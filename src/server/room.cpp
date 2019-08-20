@@ -75,7 +75,10 @@ Room::Room(QObject *parent, const QString &mode)
     L = CreateLuaState();
 
     DoLuaScript(L, "lua/sanguosha.lua");
-    DoLuaScript(L, QFile::exists("lua/ai/private-smart-ai.lua") ? "lua/ai/private-smart-ai.lua" : "lua/ai/smart-ai.lua");
+    if(isHegemonyGameMode(mode))
+        DoLuaScript(L, "lua/ai/hegemony-smart-ai.lua");
+    else
+        DoLuaScript(L, QFile::exists("lua/ai/private-smart-ai.lua") ? "lua/ai/private-smart-ai.lua" : "lua/ai/smart-ai.lua");
 
     connect(this, SIGNAL(signalSetProperty(ServerPlayer *, const char *, QVariant)), this, SLOT(slotSetProperty(ServerPlayer *, const char *, QVariant)), Qt::QueuedConnection);
 
