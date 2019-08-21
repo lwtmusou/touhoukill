@@ -68,7 +68,7 @@ sgs.ai_skill_use_func.LeitingCard = function(card, use, self)
 	local temp
 	local hearts={}
 	local spades={}
-	local cards = self.player:getHandcards()
+	local cards = self.player:getCards("hes")
 	for _,c in sgs.qlist(cards) do
 		if c:getSuit()==sgs.Card_Heart then
 			table.insert(hearts,c)
@@ -76,6 +76,7 @@ sgs.ai_skill_use_func.LeitingCard = function(card, use, self)
 			table.insert(spades,c)
 		end
 	end
+	
 	cards = sgs.QList2Table(cards)
 	if #cards>0 then
 		self:sortByKeepValue(cards)
@@ -130,10 +131,11 @@ sgs.ai_skill_cardask["@leiting"] = function(self, data)
 		return "$" .. temp
 	end
 
-	local cards = self.player:getHandcards()
-	cards = sgs.QList2Table(cards)
-	self:sortByKeepValue(cards)
-	return "$" .. cards[1]:getId()
+	return "."
+	--local cards = self.player:getHandcards()
+	--cards = sgs.QList2Table(cards)
+	--self:sortByKeepValue(cards)
+	--return "$" .. cards[1]:getId()
 end
 sgs.ai_cardneed.leiting = function(to, card, self)
 	if not self:willSkipPlayPhase(to) then

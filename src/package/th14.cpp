@@ -195,7 +195,7 @@ LeitingCard::LeitingCard()
 void LeitingCard::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
-    effect.from->drawCards(2);
+    effect.from->drawCards(1);
     if (effect.from->isKongcheng())
         return;
     QList<const Card *> hc = effect.from->getHandcards();
@@ -209,13 +209,13 @@ void LeitingCard::onEffect(const CardEffectStruct &effect) const
         return;
     }
 
-    const Card *cards = room->askForCard(effect.from, ".|.|.|hand!", "@leiting:" + effect.to->objectName(), QVariant::fromValue(effect.to), Card::MethodDiscard);
-    if (!cards) {
+    const Card *cards = room->askForCard(effect.from, ".|.|.|hand,equipped", "@leiting:" + effect.to->objectName(), QVariant::fromValue(effect.to), Card::MethodDiscard);
+    /*if (!cards) {
         //force discard!!!
         int x = qrand() % hc.length();
         cards = hc.value(x);
         room->throwCard(cards, effect.from);
-    }
+    }*/
 
     if (cards->getSuit() == Card::Heart) {
         effect.to->drawCards(1);
