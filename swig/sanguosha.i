@@ -104,6 +104,10 @@ public:
     bool isFemale() const;
     bool isNeuter() const;
 
+	void setRemoved(bool removed);
+    bool isRemoved() const;
+
+
     bool hasShownRole() const;
     void setShownRole(bool shown);
 
@@ -278,11 +282,20 @@ public:
 
 	bool hasShownSkill(const Skill *skill) const;
     bool hasShownSkill(const char *skill_name) const;
+    bool hasShownSkills(const char *skill_names) const;
 
+	bool hasShownGeneral() const;
 	void setSkillPreshowed(const char *skill, bool preshowed = true);
 	bool hasPreshowedSkill(const char *name) const;
     bool hasPreshowedSkill(const Skill *skill) const;
     bool isHidden() const;
+
+	bool ownSkill(const char *skill_name) const;
+    bool ownSkill(const Skill *skill) const;
+    bool isFriendWith(const Player *player) const;
+    bool willBeFriendWith(const Player *player) const;
+	const Player *getLord(bool include_death = false) const;
+	void setSkillsPreshowed( bool preshowed = true);
 
 
 	void setNext(Player *next);
@@ -364,6 +377,7 @@ public:
     bool isOffline() const;
 
     virtual int aliveCount(bool includeRemoved = true) const;
+	int getPlayerNumWithSameKingdom(const char *reason, const char *_to_calculate = NULL) const;
     virtual int getHandcardNum() const;
     virtual void removeCard(const Card *card, Place place);
     virtual void addCard(const Card *card, Place place);
@@ -1382,7 +1396,7 @@ public:
     void judge(JudgeStruct &judge_struct);
     void sendJudgeResult(const JudgeStruct * judge);
     QList<int> getNCards(int n, bool update_pile_number = true, bool bottom = false);
-    ServerPlayer *getLord() const;
+    ServerPlayer *getLord(const char *kingdom = "wei", bool include_death = false) const;
     void askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, GuanxingType guanxing_type = GuanxingBothSides,const char *skillName ="");
     int doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids = QList<int>(), const char *skill_name = "gongxin");
     int drawCard(bool bottom = false);
@@ -1442,7 +1456,7 @@ public:
     ServerPlayer *findPlayer(const char *general_name, bool include_dead = false) const;
     QList<ServerPlayer *> findPlayersBySkillName(const char *skill_name) const;
     ServerPlayer *findPlayerBySkillName(const char *skill_name) const;
-    ServerPlayer *findPlayerByObjectName(const char *name) const;
+    ServerPlayer *findPlayerByObjectName(const char *name, bool include_dead = false) const;
     void installEquip(ServerPlayer *player, const char *equip_name);
     void resetAI(ServerPlayer *player);
     void changeHero(ServerPlayer *player, const char *new_general, bool full_state, bool invoke_start = true, bool isSecondaryHero = false, bool sendLog = true);

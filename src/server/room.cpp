@@ -2417,7 +2417,7 @@ ServerPlayer *Room::findPlayerBySkillName(const QString &skill_name) const
     return NULL;
 }
 
-ServerPlayer *Room::findPlayerByObjectName(const QString &name) const
+ServerPlayer *Room::findPlayerByObjectName(const QString &name, bool include_dead) const
 {
     foreach (ServerPlayer *player, getAllPlayers()) {
         if (player->objectName() == name)
@@ -5803,8 +5803,10 @@ Player::Place Room::getCardPlace(int card_id) const
     return place_map.value(card_id);
 }
 
-ServerPlayer *Room::getLord() const
+ServerPlayer *Room::getLord(const QString &kingdom, bool include_death) const
 {
+    if (isHegemonyGameMode(mode))
+        return NULL;
     ServerPlayer *the_lord = m_players.first();
     if (the_lord->getRole() == "lord")
         return the_lord;

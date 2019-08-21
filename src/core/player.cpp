@@ -1857,6 +1857,23 @@ bool Player::hasShownSkill(const QString &skill_name) const
     return hasShownSkill(skill);
 }
 
+
+bool Player::hasShownSkills(const QString &skill_name) const
+{
+    foreach(const QString &skill, skill_name.split("|")) {
+        bool checkpoint = true;
+        foreach(const QString &sk, skill.split("+")) {
+            if (!hasShownSkill(sk)) {
+                checkpoint = false;
+                break;
+            }
+        }
+        if (checkpoint) return true;
+    }
+    return false;
+}
+
+
 void Player::setSkillPreshowed(const QString &skill, bool preshowed)
 {
     if (skills.contains(skill))
@@ -1976,4 +1993,20 @@ bool Player::willBeFriendWith(const Player *player) const
             return true;
     }
     return false;
+}
+
+
+const Player *Player::getLord(bool include_death) const
+{
+    return NULL;
+    //if (getActualGeneral1() && getActualGeneral1()->isLord())
+    //    return this;
+    QList<const Player *> sib = include_death ? getSiblings() : getAliveSiblings();
+    sib << this;
+    foreach(const Player *p, sib) {
+        if (p->getGeneral() && p->getGeneral()->isLord() && p->getKingdom() == kingdom)
+            return p;
+    }
+
+    return NULL;
 }

@@ -1992,3 +1992,40 @@ void ServerPlayer::sendSkillsToOthers()
             room->doNotify(p, QSanProtocol::S_COMMAND_LOG_EVENT, args);
     }
 }
+
+int ServerPlayer::getPlayerNumWithSameKingdom(const QString &reason, const QString &_to_calculate) const
+{
+    QString to_calculate = _to_calculate;
+
+    if (to_calculate.isEmpty()) {
+        if (getRole() == "careerist")
+            to_calculate = "careerist";
+        else
+            to_calculate = getRole();
+    }
+
+    ServerPlayer *this_player = room->findPlayer(objectName());
+    QList<ServerPlayer *> players = room->getAlivePlayers();
+
+    int num = 0;
+    foreach(ServerPlayer *p, players) {
+        if (!p->hasShownGeneral())
+            continue;
+        if (p->getRole() == "careerist") { // if player is careerist, DO NOT COUNT AS SOME KINGDOM!!!!!
+            if (to_calculate == "careerist")
+                num = 1;
+            continue;
+        }
+        if (p->getRole() == to_calculate) //hegemony
+            ++num;
+    }
+
+    /*if (reason != "AI") {
+        QVariant data = QVariant::fromValue(PlayerNumStruct(num, to_calculate, type, reason));
+        room->getThread()->trigger(ConfirmPlayerNum, room, this_player, data);
+        PlayerNumStruct playerNumStruct = data.value<PlayerNumStruct>();
+        num = playerNumStruct.m_num;
+    }*/
+
+    return qMax(num, 0);
+}

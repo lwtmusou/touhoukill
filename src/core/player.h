@@ -333,7 +333,7 @@ public:
 
     bool hasShownSkill(const Skill *skill) const; //hegemony
     bool hasShownSkill(const QString &skill_name) const; //hegemony
-
+    bool hasShownSkills(const QString &skill_names) const;
 
     void setSkillPreshowed(const QString &skill, bool preshowed = true);//hegemony
     void setSkillsPreshowed( bool preshowed = true);
@@ -347,6 +347,8 @@ public:
     bool ownSkill(const Skill *skill) const;
     bool isFriendWith(const Player *player) const;
     bool willBeFriendWith(const Player *player) const;
+
+    const Player *getLord(bool include_death = false) const;
 
     QVariantMap tag;
 

@@ -240,7 +240,8 @@ public:
         ServerPlayer *fldl = data.value<ServerPlayer *>();
         room->touhouLogmessage("#TriggerSkill", fldl, objectName());
         room->notifySkillInvoked(fldl, objectName());
-
+        room->broadcastSkillInvoke(objectName());
+        
         JudgeStruct judge;
         judge.who = fldl;
         judge.pattern = "Slash";

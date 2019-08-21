@@ -998,12 +998,15 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             return true;
         }
         if (room->getTag("TheFirstToShowRewarded").isNull() && room->getScenario() == NULL) {//Config.RewardTheFirstShowingPlayer && 
-            LogMessage log;
-            log.type = "#FirstShowReward";
-            log.from = player;
-            room->sendLog(log);
-            if (player->askForSkillInvoke("FirstShowReward"))
+            
+            if (player->askForSkillInvoke("FirstShowReward")) {
+                LogMessage log;
+                log.type = "#FirstShowReward";
+                log.from = player;
+                room->sendLog(log);
                 player->drawCards(2);
+            }
+                
             room->setTag("TheFirstToShowRewarded", true);
         }
         //CompanionEffect  and  HalfMaxHpLeft
