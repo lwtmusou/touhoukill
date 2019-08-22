@@ -26,12 +26,22 @@ function sgs.isGoodHp(player)
 	if goodHp then
 		return goodHp
 	else
-		for _, p in sgs.qlist(global_room:getOtherPlayers(player)) do
-			if sgs.compareRoleEvaluation(p,"rebel","loyalist")==sgs.compareRoleEvaluation(player,"rebel","loyalist")
+		if global_room:getMode():find("hegemony") then
+			local n = 0
+			for _, friend in ipairs(sgs.recorder:getFriends(player)) do
+				if global_room:getCurrent():hasShownSkill("wansha") and player:objectName() ~= friend:objectName() then continue end
+				n = n + getCardsNum("Peach", friend, observer)
+			end
+		return n > 0
+		else
+			for _, p in sgs.qlist(global_room:getOtherPlayers(player)) do
+				if sgs.compareRoleEvaluation(p,"rebel","loyalist")==sgs.compareRoleEvaluation(player,"rebel","loyalist")
 					and getCardsNum("Peach",p)>0 then
-				return true
+					return true
+				end
 			end
 		end
+
 		return false
 	end
 end

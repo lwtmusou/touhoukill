@@ -1276,8 +1276,8 @@ function SmartAI:writeKeepValue(card)
 			elseif card:isKindOf("OffensiveHorse") then return -9.8
 			else return -9.7
 			end
-		elseif self.player:hasSkills("bazhen|jgyizhong") and card:isKindOf("Armor") then return -8
-		elseif self:needKongcheng() then return 5.0
+		--elseif self.player:hasSkills("bazhen|jgyizhong") and card:isKindOf("Armor") then return -8
+		--elseif self:needKongcheng() then return 5.0
 		end
 		local value = 0
 		if card:isKindOf("Armor") then value = self:isWeak() and 5.2 or 3.2
@@ -4879,14 +4879,14 @@ function SmartAI:getAoeValue(card)
 		end
 	end
 
-	local zhiman = self.player:hasSkill("zhiman")
+	--[[local zhiman = self.player:hasSkill("zhiman")
 	local zhimanprevent
 	if card:isKindOf("SavageAssault") then
 		local menghuo = sgs.findPlayerByShownSkillName("huoshou")
 		attacker = menghuo or attacker
 		if self:isFriend(attacker) and menghuo and menghuo:hasSkill("zhiman") then zhiman = true end
 		if not self:isFriend(attacker) and menghuo:hasSkill("zhiman") then zhimanprevent = true end
-	end
+	end]]
 
 	local function getAoeValueTo(to, attacker)
 		local value, sj_num = 0, 0
@@ -6951,7 +6951,61 @@ function sgs.touhouAppendExpandPileToList(player,cards)
 	end
 	return cards
 end
+function SmartAI:touhouChainDamage(damage,from,to)
+	local x=0
+	local y=0
+	damage=self:touhouDamage(damage,from,to)
+	if self:isFriend(to) then
+		y=damage.damage
+	end
+	if self:isEnemy(to) then
+		x=damage.damage
+	end
+	if damage.nature==sgs.DamageStruct_Normal  or not damage.chain  or not to:isChained() then
+		return x,y
+	end
+	if self:touhouBreakDamage(damage,to) then
+		return x,y
+	end
+	--开始传导铁锁
+	damage.chain=true
+	local tos = sgs.SPlayerList()
+	for _,p in sgs.qlist(self.room:getOtherPlayers(to)) do
+		if p:isChained() then
+			tos:append(p)
+		end
+	end
+	if not tos:isEmpty() then
+		self.room:sortByActionOrder(tos)
+		for _,p  in sgs.qlist(tos) do
+			local real_damage=self:touhouDamage(damage,from,p)
+			if self:isFriend(to,p) then
+				y=y+real_damage.damage
+			end
+			if self:isEnemy(to,p) then
+				x=x+real_damage.damage
+			end
+			if self:touhouBreakDamage(real_damage,p) then
+				return x,y
+			end
+		end
+	end
+	return x,y
+end
 
+function SmartAI:trickProhibit(card, enemy, from)
+	from = from or self.player
+	for _, askill in sgs.qlist(enemy:getVisibleSkillList()) do
+		local s_name = askill:objectName()
+		if  enemy:hasSkill(s_name) then
+			local filter = sgs.ai_trick_prohibit[s_name]
+			if filter and type(filter) == "function" and filter(self, from, enemy, card) then
+				return true
+			end
+		end
+	end
+	return false
+end
 
 
 dofile "lua/ai/debug-ai.lua"

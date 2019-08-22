@@ -737,7 +737,7 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
             effect.effectValue.last() = effect.effectValue.last() + 1;
 
         effect.effectValue.first() = effect.effectValue.first() + magic_drank;
-        room->setTag("targets" + this->toString(), QVariant::fromValue(players));
+        room->setTag("targets" + this->toString(), QVariant::fromValue(targets));
 
         room->cardEffect(effect);
     }
