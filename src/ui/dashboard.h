@@ -55,9 +55,8 @@ public:
     void hideControlButtons();
     void showControlButtons();
 
-
-    void setPlayer(ClientPlayer *player);//hegemony
-    void showSeat();//hegemony
+    void setPlayer(ClientPlayer *player); //hegemony
+    void showSeat(); //hegemony
 
     virtual void showProgressBar(QSanProtocol::Countdown countdown);
     virtual void hideProgressBar();
@@ -106,7 +105,7 @@ public:
     void expandSpecialCard();
     void retractPileCards(const QString &pile_name);
     void retractSpecialCard();
-    inline const QStringList &getPileExpanded() const
+    inline QStringList getPileExpanded() const
     {
         return _m_pile_expanded.keys();
     }
@@ -135,7 +134,6 @@ public slots:
     void updateChaoren();
     void updateShown();
     void updateHiddenMark(); //hegemony
-
 
     void sortCards();
     void beginSorting();
@@ -251,9 +249,8 @@ protected:
     //for animated effects
     EffectAnimation *animations;
 
-    
-    QGraphicsRectItem *_m_shadow_layer1, *_m_shadow_layer2;//hegemony  //for avatar shadow layer
-    QGraphicsPixmapItem *leftHiddenMark;//hegemony
+    QGraphicsRectItem *_m_shadow_layer1, *_m_shadow_layer2; //hegemony  //for avatar shadow layer
+    QGraphicsPixmapItem *leftHiddenMark; //hegemony
 
     // for parts creation
     void _createLeft();
@@ -269,7 +266,6 @@ protected:
     //QStringList _m_pile_expanded;
     QMap<QString, QList<int> > _m_pile_expanded;
     QList<int> _m_id_expanded; //just for chaoren
-    
 
     // for equip skill/selections
     PixmapAnimation *_m_equipBorders[5];

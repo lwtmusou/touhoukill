@@ -536,16 +536,15 @@ void RoomScene::handleGameEvent(const QVariant &args)
             photo->updateAvatarTooltip();
         dashboard->updateAvatarTooltip();
         //if (eventType == S_GAME_EVENT_PREPARE_SKILL)
-            updateSkillButtons();
+        updateSkillButtons();
         dashboard->expandSpecialCard(); //for chaoren
         break;
     }
     case S_GAME_EVENT_UPDATE_PRESHOW: {
         //Q_ASSERT(arg[1].isObject());
-        bool auto_preshow_available = Self->hasFlag("AutoPreshowAvailable");
         JsonObject preshow_map = arg[1].value<JsonObject>();
         QList<QString> skill_names = preshow_map.keys();
-        foreach(const QString &skill, skill_names) {
+        foreach (const QString &skill, skill_names) {
             bool showed = preshow_map[skill].toBool();
 
             //if (Config.EnableAutoPreshow && auto_preshow_available) {
@@ -558,9 +557,9 @@ void RoomScene::handleGameEvent(const QVariant &args)
                 }
             }
             else {*/
-                
-                Self->setSkillPreshowed(skill, showed);
-                /*if (!showed) {
+
+            Self->setSkillPreshowed(skill, showed);
+            /*if (!showed) {
                     foreach(QSanSkillButton *btn, m_skillButtons) {
                         if (btn->getSkill()->objectName() == skill) {
                             btn->QGraphicsObject::setEnabled(true);
@@ -569,11 +568,11 @@ void RoomScene::handleGameEvent(const QVariant &args)
                         }
                     }
                 }*/
-                dashboard->updateHiddenMark();
-                //if (Self->inHeadSkills(skill))
-                //    dashboard->updateLeftHiddenMark();
-                //else
-                //    dashboard->updateRightHiddenMark();
+            dashboard->updateHiddenMark();
+            //if (Self->inHeadSkills(skill))
+            //    dashboard->updateLeftHiddenMark();
+            //else
+            //    dashboard->updateRightHiddenMark();
             //}
         }
         break;
@@ -610,7 +609,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         }
 
         //change bgm and backgroud
-        if (!isHegemonyGameMode(ServerInfo.GameMode) &&  player->isLord()) {
+        if (!isHegemonyGameMode(ServerInfo.GameMode) && player->isLord()) {
             ClientInstance->lord_name = newHeroName;
             setLordBGM(newHeroName);
             setLordBackdrop(newHeroName);
@@ -1316,7 +1315,7 @@ void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
         //m_mousePressed = true;    super drag??
         bool changed = false;
         QPoint point(event->pos().x(), event->pos().y());
-        foreach(Photo *photo, photos) {
+        foreach (Photo *photo, photos) {
             HegemonyRoleComboBox *box = photo->getHegemonyRoleComboBox();
             if (!box->boundingRect().contains(point) && box->isExpanding())
                 changed = true;
@@ -1326,9 +1325,7 @@ void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
             changed = true;
         if (changed)
             emit cancel_role_box_expanding();
-    
     }
-
 }
 
 void RoomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
@@ -1893,10 +1890,9 @@ void RoomScene::chooseOption(const QString &skillName, const QStringList &option
     QApplication::alert(main_window);
     if (!main_window->isActiveWindow())
         Sanguosha->playSystemAudioEffect("pop-up");
-   
+
     m_chooseOptionsBox->setSkillName(skillName);
     m_chooseOptionsBox->chooseOption(options);
-
 }
 
 /*void RoomScene::chooseOption(const QString &skillName, const QStringList &options)
@@ -2168,13 +2164,13 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
             CardMoveReason reason = movement.reason;
             if (!reason.m_skillName.isEmpty() && movement.from && movement.to_place != Player::PlaceHand && movement.to_place != Player::PlaceSpecial
                 && movement.to_place != Player::PlaceEquip && movement.to_place != Player::PlaceDelayedTrick) {
-                ClientPlayer *target = ClientInstance->getPlayer(movement.from->objectName());               
-                if (!reason.m_playerId.isEmpty() && reason.m_playerId != movement.from->objectName()) target = ClientInstance->getPlayer(reason.m_playerId);
+                ClientPlayer *target = ClientInstance->getPlayer(movement.from->objectName());
+                if (!reason.m_playerId.isEmpty() && reason.m_playerId != movement.from->objectName())
+                    target = ClientInstance->getPlayer(reason.m_playerId);
 
                 if (target && target->hasShownSkill(reason.m_skillName))
-                    card->showAvatar(target->getGeneral());//, reason.m_skillName
+                    card->showAvatar(target->getGeneral()); //, reason.m_skillName
             }
-
 
             int card_id = card->getId();
             if (!card_moves[i].card_ids.contains(card_id)) {
@@ -2511,13 +2507,10 @@ void RoomScene::updateSkillButtons()
         addSkillButton(skill);
     }
 
-
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
-        foreach(QSanSkillButton *button, m_skillButtons) {
+        foreach (QSanSkillButton *button, m_skillButtons) {
             const Skill *skill = button->getSkill();
-            bool head = button->objectName() == "left";
-            button->setEnabled(skill->canPreshow()
-                && !Self->hasShownSkill(skill));
+            button->setEnabled(skill->canPreshow() && !Self->hasShownSkill(skill));
             if (skill->canPreshow() && Self->ownSkill(skill) && !Self->hasShownGeneral()) {
                 if (Self->hasPreshowedSkill(skill->objectName()))
                     button->setState(QSanButton::S_STATE_DISABLED);
@@ -2525,17 +2518,11 @@ void RoomScene::updateSkillButtons()
                     button->setState(QSanButton::S_STATE_CANPRESHOW);
             }
         }
-    }
-    else {
+    } else {
         // disable all skill buttons
-        foreach(QSanSkillButton *button, m_skillButtons)
+        foreach (QSanSkillButton *button, m_skillButtons)
             button->setEnabled(false);
-
     }
-    
-
-
-    
 }
 
 void RoomScene::useSelectedCard()
@@ -2836,7 +2823,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         ClientInstance->clearHighlightSkillName();
     }
 
-    if (oldStatus == Client::AskForChoice)//regardless of newStatus
+    if (oldStatus == Client::AskForChoice) //regardless of newStatus
         m_chooseOptionsBox->clear();
 
     switch (newStatus & Client::ClientStatusBasicMask) {
@@ -4265,10 +4252,9 @@ void RoomScene::onGameStart()
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
         dashboard->refresh();
         dashboard->showSeat();
-        foreach(Photo *photo, photos)
+        foreach (Photo *photo, photos)
             photo->showSeat();
     }
-    
 }
 
 void RoomScene::freeze()
@@ -4351,9 +4337,9 @@ void RoomScene::showSkillInvocation(const QString &who, const QString &skill_nam
 
     if (!isHegemonyGameMode(ServerInfo.GameMode) && !player->hasSkill(skill_name) && !player->hasEquipSkill(skill_name))
         return;
-    else if (isHegemonyGameMode(ServerInfo.GameMode) && !skills.contains(skill_name)  && !player->hasEquipSkill(skill_name))
+    else if (isHegemonyGameMode(ServerInfo.GameMode) && !skills.contains(skill_name) && !player->hasEquipSkill(skill_name))
         return;
-    
+
     QString type = "#InvokeSkill";
     QString from_general = player->objectName();
     QString arg = skill_name;

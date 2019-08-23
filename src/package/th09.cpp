@@ -324,7 +324,7 @@ public:
         return false;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->isKindOf("Slash") || (use.card->isNDTrick())) {
@@ -1292,10 +1292,9 @@ public:
         if (isHegemonyGameMode(ServerInfo.GameMode)) {
             if (target->hasSkill("duanjiao") && target->hasShownSkill("duanjiao"))
                 return 3;
-        }
-        else if (target->hasSkill("duanjiao"))
+        } else if (target->hasSkill("duanjiao"))
             return 3;
-        
+
         return -1;
     }
 };
@@ -1861,7 +1860,6 @@ public:
                 foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
                     if (p->getHandcardNum() < p->getLostHp())
                         targets << p;
-                    
                 }
                 if (!targets.isEmpty())
                     setYsJieLimit(player, targets);
@@ -1880,9 +1878,9 @@ public:
             SkillAcquireDetachStruct a = data.value<SkillAcquireDetachStruct>();
             if (a.player && a.player->isCurrent() && a.skill->objectName() == objectName()) {
                 QList<ServerPlayer *> targets;
-                foreach(ServerPlayer *p, room->getOtherPlayers(a.player)) {
+                foreach (ServerPlayer *p, room->getOtherPlayers(a.player)) {
                     if (p->getHandcardNum() < p->getLostHp())
-                        targets << p;  
+                        targets << p;
                 }
                 setYsJieLimit(a.player, targets);
             }
@@ -1895,13 +1893,12 @@ public:
                 if (!v.skill || v.skill->objectName() == objectName()) {
                     if (!v.invalid && v.player->hasSkill(this)) {
                         QList<ServerPlayer *> targets;
-                        foreach(ServerPlayer *p, room->getOtherPlayers(v.player)) {
+                        foreach (ServerPlayer *p, room->getOtherPlayers(v.player)) {
                             if (p->getHandcardNum() < p->getLostHp())
                                 targets << p;
                         }
                         setYsJieLimit(v.player, targets);
-                    }   
-                    else if (v.invalid)
+                    } else if (v.invalid)
                         removeYsJieLimit(v.player, room->getOtherPlayers(v.player));
                 }
             }
