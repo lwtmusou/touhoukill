@@ -217,7 +217,7 @@ public:
                     //room->touhouLogmessage("#shigui_log", current, QString::number(current->getMark("shigui")), QList<ServerPlayer *>() << current);
                 }
             }
-                
+
         } else if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
@@ -308,7 +308,6 @@ public:
     }
 };*/
 
-
 class Chongdong : public TriggerSkill
 {
 public:
@@ -319,13 +318,13 @@ public:
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
-    {   
+    {
         PhaseSkippingStruct s = data.value<PhaseSkippingStruct>();
         if (s.player == NULL || s.player->isDead() || s.player->getKingdom() != "pc98")
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
-        foreach(ServerPlayer *p, room->getOtherPlayers(s.player)) {
+        foreach (ServerPlayer *p, room->getOtherPlayers(s.player)) {
             if (p->hasLordSkill(objectName())) {
                 d << SkillInvokeDetail(this, p, s.player);
             }
@@ -338,7 +337,7 @@ public:
         return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->owner));
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         room->broadcastSkillInvoke(objectName());
         room->notifySkillInvoked(invoke->owner, objectName());
@@ -2145,7 +2144,6 @@ public:
     {
         return true;
     }
-
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {

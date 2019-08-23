@@ -63,6 +63,8 @@ SOURCES += \
     src/package/th13.cpp \
     src/package/th14.cpp \
     src/package/th15.cpp \
+    src/package/th16.cpp \
+    src/package/th17.cpp \
     src/package/th99.cpp \
     src/package/thndj.cpp \
     src/package/touhougod.cpp \
@@ -118,7 +120,8 @@ SOURCES += \
     src/ui/lightboxanimation.cpp \
     src/ui/chooseoptionsbox.cpp \
     src/ui/playercardbox.cpp \
-    src/package/testCard.cpp
+    src/package/testCard.cpp \
+    src/ui/hegemonyrolecombobox.cpp
 
 HEADERS += \
     src/client/aux-skills.h \
@@ -169,6 +172,8 @@ HEADERS += \
     src/package/th13.h \
     src/package/th14.h \
     src/package/th15.h \
+    src/package/th16.h \
+    src/package/th17.h \
     src/package/th99.h \
     src/package/thndj.h \
     src/package/touhougod.h \
@@ -222,6 +227,7 @@ HEADERS += \
     src/ui/choosetriggerorderbox.h \
     src/ui/graphicsbox.h \
     src/ui/lightboxanimation.h \
+    src/ui/hegemonyrolecombobox.h \
     src/ui/chooseoptionsbox.h \
     src/ui/playercardbox.h \
     src/package/testCard.h \

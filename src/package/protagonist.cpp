@@ -650,7 +650,6 @@ public:
         return true;
     }
 
-
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
         if (triggerEvent == EventPhaseChanging) {
@@ -2224,8 +2223,7 @@ public:
                     }
                 }
             }
-        }
-        else if (triggerEvent == CardUsed) {
+        } else if (triggerEvent == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->getSkillName() == objectName() && use.card->getSuit() == Card::Spade && use.from && use.from->isAlive())
                 d << SkillInvokeDetail(this, use.from, use.from, NULL, true);
@@ -2250,12 +2248,11 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         invoke->invoker->drawCards(1);
         return false;
     }
-
 };
 
 class Moli : public TriggerSkill

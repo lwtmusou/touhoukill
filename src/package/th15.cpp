@@ -1356,19 +1356,20 @@ public:
 class GameRule_AskForGeneralShowHead : public TriggerSkill
 {
 public:
-    GameRule_AskForGeneralShowHead() : TriggerSkill("GameRule_AskForGeneralShowHead")
+    GameRule_AskForGeneralShowHead()
+        : TriggerSkill("GameRule_AskForGeneralShowHead")
     {
         events << EventPhaseStart;
         global = true;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         invoke->invoker->showGeneral(true, true);
         return false;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
         if (player != NULL && player->getPhase() == Player::Start && !player->hasShownGeneral())
@@ -1376,7 +1377,6 @@ public:
         return QList<SkillInvokeDetail>();
     }
 };
-
 
 TH15Package::TH15Package()
     : Package("th15")
