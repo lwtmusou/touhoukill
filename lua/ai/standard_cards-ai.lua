@@ -3625,8 +3625,14 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 	if #self.enemies > 0 then new_enemies = self.enemies
 	else
 		for _, aplayer in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-			if sgs.evaluatePlayerRole(aplayer) == "neutral" then
-				table.insert(new_enemies, aplayer)
+			if not self.room:getMode():find("hegemony") then
+				if  sgs.evaluatePlayerRole(aplayer) == "neutral" then
+					table.insert(new_enemies, aplayer)
+				end
+			else
+				if not string.find(self:evaluateKingdom(aplayer), self.player:getKingdom()) then
+					table.insert(new_enemies, aplayer)
+				end
 			end
 		end
 	end
