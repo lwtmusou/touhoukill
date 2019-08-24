@@ -7,7 +7,7 @@ MenfeiCard::MenfeiCard()
 {
 }
 
-bool MenfeiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+bool MenfeiCard::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const
 {
     return targets.isEmpty();
 }
@@ -52,10 +52,22 @@ public:
         view_as_skill = new MenfeiVS;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    void record(TriggerEvent, Room *, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->getTypeId() == Card::TypeSkill)
+            return;
+
+        use.card->setFlags("-menfei");
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->getTypeId() == Card::TypeSkill)
+            return QList<SkillInvokeDetail>();
+
+        if (use.card->hasFlag("menfei"))
             return QList<SkillInvokeDetail>();
 
         ServerPlayer *player = use.from;
@@ -79,8 +91,10 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
+        CardUseStruct use = data.value<CardUseStruct>();
+        use.card->setFlags("menfei");
         foreach (ServerPlayer *p, room->getAlivePlayers()) {
             if (p->getMark("@door") > 0) {
                 room->setPlayerMark(p, "@door", 0);
@@ -101,7 +115,7 @@ public:
         events << TargetSpecifying;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->getTypeId() == Card::TypeBasic || use.card->isNDTrick()) {
@@ -173,7 +187,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         ServerPlayer *player = invoke->invoker;
         int acquired = 0;

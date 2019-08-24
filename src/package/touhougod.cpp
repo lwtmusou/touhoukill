@@ -6244,38 +6244,34 @@ public:
         expand_pile = "xiuye";
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &) const
+    virtual bool isEnabledAtResponse(const Player *, const QString &) const
     {
         QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-        foreach(const Card *c, ClientInstance->discarded_list) {
+        foreach (const Card *c, ClientInstance->discarded_list) {
             if (c->getSuit() == Card::Club && (c->getTypeId() == Card::TypeBasic || c->isNDTrick())) {
                 if (this->matchAvaliablePattern(c->objectName(), pattern))
                     return true;
             }
-                
         }
         return false;
     }
 
-
-    bool isEnabledAtPlay(const Player *player) const
+    bool isEnabledAtPlay(const Player *) const
     {
-        foreach(const Card *c, ClientInstance->discarded_list) {
+        foreach (const Card *c, ClientInstance->discarded_list) {
             if (c->getSuit() == Card::Club && (c->getTypeId() == Card::TypeBasic || c->isNDTrick()))
                 return true;
         }
         return false;
     }
 
-
     bool viewFilter(const Card *to_select) const
     {
-        if (to_select->getSuit() != Card::Club || !ClientInstance->discarded_list.contains(to_select) )
+        if (to_select->getSuit() != Card::Club || !ClientInstance->discarded_list.contains(to_select))
             return false;
         if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) // in play!!
             return to_select->isAvailable(Self);
-        else
-        {
+        else {
             QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
             return this->matchAvaliablePattern(to_select->objectName(), pattern);
         }
@@ -6290,15 +6286,14 @@ public:
             card->addSubcard(originalCard);
             card->setCanRecast(false);
             return card;
-        }
-        else
+        } else
             return NULL;
     }
 
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const
-    {      
+    {
         QList<int> discardpile = player->getRoom()->getDiscardPile();
-        foreach(int id, discardpile) {
+        foreach (int id, discardpile) {
             Card *c = Sanguosha->getCard(id);
             if (c->getSuit() == Card::Club && c->isKindOf("Nullification"))
                 return true;
@@ -6322,7 +6317,6 @@ public:
         if (e == CardFinished) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->getSuit() == Card::Club && use.card->getSkillName() == objectName() && use.from && use.from->isAlive()) {
-                
                 QList<int> ids;
                 if (use.card->isVirtualCard())
                     ids = use.card->getSubcards();
@@ -6331,19 +6325,18 @@ public:
 
                 if (ids.isEmpty())
                     return QList<SkillInvokeDetail>();
-                foreach(int id, ids) {
+                foreach (int id, ids) {
                     if (room->getCardPlace(id) != Player::DiscardPile)
                         return QList<SkillInvokeDetail>();
                 }
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);
             }
-        }
-        else if (e == EventPhaseChanging) {
+        } else if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive && change.player && !change.player->getPile("xiuye").isEmpty() && change.player->hasSkill(this))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
         }
-        
+
         return QList<SkillInvokeDetail>();
     }
 
@@ -6352,8 +6345,7 @@ public:
         if (e == CardFinished) {
             CardUseStruct use = data.value<CardUseStruct>();
             invoke->invoker->addToPile("xiuye", use.card->getSubcards());
-        }
-        else {
+        } else {
             CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), NULL, objectName(), QString());
             DummyCard *dc = new DummyCard;
             dc->deleteLater();
@@ -6362,11 +6354,7 @@ public:
         }
         return false;
     }
-
-
 };
-
-
 
 KuangjiCard::KuangjiCard()
 {
@@ -6375,17 +6363,15 @@ KuangjiCard::KuangjiCard()
     m_skillName = "kuangji";
 }
 
-bool KuangjiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+bool KuangjiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
 {
     return to_select->hasFlag("Global_kuangjiFailed") && targets.length() < subcards.length();
 }
 
 bool KuangjiCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const
 {
-
     return targets.isEmpty() || targets.length() == subcards.length();
 }
-
 
 void KuangjiCard::use(Room *room, ServerPlayer *user, QList<ServerPlayer *> &targets) const
 {
@@ -6393,11 +6379,10 @@ void KuangjiCard::use(Room *room, ServerPlayer *user, QList<ServerPlayer *> &tar
     if (targets.isEmpty())
         room->setPlayerMark(user, "kuangji_value", subcards.length());
     else {
-        foreach(ServerPlayer *t, targets)
+        foreach (ServerPlayer *t, targets)
             room->setPlayerMark(t, "kuangji_select", 1);
     }
 }
-
 
 class KuangjiVS : public ViewAsSkill
 {
@@ -6408,7 +6393,8 @@ public:
         response_pattern = "@@kuangji";
     }
 
-    static QString uniqueName(QString pattern) {
+    static QString uniqueName(QString pattern)
+    {
         if (pattern.contains("slash"))
             pattern = "slash";
         else if (pattern.contains("jink"))
@@ -6429,13 +6415,11 @@ public:
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const
     {
-        
         if (cards.length() > 0) {
             KuangjiCard *card = new KuangjiCard;
             card->addSubcards(cards);
             return card;
-        }
-        else
+        } else
             return NULL;
     }
 };
@@ -6455,7 +6439,7 @@ public:
         return !(use.card->isKindOf("IronChain") || use.card->isKindOf("LureTiger"));
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         //QStringList ban_list;
@@ -6478,9 +6462,9 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         //invoke->invoker->tag["kuangji"] = QVariant::fromValue(use.card);
         room->setPlayerProperty(invoke->invoker, "kuangji_name", use.card->objectName());
-        ServerPlayer  *target = use.to.first();
+        ServerPlayer *target = use.to.first();
         room->setPlayerFlag(invoke->invoker, "Global_kuangjiTargetmodFailed");
-        foreach(ServerPlayer *p, room->getOtherPlayers(target)) {
+        foreach (ServerPlayer *p, room->getOtherPlayers(target)) {
             if (!use.from->isProhibited(p, use.card)) {
                 if (use.card->isKindOf("Peach") && p->isWounded())
                     room->setPlayerFlag(p, "Global_kuangjiFailed");
@@ -6488,14 +6472,14 @@ public:
                     room->setPlayerFlag(p, "Global_kuangjiFailed");
             }
         }
-        
+
         return room->askForUseCard(invoke->invoker, "@@kuangji", "@kuangji");
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        foreach(ServerPlayer *t, room->getAlivePlayers()) {
+        foreach (ServerPlayer *t, room->getAlivePlayers()) {
             if (t->getMark("kuangji_select") > 0) {
                 room->setPlayerMark(t, "kuangji_select", 0);
                 use.to << t;
@@ -6522,7 +6506,7 @@ public:
         pattern = "BasicCard,TrickCard";
     }
 
-    virtual int getDistanceLimit(const Player *player, const Card *card) const
+    virtual int getDistanceLimit(const Player *player, const Card *) const
     {
         if (player->hasFlag("Global_kuangjiTargetmodFailed"))
             return 1000;
@@ -6530,7 +6514,6 @@ public:
             return 0;
     }
 };
-
 
 
 
@@ -6797,7 +6780,7 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<QianqiangCard>();
     addMetaObject<KuangjiCard>();
 
-    skills << new ChaorenLog << new Wendao << new RoleShownHandler << new ShenbaoAttach << new Ziwo << new Benwo << new Chaowo ;
+    skills << new ChaorenLog << new Wendao << new RoleShownHandler << new ShenbaoAttach << new Ziwo << new Benwo << new Chaowo;
 }
 
 ADD_PACKAGE(TouhouGod)
