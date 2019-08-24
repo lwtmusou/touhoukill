@@ -1293,6 +1293,14 @@ void Dashboard::expandPileCards(const QString &pile_name)
     } else {
         pile = Self->getPile(new_name);
     }
+
+    if (pile_name == "xiuye") {
+        foreach(const Card *c, ClientInstance->discarded_list) {
+            if (c->getSuit() == Card::Club && (c->isNDTrick() || c->getTypeId() == Card::TypeBasic))
+                pile << c->getEffectiveId();
+        }
+    }
+
     if (pile.isEmpty())
         return;
 
@@ -1303,6 +1311,8 @@ void Dashboard::expandPileCards(const QString &pile_name)
         card_item->setPos(mapFromScene(card_item->scenePos()));
         card_item->setParentItem(this);
     }
+
+    
 
     foreach (CardItem *card_item, card_items) {
         QString pile_string = pile_name;

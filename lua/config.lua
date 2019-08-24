@@ -21,6 +21,7 @@ config = {
 		"slm",
 		"hzc",
 		"gzz",
+		"tkz",
 		"wai",
 		"touhougod"
 	},
@@ -40,6 +41,7 @@ config = {
 		slm ="#66cc99",
 		hzc ="#aacc66",
 		gzz = "#005AD7" ,
+		tkz = "#cc7014",
 		wai = "#cc7014",
 		touhougod = "#96943D",
 		
@@ -69,7 +71,8 @@ config = {
 		"TH12",
 		"TH13",
 		"TH14",
-		"TH15", --0.8不对应
+		"TH15",
+		"TH16", 
 		"TH99",
 		"THNDJ",
 		"TouhouGod",

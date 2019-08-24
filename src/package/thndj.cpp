@@ -465,7 +465,7 @@ public:
 
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-            if (p != current)
+            if (p != current && p->hasShownSkill(this))
                 d << SkillInvokeDetail(this, p, current);
         }
         return d;

@@ -6233,6 +6233,305 @@ public:
     }
 };
 
+
+
+class XiuyeVS : public OneCardViewAsSkill
+{
+public:
+    XiuyeVS()
+        : OneCardViewAsSkill("xiuye")
+    {
+        expand_pile = "xiuye";
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &) const
+    {
+        QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+        foreach(const Card *c, ClientInstance->discarded_list) {
+            if (c->getSuit() == Card::Club && (c->getTypeId() == Card::TypeBasic || c->isNDTrick())) {
+                if (this->matchAvaliablePattern(c->objectName(), pattern))
+                    return true;
+            }
+                
+        }
+        return false;
+    }
+
+
+    bool isEnabledAtPlay(const Player *player) const
+    {
+        foreach(const Card *c, ClientInstance->discarded_list) {
+            if (c->getSuit() == Card::Club && (c->getTypeId() == Card::TypeBasic || c->isNDTrick()))
+                return true;
+        }
+        return false;
+    }
+
+
+    bool viewFilter(const Card *to_select) const
+    {
+        if (to_select->getSuit() != Card::Club || !ClientInstance->discarded_list.contains(to_select) )
+            return false;
+        if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) // in play!!
+            return to_select->isAvailable(Self);
+        else
+        {
+            QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+            return this->matchAvaliablePattern(to_select->objectName(), pattern);
+        }
+        return false;
+    }
+
+    const Card *viewAs(const Card *originalCard) const
+    {
+        if (originalCard) {
+            Card *card = Sanguosha->cloneCard(originalCard->objectName());
+            card->setSkillName("xiuye");
+            card->addSubcard(originalCard);
+            card->setCanRecast(false);
+            return card;
+        }
+        else
+            return NULL;
+    }
+
+    virtual bool isEnabledAtNullification(const ServerPlayer *player) const
+    {      
+        QList<int> discardpile = player->getRoom()->getDiscardPile();
+        foreach(int id, discardpile) {
+            Card *c = Sanguosha->getCard(id);
+            if (c->getSuit() == Card::Club && c->isKindOf("Nullification"))
+                return true;
+        }
+        return false;
+    }
+};
+
+class Xiuye : public TriggerSkill
+{
+public:
+    Xiuye()
+        : TriggerSkill("xiuye")
+    {
+        events << CardsMoveOneTime << CardFinished << EventPhaseChanging;
+        view_as_skill = new XiuyeVS;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e == CardFinished) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->getSuit() == Card::Club && use.card->getSkillName() == objectName() && use.from && use.from->isAlive()) {
+                
+                QList<int> ids;
+                if (use.card->isVirtualCard())
+                    ids = use.card->getSubcards();
+                else
+                    ids << use.card->getEffectiveId();
+
+                if (ids.isEmpty())
+                    return QList<SkillInvokeDetail>();
+                foreach(int id, ids) {
+                    if (room->getCardPlace(id) != Player::DiscardPile)
+                        return QList<SkillInvokeDetail>();
+                }
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);
+            }
+        }
+        else if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive && change.player && !change.player->getPile("xiuye").isEmpty() && change.player->hasSkill(this))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
+        }
+        
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (e == CardFinished) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            invoke->invoker->addToPile("xiuye", use.card->getSubcards());
+        }
+        else {
+            CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), NULL, objectName(), QString());
+            DummyCard *dc = new DummyCard;
+            dc->deleteLater();
+            dc->addSubcards(invoke->invoker->getPile("xiuye"));
+            room->throwCard(dc, reason, NULL);
+        }
+        return false;
+    }
+
+
+};
+
+
+
+KuangjiCard::KuangjiCard()
+{
+    will_throw = true;
+    handling_method = Card::MethodNone;
+    m_skillName = "kuangji";
+}
+
+bool KuangjiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    return to_select->hasFlag("Global_kuangjiFailed") && targets.length() < subcards.length();
+}
+
+bool KuangjiCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const
+{
+
+    return targets.isEmpty() || targets.length() == subcards.length();
+}
+
+
+void KuangjiCard::use(Room *room, ServerPlayer *user, QList<ServerPlayer *> &targets) const
+{
+    room->setPlayerMark(user, "kuangji_cardlength", subcards.length());
+    if (targets.isEmpty())
+        room->setPlayerMark(user, "kuangji_value", subcards.length());
+    else {
+        foreach(ServerPlayer *t, targets)
+            room->setPlayerMark(t, "kuangji_select", 1);
+    }
+}
+
+
+class KuangjiVS : public ViewAsSkill
+{
+public:
+    KuangjiVS()
+        : ViewAsSkill("kuangji")
+    {
+        response_pattern = "@@kuangji";
+    }
+
+    static QString uniqueName(QString pattern) {
+        if (pattern.contains("slash"))
+            pattern = "slash";
+        else if (pattern.contains("jink"))
+            pattern = "jink";
+        else if (pattern.contains("analeptic"))
+            pattern = "analeptic";
+        else if (pattern.contains("peach"))
+            pattern = "peach";
+        return pattern;
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const
+    {
+        //const Card *card = Self->tag.value("kuangji").value<const Card *>();
+        QString kuangji_name = Self->property("kuangji_name").toString();
+        return uniqueName(to_select->objectName()) == uniqueName(kuangji_name);
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        
+        if (cards.length() > 0) {
+            KuangjiCard *card = new KuangjiCard;
+            card->addSubcards(cards);
+            return card;
+        }
+        else
+            return NULL;
+    }
+};
+
+class Kuangji : public TriggerSkill
+{
+public:
+    Kuangji()
+        : TriggerSkill("kuangji")
+    {
+        events << TargetSpecifying;
+        view_as_skill = new KuangjiVS;
+    }
+
+    static bool hasCardValue(CardUseStruct use)
+    {
+        return !(use.card->isKindOf("IronChain") || use.card->isKindOf("LureTiger"));
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        //QStringList ban_list;
+        //ban_list << "Jink"
+        //    << "Nullification";
+        //if (ban_list.contains(use.card->getClassName()))
+        //    return QList<SkillInvokeDetail>();
+        if (use.from && use.from->isAlive() && use.from->hasSkill(this) && use.to.length() == 1) {
+            if ((use.card->isKindOf("BasicCard") || use.card->isNDTrick())) {
+                if (!use.from->canDiscard(use.from, "hs"))
+                    return QList<SkillInvokeDetail>();
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        //invoke->invoker->tag["kuangji"] = QVariant::fromValue(use.card);
+        room->setPlayerProperty(invoke->invoker, "kuangji_name", use.card->objectName());
+        ServerPlayer  *target = use.to.first();
+        room->setPlayerFlag(invoke->invoker, "Global_kuangjiTargetmodFailed");
+        foreach(ServerPlayer *p, room->getOtherPlayers(target)) {
+            if (!use.from->isProhibited(p, use.card)) {
+                if (use.card->isKindOf("Peach") && p->isWounded())
+                    room->setPlayerFlag(p, "Global_kuangjiFailed");
+                else if (use.card->targetFilter(QList<const Player *>(), p, use.from))
+                    room->setPlayerFlag(p, "Global_kuangjiFailed");
+            }
+        }
+        
+        return room->askForUseCard(invoke->invoker, "@@kuangji", "@kuangji");
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        foreach(ServerPlayer *t, room->getAlivePlayers()) {
+            if (t->getMark("kuangji_select") > 0) {
+                room->setPlayerMark(t, "kuangji_select", 0);
+                use.to << t;
+            }
+        }
+        room->sortByActionOrder(use.to);
+        data = QVariant::fromValue(use);
+
+        int num = invoke->invoker->getMark("kuangji_cardlength");
+        if (num >= invoke->invoker->getHp())
+            invoke->invoker->drawCards(num);
+        room->setPlayerMark(invoke->invoker, "kuangji_cardlength", 0);
+
+        return false;
+    }
+};
+
+class KuangjiTargetMod : public TargetModSkill
+{
+public:
+    KuangjiTargetMod()
+        : TargetModSkill("#kuangji_effect")
+    {
+        pattern = "BasicCard,TrickCard";
+    }
+
+    virtual int getDistanceLimit(const Player *player, const Card *card) const
+    {
+        if (player->hasFlag("Global_kuangjiTargetmodFailed"))
+            return 1000;
+        else
+            return 0;
+    }
+};
+
+
 TouhouGodPackage::TouhouGodPackage()
     : Package("touhougod")
 {
@@ -6383,6 +6682,12 @@ TouhouGodPackage::TouhouGodPackage()
     alice_god->addSkill(new Qianqiang);
     alice_god->addSkill(new Xianji);
 
+    General *yuka_god = new General(this, "yuka_god", "touhougod", 4);
+    yuka_god->addSkill(new Xiuye);
+    yuka_god->addSkill(new Kuangji);
+    yuka_god->addSkill(new KuangjiTargetMod);
+    related_skills.insertMulti("kuangji", "#kuangji_effect");
+
     //    General *shinmyoumaru_god = new General(this, "shinmyoumaru_god", "touhougod", 4, false, true, true);
     //    Q_UNUSED(shinmyoumaru_god);
     //    General *tenshi_god = new General(this, "tenshi_god", "touhougod", 3, false, true, true);
@@ -6405,8 +6710,9 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<XianshiCard>();
     addMetaObject<WenyueCard>();
     addMetaObject<QianqiangCard>();
+    addMetaObject<KuangjiCard>();
 
-    skills << new ChaorenLog << new Wendao << new RoleShownHandler << new ShenbaoAttach << new Ziwo << new Benwo << new Chaowo;
+    skills << new ChaorenLog << new Wendao << new RoleShownHandler << new ShenbaoAttach << new Ziwo << new Benwo << new Chaowo ;
 }
 
 ADD_PACKAGE(TouhouGod)
