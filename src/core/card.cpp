@@ -735,6 +735,11 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
             effect.effectValue.first() = effect.effectValue.first() + 1;
         if (hasFlag("mopao2"))
             effect.effectValue.last() = effect.effectValue.last() + 1;
+        if (source->getMark("kuangji_value") > 0) {
+            effect.effectValue.first() = effect.effectValue.first() + source->getMark("kuangji_value");
+            effect.effectValue.last() = effect.effectValue.last() + source->getMark("kuangji_value");
+            room->setPlayerMark(source, "kuangji_value", 0);
+        }
 
         effect.effectValue.first() = effect.effectValue.first() + magic_drank;
         room->setTag("targets" + this->toString(), QVariant::fromValue(targets));
