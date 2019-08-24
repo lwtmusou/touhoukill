@@ -216,7 +216,7 @@ function sgs.getDefenseSlash(player, self)
 		defense = defense - 0.6
 	end
 
-	if isLord(player) then
+	if not self.room:getMode():find("hegemony") and isLord(player) then
 		defense = defense - 0.4
 		if sgs.isLordInDanger() then defense = defense - 0.7 end
 	end

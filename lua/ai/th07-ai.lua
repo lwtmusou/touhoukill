@@ -280,6 +280,7 @@ sgs.ai_skill_use["@@xijian"] = function(self, prompt)
 	if #targets == 2 then
 		return "@XijianCard=.->" .. table.concat(targets, "+")
 	end
+	return "."
 end
 
 sgs.ai_card_intention.XijianCard = function(self, card, from, tos)

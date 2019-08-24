@@ -693,6 +693,7 @@ struct JudgeStruct {
     bool play_animation;
     ServerPlayer *retrial_by_response; // record whether the current judge card is provided by a response retrial
     ServerPlayer *relative_player; // record relative player like skill owner of "huazhong", for processing the case like "huazhong -> dizhen -> huazhong"
+	bool ignore_judge;  //for tiandao
 };
 
 struct PhaseChangeStruct
@@ -1285,6 +1286,7 @@ public:
     void playAudioEffect(int index = -1) const;
     Frequency getFrequency() const;
     QStringList getSources() const;
+	QString getLimitMark() const;
 };
 
 %extend Skill {
