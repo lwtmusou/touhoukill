@@ -1,7 +1,7 @@
 #include "th16.h"
+#include "engine.h"
 #include "general.h"
 #include "skill.h"
-#include "engine.h"
 
 MenfeiCard::MenfeiCard()
 {
@@ -15,9 +15,7 @@ bool MenfeiCard::targetFilter(const QList<const Player *> &targets, const Player
 void MenfeiCard::onEffect(const CardEffectStruct &effect) const
 {
     effect.to->gainMark("@door");
-
 }
-
 
 class MenfeiVS : public ZeroCardViewAsSkill
 {
@@ -31,7 +29,7 @@ public:
     {
         if (player->getMark("@door") > 0)
             return false;
-        foreach(const Player *p, player->getAliveSiblings()) {
+        foreach (const Player *p, player->getAliveSiblings()) {
             if (p->getMark("@door") > 0)
                 return false;
         }
@@ -54,19 +52,17 @@ public:
         view_as_skill = new MenfeiVS;
     }
 
-
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->getTypeId() == Card::TypeSkill)
-            return  QList<SkillInvokeDetail>();
+            return QList<SkillInvokeDetail>();
 
         ServerPlayer *player = use.from;
 
         if (player && player->isAlive() && player->hasSkill(this)) {
             ServerPlayer *target = NULL;
-            foreach (ServerPlayer *p, room->getAlivePlayers()) 
-            {
+            foreach (ServerPlayer *p, room->getAlivePlayers()) {
                 if (p->getMark("@door") > 0) {
                     target = p;
                     break;
@@ -79,14 +75,13 @@ public:
                 }
             }
         }
-        
-        return  QList<SkillInvokeDetail>();
+
+        return QList<SkillInvokeDetail>();
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        foreach(ServerPlayer *p, room->getAlivePlayers())
-        {
+        foreach (ServerPlayer *p, room->getAlivePlayers()) {
             if (p->getMark("@door") > 0) {
                 room->setPlayerMark(p, "@door", 0);
                 break;
@@ -97,8 +92,6 @@ public:
     }
 };
 
-
-
 class Houhu : public TriggerSkill
 {
 public:
@@ -108,7 +101,6 @@ public:
         events << TargetSpecifying;
     }
 
-
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
@@ -116,8 +108,7 @@ public:
             ServerPlayer *player = use.from;
             if (player && player->isAlive() && player->hasSkill(this)) {
                 ServerPlayer *target = NULL;
-                foreach(ServerPlayer *p, room->getAlivePlayers())
-                {
+                foreach (ServerPlayer *p, room->getAlivePlayers()) {
                     if (p->getMark("@door") > 0) {
                         target = p;
                         break;
@@ -126,14 +117,13 @@ public:
                 if (target) {
                     if (use.to.contains(target)) {
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, false, target);
-                    }
-                    else if (!player->isProhibited(target, use.card) && (use.card->targetFilter(QList<const Player *>(), target, player))) {
+                    } else if (!player->isProhibited(target, use.card) && (use.card->targetFilter(QList<const Player *>(), target, player))) {
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, false, target);
                     }
                 }
             }
         }
-        return  QList<SkillInvokeDetail>();
+        return QList<SkillInvokeDetail>();
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
@@ -141,8 +131,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.to.contains(invoke->targets.first())) {
             invoke->invoker->drawCards(1);
-        }
-        else {
+        } else {
             CardUseStruct use = data.value<CardUseStruct>();
             use.to << invoke->targets.first();
             room->sortByActionOrder(use.to);
@@ -151,7 +140,6 @@ public:
         return false;
     }
 };
-
 
 class Puti : public TriggerSkill
 {
@@ -180,14 +168,12 @@ public:
             if (!player->hasSkill(this) || player->isDead() || player->getPhase() != Player::Play)
                 return QList<SkillInvokeDetail>();
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-        
         }
 
         return QList<SkillInvokeDetail>();
     }
 
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         ServerPlayer *player = invoke->invoker;
         int acquired = 0;
@@ -211,15 +197,13 @@ public:
                     room->throwCard(&dummy, reason, NULL);
                     throwIds.clear();
                 }
-            }
-            else
+            } else
                 throwIds << id;
         }
 
         return false;
     }
 };
-
 
 class Zangfa : public TriggerSkill
 {
@@ -230,7 +214,7 @@ public:
         events << TargetSpecifying;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent , const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (!use.card->isNDTrick())
@@ -239,7 +223,7 @@ public:
         bool invoke = false;
         use.card->setFlags("IgnoreFailed");
         use.card->setFlags("zangfa");
-        foreach(ServerPlayer *q, room->getAlivePlayers()) {
+        foreach (ServerPlayer *q, room->getAlivePlayers()) {
             if (!use.to.contains(q) && !use.from->isProhibited(q, use.card) && use.card->targetFilter(QList<const Player *>(), q, use.from)) {
                 invoke = true;
                 break;
@@ -252,23 +236,20 @@ public:
 
         QList<SkillInvokeDetail> d;
         QList<ServerPlayer *> invokers = room->findPlayersBySkillName(objectName());
-        foreach (ServerPlayer *p, invokers)
-        {
+        foreach (ServerPlayer *p, invokers) {
             if (p->isAlive() && (p == use.from || use.to.contains(p)))
                 d << SkillInvokeDetail(this, p, p);
-
         }
         return d;
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-
         QList<ServerPlayer *> listt;
         CardUseStruct use = data.value<CardUseStruct>();
         use.card->setFlags("IgnoreFailed");
         use.card->setFlags("zangfa");
-        foreach(ServerPlayer *q, room->getAlivePlayers()) {
+        foreach (ServerPlayer *q, room->getAlivePlayers()) {
             if (!use.to.contains(q) && !use.from->isProhibited(q, use.card) && use.card->targetFilter(QList<const Player *>(), q, use.from))
                 listt << q;
         }
@@ -283,7 +264,7 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         use.to << invoke->targets.first();
@@ -318,25 +299,24 @@ TH16Package::TH16Package()
     okina->addSkill(new Menfei);
     okina->addSkill(new Houhu);
 
-    General *etanity = new General(this, "etanity", "tkz");
+    General *etanity = new General(this, "etanity", "tkz", 4, false, true);
     Q_UNUSED(etanity);
 
-    General *nemuno = new General(this, "nemuno", "tkz");
+    General *nemuno = new General(this, "nemuno", "tkz", 4, false, true);
     Q_UNUSED(nemuno);
 
-    General *aun = new General(this, "aun", "tkz");
+    General *aun = new General(this, "aun", "tkz", 4, false, true);
     Q_UNUSED(aun);
 
     General *narumi = new General(this, "narumi", "tkz");
     narumi->addSkill(new Puti);
     narumi->addSkill(new Zangfa);
 
-    General *satono = new General(this, "satono", "tkz");
+    General *satono = new General(this, "satono", "tkz", 4, false, true);
     Q_UNUSED(satono);
 
-    General *mai = new General(this, "mai", "tkz");
+    General *mai = new General(this, "mai", "tkz", 4, false, true);
     Q_UNUSED(mai);
-
 
     addMetaObject<MenfeiCard>();
     skills << new ZangfaDistance;

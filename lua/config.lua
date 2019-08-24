@@ -22,6 +22,7 @@ config = {
 		"hzc",
 		"gzz",
 		"tkz",
+		"gxs",
 		"wai",
 		"touhougod"
 	},
@@ -42,6 +43,7 @@ config = {
 		hzc ="#aacc66",
 		gzz = "#005AD7" ,
 		tkz = "#cc7014",
+		gxs = "#ff8080",
 		wai = "#cc7014",
 		touhougod = "#96943D",
 		
