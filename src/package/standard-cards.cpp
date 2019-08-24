@@ -975,7 +975,7 @@ public:
         if (armor_id != -1)
             room->setCardFlag(armor_id, "-using");
 
-        if (judge.isGood()) {
+        if (judge.isGood() && !judge.ignore_judge) {
             Jink *jink = new Jink(Card::NoSuit, 0);
             jink->setSkillName(objectName());
             room->provide(jink);

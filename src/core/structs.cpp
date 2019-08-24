@@ -222,6 +222,7 @@ JudgeStruct::JudgeStruct()
     , play_animation(true)
     , retrial_by_response(NULL)
     , relative_player(NULL)
+    ,ignore_judge(false)
     , _m_result(TRIAL_RESULT_UNKNOWN)
 {
 }

@@ -6532,6 +6532,87 @@ public:
 };
 
 
+
+
+class Tiandao : public TriggerSkill
+{
+public:
+    Tiandao()
+        : TriggerSkill("tiandao")
+    {
+        events << FinishJudge << EventPhaseStart << EventPhaseChanging;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player->getPhase() == Player::RoundStart) {
+                if (player->isLord() && !player->tag.value("touhou-extra", false).toBool()) {
+                    foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                        room->setPlayerMark(p, "@tiandao", 0);
+                    }
+                }
+            }
+        }        
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent event, const Room *room, const QVariant &data) const
+    {
+        QList<SkillInvokeDetail> d;
+        if (event == FinishJudge) {
+            JudgeStruct *judge = data.value<JudgeStruct *>();
+            if (room->getCardPlace(judge->card->getEffectiveId()) != Player::PlaceJudge)
+                return QList<SkillInvokeDetail>();
+            if (judge->card->isKindOf("Nullification") || judge->card->isKindOf("Jink"))
+                return QList<SkillInvokeDetail>();
+
+            QList<ServerPlayer *> invokers = room->findPlayersBySkillName(objectName());
+            foreach(ServerPlayer *p, invokers)
+            {
+                if (p->isAlive() && p->getMark("@tiandao") < p->getHp())
+                    d << SkillInvokeDetail(this, p, p);
+
+            }
+        }
+        else if (event == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                    if (p->getPile("tiandao").length() > 0)
+                        d << SkillInvokeDetail(this, p, p, NULL, true);
+                }
+            }
+        }
+        return d;
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (triggerEvent == FinishJudge) {
+            JudgeStruct *judge = data.value<JudgeStruct *>();
+            invoke->invoker->gainMark("@tiandao", invoke->invoker->getMark("@tiandao") + 1);
+            judge->who->addToPile("tiandao", judge->card->getEffectiveId());
+
+            judge->ignore_judge = true;
+            data = QVariant::fromValue(judge);
+        }
+        else if (triggerEvent == EventPhaseChanging) {
+            QList<int> pile = invoke->invoker->getPile("tiandao");
+            foreach(int id, pile) {
+                Card *c = Sanguosha->getCard(id);
+                room->useCard(CardUseStruct(c, invoke->invoker, invoke->invoker));
+            }
+        }
+        return false;
+    }
+};
+
+
+
+
+
+
 TouhouGodPackage::TouhouGodPackage()
     : Package("touhougod")
 {
@@ -6687,6 +6768,10 @@ TouhouGodPackage::TouhouGodPackage()
     yuka_god->addSkill(new Kuangji);
     yuka_god->addSkill(new KuangjiTargetMod);
     related_skills.insertMulti("kuangji", "#kuangji_effect");
+
+    General *tenshi_god = new General(this, "tenshi_god", "touhougod", 4);
+    tenshi_god->addSkill(new Tiandao);
+
 
     //    General *shinmyoumaru_god = new General(this, "shinmyoumaru_god", "touhougod", 4, false, true, true);
     //    Q_UNUSED(shinmyoumaru_god);
