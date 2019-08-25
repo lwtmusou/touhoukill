@@ -6241,7 +6241,7 @@ public:
     XiuyeVS()
         : OneCardViewAsSkill("xiuye")
     {
-        expand_pile = "xiuye";
+        expand_pile = "#xiuye_temp";
     }
 
     virtual bool isEnabledAtResponse(const Player *, const QString &) const

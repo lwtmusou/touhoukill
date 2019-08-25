@@ -1294,7 +1294,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
         pile = Self->getPile(new_name);
     }
 
-    if (pile_name == "xiuye") {
+    if (pile_name == "#xiuye_temp") {
         foreach(const Card *c, ClientInstance->discarded_list) {
             if (c->getSuit() == Card::Club && (c->isNDTrick() || c->getTypeId() == Card::TypeBasic))
                 pile << c->getEffectiveId();
