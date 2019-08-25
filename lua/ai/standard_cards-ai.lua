@@ -3288,6 +3288,7 @@ sgs.ai_keep_value.Lightning = -1
 --东方杀相关
 --残局内奸挂电没仇恨太过分了
 sgs.ai_card_intention.Lightning = function(self, card, from, to)
+    if self.room:getMode():find("hegemony") then return 0 end
 	local rebel_num = sgs.current_mode_players["rebel"]
 	local loyalist_num=self.room:getAlivePlayers():length()-rebel_num
 	local lord=getLord(self.player)

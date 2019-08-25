@@ -7047,6 +7047,7 @@ function SmartAI:touhouIsDamageCard(card)
 end
 
 function SmartAI:cautionRenegade(player, friend)
+	if self.room:getMode():find("hegemony") then return false end
 	if sgs.current_mode_players["renegade"] == 0  then --or self.player:getRole() == "renegade"
 		return false
 	end

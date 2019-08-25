@@ -8,6 +8,7 @@ public:
     QString toString() const;
     QStringList toStringList() const;
     bool toBool() const;
+	QList<QVariant> toList() const;
 };
 
 %extend QVariant {

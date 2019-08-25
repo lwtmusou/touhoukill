@@ -770,16 +770,16 @@ function sgs.getDynamicPlayerStrength(player, ishuashen)
 		for i = 1, player:getEquips():length(), 1 do
 			current_value = current_value + 0.15
 		end
-		for _, p in sgs.qlist(global_room:getOtherPlayers(player)) do
+		--[[for _, p in sgs.qlist(global_room:getOtherPlayers(player)) do
 			if p:isFriendWith(player) then
-				if p:hasShownSkill("duoshi") then
-					current_value = current_value + 0.4
-				end
-				if p:hasShownSkill("zhijian") then
-					current_value = current_value + 0.3
-				end
+				--if p:hasShownSkill("duoshi") then
+				--	current_value = current_value + 0.4
+				--end
+				--if p:hasShownSkill("zhijian") then
+				--	current_value = current_value + 0.3
+				--end
 			end
-		end
+		end]]
 	end
 	--[[if player:hasShownSkills("qianhuan") then
 		for _, p in sgs.qlist(global_room:getAllPlayers()) do
@@ -2557,11 +2557,12 @@ function SmartAI:askForNullification(trick, from, to, positive)
 	local null_card = self:getCardId("Nullification")
 	local targets = sgs.SPlayerList()
 	local delete = sgs.SPlayerList()
-	--local players = self.room:getTag("targets" .. trick:toString()):toList()
-	local players = self.room:getTag("targets" .. trick:toString()):toStringList()
-	self.room:writeToConsole(trick:toString() .. " Nullification:")
+	local players = self.room:getTag("targets" .. trick:toString()):toList()
+	--local players = self.room:getTag("targets" .. trick:toString()):toStringList()
+	self.room:writeToConsole(trick:toString() .. " Nullification:" .. #players)
 
 	local names = {}
+	--for _, q in sgs.qlist(players) do
 	for _, q in sgs.qlist(players) do
 		targets:append(q:toPlayer())
 		delete:append(q:toPlayer())
@@ -7078,6 +7079,7 @@ end
 --魔改自国战的sgs.ai_skill_choice["GameRule:TriggerOrder"]
 sgs.ai_skill_invoke.GameRule_AskForGeneralShowHead = function(self, data)
 	
+	
 	local canShowHead =  true --string.find(choices, "GameRule_AskForGeneralShowHead")
 	local canShowDeputy = false --string.find(choices, "GameRule_AskForGeneralShowDeputy")
 
@@ -7112,7 +7114,9 @@ sgs.ai_skill_invoke.GameRule_AskForGeneralShowHead = function(self, data)
 			firstShowReward = true
 		end
 	--end
-
+	if true then
+		return true
+	end
 	--[[if (firstShowReward or self:willShowForAttack()) and not self:willSkipPlayPhase() then
 		for _, skill in ipairs(bothShow) do
 			if self.player:hasSkills(skill) then
@@ -7214,6 +7218,86 @@ sgs.ai_skill_invoke.GameRule_AskForGeneralShowHead = function(self, data)
 	end
 
 	return false
+end
+
+
+sgs.ai_skill_invoke.invoke_hidden_compulsory = function(self, data)
+	local name = data:toString():split(":")[2]
+	local show = ("santi|tongju"):split("|")
+	for _, skill in ipairs(show) do
+		if name == skill  and self.player:hasSkill(skill) then
+			return true
+		end
+	end
+	return false
+end
+
+function SmartAI:touhouIsSameWithLordKingdom(player)
+	if self.room:getMode():find("hegemony") then return false end
+	player= player or self.player
+	local lord =self.room:getLord()
+	return lord:getKingdom()==player:getKingdom()
+end
+
+function SmartAI:cautionRenegade(player, friend)
+	if self.room:getMode():find("hegemony") then return false end
+	if sgs.current_mode_players["renegade"] == 0  then --or self.player:getRole() == "renegade"
+		return false
+	end
+	--if sgs.ai_role[player:objectName()] == "renegade" then
+		-- return false
+	--end
+
+	local hasFakeFriend = false
+	local role = self.player:getRole()
+	local friends =  self:getFriends()
+	if role == "loyalist" or self.player:isLord()  then
+		if #friends >= sgs.current_mode_players["loyalist"]+ sgs.current_mode_players["renegade"]+sgs.current_mode_players["lord"] then
+			hasFakeFriend = true
+		end
+	elseif role == "rebel" then
+		if #friends > sgs.current_mode_players["rebel"] then
+			hasFakeFriend = true
+		end
+	end
+	if not hasFakeFriend then
+		return false
+	end
+
+	local need_caution = false
+	process = sgs.gameProcess(self.room)
+	if role == "loyalist" or self.player:isLord()  then
+		if process:match("loyal") or process == "neutral" then
+			need_caution =  true
+		end
+	elseif role == "rebel"   then
+		if process:match("rebel") or process == "neutral" then
+			need_caution =  true
+		end
+	end
+	if not need_caution then return false end
+
+
+	local sort_func = {
+		loyalist = function(a, b)
+			return sgs.role_evaluation[a:objectName()]["loyalist"] < sgs.role_evaluation[b:objectName()]["loyalist"]
+		end,
+		rebel = function(a, b)
+			return sgs.role_evaluation[a:objectName()]["rebel"] < sgs.role_evaluation[b:objectName()]["rebel"]
+		end,
+		renegade = function(a, b)
+			return sgs.role_evaluation[a:objectName()]["renegade"] < sgs.role_evaluation[b:objectName()]["renegade"]
+		end
+	}
+
+	local friends_noself = self:getFriendsNoself(player)
+	if  #friends_noself == 0 then return false end
+	if role == "loyalist" or self.player:isLord()  then
+		table.sort(friends_noself, sort_func["loyalist"])
+	elseif role == "rebel"   then
+		table.sort(friends_noself, sort_func["renegade"])
+	end
+	return  friends_noself[1]:objectName() == friend:objectName()
 end
 
 
