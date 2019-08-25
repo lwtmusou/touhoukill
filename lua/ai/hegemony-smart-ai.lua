@@ -5108,13 +5108,15 @@ function SmartAI:hasTrickEffective(card, to, from)
 		and not self:damageIsEffective(to, nature, from) then return false end
 
 	if to:hasArmorEffect("IronArmor") and (card:isKindOf("FireAttack") or card:isKindOf("BurningCamps")) then return false end
-
-	for _, callback in pairs(sgs.ai_trick_prohibit) do
+	
+	
+	--身份局的用法是需要持有这个技能，才会去调用这个技能的sgs.ai_trick_prohibit
+	--[[for _, callback in pairs(sgs.ai_trick_prohibit) do
 		if type(callback) == "function" then
 			if callback(self, from, to, card)then return false end 
 			--if callback(self, card, to, from) then return false end --参数的顺序
 		end
-	end
+	end]]
 
 	return true
 end
@@ -7300,6 +7302,25 @@ function SmartAI:cautionRenegade(player, friend)
 	return  friends_noself[1]:objectName() == friend:objectName()
 end
 
+function SmartAI:touhouDelayTrickBadTarget(card, to, from)
+	from = from or self.player
+
+	for _, askill in sgs.qlist(to:getVisibleSkillList()) do
+		local s_name = askill:objectName()
+		local filter = sgs.ai_trick_prohibit[s_name]
+		if filter and type(filter) == "function"
+		and filter(self, from, to, card) then
+			return true
+		end
+	end
+
+	if card:isKindOf("SupplyShortage") then
+		if to:hasSkills("huanmeng|songjing|guoke") then
+			return true
+		end
+	end
+	return false
+end
 
 dofile "lua/ai/debug-ai.lua"
 dofile "lua/ai/standard_cards-ai.lua"
