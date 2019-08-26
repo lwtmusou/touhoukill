@@ -3642,6 +3642,7 @@ sgs.ai_skill_playerchosen.damage = function(self, targets)
 	return targetlist[#targetlist]
 end
 
+--国战ai居然改了返回值类型。。。
 function SmartAI:askForPlayersChosen(targets, reason, max_num, min_num)
 	local playerchosen = sgs.ai_skill_playerchosen[string.gsub(reason, "%-", "_")]
 	local returns = {}
@@ -3668,6 +3669,17 @@ function SmartAI:askForPlayersChosen(targets, reason, max_num, min_num)
 		table.remove(copy,r)
 	end
 	return returns
+end
+
+function SmartAI:askForPlayerChosen(targets, reason)
+	local playerchosen = sgs.ai_skill_playerchosen[string.gsub(reason, "%-", "_")]
+	local target = nil
+	if type(playerchosen) == "function" then
+		target = playerchosen(self, targets)
+		return target
+	end
+	local r = math.random(0, targets:length() - 1)
+	return targets:at(r)
 end
 
 function SmartAI:ableToSave(saver, dying)
@@ -7116,9 +7128,9 @@ sgs.ai_skill_invoke.GameRule_AskForGeneralShowHead = function(self, data)
 			firstShowReward = true
 		end
 	--end
-	if true then
-		return true
-	end
+	--if true then
+	--	return true
+	--end
 	--[[if (firstShowReward or self:willShowForAttack()) and not self:willSkipPlayPhase() then
 		for _, skill in ipairs(bothShow) do
 			if self.player:hasSkills(skill) then
