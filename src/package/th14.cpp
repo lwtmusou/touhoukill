@@ -79,6 +79,17 @@ public:
         return d;
     }
 
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (invoke->invoker->hasShownSkill(this) || invoke->invoker->askForSkillInvoke(this, data)) {
+            invoke->invoker->showHiddenSkill(objectName());
+            return true;
+        }
+            
+        return false;
+    }
+
+
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
