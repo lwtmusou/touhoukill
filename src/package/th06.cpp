@@ -221,20 +221,6 @@ public:
         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, fldl, fldl, NULL, true);
     }
 
-    // compulsory effect, cost omitted
-    /*bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        if (ServerInfo.GameMode == "hegemony") {
-            if (invoke->invoker->hasShownSkill(this) || invoke->invoker->askForSkillInvoke(this, data)) {
-                return true;
-            }
-        }
-        return false;
-    }*/
-
-
-
-
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
     {
         ServerPlayer *fldl = data.value<ServerPlayer *>();
@@ -1532,10 +1518,13 @@ public:
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         if (triggerEvent == EventPhaseStart) {
-            room->notifySkillInvoked(invoke->owner, objectName());
-            ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->invoker), objectName(), "@mizong-ask", false, true);
-            if (target != NULL)
+            bool optional = !invoke->invoker->hasShownSkill(this);
+            
+            ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->invoker), objectName(), "@mizong-ask", optional, true);
+            if (target != NULL) {
+                room->notifySkillInvoked(invoke->owner, objectName());
                 invoke->targets << target;
+            }
             return target != NULL;
         } else
             return true;

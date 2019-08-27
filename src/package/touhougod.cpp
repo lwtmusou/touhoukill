@@ -3796,7 +3796,7 @@ public:
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
         foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-            if (p->hasSkill(this)) {
+            if (p->hasSkill(this) && p->hasShownSkill(this)) {
                 int right = qAbs(p->getSeat() - player->getSeat());
                 int left = room->alivePlayerCount() - right;
                 int distance = qMin(left, right);
@@ -3870,7 +3870,7 @@ public:
             victim = data.value<HpLostStruct>().player;
 
         ServerPlayer *uuz = room->getCurrent();
-        if (uuz && uuz->isAlive() && uuz != victim && uuz->hasSkill(this) && victim->getHp() < victim->dyingThreshold()) {
+        if (uuz && uuz->isAlive() && uuz != victim && uuz->hasSkill(this) && uuz->hasShownSkill(this) && victim->getHp() < victim->dyingThreshold()) {
             room->touhouLogmessage("#TriggerSkill", uuz, objectName());
             room->notifySkillInvoked(uuz, objectName());
         }
@@ -4976,7 +4976,7 @@ public:
         //for test!!! do not remove
         /*QSet<QString> test;
         if (init)
-           test << "seiran" << "alice_god" << "kokoro";
+           test << "sakuya_sp" << "alice_god" << "kokoro";
         else
            test << "renko" << "renko" << "renko";//test hidden general changing
         return test.toList();*/
