@@ -38,8 +38,8 @@ return{
 	["origin:raiko_1"] = "p号：39316689",
 
 	["leiting"] = "雷霆",
-	[":leiting"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以选择一名其他角色并摸一张牌，然后弃置一张牌，若以此法弃置了：<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌，其摸一张牌，然后其受到1点无来源的雷电伤害；<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，其视为使用雷【杀】。",
-	["@leiting"] = "你发动“雷霆”选择了 <font color=\"#00FF00\"><b>%src </b></font>，请选择要弃置的牌。",
+	[":leiting"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以选择一名其他角色并摸一张牌，然后可以弃置一张牌。若以此法弃置了：<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌，其摸一张牌，然后其受到1点无来源的雷电伤害；<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，其视为使用雷【杀】。",
+	["@leiting"] = "你发动“雷霆”选择了 <font color=\"#00FF00\"><b>%src </b></font>，你可以弃置一张牌。",
 	["@leiting_chosen"] = "<font color=\"#00FF00\"><b>%src </b></font> 对你发动了“雷霆”，请选择将要使用雷【杀】的合法目标。",
 
 --****************************

@@ -1071,7 +1071,7 @@ void AmazingGrace::doPreAction(Room *room, const CardUseStruct &use) const
 {
     int count = room->getAllPlayers().length();
     foreach (ServerPlayer *p, room->getAllPlayers()) {
-        if (p->hasSkill("shouhuo")) {
+        if (p->hasSkill("shouhuo") && p->hasShownSkill("shouhuo")) {
             room->notifySkillInvoked(p, "shouhuo");
             room->touhouLogmessage("#TriggerSkill", p, "shouhuo");
             count++;
@@ -1111,7 +1111,7 @@ void AmazingGrace::onEffect(const CardEffectStruct &effect) const
         card_ids << card_id.toInt();
 
     int times = 1 + effect.effectValue.first();
-    if (effect.to->hasSkill("shouhuo"))
+    if (effect.to->hasSkill("shouhuo") && effect.to->hasShownSkill("shouhuo"))
         times++;
     for (int i = 0; i < times; i += 1) {
         int card_id = room->askForAG(effect.to, card_ids, false, objectName());

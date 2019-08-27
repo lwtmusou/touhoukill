@@ -707,7 +707,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data)
             // if cost returned false, we don't process with the skill's left trigger times(use the trick of set it as triggered)
             // if effect returned true, exit the whole loop.
             bool do_cost = true;
-            if (invoke->isCompulsory && invoke->showhidden && invoke->invoker){//show hidden Compulsory skill
+            /*if (invoke->isCompulsory && invoke->showhidden && invoke->invoker){//show hidden Compulsory skill
                 bool invoke_hidden_compulsory = false;
                 if (isHegemonyGameMode(room->getMode()))
                     invoke_hidden_compulsory = invoke->owner->ownSkill(invoke->skill) && !invoke->owner->hasShownSkill(invoke->skill);
@@ -719,7 +719,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data)
                     if (do_cost)
                         invoke->invoker->showHiddenSkill(invoke->skill->objectName());
                 }
-            }
+            }*/
 
             if (do_cost && invoke->skill->cost(triggerEvent, room, invoke, data)) {
                 //show hidden skill firstly

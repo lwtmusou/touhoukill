@@ -4334,7 +4334,8 @@ void RoomScene::showSkillInvocation(const QString &who, const QString &skill_nam
     const ClientPlayer *player = ClientInstance->findChild<const ClientPlayer *>(who);
     //for hegemony gamemode: invoke hidden skill before showskill
     QStringList skills = Sanguosha->getSkillNames();
-
+    if (skill_name == "GameRule_AskForGeneralShowHead")
+        return;
     if (!isHegemonyGameMode(ServerInfo.GameMode) && !player->hasSkill(skill_name) && !player->hasEquipSkill(skill_name))
         return;
     else if (isHegemonyGameMode(ServerInfo.GameMode) && !skills.contains(skill_name) && !player->hasEquipSkill(skill_name))
