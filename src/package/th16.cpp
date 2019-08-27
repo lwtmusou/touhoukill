@@ -101,6 +101,8 @@ public:
                 break;
             }
         }
+        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+        room->notifySkillInvoked(invoke->invoker, objectName());
         invoke->targets.first()->gainMark("@door");
         return false;
     }
@@ -131,8 +133,14 @@ public:
                 if (target) {
                     if (use.to.contains(target)) {
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, false, target);
-                    } else if (!player->isProhibited(target, use.card) && (use.card->targetFilter(QList<const Player *>(), target, player))) {
-                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, false, target);
+                    } else if (!player->isProhibited(target, use.card)) {
+                        use.card->setFlags("IgnoreFailed");
+                        use.card->setFlags("houhu");
+                        bool can = use.card->targetFilter(QList<const Player *>(), target, player);
+                        use.card->setFlags("-houhu");
+                        use.card->setFlags("-IgnoreFailed");
+                        if (can)
+                            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, false, target);
                     }
                 }
             }
@@ -147,11 +155,35 @@ public:
             invoke->invoker->drawCards(1);
         } else {
             CardUseStruct use = data.value<CardUseStruct>();
+            QList<ServerPlayer *> logto;
+            logto << invoke->targets.first();
+            room->touhouLogmessage("#houhu",invoke->invoker, use.card->objectName(), logto, objectName());
+
+           
             use.to << invoke->targets.first();
             room->sortByActionOrder(use.to);
             data = QVariant::fromValue(use);
         }
         return false;
+    }
+};
+
+
+class HouhuDistance : public TargetModSkill
+{
+public:
+    HouhuDistance()
+        : TargetModSkill("houhu-dist")
+    {
+        pattern = "BasicCard,TrickCard";
+    }
+
+    int getDistanceLimit(const Player *, const Card *card) const
+    {
+        if (card->hasFlag("houhu"))
+            return 1000;
+
+        return 0;
     }
 };
 
@@ -333,7 +365,7 @@ TH16Package::TH16Package()
     Q_UNUSED(mai);
 
     addMetaObject<MenfeiCard>();
-    skills << new ZangfaDistance;
+    skills  << new HouhuDistance << new ZangfaDistance;
 }
 
 ADD_PACKAGE(TH16)
