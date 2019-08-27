@@ -329,7 +329,7 @@ return{
 	["shikieiki_god"] = "神 四季映姬" ,
 	["&shikieiki_god"] = "神四季映姬" ,
 	["#shikieiki_god"] = "幻想乡的裁判长" ,
-	["!shikieiki_god"] = "神 四季映姬·亚玛萨那度" ,
+	["!shikieiki_god"] = "神 四季映姬·夜摩仙那度" ,
 	["designer:shikieiki_god"] = "星野梦美☆",
 
 	["illustrator:shikieiki_god"] = "卜部ミチル",
@@ -471,9 +471,9 @@ return{
 
 --*************************************
 	--shen018  势力：神 5血
-	["suwako_god"] = "神 泄矢诹访子",
+	["suwako_god"] = "神 洩矢诹访子",
 	["#suwako_god"] = "名存实亡的神明",
-	["&suwako_god"] = "神泄矢诹访子",
+	["&suwako_god"] = "神洩矢诹访子",
 	["designer:suwako_god"] = "星野梦美☆",
 
 	["illustrator:suwako_god"] = "ルリア",

@@ -34,7 +34,7 @@ return
 	--zhan002  势力：战 3血
 	["shikieiki"] = "四季映姬" ,
 	["#shikieiki"] = "乐园的最高裁判长" ,
-	["!shikieiki"] = "四季映姬·亚玛萨那度" ,
+	["!shikieiki"] = "四季映姬·夜摩仙那度" ,
 	["designer:shikieiki"] = "星野梦美☆",
 
 	["illustrator:shikieiki"] = "風花風花",
