@@ -383,8 +383,16 @@ QList<SkillInvokeDetail> TriggerSkill::triggerable(TriggerEvent, const Room *, c
 
 bool TriggerSkill::cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
 {
-    if (invoke->isCompulsory)
-        return true;
+    if (invoke->isCompulsory) {//for hegemony
+        if (invoke->invoker != NULL){
+            if (invoke->invoker->hasShownSkill(this) || invoke->invoker->askForSkillInvoke(this, data))
+                //invoke->invoker->showHiddenSkill(objectName());
+                return true;
+            else
+                return false;
+        }
+        return true;   
+    }
     else {
         if (invoke->invoker != NULL) {
             //for ai
