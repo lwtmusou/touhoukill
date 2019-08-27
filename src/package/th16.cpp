@@ -52,22 +52,10 @@ public:
         view_as_skill = new MenfeiVS;
     }
 
-    void record(TriggerEvent, Room *, QVariant &data) const
-    {
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->getTypeId() == Card::TypeSkill)
-            return;
-
-        use.card->setFlags("-menfei");
-    }
-
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->getTypeId() == Card::TypeSkill)
-            return QList<SkillInvokeDetail>();
-
-        if (use.card->hasFlag("menfei"))
             return QList<SkillInvokeDetail>();
 
         ServerPlayer *player = use.from;
@@ -83,7 +71,9 @@ public:
             if (target) {
                 ServerPlayer *next = qobject_cast<ServerPlayer *>(target->getNextAlive(1));
                 if (next && next != target) {
-                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true, next);
+                    SkillInvokeDetail r(this, player, player, NULL, true);
+                    r.tag["door"] = QVariant::fromValue(next);
+                    return QList<SkillInvokeDetail>() << r;
                 }
             }
         }
@@ -94,7 +84,6 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        use.card->setFlags("menfei");
         foreach (ServerPlayer *p, room->getAlivePlayers()) {
             if (p->getMark("@door") > 0) {
                 room->setPlayerMark(p, "@door", 0);
@@ -103,7 +92,9 @@ public:
         }
         room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
         room->notifySkillInvoked(invoke->invoker, objectName());
-        invoke->targets.first()->gainMark("@door");
+        ServerPlayer *next = invoke->tag["door"].value<ServerPlayer *>();
+        if (next)
+            next->gainMark("@door");
         return false;
     }
 };
@@ -157,9 +148,8 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             QList<ServerPlayer *> logto;
             logto << invoke->targets.first();
-            room->touhouLogmessage("#houhu",invoke->invoker, use.card->objectName(), logto, objectName());
+            room->touhouLogmessage("#houhu", invoke->invoker, use.card->objectName(), logto, objectName());
 
-           
             use.to << invoke->targets.first();
             room->sortByActionOrder(use.to);
             data = QVariant::fromValue(use);
@@ -167,7 +157,6 @@ public:
         return false;
     }
 };
-
 
 class HouhuDistance : public TargetModSkill
 {
@@ -365,7 +354,7 @@ TH16Package::TH16Package()
     Q_UNUSED(mai);
 
     addMetaObject<MenfeiCard>();
-    skills  << new HouhuDistance << new ZangfaDistance;
+    skills << new HouhuDistance << new ZangfaDistance;
 }
 
 ADD_PACKAGE(TH16)
