@@ -227,7 +227,8 @@ void LeitingCard::onEffect(const CardEffectStruct &effect) const
         cards = hc.value(x);
         room->throwCard(cards, effect.from);
     }*/
-
+    if (cards == NULL)
+        return;
     if (cards->getSuit() == Card::Heart) {
         effect.to->drawCards(1);
         room->damage(DamageStruct("leiting", NULL, effect.to, 1, DamageStruct::Thunder));
