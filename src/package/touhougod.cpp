@@ -6363,6 +6363,13 @@ KuangjiCard::KuangjiCard()
     m_skillName = "kuangji";
 }
 
+static bool hasCardValue(QString name)
+{
+    if (name == "iron_chain" || name == "lure_tiger")
+        return false;
+    return true;
+}
+
 bool KuangjiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
 {
     return to_select->hasFlag("Global_kuangjiFailed") && targets.length() < subcards.length();
@@ -6370,7 +6377,8 @@ bool KuangjiCard::targetFilter(const QList<const Player *> &targets, const Playe
 
 bool KuangjiCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const
 {
-    return targets.isEmpty() || targets.length() == subcards.length();
+    QString kuangji_name = Self->property("kuangji_name").toString();
+    return (targets.isEmpty() && hasCardValue(kuangji_name)) || targets.length() == subcards.length();
 }
 
 void KuangjiCard::use(Room *room, ServerPlayer *user, QList<ServerPlayer *> &targets) const
@@ -6434,10 +6442,7 @@ public:
         view_as_skill = new KuangjiVS;
     }
 
-    static bool hasCardValue(CardUseStruct use)
-    {
-        return !(use.card->isKindOf("IronChain") || use.card->isKindOf("LureTiger"));
-    }
+
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
@@ -6473,7 +6478,7 @@ public:
             }
         }
 
-        return room->askForUseCard(invoke->invoker, "@@kuangji", "@kuangji");
+        return room->askForUseCard(invoke->invoker, "@@kuangji", "@kuangji:" + KuangjiVS::uniqueName(use.card->objectName()));
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
