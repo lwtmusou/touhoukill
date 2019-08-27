@@ -313,8 +313,8 @@ TH16Package::TH16Package()
     okina->addSkill(new Menfei);
     okina->addSkill(new Houhu);
 
-    General *etanity = new General(this, "etanity", "tkz", 4, false, true);
-    Q_UNUSED(etanity);
+    General *eternity = new General(this, "eternity", "tkz", 4, false, true);
+    Q_UNUSED(eternity);
 
     General *nemuno = new General(this, "nemuno", "tkz", 4, false, true);
     Q_UNUSED(nemuno);
