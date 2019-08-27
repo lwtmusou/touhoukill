@@ -14,9 +14,9 @@ return {
 	["@door"]= "扉",
 	["#houhu"]= "%from 发动了 “%arg2”，  %to 成为了  %arg 的额外目标。",
 	
-	["etanity"] = "爱塔妮缇拉尔瓦",
-	["#etanity"] = "接近神的蝴蝶妖精",
-	["&etanity"] = "爱塔妮缇",
+	["eternity"] = "爱塔妮缇拉尔瓦",
+	["#eternity"] = "接近神的蝴蝶妖精",
+	["&eternity"] = "爱塔妮缇",
 	
 	["nemuno"] = "坂田合欢",
 	["#nemuno"] = "跨越浮世门关的山姥",
