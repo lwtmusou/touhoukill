@@ -39,7 +39,7 @@ function SmartAI:yicunEffective(card, to, from)
 	return false
 end
 
-
+sgs.ai_skill_invoke.yicun =  true
 
 sgs.ai_skill_invoke.moyi = function(self, data)
 		local to =data:toPlayer()
@@ -174,7 +174,7 @@ function SmartAI:canNizhuan(player, attacker)
 	return false
 end
 
-
+sgs.ai_skill_invoke.guizha =  true
 sgs.ai_skill_cardask["@guizha"] = function(self, data)
 	for _,card in sgs.qlist(self.player:getCards("hs") ) do
 		if card:isKindOf("Peach") then
@@ -482,3 +482,4 @@ sgs.ai_choicemade_filter.skillInvoke.huobao = function(self, player, args)
 	end
 end
 
+sgs.ai_skill_invoke.duobao =  true

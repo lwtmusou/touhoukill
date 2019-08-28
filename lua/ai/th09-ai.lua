@@ -273,6 +273,7 @@ end
 
 sgs.ai_skill_invoke.mingtu = true
 
+sgs.ai_skill_invoke.boming =  true
 sgs.ai_damageCaused.boming = function(self, damage)
 	if damage.card and not damage.chain and not damage.transfer then
 		if  damage.card:isKindOf("Slash") and  damage.to:getHp() <= damage.to:dyingThreshold() then
@@ -288,7 +289,7 @@ sgs.ai_cardneed.boming = function(to, card, self)
 	end
 end
 
-
+sgs.ai_skill_invoke.weiya =  true
 function SmartAI:hasWeiya(player)
 	player=player or self.player
 	local current=self.room:getCurrent()
@@ -879,7 +880,7 @@ sgs.ai_skill_cardask["@tianren-jink"] = function(self)
 end
 
 
-
+sgs.ai_skill_invoke.jingdian =  true
 sgs.ai_damageInflicted.jingdian = function(self, damage)
 	if damage.nature == sgs.DamageStruct_Thunder and damage.to:hasSkill("jingdian") then
 			damage.damage=0

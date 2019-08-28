@@ -75,7 +75,7 @@ sgs.ai_choicemade_filter.cardResponded["@jiexianrecover"] = function(self, playe
 	end
 end
 
-
+sgs.ai_skill_invoke.zhouye =  true
 local hongwu_skill = {}
 hongwu_skill.name = "hongwu"
 table.insert(sgs.ai_skills, hongwu_skill)
@@ -173,7 +173,7 @@ sgs.ai_damageInflicted.yewang=function(self,damage)
 end
 
 
-
+sgs.ai_skill_invoke.bingfeng =  true
 sgs.ai_damageCaused.bingfeng = function(self, damage)
 	if damage.card then
 		if  damage.to:getMark("@ice") > 0 then
@@ -182,8 +182,9 @@ sgs.ai_damageCaused.bingfeng = function(self, damage)
 	end
 	return damage
 end
+sgs.ai_skill_invoke.wushen =  true
 
-
+sgs.ai_skill_invoke.shikong =  true
 sgs.ai_cardneed.shikong = function(to, card, self)
 	if not self:willSkipPlayPhase(to) then
 		return  (not to:getWeapon() and  getCardsNum("Weapon",to,self.player)<1 and card:isKindOf("Weapon"))
@@ -194,6 +195,9 @@ end
 function SmartAI:isShikongTarget(to, card, self)
 
 end
+sgs.ai_skill_invoke.ronghui =  true
+sgs.ai_skill_invoke.jubian =  true
+sgs.ai_skill_invoke.hengxing =  true
 
 sgs.ai_skill_askforag.cuixiang = function(self, card_ids)
 	local ids = card_ids
@@ -235,7 +239,7 @@ sgs.ai_skill_askforag.cuixiang = function(self, card_ids)
 	self:sortByCardNeed(cards)
 	return cards[#cards]:getEffectiveId()
 end
-
+sgs.ai_skill_invoke.cuixiang =  true
 
 sgs.ai_skill_discard.xuying = sgs.ai_skill_discard.gamerule
 sgs.ai_cardneed.xuying = function(to, card, self)
@@ -383,6 +387,7 @@ sgs.ai_skill_discard.jinguo = function(self, discard_num, min_num, optional, inc
 	return to_discard
 end
 
+
 function shijian_attack(self)
 	for _,p in pairs (self.enemies) do
 		if self:isWeak(p) and self:canAttack(p) then
@@ -391,6 +396,7 @@ function shijian_attack(self)
 	end
 	return false
 end
+sgs.ai_skill_invoke.shicao =  true
 
 sgs.ai_skill_invoke.shiting = function(self,data)
 	local current = self.room:getCurrent()
@@ -457,7 +463,7 @@ sgs.ai_playerchosen_intention.renguidiscard = 60
 
 
 
-
+sgs.ai_skill_invoke.ningshi =  true
 sgs.ai_trick_prohibit.gaoao = function(self, from, to, card)
 	if not card:isKindOf("DelayedTrick")  then return false end
 	if self:isFriend(from,to) then return false end
@@ -777,7 +783,7 @@ sgs.ai_skill_askforyiji.yibian = function(self, card_ids)
 	 return nil, -1
 end
 sgs.ai_Yiji_intention.yibian = -30
-
+sgs.ai_skill_invoke.huanxiang =  true
 
 
 
@@ -986,6 +992,9 @@ end
 
 
 sgs.ai_skill_invoke.xuanlan = true
+
+
+sgs.ai_skill_invoke.qiannian =  true
 
 sgs.ai_choicemade_filter.cardResponded["@qinlue-discard"] = function(self, player, args)
 	if args[#args] ~= "_nil_" then
@@ -1240,6 +1249,7 @@ sgs.ai_skill_playerchosen.hongfo = function(self, targets)
 	return targets:first()
 end
 
+sgs.ai_skill_invoke.junwei =  true
 sgs.ai_skill_cardask["@junwei-discard"] = function(self, data)
 	local target = self.player:getTag("junwei_target"):toPlayer()
 	if self:isFriend(target)  then return "." end
@@ -1424,6 +1434,7 @@ end
 
 
 --心花
+sgs.ai_skill_invoke.kuixin =  true
 local xinhua_skill = {}
 xinhua_skill.name = "xinhua"
 table.insert(sgs.ai_skills, xinhua_skill)

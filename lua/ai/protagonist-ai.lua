@@ -1353,7 +1353,7 @@ function SmartAI:touhouBreakDamage(damage,to)
 	return false
 end
 
-
+sgs.ai_skill_invoke.hpymsiyu =  true
 
 
 local yinyang_skill = {}

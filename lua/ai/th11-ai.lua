@@ -366,6 +366,8 @@ function SmartAI:copyHereSlash(card)
 	end
 	return new_slash
 end
+sgs.ai_skill_invoke.here =  true
+
 
 sgs.ai_skill_invoke.yuanling = function(self,data)
 	local target=self.player:getTag("yuanling"):toPlayer()
@@ -609,7 +611,7 @@ sgs.ai_skill_choice.gelong= function(self)
 end
 
 
-
+sgs.ai_skill_invoke.chuanran =  true
 sgs.ai_skill_playerchosen.rebing = function(self, targets)
 	local current = self.room:getCurrent()
 	local hasSlash  = getCardsNum("Slash", current, self.player) > 0

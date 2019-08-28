@@ -488,7 +488,7 @@ sgs.ai_use_value.XinshangCard = sgs.ai_use_value.Dismantlement + 1
 sgs.ai_use_priority.XinshangCard = sgs.ai_use_priority.Dismantlement + 1
 sgs.ai_card_intention.XinshangCard = 50
 
-
+sgs.ai_skill_invoke.micai =  true
 sgs.ai_damageInflicted.micai =function(self, damage)
 	if  damage.to:getHandcardNum() < damage.damage then
 		--damage.damage = damage.to:getHandcardNum()
@@ -763,7 +763,7 @@ end
 sgs.ai_use_priority.FengrangCard = sgs.ai_use_priority.AmazingGrace
 sgs.ai_use_value.FengrangCard = 3
 sgs.dynamic_value.benefit.FengrangCard = true
-
+sgs.ai_skill_invoke.shouhuo =  true
 
 
 

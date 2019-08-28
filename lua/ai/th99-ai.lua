@@ -13,7 +13,7 @@ end
 sgs.ai_use_value.QiuwenCard = 7
 sgs.ai_use_priority.QiuwenCard = 7
 
-
+sgs.ai_skill_invoke.zaozu =  true
 
 
 local dangjiavs_skill = {}
@@ -607,6 +607,7 @@ sgs.ai_choicemade_filter.cardResponded["@pingyi-discard"] = function(self, playe
 	end
 end
 
+sgs.ai_skill_invoke.tanchi =  true
 sgs.ai_skill_use["@@zheshe"] = function(self, data, method)
 	if not method then method = sgs.Card_MethodDiscard end
 	local friend_lost_hp = 10
@@ -843,7 +844,7 @@ sgs.ai_choicemade_filter.skillChoice.zhuonong = function(self, player, args, dat
 		sgs.updateIntention(player, target, 40)
 	end
 end
-
+sgs.ai_skill_invoke.jijing =  true
 
 
 
@@ -1096,7 +1097,7 @@ end
 
 
 
-
+sgs.ai_skill_invoke.xunshi =  true
 sgs.ai_skill_cardask["jidong-discard"] = function(self, data)
 	local use = data:toCardUse()
 	if self:touhouCardUseEffectNullify(use, self.player) then return "." end
@@ -1240,7 +1241,7 @@ sgs.ai_skill_playerchosen.liyou = function(self, targets)
 end
 sgs.ai_playerchosen_intention.liyou = -30
 
-
+sgs.ai_skill_invoke.sixiang =  true
 sgs.ai_slash_prohibit.sixiang = function(self, from, to, card)
 	if not card:isKindOf("NatureSlash") then return false end
 	if self:isFriend(from, to) or not to:isChained() then return false end
