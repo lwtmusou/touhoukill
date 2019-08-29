@@ -1192,8 +1192,17 @@ QList<int> Engine::getRandomCards() const
         /* if (Config.GameMode == "06_3v3" && !Config.value("3v3/UsingExtension", false).toBool()
             && card->getPackage() != "standard_cards" && card->getPackage() != "standard_ex_cards")
             continue; */
-        if (!getBanPackages().contains(card->getPackage()))
-            list << card->getId();
+        if (!getBanPackages().contains(card->getPackage())) {
+            if (card->objectName().startsWith("known_both")) {
+                if (isHegemonyGameMode(Config.GameMode) && card->objectName() == "known_both_hegemony")
+                    list << card->getId();
+                else if (!isHegemonyGameMode(Config.GameMode) && card->objectName() == "known_both")
+                    list << card->getId();
+
+            } else
+                list << card->getId();
+        }
+            
     }
     // remove two crossbows and one nullification?
     if (using_2012_3v3 || using_2013_3v3)
@@ -1202,6 +1211,9 @@ QList<int> Engine::getRandomCards() const
         list.removeOne(53);
         list.removeOne(54);
     }
+
+    
+
 
     qShuffle(list);
 
