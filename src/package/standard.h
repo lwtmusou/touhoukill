@@ -225,6 +225,7 @@ public:
     virtual QString getSubtype() const;
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual void takeEffect(ServerPlayer *target) const = 0;
+    JudgeStruct getJudge();
 
 protected:
     JudgeStruct judge;
