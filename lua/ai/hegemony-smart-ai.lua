@@ -7334,6 +7334,58 @@ function SmartAI:touhouDelayTrickBadTarget(card, to, from)
 	return false
 end
 
+function SmartAI:touhouFindPlayerToDraw(include_self, drawnum, players)
+	drawnum = drawnum or 1
+	if not players or players:isEmpty() then
+		players = sgs.QList2Table(include_self and self.room:getAllPlayers() or self.room:getOtherPlayers(self.player))
+	else
+		players = sgs.QList2Table(players)
+	end
+	local friends = {}
+	for _, player in ipairs(players) do
+		if self:isFriend(player) and not self:cautionRenegade(self.player, player)  then--
+			if not (player:hasSkill("micai") and player:isKongcheng() and drawnum <= 2) then
+				--其实不应该完全否定 所以还是量化好。。。
+				if not (player:getPhase()==sgs.Player_NotActive and player:hasSkills("gaoao|yongheng")) then
+					table.insert(friends, player)
+				end
+			end
+		end
+	end
+	if #friends == 0 then return end
+
+	self:sort(friends, "defense")
+	for _, friend in ipairs(friends) do
+		if friend:getHandcardNum() < 2 and not self:needKongcheng(friend) and not self:willSkipPlayPhase(friend) then
+			return friend
+		end
+	end
+
+	local AssistTarget = self:AssistTarget()
+	if AssistTarget then
+		for _, friend in ipairs(friends) do
+			if friend:objectName() == AssistTarget:objectName() and not self:willSkipPlayPhase(friend) then
+				return friend
+			end
+		end
+	end
+
+	for _, friend in ipairs(friends) do
+		if self:hasSkills(sgs.cardneed_skill, friend) and not self:willSkipPlayPhase(friend) then
+			return friend
+		end
+	end
+
+	self:sort(friends, "handcard")
+	for _, friend in ipairs(friends) do
+		if not self:needKongcheng(friend) and not self:willSkipPlayPhase(friend) then
+			return friend
+		end
+	end
+	return nil
+end
+
+
 dofile "lua/ai/debug-ai.lua"
 dofile "lua/ai/standard_cards-ai.lua"
 dofile "lua/ai/maneuvering-ai.lua"
