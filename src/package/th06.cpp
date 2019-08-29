@@ -235,7 +235,7 @@ public:
         judge.reason = objectName();
         room->judge(judge);
 
-        if (judge.isBad())
+        if (judge.isBad() || judge.ignore_judge)
             return false;
 
         QList<ServerPlayer *> all;
@@ -570,7 +570,7 @@ public:
         judge.who = invoke->invoker;
         room->judge(judge);
 
-        if (judge.isGood()) {
+        if (judge.isGood() && !judge.ignore_judge) {
             RecoverStruct recov;
             recov.recover = 1;
             room->recover(invoke->invoker, recov);
@@ -1507,7 +1507,7 @@ public:
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
         } else if (event == FinishJudge) {
             JudgeStruct *judge = data.value<JudgeStruct *>();
-            if (judge->reason == objectName() && judge->card->isBlack()) {
+            if (judge->reason == objectName() && judge->card->isBlack() && !judge->ignore_judge ) {
                 if (judge->who->isAlive())
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, judge->who, judge->who, NULL, true);
             }
@@ -1541,7 +1541,7 @@ public:
             judge.play_animation = false;
             room->judge(judge);
 
-            if (judge.pattern == "red") {
+            if (judge.pattern == "red" && !judge.ignore_judge) {
                 room->setPlayerFlag(invoke->invoker, "mizong");
                 room->setFixedDistance(invoke->invoker, invoke->targets.first(), 1);
                 invoke->targets.first()->gainMark("@mizong"); //gainMark could trigger skill Ganying

@@ -88,7 +88,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         JudgeStruct *judge = data.value<JudgeStruct *>();
-        if (judge->card->getSuit() != Card::Diamond)
+        if (judge->card->getSuit() != Card::Diamond || judge->ignore_judge)
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
@@ -164,7 +164,7 @@ public:
         judge.reason = objectName();
         room->judge(judge);
 
-        if (judge.isGood()) {
+        if (judge.isGood() && !judge.ignore_judge) {
             RecoverStruct recover;
             recover.recover = 1;
             room->recover(invoke->invoker, recover);
