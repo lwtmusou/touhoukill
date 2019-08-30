@@ -22,7 +22,6 @@ config = {
 		"hzc",
 		"gzz",
 		"tkz",
-		"gxs",
 		"wai",
 		"touhougod"
 	},
