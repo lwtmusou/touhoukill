@@ -1251,6 +1251,13 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (triggerEvent == DrawNCards)
+            return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget));
+        return true;
+    }
+
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         if (triggerEvent == DrawNCards) {
