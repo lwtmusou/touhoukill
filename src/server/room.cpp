@@ -2415,7 +2415,7 @@ ServerPlayer *Room::findPlayerBySkillName(const QString &skill_name) const
     return NULL;
 }
 
-ServerPlayer *Room::findPlayerByObjectName(const QString &name, bool include_dead) const
+ServerPlayer *Room::findPlayerByObjectName(const QString &name, bool) const
 {
     foreach (ServerPlayer *player, getAllPlayers()) {
         if (player->objectName() == name)

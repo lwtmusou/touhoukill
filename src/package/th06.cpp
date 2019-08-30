@@ -227,7 +227,7 @@ public:
         room->touhouLogmessage("#TriggerSkill", fldl, objectName());
         room->notifySkillInvoked(fldl, objectName());
         room->broadcastSkillInvoke(objectName());
-        
+
         JudgeStruct judge;
         judge.who = fldl;
         judge.pattern = "Slash";
@@ -847,8 +847,6 @@ public:
     }
 };
 
-
-
 class BeishuiVS : public ViewAsSkill
 {
 public:
@@ -930,7 +928,6 @@ public:
         int num = qMax(1, Self->getHp());
         if (cards.length() != num)
             return NULL;
-
 
         QString name = Self->tag.value("beishui", QString()).toString();
         if (name != NULL) {
@@ -1251,7 +1248,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent triggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         if (triggerEvent == DrawNCards)
             return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget));
@@ -1514,7 +1511,7 @@ public:
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
         } else if (event == FinishJudge) {
             JudgeStruct *judge = data.value<JudgeStruct *>();
-            if (judge->reason == objectName() && judge->card->isBlack() && !judge->ignore_judge ) {
+            if (judge->reason == objectName() && judge->card->isBlack() && !judge->ignore_judge) {
                 if (judge->who->isAlive())
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, judge->who, judge->who, NULL, true);
             }
@@ -1526,7 +1523,7 @@ public:
     {
         if (triggerEvent == EventPhaseStart) {
             bool optional = !invoke->invoker->hasShownSkill(this);
-            
+
             ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->invoker), objectName(), "@mizong-ask", optional, true);
             if (target != NULL) {
                 room->notifySkillInvoked(invoke->owner, objectName());

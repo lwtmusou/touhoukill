@@ -332,8 +332,7 @@ int Engine::getRoleIndex() const
 {
     if (ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode") {
         return 4;
-    }
-    else if (isHegemonyGameMode(ServerInfo.GameMode))
+    } else if (isHegemonyGameMode(ServerInfo.GameMode))
         return 5;
     else
         return 1;
@@ -426,7 +425,6 @@ int Engine::getGeneralCount(bool include_banned) const
             total--;
         else if (ServerInfo.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
             total--;
-
     }
 
     return total;
@@ -646,7 +644,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const
 
 QString Engine::getVersionNumber() const
 {
-    return "20190818";
+    return "20190830";
 }
 
 QString Engine::getVersion() const
@@ -656,13 +654,13 @@ QString Engine::getVersion() const
 
 QString Engine::getVersionName() const
 {
-    return "V0.9.2";
+    return "V0.9.3";
 }
 
 #if QT_VERSION >= 0x050600
 QVersionNumber Engine::getQVersionNumber() const
 {
-    return QVersionNumber(0, 9, 2);
+    return QVersionNumber(0, 9, 3);
 }
 #endif
 
@@ -687,9 +685,9 @@ QStringList Engine::getExtensions() const
 QStringList Engine::getKingdoms() const
 {
     static QStringList kingdoms;
-    
-    if (kingdoms.isEmpty()){
-        kingdoms = GetConfigFromLuaState(lua, "kingdoms").toStringList();    
+
+    if (kingdoms.isEmpty()) {
+        kingdoms = GetConfigFromLuaState(lua, "kingdoms").toStringList();
     }
     return kingdoms;
 }
@@ -795,7 +793,7 @@ int Engine::getPlayerCount(const QString &mode) const
         QStringList modestrings = mode.split("_");
         return modestrings.last().toInt(); //return 2;
     }
-        
+
     if (modes.contains(mode)) {
         QRegExp rx("(\\d+)");
         int index = rx.indexIn(mode);
@@ -824,14 +822,16 @@ QString Engine::getRoles(const QString &mode) const
         QString role;
         int num = getPlayerCount(mode);
         QStringList roles;
-        roles << "W" << "S" << "G" << "Q";//wei shu wu qun
+        roles << "W"
+              << "S"
+              << "G"
+              << "Q"; //wei shu wu qun
         for (int i = 0; i < num; ++i) {
             int role_idx = qrand() % roles.length();
             role = role + roles[role_idx];
         }
         return role;
     }
-
 
     if (modes.contains(mode)) {
         static const char *table1[] = {
@@ -1202,7 +1202,6 @@ QList<int> Engine::getRandomCards() const
             } else
                 list << card->getId();
         }
-            
     }
     // remove two crossbows and one nullification?
     if (using_2012_3v3 || using_2013_3v3)
@@ -1211,9 +1210,6 @@ QList<int> Engine::getRandomCards() const
         list.removeOne(53);
         list.removeOne(54);
     }
-
-    
-
 
     qShuffle(list);
 
@@ -1296,9 +1292,8 @@ const ViewAsSkill *Engine::getViewAsSkill(const QString &skill_name) const
     } else if (skill->inherits("AttackRangeSkill")) {
         const AttackRangeSkill *distance_skill = qobject_cast<const AttackRangeSkill *>(skill);
         return distance_skill->getViewAsSkill();
-    }
-    else
-        return NULL; 
+    } else
+        return NULL;
 }
 
 const ProhibitSkill *Engine::isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others) const
@@ -1454,7 +1449,6 @@ void CheatCard::onUse(Room *room, const CardUseStruct &use) const
     if (doc.isValid())
         room->cheat(use.from, doc.toVariant());
 }
-
 
 QString Engine::GetMappedKingdom(const QString &role)
 {
