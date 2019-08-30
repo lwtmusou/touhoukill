@@ -351,7 +351,7 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const
     room->judge(judge_struct);
 
     if (judge_struct.negative == judge_struct.isBad()) {
-        if (effect.to->isAlive())
+        if (effect.to->isAlive() && !judge_struct.ignore_judge)
             takeEffect(effect.to);
         if (room->getCardOwner(getEffectiveId()) == NULL) {
             CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
@@ -444,6 +444,11 @@ void DelayedTrick::onNullified(ServerPlayer *target) const
         room->throwCard(this, reason, NULL);
     }
 }
+
+JudgeStruct DelayedTrick::getJudge() {
+    return this->judge;
+}
+
 
 Weapon::Weapon(Suit suit, int number, int range)
     : EquipCard(suit, number)

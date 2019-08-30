@@ -1263,7 +1263,7 @@ public:
             JudgeStruct *judge = data.value<JudgeStruct *>();
             if (judge->reason == objectName()) {
                 ServerPlayer *aya = judge->who;
-                if (aya && aya->isAlive() && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge) {
+                if (aya && aya->isAlive() && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge  && !judge->ignore_judge) {
                     bool can = true;
                     foreach (int id, aya->getPile("jinengPile")) {
                         if (judge->card->getSuit() == Sanguosha->getCard(id)->getSuit()) {

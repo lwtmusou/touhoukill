@@ -872,6 +872,8 @@ end
 
 sgs.ai_choicemade_filter.cardResponded["@dunjia2"] = sgs.ai_choicemade_filter.cardResponded["@dunjia1"]
 
+
+
 sgs.ai_skill_invoke.jiyi = true
 sgs.ai_skill_askforyiji.jiyi = function(self, card_ids)
 	local available_friends = {}
@@ -913,6 +915,8 @@ sgs.ai_skill_askforyiji.jiyi = function(self, card_ids)
 end
 sgs.ai_Rende_intention.jiyi= -30
 
+
+sgs.ai_skill_invoke.chunyi =  true
 sgs.ai_skill_playerchosen.baochun = function(self, targets)
 	local target =self:touhouFindPlayerToDraw(true, self.player:getLostHp())
 	if target then return target end
@@ -1186,7 +1190,7 @@ sgs.ai_playerchosen_intention.xijian =function(self, from, to)
 end
 ]]
 
-
+sgs.ai_skill_invoke.youqu =  true
 sgs.ai_skill_choice.youqu=function(self)
 	local yukari=self.player:getRoom():findPlayerBySkillName("xijian")
 	if yukari then

@@ -1,7 +1,7 @@
 sgs.ai_cardneed.yongheng = function(to, card, self)
 	return  card:isKindOf("Spear")
 end
-
+sgs.ai_skill_invoke.yongheng =  true
 
 sgs.ai_skill_invoke.zhuqu = function(self, data)
 		local to =data:toPlayer()

@@ -136,7 +136,7 @@ public:
             }
         } else if (event == FinishJudge) {
             JudgeStruct *judge = data.value<JudgeStruct *>();
-            if (judge->reason == objectName() && judge->isGood()) {
+            if (judge->reason == objectName() && judge->isGood() && !judge->ignore_judge) {
                 ServerPlayer *uuz = judge->relative_player;
                 if (uuz && uuz->isAlive())
                     details << SkillInvokeDetail(this, uuz, uuz, NULL, true);

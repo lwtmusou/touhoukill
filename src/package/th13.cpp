@@ -667,6 +667,10 @@ void ShijieCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) 
     judge.pattern = ".";
     judge.play_animation = false;
     room->judge(judge);
+
+    if (!judge.ignore_judge)
+        return;
+
     QList<ServerPlayer *> listt;
     foreach (ServerPlayer *p, room->getAlivePlayers()) {
         foreach (const Card *c, p->getCards("e")) {
@@ -1165,7 +1169,7 @@ public:
         judge.pattern = ".|black";
         room->judge(judge);
 
-        if (judge.isGood())
+        if (judge.isGood() && !judge.ignore_judge)
             room->recover(invoke->invoker, RecoverStruct());
         return false;
     }

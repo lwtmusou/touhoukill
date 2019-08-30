@@ -191,7 +191,7 @@ public:
     }
 };
 
-class Wunian : public ProhibitSkill
+/*class Wunian : public ProhibitSkill
 {
 public:
     Wunian()
@@ -203,37 +203,68 @@ public:
     {
         return from != to && to->hasSkill(objectName(), false, include_hidden) && to->isWounded() && card->isKindOf("TrickCard");
     }
-};
+};*/
 
-class WunianEffect : public TriggerSkill
+class Wunian : public TriggerSkill
 {
 public:
-    WunianEffect()
-        : TriggerSkill("#wuniantr")
+    Wunian()
+        : TriggerSkill("wunian")
     {
-        events << Predamage;
+        events << Predamage << TargetConfirming;
+        frequency = Compulsory;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
     {
-        DamageStruct damage = data.value<DamageStruct>();
-        if (damage.from && damage.from->hasSkill("wunian"))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
+        if (e == Predamage) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.from && damage.from->hasSkill("wunian"))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
+        }
+        else if (e == TargetConfirming) {
+            QList<SkillInvokeDetail> d;
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->getTypeId() == Card::TypeTrick) {
+                foreach(ServerPlayer *p, use.to) {
+                    if (p->hasSkill(this) && p->isWounded())
+                        d << SkillInvokeDetail(this, p, p, NULL, true);
+                }
+            }
+            return d;
+        }
+
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        DamageStruct damage = data.value<DamageStruct>();
-        damage.from = NULL;
-        damage.by_user = false;
+        if (e == Predamage) {
+            DamageStruct damage = data.value<DamageStruct>();
+            damage.from = NULL;
+            damage.by_user = false;
 
-        room->touhouLogmessage("#TriggerSkill", invoke->invoker, "wunian");
-        room->notifySkillInvoked(invoke->invoker, objectName());
-        data = QVariant::fromValue(damage);
+            room->touhouLogmessage("#TriggerSkill", invoke->invoker, "wunian");
+            room->notifySkillInvoked(invoke->invoker, objectName());
+            data = QVariant::fromValue(damage);
+        }
+        else if (e == TargetConfirming) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            use.to.removeAll(invoke->invoker);
+            data = QVariant::fromValue(use);
+            LogMessage log;
+            log.type = "#SkillAvoid";
+            log.from = invoke->invoker;
+            log.arg = objectName();
+            log.arg2 = use.card->objectName();
+            room->sendLog(log);
+        }
         return false;
     }
 };
+
+
+
 
 YaobanCard::YaobanCard()
 {
@@ -828,7 +859,7 @@ public:
     }
 };
 
-class Tongju : public ProhibitSkill
+/*class Tongju : public ProhibitSkill
 {
 public:
     Tongju()
@@ -840,7 +871,51 @@ public:
     {
         return to->hasSkill(objectName(), false, include_hidden) && ((card->isKindOf("SavageAssault") || card->isKindOf("IronChain")) || card->isKindOf("ArcheryAttack"));
     }
+};*/
+
+class Tongju : public TriggerSkill
+{
+public:
+    Tongju()
+        : TriggerSkill("tongju")
+    {
+        events << TargetConfirming;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        QList<SkillInvokeDetail> d;
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->isKindOf("SavageAssault") || use.card->isKindOf("IronChain") || use.card->isKindOf("ArcheryAttack")) {
+            foreach(ServerPlayer *p, use.to) {
+                if (p->hasSkill(this))
+                    d << SkillInvokeDetail(this, p, p, NULL, true);
+            }
+        }
+        return d;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        room->notifySkillInvoked(invoke->invoker, objectName());
+
+        CardUseStruct use = data.value<CardUseStruct>();
+        use.to.removeAll(invoke->invoker);
+        data = QVariant::fromValue(use);
+        LogMessage log;
+        log.type = "#SkillAvoid";
+        log.from = invoke->invoker;
+        log.arg = objectName();
+        log.arg2 = use.card->objectName();
+        room->sendLog(log);
+
+        return false;
+    }
 };
+
+
+
+
 
 class Cuiji : public TriggerSkill
 {
@@ -1017,8 +1092,8 @@ TH11Package::TH11Package()
     General *koishi = new General(this, "koishi", "dld", 3);
     koishi->addSkill(new Maihuo);
     koishi->addSkill(new Wunian);
-    koishi->addSkill(new WunianEffect);
-    related_skills.insertMulti("wunian", "#wuniantr");
+    //koishi->addSkill(new WunianEffect);
+    //related_skills.insertMulti("wunian", "#wuniantr");
 
     General *utsuho = new General(this, "utsuho", "dld", 4);
     utsuho->addSkill(new Yaoban);

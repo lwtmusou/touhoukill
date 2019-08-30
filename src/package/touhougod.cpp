@@ -942,7 +942,8 @@ public:
         judge.play_animation = true;
         judge.reason = objectName();
         room->judge(judge);
-
+        if (!judge.ignore_judge)
+            return false;
         if (!judge.isGood()) {
             int x = player->getMark("@kinki");
             if (x == 0)
@@ -6522,13 +6523,157 @@ public:
 
 
 
+class Qizhi : public TriggerSkill
+{
+public:
+    Qizhi()
+        : TriggerSkill("qizhi")
+    {
+        events << HpChanged << EventPhaseStart;
+        frequency = Compulsory;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e == HpChanged) {
+            ServerPlayer *tenshi = data.value<ServerPlayer *>();
+            if (tenshi == NULL || tenshi->isDead() || !tenshi->hasSkill(this))
+                return QList<SkillInvokeDetail>();
+
+            ServerPlayer *current = room->getCurrent();
+            if (current == NULL || current->isDead())
+                return QList<SkillInvokeDetail>();
+
+
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, tenshi, tenshi, NULL, true);
+        }
+        if (e == EventPhaseStart) {
+            ServerPlayer *current = data.value<ServerPlayer *>();
+            if (current == NULL || current->isDead())
+                return QList<SkillInvokeDetail>();
+
+            if (current->getPhase() == Player::Start && current->hasSkill(this)) {
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current, NULL, true);
+            }
+            if (current->getPhase() == Player::Judge && current->getJudgingAreaID().isEmpty()) {
+                ServerPlayer *tenshi = room->findPlayerBySkillName(objectName());
+                if (tenshi) {
+                    QVariant tag = room->getTag("qizhi_card");
+                    if (tag != NULL && tag.canConvert(QVariant::String)) {
+                        QString exclude = tag.toString();
+                        if (exclude != "")
+                            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, tenshi, tenshi, NULL, true);
+                    }
+                } 
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    static void choiceQizhi(Room *room) {
+        QStringList names;
+        names << "lightning" << "indulgence" << "supply_shortage" << "saving_energy" << "spring_breath";
+        QVariant tag = room->getTag("qizhi_card");
+        if (tag != NULL && tag.canConvert(QVariant::String)) {
+            QString exclude = tag.toString();
+            names.removeAll(exclude);
+        }
+
+        ServerPlayer *current = room->getCurrent();
+        QString choice = room->askForChoice(current, "qizhi", names.join("+"), QVariant());
+        room->setTag("qizhi_card", choice);
+        room->touhouLogmessage("#qizhi", current, choice);
+    }
+
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (e == HpChanged)
+            choiceQizhi(room);
+        else if (e == EventPhaseStart) {
+            ServerPlayer *current = data.value<ServerPlayer *>();
+            if (current->getPhase() == Player::Start)
+                choiceQizhi(room);
+            else {
+                QVariant tag = room->getTag("qizhi_card");
+                QString exclude = tag.toString();
+                room->touhouLogmessage("#qizhi_judge", current, objectName(), QList<ServerPlayer *>(), exclude);
+                if (exclude == "lightning") {
+                    Lightning *c = new Lightning(Card::NoSuit, 0);
+                    JudgeStruct judge_struct = c->getJudge();
+                    judge_struct.who = current;
+                    room->judge(judge_struct);
+
+                    if (judge_struct.negative == judge_struct.isBad()) {
+                        if (judge_struct.who->isAlive() && !judge_struct.ignore_judge)
+                            c->takeEffect(judge_struct.who);
+                    }
+                    delete c;
+                }
+
+                if (exclude == "indulgence") {
+                    Indulgence *c = new Indulgence(Card::NoSuit, 0);
+                    JudgeStruct judge_struct = c->getJudge();
+                    judge_struct.who = current;
+                    room->judge(judge_struct);
+
+                    if (judge_struct.negative == judge_struct.isBad()) {
+                        if (judge_struct.who->isAlive() && !judge_struct.ignore_judge)
+                            c->takeEffect(judge_struct.who);
+                    }
+                    delete c;
+                }
+                if (exclude == "supply_shortage") {
+                    SupplyShortage *c = new SupplyShortage(Card::NoSuit, 0);
+                    JudgeStruct judge_struct = c->getJudge();
+                    judge_struct.who = current;
+                    room->judge(judge_struct);
+
+                    if (judge_struct.negative == judge_struct.isBad()) {
+                        if (judge_struct.who->isAlive() && !judge_struct.ignore_judge)
+                            c->takeEffect(judge_struct.who);
+                    }
+                    delete c;
+                }
+                if (exclude == "saving_energy") {
+                    SavingEnergy *c = new SavingEnergy(Card::NoSuit, 0);
+                    JudgeStruct judge_struct = c->getJudge();
+                    judge_struct.who = current;
+                    room->judge(judge_struct);
+
+                    if (judge_struct.negative == judge_struct.isBad()) {
+                        if (judge_struct.who->isAlive() && !judge_struct.ignore_judge)
+                            c->takeEffect(judge_struct.who);
+                    }
+                    delete c;
+                }
+                if (exclude == "spring_breath") {
+                    SpringBreath *c = new SpringBreath(Card::NoSuit, 0);
+                    JudgeStruct judge_struct = c->getJudge();
+                    judge_struct.who = current;
+                    room->judge(judge_struct);
+
+                    if (judge_struct.negative == judge_struct.isBad()) {
+                        if (judge_struct.who->isAlive() && !judge_struct.ignore_judge)
+                            c->takeEffect(judge_struct.who);
+                    }
+                    delete c;
+                }
+            }
+        }
+        
+        return false;
+    }
+};
+
+
+
 class Tiandao : public TriggerSkill
 {
 public:
     Tiandao()
         : TriggerSkill("tiandao")
     {
-        events << FinishJudge << EventPhaseStart << EventPhaseChanging;
+        events << FinishJudge << EventPhaseStart;// << EventPhaseChanging
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
@@ -6550,7 +6695,7 @@ public:
         QList<SkillInvokeDetail> d;
         if (event == FinishJudge) {
             JudgeStruct *judge = data.value<JudgeStruct *>();
-            if (room->getCardPlace(judge->card->getEffectiveId()) != Player::PlaceJudge)
+            if (room->getCardPlace(judge->card->getEffectiveId()) != Player::PlaceJudge || judge->who->isDead())
                 return QList<SkillInvokeDetail>();
             if (judge->card->isKindOf("Nullification") || judge->card->isKindOf("Jink"))
                 return QList<SkillInvokeDetail>();
@@ -6558,12 +6703,22 @@ public:
             QList<ServerPlayer *> invokers = room->findPlayersBySkillName(objectName());
             foreach(ServerPlayer *p, invokers)
             {
-                if (p->isAlive() && p->getMark("@tiandao") < p->getHp())
-                    d << SkillInvokeDetail(this, p, p);
+                if (p->isAlive() && p->getMark("@tiandao") < p->getHp() &&  !p->isCardLimited(judge->card, Card::MethodUse)  && !p->isProhibited(judge->who, judge->card)) {
+                    judge->card->setFlags("IgnoreFailed");
+                    judge->card->setFlags("tiandao");
+                    bool can = judge->card->targetFilter(QList<const Player *>(), judge->who, p);
+                    judge->card->setFlags("-IgnoreFailed");
+                    judge->card->setFlags("-tiandao");
+                    if (judge->card->getTypeId() == Card::TypeEquip)
+                        can = true;
+                    if (can)
+                        d << SkillInvokeDetail(this, p, p, NULL, false, judge->who);
+                }
+                    
 
             }
         }
-        else if (event == EventPhaseChanging) {
+        /*else if (event == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
                 foreach(ServerPlayer *p, room->getAlivePlayers()) {
@@ -6571,34 +6726,59 @@ public:
                         d << SkillInvokeDetail(this, p, p, NULL, true);
                 }
             }
-        }
+        }*/
         return d;
     }
+
+    /*bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseChanging)
+            return true;
+        return invoke->invoker->askForSkillInvoke(this, data);
+    }*/
 
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         if (triggerEvent == FinishJudge) {
+            invoke->invoker->gainMark("@tiandao");
             JudgeStruct *judge = data.value<JudgeStruct *>();
-            invoke->invoker->gainMark("@tiandao", invoke->invoker->getMark("@tiandao") + 1);
-            judge->who->addToPile("tiandao", judge->card->getEffectiveId());
+            room->useCard(CardUseStruct(judge->card, invoke->invoker, invoke->targets.first()));
+            
+            //judge->who->addToPile("tiandao", judge->card->getEffectiveId());
 
             judge->ignore_judge = true;
             data = QVariant::fromValue(judge);
         }
-        else if (triggerEvent == EventPhaseChanging) {
+        /*else if (triggerEvent == EventPhaseChanging) {
             QList<int> pile = invoke->invoker->getPile("tiandao");
             foreach(int id, pile) {
                 Card *c = Sanguosha->getCard(id);
                 room->useCard(CardUseStruct(c, invoke->invoker, invoke->invoker));
             }
-        }
+        }*/
         return false;
     }
 };
 
 
 
+class TiandaoDistance : public TargetModSkill
+{
+public:
+    TiandaoDistance()
+        : TargetModSkill("tiandao-dist")
+    {
+        pattern = "BasicCard,TrickCard";
+    }
 
+    int getDistanceLimit(const Player *, const Card *card) const
+    {
+        if (card->hasFlag("tiandao"))
+            return 1000;
+
+        return 0;
+    }
+};
 
 
 TouhouGodPackage::TouhouGodPackage()
@@ -6758,6 +6938,7 @@ TouhouGodPackage::TouhouGodPackage()
     related_skills.insertMulti("kuangji", "#kuangji_effect");
 
     General *tenshi_god = new General(this, "tenshi_god", "touhougod", 4);
+    tenshi_god->addSkill(new Qizhi);
     tenshi_god->addSkill(new Tiandao);
 
 
@@ -6785,7 +6966,7 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<QianqiangCard>();
     addMetaObject<KuangjiCard>();
 
-    skills << new ChaorenLog << new Wendao << new RoleShownHandler << new ShenbaoAttach << new Ziwo << new Benwo << new Chaowo;
+    skills << new ChaorenLog << new Wendao << new RoleShownHandler << new ShenbaoAttach << new Ziwo << new Benwo << new Chaowo << new TiandaoDistance;
 }
 
 ADD_PACKAGE(TouhouGod)

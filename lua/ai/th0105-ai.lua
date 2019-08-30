@@ -363,6 +363,8 @@ sgs.ai_trick_prohibit.mengxiao = function(self, from, to, card)
 	return false
 end
 
+
+sgs.ai_skill_invoke.lubiao =  true
 function lubiaoInvoke(self, card)
 	for _,p in sgs.qlist(self.room:getAlivePlayers())do
 		for _,c in sgs.qlist(p:getCards("j")) do
@@ -389,7 +391,7 @@ sgs.ai_damageInflicted.lubiao =function(self, damage)
 end
 
 
-
+sgs.ai_skill_invoke.yeyan =  true
 function yeyan_judge(self,target,card)
 	if card:isKindOf("AmazingGrace") then
 		return 2
@@ -567,6 +569,7 @@ sgs.ai_skill_use["@@lianmu"] = function(self, prompt)
 	return "."
 end
 
+sgs.ai_skill_invoke.huanwei =  true
 sgs.ai_damageCaused.huanwei = function(self, damage)
 	if damage.card and not damage.chain and not damage.transfer then
 		if  damage.card:isKindOf("Slash") and  damage.card:getSuit() == sgs.Card_Spade then
@@ -938,6 +941,10 @@ end
 sgs.ai_use_value.EzhaoCard = 2
 sgs.ai_use_priority.EzhaoCard = sgs.ai_use_priority.Slash + 0.2
 
+
+
+sgs.ai_skill_invoke.xingyou =  true
+
 local zongjiu_skill = {}
 zongjiu_skill.name = "zongjiu"
 table.insert(sgs.ai_skills, zongjiu_skill)
@@ -1082,7 +1089,7 @@ sgs.ai_skill_use_func.QirenCard=function(card,use,self)
 end
 sgs.ai_use_priority.QirenCard = 10
 
-
+sgs.ai_skill_invoke.huanshu =  true
 
 
 sgs.ai_skill_invoke.jinduan = function(self, data)

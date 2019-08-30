@@ -97,6 +97,9 @@ sgs.ai_skill_use["@@shayi"] = function(self, prompt)
 end
 
 sgs.shownCard_skill = "chunhua|santi"
+sgs.ai_skill_invoke.santi =  true
+
+
 sgs.ai_skill_invoke.kuangluan1 = function(self, data)
 	local target = data:toPlayer()
 

@@ -907,6 +907,8 @@ sgs.ai_skill_choice.buming=function(self)--因为有cardlimit  需要检测实�
 end
 
 sgs.ai_card_intention.BumingCard = 70
+sgs.ai_skill_invoke.zhengti =  true
+
 
 --[[
 sgs.ai_skill_playerchosen.zhengti = function(self, targets)

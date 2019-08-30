@@ -70,7 +70,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         JudgeStruct *judge = data.value<JudgeStruct *>();
-        if (!judge->who || !judge->who->isAlive() || judge->card->isBlack())
+        if (!judge->who || !judge->who->isAlive() || judge->card->isBlack() || judge->ignore_judge)
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
@@ -151,7 +151,7 @@ public:
 
         ServerPlayer *current = room->getCurrent();
 
-        if (judge.card->getSuit() != card->getSuit() && current && current->isAlive()) {
+        if (judge.card->getSuit() != card->getSuit() && !judge.ignore_judge && current && current->isAlive()) {
             QStringList select;
             select << "card";
             if (target && target->isAlive())
@@ -499,7 +499,7 @@ public:
     Saiqian()
         : TriggerSkill("saiqian")
     {
-        events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging << Death << Debut << Revive;
+        events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging << Death << Debut << Revive << GeneralShown;
         show_type = "static";
     }
 

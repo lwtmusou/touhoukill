@@ -880,6 +880,188 @@ void SpringBreath::takeEffect(ServerPlayer *target) const
     target->drawCards(6);
 }
 
+
+KnownBothHegmony::KnownBothHegmony(Card::Suit suit, int number)
+    : TrickCard(suit, number)
+{
+    setObjectName("known_both_hegemony");
+    can_recast = false;
+}
+
+QString KnownBothHegmony::getSubtype() const
+{
+    return "known_both";
+}
+
+bool KnownBothHegmony::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    if (targets.length() >= total_num || to_select == Self)
+        return false;
+
+    return (!to_select->hasShownGeneral()  ||  
+        !to_select->isKongcheng() && (to_select->getShownHandcards().length() < to_select->getHandcardNum()));
+}
+
+bool KnownBothHegmony::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
+{
+    int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this); 
+    return targets.length() > 0 && targets.length() <= total_num;
+}
+
+//void KnownBothHegmony::onUse(Room *room, const CardUseStruct &card_use) const
+
+
+void KnownBothHegmony::onEffect(const CardEffectStruct &effect) const
+{
+    QStringList select;
+    if (!effect.to->hasShownGeneral())
+        select << "showgeneral";
+    if (!effect.to->isKongcheng() && (effect.to->getShownHandcards().length() < effect.to->getHandcardNum()))
+        select << "showcard";
+
+    if (select.isEmpty())
+        return;
+
+    Room *room = effect.from->getRoom();
+    QString choice = room->askForChoice(effect.from, objectName(), select.join("+"), QVariant::fromValue(effect));
+
+    if (choice == "showgeneral") {
+        QStringList list = room->getTag(effect.to->objectName()).toStringList();
+        foreach(const QString &name, list) {
+            LogMessage log;
+            log.type = "$KnownBothViewGeneral";
+            log.from = effect.from;
+            log.to << effect.to;
+            log.arg = name;
+            log.arg2 = effect.to->getRole();
+            room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+        }
+        JsonArray arg;
+        arg << objectName();
+        arg << JsonUtils::toJsonArray(list);
+        room->doNotify(effect.from, QSanProtocol::S_COMMAND_VIEW_GENERALS, arg);
+    
+    }
+    else {
+        if (effect.to->getCards("h").isEmpty()) {
+            effect.to->getRoom()->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
+            return;
+        }
+
+        QList<int> ids;
+
+        for (int i = 0; i < (1 + effect.effectValue.first()); i += 1) {
+            int id = room->askForCardChosen(effect.from, effect.to, "h", objectName(), false, Card::MethodNone, ids);
+            ids << id;
+            if ((effect.to->getCards("h").length() - ids.length()) <= 0)
+                break;
+        }
+
+        effect.to->addToShownHandCards(ids);
+    
+    }
+}
+
+void KnownBothHegmony::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+{
+    QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
+    bool all_nullified = nullified_list.contains("_ALL_TARGETS");
+    int magic_drank = 0;
+    if (source && source->getMark("magic_drank") > 0)
+        magic_drank = source->getMark("magic_drank");
+
+    foreach(ServerPlayer *target, targets) {
+        CardEffectStruct effect;
+        effect.card = this;
+        effect.from = source;
+        effect.to = target;
+        effect.multiple = (targets.length() > 1);
+        effect.nullified = (all_nullified || nullified_list.contains(target->objectName()));
+
+        QVariantList players;
+        for (int i = targets.indexOf(target); i < targets.length(); i++) {
+            if (!nullified_list.contains(targets.at(i)->objectName()) && !all_nullified)
+                players.append(QVariant::fromValue(targets.at(i)));
+        }
+        //for HegNullification???
+        room->setTag("targets" + this->toString(), QVariant::fromValue(players));
+        if (hasFlag("mopao"))
+            effect.effectValue.first() = effect.effectValue.first() + 1;
+        if (source->getMark("kuangji_value") > 0) {
+            effect.effectValue.first() = effect.effectValue.first() + source->getMark("kuangji_value");
+            room->setPlayerMark(source, "kuangji_value", 0);
+        }
+
+        effect.effectValue.first() = effect.effectValue.first() + magic_drank;
+        room->cardEffect(effect);
+    }
+    if (magic_drank > 0)
+        room->setPlayerMark(source, "magic_drank", 0);
+    room->removeTag("targets" + this->toString());
+
+    if (source->isAlive() && source->isCurrent()) {
+        room->touhouLogmessage("#KnownBothLimit", source);
+        room->setTag("KnownBothUsed", true);
+        foreach(ServerPlayer *p, room->getOtherPlayers(source)) {
+            if (p->getMark("KnownBoth_Limit") == 0) {
+                room->setPlayerCardLimitation(p, "use,response", ".|.|.|show", "known_both", true);
+                room->setPlayerMark(p, "KnownBoth_Limit", 1);
+            }
+        }
+    }
+
+    if (room->getCardPlace(getEffectiveId()) == Player::PlaceTable) {
+        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
+        if (targets.size() == 1)
+            reason.m_targetId = targets.first()->objectName();
+        reason.m_extraData = QVariant::fromValue((const Card *)this);
+        room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
+    }
+}
+
+/*class KnownBothSkill : public TriggerSkill
+{
+public:
+    KnownBothSkill()
+        : TriggerSkill("known_both_effect")
+    {
+        events << EventPhaseChanging << Revive;
+        global = true;
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->getMark("KnownBoth_Limit") > 0) {
+                        room->removePlayerCardLimitation(p, "use,response", ".|.|.|show$1", "known_both");
+                        room->setPlayerMark(p, "KnownBoth_Limit", 0);
+                    }
+                }
+                room->setTag("KnownBothUsed", false);
+            }
+        }
+        else {
+            QVariant knownBothTag = room->getTag("KnownBothUsed");
+            if (knownBothTag.canConvert(QVariant::Bool) && knownBothTag.toBool() && room->getCurrent()) {
+                foreach(ServerPlayer *p, room->getOtherPlayers(room->getCurrent())) {
+                    if (p->getMark("KnownBoth_Limit") == 0) {
+                        room->setPlayerCardLimitation(p, "use", ".|.|.|show", "known_both", true);
+                        room->setPlayerMark(p, "KnownBoth_Limit", 1);
+                    }
+                }
+            }
+        }
+    }
+};*/
+
+
+
+
+
 TestCardPackage::TestCardPackage()
     : Package("test_card", Package::CardPack)
 {
@@ -935,8 +1117,11 @@ TestCardPackage::TestCardPackage()
         << new ChainJink(Card::Heart, 3)
         << new LightJink(Card::Diamond, 2)
         << new LightJink(Card::Diamond, 11)
-        << new LightJink(Card::Diamond, 7);
+        << new LightJink(Card::Diamond, 7)
 
+
+        << new KnownBothHegmony(Card::Club, 3)
+        << new KnownBothHegmony(Card::Spade, 4);
     // clang-format on
 
     foreach (Card *card, cards)

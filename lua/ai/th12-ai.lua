@@ -253,6 +253,7 @@ sgs.ai_cardneed.weizhi = function(to, card, self)
 	end
 end
 
+sgs.ai_skill_invoke.weizhuang =  true
 sgs.ai_skill_cardask["@weizhuang-discard"] = function(self, data)
 	local target =self.player:getTag("weizhuang_target"):toPlayer()
 	local use =data:toCardUse()
@@ -515,7 +516,7 @@ sgs.ai_cardneed.lizhi = function(to, card, self)
 		return  card:isKindOf("AOE")
 	end
 end
-
+sgs.ai_skill_invoke.yunshang =  true
 
 
 sgs.ai_skill_invoke.souji = true

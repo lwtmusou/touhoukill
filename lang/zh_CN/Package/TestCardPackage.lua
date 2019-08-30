@@ -69,4 +69,9 @@ return {
 	["spring_breath"] = "春息",
 	[":spring_breath"] = "锦囊牌·一次性的延时类锦囊牌<br />使用时机：出牌阶段。<br />使用目标：一名角色。<br />作用效果：目标角色判定，若结果为<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>2-9，其摸六张牌，否则其将此牌置入其判定区且此阶段内不再执行此牌效果。",
 
+	["known_both_hegemony"] = "知己知彼（国）",
+	[":known_both_hegemony"] = "锦囊牌·非全体性的普通锦囊牌<br />使用时机：出牌阶段。<br />使用目标：一至两名有暗置手牌或暗置人物牌的其他角色。<br />作用效果：你选择：<br />1.观看目标角色的暗置人物牌及身份牌 <br /> 2.明置目标角色<font color=\"green\"><b>一张</b></font>暗置手牌。<br />执行动作：此牌结算结束时，若你为当前回合角色，则其他角色于此回合内不能使用或打出其明置手牌。",
+	["known_both_hegemony:showgeneral"] = "观看人物牌和身份",
+	["known_both_hegemony:showcard"] = "明置手牌",
+	["$KnownBothViewGeneral"] = "%from 观看了 %to 的 %arg， 阵营为 %arg2" ,
 }

@@ -140,6 +140,8 @@ sgs.ai_choicemade_filter.skillInvoke.xueyi = function(self, player, promptlist, 
 	end
 end
 
+
+sgs.ai_skill_invoke.pohuai =  true
 function SmartAI:pohuaiBenefit(player)
 	local value=0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
@@ -547,7 +549,7 @@ sgs.dongjie_keep_value = {
 	Slash           = 6.4
 }
 
-
+sgs.ai_skill_invoke.bingpo =  true
 sgs.ai_damageInflicted.bingpo =function(self, damage)
 	if damage.nature ~= sgs.DamageStruct_Fire then
 		if damage.damage >= damage.to:getHp() then
@@ -861,7 +863,7 @@ sgs.ai_skill_use["@@xiaoyinVS!"] = function(self, prompt)
 	return "."
 end
 
-
+sgs.ai_skill_invoke.shixue =  true
 sgs.ai_skill_invoke.anyue = function(self, data)
 	local target = data:toPlayer()
 	if self:isEnemy(target) then

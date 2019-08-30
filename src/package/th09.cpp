@@ -398,7 +398,7 @@ public:
             }
         } else if (event == FinishJudge) {
             JudgeStruct *judge = data.value<JudgeStruct *>();
-            if (judge->reason == objectName() && judge->isGood()) {
+            if (judge->reason == objectName() && judge->isGood() && !judge->ignore_judge) {
                 ServerPlayer *lord = judge->relative_player;
                 if (lord != NULL && lord->isAlive())
                     d << SkillInvokeDetail(this, lord, lord, NULL, true);
@@ -627,7 +627,7 @@ public:
 
         room->judge(judge);
 
-        if (judge.isGood()) {
+        if (judge.isGood() && !judge.ignore_judge) {
             room->loseHp(damage.to);
         }
         return false;
@@ -940,7 +940,7 @@ public:
 
         room->judge(judge);
         ServerPlayer *target = invoke->targets.first();
-        if (judge.isGood() && invoke->invoker->isAlive() && target->isAlive() && !target->isKongcheng()) {
+        if (judge.isGood() && !judge.ignore_judge && invoke->invoker->isAlive() && target->isAlive() && !target->isKongcheng()) {
             QList<int> ids;
             foreach (const Card *card, target->getHandcards())
                 ids << card->getEffectiveId();

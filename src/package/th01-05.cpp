@@ -1909,7 +1909,7 @@ public:
     Modian()
         : TriggerSkill("modian")
     {
-        events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging << Death << Debut << Revive;
+        events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging << Death << Debut << Revive << GeneralShown;
         view_as_skill = new ModianSelfVS;
         //show_type = "static";
         related_pile = "modian";

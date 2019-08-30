@@ -140,7 +140,8 @@ end
 selectFirst = function(player, candidates) -- string
 	--暂时性的测试用国战选将ai
     if player:getRoom():getMode():find("hegemony") then
-		return candidates[1]
+	    local idx = math.random(1, #candidates)
+		return candidates[idx]
 	end
 
 	local values = {}

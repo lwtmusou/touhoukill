@@ -564,10 +564,13 @@ public:
         return can;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
+            return QList<SkillInvokeDetail>();
+
+        if (isHegemonyGameMode(room->getMode()))
             return QList<SkillInvokeDetail>();
 
         if (use.card != NULL && use.card->isKindOf("Slash")) {
@@ -707,7 +710,7 @@ public:
         judge.who = invoke->invoker;
 
         room->judge(judge);
-        if (judge.isGood()) {
+        if (judge.isGood() && !judge.ignore_judge) {
             CardUseStruct use = data.value<CardUseStruct>();
             QVariantList jink = use.from->tag["Jink_" + use.card->toString()].toList();
             for (int i = 0; i < jink.length(); ++i)
@@ -2290,7 +2293,8 @@ bool SavingEnergy::targetFilter(const QList<const Player *> &targets, const Play
 void SavingEnergy::takeEffect(ServerPlayer *target) const
 {
     target->skip(Player::Discard);
-    target->addToPile("saving_energy", this);
+    if (this->getEffectiveId() > -1)
+        target->addToPile("saving_energy", this);
 }
 
 class SavingEnergySkill : public TriggerSkill
