@@ -71,7 +71,7 @@ public:
     SkltKexue()
         : TriggerSkill("skltkexue")
     {
-        events << GameStart << EventAcquireSkill << EventLoseSkill << Death << Debut << Revive;
+        events << GameStart << EventAcquireSkill << EventLoseSkill << Death << Debut << Revive << GeneralShown;
         show_type = "static";
     }
 

@@ -2263,7 +2263,7 @@ public:
     Mingmu()
         : TriggerSkill("mingmu")
     {
-        events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging << Death << Debut << Revive;
+        events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging << Death << Debut << Revive << GeneralShown;
         show_type = "static";
     }
 
