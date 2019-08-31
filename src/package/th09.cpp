@@ -319,7 +319,7 @@ public:
         show_type = "static";
     }
 
-    bool Huiwu::canPreshow() const
+    bool canPreshow() const
     {
         return false;
     }
@@ -778,7 +778,7 @@ public:
         view_as_skill = new ToupaiVS;
     }
 
-    bool Toupai::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -2072,7 +2072,7 @@ public:
         view_as_skill = new MengxiangVS;
     }
 
-    bool Mengxiang::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -2266,7 +2266,7 @@ public:
         view_as_skill = new JishiVS;
     }
 
-    bool Jishi::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }

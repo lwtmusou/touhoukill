@@ -5431,12 +5431,12 @@ XianshiDialog::XianshiDialog(const QString &object, bool left, bool right)
 
 void XianshiDialog::popup()
 {
-    Card::HandlingMethod method;
+    /*Card::HandlingMethod method;
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         method = Card::MethodResponse;
     else
         method = Card::MethodUse;
-
+*/
     QStringList checkedPatterns;
     QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
     bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
@@ -5888,25 +5888,28 @@ bool WenyueCard::targetFilter(const QList<const Player *> &targets, const Player
 
 void WenyueCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
-    int throw_id, card_id;
+    int throw_id = -1, card_id = -1;
     foreach (int id, subcards) {
         if (Sanguosha->getCard(id)->getTypeId() == Card::TypeEquip)
             card_id = id;
         else
             throw_id = id;
     }
-    DummyCard dummy;
-    dummy.addSubcard(throw_id);
-    room->throwCard(&dummy, source, source);
-    const Card *card = Sanguosha->getCard(card_id);
-    LogMessage zhijian;
-    zhijian.type = "$ZhijianEquip";
-    zhijian.from = targets.first();
-    zhijian.card_str = QString::number(card_id);
-    room->sendLog(zhijian);
+    if (card_id != -1) {
+        DummyCard dummy;
+        dummy.addSubcard(throw_id);
+        room->throwCard(&dummy, source, source);
+    }
+    if (throw_id != -1) {
+        const Card *card = Sanguosha->getCard(card_id);
+        LogMessage zhijian;
+        zhijian.type = "$ZhijianEquip";
+        zhijian.from = targets.first();
+        zhijian.card_str = QString::number(card_id);
+        room->sendLog(zhijian);
 
-    room->moveCardTo(card, source, targets.first(), Player::PlaceEquip, CardMoveReason(CardMoveReason::S_REASON_TRANSFER, source->objectName(), "qianqiang", QString()));
-
+        room->moveCardTo(card, source, targets.first(), Player::PlaceEquip, CardMoveReason(CardMoveReason::S_REASON_TRANSFER, source->objectName(), "qianqiang", QString()));
+    }
     //deal skill qianqiang or xianji;
     if (source->getGeneralName().startsWith("alice")) {
         QList<ServerPlayer *> skill_targets;
@@ -6234,8 +6237,6 @@ public:
     }
 };
 
-
-
 class XiuyeVS : public OneCardViewAsSkill
 {
 public:
@@ -6443,8 +6444,6 @@ public:
         view_as_skill = new KuangjiVS;
     }
 
-
-
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
@@ -6521,8 +6520,6 @@ public:
     }
 };
 
-
-
 class Qizhi : public TriggerSkill
 {
 public:
@@ -6544,7 +6541,6 @@ public:
             if (current == NULL || current->isDead())
                 return QList<SkillInvokeDetail>();
 
-
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, tenshi, tenshi, NULL, true);
         }
         if (e == EventPhaseStart) {
@@ -6559,22 +6555,27 @@ public:
                 ServerPlayer *tenshi = room->findPlayerBySkillName(objectName());
                 if (tenshi) {
                     QVariant tag = room->getTag("qizhi_card");
-                    if (tag != NULL && tag.canConvert(QVariant::String)) {
+                    if (!tag.isNull() && tag.canConvert(QVariant::String)) {
                         QString exclude = tag.toString();
                         if (exclude != "")
                             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, tenshi, tenshi, NULL, true);
                     }
-                } 
+                }
             }
         }
         return QList<SkillInvokeDetail>();
     }
 
-    static void choiceQizhi(Room *room) {
+    static void choiceQizhi(Room *room)
+    {
         QStringList names;
-        names << "lightning" << "indulgence" << "supply_shortage" << "saving_energy" << "spring_breath";
+        names << "lightning"
+              << "indulgence"
+              << "supply_shortage"
+              << "saving_energy"
+              << "spring_breath";
         QVariant tag = room->getTag("qizhi_card");
-        if (tag != NULL && tag.canConvert(QVariant::String)) {
+        if (!tag.isNull() && tag.canConvert(QVariant::String)) {
             QString exclude = tag.toString();
             names.removeAll(exclude);
         }
@@ -6585,7 +6586,7 @@ public:
         room->touhouLogmessage("#qizhi", current, choice);
     }
 
-    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
     {
         if (e == HpChanged)
             choiceQizhi(room);
@@ -6660,12 +6661,10 @@ public:
                 }
             }
         }
-        
+
         return false;
     }
 };
-
-
 
 class Tiandao : public TriggerSkill
 {
@@ -6673,7 +6672,7 @@ public:
     Tiandao()
         : TriggerSkill("tiandao")
     {
-        events << FinishJudge << EventPhaseStart;// << EventPhaseChanging
+        events << FinishJudge << EventPhaseStart; // << EventPhaseChanging
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
@@ -6682,12 +6681,12 @@ public:
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player->getPhase() == Player::RoundStart) {
                 if (player->isLord() && !player->tag.value("touhou-extra", false).toBool()) {
-                    foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                    foreach (ServerPlayer *p, room->getAlivePlayers()) {
                         room->setPlayerMark(p, "@tiandao", 0);
                     }
                 }
             }
-        }        
+        }
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent event, const Room *room, const QVariant &data) const
@@ -6701,9 +6700,8 @@ public:
                 return QList<SkillInvokeDetail>();
 
             QList<ServerPlayer *> invokers = room->findPlayersBySkillName(objectName());
-            foreach(ServerPlayer *p, invokers)
-            {
-                if (p->isAlive() && p->getMark("@tiandao") < p->getHp() &&  !p->isCardLimited(judge->card, Card::MethodUse)  && !p->isProhibited(judge->who, judge->card)) {
+            foreach (ServerPlayer *p, invokers) {
+                if (p->isAlive() && p->getMark("@tiandao") < p->getHp() && !p->isCardLimited(judge->card, Card::MethodUse) && !p->isProhibited(judge->who, judge->card)) {
                     judge->card->setFlags("IgnoreFailed");
                     judge->card->setFlags("tiandao");
                     bool can = judge->card->targetFilter(QList<const Player *>(), judge->who, p);
@@ -6714,8 +6712,6 @@ public:
                     if (can)
                         d << SkillInvokeDetail(this, p, p, NULL, false, judge->who);
                 }
-                    
-
             }
         }
         /*else if (event == EventPhaseChanging) {
@@ -6743,7 +6739,7 @@ public:
             invoke->invoker->gainMark("@tiandao");
             JudgeStruct *judge = data.value<JudgeStruct *>();
             room->useCard(CardUseStruct(judge->card, invoke->invoker, invoke->targets.first()));
-            
+
             //judge->who->addToPile("tiandao", judge->card->getEffectiveId());
 
             judge->ignore_judge = true;
@@ -6759,8 +6755,6 @@ public:
         return false;
     }
 };
-
-
 
 class TiandaoDistance : public TargetModSkill
 {
@@ -6779,7 +6773,6 @@ public:
         return 0;
     }
 };
-
 
 TouhouGodPackage::TouhouGodPackage()
     : Package("touhougod")
@@ -6940,7 +6933,6 @@ TouhouGodPackage::TouhouGodPackage()
     General *tenshi_god = new General(this, "tenshi_god", "touhougod", 4);
     tenshi_god->addSkill(new Qizhi);
     tenshi_god->addSkill(new Tiandao);
-
 
     //    General *shinmyoumaru_god = new General(this, "shinmyoumaru_god", "touhougod", 4, false, true, true);
     //    Q_UNUSED(shinmyoumaru_god);

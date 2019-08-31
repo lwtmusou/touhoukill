@@ -412,7 +412,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         int damage_value = 1 + effect.drank + effect.effectValue.last();
@@ -880,7 +880,6 @@ void SpringBreath::takeEffect(ServerPlayer *target) const
     target->drawCards(6);
 }
 
-
 KnownBothHegmony::KnownBothHegmony(Card::Suit suit, int number)
     : TrickCard(suit, number)
 {
@@ -899,18 +898,16 @@ bool KnownBothHegmony::targetFilter(const QList<const Player *> &targets, const 
     if (targets.length() >= total_num || to_select == Self)
         return false;
 
-    return (!to_select->hasShownGeneral()  ||  
-        !to_select->isKongcheng() && (to_select->getShownHandcards().length() < to_select->getHandcardNum()));
+    return (!to_select->hasShownGeneral() || (!to_select->isKongcheng() && (to_select->getShownHandcards().length() < to_select->getHandcardNum())));
 }
 
 bool KnownBothHegmony::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
-    int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this); 
+    int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
     return targets.length() > 0 && targets.length() <= total_num;
 }
 
 //void KnownBothHegmony::onUse(Room *room, const CardUseStruct &card_use) const
-
 
 void KnownBothHegmony::onEffect(const CardEffectStruct &effect) const
 {
@@ -928,7 +925,7 @@ void KnownBothHegmony::onEffect(const CardEffectStruct &effect) const
 
     if (choice == "showgeneral") {
         QStringList list = room->getTag(effect.to->objectName()).toStringList();
-        foreach(const QString &name, list) {
+        foreach (const QString &name, list) {
             LogMessage log;
             log.type = "$KnownBothViewGeneral";
             log.from = effect.from;
@@ -941,9 +938,8 @@ void KnownBothHegmony::onEffect(const CardEffectStruct &effect) const
         arg << objectName();
         arg << JsonUtils::toJsonArray(list);
         room->doNotify(effect.from, QSanProtocol::S_COMMAND_VIEW_GENERALS, arg);
-    
-    }
-    else {
+
+    } else {
         if (effect.to->getCards("h").isEmpty()) {
             effect.to->getRoom()->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
             return;
@@ -959,7 +955,6 @@ void KnownBothHegmony::onEffect(const CardEffectStruct &effect) const
         }
 
         effect.to->addToShownHandCards(ids);
-    
     }
 }
 
@@ -971,7 +966,7 @@ void KnownBothHegmony::use(Room *room, ServerPlayer *source, QList<ServerPlayer 
     if (source && source->getMark("magic_drank") > 0)
         magic_drank = source->getMark("magic_drank");
 
-    foreach(ServerPlayer *target, targets) {
+    foreach (ServerPlayer *target, targets) {
         CardEffectStruct effect;
         effect.card = this;
         effect.from = source;
@@ -1003,7 +998,7 @@ void KnownBothHegmony::use(Room *room, ServerPlayer *source, QList<ServerPlayer 
     if (source->isAlive() && source->isCurrent()) {
         room->touhouLogmessage("#KnownBothLimit", source);
         room->setTag("KnownBothUsed", true);
-        foreach(ServerPlayer *p, room->getOtherPlayers(source)) {
+        foreach (ServerPlayer *p, room->getOtherPlayers(source)) {
             if (p->getMark("KnownBoth_Limit") == 0) {
                 room->setPlayerCardLimitation(p, "use,response", ".|.|.|show", "known_both", true);
                 room->setPlayerMark(p, "KnownBoth_Limit", 1);
@@ -1057,10 +1052,6 @@ public:
         }
     }
 };*/
-
-
-
-
 
 TestCardPackage::TestCardPackage()
     : Package("test_card", Package::CardPack)

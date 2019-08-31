@@ -375,11 +375,6 @@ public:
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
-        //mark record at first
-        if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        }
-
         //set or remove limitation
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();

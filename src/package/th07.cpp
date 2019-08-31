@@ -373,11 +373,10 @@ public:
         view_as_skill = new XijianVS;
     }
 
-    bool Xijian::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
-
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
@@ -472,7 +471,7 @@ public:
         view_as_skill = new BayunziDiscardJingjie("sisheng");
     }
 
-    bool Sisheng::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -537,7 +536,7 @@ public:
         view_as_skill = new BayunziDiscardJingjie("jingdong");
     }
 
-    bool Jingdong::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -1018,7 +1017,7 @@ public:
         view_as_skill = new XiezouVS;
     }
 
-    bool Xiezou::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -1172,7 +1171,6 @@ public:
         events << CardsMoveOneTime;
         view_as_skill = new ZhanzhenVS;
     }
-
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
@@ -1434,7 +1432,7 @@ public:
         view_as_skill = new QimenVS;
     }
 
-    bool Qimen::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -1515,7 +1513,7 @@ public:
         show_type = "static";
     }
 
-    bool Dunjia::canPreshow() const
+    bool canPreshow() const
     {
         return false;
     }
@@ -1962,7 +1960,6 @@ public:
         events << EventPhaseStart;
         //frequency = Frequent;
     }
-
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {

@@ -79,7 +79,6 @@ public:
         return d;
     }
 
-
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
@@ -742,7 +741,7 @@ public:
         related_pile = "feitou";
     }
 
-    bool Feitou::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }

@@ -1492,7 +1492,7 @@ public:
         view_as_skill = new HuishengVS;
     }
 
-    bool Huisheng::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }

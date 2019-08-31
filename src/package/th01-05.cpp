@@ -382,7 +382,7 @@ public:
         view_as_skill = new ZhenceVS;
     }
 
-    bool Zhence::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -502,7 +502,7 @@ public:
         view_as_skill = new ShiquVS;
     }
 
-    bool Shiqu::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -692,7 +692,7 @@ public:
         view_as_skill = new QiusuoVS;
     }
 
-    bool Qiusuo::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -1100,7 +1100,7 @@ public:
         related_pile = "dream";
     }
 
-    bool Huantong::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -1433,7 +1433,7 @@ public:
         view_as_skill = new LianmuVS;
     }
 
-    bool Lianmu::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -1637,7 +1637,7 @@ public:
         view_as_skill = new SqChuangshiVS;
     }
 
-    bool SqChuangshi::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -2140,7 +2140,7 @@ public:
         view_as_skill = new BaosiVS;
     }
 
-    bool Baosi::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -2923,7 +2923,7 @@ public:
         view_as_skill = new LuliVS;
     }
 
-    bool Luli::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }

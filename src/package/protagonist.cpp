@@ -645,7 +645,7 @@ public:
         view_as_skill = new ShoucangVS;
     }
 
-    bool Shoucang::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -756,7 +756,7 @@ public:
         view_as_skill = new BaoyiVS;
     }
 
-    bool Baoyi::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -911,7 +911,7 @@ public:
         view_as_skill = new ChunxiVS;
     }
 
-    bool Chunxi::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -1076,7 +1076,7 @@ public:
         related_mark = "@yu";
     }
 
-    bool BllmWuyu::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -1398,7 +1398,7 @@ public:
         view_as_skill = new QiangyuVS;
     }
 
-    bool Qiangyu::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -2174,7 +2174,7 @@ public:
         view_as_skill = new ToushiVS;
     }
 
-    bool Toushi::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }

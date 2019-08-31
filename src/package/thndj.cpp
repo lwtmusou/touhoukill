@@ -714,7 +714,7 @@ public:
         view_as_skill = new LiexiVS;
     }
 
-    bool Liexi::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -1242,7 +1242,7 @@ public:
         related_pile = "jinengPile";
     }
 
-    bool Jineng::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -1263,7 +1263,7 @@ public:
             JudgeStruct *judge = data.value<JudgeStruct *>();
             if (judge->reason == objectName()) {
                 ServerPlayer *aya = judge->who;
-                if (aya && aya->isAlive() && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge  && !judge->ignore_judge) {
+                if (aya && aya->isAlive() && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge && !judge->ignore_judge) {
                     bool can = true;
                     foreach (int id, aya->getPile("jinengPile")) {
                         if (judge->card->getSuit() == Sanguosha->getCard(id)->getSuit()) {

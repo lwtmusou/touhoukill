@@ -681,7 +681,7 @@ public:
         view_as_skill = new LuanyingVS;
     }
 
-    bool Luanying::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -835,7 +835,7 @@ public:
         view_as_skill = new LianxiVS;
     }
 
-    bool Lianxi::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -1120,7 +1120,7 @@ public:
         view_as_skill = new ZhesheVS;
     }
 
-    bool Zheshe::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }

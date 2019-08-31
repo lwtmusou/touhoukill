@@ -922,7 +922,7 @@ public:
         view_as_skill = new BuxianVS;
     }
 
-    bool Buxian::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -1042,7 +1042,7 @@ public:
         view_as_skill = new XingyunVS;
     }
 
-    bool Xingyun::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -1176,7 +1176,7 @@ public:
         view_as_skill = new YegeVS;
     }
 
-    bool Yege::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -1370,7 +1370,7 @@ public:
         view_as_skill = new GeshengVS;
     }
 
-    bool Gesheng::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -1782,7 +1782,7 @@ public:
         view_as_skill = new ChuangshiVS;
     }
 
-    bool Chuangshi::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -1992,7 +1992,7 @@ public:
         view_as_skill = new HuweiVS;
     }
 
-    bool Huwei::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }

@@ -66,7 +66,7 @@ public:
         related_pile = "shende";
     }
 
-    bool Shende::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -588,7 +588,6 @@ QAbstractButton *QijiDialog::createButton(const Card *card)
     }
 }
 
-
 class QijiVS : public OneCardViewAsSkill
 {
 public:
@@ -814,16 +813,13 @@ public:
 
             if (to->hasSkill("fengsu") && to->hasShownSkill("fengsu"))
                 correct = correct + to->getLostHp();
-        }
-        else {
+        } else {
             if (from->hasSkill("fengsu"))
                 correct = correct - (from->getLostHp());
 
             if (to->hasSkill("fengsu"))
                 correct = correct + to->getLostHp();
-        
         }
-
 
         return correct;
     }
@@ -1673,7 +1669,7 @@ TH10Package::TH10Package()
 
     addMetaObject<GongfengCard>();
     addMetaObject<FengshenCard>();
-    addMetaObject<ShowFengsu>();// for hegemony
+    addMetaObject<ShowFengsu>(); // for hegemony
     addMetaObject<XinshangCard>();
     addMetaObject<FengrangCard>();
     addMetaObject<JiliaoCard>();

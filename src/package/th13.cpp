@@ -739,7 +739,7 @@ public:
         view_as_skill = new ShijieVS;
     }
 
-    bool Shijie::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }

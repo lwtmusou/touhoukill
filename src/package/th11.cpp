@@ -221,12 +221,11 @@ public:
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.from && damage.from->hasSkill("wunian"))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
-        }
-        else if (e == TargetConfirming) {
+        } else if (e == TargetConfirming) {
             QList<SkillInvokeDetail> d;
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->getTypeId() == Card::TypeTrick) {
-                foreach(ServerPlayer *p, use.to) {
+                foreach (ServerPlayer *p, use.to) {
                     if (p->hasSkill(this) && p->isWounded())
                         d << SkillInvokeDetail(this, p, p, NULL, true);
                 }
@@ -247,8 +246,7 @@ public:
             room->touhouLogmessage("#TriggerSkill", invoke->invoker, "wunian");
             room->notifySkillInvoked(invoke->invoker, objectName());
             data = QVariant::fromValue(damage);
-        }
-        else if (e == TargetConfirming) {
+        } else if (e == TargetConfirming) {
             CardUseStruct use = data.value<CardUseStruct>();
             use.to.removeAll(invoke->invoker);
             data = QVariant::fromValue(use);
@@ -262,9 +260,6 @@ public:
         return false;
     }
 };
-
-
-
 
 YaobanCard::YaobanCard()
 {
@@ -311,7 +306,7 @@ public:
         events << Damaged;
     }
 
-    bool Yaoban::canPreshow() const
+    bool canPreshow() const
     {
         return true;
     }
@@ -887,7 +882,7 @@ public:
         QList<SkillInvokeDetail> d;
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->isKindOf("SavageAssault") || use.card->isKindOf("IronChain") || use.card->isKindOf("ArcheryAttack")) {
-            foreach(ServerPlayer *p, use.to) {
+            foreach (ServerPlayer *p, use.to) {
                 if (p->hasSkill(this))
                     d << SkillInvokeDetail(this, p, p, NULL, true);
             }
@@ -912,10 +907,6 @@ public:
         return false;
     }
 };
-
-
-
-
 
 class Cuiji : public TriggerSkill
 {
