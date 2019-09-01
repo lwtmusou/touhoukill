@@ -252,7 +252,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (!use.card->isNDTrick())
+        if (!use.card->isNDTrick() || use.card->isKindOf("Nullification"))
             return QList<SkillInvokeDetail>();
 
         bool invoke = false;
