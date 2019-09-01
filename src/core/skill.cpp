@@ -385,6 +385,8 @@ bool TriggerSkill::cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> 
 {
     if (invoke->isCompulsory) {//for hegemony
         if (invoke->invoker != NULL){
+            if (!invoke->invoker->hasSkill(this))
+                return true;
             if (invoke->invoker->hasShownSkill(this) || invoke->invoker->askForSkillInvoke(this, data))
                 //invoke->invoker->showHiddenSkill(objectName());
                 return true;
