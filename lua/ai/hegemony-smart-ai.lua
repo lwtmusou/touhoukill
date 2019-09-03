@@ -7385,6 +7385,20 @@ function SmartAI:touhouFindPlayerToDraw(include_self, drawnum, players)
 	return nil
 end
 
+function SmartAI:touhouHandCardsFix(player)
+	if player:hasSkill("yongheng") and player:getPhase()==sgs.Player_NotActive then
+		return true
+	end
+	return false
+end
+
+function SmartAI:touhouHpLocked(player)
+	if player:hasSkill("huanmeng") then return true end
+	if player:getHp()==1 and player:hasSkill("bumie") then
+		return true
+	end
+	return false
+end
 
 dofile "lua/ai/debug-ai.lua"
 dofile "lua/ai/standard_cards-ai.lua"
