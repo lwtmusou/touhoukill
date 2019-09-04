@@ -128,6 +128,8 @@ public:
                         use.card->setFlags("IgnoreFailed");
                         use.card->setFlags("houhu");
                         bool can = use.card->targetFilter(QList<const Player *>(), target, player);
+                        if (use.card->isKindOf("Peach") && target->isWounded())
+                            can = true;
                         use.card->setFlags("-houhu");
                         use.card->setFlags("-IgnoreFailed");
                         if (can)
