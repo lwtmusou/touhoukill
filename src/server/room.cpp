@@ -2829,12 +2829,15 @@ bool Room::makeSurrender(ServerPlayer *initiator)
     QList<ServerPlayer *> playersAlive;
     foreach (ServerPlayer *player, m_players) {
         QString playerRole = player->getRole();
-        if ((playerRole == "loyalist" || playerRole == "lord") && player->isAlive())
-            loyalAlive++;
-        else if (playerRole == "rebel" && player->isAlive())
-            rebelAlive++;
-        else if (playerRole == "renegade" && player->isAlive())
-            renegadeAlive++;
+        if (!isHegemonyGameMode(mode)) {
+            if ((playerRole == "loyalist" || playerRole == "lord") && player->isAlive())
+                loyalAlive++;
+            else if (playerRole == "rebel" && player->isAlive())
+                rebelAlive++;
+            else if (playerRole == "renegade" && player->isAlive())
+                renegadeAlive++;
+        }
+        
 
         if (player != initiator && player->isAlive() && player->isOnline()) {
             player->m_commandArgs = (initiator->getGeneral()->objectName());
@@ -2844,6 +2847,7 @@ bool Room::makeSurrender(ServerPlayer *initiator)
     doBroadcastRequest(playersAlive, S_COMMAND_SURRENDER);
 
     // collect polls
+    int hegemony_give_up = 1;
     foreach (ServerPlayer *player, playersAlive) {
         bool result = false;
         if (!player->m_isClientResponseReady || !player->getClientReply().canConvert(QVariant::Bool))
@@ -2851,39 +2855,58 @@ bool Room::makeSurrender(ServerPlayer *initiator)
         else
             result = player->getClientReply().toBool();
 
-        QString playerRole = player->getRole();
-        if (playerRole == "loyalist" || playerRole == "lord") {
-            loyalGiveup &= result;
-            if (player->isAlive())
-                loyalAlive++;
-        } else if (playerRole == "rebel") {
-            rebelGiveup &= result;
-            if (player->isAlive())
-                rebelAlive++;
-        } else if (playerRole == "renegade") {
-            renegadeGiveup &= result;
-            if (player->isAlive())
-                renegadeAlive++;
+        if (isHegemonyGameMode(mode)) {
+            if (result) hegemony_give_up++;
         }
+        else {
+            QString playerRole = player->getRole();
+            if (playerRole == "loyalist" || playerRole == "lord") {
+                loyalGiveup &= result;
+                if (player->isAlive())
+                    loyalAlive++;
+            }
+            else if (playerRole == "rebel") {
+                rebelGiveup &= result;
+                if (player->isAlive())
+                    rebelAlive++;
+            }
+            else if (playerRole == "renegade") {
+                renegadeGiveup &= result;
+                if (player->isAlive())
+                    renegadeAlive++;
+            }
+        }
+        
     }
 
     // vote counting
-    if (loyalGiveup && renegadeGiveup && !rebelGiveup)
-        gameOver("rebel", true);
-    else if (loyalGiveup && !renegadeGiveup && rebelGiveup)
-        gameOver("renegade", true);
-    else if (!loyalGiveup && renegadeGiveup && rebelGiveup)
-        gameOver("lord+loyalist", true);
-    else if (loyalGiveup && renegadeGiveup && rebelGiveup) {
-        // if everyone give up, then ensure that the initiator doesn't win.
-        QString playerRole = initiator->getRole();
-        if (playerRole == "lord" || playerRole == "loyalist")
-            gameOver(renegadeAlive >= rebelAlive ? "renegade" : "rebel", true);
-        else if (playerRole == "renegade")
-            gameOver(loyalAlive >= rebelAlive ? "loyalist+lord" : "rebel", true);
-        else if (playerRole == "rebel")
-            gameOver(renegadeAlive >= loyalAlive ? "renegade" : "loyalist+lord", true);
+    if (isHegemonyGameMode(mode)) {
+        if (hegemony_give_up > (playersAlive.length() + 1) / 2)
+            gameOver(".");
     }
+    else {
+        if (loyalGiveup && renegadeGiveup && !rebelGiveup)
+            gameOver("rebel", true);
+        else if (loyalGiveup && !renegadeGiveup && rebelGiveup)
+            gameOver("renegade", true);
+        else if (!loyalGiveup && renegadeGiveup && rebelGiveup)
+            gameOver("lord+loyalist", true);
+        else if (loyalGiveup && renegadeGiveup && rebelGiveup) {
+            // if everyone give up, then ensure that the initiator doesn't win.
+            QString playerRole = initiator->getRole();
+            if (playerRole == "lord" || playerRole == "loyalist")
+                gameOver(renegadeAlive >= rebelAlive ? "renegade" : "rebel", true);
+            else if (playerRole == "renegade")
+                gameOver(loyalAlive >= rebelAlive ? "loyalist+lord" : "rebel", true);
+            else if (playerRole == "rebel")
+                gameOver(renegadeAlive >= loyalAlive ? "renegade" : "loyalist+lord", true);
+        }
+    
+    }
+
+
+    
+
 
     initiator->setFlags("Global_ForbidSurrender");
     doNotify(initiator, S_COMMAND_ENABLE_SURRENDER, QVariant(false));
