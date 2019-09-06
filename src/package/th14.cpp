@@ -409,7 +409,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.to->hasSkill(this) && damage.to->isAlive()) {
             foreach (ServerPlayer *p, room->getOtherPlayers(damage.to)) {
-                if (p->getHp() > damage.to->getHp() && !p->isNude())
+                if (p->getHp() >= damage.to->getHp() && !p->isNude())
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
             }
         }
@@ -513,7 +513,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.from && damage.from->isAlive() && damage.from->hasSkill(this)) {
             foreach (ServerPlayer *p, room->getOtherPlayers(damage.from)) {
-                if (p->getHp() > damage.from->getHp() && !p->isNude())
+                if (p->getHp() >= damage.from->getHp() && !p->isNude())
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from);
             }
         }
