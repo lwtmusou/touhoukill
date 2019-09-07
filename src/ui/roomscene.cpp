@@ -59,8 +59,8 @@ void RoomScene::resetPiles()
 
 RoomScene::RoomScene(QMainWindow *main_window)
     : m_skillButtonSank(false)
-    , main_window(main_window)
     , game_started(false)
+    , main_window(main_window)
 {
     m_choiceDialog = NULL;
     RoomSceneInstance = this;
