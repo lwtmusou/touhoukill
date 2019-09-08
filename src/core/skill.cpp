@@ -11,11 +11,8 @@
 
 Skill::Skill(const QString &name, Frequency frequency, const QString &showType)
     : frequency(frequency)
-    , limit_mark(QString())
     , attached_lord_skill(false)
     , show_type(showType)
-    , related_mark(QString())
-    , related_pile(QString())
 {
     static QChar lord_symbol('$');
 
@@ -210,9 +207,6 @@ bool Skill::canPreshow() const
     return false;
 }
 
-
-
-
 ViewAsSkill::ViewAsSkill(const QString &name)
     : Skill(name, Skill::NotFrequent, "viewas")
     , response_pattern(QString())
@@ -277,13 +271,15 @@ const ViewAsSkill *ViewAsSkill::parseViewAsSkill(const Skill *skill)
         const DistanceSkill *trigger_skill = qobject_cast<const DistanceSkill *>(skill);
         Q_ASSERT(trigger_skill != NULL);
         const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
-        if (view_as_skill != NULL) return view_as_skill;
+        if (view_as_skill != NULL)
+            return view_as_skill;
     }
     if (skill->inherits("AttackRangeSkill")) {
         const AttackRangeSkill *trigger_skill = qobject_cast<const AttackRangeSkill *>(skill);
         Q_ASSERT(trigger_skill != NULL);
         const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
-        if (view_as_skill != NULL) return view_as_skill;
+        if (view_as_skill != NULL)
+            return view_as_skill;
     }
     return NULL;
 }
@@ -383,8 +379,8 @@ QList<SkillInvokeDetail> TriggerSkill::triggerable(TriggerEvent, const Room *, c
 
 bool TriggerSkill::cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
 {
-    if (invoke->isCompulsory) {//for hegemony
-        if (invoke->invoker != NULL){
+    if (invoke->isCompulsory) { //for hegemony
+        if (invoke->invoker != NULL) {
             if (!invoke->invoker->hasSkill(this))
                 return true;
             if (invoke->invoker->hasShownSkill(this) || invoke->invoker->askForSkillInvoke(this, data))
@@ -393,9 +389,8 @@ bool TriggerSkill::cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> 
             else
                 return false;
         }
-        return true;   
-    }
-    else {
+        return true;
+    } else {
         if (invoke->invoker != NULL) {
             //for ai
             invoke->invoker->tag[this->objectName()] = data;
@@ -537,16 +532,16 @@ const Card *ShowDistanceSkill::viewAs() const
 
 bool ShowDistanceSkill::isEnabledAtPlay(const Player *player) const
 {
-    if (!isHegemonyGameMode(ServerInfo.GameMode)) return false;
+    if (!isHegemonyGameMode(ServerInfo.GameMode))
+        return false;
     //const DistanceSkill *skill = qobject_cast<const DistanceSkill *>(Sanguosha->getSkill(objectName()));
     const Skill *skill = Sanguosha->getSkill(objectName());
     if (skill) {
-        if (!player->hasShownSkill(skill->objectName())) return true;
+        if (!player->hasShownSkill(skill->objectName()))
+            return true;
     }
     return false;
 }
-
-
 
 MaxCardsSkill::MaxCardsSkill(const QString &name)
     : Skill(name, Skill::Compulsory, "static")
