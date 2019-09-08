@@ -281,7 +281,7 @@ void PlayerCardContainer::updateSmallAvatar()
     if (_m_smallAvatarIcon == NULL) {
         _m_smallAvatarIcon = new GraphicsPixmapHoverItem(this, _getAvatarParent());
         _m_smallAvatarIcon->setTransformationMode(Qt::SmoothTransformation);
-        _m_smallAvatarIcon->setFlag(QGraphicsItem::ItemStacksBehindParent);
+        //_m_smallAvatarIcon->setFlag(QGraphicsItem::ItemStacksBehindParent);
     }
 
     const General *general = NULL;

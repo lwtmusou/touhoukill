@@ -81,8 +81,8 @@
 },
 "photo":
 {
-    "normalWidth": 175,//163
-    "normalHeight": 210,//192,
+    "normalWidth": 175,
+    "normalHeight": 210,
     "mainFrameArea": [0, 0, 175, 210],
     "canvasArea": [0, 0, 175, 210],
     "handCardNumIconArea": [-8, 125, 30, 18],
@@ -108,12 +108,12 @@
     "secondaryAvatarImageType": 4,
     "primaryAvatarImageType": 6,
     "circleImageType": 0,
-    "avatarArea": [0, 0, 175, 210],//163, 190
-    "secondaryAvatarArea": [78, 1, 77, 179],
-    "circleArea": [1, 1, 155, 179],
+    "avatarArea": [0, 0, 175, 210],
+    "secondaryAvatarArea": [88, 1, 86, 210],
+    "circleArea": [1, 1, 175, 210],
     "avatarNameArea": [3, 23, 100, 100],
     "avatarNameFont": ["@simli", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
-    "smallAvatarNameArea": [78, 23, 40, 60],
+    "smallAvatarNameArea": [88, 23, 100, 100],
     "smallAvatarNameFont": ["@simli", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
     "kingdomIconArea": [2, -1, 28, 28],
     "kingdomMaskArea": [-2, 14, 36, 120],
