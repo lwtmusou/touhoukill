@@ -881,6 +881,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
         tryParse(playerConfig["changePrimaryHeroSkinBtnPos"], layout->m_changePrimaryHeroSkinBtnPos);
         tryParse(playerConfig["changeSecondaryHeroSkinBtnPos"], layout->m_changeSecondaryHeroSkinBtnPos);
         tryParse(playerConfig["avatarArea"], layout->m_avatarArea);
+        tryParse(playerConfig["primaryAvatarArea"], layout->m_headAvatarArea);
         tryParse(playerConfig["secondaryAvatarArea"], layout->m_smallAvatarArea);
         tryParse(playerConfig["circleArea"], layout->m_circleArea);
         tryParse(playerConfig["avatarImageType"], layout->m_avatarSize);

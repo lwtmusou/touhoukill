@@ -146,7 +146,7 @@ public:
         QPoint m_changeSecondaryHeroSkinBtnPos;
 
         // photo area
-        QRect m_avatarArea;
+        QRect m_avatarArea; QRect m_headAvatarArea;// hegemony head
         int m_avatarSize;
         QRect m_smallAvatarArea;
         int m_smallAvatarSize;

@@ -247,8 +247,10 @@ void Dashboard::_createRight()
     //hegemony
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
         _m_shadow_layer1 = new QGraphicsRectItem(_m_rightFrame);
+        
         _m_shadow_layer1->setRect(G_DASHBOARD_LAYOUT.m_avatarArea);
         if (ServerInfo.Enable2ndGeneral) {
+            _m_shadow_layer1->setRect(G_DASHBOARD_LAYOUT.m_headAvatarArea);
             _m_shadow_layer2 = new QGraphicsRectItem(_m_rightFrame);
             _m_shadow_layer2->setRect(G_DASHBOARD_LAYOUT.m_smallAvatarArea);
         }

@@ -110,6 +110,7 @@
     "primaryAvatarImageType": 6,
     "circleImageType": 0,
     "avatarArea": [0, 0, 175, 208],
+	"primaryAvatarArea": [0, 0, 86, 208], // not used yet
     "secondaryAvatarArea": [88, 1, 86, 208],
     "circleArea": [1, 1, 175, 208],
     "avatarNameArea": [3, 23, 100, 100],
@@ -191,7 +192,7 @@
     "circleImageType": 0,
     //"avatarArea": [0,  0, 175, 210],
     "avatarArea": [0,  0, 200, 240],
-
+	"primaryAvatarArea": [0, 0, 100, 240],
     //"secondaryAvatarArea": [81, 10, 70, 70],
 	"secondaryAvatarArea": [101, 0, 100, 240],
     //"circleArea": [8, 10, 134, 134],
