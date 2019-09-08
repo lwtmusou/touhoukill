@@ -2927,7 +2927,7 @@ void Room::processRequestPreshow(ServerPlayer *player, const QVariant &arg)
     const QString skill_name = args[0].toString();
     const bool isPreshowed = args[1].toBool();
     //const bool head = args[2].toBool();
-    player->setSkillPreshowed(skill_name, isPreshowed);
+    player->setSkillPreshowed(skill_name, isPreshowed);// , head   
 
     player->releaseLock(ServerPlayer::SEMA_MUTEX);
 }
@@ -3204,8 +3204,24 @@ void Room::chooseHegemonyGenerals()
             _setPlayerGeneral(player, _chooseDefaultGeneral(player), true);
     }
 
+    if (Config.Enable2ndGeneral) {
+        //QList<ServerPlayer *> to_assign = m_players;
+        assignGeneralsForPlayers(to_assign);
+        foreach(ServerPlayer *player, to_assign)
+            _setupChooseGeneralRequestArgs(player);
+
+        doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
+        foreach(ServerPlayer *player, to_assign) {
+            if (player->getGeneral2() != NULL)
+                continue;
+            QString generalName = player->getClientReply().toString();
+            if (!player->m_isClientResponseReady || !_setPlayerGeneral(player, generalName, false))
+                _setPlayerGeneral(player, _chooseDefaultGeneral(player), false);
+        }
+    }
+
     //@todo
-    int i = 1;
+    //int i = 1;
     foreach (ServerPlayer *player, m_players) {
         QStringList names;
         if (player->getGeneral()) {
@@ -3218,19 +3234,28 @@ void Room::chooseHegemonyGenerals()
             //player->setActualGeneral1Name(name);
             //player->setRole(role);
             player->setGeneralName("anjiang");
-            notifyProperty(player, player, "actual_general1");
+            //notifyProperty(player, player, "actual_general1");
             foreach (ServerPlayer *p, getOtherPlayers(player))
                 notifyProperty(p, player, "general");
             notifyProperty(player, player, "general", name);
             //notifyProperty(player, player, "role", role);
-            i++;
+            //i++;
         }
-        //if (player->getGeneral2())
+        if (player->getGeneral2()) {
+            QString name = player->getGeneral2Name();
+            names.append(name);
+            //player->setActualGeneral2Name(name);
+            player->setGeneral2Name("anjiang");
+            //notifyProperty(player, player, "actual_general2");
+            foreach(ServerPlayer *p, getOtherPlayers(player))
+                notifyProperty(p, player, "general2");
+            notifyProperty(player, player, "general2", name);
+        }
 
         this->setTag(player->objectName(), QVariant::fromValue(names));
     }
 
-    if (Config.Enable2ndGeneral) {
+    /*if (Config.Enable2ndGeneral) {
         QList<ServerPlayer *> to_assign = m_players;
         assignGeneralsForPlayers(to_assign);
         foreach (ServerPlayer *player, to_assign)
@@ -3244,7 +3269,7 @@ void Room::chooseHegemonyGenerals()
             if (!player->m_isClientResponseReady || !_setPlayerGeneral(player, generalName, false))
                 _setPlayerGeneral(player, _chooseDefaultGeneral(player), false);
         }
-    }
+    }*/
 
     Config.setValue("Banlist/Roles", ban_list);
 }
@@ -4254,7 +4279,7 @@ void Room::marshal(ServerPlayer *player)
             args1 << (int)S_GAME_EVENT_ADD_SKILL;
             args1 << player->objectName();
             args1 << skill->objectName();
-            //args1 << player->inHeadSkills(skill->objectName());
+            args1 << true;//player->inHeadSkills(skill->objectName());
 
             doNotify(player, S_COMMAND_LOG_EVENT, args1);
         }
@@ -4299,6 +4324,7 @@ void Room::startGame()
         m_players.at(i)->setNext(m_players.at(i + 1));
     m_players.last()->setNext(m_players.first());
 
+    //step1 : player set  MaxHP
     foreach (ServerPlayer *player, m_players) {
         Q_ASSERT(player->getGeneral());
         if (isHegemonyGameMode(mode)) {
@@ -4306,6 +4332,10 @@ void Room::startGame()
             const General *general1 = Sanguosha->getGeneral(generals.first());
             Q_ASSERT(general1);
             int max_hp = general1->getMaxHp();
+            if (Config.Enable2ndGeneral) {
+                const General *general2 = Sanguosha->getGeneral(generals.last());
+                max_hp = (general1->getMaxHp() + general2->getMaxHp()) / 2;
+            }
             player->setMaxHp(max_hp);
         } else
             player->setMaxHp(player->getGeneralMaxHp());
@@ -4335,8 +4365,11 @@ void Room::startGame()
             setPlayerProperty(player, "role_shown", true);
         }
 
-        if (!isHegemonyGameMode(mode))
+        if (!isHegemonyGameMode(mode)) {
             setPlayerProperty(player, "general_showed", true);
+            setPlayerProperty(player, "general2_showed", true);
+        }
+            
     }
 
     preparePlayers();
@@ -5138,6 +5171,17 @@ void Room::preparePlayers()
                 player->addSkill(skill->objectName());
             //}
 
+            if (Config.Enable2ndGeneral) {
+                QString general2_name = tag[player->objectName()].toStringList().at(1);
+                //if (!player->property("Duanchang").toString().split(",").contains("deputy")) {
+                //foreach(const Skill *skill, Sanguosha->getGeneral(general2_name)->getVisibleSkillList(true, false))
+                QList<const Skill *> skills = Sanguosha->getGeneral(general2_name)->getSkillList();
+                foreach(const Skill *skill, skills)
+                    player->addSkill(skill->objectName(), false);
+            }
+            
+            //}
+
             JsonArray args;
             args << (int)QSanProtocol::S_GAME_EVENT_PREPARE_SKILL; //(int)QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
             doNotify(player, QSanProtocol::S_COMMAND_LOG_EVENT, args);
@@ -5158,8 +5202,8 @@ void Room::preparePlayers()
                 player->addSkill(skill->objectName());
             if (player->getGeneral2()) {
                 skills = player->getGeneral2()->getSkillList();
-                foreach (const Skill *skill, skills)
-                    player->addSkill(skill->objectName());
+                foreach(const Skill *skill, skills)
+                    player->addSkill(skill->objectName(), false);
             }
             player->setGender(player->getGeneral()->getGender());
         }

@@ -229,7 +229,7 @@ void PlayerCardContainer::updateAvatar()
 
         if (m_player->getGeneral() != NULL) {
             QString kingdom = m_player->getKingdom();
-            if (m_player->getGeneral2()  == NULL) {//!isHegemonyGameMode(ServerInfo.GameMode) && 
+            if (!isHegemonyGameMode(ServerInfo.GameMode)) {// && m_player->getGeneral2()  == NULL
                 _paintPixmap(_m_kingdomIcon, _m_layout->m_kingdomIconArea, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON, kingdom), _getAvatarParent());
                 _paintPixmap(_m_kingdomColorMaskIcon, _m_layout->m_kingdomMaskArea, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_COLOR_MASK, kingdom), _getAvatarParent());
             }

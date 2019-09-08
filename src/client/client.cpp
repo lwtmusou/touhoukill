@@ -1241,7 +1241,7 @@ void Client::trust()
     setStatus(NotActive);
 }
 
-void Client::preshow(const QString &skill_name, const bool isPreshowed)
+void Client::preshow(const QString &skill_name, const bool isPreshowed)//, bool head
 {
     JsonArray arg;
     arg << skill_name;
@@ -1251,11 +1251,11 @@ void Client::preshow(const QString &skill_name, const bool isPreshowed)
     //notifyServer(S_COMMAND_SKIN_CHANGE, skinInfo);
     Self->setSkillPreshowed(skill_name, isPreshowed);
 
-    emit head_preshowed();
+    //emit head_preshowed();
     //if (head)
-    //    emit head_preshowed();
+        emit head_preshowed();
     //else
-    //    emit deputy_preshowed();
+        emit deputy_preshowed();
 }
 
 

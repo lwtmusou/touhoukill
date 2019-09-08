@@ -6269,7 +6269,7 @@ end
 function SmartAI:setSkillsPreshowed()
 	for _, player in sgs.qlist(self.room:getAlivePlayers()) do
 		if player:getAI() then
-			player:setSkillsPreshowed(true)
+			player:setSkillsPreshowed("hd", true)
 		end
 	end
 end

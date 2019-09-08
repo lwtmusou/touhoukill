@@ -40,7 +40,7 @@ Dashboard::Dashboard(QGraphicsItem *widget) //QGraphicsPixmapItem *widget
     pending_card = NULL;
     
     leftHiddenMark = NULL;//?? intialization?
-
+    rightHiddenMark = NULL;
     _m_pile_expanded = QMap<QString, QList<int> >();//QStringList();
     for (int i = 0; i < 5; i++) {
         _m_equipSkillBtns[i] = NULL;
@@ -201,15 +201,17 @@ void Dashboard::_adjustComponentZValues(bool killed)
 
     
 
-    if (ServerInfo.GameMode == "hegmony")
-        _layBetween(button_widget, _m_middleFrame, _m_hegemonyroleComboBox);
-    else
-        _layBetween(button_widget, _m_middleFrame, _m_roleComboBox);
+   // if (isHegemonyGameMode(ServerInfo.GameMode))
+    //    _layBetween(button_widget, _m_middleFrame, _m_hegemonyroleComboBox);
+    //else
+    //    _layBetween(button_widget, _m_middleFrame, _m_roleComboBox);
     _layBetween(_m_rightFrameBg, _m_faceTurnedIcon, _m_equipRegions[3]);
     
     //hegemony
-    if (ServerInfo.GameMode == "hegmony") {
+    /*if (isHegemonyGameMode(ServerInfo.GameMode)) {
+        _layUnder(rightHiddenMark);
         _layUnder(leftHiddenMark);
+        _layUnder(_m_shadow_layer2);
         _layUnder(_m_shadow_layer1);
         //_layUnder(_m_avatarIcon);
 
@@ -218,7 +220,7 @@ void Dashboard::_adjustComponentZValues(bool killed)
         //_layUnder(leftHiddenMark);
         
         
-    }
+    }*/
 
     
 
@@ -246,10 +248,17 @@ void Dashboard::_createRight()
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
         _m_shadow_layer1 = new QGraphicsRectItem(_m_rightFrame);
         _m_shadow_layer1->setRect(G_DASHBOARD_LAYOUT.m_avatarArea);
+        if (ServerInfo.Enable2ndGeneral) {
+            _m_shadow_layer2 = new QGraphicsRectItem(_m_rightFrame);
+            _m_shadow_layer2->setRect(G_DASHBOARD_LAYOUT.m_smallAvatarArea);
+        }
+        
 
         _paintPixmap(leftHiddenMark, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion1, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK), _m_rightFrame);
+        _paintPixmap(rightHiddenMark, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion2, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK), _m_rightFrame);
         
         connect(ClientInstance, &Client::head_preshowed, this, &Dashboard::updateHiddenMark);
+        connect(ClientInstance, &Client::deputy_preshowed, this, &Dashboard::updateRightHiddenMark);
     }
     
 }
@@ -571,6 +580,7 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName)
     }
     //hegemony
     updateHiddenMark();
+    updateRightHiddenMark();//check it is right skilldock?
 
     return _m_skillDock->addSkillButtonByName(skillName);
 }
@@ -1718,18 +1728,27 @@ void Dashboard::updateHiddenMark()
 {
     if (!isHegemonyGameMode(ServerInfo.GameMode)) return;
     if (m_player && RoomSceneInstance->game_started && !m_player->hasShownGeneral()) {
-        leftHiddenMark->setVisible(m_player->isHidden());
+        leftHiddenMark->setVisible(m_player->isHidden(true));
     }
         
     else
         leftHiddenMark->setVisible(false);
 }
 
+void Dashboard::updateRightHiddenMark()
+{
+    if (!isHegemonyGameMode(ServerInfo.GameMode)) return;
+    if (m_player && RoomSceneInstance->game_started && !m_player->hasShownGeneral2())
+        rightHiddenMark->setVisible(m_player->isHidden(false));
+    else
+        rightHiddenMark->setVisible(false);
+}
+
 void Dashboard::setPlayer(ClientPlayer *player)
 {
     PlayerCardContainer::setPlayer(player);
     connect(player, &ClientPlayer::head_state_changed, this, &Dashboard::onHeadStateChanged);
-    //connect(player, &ClientPlayer::deputy_state_changed, this, &Dashboard::onDeputyStateChanged);
+    connect(player, &ClientPlayer::deputy_state_changed, this, &Dashboard::onDeputyStateChanged);
 }
 
 void Dashboard::onHeadStateChanged()
@@ -1742,22 +1761,37 @@ void Dashboard::onHeadStateChanged()
     updateHiddenMark();
 }
 
+void Dashboard::onDeputyStateChanged()
+{
+    if (!isHegemonyGameMode(ServerInfo.GameMode)) return;
+    if (m_player && RoomSceneInstance->game_started && !m_player->hasShownGeneral2())
+        _m_shadow_layer2->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
+    else
+        _m_shadow_layer2->setBrush(Qt::NoBrush);
+    updateRightHiddenMark();
+}
+
 void Dashboard::refresh()
 {
     PlayerCardContainer::refresh();
     if (!isHegemonyGameMode(ServerInfo.GameMode)) return;
     if (!m_player || !m_player->getGeneral() || !m_player->isAlive()) {
         _m_shadow_layer1->setBrush(Qt::NoBrush);
-        //_m_shadow_layer2->setBrush(Qt::NoBrush);
+        
         leftHiddenMark->setVisible(false);
-
-        //rightHiddenMark->setVisible(false);
+        if (ServerInfo.Enable2ndGeneral) {
+            _m_shadow_layer2->setBrush(Qt::NoBrush);
+            rightHiddenMark->setVisible(false);
+        }
+        
     }
     else if (m_player) {
         _m_shadow_layer1->setBrush(m_player->hasShownGeneral() ? Qt::transparent : G_DASHBOARD_LAYOUT.m_generalShadowColor);
-        //_m_shadow_layer2->setBrush(m_player->hasShownGeneral2() ? Qt::transparent : G_DASHBOARD_LAYOUT.m_generalShadowColor);
-        leftHiddenMark->setVisible(m_player->isHidden());
-
-        //rightHiddenMark->setVisible(m_player->isHidden(false));
+        
+        leftHiddenMark->setVisible(m_player->isHidden(true));
+        if (ServerInfo.Enable2ndGeneral) {
+            _m_shadow_layer2->setBrush(m_player->hasShownGeneral2() ? Qt::transparent : G_DASHBOARD_LAYOUT.m_generalShadowColor);
+            rightHiddenMark->setVisible(m_player->isHidden(false));
+        }
     }
 }

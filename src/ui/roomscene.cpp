@@ -505,9 +505,10 @@ void RoomScene::handleGameEvent(const QVariant &args)
     case S_GAME_EVENT_ADD_SKILL: {
         QString player_name = arg[1].toString();
         QString skill_name = arg[2].toString();
+        bool head_skill = arg[3].toBool();
 
         ClientPlayer *player = ClientInstance->getPlayer(player_name);
-        player->addSkill(skill_name);
+        player->addSkill(skill_name, head_skill);
 
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
         container->updateAvatarTooltip();
@@ -568,11 +569,11 @@ void RoomScene::handleGameEvent(const QVariant &args)
                         }
                     }
                 }*/
-            dashboard->updateHiddenMark();
+            //dashboard->updateHiddenMark();
             //if (Self->inHeadSkills(skill))
-            //    dashboard->updateLeftHiddenMark();
+                dashboard->updateHiddenMark();//updateLeftHiddenMark
             //else
-            //    dashboard->updateRightHiddenMark();
+                dashboard->updateRightHiddenMark();
             //}
         }
         break;

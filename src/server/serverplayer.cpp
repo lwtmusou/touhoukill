@@ -992,13 +992,15 @@ void ServerPlayer::loseAllMarks(const QString &mark_name)
     loseMark(mark_name, getMark(mark_name));
 }
 
-void ServerPlayer::addSkill(const QString &skill_name)
+void ServerPlayer::addSkill(const QString &skill_name, bool head_skill)
 {
-    Player::addSkill(skill_name);
+    Player::addSkill(skill_name, head_skill);
     JsonArray args;
     args << QSanProtocol::S_GAME_EVENT_ADD_SKILL;
     args << objectName();
     args << skill_name;
+    args <<  head_skill;
+
     if (isHegemonyGameMode(room->getMode()))
         room->doNotify(this, QSanProtocol::S_COMMAND_LOG_EVENT, args);
     else
@@ -1819,8 +1821,9 @@ void ServerPlayer::notifyPreshow()
     JsonArray args;
     args << (int)S_GAME_EVENT_UPDATE_PRESHOW;
     JsonObject args1;
-    foreach (const QString skill, skills.keys()) {
-        args1.insert(skill, skills.value(skill, false)); //deputy
+    foreach (const QString skill, skills.keys() + skills2.keys()) {
+        args1.insert(skill, skills.value(skill, false) 
+            || skills2.value(skill, false));
     }
     args << args1;
     room->doNotify(this, S_COMMAND_LOG_EVENT, args);
@@ -1837,6 +1840,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         return;
     QString general_name;
 
+
     room->tryPause();
 
     if (head_general) {
@@ -1845,7 +1849,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         if (getGeneralName() != "anjiang")
             return;
 
-        setSkillsPreshowed();
+        setSkillsPreshowed("h");
         notifyPreshow();
         room->setPlayerProperty(this, "general_showed", true);
 
@@ -1867,6 +1871,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         val << objectName();
         val << general_name;
         val << skin_id;
+        val << true;// only head?
         room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val);
 
         if (!property("Duanchang").toString().split(",").contains("head")) {
@@ -1968,6 +1973,7 @@ void ServerPlayer::sendSkillsToOthers()
         args << QSanProtocol::S_GAME_EVENT_ADD_SKILL;
         args << objectName();
         args << skill->objectName();
+        args << true;
         //args << head_skill;
         foreach (ServerPlayer *p, room->getOtherPlayers(this, true))
             room->doNotify(p, QSanProtocol::S_COMMAND_LOG_EVENT, args);
