@@ -573,6 +573,8 @@ QString Player::getFootnoteName() const
     //if (isHegemonyGameMode(ServerInfo.GameMode)) {
         if (general && general->objectName() != "anjiang")// || (
             return getGeneralName();
+        else if (general2 && general2->objectName() != "anjiang")
+            return general2->objectName();
         else {
             //if (property("UI_Seat").toInt())
                 return Sanguosha->translate(QString("SEAT(%1)").arg(QString::number(getInitialSeat())));
@@ -2082,4 +2084,34 @@ QList<const Skill *> Player::getDeputySkillList(bool visible_only, bool include_
         }
     }
     return skillList;
+}
+
+
+bool Player::inHeadSkills(const QString &skill_name) const
+{
+    const Skill *skill = Sanguosha->getSkill(skill_name);
+    if (skill == NULL)
+        return false;
+
+    if (!skill->isVisible()) {                                              //really confused about invisible skills! by weidouncle
+        const Skill *main_skill = Sanguosha->getMainSkill(skill_name);
+        if (main_skill != NULL)
+            return inHeadSkills(main_skill->objectName());
+    }
+    return skills.contains(skill_name) || acquired_skills.contains(skill_name);
+}
+
+
+bool Player::inDeputySkills(const QString &skill_name) const
+{
+    const Skill *skill = Sanguosha->getSkill(skill_name);
+    if (skill == NULL)
+        return false;
+
+    if (!skill->isVisible()) {
+        const Skill *main_skill = Sanguosha->getMainSkill(skill_name);
+        if (main_skill != NULL)
+            return inDeputySkills(main_skill->objectName());
+    }
+    return skills2.contains(skill_name) || acquired_skills.contains(skill_name);
 }

@@ -239,6 +239,7 @@ CommonTranslationTable = {
 	["SEAT(10)"] = "十号位",
 	
 	["#HegemonyReveal"] = "%from 展示了武将，主将为 %arg",
+	["#HegemonyRevealDouble"] = "%from 展示了武将，主将为 %arg，副将为 %arg2",
 	["FirstShowReward"] = "首亮奖励（摸两张牌）",
 	["#FirstShowReward"] = "%from 执行首亮摸牌奖励",
 	["GameRule_AskForGeneralShowHead"] = "准备阶段亮将",
