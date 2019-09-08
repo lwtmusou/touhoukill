@@ -719,6 +719,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         int old_skin_index = Config.value(QString("HeroSkin/%1").arg(general_name), 0).toInt();
         if (skinIndex == old_skin_index)
             break;
+        bool head = arg[4].toBool();
 
         ClientPlayer *player = ClientInstance->getPlayer(player_name);
 
@@ -729,15 +730,15 @@ void RoomScene::handleGameEvent(const QVariant &args)
             playerCardContainers.append(photo);
         }
         playerCardContainers.append(dashboard);
-
+        
         bool noSkin = false;
         foreach (PlayerCardContainer *playerCardContainer, playerCardContainers) {
             //const ClientPlayer *player = playerCardContainer->getPlayer();
             //const QString &heroSkinGeneralName = heroSkinContainer->getGeneralName();
             if (noSkin)
                 break;
-            if (general_name == playerCardContainer->getPlayer()->getGeneralName()) { // check container which changed skin
-                if (player->getGeneralName() == general_name && Self != player) { // check this roomscene instance of the players who need notify
+            if (general_name == playerCardContainer->getPlayer()->getGeneralName() || general_name == playerCardContainer->getPlayer()->getGeneral2Name()) { // check container which changed skin
+                if ((player->getGeneralName() == general_name  || player->getGeneral2Name() == general_name) && Self != player) { // check this roomscene instance of the players who need notify
                     QString generalIconPath;
                     QRect clipRegion;
                     G_ROOM_SKIN.getHeroSkinContainerGeneralIconPathAndClipRegion(general_name, skinIndex, generalIconPath, clipRegion);
@@ -754,7 +755,10 @@ void RoomScene::handleGameEvent(const QVariant &args)
                             heroSkinContainer->swapWithSkinItemUsed(skinIndex);
                         }
                     }
-                    playerCardContainer->getAvartarItem()->startChangeHeroSkinAnimation(general_name);
+                    if (head)
+                        playerCardContainer->getAvartarItem()->startChangeHeroSkinAnimation(general_name);
+                    else
+                        playerCardContainer->getSmallAvartarItem()->startChangeHeroSkinAnimation(general_name);
                 }
             }
         }

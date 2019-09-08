@@ -304,6 +304,8 @@ protected:
 
     QSanButton *m_changePrimaryHeroSKinBtn;
     HeroSkinContainer *m_primaryHeroSkinContainer;
+    QSanButton *m_changeSecondaryHeroSkinBtn;
+    HeroSkinContainer *m_secondaryHeroSkinContainer;
 
     // The following stuffs for showing seat
     QGraphicsPixmapItem *_m_seatItem;

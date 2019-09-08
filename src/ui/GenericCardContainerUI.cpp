@@ -229,7 +229,7 @@ void PlayerCardContainer::updateAvatar()
 
         if (m_player->getGeneral() != NULL) {
             QString kingdom = m_player->getKingdom();
-            if (!isHegemonyGameMode(ServerInfo.GameMode)) {
+            if (m_player->getGeneral2()  == NULL) {//!isHegemonyGameMode(ServerInfo.GameMode) && 
                 _paintPixmap(_m_kingdomIcon, _m_layout->m_kingdomIconArea, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON, kingdom), _getAvatarParent());
                 _paintPixmap(_m_kingdomColorMaskIcon, _m_layout->m_kingdomMaskArea, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_COLOR_MASK, kingdom), _getAvatarParent());
             }
@@ -581,6 +581,9 @@ void PlayerCardContainer::repaintAll()
     _paintPixmap(_m_roleShownIcon, _m_layout->m_roleShownArea, QSanRoomSkin::S_SKIN_KEY_ROLE_SHOWN, _getAvatarParent());
     if (NULL != m_changePrimaryHeroSKinBtn) {
         m_changePrimaryHeroSKinBtn->setPos(_m_layout->m_changePrimaryHeroSkinBtnPos);
+    }
+    if (NULL != m_changeSecondaryHeroSkinBtn) {
+        m_changeSecondaryHeroSkinBtn->setPos(_m_layout->m_changeSecondaryHeroSkinBtnPos);
     }
 
     if (_m_seatItem != NULL)
@@ -969,9 +972,9 @@ PlayerCardContainer::PlayerCardContainer()
     _m_groupDeath->setPos(0, 0);
     _allZAdjusted = false;
     m_changePrimaryHeroSKinBtn = NULL;
-    //m_changeSecondaryHeroSkinBtn = NULL;
+    m_changeSecondaryHeroSkinBtn = NULL;
     m_primaryHeroSkinContainer = NULL;
-    //m_secondaryHeroSkinContainer = NULL;
+    m_secondaryHeroSkinContainer = NULL;
     _m_seatItem = NULL;
 }
 
@@ -1145,6 +1148,12 @@ void PlayerCardContainer::_createControls()
     connect(m_changePrimaryHeroSKinBtn, SIGNAL(clicked()), this, SLOT(showHeroSkinList()));
     connect(m_changePrimaryHeroSKinBtn, SIGNAL(clicked_mouse_outside()), this, SLOT(heroSkinBtnMouseOutsideClicked()));
 
+    m_changeSecondaryHeroSkinBtn = new QSanButton("player_container",
+        "change-heroskin", _getAvatarParent());
+    m_changeSecondaryHeroSkinBtn->hide();
+    connect(m_changeSecondaryHeroSkinBtn, SIGNAL(clicked()), this, SLOT(showHeroSkinList()));
+    connect(m_changeSecondaryHeroSkinBtn, SIGNAL(clicked_mouse_outside()), this, SLOT(heroSkinBtnMouseOutsideClicked()));
+
     _createRoleComboBox();
     repaintAll();
 
@@ -1313,10 +1322,9 @@ void PlayerCardContainer::showHeroSkinList()
         if (sender() == m_changePrimaryHeroSKinBtn) {
             showHeroSkinListHelper(m_player->getGeneral(), _m_avatarIcon);//, m_primaryHeroSkinContainer
         }
-        /*else {
-            showHeroSkinListHelper(m_player->getGeneral2(), _m_smallAvatarIcon,
-            m_secondaryHeroSkinContainer);
-            }*/
+        else {
+            showHeroSkinListHelper(m_player->getGeneral2(), _m_smallAvatarIcon);//, m_secondaryHeroSkinContainer
+       }
     }
 }
 
@@ -1365,9 +1373,9 @@ void PlayerCardContainer::heroSkinBtnMouseOutsideClicked()
         if (sender() == m_changePrimaryHeroSKinBtn) {
             heroSKinBtn = m_changePrimaryHeroSKinBtn;
         }
-        //else {
-        //    heroSKinBtn = m_changeSecondaryHeroSkinBtn;
-        //}
+        else {
+            heroSKinBtn = m_changeSecondaryHeroSkinBtn;
+        }
         if (heroSKinBtn != NULL) {
             QGraphicsItem *parent = heroSKinBtn->parentItem();
             if (NULL != parent && !parent->isUnderMouse()) {
@@ -1398,16 +1406,15 @@ void PlayerCardContainer::onAvatarHoverEnter()
             avatarItem = _m_avatarIcon;
             heroSKinBtn = m_changePrimaryHeroSKinBtn;
 
-            //m_changeSecondaryHeroSkinBtn->hide();
+            m_changeSecondaryHeroSkinBtn->hide();
         }
-        /*else if ((senderObj == _m_smallAvatarIcon)
-            || (senderObj == _m_huashenItem && second_zuoci)) {
+        else if ((senderObj == _m_smallAvatarIcon)) {//|| (senderObj == _m_huashenItem && second_zuoci)
             general = m_player->getGeneral2();
             avatarItem = _m_smallAvatarIcon;
             heroSKinBtn = m_changeSecondaryHeroSkinBtn;
 
             m_changePrimaryHeroSKinBtn->hide();
-            }*/
+        }
 
         if (NULL != general && HeroSkinContainer::hasSkin(general->objectName()) && avatarItem->isSkinChangingFinished()) {
             heroSKinBtn->show();
@@ -1431,10 +1438,9 @@ void PlayerCardContainer::onAvatarHoverLeave()
         if (senderObj == _m_avatarIcon) { //|| (senderObj == _m_huashenItem && !second_zuoci))
             heroSKinBtn = m_changePrimaryHeroSKinBtn;
         }
-        /*else if ((senderObj == _m_smallAvatarIcon)
-            || (senderObj == _m_huashenItem && second_zuoci)) {
+        else if ((senderObj == _m_smallAvatarIcon)) {//|| (senderObj == _m_huashenItem && second_zuoci)
             heroSKinBtn = m_changeSecondaryHeroSkinBtn;
-            }*/
+        }
 
         if ((NULL != heroSKinBtn) && (!heroSKinBtn->isMouseInside())) {
             heroSKinBtn->hide();
@@ -1452,10 +1458,10 @@ void PlayerCardContainer::onSkinChangingStart()
         heroSKinBtn = m_changePrimaryHeroSKinBtn;
         generalName = m_player->getGeneralName();
     }
-    //else {
-    //    heroSKinBtn = m_changeSecondaryHeroSkinBtn;
-    //    generalName = m_player->getGeneral2Name();
-    //}
+    else {
+        heroSKinBtn = m_changeSecondaryHeroSkinBtn;
+        generalName = m_player->getGeneral2Name();
+    }
 
     if (heroSKinBtn != NULL)
         heroSKinBtn->hide();
@@ -1476,11 +1482,11 @@ void PlayerCardContainer::onSkinChangingFinished()
         heroSKinBtn = m_changePrimaryHeroSKinBtn;
         generalName = m_player->getGeneralName();
     }
-    // else {
-    //    avatarItem = _m_smallAvatarIcon;
-    //    heroSKinBtn = m_changeSecondaryHeroSkinBtn;
-    //    generalName = m_player->getGeneral2Name();
-    //}
+    else {
+        avatarItem = _m_smallAvatarIcon;
+        heroSKinBtn = m_changeSecondaryHeroSkinBtn;
+        generalName = m_player->getGeneral2Name();
+    }
 
     if (isItemUnderMouse(avatarItem)) {
         heroSKinBtn->show();

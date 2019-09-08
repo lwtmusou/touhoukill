@@ -6907,11 +6907,11 @@ void Room::skinChangeCommand(ServerPlayer *player, const QVariant &packet)
     QString generalName = arg[0].toString();
 
     JsonArray val;
-
     val << (int)QSanProtocol::S_GAME_EVENT_SKIN_CHANGED;
     val << player->objectName();
     val << generalName;
     val << arg[1].toInt();
+    val << (player->getGeneralName() == generalName);
 
     setTag(generalName + "_skin_id", arg[1].toInt());
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val);

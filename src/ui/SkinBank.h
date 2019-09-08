@@ -143,7 +143,7 @@ public:
         QRect m_roleShownArea;
 
         QPoint m_changePrimaryHeroSkinBtnPos;
-        //QPoint m_changeSecondaryHeroSkinBtnPos;
+        QPoint m_changeSecondaryHeroSkinBtnPos;
 
         // photo area
         QRect m_avatarArea;
