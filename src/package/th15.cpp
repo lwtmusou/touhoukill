@@ -1373,6 +1373,31 @@ public:
     }
 };
 
+class GameRule_AskForGeneralShowDeputy : public TriggerSkill
+{
+public:
+    GameRule_AskForGeneralShowDeputy()
+        : TriggerSkill("GameRule_AskForGeneralShowDeputy")
+    {
+        events << EventPhaseStart;
+        global = true;
+    }
+
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        invoke->invoker->showGeneral(false, true);
+        return false;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        ServerPlayer *player = data.value<ServerPlayer *>();
+        if (ServerInfo.Enable2ndGeneral && player != NULL && player->getPhase() == Player::Start && !player->hasShownGeneral2())
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+        return QList<SkillInvokeDetail>();
+    }
+};
+
 TH15Package::TH15Package()
     : Package("th15")
 {
@@ -1417,7 +1442,7 @@ TH15Package::TH15Package()
 
     addMetaObject<YuejianCard>();
     addMetaObject<YidanCard>();
-    skills << new ShehuoProhibit << new ShehuoTargetMod << new GameRule_AskForGeneralShowHead;
+    skills << new ShehuoProhibit << new ShehuoTargetMod << new GameRule_AskForGeneralShowHead << new GameRule_AskForGeneralShowDeputy;
 }
 
 ADD_PACKAGE(TH15)
