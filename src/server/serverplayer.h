@@ -195,7 +195,7 @@ public:
 
     void notifyPreshow();//hegemony
     void showGeneral(bool head_general = true, bool trigger_event = true, bool sendLog = true, bool ignore_rule = true);
-    void sendSkillsToOthers();
+    void sendSkillsToOthers(bool head_skill = true);
     int getPlayerNumWithSameKingdom(const QString &reason, const QString &_to_calculate = QString()) const;
 
 protected:

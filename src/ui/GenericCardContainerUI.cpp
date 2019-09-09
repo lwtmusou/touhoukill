@@ -219,7 +219,7 @@ void PlayerCardContainer::updateAvatar()
     }
 
     if (general != NULL) {
-        _m_avatarArea->setToolTip(m_player->getSkillDescription());
+        _m_avatarArea->setToolTip(m_player->getSkillDescription(true, "head"));
         QString name = general->objectName();
         QPixmap avatarIcon = _getAvatarIcon(name);
         QGraphicsPixmapItem *avatarIconTmp = _m_avatarIcon;
@@ -293,7 +293,7 @@ void PlayerCardContainer::updateSmallAvatar()
         QGraphicsPixmapItem *smallAvatarIconTmp = _m_smallAvatarIcon;
         _paintPixmap(smallAvatarIconTmp, _m_layout->m_smallAvatarArea, smallAvatarIcon, _getAvatarParent());
         _paintPixmap(_m_circleItem, _m_layout->m_circleArea, QString(QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_IMAGE).arg(_m_layout->m_circleImageSize), _getAvatarParent());
-        _m_smallAvatarArea->setToolTip(m_player->getSkillDescription());
+        _m_smallAvatarArea->setToolTip(m_player->getSkillDescription(true, "deputy"));
         QString name = Sanguosha->translate("&" + general->objectName());
         if (name.startsWith("&"))
             name = Sanguosha->translate(general->objectName());
@@ -910,10 +910,12 @@ void PlayerCardContainer::stopHuaShen()
 void PlayerCardContainer::updateAvatarTooltip()
 {
     if (m_player) {
-        QString description = m_player->getSkillDescription();
+        QString description = m_player->getSkillDescription(true, "head");
         _m_avatarArea->setToolTip(description);
-        if (m_player->getGeneral2())
+        if (m_player->getGeneral2()){
+            description = m_player->getSkillDescription(true, "deputy");
             _m_smallAvatarArea->setToolTip(description);
+        }   
     }
 }
 

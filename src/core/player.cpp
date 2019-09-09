@@ -703,7 +703,7 @@ bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden
 
     //Other modes
     //prevent infinite recursion
-    if (include_hidden && !isSkillInvalid("anyun") && (skills.contains("anyun") || acquired_skills.contains("anyun")) && !skill->isLordSkill() && !skill->isAttachedLordSkill()
+    if (include_hidden && !isSkillInvalid("anyun") && (skills.contains("anyun") || skills2.contains("anyun") || acquired_skills.contains("anyun")) && !skill->isLordSkill() && !skill->isAttachedLordSkill()
         && skill->getFrequency() != Skill::Limited && skill->getFrequency() != Skill::Wake && skill->getFrequency() != Skill::Eternal
         && (skill->getShowType() != "static" || hasFlag("has_anyu_state"))) {
         QString shown = shown_hidden_general;
@@ -848,6 +848,7 @@ void Player::addSkill(const QString &skill_name, bool head_skill)
     //skills[skill_name] = !skill->canPreshow() || general_showed;
     if (!skills_originalOrder.contains(skill_name)) //both headskill and deputy skill in order
         skills_originalOrder << skill_name;
+
     if (head_skill)
         skills[skill_name] = !skill->canPreshow() || general_showed; //head_skills
     else
@@ -857,7 +858,7 @@ void Player::addSkill(const QString &skill_name, bool head_skill)
 void Player::loseSkill(const QString &skill_name)
 {
     skills.remove(skill_name);
-    //skills2.remove(skill_name);
+    skills2.remove(skill_name);
     skills_originalOrder.removeOne(skill_name);
 }
 
@@ -1595,12 +1596,12 @@ QString Player::getSkillDescription(bool yellow,  const QString &flag) const
     QString description = QString();
     QString color = yellow ? "#FFFF33" : "#FF0080";
     QList<const Skill*> skillList =  getVisibleSkillList();
-    if (isHegemonyGameMode(ServerInfo.GameMode)) {
+    //if (isHegemonyGameMode(ServerInfo.GameMode)) {
         if (flag == "head")
             skillList = getHeadSkillList();
         else if (flag == "deputy")
             skillList = getDeputySkillList();
-    }
+    //}
 
     foreach (const Skill *skill, skillList) {
         if (skill->isAttachedLordSkill())
@@ -1619,7 +1620,7 @@ QString Player::getSkillDescription(bool yellow,  const QString &flag) const
     }
 
     if (description.isEmpty())
-        description = tr("<font color=%1>No skills</font>").arg(color);
+        description = tr("<font color=%1>No skills</font>").arg(color);        
     return description;
 }
 
@@ -1890,7 +1891,7 @@ void Player::setSkillPreshowed(const QString &skill, bool preshowed)//, bool hea
         skills[skill] = preshowed;
 
     if (skills2.contains(skill))
-        skills[skill] = preshowed;
+        skills2[skill] = preshowed;
 }
 
 void Player::setSkillsPreshowed(const QString &falgs, bool preshowed)

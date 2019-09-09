@@ -5275,7 +5275,7 @@ void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general
         foreach (const Skill *skill, player->getGeneral2()->getSkillList()) {
             if (skill->isLordSkill() && !player->isLord())
                 continue;
-            player->addSkill(skill->objectName());
+            player->addSkill(skill->objectName(),false);
         }
     }
     filterCards(player, player->getCards("he"), true);

@@ -1928,7 +1928,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val);
 
         if (!property("Duanchang").toString().split(",").contains("deputy")) {
-            sendSkillsToOthers();
+            sendSkillsToOthers(false);
             foreach(const Skill *skill, getDeputySkillList()) {//getSkillList()
                 if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
                     && hasShownSkill(skill)) {
@@ -2018,20 +2018,19 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
     room->filterCards(this, getCards("hes"), true);
 }
 
-void ServerPlayer::sendSkillsToOthers()
+void ServerPlayer::sendSkillsToOthers(bool head_skill)
 {
     QStringList names = room->getTag(objectName()).toStringList();
     if (names.isEmpty())
         return;
+    const QList<const Skill *> skills = head_skill ? getHeadSkillList() : getDeputySkillList();  //getSkillList();
 
-    const QList<const Skill *> skills = getSkillList(); //head_skill ? getHeadSkillList() : getDeputySkillList();
     foreach (const Skill *skill, skills) {
         JsonArray args;
         args << QSanProtocol::S_GAME_EVENT_ADD_SKILL;
         args << objectName();
         args << skill->objectName();
-        args << true;
-        //args << head_skill;
+        args << head_skill;
         foreach (ServerPlayer *p, room->getOtherPlayers(this, true))
             room->doNotify(p, QSanProtocol::S_COMMAND_LOG_EVENT, args);
     }
