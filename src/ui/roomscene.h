@@ -21,6 +21,7 @@ class QSanButton;
 class QGroupBox;
 struct RoomLayout;
 class BubbleChatBox;
+class ChooseGeneralBox;
 class ChooseOptionsBox;
 class ChooseTriggerOrderBox;
 class PlayerCardBox;
@@ -219,7 +220,7 @@ public slots:
     void keepLoseCardLog(const CardsMoveStruct &move);
     void keepGetCardLog(const CardsMoveStruct &move);
     // choice dialog
-    void chooseGeneral(const QStringList &generals);
+    void chooseGeneral(const QStringList &generals, const bool single_result, const bool can_convert);
     void chooseSuit(const QStringList &suits);
     void chooseCard(const ClientPlayer *playerName, const QString &flags, const QString &reason, bool handcard_visible, Card::HandlingMethod method, QList<int> disabled_ids,
                     bool enableEmptyCard);
@@ -336,6 +337,7 @@ private:
     QList<const Player *> selected_targets;
 
     GuanxingBox *guanxing_box;
+    ChooseGeneralBox *m_chooseGeneralBox;
     ChooseOptionsBox *m_chooseOptionsBox;
     ChooseTriggerOrderBox *m_chooseTriggerOrderBox;
     PlayerCardBox *m_playerCardBox;

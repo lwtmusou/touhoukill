@@ -3196,15 +3196,43 @@ void Room::chooseHegemonyGenerals()
         _setupChooseGeneralRequestArgs(player);
 
     doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
-    foreach (ServerPlayer *player, to_assign) {
-        if (player->getGeneral() != NULL)
-            continue;
-        QString generalName = player->getClientReply().toString();
-        if (!player->m_isClientResponseReady || !_setPlayerGeneral(player, generalName, true))
-            _setPlayerGeneral(player, _chooseDefaultGeneral(player), true);
+
+    if (!ServerInfo.Enable2ndGeneral) {
+        foreach(ServerPlayer *player, to_assign) {
+            if (player->getGeneral() != NULL)
+                continue;
+            QString generalName = player->getClientReply().toString();
+            if (!player->m_isClientResponseReady || !_setPlayerGeneral(player, generalName, true))
+                _setPlayerGeneral(player, _chooseDefaultGeneral(player), true);
+        }
+    }
+    else {
+        foreach(ServerPlayer *player, to_assign) {
+            if (player->getGeneral() != NULL) continue;
+            const QVariant &generalName = player->getClientReply();
+            if (!player->m_isClientResponseReady || !JsonUtils::isString(generalName)) {
+                QStringList default_generals = _chooseDefaultGenerals(player);
+                _setPlayerGeneral(player, default_generals.first(), true);
+                _setPlayerGeneral(player, default_generals.last(), false);
+            }
+            else {
+                QStringList generals = generalName.toString().split("+");
+                if (generals.length() != 2 || !_setPlayerGeneral(player, generals.first(), true)
+                    || !_setPlayerGeneral(player, generals.last(), false)) {
+                    QStringList default_generals = _chooseDefaultGenerals(player);
+                    _setPlayerGeneral(player, default_generals.first(), true);
+                    _setPlayerGeneral(player, default_generals.last(), false);
+                }
+            }
+        }
+    
     }
 
-    if (Config.Enable2ndGeneral) {
+
+
+
+
+    /*if (Config.Enable2ndGeneral) {
         //QList<ServerPlayer *> to_assign = m_players;
         assignGeneralsForPlayers(to_assign);
         foreach(ServerPlayer *player, to_assign)
@@ -3218,7 +3246,7 @@ void Room::chooseHegemonyGenerals()
             if (!player->m_isClientResponseReady || !_setPlayerGeneral(player, generalName, false))
                 _setPlayerGeneral(player, _chooseDefaultGeneral(player), false);
         }
-    }
+    }*/
 
     //@todo
     //int i = 1;
@@ -3255,21 +3283,6 @@ void Room::chooseHegemonyGenerals()
         this->setTag(player->objectName(), QVariant::fromValue(names));
     }
 
-    /*if (Config.Enable2ndGeneral) {
-        QList<ServerPlayer *> to_assign = m_players;
-        assignGeneralsForPlayers(to_assign);
-        foreach (ServerPlayer *player, to_assign)
-            _setupChooseGeneralRequestArgs(player);
-
-        doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
-        foreach (ServerPlayer *player, to_assign) {
-            if (player->getGeneral2() != NULL)
-                continue;
-            QString generalName = player->getClientReply().toString();
-            if (!player->m_isClientResponseReady || !_setPlayerGeneral(player, generalName, false))
-                _setPlayerGeneral(player, _chooseDefaultGeneral(player), false);
-        }
-    }*/
 
     Config.setValue("Banlist/Roles", ban_list);
 }
@@ -3523,6 +3536,20 @@ QString Room::_chooseDefaultGeneral(ServerPlayer *player) const
     Q_ASSERT(!player->getSelected().isEmpty());
     QString choice = m_generalSelector->selectFirst(player, player->getSelected());
     return choice;
+}
+
+QStringList Room::_chooseDefaultGenerals(ServerPlayer *player) const
+{
+    Q_ASSERT(!player->getSelected().isEmpty());
+    QStringList generals; 
+    QStringList candidates = player->getSelected();
+    QString choice1 = m_generalSelector->selectFirst(player, candidates);
+    candidates.removeAll(choice1);
+    QString choice2 = m_generalSelector->selectSecond(player, candidates);
+    //m_generalSelector->selectGenerals(player, player->getSelected());
+    generals << choice1 << choice2;
+    Q_ASSERT(!generals.isEmpty());
+    return generals;
 }
 
 bool Room::_setPlayerGeneral(ServerPlayer *player, const QString &generalName, bool isFirst)
@@ -6223,9 +6250,18 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
 
 void Room::_setupChooseGeneralRequestArgs(ServerPlayer *player)
 {
-    JsonArray options = JsonUtils::toJsonArray(player->getSelected()).value<JsonArray>();
-    if (getLord())
-        options.append(QString("%1(lord)").arg(getLord()->getGeneralName()));
+    JsonArray options;
+    if (isHegemonyGameMode(mode)) {
+        options << JsonUtils::toJsonArray(player->getSelected());
+        options << !Config.Enable2ndGeneral; //false;
+        options << false;
+    }
+    else {
+        options  = JsonUtils::toJsonArray(player->getSelected()).value<JsonArray>();
+        if (getLord())
+            options.append(QString("%1(lord)").arg(getLord()->getGeneralName()));
+    }
+    
     player->m_commandArgs = options;
 }
 

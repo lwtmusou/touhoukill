@@ -279,6 +279,12 @@ public:
         QColor graphicsBoxBorderColor;
         QSanSimpleTextFont graphicsBoxTitleFont;
 
+        //Choose General Box
+        QSanSimpleTextFont m_chooseGeneralBoxDestSeatFont;
+
+        //General Card Item
+        QRect m_generalCardItemCompanionPromptRegion;
+
         //General Button
         QRect generalButtonPositionIconRegion;
         QRect generalButtonNameRegion;
@@ -403,6 +409,13 @@ public:
     static const char *S_SKIN_KEY_EXPANDING_ROLE_BOX;
     static const char *S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK;
 
+    //ChooseGeneralBox
+    static const char *S_SKIN_KEY_CHOOSE_GENERAL_BOX_SPLIT_LINE;
+    static const char *S_SKIN_KEY_CHOOSE_GENERAL_BOX_DEST_SEAT;
+
+    //GeneralCardItem
+    static const char *S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_FONT;
+    static const char *S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_ICON;
 
     static const char *S_HERO_SKIN_KEY_GENERAL_ICON;
 

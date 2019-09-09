@@ -69,7 +69,10 @@ public:
     bool isEquipped() const;
 
     void setFrozen(bool is_frozen);
-
+    inline bool isFrozen()
+    {
+        return frozen;
+    }
     inline void showFootnote()
     {
         _m_showFootnote = true;
@@ -94,6 +97,12 @@ public:
     {
         emit clicked();
     }
+
+    void setOuterGlowEffectEnabled(const bool &willPlay);
+    bool isOuterGlowEffectEnabled() const;
+
+    void setOuterGlowColor(const QColor &color);
+    QColor getOuterGlowColor() const;
 
 private slots:
     void currentAnimationDestroyed();
@@ -120,6 +129,7 @@ protected:
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *);
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     //virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *);
+    bool auto_back, frozen;
 
 private:
     QAbstractAnimation *m_currentAnimation;
@@ -129,7 +139,11 @@ private:
     QString _m_frameType, _m_avatarName;
     QPointF home_pos;
     QPointF _m_lastMousePressScenePos;
-    bool auto_back, frozen;
+    
+    bool outerGlowEffectEnabled;
+    QColor outerGlowColor;
+    QGraphicsDropShadowEffect *outerGlowEffect;
+
 signals:
     void toggle_discards();
     void clicked();
@@ -139,6 +153,8 @@ signals:
     void enter_hover();
     void leave_hover();
     void movement_animation_finished();
+    void general_changed();
+    void hoverChanged(const bool &enter);
 };
 
 #endif

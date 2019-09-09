@@ -59,7 +59,10 @@
     "roleBoxColor-qun": [195, 177, 84],
     "roleBoxColor-shu": [172, 49, 32],
     "roleBoxColor-wu": [85, 164, 52],
-    "roleDarkColor": [125, 125, 126] 
+    "roleDarkColor": [125, 125, 126],
+
+	"generalBoxDestSeatFont": ["SimSun", 12, 2, [105, 103, 91]],
+	"generalCardItemCompanionPromptRegion": [-1, 102, 95, 15]	
 },
 "room":
 {

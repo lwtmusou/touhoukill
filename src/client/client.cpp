@@ -1593,11 +1593,37 @@ void Client::warn(const QVariant &reason_var)
 
 void Client::askForGeneral(const QVariant &arg)
 {
+    //QStringList generals;
+    //if (!tryParse(arg, generals))
+    //    return;
+    
+    JsonArray args = arg.value<JsonArray>();
     QStringList generals;
-    if (!tryParse(arg, generals))
-        return;
-    emit generals_got(generals);
-    setStatus(ExecDialog);
+    bool single_result = false;
+    bool can_convert = false;
+
+    if (!isHegemonyGameMode(ServerInfo.GameMode)) {
+        if (!tryParse(arg, generals))
+            return;
+    }
+    else {
+        if (!tryParse(args[0], generals)) return;
+        single_result = args[1].toBool();
+        can_convert =  args[2].toBool();
+    }
+
+
+    
+    if (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral) {
+        //Sanguosha->playSystemAudioEffect("lose");
+        emit generals_got(generals, single_result, can_convert);
+        setStatus(AskForGeneralTaken);
+    }
+    else {
+        //Sanguosha->playSystemAudioEffect("win");
+        emit generals_got(generals, single_result, can_convert);
+        setStatus(ExecDialog);
+    }
 }
 
 void Client::askForSuit(const QVariant &arg)

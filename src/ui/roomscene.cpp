@@ -22,6 +22,7 @@
 #include "settings.h"
 #include "uiUtils.h"
 #include "window.h"
+#include "choosegeneralbox.h"
 
 #include <QApplication>
 #include <QCheckBox>
@@ -132,7 +133,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
     // do signal-slot connections
     connect(ClientInstance, SIGNAL(player_added(ClientPlayer *)), SLOT(addPlayer(ClientPlayer *)));
     connect(ClientInstance, SIGNAL(player_removed(QString)), SLOT(removePlayer(QString)));
-    connect(ClientInstance, SIGNAL(generals_got(QStringList)), this, SLOT(chooseGeneral(QStringList)));
+    //connect(ClientInstance, SIGNAL(generals_got(QStringList)), this, SLOT(chooseGeneral(QStringList)));
+    connect(ClientInstance, &Client::generals_got, this, &RoomScene::chooseGeneral);
     connect(ClientInstance, SIGNAL(generals_viewed(QString, QStringList)), this, SLOT(viewGenerals(QString, QStringList)));
     connect(ClientInstance, SIGNAL(suits_got(QStringList)), this, SLOT(chooseSuit(QStringList)));
     connect(ClientInstance, SIGNAL(options_got(QString, QStringList)), this, SLOT(chooseOption(QString, QStringList)));
@@ -216,6 +218,13 @@ RoomScene::RoomScene(QMainWindow *main_window)
     pileContainer->hide();
     addItem(pileContainer);
     pileContainer->setZValue(9.0);
+
+    
+    m_chooseGeneralBox = new ChooseGeneralBox;
+    m_chooseGeneralBox->hide();
+    addItem(m_chooseGeneralBox);
+    m_chooseGeneralBox->setZValue(30000.0);
+    m_chooseGeneralBox->moveBy(-120, 0);
 
     connect(card_container, SIGNAL(item_chosen(int)), ClientInstance, SLOT(onPlayerChooseAG(int)));
     connect(card_container, SIGNAL(item_gongxined(int)), ClientInstance, SLOT(onPlayerReplyGongxin(int)));
@@ -1178,6 +1187,7 @@ void RoomScene::updateTable()
     pileContainer->setPos(m_tableCenterPos);
     //pileContainer->setPos(m_tableCenterPos - QPointF(pileContainer->boundingRect().width() / 2, pileContainer->boundingRect().height() / 2));
     guanxing_box->setPos(m_tableCenterPos);
+    m_chooseGeneralBox->setPos(m_tableCenterPos - QPointF(m_chooseGeneralBox->boundingRect().width() / 2, m_chooseGeneralBox->boundingRect().height() / 2));
     m_chooseOptionsBox->setPos(m_tableCenterPos - QPointF(m_chooseOptionsBox->boundingRect().width() / 2, m_chooseOptionsBox->boundingRect().height() / 2));
     m_chooseTriggerOrderBox->setPos(m_tableCenterPos - QPointF(m_chooseTriggerOrderBox->boundingRect().width() / 2, m_chooseTriggerOrderBox->boundingRect().height() / 2));
     m_playerCardBox->setPos(m_tableCenterPos - QPointF(m_playerCardBox->boundingRect().width() / 2, m_playerCardBox->boundingRect().height() / 2));
@@ -1816,21 +1826,28 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     }
 }
 
-void RoomScene::chooseGeneral(const QStringList &generals)
+void RoomScene::chooseGeneral(const QStringList &generals, const bool single_result, const bool can_convert)
 {
     //Audio::stopBGM();
     QApplication::alert(main_window);
     if (!main_window->isActiveWindow())
         Sanguosha->playSystemAudioEffect("prelude");
 
-    QDialog *dialog;
-    if (generals.isEmpty())
-        dialog = new FreeChooseDialog(main_window);
-    else
-        dialog = new ChooseGeneralDialog(generals, main_window);
+    if (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral && !generals.isEmpty()) {
+        m_chooseGeneralBox->chooseGeneral(generals, false, single_result, QString(), NULL, can_convert);
+    }
+    else {
+        QDialog *dialog;
+        if (generals.isEmpty())
+            dialog = new FreeChooseDialog(main_window);
+        else {
+            dialog = new ChooseGeneralDialog(generals, main_window);
+        }
 
-    delete m_choiceDialog;
-    m_choiceDialog = dialog;
+        delete m_choiceDialog;
+        m_choiceDialog = dialog;
+    }
+    
 }
 
 void RoomScene::chooseSuit(const QStringList &suits)
@@ -2849,6 +2866,10 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         } else if (oldStatus == Client::AskForCardChosen) {
             m_playerCardBox->clear();
         }
+        else if (oldStatus == Client::AskForGeneralTaken) {
+            if (m_chooseGeneralBox)
+                m_chooseGeneralBox->clear();
+        }
 
         prompt_box->disappear();
         ClientInstance->getPromptDoc()->clear();
@@ -3735,6 +3756,9 @@ void RoomScene::viewGenerals(const QString &reason, const QStringList &names)
     connect(dialog, SIGNAL(rejected()), dialog, SLOT(deleteLater()));
     dialog->setParent(main_window, Qt::Dialog);
     dialog->show();
+    //not used yet
+    //m_chooseGeneralBox->chooseGeneral(names, true, false,
+    //    Sanguosha->translate(reason));
 }
 
 void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players)
@@ -4222,6 +4246,9 @@ void RoomScene::onGameStart()
 #ifdef AUDIO_SUPPORT
     Audio::stopBGM();
 #endif
+    if (ClientInstance->getReplayer() != NULL && m_chooseGeneralBox)
+        m_chooseGeneralBox->clear();
+
     main_window->activateWindow();
     if (Config.GameMode.contains("_mini_")) {
         QString id = Config.GameMode;

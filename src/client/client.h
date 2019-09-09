@@ -35,6 +35,7 @@ public:
         AskForGongxin = 0x000B,
         AskForShowOrPindian = 0x000C,
         AskForGeneralTaken = 0x000D,
+        //AskForGeneralChosen = 0x01000D,
         AskForArrangement = 0x000E,
         AskForChoice = 0x000F,
         AskForTriggerOrder = 0x0010,
@@ -300,7 +301,8 @@ signals:
     void player_added(ClientPlayer *new_player);
     void player_removed(const QString &player_name);
     // choice signal
-    void generals_got(const QStringList &generals);
+    //void generals_got(const QStringList &generals);
+    void generals_got(const QStringList &generals, const bool single_result, const bool can_convert);
     void kingdoms_got(const QStringList &kingdoms);
     void suits_got(const QStringList &suits);
     void options_got(const QString &skillName, const QStringList &options);
