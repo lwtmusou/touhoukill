@@ -1009,8 +1009,11 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 
             room->setTag("TheFirstToShowRewarded", true);
         }
+        if (!Config.Enable2ndGeneral)
+            break;
+
         //CompanionEffect  and  HalfMaxHpLeft
-        /*if (player->isAlive() && player->hasShownAllGenerals()) {
+        if (player->isAlive() && player->hasShownAllGenerals()) {
             if (player->getMark("CompanionEffect") > 0) {
                 QStringList choices;
                 if (player->isWounded())
@@ -1042,7 +1045,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     player->drawCards(1);
                 room->removePlayerMark(player, "HalfMaxHpLeft");
             }
-        }*/
+        }
     }
 
     case BeforeCardsMove: { //to be record? not effect

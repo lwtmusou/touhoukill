@@ -1590,12 +1590,19 @@ QSet<QString> Player::getAcquiredSkills() const
     return acquired_skills;
 }
 
-QString Player::getSkillDescription(bool yellow) const
+QString Player::getSkillDescription(bool yellow,  const QString &flag) const
 {
     QString description = QString();
     QString color = yellow ? "#FFFF33" : "#FF0080";
+    QList<const Skill*> skillList =  getVisibleSkillList();
+    if (isHegemonyGameMode(ServerInfo.GameMode)) {
+        if (flag == "head")
+            skillList = getHeadSkillList();
+        else if (flag == "deputy")
+            skillList = getDeputySkillList();
+    }
 
-    foreach (const Skill *skill, getVisibleSkillList()) {
+    foreach (const Skill *skill, skillList) {
         if (skill->isAttachedLordSkill())
             continue;
         if (!isHegemonyGameMode(ServerInfo.GameMode) && !hasSkill(skill->objectName()))
@@ -1938,6 +1945,11 @@ bool Player::hasShownGeneral() const
 bool Player::hasShownGeneral2() const
 {
     return general2_showed;
+}
+
+bool Player::hasShownAllGenerals() const
+{
+    return general_showed && (!general2 || general2_showed);
 }
 
 void Player::setGeneralShowed(bool showed)

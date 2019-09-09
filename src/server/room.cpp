@@ -4324,7 +4324,7 @@ void Room::startGame()
         m_players.at(i)->setNext(m_players.at(i + 1));
     m_players.last()->setNext(m_players.first());
 
-    //step1 : player set  MaxHP
+    //step1 : player set  MaxHP and CompanionEffect
     foreach (ServerPlayer *player, m_players) {
         Q_ASSERT(player->getGeneral());
         if (isHegemonyGameMode(mode)) {
@@ -4335,6 +4335,10 @@ void Room::startGame()
             if (Config.Enable2ndGeneral) {
                 const General *general2 = Sanguosha->getGeneral(generals.last());
                 max_hp = (general1->getMaxHp() + general2->getMaxHp()) / 2;
+                if (general1->isCompanionWith(generals.last()))
+                    addPlayerMark(player, "CompanionEffect");
+
+                setPlayerMark(player, "HalfMaxHpLeft", (general1->getMaxHp() + general2->getMaxHp()) % 2);
             }
             player->setMaxHp(max_hp);
         } else

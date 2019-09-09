@@ -61,6 +61,9 @@ public:
 
     QString getPackage() const;
     QString getSkillDescription(bool include_name = false, bool yellow = true) const;
+    void addCompanion(const QString &name);
+    bool isCompanionWith(const QString &name) const;
+    QString getCompanions() const;
 
     inline QSet<QString> getExtraSkillSet() const
     {
@@ -81,6 +84,7 @@ private:
     QStringList related_skills;
     bool hidden;
     bool never_shown;
+    QStringList companions;
 };
 
 #endif

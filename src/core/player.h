@@ -305,7 +305,7 @@ public:
     QList<const Skill *> getDeputySkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const;
 
     QSet<QString> getAcquiredSkills() const;
-    QString getSkillDescription(bool yellow = true) const;
+    QString getSkillDescription(bool yellow = true, const QString &flag = QString()) const;
 
     virtual bool isProhibited(const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
     bool canSlashWithoutCrossbow(const Card *slash = NULL) const;
@@ -350,6 +350,7 @@ public:
     void setGeneralShowed(bool showed);
     bool hasShownGeneral2() const;
     void setGeneral2Showed(bool showed);
+    bool hasShownAllGenerals() const;
     bool ownSkill(const QString &skill_name) const;
     bool ownSkill(const Skill *skill) const;
     bool isFriendWith(const Player *player) const;
