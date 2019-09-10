@@ -251,6 +251,44 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
+
+class QizhiCard : public DelayedTrick
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE QizhiCard(Card::Suit suit, int number);
+
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    //void onUse(Room *room, const CardUseStruct &card_use) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    void takeEffect(ServerPlayer *) const;
+
+    QString getType() const
+    {
+        return "skill_card";
+    }
+    QString getSubtype() const
+    {
+        return "skill_card";
+    }
+    CardType getTypeId() const
+    {
+        return TypeSkill;
+    }
+    bool isKindOf(const char *cardType) const
+    {
+        if (strcmp(cardType, "SkillCard") == 0)
+            return true;
+        else
+            return inherits(cardType);
+    }
+
+};
+
+
+
+
 class TouhouGodPackage : public Package
 {
     Q_OBJECT

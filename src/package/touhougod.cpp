@@ -6774,6 +6774,147 @@ public:
     }
 };
 
+
+QizhiCard::QizhiCard(Suit suit, int number)
+    : DelayedTrick(suit, number)
+{
+    mute = true;
+    handling_method = Card::MethodNone;
+    setObjectName("QizhiCard");
+}
+
+bool QizhiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
+{
+    //if (!targets.isEmpty())
+    //    return false;
+
+    //if (to_select->containsTrick(objectName()))
+    //    return false;
+
+    //return true;
+    return targets.isEmpty();
+}
+
+/*void QizhiCard::onUse(Room *room, const CardUseStruct &card_use) const
+{
+    DelayedTrick::onUse(room, card_use);
+}*/
+void QizhiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+{
+    DelayedTrick::use(room, source, targets);
+    if (getSuit() == Card::Spade || getSuit() == Card::Heart)
+        source->drawCards(1);
+}
+void QizhiCard::takeEffect(ServerPlayer *) const
+{
+}
+
+class QizhiVS : public OneCardViewAsSkill
+{
+public:
+    QizhiVS() : OneCardViewAsSkill("qizhi_attach")
+    {
+        filter_pattern = ".";
+        attached_lord_skill = true;
+        //response_or_use = false;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return !player->hasUsed("QizhiCard");// && !player->isKongcheng()
+    }
+
+    const Card *viewAs(const Card *originalCard) const
+    {
+        QizhiCard *card = new QizhiCard(originalCard->getSuit(), originalCard->getNumber());
+        card->addSubcard(originalCard->getId());
+        //card->setSkillName(objectName());
+        return card;
+    }
+};
+
+class QizhiSelfVS : public OneCardViewAsSkill
+{
+public:
+    QizhiSelfVS()
+        : OneCardViewAsSkill("qizhialernative")
+    {
+        filter_pattern = ".";
+        //response_or_use = false;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return !player->hasUsed("QizhiCard");
+    }
+
+    //virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const
+    //{  
+    //}
+
+    const Card *viewAs(const Card *originalCard) const
+    {
+        QizhiCard *card = new QizhiCard(originalCard->getSuit(), originalCard->getNumber());
+        card->addSubcard(originalCard->getId());
+        //card->setSkillName(objectName());
+        return card;
+    }
+};
+
+class QizhiAlernative : public TriggerSkill
+{
+public:
+    QizhiAlernative()
+        : TriggerSkill("qizhialernative")
+    {
+        events << GameStart << EventAcquireSkill << EventLoseSkill << Death << Debut << Revive << GeneralShown << EventPhaseStart; //<< EventPhaseChanging
+        view_as_skill = new QizhiSelfVS;
+        show_type = "static";
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent != EventPhaseStart) { //the case operating attach skill
+            QList<ServerPlayer *> owners;
+            static QString attachName = "qizhi_attach";
+            foreach(ServerPlayer *p, room->getAllPlayers()) {
+                if (p->hasSkill(this, true, false))
+                    owners << p;
+            }
+
+            if (owners.length() >= 1) {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (!p->hasSkill(attachName, true) && !p->hasSkill("qizhialernative"))
+                        room->attachSkillToPlayer(p, attachName);
+                    else if (p->hasSkill(attachName, true) && p->hasSkill("qizhialernative"))
+                        room->detachSkillFromPlayer(p, attachName, true);
+                }
+            }
+            else {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->hasSkill(attachName, true))
+                        room->detachSkillFromPlayer(p, attachName, true);
+                }
+            }
+
+        }
+        /*else { //tianbian 
+            ServerPlayer *current = data.value<ServerPlayer *>();
+            if (!current->hasSkill(this) || current->isDead() || current->getPhase() != Player::Judge || current->getJudgingArea().isEmpty())
+                return QList<SkillInvokeDetail>();
+
+        }*/
+        
+    }
+};
+
+
+
+
+
+
+
+
 TouhouGodPackage::TouhouGodPackage()
     : Package("touhougod")
 {
@@ -6934,6 +7075,9 @@ TouhouGodPackage::TouhouGodPackage()
     tenshi_god->addSkill(new Qizhi);
     tenshi_god->addSkill(new Tiandao);
 
+    General *tenshi_god_sp = new General(this, "tenshi_god_sp", "touhougod", 4);
+    tenshi_god_sp->addSkill(new QizhiAlernative);
+
     //    General *shinmyoumaru_god = new General(this, "shinmyoumaru_god", "touhougod", 4, false, true, true);
     //    Q_UNUSED(shinmyoumaru_god);
     //    General *tenshi_god = new General(this, "tenshi_god", "touhougod", 3, false, true, true);
@@ -6957,8 +7101,9 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<WenyueCard>();
     addMetaObject<QianqiangCard>();
     addMetaObject<KuangjiCard>();
-
-    skills << new ChaorenLog << new Wendao << new RoleShownHandler << new ShenbaoAttach << new Ziwo << new Benwo << new Chaowo << new TiandaoDistance;
+    addMetaObject<QizhiCard>();
+    skills << new ChaorenLog << new Wendao << new RoleShownHandler << new ShenbaoAttach << new Ziwo << new Benwo << new Chaowo << new TiandaoDistance
+        << new QizhiVS;
 }
 
 ADD_PACKAGE(TouhouGod)
