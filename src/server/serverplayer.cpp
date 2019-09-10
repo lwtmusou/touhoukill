@@ -1139,9 +1139,9 @@ void ServerPlayer::introduceTo(ServerPlayer *player)
         room->doBroadcastNotify(players, S_COMMAND_ADD_PLAYER, introduce_str);
     }
 
-    /*if (!isHegemonyGameMode(room->getMode())) return;
+    if (!isHegemonyGameMode(room->getMode())) return;
     if (hasShownGeneral()) {
-        foreach(const QString skill_name, skills_originalOrder) {//skills.keys()
+        foreach(const QString skill_name, skills.keys()) {//skills.keys()  skills_originalOrder
             if (Sanguosha->getSkill(skill_name)->isVisible()) {
                 JsonArray args1;
                 args1 << (int)S_GAME_EVENT_ADD_SKILL;
@@ -1162,7 +1162,30 @@ void ServerPlayer::introduceTo(ServerPlayer *player)
                 }
             }
         }
-    }*/
+    }
+    if (hasShownGeneral2()) {
+        foreach(const QString skill_name, skills2.keys()) {
+            if (Sanguosha->getSkill(skill_name)->isVisible()) {
+                JsonArray args1;
+                args1 << S_GAME_EVENT_ADD_SKILL;
+                args1 << objectName();
+                args1 << skill_name;
+                args1 << false;
+                room->doNotify(player, S_COMMAND_LOG_EVENT, args1);
+            }
+
+            foreach(const Skill *related_skill, Sanguosha->getRelatedSkills(skill_name)) {
+                if (!related_skill->isVisible()) {
+                    JsonArray args2;
+                    args2 << (int)S_GAME_EVENT_ADD_SKILL;
+                    args2 << objectName();
+                    args2 << related_skill->objectName();
+                    args2 << false;
+                    room->doNotify(player, S_COMMAND_LOG_EVENT, args2);
+                }
+            }
+        }
+    }
 }
 
 void ServerPlayer::marshal(ServerPlayer *player) const
@@ -1171,6 +1194,8 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     room->notifyProperty(player, this, "hp");
     room->notifyProperty(player, this, "dyingFactor");
     room->notifyProperty(player, this, "general_showed");
+    room->notifyProperty(player, this, "general2_showed");
+    room->notifyProperty(player, this, "inital_seat");
 
     if (isHegemonyGameMode(room->getMode())) {
         if (player == this || hasShownGeneral()) {

@@ -4292,11 +4292,19 @@ void Room::marshal(ServerPlayer *player)
         if (isHegemonyGameMode(mode) && p == player && !p->hasShownGeneral()) {
             QString general1_name = tag[player->objectName()].toStringList().at(0);
             notifyProperty(player, p, "general", general1_name);
-        } else {
+        }
+        else
             notifyProperty(player, p, "general");
 
-            if (p->getGeneral2())
+        if (p->getGeneral2()) {
+            if (isHegemonyGameMode(mode) && p == player && !p->hasShownGeneral2()) {
+                QString general2_name = tag[player->objectName()].toStringList().at(1);
+                notifyProperty(player, p, "general2", general2_name);
+            }
+            else {
                 notifyProperty(player, p, "general2");
+            }
+        
         }
     }
 
@@ -4306,7 +4314,7 @@ void Room::marshal(ServerPlayer *player)
             args1 << (int)S_GAME_EVENT_ADD_SKILL;
             args1 << player->objectName();
             args1 << skill->objectName();
-            args1 << true;//player->inHeadSkills(skill->objectName());
+            args1 << player->inHeadSkills(skill->objectName());
 
             doNotify(player, S_COMMAND_LOG_EVENT, args1);
         }

@@ -185,6 +185,34 @@
     </message>
 </context>
 <context>
+    <name>ChooseGeneralBox</name>
+    <message>
+        <location filename="../src/ui/choosegeneralbox.cpp" line="147"/>
+        <source>fight</source>
+        <translation>出战</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/choosegeneralbox.cpp" line="224"/>
+        <source>head_general</source>
+        <translation>主将</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/choosegeneralbox.cpp" line="227"/>
+        <source>deputy_general</source>
+        <translation>副将</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/choosegeneralbox.cpp" line="300"/>
+        <source>Please select one general</source>
+        <translation>请选择一位人物</translation>
+    </message>
+    <message>
+        <location filename="../src/ui/choosegeneralbox.cpp" line="301"/>
+        <source>Please select the same nationality generals</source>
+        <translation>请选择一对同国籍人物</translation>
+    </message>
+</context>
+<context>
     <name>ChooseGeneralDialog</name>
     <message>
         <location filename="../src/dialog/choosegeneraldialog.cpp" line="51"/>
@@ -1494,34 +1522,6 @@
     </message>
 </context>
 <context>
-    <name>ChooseGeneralBox</name>
-    <message>
-        <location filename="../src/ui/choosegeneralbox.cpp" line="147"/>
-        <source>fight</source>
-        <translation>出战</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/choosegeneralbox.cpp" line="224"/>
-        <source>head_general</source>
-        <translation>主将</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/choosegeneralbox.cpp" line="227"/>
-        <source>deputy_general</source>
-        <translation>副将</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/choosegeneralbox.cpp" line="300"/>
-        <source>Please select one general</source>
-        <translation>请选择一位人物</translation>
-    </message>
-    <message>
-        <location filename="../src/ui/choosegeneralbox.cpp" line="301"/>
-        <source>Please select the same nationality generals</source>
-        <translation>请选择一对同国籍人物</translation>
-    </message>
-</context>
-<context>
     <name>GeneralOverview</name>
     <message>
         <location filename="../src/dialog/generaloverview.ui" line="29"/>
@@ -2439,7 +2439,7 @@
 <context>
     <name>Player</name>
     <message>
-        <location filename="../src/core/player.cpp" line="1622"/>
+        <location filename="../src/core/player.cpp" line="1623"/>
         <source>&lt;font color=%1&gt;No skills&lt;/font&gt;</source>
         <translation>&lt;font color=%1&gt;无技能&lt;/font&gt;</translation>
     </message>
@@ -2654,14 +2654,14 @@
         <translation>玩家序号应为 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="5474"/>
+        <location filename="../src/server/room.cpp" line="5482"/>
         <source>Card cannot be parsed:
  %1</source>
         <translation>卡牌字符串无法解析:
  %1</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="6953"/>
+        <location filename="../src/server/room.cpp" line="6961"/>
         <source>&lt;font color=#EEB422&gt;The network delay of player &lt;b&gt;%1&lt;/b&gt; is %2 milliseconds.&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 的网络延迟为 %2 毫秒&lt;/font&gt;</translation>
     </message>
