@@ -544,9 +544,7 @@ void ChooseGeneralBox::_initializeItems()
         generals << Sanguosha->getGeneral(item->objectName());
 
     foreach(GeneralCardItem *item, items)
-        item->setAcceptedMouseButtons(Qt::LeftButton);
-    foreach(GeneralCardItem *item, items)
-        item->setAcceptedMouseButtons(Qt::RightButton);
+        item->setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
 
     int index = 0;
     foreach (const General *general, generals) {
