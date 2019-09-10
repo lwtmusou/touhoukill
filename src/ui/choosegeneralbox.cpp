@@ -21,7 +21,7 @@
 #include "choosegeneralbox.h"
 #include "engine.h"
 #include "skinbank.h"
-//#include "freechoosedialog.h"
+#include "choosegeneraldialog.h" //#include "freechoosedialog.h"
 #include "banpair.h"
 #include "button.h"
 #include "client.h"
@@ -131,14 +131,14 @@ void GeneralCardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     if (ServerInfo.FreeChoose && !outOfRange && !timerLongPress.isActive() && releaseX >= pressX - moveRange
         && releaseX <= pressX + moveRange && releaseY >= pressY - moveRange && releaseY <= pressY + moveRange) {
 #else
-    //if (ServerInfo.FreeChoose && Qt::RightButton == event->button()) {
+    if (ServerInfo.FreeChoose && Qt::RightButton == event->button()) {
 #endif
-    //    FreeChooseDialog *general_changer = new FreeChooseDialog(QApplication::focusWidget());
-    //    connect(general_changer, &FreeChooseDialog::general_chosen, this, &GeneralCardItem::changeGeneral);
-    //    general_changer->exec();
-    //    general_changer->deleteLater();
-    //    return;
-    //}
+        FreeChooseDialog *general_changer = new FreeChooseDialog(QApplication::focusWidget());
+        connect(general_changer, &FreeChooseDialog::general_chosen, this, &GeneralCardItem::changeGeneral);
+        general_changer->exec();
+        general_changer->deleteLater();
+        return;
+    }
     CardItem::mouseReleaseEvent(event);
 }
 
@@ -545,6 +545,8 @@ void ChooseGeneralBox::_initializeItems()
 
     foreach(GeneralCardItem *item, items)
         item->setAcceptedMouseButtons(Qt::LeftButton);
+    foreach(GeneralCardItem *item, items)
+        item->setAcceptedMouseButtons(Qt::RightButton);
 
     int index = 0;
     foreach (const General *general, generals) {
