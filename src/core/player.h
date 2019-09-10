@@ -206,11 +206,11 @@ public:
     bool isLord() const;
     bool isCurrent() const;
 
-    void acquireSkill(const QString &skill_name);
-    void detachSkill(const QString &skill_name);
+    void acquireSkill(const QString &skill_name, bool head = true);
+    void detachSkill(const QString &skill_name, bool head = true);
     void detachAllSkills();
     virtual void addSkill(const QString &skill_name, bool head_skill = true);
-    virtual void loseSkill(const QString &skill_name);
+    virtual void loseSkill(const QString &skill_name, bool head = true);
     bool hasSkill(const QString &skill_name, bool include_lose = false, bool include_hidden = true) const;
     bool hasSkill(const Skill *skill, bool include_lose = false, bool include_hidden = true) const;
     bool hasSkills(const QString &skill_name, bool include_lose = false) const;
@@ -367,7 +367,7 @@ protected:
     QMap<QString, int> marks;
     QMap<QString, QList<int> > piles;
     QMap<QString, QStringList> pile_open;
-    QSet<QString> acquired_skills;
+    QSet<QString> acquired_skills; QSet<QString> acquired_skills2;
     QMap<QString, bool> skills; QMap<QString, bool> skills2; QStringList skills_originalOrder;//equals  skills.keys().  unlike QMap, QStringList will keep originalOrder
     QSet<QString> flags;
     QHash<QString, int> history;
