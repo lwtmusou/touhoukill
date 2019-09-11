@@ -119,7 +119,7 @@ public:
     {
         int m_normalHeight;
         QRect m_boundingRect;
-        QRect m_focusFrameArea;
+        QRect m_focusFrameArea; QRect m_focusFrameAreaDouble;
         QRect m_handCardArea;
 
         // equips
@@ -146,7 +146,7 @@ public:
         QPoint m_changeSecondaryHeroSkinBtnPos;
 
         // photo area
-        QRect m_avatarArea; QRect m_headAvatarArea;// hegemony head
+        QRect m_avatarArea; QRect m_headAvatarArea; QRect m_avatarAreaDouble;// hegemony head
         int m_avatarSize;
         QRect m_smallAvatarArea;
         int m_smallAvatarSize;
@@ -159,7 +159,7 @@ public:
         QSanShadowTextFont m_smallAvatarNameFont;
         QRect m_kingdomIconArea;
         QRect m_kingdomMaskArea;
-        QRect m_dashboardKingdomMaskArea;
+        QRect m_dashboardKingdomMaskArea; QRect m_dashboardSecondaryKingdomMaskArea;
         QSanShadowTextFont m_handCardFont;
         QRect m_screenNameArea;
         QSanShadowTextFont m_screenNameFont;
@@ -172,9 +172,9 @@ public:
         QRect m_sub_magatamaImageArea;
         bool m_magatamasHorizontal;
         bool m_magatamasBgVisible;
-        QPoint m_magatamasAnchor;
+        QPoint m_magatamasAnchor;  QPoint m_magatamasAnchorDouble;
         QPoint m_sub_magatamasAnchor;
-        Qt::Alignment m_magatamasAlign;
+        Qt::Alignment m_magatamasAlign; Qt::Alignment m_magatamasAlignDouble;
         Qt::Alignment m_sub_magatamasAlign;
         AnchoredRect m_phaseArea;
 
@@ -216,7 +216,7 @@ public:
 
     struct DashboardLayout : public PlayerCardContainerLayout
     {
-        int m_leftWidth, m_rightWidth;
+        int m_leftWidth, m_rightWidth; int m_rightWidthDouble;//hegemony
         int m_floatingAreaHeight;
         int m_rswidth;
         QSize m_buttonSetSize;

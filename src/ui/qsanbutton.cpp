@@ -413,7 +413,7 @@ void QSanInvokeSkillButton::_repaint()
 
         if (i == S_STATE_CANPRESHOW) {
             QPixmap temp(_m_bgPixmap[i]);
-            temp.fill(Qt::transparent);
+            temp.fill(Qt::yellow);//Qt::transparent
             QPainter painter(&temp);
             painter.setCompositionMode(QPainter::CompositionMode_Source);
             painter.drawPixmap(0, 0, _m_bgPixmap[i]);
@@ -511,7 +511,7 @@ void QSanInvokeSkillDock::setWidth(int width)
 void QSanInvokeSkillDock::update()
 {
     if (!_m_buttons.isEmpty()) {
-        
+
         QList<QSanInvokeSkillButton *> regular_buttons, lordskill_buttons, all_buttons;
         
         foreach (QSanInvokeSkillButton *btn, _m_buttons) {
@@ -569,11 +569,14 @@ void QSanInvokeSkillDock::update()
         //for regular skill
         for (int i = 0; i < rows; i++) {
             int rowTop = (RoomSceneInstance->m_skillButtonSank) ? (-rowH - 2 * (rows - i - 1)) : ((-rows + i) * rowH);
-            int btnWidth = (_m_width - 20) / btnNum[i];
+            int btnWidth = (this->objectName() == "left") ? (_m_width - 20) / btnNum[i] : (_m_width + 30) / btnNum[i];
             for (int j = 0; j < btnNum[i]; j++) {
                 QSanInvokeSkillButton *button = regular_buttons[m++]; //all_buttons[m++];
                 button->setButtonWidth((QSanInvokeSkillButton::SkillButtonWidth)(btnNum[i] - 1));
                 button->setPos(btnWidth * j, rowTop);
+                //QStringList l; 
+                //l << this->objectName() << button->getSkill()->objectName() << QString::number(_m_width) << QString::number(btnWidth * j)  << QString::number(rowTop);
+                //RoomSceneInstance->addlog(l);
             }
         }
 
@@ -598,6 +601,10 @@ void QSanInvokeSkillDock::update()
                 //button->setPos(0 - btnWidth * (j + 1) - 15, rowTop - G_DASHBOARD_LAYOUT.m_normalHeight);
                 button->setPos(0 - btnWidth * (j + 1) - G_DASHBOARD_LAYOUT.m_rightWidth + 45, rowTop - G_DASHBOARD_LAYOUT.m_normalHeight);
                 //
+               // QStringList l;
+                //l << this->objectName() << button->getSkill()->objectName() << QString::number(0 - btnWidth * (j + 1) - G_DASHBOARD_LAYOUT.m_rightWidth + 45) 
+                //    << QString::number(rowTop - G_DASHBOARD_LAYOUT.m_normalHeight);
+                //RoomSceneInstance->addlog(l);
             }
         }
 

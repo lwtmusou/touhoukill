@@ -105,7 +105,7 @@
     "roleComboBoxPos": [140, 1],
     "roleShownArea": [135, -5, 38, 38],
     "changePrimaryHeroSkinBtnPos": [25, 35],
-	"changeSecondaryHeroSkinBtnPos": [110, 30],
+	"changeSecondaryHeroSkinBtnPos": [110, 35],
 	
     "borderWidth": 15,
     "avatarImageType": 1,
@@ -161,6 +161,7 @@
 {
     "leftWidth": 164,
    "rightWidth": 200,
+   "rightWidthDouble": 300,
     "reverseSelectionWidth": 10,
     "normalHeight": 200,
     "floatingAreaHeight": 50,
@@ -187,7 +188,7 @@
     "roleComboBoxPos": [-28, 47],
     "roleShownArea": [-35, 41, 38, 38],
     "changePrimaryHeroSkinBtnPos": [25, 40],
-	"changeSecondaryHeroSkinBtnPos": [110, 30],
+	"changeSecondaryHeroSkinBtnPos": [175, 40],
     "borderWidth": 6,
     "avatarImageType": 1,
     "secondaryAvatarImageType": 4,
@@ -195,16 +196,21 @@
     "circleImageType": 0,
     //"avatarArea": [0,  0, 175, 210],
     "avatarArea": [0,  0, 200, 240],
-	"primaryAvatarArea": [0, 0, 100, 240],
+	"avatarAreaDouble": [0,  0, 300, 240],
+	"primaryAvatarArea": [0, 0, 150, 240],
     //"secondaryAvatarArea": [81, 10, 70, 70],
-	"secondaryAvatarArea": [101, 0, 100, 240],
+	"secondaryAvatarArea": [151, 0, 150, 240],
     //"circleArea": [8, 10, 134, 134],
-	"circleArea": [1, 1, 200, 240],
+	"circleArea": [1, 1, 300, 240],
     "avatarNameArea": [-67, -30, 100, 100],
+	"headAvatarNameArea": [0, -30, 100, 100],
+	"smallAvatarNameArea": [150, -30, 100, 100],//[-67, -30, 100, 100],
     "focusFrameArea": [0, 0, 200, 240],
-
-    "smallAvatarNameArea": [84, 36, 18, 36],
+	"focusFrameAreaDouble": [0, 0, 300, 240],
+    //"smallAvatarNameArea": [84, 36, 18, 36],
     "avatarNameFont": ["simli", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
+	"smallAvatarNameFont": ["simli", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
+
     // "avatarNameFont": ["@simli", [12, 12, 1], 60, [255, 255, 255, 255], 5, 8, [0, 0], [50, 50, 50, 150]],
     // "smallAvatarNameFont": ["@simli", [12, 12, 1], 40, [255, 255, 255, 255], 2, 10, [0, 0], [50, 50, 50, 150]],
 
@@ -225,7 +231,7 @@
 
     "kingdomIconArea": [-94, 10, 28, 28],
     "dashboardKingdomMaskArea": [-100, -2, 160, 50],
-
+	"dashboardSecondaryKingdomMaskArea": [150, -2, 120, 50],
     //"screenNameArea": [0, 0, 157, 25],
     "screenNameArea": [20, 0, 157, 25],
     "screenNameFont": ["DroidSansFallback", 12, 0, [255, 255, 255, 255], 2, 10, [0, 0], [0, 0, 0, 224]],
@@ -235,6 +241,7 @@
     "magatamaImageSubArea": [0, 6, 22, 26], //for skill banling
     "magatamasBgVisible": true,
     "magatamasAnchor": ["rightBottom", [195, 260]], //right
+	"magatamasAnchorDouble": ["rightBottom", [295, 260]], //right double
     "magatamasSubAnchor": ["leftBottom", [0, 260]],
     "cardMoveArea": [-50, 65, 200, 130],
     "progressBarArea": ["bottomCenter", "bottomCenter", [-8, 0], [300, 18]],

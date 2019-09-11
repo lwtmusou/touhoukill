@@ -55,12 +55,14 @@ Dashboard::Dashboard(QGraphicsItem *widget) //QGraphicsPixmapItem *widget
     // called by its graphics parent.
     //
     _m_width = G_DASHBOARD_LAYOUT.m_leftWidth + G_DASHBOARD_LAYOUT.m_rightWidth + 20;
-
+    if (ServerInfo.Enable2ndGeneral)
+        _m_width = G_DASHBOARD_LAYOUT.m_leftWidth + G_DASHBOARD_LAYOUT.m_rightWidthDouble + 20;
     _createLeft();
     _createMiddle();
     _createRight();
 
     _m_skillNameItem = new QGraphicsPixmapItem(_m_rightFrame);
+    
     // only do this after you create all frames.
     _createControls();
     _createExtraButtons();
@@ -234,16 +236,36 @@ int Dashboard::width()
 
 void Dashboard::_createRight()
 { //40 equals diff bettween middlefarme and rightframe
-    QRect rect = QRect(_m_width - G_DASHBOARD_LAYOUT.m_rightWidth, -40, G_DASHBOARD_LAYOUT.m_rightWidth, G_DASHBOARD_LAYOUT.m_normalHeight + 40);
+    int rwidth = (ServerInfo.Enable2ndGeneral) ? G_DASHBOARD_LAYOUT.m_rightWidthDouble : G_DASHBOARD_LAYOUT.m_rightWidth;
+    QRect rect = QRect(_m_width - rwidth, -40, rwidth, G_DASHBOARD_LAYOUT.m_normalHeight + 40);
     _paintPixmap(_m_rightFrame, rect, QPixmap(1, 1), _m_groupMain);
     _paintPixmap(_m_rightFrameBg, QRect(0, 0, rect.width(), rect.height()), _getPixmap(QSanRoomSkin::S_SKIN_KEY_RIGHTFRAME), _m_rightFrame);
     _m_rightFrame->setZValue(-1000); // nobody should be under me.
 
     _m_skillDock = new QSanInvokeSkillDock(_m_rightFrame);
-    QRect avatar = G_DASHBOARD_LAYOUT.m_avatarArea;
-    _m_skillDock->setPos(avatar.left() + 25, avatar.bottom() + G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height() - 25);
-    _m_skillDock->setWidth(avatar.width() - 50);
-    
+    //QRect avatar = G_DASHBOARD_LAYOUT.m_avatarArea;
+    QRect avatar = (ServerInfo.Enable2ndGeneral) ? G_DASHBOARD_LAYOUT.m_avatarAreaDouble : G_DASHBOARD_LAYOUT.m_avatarArea; // m_headAvatarArea;
+
+    if (ServerInfo.Enable2ndGeneral) {
+        _m_skillDock->setPos(avatar.left() + 5, avatar.bottom() + G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height() - 25);
+        _m_skillDock->setWidth(avatar.width() / 2);
+    }
+    else {
+        _m_skillDock->setPos(avatar.left() + 25, avatar.bottom() + G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height() - 25);
+        _m_skillDock->setWidth(avatar.width() - 50);
+    }
+
+
+    _m_rightSkillDock = new QSanInvokeSkillDock(_m_rightFrame);
+    QRect avatar2 = G_DASHBOARD_LAYOUT.m_smallAvatarArea; //m_smallAvatarArea;//G_DASHBOARD_LAYOUT.;
+    _m_rightSkillDock->setPos(avatar2.left() - 10, avatar2.bottom() + G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height() - 25);
+    _m_rightSkillDock->setWidth(avatar2.width() - 50);
+
+
+
+    _m_skillDock->setObjectName("left");
+    _m_rightSkillDock->setObjectName("right");
+
     //hegemony
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
         _m_shadow_layer1 = new QGraphicsRectItem(_m_rightFrame);
@@ -268,13 +290,14 @@ void Dashboard::_createRight()
 void Dashboard::_updateFrames()
 {
     // Here is where we adjust all frames to actual width
-    QRect rect = QRect(G_DASHBOARD_LAYOUT.m_leftWidth, 0, width() - G_DASHBOARD_LAYOUT.m_rightWidth - G_DASHBOARD_LAYOUT.m_leftWidth, G_DASHBOARD_LAYOUT.m_normalHeight);
+    int rwidth = (ServerInfo.Enable2ndGeneral) ? G_DASHBOARD_LAYOUT.m_rightWidthDouble : G_DASHBOARD_LAYOUT.m_rightWidth;
+    QRect rect = QRect(G_DASHBOARD_LAYOUT.m_leftWidth, 0, width() - rwidth - G_DASHBOARD_LAYOUT.m_leftWidth, G_DASHBOARD_LAYOUT.m_normalHeight);
     _paintPixmap(_m_middleFrame, rect, _getPixmap(QSanRoomSkin::S_SKIN_KEY_MIDDLEFRAME), this);
     QRect rect2 = QRect(0, 0, width(), G_DASHBOARD_LAYOUT.m_normalHeight);
     trusting_item->setRect(rect2);
     trusting_item->setPos(0, 0);
     trusting_text->setPos((rect2.width() - Config.BigFont.pixelSize() * 4.5) / 2, (rect2.height() - Config.BigFont.pixelSize()) / 2);
-    _m_rightFrame->setX(_m_width - G_DASHBOARD_LAYOUT.m_rightWidth);
+    _m_rightFrame->setX(_m_width - rwidth);
     Q_ASSERT(button_widget);
     button_widget->setX(rect.width() - getButtonWidgetWidth());
     button_widget->setY(0);
@@ -337,7 +360,8 @@ bool Dashboard::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStru
     if (place == Player::PlaceSpecial) {
         foreach (CardItem *card, card_items)
             card->setHomeOpacity(0.0);
-        QPointF center = mapFromItem(_getAvatarParent(), _dlayout->m_avatarArea.center());
+        QPoint avatarArea_center = (ServerInfo.Enable2ndGeneral) ? _dlayout->m_avatarAreaDouble.center() : _dlayout->m_avatarArea.center();
+        QPointF center = mapFromItem(_getAvatarParent(), avatarArea_center);
         QRectF rect = QRectF(0, 0, _dlayout->m_disperseWidth, 0);
         rect.moveCenter(center);
         _disperseCards(card_items, rect, Qt::AlignCenter, true, false);
@@ -541,7 +565,7 @@ void Dashboard::setWidth(int width)
     _updateDeathIcon();
 }
 
-QSanSkillButton *Dashboard::addSkillButton(const QString &skillName)
+QSanSkillButton *Dashboard::addSkillButton(const QString &skillName, const bool &head)
 {
     // if it's a equip skill, add it to equip bar
     _mutexEquipAnim.lock();
@@ -576,18 +600,28 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName)
     const Skill *skill = Sanguosha->getSkill(skillName);
     Q_ASSERT(skill && !skill->inherits("WeaponSkill") && !skill->inherits("ArmorSkill") && !skill->inherits("TreasureSkill"));
 #endif
-    if (_m_skillDock->getSkillButtonByName(skillName) != NULL) {
-        _m_button_recycle.append(_m_skillDock->getSkillButtonByName(skillName));
+    if (_m_skillDock->getSkillButtonByName(skillName) != NULL && head) {
+        //_m_button_recycle.append(_m_skillDock->getSkillButtonByName(skillName));
         return NULL;
     }
-    //hegemony
-    updateHiddenMark();
-    updateRightHiddenMark();//check it is right skilldock?
 
-    return _m_skillDock->addSkillButtonByName(skillName);
+    if (_m_rightSkillDock->getSkillButtonByName(skillName) && !head)
+        //_m_button_recycle.append(_m_leftSkillDock->getSkillButtonByName(skillName));
+        return NULL;
+
+
+    QSanInvokeSkillDock *dock = head ? _m_skillDock : _m_rightSkillDock;
+
+    //hegemony
+    if (dock == _m_skillDock)
+        updateHiddenMark();
+    else
+        updateRightHiddenMark();//check it is right skilldock?
+
+    return dock->addSkillButtonByName(skillName);
 }
 
-QSanSkillButton *Dashboard::removeSkillButton(const QString &skillName)
+QSanSkillButton *Dashboard::removeSkillButton(const QString &skillName, bool head)
 {
     QSanSkillButton *btn = NULL;
     _mutexEquipAnim.lock();
@@ -604,11 +638,13 @@ QSanSkillButton *Dashboard::removeSkillButton(const QString &skillName)
     }
     _mutexEquipAnim.unlock();
     if (btn == NULL) {
-        QSanSkillButton *temp = _m_skillDock->getSkillButtonByName(skillName);
-        if (_m_button_recycle.contains(temp))
-            _m_button_recycle.removeOne(temp);
-        else
-            btn = _m_skillDock->removeSkillButtonByName(skillName);
+        QSanInvokeSkillDock *dock = head ? _m_skillDock : _m_rightSkillDock;
+        QSanSkillButton *temp = dock->getSkillButtonByName(skillName);
+        //if (_m_button_recycle.contains(temp))
+        //    _m_button_recycle.removeOne(temp);
+        //else
+        if (temp != NULL)
+            btn = dock->removeSkillButtonByName(skillName);
     }
     return btn;
 }
@@ -659,7 +695,9 @@ void Dashboard::_createExtraButtons()
 void Dashboard::skillButtonActivated()
 {
     QSanSkillButton *button = qobject_cast<QSanSkillButton *>(sender());
-    foreach (QSanSkillButton *btn, _m_skillDock->getAllSkillButtons()) {
+    QList<QSanInvokeSkillButton *> buttons = _m_skillDock->getAllSkillButtons()
+        + _m_rightSkillDock->getAllSkillButtons();
+    foreach (QSanSkillButton *btn, buttons) {
         if (button == btn)
             continue;
 
@@ -678,7 +716,9 @@ void Dashboard::skillButtonActivated()
 
 void Dashboard::skillButtonDeactivated()
 {
-    foreach (QSanSkillButton *btn, _m_skillDock->getAllSkillButtons()) {
+    QList<QSanInvokeSkillButton *> buttons = _m_skillDock->getAllSkillButtons()
+        + _m_rightSkillDock->getAllSkillButtons();
+    foreach (QSanSkillButton *btn, buttons) {
         if (btn->getViewAsSkill() != NULL && btn->isDown())
             btn->setState(QSanButton::S_STATE_UP);
     }
@@ -847,7 +887,8 @@ void Dashboard::_adjustCards()
     QSanRoomSkin::DashboardLayout *layout = (QSanRoomSkin::DashboardLayout *)_m_layout;
     int leftWidth = layout->m_leftWidth;
     int cardHeight = G_COMMON_LAYOUT.m_cardNormalHeight;
-    int middleWidth = _m_width - layout->m_leftWidth - layout->m_rightWidth - getButtonWidgetWidth();
+    int rwidth = (ServerInfo.Enable2ndGeneral) ? layout->m_rightWidthDouble : layout->m_rightWidth;
+    int middleWidth = _m_width - layout->m_leftWidth - rwidth - getButtonWidgetWidth();
     QRect rowRect = QRect(leftWidth, layout->m_normalHeight - cardHeight - 3, middleWidth, cardHeight);
     for (int i = 0; i < maxCards; i++)
         row.push_back(m_handCards[i]);
@@ -875,7 +916,8 @@ void Dashboard::_adjustCards()
 
 int Dashboard::getMiddleWidth()
 {
-    return _m_width - G_DASHBOARD_LAYOUT.m_leftWidth - G_DASHBOARD_LAYOUT.m_rightWidth;
+    int rwidth = (ServerInfo.Enable2ndGeneral) ? G_DASHBOARD_LAYOUT.m_rightWidthDouble : G_DASHBOARD_LAYOUT.m_rightWidth;
+    return _m_width - G_DASHBOARD_LAYOUT.m_leftWidth - rwidth;
 }
 
 QList<CardItem *> Dashboard::cloneCardItems(QList<int> card_ids)
@@ -972,8 +1014,11 @@ QList<CardItem *> Dashboard::removeCardItems(const QList<int> &card_ids, Player:
             for (int i = 0; i < result.size(); i++)
                 center += result[i]->pos();
             center = 1.0 / result.length() * center;
-        } else if (place == Player::PlaceSpecial)
-            center = mapFromItem(_getAvatarParent(), _dlayout->m_avatarArea.center());
+        }
+        else if (place == Player::PlaceSpecial) {
+            QPoint avatarArea_center = (ServerInfo.Enable2ndGeneral) ? _dlayout->m_avatarAreaDouble.center() : _dlayout->m_avatarArea.center();
+            center = mapFromItem(_getAvatarParent(), avatarArea_center);
+        }
         else
             Q_ASSERT(false);
         rect.moveCenter(center.toPoint());
@@ -1047,6 +1092,7 @@ void Dashboard::updateAvatar()
     //else {
         PlayerCardContainer::updateAvatar();
         _m_skillDock->update();
+        _m_rightSkillDock->update();
         //_adjustComponentZValues();
     //}
     
@@ -1632,7 +1678,8 @@ QPointF Dashboard::getHeroSkinContainerPosition() const
 
 bool Dashboard::isItemUnderMouse(QGraphicsItem *item) const
 {
-    return (item->isUnderMouse() && !_m_skillDock->isUnderMouse()) || (_m_skillDock->isUnderMouse() && _m_screenNameItem->isVisible());
+    return (item->isUnderMouse() && !_m_skillDock->isUnderMouse() && !_m_rightSkillDock->isUnderMouse()) || 
+        ((_m_skillDock->isUnderMouse() || _m_rightSkillDock->isUnderMouse()) && _m_screenNameItem->isVisible());
 }
 
 void Dashboard::onAvatarHoverEnter()

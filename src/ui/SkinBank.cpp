@@ -893,6 +893,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
         tryParse(playerConfig["changePrimaryHeroSkinBtnPos"], layout->m_changePrimaryHeroSkinBtnPos);
         tryParse(playerConfig["changeSecondaryHeroSkinBtnPos"], layout->m_changeSecondaryHeroSkinBtnPos);
         tryParse(playerConfig["avatarArea"], layout->m_avatarArea);
+        tryParse(playerConfig["avatarAreaDouble"], layout->m_avatarAreaDouble);
         tryParse(playerConfig["primaryAvatarArea"], layout->m_headAvatarArea);
         tryParse(playerConfig["secondaryAvatarArea"], layout->m_smallAvatarArea);
         tryParse(playerConfig["circleArea"], layout->m_circleArea);
@@ -907,6 +908,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
         tryParse(playerConfig["kingdomMaskArea"], layout->m_kingdomMaskArea);
         tryParse(playerConfig["kingdomIconArea"], layout->m_kingdomIconArea);
         tryParse(playerConfig["dashboardKingdomMaskArea"], layout->m_dashboardKingdomMaskArea);
+        tryParse(playerConfig["dashboardSecondaryKingdomMaskArea"], layout->m_dashboardSecondaryKingdomMaskArea);
 
         layout->m_handCardFont.tryParse(playerConfig["handCardFont"]);
         tryParse(playerConfig["screenNameArea"], layout->m_screenNameArea);
@@ -932,7 +934,12 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
                 tryParse(magatamasSubAnchor[0], layout->m_sub_magatamasAlign);
             tryParse(magatamasSubAnchor[1], layout->m_sub_magatamasAnchor);
         }
-
+        JsonArray magatamasAnchorDouble = playerConfig["magatamasAnchorDouble"].value<JsonArray>();
+        if (magatamasAnchorDouble.size() == 2) {
+            if (isString(magatamasAnchorDouble[0]))
+                tryParse(magatamasAnchorDouble[0], layout->m_magatamasAlignDouble);
+            tryParse(magatamasAnchorDouble[1], layout->m_magatamasAnchorDouble);
+        }
 
 
 
@@ -977,9 +984,11 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
     config = layoutConfig[S_SKIN_KEY_DASHBOARD].value<JsonObject>();
     tryParse(config["leftWidth"], _m_dashboardLayout.m_leftWidth);
     tryParse(config["rightWidth"], _m_dashboardLayout.m_rightWidth);
+    tryParse(config["rightWidthDouble"], _m_dashboardLayout.m_rightWidthDouble);
     tryParse(config["reverseSelectionWidth"], _m_dashboardLayout.m_rswidth);
     tryParse(config["floatingAreaHeight"], _m_dashboardLayout.m_floatingAreaHeight);
     tryParse(config["focusFrameArea"], _m_dashboardLayout.m_focusFrameArea);
+    tryParse(config["focusFrameAreaDouble"], _m_dashboardLayout.m_focusFrameAreaDouble);
     tryParse(config["buttonSetSize"], _m_dashboardLayout.m_buttonSetSize);
     tryParse(config["confirmButtonArea"], _m_dashboardLayout.m_confirmButtonArea);
     tryParse(config["cancelButtonArea"], _m_dashboardLayout.m_cancelButtonArea);
