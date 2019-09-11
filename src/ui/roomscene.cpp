@@ -158,7 +158,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(focus_moved(QStringList, QSanProtocol::Countdown)), this, SLOT(moveFocus(QStringList, QSanProtocol::Countdown)));
     connect(ClientInstance, SIGNAL(emotion_set(QString, QString)), this, SLOT(setEmotion(QString, QString)));
     connect(ClientInstance, SIGNAL(skill_invoked(QString, QString)), this, SLOT(showSkillInvocation(QString, QString)));
-    connect(ClientInstance, SIGNAL(skill_acquired(const ClientPlayer *, QString)), this, SLOT(acquireSkill(const ClientPlayer *, QString)));
+    //connect(ClientInstance, SIGNAL(skill_acquired(const ClientPlayer *, QString)), this, SLOT(acquireSkill(const ClientPlayer *, QString)));
+    connect(ClientInstance, &Client::skill_acquired, this, &RoomScene::acquireSkill);
     connect(ClientInstance, SIGNAL(animated(int, QStringList)), this, SLOT(doAnimation(int, QStringList)));
     connect(ClientInstance, SIGNAL(role_state_changed(QString)), this, SLOT(updateRoles(QString)));
     connect(ClientInstance, SIGNAL(event_received(const QVariant)), this, SLOT(handleGameEvent(const QVariant)));
@@ -236,7 +237,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
     card_container->moveBy(-120, 0);
 
     connect(ClientInstance, SIGNAL(skill_attached(QString, bool)), this, SLOT(attachSkill(QString, bool)));
-    connect(ClientInstance, SIGNAL(skill_detached(QString)), this, SLOT(detachSkill(QString)));
+    //connect(ClientInstance, SIGNAL(skill_detached(QString)), this, SLOT(detachSkill(QString)));
+    connect(ClientInstance, &Client::skill_detached, this, &RoomScene::detachSkill);
 
     enemy_box = NULL;
     self_box = NULL;
@@ -478,11 +480,12 @@ void RoomScene::handleGameEvent(const QVariant &args)
     case S_GAME_EVENT_DETACH_SKILL: {
         QString player_name = arg[1].toString();
         QString skill_name = arg[2].toString();
+        bool head = arg[3].toBool();
 
         ClientPlayer *player = ClientInstance->getPlayer(player_name);
-        player->detachSkill(skill_name);
+        player->detachSkill(skill_name, head);
         if (player == Self)
-            detachSkill(skill_name);
+            detachSkill(skill_name, head);
 
         // stop huashen animation
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
@@ -499,10 +502,10 @@ void RoomScene::handleGameEvent(const QVariant &args)
     case S_GAME_EVENT_ACQUIRE_SKILL: {
         QString player_name = arg[1].toString();
         QString skill_name = arg[2].toString();
-
+        bool head_skill = arg[3].toBool();
         ClientPlayer *player = ClientInstance->getPlayer(player_name);
-        player->acquireSkill(skill_name);
-        acquireSkill(player, skill_name);
+        player->acquireSkill(skill_name, head_skill);
+        acquireSkill(player, skill_name, head_skill);
 
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
         container->updateAvatarTooltip();
@@ -529,9 +532,9 @@ void RoomScene::handleGameEvent(const QVariant &args)
     case S_GAME_EVENT_LOSE_SKILL: {
         QString player_name = arg[1].toString();
         QString skill_name = arg[2].toString();
-
+        bool head = arg[3].toBool();
         ClientPlayer *player = ClientInstance->getPlayer(player_name);
-        player->loseSkill(skill_name);
+        player->loseSkill(skill_name,head);
 
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
         container->updateAvatarTooltip();
@@ -630,7 +633,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         const General *newHero = Sanguosha->getGeneral(newHeroName);
         if (oldHero) {
             foreach (const Skill *skill, oldHero->getVisibleSkills())
-                detachSkill(skill->objectName());
+                detachSkill(skill->objectName(), !isSecondaryHero);
             if (oldHero->hasSkill("pingyi")) {
                 PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
                 container->stopHuaShen();
@@ -641,7 +644,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
             foreach (const Skill *skill, newHero->getVisibleSkills()) {
                 if (skill->isLordSkill() && !player->isLord())
                     continue;
-                attachSkill(skill->objectName(), false);
+                attachSkill(skill->objectName(), !isSecondaryHero);
             }
             if (!newHero->isVisible()) {
                 Config.KnownSurprisingGenerals.append(newHeroName);
@@ -2474,10 +2477,10 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
     }
 }
 
-void RoomScene::addSkillButton(const Skill *skill, bool)
+void RoomScene::addSkillButton(const Skill *skill, bool head)
 {
     // check duplication
-    QSanSkillButton *btn = dashboard->addSkillButton(skill->objectName());
+    QSanSkillButton *btn = dashboard->addSkillButton(skill->objectName(), head);
 
     if (btn == NULL)
         return;
@@ -2507,7 +2510,7 @@ void RoomScene::addSkillButton(const Skill *skill, bool)
     m_skillButtons.append(btn);
 }
 
-void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_name)
+void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_name, const bool &head)
 {
     QString type = "#AcquireSkill";
     QString from_general = player->objectName();
@@ -2515,18 +2518,27 @@ void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_na
     log_box->appendLog(type, from_general, QStringList(), QString(), arg);
 
     if (player == Self)
-        addSkillButton(Sanguosha->getSkill(skill_name));
+        addSkillButton(Sanguosha->getSkill(skill_name), head);
 }
 
 void RoomScene::updateSkillButtons()
 {
-    foreach (const Skill *skill, Self->getVisibleSkillList()) {
+    //check duanchang?
+    foreach (const Skill *skill, Self->getHeadSkillList()) {//Self->getVisibleSkillList()
+        if (skill->isLordSkill()
+            && (Self->getRole() != "lord" || ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode" || ServerInfo.GameMode == "02_1v1"
+               || Config.value("WithoutLordskill", false).toBool()))
+            continue;
+
+        addSkillButton(skill, true);
+    }
+    foreach(const Skill *skill, Self->getDeputySkillList()) {
         if (skill->isLordSkill()
             && (Self->getRole() != "lord" || ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode" || ServerInfo.GameMode == "02_1v1"
                 || Config.value("WithoutLordskill", false).toBool()))
             continue;
 
-        addSkillButton(skill);
+        addSkillButton(skill, false);
     }
 
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
@@ -4018,9 +4030,9 @@ void RoomScene::attachSkill(const QString &skill_name, bool from_left)
         addSkillButton(skill, from_left);
 }
 
-void RoomScene::detachSkill(const QString &skill_name)
+void RoomScene::detachSkill(const QString &skill_name, bool head)
 {
-    QSanSkillButton *btn = dashboard->removeSkillButton(skill_name);
+    QSanSkillButton *btn = dashboard->removeSkillButton(skill_name, head);
     if (btn == NULL)
         return; //be care LordSkill
     m_skillButtons.removeAll(btn);
@@ -4880,7 +4892,7 @@ void RoomScene::skillStateChange(const QString &skill_name)
         const Skill *skill = Sanguosha->getSkill(skill_name);
         addSkillButton(skill);
     } else if (skill_name.startsWith('-') && button_remain.contains(skill_name.mid(1))) {
-        detachSkill(skill_name.mid(1));
+        detachSkill(skill_name.mid(1), true);
     }
 }
 

@@ -329,7 +329,7 @@ signals:
     void focus_moved(const QStringList &focus, QSanProtocol::Countdown countdown);
     void emotion_set(const QString &target, const QString &emotion);
     void skill_invoked(const QString &who, const QString &skill_name);
-    void skill_acquired(const ClientPlayer *player, const QString &skill_name);
+    void skill_acquired(const ClientPlayer *player, const QString &skill_name, const bool &head);
     void animated(int name, const QStringList &args);
     void text_spoken(const QString &text);
     void line_spoken(const QString &line);
@@ -347,7 +347,7 @@ signals:
     void move_cards_got(int moveId, QList<CardsMoveStruct> moves);
 
     void skill_attached(const QString &skill_name, bool from_left);
-    void skill_detached(const QString &skill_name);
+    void skill_detached(const QString &skill_name, bool head = true);
     void do_filter();
 
     void nullification_asked(bool asked);

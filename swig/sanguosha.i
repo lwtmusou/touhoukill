@@ -169,8 +169,8 @@ public:
     bool isLord() const;
 	bool isCurrent() const;
 
-    void acquireSkill(const char *skill_name);
-    void detachSkill(const char *skill_name);
+    void acquireSkill(const char *skill_name, bool head = true);
+    void detachSkill(const char *skill_name, bool head = true);
     void detachAllSkills();
     virtual void addSkill(const char *skill_name, bool head_skill = true);
     virtual void loseSkill(const char *skill_name);

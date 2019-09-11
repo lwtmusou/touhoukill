@@ -1007,13 +1007,14 @@ void ServerPlayer::addSkill(const QString &skill_name, bool head_skill)
         room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 }
 
-void ServerPlayer::loseSkill(const QString &skill_name)
+void ServerPlayer::loseSkill(const QString &skill_name, bool head_skill)
 {
-    Player::loseSkill(skill_name);
+    Player::loseSkill(skill_name, head_skill);
     JsonArray args;
     args << QSanProtocol::S_GAME_EVENT_LOSE_SKILL;
     args << objectName();
     args << skill_name;
+    args << head_skill;
     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 }
 
@@ -1349,6 +1350,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
             arg_acquire << S_GAME_EVENT_ACQUIRE_SKILL;
             arg_acquire << objectName();
             arg_acquire << skill_name;
+            arg_acquire << inHeadSkills(skill_name);
             room->doNotify(player, S_COMMAND_LOG_EVENT, arg_acquire);
         }
     }
