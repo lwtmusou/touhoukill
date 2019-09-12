@@ -884,7 +884,7 @@ KnownBothHegmony::KnownBothHegmony(Card::Suit suit, int number)
     : TrickCard(suit, number)
 {
     setObjectName("known_both_hegemony");
-    can_recast = false;
+    can_recast = true;
 }
 
 QString KnownBothHegmony::getSubtype() const
@@ -898,22 +898,79 @@ bool KnownBothHegmony::targetFilter(const QList<const Player *> &targets, const 
     if (targets.length() >= total_num || to_select == Self)
         return false;
 
-    return (!to_select->hasShownGeneral() || (!to_select->isKongcheng() && (to_select->getShownHandcards().length() < to_select->getHandcardNum())));
+    return (!to_select->hasShownGeneral() || (to_select->getGeneral2() && to_select->hasShownGeneral2())
+        || (!to_select->isKongcheng() && (to_select->getShownHandcards().length() < to_select->getHandcardNum())));
 }
 
 bool KnownBothHegmony::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
+    bool rec = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) && can_recast;
+    if (rec) {
+        QList<int> sub;
+        if (isVirtualCard())
+            sub = subcards;
+        else
+            sub << getEffectiveId();
+
+        foreach(int id, sub) {
+            if (Self->getHandPile().contains(id)) {
+                rec = false;
+                break;
+            }
+            else { // for skill chaoren
+                if (id == Self->property("chaoren").toInt()) {
+                    rec = false;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (rec && Self->isCardLimited(this, Card::MethodUse))
+        return targets.length() == 0;
+
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
+        return targets.length() != 0;
+
     int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-    return targets.length() > 0 && targets.length() <= total_num;
+    if (!rec)
+        return targets.length() > 0 && targets.length() <= total_num;
+    else
+        return targets.length() <= total_num;
 }
 
-//void KnownBothHegmony::onUse(Room *room, const CardUseStruct &card_use) const
+void KnownBothHegmony::onUse(Room *room, const CardUseStruct &card_use) const
+{
+    if (card_use.to.isEmpty()) {
+        LogMessage log;
+        log.type = "#Card_Recast";
+        log.from = card_use.from;
+        log.card_str = card_use.card->toString();
+        room->sendLog(log);
+
+        CardMoveReason reason(CardMoveReason::S_REASON_RECAST, card_use.from->objectName());
+        reason.m_skillName = getSkillName();
+        room->moveCardTo(this, card_use.from, NULL, Player::DiscardPile, reason);
+        card_use.from->broadcastSkillInvoke("@recast");
+
+        card_use.from->drawCards(1);
+    }
+    else {
+        if (getSkillName() == "JadeSeal")
+            room->setEmotion(card_use.from, "treasure/jade_seal");
+
+        TrickCard::onUse(room, card_use);
+    }
+}
+
 
 void KnownBothHegmony::onEffect(const CardEffectStruct &effect) const
 {
     QStringList select;
     if (!effect.to->hasShownGeneral())
-        select << "showgeneral";
+        select << "showhead";
+    if (effect.to->getGeneral2() && !effect.to->hasShownGeneral2())
+        select << "showdeputy";
     if (!effect.to->isKongcheng() && (effect.to->getShownHandcards().length() < effect.to->getHandcardNum()))
         select << "showcard";
 
@@ -922,9 +979,19 @@ void KnownBothHegmony::onEffect(const CardEffectStruct &effect) const
 
     Room *room = effect.from->getRoom();
     QString choice = room->askForChoice(effect.from, objectName(), select.join("+"), QVariant::fromValue(effect));
+    LogMessage log;
+    log.type = "#KnownBothView";
+    log.from = effect.from;
+    log.to << effect.to;
+    log.arg = choice;
+    foreach(ServerPlayer *p, room->getAllPlayers(true)) {//room->getOtherPlayers(effect.from, true)
+        room->doNotify(p, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+    }
 
-    if (choice == "showgeneral") {
+
+    if (choice == "showhead" || choice == "showdeputy") {
         QStringList list = room->getTag(effect.to->objectName()).toStringList();
+        list.removeAt(choice == "showhead" ? 1 : 0);
         foreach (const QString &name, list) {
             LogMessage log;
             log.type = "$KnownBothViewGeneral";
