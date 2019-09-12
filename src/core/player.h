@@ -368,7 +368,7 @@ protected:
     QMap<QString, QList<int> > piles;
     QMap<QString, QStringList> pile_open;
     QSet<QString> acquired_skills; QSet<QString> acquired_skills2;
-    QMap<QString, bool> skills; QMap<QString, bool> skills2; QStringList skills_originalOrder;//equals  skills.keys().  unlike QMap, QStringList will keep originalOrder
+    QMap<QString, bool> skills; QMap<QString, bool> skills2; QStringList skills_originalOrder, skills2_originalOrder;//equals  skills.keys().  unlike QMap, QStringList will keep originalOrder
     QSet<QString> flags;
     QHash<QString, int> history;
     QStringList skill_invalid;
