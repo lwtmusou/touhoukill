@@ -569,13 +569,18 @@ void QSanInvokeSkillDock::update()
         //for regular skill
         for (int i = 0; i < rows; i++) {
             int rowTop = (RoomSceneInstance->m_skillButtonSank) ? (-rowH - 2 * (rows - i - 1)) : ((-rows + i) * rowH);
-            int btnWidth = (this->objectName() == "left") ? (_m_width - 20) / btnNum[i] : (_m_width + 30) / btnNum[i];
+            int btnWidth = (_m_width - 20) / btnNum[i];
+            if (ServerInfo.Enable2ndGeneral)
+                btnWidth = (this->objectName() == "left") ? (_m_width + 30) / btnNum[i] : (_m_width - 20) / btnNum[i];
             for (int j = 0; j < btnNum[i]; j++) {
                 QSanInvokeSkillButton *button = regular_buttons[m++]; //all_buttons[m++];
                 button->setButtonWidth((QSanInvokeSkillButton::SkillButtonWidth)(btnNum[i] - 1));
                 button->setPos(btnWidth * j, rowTop);
+                if (ServerInfo.Enable2ndGeneral)
+                    button->setPos(btnWidth * j + 30, rowTop);
                 //QStringList l; 
-                //l << this->objectName() << button->getSkill()->objectName() << QString::number(_m_width) << QString::number(btnWidth * j)  << QString::number(rowTop);
+                //l << this->objectName() << button->getSkill()->objectName() << QString::number(_m_width) << QString::number(btnWidth) 
+                //    << QString::number(btnWidth * j)  << QString::number(rowTop);
                 //RoomSceneInstance->addlog(l);
             }
         }

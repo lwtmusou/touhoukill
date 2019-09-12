@@ -153,15 +153,15 @@ public:
         int m_primaryAvatarSize;
         QRect m_circleArea;
         int m_circleImageSize;
-        QRect m_avatarNameArea;
+        QRect m_avatarNameArea; QRect m_headAvatarNameArea;
         QRect m_smallAvatarNameArea;
         QSanShadowTextFont m_avatarNameFont;
         QSanShadowTextFont m_smallAvatarNameFont;
-        QRect m_kingdomIconArea;
+        QRect m_kingdomIconArea; QRect m_kingdomIconAreaDouble;
         QRect m_kingdomMaskArea;
-        QRect m_dashboardKingdomMaskArea; QRect m_dashboardSecondaryKingdomMaskArea;
+        QRect m_dashboardKingdomMaskArea; QRect m_dashboardPrimaryKingdomMaskArea; QRect m_dashboardSecondaryKingdomMaskArea;
         QSanShadowTextFont m_handCardFont;
-        QRect m_screenNameArea;
+        QRect m_screenNameArea; QRect m_screenNameAreaDouble;
         QSanShadowTextFont m_screenNameFont;
 
         // progress bar and other controls
@@ -179,7 +179,7 @@ public:
         AnchoredRect m_phaseArea;
 
         // private pile (e.g. 7 stars, buqu)
-        QPoint m_privatePileStartPos;
+        QPoint m_privatePileStartPos; QPoint m_privatePileStartPosDouble;
         QPoint m_privatePileStep;
         QSize m_privatePileButtonSize;
 
@@ -190,7 +190,7 @@ public:
         AnchoredRect m_deathIconRegion;
         QRect m_votesIconRegion;
         QRect m_hiddenMarkRegion1, m_hiddenMarkRegion2, m_hiddenMarkRegion3;//hegemony
-        QRect m_seatIconRegion;//hegemony
+        QRect m_seatIconRegion; QRect m_seatIconRegionDouble;//hegemony
         QColor m_drankMaskColor;
         QColor m_duanchangMaskColor;
         QColor m_deathEffectColor;

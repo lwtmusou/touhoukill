@@ -214,6 +214,8 @@ void PlayerCardContainer::updateAvatar()
     if (m_player) {
         general = m_player->getAvatarGeneral();
         _m_layout->m_screenNameFont.paintText(_m_screenNameItem, _m_layout->m_screenNameArea, Qt::AlignCenter, m_player->screenName());
+        if (ServerInfo.Enable2ndGeneral && getPlayer() == Self)
+            _m_layout->m_screenNameFont.paintText(_m_screenNameItem, _m_layout->m_screenNameAreaDouble, Qt::AlignCenter, m_player->screenName());
     } else {
         _m_layout->m_screenNameFont.paintText(_m_screenNameItem, _m_layout->m_screenNameArea, Qt::AlignCenter, QString());
     }
@@ -223,7 +225,7 @@ void PlayerCardContainer::updateAvatar()
         QString name = general->objectName();
         QPixmap avatarIcon = _getAvatarIcon(name);
         QGraphicsPixmapItem *avatarIconTmp = _m_avatarIcon;
-        QRect avatarArea = (ServerInfo.Enable2ndGeneral && this->getPlayer() == Self) ? _m_layout->m_avatarAreaDouble : _m_layout->m_avatarArea;
+        QRect avatarArea = _m_layout->m_avatarArea;  //(ServerInfo.Enable2ndGeneral && this->getPlayer() == Self) ? _m_layout->m_avatarAreaDouble : _m_layout->m_avatarArea;
         _paintPixmap(avatarIconTmp, avatarArea, avatarIcon, _getAvatarParent());
         // this is just avatar general, perhaps game has not started yet.
 
@@ -232,12 +234,20 @@ void PlayerCardContainer::updateAvatar()
             QString kingdom = m_player->getKingdom();
             if (!isHegemonyGameMode(ServerInfo.GameMode)) {// && m_player->getGeneral2()  == NULL
                 _paintPixmap(_m_kingdomIcon, _m_layout->m_kingdomIconArea, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON, kingdom), _getAvatarParent());
+                if (ServerInfo.Enable2ndGeneral && getPlayer() == Self)
+                    _paintPixmap(_m_kingdomIcon, _m_layout->m_kingdomIconAreaDouble, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON, kingdom), _getAvatarParent());
+
+                
                 if (!ServerInfo.Enable2ndGeneral)
                     _paintPixmap(_m_kingdomColorMaskIcon, _m_layout->m_kingdomMaskArea, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_COLOR_MASK, kingdom), _getAvatarParent());
             }
                 //@todo
                 //we want this mask to start at zero piont of logbox width,
                 //and keep the height to equal with the diff between middleFrame and rightFrame
+            if (ServerInfo.Enable2ndGeneral)
+                _paintPixmap(_m_dashboardKingdomColorMaskIcon, _m_layout->m_dashboardPrimaryKingdomMaskArea,
+                    G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_DASHBOARD_KINGDOM_COLOR_MASK, kingdom), _getAvatarParent());
+            else
                 _paintPixmap(_m_dashboardKingdomColorMaskIcon, _m_layout->m_dashboardKingdomMaskArea,
                     G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_DASHBOARD_KINGDOM_COLOR_MASK, kingdom), _getAvatarParent());
             
@@ -247,14 +257,17 @@ void PlayerCardContainer::updateAvatar()
             QString name = Sanguosha->translate("&" + general->objectName());
             if (name.startsWith("&"))
                 name = Sanguosha->translate(general->objectName());
-            _m_layout->m_avatarNameFont.paintText(_m_avatarNameItem, _m_layout->m_avatarNameArea, Qt::AlignLeft | Qt::AlignJustify, name);
+            if (ServerInfo.Enable2ndGeneral && getPlayer() == Self)
+                _m_layout->m_avatarNameFont.paintText(_m_avatarNameItem, _m_layout->m_headAvatarNameArea, Qt::AlignLeft | Qt::AlignJustify, name);
+            else
+                _m_layout->m_avatarNameFont.paintText(_m_avatarNameItem, _m_layout->m_avatarNameArea, Qt::AlignLeft | Qt::AlignJustify, name);
         } else {
             _paintPixmap(_m_handCardBg, _m_layout->m_handCardArea, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM, QString(QSanRoomSkin::S_SKIN_KEY_DEFAULT_SECOND)),
                          _getAvatarParent());
         }
     } else {
         QGraphicsPixmapItem *avatarIconTmp = _m_avatarIcon;
-        QRect avatarArea = (ServerInfo.Enable2ndGeneral && this->getPlayer() == Self) ? _m_layout->m_avatarAreaDouble : _m_layout->m_avatarArea;
+        QRect avatarArea = _m_layout->m_avatarArea; //(ServerInfo.Enable2ndGeneral && this->getPlayer() == Self) ? _m_layout->m_avatarAreaDouble : _m_layout->m_avatarArea;
         _paintPixmap(avatarIconTmp, avatarArea, QSanRoomSkin::S_SKIN_KEY_BLANK_GENERAL, _getAvatarParent());
         _clearPixmap(_m_kingdomColorMaskIcon);
         _clearPixmap(_m_dashboardKingdomColorMaskIcon);
@@ -443,7 +456,7 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
         }
     }
     //set treasure pile at first
-    QPoint start = _m_layout->m_privatePileStartPos;
+    QPoint start = (ServerInfo.Enable2ndGeneral) ? _m_layout->m_privatePileStartPosDouble  : _m_layout->m_privatePileStartPos;
     QPoint step = _m_layout->m_privatePileStep;
     QSize size = _m_layout->m_privatePileButtonSize;
     QList<QGraphicsProxyWidget *> widgets_t, widgets_p, widgets = _m_privatePiles.values();
@@ -574,9 +587,9 @@ void PlayerCardContainer::refresh()
 
 void PlayerCardContainer::repaintAll()
 {
-    if (ServerInfo.Enable2ndGeneral && this->getPlayer() == Self)
-        _m_avatarArea->setRect(_m_layout->m_avatarAreaDouble);
-    else
+    //if (ServerInfo.Enable2ndGeneral && this->getPlayer() == Self)
+    //    _m_avatarArea->setRect(_m_layout->m_avatarAreaDouble);
+    //else
         _m_avatarArea->setRect(_m_layout->m_avatarArea);
     _m_smallAvatarArea->setRect(_m_layout->m_smallAvatarArea);
 
@@ -611,10 +624,16 @@ void PlayerCardContainer::repaintAll()
         m_changeSecondaryHeroSkinBtn->setPos(_m_layout->m_changeSecondaryHeroSkinBtnPos);
     }
 
-    if (_m_seatItem != NULL)
+    if (_m_seatItem != NULL) {
         _paintPixmap(_m_seatItem, _m_layout->m_seatIconRegion,
             _getPixmap(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER, QString::number(m_player->getInitialSeat())),
             _getAvatarParent());
+        if (ServerInfo.Enable2ndGeneral && getPlayer() == Self)
+            _paintPixmap(_m_seatItem, _m_layout->m_seatIconRegionDouble,
+                _getPixmap(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER, QString::number(m_player->getInitialSeat())),
+                _getAvatarParent());
+    }
+        
 
     if (!isHegemonyGameMode(ServerInfo.GameMode) && _m_roleComboBox != NULL)
         _m_roleComboBox->setPos(_m_layout->m_roleComboBoxPos);

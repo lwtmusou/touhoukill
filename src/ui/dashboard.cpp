@@ -243,8 +243,7 @@ void Dashboard::_createRight()
     _m_rightFrame->setZValue(-1000); // nobody should be under me.
 
     _m_skillDock = new QSanInvokeSkillDock(_m_rightFrame);
-    //QRect avatar = G_DASHBOARD_LAYOUT.m_avatarArea;
-    QRect avatar = (ServerInfo.Enable2ndGeneral) ? G_DASHBOARD_LAYOUT.m_avatarAreaDouble : G_DASHBOARD_LAYOUT.m_avatarArea; // m_headAvatarArea;
+    QRect avatar = G_DASHBOARD_LAYOUT.m_avatarArea; //(ServerInfo.Enable2ndGeneral) ? G_DASHBOARD_LAYOUT.m_avatarAreaDouble : G_DASHBOARD_LAYOUT.m_avatarArea; // m_headAvatarArea;
 
     if (ServerInfo.Enable2ndGeneral) {
         _m_skillDock->setPos(avatar.left() + 5, avatar.bottom() + G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height() - 25);
@@ -1729,7 +1728,7 @@ void Dashboard::_initializeRemovedEffect()
 
 void Dashboard::showSeat()
 {
-    const QRect region = G_DASHBOARD_LAYOUT.m_seatIconRegion;
+    const QRect region = (ServerInfo.Enable2ndGeneral) ? G_DASHBOARD_LAYOUT.m_seatIconRegionDouble : G_DASHBOARD_LAYOUT.m_seatIconRegion;
     PixmapAnimation *pma = PixmapAnimation::GetPixmapAnimation(_m_rightFrame, "seat");
     if (pma) {
         pma->setTransform(QTransform::fromTranslate(-pma->boundingRect().width() / 2, -pma->boundingRect().height() / 2));

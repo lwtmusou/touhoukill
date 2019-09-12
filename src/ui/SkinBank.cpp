@@ -902,16 +902,20 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
         tryParse(playerConfig["primaryAvatarImageType"], layout->m_primaryAvatarSize);
         tryParse(playerConfig["circleImageType"], layout->m_circleImageSize);
         tryParse(playerConfig["avatarNameArea"], layout->m_avatarNameArea);
+        tryParse(playerConfig["headAvatarNameArea"], layout->m_headAvatarNameArea);
         layout->m_avatarNameFont.tryParse(playerConfig["avatarNameFont"]);
         tryParse(playerConfig["smallAvatarNameArea"], layout->m_smallAvatarNameArea);
         layout->m_smallAvatarNameFont.tryParse(playerConfig["smallAvatarNameFont"]);
         tryParse(playerConfig["kingdomMaskArea"], layout->m_kingdomMaskArea);
         tryParse(playerConfig["kingdomIconArea"], layout->m_kingdomIconArea);
+        tryParse(playerConfig["kingdomIconAreaDouble"], layout->m_kingdomIconAreaDouble);
         tryParse(playerConfig["dashboardKingdomMaskArea"], layout->m_dashboardKingdomMaskArea);
+        tryParse(playerConfig["dashboardPrimaryKingdomMaskArea"], layout->m_dashboardPrimaryKingdomMaskArea);
         tryParse(playerConfig["dashboardSecondaryKingdomMaskArea"], layout->m_dashboardSecondaryKingdomMaskArea);
 
         layout->m_handCardFont.tryParse(playerConfig["handCardFont"]);
         tryParse(playerConfig["screenNameArea"], layout->m_screenNameArea);
+        tryParse(playerConfig["screenNameAreaDouble"], layout->m_screenNameAreaDouble);
         layout->m_screenNameFont.tryParse(playerConfig["screenNameFont"]);
 
         layout->m_progressBarArea.tryParse(playerConfig["progressBarArea"]);
@@ -945,6 +949,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
 
         layout->m_phaseArea.tryParse(playerConfig["phaseArea"]);
         tryParse(playerConfig["privatePileStartPos"], layout->m_privatePileStartPos);
+        tryParse(playerConfig["privatePileStartPosDouble"], layout->m_privatePileStartPosDouble);
         tryParse(playerConfig["privatePileStep"], layout->m_privatePileStep);
         tryParse(playerConfig["privatePileButtonSize"], layout->m_privatePileButtonSize);
         tryParse(playerConfig["actionedIconRegion"], layout->m_actionedIconRegion);
@@ -953,6 +958,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
         layout->m_deathIconRegion.tryParse(playerConfig["deathIconRegion"]);
         tryParse(playerConfig["votesIconRegion"], layout->m_votesIconRegion);
         tryParse(playerConfig["seatIconRegion"], layout->m_seatIconRegion);
+        tryParse(playerConfig["seatIconRegionDouble"], layout->m_seatIconRegionDouble);
         tryParse(playerConfig["drankMaskColor"], layout->m_drankMaskColor);
         tryParse(playerConfig["duanchangMaskColor"], layout->m_duanchangMaskColor);
         tryParse(playerConfig["deathEffectColor"], layout->m_deathEffectColor);
