@@ -189,7 +189,7 @@ public:
         QRect m_chainedIconRegion;
         AnchoredRect m_deathIconRegion;
         QRect m_votesIconRegion;
-        QRect m_hiddenMarkRegion1, m_hiddenMarkRegion2;//hegemony
+        QRect m_hiddenMarkRegion1, m_hiddenMarkRegion2, m_hiddenMarkRegion3;//hegemony
         QRect m_seatIconRegion;//hegemony
         QColor m_drankMaskColor;
         QColor m_duanchangMaskColor;

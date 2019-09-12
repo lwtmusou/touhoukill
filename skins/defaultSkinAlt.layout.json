@@ -267,9 +267,9 @@
     "trustButtonArea": [62, 162, 70, 70],
     "trustEffectColor": [38, 26, 66],
 	"generalShadowColor": [0, 0, 0, 180],
-	"hiddenMarkRegion": [4, -3, 124, 146],
-	//"hiddenMarkRegion": [4, -3, 170, 200],
-    "hiddenMarkRegion2": [132, -3, 124, 146],
+		"hiddenMarkRegion": [4, 0, 150, 146],
+	"hiddenMarkRegion3": [4, -3, 170, 200],
+    "hiddenMarkRegion2": [151, 0, 150, 146],
 	//"seatIconRegion": [-32, 118, 30, 30]
 	"seatIconRegion": [-94, 10, 30, 30]
 },

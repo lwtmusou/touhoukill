@@ -276,10 +276,14 @@ void Dashboard::_createRight()
             _m_shadow_layer2 = new QGraphicsRectItem(_m_rightFrame);
             _m_shadow_layer2->setRect(G_DASHBOARD_LAYOUT.m_smallAvatarArea);
         }
-        
 
-        _paintPixmap(leftHiddenMark, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion1, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK), _m_rightFrame);
-        _paintPixmap(rightHiddenMark, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion2, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK), _m_rightFrame);
+        _paintPixmap(leftHiddenMark, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion3, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK), _m_rightFrame);
+        if (ServerInfo.Enable2ndGeneral) {
+            _paintPixmap(leftHiddenMark, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion1, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK), _m_rightFrame);
+
+            _paintPixmap(rightHiddenMark, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion2, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK), _m_rightFrame);
+        }
+            
         
         connect(ClientInstance, &Client::head_preshowed, this, &Dashboard::updateHiddenMark);
         connect(ClientInstance, &Client::deputy_preshowed, this, &Dashboard::updateRightHiddenMark);
@@ -1787,9 +1791,10 @@ void Dashboard::updateHiddenMark()
 void Dashboard::updateRightHiddenMark()
 {
     if (!isHegemonyGameMode(ServerInfo.GameMode)) return;
+    if (rightHiddenMark == NULL) return;
     if (m_player && RoomSceneInstance->game_started && !m_player->hasShownGeneral2())
         rightHiddenMark->setVisible(m_player->isHidden(false));
-    else
+    else 
         rightHiddenMark->setVisible(false);
 }
 

@@ -962,6 +962,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
         tryParse(playerConfig["extraSkillTextArea"], layout->m_extraSkillTextArea);
         tryParse(playerConfig["hiddenMarkRegion"], layout->m_hiddenMarkRegion1);
         tryParse(playerConfig["hiddenMarkRegion2"], layout->m_hiddenMarkRegion2);
+        tryParse(playerConfig["hiddenMarkRegion3"], layout->m_hiddenMarkRegion3);
     }
 
     config = layoutConfig[S_SKIN_KEY_PHOTO].value<JsonObject>();
