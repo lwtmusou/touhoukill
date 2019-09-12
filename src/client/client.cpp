@@ -971,11 +971,18 @@ QString Client::getPlayerName(const QString &str)
             general_name.append("/" + Sanguosha->translate(player->getGeneral2Name()));
         if (ServerInfo.EnableSame || player->getGeneralName() == "anjiang")
             general_name = QString("%1[%2]").arg(general_name).arg(player->getSeat());
-
-        if (player->getGeneralName() == "anjiang"  && player->getGeneral2() != NULL && player->getGeneral2Name() == "anjiang") {//isHegemonyGameMode(ServerInfo.GameMode) && 
-        //if (player->getGeneralName() == "anjiang")// && player->getGeneral2() != NULL && player->getGeneral2Name() == "anjiang"
-            general_name = Sanguosha->translate(QString("SEAT(%1)").arg(QString::number(player->getInitialSeat())));
+        
+        if (isHegemonyGameMode(ServerInfo.GameMode)) {
+            if (ServerInfo.Enable2ndGeneral){
+                if (player->getGeneralName() == "anjiang"  && player->getGeneral2() != NULL && player->getGeneral2Name() == "anjiang") {  
+                    general_name = Sanguosha->translate(QString("SEAT(%1)").arg(QString::number(player->getInitialSeat())));
+                }
+            }
+            else if (player->getGeneralName() == "anjiang") {
+                general_name = Sanguosha->translate(QString("SEAT(%1)").arg(QString::number(player->getInitialSeat())));
+            }
         }
+        
         
         return general_name;
     } else
