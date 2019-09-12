@@ -188,7 +188,7 @@
     "roleComboBoxPos": [-28, 47],
     "roleShownArea": [-35, 41, 38, 38],
     "changePrimaryHeroSkinBtnPos": [25, 40],
-	"changeSecondaryHeroSkinBtnPos": [175, 40],
+	"changeSecondaryHeroSkinBtnPos": [225, 40],
     "borderWidth": 6,
     "avatarImageType": 1,
     "secondaryAvatarImageType":1,// 4,
