@@ -232,7 +232,7 @@ public:
         int m_disperseWidth;
         QColor m_trustEffectColor;
         QSanShadowTextFont m_skillTextFonts[3];
-        QRect m_skillNameArea;
+        QRect m_skillNameArea; QRect m_secondarySkillNameArea;
         QSanShadowTextFont m_skillNameFont;
         QColor m_skillTextColors[QSanButton::S_NUM_BUTTON_STATES * QSanInvokeSkillButton::S_NUM_SKILL_TYPES];
         QColor m_skillTextShadowColors[QSanButton::S_NUM_BUTTON_STATES * QSanInvokeSkillButton::S_NUM_SKILL_TYPES];

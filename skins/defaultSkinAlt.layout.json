@@ -214,6 +214,7 @@
     // "smallAvatarNameFont": ["@simli", [12, 12, 1], 40, [255, 255, 255, 255], 2, 10, [0, 0], [50, 50, 50, 150]],
 
     "skillNameArea": [55, 30, 300, 50],
+	"secondarySkillNameArea": [255, 30, 300, 50],
     "skillNameFont": ["simli", 30, 0, [255, 255, 255, 255], 2, 20, [0, 0], [255, 20, 255, 128]],
 
     // must be in one of the following format:

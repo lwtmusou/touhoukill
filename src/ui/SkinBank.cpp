@@ -1006,6 +1006,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
     tryParse(config["disperseWidth"], _m_dashboardLayout.m_disperseWidth);
     tryParse(config["trustEffectColor"], _m_dashboardLayout.m_trustEffectColor);
     tryParse(config["skillNameArea"], _m_dashboardLayout.m_skillNameArea);
+    tryParse(config["secondarySkillNameArea"], _m_dashboardLayout.m_secondarySkillNameArea);
     _m_dashboardLayout.m_skillNameFont.tryParse(config["skillNameFont"]);
     config = layoutConfig["skillButton"].value<JsonObject>();
     JsonArray configWidth = config["width"].value<JsonArray>();

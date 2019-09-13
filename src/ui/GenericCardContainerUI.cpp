@@ -317,7 +317,7 @@ void PlayerCardContainer::updateSmallAvatar()
         _paintPixmap(_m_circleItem, _m_layout->m_circleArea, QString(QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_IMAGE).arg(_m_layout->m_circleImageSize), _getAvatarParent());
         if (!fake_general) {
             _m_smallAvatarArea->setToolTip(m_player->getSkillDescription(true, "deputy"));
-            QString kingdom = (m_player->getGeneral()) ? m_player->getGeneral()->getKingdom() : "wai";
+            QString kingdom = m_player->getKingdom();  //(m_player->getGeneral()) ? m_player->getGeneral()->getKingdom() : "wai";
                 _paintPixmap(_m_dashboardSecondaryKingdomColorMaskIcon, _m_layout->m_dashboardSecondaryKingdomMaskArea,
                     G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_DASHBOARD_KINGDOM_COLOR_MASK, kingdom), _getAvatarParent());
         }
@@ -1585,8 +1585,12 @@ void PlayerCardContainer::showSkillName(const QString &skill_name, bool isSelf)
                                                  G_PHOTO_LAYOUT.m_skillNameArea, //getSkillNameArea()
                                                  Qt::AlignLeft, Sanguosha->translate(skill_name));
     } else {
-        G_DASHBOARD_LAYOUT.m_skillNameFont.paintText(_m_skillNameItem,
-                                                     G_DASHBOARD_LAYOUT.m_skillNameArea, //
+        if (ServerInfo.Enable2ndGeneral && Self->inDeputySkills(skill_name))
+            G_DASHBOARD_LAYOUT.m_skillNameFont.paintText(_m_skillNameItem, G_DASHBOARD_LAYOUT.m_secondarySkillNameArea,
+                Qt::AlignLeft, Sanguosha->translate(skill_name));
+        else
+            G_DASHBOARD_LAYOUT.m_skillNameFont.paintText(_m_skillNameItem,
+                                                     G_DASHBOARD_LAYOUT.m_skillNameArea,
                                                      Qt::AlignLeft, Sanguosha->translate(skill_name));
     }
     _m_skillNameItem->show();
