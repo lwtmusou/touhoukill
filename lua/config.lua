@@ -77,6 +77,7 @@ config = {
 		"TH99",
 		"THNDJ",
 		"TouhouGod",
+		"HegemonyGeneral",
 		"Standard", --此包内带pattern的定义 不能屏蔽。。。
 		"Test",
 

@@ -307,6 +307,8 @@ QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName, bool cache, boo
         name = name.mid(3);
     else if (ServerInfo.GameMode == "02_1v1" && name.startsWith("kof_"))
         name = name.mid(4);
+    else if (name.endsWith("_hegemony"))
+        name = name.replace("_hegemony", "");
     return getPixmap(S_SKIN_KEY_HAND_CARD_MAIN_PHOTO, name, cache, heroSkin);
 }
 
@@ -338,6 +340,8 @@ QPixmap QSanRoomSkin::getCardAvatarPixmap(const QString &generalName, bool heroS
         name = name.mid(3);
     else if (ServerInfo.GameMode == "02_1v1" && name.startsWith("kof_"))
         name = name.mid(4);
+    else if (name.endsWith("_hegemony"))
+        name = name.replace("_hegemony", "");
     return getGeneralPixmap(name, S_GENERAL_ICON_SIZE_TINY, heroSkin);
 }
 
@@ -351,6 +355,8 @@ QPixmap QSanRoomSkin::getGeneralPixmap(const QString &generalName, GeneralIconSi
     if (size == S_GENERAL_ICON_SIZE_CARD)
         return getCardMainPixmap(name, false, heroSkin);
     else {
+        if (name.endsWith("_hegemony"))
+            name = name.replace("_hegemony", "");
         QString key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(size).arg(name);
         if (isImageKeyDefined(key))
             return getPixmap(key, QString(), false, heroSkin);
@@ -1148,7 +1154,10 @@ const QString &QSanSkinFactory::getCurrentSkinName() const
 //tangjs520
 void QSanRoomSkin::getHeroSkinContainerGeneralIconPathAndClipRegion(const QString &generalName, int skinIndex, QString &generalIconPath, QRect &clipRegion) const
 {
-    QString customSkinBaseKey = QString(S_HERO_SKIN_KEY_GENERAL_ICON).arg(generalName);
+    QString unique_general = generalName;
+    if (unique_general.endsWith("_hegemony"))
+        unique_general = unique_general.replace("_hegemony", "");
+    QString customSkinBaseKey = QString(S_HERO_SKIN_KEY_GENERAL_ICON).arg(unique_general);
     QString customSkinKey = QString("%1-%2").arg(customSkinBaseKey).arg(skinIndex);
 
     QString defaultSkinBaseKey = QString(S_HERO_SKIN_KEY_GENERAL_ICON).arg("default");
@@ -1187,12 +1196,12 @@ void QSanRoomSkin::getHeroSkinContainerGeneralIconPathAndClipRegion(const QStrin
                 break;
 
             case 2:
-                generalIconPath = path.arg(generalName);
+                generalIconPath = path.arg(unique_general);
                 break;
 
             case 3:
                 if (skinIndex > 0) {
-                    generalIconPath = path.arg(generalName).arg(skinIndex);
+                    generalIconPath = path.arg(unique_general).arg(skinIndex);
                 }
                 break;
 

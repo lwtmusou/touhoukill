@@ -419,14 +419,17 @@ GeneralOverview::~GeneralOverview()
 
 bool GeneralOverview::hasSkin(const QString &general_name)
 {
-    int skin_index = Config.value(QString("HeroSkin/%1").arg(general_name), 0).toInt();
+    QString unique_general = general_name;
+    if (unique_general.endsWith("_hegemony"))
+        unique_general = unique_general.replace("_hegemony", "");
+    int skin_index = Config.value(QString("HeroSkin/%1").arg(unique_general), 0).toInt();
     if (skin_index == 0) {
         Config.beginGroup("HeroSkin");
-        Config.setValue(general_name, 1);
+        Config.setValue(unique_general, 1);
         Config.endGroup();
-        QPixmap pixmap = G_ROOM_SKIN.getCardMainPixmap(general_name);
+        QPixmap pixmap = G_ROOM_SKIN.getCardMainPixmap(unique_general);
         Config.beginGroup("HeroSkin");
-        Config.remove(general_name);
+        Config.remove(unique_general);
         Config.endGroup();
         if (pixmap.width() <= 1 && pixmap.height() <= 1)
             return false;
@@ -436,13 +439,16 @@ bool GeneralOverview::hasSkin(const QString &general_name)
 
 QString GeneralOverview::getIllustratorInfo(const QString &general_name)
 {
-    int skin_index = Config.value(QString("HeroSkin/%1").arg(general_name), 0).toInt();
+    QString unique_general = general_name;
+    if (unique_general.endsWith("_hegemony"))
+        unique_general = unique_general.replace("_hegemony", "");
+    int skin_index = Config.value(QString("HeroSkin/%1").arg(unique_general), 0).toInt();
     QString suffix = (skin_index > 0) ? QString("_%1").arg(skin_index) : QString();
-    QString illustrator_text = Sanguosha->translate(QString("illustrator:%1%2").arg(general_name).arg(suffix));
+    QString illustrator_text = Sanguosha->translate(QString("illustrator:%1%2").arg(unique_general).arg(suffix));
     if (!illustrator_text.startsWith("illustrator:"))
         return illustrator_text;
     else {
-        illustrator_text = Sanguosha->translate("illustrator:" + general_name);
+        illustrator_text = Sanguosha->translate("illustrator:" + unique_general);
         if (!illustrator_text.startsWith("illustrator:"))
             return illustrator_text;
         else
@@ -452,13 +458,16 @@ QString GeneralOverview::getIllustratorInfo(const QString &general_name)
 
 QString GeneralOverview::getOriginInfo(const QString &general_name)
 {
-    int skin_index = Config.value(QString("HeroSkin/%1").arg(general_name), 0).toInt();
+    QString unique_general = general_name;
+    if (unique_general.endsWith("_hegemony"))
+        unique_general = unique_general.replace("_hegemony", "");
+    int skin_index = Config.value(QString("HeroSkin/%1").arg(unique_general), 0).toInt();
     QString suffix = (skin_index > 0) ? QString("_%1").arg(skin_index) : QString();
-    QString illustrator_text = Sanguosha->translate(QString("origin:%1%2").arg(general_name).arg(suffix));
+    QString illustrator_text = Sanguosha->translate(QString("origin:%1%2").arg(unique_general).arg(suffix));
     if (!illustrator_text.startsWith("origin:"))
         return illustrator_text;
     else {
-        illustrator_text = Sanguosha->translate("origin:" + general_name);
+        illustrator_text = Sanguosha->translate("origin:" + unique_general);
         if (!illustrator_text.startsWith("origin:"))
             return illustrator_text;
         else
@@ -646,25 +655,27 @@ void GeneralOverview::askChangeSkin()
 {
     int row = ui->tableWidget->currentRow();
     QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
-
-    int n = Config.value(QString("HeroSkin/%1").arg(general_name), 0).toInt();
+    QString unique_general = general_name;
+    if (unique_general.endsWith("_hegemony"))
+        unique_general = unique_general.replace("_hegemony", "");
+    int n = Config.value(QString("HeroSkin/%1").arg(unique_general), 0).toInt();
     n++;
     Config.beginGroup("HeroSkin");
-    Config.setValue(general_name, n);
+    Config.setValue(unique_general, n);
     Config.endGroup();
-    QPixmap pixmap = G_ROOM_SKIN.getCardMainPixmap(general_name);
+    QPixmap pixmap = G_ROOM_SKIN.getCardMainPixmap(unique_general);
     if (pixmap.width() <= 1 && pixmap.height() <= 1) {
         Config.beginGroup("HeroSkin");
-        Config.remove(general_name);
+        Config.remove(unique_general);
         Config.endGroup();
         if (n > 1)
-            pixmap = G_ROOM_SKIN.getCardMainPixmap(general_name);
+            pixmap = G_ROOM_SKIN.getCardMainPixmap(unique_general);
         else
             return;
     }
     ui->generalPhoto->setPixmap(pixmap);
-    ui->illustratorLineEdit->setText(getIllustratorInfo(general_name));
-    ui->originLineEdit->setText(getOriginInfo(general_name));
+    ui->illustratorLineEdit->setText(getIllustratorInfo(unique_general));
+    ui->originLineEdit->setText(getOriginInfo(unique_general));
 }
 
 void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders, const QStringList &kingdoms, int lower, int upper,

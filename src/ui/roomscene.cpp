@@ -729,7 +729,11 @@ void RoomScene::handleGameEvent(const QVariant &args)
         QString player_name = arg[1].toString();
         QString general_name = arg[2].toString();
         int skinIndex = arg[3].toInt();
-        int old_skin_index = Config.value(QString("HeroSkin/%1").arg(general_name), 0).toInt();
+        QString unique_general = general_name;
+        if (unique_general.endsWith("_hegemony"))
+            unique_general = unique_general.replace("_hegemony", "");
+
+        int old_skin_index = Config.value(QString("HeroSkin/%1").arg(unique_general), 0).toInt();
         if (skinIndex == old_skin_index)
             break;
         bool head = arg[4].toBool();
@@ -759,8 +763,9 @@ void RoomScene::handleGameEvent(const QVariant &args)
                         noSkin = true;
                         continue;
                     }
+
                     Config.beginGroup("HeroSkin");
-                    (0 == skinIndex) ? Config.remove(general_name) : Config.setValue(general_name, skinIndex);
+                    (0 == skinIndex) ? Config.remove(unique_general) : Config.setValue(unique_general, skinIndex);
                     Config.endGroup();
 
                     foreach (HeroSkinContainer *heroSkinContainer, getHeroSkinContainers()) {
