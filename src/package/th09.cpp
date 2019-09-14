@@ -2122,7 +2122,7 @@ public:
         } else if (triggerEvent == EventPhaseEnd) {
             room->askForUseCard(invoke->invoker, "@@mengxiang-card1", "@mengxiang");
 
-            foreach (ServerPlayer *player, room->getAlivePlayers()) {
+            foreach (ServerPlayer *player, room->getAllPlayers(false)) {
                 if (player->getMark("mengxiangtarget") == 1) {
                     invoke->targets << player;
                     player->removeMark("mengxiangtarget");
@@ -2140,6 +2140,7 @@ public:
             invoke->invoker->setFlags(objectName());
         } else if (triggerEvent == EventPhaseEnd) {
             foreach (ServerPlayer *p, invoke->targets) {
+                if (p->isDead()) continue;
                 QList<int> ids;
                 foreach (const Card *c, p->getHandcards())
                     ids << c->getEffectiveId();
