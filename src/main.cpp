@@ -62,13 +62,13 @@ int main(int argc, char *argv[])
         return qApp->exec();
     }
 
-    qApp->setFont(Config.AppFont);
-
     QFile file("sanguosha.qss");
     if (file.open(QIODevice::ReadOnly)) {
         QTextStream stream(&file);
         qApp->setStyleSheet(stream.readAll());
     }
+
+    qApp->setFont(Config.AppFont);
 
 #ifdef AUDIO_SUPPORT
     Audio::init();

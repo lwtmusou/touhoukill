@@ -2422,14 +2422,14 @@ TH09Package::TH09Package()
     sumireko->addSkill(new Liqun);
     related_skills.insertMulti("nianli", "#nianlimod");
 
+    General *sumireko_sp = new General(this, "sumireko_sp", "zhan", 4);
+    sumireko_sp->addSkill(new Mengxiang);
+    sumireko_sp->addSkill(new Jishi);
+
     General *yorigamis = new General(this, "yorigamis$", "zhan", 4);
     yorigamis->addSkill(new Jianshe);
     yorigamis->addSkill(new YsJie);
     yorigamis->addSkill(new Yishen);
-
-    General *sumireko_sp = new General(this, "sumireko_sp", "zhan", 4);
-    sumireko_sp->addSkill(new Mengxiang);
-    sumireko_sp->addSkill(new Jishi);
 
     addMetaObject<YanhuiCard>();
     addMetaObject<ToupaiCard>();
