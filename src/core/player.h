@@ -340,7 +340,7 @@ public:
     bool hasShownSkills(const QString &skill_names) const;
     bool inHeadSkills(const QString &skill_name) const;
     bool inDeputySkills(const QString &skill_name) const;
-    void setSkillPreshowed(const QString &skill, bool preshowed = true);//hegemony
+    void setSkillPreshowed(const QString &skill, bool preshowed = true); //hegemony
     void setSkillsPreshowed(const QString &falgs = "hd", bool preshowed = true);
     bool hasPreshowedSkill(const QString &name) const;
     bool hasPreshowedSkill(const Skill *skill) const;
@@ -360,15 +360,15 @@ public:
 
     QVariantMap tag;
 
-
-
-
 protected:
     QMap<QString, int> marks;
     QMap<QString, QList<int> > piles;
     QMap<QString, QStringList> pile_open;
-    QSet<QString> acquired_skills; QSet<QString> acquired_skills2;
-    QMap<QString, bool> skills; QMap<QString, bool> skills2; QStringList skills_originalOrder, skills2_originalOrder;//equals  skills.keys().  unlike QMap, QStringList will keep originalOrder
+    QSet<QString> acquired_skills;
+    QSet<QString> acquired_skills2;
+    QMap<QString, bool> skills;
+    QMap<QString, bool> skills2;
+    QStringList skills_originalOrder, skills2_originalOrder; //equals  skills.keys().  unlike QMap, QStringList will keep originalOrder
     QSet<QString> flags;
     QHash<QString, int> history;
     QStringList skill_invalid;
@@ -394,8 +394,8 @@ private:
     int initialSeat; //for record
     bool alive;
 
-    bool general_showed; bool general2_showed;//hegemony
-
+    bool general_showed;
+    bool general2_showed; //hegemony
 
     Phase phase;
     WrappedCard *weapon, *armor, *defensive_horse, *offensive_horse, *treasure;
@@ -424,7 +424,8 @@ signals:
     void removedChanged();
     void brokenEquips_changed();
 
-    void head_state_changed(); void deputy_state_changed();//hegemony
+    void head_state_changed();
+    void deputy_state_changed(); //hegemony
 };
 
 #endif

@@ -6,11 +6,11 @@
 #include "TimedProgressBar.h"
 #include "carditem.h"
 #include "graphicspixmaphoveritem.h"
+#include "hegemonyrolecombobox.h"
 #include "heroskincontainer.h"
 #include "magatamasItem.h"
 #include "player.h"
 #include "rolecombobox.h"
-#include "hegemonyrolecombobox.h"
 
 #include <QGraphicsEffect>
 #include <QGraphicsItem>
@@ -162,7 +162,6 @@ public slots:
 
     void updateBrokenEquips();
     void onRemovedChanged();
-    
 
 protected:
     // overrider parent functions
@@ -239,7 +238,8 @@ protected:
     QGraphicsPixmapItem *_m_chainIcon, *_m_faceTurnedIcon;
     QGraphicsPixmapItem *_m_handCardBg, *_m_handCardNumText;
     QGraphicsPixmapItem *_m_kingdomColorMaskIcon;
-    QGraphicsPixmapItem *_m_dashboardKingdomColorMaskIcon; QGraphicsPixmapItem *_m_dashboardSecondaryKingdomColorMaskIcon;
+    QGraphicsPixmapItem *_m_dashboardKingdomColorMaskIcon;
+    QGraphicsPixmapItem *_m_dashboardSecondaryKingdomColorMaskIcon;
     QGraphicsPixmapItem *_m_deathIcon;
     QGraphicsPixmapItem *_m_actionIcon;
     QGraphicsPixmapItem *_m_kingdomIcon;
@@ -338,7 +338,7 @@ private:
     int _lastZ;
     bool _allZAdjusted;
 
-    void showHeroSkinListHelper(const General *general, GraphicsPixmapHoverItem *avatarIcon);//, HeroSkinContainer *&heroSkinContainer
+    void showHeroSkinListHelper(const General *general, GraphicsPixmapHoverItem *avatarIcon); //, HeroSkinContainer *&heroSkinContainer
 
 signals:
     void selected_changed();

@@ -2140,7 +2140,8 @@ public:
             invoke->invoker->setFlags(objectName());
         } else if (triggerEvent == EventPhaseEnd) {
             foreach (ServerPlayer *p, invoke->targets) {
-                if (p->isDead()) continue;
+                if (p->isDead())
+                    continue;
                 QList<int> ids;
                 foreach (const Card *c, p->getHandcards())
                     ids << c->getEffectiveId();

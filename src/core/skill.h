@@ -49,9 +49,8 @@ public:
     QString getRelatedPileName() const;
     QStringList getSources() const;
     bool matchAvaliablePattern(QString avaliablePattern, QString askedPattern) const;
-    QString getShowType() const;//nue_god
-    virtual bool canPreshow() const;//hegemony
-
+    QString getShowType() const; //nue_god
+    virtual bool canPreshow() const; //hegemony
 
 protected:
     Frequency frequency;
@@ -240,7 +239,7 @@ class DistanceSkill : public Skill
 
 public:
     explicit DistanceSkill(const QString &name);
-    
+
     virtual int getCorrect(const Player *from, const Player *to) const = 0;
     const ViewAsSkill *getViewAsSkill() const;
 
@@ -253,14 +252,11 @@ class ShowDistanceSkill : public ZeroCardViewAsSkill
     Q_OBJECT
 
 public:
-
     ShowDistanceSkill(const QString &name);
 
     const Card *viewAs() const;
     virtual bool isEnabledAtPlay(const Player *player) const;
 };
-
-
 
 class MaxCardsSkill : public Skill
 {
@@ -310,7 +306,6 @@ public:
 
 protected:
     const ViewAsSkill *view_as_skill;
-
 };
 
 class SlashNoDistanceLimitSkill : public TargetModSkill

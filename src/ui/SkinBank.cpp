@@ -28,7 +28,6 @@ const char *QSanRoomSkin::S_SKIN_KEY_DASHBOARD = "dashboard";
 const char *QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_RECT = "roleBoxRect-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_COLOR = "roleBoxColor-%1";
 
-
 // buttons
 const char *QSanRoomSkin::S_SKIN_KEY_BUTTON = "button-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_DASHBOARD_BUTTON_SET_BG = "dashboardButtonSetBg";
@@ -240,7 +239,7 @@ QString QSanRoomSkin::getButtonPixmapPath(const QString &groupName, const QStrin
     else if (state == QSanButton::S_STATE_UP)
         stateKey = "normal";
     else if (state == QSanButton::S_STATE_CANPRESHOW)
-        stateKey = "disabled";//use codes to make button lighter than other states
+        stateKey = "disabled"; //use codes to make button lighter than other states
     else
         return QString();
     return path.arg(buttonName).arg(stateKey);
@@ -822,12 +821,11 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
     tryParse(config["generalButtonPositionIconRegion"], _m_commonLayout.generalButtonPositionIconRegion);
     tryParse(config["generalButtonNameRegion"], _m_commonLayout.generalButtonNameRegion);
 
-
     tryParse(config["roleNormalBgSize"], _m_commonLayout.m_roleNormalBgSize);
     QStringList kingdoms = Sanguosha->getHegemonyKingdoms();
     //kingdoms << "wei" << "shu" << "wu" << "qun";
     kingdoms.removeAll("god");
-    foreach(const QString &kingdom, kingdoms) {
+    foreach (const QString &kingdom, kingdoms) {
         tryParse(config[QString(S_SKIN_KEY_ROLE_BOX_RECT).arg(kingdom)], _m_commonLayout.m_rolesRect[kingdom]);
         tryParse(config[QString(S_SKIN_KEY_ROLE_BOX_COLOR).arg(kingdom)], _m_commonLayout.m_rolesColor[kingdom]);
     }
@@ -835,7 +833,6 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
 
     _m_commonLayout.m_chooseGeneralBoxDestSeatFont.tryParse(config["generalBoxDestSeatFont"]);
     tryParse(config["generalCardItemCompanionPromptRegion"], _m_commonLayout.m_generalCardItemCompanionPromptRegion);
-
 
     config = layoutConfig[S_SKIN_KEY_ROOM].value<JsonObject>();
     tryParse(config["chatBoxHeightPercentage"], _m_roomLayout.m_chatBoxHeightPercentage);
@@ -855,10 +852,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
     tryParse(config["roleBoxHeight"], _m_roomLayout.m_roleBoxHeight);
     tryParse(config["scenePadding"], _m_roomLayout.m_scenePadding);
 
-    _m_roomLayout.scale = 1;        //add for scale by weidouncle
-
-    
-                                    
+    _m_roomLayout.scale = 1; //add for scale by weidouncle
 
     for (int i = 0; i < 2; i++) {
         JsonObject playerConfig;
@@ -950,8 +944,6 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
                 tryParse(magatamasAnchorDouble[0], layout->m_magatamasAlignDouble);
             tryParse(magatamasAnchorDouble[1], layout->m_magatamasAnchorDouble);
         }
-
-
 
         layout->m_phaseArea.tryParse(playerConfig["phaseArea"]);
         tryParse(playerConfig["privatePileStartPos"], layout->m_privatePileStartPos);

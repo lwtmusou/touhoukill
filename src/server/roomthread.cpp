@@ -723,11 +723,11 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data)
 
             if (do_cost && invoke->skill->cost(triggerEvent, room, invoke, data)) {
                 //show hidden skill firstly
-                //if (!invoke->isCompulsory && invoke->invoker) 
-                if (invoke->owner){
-                        invoke->owner->showHiddenSkill(invoke->skill->objectName());
+                //if (!invoke->isCompulsory && invoke->invoker)
+                if (invoke->owner) {
+                    invoke->owner->showHiddenSkill(invoke->skill->objectName());
                 }
-                    
+
                 // if we don't insert the target in the cost and there is a preferred target, we set the preferred target as the only target of the skill
                 if (invoke->preferredTarget != NULL && invoke->targets.isEmpty())
                     invoke->targets << invoke->preferredTarget;

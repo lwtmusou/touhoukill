@@ -80,7 +80,7 @@ public:
     QList<const Package *> getPackages() const;
 
     const General *getGeneral(const QString &name) const;
-    const QList <QString> getGenerals() const;
+    const QList<QString> getGenerals() const;
     int getGeneralCount(bool include_banned = false) const;
     const Skill *getSkill(const QString &skill_name) const;
     const Skill *getSkill(const EquipCard *card) const;
@@ -137,7 +137,7 @@ public:
     QStringList LatestGeneralList;
     int operationTimeRate(QSanProtocol::CommandType command, QVariant msg);
 
-    QString GetMappedKingdom(const QString &role);//hegemony
+    QString GetMappedKingdom(const QString &role); //hegemony
 
 private:
     void _loadMiniScenarios();

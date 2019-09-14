@@ -899,7 +899,7 @@ bool KnownBothHegmony::targetFilter(const QList<const Player *> &targets, const 
         return false;
 
     return (!to_select->hasShownGeneral() || (to_select->getGeneral2() && to_select->hasShownGeneral2())
-        || (!to_select->isKongcheng() && (to_select->getShownHandcards().length() < to_select->getHandcardNum())));
+            || (!to_select->isKongcheng() && (to_select->getShownHandcards().length() < to_select->getHandcardNum())));
 }
 
 bool KnownBothHegmony::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
@@ -912,12 +912,11 @@ bool KnownBothHegmony::targetsFeasible(const QList<const Player *> &targets, con
         else
             sub << getEffectiveId();
 
-        foreach(int id, sub) {
+        foreach (int id, sub) {
             if (Self->getHandPile().contains(id)) {
                 rec = false;
                 break;
-            }
-            else { // for skill chaoren
+            } else { // for skill chaoren
                 if (id == Self->property("chaoren").toInt()) {
                     rec = false;
                     break;
@@ -954,15 +953,13 @@ void KnownBothHegmony::onUse(Room *room, const CardUseStruct &card_use) const
         card_use.from->broadcastSkillInvoke("@recast");
 
         card_use.from->drawCards(1);
-    }
-    else {
+    } else {
         if (getSkillName() == "JadeSeal")
             room->setEmotion(card_use.from, "treasure/jade_seal");
 
         TrickCard::onUse(room, card_use);
     }
 }
-
 
 void KnownBothHegmony::onEffect(const CardEffectStruct &effect) const
 {
@@ -984,10 +981,9 @@ void KnownBothHegmony::onEffect(const CardEffectStruct &effect) const
     log.from = effect.from;
     log.to << effect.to;
     log.arg = choice;
-    foreach(ServerPlayer *p, room->getAllPlayers(true)) {//room->getOtherPlayers(effect.from, true)
+    foreach (ServerPlayer *p, room->getAllPlayers(true)) { //room->getOtherPlayers(effect.from, true)
         room->doNotify(p, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
     }
-
 
     if (choice == "showhead" || choice == "showdeputy") {
         QStringList list = room->getTag(effect.to->objectName()).toStringList();

@@ -4,7 +4,6 @@
 #include "card.h"
 #include "package.h"
 
-
 class HegemonyGeneralPackage : public Package
 {
     Q_OBJECT

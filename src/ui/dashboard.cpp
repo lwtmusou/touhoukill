@@ -38,10 +38,10 @@ Dashboard::Dashboard(QGraphicsItem *widget) //QGraphicsPixmapItem *widget
     _m_rightFrameBg = NULL;
     animations = new EffectAnimation();
     pending_card = NULL;
-    
-    leftHiddenMark = NULL;//?? intialization?
+
+    leftHiddenMark = NULL; //?? intialization?
     rightHiddenMark = NULL;
-    _m_pile_expanded = QMap<QString, QList<int> >();//QStringList();
+    _m_pile_expanded = QMap<QString, QList<int> >(); //QStringList();
     for (int i = 0; i < 5; i++) {
         _m_equipSkillBtns[i] = NULL;
         _m_isEquipsAnimOn[i] = false;
@@ -62,7 +62,7 @@ Dashboard::Dashboard(QGraphicsItem *widget) //QGraphicsPixmapItem *widget
     _createRight();
 
     _m_skillNameItem = new QGraphicsPixmapItem(_m_rightFrame);
-    
+
     // only do this after you create all frames.
     _createControls();
     _createExtraButtons();
@@ -201,14 +201,12 @@ void Dashboard::_adjustComponentZValues(bool killed)
     _layUnder(_m_leftFrame);
     _layUnder(_m_middleFrame);
 
-    
-
-   // if (isHegemonyGameMode(ServerInfo.GameMode))
+    // if (isHegemonyGameMode(ServerInfo.GameMode))
     //    _layBetween(button_widget, _m_middleFrame, _m_hegemonyroleComboBox);
     //else
     //    _layBetween(button_widget, _m_middleFrame, _m_roleComboBox);
     _layBetween(_m_rightFrameBg, _m_faceTurnedIcon, _m_equipRegions[3]);
-    
+
     //hegemony
     /*if (isHegemonyGameMode(ServerInfo.GameMode)) {
         _layUnder(rightHiddenMark);
@@ -223,10 +221,6 @@ void Dashboard::_adjustComponentZValues(bool killed)
         
         
     }*/
-
-    
-
-
 }
 
 int Dashboard::width()
@@ -248,19 +242,15 @@ void Dashboard::_createRight()
     if (ServerInfo.Enable2ndGeneral) {
         _m_skillDock->setPos(avatar.left() + 5, avatar.bottom() + G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height() - 25);
         _m_skillDock->setWidth(avatar.width() / 2);
-    }
-    else {
+    } else {
         _m_skillDock->setPos(avatar.left() + 25, avatar.bottom() + G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height() - 25);
         _m_skillDock->setWidth(avatar.width() - 50);
     }
-
 
     _m_rightSkillDock = new QSanInvokeSkillDock(_m_rightFrame);
     QRect avatar2 = G_DASHBOARD_LAYOUT.m_smallAvatarArea; //m_smallAvatarArea;//G_DASHBOARD_LAYOUT.;
     _m_rightSkillDock->setPos(avatar2.left() - 10, avatar2.bottom() + G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height() - 25);
     _m_rightSkillDock->setWidth(avatar2.width() - 50);
-
-
 
     _m_skillDock->setObjectName("left");
     _m_rightSkillDock->setObjectName("right");
@@ -268,7 +258,7 @@ void Dashboard::_createRight()
     //hegemony
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
         _m_shadow_layer1 = new QGraphicsRectItem(_m_rightFrame);
-        
+
         _m_shadow_layer1->setRect(G_DASHBOARD_LAYOUT.m_avatarArea);
         if (ServerInfo.Enable2ndGeneral) {
             _m_shadow_layer1->setRect(G_DASHBOARD_LAYOUT.m_headAvatarArea);
@@ -282,12 +272,10 @@ void Dashboard::_createRight()
 
             _paintPixmap(rightHiddenMark, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion2, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK), _m_rightFrame);
         }
-            
-        
+
         connect(ClientInstance, &Client::head_preshowed, this, &Dashboard::updateHiddenMark);
         connect(ClientInstance, &Client::deputy_preshowed, this, &Dashboard::updateRightHiddenMark);
     }
-    
 }
 
 void Dashboard::_updateFrames()
@@ -317,14 +305,13 @@ void Dashboard::killPlayer()
     trusting_item->hide();
     trusting_text->hide();
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
-        _m_hegemonyroleComboBox->fix(m_player->getRole() == "careerist" ? "careerist" : m_player->getRole());//m_player->getKingdom()
+        _m_hegemonyroleComboBox->fix(m_player->getRole() == "careerist" ? "careerist" : m_player->getRole()); //m_player->getKingdom()
         _m_hegemonyroleComboBox->setEnabled(false);
-    }
-    else {
+    } else {
         _m_roleComboBox->fix(m_player->getRole());
         _m_roleComboBox->setEnabled(false);
     }
-    
+
     _updateDeathIcon();
     _m_saveMeIcon->hide();
     if (_m_votesItem)
@@ -612,14 +599,13 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName, const bool 
         //_m_button_recycle.append(_m_leftSkillDock->getSkillButtonByName(skillName));
         return NULL;
 
-
     QSanInvokeSkillDock *dock = head ? _m_skillDock : _m_rightSkillDock;
 
     //hegemony
     if (dock == _m_skillDock)
         updateHiddenMark();
     else
-        updateRightHiddenMark();//check it is right skilldock?
+        updateRightHiddenMark(); //check it is right skilldock?
 
     return dock->addSkillButtonByName(skillName);
 }
@@ -698,8 +684,7 @@ void Dashboard::_createExtraButtons()
 void Dashboard::skillButtonActivated()
 {
     QSanSkillButton *button = qobject_cast<QSanSkillButton *>(sender());
-    QList<QSanInvokeSkillButton *> buttons = _m_skillDock->getAllSkillButtons()
-        + _m_rightSkillDock->getAllSkillButtons();
+    QList<QSanInvokeSkillButton *> buttons = _m_skillDock->getAllSkillButtons() + _m_rightSkillDock->getAllSkillButtons();
     foreach (QSanSkillButton *btn, buttons) {
         if (button == btn)
             continue;
@@ -719,8 +704,7 @@ void Dashboard::skillButtonActivated()
 
 void Dashboard::skillButtonDeactivated()
 {
-    QList<QSanInvokeSkillButton *> buttons = _m_skillDock->getAllSkillButtons()
-        + _m_rightSkillDock->getAllSkillButtons();
+    QList<QSanInvokeSkillButton *> buttons = _m_skillDock->getAllSkillButtons() + _m_rightSkillDock->getAllSkillButtons();
     foreach (QSanSkillButton *btn, buttons) {
         if (btn->getViewAsSkill() != NULL && btn->isDown())
             btn->setState(QSanButton::S_STATE_UP);
@@ -979,7 +963,7 @@ QList<CardItem *> Dashboard::removeCardItems(const QList<int> &card_ids, Player:
             card_item->setOpacity(0.0);
             result.push_back(card_item);
 
-            foreach(const QList<int> &expanded, _m_pile_expanded) {
+            foreach (const QList<int> &expanded, _m_pile_expanded) {
                 if (expanded.contains(card_id)) {
                     QString key = _m_pile_expanded.key(expanded);
                     if (key.isEmpty())
@@ -988,7 +972,8 @@ QList<CardItem *> Dashboard::removeCardItems(const QList<int> &card_ids, Player:
                     _m_pile_expanded[key].removeOne(card_id);
 
                     CardItem *card_item = CardItem::FindItem(m_handCards, card_id);
-                    if (card_item == selected) selected = NULL;
+                    if (card_item == selected)
+                        selected = NULL;
                     Q_ASSERT(card_item);
                     if (card_item) {
                         m_handCards.removeOne(card_item);
@@ -1017,12 +1002,10 @@ QList<CardItem *> Dashboard::removeCardItems(const QList<int> &card_ids, Player:
             for (int i = 0; i < result.size(); i++)
                 center += result[i]->pos();
             center = 1.0 / result.length() * center;
-        }
-        else if (place == Player::PlaceSpecial) {
+        } else if (place == Player::PlaceSpecial) {
             QPoint avatarArea_center = (ServerInfo.Enable2ndGeneral) ? _dlayout->m_avatarAreaDouble.center() : _dlayout->m_avatarArea.center();
             center = mapFromItem(_getAvatarParent(), avatarArea_center);
-        }
-        else
+        } else
             Q_ASSERT(false);
         rect.moveCenter(center.toPoint());
         _disperseCards(result, rect, Qt::AlignCenter, false, false);
@@ -1091,14 +1074,13 @@ void Dashboard::updateAvatar()
     
     
     }*/
-    
+
     //else {
-        PlayerCardContainer::updateAvatar();
-        _m_skillDock->update();
-        _m_rightSkillDock->update();
-        //_adjustComponentZValues();
+    PlayerCardContainer::updateAvatar();
+    _m_skillDock->update();
+    _m_rightSkillDock->update();
+    //_adjustComponentZValues();
     //}
-    
 }
 
 static bool CompareByNumber(const CardItem *a, const CardItem *b)
@@ -1356,7 +1338,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
     }
 
     if (pile_name == "#xiuye_temp") {
-        foreach(const Card *c, ClientInstance->discarded_list) {
+        foreach (const Card *c, ClientInstance->discarded_list) {
             if (c->getSuit() == Card::Club && (c->isNDTrick() || c->getTypeId() == Card::TypeBasic))
                 pile << c->getEffectiveId();
         }
@@ -1372,8 +1354,6 @@ void Dashboard::expandPileCards(const QString &pile_name)
         card_item->setPos(mapFromScene(card_item->scenePos()));
         card_item->setParentItem(this);
     }
-
-    
 
     foreach (CardItem *card_item, card_items) {
         QString pile_string = pile_name;
@@ -1681,8 +1661,8 @@ QPointF Dashboard::getHeroSkinContainerPosition() const
 
 bool Dashboard::isItemUnderMouse(QGraphicsItem *item) const
 {
-    return (item->isUnderMouse() && !_m_skillDock->isUnderMouse() && !_m_rightSkillDock->isUnderMouse()) || 
-        ((_m_skillDock->isUnderMouse() || _m_rightSkillDock->isUnderMouse()) && _m_screenNameItem->isVisible());
+    return (item->isUnderMouse() && !_m_skillDock->isUnderMouse() && !_m_rightSkillDock->isUnderMouse())
+        || ((_m_skillDock->isUnderMouse() || _m_rightSkillDock->isUnderMouse()) && _m_screenNameItem->isVisible());
 }
 
 void Dashboard::onAvatarHoverEnter()
@@ -1725,7 +1705,6 @@ void Dashboard::_initializeRemovedEffect()
     _removedEffect->setStartValue(1.0);
 }
 
-
 void Dashboard::showSeat()
 {
     const QRect region = (ServerInfo.Enable2ndGeneral) ? G_DASHBOARD_LAYOUT.m_seatIconRegionDouble : G_DASHBOARD_LAYOUT.m_seatIconRegion;
@@ -1734,14 +1713,11 @@ void Dashboard::showSeat()
         pma->setTransform(QTransform::fromTranslate(-pma->boundingRect().width() / 2, -pma->boundingRect().height() / 2));
         pma->setPos(region.x() + region.width() / 2, region.y() + region.height() / 2);
     }
-    _paintPixmap(_m_seatItem, region,
-        _getPixmap(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER, QString::number(m_player->getSeat())),
-        _m_rightFrame);
+    _paintPixmap(_m_seatItem, region, _getPixmap(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER, QString::number(m_player->getSeat())), _m_rightFrame);
     //save the seat number for later use
     //m_player->setProperty("UI_Seat", m_player->getSeat()); //use InitalSeat instead
     _m_seatItem->setZValue(1.1);
 }
-
 
 //only for hegemony??
 /*void Dashboard::_createRoleComboBox()
@@ -1775,25 +1751,27 @@ void Dashboard::showSeat()
     }
 }*/
 
-
 void Dashboard::updateHiddenMark()
 {
-    if (!isHegemonyGameMode(ServerInfo.GameMode)) return;
+    if (!isHegemonyGameMode(ServerInfo.GameMode))
+        return;
     if (m_player && RoomSceneInstance->game_started && !m_player->hasShownGeneral()) {
         leftHiddenMark->setVisible(m_player->isHidden(true));
     }
-        
+
     else
         leftHiddenMark->setVisible(false);
 }
 
 void Dashboard::updateRightHiddenMark()
 {
-    if (!isHegemonyGameMode(ServerInfo.GameMode)) return;
-    if (rightHiddenMark == NULL) return;
+    if (!isHegemonyGameMode(ServerInfo.GameMode))
+        return;
+    if (rightHiddenMark == NULL)
+        return;
     if (m_player && RoomSceneInstance->game_started && !m_player->hasShownGeneral2())
         rightHiddenMark->setVisible(m_player->isHidden(false));
-    else 
+    else
         rightHiddenMark->setVisible(false);
 }
 
@@ -1806,7 +1784,8 @@ void Dashboard::setPlayer(ClientPlayer *player)
 
 void Dashboard::onHeadStateChanged()
 {
-    if (!isHegemonyGameMode(ServerInfo.GameMode)) return;
+    if (!isHegemonyGameMode(ServerInfo.GameMode))
+        return;
     if (m_player && RoomSceneInstance->game_started && !m_player->hasShownGeneral())
         _m_shadow_layer1->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
     else
@@ -1816,7 +1795,8 @@ void Dashboard::onHeadStateChanged()
 
 void Dashboard::onDeputyStateChanged()
 {
-    if (!isHegemonyGameMode(ServerInfo.GameMode)) return;
+    if (!isHegemonyGameMode(ServerInfo.GameMode))
+        return;
     if (m_player && RoomSceneInstance->game_started && !m_player->hasShownGeneral2())
         _m_shadow_layer2->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
     else
@@ -1827,20 +1807,20 @@ void Dashboard::onDeputyStateChanged()
 void Dashboard::refresh()
 {
     PlayerCardContainer::refresh();
-    if (!isHegemonyGameMode(ServerInfo.GameMode)) return;
+    if (!isHegemonyGameMode(ServerInfo.GameMode))
+        return;
     if (!m_player || !m_player->getGeneral() || !m_player->isAlive()) {
         _m_shadow_layer1->setBrush(Qt::NoBrush);
-        
+
         leftHiddenMark->setVisible(false);
         if (ServerInfo.Enable2ndGeneral) {
             _m_shadow_layer2->setBrush(Qt::NoBrush);
             rightHiddenMark->setVisible(false);
         }
-        
-    }
-    else if (m_player) {
+
+    } else if (m_player) {
         _m_shadow_layer1->setBrush(m_player->hasShownGeneral() ? Qt::transparent : G_DASHBOARD_LAYOUT.m_generalShadowColor);
-        
+
         leftHiddenMark->setVisible(m_player->isHidden(true));
         if (ServerInfo.Enable2ndGeneral) {
             _m_shadow_layer2->setBrush(m_player->hasShownGeneral2() ? Qt::transparent : G_DASHBOARD_LAYOUT.m_generalShadowColor);

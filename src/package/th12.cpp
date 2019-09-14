@@ -1648,7 +1648,6 @@ TH12Package::TH12Package()
     myouren->addSkill(new Shuxin);
     myouren->addCompanion("byakuren");
 
-
     General *kyouko_sp = new General(this, "kyouko_sp", "xlc", 3);
     kyouko_sp->addSkill(new Huisheng);
     kyouko_sp->addSkill(new HuishengTargetMod);

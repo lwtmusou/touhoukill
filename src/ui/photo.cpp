@@ -4,9 +4,9 @@
 #include "client.h"
 #include "clientplayer.h"
 #include "engine.h"
+#include "hegemonyrolecombobox.h"
 #include "pixmapanimation.h"
 #include "rolecombobox.h"
-#include "hegemonyrolecombobox.h"
 #include "roomscene.h"
 #include "settings.h"
 #include "standard.h"
@@ -108,13 +108,11 @@ void Photo::_adjustComponentZValues(bool killed)
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
         _layBetween(emotion_item, _m_chainIcon, _m_hegemonyroleComboBox);
         _layBetween(_m_skillNameItem, _m_chainIcon, _m_hegemonyroleComboBox);
-    }
-    else
-    {
+    } else {
         _layBetween(emotion_item, _m_chainIcon, _m_roleComboBox);
         _layBetween(_m_skillNameItem, _m_chainIcon, _m_roleComboBox);
     }
-    
+
     _m_progressBarItem->setZValue(_m_groupMain->zValue() + 1);
 }
 
@@ -133,7 +131,7 @@ void Photo::setEmotion(const QString &emotion, bool permanent)
 
         if (isHegemonyGameMode(ServerInfo.GameMode))
             _layBetween(emotion_item, _m_chainIcon, _m_hegemonyroleComboBox);
-        else 
+        else
             _layBetween(emotion_item, _m_chainIcon, _m_roleComboBox);
 
         QPropertyAnimation *appear = new QPropertyAnimation(emotion_item, "opacity");

@@ -210,7 +210,7 @@ public:
     HeroSkinContainer *findHeroSkinContainer(const QString &generalName) const;
     QSet<HeroSkinContainer *> getHeroSkinContainers();
 
-    bool game_started;// from private to public
+    bool game_started; // from private to public
 
 public slots:
     void addPlayer(ClientPlayer *player);
@@ -260,7 +260,7 @@ public slots:
     void setLordBGM(QString lord = QString());
     void setLordBackdrop(QString lord = QString());
     void anyunSelectSkill(); //for anyun
-    void addlog(QStringList l);//for client test 
+    void addlog(QStringList l); //for client test
     void doSkinChange(const QString &generalName, int skinIndex);
     inline QPointF tableCenterPos()
     {
@@ -438,7 +438,7 @@ private:
     bool pindian_success;
 
     // re-layout attempts
-   
+
     void _dispersePhotos(QList<Photo *> &photos, QRectF disperseRegion, Qt::Orientation orientation, Qt::Alignment align);
 
     void _cancelAllFocus();

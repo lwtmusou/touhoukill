@@ -35,8 +35,7 @@ public:
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
-        
-		if (triggerEvent == EventPhaseChanging) {
+        if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::Discard && change.player->hasSkill(objectName()))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
@@ -46,12 +45,10 @@ public:
             ServerPlayer *kaguya1 = qobject_cast<ServerPlayer *>(move.from);
             ServerPlayer *kaguya2 = qobject_cast<ServerPlayer *>(move.to);
 
-            if (kaguya1 && kaguya1->isAlive() && kaguya1->hasSkill(this) && move.from_places.contains(Player::PlaceHand) 
-                && kaguya1->getHandcardNum() != qMax(kaguya1->getHp(), 1)
+            if (kaguya1 && kaguya1->isAlive() && kaguya1->hasSkill(this) && move.from_places.contains(Player::PlaceHand) && kaguya1->getHandcardNum() != qMax(kaguya1->getHp(), 1)
                 && kaguya1->getPhase() == Player::NotActive)
                 kaguyas << kaguya1;
-            if (kaguya2 && kaguya2->isAlive() && kaguya2->hasSkill(this) && move.to_place == Player::PlaceHand 
-                && kaguya2->getHandcardNum() != qMax(kaguya2->getHp(), 1)
+            if (kaguya2 && kaguya2->isAlive() && kaguya2->hasSkill(this) && move.to_place == Player::PlaceHand && kaguya2->getHandcardNum() != qMax(kaguya2->getHp(), 1)
                 && kaguya2->getPhase() == Player::NotActive)
                 kaguyas << kaguya2;
             if (kaguyas.length() > 1)
@@ -230,7 +227,6 @@ public:
 };
 */
 //skills  << new TianbianDistance
-
 
 HegemonyGeneralPackage::HegemonyGeneralPackage()
     : Package("hegemonyGeneral")

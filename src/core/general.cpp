@@ -216,8 +216,7 @@ bool General::isCompanionWith(const QString &name) const
     Q_ASSERT(other);
     if (kingdom != other->kingdom)
         return false;
-    return lord || other->lord || companions.contains(name)
-        || other->companions.contains(objectName());
+    return lord || other->lord || companions.contains(name) || other->companions.contains(objectName());
 }
 
 QString General::getCompanions() const
@@ -225,11 +224,11 @@ QString General::getCompanions() const
     //if (isLord())
     //    return tr("%1 Generals").arg(Sanguosha->translate(getKingdom()));
     QStringList name;
-    foreach(const QString &general, companions)
+    foreach (const QString &general, companions)
         name << QString("%1").arg(Sanguosha->translate(general));
     //GeneralList generals(Sanguosha->getGeneralList());
     QList<QString> generals = Sanguosha->getGenerals();
-    foreach(QString gname, generals) {
+    foreach (QString gname, generals) {
         const General *gnr = Sanguosha->getGeneral(gname);
         if (!gnr)
             continue;

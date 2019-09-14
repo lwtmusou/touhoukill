@@ -17,8 +17,9 @@ GameRule::GameRule(QObject *)
     //setParent(parent);
 
     events << GameStart << TurnStart << EventPhaseProceeding << EventPhaseEnd << EventPhaseChanging << PreCardUsed << CardUsed << CardFinished << CardEffected << PostHpReduced
-           << EventLoseSkill << EventAcquireSkill << AskForPeaches << AskForPeachesDone << BuryVictim << BeforeGameOverJudge << GameOverJudge << SlashHit << SlashEffected << SlashProceed << ConfirmDamage
-           << DamageDone << DamageComplete << StartJudge << FinishRetrial << FinishJudge << ChoiceMade << BeforeCardsMove << EventPhaseStart << JinkEffect << GeneralShown;
+           << EventLoseSkill << EventAcquireSkill << AskForPeaches << AskForPeachesDone << BuryVictim << BeforeGameOverJudge << GameOverJudge << SlashHit << SlashEffected
+           << SlashProceed << ConfirmDamage << DamageDone << DamageComplete << StartJudge << FinishRetrial << FinishJudge << ChoiceMade << BeforeCardsMove << EventPhaseStart
+           << JinkEffect << GeneralShown;
 }
 
 int GameRule::getPriority() const
@@ -128,8 +129,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         if (data.isNull()) {
             foreach (ServerPlayer *player, room->getPlayers()) {
                 Q_ASSERT(player->getGeneral() != NULL);
-                if (!isHegemonyGameMode(room->getMode())
-                    && (player->getGeneral()->getKingdom() == "zhu" || player->getGeneral()->getKingdom() == "touhougod") && player->getGeneralName() != "anjiang") {
+                if (!isHegemonyGameMode(room->getMode()) && (player->getGeneral()->getKingdom() == "zhu" || player->getGeneral()->getKingdom() == "touhougod")
+                    && player->getGeneralName() != "anjiang") {
                     QString new_kingdom = room->askForKingdom(player);
                     room->setPlayerProperty(player, "kingdom", new_kingdom);
 
@@ -140,7 +141,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     room->sendLog(log);
                 }
                 if (isHegemonyGameMode(room->getMode())) {
-                    foreach(const Skill *skill, player->getVisibleSkillList()) {
+                    foreach (const Skill *skill, player->getVisibleSkillList()) {
                         if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName()))) {
                             JsonArray arg;
                             arg << player->objectName();
@@ -150,15 +151,12 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                             player->setMark(skill->getLimitMark(), 1);
                         }
                     }
-                }
-                else {
-                    foreach(const Skill *skill, player->getVisibleSkillList()) {
+                } else {
+                    foreach (const Skill *skill, player->getVisibleSkillList()) {
                         if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
                             room->setPlayerMark(player, skill->getLimitMark(), 1);
                     }
                 }
-
-                
             }
             room->setTag("FirstRound", true);
             bool kof_mode = room->getMode() == "02_1v1" && Config.value("1v1/Rule", "2013").toString() != "Classical";
@@ -241,7 +239,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         if (player->getPhase() == Player::Play)
             room->addPlayerHistory(player, ".");
         if (player->getPhase() == Player::Finish) {
-            foreach(ServerPlayer *p, room->getAllPlayers())
+            foreach (ServerPlayer *p, room->getAllPlayers())
                 room->setPlayerMark(p, "multi_kill_count", 0);
         }
         break;
@@ -845,7 +843,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         room->damage(d);
 
         break;
-    }    
+    }
     case BeforeGameOverJudge: {
         DeathStruct death = data.value<DeathStruct>();
         ServerPlayer *player = death.who;
@@ -997,8 +995,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             room->gameOver(winner); // if all hasShownGenreal, and they are all friend, game over.
             return true;
         }
-        if (room->getTag("TheFirstToShowRewarded").isNull() && room->getScenario() == NULL) {//Config.RewardTheFirstShowingPlayer && 
-            
+        if (room->getTag("TheFirstToShowRewarded").isNull() && room->getScenario() == NULL) { //Config.RewardTheFirstShowingPlayer &&
+
             if (player->askForSkillInvoke("FirstShowReward")) {
                 LogMessage log;
                 log.type = "#FirstShowReward";
@@ -1006,7 +1004,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 room->sendLog(log);
                 player->drawCards(2);
             }
-                
+
             room->setTag("TheFirstToShowRewarded", true);
         }
         if (!Config.Enable2ndGeneral)
@@ -1018,7 +1016,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 QStringList choices;
                 if (player->isWounded())
                     choices << "recover";
-                choices << "draw" << "cancel";
+                choices << "draw"
+                        << "cancel";
                 LogMessage log;
                 log.type = "#CompanionEffect";
                 log.from = player;
@@ -1029,8 +1028,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     recover.who = player;
                     recover.recover = 1;
                     room->recover(player, recover);
-                }
-                else if (choice == "draw")
+                } else if (choice == "draw")
                     player->drawCards(2);
                 room->removePlayerMark(player, "CompanionEffect");
 
@@ -1230,20 +1228,17 @@ void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const
             killer->drawCards(2);
         else
             killer->drawCards(3);
-    }
-    else if (isHegemonyGameMode(room->getMode())) {
+    } else if (isHegemonyGameMode(room->getMode())) {
         if (!killer->isFriendWith(victim)) {
             int n = 1;
-            foreach(ServerPlayer *p, room->getOtherPlayers(victim)) {
+            foreach (ServerPlayer *p, room->getOtherPlayers(victim)) {
                 if (victim->isFriendWith(p))
                     ++n;
             }
             killer->drawCards(n);
-        }
-        else
+        } else
             killer->throwAllHandCardsAndEquips();
-    }
-    else {
+    } else {
         if (victim->getRole() == "rebel" && killer != victim)
             killer->drawCards(3);
         else if (victim->getRole() == "loyalist" && killer->getRole() == "lord")
@@ -1276,36 +1271,32 @@ QString GameRule::getWinner(ServerPlayer *victim) const
             else
                 winner = "renegade+rebel";
         }
-    }
-    else if (isHegemonyGameMode(room->getMode())) {
-        
+    } else if (isHegemonyGameMode(room->getMode())) {
         QList<ServerPlayer *> players = room->getAlivePlayers();
         ServerPlayer *win_player = players.first();
         if (players.length() == 1) {
             QStringList winners;
             if (!win_player->hasShownGeneral())
                 win_player->showGeneral(true, false, false);
-            
-            foreach(ServerPlayer *p, room->getPlayers()) {
+
+            foreach (ServerPlayer *p, room->getPlayers()) {
                 if (win_player->isFriendWith(p))
                     winners << p->objectName();
             }
             winner = winners.join("+");
-        }
-        else {
+        } else {
             QList<ServerPlayer *> winners;
             int careerist_threshold = (room->getPlayers().length() / 2);
-            QMap<QString, QList<ServerPlayer *>> role_count;
-            QMap<QString, QList<ServerPlayer *>> dead_role_count;
+            QMap<QString, QList<ServerPlayer *> > role_count;
+            QMap<QString, QList<ServerPlayer *> > dead_role_count;
             QMap<QString, QString> role_judge;
-            foreach(ServerPlayer *p, room->getAllPlayers(true)) {
+            foreach (ServerPlayer *p, room->getAllPlayers(true)) {
                 QString role = p->getRole();
                 if (role_count.contains(role)) {
                     QList<ServerPlayer *> players = role_count[role];
                     players.append(p);
-                    role_count[role] = players; 
-                }  
-                else {
+                    role_count[role] = players;
+                } else {
                     QList<ServerPlayer *> players;
                     players.append(p);
                     role_count[role] = players;
@@ -1316,18 +1307,16 @@ QString GameRule::getWinner(ServerPlayer *victim) const
                         QList<ServerPlayer *> players = dead_role_count[role];
                         players.append(p);
                         dead_role_count[role] = players;
-                    }
-                    else {
+                    } else {
                         QList<ServerPlayer *> players;
                         players.append(p);
                         dead_role_count[role] = players;
                     }
-                
                 }
             }
 
             QList<QString> roles = role_count.keys();
-            foreach(QString role, roles) {
+            foreach (QString role, roles) {
                 QList<ServerPlayer *> players = role_count[role];
                 if (players.length() == dead_role_count[role].length()) //all dead
                 {
@@ -1335,35 +1324,31 @@ QString GameRule::getWinner(ServerPlayer *victim) const
                 }
             }
 
-
             if (role_count.keys().length() == 1) {
                 QString role = role_count.keys().first();
                 if (role == "careerist") {
-                    foreach(ServerPlayer *p, role_count[role]) {
+                    foreach (ServerPlayer *p, role_count[role]) {
                         if (p->isAlive())
                             winners << p;
                     }
                     if (winners.length() > 1)
                         winners.clear();
-                }
-                else {
+                } else {
                     if (role_count[role].length() <= careerist_threshold)
-                            winners = role_count[role];
+                        winners = role_count[role];
                     else { //for hidden careerist
-                        if (dead_role_count[role].length() >= careerist_threshold
-                            && (role_count[role].length() - dead_role_count[role].length()) == 1) {
-                            foreach(ServerPlayer *p, role_count[role]) {
+                        if (dead_role_count[role].length() >= careerist_threshold && (role_count[role].length() - dead_role_count[role].length()) == 1) {
+                            foreach (ServerPlayer *p, role_count[role]) {
                                 if (p->isAlive())
                                     winners << p;
                             }
-
                         }
                     }
                 }
             }
 
             QStringList winner_names;
-            foreach(ServerPlayer *p, winners) {
+            foreach (ServerPlayer *p, winners) {
                 winner_names << p->objectName();
                 if (!p->hasShownGeneral())
                     p->showGeneral(true, false, false);
@@ -1371,9 +1356,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const
             winner = winner_names.join("+");
         }
 
-        
-    }
-    else {
+    } else {
         QStringList alive_roles = room->aliveRoles(victim);
         switch (victim->getRoleEnum()) {
         case Player::Lord: {

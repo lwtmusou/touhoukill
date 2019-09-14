@@ -654,7 +654,7 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
     const Skill *skill = Sanguosha->getSkill(skill_name);
     if (skill && skill->isVisible()) {
         JsonArray args;
-        args << QSanProtocol::S_GAME_EVENT_DETACH_SKILL << player->objectName() << skill_name << true;//default head?
+        args << QSanProtocol::S_GAME_EVENT_DETACH_SKILL << player->objectName() << skill_name << true; //default head?
         doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
         if (!is_equip) {
@@ -2849,7 +2849,6 @@ bool Room::makeSurrender(ServerPlayer *initiator)
             else if (playerRole == "renegade" && player->isAlive())
                 renegadeAlive++;
         }
-        
 
         if (player != initiator && player->isAlive() && player->isOnline()) {
             player->m_commandArgs = (initiator->getGeneral()->objectName());
@@ -2868,35 +2867,31 @@ bool Room::makeSurrender(ServerPlayer *initiator)
             result = player->getClientReply().toBool();
 
         if (isHegemonyGameMode(mode)) {
-            if (result) hegemony_give_up++;
-        }
-        else {
+            if (result)
+                hegemony_give_up++;
+        } else {
             QString playerRole = player->getRole();
             if (playerRole == "loyalist" || playerRole == "lord") {
                 loyalGiveup &= result;
                 if (player->isAlive())
                     loyalAlive++;
-            }
-            else if (playerRole == "rebel") {
+            } else if (playerRole == "rebel") {
                 rebelGiveup &= result;
                 if (player->isAlive())
                     rebelAlive++;
-            }
-            else if (playerRole == "renegade") {
+            } else if (playerRole == "renegade") {
                 renegadeGiveup &= result;
                 if (player->isAlive())
                     renegadeAlive++;
             }
         }
-        
     }
 
     // vote counting
     if (isHegemonyGameMode(mode)) {
         if (hegemony_give_up > (playersAlive.length() + 1) / 2)
             gameOver(".");
-    }
-    else {
+    } else {
         if (loyalGiveup && renegadeGiveup && !rebelGiveup)
             gameOver("rebel", true);
         else if (loyalGiveup && !renegadeGiveup && rebelGiveup)
@@ -2913,12 +2908,7 @@ bool Room::makeSurrender(ServerPlayer *initiator)
             else if (playerRole == "rebel")
                 gameOver(renegadeAlive >= loyalAlive ? "renegade" : "loyalist+lord", true);
         }
-    
     }
-
-
-    
-
 
     initiator->setFlags("Global_ForbidSurrender");
     doNotify(initiator, S_COMMAND_ENABLE_SURRENDER, QVariant(false));
@@ -2939,7 +2929,7 @@ void Room::processRequestPreshow(ServerPlayer *player, const QVariant &arg)
     const QString skill_name = args[0].toString();
     const bool isPreshowed = args[1].toBool();
     //const bool head = args[2].toBool();
-    player->setSkillPreshowed(skill_name, isPreshowed);// , head   
+    player->setSkillPreshowed(skill_name, isPreshowed); // , head
 
     player->releaseLock(ServerPlayer::SEMA_MUTEX);
 }
@@ -3210,39 +3200,32 @@ void Room::chooseHegemonyGenerals()
     doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
 
     if (!ServerInfo.Enable2ndGeneral) {
-        foreach(ServerPlayer *player, to_assign) {
+        foreach (ServerPlayer *player, to_assign) {
             if (player->getGeneral() != NULL)
                 continue;
             QString generalName = player->getClientReply().toString();
             if (!player->m_isClientResponseReady || !_setPlayerGeneral(player, generalName, true))
                 _setPlayerGeneral(player, _chooseDefaultGeneral(player), true);
         }
-    }
-    else {
-        foreach(ServerPlayer *player, to_assign) {
-            if (player->getGeneral() != NULL) continue;
+    } else {
+        foreach (ServerPlayer *player, to_assign) {
+            if (player->getGeneral() != NULL)
+                continue;
             const QVariant &generalName = player->getClientReply();
             if (!player->m_isClientResponseReady || !JsonUtils::isString(generalName)) {
                 QStringList default_generals = _chooseDefaultGenerals(player);
                 _setPlayerGeneral(player, default_generals.first(), true);
                 _setPlayerGeneral(player, default_generals.last(), false);
-            }
-            else {
+            } else {
                 QStringList generals = generalName.toString().split("+");
-                if (generals.length() != 2 || !_setPlayerGeneral(player, generals.first(), true)
-                    || !_setPlayerGeneral(player, generals.last(), false)) {
+                if (generals.length() != 2 || !_setPlayerGeneral(player, generals.first(), true) || !_setPlayerGeneral(player, generals.last(), false)) {
                     QStringList default_generals = _chooseDefaultGenerals(player);
                     _setPlayerGeneral(player, default_generals.first(), true);
                     _setPlayerGeneral(player, default_generals.last(), false);
                 }
             }
         }
-    
     }
-
-
-
-
 
     /*if (Config.Enable2ndGeneral) {
         //QList<ServerPlayer *> to_assign = m_players;
@@ -3287,14 +3270,13 @@ void Room::chooseHegemonyGenerals()
             //player->setActualGeneral2Name(name);
             player->setGeneral2Name("anjiang");
             //notifyProperty(player, player, "actual_general2");
-            foreach(ServerPlayer *p, getOtherPlayers(player))
+            foreach (ServerPlayer *p, getOtherPlayers(player))
                 notifyProperty(p, player, "general2");
             notifyProperty(player, player, "general2", name);
         }
 
         this->setTag(player->objectName(), QVariant::fromValue(names));
     }
-
 
     Config.setValue("Banlist/Roles", ban_list);
 }
@@ -3553,7 +3535,7 @@ QString Room::_chooseDefaultGeneral(ServerPlayer *player) const
 QStringList Room::_chooseDefaultGenerals(ServerPlayer *player) const
 {
     Q_ASSERT(!player->getSelected().isEmpty());
-    QStringList generals; 
+    QStringList generals;
     QStringList candidates = player->getSelected();
     QString choice1 = m_generalSelector->selectFirst(player, candidates);
     candidates.removeAll(choice1);
@@ -4304,19 +4286,16 @@ void Room::marshal(ServerPlayer *player)
         if (isHegemonyGameMode(mode) && p == player && !p->hasShownGeneral()) {
             QString general1_name = tag[player->objectName()].toStringList().at(0);
             notifyProperty(player, p, "general", general1_name);
-        }
-        else
+        } else
             notifyProperty(player, p, "general");
 
         if (p->getGeneral2()) {
             if (isHegemonyGameMode(mode) && p == player && !p->hasShownGeneral2()) {
                 QString general2_name = tag[player->objectName()].toStringList().at(1);
                 notifyProperty(player, p, "general2", general2_name);
-            }
-            else {
+            } else {
                 notifyProperty(player, p, "general2");
             }
-        
         }
     }
 
@@ -4405,7 +4384,7 @@ void Room::startGame()
         if (mode == "02_1v1")
             doBroadcastNotify(getOtherPlayers(player, true), S_COMMAND_REVEAL_GENERAL, JsonArray() << player->objectName() << player->getGeneralName());
 
-        if (Config.Enable2ndGeneral && mode != "02_1v1" && mode != "06_3v3" && mode != "06_XMode" && mode != "04_1v3"  && !isHegemonyGameMode(mode))
+        if (Config.Enable2ndGeneral && mode != "02_1v1" && mode != "06_3v3" && mode != "06_XMode" && mode != "04_1v3" && !isHegemonyGameMode(mode))
             broadcastProperty(player, "general2");
 
         broadcastProperty(player, "hp");
@@ -4420,7 +4399,6 @@ void Room::startGame()
             setPlayerProperty(player, "general_showed", true);
             setPlayerProperty(player, "general2_showed", true);
         }
-            
     }
 
     preparePlayers();
@@ -5227,10 +5205,10 @@ void Room::preparePlayers()
                 //if (!player->property("Duanchang").toString().split(",").contains("deputy")) {
                 //foreach(const Skill *skill, Sanguosha->getGeneral(general2_name)->getVisibleSkillList(true, false))
                 QList<const Skill *> skills = Sanguosha->getGeneral(general2_name)->getSkillList();
-                foreach(const Skill *skill, skills)
+                foreach (const Skill *skill, skills)
                     player->addSkill(skill->objectName(), false);
             }
-            
+
             //}
 
             JsonArray args;
@@ -5253,7 +5231,7 @@ void Room::preparePlayers()
                 player->addSkill(skill->objectName());
             if (player->getGeneral2()) {
                 skills = player->getGeneral2()->getSkillList();
-                foreach(const Skill *skill, skills)
+                foreach (const Skill *skill, skills)
                     player->addSkill(skill->objectName(), false);
             }
             player->setGender(player->getGeneral()->getGender());
@@ -5295,7 +5273,7 @@ void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general
         foreach (const Skill *skill, player->getGeneral2()->getSkillList()) {
             if (skill->isLordSkill() && !player->isLord())
                 continue;
-            player->addSkill(skill->objectName(),false);
+            player->addSkill(skill->objectName(), false);
         }
     }
     filterCards(player, player->getCards("he"), true);
@@ -6276,13 +6254,12 @@ void Room::_setupChooseGeneralRequestArgs(ServerPlayer *player)
         options << JsonUtils::toJsonArray(player->getSelected());
         options << !Config.Enable2ndGeneral; //false;
         options << false;
-    }
-    else {
-        options  = JsonUtils::toJsonArray(player->getSelected()).value<JsonArray>();
+    } else {
+        options = JsonUtils::toJsonArray(player->getSelected()).value<JsonArray>();
         if (getLord())
             options.append(QString("%1(lord)").arg(getLord()->getGeneralName()));
     }
-    
+
     player->m_commandArgs = options;
 }
 

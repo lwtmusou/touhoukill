@@ -548,11 +548,12 @@ void ChooseGeneralBox::_initializeItems()
     int index = 0;
     foreach (const General *general, generals) {
         int party = 0;
+        //        bool has_lord = false;
         foreach (const General *other, generals) {
             if (other->getKingdom() == general->getKingdom()) {
                 party++;
-                if (other != general && other->isLord())
-                    has_lord = true;
+                //                if (other != general && other->isLord())
+                //                    has_lord = true;
             }
         }
         GeneralCardItem *item = items.at(index);

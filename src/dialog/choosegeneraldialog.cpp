@@ -169,20 +169,19 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
     if (!view_only) {
         if (isHegemonyGameMode(ServerInfo.GameMode)) {
             //need a seat prompt
-            QLabel *seat_label = new QLabel(tr("Your seat is %1. role is %2").arg(Sanguosha->translate("CAPITAL(" + QString::number(Self->getSeat()) + ")")).arg(Sanguosha->translate(Self->getRole())));
+            QLabel *seat_label = new QLabel(
+                tr("Your seat is %1. role is %2").arg(Sanguosha->translate("CAPITAL(" + QString::number(Self->getSeat()) + ")")).arg(Sanguosha->translate(Self->getRole())));
             dialog_layout->addWidget(seat_label);
-        }
-        else {
+        } else {
             // role prompt
             QLabel *role_label = new QLabel(tr("Your role is %1").arg(Sanguosha->translate(Self->getRole())));
             if (lord_name.size())
                 role_label->setText(tr("The lord has chosen %1. Your seat is %2. %3")
-                    .arg(Sanguosha->translate(lord_name))
-                    .arg(Sanguosha->translate("CAPITAL(" + QString::number(Self->getSeat()) + ")"))
-                    .arg(role_label->text()));
+                                        .arg(Sanguosha->translate(lord_name))
+                                        .arg(Sanguosha->translate("CAPITAL(" + QString::number(Self->getSeat()) + ")"))
+                                        .arg(role_label->text()));
             dialog_layout->addWidget(role_label);
         }
-        
     }
 
     // progress bar & free choose button

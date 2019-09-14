@@ -22,9 +22,9 @@
 #define _CHOOSE_GENERAL_BOX_H
 
 #include "carditem.h"
-#include "timedprogressbar.h"
 #include "graphicsbox.h"
 #include "protocol.h"
+#include "timedprogressbar.h"
 #include <QTimer>
 
 class Button;
@@ -49,7 +49,7 @@ protected:
 #endif
 
 private:
-    GeneralCardItem(const QString &generalName);//, const int skinId
+    GeneralCardItem(const QString &generalName); //, const int skinId
 
     bool hasCompanion;
 #ifdef Q_OS_ANDROID
@@ -75,7 +75,8 @@ public:
     void clear();
 
 public slots:
-    void chooseGeneral(const QStringList &generals, bool m_viewOnly = false, bool single_result = false, const QString &reason = QString(), const Player *player = NULL, const bool can_convert = false);
+    void chooseGeneral(const QStringList &generals, bool m_viewOnly = false, bool single_result = false, const QString &reason = QString(), const Player *player = NULL,
+                       const bool can_convert = false);
     void reply();
     void adjustItems();
 

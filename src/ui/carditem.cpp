@@ -183,7 +183,6 @@ void CardItem::currentAnimationDestroyed()
         m_currentAnimation = NULL;
 }
 
-
 void CardItem::animationFinished()
 {
     QMutexLocker locker(&m_animationMutex);
@@ -296,13 +295,13 @@ void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 void CardItem::hoverEnterEvent(QGraphicsSceneHoverEvent *)
 {
     emit enter_hover();
-    emit hoverChanged(true);//hegemony
+    emit hoverChanged(true); //hegemony
 }
 
 void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
 {
     emit leave_hover();
-    emit hoverChanged(false);//hegemony
+    emit hoverChanged(false); //hegemony
 }
 
 void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
@@ -352,10 +351,10 @@ void CardItem::setFootnote(const QString &desc)
     footnote = desc;
 }
 
-
 void CardItem::setOuterGlowEffectEnabled(const bool &willPlay)
 {
-    if (outerGlowEffectEnabled == willPlay) return;
+    if (outerGlowEffectEnabled == willPlay)
+        return;
     if (willPlay) {
         if (outerGlowEffect == NULL) {
             outerGlowEffect = new QGraphicsDropShadowEffect(this);
@@ -366,8 +365,7 @@ void CardItem::setOuterGlowEffectEnabled(const bool &willPlay)
             setGraphicsEffect(outerGlowEffect);
         }
         connect(this, &CardItem::hoverChanged, outerGlowEffect, &QGraphicsDropShadowEffect::setEnabled);
-    }
-    else {
+    } else {
         if (outerGlowEffect != NULL) {
             disconnect(this, &CardItem::hoverChanged, outerGlowEffect, &QGraphicsDropShadowEffect::setEnabled);
             outerGlowEffect->setEnabled(false);
@@ -383,7 +381,8 @@ bool CardItem::isOuterGlowEffectEnabled() const
 
 void CardItem::setOuterGlowColor(const QColor &color)
 {
-    if (!outerGlowEffect || outerGlowColor == color) return;
+    if (!outerGlowEffect || outerGlowColor == color)
+        return;
     outerGlowColor = color;
     outerGlowEffect->setColor(color);
 }

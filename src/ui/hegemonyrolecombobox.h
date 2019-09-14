@@ -22,8 +22,8 @@
 #define _HEGEMONY_ROLE_COMBO_BOX_H
 
 #include <QGraphicsObject>
-#include <QPainter>
 #include <QGraphicsSceneEvent>
+#include <QPainter>
 
 class HegemonyRoleComboBox : public QGraphicsObject
 {
@@ -42,7 +42,6 @@ public:
     };
 
 private:
-
     bool circle;
     bool expanding;
     QMap<QString, bool> kingdoms_excluded;

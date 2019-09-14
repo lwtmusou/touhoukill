@@ -445,10 +445,10 @@ void DelayedTrick::onNullified(ServerPlayer *target) const
     }
 }
 
-JudgeStruct DelayedTrick::getJudge() {
+JudgeStruct DelayedTrick::getJudge()
+{
     return this->judge;
 }
-
 
 Weapon::Weapon(Suit suit, int number, int range)
     : EquipCard(suit, number)

@@ -27,8 +27,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-
-
 class SishuCard : public SkillCard
 {
     Q_OBJECT

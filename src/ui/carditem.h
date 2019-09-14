@@ -110,12 +110,12 @@ private slots:
 
 protected:
     void _initialize();
-    
+
     QImage _m_footnoteImage;
     bool _m_showFootnote;
     QString footnote;
     // QGraphicsPixmapItem *_m_footnoteItem;
-    
+
     double m_opacityAtHome;
     bool m_isSelected;
     bool _m_isUnknownGeneral;
@@ -139,7 +139,7 @@ private:
     QString _m_frameType, _m_avatarName;
     QPointF home_pos;
     QPointF _m_lastMousePressScenePos;
-    
+
     bool outerGlowEffectEnabled;
     QColor outerGlowColor;
     QGraphicsDropShadowEffect *outerGlowEffect;

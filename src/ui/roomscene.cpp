@@ -6,6 +6,7 @@
 #include "cardcontainer.h"
 #include "carditem.h"
 #include "cardoverview.h"
+#include "choosegeneralbox.h"
 #include "choosegeneraldialog.h"
 #include "chooseoptionsbox.h"
 #include "choosetriggerorderbox.h"
@@ -22,7 +23,6 @@
 #include "settings.h"
 #include "uiUtils.h"
 #include "window.h"
-#include "choosegeneralbox.h"
 
 #include <QApplication>
 #include <QCheckBox>
@@ -220,7 +220,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
     addItem(pileContainer);
     pileContainer->setZValue(9.0);
 
-    
     m_chooseGeneralBox = new ChooseGeneralBox;
     m_chooseGeneralBox->hide();
     addItem(m_chooseGeneralBox);
@@ -534,7 +533,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         QString skill_name = arg[2].toString();
         bool head = arg[3].toBool();
         ClientPlayer *player = ClientInstance->getPlayer(player_name);
-        player->loseSkill(skill_name,head);
+        player->loseSkill(skill_name, head);
 
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
         container->updateAvatarTooltip();
@@ -583,9 +582,9 @@ void RoomScene::handleGameEvent(const QVariant &args)
                 }*/
             //dashboard->updateHiddenMark();
             //if (Self->inHeadSkills(skill))
-                dashboard->updateHiddenMark();//updateLeftHiddenMark
+            dashboard->updateHiddenMark(); //updateLeftHiddenMark
             //else
-                dashboard->updateRightHiddenMark();
+            dashboard->updateRightHiddenMark();
             //}
         }
         break;
@@ -747,15 +746,17 @@ void RoomScene::handleGameEvent(const QVariant &args)
             playerCardContainers.append(photo);
         }
         playerCardContainers.append(dashboard);
-        
+
         bool noSkin = false;
         foreach (PlayerCardContainer *playerCardContainer, playerCardContainers) {
             //const ClientPlayer *player = playerCardContainer->getPlayer();
             //const QString &heroSkinGeneralName = heroSkinContainer->getGeneralName();
             if (noSkin)
                 break;
-            if (general_name == playerCardContainer->getPlayer()->getGeneralName() || general_name == playerCardContainer->getPlayer()->getGeneral2Name()) { // check container which changed skin
-                if ((player->getGeneralName() == general_name  || player->getGeneral2Name() == general_name) && Self != player) { // check this roomscene instance of the players who need notify
+            if (general_name == playerCardContainer->getPlayer()->getGeneralName()
+                || general_name == playerCardContainer->getPlayer()->getGeneral2Name()) { // check container which changed skin
+                if ((player->getGeneralName() == general_name || player->getGeneral2Name() == general_name)
+                    && Self != player) { // check this roomscene instance of the players who need notify
                     QString generalIconPath;
                     QRect clipRegion;
                     G_ROOM_SKIN.getHeroSkinContainerGeneralIconPathAndClipRegion(general_name, skinIndex, generalIconPath, clipRegion);
@@ -1843,8 +1844,7 @@ void RoomScene::chooseGeneral(const QStringList &generals, const bool single_res
 
     if (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral && !generals.isEmpty()) {
         m_chooseGeneralBox->chooseGeneral(generals, false, single_result, QString(), NULL, can_convert);
-    }
-    else {
+    } else {
         QDialog *dialog;
         if (generals.isEmpty())
             dialog = new FreeChooseDialog(main_window);
@@ -1855,7 +1855,6 @@ void RoomScene::chooseGeneral(const QStringList &generals, const bool single_res
         delete m_choiceDialog;
         m_choiceDialog = dialog;
     }
-    
 }
 
 void RoomScene::chooseSuit(const QStringList &suits)
@@ -2529,15 +2528,15 @@ void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_na
 void RoomScene::updateSkillButtons()
 {
     //check duanchang?
-    foreach (const Skill *skill, Self->getHeadSkillList()) {//Self->getVisibleSkillList()
+    foreach (const Skill *skill, Self->getHeadSkillList()) { //Self->getVisibleSkillList()
         if (skill->isLordSkill()
             && (Self->getRole() != "lord" || ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode" || ServerInfo.GameMode == "02_1v1"
-               || Config.value("WithoutLordskill", false).toBool()))
+                || Config.value("WithoutLordskill", false).toBool()))
             continue;
 
         addSkillButton(skill, true);
     }
-    foreach(const Skill *skill, Self->getDeputySkillList()) {
+    foreach (const Skill *skill, Self->getDeputySkillList()) {
         if (skill->isLordSkill()
             && (Self->getRole() != "lord" || ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode" || ServerInfo.GameMode == "02_1v1"
                 || Config.value("WithoutLordskill", false).toBool()))
@@ -2882,8 +2881,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             m_chooseTriggerOrderBox->clear();
         } else if (oldStatus == Client::AskForCardChosen) {
             m_playerCardBox->clear();
-        }
-        else if (oldStatus == Client::AskForGeneralTaken) {
+        } else if (oldStatus == Client::AskForGeneralTaken) {
             if (m_chooseGeneralBox)
                 m_chooseGeneralBox->clear();
         }

@@ -752,7 +752,7 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
 
         room->cardEffect(effect);
     }
-    room->removeTag("targets" + this->toString());//for ai?
+    room->removeTag("targets" + this->toString()); //for ai?
     if (magic_drank > 0)
         room->setPlayerMark(source, "magic_drank", 0);
 
@@ -981,7 +981,6 @@ QString DummyCard::toString(bool) const
     return "$" + subcardString();
 }
 
-
 ShowDistanceCard::ShowDistanceCard()
     : SkillCard()
 {
@@ -992,7 +991,7 @@ ShowDistanceCard::ShowDistanceCard()
 
 const Card *ShowDistanceCard::validate(CardUseStruct &card_use) const
 {
-    QString c = toString().split(":").last();   //damn it again!
+    QString c = toString().split(":").last(); //damn it again!
     //const DistanceSkill *skill = qobject_cast<const DistanceSkill *>(Sanguosha->getSkill(c));
     const Skill *skill = Sanguosha->getSkill(c);
     if (skill) {
