@@ -400,6 +400,11 @@ const General *Engine::getGeneral(const QString &name) const
     return generals.value(name, NULL);
 }
 
+const QList<QString> Engine::getGenerals() const
+{
+    return generals.keys();
+}
+
 int Engine::getGeneralCount(bool include_banned) const
 {
     if (include_banned)

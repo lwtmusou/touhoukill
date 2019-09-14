@@ -969,13 +969,20 @@ QString Client::getPlayerName(const QString &str)
         general_name = Sanguosha->translate(general_name);
         if (player->getGeneral2())
             general_name.append("/" + Sanguosha->translate(player->getGeneral2Name()));
-        if (ServerInfo.EnableSame || player->getGeneralName() == "anjiang")
-            general_name = QString("%1[%2]").arg(general_name).arg(player->getSeat());
-
-        if (player->getGeneralName() == "anjiang") {//isHegemonyGameMode(ServerInfo.GameMode) && 
-        //if (player->getGeneralName() == "anjiang")// && player->getGeneral2() != NULL && player->getGeneral2Name() == "anjiang"
-            general_name = Sanguosha->translate(QString("SEAT(%1)").arg(QString::number(player->getInitialSeat())));
+        //if (ServerInfo.EnableSame || player->getGeneralName() == "anjiang")
+        //    general_name = QString("%1[%2]").arg(general_name).arg(player->getSeat());
+        
+        if (isHegemonyGameMode(ServerInfo.GameMode)) {
+            if (ServerInfo.Enable2ndGeneral){
+                if (player->getGeneralName() == "anjiang"  && player->getGeneral2() != NULL && player->getGeneral2Name() == "anjiang") {  
+                    general_name = Sanguosha->translate(QString("SEAT(%1)").arg(QString::number(player->getInitialSeat())));
+                }
+            }
+            else if (player->getGeneralName() == "anjiang") {
+                general_name = Sanguosha->translate(QString("SEAT(%1)").arg(QString::number(player->getInitialSeat())));
+            }
         }
+        
         
         return general_name;
     } else
@@ -1241,7 +1248,7 @@ void Client::trust()
     setStatus(NotActive);
 }
 
-void Client::preshow(const QString &skill_name, const bool isPreshowed)
+void Client::preshow(const QString &skill_name, const bool isPreshowed)//, bool head
 {
     JsonArray arg;
     arg << skill_name;
@@ -1251,11 +1258,11 @@ void Client::preshow(const QString &skill_name, const bool isPreshowed)
     //notifyServer(S_COMMAND_SKIN_CHANGE, skinInfo);
     Self->setSkillPreshowed(skill_name, isPreshowed);
 
-    emit head_preshowed();
+    //emit head_preshowed();
     //if (head)
-    //    emit head_preshowed();
+        emit head_preshowed();
     //else
-    //    emit deputy_preshowed();
+        emit deputy_preshowed();
 }
 
 
@@ -1593,11 +1600,37 @@ void Client::warn(const QVariant &reason_var)
 
 void Client::askForGeneral(const QVariant &arg)
 {
+    //QStringList generals;
+    //if (!tryParse(arg, generals))
+    //    return;
+    
+    JsonArray args = arg.value<JsonArray>();
     QStringList generals;
-    if (!tryParse(arg, generals))
-        return;
-    emit generals_got(generals);
-    setStatus(ExecDialog);
+    bool single_result = false;
+    bool can_convert = false;
+
+    if (!isHegemonyGameMode(ServerInfo.GameMode)) {
+        if (!tryParse(arg, generals))
+            return;
+    }
+    else {
+        if (!tryParse(args[0], generals)) return;
+        single_result = args[1].toBool();
+        can_convert =  args[2].toBool();
+    }
+
+
+    
+    if (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral) {
+        //Sanguosha->playSystemAudioEffect("lose");
+        emit generals_got(generals, single_result, can_convert);
+        setStatus(AskForGeneralTaken);
+    }
+    else {
+        //Sanguosha->playSystemAudioEffect("win");
+        emit generals_got(generals, single_result, can_convert);
+        setStatus(ExecDialog);
+    }
 }
 
 void Client::askForSuit(const QVariant &arg)

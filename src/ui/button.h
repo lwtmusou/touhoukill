@@ -18,6 +18,7 @@ public:
     void setFont(const QFont &font);
 
     virtual QRectF boundingRect() const;
+    //void setText(const QString &text);
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -26,6 +27,9 @@ protected:
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
     virtual void timerEvent(QTimerEvent *);
+
+    //QGraphicsPixmapItem *m_icon;
+    //QGraphicsPixmapItem *m_colorReversedIcon;
 
 private:
     QString label;

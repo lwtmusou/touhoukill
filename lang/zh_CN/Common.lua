@@ -239,9 +239,17 @@ CommonTranslationTable = {
 	["SEAT(10)"] = "十号位",
 	
 	["#HegemonyReveal"] = "%from 展示了武将，主将为 %arg",
+	["#HegemonyRevealDouble"] = "%from 展示了武将，主将为 %arg，副将为 %arg2",
 	["FirstShowReward"] = "首亮奖励（摸两张牌）",
 	["#FirstShowReward"] = "%from 执行首亮摸牌奖励",
-	["GameRule_AskForGeneralShowHead"] = "准备阶段亮将",
+	["GameRule_AskForGeneralShowHead"] = "亮主将",
+	["GameRule_AskForGeneralShowDeputy"] = "亮副将",
+	["userdefine:halfmaxhp"] = "半血摸牌",
+	["#HalfMaxHpLeft"] = "%from 的武将牌上有单独的阴阳鱼，可以摸一张牌",
+	["CompanionEffect"] = "珠联璧合",
+	["#CompanionEffect"] = "%from 触发珠联璧合，可以选择回复1点体力或者摸两张牌",
+	["CompanionEffect:recover"] = "回复1点体力",
+	["CompanionEffect:draw"] = "摸两张牌",
 }
 
 return CommonTranslationTable

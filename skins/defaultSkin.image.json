@@ -201,6 +201,13 @@
 "expandingRoleBox": "image/system/roles/expanding.png",
 "roleBoxKingdomMask-default": "image/system/kingdom-mask/%1.png",
 
+//choose general box
+"chooseGeneralBoxSplitLine": "image/system/choose-general-box/split-line.png",
+"chooseGeneralBoxDestSeat": "image/system/choose-general-box/dest-seat.png",
+
+//general card item
+"generalCardItemCompanionFont-default": "image/system/companions/prompt/%1.png",
+"generalCardItemCompanionIcon-default": "image/system/companions/icons/%1.png",
 
 "headIcon": "image/system/head.png",
 "deputyIcon": "image/system/deputy.png",

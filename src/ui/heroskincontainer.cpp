@@ -118,26 +118,30 @@ bool caseInsensitiveLessThan(const QString &s1, const QString &s2)
 
 QStringList HeroSkinContainer::getHeroSkinFiles(const QString &generalName)
 {
-    if (!m_generalToSkinFiles.contains(generalName)) {
+    QString unique_general = generalName;
+    if (unique_general.endsWith("_hegemony"))
+        unique_general = unique_general.replace("_hegemony", "");
+
+    if (!m_generalToSkinFiles.contains(unique_general)) {
         QDir dir(HEROSKIN_PIXMAP_PATH);
 
-        dir.setNameFilters(QStringList(QString("%1_*.png").arg(generalName)));
+        dir.setNameFilters(QStringList(QString("%1_*.png").arg(unique_general)));
         QStringList tmpFiles = dir.entryList(QDir::Files | QDir::NoDotAndDotDot);
 
         QStringList heroSkinFiles;
         //filter files
         foreach (const QString &file, tmpFiles) {
-            if (file.count("_") == generalName.count("_") + 1)
+            if (file.count("_") == unique_general.count("_") + 1)
                 heroSkinFiles << file;
         }
 
         if (!heroSkinFiles.isEmpty()) {
             std::sort(heroSkinFiles.begin(), heroSkinFiles.end(), caseInsensitiveLessThan);
-            m_generalToSkinFiles[generalName] = heroSkinFiles;
+            m_generalToSkinFiles[unique_general] = heroSkinFiles;
         }
     }
 
-    return m_generalToSkinFiles[generalName];
+    return m_generalToSkinFiles[unique_general];
 }
 
 void HeroSkinContainer::initSkins()
@@ -145,8 +149,10 @@ void HeroSkinContainer::initSkins()
     QGraphicsRectItem *dummyRectItem = new QGraphicsRectItem(QRectF(LEFT_MARGIN, 35, AVAILABLE_AREA_WIDTH, 174), this);
     dummyRectItem->setFlag(ItemHasNoContents);
     dummyRectItem->setFlag(ItemClipsChildrenToShape);
-
-    int skinIndexUsed = Config.value(QString("HeroSkin/%1").arg(m_generalName), 0).toInt();
+    QString unique_general = m_generalName;
+    if (unique_general.endsWith("_hegemony"))
+        unique_general = unique_general.replace("_hegemony", "");
+    int skinIndexUsed = Config.value(QString("HeroSkin/%1").arg(unique_general), 0).toInt();
     createSkinItem(skinIndexUsed, dummyRectItem, true);
 
     QStringList files = getHeroSkinFiles(m_generalName);
@@ -246,8 +252,11 @@ void HeroSkinContainer::close()
 
 void HeroSkinContainer::skinSelected(int skinIndex)
 {
+    QString unique_general = m_generalName;
+    if (unique_general.endsWith("_hegemony"))
+        unique_general = unique_general.replace("_hegemony", "");
     Config.beginGroup("HeroSkin");
-    (0 == skinIndex) ? Config.remove(m_generalName) : Config.setValue(m_generalName, skinIndex);
+    (0 == skinIndex) ? Config.remove(unique_general) : Config.setValue(unique_general, skinIndex);
     Config.endGroup();
 
     close();

@@ -46,6 +46,7 @@ class Player : public QObject
     Q_PROPERTY(bool role_shown READ hasShownRole WRITE setShownRole)
 
     Q_PROPERTY(bool general_showed READ hasShownGeneral WRITE setGeneralShowed)
+    Q_PROPERTY(bool general2_showed READ hasShownGeneral2 WRITE setGeneral2Showed)
 
     Q_PROPERTY(QString next READ getNextName WRITE setNext)
 
@@ -205,11 +206,11 @@ public:
     bool isLord() const;
     bool isCurrent() const;
 
-    void acquireSkill(const QString &skill_name);
-    void detachSkill(const QString &skill_name);
+    void acquireSkill(const QString &skill_name, bool head = true);
+    void detachSkill(const QString &skill_name, bool head = true);
     void detachAllSkills();
-    virtual void addSkill(const QString &skill_name);
-    virtual void loseSkill(const QString &skill_name);
+    virtual void addSkill(const QString &skill_name, bool head_skill = true);
+    virtual void loseSkill(const QString &skill_name, bool head = true);
     bool hasSkill(const QString &skill_name, bool include_lose = false, bool include_hidden = true) const;
     bool hasSkill(const Skill *skill, bool include_lose = false, bool include_hidden = true) const;
     bool hasSkills(const QString &skill_name, bool include_lose = false) const;
@@ -300,8 +301,11 @@ public:
     QList<const Skill *> getSkillList(bool include_equip = false, bool visible_only = true) const;
     QSet<const Skill *> getVisibleSkills(bool include_equip = false) const;
     QList<const Skill *> getVisibleSkillList(bool include_equip = false) const;
+    QList<const Skill *> getHeadSkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const;
+    QList<const Skill *> getDeputySkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const;
+
     QSet<QString> getAcquiredSkills() const;
-    QString getSkillDescription(bool yellow = true) const;
+    QString getSkillDescription(bool yellow = true, const QString &flag = QString()) const;
 
     virtual bool isProhibited(const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
     bool canSlashWithoutCrossbow(const Card *slash = NULL) const;
@@ -334,15 +338,19 @@ public:
     bool hasShownSkill(const Skill *skill) const; //hegemony
     bool hasShownSkill(const QString &skill_name) const; //hegemony
     bool hasShownSkills(const QString &skill_names) const;
-
+    bool inHeadSkills(const QString &skill_name) const;
+    bool inDeputySkills(const QString &skill_name) const;
     void setSkillPreshowed(const QString &skill, bool preshowed = true);//hegemony
-    void setSkillsPreshowed( bool preshowed = true);
+    void setSkillsPreshowed(const QString &falgs = "hd", bool preshowed = true);
     bool hasPreshowedSkill(const QString &name) const;
     bool hasPreshowedSkill(const Skill *skill) const;
-    bool isHidden() const;
+    bool isHidden(const bool &head_general) const;
 
     bool hasShownGeneral() const;
     void setGeneralShowed(bool showed);
+    bool hasShownGeneral2() const;
+    void setGeneral2Showed(bool showed);
+    bool hasShownAllGenerals() const;
     bool ownSkill(const QString &skill_name) const;
     bool ownSkill(const Skill *skill) const;
     bool isFriendWith(const Player *player) const;
@@ -359,8 +367,8 @@ protected:
     QMap<QString, int> marks;
     QMap<QString, QList<int> > piles;
     QMap<QString, QStringList> pile_open;
-    QSet<QString> acquired_skills;
-    QMap<QString, bool> skills;  QStringList skills_originalOrder;//equals  skills.keys().  unlike QMap, QStringList will keep originalOrder
+    QSet<QString> acquired_skills; QSet<QString> acquired_skills2;
+    QMap<QString, bool> skills; QMap<QString, bool> skills2; QStringList skills_originalOrder, skills2_originalOrder;//equals  skills.keys().  unlike QMap, QStringList will keep originalOrder
     QSet<QString> flags;
     QHash<QString, int> history;
     QStringList skill_invalid;
@@ -386,7 +394,7 @@ private:
     int initialSeat; //for record
     bool alive;
 
-    bool general_showed; //general2_showed;//hegemony
+    bool general_showed; bool general2_showed;//hegemony
 
 
     Phase phase;
@@ -416,7 +424,7 @@ signals:
     void removedChanged();
     void brokenEquips_changed();
 
-    void head_state_changed();//hegemony
+    void head_state_changed(); void deputy_state_changed();//hegemony
 };
 
 #endif

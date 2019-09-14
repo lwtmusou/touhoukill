@@ -21,6 +21,7 @@ class QSanButton;
 class QGroupBox;
 struct RoomLayout;
 class BubbleChatBox;
+class ChooseGeneralBox;
 class ChooseOptionsBox;
 class ChooseTriggerOrderBox;
 class PlayerCardBox;
@@ -219,7 +220,7 @@ public slots:
     void keepLoseCardLog(const CardsMoveStruct &move);
     void keepGetCardLog(const CardsMoveStruct &move);
     // choice dialog
-    void chooseGeneral(const QStringList &generals);
+    void chooseGeneral(const QStringList &generals, const bool single_result, const bool can_convert);
     void chooseSuit(const QStringList &suits);
     void chooseCard(const ClientPlayer *playerName, const QString &flags, const QString &reason, bool handcard_visible, Card::HandlingMethod method, QList<int> disabled_ids,
                     bool enableEmptyCard);
@@ -336,6 +337,7 @@ private:
     QList<const Player *> selected_targets;
 
     GuanxingBox *guanxing_box;
+    ChooseGeneralBox *m_chooseGeneralBox;
     ChooseOptionsBox *m_chooseOptionsBox;
     ChooseTriggerOrderBox *m_chooseTriggerOrderBox;
     PlayerCardBox *m_playerCardBox;
@@ -450,7 +452,7 @@ private:
 private slots:
     void fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids = QList<int>(), const QList<int> &shownHandcard_ids = QList<int>());
     void updateSkillButtons();
-    void acquireSkill(const ClientPlayer *player, const QString &skill_name);
+    void acquireSkill(const ClientPlayer *player, const QString &skill_name, const bool &head = true);
     void updateSelectedTargets();
     void updateTrustButton();
     void onSkillActivated();
@@ -470,7 +472,7 @@ private slots:
     void showPlayerCards();
     void updateRolesBox();
     void updateRoles(const QString &roles);
-    void addSkillButton(const Skill *skill, bool from_left = false);
+    void addSkillButton(const Skill *skill, bool head = true); //bool from_left = false
 
     void resetPiles();
     void removeLightBox();
@@ -494,7 +496,7 @@ private slots:
     void takeAmazingGrace(ClientPlayer *taker, int card_id, bool move_cards);
 
     void attachSkill(const QString &skill_name, bool from_left);
-    void detachSkill(const QString &skill_name);
+    void detachSkill(const QString &skill_name, bool head);
 
     void doGongxin(const QList<int> &card_ids, bool enable_heart, QList<int> enabled_ids, QList<int> shownHandcard_ids = QList<int>());
 

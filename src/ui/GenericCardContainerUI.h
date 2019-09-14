@@ -239,7 +239,7 @@ protected:
     QGraphicsPixmapItem *_m_chainIcon, *_m_faceTurnedIcon;
     QGraphicsPixmapItem *_m_handCardBg, *_m_handCardNumText;
     QGraphicsPixmapItem *_m_kingdomColorMaskIcon;
-    QGraphicsPixmapItem *_m_dashboardKingdomColorMaskIcon;
+    QGraphicsPixmapItem *_m_dashboardKingdomColorMaskIcon; QGraphicsPixmapItem *_m_dashboardSecondaryKingdomColorMaskIcon;
     QGraphicsPixmapItem *_m_deathIcon;
     QGraphicsPixmapItem *_m_actionIcon;
     QGraphicsPixmapItem *_m_kingdomIcon;
@@ -304,6 +304,8 @@ protected:
 
     QSanButton *m_changePrimaryHeroSKinBtn;
     HeroSkinContainer *m_primaryHeroSkinContainer;
+    QSanButton *m_changeSecondaryHeroSkinBtn;
+    HeroSkinContainer *m_secondaryHeroSkinContainer;
 
     // The following stuffs for showing seat
     QGraphicsPixmapItem *_m_seatItem;

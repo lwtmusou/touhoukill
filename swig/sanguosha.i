@@ -169,10 +169,10 @@ public:
     bool isLord() const;
 	bool isCurrent() const;
 
-    void acquireSkill(const char *skill_name);
-    void detachSkill(const char *skill_name);
+    void acquireSkill(const char *skill_name, bool head = true);
+    void detachSkill(const char *skill_name, bool head = true);
     void detachAllSkills();
-    virtual void addSkill(const char *skill_name);
+    virtual void addSkill(const char *skill_name, bool head_skill = true);
     virtual void loseSkill(const char *skill_name);
     bool hasSkill(const char *skill_name, bool include_lose = false, bool include_hidden = true) const;
     bool hasSkills(const char *skill_name, bool include_lose = false) const;
@@ -288,14 +288,14 @@ public:
 	void setSkillPreshowed(const char *skill, bool preshowed = true);
 	bool hasPreshowedSkill(const char *name) const;
     bool hasPreshowedSkill(const Skill *skill) const;
-    bool isHidden() const;
+    bool isHidden(const bool &head_general) const;
 
 	bool ownSkill(const char *skill_name) const;
     bool ownSkill(const Skill *skill) const;
     bool isFriendWith(const Player *player) const;
     bool willBeFriendWith(const Player *player) const;
 	const Player *getLord(bool include_death = false) const;
-	void setSkillsPreshowed( bool preshowed = true);
+	void setSkillsPreshowed(const char *falgs = "hd", bool preshowed = true);
 
 
 	void setNext(Player *next);
@@ -365,7 +365,7 @@ public:
     void loseMark(const char *mark, int n = 1);
     void loseAllMarks(const char *mark_name);
 
-    virtual void addSkill(const char *skill_name);
+    virtual void addSkill(const char *skill_name, bool head_skill = true);
     virtual void loseSkill(const char *skill_name);
     virtual void setGender(General::Gender gender);
 

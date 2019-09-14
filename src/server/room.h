@@ -254,8 +254,8 @@ public:
     void changePlayerGeneral2(ServerPlayer *player, const QString &new_general);
     void filterCards(ServerPlayer *player, QList<const Card *> cards, bool refilter);//bool notifyall
 
-    void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true);
-    void acquireSkill(ServerPlayer *player, const QString &skill_name, bool open = true);
+    void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true, bool head = true);
+    void acquireSkill(ServerPlayer *player, const QString &skill_name, bool open = true , bool head = true);
 
     void setPlayerSkillInvalidity(ServerPlayer *player, const Skill *skill, bool invalidity, bool trigger_event = true);
     void setPlayerSkillInvalidity(ServerPlayer *player, const QString &skill_name, bool invalidity, bool trigger_event = true);
@@ -518,6 +518,7 @@ private:
     QList<CardsMoveOneTimeStruct> _mergeMoves(QList<CardsMoveStruct> cards_moves);
     QList<CardsMoveStruct> _separateMoves(QList<CardsMoveOneTimeStruct> moveOneTimes);
     QString _chooseDefaultGeneral(ServerPlayer *player) const;
+    QStringList _chooseDefaultGenerals(ServerPlayer *player) const;
     bool _setPlayerGeneral(ServerPlayer *player, const QString &generalName, bool isFirst);
     QString mode;
     QList<ServerPlayer *> m_players;

@@ -69,8 +69,8 @@ public:
     void loseMark(const QString &mark, int n = 1);
     void loseAllMarks(const QString &mark_name);
 
-    virtual void addSkill(const QString &skill_name);
-    virtual void loseSkill(const QString &skill_name);
+    virtual void addSkill(const QString &skill_name, bool head_skill = true);
+    virtual void loseSkill(const QString &skill_name, bool head_skill = true);
     virtual void setGender(General::Gender gender);
 
     void setAI(AI *ai);
@@ -195,7 +195,7 @@ public:
 
     void notifyPreshow();//hegemony
     void showGeneral(bool head_general = true, bool trigger_event = true, bool sendLog = true, bool ignore_rule = true);
-    void sendSkillsToOthers();
+    void sendSkillsToOthers(bool head_skill = true);
     int getPlayerNumWithSameKingdom(const QString &reason, const QString &_to_calculate = QString()) const;
 
 protected:

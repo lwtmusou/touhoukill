@@ -46,8 +46,9 @@ public:
     inline QRectF getAvatarArea()
     {
         QRectF rect;
-        rect.setSize(_dlayout->m_avatarArea.size());
-        QPointF topLeft = mapFromItem(_getAvatarParent(), _dlayout->m_avatarArea.topLeft());
+        QRect avatarArea = (ServerInfo.Enable2ndGeneral) ? _dlayout->m_avatarAreaDouble : _dlayout->m_avatarArea;
+        rect.setSize(avatarArea.size());
+        QPointF topLeft = mapFromItem(_getAvatarParent(), avatarArea.topLeft());
         rect.moveTopLeft(topLeft);
         return rect;
     }
@@ -65,8 +66,8 @@ public:
     {
         return _m_rightFrame->sceneBoundingRect();
     }
-    QSanSkillButton *removeSkillButton(const QString &skillName);
-    QSanSkillButton *addSkillButton(const QString &skillName);
+    QSanSkillButton *removeSkillButton(const QString &skillName, bool head);
+    QSanSkillButton *addSkillButton(const QString &skillName, const bool &head = true);
     bool isAvatarUnderMouse();
 
     void highlightEquip(QString skillName, bool hightlight);
@@ -127,13 +128,15 @@ public:
     {
         if (_m_skillDock)
             _m_skillDock->update();
+        if (_m_rightSkillDock)
+            _m_rightSkillDock->update();
     }
 
 public slots:
     virtual void updateAvatar();
     void updateChaoren();
     void updateShown();
-    void updateHiddenMark(); //hegemony
+    void updateHiddenMark();  void updateRightHiddenMark();//hegemony
 
     void sortCards();
     void beginSorting();
@@ -243,14 +246,14 @@ protected:
     QGraphicsRectItem *trusting_item;
     QGraphicsSimpleTextItem *trusting_text;
 
-    QSanInvokeSkillDock *_m_skillDock;
+    QSanInvokeSkillDock *_m_skillDock; QSanInvokeSkillDock *_m_rightSkillDock;//hegemony
     const QSanRoomSkin::DashboardLayout *_dlayout;
 
     //for animated effects
     EffectAnimation *animations;
 
     QGraphicsRectItem *_m_shadow_layer1, *_m_shadow_layer2; //hegemony  //for avatar shadow layer
-    QGraphicsPixmapItem *leftHiddenMark; //hegemony
+    QGraphicsPixmapItem *leftHiddenMark;  QGraphicsPixmapItem *rightHiddenMark; //hegemony
 
     // for parts creation
     void _createLeft();
@@ -314,7 +317,7 @@ private slots:
     void onCardItemThrown();
 
     void onMarkChanged();
-    void onHeadStateChanged();
+    void onHeadStateChanged();  void onDeputyStateChanged();
 
 signals:
     void card_selected(const Card *card);

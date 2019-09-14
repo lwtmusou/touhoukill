@@ -226,8 +226,8 @@ QWidget *ServerDialog::createAdvancedTab()
     disable_chat_checkbox = new QCheckBox(tr("Disable chat"));
     disable_chat_checkbox->setChecked(Config.DisableChat);
 
-    //second_general_checkbox = new QCheckBox(tr("Enable second general"));
-    //second_general_checkbox->setChecked(Config.Enable2ndGeneral);
+    second_general_checkbox = new QCheckBox(tr("Enable second general"));
+    second_general_checkbox->setChecked(Config.Enable2ndGeneral);
 
     //same_checkbox = new QCheckBox(tr("Enable Same"));
     //same_checkbox->setChecked(Config.EnableSame);
@@ -283,7 +283,7 @@ QWidget *ServerDialog::createAdvancedTab()
     layout->addLayout(HLay(godlimit_label, godlimit_spinbox));
     layout->addLayout(HLay(lord_maxchoice_label, lord_maxchoice_spinbox));
     layout->addLayout(HLay(new QLabel(tr("Upperlimit for non-lord")), nonlord_maxchoice_spinbox));
-    //layout->addWidget(second_general_checkbox);
+    layout->addWidget(second_general_checkbox);
     //layout->addLayout(HLay(max_hp_label, max_hp_scheme_ComboBox));
     //layout->addLayout(HLay(scheme0_subtraction_label, scheme0_subtraction_spinbox));
     layout->addWidget(prevent_awaken_below3_checkbox);
@@ -1053,7 +1053,7 @@ bool ServerDialog::config()
     Config.FreeAssignSelf = Config.EnableCheat && free_assign_self_checkbox->isChecked() && free_assign_checkbox->isEnabled();
     Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
     Config.DisableChat = disable_chat_checkbox->isChecked();
-    //Config.Enable2ndGeneral = second_general_checkbox->isChecked();
+    Config.Enable2ndGeneral = second_general_checkbox->isChecked();
     //Config.EnableSame = same_checkbox->isChecked();
     //Config.EnableBasara = basara_checkbox->isChecked() && basara_checkbox->isEnabled();
     //Config.EnableHegemony = hegemony_checkbox->isChecked() && hegemony_checkbox->isEnabled();

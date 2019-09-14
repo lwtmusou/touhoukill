@@ -119,7 +119,7 @@ public:
     {
         int m_normalHeight;
         QRect m_boundingRect;
-        QRect m_focusFrameArea;
+        QRect m_focusFrameArea; QRect m_focusFrameAreaDouble;
         QRect m_handCardArea;
 
         // equips
@@ -143,25 +143,25 @@ public:
         QRect m_roleShownArea;
 
         QPoint m_changePrimaryHeroSkinBtnPos;
-        //QPoint m_changeSecondaryHeroSkinBtnPos;
+        QPoint m_changeSecondaryHeroSkinBtnPos;
 
         // photo area
-        QRect m_avatarArea;
+        QRect m_avatarArea; QRect m_headAvatarArea; QRect m_avatarAreaDouble;// hegemony head
         int m_avatarSize;
         QRect m_smallAvatarArea;
         int m_smallAvatarSize;
         int m_primaryAvatarSize;
         QRect m_circleArea;
         int m_circleImageSize;
-        QRect m_avatarNameArea;
+        QRect m_avatarNameArea; QRect m_headAvatarNameArea;
         QRect m_smallAvatarNameArea;
         QSanShadowTextFont m_avatarNameFont;
         QSanShadowTextFont m_smallAvatarNameFont;
-        QRect m_kingdomIconArea;
+        QRect m_kingdomIconArea; QRect m_kingdomIconAreaDouble;
         QRect m_kingdomMaskArea;
-        QRect m_dashboardKingdomMaskArea;
+        QRect m_dashboardKingdomMaskArea; QRect m_dashboardPrimaryKingdomMaskArea; QRect m_dashboardSecondaryKingdomMaskArea;
         QSanShadowTextFont m_handCardFont;
-        QRect m_screenNameArea;
+        QRect m_screenNameArea; QRect m_screenNameAreaDouble;
         QSanShadowTextFont m_screenNameFont;
 
         // progress bar and other controls
@@ -172,14 +172,14 @@ public:
         QRect m_sub_magatamaImageArea;
         bool m_magatamasHorizontal;
         bool m_magatamasBgVisible;
-        QPoint m_magatamasAnchor;
+        QPoint m_magatamasAnchor;  QPoint m_magatamasAnchorDouble;
         QPoint m_sub_magatamasAnchor;
-        Qt::Alignment m_magatamasAlign;
+        Qt::Alignment m_magatamasAlign; Qt::Alignment m_magatamasAlignDouble;
         Qt::Alignment m_sub_magatamasAlign;
         AnchoredRect m_phaseArea;
 
         // private pile (e.g. 7 stars, buqu)
-        QPoint m_privatePileStartPos;
+        QPoint m_privatePileStartPos; QPoint m_privatePileStartPosDouble;
         QPoint m_privatePileStep;
         QSize m_privatePileButtonSize;
 
@@ -189,8 +189,8 @@ public:
         QRect m_chainedIconRegion;
         AnchoredRect m_deathIconRegion;
         QRect m_votesIconRegion;
-        QRect m_hiddenMarkRegion1, m_hiddenMarkRegion2;//hegemony
-        QRect m_seatIconRegion;//hegemony
+        QRect m_hiddenMarkRegion1, m_hiddenMarkRegion2, m_hiddenMarkRegion3;//hegemony
+        QRect m_seatIconRegion; QRect m_seatIconRegionDouble;//hegemony
         QColor m_drankMaskColor;
         QColor m_duanchangMaskColor;
         QColor m_deathEffectColor;
@@ -216,7 +216,7 @@ public:
 
     struct DashboardLayout : public PlayerCardContainerLayout
     {
-        int m_leftWidth, m_rightWidth;
+        int m_leftWidth, m_rightWidth; int m_rightWidthDouble;//hegemony
         int m_floatingAreaHeight;
         int m_rswidth;
         QSize m_buttonSetSize;
@@ -232,7 +232,7 @@ public:
         int m_disperseWidth;
         QColor m_trustEffectColor;
         QSanShadowTextFont m_skillTextFonts[3];
-        QRect m_skillNameArea;
+        QRect m_skillNameArea; QRect m_secondarySkillNameArea;
         QSanShadowTextFont m_skillNameFont;
         QColor m_skillTextColors[QSanButton::S_NUM_BUTTON_STATES * QSanInvokeSkillButton::S_NUM_SKILL_TYPES];
         QColor m_skillTextShadowColors[QSanButton::S_NUM_BUTTON_STATES * QSanInvokeSkillButton::S_NUM_SKILL_TYPES];
@@ -278,6 +278,12 @@ public:
         QColor graphicsBoxBackgroundColor;
         QColor graphicsBoxBorderColor;
         QSanSimpleTextFont graphicsBoxTitleFont;
+
+        //Choose General Box
+        QSanSimpleTextFont m_chooseGeneralBoxDestSeatFont;
+
+        //General Card Item
+        QRect m_generalCardItemCompanionPromptRegion;
 
         //General Button
         QRect generalButtonPositionIconRegion;
@@ -403,6 +409,13 @@ public:
     static const char *S_SKIN_KEY_EXPANDING_ROLE_BOX;
     static const char *S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK;
 
+    //ChooseGeneralBox
+    static const char *S_SKIN_KEY_CHOOSE_GENERAL_BOX_SPLIT_LINE;
+    static const char *S_SKIN_KEY_CHOOSE_GENERAL_BOX_DEST_SEAT;
+
+    //GeneralCardItem
+    static const char *S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_FONT;
+    static const char *S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_ICON;
 
     static const char *S_HERO_SKIN_KEY_GENERAL_ICON;
 

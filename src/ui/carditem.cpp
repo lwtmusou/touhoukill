@@ -27,6 +27,10 @@ void CardItem::_initialize()
     _m_isUnknownGeneral = false;
     auto_back = true;
     frozen = false;
+    outerGlowEffectEnabled = false;
+    outerGlowEffect = NULL;
+    outerGlowColor = Qt::white;
+
     resetTransform();
     setTransform(QTransform::fromTranslate(-_m_width / 2, -_m_height / 2), true);
 }
@@ -93,6 +97,7 @@ void CardItem::changeGeneral(const QString &general_name)
         _m_isUnknownGeneral = true;
         setToolTip(QString());
     }
+    emit general_changed();
 }
 
 const Card *CardItem::getCard() const
@@ -291,11 +296,13 @@ void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 void CardItem::hoverEnterEvent(QGraphicsSceneHoverEvent *)
 {
     emit enter_hover();
+    emit hoverChanged(true);//hegemony
 }
 
 void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
 {
     emit leave_hover();
+    emit hoverChanged(false);//hegemony
 }
 
 void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
@@ -343,4 +350,45 @@ void CardItem::setFootnote(const QString &desc)
     QPainter painter(&_m_footnoteImage);
     font.paintText(&painter, QRect(QPoint(0, 0), rect.size()), (Qt::AlignmentFlag)((int)Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWrapAnywhere), desc);
     footnote = desc;
+}
+
+
+void CardItem::setOuterGlowEffectEnabled(const bool &willPlay)
+{
+    if (outerGlowEffectEnabled == willPlay) return;
+    if (willPlay) {
+        if (outerGlowEffect == NULL) {
+            outerGlowEffect = new QGraphicsDropShadowEffect(this);
+            outerGlowEffect->setOffset(0);
+            outerGlowEffect->setBlurRadius(18);
+            outerGlowEffect->setColor(outerGlowColor);
+            outerGlowEffect->setEnabled(false);
+            setGraphicsEffect(outerGlowEffect);
+        }
+        connect(this, &CardItem::hoverChanged, outerGlowEffect, &QGraphicsDropShadowEffect::setEnabled);
+    }
+    else {
+        if (outerGlowEffect != NULL) {
+            disconnect(this, &CardItem::hoverChanged, outerGlowEffect, &QGraphicsDropShadowEffect::setEnabled);
+            outerGlowEffect->setEnabled(false);
+        }
+    }
+    outerGlowEffectEnabled = willPlay;
+}
+
+bool CardItem::isOuterGlowEffectEnabled() const
+{
+    return outerGlowEffectEnabled;
+}
+
+void CardItem::setOuterGlowColor(const QColor &color)
+{
+    if (!outerGlowEffect || outerGlowColor == color) return;
+    outerGlowColor = color;
+    outerGlowEffect->setColor(color);
+}
+
+QColor CardItem::getOuterGlowColor() const
+{
+    return outerGlowColor;
 }
