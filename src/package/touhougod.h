@@ -251,7 +251,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-
 class QizhiCard : public DelayedTrick
 {
     Q_OBJECT
@@ -283,11 +282,7 @@ public:
         else
             return inherits(cardType);
     }
-
 };
-
-
-
 
 class TouhouGodPackage : public Package
 {

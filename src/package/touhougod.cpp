@@ -6774,7 +6774,6 @@ public:
     }
 };
 
-
 QizhiCard::QizhiCard(Suit suit, int number)
     : DelayedTrick(suit, number)
 {
@@ -6783,7 +6782,7 @@ QizhiCard::QizhiCard(Suit suit, int number)
     setObjectName("QizhiCard");
 }
 
-bool QizhiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
+bool QizhiCard::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const
 {
     //if (!targets.isEmpty())
     //    return false;
@@ -6812,7 +6811,8 @@ void QizhiCard::takeEffect(ServerPlayer *) const
 class QizhiVS : public OneCardViewAsSkill
 {
 public:
-    QizhiVS() : OneCardViewAsSkill("qizhi_attach")
+    QizhiVS()
+        : OneCardViewAsSkill("qizhi_attach")
     {
         filter_pattern = ".";
         attached_lord_skill = true;
@@ -6821,7 +6821,7 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return !player->hasUsed("QizhiCard");// && !player->isKongcheng()
+        return !player->hasUsed("QizhiCard"); // && !player->isKongcheng()
     }
 
     const Card *viewAs(const Card *originalCard) const
@@ -6849,7 +6849,7 @@ public:
     }
 
     //virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const
-    //{  
+    //{
     //}
 
     const Card *viewAs(const Card *originalCard) const
@@ -6872,31 +6872,29 @@ public:
         show_type = "static";
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
     {
         if (triggerEvent != EventPhaseStart) { //the case operating attach skill
             QList<ServerPlayer *> owners;
             static QString attachName = "qizhi_attach";
-            foreach(ServerPlayer *p, room->getAllPlayers()) {
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
                 if (p->hasSkill(this, true, false))
                     owners << p;
             }
 
             if (owners.length() >= 1) {
-                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (!p->hasSkill(attachName, true) && !p->hasSkill("qizhialernative"))
                         room->attachSkillToPlayer(p, attachName);
                     else if (p->hasSkill(attachName, true) && p->hasSkill("qizhialernative"))
                         room->detachSkillFromPlayer(p, attachName, true);
                 }
-            }
-            else {
-                foreach(ServerPlayer *p, room->getAllPlayers()) {
+            } else {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->hasSkill(attachName, true))
                         room->detachSkillFromPlayer(p, attachName, true);
                 }
             }
-
         }
         /*else { //tianbian 
             ServerPlayer *current = data.value<ServerPlayer *>();
@@ -6904,16 +6902,8 @@ public:
                 return QList<SkillInvokeDetail>();
 
         }*/
-        
     }
 };
-
-
-
-
-
-
-
 
 TouhouGodPackage::TouhouGodPackage()
     : Package("touhougod")
@@ -7102,8 +7092,7 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<QianqiangCard>();
     addMetaObject<KuangjiCard>();
     addMetaObject<QizhiCard>();
-    skills << new ChaorenLog << new Wendao << new RoleShownHandler << new ShenbaoAttach << new Ziwo << new Benwo << new Chaowo << new TiandaoDistance
-        << new QizhiVS;
+    skills << new ChaorenLog << new Wendao << new RoleShownHandler << new ShenbaoAttach << new Ziwo << new Benwo << new Chaowo << new TiandaoDistance << new QizhiVS;
 }
 
 ADD_PACKAGE(TouhouGod)

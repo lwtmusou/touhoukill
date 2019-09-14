@@ -68,6 +68,7 @@ SOURCES += \
     src/package/th99.cpp \
     src/package/thndj.cpp \
     src/package/touhougod.cpp \
+    src/package/hegemonyGeneral.cpp \
     src/scenario/miniscenarios.cpp \
     src/scenario/scenario.cpp \
     src/scenario/scenerule.cpp \
@@ -95,6 +96,7 @@ SOURCES += \
     src/ui/magatamasItem.cpp \
     src/ui/photo.cpp \
     src/ui/pixmapanimation.cpp \
+    src/ui/choosegeneralbox.cpp \
     src/ui/qsanbutton.cpp \
     src/ui/QSanSelectableItem.cpp \
     src/ui/rolecombobox.cpp \
@@ -177,6 +179,7 @@ HEADERS += \
     src/package/th99.h \
     src/package/thndj.h \
     src/package/touhougod.h \
+    src/package/hegemonyGeneral.h \
     src/scenario/miniscenarios.h \
     src/scenario/scenario.h \
     src/scenario/scenerule.h \
@@ -199,6 +202,7 @@ HEADERS += \
     src/ui/dashboard.h \
     src/ui/GenericCardContainerUI.h \
     src/ui/graphicspixmaphoveritem.h \
+    src/ui/choosegeneralbox.h \
     src/ui/heroskincontainer.h \
     src/ui/indicatoritem.h \
     src/ui/magatamasItem.h \

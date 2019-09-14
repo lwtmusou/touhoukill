@@ -288,7 +288,7 @@ public:
 	void setSkillPreshowed(const char *skill, bool preshowed = true);
 	bool hasPreshowedSkill(const char *name) const;
     bool hasPreshowedSkill(const Skill *skill) const;
-    bool isHidden(const bool &head_general) const;
+    bool isHidden(bool head_general) const;
 
 	bool ownSkill(const char *skill_name) const;
     bool ownSkill(const Skill *skill) const;
