@@ -942,7 +942,7 @@ public:
         judge.play_animation = true;
         judge.reason = objectName();
         room->judge(judge);
-        if (!judge.ignore_judge)
+        if (judge.ignore_judge)
             return false;
         if (!judge.isGood()) {
             int x = player->getMark("@kinki");
