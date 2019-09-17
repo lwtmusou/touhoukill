@@ -107,7 +107,7 @@ public:
 
     virtual int getExtra(const Player *target) const
     {
-        if (target->hasSkill("qiankun"))
+        if (target->hasSkill(objectName()) && target->hasShownSkill(objectName()))
             return 2;
         else
             return 0;
