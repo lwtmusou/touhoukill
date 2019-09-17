@@ -1609,9 +1609,6 @@ TH12Package::TH12Package()
     byakuren->addSkill(new Pudu);
     byakuren->addSkill(new Jiushu);
     byakuren->addSkill(new Fahua);
-    byakuren->addCompanion("toramaru");
-    byakuren->addCompanion("murasa");
-    byakuren->addCompanion("ichirin");
 
     General *nue = new General(this, "nue", "xlc", 3);
     nue->addSkill(new Weizhi);
@@ -1620,7 +1617,6 @@ TH12Package::TH12Package()
     General *toramaru = new General(this, "toramaru", "xlc", 4);
     toramaru->addSkill(new Jinghua);
     toramaru->addSkill(new Weiguang);
-    toramaru->addCompanion("nazrin");
 
     General *murasa = new General(this, "murasa", "xlc", 4);
     murasa->addSkill(new Shuinan);
@@ -1629,7 +1625,6 @@ TH12Package::TH12Package()
     General *ichirin = new General(this, "ichirin", "xlc", 4);
     ichirin->addSkill(new Lizhi);
     ichirin->addSkill(new Yunshang);
-    ichirin->addCompanion("unzan");
 
     General *nazrin = new General(this, "nazrin", "xlc", 3);
     nazrin->addSkill(new Xunbao);
@@ -1646,7 +1641,6 @@ TH12Package::TH12Package()
     General *myouren = new General(this, "myouren", "xlc", 4, true);
     myouren->addSkill(new Shanshi);
     myouren->addSkill(new Shuxin);
-    myouren->addCompanion("byakuren");
 
     General *kyouko_sp = new General(this, "kyouko_sp", "xlc", 3);
     kyouko_sp->addSkill(new Huisheng);
