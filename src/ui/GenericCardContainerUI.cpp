@@ -457,7 +457,7 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
         }
     }
     //set treasure pile at first
-    QPoint start = (ServerInfo.Enable2ndGeneral) ? _m_layout->m_privatePileStartPosDouble : _m_layout->m_privatePileStartPos;
+    QPoint start = (ServerInfo.Enable2ndGeneral && getPlayer() == Self) ? _m_layout->m_privatePileStartPosDouble : _m_layout->m_privatePileStartPos;
     QPoint step = _m_layout->m_privatePileStep;
     QSize size = _m_layout->m_privatePileButtonSize;
     QList<QGraphicsProxyWidget *> widgets_t, widgets_p, widgets = _m_privatePiles.values();
