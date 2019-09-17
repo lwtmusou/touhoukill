@@ -92,6 +92,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     reimu_hegemony->addSkill("qixiang");
     reimu_hegemony->addSkill("fengmo");
     reimu_hegemony->addCompanion("marisa_hegemony");
+    reimu_hegemony->addCompanion("yukari_hegemony");
     reimu_hegemony->addCompanion("aya_hegemony");
 
     General *marisa_hegemony = new General(this, "marisa_hegemony", "zhu", 4);
