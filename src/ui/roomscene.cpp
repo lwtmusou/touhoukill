@@ -5390,6 +5390,8 @@ void RoomScene::setLordBackdrop(QString lord)
     QString lord_name = (lord == NULL) ? ClientInstance->lord_name : lord;
     if (lord_name == NULL)
         lord_name = Self->getGeneralName();
+    if (lord_name.endsWith("_hegemony"))
+        lord_name = lord_name.replace("_hegemony", "");
     //if (changeBackdrop)
     //    image_path = "backdrop/" + lord_name + ".jpg";
     if (changeBackdrop) {

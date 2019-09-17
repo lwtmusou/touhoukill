@@ -80,7 +80,7 @@ void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
     if (!hasCompanion)
         return;
 
-    QString kingdom = "wei"; // Sanguosha->getGeneral(objectName())->getKingdom();
+    QString kingdom = Sanguosha->getGeneral(objectName())->getKingdom(); //"wei";
     QPixmap icon = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_ICON, kingdom);
     painter->drawPixmap(boundingRect().center().x() - icon.width() / 2 + 3, boundingRect().bottom() - icon.height(), icon);
 
@@ -483,11 +483,14 @@ void ChooseGeneralBox::adjustItems()
     if (selected.length() == 2) {
         foreach (GeneralCardItem *card, items)
             card->setFrozen(true);
-        confirm->setEnabled(true);
-        // confirm->setEnabled(Sanguosha->getGeneral(selected.first()->objectName())->getKingdom()
-        //     == Sanguosha->getGeneral(selected.last()->objectName())->getKingdom());
+        //confirm->setEnabled(true);
+        const General* gen1 = Sanguosha->getGeneral(selected.first()->objectName());
+        const General* gen2 = Sanguosha->getGeneral(selected.last()->objectName());
+        bool can = (gen1->getKingdom() == gen2->getKingdom() || gen1->getKingdom() == "zhu" || gen2->getKingdom() == "zhu");
+        confirm->setEnabled(can);
     } else if (selected.length() == 1) {
         selected.first()->hideCompanion();
+        const General *seleted_general = Sanguosha->getGeneral(selected.first()->objectName());
         foreach (GeneralCardItem *card, items) {
             const General *general = Sanguosha->getGeneral(card->objectName());
             /*if (BanPair::isBanned(seleted_general->objectName(), general->objectName())
@@ -505,13 +508,21 @@ void ChooseGeneralBox::adjustItems()
                     card->hideCompanion();
                 }
             }*/
-            if (card->isFrozen())
-                card->setFrozen(false);
-            if (general->isCompanionWith(selected.first()->objectName())) {
-                selected.first()->showCompanion();
-                card->showCompanion();
-            } else {
+            if (general->getKingdom() != seleted_general->getKingdom() && general->getKingdom() != "zhu" && seleted_general->getKingdom() != "zhu") {
+                if (!card->isFrozen())
+                    card->setFrozen(true);
                 card->hideCompanion();
+            }
+            else {
+                if (card->isFrozen())
+                    card->setFrozen(false);
+                if (general->isCompanionWith(selected.first()->objectName())) {
+                    selected.first()->showCompanion();
+                    card->showCompanion();
+                }
+                else {
+                    card->hideCompanion();
+                }
             }
         }
         if (confirm->isEnabled())

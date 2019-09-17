@@ -3091,7 +3091,7 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign)
 
     QStringList choices = Sanguosha->getRandomGenerals(total - existed.size(), existed);
     QStringList latest = Sanguosha->getLatestGenerals(existed);
-    bool assign_latest_general = Config.value("AssignLatestGeneral", true).toBool();
+    bool assign_latest_general = Config.value("AssignLatestGeneral", true).toBool() && !isHegemonyGameMode(mode);
     foreach (ServerPlayer *player, to_assign) {
         player->clearSelected();
         int i = 0;
@@ -3252,17 +3252,17 @@ void Room::chooseHegemonyGenerals()
             //QStringList roles;
             //roles << "wei" << "shu" << "wu" << "qun";
             //int role_idx = qrand() % roles.length();
-            //QString role = roles[role_idx];
+            QString role = Sanguosha->getGeneral(name)->getKingdom();
+            if (role == "zhu") role = "careerist";
             names.append(name);
             //player->setActualGeneral1Name(name);
-            //player->setRole(role);
+            player->setRole(role);
             player->setGeneralName("anjiang");
             //notifyProperty(player, player, "actual_general1");
             foreach (ServerPlayer *p, getOtherPlayers(player))
                 notifyProperty(p, player, "general");
             notifyProperty(player, player, "general", name);
-            //notifyProperty(player, player, "role", role);
-            //i++;
+            notifyProperty(player, player, "role", role);
         }
         if (player->getGeneral2()) {
             QString name = player->getGeneral2Name();
@@ -3273,6 +3273,15 @@ void Room::chooseHegemonyGenerals()
             foreach (ServerPlayer *p, getOtherPlayers(player))
                 notifyProperty(p, player, "general2");
             notifyProperty(player, player, "general2", name);
+
+            QString role = Sanguosha->getGeneral(name)->getKingdom();
+            if (role == "zhu") {
+                role = "careerist";
+                player->setRole(role);
+                notifyProperty(player, player, "role", role);
+                
+            }
+            
         }
 
         this->setTag(player->objectName(), QVariant::fromValue(names));

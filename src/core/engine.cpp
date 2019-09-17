@@ -310,8 +310,25 @@ QStringList Engine::getBanPackages() const
 {
     if (qApp->arguments().contains("-server"))
         return Config.BanPackages;
-    else
-        return ban_package.toList();
+    else {
+        if (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral) {
+            QStringList ban;
+            QList<const Package *> packs = getPackages();
+            QStringList needPacks;
+            needPacks << "hegemonyGeneral" << "standard_cards" << "standard_ex_cards" << "test_card" << "maneuvering";
+            foreach(const Package *pa, packs) {
+                if (!needPacks.contains(pa->objectName()))
+                    ban << pa->objectName();
+            }
+            return ban;
+        }
+        else {
+            QStringList ban = ban_package.toList();
+            if (!ban.contains("hegemonyGeneral"))
+                ban << "hegemonyGeneral";
+            return ban;
+        }
+    }
 }
 
 QList<const Package *> Engine::getPackages() const
@@ -1057,7 +1074,8 @@ QStringList Engine::getLimitedGeneralNames() const
                 continue;
             general_names << general->objectName();
         }
-    } else {
+    }
+    else {
         while (itor.hasNext()) {
             itor.next();
             if (!isGeneralHidden(itor.value()->objectName()) && !getBanPackages().contains(itor.value()->getPackage()))
