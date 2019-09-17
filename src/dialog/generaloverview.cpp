@@ -610,6 +610,12 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     else
         ui->cvLineEdit->setText(tr("Temporily None"));
 
+    QString companions_text = general->getCompanions();
+    if (companions_text.isEmpty())
+        ui->companionLineEdit->setText(tr("None"));
+    else
+        ui->companionLineEdit->setText(companions_text);
+
     ui->illustratorLineEdit->setText(getIllustratorInfo(general->objectName()));
     ui->originLineEdit->setText(getOriginInfo(general->objectName()));
 
