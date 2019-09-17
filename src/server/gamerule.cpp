@@ -850,6 +850,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         if (isHegemonyGameMode(room->getMode())) {
             if (!player->hasShownGeneral())
                 player->showGeneral(true, false, false);
+            if (player->getGeneral2() && !player->hasShownGeneral2())
+                player->showGeneral(false, false, false);
             //if (!player->hasShownGeneral2())
             //    player->showGeneral(false, false, false);
         }
@@ -1278,6 +1280,8 @@ QString GameRule::getWinner(ServerPlayer *victim) const
             QStringList winners;
             if (!win_player->hasShownGeneral())
                 win_player->showGeneral(true, false, false);
+            if (win_player->getGeneral2() && !win_player->hasShownGeneral2())
+                win_player->showGeneral(false, false, false);
 
             foreach (ServerPlayer *p, room->getPlayers()) {
                 if (win_player->isFriendWith(p))
@@ -1352,6 +1356,8 @@ QString GameRule::getWinner(ServerPlayer *victim) const
                 winner_names << p->objectName();
                 if (!p->hasShownGeneral())
                     p->showGeneral(true, false, false);
+                if (p->getGeneral2() && !p->hasShownGeneral2())
+                    p->showGeneral(false, false, false);
             }
             winner = winner_names.join("+");
         }
