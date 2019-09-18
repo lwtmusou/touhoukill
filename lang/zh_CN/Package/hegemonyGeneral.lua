@@ -86,7 +86,7 @@ return
 	["youmu_hegemony"] = "魂魄妖梦",
 	--["prismriver"]= "普莉兹姆利巴三姐妹",
 	
-	["lunasa"] =  "	露娜萨",
+	["lunasa"] =  "露娜萨",
 	["!lunasa"] =  "露娜萨·普莉兹姆利巴",
 	["#lunasa"] = "骚灵提琴手",
 	["merlin"] =  "梅露兰",
