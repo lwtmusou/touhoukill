@@ -16,6 +16,7 @@ public:
 
     QString selectFirst(ServerPlayer *player, const QStringList &candidates);
     QString selectSecond(ServerPlayer *player, const QStringList &candidates);
+    QString selectPair(ServerPlayer *player, const QStringList &candidates);
     QString select3v3(ServerPlayer *player, const QStringList &candidates);
     QString select1v1(const QStringList &candidates);
     QStringList arrange3v3(ServerPlayer *player);
@@ -29,6 +30,7 @@ private:
     LuaFunction initializeFunc;
     LuaFunction selectFirstFunc;
     LuaFunction selectSecondFunc;
+    LuaFunction selectPairFunc;
     LuaFunction select3v3Func;
     LuaFunction select1v1Func;
     LuaFunction arrange3v3Func;

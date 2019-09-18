@@ -436,3 +436,22 @@ arrange1v1 = function(player) -- stringlist
 	end
 	return result
 end
+
+selectPair = function(player, candidates) -- string
+	--暂时性的测试用国战选将ai    
+    local real_pairs = {}
+	for _, a in ipairs(candidates) do
+		for _, b in ipairs(candidates) do
+		    if a ~= b then 
+				local general1 = sgs.Sanguosha:getGeneral(a)
+				local general2 = sgs.Sanguosha:getGeneral(b)
+				local can =  (general1:getKingdom() == general2:getKingdom()) or (general1:getKingdom() == "zhu") or (general2:getKingdom() == "zhu")
+				if can then
+					table.insert(real_pairs, a .. "+" .. b)
+				end
+			end
+		end
+	end
+	local idx = math.random(1, #real_pairs)
+	return candidates[idx]
+end

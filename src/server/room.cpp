@@ -3222,6 +3222,7 @@ void Room::chooseHegemonyGenerals()
                     QStringList default_generals = _chooseDefaultGenerals(player);
                     _setPlayerGeneral(player, default_generals.first(), true);
                     _setPlayerGeneral(player, default_generals.last(), false);
+
                 }
             }
         }
@@ -3546,11 +3547,44 @@ QStringList Room::_chooseDefaultGenerals(ServerPlayer *player) const
     Q_ASSERT(!player->getSelected().isEmpty());
     QStringList generals;
     QStringList candidates = player->getSelected();
-    QString choice1 = m_generalSelector->selectFirst(player, candidates);
-    candidates.removeAll(choice1);
-    QString choice2 = m_generalSelector->selectSecond(player, candidates);
+
+    QStringList general_pairs;
+    //temp AI
+    foreach(QString a, candidates) {
+        foreach(QString b, candidates) {
+            if (a == b) continue;
+            const General *general1 = Sanguosha->getGeneral(a);
+            const General *general2 = Sanguosha->getGeneral(b);
+            if ((general1->getKingdom() == general2->getKingdom()) || (general1->getKingdom() == "zhu") || (general2->getKingdom() == "zhu")) {
+                general_pairs << (a + "+" + b);
+                //generals << a << b;
+                //break;
+            }
+                
+        }
+        //if (!generals.isEmpty())
+        //    break;
+    }
+    int index = qrand() % general_pairs.length();
+    generals = general_pairs[index].split("+");
+    return generals;
+
+
+    if (isHegemonyGameMode(mode)) {
+        QString choice = m_generalSelector->selectPair(player, candidates);
+        generals = choice.split("+");
+
+    }
+    else
+    {
+        QString choice1 = m_generalSelector->selectFirst(player, candidates);
+        candidates.removeAll(choice1);
+        QString choice2 = m_generalSelector->selectSecond(player, candidates);
+        generals << choice1 << choice2;
+    }
+    
     //m_generalSelector->selectGenerals(player, player->getSelected());
-    generals << choice1 << choice2;
+    
     Q_ASSERT(!generals.isEmpty());
     return generals;
 }
