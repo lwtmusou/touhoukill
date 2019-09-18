@@ -341,7 +341,7 @@ public:
     bool inHeadSkills(const QString &skill_name) const;
     bool inDeputySkills(const QString &skill_name) const;
     void setSkillPreshowed(const QString &skill, bool preshowed = true); //hegemony
-    void setSkillsPreshowed(const QString &falgs = "hd", bool preshowed = true);
+    void setSkillsPreshowed(const QString &flag = "hd", bool preshowed = true);
     bool hasPreshowedSkill(const QString &name) const;
     bool hasPreshowedSkill(const Skill *skill) const;
     bool isHidden(const bool &head_general) const;

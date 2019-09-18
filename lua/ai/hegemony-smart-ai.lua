@@ -2229,7 +2229,7 @@ function SmartAI:filterEvent(event, player, data)
 	if event == sgs.GeneralShown then
 		self:updatePlayerKingdom(player, data)
 	elseif event == sgs.GeneralHidden then
-		if player:getAI() then player:setSkillsPreshowed(true) end
+		if player:getAI() then player:setSkillsPreshowed("hd", true) end
 	elseif event == sgs.TargetConfirmed then
 		local struct = data:toCardUse()
 		local from = struct.from
@@ -2373,7 +2373,7 @@ function SmartAI:filterEvent(event, player, data)
 				self:setSkillsPreshowed()
 				sgs.ai_setSkillsPreshowed = true
 			end
-			if player:getAI() then player:setSkillsPreshowed(true) end
+			if player:getAI() then player:setSkillsPreshowed("hd",true) end
 			-- sgs.printFEList(player)
 			-- sgs.debugFunc(player, 3)
 		elseif player:getPhase() == sgs.Player_NotActive then

@@ -1908,9 +1908,9 @@ void Player::setSkillPreshowed(const QString &skill, bool preshowed) //, bool he
         skills2[skill] = preshowed;
 }
 
-void Player::setSkillsPreshowed(const QString &falgs, bool preshowed)
+void Player::setSkillsPreshowed(const QString &flag, bool preshowed)
 {
-    if (flags.contains("h")) {
+    if (flag.contains("h")) {
         foreach (const QString &skill, skills.keys()) {
             if (!Sanguosha->getSkill(skill)->canPreshow())
                 continue;
@@ -1918,7 +1918,7 @@ void Player::setSkillsPreshowed(const QString &falgs, bool preshowed)
         }
     }
 
-    if (flags.contains("d")) {
+    if (flag.contains("d")) {
         foreach (const QString &skill, skills2.keys()) {
             if (!Sanguosha->getSkill(skill)->canPreshow())
                 continue;
