@@ -1224,7 +1224,7 @@ function SmartAI:assignKeep(start)
 		end
 	end
 
-	for _, card in sgs.qlist(self.player:getCards("he")) do
+	for _, card in sgs.qlist(self.player:getCards("hes")) do
 		self.keepValue[card:getEffectiveId()] = self:writeKeepValue(card)
 	end
 
@@ -1968,7 +1968,7 @@ function findPlayerByObjectName(room, name, include_death, except)
 	if include_death == nil then include_death = false end
 	local player = global_room:findPlayerByObjectName(name, include_death)
 
-	if player and not except or except:objectName() ~= player:objectName() then
+	if player and (not except or except:objectName() ~= player:objectName()) then
 		return player
 	end
 end
@@ -2258,12 +2258,12 @@ function SmartAI:filterEvent(event, player, data)
 			end
 		end
 
-		if card:isKindOf("AOE") and self.player:objectName() == player:objectName() then
-			for _, t in sgs.qlist(struct.to) do
+		--if card:isKindOf("AOE") and self.player:objectName() == player:objectName() then
+		--	for _, t in sgs.qlist(struct.to) do
 				--if t:hasShownSkill("fangzhu") then sgs.ai_AOE_data = data break end
 				--if t:hasShownSkill("guidao") and t:hasShownSkill("leiji") and card:isKindOf("ArcheryAttack") then sgs.ai_AOE_data = data break end
-			end
-		end
+		--	end
+		--end
 
 	elseif event == sgs.PreDamageDone then
 		local damage = data:toDamage()
@@ -2305,7 +2305,7 @@ function SmartAI:filterEvent(event, player, data)
 
 		if card:isKindOf("Snatch") or card:isKindOf("Dismantlement") then
 			for _, p in sgs.qlist(struct.to) do
-				for _, c in sgs.qlist(p:getCards("hej")) do
+				for _, c in sgs.qlist(p:getCards("hejs")) do
 					self.room:setCardFlag(c, "-AIGlobal_SDCardChosen_"..card:objectName())
 				end
 			end
@@ -2470,7 +2470,7 @@ function SmartAI:askForDiscard(reason, discard_num, min_num, optional, include_e
 		return min_num == 1 and self:needToThrowArmor() and self.player:getArmor():getEffectiveId() or {}
 	end
 
-	local flag = "h"
+	local flag = "hs"
 	if include_equip and (self.player:getEquips():isEmpty() or not self.player:isJilei(self.player:getEquips():first())) then flag = flag .. "e" end
 	local cards = self.player:getCards(flag)
 	cards = sgs.QList2Table(cards)
@@ -3098,7 +3098,7 @@ function sgs.ai_skill_cardask.nullfilter(self, data, pattern, target)
 	end
 	if effect and self:hasHeavySlashDamage(target, effect.slash, self.player) then return end
 	if not self:damageIsEffective(nil, damage_nature, target) then return "." end
-	if effect and target and target:hasWeapon("IceSword") and self.player:getCards("he"):length() > 1 then return end
+	if effect and target and target:hasWeapon("IceSword") and self.player:getCards("hes"):length() > 1 then return end
 	if self:getDamagedEffects(self.player, target) or self:needToLoseHp() then return "." end
 
 	if self.player:hasSkill("tianxiang") then
@@ -4052,7 +4052,7 @@ function SmartAI:getDamagedEffects(to, from, isSlash)
 	to = to or self.player
 
 	if isSlash then
-		if from:hasWeapon("IceSword") and to:getCards("he"):length() > 1 and not self:isFriend(from, to) then
+		if from:hasWeapon("IceSword") and to:getCards("hes"):length() > 1 and not self:isFriend(from, to) then
 			return false
 		end
 	end
@@ -4281,7 +4281,7 @@ function SmartAI:getCardId(class_name, acard)
 	local cards
 	if acard then cards = { acard }
 	else
-		cards = self.player:getCards("he")
+		cards = self.player:getCards("hes")
 		for _, key in sgs.list(self.player:getPileNames()) do
 			for _, id in sgs.qlist(self.player:getPile(key)) do
 				cards:append(sgs.Sanguosha:getCard(id))
@@ -5254,7 +5254,7 @@ function SmartAI:useEquipCard(card, use)
 			end
 		end
 		if card:isKindOf("Crossbow") then
-			for _, hcard in sgs.qlist(self.player:getCards("h")) do
+			for _, hcard in sgs.qlist(self.player:getCards("hs")) do
 				if hcard:isKindOf("Weapon") and not hcard:isKindOf("Crossbow") then
 					use.card = hcard
 					return
@@ -5262,7 +5262,7 @@ function SmartAI:useEquipCard(card, use)
 			end
 		end
 		if self.player:getWeapon() and self.player:getWeapon():isKindOf("Crossbow") then
-			local slash = self:getCards("Slash", "he")
+			local slash = self:getCards("Slash", "hes")
 			local notuse = {}
 			for _, s in ipairs(slash) do
 				if sgs.Sanguosha:getCard(s:getEffectiveId()):isKindOf("EquipCard") and self.room:getCardPlace(s:getEffectiveId()) == sgs.Player_PlaceHand then
@@ -5422,14 +5422,14 @@ function SmartAI:useEquipCard(card, use)
 		end
 		if not self.player:getTreasure() then
 			if #self.friends_noself > 0 then
-				for _, hcard in sgs.qlist(self.player:getCards("h")) do
+				for _, hcard in sgs.qlist(self.player:getCards("hs")) do
 					if hcard:isKindOf("WoodenOx") and not hcard:toString() ~= card:toString() then
 						use.card = hcard
 						return
 					end
 				end
 			end
-			for _, hcard in sgs.qlist(self.player:getCards("h")) do
+			for _, hcard in sgs.qlist(self.player:getCards("hs")) do
 				if hcard:isKindOf("Luminouspearl") and not hcard:toString() ~= card:toString() then
 					use.card = hcard
 					return
@@ -5438,7 +5438,7 @@ function SmartAI:useEquipCard(card, use)
 		end
 		if card:isKindOf("Luminouspearl") and (self:getOverflow() > 0 or not self.player:getTreasure() or not self.player:getTreasure():isKindOf("JadeSeal")) then
 			local should_use = false
-			for _, hcard in sgs.qlist(self.player:getCards("h")) do
+			for _, hcard in sgs.qlist(self.player:getCards("hs")) do
 				if hcard:isKindOf("Treasure") and not hcard:toString() ~= card:toString() then
 					should_use = true
 					break
@@ -5463,7 +5463,7 @@ end
 
 function SmartAI:needToLoseHp(to, from, isSlash, passive, recover)
 	to = to or self.player
-	if isSlash and from and from:hasWeapon("IceSword") and to:getCards("he"):length() > 1 and not self:isFriend(from, to) then
+	if isSlash and from and from:hasWeapon("IceSword") and to:getCards("hes"):length() > 1 and not self:isFriend(from, to) then
 		return false
 	end
 	if from and self:hasHeavySlashDamage(from, nil, to) then return false end
@@ -6080,7 +6080,7 @@ function SmartAI:willSkipPlayPhase(player, NotContains_Null)
 	local friend_snatch_dismantlement = 0
 	local cp = self.room:getCurrent()
 	if cp and self.player:objectName() == cp:objectName() and self.player:objectName() ~= player:objectName() and self:isFriend(player) then
-		for _, hcard in sgs.qlist(self.player:getCards("he")) do
+		for _, hcard in sgs.qlist(self.player:getCards("hes")) do
 			if (isCard("Snatch", hcard, self.player) and self.player:distanceTo(player) == 1) or isCard("Dismantlement", hcard, self.player) then
 				--local trick = sgs.cloneCard(hcard:objectName(), hcard:getSuit(), hcard:getNumber())
 				--if self:hasTrickEffective(trick, player) then friend_snatch_dismantlement = friend_snatch_dismantlement + 1 end
@@ -6117,7 +6117,7 @@ function SmartAI:willSkipDrawPhase(player, NotContains_Null)
 		end
 	end
 	if cp and self.player:objectName() == cp:objectName() and self.player:objectName() ~= player:objectName() and self:isFriend(player) then
-		for _, hcard in sgs.qlist(self.player:getCards("he")) do
+		for _, hcard in sgs.qlist(self.player:getCards("hes")) do
 			if (isCard("Snatch", hcard, self.player) and self.player:distanceTo(player) == 1) or isCard("Dismantlement", hcard, self.player) then
 				local trick = sgs.cloneCard(hcard:objectName(), hcard:getSuit(), hcard:getNumber())
 				if self:hasTrickEffective(trick, player) then friend_snatch_dismantlement = friend_snatch_dismantlement + 1 end
@@ -7094,8 +7094,8 @@ end
 sgs.ai_skill_invoke.GameRule_AskForGeneralShowHead = function(self, data)
 	
 	
-	local canShowHead =  true --string.find(choices, "GameRule_AskForGeneralShowHead")
-	local canShowDeputy = false --string.find(choices, "GameRule_AskForGeneralShowDeputy")
+	local canShowHead =  not self.player:hasShownGeneral() --string.find(choices, "GameRule_AskForGeneralShowHead")
+	local canShowDeputy = not self.player:hasShownGeneral2() --string.find(choices, "GameRule_AskForGeneralShowDeputy")
 
 	local firstShow = ("zaozu|jingjie"):split("|") --("luanji|qianhuan"):split("|")
 	--local bothShow = ("luanji+shuangxiong|luanji+huoshui|huoji+jizhi|luoshen+fangzhu|guanxing+jizhi"):split("|")
@@ -7103,10 +7103,10 @@ sgs.ai_skill_invoke.GameRule_AskForGeneralShowHead = function(self, data)
 
 	local notshown, shown, allshown, f, e, eAtt = 0, 0, 0, 0, 0, 0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if  not p:hasShownGeneral() then
+		if  not p:hasShownOneGeneral() then
 			notshown = notshown + 1
 		end
-		if p:hasShownGeneral() then
+		if p:hasShownOneGeneral() then
 			shown = shown + 1
 			if self:evaluateKingdom(p) == self.player:getRole() then
 				f = f + 1
@@ -7145,7 +7145,7 @@ sgs.ai_skill_invoke.GameRule_AskForGeneralShowHead = function(self, data)
 
 	if firstShowReward and not self:willSkipPlayPhase() then
 		for _, skill in ipairs(firstShow) do
-			if self.player:hasSkill(skill) and not self.player:hasShownGeneral() then
+			if self.player:hasSkill(skill) and not self.player:hasShownOneGeneral() then
 				if self.player:inHeadSkills(skill) and canShowHead and showRate > 0.8 then
 					return true
 				elseif canShowDeputy and showRate > 0.8 then
@@ -7206,7 +7206,7 @@ sgs.ai_skill_invoke.GameRule_AskForGeneralShowHead = function(self, data)
 	end]]
 
 	for _, skill in ipairs(followShow) do
-		if ((shown > 0 and e < notshown) or self.player:hasShownGeneral()) and self.player:hasSkill(skill) then
+		if ((shown > 0 and e < notshown) or self.player:hasShownOneGeneral()) and self.player:hasSkill(skill) then
 			if self.player:inHeadSkills(skill) and canShowHead and showRate > 0.6 then
 				return true
 			elseif canShowDeputy and showRate > 0.6 then
@@ -7215,7 +7215,7 @@ sgs.ai_skill_invoke.GameRule_AskForGeneralShowHead = function(self, data)
 		end
 	end
 	for _, skill in ipairs(followShow) do
-		if not self.player:hasShownGeneral() then
+		if not self.player:hasShownOneGeneral() then
 			for _,p in sgs.qlist(self.room:getOtherPlayers(player)) do
 				if p:hasShownSkill(skill) and p:getRole() == self.player:getRole() then
 					if canShowHead and canShowDeputy and showRate > 0.2 then
@@ -7234,6 +7234,148 @@ sgs.ai_skill_invoke.GameRule_AskForGeneralShowHead = function(self, data)
 	return false
 end
 
+sgs.ai_skill_invoke.GameRule_AskForGeneralShowDeputy = function(self, data)
+	
+	
+	local canShowHead =  not self.player:hasShownGeneral() --string.find(choices, "GameRule_AskForGeneralShowHead")
+	local canShowDeputy = not self.player:hasShownGeneral2() --string.find(choices, "GameRule_AskForGeneralShowDeputy")
+
+	local firstShow = ("zaozu|jingjie"):split("|") --("luanji|qianhuan"):split("|")
+	--local bothShow = ("luanji+shuangxiong|luanji+huoshui|huoji+jizhi|luoshen+fangzhu|guanxing+jizhi"):split("|")
+	local followShow = ("yuanhu|saiqian"):split("|") --("qianhuan|duoshi|rende|cunsi|jieyin|xiongyi|shouyue|hongfa"):split("|")
+
+	local notshown, shown, allshown, f, e, eAtt = 0, 0, 0, 0, 0, 0
+	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
+		if  not p:hasShownOneGeneral() then
+			notshown = notshown + 1
+		end
+		if p:hasShownOneGeneral() then
+			shown = shown + 1
+			if self:evaluateKingdom(p) == self.player:getRole() then
+				f = f + 1
+			else
+				e = e + 1
+				if self:isWeak(p) and p:getHp() == 1 and self.player:distanceTo(p) <= self.player:getAttackRange() then eAtt= eAtt + 1 end
+			end
+		end
+		--if p:hasShownAllGenerals() then
+		--	allshown = allshown + 1
+		--end
+	end
+
+	local showRate = math.random() + shown/20
+
+	local firstShowReward = false
+	--if sgs.GetConfig("RewardTheFirstShowingPlayer", true) then
+		if shown == 0 then
+			firstShowReward = true
+		end
+	--end
+	--if true then
+	--	return true
+	--end
+	--[[if (firstShowReward or self:willShowForAttack()) and not self:willSkipPlayPhase() then
+		for _, skill in ipairs(bothShow) do
+			if self.player:hasSkills(skill) then
+				if canShowHead and showRate > 0.7 then
+					return true
+				elseif canShowDeputy and showRate > 0.7 then
+					return true
+				end
+			end
+		end
+	end]]
+
+	if firstShowReward and not self:willSkipPlayPhase() then
+		for _, skill in ipairs(firstShow) do
+			if self.player:hasSkill(skill) and not self.player:hasShownOneGeneral() then
+				if self.player:inDeputySkills(skill) and canShowHead and showRate > 0.8 then
+					return true
+				elseif canShowDeputy and showRate > 0.8 then
+					return true
+				end
+			end
+		end
+		if not self.player:hasShownOneGeneral() then
+			if canShowHead and showRate > 0.9 then
+				return true
+			elseif canShowDeputy and showRate > 0.9 then
+				return true
+			end
+		end
+	end
+
+
+
+
+	--[[for _,p in ipairs(self.friends) do
+		if p:hasShownSkill("jieyin") then
+			if canShowHead and self.player:getGeneral():isMale() then
+				return "GameRule_AskForGeneralShowHead"
+			elseif canShowDeputy and self.player:getGeneral():isFemale() and self.player:getGeneral2():isMale() then
+				return "GameRule_AskForGeneralShowDeputy"
+			end
+		end
+	end]]
+
+	if self.player:getMark("CompanionEffect") > 0 then
+		if self:isWeak() or (shown > 0 and eAtt > 0 and e - f < 3 and not self:willSkipPlayPhase()) then
+			if canShowHead then
+				return true
+			elseif canShowDeputy then
+				return true
+			end
+		end
+	end
+
+	if self.player:getMark("HalfMaxHpLeft") > 0 then
+		if self:isWeak() and self:willShowForDefence() then
+			if canShowHead and showRate > 0.6 then
+				return true
+			elseif canShowDeputy and showRate >0.6 then
+				return true
+			end
+		end
+	end
+
+	--[[if self.player:hasTreasure("JadeSeal") then
+		if not self.player:hasShownGeneral() then
+			if canShowHead then
+				return true
+			elseif canShowDeputy then
+				return true
+			end
+		end
+	end]]
+
+	for _, skill in ipairs(followShow) do
+		if ((shown > 0 and e < notshown) or self.player:hasShownOneGeneral()) and self.player:hasSkill(skill) then
+			if self.player:inDeputySkills(skill) and canShowHead and showRate > 0.6 then
+				return true
+			elseif canShowDeputy and showRate > 0.6 then
+				return true
+			end
+		end
+	end
+	for _, skill in ipairs(followShow) do
+		if not self.player:hasShownOneGeneral() then
+			for _,p in sgs.qlist(self.room:getOtherPlayers(player)) do
+				if p:hasShownSkill(skill) and p:getRole() == self.player:getRole() then
+					if canShowHead and canShowDeputy and showRate > 0.2 then
+						local cho = { "GameRule_AskForGeneralShowHead", "GameRule_AskForGeneralShowDeputy"}
+						return true --cho[math.random(1, #cho)]
+					elseif canShowHead and showRate > 0.2 then
+						return true
+					elseif canShowDeputy and showRate > 0.2 then
+						return true
+					end
+				end
+			end
+		end
+	end
+
+	return false
+end
 
 sgs.ai_skill_invoke.invoke_hidden_compulsory = function(self, data)
 	local name = data:toString():split(":")[2]
@@ -7397,6 +7539,29 @@ function SmartAI:touhouHpLocked(player)
 	if player:getHp()==1 and player:hasSkill("bumie") then
 		return true
 	end
+	return false
+end
+
+function SmartAI:touhouCardUseEffectNullify(use,target)
+	for _, name in ipairs(use.nullified_list) do
+		if name == target:objectName() or name == "_ALL_TARGETS" then
+			return true
+		end
+	end
+	--仅考虑了use系列时机下，没有考虑effect类
+	--effect.to->setFlags("Global_NonSkillNullify")
+	--野性 天仪这种不在card这里设flag的 需要枚举？？ 还是另立函数？
+	return false
+end
+
+function SmartAI:touhouIsDamageCard(card)
+
+	--local classes ={"Slash","Jink","SavageAssault","ArcheryAttack","Duel","FireAttack"}  ;
+	--for _,class in pairs (classes) do
+		if sgs.dynamic_value.damage_card[card:getClassName()] then
+			return true
+		end
+	--end
 	return false
 end
 

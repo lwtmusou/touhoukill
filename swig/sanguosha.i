@@ -285,6 +285,8 @@ public:
     bool hasShownSkills(const char *skill_names) const;
 
 	bool hasShownGeneral() const;
+	bool hasShownGeneral2() const;
+	bool hasShownOneGeneral() const;
 	void setSkillPreshowed(const char *skill, bool preshowed = true);
 	bool hasPreshowedSkill(const char *name) const;
     bool hasPreshowedSkill(const Skill *skill) const;
