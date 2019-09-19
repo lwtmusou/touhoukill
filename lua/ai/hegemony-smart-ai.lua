@@ -1873,8 +1873,8 @@ function SmartAI:sort(players, key)
 	for _, p in ipairs(players) do
 		local key1 = key
 		if not key then key1 = "defenseSlash" end
-		self.room:writeToConsole(key1 .. " sort:" .. p:objectName())
-		self.room:writeToConsole(key1 .. " sort:" .. sgs.getDefenseSlash(p, self))
+		--self.room:writeToConsole(key1 .. " sort:" .. p:objectName())
+		--self.room:writeToConsole(key1 .. " sort:" .. sgs.getDefenseSlash(p, self))
 	end
 	
 	if not key or key == "defense" or key == "defenseSlash" then
@@ -1964,7 +1964,7 @@ function sgs.updateAlivePlayerRoles()
 end
 
 function findPlayerByObjectName(room, name, include_death, except)
-	room:writeToConsole("findPlayerByObjectName:" ..name)
+	--room:writeToConsole("findPlayerByObjectName:" ..name)
 	if include_death == nil then include_death = false end
 	local player = global_room:findPlayerByObjectName(name, include_death)
 
@@ -2558,11 +2558,11 @@ function SmartAI:askForNullification(trick, from, to, positive)
 	local targets = sgs.SPlayerList()
 	local delete = sgs.SPlayerList()
 	local players = self.room:getTag("targets" .. trick:toString()):toList()
-	--local players = self.room:getTag("targets" .. trick:toString()):toStringList()
-	self.room:writeToConsole(trick:toString() .. " Nullification:" .. #players)
+
+	--self.room:writeToConsole(" Nullification:" .. trick:objectName())
+
 
 	local names = {}
-	--for _, q in sgs.qlist(players) do
 	for _, q in sgs.qlist(players) do
 		targets:append(q:toPlayer())
 		delete:append(q:toPlayer())
