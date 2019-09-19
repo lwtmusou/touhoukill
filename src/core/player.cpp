@@ -1963,6 +1963,11 @@ bool Player::hasShownGeneral2() const
     return general2_showed;
 }
 
+bool Player::hasShownOneGeneral() const
+{
+    return  general_showed || (general2 && general2_showed);
+}
+
 bool Player::hasShownAllGenerals() const
 {
     return general_showed && (!general2 || general2_showed);
@@ -1995,8 +2000,7 @@ bool Player::isFriendWith(const Player *player) const
     Q_ASSERT(player);
     if (player == NULL || !isHegemonyGameMode(ServerInfo.GameMode))
         return false;
-    //if (!hasShownOneGeneral() || !player->hasShownOneGeneral())
-    if (!hasShownGeneral() || !player->hasShownGeneral())
+    if (!hasShownOneGeneral() || !player->hasShownOneGeneral())
         return false;
 
     if (this == player)
@@ -2140,3 +2144,5 @@ bool Player::inDeputySkills(const QString &skill_name) const
     }
     return skills2.contains(skill_name) || acquired_skills2.contains(skill_name);
 }
+
+

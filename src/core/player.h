@@ -350,6 +350,7 @@ public:
     void setGeneralShowed(bool showed);
     bool hasShownGeneral2() const;
     void setGeneral2Showed(bool showed);
+    bool hasShownOneGeneral() const;
     bool hasShownAllGenerals() const;
     bool ownSkill(const QString &skill_name) const;
     bool ownSkill(const Skill *skill) const;
