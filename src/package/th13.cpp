@@ -668,7 +668,7 @@ void ShijieCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) 
     judge.play_animation = false;
     room->judge(judge);
 
-    if (!judge.ignore_judge)
+    if (judge.ignore_judge)
         return;
 
     QList<ServerPlayer *> listt;
