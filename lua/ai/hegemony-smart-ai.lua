@@ -3684,10 +3684,10 @@ end
 
 function SmartAI:ableToSave(saver, dying)
 	local current = self.room:getCurrent()
-	if current and current:getPhase() ~= sgs.Player_NotActive and current:hasShownSkill("wansha")
-		and current:objectName() ~= saver:objectName() and current:objectName() ~= dying:objectName() then
-		return false
-	end
+	--if current and current:getPhase() ~= sgs.Player_NotActive and current:hasShownSkill("wansha")
+	--	and current:objectName() ~= saver:objectName() and current:objectName() ~= dying:objectName() then
+	--	return false
+	--end
 	local peach = sgs.cloneCard("peach", sgs.Card_NoSuitRed, 0)
 	if saver:isCardLimited(peach, sgs.Card_MethodUse, true) then return false end
 	return true

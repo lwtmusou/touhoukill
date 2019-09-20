@@ -226,7 +226,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->getTypeId() == Card::TypeTrick) {
                 foreach (ServerPlayer *p, use.to) {
-                    if (p->hasSkill(this) && p->isWounded())
+                    if (p->hasSkill(this) && p->isWounded() && use.from && use.from != p)
                         d << SkillInvokeDetail(this, p, p, NULL, true);
                 }
             }
