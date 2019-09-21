@@ -22,7 +22,7 @@ return
 	["yoshika_hegemony"]= "宫古芳香",
 	
 	["kogasa_hegemony"] = "多多良小伞",
-	["kyouko_hegemony"] = "SP幽谷响子",
+	["kyouko_hegemony"] = "幽谷响子",
 	["kokoro_hegemony"] = "秦心",
 	
 --***********************

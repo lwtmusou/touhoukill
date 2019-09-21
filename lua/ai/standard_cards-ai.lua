@@ -29,7 +29,7 @@ function sgs.isGoodHp(player)
 		if global_room:getMode():find("hegemony") then
 			local n = 0
 			for _, friend in ipairs(sgs.recorder:getFriends(player)) do
-				if global_room:getCurrent():hasShownSkill("wansha") and player:objectName() ~= friend:objectName() then continue end
+				--if global_room:getCurrent():hasShownSkill("wansha") and player:objectName() ~= friend:objectName() then continue end
 				n = n + getCardsNum("Peach", friend, observer)
 			end
 		return n > 0

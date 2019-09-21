@@ -3684,10 +3684,7 @@ end
 
 function SmartAI:ableToSave(saver, dying)
 	local current = self.room:getCurrent()
-	--if current and current:getPhase() ~= sgs.Player_NotActive and current:hasShownSkill("wansha")
-	--	and current:objectName() ~= saver:objectName() and current:objectName() ~= dying:objectName() then
-	--	return false
-	--end
+
 	local peach = sgs.cloneCard("peach", sgs.Card_NoSuitRed, 0)
 	if saver:isCardLimited(peach, sgs.Card_MethodUse, true) then return false end
 	return true
@@ -3810,14 +3807,7 @@ end
 function SmartAI:canRetrial(player, to_retrial, reason)
 	player = player or self.player
 	to_retrial = to_retrial or self.player
-	if player:hasShownSkill("guidao") then
-		local blackequipnum = 0
-		for _, equip in sgs.qlist(player:getEquips()) do
-			if equip:isBlack() then blackequipnum = blackequipnum + 1 end
-		end
-		if blackequipnum + player:getHandcardNum() > 0 then return true end
-	end
-	if player:hasShownSkill("guicai") and player:getHandcardNum() > 0 then return true end
+
 	return
 end
 
