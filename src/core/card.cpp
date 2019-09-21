@@ -995,7 +995,8 @@ const Card *ShowDistanceCard::validate(CardUseStruct &card_use) const
     //const DistanceSkill *skill = qobject_cast<const DistanceSkill *>(Sanguosha->getSkill(c));
     const Skill *skill = Sanguosha->getSkill(c);
     if (skill) {
-        card_use.from->showGeneral();
+        bool head = card_use.from->inHeadSkills(skill->objectName());
+        card_use.from->showGeneral(head);
     }
     return NULL;
 }
