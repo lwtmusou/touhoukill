@@ -2,6 +2,8 @@ sgs.ai_cardneed.yongheng = function(to, card, self)
 	return  card:isKindOf("Spear")
 end
 sgs.ai_skill_invoke.yongheng =  true
+sgs.ai_skill_invoke.yongheng_hegemony =  true
+
 
 sgs.ai_skill_invoke.zhuqu = function(self, data)
 		local to =data:toPlayer()
@@ -568,6 +570,21 @@ sgs.xingyun_suit_value = {
 	heart = 4.8
 }
 
+--国战版
+sgs.ai_skill_use["@@xingyun_hegemony"] = function(self, prompt)
+	local move = self.player:getTag("xingyun_move"):toMoveOneTime()
+	local ids = {}
+	for _, id in sgs.qlist(move.card_ids) do
+		if sgs.Sanguosha:getCard(id):getSuit() == sgs.Card_Heart
+		  and self.room:getCardPlace(id) == sgs.Player_PlaceHand then
+			table.insert(ids, id)
+		end
+	end
+	if #ids > 0 then
+		return "@XingyunHegemonyCard=" .. ids[1]
+	end
+	return "."
+end
 
 sgs.ai_skill_invoke.gesheng = function(self, data)
 	local target = data:toPlayer()

@@ -20,7 +20,7 @@ public:
 
     static void adjustHandcardNum(ServerPlayer *player, QString reason)
     {
-        int card_num = qMax(player->getHp(), 1);
+        int card_num = player->getMaxHp(); //qMax(player->getHp(), 1);
         Room *room = player->getRoom();
         int hc_num = player->getHandcardNum();
         if (card_num != hc_num) {
@@ -45,10 +45,10 @@ public:
             ServerPlayer *kaguya1 = qobject_cast<ServerPlayer *>(move.from);
             ServerPlayer *kaguya2 = qobject_cast<ServerPlayer *>(move.to);
 
-            if (kaguya1 && kaguya1->isAlive() && kaguya1->hasSkill(this) && move.from_places.contains(Player::PlaceHand) && kaguya1->getHandcardNum() != qMax(kaguya1->getHp(), 1)
+            if (kaguya1 && kaguya1->isAlive() && kaguya1->hasSkill(this) && move.from_places.contains(Player::PlaceHand) && kaguya1->getHandcardNum() != kaguya1->getMaxHp()
                 && kaguya1->getPhase() == Player::NotActive)
                 kaguyas << kaguya1;
-            if (kaguya2 && kaguya2->isAlive() && kaguya2->hasSkill(this) && move.to_place == Player::PlaceHand && kaguya2->getHandcardNum() != qMax(kaguya2->getHp(), 1)
+            if (kaguya2 && kaguya2->isAlive() && kaguya2->hasSkill(this) && move.to_place == Player::PlaceHand && kaguya2->getHandcardNum() != kaguya2->getMaxHp()
                 && kaguya2->getPhase() == Player::NotActive)
                 kaguyas << kaguya2;
             if (kaguyas.length() > 1)
@@ -78,6 +78,124 @@ public:
         return false;
     }
 };
+
+
+
+XingyunHegemonyCard::XingyunHegemonyCard()
+{
+    will_throw = false;
+    target_fixed = true;
+    handling_method = Card::MethodNone;
+    m_skillName = "xingyun_hegemony";
+}
+
+void XingyunHegemonyCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+{
+    foreach(int id, subcards)
+        room->showCard(source, id);
+}
+
+class XingyunHegemonyVS : public OneCardViewAsSkill
+{
+public:
+    XingyunHegemonyVS()
+        : OneCardViewAsSkill("xingyun_hegemony")
+    {
+        response_pattern = "@@xingyun_hegemony";
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    {
+        return  selected.isEmpty() && to_select->hasFlag("xingyun");
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const
+    {
+        if (originalCard) {
+            XingyunHegemonyCard *card = new XingyunHegemonyCard;
+            card->addSubcard(originalCard);
+            return card;
+        }
+        else
+            return NULL;
+    }
+};
+
+
+class XingyungHegemony : public TriggerSkill
+{
+public:
+    XingyungHegemony()
+        : TriggerSkill("xingyun_hegemony")
+    {
+        events << CardsMoveOneTime;
+        view_as_skill = new XingyunHegemonyVS;
+    }
+
+    bool canPreshow() const
+    {
+        return true;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        if (room->getTag("FirstRound").toBool())
+            return QList<SkillInvokeDetail>();
+
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        ServerPlayer *tewi = qobject_cast<ServerPlayer *>(move.to);
+        if (tewi != NULL && tewi->hasSkill(this) && move.to_place == Player::PlaceHand) {
+            foreach(int id, move.card_ids) {
+                if (Sanguosha->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand) {
+                    ServerPlayer *owner = room->getCardOwner(id);
+                    if (owner && owner == tewi)
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, tewi, tewi);
+                }
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *tewi = invoke->invoker;
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        foreach(int id, move.card_ids) {
+            if (Sanguosha->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand) {
+                ServerPlayer *owner = room->getCardOwner(id);
+                if (owner && owner == tewi)
+                    room->setCardFlag(id, "xingyun");
+            }
+        }
+        invoke->invoker->tag["xingyun_move"] = data;
+        const Card *c = room->askForUseCard(tewi, "@@xingyun_hegemony", "@xingyun_hegemony");
+        foreach(int id, move.card_ids)
+            room->setCardFlag(id, "-xingyun");
+
+        return c != NULL;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *player = invoke->invoker;        
+        QString choice = "letdraw";
+        //AI:askForChoice or askForPlayerChosen use the "xingyun" AI
+        if (player->isWounded())
+            choice = room->askForChoice(player, "xingyun", "letdraw+recover", data);
+        if (choice == "letdraw") {
+            ServerPlayer *target = room->askForPlayerChosen(player, room->getAlivePlayers(), "xingyun", "@xingyun-select");
+            target->drawCards(1);
+        }
+        else if (choice == "recover") {
+            RecoverStruct recover;
+            recover.who = player;
+            room->recover(player, recover);
+        }
+        
+        return false;
+    }
+};
+
 
 
 
@@ -244,7 +362,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     General *tewi_hegemony = new General(this, "tewi_hegemony", "shu", 3);
     tewi_hegemony->addSkill("buxian");
     tewi_hegemony->addSkill("#buxian");
-    tewi_hegemony->addSkill("xingyun");
+    tewi_hegemony->addSkill(new XingyungHegemony);
 
     General *keine_sp_hegemony = new General(this, "keine_sp_hegemony", "shu", 3);
     keine_sp_hegemony->addSkill("chuangshi");
@@ -404,7 +522,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     daiyousei_hegemony->addSkill("juxian");
     daiyousei_hegemony->addSkill("banyue");
 
-
+    addMetaObject<XingyunHegemonyCard>();
     //skills << new MingmuVS << new YemangRange << new MingmuRange;
 }
 

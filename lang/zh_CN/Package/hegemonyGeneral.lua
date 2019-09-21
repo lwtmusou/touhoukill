@@ -39,7 +39,7 @@ return
 
 	["kaguya_hegemony"] = "蓬莱山辉夜",
 	["yongheng_hegemony"] = "永恒",
-	[":yongheng_hegemony"] = "<font color=\"blue\"><b>锁定技，</b></font>你跳过弃牌阶段并将手牌调整至x张；当你于回合外获得或失去手牌后，你将手牌调整至x张。（x为你的体力值且最小为1）",
+	[":yongheng_hegemony"] = "<font color=\"blue\"><b>锁定技，</b></font>你跳过弃牌阶段并将手牌调整至x张；当你于回合外获得或失去手牌后，你将手牌调整至x张。（x为你的体力上限）",
 	
 
 	["eirin_hegemony"] = "八意永琳",
@@ -52,6 +52,14 @@ return
 	
 	["keine_hegemony"] = "上白泽慧音",
 	["tewi_hegemony"] = "因幡天为",
+		["xingyun_hegemony"] = "幸运",
+	[":xingyun_hegemony"] = "当你获得牌后，你可以展示其中一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌，你选择一项：回复1点体力；或令一名角色摸一张牌。",
+	["@xingyun_hegemony"] = "你可以发动“幸运”，展示获得的牌中的一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌。",
+	["~xingyun_hegemony"] = "选择此次获得的一张红桃牌 ->确定",
+	["xingyun:letdraw"] = "令一名角色摸一张牌" ,
+	["xingyun:recover"] = "你回复1点体力" ,
+	["@xingyun-select"]= "选择一名角色，令其摸一张牌。",
+	
 	["keine_sp_hegemony"] = "白泽",
 
 	["toyohime_hegemony"] = "绵月丰姬",
