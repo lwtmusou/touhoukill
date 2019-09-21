@@ -1222,7 +1222,7 @@ void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const
     if (killer->isDead() || room->getMode() == "06_XMode")
         return;
 
-    if (isHegemonyGameMode(room->getMode()) && !killer->hasShownGeneral())
+    if (isHegemonyGameMode(room->getMode()) && !killer->hasShownOneGeneral())
         return;
 
     if (killer->getRoom()->getMode() == "06_3v3") {

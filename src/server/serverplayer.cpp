@@ -1994,7 +1994,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         if (role != "careerist") {
             if ((i + 1) > (room->getPlayers().length() / 2)) { // set hidden careerist
                 foreach (ServerPlayer *p, room->getOtherPlayers(this, true)) {
-                    if (p->isAlive() && !p->hasShownGeneral() && role == p->getRole()) {
+                    if (p->isAlive() && !p->hasShownOneGeneral() && role == p->getRole()) {
                         p->setRole("careerist");
                         room->notifyProperty(p, p, "role", "careerist");
                     }
