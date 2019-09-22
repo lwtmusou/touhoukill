@@ -7555,6 +7555,14 @@ function SmartAI:touhouIsDamageCard(card)
 	return false
 end
 
+sgs.ai_skill_invoke["userdefine:halfmaxhp"] = function(self)
+	return not self:needKongcheng(self.player, true) or self.player:getPhase() == sgs.Player_Play
+end
+sgs.ai_skill_choice.CompanionEffect = function(self, choice, data)
+	if ( self:isWeak() or self:needKongcheng(self.player, true) ) and string.find(choice, "recover") then return "recover"
+	else return "draw" end
+end
+
 dofile "lua/ai/debug-ai.lua"
 dofile "lua/ai/standard_cards-ai.lua"
 dofile "lua/ai/maneuvering-ai.lua"
