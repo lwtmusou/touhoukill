@@ -199,6 +199,174 @@ public:
 
 
 
+class WunianHgemony : public TriggerSkill
+{
+public:
+    WunianHgemony()
+        : TriggerSkill("wunian_hegemony")
+    {
+        events << Predamage << TargetConfirming;
+        frequency = Compulsory;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
+    {
+        if (e == Predamage) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.from && damage.from->hasSkill(objectName()))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
+        }
+        else if (e == TargetConfirming) {
+            QList<SkillInvokeDetail> d;
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->getTypeId() == Card::TypeTrick) {
+                foreach(ServerPlayer *p, use.to) {
+                    if (p->hasSkill(this) && p->isWounded() && use.from && use.from != p)
+                        d << SkillInvokeDetail(this, p, p, NULL, true);
+                }
+            }
+            return d;
+        }
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        //for AI
+        if (e == TargetConfirming) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            room->setTag("wunian_hegemony_use", data);
+        }
+            
+        return (invoke->invoker->hasShownSkill(this) || invoke->invoker->askForSkillInvoke(this, data));       
+    }
+    
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (e == Predamage) {
+            DamageStruct damage = data.value<DamageStruct>();
+
+            ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->invoker), objectName(), "@wunian_transfer:" + damage.to->objectName(), false, true);
+            damage.from = target;
+            damage.transfer = true;
+            //damage.by_user = false;
+
+            //room->touhouLogmessage("#TriggerSkill", invoke->invoker, "wunian");
+            //room->notifySkillInvoked(invoke->invoker, objectName());
+            data = QVariant::fromValue(damage);
+        }
+        else if (e == TargetConfirming) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            use.to.removeAll(invoke->invoker);
+            data = QVariant::fromValue(use);
+            LogMessage log;
+            log.type = "#SkillAvoid";
+            log.from = invoke->invoker;
+            log.arg = objectName();
+            log.arg2 = use.card->objectName();
+            room->notifySkillInvoked(invoke->invoker, objectName());
+            room->sendLog(log);
+        }
+        return false;
+    }
+};
+
+
+
+
+
+
+class ZhancaoHegemony : public TriggerSkill
+{
+public:
+    ZhancaoHegemony()
+        : TriggerSkill("zhancao_hegemony")
+    {
+        events << TargetConfirmed;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        QList<SkillInvokeDetail> d;
+        if (use.card->isKindOf("Slash")) {
+            QList<ServerPlayer *> srcs = room->findPlayersBySkillName(objectName());
+            foreach(ServerPlayer *p, srcs) {
+                if (!p->canDiscard(p, "e"))
+                    continue;
+                foreach(ServerPlayer *to, use.to) {
+                    if (to->isAlive() && (p->inMyAttackRange(to) || p == to))
+                        d << SkillInvokeDetail(this, p, p, NULL, false, to);
+                }
+            }
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        invoke->invoker->tag["zhancao_target"] = QVariant::fromValue(invoke->preferredTarget);
+        QString prompt = "@zhancao_hegemony-discard:" + use.from->objectName() + ":" + invoke->preferredTarget->objectName();
+        return room->askForCard(invoke->invoker, ".|.|.|equipped", prompt, data, objectName()) != NULL;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        use.nullified_list << invoke->targets.first()->objectName();
+        data = QVariant::fromValue(use);
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
+        room->touhouLogmessage("#zhancaoTarget", invoke->invoker, objectName(), QList<ServerPlayer *>() << invoke->targets.first());
+
+        return false;
+    }
+};
+
+
+MocaoHegemonyCard::MocaoHegemonyCard()
+{
+    //m_skillName = "moacao_hegemony";
+}
+
+bool MocaoHegemonyCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    if (!targets.isEmpty() || to_select == Self)
+        return false;
+    return !to_select->getEquips().isEmpty();
+}
+
+void MocaoHegemonyCard::onEffect(const CardEffectStruct &effect) const
+{
+    Room *room = effect.to->getRoom();
+
+    int card_id = room->askForCardChosen(effect.from, effect.to, "e", "mocao");
+    room->obtainCard(effect.from, card_id);
+    effect.to->drawCards(qMax(1, effect.to->getLostHp()));
+}
+
+class MocaoHegemony : public ZeroCardViewAsSkill
+{
+public:
+    MocaoHegemony()
+        : ZeroCardViewAsSkill("mocao_hegemony")
+    {
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return !player->hasUsed("MocaoHegemonyCard");
+    }
+
+    virtual const Card *viewAs() const
+    {
+        return new MocaoHegemonyCard;
+    }
+};
+
+
+
 HegemonyGeneralPackage::HegemonyGeneralPackage()
     : Package("hegemonyGeneral")
 {
@@ -431,7 +599,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *koishi_hegemony = new General(this, "koishi_hegemony", "qun", 3);
     koishi_hegemony->addSkill("maihuo");
-    koishi_hegemony->addSkill("wunian");
+    koishi_hegemony->addSkill(new WunianHgemony);
 
 
     General *utsuho_hegemony = new General(this, "utsuho_hegemony", "qun", 4);
@@ -505,8 +673,8 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     lilywhite_hegemony->addSkill("chunyi");
 
     General *shanghai_hegemony = new General(this, "shanghai_hegemony", "wei", 3);
-    shanghai_hegemony->addSkill("zhancao");
-    shanghai_hegemony->addSkill("mocao");
+    shanghai_hegemony->addSkill(new ZhancaoHegemony);
+    shanghai_hegemony->addSkill(new MocaoHegemony);
 
     General *youki_hegemony = new General(this, "youki_hegemony", "wei", 4, true);
     youki_hegemony->addSkill("shoushu");
@@ -523,6 +691,9 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     daiyousei_hegemony->addSkill("banyue");
 
     addMetaObject<XingyunHegemonyCard>();
+    
+    
+    addMetaObject<MocaoHegemonyCard>();
     //skills << new MingmuVS << new YemangRange << new MingmuRange;
 }
 

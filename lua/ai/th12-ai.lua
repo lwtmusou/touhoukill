@@ -308,6 +308,20 @@ sgs.ai_trick_prohibit.weizhuang = function(self, from, to, card)
 	return false
 end
 
+--国战版
+sgs.ai_skill_invoke.weizhuang =function(self,data)
+	local user = self.room:getTag("weizhuang_use"):toCardUse().from
+	local card=self.room:getTag("weizhuang_use"):toCardUse().card
+	if not user then  return false end
+	local res=wunian_judge(self,user,card)
+	if res==1 then--杀等危害性牌
+		return true
+	end
+	--if res==2  then --有益牌
+	--end
+	return false
+end
+
 
 --function SmartAI:hasTrickEffective(card, to, from) ??
 sgs.ai_skill_cardask["@zhengyi"] = function(self, data)
@@ -516,8 +530,19 @@ sgs.ai_cardneed.lizhi = function(to, card, self)
 		return  card:isKindOf("AOE")
 	end
 end
-sgs.ai_skill_invoke.yunshang =  true
 
+sgs.ai_skill_invoke.yunshang =function(self,data)
+	local user = self.room:getTag("yunshang_use"):toCardUse().from
+	local card=self.room:getTag("yunshang_use"):toCardUse().card
+	if not user then  return false end
+	local res=wunian_judge(self,user,card)
+	if res==1 then--杀等危害性牌
+		return true
+	end
+	--if res==2  then --有益牌
+	--end
+	return false
+end
 
 sgs.ai_skill_invoke.souji = true
 sgs.ai_skill_invoke.tansuo = true

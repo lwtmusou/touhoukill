@@ -286,6 +286,43 @@ sgs.ai_skill_property.maihuo = { effect = {{"DrawEffect"},{"DrawEffect"}},
 end]]
 
 
+function wunian_judge(self,user,card)
+	if card:isKindOf("AmazingGrace") then
+		return 2
+	end
+	if card:isKindOf("GodSalvation") then
+		return 2
+	end
+	if card:isKindOf("IronChain") then
+		if self.player:isChained() then
+			return 2
+		else
+			return 1
+		end
+	end
+	if   card:isKindOf("Dismantlement") or card:isKindOf("Snatch") then
+		if self:isFriend(user) and self.player:getCards("j"):length()>0 then
+			return 2
+		end
+		if self:isEnemy(user) and self.player:getCards("j"):length()>0  and target:isNude() then
+			return 2
+		end
+		return 1
+	end
+	return 1
+end
+sgs.ai_skill_invoke.wunian_hegemony =function(self,data)
+	local user = self.room:getTag("wunian_hegemony_use"):toCardUse().from
+	local card=self.room:getTag("wunian_hegemony_use"):toCardUse().card
+	if not user then  return false end
+	local res=wunian_judge(self,user,card)
+	if res==1 then--杀等危害性牌
+		return true
+	end
+	--if res==2  then --有益牌
+	--end
+	return false
+end
 
 function SmartAI:getDamageSource(attacker)
 	if not attacker or attacker:hasSkill("wunian")  then

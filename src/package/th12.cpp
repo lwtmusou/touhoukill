@@ -227,6 +227,14 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
+    bool cost(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        //for AI
+        CardUseStruct use = data.value<CardUseStruct>();
+        room->setTag("weizhuang_use", data);
+        return (invoke->invoker->hasShownSkill(this) || invoke->invoker->askForSkillInvoke(this, data));
+    }
+
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         ServerPlayer *player = invoke->invoker;
@@ -644,6 +652,14 @@ public:
                 d << SkillInvokeDetail(this, p, p, NULL, true);
         }
         return d;
+    }
+
+    bool cost(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        //for AI
+        CardUseStruct use = data.value<CardUseStruct>();
+        room->setTag("yunshang_use", data);
+        return (invoke->invoker->hasShownSkill(this) || invoke->invoker->askForSkillInvoke(this, data));
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
