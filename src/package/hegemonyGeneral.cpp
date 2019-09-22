@@ -509,6 +509,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     General *eirin_hegemony = new General(this, "eirin_hegemony", "shu", 4);
     eirin_hegemony->addSkill("ruizhi");
     eirin_hegemony->addSkill("miyao");
+    eirin_hegemony->addCompanion("reisen_hegemony");
 
     General *mokou_hegemony = new General(this, "mokou_hegemony", "shu", 4);
     mokou_hegemony->addSkill("kaifeng");
