@@ -1429,6 +1429,16 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
         doAnimate(S_ANIMATE_INDICATE, player->objectName(), who->objectName());
     }
 
+    if (player->hasSkill("duxin_hegemony") && flags.contains("h")) {
+        if (player->hasShownSkill("duxin_hegemony") || player->askForSkillInvoke("duxin_hegemony", QVariant::fromValue(who))) {
+            if (!player->hasShownSkill("duxin_hegemony"))
+                player->showHiddenSkill("duxin_hegemony");
+            handcard_visible = true;
+            notifySkillInvoked(player, "duxin_hegemony");
+            doAnimate(S_ANIMATE_INDICATE, player->objectName(), who->objectName());
+        }
+    }
+
     QList<int> shownHandcards = who->getShownHandcards();
     QList<int> unknownHandcards = who->handCards();
     foreach (int id, shownHandcards)

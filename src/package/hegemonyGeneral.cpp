@@ -81,6 +81,57 @@ public:
 
 
 
+class XushiHegemony : public TriggerSkill
+{
+public:
+    XushiHegemony()
+        : TriggerSkill("xushi_hegemony")
+    {
+        events << TargetConfirming;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->getTypeId() == Card::TypeSkill || use.to.length() < 2)
+            return QList<SkillInvokeDetail>();
+
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName()))
+            d << SkillInvokeDetail(this, p, p);
+        return d;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        QString prompt = "@xushi_hegemony_targetchosen:" + use.card->objectName();
+        invoke->invoker->tag["xushi_hegemony_use"] = data;
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, use.to, objectName(), prompt, true, true);
+        if (target)
+            invoke->targets << target;
+        return target != NULL;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+
+        ServerPlayer *target = invoke->targets.first();
+        use.to.removeAll(target);
+        data = QVariant::fromValue(use);
+
+        LogMessage log;
+        log.type = "#XushiHegemonySkillAvoid";
+        log.from = target;
+        log.arg = objectName();
+        log.arg2 = use.card->objectName();
+        room->sendLog(log);
+        return false;
+    }
+};
+
+
 XingyunHegemonyCard::XingyunHegemonyCard()
 {
     will_throw = false;
@@ -197,6 +248,51 @@ public:
 };
 
 
+class DuxinHegemony : public TriggerSkill
+{
+public:
+    DuxinHegemony()
+        : TriggerSkill("duxin_hegemony")
+    {
+        events << TargetConfirmed;
+        frequency = Compulsory;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->isKindOf("SkillCard") || use.from == NULL || use.to.length() != 1 || use.from == use.to.first()
+            || use.from->hasFlag("Global_ProcessBroken"))
+            return QList<SkillInvokeDetail>();
+
+        ServerPlayer *satori = use.to.first();
+        if (satori->hasSkill(objectName()) && use.from->getGeneral2() && !use.from->hasShownGeneral2()) {
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, satori, satori, NULL, true, use.from);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        QStringList list = room->getTag(invoke->targets.first()->objectName()).toStringList();
+        //list.removeAt(choice == "showhead" ? 1 : 0);
+        list.removeAt(0);//remove head
+        foreach(const QString &name, list) {
+            LogMessage log;
+            log.type = "$KnownBothViewGeneral";
+            log.from = invoke->invoker;
+            log.to << invoke->targets.first();
+            log.arg = name;
+            log.arg2 = invoke->targets.first()->getRole();
+            room->doNotify(invoke->invoker, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+        }
+        JsonArray arg;
+        arg << objectName();
+        arg << JsonUtils::toJsonArray(list);
+        room->doNotify(invoke->invoker, QSanProtocol::S_COMMAND_VIEW_GENERALS, arg);
+        return false;
+    }
+};
 
 
 class WunianHgemony : public TriggerSkill
@@ -524,7 +620,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
 
     General *keine_hegemony = new General(this, "keine_hegemony", "shu", 3);
-    keine_hegemony->addSkill("xushi");
+    keine_hegemony->addSkill(new XushiHegemony);
     keine_hegemony->addSkill("xinyue");
     keine_hegemony->addCompanion("keine_sp_hegemony");
 
@@ -581,8 +677,9 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     hina_hegemony->addSkill("liuxing");
 
     General *momizi_hegemony = new General(this, "momizi_hegemony", "qun", 4);
-    momizi_hegemony->addSkill("shouhu");
-    momizi_hegemony->addSkill("shaojie");
+    //momizi_hegemony->addSkill("shouhu");
+    //momizi_hegemony->addSkill("shaojie");
+    momizi_hegemony->addSkill("buju");
 
     General *minoriko_hegemony = new General(this, "minoriko_hegemony", "qun", 4);
     minoriko_hegemony->addSkill("fengrang");
@@ -595,7 +692,8 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *satori_hegemony = new General(this, "satori_hegemony", "qun", 3);
     satori_hegemony->addSkill("xiangqi");
-    satori_hegemony->addSkill("duxin");
+    //satori_hegemony->addSkill("duxin");
+    satori_hegemony->addSkill(new DuxinHegemony);
     satori_hegemony->addCompanion("koishi_hegemony");
 
     General *koishi_hegemony = new General(this, "koishi_hegemony", "qun", 3);

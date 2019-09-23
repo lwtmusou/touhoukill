@@ -50,8 +50,12 @@ return
 	["reisen_hegemony"]="铃仙",
 	["!reisen_hegemony"]="铃仙·优昙华院·因幡",
 	
+	--国战改动
 	["keine_hegemony"] = "上白泽慧音",
-	
+	["xushi_hegemony"] = "虚史",
+	[":xushi_hegemony"] = "当复数名角色成为牌的目标时，你可以取消其中一个目标。",
+	["@xushi_hegemony_targetchosen"] = "虚史： 【%src】 有复数个目标， 你是否取消其中一个目标？",
+	["#XushiHegemonySkillAvoid"] = "因为 “%arg”的效果，取消了 【%arg2】 的目标 %from ",
 	
 	--因幡帝 国战削弱
 	["tewi_hegemony"] = "因幡天为",
@@ -81,7 +85,10 @@ return
 	["minoriko_hegemony"] = "秋穰子",
 	["shizuha_hegemony"] = "秋静叶",
 	
+	--国战改动
 	["satori_hegemony"] = "古明地觉",
+	["duxin_hegemony"] = "读心",
+	[":duxin_hegemony"] = "<font color=\"blue\"><b>锁定技，</b></font>当你选择其他角色的手牌时，其手牌对你可见。你成为其他角色使用牌的唯一目标时，你查看其暗置的副人物牌。",
 	
 	--国战改动
 	["koishi_hegemony"] = "古明地恋",

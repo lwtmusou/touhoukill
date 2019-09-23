@@ -423,6 +423,23 @@ sgs.ai_skill_invoke.shishi =function(self,data)
 end
 
 
+sgs.ai_skill_playerchosen.xushi_hegemony = function(self, targets)
+	local use=self.player:getTag("xushi_hegemony_use"):toCardUse()
+	local card = use.card
+	local user = use.from
+	local res=wunian_judge(self,user,card)
+	--if res==1 then--杀等危害性牌
+	--if res==2  then --有益牌
+    for _,p in sgs.qlist(targets) do
+		if res == 1 and self:isFriend(p) then
+			return p
+		elseif res == 2 and self:isEnemy(p) then
+			return p
+        end
+	end	
+	return nil
+end
+
 sgs.ai_skill_playerchosen.shouye = function(self, targets)
 	local target =self:touhouFindPlayerToDraw(false, 1)
 	if not target and #self.friends_noself>0 then

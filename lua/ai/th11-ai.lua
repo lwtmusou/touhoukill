@@ -163,6 +163,9 @@ sgs.ai_cardneed.xiangqi = function(to, card, self)
 	end
 end
 
+sgs.ai_skill_invoke.duxin_hegemony = true
+
+
 sgs.ai_skill_invoke.huzhu = function(self,data)
 	cards =self.player:getCards("hs")
 	cardname="Jink"
