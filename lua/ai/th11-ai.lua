@@ -445,7 +445,7 @@ sgs.ai_skill_cardask["@songzang"] = function(self,data)
 	local target=self.room:getCurrentDyingPlayer()
 	local need_kill=false
 	
-	if player:getRoom():getMode():find("hegemony") then
+	if self.player:getRoom():getMode():find("hegemony") then
 		need_kill = self:isEnemy(target)
 	else
 		local self_role = self.player:getRole()
