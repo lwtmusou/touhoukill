@@ -58,7 +58,7 @@ sgs.ai_skill_discard.qingting = function(self)
 	end
 
 
-	if target:hasSkill("chunxi") or target:hasSkill("xingyun") then
+	if target:hasSkill("chunxi") or target:hasSkill("xingyun") or target:hasSkill("xingyun_hegemony") then
 		local redcard
 		for _,c in sgs.qlist(self.player:getHandcards())do
 			if self:isFriend(target) then
