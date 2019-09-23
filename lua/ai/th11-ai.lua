@@ -442,75 +442,80 @@ sgs.ai_skill_cardask["@songzang"] = function(self,data)
 	local dying = data:toDying()
 	local source = self:findRealKiller(dying.who, dying.damage)
 	local executor = self:executorRewardOrPunish(dying.who, dying.damage)
-
-	local self_role = self.player:getRole()
 	local target=self.room:getCurrentDyingPlayer()
-	local target_role=sgs.ai_role[target:objectName()]
 	local need_kill=false
-	local need_peachs = math.abs(1-target:getHp())
-
-
-	if self_role== "loyalist" or self_role =="lord" then
-		if self:isEnemy(target)  then
-			if self:getOverflow()>0 then
-				need_kill=true
-			else
-				local can_save= Cansave(self,target,need_peachs)
+	
+	if player:getRoom():getMode():find("hegemony") then
+		need_kill = self:isEnemy(target)
+	else
+		local self_role = self.player:getRole()
+		
+		local target_role=sgs.ai_role[target:objectName()]
+	
+		local need_peachs = math.abs(1-target:getHp())
+		if self_role== "loyalist" or self_role =="lord" then
+			if self:isEnemy(target)  then
+				if self:getOverflow()>0 then
+					need_kill=true
+				else
+					local can_save= Cansave(self,target,need_peachs)
+					if can_save then
+						need_kill=true
+					elseif target_role=="rebel"  then
+						if source and  self:isFriend(source) then
+						else
+							need_kill=true
+						end
+					end
+				end
+			end
+		end
+		if self_role== "renegade" then
+			local can_save=Cansave(self,target,need_peachs)
+			if self:isEnemy(target) then
+				if self:getOverflow()>0 and not (target:isLord() and self.room:alivePlayerCount()>2) then
+					need_kill=true
+				end
 				if can_save then
 					need_kill=true
-				elseif target_role=="rebel"  then
-					if source and  self:isFriend(source) then
+				elseif target_role=="rebel" then
+					if source and source:hasLordSkill("tymhwuyu") then
+					else
+						need_kill=true
+					end
+				end
+			else
+				if can_save then
+				elseif target_role=="rebel" then
+					if source and source:hasLordSkill("tymhwuyu") then
 					else
 						need_kill=true
 					end
 				end
 			end
 		end
-	end
-	if self_role== "renegade" then
-		local can_save=Cansave(self,target,need_peachs)
-		if self:isEnemy(target) then
-			if self:getOverflow()>0 and not (target:isLord() and self.room:alivePlayerCount()>2) then
-				need_kill=true
-			end
-			if can_save then
-				need_kill=true
-			elseif target_role=="rebel" then
-				if source and source:hasLordSkill("tymhwuyu") then
-				else
+		if self_role== "rebel" then
+			if self:isFriend(target)
+			and source and not self:isFriend(source)
+			and not source:hasLordSkill("tymhwuyu") then
+				local card_str = self:willUsePeachTo(target)
+				if card_str =="." then
 					need_kill=true
 				end
 			end
-		else
-			if can_save then
-			elseif target_role=="rebel" then
-				if source and source:hasLordSkill("tymhwuyu") then
-				else
+			if self:isEnemy(target) then
+				if self:getOverflow()>0 then
 					need_kill=true
+				elseif target:isLord() then
+					need_kill=true
+				else
+					need_kill = Cansave(self,target,need_peachs)
 				end
 			end
 		end
-	end
-	if self_role== "rebel" then
-		if self:isFriend(target)
-		and source and not self:isFriend(source)
-		and not source:hasLordSkill("tymhwuyu") then
-			local card_str = self:willUsePeachTo(target)
-			if card_str =="." then
-				need_kill=true
-			end
-		end
-		if self:isEnemy(target) then
-			if self:getOverflow()>0 then
-				need_kill=true
-			elseif target:isLord() then
-				need_kill=true
-			else
-				need_kill = Cansave(self,target,need_peachs)
-			end
-		end
-	end
 
+	end
+	
 	if not need_kill  then return "." end
 	local cards ={}
 	for _,card in sgs.qlist(self.player:getCards("hes")) do
