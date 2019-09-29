@@ -199,7 +199,7 @@ return
 	["illustrator:wriggle_3"] = "UGUME",
 	["origin:wriggle_3"] = "p号：45332511，个人ID：1457830",
 
-	["yinghuo"] = "荧火",
+	["yinghuo"] = "萤火",
 	["chongqun"] = "虫群",
 
 	[":yinghuo"] = "当你需要使用/打出任意基本牌时，你可以明置一张同名手牌，视为使用/打出之。每回合每种牌限一次。",
