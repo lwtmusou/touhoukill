@@ -1074,11 +1074,7 @@ function sgs.getDefense(player)
 
 	if player:hasTreasure("JadeSeal") then defense = defense + 2 end
 	defense = defense + player:getHandPile():length()
-	--[[if hasEightDiagram then
-		if player:hasShownSkill("tiandu") then defense = defense + 1 end
-		if player:hasShownSkill("leiji") then defense = defense + 1 end
-		if player:hasShownSkill("hongyan") then defense = defense + 1 end
-	end]]
+
 
 	local m = sgs.masochism_skill:split("|")
 	for _, masochism in ipairs(m) do
@@ -2617,7 +2613,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 	if from then
 		if (trick:isKindOf("Duel") or trick:isKindOf("AOE")) and not self:damageIsEffective(to, sgs.DamageStruct_Normal) then return nil end
 		if trick:isKindOf("FireAttack")
-			and (not self:damageIsEffective(to, sgs.DamageStruct_Fire) or from:getHandcardNum() < 3 or (from:hasShownSkill("hongyan") and to:getHandcardNum() > 3)) then return nil end
+			and (not self:damageIsEffective(to, sgs.DamageStruct_Fire) or from:getHandcardNum() < 3) then return nil end
 		if (trick:isKindOf("Duel") or trick:isKindOf("FireAttack") or trick:isKindOf("AOE")) and self:getDamagedEffects(to, from) and self:isFriend(to) then
 			return nil
 		end
@@ -3848,7 +3844,6 @@ function SmartAI:needRetrial(judge)
 	local reason = judge.reason
 	local who = judge.who
 	if reason == "lightning" then
-		if who:hasShownSkill("hongyan") then return false end
 
 		if who:hasArmorEffect("SilverLion") and who:getHp() > 1 then return false end
 
@@ -3929,11 +3924,6 @@ function SmartAI:getRetrialCardId(cards, judge, self_card)
 	for _, card in ipairs(cards) do
 		local card_x = sgs.Sanguosha:getEngineCard(card:getEffectiveId())
 		local is_peach = self:isFriend(who)  or isCard("Peach", card_x, self.player) --and who:hasSkill("tiandu")
-		--[[if who:hasShownSkill("hongyan") and card_x:getSuit() == sgs.Card_Spade then
-			local str = card_x:getClassName() .. (":[%s:%s]=%d&"):format("heart", card_x:getNumber(), card_x:getEffectiveId())
-			card_x = sgs.Card_Parse(str)
-			assert(card_x)
-		end]]
 
 		--[[if reason == "beige" and not is_peach then
 			local damage = self.room:getTag("CurrentDamageStruct"):toDamage()
@@ -5085,7 +5075,6 @@ function SmartAI:hasTrickEffective(card, to, from)
 	end
 
 	if not card:isKindOf("TrickCard") then self.room:writeToConsole(debug.traceback()) return end
-	--if to:hasShownSkill("hongyan") and card:isKindOf("Lightning") then return false end
 	--if to:hasShownSkill("qianxun") and card:isKindOf("Snatch") then return false end
 	--if to:hasShownSkill("qianxun") and card:isKindOf("Indulgence") then return false end
 	if card:isKindOf("Indulgence") then
