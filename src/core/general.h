@@ -37,6 +37,8 @@ public:
     bool isTotallyHidden() const;
 
     bool isVisible() const;
+    int getMaxHpHead() const;
+    int getMaxHpDeputy() const;
 
     enum Gender
     {
@@ -51,9 +53,9 @@ public:
     void addSkill(Skill *skill);
     void addSkill(const QString &skill_name);
     bool hasSkill(const QString &skill_name) const;
-    QList<const Skill *> getSkillList() const;
-    QList<const Skill *> getVisibleSkillList() const;
-    QSet<const Skill *> getVisibleSkills() const;
+    QList<const Skill *> getSkillList(bool relate_to_place = false, bool head_only = true) const;
+    QList<const Skill *> getVisibleSkillList(bool relate_to_place = false, bool head_only = true) const;
+    QSet<const Skill *> getVisibleSkills(bool relate_to_place = false, bool head_only = true) const;
     QSet<const TriggerSkill *> getTriggerSkills() const;
 
     void addRelateSkill(const QString &skill_name);
@@ -64,6 +66,9 @@ public:
     void addCompanion(const QString &name);
     bool isCompanionWith(const QString &name) const;
     QString getCompanions() const;
+
+    void setHeadMaxHpAdjustedValue(int adjusted_value = -1);
+    void setDeputyMaxHpAdjustedValue(int adjusted_value = -1);
 
     inline QSet<QString> getExtraSkillSet() const
     {
@@ -85,6 +90,8 @@ private:
     bool hidden;
     bool never_shown;
     QStringList companions;
+    int head_max_hp_adjusted_value;
+    int deputy_max_hp_adjusted_value;
 };
 
 #endif

@@ -15,6 +15,7 @@ General::General(Package *package, const QString &name, const QString &kingdom, 
     , gender(male ? Male : Female)
     , hidden(hidden)
     , never_shown(never_shown)
+    , head_max_hp_adjusted_value(0), deputy_max_hp_adjusted_value(0)
 {
     static QChar lord_symbol('$');
     if (name.endsWith(lord_symbol)) {
@@ -105,21 +106,23 @@ bool General::hasSkill(const QString &skill_name) const
     return skill_set.contains(skill_name) || extra_set.contains(skill_name);
 }
 
-QList<const Skill *> General::getSkillList() const
+QList<const Skill *> General::getSkillList(bool relate_to_place, bool head_only) const
 {
     QList<const Skill *> skills;
     foreach (QString skill_name, skillname_list) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
         Q_ASSERT(skill != NULL);
-        skills << skill;
+        if (relate_to_place && !skill->relateToPlace(!head_only))
+            skills << skill;
+        else if (!relate_to_place) skills << skill;
     }
     return skills;
 }
 
-QList<const Skill *> General::getVisibleSkillList() const
+QList<const Skill *> General::getVisibleSkillList(bool relate_to_place, bool head_only) const
 {
     QList<const Skill *> skills;
-    foreach (const Skill *skill, getSkillList()) {
+    foreach (const Skill *skill, getSkillList(relate_to_place, head_only)) {
         if (skill->isVisible())
             skills << skill;
     }
@@ -127,9 +130,9 @@ QList<const Skill *> General::getVisibleSkillList() const
     return skills;
 }
 
-QSet<const Skill *> General::getVisibleSkills() const
+QSet<const Skill *> General::getVisibleSkills(bool relate_to_place, bool head_only) const
 {
-    return getVisibleSkillList().toSet();
+    return getVisibleSkillList(relate_to_place, head_only).toSet();
 }
 
 QSet<const TriggerSkill *> General::getTriggerSkills() const
@@ -236,4 +239,25 @@ QString General::getCompanions() const
             name << QString("%1").arg(Sanguosha->translate(gnr->objectName()));
     }
     return name.join(" ");
+}
+
+
+void General::setHeadMaxHpAdjustedValue(int adjusted_value /* = -1 */)
+{
+    head_max_hp_adjusted_value = adjusted_value;
+}
+
+void General::setDeputyMaxHpAdjustedValue(int adjusted_value /* = -1 */)
+{
+    deputy_max_hp_adjusted_value = adjusted_value;
+}
+
+int General::getMaxHpHead() const
+{
+    return max_hp + head_max_hp_adjusted_value;
+}
+
+int General::getMaxHpDeputy() const
+{
+    return max_hp + deputy_max_hp_adjusted_value;
 }

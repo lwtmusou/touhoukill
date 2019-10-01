@@ -1143,7 +1143,7 @@ void ServerPlayer::introduceTo(ServerPlayer *player)
     if (!isHegemonyGameMode(room->getMode()))
         return;
     if (hasShownGeneral()) {
-        foreach (const QString skill_name, skills_originalOrder) { //skills.keys()  skills_originalOrder
+        foreach (const QString skill_name, skills.keys()) { //skills.keys()  skills_originalOrder
             if (Sanguosha->getSkill(skill_name)->isVisible()) {
                 JsonArray args1;
                 args1 << (int)S_GAME_EVENT_ADD_SKILL;
@@ -1166,7 +1166,7 @@ void ServerPlayer::introduceTo(ServerPlayer *player)
         }
     }
     if (hasShownGeneral2()) {
-        foreach (const QString skill_name, skills2_originalOrder) {
+        foreach (const QString skill_name, skills2.keys()) {
             if (Sanguosha->getSkill(skill_name)->isVisible()) {
                 JsonArray args1;
                 args1 << S_GAME_EVENT_ADD_SKILL;

@@ -595,7 +595,7 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName, const bool 
         return NULL;
     }
 
-    if (_m_rightSkillDock->getSkillButtonByName(skillName) && !head)
+    if (_m_rightSkillDock->getSkillButtonByName(skillName) != NULL && !head)
         //_m_button_recycle.append(_m_leftSkillDock->getSkillButtonByName(skillName));
         return NULL;
 

@@ -13,6 +13,7 @@ Skill::Skill(const QString &name, Frequency frequency, const QString &showType)
     : frequency(frequency)
     , attached_lord_skill(false)
     , show_type(showType)
+    , relate_to_place(QString())
 {
     static QChar lord_symbol('$');
 
@@ -206,6 +207,16 @@ bool Skill::canPreshow() const
 
     return false;
 }
+
+bool Skill::relateToPlace(bool head) const
+{
+    if (head)
+        return relate_to_place == "head";
+    else
+        return relate_to_place == "deputy";
+    return false;
+}
+
 
 ViewAsSkill::ViewAsSkill(const QString &name)
     : Skill(name, Skill::NotFrequent, "viewas")

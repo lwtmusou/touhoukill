@@ -854,12 +854,12 @@ void Player::addSkill(const QString &skill_name, bool head_skill)
 
     if (head_skill) {
         skills[skill_name] = !skill->canPreshow() || general_showed; //head_skills
-        if (!skills_originalOrder.contains(skill_name))
-            skills_originalOrder << skill_name;
+        //if (!skills_originalOrder.contains(skill_name))
+        //    skills_originalOrder << skill_name;
     } else {
         skills2[skill_name] = !skill->canPreshow() || general2_showed;
-        if (!skills2_originalOrder.contains(skill_name))
-            skills2_originalOrder << skill_name;
+        //if (!skills2_originalOrder.contains(skill_name))
+        //    skills2_originalOrder << skill_name;
     }
 }
 
@@ -869,10 +869,10 @@ void Player::loseSkill(const QString &skill_name, bool head)
         skills.remove(skill_name);
     else
         skills2.remove(skill_name);
-    if (head)
-        skills_originalOrder.removeOne(skill_name);
-    else
-        skills2_originalOrder.removeOne(skill_name);
+    //if (head)
+    //    skills_originalOrder.removeOne(skill_name);
+    //else
+    //    skills2_originalOrder.removeOne(skill_name);
 }
 
 QString Player::getPhaseString() const
@@ -1580,8 +1580,8 @@ QList<const Skill *> Player::getSkillList(bool include_equip, bool visible_only)
 {
     QList<const Skill *> skillList;
 
-    //foreach (QString skill_name, skills.keys() + skills2.keys() + acquired_skills.toList()) {
-    foreach (QString skill_name, skills_originalOrder + skills2_originalOrder + acquired_skills.toList() + acquired_skills2.toList()) {
+    foreach (QString skill_name, skills.keys() + skills2.keys() + acquired_skills.toList() + acquired_skills2.toList()) {
+    //foreach (QString skill_name, skills_originalOrder + skills2_originalOrder + acquired_skills.toList() + acquired_skills2.toList()) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if (skill && (include_equip || !hasEquipSkill(skill->objectName())) && (!visible_only || skill->isVisible()))
             skillList << skill;
@@ -2072,9 +2072,9 @@ QList<const Skill *> Player::getHeadSkillList(bool visible_only, bool include_ac
     QList<const Skill *> skillList;
     QList<QString> skillslist;
     if (include_acquired)
-        skillslist = skills_originalOrder + acquired_skills.toList();
+        skillslist = skills.keys() + acquired_skills.toList();   //skills_originalOrder + acquired_skills.toList();
     else
-        skillslist = skills_originalOrder;
+        skillslist = skills.keys(); // skills_originalOrder;
     foreach (const QString &skill_name, skillslist) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if (skill != NULL) {
@@ -2097,9 +2097,9 @@ QList<const Skill *> Player::getDeputySkillList(bool visible_only, bool include_
     QList<const Skill *> skillList;
     QList<QString> skillslist;
     if (include_acquired)
-        skillslist = skills2_originalOrder + acquired_skills2.toList();
+        skillslist = skills2.keys()  + acquired_skills2.toList(); // skills2_originalOrder + acquired_skills2.toList();
     else
-        skillslist = skills2_originalOrder; //skills2.keys();
+        skillslist = skills2.keys();  //skills2_originalOrder; //
     foreach (const QString &skill_name, skillslist) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if (skill != NULL) {

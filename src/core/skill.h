@@ -51,6 +51,13 @@ public:
     bool matchAvaliablePattern(QString avaliablePattern, QString askedPattern) const;
     QString getShowType() const; //nue_god
     virtual bool canPreshow() const; //hegemony
+    virtual bool relateToPlace(bool head = true) const;
+
+    //for LUA
+    //inline void setRelateToPlace(const char *rtp)
+    //{
+    //    relate_to_place = rtp;
+    //}
 
 protected:
     Frequency frequency;
@@ -59,6 +66,7 @@ protected:
     QString related_pile;
     bool attached_lord_skill;
     QString show_type;
+    QString relate_to_place;
 
 private:
     bool lord_skill;

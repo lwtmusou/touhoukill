@@ -4413,11 +4413,11 @@ void Room::startGame()
             int max_hp = general1->getMaxHp();
             if (Config.Enable2ndGeneral) {
                 const General *general2 = Sanguosha->getGeneral(generals.last());
-                max_hp = (general1->getMaxHp() + general2->getMaxHp()) / 2;
+                max_hp = (general1->getMaxHpHead() + general2->getMaxHpDeputy()) / 2;
                 if (general1->isCompanionWith(generals.last()))
                     addPlayerMark(player, "CompanionEffect");
 
-                setPlayerMark(player, "HalfMaxHpLeft", (general1->getMaxHp() + general2->getMaxHp()) % 2);
+                setPlayerMark(player, "HalfMaxHpLeft", max_hp % 2);
             }
             player->setMaxHp(max_hp);
         } else
@@ -5248,7 +5248,7 @@ void Room::preparePlayers()
             QString general1_name = tag[player->objectName()].toStringList().at(0);
             //if (!player->property("Duanchang").toString().split(",").contains("head")) {
             //foreach(const Skill *skill, Sanguosha->getGeneral(general1_name)->getVisibleSkillList(true, true))
-            QList<const Skill *> skills = Sanguosha->getGeneral(general1_name)->getSkillList();
+            QList<const Skill *> skills = Sanguosha->getGeneral(general1_name)->getSkillList(true, true);
             foreach (const Skill *skill, skills)
                 player->addSkill(skill->objectName());
             //}
@@ -5257,7 +5257,7 @@ void Room::preparePlayers()
                 QString general2_name = tag[player->objectName()].toStringList().at(1);
                 //if (!player->property("Duanchang").toString().split(",").contains("deputy")) {
                 //foreach(const Skill *skill, Sanguosha->getGeneral(general2_name)->getVisibleSkillList(true, false))
-                QList<const Skill *> skills = Sanguosha->getGeneral(general2_name)->getSkillList();
+                QList<const Skill *> skills = Sanguosha->getGeneral(general2_name)->getSkillList(true, false);
                 foreach (const Skill *skill, skills)
                     player->addSkill(skill->objectName(), false);
             }
@@ -5299,13 +5299,13 @@ void Room::preparePlayers()
 void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general)
 {
     if (player->getGeneral() != NULL) {
-        foreach (const Skill *skill, player->getGeneral()->getSkillList())
+        foreach (const Skill *skill, player->getGeneral()->getSkillList(true, true))
             player->loseSkill(skill->objectName());
     }
     setPlayerProperty(player, "general", new_general);
     Q_ASSERT(player->getGeneral() != NULL);
     player->setGender(player->getGeneral()->getGender());
-    foreach (const Skill *skill, player->getGeneral()->getSkillList()) {
+    foreach (const Skill *skill, player->getGeneral()->getSkillList(true, true)) {
         if (skill->isLordSkill() && !player->isLord()) {
             continue;
         }
@@ -5317,13 +5317,13 @@ void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general)
 void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general)
 {
     if (player->getGeneral2() != NULL) {
-        foreach (const Skill *skill, player->getGeneral2()->getSkillList())
+        foreach (const Skill *skill, player->getGeneral2()->getSkillList(true, false))
             player->loseSkill(skill->objectName());
     }
     setPlayerProperty(player, "general2", new_general);
     Q_ASSERT(player->getGeneral2() != NULL);
     if (player->getGeneral2()) {
-        foreach (const Skill *skill, player->getGeneral2()->getSkillList()) {
+        foreach (const Skill *skill, player->getGeneral2()->getSkillList(true, false)) {
             if (skill->isLordSkill() && !player->isLord())
                 continue;
             player->addSkill(skill->objectName(), false);
