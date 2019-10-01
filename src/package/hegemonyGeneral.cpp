@@ -8,6 +8,14 @@
 //#include "th10.h"
 //#include "th08.h"
 
+
+//********  SPRING   **********
+
+
+
+//********  SUMMER   **********
+
+
 class YonghengHegemony : public TriggerSkill
 {
 public:
@@ -248,6 +256,55 @@ public:
 };
 
 
+
+class YueshiHegemony : public TriggerSkill
+{
+public:
+    YueshiHegemony()
+        : TriggerSkill("yueshi_hegemony")
+    {
+        events << PostCardEffected;
+        relate_to_place = "head";
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+        if (effect.from && effect.to->hasSkill(this) && effect.to->isWounded() && effect.to->isAlive() && effect.card->isNDTrick()) {
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to);
+        }
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+        QString prompt = "invoke:" + effect.card->objectName();
+        return invoke->invoker->askForSkillInvoke(objectName(), prompt);
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        JudgeStruct judge;
+        judge.who = invoke->invoker;
+        judge.pattern = ".|red";
+        judge.good = true;
+        judge.reason = objectName();
+        room->judge(judge);
+
+        if (judge.isGood() && !judge.ignore_judge) {
+            RecoverStruct recover;
+            recover.recover = 1;
+            room->recover(invoke->invoker, recover);
+        }
+        return false;
+    }
+};
+
+
+//********  AUTUMN   **********
+
 class DuxinHegemony : public TriggerSkill
 {
 public:
@@ -370,7 +427,7 @@ public:
 
 
 
-
+//********  WINTER   **********
 
 
 class ZhancaoHegemony : public TriggerSkill
@@ -423,7 +480,7 @@ public:
 
 MocaoHegemonyCard::MocaoHegemonyCard()
 {
-    //m_skillName = "moacao_hegemony";
+    m_skillName = "mocao_hegemony";
 }
 
 bool MocaoHegemonyCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
@@ -633,9 +690,10 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     keine_sp_hegemony->addSkill("chuangshi");
     keine_sp_hegemony->addSkill("wangyue");
 
-    General *toyohime_hegemony = new General(this, "toyohime_hegemony", "shu", 3);
+    General *toyohime_hegemony = new General(this, "toyohime_hegemony", "shu", 4);
     toyohime_hegemony->addSkill("lianxi");
-    toyohime_hegemony->addSkill("yueshi");
+    toyohime_hegemony->addSkill(new YueshiHegemony);
+    toyohime_hegemony->setHeadMaxHpAdjustedValue(-1);
     toyohime_hegemony->addCompanion("yorihime_hegemony");
 
     General *yorihime_hegemony = new General(this, "yorihime_hegemony", "shu", 4);

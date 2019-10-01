@@ -70,6 +70,10 @@ return
 	["keine_sp_hegemony"] = "白泽",
 
 	["toyohime_hegemony"] = "绵月丰姬",
+	["yueshi_hegemony"] = "月使",
+	[":yueshi_hegemony"] = "<font color=\"purple\"><b>主将技，</b></font>此武将牌减少单个阴阳鱼。你视为拥有“睿智”（当普通锦囊牌对你结算结束时，若你已受伤，你可以判定，若结果为红色，你回复1点体力）。",
+	["yueshi_hegemony:invoke"]= "普通锦囊牌【%src】对你结算结束了，你可以发动“睿智”。",
+	
 	["yorihime_hegemony"] = "绵月依姬",
 
 
