@@ -445,6 +445,10 @@ sgs.ai_skill_cardask["@luanying-invoke"] = function(self, data)
 	return "."
 end
 
+--国战版
+sgs.ai_skill_invoke.yueshi_hegemony  = function(self)
+	return self:invokeTouhouJudge()
+end
 
 sgs.ai_skill_use["@@lianxi"] = function(self, prompt)
 	local need_recast=false
