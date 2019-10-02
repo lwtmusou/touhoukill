@@ -1053,6 +1053,39 @@ sgs.ai_choicemade_filter.cardResponded["@zhancao-discard"] = function(self, play
 	end
 end
 
+--国战版
+sgs.ai_skill_cardask["@zhancao_hegemony-discard"] = function(self, data)
+	local use = data:toCardUse()
+	local target =self.player:getTag("zhancao_target"):toPlayer()
+	if not self:isFriend(target) then return "." end
+	if not self:slashIsEffective(use.card, target, use.from) then return "." end
+	if self:touhouCardUseEffectNullify(use,target) then return "." end
+	if self:isFriend(use.from) then
+		local fakeDamage=sgs.DamageStruct()
+		fakeDamage.card=use.card
+		fakeDamage.nature= self:touhouDamageNature(use.card, use.from, target)
+		fakeDamage.damage=1
+		fakeDamage.from=use.from
+		fakeDamage.to= target
+		if not self:touhouNeedAvoidAttack(fakeDamage, use.from,target) then  return "."  end
+	end
+
+
+	local cards =self.player:getCards("e")
+	local ecards=sgs.QList2Table(cards)
+	
+	if #ecards==0 then return "." end
+	if self:isWeak(target) or getCardsNum("Jink", target, self.player) < 1 or sgs.card_lack[target:objectName()]["Jink"] >0 then
+		self:sortByCardNeed(ecards)
+		return "$" .. ecards[1]:getId()
+	end
+	return "."
+end
+sgs.ai_cardneed.zhancao_hegemony = function(to, card, self)
+	return card:isKindOf("EquipCard")
+end
+
+
 local mocao_skill = {}
 mocao_skill.name = "mocao"
 table.insert(sgs.ai_skills, mocao_skill)
@@ -1097,6 +1130,44 @@ sgs.ai_card_intention.MocaoCard = function(self, card, from, tos)
 		sgs.updateIntention(from, tos[1], 30)
 	end
 end
+
+local mocao_hegemony_skill = {}
+mocao_hegemony_skill.name = "mocao_hegemony"
+table.insert(sgs.ai_skills, mocao_hegemony_skill)
+mocao_hegemony_skill.getTurnUseCard = function(self)
+	if self.player:hasUsed("MocaoHegemonyCard") then return nil end
+	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if  p:getCards("e"):length()>0 then
+			t=true
+			break
+		end
+	end
+	if t then
+		return sgs.Card_Parse("@MocaoHegemonyCard=.")
+	end
+	return nil
+end
+sgs.ai_skill_use_func.MocaoHegemonyCard = function(card, use, self)
+	local targets={}
+	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if  p:getCards("e"):length()>0 then
+			table.insert(targets,p)
+		end
+	end
+	--需要一个全新的sort
+	self:sort(targets,"value")
+	for _, p in ipairs(targets) do
+		if (p:getLostHp()<2 and self:isEnemy(p)) or (p:getLostHp()>1 and self:isFriend(p))  then
+			use.card = card
+			if use.to then
+				use.to:append(p)
+				if use.to:length() >= 1 then return end
+			end
+		end
+	end
+end
+sgs.ai_use_value.MocaoHegemonyCard = 9
+sgs.ai_use_priority.MocaoHegemonyCard = 6
 
 --function SmartAI:getDamagedEffects(to, from, slash)
 --[[
