@@ -413,8 +413,15 @@ void Client::processServerPacket(const char *cmd)
         } else if (packet.getPacketType() == S_TYPE_REQUEST) {
             if (!replayer)
                 processServerRequest(packet);
-            else if (packet.getCommandType() == QSanProtocol::S_COMMAND_CHOOSE_GENERAL)
-                processShowGeneral(packet);
+            else if (packet.getCommandType() == QSanProtocol::S_COMMAND_CHOOSE_GENERAL) {
+                if (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral) {
+                    Callback callback = m_interactions[S_COMMAND_CHOOSE_GENERAL];
+                    if (callback)
+                        (this->*callback)(packet.getMessageBody());
+                }
+                else
+                    processShowGeneral(packet);
+            }    
         }
     }
 }
