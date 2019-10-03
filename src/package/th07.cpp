@@ -1228,6 +1228,11 @@ public:
         events << EventPhaseStart;
     }
 
+    bool canPreshow() const
+    {
+        return false;
+    }
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
