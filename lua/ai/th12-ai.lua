@@ -737,6 +737,41 @@ end
 --sgs.ai_playerchosen_intention.jingxia = 50
 sgs.ai_choicemade_filter.cardChosen.jingxia = sgs.ai_choicemade_filter.cardChosen.dismantlement
 
+sgs.ai_skill_choice.jingxia_hegemony=function(self)
+	local damage=self.player:getTag("jingxia"):toDamage()
+	local from=damage.from
+	local fieldcard=sgs.SPlayerList()
+	local fieldcard1=sgs.SPlayerList()
+	
+	if from and self.player:canDiscard(from, "hes") and from:getCards("hes"):length() >= 2 then
+		return "discard"
+	end
+	
+	for _, p in sgs.qlist(self.room:getAllPlayers()) do
+		if self:isEnemy(p) then
+			if self.player:canDiscard(p, "e")   then
+				fieldcard:append(p)
+			end
+		end
+		if self:isFriend(p) then
+			if self.player:canDiscard(p, "j") and not p:containsTrick("lightning") then
+				fieldcard1:append(p)
+			end
+		end
+		if p:containsTrick("lightning") and  not self:invokeTouhouJudge() then
+			fieldcard1:append(p)
+		end
+	end
+	if self:isWeak(self.player) and self.player:canDiscard(self.player, "e") then
+		return "discardfield"
+	end
+	if fieldcard1:length()>0 then return "discardfield" end
+	if fieldcard:length()>0 then return "discardfield" end
+	if from and self:isEnemy(from) and not from:isNude() and  self.player:canDiscard(from, "hes") then
+		return "discard"
+	end
+	return "dismiss"
+end
 
 sgs.ai_skill_invoke.bianhuan = function(self, data)
 	local damage =data:toDamage()

@@ -6256,11 +6256,11 @@ function SmartAI:willShowForAttack()
 	local showRate = math.random() + f/20 + eAtt/10 + shown/20 + sgs.turncount/10
 
 	local firstShowReward = false
-	if sgs.GetConfig("RewardTheFirstShowingPlayer", true) then
+	--if sgs.GetConfig("RewardTheFirstShowingPlayer", true) then
 		if shown == 0 then
 			firstShowReward = true
 		end
-	end
+	--end
 	if firstShowReward and showRate > 0.9 then return true end
 
 	if showRate < 0.9 then return false end
@@ -6293,11 +6293,11 @@ function SmartAI:willShowForDefence()
 	local showRate = math.random() - e/10 - self.player:getHp()/10 + shown/20 + sgs.turncount/10
 
 	local firstShowReward = false
-	if sgs.GetConfig("RewardTheFirstShowingPlayer", true) then
+	--if sgs.GetConfig("RewardTheFirstShowingPlayer", true) then
 		if shown == 0 then
 			firstShowReward = true
 		end
-	end
+	--end
 	if firstShowReward and showRate > 0.9 then return true end
 
 	if showRate < 0.8 then return false end
@@ -6329,11 +6329,11 @@ function SmartAI:willShowForMasochism()
 	local showRate = math.random() - self.player:getHp()/10 + e/10 + shown/20 + sgs.turncount/10
 
 	local firstShowReward = false
-	if sgs.GetConfig("RewardTheFirstShowingPlayer", true) then
+	--if sgs.GetConfig("RewardTheFirstShowingPlayer", true) then
 		if shown == 0 then
 			firstShowReward = true
 		end
-	end
+	--end
 	if firstShowReward and showRate > 0.9 then return true end
 
 	if showRate < 0.2 then return false end

@@ -22,6 +22,12 @@ return
 	["yoshika_hegemony"]= "宫古芳香",
 	
 	["kogasa_hegemony"] = "多多良小伞",
+	["jingxia_hegemony"] = "惊吓" ,--国战削弱
+	[":jingxia_hegemony"] = "当你受到1点伤害后，你可以选择一项：依次弃置来源的两张牌；或弃置场上的一张牌。" ,
+	["jingxia_hegemony:dismiss"] = "不发动技能" ,
+	["jingxia_hegemony:discard"] = "弃置来源的两张牌" ,
+	["jingxia_hegemony:discardfield"] = "弃置场上的一张牌" ,
+	
 	["kyouko_hegemony"] = "幽谷响子",
 	["kokoro_hegemony"] = "秦心",
 	

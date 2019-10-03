@@ -10,7 +10,108 @@
 
 
 //********  SPRING   **********
+class JingxiaHegemony : public MasochismSkill
+{
+public:
+    JingxiaHegemony()
+        : MasochismSkill("jingxia_hegemony")
+    {
+    }
 
+    QList<SkillInvokeDetail> triggerable(const Room *room, const DamageStruct &damage) const
+    {
+        bool invoke = false;
+        do {
+            if (damage.to->isAlive() && damage.to->hasSkill(this)) {
+                if (damage.from != NULL && damage.to->canDiscard(damage.from, "hes")) {
+                    invoke = true;
+                    break;
+                }
+                bool flag = false;
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (damage.to->canDiscard(p, "ej")) {
+                        flag = true;
+                        break;
+                    }
+                }
+                if (flag) {
+                    invoke = true;
+                    break;
+                }
+            }
+        } while (false);
+
+        if (invoke) {
+            QList<SkillInvokeDetail> d;
+            for (int i = 0; i < damage.damage; ++i) {
+                d << SkillInvokeDetail(this, damage.to, damage.to);
+            }
+            return d;
+        }
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        QStringList select;
+        if (damage.from != NULL && damage.to->canDiscard(damage.from, "hes"))
+            select << "discard";
+
+        QList<ServerPlayer *> fieldcard;
+        foreach(ServerPlayer *p, room->getAllPlayers()) {
+            if (damage.to->canDiscard(p, "ej")) {
+                select << "discardfield";
+                break;
+            }
+        }
+        select.prepend("dismiss");
+
+        ServerPlayer *player = damage.to;
+
+        player->tag["jingxia"] = QVariant::fromValue(damage);
+        QString choice = room->askForChoice(player, objectName(), select.join("+"), QVariant::fromValue(damage));
+        player->tag.remove("jingxia");
+        if (choice == "dismiss")
+            return false;
+
+        invoke->tag["jingxia"] = choice;
+        return true;
+    }
+
+    void onDamaged(Room *room, QSharedPointer<SkillInvokeDetail> invoke, const DamageStruct &damage) const
+    {
+        QList<ServerPlayer *> fieldcard;
+        foreach(ServerPlayer *p, room->getAllPlayers()) {
+            if (damage.to->canDiscard(p, "ej"))
+                fieldcard << p;
+        }
+        ServerPlayer *player = damage.to;
+
+        QString choice = invoke->tag.value("jingxia").toString();
+
+        room->touhouLogmessage("#InvokeSkill", player, objectName());
+        room->notifySkillInvoked(player, objectName());
+        if (choice == "discard") {
+            for (int i = 0; i < 2; i++) {
+                if (player->isDead() || !player->canDiscard(damage.from, "hes"))
+                    return;
+                if (damage.from == player)
+                    room->askForDiscard(player, "jingxia", 1, 1, false, true);
+                else {
+                    int card_id = room->askForCardChosen(player, damage.from, "hes", "jingxia", false, Card::MethodDiscard);
+                    room->throwCard(card_id, damage.from, player);
+                }
+            }
+        }
+        else if (choice == "discardfield") {
+            ServerPlayer *player1 = room->askForPlayerChosen(player, fieldcard, "jingxia", "@jingxia-discardfield");
+            int card1 = room->askForCardChosen(player, player1, "ej", objectName(), false, Card::MethodDiscard);
+            room->throwCard(card1, player1, player);
+        }
+    }
+};
 
 
 //********  SUMMER   **********
@@ -611,7 +712,8 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *kogasa_hegemony = new General(this, "kogasa_hegemony", "wu", 3);
     kogasa_hegemony->addSkill("yiwang");
-    kogasa_hegemony->addSkill("jingxia");
+   // kogasa_hegemony->addSkill("jingxia");
+    kogasa_hegemony->addSkill(new JingxiaHegemony);
 
     General *kokoro_hegemony = new General(this, "kokoro_hegemony", "wu", 4);
     kokoro_hegemony->addSkill("nengwu");
