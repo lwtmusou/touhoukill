@@ -610,11 +610,19 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     else
         ui->cvLineEdit->setText(tr("Temporily None"));
 
-    QString companions_text = general->getCompanions();
-    if (companions_text.isEmpty())
-        ui->companionLineEdit->setText(tr("None"));
-    else
-        ui->companionLineEdit->setText(companions_text);
+    if (!general->objectName().endsWith("hegemony")) {
+        ui->companionLineEdit->hide();
+        ui->companionLabel->hide();
+    }
+    else {
+        QString companions_text = general->getCompanions();
+        if (companions_text.isEmpty())
+            ui->companionLineEdit->clear(); //->setText(tr("None"));
+        else
+            ui->companionLineEdit->setText(companions_text);
+        ui->companionLineEdit->show();
+        ui->companionLabel->show();
+    }
 
     ui->illustratorLineEdit->setText(getIllustratorInfo(general->objectName()));
     ui->originLineEdit->setText(getOriginInfo(general->objectName()));

@@ -902,12 +902,12 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     youmu_hegemony->addSkill("shuangren");
     youmu_hegemony->addSkill("zhanwang");
 
-    General *lunasa = new General(this, "lunasa", "wei", 3, false);
-    lunasa->addCompanion("merlin");
-    lunasa->addCompanion("lyrica");
-    General *merlin = new General(this, "merlin", "wei", 3, false);
-    merlin->addCompanion("lyrica");
-    General *lyrica = new General(this, "lyrica", "wei", 3, false);
+    General *lunasa_hegemony = new General(this, "lunasa_hegemony", "wei", 3, false);
+    lunasa_hegemony->addCompanion("merlin_hegemony");
+    lunasa_hegemony->addCompanion("lyrica_hegemony");
+    General *merlin_hegemony = new General(this, "merlin_hegemony", "wei", 3, false);
+    merlin_hegemony->addCompanion("lyrica_hegemony");
+    General *lyrica_hegemony = new General(this, "lyrica_hegemony", "wei", 3, false);
     
 
         
