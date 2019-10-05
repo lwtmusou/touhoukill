@@ -80,7 +80,7 @@ public:
         static QString attachName = "skltkexue_attach";
         QList<ServerPlayer *> sklts;
         foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (p->hasSkill(this, true))
+            if (p->hasSkill(this, true) && p->hasShownSkill(this))
                 sklts << p;
         }
 

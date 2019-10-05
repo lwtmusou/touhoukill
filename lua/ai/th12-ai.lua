@@ -743,7 +743,7 @@ sgs.ai_skill_choice.jingxia_hegemony=function(self)
 	local fieldcard=sgs.SPlayerList()
 	local fieldcard1=sgs.SPlayerList()
 	
-	if from and self.player:canDiscard(from, "hes") and from:getCards("hes"):length() >= 2 then
+	if from and self:isEnemy(from) and self.player:canDiscard(from, "hes") and from:getCards("hes"):length() >= 2 then
 		return "discard"
 	end
 	

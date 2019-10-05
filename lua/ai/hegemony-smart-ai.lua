@@ -3165,7 +3165,10 @@ function SmartAI:askForAG(card_ids, refusable, reason)
 		local card_id = cardchosen(self, card_ids)
 		if card_id then return card_id end
 	end
-
+	if refusable and #card_ids==0 then
+		return -1
+	end
+	
 	local ids = card_ids
 	local cards = {}
 	for _, id in ipairs(ids) do
@@ -7535,6 +7538,16 @@ function SmartAI:touhouGetJudges(player)
 	return judgeReasons
 end
 
+function sgs.evaluatePlayerRole(player)
+	if not player then global_room:writeToConsole("Player is empty in role's evaluation!") return end
+	local function test_func(player)
+		if player:isLord() then return "loyalist" else return "." end
+	end
+	local res = pcall(test_func, player)
+	if not res then global_room:writeToConsole(debug.traceback()) return elseif res == "loyalist" then return "loyalist" end
+	if sgs.isRolePredictable() then return player:getRole() end
+	return sgs.ai_role[player:objectName()]
+end
 
 function SmartAI:touhouIsDamageCard(card)
 
@@ -7555,7 +7568,16 @@ sgs.ai_skill_choice.CompanionEffect = function(self, choice, data)
 	else return "draw" end
 end
 
+function SmartAI:sortEnemies(players)
+	local comp_func = function(a,b)
+		local alevel = self:objectiveLevel(a)
+		local blevel = self:objectiveLevel(b)
 
+		if alevel~= blevel then return alevel > blevel end
+		return sgs.getDefenseSlash(a) < sgs.getDefenseSlash(b)
+	end
+	table.sort(players,comp_func)
+end
 
 dofile "lua/ai/debug-ai.lua"
 dofile "lua/ai/standard_cards-ai.lua"
