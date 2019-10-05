@@ -7512,6 +7512,30 @@ function SmartAI:touhouCardUseEffectNullify(use,target)
 	return false
 end
 
+function SmartAI:touhouGetJudges(player)
+	local judgeReasons = {}
+	player = player or self.room:findPlayer(self.player:getNextAlive():objectName()) --self.player:getNextAlive()
+	for _, askill in sgs.qlist(player:getVisibleSkillList()) do
+		local s_name = askill:objectName()
+		if player:hasSkill(s_name) then--需要check技能无效
+			local filter = sgs.ai_judge_model[s_name]
+			if filter and type(filter) == "function"  then
+				table.insert(judgeReasons, s_name)
+			end
+		end
+	end
+
+
+	local judge = player:getCards("j")
+	judge = sgs.QList2Table(judge)
+	judge = sgs.reverse(judge)
+	for _,needjudge in pairs(judge) do
+		table.insert(judgeReasons, needjudge:objectName())
+	end
+	return judgeReasons
+end
+
+
 function SmartAI:touhouIsDamageCard(card)
 
 	--local classes ={"Slash","Jink","SavageAssault","ArcheryAttack","Duel","FireAttack"}  ;
@@ -7530,6 +7554,8 @@ sgs.ai_skill_choice.CompanionEffect = function(self, choice, data)
 	if ( self:isWeak() or self:needKongcheng(self.player, true) ) and string.find(choice, "recover") then return "recover"
 	else return "draw" end
 end
+
+
 
 dofile "lua/ai/debug-ai.lua"
 dofile "lua/ai/standard_cards-ai.lua"
