@@ -96,10 +96,10 @@ CommonTranslationTable = {
 
 	["luck_card"] = "手气卡",
 
-	["wei"] = "魏",
-	["shu"] = "蜀",
-	["wu"] = "吴",
-	["qun"] = "群",
+	["wei"] = "冬",
+	["shu"] = "夏",
+	["wu"] = "春",
+	["qun"] = "秋",
 	["careerist"] = "野心家",
 	
 	
