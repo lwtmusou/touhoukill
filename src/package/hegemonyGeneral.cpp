@@ -8,7 +8,6 @@
 //#include "th10.h"
 //#include "th08.h"
 
-
 //********  SPRING   **********
 
 class LizhiHegemony : public TriggerSkill
@@ -184,6 +183,83 @@ public:
     }
 };
 
+
+QingtingHegemonyCard::QingtingHegemonyCard()
+{
+    target_fixed = true;
+    m_skillName = "qingting_hegemony";
+}
+
+void QingtingHegemonyCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+{
+    foreach(ServerPlayer *p, room->getOtherPlayers(source)) {
+        if (p->isKongcheng())
+            continue;
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), p->objectName());
+    }
+    foreach(ServerPlayer *p, room->getOtherPlayers(source)) {
+        if (p->isKongcheng())
+            continue;
+        const Card *card;
+        if (source->getMark("shengge") > 0 || p->getHandcardNum() == 1)
+            card = new DummyCard(QList<int>() << room->askForCardChosen(source, p, "hs", "qingting"));
+        else {
+            p->tag["qingting_give"] = QVariant::fromValue(source);
+            card = room->askForExchange(p, "qingting_give", 1, 1, false, "qingtingGive:" + source->objectName());
+            p->tag.remove("qingting_give");
+        }
+        DELETE_OVER_SCOPE(const Card, card)
+
+            source->obtainCard(card, false);
+        room->setPlayerMark(p, "@qingting", 1);
+    }
+
+    //get delay
+    if (source->isOnline())
+        room->getThread()->delay(2000);
+
+    foreach(ServerPlayer *p, room->getOtherPlayers(source)) {
+        if (p->getMark("@qingting") == 0)
+            continue;
+        room->setPlayerMark(p, "@qingting", 0);
+        if (source->isKongcheng())
+            continue;
+
+        source->tag["qingting_return"] = QVariant::fromValue(p);
+        const Card *card = room->askForExchange(source, "qingting", 1, 1, false, "qingtingReturn:" + p->objectName());
+        DELETE_OVER_SCOPE(const Card, card)
+            source->tag.remove("qingting_return");
+        p->obtainCard(card, false);
+    }
+}
+
+
+class QingtingHegemony : public ZeroCardViewAsSkill
+{
+public:
+    QingtingHegemony()
+        : ZeroCardViewAsSkill("qingting_hegemony")
+    {
+    }
+    static bool checkQingting(const Player *player)
+    {
+        foreach(const Player *p, player->getAliveSiblings()) {
+            if (!p->isKongcheng())
+                return true;
+        }
+        return false;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return !player->hasUsed("QingtingHegemonyCard") && checkQingting(player);
+    }
+
+    virtual const Card *viewAs() const
+    {
+        return new QingtingHegemonyCard;
+    }
+};
 
 class FenleiHegemony : public TriggerSkill
 {
@@ -797,6 +873,38 @@ public:
 };
 
 
+
+class BingpoHgemony : public TriggerSkill
+{
+public:
+    BingpoHgemony()
+        : TriggerSkill("bingpo_hegemony")
+    {
+        events << Dying;
+        frequency = Compulsory;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        DyingStruct dying = data.value<DyingStruct>();
+        if (dying.who->hasSkill(this) && dying.who->getHp() < dying.who->dyingThreshold() 
+            && (dying.damage == NULL || dying.damage->nature != DamageStruct::Fire))
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, dying.who, dying.who, NULL, true);
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        room->touhouLogmessage("#bingpo_hegemony_log", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(1));
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        RecoverStruct recover;
+        room->recover(invoke->invoker, recover);
+        return false;
+    }
+};
+
+
+
 class JuxianHegemony : public TriggerSkill
 {
 public:
@@ -908,8 +1016,8 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     nazrin_hegemony->addSkill("lingbai");
 
     General *miko_hegemony = new General(this, "miko_hegemony", "wu", 4);
-    miko_hegemony->addSkill("shengge");
-    miko_hegemony->addSkill("qingting");
+    //miko_hegemony->addSkill("shengge");
+    miko_hegemony->addSkill(new QingtingHegemony);
     miko_hegemony->addCompanion("futo_hegemony");
     miko_hegemony->addCompanion("toziko_hegemony");
     miko_hegemony->addCompanion("seiga_hegemony");
@@ -1174,12 +1282,14 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *cirno_hegemony = new General(this, "cirno_hegemony", "wei", 3);
     cirno_hegemony->addSkill("dongjie");
-    cirno_hegemony->addSkill("bingpo");
+    cirno_hegemony->addSkill(new BingpoHgemony);
     cirno_hegemony->addCompanion("daiyousei_hegemony");
 
     General *daiyousei_hegemony = new General(this, "daiyousei_hegemony", "wei", 3);
     daiyousei_hegemony->addSkill(new JuxianHegemony);
     daiyousei_hegemony->addSkill("banyue");
+
+    addMetaObject<QingtingHegemonyCard>();
 
     addMetaObject<XingyunHegemonyCard>();
     

@@ -14,6 +14,16 @@ public:
     virtual int getExtra(const Player *target) const;
 };
 
+class QingtingHegemonyCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE QingtingHegemonyCard();
+
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
 class XingyunHegemonyCard : public SkillCard
 {
     Q_OBJECT

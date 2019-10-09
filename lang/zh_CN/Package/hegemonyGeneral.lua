@@ -19,7 +19,11 @@ return
 	
 	["nazrin_hegemony"] = "娜兹玲",
 	
-	["miko_hegemony"] = "丰聪耳神子",
+	["miko_hegemony"] = "丰聪耳神子",--国战修改
+	["qingting_hegemony"] = "倾听",
+	[":qingting_hegemony"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以令有手牌的所有其他角色各将一张手牌交给你，然后你交给这些角色各一张手牌。",
+
+	
 	["mamizou_hegemony"] = "二岩猯藏",
 	["futo_hegemony"] = "物部布都",
 	
@@ -154,7 +158,10 @@ return
 	["alice_hegemony"]="爱丽丝",
 	["chen_hegemony"] = "橙",
 	["letty_hegemony"]="蕾蒂",
-	["cirno_hegemony"] = "琪露诺",
+	["cirno_hegemony"] = "琪露诺",--国战修改
+	["bingpo_hegemony"]= "冰魄",
+	[":bingpo_hegemony"]= "<font color=\"blue\"><b>锁定技，</b></font>锁定技，当你因火焰伤害外的原因而进入濒死状态时，你回复1点体力。",
+	["#bingpo_hegemony_log"] = "%from的“%arg”被触发, %from 回复了 %arg2点体力.",
 	
 	["daiyousei_hegemony"]= "大妖精",--国战修改
 	["juxian_hegemony"]= "具现",

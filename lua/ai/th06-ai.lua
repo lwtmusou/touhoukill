@@ -560,7 +560,7 @@ sgs.ai_damageInflicted.bingpo =function(self, damage)
 	return damage
 end
 
-
+sgs.ai_skill_invoke.bingpo_hegemony =  true
 
 sgs.ai_skill_playerchosen.zhenye = function(self, targets)
 	local target_table= sgs.QList2Table(targets)

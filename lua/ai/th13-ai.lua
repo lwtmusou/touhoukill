@@ -114,6 +114,28 @@ sgs.ai_use_value.QingtingCard = 7
 sgs.ai_use_priority.QingtingCard = 7
 
 
+local qingting_hegemony_skill = {}
+qingting_hegemony_skill.name = "qingting_hegemony"
+table.insert(sgs.ai_skills, qingting_hegemony_skill)
+qingting_hegemony_skill.getTurnUseCard = function(self)
+	if self.player:hasUsed("QingtingHegemonyCard") then return nil end
+	t=false
+	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if not p:isKongcheng() then
+			t=true
+		end
+	end
+	if t then
+	return sgs.Card_Parse("@QingtingHegemonyCard=.")
+	end
+	return nil
+end
+sgs.ai_skill_use_func.QingtingHegemonyCard=function(card,use,self)
+	use.card = card
+end
+
+sgs.ai_use_value.QingtingHegemonyCard = 7
+sgs.ai_use_priority.QingtingHegemonyCard = 7
 
 sgs.ai_skill_invoke.chiling = function(self,data)
 	local isSlash=self.player:getTag("chiling_showslash"):toInt()
