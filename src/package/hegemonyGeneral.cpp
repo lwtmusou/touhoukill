@@ -11,6 +11,76 @@
 
 //********  SPRING   **********
 
+class LizhiHegemony : public TriggerSkill
+{
+public:
+    LizhiHegemony()
+        : TriggerSkill("lizhi_hegemony")
+    {
+        events << CardFinished << DamageDone;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == DamageDone) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.from && damage.card->isKindOf("Slash"))
+                room->setCardFlag(damage.card, "lizhiDamage");
+        }
+
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent event, const Room *room, const QVariant &data) const
+    {
+        if (event == CardFinished) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (!use.card->isKindOf("Slash") || use.card->hasFlag("lizhiDamage") || !use.from || use.from->isDead() || !use.from->hasSkill(this))
+                return QList<SkillInvokeDetail>();
+
+            QList<int> ids;
+            if (use.card->isVirtualCard())
+                ids = use.card->getSubcards();
+            else
+                ids << use.card->getEffectiveId();
+
+            if (ids.isEmpty())
+                return QList<SkillInvokeDetail>();
+            foreach(int id, ids) {
+                if (room->getCardPlace(id) != Player::DiscardPile) //place???
+                    return QList<SkillInvokeDetail>();
+            }
+
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
+        }
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        QList<ServerPlayer *> targets;
+        foreach(ServerPlayer *p, room->getAlivePlayers()) {
+            if (invoke->invoker->isFriendWith(p, true))
+                targets << p;
+        }
+
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@lizhi", true, true);
+        if (target)
+            invoke->targets << target;
+        return target != NULL;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        invoke->targets.first()->obtainCard(use.card);
+        return false;
+    }
+};
+
+
+
+
 class JingxiaHegemony : public MasochismSkill
 {
 public:
@@ -774,7 +844,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     murasa_hegemony->addSkill("nihuo");
 
     General *ichirin_hegemony = new General(this, "ichirin_hegemony", "wu", 4);
-    ichirin_hegemony->addSkill("lizhi");
+    ichirin_hegemony->addSkill(new LizhiHegemony);
     ichirin_hegemony->addSkill("yunshang");
 
     General *nazrin_hegemony = new General(this, "nazrin_hegemony", "wu", 3);
@@ -819,7 +889,6 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *kogasa_hegemony = new General(this, "kogasa_hegemony", "wu", 3);
     kogasa_hegemony->addSkill("yiwang");
-   // kogasa_hegemony->addSkill("jingxia");
     kogasa_hegemony->addSkill(new JingxiaHegemony);
 
     General *kokoro_hegemony = new General(this, "kokoro_hegemony", "wu", 4);

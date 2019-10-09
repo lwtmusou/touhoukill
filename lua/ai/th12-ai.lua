@@ -531,6 +531,12 @@ sgs.ai_cardneed.lizhi = function(to, card, self)
 	end
 end
 
+sgs.ai_skill_playerchosen.lizhi_hegemony = function(self,targets)
+	local target_table =sgs.QList2Table(targets)
+	self:sort(target_table,"handcard")
+	return target_table[1]
+end
+
 sgs.ai_skill_invoke.yunshang =function(self,data)
 	local user = self.room:getTag("yunshang_use"):toCardUse().from
 	local card=self.room:getTag("yunshang_use"):toCardUse().card

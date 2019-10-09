@@ -11,7 +11,12 @@ return
 	["nue_hegemony"]= "封兽鵺",
 	["toramaru_hegemony"] = "寅丸星",
 	["murasa_hegemony"] = "村纱水蜜",
-	["ichirin_hegemony"] = "云居一轮",
+	
+	["ichirin_hegemony"] = "云居一轮",--国战修改
+	["lizhi_hegemony"] = "理智",
+	[":lizhi_hegemony"] = "你使用的【杀】结算完毕后，若此杀未造成伤害，你可令一名与你阵营相同的角色获得此牌。",
+	["@lizhi"] = "理智： 你使用的【杀】未造成伤害，你可令一名与你阵营相同的角色获得此牌。 ",
+	
 	["nazrin_hegemony"] = "娜兹玲",
 	
 	["miko_hegemony"] = "丰聪耳神子",
