@@ -86,7 +86,16 @@ return
 --***********************
 --秋（风）	
 	["kanako_hegemony"] = "八坂神奈子",
+	["qiankun_kanako"] = "乾坤",
+	[":qiankun_kanako"] = "<font color=\"blue\"><b>锁定技，</b></font>你的手牌上限+2。",
+	
 	["suwako_hegemony"] = "洩矢诹访子",
+	["qiankun_suwako"] = "乾坤",
+	[":qiankun_suwako"] = "<font color=\"blue\"><b>锁定技，</b></font>你的手牌上限+2。",
+	["chuancheng_hegemony"] = "传承",
+	[":chuancheng_hegemony"] = "当你死亡时，你可以令一名同阵营的其他角色获得“乾坤”和“传承”，然后其获得你区域里的所有牌。",
+	["@chuancheng_hegemony"] = "选择一名同阵营的其他角色，令其获得“乾坤”和“传承”以及你区域里的所有牌。",
+	
 	["sanae_hegemony"] = "东风谷早苗",
 	["aya_hegemony"] = "射命丸文",
 	["nitori_hegemony"] = "河城荷取",

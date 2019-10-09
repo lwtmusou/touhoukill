@@ -406,6 +406,75 @@ public:
 
 //********  AUTUMN   **********
 
+
+QiankunHegemony::QiankunHegemony(const QString &owner) : MaxCardsSkill("qiankun_" + owner)
+{
+}
+
+int QiankunHegemony::getExtra(const Player *target) const
+{
+    if (target->hasSkill(objectName()) && target->hasShownSkill(objectName()))
+        return 2;
+    else
+        return 0;
+}
+
+class ChuanchengHegemony : public TriggerSkill
+{
+public:
+    ChuanchengHegemony()
+        : TriggerSkill("chuancheng_hegemony")
+    {
+        events << Death;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        DeathStruct death = data.value<DeathStruct>();
+        if (death.who->hasSkill(objectName())) {
+            QList<ServerPlayer *> targets;
+            foreach(ServerPlayer *p, room->getOtherPlayers(death.who)) {
+                if (death.who->isFriendWith(p))
+                    targets << p;
+            }
+            if (!targets.isEmpty())
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, death.who, death.who, targets);
+        }
+            
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, invoke->targets, objectName(), "@chuancheng_hegemony", true, true);
+        if (target) {
+            invoke->targets.clear();
+            invoke->targets << target;
+            return true;
+        }
+        return false;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        ServerPlayer *target = invoke->targets.first();
+        room->handleAcquireDetachSkills(target, "qiankun_suwako");
+        room->handleAcquireDetachSkills(target, "chuancheng");
+        if (invoke->invoker->getCards("hejs").length() > 0) {
+            DummyCard *allcard = new DummyCard;
+            allcard->deleteLater();
+            allcard->addSubcards(invoke->invoker->getCards("hejs"));
+            room->obtainCard(target, allcard, CardMoveReason(CardMoveReason::S_REASON_RECYCLE, target->objectName()), false);
+        }
+        return false;
+    }
+};
+
+
+
+
+
+
 class DuxinHegemony : public TriggerSkill
 {
 public:
@@ -807,14 +876,14 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 //Autumn
     General *kanako_hegemony = new General(this, "kanako_hegemony", "qun", 4);
     kanako_hegemony->addSkill("shende");
-    kanako_hegemony->addSkill("qiankun");
+    kanako_hegemony->addSkill(new QiankunHegemony("kanako"));
     kanako_hegemony->addCompanion("suwako_hegemony");
     kanako_hegemony->addCompanion("sanae_hegemony");
 
     General *suwako_hegemony = new General(this, "suwako_hegemony", "qun", 3);
     suwako_hegemony->addSkill("bushu");
-    suwako_hegemony->addSkill("qiankun");
-    suwako_hegemony->addSkill("chuancheng");
+    suwako_hegemony->addSkill(new QiankunHegemony("suwako"));
+    suwako_hegemony->addSkill(new ChuanchengHegemony);
     suwako_hegemony->addCompanion("sanae_hegemony");
 
     General *sanae_hegemony = new General(this, "sanae_hegemony", "qun", 3);

@@ -188,7 +188,22 @@ sgs.ai_skill_playerchosen.chuancheng = function(self,targets)
 	end
 	return nil
 end
-
+sgs.ai_skill_playerchosen.chuancheng_hegmony = function(self,targets)
+	local target_table =sgs.QList2Table(targets)
+	if #target_table==0 then return false end
+	local chuancheng_target
+	self:sort(target_table, "value",true)
+	for _,target in pairs(target_table) do
+		if  self:isFriend(target) then
+			chuancheng_target=target
+			break
+		end
+	end
+	if chuancheng_target then
+		return chuancheng_target
+	end
+	return nil
+end
 
 sgs.ai_skill_invoke.dfgzmjiyi  =function(self,data)
 	if self.player:isKongcheng() then return false end
@@ -626,7 +641,9 @@ buju_skill.name = "buju"
 table.insert(sgs.ai_skills, buju_skill)
 function buju_skill.getTurnUseCard(self)
 	if self.player:hasUsed("BujuCard") then return nil end
+	--if ( self:willShowForAttack() or self:willShowForDefence())
 	return sgs.Card_Parse("@BujuCard=.")
+	--end
 end
 sgs.ai_skill_use_func.BujuCard = function(card, use, self)
 	use.card=card

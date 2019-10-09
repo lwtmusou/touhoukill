@@ -1995,13 +1995,22 @@ bool Player::ownSkill(const Skill *skill) const
     return ownSkill(skill->objectName());
 }
 
-bool Player::isFriendWith(const Player *player) const
+bool Player::isFriendWith(const Player *player, bool considerAnjiang) const
 {
     Q_ASSERT(player);
     if (player == NULL || !isHegemonyGameMode(ServerInfo.GameMode))
         return false;
-    if (!hasShownOneGeneral() || !player->hasShownOneGeneral())
-        return false;
+
+
+    if (considerAnjiang) {
+        if (!player->hasShownOneGeneral() && this != player)
+            return false;
+    }
+    else
+    {
+        if (!hasShownOneGeneral() || !player->hasShownOneGeneral())
+            return false;
+    }
 
     if (this == player)
         return true;

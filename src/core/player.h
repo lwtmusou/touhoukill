@@ -354,7 +354,7 @@ public:
     bool hasShownAllGenerals() const;
     bool ownSkill(const QString &skill_name) const;
     bool ownSkill(const Skill *skill) const;
-    bool isFriendWith(const Player *player) const;
+    bool isFriendWith(const Player *player, bool considerAnjiang = false) const;
     bool willBeFriendWith(const Player *player) const;
 
     const Player *getLord(bool include_death = false) const;

@@ -2,8 +2,17 @@
 #define _hegemonyGeneral_H
 
 #include "card.h"
+#include "skill.h"
 #include "package.h"
 
+
+class QiankunHegemony : public MaxCardsSkill
+{
+public:
+    explicit QiankunHegemony(const QString &);
+
+    virtual int getExtra(const Player *target) const;
+};
 
 class XingyunHegemonyCard : public SkillCard
 {
