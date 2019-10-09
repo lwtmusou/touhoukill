@@ -377,6 +377,7 @@ public:
     static const char *S_SKIN_KEY_MIDDLEFRAME;
     static const char *S_SKIN_KEY_HANDCARDNUM;
     static const char *S_SKIN_KEY_FACETURNEDMASK;
+    static const char *S_SKIN_KEY_FACETURNEDMASK_HEGEMONY;
     static const char *S_SKIN_KEY_BLANK_GENERAL;
     static const char *S_SKIN_KEY_CHAIN;
     static const char *S_SKIN_KEY_PHASE;

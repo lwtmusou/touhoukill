@@ -42,6 +42,7 @@ const char *QSanRoomSkin::S_SKIN_KEY_RIGHTFRAME = "%1RightFrame";
 const char *QSanRoomSkin::S_SKIN_KEY_MIDDLEFRAME = "%1MiddleFrame";
 const char *QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM = "%1HandCardNum-%2";
 const char *QSanRoomSkin::S_SKIN_KEY_FACETURNEDMASK = "%1FaceTurnedMask";
+const char *QSanRoomSkin::S_SKIN_KEY_FACETURNEDMASK_HEGEMONY = "%1FaceTurnedMaskHegemony";
 const char *QSanRoomSkin::S_SKIN_KEY_BLANK_GENERAL = "%1BlankGeneral";
 const char *QSanRoomSkin::S_SKIN_KEY_EXTRA_SKILL_BG = "%1ExtraSkillBg";
 const char *QSanRoomSkin::S_SKIN_KEY_CHAIN = "%1Chain";

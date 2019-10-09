@@ -235,7 +235,7 @@ protected:
     QGraphicsPixmapItem *_m_circleItem;
 
     QGraphicsPixmapItem *_m_screenNameItem;
-    QGraphicsPixmapItem *_m_chainIcon, *_m_faceTurnedIcon;
+    QGraphicsPixmapItem *_m_chainIcon, *_m_faceTurnedIcon, *_m_faceTurnedIcon2;
     QGraphicsPixmapItem *_m_handCardBg, *_m_handCardNumText;
     QGraphicsPixmapItem *_m_kingdomColorMaskIcon;
     QGraphicsPixmapItem *_m_dashboardKingdomColorMaskIcon;

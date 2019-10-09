@@ -568,6 +568,8 @@ void PlayerCardContainer::refresh()
 {
     if (!m_player || !m_player->getGeneral() || !m_player->isAlive()) {
         _m_faceTurnedIcon->setVisible(false);
+        if (_m_faceTurnedIcon2)
+            _m_faceTurnedIcon2->setVisible(false);
         _m_chainIcon->setVisible(false);
         _m_actionIcon->setVisible(false);
         _m_saveMeIcon->setVisible(false);
@@ -575,6 +577,8 @@ void PlayerCardContainer::refresh()
     } else if (m_player) {
         if (_m_faceTurnedIcon)
             _m_faceTurnedIcon->setVisible(!m_player->faceUp());
+        if (_m_faceTurnedIcon2)
+            _m_faceTurnedIcon2->setVisible(!m_player->faceUp());
         if (_m_chainIcon)
             _m_chainIcon->setVisible(m_player->isChained());
         if (_m_actionIcon)
@@ -609,10 +613,15 @@ void PlayerCardContainer::repaintAll()
     if (_m_huashenAnimation != NULL)
         startHuaShen(_m_huashenGeneralName, _m_huashenSkillName);
 
-    if (ServerInfo.Enable2ndGeneral && this->getPlayer() == Self)
-        _paintPixmap(_m_faceTurnedIcon, _m_layout->m_avatarAreaDouble, QSanRoomSkin::S_SKIN_KEY_FACETURNEDMASK, _getAvatarParent());
+
+    const char *face_turned_mask = isHegemonyGameMode(ServerInfo.GameMode) ? QSanRoomSkin::S_SKIN_KEY_FACETURNEDMASK_HEGEMONY : QSanRoomSkin::S_SKIN_KEY_FACETURNEDMASK;
+    if (this->getPlayer() == Self) {
+        _paintPixmap(_m_faceTurnedIcon, _m_layout->m_avatarArea, face_turned_mask, _getAvatarParent());
+        if (ServerInfo.Enable2ndGeneral)
+            _paintPixmap(_m_faceTurnedIcon2, _m_layout->m_smallAvatarArea, face_turned_mask, _getAvatarParent());
+    }       
     else
-        _paintPixmap(_m_faceTurnedIcon, _m_layout->m_avatarArea, QSanRoomSkin::S_SKIN_KEY_FACETURNEDMASK, _getAvatarParent());
+        _paintPixmap(_m_faceTurnedIcon, _m_layout->m_avatarArea, face_turned_mask, _getAvatarParent());
 
     _paintPixmap(_m_chainIcon, _m_layout->m_chainedIconRegion, QSanRoomSkin::S_SKIN_KEY_CHAIN, _getAvatarParent());
     _paintPixmap(_m_saveMeIcon, _m_layout->m_saveMeIconRegion, QSanRoomSkin::S_SKIN_KEY_SAVE_ME_ICON, _getAvatarParent());
@@ -969,7 +978,8 @@ PlayerCardContainer::PlayerCardContainer()
     _m_smallAvatarIcon = NULL;
     _m_circleItem = NULL;
     _m_screenNameItem = NULL;
-    _m_chainIcon = _m_faceTurnedIcon = NULL;
+    _m_chainIcon = NULL;
+    _m_faceTurnedIcon = _m_faceTurnedIcon2 = NULL;
     _m_handCardBg = _m_handCardNumText = NULL;
     _m_kingdomColorMaskIcon = _m_deathIcon = NULL;
     _m_dashboardKingdomColorMaskIcon = _m_dashboardSecondaryKingdomColorMaskIcon = _m_deathIcon = NULL;
@@ -1103,6 +1113,7 @@ void PlayerCardContainer::_adjustComponentZValues(bool killed)
     _layUnder(_m_selectedFrame);
     _layUnder(_m_extraSkillText);
     _layUnder(_m_extraSkillBg);
+    _layUnder(_m_faceTurnedIcon2);
     _layUnder(_m_faceTurnedIcon);
     _layUnder(_m_smallAvatarArea);
     _layUnder(_m_avatarArea);
