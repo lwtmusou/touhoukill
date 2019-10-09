@@ -10,6 +10,7 @@
 
 
 //********  SPRING   **********
+
 class JingxiaHegemony : public MasochismSkill
 {
 public:
@@ -110,6 +111,43 @@ public:
             int card1 = room->askForCardChosen(player, player1, "ej", objectName(), false, Card::MethodDiscard);
             room->throwCard(card1, player1, player);
         }
+    }
+};
+
+
+class FenleiHegemony : public TriggerSkill
+{
+public:
+    FenleiHegemony()
+        : TriggerSkill("fenlei_hegemony")
+    {
+        events << QuitDying;
+    }
+
+
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    {
+        ServerPlayer *who = data.value<DyingStruct>().who;
+        if (who->isAlive() && who->hasSkill(this))
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, who, who);
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        ServerPlayer *tokizo = invoke->invoker;
+        ServerPlayer *target = room->askForPlayerChosen(tokizo, room->getOtherPlayers(tokizo), objectName(), "@fenlei", true, true);
+        if (target)
+            invoke->targets << target;
+        return target != NULL;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>invoke, QVariant &) const
+    {
+
+        room->damage(DamageStruct(objectName(), NULL, invoke->targets.first(), 1, DamageStruct::Thunder));
+        return false;
     }
 };
 
@@ -761,7 +799,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *toziko_hegemony = new General(this, "toziko_hegemony", "wu", 4);
     toziko_hegemony->addSkill("leishi");
-    toziko_hegemony->addSkill("fenyuan");
+    toziko_hegemony->addSkill(new FenleiHegemony);
 
     General *seiga_hegemony = new General(this, "seiga_hegemony", "wu", 3);
     seiga_hegemony->addSkill("xiefa");

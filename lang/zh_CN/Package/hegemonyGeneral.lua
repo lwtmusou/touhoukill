@@ -17,7 +17,13 @@ return
 	["miko_hegemony"] = "丰聪耳神子",
 	["mamizou_hegemony"] = "二岩猯藏",
 	["futo_hegemony"] = "物部布都",
-	["toziko_hegemony"] = "苏我屠自古",
+	
+	
+	["toziko_hegemony"] = "苏我屠自古",--国战修改
+	["fenlei_hegemony"] = "忿雷",
+	[":fenlei_hegemony"] = "当你脱离濒死状态后，你可令一名其他角色受到无来源的1点雷电伤害。",
+	["@fenlei"] = "你可发动“忿雷”，令一名其他角色受到无来源的1点雷电伤害",
+	
 	["seiga_hegemony"]= "霍青娥",
 	["yoshika_hegemony"]= "宫古芳香",
 	

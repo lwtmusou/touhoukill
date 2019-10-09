@@ -455,6 +455,12 @@ sgs.ai_skill_invoke.fenyuan = function(self,data)
 	end
 end
 
+sgs.ai_skill_playerchosen.fenlei = function(self,targets)
+	if #self.enemies == 0 then return nil end
+	
+	self:sort(self.enemies,"hp")
+	return self.enemies[1]
+end
 
 local xiefa_skill = {}
 xiefa_skill.name = "xiefa"
