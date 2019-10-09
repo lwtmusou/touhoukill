@@ -275,6 +275,10 @@ public:
 
     virtual int getExtra(const Player *target) const;
     virtual int getFixed(const Player *target) const;
+    const ViewAsSkill *getViewAsSkill() const;
+
+protected:
+    const ViewAsSkill *view_as_skill;
 };
 
 class TargetModSkill : public Skill
@@ -378,5 +382,23 @@ class TreasureSkill : public EquipSkill
 
 public:
     explicit TreasureSkill(const QString &name);
+};
+
+
+class ViewHasSkill : public Skill
+{
+    Q_OBJECT
+
+public:
+    ViewHasSkill(const QString &name);
+
+    virtual bool ViewHas(const Player *player, const QString &skill_name, const QString &flag) const = 0;
+    inline bool isGlobal() const
+    {
+        return global;
+    }
+
+protected:
+    bool global;
 };
 #endif

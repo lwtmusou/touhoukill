@@ -292,6 +292,13 @@ const ViewAsSkill *ViewAsSkill::parseViewAsSkill(const Skill *skill)
         if (view_as_skill != NULL)
             return view_as_skill;
     }
+    if (skill->inherits("MaxCardsSkill")) {
+        const MaxCardsSkill *trigger_skill = qobject_cast<const MaxCardsSkill *>(skill);
+        Q_ASSERT(trigger_skill != NULL);
+        const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
+        if (view_as_skill != NULL)
+            return view_as_skill;
+    }
     return NULL;
 }
 
@@ -557,6 +564,12 @@ bool ShowDistanceSkill::isEnabledAtPlay(const Player *player) const
 MaxCardsSkill::MaxCardsSkill(const QString &name)
     : Skill(name, Skill::Compulsory, "static")
 {
+    view_as_skill = new ShowDistanceSkill(objectName());
+}
+
+const ViewAsSkill *MaxCardsSkill::getViewAsSkill() const
+{
+    return view_as_skill;
 }
 
 TargetModSkill::TargetModSkill(const QString &name)
@@ -714,5 +727,10 @@ ArmorSkill::ArmorSkill(const QString &name)
 
 TreasureSkill::TreasureSkill(const QString &name)
     : EquipSkill(name)
+{
+}
+
+ViewHasSkill::ViewHasSkill(const QString &name)
+    : Skill(name, Skill::Compulsory), global(false)
 {
 }
