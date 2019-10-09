@@ -219,6 +219,15 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
+class DoubleSwordHegemony : public Weapon
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE DoubleSwordHegemony(Card::Suit suit, int number);
+};
+
+
 class TestCardPackage : public Package
 {
     Q_OBJECT

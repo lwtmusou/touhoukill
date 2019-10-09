@@ -1116,6 +1116,88 @@ public:
     }
 };*/
 
+class DoubleSwordHegemonySkill : public WeaponSkill
+{
+public:
+    DoubleSwordHegemonySkill()
+        : WeaponSkill("DoubleSwordHegemony")
+    {
+        events << TargetSpecified;
+    }
+
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
+            return QList<SkillInvokeDetail>();
+
+        if (!isHegemonyGameMode(room->getMode()))
+            return QList<SkillInvokeDetail>();
+
+        if (use.card != NULL && use.card->isKindOf("Slash")) {
+            QList<SkillInvokeDetail> d;
+            foreach(ServerPlayer *p, use.to) {
+                if (p->isAlive() && !p->hasShownAllGenerals()) {
+                    if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName(), p))
+                        continue;
+                    d << SkillInvokeDetail(this, use.from, use.from, NULL, false, p);
+                }
+            }
+
+            return d;
+        }
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        //invoke->invoker->tag["DoubleSwordTarget"] = QVariant::fromValue(invoke->preferredTarget);
+        if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
+            room->setEmotion(invoke->invoker, "weapon/double_sword");
+            return true;
+        }
+        return false;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        //canshow?
+        QStringList select;
+        ServerPlayer *target = invoke->targets.first();
+        if (target->canDiscard(invoke->targets.first(), "hs"))
+            select << "discard";
+        if (!target->hasShownGeneral())
+            select << "showhead";
+        if (target->getGeneral2() && !target->hasShownGeneral2())
+            select << "showdeputy";
+
+        if (select.isEmpty())
+            return false;
+        QString choice = room->askForChoice(target, objectName(), select.join("+"), data);
+        if (choice == "discard") {
+            room->askForDiscard(target, objectName(), 1, 1, false, false);
+
+        }
+        else {
+            bool ishead = (choice == "showhead");
+            target->showGeneral(ishead, true);
+            target->drawCards(1);
+        }
+        return false;
+    }
+};
+
+DoubleSwordHegemony::DoubleSwordHegemony(Suit suit, int number)
+    : Weapon(suit, number, 2)
+{
+    setObjectName("DoubleSwordHegemony");
+}
+
+
+
+
 TestCardPackage::TestCardPackage()
     : Package("test_card", Package::CardPack)
 {
@@ -1175,14 +1257,15 @@ TestCardPackage::TestCardPackage()
 
 
         << new KnownBothHegmony(Card::Club, 3)
-        << new KnownBothHegmony(Card::Spade, 4);
+        << new KnownBothHegmony(Card::Spade, 4)
+         << new DoubleSwordHegemony(Card::Spade, 2);
     // clang-format on
 
     foreach (Card *card, cards)
         card->setParent(this);
 
     skills << new GunSkill << new JadeSealSkill << new JadeSealTriggerSkill << new PagodaSkill << new PagodaTriggerSkill << new CamouflageSkill << new PillarSkill
-           << new HakkeroSkill << new HagoromoSkill;
+           << new HakkeroSkill << new HagoromoSkill << new DoubleSwordHegemonySkill;
 }
 
 ADD_PACKAGE(TestCard)

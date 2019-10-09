@@ -1222,7 +1222,14 @@ QList<int> Engine::getRandomCards() const
                 else if (!isHegemonyGameMode(Config.GameMode) && card->objectName() == "known_both")
                     list << card->getId();
 
-            } else
+            }
+            else if (card->objectName().startsWith("DoubleSword")) {
+                if (isHegemonyGameMode(Config.GameMode) && card->objectName() == "DoubleSwordHegemony")
+                    list << card->getId();
+                else if (!isHegemonyGameMode(Config.GameMode) && card->objectName() == "DoubleSword")
+                    list << card->getId();
+            }
+            else
                 list << card->getId();
         }
     }

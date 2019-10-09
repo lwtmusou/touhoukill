@@ -404,3 +404,11 @@ function SmartAI:useCardSpringBreath(card, use)
 end
 sgs.ai_use_priority.SpringBreath = sgs.ai_use_priority.SavingEnergy
 sgs.ai_card_intention.SpringBreath = -20
+
+
+sgs.ai_skill_invoke.DoubleSwordHegemony = function(self, data)
+	local FirstShowRewarded = self.room:getTag("fahua_use"):toBool()
+	return FirstShowRewarded
+end
+
+sgs.weapon_range.DoubleSwordHegemony = 2

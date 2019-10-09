@@ -78,4 +78,10 @@ return {
 	["known_both_hegemony:showcard"] = "明置手牌",
 	["#KnownBothView"] = "%from 观看了 %to 的 %arg" ,
 	["$KnownBothViewGeneral"] = "%from 观看了 %to 的 %arg， 阵营为 %arg2" ,
+	
+	
+	["DoubleSwordHegemony"] = "雌雄剑（国）",
+	[":DoubleSwordHegemony"] = "装备牌·武器<br />攻击范围：2<br />装备技能： 你使用【杀】指定有暗置武将牌的角色后，你可令其选择一项： 其明置一张武将牌并摸一张牌; 或其弃置一张手牌。",
+	["DoubleSwordHegemony:showhead"] = "明置主将",
+	["DoubleSwordHegemony:showdeputy"] = "明置副将",
 }
