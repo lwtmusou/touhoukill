@@ -1085,6 +1085,8 @@ bool Player::hasWeapon(const QString &weapon_name, bool selfOnly) const
         }
     }
 
+    if (Sanguosha->ViewHas(this, weapon_name, "weapon")) return true;
+
     if (!weapon || isBrokenEquip(weapon->getEffectiveId(), true))
         return false;
     if (weapon->objectName() == weapon_name || weapon->isKindOf(weapon_name.toStdString().c_str()))
@@ -1112,6 +1114,9 @@ bool Player::hasArmorEffect(const QString &armor_name, bool selfOnly) const
             }
         }
     }
+
+
+    if (Sanguosha->ViewHas(this, armor_name, "armor")) return true;
 
     if (!armor || isBrokenEquip(armor->getEffectiveId(), true))
         return false;

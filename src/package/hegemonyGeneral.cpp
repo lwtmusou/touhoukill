@@ -261,6 +261,81 @@ public:
     }
 };
 
+
+class ShezhengHegemony : public AttackRangeSkill
+{
+public:
+    ShezhengHegemony()
+        : AttackRangeSkill("shezheng_hegemony")
+    {
+    }
+
+    virtual int getExtra(const Player *player, bool) const
+    {
+        if (player->hasSkill(objectName()) && player->hasShownSkill(objectName()) && !player->getWeapon())
+            return 1;
+        return 0;
+    }
+};
+
+
+class ShezhengViewHas : public ViewHasSkill
+
+{
+
+public:
+
+    ShezhengViewHas() : ViewHasSkill("#shezheng_hegemony")
+
+    {
+        relate_to_place = "head";
+    }
+
+    virtual bool ViewHas(const Player *player, const QString &skill_name, const QString &flag) const
+    {
+        if (flag == "weapon" && skill_name == "DoubleSwordHegemony" && player->isAlive() && player->hasSkill("shezheng_hegemony") && !player->getWeapon())
+            
+            return true;
+
+        return false;
+
+    }
+
+};
+
+
+class ChilingHegemony : public TriggerSkill
+{
+public:
+    ChilingHegemony()
+        : TriggerSkill("chiling_hegemony")
+    {
+        events << CardsMoveOneTime;
+        relate_to_place = "deputy";
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        ServerPlayer *miko = qobject_cast<ServerPlayer *>(move.from);
+        if (miko != NULL && miko->isAlive() && miko->hasSkill(objectName()) //&& move.from_places.contains(Player::PlaceHand)
+            && (move.to_place == Player::PlaceHand && move.to && move.to != miko))
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, miko, miko);
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        ServerPlayer *target = qobject_cast<ServerPlayer *>(move.to);
+
+        room->askForUseCard(target, IntList2StringList(move.card_ids).join("#"), "@chiling:" + invoke->invoker->objectName(), -1, Card::MethodUse, false);
+        return false;
+    }
+};
+
+
+
 class FenleiHegemony : public TriggerSkill
 {
 public:
@@ -1016,11 +1091,15 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     nazrin_hegemony->addSkill("lingbai");
 
     General *miko_hegemony = new General(this, "miko_hegemony", "wu", 4);
-    //miko_hegemony->addSkill("shengge");
     miko_hegemony->addSkill(new QingtingHegemony);
+    miko_hegemony->addSkill(new ShezhengHegemony);
+    miko_hegemony->addSkill(new ShezhengViewHas);
+    miko_hegemony->addSkill(new ChilingHegemony);
     miko_hegemony->addCompanion("futo_hegemony");
     miko_hegemony->addCompanion("toziko_hegemony");
     miko_hegemony->addCompanion("seiga_hegemony");
+    miko_hegemony->setHeadMaxHpAdjustedValue(-1);
+    related_skills.insertMulti("shezheng_hegemony", "#shezheng_hegemony");
 
     General *mamizou_hegemony = new General(this, "mamizou_hegemony", "wu", 4);
     mamizou_hegemony->addSkill("xihua");

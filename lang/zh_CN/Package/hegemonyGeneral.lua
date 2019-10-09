@@ -22,7 +22,12 @@ return
 	["miko_hegemony"] = "丰聪耳神子",--国战修改
 	["qingting_hegemony"] = "倾听",
 	[":qingting_hegemony"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以令有手牌的所有其他角色各将一张手牌交给你，然后你交给这些角色各一张手牌。",
-
+	["shezheng_hegemony"] = "摄政",
+	[":shezheng_hegemony"] = "<font color=\"purple\"><b>主将技，</b></font>此武将牌减少单个阴阳鱼。若你装备区没有武器牌，你视为装备了【雌雄剑（国）】。",
+	["chiling_hegemony"] = "敕令",
+	[":chiling_hegemony"] = "<font color=\"purple\"><b>副将技，</b></font>其他角色获得你的牌后，你可令其使用其中一张牌。",
+	["@chiling_hegemony"] = "敕令： 你从 <font color=\"#00FF00\"><b>%src </b></font> 处获得了牌，你可以使用一张牌。",
+	
 	
 	["mamizou_hegemony"] = "二岩猯藏",
 	["futo_hegemony"] = "物部布都",

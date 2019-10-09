@@ -1123,6 +1123,7 @@ public:
         : WeaponSkill("DoubleSwordHegemony")
     {
         events << TargetSpecified;
+        global = true;
     }
 
 
@@ -1153,12 +1154,31 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        //invoke->invoker->tag["DoubleSwordTarget"] = QVariant::fromValue(invoke->preferredTarget);
-        if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
-            room->setEmotion(invoke->invoker, "weapon/double_sword");
-            return true;
+        //Sanguosha->getSkill(name)->inherits("ViewHasSkill")
+        if (invoke->invoker->hasSkill("shezheng_hegemony") && Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon")) {
+            if (invoke->invoker->askForSkillInvoke("shezheng_hegemony", QVariant::fromValue(invoke->preferredTarget))) {
+                /*LogMessage log;
+                log.type = "#InvokeSkill";
+                log.from = invoke->invoker;
+                log.arg = objectName();
+                room->sendLog(log);*/
+
+                invoke->invoker->showHiddenSkill("shezheng_hegemony");
+                room->setEmotion(invoke->invoker, "weapon/double_sword");
+                return true;
+            }
         }
+        else {
+            //invoke->invoker->tag["DoubleSwordTarget"] = QVariant::fromValue(invoke->preferredTarget);
+            if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
+                room->setEmotion(invoke->invoker, "weapon/double_sword");
+                return true;
+            }
+        }
+        
         return false;
+
+
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const

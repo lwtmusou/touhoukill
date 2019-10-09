@@ -179,6 +179,8 @@ void Engine::addSkills(const QList<const Skill *> &all_skills)
 
         if (skill->inherits("ProhibitSkill"))
             prohibit_skills << qobject_cast<const ProhibitSkill *>(skill);
+        else if (skill->inherits("ViewHasSkill"))
+            viewhas_skills << qobject_cast<const ViewHasSkill *>(skill);
         else if (skill->inherits("DistanceSkill"))
             distance_skills << qobject_cast<const DistanceSkill *>(skill);
         else if (skill->inherits("MaxCardsSkill"))
@@ -1338,6 +1340,17 @@ const ProhibitSkill *Engine::isProhibited(const Player *from, const Player *to, 
 
     return NULL;
 }
+
+const ViewHasSkill *Engine::ViewHas(const Player *player, const QString &skill_name, const QString &flag) const
+{
+    foreach(const ViewHasSkill *skill, viewhas_skills) {
+        if (skill->ViewHas(player, skill_name, flag))
+            return skill;
+    }
+
+    return NULL;
+}
+
 
 int Engine::correctDistance(const Player *from, const Player *to) const
 {
