@@ -742,6 +742,7 @@ end
 sgs.ai_playerchosen_intention.sishu = -20
 
 sgs.ai_skill_invoke.juxian = true
+sgs.ai_skill_invoke.juxian_hegemony = true
 
 sgs.string2suit = {
 		spade = 0 ,

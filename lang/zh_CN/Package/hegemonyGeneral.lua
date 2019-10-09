@@ -155,7 +155,13 @@ return
 	["chen_hegemony"] = "橙",
 	["letty_hegemony"]="蕾蒂",
 	["cirno_hegemony"] = "琪露诺",
-	["daiyousei_hegemony"]= "大妖精",
+	
+	["daiyousei_hegemony"]= "大妖精",--国战修改
+	["juxian_hegemony"]= "具现",
+	[":juxian_hegemony"]= "<font color=\"red\"><b>限定技，</b></font>当你进入濒死状态时，你可亮出牌堆顶的三张牌并获得之，然后你回复x点体力（x为亮出的花色数）。",
+	["$juxianAnimate"]= "skill=daiyousei:juxian",
+	
+	
 	["lilywhite_hegemony"] = "莉莉霍瓦特",
 	
 	--上海国战削弱

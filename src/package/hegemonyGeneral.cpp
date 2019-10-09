@@ -797,6 +797,62 @@ public:
 };
 
 
+class JuxianHegemony : public TriggerSkill
+{
+public:
+    JuxianHegemony()
+        : TriggerSkill("juxian_hegemony")
+    {
+        events << Dying;
+        frequency = Limited;
+        limit_mark = "@juxian";
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        DyingStruct dying = data.value<DyingStruct>();
+
+        if (dying.who->hasSkill(this) && dying.who->isAlive() && dying.who->getHp() < dying.who->dyingThreshold() && dying.who->getMark("@juxian") > 0)
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, dying.who, dying.who);
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        room->removePlayerMark(invoke->invoker, "@juxian");
+        room->doLightbox("$juxianAnimate", 4000);
+
+        QList<int> list = room->getNCards(3);
+        CardsMoveStruct move(list, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, invoke->invoker->objectName(), objectName(), QString()));
+        room->moveCardsAtomic(move, true);
+
+        int s = 0; int h = 0; int c = 0; int d = 0;
+        foreach(int id, list) {
+            Card *card = Sanguosha->getCard(id);
+            if (card->getSuit() == Card::Spade)
+                s = 1;
+            else if (card->getSuit() == Card::Heart)
+                h = 1;
+            else if (card->getSuit() == Card::Club)
+                c = 1;
+            else if (card->getSuit() == Card::Diamond)
+                d = 1;
+        }
+
+        DummyCard dummy(list);
+        invoke->invoker->obtainCard(&dummy);
+
+        RecoverStruct recover;
+        recover.recover = (s + h + c + d);
+        room->recover(invoke->invoker, recover);
+
+        return false;
+    }
+};
+
+
+
 
 HegemonyGeneralPackage::HegemonyGeneralPackage()
     : Package("hegemonyGeneral")
@@ -1122,7 +1178,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     cirno_hegemony->addCompanion("daiyousei_hegemony");
 
     General *daiyousei_hegemony = new General(this, "daiyousei_hegemony", "wei", 3);
-    daiyousei_hegemony->addSkill("juxian");
+    daiyousei_hegemony->addSkill(new JuxianHegemony);
     daiyousei_hegemony->addSkill("banyue");
 
     addMetaObject<XingyunHegemonyCard>();
