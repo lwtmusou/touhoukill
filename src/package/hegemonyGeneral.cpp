@@ -8,6 +8,61 @@
 //#include "th10.h"
 //#include "th08.h"
 
+
+class GameRule_AskForGeneralShowHead : public TriggerSkill
+{
+public:
+    GameRule_AskForGeneralShowHead()
+        : TriggerSkill("GameRule_AskForGeneralShowHead")
+    {
+        events << EventPhaseStart;
+        global = true;
+    }
+
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        invoke->invoker->showGeneral(true, true);
+        return false;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        ServerPlayer *player = data.value<ServerPlayer *>();
+        if (player != NULL && player->getPhase() == Player::Start && !player->hasShownGeneral())
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+        return QList<SkillInvokeDetail>();
+    }
+};
+
+class GameRule_AskForGeneralShowDeputy : public TriggerSkill
+{
+public:
+    GameRule_AskForGeneralShowDeputy()
+        : TriggerSkill("GameRule_AskForGeneralShowDeputy")
+    {
+        events << EventPhaseStart;
+        global = true;
+    }
+
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        invoke->invoker->showGeneral(false, true);
+        return false;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        ServerPlayer *player = data.value<ServerPlayer *>();
+        if (ServerInfo.Enable2ndGeneral && player != NULL && player->getPhase() == Player::Start && !player->hasShownGeneral2())
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+        return QList<SkillInvokeDetail>();
+    }
+};
+
+
+
+
+
 //********  SPRING   **********
 
 class LizhiHegemony : public TriggerSkill
@@ -268,6 +323,7 @@ public:
     ShezhengHegemony()
         : AttackRangeSkill("shezheng_hegemony")
     {
+        relate_to_place = "head";
     }
 
     virtual int getExtra(const Player *player, bool) const
@@ -288,7 +344,7 @@ public:
     ShezhengViewHas() : ViewHasSkill("#shezheng_hegemony")
 
     {
-        relate_to_place = "head";
+        
     }
 
     virtual bool ViewHas(const Player *player, const QString &skill_name, const QString &flag) const
@@ -1374,7 +1430,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     
     
     addMetaObject<MocaoHegemonyCard>();
-    //skills << new MingmuVS << new YemangRange << new MingmuRange;
+    skills <<  new GameRule_AskForGeneralShowHead << new GameRule_AskForGeneralShowDeputy;
 }
 
 ADD_PACKAGE(HegemonyGeneral)

@@ -148,7 +148,7 @@ sgs.ai_skill_invoke.chiling = function(self,data)
 	return false
 end
 
-
+sgs.ai_skill_invoke.shezheng_hegemony = true
 
 measure_xihua = function(self,card)
 	local pattern = card:objectName()
