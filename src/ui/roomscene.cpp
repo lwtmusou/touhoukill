@@ -3535,7 +3535,10 @@ void RoomScene::saveReplayRecord(const bool auto_save, const bool network_only)
                 location.append("/");
             if (!QDir(location).exists())
                 QDir().mkdir(location);
-            location.append(QString("%1 %2(%3)-").arg(Sanguosha->getVersionName()).arg(Sanguosha->translate(Self->getGeneralName())).arg(Sanguosha->translate(Self->getRole())));
+            QString general_name = Sanguosha->translate(Self->getGeneralName());
+            if (ServerInfo.Enable2ndGeneral)
+                general_name.append("_" + Sanguosha->translate(Self->getGeneral2Name()));
+            location.append(QString("%1 %2(%3)-").arg(Sanguosha->getVersionName()).arg(general_name).arg(Sanguosha->translate(Self->getRole())));
             //.arg(QString::number(human)).arg(QString::number(players)));
             location.append(QDateTime::currentDateTime().toString("yyyyMMddhhmmss"));
             location.append(".txt");
