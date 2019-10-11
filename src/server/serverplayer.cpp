@@ -2241,3 +2241,172 @@ int ServerPlayer::getPlayerNumWithSameKingdom(const QString &, const QString &_t
 
     return qMax(num, 0);
 }
+
+
+bool ServerPlayer::askForGeneralShow(bool one, bool refusable)
+{
+    if (hasShownAllGenerals())
+        return false;
+
+    QStringList choices;
+
+    if (!hasShownGeneral() && disableShow(true).isEmpty())
+        choices << "show_head_general";
+    if (!hasShownGeneral2() && disableShow(false).isEmpty())
+        choices << "show_deputy_general";
+    if (choices.isEmpty())
+        return false;
+    if (!one && choices.length() == 2)
+        choices << "show_both_generals";
+    if (refusable)
+        choices.append("cancel");
+
+    QString choice = room->askForChoice(this, "GameRule_AskForGeneralShow", choices.join("+"));
+
+    if (choice == "show_head_general" || choice == "show_both_generals")
+        showGeneral();
+    if (choice == "show_deputy_general" || choice == "show_both_generals")
+        showGeneral(false);
+
+    return choice.startsWith("s");
+}
+
+bool ServerPlayer::inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const
+{
+    if (isFriendWith(victim) || !isFriendWith(skill_owner) || !victim->hasShownOneGeneral()) return false;
+    if (this == skill_owner)
+        return (getNextAlive() == victim && getNextAlive(2)->isFriendWith(this))
+        || (getLastAlive() == victim && getLastAlive(2)->isFriendWith(this));
+    else
+        return (getNextAlive() == victim && getNextAlive(2) == skill_owner)
+        || (getLastAlive() == victim && getLastAlive(2) == skill_owner);
+}
+
+bool ServerPlayer::inFormationRalation(ServerPlayer *teammate) const
+{
+    QList<const Player *> teammates = getFormation();
+    return teammates.length() > 1 && teammates.contains(teammate);
+}
+
+
+
+void ServerPlayer::summonFriends(const QString type)
+{
+    room->tryPause();
+
+    if (aliveCount() < 4) return;
+    LogMessage log;
+    log.type = "#InvokeSkill";
+    log.from = this;
+    log.arg = "GameRule_AskForArraySummon";
+    room->sendLog(log);
+    LogMessage log2;
+    log2.type = "#SummonType";
+    log2.arg = (type == "Siege") ? "summon_type_siege" : "summon_type_formation";
+    room->sendLog(log2);
+    
+    if (type =="Siege") {
+        if (isFriendWith(getNextAlive()) && isFriendWith(getLastAlive())) return;
+        bool failed = true;
+        if (!isFriendWith(getNextAlive()) && getNextAlive()->hasShownOneGeneral()) {
+            ServerPlayer *target = qobject_cast<ServerPlayer *>(getNextAlive(2));
+            if (!target->hasShownOneGeneral()) {
+                QString prompt = target->willBeFriendWith(this) ? "SiegeSummon" : "SiegeSummon!";
+                bool success = room->askForSkillInvoke(target, prompt);
+                LogMessage log;
+                log.type = "#SummonResult";
+                log.from = target;
+                log.arg = success ? "summon_success" : "summon_failed";
+                room->sendLog(log);
+                if (success) {
+                    target->askForGeneralShow();
+                    //room->doAnimate(QSanProtocol::S_ANIMATE_BATTLEARRAY, objectName(), QString("%1+%2").arg(objectName()).arg(target->objectName()));       //player success animation
+                    failed = false;
+                }
+            }
+        }
+        if (!isFriendWith(getLastAlive()) && getLastAlive()->hasShownOneGeneral()) {
+            ServerPlayer *target = qobject_cast<ServerPlayer *>(getLastAlive(2));
+            if (!target->hasShownOneGeneral()) {
+                QString prompt = target->willBeFriendWith(this) ? "SiegeSummon" : "SiegeSummon!";
+                bool success = room->askForSkillInvoke(target, prompt);
+                LogMessage log;
+                log.type = "#SummonResult";
+                log.from = target;
+                log.arg = success ? "summon_success" : "summon_failed";
+                room->sendLog(log);
+                if (success) {
+                    target->askForGeneralShow();
+                    //room->doAnimate(QSanProtocol::S_ANIMATE_BATTLEARRAY, objectName(), QString("%1+%2").arg(objectName()).arg(target->objectName()));       //player success animation
+                    failed = false;
+                }
+            }
+        }
+        if (failed)
+            room->setPlayerFlag(this, "Global_SummonFailed");
+        
+    } 
+    else if (type == "Formation") {
+        int n = aliveCount(false);
+        int asked = n;
+        bool failed = true;
+        for (int i = 1; i < n; ++i) {
+            ServerPlayer *target = qobject_cast<ServerPlayer *>(getNextAlive(i));
+            if (isFriendWith(target))
+                continue;
+            else if (!target->hasShownOneGeneral()) {
+                QString prompt = target->willBeFriendWith(this) ? "FormationSummon" : "FormationSummon!";
+                bool success = room->askForSkillInvoke(target, prompt);
+                LogMessage log;
+                log.type = "#SummonResult";
+                log.from = target;
+                log.arg = success ? "summon_success" : "summon_failed";
+                room->sendLog(log);
+
+                if (success) {
+                    target->askForGeneralShow();
+                    room->doBattleArrayAnimate(target);       //player success animation
+                    failed = false;
+                }
+                else {
+                    asked = i;
+                    break;
+                }
+            }
+            else {
+                asked = i;
+                break;
+            }
+        }
+
+        n -= asked;
+        for (int i = 1; i < n; ++i) {
+            ServerPlayer *target = qobject_cast<ServerPlayer *>(getLastAlive(i));
+            if (isFriendWith(target))
+                continue;
+            else {
+                if (!target->hasShownOneGeneral()) {
+                    QString prompt = target->willBeFriendWith(this) ? "FormationSummon" : "FormationSummon!";
+                    bool success = room->askForSkillInvoke(target, prompt);
+                    LogMessage log;
+                    log.type = "#SummonResult";
+                    log.from = target;
+                    log.arg = success ? "summon_success" : "summon_failed";
+                    room->sendLog(log);
+
+                    if (success) {
+                        target->askForGeneralShow();
+                        room->doBattleArrayAnimate(target);       //player success animation
+                        failed = false;
+                    }
+                }
+                break;
+            }
+        }
+        if (failed)
+            room->setPlayerFlag(this, "Global_SummonFailed");
+        
+    }
+    
+}
+

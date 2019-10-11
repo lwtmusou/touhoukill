@@ -363,6 +363,8 @@ public:
     bool isFriendWith(const Player *player, bool considerAnjiang = false) const;
     bool willBeFriendWith(const Player *player) const;
 
+    QList<const Player *> getFormation() const;
+
     const Player *getLord(bool include_death = false) const;
 
     QVariantMap tag;

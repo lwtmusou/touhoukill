@@ -5361,6 +5361,24 @@ void Room::doAnimate(QSanProtocol::AnimateType type, const QString &arg1, const 
     doBroadcastNotify(players, S_COMMAND_ANIMATE, arg);
 }
 
+void Room::doBattleArrayAnimate(ServerPlayer *player, ServerPlayer *target)
+{
+    if (getAlivePlayers().length() < 4) return;
+    if (!target) {
+        QStringList names;
+        foreach(const Player *p, player->getFormation())
+            names << p->objectName();
+        if (names.length() > 1)
+            doAnimate(QSanProtocol::S_ANIMATE_BATTLEARRAY, player->objectName(), names.join("+"));
+    }
+    else {
+        foreach(ServerPlayer *p, getOtherPlayers(player))
+            if (p->inSiegeRelation(player, target))
+                doAnimate(QSanProtocol::S_ANIMATE_BATTLEARRAY, player->objectName(), QString("%1+%2").arg(p->objectName()).arg(player->objectName()));
+    }
+}
+
+
 void Room::preparePlayers()
 {
     if (isHegemonyGameMode(mode)) {

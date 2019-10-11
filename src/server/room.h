@@ -250,6 +250,7 @@ public:
     {
         doAnimate((QSanProtocol::AnimateType)type, arg1, arg2, players);
     }
+    void doBattleArrayAnimate(ServerPlayer *player, ServerPlayer *target = NULL);
 
     void preparePlayers();
     void changePlayerGeneral(ServerPlayer *player, const QString &new_general);

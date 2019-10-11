@@ -244,12 +244,31 @@ CommonTranslationTable = {
 	["#FirstShowReward"] = "%from 执行首亮摸牌奖励",
 	["GameRule_AskForGeneralShowHead"] = "亮主将",
 	["GameRule_AskForGeneralShowDeputy"] = "亮副将",
+	["GameRule_AskForArraySummon"] = "阵法召唤",
+	["#SummonType"] = "召唤阵列为 %arg",
+	["summon_type_siege"] = "围攻",
+	["summon_type_formation"] = "队列",
+	["#SummonResult"] = "%from 选择了 %arg",
+	["summon_success"] = "响应",
+	["summon_failed"] = "不响应",
+	["SiegeSummon"] = "响应围攻",
+	["SiegeSummon!"] = "响应围攻",
+	["FormationSummon"] = "响应队列",
+	["FormationSummon!"] = "响应队列",
+	["GameRule_AskForGeneralShow"] = "明置武将",
+	["GameRule:TurnStart"] = "选择需要明置的武将",
+	["show_head_general"] = "明置主将",
+	["show_deputy_general"] = "明置副将",
+	["show_both_generals"] = "明置双将",
+	
 	["userdefine:halfmaxhp"] = "半血摸牌",
 	["#HalfMaxHpLeft"] = "%from 的武将牌上有单独的阴阳鱼，可以摸一张牌",
 	["CompanionEffect"] = "珠联璧合",
 	["#CompanionEffect"] = "%from 触发珠联璧合，可以选择回复1点体力或者摸两张牌",
 	["CompanionEffect:recover"] = "回复1点体力",
 	["CompanionEffect:draw"] = "摸两张牌",
+	
+	
 }
 
 return CommonTranslationTable

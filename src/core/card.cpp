@@ -1000,3 +1000,24 @@ const Card *ShowDistanceCard::validate(CardUseStruct &card_use) const
     }
     return NULL;
 }
+
+ArraySummonCard::ArraySummonCard(const QString &name)
+    : SkillCard()
+{
+    setObjectName(name);
+    m_skillName = name;
+    mute = true;
+    target_fixed = true;
+    handling_method = Card::MethodNone;
+}
+
+const Card *ArraySummonCard::validate(CardUseStruct &card_use) const
+{
+    const BattleArraySkill *skill = qobject_cast<const BattleArraySkill *>(Sanguosha->getTriggerSkill(objectName()));
+    if (skill) {
+        //card_use.from->showSkill(skill->objectName(), card_use.card->getSkillPosition());                           //new function by weidouncle
+        card_use.from->showHiddenSkill(skill->objectName());
+        skill->summonFriends(card_use.from);
+    }
+    return NULL;
+}

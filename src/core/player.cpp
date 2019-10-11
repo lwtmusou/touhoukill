@@ -2222,3 +2222,31 @@ bool Player::canShowGeneral(const QString &flags) const
     if (flags == "hd") return (deputy || hasShownGeneral2()) && (head || hasShownGeneral());
     return false;
 }
+
+
+QList<const Player *> Player::getFormation() const
+{
+    QList<const Player *> teammates;
+    teammates << this;
+    int n = aliveCount(false);
+    int num = n;
+    for (int i = 1; i < n; ++i) {
+        Player *target = getNextAlive(i);
+        if (isFriendWith(target))
+            teammates << target;
+        else {
+            num = i;
+            break;
+        }
+    }
+
+    n -= num;
+    for (int i = 1; i < n; ++i) {
+        Player *target = getLastAlive(i);
+        if (isFriendWith(target))
+            teammates << target;
+        else break;
+    }
+
+    return teammates;
+}

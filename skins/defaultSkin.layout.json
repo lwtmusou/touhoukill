@@ -298,6 +298,11 @@
 
 // The following settings override the text color defined above
 // xxButtonColor = [normalColor, downColor, disabledColor, hoverColor]
+"arrayFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]], // normalColor = [penColor, shadowColor]
+                        [[255, 255, 255, 255], [0, 0, 0, 120]], // downColor = [penColor, shadowColor]
+                        [[255, 255, 255, 255], [0, 0, 0, 120]], // disableColor = [penColor, shadowColor]
+                        [[255, 255, 255, 255], [0, 0, 0, 120]], // hoverColor = [penColor, shadowColor]
+                        [[255, 255, 255, 255], [0, 0, 0, 120]]], // preshowColor = [penColor, shadowColor]
 "awakenFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]], // normalColor = [penColor, shadowColor]
                     [[255, 255, 255, 255], [0, 0, 0, 120]], // downColor = [penColor, shadowColor]
                     [[255, 255, 255, 255], [0, 0, 0, 120]], // disableColor = [penColor, shadowColor]

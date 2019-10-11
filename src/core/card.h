@@ -245,6 +245,17 @@ public:
     const Card *validate(CardUseStruct &card_use) const;
 };
 
+class ArraySummonCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ArraySummonCard(const QString &name);
+
+    const Card *validate(CardUseStruct &card_use) const;
+};
+
+
 class DummyCard : public SkillCard
 {
     Q_OBJECT

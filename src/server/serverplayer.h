@@ -13,6 +13,7 @@ struct PhaseStruct;
 #include "socket.h"
 #include "structs.h"
 
+
 #include <QDateTime>
 #include <QSemaphore>
 
@@ -198,6 +199,11 @@ public:
     void sendSkillsToOthers(bool head_skill = true);
     void disconnectSkillsFromOthers(bool head_skill = true);
     int getPlayerNumWithSameKingdom(const QString &reason, const QString &_to_calculate = QString()) const;
+    bool askForGeneralShow(bool one = true, bool refusable = false);
+
+    bool inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const;
+    bool inFormationRalation(ServerPlayer *teammate) const;
+    void summonFriends(const QString type);
 
 protected:
     //Synchronization helpers
