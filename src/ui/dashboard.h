@@ -132,6 +132,9 @@ public:
             _m_rightSkillDock->update();
     }
 
+
+    void playBattleArrayAnimations();
+
 public slots:
     virtual void updateAvatar();
     void updateChaoren();
@@ -281,6 +284,12 @@ protected:
 
     void drawEquip(QPainter *painter, const CardItem *equip, int order);
     void setSelectedItem(CardItem *card_item);
+
+
+    // for battle arry
+    QHash<QString, PixmapAnimation *> _m_frameBorders;
+    QHash<QString, PixmapAnimation *> _m_roleBorders;
+    void _createBattleArrayAnimations();
 
     virtual void _initializeRemovedEffect();
     QPropertyAnimation *_removedEffect;

@@ -7,6 +7,7 @@
 #include "player.h"
 #include "protocol.h"
 #include "sprite.h"
+#include "pixmapanimation.h"
 
 #include <QComboBox>
 #include <QGraphicsObject>
@@ -45,6 +46,8 @@ public:
     void setFrame(FrameType type);
     virtual QRectF boundingRect() const;
     QGraphicsItem *getMouseClickReceiver();
+    void playBattleArrayAnimations();
+
 
 public slots:
     void updatePhase();
@@ -125,6 +128,10 @@ protected:
     QGraphicsPixmapItem *_m_onlineStatusItem;
     QGraphicsRectItem *_m_duanchangMask;
     QParallelAnimationGroup *_blurEffect;
+
+    QHash<QString, PixmapAnimation *> _m_frameBorders;
+    QHash<QString, PixmapAnimation *> _m_roleBorders;
+    void _createBattleArrayAnimations();
 };
 
 #endif

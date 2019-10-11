@@ -103,6 +103,7 @@ public:
         S_SKILL_COMPULSORY,
         S_SKILL_AWAKEN,
         S_SKILL_ONEOFF_SPELL,
+        S_SKILL_ARRAY,
         S_NUM_SKILL_TYPES
     };
 
@@ -111,6 +112,8 @@ public:
         QString arg1;
         if (type == QSanSkillButton::S_SKILL_AWAKEN)
             arg1 = "awaken";
+        else if (type == QSanSkillButton::S_SKILL_ARRAY) 
+            arg1 = "array";
         else if (type == QSanSkillButton::S_SKILL_COMPULSORY)
             arg1 = "compulsory";
         else if (type == QSanSkillButton::S_SKILL_FREQUENT)

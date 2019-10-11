@@ -4626,6 +4626,17 @@ void RoomScene::doIndicate(const QString &, const QStringList &args)
     showIndicator(args.first(), args.last());
 }
 
+void RoomScene::doBattleArray(const QString &, const QStringList &args)
+{
+    QStringList names = args.last().split("+");
+    if (names.contains(Self->objectName())) dashboard->playBattleArrayAnimations();
+    foreach(Photo *p, photos) {
+        const ClientPlayer *target = p->getPlayer();
+        if (names.contains(target->objectName()))
+            p->playBattleArrayAnimations();
+    }
+}
+
 void RoomScene::doAnimation(int name, const QStringList &args)
 {
     static QMap<AnimateType, AnimationFunc> map;
@@ -4638,6 +4649,7 @@ void RoomScene::doAnimation(int name, const QStringList &args)
         map[S_ANIMATE_LIGHTBOX] = &RoomScene::doLightboxAnimation;
         map[S_ANIMATE_HUASHEN] = &RoomScene::doHuashen;
         map[S_ANIMATE_INDICATE] = &RoomScene::doIndicate;
+        map[S_ANIMATE_BATTLEARRAY] = &RoomScene::doBattleArray;
     }
 
     static QMap<AnimateType, QString> anim_name;
@@ -4650,6 +4662,7 @@ void RoomScene::doAnimation(int name, const QStringList &args)
         anim_name[S_ANIMATE_LIGHTBOX] = "lightbox";
         anim_name[S_ANIMATE_HUASHEN] = "huashen";
         anim_name[S_ANIMATE_INDICATE] = "indicate";
+        anim_name[S_ANIMATE_BATTLEARRAY] = "battlearray";
     }
 
     AnimationFunc func = map.value((AnimateType)name, NULL);

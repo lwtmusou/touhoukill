@@ -1034,6 +1034,9 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
     for (int i = 0; i < QSanInvokeSkillButton::S_NUM_SKILL_TYPES; i++) {
         QString key;
         switch ((QSanInvokeSkillButton::SkillType)i) {
+        case QSanInvokeSkillButton::S_SKILL_ARRAY:
+            key = "arrayFontColor"; 
+            break;
         case QSanInvokeSkillButton::S_SKILL_AWAKEN:
             key = "awakenFontColor";
             break;

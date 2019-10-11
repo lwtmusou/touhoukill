@@ -1832,3 +1832,51 @@ void Dashboard::refresh()
         }
     }
 }
+
+void Dashboard::_createBattleArrayAnimations()
+{
+    QStringList kingdoms = Sanguosha->getHegemonyKingdoms();
+    kingdoms.removeAll("god");
+    foreach(const QString &kingdom, kingdoms) {
+        _m_frameBorders[kingdom] = new PixmapAnimation();
+        _m_frameBorders[kingdom]->setZValue(30000);
+        _m_roleBorders[kingdom] = new PixmapAnimation();
+        _m_roleBorders[kingdom]->setZValue(30000);
+        _m_frameBorders[kingdom]->setParentItem(_getFocusFrameParent());
+        _m_roleBorders[kingdom]->setParentItem(_m_rightFrame);
+        _m_frameBorders[kingdom]->setSize(QSize(_dlayout->m_avatarArea.width() * 2 * 1.1, _dlayout->m_normalHeight * 1.2));
+        _m_frameBorders[kingdom]->setPath(QString("image/kingdom/battlearray/big/%1/").arg(kingdom));
+        _m_roleBorders[kingdom]->setPath(QString("image/kingdom/battlearray/roles/%1/").arg(kingdom));
+        _m_frameBorders[kingdom]->setPlayTime(2000);
+        _m_roleBorders[kingdom]->setPlayTime(2000);
+        if (!_m_frameBorders[kingdom]->valid()) {
+            delete _m_frameBorders[kingdom];
+            delete _m_roleBorders[kingdom];
+            _m_frameBorders[kingdom] = NULL;
+            _m_roleBorders[kingdom] = NULL;
+            continue;
+        }
+        _m_frameBorders[kingdom]->setPos(-_dlayout->m_avatarArea.width() * 0.1, -_dlayout->m_normalHeight * 0.1);
+
+        double scale = G_ROOM_LAYOUT.scale;
+        QPixmap pix;
+        pix.load("image/system/roles/careerist.png");
+        int w = pix.width() * scale;
+        //int h = pix.height() * scale;
+        _m_roleBorders[kingdom]->setPos(G_DASHBOARD_LAYOUT.m_roleComboBoxPos
+            - QPoint((_m_roleBorders[kingdom]->boundingRect().width() - w) / 2, (_m_roleBorders[kingdom]->boundingRect().height()) / 2));
+        _m_frameBorders[kingdom]->setHideonStop(true);
+        _m_roleBorders[kingdom]->setHideonStop(true);
+        _m_frameBorders[kingdom]->hide();
+        _m_roleBorders[kingdom]->hide();
+    }
+}
+
+void Dashboard::playBattleArrayAnimations()
+{
+    QString kingdom = getPlayer()->getKingdom();
+    _m_frameBorders[kingdom]->show();
+    _m_frameBorders[kingdom]->start(true, 30);
+    _m_roleBorders[kingdom]->preStart();
+}
+
