@@ -267,6 +267,18 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
 
     foreach (QString kingdom, kingdoms) {
         QList<const General *> generals = map[kingdom];
+        
+        if (kingdom == "zhu") {
+            QList<const General *> addGgenerals;
+            foreach(const General *g, generals) {
+                if (g->objectName().endsWith("hegemony") && isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral)
+                    addGgenerals << g;
+                else if (!g->objectName().endsWith("hegemony") && (!isHegemonyGameMode(ServerInfo.GameMode) || !ServerInfo.Enable2ndGeneral))
+                    addGgenerals << g;
+            }
+            if (!addGgenerals.isEmpty())
+                generals = addGgenerals;
+        }
 
         if (!generals.isEmpty()) {
             QWidget *tab = createTab(generals);
