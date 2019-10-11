@@ -766,6 +766,51 @@ sgs.ai_skill_suit.juxian = function(self)
 end
 
 
+--国战版
+local banyue_hegemony_skill = {}
+banyue_hegemony_skill.name = "banyue_hegemony"
+table.insert(sgs.ai_skills, banyue_hegemony_skill)
+function banyue_hegemony_skill.getTurnUseCard(self)
+	
+	if self.player:hasUsed("BanyueHegemonyCard") then return nil end
+	if self.player:getHp() <= 1  then return nil end --consider juxian?
+	
+	return sgs.Card_Parse("@BanyueHegemonyCard=.")
+end
+sgs.ai_skill_use_func.BanyueHegemonyCard = function(card, use, self)
+	self:sort(self.friends, "handcard")
+	local to1, to2
+	for _, p in ipairs(self.friends) do
+		if p:objectName() == self.player:objectName() or to1:hasShownOneGeneral() then
+			to1 = p
+			break
+		end
+	end
+
+	if not to1 then return end
+	
+	for _, p in sgs.qlist(self.room:getOtherPlayers(to1)) do
+		local isSelf = (p:objectName() == self.player:objectName())
+		if p:hasShownOneGeneral() and not to1:isFriendWith(p, isSelf) then
+			to2 = p
+			break
+		end
+	end
+	
+	if to1 and to2 then
+		self.player:gainMark("@xyxy")
+		use.card = card
+		if use.to then
+			use.to:append(to1)
+			use.to:append(to2)
+			if use.to:length() >= 2 then return end
+		end
+	end
+end
+
+sgs.ai_use_value.BanyueHegemonyCard = 3
+sgs.ai_use_priority.BanyueHegemonyCard =6
+
 
 local banyue_skill = {}
 banyue_skill.name = "banyue"
@@ -803,6 +848,7 @@ sgs.ai_card_intention.BanyueCard = function(self, card, from, tos)
 		end
 	end
 end
+
 
 sgs.ai_skill_playerchosen.mizong = function(self, targets)
 	for _,target in sgs.qlist(targets) do
