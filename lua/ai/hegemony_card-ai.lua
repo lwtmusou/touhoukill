@@ -1,4 +1,38 @@
 
+sgs.ai_skill_choice.heg_nullification = function(self, choice, data)
+	local effect = data:toCardEffect()
+	if effect.card:isKindOf("AOE") or effect.card:isKindOf("GlobalEffect") then
+		if self:isFriendWith(effect.to) then return "all"
+		elseif self:isFriend(effect.to) then return "single"
+		elseif self:isEnemy(effect.to) then return "all"
+		end
+	end
+	local targets = sgs.SPlayerList()
+	local players = self.room:getTag("targets" .. effect.card:toString()):toList()
+	for _, q in sgs.qlist(players) do
+		targets:append(q:toPlayer())
+	end
+	if effect.card:isKindOf("FightTogether") then
+		local ed, no = 0
+		for _, p in sgs.qlist(targets) do
+			if p:objectName() ~= targets:at(0):objectName() and p:isChained() then
+				ed = ed + 1
+			end
+			if p:objectName() ~= targets:at(0):objectName() and not p:isChained() then
+				no = no + 1
+			end
+		end
+		if targets:at(0):isChained() then
+			if no > ed then return "single" end
+		else
+			if ed > no then return "single" end
+		end
+	end
+	return "all"
+end
+
+
+
 sgs.ai_nullification.ArcheryAttack = function(self, card, from, to, positive, keep)
 	local targets = sgs.SPlayerList()
 	local players = self.room:getTag("targets" .. card:toString()):toList()

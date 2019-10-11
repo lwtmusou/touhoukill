@@ -17,8 +17,8 @@ return {
 	[":heg_nullification"] = "锦囊牌\n\n使用方法Ⅰ：\n使用时机：一张锦囊牌对一个目标生效前。\n使用目标：一张对一个目标生效前的锦囊牌。\n作用效果：抵消此锦囊牌。"
 	.."\n\n使用方法Ⅱ：\n使用时机：一张锦囊牌对一名目标角色生效前。\n使用目标：一张对一名目标角色生效前的锦囊牌。\n作用效果：抵消此牌，然后你选择所有除目标角色外与目标角色阵营相同的角色，令所有角色不能使用【无懈可击】响应对这些角色结算的此牌，若如此做，每当此牌对你选择的这些角色中的一名角色生效前，抵消之。",
 	["#heg_nullification"] = "无懈可击·国 对 %log",
-	["heg_nullification:single"] = "为%to无懈此锦囊",
-	["heg_nullification:all"] = "为%to及之后的%log阵营角色无懈此锦囊" ,
+	["heg_nullification:single"] = "无懈单个角色",
+	["heg_nullification:all"] = "无懈之后同阵营的所有角色" ,
 	
 	["#HegNullificationDetails"] = "【<font color=\"yellow\"><b>无懈可击·国</b></font>】的目标是 %from 对 %to 的锦囊 【%arg】",
 	["#HegNullificationEffect"] = "【<font color=\"yellow\"><b>无懈可击·国</b></font>】生效， 目标是 %from 对 %to 的锦囊 【%arg】",

@@ -1091,8 +1091,13 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
 {
     tryPause();
     notifyMoveFocus(player, S_COMMAND_MULTIPLE_CHOICE);
-    QStringList validChoices = choices.split("+");
+    //QStringList validChoices = choices.split("+");
+    QStringList validChoices;
+    foreach(const QString &choice, choices.split("|"))
+        validChoices.append(choice.split("+"));
     Q_ASSERT(!validChoices.isEmpty());
+    QStringList titles = skill_name.split("%");
+    QString skillname = titles.at(0);
 
     AI *ai = player->getAI();
     QString answer;
@@ -1100,10 +1105,10 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
         answer = validChoices.first();
     else {
         if (ai) {
-            answer = ai->askForChoice(skill_name, choices, data);
+            answer = ai->askForChoice(skillname, choices, data);
             thread->delay();
         } else {
-            bool success = doRequest(player, S_COMMAND_MULTIPLE_CHOICE, JsonArray() << skill_name << choices, true);
+            bool success = doRequest(player, S_COMMAND_MULTIPLE_CHOICE, JsonArray() << skillname << choices, true);
             QVariant clientReply = player->getClientReply();
             if (!success || !clientReply.canConvert(QVariant::String)) {
                 answer = "cancel";
@@ -1117,7 +1122,7 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
     ChoiceMadeStruct s;
     s.player = player;
     s.type = ChoiceMadeStruct::SkillChoice;
-    s.args << skill_name << answer;
+    s.args << skillname << answer;
     s.m_extraData = data;
     QVariant d = QVariant::fromValue(s);
     thread->trigger(ChoiceMade, this, d);
@@ -1165,6 +1170,8 @@ bool Room::isCanceled(const CardEffectStruct &effect)
             log.to << effect.to;
             log.arg = effect.card->objectName();
             sendLog(log);
+
+            setEmotion(effect.to, "skill_nullify");
             return true;
         }
     }
@@ -1381,8 +1388,9 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
         }
         if (isHegNullification) {
             QString log = trick->getFullName(true);
-            heg_nullification_selection = askForChoice(repliedPlayer, "heg_nullification%log:" + log, "single%to:" + to->objectName() +
-                "+all%to:" + to->objectName() + "%log:" + Sanguosha->translate(to->getRole()), data);
+            //heg_nullification_selection = askForChoice(repliedPlayer, "heg_nullification%log:" + log, "single%to:" + to->objectName() +
+            //    "+all%to:" + to->objectName() + "%log:" + Sanguosha->translate(to->getRole()), data);
+            heg_nullification_selection = askForChoice(repliedPlayer, "heg_nullification", "single+all", data);
         }
         if (heg_nullification_selection.contains("all"))
             heg_nullification_selection = "all";
