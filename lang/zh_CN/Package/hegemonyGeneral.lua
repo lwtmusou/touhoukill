@@ -165,7 +165,7 @@ return
 	["letty_hegemony"]="蕾蒂",
 	["cirno_hegemony"] = "琪露诺",--国战修改
 	["bingpo_hegemony"]= "冰魄",
-	[":bingpo_hegemony"]= "<font color=\"blue\"><b>锁定技，</b></font>锁定技，当你因火焰伤害外的原因而进入濒死状态时，你回复1点体力。",
+	[":bingpo_hegemony"]= "<font color=\"blue\"><b>锁定技，</b></font>当你因火焰伤害外的原因而进入濒死状态时，你回复1点体力。",
 	["#bingpo_hegemony_log"] = "%from的“%arg”被触发, %from 回复了 %arg2点体力.",
 	
 	["daiyousei_hegemony"]= "大妖精",--国战修改

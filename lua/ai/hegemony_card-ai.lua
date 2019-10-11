@@ -154,7 +154,22 @@ sgs.ai_nullification.SavageAssault = function(self, card, from, to, positive, ke
 	return
 end
 
-sgs.ai_nullification.AwaitExhausted = function(self, card, from, to, positive, keep)
+
+
+function SmartAI:useCardAwaitExhaustedHegemony(AwaitExhausted, use)
+	if not AwaitExhausted:isAvailable(self.player) then return end
+	use.card = AwaitExhausted
+	return
+end
+sgs.ai_use_priority.AwaitExhaustedHegemony = 2.8
+sgs.ai_use_value.AwaitExhaustedHegemony = 4.9
+sgs.ai_keep_value.AwaitExhaustedHegemony = 1
+sgs.ai_card_intention.AwaitExhaustedHegemony = function(self, card, from, tos)
+	for _, to in ipairs(tos) do
+		sgs.updateIntention(from, to, -50)
+	end
+end
+sgs.ai_nullification.AwaitExhaustedHegemony = function(self, card, from, to, positive, keep)
 	local targets = sgs.SPlayerList()
 	local players = self.room:getTag("targets" .. card:toString()):toList()
 	for _, q in sgs.qlist(players) do
