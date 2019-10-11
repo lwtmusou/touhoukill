@@ -471,9 +471,9 @@ public:
         ServerPlayer *target = invoke->targets.first();
         if (target->canDiscard(invoke->targets.first(), "hs"))
             select << "discard";
-        if (!target->hasShownGeneral())
+        if (!target->hasShownGeneral() && target->canShowGeneral("h"))
             select << "showhead";
-        if (target->getGeneral2() && !target->hasShownGeneral2())
+        if (target->getGeneral2() && !target->hasShownGeneral2() && target->canShowGeneral("d"))
             select << "showdeputy";
 
         if (select.isEmpty())
