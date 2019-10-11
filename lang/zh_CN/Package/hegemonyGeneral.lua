@@ -169,6 +169,8 @@ return
 	["#bingpo_hegemony_log"] = "%from的“%arg”被触发, %from 回复了 %arg2点体力.",
 	
 	["daiyousei_hegemony"]= "大妖精",--国战修改
+	["banyue_hegemony"]= "半月",
+	[":banyue_hegemony"]= "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以选择两名阵营不同的角色并失去1点体力，视为其中一名对另一名角色使用【远交近攻】。",
 	["juxian_hegemony"]= "具现",
 	[":juxian_hegemony"]= "<font color=\"red\"><b>限定技，</b></font>当你进入濒死状态时，你可亮出牌堆顶的三张牌并获得之，然后你回复x点体力（x为亮出的花色数）。",
 	["$juxianAnimate"]= "skill=daiyousei:juxian",

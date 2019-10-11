@@ -1091,6 +1091,91 @@ public:
 };
 
 
+BanyueHegemonyCard::BanyueHegemonyCard()
+{
+    m_skillName = "banyue_hegemony";
+}
+
+bool BanyueHegemonyCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    Card *card = Sanguosha->cloneCard("befriend_attacking");
+    DELETE_OVER_SCOPE(Card, card)
+    if (targets.isEmpty()) {
+        return (to_select == Self || to_select->hasShownOneGeneral()) 
+            && (!to_select->isCardLimited(card, Card::HandlingMethod::MethodUse));
+    }
+    else if (targets.length() == 1) {
+        const Player *user = targets.first();
+        return  to_select->hasShownOneGeneral() && !user->isFriendWith(to_select, (user == Self)) 
+            && !user->isProhibited(to_select,card, QList<const Player *>());
+    }
+    return false;
+}
+
+bool BanyueHegemonyCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const
+{
+    return targets.length() == 2;
+}
+
+void BanyueHegemonyCard::onUse(Room *room, const CardUseStruct &card_use) const
+{
+    CardUseStruct use = card_use;
+    QVariant data = QVariant::fromValue(use);
+    RoomThread *thread = room->getThread();
+    use.from->showHiddenSkill("banyue_hegemony");
+    thread->trigger(PreCardUsed, room, data);
+    use = data.value<CardUseStruct>();
+
+    ServerPlayer *from = card_use.from;
+    ServerPlayer *to1 = card_use.to.at(0);
+    ServerPlayer *to2 = card_use.to.at(1);
+    QList<ServerPlayer *> logto;
+    logto << to1 << to2;
+    room->touhouLogmessage("#ChoosePlayerWithSkill", from, "banyue_hegemony", logto, "");
+    room->notifySkillInvoked(card_use.from, "banyue_hegemony");
+
+    thread->trigger(CardUsed, room, data);
+    use = data.value<CardUseStruct>();
+    thread->trigger(CardFinished, room, data);
+}
+
+
+void BanyueHegemonyCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const // onEffect is better?
+{
+    
+    room->loseHp(source);
+    ServerPlayer *to1 = targets.first();
+    ServerPlayer *to2 = targets.last();
+    Card *card = Sanguosha->cloneCard("befriend_attacking");
+    card->setSkillName("_banyue_hegemony");
+
+    CardUseStruct use;
+    use.from = to1;
+    use.to << to2;
+    use.card = card;
+    room->useCard(use);
+}
+
+class BanyueHegemony : public ZeroCardViewAsSkill
+{
+public:
+    BanyueHegemony()
+        : ZeroCardViewAsSkill("banyue_hegemony")
+    {
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return !player->hasUsed("BanyueHegemonyCard");
+    }
+
+    virtual const Card *viewAs() const
+    {
+        return new BanyueHegemonyCard;
+    }
+};
+
+
 
 
 HegemonyGeneralPackage::HegemonyGeneralPackage()
@@ -1422,7 +1507,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *daiyousei_hegemony = new General(this, "daiyousei_hegemony", "wei", 3);
     daiyousei_hegemony->addSkill(new JuxianHegemony);
-    daiyousei_hegemony->addSkill("banyue");
+    daiyousei_hegemony->addSkill(new BanyueHegemony);
 
     addMetaObject<QingtingHegemonyCard>();
 
@@ -1430,6 +1515,9 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     
     
     addMetaObject<MocaoHegemonyCard>();
+
+    addMetaObject<BanyueHegemonyCard>();
+
     skills <<  new GameRule_AskForGeneralShowHead << new GameRule_AskForGeneralShowDeputy;
 }
 
