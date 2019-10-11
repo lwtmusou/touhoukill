@@ -87,7 +87,7 @@ sgs.ai_event_callback =     {}
 sgs.explicit_renegade =     false
 sgs.ai_NeedPeach =          {}
 sgs.ai_defense =            {}
-
+sgs.ai_nullification =      {} -- only for hegemony?
 
 for i=sgs.NonTrigger, sgs.NumOfEvents, 1 do
 	sgs.ai_debug_func[i]    ={}
