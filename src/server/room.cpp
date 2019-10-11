@@ -5393,31 +5393,44 @@ void Room::preparePlayers()
 
 void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general)
 {
-    if (player->getGeneral() != NULL) {
+    if (!isHegemonyGameMode(mode) &&  player->getGeneral() != NULL) {
         foreach (const Skill *skill, player->getGeneral()->getSkillList(true, true))
             player->loseSkill(skill->objectName());
     }
-    setPlayerProperty(player, "general", new_general);
+    player->setProperty("general", new_general);
+    QList<ServerPlayer *> players = m_players;
+    if (new_general == "anjiang") players.removeOne(player);
+    foreach(ServerPlayer *p, players)
+        notifyProperty(p, player, "general");
+    //setPlayerProperty(player, "general", new_general); //
     Q_ASSERT(player->getGeneral() != NULL);
     player->setGender(player->getGeneral()->getGender());
-    foreach (const Skill *skill, player->getGeneral()->getSkillList(true, true)) {
-        if (skill->isLordSkill() && !player->isLord()) {
-            continue;
+    if (!isHegemonyGameMode(mode)) {
+        foreach(const Skill *skill, player->getGeneral()->getSkillList(true, true)) {
+            if (skill->isLordSkill() && !player->isLord()) {
+                continue;
+            }
+            player->addSkill(skill->objectName());
         }
-        player->addSkill(skill->objectName());
     }
+
     filterCards(player, player->getCards("hes"), true);
 }
 
 void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general)
 {
-    if (player->getGeneral2() != NULL) {
+    if (!isHegemonyGameMode(mode) && player->getGeneral2() != NULL) {
         foreach (const Skill *skill, player->getGeneral2()->getSkillList(true, false))
             player->loseSkill(skill->objectName());
     }
-    setPlayerProperty(player, "general2", new_general);
+    player->setProperty("general2", new_general);
+    QList<ServerPlayer *> players = m_players;
+    if (new_general == "anjiang") players.removeOne(player);
+    foreach(ServerPlayer *p, players)
+        notifyProperty(p, player, "general2");
+    //setPlayerProperty(player, "general2", new_general);
     Q_ASSERT(player->getGeneral2() != NULL);
-    if (player->getGeneral2()) {
+    if (!isHegemonyGameMode(mode) &&  player->getGeneral2()) {
         foreach (const Skill *skill, player->getGeneral2()->getSkillList(true, false)) {
             if (skill->isLordSkill() && !player->isLord())
                 continue;

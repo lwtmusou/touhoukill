@@ -748,6 +748,8 @@ enum TriggerEvent
     KingdomChanged,
 
     GeneralShown, // For Official Hegemony mode
+    GeneralHidden,
+    GeneralRemoved,
 
     NumOfEvents
 };

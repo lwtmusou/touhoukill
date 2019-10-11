@@ -1869,7 +1869,10 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         return;
     QString general_name;
 
-    bool notify_role = (!hasShownGeneral() && !hasShownGeneral2());
+    QVariant RoleConfirmedTag = room->getTag(this->objectName() + "_RoleConfirmed");
+
+    bool roleConfirmed = RoleConfirmedTag.canConvert(QVariant::Bool) && RoleConfirmedTag.toBool();
+    bool notify_role = !roleConfirmed &&  (!hasShownGeneral() && !hasShownGeneral2());
 
     room->tryPause();
 
@@ -1921,7 +1924,8 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         //foreach(ServerPlayer *p, room->getOtherPlayers(this, true))
         //    room->notifyProperty(p, this, "head_skin_id");
 
-    } else {
+    } 
+    else {
         //if (!ignore_rule && !canShowGeneral("h")) return;
         //ignore anjiang
         if (getGeneral2Name() != "anjiang")
@@ -1984,7 +1988,9 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
                 //    has_lord = true;
                 //    break;
                 //}
-                if ((p->hasShownGeneral() || p->hasShownGeneral2()) && p->getRole() != "careerist")
+                //QVariant RoleConfirmedTag1 = room->getTag(p->objectName() + "_RoleConfirmed");
+                //bool roleConfirmed1 = RoleConfirmedTag.canConvert(QVariant::Bool) && RoleConfirmedTag.toBool();
+                if (p->hasShownOneGeneral() && p->getRole() != "careerist")
                     ++i;
             }
         }
@@ -2006,6 +2012,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
             role = "careerist";
 
         room->setPlayerProperty(this, "role", role);
+        room->setTag(this->objectName() + "_RoleConfirmed", true);
         //}
 
         /*if (isLord()) {
@@ -2041,6 +2048,103 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
     room->filterCards(this, getCards("hes"), true);
 }
 
+
+void ServerPlayer::hideGeneral(bool head_general)
+{
+    room->tryPause();
+
+    if (head_general) {
+        if (getGeneralName() == "anjiang") return;
+
+        setSkillsPreshowed("h", false);
+        // dirty hack for temporary convenience.
+        room->setPlayerProperty(this, "flags", "hiding");
+        notifyPreshow();
+        room->setPlayerProperty(this, "general_showed", false);
+        room->setPlayerProperty(this, "flags", "-hiding");
+
+        JsonArray arg;
+        arg << (int)S_GAME_EVENT_CHANGE_HERO;
+        arg << objectName();
+        arg << "anjiang";
+        arg << false;
+        arg << false;
+        room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
+        room->changePlayerGeneral(this, "anjiang");
+
+        disconnectSkillsFromOthers();
+
+        foreach(const Skill *skill, getVisibleSkillList()) {
+            if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && !hasShownSkill(skill) && getMark(skill->getLimitMark()) > 0) {
+                JsonArray arg;
+                arg << objectName();
+                arg << skill->getLimitMark();
+                arg << 0;
+                foreach(ServerPlayer *p, room->getOtherPlayers(this, true))
+                    room->doNotify(p, QSanProtocol::S_COMMAND_SET_MARK, arg);
+            }
+        }
+
+        //if (!hasShownGeneral2()) {
+        //    room->setPlayerProperty(this, "kingdom", "god");
+        //    room->setPlayerProperty(this, "role", HegemonyMode::GetMappedRole("god"));
+        //}
+    }
+    else {
+        if (getGeneral2Name() == "anjiang") return;
+
+        setSkillsPreshowed("d", false);
+        // dirty hack for temporary convenience
+        room->setPlayerProperty(this, "flags", "hiding");
+        notifyPreshow();
+        room->setPlayerProperty(this, "general2_showed", false);
+        room->setPlayerProperty(this, "flags", "-hiding");
+
+        JsonArray arg;
+        arg << (int)S_GAME_EVENT_CHANGE_HERO;
+        arg << objectName();
+        arg << "anjiang";
+        arg << true;
+        arg << false;
+        room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
+        room->changePlayerGeneral2(this, "anjiang");
+
+        disconnectSkillsFromOthers(false);
+
+        foreach(const Skill *skill, getVisibleSkillList()) {
+            if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && !hasShownSkill(skill) && getMark(skill->getLimitMark()) > 0) {
+                JsonArray arg;
+                arg << objectName();
+                arg << skill->getLimitMark();
+                arg << 0;
+                foreach(ServerPlayer *p, room->getOtherPlayers(this, true))
+                    room->doNotify(p, QSanProtocol::S_COMMAND_SET_MARK, arg);
+            }
+        }
+
+        //if (!hasShownGeneral1()) {
+        //    room->setPlayerProperty(this, "kingdom", "god");
+        //    room->setPlayerProperty(this, "role", HegemonyMode::GetMappedRole("god"));
+        //}
+    }
+
+    LogMessage log;
+    log.type = "#BasaraConceal";
+    log.from = this;
+    log.arg = getGeneralName();
+    log.arg2 = getGeneral2Name();
+    room->sendLog(log);
+
+    Q_ASSERT(room->getThread() != NULL);
+    QVariant _head = head_general;
+    room->getThread()->trigger(GeneralHidden, room, _head);
+
+    room->filterCards(this, getCards("he"), true);
+    setSkillsPreshowed(head_general ? "h" : "d");
+    notifyPreshow();
+}
+
+
 void ServerPlayer::sendSkillsToOthers(bool head_skill)
 {
     QStringList names = room->getTag(objectName()).toStringList();
@@ -2058,6 +2162,31 @@ void ServerPlayer::sendSkillsToOthers(bool head_skill)
             room->doNotify(p, QSanProtocol::S_COMMAND_LOG_EVENT, args);
     }
 }
+
+void ServerPlayer::disconnectSkillsFromOthers(bool head_skill /* = true */)
+{
+    foreach(const QString &skill, head_skill ? skills.keys() : skills2.keys()) {
+        //QVariant _skill = skill + ":" + (head_skill ? "head" : "deputy");
+        SkillAcquireDetachStruct s;
+        s.player = this;
+        s.skill = Sanguosha->getSkill(skill);
+        s.isAcquire = false;
+        QVariant data = QVariant::fromValue(s);
+        //for filter cards??
+        room->getThread()->trigger(EventLoseSkill, room,  data);
+
+        JsonArray args;
+        args << (int)QSanProtocol::S_GAME_EVENT_DETACH_SKILL;
+        args << objectName();
+        args << skill;
+        args << head_skill;
+
+        foreach(ServerPlayer *p, room->getOtherPlayers(this, true))
+            room->doNotify(p, QSanProtocol::S_COMMAND_LOG_EVENT, args);
+    }
+
+}
+
 
 int ServerPlayer::getPlayerNumWithSameKingdom(const QString &, const QString &_to_calculate) const
 {
