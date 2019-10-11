@@ -308,6 +308,8 @@ public:
     Player::Place getCardPlace(int card_id) const;
     ServerPlayer *getCardOwner(int card_id) const;
     void setCardMapping(int card_id, ServerPlayer *owner, Player::Place place);
+    QList<int> getCardIdsOnTable(const Card *) const;
+    QList<int> getCardIdsOnTable(const QList<int> &card_ids) const;
 
     void drawCards(ServerPlayer *player, int n, const QString &reason = QString());
     void drawCards(QList<ServerPlayer *> players, int n, const QString &reason = QString());

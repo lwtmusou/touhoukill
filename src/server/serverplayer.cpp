@@ -537,13 +537,13 @@ DummyCard *ServerPlayer::wholeHandCards() const
 bool ServerPlayer::hasNullification() const
 {
     foreach (const Card *card, handcards) {
-        if (card->objectName() == "nullification")
+        if (card->isKindOf("Nullification"))
             return true;
     }
 
     if (hasTreasure("wooden_ox")) {
         foreach (int id, getPile("wooden_ox")) {
-            if (Sanguosha->getCard(id)->objectName() == "nullification")
+            if (Sanguosha->getCard(id)->isKindOf("Nullification"))
                 return true;
         }
     }

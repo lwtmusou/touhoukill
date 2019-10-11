@@ -412,6 +412,9 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         CardUseStruct use = data.value<CardUseStruct>();
         room->clearCardFlag(use.card);
 
+        if (use.card->isNDTrick())
+            room->removeTag(use.card->toString() + "HegNullificationTargets");
+
         if (use.card->isKindOf("AOE") || use.card->isKindOf("GlobalEffect")) {
             foreach (ServerPlayer *p, room->getAlivePlayers())
                 room->doNotify(p, QSanProtocol::S_COMMAND_NULLIFICATION_ASKED, QVariant("."));

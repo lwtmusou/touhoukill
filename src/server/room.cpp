@@ -1154,6 +1154,24 @@ bool Room::isCanceled(const CardEffectStruct &effect)
 
     if (!effect.card->isCancelable(effect))
         return false;
+
+    //for HegNullification
+    QStringList targets = getTag(effect.card->toString() + "HegNullificationTargets").toStringList();
+    if (!targets.isEmpty()) {
+        if (targets.contains(effect.to->objectName())) {
+            LogMessage log;
+            log.type = "#HegNullificationEffect";
+            log.from = effect.from;
+            log.to << effect.to;
+            log.arg = effect.card->objectName();
+            sendLog(log);
+            return true;
+        }
+    }
+
+    setTag("HegNullificationValid", false);
+
+
     QVariant decisionData = QVariant::fromValue(effect.to);
     setTag("NullifyingTarget", decisionData);
     decisionData = QVariant::fromValue(effect.from);
@@ -1163,6 +1181,14 @@ bool Room::isCanceled(const CardEffectStruct &effect)
     setTag("NullifyingTimes", 0);
 
     bool result = askForNullification(effect.card, effect.from, effect.to, true);
+    if (getTag("HegNullificationValid").toBool() && effect.card->isNDTrick()) {
+        foreach(ServerPlayer *p, m_players) {
+            if (p->isAlive() && p->isFriendWith(effect.to))
+                targets << p->objectName();
+        }
+        setTag(effect.card->toString() + "HegNullificationTargets", targets);
+    }
+
     //deal xianshi
     foreach (ServerPlayer *p, getAlivePlayers()) {
         ServerPlayer *target = p->tag["xianshi_nullification_target"].value<ServerPlayer *>();
@@ -1227,7 +1253,7 @@ bool Room::isCanceled(const CardEffectStruct &effect)
             }
         }
     }
-
+    
     return result;
 }
 
@@ -1327,14 +1353,67 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
 
     doAnimate(S_ANIMATE_NULLIFICATION, repliedPlayer->objectName(), to->objectName());
     useCard(CardUseStruct(card, repliedPlayer, QList<ServerPlayer *>()));
+    //deal HegNullification
+    bool isHegNullification = false;
+    QString heg_nullification_selection;
+    
+    if (!repliedPlayer->hasFlag("nullifiationNul") && card->isKindOf("HegNullification") && !trick->isKindOf("Nullification") && trick->isNDTrick() && to->getRole() != "careerist" && to->hasShownOneGeneral()) {
 
-    LogMessage log;
-    log.type = "#NullificationDetails";
-    log.from = from;
-    log.to << to;
-    log.arg = trick_name;
-    sendLog(log);
+        QVariantList qtargets = tag["targets" + trick->toString()].toList();
+        QList<ServerPlayer *> targets;
+        for (int i = 0; i < qtargets.size(); i++) {
+            QVariant n = qtargets.at(i);
+            targets.append(n.value<ServerPlayer *>());
+        }
+        QList<ServerPlayer *> targets_copy = targets;
+        targets.removeOne(to);
+        foreach(ServerPlayer *p, targets_copy) {
+            if (targets_copy.indexOf(p) < targets_copy.indexOf(to))
+                targets.removeOne(p);
+        }
+        if (!targets.isEmpty()) {
+            foreach(ServerPlayer *p, targets) {
+                if (p->getRole() != "careerist" && p->hasShownOneGeneral() && p->getRole() == to->getRole()) {
+                    isHegNullification = true;
+                    break;
+                }
+            }
+        }
+        if (isHegNullification) {
+            QString log = trick->getFullName(true);
+            heg_nullification_selection = askForChoice(repliedPlayer, "heg_nullification%log:" + log, "single%to:" + to->objectName() +
+                "+all%to:" + to->objectName() + "%log:" + Sanguosha->translate(to->getRole()), data);
+        }
+        if (heg_nullification_selection.contains("all"))
+            heg_nullification_selection = "all";
+        else
+            heg_nullification_selection = "single";
+    }
+
+    if (!isHegNullification) {
+        LogMessage log;
+        log.type = "#NullificationDetails";
+        log.from = from;
+        log.to << to;
+        log.arg = trick_name;
+        sendLog(log);
+    }
+    else {
+        LogMessage log;
+        log.type = "#HegNullificationDetails";
+        log.from = from;
+        log.to << to;
+        log.arg = trick_name;
+        sendLog(log);
+        LogMessage log2;
+        log2.type = "#HegNullificationSelection";
+        log2.from = repliedPlayer;
+        log2.arg = "hegnul_" + heg_nullification_selection;
+        sendLog(log2);
+    }
+    setTag("NullificatonType", isHegNullification);
     thread->delay(500);
+
     //though weiya cancel the effect,but choicemade should be triggerable
     ChoiceMadeStruct s;
     s.player = repliedPlayer;
@@ -1388,6 +1467,13 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
         if (!isLastTarget && askForSkillInvoke(repliedPlayer, "Pagoda", data))
             trick->setFlags("PagodaNullifiation");
     }
+
+    removeTag("NullificatonType");
+
+    if (isHegNullification && heg_nullification_selection == "all" && result) {
+        setTag("HegNullificationValid", true);
+    }
+
     return result;
 }
 
@@ -5928,6 +6014,33 @@ Player::Place Room::getCardPlace(int card_id) const
         return Player::PlaceUnknown;
     return place_map.value(card_id);
 }
+
+
+QList<int> Room::getCardIdsOnTable(const Card *virtual_card) const
+{
+    if (virtual_card == NULL)
+        return QList<int>();
+    if (!virtual_card->isVirtualCard()) {
+        QList<int> ids;
+        ids << virtual_card->getEffectiveId();
+        return getCardIdsOnTable(ids);
+    }
+    else {
+        return getCardIdsOnTable(virtual_card->getSubcards());
+    }
+    return QList<int>();
+}
+
+QList<int> Room::getCardIdsOnTable(const QList<int> &card_ids) const
+{
+    QList<int> r;
+    foreach(int id, card_ids) {
+        if (getCardPlace(id) == Player::PlaceTable)
+            r << id;
+    }
+    return r;
+}
+
 
 ServerPlayer *Room::getLord(const QString &, bool) const
 {
