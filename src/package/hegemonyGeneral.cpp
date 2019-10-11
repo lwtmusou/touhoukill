@@ -28,7 +28,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player != NULL && player->getPhase() == Player::Start && !player->hasShownGeneral())
+        if (player != NULL && player->getPhase() == Player::Start && !player->hasShownGeneral() && player->disableShow(true).isEmpty())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         return QList<SkillInvokeDetail>();
     }
@@ -53,12 +53,181 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
-        if (ServerInfo.Enable2ndGeneral && player != NULL && player->getPhase() == Player::Start && !player->hasShownGeneral2())
+        if (ServerInfo.Enable2ndGeneral && player != NULL && player->getPhase() == Player::Start && !player->hasShownGeneral2() && player->disableShow(false).isEmpty())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         return QList<SkillInvokeDetail>();
     }
 };
 
+class GameRule_AskForArraySummon : public TriggerSkill
+{
+public:
+    GameRule_AskForArraySummon() : TriggerSkill("GameRule_AskForArraySummon")
+    {
+        events << EventPhaseStart;
+        global = true;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        invoke->invoker->gainMark("@nima");
+        foreach(const Skill *skill, invoke->invoker->getVisibleSkillList()) {
+            if (!skill->inherits("BattleArraySkill")) continue;
+            const BattleArraySkill *baskill = qobject_cast<const BattleArraySkill *>(skill);
+            if (!invoke->invoker->askForSkillInvoke(objectName())) return false;
+            invoke->invoker->gainMark("@dandan_" + skill->objectName());
+            invoke->invoker->showGeneral(invoke->invoker->inHeadSkills(skill->objectName()));
+            baskill->summonFriends(invoke->invoker);
+            break;
+        }
+        return false;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent event, const Room *room, const QVariant &data) const
+    {
+        ServerPlayer *player = data.value<ServerPlayer *>();
+        if (player == NULL || player->getPhase() != Player::Start || room->getAlivePlayers().length() < 4)
+            return QList<SkillInvokeDetail>();
+
+        foreach(const Skill *skill, player->getVisibleSkillList()) {
+            if (!skill->inherits("BattleArraySkill")) continue;
+            if (qobject_cast<const BattleArraySkill *>(skill)->getViewAsSkill()->isEnabledAtPlay(player)) {
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+            }
+                
+            
+        }
+        return QList<SkillInvokeDetail>();
+    }
+};
+
+
+NiaoxiangSummon::NiaoxiangSummon()
+    : ArraySummonCard("niaoxiang")
+{
+}
+
+class Niaoxiang : public BattleArraySkill
+{
+public:
+    Niaoxiang() : BattleArraySkill("niaoxiang", "Siege")
+    {
+        events << TargetSpecified;
+        //array_type = "Seige";
+    }
+
+    virtual bool canPreshow() const
+    {
+        return false;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent event, const Room *room, const QVariant &data) const
+    {
+
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card == NULL || !use.card->isKindOf("Slash"))
+            return QList<SkillInvokeDetail>();
+
+        QList<ServerPlayer *> skill_owners = room->findPlayersBySkillName(objectName());
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *skill_owner, skill_owners) {
+            if ( skill_owner->hasShownSkill(this)) {//!BattleArraySkill::triggerable(event, room, data).isEmpty() &&
+                QList<ServerPlayer *> targets;
+                foreach(ServerPlayer *to, use.to) {
+                    if (use.from->inSiegeRelation(skill_owner, to))
+                        targets << to;  //->objectName();
+                }
+
+                if (!targets.isEmpty())
+                    d << SkillInvokeDetail(this, skill_owner, use.from, targets, true);
+                //skill_list.insert(skill_owner, QStringList(objectName() + "->" + targets.join("+")));
+            }
+        }
+        return d;
+    }
+
+    //virtual bool cost(TriggerEvent, Room *room, ServerPlayer *skill_target, QVariant &, ServerPlayer *ask_who) const  
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        if (invoke->owner != NULL && invoke->owner->hasShownSkill(this)) {
+            foreach (ServerPlayer *skill_target, invoke->targets)
+                room->doBattleArrayAnimate(invoke->owner, skill_target);
+            //room->broadcastSkillInvoke(objectName(), invoke->owner);
+            return true;
+        }
+        return false;
+    }
+
+    //virtual bool effect(TriggerEvent, Room *room, ServerPlayer *skill_target, QVariant &data, ServerPlayer *ask_who) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        //room->sendCompulsoryTriggerLog(ask_who, objectName(), true);
+        //CardUseStruct use = data.value<CardUseStruct>();
+        foreach(ServerPlayer *skill_target, invoke->targets)
+            room->loseHp(skill_target);
+        /*
+        int x = use.to.indexOf(skill_target);
+        QVariantList jink_list = use.from->tag["Jink_" + use.card->toString()].toList();
+        if (jink_list.at(x).toInt() == 1)
+            jink_list[x] = 2;
+        use.from->tag["Jink_" + use.card->toString()] = jink_list;
+        */
+        return false;
+    }
+};
+
+
+
+TuizhiHegemonyCard::TuizhiHegemonyCard()
+{
+    m_skillName = "tuizhi_hegemony";
+}
+
+bool TuizhiHegemonyCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    return targets.isEmpty();
+    //return to_select->hasShownOneGeneral() && targets.isEmpty();
+}
+
+void TuizhiHegemonyCard::onEffect(const CardEffectStruct &effect) const
+{
+    Room *room = effect.to->getRoom();
+    ServerPlayer *target = effect.to;
+    QStringList select;
+    //if (target->hasShownGeneral())
+        select << "head";
+    //if (target->getGeneral2() && target->hasShownGeneral2())
+        select << "deputy";
+    if (select.isEmpty())
+        return;
+
+    QString choice = room->askForChoice(target, objectName(), select.join("+"));
+    bool ishead = (choice == "head");
+    //target->hideGeneral(ishead); //(ishead, true);
+
+    QString flag = (choice == "head") ? "h" : "d";
+    room->setPlayerDisableShow(target, flag, "huoshui");
+}
+
+
+class TuizhiHegemony : public ZeroCardViewAsSkill
+{
+public:
+    TuizhiHegemony()
+        : ZeroCardViewAsSkill("tuizhi_hegemony")
+    {
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return true;//!player->hasUsed("BanyueHegemonyCard");
+    }
+
+    virtual const Card *viewAs() const
+    {
+        return new TuizhiHegemonyCard;
+    }
+};
 
 
 
@@ -1186,8 +1355,9 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
 
     General *reimu_hegemony = new General(this, "reimu_hegemony", "zhu", 4);
-    reimu_hegemony->addSkill("qixiang");
-    reimu_hegemony->addSkill("fengmo");
+    reimu_hegemony->addSkill(new TuizhiHegemony);
+    //reimu_hegemony->addSkill("qixiang");
+    //reimu_hegemony->addSkill("fengmo");
     reimu_hegemony->addCompanion("marisa_hegemony");
     reimu_hegemony->addCompanion("yukari_hegemony");
     reimu_hegemony->addCompanion("aya_hegemony");
@@ -1368,6 +1538,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     General *kanako_hegemony = new General(this, "kanako_hegemony", "qun", 4);
     kanako_hegemony->addSkill("shende");
     kanako_hegemony->addSkill(new QiankunHegemony("kanako"));
+    kanako_hegemony->addSkill(new Niaoxiang);
     kanako_hegemony->addCompanion("suwako_hegemony");
     kanako_hegemony->addCompanion("sanae_hegemony");
 
@@ -1509,6 +1680,10 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     daiyousei_hegemony->addSkill(new JuxianHegemony);
     daiyousei_hegemony->addSkill(new BanyueHegemony);
 
+
+    addMetaObject<TuizhiHegemonyCard>();
+    addMetaObject<NiaoxiangSummon>();
+
     addMetaObject<QingtingHegemonyCard>();
 
     addMetaObject<XingyunHegemonyCard>();
@@ -1518,7 +1693,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     addMetaObject<BanyueHegemonyCard>();
 
-    skills <<  new GameRule_AskForGeneralShowHead << new GameRule_AskForGeneralShowDeputy;
+    skills <<  new GameRule_AskForGeneralShowHead << new GameRule_AskForGeneralShowDeputy << new GameRule_AskForArraySummon;
 }
 
 ADD_PACKAGE(HegemonyGeneral)

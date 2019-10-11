@@ -6,6 +6,15 @@
 #include "package.h"
 
 
+class NiaoxiangSummon : public ArraySummonCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE NiaoxiangSummon();
+};
+
+
 class QiankunHegemony : public MaxCardsSkill
 {
 public:
@@ -58,6 +67,17 @@ public:
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
+class TuizhiHegemonyCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE TuizhiHegemonyCard();
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 
