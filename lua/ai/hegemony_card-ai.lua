@@ -317,4 +317,9 @@ sgs.ai_skill_invoke.DoubleSwordHegemony = function(self, data)
 	return FirstShowRewarded
 end
 
+sgs.ai_skill_choice.DoubleSwordHegemony = function(self, choices, data)
+	local choice_table = choices:split("+")
+	return choice_table[math.random(1, #choice_table)]
+end
+
 sgs.weapon_range.DoubleSwordHegemony = 2
