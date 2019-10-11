@@ -172,6 +172,9 @@ public:
         QRect m_screenNameAreaDouble;
         QSanShadowTextFont m_screenNameFont;
 
+        QRect leftDisableShowLockArea;
+        QRect rightDisableShowLockArea;
+
         // progress bar and other controls
         bool m_isProgressBarHorizontal;
         AnchoredRect m_progressBarArea;
@@ -414,6 +417,7 @@ public:
     static const char *S_SKIN_KEY_DEPUTY_ICON;
     static const char *S_SKIN_KEY_ROLE_SHOWN;
     static const char *S_SKIN_KEY_HIDDEN_MARK;
+    static const char *S_SKIN_KEY_DISABLE_SHOW_LOCK;
 
     // Animations
     static const char *S_SKIN_KEY_ANIMATIONS;

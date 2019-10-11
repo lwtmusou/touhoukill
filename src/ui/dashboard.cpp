@@ -57,6 +57,10 @@ Dashboard::Dashboard(QGraphicsItem *widget) //QGraphicsPixmapItem *widget
     _m_width = G_DASHBOARD_LAYOUT.m_leftWidth + G_DASHBOARD_LAYOUT.m_rightWidth + 20;
     if (ServerInfo.Enable2ndGeneral)
         _m_width = G_DASHBOARD_LAYOUT.m_leftWidth + G_DASHBOARD_LAYOUT.m_rightWidthDouble + 20;
+
+    leftDisableShowLock = NULL;
+    rightDisableShowLock = NULL;
+
     _createLeft();
     _createMiddle();
     _createRight();

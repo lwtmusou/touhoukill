@@ -2337,6 +2337,31 @@ void Room::clearPlayerCardLimitation(ServerPlayer *player, bool single_turn)
     doBroadcastNotify(S_COMMAND_CARD_LIMITATION, arg);
 }
 
+void Room::setPlayerDisableShow(ServerPlayer *player, const QString &flags, const QString &reason)
+{
+    player->setDisableShow(flags, reason);
+
+    JsonArray arg;
+    arg << player->objectName();
+    arg << true;
+    arg << flags;
+    arg << reason;
+    doBroadcastNotify(S_COMMAND_DISABLE_SHOW, arg);
+}
+
+void Room::removePlayerDisableShow(ServerPlayer *player, const QString &reason)
+{
+    player->removeDisableShow(reason);
+
+    JsonArray arg;
+    arg << player->objectName();
+    arg << false;
+    arg << QVariant();
+    arg << reason;
+    doBroadcastNotify(S_COMMAND_DISABLE_SHOW, arg);
+}
+
+
 void Room::setCardFlag(const Card *card, const QString &flag, ServerPlayer *who)
 {
     if (flag.isEmpty())

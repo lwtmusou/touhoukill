@@ -247,6 +247,8 @@ protected:
     QGraphicsPixmapItem *_m_phaseIcon;
     QGraphicsPixmapItem *_m_extraSkillBg;
     QGraphicsPixmapItem *_m_extraSkillText;
+    QGraphicsPixmapItem *leftDisableShowLock;
+    QGraphicsPixmapItem *rightDisableShowLock;
     QGraphicsTextItem *_m_markItem;
     QGraphicsPixmapItem *_m_selectedFrame;
     QMap<QString, QGraphicsProxyWidget *> _m_privatePiles;

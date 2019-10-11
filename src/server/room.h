@@ -93,6 +93,8 @@ public:
     void setPlayerCardLimitation(ServerPlayer *player, const QString &limit_list, const QString &pattern, const QString &reason, bool single_turn);
     void removePlayerCardLimitation(ServerPlayer *player, const QString &limit_list, const QString &pattern, const QString &reason, bool clearReason = false);
     void clearPlayerCardLimitation(ServerPlayer *player, bool single_turn);
+    void setPlayerDisableShow(ServerPlayer *player, const QString &flags, const QString &reason);
+    void removePlayerDisableShow(ServerPlayer *player, const QString &reason);
     void setCardFlag(const Card *card, const QString &flag, ServerPlayer *who = NULL);
     void setCardFlag(int card_id, const QString &flag, ServerPlayer *who = NULL);
     void clearCardFlag(const Card *card, ServerPlayer *who = NULL);

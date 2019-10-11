@@ -74,11 +74,13 @@ const char *QSanRoomSkin::S_SKIN_KEY_PROGRESS_BAR_IMAGE = "progressBar";
 const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_IMAGE = "generalCircleImage-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_MASK = "generalCircleMask-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK = "hiddenMark";
+const char *QSanRoomSkin::S_SKIN_KEY_DISABLE_SHOW_LOCK = "%1DisableShowLock";
 
 const char *QSanRoomSkin::S_HERO_SKIN_KEY_GENERAL_ICON = "heroSkinContainerGeneralIcon-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_HEAD_ICON = "headIcon";
 const char *QSanRoomSkin::S_SKIN_KEY_DEPUTY_ICON = "deputyIcon";
 const char *QSanRoomSkin::S_SKIN_KEY_ROLE_SHOWN = "roleShownIcon";
+
 
 // Animations
 const char *QSanRoomSkin::S_SKIN_KEY_ANIMATIONS = "preloads";
@@ -968,6 +970,9 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
         tryParse(playerConfig["hiddenMarkRegion"], layout->m_hiddenMarkRegion1);
         tryParse(playerConfig["hiddenMarkRegion2"], layout->m_hiddenMarkRegion2);
         tryParse(playerConfig["hiddenMarkRegion3"], layout->m_hiddenMarkRegion3);
+
+        tryParse(playerConfig["leftDisableShowLockArea"], layout->leftDisableShowLockArea);
+        tryParse(playerConfig["rightDisableShowLockArea"], layout->rightDisableShowLockArea);
     }
 
     config = layoutConfig[S_SKIN_KEY_PHOTO].value<JsonObject>();

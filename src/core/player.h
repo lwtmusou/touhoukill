@@ -219,6 +219,12 @@ public:
     bool hasLordSkill(const QString &skill_name, bool include_lose = false) const;
     bool hasLordSkill(const Skill *skill, bool include_lose = false) const;
 
+
+    void setDisableShow(const QString &flags, const QString &reason);
+    void removeDisableShow(const QString &reason);
+    QStringList disableShow(bool head) const;
+    bool canShowGeneral(const QString &flags = QString()) const;
+
     void setSkillInvalidity(const Skill *skill, bool invalidity);
     void setSkillInvalidity(const QString &skill_name, bool invalidity);
 
@@ -410,6 +416,7 @@ private:
 
     //QMap<Card::HandlingMethod, QStringList> card_limitation;
     QMap<Card::HandlingMethod, QMap<QString, QStringList> > card_limitation; //method, reason , pattern
+    QStringList disable_show;
 
 signals:
     void general_changed();
@@ -427,6 +434,7 @@ signals:
 
     void head_state_changed();
     void deputy_state_changed(); //hegemony
+    void disable_show_changed();
 };
 
 #endif

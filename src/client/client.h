@@ -125,6 +125,7 @@ public:
     void skillInvoked(const QVariant &invoke_str);
     void animate(const QVariant &animate_str);
     void cardLimitation(const QVariant &limit);
+    void disableShow(const QVariant &args);
     void setNullification(const QVariant &str);
     void enableSurrender(const QVariant &enabled);
     void exchangeKnownCards(const QVariant &players);

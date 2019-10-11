@@ -574,6 +574,8 @@ void PlayerCardContainer::refresh()
         _m_actionIcon->setVisible(false);
         _m_saveMeIcon->setVisible(false);
         _m_roleShownIcon->setVisible(false);
+        leftDisableShowLock->setVisible(false);
+        rightDisableShowLock->setVisible(false);
     } else if (m_player) {
         if (_m_faceTurnedIcon)
             _m_faceTurnedIcon->setVisible(!m_player->faceUp());
@@ -585,6 +587,10 @@ void PlayerCardContainer::refresh()
             _m_actionIcon->setVisible(m_player->hasFlag("actioned"));
         if (_m_deathIcon && !(ServerInfo.GameMode == "04_1v3" && m_player->getGeneralName() != "yuyuko_1v32"))
             _m_deathIcon->setVisible(m_player->isDead());
+        if (leftDisableShowLock)
+            leftDisableShowLock->setVisible(!m_player->hasShownGeneral() && !m_player->disableShow(true).isEmpty());
+        if (rightDisableShowLock)
+            rightDisableShowLock->setVisible(m_player->getGeneral2() && !m_player->hasShownGeneral2() && !m_player->disableShow(false).isEmpty());
     }
     updateHandcardNum();
     _adjustComponentZValues();
@@ -665,6 +671,12 @@ void PlayerCardContainer::repaintAll()
     _m_sub_hpBox->update();
     //}
 
+    QPixmap lock = _getPixmap(QSanRoomSkin::S_SKIN_KEY_DISABLE_SHOW_LOCK);
+    _paintPixmap(leftDisableShowLock, _m_layout->leftDisableShowLockArea,
+        lock, _getAvatarParent());
+    _paintPixmap(rightDisableShowLock, _m_layout->rightDisableShowLockArea,
+        lock, _getAvatarParent());
+
     _adjustComponentZValues();
     _initializeRemovedEffect();
     refresh();
@@ -699,6 +711,7 @@ void PlayerCardContainer::setPlayer(ClientPlayer *player)
             connect(player, &ClientPlayer::role_changed, _m_roleComboBox, &RoleComboBox::fix);
         connect(player, &ClientPlayer::hp_changed, this, &PlayerCardContainer::updateHp);
         connect(player, &ClientPlayer::removedChanged, this, &PlayerCardContainer::onRemovedChanged);
+        connect(player, &ClientPlayer::disable_show_changed, this, &PlayerCardContainer::refresh);
 
         QTextDocument *textDoc = m_player->getMarkDoc();
         Q_ASSERT(_m_markItem);
@@ -998,6 +1011,7 @@ PlayerCardContainer::PlayerCardContainer()
     pileArea->setAttribute(Qt::WA_TranslucentBackground);
     pileArea->resize(1, 1);
     _m_privatePileArea->setWidget(pileArea);
+    leftDisableShowLock = rightDisableShowLock = NULL;
 
     for (int i = 0; i < 5; i++) {
         _m_equipCards[i] = NULL;
@@ -1105,6 +1119,8 @@ void PlayerCardContainer::_adjustComponentZValues(bool killed)
     _layUnder(_m_kingdomColorMaskIcon);
     _layUnder(_m_dashboardKingdomColorMaskIcon);
     _layUnder(_m_dashboardSecondaryKingdomColorMaskIcon);
+    _layUnder(leftDisableShowLock);
+    _layUnder(rightDisableShowLock);
     _layUnder(_m_chainIcon);
 
     _layUnder(_m_screenNameItem);

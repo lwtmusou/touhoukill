@@ -688,8 +688,8 @@ bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden
                 return hasSkill(main_skill);
         }*/
 
-        //if (!include_lose && !hasEquipSkill(skill_name) && !getAcquiredSkills().contains(skill_name) && ownSkill(skill_name) && !canShowGeneral(inHeadSkills(skill_name) ? "h" : "d"))
-        //    return false;
+        if (!include_lose && !hasEquipSkill(skill_name) && !getAcquiredSkills().contains(skill_name) && ownSkill(skill_name) && !canShowGeneral(inHeadSkills(skill_name) ? "h" : "d"))
+            return false;
         if (!include_lose && !hasEquipSkill(skill_name) && skill->getFrequency() != Skill::Eternal) {
             if (isSkillInvalid(skill_name))
                 return false;
@@ -2159,4 +2159,66 @@ bool Player::inDeputySkills(const QString &skill_name) const
     return skills2.contains(skill_name) || acquired_skills2.contains(skill_name);
 }
 
+void Player::setDisableShow(const QString &flags, const QString &reason)
+{
+    if (flags.contains('h')) {
+        if (disableShow(true).contains(reason))
+            return;
+    }
+    if (flags.contains('d')) {
+        if (disableShow(false).contains(reason))
+            return;
+    }
 
+    QString dis_str = flags + ',' + reason;
+    disable_show << dis_str;
+    emit disable_show_changed();
+}
+
+void Player::removeDisableShow(const QString &reason)
+{
+    QStringList remove_list;
+    foreach(const QString &dis_str, disable_show) {
+        QString dis_reason = dis_str.split(',').at(1);
+        if (dis_reason == reason)
+            remove_list << dis_str;
+    }
+
+    if (remove_list.isEmpty()) return;
+
+    foreach(const QString &to_remove, remove_list)
+        disable_show.removeOne(to_remove);
+
+    emit disable_show_changed();
+}
+
+QStringList Player::disableShow(bool head) const
+{
+    QChar head_flag = 'h';
+    if (!head)
+        head_flag = 'd';
+
+    QStringList r;
+    foreach(const QString &dis_str, disable_show) {
+        QStringList dis_list = dis_str.split(',');
+        if (dis_list.at(0).contains(head_flag))
+            r << dis_list.at(1);
+    }
+
+    return r;
+}
+
+bool Player::canShowGeneral(const QString &flags) const
+{
+    bool head = true, deputy = true;
+    foreach(const QString &dis_str, disable_show) {
+        QStringList dis_list = dis_str.split(',');
+        if (dis_list.at(0).contains("h")) head = false;
+        if (dis_list.at(0).contains("d")) deputy = false;
+    }
+    if (flags.isEmpty()) return head || deputy || hasShownOneGeneral();
+    if (flags == "h") return head || hasShownGeneral();
+    if (flags == "d") return deputy || hasShownGeneral2();
+    if (flags == "hd") return (deputy || hasShownGeneral2()) && (head || hasShownGeneral());
+    return false;
+}

@@ -1385,6 +1385,24 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         room->doNotify(player, S_COMMAND_SET_HIDDEN_GENERAL, arg);
     }
 
+
+    foreach(QString reason, disableShow(true)) {                   //for disableshow
+        JsonArray arg;
+        arg << objectName();
+        arg << true;
+        arg << "h";
+        arg << reason;
+        room->doNotify(player, S_COMMAND_DISABLE_SHOW, arg);
+    }
+    foreach(QString reason, disableShow(false)) {
+        JsonArray arg;
+        arg << objectName();
+        arg << true;
+        arg << "d";
+        arg << reason;
+        room->doNotify(player, S_COMMAND_DISABLE_SHOW, arg);
+    }
+
     foreach (QString flag, flags)
         room->notifyProperty(player, this, "flags", flag);
 

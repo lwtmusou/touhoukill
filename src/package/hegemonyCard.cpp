@@ -233,8 +233,10 @@ bool BefriendAttacking::targetFilter(const QList<const Player *> &targets, const
 
 void BefriendAttacking::onEffect(const CardEffectStruct &effect) const
 {
-    effect.to->drawCards(1);
-    effect.from->drawCards(3);
+    if (effect.to->isAlive())
+        effect.to->drawCards(1);
+    if (effect.from->isAlive())
+        effect.from->drawCards(3);
 }
 
 bool BefriendAttacking::isAvailable(const Player *player) const

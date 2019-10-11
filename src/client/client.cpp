@@ -69,6 +69,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_ANIMATE] = &Client::animate;
     m_callbacks[S_COMMAND_FIXED_DISTANCE] = &Client::setFixedDistance;
     m_callbacks[S_COMMAND_CARD_LIMITATION] = &Client::cardLimitation;
+    m_callbacks[S_COMMAND_DISABLE_SHOW] = &Client::disableShow;
     m_callbacks[S_COMMAND_NULLIFICATION_ASKED] = &Client::setNullification;
     m_callbacks[S_COMMAND_ENABLE_SURRENDER] = &Client::enableSurrender;
     m_callbacks[S_COMMAND_EXCHANGE_KNOWN_CARDS] = &Client::exchangeKnownCards;
@@ -892,6 +893,25 @@ void Client::cardLimitation(const QVariant &limit)
         else
             player->removeCardLimitation(limit_list, pattern, reason, clearReason);
     }
+}
+
+
+void Client::disableShow(const QVariant &arg)
+{
+    JsonArray args = arg.value<JsonArray>();
+    if (args.size() != 4) return;
+
+    ClientPlayer *p = getPlayer(args[0].toString());
+    if (p == NULL) return;
+
+    bool set = args[1].toBool();
+    QString reason = args[3].toString();
+    if (set) {
+        QString flags = args[2].toString();
+        p->setDisableShow(flags, reason);
+    }
+    else
+        p->removeDisableShow(reason);
 }
 
 void Client::setNullification(const QVariant &str)
