@@ -59,6 +59,7 @@ config = {
 		"StandardExCard",
 		"TestCard",
 		"Maneuvering",
+		"HegemonyCard",
 
 		--武将包
 		"Protagonist",

@@ -317,7 +317,7 @@ QStringList Engine::getBanPackages() const
             QStringList ban;
             QList<const Package *> packs = getPackages();
             QStringList needPacks;
-            needPacks << "hegemonyGeneral" << "standard_cards" << "standard_ex_cards" << "test_card" << "maneuvering";
+            needPacks << "hegemonyGeneral"  << "hegemony_card";//<< "standard_cards" << "standard_ex_cards" << "test_card" << "maneuvering"
             foreach(const Package *pa, packs) {
                 if (!needPacks.contains(pa->objectName()))
                     ban << pa->objectName();
@@ -328,6 +328,8 @@ QStringList Engine::getBanPackages() const
             QStringList ban = ban_package.toList();
             if (!ban.contains("hegemonyGeneral"))
                 ban << "hegemonyGeneral";
+            if (!ban.contains("hegemony_card"))
+                ban << "hegemony_card";
             return ban;
         }
     }
@@ -668,7 +670,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const
 
 QString Engine::getVersionNumber() const
 {
-    return "20190830";
+    return "20191011";
 }
 
 QString Engine::getVersion() const
@@ -678,7 +680,7 @@ QString Engine::getVersion() const
 
 QString Engine::getVersionName() const
 {
-    return "V0.9.3";
+    return "V0.9.4";
 }
 
 #if QT_VERSION >= 0x050600
