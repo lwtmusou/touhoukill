@@ -3638,6 +3638,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 		end
 	end
 	for _, card in ipairs(cards) do
+		if not card:isKindOf("TrickCard") then continue end
 		for _, enemy in ipairs(new_enemies) do
 			if card:isKindOf("Snatch") and self:hasTrickEffective(card, enemy, self.player) and self.player:distanceTo(enemy) == 1 and not enemy:isNude() then
 				snatch = card:getEffectiveId()

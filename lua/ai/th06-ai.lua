@@ -781,7 +781,7 @@ sgs.ai_skill_use_func.BanyueHegemonyCard = function(card, use, self)
 	self:sort(self.friends, "handcard")
 	local to1, to2
 	for _, p in ipairs(self.friends) do
-		if p:objectName() == self.player:objectName() or to1:hasShownOneGeneral() then
+		if p:objectName() == self.player:objectName() or p:hasShownOneGeneral() then
 			to1 = p
 			break
 		end
@@ -798,7 +798,6 @@ sgs.ai_skill_use_func.BanyueHegemonyCard = function(card, use, self)
 	end
 	
 	if to1 and to2 then
-		self.player:gainMark("@xyxy")
 		use.card = card
 		if use.to then
 			use.to:append(to1)

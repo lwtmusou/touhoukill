@@ -837,7 +837,7 @@ public:
     void record(TriggerEvent, Room *room, QVariant &data) const
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player->hasSkill("fengsu") && player->hasShownSkill("fengsu"))
+        if (player && player->hasSkill("fengsu") && player->hasShownSkill("fengsu"))
             room->notifySkillInvoked(player, "fengsu");
     }
 };
@@ -923,7 +923,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.to->hasSkill(this) && damage.damage > damage.to->getHandcardNum())
+        if (damage.to && damage.to->hasSkill(this) && damage.damage > damage.to->getHandcardNum())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
         return QList<SkillInvokeDetail>();
     }

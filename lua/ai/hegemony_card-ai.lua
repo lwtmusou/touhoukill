@@ -323,3 +323,4 @@ sgs.ai_skill_choice.DoubleSwordHegemony = function(self, choices, data)
 end
 
 sgs.weapon_range.DoubleSwordHegemony = 2
+sgs.weapon_range.SixSwords = 2

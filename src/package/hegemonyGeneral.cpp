@@ -247,7 +247,7 @@ public:
     {
         if (triggerEvent == DamageDone) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.from && damage.card->isKindOf("Slash"))
+            if (damage.from && damage.card && damage.card->isKindOf("Slash"))
                 room->setCardFlag(damage.card, "lizhiDamage");
         }
 
@@ -1538,7 +1538,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     General *kanako_hegemony = new General(this, "kanako_hegemony", "qun", 4);
     kanako_hegemony->addSkill("shende");
     kanako_hegemony->addSkill(new QiankunHegemony("kanako"));
-    kanako_hegemony->addSkill(new Niaoxiang);
+    //kanako_hegemony->addSkill(new Niaoxiang);
     kanako_hegemony->addCompanion("suwako_hegemony");
     kanako_hegemony->addCompanion("sanae_hegemony");
 
