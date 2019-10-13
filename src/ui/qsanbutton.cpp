@@ -399,7 +399,7 @@ void QSanInvokeSkillButton::_repaint()
 
         if (i == S_STATE_CANPRESHOW) {
             QPixmap temp(_m_bgPixmap[i]);
-            temp.fill(Qt::yellow); //Qt::transparent
+            temp.fill(Qt::transparent); //
             QPainter painter(&temp);
             painter.setCompositionMode(QPainter::CompositionMode_Source);
             painter.drawPixmap(0, 0, _m_bgPixmap[i]);
@@ -454,13 +454,27 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
         }
     }
 
-    if (Self->isSkillInvalid(_m_skill->objectName())) {
+    if (Self->isSkillInvalid(_m_skill->objectName())) { //for SkillInvalid 
         painter->setRenderHints(QPainter::HighQualityAntialiasing);
         QPen pen(Qt::red);
         pen.setWidth(3);
         painter->setPen(pen);
         painter->drawLine(25, 6, _m_size.width() - 6, 20);
         painter->drawLine(25, 20, _m_size.width() - 6, 6);
+    }
+
+    if (getState() == S_STATE_CANPRESHOW) { //for  Hegemony mode S_STATE_CANPRESHOW
+        painter->setRenderHints(QPainter::HighQualityAntialiasing);
+        QPen pen(Qt::yellow);
+        pen.setWidth(3);
+        painter->setPen(pen);
+
+        
+        painter->drawLine(0, 2, 0, _m_size.height() -2);
+        painter->drawLine(_m_size.width() - 6, 6, _m_size.width() - 6, _m_size.height() - 2);
+        painter->drawLine(0, 2, _m_size.width() - 6, 2);
+        painter->drawLine(0, _m_size.height() - 2, _m_size.width() - 6, _m_size.height() - 2);
+
     }
 }
 
