@@ -492,7 +492,7 @@ public:
     ShezhengHegemony()
         : AttackRangeSkill("shezheng_hegemony")
     {
-        relate_to_place = "head";
+        relate_to_place = "deputy";
     }
 
     virtual int getExtra(const Player *player, bool) const
@@ -536,7 +536,7 @@ public:
         : TriggerSkill("chiling_hegemony")
     {
         events << CardsMoveOneTime;
-        relate_to_place = "deputy";
+        relate_to_place = "head";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
@@ -1403,9 +1403,9 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *miko_hegemony = new General(this, "miko_hegemony", "wu", 4);
     miko_hegemony->addSkill(new QingtingHegemony);
+    miko_hegemony->addSkill(new ChilingHegemony);
     miko_hegemony->addSkill(new ShezhengHegemony);
     miko_hegemony->addSkill(new ShezhengViewHas);
-    miko_hegemony->addSkill(new ChilingHegemony);
     miko_hegemony->addCompanion("futo_hegemony");
     miko_hegemony->addCompanion("toziko_hegemony");
     miko_hegemony->addCompanion("seiga_hegemony");
