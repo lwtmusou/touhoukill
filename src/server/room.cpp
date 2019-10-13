@@ -2757,7 +2757,8 @@ void Room::prepareForStart()
     } else if (mode == "06_3v3" || mode == "06_XMode" || mode == "02_1v1") {
         return;
     } else if (isHegemonyGameMode(mode)) {
-        assignRoles();
+        if (!ServerInfo.Enable2ndGeneral)
+            assignRoles();
         if (Config.RandomSeat)
             qShuffle(m_players);
     } else if (Config.EnableCheat && Config.value("FreeAssign", false).toBool()) {
