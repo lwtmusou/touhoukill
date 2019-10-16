@@ -277,7 +277,15 @@ function sgs.ai_cardsview_valuable.xihua(self, class_name, player)
 		["ChainJink"] = "chain_jink", ["LightJink"] = "light_jink",
 		["MagicAnaleptic"] = "magic_analeptic",["SuperPeach"] = "super_peach"
 	}
-
+	
+	if self.player:getRoom():getMode():find("hegemony") then
+		classname2objectname = {
+		["Slash"] = "slash", ["Jink"] = "jink",
+		["Peach"] = "peach", ["Analeptic"] = "analeptic",
+		["Nullification"] = "nullification",
+		["FireSlash"] = "fire_slash", ["ThunderSlash"] = "thunder_slash"
+		}
+	end
 	if classname2objectname[class_name] then
 		local viewcard = sgs.cloneCard(classname2objectname[class_name])
 		if self.player:isLocked(viewcard) then
@@ -287,6 +295,7 @@ function sgs.ai_cardsview_valuable.xihua(self, class_name, player)
 			return "@XihuaCard=.:".. classname2objectname[class_name]
 		end
 	end
+	
 end
 
 
