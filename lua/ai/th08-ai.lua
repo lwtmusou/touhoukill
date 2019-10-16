@@ -125,6 +125,12 @@ sgs.ai_skill_discard.miyao = function(self)
 	return to_discard
 end
 
+sgs.ai_skill_invoke.yaoshi_hegemony = function(self, data)
+	local to =data:toPlayer()
+	return self:isFriend(to)
+end
+
+
 sgs.ai_need_bear.bumie = function(self, card,from,tos)
 	from =from or self.player
 

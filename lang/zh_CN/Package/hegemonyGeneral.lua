@@ -79,8 +79,9 @@ return
 
 	["eirin_hegemony"] = "八意永琳",
 	["yaoshi_hegemony"] = "药矢",
-	[":yaoshi_hegemony"] = "当你使用【杀】对一名角色造成伤害时，你可防止此伤害，令其回复1点体力。",
-
+	[":yaoshi_hegemony"] = "当你使用牌对一名角色造成伤害时，你可防止此伤害，令其回复1点体力。",
+	["#yaoshi_log"] = "因“%arg”的效果，%from防止了%arg2点伤害.",
+	
 	["mokou_hegemony"] = "藤原妹红",
 	
 	["reisen_hegemony"]="铃仙",

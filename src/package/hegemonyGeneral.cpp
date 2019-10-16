@@ -600,7 +600,7 @@ public:
 
 //********  SUMMER   **********
 
-//leimi
+
 class SkltKexueHegemony : public TriggerSkill
 {
 public:
@@ -740,6 +740,38 @@ public:
         return false;
     }
 };*/
+
+
+
+class YaoshiHegemony : public TriggerSkill
+{
+public:
+    YaoshiHegemony()
+    : TriggerSkill("yaoshi_hegemony")
+    {
+    events << DamageInflicted;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.from && damage.card  &&  damage.from->isAlive() && damage.from->hasSkill(this)) //&& damage.card->isKindOf("Slash")
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        room->touhouLogmessage("#yaoshi_log", invoke->targets.first(), objectName(), QList<ServerPlayer *>(), QString::number(damage.damage));
+
+        RecoverStruct recover;
+        room->recover(invoke->targets.first(), recover);
+
+        return true;
+    }
+};
 
 
 
@@ -1413,35 +1445,6 @@ public:
     }
 };
 
-//yonglin
-/*
-class YaoshiHegemony : public TriggerSkill
-{
-public:
-	YaoshiHegemony()
-		: TriggerSkill("yaoshi_hegemony")
-	{
-		events << DamageInflicted;
-	}
-
-	QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
-	{
-		DamageStruct damage = data.value<DamageStruct>();
-		if (damage.from && damage.card && damage.card->isKindOf("Slash") &&  damage.from->isAlive() && damage.from->hasSkill(this))
-			return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
-
-		return QList<SkillInvokeDetail>();
-	}
-
-	bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-	{
-
-		RecoverStruct recover;
-		room->recover(invoke->targets.first(), recover);
-
-		return true;
-	}
-};*/
 
 //9
 /*
@@ -1827,7 +1830,8 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *eirin_hegemony = new General(this, "eirin_hegemony", "shu", 4);
     eirin_hegemony->addSkill("ruizhi");
-    eirin_hegemony->addSkill("miyao");
+    eirin_hegemony->addSkill(new YaoshiHegemony);
+    //eirin_hegemony->addSkill("miyao");
     eirin_hegemony->addCompanion("reisen_hegemony");
 
     General *mokou_hegemony = new General(this, "mokou_hegemony", "shu", 4);
