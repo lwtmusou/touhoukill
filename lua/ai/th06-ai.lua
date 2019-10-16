@@ -2,7 +2,7 @@
 function sgs.ai_cardsview_valuable.skltkexue_attach(self, class_name, player)
 	if class_name == "Peach" and player:getHp()> player:dyingThreshold() then
 		local dying = player:getRoom():getCurrentDyingPlayer()
-		if not dying or not dying:hasSkill("skltkexue")  or not dying:hasShownSkill("skltkexue") or self:isEnemy(dying, player) or dying:objectName() == player:objectName() then return nil end
+		if not dying or not dying:hasSkill("skltkexue")  or not dying:hasShownSkill("skltkexue_hegemony") or self:isEnemy(dying, player) or dying:objectName() == player:objectName() then return nil end
 
 		if self:isFriend(dying, player) then
 			if self.role == "renegade" then
@@ -23,7 +23,7 @@ end
 sgs.ai_card_intention.SkltKexueCard = sgs.ai_card_intention.Peach
 sgs.ai_use_priority.SkltKexueCard = sgs.ai_use_priority.Peach + 0.1
 function SmartAI:canKexue(player)
-	if not player:hasSkill("skltkexue") then
+	if not player:hasSkill("skltkexue") or not player:hasShownSkill("skltkexue_hegemony") then
 		return false
 	end
 	for _,p in sgs.qlist(self.room:getOtherPlayers(player)) do

@@ -56,21 +56,30 @@ return
 --夏（月）
 
 	["remilia_hegemony"] = "蕾米莉亚",
+	["skltkexue_hegemony"] = "渴血",
+	[":skltkexue_hegemony"] = "你进入濒死状态时，可以亮出此牌。当你向其他角色求【桃】时，若其体力值大于其体力下限，其可以失去1点体力，摸两张牌，然后令你回复1点体力。",
+	
 	["flandre_hegemony"] = "芙兰朵露",
 	["sakuya_hegemony"] = "十六夜咲夜",
 	["patchouli_hegemony"] = "帕秋莉",
 	["!patchouli_hegemony"] = "帕秋莉·诺蕾姬",
 	["meirin_hegemony"] = "红美铃",
+	["beishui_hegemony"] = "背水",
+	[":beishui_hegemony"] = "你可以将X张牌当任意基本牌使用（X为你的体力值和你所属阵营角色数中的较大值）。<font color=\"green\"><b>每阶段限一次。</b></font>",
 	
 	["koakuma_hegemony"] = "小恶魔",
 
 	--辉夜 国战削弱
 	["kaguya_hegemony"] = "蓬莱山辉夜",
-	["yongheng_hegemony"] = "永恒",
-	[":yongheng_hegemony"] = "<font color=\"blue\"><b>锁定技，</b></font>你跳过弃牌阶段并将手牌调整至x张；当你于回合外获得或失去手牌后，你将手牌调整至x张。（x为你的体力上限）",
+	["xuyu_hegemony"] = "须臾",
+	[":xuyu_hegemony"] = "<font color=\"purple\"><b>主将技，</b></font>锁定技，当你失去最后的手牌后，你移除副将，获得技能“永恒”。",
+	--["yongheng_hegemony"] = "永恒",
+	--[":yongheng_hegemony"] = "<font color=\"blue\"><b>锁定技，</b></font>你跳过弃牌阶段并将手牌调整至x张；当你于回合外获得或失去手牌后，你将手牌调整至x张。（x为你的体力上限）",
 	
 
 	["eirin_hegemony"] = "八意永琳",
+	["yaoshi_hegemony"] = "药矢",
+	[":yaoshi_hegemony"] = "当你使用【杀】对一名角色造成伤害时，你可防止此伤害，令其回复1点体力。",
 
 	["mokou_hegemony"] = "藤原妹红",
 	
@@ -165,6 +174,8 @@ return
 	["chen_hegemony"] = "橙",
 	["letty_hegemony"]="蕾蒂",
 	["cirno_hegemony"] = "琪露诺",--国战修改
+	["dongjie_hegemony"] = "冻结",
+	[":dongjie_hegemony"] = "当你对一名角色造成伤害时，你可令其选择： 弃置一张手牌； 或者摸一张牌，其翻面并防止此伤害。",
 	["bingpo_hegemony"]= "冰魄",
 	[":bingpo_hegemony"]= "<font color=\"blue\"><b>锁定技，</b></font>当你因火焰伤害外的原因而进入濒死状态时，你回复1点体力。",
 	["#bingpo_hegemony_log"] = "%from的“%arg”被触发, %from 回复了 %arg2点体力.",

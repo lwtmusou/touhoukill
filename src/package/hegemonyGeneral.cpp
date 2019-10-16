@@ -600,7 +600,76 @@ public:
 
 //********  SUMMER   **********
 
+//leimi
+class SkltKexueHegemony : public TriggerSkill
+{
+public:
+    SkltKexueHegemony()
+        : TriggerSkill("skltkexue_hegemony")
+    {
+        events  << EventAcquireSkill << EventLoseSkill << Death << Debut << Revive << GeneralShown << Dying; //<< GameStart
+    }
 
+    void record(TriggerEvent e, Room *room, QVariant &) const
+    {
+        if (e == Dying)
+            return;
+
+        static QString attachName = "skltkexue_attach"; // need rewrite vs skill
+        QList<ServerPlayer *> sklts;
+        foreach(ServerPlayer *p, room->getAllPlayers()) {
+            if (p->hasSkill(this, true) && p->hasShownSkill(this))
+                sklts << p;
+        }
+
+        if (sklts.length() > 1) {
+            foreach(ServerPlayer *p, room->getAllPlayers()) {
+                if (!p->hasSkill(attachName, true))
+                    room->attachSkillToPlayer(p, attachName);
+            }
+        }
+        else if (sklts.length() == 1) {
+            foreach(ServerPlayer *p, room->getAllPlayers()) {
+                if (p->hasSkill(this, true) && p->hasSkill(attachName, true))
+                    room->detachSkillFromPlayer(p, attachName, true);
+                else if (!p->hasSkill(this, true) && !p->hasSkill(attachName, true))
+                    room->attachSkillToPlayer(p, attachName);
+            }
+        }
+        else { // the case that sklts is empty
+            foreach(ServerPlayer *p, room->getAllPlayers()) {
+                if (p->hasSkill(attachName, true))
+                    room->detachSkillFromPlayer(p, attachName, true);
+            }
+        }
+    }
+
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    {
+        if (triggerEvent == Dying) {
+            DyingStruct dying = data.value<DyingStruct>();
+            if (dying.who && dying.who->isAlive() && dying.who->hasSkill(this) && !dying.who->hasShownSkill(this))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, dying.who, dying.who);
+            return QList<SkillInvokeDetail>();
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (invoke->invoker->askForSkillInvoke(this, data))
+            invoke->invoker->showHiddenSkill(objectName());
+        //invoke->invoker->showGeneral(invoke->invoker->inHeadSkills(objectName()))
+        return false;
+    }
+};
+
+
+
+
+
+/*
 class YonghengHegemony : public TriggerSkill
 {
 public:
@@ -670,7 +739,7 @@ public:
             adjustHandcardNum(invoke->invoker, objectName());
         return false;
     }
-};
+};*/
 
 
 
@@ -1344,6 +1413,271 @@ public:
     }
 };
 
+//yonglin
+/*
+class YaoshiHegemony : public TriggerSkill
+{
+public:
+	YaoshiHegemony()
+		: TriggerSkill("yaoshi_hegemony")
+	{
+		events << DamageInflicted;
+	}
+
+	QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+	{
+		DamageStruct damage = data.value<DamageStruct>();
+		if (damage.from && damage.card && damage.card->isKindOf("Slash") &&  damage.from->isAlive() && damage.from->hasSkill(this))
+			return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
+
+		return QList<SkillInvokeDetail>();
+	}
+
+	bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+	{
+
+		RecoverStruct recover;
+		room->recover(invoke->targets.first(), recover);
+
+		return true;
+	}
+};*/
+
+//9
+/*
+class DongjieHegemony : public TriggerSkill
+{
+public:
+	DongjieHegemony()
+		: TriggerSkill("dongjie_hegemony")
+	{
+		events << DamageCaused; //<< EventPhaseChanging
+	}
+
+
+	QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+	{
+		ServerPlayer *current = room->getCurrent();
+		//if (current == NULL || !current->isInMainPhase())
+		//	return QList<SkillInvokeDetail>();
+
+		if (e != DamageCaused)
+			return QList<SkillInvokeDetail>();
+		DamageStruct damage = data.value<DamageStruct>();
+		//if (damage.chain || damage.transfer || !damage.by_user)
+		//	return QList<SkillInvokeDetail>();
+		if (damage.from  && damage.from->hasSkill(this)) //  && damage.card && !damage.from->hasFlag(objectName())
+			return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
+
+		return QList<SkillInvokeDetail>();
+	}
+
+	bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+	{
+		DamageStruct damage = data.value<DamageStruct>();
+		room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), damage.to->objectName());
+
+		
+
+		//invoke->invoker->setFlags(objectName());
+		QList<ServerPlayer *> logto;
+		logto << damage.to;
+		room->touhouLogmessage("#Dongjie", invoke->invoker, "dongjie", logto);
+
+		if (!room->askForCard(damage.to, ".|.|.|hand", "@dongjie_discard", data, Card::MethodDiscard)) {
+			damage.to->drawCards(1);
+			damage.to->turnOver();
+			return true;
+		}			
+		return false;
+	}
+};*/
+
+
+//zhongguo
+/*
+class BeishuiHegemonyVS : public ViewAsSkill
+{
+public:
+	BeishuiHegemonyVS()
+		: ViewAsSkill("beishui_hegemony")
+	{
+		response_or_use = true;
+	}
+
+	static QStringList responsePatterns()
+	{
+		QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+
+		Card::HandlingMethod method = Card::MethodUse;
+		QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+		const Skill *skill = Sanguosha->getSkill("beishui");
+
+		QStringList checkedPatterns;
+		foreach(const Card *card, cards) {
+			if ((card->isKindOf("BasicCard")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+				QString name = card->objectName();
+				if (!checkedPatterns.contains(name) && skill->matchAvaliablePattern(name, pattern) && !Self->isCardLimited(card, method))
+					checkedPatterns << name;
+			}
+		}
+
+		return checkedPatterns;
+	}
+
+	virtual bool isEnabledAtPlay(const Player *player) const
+	{
+		if (player->getMark("beishui") > 0)
+			return false;
+		if (Slash::IsAvailable(player) || Analeptic::IsAvailable(player))
+			return true;
+		Card *card = Sanguosha->cloneCard("peach", Card::NoSuit, 0);
+		DELETE_OVER_SCOPE(Card, card)
+			Card *card1 = Sanguosha->cloneCard("super_peach", Card::NoSuit, 0);
+		DELETE_OVER_SCOPE(Card, card1)
+			return card->isAvailable(player) || card1->isAvailable(player);
+	}
+
+	virtual bool isEnabledAtResponse(const Player *player, const QString &) const
+	{
+		if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+			return false;
+		if (player->getMark("beishui") > 0)
+			return false;
+
+		//check main phase
+		if (player->isCurrent()) {
+			if (!player->isInMainPhase())
+				return false;
+		}
+		else {
+			foreach(const Player *p, player->getSiblings()) {
+				if (p->isCurrent()) {
+					if (!p->isInMainPhase())
+						return false;
+					break;
+				}
+			}
+		}
+
+		QStringList checkedPatterns = responsePatterns();
+		if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1 && player->getMark("Global_PreventPeach") > 0)
+			return false;
+
+		return !checkedPatterns.isEmpty();
+	}
+
+	virtual bool viewFilter(const QList<const Card *> &selected, const Card *) const
+	{
+		//int num = qMax(1, Self->getHp());
+		int roles = 1;
+		foreach(const Player *p, Self->getAliveSiblings()) {
+			if (p->getRole() == Self->getRole())
+				roles++;
+		}
+		int num = qMax(roles, Self->getHp());
+		return selected.length() < num;
+	}
+
+	virtual const Card *viewAs(const QList<const Card *> &cards) const
+	{
+		//int num = qMax(1, Self->getHp());
+		int roles = 1;
+		foreach(const Player *p, Self->getAliveSiblings()) {
+			if (p->getRole() == Self->getRole())
+				roles++;
+		}
+		int num = qMax(roles, Self->getHp());
+		if (cards.length() != num)
+			return NULL;
+
+		QString name = Self->tag.value("beishui", QString()).toString();
+		if (name != NULL) {
+			Card *card = Sanguosha->cloneCard(name);
+			card->setSkillName(objectName());
+			card->addSubcards(cards);
+			return card;
+		}
+		else
+			return NULL;
+	}
+};
+
+
+class BeishuiHegemony : public TriggerSkill
+{
+public:
+	BeishuiHegemony()
+		: TriggerSkill("beishui_hegemony")
+	{
+		events << EventPhaseChanging << PreCardUsed << CardResponded;
+		view_as_skill = new BeishuiHegemonyVS;
+	}
+
+	virtual QDialog *getDialog() const
+	{
+		return QijiDialog::getInstance("beishui", true, false);
+	}
+
+	void record(TriggerEvent e, Room *room, QVariant &data) const
+	{
+		if (e == EventPhaseChanging) {
+			foreach(ServerPlayer *p, room->getAlivePlayers()) {
+				if (p->getMark("beishui") > 0)
+					room->setPlayerMark(p, "beishui", 0);
+			}
+		}
+		//record for ai, since AI prefer use a specific card,  but not the SkillCard QijiCard.
+		if (e == PreCardUsed) {
+			CardUseStruct use = data.value<CardUseStruct>();
+			if (use.card->getSkillName() == objectName())
+				room->setPlayerMark(use.from, "beishui", 1);
+		}
+		if (e == CardResponded) {
+			CardResponseStruct response = data.value<CardResponseStruct>();
+			if (response.m_from && response.m_isUse && !response.m_isProvision && response.m_card && response.m_card->getSkillName() == objectName())
+				room->setPlayerMark(response.m_from, "beishui", 1);
+		}
+	}
+};*/
+
+//xuyu
+/*
+class XuyuHegemony : public TriggerSkill
+{
+public:
+	XuyuHegemony()
+		: TriggerSkill("xuyu_hegemony")
+	{
+		events << CardsMoveOneTime;
+		frequency = Compulsory;
+		//relate_to_place = "head";
+	}
+
+
+	QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+	{
+		if (triggerEvent == CardsMoveOneTime) {
+			CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+			ServerPlayer *kaguya = qobject_cast<ServerPlayer *>(move.from);
+
+			if (kaguya && kaguya->isAlive() && kaguya->hasSkill(this) && move.from_places.contains(Player::PlaceHand) && kaguya->isKongcheng())
+				return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, kaguya, kaguya, NULL, true);
+		}
+		return QList<SkillInvokeDetail>();
+	}
+
+	bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+	{
+		invoke->invoker->removeGeneral(invoke->invoker->inHeadSkills(objectName()));
+		QString skillname = invoke->invoker->inHeadSkills(objectName()) ? "yongheng" : "yongheng!";
+		room->handleAcquireDetachSkills(invoke->invoker, skillname);
+		//room->acquireSkill(effect.to, "yongjue");
+		return false;
+	}
+};
+*/
+
 
 
 
@@ -1454,7 +1788,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 //Summer 
 
     General *remilia_hegemony = new General(this, "remilia_hegemony", "shu", 3);
-    remilia_hegemony->addSkill("skltkexue");
+    remilia_hegemony->addSkill(new SkltKexueHegemony);
     remilia_hegemony->addSkill("mingyun");
     remilia_hegemony->addCompanion("flandre_hegemony");
     remilia_hegemony->addCompanion("sakuya_hegemony");
@@ -1487,7 +1821,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     koakuma_hegemony->addSkill("sishu");
 
     General *kaguya_hegemony = new General(this, "kaguya_hegemony", "shu", 4);
-    kaguya_hegemony->addSkill(new YonghengHegemony);
+    kaguya_hegemony->addSkill("yongheng");
     kaguya_hegemony->addCompanion("eirin_hegemony");
     kaguya_hegemony->addCompanion("mokou_hegemony");
 
