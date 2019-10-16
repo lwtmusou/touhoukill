@@ -514,6 +514,126 @@ function sgs.ai_cardsview_valuable.beishui(self, class_name, player)
 	end
 	return card_str
 end
+
+local beishui_hegemony_skill = {}
+beishui_hegemony_skill.name = "beishui_hegemony"
+table.insert(sgs.ai_skills, beishui_hegemony_skill)
+beishui_hegemony_skill.getTurnUseCard = function(self)
+	if self.player:getMark("beishui") >0 then return nil end
+	local roles = 1
+    if self.player:getRole() ~= "careerist" then
+        for _,p in sgs.qlist(self.player:getAliveSiblings()) do
+            if p:getRole() == self.player:getRole() then
+                roles = roles + 1
+			end
+        end
+    end
+	local x = math.max(self.player:getHp(), roles)
+	
+    local beishuiCards = {}
+	local pattern = "slash|peach" --|analeptic
+	local patterns = pattern:split("|")
+	for i = 1, #patterns do
+		local forbidden = patterns[i]
+		local forbid = sgs.cloneCard(forbidden)
+		if not self.player:isLocked(forbid) and forbid:isAvailable(self.player) then
+			table.insert(beishuiCards,forbid)
+		end
+	end
+    if #beishuiCards < 1 then return nil end
+	self:sortByUseValue(beishuiCards, false)
+    local choice = beishuiCards[1]:objectName()
+
+	local cards = self.player:getCards("hes")
+	cards=self:touhouAppendExpandPileToList(self.player,cards)
+	cards = sgs.QList2Table(cards)
+	if #cards < x then return nil end
+	for _,c in pairs(cards) do
+        if c:objectName():match(choice) then	return nil end
+	end
+	self:sortByKeepValue(cards)
+	local ids = {}
+	local count = 0
+	for _,c in pairs(cards) do
+		table.insert(ids, c:getEffectiveId())
+		count = count + 1
+		if (count >= x) then break end
+	end
+	
+	local card_str = (choice..":%s[%s:%s]="):format("beishui_hegemony", "to_be_decided", -1)
+	for _,id in pairs(ids) do
+		if id == ids[#ids] then
+			card_str = card_str .. id
+		else
+			card_str = card_str .. id .. "+"
+		end
+	end
+
+
+	local parsed_card = sgs.Card_Parse(card_str)
+	return parsed_card
+end
+
+function sgs.ai_cardsview_valuable.beishui_hegemony(self, class_name, player)
+	if (sgs.Sanguosha:getCurrentCardUseReason() ~= sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE) then
+		return nil
+	end
+	if self.player:getMark("beishui") > 0 then return nil end
+    --不考虑酒
+    if class_name ~= "Peach"  and class_name ~= "Jink" and class_name ~= "Slash" then return nil end 
+
+	
+	local roles = 1
+    if self.player:getRole() ~= "careerist" then
+        for _,p in sgs.qlist(self.player:getAliveSiblings()) do
+            if p:getRole() == self.player:getRole() then
+                roles = roles + 1
+			end
+        end
+    end
+	local x = math.max(self.player:getHp(), roles)
+	local cards = self.player:getCards("hes")
+	cards=self:touhouAppendExpandPileToList(self.player,cards)
+	cards = sgs.QList2Table(cards)
+	if #cards < x then return nil end
+	for _,c in pairs(cards) do
+		if c:isKindOf(class_name) then return nil end
+	end
+	
+	self:sortByKeepValue(cards)
+	local ids = {}
+	local count = 0
+	for _,c in pairs(cards) do
+		table.insert(ids, c:getEffectiveId())
+		count = count + 1
+		if (count >= x) then break end
+	end
+
+
+	local card_str
+	if class_name == "Peach" then
+		local dying = player:getRoom():getCurrentDyingPlayer()
+		if not dying  then return nil end
+		card_str =  ("peach:beishui_hegemony[%s:%s]="):format("to_be_decided", -1)
+	elseif class_name == "Jink" then
+		card_str = ("jink:beishui_hegemony[%s:%s]="):format("to_be_decided", -1)
+	elseif class_name == "Slash" then
+		card_str = ("slash:beishui_hegemony[%s:%s]="):format("to_be_decided", -1)
+	else
+		return nil
+	end
+	for _,id in pairs(ids) do
+		if id == ids[#ids] then
+			card_str = card_str .. id
+		else
+			card_str = card_str .. id .. "+"
+		end
+	end
+	return card_str
+end
+
+
+
 sgs.ai_skill_invoke.dongjie = function(self, data)
 		local damage =self.player:getTag("dongjie"):toDamage()
 		local to = damage.to

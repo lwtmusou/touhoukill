@@ -5,7 +5,7 @@
 #include "maneuvering.h"
 #include "skill.h"
 #include "standard.h"
-//#include "th10.h"
+#include "th10.h"
 //#include "th08.h"
 
 
@@ -666,6 +666,155 @@ public:
 };
 
 
+class BeishuiHegemonyVS : public ViewAsSkill
+{
+public:
+    BeishuiHegemonyVS()
+        : ViewAsSkill("beishui_hegemony")
+    {
+        response_or_use = true;
+    }
+
+    static QStringList responsePatterns()
+    {
+        QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+
+        Card::HandlingMethod method = Card::MethodUse;
+        QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+        const Skill *skill = Sanguosha->getSkill("beishui_hegemony");
+
+        QStringList checkedPatterns;
+        foreach(const Card *card, cards) {
+            if ((card->isKindOf("BasicCard")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+                QString name = card->objectName();
+                if (!checkedPatterns.contains(name) && skill->matchAvaliablePattern(name, pattern) && !Self->isCardLimited(card, method))
+                    checkedPatterns << name;
+            }
+        }
+
+        return checkedPatterns;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        if (player->getMark("beishui") > 0)
+            return false;
+        if (Slash::IsAvailable(player) || Analeptic::IsAvailable(player))
+            return true;
+        Card *card = Sanguosha->cloneCard("peach", Card::NoSuit, 0);
+        DELETE_OVER_SCOPE(Card, card)
+            Card *card1 = Sanguosha->cloneCard("super_peach", Card::NoSuit, 0);
+        DELETE_OVER_SCOPE(Card, card1)
+            return card->isAvailable(player) || card1->isAvailable(player);
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &) const
+    {
+        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+            return false;
+        if (player->getMark("beishui") > 0)
+            return false;
+
+        //check main phase
+        if (player->isCurrent()) {
+            if (!player->isInMainPhase())
+                return false;
+        }
+        else {
+            foreach(const Player *p, player->getSiblings()) {
+                if (p->isCurrent()) {
+                    if (!p->isInMainPhase())
+                        return false;
+                    break;
+                }
+            }
+        }
+
+        QStringList checkedPatterns = responsePatterns();
+        if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1 && player->getMark("Global_PreventPeach") > 0)
+            return false;
+
+        return !checkedPatterns.isEmpty();
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *) const
+    {
+        //int num = qMax(1, Self->getHp());
+        int roles = 1;
+        if (Self->getRole() != "careerist") {
+            foreach(const Player *p, Self->getAliveSiblings()) {
+                if (p->getRole() == Self->getRole())
+                    roles++;
+            }
+        }
+        int num = qMax(roles, Self->getHp());
+        return selected.length() < num;
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        //int num = qMax(1, Self->getHp());
+        int roles = 1;
+        if (Self->getRole() != "careerist") {
+            foreach(const Player *p, Self->getAliveSiblings()) {
+                if (p->getRole() == Self->getRole())
+                    roles++;
+            }
+        }
+
+        int num = qMax(roles, Self->getHp());
+        if (cards.length() != num)
+            return NULL;
+
+        QString name = Self->tag.value("beishui_hegemony", QString()).toString();
+        if (name != NULL) {
+            Card *card = Sanguosha->cloneCard(name);
+            card->setSkillName(objectName());
+            card->addSubcards(cards);
+            return card;
+        }
+        else
+            return NULL;
+    }
+};
+
+
+class BeishuiHegemony : public TriggerSkill
+{
+public:
+    BeishuiHegemony()
+        : TriggerSkill("beishui_hegemony")
+    {
+        events << EventPhaseChanging << PreCardUsed << CardResponded;
+        view_as_skill = new BeishuiHegemonyVS;
+    }
+
+    virtual QDialog *getDialog() const
+    {
+        return QijiDialog::getInstance("beishui_hegemony", true, false);
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        if (e == EventPhaseChanging) {
+            foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                if (p->getMark("beishui") > 0)
+                    room->setPlayerMark(p, "beishui", 0);
+            }
+        }
+        //record for ai, since AI prefer use a specific card,  but not the SkillCard QijiCard.
+        if (e == PreCardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->getSkillName() == objectName())
+                room->setPlayerMark(use.from, "beishui", 1);
+        }
+        if (e == CardResponded) {
+            CardResponseStruct response = data.value<CardResponseStruct>();
+            if (response.m_from && response.m_isUse && !response.m_isProvision && response.m_card && response.m_card->getSkillName() == objectName())
+                room->setPlayerMark(response.m_from, "beishui", 1);
+        }
+    }
+};
 
 
 
@@ -1497,152 +1646,6 @@ public:
 };*/
 
 
-//zhongguo
-/*
-class BeishuiHegemonyVS : public ViewAsSkill
-{
-public:
-	BeishuiHegemonyVS()
-		: ViewAsSkill("beishui_hegemony")
-	{
-		response_or_use = true;
-	}
-
-	static QStringList responsePatterns()
-	{
-		QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-
-		Card::HandlingMethod method = Card::MethodUse;
-		QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-		const Skill *skill = Sanguosha->getSkill("beishui");
-
-		QStringList checkedPatterns;
-		foreach(const Card *card, cards) {
-			if ((card->isKindOf("BasicCard")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
-				QString name = card->objectName();
-				if (!checkedPatterns.contains(name) && skill->matchAvaliablePattern(name, pattern) && !Self->isCardLimited(card, method))
-					checkedPatterns << name;
-			}
-		}
-
-		return checkedPatterns;
-	}
-
-	virtual bool isEnabledAtPlay(const Player *player) const
-	{
-		if (player->getMark("beishui") > 0)
-			return false;
-		if (Slash::IsAvailable(player) || Analeptic::IsAvailable(player))
-			return true;
-		Card *card = Sanguosha->cloneCard("peach", Card::NoSuit, 0);
-		DELETE_OVER_SCOPE(Card, card)
-			Card *card1 = Sanguosha->cloneCard("super_peach", Card::NoSuit, 0);
-		DELETE_OVER_SCOPE(Card, card1)
-			return card->isAvailable(player) || card1->isAvailable(player);
-	}
-
-	virtual bool isEnabledAtResponse(const Player *player, const QString &) const
-	{
-		if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
-			return false;
-		if (player->getMark("beishui") > 0)
-			return false;
-
-		//check main phase
-		if (player->isCurrent()) {
-			if (!player->isInMainPhase())
-				return false;
-		}
-		else {
-			foreach(const Player *p, player->getSiblings()) {
-				if (p->isCurrent()) {
-					if (!p->isInMainPhase())
-						return false;
-					break;
-				}
-			}
-		}
-
-		QStringList checkedPatterns = responsePatterns();
-		if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1 && player->getMark("Global_PreventPeach") > 0)
-			return false;
-
-		return !checkedPatterns.isEmpty();
-	}
-
-	virtual bool viewFilter(const QList<const Card *> &selected, const Card *) const
-	{
-		//int num = qMax(1, Self->getHp());
-		int roles = 1;
-		foreach(const Player *p, Self->getAliveSiblings()) {
-			if (p->getRole() == Self->getRole())
-				roles++;
-		}
-		int num = qMax(roles, Self->getHp());
-		return selected.length() < num;
-	}
-
-	virtual const Card *viewAs(const QList<const Card *> &cards) const
-	{
-		//int num = qMax(1, Self->getHp());
-		int roles = 1;
-		foreach(const Player *p, Self->getAliveSiblings()) {
-			if (p->getRole() == Self->getRole())
-				roles++;
-		}
-		int num = qMax(roles, Self->getHp());
-		if (cards.length() != num)
-			return NULL;
-
-		QString name = Self->tag.value("beishui", QString()).toString();
-		if (name != NULL) {
-			Card *card = Sanguosha->cloneCard(name);
-			card->setSkillName(objectName());
-			card->addSubcards(cards);
-			return card;
-		}
-		else
-			return NULL;
-	}
-};
-
-
-class BeishuiHegemony : public TriggerSkill
-{
-public:
-	BeishuiHegemony()
-		: TriggerSkill("beishui_hegemony")
-	{
-		events << EventPhaseChanging << PreCardUsed << CardResponded;
-		view_as_skill = new BeishuiHegemonyVS;
-	}
-
-	virtual QDialog *getDialog() const
-	{
-		return QijiDialog::getInstance("beishui", true, false);
-	}
-
-	void record(TriggerEvent e, Room *room, QVariant &data) const
-	{
-		if (e == EventPhaseChanging) {
-			foreach(ServerPlayer *p, room->getAlivePlayers()) {
-				if (p->getMark("beishui") > 0)
-					room->setPlayerMark(p, "beishui", 0);
-			}
-		}
-		//record for ai, since AI prefer use a specific card,  but not the SkillCard QijiCard.
-		if (e == PreCardUsed) {
-			CardUseStruct use = data.value<CardUseStruct>();
-			if (use.card->getSkillName() == objectName())
-				room->setPlayerMark(use.from, "beishui", 1);
-		}
-		if (e == CardResponded) {
-			CardResponseStruct response = data.value<CardResponseStruct>();
-			if (response.m_from && response.m_isUse && !response.m_isProvision && response.m_card && response.m_card->getSkillName() == objectName())
-				room->setPlayerMark(response.m_from, "beishui", 1);
-		}
-	}
-};*/
 
 //xuyu
 /*
@@ -1817,7 +1820,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *meirin_hegemony = new General(this, "meirin_hegemony", "shu", 4);
     meirin_hegemony->addSkill("taiji");
-    meirin_hegemony->addSkill("beishui");
+    meirin_hegemony->addSkill(new BeishuiHegemony);
 
     General *koakuma_hegemony = new General(this, "koakuma_hegemony", "shu", 3);
     koakuma_hegemony->addSkill("moqi");
