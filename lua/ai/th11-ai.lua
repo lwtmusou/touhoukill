@@ -53,7 +53,7 @@ sgs.ai_skill_invoke.xiangqi = function(self,data)
 			knownSameNum  = knownBasicNum + knownEquipNum
 		end
 
-		if self.player:hasSkill("duxin") then
+		if self.player:hasSkills("duxin|duxin_hegemony")  then
 			if needCausedamage and knownSameNum >0 then
 				return true
 			elseif not needCausedamage and knownDiffNum >0 then
@@ -88,7 +88,7 @@ sgs.ai_skill_cardchosen.xiangqi = function(self, who, flags)
 	local cards = from:getHandcards()
 	cards = sgs.QList2Table(cards)
 
-	if self.player:hasSkill("duxin") then
+	if self.player:hasSkills("duxin|duxin_hegemony") then
 		if not damage_effect then
 			local needReverse = not self:isFriend(from)
 			self:sortByKeepValue(cards, needReverse)
