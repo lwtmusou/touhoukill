@@ -185,8 +185,8 @@ TuizhiHegemonyCard::TuizhiHegemonyCard()
 
 bool TuizhiHegemonyCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    return targets.isEmpty();
-    //return to_select->hasShownOneGeneral() && targets.isEmpty();
+    //return targets.isEmpty();
+    return to_select->hasShownOneGeneral() && targets.isEmpty();
 }
 
 void TuizhiHegemonyCard::onEffect(const CardEffectStruct &effect) const
@@ -194,19 +194,19 @@ void TuizhiHegemonyCard::onEffect(const CardEffectStruct &effect) const
     Room *room = effect.to->getRoom();
     ServerPlayer *target = effect.to;
     QStringList select;
-    //if (target->hasShownGeneral())
+    if (target->hasShownGeneral())
         select << "head";
-    //if (target->getGeneral2() && target->hasShownGeneral2())
+    if (target->getGeneral2() && target->hasShownGeneral2())
         select << "deputy";
     if (select.isEmpty())
         return;
 
     QString choice = room->askForChoice(target, objectName(), select.join("+"));
     bool ishead = (choice == "head");
-    //target->hideGeneral(ishead); //(ishead, true);
+    target->hideGeneral(ishead); //(ishead, true);
 
-    QString flag = (choice == "head") ? "h" : "d";
-    room->setPlayerDisableShow(target, flag, "huoshui");
+    //QString flag = (choice == "head") ? "h" : "d";
+    //room->setPlayerDisableShow(target, flag, "huoshui");
 }
 
 
@@ -1423,6 +1423,49 @@ public:
 };
 
 
+class DongjieHegemony : public TriggerSkill
+{
+public:
+    DongjieHegemony()
+        : TriggerSkill("dongjie_hegemony")
+    {
+        events << DamageCaused; //<< EventPhaseChanging
+    }
+
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        ServerPlayer *current = room->getCurrent();
+        //if (current == NULL || !current->isInMainPhase())
+        //	return QList<SkillInvokeDetail>();
+
+        if (e != DamageCaused)
+            return QList<SkillInvokeDetail>();
+        DamageStruct damage = data.value<DamageStruct>();
+        //if (damage.chain || damage.transfer || !damage.by_user)
+        //	return QList<SkillInvokeDetail>();
+        if (damage.from  && damage.from->hasSkill(this)) //  && damage.card && !damage.from->hasFlag(objectName())
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), damage.to->objectName());
+
+        //invoke->invoker->setFlags(objectName());
+
+
+        if (!room->askForCard(damage.to, ".|.|.|hand", "@dongjie_discard:" + damage.from->objectName(), data, Card::MethodDiscard)) {
+            damage.to->drawCards(1);
+            damage.to->turnOver();
+            return true;
+        }
+        return false;
+    }
+};
 
 class BingpoHgemony : public TriggerSkill
 {
@@ -1595,55 +1638,9 @@ public:
 };
 
 
-//9
-/*
-class DongjieHegemony : public TriggerSkill
-{
-public:
-	DongjieHegemony()
-		: TriggerSkill("dongjie_hegemony")
-	{
-		events << DamageCaused; //<< EventPhaseChanging
-	}
 
 
-	QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
-	{
-		ServerPlayer *current = room->getCurrent();
-		//if (current == NULL || !current->isInMainPhase())
-		//	return QList<SkillInvokeDetail>();
 
-		if (e != DamageCaused)
-			return QList<SkillInvokeDetail>();
-		DamageStruct damage = data.value<DamageStruct>();
-		//if (damage.chain || damage.transfer || !damage.by_user)
-		//	return QList<SkillInvokeDetail>();
-		if (damage.from  && damage.from->hasSkill(this)) //  && damage.card && !damage.from->hasFlag(objectName())
-			return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
-
-		return QList<SkillInvokeDetail>();
-	}
-
-	bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-	{
-		DamageStruct damage = data.value<DamageStruct>();
-		room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), damage.to->objectName());
-
-		
-
-		//invoke->invoker->setFlags(objectName());
-		QList<ServerPlayer *> logto;
-		logto << damage.to;
-		room->touhouLogmessage("#Dongjie", invoke->invoker, "dongjie", logto);
-
-		if (!room->askForCard(damage.to, ".|.|.|hand", "@dongjie_discard", data, Card::MethodDiscard)) {
-			damage.to->drawCards(1);
-			damage.to->turnOver();
-			return true;
-		}			
-		return false;
-	}
-};*/
 
 
 
@@ -2013,7 +2010,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     youki_hegemony->addCompanion("youmu_hegemony");
 
     General *cirno_hegemony = new General(this, "cirno_hegemony", "wei", 3);
-    cirno_hegemony->addSkill("dongjie");
+    cirno_hegemony->addSkill(new DongjieHegemony);
     cirno_hegemony->addSkill(new BingpoHgemony);
     cirno_hegemony->addCompanion("daiyousei_hegemony");
 

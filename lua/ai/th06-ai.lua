@@ -669,6 +669,17 @@ sgs.dongjie_keep_value = {
 	Slash           = 6.4
 }
 
+sgs.ai_skill_invoke.dongjie_hegemony = function(self, data)
+	local damage =self.player:getTag("dongjie_hegemony"):toDamage()
+	local to = damage.to
+	local final_damage = self:touhouDamage(damage, self.player, to, 2)
+	local needAvoidAttack = self:touhouNeedAvoidAttack(damage,self.player,to,true, 2)
+	if self:isEnemy(to) and needAvoidAttack then
+		if final_damage.damage > 1  or final_damage.damage >= to:getHp()  then return false end
+	end
+	return self:isFriend(to) ~= to:faceUp()
+end
+
 sgs.ai_skill_invoke.bingpo =  true
 sgs.ai_damageInflicted.bingpo =function(self, damage)
 	if damage.nature ~= sgs.DamageStruct_Fire then

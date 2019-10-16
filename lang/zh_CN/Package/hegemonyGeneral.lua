@@ -174,9 +174,11 @@ return
 	["alice_hegemony"]="爱丽丝",
 	["chen_hegemony"] = "橙",
 	["letty_hegemony"]="蕾蒂",
+	
 	["cirno_hegemony"] = "琪露诺",--国战修改
 	["dongjie_hegemony"] = "冻结",
-	[":dongjie_hegemony"] = "当你对一名角色造成伤害时，你可令其选择： 弃置一张手牌； 或者摸一张牌，其翻面并防止此伤害。",
+	[":dongjie_hegemony"] = "当你对一名角色造成伤害时，你可令其选择：其摸一张牌，翻面，防止此伤害； 或者其弃置一张手牌。",
+	["@dongjie_discard"] =" %src 对你发动了“冻结”， 你可弃置一张手牌，否则将摸一张牌，翻面，防止当前伤害",
 	["bingpo_hegemony"]= "冰魄",
 	[":bingpo_hegemony"]= "<font color=\"blue\"><b>锁定技，</b></font>当你因火焰伤害外的原因而进入濒死状态时，你回复1点体力。",
 	["#bingpo_hegemony_log"] = "%from的“%arg”被触发, %from 回复了 %arg2点体力.",
