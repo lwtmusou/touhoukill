@@ -1617,9 +1617,9 @@ QString Player::getSkillDescription(bool yellow, const QString &flag) const
     QList<const Skill *> skillList = getVisibleSkillList();
     //if (isHegemonyGameMode(ServerInfo.GameMode)) {
     if (flag == "head")
-        skillList = getHeadSkillList();
+        skillList = getHeadSkillList(true,true);
     else if (flag == "deputy")
-        skillList = getDeputySkillList();
+        skillList = getDeputySkillList(true,true);
     //}
 
     foreach (const Skill *skill, skillList) {

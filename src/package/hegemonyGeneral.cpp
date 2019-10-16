@@ -890,6 +890,41 @@ public:
     }
 };*/
 
+class XuyuHegemony : public TriggerSkill
+{
+public:
+    XuyuHegemony()
+        : TriggerSkill("xuyu_hegemony")
+    {
+        events << CardsMoveOneTime;
+        frequency = Compulsory;
+        //relate_to_place = "head";
+    }
+
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    {
+        if (triggerEvent == CardsMoveOneTime) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            ServerPlayer *kaguya = qobject_cast<ServerPlayer *>(move.from);
+
+            if (kaguya && kaguya->isAlive() && kaguya->hasSkill(this) && !kaguya->hasFlag("xuyu_invoked") 
+                &&  move.from_places.contains(Player::PlaceHand) && kaguya->isKongcheng())
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, kaguya, kaguya, NULL, true);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        room->setPlayerFlag(invoke->invoker, "xuyu_invoked");
+        invoke->invoker->removeGeneral(!invoke->invoker->inHeadSkills(objectName()));
+        QString skillname = invoke->invoker->inHeadSkills(objectName()) ? "yongheng" : "yongheng!";
+        room->handleAcquireDetachSkills(invoke->invoker, skillname);
+        //room->acquireSkill(invoke->invoker, skillname);
+        return false;
+    }
+};
 
 
 class YaoshiHegemony : public TriggerSkill
@@ -1640,54 +1675,10 @@ public:
 
 
 
-
-
-
-
-//xuyu
-/*
-class XuyuHegemony : public TriggerSkill
-{
-public:
-	XuyuHegemony()
-		: TriggerSkill("xuyu_hegemony")
-	{
-		events << CardsMoveOneTime;
-		frequency = Compulsory;
-		//relate_to_place = "head";
-	}
-
-
-	QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
-	{
-		if (triggerEvent == CardsMoveOneTime) {
-			CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-			ServerPlayer *kaguya = qobject_cast<ServerPlayer *>(move.from);
-
-			if (kaguya && kaguya->isAlive() && kaguya->hasSkill(this) && move.from_places.contains(Player::PlaceHand) && kaguya->isKongcheng())
-				return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, kaguya, kaguya, NULL, true);
-		}
-		return QList<SkillInvokeDetail>();
-	}
-
-	bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-	{
-		invoke->invoker->removeGeneral(invoke->invoker->inHeadSkills(objectName()));
-		QString skillname = invoke->invoker->inHeadSkills(objectName()) ? "yongheng" : "yongheng!";
-		room->handleAcquireDetachSkills(invoke->invoker, skillname);
-		//room->acquireSkill(effect.to, "yongjue");
-		return false;
-	}
-};
-*/
-
-
-
-
 HegemonyGeneralPackage::HegemonyGeneralPackage()
     : Package("hegemonyGeneral")
 {
-
+    
 
 
 
@@ -1824,7 +1815,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     koakuma_hegemony->addSkill("sishu");
 
     General *kaguya_hegemony = new General(this, "kaguya_hegemony", "shu", 4);
-    kaguya_hegemony->addSkill("yongheng");
+    kaguya_hegemony->addSkill(new XuyuHegemony);
     kaguya_hegemony->addCompanion("eirin_hegemony");
     kaguya_hegemony->addCompanion("mokou_hegemony");
 

@@ -2163,6 +2163,104 @@ void ServerPlayer::hideGeneral(bool head_general)
 }
 
 
+void ServerPlayer::removeGeneral(bool head_general)
+
+{
+	QString general_name, from_general;
+	room->tryPause();
+	room->setEmotion(this, "remove");
+
+	QStringList names = room->getTag(objectName()).toStringList();
+
+	if (head_general) {
+
+		if (!hasShownGeneral())
+			showGeneral();   //zoushi?
+
+		from_general = getGeneralName();
+		if (from_general.contains("sujiang")) return;
+
+		from_general = names.first(); //getActualGeneral1Name();		
+		General::Gender gender = Sanguosha->getGeneral(from_general)->getGender();  //getActualGeneral1()->getGender();
+		general_name = gender == General::Male ? "sujiang" : "sujiangf"; //need image
+
+
+		//room->setPlayerProperty(this, "actual_general1", general_name);
+		room->setPlayerProperty(this, "general_showed", true);
+
+
+		JsonArray arg;
+		arg << (int)S_GAME_EVENT_CHANGE_HERO;
+		arg << objectName();
+		arg << general_name;
+		arg << false;
+		arg << false;
+		room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
+		room->changePlayerGeneral(this, general_name);
+
+
+		setSkillsPreshowed("h", false);
+		disconnectSkillsFromOthers();
+
+		foreach(const Skill *skill, getHeadSkillList()) {
+			if (skill)
+				room->detachSkillFromPlayer(this, skill->objectName(), false, false, false, true); //sendlog  head deputy
+		}
+	}
+	else {
+		if (!hasShownGeneral2())
+			showGeneral(false); //zoushi?
+
+		//from_general = getActualGeneral2Name();
+		from_general = getGeneral2Name();
+		if (from_general.contains("sujiang")) return;
+		from_general = names.last();
+		General::Gender gender = Sanguosha->getGeneral(from_general)->getGender(); //getActualGeneral2()->getGender();
+
+		general_name = gender == General::Male ? "sujiang" : "sujiangf";
+
+
+		//room->setPlayerProperty(this, "actual_general2", general_name);
+		room->setPlayerProperty(this, "general2_showed", true);
+
+		JsonArray arg;
+		arg << (int)S_GAME_EVENT_CHANGE_HERO;
+		arg << objectName();
+		arg << general_name;
+		arg << true;
+		arg << false;
+		room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
+		room->changePlayerGeneral2(this, general_name);
+
+		setSkillsPreshowed("d", false);
+		disconnectSkillsFromOthers(false);
+
+		foreach(const Skill *skill, getDeputySkillList()) {
+			if (skill)
+				room->detachSkillFromPlayer(this, skill->objectName(), false, false, false,false);
+		}
+	}
+
+
+	LogMessage log;
+	log.type = "#BasaraRemove";
+	log.from = this;
+	log.arg = head_general ? "head_general" : "deputy_general";
+	log.arg2 = from_general;
+	room->sendLog(log);
+
+	Q_ASSERT(room->getThread() != NULL);
+	//QVariant _from = from_general;
+	//room->getThread()->trigger(GeneralRemoved, room, this, _from);
+    QVariant _from = QVariant::fromValue(this);
+    room->getThread()->trigger(GeneralRemoved, room, _from);
+
+	room->filterCards(this, getCards("hes"), true);
+
+}
+
+
+
 void ServerPlayer::sendSkillsToOthers(bool head_skill)
 {
     QStringList names = room->getTag(objectName()).toStringList();

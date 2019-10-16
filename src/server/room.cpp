@@ -637,24 +637,24 @@ void Room::attachSkillToPlayer(ServerPlayer *player, const QString &skill_name, 
     doNotify(player, S_COMMAND_ATTACH_SKILL, QVariant(skill_name));
 }
 
-void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name, bool is_equip, bool acquire_only, bool sendlog)
+void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name, bool is_equip, bool acquire_only, bool sendlog, bool head)
 {
-    if (!player->hasSkill(skill_name, true))
+    if (!isHegemonyGameMode(mode) && !player->hasSkill(skill_name, true))
         return;
     if (Sanguosha->getSkill(skill_name) && Sanguosha->getSkill(skill_name)->getFrequency() == Skill::Eternal)
         return;
-
+    //if (player->getAcquiredSkills(head ? "head" : "deputy").contains(skill_name))
     if (player->getAcquiredSkills().contains(skill_name))
-        player->detachSkill(skill_name);
-    else if (!acquire_only)
-        player->loseSkill(skill_name);
+        player->detachSkill(skill_name, head);
+    else if (!acquire_only)    
+        player->loseSkill(skill_name, head);
     else
         return;
 
     const Skill *skill = Sanguosha->getSkill(skill_name);
     if (skill && skill->isVisible()) {
         JsonArray args;
-        args << QSanProtocol::S_GAME_EVENT_DETACH_SKILL << player->objectName() << skill_name << true; //default head?
+        args << QSanProtocol::S_GAME_EVENT_DETACH_SKILL << player->objectName() << skill_name << head; //default head?
         doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
         if (!is_equip) {
@@ -676,7 +676,8 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
 
         foreach (const Skill *skill, Sanguosha->getRelatedSkills(skill_name)) {
             if (skill->isVisible())
-                detachSkillFromPlayer(player, skill->objectName());
+                detachSkillFromPlayer(player, skill->objectName(), is_equip, acquire_only, sendlog, head);
+                //detachSkillFromPlayer(player, skill->objectName());
         }
     }
 }
@@ -729,6 +730,7 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
                 }
             }
         } else {
+            
             bool head = true;
             QString skill_name = skill_name;
             if (skill_name.endsWith("!")) {
