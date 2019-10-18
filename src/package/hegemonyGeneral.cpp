@@ -1479,7 +1479,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         //if (damage.chain || damage.transfer || !damage.by_user)
         //	return QList<SkillInvokeDetail>();
-        if (damage.from  && damage.from->hasSkill(this)) //  && damage.card && !damage.from->hasFlag(objectName())
+        if (damage.from  && damage.from->hasSkill(this) && damage.card && damage.card->isKindOf("Slash")) //   !damage.from->hasFlag(objectName())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
 
         return QList<SkillInvokeDetail>();
@@ -1816,6 +1816,9 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *kaguya_hegemony = new General(this, "kaguya_hegemony", "shu", 4);
     kaguya_hegemony->addSkill(new XuyuHegemony);
+    //kaguya_hegemony->addSkill("shenbao");
+    //kaguya_hegemony->addSkill("#shenbao_distance");
+    //kaguya_hegemony->addSkill("#shenbao");
     kaguya_hegemony->addCompanion("eirin_hegemony");
     kaguya_hegemony->addCompanion("mokou_hegemony");
 
