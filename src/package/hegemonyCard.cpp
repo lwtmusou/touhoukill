@@ -30,12 +30,12 @@ QString KnownBothHegemony::getSubtype() const
 
 bool KnownBothHegemony::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
     if (targets.length() >= total_num || to_select == Self)
         return false;
 
     return (!to_select->hasShownGeneral() || (to_select->getGeneral2() && to_select->hasShownGeneral2())
-            || (!to_select->isKongcheng() && (to_select->getShownHandcards().length() < to_select->getHandcardNum())));
+            || !to_select->isKongcheng());
 }
 
 bool KnownBothHegemony::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
@@ -67,7 +67,7 @@ bool KnownBothHegemony::targetsFeasible(const QList<const Player *> &targets, co
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
         return targets.length() != 0;
 
-    int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
     if (!rec)
         return targets.length() > 0 && targets.length() <= total_num;
     else
@@ -139,24 +139,11 @@ void KnownBothHegemony::onEffect(const CardEffectStruct &effect) const
         room->doNotify(effect.from, QSanProtocol::S_COMMAND_VIEW_GENERALS, arg);
 
     } else {
-        if (effect.to->getCards("h").isEmpty()) {
-            effect.to->getRoom()->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
-            return;
-        }
-
-        QList<int> ids;
-
-        for (int i = 0; i < (1 + effect.effectValue.first()); i += 1) {
-            int id = room->askForCardChosen(effect.from, effect.to, "h", objectName(), false, Card::MethodNone, ids);
-            ids << id;
-            if ((effect.to->getCards("h").length() - ids.length()) <= 0)
-                break;
-        }
-
-        effect.to->addToShownHandCards(ids);
+        room->showAllCards(effect.to, effect.from);
     }
 }
 
+/*
 void KnownBothHegemony::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
@@ -213,7 +200,7 @@ void KnownBothHegemony::use(Room *room, ServerPlayer *source, QList<ServerPlayer
         room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
     }
 }
-
+*/
 
 BefriendAttacking::BefriendAttacking(Card::Suit suit, int number) : SingleTargetTrick(suit, number)
 {

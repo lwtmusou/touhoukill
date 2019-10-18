@@ -25,4 +25,23 @@ return {
 	["#HegNullificationSelection"] = "%from 选择了该【<font color=\"yellow\"><b>无懈可击·国</b></font>】为 %arg" ,
 	["hegnul_single"] = "对单一角色生效" ,
 	["hegnul_all"] = "对该阵营的全体剩余角色生效" ,
+	
+	
+	["known_both_hegemony"] = "知己知彼（国）",
+	[":known_both_hegemony"] = "锦囊牌·非全体性的普通锦囊牌<br />使用时机：出牌阶段。<br />使用目标：一名有手牌或暗置人物牌的其他角色。<br />作用效果：你选择：<br />1.观看目标角色的一张暗置人物牌及身份牌 <br /> 2.观看目标角色手牌。<br />重铸时机：出牌阶段。<br />◆重铸：声明一张牌并将之置入处理区，然后将之置入弃牌堆，最后摸一张牌。",
+	["known_both_hegemony:showhead"] = "主将",
+	["known_both_hegemony:showdeputy"] = "副将",
+	["known_both_hegemony:showcard"] = "手牌",
+	["showhead"] = "主将",
+	["showdeputy"] = "副将",
+	["showcard"] = "手牌",
+	--["known_both_hegemony:showcard"] = "明置手牌",
+	["#KnownBothView"] = "%from 观看了 %to 的 %arg" ,
+	["$KnownBothViewGeneral"] = "%from 观看了 %to 的 %arg， 阵营为 %arg2" ,
+	
+	
+	["DoubleSwordHegemony"] = "雌雄剑（国）",
+	[":DoubleSwordHegemony"] = "装备牌·武器<br />攻击范围：2<br />装备技能： 你使用【杀】指定有暗置武将牌的角色后，你可令其选择一项： 其明置一张武将牌并摸一张牌; 或其弃置一张手牌。",
+	["DoubleSwordHegemony:showhead"] = "明置主将",
+	["DoubleSwordHegemony:showdeputy"] = "明置副将",
 }
