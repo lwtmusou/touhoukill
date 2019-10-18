@@ -873,6 +873,17 @@ end
 sgs.ai_choicemade_filter.cardResponded["@dunjia2"] = sgs.ai_choicemade_filter.cardResponded["@dunjia1"]
 
 
+sgs.ai_skill_invoke.dunjia_hegemony = function(self, data)
+	local to =self.player:getTag("dunjia_hegemony"):toPlayer()
+	local num1 = self.player:getEquips():length()
+	local num2 = to:getEquips():length()
+	
+	if self:isEnemy(to) and num2 > num1 then
+		 return true
+	end
+	return false
+end
+
 
 sgs.ai_skill_invoke.jiyi = true
 sgs.ai_skill_askforyiji.jiyi = function(self, card_ids)

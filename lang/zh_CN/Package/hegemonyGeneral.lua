@@ -173,11 +173,14 @@ return
 	
 	["alice_hegemony"]="爱丽丝",
 	["chen_hegemony"] = "橙",
+	["dunjia_hegemony"] = "遁甲",
+	[":dunjia_hegemony"] = "你使用【杀】对其他角色造成伤害后，或你受到其他角色使用【杀】造成的伤害后，若你与其装备区牌的数量差不大于x，你可与其交换装备区。 （x为你损失的体力值）",
+	
 	["letty_hegemony"]="蕾蒂",
 	
 	["cirno_hegemony"] = "琪露诺",--国战修改
 	["dongjie_hegemony"] = "冻结",
-	[":dongjie_hegemony"] = "当你对一名角色造成伤害时，你可令其选择：其摸一张牌，翻面，防止此伤害； 或者其弃置一张手牌。",
+	[":dongjie_hegemony"] = "当你使用【杀】对一名角色造成伤害时，你可令其选择：其摸一张牌，翻面，防止此伤害； 或者其弃置一张手牌。",
 	["@dongjie_discard"] =" %src 对你发动了“冻结”， 你可弃置一张手牌，否则将摸一张牌，翻面，防止当前伤害",
 	["bingpo_hegemony"]= "冰魄",
 	[":bingpo_hegemony"]= "<font color=\"blue\"><b>锁定技，</b></font>当你因火焰伤害外的原因而进入濒死状态时，你回复1点体力。",
