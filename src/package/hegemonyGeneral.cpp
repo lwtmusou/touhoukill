@@ -6,6 +6,7 @@
 #include "skill.h"
 #include "standard.h"
 #include "th10.h"
+#include "hegemonyCard.h"
 //#include "th08.h"
 
 
@@ -1367,6 +1368,150 @@ public:
 
 
 //********  WINTER   **********
+/*
+class ShihuiHegemonyVS : public ViewAsSkill
+{
+public:
+    ShihuiHegemonyVS()
+        : ViewAsSkill("shihui_hegemonyVS")
+    {
+        response_pattern = "@@shihui_hegemonyVS";
+        response_or_use = true;
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *c) const
+    {
+        return selected.isEmpty() && c->getTypeId() == Card::TypeEquip;
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        int maxnum = 1;
+        if (cards.length() == maxnum) {
+            ExNihilo *exnihilo = new ExNihilo(Card::SuitToBeDecided, -1);
+            exnihilo->addSubcards(cards);
+            exnihilo->setSkillName("_shihui");
+            return exnihilo;
+        }
+
+        return NULL;
+    }
+};
+*/
+
+/*
+class ShihuiHegemony : public TriggerSkill
+{
+public:
+    ShihuiHegemony()
+        : TriggerSkill("shihui_hegemony")
+    {
+        events << Damage <<Damaged << EventPhaseChanging;
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        //record times of using card
+        if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            //if (change.from == Player::Play) {
+                foreach(ServerPlayer *p, room->getAllPlayers(true))
+                    room->setPlayerFlag(p, "-shihui_used");
+            //}
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e == Damage) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (!damage.from || damage.from->isDead() || damage.card == NULL || !damage.card->isKindOf("Slash"))
+                return QList<SkillInvokeDetail>();
+
+            QList<SkillInvokeDetail> d;
+            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                if (!p->hasFlag("shihui_used") &&  p->isFriendWith(damage.from, true))
+                    d << SkillInvokeDetail(this, p, p, NULL, false, damage.from);
+            }
+                
+            return d;
+        }
+        if (e == Damaged) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (!damage.to || damage.to->isDead() || damage.card == NULL || !damage.card->isKindOf("Slash"))
+                return QList<SkillInvokeDetail>();
+
+            QList<SkillInvokeDetail> d;
+            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                if (!p->hasFlag("shihui_used") && p->isFriendWith(damage.to, true))
+                    d << SkillInvokeDetail(this, p, p, NULL, false, damage.to);
+            }
+
+            return d;
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        room->setPlayerFlag(invoke->invoker, "shihui_used");
+        ServerPlayer *target = invoke->targets.first();
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
+        //int maxnum = qMax(target->getEquips().length(), 1);
+        room->askForUseCard(target, "@@shihui_hegemonyVS", "shihuiuse_hegemony");
+        
+            
+        return false;
+    }
+};
+*/
+
+class ShihuiHegemony : public TriggerSkill
+{
+public:
+    ShihuiHegemony()
+        : TriggerSkill("shihui_hegemony")
+    {
+        events << Damage << Damaged;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e == Damage) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (!damage.from || damage.from->isDead() || damage.card == NULL || !damage.card->isKindOf("Slash"))
+                return QList<SkillInvokeDetail>();
+
+            AwaitExhaustedHegemony *card = new AwaitExhaustedHegemony(Card::SuitToBeDecided, -1);
+            card->setSkillName(objectName());
+            card->deleteLater();
+            if (damage.from->hasSkill(this) && !damage.from->isCardLimited(card, Card::HandlingMethod::MethodUse))
+                return QList<SkillInvokeDetail> () << SkillInvokeDetail(this, damage.from, damage.from);
+        }
+        else if (e == Damaged) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (!damage.to || damage.to->isDead() || damage.card == NULL || !damage.card->isKindOf("Slash"))
+                return QList<SkillInvokeDetail>();
+
+            AwaitExhaustedHegemony *card = new AwaitExhaustedHegemony(Card::SuitToBeDecided, -1);
+            card->setSkillName(objectName());
+            card->deleteLater();
+
+            if (damage.to->hasSkill(this) && !damage.to->isCardLimited(card, Card::HandlingMethod::MethodUse))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        AwaitExhaustedHegemony *card = new AwaitExhaustedHegemony(Card::SuitToBeDecided, -1);
+        card->setSkillName(objectName());
+        room->useCard(CardUseStruct(card, invoke->invoker, NULL), false);
+
+        return false;
+    }
+};
 
 
 
@@ -2007,7 +2152,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     yukari_hegemony->addCompanion("ran_hegemony");
 
     General *ran_hegemony = new General(this, "ran_hegemony", "wei", 3, false);
-    ran_hegemony->addSkill("shihui");
+    ran_hegemony->addSkill(new ShihuiHegemony);
     ran_hegemony->addSkill("huanzang");
     ran_hegemony->addSkill("#huanzang");
     ran_hegemony->addCompanion("chen_hegemony");
@@ -2077,7 +2222,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     addMetaObject<BanyueHegemonyCard>();
 
-    skills <<  new GameRule_AskForGeneralShowHead << new GameRule_AskForGeneralShowDeputy << new GameRule_AskForArraySummon;
+    skills <<  new GameRule_AskForGeneralShowHead << new GameRule_AskForGeneralShowDeputy << new GameRule_AskForArraySummon ; //<< new ShihuiHegemonyVS
 }
 
 ADD_PACKAGE(HegemonyGeneral)

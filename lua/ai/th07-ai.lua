@@ -378,7 +378,40 @@ sgs.ai_skill_invoke.shihui = function(self, data)
 	return false
 end
 
+sgs.ai_skill_invoke.shihui_hegemony = function(self, data)
+	return true
+end
+sgs.ai_skill_use["@@shihui_hegemonyVS"] = function(self, prompt, method)
 
+	local cards = self.player:getCards("hes")
+	cards=self:touhouAppendExpandPileToList(self.player, cards)
+	cards = sgs.QList2Table(cards)
+	local ecards = {}
+	for _, c in ipairs(cards) do
+		if c:isKindOf("EquipCard") then
+			table.insert(ecards, c)
+		end
+	end
+	
+	if #ecards == 0 then return "." end
+
+	self:sortByUseValue(ecards, false)
+
+	local card = sgs.cloneCard("ex_nihilo", sgs.Card_SuitToBeDecided, -1)
+	local maxNum = math.max(self.player:getEquips():length(), 1)
+	card:addSubcard(ecards[1])
+	card:deleteLater()
+
+	--table.insert(ids, cards[1]:getId())
+
+	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
+	card:setSkillName("_shihui")
+
+	self:useTrickCard(card, dummy_use)
+
+	if not dummy_use.card then return "." end
+	return dummy_use.card:toString()
+end
 
 --[[sgs.ai_skill_discard.shihui = function(self,discard_num, min_num)
 	local target = self.player:getTag("shihui_target"):toPlayer()

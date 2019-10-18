@@ -158,6 +158,13 @@ return
 	["yuyuko_hegemony"] = "西行寺幽幽子",
 	["yukari_hegemony"]= "八云紫",
 	["ran_hegemony"]= "八云蓝",
+	["shihui_hegemony"] = "式辉",
+	[":shihui_hegemony"] = "当你使用【杀】造成伤害后或受到【杀】造成的伤害后，你可视为使用【以逸待劳（国）】使用。", 
+	--[":shihui_hegemony"] = "当一名角色使用【杀】造成伤害后或受到【杀】造成的伤害后，若其与你阵营相同，你可以令其选择是否将一张装备牌当【无中生有】使用。<font color=\"green\"><b>每阶段限一次。</b></font>", 
+	--["shihuiuse_hegemony"]= "“式辉”：你可将一张装备牌当【无中生有】使用",
+	--["~shihui_hegemonyVS"]= "选择一张装备牌 -> 确定 -> 转化 或 取消",
+
+	
 	["youmu_hegemony"] = "魂魄妖梦",
 	--["prismriver"]= "普莉兹姆利巴三姐妹",
 	
