@@ -1070,7 +1070,7 @@ bool Player::hasWeapon(const QString &weapon_name, bool selfOnly) const
     if (getMark("Equips_Nullified_to_Yourself") > 0)
         return false;
 
-    if (hasSkill("shenbao") && !selfOnly) {
+    /*if (hasSkill("shenbao") && !selfOnly) {
         foreach (const Player *p, getAliveSiblings()) {
             if (p->weapon) {
                 if (weapon_name == "shenbao")
@@ -1083,9 +1083,9 @@ bool Player::hasWeapon(const QString &weapon_name, bool selfOnly) const
                     return true;
             }
         }
-    }
+    }*/
 
-    if (Sanguosha->ViewHas(this, weapon_name, "weapon")) return true;
+    if (Sanguosha->ViewHas(this, weapon_name, "weapon") != NULL) return true;
 
     if (!weapon || isBrokenEquip(weapon->getEffectiveId(), true))
         return false;
@@ -1100,7 +1100,7 @@ bool Player::hasArmorEffect(const QString &armor_name, bool selfOnly) const
     if (!tag["Qinggang"].toStringList().isEmpty() || getMark("Armor_Nullified") > 0 || getMark("Equips_Nullified_to_Yourself") > 0)
         return false;
 
-    if (hasSkill("shenbao") && !selfOnly) {
+    /*if (hasSkill("shenbao") && !selfOnly) {
         foreach (const Player *p, getAliveSiblings()) {
             if (p->armor) {
                 if (armor_name == "shenbao")
@@ -1113,7 +1113,7 @@ bool Player::hasArmorEffect(const QString &armor_name, bool selfOnly) const
                     return true;
             }
         }
-    }
+    }*/
 
 
     if (Sanguosha->ViewHas(this, armor_name, "armor")) return true;
@@ -1131,7 +1131,7 @@ bool Player::hasTreasure(const QString &treasure_name, bool selfOnly) const
     if (getMark("Equips_Nullified_to_Yourself") > 0)
         return false;
 
-    if (hasSkill("shenbao") && !selfOnly && treasure_name != "wooden_ox") {
+    /*if (hasSkill("shenbao") && !selfOnly && treasure_name != "wooden_ox") {
         foreach (const Player *p, getAliveSiblings()) {
             if (p->treasure) {
                 if (treasure_name == "shenbao")
@@ -1144,7 +1144,9 @@ bool Player::hasTreasure(const QString &treasure_name, bool selfOnly) const
                     return true;
             }
         }
-    }
+    }*/
+
+    if (Sanguosha->ViewHas(this, treasure_name, "treasure")) return true;
 
     if (!treasure || isBrokenEquip(treasure->getEffectiveId(), true))
         return false;

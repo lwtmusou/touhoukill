@@ -3376,22 +3376,33 @@ QStringList ShenbaoDialog::getAvailableChoices(const Player *player, CardUseStru
 
     foreach (const QString &skillName, equipViewAsSkills) {
         EquipCard *equipCard = qobject_cast<EquipCard *>(Sanguosha->cloneCard(skillName));
-        bool available = true;
+        bool available = false;
         if (equipCard != NULL) {
             EquipCard::Location location = equipCard->location();
             switch (location) {
-            case EquipCard::WeaponLocation:
-                if (!(player->hasWeapon(skillName) && !player->hasWeapon(skillName, true)))
-                    available = false;
+            case EquipCard::WeaponLocation: {
+                //if (!(player->hasWeapon(skillName) && !player->hasWeapon(skillName, true)))
+                const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "weapon");
+                if (v && v->objectName().contains("shenbao"))
+                    available = true;
                 break;
-            case EquipCard::ArmorLocation:
-                if (!(player->hasArmorEffect(skillName) && !player->hasArmorEffect(skillName, true)))
-                    available = false;
+            }
+            case EquipCard::ArmorLocation: {
+                //if (!(player->hasArmorEffect(skillName) && !player->hasArmorEffect(skillName, true)))
+                const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "armor");
+                if (v && v->objectName().contains("shenbao"))
+                    available = true;
                 break;
-            case EquipCard::TreasureLocation:
-                if (!(player->hasTreasure(skillName) && !player->hasTreasure(skillName, true)))
-                    available = false;
+            }
+
+            case EquipCard::TreasureLocation: {
+                //if (!(player->hasTreasure(skillName) && !player->hasTreasure(skillName, true)))
+                const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "treasure");
+                if (v && v->objectName().contains("shenbao"))
+                    available = true;
                 break;
+            }
+
             default:
                 available = false;
                 break;
@@ -3419,25 +3430,36 @@ QStringList ShenbaoDialog::getAvailableChoices(const Player *player, CardUseStru
 QStringList ShenbaoDialog::getAvailableNullificationChoices(const ServerPlayer *player)
 {
     QStringList choices;
-
+    //const Skill *shenbao = Sanguosha->getSkill("#shenbao_viewhas");
     foreach (const QString &skillName, equipViewAsSkills) {
         EquipCard *equipCard = qobject_cast<EquipCard *>(Sanguosha->cloneCard(skillName));
-        bool available = true;
+        bool available = false;
         if (equipCard != NULL) {
             EquipCard::Location location = equipCard->location();
             switch (location) {
-            case EquipCard::WeaponLocation:
-                if (!(player->hasWeapon(skillName) && !player->hasWeapon(skillName, true)))
-                    available = false;
+            case EquipCard::WeaponLocation: {
+                //if (!(player->hasWeapon(skillName) && !player->hasWeapon(skillName, true)))
+                const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "weapon");
+                if (v && v->objectName().contains("shenbao"))
+                    available = true;
                 break;
-            case EquipCard::ArmorLocation:
-                if (!(player->hasArmorEffect(skillName) && !player->hasArmorEffect(skillName, true)))
-                    available = false;
+            
+            }
+            case EquipCard::ArmorLocation: {
+                //if (!(player->hasArmorEffect(skillName) && !player->hasArmorEffect(skillName, true)))
+                const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "armor");
+                if (v && v->objectName().contains("shenbao"))
+                    available = true;
                 break;
-            case EquipCard::TreasureLocation:
-                if (!(player->hasTreasure(skillName) && !player->hasTreasure(skillName, true)))
-                    available = false;
+            }
+
+            case EquipCard::TreasureLocation: {
+                //if (!(player->hasTreasure(skillName) && !player->hasTreasure(skillName, true)))
+                const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "treasure");
+                if (v && v->objectName().contains("shenbao"))
+                    available = true;
                 break;
+            }
             default:
                 available = false;
                 break;
@@ -3501,9 +3523,14 @@ public:
     {
     }
 
+    //bool canPreshow() const
+    //{
+    //    return true;
+    //}
+
     virtual int getExtra(const Player *target, bool) const
     {
-        if (target->hasSkill(objectName())) {
+        if (target->hasSkill(objectName()) && target->hasShownSkill(this)) {
             int self_weapon_range = 1;
             int extra = 0;
             if (target->getWeapon()) {
@@ -3538,7 +3565,7 @@ public:
     virtual int getCorrect(const Player *from, const Player *to) const
     {
         int correct = 0;
-        if (from->hasSkill("shenbao") && from->getMark("Equips_Nullified_to_Yourself") == 0) {
+        if (from->hasSkill("shenbao") && from->hasShownSkill("shenbao") && from->getMark("Equips_Nullified_to_Yourself") == 0) {
             foreach (const Player *p, from->getAliveSiblings()) {
                 if (p->getOffensiveHorse()) {
                     correct = correct - 1;
@@ -3546,7 +3573,7 @@ public:
             }
         }
 
-        if (to->hasSkill("shenbao") && to->getMark("Equips_Nullified_to_Yourself") == 0) {
+        if (to->hasSkill("shenbao") &&  to->hasShownSkill("shenbao") &&  to->getMark("Equips_Nullified_to_Yourself") == 0) {
             foreach (const Player *p, to->getAliveSiblings()) {
                 if (p->getDefensiveHorse()) {
                     correct = correct + 1;
@@ -3679,6 +3706,117 @@ public:
         }
     }
 };
+
+
+class ShenbaoViewHas : public ViewHasSkill
+
+{
+
+public:
+
+    ShenbaoViewHas() : ViewHasSkill("#shenbao_viewhas")
+
+    {
+
+    }
+
+    virtual bool ViewHas(const Player *player, const QString &skill_name, const QString &flag) const
+    {
+        if (player->isDead() || !player->hasSkill("shenbao"))//do not consider nue?? 
+            return false;
+
+        //only consider hegemony mode??  need check items?? no need
+        //if (skill_name == "shenbao")
+        //    return true;
+        if (flag == "weapon") {
+            QString weapon_name = skill_name;
+            foreach(const Player *p, player->getAliveSiblings()) {
+                if (p->getWeapon()) {
+                    if (weapon_name == "shenbao")
+                        return true;
+                    WrappedCard *wp = p->getWeapon();
+                    if (wp->objectName() == weapon_name || wp->isKindOf(weapon_name.toStdString().c_str()))
+                        return true;
+                    const Card *real_related_weapon = Sanguosha->getEngineCard(wp->getEffectiveId());
+                    if (real_related_weapon->objectName() == weapon_name || real_related_weapon->isKindOf(weapon_name.toStdString().c_str()))
+                        return true;
+                }
+            }
+            //self broken equip
+            WrappedCard *wp = player->getWeapon();
+            if (wp && player->isBrokenEquip(wp->getEffectiveId())) {
+                if (wp->objectName() == weapon_name || wp->isKindOf(weapon_name.toStdString().c_str()))
+                    return true;
+                const Card *real_related_weapon = Sanguosha->getEngineCard(wp->getEffectiveId());
+                if (real_related_weapon->objectName() == weapon_name || real_related_weapon->isKindOf(weapon_name.toStdString().c_str()))
+                    return true;
+            }
+            //    return (weapon == NULL || weapon->objectName() != skill_name || player->isBrokenEquip(weapon->getEffectiveId()));
+        }
+        else if (flag == "armor") {
+            QString armor_name = skill_name;
+            foreach(const Player *p, player->getAliveSiblings()) {
+                if (p->getArmor()) {
+                    if (armor_name == "shenbao")
+                        return true;
+                    WrappedCard *ar = p->getArmor();
+                    if (ar->objectName() == armor_name || ar->isKindOf(armor_name.toStdString().c_str()))
+                        return true;
+                    const Card *real_related_armor = Sanguosha->getEngineCard(ar->getEffectiveId());
+                    if (real_related_armor->objectName() == armor_name || real_related_armor->isKindOf(armor_name.toStdString().c_str()))
+                        return true;
+                }
+            }
+            //self broken equip
+            WrappedCard *ar = player->getArmor();
+            if (ar && player->isBrokenEquip(ar->getEffectiveId())) {
+                if (ar->objectName() == armor_name || ar->isKindOf(armor_name.toStdString().c_str()))
+                    return true;
+                const Card *real_related_armor = Sanguosha->getEngineCard(ar->getEffectiveId());
+                if (real_related_armor->objectName() == armor_name || real_related_armor->isKindOf(armor_name.toStdString().c_str()))
+                    return true;
+            }
+            //return (armor == NULL || armor->objectName() != skill_name || player->isBrokenEquip(armor->getEffectiveId()));
+        }
+        else if (flag == "treasure") {
+            QString treasure_name = skill_name;
+            if (skill_name != "wooden_ox") {
+                foreach(const Player *p, player->getAliveSiblings()) {
+                    if (p->getTreasure()) {
+                        if (treasure_name == "shenbao")
+                            return true;
+                        WrappedCard *ar = p->getTreasure();
+                        if (ar->objectName() == treasure_name || ar->isKindOf(treasure_name.toStdString().c_str()))
+                            return true;
+                        const Card *real_related_treasure = Sanguosha->getEngineCard(ar->getEffectiveId());
+                        if (real_related_treasure->objectName() == treasure_name || real_related_treasure->isKindOf(treasure_name.toStdString().c_str()))
+                            return true;
+                    }
+                }
+            }
+
+            //self broken equip
+            WrappedCard *ar = player->getTreasure();
+            if (ar && player->isBrokenEquip(ar->getEffectiveId())) {
+                if (ar->objectName() == treasure_name || ar->isKindOf(treasure_name.toStdString().c_str()))
+                    return true;
+                const Card *real_related_treasure = Sanguosha->getEngineCard(ar->getEffectiveId());
+                if (real_related_treasure->objectName() == treasure_name || real_related_treasure->isKindOf(treasure_name.toStdString().c_str()))
+                    return true;
+            }
+
+
+            //    return (treasure && treasure->objectName() == skill_name && player->isBrokenEquip(treasure->getEffectiveId()));
+            //    return (treasure == NULL || treasure->objectName() != skill_name || player->isBrokenEquip(treasure->getEffectiveId()));
+        }
+
+
+        return false;
+
+    }
+
+};
+
 
 class Yindu : public TriggerSkill
 {
@@ -7156,8 +7294,10 @@ TouhouGodPackage::TouhouGodPackage()
     kaguya_god->addSkill(new Shenbao);
     kaguya_god->addSkill(new ShenbaoDistance);
     kaguya_god->addSkill(new ShenbaoHandler);
+    kaguya_god->addSkill(new ShenbaoViewHas);
     related_skills.insertMulti("shenbao", "#shenbao_distance");
     related_skills.insertMulti("shenbao", "#shenbao");
+    related_skills.insertMulti("shenbao", "#shenbao_viewhas");
 
     General *komachi_god = new General(this, "komachi_god", "touhougod", 4);
     komachi_god->addSkill(new Yindu);

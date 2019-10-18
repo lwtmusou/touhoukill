@@ -471,6 +471,9 @@ bool TribladeCard::targetFilter(const QList<const Player *> &targets, const Play
 
 void TribladeCard::onUse(Room *room, const CardUseStruct &card_use) const
 {
+    const ViewHasSkill *v = Sanguosha->ViewHas(card_use.from, "Triblade", "weapon");
+    if (v)
+        card_use.from->showHiddenSkill(v->objectName());
     room->setEmotion(card_use.from, "weapon/triblade");
     SkillCard::onUse(room, card_use);
 }
@@ -656,6 +659,14 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
+        const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon");
+        if (v) {
+            if (!invoke->invoker->hasShownSkill(v) && !invoke->invoker->askForSkillInvoke(this))
+                return false;
+            invoke->invoker->showHiddenSkill(v->objectName());
+        }
+            
+
         if ((invoke->preferredTarget->getArmor() && invoke->preferredTarget->hasArmorEffect(invoke->preferredTarget->getArmor()->objectName()))
             || invoke->preferredTarget->hasArmorEffect("shenbao"))
             room->setEmotion(invoke->invoker, "weapon/qinggang_sword");
@@ -760,6 +771,10 @@ public:
 
         Slash *slash = new Slash(Card::SuitToBeDecided, 0);
         slash->setSkillName(objectName());
+        
+        const ViewHasSkill *v = Sanguosha->ViewHas(Self, objectName(), "weapon");
+        if (v && v->objectName().contains("shenbao"))
+            slash->setSkillName("shenbao");
         slash->addSubcards(cards);
         return slash;
     }
@@ -906,6 +921,19 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        invoke->invoker->tag[this->objectName()] = data;
+        if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
+            const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon");
+            if (v)
+                invoke->invoker->showHiddenSkill(v->objectName());
+            return true;
+        }
+        return false;
+    }
+
+
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         QStringList horses;
@@ -957,6 +985,17 @@ public:
         if (player->isCardLimited(jink, ask.method))
             return QList<SkillInvokeDetail>();
         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (invoke->invoker->askForSkillInvoke(this, data)) {
+            const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "armor");
+            if (v)
+                invoke->invoker->showHiddenSkill(v->objectName());
+            return true;
+        }
+        return false;
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
@@ -1668,11 +1707,21 @@ public:
 
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        bool ret = WeaponSkill::cost(triggerEvent, room, invoke, data);
-        if (ret)
-            room->setEmotion(invoke->invoker, "weapon/ice_sword");
+        //bool ret = WeaponSkill::cost(triggerEvent, room, invoke, data);
+        //if (ret)
+        //    room->setEmotion(invoke->invoker, "weapon/ice_sword");
+        //return ret;
+        invoke->invoker->tag[this->objectName()] = data;
+        if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
+            const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon");
+            if (v)
+                invoke->invoker->showHiddenSkill(v->objectName());
 
-        return ret;
+            room->setEmotion(invoke->invoker, "weapon/ice_sword");
+            return true;
+        }
+        return false;
+        
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
@@ -1721,6 +1770,19 @@ public:
 
         return QList<SkillInvokeDetail>();
     }
+
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "armor");
+        if (v) {
+            if (!invoke->invoker->hasShownSkill(v) && !invoke->invoker->askForSkillInvoke(this))
+                return false;
+            invoke->invoker->showHiddenSkill(v->objectName());
+        }
+        return true;
+    }
+
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
     {

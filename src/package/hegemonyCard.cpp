@@ -428,24 +428,15 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        //Sanguosha->getSkill(name)->inherits("ViewHasSkill")
-        if (invoke->invoker->hasSkill("shezheng_hegemony") && Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon")) {
-            if (invoke->invoker->askForSkillInvoke("shezheng_hegemony", QVariant::fromValue(invoke->preferredTarget))) {
-                
 
-                invoke->invoker->showHiddenSkill("shezheng_hegemony");
-                room->setEmotion(invoke->invoker, "weapon/double_sword");
-                return true;
-            }
-        }
-        else {
-            //invoke->invoker->tag["DoubleSwordTarget"] = QVariant::fromValue(invoke->preferredTarget);
-            if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
-                room->setEmotion(invoke->invoker, "weapon/double_sword");
-                return true;
-            }
-        }
-        
+        if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
+            const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon");
+            if (v)
+                invoke->invoker->showHiddenSkill(v->objectName());
+            
+            room->setEmotion(invoke->invoker, "weapon/double_sword");
+            return true;
+        }    
         return false;
 
 

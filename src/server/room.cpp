@@ -1794,6 +1794,12 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         QString showskill = card->getSkillName();
         player->showHiddenSkill(skill_name);
         player->showHiddenSkill(card->getSkillName());
+        const Skill *equipSkill = Sanguosha->getSkill(skill_name);
+        if (equipSkill && equipSkill->inherits("WeaponSkill")) {
+            const ViewHasSkill *v = Sanguosha->ViewHas(player, skill_name, "weapon");
+            if (v)
+                player->showHiddenSkill(v->objectName());
+        }
 
         //move1
         if (method == Card::MethodUse) {

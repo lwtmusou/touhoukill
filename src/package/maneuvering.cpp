@@ -128,6 +128,19 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+
+        if (invoke->invoker->askForSkillInvoke(this, data)) {
+            const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon");
+            if (v)
+                invoke->invoker->showHiddenSkill(v->objectName());
+            return true;
+        }
+        return false;
+    }
+
+
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
@@ -297,6 +310,18 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "armor");
+        if (v) {
+            if (!invoke->invoker->hasShownSkill(v) && !invoke->invoker->askForSkillInvoke(this))
+                return false;
+            invoke->invoker->showHiddenSkill(v->objectName());
+        }
+        return true;
+    }
+
+
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         if (triggerEvent == SlashEffected) {
@@ -389,6 +414,20 @@ public:
             }
         }
         return QList<SkillInvokeDetail>();
+    }
+
+
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (triggerEvent == DamageInflicted) {
+            const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "armor");
+            if (v) {
+                if (!invoke->invoker->hasShownSkill(v) && !invoke->invoker->askForSkillInvoke(this))
+                    return false;
+                invoke->invoker->showHiddenSkill(v->objectName());
+            }
+        }
+        return true;
     }
 
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const

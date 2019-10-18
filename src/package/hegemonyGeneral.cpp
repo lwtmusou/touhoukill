@@ -519,8 +519,7 @@ public:
 
     virtual bool ViewHas(const Player *player, const QString &skill_name, const QString &flag) const
     {
-        if (flag == "weapon" && skill_name == "DoubleSwordHegemony" && player->isAlive() && player->hasSkill("shezheng_hegemony") && !player->getWeapon())
-            
+        if (flag == "weapon" && skill_name == "DoubleSwordHegemony" && player->isAlive() && player->hasSkill("shezheng_hegemony") && !player->getWeapon())         
             return true;
 
         return false;
@@ -899,7 +898,7 @@ public:
     {
         events << CardsMoveOneTime;
         frequency = Compulsory;
-        //relate_to_place = "head";
+        relate_to_place = "head";
     }
 
 
@@ -2013,9 +2012,10 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *kaguya_hegemony = new General(this, "kaguya_hegemony", "shu", 4);
     kaguya_hegemony->addSkill(new XuyuHegemony);
-    //kaguya_hegemony->addSkill("shenbao");
-    //kaguya_hegemony->addSkill("#shenbao_distance");
-    //kaguya_hegemony->addSkill("#shenbao");
+    kaguya_hegemony->addSkill("shenbao");
+    kaguya_hegemony->addSkill("#shenbao_distance");
+    kaguya_hegemony->addSkill("#shenbao");
+    kaguya_hegemony->addSkill("#shenbao_viewhas");
     kaguya_hegemony->addCompanion("eirin_hegemony");
     kaguya_hegemony->addCompanion("mokou_hegemony");
 
