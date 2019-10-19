@@ -461,6 +461,10 @@ function SmartAI:objectiveLevel(player)
 	local self_kingdom = self.player:getRole()
 	local player_kingdom_evaluate = self:evaluateKingdom(player)
 	local player_kingdom_explicit = sgs.ai_explicit[player:objectName()]
+	if player:hasShownOneGeneral() then
+		player_kingdom_evaluate = player:getRole()
+		player_kingdom_explicit = player:getRole()
+	end
 	if player_kingdom_explicit == "unknown" then
 		local mark = string.format("KnownBoth_%s_%s", self.player:objectName(), player:objectName())
 		if player:getMark(mark) > 0 then
@@ -469,6 +473,8 @@ function SmartAI:objectiveLevel(player)
 	end
 
 	local upperlimit = self.player:getLord() and 99 or math.floor(self.room:getPlayers():length() / 2)
+	
+	
 	if (not sgs.isAnjiang(self.player) or sgs.shown_kingdom[self_kingdom] < upperlimit) and self.role ~= "careerist" and self_kingdom == player_kingdom_explicit then return -2 end
 	if self:getKingdomCount() <= 2 then return 5 end
 
@@ -493,6 +499,16 @@ function SmartAI:objectiveLevel(player)
 	elseif string.find(gameProcess, ">") then
 		local kingdom = gameProcess:split(">")[1]
 		if string.find(gameProcess, ">>>") then
+			if self.player:getRole() ~= player:getRole() then
+				local ll = "false" 
+				if selfIsCareerist then
+					ll = "true" 
+				end
+				local part3 = "OBJ AI:" .. self.player:getGeneralName() .. "/" .. self.player:getGeneral2Name() .. "/"..self_kingdom ..kingdom ..upperlimit
+				local part4 = "OBJ AI2:" .. player:getGeneralName() .. "/" .. player:getGeneral2Name() .. "/"..player_kingdom_explicit .. player_kingdom_evaluate
+				global_room:writeToConsole(part3)
+				global_room:writeToConsole(part4)
+			end
 			if self_kingdom == kingdom and not selfIsCareerist then
 				if sgs.shown_kingdom[self_kingdom] < upperlimit and sgs.isAnjiang(player)
 					and (player_kingdom_evaluate == self_kingdom or string.find(player_kingdom_evaluate, self_kingdom)) then return 0
@@ -1804,6 +1820,13 @@ function SmartAI:isFriend(other, another)
 	if self.player:objectName() == other:objectName() then return true end
 	if self.player:isFriendWith(other) then return true end
 	local level = self:objectiveLevel(other)
+	if level < 0 and self.player:getRole() ~= other:getRole() then
+		local part1 = "MMP AI:" .. self.player:getGeneralName() .. "/" .. self.player:getGeneral2Name() .. "/".. self.player:getRole() ..level
+		local part2 = "MMP AI2:" .. other:getGeneralName() .. "/" .. other:getGeneral2Name() .. "/".. other:getRole().. "/".. sgs.ai_explicit[other:objectName()] .. self:evaluateKingdom(other) .. level --other:getRole()
+		global_room:writeToConsole(part1)
+		global_room:writeToConsole(part2)
+	end
+	
 	if level < 0 then return true
 	elseif level == 0 then return nil end
 	return false
@@ -2134,7 +2157,6 @@ function SmartAI:filterEvent(event, player, data)
 	end
 	
 	--if not player then
-	--	self.room:writeToConsole("MMP")
 	--	self.room:writeToConsole(event)
 	--	return
 	--end
@@ -4327,7 +4349,9 @@ function SmartAI:getCards(class_name, flag)
 	local private_pile
 	if not flag then private_pile = true end
 	flag = flag or "hes"
+	local part1 = "MMP OverFlow1:" .. class_name .."/".. flag
 	local all_cards = self.player:getCards(flag)
+	local part2 = "MMP OverFlow2:" .. class_name .."/".. flag
 	if private_pile then
 		for _, key in sgs.list(self.player:getPileNames()) do
 			for _, id in sgs.qlist(self.player:getPile(key)) do

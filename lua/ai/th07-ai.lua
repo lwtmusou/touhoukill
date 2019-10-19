@@ -907,7 +907,7 @@ sgs.ai_choicemade_filter.cardResponded["@dunjia2"] = sgs.ai_choicemade_filter.ca
 
 
 sgs.ai_skill_invoke.dunjia_hegemony = function(self, data)
-	local to =self.player:getTag("dunjia_hegemony"):toPlayer()
+	local to = data:toPlayer()
 	local num1 = self.player:getEquips():length()
 	local num2 = to:getEquips():length()
 	
