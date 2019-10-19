@@ -210,7 +210,7 @@ public:
     QList<const Card *> getEquips() const;
     const EquipCard *getEquip(int index) const;
 
-    bool hasWeapon(const char *weapon_name, bool selfOnly = false) const;
+    bool hasWeapon(const char *weapon_name, bool selfOnly = false, bool ignore_preshow = false) const;
     bool hasArmorEffect(const char *armor_name, bool selfOnly = false) const;
     bool hasTreasure(const char *treasure_name) const;
 

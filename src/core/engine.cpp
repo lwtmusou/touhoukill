@@ -1347,10 +1347,10 @@ const ProhibitSkill *Engine::isProhibited(const Player *from, const Player *to, 
     return NULL;
 }
 
-const ViewHasSkill *Engine::ViewHas(const Player *player, const QString &skill_name, const QString &flag) const
+const ViewHasSkill *Engine::ViewHas(const Player *player, const QString &skill_name, const QString &flag, bool ignore_preshow) const
 {
     foreach(const ViewHasSkill *skill, viewhas_skills) {
-        if (skill->ViewHas(player, skill_name, flag))
+        if (skill->ViewHas(player, skill_name, flag, ignore_preshow))
             return skill;
     }
 

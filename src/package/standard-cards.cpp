@@ -471,7 +471,7 @@ bool TribladeCard::targetFilter(const QList<const Player *> &targets, const Play
 
 void TribladeCard::onUse(Room *room, const CardUseStruct &card_use) const
 {
-    const ViewHasSkill *v = Sanguosha->ViewHas(card_use.from, "Triblade", "weapon");
+    const ViewHasSkill *v = Sanguosha->ViewHas(card_use.from, "Triblade", "weapon", true);
     if (v)
         card_use.from->showHiddenSkill(v->objectName());
     room->setEmotion(card_use.from, "weapon/triblade");
@@ -659,7 +659,7 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon");
+        const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon", true);
         if (v) {
             if (!invoke->invoker->hasShownSkill(v) && !invoke->invoker->askForSkillInvoke(this))
                 return false;
@@ -751,12 +751,14 @@ public:
     virtual bool isEnabledAtPlay(const Player *player) const
     {
         bool avalilable = Slash::IsAvailable(player);
-        return avalilable && EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
+        return avalilable  && player->getMark("Equips_Nullified_to_Yourself") == 0 && player->hasWeapon(objectName(), false, true);
+            //&& EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        return matchAvaliablePattern("slash", pattern) && EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
+        return matchAvaliablePattern("slash", pattern) && player->getMark("Equips_Nullified_to_Yourself") == 0 && player->hasWeapon(objectName(), false, true);
+            //EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
@@ -772,7 +774,7 @@ public:
         Slash *slash = new Slash(Card::SuitToBeDecided, 0);
         slash->setSkillName(objectName());
         
-        const ViewHasSkill *v = Sanguosha->ViewHas(Self, objectName(), "weapon");
+        const ViewHasSkill *v = Sanguosha->ViewHas(Self, objectName(), "weapon", true);
         if (v && v->objectName().contains("shenbao"))
             slash->setSkillName("shenbao");
         slash->addSubcards(cards);
@@ -925,7 +927,7 @@ public:
     {
         invoke->invoker->tag[this->objectName()] = data;
         if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
-            const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon");
+            const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon", true);
             if (v)
                 invoke->invoker->showHiddenSkill(v->objectName());
             return true;
@@ -990,7 +992,7 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         if (invoke->invoker->askForSkillInvoke(this, data)) {
-            const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "armor");
+            const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "armor", true);
             if (v)
                 invoke->invoker->showHiddenSkill(v->objectName());
             return true;
@@ -1713,7 +1715,7 @@ public:
         //return ret;
         invoke->invoker->tag[this->objectName()] = data;
         if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
-            const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon");
+            const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon", true);
             if (v)
                 invoke->invoker->showHiddenSkill(v->objectName());
 
@@ -1774,7 +1776,7 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "armor");
+        const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "armor", true);
         if (v) {
             if (!invoke->invoker->hasShownSkill(v) && !invoke->invoker->askForSkillInvoke(this))
                 return false;

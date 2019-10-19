@@ -394,7 +394,7 @@ class ViewHasSkill : public Skill
 public:
     ViewHasSkill(const QString &name);
 
-    virtual bool ViewHas(const Player *player, const QString &skill_name, const QString &flag) const = 0;
+    virtual bool ViewHas(const Player *player, const QString &skill_name, const QString &flag, bool ignore_preshow = false) const = 0;
     inline bool isGlobal() const
     {
         return global;

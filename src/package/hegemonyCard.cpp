@@ -430,7 +430,7 @@ public:
     {
 
         if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
-            const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon");
+            const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon", true);
             if (v)
                 invoke->invoker->showHiddenSkill(v->objectName());
             

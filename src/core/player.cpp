@@ -695,7 +695,6 @@ bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden
                 return false;
         }
         //if (Sanguosha->ViewHas(this, skill_name, "skill")) return true;
-
         return skills.value(skill_name, false) || skills2.value(skill_name, false) || acquired_skills.contains(skill_name) || acquired_skills2.contains(skill_name);
     }
 
@@ -1065,7 +1064,7 @@ const EquipCard *Player::getEquip(int index) const
     return NULL;
 }
 
-bool Player::hasWeapon(const QString &weapon_name, bool selfOnly) const
+bool Player::hasWeapon(const QString &weapon_name, bool selfOnly, bool ignore_preshow) const
 {
     if (getMark("Equips_Nullified_to_Yourself") > 0)
         return false;
@@ -1085,7 +1084,7 @@ bool Player::hasWeapon(const QString &weapon_name, bool selfOnly) const
         }
     }*/
 
-    if (Sanguosha->ViewHas(this, weapon_name, "weapon") != NULL) return true;
+    if (Sanguosha->ViewHas(this, weapon_name, "weapon", ignore_preshow) != NULL) return true;
 
     if (!weapon || isBrokenEquip(weapon->getEffectiveId(), true))
         return false;

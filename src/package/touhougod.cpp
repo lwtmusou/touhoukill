@@ -3382,14 +3382,14 @@ QStringList ShenbaoDialog::getAvailableChoices(const Player *player, CardUseStru
             switch (location) {
             case EquipCard::WeaponLocation: {
                 //if (!(player->hasWeapon(skillName) && !player->hasWeapon(skillName, true)))
-                const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "weapon");
+                const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "weapon", true);
                 if (v && v->objectName().contains("shenbao"))
                     available = true;
                 break;
             }
             case EquipCard::ArmorLocation: {
                 //if (!(player->hasArmorEffect(skillName) && !player->hasArmorEffect(skillName, true)))
-                const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "armor");
+                const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "armor", true);
                 if (v && v->objectName().contains("shenbao"))
                     available = true;
                 break;
@@ -3397,7 +3397,7 @@ QStringList ShenbaoDialog::getAvailableChoices(const Player *player, CardUseStru
 
             case EquipCard::TreasureLocation: {
                 //if (!(player->hasTreasure(skillName) && !player->hasTreasure(skillName, true)))
-                const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "treasure");
+                const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "treasure", true);
                 if (v && v->objectName().contains("shenbao"))
                     available = true;
                 break;
@@ -3439,7 +3439,7 @@ QStringList ShenbaoDialog::getAvailableNullificationChoices(const ServerPlayer *
             switch (location) {
             case EquipCard::WeaponLocation: {
                 //if (!(player->hasWeapon(skillName) && !player->hasWeapon(skillName, true)))
-                const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "weapon");
+                const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "weapon", true);
                 if (v && v->objectName().contains("shenbao"))
                     available = true;
                 break;
@@ -3447,7 +3447,7 @@ QStringList ShenbaoDialog::getAvailableNullificationChoices(const ServerPlayer *
             }
             case EquipCard::ArmorLocation: {
                 //if (!(player->hasArmorEffect(skillName) && !player->hasArmorEffect(skillName, true)))
-                const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "armor");
+                const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "armor", true);
                 if (v && v->objectName().contains("shenbao"))
                     available = true;
                 break;
@@ -3455,7 +3455,7 @@ QStringList ShenbaoDialog::getAvailableNullificationChoices(const ServerPlayer *
 
             case EquipCard::TreasureLocation: {
                 //if (!(player->hasTreasure(skillName) && !player->hasTreasure(skillName, true)))
-                const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "treasure");
+                const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "treasure", true);
                 if (v && v->objectName().contains("shenbao"))
                     available = true;
                 break;
@@ -3523,10 +3523,10 @@ public:
     {
     }
 
-    //bool canPreshow() const
-    //{
-    //    return true;
-    //}
+    bool canPreshow() const
+    {
+        return true;
+    }
 
     virtual int getExtra(const Player *target, bool) const
     {
@@ -3666,13 +3666,13 @@ public:
     {
         if (triggerEvent == GameStart || triggerEvent == Debut || triggerEvent == EventAcquireSkill) {
             foreach (ServerPlayer *p, room->getAllPlayers()) {
-                if (p->hasSkill("shenbao", true) && !p->hasSkill("shenbao_attach"))
+                if ((p->hasSkill("shenbao", true)  || p->ownSkill("shenbao")) && !p->hasSkill("shenbao_attach"))
                     room->attachSkillToPlayer(p, "shenbao_attach");
             }
         }
         if (triggerEvent == Death || triggerEvent == EventLoseSkill) {
             foreach (ServerPlayer *p, room->getAllPlayers()) {
-                if (!p->hasSkill("shenbao", true) && p->hasSkill("shenbao_attach"))
+                if ((!p->hasSkill("shenbao", true) && !p->ownSkill("shenbao"))&& p->hasSkill("shenbao_attach"))
                     room->detachSkillFromPlayer(p, "shenbao_attach", true);
             }
         }
@@ -3720,15 +3720,21 @@ public:
 
     }
 
-    virtual bool ViewHas(const Player *player, const QString &skill_name, const QString &flag) const
+    virtual bool ViewHas(const Player *player, const QString &skill_name, const QString &flag, bool ignore_preshow) const
     {
-        if (player->isDead() || !player->hasSkill("shenbao"))//do not consider nue?? 
+        if (player->isDead())//do not consider nue?? 
+            return false;
+
+        if (!ignore_preshow && !player->hasSkill("shenbao"))
+            return false;
+        if (ignore_preshow && !player->ownSkill("shenbao"))
             return false;
 
         //only consider hegemony mode??  need check items?? no need
         //if (skill_name == "shenbao")
         //    return true;
         if (flag == "weapon") {
+            //return true;
             QString weapon_name = skill_name;
             foreach(const Player *p, player->getAliveSiblings()) {
                 if (p->getWeapon()) {

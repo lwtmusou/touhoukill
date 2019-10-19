@@ -115,7 +115,7 @@ public:
     void playSkillAudioEffect(const QString &skill_name, int index) const;
 
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
-    const ViewHasSkill *ViewHas(const Player *player, const QString &skill_name, const QString &flag) const;
+    const ViewHasSkill *ViewHas(const Player *player, const QString &skill_name, const QString &flag, bool ignore_preshow = false) const;
     int correctDistance(const Player *from, const Player *to) const;
     int correctMaxCards(const Player *target, bool fixed = false, const QString &except = QString()) const;
     int correctCardTarget(const TargetModSkill::ModType type, const Player *from, const Card *card) const;

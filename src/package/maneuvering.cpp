@@ -132,7 +132,7 @@ public:
     {
 
         if (invoke->invoker->askForSkillInvoke(this, data)) {
-            const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon");
+            const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon", true);
             if (v)
                 invoke->invoker->showHiddenSkill(v->objectName());
             return true;
@@ -312,7 +312,7 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "armor");
+        const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "armor", true);
         if (v) {
             if (!invoke->invoker->hasShownSkill(v) && !invoke->invoker->askForSkillInvoke(this))
                 return false;
@@ -420,7 +420,7 @@ public:
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         if (triggerEvent == DamageInflicted) {
-            const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "armor");
+            const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "armor", true);
             if (v) {
                 if (!invoke->invoker->hasShownSkill(v) && !invoke->invoker->askForSkillInvoke(this))
                     return false;

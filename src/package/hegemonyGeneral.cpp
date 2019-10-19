@@ -517,7 +517,7 @@ public:
         
     }
 
-    virtual bool ViewHas(const Player *player, const QString &skill_name, const QString &flag) const
+    virtual bool ViewHas(const Player *player, const QString &skill_name, const QString &flag, bool ignore_preshow) const
     {
         if (flag == "weapon" && skill_name == "DoubleSwordHegemony" && player->isAlive() && player->hasSkill("shezheng_hegemony") && !player->getWeapon())         
             return true;
