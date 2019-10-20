@@ -37,7 +37,7 @@ return {
 	["showcard"] = "手牌",
 	--["known_both_hegemony:showcard"] = "明置手牌",
 	["#KnownBothView"] = "%from 观看了 %to 的 %arg" ,
-	["$KnownBothViewGeneral"] = "%from 观看了 %to 的 %arg， 阵营为 %arg2" ,
+	["$KnownBothViewGeneral"] = "%from 观看了 %to 的 %arg" , --， 阵营为 %arg2
 	
 	
 	["DoubleSwordHegemony"] = "雌雄剑（国）",
