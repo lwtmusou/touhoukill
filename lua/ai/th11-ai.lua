@@ -296,7 +296,7 @@ function wunian_judge(self,user,card)
 	if card:isKindOf("GodSalvation") then
 		return 2
 	end
-	if card:isKindOf("AwaitExhausted") or card:isKindOf("ExNihilo") or card:isKindOf("AllianceFeast") then
+	if card:isKindOf("AwaitExhausted") or card:isKindOf("AwaitExhaustedHegemony") or card:isKindOf("ExNihilo") or card:isKindOf("AllianceFeast") then
 		return 2
 	end
 	if card:isKindOf("IronChain") then
