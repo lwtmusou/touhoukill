@@ -588,6 +588,15 @@ struct ShownCardChangedStruct
     bool moveFromHand;
 };
 
+struct ShowGeneralStruct
+{
+    ShowGeneralStruct();
+
+    ServerPlayer *player;
+    bool isHead;
+    bool isShow;
+};
+
 struct ChoiceMadeStruct
 {
     ChoiceMadeStruct();
@@ -781,4 +790,5 @@ Q_DECLARE_METATYPE(PindianStruct *)
 Q_DECLARE_METATYPE(ExtraTurnStruct)
 Q_DECLARE_METATYPE(BrokenEquipChangedStruct)
 Q_DECLARE_METATYPE(ShownCardChangedStruct)
+Q_DECLARE_METATYPE(ShowGeneralStruct)
 #endif

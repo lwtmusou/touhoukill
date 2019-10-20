@@ -994,23 +994,23 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         break;
     }
     case GeneralShown: {
-        ServerPlayer *player = data.value<ServerPlayer *>();
+        ShowGeneralStruct s = data.value<ShowGeneralStruct>();
+        ServerPlayer *player = s.player; //data.value<ServerPlayer *>();
         QString winner = getWinner(player);
         if (!winner.isNull()) {
             room->gameOver(winner); // if all hasShownGenreal, and they are all friend, game over.
             return true;
         }
-        if (room->getTag("TheFirstToShowRewarded").isNull() && room->getScenario() == NULL) { //Config.RewardTheFirstShowingPlayer &&
-
-            if (player->askForSkillInvoke("FirstShowReward")) {
+        if ( player->getMark("TheFirstToShowReward") > 0 &&  room->getScenario() == NULL) { //Config.RewardTheFirstShowingPlayer &&room->getTag("TheFirstToShowRewarded").isNull() && 
+            room->setPlayerMark(player, "TheFirstToShowReward", 0);
+            if (player->askForSkillInvoke("FirstShowReward")) {           
                 LogMessage log;
                 log.type = "#FirstShowReward";
                 log.from = player;
                 room->sendLog(log);
                 player->drawCards(2);
             }
-
-            room->setTag("TheFirstToShowRewarded", true);
+            //room->setTag("TheFirstToShowRewarded", true);
         }
         if (!Config.Enable2ndGeneral)
             break;

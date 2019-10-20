@@ -628,3 +628,10 @@ ShownCardChangedStruct::ShownCardChangedStruct()
     , moveFromHand(false)
 {
 }
+
+ShowGeneralStruct::ShowGeneralStruct()
+    : player(NULL)
+    , isHead(true)
+    , isShow(true)
+{
+}

@@ -2,6 +2,15 @@ return
 {
 
 	["hegemonyGeneral"] = "国战标准包",
+	["tuizhi_hegemony"] = "退治",
+	[":tuizhi_hegemony"] = "你使用<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌时，你可暗置一名其他角色的一张明置的武将牌。",
+	["tuizhi_hegemony:head"] = "暗置主将",
+	["tuizhi_hegemony:deputy"] = "暗置副将",
+	["@tuizhi"] = "你可选择一名角色，暗置其一张武将牌",
+	["tongjie_hegemony"] = "同诘",
+	[":tongjie_hegemony"] = "<font color=\"blue\"><b>锁定技，</b></font>其他角色明置一张武将牌时，你摸一张牌。你的回合内，其他角色不能明置武将牌。",
+
+	
     ["reimu_hegemony"] = "博丽灵梦",
     ["marisa_hegemony"] = "雾雨魔理沙",
 
