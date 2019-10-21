@@ -27,6 +27,34 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
+class BeishuiDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    static BeishuiDialog *getInstance(const QString &object, bool left = true, bool right = true);
+
+    public slots:
+    void popup();
+    void selectCard(QAbstractButton *button);
+
+private:
+    explicit BeishuiDialog(const QString &object, bool left = true, bool right = true);
+
+    QGroupBox *createLeft();
+    //QGroupBox *createRight();
+    QAbstractButton *createButton(const Card *card);
+    QButtonGroup *group;
+    QHash<QString, const Card *> map;
+
+    QString object_name;
+
+signals:
+    void onButtonClick();
+};
+
+
+
 class SishuCard : public SkillCard
 {
     Q_OBJECT

@@ -5,7 +5,7 @@
 #include "maneuvering.h"
 #include "skill.h"
 #include "standard.h"
-#include "th10.h"
+#include "th06.h"
 #include "hegemonyCard.h"
 //#include "th08.h"
 
@@ -969,6 +969,9 @@ public:
             return NULL;
 
         QString name = Self->tag.value("beishui_hegemony", QString()).toString();
+        QStringList checkedPatterns = responsePatterns();
+        if (checkedPatterns.length() == 1)
+            name = checkedPatterns.first();
         if (name != NULL) {
             Card *card = Sanguosha->cloneCard(name);
             card->setSkillName(objectName());
@@ -993,7 +996,7 @@ public:
 
     virtual QDialog *getDialog() const
     {
-        return QijiDialog::getInstance("beishui_hegemony", true, false);
+        return BeishuiDialog::getInstance("beishui_hegemony", true, false);
     }
 
     void record(TriggerEvent e, Room *room, QVariant &data) const
