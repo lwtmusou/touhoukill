@@ -272,7 +272,7 @@ void PlayerCardBox::arrangeCards(const QList<const Card *> &cards, const QPoint 
             item->setEnabled(enableEmptyCard);
 
         connect(item, &CardItem::clicked, this, &PlayerCardBox::reply);
-        item->setAcceptedMouseButtons(Qt::LeftButton); //the source of hegemony has not set LeftButton???
+        //item->setAcceptedMouseButtons(Qt::LeftButton); //the source of hegemony has not set LeftButton???
         //connect(item, SIGNAL(clicked()), this, SLOT(reply()));
         connect(item, &CardItem::enter_hover, RoomSceneInstance->getDashboard(), &Dashboard::onCardItemHover);
         connect(item, &CardItem::leave_hover, RoomSceneInstance->getDashboard(), &Dashboard::onCardItemLeaveHover);

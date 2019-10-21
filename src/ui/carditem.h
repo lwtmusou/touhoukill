@@ -68,7 +68,7 @@ public:
     }
     bool isEquipped() const;
 
-    void setFrozen(bool is_frozen);
+    void setFrozen(bool is_frozen, bool update_movable = true);
     inline bool isFrozen()
     {
         return frozen;
@@ -131,9 +131,11 @@ protected:
     //virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *);
     bool auto_back, frozen;
 
-private:
     QAbstractAnimation *m_currentAnimation;
     QMutex m_animationMutex;
+
+private:
+    
 
     int m_cardId;
     QString _m_frameType, _m_avatarName;

@@ -362,9 +362,9 @@ bool Dashboard::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStru
         return true;
     }
 
-    m_mutexCardItemsAnimationFinished.lock();
-    _m_cardItemsAnimationFinished << card_items;
-    m_mutexCardItemsAnimationFinished.unlock();
+    //m_mutexCardItemsAnimationFinished.lock();
+    //_m_cardItemsAnimationFinished << card_items;
+    //m_mutexCardItemsAnimationFinished.unlock();
 
     if (place == Player::PlaceEquip)
         addEquips(card_items);
@@ -992,9 +992,9 @@ QList<CardItem *> Dashboard::removeCardItems(const QList<int> &card_ids, Player:
     } else
         Q_ASSERT(false);
 
-    foreach (CardItem *card, result) {
-        card->setAcceptedMouseButtons(0);
-    }
+    //foreach (CardItem *card, result) {
+    //    card->setAcceptedMouseButtons(0);
+    //}
 
     Q_ASSERT(result.size() == card_ids.size());
     if (place == Player::PlaceHand)
@@ -1386,8 +1386,8 @@ void Dashboard::expandPileCards(const QString &pile_name)
 
     adjustCards();
     _playMoveCardsAnimation(card_items, false);
-    foreach (CardItem *card_item, card_items)
-        card_item->setAcceptedMouseButtons(Qt::LeftButton);
+    //foreach (CardItem *card_item, card_items)
+    //    card_item->setAcceptedMouseButtons(Qt::LeftButton);
     update();
     _m_pile_expanded[pile_name] = pile;
 }
@@ -1415,7 +1415,7 @@ void Dashboard::expandSpecialCard()
 
         adjustCards();
         _playMoveCardsAnimation(card_items, false);
-        card_item->setAcceptedMouseButtons(Qt::LeftButton);
+        //card_item->setAcceptedMouseButtons(Qt::LeftButton);
         update();
     }
 }
@@ -1679,7 +1679,8 @@ void Dashboard::onAvatarHoverEnter()
 
 void Dashboard::onAnimationFinished()
 {
-    m_mutexCardItemsAnimationFinished.lock();
+    //while carditem went into handcard,   setAcceptedMouseButtons
+    /*m_mutexCardItemsAnimationFinished.lock();
 
     foreach (CardItem *cardItem, _m_cardItemsAnimationFinished) {
         if (NULL != cardItem) {
@@ -1688,7 +1689,7 @@ void Dashboard::onAnimationFinished()
     }
     _m_cardItemsAnimationFinished.clear();
 
-    m_mutexCardItemsAnimationFinished.unlock();
+    m_mutexCardItemsAnimationFinished.unlock();*/
 
     GenericCardContainer::onAnimationFinished();
 }

@@ -91,7 +91,7 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
         item->setHomeOpacity(1.0);
         item->setFlag(QGraphicsItem::ItemIsFocusable);
 
-        item->setAcceptedMouseButtons(Qt::LeftButton);
+        //item->setAcceptedMouseButtons(Qt::LeftButton);
         if (disabled_ids.contains(item->getCard()->getEffectiveId()))
             item->setEnabled(false);
 
@@ -229,7 +229,7 @@ QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, Pla
         copy->setEnabled(false);
         result.append(copy);
 
-        copy->setAcceptedMouseButtons(0);
+        //copy->setAcceptedMouseButtons(0);
 
         if (m_currentPlayer)
             to_take->showAvatar(m_currentPlayer->getGeneral());
@@ -353,7 +353,7 @@ void GuanxingBox::doGuanxing(const QList<int> &card_ids, bool up_only)
 
         up_items << card_item;
         card_item->setParentItem(this);
-        card_item->setAcceptedMouseButtons(Qt::LeftButton);
+        //card_item->setAcceptedMouseButtons(Qt::LeftButton);
     }
 
     show();

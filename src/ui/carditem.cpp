@@ -14,7 +14,7 @@
 
 void CardItem::_initialize()
 {
-    setAcceptedMouseButtons(0);
+    //setAcceptedMouseButtons(0);
 
     setFlag(QGraphicsItem::ItemIsMovable);
     m_opacityAtHome = 1.0;
@@ -59,11 +59,24 @@ QRectF CardItem::boundingRect() const
 void CardItem::setCard(const Card *card)
 {
     if (card != NULL) {
-        m_cardId = card->getId();
-        const Card *engineCard = Sanguosha->getEngineCard(m_cardId);
-        Q_ASSERT(engineCard != NULL);
-        setObjectName(engineCard->objectName());
-        setToolTip(engineCard->getDescription());
+        if (card->isVirtualCard()) {
+            m_cardId = Card::S_UNKNOWN_CARD_ID;
+            //Vcard = card;
+            setObjectName(card->objectName());
+            for (int i = 0; i <= Sanguosha->getCardCount() - 1; i++) {
+                if (Sanguosha->getEngineCard(i)->objectName() == card->objectName()) {
+                    setToolTip(Sanguosha->getEngineCard(i)->getDescription());
+                    break;
+                }
+            }
+        }
+        else {
+            m_cardId = card->getId();
+            const Card *engineCard = Sanguosha->getEngineCard(m_cardId);
+            Q_ASSERT(engineCard != NULL);
+            setObjectName(engineCard->objectName());
+            setToolTip(engineCard->getDescription());
+        }
     } else {
         m_cardId = Card::S_UNKNOWN_CARD_ID;
         setObjectName("unknown");
@@ -77,13 +90,13 @@ void CardItem::setEnabled(bool enabled)
 
 CardItem::~CardItem()
 {
-    QMutexLocker locker(&m_animationMutex);
-    //m_animationMutex.lock();
+    //QMutexLocker locker(&m_animationMutex);
+    m_animationMutex.lock();
     if (m_currentAnimation != NULL) {
         m_currentAnimation->deleteLater();
         m_currentAnimation = NULL;
     }
-    //m_animationMutex.unlock();
+    m_animationMutex.unlock();
 }
 
 void CardItem::changeGeneral(const QString &general_name)
@@ -122,22 +135,22 @@ void CardItem::goBack(bool playAnimation, bool doFade)
         if (m_currentAnimation != NULL)
             m_currentAnimation->start();
     } else {
-        QMutexLocker locker(&m_animationMutex);
-        //m_animationMutex.lock();
+        //QMutexLocker locker(&m_animationMutex);
+        m_animationMutex.lock();
         if (m_currentAnimation != NULL) {
             m_currentAnimation->stop();
             delete m_currentAnimation;
             m_currentAnimation = NULL;
         }
         setPos(homePos());
-        //m_animationMutex.unlock();
+        m_animationMutex.unlock();
     }
 }
 
 QAbstractAnimation *CardItem::getGoBackAnimation(bool doFade, bool smoothTransition, int duration)
 {
-    QMutexLocker locker(&m_animationMutex);
-    //m_animationMutex.lock();
+    //QMutexLocker locker(&m_animationMutex);
+    m_animationMutex.lock();
     if (m_currentAnimation != NULL) {
         m_currentAnimation->stop();
         delete m_currentAnimation;
@@ -168,10 +181,10 @@ QAbstractAnimation *CardItem::getGoBackAnimation(bool doFade, bool smoothTransit
     } else {
         m_currentAnimation = goback;
     }
-    //m_animationMutex.unlock();
+    m_animationMutex.unlock();
     connect(m_currentAnimation, SIGNAL(finished()), this, SIGNAL(movement_animation_finished()));
-    //connect(m_currentAnimation, SIGNAL(destroyed()), this, SLOT(currentAnimationDestroyed()));
-    connect(m_currentAnimation, SIGNAL(finished()), this, SLOT(animationFinished()));
+    connect(m_currentAnimation, SIGNAL(destroyed()), this, SLOT(currentAnimationDestroyed()));
+    //connect(m_currentAnimation, SIGNAL(finished()), this, SLOT(animationFinished()));
 
     return m_currentAnimation;
 }
@@ -179,7 +192,7 @@ QAbstractAnimation *CardItem::getGoBackAnimation(bool doFade, bool smoothTransit
 void CardItem::currentAnimationDestroyed()
 {
     QObject *ca = sender();
-    if (m_currentAnimation == ca)
+    if (ca == m_currentAnimation)
         m_currentAnimation = NULL;
 }
 
@@ -221,9 +234,15 @@ bool CardItem::isEquipped() const
     return Self->hasEquip(card);
 }
 
-void CardItem::setFrozen(bool is_frozen)
+void CardItem::setFrozen(bool is_frozen, bool update_movable)
 {
     frozen = is_frozen;
+    /*if (frozen != is_frozen) {
+        frozen = is_frozen;
+        if (update_movable || frozen)
+            setFlag(QGraphicsItem::ItemIsMovable, !frozen);
+        update();
+    }*/
 }
 
 CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id)
@@ -316,7 +335,7 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidge
     if (!_m_frameType.isEmpty())
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardFrameArea, G_ROOM_SKIN.getCardAvatarPixmap(_m_frameType));
 
-    if (!isEnabled()) {
+    if (frozen || !isEnabled()) {
         painter->fillRect(G_COMMON_LAYOUT.m_cardMainArea, QColor(100, 100, 100, 255 * opacity()));
         painter->setOpacity(0.7 * opacity());
     }

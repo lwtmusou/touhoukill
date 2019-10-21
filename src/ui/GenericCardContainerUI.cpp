@@ -88,11 +88,11 @@ void GenericCardContainer::_disperseCards(QList<CardItem *> &cards, QRectF fillR
 
 void GenericCardContainer::onAnimationFinished()
 {
-    QParallelAnimationGroup *animationGroup = qobject_cast<QParallelAnimationGroup *>(sender());
+    /*QParallelAnimationGroup *animationGroup = qobject_cast<QParallelAnimationGroup *>(sender());
     if (animationGroup) {
         animationGroup->clear();
         animationGroup->deleteLater();
-    }
+    }*/
 }
 
 void GenericCardContainer::_doUpdate()
@@ -110,9 +110,9 @@ void GenericCardContainer::_playMoveCardsAnimation(QList<CardItem *> &cards, boo
     }
 
     connect(animation, SIGNAL(finished()), this, SLOT(_doUpdate()));
-    if (!destroyCards) {
+    //if (!destroyCards) {
         connect(animation, SIGNAL(finished()), this, SLOT(onAnimationFinished()));
-    }
+    //}
 
     animation->start(QAbstractAnimation::DeleteWhenStopped);
 }
@@ -242,14 +242,14 @@ void PlayerCardContainer::updateAvatar()
             //@todo
             //we want this mask to start at zero piont of logbox width,
             //and keep the height to equal with the diff between middleFrame and rightFrame
-            if (!isHegemonyGameMode(ServerInfo.GameMode)) {
+            //if (!isHegemonyGameMode(ServerInfo.GameMode)) {
                 if (ServerInfo.Enable2ndGeneral)
                     _paintPixmap(_m_dashboardKingdomColorMaskIcon, _m_layout->m_dashboardPrimaryKingdomMaskArea,
                         G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_DASHBOARD_KINGDOM_COLOR_MASK, kingdom), _getAvatarParent());
                 else
                     _paintPixmap(_m_dashboardKingdomColorMaskIcon, _m_layout->m_dashboardKingdomMaskArea,
                         G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_DASHBOARD_KINGDOM_COLOR_MASK, kingdom), _getAvatarParent());
-            }
+            //}
 
 
             _paintPixmap(_m_handCardBg, _m_layout->m_handCardArea, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM, kingdom), _getAvatarParent());
@@ -316,12 +316,14 @@ void PlayerCardContainer::updateSmallAvatar()
         _paintPixmap(_m_circleItem, _m_layout->m_circleArea, QString(QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_IMAGE).arg(_m_layout->m_circleImageSize), _getAvatarParent());
         if (!fake_general) {
             _m_smallAvatarArea->setToolTip(m_player->getSkillDescription(true, "deputy"));
-            if (!isHegemonyGameMode(ServerInfo.GameMode)) {
+            //if (!isHegemonyGameMode(ServerInfo.GameMode)) {
                 QString kingdom = m_player->getKingdom(); //(m_player->getGeneral()) ? m_player->getGeneral()->getKingdom() : "wai";
+                if (isHegemonyGameMode(ServerInfo.GameMode))
+                    kingdom = general->getKingdom();
+
                 _paintPixmap(_m_dashboardSecondaryKingdomColorMaskIcon, _m_layout->m_dashboardSecondaryKingdomMaskArea,
                     G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_DASHBOARD_KINGDOM_COLOR_MASK, kingdom), _getAvatarParent());
-            }
-
+            //}
         }
 
         QString name = Sanguosha->translate("&" + general->objectName());
