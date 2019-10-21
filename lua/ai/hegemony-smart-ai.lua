@@ -1055,7 +1055,7 @@ function SmartAI:updatePlayerKingdom(player, data)
 		local isHead = data:toBool()
 		sgs.general_shown[player:objectName()][isHead and "head" or "deputy"] = true
 	else
-		sgs.general_shown[player:objectName()]["head"] = player:hasShownGeneral1()
+		sgs.general_shown[player:objectName()]["head"] = player:hasShownGeneral()
 		sgs.general_shown[player:objectName()]["deputy"] = player:hasShownGeneral2()
 	end
 
@@ -4697,7 +4697,7 @@ function SmartAI:hasSkill(skill_name, who)
 					if not who:hasShownSkill(s) then checkpoint = false end
 					if self.player:getTag("KnownBoth_" .. who:objectName()):toString() ~= "" then
 						local names = self.player:getTag("KnownBoth_" .. who:objectName()):toString():split("+")
-						if not who:hasShownGeneral1() and who:canShowGeneral("h") and names[1] ~= "anjiang" and not who:isDuanchang(true) and sgs.Sanguosha:getGeneral(names[1]):hasSkill(s) then checkpoint = true end
+						if not who:hasShownGeneral() and who:canShowGeneral("h") and names[1] ~= "anjiang" and not who:isDuanchang(true) and sgs.Sanguosha:getGeneral(names[1]):hasSkill(s) then checkpoint = true end
 						if not who:hasShownGeneral2() and who:canShowGeneral("d") and names[2] ~= "anjiang" and not who:isDuanchang(false) and sgs.Sanguosha:getGeneral(names[2]):hasSkill(s) then checkpoint = true end
 					end
 				end
@@ -6407,7 +6407,7 @@ end
 
 function sgs.hasNullSkill(skill_name, player)
 	if sgs.general_shown[player:objectName()]["head"] and player:inHeadSkills(skill_name) and #player:disableShow(true) > 0
-		and not player:hasShownGeneral1() then
+		and not player:hasShownGeneral() then
 		return true
 	elseif sgs.general_shown[player:objectName()]["deputy"] and player:inDeputySkills(skill_name) and #player:disableShow(false) > 0
 		and not player:hasShownGeneral2() then
