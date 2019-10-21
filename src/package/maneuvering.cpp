@@ -409,7 +409,7 @@ public:
                     ServerPlayer *invoker = qobject_cast<ServerPlayer *>(move.from);
                     if (invoker == NULL || invoker->isDead())
                         return QList<SkillInvokeDetail>();
-                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, invoker, invoker, NULL, true);
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, NULL, invoker, NULL, true);
                 }
             }
         }

@@ -2375,7 +2375,7 @@ public:
     {
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.to == Player::NotActive && change.player->isAlive() && !change.player->getPile("saving_energy").isEmpty())
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, NULL, change.player, NULL, true);
 
         return QList<SkillInvokeDetail>();
     }

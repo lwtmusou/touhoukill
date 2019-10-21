@@ -398,6 +398,8 @@ QList<SkillInvokeDetail> TriggerSkill::triggerable(TriggerEvent, const Room *, c
 bool TriggerSkill::cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
 {
     if (invoke->isCompulsory) { //for hegemony
+        if (invoke->owner == NULL || invoke->owner != invoke->invoker)
+            return true;
         if (invoke->invoker != NULL) {
             if (!invoke->invoker->hasSkill(this))
                 return true;
