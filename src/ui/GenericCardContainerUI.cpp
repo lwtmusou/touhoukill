@@ -536,8 +536,14 @@ void PlayerCardContainer::updateMarks()
             _m_markItem->setPos(newRect.left() - 20, newRect.top());
         else
             _m_markItem->setPos(newRect.topLeft());
-    } else
-        _m_markItem->setPos(newRect.left(), newRect.top() + newRect.height() / 2);
+    }
+    else {
+        if (ServerInfo.Enable2ndGeneral)
+            _m_markItem->setPos(newRect.left() - 150, newRect.top() + newRect.height() / 2);
+        else
+            _m_markItem->setPos(newRect.left(), newRect.top() + newRect.height() / 2);
+    }
+        
 }
 
 void PlayerCardContainer::updateBrokenEquips()

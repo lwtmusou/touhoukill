@@ -612,6 +612,8 @@ void QSanInvokeSkillDock::update()
             int btnWidth = _m_width / lordBtnNum[i];
             if (lordBtnNum[i] == 1)
                 btnWidth = _m_width / 2;
+            if (ServerInfo.Enable2ndGeneral)
+                btnWidth = btnWidth + 20;
             for (int j = 0; j < lordBtnNum[i]; j++) {
                 QSanInvokeSkillButton *button = lordskill_buttons[w++];
                 int btntype = lordBtnNum[i] - 1;
