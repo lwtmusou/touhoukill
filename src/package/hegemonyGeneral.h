@@ -33,6 +33,17 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
+class ShowShezhengCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ShowShezhengCard();
+
+    const Card *validate(CardUseStruct &card_use) const;
+};
+
+
 class XingyunHegemonyCard : public SkillCard
 {
     Q_OBJECT

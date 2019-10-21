@@ -3425,8 +3425,6 @@ QStringList ShenbaoDialog::getAvailableChoices(const Player *player, CardUseStru
     }
     if (isHegemonyGameMode(ServerInfo.GameMode) && cardUseReason == CardUseStruct::CARD_USE_REASON_PLAY && !player->hasShownSkill("shenbao")) {
         choices << "ShowShenbao";
-        //if (choices.length() == 1)
-        //    choices << "cancel";
     }
         
     return choices;
@@ -3520,10 +3518,6 @@ ShenbaoDialog::ShenbaoDialog(const QString &object)
         group->addButton(show_btn);
         layout->addWidget(show_btn);
 
-        //QCommandLinkButton *cancel_btn = new QCommandLinkButton(Sanguosha->translate("cancel"));
-        //cancel_btn->setObjectName("cancel");
-        //group->addButton(cancel_btn);
-        //layout->addWidget(cancel_btn);
     }
 
 
@@ -3607,7 +3601,6 @@ ShowShenbaoCard::ShowShenbaoCard()
     : SkillCard()
 {
     mute = true;
-    //target_fixed = true;
     handling_method = Card::MethodNone;
 }
 

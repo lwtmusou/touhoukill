@@ -698,6 +698,11 @@ public:
         relate_to_place = "deputy";
     }
 
+    bool canPreshow() const
+    {
+        return true;
+    }
+
     virtual int getExtra(const Player *player, bool) const
     {
         if (player->hasSkill(objectName()) && player->hasShownSkill(objectName()) && !player->getWeapon())
@@ -706,6 +711,81 @@ public:
     }
 };
 
+ShowShezhengCard::ShowShezhengCard()
+    : SkillCard()
+{
+    mute = true;
+    target_fixed = true;
+    handling_method = Card::MethodNone;
+}
+
+const Card *ShowShezhengCard::validate(CardUseStruct &card_use) const
+{
+    bool head = card_use.from->inHeadSkills("shezheng_hegemony");
+    card_use.from->showGeneral(head);
+    return NULL;
+}
+
+
+class ShezhengAttach : public ViewAsSkill
+{
+public:
+    ShezhengAttach()
+        : ViewAsSkill("shezheng_attach")
+    {
+        attached_lord_skill = true;
+    }
+
+    virtual bool shouldBeVisible(const Player *Self) const
+    {
+        return Self;
+    }
+
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return !player->hasShownSkill("shezheng_hegemony");
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    {
+        return false;
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        return new ShowShezhengCard();
+    }
+};
+
+
+class ShezhengHegemonyHandler : public TriggerSkill
+{
+public:
+    ShezhengHegemonyHandler()
+        : TriggerSkill("#shezheng_hegemony")
+    {
+        events << GameStart << EventAcquireSkill << EventLoseSkill << Death << Debut << EventSkillInvalidityChange;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == GameStart || triggerEvent == Debut || triggerEvent == EventAcquireSkill) {
+            foreach(ServerPlayer *p, room->getAllPlayers()) {
+                if ((p->hasSkill("shezheng_hegemony", true) || p->ownSkill("shezheng_hegemony")) && !p->hasSkill("shezheng_attach"))
+                    room->attachSkillToPlayer(p, "shezheng_attach");
+            }
+        }
+        if (triggerEvent == Death || triggerEvent == EventLoseSkill) {
+            foreach(ServerPlayer *p, room->getAllPlayers()) {
+                if ((!p->hasSkill("shezheng_hegemony", true) && !p->ownSkill("shezheng_hegemony")) && p->hasSkill("shezheng_attach"))
+                    room->detachSkillFromPlayer(p, "shezheng_attach", true);
+            }
+        }
+    }
+};
+
+
 
 class ShezhengViewHas : public ViewHasSkill
 
@@ -713,7 +793,7 @@ class ShezhengViewHas : public ViewHasSkill
 
 public:
 
-    ShezhengViewHas() : ViewHasSkill("#shezheng_hegemony")
+    ShezhengViewHas() : ViewHasSkill("#shezheng_viewhas")
 
     {
         
@@ -2142,11 +2222,13 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     miko_hegemony->addSkill(new ChilingHegemony);
     miko_hegemony->addSkill(new ShezhengHegemony);
     miko_hegemony->addSkill(new ShezhengViewHas);
+    miko_hegemony->addSkill(new ShezhengHegemonyHandler);
     miko_hegemony->addCompanion("futo_hegemony");
     miko_hegemony->addCompanion("toziko_hegemony");
     miko_hegemony->addCompanion("seiga_hegemony");
     miko_hegemony->setHeadMaxHpAdjustedValue(-1);
     related_skills.insertMulti("shezheng_hegemony", "#shezheng_hegemony");
+    related_skills.insertMulti("shezheng_hegemony", "#shezheng_viewhas");
 
     General *mamizou_hegemony = new General(this, "mamizou_hegemony", "wu", 4);
     mamizou_hegemony->addSkill("xihua");
@@ -2426,7 +2508,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     addMetaObject<NiaoxiangSummon>();
 
     addMetaObject<QingtingHegemonyCard>();
-
+    addMetaObject<ShowShezhengCard>();
     addMetaObject<XingyunHegemonyCard>();
     
     
@@ -2434,7 +2516,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     addMetaObject<BanyueHegemonyCard>();
 
-    skills <<  new GameRule_AskForGeneralShowHead << new GameRule_AskForGeneralShowDeputy << new GameRule_AskForArraySummon ; //<< new ShihuiHegemonyVS
+    skills <<  new GameRule_AskForGeneralShowHead << new GameRule_AskForGeneralShowDeputy << new GameRule_AskForArraySummon  << new ShezhengAttach; //<< new ShihuiHegemonyVS
 }
 
 ADD_PACKAGE(HegemonyGeneral)
