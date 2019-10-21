@@ -285,13 +285,13 @@ const ViewAsSkill *ViewAsSkill::parseViewAsSkill(const Skill *skill)
         if (view_as_skill != NULL)
             return view_as_skill;
     }
-    if (skill->inherits("AttackRangeSkill")) {
+    /*if (skill->inherits("AttackRangeSkill")) {
         const AttackRangeSkill *trigger_skill = qobject_cast<const AttackRangeSkill *>(skill);
         Q_ASSERT(trigger_skill != NULL);
         const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
         if (view_as_skill != NULL)
             return view_as_skill;
-    }
+    }*/
     if (skill->inherits("MaxCardsSkill")) {
         const MaxCardsSkill *trigger_skill = qobject_cast<const MaxCardsSkill *>(skill);
         Q_ASSERT(trigger_skill != NULL);
@@ -601,7 +601,7 @@ int TargetModSkill::getExtraTargetNum(const Player *, const Card *) const
 AttackRangeSkill::AttackRangeSkill(const QString &name)
     : Skill(name, Skill::Compulsory, "static")
 {
-    view_as_skill = new ShowDistanceSkill(objectName()); //also use ShowDistanceSkill
+    //view_as_skill = new ShowDistanceSkill(objectName()); //also use ShowDistanceSkill
 }
 
 const ViewAsSkill *AttackRangeSkill::getViewAsSkill() const

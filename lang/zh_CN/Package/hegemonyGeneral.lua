@@ -80,6 +80,7 @@ return
 
 	--辉夜 国战削弱
 	["kaguya_hegemony"] = "蓬莱山辉夜",
+	["ShowShenbao"] = "神宝（单纯亮将）";
 	["xuyu_hegemony"] = "须臾",
 	[":xuyu_hegemony"] = "<font color=\"purple\"><b>主将技，</b></font>锁定技，当你失去最后的手牌后，你移除副将，获得技能“永恒”。",
 	--["yongheng_hegemony"] = "永恒",

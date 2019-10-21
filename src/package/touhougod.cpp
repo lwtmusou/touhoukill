@@ -3358,10 +3358,10 @@ void ShenbaoDialog::popup()
 
     if (choices.isEmpty()) {
         emit onButtonClick();
-    } else if (choices.length() == 1) {
+    } /*else if (choices.length() == 1) {
         Self->tag["shenbao_choice"] = choices.first();
         emit onButtonClick();
-    } else {
+    }*/ else {
         QList<QAbstractButton *> btns = group->buttons();
         foreach (QAbstractButton *btn, btns)
             btn->setEnabled(choices.contains(btn->objectName()));
@@ -3423,7 +3423,12 @@ QStringList ShenbaoDialog::getAvailableChoices(const Player *player, CardUseStru
             }
         }
     }
-
+    if (isHegemonyGameMode(ServerInfo.GameMode) && cardUseReason == CardUseStruct::CARD_USE_REASON_PLAY && !player->hasShownSkill("shenbao")) {
+        choices << "ShowShenbao";
+        //if (choices.length() == 1)
+        //    choices << "cancel";
+    }
+        
     return choices;
 }
 
@@ -3496,7 +3501,6 @@ ShenbaoDialog::ShenbaoDialog(const QString &object)
     group = new QButtonGroup;
 
     QVBoxLayout *layout = new QVBoxLayout;
-
     foreach (const QString &skillName, equipViewAsSkills) {
         QCommandLinkButton *btn = new QCommandLinkButton(Sanguosha->translate(skillName));
         btn->setObjectName(skillName);
@@ -3509,6 +3513,19 @@ ShenbaoDialog::ShenbaoDialog(const QString &object)
         group->addButton(btn);
         layout->addWidget(btn);
     }
+
+    if (isHegemonyGameMode(ServerInfo.GameMode)) {
+        QCommandLinkButton *show_btn = new QCommandLinkButton(Sanguosha->translate("ShowShenbao"));
+        show_btn->setObjectName("ShowShenbao");
+        group->addButton(show_btn);
+        layout->addWidget(show_btn);
+
+        //QCommandLinkButton *cancel_btn = new QCommandLinkButton(Sanguosha->translate("cancel"));
+        //cancel_btn->setObjectName("cancel");
+        //group->addButton(cancel_btn);
+        //layout->addWidget(cancel_btn);
+    }
+
 
     setLayout(layout);
     connect(group, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(selectSkill(QAbstractButton *)));
@@ -3585,6 +3602,27 @@ public:
     }
 };
 
+
+ShowShenbaoCard::ShowShenbaoCard()
+    : SkillCard()
+{
+    mute = true;
+    //target_fixed = true;
+    handling_method = Card::MethodNone;
+}
+
+bool ShowShenbaoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    return  (to_select == Self && targets.isEmpty());
+}
+
+const Card *ShowShenbaoCard::validate(CardUseStruct &card_use) const
+{
+    bool head = card_use.from->inHeadSkills("shenbao");
+    card_use.from->showGeneral(head);
+    return NULL;
+}
+
 class ShenbaoAttach : public ViewAsSkill
 {
 public:
@@ -3626,6 +3664,8 @@ public:
             return false;
 
         QString name = Self->tag.value("shenbao_choice").toString();
+        if (name == "ShowShenbao")
+            return false;
         const ViewAsSkill *skill = Sanguosha->getViewAsSkill(name);
         if (skill == NULL)
             return false;
@@ -3642,6 +3682,12 @@ public:
             return NULL;
 
         QString name = Self->tag.value("shenbao_choice").toString();
+        if (name == "ShowShenbao") {
+            return new ShowShenbaoCard();
+        }
+        //if (name == "cancel")
+        //    return NULL;
+
         const ViewAsSkill *skill = Sanguosha->getViewAsSkill(name);
         if (skill == NULL)
             return NULL;
@@ -3652,6 +3698,7 @@ public:
         return NULL;
     }
 };
+
 
 class ShenbaoHandler : public TriggerSkill
 {
@@ -3734,6 +3781,8 @@ public:
         //if (skill_name == "shenbao")
         //    return true;
         if (flag == "weapon") {
+            if ((skill_name == "Crossbow" || skill_name == "SixSwords") && !player->hasShownSkill("shenbao"))
+                return false;
             //return true;
             QString weapon_name = skill_name;
             foreach(const Player *p, player->getAliveSiblings()) {
@@ -7381,6 +7430,7 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<FengyinCard>();
     addMetaObject<HuaxiangCard>();
     addMetaObject<ChaowoCard>();
+    addMetaObject<ShowShenbaoCard>();
     addMetaObject<WendaoCard>();
     addMetaObject<XinhuaCard>();
     addMetaObject<RumoCard>();

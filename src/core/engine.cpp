@@ -1323,10 +1323,10 @@ const ViewAsSkill *Engine::getViewAsSkill(const QString &skill_name) const
     } else if (skill->inherits("DistanceSkill")) {//for hegemony showskill
         const DistanceSkill *distance_skill = qobject_cast<const DistanceSkill *>(skill);
         return distance_skill->getViewAsSkill();
-    } else if (skill->inherits("AttackRangeSkill")) {//for hegemony showskill
+    } /*else if (skill->inherits("AttackRangeSkill")) {//for hegemony showskill
         const AttackRangeSkill *distance_skill = qobject_cast<const AttackRangeSkill *>(skill);
         return distance_skill->getViewAsSkill();
-    }  else if (skill->inherits("MaxCardsSkill")) {//for hegemony showskill
+    }*/  else if (skill->inherits("MaxCardsSkill")) {//for hegemony showskill
         const MaxCardsSkill *distance_skill = qobject_cast<const MaxCardsSkill *>(skill);
         return distance_skill->getViewAsSkill();
     }
