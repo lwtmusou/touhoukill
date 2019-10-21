@@ -607,6 +607,9 @@ void RoomScene::handleGameEvent(const QVariant &args)
         bool isSecondaryHero = arg[3].toBool();
         bool sendLog = arg[4].toBool();
         ClientPlayer *player = ClientInstance->getPlayer(playerName);
+        PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
+        if (container)
+            container->refresh();
         if (Sanguosha->getGeneral(newHeroName) && sendLog) {
             QString type = "#Transfigure";
             QString arg2 = QString();
@@ -626,6 +629,8 @@ void RoomScene::handleGameEvent(const QVariant &args)
             setLordBGM(newHeroName);
             setLordBackdrop(newHeroName);
         }
+
+
         if (player != Self)
             break;
         const General *oldHero = isSecondaryHero ? player->getGeneral2() : player->getGeneral();
@@ -633,8 +638,8 @@ void RoomScene::handleGameEvent(const QVariant &args)
         if (oldHero) {
             foreach (const Skill *skill, oldHero->getVisibleSkills(true, !isSecondaryHero))
                 detachSkill(skill->objectName(), !isSecondaryHero);
-            if (oldHero->hasSkill("pingyi")) {
-                PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
+            if (oldHero->hasSkill("pingyi") && container) {
+                //PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
                 container->stopHuaShen();
             }
         }
