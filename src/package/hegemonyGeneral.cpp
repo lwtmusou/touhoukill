@@ -1204,9 +1204,27 @@ public:
     {
         room->setPlayerFlag(invoke->invoker, "xuyu_invoked");
         invoke->invoker->removeGeneral(!invoke->invoker->inHeadSkills(objectName()));
-        QString skillname = invoke->invoker->inHeadSkills(objectName()) ? "yongheng" : "yongheng!";
-        room->handleAcquireDetachSkills(invoke->invoker, skillname);
+        
+        // add this to Player::skills, not Player::acquired_skills.
+        bool head = invoke->invoker->inHeadSkills(objectName());
+        invoke->invoker->addSkill("yongheng", head);
+        invoke->invoker->sendSkillsToOthers(head);
+
+        const Skill *skill = Sanguosha->getSkill("yongheng");
+        const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
+        room->getThread()->addTriggerSkill(trigger_skill);
+
+        QString flag = (head) ? "h" : "d";
+        invoke->invoker->setSkillsPreshowed(flag, true);
+        invoke->invoker->notifyPreshow();
+        //room->setPlayerProperty(invoke->invoker, "general_showed", true);
+
+
+        //QString skillname = invoke->invoker->inHeadSkills(objectName()) ? "yongheng" : "yongheng!";
+        //room->handleAcquireDetachSkills(invoke->invoker, skillname);
         //room->acquireSkill(invoke->invoker, skillname);
+
+
         return false;
     }
 };
