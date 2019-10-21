@@ -272,11 +272,17 @@ GeneralOverview::GeneralOverview(QWidget *parent)
     ui->scrollArea->setWidget(group_box);
     ui->skillTextEdit->setProperty("description", true);
     if (ServerInfo.DuringGame && ServerInfo.EnableCheat) {
-        ui->changeGeneralButton->show();
-        //ui->changeGeneral2Button->show();
-        ui->changeGeneral2Button->hide();
+        if (!isHegemonyGameMode(ServerInfo.GameMode))
+            ui->changeGeneralButton->show();
+        else
+            ui->changeGeneralButton->hide();
+        //
+        if (!isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral)
+            ui->changeGeneral2Button->show();
+        else
+            ui->changeGeneral2Button->hide();
         connect(ui->changeGeneralButton, SIGNAL(clicked()), this, SLOT(askTransfiguration()));
-        //connect(ui->changeGeneral2Button, SIGNAL(clicked()), this, SLOT(askTransfiguration()));
+        connect(ui->changeGeneral2Button, SIGNAL(clicked()), this, SLOT(askTransfiguration()));
     } else {
         ui->changeGeneralButton->hide();
         ui->changeGeneral2Button->hide();
@@ -644,17 +650,17 @@ void GeneralOverview::playAudioEffect()
 
 void GeneralOverview::askTransfiguration()
 {
-    //QPushButton *button = qobject_cast<QPushButton *>(sender());
-    //bool isSecondaryHero = (button && button->objectName() == ui->changeGeneral2Button->objectName());
+    QPushButton *button = qobject_cast<QPushButton *>(sender());
+    bool isSecondaryHero = (button && button->objectName() == ui->changeGeneral2Button->objectName());
     if (ServerInfo.EnableCheat && Self) {
-        //if (isSecondaryHero)
-        //    ui->changeGeneral2Button->setEnabled(false);
-        //else
-        //    ui->changeGeneralButton->setEnabled(false);
+        if (isSecondaryHero)
+            ui->changeGeneral2Button->setEnabled(false);
+        else
+            ui->changeGeneralButton->setEnabled(false);
         int row = ui->tableWidget->currentRow();
         QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
-        //ClientInstance->requestCheatChangeGeneral(general_name, isSecondaryHero);
-        ClientInstance->requestCheatChangeGeneral(general_name, false);
+        ClientInstance->requestCheatChangeGeneral(general_name, isSecondaryHero);
+        //ClientInstance->requestCheatChangeGeneral(general_name, false);
     }
 }
 
