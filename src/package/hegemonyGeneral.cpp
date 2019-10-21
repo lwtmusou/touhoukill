@@ -243,7 +243,7 @@ public:
     {
         if (event == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card && use.card->getSuit() == Card::Heart) {
+            if (use.card && use.card->getSuit() == Card::Heart && use.card->getTypeId() != Card::TypeSkill) {
                 if (use.from && use.from->hasSkill(this)) {
                     foreach(ServerPlayer *p, room->getOtherPlayers(use.from)) {
                         if (p->hasShownOneGeneral())

@@ -149,7 +149,18 @@ sgs.ai_skill_choice.fengmo = function(self, choices, data)
 	return "card"
 end
 
+sgs.ai_skill_invoke.tongjie_hegemony =function(self,data)
+	return true
+end
 
+sgs.ai_skill_playerchosen.tuizhi_hegemony = function(self, targets)
+	for _,p  in sgs.qlist(targets) do
+		if self:isEnemy(p) then
+			return p
+		end
+	end
+	return nil
+end
 
 table.insert(sgs.ai_global_flags, "bolisource")
 sgs.ai_skill_invoke.boli = function(self,data)
