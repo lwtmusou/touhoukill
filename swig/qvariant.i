@@ -168,6 +168,14 @@ public:
         return $self->value<ShownCardChangedStruct>();
     }
 
+	void setValue(ShowGeneralStruct *s) {
+        $self->setValue(QVariant::fromValue(*s));
+    }
+
+    ShowGeneralStruct toShowGeneralChange() const{
+        return $self->value<ShowGeneralStruct>();
+    }
+
     void setValue(QList<int> intlist) {
         QVariantList varlist;
         for (int i = 0; i < intlist.length(); i++)

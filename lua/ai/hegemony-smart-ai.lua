@@ -478,7 +478,7 @@ function SmartAI:objectiveLevel(player)
 	if (not sgs.isAnjiang(self.player) or sgs.shown_kingdom[self_kingdom] < upperlimit) and self.role ~= "careerist" and self_kingdom == player_kingdom_explicit then return -2 end
 	if self:getKingdomCount() <= 2 then return 5 end
 
-	local selfIsCareerist = self.role == "careerist" or sgs.shown_kingdom[self_kingdom] >= upperlimit and not self.player:hasShownGeneral()
+	local selfIsCareerist = self.role == "careerist" or (sgs.shown_kingdom[self_kingdom] >= upperlimit and not self.player:hasShownOneGeneral()) --confrimed
 
 	local gameProcess = sgs.gameProcess()
 	if gameProcess == "===" then
@@ -504,10 +504,34 @@ function SmartAI:objectiveLevel(player)
 				if selfIsCareerist then
 					ll = "true" 
 				end
+				--[[OBJ AI:anjiang/remilia_hegemony/shushu4
+OBJ AI2:kokoro_hegemony/nazrin_hegemony/wuwu
+selfIsCareerist
+FUCK
+OBJ AI:anjiang/remilia_hegemony/shushu4
+OBJ AI2:ichirin_hegemony/anjiang/wuwu
+selfIsCareerist
+FUCK
+MMP AI:anjiang/remilia_hegemony/shu-1
+MMP AI2:ichirin_hegemony/anjiang/wu/wuwu-1]]
 				local part3 = "OBJ AI:" .. self.player:getGeneralName() .. "/" .. self.player:getGeneral2Name() .. "/"..self_kingdom ..kingdom ..upperlimit
 				local part4 = "OBJ AI2:" .. player:getGeneralName() .. "/" .. player:getGeneral2Name() .. "/"..player_kingdom_explicit .. player_kingdom_evaluate
+				
+
 				global_room:writeToConsole(part3)
 				global_room:writeToConsole(part4)
+				if self_kingdom == kingdom then
+					if  selfIsCareerist then
+						global_room:writeToConsole("selfIsCareerist")
+					else
+						global_room:writeToConsole("NO Careerist")
+					end
+				end
+				if not string.find(player_kingdom_evaluate, kingdom) then
+					global_room:writeToConsole("FUCK")
+				else
+					global_room:writeToConsole("DIU")
+				end
 			end
 			if self_kingdom == kingdom and not selfIsCareerist then
 				if sgs.shown_kingdom[self_kingdom] < upperlimit and sgs.isAnjiang(player)
@@ -665,7 +689,7 @@ function sgs.gameProcess(update)
 		if i < #kingdoms then sum_value2 = sum_value2 + value[kingdoms[i]] end
 		if i < #kingdoms - 1 then sum_value3 = sum_value3 + value[kingdoms[i]] end
 	end
-
+    --SEAT7 10 shu20 qun20 wu0 careerist20 wei0 gP:=== Shu3 Qun1 Wu1 Careerist0 Wei1    麻痹打脸，这是平衡局？？？？？
 	local process = "==="
 	if value[kingdoms[1]] >= sum_value1 and value[kingdoms[1]] > 0 then
 		process = kingdoms[1] .. ">>>"
@@ -2129,9 +2153,10 @@ function SmartAI:filterEvent(event, player, data)
 	--需要对player赋值
 	if event == sgs.GameStart or  event == sgs.TurnStart
 	or  event == sgs.EventPhaseStart  or  event == sgs.EventPhaseEnd  or event == sgs.EventPhaseProceeding
-	or event == sgs.HpChanged or event == sgs.MaxHpChanged
-    or event == sgs.GeneralShown	then
+	or event == sgs.HpChanged or event == sgs.MaxHpChanged then
 		player = data:toPlayer()
+    elseif event == sgs.GeneralShown or event == sgs.GeneralHidden	then
+		player = data:toShowGeneralChange().player
 	elseif event == sgs.HpRecover or event == sgs.PreHpRecover then
 		player = data:toRecover().to
 	elseif event == sgs.StartJudge or event == sgs.AskForRetrial or event == sgs.FinishRetrial or event == sgs.FinishJudge  then
@@ -2879,7 +2904,7 @@ function SmartAI:getCardRandomly(who, flags, disable_list)
 	if cards:isEmpty() then return end
 	local r = math.random(0, cards:length() - 1)
 	local card = cards:at(r)
-	if who:hasArmorEffect("SilverLion") and cards:contains(who:getArmor()) then
+	if who:hasArmorEffect("SilverLion") then --and cards:contains(who:getArmor()) 
 		if self:isEnemy(who) and who:isWounded() and card == who:getArmor() then
 			if r ~= (cards:length() - 1) then
 				card = cards:at(r + 1)
@@ -4350,8 +4375,10 @@ function SmartAI:getCards(class_name, flag)
 	if not flag then private_pile = true end
 	flag = flag or "hes"
 	local part1 = "MMP OverFlow1:" .. class_name .."/".. flag
+	global_room:writeToConsole(part1)
 	local all_cards = self.player:getCards(flag)
 	local part2 = "MMP OverFlow2:" .. class_name .."/".. flag
+	global_room:writeToConsole(part2)
 	if private_pile then
 		for _, key in sgs.list(self.player:getPileNames()) do
 			for _, id in sgs.qlist(self.player:getPile(key)) do
@@ -4392,7 +4419,7 @@ function SmartAI:getCards(class_name, flag)
 			if viewas then
 				viewas = sgs.Card_Parse(viewas)
 				assert(viewas)
-				if isCard and self:adjustUsePriority(card, 0) >= self:adjustUsePriority(viewas, 0) then
+				if isCard  then --and self:adjustUsePriority(card, 0) >= self:adjustUsePriority(viewas, 0)
 					table.insert(cards, card)
 				else
 					table.insert(cards, viewas)

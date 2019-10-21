@@ -776,7 +776,14 @@ struct ShownCardChangedStruct
     bool moveFromHand;
 };
 
+struct ShowGeneralStruct
+{
+    ShowGeneralStruct();
 
+    ServerPlayer *player;
+    bool isHead;
+    bool isShow;
+};
 
 
 struct SkillInvokeDetail
