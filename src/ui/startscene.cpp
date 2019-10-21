@@ -139,7 +139,8 @@ void StartScene::printServerInfo()
             scheme_str = tr("Average");
             break;
         }
-        server_log->append(tr("Secondary general is enabled, max hp scheme is %1").arg(scheme_str));
+        if (!isHegemonyGameMode(Config.GameMode))
+            server_log->append(tr("Secondary general is enabled, max hp scheme is %1").arg(scheme_str));
     } else
         server_log->append(tr("Seconardary general is disabled"));
 
