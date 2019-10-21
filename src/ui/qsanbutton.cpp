@@ -427,22 +427,39 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
         int nline = _m_skill->objectName().indexOf("-");
         if (nline == -1)
             nline = _m_skill->objectName().indexOf("_");
-        QString engskillname = _m_skill->objectName().left(nline);
+        QString engskillname = _m_skill->objectName().split("_").first();  //left(nline);
+        QString HegSkillname = engskillname + "_hegemony";
         QString generalName = "";
 
         foreach (const Player *p, Self->getSiblings()) {
             const General *general = p->getGeneral();
-            if (general->hasSkill(engskillname)) {
+            if (general->hasSkill(engskillname) || general->hasSkill(HegSkillname)) {
                 generalName = general->objectName();
                 break;
+            }
+            if (ServerInfo.Enable2ndGeneral) {
+                const General *general2 = p->getGeneral2();
+                if (general2->hasSkill(engskillname) || general2->hasSkill(HegSkillname)) {
+                    generalName = general2->objectName();
+                    break;
+                }
             }
         }
         if (generalName == "") {
             const General *general = Self->getGeneral();
-            if (general && general->hasSkill(engskillname))
+            if (general && (general->hasSkill(engskillname) || general->hasSkill(HegSkillname)))
                 generalName = general->objectName();
+            if (ServerInfo.Enable2ndGeneral) {
+                const General *general2 = Self->getGeneral2();
+                if (general2->hasSkill(engskillname) || general2->hasSkill(HegSkillname)) {
+                    generalName = general2->objectName();
+                }
+            }
         }
         if (generalName != "") {
+            if (generalName.endsWith("_hegemony"))
+                generalName = generalName.replace("_hegemony", "");
+
             QString path = G_ROOM_SKIN.getButtonPixmapPath(G_ROOM_SKIN.S_SKIN_KEY_BUTTON_SKILL, getSkillTypeString(_m_skillType), _m_state);
             int n = path.lastIndexOf("/");
             path = path.left(n + 1) + generalName + ".png";
