@@ -156,8 +156,8 @@
     "extraSkillFont": ["simli", [16, 16, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
     "extraSkillTextArea": [32, 113, 56, 20],
 	"seatIconRegion": [4, 1, 23, 16],
-	"leftDisableShowLockArea": [16, 49, 70, 161],
-    "rightDisableShowLockArea": [93, 49, 70, 161]
+	"leftDisableShowLockArea": [16, 49, 70, 100],
+    "rightDisableShowLockArea": [93, 49, 70, 100]
 },
 "dashboard":
 {
