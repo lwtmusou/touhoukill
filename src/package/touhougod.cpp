@@ -3767,8 +3767,15 @@ public:
 
         if (!ignore_preshow && !player->hasSkill("shenbao"))
             return false;
-        if (ignore_preshow && !player->ownSkill("shenbao"))
-            return false;
+        if (ignore_preshow) {
+            if (!player->ownSkill("shenbao"))
+                return false;
+            if (!player->hasShownSkill("shenbao")) {
+                QString flag = (player->inHeadSkills("shenbao")) ? "h" : "d";
+                if (!player->canShowGeneral(flag))
+                    return false;
+            }
+        }
 
         //only consider hegemony mode??  need check items?? no need
         //if (skill_name == "shenbao")
