@@ -1783,6 +1783,8 @@ sgs.ai_skill_invoke.EightDiagram = function(self, data)
 	end
 	return true
 end
+
+
 --【命运】【绯想】【红白】【无寿】【斗魂】
 function sgs.ai_armor_value.EightDiagram(player, self)
 	--其实需要先确定目的
@@ -1816,6 +1818,11 @@ function sgs.ai_armor_value.EightDiagram(player, self)
 	end
 
 	return 4
+end
+
+
+sgs.ai_skill_invoke.RenwangShield = function(self, data)
+	return true
 end
 
 function sgs.ai_armor_value.RenwangShield(player, self)
@@ -1852,6 +1859,19 @@ sgs.ai_use_priority.SilverLion = 1.0
 sgs.ai_use_priority.EightDiagram = 0.8
 sgs.ai_use_priority.RenwangShield = 0.85
 sgs.ai_use_priority.DefensiveHorse = 2.75
+
+
+function SmartAI:useCardArcheryAttack(card, use)
+	if self:getAoeValue(card) > 0 then
+		use.card = card
+	end
+end
+
+function SmartAI:useCardSavageAssault(card, use)
+	if self:getAoeValue(card) > 0 then
+		use.card = card
+	end
+end
 
 sgs.dynamic_value.damage_card.ArcheryAttack = true
 sgs.dynamic_value.damage_card.SavageAssault = true

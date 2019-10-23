@@ -20,6 +20,9 @@ sgs.ai_choicemade_filter.skillInvoke.zhuqu = function(self, player, args, data)
 	end
 end
 
+sgs.ai_skill_invoke.xuyu_hegemony  = function(self)
+	return true
+end
 
 
 sgs.ai_skill_invoke.ruizhi  = function(self)
