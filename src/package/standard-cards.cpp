@@ -125,6 +125,8 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
             if (extra_target) {
                 use.to.append(extra_target);
                 room->sortByActionOrder(use.to);
+                if (player->hasSkill("shuangren") && !player->hasShownSkill("shuangren"))
+                    player->showHiddenSkill("shuangren");
             } else
                 break;
             targets_ts.clear();
