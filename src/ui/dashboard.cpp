@@ -204,13 +204,50 @@ void Dashboard::_adjustComponentZValues(bool killed)
     _layUnder(_m_rightFrame);
     _layUnder(_m_leftFrame);
     _layUnder(_m_middleFrame);
-
-    // if (isHegemonyGameMode(ServerInfo.GameMode))
-    //    _layBetween(button_widget, _m_middleFrame, _m_hegemonyroleComboBox);
-    //else
-    //    _layBetween(button_widget, _m_middleFrame, _m_roleComboBox);
-    _layBetween(_m_rightFrameBg, _m_faceTurnedIcon, _m_equipRegions[3]);
-
+    
+    if (isHegemonyGameMode(ServerInfo.GameMode)) {
+        if (button_widget && _m_middleFrame && _m_hegemonyroleComboBox)
+            _layBetween(button_widget, _m_middleFrame, _m_hegemonyroleComboBox);
+    }
+    else {
+        if (button_widget && _m_middleFrame && _m_roleComboBox)
+            _layBetween(button_widget, _m_middleFrame, _m_roleComboBox);
+    }
+    
+    if (_m_rightFrameBg && _m_faceTurnedIcon && _m_equipRegions)
+        _layBetween(_m_rightFrameBg, _m_faceTurnedIcon, _m_equipRegions[3]);
+    if (leftHiddenMark)
+        _layUnder(leftHiddenMark);
+    if (rightHiddenMark)
+        _layUnder(rightHiddenMark);
+    if (_m_smallAvatarArea)
+        _layUnder(_m_smallAvatarArea);
+    if (_m_avatarArea)
+        _layUnder(_m_avatarArea);
+    if  (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral && _m_shadow_layer2)
+        _layUnder(_m_shadow_layer2);
+    if (isHegemonyGameMode(ServerInfo.GameMode) && _m_shadow_layer1)
+        _layUnder(_m_shadow_layer1);
+    if (_m_faceTurnedIcon2)
+        _layUnder(_m_faceTurnedIcon2);
+    if (_m_faceTurnedIcon)
+        _layUnder(_m_faceTurnedIcon);
+    if (_m_smallAvatarIcon)
+        _layUnder(_m_smallAvatarIcon);
+    if (_m_avatarIcon)
+        _layUnder(_m_avatarIcon);
+    //_layUnder(_m_rightFrameBg);
+    //the following  items must be on top
+    //_m_smallAvatarNameItem
+    //_m_avatarNameItem
+    //_m_dashboardKingdomColorMaskIcon
+    //_m_dashboardSecondaryKingdomColorMaskIcon
+    if (_m_hpBox)
+        _m_hpBox->setZValue(2000);
+    if (_m_sub_hpBox)
+        _m_sub_hpBox->setZValue(2000);
+    
+    //_m_rightFrameBg->setZValue(3000);
     //hegemony
     /*if (isHegemonyGameMode(ServerInfo.GameMode)) {
         _layUnder(rightHiddenMark);
@@ -1023,68 +1060,33 @@ QList<CardItem *> Dashboard::removeCardItems(const QList<int> &card_ids, Player:
 
 void Dashboard::updateAvatar()
 {
-    /*if (ServerInfo.GameMode == "hegemony") {
-        if (_m_avatarIcon == NULL) {
-            _m_avatarIcon = new GraphicsPixmapHoverItem(this, _getAvatarParent());
-            _m_avatarIcon->setTransformationMode(Qt::SmoothTransformation);
-        }
+    /*
+        rewrite PlayerCardContainer::updateAvatar() ??
+    */
 
-        const General *general = NULL;
-        if (m_player) {
-            general = m_player->getAvatarGeneral();
-
-        }
-
-        QGraphicsPixmapItem *avatarIconTmp = _m_avatarIcon;
-        if (general != NULL) {
-            _m_avatarArea->setToolTip(m_player->getSkillDescription());
-            QString name = general->objectName();
-            QPixmap avatarIcon = _getAvatarIcon(name);
-            QRect area = _m_layout->m_avatarArea;
-            area = QRect(area.left() + 2, area.top() + 1, area.width() - 2, area.height() - 3);
-            _paintPixmap(avatarIconTmp, area, avatarIcon, _getAvatarParent());
-            // this is just avatar general, perhaps game has not started yet.
-            if (m_player->getGeneral() != NULL) {
-                QString kingdom = m_player->getKingdom();
-                _paintPixmap(_m_kingdomColorMaskIcon, _m_layout->m_kingdomMaskArea,
-                    G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_COLOR_MASK, kingdom), this->_getAvatarParent());
-                _paintPixmap(_m_handCardBg, _m_layout->m_handCardArea,
-                    _getPixmap(QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM, kingdom), this->_getAvatarParent());
-                QString name = Sanguosha->translate("&" + general->objectName());
-                if (name.startsWith("&"))
-                    name = Sanguosha->translate(general->objectName());
-                _m_layout->m_avatarNameFont.paintText(_m_avatarNameItem,
-                    _m_layout->m_avatarNameArea,
-                    Qt::AlignLeft | Qt::AlignJustify, name);
-            }
-            else {
-                _paintPixmap(_m_handCardBg, _m_layout->m_handCardArea,
-                    _getPixmap(QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM, QSanRoomSkin::S_SKIN_KEY_DEFAULT_SECOND),
-                    _getAvatarParent());
-            }
-        }
-        else {
-            _paintPixmap(avatarIconTmp, _m_layout->m_avatarArea,
-                QSanRoomSkin::S_SKIN_KEY_BLANK_GENERAL, _getAvatarParent());
-            _clearPixmap(_m_kingdomColorMaskIcon);
-            _clearPixmap(_m_kingdomIcon);
-            _paintPixmap(_m_handCardBg, _m_layout->m_handCardArea,
-                _getPixmap(QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM, QSanRoomSkin::S_SKIN_KEY_DEFAULT_SECOND),
-                _getAvatarParent());
-            _m_avatarArea->setToolTip(QString());
-        }
-        _m_avatarIcon->show();
-        _adjustComponentZValues();
     
-    
-    }*/
-
-    //else {
     PlayerCardContainer::updateAvatar();
+    if (_m_skillDock)
     _m_skillDock->update();
+    if (_m_rightSkillDock)
     _m_rightSkillDock->update();
-    //_adjustComponentZValues();
-    //}
+    _adjustComponentZValues();
+    
+}
+
+void Dashboard::updateSmallAvatar()
+{
+    /*
+    rewrite PlayerCardContainer::updateAvatar() ??
+    */
+
+
+    PlayerCardContainer::updateSmallAvatar();
+    if (_m_skillDock)
+    _m_skillDock->update();
+    if (_m_rightSkillDock)
+    _m_rightSkillDock->update();
+    _adjustComponentZValues();
 }
 
 static bool CompareByNumber(const CardItem *a, const CardItem *b)
