@@ -960,6 +960,77 @@ end
 sgs.ai_Rende_intention.jiyi= -30
 
 
+sgs.ai_skill_invoke.hanbo_hegemony = function(self, data)
+	local target = data:toPlayer()
+	return target and self:isEnemy(target)
+end
+
+
+local dongzhi_hegemony_skill={}
+dongzhi_hegemony_skill.name="dongzhi_hegemony"
+table.insert(sgs.ai_skills, dongzhi_hegemony_skill)
+dongzhi_hegemony_skill.getTurnUseCard=function(self)
+	if self.player:getMark("@dongzhi") == 0 then return nil end
+	return sgs.Card_Parse("@DongzhiHegemonyCard=.")
+end
+
+sgs.ai_skill_use_func.DongzhiHegemonyCard = function(card, use, self)
+	local self_role = self.player:getRole()
+	
+	--[[local players = { wei = , shu = 1, wu = 1, qun = 1}
+	
+	table.removeOne(players, self_role)
+	
+	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if p:hasShownOneGeneral() or self.room:getTag(p:objectName() + "_RoleConfirmed"):toBool() then
+			role = p:getRole()
+			if players[role] then
+				players[role] = players[role] + 1 
+			end
+		end
+	end]]
+	
+	local kingdoms = { "wei", "shu", "wu", "qun"}
+	table.removeOne(kingdoms, self_role)
+	table.insert(kingdoms, "careerist")
+	
+	--[[local cmp = function(a, b)
+		return players[a] > players[b]
+	end
+	table.sort(kingdoms, cmp)
+	]]
+	--local p = sgs.gameProcess(true)
+	local upperlimit = math.min(2, math.floor(self.room:getPlayers():length() / 2))
+	local target_role = ""
+	for i = 1, #kingdoms do
+		local playerNum = self.player:getPlayerNumWithSameKingdom("AI", kingdoms[i])
+		if playerNum >= upperlimit then
+			target_role = kingdoms[i]
+			break
+		end
+	end
+	
+	if target_role ~= "" then
+		use.card = card
+		if use.to then
+			for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+				if p:hasShownOneGeneral() or self.room:getTag(p:objectName() + "_RoleConfirmed"):toBool() then
+					if target_role == p:getRole() then
+						use.to:append(p)
+						return  --只需指定一个，后续会在onuse 自动补完。
+					end
+				end
+			end
+			--return  指定全部的时候 
+		end
+	end
+end
+
+
+sgs.ai_use_value.DongzhiHegemonyCard = 9
+sgs.ai_use_priority.DongzhiHegemonyCard = 8
+
+
 sgs.ai_skill_invoke.chunyi =  true
 sgs.ai_skill_playerchosen.baochun = function(self, targets)
 	local target =self:touhouFindPlayerToDraw(true, self.player:getLostHp())

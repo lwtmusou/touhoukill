@@ -1962,6 +1962,183 @@ public:
 };
 
 
+class HanboHegemony : public TriggerSkill
+{
+public:
+    HanboHegemony()
+        : TriggerSkill("hanbo_hegemony")
+    {
+        events << CardsMoveOneTime;
+    }
+
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+
+        ServerPlayer *current = room->getCurrent();
+        if (!current || current->isDead() || !current->hasSkill(this))
+            return QList<SkillInvokeDetail>();
+
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        ServerPlayer *target = qobject_cast<ServerPlayer *>(move.from);
+        if (target &&  target != current &&  target->isAlive() && move.from_places.contains(Player::PlaceHand) && target->isKongcheng())
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current, NULL, false, target);
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *target = invoke->targets.first();
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
+
+        target->drawCards(2);
+        target->turnOver();
+
+        return false;
+    }
+};
+
+
+DongzhiHegemonyCard::DongzhiHegemonyCard()
+{
+    m_skillName = "dongzhi_hegemony";
+}
+
+bool DongzhiHegemonyCard::targetFilter(const QList<const Player *> &selected, const Player *to_select, const Player *player) const
+{
+    return selected.isEmpty() && to_select->hasShownOneGeneral();
+
+    /*if (!to_selected->hasShownOneGeneral()) //consider anjiang  has comfirmed??   to_selected->getRole() == NULL??  
+        retrun false;
+    if (selected.isEmpty())
+        return true;
+    QString role = selected.first()->getRole();
+
+    return (role != "careerist"  &&  to_select->getRole() == role);*/
+}
+
+/*bool DongzhiHegemonyCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
+{
+    int num = 0;
+    QString role = targets.first()->getRole();
+    if (Self->getRole() == role)
+        num++;
+    foreach(const Player *p, Self->getAvlieSiblings()) {
+        if (p->getRole() == role)
+            num++;
+    }
+    return targets.length() == num;
+}*/
+
+
+void DongzhiHegemonyCard::onUse(Room *room, const CardUseStruct &card_use) const
+{
+    QList<ServerPlayer *> targets;
+    ServerPlayer *target = card_use.to.first();
+    targets << target;
+    QList<ServerPlayer *> players = room->getOtherPlayers(target);
+    foreach(ServerPlayer *player, players) {
+        if (!target->isFriendWith(player))
+            continue;
+        targets << player;
+    }
+
+    CardUseStruct use = card_use;
+    use.to = targets;
+    room->doLightbox("$dongzhiAnimate", 4000);
+    SkillCard::onUse(room, use);
+}
+
+
+void DongzhiHegemonyCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+{
+    room->removePlayerMark(source, "@dongzhi");
+    foreach(ServerPlayer *p, targets) {
+        int num = p->getHp();
+        if (!room->askForDiscard(p, "dongzhi", num, num, true, true))
+            room->setPlayerMark(p, "@dongzhi_damage", 1);
+    }
+}
+
+class DongzhiHegemonyVS : public ZeroCardViewAsSkill
+{
+public:
+    DongzhiHegemonyVS()
+        : ZeroCardViewAsSkill("dongzhi_hegemony")
+    {
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return player->getMark("@dongzhi") > 0;
+    }
+
+    virtual const Card *viewAs() const
+    {
+        return new DongzhiHegemonyCard;
+    }
+};
+
+class DongzhiHegemony : public TriggerSkill
+{
+public:
+    DongzhiHegemony()
+        : TriggerSkill("dongzhi_hegemony")
+    {
+        events << DamageInflicted << EventPhaseStart;
+        limit_mark = "@dongzhi";
+        view_as_skill = new DongzhiHegemonyVS;
+        frequency = Limited;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player && player->getPhase() == Player::NotActive)
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                if (p->getMark("@dongzhi_damage") > 0) {
+                    room->setPlayerMark(p, "@dongzhi_damage", 0);
+                }
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    {
+        if (triggerEvent != DamageInflicted)
+            return QList<SkillInvokeDetail>();
+
+        DamageStruct damage = data.value<DamageStruct>();
+        if (!damage.to || damage.to->isDead() || damage.to->getMark("@dongzhi_damage") == 0)
+            return QList<SkillInvokeDetail>();
+
+
+        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, NULL, damage.to, NULL, true);
+
+    }
+
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        //log
+        DamageStruct damage = data.value<DamageStruct>();
+        LogMessage log;
+        log.type = "#DongzhiDamage";
+        log.from = invoke->invoker;
+        log.arg = QString::number(damage.damage);
+        log.arg2 = QString::number(++damage.damage);
+        room->sendLog(log);
+
+        data = QVariant::fromValue(damage);
+        return false;
+    }
+};
+
+
+
+
 class DongjieHegemony : public TriggerSkill
 {
 public:
@@ -2490,8 +2667,9 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     chen_hegemony->addSkill("#qimen-prohibit");
 
     General *letty_hegemony = new General(this, "letty_hegemony", "wei", 4);
-    letty_hegemony->addSkill("jiyi");
-    letty_hegemony->addSkill("chunmian");
+    letty_hegemony->addSkill(new HanboHegemony);
+    letty_hegemony->addSkill(new DongzhiHegemony);
+    letty_hegemony->addCompanion("cirno_hegemony");
 
     General *lilywhite_hegemony = new General(this, "lilywhite_hegemony", "wei", 3);
     lilywhite_hegemony->addSkill("baochun");
@@ -2525,7 +2703,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     
     
     addMetaObject<MocaoHegemonyCard>();
-
+    addMetaObject<DongzhiHegemonyCard>();
     addMetaObject<BanyueHegemonyCard>();
 
     skills <<  new GameRule_AskForGeneralShowHead << new GameRule_AskForGeneralShowDeputy << new GameRule_AskForArraySummon  << new ShezhengAttach; //<< new ShihuiHegemonyVS
