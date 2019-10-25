@@ -514,13 +514,13 @@ selfIsCareerist
 FUCK
 MMP AI:anjiang/remilia_hegemony/shu-1
 MMP AI2:ichirin_hegemony/anjiang/wu/wuwu-1]]
-				local part3 = "OBJ AI:" .. self.player:getGeneralName() .. "/" .. self.player:getGeneral2Name() .. "/"..self_kingdom ..kingdom ..upperlimit
-				local part4 = "OBJ AI2:" .. player:getGeneralName() .. "/" .. player:getGeneral2Name() .. "/"..player_kingdom_explicit .. player_kingdom_evaluate
+				--local part3 = "OBJ AI:" .. self.player:getGeneralName() .. "/" .. self.player:getGeneral2Name() .. "/"..self_kingdom ..kingdom ..upperlimit
+				--local part4 = "OBJ AI2:" .. player:getGeneralName() .. "/" .. player:getGeneral2Name() .. "/"..player_kingdom_explicit .. player_kingdom_evaluate
 				
 
-				global_room:writeToConsole(part3)
-				global_room:writeToConsole(part4)
-				if self_kingdom == kingdom then
+				--global_room:writeToConsole(part3)
+				--global_room:writeToConsole(part4)
+				--[[if self_kingdom == kingdom then
 					if  selfIsCareerist then
 						global_room:writeToConsole("selfIsCareerist")
 					else
@@ -531,7 +531,7 @@ MMP AI2:ichirin_hegemony/anjiang/wu/wuwu-1]]
 					global_room:writeToConsole("FUCK")
 				else
 					global_room:writeToConsole("DIU")
-				end
+				end]]
 			end
 			if self_kingdom == kingdom and not selfIsCareerist then
 				if sgs.shown_kingdom[self_kingdom] < upperlimit and sgs.isAnjiang(player)
@@ -1843,14 +1843,7 @@ function SmartAI:isFriend(other, another)
 	if sgs.isRoleExpose() and self.lua_ai:relationTo(other) ~= sgs.AI_Neutrality then return self.lua_ai:isFriend(other) end
 	if self.player:objectName() == other:objectName() then return true end
 	if self.player:isFriendWith(other) then return true end
-	local level = self:objectiveLevel(other)
-	if level < 0 and self.player:getRole() ~= other:getRole() then
-		local part1 = "MMP AI:" .. self.player:getGeneralName() .. "/" .. self.player:getGeneral2Name() .. "/".. self.player:getRole() ..level
-		local part2 = "MMP AI2:" .. other:getGeneralName() .. "/" .. other:getGeneral2Name() .. "/".. other:getRole().. "/".. sgs.ai_explicit[other:objectName()] .. self:evaluateKingdom(other) .. level --other:getRole()
-		global_room:writeToConsole(part1)
-		global_room:writeToConsole(part2)
-	end
-	
+	local level = self:objectiveLevel(other)	
 	if level < 0 then return true
 	elseif level == 0 then return nil end
 	return false

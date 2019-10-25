@@ -882,3 +882,9 @@ function sgs.ai_armor_value.IronArmor(player, self)
 end
 
 sgs.ai_use_priority.IronArmor = 0.82
+
+
+sgs.ai_skill_invoke.SilverLion = function(self, data)
+	return true
+end
+

@@ -137,6 +137,7 @@ public:
 
 public slots:
     virtual void updateAvatar();
+    virtual void updateSmallAvatar();
     void updateChaoren();
     void updateShown();
     void updateHiddenMark();  void updateRightHiddenMark();//hegemony
