@@ -324,3 +324,101 @@ end
 
 sgs.weapon_range.DoubleSwordHegemony = 2
 sgs.weapon_range.SixSwords = 2
+
+
+function SmartAI:useCardKnownBothHegemony(KnownBoth, use)
+	self.knownboth_choice = {}
+	if not KnownBoth:isAvailable(self.player) then return false end
+	local targets = sgs.PlayerList()
+	local total_num = 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, KnownBoth)
+	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if KnownBoth:targetFilter(targets, player, self.player) and sgs.isAnjiang(player) and not targets:contains(player)
+			and player:getMark(("KnownBoth_%s_%s"):format(self.player:objectName(), player:objectName())) == 0 and self:hasTrickEffective(KnownBoth, player, self.player) then
+			use.card = KnownBoth
+			targets:append(player)
+			if use.to then use.to:append(player) end
+			self.knownboth_choice[player:objectName()] = "showhead"
+		end
+	end
+
+	if total_num > targets:length() then
+		self:sort(self.enemies, "handcard")
+		sgs.reverse(self.enemies)
+		for _, enemy in ipairs(self.enemies) do
+			if KnownBoth:targetFilter(targets, enemy, self.player) and enemy:getHandcardNum() - self:getKnownNum(enemy, self.player) > 3 and not targets:contains(enemy)
+				and self:hasTrickEffective(KnownBoth, enemy, self.player) then
+				use.card = KnownBoth
+				targets:append(enemy)
+				if use.to then use.to:append(enemy) end
+				self.knownboth_choice[enemy:objectName()] = "showcard"
+			end
+		end
+	end
+	if total_num > targets:length() and not targets:isEmpty() then
+		self:sort(self.friends_noself, "handcard")
+		self.friends_noself = sgs.reverse(self.friends_noself)
+		for _, friend in ipairs(self.friends_noself) do
+			if self:getKnownNum(friend, self.player) ~= friend:getHandcardNum() and card:targetFilter(targets, friend, self.player) and not targets:contains(friend)
+				and self:hasTrickEffective(KnownBoth, friend, self.player) then
+				targets:append(friend)
+				if use.to then use.to:append(friend) end
+				self.knownboth_choice[friend:objectName()] = "showcard"
+			end
+		end
+	end
+
+	if not use.card then
+		targets = sgs.PlayerList()
+		local canRecast = KnownBoth:targetsFeasible(targets, self.player)
+		if canRecast then
+			use.card = KnownBoth
+			if use.to then use.to = sgs.SPlayerList() end
+		end
+	end
+end
+
+
+sgs.ai_skill_choice.known_both_hegemony = function(self, choices, data)
+	local target = data:toPlayer()
+	if target and self.knownboth_choice and self.knownboth_choice[target:objectName()] then return self.knownboth_choice[target:objectName()] end
+	return "showcard"
+end
+
+sgs.ai_use_priority.KnownBothHegemony = 9.1
+sgs.ai_use_value.KnownBothHegemony = 5.5
+sgs.ai_keep_value.KnownBothHegemony = 3.33
+
+sgs.ai_choicemade_filter.skillChoice.known_both_hegemony = function(self, from, promptlist)  --function(self, player, args, data)
+	local choice = promptlist[#promptlist]
+	if choice ~= "showcard" then
+		for _, to in sgs.qlist(self.room:getOtherPlayers(from)) do
+			if to:hasFlag("KnownBothTarget") then
+				to:setMark(("KnownBoth_%s_%s"):format(from:objectName(), to:objectName()), 1)
+				local names = {}
+				if from:getTag("KnownBoth_" .. to:objectName()):toString() ~= "" then
+					names = from:getTag("KnownBoth_" .. to:objectName()):toString():split("+")
+				else
+					if to:hasShownGeneral() then
+						table.insert(names, to:getGeneralName()) --getActualGeneralName
+					else
+						table.insert(names, "anjiang")
+					end
+					if to:hasShownGeneral2() then
+						table.insert(names, to:getGeneral2Name())
+					else
+						table.insert(names, "anjiang")
+					end
+				end
+				local generals = self.room:getTag(to:objectName()).toList();
+				
+				if choice == "showhead" then
+					names[1] = generals:first()
+				else
+					names[2] = generals:last()
+				end
+				from:setTag("KnownBoth_" .. to:objectName(), sgs.QVariant(table.concat(names, "+")))
+				break
+			end
+		end
+	end
+end

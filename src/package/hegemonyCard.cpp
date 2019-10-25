@@ -111,7 +111,9 @@ void KnownBothHegemony::onEffect(const CardEffectStruct &effect) const
         return;
 
     Room *room = effect.from->getRoom();
-    QString choice = room->askForChoice(effect.from, objectName(), select.join("+"), QVariant::fromValue(effect));
+    effect.to->setFlags("KnownBothTarget");//for AI
+    QString choice = room->askForChoice(effect.from, objectName(), select.join("+"), QVariant::fromValue(effect.to));
+    effect.to->setFlags("-KnownBothTarget");
     LogMessage log;
     log.type = "#KnownBothView";
     log.from = effect.from;
@@ -143,64 +145,29 @@ void KnownBothHegemony::onEffect(const CardEffectStruct &effect) const
     }
 }
 
-/*
-void KnownBothHegemony::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+bool KnownBothHegemony::isAvailable(const Player *player) const
 {
-    QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
-    bool all_nullified = nullified_list.contains("_ALL_TARGETS");
-    int magic_drank = 0;
-    if (source && source->getMark("magic_drank") > 0)
-        magic_drank = source->getMark("magic_drank");
-
-    foreach (ServerPlayer *target, targets) {
-        CardEffectStruct effect;
-        effect.card = this;
-        effect.from = source;
-        effect.to = target;
-        effect.multiple = (targets.length() > 1);
-        effect.nullified = (all_nullified || nullified_list.contains(target->objectName()));
-
-        QVariantList players;
-        for (int i = targets.indexOf(target); i < targets.length(); i++) {
-            if (!nullified_list.contains(targets.at(i)->objectName()) && !all_nullified)
-                players.append(QVariant::fromValue(targets.at(i)));
-        }
-        //for HegNullification???
-        room->setTag("targets" + this->toString(), QVariant::fromValue(players));
-        if (hasFlag("mopao"))
-            effect.effectValue.first() = effect.effectValue.first() + 1;
-        if (source->getMark("kuangji_value") > 0) {
-            effect.effectValue.first() = effect.effectValue.first() + source->getMark("kuangji_value");
-            room->setPlayerMark(source, "kuangji_value", 0);
-        }
-
-        effect.effectValue.first() = effect.effectValue.first() + magic_drank;
-        room->cardEffect(effect);
+    bool can_use = false;
+    foreach(const Player *p, player->getSiblings()) {
+        if (player->isProhibited(p, this))
+            continue;
+        if (p->isKongcheng() && p->hasShownAllGenerals())
+            continue;
+        can_use = true;
+        break;
     }
-    if (magic_drank > 0)
-        room->setPlayerMark(source, "magic_drank", 0);
-    room->removeTag("targets" + this->toString());
-
-    if (source->isAlive() && source->isCurrent()) {
-        room->touhouLogmessage("#KnownBothLimit", source);
-        room->setTag("KnownBothUsed", true);
-        foreach (ServerPlayer *p, room->getOtherPlayers(source)) {
-            if (p->getMark("KnownBoth_Limit") == 0) {
-                room->setPlayerCardLimitation(p, "use,response", ".|.|.|show", "known_both", true);
-                room->setPlayerMark(p, "KnownBoth_Limit", 1);
-            }
-        }
-    }
-
-    if (room->getCardPlace(getEffectiveId()) == Player::PlaceTable) {
-        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
-        if (targets.size() == 1)
-            reason.m_targetId = targets.first()->objectName();
-        reason.m_extraData = QVariant::fromValue((const Card *)this);
-        room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
-    }
+    bool can_rec = can_recast;
+    QList<int> sub;
+    if (isVirtualCard())
+        sub = subcards;
+    else
+        sub << getEffectiveId();
+    if (sub.isEmpty() || sub.contains(-1))
+        can_rec = false;
+    return (can_use && !player->isCardLimited(this, Card::MethodUse))
+        || (can_rec && !player->isCardLimited(this, Card::MethodRecast));
 }
-*/
+
 
 BefriendAttacking::BefriendAttacking(Card::Suit suit, int number) : SingleTargetTrick(suit, number)
 {

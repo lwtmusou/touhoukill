@@ -1200,7 +1200,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     room->notifyProperty(player, this, "inital_seat");
 
     if (isHegemonyGameMode(room->getMode())) {
-        if (player == this || hasShownGeneral()) {
+        if (player == this || hasShownOneGeneral()) {
             room->notifyProperty(player, this, "kingdom");
             room->notifyProperty(player, this, "role");
         } else {
@@ -2339,7 +2339,7 @@ int ServerPlayer::getPlayerNumWithSameKingdom(const QString &, const QString &_t
 
     int num = 0;
     foreach (ServerPlayer *p, players) {
-        if (!p->hasShownGeneral())
+        if (!p->hasShownOneGeneral())
             continue;
         if (p->getRole() == "careerist") { // if player is careerist, DO NOT COUNT AS SOME KINGDOM!!!!!
             if (to_calculate == "careerist")

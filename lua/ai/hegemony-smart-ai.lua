@@ -604,7 +604,7 @@ function sgs.gameProcess(update)
 	for _, ap in sgs.qlist(players) do
 		if table.contains(kingdoms, sgs.ai_explicit[ap:objectName()]) then
 			local v = 0
-			if ap:hasShownGeneral() then
+			if ap:hasShownOneGeneral() then
 				local huashen = false --ap:hasShownSkill("huashen") and ap:getTag("Huashens"):toList():length() > 0
 				v = sgs.getDynamicPlayerStrength(ap, huashen) + sgs.getDefense(ap) / 2
 			else
@@ -883,7 +883,7 @@ function SmartAI:evaluateKingdom(player, other)
 end
 
 function sgs.isAnjiang(player, another)
-	if sgs.ai_explicit[player:objectName()] == "unknown" and not player:hasShownGeneral() then return true end
+	if sgs.ai_explicit[player:objectName()] == "unknown" and not player:hasShownOneGeneral() then return true end
 	return false
 end
 
@@ -4367,11 +4367,11 @@ function SmartAI:getCards(class_name, flag)
 	local private_pile
 	if not flag then private_pile = true end
 	flag = flag or "hes"
-	local part1 = "MMP OverFlow1:" .. class_name .."/".. flag
-	global_room:writeToConsole(part1)
+	--local part1 = "MMP OverFlow1:" .. class_name .."/".. flag
+	--global_room:writeToConsole(part1)
 	local all_cards = self.player:getCards(flag)
-	local part2 = "MMP OverFlow2:" .. class_name .."/".. flag
-	global_room:writeToConsole(part2)
+	--local part2 = "MMP OverFlow2:" .. class_name .."/".. flag
+	--global_room:writeToConsole(part2)
 	if private_pile then
 		for _, key in sgs.list(self.player:getPileNames()) do
 			for _, id in sgs.qlist(self.player:getPile(key)) do
@@ -6059,7 +6059,7 @@ function SmartAI:ImitateResult_DrawNCards(player, skills)
 		end
 	end
 	local count = 2
-	if player:hasTreasure("JadeSeal") and player:hasShownGeneral() then count = count + 1 end
+	if player:hasTreasure("JadeSeal") and player:hasShownOneGeneral() then count = count + 1 end
 	if #drawSkills > 0 then
 		for _,skillname in pairs(drawSkills) do
 			if skillname == "tuxi" then return math.min(2, self.room:getOtherPlayers(player):length())
@@ -6281,15 +6281,15 @@ end
 
 function SmartAI:willShowForAttack()
 	if sgs.isRoleExpose() then return true end
-	if self.player:hasShownGeneral() then return true end
+	if self.player:hasShownOneGeneral() then return true end
 	if self.room:alivePlayerCount() < 3 then return true end
 
 	local notshown, shown, f, e, eAtt = 0, 0, 0, 0, 0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if  not p:hasShownGeneral() then
+		if  not p:hasShownOneGeneral() then
 			notshown = notshown + 1
 		end
-		if p:hasShownGeneral() then
+		if p:hasShownOneGeneral() then
 			shown = shown + 1
 			if self:evaluateKingdom(p) == self.player:getRole() then
 				f = f + 1
@@ -6318,16 +6318,16 @@ end
 
 function SmartAI:willShowForDefence()
 	if sgs.isRoleExpose() then return true end
-	if self.player:hasShownGeneral() then return true end
+	if self.player:hasShownOneGeneral() then return true end
 	if self.room:alivePlayerCount() < 3 then return true end
 	if self:isWeak() then return true end
 
 	local notshown, shown, f, e, eAtt = 0, 0, 0, 0, 0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if  not p:hasShownGeneral() then
+		if  not p:hasShownOneGeneral() then
 			notshown = notshown + 1
 		end
-		if p:hasShownGeneral() then
+		if p:hasShownOneGeneral() then
 			shown = shown + 1
 			if self:evaluateKingdom(p) == self.player:getRole() then
 				f = f + 1
@@ -6355,15 +6355,15 @@ end
 
 function SmartAI:willShowForMasochism()
 	if sgs.isRoleExpose() then return true end
-	if self.player:hasShownGeneral() then return true end
+	if self.player:hasShownOneGeneral() then return true end
 	if self.room:alivePlayerCount() < 3 then return true end
 
 	local notshown, shown, f, e, eAtt = 0, 0, 0, 0, 0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if  not p:hasShownGeneral() then
+		if  not p:hasShownOneGeneral() then
 			notshown = notshown + 1
 		end
-		if p:hasShownGeneral() then
+		if p:hasShownOneGeneral() then
 			shown = shown + 1
 			if self:evaluateKingdom(p) == self.player:getRole() then
 				f = f + 1
@@ -6416,8 +6416,8 @@ function SmartAI:isFriendWith(player)
 	local p_kingdom = self:evaluateKingdom(player)
 	if kingdom == p_kingdom then
 		local kingdom_num = self.player:getPlayerNumWithSameKingdom("AI")
-		if not self.player:hasShownGeneral() then kingdom_num = kingdom_num + 1 end
-		if not player:hasShownGeneral() then kingdom_num = kingdom_num + 1 end
+		if not self.player:hasShownOneGeneral() then kingdom_num = kingdom_num + 1 end
+		if not player:hasShownOneGeneral() then kingdom_num = kingdom_num + 1 end
 		if self.player:aliveCount() / 2 > kingdom_num or player:getLord() then return true end
 	end
 
@@ -7158,7 +7158,7 @@ sgs.ai_skill_invoke.GameRule_AskForGeneralShowHead = function(self, data)
 				end
 			end
 		end
-		if not self.player:hasShownGeneral() then
+		if not self.player:hasShownOneGeneral() then
 			if canShowHead and showRate > 0.9 then
 				return true
 			elseif canShowDeputy and showRate > 0.9 then
