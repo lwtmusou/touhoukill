@@ -304,6 +304,7 @@ sgs.ai_skillProperty.huisu = function(self)
 end
 
 sgs.ai_skill_invoke.bolan = true
+sgs.ai_skill_invoke.bolan_hegemony = true
 
 function sgs.ai_cardsview_valuable.hezhou(self, class_name, player)
 	if self:touhouClassMatch(class_name, "Peach") then

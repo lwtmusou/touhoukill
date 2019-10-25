@@ -948,6 +948,93 @@ public:
 };
 
 
+
+class BolanHgemony : public TriggerSkill
+{
+public:
+    BolanHgemony()
+        : TriggerSkill("bolan_hegemony")
+    {
+        events << CardUsed << EventPhaseChanging << TargetConfirmed;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
+    {
+        if (triggerEvent == EventPhaseChanging) {
+            foreach(ServerPlayer *p, room->getAllPlayers())
+                p->setFlags("-" + objectName());
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseChanging)
+            return QList<SkillInvokeDetail>();
+
+        CardUseStruct use = data.value<CardUseStruct>();
+        QList<SkillInvokeDetail> d;
+        if (!use.card->isNDTrick())
+            return d;
+
+        QList<ServerPlayer *> owners =  room->findPlayersBySkillName(objectName());
+        foreach(ServerPlayer *p, owners) {
+            if (!p->hasFlag(objectName())) {
+                if (triggerEvent == CardUsed &&  use.from && p->isFriendWith(use.from, true)) {//use.from->hasShownOneGeneral() && 
+                    d << SkillInvokeDetail(this, p, p);
+                    continue;
+                }
+                if (triggerEvent == TargetConfirmed) {
+                    foreach(ServerPlayer *to, use.to) {
+                        if (p->isFriendWith(to, true)) {
+                            d << SkillInvokeDetail(this, p, p);
+                            break;
+
+                        }
+                    }
+                }
+            }
+        }
+        return d;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        QList<int> list = room->getNCards(2);
+        ServerPlayer *player = invoke->invoker;
+        player->setFlags(objectName());
+
+        CardsMoveStruct move(list, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, invoke->invoker->objectName(), objectName(), QString()));
+        room->moveCardsAtomic(move, true);
+
+        QList<int> able;
+        QList<int> disabled;
+        foreach(int id, list) {
+            Card *tmp_card = Sanguosha->getCard(id);
+            if (tmp_card->isKindOf("TrickCard") || use.card->getSuit() == tmp_card->getSuit())
+                able << id;
+            else
+                disabled << id;
+        }
+
+        if (!able.isEmpty()) {
+            DummyCard dummy(able);
+            room->obtainCard(player, &dummy);
+        }
+        if (!disabled.isEmpty()) {
+            CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, invoke->invoker->objectName(), objectName(), QString());
+            DummyCard dummy(disabled);
+            room->throwCard(&dummy, reason, NULL);
+        }
+
+        return false;
+    }
+};
+
+
+
+
+
 class BeishuiHegemonyVS : public ViewAsSkill
 {
 public:
@@ -2481,7 +2568,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     sakuya_hegemony->addCompanion("meirin_hegemony");
 
     General *patchouli_hegemony = new General(this, "patchouli_hegemony", "shu", 3);
-    patchouli_hegemony->addSkill("bolan");
+    patchouli_hegemony->addSkill(new BolanHgemony);
     patchouli_hegemony->addSkill("hezhou");
     patchouli_hegemony->addCompanion("koakuma_hegemony");
 

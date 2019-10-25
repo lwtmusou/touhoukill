@@ -73,6 +73,9 @@ return
 	["sakuya_hegemony"] = "十六夜咲夜",
 	["patchouli_hegemony"] = "帕秋莉",
 	["!patchouli_hegemony"] = "帕秋莉·诺蕾姬",
+	["bolan_hegemony"] = "博览",
+	[":bolan_hegemony"] = "当一名角色使用普通锦囊牌时或成为普通锦囊的目标后，若其与你阵营相同，你可以亮出牌堆顶的两张牌，然后获得其中的锦囊牌和与此牌花色相同的牌。<font color=\"green\"><b>每阶段限一次。</b></font>",
+	
 	["meirin_hegemony"] = "红美铃",
 	["beishui_hegemony"] = "背水",
 	[":beishui_hegemony"] = "你可以将X张牌当任意基本牌使用（X为你的体力值和你所属阵营角色数中的较大值）。<font color=\"green\"><b>每阶段限一次。</b></font>",
