@@ -248,20 +248,6 @@ void Dashboard::_adjustComponentZValues(bool killed)
         _m_sub_hpBox->setZValue(2000);
     
     //_m_rightFrameBg->setZValue(3000);
-    //hegemony
-    /*if (isHegemonyGameMode(ServerInfo.GameMode)) {
-        _layUnder(rightHiddenMark);
-        _layUnder(leftHiddenMark);
-        _layUnder(_m_shadow_layer2);
-        _layUnder(_m_shadow_layer1);
-        //_layUnder(_m_avatarIcon);
-
-        //_layUnder(_m_avatarIcon);
-        //_layUnder(_m_shadow_layer1);
-        //_layUnder(leftHiddenMark);
-        
-        
-    }*/
 }
 
 int Dashboard::width()

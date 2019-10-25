@@ -1191,6 +1191,71 @@ public:
 
 
 
+class FengxiangHegemony : public OneCardViewAsSkill
+{
+public:
+    FengxiangHegemony()
+        : OneCardViewAsSkill("fengxiang_hegemony")
+    {
+        filter_pattern = ".|red|.|hand";
+        response_or_use = true;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
+    {
+        return matchAvaliablePattern("fire_attack", pattern) && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const
+    {
+        if (originalCard) {
+            FireAttack *card = new FireAttack(Card::SuitToBeDecided, -1);
+            card->addSubcard(originalCard);
+            card->setSkillName(objectName());
+            return card;
+        }
+        return NULL;
+    }
+};
+
+class KaifengHegemony : public TriggerSkill
+{
+public:
+    KaifengHegemony()
+        : TriggerSkill("kaifeng_hegemony")
+    {
+        events << Damaged << DamageCaused;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.nature != DamageStruct::Fire || !damage.from || damage.from == damage.to)
+            return QList<SkillInvokeDetail>();
+        if (triggerEvent == DamageCaused) {
+            if (damage.from->hasSkill(this) && damage.from->getHp() < damage.to->getHp() && !damage.from->isDead())
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
+        }
+        else if (triggerEvent == Damaged) {
+            if (damage.to->hasSkill(this) && damage.to->getHp() < damage.from->getHp() && !damage.to->isDead())
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, false, damage.from);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        ServerPlayer *mokou = invoke->invoker;
+        ServerPlayer *target = invoke->targets.first();
+        RecoverStruct recover;
+        recover.recover = 1;
+        room->recover(mokou, recover);
+        return false;
+    }
+};
+
+
+
 class XushiHegemony : public TriggerSkill
 {
 public:
@@ -2267,8 +2332,8 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     eirin_hegemony->addCompanion("reisen_hegemony");
 
     General *mokou_hegemony = new General(this, "mokou_hegemony", "shu", 4);
-    mokou_hegemony->addSkill("kaifeng");
-    mokou_hegemony->addSkill("fengxiang");
+    mokou_hegemony->addSkill(new KaifengHegemony);
+    mokou_hegemony->addSkill(new FengxiangHegemony);
     mokou_hegemony->addCompanion("keine_hegemony");
     mokou_hegemony->addCompanion("keine_sp_hegemony");
 

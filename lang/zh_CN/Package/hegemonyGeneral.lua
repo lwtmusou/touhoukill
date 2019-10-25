@@ -94,6 +94,10 @@ return
 	["#yaoshi_log"] = "因“%arg”的效果，%from防止了%arg2点伤害.",
 	
 	["mokou_hegemony"] = "藤原妹红",
+	["fengxiang_hegemony"] = "凤翔",
+	[":fengxiang_hegemony"] = "你可将一张红色手牌当【火攻】使用。你以此法使用的【火攻】的效果中的“弃置”改为“重铸”。",
+	["kaifeng_hegemony"] = "凯风",
+	[":kaifeng_hegemony"] = "你对其他角色造成火焰伤害后 或 你受到其他角色造成的火焰伤害时，若你的体力值小于该角色，你回复一点体力。",
 	
 	["reisen_hegemony"]="铃仙",
 	["!reisen_hegemony"]="铃仙·优昙华院·因幡",
@@ -195,6 +199,10 @@ return
 	[":dunjia_hegemony"] = "你使用【杀】对其他角色造成伤害后，或你受到其他角色使用【杀】造成的伤害后，若你与其装备区牌的数量差不大于x，你可与其交换装备区。 （x为你损失的体力值）",
 	
 	["letty_hegemony"]="蕾蒂",
+	["hanbo_hegemony"] = "寒波",
+	[":hanbo_hegemony"] = "其他角色于你的回合内失去最后的手牌后，你可令其摸2张牌并翻面。",
+	["dongzhi_hegemony"] = "冬至",
+	[":dongzhi_hegemony"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可选择一个阵营的全部角色，这些角色依次选择：弃x张牌，或本回合受到伤害时，该伤害+1。（x为其体力值）",
 	
 	["cirno_hegemony"] = "琪露诺",--国战修改
 	["dongjie_hegemony"] = "冻结",

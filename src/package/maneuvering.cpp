@@ -546,6 +546,23 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
                     room->throwCard(card_to_throw, effect.from, effect.from);
                 damage = true;
             }
+        } else if (getSkillName() == "fengxiang_hegemony") {
+            const Card *card_to_throw = room->askForCard(effect.from, pattern, prompt, QVariant::fromValue(effect), Card::MethodNone);
+            if (card_to_throw) {
+                LogMessage log;
+                log.type = "#Card_Recast";
+                log.from = effect.from;
+                log.card_str = card_to_throw->toString();
+                room->sendLog(log);
+
+                CardMoveReason reason(CardMoveReason::S_REASON_RECAST, effect.from->objectName());
+                reason.m_skillName = getSkillName();
+                room->moveCardTo(card_to_throw, effect.from, NULL, Player::DiscardPile, reason);
+                effect.from->broadcastSkillInvoke("@recast");
+
+                effect.from->drawCards(1);
+                damage = true;
+            }
         } else {
             const Card *card_to_throw = room->askForCard(effect.from, pattern, prompt, QVariant::fromValue(effect));
             if (card_to_throw)
