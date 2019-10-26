@@ -207,6 +207,7 @@ return
 	["dongzhi_hegemony"] = "冬至",
 	[":dongzhi_hegemony"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可选择一个阵营的全部角色，这些角色依次选择：弃x张牌，或本回合受到伤害时，该伤害+1。（x为其体力值）",
 	["#DongzhiDamage"] = "%from 的 <font color=\"yellow\"><b>冬至</b></font>效果被触发，伤害由 %arg 点增加至 %arg2 点",
+	["$juxianAnimate"]= "skill=letty:dongzhi",
 	
 	
 	["cirno_hegemony"] = "琪露诺",--国战修改
