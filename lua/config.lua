@@ -213,7 +213,7 @@ config = {
 		"yorihime->toyohime",
 		"youki->youmu",
 		"myouren->byakuren",
-		"leira->prismriver",
+		"leira|lunasa|merlin|lyrica->prismriver",
 		"reisen2->tewi",
 		"merry->renko",
 		"lunar|star->sunny",
@@ -228,6 +228,7 @@ config = {
 		"seiran->ringo",
 		"seija_sp->seija",
 		"rumia_sp->rumia",
+		"lunasa|merlin|lyrica->prismriver",
 	},
 	latest_generals = {
 		"reimu","reisen_gzz", "marisa_slm",
