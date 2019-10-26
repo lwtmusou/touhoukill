@@ -600,6 +600,62 @@ sgs.ai_skill_use["@@xiezou"] = function(self, prompt)
 end
 
 sgs.ai_skill_invoke.hesheng = true
+
+sgs.ai_skill_invoke.jianling_hegemony = true
+
+sgs.ai_skill_invoke.jizou_hegemony = function(self, data)
+	local target = data:toPlayer()
+	return target and self:isEnemy(target)
+end
+
+
+sgs.ai_view_as.hezou_hegemony = function(card, player, card_place)
+	if (sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_UNKNOWN) then
+		return false
+	end
+	local pattern=sgs.Sanguosha:getCurrentCardUsePattern()
+	if card:isKindOf("BasicCard") then return false end
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	if card_place ~= sgs.Player_PlaceSpecial and not card:hasFlag("using") then
+		if pattern=="slash" then
+			return ("slash:hezou_hegemony[%s:%s]=%d"):format(suit, number, card_id)
+		end
+	end
+end
+
+local hezou_hegemony_skill = {}
+hezou_hegemony_skill.name = "hezou_hegemony"
+table.insert(sgs.ai_skills, hezou_hegemony_skill)
+hezou_hegemony_skill.getTurnUseCard = function(self, inclusive)
+		if not sgs.Slash_IsAvailable(self.player)  then return false end
+		local ecards={}
+		local cards=self.player:getCards("hes")
+		cards=self:touhouAppendExpandPileToList(self.player,cards)
+		for _,c in sgs.qlist(cards) do
+			if not c:isKindOf("BasicCard") then
+				table.insert(ecards,c)
+			end
+		end
+		if #ecards==0 then return false end
+		self:sortByUseValue(ecards, true)
+		local suit = ecards[1]:getSuitString()
+		local number = ecards[1]:getNumberString()
+		local card_id = ecards[1]:getEffectiveId()
+		local slash_str = ("slash:hezou_hegemony[%s:%s]=%d"):format(suit, number, card_id)
+		local slash = sgs.Card_Parse(slash_str)
+
+		assert(slash)
+		return slash
+end
+sgs.ai_cardneed.hezou_hegemony = function(to, card, self)
+	return not c:isKindOf("BasicCard")
+end
+
+
+
+
 --[[
 sgs.ai_slash_prohibit.hesheng = function(self, from, to, card)
 	local prevent=false

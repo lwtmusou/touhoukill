@@ -1960,6 +1960,211 @@ public:
 };
 
 
+
+class HezouHegemonyVS : public OneCardViewAsSkill
+{
+public:
+    HezouHegemonyVS()
+        : OneCardViewAsSkill("hezou_hegemony")
+    {
+        filter_pattern = "TrickCard,EquipCard";
+        response_or_use = true;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return Slash::IsAvailable(player);
+    }
+
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
+    {
+        return matchAvaliablePattern("slash", pattern);
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const
+    {
+        if (originalCard != NULL) {
+            Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
+            slash->addSubcard(originalCard);
+            slash->setSkillName(objectName());
+            return slash;
+        }
+        return NULL;
+    }
+};
+
+class HezouHegemony : public TriggerSkill
+{
+public:
+    HezouHegemony()
+        : TriggerSkill("hezou_hegemony")
+    {
+        events << CardUsed << CardResponded;
+        view_as_skill = new HezouHegemonyVS;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        
+        ServerPlayer *player = NULL;
+        const Card *card = NULL;
+        if (triggerEvent == CardUsed) {
+            player = data.value<CardUseStruct>().from;
+            card = data.value<CardUseStruct>().card;
+        }
+        else {
+            CardResponseStruct response = data.value<CardResponseStruct>();
+            player = response.m_from;
+            //if (response.m_isUse)
+            card = response.m_card;
+        }
+        if (player && card && card->getSkillName() == objectName())
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
+        
+        return QList<SkillInvokeDetail>();
+    }
+
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        invoke->invoker->drawCards(1);
+        return false;
+    }
+
+};
+
+
+
+class XianlingHegemony : public MaxCardsSkill
+{
+public:
+    XianlingHegemony()
+        : MaxCardsSkill("xianling_hegemony")
+    {
+    }
+
+    virtual int getExtra(const Player *target) const
+    {
+        int num = 0;
+        if (target->hasSkill(objectName()) && target->hasShownSkill(objectName())) {
+            ++num;
+        }
+        
+        foreach(const Player *p, target->getAliveSiblings()) {
+            if (target->isFriendWith(p) && p->hasSkill(objectName()) && p->hasShownSkill(objectName()))
+                ++num;
+        }
+        return num;
+    }
+};
+
+
+class JizouHegemony : public TriggerSkill
+{
+public:
+    JizouHegemony()
+        : TriggerSkill("jizou_hegemony")
+    {
+        events << Damage;
+    }
+
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.from == NULL || damage.to->isDead() || damage.from->isDead())
+            return QList<SkillInvokeDetail>();
+        if (damage.from == damage.to || !damage.from->hasSkill(this))
+            return QList<SkillInvokeDetail>();
+
+        Dismantlement *card = new Dismantlement(Card::NoSuit, 0);
+        card->setSkillName(objectName());
+        card->deleteLater();
+
+        if (damage.from->isCardLimited(card, Card::MethodUse) || damage.from->isProhibited(damage.to, card))
+            return QList<SkillInvokeDetail>();
+        if (card->targetFilter(QList<const Player *>(), damage.to, damage.from))
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        Dismantlement *card = new Dismantlement(Card::NoSuit, 0);
+        card->setSkillName(objectName());
+        card->deleteLater();
+
+        room->useCard(CardUseStruct(card, invoke->invoker, invoke->targets.first()), false);
+        return false;
+    }
+};
+
+class GuanlingHegemony : public TargetModSkill
+{
+public:
+    GuanlingHegemony()
+        : TargetModSkill("guanling_hegemony")
+    {
+        pattern = "Slash";
+    }
+
+    virtual int getResidueNum(const Player *from, const Card *card) const
+    {
+        int num = 0;
+        if (from->hasSkill(objectName())) // && from->hasShownSkill(objectName())
+            ++num;
+        
+        foreach(const Player *p, from->getAliveSiblings()) {
+            if (from->isFriendWith(p) && p->hasSkill(objectName()) && p->hasShownSkill(objectName()))
+                ++num;
+        }
+        return num;
+    }
+};
+
+
+class JianlingHegemony : public TriggerSkill
+{
+public:
+    JianlingHegemony()
+        : TriggerSkill("jianling_hegemony")
+    {
+        events << DrawNCards;
+        frequency = Compulsory;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        QList<SkillInvokeDetail> d;
+        DrawNCardsStruct qnum = data.value<DrawNCardsStruct>();
+        if (qnum.player->hasSkill(objectName()))
+            d << SkillInvokeDetail(this, qnum.player, qnum.player, NULL, qnum.player->hasShownSkill(this));
+
+
+        foreach(ServerPlayer *p, room->getOtherPlayers(qnum.player)) {
+            if (qnum.player->isFriendWith(p) && p->hasSkill(objectName()) && p->hasShownSkill(this))
+                d << SkillInvokeDetail(this, p, qnum.player, NULL, true);
+        }
+
+        return d;   
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DrawNCardsStruct qnum = data.value<DrawNCardsStruct>();
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->owner->objectName(), qnum.player->objectName());
+        qnum.n = qnum.n + 1;
+        data = QVariant::fromValue(qnum);
+        room->notifySkillInvoked(invoke->owner, objectName());
+        room->touhouLogmessage("#TriggerSkill", invoke->owner, objectName());
+        return false;
+    }
+};
+
+
+
+
+
 class ZhancaoHegemony : public TriggerSkill
 {
 public:
@@ -2104,19 +2309,6 @@ bool DongzhiHegemonyCard::targetFilter(const QList<const Player *> &selected, co
 
     return (role != "careerist"  &&  to_select->getRole() == role);*/
 }
-
-/*bool DongzhiHegemonyCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
-{
-    int num = 0;
-    QString role = targets.first()->getRole();
-    if (Self->getRole() == role)
-        num++;
-    foreach(const Player *p, Self->getAvlieSiblings()) {
-        if (p->getRole() == role)
-            num++;
-    }
-    return targets.length() == num;
-}*/
 
 
 void DongzhiHegemonyCard::onUse(Room *room, const CardUseStruct &card_use) const
@@ -2732,14 +2924,20 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     youmu_hegemony->addSkill("shuangren");
     youmu_hegemony->addSkill("zhanwang");
 
-    General *lunasa_hegemony = new General(this, "lunasa_hegemony", "wei", 3, false);
+    General *lunasa_hegemony = new General(this, "lunasa_hegemony", "wei", 4, false);
+    lunasa_hegemony->addSkill(new HezouHegemony);
+    lunasa_hegemony->addSkill(new XianlingHegemony);
     lunasa_hegemony->addCompanion("merlin_hegemony");
     lunasa_hegemony->addCompanion("lyrica_hegemony");
-    General *merlin_hegemony = new General(this, "merlin_hegemony", "wei", 3, false);
-    merlin_hegemony->addCompanion("lyrica_hegemony");
-    General *lyrica_hegemony = new General(this, "lyrica_hegemony", "wei", 3, false);
-    
 
+    General *merlin_hegemony = new General(this, "merlin_hegemony", "wei", 3, false);
+    merlin_hegemony->addSkill(new JizouHegemony);
+    merlin_hegemony->addSkill(new GuanlingHegemony);
+    merlin_hegemony->addCompanion("lyrica_hegemony");
+
+    General *lyrica_hegemony = new General(this, "lyrica_hegemony", "wei", 3, false);
+    lyrica_hegemony->addSkill("xiezou");
+    lyrica_hegemony->addSkill(new JianlingHegemony);
         
 
     General *alice_hegemony = new General(this, "alice_hegemony", "wei", 4, false);

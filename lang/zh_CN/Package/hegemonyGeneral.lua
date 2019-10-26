@@ -188,12 +188,25 @@ return
 	["lunasa_hegemony"] =  "露娜萨",
 	["!lunasa_hegemony"] =  "露娜萨·普莉兹姆利巴",
 	["#lunasa_hegemony"] = "骚灵提琴手",
+	["hezou_hegemony"] = "合奏",
+	[":hezou_hegemony"] = "你可将一张非基本牌当【杀】使用或打出。你以此法使用或打出牌时，你摸一张牌。",
+	["xianling_hegemony"] = "弦灵",
+	[":xianling_hegemony"] = "<font color=\"blue\"><b>锁定技，</b></font>与你阵营相同的角色的手牌上限+1。",
+	
 	["merlin_hegemony"] =  "梅露兰",
 	["!merlin_hegemony"] =  "梅露兰·普莉兹姆利巴",
 	["#merlin_hegemony"] = "骚灵小号手",
+	["jizou_hegemony"] = "激奏",
+	[":jizou_hegemony"] = "你对一名其他角色造成伤害后，你可视为对其使用【过河拆桥】。",
+	["guanling_hegemony"] = "管灵",
+	[":guanling_hegemony"] = "<font color=\"blue\"><b>锁定技，</b></font>与你阵营相同的角色出牌阶段使用【杀】的次数+1。",
+	
+	
 	["lyrica_hegemony"] =  "莉莉卡",
 	["!lyrica_hegemony"] =  "莉莉卡·普莉兹姆利巴",
 	["#lyrica_hegemony"] = "骚灵键盘手",
+	["jianling_hegemony"] = "键灵",
+	[":jianling_hegemony"] = "<font color=\"blue\"><b>锁定技，</b></font>与你阵营相同的角色的摸牌阶段摸牌数+1。",
 	
 	["alice_hegemony"]="爱丽丝",
 	["chen_hegemony"] = "橙",
