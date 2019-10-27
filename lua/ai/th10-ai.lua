@@ -135,6 +135,8 @@ sgs.ai_skill_invoke.bushu =function(self,data)
 	return false
 end
 function sgs.ai_skill_pindian.bushu(minusecard, self, requestor, maxcard)
+	self.player:gainMark("@startBushu")
+	requestor:gainMark("@requestor")
 	if self:isFriend(requestor) then
 		return self:getMinCard()
 	end
