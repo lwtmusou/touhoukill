@@ -3912,13 +3912,13 @@ function SmartAI:needRetrial(judge)
 		end
 	elseif reason == "indulgence" then
 		if who:isSkipped(sgs.Player_Draw) and who:isKongcheng() then
-			if who:hasShownSkill("kurou") and who:getHp() >= 3 then
+			--[[if who:hasShownSkill("kurou") and who:getHp() >= 3 then
 				if self:isFriend(who) then
 					return not judge:isGood()
 				else
 					return judge:isGood()
 				end
-			end
+			end]]
 		end
 		if self:isFriend(who) then
 			local drawcardnum = self:ImitateResult_DrawNCards(who, who:getVisibleSkillList())
@@ -5239,7 +5239,7 @@ function SmartAI:evaluateWeapon(card, player, target)
 		local peach_num = player:objectName() == self.player:objectName() and self:getCardsNum("Peach") or getCardsNum("Peach", player, self.player)
 
 		deltaSelfThreat = deltaSelfThreat + slash_num * 3 - 2
-		if player:hasShownSkill("kurou") then deltaSelfThreat = deltaSelfThreat + peach_num + analeptic_num + self.player:getHp() end
+		--if player:hasShownSkill("kurou") then deltaSelfThreat = deltaSelfThreat + peach_num + analeptic_num + self.player:getHp() end
 		if player:getWeapon() and not self:hasCrossbowEffect(player) and not player:canSlashWithoutCrossbow() and slash_num > 0 then
 			for _, enemy in ipairs(enemies) do
 				if player:distanceTo(enemy) <= currentRange
@@ -6156,8 +6156,8 @@ function SmartAI:willSkipDrawPhase(player, NotContains_Null)
 		end
 	end
 	if player:containsTrick("supply_shortage") then
-		if player:hasShownSkill("shensu") or (player:hasShownSkill("qiaobian") and not player:isKongcheng()) then return false end
-		if player:hasShownSkills("guanxing+yizhi") or (player:hasShownSkills("guanxing|yizhi") and self.room:alivePlayerCount() >= 4) then return false end
+		--if player:hasShownSkill("shensu") or (player:hasShownSkill("qiaobian") and not player:isKongcheng()) then return false end
+		--if player:hasShownSkills("guanxing+yizhi") or (player:hasShownSkills("guanxing|yizhi") and self.room:alivePlayerCount() >= 4) then return false end
 		if friend_null + friend_snatch_dismantlement > 1 then return false end
 		return true
 	end
