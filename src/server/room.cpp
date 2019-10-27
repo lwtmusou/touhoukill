@@ -5456,7 +5456,8 @@ void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general)
         notifyProperty(p, player, "general");
     //setPlayerProperty(player, "general", new_general); //
     Q_ASSERT(player->getGeneral() != NULL);
-    player->setGender(player->getGeneral()->getGender());
+    if (new_general != "anjiang")
+        player->setGender(player->getGeneral()->getGender());
     if (!isHegemonyGameMode(mode)) {
         foreach(const Skill *skill, player->getGeneral()->getSkillList(true, true)) {
             if (skill->isLordSkill() && !player->isLord()) {
