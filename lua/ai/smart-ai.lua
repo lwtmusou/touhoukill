@@ -5465,6 +5465,7 @@ function SmartAI:hasTrickEffective(card, to, from)
 	if self.room:isProhibited(from, to, card) then return false end
 	--if to:hasSkill("zhengyi")  and not card:isKindOf("DelayedTrick") and card:isBlack() then return false end
 	if to:hasSkill("yunshang") and from:objectName() ~= to:objectName()  and not from:inMyAttackRange(to) then return false end
+	if to:hasSkills("wunian|wunian_hegemony") and from:objectName() ~= to:objectName() then return false end
 	if to:hasSkill("fenghua") then
 		for _, id in sgs.qlist(to:getPile("fenghua")) do
 			if sgs.Sanguosha:getCard(id):getSuit() == card:getSuit() then
@@ -6421,6 +6422,9 @@ function SmartAI:touhouDamageEffect(damage,from,to)
 	if from:hasSkill("lizhi") then
 		return true, willUse
 	end
+	if from:hasSkill("yaoshi_hegemony") and damage.card then
+		return true, willUse
+	end
 	if from:hasSkill("shenyin") and not to:isNude() then
 		return true, willUse
 	end
@@ -6772,6 +6776,7 @@ end
 --主要用于要求出杀闪等respone时
 function SmartAI:touhouNeedAvoidAttack(damage,from,to,ignoreDamageEffect, damageStep)
 	if to:hasSkill("xuying") and to:getHandcardNum() > 0 and damage.card and damage.card:isKindOf("Slash") then return true end
+	if to:isRemoved() then return false end
 	ignoreDamageEffect = ignoreDamageEffect or false
 	damageStep = damageStep or 1
 	local effect, willEffect = false, false
@@ -6811,6 +6816,9 @@ end
 function SmartAI:touhouRecoverAfterAttack(damage,player)
 	player = player or self.player
 	if player:hasSkill("changqing") and damage.damage ==player:getHp() and self.room:getAlivePlayers():length()>=5 then
+		return 1
+	end
+	if player:hasSkill("bingpo_hegemony") and damage.damage >= player:getHp() and damage.nature ~= sgs.DamageStruct_Fire then
 		return 1
 	end
 	if player:hasSkill("jiaoxia")  and player:getCards("e"):length()==0

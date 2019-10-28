@@ -3634,12 +3634,8 @@ end
 
 function SmartAI:askForPindian(requestor, reason)
 	local passive = { "lieren" }
-	self.player:gainMark("@pindian1")
-	requestor:gainMark("@pindian1")
 	if self.player:objectName() == requestor:objectName() and not table.contains(passive, reason) then
 		if self[reason .. "_card"] then
-			self.player:gainMark("@pindian2")
-			requestor:gainMark("@pindian2")
 			return sgs.Sanguosha:getCard(self[reason .. "_card"])
 		else
 			self.room:writeToConsole("Pindian card for " .. reason .. " not found!!")
@@ -3653,14 +3649,22 @@ function SmartAI:askForPindian(requestor, reason)
 		return a:getNumber() < b:getNumber()
 	end
 	table.sort(cards, compare_func)
+	self.player:gainMark("@pindian3_1")
+	requestor:gainMark("@pindian3_1")
 	local maxcard, mincard, minusecard
 	for _, card in ipairs(cards) do
+		self.player:gainMark("@pindian_value_" .. card:objectName())
 		if self:getUseValue(card) < 6 then mincard = card break end
 	end
 	for _, card in ipairs(sgs.reverse(cards)) do
+		self.player:gainMark("@pindian_value1_" .. card:objectName())
 		if self:getUseValue(card) < 6 then maxcard = card break end
 	end
+	self.player:gainMark("@pindian3_2")
+	requestor:gainMark("@pindian3_2")
 	self:sortByUseValue(cards, true)
+	self.player:gainMark("@pindian3_3")
+	requestor:gainMark("@pindian3_3")
 	minusecard = cards[1]
 	maxcard = maxcard or minusecard
 	mincard = mincard or minusecard
@@ -4358,7 +4362,7 @@ function SmartAI:getCardId(class_name, player, acard, exclude_subclass_name)
 			viewascard = sgs.Card_Parse(viewas)
 			assert(viewascard)
 		end
-		local isCard = card:isKindOf(class_name) and ((not exclude_subclass_name) or not card:isKindOf(exclude_subclass_name))
+		local isCard = card:isKindOf(class_name) --and ((not exclude_subclass_name) or not card:isKindOf(exclude_subclass_name))
 				and  not prohibitUseDirectly(card, self.player)
 						and (card_place ~= sgs.Player_PlaceSpecial or self.player:getHandPile():contains(card:getEffectiveId()))
 		if viewas then
@@ -5117,7 +5121,8 @@ function SmartAI:hasTrickEffective(card, to, from)
 	to = to or self.player
 	--if sgs.Sanguosha:isProhibited(from, to, card) then return false end
 	if to:isRemoved() then return false end
-
+	if to:hasSkill("yunshang") and from:objectName() ~= to:objectName()  and not from:inMyAttackRange(to) then return false end
+	if to:hasSkills("wunian|wunian_hegemony") and from:objectName() ~= to:objectName() then return false end
 	if from then
 		--if from:hasShownSkill("zhiman") and self:isFriend(to, from) and (card:isKindOf("Duel") or card:isKindOf("ArcheryAttack") or card:isKindOf("SavageAssault")) then return false end
 		--if from:hasShownSkill("zhiman") and self:isFriend(to, from) and (card:isKindOf("FireAttack") or card:isKindOf("BurningCamps")) and not self:isGoodChainTarget(to, from, sgs.DamageStruct_Fire) then
@@ -6731,6 +6736,7 @@ end
 
 function SmartAI:touhouNeedAvoidAttack(damage,from,to,ignoreDamageEffect, damageStep)
 	if to:hasSkill("xuying") and to:getHandcardNum() > 0 and damage.card and damage.card:isKindOf("Slash") then return true end
+	if to:isRemoved() then return false end
 	ignoreDamageEffect = ignoreDamageEffect or false
 	damageStep = damageStep or 1
 	local effect, willEffect = false, false
@@ -6792,9 +6798,13 @@ function SmartAI:touhouDamageEffect(damage,from,to)
 			end
 		end
 	end
-	if from:hasSkill("lizhi") then
+	if from:hasSkill("lizhi")  then
 		return true, willUse
 	end
+	if from:hasSkill("yaoshi_hegemony") and damage.card then
+		return true, willUse
+	end
+	
 	if from:hasSkill("shenyin") and not to:isNude() then
 		return true, willUse
 	end
@@ -6900,6 +6910,9 @@ end
 function SmartAI:touhouRecoverAfterAttack(damage,player)
 	player = player or self.player
 	if player:hasSkill("changqing") and damage.damage ==player:getHp() and self.room:getAlivePlayers():length()>=5 then
+		return 1
+	end
+	if player:hasSkill("bingpo_hegemony") and damage.damage >= player:getHp() and damage.nature ~= sgs.DamageStruct_Fire then
 		return 1
 	end
 	if player:hasSkill("jiaoxia")  and player:getCards("e"):length()==0
@@ -7084,7 +7097,7 @@ end
 function getBestHp(player)
 	local arr = {ganlu = 1, yinghun = 2, nosmiji = 1, xueji = 1, baobian = math.max(0, player:getMaxHp() - 3)}
 	if player:hasSkill("huwei") then return 3 end
-	if player:hasSkill("wunian") then
+	if player:hasSkills("wunian|wunian_hegemony") then
 		if player:getArmor() or player:getDefensiveHorse() then
 			return player:getMaxHp()-1
 		end
