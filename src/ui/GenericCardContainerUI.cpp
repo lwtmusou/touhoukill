@@ -41,10 +41,12 @@ CardItem *GenericCardContainer::_createCard(int card_id)
     return item;
 }
 
+
 void GenericCardContainer::_destroyCard()
 {
-    CardItem *card = qobject_cast<CardItem *>(sender());
-    if (card) {
+    //CardItem *card = qobject_cast<CardItem *>(sender()); 
+    CardItem *card = (CardItem *)sender();
+    if (card != NULL) {
         card->setVisible(false);
         card->deleteLater();
     }

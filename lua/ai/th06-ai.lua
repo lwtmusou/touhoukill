@@ -845,6 +845,10 @@ sgs.ai_skill_playerchosen.moqi = function(self, targets)
 	return targets:first()
 end
 
+sgs.ai_skill_invoke.moqi_hegemony = function(self,data)
+	return true
+end
+
 local sishu_skill = {}
 sishu_skill.name = "sishu"
 table.insert(sgs.ai_skills, sishu_skill)

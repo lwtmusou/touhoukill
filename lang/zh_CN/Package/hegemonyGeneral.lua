@@ -81,6 +81,8 @@ return
 	[":beishui_hegemony"] = "你可以将X张牌当任意基本牌使用（X为你的体力值和你所属阵营角色数中的较大值）。<font color=\"green\"><b>每阶段限一次。</b></font>",
 	
 	["koakuma_hegemony"] = "小恶魔",
+	["moqi_hegemony"] = "魔契",
+	[":moqi_hegemony"] = "与你阵营相同的角色使用普通锦囊牌时，你可令此牌的首个效果值+1。",
 
 	--辉夜 国战削弱
 	["kaguya_hegemony"] = "蓬莱山辉夜",

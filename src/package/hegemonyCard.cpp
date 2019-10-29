@@ -111,38 +111,46 @@ void KnownBothHegemony::onEffect(const CardEffectStruct &effect) const
         return;
 
     Room *room = effect.from->getRoom();
-    effect.to->setFlags("KnownBothTarget");//for AI
-    QString choice = room->askForChoice(effect.from, objectName(), select.join("+"), QVariant::fromValue(effect.to));
-    effect.to->setFlags("-KnownBothTarget");
-    LogMessage log;
-    log.type = "#KnownBothView";
-    log.from = effect.from;
-    log.to << effect.to;
-    log.arg = choice;
-    foreach (ServerPlayer *p, room->getAllPlayers(true)) { //room->getOtherPlayers(effect.from, true)
-        room->doNotify(p, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
-    }
+    for (int i = 0; i < (1 + effect.effectValue.first()); i += 1) {
+        effect.to->setFlags("KnownBothTarget");//for AI
+        QString choice = room->askForChoice(effect.from, objectName(), select.join("+"), QVariant::fromValue(effect.to));
+        effect.to->setFlags("-KnownBothTarget");
+        select.removeAll(choice);
 
-    if (choice == "showhead" || choice == "showdeputy") {
-        QStringList list = room->getTag(effect.to->objectName()).toStringList();
-        list.removeAt(choice == "showhead" ? 1 : 0);
-        foreach (const QString &name, list) {
-            LogMessage log;
-            log.type = "$KnownBothViewGeneral";
-            log.from = effect.from;
-            log.to << effect.to;
-            log.arg = name;
-            log.arg2 = effect.to->getRole();
-            room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+        LogMessage log;
+        log.type = "#KnownBothView";
+        log.from = effect.from;
+        log.to << effect.to;
+        log.arg = choice;
+        foreach(ServerPlayer *p, room->getAllPlayers(true)) { //room->getOtherPlayers(effect.from, true)
+            room->doNotify(p, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
         }
-        JsonArray arg;
-        arg << objectName();
-        arg << JsonUtils::toJsonArray(list);
-        room->doNotify(effect.from, QSanProtocol::S_COMMAND_VIEW_GENERALS, arg);
 
-    } else {
-        room->showAllCards(effect.to, effect.from);
-    }
+        if (choice == "showhead" || choice == "showdeputy") {
+            QStringList list = room->getTag(effect.to->objectName()).toStringList();
+            list.removeAt(choice == "showhead" ? 1 : 0);
+            foreach(const QString &name, list) {
+                LogMessage log;
+                log.type = "$KnownBothViewGeneral";
+                log.from = effect.from;
+                log.to << effect.to;
+                log.arg = name;
+                log.arg2 = effect.to->getRole();
+                room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+            }
+            JsonArray arg;
+            arg << objectName();
+            arg << JsonUtils::toJsonArray(list);
+            room->doNotify(effect.from, QSanProtocol::S_COMMAND_VIEW_GENERALS, arg);
+
+        }
+        else {
+            room->showAllCards(effect.to, effect.from);
+        }
+
+        if (select.isEmpty())
+            break;
+    } 
 }
 
 bool KnownBothHegemony::isAvailable(const Player *player) const
@@ -187,10 +195,11 @@ bool BefriendAttacking::targetFilter(const QList<const Player *> &targets, const
 
 void BefriendAttacking::onEffect(const CardEffectStruct &effect) const
 {
+    
+    if (effect.from->isAlive())
+        effect.from->drawCards(3 + effect.effectValue.first());
     if (effect.to->isAlive())
         effect.to->drawCards(1);
-    if (effect.from->isAlive())
-        effect.from->drawCards(3);
 }
 
 bool BefriendAttacking::isAvailable(const Player *player) const
@@ -326,7 +335,8 @@ void AwaitExhaustedHegemony::use(Room *room, ServerPlayer *source, QList<ServerP
                 players.append(QVariant::fromValue(targets.at(i)));
         }
         room->setTag("targets" + this->toString(), QVariant::fromValue(players));
-
+        if (hasFlag("mopao"))
+            effect.effectValue.first() = effect.effectValue.first() + 1;
         room->cardEffect(effect);
     }
 
@@ -350,7 +360,7 @@ void AwaitExhaustedHegemony::use(Room *room, ServerPlayer *source, QList<ServerP
 
 void AwaitExhaustedHegemony::onEffect(const CardEffectStruct &effect) const
 {
-    effect.to->drawCards(2);
+    effect.to->drawCards(2 + effect.effectValue.first());
     effect.to->getRoom()->setPlayerFlag(effect.to, "AwaitExhaustedEffected");
 }
 

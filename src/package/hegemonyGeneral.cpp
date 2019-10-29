@@ -1190,6 +1190,65 @@ public:
 
 
 
+class MoqiHgemony : public TriggerSkill
+{
+public:
+    MoqiHgemony()
+        : TriggerSkill("moqi_hegemony")
+    {
+        events << CardUsed << EventPhaseChanging;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
+    {
+        if (triggerEvent == EventPhaseChanging) {
+            foreach(ServerPlayer *p, room->getAllPlayers())
+                p->setFlags("-" + objectName());
+        }
+    }
+
+    static bool can_add(CardUseStruct use)
+    {
+        return use.card->isNDTrick()
+            && !(use.card->isKindOf("IronChain") || use.card->isKindOf("LureTiger") || use.card->isKindOf("Nullification"));
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseChanging)
+            return QList<SkillInvokeDetail>();
+
+        CardUseStruct use = data.value<CardUseStruct>();
+        QList<SkillInvokeDetail> d;
+        if (!can_add(use))
+            return d;
+
+        QList<ServerPlayer *> owners = room->findPlayersBySkillName(objectName());
+        foreach(ServerPlayer *p, owners) {
+            if (!p->hasFlag(objectName())) {
+                if (use.from && p->isFriendWith(use.from, true)) {
+                    d << SkillInvokeDetail(this, p, p);
+                }
+            }
+        }
+        return d;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        //add log?
+        CardUseStruct use = data.value<CardUseStruct>();
+        room->setCardFlag(use.card, "mopao");
+        room->setPlayerFlag(invoke->invoker, objectName());
+        return false;
+    }
+};
+
+
+
+
+
+
 
 class XuyuHegemony : public TriggerSkill
 {
@@ -2769,7 +2828,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     meirin_hegemony->addSkill(new BeishuiHegemony);
 
     General *koakuma_hegemony = new General(this, "koakuma_hegemony", "shu", 3);
-    koakuma_hegemony->addSkill("moqi");
+    koakuma_hegemony->addSkill(new MoqiHgemony);
     koakuma_hegemony->addSkill("sishu");
 
     General *kaguya_hegemony = new General(this, "kaguya_hegemony", "shu", 4);
