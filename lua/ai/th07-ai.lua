@@ -241,7 +241,12 @@ end
 
 sgs.ai_skill_invoke.shenyin = function(self, data)
 	local target = self.player:getTag("shenyin-target"):toPlayer()
-	return target:objectName() == self.player:objectName() or self.player:isCurrent()
+	if self.player:isCurrent() then
+		return target:objectName() ~= self.player:objectName()
+	else
+		return target:objectName() == self.player:objectName()
+	end
+	return  false  
 end
 sgs.ai_skill_use["@@xijian"] = function(self, prompt)
 	local targets={}
