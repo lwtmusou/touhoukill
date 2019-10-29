@@ -36,8 +36,8 @@ return
 	["@chiling_hegemony"] = "敕令： 你从 <font color=\"#00FF00\"><b>%src </b></font> 处获得了牌，你可以使用一张牌。",
 	["shezheng_hegemony"] = "摄政",
 	[":shezheng_hegemony"] = "<font color=\"purple\"><b>副将技，</b></font>若你装备区没有武器牌，你视为装备了【雌雄剑（国）】。",
-	["shezheng_attach"] = "摄政（单纯亮将）";
-	[":shezheng_attach"] = "摄政（单纯亮将）";
+	["shezheng_attach"] = "摄政（出牌阶段亮将）";
+	[":shezheng_attach"] = "摄政（出牌阶段亮将）";
 	
 	
 	["mamizou_hegemony"] = "二岩猯藏",
@@ -84,7 +84,7 @@ return
 
 	--辉夜 国战削弱
 	["kaguya_hegemony"] = "蓬莱山辉夜",
-	["ShowShenbao"] = "神宝（单纯亮将）";
+	["ShowShenbao"] = "神宝（出牌阶段亮将）";
 	["xuyu_hegemony"] = "须臾",
 	[":xuyu_hegemony"] = "<font color=\"purple\"><b>主将技，</b></font><font color=\"blue\"><b>锁定技，</b></font>当你失去最后的手牌后，你移除副将，获得技能“永恒”。",
 
