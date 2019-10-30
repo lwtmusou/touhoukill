@@ -191,7 +191,7 @@ return
 	["!lunasa_hegemony"] =  "露娜萨·普莉兹姆利巴",
 	["#lunasa_hegemony"] = "骚灵提琴手",
 	["hezou_hegemony"] = "合奏",
-	[":hezou_hegemony"] = "你可将一张非基本牌当【杀】使用或打出。你以此法使用或打出牌时，你摸一张牌。",
+	[":hezou_hegemony"] = "你可将一张非基本牌当【杀】使用或打出。你以此法使用或打出牌时，若场上有与之花色相同的牌，你摸一张牌。",
 	["xianling_hegemony"] = "弦灵",
 	[":xianling_hegemony"] = "<font color=\"blue\"><b>锁定技，</b></font>与你阵营相同的角色的手牌上限+1。",
 	

@@ -1112,7 +1112,7 @@ public:
         int roles = 1;
         if (Self->getRole() != "careerist") {
             foreach(const Player *p, Self->getAliveSiblings()) {
-                if (p->getRole() == Self->getRole())
+                if (Self->isFriendWith(p))//p->getRole() == Self->getRole()
                     roles++;
             }
         }
@@ -1126,7 +1126,7 @@ public:
         int roles = 1;
         if (Self->getRole() != "careerist") {
             foreach(const Player *p, Self->getAliveSiblings()) {
-                if (p->getRole() == Self->getRole())
+                if (Self->isFriendWith(p)) //p->getRole() == Self->getRole()
                     roles++;
             }
         }
@@ -2077,8 +2077,16 @@ public:
             //if (response.m_isUse)
             card = response.m_card;
         }
-        if (player && card && card->getSkillName() == objectName())
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
+        if (player && card && card->getSkillName() == objectName()) {
+            foreach(ServerPlayer *p, room->getAllPlayers()) {
+                QList<const Card*> cards = p->getCards("ej");
+                foreach(const Card*c, cards) {
+                    if (c->getSuit() == card->getSuit())
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
+                }
+            }
+        }
+            
         
         return QList<SkillInvokeDetail>();
     }
@@ -2086,6 +2094,8 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
+        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+        room->notifySkillInvoked(invoke->invoker, objectName());
         invoke->invoker->drawCards(1);
         return false;
     }
