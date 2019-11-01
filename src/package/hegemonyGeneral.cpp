@@ -443,7 +443,7 @@ public:
     LizhiHegemony()
         : TriggerSkill("lizhi_hegemony")
     {
-        events << CardFinished << DamageDone;
+        events << CardFinished << DamageDone << EventPhaseChanging;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
@@ -453,6 +453,12 @@ public:
             if (damage.from && damage.card && damage.card->isKindOf("Slash"))
                 room->setCardFlag(damage.card, "lizhiDamage");
         }
+        if (triggerEvent == EventPhaseChanging) {
+            foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                if (p->hasFlag("lizhi_used"))
+                    room->setPlayerFlag(p, "-lizhi_used");
+            }
+        }
 
     }
 
@@ -460,7 +466,8 @@ public:
     {
         if (event == CardFinished) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (!use.card->isKindOf("Slash") || use.card->hasFlag("lizhiDamage") || !use.from || use.from->isDead() || !use.from->hasSkill(this))
+            if (!use.card->canDamage() || use.card->hasFlag("lizhiDamage") || !use.from || use.from->isDead()
+                || !use.from->hasSkill(this) || use.from->hasFlag("lizhi_used"))
                 return QList<SkillInvokeDetail>();
 
             QList<int> ids;
@@ -498,11 +505,13 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
+        room->setPlayerFlag(invoke->invoker, "lizhi_used");
         CardUseStruct use = data.value<CardUseStruct>();
         invoke->targets.first()->obtainCard(use.card);
         return false;
     }
 };
+
 
 
 
