@@ -4362,7 +4362,7 @@ function SmartAI:getCardId(class_name, player, acard, exclude_subclass_name)
 			self:sortByKeepValue(cards)
 		end
 	end
-	--self:sortByUsePriority(cards, player)
+	self:sortByUsePriority(cards, player)
 	--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_getCardId3") end
 	
 	local cardsViewFirst = cardsViewValue(self, class_name, self.player,"getCardId")
@@ -4389,7 +4389,7 @@ function SmartAI:getCardId(class_name, player, acard, exclude_subclass_name)
 				and  not prohibitUseDirectly(card, self.player)
 						and (card_place ~= sgs.Player_PlaceSpecial or self.player:getHandPile():contains(card:getEffectiveId()))
 		if viewas then
-			if isCard then --and self:adjustUsePriority(card, 0) >= self:adjustUsePriority(viewascard, 0) then
+			if isCard and self:adjustUsePriority(card, 0) >= self:adjustUsePriority(viewascard, 0) then
 				table.insert(cardArr, card)
 			else
 				table.insert(viewArr, viewascard)
@@ -4399,10 +4399,10 @@ function SmartAI:getCardId(class_name, player, acard, exclude_subclass_name)
 		end
 	end
 	--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_getCardId5") end
-	--[[if not cardask then
+	if not cardask then
 		self:sortByUsePriority(viewArr)
 		self:sortByUsePriority(cardArr)
-	end]]
+	end
 
 	if #viewArr > 0 or #cardArr > 0 then
 		local viewas, cardid
@@ -4433,7 +4433,7 @@ function SmartAI:getCards(class_name, flag)
 	--local part2 = "MMP OverFlow2:" .. class_name .."/".. flag
 	--global_room:writeToConsole(part2)
 	if private_pile then
-		for _, key in sgs.qlist(self.player:getPileNames()) do
+		for _, key in sgs.list(self.player:getPileNames()) do
 			for _, id in sgs.qlist(self.player:getPile(key)) do
 				all_cards:append(sgs.Sanguosha:getCard(id))
 			end
