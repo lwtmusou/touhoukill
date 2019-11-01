@@ -1763,6 +1763,112 @@ public:
 };
 
 
+
+
+
+class YinghuoHegemony : public TriggerSkill
+{
+public:
+    YinghuoHegemony()
+        : TriggerSkill("yinghuo_hegemony")
+    {
+        events << CardUsed << CardResponded;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        if (triggerEvent == CardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.from && use.from->isAlive() && use.from->hasSkill(this) && use.card && use.card->getTypeId() == Card::TypeBasic){
+                if (use.to.length() == 1 && use.to.first() == use.from)
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
+            }
+        }
+        else {
+            CardResponseStruct response = data.value<CardResponseStruct>();
+            if (response.m_from  && response.m_from->isAlive()  && response.m_from->hasSkill(this) &&  response.m_isUse 
+                &&  response.m_card && response.m_card->getTypeId() == Card::TypeBasic)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, response.m_from, response.m_from);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        invoke->invoker->drawCards(1);
+        return false;
+    }
+
+};
+
+class ChongqunHegemony : public TriggerSkill
+{
+public:
+    ChongqunHegemony()
+        : TriggerSkill("chongqun_hegemony")
+    {
+        events << CardsMoveOneTime;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        QList<SkillInvokeDetail> d;
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
+        if (player != NULL && player->isAlive() && player->hasSkill(this)
+            && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
+            bool can = false;
+            foreach(ServerPlayer *p, room->getOtherPlayers(player))
+            {
+                if (player->canDiscard(p, "hs")) {
+                    can = true;
+                    break;
+                }
+
+            }
+            if (!can)
+                return d;
+
+            foreach(int id, move.card_ids) {
+                if (Sanguosha->getCard(id)->getTypeId() == Card::TypeBasic) {
+                    d << SkillInvokeDetail(this, player, player);
+                }
+                    
+            }
+        }
+        return d;
+    }
+
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    { 
+        // how to notice player the remain times?
+        QList<ServerPlayer *> targets;
+        foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker))
+        {
+            if (invoke->invoker->canDiscard(p, "hs"))
+                targets << p;
+        }
+        if (targets.isEmpty())
+            return false;
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@chongqun_target", true, true);
+        if (target) {
+            invoke->targets << target;
+            return true;
+        }
+        return false;
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hs", objectName());
+        room->throwCard(id, invoke->targets.first(), invoke->invoker);
+        return false;
+    }
+};
+
+
+
 //********  AUTUMN   **********
 
 
@@ -3324,6 +3430,9 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     yorihime_hegemony->addSkill("pingyi");
     yorihime_hegemony->addSkill("#pingyi_handle");
 
+    General *wriggle_hegemony = new General(this, "wriggle_hegemony", "shu", 3);
+    wriggle_hegemony->addSkill(new YinghuoHegemony);
+    wriggle_hegemony->addSkill(new ChongqunHegemony);
 
 
 //Autumn

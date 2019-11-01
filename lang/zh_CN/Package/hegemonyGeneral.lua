@@ -140,6 +140,16 @@ return
 	
 	["yorihime_hegemony"] = "绵月依姬",
 
+	
+	["wriggle_hegemony"] = "莉格露",
+	["#wriggle_hegemony"] = "在黑暗中蠢动的光虫",
+	["!wriggle_hegemony"] = "莉格露•奈特巴格",
+	["yinghuo_hegemony"] = "萤火",
+	["chongqun_hegemony"] = "虫群",
+
+	[":yinghuo_hegemony"] = "当你使用基本牌时，若此牌的目标不含有其他角色，你可以摸一张牌。 ",
+	[":chongqun_hegemony"] = "当你因弃置失去一张基本牌后，你可以弃置一名其他角色的一张手牌。",
+	--["@chongqun_target"]= "选择有手牌的一名其他角色 -> 确定",
 
 --***********************
 --秋（风）	

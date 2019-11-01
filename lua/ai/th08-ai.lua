@@ -934,7 +934,18 @@ sgs.ai_playerchosen_intention.chongqun =function(self, from, to)
 	sgs.updateIntention(from, to, intention)
 end
 
+sgs.ai_skill_invoke.yinghuo_hegemony = true
 
+sgs.ai_skill_playerchosen.chongqun_hegemony = function(self, targets)
+	targets=sgs.QList2Table(targets)
+	self:sort(targets,"handcard")
+	for _,p in pairs(targets)do
+		if self:isEnemy(p) and self.player:canDiscard(p, "hs") and not self:touhouHandCardsFix(p) then
+			return p
+		end
+	end
+	return nil
+end
 
 sgs.ai_skill_playerchosen.chuangshi = function(self, targets)
 	if self.player:getMark("chuangshi")>0 then return nil end
