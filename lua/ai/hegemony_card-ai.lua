@@ -117,8 +117,8 @@ sgs.ai_nullification.SavageAssault = function(self, card, from, to, positive, ke
 
 	if positive then
 		if self:isFriend(to) then
-			local menghuo = sgs.findPlayerByShownSkillName("huoshou")
-			local zhurong = sgs.findPlayerByShownSkillName("juxiang")
+			local menghuo = nil --sgs.findPlayerByShownSkillName("huoshou")
+			local zhurong = nil --sgs.findPlayerByShownSkillName("juxiang")
 			if menghuo then targets:removeOne(menghuo) end
 			if zhurong then targets:removeOne(zhurong) end
 
