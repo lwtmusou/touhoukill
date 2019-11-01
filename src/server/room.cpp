@@ -7370,3 +7370,82 @@ void Room::countDescription()
     stream << count;
     file.close();
 }
+
+
+void Room::transformGeneral(ServerPlayer *player, QString general_name, int head)
+{
+    if (!player->canTransform(head)) return; //check sujiang
+
+    bool need_show = head ? player->hasShownGeneral() : player->hasShownGeneral2();
+    QStringList names;
+    //names << player->getActualGeneral1Name() << player->getActualGeneral2Name();
+    QStringList generals = getTag(player->objectName()).toStringList();
+    names << generals.first() << generals.last();
+
+    //handleUsedGeneral("-" + player->getActualGeneral2Name());
+    //handleUsedGeneral(general_name);
+
+    player->removeGeneral(head);
+    QList<const TriggerSkill *> game_start;
+
+    foreach(const Skill *skill, Sanguosha->getGeneral(general_name)->getVisibleSkillList(true, head)) {
+        if (skill->inherits("TriggerSkill")) {
+            const TriggerSkill *tr = qobject_cast<const TriggerSkill *>(skill);
+            if (tr != NULL) {
+                getThread()->addTriggerSkill(tr);
+                if (tr->getTriggerEvents().contains(GameStart))// && !tr->triggerable(GameStart, this, player, void_data).isEmpty()
+                    game_start << tr;
+            }
+        }
+        player->addSkill(skill->objectName(), head);
+        //invoke->invoker->sendSkillsToOthers(head);//check shown
+    }
+
+
+
+    if (head) {
+        changePlayerGeneral(player, "anjiang");
+        notifyProperty(player, player, "general", general_name);
+        names[0] = general_name;
+        setPlayerProperty(player, "general_showed", false);
+    }
+    else {
+        changePlayerGeneral2(player, "anjiang");
+        notifyProperty(player, player, "general2", general_name);
+
+        names[1] = general_name;
+        setPlayerProperty(player, "general2_showed", false);
+    }
+
+
+
+    setTag(player->objectName(), names);
+
+    foreach(const Skill *skill, Sanguosha->getGeneral(general_name)->getSkillList(true, head)) {
+        if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()) {
+            player->setMark(skill->getLimitMark(), 1);
+            JsonArray arg;
+            arg << player->objectName();
+            arg << skill->getLimitMark();
+            arg << 1;
+            doNotify(player, S_COMMAND_SET_MARK, arg);
+        }
+    }
+
+
+    if (!game_start.isEmpty()) {
+        QVariant v = QVariant::fromValue(player);
+        thread->trigger(GameStart, this, v);
+    }
+    /*foreach(const TriggerSkill *skill, game_start) {
+    if (skill->cost(GameStart, this, player, void_data, player))
+    skill->effect(GameStart, this, player, void_data, player);
+    }*/
+
+    //do not consider CompanionEffect
+    //if (Sanguosha->getGeneral(names[0])->isCompanionWith(general_name))
+    //	setPlayerMark(player, "CompanionEffect", 1);
+    //if (need_show)
+        player->showGeneral(head);
+}
+

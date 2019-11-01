@@ -1462,6 +1462,148 @@ public:
 };
 
 
+class XinyueHegemony : public TriggerSkill
+{
+public:
+    XinyueHegemony()
+        : TriggerSkill("xinyue_hegemony")
+    {
+        events << Damaged << EventPhaseChanging;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e == Damaged) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.from && damage.from->isAlive() && damage.to->isAlive() && damage.to->hasSkill(this)) {// && damage.from->getHandcardNum() > damage.to->getHp()
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, false, damage.from);
+            }
+        }
+        else if (e == EventPhaseChanging) {
+            QList<SkillInvokeDetail> d;
+            //ServerPlayer *player = data.value<ServerPlayer *>();
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {  //check current is dead
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->hasFlag("xinyue_transform")) {
+                        d << SkillInvokeDetail(this, NULL, p, NULL, true);
+                    }
+                        
+                }
+            }
+            return d;
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent e, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (e == Damaged) {
+            DamageStruct damage = data.value<DamageStruct>();
+            QString prompt = "target:" + damage.from->objectName() + "::" + QString::number(invoke->invoker->getHp());
+            return invoke->invoker->askForSkillInvoke(objectName(), data, prompt);
+        }
+        return true;
+    }
+
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        if (e == Damaged) {
+            room->setPlayerFlag(invoke->invoker, "xinyue_transform");
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
+            int x = invoke->targets.first()->getHandcardNum() - invoke->invoker->getHp();
+            if (x <= 0)
+                return false;
+            room->askForDiscard(invoke->targets.first(), objectName(), x, x, false, false);
+        }
+        else {
+            room->setPlayerFlag(invoke->invoker, "-xinyue_transform");
+            QStringList generals = room->getTag(invoke->invoker->objectName()).toStringList();
+            QString old_general = "keine_hegemony";
+            QString new_general = "keine_sp_hegemony";
+            bool head = (generals.first() == old_general);
+            room->transformGeneral(invoke->invoker, new_general, head);
+        }
+        return false;
+    }
+};
+
+
+class WangyueHegemony : public TriggerSkill
+{
+public:
+    WangyueHegemony()
+        : TriggerSkill("wangyue_hegemony")
+    {
+        events << Damaged << EventPhaseChanging;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e == Damaged) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.from && damage.from->isAlive() && damage.to->isAlive() && damage.to->hasSkill(this)) { 
+                // && damage.from->getHandcardNum() > damage.to->getHandcardNum() && damage.to->getHandcardNum() < 5
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, false, damage.from);
+            }
+        }
+        else if (e == EventPhaseChanging)
+        {
+            QList<SkillInvokeDetail> d;
+            //ServerPlayer *player = data.value<ServerPlayer *>();
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {  //check current is dead
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->hasFlag("wangyue_transform"))
+                        d << SkillInvokeDetail(this, NULL, p, NULL, true);
+                }
+            }
+            return d;
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent e, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (e == Damaged) {
+            DamageStruct damage = data.value<DamageStruct>();
+            int num = qMin(5, damage.from->getHandcardNum());
+            QString prompt = "target:" + damage.from->objectName() + "::" + QString::number(num);
+            return invoke->invoker->askForSkillInvoke(objectName(), data, prompt);
+        }
+        return true;
+    }
+
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        if (e == Damaged) {
+            room->setPlayerFlag(invoke->invoker, "wangyue_transform");
+            int num = qMin(5, invoke->targets.first()->getHandcardNum());
+            if (num <= 0)
+                return false;
+            int x = num - invoke->invoker->getHandcardNum();
+            invoke->invoker->drawCards(x);
+        }
+        else {
+            room->setPlayerFlag(invoke->invoker, "-wangyue_transform");
+            QStringList generals = room->getTag(invoke->invoker->objectName()).toStringList();
+            QString old_general = "keine_sp_hegemony";
+            QString new_general = "keine_hegemony";
+            bool head = (generals.first() == old_general);
+            room->transformGeneral(invoke->invoker, new_general, head);
+        }
+        return false;
+    }
+};
+
+
+
+
+
+
+
+
+
 XingyunHegemonyCard::XingyunHegemonyCard()
 {
     will_throw = false;
@@ -2879,17 +3021,16 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *keine_hegemony = new General(this, "keine_hegemony", "shu", 3);
     keine_hegemony->addSkill(new XushiHegemony);
-    keine_hegemony->addSkill("xinyue");
-    keine_hegemony->addCompanion("keine_sp_hegemony");
+    keine_hegemony->addSkill(new XinyueHegemony);
+
+    General *keine_sp_hegemony = new General(this, "keine_sp_hegemony", "shu", 3, false, true);
+    keine_sp_hegemony->addSkill("chuangshi");
+    keine_sp_hegemony->addSkill(new WangyueHegemony);
 
     General *tewi_hegemony = new General(this, "tewi_hegemony", "shu", 3);
     tewi_hegemony->addSkill("buxian");
     tewi_hegemony->addSkill("#buxian");
     tewi_hegemony->addSkill(new XingyungHegemony);
-
-    General *keine_sp_hegemony = new General(this, "keine_sp_hegemony", "shu", 3);
-    keine_sp_hegemony->addSkill("chuangshi");
-    keine_sp_hegemony->addSkill("wangyue");
 
     General *toyohime_hegemony = new General(this, "toyohime_hegemony", "shu", 4);
     toyohime_hegemony->addSkill("lianxi");

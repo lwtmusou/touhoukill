@@ -582,6 +582,15 @@ sgs.ai_need_damaged.xinyue = function(self, attacker, player)
 	return false
 end
 
+sgs.ai_skill_invoke.xinyue_hegemony =function(self,data)
+	local target=data:toDamage().from
+	if target and self:isEnemy(target) and target:getHandcardNum() > self.player:getHp() then
+		return true
+	end
+	return false
+end
+
+
 sgs.ai_skill_use["@@buxian"] = function(self, prompt)
 	local handcards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByUseValue(handcards)
@@ -1044,6 +1053,13 @@ sgs.ai_skill_use_func.ChuangshiCard=function(card,use,self)
 end
 
 sgs.ai_skill_invoke.wangyue = true
+sgs.ai_skill_invoke.wangyue_hegemony =function(self,data)
+	local target=data:toDamage().from
+	if target and target:getHandcardNum() > self.player:getHandcardNum() then
+		return true
+	end
+	return false
+end
 
 
 

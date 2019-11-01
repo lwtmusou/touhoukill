@@ -362,6 +362,7 @@ public:
     bool ownSkill(const Skill *skill) const;
     bool isFriendWith(const Player *player, bool considerAnjiang = false) const;
     bool willBeFriendWith(const Player *player) const;
+    bool canTransform(bool head) const;
 
     QList<const Player *> getFormation() const;
 

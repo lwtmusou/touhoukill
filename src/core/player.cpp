@@ -2250,3 +2250,11 @@ QList<const Player *> Player::getFormation() const
 
     return teammates;
 }
+
+bool Player::canTransform(bool head) const
+{
+    if (head)
+        return !getGeneralName().contains("sujiang"); // && !isDuanchang(head)
+    else
+        return getGeneral2() && !getGeneral2Name().contains("sujiang");//&& !isDuanchang(head)
+}
