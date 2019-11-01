@@ -1600,10 +1600,6 @@ public:
 
 
 
-
-
-
-
 XingyunHegemonyCard::XingyunHegemonyCard()
 {
     will_throw = false;
@@ -2382,6 +2378,292 @@ public:
 };
 
 
+
+class BaochunHegemony : public TriggerSkill
+{
+public:
+    BaochunHegemony()
+        : TriggerSkill("baochun_hegemony")
+    {
+        events << Damaged << HpRecover;
+        frequency = Compulsory;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e == Damaged) {
+            QList<SkillInvokeDetail> d;
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.to->isAlive()) {
+                foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                    if (damage.to == p) {
+                        if (damage.to->hasSkill(this))
+                            d << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
+                    }
+                    else {
+                        if (p->hasSkill(this) && p->isFriendWith(damage.to, true))
+                            d << SkillInvokeDetail(this, p, p, NULL, true);
+                    }
+                }
+            }
+            return d;
+        }
+        else if (e == HpRecover)
+        {
+            RecoverStruct r = data.value<RecoverStruct>();
+            if (r.to->isAlive() && r.to->hasSkill(this))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, r.to, r.to, NULL, true);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (e == HpRecover)
+            room->setPlayerFlag(invoke->invoker, "Global_baochunAIFailed");
+        return (invoke->invoker->hasShownSkill(this) || invoke->invoker->askForSkillInvoke(this, data));
+    }
+
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        bool draw = true;
+        if (e == Damaged) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (invoke->invoker != damage.to)
+                draw = false;
+        }
+        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        if (!draw) {
+            if (invoke->invoker->canDiscard(invoke->invoker, "hes"))
+                room->askForDiscard(invoke->invoker, objectName(), 1, 1, false, true);
+        }
+        else {
+            QList<ServerPlayer *> targets;
+            foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                if (invoke->invoker->isFriendWith(p, true))
+                    targets << p;
+            }
+            foreach(ServerPlayer *p, targets) {
+                if (p->isAlive())
+                    p->drawCards(1);
+            }
+        
+        }
+        
+        
+        return false;
+    }
+};
+
+
+
+ChunhenHegemonyCard::ChunhenHegemonyCard()
+{
+    will_throw = false;
+    handling_method = Card::MethodNone;
+    m_skillName = "chunhen_hegemony";
+}
+
+void ChunhenHegemonyCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+{
+    DummyCard dummy(subcards);
+    room->obtainCard(targets.first(), &dummy);
+}
+
+class ChunhenHegemonyVS : public ViewAsSkill
+{
+public:
+    ChunhenHegemonyVS() : ViewAsSkill("chunhen_hegemony")
+    {
+        expand_pile = "#chunhen_temp";
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const
+    {
+        return Self->getPile("#chunhen_temp").contains(to_select->getId());
+    }
+
+    virtual bool isEnabledAtPlay(const Player *) const
+    {
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
+    {
+        return pattern.startsWith("@@chunhen");
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        if (cards.isEmpty()) return NULL;
+        ChunhenHegemonyCard *card = new ChunhenHegemonyCard;
+        card->addSubcards(cards);
+        return card;
+    }
+};
+
+class ChunhenHegemony : public TriggerSkill
+{
+public:
+    ChunhenHegemony() : TriggerSkill("chunhen_hegemony")
+    {
+        events << CardsMoveOneTime;
+        view_as_skill = new ChunhenHegemonyVS;
+    }
+
+    virtual bool canPreshow() const
+    {
+        return true;
+    }
+
+    static bool putToPile(Room *room, ServerPlayer *player, QList<int> ids)
+    {
+        CardsMoveStruct move;
+        move.from_place = Player::DiscardPile;
+        move.to = player;
+        move.to_player_name = player->objectName();
+        move.to_pile_name = "#chunhen_temp";
+        move.card_ids = ids;
+        move.to_place = Player::PlaceSpecial;
+        move.open = true;
+
+        QList<CardsMoveStruct> _moves = QList<CardsMoveStruct>() << move;
+        QList<ServerPlayer *> _player = QList<ServerPlayer *>() << player;
+        room->setPlayerFlag(player, "chunhen_InTempMoving");
+        room->notifyMoveCards(true, _moves, true, _player);
+        room->notifyMoveCards(false, _moves, true, _player);
+        room->setPlayerFlag(player, "-chunhen_InTempMoving");
+
+        QVariantList tag = IntList2VariantList(ids);
+        player->tag["chunhen_tempcards"] = tag;
+        return true;
+    }
+
+    static void cleanUp(Room *room, ServerPlayer *player)
+    {
+        QList<int> reds = VariantList2IntList(player->tag.value("chunhen_tempcards", QVariantList()).toList());
+        player->tag.remove("chunhen_tempcards");
+        if (reds.isEmpty())
+            return;
+
+        CardsMoveStruct move;
+        move.from = player;
+        move.from_player_name = player->objectName();
+        move.from_place = Player::PlaceSpecial;
+        move.from_pile_name = "#chunhen_temp";
+        move.to_place = Player::DiscardPile;
+        move.open = true;
+        move.card_ids = reds;
+
+        QList<CardsMoveStruct> _moves = QList<CardsMoveStruct>() << move;
+        QList<ServerPlayer *> _player = QList<ServerPlayer *>() << player;
+        room->setPlayerFlag(player, "chunhen_InTempMoving");
+        room->notifyMoveCards(true, _moves, true, _player);
+        room->notifyMoveCards(false, _moves, true, _player);
+        room->setPlayerFlag(player, "-chunhen_InTempMoving");
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent event, const Room *room, const QVariant &data) const
+    {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
+        if (player == NULL  || !player->hasSkill(this))  // || player->tag["chunhen_to_judge"].toStringList().isEmpty()
+            return QList<SkillInvokeDetail>();
+
+        if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
+            if ((move.from_places.contains(Player::PlaceHand) || move.from_places.contains(Player::PlaceEquip)) && move.to_place == Player::DiscardPile) {
+                QList<int> ids;
+                foreach(int id, move.card_ids) {
+                    if (Sanguosha->getCard(id)->isRed() && room->getCardPlace(id) == Player::DiscardPile)
+                        ids << id;
+                }
+                if (ids.isEmpty())
+                    return QList<SkillInvokeDetail>();
+                
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        while (true) {
+            QList<int> ids;
+            foreach(int id, move.card_ids) {
+                if (Sanguosha->getCard(id)->isRed() && room->getCardPlace(id) == Player::DiscardPile)
+                    ids << id;
+            }
+            if (ids.isEmpty())
+                return false;
+
+            ServerPlayer *player = invoke->invoker;
+            if (!putToPile(room, player, ids))
+                return false;
+
+            QVariantList listc = IntList2VariantList(ids);
+            invoke->invoker->tag["chunhen_cards"] = listc; //for ai
+            const Card *usecard = room->askForUseCard(player, "@@chunhen_hegemony", "@chunhen_give", -1, Card::MethodNone);
+            cleanUp(room, player);
+            if (usecard == NULL)
+                return false;
+        }
+
+        return false;
+    }
+
+    /*virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const
+    {
+        QStringList lirang_card = player->tag["lirang_to_judge"].toStringList();
+        QList<int> cards = StringList2IntList(lirang_card.last().split("+"));
+        lirang_card.removeLast();
+
+        QList<CardsMoveStruct> moves;
+
+        do {
+            room->notifyMoveToPile(player, cards, objectName(), Player::DiscardPile, false, false);
+
+            QStringList targets = player->tag["lirang_target"].toStringList();
+            QStringList cards_get = player->tag["lirang_get"].toStringList();
+            QList<int> get = StringList2IntList(cards_get.last().split("+"));
+            ServerPlayer *target;
+            foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                if (p->objectName() == targets.last())
+                    target = p;
+            }
+            targets.removeLast();
+            cards_get.removeLast();
+            player->tag["lirang_target"] = targets;
+            player->tag["lirang_get"] = cards_get;
+
+            CardMoveReason reason(CardMoveReason::S_REASON_PREVIEWGIVE, player->objectName(), target->objectName(), objectName(), QString());
+            CardsMoveStruct move(get, target, Player::PlaceHand, reason);
+            moves.append(move);
+
+            foreach(int id, get)
+                cards.removeOne(id);
+
+            if (!cards.isEmpty()) {
+                room->notifyMoveToPile(player, cards, objectName(), Player::DiscardPile, true, true);
+                player->tag["lirang_this_time"] = IntList2VariantList(cards);
+            }
+        }
+
+        while (!cards.isEmpty() && player->isAlive()
+            && room->askForUseCard(player, "@@lirang", "@lirang-distribute:::" + QString::number(cards.length()), -1, Card::MethodNone));
+
+        if (!cards.isEmpty()) room->notifyMoveToPile(player, cards, objectName(), Player::DiscardPile, false, false);
+
+        player->tag["lirang_to_judge"] = lirang_card;
+        player->tag.remove("lirang_this_time");
+        room->moveCardsAtomic(moves, true);
+        room->broadcastSkillInvoke(objectName(), player);
+
+        return false;
+    }*/
+};
 
 
 
@@ -3176,8 +3458,8 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     letty_hegemony->addCompanion("cirno_hegemony");
 
     General *lilywhite_hegemony = new General(this, "lilywhite_hegemony", "wei", 3);
-    lilywhite_hegemony->addSkill("baochun");
-    lilywhite_hegemony->addSkill("chunyi");
+    lilywhite_hegemony->addSkill(new BaochunHegemony);
+    lilywhite_hegemony->addSkill(new ChunhenHegemony);
 
     General *shanghai_hegemony = new General(this, "shanghai_hegemony", "wei", 3);
     shanghai_hegemony->addSkill(new ZhancaoHegemony);
@@ -3205,7 +3487,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     addMetaObject<ShowShezhengCard>();
     addMetaObject<XingyunHegemonyCard>();
     
-    
+    addMetaObject<ChunhenHegemonyCard>();
     addMetaObject<MocaoHegemonyCard>();
     addMetaObject<DongzhiHegemonyCard>();
     addMetaObject<BanyueHegemonyCard>();

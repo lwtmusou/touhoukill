@@ -251,6 +251,13 @@ return
 	
 	
 	["lilywhite_hegemony"] = "莉莉霍瓦特",
+	["baochun_hegemony"]= "报春",
+	[":baochun_hegemony"]= "<font color=\"blue\"><b>锁定技，</b></font>你受到伤害后或你回复体力后，与你阵营相同的角色各摸一张牌。当同阵营其他角色受到伤害后，你弃置一张牌。",
+	["chunhen_hegemony"]= "春痕",
+	[":chunhen_hegemony"]= "每当你的一张被弃置的红色牌置入弃牌堆后，你可以将之交给一名其他角色。",
+	["#chunhen_temp"]= "春痕",
+	["@chunhen_give"] = "春痕： 你可将你被弃置的红色牌交给一名其他角色",
+	["~chunhen_hegemony"]= "选择牌和一名其他角色 --> 确定",
 	
 	--上海国战削弱
 	["shanghai_hegemony"] = "上海人形" ,

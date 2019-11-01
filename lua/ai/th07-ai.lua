@@ -1105,6 +1105,7 @@ sgs.ai_skill_playerchosen.baochun = function(self, targets)
 end
 sgs.ai_playerchosen_intention.baochun = -80
 
+
 sgs.ai_need_damaged.baochun = function(self, attacker, player)
 	local x= player:getLostHp()+1
 	if x>=2 and player:getHp()>1 then
@@ -1112,6 +1113,41 @@ sgs.ai_need_damaged.baochun = function(self, attacker, player)
 	end
 	return false
 end
+
+sgs.ai_skill_invoke.baochun_hegemony =  function(self, data)
+	if self.player:hasFlag("Global_baochunAIFailed") then
+		return true
+	end
+	local damage = data:toDamage()
+	if  damage.to and damage.to:objectName() == self.player:objectName() then
+		return true
+	end
+	return false	
+end
+
+sgs.ai_skill_use["@@chunhen_hegemony"] = function(self, prompt)	
+	
+	local tmp = self.player:getTag("chunhen_cards"):toIntList()
+	local cards = {}
+	for _, card_id in sgs.qlist(tmp) do
+		table.insert(cards, sgs.Sanguosha:getCard(card_id))
+	end
+	if #cards == 0 then return "." end
+	
+	local card, friend = self:getCardNeedPlayer(cards, self.friends_noself)
+	if card and friend then return "@ChunhenHegemonyCard=" .. card:getEffectiveId() .. "->" .. friend:objectName() end
+	if #self.friends_noself > 0 then
+		self:sort(self.friends_noself, "handcard")
+		for _, afriend in ipairs(self.friends_noself) do
+			if not self:needKongcheng(afriend, true) then
+				return "@ChunhenHegemonyCard=" .. cards[1]:getEffectiveId() .. "->" .. afriend:objectName()
+			end
+		end
+	end
+	return "."
+end
+
+
 
 --[[sgs.ai_skill_invoke.zhancao = function(self,data)
 	local use=self.player:getTag("zhancao_carduse"):toCardUse()

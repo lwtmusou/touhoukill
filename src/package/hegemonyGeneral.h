@@ -55,6 +55,18 @@ public:
 };
 
 
+class ChunhenHegemonyCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ChunhenHegemonyCard();
+
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
+
+
 class MocaoHegemonyCard : public SkillCard
 {
     Q_OBJECT
