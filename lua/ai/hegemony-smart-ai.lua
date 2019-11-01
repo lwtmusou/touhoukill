@@ -1464,13 +1464,16 @@ function SmartAI:adjustKeepValue(card, v)
 end
 
 function SmartAI:getUseValue(card)
+	--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_starteee") end
 	if not card then global_room:writeToConsole(debug.traceback()) end
 	local class_name = card:isKindOf("LuaSkillCard") and card:objectName() or card:getClassName()
+	--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_startffff") end
 	local v = sgs.ai_use_value[class_name] or 0
-
+	--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_start") end
 	if card:getTypeId() == sgs.Card_TypeSkill then
 		return v
 	elseif card:getTypeId() == sgs.Card_TypeEquip then
+		--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_equip") end
 		if self.player:hasEquip(card) then
 			if card:isKindOf("OffensiveHorse") and self.player:getAttackRange() > 2 then return 5.5 end
 			if card:isKindOf("DefensiveHorse") and self:hasEightDiagramEffect() then return 5.5 end
@@ -1485,34 +1488,48 @@ function SmartAI:getUseValue(card)
 		if self.player:hasSkills(sgs.lose_equip_skill) then return 10 end
 	elseif card:getTypeId() == sgs.Card_TypeBasic then
 		if card:isKindOf("Slash") then
+			--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_slash_start") end
 			if self.player:hasFlag("TianyiSuccess") or self:hasHeavySlashDamage(self.player, card) then v = 8.7 end
-			if self.player:getPhase() == sgs.Player_Play and self:slashIsAvailable() and #self.enemies > 0 and self:getCardsNum("Slash") == 1 then v = v + 5 end
+			--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_slash_s1") end
+			if self.player:getPhase() == sgs.Player_Play and self:slashIsAvailable() and #self.enemies > 0 and self:getCardsNum("Slash") == 1 then 	v = v + 5 end
+			--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_slash_s2") end
 			if self:hasCrossbowEffect() then v = v + 4 end
+			--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_slash_s3") end
 			if card:getSkillName() == "Spear" then v = v - 1 end
+			--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_slash_s4") end
 		elseif card:isKindOf("Jink") then
+			--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_jink_s1") end
 			if self:getCardsNum("Jink") > 1 then v = v - 6 end
+			--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_jink_s2") end
 		elseif card:isKindOf("Peach") then
+			--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_peach_s1") end
 			if self.player:isWounded() then v = v + 6 end
+			--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_peach_s2") end
 		end
 	elseif card:getTypeId() == sgs.Card_TypeTrick then
+		--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_trick_s1") end
 		--if self.player:getPhase() == sgs.Player_Play and not card:isAvailable(self.player) then v = 0 end
 		if self.player:getWeapon() and not self.player:hasSkills(sgs.lose_equip_skill) and card:isKindOf("Collateral") then v = 2 end
 		--if card:getSkillName() == "shuangxiong" then v = 6 end
+		--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_trick_s2") end
 		if card:isKindOf("Duel") then v = v + self:getCardsNum("Slash") * 2 end
-		--if self.player:hasSkill("jizhi") then v = v + 4 end
+		--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_trick_s3") end
 	end
 
 	--if self.player:hasSkills(sgs.need_kongcheng) then
 	--	if self.player:getHandcardNum() == 1 then v = 10 end
 	--end
+	--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_handpile") end
 	if self.player:getHandPile():contains(card:getEffectiveId()) then
 		v = v + 1
 	end
-
+	--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_handpile1") end
 	if card:isKindOf("HalberdCard") then v = v + 20 end
 
+	--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_adjustUsePriority") end
 	if self.player:getPhase() == sgs.Player_Play then v = self:adjustUsePriority(card, v) end
-	return v
+	--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_adjustUsePriority2") end
+	return v  --if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@caonimade_pidian") end
 end
 
 function SmartAI:getUsePriority(card)
@@ -3642,34 +3659,36 @@ function SmartAI:askForPindian(requestor, reason)
 			return self:getMaxCard(self.player):getId()
 		end
 	end
-	self.player:gainMark("@pindian3")
-	requestor:gainMark("@pindian3")
+	--self.player:gainMark("@pindian3")
+	--requestor:gainMark("@pindian3")
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	local compare_func = function(a, b)
 		return a:getNumber() < b:getNumber()
 	end
 	table.sort(cards, compare_func)
-	self.player:gainMark("@pindian3_1")
-	requestor:gainMark("@pindian3_1")
+	--self.player:gainMark("@pindian3_1")
+	--requestor:gainMark("@pindian3_1")
 	local maxcard, mincard, minusecard
 	for _, card in ipairs(cards) do
-		self.player:gainMark("@pindian_value_" .. card:objectName())
+		--self.player:gainMark("@pindian_value_" .. card:objectName())
 		if self:getUseValue(card) < 6 then mincard = card break end
 	end
+	--self.room:setPlayerMark(self.player, "@pindian3_1", 0)
+	--self.room:setPlayerMark(requestor, "@pindian3_1", 0)
 	for _, card in ipairs(sgs.reverse(cards)) do
-		self.player:gainMark("@pindian_value1_" .. card:objectName())
+		--self.player:gainMark("@pindian_value1_" .. card:objectName())
 		if self:getUseValue(card) < 6 then maxcard = card break end
 	end
-	self.player:gainMark("@pindian3_2")
-	requestor:gainMark("@pindian3_2")
+	--self.player:gainMark("@pindian3_2")
+	--requestor:gainMark("@pindian3_2")
 	self:sortByUseValue(cards, true)
-	self.player:gainMark("@pindian3_3")
-	requestor:gainMark("@pindian3_3")
+	--self.player:gainMark("@pindian3_3")
+	--requestor:gainMark("@pindian3_3")
 	minusecard = cards[1]
 	maxcard = maxcard or minusecard
 	mincard = mincard or minusecard
-	self.player:gainMark("@pindian4")
-	requestor:gainMark("@pindian4")
+	--self.player:gainMark("@pindian4")
+	--requestor:gainMark("@pindian4")
 	local sameclass, c1 = true
 	for _, c2 in ipairs(cards) do
 		if not c1 then c1 = c2
@@ -3679,8 +3698,8 @@ function SmartAI:askForPindian(requestor, reason)
 		if self:isFriend(requestor) then return self:getMinCard()
 		else return self:getMaxCard() end
 	end
-	self.player:gainMark("@pindian5")
-	requestor:gainMark("@pindian5")
+	--self.player:gainMark("@pindian5")
+	--requestor:gainMark("@pindian5")
 	local callback = sgs.ai_skill_pindian[reason]
 	if type(callback) == "function" then
 		local ret = callback(minusecard, self, requestor, maxcard, mincard)
@@ -4320,6 +4339,7 @@ end
 function SmartAI:getCardId(class_name, player, acard, exclude_subclass_name)
 	player = player or self.player
 	local cards
+	--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_getCardId1") end
 	if acard then cards = { acard }
 	else
 		cards = self.player:getCards("hes")
@@ -4331,6 +4351,7 @@ function SmartAI:getCardId(class_name, player, acard, exclude_subclass_name)
 		cards = sgs.QList2Table(cards)
 	end
 
+	--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_getCardId2") end
 	local cardask
 	local reason = sgs.Sanguosha:getCurrentCardUseReason()
 	cardask = class_name ~= "Slash" or (reason and reason == sgs.CardUseStruct_CARD_USE_REASON_RESPONSE)
@@ -4341,7 +4362,9 @@ function SmartAI:getCardId(class_name, player, acard, exclude_subclass_name)
 			self:sortByKeepValue(cards)
 		end
 	end
-
+	--self:sortByUsePriority(cards, player)
+	--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_getCardId3") end
+	
 	local cardsViewFirst = cardsViewValue(self, class_name, self.player,"getCardId")
 	if #cardsViewFirst > 0 then
 		table.sort(cardsViewFirst,
@@ -4351,7 +4374,7 @@ function SmartAI:getCardId(class_name, player, acard, exclude_subclass_name)
 		)
 		return cardsViewFirst[1]
 	end
-
+	--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_getCardId4") end
 	local viewArr, cardArr = {}, {}
 
 	for _, card in ipairs(cards) do
@@ -4366,7 +4389,7 @@ function SmartAI:getCardId(class_name, player, acard, exclude_subclass_name)
 				and  not prohibitUseDirectly(card, self.player)
 						and (card_place ~= sgs.Player_PlaceSpecial or self.player:getHandPile():contains(card:getEffectiveId()))
 		if viewas then
-			if isCard and self:adjustUsePriority(card, 0) >= self:adjustUsePriority(viewascard, 0) then
+			if isCard then --and self:adjustUsePriority(card, 0) >= self:adjustUsePriority(viewascard, 0) then
 				table.insert(cardArr, card)
 			else
 				table.insert(viewArr, viewascard)
@@ -4375,11 +4398,11 @@ function SmartAI:getCardId(class_name, player, acard, exclude_subclass_name)
 			table.insert(cardArr, card)
 		end
 	end
-
-	if not cardask then
+	--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_getCardId5") end
+	--[[if not cardask then
 		self:sortByUsePriority(viewArr)
 		self:sortByUsePriority(cardArr)
-	end
+	end]]
 
 	if #viewArr > 0 or #cardArr > 0 then
 		local viewas, cardid
@@ -4410,7 +4433,7 @@ function SmartAI:getCards(class_name, flag)
 	--local part2 = "MMP OverFlow2:" .. class_name .."/".. flag
 	--global_room:writeToConsole(part2)
 	if private_pile then
-		for _, key in sgs.list(self.player:getPileNames()) do
+		for _, key in sgs.qlist(self.player:getPileNames()) do
 			for _, id in sgs.qlist(self.player:getPile(key)) do
 				all_cards:append(sgs.Sanguosha:getCard(id))
 			end
@@ -4422,9 +4445,15 @@ function SmartAI:getCards(class_name, flag)
 	end
 	local cards, other = {}, {}
 	local card_place, card_str
-
+	--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_cardsViewValue_start") end
 	local cardsViewFirst = cardsViewValue(self, class_name, self.player,"getCards")
+	--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_cardsViewValue_end") end
 	if #cardsViewFirst > 0 then
+		local c = sgs.Card_Parse(cardsViewFirst[1])
+		assert(c)
+		table.insert(cards, c)
+	end
+	--[[if #cardsViewFirst > 0 then
 		table.sort(cardsViewFirst,
 		function(a,b)
 			return self:getUsePriority(sgs.Card_Parse(a)) > self:getUsePriority(sgs.Card_Parse(b))
@@ -4435,8 +4464,8 @@ function SmartAI:getCards(class_name, flag)
 			assert(c)
 			table.insert(cards, c)
 		end
-	end
-
+	end]]
+	--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_iscard_start") end
 	for _, card in sgs.qlist(all_cards) do
 		card_place = room:getCardPlace(card:getEffectiveId())
 
@@ -4461,8 +4490,10 @@ function SmartAI:getCards(class_name, flag)
 			end
 		end
 	end
-
+	--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_iscard_end") end
+	--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_cardsView_start") end
 	card_str = cardsView(self, class_name, self.player, other)
+	--if  self.player:getMark("@pindian3_1") > 0 then self.player:gainMark("@pindian_cardsView_end") end
 	if #card_str > 0 then
 		for _, str in ipairs(card_str) do
 			local c = sgs.Card_Parse(str)
