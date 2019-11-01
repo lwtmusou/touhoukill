@@ -655,7 +655,7 @@ hezou_hegemony_skill.getTurnUseCard = function(self, inclusive)
 		return slash
 end
 sgs.ai_cardneed.hezou_hegemony = function(to, card, self)
-	return not c:isKindOf("BasicCard")
+	return not card:isKindOf("BasicCard")
 end
 
 
@@ -1023,7 +1023,11 @@ sgs.ai_Rende_intention.jiyi= -30
 
 sgs.ai_skill_invoke.hanbo_hegemony = function(self, data)
 	local target = data:toPlayer()
-	return target and self:isEnemy(target)
+	if target then
+		if self:isEnemy(target) and target:faceup() then return true end
+		if self:isFriend(target) and not target:faceup() then return true end
+	end
+	return false
 end
 
 
@@ -1075,7 +1079,7 @@ sgs.ai_skill_use_func.DongzhiHegemonyCard = function(card, use, self)
 		use.card = card
 		if use.to then
 			for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-				if p:hasShownOneGeneral() or self.room:getTag(p:objectName() + "_RoleConfirmed"):toBool() then
+				if p:hasShownOneGeneral()  then --or self.room:getTag(p:objectName() + "_RoleConfirmed"):toBool()
 					if target_role == p:getRole() then
 						use.to:append(p)
 						return  --只需指定一个，后续会在onuse 自动补完。
