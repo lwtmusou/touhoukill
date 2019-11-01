@@ -698,8 +698,15 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
                 head = false;
             }
 
-            if (!player->hasSkill(actual_skill, true))
-                continue;
+            if (isHegemonyGameMode(mode)) {
+                if (!player->ownSkill(actual_skill))
+                    continue;
+            }
+            else {
+                if (!player->hasSkill(actual_skill, true))
+                    continue;
+            }
+            
             if (Sanguosha->getSkill(actual_skill) && Sanguosha->getSkill(actual_skill)->getFrequency() == Skill::Eternal)
                 continue;
 

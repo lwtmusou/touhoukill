@@ -1764,6 +1764,267 @@ public:
 
 
 
+class PingyiHegemony : public TriggerSkill
+{
+public:
+    PingyiHegemony()
+        : TriggerSkill("pingyi_hegemony")
+    {
+        events << Damage << Damaged;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
+    {  
+        DamageStruct damage = data.value<DamageStruct>();
+        ServerPlayer *yori = (e == Damage) ? damage.from : damage.to;
+        if (yori == NULL || yori->isDead() || !yori->hasSkill(this) || !yori->canDiscard(yori, "hes"))
+            return QList<SkillInvokeDetail>();
+
+        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori);
+
+    }
+
+
+    static QStringList GetAvailableGenerals(Room *room, ServerPlayer *yori)
+    {
+        QStringList all = Sanguosha->getLimitedGeneralNames(); //.toSet()
+        QStringList all_shu;
+        foreach(QString g_name, all) {
+            const General *general = Sanguosha->getGeneral(g_name);
+            if (general->getKingdom() == "shu")
+                all_shu << g_name;
+        }
+        all_shu << "keine_sp_hegemony";
+
+        //all_shu.removeAll("yorihime_hegemony");
+        QStringList names = room->getTag(yori->objectName()).toStringList();
+        all_shu.removeAll(names.first());
+        all_shu.removeAll(names.last());
+
+        foreach(ServerPlayer *player, room->getAllPlayers()) {
+            if (player->hasShownGeneral()) {
+                QString name1 = player->getGeneralName();
+                const General *general = Sanguosha->getGeneral(name1);
+                if (general->getKingdom() == "shu")
+                    all_shu.removeAll(name1);
+            }
+            if (player->hasShownGeneral2()) {
+                QString name2 = player->getGeneral2Name();
+                const General *general = Sanguosha->getGeneral(name2);
+                if (general->getKingdom() == "shu")
+                    all_shu.removeAll(name2);
+            }
+        }
+        return all_shu;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        return room->askForCard(invoke->invoker, ".|.|.|hand,equipped", "@pingyi_hegemony", data, Card::MethodDiscard, NULL, false,
+            objectName());
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        //bool other_general_place = !invoke->invoker->inHeadSkills(objectName());
+        //invoke->invoker->showGeneral(other_general_place);
+
+        QStringList choices = GetAvailableGenerals(room, invoke->invoker);
+        if (choices.isEmpty())
+            return false;
+
+        room->setPlayerFlag(invoke->invoker, "Pingyi_Choose");
+        QString general_name = room->askForGeneral(invoke->invoker, choices);
+        room->setPlayerFlag(invoke->invoker, "-Pingyi_Choose");
+        const General *general = Sanguosha->getGeneral(general_name);
+
+        QStringList skill_names;
+
+        foreach(const Skill *skill, general->getVisibleSkillList()) {
+            if (skill->isAttachedLordSkill() || skill->getFrequency() == Skill::Limited || skill->relateToPlace(true) || skill->relateToPlace(false))
+                continue;
+
+            skill_names << skill->objectName();
+        }
+        if (skill_names.isEmpty())
+            return false;
+
+        QString skill_name = room->askForChoice(invoke->invoker, objectName(), skill_names.join("+"));
+        const Skill *skill = Sanguosha->getSkill(skill_name);
+        //room->setPlayerFlag(invoke->invoker, "pingyi_used");
+        skillProcess(room, invoke->invoker, general_name, skill);
+        return false;
+    }
+
+    static void skillProcess(Room *room, ServerPlayer *yori, QString pingyi_general = QString(), const Skill *skill = NULL)
+    {
+        JsonArray arg;
+        arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+        arg << yori->objectName();
+        if (pingyi_general.isEmpty() || skill == NULL) {
+            arg << QString() << QString();
+        }
+        else {
+            arg << pingyi_general;
+            arg << skill->objectName();
+        }
+        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+
+
+        if (yori->tag.contains("pingyi_skill") && yori->tag.contains("pingyi_General")) {
+            QString originalSkillName = yori->tag.value("pingyi_skill", QString()).toString();
+
+            //ServerPlayer *originalOwner = yori->tag["pingyi_originalOwner"].value<ServerPlayer *>();
+
+            // 1. yorihime lost the acquired skill
+            if (!originalSkillName.isEmpty()) {
+                if (!yori->inHeadSkills("pingyi_hegemony"))
+                    originalSkillName = originalSkillName + "!";
+                room->handleAcquireDetachSkills(yori, "-" + originalSkillName, false);//
+            }
+            yori->tag.remove("pingyi_skill");
+            yori->tag.remove("pingyi_General");
+            yori->tag.remove("Huashen_skill");
+            yori->tag.remove("Huashen_target");
+        }
+
+        if (skill != NULL && !pingyi_general.isEmpty()) {
+            yori->tag["pingyi_skill"] = skill->objectName();
+            yori->tag["pingyi_General"] = pingyi_general;
+
+
+            // 2. acquire the skill
+            yori->tag["Huashen_skill"] = skill->objectName();//for marshal
+            yori->tag["Huashen_target"] = pingyi_general;
+
+
+           // QString skillname = yori->inHeadSkills("pingyi_hegemony") ? skill->objectName() : skill->objectName() + "!";
+            //room->handleAcquireDetachSkills(yori, skillname, true); //need rewrite handleAcquireDetachSkills 
+
+
+            bool head = yori->inHeadSkills("pingyi_hegemony");
+            bool game_start = false;
+            // process main skill
+            yori->addSkill(skill->objectName(), head);
+            const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
+            if (trigger_skill) {
+                room->getThread()->addTriggerSkill(trigger_skill);
+                if (trigger_skill->getTriggerEvents().contains(GameStart)) {
+                    game_start = true;
+                }
+                    
+            }
+            SkillAcquireDetachStruct s;
+            s.isAcquire = true;
+            s.player = yori;
+            s.skill = skill;
+            QVariant data = QVariant::fromValue(s);
+            room->getThread()->trigger(EventAcquireSkill, room, data);
+
+            JsonArray args;
+            args << QSanProtocol::S_GAME_EVENT_ACQUIRE_SKILL << yori->objectName() << skill->objectName() << head;
+            room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
+
+            //process related skill
+            foreach(const Skill *related_skill, Sanguosha->getRelatedSkills(skill->objectName())) {
+                if (!related_skill->isVisible()) { //??
+                                                   //acquireSkill(player, related_skill);
+                    yori->addSkill(related_skill->objectName(), head);
+                    const TriggerSkill *tr = qobject_cast<const TriggerSkill *>(related_skill);
+                    if (tr) {
+                        room->getThread()->addTriggerSkill(tr);
+                        if (tr->getTriggerEvents().contains(GameStart))
+                            game_start = true;
+                    }
+                    SkillAcquireDetachStruct s;
+                    s.isAcquire = true;
+                    s.player = yori;
+                    s.skill = related_skill;
+                    QVariant data = QVariant::fromValue(s);
+                    room->getThread()->trigger(EventAcquireSkill, room, data);
+                }
+
+            }
+
+
+            yori->sendSkillsToOthers(head);
+            QString flag = (head) ? "h" : "d";
+            yori->setSkillsPreshowed(flag, true);
+            yori->notifyPreshow();
+
+
+            
+
+            //trigger game start
+            if (game_start) {
+                QVariant v = QVariant::fromValue(yori);
+                room->getThread()->trigger(GameStart, room, v);
+            }
+        }
+    }
+};
+
+class PingyiHegemonyHandler : public TriggerSkill
+{
+public:
+    PingyiHegemonyHandler()
+        : TriggerSkill("#pingyi_hegemony")
+    {
+        events << GeneralShown << GeneralHidden << GeneralRemoved;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+
+        if (triggerEvent == GeneralShown) {
+            ShowGeneralStruct s = data.value<ShowGeneralStruct>();
+            ServerPlayer *target = s.player;
+
+            if (target && target->isAlive()) {
+                QString name = s.isHead ? s.player->getGeneralName() : s.player->getGeneral2Name();
+                QList<SkillInvokeDetail> d;
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    QString who = p->tag.value("pingyi_General", QString()).toString();
+                    if (who == name)
+                        d << SkillInvokeDetail(this, NULL, p, NULL, true);
+                }
+                return d;
+            }
+        
+        }
+        if (triggerEvent == GeneralHidden || triggerEvent == GeneralRemoved) {
+            ShowGeneralStruct s = data.value<ShowGeneralStruct>();
+            ServerPlayer *target = s.player;
+            if (target && target->isAlive()) {
+                //QStringList names = room->getTag(target->objectName()).toStringList();
+                //QString name = s.isHead ? names.first() : names.last();
+                bool invoke = true;
+                if (target->hasShownGeneral() && target->getGeneralName() == "yorihime_hegemony")
+                    invoke = false;
+                if (target->getGeneral2() && target->hasShownGeneral2() && target->getGeneral2Name() == "yorihime_hegemony")
+                    invoke = false;
+                if (invoke) {
+                    QString who = target->tag.value("pingyi_General", QString()).toString();
+                    if (!who.isEmpty())
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, NULL, target, NULL, true);
+                }
+                
+            }
+        }
+
+
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+
+        PingyiHegemony::skillProcess(room, invoke->invoker);
+        return false;
+    }
+};
+
 
 
 class YinghuoHegemony : public TriggerSkill
@@ -3427,8 +3688,9 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     toyohime_hegemony->addCompanion("yorihime_hegemony");
 
     General *yorihime_hegemony = new General(this, "yorihime_hegemony", "shu", 4);
-    yorihime_hegemony->addSkill("pingyi");
-    yorihime_hegemony->addSkill("#pingyi_handle");
+    yorihime_hegemony->addSkill(new PingyiHegemony);
+    yorihime_hegemony->addSkill(new PingyiHegemonyHandler);
+    related_skills.insertMulti("pingyi_hegemony", "#pingyi_hegemony");
 
     General *wriggle_hegemony = new General(this, "wriggle_hegemony", "shu", 3);
     wriggle_hegemony->addSkill(new YinghuoHegemony);

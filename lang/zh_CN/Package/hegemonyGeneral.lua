@@ -139,7 +139,10 @@ return
 	["yueshi_hegemony:invoke"]= "普通锦囊牌【%src】对你结算结束了，你可以发动“睿智”。",
 	
 	["yorihime_hegemony"] = "绵月依姬",
-
+	["pingyi_hegemony"] = "凭依",
+	[":pingyi_hegemony"] = "你造成伤害后或受到伤害后，你可以弃置一张牌，然后你可以获得一个未登场的夏势力角色的技能（主将技，副将技，限定技除外）。你拥有此技能直到该武将牌被亮出 或 你以此法重新声明技能 或 此武将牌被移除，被暗置。",
+	["@pingyi_hegemony"]= "你是否要弃置一张牌，发动“凭依”",
+	
 	
 	["wriggle_hegemony"] = "莉格露",
 	["#wriggle_hegemony"] = "在黑暗中蠢动的光虫",

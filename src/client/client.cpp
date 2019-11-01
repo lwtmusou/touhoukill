@@ -1633,7 +1633,7 @@ void Client::askForGeneral(const QVariant &arg)
     bool single_result = false;
     bool can_convert = false;
 
-    if (!isHegemonyGameMode(ServerInfo.GameMode)) {
+    if (!isHegemonyGameMode(ServerInfo.GameMode) || Self->hasFlag("Pingyi_Choose")) {
         if (!tryParse(arg, generals))
             return;
     } else {
@@ -1643,7 +1643,7 @@ void Client::askForGeneral(const QVariant &arg)
         can_convert = args[2].toBool();
     }
 
-    if (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral) {
+    if (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral && !Self->hasFlag("Pingyi_Choose")) {
         //Sanguosha->playSystemAudioEffect("lose");
         emit generals_got(generals, single_result, can_convert);
         setStatus(AskForGeneralTaken);

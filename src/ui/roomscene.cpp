@@ -1847,7 +1847,7 @@ void RoomScene::chooseGeneral(const QStringList &generals, const bool single_res
     if (!main_window->isActiveWindow())
         Sanguosha->playSystemAudioEffect("prelude");
 
-    if (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral && !generals.isEmpty()) {
+    if (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral && !Self->hasFlag("Pingyi_Choose")  && !generals.isEmpty()) {
         m_chooseGeneralBox->chooseGeneral(generals, false, single_result, QString(), NULL, can_convert);
     } else {
         QDialog *dialog;
