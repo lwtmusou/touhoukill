@@ -1795,14 +1795,19 @@ public:
 
     static QStringList GetAvailableGenerals(Room *room, ServerPlayer *yori)
     {
-        QStringList all = Sanguosha->getLimitedGeneralNames(); //.toSet()
+        QList<const General *> all_generals = Sanguosha->findChildren<const General *>();
+        //QStringList all = Sanguosha->getPackages  //Sanguosha->getLimitedGeneralNames(); //.toSet()
         QStringList all_shu;
-        foreach(QString g_name, all) {
+        foreach(const General *general, all_generals) {
+            if (general->getKingdom() == "shu")
+                all_shu << general->objectName();
+        }
+        /*foreach(QString g_name, all) {
             const General *general = Sanguosha->getGeneral(g_name);
             if (general->getKingdom() == "shu")
                 all_shu << g_name;
-        }
-        all_shu << "keine_sp_hegemony";
+        }*/
+        //all_shu << "keine_sp_hegemony";
 
         //all_shu.removeAll("yorihime_hegemony");
         QStringList names = room->getTag(yori->objectName()).toStringList();
