@@ -91,13 +91,11 @@ sgs.ai_skill_discard.qingting = function(self)
 		cards = sgs.QList2Table(self.player:getHandcards())
 	end
 	
-	self.player:gainMark("@StartQingtingSort")
 	if self:isFriend(target) then
 		self:sortByUseValue(cards, true)
 	else
 		self:sortByUseValue(cards)
 	end
-	self.player:gainMark("@EndQingtingSort")
 	
 	local tmpCard = cards[1]
 	if self:isEnemy(target) and tmpCard:isKindOf("Peach") then

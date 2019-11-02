@@ -429,7 +429,8 @@ end
 
 function SmartAI:slashIsAvailable(player, slash) -- @todo: param of slashIsAvailable
 	player = player or self.player
-	slash = slash or self:getCard("Slash", player)
+	slash = slash --self:getCard("Slash", player)   
+	-- getUseValue -> slashIsAvailable -> self:getCard -> self: sortByUseValue  -> getUseValue  国战下这tm是一条死循环
 	if not slash or not slash:isKindOf("Slash") then slash = sgs.cloneCard("slash") end
 	assert(slash)
 	return slash:isAvailable(player) or slash:hasFlag("jiuhao")
@@ -2269,7 +2270,7 @@ sgs.ai_skill_cardask["duel-slash"] = function(self, data, pattern, target)
 			return "."
 		end
 	end
-
+	
 	if (not self:isFriend(target) and self:getCardsNum("Slash") >= getCardsNum("Slash", target, self.player))
 		or (target:getHp() > 2 and self.player:getHp() <= 1 and self:getCardsNum("Peach") == 0) then
 		return self:getCardId("Slash")
