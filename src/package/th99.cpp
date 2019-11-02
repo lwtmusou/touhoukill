@@ -997,10 +997,17 @@ public:
         arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
         arg << yori->objectName();
         if (skill_owner == NULL || skill == NULL) {
-            arg << QString() << QString();
+            arg << QString() << QString() << QString() << QString();
         } else {
-            arg << skill_owner->getGeneral()->objectName();
-            arg << skill->objectName();
+            if (yori->inHeadSkills("pingyi")) {
+                arg << skill_owner->getGeneral()->objectName();
+                arg << skill->objectName();
+            }
+            arg << QString() << QString();
+            if (!yori->inHeadSkills("pingyi")) {
+                arg << skill_owner->getGeneral()->objectName();
+                arg << skill->objectName();
+            }
         }
         room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
 

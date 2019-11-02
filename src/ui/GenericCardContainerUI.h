@@ -104,7 +104,7 @@ public:
     virtual void killPlayer();
     virtual void revivePlayer();
     virtual QGraphicsItem *getMouseClickReceiver() = 0;
-    virtual void startHuaShen(QString generalName, QString skillName);
+    virtual void startHuaShen(QString generalName, QString skillName, QString general2Name, QString skill2Name);
     virtual void stopHuaShen();
     virtual void updateAvatarTooltip();
     virtual void setRoleShown(bool shown = false);
@@ -137,7 +137,7 @@ public:
 
     void stopHeroSkinChangingAnimation();
     void showSkillName(const QString &skill_name, bool isSelf);
-    QString getHuashenSkillName();
+    QString getHuashenSkillName(bool head);
 
 public slots:
     void updateAvatar();
@@ -296,13 +296,15 @@ protected:
 
     // animations
     QAbstractAnimation *_m_huashenAnimation;
-    QGraphicsItem *_m_huashenItem;
+    QGraphicsItem *_m_huashenItem; QGraphicsItem *_m_huashenItem2;
     //GraphicsWidgetHoverItem *_m_huashenItem;
     //GraphicsPixmapHoverItem *_m_huashenItem;
     //QGraphicsPixmapItem *_m_huashenItem;
 
     QString _m_huashenGeneralName;
     QString _m_huashenSkillName;
+    QString _m_huashenGeneral2Name;
+    QString _m_huashenSkill2Name;
 
     QSanButton *m_changePrimaryHeroSKinBtn;
     HeroSkinContainer *m_primaryHeroSkinContainer;

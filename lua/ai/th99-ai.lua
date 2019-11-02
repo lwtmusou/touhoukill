@@ -566,6 +566,22 @@ local function pingyi_change(player,attacker)
 end
 
 
+sgs.ai_skill_cardask["@pingyi_hegemony"] = function(self, data)
+	local head = self.player:inHeadSkills("pingyi_hegemony")
+	if (head and self.player:hasShownGeneral()) then
+		return "."
+	end
+	if (not head and self.player:hasShownGeneral2()) then
+		return "."
+	end
+
+	local cards=self.player:getCards("hes")
+	cards = sgs.QList2Table(cards)
+	if #cards==0 then return "." end
+	self:sortByKeepValue(cards)
+	return "$" .. cards[1]:getId()
+end
+
 sgs.ai_skill_choice.pingyi=function(self, choices)
 	local target =self.player:getTag("pingyi_target"):toPlayer()
 	if self:isEnemy(target) then

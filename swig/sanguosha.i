@@ -300,6 +300,9 @@ public:
 	void setSkillsPreshowed(const char *flag = "hd", bool preshowed = true);
 
 
+	bool inHeadSkills(const char *skill_name) const;
+	bool inDeputySkills(const char *skill_name) const;
+
 	void setNext(Player *next);
     void setNext(const char *next);
     Player *getNext(bool ignoreRemoved = true) const;
