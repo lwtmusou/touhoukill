@@ -1509,7 +1509,10 @@ public:
     bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         if (e == Damaged) {
-            room->setPlayerFlag(invoke->invoker, "xinyue_transform");
+            if (invoke->invoker->hasShownGeneral() && invoke->invoker->getGeneralName() == "keine_hegemony")
+                room->setPlayerFlag(invoke->invoker, "xinyue_transform");
+            else if (invoke->invoker->getGeneral2() && invoke->invoker->hasShownGeneral2() && invoke->invoker->getGeneral2Name() == "keine_hegemony")
+                room->setPlayerFlag(invoke->invoker, "xinyue_transform");
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
             int x = invoke->targets.first()->getHandcardNum() - invoke->invoker->getHp();
             if (x <= 0)
@@ -1577,7 +1580,12 @@ public:
     bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         if (e == Damaged) {
-            room->setPlayerFlag(invoke->invoker, "wangyue_transform");
+            if (invoke->invoker->hasShownGeneral() && invoke->invoker->getGeneralName() == "keine_sp_hegemony")
+                room->setPlayerFlag(invoke->invoker, "wangyue_transform");
+            else if (invoke->invoker->getGeneral2() && invoke->invoker->hasShownGeneral2() && invoke->invoker->getGeneral2Name() == "keine_sp_hegemony")
+                room->setPlayerFlag(invoke->invoker, "wangyue_transform");
+
+            
             int num = qMin(5, invoke->targets.first()->getHandcardNum());
             if (num <= 0)
                 return false;

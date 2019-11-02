@@ -113,11 +113,11 @@ return
 	["@xushi_hegemony_targetchosen"] = "虚史： 【%src】 有复数个目标， 你是否取消其中一个目标？",
 	["#XushiHegemonySkillAvoid"] = "因为 “%arg”的效果，取消了 【%arg2】 的目标 %from ",
 	["xinyue_hegemony"] = "新月",
-	[":xinyue_hegemony"] = "当你受到伤害后，你可以令来源将其手牌弃置至X张（X为你的体力值）。若如此做，本回合结束时，此武将牌变更为“白泽”。",
+	[":xinyue_hegemony"] = "当你受到伤害后，你可以令来源将其手牌弃置至X张（X为你的体力值）。若如此做，本回合结束时，武将牌“上白泽慧音”变更为“白泽”。",
 	["xinyue_hegemony:target"] = "<font color=\"#00FF00\"><b>%src </b></font>对你造成了伤害，你可以发动“新月”，令其将手牌弃至 %arg 张。",
 
 	["wangyue_hegemony"] = "望月",
-	[":wangyue_hegemony"] = "当你受到伤害后，你可以将手牌补至X张（X为来源的手牌数且至多为5）。若如此做，本回合结束时，此武将牌变更为“慧音”。",
+	[":wangyue_hegemony"] = "当你受到伤害后，你可以将手牌补至X张（X为来源的手牌数且至多为5）。若如此做，本回合结束时，武将牌“白泽”变更为“上白泽慧音”。",
 	["wangyue_hegemony:target"] = "<font color=\"#00FF00\"><b>%src </b></font>对你造成了伤害，你可以发动“望月”，将手牌补至 %arg 张。",
 	
 	
