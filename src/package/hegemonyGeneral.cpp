@@ -1846,26 +1846,51 @@ public:
         if (choices.isEmpty())
             return false;
 
-        room->setPlayerFlag(invoke->invoker, "Pingyi_Choose");
-        QString general_name = room->askForGeneral(invoke->invoker, choices);
-        room->setPlayerFlag(invoke->invoker, "-Pingyi_Choose");
-        const General *general = Sanguosha->getGeneral(general_name);
+        //AI *ai = invoke->invoker->getAI();
+        if (!invoke->invoker->isOnline()) {//  ai: Just make a random choice
+            //QString general_name = room->askForChoice(invoke->invoker, objectName(), choices.join("+"));
+            int idx = qrand() % choices.length();
+            QString general_name = choices.at(idx);
+            const General *general = Sanguosha->getGeneral(general_name);
 
-        QStringList skill_names;
 
-        foreach(const Skill *skill, general->getVisibleSkillList()) {
-            if (skill->isAttachedLordSkill() || skill->getFrequency() == Skill::Limited || skill->relateToPlace(true) || skill->relateToPlace(false))
-                continue;
+            QStringList skill_names;
 
-            skill_names << skill->objectName();
+            foreach(const Skill *skill, general->getVisibleSkillList()) {
+                if (skill->isAttachedLordSkill() || skill->getFrequency() == Skill::Limited || skill->relateToPlace(true) || skill->relateToPlace(false))
+                    continue;
+
+                skill_names << skill->objectName();
+            }
+            if (skill_names.isEmpty())
+                return false;
+
+            int skill_idx = qrand() % skill_names.length();
+            QString skill_name = skill_names.at(skill_idx);
+            const Skill *skill = Sanguosha->getSkill(skill_name);
+            skillProcess(room, invoke->invoker, general_name, skill);
         }
-        if (skill_names.isEmpty())
-            return false;
+        else {
+            room->setPlayerFlag(invoke->invoker, "Pingyi_Choose");
+            QString general_name = room->askForGeneral(invoke->invoker, choices);
+            room->setPlayerFlag(invoke->invoker, "-Pingyi_Choose");
+            const General *general = Sanguosha->getGeneral(general_name);
 
-        QString skill_name = room->askForChoice(invoke->invoker, objectName(), skill_names.join("+"));
-        const Skill *skill = Sanguosha->getSkill(skill_name);
-        //room->setPlayerFlag(invoke->invoker, "pingyi_used");
-        skillProcess(room, invoke->invoker, general_name, skill);
+            QStringList skill_names;
+
+            foreach(const Skill *skill, general->getVisibleSkillList()) {
+                if (skill->isAttachedLordSkill() || skill->getFrequency() == Skill::Limited || skill->relateToPlace(true) || skill->relateToPlace(false))
+                    continue;
+
+                skill_names << skill->objectName();
+            }
+            if (skill_names.isEmpty())
+                return false;
+
+            QString skill_name = room->askForChoice(invoke->invoker, objectName(), skill_names.join("+"));
+            const Skill *skill = Sanguosha->getSkill(skill_name); 
+            skillProcess(room, invoke->invoker, general_name, skill);
+        }        
         return false;
     }
 
@@ -1875,11 +1900,18 @@ public:
         arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
         arg << yori->objectName();
         if (pingyi_general.isEmpty() || skill == NULL) {
-            arg << QString() << QString();
+            arg << QString() << QString() << QString() << QString();
         }
         else {
-            arg << pingyi_general;
-            arg << skill->objectName();
+            if (yori->inHeadSkills("pingyi_hegemony")) {
+                arg << pingyi_general;
+                arg << skill->objectName();
+            }
+            arg << QString() << QString();
+            if (!yori->inHeadSkills("pingyi_hegemony")) {
+                arg << pingyi_general;
+                arg << skill->objectName();
+            }
         }
         room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
 
@@ -1899,6 +1931,7 @@ public:
             yori->tag.remove("pingyi_General");
             yori->tag.remove("Huashen_skill");
             yori->tag.remove("Huashen_target");
+            yori->tag.remove("Huashen_place");
         }
 
         if (skill != NULL && !pingyi_general.isEmpty()) {
@@ -1910,12 +1943,14 @@ public:
             yori->tag["Huashen_skill"] = skill->objectName();//for marshal
             yori->tag["Huashen_target"] = pingyi_general;
 
-
-           // QString skillname = yori->inHeadSkills("pingyi_hegemony") ? skill->objectName() : skill->objectName() + "!";
+            //QString skillname = yori->inHeadSkills("pingyi_hegemony") ? skill->objectName() : skill->objectName() + "!";
             //room->handleAcquireDetachSkills(yori, skillname, true); //need rewrite handleAcquireDetachSkills 
 
 
             bool head = yori->inHeadSkills("pingyi_hegemony");
+            QString place = (head) ? "head" : "deputy";
+            yori->tag["Huashen_place"] = place;
+
             bool game_start = false;
             // process main skill
             yori->addSkill(skill->objectName(), head);

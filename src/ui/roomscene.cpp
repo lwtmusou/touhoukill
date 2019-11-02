@@ -450,11 +450,14 @@ void RoomScene::handleGameEvent(const QVariant &args)
         ClientPlayer *player = ClientInstance->getPlayer(arg[1].toString());
         QString huashenGeneral = arg[2].toString();
         QString huashenSkill = arg[3].toString();
+        QString huashenGeneral2 = arg[4].toString();
+        QString huashenSkill2 = arg[5].toString();
+
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        if (huashenSkill.isEmpty() || huashenGeneral.isEmpty())
+        if ((huashenSkill.isEmpty() || huashenGeneral.isEmpty()) && (huashenSkill2.isEmpty() || huashenGeneral2.isEmpty()))
             container->stopHuaShen();
         else
-            container->startHuaShen(huashenGeneral, huashenSkill);
+            container->startHuaShen(huashenGeneral, huashenSkill, huashenGeneral2, huashenSkill2);
 
         break;
     }

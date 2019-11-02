@@ -4792,8 +4792,15 @@ public:
             JsonArray arg;
             arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
             arg << invoke->invoker->objectName();
-            arg << general->objectName();
-            arg << skill_name;
+            if (invoke->invoker->inHeadSkills(objectName())) {
+                arg << general->objectName();
+                arg << skill_name;
+            }
+            arg << QString() << QString();
+            if (!invoke->invoker->inHeadSkills(objectName())) {
+                arg << general->objectName();
+                arg << skill_name;
+            }
             room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
             room->handleAcquireDetachSkills(invoke->invoker, skill_name, true);
         }
@@ -5396,7 +5403,7 @@ public:
         JsonArray arg;
         arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
         arg << invoke->invoker->objectName();
-        arg << QString() << QString();
+        arg << QString() << QString() << QString() << QString();
         room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
 
         return false;
