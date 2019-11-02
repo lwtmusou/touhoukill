@@ -82,7 +82,7 @@ return
 	
 	["koakuma_hegemony"] = "小恶魔",
 	["moqi_hegemony"] = "魔契",
-	[":moqi_hegemony"] = "当与你阵营相同的角色使用普通锦囊牌时，你可以令此牌的首个效果值+1。",
+	[":moqi_hegemony"] = "当与你阵营相同的角色使用普通锦囊牌时，你可以令此牌的首个效果值+1。<font color=\"green\"><b>每阶段限一次。</b></font>",
 
 	--辉夜 国战削弱
 	["kaguya_hegemony"] = "蓬莱山辉夜",
