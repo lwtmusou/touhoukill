@@ -435,6 +435,9 @@ void Dashboard::_addHandCard(CardItem *card_item, bool prepend, const QString &f
     connect(card_item, SIGNAL(enter_hover()), this, SLOT(onCardItemHover()));
     connect(card_item, SIGNAL(leave_hover()), this, SLOT(onCardItemLeaveHover()));
 
+    //connect(card_item, &CardItem::enter_hover, this, &Dashboard::bringSenderToTop);
+    //connect(card_item, &CardItem::leave_hover, this, &Dashboard::resetSenderZValue);
+
     //card_item->installSceneEventFilter(this);
 }
 
@@ -1595,20 +1598,52 @@ void Dashboard::onCardItemThrown()
 
 void Dashboard::onCardItemHover()
 {
-    QGraphicsItem *card_item = qobject_cast<QGraphicsItem *>(sender());
+    //QGraphicsItem *card_item = qobject_cast<QGraphicsItem *>(sender());
+    CardItem *card_item = qobject_cast<CardItem *>(sender());
     if (!card_item)
         return;
 
     animations->emphasize(card_item);
+
+
+    /*_adjustCards();
+    foreach(CardItem *card, m_handCards)
+        card->goBack(true, true);
+    */
 }
 
 void Dashboard::onCardItemLeaveHover()
 {
-    QGraphicsItem *card_item = qobject_cast<QGraphicsItem *>(sender());
+    //QGraphicsItem *card_item = qobject_cast<QGraphicsItem *>(sender());
+    CardItem *card_item = qobject_cast<CardItem *>(sender());
     if (!card_item)
         return;
 
     animations->effectOut(card_item);
+
+    /*_adjustCards();
+    foreach(CardItem *card, m_handCards)
+        card->goBack(true, true);
+    */
+}
+
+
+void Dashboard::bringSenderToTop()
+{
+    CardItem *item = qobject_cast<CardItem *>(sender());
+
+    Q_ASSERT(item);
+    item->setData(CARDITEM_Z_DATA_KEY, item->zValue());
+    item->setZValue(1000);
+}
+
+void Dashboard::resetSenderZValue()
+{
+    CardItem *item = qobject_cast<CardItem *>(sender());
+
+    Q_ASSERT(item);
+    const int z = item->data(CARDITEM_Z_DATA_KEY).toInt();
+    item->setZValue(z);
 }
 
 void Dashboard::onMarkChanged()

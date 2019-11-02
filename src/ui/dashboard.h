@@ -134,6 +134,7 @@ public:
 
 
     void playBattleArrayAnimations();
+    static const int CARDITEM_Z_DATA_KEY = 0413;
 
 public slots:
     virtual void updateAvatar();
@@ -328,6 +329,9 @@ private slots:
 
     void onMarkChanged();
     void onHeadStateChanged();  void onDeputyStateChanged();
+
+    void bringSenderToTop();
+    void resetSenderZValue();
 
 signals:
     void card_selected(const Card *card);
