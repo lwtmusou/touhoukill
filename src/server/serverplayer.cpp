@@ -1200,7 +1200,9 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     room->notifyProperty(player, this, "inital_seat");
 
     if (isHegemonyGameMode(room->getMode())) {
-        if (player == this || hasShownOneGeneral()) {
+        QVariant RoleConfirmedTag = room->getTag(this->objectName() + "_RoleConfirmed");
+        bool roleConfirmed = RoleConfirmedTag.canConvert(QVariant::Bool) && RoleConfirmedTag.toBool();
+        if (player == this || hasShownOneGeneral() || roleConfirmed) {
             room->notifyProperty(player, this, "kingdom");
             room->notifyProperty(player, this, "role");
         } else {
