@@ -699,7 +699,7 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
             }
 
             if (isHegemonyGameMode(mode)) {
-                if (!player->ownSkill(actual_skill))
+                if (!player->ownSkill(actual_skill) && !player->hasSkill(actual_skill, true))
                     continue;
             }
             else {
@@ -737,20 +737,18 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
                 }
             }
         } else {
-            
             bool head = true;
-            QString skill_name = skill_name;
-            if (skill_name.endsWith("!")) {
-                skill_name.chop(1);
+            QString actual_skill = skill_name;
+            if (actual_skill.endsWith("!")) {
+                actual_skill.chop(1);
                 head = false;
             }
-            const Skill *skill = Sanguosha->getSkill(skill_name);
+            const Skill *skill = Sanguosha->getSkill(actual_skill);
             if (!skill)
                 continue;
-            if (player->getAcquiredSkills().contains(skill_name))
+            if (player->getAcquiredSkills().contains(actual_skill))
                 continue;
-            player->acquireSkill(skill_name, head);
-
+            player->acquireSkill(actual_skill, head);
             if (skill->inherits("TriggerSkill")) {
                 const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
                 thread->addTriggerSkill(trigger_skill);
@@ -758,13 +756,12 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
             if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
                 //addPlayerMark(player, skill->getLimitMark());
                 setPlayerMark(player, skill->getLimitMark(), 1);
-
             if (skill->isVisible()) {
                 JsonArray args;
-                args << QSanProtocol::S_GAME_EVENT_ACQUIRE_SKILL << player->objectName() << skill_name << head;
+                args << QSanProtocol::S_GAME_EVENT_ACQUIRE_SKILL << player->objectName() << actual_skill << head;
                 doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
-                foreach (const Skill *related_skill, Sanguosha->getRelatedSkills(skill_name)) {
+                foreach (const Skill *related_skill, Sanguosha->getRelatedSkills(actual_skill)) {
                     if (!related_skill->isVisible())
                         acquireSkill(player, related_skill);
                 }
