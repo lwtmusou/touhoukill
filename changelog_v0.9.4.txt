@@ -105,10 +105,10 @@ v 0.9.4
 54 雌雄剑根据国战模式 进行了修改。
 55 sp堇子 结算细节调整 ： “不因使用而失去” -》“因弃置失去”
 56 确认并fix一个客户端崩溃点
-     SupplyShortage::isAvailable   getSiblings ->
+     SupplyShortage::isAvailable   getSiblings -> getAliveSiblings
     1） 主视角手里有兵粮的时候，初始的下家死亡。
     2）初始的下家死亡后，摸进一张兵粮。
-
+56 UI 火攻展示后，卡牌变回非选中状态。
 
 
 **********************************
