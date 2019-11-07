@@ -101,7 +101,7 @@ return
 	["fengxiang_hegemony"] = "凤翔",
 	[":fengxiang_hegemony"] = "你可以将一张红色手牌当【火攻】使用，且此【火攻】的效果中的“弃置”改为“重铸”。",
 	["kaifeng_hegemony"] = "凯风",
-	[":kaifeng_hegemony"] = "当你对一名其他角色造成火焰伤害后或你受到一名其他角色造成的火焰伤害时，若你的体力值小于该角色，你回复1点体力。",
+	[":kaifeng_hegemony"] = "当你对一名其他角色造成火焰伤害时或你受到一名其他角色造成的火焰伤害时，若你的体力值小于该角色，你回复1点体力。",
 	
 	["reisen_hegemony"]="铃仙",
 	["!reisen_hegemony"]="铃仙·优昙华院·因幡",
