@@ -156,7 +156,7 @@ void KnownBothHegemony::onEffect(const CardEffectStruct &effect) const
 bool KnownBothHegemony::isAvailable(const Player *player) const
 {
     bool can_use = false;
-    foreach(const Player *p, player->getSiblings()) {
+    foreach(const Player *p, player->getAliveSiblings()) {
         if (player->isProhibited(p, this))
             continue;
         if (p->isKongcheng() && p->hasShownAllGenerals())

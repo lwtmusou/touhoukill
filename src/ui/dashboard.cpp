@@ -409,7 +409,7 @@ void Dashboard::addHandCards(QList<CardItem *> &card_items)
 
 void Dashboard::_addHandCard(CardItem *card_item, bool prepend, const QString &footnote)
 {
-    if (ClientInstance->getStatus() == Client::Playing)
+    if (ClientInstance->getStatus() == Client::Playing && card_item->getCard())
         card_item->setEnabled(card_item->getCard()->isAvailable(Self));
     else
         card_item->setEnabled(false); //false

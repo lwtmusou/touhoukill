@@ -666,7 +666,7 @@ SupplyShortage::SupplyShortage(Card::Suit suit, int number)
 
 bool SupplyShortage::isAvailable(const Player *player) const
 {
-    foreach (const Player *p, player->getSiblings()) {
+    foreach (const Player *p, player->getAliveSiblings()) {
         if (targetFilter(QList<const Player *>(), p, player) && !player->isProhibited(p, this))
             return DelayedTrick::isAvailable(player);
     }
