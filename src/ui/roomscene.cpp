@@ -2611,6 +2611,7 @@ void RoomScene::useSelectedCard()
             dashboard->stopPending();
             prompt_box->disappear();
         }
+        dashboard->unselectAll();
         break;
     }
     case Client::NotActive: {
