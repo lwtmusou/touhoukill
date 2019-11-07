@@ -450,7 +450,7 @@ public:
     {
         if (triggerEvent == DamageDone) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.from && damage.card && damage.card->isKindOf("Slash"))
+            if (damage.from && damage.card )//&& damage.card->isKindOf("Slash")
                 room->setCardFlag(damage.card, "lizhiDamage");
         }
         if (triggerEvent == EventPhaseChanging) {
