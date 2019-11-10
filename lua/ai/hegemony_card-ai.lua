@@ -409,7 +409,7 @@ sgs.ai_choicemade_filter.skillChoice.known_both_hegemony = function(self, from, 
 						table.insert(names, "anjiang")
 					end
 				end
-				local generals = self.room:getTag(to:objectName()).toList();
+				local generals = self.room:getTag(to:objectName()):toList()
 				
 				if choice == "showhead" then
 					names[1] = generals:first()
