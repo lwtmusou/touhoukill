@@ -2983,7 +2983,7 @@ public:
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-        if (player == NULL  || !player->hasSkill(this))  // || player->tag["chunhen_to_judge"].toStringList().isEmpty()
+        if (player == NULL  || !player->hasSkill(this) || player->isDead())  // || player->tag["chunhen_to_judge"].toStringList().isEmpty()
             return QList<SkillInvokeDetail>();
 
         if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
