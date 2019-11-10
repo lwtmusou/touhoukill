@@ -41,7 +41,7 @@ return{
 	["#koishi"] = "紧闭着的恋之瞳",
 	["designer:koishi"] = "星野梦美☆",
 
-	["illustrator:koishi"] = "深崎暮人 (p号:)",
+	["illustrator:koishi"] = "深崎暮人",
 	--个人ID：
 	["illustrator:koishi_1"] = "bon",
 	["origin:koishi_1"] = "p号：21914911，个人ID：1225738",
