@@ -309,8 +309,12 @@ QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName, bool cache, boo
         name = name.mid(3);
     else if (ServerInfo.GameMode == "02_1v1" && name.startsWith("kof_"))
         name = name.mid(4);
-    else if (name.endsWith("_hegemony"))
-        name = name.replace("_hegemony", "");
+    else if (name.endsWith("_hegemony")) {
+        const General *general = Sanguosha->getGeneral(name);
+        if (!general)
+            name = name.replace("_hegemony", "");
+    }
+        
     return getPixmap(S_SKIN_KEY_HAND_CARD_MAIN_PHOTO, name, cache, heroSkin);
 }
 
