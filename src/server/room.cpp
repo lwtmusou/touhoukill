@@ -2162,7 +2162,7 @@ QSharedPointer<SkillInvokeDetail> Room::askForTriggerOrder(ServerPlayer *player,
         if (reply != "cancel") {
             QStringList replyList = reply.split(":");
             foreach (const QSharedPointer<SkillInvokeDetail> &ptr, sameTiming) {
-                if (ptr->skill->objectName() == replyList.first() && ptr->owner->objectName() == replyList.value(1) && ptr->invoker->objectName() == replyList.value(2)) {
+                if (ptr->skill->objectName() == replyList.first() && (ptr->owner == NULL ||  ptr->owner->objectName() == replyList.value(1)) && ptr->invoker->objectName() == replyList.value(2)) {
                     if (ptr->preferredTarget) {
                         if (replyList.length() < 4)
                             continue;
