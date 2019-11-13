@@ -3797,6 +3797,8 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     //satori_hegemony->addSkill("duxin");
     satori_hegemony->addSkill(new DuxinHegemony);
     satori_hegemony->addCompanion("koishi_hegemony");
+    satori_hegemony->addCompanion("utsuho_hegemony");
+    satori_hegemony->addCompanion("rin_hegemony");
 
     General *koishi_hegemony = new General(this, "koishi_hegemony", "qun", 3);
     koishi_hegemony->addSkill("maihuo");
