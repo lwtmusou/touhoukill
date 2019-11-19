@@ -347,7 +347,13 @@ public:
             if (player == NULL || !player->isAlive())
                 return;
         }
-            
+        else if (triggerEvent == Death) {
+            DeathStruct d = data.value<DeathStruct>();
+            player = d.who;
+            if (!player->hasShownSkill(this))
+                return;
+        }
+
         ServerPlayer *c = room->getCurrent();      
         if (c == NULL || (triggerEvent != EventPhaseStart && c->getPhase() == Player::NotActive) || c != player)
             return;
