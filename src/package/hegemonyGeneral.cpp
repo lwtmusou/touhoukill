@@ -246,7 +246,7 @@ public:
             if (use.card && use.card->getSuit() == Card::Heart && use.card->getTypeId() != Card::TypeSkill) {
                 if (use.from && use.from->hasSkill(this)) {
                     foreach(ServerPlayer *p, room->getOtherPlayers(use.from)) {
-                        if (p->hasShownOneGeneral())
+                        if ((p->hasShownGeneral() && !p->getGeneralName().contains("sujiang")) || (p->hasShownGeneral2() && !p->getGeneral2Name().contains("sujiang")))
                             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
                     }
                 }
@@ -257,7 +257,7 @@ public:
             if (resp.m_isUse && resp.m_card && resp.m_card->getSuit() == Card::Heart) {
                 if (resp.m_from && resp.m_from->hasSkill(this)) {
                     foreach(ServerPlayer *p, room->getOtherPlayers(resp.m_from)) {
-                        if (p->hasShownOneGeneral())
+                        if ((p->hasShownGeneral() && !p->getGeneralName().contains("sujiang")) || (p->hasShownGeneral2() && !p->getGeneral2Name().contains("sujiang")))
                             return QList<SkillInvokeDetail>()  << SkillInvokeDetail(this, resp.m_from, resp.m_from);
                     }
                 }
@@ -272,7 +272,7 @@ public:
     {
         QList<ServerPlayer *> targets;
         foreach(ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
-            if (p->hasShownOneGeneral())
+            if ((p->hasShownGeneral() && !p->getGeneralName().contains("sujiang")) || (p->hasShownGeneral2() && !p->getGeneral2Name().contains("sujiang")))
                 targets << p;
         }
 
@@ -286,9 +286,9 @@ public:
     {
         ServerPlayer *target = invoke->targets.first();
         QStringList select;
-        if (target->hasShownGeneral())
+        if (target->hasShownGeneral() && !target->getGeneralName().contains("sujiang"))
             select << "head";
-        if (target->getGeneral2() && target->hasShownGeneral2())
+        if (target->getGeneral2() && target->hasShownGeneral2() && !target->getGeneral2Name().contains("sujiang"))
             select << "deputy";
         if (select.isEmpty())
             return false;
@@ -1847,7 +1847,8 @@ public:
     {
         //bool other_general_place = !invoke->invoker->inHeadSkills(objectName());
         //invoke->invoker->showGeneral(other_general_place);
-
+        if (!invoke->invoker->hasSkill("pingyi"))//check whether the general yorihime is removed during skill_cost (throw one card)
+            return false;
         QStringList choices = GetAvailableGenerals(room, invoke->invoker);
         if (choices.isEmpty())
             return false;
