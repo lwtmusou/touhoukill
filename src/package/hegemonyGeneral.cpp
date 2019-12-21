@@ -1847,7 +1847,7 @@ public:
     {
         //bool other_general_place = !invoke->invoker->inHeadSkills(objectName());
         //invoke->invoker->showGeneral(other_general_place);
-        if (!invoke->invoker->hasSkill("pingyi"))//check whether the general yorihime is removed during skill_cost (throw one card)
+        if (!invoke->invoker->hasSkill("pingyi_hegemony"))//check whether the general yorihime is removed during skill_cost (throw one card)
             return false;
         QStringList choices = GetAvailableGenerals(room, invoke->invoker);
         if (choices.isEmpty())
