@@ -6510,7 +6510,7 @@ public:
     Xiuye()
         : TriggerSkill("xiuye")
     {
-        events << CardsMoveOneTime << CardFinished << EventPhaseChanging;
+        events  << CardFinished << EventPhaseChanging;//<< CardsMoveOneTime
         view_as_skill = new XiuyeVS;
     }
 
@@ -6548,11 +6548,24 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             invoke->invoker->addToPile("xiuye", use.card->getSubcards());
         } else {
+            QList<int> ids = invoke->invoker->getPile("xiuye");
+            int num = ids.length();
+
+
+            CardsMoveStruct move;
+            move.card_ids = ids;
+            move.from = invoke->invoker;
+            move.to_place = Player::DrawPile;
+            room->moveCardsAtomic(move, true);//move visible?
+
+
+            room->askForGuanxing(invoke->invoker, room->getNCards(num), Room::GuanxingDownOnly, objectName());
+            /*
             CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), NULL, objectName(), QString());
             DummyCard *dc = new DummyCard;
             dc->deleteLater();
             dc->addSubcards(invoke->invoker->getPile("xiuye"));
-            room->throwCard(dc, reason, NULL);
+            room->throwCard(dc, reason, NULL);*/
         }
         return false;
     }
