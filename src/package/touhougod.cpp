@@ -5173,11 +5173,11 @@ public:
                    << "youmu_god";
         return (all - banned - huashen_set - room_set).toList();
 
-        Q_UNUSED(init);
+        //Q_UNUSED(init);
         //for test!!! do not remove
         /*QSet<QString> test;
         if (init)
-           test << "sakuya_sp" << "alice_god" << "kokoro";
+           test << "remilia_god" << "flandre" << "kokoro";
         else
            test << "renko" << "renko" << "renko";//test hidden general changing
         return test.toList();*/
@@ -6552,14 +6552,25 @@ public:
             int num = ids.length();
 
 
-            CardsMoveStruct move;
+            /*CardsMoveStruct move;
             move.card_ids = ids;
             move.from = invoke->invoker;
             move.to_place = Player::DrawPile;
             room->moveCardsAtomic(move, true);//move visible?
+            */
+            //room->askForGuanxing(invoke->invoker, room->getNCards(num), Room::GuanxingDownOnly, objectName());
 
+            room->moveCardsToEndOfDrawpile(ids, true);
 
-            room->askForGuanxing(invoke->invoker, room->getNCards(num), Room::GuanxingDownOnly, objectName());
+            LogMessage l;
+            l.type = "$jinghua";
+            l.from = invoke->invoker;
+            l.card_str = IntList2StringList(ids).join("+");
+            room->sendLog(l);
+
+            if (ids.length() > 1)
+                room->askForGuanxing(invoke->invoker, ids, Room::GuanxingDownOnly, objectName());
+            
             /*
             CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), NULL, objectName(), QString());
             DummyCard *dc = new DummyCard;
