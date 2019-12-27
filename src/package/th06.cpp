@@ -223,7 +223,7 @@ public:
         if (!fldl->hasSkill(this) || fldl->isDead() || fldl->getPhase() != Player::Start)
             return QList<SkillInvokeDetail>();
 
-        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, fldl, fldl, NULL, fldl->hasShownSkill(this));
+        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, fldl, fldl, NULL, true);//fldl->hasShownSkill(this)
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const

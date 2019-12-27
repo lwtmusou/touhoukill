@@ -682,10 +682,11 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data)
                 // if there is a compulsory skill or compulsory effect, it shouldn't be able to cancel
                 bool has_compulsory = false;
                 foreach (const QSharedPointer<SkillInvokeDetail> &detail, sameTiming) {
-                    if (detail->isCompulsory && !detail->invoker->isHiddenSkill(detail->skill->objectName())) { // judge the compulsory effect/skill in the detail struct
+                    if (detail->isCompulsory && invoke->owner && invoke->owner->hasShownSkill(detail->skill->objectName())) {
                         has_compulsory = true;
                         break;
                     }
+                        
                 }
                 // since the invoker of the sametiming list is the same, we can use sameTiming.first()->invoker to judge the invoker of this time
                 QSharedPointer<SkillInvokeDetail> detailSelected = room->askForTriggerOrder(sameTiming.first()->invoker, sameTiming, !has_compulsory, data);
