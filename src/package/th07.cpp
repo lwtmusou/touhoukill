@@ -2250,7 +2250,7 @@ public:
             slash->addSubcard(pindian->from_card);
             slash->addSubcard(pindian->to_card);
             if (pindian->from->canSlash(pindian->to, slash, false))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, pindian->from, pindian->from, NULL, true, pindian->to, false);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, NULL, pindian->from, NULL, true, pindian->to, false);
         }
         return QList<SkillInvokeDetail>();
     }

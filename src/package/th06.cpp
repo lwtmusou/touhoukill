@@ -294,7 +294,7 @@ public:
             if (damage.from == damage.to)
                 return QList<SkillInvokeDetail>();
             if (damage.card && damage.card->isKindOf("Slash") && damage.card->hasFlag("yuxueSlash"))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true, NULL, false);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, NULL, damage.from, NULL, true, NULL, false);
         }
 
         return QList<SkillInvokeDetail>();
@@ -489,7 +489,7 @@ public:
 
             foreach (ServerPlayer *liege, room->getAllPlayers()) {
                 if (!liege->getPile("suoding_cards").isEmpty())
-                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, NULL, change.player, NULL, true);
             }
         }
         return QList<SkillInvokeDetail>();
@@ -817,7 +817,7 @@ public:
                 if (room->getCardPlace(id) != Player::DiscardPile)
                     return QList<SkillInvokeDetail>();
             }
-            d << SkillInvokeDetail(this, effect.from, effect.from, NULL, true, NULL, false);
+            d << SkillInvokeDetail(this, NULL, effect.from, NULL, true, NULL, false);
         }
         return d;
     }

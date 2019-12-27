@@ -237,9 +237,9 @@ public:
                 return QList<SkillInvokeDetail>();
             ServerPlayer *target = pindian->from->tag["suwako_bushu"].value<ServerPlayer *>();
             if (pindian->success && target && target->isAlive())
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, pindian->from, pindian->from, NULL, true, target);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, NULL, pindian->from, NULL, true, target);
             else if (!pindian->success && pindian->from->isAlive())
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, pindian->from, pindian->from, NULL, true);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, NULL, pindian->from, NULL, true);
 
         } else if (triggerEvent == Damaged) {
             DamageStruct damage = data.value<DamageStruct>();
@@ -348,7 +348,7 @@ public:
         } else if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive && change.player->hasFlag(objectName())) {
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, NULL, true);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, NULL, change.player, NULL, true);
             }
         }
         return QList<SkillInvokeDetail>();
@@ -362,7 +362,7 @@ public:
         } else if (e == EventPhaseChanging) {
             //invoke->invoker->setFlags("-zhunbei");
             room->touhouLogmessage("#TouhouBuff", invoke->invoker, objectName());
-            room->notifySkillInvoked(invoke->invoker, "zhunbei");
+            room->notifySkillInvoked(invoke->invoker, objectName());
             invoke->invoker->drawCards(3);
         }
         return false;
@@ -508,8 +508,41 @@ QGroupBox *QijiDialog::createLeft()
 
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
     QStringList ban_list;
-
+    QStringList log;
+    QStringList log1;
     foreach (const Card *card, cards) {
+        if (card->getTypeId() == Card::TypeBasic) {
+            bool can = !map.contains(card->objectName()) && !ban_list.contains(card->getClassName())
+                && !ServerInfo.Extensions.contains("!" + card->getPackage());
+            if (can && log.isEmpty()) {
+                log << this->objectName() << card->objectName();
+                if (!map.contains(card->objectName()))
+                    log << "Not_in_map";
+                if (!ban_list.contains(card->getClassName()))
+                    log << "Not_in_ban_list";
+                if (!ServerInfo.Extensions.contains("!" + card->getPackage()))
+                    log << "not_ban" << card->getPackage();
+
+                LogMessage l;
+                l.type = "#" + log.join("+");
+                ClientInstance->log(l.toJsonValue());
+            }
+            else if (!can && log1.isEmpty()) {
+                log1 << this->objectName() << card->objectName();
+                if (map.contains(card->objectName()))
+                    log1 << "In_map";
+
+                if (ban_list.contains(card->getClassName()))
+                    log1 << "In_ban_list";
+                if (ServerInfo.Extensions.contains("!" + card->getPackage()))
+                    log1 << "ban_package" << card->getPackage();
+
+                LogMessage l;
+                l.type = "#" + log1.join("+");
+                ClientInstance->log(l.toJsonValue());
+            }
+        }
+
         if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getClassName())
             && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
             Card *c = Sanguosha->cloneCard(card->objectName());
