@@ -3029,7 +3029,7 @@ bool Room::makeSurrender(ServerPlayer *initiator)
     // vote counting
     if (isHegemonyGameMode(mode)) {
         if (hegemony_give_up > (playersAlive.length() + 1) / 2)
-            gameOver(".");
+            gameOver(".", true);
     } else {
         if (loyalGiveup && renegadeGiveup && !rebelGiveup)
             gameOver("rebel", true);
