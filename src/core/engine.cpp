@@ -317,14 +317,14 @@ QStringList Engine::getBanPackages() const
             QStringList ban;
             QList<const Package *> packs = getPackages();
             QStringList needPacks;
-            needPacks << "hegemonyGeneral"  << "hegemony_card";//<< "standard_cards" << "standard_ex_cards" << "test_card" << "maneuvering"
-            foreach(const Package *pa, packs) {
+            needPacks << "hegemonyGeneral"
+                      << "hegemony_card"; //<< "standard_cards" << "standard_ex_cards" << "test_card" << "maneuvering"
+            foreach (const Package *pa, packs) {
                 if (!needPacks.contains(pa->objectName()))
                     ban << pa->objectName();
             }
             return ban;
-        }
-        else {
+        } else {
             QStringList ban = ban_package.toList();
             if (!ban.contains("hegemonyGeneral"))
                 ban << "hegemonyGeneral";
@@ -1078,8 +1078,7 @@ QStringList Engine::getLimitedGeneralNames() const
                 continue;
             general_names << general->objectName();
         }
-    }
-    else {
+    } else {
         while (itor.hasNext()) {
             itor.next();
             if (!isGeneralHidden(itor.value()->objectName()) && !getBanPackages().contains(itor.value()->getPackage()))
@@ -1226,14 +1225,12 @@ QList<int> Engine::getRandomCards() const
                 else if (!isHegemonyGameMode(Config.GameMode) && card->objectName() == "known_both")
                     list << card->getId();
 
-            }
-            else if (card->objectName().startsWith("DoubleSword")) {
+            } else if (card->objectName().startsWith("DoubleSword")) {
                 if (isHegemonyGameMode(Config.GameMode) && card->objectName() == "DoubleSwordHegemony")
                     list << card->getId();
                 else if (!isHegemonyGameMode(Config.GameMode) && card->objectName() == "DoubleSword")
                     list << card->getId();
-            }
-            else
+            } else
                 list << card->getId();
         }
     }
@@ -1320,17 +1317,17 @@ const ViewAsSkill *Engine::getViewAsSkill(const QString &skill_name) const
     else if (skill->inherits("TriggerSkill")) {
         const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
         return trigger_skill->getViewAsSkill();
-    } else if (skill->inherits("DistanceSkill")) {//for hegemony showskill
+    } else if (skill->inherits("DistanceSkill")) { //for hegemony showskill
         const DistanceSkill *distance_skill = qobject_cast<const DistanceSkill *>(skill);
         return distance_skill->getViewAsSkill();
     } /*else if (skill->inherits("AttackRangeSkill")) {//for hegemony showskill
         const AttackRangeSkill *distance_skill = qobject_cast<const AttackRangeSkill *>(skill);
         return distance_skill->getViewAsSkill();
-    }*/  else if (skill->inherits("MaxCardsSkill")) {//for hegemony showskill
+    }*/
+    else if (skill->inherits("MaxCardsSkill")) { //for hegemony showskill
         const MaxCardsSkill *distance_skill = qobject_cast<const MaxCardsSkill *>(skill);
         return distance_skill->getViewAsSkill();
-    }
-    else
+    } else
         return NULL;
 }
 
@@ -1349,14 +1346,13 @@ const ProhibitSkill *Engine::isProhibited(const Player *from, const Player *to, 
 
 const ViewHasSkill *Engine::ViewHas(const Player *player, const QString &skill_name, const QString &flag, bool ignore_preshow) const
 {
-    foreach(const ViewHasSkill *skill, viewhas_skills) {
+    foreach (const ViewHasSkill *skill, viewhas_skills) {
         if (skill->ViewHas(player, skill_name, flag, ignore_preshow))
             return skill;
     }
 
     return NULL;
 }
-
 
 int Engine::correctDistance(const Player *from, const Player *to) const
 {

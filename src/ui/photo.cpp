@@ -377,12 +377,11 @@ void Photo::_initializeRemovedEffect()
     _blurEffect->addAnimation(initializeBlurEffect(_m_smallAvatarIcon));
 }
 
-
 void Photo::_createBattleArrayAnimations()
 {
     QStringList kingdoms = Sanguosha->getKingdoms();
     kingdoms.removeAll("god");
-    foreach(const QString &kingdom, kingdoms) {
+    foreach (const QString &kingdom, kingdoms) {
         _m_frameBorders[kingdom] = new PixmapAnimation();
         _m_frameBorders[kingdom]->setZValue(30000);
         _m_roleBorders[kingdom] = new PixmapAnimation();
@@ -408,7 +407,7 @@ void Photo::_createBattleArrayAnimations()
         int w = pix.width() * scale;
         int h = pix.height() * scale;
         _m_roleBorders[kingdom]->setPos(G_PHOTO_LAYOUT.m_roleComboBoxPos
-            - QPoint((_m_roleBorders[kingdom]->boundingRect().width() - w) / 2, (_m_roleBorders[kingdom]->boundingRect().height() - h / 2) / 2));
+                                        - QPoint((_m_roleBorders[kingdom]->boundingRect().width() - w) / 2, (_m_roleBorders[kingdom]->boundingRect().height() - h / 2) / 2));
         _m_frameBorders[kingdom]->setHideonStop(true);
         _m_roleBorders[kingdom]->setHideonStop(true);
         _m_frameBorders[kingdom]->hide();

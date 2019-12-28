@@ -30,8 +30,6 @@ public:
         Eternal
     };
 
-
-
     explicit Skill(const QString &name, Frequency frequent = NotFrequent, const QString &showType = "trigger");
     bool isLordSkill() const;
     bool isAttachedLordSkill() const;
@@ -386,7 +384,6 @@ public:
     explicit TreasureSkill(const QString &name);
 };
 
-
 class ViewHasSkill : public Skill
 {
     Q_OBJECT
@@ -404,15 +401,12 @@ protected:
     bool global;
 };
 
-
-
 class BattleArraySkill : public TriggerSkill
 {
     Q_OBJECT
 
 public:
-
-    BattleArraySkill(const QString &name, const QString  arrayType);//
+    BattleArraySkill(const QString &name, const QString arrayType); //
     //virtual QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const;
     //virtual bool triggerable(const ServerPlayer *player) const;
 
@@ -422,7 +416,7 @@ public:
     {
         return array_type;
     }
-    
+
 private:
     QString array_type;
 };
@@ -432,7 +426,6 @@ class ArraySummonSkill : public ZeroCardViewAsSkill
     Q_OBJECT
 
 public:
-
     ArraySummonSkill(const QString &name);
 
     const Card *viewAs() const;

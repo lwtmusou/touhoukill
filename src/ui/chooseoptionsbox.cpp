@@ -72,23 +72,21 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
             QStringList choices = choice.split("%");
             QString choice_ = choices.at(0);
             QString text = translate(choice_);
-            foreach(const QString &element, choices) {
+            foreach (const QString &element, choices) {
                 if (element.startsWith("from:")) {
                     QStringList froms = element.split(":");
                     if (!froms.at(1).isEmpty()) {
                         QString from = ClientInstance->getPlayerName(froms.at(1));
                         text.replace("%from", from);
                     }
-                }
-                else if (element.startsWith("to:")) {
+                } else if (element.startsWith("to:")) {
                     QStringList tos = element.split(":");
                     QStringList to_list;
                     for (int i = 1; i < tos.length(); i++)
                         to_list << ClientInstance->getPlayerName(tos.at(i));
                     QString to = to_list.join(", ");
                     text.replace("%to", to);
-                }
-                else if (element.startsWith("log:")) {
+                } else if (element.startsWith("log:")) {
                     QStringList logs = element.split(":");
                     if (!logs.at(1).isEmpty()) {
                         QString log = logs.at(1);
@@ -96,7 +94,6 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
                     }
                 }
             }
-
 
             Button *button = new Button(text, QSizeF(buttonWidth, defaultButtonHeight));
             //Button *button = new Button(translate(choice), QSizeF(500, defaultButtonHeight));

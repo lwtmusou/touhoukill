@@ -22,11 +22,11 @@
 //#include "skinbank.h"
 #include "SkinBank.h"
 
+#include <QDir>
+#include <QGraphicsScene>
 #include <QPainter>
 #include <QPixmapCache>
-#include <QDir>
 #include <QTimer>
-#include <QGraphicsScene>
 
 const int PixmapAnimation::S_DEFAULT_INTERVAL = 50;
 
@@ -98,7 +98,8 @@ void PixmapAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
 
 QRectF PixmapAnimation::boundingRect() const
 {
-    if (m_fix_rect) return QRect(0, 0, m_size.width(), m_size.height());
+    if (m_fix_rect)
+        return QRect(0, 0, m_size.width(), m_size.height());
     double scale = G_ROOM_LAYOUT.scale;
     return QRect(0, 0, (int)(frames.at(current).width() * scale), (int)(frames.at(current).height() * scale));
 }
@@ -125,7 +126,8 @@ void PixmapAnimation::start(bool permanent, int interval)
 void PixmapAnimation::stop()
 {
     killTimer(_m_timerId);
-    if (hideonstop) this->hide();
+    if (hideonstop)
+        this->hide();
 }
 
 void PixmapAnimation::reset()
@@ -157,15 +159,14 @@ PixmapAnimation *PixmapAnimation::GetPixmapAnimation(QGraphicsItem *parent, cons
 {
     PixmapAnimation *pma = new PixmapAnimation();
     pma->setPath(QString("image/system/emotion/%1/").arg(emotion), playback);
-    if (duration > 0) pma->setPlayTime(duration);
+    if (duration > 0)
+        pma->setPlayTime(duration);
     if (pma->valid()) {
         if (emotion == "no-success") {
-            pma->moveBy(pma->boundingRect().width() * 0.25,
-                pma->boundingRect().height() * 0.25);
+            pma->moveBy(pma->boundingRect().width() * 0.25, pma->boundingRect().height() * 0.25);
             pma->setScale(0.5);
         } else if (emotion == "success") {
-            pma->moveBy(pma->boundingRect().width() * 0.1,
-                pma->boundingRect().height() * 0.1);
+            pma->moveBy(pma->boundingRect().width() * 0.1, pma->boundingRect().height() * 0.1);
             pma->setScale(0.8);
         } else if (emotion.contains("double_sword"))
             pma->moveBy(13, -20);
@@ -174,8 +175,7 @@ PixmapAnimation *PixmapAnimation::GetPixmapAnimation(QGraphicsItem *parent, cons
         else if (emotion.contains("/spear"))
             pma->moveBy(-20, -20);
 
-        pma->moveBy((parent->boundingRect().width() - pma->boundingRect().width()) / 2,
-            (parent->boundingRect().height() - pma->boundingRect().height()) / 2);
+        pma->moveBy((parent->boundingRect().width() - pma->boundingRect().width()) / 2, (parent->boundingRect().height() - pma->boundingRect().height()) / 2);
 
         pma->setParentItem(parent);
         pma->setZValue(20002.0);
@@ -198,7 +198,8 @@ QPixmap PixmapAnimation::GetFrameFromCache(const QString &filename)
     QPixmap pixmap;
     if (!QPixmapCache::find(filename, &pixmap)) {
         pixmap.load(filename);
-        if (!pixmap.isNull()) QPixmapCache::insert(filename, pixmap);
+        if (!pixmap.isNull())
+            QPixmapCache::insert(filename, pixmap);
     }
     return pixmap;
 }
@@ -210,4 +211,3 @@ int PixmapAnimation::GetFrameCount(const QString &emotion)
     dir.setNameFilters(QStringList("*.png"));
     return dir.entryList(QDir::Files | QDir::NoDotAndDotDot).count();
 }
-

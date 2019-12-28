@@ -204,8 +204,6 @@ public:
     virtual void takeEffect(ServerPlayer *target) const;
 };
 
-
-
 class TestCardPackage : public Package
 {
     Q_OBJECT

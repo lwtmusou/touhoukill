@@ -6,15 +6,12 @@
 #include "room.h"
 #include "standard-equips.h"
 
-
-
 HegNullification::HegNullification(Suit suit, int number)
     : Nullification(suit, number)
 {
     target_fixed = true;
     setObjectName("heg_nullification");
 }
-
 
 KnownBothHegemony::KnownBothHegemony(Card::Suit suit, int number)
     : TrickCard(suit, number)
@@ -34,8 +31,7 @@ bool KnownBothHegemony::targetFilter(const QList<const Player *> &targets, const
     if (targets.length() >= total_num || to_select == Self)
         return false;
 
-    return (!to_select->hasShownGeneral() || (to_select->getGeneral2() && to_select->hasShownGeneral2())
-            || !to_select->isKongcheng());
+    return (!to_select->hasShownGeneral() || (to_select->getGeneral2() && to_select->hasShownGeneral2()) || !to_select->isKongcheng());
 }
 
 bool KnownBothHegemony::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
@@ -112,7 +108,7 @@ void KnownBothHegemony::onEffect(const CardEffectStruct &effect) const
 
     Room *room = effect.from->getRoom();
     for (int i = 0; i < (1 + effect.effectValue.first()); i += 1) {
-        effect.to->setFlags("KnownBothTarget");//for AI
+        effect.to->setFlags("KnownBothTarget"); //for AI
         QString choice = room->askForChoice(effect.from, objectName(), select.join("+"), QVariant::fromValue(effect.to));
         effect.to->setFlags("-KnownBothTarget");
         select.removeAll(choice);
@@ -122,14 +118,14 @@ void KnownBothHegemony::onEffect(const CardEffectStruct &effect) const
         log.from = effect.from;
         log.to << effect.to;
         log.arg = choice;
-        foreach(ServerPlayer *p, room->getAllPlayers(true)) { //room->getOtherPlayers(effect.from, true)
+        foreach (ServerPlayer *p, room->getAllPlayers(true)) { //room->getOtherPlayers(effect.from, true)
             room->doNotify(p, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
         }
 
         if (choice == "showhead" || choice == "showdeputy") {
             QStringList list = room->getTag(effect.to->objectName()).toStringList();
             list.removeAt(choice == "showhead" ? 1 : 0);
-            foreach(const QString &name, list) {
+            foreach (const QString &name, list) {
                 LogMessage log;
                 log.type = "$KnownBothViewGeneral";
                 log.from = effect.from;
@@ -143,20 +139,19 @@ void KnownBothHegemony::onEffect(const CardEffectStruct &effect) const
             arg << JsonUtils::toJsonArray(list);
             room->doNotify(effect.from, QSanProtocol::S_COMMAND_VIEW_GENERALS, arg);
 
-        }
-        else {
+        } else {
             room->showAllCards(effect.to, effect.from);
         }
 
         if (select.isEmpty())
             break;
-    } 
+    }
 }
 
 bool KnownBothHegemony::isAvailable(const Player *player) const
 {
     bool can_use = false;
-    foreach(const Player *p, player->getAliveSiblings()) {
+    foreach (const Player *p, player->getAliveSiblings()) {
         if (player->isProhibited(p, this))
             continue;
         if (p->isKongcheng() && p->hasShownAllGenerals())
@@ -172,12 +167,11 @@ bool KnownBothHegemony::isAvailable(const Player *player) const
         sub << getEffectiveId();
     if (sub.isEmpty() || sub.contains(-1))
         can_rec = false;
-    return (can_use && !player->isCardLimited(this, Card::MethodUse))
-        || (can_rec && !player->isCardLimited(this, Card::MethodRecast));
+    return (can_use && !player->isCardLimited(this, Card::MethodUse)) || (can_rec && !player->isCardLimited(this, Card::MethodRecast));
 }
 
-
-BefriendAttacking::BefriendAttacking(Card::Suit suit, int number) : SingleTargetTrick(suit, number)
+BefriendAttacking::BefriendAttacking(Card::Suit suit, int number)
+    : SingleTargetTrick(suit, number)
 {
     setObjectName("befriend_attacking");
 }
@@ -195,7 +189,6 @@ bool BefriendAttacking::targetFilter(const QList<const Player *> &targets, const
 
 void BefriendAttacking::onEffect(const CardEffectStruct &effect) const
 {
-    
     if (effect.from->isAlive())
         effect.from->drawCards(3 + effect.effectValue.first());
     if (effect.to->isAlive())
@@ -258,8 +251,8 @@ bool BefriendAttacking::isAvailable(const Player *player) const
     return QStringList();
 }*/
 
-
-AwaitExhaustedHegemony::AwaitExhaustedHegemony(Card::Suit suit, int number) : TrickCard(suit, number)
+AwaitExhaustedHegemony::AwaitExhaustedHegemony(Card::Suit suit, int number)
+    : TrickCard(suit, number)
 {
     setObjectName("await_exhausted_hegemony");
     target_fixed = true;
@@ -277,7 +270,7 @@ bool AwaitExhaustedHegemony::isAvailable(const Player *player) const
         canUse = true;
     if (!canUse) {
         QList<const Player *> players = player->getAliveSiblings();
-        foreach(const Player *p, players) {
+        foreach (const Player *p, players) {
             if (player->isProhibited(p, this))
                 continue;
             if (player->isFriendWith(p)) {
@@ -295,7 +288,7 @@ void AwaitExhaustedHegemony::onUse(Room *room, const CardUseStruct &card_use) co
     CardUseStruct new_use = card_use;
     if (!card_use.from->isProhibited(card_use.from, this))
         new_use.to << new_use.from;
-    foreach(ServerPlayer *p, room->getOtherPlayers(new_use.from)) {
+    foreach (ServerPlayer *p, room->getOtherPlayers(new_use.from)) {
         if (p->isFriendWith(new_use.from)) {
             const ProhibitSkill *skill = room->isProhibited(card_use.from, p, this);
             if (skill) {
@@ -307,8 +300,7 @@ void AwaitExhaustedHegemony::onUse(Room *room, const CardUseStruct &card_use) co
                 room->sendLog(log);
 
                 //room->broadcastSkillInvoke(skill->objectName(), p);
-            }
-            else {
+            } else {
                 new_use.to << p;
             }
         }
@@ -321,7 +313,7 @@ void AwaitExhaustedHegemony::use(Room *room, ServerPlayer *source, QList<ServerP
 {
     QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
     bool all_nullified = nullified_list.contains("_ALL_TARGETS");
-    foreach(ServerPlayer *target, targets) {
+    foreach (ServerPlayer *target, targets) {
         CardEffectStruct effect;
         effect.card = this;
         effect.from = source;
@@ -342,7 +334,7 @@ void AwaitExhaustedHegemony::use(Room *room, ServerPlayer *source, QList<ServerP
 
     room->removeTag("targets" + this->toString());
 
-    foreach(ServerPlayer *target, targets) {
+    foreach (ServerPlayer *target, targets) {
         if (target->hasFlag("AwaitExhaustedEffected")) {
             room->setPlayerFlag(target, "-AwaitExhaustedEffected");
             room->askForDiscard(target, objectName(), 2, 2, false, true);
@@ -353,7 +345,8 @@ void AwaitExhaustedHegemony::use(Room *room, ServerPlayer *source, QList<ServerP
     if (!table_cardids.isEmpty()) {
         DummyCard dummy(table_cardids);
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
-        if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
+        if (targets.size() == 1)
+            reason.m_targetId = targets.first()->objectName();
         room->moveCardTo(&dummy, source, NULL, Player::DiscardPile, reason, true);
     }
 }
@@ -364,9 +357,6 @@ void AwaitExhaustedHegemony::onEffect(const CardEffectStruct &effect) const
     effect.to->getRoom()->setPlayerFlag(effect.to, "AwaitExhaustedEffected");
 }
 
-
-
-
 class DoubleSwordHegemonySkill : public WeaponSkill
 {
 public:
@@ -376,7 +366,6 @@ public:
         events << TargetSpecified;
         global = true;
     }
-
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
@@ -389,7 +378,7 @@ public:
 
         if (use.card != NULL && use.card->isKindOf("Slash")) {
             QList<SkillInvokeDetail> d;
-            foreach(ServerPlayer *p, use.to) {
+            foreach (ServerPlayer *p, use.to) {
                 if (p->isAlive() && !p->hasShownAllGenerals()) {
                     if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName(), p))
                         continue;
@@ -405,18 +394,15 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-
         if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
             const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon", true);
             if (v)
                 invoke->invoker->showHiddenSkill(v->objectName());
-            
+
             room->setEmotion(invoke->invoker, "weapon/double_sword");
             return true;
-        }    
+        }
         return false;
-
-
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
@@ -437,8 +423,7 @@ public:
         if (choice == "discard") {
             room->askForDiscard(target, objectName(), 1, 1, false, false);
 
-        }
-        else {
+        } else {
             bool ishead = (choice == "showhead");
             target->showGeneral(ishead, true);
             target->drawCards(1);
@@ -453,9 +438,6 @@ DoubleSwordHegemony::DoubleSwordHegemony(Suit suit, int number)
     setObjectName("DoubleSwordHegemony");
 }
 
-
-
-
 SixSwords::SixSwords(Suit suit, int number)
     : Weapon(suit, number, 2)
 {
@@ -465,13 +447,14 @@ SixSwords::SixSwords(Suit suit, int number)
 class SixSwordsSkill : public AttackRangeSkill
 {
 public:
-    SixSwordsSkill() : AttackRangeSkill("SixSwords")
+    SixSwordsSkill()
+        : AttackRangeSkill("SixSwords")
     {
     }
 
     virtual int getExtra(const Player *target, bool) const
     {
-        foreach(const Player *p, target->getAliveSiblings()) {
+        foreach (const Player *p, target->getAliveSiblings()) {
             if (p->hasWeapon("SixSwords") && p->isFriendWith(target) && p->getMark("Equips_Nullified_to_Yourself") == 0)
                 return 1;
         }
@@ -479,7 +462,6 @@ public:
         return 0;
     }
 };
-
 
 HegemonyCardPackage::HegemonyCardPackage()
     : Package("hegemony_card", Package::CardPack)
@@ -632,7 +614,6 @@ HegemonyCardPackage::HegemonyCardPackage()
 
     cards << horses;
     // clang-format on
-
 
     foreach (Card *card, cards)
         card->setParent(this);

@@ -223,7 +223,7 @@ public:
         if (!fldl->hasSkill(this) || fldl->isDead() || fldl->getPhase() != Player::Start)
             return QList<SkillInvokeDetail>();
 
-        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, fldl, fldl, NULL, true);//fldl->hasShownSkill(this)
+        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, fldl, fldl, NULL, true); //fldl->hasShownSkill(this)
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
@@ -852,7 +852,6 @@ public:
     }
 };
 
-
 BeishuiDialog *BeishuiDialog::getInstance(const QString &object, bool left, bool right)
 {
     static QPointer<BeishuiDialog> instance;
@@ -868,7 +867,7 @@ BeishuiDialog *BeishuiDialog::getInstance(const QString &object, bool left, bool
     return instance;
 }
 
-BeishuiDialog::BeishuiDialog(const QString &object, bool left, bool right)
+BeishuiDialog::BeishuiDialog(const QString &object, bool left, bool)
     : object_name(object)
 {
     setObjectName(object);
@@ -900,23 +899,22 @@ void BeishuiDialog::popup()
     //collect avaliable patterns for specific skill
     QStringList validPatterns;
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-    foreach(const Card *card, cards) {
+    foreach (const Card *card, cards) {
         if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
             QString name = card->objectName();
             if (!validPatterns.contains(name))
                 validPatterns << card->objectName();
         }
     }
-        
-    
+
     //then match it and check "CardLimit"
-    foreach(QString str, validPatterns) {
+    foreach (QString str, validPatterns) {
         const Skill *skill = Sanguosha->getSkill(object_name);
         if (play || skill->matchAvaliablePattern(str, pattern)) {
             Card *card = Sanguosha->cloneCard(str);
             DELETE_OVER_SCOPE(Card, card)
-                if (!Self->isCardLimited(card, method))
-                    checkedPatterns << str;
+            if (!Self->isCardLimited(card, method))
+                checkedPatterns << str;
         }
     }
     //while responsing, if only one pattern were checked, emit click()
@@ -927,7 +925,7 @@ void BeishuiDialog::popup()
         return;
     }
 
-    foreach(QAbstractButton *button, group->buttons()) {
+    foreach (QAbstractButton *button, group->buttons()) {
         const Card *card = map[button->objectName()];
         const Player *user = Self;
 
@@ -964,7 +962,7 @@ QGroupBox *BeishuiDialog::createLeft()
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
     QStringList ban_list;
 
-    foreach(const Card *card, cards) {
+    foreach (const Card *card, cards) {
         if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getClassName())
             && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
             Card *c = Sanguosha->cloneCard(card->objectName());
@@ -978,7 +976,6 @@ QGroupBox *BeishuiDialog::createLeft()
     return box;
 }
 
-
 QAbstractButton *BeishuiDialog::createButton(const Card *card)
 {
     if (card->objectName() == "slash" && map.contains(card->objectName()) && !map.contains("normal_slash")) {
@@ -990,8 +987,7 @@ QAbstractButton *BeishuiDialog::createButton(const Card *card)
         group->addButton(button);
 
         return button;
-    }
-    else {
+    } else {
         QCommandLinkButton *button = new QCommandLinkButton(Sanguosha->translate(card->objectName()));
         button->setObjectName(card->objectName());
         button->setToolTip(card->getDescription());
@@ -1002,7 +998,6 @@ QAbstractButton *BeishuiDialog::createButton(const Card *card)
         return button;
     }
 }
-
 
 class BeishuiVS : public ViewAsSkill
 {

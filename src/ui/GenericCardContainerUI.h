@@ -296,7 +296,8 @@ protected:
 
     // animations
     QAbstractAnimation *_m_huashenAnimation;
-    QGraphicsItem *_m_huashenItem; QGraphicsItem *_m_huashenItem2;
+    QGraphicsItem *_m_huashenItem;
+    QGraphicsItem *_m_huashenItem2;
     //GraphicsWidgetHoverItem *_m_huashenItem;
     //GraphicsPixmapHoverItem *_m_huashenItem;
     //QGraphicsPixmapItem *_m_huashenItem;

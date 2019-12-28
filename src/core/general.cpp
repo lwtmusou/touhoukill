@@ -15,7 +15,8 @@ General::General(Package *package, const QString &name, const QString &kingdom, 
     , gender(male ? Male : Female)
     , hidden(hidden)
     , never_shown(never_shown)
-    , head_max_hp_adjusted_value(0), deputy_max_hp_adjusted_value(0)
+    , head_max_hp_adjusted_value(0)
+    , deputy_max_hp_adjusted_value(0)
 {
     static QChar lord_symbol('$');
     if (name.endsWith(lord_symbol)) {
@@ -114,7 +115,8 @@ QList<const Skill *> General::getSkillList(bool relate_to_place, bool head_only)
         Q_ASSERT(skill != NULL);
         if (relate_to_place && !skill->relateToPlace(!head_only))
             skills << skill;
-        else if (!relate_to_place) skills << skill;
+        else if (!relate_to_place)
+            skills << skill;
     }
     return skills;
 }
@@ -219,7 +221,7 @@ bool General::isCompanionWith(const QString &name) const
     Q_ASSERT(other);
     //if (kingdom != other->kingdom)
     //    return false;
-    return  companions.contains(name) || other->companions.contains(objectName()); //lord || other->lord ||
+    return companions.contains(name) || other->companions.contains(objectName()); //lord || other->lord ||
 }
 
 QString General::getCompanions() const
@@ -240,7 +242,6 @@ QString General::getCompanions() const
     }
     return name.join(" ");
 }
-
 
 void General::setHeadMaxHpAdjustedValue(int adjusted_value /* = -1 */)
 {

@@ -633,7 +633,6 @@ void RoomScene::handleGameEvent(const QVariant &args)
             setLordBackdrop(newHeroName);
         }
 
-
         if (player != Self)
             break;
         const General *oldHero = isSecondaryHero ? player->getGeneral2() : player->getGeneral();
@@ -1850,7 +1849,7 @@ void RoomScene::chooseGeneral(const QStringList &generals, const bool single_res
     if (!main_window->isActiveWindow())
         Sanguosha->playSystemAudioEffect("prelude");
 
-    if (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral && !Self->hasFlag("Pingyi_Choose")  && !generals.isEmpty()) {
+    if (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral && !Self->hasFlag("Pingyi_Choose") && !generals.isEmpty()) {
         m_chooseGeneralBox->chooseGeneral(generals, false, single_result, QString(), NULL, can_convert);
     } else {
         QDialog *dialog;
@@ -4638,8 +4637,9 @@ void RoomScene::doIndicate(const QString &, const QStringList &args)
 void RoomScene::doBattleArray(const QString &, const QStringList &args)
 {
     QStringList names = args.last().split("+");
-    if (names.contains(Self->objectName())) dashboard->playBattleArrayAnimations();
-    foreach(Photo *p, photos) {
+    if (names.contains(Self->objectName()))
+        dashboard->playBattleArrayAnimations();
+    foreach (Photo *p, photos) {
         const ClientPlayer *target = p->getPlayer();
         if (names.contains(target->objectName()))
             p->playBattleArrayAnimations();

@@ -256,21 +256,19 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
         map[general->getKingdom()] << general;
     }
 
-    QStringList kingdoms;// = Sanguosha->getKingdoms();
+    QStringList kingdoms; // = Sanguosha->getKingdoms();
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
-        
         kingdoms << Sanguosha->getHegemonyKingdoms();
         kingdoms << "zhu";
-    }
-    else
+    } else
         kingdoms << Sanguosha->getKingdoms();
 
     foreach (QString kingdom, kingdoms) {
         QList<const General *> generals = map[kingdom];
-        
+
         if (kingdom == "zhu") {
             QList<const General *> addGgenerals;
-            foreach(const General *g, generals) {
+            foreach (const General *g, generals) {
                 if (g->objectName().endsWith("hegemony") && isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral)
                     addGgenerals << g;
                 else if (!g->objectName().endsWith("hegemony") && (!isHegemonyGameMode(ServerInfo.GameMode) || !ServerInfo.Enable2ndGeneral))

@@ -512,8 +512,7 @@ QGroupBox *QijiDialog::createLeft()
     QStringList log1;
     foreach (const Card *card, cards) {
         if (card->getTypeId() == Card::TypeBasic) {
-            bool can = !map.contains(card->objectName()) && !ban_list.contains(card->getClassName())
-                && !ServerInfo.Extensions.contains("!" + card->getPackage());
+            bool can = !map.contains(card->objectName()) && !ban_list.contains(card->getClassName()) && !ServerInfo.Extensions.contains("!" + card->getPackage());
             if (can && log.isEmpty()) {
                 log << this->objectName() << card->objectName();
                 if (!map.contains(card->objectName()))
@@ -526,8 +525,7 @@ QGroupBox *QijiDialog::createLeft()
                 LogMessage l;
                 l.type = "#" + log.join("+");
                 ClientInstance->log(l.toJsonValue());
-            }
-            else if (!can && log1.isEmpty()) {
+            } else if (!can && log1.isEmpty()) {
                 log1 << this->objectName() << card->objectName();
                 if (map.contains(card->objectName()))
                     log1 << "In_map";

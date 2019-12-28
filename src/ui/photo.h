@@ -4,10 +4,10 @@
 #include "GenericCardContainerUI.h"
 #include "QSanSelectableItem.h"
 #include "carditem.h"
+#include "pixmapanimation.h"
 #include "player.h"
 #include "protocol.h"
 #include "sprite.h"
-#include "pixmapanimation.h"
 
 #include <QComboBox>
 #include <QGraphicsObject>
@@ -47,7 +47,6 @@ public:
     virtual QRectF boundingRect() const;
     QGraphicsItem *getMouseClickReceiver();
     void playBattleArrayAnimations();
-
 
 public slots:
     void updatePhase();

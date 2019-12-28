@@ -112,7 +112,7 @@ public:
         QString arg1;
         if (type == QSanSkillButton::S_SKILL_AWAKEN)
             arg1 = "awaken";
-        else if (type == QSanSkillButton::S_SKILL_ARRAY) 
+        else if (type == QSanSkillButton::S_SKILL_ARRAY)
             arg1 = "array";
         else if (type == QSanSkillButton::S_SKILL_COMPULSORY)
             arg1 = "compulsory";

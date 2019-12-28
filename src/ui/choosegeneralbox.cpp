@@ -484,8 +484,8 @@ void ChooseGeneralBox::adjustItems()
         foreach (GeneralCardItem *card, items)
             card->setFrozen(true);
         //confirm->setEnabled(true);
-        const General* gen1 = Sanguosha->getGeneral(selected.first()->objectName());
-        const General* gen2 = Sanguosha->getGeneral(selected.last()->objectName());
+        const General *gen1 = Sanguosha->getGeneral(selected.first()->objectName());
+        const General *gen2 = Sanguosha->getGeneral(selected.last()->objectName());
         bool can = (gen1->getKingdom() == gen2->getKingdom() || gen1->getKingdom() == "zhu" || gen2->getKingdom() == "zhu");
         confirm->setEnabled(can);
     } else if (selected.length() == 1) {
@@ -512,15 +512,13 @@ void ChooseGeneralBox::adjustItems()
                 if (!card->isFrozen())
                     card->setFrozen(true);
                 card->hideCompanion();
-            }
-            else {
+            } else {
                 if (card->isFrozen())
                     card->setFrozen(false);
                 if (general->isCompanionWith(selected.first()->objectName())) {
                     selected.first()->showCompanion();
                     card->showCompanion();
-                }
-                else {
+                } else {
                     card->hideCompanion();
                 }
             }

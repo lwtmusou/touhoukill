@@ -219,7 +219,6 @@ public:
     bool hasLordSkill(const QString &skill_name, bool include_lose = false) const;
     bool hasLordSkill(const Skill *skill, bool include_lose = false) const;
 
-
     void setDisableShow(const QString &flags, const QString &reason);
     void removeDisableShow(const QString &reason);
     QStringList disableShow(bool head) const;

@@ -3361,7 +3361,8 @@ void ShenbaoDialog::popup()
     } /*else if (choices.length() == 1) {
         Self->tag["shenbao_choice"] = choices.first();
         emit onButtonClick();
-    }*/ else {
+    }*/
+    else {
         QList<QAbstractButton *> btns = group->buttons();
         foreach (QAbstractButton *btn, btns)
             btn->setEnabled(choices.contains(btn->objectName()));
@@ -3426,7 +3427,7 @@ QStringList ShenbaoDialog::getAvailableChoices(const Player *player, CardUseStru
     if (isHegemonyGameMode(ServerInfo.GameMode) && cardUseReason == CardUseStruct::CARD_USE_REASON_PLAY && !player->hasShownSkill("shenbao")) {
         choices << "ShowShenbao";
     }
-        
+
     return choices;
 }
 
@@ -3446,7 +3447,6 @@ QStringList ShenbaoDialog::getAvailableNullificationChoices(const ServerPlayer *
                 if (v && v->objectName().contains("shenbao"))
                     available = true;
                 break;
-            
             }
             case EquipCard::ArmorLocation: {
                 //if (!(player->hasArmorEffect(skillName) && !player->hasArmorEffect(skillName, true)))
@@ -3517,9 +3517,7 @@ ShenbaoDialog::ShenbaoDialog(const QString &object)
         show_btn->setObjectName("ShowShenbao");
         group->addButton(show_btn);
         layout->addWidget(show_btn);
-
     }
-
 
     setLayout(layout);
     connect(group, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(selectSkill(QAbstractButton *)));
@@ -3584,7 +3582,7 @@ public:
             }
         }
 
-        if (to->hasSkill("shenbao") &&  to->hasShownSkill("shenbao") &&  to->getMark("Equips_Nullified_to_Yourself") == 0) {
+        if (to->hasSkill("shenbao") && to->hasShownSkill("shenbao") && to->getMark("Equips_Nullified_to_Yourself") == 0) {
             foreach (const Player *p, to->getAliveSiblings()) {
                 if (p->getDefensiveHorse()) {
                     correct = correct + 1;
@@ -3596,7 +3594,6 @@ public:
     }
 };
 
-
 ShowShenbaoCard::ShowShenbaoCard()
     : SkillCard()
 {
@@ -3606,7 +3603,7 @@ ShowShenbaoCard::ShowShenbaoCard()
 
 bool ShowShenbaoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    return  (to_select == Self && targets.isEmpty());
+    return (to_select == Self && targets.isEmpty());
 }
 
 const Card *ShowShenbaoCard::validate(CardUseStruct &card_use) const
@@ -3692,7 +3689,6 @@ public:
     }
 };
 
-
 class ShenbaoHandler : public TriggerSkill
 {
 public:
@@ -3706,13 +3702,13 @@ public:
     {
         if (triggerEvent == GameStart || triggerEvent == Debut || triggerEvent == EventAcquireSkill) {
             foreach (ServerPlayer *p, room->getAllPlayers()) {
-                if ((p->hasSkill("shenbao", true)  || p->ownSkill("shenbao")) && !p->hasSkill("shenbao_attach"))
+                if ((p->hasSkill("shenbao", true) || p->ownSkill("shenbao")) && !p->hasSkill("shenbao_attach"))
                     room->attachSkillToPlayer(p, "shenbao_attach");
             }
         }
         if (triggerEvent == Death || triggerEvent == EventLoseSkill) {
             foreach (ServerPlayer *p, room->getAllPlayers()) {
-                if ((!p->hasSkill("shenbao", true) && !p->ownSkill("shenbao"))&& p->hasSkill("shenbao_attach"))
+                if ((!p->hasSkill("shenbao", true) && !p->ownSkill("shenbao")) && p->hasSkill("shenbao_attach"))
                     room->detachSkillFromPlayer(p, "shenbao_attach", true);
             }
         }
@@ -3747,22 +3743,19 @@ public:
     }
 };
 
-
 class ShenbaoViewHas : public ViewHasSkill
 
 {
-
 public:
-
-    ShenbaoViewHas() : ViewHasSkill("#shenbao_viewhas")
+    ShenbaoViewHas()
+        : ViewHasSkill("#shenbao_viewhas")
 
     {
-
     }
 
     virtual bool ViewHas(const Player *player, const QString &skill_name, const QString &flag, bool ignore_preshow) const
     {
-        if (player->isDead())//do not consider nue?? 
+        if (player->isDead()) //do not consider nue??
             return false;
 
         if (!ignore_preshow && !player->hasSkill("shenbao"))
@@ -3785,7 +3778,7 @@ public:
                 return false;
             //return true;
             QString weapon_name = skill_name;
-            foreach(const Player *p, player->getAliveSiblings()) {
+            foreach (const Player *p, player->getAliveSiblings()) {
                 if (p->getWeapon()) {
                     if (weapon_name == "shenbao")
                         return true;
@@ -3807,10 +3800,9 @@ public:
                     return true;
             }
             //    return (weapon == NULL || weapon->objectName() != skill_name || player->isBrokenEquip(weapon->getEffectiveId()));
-        }
-        else if (flag == "armor") {
+        } else if (flag == "armor") {
             QString armor_name = skill_name;
-            foreach(const Player *p, player->getAliveSiblings()) {
+            foreach (const Player *p, player->getAliveSiblings()) {
                 if (p->getArmor()) {
                     if (armor_name == "shenbao")
                         return true;
@@ -3832,11 +3824,10 @@ public:
                     return true;
             }
             //return (armor == NULL || armor->objectName() != skill_name || player->isBrokenEquip(armor->getEffectiveId()));
-        }
-        else if (flag == "treasure") {
+        } else if (flag == "treasure") {
             QString treasure_name = skill_name;
             if (skill_name != "wooden_ox") {
-                foreach(const Player *p, player->getAliveSiblings()) {
+                foreach (const Player *p, player->getAliveSiblings()) {
                     if (p->getTreasure()) {
                         if (treasure_name == "shenbao")
                             return true;
@@ -3860,18 +3851,13 @@ public:
                     return true;
             }
 
-
             //    return (treasure && treasure->objectName() == skill_name && player->isBrokenEquip(treasure->getEffectiveId()));
             //    return (treasure == NULL || treasure->objectName() != skill_name || player->isBrokenEquip(treasure->getEffectiveId()));
         }
 
-
         return false;
-
     }
-
 };
-
 
 class Yindu : public TriggerSkill
 {
@@ -6510,7 +6496,7 @@ public:
     Xiuye()
         : TriggerSkill("xiuye")
     {
-        events  << CardFinished << EventPhaseChanging;//<< CardsMoveOneTime
+        events << CardFinished << EventPhaseChanging; //<< CardsMoveOneTime
         view_as_skill = new XiuyeVS;
     }
 
@@ -6549,8 +6535,6 @@ public:
             invoke->invoker->addToPile("xiuye", use.card->getSubcards());
         } else {
             QList<int> ids = invoke->invoker->getPile("xiuye");
-            int num = ids.length();
-
 
             /*CardsMoveStruct move;
             move.card_ids = ids;
@@ -6570,7 +6554,7 @@ public:
 
             if (ids.length() > 1)
                 room->askForGuanxing(invoke->invoker, ids, Room::GuanxingDownOnly, objectName());
-            
+
             /*
             CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), NULL, objectName(), QString());
             DummyCard *dc = new DummyCard;
@@ -7129,8 +7113,6 @@ public:
     }
 };
 
-
-
 class Tianbian : public TriggerSkill
 {
 public:
@@ -7141,128 +7123,119 @@ public:
         frequency = Eternal;
     }
 
-
-QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
-{
-    ServerPlayer *current = data.value<ServerPlayer *>();
-    if (current == NULL || current->isDead())
-        return QList<SkillInvokeDetail>();
-    if (current->getPhase() == Player::Judge) {
-        QList<const Card *> tricks = current->getJudgingArea();
-        if (tricks.isEmpty())
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        ServerPlayer *current = data.value<ServerPlayer *>();
+        if (current == NULL || current->isDead())
             return QList<SkillInvokeDetail>();
-        QList<ServerPlayer *> tenshis = room->findPlayersBySkillName(objectName());
-        QList<SkillInvokeDetail> d;
-        foreach(ServerPlayer *tenshi, tenshis)
-            d << SkillInvokeDetail(this, tenshi, tenshi, NULL, true);
-        return d;
-    }
-    return QList<SkillInvokeDetail>();
-}
-
-bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-{
-    ServerPlayer *current = data.value<ServerPlayer *>();
-    int maxchoice = qMax(current->getJudgingAreaID().length(), 2);
-    //step 1 choose card which will not be used
-    QList<int> disable;
-    for (int i = 0; i < maxchoice; i += 1) {
-        if (!invoke->invoker->askForSkillInvoke("tianbian_choosecard"))
-            break;
-        
-        int card_id = room->askForCardChosen(invoke->invoker, current, "j", objectName(), false, Card::MethodDiscard, disable); //refuasable??
-        if (card_id <= -1)
-            break;
-        disable << card_id;
-
-    }
-
-    //step 2 use card which is avaliable
-    QList<int> tricks = current->getJudgingAreaID();
-    QList<int> effected;
-    while (!tricks.isEmpty() && current->isAlive()) {
-        tricks = current->getJudgingAreaID();
-        //foreach(int id, effected) {
-        //	if (tricks.contains(id))
-        //		tricks.removeOne(id);
-        //}
-
-        QList<int> use_ids, disable_use_ids;
-        foreach(int id, tricks) {
-            const Card *c = Sanguosha->getEngineCard(id); //deletelater?
-            c->setFlags("tianbian");
-            c->setFlags("IgnoreFailed");
-            bool can = !disable.contains(id) && usecheck (invoke->invoker, current, c);
-            c->setFlags("-IgnoreFailed");
-            c->setFlags("-tianbian");
-            if (can)
-                use_ids << id;
-            else
-                disable_use_ids << id;
-
+        if (current->getPhase() == Player::Judge) {
+            QList<const Card *> tricks = current->getJudgingArea();
+            if (tricks.isEmpty())
+                return QList<SkillInvokeDetail>();
+            QList<ServerPlayer *> tenshis = room->findPlayersBySkillName(objectName());
+            QList<SkillInvokeDetail> d;
+            foreach (ServerPlayer *tenshi, tenshis)
+                d << SkillInvokeDetail(this, tenshi, tenshi, NULL, true);
+            return d;
         }
-        if (use_ids.length() == 0)
-            break;
-        int card_id = room->askForCardChosen(invoke->invoker, current, "j", objectName(), false, Card::MethodNone, disable_use_ids);
-        const Card *c = Sanguosha->getEngineCard(card_id);
-        //real delaycard??
-        room->useCard(CardUseStruct(c, invoke->invoker, current));
-        effected << card_id;
+        return QList<SkillInvokeDetail>();
     }
 
-    //step 3 throw all card, and effect delay
-    if 	(current->isAlive() &&  !current->getJudgingAreaID().isEmpty()){
-        int num = current->getJudgingAreaID().length() / 2;
-        DummyCard *dummy = new DummyCard;
-        dummy->addSubcards(current->getJudgingAreaID());
-        room->throwCard(dummy, current, invoke->invoker);
-        QStringList names;
-        names << "lightning"
-        << "indulgence"
-        << "supply_shortage"
-        << "saving_energy"
-        << "spring_breath";
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *current = data.value<ServerPlayer *>();
+        int maxchoice = qMax(current->getJudgingAreaID().length(), 2);
+        //step 1 choose card which will not be used
+        QList<int> disable;
+        for (int i = 0; i < maxchoice; i += 1) {
+            if (!invoke->invoker->askForSkillInvoke("tianbian_choosecard"))
+                break;
 
-        
-        for (int i = 0; i < num; i += 1) {
-            QString choice = room->askForChoice(invoke->invoker, objectName(), names.join("+"), QVariant());
-            tianbianEffect(choice, current);
+            int card_id = room->askForCardChosen(invoke->invoker, current, "j", objectName(), false, Card::MethodDiscard, disable); //refuasable??
+            if (card_id <= -1)
+                break;
+            disable << card_id;
         }
 
-    }
+        //step 2 use card which is avaliable
+        QList<int> tricks = current->getJudgingAreaID();
+        QList<int> effected;
+        while (!tricks.isEmpty() && current->isAlive()) {
+            tricks = current->getJudgingAreaID();
+            //foreach(int id, effected) {
+            //	if (tricks.contains(id))
+            //		tricks.removeOne(id);
+            //}
 
-return false;
-}
-    static void tianbianEffect(QString choice, ServerPlayer *current) {
+            QList<int> use_ids, disable_use_ids;
+            foreach (int id, tricks) {
+                const Card *c = Sanguosha->getEngineCard(id); //deletelater?
+                c->setFlags("tianbian");
+                c->setFlags("IgnoreFailed");
+                bool can = !disable.contains(id) && usecheck(invoke->invoker, current, c);
+                c->setFlags("-IgnoreFailed");
+                c->setFlags("-tianbian");
+                if (can)
+                    use_ids << id;
+                else
+                    disable_use_ids << id;
+            }
+            if (use_ids.length() == 0)
+                break;
+            int card_id = room->askForCardChosen(invoke->invoker, current, "j", objectName(), false, Card::MethodNone, disable_use_ids);
+            const Card *c = Sanguosha->getEngineCard(card_id);
+            //real delaycard??
+            room->useCard(CardUseStruct(c, invoke->invoker, current));
+            effected << card_id;
+        }
+
+        //step 3 throw all card, and effect delay
+        if (current->isAlive() && !current->getJudgingAreaID().isEmpty()) {
+            int num = current->getJudgingAreaID().length() / 2;
+            DummyCard *dummy = new DummyCard;
+            dummy->addSubcards(current->getJudgingAreaID());
+            room->throwCard(dummy, current, invoke->invoker);
+            QStringList names;
+            names << "lightning"
+                  << "indulgence"
+                  << "supply_shortage"
+                  << "saving_energy"
+                  << "spring_breath";
+
+            for (int i = 0; i < num; i += 1) {
+                QString choice = room->askForChoice(invoke->invoker, objectName(), names.join("+"), QVariant());
+                tianbianEffect(choice, current);
+            }
+        }
+
+        return false;
+    }
+    static void tianbianEffect(QString choice, ServerPlayer *current)
+    {
         DelayedTrick *delay_trick;
         Room *room = current->getRoom();
         if (choice == "lightning") {
             Lightning *c = new Lightning(Card::NoSuit, 0);
             c->deleteLater();
             delay_trick = qobject_cast<DelayedTrick *>(c);
-        }
-        else if (choice == "indulgence") {
+        } else if (choice == "indulgence") {
             Indulgence *c = new Indulgence(Card::NoSuit, 0);
             c->deleteLater();
             delay_trick = qobject_cast<DelayedTrick *>(c);
-        }
-        else if (choice == "supply_shortage") {
+        } else if (choice == "supply_shortage") {
             SupplyShortage *c = new SupplyShortage(Card::NoSuit, 0);
             c->deleteLater();
             delay_trick = qobject_cast<DelayedTrick *>(c);
-        }
-        else if (choice == "saving_energy") {
+        } else if (choice == "saving_energy") {
             SavingEnergy *c = new SavingEnergy(Card::NoSuit, 0);
             c->deleteLater();
             delay_trick = qobject_cast<DelayedTrick *>(c);
-        }
-        else if (choice == "spring_breath") {
+        } else if (choice == "spring_breath") {
             SpringBreath *c = new SpringBreath(Card::NoSuit, 0);
             c->deleteLater();
             delay_trick = qobject_cast<DelayedTrick *>(c);
         }
-        if (delay_trick != NULL)
-        {
+        if (delay_trick != NULL) {
             //bool on_effect = room->cardEffect(delay_trick, NULL, current);  // iscanceled  ->  DelayedTrick::onEffect
             //effected << trick;
             //if (!on_effect)
@@ -7278,20 +7251,18 @@ return false;
             }
             delete delay_trick;
         }
-        
     }
 
-
-    static bool usecheck (ServerPlayer *from ,  ServerPlayer *to, const Card *c){
-        if (c->isKindOf("Jink") || c->isKindOf("Nullification"))//using matchpattern is better?
+    static bool usecheck(ServerPlayer *from, ServerPlayer *to, const Card *c)
+    {
+        if (c->isKindOf("Jink") || c->isKindOf("Nullification")) //using matchpattern is better?
             return false;
         if (from->isCardLimited(c, Card::MethodUse) || from->isProhibited(to, c))
             return false;
         if (c->isKindOf("Peach")) {
             if (to->isWounded())
                 return true;
-        }
-        else if (c->targetFilter(QList<const Player *>(), to, from))
+        } else if (c->targetFilter(QList<const Player *>(), to, from))
             return true;
         return false;
     }
@@ -7316,7 +7287,6 @@ public:
 };
 
 //skills  << new TianbianDistance
-
 
 TouhouGodPackage::TouhouGodPackage()
     : Package("touhougod")

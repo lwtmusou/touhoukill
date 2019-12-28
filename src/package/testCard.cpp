@@ -880,8 +880,6 @@ void SpringBreath::takeEffect(ServerPlayer *target) const
     target->drawCards(6);
 }
 
-
-
 TestCardPackage::TestCardPackage()
     : Package("test_card", Package::CardPack)
 {
@@ -938,7 +936,6 @@ TestCardPackage::TestCardPackage()
         << new LightJink(Card::Diamond, 2)
         << new LightJink(Card::Diamond, 11)
         << new LightJink(Card::Diamond, 7);
-
 
     // clang-format on
 

@@ -132,7 +132,6 @@ public:
             _m_rightSkillDock->update();
     }
 
-
     void playBattleArrayAnimations();
     static const int CARDITEM_Z_DATA_KEY = 0413;
 
@@ -141,7 +140,8 @@ public slots:
     virtual void updateSmallAvatar();
     void updateChaoren();
     void updateShown();
-    void updateHiddenMark();  void updateRightHiddenMark();//hegemony
+    void updateHiddenMark();
+    void updateRightHiddenMark(); //hegemony
 
     void sortCards();
     void beginSorting();
@@ -251,14 +251,16 @@ protected:
     QGraphicsRectItem *trusting_item;
     QGraphicsSimpleTextItem *trusting_text;
 
-    QSanInvokeSkillDock *_m_skillDock; QSanInvokeSkillDock *_m_rightSkillDock;//hegemony
+    QSanInvokeSkillDock *_m_skillDock;
+    QSanInvokeSkillDock *_m_rightSkillDock; //hegemony
     const QSanRoomSkin::DashboardLayout *_dlayout;
 
     //for animated effects
     EffectAnimation *animations;
 
     QGraphicsRectItem *_m_shadow_layer1, *_m_shadow_layer2; //hegemony  //for avatar shadow layer
-    QGraphicsPixmapItem *leftHiddenMark;  QGraphicsPixmapItem *rightHiddenMark; //hegemony
+    QGraphicsPixmapItem *leftHiddenMark;
+    QGraphicsPixmapItem *rightHiddenMark; //hegemony
 
     // for parts creation
     void _createLeft();
@@ -286,7 +288,6 @@ protected:
 
     void drawEquip(QPainter *painter, const CardItem *equip, int order);
     void setSelectedItem(CardItem *card_item);
-
 
     // for battle arry
     QHash<QString, PixmapAnimation *> _m_frameBorders;
@@ -328,7 +329,8 @@ private slots:
     void onCardItemThrown();
 
     void onMarkChanged();
-    void onHeadStateChanged();  void onDeputyStateChanged();
+    void onHeadStateChanged();
+    void onDeputyStateChanged();
 
     void bringSenderToTop();
     void resetSenderZValue();

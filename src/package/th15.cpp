@@ -1348,8 +1348,6 @@ public:
     }
 };
 
-
-
 TH15Package::TH15Package()
     : Package("th15")
 {
@@ -1394,7 +1392,7 @@ TH15Package::TH15Package()
 
     addMetaObject<YuejianCard>();
     addMetaObject<YidanCard>();
-    skills << new ShehuoProhibit << new ShehuoTargetMod ;
+    skills << new ShehuoProhibit << new ShehuoTargetMod;
 }
 
 ADD_PACKAGE(TH15)

@@ -204,16 +204,15 @@ void Dashboard::_adjustComponentZValues(bool killed)
     _layUnder(_m_rightFrame);
     _layUnder(_m_leftFrame);
     _layUnder(_m_middleFrame);
-    
+
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
         if (button_widget && _m_middleFrame && _m_hegemonyroleComboBox)
             _layBetween(button_widget, _m_middleFrame, _m_hegemonyroleComboBox);
-    }
-    else {
+    } else {
         if (button_widget && _m_middleFrame && _m_roleComboBox)
             _layBetween(button_widget, _m_middleFrame, _m_roleComboBox);
     }
-    
+
     if (_m_rightFrameBg && _m_faceTurnedIcon && _m_equipRegions)
         _layBetween(_m_rightFrameBg, _m_faceTurnedIcon, _m_equipRegions[3]);
     if (leftHiddenMark)
@@ -224,7 +223,7 @@ void Dashboard::_adjustComponentZValues(bool killed)
         _layUnder(_m_smallAvatarArea);
     if (_m_avatarArea)
         _layUnder(_m_avatarArea);
-    if  (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral && _m_shadow_layer2)
+    if (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral && _m_shadow_layer2)
         _layUnder(_m_shadow_layer2);
     if (isHegemonyGameMode(ServerInfo.GameMode) && _m_shadow_layer1)
         _layUnder(_m_shadow_layer1);
@@ -246,7 +245,7 @@ void Dashboard::_adjustComponentZValues(bool killed)
         _m_hpBox->setZValue(2000);
     if (_m_sub_hpBox)
         _m_sub_hpBox->setZValue(2000);
-    
+
     //_m_rightFrameBg->setZValue(3000);
 }
 
@@ -1053,14 +1052,12 @@ void Dashboard::updateAvatar()
         rewrite PlayerCardContainer::updateAvatar() ??
     */
 
-    
     PlayerCardContainer::updateAvatar();
     if (_m_skillDock)
-    _m_skillDock->update();
+        _m_skillDock->update();
     if (_m_rightSkillDock)
-    _m_rightSkillDock->update();
+        _m_rightSkillDock->update();
     _adjustComponentZValues();
-    
 }
 
 void Dashboard::updateSmallAvatar()
@@ -1069,12 +1066,11 @@ void Dashboard::updateSmallAvatar()
     rewrite PlayerCardContainer::updateAvatar() ??
     */
 
-
     PlayerCardContainer::updateSmallAvatar();
     if (_m_skillDock)
-    _m_skillDock->update();
+        _m_skillDock->update();
     if (_m_rightSkillDock)
-    _m_rightSkillDock->update();
+        _m_rightSkillDock->update();
     _adjustComponentZValues();
 }
 
@@ -1605,7 +1601,6 @@ void Dashboard::onCardItemHover()
 
     animations->emphasize(card_item);
 
-
     /*_adjustCards();
     foreach(CardItem *card, m_handCards)
         card->goBack(true, true);
@@ -1626,7 +1621,6 @@ void Dashboard::onCardItemLeaveHover()
         card->goBack(true, true);
     */
 }
-
 
 void Dashboard::bringSenderToTop()
 {
@@ -1861,7 +1855,7 @@ void Dashboard::_createBattleArrayAnimations()
 {
     QStringList kingdoms = Sanguosha->getHegemonyKingdoms();
     kingdoms.removeAll("god");
-    foreach(const QString &kingdom, kingdoms) {
+    foreach (const QString &kingdom, kingdoms) {
         _m_frameBorders[kingdom] = new PixmapAnimation();
         _m_frameBorders[kingdom]->setZValue(30000);
         _m_roleBorders[kingdom] = new PixmapAnimation();
@@ -1888,7 +1882,7 @@ void Dashboard::_createBattleArrayAnimations()
         int w = pix.width() * scale;
         //int h = pix.height() * scale;
         _m_roleBorders[kingdom]->setPos(G_DASHBOARD_LAYOUT.m_roleComboBoxPos
-            - QPoint((_m_roleBorders[kingdom]->boundingRect().width() - w) / 2, (_m_roleBorders[kingdom]->boundingRect().height()) / 2));
+                                        - QPoint((_m_roleBorders[kingdom]->boundingRect().width() - w) / 2, (_m_roleBorders[kingdom]->boundingRect().height()) / 2));
         _m_frameBorders[kingdom]->setHideonStop(true);
         _m_roleBorders[kingdom]->setHideonStop(true);
         _m_frameBorders[kingdom]->hide();
@@ -1903,4 +1897,3 @@ void Dashboard::playBattleArrayAnimations()
     _m_frameBorders[kingdom]->start(true, 30);
     _m_roleBorders[kingdom]->preStart();
 }
-

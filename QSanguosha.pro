@@ -123,6 +123,7 @@ SOURCES += \
     src/ui/chooseoptionsbox.cpp \
     src/ui/playercardbox.cpp \
     src/package/testCard.cpp \
+    src/package/hegemonyCard.cpp \
     src/ui/hegemonyrolecombobox.cpp
 
 HEADERS += \
@@ -235,6 +236,7 @@ HEADERS += \
     src/ui/chooseoptionsbox.h \
     src/ui/playercardbox.h \
     src/package/testCard.h \
+    src/package/hegemonyCard.h \
     src/pch.h
 
 FORMS += \

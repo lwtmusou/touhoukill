@@ -217,7 +217,6 @@ bool Skill::relateToPlace(bool head) const
     return false;
 }
 
-
 ViewAsSkill::ViewAsSkill(const QString &name)
     : Skill(name, Skill::NotFrequent, "viewas")
     , response_pattern(QString())
@@ -733,13 +732,14 @@ TreasureSkill::TreasureSkill(const QString &name)
 }
 
 ViewHasSkill::ViewHasSkill(const QString &name)
-    : Skill(name, Skill::Compulsory), global(false)
+    : Skill(name, Skill::Compulsory)
+    , global(false)
 {
 }
 
-
-BattleArraySkill::BattleArraySkill(const QString &name, const QString type)//
-    : TriggerSkill(name), array_type(type)
+BattleArraySkill::BattleArraySkill(const QString &name, const QString type) //
+    : TriggerSkill(name)
+    , array_type(type)
 {
     if (!inherits("LuaBattleArraySkill")) //extremely dirty hack!!!
         view_as_skill = new ArraySummonSkill(objectName());
@@ -748,8 +748,8 @@ BattleArraySkill::BattleArraySkill(const QString &name, const QString type)//
 //bool BattleArraySkill::triggerable(const ServerPlayer *player) const
 //QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
 //{
-    //return  TriggerSkill::triggerable(        //TriggerSkill::triggerable(player) && player->aliveCount() >= 4;
-    //if (room->getAlivePlayers().length() >= 4 && TriggerSkill::triggerable(triggerEvent, )
+//return  TriggerSkill::triggerable(        //TriggerSkill::triggerable(player) && player->aliveCount() >= 4;
+//if (room->getAlivePlayers().length() >= 4 && TriggerSkill::triggerable(triggerEvent, )
 
 //    return QList<SkillInvokeDetail>();
 //}
@@ -762,7 +762,6 @@ void BattleArraySkill::summonFriends(ServerPlayer *player) const
 ArraySummonSkill::ArraySummonSkill(const QString &name)
     : ZeroCardViewAsSkill(name)
 {
-
 }
 
 const Card *ArraySummonSkill::viewAs() const
@@ -778,18 +777,19 @@ const Card *ArraySummonSkill::viewAs() const
 //using namespace HegemonyMode;
 bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const
 {
-    
-    if (player->getAliveSiblings().length() < 3) return false;
-    if (player->hasFlag("Global_SummonFailed")) return false;
-    if (!player->canShowGeneral(player->inHeadSkills(objectName()) ? "h" : "d")) return false;
+    if (player->getAliveSiblings().length() < 3)
+        return false;
+    if (player->hasFlag("Global_SummonFailed"))
+        return false;
+    if (!player->canShowGeneral(player->inHeadSkills(objectName()) ? "h" : "d"))
+        return false;
     const BattleArraySkill *skill = qobject_cast<const BattleArraySkill *>(Sanguosha->getTriggerSkill(objectName()));
     if (skill) {
         QString type = skill->getArrayType();
-        
+
         if (type == "Siege") {
             //return true;
-            if (player->willBeFriendWith(player->getNextAlive())
-                && player->willBeFriendWith(player->getLastAlive()))
+            if (player->willBeFriendWith(player->getNextAlive()) && player->willBeFriendWith(player->getLastAlive()))
                 return false;
             if (!player->willBeFriendWith(player->getNextAlive())) {
                 if (!player->getNextAlive(2)->hasShownOneGeneral() && player->getNextAlive()->hasShownOneGeneral())
@@ -797,9 +797,8 @@ bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const
             }
             if (!player->willBeFriendWith(player->getLastAlive()))
                 return !player->getLastAlive(2)->hasShownOneGeneral() && player->getLastAlive()->hasShownOneGeneral();
-            
-        }
-        else if (type == "Formation") {
+
+        } else if (type == "Formation") {
             int n = player->aliveCount(false);
             int asked = n;
             for (int i = 1; i < n; ++i) {
@@ -818,12 +817,10 @@ bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const
                 Player *target = player->getLastAlive(i);
                 if (player->isFriendWith(target))
                     continue;
-                else return !target->hasShownOneGeneral();
+                else
+                    return !target->hasShownOneGeneral();
             }
         }
-        
     }
     return false;
 }
-
-

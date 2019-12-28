@@ -619,8 +619,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     if (!general->objectName().endsWith("hegemony")) {
         ui->companionLineEdit->hide();
         ui->companionLabel->hide();
-    }
-    else {
+    } else {
         QString companions_text = general->getCompanions();
         if (companions_text.isEmpty())
             ui->companionLineEdit->clear(); //->setText(tr("None"));

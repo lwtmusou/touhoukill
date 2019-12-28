@@ -135,8 +135,6 @@ protected:
     QMutex m_animationMutex;
 
 private:
-    
-
     int m_cardId;
     QString _m_frameType, _m_avatarName;
     QPointF home_pos;

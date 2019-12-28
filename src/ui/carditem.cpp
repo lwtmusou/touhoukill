@@ -69,8 +69,7 @@ void CardItem::setCard(const Card *card)
                     break;
                 }
             }
-        }
-        else {
+        } else {
             m_cardId = card->getId();
             const Card *engineCard = Sanguosha->getEngineCard(m_cardId);
             Q_ASSERT(engineCard != NULL);
@@ -234,7 +233,7 @@ bool CardItem::isEquipped() const
     return Self->hasEquip(card);
 }
 
-void CardItem::setFrozen(bool is_frozen, bool update_movable)
+void CardItem::setFrozen(bool is_frozen, bool)
 {
     frozen = is_frozen;
     /*if (frozen != is_frozen) {

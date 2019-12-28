@@ -255,7 +255,6 @@ public:
     const Card *validate(CardUseStruct &card_use) const;
 };
 
-
 class DummyCard : public SkillCard
 {
     Q_OBJECT

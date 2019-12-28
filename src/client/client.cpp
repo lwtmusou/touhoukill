@@ -419,10 +419,9 @@ void Client::processServerPacket(const char *cmd)
                     Callback callback = m_interactions[S_COMMAND_CHOOSE_GENERAL];
                     if (callback)
                         (this->*callback)(packet.getMessageBody());
-                }
-                else
+                } else
                     processShowGeneral(packet);
-            }    
+            }
         }
     }
 }
@@ -895,22 +894,22 @@ void Client::cardLimitation(const QVariant &limit)
     }
 }
 
-
 void Client::disableShow(const QVariant &arg)
 {
     JsonArray args = arg.value<JsonArray>();
-    if (args.size() != 4) return;
+    if (args.size() != 4)
+        return;
 
     ClientPlayer *p = getPlayer(args[0].toString());
-    if (p == NULL) return;
+    if (p == NULL)
+        return;
 
     bool set = args[1].toBool();
     QString reason = args[3].toString();
     if (set) {
         QString flags = args[2].toString();
         p->setDisableShow(flags, reason);
-    }
-    else
+    } else
         p->removeDisableShow(reason);
 }
 

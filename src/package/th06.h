@@ -34,7 +34,7 @@ class BeishuiDialog : public QDialog
 public:
     static BeishuiDialog *getInstance(const QString &object, bool left = true, bool right = true);
 
-    public slots:
+public slots:
     void popup();
     void selectCard(QAbstractButton *button);
 
@@ -52,8 +52,6 @@ private:
 signals:
     void onButtonClick();
 };
-
-
 
 class SishuCard : public SkillCard
 {

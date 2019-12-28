@@ -47,7 +47,7 @@ public:
     void reset();
     bool isFirstFrame();
 
-    static PixmapAnimation *GetPixmapAnimation(QGraphicsItem *parent, const QString & emotion, bool playback = false, int duration = 0);
+    static PixmapAnimation *GetPixmapAnimation(QGraphicsItem *parent, const QString &emotion, bool playback = false, int duration = 0);
     static QPixmap GetFrameFromCache(const QString &filename);
     static int GetFrameCount(const QString &emotion);
 
@@ -71,4 +71,3 @@ private:
 };
 
 #endif
-

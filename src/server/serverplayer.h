@@ -13,7 +13,6 @@ struct PhaseStruct;
 #include "socket.h"
 #include "structs.h"
 
-
 #include <QDateTime>
 #include <QSemaphore>
 

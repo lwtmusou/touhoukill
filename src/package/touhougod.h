@@ -124,7 +124,6 @@ public:
     const Card *validate(CardUseStruct &card_use) const;
 };
 
-
 class WendaoCard : public SkillCard
 {
     Q_OBJECT

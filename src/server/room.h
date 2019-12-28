@@ -381,7 +381,6 @@ public:
     void addPlayerHistory(ServerPlayer *player, const QString &key, int times = 1);
     void Room::transformGeneral(ServerPlayer *player, QString general_name, int head);
 
-
     void toggleReadyCommand(ServerPlayer *player, const QVariant &);
     void speakCommand(ServerPlayer *player, const QVariant &arg);
     void trustCommand(ServerPlayer *player, const QVariant &arg);
