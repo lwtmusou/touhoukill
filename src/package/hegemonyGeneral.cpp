@@ -2117,7 +2117,7 @@ public:
     {
         ServerPlayer *target = invoke->targets.first();
         room->handleAcquireDetachSkills(target, "qiankun_suwako");
-        room->handleAcquireDetachSkills(target, "chuancheng");
+        room->handleAcquireDetachSkills(target, "chuancheng_hegemony");
         if (invoke->invoker->getCards("hejs").length() > 0) {
             DummyCard *allcard = new DummyCard;
             allcard->deleteLater();
