@@ -480,6 +480,7 @@ end
 
 sgs.ai_skill_invoke.huanzang = function(self, data)
 	local target = data:toDying().who
+	if self:isEnemy(target) and  target:hasShownSkills("shijie+nengwu") then return false end
 	if self:isFriend(target) then
 		if  not target:getCards("je"):isEmpty() then return true end
 		num = getCardsNum("Analeptic", target, self.player) + getCardsNum("Peach", target, self.player)
@@ -504,7 +505,8 @@ end]]
 sgs.ai_skill_choice.huanzang=function(self, choices, data)
 	local who = data:toDying().who
 	local choice_table = choices:split("+")
-
+    
+	
 	if self:isFriend(who) then
 		if choices:match("e") then return "e" end
 		if choices:match("hs") then
