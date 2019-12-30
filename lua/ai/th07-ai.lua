@@ -896,15 +896,15 @@ sgs.ai_skill_use["@@qimen"] = function(self, prompt)
 		end
 	end
 
-	local f, e = sgs.SPlayerList(), sgs.SPlayerList()
+	local f, e = {}, {}
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
 		if p:getEquips():length() >= maxNum and not self.player:isProhibited(p, card)
 		 then --card:targetFilter(sgs.SPlayerList(), p, self.player)
 			if (self:isFriend(p)) then
-				f:append(p)
+				table.insert(f, p)
 			end
 			if (self:isEnemy(p)) then
-				e:append(p)
+				table.insert(e, p)
 			end
 		end
 	end
@@ -930,7 +930,12 @@ sgs.ai_skill_use["@@qimen"] = function(self, prompt)
 			table.insert(target_objectname, e:first():objectName())
 		end
 	else
-		table.insert(target_objectname, dummy_use.to:first():objectName())
+	    for _,p in sgs.qlist(dummy_use.to) do
+		    if table.contains(e, p)  or table.contains(f, p) then
+				table.insert(target_objectname, p:objectName())
+				break
+			end
+		end
 	end
 	if #target_objectname>0 then
 		card = sgs.cloneCard(cardname, sgs.Card_NoSuit, 0)
@@ -1134,8 +1139,8 @@ sgs.ai_skill_use["@@chunhen_hegemony"] = function(self, prompt)
 	end
 	if #cards == 0 then return "." end
 	
-	local card, friend = self:getCardNeedPlayer(cards, self.friends_noself)
-	if card and friend then return "@ChunhenHegemonyCard=" .. card:getEffectiveId() .. "->" .. friend:objectName() end
+	local card, friend = self:getCardNeedPlayer(cards, self.friends_noself)--麻痹 死人不马上更新self.friends_noself
+	if card and friend and friend:isAlive() then return "@ChunhenHegemonyCard=" .. card:getEffectiveId() .. "->" .. friend:objectName() end
 	if #self.friends_noself > 0 then
 		self:sort(self.friends_noself, "handcard")
 		for _, afriend in ipairs(self.friends_noself) do
