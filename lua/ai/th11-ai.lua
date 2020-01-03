@@ -649,7 +649,7 @@ sgs.ai_skill_invoke.gelong = function(self,data)
 	--local damage = data:toDamage()
 	--return not self:isFriend(damage.from)
 	local target = data:toPlayer()
-	return not self:isFriend(target)
+	return (not self:isFriend(target))  and target:faceUp()  
 end
 sgs.ai_skill_choice.gelong= function(self)
 	if not self.player:faceUp() or self.player:isWounded() then

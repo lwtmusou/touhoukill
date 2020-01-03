@@ -1333,7 +1333,7 @@ function sgs.ai_cardsview.shenbao_attach(self, class_name, player)
 	local weapon = self.player:getWeapon()
 	if weapon and weapon:isKindOf("Spear") then return nil end
 	if class_name == "Slash" then
-		return cardsView_spear(self, player, "Spear")
+		return cardsView_spear(self, player, "shenbao")--"Spear"
 	end
 end
 
