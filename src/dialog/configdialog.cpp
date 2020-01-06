@@ -170,7 +170,7 @@ void ConfigDialog::on_resetRecordPathButton_clicked()
         Config.RecordSavePath = path;
     }
 }
-
+#include "audio.h"
 void ConfigDialog::saveConfig()
 {
     float volume = ui->bgmVolumeSlider->value() / 100.0;
@@ -179,7 +179,7 @@ void ConfigDialog::saveConfig()
     volume = ui->effectVolumeSlider->value() / 100.0;
     Config.EffectVolume = volume;
     Config.setValue("EffectVolume", volume);
-
+    Audio::setBGMVolume(Config.BGMVolume);
     bool enabled = ui->enableEffectCheckBox->isChecked();
     Config.EnableEffects = enabled;
     Config.setValue("EnableEffects", enabled);
