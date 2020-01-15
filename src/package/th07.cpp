@@ -2148,14 +2148,26 @@ public:
     Shoushu()
         : TriggerSkill("shoushu")
     {
-        events << CardsMoveOneTime;
+        events << CardsMoveOneTime << EventPhaseChanging;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
+        if (triggerEvent == EventPhaseChanging) {
+            foreach (ServerPlayer *p, room->getAlivePlayers())
+                room->setPlayerFlag(p, "-shoushu_used");
+            
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e != CardsMoveOneTime)
+            return QList<SkillInvokeDetail>();
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-        if (player != NULL && player->isAlive() && player->hasSkill(this) && move.to_place == Player::DiscardPile
+        if (player != NULL && player->isAlive() && player->hasSkill(this) && !player->hasFlag("shoushu_used")
+            && move.to_place == Player::DiscardPile
             && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
                 || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE)) {
             const Card *card = move.reason.m_extraData.value<const Card *>();
@@ -2173,6 +2185,7 @@ public:
         ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "@shoushu:" + card->objectName(), true, true);
         if (target) {
             invoke->targets << target;
+            room->setPlayerFlag(player, "shoushu_used");
             return true;
         }
         return false;
