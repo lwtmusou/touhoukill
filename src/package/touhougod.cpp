@@ -6434,6 +6434,8 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *, const QString &) const
     {
+        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+            return false;
         QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
         foreach (const Card *c, ClientInstance->discarded_list) {
             if (c->getSuit() == Card::Club && (c->getTypeId() == Card::TypeBasic || c->isNDTrick())) {
