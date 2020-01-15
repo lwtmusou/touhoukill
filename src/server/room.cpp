@@ -6283,7 +6283,7 @@ int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> e
 
 const Card *Room::askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const QString &reason, PindianStruct *pindian)
 {
-    if (!from->isAlive() || !to->isAlive())
+    if (!from->isAlive() || !to->isAlive() || player->isKongcheng())
         return NULL;
     Q_ASSERT(!player->isKongcheng());
 

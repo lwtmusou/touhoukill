@@ -611,8 +611,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
         room->moveCardTo(card1, this, NULL, Player::PlaceTable, reason1, false);
 
         card2 = room->askForPindian(target, this, target, reason, pindian);
-        CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, target->objectName());
-        room->moveCardTo(card2, target, NULL, Player::PlaceTable, reason2, true);
+       
 
     } else {
         if (card1->isVirtualCard()) {
@@ -631,12 +630,28 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
         room->moveCardTo(card1, this, NULL, Player::PlaceTable, reason1, false);
 
         card2 = room->askForPindian(target, this, target, reason, pindian);
+        
+    }
+    if (card2 != NULL) {
         CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, target->objectName());
         room->moveCardTo(card2, target, NULL, Player::PlaceTable, reason2, false);
     }
+    
+    //check whether card is empty 
+    if (card1 == NULL || card2 == NULL) {
+        if (card1 != NULL) {
 
-    if (card1 == NULL || card2 == NULL)
+            CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, this->objectName(), target->objectName(), pindian_struct.reason, QString());
+            room->moveCardTo(card1, pindian_struct.from, NULL, Player::DiscardPile, reason1, true);
+
+        }
+        if (card2 != NULL) {
+            CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, pindian_struct.to->objectName());
+            room->moveCardTo(card2, pindian_struct.to, NULL, Player::DiscardPile, reason2, true);
+        }
+        //need trigger choice made?
         return false;
+    }
 
     pindian_struct.from_card = card1;
     pindian_struct.to_card = card2;
@@ -2020,9 +2035,9 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
                 //    has_lord = true;
                 //    break;
                 //}
-                //QVariant RoleConfirmedTag1 = room->getTag(p->objectName() + "_RoleConfirmed");
-                //bool roleConfirmed1 = RoleConfirmedTag.canConvert(QVariant::Bool) && RoleConfirmedTag.toBool();
-                if (p->hasShownOneGeneral() && p->getRole() != "careerist")
+                QVariant RoleConfirmedTag1 = room->getTag(p->objectName() + "_RoleConfirmed");
+                bool roleConfirmed1 = RoleConfirmedTag.canConvert(QVariant::Bool) && RoleConfirmedTag.toBool();
+                if (roleConfirmed1 && p->getRole() != "careerist")
                     ++i;
             }
         }
@@ -2032,7 +2047,9 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         if (role != "careerist") {
             if ((i + 1) > (room->getPlayers().length() / 2)) { // set hidden careerist
                 foreach (ServerPlayer *p, room->getOtherPlayers(this, true)) {
-                    if (p->isAlive() && !p->hasShownOneGeneral() && role == p->getRole()) {
+                    QVariant RoleConfirmedTag1 = room->getTag(p->objectName() + "_RoleConfirmed");
+                    bool roleConfirmed1 = RoleConfirmedTag1.canConvert(QVariant::Bool) && RoleConfirmedTag1.toBool();
+                    if (p->isAlive() && !roleConfirmed1 && role == p->getRole()) {
                         p->setRole("careerist");
                         room->notifyProperty(p, p, "role", "careerist");
                     }
