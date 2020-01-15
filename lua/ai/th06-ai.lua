@@ -88,6 +88,9 @@ function SmartAI:slashProhibitToEghitDiagram(card,from,enemy)
 	return false
 end
 
+
+sgs.ai_skill_invoke.skltkexue_hegemony =  true
+
 --sgs.ai_skill_invoke.EightDiagram
 --sgs.ai_armor_value.EightDiagram
 --SmartAI:getFinalRetrial
@@ -927,7 +930,7 @@ sgs.ai_skill_use_func.BanyueHegemonyCard = function(card, use, self)
 	if not to1 then return end
 	
 	for _, p in sgs.qlist(self.room:getOtherPlayers(to1)) do
-		local isSelf = (p:objectName() == self.player:objectName())
+		local isSelf = (to1:objectName() == self.player:objectName())
 		if p:hasShownOneGeneral() and not to1:isFriendWith(p, isSelf) then
 			to2 = p
 			break
