@@ -1920,7 +1920,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
     QVariant RoleConfirmedTag = room->getTag(this->objectName() + "_RoleConfirmed");
 
     bool roleConfirmed = RoleConfirmedTag.canConvert(QVariant::Bool) && RoleConfirmedTag.toBool();
-    bool notify_role = !roleConfirmed && (!hasShownGeneral() && !hasShownGeneral2());
+    bool notify_role = !roleConfirmed; //&& (!hasShownGeneral() && !hasShownGeneral2());
 
     room->tryPause();
 
@@ -2036,7 +2036,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
                 //    break;
                 //}
                 QVariant RoleConfirmedTag1 = room->getTag(p->objectName() + "_RoleConfirmed");
-                bool roleConfirmed1 = RoleConfirmedTag.canConvert(QVariant::Bool) && RoleConfirmedTag.toBool();
+                bool roleConfirmed1 = RoleConfirmedTag1.canConvert(QVariant::Bool) && RoleConfirmedTag1.toBool();
                 if (roleConfirmed1 && p->getRole() != "careerist")
                     ++i;
             }
@@ -2080,7 +2080,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         log.type = "#HegemonyReveal";
         log.from = this;
         log.arg = getGeneralName();
-        if (Config.Enable2ndGeneral) {
+        if (Config.Enable2ndGeneral || isHegemonyGameMode(room->getMode())) {
             log.type = "#HegemonyRevealDouble";
             log.arg2 = getGeneral2Name();
         }

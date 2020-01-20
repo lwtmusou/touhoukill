@@ -768,7 +768,7 @@ QString Engine::getSetupString() const
         flags.append("C");
     if (Config.EnableCheat && Config.FreeChoose)
         flags.append("F");
-    if (Config.Enable2ndGeneral)
+    if (Config.Enable2ndGeneral || isHegemonyGameMode(Config.GameMode))
         flags.append("S");
     if (Config.EnableSame)
         flags.append("T");

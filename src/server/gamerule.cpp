@@ -994,6 +994,10 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         break;
     }
     case GeneralShown: {
+        //Only for Hegemony (Enable2ndGeneral is default setting)
+        if (!isHegemonyGameMode(room->getMode()))
+            break;
+
         ShowGeneralStruct s = data.value<ShowGeneralStruct>();
         ServerPlayer *player = s.player; //data.value<ServerPlayer *>();
         QString winner = getWinner(player);
@@ -1012,9 +1016,9 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             }
             //room->setTag("TheFirstToShowRewarded", true);
         }
-        if (!Config.Enable2ndGeneral)
-            break;
-
+        //if (!Config.Enable2ndGeneral)
+        //    break;
+        
         //CompanionEffect  and  HalfMaxHpLeft
         if (player->isAlive() && player->hasShownAllGenerals()) {
             if (player->getMark("CompanionEffect") > 0) {
