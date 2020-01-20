@@ -1842,7 +1842,8 @@ bool Player::hasShownSkill(const Skill *skill) const
 
     if (skill->inherits("TriggerSkill")) {
         const TriggerSkill *tr_skill = qobject_cast<const TriggerSkill *>(skill);
-        if (tr_skill && tr_skill->isGlobal())
+        if (tr_skill && tr_skill->isGlobal() 
+            && !(skills.contains(tr_skill->objectName())  || skills2.contains(tr_skill->objectName())))
             return true;
     }
 
