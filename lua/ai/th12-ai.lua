@@ -5,7 +5,7 @@ table.insert(sgs.ai_skills, pudu_skill)
 pudu_skill.getTurnUseCard = function(self)
 	if self.player:hasUsed("PuduCard") then return nil end
 	local can=false
-	if self.player:getHp()>3 then
+	if self.player:getHp()>3 or self.player:getLostHp() < 1 then
 		can=true
 	elseif self.player:getHp()==1   then
 		local value = self:getCardsNum("Analeptic")+self:getCardsNum("Peach")
@@ -801,6 +801,16 @@ sgs.ai_skill_invoke.bianhuan = function(self, data)
 	return false
 end
 
+
+sgs.ai_skill_invoke.bianhuan_hegemony = function(self, data)
+	local damage =data:toDamage()
+    if damage.from and self.player:isFriend(damage.from) and damage.nature ~= sgs.DamageStruct_Normal then
+		return false
+    end
+
+    return damage.damage > 1
+end
+
 local nuhuo_skill = {}
 nuhuo_skill.name = "nuhuo"
 table.insert(sgs.ai_skills, nuhuo_skill)
@@ -894,6 +904,11 @@ sgs.ai_choicemade_filter.skillInvoke.shanshi = function(self, player, args, data
 	if target  and args[#args] == "yes" then
 		sgs.updateIntention(player,  target, -30)
 	end
+end
+
+sgs.ai_skill_invoke.shanshi_hegemony = function(self, data)
+	local target = data:toPlayer()
+	return target and self:isFriend(target)
 end
 
 

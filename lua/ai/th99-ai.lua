@@ -445,6 +445,19 @@ sgs.ai_skill_cardask["@luanying-invoke"] = function(self, data)
 	return "."
 end
 
+sgs.ai_skill_use["@@mengxian"] = function(self, prompt)
+    local current = self.room:getCurrent()
+    if current and self.isFriend(current) and self:getOverflow(current) > 0  then
+        local jingjies =  self.player:getPile("jingjie")
+		if not jingjies:isEmpty() then
+			return "@MengxianCard=".. jingjies:frist().."->"
+		end
+	end
+	return "."
+end
+
+
+
 --国战版
 sgs.ai_skill_invoke.yueshi_hegemony  = function(self)
 	return self:invokeTouhouJudge()

@@ -548,6 +548,12 @@ public:
     {
         events << EventPhaseChanging << DamageDone << TurnStart;
         global = true;
+
+    }
+
+    bool canPreshow() const
+    {
+        return true;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const

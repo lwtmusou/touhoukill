@@ -115,6 +115,16 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };*/
 
+class MengxianCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE MengxianCard();
+
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
 
 class HegemonyGeneralPackage : public Package
 {

@@ -61,6 +61,15 @@ return
 	
 	["kyouko_hegemony"] = "幽谷响子",
 	["kokoro_hegemony"] = "秦心",
+	["unzan_hegemony"] = "云山",
+	["bianhuan_hegemony"] = "变幻",
+	[":bianhuan_hegemony"] = "当你受到伤害时，你可以失去1点体力，防止此伤害。",
+	["lianda_hegemony"] = "连打",
+	[":lianda_hegemony"] = "<font color=\"blue\"><b>锁定技，</b></font>你于出牌阶段使用【杀】的次数+x。x为你已失去的体力值",
+	["myouren_hegemony"] = "命莲" ,
+	["shanshi_hegemony"] = "善逝" ,
+	[":shanshi_hegemony"] = "当你于一名其他角色的回合内失去牌后或一名其他角色于你的回合内失去牌后，若失去牌的角色手牌数小于x,你可以令你与其各摸一张牌。（x为其体力值且最小为1）<font color=\"green\"><b>每阶段限一次。</b></font>" ,
+	
 	
 --***********************
 --夏（月）
@@ -154,6 +163,14 @@ return
 	[":chongqun_hegemony"] = "当你因弃置而失去一张基本牌后，你可以弃置一名其他角色的一张手牌。",
 	--["@chongqun_target"]= "选择有手牌的一名其他角色 -> 确定",
 
+	["rumia_hegemony"] = "露米娅",
+	["zhenye_hegemony"] = "真夜",
+	[":zhenye_hegemony"] = "结束阶段开始时，你可以令一名其他角色翻面并摸x张牌，然后你翻面。（x为你的阵营的角色数）",
+	["@zhenye-select-heg"]= "你可以令一名其他角色的人物牌翻面并摸x张牌，然后你的人物牌翻面。（x为你的阵营的角色数）",
+	
+	["mystia_hegemony"]="米斯蒂娅",
+	["yuka_hegemony"]= "风见幽香",
+	
 --***********************
 --秋（风）	
 	["kanako_hegemony"] = "八坂神奈子",
@@ -191,6 +208,13 @@ return
 	["rin_hegemony"] = "火焰猫燐",
 	["yugi_hegemony"] = "星熊勇仪",
 	["parsee_hegemony"]= "水桥帕露西",
+	
+	["yamame_hegemony"] = "黑谷山女",
+	["kisume_hegemony"] = "琪斯美",
+	
+	["diaoping_hegemony"] = "钓瓶",
+	[":diaoping_hegemony"] = "当其他角色使用【杀】指定目标后，若目标包含与你阵营相同的角色，你可以与此牌的使用者拼点：当你赢后，此【杀】无效并令其横置；当你没赢后，你与其各摸一张牌。",
+
 	
 --***********************
 --冬（雪）
@@ -285,5 +309,12 @@ return
 	
 	["youki_hegemony"] = "魂魄妖忌" ,
 
+	["renko_hegemony"] = "宇佐见莲子",
+	["merry_hegemony"] = "玛艾露贝莉",
+	
+	["luanying_hegemony"] = "乱影",
+	[":luanying_hegemony"] = "<font color=\"purple\"><b>主将技，</b></font>此武将牌上单独的阴阳鱼个数-1；当其他角色使用基本牌时，你可以将一张与此牌颜色相同的“境界”交给其，令此牌无效。<font color=\"green\"><b>每阶段限一次。</b></font>",
+    ["mengxian_hegemony"] = "梦现",
+	[":mengxian_hegemony"] = "<font color=\"purple\"><b>副将技，</b></font>一名角色的弃牌阶段开始时，你可以弃置x张境界，令其的手牌上限于本回合+x。",
 	
 }
