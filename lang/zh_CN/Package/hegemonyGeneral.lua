@@ -210,6 +210,9 @@ return
 	["parsee_hegemony"]= "水桥帕露西",
 	
 	["yamame_hegemony"] = "黑谷山女",
+	["chuanran_hegemony"] = "传染",
+	[":chuanran_hegemony"] = "当一名角色受到【杀】造成的非属性伤害后，若来源属于你的阵营或处于连环状态，你可令该角色横置。",
+	
 	["kisume_hegemony"] = "琪斯美",
 	
 	["diaoping_hegemony"] = "钓瓶",
@@ -316,5 +319,6 @@ return
 	[":luanying_hegemony"] = "<font color=\"purple\"><b>主将技，</b></font>此武将牌上单独的阴阳鱼个数-1；当其他角色使用基本牌时，你可以将一张与此牌颜色相同的“境界”交给其，令此牌无效。<font color=\"green\"><b>每阶段限一次。</b></font>",
     ["mengxian_hegemony"] = "梦现",
 	[":mengxian_hegemony"] = "<font color=\"purple\"><b>副将技，</b></font>一名角色的弃牌阶段开始时，你可以弃置x张境界，令其的手牌上限于本回合+x。",
-	
+	["@mengxian_hegemony"] = "你可以发动“梦现”： 弃置x张境界，令当前回合的角色手牌上限+x",
+	["~mengxian_hegemony"] = "选择任意张境界->确定",
 }

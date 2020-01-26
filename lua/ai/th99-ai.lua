@@ -445,12 +445,12 @@ sgs.ai_skill_cardask["@luanying-invoke"] = function(self, data)
 	return "."
 end
 
-sgs.ai_skill_use["@@mengxian"] = function(self, prompt)
+sgs.ai_skill_use["@@mengxian_hegemony"] = function(self, prompt)
     local current = self.room:getCurrent()
-    if current and self.isFriend(current) and self:getOverflow(current) > 0  then
+    if current and self:isFriend(current) and self:getOverflow(current) > 0  then
         local jingjies =  self.player:getPile("jingjie")
 		if not jingjies:isEmpty() then
-			return "@MengxianCard=".. jingjies:frist().."->"
+			return "@MengxianCard=".. jingjies:first().."->"
 		end
 	end
 	return "."

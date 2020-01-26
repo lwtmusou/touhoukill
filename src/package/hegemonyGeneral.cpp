@@ -2419,6 +2419,41 @@ public:
 };
 
 
+class ChuanranHgemony : public TriggerSkill
+{
+public:
+    ChuanranHgemony()
+        : TriggerSkill("chuanran_hegemony")
+    {
+        events << Damaged;
+        //frequency = Compulsory;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        QList<ServerPlayer *> yamames = room->findPlayersBySkillName(objectName());
+        if (yamames.isEmpty() || damage.nature != DamageStruct::Normal || !damage.from || damage.from->isDead() || !damage.card || !damage.card->isKindOf("Slash") || damage.to->isChained())
+            return QList<SkillInvokeDetail>();
+
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *p, yamames) {
+            if ((p == damage.from || p->isFriendWith(damage.from) || damage.from->isChained()) && damage.to != p) {
+                d << SkillInvokeDetail(this, p, p, NULL, false, damage.to);
+            }
+        }
+        return d;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        room->notifySkillInvoked(invoke->owner, objectName());
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
+
+        room->setPlayerProperty(invoke->targets.first(), "chained", true);
+        return false;
+    }
+};
 
 class DiaopingHegemony : public TriggerSkill
 {
@@ -3775,7 +3810,7 @@ public:
     MengxianVS()
         : ViewAsSkill("mengxian_hegemony")
     {
-        response_pattern = "@@mengxian";
+        response_pattern = "@@mengxian_hegemony";
         expand_pile = "jingjie";
     }
 
@@ -3847,7 +3882,7 @@ public:
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
 
-        return room->askForUseCard(invoke->invoker, "@@mengxian", "@mengxian");
+        return room->askForUseCard(invoke->invoker, "@@mengxian_hegemony", "@mengxian_hegemony");
         //QString prompt = "@luanying-invoke:" + user->objectName() + ":" + card->objectName();
         //const Card *c = room->askForCard(invoke->invoker, "@@luanying", prompt, data, Card::MethodNone, NULL, false, "luanying");
     }
@@ -3859,7 +3894,7 @@ public:
         int num = merry->tag["mengxian_maxcard"].toInt();
         merry->tag.remove("mengxian_maxcard");
         if (num > 0 && current && current->isAlive())
-            room->setPlayerMark(merry, "mengxian_maxcard", current->getMark("mengxian_maxcard") + num);
+            room->setPlayerMark(current, "mengxian_maxcard", current->getMark("mengxian_maxcard") + num);
         return false;
 
     }
@@ -4164,7 +4199,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     parsee_hegemony->addSkill("gelong");
 
     General *yamame_hegemony = new General(this, "yamame_hegemony", "qun", 4);
-    yamame_hegemony->addSkill("chuanran");
+    yamame_hegemony->addSkill(new ChuanranHgemony);
     yamame_hegemony->addSkill("rebing");
     yamame_hegemony->addCompanion("kisume_hegemony");
 

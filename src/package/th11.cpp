@@ -727,6 +727,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         room->notifySkillInvoked(invoke->owner, objectName());
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
         LogMessage log;
         log.type = "#TriggerSkill";
         log.from = invoke->owner;

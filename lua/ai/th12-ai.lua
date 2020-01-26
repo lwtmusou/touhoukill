@@ -804,7 +804,7 @@ end
 
 sgs.ai_skill_invoke.bianhuan_hegemony = function(self, data)
 	local damage =data:toDamage()
-    if damage.from and self.player:isFriend(damage.from) and damage.nature ~= sgs.DamageStruct_Normal then
+    if damage.from and self:isFriend(damage.from) and damage.nature ~= sgs.DamageStruct_Normal then
 		return false
     end
 

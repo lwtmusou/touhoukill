@@ -660,6 +660,12 @@ end
 
 
 sgs.ai_skill_invoke.chuanran =  true
+sgs.ai_skill_invoke.chuanran_hegemony  =function(self,data)
+	local player = data:toPlayer()
+	return not self:isFriend(player)
+end
+
+
 sgs.ai_skill_playerchosen.rebing = function(self, targets)
 	local current = self.room:getCurrent()
 	local hasSlash  = getCardsNum("Slash", current, self.player) > 0

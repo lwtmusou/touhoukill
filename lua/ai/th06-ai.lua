@@ -722,6 +722,29 @@ sgs.ai_playerchosen_intention.zhenye =function(self, from, to)
 end
 
 
+
+sgs.ai_skill_playerchosen.zhenye_hegemony = function(self, targets)
+	local target_table= sgs.QList2Table(targets)    
+    local do_turnup = true
+	if self.player:faceUp() then
+        local gameProcess = sgs.gameProcess()
+        if not string.find(gameProcess, ">") then
+            do_turnup = false
+        end 
+    end
+
+	self:sort(target_table,"hp")
+	for _,p in pairs (target_table) do
+		if self:isFriend(p) and not p:faceUp()then
+			 return p
+		end
+		if self:isEnemy(p) and p:faceUp() and do_turnup then
+			 return p
+		end
+	end
+	return nil
+end
+
 sgs.ai_skill_invoke.anyu = true
 sgs.ai_skill_choice.anyu= function(self, choices, data)
 	if self.player:faceUp() then
