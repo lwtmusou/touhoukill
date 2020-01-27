@@ -2434,12 +2434,12 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         QList<ServerPlayer *> yamames = room->findPlayersBySkillName(objectName());
-        if (yamames.isEmpty() || damage.nature != DamageStruct::Normal || !damage.from || damage.from->isDead() || !damage.card || !damage.card->isKindOf("Slash") || damage.to->isChained())
+        if (yamames.isEmpty() || damage.nature != DamageStruct::Normal || !damage.from || damage.from->isDead() || !damage.card || !damage.card->isKindOf("Slash") || damage.to->isChained() || damage.to->isDead())
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
         foreach(ServerPlayer *p, yamames) {
-            if ((p == damage.from || p->isFriendWith(damage.from) || damage.from->isChained()) && damage.to != p) {
+            if ((p == damage.from || p->isFriendWith(damage.from, true) || damage.from->isChained()) && damage.to != p) {
                 d << SkillInvokeDetail(this, p, p, NULL, false, damage.to);
             }
         }
