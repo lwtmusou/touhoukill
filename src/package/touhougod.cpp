@@ -1962,8 +1962,9 @@ public:
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         const Skill *skill = Sanguosha->getSkill("huaxiang");
         QStringList checkedPatterns;
+        QStringList ban_list = Sanguosha->getBanPackages();
         foreach (const Card *card, cards) {
-            if ((card->isKindOf("BasicCard") || card->isKindOf("Nullification")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+            if ((card->isKindOf("BasicCard") || card->isKindOf("Nullification")) && !ban_list.contains(card->getPackage()) ) {//&& !ServerInfo.Extensions.contains("!" + card->getPackage())
                 QString name = card->objectName();
                 if (!checkedPatterns.contains(name) && skill->matchAvaliablePattern(name, pattern) && !Self->isCardLimited(card, method)) {
                     if (name.contains("jink") && Self->getMaxHp() > 3)
@@ -4238,8 +4239,9 @@ public:
 
         QStringList validPatterns;
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+        QStringList ban_list = Sanguosha->getBanPackages();
         foreach (const Card *card, cards) {
-            if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+            if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) {//&& !ServerInfo.Extensions.contains("!" + card->getPackage())
                 QString p = card->objectName();
                 if (card->isKindOf("Slash"))
                     p = "slash";
@@ -5679,11 +5681,11 @@ QGroupBox *XianshiDialog::createLeft()
     QVBoxLayout *layout = new QVBoxLayout;
 
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-    QStringList ban_list;
+    QStringList ban_list = Sanguosha->getBanPackages();
 
     foreach (const Card *card, cards) {
-        if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getClassName())
-            && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+        if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getPackage())
+            ) {//&& !ServerInfo.Extensions.contains("!" + card->getPackage())
             Card *c = Sanguosha->cloneCard(card->objectName());
             c->setParent(this);
             layout->addWidget(createButton(c));
@@ -5706,11 +5708,11 @@ QGroupBox *XianshiDialog::createRight()
     QGroupBox *box2 = new QGroupBox(Sanguosha->translate("multiple_target_trick"));
     QVBoxLayout *layout2 = new QVBoxLayout;
 
-    QStringList ban_list; //no need to ban
+    QStringList ban_list = Sanguosha->getBanPackages();
 
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
     foreach (const Card *card, cards) {
-        if (card->isNDTrick() && !map.contains(card->objectName()) && !ban_list.contains(card->getClassName()) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+        if (card->isNDTrick() && !map.contains(card->objectName()) && !ban_list.contains(card->getPackage())) {//&& !ServerInfo.Extensions.contains("!" + card->getPackage())
             Card *c = Sanguosha->cloneCard(card->objectName());
             c->setSkillName(object_name);
             c->setParent(this);

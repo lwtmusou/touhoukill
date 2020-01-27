@@ -899,8 +899,9 @@ void BeishuiDialog::popup()
     //collect avaliable patterns for specific skill
     QStringList validPatterns;
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+    QStringList ban_list = Sanguosha->getBanPackages();
     foreach (const Card *card, cards) {
-        if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+        if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) {//!ServerInfo.Extensions.contains("!" + card->getPackage())
             QString name = card->objectName();
             if (!validPatterns.contains(name))
                 validPatterns << card->objectName();
@@ -960,11 +961,9 @@ QGroupBox *BeishuiDialog::createLeft()
     QVBoxLayout *layout = new QVBoxLayout;
 
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-    QStringList ban_list;
-
+    QStringList ban_list = Sanguosha->getBanPackages();
     foreach (const Card *card, cards) {
-        if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getClassName())
-            && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+        if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getPackage())) {//!ServerInfo.Extensions.contains("!" + card->getPackage())
             Card *c = Sanguosha->cloneCard(card->objectName());
             c->setParent(this);
             layout->addWidget(createButton(c));
@@ -1017,8 +1016,9 @@ public:
         const Skill *skill = Sanguosha->getSkill("beishui");
 
         QStringList checkedPatterns;
+        QStringList ban_list = Sanguosha->getBanPackages();
         foreach (const Card *card, cards) {
-            if ((card->isKindOf("BasicCard")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+            if ((card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) {//!ServerInfo.Extensions.contains("!" + card->getPackage()) 
                 QString name = card->objectName();
                 if (!checkedPatterns.contains(name) && skill->matchAvaliablePattern(name, pattern) && !Self->isCardLimited(card, method))
                     checkedPatterns << name;
@@ -1061,7 +1061,7 @@ public:
                 }
             }
         }
-
+        
         QStringList checkedPatterns = responsePatterns();
         if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1 && player->getMark("Global_PreventPeach") > 0)
             return false;

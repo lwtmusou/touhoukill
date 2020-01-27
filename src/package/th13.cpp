@@ -221,8 +221,9 @@ void XihuaDialog::popup()
     //collect avaliable patterns for specific skill
     QStringList validPatterns;
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+    QStringList ban_list = Sanguosha->getBanPackages();
     foreach (const Card *card, cards) {
-        if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+        if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) {//&& !ServerInfo.Extensions.contains("!" + card->getPackage())
             QString name = card->objectName();
             QString pattern = card->objectName();
             if (pattern.contains("slash"))
@@ -294,41 +295,12 @@ QGroupBox *XihuaDialog::createLeft()
     QVBoxLayout *layout = new QVBoxLayout;
 
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-    QStringList ban_list;
+    QStringList ban_list = Sanguosha->getBanPackages();
     QStringList log;
     QStringList log1;
     foreach (const Card *card, cards) {
-        if (card->getTypeId() == Card::TypeBasic) {
-            bool can = !map.contains(card->objectName()) && !ban_list.contains(card->getClassName()) && !ServerInfo.Extensions.contains("!" + card->getPackage());
-            if (can && log.isEmpty()) {
-                log << this->objectName() << card->objectName();
-                if (!map.contains(card->objectName()))
-                    log << "Not_in_map";
-                if (!ban_list.contains(card->getClassName()))
-                    log << "Not_in_ban_list";
-                if (!ServerInfo.Extensions.contains("!" + card->getPackage()))
-                    log << "not_ban" << card->getPackage();
-
-                LogMessage l;
-                l.type = "#" + log.join("+");
-                ClientInstance->log(l.toJsonValue());
-            } else if (!can && log1.isEmpty()) {
-                log1 << this->objectName() << card->objectName();
-                if (map.contains(card->objectName()))
-                    log1 << "In_map";
-
-                if (ban_list.contains(card->getClassName()))
-                    log1 << "In_ban_list";
-                if (ServerInfo.Extensions.contains("!" + card->getPackage()))
-                    log1 << "ban_package" << card->getPackage();
-
-                LogMessage l;
-                l.type = "#" + log1.join("+");
-                ClientInstance->log(l.toJsonValue());
-            }
-        }
-        if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getClassName())
-            && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+        if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getPackage())
+            ) {//&& !ServerInfo.Extensions.contains("!" + card->getPackage())
             Card *c = Sanguosha->cloneCard(card->objectName());
             c->setParent(this);
             layout->addWidget(createButton(c));
@@ -351,11 +323,11 @@ QGroupBox *XihuaDialog::createRight()
     QGroupBox *box2 = new QGroupBox(Sanguosha->translate("multiple_target_trick"));
     QVBoxLayout *layout2 = new QVBoxLayout;
 
-    QStringList ban_list; //no need to ban
+    QStringList ban_list = Sanguosha->getBanPackages();
 
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
     foreach (const Card *card, cards) {
-        if (card->isNDTrick() && !map.contains(card->objectName()) && !ban_list.contains(card->getClassName()) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+        if (card->isNDTrick() && !map.contains(card->objectName()) && !ban_list.contains(card->getPackage())) {// && !ServerInfo.Extensions.contains("!" + card->getPackage())
             Card *c = Sanguosha->cloneCard(card->objectName());
             c->setSkillName(object_name);
             c->setParent(this);
@@ -619,8 +591,9 @@ public:
         QStringList checkedPatterns;
         const Skill *skill = Sanguosha->getSkill("xihua");
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+        QStringList ban_list = Sanguosha->getBanPackages();
         foreach (const Card *card, cards) {
-            if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ServerInfo.Extensions.contains("!" + card->getPackage())) {
+            if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage()) ) {//!ServerInfo.Extensions.contains("!" + card->getPackage())
                 QString p = card->objectName();
                 if (!checkedPatterns.contains(p) && skill->matchAvaliablePattern(p, pattern)
                     && !XihuaClear::xihua_choice_limit(Self, p, method)) //&& !Self->isCardLimited(card, method)
