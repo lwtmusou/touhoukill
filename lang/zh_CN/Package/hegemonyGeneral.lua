@@ -33,7 +33,7 @@ return
 	[":qingting_hegemony"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以令有手牌的所有其他角色各将一张手牌交给你，然后你交给这些角色各一张手牌。",
 	["chiling_hegemony"] = "敕令",
 	[":chiling_hegemony"] = "<font color=\"purple\"><b>主将技，</b></font>此武将牌上单独的阴阳鱼个数-1；当一名其他角色获得你的牌后，你可以令其使用其中的一张牌。",
-	["@chiling_hegemony"] = "敕令： 你从 <font color=\"#00FF00\"><b>%src </b></font> 处获得了牌，你可以使用一张牌。",
+	["@chiling_hegemony"] = "敕令： 你从 <font color=\"#00FF00\"><b>%src </b></font> 处获得了【%dest】，你可以使用此牌。",
 	["shezheng_hegemony"] = "摄政",
 	[":shezheng_hegemony"] = "<font color=\"purple\"><b>副将技，</b></font>若你装备区没有武器牌，你视为装备了【雌雄剑（国）】。",
 	["shezheng_attach"] = "摄政（出牌阶段亮将）";

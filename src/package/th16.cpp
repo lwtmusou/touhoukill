@@ -112,6 +112,8 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->getTypeId() == Card::TypeBasic || use.card->isNDTrick()) {
+            if (use.card->isKindOf("Jink") || use.card->isKindOf("Nullification"))
+                return QList<SkillInvokeDetail>();
             ServerPlayer *player = use.from;
             if (player && player->isAlive() && player->hasSkill(this)) {
                 ServerPlayer *target = NULL;

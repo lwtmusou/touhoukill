@@ -5515,10 +5515,12 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        QStringList ban_list;
-        ban_list << "Jink"
-                 << "Nullification";
-        if (ban_list.contains(use.card->getClassName()))
+        //QStringList ban_list;
+        //ban_list << "Jink"
+        //         << "Nullification";
+        //if (ban_list.contains(use.card->getClassName()))
+        //    return QList<SkillInvokeDetail>();
+        if (use.card->isKindOf("Jink") || use.card->isKindOf("Nullification"))
             return QList<SkillInvokeDetail>();
         if (use.from && use.from->isAlive() && use.from->hasSkill(this) && use.from->getMark("@star") > 0 && use.to.length() == 1 && !use.from->hasFlag("Global_ProcessBroken")) {
             if ((use.card->isKindOf("BasicCard") || use.card->isNDTrick())) {

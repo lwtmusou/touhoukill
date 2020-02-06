@@ -815,8 +815,9 @@ public:
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *target = qobject_cast<ServerPlayer *>(move.to);
-
-        room->askForUseCard(target, IntList2StringList(move.card_ids).join("#"), "@chiling:" + invoke->invoker->objectName(), -1, Card::MethodUse, false);
+        Card *card = Sanguosha->getCard(move.card_ids.first());
+        QString  prompt = "@chiling_hegemony:" + invoke->invoker->objectName() + ":" + card->objectName();
+        room->askForUseCard(target, IntList2StringList(move.card_ids).join("#"), prompt, -1, Card::MethodUse, false);
         return false;
     }
 };
