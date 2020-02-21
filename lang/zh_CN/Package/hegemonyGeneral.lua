@@ -218,7 +218,7 @@ return
 	
 	["diaoping_hegemony"] = "钓瓶",
 	[":diaoping_hegemony"] = "当其他角色使用【杀】指定目标后，若目标包含与你阵营相同的角色，你可以与此牌的使用者拼点：当你赢后，其横置且此【杀】无效；当你没赢后，你与其各摸一张牌。",
-
+    ["diaoping_hegemony:slashtarget"]= "<font color=\"#FF8000\"><b>%src </b></font> 使用了【%dest】，你可以发动“钓瓶”。",
 	
 --***********************
 --冬（雪）
