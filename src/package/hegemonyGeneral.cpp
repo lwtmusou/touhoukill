@@ -1817,14 +1817,31 @@ public:
     PingyiHegemony()
         : TriggerSkill("pingyi_hegemony")
     {
-        events << Damage << Damaged;
+        events << Damage << Damaged << EventPhaseChanging;
+    }
+
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const
+    {
+        if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                    if (p->hasFlag("pingyi_used"))
+                        room->setPlayerFlag(p, "-pingyi_used");
+                }
+            }
+        }
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
     {
+        if (e == EventPhaseChanging)
+            return QList<SkillInvokeDetail>();
+
         DamageStruct damage = data.value<DamageStruct>();
         ServerPlayer *yori = (e == Damage) ? damage.from : damage.to;
-        if (yori == NULL || yori->isDead() || !yori->hasSkill(this) || !yori->canDiscard(yori, "hes"))
+        if (yori == NULL || yori->hasFlag("pingyi_used") || yori->isDead() || !yori->hasSkill(this) || !yori->canDiscard(yori, "hes"))
             return QList<SkillInvokeDetail>();
 
         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, yori, yori);
@@ -1882,6 +1899,8 @@ public:
         QStringList choices = GetAvailableGenerals(room, invoke->invoker);
         if (choices.isEmpty())
             return false;
+
+        room->setPlayerFlag(invoke->invoker, "pingyi_used");
 
         //AI *ai = invoke->invoker->getAI();
         if (!invoke->invoker->isOnline()) { //  ai: Just make a random choice

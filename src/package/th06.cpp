@@ -527,6 +527,7 @@ public:
         : TriggerSkill("huisu")
     {
         events << PostHpReduced << EventPhaseChanging << EventPhaseStart;
+        global = true;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
