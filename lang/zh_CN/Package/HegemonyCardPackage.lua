@@ -5,7 +5,7 @@ return {
 	
 	
 	["SixSwords"] = "吴六剑",
-	[":SixSwords"] = "装备牌·武器\n\n攻击范围：2<br/>装备技能：<font color=\"blue\"><b>锁定技，</b></font>与你阵营相同的其他角色的攻击范围+1。",
+	[":SixSwords"] = "装备牌·武器\n攻击范围：2<br/>装备技能：<font color=\"blue\"><b>锁定技，</b></font>与你阵营相同的其他角色的攻击范围+1。",
 	
 	["befriend_attacking"] = "远交近攻",
 	[":befriend_attacking"] = "锦囊牌·非全体性的普通锦囊牌\n\n使用时机：出牌阶段。\n使用目标：一名与你阵营不同且有明置的武将牌的角色。\n作用效果：你摸<font color=\"green\"><b>三张</b></font>牌，然后目标角色摸一张牌。",
@@ -41,7 +41,7 @@ return {
 	
 	
 	["DoubleSwordHegemony"] = "雌雄剑（国）",
-	[":DoubleSwordHegemony"] = "装备牌·武器<br />攻击范围：2<br />装备技能： 你使用【杀】指定有暗置武将牌的角色后，你可以令其选择一项：明置一张武将牌并摸一张牌; 或弃置一张手牌。",
+	[":DoubleSwordHegemony"] = "装备牌·武器<br />攻击范围：2<br />装备技能：当你使用【杀】指定有暗置武将牌的角色后，你可以令其选择一项：明置一张武将牌并摸一张牌; 或弃置一张手牌。",
 	["DoubleSwordHegemony:showhead"] = "明置主将",
 	["DoubleSwordHegemony:showdeputy"] = "明置副将",
 }

@@ -165,8 +165,8 @@ return
 
 	["rumia_hegemony"] = "露米娅",
 	["zhenye_hegemony"] = "真夜",
-	[":zhenye_hegemony"] = "结束阶段开始时，你可以令一名其他角色翻面和摸X张牌（X为你的阵营的角色数），然后你翻面。",
-	["@zhenye-select-heg"]= "你可以令一名其他角色的人物牌翻面和摸X张牌（X为你的阵营的角色数），然后你的人物牌翻面。",
+	[":zhenye_hegemony"] = "结束阶段开始时，你可以令一名其他角色翻面和令其摸X张牌（X为你的阵营的角色数），然后你翻面。",
+	["@zhenye-select-heg"]= "你可以令一名其他角色的人物牌翻面和令其摸X张牌（X为你的阵营的角色数），然后你的人物牌翻面。",
 	
 	["mystia_hegemony"]="米斯蒂娅",
 	["yuka_hegemony"]= "风见幽香",
@@ -276,7 +276,7 @@ return
 	
 	["cirno_hegemony"] = "琪露诺",--国战修改
 	["dongjie_hegemony"] = "冻结",
-	[":dongjie_hegemony"] = "当你使用【杀】对一名角色造成伤害时，你可以令其选择一项：摸一张牌，然后翻面并防止此伤害；或弃置一张手牌。",
+	[":dongjie_hegemony"] = "当你使用【杀】对一名角色造成伤害时，你可以令其选择一项：摸一张牌，然后翻面并防止此伤害，或弃置一张手牌。",
 	["@dongjie_discard"] =" %src 对你发动了“冻结”， 你可弃置一张手牌，否则将摸一张牌，翻面，防止当前伤害",
 	["bingpo_hegemony"]= "冰魄",
 	[":bingpo_hegemony"]= "<font color=\"blue\"><b>锁定技，</b></font>当你不因火焰伤害而进入濒死状态时，你回复1点体力。",
