@@ -501,6 +501,31 @@ sgs.ai_skill_playerchosen.xushi_hegemony = function(self, targets)
 	return nil
 end
 
+sgs.ai_skill_use["@@xushi_hegemony"] = function(self, prompt)
+    local use=self.player:getTag("xushi_hegemony_use"):toCardUse()
+	local card = use.card
+	local user = use.from
+	local res=wunian_judge(self,user,card)
+	local target = nil
+    for _,p in sgs.qlist(use.to) do
+		if res == 1 and self:isFriend(p) then
+			target = p
+			break
+		elseif res == 2 and self:isEnemy(p) then
+			target = p
+			break
+        end
+	end		
+	if target  then
+        local handcards = sgs.QList2Table(self.player:getHandcards())
+	    self:sortByUseValue(handcards)
+	    if #handcards==0 then return "." end
+		return "@XushiHegemonyCard=".. handcards[1]:getId() .."->" .. target:objectName()
+	end
+	return "."
+end
+
+
 sgs.ai_skill_playerchosen.shouye = function(self, targets)
 	local target =self:touhouFindPlayerToDraw(false, 1)
 	if not target and #self.friends_noself>0 then

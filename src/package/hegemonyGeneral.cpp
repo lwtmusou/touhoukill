@@ -1470,6 +1470,49 @@ public:
     }
 };
 
+
+
+
+
+XushiHegemonyCard::XushiHegemonyCard()
+{
+    will_throw = true;
+    //handling_method = Card::MethodNone;
+    m_skillName = "xushi_hegemony";
+}
+
+
+bool XushiHegemonyCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
+{
+    return targets.isEmpty() & to_select->hasFlag("Global_xushiFailed");
+}
+
+void XushiHegemonyCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const
+{
+    foreach(ServerPlayer *p, targets)
+        room->setPlayerFlag(p, "xushi_cancel");
+}
+
+
+
+class XushiHegemonyVS : public OneCardViewAsSkill
+{
+public:
+    XushiHegemonyVS() : OneCardViewAsSkill("xushi_hegemony")
+    {
+        filter_pattern = ".|.|.|hand!";
+        response_pattern = "@@xushi_hegemony";
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const
+    {
+        XushiHegemonyCard *c = new XushiHegemonyCard;
+        c->addSubcard(originalCard);
+        return c;
+    }
+};
+
+
 class XushiHegemony : public TriggerSkill
 {
 public:
@@ -1477,6 +1520,12 @@ public:
         : TriggerSkill("xushi_hegemony")
     {
         events << TargetConfirming;
+        view_as_skill = new XushiHegemonyVS;
+    }
+
+    bool canPreshow() const
+    {
+        return true;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
@@ -1486,8 +1535,11 @@ public:
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
-        foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName()))
-            d << SkillInvokeDetail(this, p, p);
+        foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            if (p->canDiscard(p, "hs"))
+                d << SkillInvokeDetail(this, p, p);
+        }
+            
         return d;
     }
 
@@ -1496,10 +1548,20 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         QString prompt = "@xushi_hegemony_targetchosen:" + use.card->objectName();
         invoke->invoker->tag["xushi_hegemony_use"] = data;
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, use.to, objectName(), prompt, true, true);
-        if (target)
-            invoke->targets << target;
-        return target != NULL;
+        foreach(ServerPlayer *p, use.to)
+            room->setPlayerFlag(p, "Global_xushiFailed");
+        const Card *c = room->askForUseCard(invoke->invoker, "@@xushi_hegemony", prompt); //, -1, Card::MethodUse, false
+        //ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, use.to, objectName(), prompt, true, true);
+        if (c) {
+            foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                if (p->hasFlag("xushi_cancel")) {
+                    room->setPlayerFlag(p, "-xushi_cancel");
+                    invoke->targets << p;
+                }
+            }
+        
+        }
+        return c != NULL;
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
@@ -4321,6 +4383,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     addMetaObject<QingtingHegemonyCard>();
     addMetaObject<ShowShezhengCard>();
+    addMetaObject<XushiHegemonyCard>();
     addMetaObject<XingyunHegemonyCard>();
 
     addMetaObject<ChunhenHegemonyCard>();

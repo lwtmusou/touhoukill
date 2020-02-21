@@ -118,8 +118,9 @@ return
 	--国战改动
 	["keine_hegemony"] = "上白泽慧音",
 	["xushi_hegemony"] = "虚史",
-	[":xushi_hegemony"] = "当至少两名角色成为牌的目标时，你可以取消其中一个目标。",
-	["@xushi_hegemony_targetchosen"] = "虚史： 【%src】 有至少两个目标， 你是否取消其中一个目标？",
+	[":xushi_hegemony"] = "当至少两名角色成为牌的目标时，你可以弃置一张手牌取消其中一个目标。",
+	["@xushi_hegemony_targetchosen"] = "虚史： 【%src】 有至少两个目标， 你是否弃置一张手牌取消其中一个目标？",
+	["~xushi_hegemony"] = "选择一张手牌并选择要取消的目标--》确定",
 	["#XushiHegemonySkillAvoid"] = "因为 “%arg”的效果，取消了 【%arg2】 的目标 %from ",
 	["xinyue_hegemony"] = "新月",
 	[":xinyue_hegemony"] = "当你受到伤害后，你可以令来源将其手牌弃置至X张（X为你的体力值），若如此做，当前回合结束时，你将武将牌“上白泽慧音”替换为“白泽”。",
