@@ -118,8 +118,9 @@ return
 	--国战改动
 	["keine_hegemony"] = "上白泽慧音",
 	["xushi_hegemony"] = "虚史",
-	[":xushi_hegemony"] = "当至少两名角色成为牌的目标时，你可以取消其中一个目标。",
-	["@xushi_hegemony_targetchosen"] = "虚史： 【%src】 有至少两个目标， 你是否取消其中一个目标？",
+	[":xushi_hegemony"] = "当至少两名角色成为牌的目标时，你可以弃置一张手牌取消其中一个目标。",
+	["@xushi_hegemony_targetchosen"] = "虚史： 【%src】 有至少两个目标， 你是否弃置一张手牌取消其中一个目标？",
+	["~xushi_hegemony"] = "选择一张手牌并选择要取消的目标--》确定",
 	["#XushiHegemonySkillAvoid"] = "因为 “%arg”的效果，取消了 【%arg2】 的目标 %from ",
 	["xinyue_hegemony"] = "新月",
 	[":xinyue_hegemony"] = "当你受到伤害后，你可以令来源将其手牌弃置至X张（X为你的体力值），若如此做，当前回合结束时，你将武将牌“上白泽慧音”替换为“白泽”。",
@@ -149,7 +150,7 @@ return
 	
 	["yorihime_hegemony"] = "绵月依姬",
 	["pingyi_hegemony"] = "凭依",
-	[":pingyi_hegemony"] = "当你造成伤害后或受到伤害后，你可以弃置一张牌，视为拥有一个未登场的夏势力人物牌的一个技能（主将技，副将技，限定技除外），直到此人物牌被明置，或你重新发动“凭依”，或人物牌“绵月依姬”被移除或被暗置为止。",
+	[":pingyi_hegemony"] = "当你造成伤害后或受到伤害后，你可以弃置一张牌，视为拥有一个未登场的夏势力人物牌的一个技能（主将技，副将技，限定技除外），直到此人物牌被明置，或你重新发动“凭依”，或人物牌“绵月依姬”被移除或被暗置为止。<font color=\"green\"><b>每回合限一次。</b></font>",
 	["@pingyi_hegemony"]= "你是否要弃置一张牌，发动“凭依”",
 	
 	
@@ -217,7 +218,7 @@ return
 	
 	["diaoping_hegemony"] = "钓瓶",
 	[":diaoping_hegemony"] = "当其他角色使用【杀】指定目标后，若目标包含与你阵营相同的角色，你可以与此牌的使用者拼点：当你赢后，其横置且此【杀】无效；当你没赢后，你与其各摸一张牌。",
-
+    ["diaoping_hegemony:slashtarget"]= "<font color=\"#FF8000\"><b>%src </b></font> 使用了【%dest】，你可以发动“钓瓶”。",
 	
 --***********************
 --冬（雪）

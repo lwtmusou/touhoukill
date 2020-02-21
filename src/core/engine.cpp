@@ -670,7 +670,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const
 
 QString Engine::getVersionNumber() const
 {
-    return "20200127";
+    return "20200121";
 }
 
 QString Engine::getVersion() const
