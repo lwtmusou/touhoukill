@@ -964,6 +964,8 @@ void XiefaCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) 
     Card *card = Sanguosha->getCard(subcards.first());
     to1->obtainCard(card, false);
 
+    if (to2->isDead() || to2->isRemoved())
+        return;
     Slash *slash = new Slash(Card::NoSuit, 0);
     slash->setSkillName("_xiefa");
     room->setCardFlag(slash, "xiefa");
