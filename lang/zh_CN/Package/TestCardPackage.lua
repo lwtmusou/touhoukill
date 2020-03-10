@@ -4,13 +4,13 @@ return {
 	["test_card"] = "东方杀测试牌",
 
 	["light_slash"] = "秽杀",
-	[":light_slash"] = "基本牌<br />使用时机：出牌阶段限一次。<br />使用目标：你攻击范围内的一名其他角色。<br />作用效果：你明置目标角色的<font color=\"green\"><b>一张</b></font>手牌，然后对其造成<font color=\"green\"><b>1点</b></font>伤害。",
+	[":light_slash"] = "基本牌<br />使用时机：出牌阶段限一次。<br />使用目标：一名在你攻击范围内的其他角色。<br />作用效果：你明置目标角色的<font color=\"green\"><b>一张</b></font>手牌，然后对其造成<font color=\"green\"><b>1点</b></font>伤害。",
 
 	["power_slash"] = "幻杀",
-	[":power_slash"] = "基本牌<br />使用时机：出牌阶段限一次。<br />使用目标：你攻击范围内的一名其他角色。<br />作用效果：你横置目标角色装备区里的<font color=\"green\"><b>一张</b></font>牌，然后对其造成<font color=\"green\"><b>1点</b></font>伤害。",
+	[":power_slash"] = "基本牌<br />使用时机：出牌阶段限一次。<br />使用目标：一名在你攻击范围内的其他角色。<br />作用效果：你横置目标角色装备区里的<font color=\"green\"><b>一张</b></font>牌，然后对其造成<font color=\"green\"><b>1点</b></font>伤害。",
 
 	["iron_slash"] = "缚杀",
-	[":iron_slash"] = "基本牌<br />使用时机：出牌阶段限一次。<br />使用目标：你攻击范围内的一名其他角色。<br />作用效果：你令目标角色横置，然后对其造成<font color=\"green\"><b>1点</b></font>伤害。",
+	[":iron_slash"] = "基本牌<br />使用时机：出牌阶段限一次。<br />使用目标：一名在你攻击范围内的其他角色。<br />作用效果：你令目标角色横置，然后对其造成<font color=\"green\"><b>1点</b></font>伤害。",
 
 	["magic_analeptic"] = "果酒",
 	[":magic_analeptic"] = "基本牌<br />使用方法①<br />使用时机：出牌阶段限一次。<br />使用目标：一名包括你在内的角色（默认为你）。<br />作用效果：目标角色于此回合内使用的下一张普通锦囊牌的第一个效果值+<font color=\"green\"><b>1</b></font>。<br />◆不处于濒死状态的角色使用【酒】默认是以使用方法①使用【酒】。<br /> <br />使用方法②<br />使用时机：当你处于濒死状态时。<br />使用目标：你。<br />作用效果：你回复<font color=\"green\"><b>1点</b></font>体力。<br />◆处于濒死状态的角色使用【酒】默认是以使用方法②使用【酒】。",

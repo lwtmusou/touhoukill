@@ -4,7 +4,7 @@ local t = {
 	["standard_cards"] = "标准版",
 
 	["slash"] = "杀",
-	[":slash"] = "基本牌<br />使用时机：出牌阶段限一次。<br />使用目标：你攻击范围内的一名其他角色。<br />作用效果：你对目标角色造成<font color=\"green\"><b>1点</b></font>伤害。",
+	[":slash"] = "基本牌<br />使用时机：出牌阶段限一次。<br />使用目标：一名在你攻击范围内的其他角色。<br />作用效果：你对目标角色造成<font color=\"green\"><b>1点</b></font>伤害。",
 	["slash-jink"] = "%src 对你使用了【杀】，请使用一张【闪】",
 	["@multi-jink-start"] = "%src 对你使用了【杀】，你需依次使用 %arg 张【闪】",
 	["@multi-jink"] = "%src 对你使用了【杀】，你需再依次使用 %arg 张【闪】",
