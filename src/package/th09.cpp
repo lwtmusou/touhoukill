@@ -1831,6 +1831,7 @@ public:
     {
         events << EventPhaseStart << EventAcquireSkill << EventLoseSkill << Death << EventSkillInvalidityChange << HpChanged << CardsMoveOneTime;
         show_type = "static";
+        frequency = Compulsory;
     }
 
     static void removeYsJieLimit(ServerPlayer *player, QList<ServerPlayer *> targets)
