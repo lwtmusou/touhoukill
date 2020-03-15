@@ -686,12 +686,11 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data)
                         if (invoke->owner == NULL) {
                             has_compulsory = true;
                             break;
-                        }
-                        else if (invoke->owner && invoke->owner->hasShownSkill(detail->skill->objectName())) {
+                        } else if (invoke->owner && invoke->owner->hasShownSkill(detail->skill->objectName())) {
                             has_compulsory = true;
                             break;
                         }
-                    } 
+                    }
                 }
                 // since the invoker of the sametiming list is the same, we can use sameTiming.first()->invoker to judge the invoker of this time
                 QSharedPointer<SkillInvokeDetail> detailSelected = room->askForTriggerOrder(sameTiming.first()->invoker, sameTiming, !has_compulsory, data);

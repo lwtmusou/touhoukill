@@ -611,7 +611,6 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
         room->moveCardTo(card1, this, NULL, Player::PlaceTable, reason1, false);
 
         card2 = room->askForPindian(target, this, target, reason, pindian);
-       
 
     } else {
         if (card1->isVirtualCard()) {
@@ -630,20 +629,17 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
         room->moveCardTo(card1, this, NULL, Player::PlaceTable, reason1, false);
 
         card2 = room->askForPindian(target, this, target, reason, pindian);
-        
     }
     if (card2 != NULL) {
         CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, target->objectName());
         room->moveCardTo(card2, target, NULL, Player::PlaceTable, reason2, false);
     }
-    
-    //check whether card is empty 
+
+    //check whether card is empty
     if (card1 == NULL || card2 == NULL) {
         if (card1 != NULL) {
-
             CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, this->objectName(), target->objectName(), pindian_struct.reason, QString());
             room->moveCardTo(card1, pindian_struct.from, NULL, Player::DiscardPile, reason1, true);
-
         }
         if (card2 != NULL) {
             CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, pindian_struct.to->objectName());

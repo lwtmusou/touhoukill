@@ -548,7 +548,6 @@ public:
     {
         events << EventPhaseChanging << DamageDone << TurnStart;
         global = true;
-
     }
 
     bool canPreshow() const

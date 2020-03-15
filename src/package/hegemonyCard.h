@@ -20,8 +20,6 @@ public:
     Q_INVOKABLE DoubleSwordHegemony(Card::Suit suit, int number);
 };
 
-
-
 class AwaitExhaustedHegemony : public TrickCard
 {
     Q_OBJECT
@@ -37,7 +35,6 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-
 class KnownBothHegemony : public TrickCard
 {
     Q_OBJECT
@@ -52,7 +49,6 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isAvailable(const Player *player) const;
 };
-
 
 class BefriendAttacking : public SingleTargetTrick
 {
@@ -75,7 +71,6 @@ class HegNullification : public Nullification
 public:
     Q_INVOKABLE HegNullification(Card::Suit suit, int number);
 };
-
 
 class HegemonyCardPackage : public Package
 {

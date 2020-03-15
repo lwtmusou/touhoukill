@@ -419,7 +419,7 @@ void QijiDialog::popup()
     if (object_name == "huaxiang") {
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         foreach (const Card *card, cards) {
-            if (card->isKindOf("BasicCard") && !ban_list.contains(card->getPackage())) {// && !ServerInfo.Extensions.contains("!" + card->getPackage())
+            if (card->isKindOf("BasicCard") && !ban_list.contains(card->getPackage())) { // && !ServerInfo.Extensions.contains("!" + card->getPackage())
                 QString name = card->objectName();
                 if (!validPatterns.contains(name)) {
                     if (name.contains("jink") && Self->getMaxHp() > 3)
@@ -512,7 +512,6 @@ QGroupBox *QijiDialog::createLeft()
     QStringList log;
     QStringList log1;
     foreach (const Card *card, cards) {
-
         if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName())
             && !ban_list.contains(card->getPackage())) { // && !ServerInfo.Extensions.contains("!" + card->getPackage())
             Card *c = Sanguosha->cloneCard(card->objectName());
@@ -615,7 +614,7 @@ public:
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         QStringList ban_list = Sanguosha->getBanPackages();
         foreach (const Card *card, cards) {
-            if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) {//&& !ServerInfo.Extensions.contains("!" + card->getPackage())
+            if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) { //&& !ServerInfo.Extensions.contains("!" + card->getPackage())
                 QString p = card->objectName();
                 if (!checkedPatterns.contains(p) && skill->matchAvaliablePattern(p, pattern) && !Self->isCardLimited(card, method))
                     checkedPatterns << p;

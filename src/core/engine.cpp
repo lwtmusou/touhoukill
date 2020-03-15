@@ -313,7 +313,7 @@ QStringList Engine::getBanPackages() const
     if (qApp->arguments().contains("-server"))
         return Config.BanPackages;
     else {
-        if (isHegemonyGameMode(ServerInfo.GameMode)) {// && ServerInfo.Enable2ndGeneral
+        if (isHegemonyGameMode(ServerInfo.GameMode)) { // && ServerInfo.Enable2ndGeneral
             QStringList ban;
             QList<const Package *> packs = getPackages();
             QStringList needPacks;
