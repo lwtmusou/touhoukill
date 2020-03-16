@@ -1011,6 +1011,20 @@ void MainWindow::updateInfoReceived()
 #endif
                 parseUpdateInfo(latestVersion, ver, ob.value("FullPack").toObject());
         }
+    } else {
+        // detect "warnedUpdateFromTestVersion20200315" afterwards
+        QString warnConfig = QStringLiteral("warnedUpdateFromTestVersion") + Sanguosha->getVersionNumber();
+        bool warned = Config.value(warnConfig, false).toBool();
+        if (!warned) {
+            Config.setValue(warnConfig, true);
+            QMessageBox::warning(this, tr("Important notify"),
+                                 tr("<font color=\"red\"><b>You have just updated from a publicly test version of TouhouSatsu.<br />"
+                                    "This update package is made for convenience and DOES NOT gurantee the usability of the whole copy of game.<br />"
+                                    "<br />"
+                                    "Please DO NOT report any errors caused by this copy.<br />"
+                                    "If anything unexpected occurred, please delete this copy from your computer and re-download the full package.</b></font>"),
+                                 QMessageBox::Ok);
+        }
     }
 }
 
