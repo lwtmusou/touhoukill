@@ -352,9 +352,12 @@ const Card *TrustAI::askForPindian(ServerPlayer *requestor, const QString &)
         return cards.last();
 }
 
-ServerPlayer *TrustAI::askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason)
+ServerPlayer *TrustAI::askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason, bool optional)
 {
     Q_UNUSED(reason);
+
+    if (optional)
+        return NULL;
 
     int r = qrand() % targets.length();
     return targets.at(r);

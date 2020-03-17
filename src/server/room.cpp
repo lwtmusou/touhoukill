@@ -6423,7 +6423,7 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
     AI *ai = player->getAI();
     ServerPlayer *choice = NULL;
     if (ai) {
-        choice = ai->askForPlayerChosen(targets, skillName);
+        choice = ai->askForPlayerChosen(targets, skillName, optional);
         if (choice && notify_skill)
             thread->delay();
     } else {
