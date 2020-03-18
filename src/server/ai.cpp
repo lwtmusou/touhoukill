@@ -278,9 +278,11 @@ QString TrustAI::askForKingdom()
         return "wai";
 }
 
-bool TrustAI::askForSkillInvoke(const QString &, const QVariant &)
+bool TrustAI::askForSkillInvoke(const QString &skill_name, const QVariant &)
 {
-    return false;
+    const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
+    return skill != NULL && skill->getFrequency() == Skill::Frequent;
+    //    return false;
 }
 
 QString TrustAI::askForChoice(const QString &, const QString &choice, const QVariant &)
