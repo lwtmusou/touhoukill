@@ -98,8 +98,7 @@ return
 	["ShowShenbao"] = "神宝（出牌阶段亮将）";
 	["xuyu_hegemony"] = "须臾",
 	[":xuyu_hegemony"] = "<font color=\"purple\"><b>主将技，</b></font><font color=\"blue\"><b>锁定技，</b></font>当你失去最后的手牌后，你移除副将的武将牌，获得“永恒”。",
-
-	
+	["$xuyuHegemonyAnimate"] = "skill=kaguya:xuyu_hegemony"
 
 	["eirin_hegemony"] = "八意永琳",
 	["yaoshi_hegemony"] = "药矢",
