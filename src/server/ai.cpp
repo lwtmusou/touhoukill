@@ -278,9 +278,11 @@ QString TrustAI::askForKingdom()
         return "wai";
 }
 
-bool TrustAI::askForSkillInvoke(const QString &, const QVariant &)
+bool TrustAI::askForSkillInvoke(const QString &skill_name, const QVariant &)
 {
-    return false;
+    const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
+    return skill != NULL && skill->getFrequency() == Skill::Frequent;
+    //    return false;
 }
 
 QString TrustAI::askForChoice(const QString &, const QString &choice, const QVariant &)
@@ -352,9 +354,12 @@ const Card *TrustAI::askForPindian(ServerPlayer *requestor, const QString &)
         return cards.last();
 }
 
-ServerPlayer *TrustAI::askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason)
+ServerPlayer *TrustAI::askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason, bool optional)
 {
     Q_UNUSED(reason);
+
+    if (optional)
+        return NULL;
 
     int r = qrand() % targets.length();
     return targets.at(r);

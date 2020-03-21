@@ -502,7 +502,7 @@ void MainWindow::on_actionAbout_triggered()
     const char *time = __TIME__;
     content.append(tr("Compilation time: %1 %2 <br/>").arg(date).arg(time));
 
-    QString project_url = "https://qcloud.coding.net/u/Fsu0413/p/TouhouSatsu";
+    QString project_url = "https://fsu0413.coding.net/p/TouhouSatsu/git";
     content.append(tr("Source code: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(project_url));
 
     QString forum_url = "http://qsanguosha.org";
@@ -996,6 +996,20 @@ void MainWindow::updateInfoReceived()
     QString ver = ob.value("LatestVersionNumber").toString();
 #endif
 
+    // detect the mis-upgrade info here --
+
+    bool warned = false;
+    {
+        QString warnConfigx = QStringLiteral("warnedUpdateFromTestVersion20200315");
+        QString warnConfig = QStringLiteral("warnedUpdateFromTestVersion") + Sanguosha->getVersionNumber();
+        bool needWarn = Config.value(warnConfigx, false).toBool();
+        warned = Config.value(warnConfig, false).toBool();
+        if (needWarn && !warned)
+            Config.setValue(warnConfig, true);
+        else
+            warned = true;
+    }
+
     if (latestVersion > Sanguosha->getVersionNumber()) {
         // there is a new version available now!!
         QString from = QString("From") + Sanguosha->getVersionNumber();
@@ -1011,6 +1025,15 @@ void MainWindow::updateInfoReceived()
 #endif
                 parseUpdateInfo(latestVersion, ver, ob.value("FullPack").toObject());
         }
+    } else if (!warned) {
+        // -- and display the mis-upgrade info only when no update is available
+        QMessageBox::warning(this, tr("Important notify"),
+                             tr("<font color=\"red\"><b>You have previously updated from a publicly test version of TouhouSatsu.<br />"
+                                "<br />"
+                                "Because the update package IS NOT guarnteed to work every time on your copy,<br />"
+                                "please DO NOT report any errors caused by this copy.<br />"
+                                "If anything unexpected occurred, please delete this copy from your computer and re-download the full package.</b></font>"),
+                             QMessageBox::Ok);
     }
 }
 

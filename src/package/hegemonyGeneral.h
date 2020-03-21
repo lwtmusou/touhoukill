@@ -2,9 +2,8 @@
 #define _hegemonyGeneral_H
 
 #include "card.h"
-#include "skill.h"
 #include "package.h"
-
+#include "skill.h"
 
 class NiaoxiangSummon : public ArraySummonCard
 {
@@ -13,7 +12,6 @@ class NiaoxiangSummon : public ArraySummonCard
 public:
     Q_INVOKABLE NiaoxiangSummon();
 };
-
 
 class QiankunHegemony : public MaxCardsSkill
 {
@@ -43,7 +41,6 @@ public:
     const Card *validate(CardUseStruct &card_use) const;
 };
 
-
 class XushiHegemonyCard : public SkillCard
 {
     Q_OBJECT
@@ -55,7 +52,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-
 class XingyunHegemonyCard : public SkillCard
 {
     Q_OBJECT
@@ -66,7 +62,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-
 class ChunhenHegemonyCard : public SkillCard
 {
     Q_OBJECT
@@ -76,8 +71,6 @@ public:
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
-
-
 
 class MocaoHegemonyCard : public SkillCard
 {
@@ -101,7 +94,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };
-
 
 class BanyueHegemonyCard : public SkillCard
 {
@@ -136,7 +128,6 @@ public:
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
-
 
 class HegemonyGeneralPackage : public Package
 {

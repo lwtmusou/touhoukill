@@ -783,7 +783,7 @@ public:
             QStringList ban_list = Sanguosha->getBanPackages();
             foreach (const Card *card, cards) {
                 if (card->getTypeId() == Card::TypeTrick && !card->isNDTrick() && card->getSubtype() == "unmovable_delayed_trick" && !trick_list.contains(card->objectName())
-                    && !ban_list.contains(card->getPackage())) {// && !ServerInfo.Extensions.contains("!" + card->getPackage())
+                    && !ban_list.contains(card->getPackage())) { // && !ServerInfo.Extensions.contains("!" + card->getPackage())
                     if (!kana->containsTrick(card->objectName()))
                         trick_list << card->objectName();
                 }

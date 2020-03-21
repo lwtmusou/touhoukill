@@ -4536,13 +4536,13 @@ void Room::startGame()
             Q_ASSERT(general1);
             int max_hp = general1->getMaxHp();
             //if (Config.Enable2ndGeneral) {
-                const General *general2 = Sanguosha->getGeneral(generals.last());
-                max_hp = (general1->getMaxHpHead() + general2->getMaxHpDeputy());
-                if (general1->isCompanionWith(generals.last()))
-                    addPlayerMark(player, "CompanionEffect");
+            const General *general2 = Sanguosha->getGeneral(generals.last());
+            max_hp = (general1->getMaxHpHead() + general2->getMaxHpDeputy());
+            if (general1->isCompanionWith(generals.last()))
+                addPlayerMark(player, "CompanionEffect");
 
-                setPlayerMark(player, "HalfMaxHpLeft", max_hp % 2);
-                max_hp = max_hp / 2;
+            setPlayerMark(player, "HalfMaxHpLeft", max_hp % 2);
+            max_hp = max_hp / 2;
             //}
             player->setMaxHp(max_hp);
         } else
@@ -5396,12 +5396,12 @@ void Room::preparePlayers()
             //}
 
             //if (Config.Enable2ndGeneral) {
-                QString general2_name = tag[player->objectName()].toStringList().at(1);
-                //if (!player->property("Duanchang").toString().split(",").contains("deputy")) {
-                //foreach(const Skill *skill, Sanguosha->getGeneral(general2_name)->getVisibleSkillList(true, false))
-                QList<const Skill *> skills2 = Sanguosha->getGeneral(general2_name)->getSkillList(true, false);
-                foreach (const Skill *skill, skills2)
-                    player->addSkill(skill->objectName(), false);
+            QString general2_name = tag[player->objectName()].toStringList().at(1);
+            //if (!player->property("Duanchang").toString().split(",").contains("deputy")) {
+            //foreach(const Skill *skill, Sanguosha->getGeneral(general2_name)->getVisibleSkillList(true, false))
+            QList<const Skill *> skills2 = Sanguosha->getGeneral(general2_name)->getSkillList(true, false);
+            foreach (const Skill *skill, skills2)
+                player->addSkill(skill->objectName(), false);
             //}
 
             //}
@@ -6423,7 +6423,7 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
     AI *ai = player->getAI();
     ServerPlayer *choice = NULL;
     if (ai) {
-        choice = ai->askForPlayerChosen(targets, skillName);
+        choice = ai->askForPlayerChosen(targets, skillName, optional);
         if (choice && notify_skill)
             thread->delay();
     } else {
@@ -6487,7 +6487,7 @@ void Room::_setupChooseGeneralRequestArgs(ServerPlayer *player)
     JsonArray options;
     if (isHegemonyGameMode(mode)) {
         options << JsonUtils::toJsonArray(player->getSelected());
-        options << false;//!Config.Enable2ndGeneral; //false;
+        options << false; //!Config.Enable2ndGeneral; //false;
         options << false;
     } else {
         options = JsonUtils::toJsonArray(player->getSelected()).value<JsonArray>();

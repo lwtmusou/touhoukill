@@ -548,7 +548,6 @@ public:
     {
         events << EventPhaseChanging << DamageDone << TurnStart;
         global = true;
-
     }
 
     bool canPreshow() const
@@ -2126,6 +2125,9 @@ TH99Package::TH99Package()
     General *reisen2 = new General(this, "reisen2", "wai", 4);
     reisen2->addSkill(new Sixiang);
     reisen2->addSkill(new Daoyao);
+
+    General *miyoi = new General(this, "miyoi", "wai", 4, false, true, true);
+    Q_UNUSED(miyoi);
 
     addMetaObject<QiuwenCard>();
     addMetaObject<DangjiaCard>();

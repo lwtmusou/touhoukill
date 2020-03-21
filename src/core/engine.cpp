@@ -313,7 +313,7 @@ QStringList Engine::getBanPackages() const
     if (qApp->arguments().contains("-server"))
         return Config.BanPackages;
     else {
-        if (isHegemonyGameMode(ServerInfo.GameMode)) {// && ServerInfo.Enable2ndGeneral
+        if (isHegemonyGameMode(ServerInfo.GameMode)) { // && ServerInfo.Enable2ndGeneral
             QStringList ban;
             QList<const Package *> packs = getPackages();
             QStringList needPacks;
@@ -670,7 +670,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const
 
 QString Engine::getVersionNumber() const
 {
-    return "20200121";
+    return "20200316";
 }
 
 QString Engine::getVersion() const
@@ -680,13 +680,13 @@ QString Engine::getVersion() const
 
 QString Engine::getVersionName() const
 {
-    return "V0.9.4";
+    return "V0.9.5";
 }
 
 #if QT_VERSION >= 0x050600
 QVersionNumber Engine::getQVersionNumber() const
 {
-    return QVersionNumber(0, 9, 3);
+    return QVersionNumber(0, 9, 5);
 }
 #endif
 
