@@ -379,7 +379,7 @@ public:
     const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
     QSharedPointer<SkillInvokeDetail> askForTriggerOrder(ServerPlayer *player, const QList<QSharedPointer<SkillInvokeDetail> > &sameTiming, bool cancelable, const QVariant &data);
     void addPlayerHistory(ServerPlayer *player, const QString &key, int times = 1);
-    void Room::transformGeneral(ServerPlayer *player, QString general_name, int head);
+    void transformGeneral(ServerPlayer *player, QString general_name, int head);
 
     void toggleReadyCommand(ServerPlayer *player, const QVariant &);
     void speakCommand(ServerPlayer *player, const QVariant &arg);
