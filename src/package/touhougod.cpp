@@ -7111,12 +7111,6 @@ public:
                 }
             }
         }
-        /*else { //tianbian 
-            ServerPlayer *current = data.value<ServerPlayer *>();
-            if (!current->hasSkill(this) || current->isDead() || current->getPhase() != Player::Judge || current->getJudgingArea().isEmpty())
-                return QList<SkillInvokeDetail>();
-
-        }*/
     }
 };
 
@@ -7199,9 +7193,9 @@ public:
         //step 3 throw all card, and effect delay
         if (current->isAlive() && !current->getJudgingAreaID().isEmpty()) {
             int num = current->getJudgingAreaID().length() / 2;
-            DummyCard *dummy = new DummyCard;
-            dummy->addSubcards(current->getJudgingAreaID());
-            room->throwCard(dummy, current, invoke->invoker);
+            DummyCard dummy;
+            dummy.addSubcards(current->getJudgingAreaID());
+            room->throwCard(&dummy, current, invoke->invoker);
             QStringList names;
             names << "lightning"
                   << "indulgence"
@@ -7217,30 +7211,25 @@ public:
 
         return false;
     }
-    static void tianbianEffect(QString choice, ServerPlayer *current)
+    static void tianbianEffect(const QString &choice, ServerPlayer *current)
     {
-        DelayedTrick *delay_trick;
+        DelayedTrick *delay_trick = NULL;
         Room *room = current->getRoom();
         if (choice == "lightning") {
             Lightning *c = new Lightning(Card::NoSuit, 0);
-            c->deleteLater();
-            delay_trick = qobject_cast<DelayedTrick *>(c);
+            delay_trick = c;
         } else if (choice == "indulgence") {
             Indulgence *c = new Indulgence(Card::NoSuit, 0);
-            c->deleteLater();
-            delay_trick = qobject_cast<DelayedTrick *>(c);
+            delay_trick = c;
         } else if (choice == "supply_shortage") {
             SupplyShortage *c = new SupplyShortage(Card::NoSuit, 0);
-            c->deleteLater();
-            delay_trick = qobject_cast<DelayedTrick *>(c);
+            delay_trick = c;
         } else if (choice == "saving_energy") {
             SavingEnergy *c = new SavingEnergy(Card::NoSuit, 0);
-            c->deleteLater();
-            delay_trick = qobject_cast<DelayedTrick *>(c);
+            delay_trick = c;
         } else if (choice == "spring_breath") {
             SpringBreath *c = new SpringBreath(Card::NoSuit, 0);
-            c->deleteLater();
-            delay_trick = qobject_cast<DelayedTrick *>(c);
+            delay_trick = c;
         }
         if (delay_trick != NULL) {
             //bool on_effect = room->cardEffect(delay_trick, NULL, current);  // iscanceled  ->  DelayedTrick::onEffect
@@ -7271,6 +7260,36 @@ public:
                 return true;
         } else if (c->targetFilter(QList<const Player *>(), to, from))
             return true;
+        return false;
+    }
+};
+
+class TianbianClear : public TriggerSkill
+{
+public:
+    TianbianClear()
+        : TriggerSkill("#tianbian-Clear")
+    {
+        events << Death;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        DeathStruct death = data.value<DeathStruct>();
+        if (death.who->hasSkill("tianbian"))
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, death.who, death.who, NULL, true);
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        foreach (ServerPlayer *p, room->getAlivePlayers()) {
+            DummyCard c;
+            c.addSubcards(p->getCards("j"));
+            room->throwCard(&c, invoke->invoker);
+        }
+
         return false;
     }
 };
@@ -7461,7 +7480,9 @@ TouhouGodPackage::TouhouGodPackage()
     tenshi_god_sp->addSkill(new QizhiAlernative);
     tenshi_god_sp->addSkill(new Tianbian);
     tenshi_god_sp->addSkill(new TianbianDistance);
+    tenshi_god_sp->addSkill(new TianbianClear);
     related_skills.insertMulti("tianbian", "#tianbian-dist");
+    related_skills.insertMulti("tianbian", "#tianbian-Clear");
 
     //    General *shinmyoumaru_god = new General(this, "shinmyoumaru_god", "touhougod", 4, false, true, true);
     //    Q_UNUSED(shinmyoumaru_god);
