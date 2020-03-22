@@ -97,7 +97,7 @@ return
 	["kaguya_hegemony"] = "蓬莱山辉夜",
 	["ShowShenbao"] = "神宝（出牌阶段亮将）";
 	["xuyu_hegemony"] = "须臾",
-	[":xuyu_hegemony"] = "<font color=\"purple\"><b>主将技，</b></font><font color=\"blue\"><b>锁定技，</b></font>当你失去最后的手牌后，你移除副将的武将牌，并令此武将牌本局游戏内添加技能“永恒”。",
+	[":xuyu_hegemony"] = "<font color=\"purple\"><b>主将技，</b></font><font color=\"blue\"><b>锁定技，</b></font>当你失去最后的手牌后，你移除副将的武将牌，并令此武将牌视为拥有“永恒”。",
 	["$xuyuHegemonyAnimate"] = "skill=kaguya:xuyu_hegemony"
 
 	["eirin_hegemony"] = "八意永琳",
@@ -107,7 +107,7 @@ return
 	
 	["mokou_hegemony"] = "藤原妹红",
 	["fengxiang_hegemony"] = "凤翔",
-	[":fengxiang_hegemony"] = "你可以将一张红色手牌当【火攻】使用，且此【火攻】的效果中的“弃置”改为“重铸”。",
+	[":fengxiang_hegemony"] = "你可以将一张红色手牌当【火攻】使用，且此【火攻】效果中的“弃置”改为“重铸”。",
 	["kaifeng_hegemony"] = "凯风",
 	[":kaifeng_hegemony"] = "当你对一名其他角色造成火焰伤害时或你受到一名其他角色造成的火焰伤害时，若你的体力值小于该角色，你回复1点体力。",
 	
@@ -149,7 +149,7 @@ return
 	
 	["yorihime_hegemony"] = "绵月依姬",
 	["pingyi_hegemony"] = "凭依",
-	[":pingyi_hegemony"] = "当你造成伤害后或受到伤害后，你可以弃置一张牌，视为拥有一个未登场的夏势力人物牌的一个技能（主将技，副将技，限定技除外），直到此人物牌被明置，或你重新发动“凭依”，或人物牌“绵月依姬”被移除或被暗置为止。<font color=\"green\"><b>每回合限一次。</b></font>",
+	[":pingyi_hegemony"] = "当你造成伤害后或受到伤害后，你可以弃置一张牌，令此武将牌视为拥有一个未登场的夏势力人物牌的一个技能（主将技，副将技，限定技除外），直到此人物牌被明置，或你重新发动“凭依”，或人物牌“绵月依姬”被移除或被暗置为止。<font color=\"green\"><b>每回合限一次。</b></font>",
 	["@pingyi_hegemony"]= "你是否要弃置一张牌，发动“凭依”",
 	
 	
