@@ -1821,11 +1821,11 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             reason.m_skillName = card->getSkillName();
             reason.m_extraData = QVariant::fromValue(card);
             if (theProvider != NULL)
-                moveCardTo(card, theProvider, NULL, isProvision ? Player::PlaceTable : Player::DiscardPile, reason);
+                moveCardTo(card, theProvider, NULL, isProvision ? Player::PlaceTable : Player::DiscardPile, reason, method != Card::MethodPindian);
             else if (!card->isVirtualCard() && getCardOwner(card->getEffectiveId()) && getCardOwner(card->getEffectiveId()) != player) //only for Skill Xinhua
-                moveCardTo(card, getCardOwner(card->getEffectiveId()), NULL, isProvision ? Player::PlaceTable : Player::DiscardPile, reason);
+                moveCardTo(card, getCardOwner(card->getEffectiveId()), NULL, isProvision ? Player::PlaceTable : Player::DiscardPile, reason, method != Card::MethodPindian);
             else
-                moveCardTo(card, player, NULL, isProvision ? Player::PlaceTable : Player::DiscardPile, reason, false);
+                moveCardTo(card, player, NULL, isProvision ? Player::PlaceTable : Player::DiscardPile, reason, method != Card::MethodPindian);
         }
         //move2
         if ((method == Card::MethodUse || method == Card::MethodResponse) && !isRetrial) {
