@@ -1339,7 +1339,8 @@ public:
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *kaguya = qobject_cast<ServerPlayer *>(move.from);
 
-            if (kaguya && kaguya->isAlive() && kaguya->hasSkill(this) && !kaguya->hasFlag("xuyu_invoked") && move.from_places.contains(Player::PlaceHand) && kaguya->isKongcheng())
+            if (kaguya && kaguya->isAlive() && kaguya->hasSkill(this) && kaguya->getMark("xuyu_invoked") != 0 && move.from_places.contains(Player::PlaceHand)
+                && kaguya->isKongcheng())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, kaguya, kaguya, NULL, true);
         }
         return QList<SkillInvokeDetail>();
@@ -1347,7 +1348,8 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        room->setPlayerFlag(invoke->invoker, "xuyu_invoked");
+        room->setPlayerMark(invoke->invoker, "xuyu_invoked", 1);
+        room->doLightbox("$xuyuHegemonyAnimate", 4000);
         invoke->invoker->removeGeneral(!invoke->invoker->inHeadSkills(objectName()));
 
         // add this to Player::skills, not Player::acquired_skills.
