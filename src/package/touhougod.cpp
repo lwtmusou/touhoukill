@@ -7486,7 +7486,7 @@ TouhouGodPackage::TouhouGodPackage()
     tenshi_god->addSkill(new Qizhi);
     tenshi_god->addSkill(new Tiandao);
 
-    General *tenshi_god_sp = new General(this, "tenshi_god_sp", "touhougod", 4);
+    General *tenshi_god_sp = new General(this, "tenshi_god_sp", "touhougod", 4, false, true, true); // not finished yet
     tenshi_god_sp->addSkill(new QizhiAlernative);
     tenshi_god_sp->addSkill(new Tianbian);
     tenshi_god_sp->addSkill(new TianbianDistance);
