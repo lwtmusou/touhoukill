@@ -93,10 +93,7 @@ public:
     {
         return response_or_use;
     }
-    inline QString getExpandPile() const
-    {
-        return expand_pile;
-    }
+    virtual QString getExpandPile() const;
 
 protected:
     QString response_pattern;

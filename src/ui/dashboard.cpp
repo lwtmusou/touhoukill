@@ -1238,12 +1238,6 @@ void Dashboard::startPending(const ViewAsSkill *skill)
             expandPileCards(pile);
         if (!(skill && skill->isResponseOrUse()))
             expandSpecialCard();
-        if (skill && skill->objectName() == "anyun") {
-            QString name = Self->tag.value("anyun", QString()).toString();
-            if (name == "xinhua") {
-                expandPileCards("%shown_card");
-            }
-        }
     } else {
         foreach (const QString &pile, Self->getPileNames()) {
             if (pile.startsWith("&") || pile == "wooden_ox")
@@ -1275,12 +1269,6 @@ void Dashboard::stopPending()
                 item->hideFootnote();
         } else if (!view_as_skill->getExpandPile().isEmpty()) {
             retractPileCards(view_as_skill->getExpandPile());
-        }
-        if (view_as_skill->objectName() == "anyun") {
-            QString name = Self->tag.value("anyun", QString()).toString();
-            if (name == "xinhua") {
-                retractPileCards("%shown_card");
-            }
         }
     }
 

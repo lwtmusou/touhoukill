@@ -4979,6 +4979,16 @@ public:
         response_or_use = true;
     }
 
+    virtual QString getExpandPile() const
+    {
+        QString name = Self->tag.value("anyun", QString()).toString();
+        if (name != NULL) {
+            const ViewAsSkill *s = Sanguosha->getViewAsSkill(name);
+            return s->getExpandPile();
+        }
+        return QString();
+    }
+
     static bool hasHiddenViewas(const Player *player)
     {
         bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);

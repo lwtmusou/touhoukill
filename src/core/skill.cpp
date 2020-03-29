@@ -301,6 +301,11 @@ const ViewAsSkill *ViewAsSkill::parseViewAsSkill(const Skill *skill)
     return NULL;
 }
 
+QString ViewAsSkill::getExpandPile() const
+{
+    return expand_pile;
+}
+
 ZeroCardViewAsSkill::ZeroCardViewAsSkill(const QString &name)
     : ViewAsSkill(name)
 {
