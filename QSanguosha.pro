@@ -124,6 +124,7 @@ SOURCES += \
     src/ui/playercardbox.cpp \
     src/package/testCard.cpp \
     src/package/hegemonyCard.cpp \
+    src/package/playground.cpp \
     src/ui/hegemonyrolecombobox.cpp
 
 HEADERS += \
@@ -237,6 +238,7 @@ HEADERS += \
     src/ui/playercardbox.h \
     src/package/testCard.h \
     src/package/hegemonyCard.h \
+    src/package/playground.h \
     src/pch.h
 
 FORMS += \
