@@ -137,6 +137,16 @@ bool Fsu0413GainianDialog::isResponseOk(const Player *player, const QString &pat
                     return true;
             }
         }
+
+        foreach (int handPileId, player->getHandPile()) {
+            const Card *handCard = Sanguosha->getCard(handPileId);
+            if (handCard != NULL && handCard->isKindOf("DelayedTrick")) {
+                copy->clearSubcards();
+                copy->addSubcard(handCard);
+                if ((copy->match(pattern) || Sanguosha->matchExpPattern(pattern, player, copy.data())) && !player->isCardLimited(copy.data(), Card::MethodUse))
+                    return true;
+            }
+        }
     }
 
     return false;
@@ -162,6 +172,19 @@ void Fsu0413GainianDialog::popup()
                     }
                 }
             }
+
+            foreach (int handPileId, Self->getHandPile()) {
+                const Card *handCard = Sanguosha->getCard(handPileId);
+                if (handCard != NULL && handCard->isKindOf("DelayedTrick")) {
+                    copy->clearSubcards();
+                    copy->addSubcard(handCard);
+                    if ((copy->match(Sanguosha->getCurrentCardUsePattern()) || Sanguosha->matchExpPattern(Sanguosha->getCurrentCardUsePattern(), Self, copy.data()))
+                        && !Self->isCardLimited(copy.data(), Card::MethodUse)) {
+                        availableCards << copy->objectName();
+                        break;
+                    }
+                }
+            }
         }
 
         if (availableCards.isEmpty()) {
@@ -178,6 +201,18 @@ void Fsu0413GainianDialog::popup()
             copy->setSkillName("fsu0413gainian");
             foreach (const Card *handCard, Self->getHandcards()) {
                 if (handCard->isKindOf("DelayedTrick")) {
+                    copy->clearSubcards();
+                    copy->addSubcard(handCard);
+                    if (copy->isAvailable(Self) && !Self->isCardLimited(copy.data(), Card::MethodUse)) {
+                        availableCards << copy->objectName();
+                        break;
+                    }
+                }
+            }
+
+            foreach (int handPileId, Self->getHandPile()) {
+                const Card *handCard = Sanguosha->getCard(handPileId);
+                if (handCard != NULL && handCard->isKindOf("DelayedTrick")) {
                     copy->clearSubcards();
                     copy->addSubcard(handCard);
                     if (copy->isAvailable(Self) && !Self->isCardLimited(copy.data(), Card::MethodUse)) {
@@ -273,6 +308,12 @@ public:
     {
         foreach (const Card *card, player->getHandcards()) {
             if (card->isKindOf("DelayedTrick"))
+                return true;
+        }
+
+        foreach (int id, player->getHandPile()) {
+            const Card *card = Sanguosha->getCard(id);
+            if (card != NULL && card->isKindOf("DelayedTrick"))
                 return true;
         }
 
