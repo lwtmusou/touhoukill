@@ -80,7 +80,6 @@ Engine::Engine()
     metaobjects.insert(SurrenderCard::staticMetaObject.className(), &SurrenderCard::staticMetaObject);
     metaobjects.insert(CheatCard::staticMetaObject.className(), &CheatCard::staticMetaObject);
 
-    SurprisingGenerals = GetConfigFromLuaState(lua, "surprising_generals").toStringList();
     LordBGMConvertList = GetConfigFromLuaState(lua, "bgm_convert_pairs").toStringList();
     LordBackdropConvertList = GetConfigFromLuaState(lua, "backdrop_convert_pairs").toStringList();
     LatestGeneralList = GetConfigFromLuaState(lua, "latest_generals").toStringList();

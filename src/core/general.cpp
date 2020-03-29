@@ -82,7 +82,7 @@ bool General::isTotallyHidden() const
 
 bool General::isVisible() const
 {
-    return !Sanguosha->SurprisingGenerals.contains(objectName()) || Config.KnownSurprisingGenerals.contains(objectName());
+    return true;
 }
 
 void General::addSkill(Skill *skill)

@@ -132,7 +132,6 @@ public:
 
     bool isGeneralHidden(const QString &general_name) const;
 
-    QStringList SurprisingGenerals;
     QStringList LordBGMConvertList;
     QStringList LordBackdropConvertList;
     QStringList LatestGeneralList;
