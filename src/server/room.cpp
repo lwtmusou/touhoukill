@@ -3279,17 +3279,6 @@ void Room::chooseGenerals()
     else
         lord_list = Sanguosha->getRandomLords();
     QString general = askForGeneral(the_lord, lord_list);
-    if (QDate::currentDate().month() == 4 && QDate::currentDate().day() == 1) {
-        if (the_lord->screenName() == "Fs")
-            general = "Fsu0413";
-        else {
-            QString origGeneral = general;
-            do {
-                general = lord_list[qrand() % lord_list.length()];
-            } while (general == origGeneral);
-        }
-    }
-
     the_lord->setGeneralName(general);
     broadcastProperty(the_lord, "general", general);
 
@@ -3315,18 +3304,6 @@ void Room::chooseGenerals()
         if (player->getGeneral() != NULL)
             continue;
         QString generalName = player->getClientReply().toString();
-
-        if (QDate::currentDate().month() == 4 && QDate::currentDate().day() == 1) {
-            if (player->screenName() == "Fs")
-                generalName = "Fsu0413";
-            else {
-                QString origGeneral = generalName;
-                do {
-                    generalName = player->getSelected()[qrand() % player->getSelected().length()];
-                } while (generalName == origGeneral);
-            }
-        }
-
         if (!player->m_isClientResponseReady || !_setPlayerGeneral(player, generalName, true))
             _setPlayerGeneral(player, _chooseDefaultGeneral(player), true);
     }
@@ -3751,9 +3728,7 @@ bool Room::_setPlayerGeneral(ServerPlayer *player, const QString &generalName, b
     const General *general = Sanguosha->getGeneral(generalName);
     if (general == NULL)
         return false;
-    else if (generalName == "Fsu0413") {
-        // specialize!!!
-    } else if (!Config.FreeChoose && !player->getSelected().contains(generalName))
+    else if (!Config.FreeChoose && !player->getSelected().contains(generalName))
         return false;
 
     if (isFirst) {
