@@ -1000,14 +1000,13 @@ void MainWindow::updateInfoReceived()
 
     bool warned = false;
     {
-        QString warnConfigx = QStringLiteral("warnedUpdateFromTestVersion20200315");
-        QString warnConfig = QStringLiteral("warnedUpdateFromTestVersion") + Sanguosha->getVersionNumber();
-        bool needWarn = Config.value(warnConfigx, false).toBool();
+        QString warnConfig = QStringLiteral("warnedUpdateFromTestVersion20200315");
+        QString warnConfigEx = QStringLiteral("warnedUpdateFromTestVersion") + Sanguosha->getVersionNumber();
         warned = Config.value(warnConfig, false).toBool();
-        if (needWarn && !warned)
+        if (!warned) {
             Config.setValue(warnConfig, true);
-        else
-            warned = true;
+            Config.setValue(warnConfigEx, true);
+        }
     }
 
     if (latestVersion > Sanguosha->getVersionNumber()) {
@@ -1028,10 +1027,10 @@ void MainWindow::updateInfoReceived()
     } else if (!warned) {
         // -- and display the mis-upgrade info only when no update is available
         QMessageBox::warning(this, tr("Important notify"),
-                             tr("<font color=\"red\"><b>You have previously updated from a publicly test version of TouhouSatsu.<br />"
+                             tr("<font color=\"red\"><b>You have just updated from a publicly test version of TouhouSatsu.<br />"
+                                "This update package is made for convenience and DOES NOT gurantee the usability of the whole copy of game.<br />"
                                 "<br />"
-                                "Because the update package IS NOT guarnteed to work every time on your copy,<br />"
-                                "please DO NOT report any errors caused by this copy.<br />"
+                                "Please DO NOT report any errors caused by this copy.<br />"
                                 "If anything unexpected occurred, please delete this copy from your computer and re-download the full package.</b></font>"),
                              QMessageBox::Ok);
     }
