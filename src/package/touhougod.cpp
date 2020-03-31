@@ -6586,7 +6586,6 @@ public:
 KuangjiCard::KuangjiCard()
 {
     will_throw = true;
-    handling_method = Card::MethodNone;
     m_skillName = "kuangji";
 }
 
