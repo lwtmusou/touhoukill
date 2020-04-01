@@ -242,7 +242,7 @@ return
 
 --***********************************
 	--yym009  势力：妖 3血
-	["lilywhite"] = "莉莉白",
+	["lilywhite"] = "莉莉霍瓦特",
 	["#lilywhite"] = "带来春天的妖精",
 	["designer:lilywhite"] = "星野梦美☆",
 
