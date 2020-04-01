@@ -983,7 +983,7 @@ public:
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
         room->broadcastSkillInvoke(objectName());
         QString prompt = "@zhanwang-discard:" + invoke->invoker->objectName();
-        const Card *card = room->askForCard(invoke->targets.first(), ".|.|.|equipped", prompt, data, Card::MethodDiscard);
+        const Card *card = room->askForCard(invoke->targets.first(), ".|.|.|equipped", prompt, data);
         if (card == NULL) {
             DamageStruct damage = data.value<DamageStruct>();
             damage.damage = damage.damage + 1;

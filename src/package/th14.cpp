@@ -209,7 +209,7 @@ void LeitingCard::onEffect(const CardEffectStruct &effect) const
         return;
     }
 
-    const Card *cards = room->askForCard(effect.from, ".|.|.|hand,equipped", "@leiting:" + effect.to->objectName(), QVariant::fromValue(effect.to), Card::MethodDiscard);
+    const Card *cards = room->askForCard(effect.from, ".|.|.|hand,equipped", "@leiting:" + effect.to->objectName(), QVariant::fromValue(effect.to));
     /*if (!cards) {
         //force discard!!!
         int x = qrand() % hc.length();
@@ -578,8 +578,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
-        const Card *card
-            = room->askForCard(invoke->targets.first(), ".|red|.|hand", "@juwang:" + invoke->invoker->objectName(), data, Card::MethodDiscard, NULL, false, objectName());
+        const Card *card = room->askForCard(invoke->targets.first(), ".|red|.|hand", "@juwang:" + invoke->invoker->objectName(), data);
         if (card == NULL)
             room->damage(DamageStruct(objectName(), invoke->invoker, invoke->targets.first(), 1));
         return false;

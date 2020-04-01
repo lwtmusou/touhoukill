@@ -450,8 +450,7 @@ void SaiqianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
             room->loseHp(reimu);
             room->recover(source, recov);
         } else if (choice == "discard_saiqian") {
-            const Card *heartcard
-                = room->askForCard(reimu, ".H", "@saiqian-discard:" + source->objectName(), QVariant::fromValue(source), Card::MethodDiscard, NULL, true, "saiqian");
+            const Card *heartcard = room->askForCard(reimu, ".H", "@saiqian-discard:" + source->objectName(), QVariant::fromValue(source));
             if (heartcard != NULL)
                 room->recover(source, recov);
         }
@@ -556,7 +555,7 @@ void JiezouCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
     ServerPlayer *target = targets.first();
     int id = room->askForCardChosen(source, target, "hejs", "jiezou");
     room->obtainCard(source, id, false); //room->getCardPlace(id) != Player::PlaceHand
-    const Card *spade = room->askForCard(source, ".|spade", "@jiezou_spadecard", QVariant(), Card::MethodDiscard, NULL, false, "jiezou", false);
+    const Card *spade = room->askForCard(source, ".|spade", "@jiezou_spadecard");
     if (spade == NULL) {
         room->loseHp(source);
         room->setPlayerFlag(source, "Global_PlayPhaseTerminated");
@@ -1456,7 +1455,7 @@ public:
                 return false;
             }
 
-            const Card *card = room->askForCard(invoke->invoker, "@@qiangyu!", "qiangyu-discard", data, Card::MethodDiscard, NULL, false, objectName());
+            const Card *card = room->askForCard(invoke->invoker, "@@qiangyu!", "qiangyu-discard", data);
             if (!card) {
                 // force discard!!!
                 DummyCard *dc = new DummyCard;

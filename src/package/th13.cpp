@@ -1618,7 +1618,7 @@ public:
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, damage.to->objectName(), p->objectName());
             if (p->canDiscard(p, "hes")) {
                 p->tag["qingyu_source"] = QVariant::fromValue(damage.to);
-                const Card *cards = room->askForCard(p, ".|.|.|.", "@qingyu-discard:" + damage.to->objectName(), QVariant::fromValue(damage.to), Card::MethodDiscard);
+                const Card *cards = room->askForCard(p, ".|.|.|.", "@qingyu-discard:" + damage.to->objectName(), QVariant::fromValue(damage.to));
                 p->tag.remove("qingyu_source");
                 if (cards == NULL)
                     damage.to->drawCards(1);

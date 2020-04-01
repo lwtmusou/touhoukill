@@ -545,7 +545,7 @@ public:
             if (use.card->isKindOf("Nullification")) {
                 room->notifySkillInvoked(current, objectName());
                 room->touhouLogmessage("#weiya_ask", use.from, objectName(), QList<ServerPlayer *>(), use.card->objectName());
-                if (room->askForCard(use.from, "nullification", "@weiya:nullification", data, Card::MethodDiscard))
+                if (room->askForCard(use.from, "nullification", "@weiya:nullification", data))
                     return false;
                 room->touhouLogmessage("#weiya", use.from, objectName(), QList<ServerPlayer *>(), use.card->objectName());
                 room->setPlayerFlag(use.from, "nullifiationNul");
@@ -561,7 +561,7 @@ public:
                     weiya_pattern = "peach";
                 room->notifySkillInvoked(current, objectName());
                 room->touhouLogmessage("#weiya_ask", use.from, objectName(), QList<ServerPlayer *>(), use.card->objectName());
-                if (room->askForCard(use.from, weiya_pattern, "@weiya:" + use.card->objectName(), data, Card::MethodDiscard))
+                if (room->askForCard(use.from, weiya_pattern, "@weiya:" + use.card->objectName(), data))
                     return false;
                 room->touhouLogmessage("#weiya", use.from, objectName(), QList<ServerPlayer *>(), use.card->objectName());
                 use.nullified_list << "_ALL_TARGETS";
@@ -581,7 +581,7 @@ public:
                 weiya_pattern = "peach";
             room->notifySkillInvoked(current, objectName());
             room->touhouLogmessage("#weiya_ask", resp.m_from, objectName(), QList<ServerPlayer *>(), card_star->objectName());
-            if (room->askForCard(resp.m_from, weiya_pattern, "@weiya:" + card_star->objectName(), data, Card::MethodDiscard))
+            if (room->askForCard(resp.m_from, weiya_pattern, "@weiya:" + card_star->objectName(), data))
                 return false;
             room->touhouLogmessage("#weiya", resp.m_from, objectName(), QList<ServerPlayer *>(), card_star->objectName());
             resp.m_isNullified = true;

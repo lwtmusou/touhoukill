@@ -243,7 +243,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         use.from->tag["weizhuang_target"] = QVariant::fromValue(player);
         QString prompt = "@weizhuang-discard:" + player->objectName() + ":" + use.card->objectName();
-        const Card *card = room->askForCard(use.from, ".Basic", prompt, data, Card::MethodDiscard);
+        const Card *card = room->askForCard(use.from, ".Basic", prompt, data);
         if (card == NULL) {
             use.nullified_list << player->objectName();
             data = QVariant::fromValue(use);

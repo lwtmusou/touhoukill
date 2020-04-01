@@ -2272,7 +2272,7 @@ public:
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), current->objectName());
 
             QString prompt = "@qinlue-discard1:" + source->objectName();
-            const Card *card = room->askForCard(current, "Jink,Armor", prompt, QVariant::fromValue(source), Card::MethodDiscard);
+            const Card *card = room->askForCard(current, "Jink,Armor", prompt, QVariant::fromValue(source));
             if (!card) {
                 room->setPlayerFlag(current, "Global_TurnTerminated");
                 if (!room->getThread()->hasExtraTurn()) {
@@ -3189,7 +3189,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         use.from->tag["junwei_target"] = QVariant::fromValue(player);
         QString prompt = "@junwei-discard:" + player->objectName() + ":" + use.card->objectName();
-        const Card *card = room->askForCard(use.from, ".|black|.|hand,equipped", prompt, data, Card::MethodDiscard);
+        const Card *card = room->askForCard(use.from, ".|black|.|hand,equipped", prompt, data);
         if (card == NULL) {
             use.nullified_list << player->objectName();
             data = QVariant::fromValue(use);
