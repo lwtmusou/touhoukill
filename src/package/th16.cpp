@@ -197,12 +197,12 @@ public:
 
         if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (((move.reason.m_reason | CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DRAW) && move.reason.m_extraData.toString() != "xunfo"
-                && move.to->isLord())
+            if (((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DRAW) && move.reason.m_extraData.toString() != "xunfo"
+                && move.reason.m_extraData.toString() != "initialDraw" && move.to->isLord())
                 triggerFlag = true;
         } else {
             RecoverStruct recover = data.value<RecoverStruct>();
-            if (recover.who->isLord())
+            if (recover.to->isLord())
                 triggerFlag = true;
         }
 
