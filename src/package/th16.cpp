@@ -188,6 +188,7 @@ public:
         : TriggerSkill("xunfo")
     {
         events << CardsMoveOneTime << HpRecover;
+        frequency = Compulsory;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
@@ -212,7 +213,7 @@ public:
 
         foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (p->isAlive() && p->hasSkill(this))
-                r << SkillInvokeDetail(this, p, p);
+                r << SkillInvokeDetail(this, p, p, NULL, true);
         }
 
         return r;
@@ -309,7 +310,15 @@ void HuyuanCard::onEffect(const CardEffectStruct &effect) const
     room->setPlayerProperty(effect.to, "huyuansuits", suits.join(","));
     bool discarded = false;
     try {
-        discarded = room->askForCard(effect.to, "@@huyuandis", "@huyuandis:::" + suits.join(","), suits);
+        QString prompt;
+        if (suits.length() == 1)
+            prompt = QString("@huyuandis1:") + effect.from->objectName() + QString("::") + suits.first();
+        else if (suits.length() == 2)
+            prompt = QString("@huyuandis2:") + effect.from->objectName() + QString("::") + suits.first() + QString(":") + suits.last();
+        else if (suits.length() == 3)
+            prompt = (QString("@huyuandis3%1:") + effect.from->objectName() + QString("::%2:%3")).arg(suits.first()).arg(suits.last()).arg(suits.at(1));
+
+        discarded = room->askForCard(effect.to, "@@huyuandis", prompt, suits);
     } catch (TriggerEvent event) {
         if (event == TurnBroken)
             room->setPlayerProperty(effect.to, "huyuansuits", QVariant());
