@@ -616,7 +616,7 @@ public:
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, dc.player, dc.player, NULL, true);
         } else if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (move.reason.m_reason == CardMoveReason::S_REASON_DRAW && move.reason.m_extraData.toString() == "drawFromDrawpile") {
+            if (move.reason.m_reason == CardMoveReason::S_REASON_DRAW && move.reason.m_extraData.toString() != "initialDraw") {
                 ServerPlayer *rikako = qobject_cast<ServerPlayer *>(move.to);
                 if (rikako != NULL && rikako->hasSkill(this)) {
                     foreach (int id, move.card_ids) {

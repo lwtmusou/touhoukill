@@ -1410,7 +1410,7 @@ public:
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
 
         if (triggerEvent == BeforeCardsMove) {
-            if (move.reason.m_reason == CardMoveReason::S_REASON_DRAW && move.reason.m_extraData.toString() == "drawFromDrawpile") {
+            if (move.reason.m_reason == CardMoveReason::S_REASON_DRAW && move.reason.m_extraData.toString() != "initialDraw") {
                 ServerPlayer *marisa = qobject_cast<ServerPlayer *>(move.to);
                 if (marisa != NULL && marisa->hasSkill(this))
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, marisa, marisa);

@@ -1,4 +1,5 @@
 #include "th16.h"
+#include "clientplayer.h"
 #include "engine.h"
 #include "general.h"
 #include "skill.h"
@@ -180,6 +181,203 @@ public:
     }
 };
 
+class Xunfo : public TriggerSkill
+{
+public:
+    Xunfo()
+        : TriggerSkill("xunfo")
+    {
+        events << CardsMoveOneTime << HpRecover;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        bool triggerFlag = false;
+
+        if (triggerEvent == CardsMoveOneTime) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if (((move.reason.m_reason | CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DRAW) && move.reason.m_extraData.toString() != "xunfo"
+                && move.to->isLord())
+                triggerFlag = true;
+        } else {
+            RecoverStruct recover = data.value<RecoverStruct>();
+            if (recover.who->isLord())
+                triggerFlag = true;
+        }
+
+        QList<SkillInvokeDetail> r;
+
+        if (!triggerFlag)
+            return r;
+
+        foreach (ServerPlayer *p, room->getAllPlayers()) {
+            if (p->isAlive() && p->hasSkill(this))
+                r << SkillInvokeDetail(this, p, p);
+        }
+
+        return r;
+    }
+
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        invoke->invoker->drawCards(1, "xunfo");
+        return false;
+    }
+};
+
+namespace HuyuanNs {
+bool cardAvailable(const Card *c)
+{
+    switch (c->getSuit()) {
+    case Card::Spade:
+    case Card::Heart:
+    case Card::Club:
+    case Card::Diamond:
+        return true;
+        break;
+    default:
+        return false;
+    }
+
+    return false;
+}
+}
+
+class HuyuanDis : public ViewAsSkill
+{
+public:
+    HuyuanDis()
+        : ViewAsSkill("huyuandis")
+    {
+        response_pattern = "@@huyuandis";
+    }
+
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    {
+        QStringList ls = Self->property("huyuansuits").toString().split(",");
+        foreach (const Card *c, selected) {
+            if (HuyuanNs::cardAvailable(c))
+                ls.removeAll(c->getSuitString());
+            else
+                return false;
+        }
+
+        if (ls.length() == 0)
+            return false;
+
+        return HuyuanNs::cardAvailable(to_select) && ls.contains(to_select->getSuitString());
+    }
+
+    const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        QStringList ls = Self->property("huyuansuits").toString().split(",");
+        foreach (const Card *c, cards) {
+            if (HuyuanNs::cardAvailable(c))
+                ls.removeAll(c->getSuitString());
+            else
+                return NULL;
+        }
+
+        if (ls.length() == 0) {
+            DummyCard *card = new DummyCard;
+            card->addSubcards(cards);
+            return card;
+        }
+
+        return NULL;
+    }
+};
+
+HuyuanCard::HuyuanCard()
+{
+    handling_method = MethodNone;
+    will_throw = false;
+}
+
+void HuyuanCard::onEffect(const CardEffectStruct &effect) const
+{
+    Room *room = effect.from->getRoom();
+    QStringList suits;
+
+    foreach (int id, getSubcards()) {
+        room->showCard(effect.from, id);
+        const Card *c = Sanguosha->getCard(id);
+        if (HuyuanNs::cardAvailable(c))
+            suits << c->getSuitString();
+    }
+
+    room->setPlayerProperty(effect.to, "huyuansuits", suits.join(","));
+    bool discarded = false;
+    try {
+        discarded = room->askForCard(effect.to, "@@huyuandis", "@huyuandis:::" + suits.join(","), suits);
+    } catch (TriggerEvent event) {
+        if (event == TurnBroken)
+            room->setPlayerProperty(effect.to, "huyuansuits", QVariant());
+
+        throw event;
+    }
+
+    room->setPlayerProperty(effect.to, "huyuansuits", QVariant());
+
+    if (discarded)
+        room->recover(effect.to, RecoverStruct());
+    else {
+        room->loseHp(effect.to);
+        if (effect.to->isAlive())
+            effect.to->drawCards(getSubcards().length(), "huyuan");
+    }
+}
+
+class Huyuan : public ViewAsSkill
+{
+public:
+    Huyuan()
+        : ViewAsSkill("huyuan")
+    {
+    }
+
+    bool isEnabledAtPlay(const Player *player) const
+    {
+        return !player->hasUsed("HuyuanCard");
+    }
+
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    {
+        if (selected.length() >= 3)
+            return false;
+        if (!HuyuanNs::cardAvailable(to_select))
+            return false;
+        foreach (const Card *card, selected) {
+            if (card->getSuit() == to_select->getSuit())
+                return false;
+        }
+
+        return true;
+    }
+
+    const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        if (cards.length() == 0)
+            return NULL;
+
+        QSet<Card::Suit> suits;
+        foreach (const Card *card, cards) {
+            if (!HuyuanNs::cardAvailable(card))
+                return NULL;
+
+            suits.insert(card->getSuit());
+        }
+
+        if (suits.size() == cards.length()) {
+            HuyuanCard *hy = new HuyuanCard;
+            hy->addSubcards(cards);
+            return hy;
+        }
+
+        return NULL;
+    }
+};
+
 class Puti : public TriggerSkill
 {
 public:
@@ -344,8 +542,9 @@ TH16Package::TH16Package()
     General *nemuno = new General(this, "nemuno", "tkz", 4, false, true);
     Q_UNUSED(nemuno);
 
-    General *aun = new General(this, "aun", "tkz", 4, false, true);
-    Q_UNUSED(aun);
+    General *aun = new General(this, "aun", "tkz", 3);
+    aun->addSkill(new Xunfo);
+    aun->addSkill(new Huyuan);
 
     General *narumi = new General(this, "narumi", "tkz");
     narumi->addSkill(new Puti);
@@ -358,7 +557,8 @@ TH16Package::TH16Package()
     Q_UNUSED(mai);
 
     addMetaObject<MenfeiCard>();
-    skills << new HouhuDistance << new ZangfaDistance;
+    addMetaObject<HuyuanCard>();
+    skills << new HouhuDistance << new ZangfaDistance << new HuyuanDis;
 }
 
 ADD_PACKAGE(TH16)
