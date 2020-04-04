@@ -219,6 +219,24 @@ public:
         return r;
     }
 
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (TriggerSkill::cost(triggerEvent, room, invoke, data)) {
+            if (invoke->invoker->hasShownSkill(this)) {
+                LogMessage log;
+                log.type = "#TriggerSkill";
+                log.from = invoke->invoker;
+                log.arg = objectName();
+                room->sendLog(log);
+
+                room->notifySkillInvoked(invoke->invoker, objectName());
+            }
+            return true;
+        }
+
+        return false;
+    }
+
     bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         invoke->invoker->drawCards(1, "xunfo");
