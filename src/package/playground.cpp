@@ -456,6 +456,7 @@ public:
 
 Fsu0413Fei2ZhaiCard::Fsu0413Fei2ZhaiCard()
 {
+    target_fixed = true;
     will_throw = true;
 }
 
