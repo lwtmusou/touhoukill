@@ -403,11 +403,15 @@ public:
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         if (TriggerSkill::cost(triggerEvent, room, invoke, data)) {
-            LogMessage l;
-            l.type = "#TriggerSkill";
-            l.from = invoke->invoker;
-            l.arg = objectName();
-            room->sendLog(l);
+            if (invoke->invoker->hasShownSkill(this)) {
+                LogMessage l;
+                l.type = "#TriggerSkill";
+                l.from = invoke->invoker;
+                l.arg = objectName();
+                room->sendLog(l);
+
+                room->notifySkillInvoked(invoke->invoker, objectName());
+            }
 
             return true;
         }
