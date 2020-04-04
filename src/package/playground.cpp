@@ -79,6 +79,8 @@ public:
                 skills_canselect << s;
         }
 
+        const Skill *skill_selected = NULL;
+
         if (!skills_canselect.isEmpty()) {
             QStringList l;
             foreach (const Skill *s, skills_canselect)
@@ -87,6 +89,13 @@ public:
             QString skill_lose = l.first();
             if (l.length() > 1)
                 skill_lose = room->askForChoice(invoke->invoker, objectName(), l.join("+"), data);
+
+            foreach (const Skill *s, skills_canselect) {
+                if (s->objectName() == skill_lose) {
+                    skill_selected = s;
+                    break;
+                }
+            }
 
             LogMessage log;
             log.type = "$Fsu0413GepiNullify";
@@ -102,8 +111,16 @@ public:
             room->setPlayerSkillInvalidity(player, skill_lose, true);
         }
 
-        if (player->isAlive())
-            player->drawCards(3, objectName());
+        if (player->isAlive()) {
+            bool drawFlag = true;
+            if (skill_selected != NULL) {
+                QString trans = Sanguosha->translate(":" + skill_selected->objectName());
+                drawFlag = !trans.contains(Sanguosha->translate("fsu0413gepiPlay"));
+            }
+
+            if (drawFlag)
+                player->drawCards(3, objectName());
+        }
 
         return false;
     }
@@ -433,6 +450,89 @@ public:
         int obtainId = delayedtricks.at(qrand() % delayedtricks.length());
         st.player->obtainCard(Sanguosha->getCard(obtainId));
 
+        return false;
+    }
+};
+
+Fsu0413Fei2ZhaiCard::Fsu0413Fei2ZhaiCard()
+{
+    will_throw = true;
+}
+
+void Fsu0413Fei2ZhaiCard::onUse(Room *room, const CardUseStruct &card_use) const
+{
+    room->doLightbox("$Fsu0413Fei2ZhaiAnimate", 4000);
+    room->setPlayerMark(card_use.from, "@fat", 0);
+    SkillCard::onUse(room, card_use);
+}
+
+void Fsu0413Fei2ZhaiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+{
+    while (!source->isNude() && source->isAlive())
+        source->throwAllHandCards();
+
+    DummyCard dummy;
+    foreach (int id, room->getDiscardPile()) {
+        if (Sanguosha->getCard(id)->isKindOf("Peach"))
+            dummy.addSubcard(id);
+    }
+
+    source->obtainCard(&dummy);
+    room->handleAcquireDetachSkills(source, "fsu0413fei4zhai");
+}
+
+class Fsu0413Fei2Zhai : public ViewAsSkill
+{
+public:
+    Fsu0413Fei2Zhai()
+        : ViewAsSkill("fsu0413fei2zhai")
+    {
+        frequency = Limited;
+        limit_mark = "@fat";
+    }
+
+    bool viewFilter(const QList<const Card *> &, const Card *to_select) const
+    {
+        return !to_select->isEquipped();
+    }
+
+    const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        if (cards.length() == Self->getHandcardNum()) {
+            Fsu0413Fei2ZhaiCard *fat = new Fsu0413Fei2ZhaiCard;
+            fat->addSubcards(cards);
+            return fat;
+        }
+
+        return NULL;
+    }
+
+    bool isEnabledAtPlay(const Player *player) const
+    {
+        return player->getMark("@fat") > 0;
+    }
+};
+
+class Fsu0413Fei4Zhai : public TriggerSkill
+{
+public:
+    Fsu0413Fei4Zhai()
+        : TriggerSkill("fsu0413fei4zhai")
+    {
+        events << EventPhaseChanging;
+        frequency = Eternal;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        PhaseChangeStruct st = data.value<PhaseChangeStruct>();
+        if (st.player->isAlive() && st.player->hasSkill(this) && st.to == Player::Discard)
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, st.player, st.player, NULL, true);
+    }
+
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        invoke->invoker->skip(Player::Discard);
         return false;
     }
 };
