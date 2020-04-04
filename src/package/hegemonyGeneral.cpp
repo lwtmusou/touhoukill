@@ -1339,7 +1339,7 @@ public:
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *kaguya = qobject_cast<ServerPlayer *>(move.from);
 
-            if (kaguya && kaguya->isAlive() && kaguya->hasSkill(this) && kaguya->getMark("xuyu_invoked") != 0 && move.from_places.contains(Player::PlaceHand)
+            if (kaguya && kaguya->isAlive() && kaguya->hasSkill(this) && kaguya->getMark("xuyu_invoked") < 1 && move.from_places.contains(Player::PlaceHand)
                 && kaguya->isKongcheng())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, kaguya, kaguya, NULL, true);
         }
