@@ -641,7 +641,7 @@ public:
             bool ok = false;
             int id = invoke->invoker->tag["chuntengid"].toInt(&ok);
             const Card *card = Sanguosha->getCard(id);
-            if (id && card != NULL)
+            if (ok && card != NULL)
                 invoke->invoker->obtainCard(card, false);
 
             invoke->invoker->tag.remove("chuntengid");
