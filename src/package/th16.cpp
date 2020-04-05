@@ -556,6 +556,250 @@ public:
     }
 };
 
+ChuntengCard::ChuntengCard()
+{
+    will_throw = false;
+    handling_method = Card::MethodNone;
+    target_fixed = true;
+}
+
+void ChuntengCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &) const
+{
+    // source->obtainCard(this);
+    source->tag["chuntengid"] = getEffectiveId();
+}
+
+class ChuntengVS : public OneCardViewAsSkill
+{
+public:
+    ChuntengVS()
+        : OneCardViewAsSkill("chunteng")
+    {
+        response_pattern = "@@chunteng";
+        filter_pattern = ".|.|.|spring";
+        expand_pile = "spring";
+    }
+
+    const Card *viewAs(const Card *originalCard) const
+    {
+        ChuntengCard *c = new ChuntengCard;
+        c->addSubcard(originalCard);
+
+        return c;
+    }
+};
+
+class Chunteng : public TriggerSkill
+{
+public:
+    Chunteng()
+        : TriggerSkill("chunteng")
+    {
+        events << AfterDrawInitialCards << EventPhaseStart;
+        view_as_skill = new ChuntengVS;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    {
+        QList<SkillInvokeDetail> r;
+
+        ServerPlayer *target = NULL;
+        if (triggerEvent == AfterDrawInitialCards) {
+            DrawNCardsStruct st = data.value<DrawNCardsStruct>();
+            if (st.isInitial)
+                target = st.player;
+        } else {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player->getPhase() == Player::Start)
+                target = player;
+        }
+
+        if (target != NULL && target->isAlive() && target->hasSkill(this))
+            r << SkillInvokeDetail(this, target, target);
+
+        return r;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        if (invoke->invoker->getPile("spring").isEmpty()) {
+            if (invoke->invoker->askForSkillInvoke(this))
+                return true;
+        } else {
+            if (room->askForUseCard(invoke->invoker, "@@chunteng", "@chunteng", -1, Card::MethodNone, true, objectName()))
+                return true;
+        }
+
+        return false;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        if (invoke->invoker->getPile("spring").isEmpty()) {
+            invoke->invoker->addToPile("spring", room->getNCards(4), false);
+        } else {
+            bool ok = false;
+            int id = invoke->invoker->tag["chuntengid"].toInt(&ok);
+            const Card *card = Sanguosha->getCard(id);
+            if (ok && card != NULL)
+                invoke->invoker->obtainCard(card, false);
+
+            invoke->invoker->tag.remove("chuntengid");
+        }
+
+        return false;
+    }
+};
+
+HuazhaoCard::HuazhaoCard()
+{
+    target_fixed = true;
+    will_throw = false;
+    handling_method = Card::MethodNone;
+}
+
+void HuazhaoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+{
+    room->showCard(source, getEffectiveId());
+}
+
+Huazhao2Card::Huazhao2Card()
+{
+    will_throw = false;
+    handling_method = Card::MethodNone;
+    m_skillName = "_huazhao";
+}
+
+void Huazhao2Card::onEffect(const CardEffectStruct &effect) const
+{
+    CardMoveReason r(CardMoveReason::S_REASON_GIVE, effect.from->objectName(), effect.to->objectName(), "huazhao", QString());
+    Room *room = effect.from->getRoom();
+    room->obtainCard(effect.to, this, r);
+
+    if (effect.to->getHandcardNum() > effect.from->getPile("spring").length()) {
+        if (!room->askForDiscard(effect.to, "huazhao", 1, 1, true, true, "@huazhao-discard")) {
+            DummyCard d;
+            d.addSubcards(effect.from->getPile("spring"));
+            CardMoveReason r2(CardMoveReason::S_REASON_PUT, effect.to->objectName(), QString(), "huazhao", QString());
+            room->throwCard(&d, r2, NULL);
+        }
+    }
+}
+
+class HuazhaoVS : public OneCardViewAsSkill
+{
+public:
+    HuazhaoVS()
+        : OneCardViewAsSkill("huazhao")
+    {
+        expand_pile = "spring";
+    }
+
+    bool viewFilter(const Card *to_select) const
+    {
+        if (Self->getPile("spring").contains(to_select->getId())) {
+            if (Sanguosha->getCurrentCardUsePattern() == "@@huazhao-card2!")
+                return true;
+
+            bool ok = false;
+            Card::Suit s = static_cast<Card::Suit>(Self->property("huazhao1").toString().toInt(&ok));
+            if (ok)
+                return to_select->getSuit() == s;
+        }
+
+        return false;
+    }
+
+    const Card *viewAs(const Card *originalCard) const
+    {
+        Card *c = NULL;
+        if (Sanguosha->getCurrentCardUsePattern() == "@@huazhao-card1") {
+            c = new HuazhaoCard;
+            c->setSkillName(objectName());
+        } else {
+            c = new Huazhao2Card;
+            c->setSkillName("_huazhao");
+        }
+
+        c->addSubcard(originalCard);
+
+        return c;
+    }
+
+    bool isEnabledAtPlay(const Player *) const
+    {
+        return false;
+    }
+
+    bool isEnabledAtResponse(const Player *, const QString &pattern) const
+    {
+        return pattern.startsWith("@@huazhao-card");
+    }
+};
+
+class Huazhao : public TriggerSkill
+{
+public:
+    Huazhao()
+        : TriggerSkill("huazhao")
+    {
+        events << CardUsed << CardResponded;
+        view_as_skill = new HuazhaoVS;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    {
+        CardUseStruct u;
+
+        if (triggerEvent == CardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            u.card = use.card;
+            u.from = use.from;
+        } else if (triggerEvent == CardResponded) {
+            CardResponseStruct resp = data.value<CardResponseStruct>();
+            if (resp.m_isUse) {
+                u.card = resp.m_card;
+                u.from = resp.m_from;
+            }
+        }
+
+        if (u.card != NULL && !u.card->isKindOf("SkillCard") && u.from != NULL && u.from->isAlive() && u.from->hasSkill(this) && !u.from->getPile("spring").isEmpty()) {
+            SkillInvokeDetail d(this, u.from, u.from);
+            d.tag["u"] = QVariant::fromValue<CardUseStruct>(u);
+
+            return QList<SkillInvokeDetail>() << d;
+        }
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        CardUseStruct u = invoke->tag["u"].value<CardUseStruct>();
+        room->setPlayerProperty(u.from, "huazhao1", QString::number(static_cast<int>(u.card->getSuit())));
+        return room->askForUseCard(u.from, "@@huazhao-card1", "@huazhao1:::" + u.card->getSuitString(), -1, Card::MethodNone, true, objectName());
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        CardUseStruct u = invoke->tag["u"].value<CardUseStruct>();
+        if (!room->askForUseCard(u.from, "@@huazhao-card2!", "@huazhao2", -1, Card::MethodNone, true, "_huazhao")) {
+            QList<ServerPlayer *> p = room->getAllPlayers();
+            p.removeAll(u.from);
+            ServerPlayer *target = p[qrand() % p.length()];
+
+            Card *c = new Huazhao2Card;
+            c->setSkillName("_huazhao");
+            c->addSubcard(u.from->getPile("spring")[qrand() % u.from->getPile("spring").length()]);
+
+            CardUseStruct newUse(c, u.from, target);
+            room->useCard(newUse);
+        }
+
+        return false;
+    }
+};
+
 TH16Package::TH16Package()
     : Package("th16")
 {
@@ -583,8 +827,15 @@ TH16Package::TH16Package()
     General *mai = new General(this, "mai", "tkz", 4, false, true);
     Q_UNUSED(mai);
 
+    General *lili = new General(this, "liliwhite_sp", "tkz");
+    lili->addSkill(new Chunteng);
+    lili->addSkill(new Huazhao);
+
     addMetaObject<MenfeiCard>();
     addMetaObject<HuyuanCard>();
+    addMetaObject<ChuntengCard>();
+    addMetaObject<HuazhaoCard>();
+    addMetaObject<Huazhao2Card>();
     skills << new HouhuDistance << new ZangfaDistance << new HuyuanDis;
 }
 

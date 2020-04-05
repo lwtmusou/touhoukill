@@ -1031,8 +1031,8 @@ sgs.ai_Rende_intention.jiyi= -30
 sgs.ai_skill_invoke.hanbo_hegemony = function(self, data)
 	local target = data:toPlayer()
 	if target then
-		if self:isEnemy(target) and target:faceup() then return true end
-		if self:isFriend(target) and not target:faceup() then return true end
+		return self:isEnemy(target)
+		--if self:isFriend(target) and not target:faceup() then return true end
 	end
 	return false
 end
@@ -1086,14 +1086,14 @@ sgs.ai_skill_use_func.DongzhiHegemonyCard = function(card, use, self)
 		use.card = card
 		if use.to then
 			for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-				if p:hasShownOneGeneral()  then --or self.room:getTag(p:objectName() + "_RoleConfirmed"):toBool()
+				if p:hasShownOneGeneral() and not p:isNude()  then --or self.room:getTag(p:objectName() + "_RoleConfirmed"):toBool()
 					if target_role == p:getRole() then
 						use.to:append(p)
-						return  --只需指定一个，后续会在onuse 自动补完。
+						--return  --只指定一个
 					end
 				end
 			end
-			--return  指定全部的时候 
+			return  --指定全部的时候 
 		end
 	end
 end

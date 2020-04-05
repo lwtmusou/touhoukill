@@ -1339,7 +1339,7 @@ public:
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *kaguya = qobject_cast<ServerPlayer *>(move.from);
 
-            if (kaguya && kaguya->isAlive() && kaguya->hasSkill(this) && kaguya->getMark("xuyu_invoked") != 0 && move.from_places.contains(Player::PlaceHand)
+            if (kaguya && kaguya->isAlive() && kaguya->hasSkill(this) && kaguya->getMark("xuyu_invoked") < 1 && move.from_places.contains(Player::PlaceHand)
                 && kaguya->isKongcheng())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, kaguya, kaguya, NULL, true);
         }
@@ -3350,31 +3350,34 @@ public:
     HanboHegemony()
         : TriggerSkill("hanbo_hegemony")
     {
-        events << CardsMoveOneTime;
+        events << DamageCaused;
+        frequency = Compulsory;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
-        ServerPlayer *current = room->getCurrent();
-        if (!current || current->isDead() || !current->hasSkill(this))
-            return QList<SkillInvokeDetail>();
-
-        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        ServerPlayer *target = qobject_cast<ServerPlayer *>(move.from);
-        if (target && target != current && target->isAlive() && move.from_places.contains(Player::PlaceHand) && target->isKongcheng())
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current, NULL, false, target);
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.from && damage.from->hasSkill(this) && damage.nature == DamageStruct::Normal && damage.from != damage.to && damage.to->isAlive() && damage.to->isKongcheng())
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true, damage.to);
 
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         ServerPlayer *target = invoke->targets.first();
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
+        DamageStruct damage = data.value<DamageStruct>();
 
-        target->drawCards(2);
-        target->turnOver();
+        LogMessage log;
+        log.type = "#HanboEffect";
+        log.from = invoke->invoker;
+        log.to << target;
+        log.arg = QString::number(damage.damage);
+        log.arg2 = QString::number(++damage.damage);
+        room->sendLog(log);
 
+        data = QVariant::fromValue(damage);
         return false;
     }
 };
@@ -3386,19 +3389,20 @@ DongzhiHegemonyCard::DongzhiHegemonyCard()
 
 bool DongzhiHegemonyCard::targetFilter(const QList<const Player *> &selected, const Player *to_select, const Player *) const
 {
-    return selected.isEmpty() && to_select->hasShownOneGeneral();
-
-    /*if (!to_selected->hasShownOneGeneral()) //consider anjiang  has comfirmed??   to_selected->getRole() == NULL??  
-        retrun false;
+    if (to_select->isNude())
+        return false;
     if (selected.isEmpty())
-        return true;
-    QString role = selected.first()->getRole();
-
-    return (role != "careerist"  &&  to_select->getRole() == role);*/
+        return to_select->hasShownOneGeneral();
+    else
+        return to_select->hasShownOneGeneral() && selected.first()->isFriendWith(to_select);
 }
 
 void DongzhiHegemonyCard::onUse(Room *room, const CardUseStruct &card_use) const
 {
+    room->doLightbox("$dongzhiAnimate", 4000);
+    SkillCard::onUse(room, card_use);
+
+    /*
     QList<ServerPlayer *> targets;
     ServerPlayer *target = card_use.to.first();
     targets << target;
@@ -3412,25 +3416,40 @@ void DongzhiHegemonyCard::onUse(Room *room, const CardUseStruct &card_use) const
     CardUseStruct use = card_use;
     use.to = targets;
     room->doLightbox("$dongzhiAnimate", 4000);
-    SkillCard::onUse(room, use);
+    SkillCard::onUse(room, use);*/
 }
 
 void DongzhiHegemonyCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     room->removePlayerMark(source, "@dongzhi");
+
+    QString flag = "hes";
     foreach (ServerPlayer *p, targets) {
-        int num = p->getHp();
-        if (!room->askForDiscard(p, "dongzhi", num, num, true, true))
-            room->setPlayerMark(p, "@dongzhi_damage", 1);
+        int num = qMax(p->getEquips().length(), 1);
+        QList<int> disable;
+        DummyCard *dummy = new DummyCard;
+        for (int i = 0; i < num; i += 1) {
+            int card_id = room->askForCardChosen(source, p, flag, objectName(), false, Card::MethodDiscard, disable);
+            //"dongzhi_hegemony"
+            disable << card_id;
+            dummy->addSubcard(card_id);
+
+            if (p->getCards(flag).length() - disable.length() <= 0)
+                break;
+        }
+        room->throwCard(dummy, p, source);
+        delete dummy;
     }
 }
 
-class DongzhiHegemonyVS : public ZeroCardViewAsSkill
+class DongzhiHegemony : public ZeroCardViewAsSkill
 {
 public:
-    DongzhiHegemonyVS()
+    DongzhiHegemony()
         : ZeroCardViewAsSkill("dongzhi_hegemony")
     {
+        limit_mark = "@dongzhi";
+        frequency = Limited;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const
@@ -3444,6 +3463,7 @@ public:
     }
 };
 
+/*
 class DongzhiHegemony : public TriggerSkill
 {
 public:
@@ -3496,6 +3516,7 @@ public:
         return false;
     }
 };
+*/
 
 class DongjieHegemony : public TriggerSkill
 {

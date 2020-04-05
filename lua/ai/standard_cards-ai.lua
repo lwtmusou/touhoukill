@@ -199,6 +199,10 @@ function sgs.getDefenseSlash(player, self)
 		   and not (player:hasArmorEffect("SilverLion") and not IgnoreArmor(attacker, player)) then
 			 defense = defense - 2
 		end
+		if attacker:hasSkill("hanbo_hegemony") and player:getHandcardNum() == 0
+		   and not (player:hasArmorEffect("SilverLion") and not IgnoreArmor(attacker, player)) then
+			 defense = defense - 2
+		end
 	 end
 
 	local has_fire_slash
@@ -273,6 +277,7 @@ function SmartAI:slashProhibit(card, enemy, from)
 		if getCardsNum("Jink",enemy, from) == 0 and enemy:getHp() < 2 and self:slashIsEffective(card, enemy, from) then return true end
 		if enemy:isLord() and self:isWeak(enemy) and self:slashIsEffective(card, enemy, from) then return true end
 		if from:hasWeapon("GudingBlade") and enemy:isKongcheng() then return true end
+		if from:hasShownSkill("hanbo_hegemony") and enemy:isKongcheng() and not card:isKindOf("NatureSlash") then return true end
 	else
 		if self:slashProhibitToEghitDiagram(card,from,enemy)
 		or self:slashProhibitToDiaopingTarget(card,from,enemy) then
