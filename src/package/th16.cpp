@@ -674,7 +674,7 @@ void Huazhao2Card::onEffect(const CardEffectStruct &effect) const
 {
     CardMoveReason r(CardMoveReason::S_REASON_GIVE, effect.from->objectName(), effect.to->objectName(), "huazhao", QString());
     Room *room = effect.from->getRoom();
-    room->obtainCard(effect.to, this, r);
+    room->obtainCard(effect.to, this, r, false);
 
     if (effect.to->getHandcardNum() > effect.from->getPile("spring").length()) {
         if (!room->askForDiscard(effect.to, "huazhao", 1, 1, true, true, "@huazhao-discard")) {
