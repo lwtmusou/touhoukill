@@ -30,6 +30,9 @@ return {
 	["#aun"] = "醉心神佛的守护神兽",
 	["designer:aun"] = "七曜",
 	
+	["illustrator:aun"] = "针鼠修罗",
+	["origin:narumi"] = "p号：62808139；个人id：3442252",
+	
 	["xunfo"] = "寻佛",
 	[":xunfo"] = "<font color=\"blue\"><b>锁定技，</b></font>当主公摸牌（因此技能而摸牌的除外）或回复体力时，你摸一张牌。",
 	
@@ -43,6 +46,7 @@ return {
 	["@huyuandis3diamond"] = "%src 对你发动【护院】，你可以弃置 一 张 方片 牌、一 张 %arg 牌和 一 张 %arg2 牌来回复 1 点体力，或点击 “取消” 来失去 1 点体力并摸 三 张牌。",
 	["@huyuandis3club"] = "%src 对你发动【护院】，你可以弃置 一 张 梅花 牌、一 张 %arg 牌和 一 张 %arg2 牌来回复 1 点体力，或点击 “取消” 来失去 1 点体力并摸 三 张牌。",
 	["~huyuandis"] = "选择要弃置的牌 -> “确定”  -> 弃置之并回复体力。或 “取消” -> 失去体力并摸牌。",
+
 
 	["narumi"] = "矢田寺成美" ,
 	["#narumi"] = "垂迹于森林的魔法地藏" ,
@@ -63,4 +67,14 @@ return {
 	
 	["mai"] = "丁礼田舞",
 	["#mai"] = "过于危险的背景舞者", -- same with satono????
+	
+	
+	["liliwhite_sp"] = "天空璋SP莉莉霍瓦特" ,
+	["#liliwhite_sp"] = "不息春音" ,
+	["designer:liliwhite_sp"] = "dawda",
+	
+	["illustrator:liliwhite_sp"] = "名乗る名は無い",
+	["origin:liliwhite_sp"] = "p号：56488470；个人id：2022926",
+	
+	
 }
