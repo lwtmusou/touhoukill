@@ -264,13 +264,14 @@ return
 	[":dunjia_hegemony"] = "当你使用【杀】对其他角色造成伤害后，或你受到其他角色使用【杀】造成的伤害后，若你与其装备区牌差不大于X（X为你已损失的体力值），你可以与其交换装备区里的牌。",
 	
 	["letty_hegemony"]="蕾蒂",
-	["designer:letty_hegemony"] = "名和行年",
+	--["designer:letty_hegemony"] = "名和行年",
 	["hanbo_hegemony"] = "寒波",
-	[":hanbo_hegemony"] = "当其他角色于你的回合内失去最后的手牌后，你可以令其摸两张牌和翻面。",
+	[":hanbo_hegemony"] = "<font color=\"blue\"><b>锁定技，</b></font>你对其他角色造成非属性伤害时，若其没有手牌，此伤害+1。",
+	["#HanboEffect"] = "%from 的【<font color=\"yellow\"><b>寒波</b></font>】效果被触发， %to 没有手牌，伤害从 %arg 增加至 %arg2",
 	["dongzhi_hegemony"] = "冬至",
 	["dongzhi"] = "冬至",
-	[":dongzhi_hegemony"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可选择一个阵营的全部角色，这些角色依次选择：弃x张牌，或本回合受到伤害时，该伤害+1。（x为其体力值）",
-	["#DongzhiDamage"] = "%from 的 <font color=\"yellow\"><b>冬至</b></font>效果被触发，伤害由 %arg 点增加至 %arg2 点",
+	[":dongzhi_hegemony"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可选择同一阵营的任意名有牌的角色，你依次弃置该角色x张牌（x为其装备区牌数且至少为1）",
+	--["#DongzhiDamage"] = "%from 的 <font color=\"yellow\"><b>冬至</b></font>效果被触发，伤害由 %arg 点增加至 %arg2 点",
 	["$dongzhiAnimate"]= "skill=letty:dongzhi",
 	
 	

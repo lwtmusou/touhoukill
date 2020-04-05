@@ -1661,8 +1661,8 @@ function SmartAI:getDynamicUsePriority(card)
 			end
 		end
 		value = value + dynamic_value
-	elseif card:isKindOf("ArcheryAttack") and self.player:hasSkill("luanji") then
-		value = value + 5.5
+	--elseif card:isKindOf("ArcheryAttack") and self.player:hasSkill("luanji") then
+	--	value = value + 5.5
 	elseif card:isKindOf("Duel") and self.player:hasSkill("shuangxiong") then
 		value = value + 6.3
 	elseif card:isKindOf("WendaoCard") and self.player:hasShownSkills("wendao+hongfa") and not self.player:getPile("heavenly_army"):isEmpty()
@@ -3396,6 +3396,7 @@ function SmartAI:hasHeavySlashDamage(from, slash, to, getValue)
 	end
 	if from:hasFlag("luoyi") then dmg = dmg + 1 end
 	if from:hasWeapon("GudingBlade") and slash and to:isKongcheng() then dmg = dmg + 1 end
+	if from:hasSkill("hanbo_hegemony") and slash and not slash:isKindOf("NatureSlash") and to:isKongcheng() then dmg = dmg + 1 end
 	if to:getMark("@gale") > 0 and fireSlash then dmg = dmg + 1 end
 	--[[local jiaren_zidan = sgs.findPlayerByShownSkillName("jgchiying")
 	if jiaren_zidan and jiaren_zidan:isFriendWith(to) then
@@ -6715,6 +6716,12 @@ function SmartAI:touhouDamageCaused(damage,from,to)
 			damage.damage=damage.damage+1
 		end
 	end
+	if damage.nature ==  sgs.DamageStruct_Normal then
+		if from and to:isKongcheng() and from:hasSkill("hanbo_hegemony") then
+			damage.damage=damage.damage+1
+		end
+	end
+	
 	return damage
 end
 

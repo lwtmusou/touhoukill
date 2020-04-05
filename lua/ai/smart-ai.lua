@@ -3463,7 +3463,7 @@ function SmartAI:hasHeavySlashDamage(from, slash, to, getValue)
 
 	if to:hasArmorEffect("Vine") and not IgnoreArmor(from, to) and fireSlash then dmg = dmg + 1 end
 	if from:hasWeapon("GudingBlade") and slash and to:isKongcheng() then dmg = dmg + 1 end
-
+    if from:hasSkill("hanbo_hegemony") and slash and not slash:isKindOf("NatureSlash") and to:isKongcheng() then dmg = dmg + 1 end
 	if getValue then return dmg end
 	return (dmg > 1)
 end
@@ -5830,6 +5830,11 @@ function SmartAI:damageMinusHp(self, enemy, type)
 					and not (enemy:hasArmorEffect("SilverLion") and not IgnoreArmor(self.player, enemy)) then
 					slash_damagenum = slash_damagenum + 1
 				end
+				if self.player:hasSkill("hanbo_hegemony")
+					and (enemy:isKongcheng()) and not acard:isKindOf("NatureSlash")
+					and not (enemy:hasArmorEffect("SilverLion") and not IgnoreArmor(self.player, enemy)) then
+					slash_damagenum = slash_damagenum + 1
+				end
 			end
 		end
 		if type == 0 then return (trick_effectivenum + slash_damagenum - effectivefireattacknum - enemy:getHp())
@@ -6320,6 +6325,12 @@ function SmartAI:touhouDamageCaused(damage,from,to)
 			damage.damage=damage.damage+1
 		end
 	end
+	if damage.nature ==  sgs.DamageStruct_Normal then
+		if from and to:isKongcheng() and from:hasSkill("hanbo_hegemony") then
+			damage.damage=damage.damage+1
+		end
+	end
+	
 	return damage
 end
 
