@@ -71,13 +71,11 @@ return {
 	
 	["liliwhite_sp"] = "天空璋SP莉莉霍瓦特",
 	["#liliwhite_sp"] = "不息春音",
-	["&liliwhite_sp"] = "天空璋SP莉莉霍瓦特",
+	["&liliwhite_sp"] = "天空璋莉莉白",
 	["designer:liliwhite_sp"] = "dawda",
-	
 	["illustrator:liliwhite_sp"] = "名乗る名は無い",
 	["origin:liliwhite_sp"] = "p号：56488470；个人id：2022926",
-	
-	
+
 	["chunteng"] = "春腾",
 	["spring"] = "春",
 	[":chunteng"] = "分发起始手牌后或准备阶段开始时，若你的人物牌上没有“春”，你可以将牌堆顶的四张牌扣置于人物牌上，称为 “春”，反之你可以获得一张“春”。",
@@ -88,6 +86,6 @@ return {
 	["@huazhao1"] = "你可以发动“花朝”展示 一 张 %arg “春”。",
 	["~huazhao"] = "选择一张与之花色相同的“春” -> “确定”",
 	["@huazhao2"] = "请将一张“春”交给一名其他角色。",
-
+	["@huazhao-discard"] = "你因“花朝”的效果需要弃置一张牌，或将所有“春”置入弃牌堆。<br /><br />操作提示：选择要弃置的一张牌 -> “确定”。或点击“取消” -> 将所有“春”置入弃牌堆",
 	
 }
