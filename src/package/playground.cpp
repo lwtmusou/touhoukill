@@ -467,7 +467,7 @@ void Fsu0413Fei2ZhaiCard::onUse(Room *room, const CardUseStruct &card_use) const
     SkillCard::onUse(room, card_use);
 }
 
-void Fsu0413Fei2ZhaiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void Fsu0413Fei2ZhaiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
 {
     while (!source->isNude() && source->isAlive())
         source->throwAllHandCards();

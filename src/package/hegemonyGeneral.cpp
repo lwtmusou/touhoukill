@@ -3351,33 +3351,33 @@ public:
         : TriggerSkill("hanbo_hegemony")
     {
         events << DamageCaused;
-		frequency = Compulsory;
+        frequency = Compulsory;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
-		DamageStruct damage = data.value<DamageStruct>();
-		if (damage.from && damage.from->hasSkill(this) && damage.nature == DamageStruct::Normal && damage.from != damage.to && damage.to->isAlive() && damage.to->isKongcheng())
-			return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true, damage.to);
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.from && damage.from->hasSkill(this) && damage.nature == DamageStruct::Normal && damage.from != damage.to && damage.to->isAlive() && damage.to->isKongcheng())
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true, damage.to);
 
-		return QList<SkillInvokeDetail>();
+        return QList<SkillInvokeDetail>();
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         ServerPlayer *target = invoke->targets.first();
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
-		DamageStruct damage = data.value<DamageStruct>();
+        DamageStruct damage = data.value<DamageStruct>();
 
-		LogMessage log;
-		log.type = "#HanboEffect";
-		log.from = invoke->invoker;
-		log.to << target;
-		log.arg = QString::number(damage.damage);
-		log.arg2 = QString::number(++damage.damage);
-		room->sendLog(log);
+        LogMessage log;
+        log.type = "#HanboEffect";
+        log.from = invoke->invoker;
+        log.to << target;
+        log.arg = QString::number(damage.damage);
+        log.arg2 = QString::number(++damage.damage);
+        room->sendLog(log);
 
-		data = QVariant::fromValue(damage);
+        data = QVariant::fromValue(damage);
         return false;
     }
 };
@@ -3401,7 +3401,7 @@ void DongzhiHegemonyCard::onUse(Room *room, const CardUseStruct &card_use) const
 {
     room->doLightbox("$dongzhiAnimate", 4000);
     SkillCard::onUse(room, card_use);
-    
+
     /*
     QList<ServerPlayer *> targets;
     ServerPlayer *target = card_use.to.first();
