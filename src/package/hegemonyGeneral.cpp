@@ -976,6 +976,61 @@ public:
 
 //********  SUMMER   **********
 
+SkltKexueHegCard::SkltKexueHegCard()
+{
+    will_throw = false;
+    target_fixed = true;
+    handling_method = Card::MethodUse;
+    m_skillName = "skltkexue_hegemony_attach";
+}
+
+void SkltKexueHegCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+{
+    ServerPlayer *who = room->getCurrentDyingPlayer();
+    if (who != NULL && who->hasShownSkill("skltkexue_hegemony")) {
+        room->notifySkillInvoked(who, "skltkexue_hegemony");
+        room->loseHp(source);
+        if (source->isAlive())
+            source->drawCards(1);
+
+        RecoverStruct recover;
+        recover.recover = 1;
+        recover.who = source;
+        room->recover(who, recover);
+    }
+}
+
+class SkltKexueHegVS : public ZeroCardViewAsSkill
+{
+public:
+    SkltKexueHegVS()
+        : ZeroCardViewAsSkill("skltkexue_hegemony_attach")
+    {
+        attached_lord_skill = true;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *) const
+    {
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    {
+        if (player->getHp() > player->dyingThreshold() && pattern.contains("peach")) {
+            foreach(const Player *p, player->getAliveSiblings()) {
+                if (p->hasFlag("Global_Dying") &&  p->hasShownSkill("skltkexue_hegemony"))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    virtual const Card *viewAs() const
+    {
+        return new SkltKexueHegCard;
+    }
+};
+
 class SkltKexueHegemony : public TriggerSkill
 {
 public:
@@ -990,7 +1045,7 @@ public:
         if (e == Dying)
             return;
 
-        static QString attachName = "skltkexue_attach"; // need rewrite vs skill
+        static QString attachName = "skltkexue_hegemony_attach"; // need rewrite vs skill
         QList<ServerPlayer *> sklts;
         foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (p->hasSkill(this, true) && p->hasShownSkill(this))
@@ -4366,6 +4421,8 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     addMetaObject<QingtingHegemonyCard>();
     addMetaObject<ShowShezhengCard>();
+
+    addMetaObject<SkltKexueHegCard>();
     addMetaObject<XushiHegemonyCard>();
     addMetaObject<XingyunHegemonyCard>();
 
@@ -4375,7 +4432,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     addMetaObject<BanyueHegemonyCard>();
     addMetaObject<MengxianCard>();
 
-    skills << new GameRule_AskForGeneralShowHead << new GameRule_AskForGeneralShowDeputy << new GameRule_AskForArraySummon << new ShezhengAttach; //<< new ShihuiHegemonyVS
+    skills << new GameRule_AskForGeneralShowHead << new GameRule_AskForGeneralShowDeputy << new GameRule_AskForArraySummon << new ShezhengAttach << new SkltKexueHegVS; //<< new ShihuiHegemonyVS
 }
 
 ADD_PACKAGE(HegemonyGeneral)

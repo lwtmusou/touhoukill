@@ -41,6 +41,19 @@ public:
     const Card *validate(CardUseStruct &card_use) const;
 };
 
+
+
+class SkltKexueHegCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE SkltKexueHegCard();
+
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
+
 class XushiHegemonyCard : public SkillCard
 {
     Q_OBJECT
