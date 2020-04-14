@@ -304,12 +304,12 @@ return
 	
 	--上海国战削弱
 	["shanghai_hegemony"] = "上海人形" ,
-	["zhancao_hegemony"] = "战操" ,
-	[":zhancao_hegemony"] = "当你或一名在你攻击范围内的角色成为【杀】的目标后，你可以弃置一张装备区的牌，令此【杀】对其无效。",
-	["@zhancao_hegemony-discard"] = "<font color=\"#00FF00\"><b>%src </b></font>使用【杀】指定了<font color=\"#FF8000\"><b>%dest </b></font>为目标，你可以发动“战操”，弃置一张装备区的牌，使此【杀】对<font color=\"#FF8000\"><b>%dest </b></font>无效" ,
-	["#zhancaoTarget"] = "%from 使用 %arg 的目标是 %to。" ,
-	["mocao_hegemony"] = "魔操" ,
-	[":mocao_hegemony"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以获得一名其他角色装备区里的一张牌，令其摸X张牌（X为其已损失的体力值且至少为1）。",
+	--["zhancao_hegemony"] = "战操" ,
+	--[":zhancao_hegemony"] = "当你或一名在你攻击范围内的角色成为【杀】的目标后，你可以弃置一张装备区的牌，令此【杀】对其无效。",
+	--["@zhancao_hegemony-discard"] = "<font color=\"#00FF00\"><b>%src </b></font>使用【杀】指定了<font color=\"#FF8000\"><b>%dest </b></font>为目标，你可以发动“战操”，弃置一张装备区的牌，使此【杀】对<font color=\"#FF8000\"><b>%dest </b></font>无效" ,
+	--["#zhancaoTarget"] = "%from 使用 %arg 的目标是 %to。" ,
+	--["mocao_hegemony"] = "魔操" ,
+	--[":mocao_hegemony"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以获得一名其他角色装备区里的一张牌，令其摸X张牌（X为其已损失的体力值且至少为1）。",
 
 	
 	

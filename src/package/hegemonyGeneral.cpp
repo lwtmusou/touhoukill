@@ -3312,6 +3312,7 @@ public:
     }*/
 };
 
+/*
 class ZhancaoHegemony : public TriggerSkill
 {
 public:
@@ -3398,6 +3399,8 @@ public:
         return new MocaoHegemonyCard;
     }
 };
+*/
+
 
 class HanboHegemony : public TriggerSkill
 {
@@ -4387,8 +4390,8 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     lilywhite_hegemony->addSkill(new ChunhenHegemony);
 
     General *shanghai_hegemony = new General(this, "shanghai_hegemony", "wei", 3);
-    shanghai_hegemony->addSkill(new ZhancaoHegemony);
-    shanghai_hegemony->addSkill(new MocaoHegemony);
+    shanghai_hegemony->addSkill("zhancao");
+    shanghai_hegemony->addSkill("mocao");
 
     General *youki_hegemony = new General(this, "youki_hegemony", "wei", 4, true);
     youki_hegemony->addSkill("shoushu");
@@ -4427,7 +4430,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     addMetaObject<XingyunHegemonyCard>();
 
     addMetaObject<ChunhenHegemonyCard>();
-    addMetaObject<MocaoHegemonyCard>();
+    //addMetaObject<MocaoHegemonyCard>();
     addMetaObject<DongzhiHegemonyCard>();
     addMetaObject<BanyueHegemonyCard>();
     addMetaObject<MengxianCard>();
