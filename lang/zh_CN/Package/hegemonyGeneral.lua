@@ -1,7 +1,24 @@
 return
 {
-
 	["hegemonyGeneral"] = "国战标准包",
+	--奖励规则部分
+	["@HalfLife"] = "半血奖励",
+	["HalfLife"] = "半血奖励",
+	["halflife_attach"] = "半血奖励",
+	[":halflife_attach"] = "出牌阶段，你可以结算半血奖励，摸一张牌。 弃牌阶段开始时，你可以结算半血奖励，令本回合你的手牌上限+2",
+	["#HalfLife"] = "%from 的武将牌上有单独的阴阳鱼，本回合手牌上限+2",
+	
+	["@CompanionEffect"] = "珠联璧合奖励",
+    ["#DoCompanionEffect"] = "%from 结算珠联璧合奖励",
+	["companion_attach"] =  "珠联璧合奖励",
+	["@companion_attach"] = "出牌阶段，你可以结算珠联璧合奖励，摸两张牌或回复1点体力。一名角色向你求【桃】时，你可以结算珠联璧合奖励，令其回复1点体力。",
+	
+	["@Pioneer"] = "先驱",
+	["pioneer_attach"] =  "首亮奖励",
+	[":pioneer_attach"] =  "出牌阶段，你可执行首亮奖励，将手牌补至四张，并观看一名角色的一张暗置武将牌。",
+	["@pioneer_attach"] =  "你执行首亮奖励，观看一名角色的一张暗置武将牌",
+	
+	
 	["tuizhi_hegemony"] = "退治",
 	[":tuizhi_hegemony"] = "当你使用<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌时，你可以暗置一名其他角色的一张明置的人物牌。",
 	["tuizhi_hegemony:head"] = "暗置主将",

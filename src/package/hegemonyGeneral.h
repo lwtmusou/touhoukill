@@ -21,6 +21,38 @@ public:
     virtual int getExtra(const Player *target) const;
 };
 
+class HalfLifeCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE HalfLifeCard();
+
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
+class CompanionCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE CompanionCard();
+
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
+class PioneerCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE PioneerCard();
+
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
+
+
 class QingtingHegemonyCard : public SkillCard
 {
     Q_OBJECT
