@@ -761,41 +761,54 @@ public:
     Fengshui()
         : TriggerSkill("fengshui")
     {
-        events << AskForRetrial;
+        events << StartJudge << Dying;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
     {
-        JudgeStruct *judge = data.value<JudgeStruct *>();
-        if (!judge->who || !judge->who->isAlive())
-            return QList<SkillInvokeDetail>();
+        
+        if (e == StartJudge) {
+            JudgeStruct *judge = data.value<JudgeStruct *>();
+            if (!judge->who || !judge->who->isAlive())
+                return QList<SkillInvokeDetail>();
+        }
+
+        else if (e == Dying) {
+            ServerPlayer *who = data.value<DyingStruct>().who;
+            if (who == NULL || who->getHp() >= who->dyingThreshold() || who->isDead())
+                return QList<SkillInvokeDetail>();
+        }
 
         QList<SkillInvokeDetail> d;
-        foreach (ServerPlayer *p, room->getAllPlayers()) {
+        foreach(ServerPlayer *p, room->getAllPlayers()) {
             if (p->hasSkill(this))
                 d << SkillInvokeDetail(this, p, p);
         }
-
         return d;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        JudgeStruct *judge = data.value<JudgeStruct *>();
+        
         ServerPlayer *player = invoke->invoker;
-        QList<int> list = room->getNCards(2);
-        if (judge->reason == "shijie")
-            player->setFlags("shijie_judge");
+        QList<int> list = room->getNCards(3);
+
+        if (e == StartJudge) {
+            JudgeStruct *judge = data.value<JudgeStruct *>();
+            if (judge->reason == "shijie")// for AI
+                player->setFlags("shijie_judge");
+        }
+        
         room->askForGuanxing(player, list, Room::GuanxingBothSides, objectName());
 
-        if (player->askForSkillInvoke("fengshui_retrial", data)) {
+        /*if (player->askForSkillInvoke("fengshui_retrial", data)) {
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), judge->who->objectName());
 
             player->setFlags("-shijie_judge");
             QList<int> list1 = room->getNCards(1);
             Card *card = Sanguosha->getCard(list1.first());
             room->retrial(card, player, judge, objectName());
-        }
+        }*/
         player->setFlags("-shijie_judge");
         return false;
     }
