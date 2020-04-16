@@ -239,8 +239,10 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         if (player->getPhase() == Player::Play)
             room->addPlayerHistory(player, ".");
         if (player->getPhase() == Player::Finish) {
-            foreach (ServerPlayer *p, room->getAllPlayers())
-                room->setPlayerMark(p, "multi_kill_count", 0);
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
+                if (player->getMark("multi_kill_count") > 0)
+                    room->setPlayerMark(p, "multi_kill_count", 0);
+            }
         }
         break;
     }
