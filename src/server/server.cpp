@@ -738,6 +738,39 @@ QGroupBox *ServerDialog::createXModeBox()
     return box;
 }
 
+QGroupBox *ServerDialog::createHegemonyBox()
+{
+    QGroupBox *box = new QGroupBox(tr("Hegemony options"));
+    box->setEnabled(Config.GameMode.startsWith("hegemony_"));
+    box->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+    QComboBox *firstshow = new QComboBox;
+    firstshow->addItem(tr("Not Used"), "None");
+    firstshow->addItem(tr("Instant"), "Instant");
+    firstshow->addItem(tr("Postponed"), "Postponed");
+
+    QComboBox *companion = new QComboBox;
+    companion->addItem(tr("Instant"), "Instant");
+    companion->addItem(tr("Postponed"), "Postponed");
+
+    QComboBox *halfhpdraw = new QComboBox;
+    halfhpdraw->addItem(tr("Instant"), "Instant");
+    halfhpdraw->addItem(tr("Postponed"), "Postponed");
+
+    QComboBox *careeristkill = new QComboBox;
+    careeristkill->addItem(tr("As Usual"), "AsUsual");
+    careeristkill->addItem(tr("Always draw 3"), "AlwaysDraw3");
+
+    QFormLayout *l = new QFormLayout;
+    l->addRow(tr("First Show Reward"), firstshow);
+    l->addRow(tr("Companion Reward"), companion);
+    l->addRow(tr("Half HP Draw Reward"), halfhpdraw);
+    l->addRow(tr("Careerist Kill Reward"), careeristkill);
+
+    box->setLayout(l);
+    return box;
+}
+
 QGroupBox *ServerDialog::createGameModeBox()
 {
     QGroupBox *mode_box = new QGroupBox(tr("Game mode"));
@@ -755,6 +788,11 @@ QGroupBox *ServerDialog::createGameModeBox()
         button->setObjectName(itor.key());
         mode_group->addButton(button);
 
+        if (itor.key() == Config.GameMode)
+            button->setChecked(true);
+
+        connect(button, SIGNAL(toggled(bool)), this, SLOT(checkCurrentBtnIsHegemonyMode(bool)));
+
         if (itor.key() == "02_1v1") {
             QGroupBox *box = create1v1Box();
             connect(button, SIGNAL(toggled(bool)), box, SLOT(setEnabled(bool)));
@@ -770,12 +808,13 @@ QGroupBox *ServerDialog::createGameModeBox()
             connect(button, SIGNAL(toggled(bool)), box, SLOT(setEnabled(bool)));
 
             item_list << button << box;
+        } else if (itor.key() == "hegemony_8") {
+            hegemonyBox = createHegemonyBox();
+
+            item_list << button << hegemonyBox;
         } else {
             item_list << button;
         }
-
-        if (itor.key() == Config.GameMode)
-            button->setChecked(true);
     }
 
     // add scenario modes
@@ -800,12 +839,11 @@ QGroupBox *ServerDialog::createGameModeBox()
     scenario_ComboBox->setCurrentIndex(index);
     }
     }*/
-
+#if 0
     //mini scenes
     QRadioButton *mini_scenes = new QRadioButton(tr("Mini Scenes"));
     mini_scenes->setObjectName("mini");
     mode_group->addButton(mini_scenes);
-
     /*mini_scene_ComboBox = new QComboBox;
     int index = -1;
     int stage = qMin(Sanguosha->getMiniSceneCounts(), Config.value("MiniSceneStage", 1).toInt());
@@ -842,6 +880,8 @@ QGroupBox *ServerDialog::createGameModeBox()
     //item_list << HLay(scenario_button, scenario_ComboBox);
     //item_list << HLay(mini_scenes, mini_scene_ComboBox);
     item_list << HLay(mini_scenes, mini_scene_button);
+
+#endif
 
     // ============
 
@@ -993,6 +1033,13 @@ void ServerDialog::doCustomAssign()
 void ServerDialog::setMiniCheckBox()
 {
     //mini_scene_ComboBox->setEnabled(false);
+}
+
+void ServerDialog::checkCurrentBtnIsHegemonyMode(bool v)
+{
+    QRadioButton *but = qobject_cast<QRadioButton *>(sender());
+    if (but != NULL && v)
+        hegemonyBox->setEnabled(but->objectName().startsWith("hegemony_"));
 }
 
 void Select3v3GeneralDialog::toggleCheck()

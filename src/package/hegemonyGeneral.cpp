@@ -177,7 +177,6 @@ public:
     }
 };
 
-
 //********  GameRule   **********
 
 HalfLifeCard::HalfLifeCard()
@@ -211,7 +210,7 @@ public:
 
     //virtual bool shouldBeVisible(const Player *Self) const
     //{
-     //   return Self && Self->getMark("@HalfLife") > 0;
+    //   return Self && Self->getMark("@HalfLife") > 0;
     //}
 
     virtual const Card *viewAs() const
@@ -252,10 +251,8 @@ public:
     {
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *current = data.value<ServerPlayer *>();
-            if (current && current->isAlive() && current->getPhase() == Player::Discard && current->getMark("@HalfLife") > 0) 
-                return  QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current);
-            
-                
+            if (current && current->isAlive() && current->getPhase() == Player::Discard && current->getMark("@HalfLife") > 0)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current);
         }
         return QList<SkillInvokeDetail>();
     }
@@ -271,24 +268,21 @@ public:
         room->sendLog(log);
         return false;
     }
-
 };
 
 class HalfLifeMax : public MaxCardsSkill
 {
 public:
     HalfLifeMax()
-       : MaxCardsSkill("#HalfLife_max")
-   {
-   }
+        : MaxCardsSkill("#HalfLife_max")
+    {
+    }
 
-   virtual int getExtra(const Player *target) const
-   {
-       return target->getMark("HalfLife_maxcard");
-   }
+    virtual int getExtra(const Player *target) const
+    {
+        return target->getMark("HalfLife_maxcard");
+    }
 };
-
-
 
 CompanionCard::CompanionCard()
 {
@@ -304,7 +298,7 @@ void CompanionCard::use(Room *room, ServerPlayer *player, QList<ServerPlayer *> 
     room->detachSkillFromPlayer(player, "companion_attach", true);
 
     QString choice;
-    if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY){
+    if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
         QStringList choices;
         if (player->isWounded())
             choices << "recover";
@@ -316,13 +310,11 @@ void CompanionCard::use(Room *room, ServerPlayer *player, QList<ServerPlayer *> 
             recover.who = player;
             recover.recover = 1;
             room->recover(player, recover);
-        }
-        else if (choice == "draw")
+        } else if (choice == "draw")
             player->drawCards(2);
-    
-    }
-    else {
-        foreach(ServerPlayer *p, room->getAlivePlayers()) {
+
+    } else {
+        foreach (ServerPlayer *p, room->getAlivePlayers()) {
             if (p->hasFlag("Global_Dying")) {
                 RecoverStruct recover;
                 recover.who = player;
@@ -334,8 +326,6 @@ void CompanionCard::use(Room *room, ServerPlayer *player, QList<ServerPlayer *> 
     }
 
     room->setEmotion(player, "companion");
-
-    
 }
 
 class CompanionVS : public ZeroCardViewAsSkill
@@ -357,7 +347,7 @@ public:
         if (pattern.contains("peach")) {
             if (player->hasFlag("Global_Dying"))
                 return true;
-            foreach(const Player *p, player->getAliveSiblings()) {
+            foreach (const Player *p, player->getAliveSiblings()) {
                 if (p->hasFlag("Global_Dying"))
                     return true;
             }
@@ -370,7 +360,6 @@ public:
         return new CompanionCard;
     }
 };
-
 
 PioneerCard::PioneerCard()
 {
@@ -388,9 +377,8 @@ void PioneerCard::use(Room *room, ServerPlayer *player, QList<ServerPlayer *> &)
     int num = qMax(0, 4 - player->getHandcardNum());
     player->drawCards(num);
 
-
     QList<ServerPlayer *> targets;
-    foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+    foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
         if (!p->hasShownAllGenerals())
             targets << p;
     }
@@ -411,15 +399,14 @@ void PioneerCard::use(Room *room, ServerPlayer *player, QList<ServerPlayer *> &)
         log.from = player;
         log.to << target;
         log.arg = choice;
-        foreach(ServerPlayer *p, room->getAllPlayers(true)) { //room->getOtherPlayers(effect.from, true)
+        foreach (ServerPlayer *p, room->getAllPlayers(true)) { //room->getOtherPlayers(effect.from, true)
             room->doNotify(p, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
         }
-
 
         if (choice == "showhead" || choice == "showdeputy") {
             QStringList list = room->getTag(target->objectName()).toStringList();
             list.removeAt(choice == "showhead" ? 1 : 0);
-            foreach(const QString &name, list) {
+            foreach (const QString &name, list) {
                 LogMessage log;
                 log.type = "$KnownBothViewGeneral";
                 log.from = player;
@@ -432,10 +419,8 @@ void PioneerCard::use(Room *room, ServerPlayer *player, QList<ServerPlayer *> &)
             arg << objectName();
             arg << JsonUtils::toJsonArray(list);
             room->doNotify(player, QSanProtocol::S_COMMAND_VIEW_GENERALS, arg);
-
         }
     }
-
 }
 
 class PioneerVS : public ZeroCardViewAsSkill
@@ -459,7 +444,6 @@ public:
 };
 
 //********  PROTAGONIST   **********
-
 
 class TuizhiHegemony : public TriggerSkill
 {
@@ -1249,8 +1233,8 @@ public:
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
         if (player->getHp() > player->dyingThreshold() && pattern.contains("peach")) {
-            foreach(const Player *p, player->getAliveSiblings()) {
-                if (p->hasFlag("Global_Dying") &&  p->hasShownSkill("skltkexue_hegemony"))
+            foreach (const Player *p, player->getAliveSiblings()) {
+                if (p->hasFlag("Global_Dying") && p->hasShownSkill("skltkexue_hegemony"))
                     return true;
             }
         }
@@ -3633,7 +3617,6 @@ public:
 };
 */
 
-
 class HanboHegemony : public TriggerSkill
 {
 public:
@@ -4669,9 +4652,10 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     addMetaObject<DongzhiHegemonyCard>();
     addMetaObject<BanyueHegemonyCard>();
     addMetaObject<MengxianCard>();
-    
+
     //GameRule
-    skills << new GameRule_AskForGeneralShowHead << new GameRule_AskForGeneralShowDeputy << new GameRule_AskForArraySummon << new HalfLife << new HalfLifeVS << new HalfLifeMax << new CompanionVS << new PioneerVS;
+    skills << new GameRule_AskForGeneralShowHead << new GameRule_AskForGeneralShowDeputy << new GameRule_AskForArraySummon << new HalfLife << new HalfLifeVS << new HalfLifeMax
+           << new CompanionVS << new PioneerVS;
     //General skill
     skills << new ShezhengAttach << new SkltKexueHegVS; //<< new ShihuiHegemonyVS
 }

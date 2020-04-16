@@ -93,14 +93,14 @@ Engine::Engine()
     // available game modes
     modes["02p"] = tr("2 players");
     //modes["02pbb"] = tr("2 players (using blance beam)");
-    modes["02_1v1"] = tr("2 players (KOF style)");
+    //modes["02_1v1"] = tr("2 players (KOF style)");
     modes["03p"] = tr("3 players");
     modes["04p"] = tr("4 players");
     //modes["04_1v3"] = tr("4 players (Hulao Pass)");
     modes["05p"] = tr("5 players");
     modes["06p"] = tr("6 players");
     modes["06pd"] = tr("6 players (2 renegades)");
-    modes["06_3v3"] = tr("6 players (3v3)");
+    //modes["06_3v3"] = tr("6 players (3v3)");
     //modes["06_XMode"] = tr("6 players (XMode)");
     modes["07p"] = tr("7 players");
     modes["08p"] = tr("8 players");

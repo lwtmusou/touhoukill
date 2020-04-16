@@ -766,7 +766,6 @@ public:
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
     {
-        
         if (e == StartJudge) {
             JudgeStruct *judge = data.value<JudgeStruct *>();
             if (!judge->who || !judge->who->isAlive())
@@ -780,7 +779,7 @@ public:
         }
 
         QList<SkillInvokeDetail> d;
-        foreach(ServerPlayer *p, room->getAllPlayers()) {
+        foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (p->hasSkill(this))
                 d << SkillInvokeDetail(this, p, p);
         }
@@ -789,16 +788,15 @@ public:
 
     bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        
         ServerPlayer *player = invoke->invoker;
         QList<int> list = room->getNCards(3);
 
         if (e == StartJudge) {
             JudgeStruct *judge = data.value<JudgeStruct *>();
-            if (judge->reason == "shijie")// for AI
+            if (judge->reason == "shijie") // for AI
                 player->setFlags("shijie_judge");
         }
-        
+
         room->askForGuanxing(player, list, Room::GuanxingBothSides, objectName());
 
         /*if (player->askForSkillInvoke("fengshui_retrial", data)) {

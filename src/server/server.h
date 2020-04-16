@@ -89,6 +89,8 @@ private:
     QGroupBox *create3v3Box();
     QGroupBox *createXModeBox();
 
+    QGroupBox *createHegemonyBox();
+
     QLineEdit *server_name_edit;
     QSpinBox *timeout_spinbox;
     QCheckBox *nolimit_checkbox;
@@ -156,6 +158,8 @@ private:
     QButtonGroup *extension_group;
     QButtonGroup *mode_group;
 
+    QGroupBox *hegemonyBox;
+
 private slots:
 
     void onOkButtonClicked();
@@ -166,6 +170,8 @@ private slots:
 
     void doCustomAssign();
     void setMiniCheckBox();
+
+    void checkCurrentBtnIsHegemonyMode(bool v);
 };
 
 class Scenario;
