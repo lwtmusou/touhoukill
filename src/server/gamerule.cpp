@@ -1006,7 +1006,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             return true;
         }
         if (player->getMark("TheFirstToShowReward") > 0 && room->getScenario() == NULL) { //Config.RewardTheFirstShowingPlayer &&room->getTag("TheFirstToShowRewarded").isNull() &&
-            room->setPlayerMark(player, "TheFirstToShowReward", 0);
+            player->setMark("TheFirstToShowReward", 0);
             //bonus Postpone
             player->gainMark("@Pioneer");
             QString attachName = "pioneer_attach";
@@ -1055,7 +1055,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 } else if (choice == "draw")
                     player->drawCards(2);
                 */
-                room->removePlayerMark(player, "CompanionEffect");
+                player->setMark("CompanionEffect", 0);
 
                 room->setEmotion(player, "companion");
             }
@@ -1076,7 +1076,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     player->drawCards(1);
                 
                 */
-                room->removePlayerMark(player, "HalfMaxHpLeft");
+                player->setMark("HalfMaxHpLeft", 0);
             }
         }
     }

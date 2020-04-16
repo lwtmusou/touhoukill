@@ -2087,7 +2087,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         Q_ASSERT(room->getThread() != NULL);
 
         if (room->getTag("TheFirstToShowRewarded").isNull()) {
-            room->setPlayerMark(this, "TheFirstToShowReward", 1);
+            setMark("TheFirstToShowReward", 1);
             room->setTag("TheFirstToShowRewarded", true);
         }
 

@@ -4539,9 +4539,9 @@ void Room::startGame()
             const General *general2 = Sanguosha->getGeneral(generals.last());
             max_hp = (general1->getMaxHpHead() + general2->getMaxHpDeputy());
             if (general1->isCompanionWith(generals.last()))
-                addPlayerMark(player, "CompanionEffect");
+                player->setMark("CompanionEffect", 1);
 
-            setPlayerMark(player, "HalfMaxHpLeft", max_hp % 2);
+            player->setMark("HalfMaxHpLeft", max_hp % 2);
             max_hp = max_hp / 2;
             //}
             player->setMaxHp(max_hp);
