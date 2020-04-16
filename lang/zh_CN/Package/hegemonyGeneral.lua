@@ -1,7 +1,24 @@
 return
 {
-
 	["hegemonyGeneral"] = "国战标准包",
+	--奖励规则部分
+	["@HalfLife"] = "半血奖励",
+	["HalfLife"] = "半血奖励",
+	["halflife_attach"] = "半血奖励",
+	[":halflife_attach"] = "出牌阶段，你可以结算半血奖励，摸一张牌。 弃牌阶段开始时，你可以结算半血奖励，令本回合你的手牌上限+2",
+	["#HalfLife"] = "%from 的武将牌上有单独的阴阳鱼，本回合手牌上限+2",
+	
+	["@CompanionEffect"] = "珠联璧合奖励",
+    ["#DoCompanionEffect"] = "%from 结算珠联璧合奖励",
+	["companion_attach"] =  "珠联璧合奖励",
+	["@companion_attach"] = "出牌阶段，你可以结算珠联璧合奖励，摸两张牌或回复1点体力。一名角色向你求【桃】时，你可以结算珠联璧合奖励，令其回复1点体力。",
+	
+	["@Pioneer"] = "先驱",
+	["pioneer_attach"] =  "首亮奖励",
+	[":pioneer_attach"] =  "出牌阶段，你可执行首亮奖励，将手牌补至四张，并观看一名角色的一张暗置武将牌。",
+	["@pioneer_attach"] =  "你执行首亮奖励，观看一名角色的一张暗置武将牌",
+	
+	
 	["tuizhi_hegemony"] = "退治",
 	[":tuizhi_hegemony"] = "当你使用<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌时，你可以暗置一名其他角色的一张明置的人物牌。",
 	["tuizhi_hegemony:head"] = "暗置主将",
@@ -76,7 +93,9 @@ return
 
 	["remilia_hegemony"] = "蕾米莉亚",
 	["skltkexue_hegemony"] = "渴血",
-	[":skltkexue_hegemony"] = "你进入濒死状态时，你可以明置此武将牌；当你向其他角色求【桃】时，若其体力值大于其体力下限，其可以失去1点体力，摸两张牌，然后令你回复1点体力。",
+	[":skltkexue_hegemony"] = "你进入濒死状态时，你可以明置此武将牌；当你向其他角色求【桃】时，若其体力值大于其体力下限，其可以失去1点体力，摸一张牌，然后令你回复1点体力。",
+	["skltkexue_hegemony_attach"]= "渴血出桃",
+	[":skltkexue_hegemony_attach"]= "当拥有“渴血”的角色处于濒死状态时并向你求【桃】时，若你的体力值大于体力下限，你可以失去1点体力，摸一张牌，然后令其回复1点体力。",
 	
 	["flandre_hegemony"] = "芙兰朵露",
 	["sakuya_hegemony"] = "十六夜咲夜",
@@ -302,12 +321,12 @@ return
 	
 	--上海国战削弱
 	["shanghai_hegemony"] = "上海人形" ,
-	["zhancao_hegemony"] = "战操" ,
-	[":zhancao_hegemony"] = "当你或一名在你攻击范围内的角色成为【杀】的目标后，你可以弃置一张装备区的牌，令此【杀】对其无效。",
-	["@zhancao_hegemony-discard"] = "<font color=\"#00FF00\"><b>%src </b></font>使用【杀】指定了<font color=\"#FF8000\"><b>%dest </b></font>为目标，你可以发动“战操”，弃置一张装备区的牌，使此【杀】对<font color=\"#FF8000\"><b>%dest </b></font>无效" ,
-	["#zhancaoTarget"] = "%from 使用 %arg 的目标是 %to。" ,
-	["mocao_hegemony"] = "魔操" ,
-	[":mocao_hegemony"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以获得一名其他角色装备区里的一张牌，令其摸X张牌（X为其已损失的体力值且至少为1）。",
+	--["zhancao_hegemony"] = "战操" ,
+	--[":zhancao_hegemony"] = "当你或一名在你攻击范围内的角色成为【杀】的目标后，你可以弃置一张装备区的牌，令此【杀】对其无效。",
+	--["@zhancao_hegemony-discard"] = "<font color=\"#00FF00\"><b>%src </b></font>使用【杀】指定了<font color=\"#FF8000\"><b>%dest </b></font>为目标，你可以发动“战操”，弃置一张装备区的牌，使此【杀】对<font color=\"#FF8000\"><b>%dest </b></font>无效" ,
+	--["#zhancaoTarget"] = "%from 使用 %arg 的目标是 %to。" ,
+	--["mocao_hegemony"] = "魔操" ,
+	--[":mocao_hegemony"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以获得一名其他角色装备区里的一张牌，令其摸X张牌（X为其已损失的体力值且至少为1）。",
 
 	
 	

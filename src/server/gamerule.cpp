@@ -1007,13 +1007,21 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         }
         if (player->getMark("TheFirstToShowReward") > 0 && room->getScenario() == NULL) { //Config.RewardTheFirstShowingPlayer &&room->getTag("TheFirstToShowRewarded").isNull() &&
             room->setPlayerMark(player, "TheFirstToShowReward", 0);
+            //bonus Postpone
+            player->gainMark("@Pioneer");
+            QString attachName = "pioneer_attach";
+            if (player && !player->hasSkill(attachName))
+                room->attachSkillToPlayer(player, attachName);
+
+            //get bonus immediately
+            /*
             if (player->askForSkillInvoke("FirstShowReward")) {
                 LogMessage log;
                 log.type = "#FirstShowReward";
                 log.from = player;
                 room->sendLog(log);
                 player->drawCards(2);
-            }
+            }*/
             //room->setTag("TheFirstToShowRewarded", true);
         }
         //if (!Config.Enable2ndGeneral)
@@ -1022,7 +1030,14 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         //CompanionEffect  and  HalfMaxHpLeft
         if (player->isAlive() && player->hasShownAllGenerals()) {
             if (player->getMark("CompanionEffect") > 0) {
-                QStringList choices;
+                //bonus Postpone
+                player->gainMark("@CompanionEffect");
+                QString attachName = "companion_attach";
+                if (player && !player->hasSkill(attachName))
+                    room->attachSkillToPlayer(player, attachName);
+
+                //get bonus immediately
+                /*QStringList choices;
                 if (player->isWounded())
                     choices << "recover";
                 choices << "draw"
@@ -1039,17 +1054,28 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     room->recover(player, recover);
                 } else if (choice == "draw")
                     player->drawCards(2);
+                */
                 room->removePlayerMark(player, "CompanionEffect");
 
                 room->setEmotion(player, "companion");
             }
             if (player->getMark("HalfMaxHpLeft") > 0) {
+                //bonus Postpone
+                player->gainMark("@HalfLife");
+                QString attachName = "halflife_attach";
+                if (player && !player->hasSkill(attachName))
+                    room->attachSkillToPlayer(player, attachName);
+
+                //get bonus immediately
+                /*
                 LogMessage log;
                 log.type = "#HalfMaxHpLeft";
                 log.from = player;
                 room->sendLog(log);
                 if (player->askForSkillInvoke("userdefine:halfmaxhp"))
                     player->drawCards(1);
+                
+                */
                 room->removePlayerMark(player, "HalfMaxHpLeft");
             }
         }

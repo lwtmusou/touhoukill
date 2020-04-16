@@ -1779,8 +1779,9 @@ void MocaoCard::onEffect(const CardEffectStruct &effect) const
 
     int card_id = room->askForCardChosen(effect.from, effect.to, "e", "mocao");
     room->obtainCard(effect.from, card_id);
-    if (effect.to->isWounded())
-        effect.to->drawCards(qMin(5, effect.to->getLostHp()));
+    int num = qMax(1, qMin(5, effect.to->getLostHp()));
+    //if (effect.to->isWounded())
+    effect.to->drawCards(num);
 }
 
 class Mocao : public ZeroCardViewAsSkill

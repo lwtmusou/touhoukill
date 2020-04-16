@@ -177,57 +177,273 @@ public:
     }
 };
 
-/*
-TuizhiHegemonyCard::TuizhiHegemonyCard()
+//********  GameRule   **********
+
+HalfLifeCard::HalfLifeCard()
 {
-    m_skillName = "tuizhi_hegemony";
+    will_throw = false;
+    handling_method = Card::MethodNone;
+    m_skillName = "halflife_attach";
+    target_fixed = true;
 }
 
-bool TuizhiHegemonyCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+void HalfLifeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
 {
-    //return targets.isEmpty();
-    return to_select->hasShownOneGeneral() && targets.isEmpty();
+    source->loseMark("@HalfLife", 1);
+    source->drawCards(1);
+    room->detachSkillFromPlayer(source, "halflife_attach", true);
 }
 
-void TuizhiHegemonyCard::onEffect(const CardEffectStruct &effect) const
-{
-    Room *room = effect.to->getRoom();
-    ServerPlayer *target = effect.to;
-    QStringList select;
-    if (target->hasShownGeneral())
-        select << "head";
-    if (target->getGeneral2() && target->hasShownGeneral2())
-        select << "deputy";
-    if (select.isEmpty())
-        return;
-
-    QString choice = room->askForChoice(target, objectName(), select.join("+"));
-    bool ishead = (choice == "head");
-    target->hideGeneral(ishead); //(ishead, true);
-
-    //QString flag = (choice == "head") ? "h" : "d";
-    //room->setPlayerDisableShow(target, flag, "huoshui");
-}
-*/
-/*
-class TuizhiHegemony : public ZeroCardViewAsSkill
+class HalfLifeVS : public ZeroCardViewAsSkill
 {
 public:
-    TuizhiHegemony()
-        : ZeroCardViewAsSkill("tuizhi_hegemony")
+    HalfLifeVS()
+        : ZeroCardViewAsSkill("halflife_attach")
     {
+        attached_lord_skill = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return true;//!player->hasUsed("BanyueHegemonyCard");
+        return player->getMark("@HalfLife") > 0;
+    }
+
+    //virtual bool shouldBeVisible(const Player *Self) const
+    //{
+    //   return Self && Self->getMark("@HalfLife") > 0;
+    //}
+
+    virtual const Card *viewAs() const
+    {
+        return new HalfLifeCard;
+    }
+};
+
+class HalfLife : public TriggerSkill
+{
+public:
+    HalfLife()
+        : TriggerSkill("HalfLife")
+    {
+        events << EventPhaseStart << EventPhaseChanging;
+        global = true;
+    }
+
+    /*void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        static QString attachName = "halflife_attach";
+        ServerPlayer *player = data.value<ServerPlayer *>();
+        if (player && !player->hasSkill(attachName))
+            room->attachSkillToPlayer(player, attachName);
+
+    }*/
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive && change.player && change.player->isAlive())
+                room->setPlayerMark(change.player, "HalfLife_maxcard", 0);
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *current = data.value<ServerPlayer *>();
+            if (current && current->isAlive() && current->getPhase() == Player::Discard && current->getMark("@HalfLife") > 0)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current);
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        invoke->invoker->loseMark("@HalfLife", 1);
+        room->setPlayerMark(invoke->invoker, "HalfLife_maxcard", 2);
+        room->detachSkillFromPlayer(invoke->invoker, "halflife_attach", true);
+        LogMessage log;
+        log.type = "#HalfLife";
+        log.from = invoke->invoker;
+        room->sendLog(log);
+        return false;
+    }
+};
+
+class HalfLifeMax : public MaxCardsSkill
+{
+public:
+    HalfLifeMax()
+        : MaxCardsSkill("#HalfLife_max")
+    {
+    }
+
+    virtual int getExtra(const Player *target) const
+    {
+        return target->getMark("HalfLife_maxcard");
+    }
+};
+
+CompanionCard::CompanionCard()
+{
+    will_throw = false;
+    handling_method = Card::MethodNone;
+    m_skillName = "companion_attach";
+    target_fixed = true;
+}
+
+void CompanionCard::use(Room *room, ServerPlayer *player, QList<ServerPlayer *> &) const
+{
+    player->loseMark("@CompanionEffect", 1);
+    room->detachSkillFromPlayer(player, "companion_attach", true);
+
+    QString choice;
+    if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+        QStringList choices;
+        if (player->isWounded())
+            choices << "recover";
+        choices << "draw";
+
+        choice = room->askForChoice(player, "CompanionEffect", choices.join("+"));
+        if (choice == "recover") {
+            RecoverStruct recover;
+            recover.who = player;
+            recover.recover = 1;
+            room->recover(player, recover);
+        } else if (choice == "draw")
+            player->drawCards(2);
+
+    } else {
+        foreach (ServerPlayer *p, room->getAlivePlayers()) {
+            if (p->hasFlag("Global_Dying")) {
+                RecoverStruct recover;
+                recover.who = player;
+                recover.recover = 1;
+                room->recover(p, recover);
+                break;
+            }
+        }
+    }
+
+    room->setEmotion(player, "companion");
+}
+
+class CompanionVS : public ZeroCardViewAsSkill
+{
+public:
+    CompanionVS()
+        : ZeroCardViewAsSkill("companion_attach")
+    {
+        attached_lord_skill = true;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return player->getMark("@CompanionEffect") > 0;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    {
+        if (pattern.contains("peach")) {
+            if (player->hasFlag("Global_Dying"))
+                return true;
+            foreach (const Player *p, player->getAliveSiblings()) {
+                if (p->hasFlag("Global_Dying"))
+                    return true;
+            }
+        }
+        return false;
     }
 
     virtual const Card *viewAs() const
     {
-        return new TuizhiHegemonyCard;
+        return new CompanionCard;
     }
-};*/
+};
+
+PioneerCard::PioneerCard()
+{
+    will_throw = false;
+    handling_method = Card::MethodNone;
+    m_skillName = "pioneer_attach";
+    target_fixed = true;
+}
+
+void PioneerCard::use(Room *room, ServerPlayer *player, QList<ServerPlayer *> &) const
+{
+    player->loseMark("@Pioneer", 1);
+    room->detachSkillFromPlayer(player, "pioneer_attach", true);
+
+    int num = qMax(0, 4 - player->getHandcardNum());
+    player->drawCards(num);
+
+    QList<ServerPlayer *> targets;
+    foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
+        if (!p->hasShownAllGenerals())
+            targets << p;
+    }
+
+    if (!targets.isEmpty()) {
+        ServerPlayer *target = room->askForPlayerChosen(player, targets, "pioneer_attach", "@pioneer_attach");
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), target->objectName());
+        QStringList select;
+        if (!target->hasShownGeneral())
+            select << "showhead";
+        if (target->getGeneral2() && !target->hasShownGeneral2())
+            select << "showdeputy";
+
+        QString choice = room->askForChoice(player, "pioneer_attach", select.join("+"), QVariant::fromValue(target));
+
+        LogMessage log;
+        log.type = "#KnownBothView";
+        log.from = player;
+        log.to << target;
+        log.arg = choice;
+        foreach (ServerPlayer *p, room->getAllPlayers(true)) { //room->getOtherPlayers(effect.from, true)
+            room->doNotify(p, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+        }
+
+        if (choice == "showhead" || choice == "showdeputy") {
+            QStringList list = room->getTag(target->objectName()).toStringList();
+            list.removeAt(choice == "showhead" ? 1 : 0);
+            foreach (const QString &name, list) {
+                LogMessage log;
+                log.type = "$KnownBothViewGeneral";
+                log.from = player;
+                log.to << target;
+                log.arg = name;
+                log.arg2 = target->getRole();
+                room->doNotify(player, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+            }
+            JsonArray arg;
+            arg << objectName();
+            arg << JsonUtils::toJsonArray(list);
+            room->doNotify(player, QSanProtocol::S_COMMAND_VIEW_GENERALS, arg);
+        }
+    }
+}
+
+class PioneerVS : public ZeroCardViewAsSkill
+{
+public:
+    PioneerVS()
+        : ZeroCardViewAsSkill("pioneer_attach")
+    {
+        attached_lord_skill = true;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return player->getMark("@Pioneer") > 0;
+    }
+
+    virtual const Card *viewAs() const
+    {
+        return new PioneerCard;
+    }
+};
+
+//********  PROTAGONIST   **********
 
 class TuizhiHegemony : public TriggerSkill
 {
@@ -976,6 +1192,61 @@ public:
 
 //********  SUMMER   **********
 
+SkltKexueHegCard::SkltKexueHegCard()
+{
+    will_throw = false;
+    target_fixed = true;
+    handling_method = Card::MethodUse;
+    m_skillName = "skltkexue_hegemony_attach";
+}
+
+void SkltKexueHegCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+{
+    ServerPlayer *who = room->getCurrentDyingPlayer();
+    if (who != NULL && who->hasShownSkill("skltkexue_hegemony")) {
+        room->notifySkillInvoked(who, "skltkexue_hegemony");
+        room->loseHp(source);
+        if (source->isAlive())
+            source->drawCards(1);
+
+        RecoverStruct recover;
+        recover.recover = 1;
+        recover.who = source;
+        room->recover(who, recover);
+    }
+}
+
+class SkltKexueHegVS : public ZeroCardViewAsSkill
+{
+public:
+    SkltKexueHegVS()
+        : ZeroCardViewAsSkill("skltkexue_hegemony_attach")
+    {
+        attached_lord_skill = true;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *) const
+    {
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    {
+        if (player->getHp() > player->dyingThreshold() && pattern.contains("peach")) {
+            foreach (const Player *p, player->getAliveSiblings()) {
+                if (p->hasFlag("Global_Dying") && p->hasShownSkill("skltkexue_hegemony"))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    virtual const Card *viewAs() const
+    {
+        return new SkltKexueHegCard;
+    }
+};
+
 class SkltKexueHegemony : public TriggerSkill
 {
 public:
@@ -990,7 +1261,7 @@ public:
         if (e == Dying)
             return;
 
-        static QString attachName = "skltkexue_attach"; // need rewrite vs skill
+        static QString attachName = "skltkexue_hegemony_attach"; // need rewrite vs skill
         QList<ServerPlayer *> sklts;
         foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (p->hasSkill(this, true) && p->hasShownSkill(this))
@@ -3257,6 +3528,7 @@ public:
     }*/
 };
 
+/*
 class ZhancaoHegemony : public TriggerSkill
 {
 public:
@@ -3343,6 +3615,7 @@ public:
         return new MocaoHegemonyCard;
     }
 };
+*/
 
 class HanboHegemony : public TriggerSkill
 {
@@ -4332,8 +4605,8 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     lilywhite_hegemony->addSkill(new ChunhenHegemony);
 
     General *shanghai_hegemony = new General(this, "shanghai_hegemony", "wei", 3);
-    shanghai_hegemony->addSkill(new ZhancaoHegemony);
-    shanghai_hegemony->addSkill(new MocaoHegemony);
+    shanghai_hegemony->addSkill("zhancao");
+    shanghai_hegemony->addSkill("mocao");
 
     General *youki_hegemony = new General(this, "youki_hegemony", "wei", 4, true);
     youki_hegemony->addSkill("shoushu");
@@ -4363,19 +4636,28 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     //addMetaObject<TuizhiHegemonyCard>();
     addMetaObject<NiaoxiangSummon>();
+    addMetaObject<HalfLifeCard>();
+    addMetaObject<CompanionCard>();
+    addMetaObject<PioneerCard>();
 
     addMetaObject<QingtingHegemonyCard>();
     addMetaObject<ShowShezhengCard>();
+
+    addMetaObject<SkltKexueHegCard>();
     addMetaObject<XushiHegemonyCard>();
     addMetaObject<XingyunHegemonyCard>();
 
     addMetaObject<ChunhenHegemonyCard>();
-    addMetaObject<MocaoHegemonyCard>();
+    //addMetaObject<MocaoHegemonyCard>();
     addMetaObject<DongzhiHegemonyCard>();
     addMetaObject<BanyueHegemonyCard>();
     addMetaObject<MengxianCard>();
 
-    skills << new GameRule_AskForGeneralShowHead << new GameRule_AskForGeneralShowDeputy << new GameRule_AskForArraySummon << new ShezhengAttach; //<< new ShihuiHegemonyVS
+    //GameRule
+    skills << new GameRule_AskForGeneralShowHead << new GameRule_AskForGeneralShowDeputy << new GameRule_AskForArraySummon << new HalfLife << new HalfLifeVS << new HalfLifeMax
+           << new CompanionVS << new PioneerVS;
+    //General skill
+    skills << new ShezhengAttach << new SkltKexueHegVS; //<< new ShihuiHegemonyVS
 }
 
 ADD_PACKAGE(HegemonyGeneral)

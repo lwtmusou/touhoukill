@@ -21,7 +21,7 @@ SkltKexueCard::SkltKexueCard()
 void SkltKexueCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
 {
     ServerPlayer *who = room->getCurrentDyingPlayer();
-    if (who != NULL && (who->hasSkill("skltkexue") || who->hasShownSkill("skltkexue_hegemony"))) {
+    if (who != NULL && who->hasSkill("skltkexue")) {
         room->notifySkillInvoked(who, "skltkexue");
         room->loseHp(source);
         if (source->isAlive())
@@ -52,7 +52,7 @@ public:
     {
         if (player->getHp() > player->dyingThreshold() && pattern.contains("peach")) {
             foreach (const Player *p, player->getAliveSiblings()) {
-                if (p->hasFlag("Global_Dying") && (p->hasSkill("skltkexue") || p->hasShownSkill("skltkexue_hegemony")))
+                if (p->hasFlag("Global_Dying") && p->hasSkill("skltkexue"))
                     return true;
             }
         }

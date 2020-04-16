@@ -21,6 +21,36 @@ public:
     virtual int getExtra(const Player *target) const;
 };
 
+class HalfLifeCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE HalfLifeCard();
+
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
+class CompanionCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE CompanionCard();
+
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
+class PioneerCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE PioneerCard();
+
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
 class QingtingHegemonyCard : public SkillCard
 {
     Q_OBJECT
@@ -39,6 +69,16 @@ public:
     Q_INVOKABLE ShowShezhengCard();
 
     const Card *validate(CardUseStruct &card_use) const;
+};
+
+class SkltKexueHegCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE SkltKexueHegCard();
+
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
 class XushiHegemonyCard : public SkillCard
@@ -72,7 +112,7 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class MocaoHegemonyCard : public SkillCard
+/*class MocaoHegemonyCard : public SkillCard
 {
     Q_OBJECT
 
@@ -81,7 +121,7 @@ public:
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
-};
+};*/
 
 class DongzhiHegemonyCard : public SkillCard
 {
