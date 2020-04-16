@@ -100,8 +100,6 @@ public:
     QString TableBgImage;
     QString RecordSavePath;
     bool UseLordBackdrop;
-    bool EnableSurprisingGenerals;
-    QStringList KnownSurprisingGenerals;
 
     // consts
     static const int S_SURRENDER_REQUEST_MIN_INTERVAL;

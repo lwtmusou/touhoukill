@@ -652,10 +652,6 @@ void RoomScene::handleGameEvent(const QVariant &args)
                     continue;
                 attachSkill(skill->objectName(), !isSecondaryHero);
             }
-            if (!newHero->isVisible()) {
-                Config.KnownSurprisingGenerals.append(newHeroName);
-                Config.setValue("KnownSurprisingGenerals", Config.KnownSurprisingGenerals);
-            }
         }
 
         break;

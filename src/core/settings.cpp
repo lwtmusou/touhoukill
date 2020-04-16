@@ -697,9 +697,6 @@ void Settings::init()
     NetworkOnly = value("NetworkOnly", false).toBool();
     RecordSavePath = value("RecordSavePath", "records/").toString();
 
-    EnableSurprisingGenerals = value("EnableSurprisingGenerals", false).toBool();
-    KnownSurprisingGenerals = value("KnownSurprisingGenerals", QStringList()).toStringList();
-
     lua_State *lua = Sanguosha->getLuaState();
     QStringList roles_ban, kof_ban, hulao_ban, xmode_ban, basara_ban, hegemony_ban, pairs_ban;
 
