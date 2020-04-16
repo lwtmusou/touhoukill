@@ -67,6 +67,11 @@ public:
     QStringList ExtraHiddenGenerals;
     QStringList RemovedHiddenGenerals;
 
+    QString HegemonyFirstShowReward;
+    QString HegemonyCompanionReward;
+    QString HegemonyHalfHpReward;
+    QString HegemonyCareeristKillReward;
+
     // client side
     QString HostAddress;
     QString UserName;

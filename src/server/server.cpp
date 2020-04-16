@@ -748,18 +748,32 @@ QGroupBox *ServerDialog::createHegemonyBox()
     firstshow->addItem(tr("Not Used"), "None");
     firstshow->addItem(tr("Instant"), "Instant");
     firstshow->addItem(tr("Postponed"), "Postponed");
+    hegemony_first_show = firstshow;
+    if (Config.HegemonyFirstShowReward == "Instant")
+        firstshow->setCurrentIndex(1);
+    else if (Config.HegemonyFirstShowReward == "Postponed")
+        firstshow->setCurrentIndex(2);
 
     QComboBox *companion = new QComboBox;
     companion->addItem(tr("Instant"), "Instant");
     companion->addItem(tr("Postponed"), "Postponed");
+    hegemony_companion = companion;
+    if (Config.HegemonyCompanionReward == "Postponed")
+        companion->setCurrentIndex(1);
 
     QComboBox *halfhpdraw = new QComboBox;
     halfhpdraw->addItem(tr("Instant"), "Instant");
     halfhpdraw->addItem(tr("Postponed"), "Postponed");
+    hegemony_half_hp_draw = halfhpdraw;
+    if (Config.HegemonyHalfHpReward == "Postponed")
+        halfhpdraw->setCurrentIndex(1);
 
     QComboBox *careeristkill = new QComboBox;
     careeristkill->addItem(tr("As Usual"), "AsUsual");
     careeristkill->addItem(tr("Always draw 3"), "AlwaysDraw3");
+    hegemony_careerist_kill = careeristkill;
+    if (Config.HegemonyCareeristKillReward == "AlwaysDraw3")
+        careeristkill->setCurrentIndex(1);
 
     QFormLayout *l = new QFormLayout;
     l->addRow(tr("First Show Reward"), firstshow);
@@ -1141,6 +1155,13 @@ bool ServerDialog::config()
     } else
         Config.GameMode = objname;
 
+    if (Config.GameMode.startsWith("hegemony_")) {
+        Config.HegemonyFirstShowReward = hegemony_first_show->itemData(hegemony_first_show->currentIndex()).toString();
+        Config.HegemonyCompanionReward = hegemony_companion->itemData(hegemony_companion->currentIndex()).toString();
+        Config.HegemonyHalfHpReward = hegemony_half_hp_draw->itemData(hegemony_half_hp_draw->currentIndex()).toString();
+        Config.HegemonyCareeristKillReward = hegemony_careerist_kill->itemData(hegemony_careerist_kill->currentIndex()).toString();
+    }
+
     Config.setValue("ServerName", Config.ServerName);
     Config.setValue("GameMode", Config.GameMode);
     Config.setValue("OperationTimeout", Config.OperationTimeout);
@@ -1181,7 +1202,7 @@ bool ServerDialog::config()
     Config.setValue("ServerPort", Config.ServerPort);
     Config.setValue("Address", Config.Address);
     Config.setValue("DisableLua", disable_lua_checkbox->isChecked());
-
+#if 0
     Config.beginGroup("3v3");
     //Config.setValue("UsingExtension", !official_3v3_radiobutton->isChecked());
     Config.setValue("RoleChoose", role_choose_ComboBox->itemData(role_choose_ComboBox->currentIndex()).toString());
@@ -1198,6 +1219,13 @@ bool ServerDialog::config()
     //Config.beginGroup("XMode");
     //Config.setValue("RoleChooseX", role_choose_xmode_ComboBox->itemData(role_choose_xmode_ComboBox->currentIndex()).toString());
     //Config.endGroup();
+#endif
+    if (Config.GameMode.startsWith("hegemony_")) {
+        Config.setValue("HegemonyFirstShowReward", Config.HegemonyFirstShowReward);
+        Config.setValue("HegemonyCompanionReward", Config.HegemonyCompanionReward);
+        Config.setValue("HegemonyHalfHpReward", Config.HegemonyHalfHpReward);
+        Config.setValue("HegemonyCareeristKillReward", Config.HegemonyCareeristKillReward);
+    }
 
     QSet<QString> ban_packages;
     QList<QAbstractButton *> checkboxes = extension_group->buttons();
