@@ -159,6 +159,10 @@ private:
     QButtonGroup *mode_group;
 
     QGroupBox *hegemonyBox;
+    QComboBox *hegemony_first_show;
+    QComboBox *hegemony_companion;
+    QComboBox *hegemony_half_hp_draw;
+    QComboBox *hegemony_careerist_kill;
 
 private slots:
 

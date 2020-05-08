@@ -665,6 +665,11 @@ void Settings::init()
     DetectorPort = value("DetectorPort", 9526u).toUInt();
     MaxCards = value("MaxCards", 12).toInt();
 
+    HegemonyFirstShowReward = value("HegemonyFirstShowReward", "None").toString();
+    HegemonyCompanionReward = value("HegemonyCompanionReward", "Instant").toString();
+    HegemonyHalfHpReward = value("HegemonyHalfHpReward", "Instant").toString();
+    HegemonyCareeristKillReward = value("HegemonyCareeristKillReward", "AsUsual").toString();
+
     EnableHotKey = value("EnableHotKey", true).toBool();
     NeverNullifyMyTrick = value("NeverNullifyMyTrick", true).toBool();
     EnableMinimizeDialog = value("EnableMinimizeDialog", false).toBool();
@@ -696,9 +701,6 @@ void Settings::init()
     EnableAutoSaveRecord = value("EnableAutoSaveRecord", false).toBool();
     NetworkOnly = value("NetworkOnly", false).toBool();
     RecordSavePath = value("RecordSavePath", "records/").toString();
-
-    EnableSurprisingGenerals = value("EnableSurprisingGenerals", false).toBool();
-    KnownSurprisingGenerals = value("KnownSurprisingGenerals", QStringList()).toStringList();
 
     lua_State *lua = Sanguosha->getLuaState();
     QStringList roles_ban, kof_ban, hulao_ban, xmode_ban, basara_ban, hegemony_ban, pairs_ban;

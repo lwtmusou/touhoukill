@@ -239,8 +239,10 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         if (player->getPhase() == Player::Play)
             room->addPlayerHistory(player, ".");
         if (player->getPhase() == Player::Finish) {
-            foreach (ServerPlayer *p, room->getAllPlayers())
-                room->setPlayerMark(p, "multi_kill_count", 0);
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
+                if (player->getMark("multi_kill_count") > 0)
+                    room->setPlayerMark(p, "multi_kill_count", 0);
+            }
         }
         break;
     }
@@ -1006,77 +1008,72 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             return true;
         }
         if (player->getMark("TheFirstToShowReward") > 0 && room->getScenario() == NULL) { //Config.RewardTheFirstShowingPlayer &&room->getTag("TheFirstToShowRewarded").isNull() &&
-            room->setPlayerMark(player, "TheFirstToShowReward", 0);
-            //bonus Postpone
-            player->gainMark("@Pioneer");
-            QString attachName = "pioneer_attach";
-            if (player && !player->hasSkill(attachName))
-                room->attachSkillToPlayer(player, attachName);
-
-            //get bonus immediately
-            /*
-            if (player->askForSkillInvoke("FirstShowReward")) {
-                LogMessage log;
-                log.type = "#FirstShowReward";
-                log.from = player;
-                room->sendLog(log);
-                player->drawCards(2);
-            }*/
-            //room->setTag("TheFirstToShowRewarded", true);
+            player->setMark("TheFirstToShowReward", 0);
+            if (Config.HegemonyFirstShowReward == "Postponed") {
+                player->gainMark("@Pioneer");
+                QString attachName = "pioneer_attach";
+                if (player && !player->hasSkill(attachName))
+                    room->attachSkillToPlayer(player, attachName);
+            } else if (Config.HegemonyFirstShowReward == "Instant") {
+                if (player->askForSkillInvoke("FirstShowReward")) {
+                    LogMessage log;
+                    log.type = "#FirstShowReward";
+                    log.from = player;
+                    room->sendLog(log);
+                    player->drawCards(2);
+                }
+            }
         }
-        //if (!Config.Enable2ndGeneral)
-        //    break;
 
         //CompanionEffect  and  HalfMaxHpLeft
         if (player->isAlive() && player->hasShownAllGenerals()) {
             if (player->getMark("CompanionEffect") > 0) {
+                player->setMark("CompanionEffect", 0);
+
                 //bonus Postpone
-                player->gainMark("@CompanionEffect");
-                QString attachName = "companion_attach";
-                if (player && !player->hasSkill(attachName))
-                    room->attachSkillToPlayer(player, attachName);
-
-                //get bonus immediately
-                /*QStringList choices;
-                if (player->isWounded())
-                    choices << "recover";
-                choices << "draw"
-                        << "cancel";
-                LogMessage log;
-                log.type = "#CompanionEffect";
-                log.from = player;
-                room->sendLog(log);
-                QString choice = room->askForChoice(player, "CompanionEffect", choices.join("+"));
-                if (choice == "recover") {
-                    RecoverStruct recover;
-                    recover.who = player;
-                    recover.recover = 1;
-                    room->recover(player, recover);
-                } else if (choice == "draw")
-                    player->drawCards(2);
-                */
-                room->removePlayerMark(player, "CompanionEffect");
-
+                if (Config.HegemonyCompanionReward == "Postponed") {
+                    player->gainMark("@CompanionEffect");
+                    QString attachName = "companion_attach";
+                    if (player && !player->hasSkill(attachName))
+                        room->attachSkillToPlayer(player, attachName);
+                } else {
+                    QStringList choices;
+                    if (player->isWounded())
+                        choices << "recover";
+                    choices << "draw"
+                            << "cancel";
+                    LogMessage log;
+                    log.type = "#CompanionEffect";
+                    log.from = player;
+                    room->sendLog(log);
+                    QString choice = room->askForChoice(player, "CompanionEffect", choices.join("+"));
+                    if (choice == "recover") {
+                        RecoverStruct recover;
+                        recover.who = player;
+                        recover.recover = 1;
+                        room->recover(player, recover);
+                    } else if (choice == "draw")
+                        player->drawCards(2);
+                }
                 room->setEmotion(player, "companion");
             }
             if (player->getMark("HalfMaxHpLeft") > 0) {
-                //bonus Postpone
-                player->gainMark("@HalfLife");
-                QString attachName = "halflife_attach";
-                if (player && !player->hasSkill(attachName))
-                    room->attachSkillToPlayer(player, attachName);
+                player->setMark("HalfMaxHpLeft", 0);
 
-                //get bonus immediately
-                /*
-                LogMessage log;
-                log.type = "#HalfMaxHpLeft";
-                log.from = player;
-                room->sendLog(log);
-                if (player->askForSkillInvoke("userdefine:halfmaxhp"))
-                    player->drawCards(1);
-                
-                */
-                room->removePlayerMark(player, "HalfMaxHpLeft");
+                if (Config.HegemonyHalfHpReward == "Postponed") {
+                    //bonus Postpone
+                    player->gainMark("@HalfLife");
+                    QString attachName = "halflife_attach";
+                    if (player && !player->hasSkill(attachName))
+                        room->attachSkillToPlayer(player, attachName);
+                } else {
+                    LogMessage log;
+                    log.type = "#HalfMaxHpLeft";
+                    log.from = player;
+                    room->sendLog(log);
+                    if (player->askForSkillInvoke("userdefine:halfmaxhp"))
+                        player->drawCards(1);
+                }
             }
         }
     }
@@ -1266,9 +1263,13 @@ void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const
     } else if (isHegemonyGameMode(room->getMode())) {
         if (!killer->isFriendWith(victim)) {
             int n = 1;
-            foreach (ServerPlayer *p, room->getOtherPlayers(victim)) {
-                if (victim->isFriendWith(p))
-                    ++n;
+            if (Config.HegemonyCareeristKillReward == "AlwaysDraw3" && killer->getRole() == "careerist") {
+                n = 3;
+            } else {
+                foreach (ServerPlayer *p, room->getOtherPlayers(victim)) {
+                    if (victim->isFriendWith(p))
+                        ++n;
+                }
             }
             killer->drawCards(n);
         } else
