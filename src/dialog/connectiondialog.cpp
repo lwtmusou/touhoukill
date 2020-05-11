@@ -94,6 +94,8 @@ void ConnectionDialog::showAvatarList()
 ConnectionDialog::ConnectionDialog(QWidget *parent)
     : QDialog(parent)
 {
+    setWindowTitle(tr("Connection setup"));
+
     QGroupBox *gb = new QGroupBox(tr("Connection setup"));
 
     nameLineEdit = new QLineEdit;
@@ -108,7 +110,7 @@ ConnectionDialog::ConnectionDialog(QWidget *parent)
     connlayout->addRow(tr("Name:"), nameLineEdit);
     connlayout->addRow(tr("Host:"), hostComboBox);
 
-    QLabel *avalbl = new QLabel("Avatar:");
+    QLabel *avalbl = new QLabel(tr("Avatar:"));
     avatarPixmap = new QLabel;
     avatarPixmap->setPixmap(G_ROOM_SKIN.getGeneralPixmap(Config.UserAvatar, QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE, false));
     avatarPixmap->setScaledContents(true);
