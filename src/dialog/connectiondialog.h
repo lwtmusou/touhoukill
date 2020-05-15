@@ -1,6 +1,10 @@
 #ifndef _CONNECTION_DIALOG_H
 #define _CONNECTION_DIALOG_H
 
+#include "engine.h"
+#include "general.h"
+
+#include <QAbstractListModel>
 #include <QButtonGroup>
 #include <QComboBox>
 #include <QDialog>
@@ -8,9 +12,18 @@
 
 class UdpDetector;
 
-namespace Ui {
-class ConnectionDialog;
-}
+class AvatarModel : public QAbstractListModel
+{
+    Q_OBJECT
+public:
+    explicit AvatarModel(const QList<const General *> &list);
+
+    virtual int rowCount(const QModelIndex &) const;
+    virtual QVariant data(const QModelIndex &index, int role) const;
+
+private:
+    QList<const General *> list;
+};
 
 class ConnectionDialog : public QDialog
 {
@@ -22,15 +35,25 @@ public:
     void hideAvatarList();
     void showAvatarList();
 
-private:
-    Ui::ConnectionDialog *ui;
-
 private slots:
     void on_detectLANButton_clicked();
     void on_clearHistoryButton_clicked();
-    void on_avatarList_itemDoubleClicked(QListWidgetItem *item);
+    void on_avatarList_doubleClicked(const QModelIndex &index);
     void on_changeAvatarButton_clicked();
     void on_connectButton_clicked();
+
+private:
+    QLineEdit *nameLineEdit;
+    QComboBox *hostComboBox;
+    QLabel *avatarPixmap;
+    QCheckBox *reconnectionCheckBox;
+    QListView *avatarList;
+
+    QSize shrinkSize;
+    QSize expandSize;
+
+private:
+    void showEvent(QShowEvent *e);
 };
 
 class UdpDetectorDialog : public QDialog

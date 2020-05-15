@@ -5,69 +5,186 @@
 #include "settings.h"
 #include "ui_connectiondialog.h"
 
+#include <QAction>
+#include <QApplication>
 #include <QBoxLayout>
+#include <QButtonGroup>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QDialog>
+#include <QFormLayout>
+#include <QFrame>
+#include <QGroupBox>
+#include <QHeaderView>
+#include <QLabel>
+#include <QLineEdit>
+#include <QListView>
 #include <QMessageBox>
+#include <QPushButton>
 #include <QRadioButton>
 #include <QTimer>
+#include <QWidget>
 
-static const int ShrinkWidth = 285;
-static const int ExpandWidth = 826;
+AvatarModel::AvatarModel(const QList<const General *> &list)
+    : list(list)
+{
+}
+
+int AvatarModel::rowCount(const QModelIndex &) const
+{
+    return list.size();
+}
+
+QVariant AvatarModel::data(const QModelIndex &index, int role) const
+{
+    int row = index.row();
+    if (row < 0 || row >= list.length())
+        return QVariant();
+
+    const General *general = list.at(row);
+
+    switch (role) {
+    case Qt::UserRole:
+        return general->objectName();
+    case Qt::DisplayRole:
+        return Sanguosha->translate(general->objectName());
+    case Qt::DecorationRole: {
+        QIcon icon(G_ROOM_SKIN.getGeneralPixmap(general->objectName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE));
+        return icon;
+    }
+    }
+
+    return QVariant();
+}
 
 void ConnectionDialog::hideAvatarList()
 {
-    if (!ui->avatarList->isVisible())
+    if (!avatarList->isVisible())
         return;
-    ui->avatarList->hide();
-    ui->avatarList->clear();
+    avatarList->hide();
+    setFixedSize(shrinkSize);
 }
 
 void ConnectionDialog::showAvatarList()
 {
-    if (ui->avatarList->isVisible())
+    if (avatarList->isVisible())
         return;
-    ui->avatarList->clear();
-    QList<const General *> generals = Sanguosha->findChildren<const General *>();
-    foreach (const General *general, generals) {
-        QIcon icon(G_ROOM_SKIN.getGeneralPixmap(general->objectName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE, false));
-        QString text = Sanguosha->translate(general->objectName());
-        QListWidgetItem *item = new QListWidgetItem(icon, text, ui->avatarList);
-        item->setData(Qt::UserRole, general->objectName());
+
+    setFixedSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
+
+    if (avatarList->model() == NULL) {
+        QList<const General *> generals = Sanguosha->findChildren<const General *>();
+        QMutableListIterator<const General *> itor = generals;
+        while (itor.hasNext()) {
+            if (itor.next()->isTotallyHidden())
+                itor.remove();
+        }
+
+        AvatarModel *model = new AvatarModel(generals);
+        model->setParent(this);
+        avatarList->setModel(model);
     }
-    ui->avatarList->show();
+    avatarList->show();
+    if (expandSize.isEmpty())
+        expandSize = size();
+
+    setFixedSize(expandSize);
 }
 
 ConnectionDialog::ConnectionDialog(QWidget *parent)
     : QDialog(parent)
-    , ui(new Ui::ConnectionDialog)
 {
-    ui->setupUi(this);
+    QGroupBox *gb = new QGroupBox(tr("Connection setup"));
 
-    ui->nameLineEdit->setText(Config.UserName);
-    ui->nameLineEdit->setMaxLength(64);
+    nameLineEdit = new QLineEdit;
+    nameLineEdit->setText(Config.UserName);
 
-    ui->hostComboBox->addItems(Config.HistoryIPs);
-    ui->hostComboBox->lineEdit()->setText(Config.HostAddress);
+    hostComboBox = new QComboBox;
+    hostComboBox->setEditable(true);
+    hostComboBox->addItems(Config.HistoryIPs);
+    hostComboBox->setEditText(Config.HostAddress);
 
-    ui->connectButton->setFocus();
+    QFormLayout *connlayout = new QFormLayout;
+    connlayout->addRow(tr("Name:"), nameLineEdit);
+    connlayout->addRow(tr("Host:"), hostComboBox);
 
-    ui->avatarPixmap->setPixmap(G_ROOM_SKIN.getGeneralPixmap(Config.UserAvatar, QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE, false));
+    QLabel *avalbl = new QLabel("Avatar:");
+    avatarPixmap = new QLabel;
+    avatarPixmap->setPixmap(G_ROOM_SKIN.getGeneralPixmap(Config.UserAvatar, QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE, false));
+    avatarPixmap->setScaledContents(true);
+    avatarPixmap->setMinimumSize(QSize(134, 134));
+    avatarPixmap->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-    hideAvatarList();
+    QVBoxLayout *avalayout = new QVBoxLayout;
+    avalayout->addWidget(avalbl);
+    avalayout->addWidget(avatarPixmap);
+    avalayout->addStretch();
 
-    ui->reconnectionCheckBox->setChecked(Config.value("EnableReconnection", false).toBool());
+    QPushButton *landetect = new QPushButton(tr("Detect LAN ..."));
+    connect(landetect, &QPushButton::clicked, this, &ConnectionDialog::on_detectLANButton_clicked);
+    QPushButton *clearhist = new QPushButton(tr("Clear history"));
+    connect(clearhist, &QPushButton::clicked, this, &ConnectionDialog::on_clearHistoryButton_clicked);
+    QPushButton *changeava = new QPushButton(tr("Change avatar"));
+    connect(changeava, &QPushButton::clicked, this, &ConnectionDialog::on_changeAvatarButton_clicked);
 
-    setFixedHeight(height());
-    setFixedWidth(ShrinkWidth);
+    QVBoxLayout *btnlayout = new QVBoxLayout;
+    btnlayout->addWidget(landetect);
+    btnlayout->addWidget(clearhist);
+    btnlayout->addStretch();
+    btnlayout->addWidget(changeava);
+
+    QHBoxLayout *btmlayout = new QHBoxLayout;
+    btmlayout->addLayout(avalayout);
+    btmlayout->addLayout(btnlayout);
+    QVBoxLayout *gblayout = new QVBoxLayout;
+    gblayout->addLayout(connlayout);
+    gblayout->addLayout(btmlayout);
+
+    gb->setLayout(gblayout);
+
+    reconnectionCheckBox = new QCheckBox(tr("Reconnection"));
+    reconnectionCheckBox->setChecked(Config.value("EnableReconnection", false).toBool());
+
+    QPushButton *connectbtn = new QPushButton(tr("Connect"));
+    connect(connectbtn, &QPushButton::clicked, this, &ConnectionDialog::on_connectButton_clicked);
+
+    QPushButton *cancelbtn = new QPushButton(tr("Cancel"));
+    connect(cancelbtn, &QPushButton::clicked, this, &ConnectionDialog::reject);
+
+    QHBoxLayout *btnglayout = new QHBoxLayout;
+    btnglayout->addWidget(reconnectionCheckBox);
+    btnglayout->addStretch();
+    btnglayout->addWidget(connectbtn);
+    btnglayout->addWidget(cancelbtn);
+
+    QVBoxLayout *llayout = new QVBoxLayout;
+    llayout->addWidget(gb);
+    llayout->addLayout(btnglayout);
+
+    avatarList = new QListView;
+    avatarList->setIconSize(QSize(80, 80));
+    avatarList->setViewMode(QListView::IconMode);
+    avatarList->setUniformItemSizes(true);
+    avatarList->setMinimumWidth(500);
+    avatarList->hide();
+    connect(avatarList, &QListView::doubleClicked, this, &ConnectionDialog::on_avatarList_doubleClicked);
+
+    QHBoxLayout *totlayout = new QHBoxLayout;
+    totlayout->addLayout(llayout);
+    totlayout->addWidget(avatarList);
+
+    setLayout(totlayout);
+
+    connectbtn->setFocus();
 }
 
 ConnectionDialog::~ConnectionDialog()
 {
-    delete ui;
 }
 
 void ConnectionDialog::on_connectButton_clicked()
 {
-    QString username = ui->nameLineEdit->text();
+    QString username = nameLineEdit->text();
 
     if (username.isEmpty()) {
         QMessageBox::warning(this, tr("Warning"), tr("The user name can not be empty!"));
@@ -75,47 +192,52 @@ void ConnectionDialog::on_connectButton_clicked()
     }
 
     Config.UserName = username;
-    Config.HostAddress = ui->hostComboBox->lineEdit()->text();
+    Config.HostAddress = hostComboBox->currentText();
 
     Config.setValue("UserName", Config.UserName);
     Config.setValue("HostAddress", Config.HostAddress);
-    Config.setValue("EnableReconnection", ui->reconnectionCheckBox->isChecked());
+    Config.setValue("EnableReconnection", reconnectionCheckBox->isChecked());
 
     accept();
 }
 
+void ConnectionDialog::showEvent(QShowEvent *e)
+{
+    QDialog::showEvent(e);
+    if (shrinkSize.isEmpty())
+        shrinkSize = size();
+
+    setFixedSize(shrinkSize);
+}
+
 void ConnectionDialog::on_changeAvatarButton_clicked()
 {
-    if (ui->avatarList->isVisible()) {
-        QListWidgetItem *selected = ui->avatarList->currentItem();
-        if (selected)
-            on_avatarList_itemDoubleClicked(selected);
-        else {
+    if (avatarList->isVisible()) {
+        QModelIndex index = avatarList->currentIndex();
+        if (index.isValid()) {
+            on_avatarList_doubleClicked(index);
+        } else {
             hideAvatarList();
-            setFixedWidth(ShrinkWidth);
         }
     } else {
         showAvatarList();
-        setFixedWidth(ExpandWidth);
     }
 }
 
-void ConnectionDialog::on_avatarList_itemDoubleClicked(QListWidgetItem *item)
+void ConnectionDialog::on_avatarList_doubleClicked(const QModelIndex &index)
 {
-    QString general_name = item->data(Qt::UserRole).toString();
-    QPixmap avatar(G_ROOM_SKIN.getGeneralPixmap(general_name, QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE, false));
-    ui->avatarPixmap->setPixmap(avatar);
+    QString general_name = avatarList->model()->data(index, Qt::UserRole).toString();
+    QPixmap avatar(G_ROOM_SKIN.getGeneralPixmap(general_name, QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE));
+    avatarPixmap->setPixmap(avatar);
     Config.UserAvatar = general_name;
     Config.setValue("UserAvatar", general_name);
     hideAvatarList();
-
-    setFixedWidth(ShrinkWidth);
 }
 
 void ConnectionDialog::on_clearHistoryButton_clicked()
 {
-    ui->hostComboBox->clear();
-    ui->hostComboBox->lineEdit()->clear();
+    hostComboBox->clear();
+    hostComboBox->setEditText(QString());
 
     Config.HistoryIPs.clear();
     Config.remove("HistoryIPs");
@@ -124,7 +246,8 @@ void ConnectionDialog::on_clearHistoryButton_clicked()
 void ConnectionDialog::on_detectLANButton_clicked()
 {
     UdpDetectorDialog *detector_dialog = new UdpDetectorDialog(this);
-    connect(detector_dialog, SIGNAL(address_chosen(QString)), ui->hostComboBox->lineEdit(), SLOT(setText(QString)));
+    // connect(detector_dialog, SIGNAL(address_chosen(QString)), hostComboBox, SLOT(setEditText(QString)));
+    connect(detector_dialog, &UdpDetectorDialog::address_chosen, hostComboBox, &QComboBox::setEditText);
 
     detector_dialog->exec();
 }
