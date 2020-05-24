@@ -3,7 +3,6 @@
 #include "detector.h"
 #include "engine.h"
 #include "settings.h"
-#include "ui_connectiondialog.h"
 
 #include <QAction>
 #include <QApplication>
