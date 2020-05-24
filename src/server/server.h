@@ -205,7 +205,7 @@ private:
 private slots:
     void processNewConnection(ClientSocket *socket);
     void processRequest(const char *request);
-    void cleanup();
+    void cleanupSimc();
     void gameOver();
 
 signals:

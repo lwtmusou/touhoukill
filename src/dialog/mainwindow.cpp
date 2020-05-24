@@ -334,10 +334,12 @@ void BackLoader::preload()
 
 void MainWindow::enterRoom()
 {
-    // add current ip to history
-    if (!Config.HistoryIPs.contains(Config.HostAddress)) {
-        Config.HistoryIPs << Config.HostAddress;
-        Config.HistoryIPs.sort();
+    if (QUrl(Config.HostAddress).path().length() == 0) {
+        // add current ip to history only if the modifiers does not exist.
+        // add the last connected address to the first one. DO NOT SORT
+        if (Config.HistoryIPs.contains(Config.HostAddress))
+            Config.HistoryIPs.removeAll(Config.HostAddress);
+        Config.HistoryIPs.prepend(Config.HostAddress);
         Config.setValue("HistoryUrls", Config.HistoryIPs);
     }
 

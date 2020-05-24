@@ -43,12 +43,12 @@ private slots:
     void on_clearHistoryButton_clicked();
     void on_avatarList_doubleClicked(const QModelIndex &index);
     void on_changeAvatarButton_clicked();
+    void on_fillreconnect_clicked();
 
 private:
     QLineEdit *nameLineEdit;
     QComboBox *hostComboBox;
     QLabel *avatarPixmap;
-    QCheckBox *reconnectionCheckBox;
     QListView *avatarList;
 
     QSize shrinkSize;

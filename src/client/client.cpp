@@ -304,7 +304,7 @@ void Client::signup()
         replayer->start();
     else {
         JsonArray arg;
-        arg << Config.value("EnableReconnection", false).toBool();
+        arg << QUrl(Config.HostAddress).path();
         arg << QString(Config.UserName.toUtf8().toBase64());
         arg << Config.UserAvatar;
         notifyServer(S_COMMAND_SIGNUP, arg);
@@ -493,6 +493,10 @@ void Client::updateProperty(const QVariant &arg)
     if (!player)
         return;
     player->setProperty(args[1].toString().toLatin1().constData(), args[2].toString());
+
+    // save objectName
+    if (args[1].toString() == "objectName" && player == Self)
+        Config.setValue("LastSelfObjectName", args[2].toString());
 }
 
 void Client::removePlayer(const QVariant &player_name)
@@ -1612,8 +1616,12 @@ void Client::warn(const QVariant &reason_var)
         msg = tr("Game is over now");
     else if (reason == "INVALID_FORMAT")
         msg = tr("Invalid signup string");
-    else if (reason == "LEVEL_LIMITATION")
-        msg = tr("Your level is not enough");
+    else if (reason == "INVALID_OPERATION")
+        msg = tr("Invalid operation");
+    else if (reason == "OPERATION_NOT_IMPLEMENTED")
+        msg = tr("Operation not implemented");
+    else if (reason == "USERNAME_INCORRECT")
+        msg = tr("Username is incorrect");
     else
         msg = tr("Unknown warning: %1").arg(reason);
 

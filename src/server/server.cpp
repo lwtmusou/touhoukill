@@ -1299,24 +1299,9 @@ Room *Server::createNewRoom()
 
 void Server::processNewConnection(ClientSocket *socket)
 {
-    if (Config.ForbidSIMC) {
-        QString addr = socket->peerAddress();
-        if (addresses.contains(addr)) {
-            socket->disconnectFromHost();
-            emit server_message(tr("Forbid the connection of address %1").arg(addr));
-            return;
-        } else
-            addresses.insert(addr);
-    }
-
-    connect(socket, SIGNAL(disconnected()), this, SLOT(cleanup()));
     Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_CHECK_VERSION);
     packet.setMessageBody((Sanguosha->getVersion()));
     socket->send((packet.toString()));
-    Packet packet2(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SETUP);
-    QString s = Sanguosha->getSetupString();
-    packet2.setMessageBody(s);
-    socket->send((packet2.toString()));
     emit server_message(tr("%1 connected").arg(socket->peerName()));
 
     connect(socket, SIGNAL(message_got(const char *)), this, SLOT(processRequest(const char *)));
@@ -1338,18 +1323,88 @@ void Server::processRequest(const char *request)
     }
 
     const JsonArray &body = signup.getMessageBody().value<JsonArray>();
-    bool reconnection_enabled = body[0].toBool();
+    QString urlPath = body[0].toString();
     QString screen_name = QString::fromUtf8(QByteArray::fromBase64(body[1].toString().toLatin1()));
     QString avatar = body[2].toString();
+    bool reconnection_enabled = false;
 
-    if (reconnection_enabled) {
-        foreach (QString objname, name2objname.values(screen_name)) {
-            ServerPlayer *player = players.value(objname);
-            if (player && player->getState() == "offline" && !player->getRoom()->isFinished()) {
-                player->getRoom()->reconnect(player, socket);
-                return;
+    QStringList ps = urlPath.split('/', QString::SkipEmptyParts);
+    QString messageBodyToSend;
+    if (ps.length() == 0) {
+        // default connected
+    } else {
+        if (ps.length() != 2) {
+            messageBodyToSend = "INVALID_OPERATION";
+            emit server_message(tr("invalid operation: more than 2 parts"));
+        } else {
+            // check valid ps.first
+            if (ps.first() == "reconnect") {
+                reconnection_enabled = true;
+            } else if (ps.first() == "observe") {
+                // warning, not implemented
+                emit server_message(tr("unimplemented operation: %1").arg(ps.first()));
+                messageBodyToSend = "OPERATION_NOT_IMPLEMENTED";
+            } else {
+                emit server_message(tr("invalid operation: %1").arg(ps.first()));
+                messageBodyToSend = "INVALID_OPERATION";
             }
         }
+        if (messageBodyToSend.isEmpty()) {
+            // check valid ps.last
+            if (!ps.last().startsWith("sgs")) {
+                emit server_message(tr("reconnect username incorrect: %1").arg(ps.last()));
+                messageBodyToSend = "USERNAME_INCORRECT";
+            } else {
+                QString num = ps.last().mid(3);
+                bool ok = false;
+                num.toInt(&ok);
+                if (ok) {
+                    // valid connection name
+                } else {
+                    emit server_message(tr("reconnect username incorrect: %1").arg(ps.last()));
+                    messageBodyToSend = "USERNAME_INCORRECT";
+                }
+            }
+        }
+
+        if (!messageBodyToSend.isEmpty()) {
+            QSanProtocol::Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_WARN);
+            packet.setMessageBody(messageBodyToSend);
+            socket->send(packet.toString());
+            socket->disconnectFromHost();
+            return;
+        }
+    }
+    if (Config.ForbidSIMC) {
+        QString addr = socket->peerAddress();
+        if (addresses.contains(addr)) {
+            socket->disconnectFromHost();
+            emit server_message(tr("Forbid the connection of address %1").arg(addr));
+            return;
+        } else {
+            addresses.insert(addr);
+            connect(socket, SIGNAL(disconnected()), this, SLOT(cleanupSimc()));
+        }
+    }
+
+    Packet packet2(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SETUP);
+    QString s = Sanguosha->getSetupString();
+    packet2.setMessageBody(s);
+    socket->send((packet2.toString()));
+
+    if (reconnection_enabled) {
+        ServerPlayer *player = players.value(ps.last());
+        if (player && player->getState() == "offline" && !player->getRoom()->isFinished()) {
+            player->getRoom()->reconnect(player, socket);
+            return;
+        }
+
+        // player not found
+        emit server_message(tr("reconnect username not found: %1").arg(ps.last()));
+        QSanProtocol::Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_WARN);
+        packet.setMessageBody("USERNAME_INCORRECT");
+        socket->send(packet.toString());
+        socket->disconnectFromHost();
     }
 
     if (current == NULL || current->isFull() || current->isFinished())
@@ -1359,11 +1414,12 @@ void Server::processRequest(const char *request)
     current->signup(player, screen_name, avatar, false);
 }
 
-void Server::cleanup()
+void Server::cleanupSimc()
 {
-    const ClientSocket *socket = qobject_cast<const ClientSocket *>(sender());
-    if (Config.ForbidSIMC)
+    if (Config.ForbidSIMC) {
+        const ClientSocket *socket = qobject_cast<const ClientSocket *>(sender());
         addresses.remove(socket->peerAddress());
+    }
 }
 
 void Server::signupPlayer(ServerPlayer *player)

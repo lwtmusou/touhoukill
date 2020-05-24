@@ -99,21 +99,62 @@ void ConnectionDialog::accept()
         return;
     }
 
-    Config.UserName = username;
-
     QUrl url(hostComboBox->currentText());
     if (url.isValid() && (url.scheme() == "qths") && !url.host().isEmpty()) {
-        // valid
+        // modifiers
+        if (!url.path().isEmpty()) {
+            // now we are planning to support the following 2 modifiers:
+            // 1. reconnect
+            // 2. observe
+            //
+            // The "reconnect" modifier should do the same as the reconnect function before
+            // The "observe" modifier is .....
+
+            QString p = url.path();
+            QStringList ps = p.split('/', QString::SkipEmptyParts);
+            if (ps.length() != 2) {
+                QMessageBox::warning(this, tr("Warning"), tr("This pattern is not supported, please recheck your input."));
+                return;
+            } else {
+                // check valid ps.first
+                if (ps.first() == "reconnect") {
+                    // correct reconnection indicator
+                } else if (ps.first() == "observe") {
+                    // warning, not implemented
+                    QMessageBox::warning(this, tr("Warning"), tr("This operation is not implemented yet. Sorry for my laziness."));
+                    return;
+                } else {
+                    QMessageBox::warning(this, tr("Warning"), tr("This operation is not supported, please recheck your input."));
+                    return;
+                }
+
+                // check valid ps.last
+                if (!ps.last().startsWith("sgs")) {
+                    QMessageBox::warning(this, tr("Warning"), tr("The connection name is incorrect, please recheck your input."));
+                    return;
+                }
+
+                QString num = ps.last().mid(3);
+                bool ok = false;
+                num.toInt(&ok);
+                if (ok) {
+                    // valid connection name
+                } else {
+                    QMessageBox::warning(this, tr("Warning"), tr("The connection name is incorrect, please recheck your input."));
+                    return;
+                }
+            }
+        }
     } else {
         QMessageBox::warning(this, tr("Warning"), tr("Please input valid host address!<br />Starts with 0.9.7 the address must begin with \"qths://\"."));
         return;
     }
 
+    Config.UserName = username;
     Config.HostAddress = hostComboBox->currentText();
 
     Config.setValue("UserName", Config.UserName);
     Config.setValue("HostUrl", Config.HostAddress);
-    Config.setValue("EnableReconnection", reconnectionCheckBox->isChecked());
 
     QDialog::accept();
 }
@@ -126,12 +167,7 @@ ConnectionDialog::ConnectionDialog(QWidget *parent)
     QGroupBox *gb = new QGroupBox(tr("Connection setup"));
 
     nameLineEdit = new QLineEdit;
-    nameLineEdit->setText(Config.UserName);
-
     hostComboBox = new QComboBox;
-    hostComboBox->setEditable(true);
-    hostComboBox->addItems(Config.HistoryIPs);
-    hostComboBox->setEditText(Config.HostAddress);
 
     QFormLayout *connlayout = new QFormLayout;
     connlayout->addRow(tr("Name:"), nameLineEdit);
@@ -139,7 +175,6 @@ ConnectionDialog::ConnectionDialog(QWidget *parent)
 
     QLabel *avalbl = new QLabel(tr("Avatar:"));
     avatarPixmap = new QLabel;
-    avatarPixmap->setPixmap(G_ROOM_SKIN.getGeneralPixmap(Config.UserAvatar, QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE, false));
     avatarPixmap->setScaledContents(true);
     avatarPixmap->setMinimumSize(QSize(134, 134));
     avatarPixmap->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -149,6 +184,8 @@ ConnectionDialog::ConnectionDialog(QWidget *parent)
     avalayout->addWidget(avatarPixmap);
     avalayout->addStretch();
 
+    QPushButton *fillreconnectinfo = new QPushButton(tr("Fill Reconnection Information"));
+    connect(fillreconnectinfo, &QPushButton::clicked, this, &ConnectionDialog::on_fillreconnect_clicked);
     QPushButton *landetect = new QPushButton(tr("Detect LAN ..."));
     connect(landetect, &QPushButton::clicked, this, &ConnectionDialog::on_detectLANButton_clicked);
     QPushButton *clearhist = new QPushButton(tr("Clear history"));
@@ -157,6 +194,7 @@ ConnectionDialog::ConnectionDialog(QWidget *parent)
     connect(changeava, &QPushButton::clicked, this, &ConnectionDialog::on_changeAvatarButton_clicked);
 
     QVBoxLayout *btnlayout = new QVBoxLayout;
+    btnlayout->addWidget(fillreconnectinfo);
     btnlayout->addWidget(landetect);
     btnlayout->addWidget(clearhist);
     btnlayout->addStretch();
@@ -171,9 +209,6 @@ ConnectionDialog::ConnectionDialog(QWidget *parent)
 
     gb->setLayout(gblayout);
 
-    reconnectionCheckBox = new QCheckBox(tr("Reconnection"));
-    reconnectionCheckBox->setChecked(Config.value("EnableReconnection", false).toBool());
-
     QPushButton *connectbtn = new QPushButton(tr("Connect"));
     connect(connectbtn, &QPushButton::clicked, this, &ConnectionDialog::accept);
     connectbtn->setDefault(true);
@@ -182,7 +217,6 @@ ConnectionDialog::ConnectionDialog(QWidget *parent)
     connect(cancelbtn, &QPushButton::clicked, this, &ConnectionDialog::reject);
 
     QHBoxLayout *btnglayout = new QHBoxLayout;
-    btnglayout->addWidget(reconnectionCheckBox);
     btnglayout->addStretch();
     btnglayout->addWidget(connectbtn);
     btnglayout->addWidget(cancelbtn);
@@ -214,6 +248,20 @@ ConnectionDialog::~ConnectionDialog()
 
 void ConnectionDialog::showEvent(QShowEvent *e)
 {
+    nameLineEdit->setText(Config.UserName);
+
+    hostComboBox->setEditable(true);
+    hostComboBox->clear();
+    hostComboBox->addItems(Config.HistoryIPs);
+
+    // if the last connected address has modifiers, don't use
+    if (QUrl(Config.HostAddress).path().isEmpty())
+        hostComboBox->setEditText(Config.HostAddress);
+    else
+        hostComboBox->setEditText(Config.HistoryIPs.first());
+
+    avatarPixmap->setPixmap(G_ROOM_SKIN.getGeneralPixmap(Config.UserAvatar, QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE, false));
+
     QDialog::showEvent(e);
     if (shrinkSize.isEmpty())
         shrinkSize = size();
@@ -225,14 +273,22 @@ void ConnectionDialog::on_changeAvatarButton_clicked()
 {
     if (avatarList->isVisible()) {
         QModelIndex index = avatarList->currentIndex();
-        if (index.isValid()) {
+        if (index.isValid())
             on_avatarList_doubleClicked(index);
-        } else {
+        else
             hideAvatarList();
-        }
-    } else {
+    } else
         showAvatarList();
-    }
+}
+
+void ConnectionDialog::on_fillreconnect_clicked()
+{
+    QUrl u(hostComboBox->currentText());
+    if (u.isValid() && (u.scheme() == "qths") && !u.host().isEmpty()) {
+        u.setPath(QString(QStringLiteral("/reconnect/")).append(Config.value("LastSelfObjectName", QString(QStringLiteral("sgs1"))).toString()));
+        hostComboBox->setEditText(u.toString());
+    } else
+        QMessageBox::warning(this, tr("Warning"), tr("Please fill the server information before we fill reconnection information for you."));
 }
 
 void ConnectionDialog::on_avatarList_doubleClicked(const QModelIndex &index)
@@ -248,7 +304,7 @@ void ConnectionDialog::on_avatarList_doubleClicked(const QModelIndex &index)
 void ConnectionDialog::on_clearHistoryButton_clicked()
 {
     hostComboBox->clear();
-    hostComboBox->setEditText(QString());
+    hostComboBox->setEditText("qths://");
 
     Config.HistoryIPs.clear();
     Config.remove("HistoryUrls");
@@ -257,7 +313,6 @@ void ConnectionDialog::on_clearHistoryButton_clicked()
 void ConnectionDialog::on_detectLANButton_clicked()
 {
     UdpDetectorDialog *detector_dialog = new UdpDetectorDialog(this);
-    // connect(detector_dialog, SIGNAL(address_chosen(QString)), hostComboBox, SLOT(setEditText(QString)));
     connect(detector_dialog, &UdpDetectorDialog::address_chosen, hostComboBox, &QComboBox::setEditText);
 
     detector_dialog->exec();
@@ -326,6 +381,6 @@ void UdpDetectorDialog::chooseAddress(QListWidgetItem *item)
     accept();
 
     QString address = item->data(Qt::UserRole).toString();
-    address.prepend("qsgs://");
+    address.prepend("qths://");
     emit address_chosen(address);
 }

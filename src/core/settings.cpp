@@ -309,11 +309,6 @@ void Settings::loadSettingsFromConfigIni()
         }
 
         {
-            QVariant value(oldConfig.value(QStringLiteral("EnableReconnection"), false).toBool());
-            setValue(QStringLiteral("EnableReconnection"), value);
-        }
-
-        {
             QVariant value(oldConfig.value(QStringLiteral("EnableSame"), false).toBool());
             setValue(QStringLiteral("EnableSame"), value);
         }
