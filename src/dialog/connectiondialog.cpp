@@ -100,6 +100,15 @@ void ConnectionDialog::accept()
     }
 
     Config.UserName = username;
+
+    QUrl url(hostComboBox->currentText());
+    if (url.isValid() && (url.scheme() == "qths") && !url.host().isEmpty()) {
+        // valid
+    } else {
+        QMessageBox::warning(this, tr("Warning"), tr("Please input valid host address!<br />Starts with 0.9.7 the address must begin with \"qths://\"."));
+        return;
+    }
+
     Config.HostAddress = hostComboBox->currentText();
 
     Config.setValue("UserName", Config.UserName);

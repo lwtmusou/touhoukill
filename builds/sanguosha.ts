@@ -763,63 +763,69 @@
 <context>
     <name>ConnectionDialog</name>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="97"/>
-        <location filename="../src/dialog/connectiondialog.cpp" line="99"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="124"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="126"/>
         <source>Connection setup</source>
         <translation>连接设置</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="129"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="156"/>
         <source>Change avatar</source>
         <translation>修改头像</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="113"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="140"/>
         <source>Avatar:</source>
         <translation>头像:</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="111"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="108"/>
+        <source>Please input valid host address!&lt;br /&gt;Starts with 0.9.7 the address must begin with &quot;qths://&quot;.</source>
+        <translation>请输入有效的主机地址！&lt;br /&gt;从0.9.7版本开始，地址需要以“qths://”开头。</translation>
+    </message>
+    <message>
+        <location filename="../src/dialog/connectiondialog.cpp" line="138"/>
         <source>Host:</source>
         <translation>主机:</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="110"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="137"/>
         <source>Name:</source>
         <translation>名称:</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="127"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="154"/>
         <source>Clear history</source>
         <translation>清除历史记录</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="125"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="152"/>
         <source>Detect LAN ...</source>
         <translation>探测局域网 ...</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="150"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="177"/>
         <source>Connect</source>
         <translation>连接</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="147"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="174"/>
         <source>Reconnection</source>
         <translation>断线重连</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="153"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="181"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="192"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="98"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="108"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="192"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="98"/>
         <source>The user name can not be empty!</source>
         <translation>用户名不能为空!</translation>
     </message>
@@ -2407,32 +2413,32 @@
 <context>
     <name>NativeClientSocket</name>
     <message>
-        <location filename="../src/util/nativesocket.cpp" line="150"/>
+        <location filename="../src/util/nativesocket.cpp" line="149"/>
         <source>Connection was refused or timeout</source>
         <translation>连接被拒绝或超时</translation>
     </message>
     <message>
-        <location filename="../src/util/nativesocket.cpp" line="153"/>
+        <location filename="../src/util/nativesocket.cpp" line="152"/>
         <source>Remote host close this connection</source>
         <translation>远程主机已关闭此次连接</translation>
     </message>
     <message>
-        <location filename="../src/util/nativesocket.cpp" line="156"/>
+        <location filename="../src/util/nativesocket.cpp" line="155"/>
         <source>Host not found</source>
         <translation>未找到主机</translation>
     </message>
     <message>
-        <location filename="../src/util/nativesocket.cpp" line="159"/>
+        <location filename="../src/util/nativesocket.cpp" line="158"/>
         <source>Socket access error</source>
         <translation>套接字访问错误</translation>
     </message>
     <message>
-        <location filename="../src/util/nativesocket.cpp" line="164"/>
+        <location filename="../src/util/nativesocket.cpp" line="163"/>
         <source>Unknow error</source>
         <translation>未知错误</translation>
     </message>
     <message>
-        <location filename="../src/util/nativesocket.cpp" line="168"/>
+        <location filename="../src/util/nativesocket.cpp" line="167"/>
         <source>Connection failed, error code = %1
  reason:
  %2</source>
@@ -3927,12 +3933,12 @@ P = 你自己, R = 你所在的房间</translation>
 <context>
     <name>UdpDetectorDialog</name>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="262"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="271"/>
         <source>Detect available server&apos;s addresses at LAN</source>
         <translation>在局域网内探测可用的服务器地址</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="263"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="272"/>
         <source>Refresh</source>
         <translation>刷新</translation>
     </message>
