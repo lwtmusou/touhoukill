@@ -326,5 +326,6 @@ void UdpDetectorDialog::chooseAddress(QListWidgetItem *item)
     accept();
 
     QString address = item->data(Qt::UserRole).toString();
+    address.prepend("qsgs://");
     emit address_chosen(address);
 }
