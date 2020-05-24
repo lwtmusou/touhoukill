@@ -659,9 +659,28 @@ void Settings::init()
         UserName = tr("Sanguosha-fans");
     ServerName = value("ServerName", tr("%1's server").arg(UserName)).toString();
 
-    HostAddress = value("HostAddress", "127.0.0.1").toString();
+    if (!contains("HostUrl")) {
+        if (contains("HostAddress")) {
+            QString h = value("HostAddress").toString();
+            setValue("HostUrl", QString("qths://" + h));
+            remove("HostAddress");
+        }
+    }
+    HostAddress = value("HostUrl", "qths://127.0.0.1").toString();
     UserAvatar = value("UserAvatar", "keine_sp").toString();
-    HistoryIPs = value("HistoryIPs").toStringList();
+
+    if (!(contains("HistoryUrls"))) {
+        if (contains("HistoryIPs")) {
+            QStringList l = value("HistoryIPs").toStringList();
+            QStringList l2;
+            foreach (const QString &i, l)
+                l2 << ("qths://" + i);
+
+            setValue("HistoryUrls", l2);
+            remove("HistoryIPs");
+        }
+    }
+    HistoryIPs = value("HistoryUrls").toStringList();
     DetectorPort = value("DetectorPort", 9526u).toUInt();
     MaxCards = value("MaxCards", 12).toInt();
 

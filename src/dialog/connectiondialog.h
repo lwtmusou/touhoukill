@@ -35,12 +35,14 @@ public:
     void hideAvatarList();
     void showAvatarList();
 
+public slots:
+    void accept();
+
 private slots:
     void on_detectLANButton_clicked();
     void on_clearHistoryButton_clicked();
     void on_avatarList_doubleClicked(const QModelIndex &index);
     void on_changeAvatarButton_clicked();
-    void on_connectButton_clicked();
 
 private:
     QLineEdit *nameLineEdit;

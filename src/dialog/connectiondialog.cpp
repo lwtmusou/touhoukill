@@ -90,6 +90,25 @@ void ConnectionDialog::showAvatarList()
     setFixedSize(expandSize);
 }
 
+void ConnectionDialog::accept()
+{
+    QString username = nameLineEdit->text();
+
+    if (username.isEmpty()) {
+        QMessageBox::warning(this, tr("Warning"), tr("The user name can not be empty!"));
+        return;
+    }
+
+    Config.UserName = username;
+    Config.HostAddress = hostComboBox->currentText();
+
+    Config.setValue("UserName", Config.UserName);
+    Config.setValue("HostUrl", Config.HostAddress);
+    Config.setValue("EnableReconnection", reconnectionCheckBox->isChecked());
+
+    QDialog::accept();
+}
+
 ConnectionDialog::ConnectionDialog(QWidget *parent)
     : QDialog(parent)
 {
@@ -147,7 +166,8 @@ ConnectionDialog::ConnectionDialog(QWidget *parent)
     reconnectionCheckBox->setChecked(Config.value("EnableReconnection", false).toBool());
 
     QPushButton *connectbtn = new QPushButton(tr("Connect"));
-    connect(connectbtn, &QPushButton::clicked, this, &ConnectionDialog::on_connectButton_clicked);
+    connect(connectbtn, &QPushButton::clicked, this, &ConnectionDialog::accept);
+    connectbtn->setDefault(true);
 
     QPushButton *cancelbtn = new QPushButton(tr("Cancel"));
     connect(cancelbtn, &QPushButton::clicked, this, &ConnectionDialog::reject);
@@ -181,25 +201,6 @@ ConnectionDialog::ConnectionDialog(QWidget *parent)
 
 ConnectionDialog::~ConnectionDialog()
 {
-}
-
-void ConnectionDialog::on_connectButton_clicked()
-{
-    QString username = nameLineEdit->text();
-
-    if (username.isEmpty()) {
-        QMessageBox::warning(this, tr("Warning"), tr("The user name can not be empty!"));
-        return;
-    }
-
-    Config.UserName = username;
-    Config.HostAddress = hostComboBox->currentText();
-
-    Config.setValue("UserName", Config.UserName);
-    Config.setValue("HostAddress", Config.HostAddress);
-    Config.setValue("EnableReconnection", reconnectionCheckBox->isChecked());
-
-    accept();
 }
 
 void ConnectionDialog::showEvent(QShowEvent *e)
@@ -241,7 +242,7 @@ void ConnectionDialog::on_clearHistoryButton_clicked()
     hostComboBox->setEditText(QString());
 
     Config.HistoryIPs.clear();
-    Config.remove("HistoryIPs");
+    Config.remove("HistoryUrls");
 }
 
 void ConnectionDialog::on_detectLANButton_clicked()
