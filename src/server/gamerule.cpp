@@ -680,6 +680,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                         extraEffect.multiple = effect.multiple;
                         extraCard->onEffect(extraEffect);
                     }
+                    delete extraCard;
 
                     effect.card->onEffect(effect);
                 } else
@@ -763,6 +764,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 extraEffect.to = effect.from;
                 extraEffect.multiple = effect.multiple;
                 extraCard->onEffect(extraEffect);
+                delete extraCard;
             }
         }
 
@@ -821,6 +823,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     extraEffect.effectValue.last() = extraEffect.effectValue.last() + effect.drank;
             }
             extraCard->onEffect(extraEffect);
+            delete extraCard;
         }
 
         //@todo: I want IronSlash to obtain function debuffEffect() from "Slash"  as an inheritance, But the variant slasheffect.slash is "Card".
