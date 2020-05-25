@@ -50,17 +50,17 @@
 <context>
     <name>BroadcastBox</name>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="671"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="673"/>
         <source>Broadcast</source>
         <translation>广播</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="674"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="676"/>
         <source>Please input the message to broadcast</source>
         <translation>请输入要广播的信息</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="681"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="683"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
@@ -256,186 +256,200 @@
 <context>
     <name>Client</name>
     <message>
-        <location filename="../src/client/client.cpp" line="791"/>
+        <location filename="../src/client/client.cpp" line="795"/>
         <source>Your role is %1</source>
         <translation>你的身份是 %1</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="793"/>
+        <location filename="../src/client/client.cpp" line="797"/>
         <source>
  wait for the lord player choosing general, please</source>
         <translation>
 请等待主公选择人物</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1056"/>
+        <location filename="../src/client/client.cpp" line="1060"/>
         <source>The argument (%1) of command %2 does not conform the format %3</source>
         <translation>命令 %2 的参数 (%1) 不符合其格式 %3</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1057"/>
+        <location filename="../src/client/client.cpp" line="1061"/>
         <source>Command format warning</source>
         <translation>命令格式警告</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1138"/>
+        <location filename="../src/client/client.cpp" line="1142"/>
         <source>Do you want to invoke skill [%1] ?</source>
         <translation>你想发动技能“%1”吗?</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1098"/>
+        <location filename="../src/client/client.cpp" line="1102"/>
         <source>&lt;br/&gt; &lt;b&gt;Notice&lt;/b&gt;: %1&lt;br/&gt;</source>
         <translation>&lt;br/&gt; &lt;b&gt;操作提示&lt;/b&gt;: %1&lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1437"/>
+        <location filename="../src/client/client.cpp" line="1441"/>
         <source>Draw pile: &lt;b&gt;%1&lt;/b&gt;, discard pile: &lt;b&gt;%2&lt;/b&gt;, swap times: &lt;b&gt;%3&lt;/b&gt;</source>
         <translation>摸牌堆:&lt;b&gt;%1&lt;/b&gt;,弃牌堆:&lt;b&gt;%2&lt;/b&gt;,洗牌次数:&lt;b&gt;%3&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="735"/>
+        <location filename="../src/client/client.cpp" line="739"/>
         <source>&lt;p align = &quot;center&quot;&gt;Game will start in &lt;b&gt;%1&lt;/b&gt; seconds...&lt;/p&gt;</source>
         <translation>&lt;p align = &quot;center&quot;&gt;游戏将在 &lt;b&gt;%1&lt;/b&gt; 秒后开始...&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1142"/>
+        <location filename="../src/client/client.cpp" line="1146"/>
         <source>Do you want to invoke skill [%1] to %2 ?</source>
         <translation>你想对%2发动技能“%1”吗?</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1168"/>
+        <location filename="../src/client/client.cpp" line="1172"/>
         <source>%1 initiated a vote for disadvataged side to claim capitulation. Click &quot;OK&quot; to surrender or &quot;Cancel&quot; to resist.</source>
         <translation>%1 要求所有人表决是否投降。 点【确定】表示你要投降，点【取消】拒绝向其他玩家投降。</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1182"/>
+        <location filename="../src/client/client.cpp" line="1186"/>
         <source>Do you want to use the luck card?</source>
         <translation>你想使用手气卡吗？</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1219"/>
+        <location filename="../src/client/client.cpp" line="1223"/>
         <source>Do you want to use nullification to trick card %1 from %2?</source>
         <translation>是否对 %2 的 %1 使用【无懈可击】？</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1221"/>
+        <location filename="../src/client/client.cpp" line="1225"/>
         <source>%1 used trick card %2 to %3 &lt;br&gt;Do you want to use nullification?</source>
         <translation>%1 对 %3 使用锦囊【%2】 &lt;br&gt;是否使用【无懈可击】？</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1456"/>
+        <location filename="../src/client/client.cpp" line="1460"/>
         <source>Please discard %1 card(s), include equip</source>
         <translation>请弃置 %1 张牌，包括装备区的牌</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1458"/>
+        <location filename="../src/client/client.cpp" line="1462"/>
         <source>Please discard %1 card(s), only hand cards is allowed</source>
         <translation>请弃置 %1 张手牌</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1461"/>
+        <location filename="../src/client/client.cpp" line="1465"/>
         <source>hand</source>
         <translation>手</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1494"/>
+        <location filename="../src/client/client.cpp" line="1498"/>
         <source>Please give %1 cards to exchange</source>
         <translation>请选择用于交换的 %1 张手牌</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="2125"/>
-        <location filename="../src/client/client.cpp" line="2129"/>
+        <location filename="../src/client/client.cpp" line="1620"/>
+        <source>Invalid operation</source>
+        <translation>无效的操作</translation>
+    </message>
+    <message>
+        <location filename="../src/client/client.cpp" line="1622"/>
+        <source>Operation not implemented</source>
+        <translation>操作暂未实现</translation>
+    </message>
+    <message>
+        <location filename="../src/client/client.cpp" line="1624"/>
+        <source>Username is incorrect</source>
+        <translation>用户名错误</translation>
+    </message>
+    <message>
+        <location filename="../src/client/client.cpp" line="2133"/>
+        <location filename="../src/client/client.cpp" line="2137"/>
         <source>&lt;br/&gt; &lt;b&gt;Source&lt;/b&gt;: %1&lt;br/&gt;</source>
         <translation>&lt;br/&gt; &lt;b&gt;技能来源&lt;/b&gt;: %1&lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="2127"/>
+        <location filename="../src/client/client.cpp" line="2135"/>
         <source>Please choose a player</source>
         <translation>请选择一名玩家</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1612"/>
+        <location filename="../src/client/client.cpp" line="1616"/>
         <source>Game is over now</source>
         <translation>游戏已经结束</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1614"/>
+        <location filename="../src/client/client.cpp" line="1618"/>
         <source>Invalid signup string</source>
         <translation>无效的登录字符串</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1616"/>
         <source>Your level is not enough</source>
-        <translation>你的等级不够</translation>
+        <translation type="vanished">你的等级不够</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1618"/>
+        <location filename="../src/client/client.cpp" line="1626"/>
         <source>Unknown warning: %1</source>
         <translation>未知警告: %1</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1861"/>
+        <location filename="../src/client/client.cpp" line="1869"/>
         <source>You are dying, please provide %1 peach(es)(or analeptic) to save yourself</source>
         <translation>你处于濒死状态，请提供 %1 个【桃】（或【酒】）来自救</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1870"/>
+        <location filename="../src/client/client.cpp" line="1878"/>
         <source>%1 is dying, please provide %2 peach(es) to save him</source>
         <translation>%1 处于濒死状态，请提供 %2 个【桃】来挽救该角色</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1171"/>
+        <location filename="../src/client/client.cpp" line="1175"/>
         <source>&lt;br/&gt; &lt;b&gt;Notice&lt;/b&gt;: if all people on your side decides to surrender. You&apos;ll lose this game.</source>
         <translation>&lt;br/&gt;&lt;b&gt;注意&lt;/b&gt;：如果所有同阵营的玩家决定投降，你将输掉这局游戏。</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1461"/>
+        <location filename="../src/client/client.cpp" line="1465"/>
         <source>%1 %2 cards(s) are required at least</source>
         <translation>你需要至少弃置 %1 张%2牌</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1496"/>
+        <location filename="../src/client/client.cpp" line="1500"/>
         <source>Please give at most %1 cards to exchange.&lt;br /&gt;You can give %2 cards at least</source>
         <translation>请选择至多 %1 张牌用于交换。&lt;br /&gt;你至少可以交换 %2 张牌</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="1906"/>
+        <location filename="../src/client/client.cpp" line="1914"/>
         <source>%1 request you to show one hand card</source>
         <translation>%1 要求你展示一张手牌</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="2055"/>
+        <location filename="../src/client/client.cpp" line="2063"/>
         <source>Please play a card for pindian</source>
         <translation>请出一张卡牌用于拼点</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="2058"/>
+        <location filename="../src/client/client.cpp" line="2066"/>
         <source>%1 ask for you to play a card to pindian</source>
         <translation>%1 要求你出一张卡牌用于拼点</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="2084"/>
+        <location filename="../src/client/client.cpp" line="2092"/>
         <source>Please distribute %1 cards %2 as you wish</source>
         <translation>请将 %1 张牌交给任意一名%2角色</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="2084"/>
+        <location filename="../src/client/client.cpp" line="2092"/>
         <source>to another player</source>
         <translation>给其他角色</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="2196"/>
+        <location filename="../src/client/client.cpp" line="2204"/>
         <source>&lt;font color=&apos;red&apos;&gt;System: %1&lt;/font&gt;</source>
         <translation>&lt;font color=&apos;red&apos;&gt;系统: %1&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../src/client/client.cpp" line="2214"/>
+        <location filename="../src/client/client.cpp" line="2222"/>
         <source>&lt;font color=&apos;%1&apos;&gt;[%2] said: %3 &lt;/font&gt;</source>
         <translation>&lt;font color=&apos;%1&apos;&gt;[%2] 说: %3 &lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../src/client/client.cpp" line="386"/>
-        <location filename="../src/client/client.cpp" line="1621"/>
+        <location filename="../src/client/client.cpp" line="1629"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
@@ -763,64 +777,100 @@
 <context>
     <name>ConnectionDialog</name>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="124"/>
-        <location filename="../src/dialog/connectiondialog.cpp" line="126"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="165"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="167"/>
         <source>Connection setup</source>
         <translation>连接设置</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="156"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="187"/>
+        <source>Fill Reconnection Information</source>
+        <translation>填写断线重连信息</translation>
+    </message>
+    <message>
+        <location filename="../src/dialog/connectiondialog.cpp" line="193"/>
         <source>Change avatar</source>
         <translation>修改头像</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="140"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="176"/>
         <source>Avatar:</source>
         <translation>头像:</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="108"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="116"/>
+        <source>This pattern is not supported, please recheck your input.</source>
+        <translation>当前地址形式不受支持，请检查输入。</translation>
+    </message>
+    <message>
+        <location filename="../src/dialog/connectiondialog.cpp" line="124"/>
+        <source>This operation is not implemented yet. Sorry for my laziness.</source>
+        <translation>当前操作还没有实现。我咕咕咕了。</translation>
+    </message>
+    <message>
+        <location filename="../src/dialog/connectiondialog.cpp" line="127"/>
+        <source>This operation is not supported, please recheck your input.</source>
+        <translation>当前操作不受支持，请检查输入。</translation>
+    </message>
+    <message>
+        <location filename="../src/dialog/connectiondialog.cpp" line="133"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="143"/>
+        <source>The connection name is incorrect, please recheck your input.</source>
+        <translation>连接名错误，请检查输入。</translation>
+    </message>
+    <message>
+        <location filename="../src/dialog/connectiondialog.cpp" line="149"/>
         <source>Please input valid host address!&lt;br /&gt;Starts with 0.9.7 the address must begin with &quot;qths://&quot;.</source>
         <translation>请输入有效的主机地址！&lt;br /&gt;从0.9.7版本开始，地址需要以“qths://”开头。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="138"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="174"/>
         <source>Host:</source>
         <translation>主机:</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="137"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="291"/>
+        <source>Please fill the server information before we fill reconnection information for you.</source>
+        <translation>请在填写断线重连信息之前手工填写服务器信息。</translation>
+    </message>
+    <message>
+        <location filename="../src/dialog/connectiondialog.cpp" line="173"/>
         <source>Name:</source>
         <translation>名称:</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="154"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="191"/>
         <source>Clear history</source>
         <translation>清除历史记录</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="152"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="189"/>
         <source>Detect LAN ...</source>
         <translation>探测局域网 ...</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="177"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="212"/>
         <source>Connect</source>
         <translation>连接</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="174"/>
         <source>Reconnection</source>
-        <translation>断线重连</translation>
+        <translation type="vanished">断线重连</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="181"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="216"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
         <location filename="../src/dialog/connectiondialog.cpp" line="98"/>
-        <location filename="../src/dialog/connectiondialog.cpp" line="108"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="116"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="124"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="127"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="133"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="143"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="149"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="291"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
@@ -2019,13 +2069,13 @@
     </message>
     <message>
         <location filename="../src/dialog/mainwindow.ui" line="339"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1052"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1054"/>
         <source>About fmod</source>
         <translation>关于 fmod</translation>
     </message>
     <message>
         <location filename="../src/dialog/mainwindow.ui" line="344"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1074"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1076"/>
         <source>About Lua</source>
         <translation>关于 Lua</translation>
     </message>
@@ -2042,7 +2092,7 @@
     </message>
     <message>
         <location filename="../src/dialog/mainwindow.ui" line="359"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1094"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1096"/>
         <source>About GPLv3</source>
         <translation>关于 GPLv3</translation>
     </message>
@@ -2078,7 +2128,7 @@
     </message>
     <message>
         <location filename="../src/dialog/mainwindow.ui" line="241"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="656"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="658"/>
         <source>Role assign table</source>
         <translation>身份分配表</translation>
     </message>
@@ -2096,14 +2146,14 @@
         <location filename="../src/dialog/mainwindow.cpp" line="240"/>
         <location filename="../src/dialog/mainwindow.cpp" line="264"/>
         <location filename="../src/dialog/mainwindow.cpp" line="284"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="701"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="730"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="703"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="732"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
         <location filename="../src/dialog/mainwindow.cpp" line="240"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="730"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="732"/>
         <source>Can not start server!</source>
         <translation>不能启动服务器!</translation>
     </message>
@@ -2129,8 +2179,8 @@
     </message>
     <message>
         <location filename="../src/dialog/mainwindow.cpp" line="302"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="743"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="775"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="745"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="777"/>
         <source>Pure text replay file (*.txt);; Image replay file (*.png)</source>
         <translation>纯文本重放文件 (*.txt);; 图像重放文件 (*.png)</translation>
     </message>
@@ -2140,144 +2190,144 @@
         <translation>网络错误</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="475"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="477"/>
         <source>Disciples dressed in blue, my heart worries for you. You are the cause, of this song without pause</source>
         <translation>青青子衿 悠悠我心 但为君故 沉吟至今</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="479"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="481"/>
         <source>&quot;A Short Song&quot; by Cao Cao</source>
         <translation>曹操《短歌行》</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="488"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="490"/>
         <source>This is the open source clone of the popular &lt;b&gt;Sanguosha&lt;/b&gt; game,totally written in C++ Qt GUI framework &lt;br /&gt;</source>
         <translation>这是游卡&lt;b&gt;三国杀&lt;/b&gt;的开源克隆，使用 C++ Qt GUI 框架 &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="503"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="505"/>
         <source>Compilation time: %1 %2 &lt;br/&gt;</source>
         <translation>编译时间: %1 %2 &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="509"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="511"/>
         <source>Forum: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</source>
         <translation>论坛: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="511"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="513"/>
         <source>About QSanguosha</source>
         <translation>关于 QSanguosha</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="516"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="660"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="714"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1056"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1078"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1098"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="518"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="662"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="716"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1058"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1080"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1100"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="639"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="641"/>
         <source> (no renegade)</source>
         <translation> (无内奸)</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="643"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="645"/>
         <source> (single renegade)</source>
         <translation> (单内奸)</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="775"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="777"/>
         <source>Load replay record</source>
         <translation>载入录像记录</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="781"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="783"/>
         <source>Record Analysis</source>
         <translation>录像数据分析</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="793"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="795"/>
         <source>ScreenName</source>
         <translation>玩家</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="793"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="795"/>
         <source>General</source>
         <translation>人物</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="793"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="795"/>
         <source>Role</source>
         <translation>身份</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="793"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="795"/>
         <source>Living</source>
         <translation>存活</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="793"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="795"/>
         <source>WinOrLose</source>
         <translation>胜负</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="793"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="795"/>
         <source>TurnCount</source>
         <translation>回合</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="793"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="795"/>
         <source>Recover</source>
         <translation>回血</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="793"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="795"/>
         <source>Damage</source>
         <translation>伤害</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="793"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="795"/>
         <source>Damaged</source>
         <translation>受伤</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="794"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="796"/>
         <source>Kill</source>
         <translation>击杀</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="913"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="915"/>
         <source>New Version %1(%3) available.&lt;br/&gt;But we don&apos;t support auto-updating from %2 to %1 on this platform.&lt;br/&gt;Please download the full package from &lt;a href=&quot;%4&quot;&gt;Here&lt;/a&gt;.</source>
         <translation>新版本 %1（%3）可用。&lt;br /&gt;
 但是在此平台上我们不支持从 %2 到 %1 的自动更新。&lt;br /&gt;
 请从&lt;a href=&quot;%4&quot;&gt;这里&lt;/a&gt;下载完整包。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="924"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="926"/>
         <source>New Version Avaliable</source>
         <translation>新版本可用</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1030"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1032"/>
         <source>Important notify</source>
         <translation>重要提示</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1031"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1033"/>
         <source>&lt;font color=&quot;red&quot;&gt;&lt;b&gt;You have previously updated from a publicly test version of TouhouSatsu.&lt;br /&gt;&lt;br /&gt;Because the update package IS NOT guarnteed to work every time on your copy,&lt;br /&gt;please DO NOT report any errors caused by this copy.&lt;br /&gt;If anything unexpected occurred, please delete this copy from your computer and re-download the full package.&lt;/b&gt;&lt;/font&gt;</source>
         <translation>&lt;font color=&quot;red&quot;&gt;&lt;b&gt;您此前从公测版本的东方杀进行过自动升级。&lt;br /&gt;&lt;br /&gt;因为升级包不保证每次在这份本体上好用&lt;br /&gt;所以请不要报告这份本体中的任何问题。&lt;br /&gt;如果有预想以外的情况发生的话，请删除此份本体并重新下载完整包。&lt;/b&gt;&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1087"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1089"/>
         <source>The GNU General Public License is the most widely used free software license, which guarantees end users the freedoms to use, study, share, and modify the software.</source>
         <translation>GNU 通用公共许可协议（简称GNU GPL或GPL），是一个广泛被使用的自由软件许可证条款，它确保了广大用户自由地使用、学习、共享或修改软件。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="821"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="823"/>
         <source>Alive</source>
         <translation>存活</translation>
     </message>
@@ -2287,120 +2337,120 @@
         <translation>请在QQ群 384318315 的群文件里检查更新。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="821"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="823"/>
         <source>Dead</source>
         <translation>阵亡</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="826"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="828"/>
         <source>Win</source>
         <translation>胜</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="826"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="828"/>
         <source>Lose</source>
         <translation>负</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="854"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="856"/>
         <source>Packages:</source>
         <translation>人物包：</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="857"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="859"/>
         <source>GameMode:</source>
         <translation>游戏模式：</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1042"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1044"/>
         <source>FMOD is a proprietary audio library made by Firelight Technologies</source>
         <translation>FMOD 是由 Firelight Technologies 出品的专有音频库</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1046"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1069"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1092"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1048"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1071"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1094"/>
         <source>Official site: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</source>
         <translation>官方网站: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1065"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1067"/>
         <source>Lua is a powerful, fast, lightweight, embeddable scripting language.</source>
         <translation>Lua 是一种强大的，快速的，轻量级，可嵌入的脚本语言.</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="701"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="703"/>
         <source>Server is not started yet!</source>
         <translation>服务器尚未启动!</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="742"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="744"/>
         <source>Please select a replay file</source>
         <translation>请选择一个重放文件</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="499"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="501"/>
         <source>Current version: %1 %2 (%3)&lt;br/&gt;</source>
         <translation>当前版本: %1 %2 (%3)&lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="860"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="862"/>
         <source>ServerOptions:</source>
         <translation>服务器选项：</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="867"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="869"/>
         <source>Chat Information:</source>
         <translation>聊天信息：</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1049"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1071"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1051"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1073"/>
         <source>Current versionn %1 &lt;br/&gt;</source>
         <translation>当前版本 %1&lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="584"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="586"/>
         <source>Show main window</source>
         <translation>显示主窗口</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="506"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="508"/>
         <source>Source code: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</source>
         <translation>源代码: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="608"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="610"/>
         <source>Count</source>
         <translation>人数</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="608"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="610"/>
         <source>Lord</source>
         <translation>主公</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="608"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="610"/>
         <source>Loyalist</source>
         <translation>忠臣</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="608"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="610"/>
         <source>Rebel</source>
         <translation>反贼</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="608"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="610"/>
         <source>Renegade</source>
         <translation>内奸</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="635"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="637"/>
         <source> (double renegade)</source>
         <translation> (双内奸)</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="598"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="600"/>
         <source>Game is minimized</source>
         <translation>游戏已经最小化到系统托盘</translation>
     </message>
@@ -2610,69 +2660,69 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="../src/server/room.cpp" line="2861"/>
+        <location filename="../src/server/room.cpp" line="2865"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3134"/>
+        <location filename="../src/server/room.cpp" line="3144"/>
         <source>Computer %1</source>
         <translation>电脑 %1</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2884"/>
+        <location filename="../src/server/room.cpp" line="2888"/>
         <source>&lt;font color=#000000&gt;Player &lt;b&gt;%1&lt;/b&gt; left the game&lt;/font&gt;</source>
         <translation>&lt;font color=#000000&gt;玩家 %1 离开了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3111"/>
+        <location filename="../src/server/room.cpp" line="3121"/>
         <source>This server is limited to add robot. YOU CAN ONLY ADD ROBOT USING &quot;Fill Robots&quot;.</source>
         <translation>这个服务器启用了限制添加电脑。&lt;b&gt;只允许使用“补全所有电脑”来添加电脑&lt;/b&gt;。</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3138"/>
+        <location filename="../src/server/room.cpp" line="3148"/>
         <source>Hello, I&apos;m a robot</source>
         <translation>大家好，我是一个机器人</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3148"/>
+        <location filename="../src/server/room.cpp" line="3158"/>
         <source>This server is limited to add robot. Please ensure that the number of players is more than 4 and there is more than a half human players.</source>
         <translation>这个服务器启用了限制添加电脑。请确定本模式人数大于4并且存在一半以上的真人玩家。</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3195"/>
+        <location filename="../src/server/room.cpp" line="3205"/>
         <source>&lt;font color=#EEB422&gt;Player &lt;b&gt;%1&lt;/b&gt; joined the game&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 加入了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3890"/>
+        <location filename="../src/server/room.cpp" line="3900"/>
         <source>Unable to parse player</source>
         <translation>不可分析的玩家</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3892"/>
+        <location filename="../src/server/room.cpp" line="3902"/>
         <source>Server is not waiting for reply from %1</source>
         <translation>服务器无法获取 %1 的响应</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3894"/>
+        <location filename="../src/server/room.cpp" line="3904"/>
         <source>Reply command should be %1 instead of %2</source>
         <translation>应答指令应为 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3896"/>
+        <location filename="../src/server/room.cpp" line="3906"/>
         <source>Reply serial should be %1 instead of %2</source>
         <translation>玩家序号应为 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="5684"/>
+        <location filename="../src/server/room.cpp" line="5694"/>
         <source>Card cannot be parsed:
  %1</source>
         <translation>卡牌字符串无法解析:
  %1</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="7186"/>
+        <location filename="../src/server/room.cpp" line="7196"/>
         <source>&lt;font color=#EEB422&gt;The network delay of player &lt;b&gt;%1&lt;/b&gt; is %2 milliseconds.&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 的网络延迟为 %2 毫秒&lt;/font&gt;</translation>
     </message>
@@ -3132,19 +3182,45 @@ P = 你自己, R = 你所在的房间</translation>
 <context>
     <name>Server</name>
     <message>
-        <location filename="../src/server/server.cpp" line="1306"/>
+        <location filename="../src/server/server.cpp" line="1382"/>
         <source>Forbid the connection of address %1</source>
         <translation>禁止了地址 %1 的连接</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="1320"/>
+        <location filename="../src/server/server.cpp" line="1305"/>
         <source>%1 connected</source>
         <translation>%1 已连接</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="1332"/>
+        <location filename="../src/server/server.cpp" line="1317"/>
         <source>Invalid signup string: %1</source>
         <translation>无效的登录字符串: %1</translation>
+    </message>
+    <message>
+        <location filename="../src/server/server.cpp" line="1338"/>
+        <source>invalid operation: more than 2 parts</source>
+        <translation>无效的操作：多于 2 部分</translation>
+    </message>
+    <message>
+        <location filename="../src/server/server.cpp" line="1345"/>
+        <source>unimplemented operation: %1</source>
+        <translation>未实现的操作： %1</translation>
+    </message>
+    <message>
+        <location filename="../src/server/server.cpp" line="1348"/>
+        <source>invalid operation: %1</source>
+        <translation>无效操作：%1</translation>
+    </message>
+    <message>
+        <location filename="../src/server/server.cpp" line="1355"/>
+        <location filename="../src/server/server.cpp" line="1364"/>
+        <source>reconnect username incorrect: %1</source>
+        <translation>重连用户名不正确：%1</translation>
+    </message>
+    <message>
+        <location filename="../src/server/server.cpp" line="1403"/>
+        <source>reconnect username not found: %1</source>
+        <translation>重连用户名未找到：%1</translation>
     </message>
 </context>
 <context>
@@ -3710,24 +3786,24 @@ P = 你自己, R = 你所在的房间</translation>
 <context>
     <name>Settings</name>
     <message>
-        <location filename="../src/core/settings.cpp" line="605"/>
+        <location filename="../src/core/settings.cpp" line="600"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="../src/core/settings.cpp" line="605"/>
+        <location filename="../src/core/settings.cpp" line="600"/>
         <source>Font file %1 could not be loaded!</source>
         <translation>不能载入字体文件 %1 !</translation>
     </message>
     <message>
-        <location filename="../src/core/settings.cpp" line="544"/>
-        <location filename="../src/core/settings.cpp" line="659"/>
+        <location filename="../src/core/settings.cpp" line="539"/>
+        <location filename="../src/core/settings.cpp" line="654"/>
         <source>Sanguosha-fans</source>
         <translation>三国杀fans</translation>
     </message>
     <message>
-        <location filename="../src/core/settings.cpp" line="551"/>
-        <location filename="../src/core/settings.cpp" line="660"/>
+        <location filename="../src/core/settings.cpp" line="546"/>
+        <location filename="../src/core/settings.cpp" line="655"/>
         <source>%1&apos;s server</source>
         <translation>%1的服务器</translation>
     </message>
@@ -3933,12 +4009,12 @@ P = 你自己, R = 你所在的房间</translation>
 <context>
     <name>UdpDetectorDialog</name>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="271"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="326"/>
         <source>Detect available server&apos;s addresses at LAN</source>
         <translation>在局域网内探测可用的服务器地址</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="272"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="327"/>
         <source>Refresh</source>
         <translation>刷新</translation>
     </message>
@@ -3946,22 +4022,22 @@ P = 你自己, R = 你所在的房间</translation>
 <context>
     <name>UpdateDialog</name>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1117"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1119"/>
         <source>New Version Available</source>
         <translation>新版本可用</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1126"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1128"/>
         <source>Yes</source>
         <translation>是</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1129"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1131"/>
         <source>No</source>
         <translation>否</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1150"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1152"/>
         <source>New Version %1(%3) available.
 We support auto-updating from %2 to %1 on this platform.
 Click &apos;Yes&apos; to update now.</source>
@@ -3970,36 +4046,36 @@ Click &apos;Yes&apos; to update now.</source>
 点击“是”开始更新。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1208"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1290"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1306"/>
-        <location filename="../src/dialog/mainwindow.cpp" line="1341"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1210"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1292"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1308"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1343"/>
         <source>Update Error</source>
         <translation>更新错误</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1208"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1210"/>
         <source>An error occurred when downloading packages.
 URL is empty.</source>
         <translation>下载更新包失败。
 路径为空。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1290"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1292"/>
         <source>An error occurred when downloading packages.
 Cannot download the update script.</source>
         <translation>下载更新包失败。
 无法下载更新脚本。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1306"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1308"/>
         <source>An error occurred when downloading packages.
 Download pack checksum mismatch.</source>
         <translation>下载更新包失败。
 更新包校验码不匹配。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/mainwindow.cpp" line="1341"/>
+        <location filename="../src/dialog/mainwindow.cpp" line="1343"/>
         <source>An error occurred when downloading packages.
 Cannot download the update pack.</source>
         <translation>下载更新包失败。
