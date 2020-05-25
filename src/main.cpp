@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
         if (arg.startsWith("-connect:")) {
             arg.remove("-connect:");
             Config.HostAddress = arg;
-            Config.setValue("HostAddress", arg);
+            Config.setValue("HostUrl", arg);
 
             main_window->startConnection();
             break;

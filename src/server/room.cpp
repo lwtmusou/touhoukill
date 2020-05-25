@@ -888,7 +888,11 @@ ServerPlayer *Room::getRaceResult(QList<ServerPlayer *> &players, QSanProtocol::
             continue;
         }
 
-        if (validateFunc == NULL || (winner->m_isClientResponseReady && (this->*validateFunc)(winner, winner->getClientReply(), funcArg))) {
+        // original line is:
+        // if (validateFunc == NULL || (winner->m_isClientResponseReady && (this->*validateFunc)(winner, winner->getClientReply(), funcArg))) {
+        // but I prefer m_isClientResponseReady is judged first since disconnection makes m_isClientResponseReady = false
+        // processResponse makes m_isClientResponseReady = true
+        if (winner->m_isClientResponseReady && (validateFunc == NULL || (this->*validateFunc)(winner, winner->getClientReply(), funcArg))) {
             validResult = true;
             break;
         } else {
@@ -2889,8 +2893,14 @@ void Room::reportDisconnection()
         }
     } else {
         // fourth case
-        if (player->m_isWaitingReply)
-            player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
+        if (player->m_isWaitingReply) {
+            if (_m_raceStarted) {
+                // copied from processResponse about race request
+                _m_raceWinner.store(player);
+                _m_semRaceRequest.release();
+            } else
+                player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
+        }
         setPlayerProperty(player, "state", "offline");
 
         bool someone_is_online = false;
@@ -2928,7 +2938,12 @@ void Room::trustCommand(ServerPlayer *player, const QVariant &)
         player->setState("trust");
         if (player->m_isWaitingReply) {
             player->releaseLock(ServerPlayer::SEMA_MUTEX);
-            player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
+            if (_m_raceStarted) {
+                // copied from processResponse about race request
+                _m_raceWinner.store(player);
+                _m_semRaceRequest.release();
+            } else
+                player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
         }
     } else
         player->setState("online");
