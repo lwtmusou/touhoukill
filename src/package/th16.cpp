@@ -684,6 +684,24 @@ public:
         return r;
     }
 
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (TriggerSkill::cost(triggerEvent, room, invoke, data)) {
+            if (invoke->invoker->hasShownSkill(this) && triggerEvent == TargetSpecified) {
+                LogMessage l;
+                l.type = "#TriggerSkill";
+                l.arg = objectName();
+                l.from = invoke->invoker;
+                room->sendLog(l);
+
+                room->notifySkillInvoked(invoke->invoker, objectName());
+            }
+            return true;
+        }
+
+        return false;
+    }
+
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
@@ -694,18 +712,17 @@ public:
             return false;
 
         if (triggerEvent == TargetSpecified) {
-            if (invoke->targets.first()->askForSkillInvoke("#shengyu-select", "mow")) {
+            QList<int> ids;
+            foreach (const Card *eq, invoke->targets.first()->getEquips()) {
+                if (eq->sameColorWith(use.card) && !invoke->targets.first()->getBrokenEquips().contains(eq->getId()))
+                    ids << eq->getId();
+            }
+
+            if (ids.isEmpty() || invoke->targets.first()->askForSkillInvoke("#shengyu-select", "mow")) {
                 room->setPlayerCardLimitation(invoke->targets.first(), "use,response", ".|" + colorstring + "|.|.", "shengyu", false);
                 invoke->targets.first()->setFlags("shengyu_" + use.card->toString());
-            } else {
-                QList<int> ids;
-                foreach (const Card *eq, invoke->targets.first()->getEquips()) {
-                    if (eq->sameColorWith(use.card))
-                        ids << eq->getId();
-                }
-
+            } else
                 invoke->targets.first()->addBrokenEquips(ids);
-            }
         } else
             room->removePlayerCardLimitation(invoke->targets.first(), "use,response", ".|" + colorstring + "|.|.$0", "shengyu");
 
