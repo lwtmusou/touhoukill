@@ -654,8 +654,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                             extraCard->deleteLater();
 
                             extraEffect.card = effect.card;
-                            extraEffect.from = effect.to;
-                            extraEffect.to = effect.from;
+                            extraEffect.from = effect.from;
+                            extraEffect.to = effect.to;
                             extraEffect.multiple = effect.multiple;
                             extraEffect.effectValue.first() = effect.effectValue.first();
                             extraCard->onEffect(extraEffect);
