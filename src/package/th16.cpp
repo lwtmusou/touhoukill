@@ -236,10 +236,11 @@ public:
         return r;
     }
 
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *r, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         use.to << invoke->owner;
+        r->sortByActionOrder(use.to);
         data = QVariant::fromValue(use);
         return false;
     }
