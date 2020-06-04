@@ -136,7 +136,9 @@ public:
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         if (triggerEvent != CardFinished) {
-            bool choice = room->askForSkillInvoke(invoke->invoker, "#miyi-instant", QVariant::fromValue(invoke->targets.first()));
+            invoke->invoker->tag["miyi-instant"] = QVariant::fromValue(invoke->targets.first());
+            bool choice = room->askForSkillInvoke(invoke->invoker, "#miyi-instant", QString("mya:") + invoke->targets.first()->objectName());
+            invoke->invoker->tag.remove("miyi-instant");
             if (choice) {
                 room->setPlayerProperty(invoke->targets.first(), "removed", false);
                 room->removePlayerCardLimitation(invoke->targets.first(), "use", ".$1", "lure_tiger");
@@ -719,7 +721,7 @@ public:
                     ids << eq->getId();
             }
 
-            if (ids.isEmpty() || invoke->targets.first()->askForSkillInvoke("#shengyu-select", "mow")) {
+            if (ids.isEmpty() || invoke->targets.first()->askForSkillInvoke("#shengyu-select", QString("mow:%1::%2").arg(invoke->invoker->objectName()).arg(colorstring))) {
                 room->setPlayerCardLimitation(invoke->targets.first(), "use,response", ".|" + colorstring + "|.|.", "shengyu", false);
                 invoke->targets.first()->setFlags("shengyu_" + use.card->toString());
             } else
@@ -760,6 +762,7 @@ public:
         BoneHealing *bh = new BoneHealing(Card::SuitToBeDecided, -1);
         bh->addSubcard(originalCard);
         bh->setSkillName(objectName());
+        bh->setShowSkill(objectName());
         return bh;
     }
 };
