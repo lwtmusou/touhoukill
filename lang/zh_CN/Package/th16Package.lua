@@ -6,7 +6,7 @@ return {
 	
 	["okina"] = "摩多罗隐岐奈",
 	["#okina"] = "啥",
-	
+	["designer:okina"] = "dawda",
 	["illustrator:okina"] = "谁",
 	["origin:okina"] = "p号：多少；个人id：多少",
 	
@@ -50,6 +50,7 @@ return {
 	
 	["nemuno"] = "坂田合欢",
 	["#nemuno"] = "跨越浮世门关的山姥",
+	["designer:nemuno"] = "三国有单",
 	
 	["illustrator:nemuno"] = "谁",
 	["origin:nemuno"] = "p号：多少；个人id：多少",
