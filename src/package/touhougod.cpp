@@ -7180,6 +7180,8 @@ public:
             QList<int> use_ids, disable_use_ids;
             foreach (int id, tricks) {
                 const Card *c = Sanguosha->getEngineCard(id); //deletelater?
+
+                // Fs: when modifiying this skill, check skill "Zhumao" in th16
                 c->setFlags("tianbian");
                 c->setFlags("IgnoreFailed");
                 bool can = !disable.contains(id) && usecheck(invoke->invoker, current, c);
@@ -7303,6 +7305,7 @@ public:
     }
 };
 
+// Fs: when modifiying this skill, check skill "Zhumao" in th16
 class TianbianDistance : public TargetModSkill
 {
 public:

@@ -1375,27 +1375,30 @@ public:
     Zhumao()
         : TriggerSkill("zhumao")
     {
-        events << TargetConfirming;
+        events << TargetSpecifying;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         QList<SkillInvokeDetail> r;
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card != NULL && !use.card->isKindOf("SkillCard") && use.from != NULL) {
+        if (use.card != NULL && (use.card->isKindOf("Slash") || use.card->isNDTrick()) && use.from != NULL) {
             foreach (ServerPlayer *m, use.to) {
                 if (m->isAlive() && m->hasSkill(this)) {
                     // m is mai here
                     if (m->getHandcardNum() < use.from->getHandcardNum()) {
-                        // TEMPORARILY no availability check
+                        use.card->setFlags("tianbian");
+                        use.card->setFlags("IgnoreFailed");
                         QList<ServerPlayer *> noselectPlayers = use.to;
                         noselectPlayers << use.from << m;
                         foreach (ServerPlayer *p, room->getAllPlayers()) {
-                            if (!noselectPlayers.contains(p)) {
+                            if (!noselectPlayers.contains(p) && use.card->targetFilter(QList<const Player *>(), p, use.from)) {
                                 r << SkillInvokeDetail(this, m, m);
                                 break;
                             }
                         }
+                        use.card->setFlags("-tianbian");
+                        use.card->setFlags("-IgnoreFailed");
                     }
                 }
             }
@@ -1410,10 +1413,14 @@ public:
         QList<ServerPlayer *> noselectPlayers = use.to;
         noselectPlayers << use.from << invoke->invoker;
         QList<ServerPlayer *> selectPlayer;
+        use.card->setFlags("tianbian");
+        use.card->setFlags("IgnoreFailed");
         foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (!noselectPlayers.contains(p))
+            if (!noselectPlayers.contains(p) && use.card->targetFilter(QList<const Player *>(), p, use.from))
                 selectPlayer << p;
         }
+        use.card->setFlags("-tianbian");
+        use.card->setFlags("-IgnoreFailed");
 
         if (!selectPlayer.isEmpty()) {
             ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, selectPlayer, objectName(), "@zhumao-select:::" + use.card->objectName(), true, true);
