@@ -1706,6 +1706,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
         if (use.card->isKindOf("Peach") || use.card->isKindOf("Slash") || use.card->isNDTrick()) {
+            // Fs: when modifiying this skill, check skill "Zhumao" in th16
             use.card->setFlags("xunshi");
             use.card->setFlags("IgnoreFailed");
             foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
@@ -1735,7 +1736,8 @@ public:
         room->touhouLogmessage("#xunshi", use.from, use.card->objectName(), logto, objectName());
 
         //wtf!?  this flag can not detected in sgs.ai_choicemade_filter.cardChosen.snatch
-        room->setCardFlag(use.card, "xunshi");
+        // Fs: so delete this
+        // room->setCardFlag(use.card, "xunshi");
         invoke->invoker->drawCards(1);
         use.to << invoke->invoker;
         room->sortByActionOrder(use.to);
@@ -1745,6 +1747,7 @@ public:
     }
 };
 
+// Fs: when modifiying this skill, check skill "Zhumao" in th16
 class XunshiDistance : public TargetModSkill
 {
 public:

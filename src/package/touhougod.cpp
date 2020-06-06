@@ -7181,7 +7181,6 @@ public:
             foreach (int id, tricks) {
                 const Card *c = Sanguosha->getEngineCard(id); //deletelater?
 
-                // Fs: when modifiying this skill, check skill "Zhumao" in th16
                 c->setFlags("tianbian");
                 c->setFlags("IgnoreFailed");
                 bool can = !disable.contains(id) && usecheck(invoke->invoker, current, c);
@@ -7242,6 +7241,9 @@ public:
             SpringBreath *c = new SpringBreath(Card::NoSuit, 0);
             delay_trick = c;
         }
+
+        // delay_trick = qobject_cast<DelayedTrick *>(Sanguosha->cloneCard(choice, Card::NoSuit, 0)); // does this make sence?
+
         if (delay_trick != NULL) {
             //bool on_effect = room->cardEffect(delay_trick, NULL, current);  // iscanceled  ->  DelayedTrick::onEffect
             //effected << trick;
@@ -7305,7 +7307,6 @@ public:
     }
 };
 
-// Fs: when modifiying this skill, check skill "Zhumao" in th16
 class TianbianDistance : public TargetModSkill
 {
 public:

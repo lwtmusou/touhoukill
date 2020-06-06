@@ -1387,7 +1387,7 @@ public:
                 if (m->isAlive() && m->hasSkill(this)) {
                     // m is mai here
                     if (m->getHandcardNum() < use.from->getHandcardNum()) {
-                        use.card->setFlags("tianbian");
+                        use.card->setFlags("xunshi");
                         use.card->setFlags("IgnoreFailed");
                         QList<ServerPlayer *> noselectPlayers = use.to;
                         noselectPlayers << use.from << m;
@@ -1397,7 +1397,7 @@ public:
                                 break;
                             }
                         }
-                        use.card->setFlags("-tianbian");
+                        use.card->setFlags("-xunshi");
                         use.card->setFlags("-IgnoreFailed");
                     }
                 }
@@ -1413,13 +1413,13 @@ public:
         QList<ServerPlayer *> noselectPlayers = use.to;
         noselectPlayers << use.from << invoke->invoker;
         QList<ServerPlayer *> selectPlayer;
-        use.card->setFlags("tianbian");
+        use.card->setFlags("xunshi");
         use.card->setFlags("IgnoreFailed");
         foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (!noselectPlayers.contains(p) && use.card->targetFilter(QList<const Player *>(), p, use.from))
                 selectPlayer << p;
         }
-        use.card->setFlags("-tianbian");
+        use.card->setFlags("-xunshi");
         use.card->setFlags("-IgnoreFailed");
 
         if (!selectPlayer.isEmpty()) {
