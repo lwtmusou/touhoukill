@@ -1192,61 +1192,7 @@ public:
 
 //********  SUMMER   **********
 
-SkltKexueHegCard::SkltKexueHegCard()
-{
-    will_throw = false;
-    target_fixed = true;
-    handling_method = Card::MethodUse;
-    m_skillName = "skltkexue_hegemony_attach";
-}
-
-void SkltKexueHegCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
-{
-    ServerPlayer *who = room->getCurrentDyingPlayer();
-    if (who != NULL && who->hasShownSkill("skltkexue_hegemony")) {
-        room->notifySkillInvoked(who, "skltkexue_hegemony");
-        room->loseHp(source);
-        if (source->isAlive())
-            source->drawCards(1);
-
-        RecoverStruct recover;
-        recover.recover = 1;
-        recover.who = source;
-        room->recover(who, recover);
-    }
-}
-
-class SkltKexueHegVS : public ZeroCardViewAsSkill
-{
-public:
-    SkltKexueHegVS()
-        : ZeroCardViewAsSkill("skltkexue_hegemony_attach")
-    {
-        attached_lord_skill = true;
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const
-    {
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
-    {
-        if (player->getHp() > player->dyingThreshold() && pattern.contains("peach")) {
-            foreach (const Player *p, player->getAliveSiblings()) {
-                if (p->hasFlag("Global_Dying") && p->hasShownSkill("skltkexue_hegemony"))
-                    return true;
-            }
-        }
-        return false;
-    }
-
-    virtual const Card *viewAs() const
-    {
-        return new SkltKexueHegCard;
-    }
-};
-
+/*
 class SkltKexueHegemony : public TriggerSkill
 {
 public:
@@ -1307,7 +1253,7 @@ public:
         return false;
     }
 };
-
+*/
 class BolanHgemony : public TriggerSkill
 {
 public:
@@ -4365,7 +4311,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     //Summer
 
     General *remilia_hegemony = new General(this, "remilia_hegemony", "shu", 3);
-    remilia_hegemony->addSkill(new SkltKexueHegemony);
+    remilia_hegemony->addSkill("skltkexue");
     remilia_hegemony->addSkill("mingyun");
     remilia_hegemony->addCompanion("flandre_hegemony");
     remilia_hegemony->addCompanion("sakuya_hegemony");
@@ -4643,7 +4589,6 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     addMetaObject<QingtingHegemonyCard>();
     addMetaObject<ShowShezhengCard>();
 
-    addMetaObject<SkltKexueHegCard>();
     addMetaObject<XushiHegemonyCard>();
     addMetaObject<XingyunHegemonyCard>();
 
@@ -4657,7 +4602,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     skills << new GameRule_AskForGeneralShowHead << new GameRule_AskForGeneralShowDeputy << new GameRule_AskForArraySummon << new HalfLife << new HalfLifeVS << new HalfLifeMax
            << new CompanionVS << new PioneerVS;
     //General skill
-    skills << new ShezhengAttach << new SkltKexueHegVS; //<< new ShihuiHegemonyVS
+    skills << new ShezhengAttach;
 }
 
 ADD_PACKAGE(HegemonyGeneral)

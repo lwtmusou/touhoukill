@@ -2,7 +2,7 @@
 function sgs.ai_cardsview_valuable.skltkexue_attach(self, class_name, player)
 	if class_name == "Peach" and player:getHp()> player:dyingThreshold() then
 		local dying = player:getRoom():getCurrentDyingPlayer()
-		if not dying or (not dying:hasSkill("skltkexue")  and not dying:hasShownSkill("skltkexue_hegemony"))
+		if not dying or (not dying:hasSkill("skltkexue") and not dying:hasShownSkill("skltkexue"))
 		or self:isEnemy(dying, player) or dying:objectName() == player:objectName() then return nil end
 
 		if self:isFriend(dying, player) then
@@ -22,28 +22,6 @@ function sgs.ai_cardsview_valuable.skltkexue_attach(self, class_name, player)
 	end
 end
 
-function sgs.ai_cardsview_valuable.skltkexue_hegemony_attach(self, class_name, player)
-	if class_name == "Peach" and player:getHp()> player:dyingThreshold() then
-		local dying = player:getRoom():getCurrentDyingPlayer()
-		if not dying or  not dying:hasShownSkill("skltkexue_hegemony")
-		or self:isEnemy(dying, player) or dying:objectName() == player:objectName() then return nil end
-
-		if self:isFriend(dying, player) then
-			if self.role == "renegade" then
-				local need_hp = math.abs(1 - dying:getHp())
-				local others_hp = 0
-				for _,p in pairs(self.friends_noself)do
-					if p:getHp()>1 then
-						others_hp = others_hp + p:getHp() - 1
-					end
-				end
-				if others_hp >= need_hp then return nil end
-			end
-			return "@SkltKexueHegCard=."
-		end
-		return nil
-	end
-end
 
 sgs.ai_card_intention.SkltKexueCard = sgs.ai_card_intention.Peach
 sgs.ai_use_priority.SkltKexueCard = sgs.ai_use_priority.Peach + 0.1
@@ -113,7 +91,7 @@ function SmartAI:slashProhibitToEghitDiagram(card,from,enemy)
 end
 
 
-sgs.ai_skill_invoke.skltkexue_hegemony =  true
+sgs.ai_skill_invoke.skltkexue =  true
 
 --sgs.ai_skill_invoke.EightDiagram
 --sgs.ai_armor_value.EightDiagram

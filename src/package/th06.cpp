@@ -24,8 +24,13 @@ void SkltKexueCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> 
     if (who != NULL && who->hasSkill("skltkexue")) {
         room->notifySkillInvoked(who, "skltkexue");
         room->loseHp(source);
-        if (source->isAlive())
-            source->drawCards(2);
+        if (source->isAlive()) {
+            if (isHegemonyGameMode(ServerInfo.GameMode))
+                source->drawCards(1);
+            else
+                source->drawCards(2);
+        }
+            
 
         RecoverStruct recover;
         recover.recover = 1;
@@ -71,12 +76,15 @@ public:
     SkltKexue()
         : TriggerSkill("skltkexue")
     {
-        events << GameStart << EventAcquireSkill << EventLoseSkill << Death << Debut << Revive << GeneralShown;
+        events << GameStart << EventAcquireSkill << EventLoseSkill << Death << Debut << Revive << GeneralShown << GeneralShown << Dying;
         show_type = "static";
     }
 
-    void record(TriggerEvent, Room *room, QVariant &) const
+    void record(TriggerEvent e, Room *room, QVariant &) const
     {
+        if (e == Dying)
+            return;
+
         static QString attachName = "skltkexue_attach";
         QList<ServerPlayer *> sklts;
         foreach (ServerPlayer *p, room->getAllPlayers()) {
@@ -103,6 +111,25 @@ public:
             }
         }
     }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    {
+        if (triggerEvent == Dying) {
+            DyingStruct dying = data.value<DyingStruct>();
+            if (dying.who && dying.who->isAlive() && dying.who->hasSkill(this) && !dying.who->hasShownSkill(this))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, dying.who, dying.who);
+            return QList<SkillInvokeDetail>();
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (invoke->invoker->askForSkillInvoke(this, data))
+            invoke->invoker->showHiddenSkill(objectName());
+        return false;
+    }
+
 };
 
 class Mingyun : public TriggerSkill
