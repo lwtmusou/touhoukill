@@ -379,10 +379,6 @@
         <translation>无效的登录字符串</translation>
     </message>
     <message>
-        <source>Your level is not enough</source>
-        <translation type="vanished">你的等级不够</translation>
-    </message>
-    <message>
         <location filename="../src/client/client.cpp" line="1626"/>
         <source>Unknown warning: %1</source>
         <translation>未知警告: %1</translation>
@@ -852,10 +848,6 @@
         <location filename="../src/dialog/connectiondialog.cpp" line="212"/>
         <source>Connect</source>
         <translation>连接</translation>
-    </message>
-    <message>
-        <source>Reconnection</source>
-        <translation type="vanished">断线重连</translation>
     </message>
     <message>
         <location filename="../src/dialog/connectiondialog.cpp" line="216"/>
@@ -1521,7 +1513,7 @@
         <translation>重复技能: %1</translation>
     </message>
     <message>
-        <location filename="../src/core/engine.cpp" line="812"/>
+        <location filename="../src/core/engine.cpp" line="822"/>
         <source>%1 [Scenario mode]</source>
         <translation>%1 【剧情模式】</translation>
     </message>
@@ -2500,7 +2492,7 @@
 <context>
     <name>Player</name>
     <message>
-        <location filename="../src/core/player.cpp" line="1646"/>
+        <location filename="../src/core/player.cpp" line="1648"/>
         <source>&lt;font color=%1&gt;No skills&lt;/font&gt;</source>
         <translation>&lt;font color=%1&gt;无技能&lt;/font&gt;</translation>
     </message>
@@ -2665,7 +2657,7 @@
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3144"/>
+        <location filename="../src/server/room.cpp" line="3149"/>
         <source>Computer %1</source>
         <translation>电脑 %1</translation>
     </message>
@@ -2675,54 +2667,54 @@
         <translation>&lt;font color=#000000&gt;玩家 %1 离开了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3121"/>
+        <location filename="../src/server/room.cpp" line="3126"/>
         <source>This server is limited to add robot. YOU CAN ONLY ADD ROBOT USING &quot;Fill Robots&quot;.</source>
         <translation>这个服务器启用了限制添加电脑。&lt;b&gt;只允许使用“补全所有电脑”来添加电脑&lt;/b&gt;。</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3148"/>
+        <location filename="../src/server/room.cpp" line="3153"/>
         <source>Hello, I&apos;m a robot</source>
         <translation>大家好，我是一个机器人</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3158"/>
+        <location filename="../src/server/room.cpp" line="3163"/>
         <source>This server is limited to add robot. Please ensure that the number of players is more than 4 and there is more than a half human players.</source>
         <translation>这个服务器启用了限制添加电脑。请确定本模式人数大于4并且存在一半以上的真人玩家。</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3205"/>
+        <location filename="../src/server/room.cpp" line="3210"/>
         <source>&lt;font color=#EEB422&gt;Player &lt;b&gt;%1&lt;/b&gt; joined the game&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 加入了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3900"/>
+        <location filename="../src/server/room.cpp" line="3905"/>
         <source>Unable to parse player</source>
         <translation>不可分析的玩家</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3902"/>
+        <location filename="../src/server/room.cpp" line="3907"/>
         <source>Server is not waiting for reply from %1</source>
         <translation>服务器无法获取 %1 的响应</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3904"/>
+        <location filename="../src/server/room.cpp" line="3909"/>
         <source>Reply command should be %1 instead of %2</source>
         <translation>应答指令应为 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3906"/>
+        <location filename="../src/server/room.cpp" line="3911"/>
         <source>Reply serial should be %1 instead of %2</source>
         <translation>玩家序号应为 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="5694"/>
+        <location filename="../src/server/room.cpp" line="5699"/>
         <source>Card cannot be parsed:
  %1</source>
         <translation>卡牌字符串无法解析:
  %1</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="7196"/>
+        <location filename="../src/server/room.cpp" line="7201"/>
         <source>&lt;font color=#EEB422&gt;The network delay of player &lt;b&gt;%1&lt;/b&gt; is %2 milliseconds.&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 的网络延迟为 %2 毫秒&lt;/font&gt;</translation>
     </message>
@@ -3811,7 +3803,7 @@ P = 你自己, R = 你所在的房间</translation>
 <context>
     <name>Skill</name>
     <message>
-        <location filename="../src/core/skill.cpp" line="57"/>
+        <location filename="../src/core/skill.cpp" line="59"/>
         <source>this skill cannot preshow</source>
         <translation>此技能不可预亮</translation>
     </message>
