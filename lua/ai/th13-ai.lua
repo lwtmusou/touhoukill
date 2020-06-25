@@ -329,7 +329,7 @@ sgs.ai_skill_cardchosen.xihua = function(self, who, flags)
 				table.insert(success,c)
 			elseif  xihua:isKindOf("TrickCard") and c:isKindOf("TrickCard") then
 				table.insert(success,c)
-			elseif c:getNumber()>10 then
+			elseif not self.player:getRoom():getMode():find("hegemony") and c:getNumber()>10 then
 				table.insert(success,c)
 			else
 				table.insert(unsuccess,c)
@@ -349,7 +349,11 @@ end
 
 
 sgs.ai_cardneed.xihua = function(to, card, self)
-	return card:getNumber() > 10
+    if not self.player:getRoom():getMode():find("hegemony") then
+	    return card:getNumber() > 10
+	else
+	    return nil 
+	end
 end
 
 

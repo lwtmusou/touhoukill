@@ -463,7 +463,7 @@ bool XihuaCard::do_xihua(ServerPlayer *tanuki) const
     Card *card = Sanguosha->getCard(to_show);
 
     bool success = false;
-    if (card->getNumber() > 10)
+    if (!isHegemonyGameMode(ServerInfo.GameMode) && card->getNumber() > 10) //this skill in hegemony mode differs with other modes 
         success = true;
     else if (card->isKindOf("TrickCard") && xihuacard->isKindOf("TrickCard"))
         success = true;
