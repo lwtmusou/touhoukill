@@ -34,7 +34,7 @@ public:
     bool isLordSkill() const;
     bool isAttachedLordSkill() const;
     virtual bool shouldBeVisible(const Player *Self) const; // usually for attached skill
-    QString getDescription(bool yellow = true) const;
+    QString getDescription(bool yellow = true, bool addHegemony = false) const;
     QString getNotice(int index) const;
     bool isVisible() const;
 

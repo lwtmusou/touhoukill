@@ -339,12 +339,22 @@ QList<const Package *> Engine::getPackages() const
     return findChildren<const Package *>();
 }
 
-QString Engine::translate(const QString &to_translate) const
+QString Engine::translate(const QString &to_translate, bool addHegemony) const
 {
     QStringList list = to_translate.split("\\");
     QString res;
-    foreach (QString str, list)
-        res.append(translations.value(str, str));
+    foreach(QString str, list) {
+        if (addHegemony && !str.endsWith("_hegemony")) {
+            QString strh = str + "_hegemony";
+            if (translations.contains(strh))
+                res.append(translations.value(strh, strh));
+            else
+                res.append(translations.value(str, str));
+        }
+        else
+            res.append(translations.value(str, str));
+    }
+        
     return res;
 }
 

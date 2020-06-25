@@ -43,17 +43,19 @@ bool Skill::shouldBeVisible(const Player *Self) const
     return Self != NULL;
 }
 
-QString Skill::getDescription(bool yellow) const
+QString Skill::getDescription(bool yellow, bool addHegemony) const
 {
     bool normal_game = ServerInfo.DuringGame && isNormalGameMode(ServerInfo.GameMode);
     QString name = QString("%1%2").arg(objectName()).arg(normal_game ? "_p" : "");
-    QString des_src = Sanguosha->translate(":" + name);
+    //bool addHegemony = isHegemony && !objectName().endsWith("_hegemony");
+    QString des_src = Sanguosha->translate(":" + name, addHegemony);
     if (normal_game && des_src.startsWith(":"))
         des_src = Sanguosha->translate(":" + objectName());
     if (des_src.startsWith(":"))
         return QString();
     QString desc = QString("<font color=%1>%2</font>").arg(yellow ? "#FFFF33" : "#FF0080").arg(des_src);
-    if (isHegemonyGameMode(ServerInfo.GameMode) && !canPreshow())
+    //if (isHegemonyGameMode(ServerInfo.GameMode) && !canPreshow())
+    if (addHegemony && !canPreshow())
         desc.prepend(QString("<font color=gray>(%1)</font><br/>").arg(tr("this skill cannot preshow")));
     return desc;
 }

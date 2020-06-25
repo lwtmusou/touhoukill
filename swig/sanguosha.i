@@ -1195,7 +1195,7 @@ public:
 class Engine: public QObject {
 public:
     void addTranslationEntry(const char *key, const char *value);
-    QString translate(const char *to_translate) const;
+    QString translate(const char *to_translate, bool addHegemony = false) const;
     lua_State *getLuaState() const;
 
     int getMiniSceneCounts();
@@ -1288,7 +1288,7 @@ public:
     explicit Skill(const char *name, Frequency frequent = NotFrequent);
     bool isLordSkill() const;
     bool isAttachedLordSkill() const;
-    QString getDescription(bool yellow = true) const;
+    QString getDescription(bool yellow = true, bool addHegemony = false) const;
     bool isVisible() const;
 
     virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const;
