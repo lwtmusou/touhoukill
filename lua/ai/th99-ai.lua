@@ -456,7 +456,32 @@ sgs.ai_skill_use["@@mengxian_hegemony"] = function(self, prompt)
 	return "."
 end
 
-
+sgs.ai_skill_cardask["@mengxian_hegemony"] = function(self, data)
+	local damage = data:toDamage()
+	local getReturn = function()
+			return "$" .. self.player:getPile("jingjie"):first()
+	end
+	local target = damage.to
+	if self:isFriend(target) then
+		if self:getDamagedEffects(target, self.players, true) or self:needToLoseHp(target, self.player, true) then return "."
+		elseif target:isChained() and self:isGoodChainTarget(target, self.player, nil, nil, damage.card) then return "."
+		elseif self:isWeak(target) or damage.damage > 1 then return getReturn()
+		elseif target:getLostHp() < 1 then return "." end
+		return getReturn()
+	else
+		local canDamage = self:touhouNeedAvoidAttack(damage,damage.from,target,true)
+		if not canDamage then return getReturn() end
+		if self:isWeak(target) then return "." end
+		if damage.damage > 1 or self:hasHeavySlashDamage(damage.from, damage.card, target) then return "." end
+		if target:getArmor() and self:evaluateArmor(target:getArmor(), target) > 3 and not (target:hasArmorEffect("SilverLion") and target:isWounded()) then return getReturn() end
+		local num = target:getHandcardNum()
+		if self:hasSkills(sgs.need_kongcheng, target) then return "." end
+		if target:getCards("hes"):length()<4 and target:getCards("hes"):length()>1 then return getReturn() end
+		return "."
+	end
+	
+	return "."
+end
 
 --国战版
 sgs.ai_skill_invoke.yueshi_hegemony  = function(self)
