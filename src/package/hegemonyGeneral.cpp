@@ -2521,6 +2521,90 @@ public:
     }
 };
 
+
+
+ShowFengsuCard::ShowFengsuCard()
+    : SkillCard()
+{
+    mute = true;
+    target_fixed = true;
+    handling_method = Card::MethodNone;
+}
+
+const Card *ShowFengsuCard::validate(CardUseStruct &card_use) const
+{
+    bool head = card_use.from->inHeadSkills("fengsu");
+    card_use.from->showGeneral(head);
+    return NULL;
+}
+
+class FengsuAttach : public ViewAsSkill
+{
+public:
+    FengsuAttach()
+        : ViewAsSkill("fengsu_attach")
+    {
+        attached_lord_skill = true;
+    }
+
+    virtual bool shouldBeVisible(const Player *Self) const
+    {
+        return Self;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return !player->hasShownSkill("fengsu");
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &, const Card *) const
+    {
+        return false;
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &) const
+    {
+        return new ShowFengsuCard();
+    }
+};
+
+class FengsuHegemonyHandler : public TriggerSkill
+{
+public:
+    FengsuHegemonyHandler()
+        : TriggerSkill("#fengsu_hegemony")
+    {
+        events << GameStart << EventAcquireSkill << EventLoseSkill << Death << Debut << EventSkillInvalidityChange;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
+    {
+        if (!isHegemonyGameMode(ServerInfo.GameMode))
+            return;
+
+        if (triggerEvent == GameStart || triggerEvent == Debut || triggerEvent == EventAcquireSkill) {
+            foreach(ServerPlayer *p, room->getAllPlayers()) {
+                if ((p->hasSkill("fengsu", true) || p->ownSkill("fengsu")) && !p->hasSkill("fengsu_attach")) {
+                    p->gainMark("@dddd");
+                    room->attachSkillToPlayer(p, "fengsu_attach");
+                    p->gainMark("@rrrr");
+                }
+                    
+            }
+        }
+        if (triggerEvent == Death || triggerEvent == EventLoseSkill) {
+            foreach(ServerPlayer *p, room->getAllPlayers()) {
+                if ((!p->hasSkill("fengsu", true) && !p->ownSkill("fengsu")) && p->hasSkill("fengsu_attach"))
+                    room->detachSkillFromPlayer(p, "fengsu_attach", true);
+            }
+        }
+    }
+};
+
+
+
+
+
 class DuxinHegemony : public TriggerSkill
 {
 public:
@@ -4458,8 +4542,11 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     General *aya_hegemony = new General(this, "aya_hegemony", "qun", 3);
     aya_hegemony->addSkill("fengshen");
     aya_hegemony->addSkill("fengsu");
-    aya_hegemony->addSkill("#fengsu-effect");
+    aya_hegemony->addSkill("#fengsu-distance");
+    aya_hegemony->addSkill(new FengsuHegemonyHandler);
+    related_skills.insertMulti("fengsu", "#fengsu_hegemony");
     aya_hegemony->addCompanion("momizi_hegemony");
+    
 
     General *nitori_hegemony = new General(this, "nitori_hegemony", "qun", 3);
     nitori_hegemony->addSkill("xinshang");
@@ -4622,6 +4709,9 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     addMetaObject<XushiHegemonyCard>();
     addMetaObject<XingyunHegemonyCard>();
 
+    addMetaObject<ShowFengsuCard>();
+
+
     addMetaObject<ChunhenHegemonyCard>();
     //addMetaObject<MocaoHegemonyCard>();
     addMetaObject<DongzhiHegemonyCard>();
@@ -4632,7 +4722,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     skills << new GameRule_AskForGeneralShowHead << new GameRule_AskForGeneralShowDeputy << new GameRule_AskForArraySummon << new HalfLife << new HalfLifeVS << new HalfLifeMax
            << new CompanionVS << new PioneerVS;
     //General skill
-    skills << new ShezhengAttach;
+    skills << new ShezhengAttach << new FengsuAttach;
 }
 
 ADD_PACKAGE(HegemonyGeneral)

@@ -800,11 +800,11 @@ ShowFengsu::ShowFengsu()
 {
 }
 
-class Fengsu : public DistanceSkill
+class FengsuDistance : public DistanceSkill
 {
 public:
-    Fengsu()
-        : DistanceSkill("fengsu")
+    FengsuDistance()
+        : DistanceSkill("#fengsu-distance")
     {
     }
 
@@ -829,13 +829,14 @@ public:
     }
 };
 
-class FengsuEffect : public TriggerSkill
+class Fengsu : public TriggerSkill
 {
 public:
-    FengsuEffect()
-        : TriggerSkill("#fengsu-effect")
+    Fengsu()
+        : TriggerSkill("fengsu")
     {
         events << HpChanged;
+        frequency = Compulsory;
     }
 
     void record(TriggerEvent, Room *room, QVariant &data) const
@@ -844,6 +845,17 @@ public:
         if (player && player->hasSkill("fengsu") && player->hasShownSkill("fengsu"))
             room->notifySkillInvoked(player, "fengsu");
     }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        ServerPlayer *player = data.value<ServerPlayer *>();
+        if (isHegemonyGameMode(ServerInfo.GameMode) && player && player->hasSkill(objectName()) && !player->hasShownSkill(objectName())) {
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+        }
+
+        return QList<SkillInvokeDetail>();
+    }
+
 };
 
 XinshangCard::XinshangCard()
@@ -1637,8 +1649,8 @@ TH10Package::TH10Package()
     General *aya = new General(this, "aya", "fsl", 3);
     aya->addSkill(new Fengshen);
     aya->addSkill(new Fengsu);
-    aya->addSkill(new FengsuEffect);
-    related_skills.insertMulti("fengsu", "#fengsu-effect");
+    aya->addSkill(new FengsuDistance);
+    related_skills.insertMulti("fengsu", "#fengsu-distance");
 
     General *nitori = new General(this, "nitori", "fsl", 3);
     nitori->addSkill(new Xinshang);

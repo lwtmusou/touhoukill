@@ -208,6 +208,10 @@ return
 	
 	["sanae_hegemony"] = "东风谷早苗",
 	["aya_hegemony"] = "射命丸文",
+	["fengsu_attach"] = "风速（出牌阶段亮将）";
+	[":fengsu_attach"] = "风速（出牌阶段亮将）";
+	
+	
 	["nitori_hegemony"] = "河城荷取",
 	["hina_hegemony"] = "键山雏",
 	["momizi_hegemony"] = "犬走椛",
