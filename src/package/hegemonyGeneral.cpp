@@ -2585,9 +2585,7 @@ public:
         if (triggerEvent == GameStart || triggerEvent == Debut || triggerEvent == EventAcquireSkill) {
             foreach(ServerPlayer *p, room->getAllPlayers()) {
                 if ((p->hasSkill("fengsu", true) || p->ownSkill("fengsu")) && !p->hasSkill("fengsu_attach")) {
-                    p->gainMark("@dddd");
                     room->attachSkillToPlayer(p, "fengsu_attach");
-                    p->gainMark("@rrrr");
                 }
                     
             }
