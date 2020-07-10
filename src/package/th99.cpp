@@ -1162,7 +1162,7 @@ public:
                 }
             }
         } else if (triggerEvent == DamageComplete) {
-            invoke->preferredTarget->setMark("zheshetransfer", 0);
+            invoke->preferredTarget->loseMark("zheshetransfer");
             return true;
         }
 
@@ -1172,7 +1172,7 @@ public:
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         if (triggerEvent == DamageInflicted) {
-            invoke->targets.first()->setMark("zheshetransfer", 1);
+            invoke->targets.first()->addMark("zheshetransfer");
 
             DamageStruct damage;
             damage.from = invoke->invoker;
