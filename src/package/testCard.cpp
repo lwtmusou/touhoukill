@@ -442,7 +442,7 @@ public:
         }
 
         if (dummy->subcardsLength() > 0) {
-            room->setEmotion(effect.to, "weapon/hakkero");
+            room->setEmotion(effect.from, "weapon/hakkero");
             room->throwCard(dummy, effect.to, effect.from);
         }
         delete dummy;
