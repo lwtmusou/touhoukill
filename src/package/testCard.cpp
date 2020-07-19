@@ -427,7 +427,7 @@ public:
 
         DummyCard *dummy = new DummyCard;
         int card_id = -1;
-        QList<int> ids, disable;
+        QList<int> disable;
         foreach (const Card *c, effect.to->getCards("hes")) {
             if (!effect.from->canDiscard(effect.to, c->getEffectiveId()))
                 disable << c->getEffectiveId();
@@ -441,7 +441,10 @@ public:
                 break;
         }
 
-        room->throwCard(dummy, effect.to, effect.from);
+        if (dummy->subcardsLength() > 0) {
+            room->setEmotion(effect.to, "weapon/hakkero");
+            room->throwCard(dummy, effect.to, effect.from);
+        }
         delete dummy;
         return false;
     }
