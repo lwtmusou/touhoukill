@@ -1763,7 +1763,7 @@ public:
         ServerPlayer *player = data.value<ServerPlayer *>();
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), player->objectName());
 
-        const Card *card = room->askForCard(player, "%slash,%thunder_slash,%fire_slash", "@quanjie-discard");
+        const Card *card = room->askForCard(player, "Slash|.|.|hand", "@quanjie-discard");
         if (card == NULL) {
             player->drawCards(1);
             room->setPlayerCardLimitation(player, "use", "Slash", objectName(), true);
