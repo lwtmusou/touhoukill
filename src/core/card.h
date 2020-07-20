@@ -104,6 +104,7 @@ public:
 
     virtual bool isMute() const;
     virtual bool canDamage() const;
+    virtual bool canRecover() const;
     virtual bool willThrow() const;
     virtual bool canRecast() const;
     void setCanRecast(bool can);
@@ -210,6 +211,7 @@ protected:
     int m_number;
     int m_id;
     bool can_damage;
+    bool can_recover;
     QString m_skillName;
     Card::HandlingMethod handling_method;
 

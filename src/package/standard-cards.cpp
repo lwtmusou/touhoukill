@@ -365,6 +365,7 @@ Peach::Peach(Suit suit, int number)
 {
     setObjectName("peach");
     target_fixed = true;
+    can_recover = true;
 }
 
 QString Peach::getSubtype() const
@@ -1184,6 +1185,7 @@ GodSalvation::GodSalvation(Suit suit, int number)
     : GlobalEffect(suit, number)
 {
     setObjectName("god_salvation");
+    can_recover = true;
 }
 
 bool GodSalvation::isCancelable(const CardEffectStruct &effect) const
