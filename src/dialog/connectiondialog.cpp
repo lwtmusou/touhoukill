@@ -150,6 +150,16 @@ void ConnectionDialog::accept()
         return;
     }
 
+    if (username == tr("Sanguosha-fans")) {
+        QMessageBox::StandardButton ask = QMessageBox::information(this, tr("Notice"),
+                                                                   tr("You are meant to join the game using the default nickname.<br />"
+                                                                      "We suggest that you change the nickname to identify the unique you for convenience.<br /><br />"
+                                                                      "Do you want to change the nickname now?"),
+                                                                   QMessageBox::Yes, QMessageBox::No);
+        if (ask == QMessageBox::Yes)
+            return;
+    }
+
     Config.UserName = username;
     Config.HostAddress = hostComboBox->currentText();
 

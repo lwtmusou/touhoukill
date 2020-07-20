@@ -773,23 +773,23 @@
 <context>
     <name>ConnectionDialog</name>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="165"/>
-        <location filename="../src/dialog/connectiondialog.cpp" line="167"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="175"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="177"/>
         <source>Connection setup</source>
         <translation>连接设置</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="187"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="197"/>
         <source>Fill Reconnection Information</source>
         <translation>填写断线重连信息</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="193"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="203"/>
         <source>Change avatar</source>
         <translation>修改头像</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="176"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="186"/>
         <source>Avatar:</source>
         <translation>头像:</translation>
     </message>
@@ -820,37 +820,52 @@
         <translation>请输入有效的主机地址！&lt;br /&gt;从0.9.7版本开始，地址需要以“qths://”开头。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="174"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="153"/>
+        <source>Sanguosha-fans</source>
+        <translation>三国杀fans</translation>
+    </message>
+    <message>
+        <location filename="../src/dialog/connectiondialog.cpp" line="154"/>
+        <source>Notice</source>
+        <translation>提示</translation>
+    </message>
+    <message>
+        <location filename="../src/dialog/connectiondialog.cpp" line="155"/>
+        <source>You are meant to join the game using the default nickname.&lt;br /&gt;We suggest that you change the nickname to identify the unique you for convenience.&lt;br /&gt;&lt;br /&gt;Do you want to change the nickname now?</source>
+        <translation>您将要使用默认昵称进入游戏。&lt;br /&gt;我们建议您修改一下昵称，以方便在游戏中鉴别自己。&lt;br /&gt;&lt;br /&gt;现在修改昵称吗？</translation>
+    </message>
+    <message>
+        <location filename="../src/dialog/connectiondialog.cpp" line="184"/>
         <source>Host:</source>
         <translation>主机:</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="291"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="301"/>
         <source>Please fill the server information before we fill reconnection information for you.</source>
         <translation>请在填写断线重连信息之前手工填写服务器信息。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="173"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="183"/>
         <source>Name:</source>
         <translation>名称:</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="191"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="201"/>
         <source>Clear history</source>
         <translation>清除历史记录</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="189"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="199"/>
         <source>Detect LAN ...</source>
         <translation>探测局域网 ...</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="212"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="222"/>
         <source>Connect</source>
         <translation>连接</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="216"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="226"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
@@ -862,7 +877,7 @@
         <location filename="../src/dialog/connectiondialog.cpp" line="133"/>
         <location filename="../src/dialog/connectiondialog.cpp" line="143"/>
         <location filename="../src/dialog/connectiondialog.cpp" line="149"/>
-        <location filename="../src/dialog/connectiondialog.cpp" line="291"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="301"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
@@ -4001,12 +4016,12 @@ P = 你自己, R = 你所在的房间</translation>
 <context>
     <name>UdpDetectorDialog</name>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="326"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="336"/>
         <source>Detect available server&apos;s addresses at LAN</source>
         <translation>在局域网内探测可用的服务器地址</translation>
     </message>
     <message>
-        <location filename="../src/dialog/connectiondialog.cpp" line="327"/>
+        <location filename="../src/dialog/connectiondialog.cpp" line="337"/>
         <source>Refresh</source>
         <translation>刷新</translation>
     </message>
