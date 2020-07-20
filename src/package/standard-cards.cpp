@@ -408,8 +408,11 @@ void Peach::onEffect(const CardEffectStruct &effect) const
 
 bool Peach::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    if (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"))
-        return true;
+    if (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed")) {
+        if (Self != to_select)
+            return true;
+    }
+        
     if (Self->hasFlag("Global_shehuoInvokerFailed"))
         return (to_select->hasFlag("Global_shehuoFailed") && to_select->isWounded());
 
