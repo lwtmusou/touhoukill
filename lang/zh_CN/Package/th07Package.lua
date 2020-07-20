@@ -55,7 +55,7 @@ return
 
 	["shenyin"] = "神隐",
 	[":shenyin"] = "当你造成伤害后或你受到伤害后，你可以令受到伤害的角色神隐。",
-	["shenyin:target"]= "神隐：你可以令  %src   <font color=\"red\"><b>神隐 </b></font> （其进入神隐状态，不计入距离和座次的计算、不能使用牌且不是牌的合法目标、不进行因伤害或失去体力而导致的扣减体力结算；<font color=\"#FFA500\"><b>回合结束时解除神隐状态</b></font>）。",
+	["shenyin:target"]= "神隐：你可以令  %src   <font color=\"red\"><b>神隐 </b></font> （其进入神隐状态，不计入距离和座次的计算、不能使用牌且不是牌的合法目标、不进行伤害结算和流失体力结算；<font color=\"#FFA500\"><b>回合结束时解除神隐状态</b></font>）。",
 	["shenyin:target1"]= "神隐 ： 你可以令  %src   <font color=\"#00FF00\"><b>解除神隐状态 </b></font>  。",
 	["shenyin:target2"]= "神隐 ： 你可以令  %src   <font color=\"red\"><b>进入神隐状态 </b></font>  。",
 	["#Shenyin1"] = "%from 于此回合内进入神隐状态",
