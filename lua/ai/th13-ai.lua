@@ -175,7 +175,7 @@ measure_xihua = function(self,card)
 			success =success+1
 		elseif  card:isKindOf("TrickCard") and c:isKindOf("TrickCard") then
 			success =success+1
-		elseif c:getNumber()>10 then
+		elseif  not global_room:getMode():find("hegemony") and  c:getNumber()>10 then
 			success =success+1
 		end
 	end

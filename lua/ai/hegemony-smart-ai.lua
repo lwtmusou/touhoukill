@@ -7754,6 +7754,92 @@ function SmartAI:sortEnemies(players)
 	table.sort(players,comp_func)
 end
 
+
+
+local pioneerVS_skill = {}
+pioneerVS_skill.name = "pioneer_attach"
+table.insert(sgs.ai_skills, pioneerVS_skill)
+pioneerVS_skill.getTurnUseCard = function(self)
+
+    if self.player:getMark("@Pioneer") == 0 then return nil end
+        if self.player:getHandcardNum() > 2 then return nil end
+    
+    local card_str ="@PioneerCard=."
+    local skillcard = sgs.Card_Parse(card_str)
+
+    assert(skillcard)
+
+    return skillcard
+end
+
+sgs.ai_skill_use_func.PioneerCard = function(card, use, self)
+    use.card = card
+end
+
+
+local HalfLifeVS_skill = {}
+HalfLifeVS_skill.name = "halflife_attach"
+table.insert(sgs.ai_skills, HalfLifeVS_skill)
+HalfLifeVS_skill.getTurnUseCard = function(self)
+
+    if self.player:getMark("@HalfLife") == 0 then return nil end
+    if self.player:getHandcardNum() >= self.player:getMaxCards() then return nil end
+
+    local card_str ="@HalfLifeCard=."
+    local skillcard = sgs.Card_Parse(card_str)
+
+    assert(skillcard)
+
+    return skillcard
+end
+
+sgs.ai_skill_use_func.HalfLifeCard = function(card, use, self)
+    use.card = card
+end
+
+sgs.ai_skill_invoke.HalfLife = function(self, data)
+    return self.player:getHandcardNum() > self.player:getMaxCards()
+end
+
+local CompanionVS_skill = {}
+CompanionVS_skill.name = "companion_attach"
+table.insert(sgs.ai_skills, CompanionVS_skill)
+CompanionVS_skill.getTurnUseCard = function(self)
+
+    if self.player:getMark("@CompanionEffect") == 0 then return nil end
+    if not self.player:isWounded() then return nil end
+
+    local card_str ="@CompanionCard=."
+    local skillcard = sgs.Card_Parse(card_str)
+
+    assert(skillcard)
+
+    return skillcard
+end
+
+sgs.ai_skill_use_func.CompanionCard = function(card, use, self)
+    use.card = card
+end
+sgs.ai_skill_choice.CompanionEffect= function(self, choices, data)
+    if choices:match("recover") then
+            return "recover"
+
+    end
+    return "draw"
+end
+
+
+function sgs.ai_cardsview_valuable.companion_attach(self, class_name, player)
+    if class_name == "Peach" then
+        local dying = player:getRoom():getCurrentDyingPlayer()
+        if not dying or not self:isFriend(dying, player) or self.player:getMark("@CompanionEffect") == 0 then return nil end
+        return "@CompanionCard=."
+    end
+end
+
+
+
+
 dofile "lua/ai/debug-ai.lua"
 dofile "lua/ai/standard_cards-ai.lua"
 dofile "lua/ai/maneuvering-ai.lua"

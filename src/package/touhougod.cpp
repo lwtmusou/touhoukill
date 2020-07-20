@@ -6042,7 +6042,7 @@ public:
         if (card->isRed()) {
             if (card->canDamage())
                 return 1000;
-            if (card->getSkillName() == "xianshi") {
+            /*if (card->getSkillName() == "xianshi") {
                 QString selected_effect = Self->tag.value("xianshi", QString()).toString();
                 if (selected_effect != NULL) {
                     Card *extracard = Sanguosha->cloneCard(selected_effect);
@@ -6050,16 +6050,18 @@ public:
                     if (extracard->canDamage())
                         return 1000;
                 }
-            }
+            }*/
 
         } else if (card->isBlack()) {
-            if (card->isKindOf("Peach"))
+            if (card->canRecover())
+                return 1000;
+            /*if (card->isKindOf("Peach"))
                 return 1000;
             if (card->getSkillName() == "xianshi") {
                 QString selected_effect = Self->tag.value("xianshi", QString()).toString();
-                if (selected_effect != NULL && (selected_effect.contains("peach") || selected_effect.contains("analeptic")))
+                if (selected_effect != NULL && (selected_effect.contains("peach") || selected_effect.contains("analeptic") || selected_effect.contains("god_salvation")))
                     return 1000;
-            }
+            }*/
         }
 
         return 0;

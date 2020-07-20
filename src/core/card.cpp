@@ -22,6 +22,7 @@ Card::Card(Suit suit, int number, bool target_fixed)
     , m_number(number)
     , m_id(-1)
     , can_damage(false)
+    , can_recover(false)
 {
     handling_method = will_throw ? Card::MethodDiscard : Card::MethodUse;
 }
@@ -846,7 +847,32 @@ bool Card::isMute() const
 
 bool Card::canDamage() const
 {
+    if (getSkillName() == "xianshi" && Self) {
+        QString selected_effect = Self->tag.value("xianshi", QString()).toString();
+        if (selected_effect != NULL) {
+            Card *extracard = Sanguosha->cloneCard(selected_effect);
+            extracard->deleteLater();
+            if (extracard->canDamage())
+                return true;
+        }
+    }
     return can_damage;
+}
+
+bool Card::canRecover() const
+{
+    if (getSkillName() == "xianshi" && Self) {
+        QString selected_effect = Self->tag.value("xianshi", QString()).toString();
+        if (selected_effect != NULL) {
+            if (selected_effect.contains("analeptic"))
+                return true;
+            Card *extracard = Sanguosha->cloneCard(selected_effect);
+            extracard->deleteLater();
+            if (extracard->canRecover())
+                return true;
+        }
+    }
+    return can_recover;
 }
 
 bool Card::willThrow() const

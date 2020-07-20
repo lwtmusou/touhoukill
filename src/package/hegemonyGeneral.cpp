@@ -251,7 +251,7 @@ public:
     {
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *current = data.value<ServerPlayer *>();
-            if (current && current->isAlive() && current->getPhase() == Player::Discard && current->getMark("@HalfLife") > 0)
+            if (current && current->isAlive() && current->getPhase() == Player::Discard && current->getMark("@HalfLife") > 0 && current->getHandcardNum() > current->getMaxCards())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current);
         }
         return QList<SkillInvokeDetail>();
@@ -315,6 +315,7 @@ void CompanionCard::use(Room *room, ServerPlayer *player, QList<ServerPlayer *> 
 
     } else {
         foreach (ServerPlayer *p, room->getAlivePlayers()) {
+            
             if (p->hasFlag("Global_Dying")) {
                 RecoverStruct recover;
                 recover.who = player;

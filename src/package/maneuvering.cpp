@@ -51,6 +51,10 @@ QString Analeptic::getSubtype() const
     return "buff_card";
 }
 
+bool Analeptic::canRecover() const {
+    return Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY || Card::canRecover();
+}
+
 bool Analeptic::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     if (targets.isEmpty()) {
