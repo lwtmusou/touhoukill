@@ -1567,17 +1567,17 @@ bool NianliCard::targetFilter(const QList<const Player *> &targets, const Player
     Card *new_card = Sanguosha->cloneCard(user_string, Card::SuitToBeDecided, 0);
     DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("nianli");
-    if (new_card->targetFixed())
+    if (new_card->targetFixed(Self))
         return false;
     return new_card && new_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, new_card, targets);
 }
 
-bool NianliCard::targetFixed() const
+bool NianliCard::targetFixed(const Player *Self) const
 {
     Card *new_card = Sanguosha->cloneCard(user_string, Card::SuitToBeDecided, 0);
     DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("nianli");
-    return new_card && new_card->targetFixed();
+    return new_card && new_card->targetFixed(Self);
 }
 
 bool NianliCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
@@ -1983,10 +1983,10 @@ bool MengxiangCard::targetFilter(const QList<const Player *> &targets, const Pla
     ;
 }
 
-bool MengxiangCard::targetFixed() const
+bool MengxiangCard::targetFixed(const Player *Self) const
 {
     const Card *oc = Sanguosha->getCard(subcards.first());
-    return oc->targetFixed();
+    return oc->targetFixed(Self);
 }
 
 bool MengxiangCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const

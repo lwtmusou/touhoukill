@@ -1888,7 +1888,7 @@ bool HuaxiangCard::targetFilter(const QList<const Player *> &targets, const Play
     return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
 }
 
-bool HuaxiangCard::targetFixed() const
+bool HuaxiangCard::targetFixed(const Player *Self) const
 {
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;
@@ -1898,7 +1898,7 @@ bool HuaxiangCard::targetFixed() const
     Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
     DELETE_OVER_SCOPE(Card, card)
     card->setSkillName("huaxiang");
-    return card && card->targetFixed();
+    return card && card->targetFixed(Self);
 }
 
 bool HuaxiangCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
@@ -2661,7 +2661,7 @@ public:
                         use.from = player;
                         use.card = useCard;
                         // TODO: fill use.to
-                        if (!use.card->targetFixed())
+                        if (!use.card->targetFixed(use.from))
                             use.to << target;
                         room->useCard(use);
                     }
@@ -4175,10 +4175,10 @@ bool XinhuaCard::targetFilter(const QList<const Player *> &targets, const Player
     ;
 }
 
-bool XinhuaCard::targetFixed() const
+bool XinhuaCard::targetFixed(const Player *Self) const
 {
     const Card *oc = Sanguosha->getCard(subcards.first());
-    return oc->targetFixed();
+    return oc->targetFixed(Self);
 }
 
 bool XinhuaCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
@@ -5785,14 +5785,14 @@ bool XianshiCard::targetFilter(const QList<const Player *> &targets, const Playe
     return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
 }
 
-bool XianshiCard::targetFixed() const
+bool XianshiCard::targetFixed(const Player *Self) const
 {
     const Card *oc = Sanguosha->getCard(subcards.first());
     Card *card = Sanguosha->cloneCard(oc->objectName());
     DELETE_OVER_SCOPE(Card, card)
     card->addSubcard(oc);
     card->setSkillName("xianshi");
-    return card && card->targetFixed();
+    return card && card->targetFixed(Self);
 }
 
 bool XianshiCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const

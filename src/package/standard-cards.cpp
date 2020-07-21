@@ -373,7 +373,7 @@ QString Peach::getSubtype() const
     return "recover_card";
 }
 
-bool Peach::targetFixed() const
+bool Peach::targetFixed(const Player *Self) const
 {
     bool ignore = (Self && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
     if (ignore)
@@ -413,7 +413,7 @@ bool Peach::targetFilter(const QList<const Player *> &targets, const Player *to_
         if (Self != to_select)
             return true;
     }
-        
+
     if (Self->hasFlag("Global_shehuoInvokerFailed"))
         return (to_select->hasFlag("Global_shehuoFailed") && to_select->isWounded());
 

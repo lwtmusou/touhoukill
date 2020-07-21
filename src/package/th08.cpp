@@ -720,7 +720,7 @@ public:
                 bool ignore = (use.from && use.from->hasSkill("tianqu", false, false) && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
                                && !use.from->hasFlag("IgnoreFailed"));
 
-                if (!ignore && use.card->targetFixed())
+                if (!ignore && use.card->targetFixed(use.from))
                     return;
 
                 bool invoke = false;
@@ -761,7 +761,7 @@ public:
         bool ignore = (use.from && use.from->hasSkill("tianqu", false, false) && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
                        && !use.from->hasFlag("IgnoreFailed"));
 
-        if (!ignore && use.card->targetFixed())
+        if (!ignore && use.card->targetFixed(use.from))
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
@@ -1544,7 +1544,7 @@ bool YinghuoCard::targetFilter(const QList<const Player *> &targets, const Playe
     return new_card && new_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, new_card, targets);
 }
 
-bool YinghuoCard::targetFixed() const
+bool YinghuoCard::targetFixed(const Player *Self) const
 {
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;
@@ -1554,7 +1554,7 @@ bool YinghuoCard::targetFixed() const
     DELETE_OVER_SCOPE(Card, new_card)
 
     new_card->setSkillName("yinghuo");
-    return new_card && new_card->targetFixed();
+    return new_card && new_card->targetFixed(Self);
 }
 
 bool YinghuoCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
@@ -1862,7 +1862,7 @@ bool ChuangshiCard::targetFilter(const QList<const Player *> &targets, const Pla
     DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("chuangshi");
 
-    if (new_card->targetFixed())
+    if (new_card->targetFixed(Self))
         return false;
     if (new_card->isKindOf("FireAttack"))
         return new_card && (new_card->targetFilter(targets, to_select, user) || (to_select == user && !user->isKongcheng())) && !user->isProhibited(to_select, new_card, targets);

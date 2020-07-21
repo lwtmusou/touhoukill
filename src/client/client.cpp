@@ -718,7 +718,7 @@ void Client::onPlayerResponseCard(const Card *card, const QList<const Player *> 
         replyToServer(S_COMMAND_RESPONSE_CARD);
     } else {
         JsonArray targetNames;
-        if (!card->targetFixed()) {
+        if (!card->targetFixed(Self)) {
             foreach (const Player *target, targets)
                 targetNames << target->objectName();
         }

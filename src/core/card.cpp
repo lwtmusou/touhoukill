@@ -609,7 +609,7 @@ Card *Card::Clone(const Card *card)
         return NULL;
 }
 
-bool Card::targetFixed() const
+bool Card::targetFixed(const Player *Self) const
 {
     bool ignore = (Self && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
     if (ignore && !(isKindOf("SkillCard") || isKindOf("AOE") || isKindOf("GlobalEffect")))
@@ -619,9 +619,9 @@ bool Card::targetFixed() const
     return target_fixed;
 }
 
-bool Card::targetsFeasible(const QList<const Player *> &targets, const Player *) const
+bool Card::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
-    if (targetFixed())
+    if (targetFixed(Self))
         return true;
     else
         return !targets.isEmpty();
@@ -658,7 +658,7 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
     bool hidden = (card_use.card->getTypeId() == TypeSkill && !card_use.card->willThrow());
     LogMessage log;
     log.from = player;
-    if (!card_use.card->targetFixed() || card_use.to.length() > 1 || !card_use.to.contains(card_use.from))
+    if (!card_use.card->targetFixed(card_use.from) || card_use.to.length() > 1 || !card_use.to.contains(card_use.from))
         log.to = card_use.to;
     log.type = "#UseCard";
     log.card_str = card_use.card->toString(hidden);

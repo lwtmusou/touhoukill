@@ -1722,7 +1722,7 @@ public:
 TH16Package::TH16Package()
     : Package("th16")
 {
-    General *okina = new General(this, "okina$", "tkz");
+    General *okina = new General(this, "okina$", "tkz", 4, false, true, true);
     okina->addSkill(new Miyi);
     okina->addSkill(new MiyiBasicExceptSlash);
     okina->addSkill(new MiyiTargetMod);

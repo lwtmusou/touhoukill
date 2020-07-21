@@ -67,7 +67,7 @@ class HuayinCard : public SkillCard
 public:
     Q_INVOKABLE HuayinCard();
 
-    virtual bool targetFixed() const;
+    virtual bool targetFixed(const Player *Self) const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
 

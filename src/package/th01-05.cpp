@@ -2319,12 +2319,12 @@ ZongjiuCard::ZongjiuCard()
     handling_method = Card::MethodNone; //related to UseCardLimit
 }
 
-bool ZongjiuCard::targetFixed() const
+bool ZongjiuCard::targetFixed(const Player *Self) const
 {
     Analeptic *ana = new Analeptic(Card::NoSuit, 0);
     ana->setSkillName("zongjiu");
     ana->deleteLater();
-    return ana->targetFixed();
+    return ana->targetFixed(Self);
 }
 
 const Card *ZongjiuCard::validate(CardUseStruct &use) const
@@ -2584,10 +2584,10 @@ bool QirenCard::targetFilter(const QList<const Player *> &targets, const Player 
     return oc->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, oc, targets);
 }
 
-bool QirenCard::targetFixed() const
+bool QirenCard::targetFixed(const Player *Self) const
 {
     int shownId = (Self->getShownHandcards().contains(subcards.first())) ? subcards.first() : subcards.last();
-    return Sanguosha->getCard(shownId)->targetFixed();
+    return Sanguosha->getCard(shownId)->targetFixed(Self);
 }
 
 bool QirenCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
@@ -2611,7 +2611,7 @@ bool QirenCard::isAvailable(const Player *player) const
 
     //Do not check isAvaliable() in ViewFilter in ViewAsSkill
     //check prohibit
-    if (oc->targetFixed()) {
+    if (oc->targetFixed(player)) {
         if (oc->isKindOf("AOE") || oc->isKindOf("GlobalEffect")) {
             QList<const Player *> players = player->getAliveSiblings();
             if (oc->isKindOf("GlobalEffect"))

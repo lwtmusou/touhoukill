@@ -1456,7 +1456,7 @@ bool HuishengCard::targetFilter(const QList<const Player *> &targets, const Play
     new_card->setSkillName("huisheng");
     if (new_card->isKindOf("Peach"))
         return to_select->objectName() == str && new_card->isAvailable(to_select);
-    if (new_card->targetFixed() && !targets.isEmpty())
+    if (new_card->targetFixed(Self) && !targets.isEmpty())
         return false;
     if (targets.isEmpty() && to_select->objectName() != str)
         return false;

@@ -182,7 +182,7 @@ void TrustAI::activate(CardUseStruct &card_use)
 {
     QList<const Card *> cards = self->getHandcards();
     foreach (const Card *card, cards) {
-        if (card->targetFixed()) {
+        if (card->targetFixed(self)) {
             if (useCard(card)) {
                 card_use.card = card;
                 card_use.from = self;

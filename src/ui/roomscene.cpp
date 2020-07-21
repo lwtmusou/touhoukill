@@ -1453,7 +1453,7 @@ void RoomScene::enableTargets(const Card *card)
 
     Client::Status status = ClientInstance->getStatus();
 
-    if (card->targetFixed()
+    if (card->targetFixed(Self)
         || ((status & Client::ClientStatusBasicMask) == Client::Responding
             && (status == Client::Responding || (card->getTypeId() != Card::TypeSkill && status != Client::RespondingUse)))
         || ClientInstance->getStatus() == Client::AskForShowOrPindian) {
@@ -2679,7 +2679,7 @@ void RoomScene::onEnabledChange()
 
 void RoomScene::useCard(const Card *card)
 {
-    if (card->targetFixed() || card->targetsFeasible(selected_targets, Self))
+    if (card->targetFixed(Self) || card->targetsFeasible(selected_targets, Self))
         ClientInstance->onPlayerResponseCard(card, selected_targets);
     enableTargets(NULL);
 }
@@ -3136,7 +3136,7 @@ void RoomScene::onSkillActivated()
         cancel_button->setEnabled(true);
 
         const Card *card = dashboard->pendingCard();
-        if (card && card->targetFixed() && card->isAvailable(Self) && !Self->hasFlag("Global_InstanceUse_Failed")) {
+        if (card && card->targetFixed(Self) && card->isAvailable(Self) && !Self->hasFlag("Global_InstanceUse_Failed")) {
             bool instance_use = skill->inherits("ZeroCardViewAsSkill");
             if (!instance_use) {
                 QList<const Card *> cards;

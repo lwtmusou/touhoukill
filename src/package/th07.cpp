@@ -2287,11 +2287,11 @@ HuayinCard::HuayinCard()
     m_skillName = "huayin";
 }
 
-bool HuayinCard::targetFixed() const
+bool HuayinCard::targetFixed(const Player *Self) const
 {
     Peach *card = new Peach(Card::NoSuit, 0);
     DELETE_OVER_SCOPE(Peach, card)
-    return card->targetFixed();
+    return card->targetFixed(Self);
 }
 
 bool HuayinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
@@ -2323,7 +2323,7 @@ void HuayinCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
 
     if (!card->getSubcards().isEmpty() && !source->isCardLimited(card, Card::MethodUse, true)
         && (Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY || card->isAvailable(source))
-        && (card->targetFixed() || card->targetsFeasible(playerTargets, source))) {
+        && (card->targetFixed(source) || card->targetsFeasible(playerTargets, source))) {
         card->setSkillName("huayin");
         CardUseStruct use;
         use.from = source;

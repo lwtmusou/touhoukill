@@ -184,9 +184,9 @@ public:
     }
 
     // card target selection
-    inline virtual bool targetFixed() const
+    inline virtual bool targetFixed(const Player *Self) const
     {
-        return m_card->targetFixed();
+        return m_card->targetFixed(Self);
     }
     inline virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
     {

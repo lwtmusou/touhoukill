@@ -184,7 +184,7 @@ bool SuperPeach::match(const QString &pattern) const
         return Peach::match(pattern);
 }
 
-bool SuperPeach::targetFixed() const
+bool SuperPeach::targetFixed(const Player *Self) const
 {
     bool globalDying = false;
     if (Self) {
@@ -226,7 +226,7 @@ bool SuperPeach::targetFilter(const QList<const Player *> &targets, const Player
         if (Self != to_select)
             return true;
     }
-        
+
     if (Self->hasFlag("Global_shehuoInvokerFailed"))
         return (to_select->hasFlag("Global_shehuoFailed") && to_select->isDebuffStatus());
 

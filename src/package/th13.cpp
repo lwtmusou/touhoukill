@@ -463,7 +463,7 @@ bool XihuaCard::do_xihua(ServerPlayer *tanuki) const
     Card *card = Sanguosha->getCard(to_show);
 
     bool success = false;
-    if (!isHegemonyGameMode(ServerInfo.GameMode) && card->getNumber() > 10) //this skill in hegemony mode differs with other modes 
+    if (!isHegemonyGameMode(ServerInfo.GameMode) && card->getNumber() > 10) //this skill in hegemony mode differs with other modes
         success = true;
     else if (card->isKindOf("TrickCard") && xihuacard->isKindOf("TrickCard"))
         success = true;
@@ -488,12 +488,12 @@ bool XihuaCard::targetFilter(const QList<const Player *> &targets, const Player 
     Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
     DELETE_OVER_SCOPE(Card, card)
     card->setSkillName("xihua");
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && card->targetFixed())
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && card->targetFixed(Self))
         return false;
     return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
 }
 
-bool XihuaCard::targetFixed() const
+bool XihuaCard::targetFixed(const Player *) const
 {
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;

@@ -846,7 +846,7 @@ public:
             room->notifySkillInvoked(player, "fengsu");
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
         if (isHegemonyGameMode(ServerInfo.GameMode) && player && player->hasSkill(objectName()) && !player->hasShownSkill(objectName())) {
@@ -855,7 +855,6 @@ public:
 
         return QList<SkillInvokeDetail>();
     }
-
 };
 
 XinshangCard::XinshangCard()

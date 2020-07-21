@@ -71,7 +71,7 @@ class HuaxiangCard : public SkillCard
 public:
     Q_INVOKABLE HuaxiangCard();
 
-    virtual bool targetFixed() const;
+    virtual bool targetFixed(const Player *Self) const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
 
@@ -142,7 +142,7 @@ class XinhuaCard : public SkillCard
 public:
     Q_INVOKABLE XinhuaCard();
 
-    virtual bool targetFixed() const;
+    virtual bool targetFixed(const Player *Self) const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
 
@@ -219,7 +219,7 @@ class XianshiCard : public SkillCard
 public:
     Q_INVOKABLE XianshiCard();
 
-    virtual bool targetFixed() const;
+    virtual bool targetFixed(const Player *Self) const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
 

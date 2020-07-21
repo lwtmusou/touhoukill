@@ -1839,7 +1839,7 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     //Peach , EquipCard , ExNihilo, Analeptic, Lightning
 
     use.card->setFlags("IgnoreFailed");
-    if (use.card->targetFixed() && !use.to.contains(use.from) && !use.card->isKindOf("AOE") && !use.card->isKindOf("GlobalEffect")) {
+    if (use.card->targetFixed(use.from) && !use.to.contains(use.from) && !use.card->isKindOf("AOE") && !use.card->isKindOf("GlobalEffect")) {
         if (isHiddenSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
             showTargetFix << "tianqu";
     }
