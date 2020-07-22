@@ -262,6 +262,8 @@ GeneralOverview::GeneralOverview(QWidget *parent)
     , ui(new Ui::GeneralOverview)
 {
     ui->setupUi(this);
+    ui->tableWidget->setSortingEnabled(false);
+
     origin_window_title = windowTitle();
 
     button_layout = new QVBoxLayout;

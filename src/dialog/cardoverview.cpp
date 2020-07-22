@@ -31,6 +31,8 @@ CardOverview::CardOverview(QWidget *parent)
     ui->tableWidget->setColumnWidth(3, 60);
     ui->tableWidget->setColumnWidth(4, 70);
 
+    ui->tableWidget->setSortingEnabled(false);
+
     if (ServerInfo.EnableCheat)
         connect(ui->getCardButton, SIGNAL(clicked()), this, SLOT(askCard()));
     else
