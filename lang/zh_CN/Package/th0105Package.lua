@@ -256,7 +256,7 @@ return {
 	["origin:alice_old_3"] = "p号：15034012,个人ID:1251",
 
 	["modian_attach"] = "魔典给牌",
-	["：modian_attach"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将一张黑色手牌置于魔典技能人的人物牌上。",
+	[":modian_attach"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将一张【杀】或普通锦囊牌置于有“魔典”技能的角色的人物牌上。",
 	["@modian"] = "“魔典”牌数已经大于你的体力值，你须将一张“魔典”牌置入弃牌堆",
 	["~modian"] = "选择一张魔典牌-->确定",
 	["modian:draw"] = "摸牌",
