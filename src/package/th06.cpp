@@ -30,7 +30,6 @@ void SkltKexueCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> 
             else
                 source->drawCards(2);
         }
-            
 
         RecoverStruct recover;
         recover.recover = 1;
@@ -76,7 +75,7 @@ public:
     SkltKexue()
         : TriggerSkill("skltkexue")
     {
-        events << GameStart << EventAcquireSkill << EventLoseSkill << Death << Debut << Revive << GeneralShown << GeneralShown << Dying;
+        events << GameStart << EventAcquireSkill << EventLoseSkill << Death << Debut << Revive << GeneralShown << Dying;
         show_type = "static";
     }
 
@@ -129,7 +128,6 @@ public:
             invoke->invoker->showHiddenSkill(objectName());
         return false;
     }
-
 };
 
 class Mingyun : public TriggerSkill
