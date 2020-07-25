@@ -315,7 +315,6 @@ void CompanionCard::use(Room *room, ServerPlayer *player, QList<ServerPlayer *> 
 
     } else {
         foreach (ServerPlayer *p, room->getAlivePlayers()) {
-            
             if (p->hasFlag("Global_Dying")) {
                 RecoverStruct recover;
                 recover.who = player;
@@ -1471,7 +1470,7 @@ public:
     {
         //add log?
         CardUseStruct use = data.value<CardUseStruct>();
-        room->setCardFlag(use.card, "mopao");
+        use.card->setFlags("mopao");
         room->setPlayerFlag(invoke->invoker, objectName());
         return false;
     }
@@ -2522,8 +2521,6 @@ public:
     }
 };
 
-
-
 ShowFengsuCard::ShowFengsuCard()
     : SkillCard()
 {
@@ -2584,25 +2581,20 @@ public:
             return;
 
         if (triggerEvent == GameStart || triggerEvent == Debut || triggerEvent == EventAcquireSkill) {
-            foreach(ServerPlayer *p, room->getAllPlayers()) {
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
                 if ((p->hasSkill("fengsu", true) || p->ownSkill("fengsu")) && !p->hasSkill("fengsu_attach")) {
                     room->attachSkillToPlayer(p, "fengsu_attach");
                 }
-                    
             }
         }
         if (triggerEvent == Death || triggerEvent == EventLoseSkill) {
-            foreach(ServerPlayer *p, room->getAllPlayers()) {
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
                 if ((!p->hasSkill("fengsu", true) && !p->ownSkill("fengsu")) && p->hasSkill("fengsu_attach"))
                     room->detachSkillFromPlayer(p, "fengsu_attach", true);
             }
         }
     }
 };
-
-
-
-
 
 class DuxinHegemony : public TriggerSkill
 {
@@ -4147,7 +4139,6 @@ public:
     }
 };*/
 
-
 class MengxianVS : public OneCardViewAsSkill
 {
 public:
@@ -4185,14 +4176,13 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         QList<SkillInvokeDetail> d;
-        if (damage.card && damage.by_user && damage.card->isKindOf("Slash") && !damage.chain && !damage.transfer
-            && damage.from != damage.to && damage.from->isAlive()) {
+        if (damage.card && damage.by_user && damage.card->isKindOf("Slash") && !damage.chain && !damage.transfer && damage.from != damage.to && damage.from->isAlive()) {
             QList<ServerPlayer *> sources = room->findPlayersBySkillName(objectName());
-            foreach(ServerPlayer *s, sources) {
+            foreach (ServerPlayer *s, sources) {
                 if (!s->getPile("jingjie").isEmpty() && s->isFriendWith(damage.from, true))
                     d << SkillInvokeDetail(this, s, s, NULL, false, damage.to);
             }
-        }       
+        }
         return d;
     }
 
@@ -4213,11 +4203,10 @@ public:
             return true;
         }
         return false;
-    
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {   
+    {
         ServerPlayer *from = invoke->invoker;
         ServerPlayer *to = invoke->targets.first();
 
@@ -4234,7 +4223,6 @@ public:
         return true;
     }
 };
-
 
 /*
 class MengxianHegemony : public TriggerSkill
@@ -4545,7 +4533,6 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     aya_hegemony->addSkill(new FengsuHegemonyHandler);
     related_skills.insertMulti("fengsu", "#fengsu_hegemony");
     aya_hegemony->addCompanion("momizi_hegemony");
-    
 
     General *nitori_hegemony = new General(this, "nitori_hegemony", "qun", 3);
     nitori_hegemony->addSkill("xinshang");
@@ -4709,7 +4696,6 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     addMetaObject<XingyunHegemonyCard>();
 
     addMetaObject<ShowFengsuCard>();
-
 
     addMetaObject<ChunhenHegemonyCard>();
     //addMetaObject<MocaoHegemonyCard>();

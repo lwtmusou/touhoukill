@@ -5474,9 +5474,9 @@ public:
                 QString choices = QString("%1_first+%2_second").arg(use.card->objectName()).arg(use.card->objectName());
                 choice = room->askForChoice(invoke->invoker, objectName(), choices);
                 if (choice.endsWith("second"))
-                    room->setCardFlag(use.card, "mopao2");
+                    use.card->setFlags("mopao2");
                 else
-                    room->setCardFlag(use.card, "mopao");
+                    use.card->setFlags("mopao");
             } else if (use.card->isKindOf("Slash")) {
                 QString choice = "second";
                 if (use.card->isKindOf("LightSlash") || use.card->isKindOf("PowerSlash")) {
@@ -5485,11 +5485,11 @@ public:
                 }
 
                 if (choice.endsWith("second"))
-                    room->setCardFlag(use.card, "mopao2");
+                    use.card->setFlags("mopao2");
                 else
-                    room->setCardFlag(use.card, "mopao");
+                    use.card->setFlags("mopao");
             } else
-                room->setCardFlag(use.card, "mopao");
+                use.card->setFlags("mopao");
 
             LogMessage log;
             log.type = "#Chongneng";
