@@ -1762,12 +1762,13 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->isNDTrick() && use.from != NULL && use.from->isAlive() && use.from->tag.contains("yaolieffect2") && use.card->getSkillName() != "yaolitrick") {
             QString cardName = use.card->getClassName();
+
             Card *c = Sanguosha->cloneCard(cardName);
-            DELETE_OVER_SCOPE(Card, c)
             if (c != NULL) {
+                DELETE_OVER_SCOPE(Card, c)
                 c->setSkillName("_yaolitrick");
                 c->setCanRecast(false);
-                if (c->isAvailable(Self))
+                if (c->isAvailable(use.from))
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true, NULL, false);
             }
         }
