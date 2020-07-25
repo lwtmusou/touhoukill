@@ -1673,7 +1673,7 @@ public:
             QString cardName = Self->property("yaolitrick").toString();
             Card *c = Sanguosha->cloneCard(cardName);
             if (c != NULL) {
-                c->setSkillName("_yaoli-trick");
+                c->setSkillName("_yaolitrick");
                 c->setCanRecast(false);
                 if (c->isAvailable(Self))
                     return c;
@@ -1712,7 +1712,7 @@ class YaoliBasic : public TriggerSkill
 {
 public:
     YaoliBasic()
-        : TriggerSkill("yaoli-basic")
+        : TriggerSkill("yaolibasic")
     {
         events << CardUsed;
         global = true;
@@ -1738,7 +1738,7 @@ public:
 
         room->sendLog(l);
 
-        if (use.card->isKindOf("LightSlash") || use.card->isKindOf("PowerSlash"))
+        if (!use.card->isKindOf("Slash") || use.card->isKindOf("LightSlash") || use.card->isKindOf("PowerSlash"))
             use.card->setFlags("mopao");
         else
             use.card->setFlags("mopao2");
@@ -1751,7 +1751,7 @@ class YaoliTrick : public TriggerSkill
 {
 public:
     YaoliTrick()
-        : TriggerSkill("yaoli-trick")
+        : TriggerSkill("yaolitrick")
     {
         events << CardFinished;
         global = true;
@@ -1760,12 +1760,12 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->isNDTrick() && use.from != NULL && use.from->isAlive() && use.from->tag.contains("yaolieffect2") && use.card->getSkillName() != "yaoli-trick") {
+        if (use.card->isNDTrick() && use.from != NULL && use.from->isAlive() && use.from->tag.contains("yaolieffect2") && use.card->getSkillName() != "yaolitrick") {
             QString cardName = use.card->getClassName();
             Card *c = Sanguosha->cloneCard(cardName);
             DELETE_OVER_SCOPE(Card, c)
             if (c != NULL) {
-                c->setSkillName("_yaoli");
+                c->setSkillName("_yaolitrick");
                 c->setCanRecast(false);
                 if (c->isAvailable(Self))
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true, NULL, false);
@@ -1791,7 +1791,7 @@ class YaoliEquip : public TriggerSkill
 {
 public:
     YaoliEquip()
-        : TriggerSkill("yaoli-equip")
+        : TriggerSkill("yaoliequip")
     {
         events << CardUsed;
         global = true;
@@ -1837,7 +1837,7 @@ public:
                 use.from, ts, "yaoli", QStringLiteral("@yaoliequip") + (discard ? QStringLiteral("") : QStringLiteral("i")) + ":::" + QString::number(x), true, false);
 
             if (t != NULL) {
-                int id = room->askForCardChosen(use.from, t, "ej", "yaoli-equip", false, Card::MethodDiscard);
+                int id = room->askForCardChosen(use.from, t, "ej", "yaoliequip", false, Card::MethodDiscard);
                 if (id != -1) {
                     if (!discard) {
                         LogMessage l;
