@@ -175,7 +175,7 @@ return{
 	
 	["#yaolistart"] = "%from 获得了 <font color=\"#FF8000\"><b>“药理”</b></font>（%arg） 的效果。",
 	["#yaolifinish"] = "%from 的出牌阶段结束，<font color=\"#FF8000\"><b>“药理”</b></font>（%arg） 的效果消失。",
-	["yaoli-draw:hahahahahaha"] = "%from 对你发动“药理”，你可以摸 1 张牌然后弃置 1 张牌。" ,
+	["yaoli-draw:hahahahahaha"] = "%src 对你发动“药理”，你可以摸 1 张牌然后弃置 1 张牌。" ,
 	["@yaoli-discard"] = "请弃置 1 张牌，包括装备" ,
 	["#yaolibasic"] = "%from 执行 <font color=\"#FF8000\"><b>“药理”</b></font>（基本牌） 的效果，此次使用的 %arg 的第一个效果值 <font color=green><b>+1</b></font>。",
 	["@yaoliequipi"] = "请选择 1 名角色，弃置其区域内的 1 张牌，或者点击“取消”摸 %arg 张牌。<br />您还可以弃置场上 %arg 张牌。",
