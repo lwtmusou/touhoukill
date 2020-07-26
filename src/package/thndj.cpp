@@ -1823,51 +1823,52 @@ public:
                 x = weapon->getRange();
         }
 
-        bool discard = false;
-        do {
-            QList<ServerPlayer *> ts;
-            foreach (ServerPlayer *p, room->getAlivePlayers()) {
-                if (use.from->canDiscard(p, "ej"))
-                    ts << p;
-            }
+        if (use.from->askForSkillInvoke("yaoyi-equip", data, "mowmowmowmow:::" + QString::number(x))) {
+            bool discard = false;
+            do {
+                QList<ServerPlayer *> ts;
+                foreach (ServerPlayer *p, room->getAlivePlayers()) {
+                    if (use.from->canDiscard(p, "ej"))
+                        ts << p;
+                }
 
-            if (ts.isEmpty())
-                break;
+                if (ts.isEmpty())
+                    break;
 
-            ServerPlayer *t = room->askForPlayerChosen(
-                use.from, ts, "yaoli", QStringLiteral("@yaoliequip") + (discard ? QStringLiteral("") : QStringLiteral("i")) + ":::" + QString::number(x), true, false);
+                ServerPlayer *t = room->askForPlayerChosen(
+                    use.from, ts, "yaoli", QStringLiteral("@yaoliequip") + (discard ? QStringLiteral("") : QStringLiteral("i")) + ":::" + QString::number(x), true, false);
 
-            if (t != NULL) {
-                int id = room->askForCardChosen(use.from, t, "ej", "yaoliequip", false, Card::MethodDiscard);
-                if (id != -1) {
-                    if (!discard) {
-                        LogMessage l;
-                        l.type = "#yaoliequipi";
-                        l.from = use.from;
+                if (t != NULL) {
+                    int id = room->askForCardChosen(use.from, t, "ej", "yaoliequip", false, Card::MethodDiscard);
+                    if (id != -1) {
+                        if (!discard) {
+                            LogMessage l;
+                            l.type = "#yaoliequipi";
+                            l.from = use.from;
 
-                        room->sendLog(l);
-                        room->notifySkillInvoked(use.from, "yaoli");
-                    }
-                    discard = true;
-                    ServerPlayer *thrower = use.from;
-                    if (room->getCardOwner(id) == use.from && room->getCardPlace(id) != Player::PlaceJudge)
-                        thrower = NULL;
-                    room->throwCard(id, t, thrower);
+                            room->sendLog(l);
+                            room->notifySkillInvoked(use.from, "yaoli");
+                        }
+                        discard = true;
+                        ServerPlayer *thrower = use.from;
+                        if (room->getCardOwner(id) == use.from && room->getCardPlace(id) != Player::PlaceJudge)
+                            thrower = NULL;
+                        room->throwCard(id, t, thrower);
+                    } else
+                        break;
                 } else
                     break;
-            } else
-                break;
-        } while (--x);
+            } while (--x);
 
-        if (!discard) {
-            LogMessage l;
-            l.type = "#yaoliequip0";
-            l.from = use.from;
+            if (!discard) {
+                LogMessage l;
+                l.type = "#yaoliequip0";
+                l.from = use.from;
 
-            room->notifySkillInvoked(use.from, "yaoli");
-            room->drawCards(use.from, x, "yaoli");
+                room->notifySkillInvoked(use.from, "yaoli");
+                room->drawCards(use.from, x, "yaoli");
+            }
         }
-
         return false;
     }
 };
