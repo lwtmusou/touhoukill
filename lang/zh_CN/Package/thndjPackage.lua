@@ -184,6 +184,7 @@ return{
 	["#yaoliequipi"] = "%from 执行 <font color=\"#FF8000\"><b>“药理”</b></font>（装备牌） 的效果",
 	["#yaoliequip0"] = "%from 执行 <font color=\"#FF8000\"><b>“药理”</b></font>（装备牌） 的效果",
 	["@yaolitrick"] = "您可以执行“药理”（锦囊牌）的效果，视为使用 %arg。",
-	["~yaoliattach"] = "选择目标 -> 点击“确定”",
+	["~yaoliattach"] = "（如果有的话）选择目标->点击“确定”",
+	["~yaoli"] = "（如果有的话）选择目标->点击“确定”",
 	
 }
