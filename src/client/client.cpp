@@ -1561,8 +1561,19 @@ void Client::killPlayer(const QVariant &player_name)
     alive_count--;
     ClientPlayer *player = getPlayer(name);
     if (player == Self) {
-        foreach (const Skill *skill, Self->getVisibleSkills())
-            emit skill_detached(skill->objectName());
+        if (isHegemonyGameMode(ServerInfo.GameMode)) {
+            foreach(const Skill *skill, Self->getHeadSkillList(true, true))
+                emit skill_detached(skill->objectName(), true);
+            foreach(const Skill *skill, Self->getDeputySkillList(true, true))
+                emit skill_detached(skill->objectName(), false);
+        }
+        else {
+            foreach(const Skill *skill, Self->getVisibleSkills())
+                emit skill_detached(skill->objectName());
+        }
+
+
+        
     }
     player->detachAllSkills();
 
