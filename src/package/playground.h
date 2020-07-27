@@ -43,6 +43,17 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
+class Fsu0413JbdNashaCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Fsu0413JbdNashaCard();
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
 class PlaygroundPackage : public Package
 {
     Q_OBJECT
