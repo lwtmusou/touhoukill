@@ -230,6 +230,11 @@ bool SuperPeach::targetFilter(const QList<const Player *> &targets, const Player
     if (Self->hasFlag("Global_shehuoInvokerFailed"))
         return (to_select->hasFlag("Global_shehuoFailed") && to_select->isDebuffStatus());
 
+    if (Self->hasSkill("riyue") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed")) {
+        if ((canDamage() && isRed()) || canRecover() && isBlack())
+            return to_select->isDebuffStatus();
+    }
+
     if (targets.isEmpty()) {
         bool globalDying = false;
         QList<const Player *> players = Self->getSiblings();
