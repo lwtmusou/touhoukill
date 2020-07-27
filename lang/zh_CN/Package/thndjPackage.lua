@@ -159,7 +159,7 @@ return{
 	
 	["eirin_ndj"] = "年代记SP永琳",
 	["&eirin_ndj"] = "年代记永琳",
-	["#eirin_ndj"] = "什么称号",
+	["#eirin_ndj"] = "月之慧首",
 	["designer:eirin_ndj"] = "风的呓语",
 	
 	["yaoli"] = "药理",
@@ -175,7 +175,7 @@ return{
 	
 	["#yaolistart"] = "%from 获得了 <font color=\"#FF8000\"><b>“药理”</b></font>（%arg） 的效果。",
 	["#yaolifinish"] = "%from 的出牌阶段结束，<font color=\"#FF8000\"><b>“药理”</b></font>（%arg） 的效果消失。",
-	["yaoli-draw:hahahahahaha"] = "%from 对你发动“药理”，你可以摸 1 张牌然后弃置 1 张牌。" ,
+	["yaoli-draw:hahahahahaha"] = "%src 对你发动“药理”，你可以摸 1 张牌然后弃置 1 张牌。" ,
 	["yaoli-equip:mowmowmowmow"] = "是否执行<font color=\"#FF8000\"><b>“药理”</b></font>（装备牌） 的效果？" ,
 	["@yaoli-discard"] = "请弃置 1 张牌，包括装备" ,
 	["#yaolibasic"] = "%from 执行 <font color=\"#FF8000\"><b>“药理”</b></font>（基本牌） 的效果，此次使用的 %arg 的第一个效果值 <font color=green><b>+1</b></font>。",
@@ -184,6 +184,6 @@ return{
 	["#yaoliequipi"] = "%from 执行 <font color=\"#FF8000\"><b>“药理”</b></font>（装备牌） 的效果",
 	["#yaoliequip0"] = "%from 执行 <font color=\"#FF8000\"><b>“药理”</b></font>（装备牌） 的效果",
 	["@yaolitrick"] = "您可以执行“药理”（锦囊牌）的效果，视为使用 %arg。",
-	["~yaoliattach"] = "（如果有的话）选择目标->点击“确定”",
+	["~yaoliattach"] = "选择目标 -> 点击“确定”",
 	
 }
