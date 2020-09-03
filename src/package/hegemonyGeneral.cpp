@@ -3411,10 +3411,11 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        QList<int> disable;//record cards into discarplie while this process. like yongheng
         while (true) {
             QList<int> ids;
             foreach (int id, move.card_ids) {
-                if (Sanguosha->getCard(id)->isRed() && room->getCardPlace(id) == Player::DiscardPile)
+                if (Sanguosha->getCard(id)->isRed() && room->getCardPlace(id) == Player::DiscardPile && !disable.contains(id))
                     ids << id;
             }
             if (ids.isEmpty())
@@ -3427,6 +3428,7 @@ public:
             QVariantList listc = IntList2VariantList(ids);
             invoke->invoker->tag["chunhen_cards"] = listc; //for ai
             const Card *usecard = room->askForUseCard(player, "@@chunhen_hegemony", "@chunhen_give", -1, Card::MethodNone);
+            disable += usecard->getSubcards();
             cleanUp(room, player);
             if (usecard == NULL)
                 return false;
