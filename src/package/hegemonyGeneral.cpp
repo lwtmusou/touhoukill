@@ -3635,21 +3635,6 @@ void DongzhiHegemonyCard::onUse(Room *room, const CardUseStruct &card_use) const
     room->doLightbox("$dongzhiAnimate", 4000);
     SkillCard::onUse(room, card_use);
 
-    /*
-    QList<ServerPlayer *> targets;
-    ServerPlayer *target = card_use.to.first();
-    targets << target;
-    QList<ServerPlayer *> players = room->getOtherPlayers(target);
-    foreach (ServerPlayer *player, players) {
-        if (!target->isFriendWith(player))
-            continue;
-        targets << player;
-    }
-
-    CardUseStruct use = card_use;
-    use.to = targets;
-    room->doLightbox("$dongzhiAnimate", 4000);
-    SkillCard::onUse(room, use);*/
 }
 
 void DongzhiHegemonyCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
@@ -3658,7 +3643,7 @@ void DongzhiHegemonyCard::use(Room *room, ServerPlayer *source, QList<ServerPlay
 
     QString flag = "hes";
     foreach (ServerPlayer *p, targets) {
-        int num = qMax(p->getEquips().length(), 1);
+        int num = qMin(p->getEquips().length() + 1, p->getCards(flag).length());
         QList<int> disable;
         DummyCard *dummy = new DummyCard;
         for (int i = 0; i < num; i += 1) {

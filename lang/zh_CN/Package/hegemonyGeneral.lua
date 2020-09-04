@@ -296,7 +296,7 @@ return
 	["#HanboEffect"] = "%from 的【<font color=\"yellow\"><b>寒波</b></font>】效果被触发， %to 没有手牌，伤害从 %arg 增加至 %arg2",
 	["dongzhi_hegemony"] = "冬至",
 	["dongzhi"] = "冬至",
-	[":dongzhi_hegemony"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可选择同一阵营的任意名有牌的角色，你依次弃置该角色x张牌（x为其装备区牌数且至少为1）",
+	[":dongzhi_hegemony"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可选择同一阵营的任意名有牌的角色，你依次弃置该角色x张牌（x为其装备区牌数+1）",
 	--["#DongzhiDamage"] = "%from 的 <font color=\"yellow\"><b>冬至</b></font>效果被触发，伤害由 %arg 点增加至 %arg2 点",
 	["$dongzhiAnimate"]= "skill=letty:dongzhi",
 	
