@@ -1774,11 +1774,34 @@ public:
     Jianshe()
         : TriggerSkill("jianshe")
     {
-        events << EventPhaseStart;
+        events << EventPhaseStart << CardsMoveOneTime << EventPhaseChanging;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    void record(TriggerEvent e, Room *room, QVariant &data) const
     {
+        if (e ==  CardsMoveOneTime) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
+            if (player && player->isAlive() && move.from_places.contains(Player::PlaceHand))
+                room->setPlayerFlag(player, "jianshe_losed");
+
+        }
+        if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                    if (p->hasFlag("jianshe_losed"))
+                        room->setPlayerFlag(p, "-jianshe_losed");
+                }
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
+    {
+        if (e != EventPhaseStart)
+            return QList<SkillInvokeDetail>();
+
         ServerPlayer *player = data.value<ServerPlayer *>();
         if (player == NULL || !player->isAlive() || player->getPhase() != Player::Finish)
             return QList<SkillInvokeDetail>();
@@ -1794,8 +1817,11 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         ServerPlayer *current = room->getCurrent();
-        return room->askForCard(invoke->invoker, ".|.|.|hand", "@jianshe-discard:" + current->objectName(), QVariant::fromValue(current), Card::MethodDiscard, NULL, false,
-                                objectName());
+        if (!invoke->invoker->hasFlag("jianshe_losed"))
+            return room->askForCard(invoke->invoker, ".|.|.|hand", "@jianshe-discard:" + current->objectName(), QVariant::fromValue(current), Card::MethodDiscard, NULL, false,
+                objectName());
+        else
+            return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(current));
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
