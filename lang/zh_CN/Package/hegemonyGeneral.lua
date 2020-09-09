@@ -286,9 +286,7 @@ return
 	
 	["alice_hegemony"]="爱丽丝",
 	["chen_hegemony"] = "橙",
-	["dunjia_hegemony"] = "遁甲",
-	[":dunjia_hegemony"] = "当你使用【杀】对其他角色造成伤害后，或你受到其他角色使用【杀】造成的伤害后，若你与其装备区牌差不大于X（X为你已损失的体力值），你可以与其交换装备区里的牌。",
-	
+		
 	["letty_hegemony"]="蕾蒂",
 	--["designer:letty_hegemony"] = "名和行年",
 	["hanbo_hegemony"] = "寒波",

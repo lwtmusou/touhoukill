@@ -208,13 +208,15 @@ return
 	["#qimen-dist"] = "奇门(距离)",
 	["~qimen"] = "选择视为使用的牌的目标 -> 确定",
 	["dunjia"] = "遁甲",
-	["@dunjia1"] = "你可以弃置一张装备区的牌， 防止<font color=\"green\"><b> %src </b></font> 对 <font color=\"green\"><b> %dest </b></font>造成的 %arg 点伤害。",
-	["@dunjia2"] = "你可以弃置一张装备区的牌， 防止 <font color=\"green\"><b> %src </b></font>受到的 %dest 点伤害。",
-
-	["#Dunjia"]= "%from  因 “%arg” 效果，防止了%arg2 点伤害。",
-
-	[":dunjia"] = "当你受到非属性伤害时，一名装备区里的牌数不小于你的角色可以弃置其装备区里的一张牌，防止此伤害。",
-	["dunjia:invoke"]= "<font color=\"#FF8000\"><b> %dest </b></font> 将对 <font color=\"#00FF00\"><b>%src </b></font>造成 %arg 点伤害。  你可以响应 <font color=\"#00FF00\"><b>%src </b></font> 的“遁甲”。",
+	[":dunjia"] = "当你对其他角色造成伤害后，或你受到其他角色造成的伤害后，若你与其装备区牌差不大于X（X为你已损失的体力值），你可以与其交换装备区里的牌。",
+	
+	
+	--["dunjia"] = "遁甲",
+	--["@dunjia1"] = "你可以弃置一张装备区的牌， 防止<font color=\"green\"><b> %src </b></font> 对 <font color=\"green\"><b> %dest </b></font>造成的 %arg 点伤害。",
+	--["@dunjia2"] = "你可以弃置一张装备区的牌， 防止 <font color=\"green\"><b> %src </b></font>受到的 %dest 点伤害。",
+	--["#Dunjia"]= "%from  因 “%arg” 效果，防止了%arg2 点伤害。",
+	--[":dunjia"] = "当你受到非属性伤害时，一名装备区里的牌数不小于你的角色可以弃置其装备区里的一张牌，防止此伤害。",
+	--["dunjia:invoke"]= "<font color=\"#FF8000\"><b> %dest </b></font> 将对 <font color=\"#00FF00\"><b>%src </b></font>造成 %arg 点伤害。  你可以响应 <font color=\"#00FF00\"><b>%src </b></font> 的“遁甲”。",
 
 --***********************************
 	--yym008  势力：妖 4血
