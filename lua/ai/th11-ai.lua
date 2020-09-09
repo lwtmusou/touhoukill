@@ -147,7 +147,7 @@ sgs.ai_slash_prohibit.xiangqi = function(self, from, to, card)
 			end
 		end
 		if peach_num >0 then
-			if to:hasSkill("duxin") then
+			if to:hasSkill("duxin") or to:hasShownSkill("duxin_hegemony") then
 				return true
 			else
 				return peach_num >= ( from:getHandcardNum() /2)

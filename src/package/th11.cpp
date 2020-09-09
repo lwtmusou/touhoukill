@@ -687,8 +687,24 @@ public:
             damage.from->drawCards(1);
             int max = qMin(damage.from->getCards("hes").length(), 2);
             if (max > 0) {
-                const Card *cards = room->askForExchange(damage.from, objectName(), max, max, true, "@gelong:" + damage.to->objectName() + ":" + QString::number(max));
-                room->obtainCard(damage.to, cards, false);
+                //const Card *cards = room->askForExchange(damage.from, objectName(), max, max, true, "@gelong:" + damage.to->objectName() + ":" + QString::number(max));
+                //room->obtainCard(damage.to, cards, false);
+
+                QList<int> disable;
+                DummyCard *dummy = new DummyCard;
+                for (int i = 0; i < max; i += 1) {
+                    int card_id = room->askForCardChosen(damage.to, damage.from, "hes", objectName(), false, Card::MethodNone, disable);
+
+                    disable << card_id;
+                    dummy->addSubcard(card_id);
+
+                    if (damage.from->getCards("hes").length() - disable.length() <= 0)
+                        break;
+                }
+
+                CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, damage.to->objectName());
+                room->obtainCard(damage.to, dummy, reason, false);
+                delete dummy;
             }
         } else {
             damage.from->turnOver();
