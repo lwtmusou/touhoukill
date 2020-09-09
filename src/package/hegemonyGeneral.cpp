@@ -3428,9 +3428,10 @@ public:
             QVariantList listc = IntList2VariantList(ids);
             invoke->invoker->tag["chunhen_cards"] = listc; //for ai
             const Card *usecard = room->askForUseCard(player, "@@chunhen_hegemony", "@chunhen_give", -1, Card::MethodNone);
-            disable += usecard->getSubcards();
             cleanUp(room, player);
-            if (usecard == NULL)
+            if (usecard != NULL)
+                disable += usecard->getSubcards();
+            else
                 return false;
         }
 
