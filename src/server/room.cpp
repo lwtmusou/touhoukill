@@ -6673,7 +6673,7 @@ void Room::fillAG(const QList<int> &card_ids, ServerPlayer *who, const QList<int
         doBroadcastNotify(S_COMMAND_FILL_AMAZING_GRACE, arg);
 }
 
-void Room::takeAG(ServerPlayer *player, int card_id, bool move_cards, QList<ServerPlayer *> to_notify)
+void Room::takeAG(ServerPlayer *player, int card_id, bool move_cards, QList<ServerPlayer *> to_notify, Player::Place fromPlace)
 {
     if (to_notify.isEmpty())
         to_notify = getAllPlayers(true); //notice dead players
@@ -6688,7 +6688,7 @@ void Room::takeAG(ServerPlayer *player, int card_id, bool move_cards, QList<Serv
         if (move_cards) {
             CardsMoveOneTimeStruct move;
             move.from = NULL;
-            move.from_places << Player::DrawPile;
+            move.from_places << fromPlace;
             move.to = player;
             move.to_place = Player::PlaceHand;
             move.card_ids << card_id;
