@@ -2070,7 +2070,7 @@ TH16Package::TH16Package()
     okinasp->addSkill(new Menfei);
     okinasp->addSkill(new Houhu);
 
-    General *lili = new General(this, "liliwhite_sp", "tkz");
+    General *lili = new General(this, "lilywhite_sp", "tkz");
     lili->addSkill(new Chunteng);
     lili->addSkill(new Huazhao);
 

@@ -211,6 +211,7 @@ config = {
 		"shanghai->alice",
 		"yatsuhashi->benben",
 		"mai->satono",
+		"lilywhite_sp->lilywhite",
 	},
 
 	backdrop_convert_pairs = {

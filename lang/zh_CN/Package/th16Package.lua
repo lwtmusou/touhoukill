@@ -134,12 +134,12 @@ return {
 	["@zhumao-select"] = "你可以发动“竹矛”令一名其他角色摸一张牌成为 %arg 的额外目标。",
 	["#zhumao-cancelself:yes"] = "是否执行“竹矛”的效果，取消你自己？",
 	
-	["liliwhite_sp"] = "天空璋SP莉莉霍瓦特",
-	["#liliwhite_sp"] = "不息的春音",
-	["&liliwhite_sp"] = "天空璋莉莉白",
-	["designer:liliwhite_sp"] = "dawda",
-	["illustrator:liliwhite_sp"] = "名乗る名は無い",
-	["origin:liliwhite_sp"] = "p号：56488470；个人id：2022926",
+	["lilywhite_sp"] = "天空璋SP莉莉霍瓦特",
+	["#lilywhite_sp"] = "不息的春音",
+	["&lilywhite_sp"] = "天空璋莉莉白",
+	["designer:lilywhite_sp"] = "dawda",
+	["illustrator:lilywhite_sp"] = "名乗る名は無い",
+	["origin:lilywhite_sp"] = "p号：56488470；个人id：2022926",
 
 	["chunteng"] = "花朝",
 	["spring"] = "春",
