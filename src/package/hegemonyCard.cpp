@@ -31,7 +31,7 @@ bool KnownBothHegemony::targetFilter(const QList<const Player *> &targets, const
     if (targets.length() >= total_num || to_select == Self)
         return false;
 
-    return (!to_select->hasShownGeneral() || (to_select->getGeneral2() && to_select->hasShownGeneral2()) || !to_select->isKongcheng());
+    return (!to_select->hasShownGeneral() || (to_select->getGeneral2() && !to_select->hasShownGeneral2()) || !to_select->isKongcheng());
 }
 
 bool KnownBothHegemony::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const

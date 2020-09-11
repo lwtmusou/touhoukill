@@ -2952,59 +2952,6 @@ public:
     }
 };
 
-class DunjiaHegemony : public TriggerSkill
-{
-public:
-    DunjiaHegemony()
-        : TriggerSkill("dunjia_hegemony")
-    {
-        events << Damage << Damaged;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
-    {
-        DamageStruct damage = data.value<DamageStruct>();
-        if (damage.from == NULL || damage.to->isDead() || damage.from->isDead())
-            return QList<SkillInvokeDetail>();
-        if (damage.from == damage.to || damage.card == NULL || !damage.card->isKindOf("Slash"))
-            return QList<SkillInvokeDetail>();
-        int num1 = damage.from->getEquips().length();
-        int num2 = damage.to->getEquips().length();
-        if (num2 == 0 && num1 == 0)
-            return QList<SkillInvokeDetail>();
-        int diff = qAbs(num1 - num2);
-
-        if (e == Damage && damage.from && damage.from->hasSkill(this) && diff <= damage.from->getLostHp())
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
-        else if (e == Damaged && damage.to && damage.to->hasSkill(this) && diff <= damage.to->getLostHp())
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, false, damage.from);
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        ServerPlayer *first = invoke->invoker;
-        ServerPlayer *second = invoke->targets.first();
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, first->objectName(), second->objectName());
-
-        QList<int> equips1, equips2;
-        foreach (const Card *equip, first->getEquips())
-            equips1.append(equip->getId());
-        foreach (const Card *equip, second->getEquips())
-            equips2.append(equip->getId());
-
-        QList<CardsMoveStruct> exchangeMove;
-        CardsMoveStruct move1(equips1, second, Player::PlaceEquip,
-                              CardMoveReason(CardMoveReason::S_REASON_SWAP, first->objectName(), second->objectName(), "dunjia_hegemony", QString()));
-        CardsMoveStruct move2(equips2, first, Player::PlaceEquip,
-                              CardMoveReason(CardMoveReason::S_REASON_SWAP, second->objectName(), first->objectName(), "dunjia_hegemony", QString()));
-        exchangeMove.push_back(move2);
-        exchangeMove.push_back(move1);
-        room->moveCardsAtomic(exchangeMove, false);
-
-        return false;
-    }
-};
 
 class HezouHegemonyVS : public OneCardViewAsSkill
 {
@@ -3411,10 +3358,11 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        QList<int> disable;//record cards into discarplie while this process. like yongheng
         while (true) {
             QList<int> ids;
             foreach (int id, move.card_ids) {
-                if (Sanguosha->getCard(id)->isRed() && room->getCardPlace(id) == Player::DiscardPile)
+                if (Sanguosha->getCard(id)->isRed() && room->getCardPlace(id) == Player::DiscardPile && !disable.contains(id))
                     ids << id;
             }
             if (ids.isEmpty())
@@ -3428,7 +3376,9 @@ public:
             invoke->invoker->tag["chunhen_cards"] = listc; //for ai
             const Card *usecard = room->askForUseCard(player, "@@chunhen_hegemony", "@chunhen_give", -1, Card::MethodNone);
             cleanUp(room, player);
-            if (usecard == NULL)
+            if (usecard != NULL)
+                disable += usecard->getSubcards();
+            else
                 return false;
         }
 
@@ -3633,21 +3583,6 @@ void DongzhiHegemonyCard::onUse(Room *room, const CardUseStruct &card_use) const
     room->doLightbox("$dongzhiAnimate", 4000);
     SkillCard::onUse(room, card_use);
 
-    /*
-    QList<ServerPlayer *> targets;
-    ServerPlayer *target = card_use.to.first();
-    targets << target;
-    QList<ServerPlayer *> players = room->getOtherPlayers(target);
-    foreach (ServerPlayer *player, players) {
-        if (!target->isFriendWith(player))
-            continue;
-        targets << player;
-    }
-
-    CardUseStruct use = card_use;
-    use.to = targets;
-    room->doLightbox("$dongzhiAnimate", 4000);
-    SkillCard::onUse(room, use);*/
 }
 
 void DongzhiHegemonyCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
@@ -3656,7 +3591,7 @@ void DongzhiHegemonyCard::use(Room *room, ServerPlayer *source, QList<ServerPlay
 
     QString flag = "hes";
     foreach (ServerPlayer *p, targets) {
-        int num = qMax(p->getEquips().length(), 1);
+        int num = qMin(p->getEquips().length() + 1, p->getCards(flag).length());
         QList<int> disable;
         DummyCard *dummy = new DummyCard;
         for (int i = 0; i < num; i += 1) {
@@ -4640,7 +4575,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *chen_hegemony = new General(this, "chen_hegemony", "wei", 3, false);
     chen_hegemony->addSkill("qimen");
-    chen_hegemony->addSkill(new DunjiaHegemony);
+    chen_hegemony->addSkill("dunjia");
     chen_hegemony->addSkill("#qimen-dist");
     chen_hegemony->addSkill("#qimen-prohibit");
 

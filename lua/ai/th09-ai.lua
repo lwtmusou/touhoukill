@@ -1114,6 +1114,21 @@ sgs.ai_skill_cardask["@jianshe-discard"] = function(self, data)
 	return "$" .. cards[1]:getId()
 end
 
+sgs.ai_skill_invoke.jianshe = function(self, data)
+	local target = self.room:getCurrent()
+	if not target or target:isDead() then return false end
+	local effect=false
+	local num =  target:getHandcardNum() - 1
+	
+	if self:isEnemy(target) and (num > 2 or num <=0) then
+		effect=true
+	elseif self:isFriend(target) and num <= 2 and num > 0  and target:isWounded() then
+		effect=true
+	end
+	return effect 
+end
+
+
 --俭奢: 执行选项
 sgs.ai_skill_choice.jianshe = function(self, choices, data)
 	if self:isWeak(self.player) then

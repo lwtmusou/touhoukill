@@ -1519,73 +1519,56 @@ public:
     Dunjia()
         : TriggerSkill("dunjia")
     {
-        events << DamageInflicted;
-        show_type = "static";
+        events << Damage << Damaged;
     }
 
-    bool canPreshow() const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
     {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.from == NULL || damage.to->isDead() || damage.from->isDead())
+            return QList<SkillInvokeDetail>();
+        if (damage.from == damage.to)
+            return QList<SkillInvokeDetail>();
+        int num1 = damage.from->getEquips().length();
+        int num2 = damage.to->getEquips().length();
+        if (num2 == 0 && num1 == 0)
+            return QList<SkillInvokeDetail>();
+        int diff = qAbs(num1 - num2);
+
+        if (e == Damage && damage.from && damage.from->hasSkill(this) && diff <= damage.from->getLostHp())
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
+        else if (e == Damaged && damage.to && damage.to->hasSkill(this) && diff <= damage.to->getLostHp())
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, false, damage.from);
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        ServerPlayer *first = invoke->invoker;
+        ServerPlayer *second = invoke->targets.first();
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, first->objectName(), second->objectName());
+
+        QList<int> equips1, equips2;
+        foreach(const Card *equip, first->getEquips())
+            equips1.append(equip->getId());
+        foreach(const Card *equip, second->getEquips())
+            equips2.append(equip->getId());
+
+        QList<CardsMoveStruct> exchangeMove;
+        CardsMoveStruct move1(equips1, second, Player::PlaceEquip,
+            CardMoveReason(CardMoveReason::S_REASON_SWAP, first->objectName(), second->objectName(), "dunjia_hegemony", QString()));
+        CardsMoveStruct move2(equips2, first, Player::PlaceEquip,
+            CardMoveReason(CardMoveReason::S_REASON_SWAP, second->objectName(), first->objectName(), "dunjia_hegemony", QString()));
+        exchangeMove.push_back(move2);
+        exchangeMove.push_back(move1);
+        room->moveCardsAtomic(exchangeMove, false);
+
         return false;
     }
-
-    static QList<ServerPlayer *> dunjiaInvokers(ServerPlayer *chen)
-    {
-        QList<ServerPlayer *> invokers;
-        Room *room = chen->getRoom();
-        foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (p->getEquips().length() >= chen->getEquips().length() && p->canDiscard(p, "e")) {
-                if (p == chen)
-                    invokers << p;
-                else if (chen->hasSkill("dunjia", false, false))
-                    invokers << p;
-            }
-        }
-        return invokers;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
-    {
-        DamageStruct damage = data.value<DamageStruct>();
-        if (damage.nature != DamageStruct::Normal || !damage.to->hasSkill(this))
-            return QList<SkillInvokeDetail>();
-        if (isHegemonyGameMode(room->getMode()) && !damage.to->hasShownSkill(this))
-            return QList<SkillInvokeDetail>();
-
-        QList<ServerPlayer *> invokers = dunjiaInvokers(damage.to);
-        QList<SkillInvokeDetail> d;
-        foreach (ServerPlayer *p, invokers)
-            d << SkillInvokeDetail(this, damage.to, p, NULL, false, damage.to);
-
-        return d;
-    }
-
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        DamageStruct damage = data.value<DamageStruct>();
-        QString prompt;
-        if (damage.from)
-            prompt = QString("@dunjia1:%1:%2:%3").arg(damage.from->objectName()).arg(invoke->owner->objectName()).arg(QString::number(damage.damage));
-        else
-            prompt = QString("@dunjia2:%1:%2").arg(invoke->owner->objectName()).arg(QString::number(damage.damage));
-        invoke->invoker->tag[objectName()] = data;
-        const Card *card = room->askForCard(invoke->invoker, ".|.|.|equipped", prompt, data, objectName());
-        return card != NULL;
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        room->notifySkillInvoked(invoke->owner, objectName());
-        if (invoke->invoker != invoke->owner)
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->owner->objectName());
-
-        DamageStruct damage = data.value<DamageStruct>();
-
-        QString logo_type = "#Dunjia";
-        room->touhouLogmessage(logo_type, invoke->owner, objectName(), QList<ServerPlayer *>(), QString::number(damage.damage));
-
-        return true;
-    }
 };
+
+
+
 
 class Jiyi : public TriggerSkill
 {
