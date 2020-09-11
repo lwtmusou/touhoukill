@@ -2082,7 +2082,7 @@ public:
 
     virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &, bool) const
     {
-        return !from->hasSkill("miyi") && to->isRemoved() && card->getTypeId() != Card::TypeSkill;
+        return  to->isRemoved() && card->getTypeId() != Card::TypeSkill;//!from->hasSkill("miyi")
     }
 };
 
