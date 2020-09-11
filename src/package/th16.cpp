@@ -129,14 +129,19 @@ void ZhaoweiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
             room->throwCard(cards, source);
         } else {
             room->setPlayerMark(source, "zhaowei_discardnum", num);
-            cards = room->askForCard(source, "@@zhaowei-card2!", "@zhaowei_discard:" + QString::number(num), num);
-            if (cards == NULL) {
-                QList<const Card *> cs = source->getCards("hes");
-                qShuffle(cs);
-                cs = cs.mid(1, num);
-                c.addSubcards(cs);
-                cards = &c;
-                room->throwCard(cards, source);
+            try {
+                cards = room->askForCard(source, "@@zhaowei-card2!", "@zhaowei_discard:" + QString::number(num), num);
+                if (cards == NULL) {
+                    QList<const Card *> cs = source->getCards("hes");
+                    qShuffle(cs);
+                    cs = cs.mid(1, num);
+                    c.addSubcards(cs);
+                    cards = &c;
+                    room->throwCard(cards, source);
+                }
+            } catch (TriggerEvent event) {
+                room->setPlayerMark(source, "zhaowei_discardnum", 0);
+                throw event;
             }
         }
 
