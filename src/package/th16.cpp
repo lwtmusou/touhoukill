@@ -380,8 +380,7 @@ bool ZhaoweiCard::targetFilter(const QList<const Player *> &targets, const Playe
         return targets.isEmpty() && to_select != self && !to_select->isNude();
     }
     if (self->getMark("zhaowei_mod") == 2) {
-        int num = self->getMark("zhaowei");
-        return targets.length() < num && to_select != self && !to_select->isNude();
+        return targets.length() < self->getHandcardNum() && to_select != self && !to_select->isNude();
     }
     return false;
 }
@@ -492,7 +491,16 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        QString choice = room->askForChoice(invoke->invoker, objectName(), "zhaowei1+zhaowei2+cancel", NULL);
+        QStringList select;
+        select << "zhaowei1";
+        foreach(ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
+            if (!p->isKongcheng()) {
+                select << "zhaowei2";
+                break;
+            }              
+        }
+        select << "cancel";
+        QString choice = room->askForChoice(invoke->invoker, objectName(), select.join("+"), NULL);
         if (choice == "cancel")
             return false;
         invoke->invoker->showHiddenSkill(objectName());
