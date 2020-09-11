@@ -210,6 +210,7 @@ config = {
 		"lunar|star->sunny",
 		"shanghai->alice",
 		"yatsuhashi->benben",
+		"mai->satono",
 	},
 
 	backdrop_convert_pairs = {
