@@ -224,18 +224,15 @@ config = {
 		"lunasa|merlin|lyrica->prismriver",
 	},
 	latest_generals = {
-		"reimu","reisen_gzz", "marisa_slm",
-		"sariel","konngara",
-		"yukimai", "gengetsumugetsu",
-		"koakuma", "rumia_sp",
-		"yuyuko","yukari","ran","chen",
-		"wriggle", "keine", "mystia_sp",
-		"suika","tenshi",
-		"nue_slm", "seija_sp",
-		"junko","hecatia","clownpiece","sagume","doremy","ringo","seiran",
-		"reisen2",
 		"satori_god","marisa_god",
 		"nue_god",
-		"yukari_ndj", "aya_ndj",
+		
+		"chen",
+		"sumireko_sp", "yorigamis",
+		"parsee",
+		"futo",
+		"okina", "okina_sp","eternity", "nemuno", "aun", "narumi", "satono", "mai", "lilywhite_sp",
+		"eirin_ndj", "tenshi_ndj",
+		"yuka_god", --"tenshi_god",
 	}
 }
