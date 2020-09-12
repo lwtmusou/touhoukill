@@ -841,6 +841,11 @@ QList<Player::Phase> &ServerPlayer::getPhases()
     return phases;
 }
 
+int ServerPlayer::getPhasesIndex() const
+{
+    return _m_phases_index;
+}
+
 void ServerPlayer::skip(Player::Phase phase, bool isCost, bool sendLog)
 {
     for (int i = _m_phases_index; i < _m_phases_state.size(); i++) {

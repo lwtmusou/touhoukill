@@ -60,6 +60,7 @@ public:
     bool changePhase(Player::Phase from, Player::Phase to);
 
     QList<Player::Phase> &getPhases();
+    int getPhasesIndex() const;
     void skip(Player::Phase phase, bool isCost = false, bool sendLog = true);
     void insertPhases(QList<Player::Phase> new_phases, int index = -1);
     void exchangePhases(Player::Phase phase, Player::Phase phase1);
