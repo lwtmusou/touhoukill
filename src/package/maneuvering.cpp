@@ -587,6 +587,7 @@ IronChain::IronChain(Card::Suit suit, int number)
 {
     setObjectName("iron_chain");
     can_recast = true;
+    has_effectvalue = false;
 }
 
 QString IronChain::getSubtype() const

@@ -23,6 +23,7 @@ Card::Card(Suit suit, int number, bool target_fixed)
     , m_id(-1)
     , can_damage(false)
     , can_recover(false)
+    , has_effectvalue(true)
 {
     handling_method = will_throw ? Card::MethodDiscard : Card::MethodUse;
 }
@@ -877,6 +878,10 @@ bool Card::canRecover() const
         }
     }
     return can_recover;
+}
+
+bool Card::hasEffectValue() const {
+    return has_effectvalue;
 }
 
 bool Card::willThrow() const

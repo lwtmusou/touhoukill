@@ -5647,7 +5647,7 @@ void XianshiDialog::popup()
         checkedPatterns = xianshi_record.split("+");
     else {
         const Skill *skill = Sanguosha->getSkill(object_name);
-        QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+        /*QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         bool basic_pattern = false;
         bool trick_pattern = false;
         foreach (const Card *card, cards) {
@@ -5657,12 +5657,14 @@ void XianshiDialog::popup()
                 trick_pattern = true;
             if (trick_pattern && basic_pattern)
                 break;
-        }
+        }*/
         foreach (QString name, xianshi_record.split("+")) {
-            if (skill->matchAvaliablePattern(name, "BasicCard") && trick_pattern)
+            if (!skill->matchAvaliablePattern(name, pattern))// need check SqChuangshi
                 checkedPatterns << name;
-            else if (skill->matchAvaliablePattern(name, "TrickCard") && basic_pattern)
-                checkedPatterns << name;
+            //if (skill->matchAvaliablePattern(name, "BasicCard") && trick_pattern)
+            //    checkedPatterns << name;
+            //else if (skill->matchAvaliablePattern(name, "TrickCard") && basic_pattern)
+            //    checkedPatterns << name;
         }
     }
 
@@ -5843,6 +5845,8 @@ const Card *XianshiCard::validateInResponse(ServerPlayer *user) const
     return use_card;
 }
 
+
+
 class XianshiVS : public OneCardViewAsSkill
 {
 public:
@@ -5854,20 +5858,38 @@ public:
 
     virtual bool viewFilter(const Card *c) const
     {
+        if (c->getTypeId() == Card::TypeEquip)
+            return false;
         QString selected_effect = Self->tag.value("xianshi", QString()).toString();
         bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
         if (play) {
-            if (matchAvaliablePattern(selected_effect, "BasicCard"))
-                return c->isNDTrick() && c->isAvailable(Self);
-            else
-                return c->isKindOf("BasicCard") && c->isAvailable(Self);
+            //if (matchAvaliablePattern(selected_effect, "BasicCard"))
+            //    return c->isNDTrick() && c->isAvailable(Self);
+            //else
+            //    return c->isKindOf("BasicCard") && c->isAvailable(Self);
+            if (!c->isAvailable(Self))
+                return false;
+           
+
         } else {
             QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-            if (matchAvaliablePattern(selected_effect, "BasicCard"))
-                return c->isNDTrick() && matchAvaliablePattern(c->objectName(), pattern);
-            else
-                return c->isKindOf("BasicCard") && matchAvaliablePattern(c->objectName(), pattern);
+            if (!matchAvaliablePattern(c->objectName(), pattern))
+                return false;
+            //if (matchAvaliablePattern(selected_effect, "BasicCard"))
+            //    return c->isNDTrick() && matchAvaliablePattern(c->objectName(), pattern);
+            //else
+            //    return c->isKindOf("BasicCard") && matchAvaliablePattern(c->objectName(), pattern);
         }
+        if (selected_effect.contains("slash"))
+            return !c->isKindOf("Slash");
+        else if (selected_effect.contains("jink"))
+            return !c->isKindOf("Jink");
+        else if (selected_effect.contains("analeptic"))
+            return !c->isKindOf("Analeptic");
+        else if (selected_effect.contains("peach"))
+            return !c->isKindOf("Peach");
+        else
+            return c->objectName() != selected_effect;
 
         return false;
     }
@@ -5881,8 +5903,10 @@ public:
         QString xianshi_record = player->property("xianshi_record").toString();
         if (xianshi_record == NULL)
             return false;
+        return true;
 
-        QStringList checkedPatterns;
+        //ignore check
+        /*QStringList checkedPatterns;
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         bool basic_pattern = false;
         bool trick_pattern = false;
@@ -5902,7 +5926,7 @@ public:
                 return true;
         }
 
-        return !checkedPatterns.isEmpty();
+        return !checkedPatterns.isEmpty();*/
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const
@@ -5941,7 +5965,7 @@ public:
         if (xianshi_record == NULL)
             return false;
         foreach (QString name, xianshi_record.split("+")) {
-            if (matchAvaliablePattern(name, "BasicCard")) {
+            if (!name.contains("nullification")) {//matchAvaliablePattern(name, "BasicCard")
                 record = true;
                 break;
             }

@@ -601,7 +601,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                         recover.recover = 1 + effect.effectValue.first();
                         room->recover(effect.to, recover);
                     }
-                } else if (effect.card->getSkillName() == "xianshi") {
+                } else if (effect.card->getSkillName() == "xianshi") {// deal xianshi extra effect and original effect
                     QString xianshi_name;
                     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
                     foreach (const Card *card, cards) {
@@ -614,6 +614,85 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     }
 
                     Card *extraCard = Sanguosha->cloneCard(xianshi_name);
+                    if (extraCard->isKindOf("Slash")) {
+                        DamageStruct::Nature nature = DamageStruct::Normal;
+                        if (extraCard->isKindOf("FireSlash"))
+                            nature = DamageStruct::Fire;
+                        else if (extraCard->isKindOf("ThunderSlash"))
+                            nature = DamageStruct::Thunder;
+                        int damageValue = 1;
+
+                        if (extraCard->isKindOf("DebuffSlash")) {
+                            SlashEffectStruct extraEffect;
+                            extraEffect.from = effect.from;
+                            //extraEffect.nature = nature;
+                            extraEffect.slash = extraCard;
+
+                            extraEffect.to = effect.to;
+                            //effect.drank = drank;
+                            extraEffect.effectValue.first() = effect.effectValue.first();
+
+                            if (extraCard->isKindOf("IronSlash"))
+                                IronSlash::debuffEffect(extraEffect);
+                            else if (extraCard->isKindOf("LightSlash"))
+                                LightSlash::debuffEffect(extraEffect);
+                            else if (extraCard->isKindOf("PowerSlash"))
+                                PowerSlash::debuffEffect(extraEffect);
+                        }
+
+                        if (!extraCard->isKindOf("LightSlash") && !extraCard->isKindOf("PowerSlash")) {
+                            damageValue = damageValue + effect.effectValue.first();
+                        }
+
+                        DamageStruct d = DamageStruct(effect.card, effect.from, effect.to, damageValue, nature);
+                        room->damage(d);
+
+                    }
+                    else if (!effect.card->isKindOf("Slash")) { //if original effect is slash, deal extra effect after slash hit.
+                        if (extraCard->isKindOf("Peach")) {
+                            CardEffectStruct extraEffect;
+                            extraCard->addSubcards(effect.card->getSubcards());
+                            extraCard->deleteLater();
+
+                            extraEffect.card = effect.card;
+                            extraEffect.from = effect.from;
+                            extraEffect.to = effect.to;
+                            extraEffect.multiple = effect.multiple;
+                            if (effect.card->isNDTrick())
+                                extraEffect.effectValue.first() = effect.effectValue.first();
+                            extraCard->onEffect(extraEffect);
+                        }
+                        else if (extraCard->isKindOf("Analeptic")) {
+                            RecoverStruct recover;
+                            recover.card = effect.card;
+                            recover.who = effect.from;
+                            if (effect.card->isNDTrick())
+                                recover.recover = 1 + effect.effectValue.first();
+                            room->recover(effect.to, recover);
+                        }
+                        else if (extraCard->isKindOf("AmazingGrace")) {
+                            effect.from->getRoom()->doExtraAmazingGrace(effect.from, effect.to, 1 + effect.effectValue.first());
+                        }  else {
+                            CardEffectStruct extraEffect;
+                            extraCard->addSubcards(effect.card->getSubcards());
+                            extraCard->deleteLater();
+                            extraEffect.card = effect.card;
+                            extraEffect.from = effect.from;
+                            extraEffect.to = effect.to;
+                            extraEffect.multiple = effect.multiple;
+                            if (effect.card->isNDTrick())
+                                extraEffect.effectValue.first() = effect.effectValue.first();
+                            extraCard->onEffect(extraEffect);
+                        }
+                    } 
+                    //xianshi_extra effect will use magic_drank whilefirst effect, then clean it.  //need check
+                    if (effect.effectValue.first() > 0 && effect.card->isNDTrick() && extraCard->hasEffectValue())
+                        effect.effectValue.first() = 0;
+
+                    delete extraCard;
+                    effect.card->onEffect(effect);//do original effect 
+
+                    /*
                     if (effect.card->isNDTrick()) {
                         if (extraCard->isKindOf("Slash")) {
                             DamageStruct::Nature nature = DamageStruct::Normal;
@@ -682,7 +761,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     }
                     delete extraCard;
 
-                    effect.card->onEffect(effect);
+                    effect.card->onEffect(effect);*/
                 } else
                     effect.card->onEffect(effect);
             }
@@ -753,17 +832,67 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         if (j.jink != NULL && j.jink->getSkillName() == "xianshi") {
             SlashEffectStruct effect = j.slashEffect;
 
-            QString xianshi_name = effect.to->property("xianshi_card").toString();
+            QString xianshi_name = effect.to->property("xianshi_card").toString();         
             if (xianshi_name != NULL && effect.from && effect.to && effect.from->isAlive() && effect.to->isAlive()) {
-                CardEffectStruct extraEffect;
                 Card *extraCard = Sanguosha->cloneCard(xianshi_name);
-                extraCard->addSubcards(j.jink->getSubcards());
-                extraCard->deleteLater();
-                extraEffect.card = j.jink;
-                extraEffect.from = effect.to;
-                extraEffect.to = effect.from;
-                extraEffect.multiple = effect.multiple;
-                extraCard->onEffect(extraEffect);
+                if (extraCard->isKindOf("Slash")) {
+                    DamageStruct::Nature nature = DamageStruct::Normal;
+                    if (extraCard->isKindOf("FireSlash"))
+                        nature = DamageStruct::Fire;
+                    else if (extraCard->isKindOf("ThunderSlash"))
+                        nature = DamageStruct::Thunder;
+                    int damageValue = 1;
+
+                    if (extraCard->isKindOf("DebuffSlash")) {
+                        SlashEffectStruct extraEffect;
+                        extraEffect.from = effect.to;
+                        extraEffect.slash = extraCard;
+                        extraEffect.to = effect.from;
+
+                        if (extraCard->isKindOf("IronSlash"))
+                            IronSlash::debuffEffect(extraEffect);
+                        else if (extraCard->isKindOf("LightSlash"))
+                            LightSlash::debuffEffect(extraEffect);
+                        else if (extraCard->isKindOf("PowerSlash"))
+                            PowerSlash::debuffEffect(extraEffect);
+                    }
+
+                    DamageStruct d = DamageStruct(j.jink, effect.to, effect.from, damageValue, nature);
+                    room->damage(d);
+
+                }
+                else if (extraCard->isKindOf("Peach")) {
+                    CardEffectStruct extraEffect;
+                    extraCard->addSubcards(j.jink->getSubcards());
+                    extraCard->deleteLater();
+
+                    extraEffect.card = j.jink;
+                    extraEffect.from = effect.to;
+                    extraEffect.to = effect.from;
+                    extraEffect.multiple = effect.multiple;
+                    extraCard->onEffect(extraEffect);
+                }
+                else if (extraCard->isKindOf("Analeptic")) {
+                    RecoverStruct recover;
+                    recover.card = j.jink;
+                    recover.to = effect.from;
+                    recover.who = effect.to;
+                    room->recover(effect.from, recover);
+                }
+                else if (extraCard->isKindOf("AmazingGrace")) {
+                    effect.from->getRoom()->doExtraAmazingGrace(effect.from, effect.from, 1);
+                }
+                else { // trick card
+                    CardEffectStruct extraEffect;
+                    extraCard->addSubcards(j.jink->getSubcards());
+                    extraCard->deleteLater();
+                    extraEffect.card = j.jink;
+                    extraEffect.from = effect.to;
+                    extraEffect.to = effect.from;
+                    extraEffect.multiple = effect.multiple;
+                    extraCard->onEffect(extraEffect);
+                }
+
                 delete extraCard;
             }
         }
@@ -800,30 +929,52 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             QString xianshi_name;
             QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
             foreach (const Card *card, cards) {
-                if (card->isNDTrick() || card->isKindOf("Slash")) {
-                    if (effect.slash->hasFlag("xianshi_" + card->objectName())) {
-                        xianshi_name = card->objectName();
-                        break;
-                    }
+                if (effect.slash->hasFlag("xianshi_" + card->objectName())) {
+                    xianshi_name = card->objectName();
+                    break;
                 }
             }
+
             CardEffectStruct extraEffect;
             Card *extraCard = Sanguosha->cloneCard(xianshi_name);
             extraCard->addSubcards(effect.slash->getSubcards());
             extraCard->deleteLater();
-            extraEffect.card = effect.slash;
-            extraEffect.from = effect.from;
-            extraEffect.to = effect.to;
-            extraEffect.multiple = effect.multiple;
-            //Trick damage effect + drank
-            if (extraCard->canDamage()) {
-                if (extraCard->isKindOf("BoneHealing"))
-                    extraEffect.effectValue.first() = extraEffect.effectValue.first() + effect.drank;
-                else
-                    extraEffect.effectValue.last() = extraEffect.effectValue.last() + effect.drank;
+            if (extraCard->isKindOf("Peach")) {
+                extraEffect.card = effect.slash;
+                extraEffect.from = effect.from;
+                extraEffect.to = effect.to;
+                extraEffect.multiple = effect.multiple;
+                extraEffect.effectValue.first() = extraEffect.effectValue.first(); //+effect.drank;
+                extraCard->onEffect(extraEffect);
             }
-            extraCard->onEffect(extraEffect);
+            else if (extraCard->isKindOf("Analeptic")) {
+                RecoverStruct recover;
+                recover.card = effect.slash;
+                recover.who = effect.from;
+                recover.recover = 1; //+effect.drank;
+                room->recover(effect.to, recover);
+            }
+            else if (extraCard->isKindOf("AmazingGrace")){
+                effect.from->getRoom()->doExtraAmazingGrace(effect.from, effect.to, 1);
+            } 
+            else {
+                extraEffect.card = effect.slash;
+                extraEffect.from = effect.from;
+                extraEffect.to = effect.to;
+                extraEffect.multiple = effect.multiple;
+                //Trick damage effect + drank
+                if (extraCard->canDamage()) {
+                    if (extraCard->isKindOf("BoneHealing"))
+                        extraEffect.effectValue.first() = extraEffect.effectValue.first() + effect.drank;
+                    else
+                        extraEffect.effectValue.last() = extraEffect.effectValue.last() + effect.drank;
+                }
+                extraCard->onEffect(extraEffect);
+            }
+
+            
             delete extraCard;
+            //effect.drank = 0;
         }
 
         //@todo: I want IronSlash to obtain function debuffEffect() from "Slash"  as an inheritance, But the variant slasheffect.slash is "Card".

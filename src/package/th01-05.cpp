@@ -28,10 +28,20 @@ public:
 
         if (ids.isEmpty())
             return QList<SkillInvokeDetail>();
-        foreach (int id, ids) {
-            if (room->getCardPlace(id) != Player::PlaceTable)
-                return QList<SkillInvokeDetail>();
+        if (damage.card->isKindOf("Jink") || damage.card->isKindOf("Nullification")) {//couple xianshi
+            foreach(int id, ids) {
+                if (room->getCardPlace(id) != Player::DiscardPile)
+                    return QList<SkillInvokeDetail>();
+            }
         }
+        else {
+            foreach(int id, ids) {
+                if (room->getCardPlace(id) != Player::PlaceTable)
+                    return QList<SkillInvokeDetail>();
+            }
+        }
+
+        
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *mima, room->findPlayersBySkillName(objectName())) {
             if (mima != damage.from)

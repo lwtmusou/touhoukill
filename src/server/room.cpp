@@ -1264,6 +1264,19 @@ bool Room::isCanceled(const CardEffectStruct &effect)
                         re.who = p;
                         recover(target, re);
                     }
+                    else if (extraCard->isKindOf("AmazingGrace")) {
+                        doExtraAmazingGrace(p, target, 1);
+                    }
+                    else { //Trick card
+                        CardEffectStruct extraEffect;
+                        extraCard->deleteLater();
+
+                        extraEffect.card = xianshi_nullification;
+                        extraEffect.from = p;
+                        extraEffect.to = target;
+                        extraEffect.multiple = effect.multiple;
+                        extraCard->onEffect(extraEffect);
+                    }
                 }
             }
         }
@@ -2007,6 +2020,33 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
     thread->trigger(ChoiceMade, this, decisionData);
 
     return card_id;
+}
+
+
+void Room::doExtraAmazingGrace(ServerPlayer *from, ServerPlayer *target, int times) {//couple xianshi
+    target->gainMark("@MMP");
+    int count = getAllPlayers().length();
+    QList<int> card_ids = getNCards(count);
+    CardsMoveStruct move(card_ids, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, from->objectName(), "xianshi", QString()));
+    moveCardsAtomic(move, true);
+    fillAG(card_ids);
+
+    for (int i = 0; i < times; i += 1) {
+        int card_id = askForAG(target, card_ids, false, "xianshi");
+        card_ids.removeOne(card_id);
+        takeAG(target, card_id);
+        if (card_ids.isEmpty())
+            break;
+    }
+    clearAG();
+
+    //throw other cards
+
+    if (!card_ids.isEmpty()) {
+        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, from->objectName(), "xianshi", QString());
+        DummyCard dummy(card_ids);
+        throwCard(&dummy, reason, NULL);
+    }
 }
 
 const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const QString &reason)

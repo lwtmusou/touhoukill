@@ -348,6 +348,7 @@ Jink::Jink(Suit suit, int number)
 {
     setObjectName("jink");
     target_fixed = true;
+    has_effectvalue = false;
 }
 
 QString Jink::getSubtype() const
@@ -1368,6 +1369,7 @@ Nullification::Nullification(Suit suit, int number)
 {
     target_fixed = true;
     setObjectName("nullification");
+    has_effectvalue = false;
 }
 
 void Nullification::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
@@ -1624,6 +1626,7 @@ Indulgence::Indulgence(Suit suit, int number)
     judge.pattern = ".|heart";
     judge.good = true;
     judge.reason = objectName();
+    has_effectvalue = false;
 }
 
 QString Indulgence::getSubtype() const
@@ -1648,6 +1651,7 @@ Disaster::Disaster(Card::Suit suit, int number)
     : DelayedTrick(suit, number, true)
 {
     target_fixed = true;
+    has_effectvalue = false;
 }
 
 QString Disaster::getSubtype() const
@@ -2351,6 +2355,7 @@ SavingEnergy::SavingEnergy(Suit suit, int number)
     judge.good = false;
     judge.negative = false;
     judge.reason = objectName();
+    has_effectvalue = false;
 }
 
 QString SavingEnergy::getSubtype() const
