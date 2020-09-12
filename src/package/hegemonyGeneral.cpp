@@ -672,7 +672,20 @@ public:
     {
         if (event == CardFinished) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (!use.card->canDamage() || use.card->hasFlag("lizhiDamage") || !use.from || use.from->isDead() || !use.from->hasSkill(this) || use.from->hasFlag("lizhi_used"))
+            if (use.card == NULL || use.card->getTypeId() == Card::TypeSkill || !use.card->canDamage() || use.card->hasFlag("lizhiDamage"))
+                return QList<SkillInvokeDetail>();
+
+            ServerPlayer *source;
+            if (!use.to.isEmpty()) {
+                foreach(ServerPlayer *p, use.to) {
+                    if (p->isAlive() && p->hasSkill(this) && !p->hasFlag("lizhi_used"))
+                        source = p;
+                }
+            }
+            
+            if (use.from && use.from->isAlive() && use.from->hasSkill(this) && !use.from->hasFlag("lizhi_used"))
+                source = use.from;
+            if (source == NULL)
                 return QList<SkillInvokeDetail>();
 
             QList<int> ids;
@@ -688,21 +701,21 @@ public:
                     return QList<SkillInvokeDetail>();
             }
 
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, source, source);
         }
 
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *p, room->getAlivePlayers()) {
             if (invoke->invoker->isFriendWith(p, true))
                 targets << p;
         }
-
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@lizhi", true, true);
+        CardUseStruct use = data.value<CardUseStruct>();
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@lizhi:" + use.card->objectName(), true, true);
         if (target)
             invoke->targets << target;
         return target != NULL;

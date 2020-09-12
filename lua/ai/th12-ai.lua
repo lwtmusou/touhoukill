@@ -807,8 +807,12 @@ sgs.ai_skill_invoke.bianhuan_hegemony = function(self, data)
     if damage.from and self:isFriend(damage.from) and damage.nature ~= sgs.DamageStruct_Normal then
 		return false
     end
+	if (self.player:hasSkill("lizhi_hegemony")) then
+		return true
+	end
+	local effect, willEffect = self:touhouDamageEffect(damage, damage.from, damage.to)
 
-    return damage.damage > 1
+    return damage.damage > 1 or (not self:isFriend(damage.from) and effect)
 end
 
 local nuhuo_skill = {}
