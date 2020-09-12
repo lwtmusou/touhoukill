@@ -6783,8 +6783,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
     {
         if (e == DamageDone) {
-            QVariant dimaiTag = room->getTag("dimai_damage");
-            bool damaged = dimaiTag.canConvert(QVariant::Bool) && dimaiTag.toBool();
+            bool damaged = room->getCurrent() == NULL || room->getCurrent()->hasFlag("dimai_damage");
             if (damaged)
                 return QList<SkillInvokeDetail>();
             ServerPlayer *tenshi = room->findPlayerBySkillName(objectName());
@@ -6915,9 +6914,11 @@ public:
 
     bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
     {
-        if (e == DamageDone)
+        if (e == DamageDone) {
+            if (room->getCurrent() != NULL)
+                room->getCurrent()->setFlags("dimai_damage");
             nextDimai(room);
-        else if (e == EventPhaseStart) {
+        } else if (e == EventPhaseStart) {
             ServerPlayer *current = data.value<ServerPlayer *>();
 
             QVariant tag = room->getTag("dimai_card");
