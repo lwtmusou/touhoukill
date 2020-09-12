@@ -72,9 +72,20 @@ public:
     {
         nextExtraTurn = p;
     }
+
     inline bool hasExtraTurn() const
     {
         return nextExtraTurn != NULL;
+    }
+
+    inline ServerPlayer *getNextExtraTurn() const
+    {
+        return nextExtraTurn;
+    }
+
+    inline ServerPlayer *getExtraTurnReturn() const
+    {
+        return extraTurnReturn;
     }
 
     inline Room *getRoom() const

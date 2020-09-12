@@ -5659,7 +5659,7 @@ void XianshiDialog::popup()
                 break;
         }*/
         foreach (QString name, xianshi_record.split("+")) {
-            if (!skill->matchAvaliablePattern(name, pattern))// need check SqChuangshi
+            if (!skill->matchAvaliablePattern(name, pattern)) // need check SqChuangshi
                 checkedPatterns << name;
             //if (skill->matchAvaliablePattern(name, "BasicCard") && trick_pattern)
             //    checkedPatterns << name;
@@ -5845,8 +5845,6 @@ const Card *XianshiCard::validateInResponse(ServerPlayer *user) const
     return use_card;
 }
 
-
-
 class XianshiVS : public OneCardViewAsSkill
 {
 public:
@@ -5869,7 +5867,6 @@ public:
             //    return c->isKindOf("BasicCard") && c->isAvailable(Self);
             if (!c->isAvailable(Self))
                 return false;
-           
 
         } else {
             QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
@@ -5894,7 +5891,7 @@ public:
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    virtual bool isEnabledAtResponse(const Player *player, const QString &) const
     {
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
             return false;
@@ -5965,7 +5962,7 @@ public:
         if (xianshi_record == NULL)
             return false;
         foreach (QString name, xianshi_record.split("+")) {
-            if (!name.contains("nullification")) {//matchAvaliablePattern(name, "BasicCard")
+            if (!name.contains("nullification")) { //matchAvaliablePattern(name, "BasicCard")
                 record = true;
                 break;
             }
@@ -6772,18 +6769,20 @@ public:
 
 class Dimai : public TriggerSkill
 {
+private:
+    static QStringList names;
+
 public:
     Dimai()
         : TriggerSkill("dimai")
     {
-        events << EventPhaseStart << DamageDone;
-        frequency = Compulsory;
+        events << NumOfEvents;
+        frequency = Eternal;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
     {
         if (e == DamageDone) {
-
             QVariant dimaiTag = room->getTag("dimai_damage");
             bool damaged = dimaiTag.canConvert(QVariant::Bool) && dimaiTag.toBool();
             if (damaged)
@@ -6791,40 +6790,111 @@ public:
             ServerPlayer *tenshi = room->findPlayerBySkillName(objectName());
             if (tenshi)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, tenshi, tenshi, NULL, true);
-        }
-        
-
-        if (e == EventPhaseStart) {
+        } else if (e == EventPhaseStart) {
             ServerPlayer *current = data.value<ServerPlayer *>();
             if (current == NULL || current->isDead())
                 return QList<SkillInvokeDetail>();
 
             if (current->getPhase() == Player::Judge && current->getJudgingAreaID().isEmpty()) {
                 ServerPlayer *tenshi = room->findPlayerBySkillName(objectName());
-                if (tenshi) {
+                if (tenshi)
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, tenshi, tenshi, NULL, true);
-                    /*QVariant tag = room->getTag("dimai_card");
-                    if (!tag.isNull() && tag.canConvert(QVariant::String)) {
-                        QString exclude = tag.toString();
-                        if (exclude != "")
-
-                        if (exclude != "")
-                            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, tenshi, tenshi, NULL, true);
-                    }*/
-                }
             }
         }
         return QList<SkillInvokeDetail>();
     }
 
+    static inline bool willJudge(ServerPlayer *player, bool isExtraTurn = false)
+    {
+        if (player->isDead())
+            return false;
+
+        if (!player->faceUp()) // will turn over before extra turn starts and skip the full turn
+            return false;
+
+        if (!player->getJudgingAreaID().isEmpty()) // will not judge dimai because of the judging area is not clean
+            return false;
+
+        if (isExtraTurn && player->tag.contains("ExtraTurnInfo")
+            && !player->tag.value("ExtraTurnInfo").value<ExtraTurnStruct>().set_phases.contains(Player::Judge)) // shitu: No Judge phase during extra turn
+            return false;
+
+        return true;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == GameStart) {
+            if (room->getTag("dimai_card").toString().length() == 0)
+                room->setTag("dimai_card", "lightning");
+        } else {
+            ServerPlayer *player = room->getCurrent();
+            if (player != NULL) {
+                if (triggerEvent == EventPhaseStart && player == data.value<ServerPlayer *>() && player->getPhase() == Player::Judge && player->getJudgingAreaID().isEmpty()
+                    && player->isAlive()) {
+                    // judge NOW !!
+                    player = NULL;
+                } else if (player->getPhases().mid(player->getPhasesIndex() + 1).contains(Player::Judge) && !player->isSkipped(Player::Judge) && player->isAlive()) {
+                    // will judge in this turn LATER
+                } else {
+                    // will not judge this turn
+                    // should find next player who will judge Dimai according to the current situation
+                    RoomThread *thread = room->getThread();
+                    if (thread->hasExtraTurn()) {
+                        // an extra turn is inserted...
+                        player = thread->getNextExtraTurn();
+                        if (!willJudge(player, true))
+                            player = qobject_cast<ServerPlayer *>(room->getCurrent()->getNext(false));
+                    } else if (room->getTag("touhou-extra").toBool()) {
+                        // this is extra turn
+                        player = qobject_cast<ServerPlayer *>(thread->getExtraTurnReturn()->getNext(false));
+                    } else {
+                        // this is not extra turn and no extra turn inserted
+                        player = qobject_cast<ServerPlayer *>(player->getNext(false));
+                    }
+
+                    if (player == NULL) // erroneous qobject_cast?
+                        return;
+
+                    ServerPlayer *player2 = player;
+                    forever {
+                        if (!willJudge(player2)) {
+                            player2 = qobject_cast<ServerPlayer *>(player->getNext(false));
+                            if (player2 == NULL) // erroneous qobject_cast?
+                                return;
+
+                            if (player2 == player) {
+                                player = NULL;
+                                break;
+                            }
+                        } else
+                            break;
+                    }
+
+                    player = player2;
+                }
+
+                // Now player is the one who will judge dimai
+                // Let's find the player who previously have the dimai mark
+                ServerPlayer *prev = NULL;
+                foreach (ServerPlayer *p, room->getAllPlayers(true)) {
+                    if (p->getMark("@dimai_displaying") > 0) {
+                        prev = p;
+                        break;
+                    }
+                }
+
+                // finally, set mark
+                if (prev != NULL && prev != player)
+                    room->setPlayerMark(prev, "@dimai_displaying", 0);
+                if (player != NULL && (player->getMark("@dimai_displaying") != (names.indexOf(room->getTag("dimai_card").toString()) + 1)))
+                    room->setPlayerMark(player, "@dimai_displaying", names.indexOf(room->getTag("dimai_card").toString()) + 1);
+            }
+        }
+    }
+
     static void nextDimai(Room *room)
     {
-        QStringList names;
-        names << "lightning"
-              << "indulgence"
-              << "spring_breath"
-              << "saving_energy"
-              << "supply_shortage" ;
         QVariant tag = room->getTag("dimai_card");
         QString exclude = tag.toString();
         if (exclude == "")
@@ -6849,80 +6919,34 @@ public:
             nextDimai(room);
         else if (e == EventPhaseStart) {
             ServerPlayer *current = data.value<ServerPlayer *>();
-            
-                QVariant tag = room->getTag("dimai_card");
-                QString exclude = tag.toString();
-                if (exclude == "")
-                    exclude = "lightning";
-                room->touhouLogmessage("#dimai_judge", current, objectName(), QList<ServerPlayer *>(), exclude);
-                
-                if (exclude == "lightning") {
-                    Lightning *c = new Lightning(Card::NoSuit, 0);
-                    JudgeStruct judge_struct = c->getJudge();
-                    judge_struct.who = current;
-                    room->judge(judge_struct);
 
-                    if (judge_struct.negative == judge_struct.isBad()) {
-                        if (judge_struct.who->isAlive() && !judge_struct.ignore_judge)
-                            c->takeEffect(judge_struct.who);
-                    }
-                    delete c;
+            QVariant tag = room->getTag("dimai_card");
+            QString exclude = tag.toString();
+            if (exclude == "")
+                exclude = "lightning";
+            room->touhouLogmessage("#dimai_judge", current, objectName(), QList<ServerPlayer *>(), exclude);
+
+            DelayedTrick *c = qobject_cast<DelayedTrick *>(Sanguosha->cloneCard(exclude, Card::NoSuit, 0));
+            if (c == NULL)
+                room->touhouLogmessage("#dimai_unknownErr", current, exclude);
+            else {
+                JudgeStruct judge_struct = c->getJudge();
+                judge_struct.who = current;
+                room->judge(judge_struct);
+                if (judge_struct.negative == judge_struct.isBad()) {
+                    if (judge_struct.who->isAlive() && !judge_struct.ignore_judge)
+                        c->takeEffect(judge_struct.who);
                 }
-
-                if (exclude == "indulgence") {
-                    Indulgence *c = new Indulgence(Card::NoSuit, 0);
-                    JudgeStruct judge_struct = c->getJudge();
-                    judge_struct.who = current;
-                    room->judge(judge_struct);
-
-                    if (judge_struct.negative == judge_struct.isBad()) {
-                        if (judge_struct.who->isAlive() && !judge_struct.ignore_judge)
-                            c->takeEffect(judge_struct.who);
-                    }
-                    delete c;
-                }
-                if (exclude == "supply_shortage") {
-                    SupplyShortage *c = new SupplyShortage(Card::NoSuit, 0);
-                    JudgeStruct judge_struct = c->getJudge();
-                    judge_struct.who = current;
-                    room->judge(judge_struct);
-
-                    if (judge_struct.negative == judge_struct.isBad()) {
-                        if (judge_struct.who->isAlive() && !judge_struct.ignore_judge)
-                            c->takeEffect(judge_struct.who);
-                    }
-                    delete c;
-                }
-                if (exclude == "saving_energy") {
-                    SavingEnergy *c = new SavingEnergy(Card::NoSuit, 0);
-                    JudgeStruct judge_struct = c->getJudge();
-                    judge_struct.who = current;
-                    room->judge(judge_struct);
-
-                    if (judge_struct.negative == judge_struct.isBad()) {
-                        if (judge_struct.who->isAlive() && !judge_struct.ignore_judge)
-                            c->takeEffect(judge_struct.who);
-                    }
-                    delete c;
-                }
-                if (exclude == "spring_breath") {
-                    SpringBreath *c = new SpringBreath(Card::NoSuit, 0);
-                    JudgeStruct judge_struct = c->getJudge();
-                    judge_struct.who = current;
-                    room->judge(judge_struct);
-
-                    if (judge_struct.negative == judge_struct.isBad()) {
-                        if (judge_struct.who->isAlive() && !judge_struct.ignore_judge)
-                            c->takeEffect(judge_struct.who);
-                    }
-                    delete c;
-                }
-                nextDimai(room);
+                delete c;
+            }
+            nextDimai(room);
         }
 
         return false;
     }
 };
+
+QStringList Dimai::names {"lightning", "indulgence", "spring_breath", "saving_energy", "supply_shortage"};
 
 class Tiandao : public TriggerSkill
 {
@@ -6933,7 +6957,7 @@ public:
         events << FinishJudge;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent event, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         QList<SkillInvokeDetail> d;
         JudgeStruct *judge = data.value<JudgeStruct *>();
@@ -6943,7 +6967,7 @@ public:
             return QList<SkillInvokeDetail>();
 
         QList<ServerPlayer *> invokers = room->findPlayersBySkillName(objectName());
-        foreach(ServerPlayer *p, invokers) {
+        foreach (ServerPlayer *p, invokers) {
             if (p->isAlive() && !p->isCardLimited(judge->card, Card::MethodUse) && !p->isProhibited(judge->who, judge->card)) {
                 judge->card->setFlags("IgnoreFailed");
                 judge->card->setFlags("tiandao");
@@ -6956,12 +6980,11 @@ public:
                     d << SkillInvokeDetail(this, p, p, NULL, false, judge->who);
             }
         }
-                
+
         return d;
     }
 
-
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         JudgeStruct *judge = data.value<JudgeStruct *>();
         room->useCard(CardUseStruct(judge->card, invoke->invoker, invoke->targets.first()));
