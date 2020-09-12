@@ -6859,7 +6859,7 @@ public:
                     ServerPlayer *player2 = player;
                     forever {
                         if (!willJudge(player2)) {
-                            player2 = qobject_cast<ServerPlayer *>(player->getNext(false));
+                            player2 = qobject_cast<ServerPlayer *>(player2->getNext(false));
                             if (player2 == NULL) // erroneous qobject_cast?
                                 return;
 
