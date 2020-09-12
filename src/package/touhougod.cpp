@@ -6770,84 +6770,92 @@ public:
     }
 };
 
-class Qizhi : public TriggerSkill
+class Dimai : public TriggerSkill
 {
 public:
-    Qizhi()
-        : TriggerSkill("qizhi")
+    Dimai()
+        : TriggerSkill("dimai")
     {
-        events << HpChanged << EventPhaseStart;
+        events << EventPhaseStart << DamageDone;
         frequency = Compulsory;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
     {
-        if (e == HpChanged) {
-            ServerPlayer *tenshi = data.value<ServerPlayer *>();
-            if (tenshi == NULL || tenshi->isDead() || !tenshi->hasSkill(this))
-                return QList<SkillInvokeDetail>();
+        if (e == DamageDone) {
 
-            ServerPlayer *current = room->getCurrent();
-            if (current == NULL || current->isDead())
+            QVariant dimaiTag = room->getTag("dimai_damage");
+            bool damaged = dimaiTag.canConvert(QVariant::Bool) && dimaiTag.toBool();
+            if (damaged)
                 return QList<SkillInvokeDetail>();
-
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, tenshi, tenshi, NULL, true);
+            ServerPlayer *tenshi = room->findPlayerBySkillName(objectName());
+            if (tenshi)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, tenshi, tenshi, NULL, true);
         }
+        
+
         if (e == EventPhaseStart) {
             ServerPlayer *current = data.value<ServerPlayer *>();
             if (current == NULL || current->isDead())
                 return QList<SkillInvokeDetail>();
 
-            if (current->getPhase() == Player::Start && current->hasSkill(this)) {
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current, NULL, true);
-            }
             if (current->getPhase() == Player::Judge && current->getJudgingAreaID().isEmpty()) {
                 ServerPlayer *tenshi = room->findPlayerBySkillName(objectName());
                 if (tenshi) {
-                    QVariant tag = room->getTag("qizhi_card");
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, tenshi, tenshi, NULL, true);
+                    /*QVariant tag = room->getTag("dimai_card");
                     if (!tag.isNull() && tag.canConvert(QVariant::String)) {
                         QString exclude = tag.toString();
                         if (exclude != "")
+
+                        if (exclude != "")
                             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, tenshi, tenshi, NULL, true);
-                    }
+                    }*/
                 }
             }
         }
         return QList<SkillInvokeDetail>();
     }
 
-    static void choiceQizhi(Room *room)
+    static void nextDimai(Room *room)
     {
         QStringList names;
         names << "lightning"
               << "indulgence"
-              << "supply_shortage"
+              << "spring_breath"
               << "saving_energy"
-              << "spring_breath";
-        QVariant tag = room->getTag("qizhi_card");
-        if (!tag.isNull() && tag.canConvert(QVariant::String)) {
+              << "supply_shortage" ;
+        QVariant tag = room->getTag("dimai_card");
+        QString exclude = tag.toString();
+        if (exclude == "")
+            exclude = "lightning";
+        /*if (!tag.isNull() && tag.canConvert(QVariant::String)) {
             QString exclude = tag.toString();
             names.removeAll(exclude);
-        }
-
-        ServerPlayer *current = room->getCurrent();
-        QString choice = room->askForChoice(current, "qizhi", names.join("+"), QVariant());
-        room->setTag("qizhi_card", choice);
-        room->touhouLogmessage("#qizhi", current, choice);
+        }*/
+        int pos = names.indexOf(exclude) + 1;
+        if (pos >= names.length())
+            pos = 0;
+        //ServerPlayer *current = room->getCurrent();
+        //QString choice = room->askForChoice(current, "qizhi", names.join("+"), QVariant());
+        QString next = names.at(pos);
+        room->setTag("dimai_card", next);
+        room->touhouLogmessage("#dimai", NULL, next);
     }
 
     bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
     {
-        if (e == HpChanged)
-            choiceQizhi(room);
+        if (e == DamageDone)
+            nextDimai(room);
         else if (e == EventPhaseStart) {
             ServerPlayer *current = data.value<ServerPlayer *>();
-            if (current->getPhase() == Player::Start)
-                choiceQizhi(room);
-            else {
-                QVariant tag = room->getTag("qizhi_card");
+            
+                QVariant tag = room->getTag("dimai_card");
                 QString exclude = tag.toString();
-                room->touhouLogmessage("#qizhi_judge", current, objectName(), QList<ServerPlayer *>(), exclude);
+                if (exclude == "")
+                    exclude = "lightning";
+                room->touhouLogmessage("#dimai_judge", current, objectName(), QList<ServerPlayer *>(), exclude);
+                
                 if (exclude == "lightning") {
                     Lightning *c = new Lightning(Card::NoSuit, 0);
                     JudgeStruct judge_struct = c->getJudge();
@@ -6909,7 +6917,7 @@ public:
                     }
                     delete c;
                 }
-            }
+                nextDimai(room);
         }
 
         return false;
@@ -6922,86 +6930,44 @@ public:
     Tiandao()
         : TriggerSkill("tiandao")
     {
-        events << FinishJudge << EventPhaseStart; // << EventPhaseChanging
-    }
-
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
-    {
-        if (triggerEvent == EventPhaseStart) {
-            ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player->getPhase() == Player::RoundStart) {
-                if (player->isLord() && !player->tag.value("touhou-extra", false).toBool()) {
-                    foreach (ServerPlayer *p, room->getAlivePlayers()) {
-                        room->setPlayerMark(p, "@tiandao", 0);
-                    }
-                }
-            }
-        }
+        events << FinishJudge;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent event, const Room *room, const QVariant &data) const
     {
         QList<SkillInvokeDetail> d;
-        if (event == FinishJudge) {
-            JudgeStruct *judge = data.value<JudgeStruct *>();
-            if (room->getCardPlace(judge->card->getEffectiveId()) != Player::PlaceJudge || judge->who->isDead())
-                return QList<SkillInvokeDetail>();
-            if (judge->card->isKindOf("Nullification") || judge->card->isKindOf("Jink"))
-                return QList<SkillInvokeDetail>();
+        JudgeStruct *judge = data.value<JudgeStruct *>();
+        if (room->getCardPlace(judge->card->getEffectiveId()) != Player::PlaceJudge || judge->who->isDead())
+            return QList<SkillInvokeDetail>();
+        if (judge->card->isKindOf("Nullification") || judge->card->isKindOf("Jink"))
+            return QList<SkillInvokeDetail>();
 
-            QList<ServerPlayer *> invokers = room->findPlayersBySkillName(objectName());
-            foreach (ServerPlayer *p, invokers) {
-                if (p->isAlive() && p->getMark("@tiandao") < p->getHp() && !p->isCardLimited(judge->card, Card::MethodUse) && !p->isProhibited(judge->who, judge->card)) {
-                    judge->card->setFlags("IgnoreFailed");
-                    judge->card->setFlags("tiandao");
-                    bool can = judge->card->targetFilter(QList<const Player *>(), judge->who, p);
-                    judge->card->setFlags("-IgnoreFailed");
-                    judge->card->setFlags("-tiandao");
-                    if (judge->card->getTypeId() == Card::TypeEquip)
-                        can = true;
-                    if (can)
-                        d << SkillInvokeDetail(this, p, p, NULL, false, judge->who);
-                }
+        QList<ServerPlayer *> invokers = room->findPlayersBySkillName(objectName());
+        foreach(ServerPlayer *p, invokers) {
+            if (p->isAlive() && !p->isCardLimited(judge->card, Card::MethodUse) && !p->isProhibited(judge->who, judge->card)) {
+                judge->card->setFlags("IgnoreFailed");
+                judge->card->setFlags("tiandao");
+                bool can = judge->card->targetFilter(QList<const Player *>(), judge->who, p);
+                judge->card->setFlags("-IgnoreFailed");
+                judge->card->setFlags("-tiandao");
+                if (judge->card->getTypeId() == Card::TypeEquip)
+                    can = true;
+                if (can)
+                    d << SkillInvokeDetail(this, p, p, NULL, false, judge->who);
             }
         }
-        /*else if (event == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive) {
-                foreach(ServerPlayer *p, room->getAlivePlayers()) {
-                    if (p->getPile("tiandao").length() > 0)
-                        d << SkillInvokeDetail(this, p, p, NULL, true);
-                }
-            }
-        }*/
+                
         return d;
     }
 
-    /*bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        if (triggerEvent == EventPhaseChanging)
-            return true;
-        return invoke->invoker->askForSkillInvoke(this, data);
-    }*/
 
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        if (triggerEvent == FinishJudge) {
-            invoke->invoker->gainMark("@tiandao");
-            JudgeStruct *judge = data.value<JudgeStruct *>();
-            room->useCard(CardUseStruct(judge->card, invoke->invoker, invoke->targets.first()));
+        JudgeStruct *judge = data.value<JudgeStruct *>();
+        room->useCard(CardUseStruct(judge->card, invoke->invoker, invoke->targets.first()));
 
-            //judge->who->addToPile("tiandao", judge->card->getEffectiveId());
-
-            judge->ignore_judge = true;
-            data = QVariant::fromValue(judge);
-        }
-        /*else if (triggerEvent == EventPhaseChanging) {
-            QList<int> pile = invoke->invoker->getPile("tiandao");
-            foreach(int id, pile) {
-                Card *c = Sanguosha->getCard(id);
-                room->useCard(CardUseStruct(c, invoke->invoker, invoke->invoker));
-            }
-        }*/
+        judge->ignore_judge = true;
+        data = QVariant::fromValue(judge);
         return false;
     }
 };
@@ -7512,7 +7478,7 @@ TouhouGodPackage::TouhouGodPackage()
     related_skills.insertMulti("kuangji", "#kuangji_effect");
 
     General *tenshi_god = new General(this, "tenshi_god", "touhougod", 4);
-    tenshi_god->addSkill(new Qizhi);
+    tenshi_god->addSkill(new Dimai);
     tenshi_god->addSkill(new Tiandao);
 
     General *tenshi_god_sp = new General(this, "tenshi_god_sp", "touhougod", 4, false, true, true); // not finished yet

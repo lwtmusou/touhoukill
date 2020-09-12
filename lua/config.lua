@@ -233,6 +233,6 @@ config = {
 		"futo",
 		"okina", "okina_sp","eternity", "nemuno", "aun", "narumi", "satono", "mai", "lilywhite_sp",
 		"eirin_ndj", "tenshi_ndj",
-		"yuka_god", "patchouli_god",--"tenshi_god",
+		"yuka_god", "patchouli_god", "tenshi_god",
 	}
 }
