@@ -109,9 +109,9 @@ void ZhaoweiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
     } else if (zhaoweiMod == 2) {
         QList<ServerPlayer *> targets_other;
         foreach (ServerPlayer *p, targets) {
-            if (p->isNude())
+            if (p->isKongcheng())
                 continue;
-            int card_id = room->askForCardChosen(source, p, "hes", objectName(), false, Card::MethodNone);
+            int card_id = room->askForCardChosen(source, p, "hs", objectName(), false, Card::MethodNone);
             source->obtainCard(Sanguosha->getCard(card_id));
             targets_other << p;
         }
