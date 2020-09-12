@@ -675,15 +675,17 @@ public:
             if (use.card == NULL || use.card->getTypeId() == Card::TypeSkill || !use.card->canDamage() || use.card->hasFlag("lizhiDamage"))
                 return QList<SkillInvokeDetail>();
 
-            ServerPlayer *source;
+            ServerPlayer *source = NULL;
             if (!use.to.isEmpty()) {
                 foreach(ServerPlayer *p, use.to) {
-                    if (p->isAlive() && p->hasSkill(this) && !p->hasFlag("lizhi_used"))
+                    if (p->isAlive() && p->hasSkill(this) && !p->hasFlag("lizhi_used")) {
                         source = p;
+                        break;
+                    }
+                        
                 }
             }
-            
-            if (use.from && use.from->isAlive() && use.from->hasSkill(this) && !use.from->hasFlag("lizhi_used"))
+            if (source == NULL && use.from && use.from->isAlive() && use.from->hasSkill(this) && !use.from->hasFlag("lizhi_used"))
                 source = use.from;
             if (source == NULL)
                 return QList<SkillInvokeDetail>();
