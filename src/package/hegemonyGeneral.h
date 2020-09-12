@@ -71,8 +71,6 @@ public:
     const Card *validate(CardUseStruct &card_use) const;
 };
 
-
-
 class XushiHegemonyCard : public SkillCard
 {
     Q_OBJECT
@@ -103,8 +101,6 @@ public:
 
     const Card *validate(CardUseStruct &card_use) const;
 };
-
-
 
 class ChunhenHegemonyCard : public SkillCard
 {

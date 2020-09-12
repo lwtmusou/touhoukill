@@ -1549,16 +1549,16 @@ public:
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, first->objectName(), second->objectName());
 
         QList<int> equips1, equips2;
-        foreach(const Card *equip, first->getEquips())
+        foreach (const Card *equip, first->getEquips())
             equips1.append(equip->getId());
-        foreach(const Card *equip, second->getEquips())
+        foreach (const Card *equip, second->getEquips())
             equips2.append(equip->getId());
 
         QList<CardsMoveStruct> exchangeMove;
         CardsMoveStruct move1(equips1, second, Player::PlaceEquip,
-            CardMoveReason(CardMoveReason::S_REASON_SWAP, first->objectName(), second->objectName(), "dunjia_hegemony", QString()));
+                              CardMoveReason(CardMoveReason::S_REASON_SWAP, first->objectName(), second->objectName(), "dunjia_hegemony", QString()));
         CardsMoveStruct move2(equips2, first, Player::PlaceEquip,
-            CardMoveReason(CardMoveReason::S_REASON_SWAP, second->objectName(), first->objectName(), "dunjia_hegemony", QString()));
+                              CardMoveReason(CardMoveReason::S_REASON_SWAP, second->objectName(), first->objectName(), "dunjia_hegemony", QString()));
         exchangeMove.push_back(move2);
         exchangeMove.push_back(move1);
         room->moveCardsAtomic(exchangeMove, false);
@@ -1566,9 +1566,6 @@ public:
         return false;
     }
 };
-
-
-
 
 class Jiyi : public TriggerSkill
 {

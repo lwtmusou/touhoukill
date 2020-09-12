@@ -51,7 +51,8 @@ QString Analeptic::getSubtype() const
     return "buff_card";
 }
 
-bool Analeptic::canRecover() const {
+bool Analeptic::canRecover() const
+{
     return Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY || Card::canRecover();
 }
 
@@ -61,7 +62,7 @@ bool Analeptic::targetFilter(const QList<const Player *> &targets, const Player 
         if (to_select == Self)
             return true;
         if (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"))
-            return true;  
+            return true;
     }
     if (Self->hasSkill("riyue") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed")) {
         if ((canDamage() && isRed()) || canRecover() && isBlack())

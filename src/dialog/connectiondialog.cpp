@@ -272,6 +272,8 @@ void ConnectionDialog::showEvent(QShowEvent *e)
 
     avatarPixmap->setPixmap(G_ROOM_SKIN.getGeneralPixmap(Config.UserAvatar, QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE, false));
 
+    hideAvatarList();
+
     QDialog::showEvent(e);
     if (shrinkSize.isEmpty())
         shrinkSize = size();

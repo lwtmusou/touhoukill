@@ -2952,7 +2952,6 @@ public:
     }
 };
 
-
 class HezouHegemonyVS : public OneCardViewAsSkill
 {
 public:
@@ -3358,7 +3357,7 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        QList<int> disable;//record cards into discarplie while this process. like yongheng
+        QList<int> disable; //record cards into discarplie while this process. like yongheng
         while (true) {
             QList<int> ids;
             foreach (int id, move.card_ids) {
@@ -3582,7 +3581,6 @@ void DongzhiHegemonyCard::onUse(Room *room, const CardUseStruct &card_use) const
 {
     room->doLightbox("$dongzhiAnimate", 4000);
     SkillCard::onUse(room, card_use);
-
 }
 
 void DongzhiHegemonyCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const

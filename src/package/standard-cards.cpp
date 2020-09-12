@@ -443,7 +443,6 @@ bool Peach::targetFilter(const QList<const Player *> &targets, const Player *to_
                 return true;
             if (Self->getKingdom() == "zhan" && Self->getPhase() == Player::Play && to_select->hasLordSkill("yanhui"))
                 return true;
-            
         }
     }
     return false;
@@ -2080,9 +2079,9 @@ public:
     {
     }
 
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &, bool) const
+    virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &, bool) const
     {
-        return  to->isRemoved() && card->getTypeId() != Card::TypeSkill;//!from->hasSkill("miyi")
+        return to->isRemoved() && card->getTypeId() != Card::TypeSkill;
     }
 };
 

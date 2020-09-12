@@ -1779,17 +1779,16 @@ public:
 
     void record(TriggerEvent e, Room *room, QVariant &data) const
     {
-        if (e ==  CardsMoveOneTime) {
+        if (e == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
             if (player && player->isAlive() && move.from_places.contains(Player::PlaceHand))
                 room->setPlayerFlag(player, "jianshe_losed");
-
         }
         if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
-                foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                foreach (ServerPlayer *p, room->getAlivePlayers()) {
                     if (p->hasFlag("jianshe_losed"))
                         room->setPlayerFlag(p, "-jianshe_losed");
                 }
@@ -1819,7 +1818,7 @@ public:
         ServerPlayer *current = room->getCurrent();
         if (!invoke->invoker->hasFlag("jianshe_losed"))
             return room->askForCard(invoke->invoker, ".|.|.|hand", "@jianshe-discard:" + current->objectName(), QVariant::fromValue(current), Card::MethodDiscard, NULL, false,
-                objectName());
+                                    objectName());
         else
             return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(current));
     }
