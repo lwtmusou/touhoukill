@@ -343,18 +343,17 @@ QString Engine::translate(const QString &to_translate, bool addHegemony) const
 {
     QStringList list = to_translate.split("\\");
     QString res;
-    foreach(QString str, list) {
+    foreach (QString str, list) {
         if (addHegemony && !str.endsWith("_hegemony")) {
             QString strh = str + "_hegemony";
             if (translations.contains(strh))
                 res.append(translations.value(strh, strh));
             else
                 res.append(translations.value(str, str));
-        }
-        else
+        } else
             res.append(translations.value(str, str));
     }
-        
+
     return res;
 }
 
@@ -679,7 +678,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const
 
 QString Engine::getVersionNumber() const
 {
-    return "20200331";
+    return "20200913";
 }
 
 QString Engine::getVersion() const
@@ -689,13 +688,13 @@ QString Engine::getVersion() const
 
 QString Engine::getVersionName() const
 {
-    return "V0.9.6";
+    return "V0.9.7";
 }
 
 #if QT_VERSION >= 0x050600
 QVersionNumber Engine::getQVersionNumber() const
 {
-    return QVersionNumber(0, 9, 6);
+    return QVersionNumber(0, 9, 7);
 }
 #endif
 
