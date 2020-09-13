@@ -1831,6 +1831,7 @@ TH16Package::TH16Package()
     addMetaObject<ChuntengCard>();
     addMetaObject<Chunteng2Card>();
     addMetaObject<LinsaCard>();
+    addMetaObject<GuwuCard>();
     skills << new HouhuDistance << new ZangfaDistance << new HuyuanDis << new GuwuGiveUse;
 }
 
