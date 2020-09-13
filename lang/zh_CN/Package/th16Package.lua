@@ -52,7 +52,7 @@ return {
 	[":diexing"] = "<font color=\"blue\"><b>锁定技，</b></font>当你扣减体力后，你摸两张牌；当你一次性失去至少两张手牌后，你回复1点体力。",
 	
 	["linsa"] = "鳞洒",
-	[":linsa"] = "<font color=\"green\"><b出牌阶段限一次，</b></font>你可以将一张手牌交给一名其它角色并展示之，若此牌花色为：<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌，其失去1点体力；<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，其于此回合内使用下一张手牌时，你无效之。",
+	[":linsa"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将一张手牌交给一名其它角色并展示之，若此牌花色为：<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌，其失去1点体力；<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，其于此回合内使用下一张手牌时，你无效之。",
 	["#LinsaNullifyPre"] = "%from 使用了“麟洒”，%to 于本回合内使用的下一张手牌将无效。",
 	["#LinsaNullifyPreRoundOver"] = "%to 的回合结束，%from 使用的“麟洒”效果消失。",
 	["#LinsaNullify"] = "因 %from 使用的“麟洒”效果，%to 使用的 %arg 无效。",
