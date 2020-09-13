@@ -48,7 +48,7 @@ QVariant AvatarModel::data(const QModelIndex &index, int role) const
     case Qt::DisplayRole:
         return Sanguosha->translate(general->objectName());
     case Qt::DecorationRole: {
-        QIcon icon(G_ROOM_SKIN.getGeneralPixmap(general->objectName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE));
+        QIcon icon(G_ROOM_SKIN.getGeneralPixmap(general->objectName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE, false));
         return icon;
     }
     }
