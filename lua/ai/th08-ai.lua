@@ -1053,22 +1053,19 @@ sgs.ai_skill_use["@@chuangshi"] = function(self, prompt)
 
 	local target
 	target=self.player:getTag("chuangshi_victim"):toPlayer()
-	self.player:removeTag("chuangshi_victim")
+	--self.player:removeTag("chuangshi_victim")
 
 
 	if cardname and user then
-		self.room:setPlayerMark(self.player, "chuangshi", self.player:getMark("chuangshi")+1);
-		self.room:setPlayerMark(user, "chuangshi_user", 0);
-		local chuangshicard = sgs.Sanguosha:cloneCard(cardname)
-		chuangshicard:setSkillName("_chuangshi")
-		local carduse=sgs.CardUseStruct()
-		carduse.card=chuangshicard
-		carduse.from=user
-		if target then
-			carduse.to:append(target)
-		end
-		self.room:useCard(carduse,false)
+		self.room:setPlayerMark(self.player, "chuangshi", self.player:getMark("chuangshi")+1)
+		--self.room:setPlayerMark(user, "chuangshi_user", 0)
+		
 		self.room:setPlayerFlag(self.player, "chuangshi")
+		if target then
+			return "@ChuangshiCard=.:" .. cardname .. "->" .. target:objectName()
+		else
+			return "@ChuangshiCard=.:" .. cardname .. "->" .. user:objectName()
+		end
 	end
 	return "."
 end
@@ -1077,16 +1074,7 @@ local chuangshi_filter = function(self, player, carduse)
 		sgs.ai_chuangshi_effect = true
 	end
 end
-sgs.ai_skill_use_func.ChuangshiCard=function(card,use,self)
-	local userstring=card:toString()
-	local target=self.player:getTag("chuangshi_victim"):toPlayer()
-	use.card=card
-	local target=self.player:getTag("chuangshi_victim"):toPlayer()
-	if use.to and  target then
-		use.to:appnd(target)
-		return
-	end
-end
+
 
 sgs.ai_skill_invoke.wangyue = true
 sgs.ai_skill_invoke.wangyue_hegemony =function(self,data)
