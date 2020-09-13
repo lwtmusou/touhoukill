@@ -1832,7 +1832,7 @@ public:
                 x = weapon->getRange();
         }
 
-        if (use.from->askForSkillInvoke("yaoyi-equip", data, "mowmowmowmow:::" + QString::number(x))) {
+        if (use.from->askForSkillInvoke("yaoli-equip", data, "mowmowmowmow:::" + QString::number(x))) {
             bool discard = false;
             do {
                 QList<ServerPlayer *> ts;
