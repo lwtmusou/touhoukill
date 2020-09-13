@@ -1644,7 +1644,7 @@ Chunteng2Card::Chunteng2Card()
 {
     will_throw = false;
     handling_method = Card::MethodNone;
-    m_skillName = "_chuteng";
+    m_skillName = "_chunteng";
 }
 
 void Chunteng2Card::onEffect(const CardEffectStruct &effect) const
@@ -1654,10 +1654,10 @@ void Chunteng2Card::onEffect(const CardEffectStruct &effect) const
     room->obtainCard(effect.to, this, r, false);
 
     if (effect.to->getHandcardNum() > effect.from->getPile("spring").length()) {
-        if (!room->askForDiscard(effect.to, "chuteng", 1, 1, true, true, "@chuteng-discard")) {
+        if (!room->askForDiscard(effect.to, "chunteng", 1, 1, true, true, "@chunteng-discard")) {
             DummyCard d;
             d.addSubcards(effect.from->getPile("spring"));
-            CardMoveReason r2(CardMoveReason::S_REASON_PUT, effect.to->objectName(), QString(), "chuteng", QString());
+            CardMoveReason r2(CardMoveReason::S_REASON_PUT, effect.to->objectName(), QString(), "chunteng", QString());
             room->throwCard(&d, r2, NULL);
         }
     }
