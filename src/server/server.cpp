@@ -1405,6 +1405,8 @@ void Server::processRequest(const char *request)
         packet.setMessageBody("USERNAME_INCORRECT");
         socket->send(packet.toString());
         socket->disconnectFromHost();
+
+        return;
     }
 
     if (current == NULL || current->isFull() || current->isFinished())
