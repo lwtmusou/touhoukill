@@ -1310,7 +1310,8 @@ public:
         // "'A' proceed the effect of 'guwu' and used 'C' as 'C'" will be output in the log box, which is not what I need
         // I don't want to deal with the logic in SkillCard::validate
 
-        Card *c = Sanguosha->cloneCard(originalCard);
+        Card *c = Sanguosha->cloneCard(originalCard->getClassName(), originalCard->getSuit(), originalCard->getNumber());
+        c->addSubcard(originalCard);
         c->setSkillName("_guwu");
         c->setCanRecast(false);
 
