@@ -1162,7 +1162,7 @@ public:
                 }
             }
         } else if (triggerEvent == DamageComplete) {
-            invoke->preferredTarget->loseMark("zheshetransfer");
+            invoke->preferredTarget->removeMark("zheshetransfer");
             return true;
         }
 
