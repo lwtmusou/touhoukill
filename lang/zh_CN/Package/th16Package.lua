@@ -25,7 +25,7 @@ return {
 
 	["zhuzhe"] = "主者",
 	--[":zhuzhe"] = "<font color=\"orange\"><b>主公技，</b></font>当其他璋势力角色使用有摸牌或回血效果的牌指定目标时，其可以令你成为额外目标。",
-	[":zhuzhe"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"green\"><b>出牌段限一次，</b></font>你可以令其他璋势力角色选择是否将其一张牌交给你（选是会终止询问）。" ,
+	[":zhuzhe"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"green\"><b>出牌阶段限一次，</b></font>你可以令其他璋势力角色选择是否将其一张牌交给你（选是会终止询问）。" ,
 	["@zhuzhe"] = "“主者”：你可以将一张牌交给 主公 。" ,
 	
 	
