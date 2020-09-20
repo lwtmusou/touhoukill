@@ -1011,8 +1011,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 player->showGeneral(true, false, false);
             if (player->getGeneral2() && !player->hasShownGeneral2())
                 player->showGeneral(false, false, false);
-            //if (!player->hasShownGeneral2())
-            //    player->showGeneral(false, false, false);
         }
 
         break;
