@@ -32,7 +32,7 @@ public:
     Miyi()
         : TriggerSkill("miyi")
     {
-        events << SlashHit << TrickEffect << CardFinished << PreCardUsed;
+        events << PreCardUsed << EventPhaseChanging;
         view_as_skill = new MiyiVS;
     }
 
@@ -633,14 +633,14 @@ public:
         view_as_skill = new LinsaVS;
     }
 
-    void record(TriggerEvent e, Room *room, QVariant &data)
+    void record(TriggerEvent e, Room *room, QVariant &data) const
     {
         if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->tag.contains("linsaNullifyFrom")) {
-                        ServerPlayer *from = p->tag.value("linsaNullifyFrom").value<ServerPlayer *>();
+                        ServerPlayer *from = p->tag.value("linsaNullifyFrom", NULL).value<ServerPlayer *>();
                         if (from != NULL) {
                             LogMessage l;
                             l.type = "#LinsaNullifyPreRoundOver";
@@ -662,6 +662,8 @@ public:
         CardUseStruct use;
         if (triggerEvent == CardUsed) {
             use = data.value<CardUseStruct>();
+            if (use.card->getTypeId() == Card::TypeSkill)
+                return QList<SkillInvokeDetail>();
             p = use.from;
         } else if (triggerEvent = CardResponded) {
             CardResponseStruct resp = data.value<CardResponseStruct>();
