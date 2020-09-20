@@ -3481,7 +3481,7 @@ void RoomScene::addRestartButton(QDialog *dialog)
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
 
-    if (ClientInstance->findChild<Replayer *>() == NULL) {
+    if (ClientInstance->findChild<Replayer *>() == NULL && QUrl(Config.HostAddress).path().isEmpty()) {
         bool goto_next = false;
         if (ServerInfo.GameMode.contains("_mini_") && Self->property("win").toBool())
             goto_next = (_m_currentStage < Sanguosha->getMiniSceneCounts());
