@@ -667,6 +667,8 @@ public:
             p = use.from;
         } else if (triggerEvent = CardResponded) {
             CardResponseStruct resp = data.value<CardResponseStruct>();
+            if (resp.m_card && resp.m_card->getTypeId() == Card::TypeSkill)
+                return QList<SkillInvokeDetail>();
             if (resp.m_isUse) {
                 use.from = resp.m_from;
                 use.card = resp.m_card;
