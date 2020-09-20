@@ -426,7 +426,7 @@ public:
         } else {
             bool ishead = (choice == "showhead");
             target->showGeneral(ishead, true);
-            target->drawCards(1);
+            //target->drawCards(1);
         }
         return false;
     }

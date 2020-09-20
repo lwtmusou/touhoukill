@@ -41,7 +41,7 @@ return {
 	
 	
 	["DoubleSwordHegemony"] = "雌雄剑（国）",
-	[":DoubleSwordHegemony"] = "装备牌·武器<br />攻击范围：2<br />装备技能：当你使用【杀】指定有暗置武将牌的角色后，你可以令其选择一项：明置一张武将牌并摸一张牌; 或弃置一张手牌。",
+	[":DoubleSwordHegemony"] = "装备牌·武器<br />攻击范围：2<br />装备技能：当你使用【杀】指定有暗置武将牌的角色后，你可以令其选择一项：明置一张武将牌; 或弃置一张手牌。",
 	["DoubleSwordHegemony:showhead"] = "明置主将",
 	["DoubleSwordHegemony:showdeputy"] = "明置副将",
 }
