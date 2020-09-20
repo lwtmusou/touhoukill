@@ -273,6 +273,7 @@ private:
     QList<int> available_cards;
 
     unsigned int _m_lastServerSerial;
+    bool m_isObjectNameRecorded;
 
     void updatePileNum();
     QString setPromptList(const QStringList &text);

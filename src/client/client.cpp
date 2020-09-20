@@ -32,6 +32,7 @@ Client::Client(QObject *parent, const QString &filename)
     , swap_pile(0)
     , _m_roomState(true)
     , heartbeatTimer(NULL)
+    , m_isObjectNameRecorded(false)
 {
     ClientInstance = this;
     m_isGameOver = false;
@@ -493,10 +494,6 @@ void Client::updateProperty(const QVariant &arg)
     if (!player)
         return;
     player->setProperty(args[1].toString().toLatin1().constData(), args[2].toString());
-
-    // save objectName
-    if (args[1].toString() == "objectName" && player == Self)
-        Config.setValue("LastSelfObjectName", args[2].toString());
 }
 
 void Client::removePlayer(const QVariant &player_name)
@@ -734,6 +731,11 @@ void Client::onPlayerResponseCard(const Card *card, const QList<const Player *> 
 
 void Client::startInXs(const QVariant &left_seconds)
 {
+    if (!m_isObjectNameRecorded) {
+        m_isObjectNameRecorded = true;
+        Config.setValue("LastSelfObjectName", Self->objectName());
+    }
+
     int seconds = left_seconds.toInt();
     if (seconds > 0)
         lines_doc->setHtml(tr("<p align = \"center\">Game will start in <b>%1</b> seconds...</p>").arg(seconds));
