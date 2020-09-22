@@ -1250,7 +1250,9 @@ void GuwuCard::onEffect(const CardEffectStruct &effect) const
 
     try {
         room->setPlayerMark(effect.to, "guwugive", 1);
-        room->askForUseCard(effect.to, "@@guwugiveuse", "@guwu-giveuse");
+
+        // askForUseCard is meant to disable recasting, so no need to prevent recasting
+        room->askForUseCard(effect.to, ".|.|.|hand", "@guwu-giveuse");
         if (effect.to->getMark("guwugive") != 0)
             room->setPlayerMark(effect.to, "guwugive", 0);
     } catch (TriggerEvent ev) {
@@ -1297,37 +1299,6 @@ public:
     }
 };
 
-class GuwuGiveUseVS : public OneCardViewAsSkill
-{
-public:
-    GuwuGiveUseVS()
-        : OneCardViewAsSkill("guwugiveuse")
-    {
-        response_pattern = "@@guwugiveuse";
-        filter_pattern = ".|.|.|hand";
-        response_or_use = true;
-    }
-
-    const Card *viewAs(const Card *originalCard) const
-    {
-        // how to prevent recasting?
-        // "'A' proceed the effect of 'guwu' and used 'C' as 'C'" will be output in the log box, which is not what I need
-        // I don't want to deal with the logic in SkillCard::validate
-
-        Card *c = Sanguosha->cloneCard(originalCard->getClassName(), originalCard->getSuit(), originalCard->getNumber());
-        c->addSubcard(originalCard);
-        c->setSkillName("_guwu");
-        c->setCanRecast(false);
-
-        if (c->isAvailable(Self))
-            return c;
-        else
-            delete c;
-
-        return NULL;
-    }
-};
-
 class GuwuGiveUse : public TriggerSkill
 {
 public:
@@ -1335,7 +1306,6 @@ public:
         : TriggerSkill("guwugiveuse")
     {
         events << PreCardUsed;
-        view_as_skill = new GuwuGiveUseVS;
         global = true;
     }
 
