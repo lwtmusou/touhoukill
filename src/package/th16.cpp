@@ -1455,7 +1455,7 @@ public:
                         QList<ServerPlayer *> noselectPlayers = use.to;
                         noselectPlayers << use.from << m;
                         foreach (ServerPlayer *p, room->getAllPlayers()) {
-                            if (!noselectPlayers.contains(p) && use.card->targetFilter(QList<const Player *>(), p, use.from)) {
+                            if (!noselectPlayers.contains(p) && use.card->targetFilter(QList<const Player *>(), p, use.from) && !use.from->isProhibited(p, use.card)) {
                                 r << SkillInvokeDetail(this, m, m);
                                 break;
                             }
@@ -1479,7 +1479,7 @@ public:
         use.card->setFlags("xunshi");
         use.card->setFlags("IgnoreFailed");
         foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (!noselectPlayers.contains(p) && use.card->targetFilter(QList<const Player *>(), p, use.from))
+            if (!noselectPlayers.contains(p) && use.card->targetFilter(QList<const Player *>(), p, use.from) && !use.from->isProhibited(p, use.card))
                 selectPlayer << p;
         }
         use.card->setFlags("-xunshi");
