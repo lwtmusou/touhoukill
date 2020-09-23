@@ -723,7 +723,9 @@ public:
 
     bool viewFilter(const Card *to_select) const
     {
-        return !to_select->isEquipped();
+        const Room *room = Sanguosha->currentRoom();
+        Q_ASSERT(room != NULL);
+        return room->getCardPlace(to_select->getId()) == Player::PlaceHand;
     }
 
     const Card *viewAs(const Card *originalCard) const
@@ -755,7 +757,7 @@ public:
         QList<SkillInvokeDetail> r;
         if (e == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from != NULL && !use.from->hasSkill("bmmaoji") && use.from->isAlive()) {
+            if (use.from != NULL && !use.from->hasSkill("bmmaoji") && use.from->isAlive() && use.card != NULL && use.card->isKindOf("Slash")) {
                 foreach (ServerPlayer *p, use.to) {
                     if (p->hasSkill("bmmaoji"))
                         r << SkillInvokeDetail(this, p, p, use.from, true);
@@ -814,7 +816,7 @@ public:
             for (int i = eff.jink_num; i > 0; i--) {
                 QString prompt = QString("@bmmaoji-slash%1:%2::%3").arg(i == eff.jink_num ? "-start" : QString()).arg(eff.from->objectName()).arg(i);
                 const Card *slash = room->askForCard(eff.to, "slash", prompt, data, Card::MethodResponse, eff.from);
-                if (slash = NULL)
+                if (slash == NULL)
                     return true;
             }
 

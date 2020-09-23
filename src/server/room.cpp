@@ -1263,11 +1263,9 @@ bool Room::isCanceled(const CardEffectStruct &effect)
                         re.card = xianshi_nullification;
                         re.who = p;
                         recover(target, re);
-                    }
-                    else if (extraCard->isKindOf("AmazingGrace")) {
+                    } else if (extraCard->isKindOf("AmazingGrace")) {
                         doExtraAmazingGrace(p, target, 1);
-                    }
-                    else { //Trick card
+                    } else { //Trick card
                         CardEffectStruct extraEffect;
                         extraCard->deleteLater();
 
@@ -2022,8 +2020,8 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
     return card_id;
 }
 
-
-void Room::doExtraAmazingGrace(ServerPlayer *from, ServerPlayer *target, int times) {//couple xianshi
+void Room::doExtraAmazingGrace(ServerPlayer *from, ServerPlayer *target, int times)
+{ //couple xianshi
     target->gainMark("@MMP");
     int count = getAllPlayers().length();
     QList<int> card_ids = getNCards(count);
@@ -3084,7 +3082,7 @@ bool Room::makeSurrender(ServerPlayer *initiator)
     // vote counting
     if (isHegemonyGameMode(mode)) {
         if (hegemony_give_up > (playersAlive.length() + 1) / 2) {
-            foreach(ServerPlayer *p, getAlivePlayers()) {
+            foreach (ServerPlayer *p, getAlivePlayers()) {
                 if (!p->hasShownGeneral())
                     p->showGeneral(true, false, false);
                 if (p->getGeneral2() && !p->hasShownGeneral2())
@@ -3092,7 +3090,7 @@ bool Room::makeSurrender(ServerPlayer *initiator)
             }
             gameOver(".", true);
         }
-            
+
     } else {
         if (loyalGiveup && renegadeGiveup && !rebelGiveup)
             gameOver("rebel", true);
@@ -5550,7 +5548,7 @@ void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general
             player->addSkill(skill->objectName(), false);
         }
     }
-    filterCards(player, player->getCards("he"), true);
+    filterCards(player, player->getCards("hes"), true);
 }
 
 void Room::filterCards(ServerPlayer *player, QList<const Card *> cards, bool refilter)
