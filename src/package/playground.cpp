@@ -3,6 +3,7 @@
 #include "engine.h"
 #include "general.h"
 #include "skill.h"
+#include "testCard.h"
 
 class Fsu0413Gepi : public TriggerSkill
 {
@@ -712,6 +713,96 @@ public:
     }
 };
 
+class BmMaoji : public FilterSkill
+{
+public:
+    BmMaoji()
+        : FilterSkill("bmmaoji")
+    {
+    }
+
+    bool viewFilter(const Card *to_select) const
+    {
+        return !to_select->isEquipped();
+    }
+
+    const Card *viewAs(const Card *originalCard) const
+    {
+        PowerSlash *slash = new PowerSlash(originalCard->getSuit(), originalCard->getNumber());
+        slash->setSkillName("bmmaoji");
+        WrappedCard *wrap = Sanguosha->getWrappedCard(originalCard->getId());
+        wrap->takeOver(slash);
+        return wrap;
+    }
+
+    int getEffectIndex(const ServerPlayer *player, const Card *) const
+    {
+        return (player->getGeneralName() == "benmao" || player->getGeneral2Name() == "benmao") ? 1 : 3;
+    }
+};
+
+class BmMaojiTrigger : public TriggerSkill
+{
+public:
+    BmMaojiTrigger()
+        : TriggerSkill("#bmmaoji")
+    {
+        events << TargetConfirmed << SlashProceed;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
+    {
+        QList<SkillInvokeDetail> r;
+        if (e == TargetConfirmed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.from != NULL && !use.from->hasSkill("bmmaoji")) {
+                foreach (ServerPlayer *p, use.to) {
+                    if (p->hasSkill("bmmaoji"))
+                        r << SkillInvokeDetail(this, p, p, use.from, true);
+                }
+            }
+        } else if (e == SlashProceed) {
+            SlashEffectStruct eff = data.value<SlashEffectStruct>();
+            if (eff.from->hasSkill("bmmaoji"))
+                r << SkillInvokeDetail(this, eff.from, eff.from, eff.to, true);
+        }
+        return r;
+    }
+
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (e == TargetConfirmed) {
+            room->broadcastSkillInvoke("bmmaoji", 2);
+
+            if (!invoke->targets.first()->getCards("e").isEmpty()) {
+                DummyCard c;
+                c.addSubcards(invoke->targets.first()->getCards("e"));
+                invoke->targets.first()->obtainCard(&c);
+            }
+
+            QStringList skills = {"bmmaoji"};
+            QStringList conflictingSkills = {"huanwei"};
+            foreach (const QString &conflict, conflictingSkills) {
+                if (invoke->targets.first()->hasSkill(conflict, true, true)) {
+                    room->touhouLogmessage("#bmmaoji-conflictingskill", invoke->targets.first(), conflict);
+                    skills << (QStringLiteral("-") + conflict);
+                }
+            }
+
+            room->handleAcquireDetachSkills(invoke->targets.first(), skills);
+        } else if (e == SlashProceed) {
+            // couple GameRule::effect(SlashProceed)
+
+            SlashEffectStruct eff = data.value<SlashEffectStruct>();
+            if (eff.jink_num != 0) {
+                eff.jink_num += 1;
+                data = QVariant::fromValue<SlashEffectStruct>(eff);
+            }
+        }
+        return false;
+    }
+};
+
 PlaygroundPackage::PlaygroundPackage()
     : Package("playground")
 {
@@ -728,6 +819,11 @@ PlaygroundPackage::PlaygroundPackage()
     General *kitsuhattyou = new General(this, "kitsuhattyou", "touhougod", 3, false, true, true);
     kitsuhattyou->addSkill(new Fsu0413JbdNashaT);
     addMetaObject<Fsu0413JbdNashaCard>();
+
+    General *benmao = new General(this, "benmao", "touhougod", 4, true);
+    benmao->addSkill(new BmMaoji);
+    benmao->addSkill(new BmMaojiTrigger);
+    related_skills.insertMulti("bmmaoji", "#bmmaoji");
 }
 
 ADD_PACKAGE(Playground)
