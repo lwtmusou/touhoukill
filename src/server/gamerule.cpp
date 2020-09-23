@@ -788,60 +788,38 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         if (!effect.to->isAlive())
             break;
 
-        //process skill cancel, like kaungluan.
+        // process skill cancel, like (obsolete) kuangluan and (current) bmmaoji.
         if (room->getThread()->trigger(Cancel, room, data)) {
             effect = data.value<SlashEffectStruct>();
             room->slashResult(effect, NULL);
             break;
         }
 
-        if (effect.from->hasSkill("bmmaoji")) {
-            if (effect.jink_num == 0) {
-                room->slashResult(effect, NULL);
-                break;
-            }
-
+        if (effect.jink_num == 0) {
+            room->slashResult(effect, NULL);
+            break;
+        }
+        if (effect.jink_num == 1) {
+            const Card *jink = room->askForCard(effect.to, "jink", "slash-jink:" + slasher, data, Card::MethodUse, effect.from);
+            room->slashResult(effect, room->isJinkEffected(effect, jink) ? jink : NULL);
+        } else {
             DummyCard *jink = new DummyCard;
+            // Since GameRule is created by RoomThread not Engine, and this function also runs at RoomThread not main thread, so this jink must be on the RoomThread
+            // Because the RoomThread has no event loop, so a deleteLater is absolutely safe for it can be deleted only by the time of the deletion of RoomThread
             jink->deleteLater();
+            const Card *asked_jink = NULL;
             for (int i = effect.jink_num; i > 0; i--) {
-                QString prompt = QString("@bmmaoji-slash%1:%2::%3").arg(i == effect.jink_num ? "-start" : QString()).arg(slasher).arg(i);
-                const Card *slash = room->askForCard(effect.to, "slash", prompt, data, Card::MethodResponse, effect.from);
-                if (slash != NULL)
-                    jink->addSubcard(slash);
-                else {
+                QString prompt = QString("@multi-jink%1:%2::%3").arg(i == effect.jink_num ? "-start" : QString()).arg(slasher).arg(i);
+                asked_jink = room->askForCard(effect.to, "jink", prompt, data, Card::MethodUse, effect.from);
+                if (!room->isJinkEffected(effect, asked_jink)) {
                     delete jink;
                     room->slashResult(effect, NULL);
                     return false;
+                } else {
+                    jink->addSubcard(asked_jink->getEffectiveId());
                 }
             }
             room->slashResult(effect, jink);
-        } else {
-            if (effect.jink_num == 0) {
-                room->slashResult(effect, NULL);
-                break;
-            }
-            if (effect.jink_num == 1) {
-                const Card *jink = room->askForCard(effect.to, "jink", "slash-jink:" + slasher, data, Card::MethodUse, effect.from);
-                room->slashResult(effect, room->isJinkEffected(effect, jink) ? jink : NULL);
-            } else {
-                DummyCard *jink = new DummyCard;
-                // Since GameRule is created by RoomThread not Engine, and this function also runs at RoomThread not main thread, so this jink must be on the RoomThread
-                // Because the RoomThread has no event loop, so a deleteLater is absolutely safe for it can be deleted only by the time of the deletion of RoomThread
-                jink->deleteLater();
-                const Card *asked_jink = NULL;
-                for (int i = effect.jink_num; i > 0; i--) {
-                    QString prompt = QString("@multi-jink%1:%2::%3").arg(i == effect.jink_num ? "-start" : QString()).arg(slasher).arg(i);
-                    asked_jink = room->askForCard(effect.to, "jink", prompt, data, Card::MethodUse, effect.from);
-                    if (!room->isJinkEffected(effect, asked_jink)) {
-                        delete jink;
-                        room->slashResult(effect, NULL);
-                        return false;
-                    } else {
-                        jink->addSubcard(asked_jink->getEffectiveId());
-                    }
-                }
-                room->slashResult(effect, jink);
-            }
         }
 
         break;

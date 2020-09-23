@@ -747,7 +747,7 @@ public:
     BmMaojiTrigger()
         : TriggerSkill("#bmmaoji")
     {
-        events << TargetConfirmed << SlashProceed;
+        events << TargetConfirmed << SlashProceed << Cancel;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
@@ -755,7 +755,7 @@ public:
         QList<SkillInvokeDetail> r;
         if (e == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from != NULL && !use.from->hasSkill("bmmaoji")) {
+            if (use.from != NULL && !use.from->hasSkill("bmmaoji") && use.from->isAlive()) {
                 foreach (ServerPlayer *p, use.to) {
                     if (p->hasSkill("bmmaoji"))
                         r << SkillInvokeDetail(this, p, p, use.from, true);
@@ -765,6 +765,10 @@ public:
             SlashEffectStruct eff = data.value<SlashEffectStruct>();
             if (eff.from->hasSkill("bmmaoji"))
                 r << SkillInvokeDetail(this, eff.from, eff.from, eff.to, true);
+        } else if (e == Cancel && data.canConvert<SlashEffectStruct>()) {
+            SlashEffectStruct eff = data.value<SlashEffectStruct>();
+            if (eff.slash->hasFlag("bmmaoji"))
+                r << SkillInvokeDetail(this, eff.from, eff.from, eff.to, true, NULL, false);
         }
         return r;
     }
@@ -791,13 +795,32 @@ public:
 
             room->handleAcquireDetachSkills(invoke->targets.first(), skills);
         } else if (e == SlashProceed) {
-            // couple GameRule::effect(SlashProceed)
-
             SlashEffectStruct eff = data.value<SlashEffectStruct>();
+            eff.slash->setFlags("bmmaoji"); // for triggering the effect afterwards...
+
             if (eff.jink_num != 0) {
                 eff.jink_num += 1;
                 data = QVariant::fromValue<SlashEffectStruct>(eff);
             }
+        } else if (e == Cancel) {
+            // In this case, BmMaoji Flag is set to the slash itself.
+            // We should always use the BmMaoji slash procedure in this case and ignore the game rule.
+            // So this effect will always return true.
+
+            SlashEffectStruct eff = data.value<SlashEffectStruct>();
+            if (eff.jink_num == 0) // the case of force hit
+                return true;
+
+            for (int i = eff.jink_num; i > 0; i--) {
+                QString prompt = QString("@bmmaoji-slash%1:%2::%3").arg(i == eff.jink_num ? "-start" : QString()).arg(eff.from->objectName()).arg(i);
+                const Card *slash = room->askForCard(eff.to, "slash", prompt, data, Card::MethodResponse, eff.from);
+                if (slash = NULL)
+                    return true;
+            }
+
+            eff.canceled = true;
+            data = QVariant::fromValue<SlashEffectStruct>(eff);
+            return true;
         }
         return false;
     }
