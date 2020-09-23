@@ -41,6 +41,7 @@ return {
 	["#benmao"] = "笨猫",
 	["benmao"] = "神 蔚海幽浮",
 	["designer:benmao"] = "吉八弔千慧",
+	["cv:benmao"] = "Tencent ZhiYan ft. Cat",
 	["&benmao"] = "神笨猫",
 	
 	["bmmaoji"] = "猫击",
