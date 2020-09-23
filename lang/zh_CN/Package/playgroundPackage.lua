@@ -38,4 +38,11 @@ return {
 	["fsu0413jbdnasha:turn"] = "翻面",
 	["fsu0413jbdnasha:disc"] = "弃置所有区域内的牌",
 	
+	["#benmao"] = "笨猫",
+	["benmao"] = "神 蔚海幽浮",
+	["designer:benmao"] = "吉八弔千慧",
+	["&benmao"] = "神笨猫",
+	
+	["bmmaoji"] = "猫击",
+	[":bmmaoji"] = "<font color=blue><b>锁定技，</b></font>你的手牌视为【杀】。你使用的【杀】结算前，你将抵消此【杀】的方法改为目标打出一张【杀】。你使用的【杀】指定一名角色为目标后，你令其获得“猫击”。",
 }
