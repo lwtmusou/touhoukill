@@ -677,12 +677,11 @@ public:
 
             ServerPlayer *source = NULL;
             if (!use.to.isEmpty()) {
-                foreach(ServerPlayer *p, use.to) {
+                foreach (ServerPlayer *p, use.to) {
                     if (p->isAlive() && p->hasSkill(this) && !p->hasFlag("lizhi_used")) {
                         source = p;
                         break;
                     }
-                        
                 }
             }
             if (source == NULL && use.from && use.from->isAlive() && use.from->hasSkill(this) && !use.from->hasFlag("lizhi_used"))
