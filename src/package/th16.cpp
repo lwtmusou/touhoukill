@@ -734,8 +734,10 @@ public:
         if (triggerEvent == TargetSpecified) {
             if (use.card != NULL && (use.card->isKindOf("Slash") || use.card->isNDTrick()) && (use.card->isRed() || use.card->isBlack()) && use.from != NULL
                 && use.from->hasSkill(this) && use.from->isAlive()) {
-                foreach (ServerPlayer *p, use.to)
-                    r << SkillInvokeDetail(this, use.from, use.from, NULL, true, p);
+                foreach (ServerPlayer *p, use.to) {
+                    if (p != use.from)
+                        r << SkillInvokeDetail(this, use.from, use.from, NULL, true, p);
+                }
             }
         } else {
             if (use.card != NULL) {

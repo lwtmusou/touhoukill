@@ -41,8 +41,18 @@ return {
 	["#benmao"] = "笨猫",
 	["benmao"] = "神 蔚海幽浮",
 	["designer:benmao"] = "吉八弔千慧",
+	["cv:benmao"] = "Tencent ZhiYan ft. Cat",
 	["&benmao"] = "神笨猫",
 	
 	["bmmaoji"] = "猫击",
-	[":bmmaoji"] = "<font color=blue><b>锁定技，</b></font>你的手牌均视为幻【杀】；当你使用【杀】指定一个目标后，你将其抵消此【杀】的方式改为依次打出两张【闪】；当你成为一名未拥有“猫击”的角色使用【杀】的目标后，你令其获得其装备区里的所有牌，然后令其获得“猫击”。",
+	[":bmmaoji"] = "<font color=blue><b>锁定技，</b></font>你的手牌视为幻【杀】；当你使用【杀】指定一个目标后，你将其抵消此【杀】的方式改为依次打出两张【杀】；当你成为一名未拥有“猫击”角色使用【杀】的目标后，你令其获得其装备区里的所有牌，然后令其获得“猫击”。",
+	["@bmmaoji-slash-start"] = "%src 对你使用了【杀】并触发了“猫击”，你需依次打出 %arg 张【杀】来抵消。",
+	["@bmmaoji-slash"] = "%src 触发了“猫击”，你还需要依次打出 %arg 张【杀】。",
+	["@bmmaoji-conflictingskill"] = "%from 拥有的技能 <font color=\"yellow\"><b>%arg</b></font> 与 <font color=\"yellow\"><b>猫击</b></font> 冲突，因此将失去技能<font color=\"yellow\"><b>%arg</b></font>。",
+	
+	["$bmmaoji1"] = "喵",
+	["$bmmaoji2"] = "喵",
+	["$bmmaoji3"] = "笨猫笨猫笨",
+	["~benmao"] = "喵",
+
 }

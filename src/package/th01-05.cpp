@@ -28,20 +28,18 @@ public:
 
         if (ids.isEmpty())
             return QList<SkillInvokeDetail>();
-        if (damage.card->isKindOf("Jink") || damage.card->isKindOf("Nullification")) {//couple xianshi
-            foreach(int id, ids) {
+        if (damage.card->isKindOf("Jink") || damage.card->isKindOf("Nullification")) { //couple xianshi
+            foreach (int id, ids) {
                 if (room->getCardPlace(id) != Player::DiscardPile)
                     return QList<SkillInvokeDetail>();
             }
-        }
-        else {
-            foreach(int id, ids) {
+        } else {
+            foreach (int id, ids) {
                 if (room->getCardPlace(id) != Player::PlaceTable)
                     return QList<SkillInvokeDetail>();
             }
         }
 
-        
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *mima, room->findPlayersBySkillName(objectName())) {
             if (mima != damage.from)
@@ -1546,7 +1544,7 @@ public:
         }
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player->hasSkill(this) && (player->getPhase() == Player::RoundStart || player->getPhase() == Player::NotActive))
+            if (player->hasSkill("huanwei") && (player->getPhase() == Player::RoundStart || player->getPhase() == Player::NotActive))
                 room->filterCards(player, player->getCards("hes"), true);
         }
     }
@@ -1556,7 +1554,7 @@ public:
         if (triggerEvent == DamageCaused) {
             DamageStruct damage = data.value<DamageStruct>();
             //use objectname when checking skill ,not "huanwei"( since it is a static skill)
-            if (damage.chain || damage.transfer || !damage.by_user || !damage.from || !damage.from->hasSkill(objectName()) || !damage.from->isCurrent())
+            if (damage.chain || damage.transfer || !damage.by_user || !damage.from || !damage.from->hasSkill("huanwei") || !damage.from->isCurrent())
                 return QList<SkillInvokeDetail>();
             if (damage.card && damage.card->isKindOf("Slash") && damage.card->getSuit() == Card::Spade)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);

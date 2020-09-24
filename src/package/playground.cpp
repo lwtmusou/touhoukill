@@ -3,6 +3,7 @@
 #include "engine.h"
 #include "general.h"
 #include "skill.h"
+#include "testCard.h"
 
 class Fsu0413Gepi : public TriggerSkill
 {
@@ -712,6 +713,121 @@ public:
     }
 };
 
+class BmMaoji : public FilterSkill
+{
+public:
+    BmMaoji()
+        : FilterSkill("bmmaoji")
+    {
+    }
+
+    bool viewFilter(const Card *to_select) const
+    {
+        const Room *room = Sanguosha->currentRoom();
+        Q_ASSERT(room != NULL);
+        return room->getCardPlace(to_select->getId()) == Player::PlaceHand;
+    }
+
+    const Card *viewAs(const Card *originalCard) const
+    {
+        PowerSlash *slash = new PowerSlash(originalCard->getSuit(), originalCard->getNumber());
+        slash->setSkillName("bmmaoji");
+        WrappedCard *wrap = Sanguosha->getWrappedCard(originalCard->getId());
+        wrap->takeOver(slash);
+        return wrap;
+    }
+
+    int getEffectIndex(const ServerPlayer *player, const Card *) const
+    {
+        return (player->getGeneralName() == "benmao" || player->getGeneral2Name() == "benmao") ? 1 : 3;
+    }
+};
+
+class BmMaojiTrigger : public TriggerSkill
+{
+public:
+    BmMaojiTrigger()
+        : TriggerSkill("#bmmaoji")
+    {
+        events << TargetConfirmed << SlashProceed << Cancel;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
+    {
+        QList<SkillInvokeDetail> r;
+        if (e == TargetConfirmed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.from != NULL && !use.from->hasSkill("bmmaoji") && use.from->isAlive() && use.card != NULL && use.card->isKindOf("Slash")) {
+                foreach (ServerPlayer *p, use.to) {
+                    if (p->hasSkill("bmmaoji"))
+                        r << SkillInvokeDetail(this, p, p, use.from, true);
+                }
+            }
+        } else if (e == SlashProceed) {
+            SlashEffectStruct eff = data.value<SlashEffectStruct>();
+            if (eff.from->hasSkill("bmmaoji"))
+                r << SkillInvokeDetail(this, eff.from, eff.from, eff.to, true);
+        } else if (e == Cancel && data.canConvert<SlashEffectStruct>()) {
+            SlashEffectStruct eff = data.value<SlashEffectStruct>();
+            if (eff.slash->hasFlag("bmmaoji"))
+                r << SkillInvokeDetail(this, eff.from, eff.from, eff.to, true, NULL, false);
+        }
+        return r;
+    }
+
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (e == TargetConfirmed) {
+            room->broadcastSkillInvoke("bmmaoji", 2);
+
+            if (!invoke->targets.first()->getCards("e").isEmpty()) {
+                DummyCard c;
+                c.addSubcards(invoke->targets.first()->getCards("e"));
+                invoke->targets.first()->obtainCard(&c);
+            }
+
+            QStringList skills = {"bmmaoji"};
+            QStringList conflictingSkills = {"huanwei"};
+            foreach (const QString &conflict, conflictingSkills) {
+                if (invoke->targets.first()->hasSkill(conflict, true, true)) {
+                    room->touhouLogmessage("#bmmaoji-conflictingskill", invoke->targets.first(), conflict);
+                    skills << (QStringLiteral("-") + conflict);
+                }
+            }
+
+            room->handleAcquireDetachSkills(invoke->targets.first(), skills);
+        } else if (e == SlashProceed) {
+            SlashEffectStruct eff = data.value<SlashEffectStruct>();
+            eff.slash->setFlags("bmmaoji"); // for triggering the effect afterwards...
+
+            if (eff.jink_num != 0) {
+                eff.jink_num += 1;
+                data = QVariant::fromValue<SlashEffectStruct>(eff);
+            }
+        } else if (e == Cancel) {
+            // In this case, BmMaoji Flag is set to the slash itself.
+            // We should always use the BmMaoji slash procedure in this case and ignore the game rule.
+            // So this effect will always return true.
+
+            SlashEffectStruct eff = data.value<SlashEffectStruct>();
+            if (eff.jink_num == 0) // the case of force hit
+                return true;
+
+            for (int i = eff.jink_num; i > 0; i--) {
+                QString prompt = QString("@bmmaoji-slash%1:%2::%3").arg(i == eff.jink_num ? "-start" : QString()).arg(eff.from->objectName()).arg(i);
+                const Card *slash = room->askForCard(eff.to, "slash", prompt, data, Card::MethodResponse, eff.from);
+                if (slash == NULL)
+                    return true;
+            }
+
+            eff.canceled = true;
+            data = QVariant::fromValue<SlashEffectStruct>(eff);
+            return true;
+        }
+        return false;
+    }
+};
+
 PlaygroundPackage::PlaygroundPackage()
     : Package("playground")
 {
@@ -728,6 +844,11 @@ PlaygroundPackage::PlaygroundPackage()
     General *kitsuhattyou = new General(this, "kitsuhattyou", "touhougod", 3, false, true, true);
     kitsuhattyou->addSkill(new Fsu0413JbdNashaT);
     addMetaObject<Fsu0413JbdNashaCard>();
+
+    General *benmao = new General(this, "benmao", "touhougod", 4, true);
+    benmao->addSkill(new BmMaoji);
+    benmao->addSkill(new BmMaojiTrigger);
+    related_skills.insertMulti("bmmaoji", "#bmmaoji");
 }
 
 ADD_PACKAGE(Playground)

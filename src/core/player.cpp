@@ -1626,7 +1626,6 @@ QString Player::getSkillDescription(bool yellow, const QString &flag) const
         skillList = getDeputySkillList(true, true);
     //}
 
-    
     foreach (const Skill *skill, skillList) {
         if (skill->isAttachedLordSkill())
             continue;

@@ -880,7 +880,8 @@ bool Card::canRecover() const
     return can_recover;
 }
 
-bool Card::hasEffectValue() const {
+bool Card::hasEffectValue() const
+{
     return has_effectvalue;
 }
 
