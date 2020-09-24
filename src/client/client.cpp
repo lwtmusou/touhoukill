@@ -2184,11 +2184,7 @@ void Client::log(const QVariant &log_str)
     else {
         if (log.first().contains("#HegemonyReveal"))
             Sanguosha->playSystemAudioEffect("choose-item");
-        else if (log.first() == "#Zombify") {
-            ClientPlayer *from = getPlayer(log.at(1));
-            if (from)
-                Sanguosha->playSystemAudioEffect(QString("zombify-%1").arg(from->isMale() ? "male" : "female"));
-        } else if (log.first() == "#UseLuckCard") {
+        else if (log.first() == "#UseLuckCard") {
             ClientPlayer *from = getPlayer(log.at(1));
             if (from && from != Self)
                 from->setHandcardNum(0);
