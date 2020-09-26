@@ -862,7 +862,7 @@ public:
             return r;
 
         foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (p->isAlive() && p->hasSkill(this))
+            if (p->isAlive() && p->hasSkill(this) && p->getHandcardNum() < 5)
                 r << SkillInvokeDetail(this, p, p, NULL, true);
         }
 
@@ -1222,7 +1222,7 @@ public:
         QList<SkillInvokeDetail> r;
         if (use.from != NULL && use.card != NULL && !use.card->isKindOf("SkillCard") && use.to.length() >= 2) {
             foreach (ServerPlayer *p, room->getAllPlayers()) {
-                if (p->hasSkill(this))
+                if (p->hasSkill(this) && p->getHandcardNum() < 5)
                     r << SkillInvokeDetail(this, p, p);
             }
         }
@@ -1343,7 +1343,7 @@ public:
     Kuangwu()
         : TriggerSkill("kuangwu")
     {
-        events << EventPhaseStart;
+        events << EventPhaseEnd;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
