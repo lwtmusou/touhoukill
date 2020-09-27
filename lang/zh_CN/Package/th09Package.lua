@@ -86,6 +86,7 @@ return
 	["yuka"] = "风见幽香",
 	["#yuka"] = "四季的鲜花之主",
 	["designer:yuka"] = "星野梦美☆",
+	["comment:yuka"] = "<div><i>无论是什么能力，只要练到极限就能变得比谁都强。</i></div>",
 
 	["illustrator:yuka"] = "Reina",
 	["origin:yuka"] = "p号：7593428，个人ID：309664",
