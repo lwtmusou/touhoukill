@@ -1022,12 +1022,13 @@ public:
     {
         if (selected.length() >= 3)
             return false;
+        if (to_select->isEquipped())
+            return false;
         if (!HuyuanNs::cardAvailable(to_select))
             return false;
+
         foreach (const Card *card, selected) {
             if (card->getSuit() == to_select->getSuit())
-                return false;
-            if (card->isEquipped())
                 return false;
         }
 
