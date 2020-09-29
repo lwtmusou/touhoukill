@@ -288,7 +288,7 @@ return
 --**********************************************
 	--zhan012  势力：战 4血
 	["sumireko_sp"] = "密封梦魇堇子",
-	[":sumireko_sp"] = "往返两界的梦魂", 
+	["#sumireko_sp"] = "往返两界的梦魂", 
 	["designer:sumireko_sp"] = "bullytou",
 
 	["illustrator:sumireko_sp"] = "EO@例大祭ひ19ab",
@@ -332,4 +332,20 @@ return
 	["yishen"] = "依神",
 	[":yishen"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"blue\"><b>锁定技，</b></font>你与在其他战势力角色攻击范围内的其他角色的距离-1。",
 	
+	["kokoro_sp"] = "SP丧面秦心",
+	["&kokoro_sp"] = "丧面秦心",
+	["#kokoro_sp"] = "什么",
+	["designer:kokoro_sp"] = "223",
+	
+	["mianling"] = "面灵",
+	[":mianling"] = "当你从牌堆获得牌时，你须将牌堆顶等量的牌置于人物牌上，称为“面”，然后若“面”数大于X（X为存活角色数），你将多于X张的“面”置入弃牌堆；你能使用或打出“面”，以此法使用或打出的结算完毕后，你选择一项：弃置一张牌，或失去1点体力。（打出暂未实装）",
+	["@mianling-exchange"] = "你因“面灵”的效果，需要将 %arg 张“面”置入弃牌堆。",
+	["@mianling-discard"] = "你因“面灵”的效果，需要弃置 1 张牌，否则失去 1 点体力。",
+	
+	-- BE WARE: This skill name is "ximshang", not "xinshang"!!!!!
+	["ximshang"] = "心殇",
+	[":ximshang"] = "一名角色的结束阶段开始时，若你失去过牌，且此回合内置入弃牌堆的牌有四种不同的花色，你可以对一名角色造成1点伤害。",
+	["@ximshang-select"] = "你可以发动“心殇”对一名角色造成 1 点伤害。",
+	
+	["qsmian"] = "面",
 }

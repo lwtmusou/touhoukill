@@ -2005,7 +2005,6 @@ bool MengxiangCard::targetFilter(const QList<const Player *> &targets, const Pla
 {
     const Card *oc = Sanguosha->getCard(subcards.first());
     return oc->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, oc, targets);
-    ;
 }
 
 bool MengxiangCard::targetFixed(const Player *Self) const
@@ -2394,6 +2393,261 @@ public:
     }
 };
 
+MianLingCard::MianLingCard()
+{
+    will_throw = false;
+}
+
+bool MianLingCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    const Card *oc = Sanguosha->getCard(subcards.first());
+    return oc->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, oc, targets);
+}
+
+bool MianLingCard::targetFixed(const Player *Self) const
+{
+    const Card *oc = Sanguosha->getCard(subcards.first());
+    return oc->targetFixed(Self);
+}
+
+bool MianLingCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
+{
+    const Card *oc = Sanguosha->getCard(subcards.first());
+    if (oc->canRecast() && targets.length() == 0)
+        return false;
+    return oc->targetsFeasible(targets, Self);
+}
+
+const Card *MianLingCard::validate(CardUseStruct &) const
+{
+    const Card *c = Sanguosha->getCard(subcards.first());
+    c->setFlags("mianling");
+    return c;
+}
+
+const Card *MianLingCard::validateInResponse(ServerPlayer *) const
+{
+    const Card *c = Sanguosha->getCard(subcards.first());
+    c->setFlags("mianling");
+    return c;
+}
+
+class MianlingVS : public ViewAsSkill
+{
+public:
+    MianlingVS()
+        : ViewAsSkill("mianling")
+    {
+        expand_pile = "qsmian";
+        // response_or_use = true;
+    }
+
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    {
+        if (!Self->getPile("qsmian").contains(to_select->getId()))
+            return false;
+
+        if (Sanguosha->getCurrentCardUsePattern() == "@@mianling!")
+            return Self->getPile("qsmian").length() - selected.length() > 1 + Self->getAliveSiblings().length();
+        else
+            return selected.length() == 0
+                && ((Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) ? to_select->isAvailable(Self)
+                                                                                                  : to_select->match(Sanguosha->getCurrentCardUsePattern()));
+    }
+
+    const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        if (Sanguosha->getCurrentCardUsePattern() == "@@mianling!") {
+            if (Self->getPile("qsmian").length() - cards.length() == 1 + Self->getAliveSiblings().length()) {
+                DummyCard *dc = new DummyCard;
+                dc->addSubcards(cards);
+                return dc;
+            }
+        } else if (cards.length() == 1) {
+            MianLingCard *ml = new MianLingCard;
+            ml->addSubcards(cards);
+            return ml;
+        }
+
+        return NULL;
+    }
+
+    bool isEnabledAtPlay(const Player *player) const
+    {
+        foreach (int id, player->getPile("qsmian")) {
+            if (Sanguosha->getCard(id)->isAvailable(player))
+                return true;
+        }
+
+        return false;
+    }
+
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    {
+        if (pattern == "@@mianling!")
+            return true;
+
+        foreach (int id, player->getPile("qsmian")) {
+            if (Sanguosha->getCard(id)->match(pattern))
+                return true;
+        }
+
+        return false;
+    }
+
+    bool isEnabledAtNullification(const ServerPlayer *player) const
+    {
+        return !player->getPile("qsmian").isEmpty();
+    }
+};
+
+class Mianling : public TriggerSkill
+{
+public:
+    Mianling()
+        : TriggerSkill("mianling")
+    {
+        view_as_skill = new MianlingVS;
+        events << BeforeCardsMove << CardFinished; // << ??
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    {
+        if (triggerEvent == BeforeCardsMove) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if (move.reason.m_reason == CardMoveReason::S_REASON_DRAW && move.reason.m_extraData.toString() != "initialDraw") {
+                ServerPlayer *marisa = qobject_cast<ServerPlayer *>(move.to);
+                if (marisa != NULL && marisa->hasSkill(this))
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, marisa, marisa, NULL, true);
+            }
+        } else if (triggerEvent == CardFinished) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card != NULL && use.card->hasFlag("mianling") && use.from != NULL && use.from->isAlive())
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);
+        } // else if ???
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (triggerEvent == BeforeCardsMove) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            QList<int> c = room->getNCards(move.card_ids.length());
+            invoke->invoker->addToPile("qsmian", c);
+
+            if (invoke->invoker->getPile("qsmian").length() > room->getAlivePlayers().length()) {
+                int n = invoke->invoker->getPile("qsmian").length() - room->getAlivePlayers().length();
+
+                DummyCard dc;
+                const Card *e = room->askForCard(invoke->invoker, "@@mianling!", "@mianling-exchange:::" + QString::number(n), QVariant(), Card::MethodNone);
+                if (e == NULL) {
+                    QList<int> m = invoke->invoker->getPile("qsmian");
+                    qShuffle(m);
+                    m = m.mid(1, n);
+                    dc.addSubcards(m);
+                    e = &dc;
+                }
+
+                room->throwCard(e, NULL);
+            }
+        } else {
+            if (!room->askForDiscard(invoke->invoker, "mianling", 1, 1, true, true, "@mianling-discard"))
+                room->loseHp(invoke->invoker);
+        }
+
+        return false;
+    }
+};
+
+class Ximshang : public TriggerSkill
+{
+public:
+    Ximshang()
+        : TriggerSkill("ximshang")
+    {
+        events << CardsMoveOneTime << EventPhaseStart;
+        global = true; // BE WARE! this skill should record even if no one actually has this skill
+    }
+
+    void record(TriggerEvent e, Room *r, QVariant &d) const
+    {
+        if (e == CardsMoveOneTime) {
+            if (r->getCurrent() != NULL && r->getCurrent()->isAlive() && r->getCurrent()->getPhase() != Player::NotActive) {
+                CardsMoveOneTimeStruct m = d.value<CardsMoveOneTimeStruct>();
+                if (m.from != NULL && (m.from_places.contains(Player::PlaceHand) || m.from_places.contains(Player::PlaceEquip)))
+                    m.from->setFlags("ximshanglost");
+
+                if (m.to_place == Player::DiscardPile) {
+                    foreach (int id, m.card_ids) {
+                        const Card *c = Sanguosha->getCard(id);
+                        bool flag = false;
+                        switch (c->getSuit()) {
+                        case Card::Spade: // 0
+                        case Card::Club: // 1
+                        case Card::Heart: // 2
+                        case Card::Diamond: // 3
+                            flag = true;
+                            break;
+                        default:
+                            break;
+                        }
+                        if (flag) {
+                            // BE WARE! check this when changing enum Card::Suit
+                            int m = r->getCurrent()->getMark("ximshangsuits");
+                            m = m | (1 << static_cast<int>(c->getSuit()));
+                            r->getCurrent()->setMark("ximshangsuits", m);
+                        }
+                    }
+                }
+            }
+        } else {
+            ServerPlayer *p = d.value<ServerPlayer *>();
+            if (p->getPhase() == Player::NotActive) {
+                p->setMark("ximshangsuits", 0);
+                foreach (ServerPlayer *sp, r->getAlivePlayers())
+                    sp->setFlags("-ximshanglost");
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *r, const QVariant &d) const
+    {
+        QList<SkillInvokeDetail> ret;
+        if (e == EventPhaseStart) {
+            ServerPlayer *p = d.value<ServerPlayer *>();
+
+            // magic number: 1 << 0 | 1 << 1 | 1 << 2 | 1 << 3 == 15
+            // BE WARE! Since this matches Card::Suit, be sure to check this when changing Card::Suit
+            if (p != NULL && p->isAlive() && p->getPhase() == Player::Finish && p->getMark("ximshangsuits") == 15) {
+                foreach (ServerPlayer *sp, r->getAlivePlayers()) {
+                    if (sp->hasSkill(this) && sp->hasFlag("ximshanglost"))
+                        ret << SkillInvokeDetail(this, sp, sp);
+                }
+            }
+        }
+
+        return ret;
+    }
+
+    bool cost(TriggerEvent, Room *r, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        ServerPlayer *t = r->askForPlayerChosen(invoke->invoker, r->getAlivePlayers(), "ximshang", "@ximshang-select", true, true);
+        if (t != NULL) {
+            invoke->targets << t;
+            return true;
+        }
+
+        return false;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        room->damage(DamageStruct("ximshang", invoke->invoker, invoke->targets.first()));
+        return false;
+    }
+};
+
 TH09Package::TH09Package()
     : Package("th09")
 {
@@ -2459,6 +2713,10 @@ TH09Package::TH09Package()
     yorigamis->addSkill(new YsJie);
     yorigamis->addSkill(new Yishen);
 
+    General *kokorosp = new General(this, "kokoro_sp", "zhan", 3);
+    kokorosp->addSkill(new Mianling);
+    kokorosp->addSkill(new Ximshang);
+
     addMetaObject<YanhuiCard>();
     addMetaObject<ToupaiCard>();
     addMetaObject<TianrenCard>();
@@ -2466,6 +2724,7 @@ TH09Package::TH09Package()
     addMetaObject<MengxiangCard>();
     addMetaObject<MengxiangTargetCard>();
     addMetaObject<JishiCard>();
+    addMetaObject<MianLingCard>();
 
     skills << new YanhuiVS;
 }

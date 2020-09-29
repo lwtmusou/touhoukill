@@ -26,7 +26,7 @@ class Player : public QObject
     Q_PROPERTY(int dyingFactor READ getDyingFactor WRITE setDyingFactor)
     Q_PROPERTY(int maxhp READ getMaxHp WRITE setMaxHp)
     Q_PROPERTY(int chaoren READ getChaoren WRITE setChaoren)
-    //Q_PROPERTY(QList<int> shown_handcards READ getShownHandcards WRITE setShownHandcards)
+
     Q_PROPERTY(QString kingdom READ getKingdom WRITE setKingdom)
     Q_PROPERTY(bool wounded READ isWounded STORED false)
     Q_PROPERTY(QString role READ getRole WRITE setRole)
