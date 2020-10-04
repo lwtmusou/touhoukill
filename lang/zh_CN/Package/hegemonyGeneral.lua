@@ -71,6 +71,7 @@ return
 	
 	["seiga_hegemony"]= "霍青娥",
 	["yoshika_hegemony"]= "宫古芳香",
+	["kyouko_hegemony"] = "幽谷响子",
 	
 	["kogasa_hegemony"] = "多多良小伞",
 	["jingxia_hegemony"] = "惊吓" ,--国战削弱
@@ -79,7 +80,6 @@ return
 	["jingxia_hegemony:discard"] = "弃置来源的两张牌" ,
 	["jingxia_hegemony:discardfield"] = "弃置场上的一张牌" ,
 	
-	["kyouko_hegemony"] = "幽谷响子",
 	["kokoro_hegemony"] = "秦心",
 	["unzan_hegemony"] = "云山",
 	["bianhuan_hegemony"] = "变幻",
@@ -95,12 +95,14 @@ return
 --夏（月）
 
 	["remilia_hegemony"] = "蕾米莉亚",
+	["!remilia_hegemony"] = "蕾米莉亚·斯卡雷特",
 	--["skltkexue_hegemony"] = "渴血",
 	[":skltkexue_hegemony"] = "你进入濒死状态时，你可以明置此武将牌；当你向其他角色求【桃】时，若其体力值大于其体力下限，其可以失去1点体力，摸一张牌，然后令你回复1点体力。",
 	--["skltkexue_hegemony_attach"]= "渴血出桃",
 	[":skltkexue_attach_hegemony"]= "当拥有“渴血”的角色处于濒死状态时并向你求【桃】时，若你的体力值大于体力下限，你可以失去1点体力，摸一张牌，然后令其回复1点体力。",
 	
 	["flandre_hegemony"] = "芙兰朵露",
+	["!flandre_hegemony"] = "芙兰朵露·斯卡雷特",
 	["sakuya_hegemony"] = "十六夜咲夜",
 	["patchouli_hegemony"] = "帕秋莉",
 	["!patchouli_hegemony"] = "帕秋莉·诺蕾姬",
@@ -147,6 +149,7 @@ return
 	[":xinyue_hegemony"] = "当你受到伤害后，你可以令来源将其手牌弃置至X张（X为你的体力值），若如此做，当前回合结束时，你将武将牌“上白泽慧音”替换为“白泽”。",
 	["xinyue_hegemony:target"] = "<font color=\"#00FF00\"><b>%src </b></font>对你造成了伤害，你可以发动“新月”，令其将手牌弃至 %arg 张。",
 
+	["keine_sp_hegemony"] = "白泽",
 	["wangyue_hegemony"] = "望月",
 	[":wangyue_hegemony"] = "当你受到伤害后，你可以将手牌补至X张（X为来源的手牌数且至多为5），若如此做，当前回合结束时，你将武将牌“白泽”替换为“上白泽慧音”。",
 	["wangyue_hegemony:target"] = "<font color=\"#00FF00\"><b>%src </b></font>对你造成了伤害，你可以发动“望月”，将手牌补至 %arg 张。",
@@ -162,7 +165,6 @@ return
 	["xingyun:recover"] = "你回复1点体力" ,
 	["@xingyun-select"]= "选择一名角色，令其摸一张牌。",
 	
-	["keine_sp_hegemony"] = "白泽",
 
 	["toyohime_hegemony"] = "绵月丰姬",
 	["yueshi_hegemony"] = "月使",
@@ -177,7 +179,7 @@ return
 	
 	["wriggle_hegemony"] = "莉格露",
 	["#wriggle_hegemony"] = "在黑暗中蠢动的光虫",
-	["!wriggle_hegemony"] = "莉格露•奈特巴格",
+	["!wriggle_hegemony"] = "莉格露·奈特巴格",
 	["yinghuo_hegemony"] = "萤火",
 	["chongqun_hegemony"] = "虫群",
 
@@ -190,7 +192,7 @@ return
 	[":zhenye_hegemony"] = "结束阶段开始时，你可以令一名其他角色翻面和令其摸X张牌（X为你的阵营的角色数），然后你翻面。",
 	["@zhenye-select-heg"]= "你可以令一名其他角色的人物牌翻面和令其摸X张牌（X为你的阵营的角色数），然后你的人物牌翻面。",
 	
-	["mystia_hegemony"]="米斯蒂娅",
+	-- ["mystia_hegemony"]="米斯蒂娅",
 	["yuka_hegemony"]= "风见幽香",
 	
 --***********************
@@ -288,7 +290,6 @@ return
 	["chen_hegemony"] = "橙",
 		
 	["letty_hegemony"]="蕾蒂",
-	--["designer:letty_hegemony"] = "名和行年",
 	["hanbo_hegemony"] = "寒波",
 	[":hanbo_hegemony"] = "<font color=\"blue\"><b>锁定技，</b></font>你对其他角色造成非属性伤害时，若其没有手牌，此伤害+1。",
 	["#HanboEffect"] = "%from 的【<font color=\"yellow\"><b>寒波</b></font>】效果被触发， %to 没有手牌，伤害从 %arg 增加至 %arg2",
@@ -297,22 +298,6 @@ return
 	[":dongzhi_hegemony"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可选择同一阵营的任意名有牌的角色，你依次弃置该角色x张牌（x为其装备区牌数+1）",
 	--["#DongzhiDamage"] = "%from 的 <font color=\"yellow\"><b>冬至</b></font>效果被触发，伤害由 %arg 点增加至 %arg2 点",
 	["$dongzhiAnimate"]= "skill=letty:dongzhi",
-	
-	
-	["cirno_hegemony"] = "琪露诺",--国战修改
-	["dongjie_hegemony"] = "冻结",
-	[":dongjie_hegemony"] = "当你使用【杀】对一名角色造成伤害时，你可以令其选择一项：摸一张牌，然后翻面并防止此伤害，或弃置一张手牌。",
-	["@dongjie_discard"] =" %src 对你发动了“冻结”， 你可弃置一张手牌，否则将摸一张牌，翻面，防止当前伤害",
-	["bingpo_hegemony"]= "冰魄",
-	[":bingpo_hegemony"]= "<font color=\"blue\"><b>锁定技，</b></font>当你不因火焰伤害而进入濒死状态时，你回复1点体力。",
-	["#bingpo_hegemony_log"] = "%from的“%arg”被触发, %from 回复了 %arg2点体力.",
-	
-	["daiyousei_hegemony"]= "大妖精",--国战修改
-	["banyue_hegemony"]= "半月",
-	[":banyue_hegemony"]= "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以选择两名阵营不同的角色并失去1点体力，视为其中一名对另一名角色使用【远交近攻】。",
-	["juxian_hegemony"]= "具现",
-	[":juxian_hegemony"]= "<font color=\"red\"><b>限定技，</b></font>当你进入濒死状态时，你可以亮出牌堆顶的三张牌并获得之，然后你回复x点体力（x为其中的花色数）。",
-	["$juxianAnimate"]= "skill=daiyousei:juxian",
 	
 	
 	["lilywhite_hegemony"] = "莉莉霍瓦特",
@@ -333,12 +318,27 @@ return
 	--["mocao_hegemony"] = "魔操" ,
 	--[":mocao_hegemony"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以获得一名其他角色装备区里的一张牌，令其摸X张牌（X为其已损失的体力值且至少为1）。",
 
-	
-	
 	["youki_hegemony"] = "魂魄妖忌" ,
-
+	
+	["cirno_hegemony"] = "琪露诺",--国战修改
+	["dongjie_hegemony"] = "冻结",
+	[":dongjie_hegemony"] = "当你使用【杀】对一名角色造成伤害时，你可以令其选择一项：摸一张牌，然后翻面并防止此伤害，或弃置一张手牌。",
+	["@dongjie_discard"] =" %src 对你发动了“冻结”， 你可弃置一张手牌，否则将摸一张牌，翻面，防止当前伤害",
+	["bingpo_hegemony"]= "冰魄",
+	[":bingpo_hegemony"]= "<font color=\"blue\"><b>锁定技，</b></font>当你不因火焰伤害而进入濒死状态时，你回复1点体力。",
+	["#bingpo_hegemony_log"] = "%from的“%arg”被触发, %from 回复了 %arg2点体力.",
+	
+	["daiyousei_hegemony"]= "大妖精",--国战修改
+	["banyue_hegemony"]= "半月",
+	[":banyue_hegemony"]= "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以选择两名阵营不同的角色并失去1点体力，视为其中一名对另一名角色使用【远交近攻】。",
+	["juxian_hegemony"]= "具现",
+	[":juxian_hegemony"]= "<font color=\"red\"><b>限定技，</b></font>当你进入濒死状态时，你可以亮出牌堆顶的三张牌并获得之，然后你回复x点体力（x为其中的花色数）。",
+	["$juxianAnimate"]= "skill=daiyousei:juxian",
+	
 	["renko_hegemony"] = "宇佐见莲子",
 	["merry_hegemony"] = "玛艾露贝莉",
+	["!merry_hegemony"] = "玛艾露贝莉·赫恩",
+	
 	
 	["luanying_hegemony"] = "乱影",
 	[":luanying_hegemony"] = "<font color=\"purple\"><b>主将技，</b></font>此武将牌上单独的阴阳鱼个数-1；当其他角色使用基本牌时，你可以将一张与此牌颜色相同的“境界”交给其，令此牌无效。<font color=\"green\"><b>每阶段限一次。</b></font>",

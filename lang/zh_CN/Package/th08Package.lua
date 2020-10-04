@@ -188,7 +188,7 @@ return
 	--yyc008  势力：永 3血
 	["wriggle"] = "莉格露",
 	["#wriggle"] = "在黑暗中蠢动的光虫",
-	["!wriggle"] = "莉格露•奈特巴格",
+	["!wriggle"] = "莉格露·奈特巴格",
 	["designer:wriggle"] = "星野梦美☆",
 
 	["illustrator:wriggle"] = "底虫",
