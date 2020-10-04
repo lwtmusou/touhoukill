@@ -90,7 +90,7 @@ void ZhaoweiCard::onUse(Room *room, const CardUseStruct &card_use) const
     card_use.from->tag["zhaowei_mod"] = 2;
 
     if (card_use.to.length() == 1) {
-        QString choice = card_use.to.first()->isKongcheng() ? "zhaowei1" : room->askForChoice(card_use.from, "zhaowei", "zhaowei1+zhaowei2", NULL);
+        QString choice = card_use.to.first()->isKongcheng() ? "zhaowei1" : room->askForChoice(card_use.from, "zhaowei", "zhaowei1+zhaowei2");
         if (choice == "zhaowei1")
             card_use.from->tag["zhaowei_mod"] = 1;
     }
@@ -270,7 +270,7 @@ void ZhuzheCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) 
         if (p->getKingdom() != "tkz")
             continue;
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), p->objectName());
-        const Card *c = room->askForCard(p, ".|.|.|hand,equipped", "@zhuzhe", NULL, Card::MethodNone, source, false, "zhuzhe");
+        const Card *c = room->askForCard(p, ".|.|.|hand,equipped", "@zhuzhe", QVariant(), Card::MethodNone, source, false, "zhuzhe");
         if (c != NULL) {
             source->obtainCard(c);
             break;
@@ -640,7 +640,7 @@ public:
             if (change.to == Player::NotActive) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->tag.contains("linsaNullifyFrom")) {
-                        ServerPlayer *from = p->tag.value("linsaNullifyFrom", NULL).value<ServerPlayer *>();
+                        ServerPlayer *from = p->tag.value("linsaNullifyFrom").value<ServerPlayer *>();
                         if (from != NULL) {
                             LogMessage l;
                             l.type = "#LinsaNullifyPreRoundOver";
@@ -665,7 +665,7 @@ public:
             if (use.card->getTypeId() == Card::TypeSkill)
                 return QList<SkillInvokeDetail>();
             p = use.from;
-        } else if (triggerEvent = CardResponded) {
+        } else if (triggerEvent == CardResponded) {
             CardResponseStruct resp = data.value<CardResponseStruct>();
             if (resp.m_card && resp.m_card->getTypeId() == Card::TypeSkill)
                 return QList<SkillInvokeDetail>();
@@ -678,7 +678,7 @@ public:
         }
 
         if (p != NULL && use.m_isHandcard) {
-            ServerPlayer *e = p->tag.value("linsaNullifyFrom", NULL).value<ServerPlayer *>();
+            ServerPlayer *e = p->tag.value("linsaNullifyFrom").value<ServerPlayer *>();
             if (e != NULL)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, e, p, NULL, true, NULL, false);
         }
@@ -695,7 +695,7 @@ public:
             use.nullified_list << "_ALL_TARGETS";
             data = QVariant::fromValue<CardUseStruct>(use);
             nullifiedCard = use.card;
-        } else if (triggerEvent = CardResponded) {
+        } else if (triggerEvent == CardResponded) {
             CardResponseStruct resp = data.value<CardResponseStruct>();
             resp.m_isNullified = true;
             data = QVariant::fromValue<CardResponseStruct>(resp);

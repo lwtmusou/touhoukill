@@ -65,7 +65,7 @@ bool Analeptic::targetFilter(const QList<const Player *> &targets, const Player 
             return true;
     }
     if (Self->hasSkill("riyue") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed")) {
-        if ((canDamage() && isRed()) || canRecover() && isBlack())
+        if ((canDamage() && isRed()) || (canRecover() && isBlack()))
             return true;
     }
 

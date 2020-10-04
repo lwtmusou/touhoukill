@@ -616,7 +616,7 @@ bool Card::targetFixed(const Player *Self) const
     if (ignore && !(isKindOf("SkillCard") || isKindOf("AOE") || isKindOf("GlobalEffect")))
         return false;
     bool riyue_ignore = (Self && Self->hasSkill("riyue") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
-    if (riyue_ignore && !(isKindOf("SkillCard") || isKindOf("AOE") || isKindOf("GlobalEffect")) && ((canDamage() && isRed()) || canRecover() && isBlack()))
+    if (riyue_ignore && !(isKindOf("SkillCard") || isKindOf("AOE") || isKindOf("GlobalEffect")) && ((canDamage() && isRed()) || (canRecover() && isBlack())))
         return false;
 
     if (Self && Self->hasFlag("Global_shehuoInvokerFailed"))
