@@ -299,7 +299,7 @@ public:
     {
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card && use.card->isKindOf("Slash") && use.from && use.from->hasSkill(this))
+            if (use.card && use.card->isKindOf("Slash") && use.card->hasFlag("yuxueSlash") && use.from && use.from->hasSkill(this))
                 room->notifySkillInvoked(use.from, objectName());
         }
     }
@@ -325,15 +325,15 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        DamageStruct damage = data.value<DamageStruct>();
         if (triggerEvent == Damaged) {
             room->setPlayerFlag(invoke->invoker, "SlashRecorder_yuxueSlash");
             if (invoke->invoker->isHiddenSkill(objectName()))
                 room->setPlayerFlag(invoke->invoker, "Global_viewasHidden_Failed"); //only for anyun
             const Card *c = room->askForUseCard(invoke->invoker, "slash", "@yuxue", -1, Card::MethodUse, false, objectName());
-            room->setPlayerFlag(invoke->invoker, "-SlashRecorder_yuxueSlash");
+            if (c == NULL)
+                room->setPlayerFlag(invoke->invoker, "-SlashRecorder_yuxueSlash");
             return c != NULL;
 
         } else if (triggerEvent == ConfirmDamage)
