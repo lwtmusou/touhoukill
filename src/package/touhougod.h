@@ -262,37 +262,19 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class QizhiCard : public DelayedTrick
+class XiuyeCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE QizhiCard(Card::Suit suit, int number);
+    Q_INVOKABLE XiuyeCard();
 
-    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    //void onUse(Room *room, const CardUseStruct &card_use) const;
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-    void takeEffect(ServerPlayer *) const;
+    virtual bool targetFixed(const Player *Self) const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
 
-    QString getType() const
-    {
-        return "skill_card";
-    }
-    QString getSubtype() const
-    {
-        return "skill_card";
-    }
-    CardType getTypeId() const
-    {
-        return TypeSkill;
-    }
-    bool isKindOf(const char *cardType) const
-    {
-        if (strcmp(cardType, "SkillCard") == 0)
-            return true;
-        else
-            return inherits(cardType);
-    }
+    virtual const Card *validate(CardUseStruct &card_use) const;
+    virtual const Card *validateInResponse(ServerPlayer *user) const;
 };
 
 class TouhouGodPackage : public Package

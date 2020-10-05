@@ -1312,15 +1312,13 @@ void Dashboard::expandPileCards(const QString &pile_name)
         new_name = new_name.mid(1);
         foreach (const Player *p, Self->getAliveSiblings())
             pile += p->getPile(new_name);
-    } else {
-        pile = Self->getPile(new_name);
-    }
-
-    if (pile_name == "#xiuye_temp") {
+    } else if (pile_name == "#xiuye_temp") {
         foreach (const Card *c, ClientInstance->discarded_list) {
             if (c->getSuit() == Card::Club && (c->isNDTrick() || c->getTypeId() == Card::TypeBasic))
                 pile << c->getEffectiveId();
         }
+    } else {
+        pile = Self->getPile(new_name);
     }
 
     if (pile.isEmpty())
