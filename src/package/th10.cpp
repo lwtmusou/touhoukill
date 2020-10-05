@@ -360,7 +360,6 @@ public:
             invoke->invoker->setFlags(objectName());
             return true;
         } else if (e == EventPhaseChanging) {
-            //invoke->invoker->setFlags("-zhunbei");
             room->touhouLogmessage("#TouhouBuff", invoke->invoker, objectName());
             room->notifySkillInvoked(invoke->invoker, objectName());
             invoke->invoker->drawCards(3);
@@ -729,8 +728,6 @@ public:
             }
         }
 
-        //record for ai, since AI prefer use a specific card,  but not the SkillCard QijiCard.
-        // Fs: @lwtmusou consider move this to AI related code. There is AI::filterEvent which can trigger some code in AI usage
         if (e == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->getSkillName() == objectName())

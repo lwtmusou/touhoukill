@@ -1145,7 +1145,6 @@ public:
                     room->setPlayerMark(p, "beishui", 0);
             }
         }
-        //record for ai, since AI prefer use a specific card,  but not the SkillCard QijiCard.
         if (e == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->getSkillName() == objectName())

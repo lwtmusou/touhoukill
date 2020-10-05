@@ -1604,7 +1604,7 @@ public:
             log.arg = objectName();
             room->sendLog(log);
 
-            Card *supplyshortage = Sanguosha->cloneCard("supply_shortage", card->getSuit(), card->getNumber());
+            SupplyShortage *supplyshortage = new SupplyShortage(card->getSuit(), card->getNumber());
             WrappedCard *vs_card = Sanguosha->getWrappedCard(card->getSubcards().first());
             vs_card->setSkillName(objectName());
             vs_card->takeOver(supplyshortage);
