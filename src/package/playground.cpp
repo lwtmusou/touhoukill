@@ -5,6 +5,13 @@
 #include "skill.h"
 #include "testCard.h"
 
+#include <QAbstractButton>
+#include <QApplication>
+#include <QButtonGroup>
+#include <QCommandLinkButton>
+#include <QPointer>
+#include <QVBoxLayout>
+
 class Fsu0413Gepi : public TriggerSkill
 {
 public:

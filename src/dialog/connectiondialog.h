@@ -10,6 +10,7 @@
 #include <QDialog>
 #include <QListWidget>
 
+class QLabel;
 class UdpDetector;
 
 class AvatarModel : public QAbstractListModel

@@ -5,6 +5,7 @@
 #include <QStringList>
 #include <QTcpSocket>
 #include <QUdpSocket>
+#include <QUrl>
 
 NativeServerSocket::NativeServerSocket()
 {

@@ -12,6 +12,7 @@
 
 class FilterSkill;
 class General;
+class QGraphicsDropShadowEffect;
 
 class CardItem : public QSanSelectableItem
 {

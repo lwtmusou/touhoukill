@@ -4,6 +4,12 @@
 #include "card.h"
 #include "package.h"
 
+#include <QDialog>
+
+class QAbstractButton;
+class QGroupBox;
+class QButtonGroup;
+
 class SkltKexueCard : public SkillCard
 {
     Q_OBJECT

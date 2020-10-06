@@ -5,6 +5,7 @@
 #include "skill.h"
 
 #include <QFocusEvent>
+#include <QGraphicsDropShadowEffect>
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>

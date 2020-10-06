@@ -3,7 +3,11 @@
 
 #include "card.h"
 #include "package.h"
+
 #include <QDialog>
+
+class QAbstractButton;
+class QButtonGroup;
 
 class Fsu0413GainianDialog : public QDialog
 {

@@ -10,6 +10,10 @@
 #include "th10.h"
 #include "util.h"
 
+#include <QApplication>
+#include <QCommandLinkButton>
+#include <QPointer>
+
 SkltKexueCard::SkltKexueCard()
 {
     will_throw = false;

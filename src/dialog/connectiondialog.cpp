@@ -22,6 +22,7 @@
 #include <QPushButton>
 #include <QRadioButton>
 #include <QTimer>
+#include <QUrl>
 #include <QWidget>
 
 AvatarModel::AvatarModel(const QList<const General *> &list)
