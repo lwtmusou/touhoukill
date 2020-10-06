@@ -44,6 +44,7 @@ SOURCES += \
     src/dialog/customassigndialog.cpp \
     src/dialog/distanceviewdialog.cpp \
     src/dialog/generaloverview.cpp \
+    src/dialog/updatedialog.cpp \
     src/dialog/mainwindow.cpp \
     src/dialog/roleassigndialog.cpp \
     src/package/exppattern.cpp \
@@ -157,6 +158,7 @@ HEADERS += \
     src/dialog/customassigndialog.h \
     src/dialog/distanceviewdialog.h \
     src/dialog/generaloverview.h \
+    src/dialog/updatedialog.h \
     src/dialog/mainwindow.h \
     src/dialog/roleassigndialog.h \
     src/package/exppattern.h \
