@@ -1,4 +1,5 @@
 #include "configdialog.h"
+#include "audio.h"
 #include "engine.h"
 #include "settings.h"
 #include "ui_configdialog.h"
@@ -170,7 +171,7 @@ void ConfigDialog::on_resetRecordPathButton_clicked()
         Config.RecordSavePath = path;
     }
 }
-#include "audio.h"
+
 void ConfigDialog::saveConfig()
 {
     float volume = ui->bgmVolumeSlider->value() / 100.0;

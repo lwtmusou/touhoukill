@@ -3,6 +3,8 @@
 #include "audio.h"
 #include "cardoverview.h"
 #include "client.h"
+#include "configdialog.h"
+#include "connectiondialog.h"
 #include "generaloverview.h"
 #include "lua.hpp"
 #include "pixmapanimation.h"
@@ -16,6 +18,7 @@
 #include "window.h"
 
 #include <QCheckBox>
+#include <QComboBox>
 #include <QCommandLinkButton>
 #include <QCryptographicHash>
 #include <QDesktopServices>
@@ -36,6 +39,8 @@
 #include <QNetworkReply>
 #include <QProcess>
 #include <QProgressBar>
+#include <QSettings>
+#include <QSpinBox>
 #include <QStatusBar>
 #include <QSystemTrayIcon>
 #include <QTime>
@@ -94,7 +99,6 @@ public:
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , autoUpdateManager(new QNetworkAccessManager(this))
 {
     ui->setupUi(this);
     scene = NULL;
@@ -112,6 +116,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(ui->actionAcknowledgement_2, SIGNAL(triggered()), this, SLOT(on_actionAcknowledgement_triggered()));
+
+    update_dialog = new UpdateDialog(this);
 
     StartScene *start_scene = new StartScene;
     //play title BGM
@@ -143,7 +149,7 @@ MainWindow::MainWindow(QWidget *parent)
     systray = NULL;
 
     if (Config.EnableAutoUpdate)
-        checkForUpdate();
+        update_dialog->checkForUpdate();
 }
 
 void MainWindow::restoreFromConfig()
@@ -168,20 +174,6 @@ void MainWindow::restoreFromConfig()
     ui->actionEnable_Hotkey->setChecked(Config.EnableHotKey);
     ui->actionNever_nullify_my_trick->setChecked(Config.NeverNullifyMyTrick);
     ui->actionNever_nullify_my_trick->setEnabled(false);
-}
-
-void MainWindow::checkForUpdate()
-{
-    QNetworkRequest req;
-#if QT_VERSION >= 0x050600
-    req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-#endif
-
-    req.setUrl(QUrl("https://www.touhousatsu.rocks/TouhouKillUpdate0.9.json"));
-
-    QNetworkReply *reply = autoUpdateManager->get(req);
-    connect(reply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &MainWindow::updateError);
-    connect(reply, &QNetworkReply::finished, this, &MainWindow::updateInfoReceived);
 }
 
 void MainWindow::closeEvent(QCloseEvent *)
@@ -375,7 +367,6 @@ void MainWindow::enterRoom()
         ui->actionDeath_note->disconnect();
         ui->actionDamage_maker->disconnect();
         ui->actionRevive_wand->disconnect();
-        ui->actionSend_lowlevel_command->disconnect();
         ui->actionExecute_script_at_server_side->disconnect();
     }
 
@@ -415,7 +406,6 @@ void MainWindow::gotoStartScene()
     ui->actionDeath_note->disconnect();
     ui->actionDamage_maker->disconnect();
     ui->actionRevive_wand->disconnect();
-    ui->actionSend_lowlevel_command->disconnect();
     ui->actionExecute_script_at_server_side->disconnect();
     gotoScene(start_scene);
 
@@ -886,158 +876,6 @@ void MainWindow::on_actionView_ban_list_triggered()
 {
     BanlistDialog *dialog = new BanlistDialog(this, true);
     dialog->exec();
-}
-
-void MainWindow::updateError(QNetworkReply::NetworkError)
-{
-    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
-    if (reply != NULL)
-        disconnect(reply, &QNetworkReply::finished, this, 0);
-}
-
-#if QT_VERSION >= 0x050600
-void MainWindow::parseUpdateInfo(const QString &v, const QVersionNumber &vn, const QJsonObject &ob)
-#else
-void MainWindow::parseUpdateInfo(const QString &v, const QString &vn, const QJsonObject &ob)
-#endif
-{
-#if defined(Q_OS_WIN)
-    QJsonValue value = ob.value("Win");
-#elif defined(Q_OS_ANDROID)
-    QJsonValue value = ob.value("And");
-#elif defined(Q_OS_MACOS)
-    QJsonValue value = ob.value("Mac");
-#else
-    QJsonValue value = ob.value("Oth");
-#endif
-    if (value.isString()) {
-        QMessageBox mbox(this);
-        mbox.setTextFormat(Qt::RichText);
-        mbox.setText(tr("New Version %1(%3) available.<br/>"
-                        "But we don\'t support auto-updating from %2 to %1 on this platform.<br/>"
-                        "Please download the full package from <a href=\"%4\">Here</a>.")
-                         .arg(v)
-                         .arg(Sanguosha->getVersionNumber())
-#if QT_VERSION >= 0x050600
-                         .arg(vn.toString())
-#else
-                         .arg(vn)
-#endif
-                         .arg(value.toString()));
-        mbox.setWindowTitle(tr("New Version Avaliable"));
-        mbox.setIcon(QMessageBox::Information);
-        mbox.setStandardButtons(QMessageBox::Ok);
-        mbox.exec();
-    } else if (value.isObject()) {
-        QJsonObject updateOb = value.toObject();
-#ifndef Q_OS_ANDROID
-        QString updateScript = updateOb.value("UpdateScript").toString();
-#else
-        QString updateScript = "jni";
-#endif
-        QString packKey = "UpdatePack";
-        QString hashKey = "UpdatePackHash";
-        if (GetConfigFromLuaState(Sanguosha->getLuaState(), "withBgm").toBool()) {
-            packKey.append("B");
-            hashKey.append("B");
-        }
-        if (GetConfigFromLuaState(Sanguosha->getLuaState(), "withHeroSkin").toBool()) {
-            packKey.append("H");
-            hashKey.append("H");
-        }
-
-        QString updatePack = updateOb.value(packKey).toString();
-        QJsonObject updateHash = updateOb.value(hashKey).toObject();
-        if (!updateScript.isEmpty() && !updatePack.isEmpty() && !updateHash.isEmpty()) {
-            UpdateDialog upd;
-            upd.setInfo(v, vn, updateScript, updatePack, updateHash);
-            upd.exec();
-        }
-    }
-}
-
-void MainWindow::updateInfoReceived()
-{
-    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
-    if (reply == NULL)
-        return;
-    QByteArray arr = reply->readAll();
-
-    QJsonParseError err;
-    QJsonDocument doc = QJsonDocument::fromJson(arr, &err);
-
-    if (err.error != QJsonParseError::NoError) {
-        return;
-    }
-    if (!doc.isObject()) {
-        qDebug() << "error document when parsing update data";
-        return;
-    }
-
-    QJsonObject ob;
-    QJsonObject fullOb = doc.object();
-    QString channel = Config.value("AutoUpdateChannel", QStringLiteral("Global")).toString();
-    if (!fullOb.contains(channel)) {
-        qDebug() << "Ob doesn't contain the update channel: " << channel;
-        return;
-    } else if (!fullOb.value(channel).isObject()) {
-        qDebug() << "the Channel of Ob is not an object: " << channel;
-        return;
-    }
-    ob = fullOb.value(channel).toObject();
-
-    if (!ob.contains("LatestVersion") || !ob.value("LatestVersion").isString()) {
-        qDebug() << "LatestVersion field is incorrect";
-        return;
-    }
-
-    QString latestVersion = ob.value("LatestVersion").toString();
-
-#if QT_VERSION >= 0x050600
-    QVersionNumber ver = QVersionNumber::fromString(ob.value("LatestVersionNumber").toString());
-#else
-    QString ver = ob.value("LatestVersionNumber").toString();
-#endif
-
-    // detect the mis-upgrade info here --
-
-    bool warned = false;
-    {
-        QString warnConfigx = QStringLiteral("warnedUpdateFromTestVersion20200315");
-        QString warnConfig = QStringLiteral("warnedUpdateFromTestVersion") + Sanguosha->getVersionNumber();
-        bool needWarn = Config.value(warnConfigx, false).toBool();
-        warned = Config.value(warnConfig, false).toBool();
-        if (needWarn && !warned)
-            Config.setValue(warnConfig, true);
-        else
-            warned = true;
-    }
-
-    if (latestVersion > Sanguosha->getVersionNumber()) {
-        // there is a new version available now!!
-        QString from = QString("From") + Sanguosha->getVersionNumber();
-        if (ob.contains(from))
-            parseUpdateInfo(latestVersion, ver, ob.value(from).toObject());
-        else {
-#if QT_VERSION >= 0x050600
-            QVersionNumber pref = QVersionNumber::commonPrefix(Sanguosha->getQVersionNumber(), ver);
-            from = QString("From") + pref.toString();
-            if (ob.contains(from))
-                parseUpdateInfo(latestVersion, ver, ob.value(from).toObject());
-            else
-#endif
-                parseUpdateInfo(latestVersion, ver, ob.value("FullPack").toObject());
-        }
-    } else if (!warned) {
-        // -- and display the mis-upgrade info only when no update is available
-        QMessageBox::warning(this, tr("Important notify"),
-                             tr("<font color=\"red\"><b>You have previously updated from a publicly test version of TouhouSatsu.<br />"
-                                "<br />"
-                                "Because the update package IS NOT guarnteed to work every time on your copy,<br />"
-                                "please DO NOT report any errors caused by this copy.<br />"
-                                "If anything unexpected occurred, please delete this copy from your computer and re-download the full package.</b></font>"),
-                             QMessageBox::Ok);
-    }
 }
 
 void MainWindow::on_actionAbout_fmod_triggered()

@@ -1,17 +1,10 @@
 #ifndef _MAIN_WINDOW_H
 #define _MAIN_WINDOW_H
 
-#include "configdialog.h"
-#include "connectiondialog.h"
 #include "engine.h"
 
-#include <QCheckBox>
-#include <QComboBox>
-#include <QJsonObject>
+#include <QDialog>
 #include <QMainWindow>
-#include <QNetworkReply>
-#include <QSettings>
-#include <QSpinBox>
 
 namespace Ui {
 class MainWindow;
@@ -28,6 +21,9 @@ class RoomItem;
 class QProgressBar;
 class QLabel;
 class QWinTaskbarButton;
+class UpdateDialog;
+class ConnectionDialog;
+class ConfigDialog;
 
 class BroadcastBox : public QDialog
 {
@@ -68,17 +64,11 @@ private:
     Ui::MainWindow *ui;
     ConnectionDialog *connection_dialog;
     ConfigDialog *config_dialog;
+    UpdateDialog *update_dialog;
     QSystemTrayIcon *systray;
-    QNetworkAccessManager *autoUpdateManager;
 
     void restoreFromConfig();
-    void checkForUpdate();
 
-#if QT_VERSION >= 0x050600
-    void parseUpdateInfo(const QString &v, const QVersionNumber &vn, const QJsonObject &ob);
-#else
-    void parseUpdateInfo(const QString &v, const QString &vn, const QJsonObject &ob);
-#endif
 public slots:
     void startConnection();
 
@@ -115,8 +105,6 @@ private slots:
     void changeTableBg();
     void on_actionView_ban_list_triggered();
 
-    void updateError(QNetworkReply::NetworkError e);
-    void updateInfoReceived();
 };
 
 #endif

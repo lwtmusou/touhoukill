@@ -1,9 +1,12 @@
 #include "updatedialog.h"
 #include "engine.h"
+#include "settings.h"
 
 #include <QApplication>
 #include <QFile>
 #include <QHBoxLayout>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QLabel>
 #include <QMessageBox>
 #include <QNetworkAccessManager>
@@ -63,10 +66,136 @@ UpdateDialog::UpdateDialog(QWidget *parent)
     setLayout(layout);
 }
 
+void UpdateDialog::checkForUpdate()
+{
+    QNetworkRequest req;
 #if QT_VERSION >= 0x050600
-void UpdateDialog::setInfo(const QString &v, const QVersionNumber &vn, const QString &updateScript, const QString &updatePack, const QJsonObject &updateHash)
+    req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+#endif
+
+    req.setUrl(QUrl("https://www.touhousatsu.rocks/TouhouKillUpdate0.9.json"));
+
+    QNetworkReply *reply = downloadManager->get(req);
+    connect(reply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::updateError);
+    connect(reply, &QNetworkReply::finished, this, &UpdateDialog::updateInfoReceived);
+}
+
+void UpdateDialog::updateError(QNetworkReply::NetworkError)
+{
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    if (reply != NULL)
+        disconnect(reply, &QNetworkReply::finished, this, 0);
+}
+
+void UpdateDialog::updateInfoReceived()
+{
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    if (reply == NULL)
+        return;
+
+    QByteArray arr = reply->readAll();
+
+    QJsonParseError err;
+    QJsonDocument doc = QJsonDocument::fromJson(arr, &err);
+
+    if (err.error != QJsonParseError::NoError) {
+        return;
+    }
+    if (!doc.isObject()) {
+        qDebug() << "error document when parsing update data";
+        return;
+    }
+
+    QJsonObject ob;
+    QJsonObject fullOb = doc.object();
+    ob = fullOb.value("Global").toObject();
+    if (!ob.contains("LatestVersion") || !ob.value("LatestVersion").isString()) {
+        qDebug() << "LatestVersion field is incorrect";
+        return;
+    }
+
+    QString latestVersion = ob.value("LatestVersion").toString();
+
+#if QT_VERSION >= 0x050600
+    QVersionNumber ver = QVersionNumber::fromString(ob.value("LatestVersionNumber").toString());
 #else
-void UpdateDialog::setInfo(const QString &v, const QString &vn, const QString &updateScript, const QString &updatePack, const QJsonObject &updateHash)
+    QString ver = ob.value("LatestVersionNumber").toString();
+#endif
+
+    if (latestVersion > Sanguosha->getVersionNumber()) {
+        // there is a new version available now!!
+        QString from = QString("From") + Sanguosha->getVersionNumber();
+        if (ob.contains(from))
+            parseUpdateInfo(latestVersion, ver, ob.value(from).toObject());
+        else {
+#if QT_VERSION >= 0x050600
+            QVersionNumber pref = QVersionNumber::commonPrefix(Sanguosha->getQVersionNumber(), ver);
+            from = QString("From") + pref.toString();
+            if (ob.contains(from))
+                parseUpdateInfo(latestVersion, ver, ob.value(from).toObject());
+            else
+#endif
+                parseUpdateInfo(latestVersion, ver, ob.value("FullPack").toObject());
+        }
+    }
+}
+
+#if QT_VERSION >= 0x050600
+void UpdateDialog::parseUpdateInfo(const QString &v, const QVersionNumber &vn, const QJsonObject &ob)
+#else
+void UpdateDialog::parseUpdateInfo(const QString &v, const QString &vn, const QJsonObject &ob)
+#endif
+{
+#if defined(Q_OS_WIN)
+    QJsonValue value = ob.value("Win");
+#elif defined(Q_OS_ANDROID)
+    QJsonValue value = ob.value("And");
+#elif defined(Q_OS_MACOS)
+    QJsonValue value = ob.value("Mac");
+#else
+    QJsonValue value = ob.value("Oth");
+#endif
+    if (value.isString()) {
+        QMessageBox mbox(this);
+        mbox.setTextFormat(Qt::RichText);
+        mbox.setText(tr("New Version %1(%3) available.<br/>"
+                        "But we don\'t support auto-updating from %2 to %1 on this platform.<br/>"
+                        "Please download the full package from <a href=\"%4\">Here</a>.")
+                         .arg(v)
+                         .arg(Sanguosha->getVersionNumber())
+#if QT_VERSION >= 0x050600
+                         .arg(vn.toString())
+#else
+                         .arg(vn)
+#endif
+                         .arg(value.toString()));
+        mbox.setWindowTitle(tr("New Version Avaliable"));
+        mbox.setIcon(QMessageBox::Information);
+        mbox.setStandardButtons(QMessageBox::Ok);
+        mbox.exec();
+    } else if (value.isObject()) {
+        QJsonObject updateOb = value.toObject();
+#ifndef Q_OS_ANDROID
+        QString updateScript = updateOb.value("UpdateScript").toString();
+#else
+        QString updateScript = "jni";
+#endif
+        QString packKey = "UpdatePack";
+        QString hashKey = "UpdatePackHash";
+
+        QString updatePack = updateOb.value(packKey).toString();
+        QJsonObject updateHash = updateOb.value(hashKey).toObject();
+        if (!updateScript.isEmpty() && !updatePack.isEmpty() && !updateHash.isEmpty()) {
+            setInfo(v, vn, updatePack, updateHash, updateScript);
+            exec();
+        }
+    }
+}
+
+#if QT_VERSION >= 0x050600
+void UpdateDialog::setInfo(const QString &v, const QVersionNumber &vn, const QString &updatePackOrAddress, const QJsonObject &updateHash, const QString &updateScript)
+#else
+void UpdateDialog::setInfo(const QString &v, const QString &vn, const QString &updatePackOrAddress, const QJsonObject &updateHash, const QString &updateScript)
 #endif
 {
     lbl->setText(tr("New Version %1(%3) available.\n"
@@ -81,7 +210,7 @@ void UpdateDialog::setInfo(const QString &v, const QString &vn, const QString &u
 #endif
 
     m_updateScript = updateScript;
-    m_updatePack = updatePack;
+    m_updatePack = updatePackOrAddress;
     m_updateHash = updateHash;
 }
 

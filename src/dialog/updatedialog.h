@@ -1,5 +1,9 @@
+#ifndef UPDATE_DIALOG_H_
+#define UPDATE_DIALOG_H_
+
 #include <QDialog>
 #include <QJsonObject>
+#include <QNetworkReply>
 
 class QWidget;
 class QString;
@@ -22,9 +26,9 @@ class UpdateDialog : public QDialog
 public:
     explicit UpdateDialog(QWidget *parent = 0);
 #if QT_VERSION >= 0x050600
-    void setInfo(const QString &v, const QVersionNumber &vn, const QString &updateScript, const QString &updatePack, const QJsonObject &updateHash);
+    void setInfo(const QString &v, const QVersionNumber &vn, const QString &updatePackOrAddress, const QJsonObject &updateHash, const QString &updateScript);
 #else
-    void setInfo(const QString &v, const QString &vn, const QString &updateScript, const QString &updatePack, const QJsonObject &updateHash);
+    void setInfo(const QString &v, const QString &vn, const QString &updatePackOrAddress, const QJsonObject &updateHash, const QString &updateScript);
 #endif
 
 private:
@@ -49,6 +53,12 @@ private:
     void startUpdate();
     bool packHashVerify(const QByteArray &arr);
 
+#if QT_VERSION >= 0x050600
+    void parseUpdateInfo(const QString &v, const QVersionNumber &vn, const QJsonObject &ob);
+#else
+    void parseUpdateInfo(const QString &v, const QString &vn, const QJsonObject &ob);
+#endif
+
 private slots:
     void startDownload();
     void downloadProgress(quint64 downloaded, quint64 total);
@@ -57,10 +67,17 @@ private slots:
     void finishedPack();
     void errPack();
 
+    void updateError(QNetworkReply::NetworkError e);
+    void updateInfoReceived();
+
 public slots:
     void accept() override;
     void reject() override;
 
+    void checkForUpdate();
+
 protected:
     void showEvent(QShowEvent *event) override;
 };
+
+#endif
