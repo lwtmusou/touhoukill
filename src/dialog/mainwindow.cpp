@@ -53,10 +53,6 @@
 #include <QWinTaskbarProgress>
 #endif
 
-#if QT_VERSION >= 0x050600
-#include <QVersionNumber>
-#endif
-
 class FitView : public QGraphicsView
 {
 public:

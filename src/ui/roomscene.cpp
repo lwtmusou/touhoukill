@@ -283,9 +283,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     chat_edit_widget->setObjectName("chat_edit_widget");
     chat_edit_widget->setZValue(-2.0);
     connect(chat_edit, SIGNAL(returnPressed()), this, SLOT(speak()));
-#if QT_VERSION >= 0x040700
     chat_edit->setPlaceholderText(tr("Please enter text to chat ... "));
-#endif
 
     chat_widget = new ChatWidget();
     chat_widget->setZValue(-0.1);

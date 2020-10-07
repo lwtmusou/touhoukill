@@ -7,9 +7,7 @@
 
 class QWidget;
 class QString;
-#if QT_VERSION > 0x050600
 class QVersionNumber;
-#endif
 class QProgressBar;
 class QLabel;
 class QNetworkAccessManager;
@@ -25,11 +23,7 @@ class UpdateDialog : public QDialog
 
 public:
     explicit UpdateDialog(QWidget *parent = 0);
-#if QT_VERSION >= 0x050600
     void setInfo(const QString &v, const QVersionNumber &vn, const QString &updatePackOrAddress, const QJsonObject &updateHash, const QString &updateScript);
-#else
-    void setInfo(const QString &v, const QString &vn, const QString &updatePackOrAddress, const QJsonObject &updateHash, const QString &updateScript);
-#endif
 
 private:
     QProgressBar *bar;
@@ -53,11 +47,7 @@ private:
     void startUpdate();
     bool packHashVerify(const QByteArray &arr);
 
-#if QT_VERSION >= 0x050600
     void parseUpdateInfo(const QString &v, const QVersionNumber &vn, const QJsonObject &ob);
-#else
-    void parseUpdateInfo(const QString &v, const QString &vn, const QJsonObject &ob);
-#endif
 
 private slots:
     void startDownload();

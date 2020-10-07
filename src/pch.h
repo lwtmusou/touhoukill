@@ -172,12 +172,9 @@
 #include <QVariant>
 #include <QVariantList>
 #include <QVariantMap>
+#include <QVersionNumber>
 #include <QWaitCondition>
 #include <QWidget>
-
-#if QT_VERSION >= 0x050600
-#include <QVersionNumber>
-#endif
 
 #ifdef Q_OS_WIN
 #include <QWinTaskbarButton>

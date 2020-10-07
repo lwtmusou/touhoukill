@@ -7,6 +7,14 @@ TEMPLATE = app
 CONFIG += audio
 win32: QT += winextras
 
+!equals(QT_MAJOR_VERSION, "5") {
+    error("QSanguosha requires Qt 5 after 5.6.")
+}
+
+lessThan(QT_MINOR_VERSION, 6) {
+    error("QSanguosha requires Qt 5 after 5.6.")
+}
+
 CONFIG += c++11
 CONFIG += lua
 

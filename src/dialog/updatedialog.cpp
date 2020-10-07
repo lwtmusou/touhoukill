@@ -18,10 +18,7 @@
 #include <QString>
 #include <QUrl>
 #include <QVBoxLayout>
-
-#if QT_VERSION >= 0x050600
 #include <QVersionNumber>
-#endif
 #ifdef Q_OS_WIN
 #include <QWinTaskbarButton>
 #include <QWinTaskbarProgress>
@@ -34,7 +31,9 @@ UpdateDialog::UpdateDialog(QWidget *parent)
     , downloadManager(new QNetworkAccessManager(this))
     , scriptReply(NULL)
     , packReply(NULL)
+#ifdef Q_OS_WIN
     , taskbarButton(NULL)
+#endif
     , m_finishedScript(false)
     , m_finishedPack(false)
     , m_busy(false)
@@ -69,9 +68,7 @@ UpdateDialog::UpdateDialog(QWidget *parent)
 void UpdateDialog::checkForUpdate()
 {
     QNetworkRequest req;
-#if QT_VERSION >= 0x050600
     req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-#endif
 
     req.setUrl(QUrl("https://www.touhousatsu.rocks/TouhouKillUpdate0.9.json"));
 
@@ -116,11 +113,7 @@ void UpdateDialog::updateInfoReceived()
 
     QString latestVersion = ob.value("LatestVersion").toString();
 
-#if QT_VERSION >= 0x050600
     QVersionNumber ver = QVersionNumber::fromString(ob.value("LatestVersionNumber").toString());
-#else
-    QString ver = ob.value("LatestVersionNumber").toString();
-#endif
 
     if (latestVersion > Sanguosha->getVersionNumber()) {
         // there is a new version available now!!
@@ -128,23 +121,17 @@ void UpdateDialog::updateInfoReceived()
         if (ob.contains(from))
             parseUpdateInfo(latestVersion, ver, ob.value(from).toObject());
         else {
-#if QT_VERSION >= 0x050600
             QVersionNumber pref = QVersionNumber::commonPrefix(Sanguosha->getQVersionNumber(), ver);
             from = QString("From") + pref.toString();
             if (ob.contains(from))
                 parseUpdateInfo(latestVersion, ver, ob.value(from).toObject());
             else
-#endif
                 parseUpdateInfo(latestVersion, ver, ob.value("FullPack").toObject());
         }
     }
 }
 
-#if QT_VERSION >= 0x050600
 void UpdateDialog::parseUpdateInfo(const QString &v, const QVersionNumber &vn, const QJsonObject &ob)
-#else
-void UpdateDialog::parseUpdateInfo(const QString &v, const QString &vn, const QJsonObject &ob)
-#endif
 {
 #if defined(Q_OS_WIN)
     QJsonValue value = ob.value("Win");
@@ -163,11 +150,7 @@ void UpdateDialog::parseUpdateInfo(const QString &v, const QString &vn, const QJ
                         "Please download the full package from <a href=\"%4\">Here</a>.")
                          .arg(v)
                          .arg(Sanguosha->getVersionNumber())
-#if QT_VERSION >= 0x050600
                          .arg(vn.toString())
-#else
-                         .arg(vn)
-#endif
                          .arg(value.toString()));
         mbox.setWindowTitle(tr("New Version Avaliable"));
         mbox.setIcon(QMessageBox::Information);
@@ -192,22 +175,14 @@ void UpdateDialog::parseUpdateInfo(const QString &v, const QString &vn, const QJ
     }
 }
 
-#if QT_VERSION >= 0x050600
 void UpdateDialog::setInfo(const QString &v, const QVersionNumber &vn, const QString &updatePackOrAddress, const QJsonObject &updateHash, const QString &updateScript)
-#else
-void UpdateDialog::setInfo(const QString &v, const QString &vn, const QString &updatePackOrAddress, const QJsonObject &updateHash, const QString &updateScript)
-#endif
 {
     lbl->setText(tr("New Version %1(%3) available.\n"
                     "We support auto-updating from %2 to %1 on this platform.\n"
                     "Click 'Yes' to update now.")
                      .arg(v)
                      .arg(Sanguosha->getVersionNumber())
-#if QT_VERSION >= 0x050600
                      .arg(vn.toString()));
-#else
-                     .arg(vn));
-#endif
 
     m_updateScript = updateScript;
     m_updatePack = updatePackOrAddress;
@@ -264,9 +239,7 @@ void UpdateDialog::startDownload()
     m_busy = true;
 
     QNetworkRequest reqPack;
-#if QT_VERSION >= 0x050600
     reqPack.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-#endif
     reqPack.setUrl(QUrl(m_updatePack));
     packReply = downloadManager->get(reqPack);
     connect(packReply, &QNetworkReply::downloadProgress, this, &UpdateDialog::downloadProgress);
@@ -275,9 +248,7 @@ void UpdateDialog::startDownload()
 
 #ifndef Q_OS_ANDROID
     QNetworkRequest reqScript;
-#if QT_VERSION >= 0x050600
     reqScript.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-#endif
     reqScript.setUrl(QUrl(m_updateScript));
     scriptReply = downloadManager->get(reqScript);
     connect(scriptReply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errScript);
