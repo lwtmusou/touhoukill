@@ -862,7 +862,7 @@ public:
             return r;
 
         foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (p->isAlive() && p->hasSkill(this) && p->getHandcardNum() < 5)
+            if (p->isAlive() && p->hasSkill(this) && p->getHandcardNum() <= 5)
                 r << SkillInvokeDetail(this, p, p, NULL, true);
         }
 
@@ -1005,17 +1005,13 @@ void HuyuanCard::onEffect(const CardEffectStruct &effect) const
     }
 }
 
-class Huyuan : public ViewAsSkill
+class HuyuanVS : public ViewAsSkill
 {
 public:
-    Huyuan()
+    HuyuanVS()
         : ViewAsSkill("huyuan")
     {
-    }
-
-    bool isEnabledAtPlay(const Player *player) const
-    {
-        return !player->hasUsed("HuyuanCard");
+        response_pattern = "@@huyuan";
     }
 
     bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
@@ -1055,6 +1051,37 @@ public:
         }
 
         return NULL;
+    }
+};
+
+class Huyuan : public TriggerSkill
+{
+public:
+    Huyuan()
+        : TriggerSkill("huyuan")
+    {
+        events << EventPhaseStart;
+        view_as_skill = new HuyuanVS;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        ServerPlayer *p = data.value<ServerPlayer *>();
+
+        if (p != NULL && p->getPhase() == Player::Finish && p->hasSkill(this) && p->isAlive() && !p->isKongcheng())
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, p, p);
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        return room->askForUseCard(invoke->invoker, "@@huyuan", "@huyuaninvoke", -1, Card::MethodNone, true, "huyuan");
+    }
+
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &) const
+    {
+        return false;
     }
 };
 
@@ -1107,7 +1134,9 @@ public:
                 CardsMoveStruct move2(id, player, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_GOTBACK, player->objectName()));
                 room->moveCardsAtomic(move2, true);
 
-                room->setPlayerCardLimitation(player, "use", "Slash", "puti", true);
+                if (!room->askForDiscard(player, "puti", 1, 1, true, false, "@puti-discard1"))
+                    room->setPlayerCardLimitation(player, "use", "Slash", "puti", true);
+
                 if (!throwIds.isEmpty()) {
                     CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), "sishu", QString());
                     DummyCard dummy(throwIds);
@@ -1225,7 +1254,7 @@ public:
         QList<SkillInvokeDetail> r;
         if (use.from != NULL && use.card != NULL && !use.card->isKindOf("SkillCard") && use.to.length() >= 2) {
             foreach (ServerPlayer *p, room->getAllPlayers()) {
-                if (p->hasSkill(this) && p->getHandcardNum() < 5)
+                if (p->hasSkill(this) && p->getHandcardNum() <= 5)
                     r << SkillInvokeDetail(this, p, p);
             }
         }
