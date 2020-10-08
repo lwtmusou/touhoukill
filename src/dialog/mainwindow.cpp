@@ -269,7 +269,18 @@ void MainWindow::checkVersion(const QString &server_version, const QString &serv
     else
         text.append(tr("The server version is older than your client version, please ask the server to update<br/>"));
 
-    text.append(tr("please check the Qun file of QQ Qun 384318315 for update packages."));
+    if (!Config.EnableAutoUpdate)
+        text.append(tr("Enable auto update from the config dialog, and restart the game to check update."));
+    else if (Config.AutoUpdateNeedsRestart) {
+        if (Config.AutoUpdateDataRececived)
+            text.append(tr("An error occurred when parsing update info. Please restart the game and retry auto updating."));
+        else
+            text.append(tr("Please restart the game and try auto updating."));
+    } else if (!Config.AutoUpdateDataRececived)
+        text.append(tr("Please wait a minute for downloading update info."));
+    else
+        text.append(tr("It seems like your version is the latest version. Either the server is using a test version, or auto updater is not up-to-date."));
+
     QMessageBox::warning(this, tr("Warning"), text);
 }
 
@@ -937,4 +948,28 @@ void MainWindow::on_actionAbout_GPLv3_triggered()
     window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0, scene && scene->inherits("RoomScene") ? scene->height() : 0);
 
     window->appear();
+}
+
+// ATTENTION!!!! this slot is for "Download/update contents" menu item
+void MainWindow::on_actionDownload_Hero_Skin_and_BGM_triggered()
+{
+    if (!Config.EnableAutoUpdate) {
+        QMessageBox::warning(this, tr("TouhouSatsu"), tr("Please enable auto update, restart the game and retry."));
+        return;
+    } else if (!Config.AutoUpdateDataRececived) {
+        if (Config.AutoUpdateNeedsRestart) {
+            QMessageBox::warning(this, tr("TouhouSatsu"), tr("Please restart the game and retry."));
+            return;
+        } else {
+            QMessageBox::information(this, tr("TouhouSatsu"), tr("Please wait a minute for downloading update info."));
+            return;
+        }
+    } else {
+        if (Config.AutoUpdateNeedsRestart) {
+            QMessageBox::warning(this, tr("TouhouSatsu"), tr("An error occurred when parsing update info. Please restart the game and retry."));
+            return;
+        } else {
+            update_dialog->exec();
+        }
+    }
 }

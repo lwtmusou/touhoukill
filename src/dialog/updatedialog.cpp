@@ -3,6 +3,7 @@
 #include "settings.h"
 
 #include <QApplication>
+#include <QDesktopServices>
 #include <QFile>
 #include <QHBoxLayout>
 #include <QJsonDocument>
@@ -38,31 +39,53 @@ UpdateDialog::UpdateDialog(QWidget *parent)
     , m_finishedPack(false)
     , m_busy(false)
 {
-    setWindowTitle(tr("New Version Available"));
+    setWindowTitle(tr("Download/Update contents"));
+    lbl->setVisible(false);
+
+    connect(this, &UpdateDialog::busy, [this](bool busy) -> void { m_busy = busy; });
+
+    for (int i = 0; i < UiMax; ++i) {
+        currentVersion[i] = new QLabel;
+        currentVersion[i]->setText(getVersionNumberForItem(static_cast<UpdateItem>(i)).toString());
+        currentVersion[i]->setAlignment(Qt::AlignCenter);
+        latestVersion[i] = new QLabel("X.X.X");
+        latestVersion[i]->setAlignment(Qt::AlignCenter);
+        updateButton[i] = new QPushButton(tr("Update"));
+        // save the update item here for later use. See UpdateDialog::updateClicked
+        updateButton[i]->setObjectName(QString::number(i));
+        if (i == UiBase)
+            updateButton[i]->setDefault(true);
+        connect(updateButton[i], &QPushButton::clicked, this, &UpdateDialog::updateClicked);
+        connect(this, &UpdateDialog::busy, updateButton[i], &QPushButton::setDisabled);
+    }
+
+    changelogBtn = new QPushButton(tr("Show Changelog"));
+    connect(changelogBtn, &QPushButton::clicked, [this]() -> void { QDesktopServices::openUrl(QUrl(m_baseChangeLog)); });
 
     bar->setMaximum(10000);
 
-    QVBoxLayout *layout = new QVBoxLayout;
+    QGridLayout *upperLayout = new QGridLayout;
 
-    layout->addWidget(lbl);
-    layout->addWidget(bar);
+    upperLayout->addWidget(lbl, 0, 0, 1, 5);
+    upperLayout->addWidget(new QLabel(tr("Current Version")), 1, 1);
+    upperLayout->addWidget(new QLabel(tr("Latest Version")), 1, 2);
+    upperLayout->addWidget(new QLabel(tr("Base Contents")), 2, 0);
+    upperLayout->addWidget(currentVersion[UiBase], 2, 1);
+    upperLayout->addWidget(latestVersion[UiBase], 2, 2);
+    upperLayout->addWidget(changelogBtn, 2, 3);
+    upperLayout->addWidget(updateButton[UiBase], 2, 4);
+    upperLayout->addWidget(new QLabel(tr("Hero Skin")), 3, 0);
+    upperLayout->addWidget(currentVersion[UiSkin], 3, 1);
+    upperLayout->addWidget(latestVersion[UiSkin], 3, 2);
+    upperLayout->addWidget(updateButton[UiSkin], 3, 4);
+    upperLayout->addWidget(new QLabel(tr("BGM")), 4, 0);
+    upperLayout->addWidget(currentVersion[UiBgm], 4, 1);
+    upperLayout->addWidget(latestVersion[UiBgm], 4, 2);
+    upperLayout->addWidget(updateButton[UiBgm], 4, 4);
 
-    QPushButton *yesBtn = new QPushButton(tr("Yes"));
-    connect(yesBtn, &QPushButton::clicked, [yesBtn]() -> void { yesBtn->setDisabled(true); });
+    upperLayout->addWidget(bar, 5, 0, 1, 5);
 
-    QPushButton *noBtn = new QPushButton(tr("No"));
-    connect(noBtn, &QPushButton::clicked, [this]() -> void { QDialog::reject(); });
-    connect(yesBtn, &QPushButton::clicked, [noBtn]() -> void { noBtn->setDisabled(true); });
-
-    connect(yesBtn, &QPushButton::clicked, this, &UpdateDialog::startDownload);
-
-    QHBoxLayout *hlayout = new QHBoxLayout;
-    hlayout->addWidget(yesBtn);
-    hlayout->addWidget(noBtn);
-
-    layout->addLayout(hlayout);
-
-    setLayout(layout);
+    setLayout(upperLayout);
 }
 
 void UpdateDialog::checkForUpdate()
@@ -80,8 +103,11 @@ void UpdateDialog::checkForUpdate()
 void UpdateDialog::updateError(QNetworkReply::NetworkError)
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
-    if (reply != NULL)
+    if (reply != NULL) {
+        Config.AutoUpdateDataRececived = true;
+        Config.AutoUpdateNeedsRestart = true;
         disconnect(reply, &QNetworkReply::finished, this, 0);
+    }
 }
 
 void UpdateDialog::updateInfoReceived()
@@ -90,48 +116,167 @@ void UpdateDialog::updateInfoReceived()
     if (reply == NULL)
         return;
 
+    Config.AutoUpdateDataRececived = true;
+
     QByteArray arr = reply->readAll();
 
     QJsonParseError err;
     QJsonDocument doc = QJsonDocument::fromJson(arr, &err);
 
     if (err.error != QJsonParseError::NoError) {
+        Config.AutoUpdateNeedsRestart = true;
         return;
     }
     if (!doc.isObject()) {
         qDebug() << "error document when parsing update data";
+        Config.AutoUpdateNeedsRestart = true;
         return;
     }
 
-    QJsonObject ob;
     QJsonObject fullOb = doc.object();
-    ob = fullOb.value("Global").toObject();
-    if (!ob.contains("LatestVersion") || !ob.value("LatestVersion").isString()) {
-        qDebug() << "LatestVersion field is incorrect";
-        return;
+
+    do {
+        QJsonObject ob;
+        // check "Base" first, if there is no "Base" then check "Global" instead -- for compatability for 0.9
+        // will remove "Global" judgment for 0.10
+        ob = fullOb.value("Base").toObject();
+        if (!ob.contains("LatestVersion") || !ob.value("LatestVersion").isString()) {
+            ob = fullOb.value("Global").toObject();
+            if (!ob.contains("LatestVersion") || !ob.value("LatestVersion").isString()) {
+                qDebug() << "Base/Global LatestVersion field is incorrect";
+                break;
+            }
+        }
+
+        parseVersionInfo(UiBase, ob);
+    } while (0);
+
+    do {
+        QJsonObject ob;
+        ob = fullOb.value("HeroSkin").toObject();
+        if (!ob.contains("LatestVersion") || !ob.value("LatestVersion").isString()) {
+            qDebug() << "HeroSkin LatestVersion field is incorrect";
+            break;
+        }
+
+        parseVersionInfo(UiSkin, ob);
+    } while (0);
+
+    do {
+        QJsonObject ob;
+        ob = fullOb.value("BGM").toObject();
+        if (!ob.contains("LatestVersion") || !ob.value("LatestVersion").isString()) {
+            qDebug() << "BGM LatestVersion field is incorrect";
+            break;
+        }
+
+        parseVersionInfo(UiBgm, ob);
+    } while (0);
+
+    for (int i = 0; i < UiMax; ++i) {
+        if (m_updateContents[i].updatePack.isEmpty())
+            updateButton[i]->setEnabled(false);
     }
 
-    QString latestVersion = ob.value("LatestVersion").toString();
+    if (updateButton[UiBase]->isEnabled()) {
+        if (m_updateContents[UiBase].updateHash.isEmpty() || m_updateContents[UiBase].updateScript.isEmpty()) {
+            lbl->setText(tr("New Version %1(%3) available.\n"
+                            "But we don\'t support auto-updating from %2 to %1 on this platform.\n"
+                            "Please download the full package by clicking \"Update\" button on the \"Base Contents\" column.")
+                             .arg(latestVersion[UiBase]->text())
+                             .arg(getVersionNumberForItem(UiBase).toString())
+                             .arg(m_baseVersionNumber));
+        } else {
+            lbl->setText(tr("New Version %1(%3) available.\n"
+                            "We support auto-updating from %2 to %1 on this platform.\n"
+                            "Click \"Update\" button on the \"Base Contents\" column to update now.")
+                             .arg(latestVersion[UiBase]->text())
+                             .arg(getVersionNumberForItem(UiBase).toString())
+                             .arg(m_baseVersionNumber));
+        }
 
+        lbl->setVisible(true);
+        exec();
+    }
+}
+
+void UpdateDialog::parseVersionInfo(UpdateDialog::UpdateItem item, const QJsonObject &ob)
+{
     QVersionNumber ver = QVersionNumber::fromString(ob.value("LatestVersionNumber").toString());
+    latestVersion[item]->setText(ver.toString());
 
-    if (latestVersion > Sanguosha->getVersionNumber()) {
+    if (item == UiBase) {
+        if (ob.contains("ChangeLog"))
+            m_baseChangeLog = ob.value("ChangeLog").toString();
+        else
+            changelogBtn->setVisible(false);
+
+        m_baseVersionNumber = ob.value("LatestVersion").toString();
+    }
+
+    if (ver > getVersionNumberForItem(item)) {
         // there is a new version available now!!
-        QString from = QString("From") + Sanguosha->getVersionNumber();
+        QString from = QString("From") + getVersionNumberForItem(item).toString();
         if (ob.contains(from))
-            parseUpdateInfo(latestVersion, ver, ob.value(from).toObject());
+            parsePackageInfo(item, ob.value(from).toObject());
         else {
             QVersionNumber pref = QVersionNumber::commonPrefix(Sanguosha->getQVersionNumber(), ver);
             from = QString("From") + pref.toString();
             if (ob.contains(from))
-                parseUpdateInfo(latestVersion, ver, ob.value(from).toObject());
+                parsePackageInfo(item, ob.value(from).toObject());
             else
-                parseUpdateInfo(latestVersion, ver, ob.value("FullPack").toObject());
+                parsePackageInfo(item, ob.value("FullPack").toObject());
         }
     }
 }
 
-void UpdateDialog::parseUpdateInfo(const QString &v, const QVersionNumber &vn, const QJsonObject &ob)
+QVersionNumber UpdateDialog::getVersionNumberForItem(UpdateDialog::UpdateItem item)
+{
+    switch (item) {
+    case UiBase:
+        return Sanguosha->getQVersionNumber();
+    case UiSkin: {
+        QString v = GetConfigFromLuaState(Sanguosha->getLuaState(), "withHeroSkin").toString();
+        // @todo_Fs: need to confirm that nil is converted to null string in QVariant
+        if (v.length() != 0)
+            return QVersionNumber::fromString(v);
+        break;
+    }
+    case UiBgm: {
+        QString v = GetConfigFromLuaState(Sanguosha->getLuaState(), "withBgm").toString();
+        // @todo_Fs: need to confirm that nil is converted to null string in QVariant
+        if (v.length() != 0)
+            return QVersionNumber::fromString(v);
+        break;
+    }
+    default:
+        break;
+    }
+
+    return QVersionNumber();
+}
+
+void UpdateDialog::updateClicked()
+{
+    QPushButton *btn = qobject_cast<QPushButton *>(sender());
+    if (btn != NULL) {
+        // previously we save the update item to objectName, so we need to extract the update item from objectName
+        bool ok = false;
+        UpdateItem item = static_cast<UpdateItem>(btn->objectName().toInt(&ok));
+        if (ok) {
+            if (m_updateContents[item].updateScript.isEmpty() && m_updateContents[item].updateHash.isEmpty())
+                QDesktopServices::openUrl(m_updateContents[item].updatePack);
+            else {
+                m_updateScript = m_updateContents[item].updateScript;
+                m_updatePack = m_updateContents[item].updatePack;
+                m_updateHash = m_updateContents[item].updateHash;
+                startDownload();
+            }
+        }
+    }
+}
+
+void UpdateDialog::parsePackageInfo(UpdateDialog::UpdateItem item, const QJsonObject &ob)
 {
 #if defined(Q_OS_WIN)
     QJsonValue value = ob.value("Win");
@@ -143,50 +288,18 @@ void UpdateDialog::parseUpdateInfo(const QString &v, const QVersionNumber &vn, c
     QJsonValue value = ob.value("Oth");
 #endif
     if (value.isString()) {
-        QMessageBox mbox(this);
-        mbox.setTextFormat(Qt::RichText);
-        mbox.setText(tr("New Version %1(%3) available.<br/>"
-                        "But we don\'t support auto-updating from %2 to %1 on this platform.<br/>"
-                        "Please download the full package from <a href=\"%4\">Here</a>.")
-                         .arg(v)
-                         .arg(Sanguosha->getVersionNumber())
-                         .arg(vn.toString())
-                         .arg(value.toString()));
-        mbox.setWindowTitle(tr("New Version Avaliable"));
-        mbox.setIcon(QMessageBox::Information);
-        mbox.setStandardButtons(QMessageBox::Ok);
-        mbox.exec();
+        m_updateContents[item].updatePack = value.toString();
     } else if (value.isObject()) {
         QJsonObject updateOb = value.toObject();
-#ifndef Q_OS_ANDROID
         QString updateScript = updateOb.value("UpdateScript").toString();
-#else
-        QString updateScript = "jni";
-#endif
-        QString packKey = "UpdatePack";
-        QString hashKey = "UpdatePackHash";
-
-        QString updatePack = updateOb.value(packKey).toString();
-        QJsonObject updateHash = updateOb.value(hashKey).toObject();
+        QString updatePack = updateOb.value("UpdatePack").toString();
+        QJsonObject updateHash = updateOb.value("UpdatePackHash").toObject();
         if (!updateScript.isEmpty() && !updatePack.isEmpty() && !updateHash.isEmpty()) {
-            setInfo(v, vn, updatePack, updateHash, updateScript);
-            exec();
+            m_updateContents[item].updateScript = updateScript;
+            m_updateContents[item].updatePack = updatePack;
+            m_updateContents[item].updateHash = updateHash;
         }
     }
-}
-
-void UpdateDialog::setInfo(const QString &v, const QVersionNumber &vn, const QString &updatePackOrAddress, const QJsonObject &updateHash, const QString &updateScript)
-{
-    lbl->setText(tr("New Version %1(%3) available.\n"
-                    "We support auto-updating from %2 to %1 on this platform.\n"
-                    "Click 'Yes' to update now.")
-                     .arg(v)
-                     .arg(Sanguosha->getVersionNumber())
-                     .arg(vn.toString()));
-
-    m_updateScript = updateScript;
-    m_updatePack = updatePackOrAddress;
-    m_updateHash = updateHash;
 }
 
 void UpdateDialog::startUpdate()
@@ -199,12 +312,18 @@ void UpdateDialog::startUpdate()
     QStringList arg;
     arg << "UpdateScript.vbs" << QString::number(QCoreApplication::applicationPid());
     QProcess::startDetached("wscript", arg, QCoreApplication::applicationDirPath());
-#elif defined(Q_OS_ANDROID)
-// call JNI to install the package
 #else
-    QStringList arg;
-    arg << "-c" << ("\"./UpdateScript.sh " + QString::number(QCoreApplication::applicationPid()) + "\"");
-    QProcess::startDetached("sh", arg, QCoreApplication::applicationDirPath());
+#ifdef Q_OS_ANDROID
+    if (m_updateScript == "jni") {
+        // call jni
+    } else {
+#endif
+        QStringList arg;
+        arg << "-c" << ("\"./UpdateScript.sh " + QString::number(QCoreApplication::applicationPid()) + "\"");
+        QProcess::startDetached("sh", arg, QCoreApplication::applicationDirPath());
+#ifdef Q_OS_ANDROID
+    }
+#endif
 #endif
 
     QCoreApplication::exit(0);
@@ -232,11 +351,10 @@ void UpdateDialog::startDownload()
 {
     if (m_updatePack.isEmpty() || m_updateScript.isEmpty()) {
         QMessageBox::critical(this, tr("Update Error"), tr("An error occurred when downloading packages.\nURL is empty."));
-        QDialog::reject();
         return;
     }
 
-    m_busy = true;
+    emit busy(true);
 
     QNetworkRequest reqPack;
     reqPack.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
@@ -246,15 +364,18 @@ void UpdateDialog::startDownload()
     connect(packReply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errPack);
     connect(packReply, &QNetworkReply::finished, this, &UpdateDialog::finishedPack);
 
-#ifndef Q_OS_ANDROID
-    QNetworkRequest reqScript;
-    reqScript.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-    reqScript.setUrl(QUrl(m_updateScript));
-    scriptReply = downloadManager->get(reqScript);
-    connect(scriptReply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errScript);
-    connect(scriptReply, &QNetworkReply::finished, this, &UpdateDialog::finishedScript);
-#else
-    m_finishedScript = true;
+#ifdef Q_OS_ANDROID
+    if (m_updateScript != "jni") {
+#endif
+        QNetworkRequest reqScript;
+        reqScript.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+        reqScript.setUrl(QUrl(m_updateScript));
+        scriptReply = downloadManager->get(reqScript);
+        connect(scriptReply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errScript);
+        connect(scriptReply, &QNetworkReply::finished, this, &UpdateDialog::finishedScript);
+#ifdef Q_OS_ANDROID
+    } else
+        m_finishedScript = true;
 #endif
 
 #ifdef Q_OS_WIN
@@ -309,6 +430,7 @@ void UpdateDialog::errScript()
         disconnect(packReply, &QNetworkReply::finished, this, &UpdateDialog::finishedPack);
     }
 
+    Config.AutoUpdateNeedsRestart = true;
     QMessageBox::critical(this, tr("Update Error"), tr("An error occurred when downloading packages.\nCannot download the update script."));
     QDialog::reject();
 }
@@ -325,6 +447,7 @@ void UpdateDialog::finishedPack()
     QByteArray arr = packReply->readAll();
 
     if (!packHashVerify(arr)) {
+        Config.AutoUpdateNeedsRestart = true;
         QMessageBox::critical(this, tr("Update Error"), tr("An error occurred when downloading packages.\nDownload pack checksum mismatch."));
 #ifdef Q_OS_WIN
         taskbarButton->progress()->hide();
@@ -360,6 +483,7 @@ void UpdateDialog::errPack()
         disconnect(packReply, &QNetworkReply::finished, this, &UpdateDialog::finishedPack);
     }
 
+    Config.AutoUpdateNeedsRestart = true;
     QMessageBox::critical(this, tr("Update Error"), tr("An error occurred when downloading packages.\nCannot download the update pack."));
     QDialog::reject();
 }
@@ -377,6 +501,7 @@ void UpdateDialog::reject()
 void UpdateDialog::showEvent(QShowEvent *e)
 {
     QDialog::showEvent(e);
+
 #ifdef Q_OS_WIN
     taskbarButton = new QWinTaskbarButton(this);
     taskbarButton->setWindow(windowHandle());

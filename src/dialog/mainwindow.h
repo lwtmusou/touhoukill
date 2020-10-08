@@ -105,6 +105,7 @@ private slots:
     void changeTableBg();
     void on_actionView_ban_list_triggered();
 
+    void on_actionDownload_Hero_Skin_and_BGM_triggered();
 };
 
 #endif

@@ -4,9 +4,6 @@
 config = {
 	developers = {
 	},
-	
-	withHeroSkin = false,
-	withBgm = false,
 
 	kingdoms = {
 		"zhu",
@@ -207,3 +204,15 @@ config = {
 		"yuka_god", "patchouli_god", "tenshi_god","kokoro_sp",
 	}
 }
+
+local f = io.open("audio/bgm/version.txt")
+if f then
+	config.withBgm = f:read("*L")
+	f:close()
+end
+
+f = io.open("image/heroskin/version.txt")
+if f then
+	config.withHeroSkin = f:read("*L")
+	f:close()
+end

@@ -511,27 +511,6 @@
             </widget>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_3">
-             <item>
-              <widget class="QLabel" name="label">
-               <property name="text">
-                <string>AutoUpdateChannel</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="autoUpdateChannelLineEdit">
-               <property name="text">
-                <string notr="true">Global</string>
-               </property>
-               <property name="placeholderText">
-                <string>DO NOT EDIT THIS UNLESS YOU KNOW WHAT YOU ARE DOING</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
             <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="0,1">
              <item>
               <widget class="QLabel" name="bubbleChatBoxDelayLabel">

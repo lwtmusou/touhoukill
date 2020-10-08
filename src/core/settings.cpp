@@ -797,11 +797,11 @@ void Settings::init()
         setValue("ForbidPackages", forbid_packages);
     }
 
-    Config.ExtraHiddenGenerals = GetConfigFromLuaState(lua, "extra_hidden_generals").toStringList();
-    Config.RemovedHiddenGenerals = GetConfigFromLuaState(lua, "removed_hidden_generals").toStringList();
+    ExtraHiddenGenerals = GetConfigFromLuaState(lua, "extra_hidden_generals").toStringList();
+    RemovedHiddenGenerals = GetConfigFromLuaState(lua, "removed_hidden_generals").toStringList();
 
-    if (!contains("AutoUpdateChannel"))
-        setValue("AutoUpdateChannel", QStringLiteral("Global"));
+    AutoUpdateNeedsRestart = !EnableAutoUpdate;
+    AutoUpdateDataRececived = false;
 }
 
 const QString &Settings::getQSSFileContent()
