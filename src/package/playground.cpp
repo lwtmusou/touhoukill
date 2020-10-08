@@ -846,7 +846,7 @@ PlaygroundPackage::PlaygroundPackage()
     kitsuhattyou->addSkill(new Fsu0413JbdNashaT);
     addMetaObject<Fsu0413JbdNashaCard>();
 
-    General *benmao = new General(this, "benmao", "touhougod", 4, true);
+    General *benmao = new General(this, "benmao", "touhougod", 5, true);
     benmao->addSkill(new BmMaoji);
     benmao->addSkill(new BmMaojiTrigger);
     related_skills.insertMulti("bmmaoji", "#bmmaoji");
