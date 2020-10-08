@@ -862,7 +862,7 @@ public:
             return r;
 
         foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (p->isAlive() && p->hasSkill(this) && p->getHandcardNum() <= 5)
+            if (p->isAlive() && p->hasSkill(this) && p->getHandcardNum() < 5)
                 r << SkillInvokeDetail(this, p, p, NULL, true);
         }
 
@@ -1254,7 +1254,7 @@ public:
         QList<SkillInvokeDetail> r;
         if (use.from != NULL && use.card != NULL && !use.card->isKindOf("SkillCard") && use.to.length() >= 2) {
             foreach (ServerPlayer *p, room->getAllPlayers()) {
-                if (p->hasSkill(this) && p->getHandcardNum() <= 5)
+                if (p->hasSkill(this) && p->getHandcardNum() < 5)
                     r << SkillInvokeDetail(this, p, p);
             }
         }
@@ -1518,15 +1518,7 @@ public:
         l.to << invoke->targets.first();
         room->sendLog(l);
 
-        bool flag = true;
-        foreach (ServerPlayer *p, use.to) {
-            if (p != invoke->invoker && p->getHandcardNum() <= invoke->invoker->getHandcardNum()) {
-                flag = false;
-                break;
-            }
-        }
-
-        if (flag && room->askForSkillInvoke(invoke->invoker, "#zhumao-cancelself", "yes")) {
+        if (room->askForSkillInvoke(invoke->targets.first(), "#zhumao-cancelself", QStringLiteral("yes:") + invoke->invoker->objectName())) {
             LogMessage l;
             l.type = "$CancelTarget";
             l.from = use.from;
