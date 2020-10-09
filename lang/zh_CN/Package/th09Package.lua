@@ -334,7 +334,7 @@ return
 	
 	["kokoro_sp"] = "SP丧面秦心",
 	["&kokoro_sp"] = "丧面秦心",
-	["#kokoro_sp"] = "什么",
+	["#kokoro_sp"] = "追寻希望的付丧神",
 	["designer:kokoro_sp"] = "223",
 	
 	["mianling"] = "面灵",
