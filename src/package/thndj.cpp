@@ -951,8 +951,9 @@ public:
     Kexue()
         : TargetModSkill("kexue")
     {
-        pattern = "Slash";
+        pattern = "Slash,TrickCard+^DelayedTrick";
     }
+
     virtual int getDistanceLimit(const Player *from, const Card *) const
     {
         if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && from->hasSkill(objectName()) && from->isChained())
@@ -982,7 +983,8 @@ public:
     void record(TriggerEvent, Room *room, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->isKindOf("Slash") && use.to.length() > 1 && use.from->isChained() && use.from->hasSkill("kexue"))
+        if (use.card != NULL && (use.card->isKindOf("Slash") || use.card->isNDTrick()) && use.to.length() > 1 && use.from != NULL && use.from->isChained()
+            && use.from->hasSkill("kexue"))
             room->notifySkillInvoked(use.from, "kexue");
     }
 };
