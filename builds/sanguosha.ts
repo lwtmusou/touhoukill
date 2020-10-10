@@ -556,7 +556,7 @@
         <location filename="../src/dialog/configdialog.ui" line="85"/>
         <location filename="../src/dialog/configdialog.ui" line="141"/>
         <location filename="../src/dialog/configdialog.ui" line="227"/>
-        <location filename="../src/dialog/configdialog.ui" line="635"/>
+        <location filename="../src/dialog/configdialog.ui" line="614"/>
         <source>Browse ...</source>
         <translation>浏览 ...</translation>
     </message>
@@ -564,7 +564,7 @@
         <location filename="../src/dialog/configdialog.ui" line="92"/>
         <location filename="../src/dialog/configdialog.ui" line="148"/>
         <location filename="../src/dialog/configdialog.ui" line="234"/>
-        <location filename="../src/dialog/configdialog.ui" line="645"/>
+        <location filename="../src/dialog/configdialog.ui" line="624"/>
         <source>Reset</source>
         <translation>重置</translation>
     </message>
@@ -669,22 +669,22 @@
         <translation>游戏</translation>
     </message>
     <message>
-        <location filename="../src/dialog/configdialog.ui" line="560"/>
+        <location filename="../src/dialog/configdialog.ui" line="539"/>
         <source>Game Record</source>
         <translation>游戏录像</translation>
     </message>
     <message>
-        <location filename="../src/dialog/configdialog.ui" line="601"/>
+        <location filename="../src/dialog/configdialog.ui" line="580"/>
         <source>Setup Record Paths</source>
         <translation>设置录像保存路径</translation>
     </message>
     <message>
-        <location filename="../src/dialog/configdialog.ui" line="584"/>
+        <location filename="../src/dialog/configdialog.ui" line="563"/>
         <source>Network Game Only</source>
         <translation>只保存联机游戏</translation>
     </message>
     <message>
-        <location filename="../src/dialog/configdialog.ui" line="568"/>
+        <location filename="../src/dialog/configdialog.ui" line="547"/>
         <source>Enable Auto Save</source>
         <translation>启用自动保存</translation>
     </message>
@@ -720,52 +720,42 @@
     </message>
     <message>
         <location filename="../src/dialog/configdialog.ui" line="518"/>
-        <source>AutoUpdateChannel</source>
-        <translation>自动更新频道</translation>
-    </message>
-    <message>
-        <location filename="../src/dialog/configdialog.ui" line="528"/>
-        <source>DO NOT EDIT THIS UNLESS YOU KNOW WHAT YOU ARE DOING</source>
-        <translation>如果你不知道你在做什么，请不要修改</translation>
-    </message>
-    <message>
-        <location filename="../src/dialog/configdialog.ui" line="539"/>
         <source>Bubble chat box delay(seconds)</source>
         <translation>气泡聊天框显示时间</translation>
     </message>
     <message>
-        <location filename="../src/dialog/configdialog.cpp" line="52"/>
+        <location filename="../src/dialog/configdialog.cpp" line="51"/>
         <source> second</source>
         <translation>秒</translation>
     </message>
     <message>
-        <location filename="../src/dialog/configdialog.cpp" line="101"/>
+        <location filename="../src/dialog/configdialog.cpp" line="100"/>
         <source>Select a background image</source>
         <translation>请选择一张背景图片</translation>
     </message>
     <message>
-        <location filename="../src/dialog/configdialog.cpp" line="101"/>
-        <location filename="../src/dialog/configdialog.cpp" line="131"/>
+        <location filename="../src/dialog/configdialog.cpp" line="100"/>
+        <location filename="../src/dialog/configdialog.cpp" line="130"/>
         <source>Images (*.png *.bmp *.jpg)</source>
         <translation>图片 (*.png *.bmp *.jpg)</translation>
     </message>
     <message>
-        <location filename="../src/dialog/configdialog.cpp" line="131"/>
+        <location filename="../src/dialog/configdialog.cpp" line="130"/>
         <source>Select a tableBg image</source>
         <translation>请选择一张游戏时背景图片</translation>
     </message>
     <message>
-        <location filename="../src/dialog/configdialog.cpp" line="156"/>
+        <location filename="../src/dialog/configdialog.cpp" line="155"/>
         <source>Select a Record Paths</source>
         <translation>选择一个回放路径</translation>
     </message>
     <message>
-        <location filename="../src/dialog/configdialog.cpp" line="241"/>
+        <location filename="../src/dialog/configdialog.cpp" line="238"/>
         <source>Select a background music</source>
         <translation>请选择背景音乐文件</translation>
     </message>
     <message>
-        <location filename="../src/dialog/configdialog.cpp" line="241"/>
+        <location filename="../src/dialog/configdialog.cpp" line="238"/>
         <source>Audio files (*.wav *.mp3 *.ogg)</source>
         <translation>音频文件 (*.wav *.mp3 *.ogg)</translation>
     </message>
