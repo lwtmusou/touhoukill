@@ -1626,16 +1626,6 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
         setChatBoxVisible(!chat_box_widget->isVisible());
         break;
     }
-        /*case Qt::Key_F12: {
-                    if (Self->hasSkill("huashen")) {
-                    const Skill *huashen_skill = Sanguosha->getSkill("huashen");
-                    if (huashen_skill) {
-                    HuashenDialog *dialog = qobject_cast<HuashenDialog *>(huashen_skill->getDialog());
-                    if (dialog) dialog->popup();
-                    }
-                    }
-                    break;
-                    }*/
 
     case Qt::Key_S:
         dashboard->selectCard("slash");

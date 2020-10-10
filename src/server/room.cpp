@@ -3891,21 +3891,6 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
                     }
                 }
             }
-        } else if (sentence == ".ShowHuashen") {
-            _NO_BROADCAST_SPEAKING;
-            QList<ServerPlayer *> zuocis = findPlayersBySkillName("huashen");
-            QStringList huashen_name;
-            foreach (ServerPlayer *zuoci, zuocis) {
-                QVariantList huashens = zuoci->tag["Huashens"].toList();
-                huashen_name.clear();
-                foreach (QVariant name, huashens)
-                    huashen_name << QString("<b>%1</b>").arg(Sanguosha->translate(name.toString()));
-                QString huashen = huashen_name.join(", ");
-                huashen = huashen.toUtf8().toBase64();
-                JsonArray body;
-                body << zuoci->objectName() << huashen;
-                doNotify(player, S_COMMAND_SPEAK, body);
-            }
         } else if (sentence.startsWith(".SetAIDelay=")) {
             _NO_BROADCAST_SPEAKING;
             bool ok = false;
