@@ -820,7 +820,7 @@ QGroupBox *ServerDialog::createGameModeBox()
             connect(button, SIGNAL(toggled(bool)), box, SLOT(setEnabled(bool)));
 
             item_list << button << box;
-        } else if (itor.key() == "hegemony_8") {
+        } else if (itor.key() == "hegemony_10") {
             hegemonyBox = createHegemonyBox();
 
             item_list << button << hegemonyBox;
@@ -902,7 +902,7 @@ QGroupBox *ServerDialog::createGameModeBox()
 
     for (int i = 0; i < item_list.length(); i++) {
         QObject *item = item_list.at(i);
-        QVBoxLayout *side = i <= item_list.length() / 2 - 2 ? left : right;
+        QVBoxLayout *side = i < 14 ? left : right;
 
         if (item->isWidgetType()) {
             QWidget *widget = qobject_cast<QWidget *>(item);
@@ -911,10 +911,9 @@ QGroupBox *ServerDialog::createGameModeBox()
             QLayout *item_layout = qobject_cast<QLayout *>(item);
             side->addLayout(item_layout);
         }
-        if (i == item_list.length() / 2 - 2)
-            side->addStretch();
     }
 
+    left->addStretch();
     right->addStretch();
 
     QHBoxLayout *layout = new QHBoxLayout;

@@ -89,16 +89,11 @@ Engine::Engine()
 
     // available game modes
     modes["02p"] = tr("2 players");
-    //modes["02pbb"] = tr("2 players (using blance beam)");
-    //modes["02_1v1"] = tr("2 players (KOF style)");
     modes["03p"] = tr("3 players");
     modes["04p"] = tr("4 players");
-    //modes["04_1v3"] = tr("4 players (Hulao Pass)");
     modes["05p"] = tr("5 players");
     modes["06p"] = tr("6 players");
     modes["06pd"] = tr("6 players (2 renegades)");
-    //modes["06_3v3"] = tr("6 players (3v3)");
-    //modes["06_XMode"] = tr("6 players (XMode)");
     modes["07p"] = tr("7 players");
     modes["08p"] = tr("8 players");
     modes["08pd"] = tr("8 players (2 renegades)");
@@ -107,13 +102,15 @@ Engine::Engine()
     modes["10pd"] = tr("10 players");
     modes["10p"] = tr("10 players (1 renegade)");
     modes["10pz"] = tr("10 players (0 renegade)");
-    modes["hegemony_2"] = tr("hegemony 2 players");
-    modes["hegemony_3"] = tr("hegemony 3 players");
-    modes["hegemony_4"] = tr("hegemony 4 players");
-    modes["hegemony_5"] = tr("hegemony 5 players");
-    modes["hegemony_6"] = tr("hegemony 6 players");
-    modes["hegemony_7"] = tr("hegemony 7 players");
-    modes["hegemony_8"] = tr("hegemony 8 players");
+    modes["hegemony_02"] = tr("hegemony 2 players");
+    modes["hegemony_03"] = tr("hegemony 3 players");
+    modes["hegemony_04"] = tr("hegemony 4 players");
+    modes["hegemony_05"] = tr("hegemony 5 players");
+    modes["hegemony_06"] = tr("hegemony 6 players");
+    modes["hegemony_07"] = tr("hegemony 7 players");
+    modes["hegemony_08"] = tr("hegemony 8 players");
+    modes["hegemony_09"] = tr("hegemony 9 players");
+    modes["hegemony_10"] = tr("hegemony 10 players");
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 
@@ -820,7 +817,7 @@ int Engine::getPlayerCount(const QString &mode) const
 {
     if (isHegemonyGameMode(mode)) {
         QStringList modestrings = mode.split("_");
-        return modestrings.last().toInt(); //return 2;
+        return modestrings.last().toInt(NULL, 10); //return 2;
     }
 
     if (modes.contains(mode)) {
