@@ -62,6 +62,8 @@ private:
     QString m_baseChangeLog;
     QString m_baseVersionNumber;
 
+    bool m_configLuaIs097;
+
     QString m_updateScript;
     QString m_updatePack;
     QJsonObject m_updateHash;

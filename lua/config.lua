@@ -209,10 +209,14 @@ local f = io.open("audio/bgm/version.txt")
 if f then
 	config.withBgm = f:read("*L")
 	f:close()
+else
+	config.withBgm = "N/A"
 end
 
 f = io.open("image/heroskin/version.txt")
 if f then
 	config.withHeroSkin = f:read("*L")
 	f:close()
+else
+	config.withHeroSkin = "N/A"
 end

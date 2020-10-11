@@ -35,6 +35,7 @@ UpdateDialog::UpdateDialog(QWidget *parent)
 #ifdef Q_OS_WIN
     , taskbarButton(NULL)
 #endif
+    , m_configLuaIs097(false)
     , m_finishedScript(false)
     , m_finishedPack(false)
     , m_busy(false)
@@ -66,9 +67,14 @@ UpdateDialog::UpdateDialog(QWidget *parent)
 
     QGridLayout *upperLayout = new QGridLayout;
 
+    QLabel *c = new QLabel(tr("Current Version"));
+    c->setAlignment(Qt::AlignCenter);
+    QLabel *l = new QLabel(tr("Latest Version"));
+    l->setAlignment(Qt::AlignCenter);
+
     upperLayout->addWidget(lbl, 0, 0, 1, 5);
-    upperLayout->addWidget(new QLabel(tr("Current Version")), 1, 1);
-    upperLayout->addWidget(new QLabel(tr("Latest Version")), 1, 2);
+    upperLayout->addWidget(c, 1, 1);
+    upperLayout->addWidget(l, 1, 2);
     upperLayout->addWidget(new QLabel(tr("Base Contents")), 2, 0);
     upperLayout->addWidget(currentVersion[UiBase], 2, 1);
     upperLayout->addWidget(latestVersion[UiBase], 2, 2);
@@ -178,23 +184,45 @@ void UpdateDialog::updateInfoReceived()
             updateButton[i]->setEnabled(false);
     }
 
+    if (m_configLuaIs097) {
+        updateButton[UiSkin]->setEnabled(false);
+        updateButton[UiBgm]->setEnabled(false);
+    }
+
     if (updateButton[UiBase]->isEnabled()) {
         if (m_updateContents[UiBase].updateHash.isEmpty() || m_updateContents[UiBase].updateScript.isEmpty()) {
-            lbl->setText(tr("New Version %1(%3) available.\n"
-                            "But we don\'t support auto-updating from %2 to %1 on this platform.\n"
+            lbl->setText(tr("New Version %1(%3) available.<br />"
+                            "But we don\'t support auto-updating from %2 to %1 on this platform.<br />"
                             "Please download the full package by clicking \"Update\" button on the \"Base Contents\" column.")
                              .arg(latestVersion[UiBase]->text())
                              .arg(getVersionNumberForItem(UiBase).toString())
                              .arg(m_baseVersionNumber));
+            lbl->setTextFormat(Qt::RichText);
         } else {
-            lbl->setText(tr("New Version %1(%3) available.\n"
-                            "We support auto-updating from %2 to %1 on this platform.\n"
+            lbl->setText(tr("New Version %1(%3) available.<br />"
+                            "We support auto-updating from %2 to %1 on this platform.<br />"
                             "Click \"Update\" button on the \"Base Contents\" column to update now.")
                              .arg(latestVersion[UiBase]->text())
                              .arg(getVersionNumberForItem(UiBase).toString())
                              .arg(m_baseVersionNumber));
+            lbl->setTextFormat(Qt::RichText);
         }
 
+        if (m_configLuaIs097) {
+            lbl->setText(lbl->text() + "<br /><br />"
+                         + tr("<font color=red>Warning: You have replaced lua/config.lua to 0.9.7 version.<br />"
+                              "This will affect auto update for HeroSkin and BGM.<br /><br />"
+                              "This warning will show every time the game started before the original config.lua is put back.</font>"));
+        }
+
+        lbl->setVisible(true);
+        exec();
+    } else if (m_configLuaIs097) {
+        lbl->setText(tr("<font color=red>Warning: You have replaced lua/config.lua to 0.9.7 version.<br />"
+                        "This will affect auto update for HeroSkin and BGM.<br /><br />"
+                        "This warning will show every time the game started before the original config.lua is put back.</font>"));
+
+        lbl->setTextFormat(Qt::RichText);
         lbl->setVisible(true);
         exec();
     }
@@ -236,17 +264,33 @@ QVersionNumber UpdateDialog::getVersionNumberForItem(UpdateDialog::UpdateItem it
     case UiBase:
         return Sanguosha->getQVersionNumber();
     case UiSkin: {
-        QString v = GetConfigFromLuaState(Sanguosha->getLuaState(), "withHeroSkin").toString();
-        // @todo_Fs: need to confirm that nil is converted to null string in QVariant
-        if (v.length() != 0)
-            return QVersionNumber::fromString(v);
+        QVariant v = GetConfigFromLuaState(Sanguosha->getLuaState(), "withHeroSkin");
+        if (static_cast<QMetaType::Type>(v.type()) != QMetaType::QString) {
+            m_configLuaIs097 = true;
+            break;
+        }
+
+        QString s = v.toString();
+        if (s == "N/A")
+            return QVersionNumber();
+        else if (s.length() != 0)
+            return QVersionNumber::fromString(s);
+
         break;
     }
     case UiBgm: {
-        QString v = GetConfigFromLuaState(Sanguosha->getLuaState(), "withBgm").toString();
-        // @todo_Fs: need to confirm that nil is converted to null string in QVariant
-        if (v.length() != 0)
-            return QVersionNumber::fromString(v);
+        QVariant v = GetConfigFromLuaState(Sanguosha->getLuaState(), "withBgm");
+        if (static_cast<QMetaType::Type>(v.type()) != QMetaType::QString) {
+            m_configLuaIs097 = true;
+            break;
+        }
+
+        QString s = v.toString();
+        if (s == "N/A")
+            return QVersionNumber();
+        else if (s.length() != 0)
+            return QVersionNumber::fromString(s);
+
         break;
     }
     default:
