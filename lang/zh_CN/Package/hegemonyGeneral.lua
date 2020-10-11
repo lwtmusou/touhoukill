@@ -90,6 +90,12 @@ return
 	["shanshi_hegemony"] = "善逝" ,
 	[":shanshi_hegemony"] = "当你于一名其他角色的回合内失去牌后或一名其他角色于你的回合内失去牌后，若失去牌的角色的手牌数小于X（X为其体力值且至少为1），你可以令你与其各摸一张牌。<font color=\"green\"><b>每阶段限一次。</b></font>" ,
 	
+	["!sunny_hegemony"] = "桑尼·米尔克",
+	["sunny_hegemony"] = "桑尼",
+	["!lunar_hegemony"] = "露娜·切露德",
+	["lunar_hegemony"] = "露娜",
+	["!star_hegemony"] = "斯塔·萨菲雅",
+	["star_hegemony"] = "斯塔",
 	
 --***********************
 --夏（月）
@@ -192,8 +198,16 @@ return
 	[":zhenye_hegemony"] = "结束阶段开始时，你可以令一名其他角色翻面和令其摸X张牌（X为你的阵营的角色数），然后你翻面。",
 	["@zhenye-select-heg"]= "你可以令一名其他角色的人物牌翻面和令其摸X张牌（X为你的阵营的角色数），然后你的人物牌翻面。",
 	
-	-- ["mystia_hegemony"]="米斯蒂娅",
+	
 	["yuka_hegemony"]= "风见幽香",
+	
+	["!mystia_hegemony"] = "米斯蒂娅·萝蕾拉",
+	["mystia_hegemony"]="米斯蒂娅",
+	["shinmyoumaru_hegemony"] = "少名针妙丸",
+	["seija_hegemony"] = "鬼人正邪",
+	["wakasagihime_hegemony"] = "若鹭姬",
+	["kagerou_hegemony"] = "今泉影狼",
+	
 	
 --***********************
 --秋（风）	
@@ -246,6 +260,10 @@ return
 	["diaoping_hegemony"] = "钓瓶",
 	[":diaoping_hegemony"] = "当其他角色使用【杀】指定目标后，若目标包含与你阵营相同的角色，你可以与此牌的使用者拼点：当你赢后，其横置且此【杀】无效；当你没赢后，你与其各摸一张牌。",
     ["diaoping_hegemony:slashtarget"]= "<font color=\"#FF8000\"><b>%src </b></font> 使用了【%dest】，你可以发动“钓瓶”。",
+	
+	["suika_hegemony"] = "伊吹萃香",
+	["kasen_hegemony"] = "茨木華扇",
+	["hatate_hegemony"] = "姬海棠果",
 	
 --***********************
 --冬（雪）
@@ -347,6 +365,10 @@ return
 	[":mengxian_hegemony"] = "<font color=\"purple\"><b>副将技，</b></font>与你阵营相同的角色使用【杀】对目标角色造成伤害时，你可弃置一张境界，防止此伤害，依次弃置目标角色两张牌。",
 	["@mengxian_hegemony"] = "你可以发动“梦现”： 你可以防止 %src 对 %dest  的伤害， 并弃置%dest两张牌",
 	["~mengxian_hegemony"] = "选择一张境界 -> 确定",
+	
+	["rinnosuke_hegemony"] = "森近霖之助",
+	["tokiko_hegemony"] = "朱鹭子",
+	["mima_hegemony"] = "魅魔" ,
 	
 ------------------------------------------
 -- 设计者 @dawda 错了自己改
