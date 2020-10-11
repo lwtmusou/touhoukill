@@ -4370,7 +4370,6 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     General *star_hegemony = new General(this, "star_hegemony", "wu", 3);
     star_hegemony->addSkill("ganying");
 
-
     //Summer
 
     General *remilia_hegemony = new General(this, "remilia_hegemony", "shu", 3);
@@ -4471,14 +4470,26 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     yuka_hegemony->addSkill("weiya");
 
     General *mystia_hegemony = new General(this, "mystia_hegemony", "shu", 3);
+    mystia_hegemony->addSkill("yege");
+    mystia_hegemony->addSkill("laolong");
 
     General *shinmyoumaru_hegemony = new General(this, "shinmyoumaru_hegemony", "shu", 3);
+    shinmyoumaru_hegemony->addSkill("baochui");
+    shinmyoumaru_hegemony->addSkill("yicun");
     shinmyoumaru_hegemony->addCompanion("seija_hegemony");
+
     General *seija_hegemony = new General(this, "seija_hegemony", "shu", 3);
+    seija_hegemony->addSkill("nizhuan");
+    seija_hegemony->addSkill("guizha");
 
     General *kagerou_hegemony = new General(this, "kagerou_hegemony", "shu", 4);
+    kagerou_hegemony->addSkill("langying");
+    kagerou_hegemony->addSkill("yuanfei");
     kagerou_hegemony->addCompanion("wakasagihime_hegemony");
+
     General *wakasagihime_hegemony = new General(this, "wakasagihime_hegemony", "shu", 3);
+    wakasagihime_hegemony->addSkill("shizhu");
+    wakasagihime_hegemony->addSkill("liange");
 
     //Autumn
     General *kanako_hegemony = new General(this, "kanako_hegemony", "qun", 4);
@@ -4516,8 +4527,6 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     hina_hegemony->addSkill("liuxing");
 
     General *momizi_hegemony = new General(this, "momizi_hegemony", "qun", 4);
-    //momizi_hegemony->addSkill("shouhu");
-    //momizi_hegemony->addSkill("shaojie");
     momizi_hegemony->addSkill("buju");
 
     General *minoriko_hegemony = new General(this, "minoriko_hegemony", "qun", 4);
@@ -4531,7 +4540,6 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *satori_hegemony = new General(this, "satori_hegemony", "qun", 3);
     satori_hegemony->addSkill("xiangqi");
-    //satori_hegemony->addSkill("duxin");
     satori_hegemony->addSkill(new DuxinHegemony);
     satori_hegemony->addCompanion("koishi_hegemony");
     satori_hegemony->addCompanion("utsuho_hegemony");
@@ -4578,8 +4586,9 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     kasen_hegemony->addSkill("yushou");
 
     General *hatate_hegemony = new General(this, "hatate_hegemony", "qun", 4);
+    hatate_hegemony->addSkill("kuaizhao");
+    hatate_hegemony->addSkill("duanjiao");
     hatate_hegemony->addCompanion("aya_hegemony");
-
 
     //Winter
     General *yuyuko_hegemony = new General(this, "yuyuko_hegemony", "wei", 4, false);
@@ -4667,7 +4676,6 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     merry_hegemony->addSkill(new MengxianHegemony);
     //merry_hegemony->addSkill(new MengxianMax);
     related_skills.insertMulti("mengxian_hegemony", "#mengxian_hegemony");
-
 
     General *rinnosuke_hegemony = new General(this, "rinnosuke_hegemony", "wei", 4, true);
     rinnosuke_hegemony->addSkill("xiufu");

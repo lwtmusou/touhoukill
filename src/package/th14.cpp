@@ -13,7 +13,6 @@ public:
         : TriggerSkill("baochui")
     {
         events << EventPhaseStart;
-        ;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
@@ -1145,7 +1144,6 @@ TH14Package::TH14Package()
     General *benben = new General(this, "benben", "hzc", 3);
     benben->addSkill(new Yuyin);
     benben->addSkill(new Wuchang);
-    benben->addCompanion("yatsuhashi");
 
     General *yatsuhashi = new General(this, "yatsuhashi", "hzc", 3);
     yatsuhashi->addSkill(new Canxiang);
