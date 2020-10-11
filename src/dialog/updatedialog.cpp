@@ -143,7 +143,7 @@ void UpdateDialog::updateInfoReceived()
 
     do {
         QJsonObject ob;
-        // check "Base" first, if there is no "Base" then check "Global" instead -- for compatability for 0.9
+        // check "Base" first, if there is no "Base" then check "Global" instead -- for compatibility with 0.9
         // will remove "Global" judgment for 0.10
         ob = fullOb.value("Base").toObject();
         if (!ob.contains("LatestVersion") || !ob.value("LatestVersion").isString()) {
