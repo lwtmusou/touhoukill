@@ -266,18 +266,11 @@ GeneralOverview::GeneralOverview(QWidget *parent)
 
     origin_window_title = windowTitle();
 
-    yuyuko_spComment = new QLabel(Sanguosha->translate("comment:yuyuko_sp"));
-    yuyuko_spComment->setWordWrap(false);
-    yuyuko_spComment->setTextFormat(Qt::RichText);
     button_layout = new QVBoxLayout;
-    QHBoxLayout *button_layout_with_yuyukosp_comment = new QHBoxLayout;
-    button_layout_with_yuyukosp_comment->addLayout(button_layout);
-    button_layout_with_yuyukosp_comment->addWidget(yuyuko_spComment);
 
     QGroupBox *group_box = new QGroupBox;
     group_box->setTitle(tr("Effects"));
-    group_box->setLayout(button_layout_with_yuyukosp_comment);
-
+    group_box->setLayout(button_layout);
     ui->scrollArea->setWidget(group_box);
     ui->skillTextEdit->setProperty("description", true);
     if (ServerInfo.DuringGame && ServerInfo.EnableCheat) {
@@ -614,18 +607,6 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     button_layout->addStretch();
     ui->skillTextEdit->append(general->getSkillDescription(true, false));
     ui->changeGeneralButton->setEnabled(Self && Self->getGeneralName() != general->objectName());
-
-    if (general->objectName() != "yuyuko_sp") {
-        yuyuko_spComment->hide();
-        QString comment_text = Sanguosha->translate("comment:" + general->objectName());
-        if (!comment_text.startsWith("comment:")) {
-            QLabel *l = new QLabel(comment_text);
-            l->setTextFormat(Qt::RichText);
-            l->setWordWrap(true);
-            button_layout->addWidget(l);
-        }
-    } else
-        yuyuko_spComment->show();
 }
 
 void GeneralOverview::playAudioEffect()

@@ -74,7 +74,6 @@ public:
 
 private:
     Ui::GeneralOverview *ui;
-    QLabel *yuyuko_spComment;
     QVBoxLayout *button_layout;
     GeneralSearch *general_search;
 

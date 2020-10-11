@@ -132,7 +132,6 @@ return
 	["&prismriver"]= "骚灵乐团",
 	["#prismriver"]= "骚灵乐团",
 	["designer:prismriver"] = "星野梦美☆",
-	["comment:prismriver"] = "<div align=center><i>“来举行一场盛大的演出吧！”</i></div>",
 
 	["illustrator:prismriver"] = "ふーぷ",
 	["origin:prismriver"] = "p号：54085300",
@@ -318,35 +317,6 @@ return
 	["&yuyuko_sp"]="千年幽幽子",
 	["#yuyuko_sp"]= "千年前的舞姬",
 	["designer:yuyuko_sp"] = "星野梦美☆",
-	["comment:yuyuko_sp"] = "<div align=right><i>  富</i></div>" ..
-							"<div align=right><i>  士</i></div>" ..
-							"<div align=right><i> 其 见</i></div>" ..
-							"<div align=right><i>| 为 之</i></div>" ..
-							"<div align=right><i>| 魂 女</i></div>" ..
-							"<div align=right><i>| 魄 ，</i></div>" ..
-							"<div align=right><i>| ， 西</i></div>" ..
-							"<div align=right><i>祈 安 行</i></div>" ..
-							"<div align=left><i>愿 息 妖</i></div>" ..
-							"<div align=left><i>， 白 盛</i></div>" ..
-							"<div align=left><i>永 玉 开</i></div>" ..
-							"<div align=left><i>不 楼 之</i></div>" ..
-							"<div align=left><i>识 之 时</i></div>" ..
-							"<div align=left><i>痛 中 ，</i></div>" ..
-							"<div align=left><i>苦 ， 分</i></div>" ..
-							"<div align=left><i>之 封 割</i></div>" ..
-							"<div align=left><i>滋 印 幽</i></div>" ..
-							"<div align=left><i>味 西 冥</i></div>" ..
-							"<div align=left><i>， 行 之</i></div>" ..
-							"<div align=left><i>永 妖 境</i></div>" ..
-							"<div align=left><i>不 之 。</i></div>" ..
-							"<div align=left><i>问 花</i></div>" ..
-							"<div align=left><i>轮 ，</i></div>" ..
-							"<div align=left><i>回 以</i></div>" ..
-							"<div align=left><i>之 此</i></div>" ..
-							"<div align=left><i>转 为</i></div>" ..
-							"<div align=left><i>世 结</i></div>" ..
-							"<div align=left><i>… 界</i></div>" ..
-							"<div align=left><i>… 。</i></div>",
 
 	["illustrator:yuyuko_sp"] = "めっこ",
 	["origin:yuyuko_sp"] = "p号：10128798，个人ID：814762",

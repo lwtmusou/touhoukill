@@ -7,7 +7,6 @@ return
 	["kaguya"] = "蓬莱山辉夜",
 	["#kaguya"] = "永远与须臾的罪人",
 	["designer:kaguya"] = "星野梦美☆",
-	["comment:kaguya"] = "<div align=left><i>伴随着不老不死的，</i></div><div align=center><i>只是须臾的快乐和永恒的空虚。</i></div>",
 
 	["illustrator:kaguya"] = "c7肘",
 	["origin:kaguya"] = "p号：16237731，个人ID：217707",
