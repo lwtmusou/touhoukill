@@ -7,9 +7,6 @@
 #include "generalselector.h"
 #include "lua.hpp"
 #include "miniscenarios.h"
-#include "roomthread1v1.h"
-#include "roomthread3v3.h"
-#include "roomthreadxmode.h"
 #include "scenario.h"
 #include "scenerule.h"
 #include "server.h"
@@ -3523,25 +3520,7 @@ void Room::run()
 
     if (scenario && !scenario->generalSelection())
         startGame();
-    else if (mode == "06_3v3") {
-        thread_3v3 = new RoomThread3v3(this);
-        thread_3v3->start();
-
-        connect(thread_3v3, SIGNAL(finished()), this, SLOT(startGame()));
-        connect(thread_3v3, SIGNAL(finished()), thread_3v3, SLOT(deleteLater()));
-    } else if (mode == "06_XMode") {
-        thread_xmode = new RoomThreadXMode(this);
-        thread_xmode->start();
-
-        connect(thread_xmode, SIGNAL(finished()), this, SLOT(startGame()));
-        connect(thread_xmode, SIGNAL(finished()), thread_xmode, SLOT(deleteLater()));
-    } else if (mode == "02_1v1") {
-        thread_1v1 = new RoomThread1v1(this);
-        thread_1v1->start();
-
-        connect(thread_1v1, SIGNAL(finished()), this, SLOT(startGame()));
-        connect(thread_1v1, SIGNAL(finished()), thread_1v1, SLOT(deleteLater()));
-    } else if (mode == "04_1v3") {
+    else if (mode == "04_1v3") {
         ServerPlayer *lord = m_players.first();
         setPlayerProperty(lord, "general", "yuyuko_1v3");
 
