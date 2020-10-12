@@ -744,6 +744,8 @@ QString Engine::getModeName(const QString &mode) const
 {
     if (modes.contains(mode))
         return modes.value(mode);
+
+    return QString();
 }
 
 int Engine::getPlayerCount(const QString &mode) const

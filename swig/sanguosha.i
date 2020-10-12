@@ -1347,7 +1347,7 @@ public:
     void delay(unsigned long msecs = 1000);
 };
 
-class Room: public QThread {
+class Room: public QObject {
 public:
     enum GuanxingType { GuanxingUpOnly = 1, GuanxingBothSides = 0, GuanxingDownOnly = -1 };
 

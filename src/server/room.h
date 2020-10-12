@@ -19,7 +19,7 @@ class GeneralSelector;
 struct lua_State;
 struct LogMessage;
 
-class Room : public QThread
+class Room : public QObject
 {
     Q_OBJECT
     Q_ENUMS(GuanxingType)
@@ -413,7 +413,6 @@ public:
     bool makeSurrender(ServerPlayer *player);
 
 protected:
-    virtual void run();
     int _m_Id;
 
 private:
@@ -561,7 +560,6 @@ private:
 
     QVariantMap tag;
 
-    bool _virtual;
     RoomState _m_roomState;
 
     QVariant m_fillAGarg;
@@ -617,7 +615,6 @@ private slots:
 
 signals:
     void room_message(const QString &msg);
-    void game_start();
     void game_over(const QString &winner);
     void signalSetProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
 };

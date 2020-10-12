@@ -2,6 +2,7 @@
 #include "ai.h"
 #include "engine.h"
 #include "gamerule.h"
+#include "protocol.h"
 #include "room.h"
 #include "settings.h"
 #include "standard.h"
@@ -14,6 +15,7 @@
 #endif
 
 using namespace JsonUtils;
+using namespace QSanProtocol;
 
 LogMessage::LogMessage()
     : from(NULL)
@@ -322,9 +324,77 @@ void RoomThread::_handleTurnBrokenNormal(GameRule *game_rule)
 
 void RoomThread::run()
 {
+    // initialize random seed for later use
     qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
+    Config.AIDelay = Config.OriginAIDelay;
+    foreach (ServerPlayer *player, room->getPlayers()) {
+        //Ensure that the game starts with all player's mutex locked
+        player->drainAllLocks();
+        player->releaseLock(ServerPlayer::SEMA_MUTEX);
+    }
+
+    room->prepareForStart();
+
+    bool using_countdown = true;
+    if (!room->property("to_test").toString().isEmpty())
+        using_countdown = false;
+
+#ifndef QT_NO_DEBUG
+    using_countdown = false;
+#endif
+
+    if (using_countdown) {
+        for (int i = Config.CountDownSeconds; i >= 0; i--) {
+            room->doBroadcastNotify(S_COMMAND_START_IN_X_SECONDS, i);
+            sleep(1);
+        }
+    } else
+        room->doBroadcastNotify(S_COMMAND_START_IN_X_SECONDS, QVariant(0));
+
+    if (room->getMode() == "04_1v3") {
+        ServerPlayer *lord = room->getPlayers().first();
+        room->setPlayerProperty(lord, "general", "yuyuko_1v3");
+
+        QList<const General *> generals = QList<const General *>();
+        foreach (QString pack_name, GetConfigFromLuaState(Sanguosha->getLuaState(), "hulao_packages").toStringList()) {
+            const Package *pack = Sanguosha->findChild<const Package *>(pack_name);
+            if (pack)
+                generals << pack->findChildren<const General *>();
+        }
+
+        QStringList names;
+        foreach (const General *general, generals) {
+            if (general->isTotallyHidden())
+                continue;
+            names << general->objectName();
+        }
+
+        foreach (const QString &name, Config.value("Banlist/HulaoPass").toStringList())
+            if (names.contains(name))
+                names.removeOne(name);
+
+        foreach (ServerPlayer *player, room->getPlayers()) {
+            if (player == lord)
+                continue;
+
+            qShuffle(names);
+            QStringList choices = names.mid(0, 3);
+            QString name = room->askForGeneral(player, choices);
+
+            room->setPlayerProperty(player, "general", name);
+            names.removeOne(name);
+        }
+
+        room->startGame();
+    } else if (isHegemonyGameMode(room->getMode())) {
+        room->chooseHegemonyGenerals();
+        room->startGame();
+    } else {
+        room->chooseGenerals();
+        room->startGame();
+    }
+
     Sanguosha->registerRoom(room);
-    // GameRule *game_rule;
     if (room->getMode() == "04_1v3")
         game_rule = new HulaoPassMode(this);
     else

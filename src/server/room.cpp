@@ -33,7 +33,7 @@
 using namespace QSanProtocol;
 
 Room::Room(QObject *parent, const QString &mode)
-    : QThread(parent)
+    : QObject(parent)
     , _m_lastMovementId(0)
     , mode(mode)
     , current(NULL)
@@ -52,7 +52,6 @@ Room::Room(QObject *parent, const QString &mode)
     , provided(NULL)
     , has_provided(false)
     , provider(NULL)
-    , _virtual(false)
     , _m_roomState(false)
     , m_fillAGWho(NULL)
 {
@@ -2791,8 +2790,6 @@ void Room::prepareForStart()
                 }
             } else {
                 JsonArray replyArray = clientReply.value<JsonArray>();
-                QString name = replyArray.value(0).value<JsonArray>().value(0).toString();
-                QString role = replyArray.value(1).value<JsonArray>().value(0).toString();
                 for (int i = 0; i < replyArray.value(0).value<JsonArray>().size(); i++) {
                     QString name = replyArray.value(0).value<JsonArray>().value(i).toString();
                     QString role = replyArray.value(1).value<JsonArray>().value(i).toString();
@@ -3166,8 +3163,10 @@ ServerPlayer *Room::getOwner() const
 
 void Room::toggleReadyCommand(ServerPlayer *, const QVariant &)
 {
-    if (!game_started && isFull())
-        start();
+    if (!game_started && isFull()) {
+        thread = new RoomThread(this);
+        thread->start();
+    }
 }
 
 void Room::signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot)
@@ -3424,84 +3423,6 @@ void Room::chooseHegemonyGenerals()
     }
 
     Config.setValue("Banlist/Roles", ban_list);
-}
-
-void Room::run()
-{
-    // initialize random seed for later use
-    qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
-    Config.AIDelay = Config.OriginAIDelay;
-    //Audio::stopBGM();
-    foreach (ServerPlayer *player, m_players) {
-        //Ensure that the game starts with all player's mutex locked
-        player->drainAllLocks();
-        player->releaseLock(ServerPlayer::SEMA_MUTEX);
-    }
-
-    //defaultHeroSkin();
-
-    prepareForStart();
-
-    bool using_countdown = true;
-    if (_virtual || !property("to_test").toString().isEmpty())
-        using_countdown = false;
-
-#ifndef QT_NO_DEBUG
-    using_countdown = false;
-#endif
-
-    if (using_countdown) {
-        for (int i = Config.CountDownSeconds; i >= 0; i--) {
-            doBroadcastNotify(S_COMMAND_START_IN_X_SECONDS, i);
-            sleep(1);
-        }
-    } else
-        doBroadcastNotify(S_COMMAND_START_IN_X_SECONDS, QVariant(0));
-
-    if (mode == "04_1v3") {
-        ServerPlayer *lord = m_players.first();
-        setPlayerProperty(lord, "general", "yuyuko_1v3");
-
-        QList<const General *> generals = QList<const General *>();
-        foreach (QString pack_name, GetConfigFromLuaState(Sanguosha->getLuaState(), "hulao_packages").toStringList()) {
-            const Package *pack = Sanguosha->findChild<const Package *>(pack_name);
-            if (pack)
-                generals << pack->findChildren<const General *>();
-        }
-
-        QStringList names;
-        foreach (const General *general, generals) {
-            if (general->isTotallyHidden())
-                continue;
-            names << general->objectName();
-        }
-
-        foreach (QString name, Config.value("Banlist/HulaoPass").toStringList())
-            if (names.contains(name))
-                names.removeOne(name);
-
-        foreach (ServerPlayer *player, m_players) {
-            if (player == lord)
-                continue;
-
-            qShuffle(names);
-            QStringList choices = names.mid(0, 3);
-            QString name = askForGeneral(player, choices);
-
-            setPlayerProperty(player, "general", name);
-            names.removeOne(name);
-        }
-
-        startGame();
-    } else if (isHegemonyGameMode(mode)) {
-        chooseHegemonyGenerals();
-
-        startGame();
-    } else {
-        chooseGenerals();
-
-        startGame();
-    }
 }
 
 void Room::assignRoles()
@@ -4569,39 +4490,8 @@ void Room::startGame()
         setCardMapping(card_id, NULL, Player::DrawPile);
     doBroadcastNotify(S_COMMAND_UPDATE_PILE, QVariant(m_drawPile->length()));
 
-    thread = new RoomThread(this);
-    /*if (mode == "hegemony") {
-        QStringList roles;
-        roles << "wei" << "shu" << "wu" << "qun";
-        QMap<QString, QString> rolemap;
-        rolemap["wei"] = "lord";
-        rolemap["shu"] = "loyalist";
-        rolemap["wu"] = "rebel";
-        rolemap["qun"] = "renegade";
-        foreach(ServerPlayer *player, m_players) {
-            QString choice = askForChoice(player, "hegemony_choice_role", roles.join("+"), QVariant());
-            //QString role_choice = rolemap[choice];
-            //player->setRole(role_choice);
-            //notifyProperty(player, player, "role");
-
-            //broadcast 
-            //setPlayerProperty(player, "kingdom", choice);
-            //setPlayerProperty(player, "role", choice);
-            
-            //notify
-            //player->setKingdom(choice);
-            //notifyProperty(player, player, "kingdom");
-            player->setRole(choice);
-            notifyProperty(player, player, "role", choice);
-        }
-    }*/
-
     if (mode != "02_1v1" && mode != "06_3v3" && mode != "06_XMode")
         _m_roomState.reset();
-    connect(thread, SIGNAL(started()), this, SIGNAL(game_start()));
-
-    if (!_virtual)
-        thread->start();
 }
 
 bool Room::notifyProperty(ServerPlayer *playerToNotify, const ServerPlayer *propertyOwner, const char *propertyName, const QString &value)
