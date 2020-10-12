@@ -1,24 +1,23 @@
 #ifndef _ROOM_H
 #define _ROOM_H
 
-class TriggerSkill;
-class ProhibitSkill;
-class Scenario;
-class TrickCard;
-class GeneralSelector;
-
-struct lua_State;
-struct LogMessage;
+#include <QAtomicPointer>
+#include <QMutex>
+#include <QStack>
+#include <QWaitCondition>
 
 #include "RoomState.h"
 #include "protocol.h"
 #include "roomthread.h"
 #include "serverplayer.h"
 
-#include <QAtomicPointer>
-#include <QMutex>
-#include <QStack>
-#include <QWaitCondition>
+class TriggerSkill;
+class ProhibitSkill;
+class TrickCard;
+class GeneralSelector;
+
+struct lua_State;
+struct LogMessage;
 
 class Room : public QThread
 {
@@ -56,7 +55,6 @@ public:
 
     int getLack() const;
     QString getMode() const;
-    const Scenario *getScenario() const;
     RoomThread *getThread() const;
     ServerPlayer *getCurrent() const;
     void setCurrent(ServerPlayer *current);
@@ -562,7 +560,6 @@ private:
     ServerPlayer *provider;
 
     QVariantMap tag;
-    const Scenario *scenario;
 
     bool _virtual;
     RoomState _m_roomState;

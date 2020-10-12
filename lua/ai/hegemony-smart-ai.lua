@@ -614,9 +614,6 @@ end
 function sgs.gameProcess(update)
 	if not update and sgs.ai_process then return sgs.ai_process end
 
-	local scenario = global_room:getScenario()
-	if scenario and scenario:objectName() == "jiange_defense" then return "wei>>>" end
-
 	local value = {}
 	local kingdoms = sgs.KingdomsTable
 	for _, kingdom in ipairs(kingdoms) do
@@ -6575,7 +6572,6 @@ function sgs.isRoleExpose()
 	--local mode = string.lower(global_room:getMode())
 	--if mode:find("0") then return false end
 	--if global_room:getMode() == "jiange_defense" then return true end
-	if global_room:getScenario() and global_room:getScenario():exposeRoles() then return true end
 	return false
 end
 

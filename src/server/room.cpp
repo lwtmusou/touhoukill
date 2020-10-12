@@ -6,9 +6,6 @@
 #include "gamerule.h"
 #include "generalselector.h"
 #include "lua.hpp"
-#include "miniscenarios.h"
-#include "scenario.h"
-#include "scenerule.h"
 #include "server.h"
 #include "settings.h"
 #include "standard.h"
@@ -62,7 +59,6 @@ Room::Room(QObject *parent, const QString &mode)
     static int s_global_room_id = 0;
     _m_Id = s_global_room_id++;
     player_count = Sanguosha->getPlayerCount(mode);
-    scenario = Sanguosha->getScenario(mode);
 
     initCallbacks();
 
@@ -540,30 +536,6 @@ void Room::gameOver(const QString &winner, bool isSurrender)
     //defaultHeroSkin();
     emit game_over(winner);
 
-    if (mode.contains("_mini_")) {
-        ServerPlayer *playerWinner = NULL;
-        QStringList winners = winner.split("+");
-        foreach (ServerPlayer *sp, m_players) {
-            if (sp->getState() != "robot" && (winners.contains(sp->getRole()) || winners.contains(sp->objectName()))) {
-                playerWinner = sp;
-                break;
-            }
-        }
-
-        if (playerWinner) {
-            QString id = Config.GameMode;
-            id.replace("_mini_", "");
-            int stage = Config.value("MiniSceneStage", 1).toInt();
-            int current = id.toInt();
-            if (current < Sanguosha->getMiniSceneCounts()) {
-                if (current + 1 > stage)
-                    Config.setValue("MiniSceneStage", current + 1);
-                QString mode = QString(MiniScene::S_KEY_MINISCENE).arg(QString::number(current + 1));
-                Config.setValue("GameMode", mode);
-                Config.GameMode = mode;
-            }
-        }
-    }
     Config.AIDelay = Config.OriginAIDelay;
 
     if (!getTag("NextGameMode").toString().isNull()) {
@@ -2513,11 +2485,6 @@ QString Room::getMode() const
     return mode;
 }
 
-const Scenario *Room::getScenario() const
-{
-    return scenario;
-}
-
 void Room::broadcast(const QString &message, ServerPlayer *except)
 {
     foreach (ServerPlayer *player, m_players) {
@@ -2775,31 +2742,7 @@ int Room::drawCard(bool bottom)
 
 void Room::prepareForStart()
 {
-    if (scenario) {
-        QStringList generals, roles;
-        scenario->assign(generals, roles);
-
-        bool expose_roles = scenario->exposeRoles();
-        for (int i = 0; i < m_players.length(); i++) {
-            ServerPlayer *player = m_players[i];
-            if (generals.size() > i && !generals[i].isNull()) {
-                player->setGeneralName(generals[i]);
-                broadcastProperty(player, "general");
-            }
-
-            player->setRole(roles.at(i));
-            if (player->isLord()) {
-                broadcastProperty(player, "role");
-                setPlayerProperty(player, "role_shown", true);
-            }
-
-            if (expose_roles) {
-                broadcastProperty(player, "role");
-                setPlayerProperty(player, "role_shown", true);
-            } else
-                notifyProperty(player, player, "role");
-        }
-    } else if (mode == "06_3v3" || mode == "06_XMode" || mode == "02_1v1") {
+    if (mode == "06_3v3" || mode == "06_XMode" || mode == "02_1v1") {
         return;
     } else if (isHegemonyGameMode(mode)) {
         if (!ServerInfo.Enable2ndGeneral)
@@ -3515,9 +3458,7 @@ void Room::run()
     } else
         doBroadcastNotify(S_COMMAND_START_IN_X_SECONDS, QVariant(0));
 
-    if (scenario && !scenario->generalSelection())
-        startGame();
-    else if (mode == "04_1v3") {
+    if (mode == "04_1v3") {
         ServerPlayer *lord = m_players.first();
         setPlayerProperty(lord, "general", "yuyuko_1v3");
 
@@ -5638,8 +5579,6 @@ void Room::acquireSkill(ServerPlayer *player, const QString &skill_name, bool op
 void Room::setTag(const QString &key, const QVariant &value)
 {
     tag.insert(key, value);
-    if (scenario)
-        scenario->onTagSet(this, key);
 }
 
 QVariant Room::getTag(const QString &key) const
@@ -6536,7 +6475,7 @@ QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, Q
         bool success = doRequest(player, S_COMMAND_CHOOSE_GENERAL, options, true);
 
         QVariant clientResponse = player->getClientReply();
-        bool free = Config.FreeChoose || mode.startsWith("_mini_") || mode == "custom_scenario";
+        bool free = Config.FreeChoose;
         if (!success || !JsonUtils::isString(clientResponse) || (!free && !generals.contains(clientResponse.toString())))
             return default_choice;
         else

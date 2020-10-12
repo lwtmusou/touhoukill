@@ -3,7 +3,6 @@
 #include "engine.h"
 #include "lua.hpp"
 #include "maneuvering.h"
-#include "scenario.h"
 #include "serverplayer.h"
 #include "settings.h"
 #include "standard.h"
@@ -118,10 +117,6 @@ AI::Relation AI::relationTo(const ServerPlayer *other) const
 {
     if (self == other)
         return Friend;
-
-    const Scenario *scenario = room->getScenario();
-    if (scenario)
-        return scenario->relationTo(self, other);
 
     if (room->getMode() == "06_3v3" || room->getMode() == "06_XMode")
         return GetRelation3v3(self, other);

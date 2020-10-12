@@ -48,7 +48,7 @@ public:
 
         //get ganerals
         QSet<QString> all = Sanguosha->getLimitedGeneralNames().toSet();
-        if (isNormalGameMode(room->getMode()) || room->getMode().contains("_mini_") || room->getMode() == "custom_scenario")
+        if (isNormalGameMode(room->getMode()))
             all.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());
         else if (room->getMode() == "06_XMode") {
             foreach (ServerPlayer *p, room->getAlivePlayers())
@@ -5140,7 +5140,7 @@ public:
     {
         QSet<QString> all = Sanguosha->getLimitedGeneralNames().toSet();
         Room *room = zuoci->getRoom();
-        if (isNormalGameMode(room->getMode()) || room->getMode().contains("_mini_") || room->getMode() == "custom_scenario")
+        if (isNormalGameMode(room->getMode()))
             all.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());
         else if (room->getMode() == "06_XMode") {
             foreach (ServerPlayer *p, room->getAlivePlayers())

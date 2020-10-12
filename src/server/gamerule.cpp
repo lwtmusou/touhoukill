@@ -1148,7 +1148,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             room->gameOver(winner); // if all hasShownGenreal, and they are all friend, game over.
             return true;
         }
-        if (player->getMark("TheFirstToShowReward") > 0 && room->getScenario() == NULL) { //Config.RewardTheFirstShowingPlayer &&room->getTag("TheFirstToShowRewarded").isNull() &&
+        if (player->getMark("TheFirstToShowReward") > 0) {
             player->setMark("TheFirstToShowReward", 0);
             if (Config.HegemonyFirstShowReward == "Postponed") {
                 player->gainMark("@Pioneer");

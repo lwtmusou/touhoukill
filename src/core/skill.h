@@ -165,19 +165,6 @@ protected:
     bool global;
 };
 
-class Scenario;
-
-class ScenarioRule : public TriggerSkill
-{
-    Q_OBJECT
-
-public:
-    explicit ScenarioRule(Scenario *scenario);
-
-    virtual int getPriority() const;
-    virtual QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const;
-};
-
 class MasochismSkill : public TriggerSkill
 {
     Q_OBJECT

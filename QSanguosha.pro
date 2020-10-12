@@ -49,7 +49,6 @@ SOURCES += \
     src/dialog/choosegeneraldialog.cpp \
     src/dialog/configdialog.cpp \
     src/dialog/connectiondialog.cpp \
-    src/dialog/customassigndialog.cpp \
     src/dialog/distanceviewdialog.cpp \
     src/dialog/generaloverview.cpp \
     src/dialog/updatedialog.cpp \
@@ -78,9 +77,6 @@ SOURCES += \
     src/package/thndj.cpp \
     src/package/touhougod.cpp \
     src/package/hegemonyGeneral.cpp \
-    src/scenario/miniscenarios.cpp \
-    src/scenario/scenario.cpp \
-    src/scenario/scenerule.cpp \
     src/server/ai.cpp \
     src/server/gamerule.cpp \
     src/server/generalselector.cpp \
@@ -160,7 +156,6 @@ HEADERS += \
     src/dialog/choosegeneraldialog.h \
     src/dialog/configdialog.h \
     src/dialog/connectiondialog.h \
-    src/dialog/customassigndialog.h \
     src/dialog/distanceviewdialog.h \
     src/dialog/generaloverview.h \
     src/dialog/updatedialog.h \
@@ -189,9 +184,6 @@ HEADERS += \
     src/package/thndj.h \
     src/package/touhougod.h \
     src/package/hegemonyGeneral.h \
-    src/scenario/miniscenarios.h \
-    src/scenario/scenario.h \
-    src/scenario/scenerule.h \
     src/server/ai.h \
     src/server/gamerule.h \
     src/server/generalselector.h \

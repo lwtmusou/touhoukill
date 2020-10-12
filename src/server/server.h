@@ -126,9 +126,6 @@ private:
     QLabel *scheme0_subtraction_label;
     QSpinBox *scheme0_subtraction_spinbox;
     QCheckBox *prevent_awaken_below3_checkbox;
-    QComboBox *scenario_ComboBox;
-    QComboBox *mini_scene_ComboBox;
-    QPushButton *mini_scene_button;
     QLineEdit *address_edit;
     QLineEdit *port_edit;
     QSpinBox *game_start_spinbox;
@@ -172,13 +169,11 @@ private slots:
     void edit1v1Banlist();
     void updateButtonEnablility(QAbstractButton *button);
 
-    void doCustomAssign();
     void setMiniCheckBox();
 
     void checkCurrentBtnIsHegemonyMode(bool v);
 };
 
-class Scenario;
 class ServerPlayer;
 
 class Server : public QObject

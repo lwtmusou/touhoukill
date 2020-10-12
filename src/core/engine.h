@@ -18,7 +18,6 @@
 #include <QThread>
 
 class AI;
-class Scenario;
 class LuaBasicCard;
 class LuaTrickCard;
 class LuaWeapon;
@@ -39,8 +38,6 @@ public:
     void addTranslationEntry(const char *key, const char *value);
     QString translate(const QString &to_translate, bool addHegemony = false) const;
     lua_State *getLuaState() const;
-
-    int getMiniSceneCounts();
 
     void addPackage(Package *package);
     void addBanPackage(const QString &package_name);
@@ -73,9 +70,6 @@ public:
     QList<const Skill *> getRelatedSkills(const QString &skill_name) const;
     const Skill *getMainSkill(const QString &skill_name) const;
 
-    QStringList getModScenarioNames() const;
-    void addScenario(Scenario *scenario);
-    const Scenario *getScenario(const QString &name) const;
     void addPackage(const QString &name);
     QList<const Package *> getPackages() const;
 
@@ -140,9 +134,6 @@ public:
     QString GetMappedKingdom(const QString &role); //hegemony
 
 private:
-    void _loadMiniScenarios();
-    void _loadModScenarios();
-
     QMutex m_mutex;
     QHash<QString, QString> translations;
     QHash<QString, const General *> generals;
@@ -167,9 +158,6 @@ private:
     QList<Card *> cards;
     QStringList lord_list;
     QSet<QString> ban_package;
-    QHash<QString, Scenario *> m_scenarios;
-    QHash<QString, Scenario *> m_miniScenes;
-    Scenario *m_customScene;
 
     lua_State *lua;
 

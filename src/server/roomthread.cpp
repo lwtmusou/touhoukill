@@ -3,8 +3,6 @@
 #include "engine.h"
 #include "gamerule.h"
 #include "room.h"
-#include "scenario.h"
-#include "scenerule.h"
 #include "settings.h"
 #include "standard.h"
 
@@ -335,12 +333,6 @@ void RoomThread::run()
     addTriggerSkill(game_rule);
     foreach (const TriggerSkill *triggerSkill, Sanguosha->getGlobalTriggerSkills())
         addTriggerSkill(triggerSkill);
-
-    if (room->getScenario() != NULL) {
-        const ScenarioRule *rule = room->getScenario()->getRule();
-        if (rule)
-            addTriggerSkill(rule);
-    }
 
     // start game
     try {

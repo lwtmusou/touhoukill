@@ -7,9 +7,7 @@
 #include "client.h"
 #include "lua-wrapper.h"
 #include "lua.hpp"
-#include "miniscenarios.h"
 #include "protocol.h"
-#include "scenario.h"
 #include "settings.h"
 #include "structs.h"
 
@@ -22,37 +20,6 @@
 #include <QVersionNumber>
 
 Engine *Sanguosha = NULL;
-
-int Engine::getMiniSceneCounts()
-{
-    return m_miniScenes.size();
-}
-
-void Engine::_loadMiniScenarios()
-{
-    static bool loaded = false;
-    if (loaded)
-        return;
-    int i = 1;
-    while (true) {
-        if (!QFile::exists(QString("etc/customScenes/%1.txt").arg(QString::number(i))))
-            break;
-
-        QString sceneKey = QString(MiniScene::S_KEY_MINISCENE).arg(QString::number(i));
-        m_miniScenes[sceneKey] = new LoadedScenario(QString::number(i));
-        i++;
-    }
-    loaded = true;
-}
-
-void Engine::_loadModScenarios()
-{
-    //addScenario(new GuanduScenario());
-    //addScenario(new CoupleScenario());
-    //addScenario(new FanchengScenario());
-    //addScenario(new ZombieScenario());
-    //addScenario(new ImpasseScenario());
-}
 
 void Engine::addPackage(const QString &name)
 {
@@ -80,10 +47,6 @@ Engine::Engine()
     LordBGMConvertList = GetConfigFromLuaState(lua, "bgm_convert_pairs").toStringList();
     LordBackdropConvertList = GetConfigFromLuaState(lua, "backdrop_convert_pairs").toStringList();
     LatestGeneralList = GetConfigFromLuaState(lua, "latest_generals").toStringList();
-
-    _loadMiniScenarios();
-    _loadModScenarios();
-    m_customScene = new CustomScenario();
 
     DoLuaScript(lua, "lua/sanguosha.lua");
 
@@ -136,30 +99,6 @@ Engine::~Engine()
 #ifdef AUDIO_SUPPORT
     Audio::quit();
 #endif
-}
-
-QStringList Engine::getModScenarioNames() const
-{
-    return m_scenarios.keys();
-}
-
-void Engine::addScenario(Scenario *scenario)
-{
-    QString key = scenario->objectName();
-    m_scenarios[key] = scenario;
-    addPackage(scenario);
-}
-
-const Scenario *Engine::getScenario(const QString &name) const
-{
-    if (m_scenarios.contains(name))
-        return m_scenarios[name];
-    else if (m_miniScenes.contains(name))
-        return m_miniScenes[name];
-    else if (name == "custom_scenario")
-        return m_customScene;
-    else
-        return NULL;
 }
 
 void Engine::addSkills(const QList<const Skill *> &all_skills)
@@ -442,8 +381,7 @@ int Engine::getGeneralCount(bool include_banned) const
             total--;
         else if (isGeneralHidden(general->objectName()))
             total--;
-        else if ((isNormalGameMode(ServerInfo.GameMode) || ServerInfo.GameMode.contains("_mini_") || ServerInfo.GameMode == "custom_scenario")
-                 && Config.value("Banlist/Roles").toStringList().contains(general->objectName()))
+        else if (isNormalGameMode(ServerInfo.GameMode) && Config.value("Banlist/Roles").toStringList().contains(general->objectName()))
             total--;
         else if (ServerInfo.GameMode == "04_1v3" && Config.value("Banlist/HulaoPass").toStringList().contains(general->objectName()))
             total--;
@@ -699,12 +637,9 @@ QStringList Engine::getExtensions() const
 {
     QStringList extensions;
     QList<const Package *> packages = findChildren<const Package *>();
-    foreach (const Package *package, packages) {
-        if (package->inherits("Scenario"))
-            continue;
-
+    foreach (const Package *package, packages)
         extensions << package->objectName();
-    }
+
     return extensions;
 }
 
@@ -809,8 +744,6 @@ QString Engine::getModeName(const QString &mode) const
 {
     if (modes.contains(mode))
         return modes.value(mode);
-    else
-        return tr("%1 [Scenario mode]").arg(translate(mode));
 }
 
 int Engine::getPlayerCount(const QString &mode) const
@@ -825,11 +758,6 @@ int Engine::getPlayerCount(const QString &mode) const
         int index = rx.indexIn(mode);
         if (index != -1)
             return rx.capturedTexts().first().toInt();
-    } else {
-        // scenario mode
-        const Scenario *scenario = getScenario(mode);
-        Q_ASSERT(scenario);
-        return scenario->getPlayerCount();
     }
 
     return -1;
@@ -899,10 +827,6 @@ QString Engine::getRoles(const QString &mode) const
             return "ZCCCNFFF";
         else if (n == 6)
             return "ZCCNFF";
-    } else {
-        const Scenario *scenario = getScenario(mode);
-        if (scenario)
-            return scenario->getRoles();
     }
     return QString();
 }
@@ -961,8 +885,7 @@ QStringList Engine::getLords(bool contain_banned) const
         if (getBanPackages().contains(general->getPackage()))
             continue;
         if (!contain_banned) {
-            if (ServerInfo.GameMode.endsWith("p") || ServerInfo.GameMode.endsWith("pd") || ServerInfo.GameMode.endsWith("pz") || ServerInfo.GameMode.contains("_mini_")
-                || ServerInfo.GameMode == "custom_scenario")
+            if (ServerInfo.GameMode.endsWith("p") || ServerInfo.GameMode.endsWith("pd") || ServerInfo.GameMode.endsWith("pz"))
                 if (Config.value("Banlist/Roles", "").toStringList().contains(lord))
                     continue;
             if (Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
@@ -1128,7 +1051,7 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 
     Q_ASSERT(all_generals.count() >= count);
 
-    if (isNormalGameMode(ServerInfo.GameMode) || ServerInfo.GameMode.contains("_mini_") || ServerInfo.GameMode == "custom_scenario")
+    if (isNormalGameMode(ServerInfo.GameMode))
         general_set.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());
     else if (ServerInfo.GameMode == "04_1v3")
         general_set.subtract(Config.value("Banlist/HulaoPass", "").toStringList().toSet());
@@ -1168,7 +1091,7 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 QStringList Engine::getLatestGenerals(const QSet<QString> &ban_set) const
 {
     QSet<QString> general_set = LatestGeneralList.toSet();
-    if (isNormalGameMode(ServerInfo.GameMode) || ServerInfo.GameMode.contains("_mini_") || ServerInfo.GameMode == "custom_scenario")
+    if (isNormalGameMode(ServerInfo.GameMode))
         general_set.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());
     else if (ServerInfo.GameMode == "04_1v3")
         general_set.subtract(Config.value("Banlist/HulaoPass", "").toStringList().toSet());

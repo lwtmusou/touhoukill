@@ -248,8 +248,6 @@ end
 --【冻结】【死蝶】
 --【神德】
 function SmartAI:slashProhibit(card, enemy, from)
-	local mode = self.room:getMode()
-	if mode:find("_mini_36") then return self.player:hasSkill("keji") end
 	card = card or sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
 	from = from or self.player
 	if from:hasSkill("here") or enemy:hasSkill("here") then
@@ -1893,7 +1891,6 @@ sgs.ai_keep_value.SavageAssault = 3.36
 --【威压】【理智】
 --self:touhouDamage
 sgs.ai_skill_cardask.aoe = function(self, data, pattern, target, name)
-	if self.room:getMode():find("_mini_35") and self.player:getLostHp() == 1 and name == "archery_attack" then return "." end
 	if sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) then return "." end
 
 	local aoe

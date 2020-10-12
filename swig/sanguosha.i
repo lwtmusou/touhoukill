@@ -1200,8 +1200,6 @@ public:
     QString translate(const char *to_translate, bool addHegemony = false) const;
     lua_State *getLuaState() const;
 
-    int getMiniSceneCounts();
-
     void addPackage(Package *package);
     void addBanPackage(const char *package_name);
     QStringList getBanPackages() const;
@@ -1229,9 +1227,6 @@ public:
     QList<const Skill *> getRelatedSkills(const char *skill_name) const;
     const Skill *getMainSkill(const char *skill_name) const;
 
-    QStringList getModScenarioNames() const;
-    void addScenario(Scenario *scenario);
-    const Scenario *getScenario(const char *name) const;
     void addPackage(const char *name);
 
     const General *getGeneral(const char *name) const;
@@ -1364,7 +1359,6 @@ public:
     bool canPause(ServerPlayer *p) const;
     int getLack() const;
     QString getMode() const;
-    const Scenario *getScenario() const;
     RoomThread *getThread() const;
     ServerPlayer *getCurrent() const;
     void setCurrent(ServerPlayer *current);

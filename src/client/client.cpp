@@ -743,7 +743,7 @@ void Client::startInXs(const QVariant &left_seconds)
         lines_doc->setHtml(QString());
 
     emit start_in_xs();
-    if (seconds == 0 && Sanguosha->getScenario(ServerInfo.GameMode) == NULL) {
+    if (seconds == 0) {
         emit avatars_hiden();
     }
 }

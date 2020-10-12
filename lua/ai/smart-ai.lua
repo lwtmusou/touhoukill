@@ -1074,9 +1074,8 @@ end
 function sgs.isRolePredictable(classical)
 	if not classical and sgs.GetConfig("RolePredictable", false) then return true end
 	local mode = string.lower(global_room:getMode())
-	local isMini = (mode:find("mini") or mode:find("custom_scenario"))
-	if (not mode:find("0") and not isMini) or mode:find("02p") or mode:find("02_1v1") or mode:find("04_1v3")
-		or mode == "06_3v3" or mode == "06_xmode" or (not classical and isMini) then return true end
+	if (not mode:find("0")) or mode:find("02p") or mode:find("02_1v1") or mode:find("04_1v3")
+		or mode == "06_3v3" or mode == "06_xmode" or (not classical) then return true end
 	return false
 end
 
@@ -7314,8 +7313,3 @@ end
 --dofile "lua/ai/sp-ai.lua"
 --dofile "lua/ai/special3v3-ai.lua"
 
-for _, ascenario in ipairs(sgs.Sanguosha:getModScenarioNames()) do
-	if not loaded:match(ascenario) and files:match(string.lower(ascenario)) then
-		dofile("lua/ai/" .. string.lower(ascenario) .. "-ai.lua")
-	end
-end

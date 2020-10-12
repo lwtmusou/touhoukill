@@ -3,7 +3,6 @@
 #include "engine.h"
 #include "player.h"
 #include "room.h"
-#include "scenario.h"
 #include "settings.h"
 #include "standard.h"
 
@@ -433,22 +432,6 @@ bool TriggerSkill::cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> 
 bool TriggerSkill::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &) const
 {
     return false;
-}
-
-ScenarioRule::ScenarioRule(Scenario *scenario)
-    : TriggerSkill(scenario->objectName())
-{
-    setParent(scenario);
-}
-
-int ScenarioRule::getPriority() const
-{
-    return 1;
-}
-
-QList<SkillInvokeDetail> ScenarioRule::triggerable(TriggerEvent, const Room *, const QVariant &) const
-{
-    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, NULL, NULL, NULL, true);
 }
 
 MasochismSkill::MasochismSkill(const QString &name)

@@ -3470,10 +3470,7 @@ void RoomScene::addRestartButton(QDialog *dialog)
     hlayout->addStretch();
 
     if (ClientInstance->findChild<Replayer *>() == NULL && QUrl(Config.HostAddress).path().isEmpty()) {
-        bool goto_next = false;
-        if (ServerInfo.GameMode.contains("_mini_") && Self->property("win").toBool())
-            goto_next = (_m_currentStage < Sanguosha->getMiniSceneCounts());
-        QPushButton *restart_button = new QPushButton(goto_next ? tr("Next Stage") : tr("Restart Game"));
+        QPushButton *restart_button = new QPushButton(tr("Restart Game"));
         connect(restart_button, SIGNAL(clicked()), dialog, SLOT(accept()));
         connect(restart_button, SIGNAL(clicked()), this, SIGNAL(restart()));
         hlayout->addWidget(restart_button);
