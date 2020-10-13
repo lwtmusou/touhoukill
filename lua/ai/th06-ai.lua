@@ -26,7 +26,7 @@ end
 sgs.ai_card_intention.SkltKexueCard = sgs.ai_card_intention.Peach
 sgs.ai_use_priority.SkltKexueCard = sgs.ai_use_priority.Peach + 0.1
 function SmartAI:canKexue(player)
-	if not player:hasSkill("skltkexue") or not player:hasShownSkill("skltkexue_hegemony") then
+	if not player:hasSkill("skltkexue") then
 		return false
 	end
 	for _,p in sgs.qlist(self.room:getOtherPlayers(player)) do
