@@ -378,10 +378,7 @@ public:
             const Card *supply_card = room->askForCard(player, "Peach|.|.|hand!", "@guizha:" + victim->objectName(), data, Card::MethodNone, victim, false, objectName(), false);
             //force to supply!
             peachId = (supply_card != NULL) ? supply_card->getEffectiveId() : peachId;
-            Peach *peach = new Peach(Card::SuitToBeDecided, -1);
-            peach->addSubcard(peachId);
-            peach->setSkillName("_guizha");
-            room->useCard(CardUseStruct(peach, player, victim), false);
+            room->useCard(CardUseStruct(Sanguosha->getCard(peachId), player, victim), false);
             if (victim->getHp() >= victim->dyingThreshold()) {
                 room->setPlayerFlag(victim, "-Global_Dying");
                 return true; //avoid triggering askforpeach
