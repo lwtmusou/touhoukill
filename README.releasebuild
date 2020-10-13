@@ -1,0 +1,23 @@
+To build QSanguosha with VS2015 using Qt Creator
+Tips: "~" stands for the folder where the repo is in. Make sure there is no non-ascii character and no space in the path where the repo is in.
+Make sure you have VS2015 and Qt Creator installed.
+
+1. Download the following package and extract it to "E:\Qt\Qt5.6.2-Windows-x86-VS2015"
+   https://sourceforge.net/projects/fsu0413miscfile/files/Qt5.6.2-Windows-x86-VS2015.7z
+If you have a partition table without drive E, you can run "QtBinPatcher.exe" after extracting the package. Make sure there is no non-ascii character and no space in the path.
+
+2. Download the swigwin (swig for Windows, 3.0.8 or later to ensure the support for Lua 5.2) http://sourceforge.net/projects/swig/files/swigwin/
+Create a ~/tools/swig folder under your source directory. Unzip swigwin and copy all unzipped files to tools/swig. To make sure you copied them to the right directory hierarchy, check if this file exists: ~/tools/swig/swig.exe
+
+3. Open Qt Creator, select Tools - Options in the menu bar, and click "Kits" tab on the left.
+
+4. Select "Qt Version" tab on the top, and press "Add..." on the right, select "E:\Qt\Qt5.6.2-Windows-x86-VS2015\bin\qmake.exe" for qmake file.
+
+5. Select "Kits" tab on the top, and press "Add" on the right, fill "Compiler" and "Qt Version" in the buttom list.
+   Compiler is your 32bit VS2015 installation.
+   Qt Version is the one which is added in step 4.
+
+6. Open QSanguosha.pro in ~ using Qt Creator.
+
+You are now able to build the whole solution.
+
