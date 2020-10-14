@@ -4369,6 +4369,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *star_hegemony = new General(this, "star_hegemony", "wu", 3);
     star_hegemony->addSkill("ganying");
+    star_hegemony->addSkill("stqsjn");
 
     //Summer
 
