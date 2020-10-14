@@ -2821,6 +2821,95 @@ public:
     }
 };
 
+class CuijiHegemony : public TriggerSkill
+{
+public:
+    CuijiHegemony()
+        : TriggerSkill("cuiji_hegemony")
+    {
+        events << DrawNCards;
+        relate_to_place = "deputy";
+    }
+
+    static void do_cuiji(ServerPlayer *player)
+    {
+        Room *room = player->getRoom();
+        QString choice = room->askForChoice(player, "cuiji_hegemony_suit", "club+diamond+heart+spade+basic+nonbasic");
+        QString pattern = ".|" + choice;
+        if (choice.contains("basic"))
+            pattern = QString(choice.startsWith("non") ? "^" : "") + "BasicCard";
+        room->touhouLogmessage("#cuiji_choice", player, "cuiji", QList<ServerPlayer *>(), "cuiji_hegemony:" + choice);
+        room->notifySkillInvoked(player, "cuiji_hegemony");
+        int acquired = 0;
+        QList<int> throwIds;
+        while (acquired < 1) {
+            int id = room->drawCard();
+            CardsMoveStruct move(id, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, player->objectName()));
+            move.reason.m_skillName = "cuiji_hegemony";
+            room->moveCardsAtomic(move, true);
+            room->getThread()->delay();
+            Card *card = Sanguosha->getCard(id);
+            if (card->match(pattern)) {
+                acquired = acquired + 1;
+                CardsMoveStruct move2(id, player, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_GOTBACK, player->objectName()));
+                room->moveCardsAtomic(move2, true);
+
+                if (!throwIds.isEmpty()) {
+                    CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), "cuiji", QString());
+                    DummyCard dummy(throwIds);
+                    room->throwCard(&dummy, reason, NULL);
+                    throwIds.clear();
+                }
+            } else
+                throwIds << id;
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        DrawNCardsStruct s = data.value<DrawNCardsStruct>();
+        if (s.player->hasSkill(this) && s.n > 0)
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, s.player, s.player);
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        DrawNCardsStruct draw = data.value<DrawNCardsStruct>();
+        invoke->invoker->tag["cuiji_hegemony"] = 1;
+        draw.n = draw.n - 1;
+        data = QVariant::fromValue(draw);
+        return false;
+    }
+};
+
+class CuijiHEffect : public TriggerSkill
+{
+public:
+    CuijiHEffect()
+        : TriggerSkill("#cuiji_hegemony")
+    {
+        events << AfterDrawNCards;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        DrawNCardsStruct dc = data.value<DrawNCardsStruct>();
+        int num = dc.player->tag["cuiji_hegemony"].toInt();
+        if (num > 0)
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, dc.player, dc.player, NULL, true);
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        invoke->invoker->tag.remove("cuiji_hegemony");
+        CuijiHegemony::do_cuiji(invoke->invoker);
+
+        return false;
+    }
+};
+
 //********  WINTER   **********
 
 class ShihuiHegemony : public TriggerSkill
@@ -4160,12 +4249,17 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     General *suika_hegemony = new General(this, "suika_hegemony", "qun", 3);
     suika_hegemony->addSkill("zuiyue");
     suika_hegemony->addSkill("doujiu");
-    suika_hegemony->addCompanion("reimu_hegemony");
+    suika_hegemony->addSkill(new CuijiHegemony);
+    suika_hegemony->addSkill(new CuijiHEffect);
     suika_hegemony->setHeadMaxHpAdjustedValue(-1);
+    related_skills.insertMulti("cuiji_hegemony", "#cuiji_hegemony");
+    suika_hegemony->addCompanion("yugi_hegemony");
 
     General *kasen_hegemony = new General(this, "kasen_hegemony", "qun", 4);
     kasen_hegemony->addSkill("zhujiu");
     kasen_hegemony->addSkill("yushou");
+    kasen_hegemony->addCompanion("suika_hegemony");
+    kasen_hegemony->addCompanion("yugi_hegemony");
 
     General *hatate_hegemony = new General(this, "hatate_hegemony", "qun", 4);
     hatate_hegemony->addSkill("kuaizhao");
