@@ -3932,9 +3932,6 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     General *reimu_hegemony = new General(this, "reimu_hegemony", "zhu", 4);
     reimu_hegemony->addSkill(new TuizhiHegemony);
     reimu_hegemony->addSkill(new TongjieHegemony);
-
-    //reimu_hegemony->addSkill("qixiang");
-    //reimu_hegemony->addSkill("fengmo");
     reimu_hegemony->addCompanion("marisa_hegemony");
     reimu_hegemony->addCompanion("yukari_hegemony");
     reimu_hegemony->addCompanion("aya_hegemony");
@@ -4088,7 +4085,6 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     General *eirin_hegemony = new General(this, "eirin_hegemony", "shu", 4);
     eirin_hegemony->addSkill("ruizhi");
     eirin_hegemony->addSkill(new YaoshiHegemony);
-    //eirin_hegemony->addSkill("miyao");
     eirin_hegemony->addCompanion("reisen_hegemony");
 
     General *mokou_hegemony = new General(this, "mokou_hegemony", "shu", 4);
@@ -4133,10 +4129,6 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     rumia_hegemony->addSkill(new ZhenyeHegemony);
     rumia_hegemony->addSkill("anyu");
 
-    //General *mystia_hegemony = new General(this, "mystia_hegemony", "shu", 3);
-    //mystia_hegemony->addSkill("yege");
-    //mystia_hegemony->addSkill("laolong");
-
     General *yuka_hegemony = new General(this, "yuka_hegemony", "shu", 4);
     yuka_hegemony->addSkill("weiya");
 
@@ -4157,7 +4149,6 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     General *kanako_hegemony = new General(this, "kanako_hegemony", "qun", 4);
     kanako_hegemony->addSkill("shende");
     kanako_hegemony->addSkill(new QiankunHegemony("kanako"));
-    //kanako_hegemony->addSkill(new Niaoxiang);
     kanako_hegemony->addCompanion("suwako_hegemony");
     kanako_hegemony->addCompanion("sanae_hegemony");
 
@@ -4338,7 +4329,6 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     merry_hegemony->addSkill(new LuanyingHegemony);
     merry_hegemony->setHeadMaxHpAdjustedValue(-1);
     merry_hegemony->addSkill(new MengxianHegemony);
-    //merry_hegemony->addSkill(new MengxianMax);
     related_skills.insertMulti("mengxian_hegemony", "#mengxian_hegemony");
 
     General *rinnosuke_hegemony = new General(this, "rinnosuke_hegemony", "wei", 4, true);
@@ -4354,25 +4344,18 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     mima_hegemony->addSkill("meiling");
     mima_hegemony->addCompanion("marisa_hegemony");
 
-    //addMetaObject<TuizhiHegemonyCard>();
     addMetaObject<NiaoxiangSummon>();
     addMetaObject<HalfLifeCard>();
     addMetaObject<CompanionCard>();
     addMetaObject<PioneerCard>();
-
     addMetaObject<QingtingHegemonyCard>();
     addMetaObject<ShowShezhengCard>();
-
     addMetaObject<XushiHegemonyCard>();
     addMetaObject<XingyunHegemonyCard>();
-
     addMetaObject<ShowFengsuCard>();
-
     addMetaObject<ChunhenHegemonyCard>();
-    //addMetaObject<MocaoHegemonyCard>();
     addMetaObject<DongzhiHegemonyCard>();
     addMetaObject<BanyueHegemonyCard>();
-    //addMetaObject<MengxianCard>();
 
     //GameRule
     skills << new GameRule_AskForGeneralShowHead << new GameRule_AskForGeneralShowDeputy << new GameRule_AskForArraySummon << new HalfLife << new HalfLifeVS << new HalfLifeMax
