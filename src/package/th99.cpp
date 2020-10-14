@@ -1472,7 +1472,7 @@ public:
     Stqsjn()
         : TriggerSkill("stqsjn")
     {
-        events << TargetConfirming;
+        events << TargetSpecifying;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
