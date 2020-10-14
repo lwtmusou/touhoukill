@@ -62,6 +62,7 @@ public:
         : TriggerSkill("doujiu")
     {
         events << CardUsed;
+        relate_to_place = "head";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
