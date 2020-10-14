@@ -3990,7 +3990,6 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *mamizou_hegemony = new General(this, "mamizou_hegemony", "wu", 4);
     mamizou_hegemony->addSkill("xihua");
-    mamizou_hegemony->addSkill("#xihua_clear");
 
     General *futo_hegemony = new General(this, "futo_hegemony", "wu", 3);
     futo_hegemony->addSkill("shijie");
@@ -4008,7 +4007,6 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *yoshika_hegemony = new General(this, "yoshika_hegemony", "wu", 4);
     yoshika_hegemony->addSkill("duzhua");
-    yoshika_hegemony->addSkill("#duzhuaTargetMod");
     yoshika_hegemony->addSkill("taotie");
 
     General *kyouko_hegemony = new General(this, "kyouko_hegemony", "wu", 3);
@@ -4050,7 +4048,6 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     star_hegemony->addSkill("stqsjn");
 
     //Summer
-
     General *remilia_hegemony = new General(this, "remilia_hegemony", "shu", 3);
     remilia_hegemony->addSkill("skltkexue");
     remilia_hegemony->addSkill("mingyun");
@@ -4061,7 +4058,6 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     General *flandre_hegemony = new General(this, "flandre_hegemony", "shu", 3);
     flandre_hegemony->addSkill("pohuai");
     flandre_hegemony->addSkill("yuxue");
-    flandre_hegemony->addSkill("#yuxue-slash-ndl");
     flandre_hegemony->addSkill("shengyan");
     flandre_hegemony->addCompanion("meirin_hegemony");
 
@@ -4086,9 +4082,6 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     General *kaguya_hegemony = new General(this, "kaguya_hegemony", "shu", 4);
     kaguya_hegemony->addSkill(new XuyuHegemony);
     kaguya_hegemony->addSkill("shenbao");
-    kaguya_hegemony->addSkill("#shenbao_distance");
-    kaguya_hegemony->addSkill("#shenbao");
-    kaguya_hegemony->addSkill("#shenbao_viewhas");
     kaguya_hegemony->addCompanion("eirin_hegemony");
     kaguya_hegemony->addCompanion("mokou_hegemony");
 
@@ -4119,7 +4112,6 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *tewi_hegemony = new General(this, "tewi_hegemony", "shu", 3);
     tewi_hegemony->addSkill("buxian");
-    tewi_hegemony->addSkill("#buxian");
     tewi_hegemony->addSkill(new XingyungHegemony);
 
     General *toyohime_hegemony = new General(this, "toyohime_hegemony", "shu", 4);
@@ -4182,7 +4174,6 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     General *aya_hegemony = new General(this, "aya_hegemony", "qun", 3);
     aya_hegemony->addSkill("fengshen");
     aya_hegemony->addSkill("fengsu");
-    aya_hegemony->addSkill("#fengsu-distance");
     aya_hegemony->addSkill(new FengsuHegemonyHandler);
     related_skills.insertMulti("fengsu", "#fengsu_hegemony");
     aya_hegemony->addCompanion("momizi_hegemony");
@@ -4311,9 +4302,6 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     General *chen_hegemony = new General(this, "chen_hegemony", "wei", 3, false);
     chen_hegemony->addSkill("qimen");
     chen_hegemony->addSkill("dunjia");
-    chen_hegemony->addSkill("#qimen-dist");
-    chen_hegemony->addSkill("#qimen-prohibit");
-
     General *letty_hegemony = new General(this, "letty_hegemony", "wei", 4);
     letty_hegemony->addSkill(new HanboHegemony);
     letty_hegemony->addSkill(new DongzhiHegemony);
