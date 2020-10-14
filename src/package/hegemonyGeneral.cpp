@@ -4483,15 +4483,6 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     seija_hegemony->addSkill("nizhuan");
     seija_hegemony->addSkill("guizha");
 
-    General *kagerou_hegemony = new General(this, "kagerou_hegemony", "shu", 4);
-    kagerou_hegemony->addSkill("langying");
-    kagerou_hegemony->addSkill("yuanfei");
-    kagerou_hegemony->addCompanion("wakasagihime_hegemony");
-
-    General *wakasagihime_hegemony = new General(this, "wakasagihime_hegemony", "shu", 3);
-    wakasagihime_hegemony->addSkill("shizhu");
-    wakasagihime_hegemony->addSkill("liange");
-
     //Autumn
     General *kanako_hegemony = new General(this, "kanako_hegemony", "qun", 4);
     kanako_hegemony->addSkill("shende");

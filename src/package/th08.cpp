@@ -1132,12 +1132,12 @@ bool YegeCard::targetFilter(const QList<const Player *> &targets, const Player *
 
 const Card *YegeCard::validate(CardUseStruct &cardUse) const
 {
-    cardUse.from->showHiddenSkill("yege");
     ServerPlayer *to = cardUse.to.first();
     if (!to->containsTrick("indulgence")) {
         Indulgence *indulgence = new Indulgence(getSuit(), getNumber());
         indulgence->addSubcard(getEffectiveId());
         indulgence->setSkillName("yege");
+        indulgence->setShowSkill("yege");
         return indulgence;
     }
     return this;
@@ -1159,6 +1159,7 @@ public:
         if (originalCard) {
             YegeCard *indl = new YegeCard;
             indl->addSubcard(originalCard);
+            indl->setShowSkill("yege");
             indl->setSkillName(objectName());
             return indl;
         }
@@ -1172,7 +1173,7 @@ public:
     Yege()
         : TriggerSkill("yege")
     {
-        events << EventPhaseStart;
+        events << EventPhaseStart << CardUsed;
         view_as_skill = new YegeVS;
     }
 
@@ -1181,37 +1182,52 @@ public:
         return true;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
     {
-        ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player->getPhase() != Player::Play)
-            return QList<SkillInvokeDetail>();
-
         QList<SkillInvokeDetail> d;
-        foreach (ServerPlayer *p, room->getAllPlayers()) {
-            foreach (const Card *c, p->getCards("j")) {
-                if (c->isKindOf("Indulgence"))
-                    return QList<SkillInvokeDetail>();
-            }
-        }
+        if (e == EventPhaseStart) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player->getPhase() != Player::Play)
+                return d;
 
-        foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-            if (p != player)
-                d << SkillInvokeDetail(this, p, p, NULL, false, player);
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
+                foreach (const Card *c, p->getCards("j")) {
+                    if (c->isKindOf("Indulgence"))
+                        return d;
+                }
+            }
+
+            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                if (p != player)
+                    d << SkillInvokeDetail(this, p, p, NULL, false, player);
+            }
+        } else if (isHegemonyGameMode(ServerInfo.GameMode)) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card != NULL && use.card->isKindOf("indulgence") && use.card->getSkillName() == "yege" && use.from != NULL && use.from->hasSkill(this) && use.from->isAlive()
+                && use.card->getSuit() == Card::Diamond)
+                d << SkillInvokeDetail(this, use.from, use.from, NULL, true);
         }
         return d;
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool cost(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &v) const
     {
-        QString prompt = "@yege:" + invoke->preferredTarget->objectName();
-        const Card *card = room->askForUseCard(invoke->invoker, "@@yege", prompt);
-        return card != NULL;
+        if (e == EventPhaseStart) {
+            QString prompt = "@yege:" + invoke->preferredTarget->objectName();
+            const Card *card = room->askForUseCard(invoke->invoker, "@@yege", prompt);
+            return card != NULL;
+        }
+
+        return TriggerSkill::cost(e, room, invoke, v);
     }
 
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent e, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        invoke->invoker->drawCards(1);
+        if (e == EventPhaseStart) {
+            if (!isHegemonyGameMode(ServerInfo.GameMode))
+                invoke->invoker->drawCards(1, "yege");
+        } else
+            invoke->invoker->drawCards(1, "yege");
         return false;
     }
 };
