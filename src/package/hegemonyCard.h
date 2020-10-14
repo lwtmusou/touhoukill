@@ -48,6 +48,9 @@ public:
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isAvailable(const Player *player) const;
+
+private:
+    void doKnownBoth(const QString &choice, const CardEffectStruct &effect) const;
 };
 
 class BefriendAttacking : public SingleTargetTrick
@@ -60,8 +63,6 @@ public:
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isAvailable(const Player *player) const;
-
-    //virtual QStringList checkTargetModSkillShow(const CardUseStruct &use) const;
 };
 
 class HegNullification : public Nullification

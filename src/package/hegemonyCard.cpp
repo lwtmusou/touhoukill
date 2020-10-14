@@ -93,6 +93,37 @@ void KnownBothHegemony::onUse(Room *room, const CardUseStruct &card_use) const
     }
 }
 
+void KnownBothHegemony::doKnownBoth(const QString &choice, const CardEffectStruct &effect) const
+{
+    Room *room = effect.from->getRoom();
+    LogMessage log;
+    log.type = "#KnownBothView";
+    log.from = effect.from;
+    log.to << effect.to;
+    log.arg = choice;
+    foreach (ServerPlayer *p, room->getAllPlayers(true))
+        room->doNotify(p, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+
+    if (choice == "showhead" || choice == "showdeputy") {
+        QStringList list = room->getTag(effect.to->objectName()).toStringList();
+        list.removeAt(choice == "showhead" ? 1 : 0);
+        foreach (const QString &name, list) {
+            LogMessage log;
+            log.type = "$KnownBothViewGeneral";
+            log.from = effect.from;
+            log.to << effect.to;
+            log.arg = name;
+            log.arg2 = effect.to->getRole();
+            room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+        }
+        JsonArray arg;
+        arg << objectName();
+        arg << JsonUtils::toJsonArray(list);
+        room->doNotify(effect.from, QSanProtocol::S_COMMAND_VIEW_GENERALS, arg);
+    } else
+        room->showAllCards(effect.to, effect.from);
+}
+
 void KnownBothHegemony::onEffect(const CardEffectStruct &effect) const
 {
     QStringList select;
@@ -113,38 +144,22 @@ void KnownBothHegemony::onEffect(const CardEffectStruct &effect) const
         effect.to->setFlags("-KnownBothTarget");
         select.removeAll(choice);
 
-        LogMessage log;
-        log.type = "#KnownBothView";
-        log.from = effect.from;
-        log.to << effect.to;
-        log.arg = choice;
-        foreach (ServerPlayer *p, room->getAllPlayers(true)) { //room->getOtherPlayers(effect.from, true)
-            room->doNotify(p, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
-        }
-
-        if (choice == "showhead" || choice == "showdeputy") {
-            QStringList list = room->getTag(effect.to->objectName()).toStringList();
-            list.removeAt(choice == "showhead" ? 1 : 0);
-            foreach (const QString &name, list) {
-                LogMessage log;
-                log.type = "$KnownBothViewGeneral";
-                log.from = effect.from;
-                log.to << effect.to;
-                log.arg = name;
-                log.arg2 = effect.to->getRole();
-                room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
-            }
-            JsonArray arg;
-            arg << objectName();
-            arg << JsonUtils::toJsonArray(list);
-            room->doNotify(effect.from, QSanProtocol::S_COMMAND_VIEW_GENERALS, arg);
-
-        } else {
-            room->showAllCards(effect.to, effect.from);
-        }
+        doKnownBoth(choice, effect);
 
         if (select.isEmpty())
             break;
+    }
+
+    if (effect.from->hasSkill("kuaizhao_hegemony")) {
+        while (!select.isEmpty()) {
+            effect.to->setFlags("KnownBothTarget"); //for AI
+            QString choice = room->askForChoice(effect.from, objectName(), select.join("+") + "+dismiss", QVariant::fromValue(effect.to));
+            effect.to->setFlags("-KnownBothTarget");
+            if (choice == "dismiss")
+                return;
+            select.removeAll(choice);
+            doKnownBoth(choice, effect);
+        }
     }
 }
 
