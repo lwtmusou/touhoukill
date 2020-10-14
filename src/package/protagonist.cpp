@@ -849,6 +849,7 @@ public:
             if (id > -1)
                 room->obtainCard(player, id, false);
 
+            player->tag.remove(objectName());
             return true;
         } else {
             room->touhouLogmessage("#TriggerSkill", player, objectName());

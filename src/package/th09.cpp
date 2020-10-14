@@ -961,6 +961,7 @@ public:
                 room->moveCardTo(Sanguosha->getCard(card_id), target, NULL, Player::DrawPile, reason, target->getShownHandcards().contains(card_id));
                 invoke->invoker->setFlags("-Global_GongxinOperator");
             }
+            invoke->invoker->tag.remove("gongxin");
         }
         return false;
     }

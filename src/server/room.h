@@ -300,6 +300,7 @@ public:
     void setTag(const QString &key, const QVariant &value);
     QVariant getTag(const QString &key) const;
     void removeTag(const QString &key);
+    QStringList getTagNames() const;
 
     void setEmotion(ServerPlayer *target, const QString &emotion);
 

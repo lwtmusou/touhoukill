@@ -5481,6 +5481,11 @@ void Room::removeTag(const QString &key)
     tag.remove(key);
 }
 
+QStringList Room::getTagNames() const
+{
+    return tag.keys();
+}
+
 void Room::setEmotion(ServerPlayer *target, const QString &emotion)
 {
     JsonArray arg;
@@ -6091,11 +6096,6 @@ int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> e
     int card_id;
     AI *ai = shenlvmeng->getAI();
     if (ai) {
-        QList<int> hearts;
-        foreach (int id, target->handCards()) {
-            if (Sanguosha->getCard(id)->getSuit() == Card::Heart)
-                hearts << id;
-        }
         if (enabled_ids.isEmpty()) {
             shenlvmeng->tag.remove(skill_name);
             return -1;
