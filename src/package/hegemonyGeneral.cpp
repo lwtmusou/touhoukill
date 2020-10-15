@@ -2917,13 +2917,13 @@ KuaizhaoHegemonyCard::KuaizhaoHegemonyCard()
 
 bool KuaizhaoHegemonyCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    KnownBothHegemony *duel = new KnownBothHegemony(Card::NoSuit, 0);
-    duel->setCanRecast(false);
-    duel->deleteLater();
+    KnownBothHegemony *trick = new KnownBothHegemony(Card::NoSuit, 0);
+    trick->setCanRecast(false);
+    trick->deleteLater();
 
-    if (targets.length() == 0 && to_select->isCardLimited(duel, Card::MethodUse))
+    if (targets.length() == 0 && to_select->isCardLimited(trick, Card::MethodUse))
         return false;
-    else if (targets.length() == 1 && targets.first()->isProhibited(to_select, duel))
+    else if (targets.length() == 1 && targets.first()->isProhibited(to_select, trick))
         return false;
 
     return targets.length() < 2;
@@ -2953,8 +2953,6 @@ void KuaizhaoHegemonyCard::onUse(Room *room, const CardUseStruct &use) const
     card_use = data.value<CardUseStruct>();
 
     player->showHiddenSkill("kuaizhao_hegemony");
-    CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName(), QString(), card_use.card->getSkillName(), QString());
-    room->moveCardTo(this, player, NULL, Player::DiscardPile, reason, true);
 
     thread->trigger(CardUsed, room, data);
     thread->trigger(CardFinished, room, data);
@@ -2965,18 +2963,18 @@ void KuaizhaoHegemonyCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *>
     ServerPlayer *to = targets.at(1);
     ServerPlayer *from = targets.at(0);
 
-    KnownBothHegemony *duel = new KnownBothHegemony(Card::NoSuit, 0);
-    duel->setSkillName("_kuaizhao_hegemony");
-    if (!from->isCardLimited(duel, Card::MethodUse) && !from->isProhibited(to, duel))
-        room->useCard(CardUseStruct(duel, from, to));
+    KnownBothHegemony *trick = new KnownBothHegemony(Card::NoSuit, 0);
+    trick->setSkillName("_kuaizhao_hegemony");
+    if (!from->isCardLimited(duel, Card::MethodUse) && !from->isProhibited(to, trick))
+        room->useCard(CardUseStruct(trick, from, to));
     else
-        delete duel;
+        delete trick;
 }
 
-class KuaizhaoHeg : public ZeroCardViewAsSkill
+class KuaizhaoHegemony : public ZeroCardViewAsSkill
 {
 public:
-    KuaizhaoHeg()
+    KuaizhaoHegemony()
         : ZeroCardViewAsSkill("kuaizhao_hegemony")
     {
     }
@@ -4326,7 +4324,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     kasen_hegemony->addCompanion("yugi_hegemony");
 
     General *hatate_hegemony = new General(this, "hatate_hegemony", "qun", 4);
-    hatate_hegemony->addSkill(new KuaizhaoHeg);
+    hatate_hegemony->addSkill(new KuaizhaoHegemony);
     hatate_hegemony->addSkill("duanjiao");
     hatate_hegemony->addCompanion("aya_hegemony");
 
@@ -4438,7 +4436,8 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     addMetaObject<ChunhenHegemonyCard>();
     addMetaObject<DongzhiHegemonyCard>();
     addMetaObject<BanyueHegemonyCard>();
-    addMetaObject<KuaizhaoHegemonyCard>();
+    addMetaObject<
+        HegemonyCard>();
 
     //GameRule
     skills << new GameRule_AskForGeneralShowHead << new GameRule_AskForGeneralShowDeputy << new GameRule_AskForArraySummon << new HalfLife << new HalfLifeVS << new HalfLifeMax
