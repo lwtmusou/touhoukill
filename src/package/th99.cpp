@@ -1187,11 +1187,11 @@ public:
     }
 };
 
-class Tanchi : public TriggerSkill
+class Dubi : public TriggerSkill
 {
 public:
-    Tanchi()
-        : TriggerSkill("tanchi")
+    Dubi()
+        : TriggerSkill("dubi")
     {
         events << HpRecover;
     }
@@ -1208,7 +1208,7 @@ public:
 
     bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        invoke->targets.first()->drawCards(1, "tanchi");
+        invoke->targets.first()->drawCards(1, "dubi");
         return false;
     }
 };
@@ -1466,11 +1466,11 @@ public:
     }
 };
 
-class Stqsjn : public TriggerSkill
+class Zhuxi : public TriggerSkill
 {
 public:
-    Stqsjn()
-        : TriggerSkill("stqsjn")
+    Zhuxi()
+        : TriggerSkill("zhuxi")
     {
         events << TargetSpecifying;
     }
@@ -1491,7 +1491,7 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        ServerPlayer *p = room->askForPlayerChosen(invoke->invoker, use.to, "stqsjn", "@stqsjn-cancel", true, true);
+        ServerPlayer *p = room->askForPlayerChosen(invoke->invoker, use.to, "zhuxi", "@zhuxi-cancel", true, true);
         if (p != NULL) {
             room->loseHp(invoke->invoker);
             invoke->targets << p;
@@ -1511,7 +1511,7 @@ public:
         LogMessage l;
         l.type = "#XushiHegemonySkillAvoid";
         l.from = invoke->targets.first();
-        l.arg = "stqsjn";
+        l.arg = "zhuxi";
         l.arg2 = use.card->objectName();
 
         room->sendLog(l);
@@ -2251,7 +2251,7 @@ TH99Package::TH99Package()
 
     General *sunny = new General(this, "sunny", "wai", 3);
     sunny->addSkill(new Zheshe);
-    sunny->addSkill(new Tanchi);
+    sunny->addSkill(new Dubi);
 
     General *lunar = new General(this, "lunar", "wai", 3);
     lunar->addSkill(new Zhuonong);
@@ -2259,7 +2259,7 @@ TH99Package::TH99Package()
 
     General *star = new General(this, "star", "wai", 3);
     star->addSkill(new Ganying);
-    star->addSkill(new Stqsjn);
+    star->addSkill(new Zhuxi);
 
     General *kasen = new General(this, "kasen", "wai", 4);
     kasen->addSkill(new Zhujiu);
