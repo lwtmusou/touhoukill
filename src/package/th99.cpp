@@ -1199,11 +1199,11 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *r, const QVariant &data) const
     {
         RecoverStruct recover = data.value<RecoverStruct>();
-        foreach (ServerPlayer *p, r->getAlivePlayers()) {
-            if (p->hasSkill(this))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, p, p, recover.to);
+        QList<SkillInvokeDetail> d;
+        foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            d << SkillInvokeDetail(this, p, p, recover.to);
         }
-        return QList<SkillInvokeDetail>();
+        return d;
     }
 
     bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
