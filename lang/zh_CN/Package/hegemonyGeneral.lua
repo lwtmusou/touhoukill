@@ -203,10 +203,9 @@ return
 	
 	["!mystia_hegemony"] = "米斯蒂娅·萝蕾拉",
 	["mystia_hegemony"]="米斯蒂娅",
+	[":yege_hegemony"] = "其他角色的出牌阶段开始时，若场上没有【乐不思蜀】，你可以将一张手牌当【乐不思蜀】对其使用。你以此法使用方块牌时，你摸一张牌。",
 	["shinmyoumaru_hegemony"] = "少名针妙丸",
 	["seija_hegemony"] = "鬼人正邪",
-	["wakasagihime_hegemony"] = "若鹭姬",
-	["kagerou_hegemony"] = "今泉影狼",
 	
 	
 --***********************
@@ -262,8 +261,13 @@ return
     ["diaoping_hegemony:slashtarget"]= "<font color=\"#FF8000\"><b>%src </b></font> 使用了【%dest】，你可以发动“钓瓶”。",
 	
 	["suika_hegemony"] = "伊吹萃香",
+	[":doujiu_hegemony"] = "主将技，此武将牌上单独的阴阳鱼个数-1；当其他角色于其出牌阶段内使用【桃】或【酒】时，你可以摸一张牌并与其拼点，当你赢后，此牌无效，你回复1点体力，然后结束当前阶段。",
+	["cuiji_hegemony"] = "萃集",
+	[":cuiji_hegemony"] = "副将技，摸牌阶段，你可以少摸一张牌，你选择一项条件 【1一种花色】或【2基本牌】或【3非基本牌】，检索一张符合条件的牌并获得之。",
 	["kasen_hegemony"] = "茨木華扇",
 	["hatate_hegemony"] = "姬海棠果",
+	["kuaizhao_hegemony"] = "快照",
+	[":kuaizhao_hegemony"] = "出牌阶段限一次，你可令一名角色视为对另一名角色使用【知己知彼】。你使用【知己知彼】可执行所有选项。",
 	
 --***********************
 --冬（雪）
@@ -374,6 +378,7 @@ return
 -- 设计者 @dawda 错了自己改
 	["designer:reimu_hegemony"] = "三国有单", -- 推重
 	["designer:marisa_hegemony"] = "星野梦美☆",
+
 	["designer:byakuren_hegemony"] = "星野梦美☆",
 	["designer:nue_hegemony"] = "星野梦美☆",
 	["designer:toramaru_hegemony"] = "三国有单",
@@ -391,6 +396,10 @@ return
 	["designer:kokoro_hegemony"] = "星野梦美☆",
 	["designer:unzan_hegemony"] = "三国有单", -- 这个云山是推重的吗？
 	["designer:myouren_hegemony"] = "辰焰天明",
+	["designer:sunny_hegemony"] = "星野梦美☆",
+	["designer:lunar_hegemony"] = "星野梦美☆",
+	["designer:star_hegemony"] = "三国有单",
+
 	["designer:remilia_hegemony"] = "星野梦美☆",
 	["designer:flandre_hegemony"] = "星野梦美☆",
 	["designer:sakuya_hegemony"] = "星野梦美☆",
@@ -409,6 +418,10 @@ return
 	["designer:wriggle_hegemony"] = "星野梦美☆",
 	["designer:rumia_hegemony"] = "星野梦美☆",
 	["designer:yuka_hegemony"] = "星野梦美☆",
+	["designer:mystia_hegemony"] = "辰焰天明",
+	["designer:shinmyoumaru_hegemony"] = "三国有单",
+	["designer:seija_hegemony"] = "星野梦美☆",
+
 	["designer:kanako_hegemony"] = "星野梦美☆",
 	["designer:suwako_hegemony"] = "星野梦美☆",
 	["designer:sanae_hegemony"] = "星野梦美☆",
@@ -426,6 +439,10 @@ return
 	["designer:parsee_hegemony"] = "三国有单",
 	["designer:yamame_hegemony"] = "三国有单",
 	["designer:kisume_hegemony"] = "星野梦美☆",
+	["designer:suika_hegemony"] = "星野梦美☆",
+	["designer:kasen_hegemony"] = "三国有单",
+	["designer:hatate_hegemony"] = "星野梦美☆",
+
 	["designer:yuyuko_hegemony"] = "三国有单",
 	["designer:yukari_hegemony"] = "三国有单",
 	["designer:ran_hegemony"] = "三国有单",
@@ -443,4 +460,7 @@ return
 	["designer:daiyousei_hegemony"] = "星野梦美☆",
 	["designer:renko_hegemony"] = "星野梦美☆",
 	["designer:merry_hegemony"] = "星野梦美☆",
+	["designer:rinnosuke_hegemony"] = "星野梦美☆",
+	["designer:tokiko_hegemony"] = "星野梦美☆",
+	["designer:mima_hegemony"] = "bullytou",
 }

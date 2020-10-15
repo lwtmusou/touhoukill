@@ -2910,7 +2910,7 @@ public:
     }
 };
 
-// taken from LijianCard from original QSanguosha -- Target 1 is the target of KnownBoth, Target 2 is the user!!!!
+// taken from LijianCard from original QSanguosha -- Target 2 is the target of KnownBoth, Target 1 is the user
 KuaizhaoHegemonyCard::KuaizhaoHegemonyCard()
 {
 }
@@ -2920,10 +2920,10 @@ bool KuaizhaoHegemonyCard::targetFilter(const QList<const Player *> &targets, co
     KnownBothHegemony *duel = new KnownBothHegemony(Card::NoSuit, 0);
     duel->setCanRecast(false);
     duel->deleteLater();
-    if (targets.isEmpty() && Self->isProhibited(to_select, duel))
-        return false;
 
-    if (targets.length() == 1 && to_select->isCardLimited(duel, Card::MethodUse))
+    if (targets.length() == 0 && to_select->isCardLimited(duel, Card::MethodUse))
+        return false;
+    else if (targets.length() == 1 && targets.first()->isProhibited(to_select, duel))
         return false;
 
     return targets.length() < 2;
@@ -2962,8 +2962,8 @@ void KuaizhaoHegemonyCard::onUse(Room *room, const CardUseStruct &use) const
 
 void KuaizhaoHegemonyCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const
 {
-    ServerPlayer *to = targets.at(0);
-    ServerPlayer *from = targets.at(1);
+    ServerPlayer *to = targets.at(1);
+    ServerPlayer *from = targets.at(0);
 
     KnownBothHegemony *duel = new KnownBothHegemony(Card::NoSuit, 0);
     duel->setSkillName("_kuaizhao_hegemony");
