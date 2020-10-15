@@ -443,8 +443,11 @@ public:
         return false;
     }
 
-    bool isEnabledAtResponse(const Player *, const QString &pattern) const
+    bool isEnabledAtResponse(const Player *p, const QString &pattern) const
     {
+        if (p->property("currentdying").toString() == p->objectName())
+            return false;
+
         return pattern.contains("peach");
     }
 
