@@ -136,9 +136,16 @@ void KnownBothHegemony::onEffect(const CardEffectStruct &effect) const
 
     if (select.isEmpty())
         return;
-
+    int num = qMin(select.length（）， 1 + effect.effectValue.first())
+    if (effect.from->hasSkill("kuaizhao_hegemony")){
+        if (!effect.from->hasShownSkill("kuaizhao_hegemony") && effect.from->askForSkillInvoke("kuaizhao_hegemony", QVariant::fromValue(effect)))
+	        effect.from->showHiddenSkill("kuaizhao_hegemony");
+        if (effect.from->hasShownSkill("kuaizhao_hegemony"))
+            num = select.length（）;
+    }
+    
     Room *room = effect.from->getRoom();
-    for (int i = 0; i < (1 + effect.effectValue.first()); i += 1) {
+    for (int i = 0; i < num; i += 1) {
         effect.to->setFlags("KnownBothTarget"); //for AI
         QString choice = room->askForChoice(effect.from, objectName(), select.join("+"), QVariant::fromValue(effect.to));
         effect.to->setFlags("-KnownBothTarget");
@@ -147,10 +154,10 @@ void KnownBothHegemony::onEffect(const CardEffectStruct &effect) const
         doKnownBoth(choice, effect);
 
         if (select.isEmpty())
-            break;
+            return;
     }
 
-    if (effect.from->hasSkill("kuaizhao_hegemony")) {
+    /*if (effect.from->hasSkill("kuaizhao_hegemony")) {
         while (!select.isEmpty()) {
             effect.to->setFlags("KnownBothTarget"); //for AI
             QString choice = room->askForChoice(effect.from, objectName(), select.join("+") + "+dismiss", QVariant::fromValue(effect.to));
@@ -160,7 +167,7 @@ void KnownBothHegemony::onEffect(const CardEffectStruct &effect) const
             select.removeAll(choice);
             doKnownBoth(choice, effect);
         }
-    }
+    }*/
 }
 
 bool KnownBothHegemony::isAvailable(const Player *player) const
