@@ -736,6 +736,19 @@ sgs.ai_skill_use["@@yege"] = function(self, prompt)
 	if self:isEnemy(current) then
 		local cards = self.player:getHandcards()
 		cards=self:touhouAppendExpandPileToList(self.player,cards)
+		
+	    if self.room:getMode():find("hegemony") then
+		    local diamonds = {}
+			for _,c in sgs.qlist(cards) do
+				if c:getSuit() == sgs.Card_Diamond then
+					table.insert(diamonds, c)
+				end
+			end
+			self:sortByUseValue(diamonds)
+			if #diamonds > 0 then 
+				return "@YegeCard=".. diamonds[1]:getId() .."->" .. current:objectName() 
+			end
+		end
 		cards = sgs.QList2Table(cards)
 		self:sortByUseValue(cards)
 		if #cards == 0 then return "." end
@@ -743,6 +756,13 @@ sgs.ai_skill_use["@@yege"] = function(self, prompt)
 	end
 	return "."
 end
+
+sgs.ai_cardneed.yege = function(to, card, self)
+    if self.room:getMode():find("hegemony") then
+		return card:getSuit()==sgs.Card_Diamond
+	end
+end
+
 
 local mingmuvs_skill = {}
 mingmuvs_skill.name = "mingmu_attach"
