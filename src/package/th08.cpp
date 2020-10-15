@@ -1119,7 +1119,7 @@ bool YegeCard::targetFilter(const QList<const Player *> &targets, const Player *
         return false;
     if (to_select->getPhase() != Player::Play)
         return false;
-    Indulgence *indl = new Indulgence(getSuit(), getNumber());
+    Indulgence *indl = new Indulgence(Card::SuitToBeDecided, -1);
     indl->addSubcard(getEffectiveId());
     indl->setSkillName("yege");
     indl->deleteLater();
@@ -1134,7 +1134,7 @@ const Card *YegeCard::validate(CardUseStruct &cardUse) const
 {
     ServerPlayer *to = cardUse.to.first();
     if (!to->containsTrick("indulgence")) {
-        Indulgence *indulgence = new Indulgence(getSuit(), getNumber());
+        Indulgence *indulgence = new Indulgence(Card::SuitToBeDecided, -1);
         indulgence->addSubcard(getEffectiveId());
         indulgence->setSkillName("yege");
         indulgence->setShowSkill("yege");
@@ -1203,7 +1203,7 @@ public:
             }
         } else if (isHegemonyGameMode(ServerInfo.GameMode)) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card != NULL && use.card->isKindOf("indulgence") && use.card->getSkillName() == "yege" && use.from != NULL && use.from->hasSkill(this) && use.from->isAlive()
+            if (use.card != NULL && use.card->isKindOf("Indulgence") && use.card->getSkillName() == "yege" && use.from != NULL && use.from->hasSkill(this) && use.from->isAlive()
                 && use.card->getSuit() == Card::Diamond)
                 d << SkillInvokeDetail(this, use.from, use.from, NULL, true);
         }
