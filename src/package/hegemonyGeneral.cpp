@@ -2835,10 +2835,10 @@ public:
     {
         Room *room = player->getRoom();
         QString choice = room->askForChoice(player, "cuiji_hegemony_suit", "club+diamond+heart+spade+basic+nonbasic");
-        QString pattern = ".|" + choice;
-        if (choice.contains("basic"))
-            pattern = QString(choice.startsWith("non") ? "^" : "") + "BasicCard";
-        room->touhouLogmessage("#cuiji_choice", player, "cuiji", QList<ServerPlayer *>(), "cuiji_hegemony:" + choice);
+        //QString pattern = ".|" + choice;
+        //if (choice.contains("basic"))
+        //    pattern = QString(choice.startsWith("non") ? "^" : "") + "BasicCard";
+        room->touhouLogmessage("#cuiji_choice", player, "cuiji_hegemony", QList<ServerPlayer *>(), "cuiji_hegemony:" + choice);
         room->notifySkillInvoked(player, "cuiji_hegemony");
         int acquired = 0;
         QList<int> throwIds;
@@ -2849,13 +2849,21 @@ public:
             room->moveCardsAtomic(move, true);
             room->getThread()->delay();
             Card *card = Sanguosha->getCard(id);
-            if (card->match(pattern)) {
+            bool matched = false;
+            if (card->getSuitString() == choice)
+                matched = true;
+            elseif (card->getType() == choice)
+                matched = true;
+            elseif (choice == "nonbasic" && card->getType() != choice)
+                matched = true;
+            // if (card->match(pattern))   //only match objectname or basiccard 
+            if (matched) {
                 acquired = acquired + 1;
                 CardsMoveStruct move2(id, player, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_GOTBACK, player->objectName()));
                 room->moveCardsAtomic(move2, true);
 
                 if (!throwIds.isEmpty()) {
-                    CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), "cuiji", QString());
+                    CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), "cuiji_hegemony", QString());
                     DummyCard dummy(throwIds);
                     room->throwCard(&dummy, reason, NULL);
                     throwIds.clear();
