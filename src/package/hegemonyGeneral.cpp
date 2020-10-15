@@ -2965,7 +2965,7 @@ void KuaizhaoHegemonyCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *>
 
     KnownBothHegemony *trick = new KnownBothHegemony(Card::NoSuit, 0);
     trick->setSkillName("_kuaizhao_hegemony");
-    if (!from->isCardLimited(duel, Card::MethodUse) && !from->isProhibited(to, trick))
+    if (!from->isCardLimited(trick, Card::MethodUse) && !from->isProhibited(to, trick))
         room->useCard(CardUseStruct(trick, from, to));
     else
         delete trick;
@@ -4436,8 +4436,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     addMetaObject<ChunhenHegemonyCard>();
     addMetaObject<DongzhiHegemonyCard>();
     addMetaObject<BanyueHegemonyCard>();
-    addMetaObject<
-        HegemonyCard>();
+    addMetaObject<KuaizhaoHegemonyCard>();
 
     //GameRule
     skills << new GameRule_AskForGeneralShowHead << new GameRule_AskForGeneralShowDeputy << new GameRule_AskForArraySummon << new HalfLife << new HalfLifeVS << new HalfLifeMax
