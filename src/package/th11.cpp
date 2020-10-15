@@ -191,20 +191,6 @@ public:
     }
 };
 
-/*class Wunian : public ProhibitSkill
-{
-public:
-    Wunian()
-        : ProhibitSkill("wunian")
-    {
-    }
-
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &, bool include_hidden) const
-    {
-        return from != to && to->hasSkill(objectName(), false, include_hidden) && to->isWounded() && card->isKindOf("TrickCard");
-    }
-};*/
-
 class Wunian : public TriggerSkill
 {
 public:
@@ -430,44 +416,43 @@ public:
     }
 };
 
-class Songzang : public TriggerSkill
+SongzangCard::SongzangCard()
+{
+    target_fixed = true;
+}
+
+void SongzangCard::onEffect(const CardEffectStruct &effect) const
+{
+    DamageStruct d;
+    d.from = effect.from;
+    d.to = effect.to;
+    effect.from->getRoom()->killPlayer(effect.to, &d);
+}
+
+class Songzang : public OneCardViewAsSkill
 {
 public:
     Songzang()
-        : TriggerSkill("songzang")
+        : OneCardViewAsSkill("songzang")
     {
-        events << AskForPeaches;
+        filter_pattern = ".|spade|.|hand";
     }
 
-    int getPriority() const
+    bool isEnabledAtPlay(const Player *) const
     {
-        return 10;
+        return false;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    bool isEnabledAtResponse(const Player *, const QString &pattern) const
     {
-        DyingStruct dying = data.value<DyingStruct>();
-        if (dying.nowAskingForPeaches != dying.who && dying.nowAskingForPeaches->hasSkill(this))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, dying.nowAskingForPeaches, dying.nowAskingForPeaches, NULL, false, dying.who);
-        return QList<SkillInvokeDetail>();
+        return pattern.contains("peach");
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    const Card *viewAs(const Card *originalCard) const
     {
-        //just for ai
-        invoke->invoker->tag["songzang_dying"] = data;
-        return room->askForCard(invoke->invoker, ".|spade", "@songzang:" + invoke->preferredTarget->objectName(), data, objectName());
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
-        room->setPlayerFlag(invoke->targets.first(), "-Global_Dying");
-        DamageStruct damage;
-        damage.from = invoke->invoker;
-        room->killPlayer(invoke->targets.first(), &damage);
-
-        return true; //avoid triggering askforpeach
+        SongzangCard *card = new SongzangCard;
+        card->addSubcard(originalCard);
+        return card;
     }
 };
 
@@ -871,20 +856,6 @@ public:
     }
 };
 
-/*class Tongju : public ProhibitSkill
-{
-public:
-    Tongju()
-        : ProhibitSkill("tongju")
-    {
-    }
-
-    virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &, bool include_hidden) const
-    {
-        return to->hasSkill(objectName(), false, include_hidden) && ((card->isKindOf("SavageAssault") || card->isKindOf("IronChain")) || card->isKindOf("ArcheryAttack"));
-    }
-};*/
-
 class Tongju : public TriggerSkill
 {
 public:
@@ -1137,6 +1108,7 @@ TH11Package::TH11Package()
     addMetaObject<MaihuoCard>();
     addMetaObject<YaobanCard>();
     addMetaObject<JiuhaoCard>();
+    addMetaObject<SongzangCard>();
 }
 
 ADD_PACKAGE(TH11)
