@@ -320,10 +320,10 @@ public:
             ServerPlayer *target = use.to.first();
             ServerPlayer *p1 = NULL;
             ServerPlayer *p2 = NULL;
-            if (e == TargetSpecified && use.from != NULL && use.from->isAlive() && use.from->hasSkill(this) && target->isAlive()) {
+            if (e == TargetSpecified && use.from != NULL && use.from->isAlive() && !use.from->hasFlag("nizhuanUsed") && use.from->hasSkill(this) && target->isAlive()) {
                 p1 = use.from;
                 p2 = target;
-            } else if (e == TargetConfirmed && target->isAlive() && target->hasSkill(this) && use.from != NULL && use.from->isAlive()) {
+            } else if (e == TargetConfirmed && target->isAlive() && !target->hasFlag("nizhuanUsed") && target->hasSkill(this) && use.from != NULL && use.from->isAlive()) {
                 p1 = target;
                 p2 = use.from;
             }
@@ -362,6 +362,7 @@ public:
             swapHandCard(p1, p2, room);
             room->removeTag("nizhuan" + use.card->toString());
         } else {
+            room->setPlayerFlag(p, "nizhuanUsed");
             use.card->setFlags("nizhuan");
             ServerPlayer *p1 = invoke->invoker;
             ServerPlayer *p2 = invoke->targets.first();
