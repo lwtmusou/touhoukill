@@ -2453,8 +2453,9 @@ public:
             return Self->getPile("qsmian").length() - selected.length() > 1 + Self->getAliveSiblings().length();
         else
             return selected.length() == 0
-                && ((Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) ? to_select->isAvailable(Self)
-                                                                                                  : to_select->match(Sanguosha->getCurrentCardUsePattern()));
+                && ((Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
+                        ? to_select->isAvailable(Self)
+                        : Sanguosha->matchExpPattern(Sanguosha->getCurrentCardUsePattern(), Self, to_select));
     }
 
     const Card *viewAs(const QList<const Card *> &cards) const
@@ -2490,7 +2491,7 @@ public:
             return true;
 
         foreach (int id, player->getPile("qsmian")) {
-            if (Sanguosha->getCard(id)->match(pattern))
+            if (Sanguosha->matchExpPattern(pattern, player, Sanguosha->getCard(id)))
                 return true;
         }
 

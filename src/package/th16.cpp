@@ -814,11 +814,12 @@ public:
         return bh->isAvailable(player);
     }
 
-    bool isEnabledAtResponse(const Player *, const QString &pattern) const
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
         BoneHealing *bh = new BoneHealing(Card::SuitToBeDecided, -1);
         DELETE_OVER_SCOPE(BoneHealing, bh)
-        return bh->match(pattern);
+        // return bh->match(pattern);
+        return Sanguosha->matchExpPattern(pattern, player, bh);
     }
 
     const Card *viewAs(const Card *originalCard) const
