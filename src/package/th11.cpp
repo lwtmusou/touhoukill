@@ -435,7 +435,7 @@ public:
     Songzang()
         : OneCardViewAsSkill("songzang")
     {
-        filter_pattern = ".|spade|.|hand";
+        filter_pattern = ".|spade";
     }
 
     bool isEnabledAtPlay(const Player *) const
