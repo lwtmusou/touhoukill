@@ -1196,7 +1196,7 @@ public:
         events << HpRecover;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *r, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         RecoverStruct recover = data.value<RecoverStruct>();
         QList<SkillInvokeDetail> d;
