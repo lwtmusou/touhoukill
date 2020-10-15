@@ -362,7 +362,7 @@ public:
             swapHandCard(p1, p2, room);
             room->removeTag("nizhuan" + use.card->toString());
         } else {
-            room->setPlayerFlag(p, "nizhuanUsed");
+            room->setPlayerFlag(invoke->invoker, "nizhuanUsed");
             use.card->setFlags("nizhuan");
             ServerPlayer *p1 = invoke->invoker;
             ServerPlayer *p2 = invoke->targets.first();
