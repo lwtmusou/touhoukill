@@ -2852,11 +2852,11 @@ public:
             bool matched = false;
             if (card->getSuitString() == choice)
                 matched = true;
-            elseif (card->getType() == choice)
+            else if (card->getType() == choice)
                 matched = true;
-            elseif (choice == "nonbasic" && card->getType() != choice)
+            else if (choice == "nonbasic" && card->getType() != choice)
                 matched = true;
-            // if (card->match(pattern))   //only match objectname or basiccard 
+            // if (card->match(pattern))   //only match objectname or basiccard
             if (matched) {
                 acquired = acquired + 1;
                 CardsMoveStruct move2(id, player, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_GOTBACK, player->objectName()));

@@ -136,14 +136,14 @@ void KnownBothHegemony::onEffect(const CardEffectStruct &effect) const
 
     if (select.isEmpty())
         return;
-    int num = qMin(select.length（）， 1 + effect.effectValue.first())
-    if (effect.from->hasSkill("kuaizhao_hegemony")){
+    int num = qMin(select.length(), 1 + effect.effectValue.first());
+    if (effect.from->hasSkill("kuaizhao_hegemony")) {
         if (!effect.from->hasShownSkill("kuaizhao_hegemony") && effect.from->askForSkillInvoke("kuaizhao_hegemony", QVariant::fromValue(effect)))
-	        effect.from->showHiddenSkill("kuaizhao_hegemony");
+            effect.from->showHiddenSkill("kuaizhao_hegemony");
         if (effect.from->hasShownSkill("kuaizhao_hegemony"))
-            num = select.length（）;
+            num = select.length();
     }
-    
+
     Room *room = effect.from->getRoom();
     for (int i = 0; i < num; i += 1) {
         effect.to->setFlags("KnownBothTarget"); //for AI
