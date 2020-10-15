@@ -4310,7 +4310,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     kisume_hegemony->addSkill(new DiaopingHegemony);
     kisume_hegemony->addSkill("tongju");
 
-    General *suika_hegemony = new General(this, "suika_hegemony", "qun", 3);
+    General *suika_hegemony = new General(this, "suika_hegemony", "qun", 4);
     suika_hegemony->addSkill("zuiyue");
     suika_hegemony->addSkill("doujiu");
     suika_hegemony->addSkill(new CuijiHegemony);
