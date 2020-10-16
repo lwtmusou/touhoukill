@@ -718,6 +718,9 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
+        if (player->property("currentdying").toString().isEmpty())
+            return false;
+
         return pattern.contains("peach") && !player->isKongcheng();
     }
 
