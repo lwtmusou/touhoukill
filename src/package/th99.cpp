@@ -1510,7 +1510,7 @@ public:
         LogMessage l;
         l.type = "#XushiHegemonySkillAvoid";
         l.from = invoke->targets.first();
-        l.arg = "zhuxi";
+        l.arg = objectName();
         l.arg2 = use.card->objectName();
 
         room->sendLog(l);
