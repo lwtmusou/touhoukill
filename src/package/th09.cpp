@@ -1180,13 +1180,10 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
-        if (originalCard != NULL) {
-            Lightning *card = new Lightning(originalCard->getSuit(), originalCard->getNumber());
-            card->addSubcard(originalCard);
-            card->setSkillName("leiyun");
-            return card;
-        } else
-            return NULL;
+        Lightning *card = new Lightning(originalCard->getSuit(), originalCard->getNumber());
+        card->addSubcard(originalCard);
+        card->setSkillName("leiyun");
+        return card;
     }
 };
 

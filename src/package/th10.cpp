@@ -166,7 +166,6 @@ public:
     {
         GongfengCard *card = new GongfengCard;
         card->addSubcard(originalCard);
-
         return card;
     }
 };

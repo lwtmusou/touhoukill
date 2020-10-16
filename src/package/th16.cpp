@@ -618,7 +618,6 @@ public:
         LinsaCard *c = new LinsaCard;
         c->addSubcard(originalCard);
         c->setShowSkill(objectName());
-
         return c;
     }
 };
@@ -803,7 +802,7 @@ public:
     Modao()
         : OneCardViewAsSkill("modao")
     {
-        filter_pattern = ".|club|.|.";
+        filter_pattern = ".|club";
         response_or_use = true;
     }
 
@@ -818,7 +817,6 @@ public:
     {
         BoneHealing *bh = new BoneHealing(Card::SuitToBeDecided, -1);
         DELETE_OVER_SCOPE(BoneHealing, bh)
-        // return bh->match(pattern);
         return Sanguosha->matchExpPattern(pattern, player, bh);
     }
 
@@ -1544,7 +1542,6 @@ HuazhaoCard::HuazhaoCard()
 
 void HuazhaoCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &) const
 {
-    // source->obtainCard(this);
     source->tag["huazhaoid"] = getEffectiveId();
 }
 
@@ -1563,7 +1560,6 @@ public:
     {
         HuazhaoCard *c = new HuazhaoCard;
         c->addSubcard(originalCard);
-
         return c;
     }
 };

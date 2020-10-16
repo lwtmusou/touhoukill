@@ -1117,7 +1117,6 @@ public:
     {
         ZhesheCard *card = new ZhesheCard;
         card->addSubcard(originalCard);
-
         return card;
     }
 };

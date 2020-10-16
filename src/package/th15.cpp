@@ -1137,19 +1137,6 @@ public:
         ana->setSkillName(objectName());
         return ana;
     }
-
-    virtual const Card *viewAs() const
-    {
-        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
-            YuejianCard *c = new YuejianCard;
-            return c;
-        } else {
-            AwaitExhausted *card = new AwaitExhausted(Card::SuitToBeDecided, -1);
-            card->setSkillName(objectName());
-            return card;
-        }
-        return NULL;
-    }
 };
 
 YidanDialog *YidanDialog::getInstance(const QString &object)
@@ -1268,17 +1255,14 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
-        if (originalCard != NULL) {
-            QString name = Self->tag.value("yidan", QString()).toString();
-            if (name != NULL) {
-                YidanCard *slash = new YidanCard;
-                slash->addSubcard(originalCard);
-                slash->setUserString(name);
-                return slash;
-            } else
-                return NULL;
-        }
-        return NULL;
+        QString name = Self->tag.value("yidan", QString()).toString();
+        if (name != NULL) {
+            YidanCard *slash = new YidanCard;
+            slash->addSubcard(originalCard);
+            slash->setUserString(name);
+            return slash;
+        } else
+            return NULL;
     }
 };
 

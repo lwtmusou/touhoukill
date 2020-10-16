@@ -2365,12 +2365,9 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
-        if (originalCard != NULL) {
-            ZongjiuCard *card = new ZongjiuCard;
-            card->addSubcard(originalCard);
-            return card;
-        } else
-            return NULL;
+        ZongjiuCard *card = new ZongjiuCard;
+        card->addSubcard(originalCard);
+        return card;
     }
 };
 

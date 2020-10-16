@@ -723,12 +723,9 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
-        if (originalCard != NULL) {
-            ShijieCard *card = new ShijieCard;
-            card->addSubcard(originalCard);
-            return card;
-        } else
-            return NULL;
+        ShijieCard *card = new ShijieCard;
+        card->addSubcard(originalCard);
+        return card;
     }
 };
 
@@ -1005,7 +1002,6 @@ public:
     {
         XiefaCard *card = new XiefaCard;
         card->addSubcard(originalCard);
-
         return card;
     }
 };
@@ -1102,13 +1098,10 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
-        if (originalCard != NULL) {
-            Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
-            slash->addSubcard(originalCard);
-            slash->setSkillName("duzhua");
-            return slash;
-        } else
-            return NULL;
+        Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
+        slash->addSubcard(originalCard);
+        slash->setSkillName("duzhua");
+        return slash;
     }
 };
 
@@ -1477,18 +1470,18 @@ public:
     Buming()
         : OneCardViewAsSkill("buming")
     {
-        filter_pattern = ".|.|.|.!";
+        filter_pattern = ".!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
         return !player->hasUsed("BumingCard");
     }
+
     virtual const Card *viewAs(const Card *originalCard) const
     {
         BumingCard *card = new BumingCard;
         card->addSubcard(originalCard);
-
         return card;
     }
 };

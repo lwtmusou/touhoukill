@@ -274,13 +274,10 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
-        if (originalCard) {
-            FireAttack *card = new FireAttack(Card::SuitToBeDecided, -1);
-            card->addSubcard(originalCard);
-            card->setSkillName(objectName());
-            return card;
-        }
-        return NULL;
+        FireAttack *card = new FireAttack(Card::SuitToBeDecided, -1);
+        card->addSubcard(originalCard);
+        card->setSkillName(objectName());
+        return card;
     }
 };
 
@@ -585,12 +582,9 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
-        if (originalCard) {
-            BuxianCard *card = new BuxianCard;
-            card->addSubcard(originalCard);
-            return card;
-        }
-        return NULL;
+        BuxianCard *card = new BuxianCard;
+        card->addSubcard(originalCard);
+        return card;
     }
 };
 
@@ -838,14 +832,11 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
-        if (originalCard) {
-            YegeCard *indl = new YegeCard;
-            indl->addSubcard(originalCard);
-            indl->setShowSkill("yege");
-            indl->setSkillName(objectName());
-            return indl;
-        }
-        return NULL;
+        YegeCard *indl = new YegeCard;
+        indl->addSubcard(originalCard);
+        indl->setShowSkill("yege");
+        indl->setSkillName(objectName());
+        return indl;
     }
 };
 

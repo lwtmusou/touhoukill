@@ -565,12 +565,7 @@ public:
     Hunpo()
         : OneCardViewAsSkill("hunpo")
     {
-        filter_pattern = ".|.|.|.!";
-    }
-
-    virtual bool viewFilter(const Card *to_select) const
-    {
-        return !Self->isJilei(to_select);
+        filter_pattern = ".!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const
@@ -580,12 +575,9 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
-        if (originalCard != NULL) {
-            HunpoCard *card = new HunpoCard;
-            card->addSubcard(originalCard);
-            return card;
-        } else
-            return NULL;
+        HunpoCard *card = new HunpoCard;
+        card->addSubcard(originalCard);
+        return card;
     }
 };
 

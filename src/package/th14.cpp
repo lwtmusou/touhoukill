@@ -755,13 +755,10 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
-        if (originalCard != NULL) {
-            Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
-            slash->addSubcard(originalCard);
-            slash->setSkillName("feitou");
-            return slash;
-        } else
-            return NULL;
+        Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
+        slash->addSubcard(originalCard);
+        slash->setSkillName("feitou");
+        return slash;
     }
 };
 
@@ -969,7 +966,7 @@ public:
     Liange()
         : OneCardViewAsSkill("liange")
     {
-        filter_pattern = ".|.|.|.";
+        filter_pattern = ".";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const

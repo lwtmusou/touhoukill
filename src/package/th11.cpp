@@ -186,7 +186,6 @@ public:
     {
         MaihuoCard *card = new MaihuoCard;
         card->addSubcard(originalCard);
-
         return card;
     }
 };
@@ -277,7 +276,6 @@ public:
     {
         YaobanCard *card = new YaobanCard;
         card->addSubcard(originalCard);
-
         return card;
     }
 };
@@ -1023,13 +1021,10 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
-        if (originalCard != NULL) {
-            SavageAssault *sa = new SavageAssault(Card::SuitToBeDecided, -1);
-            sa->addSubcard(originalCard);
-            sa->setSkillName(objectName());
-            return sa;
-        } else
-            return NULL;
+        SavageAssault *sa = new SavageAssault(Card::SuitToBeDecided, -1);
+        sa->addSubcard(originalCard);
+        sa->setSkillName(objectName());
+        return sa;
     }
 };
 
@@ -1055,13 +1050,10 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
-        if (originalCard != NULL) {
-            Analeptic *ana = new Analeptic(originalCard->getSuit(), originalCard->getNumber());
-            ana->addSubcard(originalCard);
-            ana->setSkillName(objectName());
-            return ana;
-        } else
-            return NULL;
+        Analeptic *ana = new Analeptic(originalCard->getSuit(), originalCard->getNumber());
+        ana->addSubcard(originalCard);
+        ana->setSkillName(objectName());
+        return ana;
     }
 };
 
@@ -1077,8 +1069,6 @@ TH11Package::TH11Package()
     General *koishi = new General(this, "koishi", "dld", 3);
     koishi->addSkill(new Maihuo);
     koishi->addSkill(new Wunian);
-    //koishi->addSkill(new WunianEffect);
-    //related_skills.insertMulti("wunian", "#wuniantr");
 
     General *utsuho = new General(this, "utsuho", "dld", 4);
     utsuho->addSkill(new Yaoban);

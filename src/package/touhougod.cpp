@@ -1490,7 +1490,6 @@ public:
     {
         ShenshouCard *card = new ShenshouCard;
         card->addSubcard(originalCard);
-
         return card;
     }
 };
@@ -1609,7 +1608,7 @@ public:
     Fengyin()
         : OneCardViewAsSkill("fengyin")
     {
-        filter_pattern = ".|heart|.|.!";
+        filter_pattern = ".|heart!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const
@@ -1619,12 +1618,9 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
-        if (originalCard != NULL) {
-            FengyinCard *card = new FengyinCard;
-            card->addSubcard(originalCard);
-            return card;
-        } else
-            return NULL;
+        FengyinCard *card = new FengyinCard;
+        card->addSubcard(originalCard);
+        return card;
     }
 };
 
@@ -6388,7 +6384,7 @@ public:
         : OneCardViewAsSkill("qianqiang")
     {
         response_or_use = true;
-        filter_pattern = "EquipCard|.|.|hand,equipped";
+        filter_pattern = "EquipCard";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const
@@ -6398,12 +6394,9 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
-        if (originalCard != NULL) {
-            QianqiangCard *card = new QianqiangCard;
-            card->addSubcard(originalCard);
-            return card;
-        } else
-            return NULL;
+        QianqiangCard *card = new QianqiangCard;
+        card->addSubcard(originalCard);
+        return card;
     }
 };
 
