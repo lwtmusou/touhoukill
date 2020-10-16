@@ -1272,9 +1272,18 @@ bool JijingCard::targetFilter(const QList<const Player *> &targets, const Player
     if (to_select->getPhase() != Player::NotActive)
         return false;
 
-    QString exclude = Self->property("jijingInclude").toString();
-    if (!exclude.isEmpty() && to_select->objectName() == exclude)
-        return !targets.contains(to_select);
+    QString include = Self->property("jijingInclude").toString();
+    if (!include.isEmpty()) {
+        bool flag = false;
+        foreach (const Player *p, targets) {
+            if (p->objectName() == include) {
+                flag = true;
+                break;
+            }
+        }
+        if (!flag)
+            return to_select->objectName() == include;
+    }
 
     return true;
 }
@@ -1345,7 +1354,7 @@ public:
             if (change.to == Player::NotActive) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->getMark("@jijing") > 0) {
-                        room->setPlayerMark(p, "@jijing", 0);
+                        p->loseAllMarks("@jijing");
                         room->setFixedDistance(change.player, p, -1);
                     }
                 }
@@ -1361,7 +1370,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
 
         if (e == Damage) {
-            if (damage.from != NULL && damage.from->isAlive() && damage.from->hasSkill(this) && damage.from->getPhase() != Player::NotActive)
+            if (damage.from != NULL && damage.from->isAlive() && damage.from->hasSkill(this) && damage.from->getPhase() != Player::NotActive && damage.to->isAlive())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from);
         } else if (e == Damaged) {
             ServerPlayer *p = room->getCurrent();
@@ -1379,7 +1388,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         QString prompt = QString("@jijing-%1").arg(triggerEvent == Damage ? 41 : 42);
 
-        if (triggerEvent == Damage && damage.to->isAlive()) {
+        if (triggerEvent == Damage) {
             room->setPlayerProperty(invoke->invoker, "jijingInclude", damage.to->objectName());
             prompt.append("i:").append(damage.to->objectName());
         } else {
@@ -1510,7 +1519,7 @@ public:
         LogMessage l;
         l.type = "#XushiHegemonySkillAvoid";
         l.from = invoke->targets.first();
-        l.arg = "zhuxi";
+        l.arg = objectName();
         l.arg2 = use.card->objectName();
 
         room->sendLog(l);

@@ -2924,7 +2924,7 @@ KuaizhaoHegemonyCard::KuaizhaoHegemonyCard()
     m_skillName = "kuaizhao_hegemony";
 }
 
-bool KuaizhaoHegemonyCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+bool KuaizhaoHegemonyCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
 {
     KnownBothHegemony *trick = new KnownBothHegemony(Card::NoSuit, 0);
     trick->setCanRecast(false);
