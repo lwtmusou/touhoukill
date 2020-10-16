@@ -264,6 +264,8 @@ return
 	[":doujiu_hegemony"] = "<font color=\"purple\"><b>主将技，</b></font>此武将牌上单独的阴阳鱼个数-1；当其他角色于其出牌阶段内使用【桃】或【酒】时，你可以摸一张牌并与其拼点，当你赢后，此牌无效，你回复1点体力，然后结束当前阶段。",
 	["cuiji_hegemony"] = "萃集",
 	[":cuiji_hegemony"] = "<font color=\"purple\"><b>副将技，</b></font>摸牌阶段，你可以少摸一张牌，你选择一项条件 【1一种花色】或【2基本牌】或【3非基本牌】，检索一张符合条件的牌并获得之。",
+	["nonbasic"] = "非基本牌",
+	
 	["kasen_hegemony"] = "茨木華扇",
 	["hatate_hegemony"] = "姬海棠果",
 	["kuaizhao_hegemony"] = "快照",

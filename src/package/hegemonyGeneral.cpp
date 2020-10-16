@@ -2854,7 +2854,7 @@ public:
                 matched = true;
             else if (card->getType() == choice)
                 matched = true;
-            else if (choice == "nonbasic" && card->getType() != choice)
+            else if (choice == "nonbasic" && card->getType() != "basic")
                 matched = true;
             // if (card->match(pattern))   //only match objectname or basiccard
             if (matched) {
