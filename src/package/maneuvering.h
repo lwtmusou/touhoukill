@@ -9,7 +9,7 @@ class NatureSlash : public Slash
 
 public:
     NatureSlash(Suit suit, int number, DamageStruct::Nature nature);
-    virtual bool match(const QString &pattern) const;
+    virtual bool matchTypeOrName(const QString &pattern) const;
 };
 
 class ThunderSlash : public NatureSlash

@@ -10,13 +10,13 @@ NatureSlash::NatureSlash(Suit suit, int number, DamageStruct::Nature nature)
     this->nature = nature;
 }
 
-bool NatureSlash::match(const QString &pattern) const
+bool NatureSlash::matchTypeOrName(const QString &pattern) const
 {
     QStringList patterns = pattern.split("+");
     if (patterns.contains("slash"))
         return true;
     else
-        return Slash::match(pattern);
+        return Slash::matchTypeOrName(pattern);
 }
 
 ThunderSlash::ThunderSlash(Suit suit, int number)

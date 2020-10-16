@@ -448,7 +448,7 @@ void Dashboard::selectCard(const QString &pattern, bool forward, bool multiple)
     // find all cards that match the card type
     QList<CardItem *> matches;
     foreach (CardItem *card_item, m_handCards) {
-        if (card_item->isEnabled() && (pattern == "." || card_item->getCard()->match(pattern)))
+        if (card_item->isEnabled() && (pattern == "." || card_item->getCard()->matchTypeOrName(pattern)))
             matches << card_item;
     }
 

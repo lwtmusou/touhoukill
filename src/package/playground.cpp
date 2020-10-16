@@ -158,7 +158,7 @@ bool Fsu0413GainianDialog::isResponseOk(const Player *player, const QString &pat
             if (handCard->isKindOf("DelayedTrick")) {
                 copy->clearSubcards();
                 copy->addSubcard(handCard);
-                if ((copy->match(pattern) || Sanguosha->matchExpPattern(pattern, player, copy.data())) && !player->isCardLimited(copy.data(), Card::MethodUse))
+                if ((copy->matchTypeOrName(pattern) || Sanguosha->matchExpPattern(pattern, player, copy.data())) && !player->isCardLimited(copy.data(), Card::MethodUse))
                     return true;
             }
         }
@@ -168,7 +168,7 @@ bool Fsu0413GainianDialog::isResponseOk(const Player *player, const QString &pat
             if (handCard != NULL && handCard->isKindOf("DelayedTrick")) {
                 copy->clearSubcards();
                 copy->addSubcard(handCard);
-                if ((copy->match(pattern) || Sanguosha->matchExpPattern(pattern, player, copy.data())) && !player->isCardLimited(copy.data(), Card::MethodUse))
+                if ((copy->matchTypeOrName(pattern) || Sanguosha->matchExpPattern(pattern, player, copy.data())) && !player->isCardLimited(copy.data(), Card::MethodUse))
                     return true;
             }
         }
@@ -190,7 +190,7 @@ void Fsu0413GainianDialog::popup()
                 if (handCard->isKindOf("DelayedTrick")) {
                     copy->clearSubcards();
                     copy->addSubcard(handCard);
-                    if ((copy->match(Sanguosha->getCurrentCardUsePattern()) || Sanguosha->matchExpPattern(Sanguosha->getCurrentCardUsePattern(), Self, copy.data()))
+                    if ((copy->matchTypeOrName(Sanguosha->getCurrentCardUsePattern()) || Sanguosha->matchExpPattern(Sanguosha->getCurrentCardUsePattern(), Self, copy.data()))
                         && !Self->isCardLimited(copy.data(), Card::MethodUse)) {
                         availableCards << copy->objectName();
                         break;
@@ -203,7 +203,7 @@ void Fsu0413GainianDialog::popup()
                 if (handCard != NULL && handCard->isKindOf("DelayedTrick")) {
                     copy->clearSubcards();
                     copy->addSubcard(handCard);
-                    if ((copy->match(Sanguosha->getCurrentCardUsePattern()) || Sanguosha->matchExpPattern(Sanguosha->getCurrentCardUsePattern(), Self, copy.data()))
+                    if ((copy->matchTypeOrName(Sanguosha->getCurrentCardUsePattern()) || Sanguosha->matchExpPattern(Sanguosha->getCurrentCardUsePattern(), Self, copy.data()))
                         && !Self->isCardLimited(copy.data(), Card::MethodUse)) {
                         availableCards << copy->objectName();
                         break;

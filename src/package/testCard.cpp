@@ -10,13 +10,13 @@ DebuffSlash::DebuffSlash(Suit suit, int number)
 {
 }
 
-bool DebuffSlash::match(const QString &pattern) const
+bool DebuffSlash::matchTypeOrName(const QString &pattern) const
 {
     QStringList patterns = pattern.split("+");
     if (patterns.contains("slash"))
         return true;
     else
-        return Slash::match(pattern);
+        return Slash::matchTypeOrName(pattern);
 }
 
 IronSlash::IronSlash(Suit suit, int number)
@@ -90,13 +90,13 @@ NatureJink::NatureJink(Suit suit, int number)
 {
 }
 
-bool NatureJink::match(const QString &pattern) const
+bool NatureJink::matchTypeOrName(const QString &pattern) const
 {
     QStringList patterns = pattern.split("+");
     if (patterns.contains("jink"))
         return true;
     else
-        return Jink::match(pattern);
+        return Jink::matchTypeOrName(pattern);
 }
 
 ChainJink::ChainJink(Suit suit, int number)
@@ -142,13 +142,13 @@ MagicAnaleptic::MagicAnaleptic(Card::Suit suit, int number)
     setObjectName("magic_analeptic");
 }
 
-bool MagicAnaleptic::match(const QString &pattern) const
+bool MagicAnaleptic::matchTypeOrName(const QString &pattern) const
 {
     QStringList patterns = pattern.split("+");
     if (patterns.contains("analeptic"))
         return true;
     else
-        return Analeptic::match(pattern);
+        return Analeptic::matchTypeOrName(pattern);
 }
 
 void MagicAnaleptic::onEffect(const CardEffectStruct &effect) const
@@ -175,13 +175,13 @@ SuperPeach::SuperPeach(Suit suit, int number)
     target_fixed = true;
 }
 
-bool SuperPeach::match(const QString &pattern) const
+bool SuperPeach::matchTypeOrName(const QString &pattern) const
 {
     QStringList patterns = pattern.split("+");
     if (patterns.contains("peach"))
         return true;
     else
-        return Peach::match(pattern);
+        return Peach::matchTypeOrName(pattern);
 }
 
 bool SuperPeach::targetFixed(const Player *Self) const

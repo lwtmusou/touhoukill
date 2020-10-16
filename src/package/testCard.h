@@ -10,7 +10,7 @@ class DebuffSlash : public Slash
 
 public:
     DebuffSlash(Suit suit, int number);
-    virtual bool match(const QString &pattern) const;
+    virtual bool matchTypeOrName(const QString &pattern) const;
 };
 
 class IronSlash : public DebuffSlash
@@ -49,7 +49,7 @@ class NatureJink : public Jink
 
 public:
     NatureJink(Suit suit, int number);
-    virtual bool match(const QString &pattern) const;
+    virtual bool matchTypeOrName(const QString &pattern) const;
 };
 
 class ChainJink : public NatureJink
@@ -78,7 +78,7 @@ class MagicAnaleptic : public Analeptic
 
 public:
     Q_INVOKABLE MagicAnaleptic(Card::Suit suit, int number);
-    virtual bool match(const QString &pattern) const;
+    virtual bool matchTypeOrName(const QString &pattern) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
@@ -88,7 +88,7 @@ class SuperPeach : public Peach
 
 public:
     Q_INVOKABLE SuperPeach(Card::Suit suit, int number);
-    virtual bool match(const QString &pattern) const;
+    virtual bool matchTypeOrName(const QString &pattern) const;
 
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool targetFixed(const Player *Self) const;

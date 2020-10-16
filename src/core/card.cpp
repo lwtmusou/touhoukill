@@ -177,7 +177,7 @@ bool Card::isEquipped() const
     return Self->hasEquip(this);
 }
 
-bool Card::match(const QString &pattern) const
+bool Card::matchTypeOrName(const QString &pattern) const
 {
     QStringList patterns = pattern.split("+");
     foreach (QString ptn, patterns)

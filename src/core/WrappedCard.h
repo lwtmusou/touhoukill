@@ -133,10 +133,10 @@ public:
         return m_card->getCommonEffectName();
     }
 
-    inline virtual bool match(const QString &pattern) const
+    inline virtual bool matchTypeOrName(const QString &pattern) const
     {
         Q_ASSERT(m_card != NULL);
-        return m_card->match(pattern);
+        return m_card->matchTypeOrName(pattern);
     }
 
     virtual void setFlags(const QString &flag) const;
