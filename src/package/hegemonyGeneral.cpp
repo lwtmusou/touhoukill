@@ -2921,6 +2921,7 @@ public:
 // taken from LijianCard from original QSanguosha -- Target 2 is the target of KnownBoth, Target 1 is the user
 KuaizhaoHegemonyCard::KuaizhaoHegemonyCard()
 {
+    m_skillName = "kuaizhao_hegemony";
 }
 
 bool KuaizhaoHegemonyCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const

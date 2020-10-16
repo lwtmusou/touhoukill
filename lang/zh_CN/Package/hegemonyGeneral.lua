@@ -267,7 +267,7 @@ return
 	["kasen_hegemony"] = "茨木華扇",
 	["hatate_hegemony"] = "姬海棠果",
 	["kuaizhao_hegemony"] = "快照",
-	[":kuaizhao_hegemony"] = "出牌阶段限一次，你可令一名角色视为对另一名角色使用【知己知彼】。你使用【知己知彼】执行所有选项。",
+	[":kuaizhao_hegemony"] = "出牌阶段限一次，你可令一名角色视为对另一名角色使用【知己知彼（国）】。你使用【知己知彼（国）】执行所有选项。",
 	
 --***********************
 --冬（雪）
@@ -441,7 +441,7 @@ return
 	["designer:kisume_hegemony"] = "星野梦美☆",
 	["designer:suika_hegemony"] = "星野梦美☆",
 	["designer:kasen_hegemony"] = "三国有单",
-	["designer:hatate_hegemony"] = "星野梦美☆",
+	["designer:hatate_hegemony"] = "名和行年",
 
 	["designer:yuyuko_hegemony"] = "三国有单",
 	["designer:yukari_hegemony"] = "三国有单",
@@ -452,7 +452,7 @@ return
 	["designer:lyrica_hegemony"] = "三国有单", -- 国战独占
 	["designer:alice_hegemony"] = "三国有单",
 	["designer:chen_hegemony"] = "三国有单",
-	["designer:letty_hegemony"] = "明和行年", -- 推重，看到了设计者
+	["designer:letty_hegemony"] = "名和行年", -- 推重，看到了设计者
 	["designer:lilywhite_hegemony"] = "三国有单", -- 推重
 	["designer:shanghai_hegemony"] = "星野梦美☆",
 	["designer:youki_hegemony"] = "辰焰天明",
