@@ -2,7 +2,6 @@
 #include "GenericCardContainerUI.h"
 #include "engine.h"
 #include "qsanbutton.h"
-#include "sanshadowtextfont.h"
 #include "settings.h"
 #include "skinitem.h"
 
@@ -11,6 +10,7 @@
 #include <QGraphicsProxyWidget>
 #include <QGraphicsSceneWheelEvent>
 #include <QPainter>
+#include <QFontDatabase>
 #include <QScrollBar>
 
 const char *HEROSKIN_PIXMAP_PATH = "image/heroskin/fullskin/generals/full";
@@ -57,13 +57,9 @@ HeroSkinContainer::HeroSkinContainer(const QString &generalName, const QString &
     QGraphicsPixmapItem *kingdomIcon = NULL;
     PlayerCardContainer::_paintPixmap(kingdomIcon, QRect(9, 2, 28, 25), G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON, kingdom), this);
 
-    QString name = Sanguosha->translate("&" + m_generalName);
-    if (name.startsWith("&")) {
-        name = Sanguosha->translate(m_generalName);
-    }
     QGraphicsPixmapItem *avatarNameItem = new QGraphicsPixmapItem(this);
-    getAvatarNameFont().paintText(avatarNameItem, QRect(34, -8, 100, 40), //34, -8, 60, 40
-                                  Qt::AlignLeft | Qt::AlignJustify, name);
+    //getAvatarNameFont().paintText(avatarNameItem, QRect(34, -8, 100, 40), //34, -8, 60, 40
+    //                              Qt::AlignLeft | Qt::AlignJustify, name);
 
     initSkins();
     fillSkins();
@@ -242,7 +238,25 @@ QRectF HeroSkinContainer::boundingRect() const
 
 void HeroSkinContainer::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
+    // draw pixel map
     painter->drawPixmap(0, 0, m_backgroundPixmap);
+
+    painter->setPen(Qt::white);
+    painter->setBrush(Qt::NoBrush);
+
+    // paint text.
+    painter->setFont(getAvatarNameFont());
+    // get name.
+    QString name = Sanguosha->translate("&" + m_generalName);
+    if (name.startsWith("&")) {
+        name = Sanguosha->translate(m_generalName);
+    }
+
+    painter->drawText(QRect(34, -8, 100, 40),  Qt::AlignLeft | Qt::AlignJustify, name);
+
+    // paint shadow
+    // https://forum.qt.io/topic/47422/how-to-draw-a-text-with-drop-shadow-in-the-image-using-qpainter/2
+
 }
 
 void HeroSkinContainer::close()
@@ -286,11 +300,19 @@ void HeroSkinContainer::swapWithSkinItemUsed(int skinIndex)
     m_skins.swap(0, m_skins.indexOf(newSkinItemUsed));
 }
 
-const SanShadowTextFont &HeroSkinContainer::getAvatarNameFont()
+const QFont &HeroSkinContainer::getAvatarNameFont()
 {
-    static const SanShadowTextFont avatarNameFont("SimLi", QSize(18, 18), 1, 10, QColor(50, 50, 50, 200));
+    // load font
+    static int id = QFontDatabase::addApplicationFont("font/simli");
+    static QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+    static QFont font(family);
+    font.setPixelSize(18);
+    // shadowRadius = 1
+    // shadowDecadeFactor = 10
+    // shadowColor = QColor(50, 50, 50, 200)
+    //static const SanShadowTextFont avatarNameFont("SimLi", QSize(18, 18), 1, 10, QColor(50, 50, 50, 200));
     //SanShadowTextFont avatarNameFont("SimLi");
-    return avatarNameFont;
+    return font;
 }
 
 void HeroSkinContainer::mousePressEvent(QGraphicsSceneMouseEvent *)

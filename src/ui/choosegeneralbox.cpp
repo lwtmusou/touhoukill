@@ -26,7 +26,7 @@
 #include "client.h"
 #include "clientplayer.h"
 #include "engine.h"
-#include "skinbank.h"
+#include "SkinBank.h"
 
 #include <QApplication>
 #include <QGraphicsProxyWidget>

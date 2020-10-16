@@ -7,6 +7,7 @@
 //#include "GenericCardContainerUI.h"
 
 #include <QGraphicsObject>
+#include <QFont>
 
 class SanShadowTextFont;
 class SkinItem;
@@ -52,7 +53,7 @@ private:
     //void swapWithSkinItemUsed(int skinIndex);
 
     static QStringList getHeroSkinFiles(const QString &generalName);
-    static const SanShadowTextFont &getAvatarNameFont();
+    static const QFont &getAvatarNameFont();
 
 private:
     const QString m_generalName;

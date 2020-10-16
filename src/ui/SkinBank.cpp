@@ -107,6 +107,7 @@ IQSanComponentSkin::QSanSimpleTextFont::QSanSimpleTextFont()
 
 bool IQSanComponentSkin::QSanSimpleTextFont::tryParse(const QVariant &args)
 {
+    /*
     JsonArray arg = args.value<JsonArray>();
     if (arg.size() < 4)
         return false;
@@ -135,6 +136,7 @@ bool IQSanComponentSkin::QSanSimpleTextFont::tryParse(const QVariant &args)
     }
     m_weight = arg[2].toInt();
     JsonUtils::tryParse(arg[3], m_color);
+    */
     return true;
 }
 
@@ -168,6 +170,7 @@ bool IQSanComponentSkin::isImageKeyDefined(const QString &key) const
 
 void IQSanComponentSkin::QSanSimpleTextFont::paintText(QPainter *painter, QRect pos, Qt::Alignment align, const QString &text) const
 {
+    /*
     if (pos.width() <= 0 || pos.height() <= 0 || m_fontSize.width() <= 0 || m_fontSize.height() <= 0)
         return;
     QSize actualSize = m_fontSize;
@@ -175,6 +178,8 @@ void IQSanComponentSkin::QSanSimpleTextFont::paintText(QPainter *painter, QRect 
         QSanUiUtils::QSanFreeTypeFont::paintQStringMultiLine(painter, text, m_fontFace, m_color, actualSize, m_spacing, pos, align);
     else
         QSanUiUtils::QSanFreeTypeFont::paintQString(painter, text, m_fontFace, m_color, actualSize, m_spacing, m_weight, pos, m_vertical ? Qt::Vertical : Qt::Horizontal, align);
+
+    */
 }
 
 void IQSanComponentSkin::QSanSimpleTextFont::paintText(QGraphicsPixmapItem *item, QRect pos, Qt::Alignment align, const QString &text) const

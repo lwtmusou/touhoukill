@@ -103,10 +103,10 @@ SOURCES += \
     src/ui/QSanSelectableItem.cpp \
     src/ui/rolecombobox.cpp \
     src/ui/roomscene.cpp \
-    src/ui/sanfreetypefont.cpp \
-    src/ui/sanshadowtextfont.cpp \
-    src/ui/sansimpletextfont.cpp \
-    src/ui/sanuiutils.cpp \
+    #src/ui/sanfreetypefont.cpp \
+    #src/ui/sanshadowtextfont.cpp \
+    #src/ui/sansimpletextfont.cpp \
+    #src/ui/sanuiutils.cpp \
     src/ui/SkinBank.cpp \
     src/ui/skinitem.cpp \
     src/ui/sprite.cpp \
@@ -210,10 +210,10 @@ HEADERS += \
     src/ui/QSanSelectableItem.h \
     src/ui/rolecombobox.h \
     src/ui/roomscene.h \
-    src/ui/sanfreetypefont.h \
-    src/ui/sanshadowtextfont.h \
-    src/ui/sansimpletextfont.h \
-    src/ui/sanuiutils.h \
+    #src/ui/sanfreetypefont.h \
+    #src/ui/sanshadowtextfont.h \
+    #src/ui/sansimpletextfont.h \
+    #src/ui/sanuiutils.h \
     src/ui/SkinBank.h \
     src/ui/skinitem.h \
     src/ui/sprite.h \
@@ -418,11 +418,11 @@ android:DEFINES += "\"getlocaledecpoint()='.'\""
 
 TRANSLATIONS += builds/sanguosha.ts
 
-CONFIG(debug, debug|release): LIBS += -lfreetype_D
-else:LIBS += -lfreetype
+#CONFIG(debug, debug|release): LIBS += -lfreetype_D
+#else:LIBS += -lfreetype
 
-INCLUDEPATH += $$_PRO_FILE_PWD_/include/freetype
-DEPENDPATH += $$_PRO_FILE_PWD_/include/freetype
+#INCLUDEPATH += $$_PRO_FILE_PWD_/include/freetype
+#DEPENDPATH += $$_PRO_FILE_PWD_/include/freetype
 
 #ANDROID_PACKAGE_SOURCE_DIR = $$_PRO_FILE_PWD_/resource/android
 

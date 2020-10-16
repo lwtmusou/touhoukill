@@ -2226,7 +2226,7 @@ void Room::setPlayerFlag(ServerPlayer *player, const QString &flag)
 void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value)
 {
 #ifdef QT_DEBUG
-    if (currentThread() != player->thread()) {
+    if (getThread() != player->thread()) {
         playerPropertySet = false;
         emit signalSetProperty(player, property_name, value);
         while (!playerPropertySet) {

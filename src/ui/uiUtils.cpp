@@ -66,15 +66,7 @@ void QSanUiUtils::makeGray(QPixmap &pixmap)
     }
     pixmap = QPixmap::fromImage(img);
 }
-
-#include <ft2build.h>
-#include FT_FREETYPE_H
-#include FT_BITMAP_H
-#include FT_OUTLINE_H
-
-static FT_Library _ftlib;
-static bool _ftLibInitialized = false;
-
+/*
 static bool _initLibrary()
 {
     FT_Error error = FT_Init_FreeType(&_ftlib);
@@ -514,3 +506,5 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQStringMultiLine(QPainter *painter, QSt
     painter->drawImage(topLeft.x() + xstart, topLeft.y() + ystart, result);
     return true;
 }
+
+*/

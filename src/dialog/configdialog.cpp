@@ -179,7 +179,9 @@ void ConfigDialog::saveConfig()
     volume = ui->effectVolumeSlider->value() / 100.0;
     Config.EffectVolume = volume;
     Config.setValue("EffectVolume", volume);
+#ifdef AUDIO_SUPPORT
     Audio::setBGMVolume(Config.BGMVolume);
+#endif
     bool enabled = ui->enableEffectCheckBox->isChecked();
     Config.EnableEffects = enabled;
     Config.setValue("EnableEffects", enabled);
