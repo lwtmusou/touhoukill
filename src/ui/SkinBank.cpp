@@ -15,6 +15,7 @@
 #include <QPropertyAnimation>
 #include <QStyleOptionGraphicsItem>
 #include <QTextItem>
+#include <QFontDatabase>
 
 using namespace std;
 using namespace JsonUtils;
@@ -98,16 +99,17 @@ const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_FONT = "general
 const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_ICON = "generalCardItemCompanionIcon-%1";
 
 QSanSkinFactory *QSanSkinFactory::_sm_singleton = NULL;
-QHash<QString, int *> IQSanComponentSkin::QSanSimpleTextFont::_m_fontBank;
+QHash<QString, QString> IQSanComponentSkin::QSanSimpleTextFont::_m_fontBank;
 
 IQSanComponentSkin::QSanSimpleTextFont::QSanSimpleTextFont()
+    : m_family_name(""), m_spacing(0), m_weight(0), m_color(Qt::black), m_vertical(false), m_fontSize(0, 0)
 {
-    memset(this, 0, sizeof(*this));
+    //memset(this, 0, sizeof(*this));
+    
 }
 
 bool IQSanComponentSkin::QSanSimpleTextFont::tryParse(const QVariant &args)
 {
-    /*
     JsonArray arg = args.value<JsonArray>();
     if (arg.size() < 4)
         return false;
@@ -118,10 +120,12 @@ bool IQSanComponentSkin::QSanSimpleTextFont::tryParse(const QVariant &args)
         fontPath.remove(0, 1);
     }
     if (_m_fontBank.contains(fontPath))
-        m_fontFace = _m_fontBank[fontPath];
+        m_family_name = _m_fontBank[fontPath];
     else {
-        m_fontFace = QSanUiUtils::QSanFreeTypeFont::loadFont(fontPath);
-        _m_fontBank[fontPath] = m_fontFace;
+        int id = QFontDatabase::addApplicationFont(fontPath);
+        if(id == -1) return false;
+        m_family_name = QFontDatabase::applicationFontFamilies(id).at(0);
+        _m_fontBank[fontPath] = m_family_name;
     }
     if (JsonUtils::isNumber(arg[1])) {
         int size = arg[1].toInt();
@@ -136,7 +140,6 @@ bool IQSanComponentSkin::QSanSimpleTextFont::tryParse(const QVariant &args)
     }
     m_weight = arg[2].toInt();
     JsonUtils::tryParse(arg[3], m_color);
-    */
     return true;
 }
 
@@ -180,6 +183,25 @@ void IQSanComponentSkin::QSanSimpleTextFont::paintText(QPainter *painter, QRect 
         QSanUiUtils::QSanFreeTypeFont::paintQString(painter, text, m_fontFace, m_color, actualSize, m_spacing, m_weight, pos, m_vertical ? Qt::Vertical : Qt::Horizontal, align);
 
     */
+    QFont f;
+    f.setWordSpacing(m_spacing);
+    f.setWeight(m_weight);
+    if(!m_family_name.isEmpty()) f.setFamily(m_family_name);
+
+    painter->setFont(f);
+    painter->setPen(m_color);
+
+    // size
+    pos.setWidth(m_fontSize.width());
+    pos.setHeight(m_fontSize.height());
+
+    // Text option
+    QTextOption option;
+    option.setAlignment(align);
+
+    // now only m_vertical and font name is not handled.
+
+    painter->drawText(pos, text, option);
 }
 
 void IQSanComponentSkin::QSanSimpleTextFont::paintText(QGraphicsPixmapItem *item, QRect pos, Qt::Alignment align, const QString &text) const

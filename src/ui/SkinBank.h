@@ -22,7 +22,7 @@ public:
     class QSanSimpleTextFont
     {
     public:
-        int *m_fontFace;
+        QString m_family_name;
         QSize m_fontSize;
         int m_spacing;
         int m_weight;
@@ -36,7 +36,7 @@ public:
         void paintText(QGraphicsPixmapItem *item, QRect pos, Qt::Alignment align, const QString &text) const;
 
     protected:
-        static QHash<QString, int *> _m_fontBank;
+        static QHash<QString, QString> _m_fontBank;
     };
 
     class QSanShadowTextFont : public QSanSimpleTextFont
