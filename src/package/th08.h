@@ -49,17 +49,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class GeshengCard : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE GeshengCard();
-
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual const Card *validate(CardUseStruct &cardUse) const;
-};
-
 class YegeCard : public SkillCard
 {
     Q_OBJECT
