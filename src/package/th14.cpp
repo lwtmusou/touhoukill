@@ -328,7 +328,7 @@ public:
                 p2 = use.from;
             }
 
-            if (p1 != NULL && p2 != NULL)
+            if (p1 != NULL && p2 != NULL && !(p1->isKongcheng() && p2->isKongcheng()))
                 d << SkillInvokeDetail(this, p1, p1, NULL, false, p2);
         }
 
