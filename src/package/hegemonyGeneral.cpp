@@ -2930,12 +2930,12 @@ bool KuaizhaoHegemonyCard::targetFilter(const QList<const Player *> &targets, co
     trick->setCanRecast(false);
     trick->deleteLater();
 
-    if (targets.length() == 0 && to_select->isCardLimited(trick, Card::MethodUse))
-        return false;
-    else if (targets.length() == 1 && targets.first()->isProhibited(to_select, trick))
-        return false;
+    if (targets.length() == 0)
+        return !to_select->isCardLimited(trick, Card::MethodUse);
+    else if (targets.length() == 1)
+        return trick->targetFilter(QList<const Player *>(), to_select, targets.first()) &&  !targets.first()->isProhibited(to_select, trick);
 
-    return targets.length() < 2;
+    return false;
 }
 
 bool KuaizhaoHegemonyCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const
