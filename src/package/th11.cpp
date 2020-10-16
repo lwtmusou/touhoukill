@@ -445,6 +445,9 @@ public:
 
     bool isEnabledAtResponse(const Player *p, const QString &pattern) const
     {
+        if (p->property("currentdying").toString().isEmpty())
+            return false;
+
         if (p->property("currentdying").toString() == p->objectName())
             return false;
 
