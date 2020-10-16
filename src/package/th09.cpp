@@ -1284,6 +1284,7 @@ public:
     Duanjiao()
         : AttackRangeSkill("duanjiao")
     {
+        //view_as_skill = new ShowDistanceSkill(objectName());
     }
 
     virtual int getFixed(const Player *target, bool) const
