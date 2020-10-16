@@ -4119,7 +4119,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *sunny_hegemony = new General(this, "sunny_hegemony", "wu", 3);
     sunny_hegemony->addSkill("zheshe");
-    sunny_hegemony->addSkill("tanchi");
+    sunny_hegemony->addSkill("zhuxi");
     sunny_hegemony->addCompanion("lunar_hegemony");
     sunny_hegemony->addCompanion("star_hegemony");
 
@@ -4130,7 +4130,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *star_hegemony = new General(this, "star_hegemony", "wu", 3);
     star_hegemony->addSkill("ganying");
-    star_hegemony->addSkill("stqsjn");
+    star_hegemony->addSkill("dubi");
 
     //Summer
     General *remilia_hegemony = new General(this, "remilia_hegemony", "shu", 3);

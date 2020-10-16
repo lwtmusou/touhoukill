@@ -1186,11 +1186,11 @@ public:
     }
 };
 
-class Dubi : public TriggerSkill
+class Zhuxi : public TriggerSkill
 {
 public:
-    Dubi()
-        : TriggerSkill("dubi")
+    Zhuxi()
+        : TriggerSkill("zhuxi")
     {
         events << HpRecover;
     }
@@ -1207,7 +1207,7 @@ public:
 
     bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        invoke->targets.first()->drawCards(1, "dubi");
+        invoke->targets.first()->drawCards(1, objectName());
         return false;
     }
 };
@@ -1465,11 +1465,11 @@ public:
     }
 };
 
-class Zhuxi : public TriggerSkill
+class Dubi : public TriggerSkill
 {
 public:
-    Zhuxi()
-        : TriggerSkill("zhuxi")
+    Dubi()
+        : TriggerSkill("dubi")
     {
         events << TargetSpecifying;
     }
@@ -1490,7 +1490,7 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        ServerPlayer *p = room->askForPlayerChosen(invoke->invoker, use.to, "zhuxi", "@zhuxi-cancel", true, true);
+        ServerPlayer *p = room->askForPlayerChosen(invoke->invoker, use.to, objectName(), "@dubi-cancel", true, true);
         if (p != NULL) {
             room->loseHp(invoke->invoker);
             invoke->targets << p;
@@ -2250,7 +2250,7 @@ TH99Package::TH99Package()
 
     General *sunny = new General(this, "sunny", "wai", 3);
     sunny->addSkill(new Zheshe);
-    sunny->addSkill(new Dubi);
+    sunny->addSkill(new Zhuxi);
 
     General *lunar = new General(this, "lunar", "wai", 3);
     lunar->addSkill(new Zhuonong);
@@ -2258,7 +2258,7 @@ TH99Package::TH99Package()
 
     General *star = new General(this, "star", "wai", 3);
     star->addSkill(new Ganying);
-    star->addSkill(new Zhuxi);
+    star->addSkill(new Dubi);
 
     General *kasen = new General(this, "kasen", "wai", 4);
     kasen->addSkill(new Zhujiu);
