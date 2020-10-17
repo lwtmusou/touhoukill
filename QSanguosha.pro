@@ -342,7 +342,11 @@ CONFIG(audio){
 
 CONFIG(lua){
 
+linux: {
 android:DEFINES += "\"getlocaledecpoint()='.'\""
+else: DEFINES += LUA_USE_MKSTEMP
+}
+
 
     SOURCES += \
         src/lua/lzio.c \
