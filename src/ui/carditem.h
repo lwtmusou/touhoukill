@@ -10,7 +10,6 @@
 #include <QMutex>
 #include <QSize>
 
-class FilterSkill;
 class General;
 class QGraphicsDropShadowEffect;
 

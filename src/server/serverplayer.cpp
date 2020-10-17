@@ -2540,3 +2540,8 @@ void ServerPlayer::summonFriends(const QString type)
             room->setPlayerFlag(this, "Global_SummonFailed");
     }
 }
+
+RoomObject *ServerPlayer::getRoomObject() const
+{
+    return room;
+}

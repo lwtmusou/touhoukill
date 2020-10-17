@@ -272,7 +272,6 @@ protected:
     QList<CardItem *> pendings;
     const Card *pending_card;
     const ViewAsSkill *view_as_skill;
-    const FilterSkill *filter;
     //QStringList _m_pile_expanded;
     QMap<QString, QList<int> > _m_pile_expanded;
     QList<int> _m_id_expanded; //just for chaoren

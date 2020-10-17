@@ -224,3 +224,9 @@ void ClientPlayer::setMark(const QString &mark, int value)
 
     mark_doc->setHtml(text);
 }
+
+RoomObject *ClientPlayer::getRoomObject() const
+{
+    // TODO_Fs: Multiple Client pending
+    return ClientInstance;
+}

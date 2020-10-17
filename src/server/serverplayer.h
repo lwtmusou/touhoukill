@@ -206,6 +206,8 @@ public:
     bool inFormationRalation(ServerPlayer *teammate) const;
     void summonFriends(const QString type);
 
+    RoomObject *getRoomObject() const override;
+
 protected:
     //Synchronization helpers
     QSemaphore **semas;

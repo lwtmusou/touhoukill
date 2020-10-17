@@ -28,7 +28,6 @@ Dashboard::Dashboard(QGraphicsItem *widget) //QGraphicsPixmapItem *widget
     : button_widget(widget)
     , selected(NULL)
     , view_as_skill(NULL)
-    , filter(NULL)
 {
     Q_ASSERT(button_widget);
     _dlayout = &G_DASHBOARD_LAYOUT;

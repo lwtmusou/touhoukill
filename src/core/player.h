@@ -14,6 +14,7 @@ class Horse;
 class DelayedTrick;
 class DistanceSkill;
 class TriggerSkill;
+class RoomObject;
 
 class Player : public QObject
 {
@@ -366,6 +367,8 @@ public:
     QList<const Player *> getFormation() const;
 
     const Player *getLord(bool include_death = false) const;
+
+    virtual RoomObject *getRoomObject() const = 0;
 
     QVariantMap tag;
 

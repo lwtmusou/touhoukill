@@ -5,6 +5,7 @@
 #include "player.h"
 
 class Client;
+class RoomObject;
 class QTextDocument;
 
 class ClientPlayer : public Player
@@ -30,6 +31,8 @@ public:
     virtual void addKnownHandCard(const Card *card);
     virtual bool isLastHandCard(const Card *card, bool contain = false) const;
     virtual void setMark(const QString &mark, int value);
+
+    RoomObject *getRoomObject() const override;
 
 private:
     int handcard_num;
