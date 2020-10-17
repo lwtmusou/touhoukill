@@ -19,7 +19,7 @@ class GeneralSelector;
 struct lua_State;
 struct LogMessage;
 
-class Room : public QObject
+class Room : public QObject, public RoomObject
 {
     Q_OBJECT
     Q_ENUMS(GuanxingType)
@@ -390,18 +390,6 @@ public:
     void networkDelayTestCommand(ServerPlayer *player, const QVariant &);
     bool roleStatusCommand(ServerPlayer *player);
 
-    inline RoomObject *getRoomState()
-    {
-        return &_m_roomState;
-    }
-    inline Card *getCard(int cardId) const
-    {
-        return _m_roomState.getCard(cardId);
-    }
-    inline void resetCard(int cardId)
-    {
-        _m_roomState.resetCard(cardId);
-    }
     void updateCardsOnLose(const CardsMoveStruct &move);
     void updateCardsOnGet(const CardsMoveStruct &move);
 
@@ -560,8 +548,6 @@ private:
     ServerPlayer *provider;
 
     QVariantMap tag;
-
-    RoomObject _m_roomState;
 
     QVariant m_fillAGarg;
     ServerPlayer *m_fillAGWho;

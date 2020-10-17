@@ -34,6 +34,7 @@ using namespace QSanProtocol;
 
 Room::Room(QObject *parent, const QString &mode)
     : QObject(parent)
+    , RoomObject(false)
     , _m_lastMovementId(0)
     , mode(mode)
     , current(NULL)
@@ -52,7 +53,6 @@ Room::Room(QObject *parent, const QString &mode)
     , provided(NULL)
     , has_provided(false)
     , provider(NULL)
-    , _m_roomState(false)
     , m_fillAGWho(NULL)
 {
     static int s_global_room_id = 0;
@@ -1272,7 +1272,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
 {
     tryPause();
 
-    _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
+    setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
     QString trick_name = trick->objectName();
     QList<ServerPlayer *> validHumanPlayers;
     QList<ServerPlayer *> validAiPlayers;
@@ -1616,7 +1616,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     tryPause();
     notifyMoveFocus(player, S_COMMAND_RESPONSE_CARD);
 
-    _m_roomState.setCurrentCardUsePattern(pattern);
+    setCurrentCardUsePattern(pattern);
 
     const Card *card = NULL;
     CardAskedStruct s;
@@ -1642,7 +1642,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         reason = CardUseStruct::CARD_USE_REASON_RESPONSE;
     else if (method == Card::MethodUse)
         reason = CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
-    _m_roomState.setCurrentCardUseReason(reason);
+    setCurrentCardUseReason(reason);
 
     if (player->hasFlag("continuing"))
         setPlayerFlag(player, "-continuing");
@@ -1853,8 +1853,8 @@ const Card *Room::askForUseCard(ServerPlayer *player, const QString &pattern, co
     tryPause();
     notifyMoveFocus(player, S_COMMAND_RESPONSE_CARD);
 
-    _m_roomState.setCurrentCardUsePattern(pattern);
-    _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
+    setCurrentCardUsePattern(pattern);
+    setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
     CardUseStruct card_use;
 
     bool isCardUsed = false;
@@ -2049,7 +2049,7 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying)
 {
     tryPause();
     notifyMoveFocus(player, S_COMMAND_ASK_PEACH);
-    _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
+    setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
 
     const Card *card = NULL;
     int threshold = dying->dyingThreshold();
@@ -4491,7 +4491,7 @@ void Room::startGame()
     doBroadcastNotify(S_COMMAND_UPDATE_PILE, QVariant(m_drawPile->length()));
 
     if (mode != "02_1v1" && mode != "06_3v3" && mode != "06_XMode")
-        _m_roomState.reset();
+        reset();
 }
 
 bool Room::notifyProperty(ServerPlayer *playerToNotify, const ServerPlayer *propertyOwner, const char *propertyName, const QString &value)
@@ -5509,8 +5509,8 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use)
 
     notifyMoveFocus(player, S_COMMAND_PLAY_CARD);
 
-    _m_roomState.setCurrentCardUsePattern(QString());
-    _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_PLAY);
+    setCurrentCardUsePattern(QString());
+    setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_PLAY);
 
     AI *ai = player->getAI();
     if (ai) {
