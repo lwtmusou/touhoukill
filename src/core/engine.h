@@ -115,14 +115,10 @@ public:
     int correctCardTarget(const TargetModSkill::ModType type, const Player *from, const Card *card) const;
     int correctAttackRange(const Player *target, bool include_weapon = true, bool fixed = false) const;
 
-    void registerRoom(QObject *room);
+    void registerRoom(RoomObject *room);
     void unregisterRoom();
-    QObject *currentRoomObject();
     Room *currentRoom();
-    RoomObject *currentRoomState();
-
-    QString getCurrentCardUsePattern();
-    CardUseStruct::CardUseReason getCurrentCardUseReason();
+    RoomObject *currentRoomObject();
 
     bool isGeneralHidden(const QString &general_name) const;
 
@@ -140,7 +136,7 @@ private:
     QHash<QString, const QMetaObject *> metaobjects;
     QHash<QString, QString> className2objectName;
     QHash<QString, const Skill *> skills;
-    QHash<QThread *, QObject *> m_rooms;
+    QHash<QThread *, RoomObject *> m_rooms;
     QMap<QString, QString> modes;
     QMultiMap<QString, QString> related_skills;
     mutable QMap<QString, const CardPattern *> patterns;

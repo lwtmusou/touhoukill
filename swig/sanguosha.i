@@ -1266,12 +1266,7 @@ public:
     int correctCardTarget(const TargetModSkill::ModType type, const Player *from, const Card *card) const;
     int correctAttackRange(const Player *target, bool include_weapon = true, bool fixed = false) const;
 
-    void registerRoom(QObject *room);
-    void unregisterRoom();
     Room *currentRoom();
-
-    QString getCurrentCardUsePattern();
-    CardUseStruct::CardUseReason getCurrentCardUseReason();
 
     bool isGeneralHidden(const char *general_name) const;
 };

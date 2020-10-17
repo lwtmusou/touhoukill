@@ -1873,7 +1873,7 @@ HuaxiangCard::HuaxiangCard()
 
 bool HuaxiangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+    if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return false;
     if (user_string == NULL)
         return false;
@@ -1886,7 +1886,7 @@ bool HuaxiangCard::targetFilter(const QList<const Player *> &targets, const Play
 
 bool HuaxiangCard::targetFixed(const Player *Self) const
 {
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+    if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;
 
     if (!user_string.isEmpty())
@@ -1899,7 +1899,7 @@ bool HuaxiangCard::targetFixed(const Player *Self) const
 
 bool HuaxiangCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+    if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;
 
     if (user_string == NULL)
@@ -1947,10 +1947,10 @@ public:
 
     static QStringList responsePatterns()
     {
-        QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+        QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
 
         Card::HandlingMethod method;
-        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+        if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
             method = Card::MethodResponse;
         else
             method = Card::MethodUse;
@@ -3352,7 +3352,7 @@ void ShenbaoDialog::popup()
 {
     Self->tag.remove("shenbao_choice");
 
-    QStringList choices = getAvailableChoices(Self, Sanguosha->getCurrentCardUseReason(), Sanguosha->getCurrentCardUsePattern());
+    QStringList choices = getAvailableChoices(Self, Sanguosha->currentRoomObject()->getCurrentCardUseReason(), Sanguosha->currentRoomObject()->getCurrentCardUsePattern());
 
     if (choices.isEmpty()) {
         emit onButtonClick();
@@ -3633,12 +3633,12 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const
     {
-        return !ShenbaoDialog::getAvailableChoices(player, CardUseStruct::CARD_USE_REASON_PLAY, Sanguosha->getCurrentCardUsePattern()).isEmpty();
+        return !ShenbaoDialog::getAvailableChoices(player, CardUseStruct::CARD_USE_REASON_PLAY, Sanguosha->currentRoomObject()->getCurrentCardUsePattern()).isEmpty();
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        return !ShenbaoDialog::getAvailableChoices(player, Sanguosha->getCurrentCardUseReason(), pattern).isEmpty();
+        return !ShenbaoDialog::getAvailableChoices(player, Sanguosha->currentRoomObject()->getCurrentCardUseReason(), pattern).isEmpty();
     }
 
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const
@@ -3658,7 +3658,7 @@ public:
         if (skill == NULL)
             return false;
 
-        if (ShenbaoDialog::getAvailableChoices(Self, Sanguosha->getCurrentCardUseReason(), Sanguosha->getCurrentCardUsePattern()).contains(name))
+        if (ShenbaoDialog::getAvailableChoices(Self, Sanguosha->currentRoomObject()->getCurrentCardUseReason(), Sanguosha->currentRoomObject()->getCurrentCardUsePattern()).contains(name))
             return skill->viewFilter(selected, to_select);
 
         return false;
@@ -3680,7 +3680,7 @@ public:
         if (skill == NULL)
             return NULL;
 
-        if (ShenbaoDialog::getAvailableChoices(Self, Sanguosha->getCurrentCardUseReason(), Sanguosha->getCurrentCardUsePattern()).contains(name))
+        if (ShenbaoDialog::getAvailableChoices(Self, Sanguosha->currentRoomObject()->getCurrentCardUseReason(), Sanguosha->currentRoomObject()->getCurrentCardUsePattern()).contains(name))
             return skill->viewAs(cards);
 
         return NULL;
@@ -4232,7 +4232,7 @@ public:
 
     static QStringList responsePatterns()
     {
-        QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+        QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
 
         QStringList validPatterns;
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
@@ -4288,8 +4288,8 @@ public:
         if (selected.length() >= 1)
             return false;
 
-        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
-            || Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+        if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
+            || Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
             QStringList patterns = responsePatterns();
             foreach (const Player *p, Self->getAliveSiblings()) {
                 if (p->getShownHandcards().contains(to_select->getId())) {
@@ -4300,7 +4300,7 @@ public:
                     }
                 }
             }
-        } else if ((Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)) {
+        } else if ((Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)) {
             foreach (const Player *p, Self->getAliveSiblings()) {
                 if (p->getShownHandcards().contains(to_select->getId()) && to_select->isAvailable(Self))
                     return true;
@@ -4558,7 +4558,7 @@ public:
 
     virtual int getDistanceLimit(const Player *from, const Card *card) const
     {
-        if (from->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !card->hasFlag("IgnoreFailed"))
+        if (from->hasSkill("tianqu") && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !card->hasFlag("IgnoreFailed"))
             return 1000;
         else
             return 0;
@@ -4912,7 +4912,7 @@ AnyunDialog::AnyunDialog(const QString &object)
 
 void AnyunDialog::popup()
 {
-    bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+    bool play = (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
 
     foreach (QAbstractButton *button, group->buttons()) {
         layout->removeWidget(button);
@@ -4929,7 +4929,7 @@ void AnyunDialog::popup()
                 if (play && vs->isEnabledAtPlay(Self))
                     add = true;
                 if (!play) {
-                    QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+                    QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
                     if (vs->isEnabledAtResponse(Self, pattern))
                         add = true;
                 }
@@ -4987,8 +4987,8 @@ public:
 
     static bool hasHiddenViewas(const Player *player)
     {
-        bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
-        QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+        bool play = (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+        QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
         foreach (QString hidden, Self->getHiddenGenerals()) {
             const General *g = Sanguosha->getGeneral(hidden);
             foreach (const Skill *skill, g->getSkillList()) {
@@ -5635,8 +5635,8 @@ void XianshiDialog::popup()
         method = Card::MethodUse;
 */
     QStringList checkedPatterns;
-    QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-    bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+    QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
+    bool play = (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
     QString xianshi_record = Self->property("xianshi_record").toString();
 
     if (play)
@@ -5855,7 +5855,7 @@ public:
         if (c->getTypeId() == Card::TypeEquip)
             return false;
         QString selected_effect = Self->tag.value("xianshi", QString()).toString();
-        bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+        bool play = (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
         if (play) {
             //if (matchAvaliablePattern(selected_effect, "BasicCard"))
             //    return c->isNDTrick() && c->isAvailable(Self);
@@ -5865,7 +5865,7 @@ public:
                 return false;
 
         } else {
-            QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+            QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
             if (!matchAvaliablePattern(c->objectName(), pattern))
                 return false;
             //if (matchAvaliablePattern(selected_effect, "BasicCard"))
@@ -5889,7 +5889,7 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &) const
     {
-        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+        if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
             return false;
         if (player->hasFlag("xianshi_used"))
             return false;
@@ -6053,7 +6053,7 @@ public:
 
     virtual int getExtraTargetNum(const Player *player, const Card *card) const
     {
-        if (!player->hasSkill(this) || !Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
+        if (!player->hasSkill(this) || !Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
             return 0;
 
         if (card->isRed()) {
@@ -6511,9 +6511,9 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *, const QString &) const
     {
-        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+        if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
             return false;
-        QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+        QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
         foreach (const Card *c, ClientInstance->discarded_list) {
             if (c->getSuit() == Card::Club && (c->getTypeId() == Card::TypeBasic || c->isNDTrick())) {
                 if (this->matchAvaliablePattern(c->objectName(), pattern))
@@ -6536,10 +6536,10 @@ public:
     {
         if (to_select->getSuit() != Card::Club || !ClientInstance->discarded_list.contains(to_select))
             return false;
-        if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) // in play!!
+        if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) // in play!!
             return to_select->isAvailable(Self);
         else {
-            QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+            QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
             return this->matchAvaliablePattern(to_select->objectName(), pattern);
         }
         return false;

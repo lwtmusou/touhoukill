@@ -298,7 +298,7 @@ void CompanionCard::use(Room *room, ServerPlayer *player, QList<ServerPlayer *> 
     room->detachSkillFromPlayer(player, "companion_attach", true);
 
     QString choice;
-    if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+    if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
         QStringList choices;
         if (player->isWounded())
             choices << "recover";
@@ -1297,7 +1297,7 @@ public:
 
     static QStringList responsePatterns()
     {
-        QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+        QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
 
         Card::HandlingMethod method = Card::MethodUse;
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
@@ -1331,7 +1331,7 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &) const
     {
-        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+        if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
             return false;
         if (player->getMark("beishui") > 0)
             return false;
@@ -1584,7 +1584,7 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
     {
-        return matchAvaliablePattern("fire_attack", pattern) && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
+        return matchAvaliablePattern("fire_attack", pattern) && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const

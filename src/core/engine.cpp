@@ -396,7 +396,7 @@ int Engine::getGeneralCount(bool include_banned) const
     return total;
 }
 
-void Engine::registerRoom(QObject *room)
+void Engine::registerRoom(RoomObject *room)
 {
     m_mutex.lock();
     m_rooms[QThread::currentThread()] = room;
@@ -410,10 +410,10 @@ void Engine::unregisterRoom()
     m_mutex.unlock();
 }
 
-QObject *Engine::currentRoomObject()
+RoomObject *Engine::currentRoomObject()
 {
     m_mutex.lock();
-    QObject *room = m_rooms[QThread::currentThread()];
+    RoomObject *room = m_rooms[QThread::currentThread()];
     Q_ASSERT(room);
     m_mutex.unlock();
     return room;
@@ -425,29 +425,6 @@ Room *Engine::currentRoom()
     Room *room = qobject_cast<Room *>(roomObject);
     Q_ASSERT(room != NULL);
     return room;
-}
-
-RoomObject *Engine::currentRoomState()
-{
-    QObject *roomObject = currentRoomObject();
-    Room *room = qobject_cast<Room *>(roomObject);
-    if (room != NULL) {
-        return room;
-    } else {
-        Client *client = qobject_cast<Client *>(roomObject);
-        Q_ASSERT(client != NULL);
-        return client;
-    }
-}
-
-QString Engine::getCurrentCardUsePattern()
-{
-    return currentRoomState()->getCurrentCardUsePattern();
-}
-
-CardUseStruct::CardUseReason Engine::getCurrentCardUseReason()
-{
-    return currentRoomState()->getCurrentCardUseReason();
 }
 
 bool Engine::isGeneralHidden(const QString &general_name) const
@@ -1258,7 +1235,8 @@ const ViewAsSkill *Engine::getViewAsSkill(const QString &skill_name) const
 
 const ProhibitSkill *Engine::isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others) const
 {
-    bool ignore = (from->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to != from && !card->hasFlag("IgnoreFailed"));
+    bool ignore = (from->hasSkill("tianqu") && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to != from
+                   && !card->hasFlag("IgnoreFailed"));
     if (ignore && !card->isKindOf("SkillCard"))
         return NULL;
     foreach (const ProhibitSkill *skill, prohibit_skills) {

@@ -1842,26 +1842,26 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
 
     use.card->setFlags("IgnoreFailed");
     if (use.card->targetFixed(use.from) && !use.to.contains(use.from) && !use.card->isKindOf("AOE") && !use.card->isKindOf("GlobalEffect")) {
-        if (isHiddenSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
+        if (isHiddenSkill("tianqu") && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
             showTargetFix << "tianqu";
     }
     use.card->setFlags("-IgnoreFailed");
 
     //check prohibit
     foreach (ServerPlayer *p, use.to) {
-        if (use.from->isProhibited(p, use.card) && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+        if (use.from->isProhibited(p, use.card) && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
             showTargetProhibit << "tianqu";
             break;
         } else if (use.card->isKindOf("Peach")) {
-            if (!p->isWounded() && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+            if (!p->isWounded() && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
                 showTargetProhibit << "tianqu";
                 break;
             }
-            if (p != use.from && (!p->hasLordSkill("yanhui") || p->getKingdom() != "zhan") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+            if (p != use.from && (!p->hasLordSkill("yanhui") || p->getKingdom() != "zhan") && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
                 showTargetProhibit << "tianqu";
                 break;
             }
-        } else if (use.card->isKindOf("DelayedTrick") && p->containsTrick(use.card->objectName()) && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+        } else if (use.card->isKindOf("DelayedTrick") && p->containsTrick(use.card->objectName()) && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
             showTargetProhibit << "tianqu";
             break;
         }

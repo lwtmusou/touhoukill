@@ -402,14 +402,14 @@ QijiDialog::QijiDialog(const QString &object, bool left, bool right)
 void QijiDialog::popup()
 {
     Card::HandlingMethod method;
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+    if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         method = Card::MethodResponse;
     else
         method = Card::MethodUse;
 
     QStringList checkedPatterns;
-    QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-    bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+    QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
+    bool play = (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
 
     //collect avaliable patterns for specific skill
     QStringList validPatterns;
@@ -600,9 +600,9 @@ public:
 
     static QStringList responsePatterns()
     {
-        QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+        QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
         Card::HandlingMethod method;
-        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+        if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
             method = Card::MethodResponse;
         else
             method = Card::MethodUse;

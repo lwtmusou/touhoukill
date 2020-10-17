@@ -964,8 +964,8 @@ public:
 
     const Card *viewAs(const Card *originalCard) const
     {
-        bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
-        QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+        bool play = (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+        QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
         if (play || matchAvaliablePattern("slash", pattern)) {
             Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
             slash->addSubcard(originalCard);

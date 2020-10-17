@@ -182,7 +182,7 @@ void Fsu0413GainianDialog::popup()
     Self->tag.remove("fsu0413gainian");
     QStringList availableCards;
 
-    if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+    if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
         foreach (const Card *c, map) {
             QScopedPointer<Card> copy(Sanguosha->cloneCard(c));
             copy->setSkillName("fsu0413gainian");
@@ -190,7 +190,8 @@ void Fsu0413GainianDialog::popup()
                 if (handCard->isKindOf("DelayedTrick")) {
                     copy->clearSubcards();
                     copy->addSubcard(handCard);
-                    if ((copy->matchTypeOrName(Sanguosha->getCurrentCardUsePattern()) || Sanguosha->matchExpPattern(Sanguosha->getCurrentCardUsePattern(), Self, copy.data()))
+                    if ((copy->matchTypeOrName(Sanguosha->currentRoomObject()->getCurrentCardUsePattern())
+                         || Sanguosha->matchExpPattern(Sanguosha->currentRoomObject()->getCurrentCardUsePattern(), Self, copy.data()))
                         && !Self->isCardLimited(copy.data(), Card::MethodUse)) {
                         availableCards << copy->objectName();
                         break;
@@ -203,7 +204,8 @@ void Fsu0413GainianDialog::popup()
                 if (handCard != NULL && handCard->isKindOf("DelayedTrick")) {
                     copy->clearSubcards();
                     copy->addSubcard(handCard);
-                    if ((copy->matchTypeOrName(Sanguosha->getCurrentCardUsePattern()) || Sanguosha->matchExpPattern(Sanguosha->getCurrentCardUsePattern(), Self, copy.data()))
+                    if ((copy->matchTypeOrName(Sanguosha->currentRoomObject()->getCurrentCardUsePattern())
+                         || Sanguosha->matchExpPattern(Sanguosha->currentRoomObject()->getCurrentCardUsePattern(), Self, copy.data()))
                         && !Self->isCardLimited(copy.data(), Card::MethodUse)) {
                         availableCards << copy->objectName();
                         break;
@@ -220,7 +222,7 @@ void Fsu0413GainianDialog::popup()
             emit onButtonClick();
             return;
         }
-    } else if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+    } else if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
         foreach (const Card *c, map) {
             QScopedPointer<Card> copy(Sanguosha->cloneCard(c));
             copy->setSkillName("fsu0413gainian");
@@ -347,7 +349,7 @@ public:
 
     bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+        if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
             Fsu0413GainianDialog *d = qobject_cast<Fsu0413GainianDialog *>(getDialog());
             if (d != NULL)
                 return d->isResponseOk(player, pattern);
