@@ -602,6 +602,10 @@ Card *Card::Clone(const Card *card)
     }
     if (card_obj) {
         Card *new_card = qobject_cast<Card *>(card_obj);
+        if (new_card == NULL) {
+            delete card_obj;
+            return NULL;
+        }
         new_card->setId(card->getId());
         new_card->setObjectName(card->objectName());
         new_card->addSubcard(card->getId());
