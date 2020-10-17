@@ -1,4 +1,5 @@
 #include "carditem.h"
+#include "client.h"
 #include "clientplayer.h"
 #include "engine.h"
 #include "settings.h"
@@ -115,7 +116,7 @@ void CardItem::changeGeneral(const QString &general_name)
 
 const Card *CardItem::getCard() const
 {
-    return Sanguosha->getCard(m_cardId);
+    return ClientInstance->getCard(m_cardId);
 }
 
 void CardItem::setHomePos(QPointF home_pos)

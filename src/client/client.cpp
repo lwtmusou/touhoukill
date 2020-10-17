@@ -207,7 +207,7 @@ void Client::updateCard(const QVariant &val)
         card->setId(cardId);
         card->setSkillName(skillName);
         card->setObjectName(objectName);
-        WrappedCard *wrapped = Sanguosha->getWrappedCard(cardId);
+        WrappedCard *wrapped = getWrappedCard(cardId);
         Q_ASSERT(wrapped != NULL);
         wrapped->copyEverythingFrom(card);
     }
@@ -510,7 +510,7 @@ void Client::removePlayer(const QVariant &player_name)
 
 bool Client::_loseSingleCard(int card_id, CardsMoveStruct move)
 {
-    const Card *card = Sanguosha->getCard(card_id);
+    const Card *card = getCard(card_id);
     if (move.from)
         move.from->removeCard(card, move.from_place);
     else {
@@ -524,7 +524,7 @@ bool Client::_loseSingleCard(int card_id, CardsMoveStruct move)
 
 bool Client::_getSingleCard(int card_id, CardsMoveStruct move)
 {
-    const Card *card = Sanguosha->getCard(card_id);
+    const Card *card = getCard(card_id);
     if (move.to)
         move.to->addCard(card, move.to_place);
     else {
@@ -1416,7 +1416,7 @@ void Client::synchronizeDiscardPile(const QVariant &discard_pile)
     QList<int> discard;
     if (JsonUtils::tryParse(discard_pile, discard)) {
         foreach (int id, discard) {
-            const Card *card = Sanguosha->getCard(id);
+            const Card *card = getCard(id);
             discarded_list.append(card);
         }
         updatePileNum();
@@ -1432,7 +1432,7 @@ void Client::setCardFlag(const QVariant &pattern_str)
     int id = pattern[0].toInt();
     QString flag = pattern[1].toString();
 
-    Card *card = Sanguosha->getCard(id);
+    Card *card = getCard(id);
     if (card != NULL)
         card->setFlags(flag);
 }
@@ -1839,7 +1839,7 @@ void Client::takeAG(const QVariant &take_var)
 
     int card_id = take[1].toInt();
     bool move_cards = take[2].toBool();
-    const Card *card = Sanguosha->getCard(card_id);
+    const Card *card = getCard(card_id);
 
     if (take[0].isNull()) {
         if (move_cards) {
@@ -1967,7 +1967,7 @@ void Client::showCard(const QVariant &show_str)
 
     ClientPlayer *player = getPlayer(player_name);
     if (player != Self)
-        player->addKnownHandCard(Sanguosha->getCard(card_id));
+        player->addKnownHandCard(getCard(card_id));
 
     emit card_shown(player_name, card_id);
 }

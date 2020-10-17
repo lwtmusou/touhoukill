@@ -203,7 +203,7 @@ sgs.ai_skill_askforag.cuixiang = function(self, card_ids)
 	local ids = card_ids
 	local cards = {}
 	for _, id in ipairs(ids) do
-		table.insert(cards, sgs.Sanguosha:getCard(id))
+		table.insert(cards, self.room:getCard(id))
 	end
 	local needcards ={}
 	for _, card in ipairs(cards) do
@@ -754,7 +754,7 @@ sgs.ai_skill_askforyiji.yibian = function(self, card_ids)
 	 local toGive, allcards = {}, {}
 	 local keep
 	 for _, id in ipairs(card_ids) do
-		 local card = sgs.Sanguosha:getCard(id)
+		 local card = self.room:getCard(id)
 		 if not keep and (isCard("Jink", card, self.player) or isCard("Analeptic", card, self.player)) then
 			 keep = true
 		 else
@@ -833,7 +833,7 @@ huaxiang_skill.getTurnUseCard = function(self)
 	for _,c in sgs.qlist(cards) do
 		local can = true
 		for _,id in sgs.qlist(self.player:getPile("rainbow")) do
-			if c:getSuit() == sgs.Sanguosha:getCard(id):getSuit() then
+			if c:getSuit() == self.room:getCard(id):getSuit() then
 				can = false
 				break
 			end
@@ -908,7 +908,7 @@ function sgs.ai_cardsview_valuable.huaxiang(self, class_name, player)
 	for _,c in sgs.qlist(cards) do
 		local can = true
 		for _,id in sgs.qlist(self.player:getPile("rainbow")) do
-			if c:getSuit() == sgs.Sanguosha:getCard(id):getSuit() then
+			if c:getSuit() == self.room:getCard(id):getSuit() then
 				can = false
 				break
 			end
@@ -1036,7 +1036,7 @@ table.insert(sgs.ai_skills, chaoren_skill)
 chaoren_skill.getTurnUseCard = function(self, inclusive)
 		local drawpile = self.room:getDrawPile()
 		if drawpile:isEmpty() then return false end
-		local acard = sgs.Sanguosha:getCard(drawpile:first())
+		local acard = self.room:getCard(drawpile:first())
 		if not acard:isAvailable(self.player) then return false end
 		local suit =acard:getSuitString()
 		local number = acard:getNumberString()
@@ -1051,7 +1051,7 @@ chaoren_skill.getTurnUseCard = function(self, inclusive)
 end
 
 function sgs.ai_cardsview_valuable.chaoren(self, class_name, player)
-	local acard = sgs.Sanguosha:getCard(self.room:getDrawPile():first())
+	local acard = self.room:getCard(self.room:getDrawPile():first())
 	if not acard then return nil end
 	local suit =acard:getSuitString()
 	local number = acard:getNumberString()
@@ -1442,7 +1442,7 @@ xinhua_skill.getTurnUseCard = function(self)
 	local XinhuaCards = {}
 	for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		for _, id in sgs.qlist(p:getShownHandcards()) do
-			local card = sgs.Sanguosha:getCard(id)
+			local card = self.room:getCard(id)
 			if not self.player:isLocked(card) then
 				table.insert(XinhuaCards, card)
 			end
@@ -1471,7 +1471,7 @@ xinhua_skill.getTurnUseCard = function(self)
 	return nil
 end
 sgs.ai_skill_use_func.XinhuaCard=function(card,use,self)
-	local xinhua = sgs.Sanguosha:getCard(card:getSubcards():first())
+	local xinhua = self.room:getCard(card:getSubcards():first())
 	if xinhua:getTypeId() == sgs.Card_TypeBasic then
 		self:useBasicCard(xinhua, use)
 	elseif xinhua:getTypeId() == sgs.Card_TypeTrick then
@@ -1493,7 +1493,7 @@ function sgs.ai_cardsview_valuable.xinhua(self, class_name, player)
 	local XinhuaCards = {}
 	for _, p in sgs.qlist(self.room:getOtherPlayers(player)) do
 		for _, id in sgs.qlist(p:getShownHandcards()) do
-			local card = sgs.Sanguosha:getCard(id)
+			local card = self.room:getCard(id)
 			if card:isKindOf(class_name) then
 				if sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_RESPONSE then
 					if not player:isCardLimited(card, sgs.Card_MethodResponse) then
@@ -1593,7 +1593,7 @@ sgs.ai_skill_use["@@wenyue"] = function(self, prompt)
 	for _,p in pairs(self.friends) do
 		if not p:hasFlag("Global_wenyueFailed") then	
 			for _,id  in sgs.qlist(tmp) do
-				local equip = sgs.Sanguosha:getCard(id):getRealCard():toEquipCard()
+				local equip = self.room:getCard(id):getRealCard():toEquipCard()
 				if  not p:getEquip(equip:location()) then
 					target = p
 					table.insert(ids, id)
@@ -1658,7 +1658,7 @@ end
 sgs.ai_skill_use_func.QianqiangCard = function(card, use, self)
 	local target
 	for _,p in pairs (self.enemies) do
-		local card = sgs.Sanguosha:getCard(card:getEffectiveId())
+		local card = self.room:getCard(card:getEffectiveId())
 		local equip = card:getRealCard():toEquipCard()
 		if not p:getEquip(equip:location()) then
 			target = p

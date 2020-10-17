@@ -85,7 +85,7 @@ function sgs.ai_skill_pindian.dangjia(minusecard, self, requestor, maxcard)
 end
 
 sgs.ai_choicemade_filter.pindian.dangjia = function(self, from, args)
-	local number = sgs.Sanguosha:getCard(tonumber(args[3])):getNumber()
+	local number = self.room:getCard(tonumber(args[3])):getNumber()
 	local lord = findPlayerByObjectName(self.room, args[4])
 	if not lord then return end
 
@@ -136,7 +136,7 @@ function choose_xiufuId(self, card_ids)
 	local target
 
 	for _,card_id in pairs(card_ids) do
-		local card=sgs.Sanguosha:getCard(card_id)
+		local card=self.room:getCard(card_id)
 		if card:getSuit()==sgs.Card_Spade  then
 			table.insert(spades,card_id)
 		end
@@ -171,7 +171,7 @@ function choose_xiufuId(self, card_ids)
 		end
 		if p:hasSkills("baoyi|jiezou") then
 			for _,id in  pairs(spades) do
-				local card=sgs.Sanguosha:getCard(id):getRealCard():toEquipCard()
+				local card=self.room:getCard(id):getRealCard():toEquipCard()
 				local n=card:location()
 				if not p:getEquip(n) then
 					baoyi_id=id
@@ -234,7 +234,7 @@ function equip_in_discardpile(self)
 	local card_ids ={}
 	local discardpile = self.room:getDiscardPile()
 	for _, id in sgs.qlist(discardpile) do
-		local tmp_card = sgs.Sanguosha:getCard(id)
+		local tmp_card = self.room:getCard(id)
 		if (tmp_card:isKindOf("EquipCard")) then
 			table.insert(card_ids, id)
 		end
@@ -394,7 +394,7 @@ function SmartAI:canLuanying(player, card )
 	end
 	if not card:isBlack() and not card:isRed() then return false end
 	for _,id in sgs.qlist(player:getPile("jingjie")) do
-		if sgs.Sanguosha:getCard(id):sameColorWith(card) then
+		if self.room:getCard(id):sameColorWith(card) then
 			return true
 		end
 	end
@@ -419,7 +419,7 @@ sgs.ai_skill_cardask["@luanying-invoke"] = function(self, data)
 		local getReturn = function()
 			local cards = {}
 			for _, id in sgs.qlist(self.player:getPile("jingjie")) do
-				local silingcard = sgs.Sanguosha:getCard(id)
+				local silingcard = self.room:getCard(id)
 				if (silingcard:sameColorWith(card)) then
 					table.insert(cards, silingcard)
 				end

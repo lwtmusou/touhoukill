@@ -660,7 +660,7 @@ public:
         QList<int> able;
         QList<int> disabled;
         foreach (int id, list) {
-            Card *tmp_card = Sanguosha->getCard(id);
+            Card *tmp_card = room->getCard(id);
             if (tmp_card->isKindOf("TrickCard") || use.card->getSuit() == tmp_card->getSuit())
                 able << id;
             else
@@ -751,7 +751,7 @@ public:
             const Card *card = move.reason.m_extraData.value<const Card *>();
             if (card && card->getSkillName() == objectName()) {
                 foreach (int id, move.card_ids) {
-                    if (Sanguosha->getCard(id)->isKindOf("TrickCard") && room->getCardPlace(id) == Player::DiscardPile)
+                    if (room->getCard(id)->isKindOf("TrickCard") && room->getCardPlace(id) == Player::DiscardPile)
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
                 }
             }
@@ -765,8 +765,8 @@ public:
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         QString name = "";
         foreach (int id, move.card_ids) {
-            if (Sanguosha->getCard(id)->isKindOf("TrickCard"))
-                name = Sanguosha->getCard(id)->objectName();
+            if (room->getCard(id)->isKindOf("TrickCard"))
+                name = room->getCard(id)->objectName();
         }
         ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "@hezhou:" + name, true, true);
         if (target != NULL)
@@ -781,7 +781,7 @@ public:
 
         QList<int> ids;
         foreach (int id, move.card_ids) {
-            if (Sanguosha->getCard(id)->isKindOf("TrickCard") && room->getCardPlace(id) == Player::DiscardPile)
+            if (room->getCard(id)->isKindOf("TrickCard") && room->getCardPlace(id) == Player::DiscardPile)
                 ids << id;
         }
 
@@ -1495,7 +1495,7 @@ static void do_sishu(ServerPlayer *player)
         move.reason.m_skillName = "sishu";
         room->moveCardsAtomic(move, true);
         room->getThread()->delay();
-        Card *card = Sanguosha->getCard(id);
+        Card *card = room->getCard(id);
         if (card->isNDTrick()) {
             ServerPlayer *target = room->askForPlayerChosen(player, room->getAllPlayers(), "sishu", QString(), false, true);
             acquired = acquired + 1;
@@ -1594,7 +1594,7 @@ public:
         QList<int> get;
         QList<int> thro;
         foreach (int id, list) {
-            if (Sanguosha->getCard(id)->getSuit() != suit)
+            if (room->getCard(id)->getSuit() != suit)
                 get << id;
             else
                 thro << id;
@@ -1921,7 +1921,7 @@ public:
         related_pile = "fenghua";
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
         if (triggerEvent == GameStart || triggerEvent == Debut) {
             ServerPlayer *player = data.value<ServerPlayer *>();
@@ -1935,7 +1935,7 @@ public:
                     if (!p->hasSkill(this) || p == use.from)
                         continue;
                     foreach (int id, p->getPile(objectName())) {
-                        if (Sanguosha->getCard(id)->getSuit() == use.card->getSuit()) {
+                        if (room->getCard(id)->getSuit() == use.card->getSuit()) {
                             d << SkillInvokeDetail(this, p, p, NULL, true);
                             break;
                         }

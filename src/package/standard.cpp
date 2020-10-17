@@ -283,7 +283,7 @@ DelayedTrick::DelayedTrick(Suit suit, int number, bool movable, bool returnable)
 void DelayedTrick::onUse(Room *room, const CardUseStruct &card_use) const
 {
     CardUseStruct use = card_use;
-    WrappedCard *wrapped = Sanguosha->getWrappedCard(getEffectiveId());
+    WrappedCard *wrapped = room->getWrappedCard(getEffectiveId());
     use.card = wrapped;
 
     LogMessage log;
@@ -364,7 +364,7 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const
         if (room->getCardOwner(getEffectiveId()) == NULL) {
             if (isVirtualCard()) {
                 Card *delayTrick = Sanguosha->cloneCard(objectName());
-                WrappedCard *vs_card = Sanguosha->getWrappedCard(getEffectiveId());
+                WrappedCard *vs_card = room->getWrappedCard(getEffectiveId());
                 vs_card->setSkillName(getSkillName());
                 vs_card->takeOver(delayTrick);
                 room->broadcastUpdateCard(room->getAlivePlayers(), vs_card->getId(), vs_card);

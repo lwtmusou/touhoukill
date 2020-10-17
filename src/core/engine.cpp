@@ -440,33 +440,6 @@ bool Engine::isGeneralHidden(const QString &general_name) const
         return !Config.RemovedHiddenGenerals.contains(general_name);
 }
 
-WrappedCard *Engine::getWrappedCard(int cardId)
-{
-    Card *card = getCard(cardId);
-    WrappedCard *wrappedCard = qobject_cast<WrappedCard *>(card);
-    Q_ASSERT(wrappedCard != NULL && wrappedCard->getId() == cardId);
-    return wrappedCard;
-}
-
-Card *Engine::getCard(int cardId)
-{
-    Card *card = NULL;
-    if (cardId < 0 || cardId >= cards.length())
-        return NULL;
-    QObject *room = currentRoomObject();
-    Q_ASSERT(room);
-    Room *serverRoom = qobject_cast<Room *>(room);
-    if (serverRoom != NULL) {
-        card = serverRoom->getCard(cardId);
-    } else {
-        Client *clientRoom = qobject_cast<Client *>(room);
-        Q_ASSERT(clientRoom != NULL);
-        card = clientRoom->getCard(cardId);
-    }
-    Q_ASSERT(card);
-    return card;
-}
-
 const Card *Engine::getEngineCard(int cardId) const
 {
     if (cardId == Card::S_UNKNOWN_CARD_ID)

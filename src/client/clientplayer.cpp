@@ -45,7 +45,7 @@ void ClientPlayer::addCard(const Card *card, Place place)
         break;
     }
     case PlaceEquip: {
-        WrappedCard *equip = Sanguosha->getWrappedCard(card->getEffectiveId());
+        WrappedCard *equip = getRoomObject()->getWrappedCard(card->getEffectiveId());
         setEquip(equip);
         break;
     }
@@ -73,7 +73,7 @@ bool ClientPlayer::isLastHandCard(const Card *card, bool contain) const
     } else if (card->getSubcards().length() > 0) {
         if (!contain) {
             foreach (int card_id, card->getSubcards()) {
-                if (!known_cards.contains(Sanguosha->getCard(card_id)))
+                if (!known_cards.contains(getRoomObject()->getCard(card_id)))
                     return false;
             }
             return known_cards.length() == card->getSubcards().length();
@@ -98,7 +98,7 @@ void ClientPlayer::removeCard(const Card *card, Place place)
         break;
     }
     case PlaceEquip: {
-        WrappedCard *equip = Sanguosha->getWrappedCard(card->getEffectiveId());
+        WrappedCard *equip = getRoomObject()->getWrappedCard(card->getEffectiveId());
         removeEquip(equip);
         break;
     }
@@ -120,7 +120,7 @@ void ClientPlayer::setCards(const QList<int> &card_ids)
 {
     known_cards.clear();
     foreach (int cardId, card_ids)
-        known_cards.append(Sanguosha->getCard(cardId));
+        known_cards.append(getRoomObject()->getCard(cardId));
 }
 
 QTextDocument *ClientPlayer::getMarkDoc() const

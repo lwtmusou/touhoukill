@@ -104,7 +104,7 @@ void ZhaoweiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
     source->tag.remove("zhaowei_mod");
     if (zhaoweiMod == 1) {
         int card_id = room->askForCardChosen(source, targets.first(), "hes", objectName(), false, Card::MethodNone);
-        source->obtainCard(Sanguosha->getCard(card_id));
+        source->obtainCard(room->getCard(card_id));
         targets.first()->drawCards(1);
     } else if (zhaoweiMod == 2) {
         QList<ServerPlayer *> targets_other;
@@ -112,7 +112,7 @@ void ZhaoweiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
             if (p->isKongcheng())
                 continue;
             int card_id = room->askForCardChosen(source, p, "hs", objectName(), false, Card::MethodNone);
-            source->obtainCard(Sanguosha->getCard(card_id));
+            source->obtainCard(room->getCard(card_id));
             targets_other << p;
         }
 
@@ -580,7 +580,7 @@ void LinsaCard::onEffect(const CardEffectStruct &effect) const
     Room *room = effect.from->getRoom();
 
     // get the card detail before give
-    Card::Suit suit = Sanguosha->getCard(getSubcards().first())->getSuit();
+    Card::Suit suit = room->getCard(getSubcards().first())->getSuit();
     room->showCard(effect.from, getEffectiveId());
 
     CardMoveReason r(CardMoveReason::S_REASON_GIVE, effect.from->objectName(), "linsa", QString());
@@ -969,7 +969,7 @@ void HuyuanCard::onEffect(const CardEffectStruct &effect) const
 
     foreach (int id, getSubcards()) {
         room->showCard(effect.from, id);
-        const Card *c = Sanguosha->getCard(id);
+        const Card *c = room->getCard(id);
         if (HuyuanNs::cardAvailable(c))
             suits << c->getSuitString();
     }
@@ -1127,7 +1127,7 @@ public:
             move.reason.m_skillName = "puti";
             room->moveCardsAtomic(move, true);
             room->getThread()->delay();
-            Card *card = Sanguosha->getCard(id);
+            Card *card = room->getCard(id);
             if (card->getTypeId() == Card::TypeTrick) {
                 acquired = acquired + 1;
                 CardsMoveStruct move2(id, player, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_GOTBACK, player->objectName()));
@@ -1408,7 +1408,7 @@ public:
             int id = room->askForAG(invoke->targets.first(), asklist, false, objectName());
             room->takeAG(invoke->targets.first(), id, false, QList<ServerPlayer *>() << invoke->targets.first());
 
-            const Card *c = Sanguosha->getCard(id);
+            const Card *c = room->getCard(id);
             Card::CardType t = Card::TypeSkill;
             if (c != NULL)
                 t = c->getTypeId();
@@ -1416,7 +1416,7 @@ public:
             takelist << id;
             asklist.removeAll(id);
             foreach (int remainedId, asklist) {
-                const Card *cr = Sanguosha->getCard(remainedId);
+                const Card *cr = room->getCard(remainedId);
                 if (cr != NULL && cr->getTypeId() == t) {
                     asklist.removeAll(remainedId);
                     room->takeAG(NULL, id, false, QList<ServerPlayer *>() << invoke->targets.first());
@@ -1615,7 +1615,7 @@ public:
         } else {
             bool ok = false;
             int id = invoke->invoker->tag["huazhaoid"].toInt(&ok);
-            const Card *card = Sanguosha->getCard(id);
+            const Card *card = room->getCard(id);
             if (ok && card != NULL)
                 invoke->invoker->obtainCard(card, false);
 

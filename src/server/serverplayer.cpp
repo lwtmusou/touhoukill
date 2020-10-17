@@ -400,7 +400,7 @@ void ServerPlayer::removeCard(const Card *card, Place place)
         Q_ASSERT(equip != NULL);
         equip->onUninstall(this);
 
-        WrappedCard *wrapped = Sanguosha->getWrappedCard(card->getEffectiveId());
+        WrappedCard *wrapped = room->getWrappedCard(card->getEffectiveId());
         removeEquip(wrapped);
 
         bool show_log = true;
@@ -446,7 +446,7 @@ void ServerPlayer::addCard(const Card *card, Place place)
         break;
     }
     case PlaceEquip: {
-        WrappedCard *wrapped = Sanguosha->getWrappedCard(card->getEffectiveId());
+        WrappedCard *wrapped = room->getWrappedCard(card->getEffectiveId());
         const EquipCard *equip = qobject_cast<const EquipCard *>(wrapped->getRealCard());
         setEquip(wrapped);
         equip->onInstall(this);
@@ -468,7 +468,7 @@ bool ServerPlayer::isLastHandCard(const Card *card, bool contain) const
     } else if (card->getSubcards().length() > 0) {
         if (!contain) {
             foreach (int card_id, card->getSubcards()) {
-                if (!handcards.contains(Sanguosha->getCard(card_id)))
+                if (!handcards.contains(room->getCard(card_id)))
                     return false;
             }
             return handcards.length() == card->getSubcards().length();
@@ -542,7 +542,7 @@ bool ServerPlayer::hasNullification() const
 
     if (hasTreasure("wooden_ox")) {
         foreach (int id, getPile("wooden_ox")) {
-            if (Sanguosha->getCard(id)->isKindOf("Nullification"))
+            if (room->getCard(id)->isKindOf("Nullification"))
                 return true;
         }
     }
@@ -550,7 +550,7 @@ bool ServerPlayer::hasNullification() const
     if (hasSkill("chaoren")) {
         bool ok = false;
         int id = property("chaoren").toInt(&ok);
-        if (ok && id > -1 && Sanguosha->getCard(id)->isKindOf("Nullification"))
+        if (ok && id > -1 && room->getCard(id)->isKindOf("Nullification"))
             return true;
     }
 
@@ -614,7 +614,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     } else {
         if (card1->isVirtualCard()) {
             int card_id = card1->getEffectiveId();
-            card1 = Sanguosha->getCard(card_id);
+            card1 = room->getCard(card_id);
         }
         if (card1 && isShownHandcard(card1->getEffectiveId())) {
             log2.type = "$PindianResult";

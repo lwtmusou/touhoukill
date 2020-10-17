@@ -330,7 +330,7 @@ void XijianCard::onUse(Room *room, const CardUseStruct &card_use) const
 
     int card_id = room->askForCardChosen(from, to1, flag, "xijian", false, Card::MethodNone, disable);
     Player::Place place = room->getCardPlace(card_id);
-    const Card *card = Sanguosha->getCard(card_id);
+    const Card *card = room->getCard(card_id);
     card_use.from->showHiddenSkill("xijian");
     if (place == Player::PlaceHand)
         to2->obtainCard(card, false);
@@ -1258,7 +1258,7 @@ public:
         QList<int> able;
         QList<int> disabled;
         foreach (int id, list) {
-            Card *tmp_card = Sanguosha->getCard(id);
+            Card *tmp_card = room->getCard(id);
             if (tmp_card->isKindOf("EquipCard")) {
                 able << id;
             } else {
@@ -1875,7 +1875,7 @@ public:
         view_as_skill = new WangwuVS;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
@@ -1884,7 +1884,7 @@ public:
                 foreach (ServerPlayer *p, use.to) {
                     if (p != use.from && p->hasSkill(this) && !p->getPile("siling").isEmpty()) {
                         foreach (int id, p->getPile("siling")) {
-                            if (Sanguosha->getCard(id)->sameColorWith(use.card)) {
+                            if (room->getCard(id)->sameColorWith(use.card)) {
                                 d << SkillInvokeDetail(this, p, p);
                                 break;
                             }
@@ -1904,7 +1904,7 @@ public:
         bool flag = false;
         QList<int> list = player->getPile("siling");
         foreach (int id, list) {
-            if (Sanguosha->getCard(id)->sameColorWith(use.card)) {
+            if (room->getCard(id)->sameColorWith(use.card)) {
                 flag = true;
                 break;
             }
@@ -1980,7 +1980,7 @@ public:
             return false;
 
         CardMoveReason reason(CardMoveReason::S_REASON_PUT, invoke->invoker->objectName(), objectName(), QString());
-        room->throwCard(Sanguosha->getCard(to_throw), reason, NULL);
+        room->throwCard(room->getCard(to_throw), reason, NULL);
 
         return false;
     }
@@ -2030,7 +2030,7 @@ public:
 
         QList<SkillInvokeDetail> d;
         foreach (int id, move.card_ids) {
-            const Card *card = Sanguosha->getCard(id);
+            const Card *card = room->getCard(id);
             if (card != NULL && card->getSuit() == Card::Heart && card->getNumber() >= 11 && card->getNumber() <= 13) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->hasSkill("jixiong") && !p->hasFlag("jixiong_used"))
@@ -2089,7 +2089,7 @@ public:
 
         QList<SkillInvokeDetail> d;
         foreach (int id, move.card_ids) {
-            const Card *card = Sanguosha->getCard(id);
+            const Card *card = room->getCard(id);
             if (card != NULL && card->getSuit() == Card::Spade && card->getNumber() >= 11 && card->getNumber() <= 13) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->hasSkill("jixiong") && !p->hasFlag("jixiong_used"))
@@ -2294,7 +2294,7 @@ void HuayinCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
     Peach *card = new Peach(Card::SuitToBeDecided, -1);
     foreach (int id, source->handCards()) {
         // room->showCard(source, id);
-        if (!Sanguosha->getCard(id)->isKindOf("BasicCard"))
+        if (!room->getCard(id)->isKindOf("BasicCard"))
             card->addSubcard(id);
     }
     QList<const Player *> playerTargets;

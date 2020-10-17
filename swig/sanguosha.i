@@ -1245,8 +1245,6 @@ public:
 
     int getCardCount() const;
     const Card *getEngineCard(int cardId) const;
-    Card *getCard(int cardId);
-    WrappedCard *getWrappedCard(int cardId);
 
     QStringList getLords(bool contain_banned = false) const;
     QStringList getRandomLords() const;
@@ -1559,6 +1557,9 @@ public:
 
     void updateStateItem();
 
+    Card *getCard(int cardId);
+    WrappedCard *getWrappedCard(int cardId);
+	
     void setPlayerSkillInvalidity(ServerPlayer *player, const Skill *skill, bool invalidity);
     void setPlayerSkillInvalidity(ServerPlayer *player, const char *skill_name, bool invalidity);
 };

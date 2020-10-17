@@ -45,7 +45,7 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
         foreach (QString one_card, card_str.split("+")) {
             const Card *card = NULL;
             if (type == "$JudgeResult" || type == "$PasteCard")
-                card = Sanguosha->getCard(one_card.toInt());
+                card = ClientInstance->getCard(one_card.toInt());
             else
                 card = Sanguosha->getEngineCard(one_card.toInt());
             if (card) {

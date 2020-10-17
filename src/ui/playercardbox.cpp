@@ -105,13 +105,13 @@ void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player
         QList<const Card *> handcards;
         QList<const Card *> shownHandcards;
         foreach (int id, player->getShownHandcards()) {
-            const Card *c = Sanguosha->getCard(id);
+            const Card *c = ClientInstance->getCard(id);
             shownHandcards << c;
         }
 
         if (!handcardVisible && Self != player) {
             foreach (int id, player->getShownHandcards()) {
-                const Card *c = Sanguosha->getCard(id);
+                const Card *c = ClientInstance->getCard(id);
                 handcards << c;
             }
             int hidden = player->getHandcardNum() - handcards.length();

@@ -91,9 +91,6 @@ public:
 
     int getCardCount() const;
     const Card *getEngineCard(int cardId) const;
-    // @todo: consider making this const Card *
-    Card *getCard(int cardId);
-    WrappedCard *getWrappedCard(int cardId);
 
     QStringList getLords(bool contain_banned = false) const;
     QStringList getRandomLords() const;

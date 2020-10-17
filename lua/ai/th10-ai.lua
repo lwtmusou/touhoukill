@@ -668,7 +668,7 @@ sgs.ai_skill_discard.buju = function(self,discard_num, min_num)
 				table.insert(tmp, fakeJudge.card:getEffectiveId())
 				table.remove(cards, 1)
 			else
-				local newCard = sgs.Sanguosha:getCard(judge_id)
+				local newCard = self.room:getCard(judge_id)
 				table.insert(tmp, judge_id)
 				table.removeOne(cards, newCard)
 			end
@@ -746,7 +746,7 @@ sgs.ai_damageInflicted.shaojie =function(self, damage)
 		local can = damage.card:hasFlag("showncards")
 		if damage.from then
 			for _, id in sgs.qlist(damage.from:getShownHandcards()) do
-				local c = sgs.Sanguosha:getCard(id)
+				local c = self.room:getCard(id)
 				if damage.card:getColor() == c:getColor() then
 					can =true
 					break

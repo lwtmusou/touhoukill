@@ -1045,7 +1045,7 @@ public:
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *target = qobject_cast<ServerPlayer *>(move.to);
-        Card *card = Sanguosha->getCard(move.card_ids.first());
+        Card *card = room->getCard(move.card_ids.first());
         QString prompt = "@chiling_hegemony:" + invoke->invoker->objectName() + ":" + card->objectName();
         room->askForUseCard(target, IntList2StringList(move.card_ids).join("#"), prompt, -1, Card::MethodUse, false);
         return false;
@@ -1265,7 +1265,7 @@ public:
         QList<int> able;
         QList<int> disabled;
         foreach (int id, list) {
-            Card *tmp_card = Sanguosha->getCard(id);
+            Card *tmp_card = room->getCard(id);
             if (tmp_card->isKindOf("TrickCard") || use.card->getSuit() == tmp_card->getSuit())
                 able << id;
             else
@@ -1934,7 +1934,7 @@ public:
         ServerPlayer *tewi = qobject_cast<ServerPlayer *>(move.to);
         if (tewi != NULL && tewi->hasSkill(this) && move.to_place == Player::PlaceHand) {
             foreach (int id, move.card_ids) {
-                if (Sanguosha->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand) {
+                if (room->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand) {
                     ServerPlayer *owner = room->getCardOwner(id);
                     if (owner && owner == tewi)
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, tewi, tewi);
@@ -1949,7 +1949,7 @@ public:
         ServerPlayer *tewi = invoke->invoker;
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         foreach (int id, move.card_ids) {
-            if (Sanguosha->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand) {
+            if (room->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand) {
                 ServerPlayer *owner = room->getCardOwner(id);
                 if (owner && owner == tewi)
                     room->setCardFlag(id, "xingyun");
@@ -2386,7 +2386,7 @@ public:
                 return d;
 
             foreach (int id, move.card_ids) {
-                if (Sanguosha->getCard(id)->getTypeId() == Card::TypeBasic) {
+                if (room->getCard(id)->getTypeId() == Card::TypeBasic) {
                     d << SkillInvokeDetail(this, player, player);
                 }
             }
@@ -2848,7 +2848,7 @@ public:
             move.reason.m_skillName = "cuiji_hegemony";
             room->moveCardsAtomic(move, true);
             room->getThread()->delay();
-            Card *card = Sanguosha->getCard(id);
+            Card *card = room->getCard(id);
             bool matched = false;
             if (card->getSuitString() == choice)
                 matched = true;
@@ -3437,7 +3437,7 @@ public:
             if ((move.from_places.contains(Player::PlaceHand) || move.from_places.contains(Player::PlaceEquip)) && move.to_place == Player::DiscardPile) {
                 QList<int> ids;
                 foreach (int id, move.card_ids) {
-                    if (Sanguosha->getCard(id)->isRed() && room->getCardPlace(id) == Player::DiscardPile)
+                    if (room->getCard(id)->isRed() && room->getCardPlace(id) == Player::DiscardPile)
                         ids << id;
                 }
                 if (ids.isEmpty())
@@ -3456,7 +3456,7 @@ public:
         while (true) {
             QList<int> ids;
             foreach (int id, move.card_ids) {
-                if (Sanguosha->getCard(id)->isRed() && room->getCardPlace(id) == Player::DiscardPile && !disable.contains(id))
+                if (room->getCard(id)->isRed() && room->getCardPlace(id) == Player::DiscardPile && !disable.contains(id))
                     ids << id;
             }
             if (ids.isEmpty())
@@ -3680,7 +3680,7 @@ public:
         int c = 0;
         int d = 0;
         foreach (int id, list) {
-            Card *card = Sanguosha->getCard(id);
+            Card *card = room->getCard(id);
             if (card->getSuit() == Card::Spade)
                 s = 1;
             else if (card->getSuit() == Card::Heart)
@@ -3862,7 +3862,7 @@ public:
                     QList<int> jingjie = p->getPile("jingjie");
                     bool flag = false;
                     foreach (int id, jingjie) {
-                        if (Sanguosha->getCard(id)->getColor() == card->getColor()) {
+                        if (room->getCard(id)->getColor() == card->getColor()) {
                             flag = true;
                             break;
                         }
@@ -4003,11 +4003,11 @@ public:
 
         if (from->canDiscard(to, "hes")) {
             int card_id = room->askForCardChosen(from, to, "hes", "mengxian_hegemony", false, Card::MethodDiscard);
-            room->throwCard(Sanguosha->getCard(card_id), to, from);
+            room->throwCard(room->getCard(card_id), to, from);
 
             if (from->isAlive() && to->isAlive() && from->canDiscard(to, "hes")) {
                 card_id = room->askForCardChosen(from, to, "hes", "mengxian_hegemony", false, Card::MethodDiscard);
-                room->throwCard(Sanguosha->getCard(card_id), to, from);
+                room->throwCard(room->getCard(card_id), to, from);
             }
         }
 

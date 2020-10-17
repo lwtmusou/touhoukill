@@ -345,7 +345,7 @@ function SmartAI:getTurnUse()
 		--if c:isAvailable(self.player) then table.insert(cards, c) end
 	end
 	for _, id in sgs.qlist(self.player:getHandPile()) do
-		local c = sgs.Sanguosha:getCard(id)
+		local c = self.room:getCard(id)
 		table.insert(cards, c)
 		--if c:isAvailable(self.player) then table.insert(cards, c) end
 	end
@@ -1346,7 +1346,7 @@ function SmartAI:writeKeepValue(card)
 		elseif card:isKindOf("WoodenOx") then
 			value = 3.19
 			for _, id in sgs.qlist(self.player:getHandPile()) do
-				local c = sgs.Sanguosha:getCard(id)
+				local c = self.room:getCard(id)
 				value = value + (sgs.ai_keep_value[c:getClassName()] or 0)
 			end
 		else value = 3.19
@@ -2158,7 +2158,7 @@ sgs.ai_choicemade_filter.Yiji.general = function(self, from, promptlist)
 
 	
 	for _, id in ipairs(card_ids) do
-		local card = sgs.Sanguosha:getCard(tonumber(id))
+		local card = self.room:getCard(tonumber(id))
 		table.insert(cards, card)
 	end
 	if from and to then
@@ -2458,7 +2458,7 @@ function SmartAI:filterEvent(event, player, data)
 		for i = 0, move.card_ids:length() - 1 do
 			local place = move.from_places:at(i)
 			local card_id = move.card_ids:at(i)
-			local card = sgs.Sanguosha:getCard(card_id)
+			local card = self.room:getCard(card_id)
 
 			if move.to_place == sgs.Player_PlaceHand and to and player:objectName() == to:objectName() then
 				if card:hasFlag("visible") then
@@ -2584,10 +2584,10 @@ function SmartAI:askForDiscard(reason, discard_num, min_num, optional, include_e
 	if type(callback) == "function" then
 		local cb = callback(self, discard_num, min_num, optional, include_equip)
 		if cb then
-			if type(cb) == "number" and not self.player:isJilei(sgs.Sanguosha:getCard(cb)) then return { cb }
+			if type(cb) == "number" and not self.player:isJilei(self.room:getCard(cb)) then return { cb }
 			elseif type(cb) == "table" then
 				for _, card_id in ipairs(cb) do
-					if not exchange and self.player:isJilei(sgs.Sanguosha:getCard(card_id)) then
+					if not exchange and self.player:isJilei(self.room:getCard(card_id)) then
 						return {}
 					end
 				end
@@ -2895,7 +2895,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 					local getvalue = 0
 					if invoke then
 						for _, ag_id in ipairs(ag_ids) do
-							local ag_card = sgs.Sanguosha:getCard(ag_id)
+							local ag_card = self.room:getCard(ag_id)
 							if ag_card:isKindOf("Peach") then getvalue = getvalue + 1 end
 							if ag_card:isKindOf("ExNihilo") then getvalue = getvalue + 1 end
 							if ag_card:isKindOf("Snatch") then getvalue = getvalue + 1 end
@@ -2910,7 +2910,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 					local ag_ids = self.room:getTag("AmazingGrace"):toStringList()
 					local peach_num, exnihilo_num, snatch_num, analeptic_num, crossbow_num = 0, 0, 0, 0, 0
 					for _, ag_id in ipairs(ag_ids) do
-						local ag_card = sgs.Sanguosha:getCard(ag_id)
+						local ag_card = self.room:getCard(ag_id)
 						if ag_card:isKindOf("Peach") then peach_num = peach_num + 1 end
 						if ag_card:isKindOf("ExNihilo") then exnihilo_num = exnihilo_num + 1 end
 						if ag_card:isKindOf("Snatch") then snatch_num = snatch_num + 1 end
@@ -3305,7 +3305,7 @@ function SmartAI:askForAG(card_ids, refusable, reason)
 	local ids = card_ids
 	local cards = {}
 	for _, id in ipairs(ids) do
-		table.insert(cards, sgs.Sanguosha:getCard(id))
+		table.insert(cards, self.room:getCard(id))
 	end
 	for _, card in ipairs(cards) do
 		if card:isKindOf("Peach") then return card:getEffectiveId() end
@@ -3705,7 +3705,7 @@ function SmartAI:askForPindian(requestor, reason)
 	local passive = { "lieren" }
 	if self.player:objectName() == requestor:objectName() and not table.contains(passive, reason) then
 		if self[reason .. "_card"] then
-			return sgs.Sanguosha:getCard(self[reason .. "_card"])
+			return self.room:getCard(self[reason .. "_card"])
 		else
 			self.room:writeToConsole("Pindian card for " .. reason .. " not found!!")
 			return self:getMaxCard(self.player):getId()
@@ -3865,7 +3865,7 @@ function SmartAI:willUsePeachTo(dying)
 			local same = false
 			for i, card_id in sgs.qlist(buqu) do
 				for j, card_id2 in sgs.qlist(buqu) do
-					if i ~= j and sgs.Sanguosha:getCard(card_id):getNumber() == sgs.Sanguosha:getCard(card_id2):getNumber() then
+					if i ~= j and self.room:getCard(card_id):getNumber() == self.room:getCard(card_id2):getNumber() then
 						same = true
 						break
 					end
@@ -4335,7 +4335,7 @@ function SmartAI:getKnownNum(player, observer)
 	else
 		local cards = player:getHandcards()
 		for _, id in sgs.qlist(player:getHandPile()) do
-			cards:append(sgs.Sanguosha:getCard(id))
+			cards:append(self.room:getCard(id))
 		end
 		local known = 0
 		for _, card in sgs.qlist(cards) do
@@ -4351,7 +4351,7 @@ function getKnownNum(player, observer)
 	if not player then global_room:writeToConsole(debug.traceback()) return end
 	local cards = player:getHandcards()
 	for _, id in sgs.qlist(player:getHandPile()) do
-		cards:append(sgs.Sanguosha:getCard(id))
+		cards:append(self.room:getCard(id))
 	end
 	local known = 0
 	for _, card in sgs.qlist(cards) do
@@ -4370,7 +4370,7 @@ function getKnownCard(player, from, class_name, viewas, flags, return_table)
 	local cards = player:getCards(flags)
 	if flags:match("h") then
 		for _, id in sgs.qlist(player:getHandPile()) do
-			cards:append(sgs.Sanguosha:getCard(id))
+			cards:append(self.room:getCard(id))
 		end
 	end
 	local suits = {["club"] = 1, ["spade"] = 1, ["diamond"] = 1, ["heart"] = 1}
@@ -4397,7 +4397,7 @@ function SmartAI:getCardId(class_name, player, acard, exclude_subclass_name)
 		cards = self.player:getCards("hes")
 		for _, key in sgs.list(self.player:getPileNames()) do
 			for _, id in sgs.qlist(self.player:getPile(key)) do
-				cards:append(sgs.Sanguosha:getCard(id))
+				cards:append(self.room:getCard(id))
 			end
 		end
 		cards = sgs.QList2Table(cards)
@@ -4488,12 +4488,12 @@ function SmartAI:getCards(class_name, flag)
 	if private_pile then
 		for _, key in sgs.list(self.player:getPileNames()) do
 			for _, id in sgs.qlist(self.player:getPile(key)) do
-				all_cards:append(sgs.Sanguosha:getCard(id))
+				all_cards:append(self.room:getCard(id))
 			end
 		end
 	elseif flag:match("h") then
 		for _, id in sgs.qlist(self.player:getHandPile()) do
-			all_cards:append(sgs.Sanguosha:getCard(id))
+			all_cards:append(self.room:getCard(id))
 		end
 	end
 	local cards, other = {}, {}
@@ -4565,7 +4565,7 @@ function getCardsNum(class_name, player, from)
 
 	local cards = sgs.QList2Table(player:getHandcards())
 	for _, id in sgs.qlist(player:getHandPile()) do
-		table.insert(cards, sgs.Sanguosha:getCard(id))
+		table.insert(cards, self.room:getCard(id))
 	end
 	local num = 0
 	local shownum = 0
@@ -4982,7 +4982,7 @@ function SmartAI:getAoeValue(card)
 	end
 	if card:isVirtualCard() and card:subcardsLength() > 0 then
 		for _, subcardid in sgs.qlist(card:getSubcards()) do
-			local subcard = sgs.Sanguosha:getCard(subcardid)
+			local subcard = self.room:getCard(subcardid)
 			if isCard("Peach", subcard, self.player) then peach_num = peach_num - 1 end
 			if isCard("Nullification", subcard, self.player) then null_num = null_num - 1 end
 		end
@@ -5399,7 +5399,7 @@ function SmartAI:useEquipCard(card, use)
 			local slash = self:getCards("Slash", "hes")
 			local notuse = {}
 			for _, s in ipairs(slash) do
-				if sgs.Sanguosha:getCard(s:getEffectiveId()):isKindOf("EquipCard") and self.room:getCardPlace(s:getEffectiveId()) == sgs.Player_PlaceHand then
+				if self.room:getCard(s:getEffectiveId()):isKindOf("EquipCard") and self.room:getCardPlace(s:getEffectiveId()) == sgs.Player_PlaceHand then
 					table.insert(notuse, s)
 				end
 			end
@@ -7028,7 +7028,7 @@ function sgs.getCardNumAtCertainPlace(card, player, place)
 			if place == sgs.Player_PlaceHand then
 				if player:handCards():contains(id) then num = num + 1 end
 			elseif place == sgs.Player_PlaceEquip then
-				if player:hasEquip(sgs.Sanguosha:getCard(id)) then num = num + 1 end
+				if player:hasEquip(self.room:getCard(id)) then num = num + 1 end
 			end
 		end
 		return num
@@ -7062,12 +7062,12 @@ end
 function sgs.touhouAppendExpandPileToList(player,cards)
 	if sgs.touhouCanWoodenOx(player) then
 		for _, id in sgs.qlist(player:getPile("wooden_ox")) do
-			cards:prepend(sgs.Sanguosha:getCard(id))
+			cards:prepend(self.room:getCard(id))
 		end
 	end
 	if player:hasSkill("shanji") then
 		for _, id in sgs.qlist(player:getPile("piao")) do
-			cards:prepend(sgs.Sanguosha:getCard(id))
+			cards:prepend(self.room:getCard(id))
 		end
 	end
 	return cards
@@ -7132,23 +7132,23 @@ end
 function SmartAI:touhouAppendExpandPileToList(player,cards)
 	if sgs.touhouCanWoodenOx(player) then
 		for _, id in sgs.qlist(player:getPile("wooden_ox")) do
-			cards:prepend(sgs.Sanguosha:getCard(id))
+			cards:prepend(self.room:getCard(id))
 		end
 	end
 	if player:hasSkill("shanji") then
 		for _, id in sgs.qlist(player:getPile("piao")) do
-			cards:prepend(sgs.Sanguosha:getCard(id))
+			cards:prepend(self.room:getCard(id))
 		end
 	end
 	--[[if player:hasSkill("xinhua") then
 		for _, p in sgs.qlist(self.room:getOtherPlayers(player)) do
 			for _, id in sgs.qlist(p:getShownHandcards()) do
-				cards:prepend(sgs.Sanguosha:getCard(id))
+				cards:prepend(self.room:getCard(id))
 			end
 		end
 	end]]
 	--if player:hasSkill("chaoren") then
-	--  cards:prepend(sgs.Sanguosha:getCard(self.room:getDrawPile():first()))
+	--  cards:prepend(self.room:getCard(self.room:getDrawPile():first()))
 	--end
 	return cards
 end
@@ -7171,12 +7171,12 @@ end
 function sgs.touhouAppendExpandPileToList(player,cards)
 	if sgs.touhouCanWoodenOx(player) then
 		for _, id in sgs.qlist(player:getPile("wooden_ox")) do
-			cards:prepend(sgs.Sanguosha:getCard(id))
+			cards:prepend(self.room:getCard(id))
 		end
 	end
 	if player:hasSkill("shanji") then
 		for _, id in sgs.qlist(player:getPile("piao")) do
-			cards:prepend(sgs.Sanguosha:getCard(id))
+			cards:prepend(self.room:getCard(id))
 		end
 	end
 	return cards

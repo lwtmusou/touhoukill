@@ -143,7 +143,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
                 if (findOneShow)
                     break;
                 checkpoint = false;
-                const Card *card = Sanguosha->getCard(id);
+                const Card *card = player->getRoomObject()->getCard(id);
                 foreach (QString p, place.split(",")) {
                     if (p == "equipped" && player->hasEquip(card)) {
                         checkpoint = true;
@@ -172,7 +172,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
                         checkpoint = true;
                     } else if (p == "shehuo" && card->getEffectiveId() >= 0 && !player->hasEquip(card)) {
                         checkpoint = true;
-                    } else if (p == "benwo" && (card->isVirtualCard() || !player->getHandcards().contains(Sanguosha->getCard(card->getId())))) {
+                    } else if (p == "benwo" && (card->isVirtualCard() || !player->getHandcards().contains(player->getRoomObject()->getCard(card->getId())))) {
                         return false;
                     } else if (!player->getPile(p).isEmpty() && player->getPile(p).contains(id)) {
                         checkpoint = true;

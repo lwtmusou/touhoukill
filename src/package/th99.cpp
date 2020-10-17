@@ -190,7 +190,7 @@ bool XiufuCard::putToPile(Room *room, ServerPlayer *mori)
     QList<int> discardpile = room->getDiscardPile();
     QList<int> equips;
     foreach (int id, discardpile) {
-        if (Sanguosha->getCard(id)->isKindOf("EquipCard"))
+        if (room->getCard(id)->isKindOf("EquipCard"))
             equips << id;
     }
 
@@ -264,7 +264,7 @@ void XiufuCard::onUse(Room *room, const CardUseStruct &card_use) const
         QList<int> discardpile = room->getDiscardPile();
         QList<int> equips;
         foreach (int id, discardpile) {
-            if (Sanguosha->getCard(id)->isKindOf("EquipCard"))
+            if (room->getCard(id)->isKindOf("EquipCard"))
                 equips << id;
         }
 
@@ -291,7 +291,7 @@ void XiufuCard::use(Room *room, ServerPlayer *mori, QList<ServerPlayer *> &) con
     if (xiufu_id == -1)
         return;
 
-    const EquipCard *equip = qobject_cast<const EquipCard *>(Sanguosha->getCard(xiufu_id)->getRealCard());
+    const EquipCard *equip = qobject_cast<const EquipCard *>(room->getCard(xiufu_id)->getRealCard());
     ServerPlayer *target = mori->tag.value("xiufu_to", QVariant::fromValue((ServerPlayer *)(NULL))).value<ServerPlayer *>();
 
     int equipped_id = -1;
@@ -489,7 +489,7 @@ public:
                 QList<SkillInvokeDetail> d;
                 int i = 0;
                 foreach (int id, move.card_ids) {
-                    const Card *c = Sanguosha->getCard(id);
+                    const Card *c = room->getCard(id);
                     Player::Place from_place = move.from_places.value(i++);
                     if (c != NULL && (c->isKindOf("EquipCard") || c->isKindOf("TrickCard")) && (from_place == Player::PlaceHand || from_place == Player::PlaceEquip))
                         d << SkillInvokeDetail(this, from, from, NULL, false, thrower);
@@ -717,7 +717,7 @@ public:
                     QList<int> jingjie = p->getPile("jingjie");
                     bool flag = false;
                     foreach (int id, jingjie) {
-                        if (Sanguosha->getCard(id)->getColor() == card->getColor()) {
+                        if (room->getCard(id)->getColor() == card->getColor()) {
                             flag = true;
                             break;
                         }
@@ -1623,7 +1623,7 @@ void YushouCard::onUse(Room *room, const CardUseStruct &card_use) const
     from->tag["yushou_target"] = QVariant::fromValue(to2);
     int card_id = room->askForCardChosen(from, to1, "e", "yushou", false, Card::MethodNone, disable);
     from->showHiddenSkill("yushou");
-    const Card *card = Sanguosha->getCard(card_id);
+    const Card *card = room->getCard(card_id);
     room->moveCardTo(card, to1, to2, Player::PlaceEquip, CardMoveReason(CardMoveReason::S_REASON_TRANSFER, from->objectName(), "yushou", QString()));
 
     QString prompt = "confirm:" + to2->objectName();
@@ -1666,7 +1666,7 @@ void PanduCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
     ServerPlayer *target = targets.first();
     int card_id = room->askForCardChosen(source, target, "hs", "pandu");
     room->showCard(target, card_id);
-    Card *showcard = Sanguosha->getCard(card_id);
+    Card *showcard = room->getCard(card_id);
     if (showcard->isKindOf("Slash")) {
         if (!target->isCardLimited(showcard, Card::MethodUse)) {
             room->setCardFlag(showcard, "chosenExtraSlashTarget");

@@ -237,7 +237,7 @@ MofaCard::MofaCard()
 
 void MofaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
 {
-    Card *card = Sanguosha->getCard(subcards.first());
+    Card *card = room->getCard(subcards.first());
     if (card->getSuit() == Card::Spade)
         source->drawCards(1);
     room->touhouLogmessage("#mofa_notice", source, "mofa");
@@ -707,7 +707,7 @@ BaoyiCard::BaoyiCard()
 void BaoyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
 {
     foreach (int id, subcards) {
-        Card *c = Sanguosha->getCard(id);
+        Card *c = room->getCard(id);
         if (c->getSuit() == Card::Spade) {
             room->setPlayerFlag(source, "baoyi");
             break;
@@ -935,7 +935,7 @@ public:
         ServerPlayer *reimu = qobject_cast<ServerPlayer *>(move.to);
         if (reimu != NULL && reimu->hasSkill(this) && move.to_place == Player::PlaceHand) {
             foreach (int id, move.card_ids) {
-                if (Sanguosha->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand) {
+                if (room->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand) {
                     ServerPlayer *owner = room->getCardOwner(id);
                     if (owner && owner == reimu)
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, reimu, reimu);
@@ -950,7 +950,7 @@ public:
         ServerPlayer *reimu = invoke->invoker;
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         foreach (int id, move.card_ids) {
-            if (Sanguosha->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand) {
+            if (room->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand) {
                 ServerPlayer *owner = room->getCardOwner(id);
                 if (owner && owner == reimu)
                     room->setCardFlag(id, "chunxi");
@@ -1876,9 +1876,9 @@ public:
 
             foreach (int id, Sanguosha->getRandomCards()) {
                 if (room->getCardPlace(id) == Player::PlaceTable)
-                    room->moveCardTo(Sanguosha->getCard(id), NULL, Player::DiscardPile, true);
-                if (Sanguosha->getCard(id)->hasFlag("using"))
-                    room->setCardFlag(Sanguosha->getCard(id), "-using");
+                    room->moveCardTo(room->getCard(id), NULL, Player::DiscardPile, true);
+                if (room->getCard(id)->hasFlag("using"))
+                    room->setCardFlag(room->getCard(id), "-using");
             }
 
             invoke->invoker->addMark("siyuinvoke");
@@ -2068,7 +2068,7 @@ public:
         events << CardsMoveOneTime << CardUsed << CardResponded << EventPhaseStart << EventPhaseChanging;
     }
 
-    void record(TriggerEvent triggerEvent, Room *, QVariant &data) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
         if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
@@ -2079,7 +2079,7 @@ public:
             if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
                 foreach (int id, move.card_ids) {
                     if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand || move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceEquip) {
-                        if (Sanguosha->getCard(id)->getSuit() == Card::Heart) {
+                        if (room->getCard(id)->getSuit() == Card::Heart) {
                             heart = true;
                             break;
                         }

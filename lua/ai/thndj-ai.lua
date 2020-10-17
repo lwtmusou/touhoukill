@@ -415,7 +415,7 @@ jineng_skill.getTurnUseCard = function(self)
 	local jinengCards = {}
 	for _, id in sgs.qlist(ids) do
 		local forbid
-		local c = sgs.Sanguosha:getCard(id)
+		local c = self.room:getCard(id)
 		local suit = c:getSuit()
 		if  suit == sgs.Card_Spade then
 			forbid = sgs.cloneCard("slash")
@@ -483,7 +483,7 @@ function sgs.ai_cardsview_valuable.jineng(self, class_name, player)
 	local spade, heart, club, diamond -- = {}, {}, {}, {}
 
 	for _, id in sgs.qlist(ids) do
-		local c = sgs.Sanguosha:getCard(id)
+		local c = self.room:getCard(id)
 		local suit = c:getSuit()
 		if  suit == sgs.Card_Spade then
 			spade =  c

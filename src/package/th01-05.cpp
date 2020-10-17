@@ -860,7 +860,7 @@ public:
             room->sendLog(log);
 
             Card *delayTrick = Sanguosha->cloneCard(choice);
-            WrappedCard *vs_card = Sanguosha->getWrappedCard(card_id);
+            WrappedCard *vs_card = room->getWrappedCard(card_id);
             vs_card->setSkillName(objectName());
             vs_card->takeOver(delayTrick);
             room->broadcastUpdateCard(room->getAlivePlayers(), vs_card->getId(), vs_card);
@@ -879,7 +879,7 @@ public:
             }
             int card_id = room->askForCardChosen(invoke->invoker, invoke->invoker, "j", objectName(), false, Card::MethodDiscard, disable);
 
-            const Card *card = Sanguosha->getCard(card_id);
+            const Card *card = room->getCard(card_id);
             room->moveCardTo(card, invoke->invoker, current, Player::PlaceDelayedTrick,
                              CardMoveReason(CardMoveReason::S_REASON_TRANSFER, invoke->invoker->objectName(), objectName(), QString()));
         }
@@ -1145,7 +1145,7 @@ public:
                 foreach (QVariant card_data, ids) {
                     int id = card_data.toInt();
                     room->showCard(invoke->invoker, id);
-                    if (Sanguosha->getCard(id)->isKindOf("BasicCard"))
+                    if (room->getCard(id)->isKindOf("BasicCard"))
                         get_ids << id;
                     else
                         throw_ids << id;
@@ -1373,7 +1373,7 @@ public:
                 room->setPlayerFlag(invoke->targets.first(), objectName());
         }
         if (id > -1) {
-            Card *c = Sanguosha->getCard(id);
+            Card *c = room->getCard(id);
             if (invoke->invoker == pindian->from)
                 pindian->from_card = c;
             else
@@ -1598,7 +1598,7 @@ public:
     {
         Jink *jink = new Jink(originalCard->getSuit(), originalCard->getNumber());
         jink->setSkillName(objectName());
-        WrappedCard *card = Sanguosha->getWrappedCard(originalCard->getId());
+        WrappedCard *card = Sanguosha->currentRoom()->getWrappedCard(originalCard->getId());
         card->takeOver(jink);
         return card;
     }
@@ -1807,10 +1807,10 @@ void ModianCard::use(Room *room, ServerPlayer *src, QList<ServerPlayer *> &targe
 
     bool draw = true;
     foreach (int id, alice->getPile("modian")) {
-        if (Sanguosha->getCard(id)->objectName() == Sanguosha->getCard(subcards.first())->objectName()) {
+        if (room->getCard(id)->objectName() == room->getCard(subcards.first())->objectName()) {
             draw = false;
             break;
-        } else if (Sanguosha->getCard(id)->isKindOf("Slash") && Sanguosha->getCard(subcards.first())->isKindOf("Slash")) {
+        } else if (room->getCard(id)->isKindOf("Slash") && room->getCard(subcards.first())->isKindOf("Slash")) {
             draw = false;
             break;
         }
@@ -1828,7 +1828,7 @@ void ModianCard::use(Room *room, ServerPlayer *src, QList<ServerPlayer *> &targe
 
             int x = qrand() % modians.length();
             int id = modians.value(x);
-            c = Sanguosha->getCard(id);
+            c = room->getCard(id);
         }
 
         CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, "", NULL, objectName(), "");
@@ -1981,21 +1981,21 @@ public:
             return false;
         if (matchAvaliablePattern("slash", pattern)) {
             foreach (int id, player->getPile("modian")) {
-                if (Sanguosha->getCard(id)->isKindOf("TrickCard"))
+                if (player->getRoomObject()->getCard(id)->isKindOf("TrickCard"))
                     return true;
             }
         }
 
         bool trick = false;
         foreach (int id, player->getPile("modian")) {
-            if (Sanguosha->getCard(id)->isKindOf("TrickCard") && matchAvaliablePattern(Sanguosha->getCard(id)->objectName(), pattern)) {
+            if (player->getRoomObject()->getCard(id)->isKindOf("TrickCard") && matchAvaliablePattern(player->getRoomObject()->getCard(id)->objectName(), pattern)) {
                 trick = true;
                 break;
             }
         }
         if (trick) {
             foreach (int id, player->getPile("modian")) {
-                if (Sanguosha->getCard(id)->isKindOf("Slash"))
+                if (player->getRoomObject()->getCard(id)->isKindOf("Slash"))
                     return true;
             }
         }
@@ -2084,14 +2084,14 @@ public:
     {
         bool hasNul = false;
         foreach (int id, player->getPile("modian")) {
-            if (Sanguosha->getCard(id)->isKindOf("Nullification")) {
+            if (player->getRoom()->getCard(id)->isKindOf("Nullification")) {
                 hasNul = true;
                 break;
             }
         }
         if (hasNul) {
             foreach (int id, player->getPile("modian")) {
-                if (Sanguosha->getCard(id)->isKindOf("Slash")) {
+                if (player->getRoom()->getCard(id)->isKindOf("Slash")) {
                     Nullification *nul = new Nullification(Card::SuitToBeDecided, -1);
                     nul->addSubcard(id);
                     DELETE_OVER_SCOPE(Nullification, nul)
@@ -2422,12 +2422,12 @@ public:
         frequency = Compulsory;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->isKindOf("Slash") && use.from->isAlive() && use.from->hasSkill(this)) {
             foreach (int id, use.from->getShownHandcards()) {
-                if (Sanguosha->getCard(id)->getSuit() == use.card->getSuit())
+                if (room->getCard(id)->getSuit() == use.card->getSuit())
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);
             }
         }
@@ -2456,9 +2456,10 @@ public:
 
     static QString xingyouPattern(ServerPlayer *current)
     {
+        Room *room = current->getRoom();
         QStringList suits;
         foreach (int id, current->getShownHandcards()) {
-            QString suit = Sanguosha->getCard(id)->getSuitString();
+            QString suit = room->getCard(id)->getSuitString();
             if (!suits.contains(suit))
                 suits << suit;
         }
@@ -2564,11 +2565,11 @@ QirenCard::QirenCard()
 bool QirenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     int shownId = (Self->getShownHandcards().contains(subcards.first())) ? subcards.first() : subcards.last();
-    Card *oc = Sanguosha->getCard(shownId);
+    Card *oc = Self->getRoomObject()->getCard(shownId);
     int id = (Self->getShownHandcards().contains(subcards.first())) ? subcards.last() : subcards.first();
 
     //only consider slashTargetFix
-    if (Sanguosha->getCard(id)->isKindOf("Slash")) {
+    if (Self->getRoomObject()->getCard(id)->isKindOf("Slash")) {
         if (Self->hasFlag("slashTargetFix")) {
             if (Self->hasFlag("slashDisableExtraTarget")) {
                 return to_select->hasFlag("SlashAssignee") && oc->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, oc, targets);
@@ -2592,19 +2593,19 @@ bool QirenCard::targetFilter(const QList<const Player *> &targets, const Player 
 bool QirenCard::targetFixed(const Player *Self) const
 {
     int shownId = (Self->getShownHandcards().contains(subcards.first())) ? subcards.first() : subcards.last();
-    return Sanguosha->getCard(shownId)->targetFixed(Self);
+    return Self->getRoomObject()->getCard(shownId)->targetFixed(Self);
 }
 
 bool QirenCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
     int shownId = (Self->getShownHandcards().contains(subcards.first())) ? subcards.first() : subcards.last();
 
-    if (Sanguosha->getCard(shownId)->canRecast() && targets.length() == 0)
+    if (Self->getRoomObject()->getCard(shownId)->canRecast() && targets.length() == 0)
         return false;
     //do not consider extraTarget
-    if (Sanguosha->getCard(shownId)->isKindOf("Collateral"))
+    if (Self->getRoomObject()->getCard(shownId)->isKindOf("Collateral"))
         return targets.length() == 1;
-    return Sanguosha->getCard(shownId)->targetsFeasible(targets, Self);
+    return Self->getRoomObject()->getCard(shownId)->targetsFeasible(targets, Self);
 }
 
 bool QirenCard::isAvailable(const Player *player) const
@@ -2612,7 +2613,7 @@ bool QirenCard::isAvailable(const Player *player) const
     int shownId = (Self->getShownHandcards().contains(subcards.first())) ? subcards.first() : subcards.last();
     int id = (Self->getShownHandcards().contains(subcards.first())) ? subcards.last() : subcards.first();
 
-    Card *oc = Sanguosha->getCard(shownId);
+    Card *oc = Self->getRoomObject()->getCard(shownId);
 
     //Do not check isAvaliable() in ViewFilter in ViewAsSkill
     //check prohibit
@@ -2634,7 +2635,7 @@ bool QirenCard::isAvailable(const Player *player) const
         }
     }
     //check times
-    Card *card = Sanguosha->getCard(id);
+    Card *card = Self->getRoomObject()->getCard(id);
     bool play = player->getPhase() == Player::Play && player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY;
     if (card->isKindOf("Slash") && play) {
         if (!Slash::IsAvailable(player, card, true))
@@ -2652,8 +2653,8 @@ void QirenCard::onUse(Room *room, const CardUseStruct &card_use) const
 {
     int shownId = (card_use.from->isShownHandcard(subcards.first())) ? subcards.first() : subcards.last();
     int id = (card_use.from->isShownHandcard(subcards.first())) ? subcards.last() : subcards.first();
-    Card *oc = Sanguosha->getCard(shownId);
-    Card *card = Sanguosha->getCard(id);
+    Card *oc = room->getCard(shownId);
+    Card *card = room->getCard(id);
     QList<ServerPlayer *> targets;
     CardUseStruct use = card_use;
     use.card = card;
@@ -3036,9 +3037,9 @@ public:
         else
             target->removeShownHandCards(QList<int>() << id);
 
-        if (target->getPhase() == Player::Play && Sanguosha->getCard(id)->getColor() != card->getColor())
+        if (target->getPhase() == Player::Play && room->getCard(id)->getColor() != card->getColor())
             target->drawCards(1);
-        else if (target->getPhase() != Player::Play && Sanguosha->getCard(id)->getColor() == card->getColor())
+        else if (target->getPhase() != Player::Play && room->getCard(id)->getColor() == card->getColor())
             target->drawCards(1);
         return false;
     }
@@ -3261,7 +3262,7 @@ public:
         if (!invoke->targets.first()->isKongcheng() && invoke->invoker->askForSkillInvoke(this, data)) {
             int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hs", objectName());
             room->showCard(invoke->targets.first(), id);
-            if (Sanguosha->getCard(id)->getTypeId() == Card::TypeBasic)
+            if (room->getCard(id)->getTypeId() == Card::TypeBasic)
                 room->loseHp(invoke->targets.first(), 1);
         }
         return false;

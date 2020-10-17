@@ -587,7 +587,7 @@ sgs.ai_skill_cardchosen.jiezou = function(self, who, flags)
 			end
 		end
 		local id = self:askForCardChosen(who, "hes", "snatch", sgs.Card_MethodNone)
-		return sgs.Sanguosha:getCard(id)
+		return self.room:getCard(id)
 	end
 end
 sgs.ai_skill_cardask["@jiezou_spadecard"] = function(self, data)
@@ -873,7 +873,7 @@ sgs.ai_skill_use["@@chunxi"] = function(self, prompt)
 	local move = self.player:getTag("chunxi_move"):toMoveOneTime()
 	local ids = {}
 	for _, id in sgs.qlist(move.card_ids) do
-		if sgs.Sanguosha:getCard(id):getSuit() == sgs.Card_Heart
+		if self.room:getCard(id):getSuit() == sgs.Card_Heart
 		  and self.room:getCardPlace(id) == sgs.Player_PlaceHand then
 			table.insert(ids, id)
 		end
@@ -1045,7 +1045,7 @@ function sgs.ai_cardsview_valuable.bllmwuyu(self, class_name, player)
 				end
 			end
 			for _,id in sgs.qlist(player:getHandPile()) do
-				local c = sgs.Sanguosha:getCard(id)
+				local c = self.room:getCard(id)
 				if not c:hasFlag("AIGlobal_SearchForAnaleptic") then
 					table.insert(others,c)
 				end
@@ -1235,7 +1235,7 @@ sgs.ai_skill_use_func.DfgzmSiyuCard = function(card, use, self)
 	self:sort(self.enemies,"handcard")
 	for var=#self.enemies, 1, -1 do
 		if self.enemies[var]:hasSkills("chunxi|xingyun") then
-			local heart=sgs.Sanguosha:getCard(card:getSubcards():first())
+			local heart=self.room:getCard(card:getSubcards():first())
 			if heart:getSuit()~=sgs.Card_Heart then
 				target=self.enemies[var]
 				break

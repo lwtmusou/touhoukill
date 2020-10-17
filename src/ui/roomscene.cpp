@@ -3133,7 +3133,7 @@ void RoomScene::onSkillActivated()
                 foreach (const QString &name, dashboard->getPileExpanded()) {
                     QList<int> pile = Self->getPile(name);
                     foreach (int id, pile)
-                        cards << Sanguosha->getCard(id);
+                        cards << ClientInstance->getCard(id);
                 }
 
                 foreach (const Card *c, cards) {
@@ -4174,7 +4174,7 @@ void RoomScene::showPile(const QList<int> &card_ids, const QString &name, const 
         if (name == "zhenli") {
             QList<Card *> zhenlis;
             foreach (int id, card_ids) {
-                zhenlis << Sanguosha->getCard(id);
+                zhenlis << ClientInstance->getCard(id);
             }
             std::sort(zhenlis.begin(), zhenlis.end(), Card::CompareByNumber);
             QList<int> zhenids;
@@ -5085,14 +5085,14 @@ void RoomScene::showPindianBox(const QString &from_name, int from_id, const QStr
         pindian_to_card = NULL;
     }
 
-    pindian_from_card = new CardItem(Sanguosha->getCard(from_id));
+    pindian_from_card = new CardItem(ClientInstance->getCard(from_id));
     pindian_from_card->setParentItem(pindian_box);
     pindian_from_card->setPos(QPointF(28 + pindian_from_card->boundingRect().width() / 2, 44 + pindian_from_card->boundingRect().height() / 2));
     pindian_from_card->setFlag(QGraphicsItem::ItemIsMovable, false);
     pindian_from_card->setHomePos(pindian_from_card->pos());
     pindian_from_card->setFootnote(ClientInstance->getPlayerName(from_name));
 
-    pindian_to_card = new CardItem(Sanguosha->getCard(to_id));
+    pindian_to_card = new CardItem(ClientInstance->getCard(to_id));
     pindian_to_card->setParentItem(pindian_box);
     pindian_to_card->setPos(QPointF(126 + pindian_to_card->boundingRect().width() / 2, 44 + pindian_to_card->boundingRect().height() / 2));
     pindian_to_card->setFlag(QGraphicsItem::ItemIsMovable, false);

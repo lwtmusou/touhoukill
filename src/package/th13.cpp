@@ -134,7 +134,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *target = qobject_cast<ServerPlayer *>(move.to);
@@ -142,7 +142,7 @@ public:
         bool isSlash = false;
         foreach (int id, move.card_ids) {
             if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand) {
-                if (Sanguosha->getCard(id)->isKindOf("Slash")) {
+                if (room->getCard(id)->isKindOf("Slash")) {
                     isSlash = true;
                     break;
                 }
@@ -460,7 +460,7 @@ bool XihuaCard::do_xihua(ServerPlayer *tanuki) const
     room->showCard(tanuki, to_show);
 
     room->getThread()->delay();
-    Card *card = Sanguosha->getCard(to_show);
+    Card *card = room->getCard(to_show);
 
     bool success = false;
     if (!isHegemonyGameMode(ServerInfo.GameMode) && card->getNumber() > 10) //this skill in hegemony mode differs with other modes
@@ -804,7 +804,7 @@ public:
 
             player->setFlags("-shijie_judge");
             QList<int> list1 = room->getNCards(1);
-            Card *card = Sanguosha->getCard(list1.first());
+            Card *card = room->getCard(list1.first());
             room->retrial(card, player, judge, objectName());
         }*/
         player->setFlags("-shijie_judge");
@@ -972,7 +972,7 @@ void XiefaCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) 
 {
     ServerPlayer *to1 = targets.first();
     ServerPlayer *to2 = targets.last();
-    Card *card = Sanguosha->getCard(subcards.first());
+    Card *card = room->getCard(subcards.first());
     to1->obtainCard(card, false);
 
     if (to2->isDead() || to2->isRemoved())
@@ -1292,7 +1292,7 @@ public:
             if (player != NULL && player->getPhase() == Player::Discard && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)) {
                 foreach (int id, move.card_ids) {
                     if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceHand) {
-                        Card *card = Sanguosha->getCard(id);
+                        Card *card = room->getCard(id);
                         recordChuixue(player, card);
                     }
                 }
@@ -1601,7 +1601,7 @@ public:
             room->sendLog(log);
 
             SupplyShortage *supplyshortage = new SupplyShortage(card->getSuit(), card->getNumber());
-            WrappedCard *vs_card = Sanguosha->getWrappedCard(card->getSubcards().first());
+            WrappedCard *vs_card = room->getWrappedCard(card->getSubcards().first());
             vs_card->setSkillName(objectName());
             vs_card->takeOver(supplyshortage);
             room->broadcastUpdateCard(room->getAlivePlayers(), vs_card->getId(), vs_card);

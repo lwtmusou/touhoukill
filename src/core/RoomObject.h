@@ -19,6 +19,7 @@ public:
     explicit RoomObject(QObject *parent = NULL);
     ~RoomObject();
     Card *getCard(int cardId) const;
+    WrappedCard *getWrappedCard(int cardId) const;
 
     inline QString getCurrentCardUsePattern() const
     {

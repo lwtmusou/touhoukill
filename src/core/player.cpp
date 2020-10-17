@@ -1162,7 +1162,7 @@ QList<const Card *> Player::getJudgingArea() const
 {
     QList<const Card *> cards;
     foreach (int card_id, judging_area)
-        cards.append(Sanguosha->getCard(card_id));
+        cards.append(getRoomObject()->getCard(card_id));
     return cards;
 }
 
@@ -1307,7 +1307,7 @@ bool Player::canDiscard(const Player *to, int card_id, const QString &reason) co
     }
 
     if (this == to) {
-        if (isJilei(Sanguosha->getCard(card_id)))
+        if (isJilei(getRoomObject()->getCard(card_id)))
             return false;
     }
     return true;
@@ -1328,7 +1328,7 @@ void Player::removeDelayedTrick(const Card *trick)
 bool Player::containsTrick(const QString &trick_name) const
 {
     foreach (int trick_id, judging_area) {
-        WrappedCard *trick = Sanguosha->getWrappedCard(trick_id);
+        WrappedCard *trick = getRoomObject()->getWrappedCard(trick_id);
         if (trick->objectName() == trick_name)
             return true;
     }
@@ -1715,7 +1715,7 @@ bool Player::isCardLimited(const Card *card, Card::HandlingMethod method, bool i
         return false;
     if (card->getTypeId() == Card::TypeSkill && method == card->getHandlingMethod()) {
         foreach (int card_id, card->getSubcards()) {
-            const Card *c = Sanguosha->getCard(card_id);
+            const Card *c = getRoomObject()->getCard(card_id);
             QMap<QString, QStringList> map = card_limitation[method];
             QMap<QString, QStringList>::iterator it;
             for (it = map.begin(); it != map.end(); ++it) {

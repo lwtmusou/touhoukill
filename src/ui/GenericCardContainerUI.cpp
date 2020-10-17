@@ -34,7 +34,7 @@ QList<CardItem *> GenericCardContainer::_createCards(QList<int> card_ids)
 
 CardItem *GenericCardContainer::_createCard(int card_id)
 {
-    const Card *card = Sanguosha->getCard(card_id);
+    const Card *card = ClientInstance->getCard(card_id);
     CardItem *item = new CardItem(card);
     item->setOpacity(0.0);
     item->setParentItem(this);

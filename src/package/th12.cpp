@@ -508,7 +508,7 @@ public:
             mes.type = "$baota";
             mes.from = invoke->invoker;
             mes.arg = objectName();
-            mes.card_str = Sanguosha->getCard(card_id)->toString();
+            mes.card_str = room->getCard(card_id)->toString();
             room->sendLog(mes);
 
             QList<int> buttom_ids;
@@ -912,7 +912,7 @@ public:
         QList<int> able;
         QList<int> disable;
         foreach (int id, ids) {
-            if (Sanguosha->getCard(id)->getSuit() == card->getSuit())
+            if (room->getCard(id)->getSuit() == card->getSuit())
                 able << id;
             else
                 disable << id;
@@ -1583,7 +1583,7 @@ public:
             bool can = false;
             foreach (int id, move.card_ids) {
                 if (move.from_places.at(move.card_ids.indexOf(id)) == Player::PlaceDelayedTrick) {
-                    WrappedCard *vs_card = Sanguosha->getWrappedCard(id);
+                    WrappedCard *vs_card = room->getWrappedCard(id);
                     if (vs_card->getSubtype() == "unmovable_delayed_trick") {
                         can = true;
                         break;

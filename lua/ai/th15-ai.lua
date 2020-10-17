@@ -80,7 +80,7 @@ sgs.ai_skill_use["@@shayi"] = function(self, prompt)
 
 	local ids=self.player:getTag("shayi"):toIntList()
 	for _,id in sgs.qlist(ids) do
-		local card = sgs.Sanguosha:getCard(id)
+		local card = self.room:getCard(id)
 		local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 		self:useBasicCard(card, dummy_use)
 		if dummy_use.card and not dummy_use.to:isEmpty() then
@@ -170,7 +170,7 @@ sgs.ai_skill_cardchosen.yuyi = function(self, who, flags)
 	end
 
 	local id = self:askForCardChosen(who, "hs", "dismantlement", sgs.Card_MethodDiscard)
-	return sgs.Sanguosha:getCard(id)
+	return self.room:getCard(id)
 end
 
 --[[sgs.ai_skill_invoke.yuyi = function(self, data)
@@ -365,7 +365,7 @@ function sgs.ai_cardsview_valuable.jiangguo(self, class_name, player)
 		if dying and dying:objectName() == self.player:objectName() then  
 			local dango = self.player:getPile("dango")
 			if dango:isEmpty() then return nil end
-			local card = sgs.Sanguosha:getCard(dango:first())
+			local card = self.room:getCard(dango:first())
 		
 			local suit = card:getSuitString()
 			local number = card:getNumberString()

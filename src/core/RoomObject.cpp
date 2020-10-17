@@ -16,6 +16,11 @@ RoomObject::~RoomObject()
 
 Card *RoomObject::getCard(int cardId) const
 {
+    return getWrappedCard(cardId);
+}
+
+WrappedCard *RoomObject::getWrappedCard(int cardId) const
+{
     if (!m_cards.contains(cardId))
         return NULL;
     return m_cards[cardId];

@@ -1755,11 +1755,11 @@ public:
 
         if (from->canDiscard(to, "hes")) {
             int card_id = room->askForCardChosen(from, to, "hes", "IceSword", false, Card::MethodDiscard);
-            room->throwCard(Sanguosha->getCard(card_id), to, from);
+            room->throwCard(room->getCard(card_id), to, from);
 
             if (from->isAlive() && to->isAlive() && from->canDiscard(to, "hes")) {
                 card_id = room->askForCardChosen(from, to, "hes", "IceSword", false, Card::MethodDiscard);
-                room->throwCard(Sanguosha->getCard(card_id), to, from);
+                room->throwCard(room->getCard(card_id), to, from);
             }
         }
 

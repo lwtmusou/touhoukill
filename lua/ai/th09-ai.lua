@@ -561,7 +561,7 @@ sgs.ai_skill_cardchosen.feixiang = function(self, who, flags)
 		local self_card =  who:objectName()== self.player:objectName()
 		local new_id=self:getRetrialCardId(cards1, judge, self_card)
 		if new_id ~= -1 then
-			return sgs.Sanguosha:getCard(new_id)
+			return self.room:getCard(new_id)
 		end
 		if #cards1 > 0 then
 			return cards1[math.random(1, #cards1)]
@@ -571,7 +571,7 @@ sgs.ai_skill_cardchosen.feixiang = function(self, who, flags)
 		local self_card =  who:objectName()== self.player:objectName()
 		local new_id=self:getRetrialCardId(cards1, judge, self_card)
 		if new_id ~= -1 then
-			return sgs.Sanguosha:getCard(new_id)
+			return self.room:getCard(new_id)
 		else
 			flag = "hs"
 		end
@@ -599,7 +599,7 @@ sgs.ai_skill_playerchosen.feixiang = function(self, targets)
 		--new_id 不为-1 代表 装备区的id去改判，可以得到好结果
         	if new_id == -1 then continue end
 		--牌的基础使用价值
-        	local new_value = self:getUseValue(sgs.Sanguosha:getCard(new_id))
+        	local new_value = self:getUseValue(self.room:getCard(new_id))
         	local diff = judgecard_value - new_value
         	if not self:isEnemy(target) then
 			diff = 0 - diff
@@ -649,7 +649,7 @@ sgs.ai_skill_cardchosen.feixiang = function(self, who, flags)
 	local self_card =  who:objectName()== self.player:objectName()
 	local new_id=self:getRetrialCardId(cards1, judge, self_card)
 	if new_id ~= -1 then
-		return sgs.Sanguosha:getCard(new_id)
+		return self.room:getCard(new_id)
 	end
 
 	return cards1[math.random(1, #cards1)]

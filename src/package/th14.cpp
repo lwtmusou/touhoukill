@@ -108,7 +108,7 @@ public:
             if (move.to_place == Player::DiscardPile) {
                 QVariantList ids = current->tag["moyi_basics"].toList();
                 foreach (int id, move.card_ids) {
-                    if (Sanguosha->getCard(id)->isKindOf("BasicCard") && !ids.contains(id))
+                    if (room->getCard(id)->isKindOf("BasicCard") && !ids.contains(id))
                         ids << id;
                 }
                 current->tag["moyi_basics"] = ids;
@@ -419,7 +419,7 @@ public:
         ServerPlayer *target = invoke->targets.first();
         QList<int> ids;
         foreach (int id, target->handCards()) {
-            if (Sanguosha->getCard(id)->isKindOf("Peach") || Sanguosha->getCard(id)->isKindOf("Analeptic"))
+            if (room->getCard(id)->isKindOf("Peach") || room->getCard(id)->isKindOf("Analeptic"))
                 ids << id;
         }
 
@@ -859,7 +859,7 @@ public:
                     temp_ids << card_data.toInt();
 
                 foreach (int id, move.card_ids) {
-                    Card *card = Sanguosha->getCard(id);
+                    Card *card = room->getCard(id);
                     if (card->isKindOf("Peach") && !temp_ids.contains(id) && room->getCardPlace(id) == Player::DiscardPile)
                         shizhu_ids << id;
                 }
@@ -930,7 +930,7 @@ public:
                 }
             }
             if (!hand_peach)
-                source->obtainCard(Sanguosha->getCard(id), true);
+                source->obtainCard(room->getCard(id), true);
         }
         return false;
     }
@@ -944,7 +944,7 @@ LiangeCard::LiangeCard()
 
 void LiangeCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const
 {
-    room->moveCardTo(Sanguosha->getCard(subcards.first()), NULL, Player::DrawPile);
+    room->moveCardTo(room->getCard(subcards.first()), NULL, Player::DrawPile);
     QList<int> idlist = room->getNCards(2);
 
     room->fillAG(idlist, targets.first());
@@ -1105,7 +1105,7 @@ public:
             ServerPlayer *current = room->getCurrent();
             QList<int> disable = huobaoProhibitCards(invoke->invoker, current);
             int id = room->askForCardChosen(invoke->invoker, current, "e", objectName(), false, Card::MethodNone, disable);
-            const Card *card = Sanguosha->getCard(id);
+            const Card *card = room->getCard(id);
             if (!invoke->invoker->hasFlag("huobao")) {
                 room->setPlayerFlag(invoke->invoker, "huobao");
                 room->setFixedDistance(current, invoke->invoker, 1);

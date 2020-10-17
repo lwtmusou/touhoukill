@@ -164,7 +164,7 @@ bool Fsu0413GainianDialog::isResponseOk(const Player *player, const QString &pat
         }
 
         foreach (int handPileId, player->getHandPile()) {
-            const Card *handCard = Sanguosha->getCard(handPileId);
+            const Card *handCard = player->getRoomObject()->getCard(handPileId);
             if (handCard != NULL && handCard->isKindOf("DelayedTrick")) {
                 copy->clearSubcards();
                 copy->addSubcard(handCard);
@@ -200,7 +200,7 @@ void Fsu0413GainianDialog::popup()
             }
 
             foreach (int handPileId, Self->getHandPile()) {
-                const Card *handCard = Sanguosha->getCard(handPileId);
+                const Card *handCard = Self->getRoomObject()->getCard(handPileId);
                 if (handCard != NULL && handCard->isKindOf("DelayedTrick")) {
                     copy->clearSubcards();
                     copy->addSubcard(handCard);
@@ -238,7 +238,7 @@ void Fsu0413GainianDialog::popup()
             }
 
             foreach (int handPileId, Self->getHandPile()) {
-                const Card *handCard = Sanguosha->getCard(handPileId);
+                const Card *handCard = Self->getRoomObject()->getCard(handPileId);
                 if (handCard != NULL && handCard->isKindOf("DelayedTrick")) {
                     copy->clearSubcards();
                     copy->addSubcard(handCard);
@@ -339,7 +339,7 @@ public:
         }
 
         foreach (int id, player->getHandPile()) {
-            const Card *card = Sanguosha->getCard(id);
+            const Card *card = player->getRoomObject()->getCard(id);
             if (card != NULL && card->isKindOf("DelayedTrick"))
                 return true;
         }
@@ -407,7 +407,7 @@ public:
     {
         bool flag = false;
         foreach (int id, const_cast<Room *>(room)->getDiscardPile()) {
-            const Card *c = Sanguosha->getCard(id);
+            const Card *c = room->getCard(id);
             if (c && c->isKindOf("DelayedTrick")) {
                 flag = true;
                 break;
@@ -452,13 +452,13 @@ public:
         QList<int> delayedtricks;
 
         foreach (int id, room->getDiscardPile()) {
-            const Card *c = Sanguosha->getCard(id);
+            const Card *c = room->getCard(id);
             if (c && c->isKindOf("DelayedTrick"))
                 delayedtricks << id;
         }
 
         int obtainId = delayedtricks.at(qrand() % delayedtricks.length());
-        st.player->obtainCard(Sanguosha->getCard(obtainId));
+        st.player->obtainCard(room->getCard(obtainId));
 
         return false;
     }
@@ -484,7 +484,7 @@ void Fsu0413Fei2ZhaiCard::use(Room *room, ServerPlayer *source, QList<ServerPlay
 
     DummyCard dummy;
     foreach (int id, room->getDiscardPile()) {
-        if (Sanguosha->getCard(id)->isKindOf("Peach"))
+        if (room->getCard(id)->isKindOf("Peach"))
             dummy.addSubcard(id);
     }
 
@@ -609,11 +609,11 @@ public:
             cards.removeOne(id);
 
             if (s == Card::NoSuit) {
-                const Card *c = Sanguosha->getCard(id);
+                const Card *c = room->getCard(id);
                 if (c != NULL) {
                     s = c->getSuit();
                     foreach (int remainid, cards) {
-                        const Card *rc = Sanguosha->getCard(remainid);
+                        const Card *rc = room->getCard(remainid);
                         if (rc != NULL && rc->getSuit() != s) {
                             guanxingcards << remainid;
                             cards.removeOne(remainid);
@@ -741,7 +741,7 @@ public:
     {
         PowerSlash *slash = new PowerSlash(originalCard->getSuit(), originalCard->getNumber());
         slash->setSkillName("bmmaoji");
-        WrappedCard *wrap = Sanguosha->getWrappedCard(originalCard->getId());
+        WrappedCard *wrap = Sanguosha->currentRoom()->getWrappedCard(originalCard->getId());
         wrap->takeOver(slash);
         return wrap;
     }

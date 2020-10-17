@@ -398,8 +398,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
 
                     foreach (int id, Sanguosha->getRandomCards()) {
                         if (room->getCardPlace(id) == Player::PlaceTable || room->getCardPlace(id) == Player::PlaceJudge)
-                            room->moveCardTo(Sanguosha->getCard(id), NULL, Player::DiscardPile, true);
-                        if (Sanguosha->getCard(id)->hasFlag("using"))
+                            room->moveCardTo(room->getCard(id), NULL, Player::DiscardPile, true);
+                        if (room->getCard(id)->hasFlag("using"))
                             room->setCardFlag(id, "-using");
                     }
                 }
@@ -1079,7 +1079,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         int card_id = room->drawCard();
 
         JudgeStruct *judge = data.value<JudgeStruct *>();
-        judge->card = Sanguosha->getCard(card_id);
+        judge->card = room->getCard(card_id);
 
         LogMessage log;
         log.type = "$InitialJudge";

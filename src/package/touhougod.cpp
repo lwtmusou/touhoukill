@@ -256,7 +256,7 @@ public:
         room->getThread()->delay();
 
         room->clearAG();
-        Card *card = Sanguosha->getCard(cd_id);
+        Card *card = room->getCard(cd_id);
         if (card->isBlack())
             player->gainMark("@ye", 1);
         room->throwCard(cd_id, NULL);
@@ -1390,7 +1390,7 @@ void ShenshouCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
 {
     ServerPlayer *target = targets.first();
 
-    Card *card = Sanguosha->getCard(subcards.first());
+    Card *card = room->getCard(subcards.first());
 
     int x = 0;
     int y = 0;
@@ -2016,7 +2016,7 @@ public:
             return false;
 
         foreach (int id, Self->getPile("rainbow")) {
-            Card *card = Sanguosha->getCard(id);
+            Card *card = Self->getRoomObject()->getCard(id);
             if (card->getSuit() == to_select->getSuit())
                 return false;
         }
@@ -2432,7 +2432,7 @@ public:
                         mes.type = "$chaoren";
                         mes.from = byakuren;
                         mes.arg = "chaoren";
-                        mes.card_str = Sanguosha->getCard(move.card_ids.first())->toString();
+                        mes.card_str = room->getCard(move.card_ids.first())->toString();
                         room->sendLog(mes);
                     }
                 }
@@ -2614,7 +2614,7 @@ public:
             }
             bool canUse = false;
             foreach (int id, player->handCards()) {
-                const Card *card = Sanguosha->getCard(id);
+                const Card *card = room->getCard(id);
                 // TODO: CHECK isAvailable FUNCTION OF ALL CARDS!!!!!!
                 if (Sanguosha->matchExpPattern(pattern, player, card) && !player->isCardLimited(card, Card::MethodUse)) {
                     foreach (ServerPlayer *t, room->getAlivePlayers()) {
@@ -2638,7 +2638,7 @@ public:
                     const Card *useCard = NULL;
                     ServerPlayer *target = NULL;
                     foreach (int id, player->handCards()) {
-                        const Card *card = Sanguosha->getCard(id);
+                        const Card *card = room->getCard(id);
                         // TODO: CHECK isAvailable FUNCTION OF ALL CARDS!!!!!!
                         if (Sanguosha->matchExpPattern(pattern, player, card) && !player->isCardLimited(card, Card::MethodUse)) {
                             foreach (ServerPlayer *t, room->getAlivePlayers()) {
@@ -3283,7 +3283,7 @@ void WendaoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
         } else {
             int card_id = room->askForCardChosen(source, p, "hs", objectName(), false, Card::MethodDiscard);
             room->throwCard(card_id, p, source);
-            wendaoCard = Sanguosha->getCard(card_id);
+            wendaoCard = room->getCard(card_id);
         }
         if (wendaoCard->isRed()) {
             RecoverStruct recover;
@@ -4167,20 +4167,19 @@ XinhuaCard::XinhuaCard()
 
 bool XinhuaCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    const Card *oc = Sanguosha->getCard(subcards.first());
+    const Card *oc = Self->getRoomObject()->getCard(subcards.first());
     return oc->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, oc, targets);
-    ;
 }
 
 bool XinhuaCard::targetFixed(const Player *Self) const
 {
-    const Card *oc = Sanguosha->getCard(subcards.first());
+    const Card *oc = Self->getRoomObject()->getCard(subcards.first());
     return oc->targetFixed(Self);
 }
 
 bool XinhuaCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
-    const Card *oc = Sanguosha->getCard(subcards.first());
+    const Card *oc = Self->getRoomObject()->getCard(subcards.first());
     if (oc->canRecast() && targets.length() == 0)
         return false;
     return oc->targetsFeasible(targets, Self);
@@ -4189,7 +4188,7 @@ bool XinhuaCard::targetsFeasible(const QList<const Player *> &targets, const Pla
 const Card *XinhuaCard::validate(CardUseStruct &use) const
 {
     Room *room = use.from->getRoom();
-    const Card *card = Sanguosha->getCard(subcards.first());
+    const Card *card = room->getCard(subcards.first());
     use.from->showHiddenSkill("xinhua");
 
     room->notifySkillInvoked(use.from, "xinhua");
@@ -4207,7 +4206,7 @@ const Card *XinhuaCard::validate(CardUseStruct &use) const
 const Card *XinhuaCard::validateInResponse(ServerPlayer *user) const
 {
     Room *room = user->getRoom();
-    const Card *card = Sanguosha->getCard(subcards.first());
+    const Card *card = room->getCard(subcards.first());
     user->showHiddenSkill("xinhua");
 
     room->notifySkillInvoked(user, "xinhua");
@@ -4323,7 +4322,7 @@ public:
             return false;
         foreach (const Player *p, player->getAliveSiblings()) {
             foreach (int id, p->getShownHandcards()) {
-                if (Sanguosha->getCard(id)->isKindOf("Nullification") && !player->isCardLimited(Sanguosha->getCard(id), Card::MethodUse, true))
+                if (player->getRoom()->getCard(id)->isKindOf("Nullification") && !player->isCardLimited(player->getRoom()->getCard(id), Card::MethodUse, true))
                     return true;
             }
         }
@@ -5776,7 +5775,7 @@ XianshiCard::XianshiCard()
 
 bool XianshiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    const Card *oc = Sanguosha->getCard(subcards.first());
+    const Card *oc = Self->getRoomObject()->getCard(subcards.first());
     Card *card = Sanguosha->cloneCard(oc->objectName());
     DELETE_OVER_SCOPE(Card, card)
     card->addSubcard(oc);
@@ -5786,7 +5785,7 @@ bool XianshiCard::targetFilter(const QList<const Player *> &targets, const Playe
 
 bool XianshiCard::targetFixed(const Player *Self) const
 {
-    const Card *oc = Sanguosha->getCard(subcards.first());
+    const Card *oc = Self->getRoomObject()->getCard(subcards.first());
     Card *card = Sanguosha->cloneCard(oc->objectName());
     DELETE_OVER_SCOPE(Card, card)
     card->addSubcard(oc);
@@ -5796,7 +5795,7 @@ bool XianshiCard::targetFixed(const Player *Self) const
 
 bool XianshiCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
-    const Card *oc = Sanguosha->getCard(subcards.first());
+    const Card *oc = Self->getRoomObject()->getCard(subcards.first());
     Card *card = Sanguosha->cloneCard(oc->objectName());
     DELETE_OVER_SCOPE(Card, card)
     card->addSubcard(oc);
@@ -5810,7 +5809,7 @@ const Card *XianshiCard::validate(CardUseStruct &use) const
 {
     QString xianshi_name = user_string;
     use.from->showHiddenSkill("xianshi");
-    const Card *card = Sanguosha->getCard(subcards.first());
+    const Card *card = use.from->getRoom()->getCard(subcards.first());
     Card *use_card = Sanguosha->cloneCard(card->objectName(), card->getSuit(), card->getNumber());
     use_card->setSkillName("xianshi");
 
@@ -5830,7 +5829,7 @@ const Card *XianshiCard::validateInResponse(ServerPlayer *user) const
     QString xianshi_name = user_string;
     user->showHiddenSkill("xianshi");
 
-    const Card *card = Sanguosha->getCard(subcards.first());
+    const Card *card = room->getCard(subcards.first());
     Card *use_card = Sanguosha->cloneCard(card->objectName(), card->getSuit(), card->getNumber());
     use_card->setSkillName("xianshi");
     use_card->addSubcard(subcards.first());
@@ -5974,7 +5973,7 @@ public:
 
         if (player->hasTreasure("wooden_ox")) {
             foreach (int id, player->getPile("wooden_ox")) {
-                if (Sanguosha->getCard(id)->objectName() == "nullification")
+                if (player->getRoom()->getCard(id)->objectName() == "nullification")
                     return true;
             }
         }
@@ -6091,14 +6090,14 @@ WenyueCard::WenyueCard()
     will_throw = false;
 }
 
-bool WenyueCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
+bool WenyueCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     if (to_select->hasFlag("Global_wenyueFailed"))
         return false;
     if (targets.length() == 0) {
         foreach (int id, subcards) {
-            if (Sanguosha->getCard(id)->getTypeId() == Card::TypeEquip) {
-                const EquipCard *equip = qobject_cast<const EquipCard *>(Sanguosha->getCard(id)->getRealCard());
+            if (Self->getRoomObject()->getCard(id)->getTypeId() == Card::TypeEquip) {
+                const EquipCard *equip = qobject_cast<const EquipCard *>(Self->getRoomObject()->getCard(id)->getRealCard());
                 if (!to_select->getEquip(equip->location()))
                     return true;
             }
@@ -6111,7 +6110,7 @@ void WenyueCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
 {
     int throw_id = -1, card_id = -1;
     foreach (int id, subcards) {
-        if (Sanguosha->getCard(id)->getTypeId() == Card::TypeEquip)
+        if (room->getCard(id)->getTypeId() == Card::TypeEquip)
             card_id = id;
         else
             throw_id = id;
@@ -6122,7 +6121,7 @@ void WenyueCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
         room->throwCard(&dummy, source, source);
     }
     if (throw_id != -1) {
-        const Card *card = Sanguosha->getCard(card_id);
+        const Card *card = room->getCard(card_id);
         LogMessage zhijian;
         zhijian.type = "$ZhijianEquip";
         zhijian.from = targets.first();
@@ -6281,7 +6280,7 @@ public:
             if (player != NULL && move.to_place == Player::DiscardPile) {
                 QList<int> equip_ids;
                 foreach (int id, move.card_ids) {
-                    if (Sanguosha->getCard(id)->getTypeId() == Card::TypeEquip && room->getCardPlace(id) == Player::DiscardPile)
+                    if (room->getCard(id)->getTypeId() == Card::TypeEquip && room->getCardPlace(id) == Player::DiscardPile)
                         equip_ids << id;
                 }
                 if (equip_ids.isEmpty())
@@ -6289,7 +6288,7 @@ public:
 
                 bool canMove = false;
                 foreach (int id, equip_ids) {
-                    const EquipCard *equip = qobject_cast<const EquipCard *>(Sanguosha->getCard(id)->getRealCard());
+                    const EquipCard *equip = qobject_cast<const EquipCard *>(room->getCard(id)->getRealCard());
                     foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
                         if (!p->getEquip(equip->location())) {
                             canMove = true;
@@ -6320,7 +6319,7 @@ public:
         while (true) {
             QList<int> equip_ids;
             foreach (int id, move.card_ids) {
-                if (Sanguosha->getCard(id)->getTypeId() == Card::TypeEquip && room->getCardPlace(id) == Player::DiscardPile)
+                if (room->getCard(id)->getTypeId() == Card::TypeEquip && room->getCardPlace(id) == Player::DiscardPile)
                     equip_ids << id;
             }
             if (equip_ids.isEmpty())
@@ -6353,7 +6352,7 @@ QianqiangCard::QianqiangCard()
 bool QianqiangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
 {
     if (targets.length() == 0) {
-        const EquipCard *equip = qobject_cast<const EquipCard *>(Sanguosha->getCard(subcards.first())->getRealCard());
+        const EquipCard *equip = qobject_cast<const EquipCard *>(Self->getRoomObject()->getCard(subcards.first())->getRealCard());
         if (!to_select->getEquip(equip->location()))
             return true;
     }
@@ -6363,7 +6362,7 @@ bool QianqiangCard::targetFilter(const QList<const Player *> &targets, const Pla
 void QianqiangCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     int card_id = subcards.first();
-    const Card *card = Sanguosha->getCard(card_id);
+    const Card *card = room->getCard(card_id);
     if (room->getCardPlace(card_id) != Player::PlaceEquip) {
         LogMessage zhijian;
         zhijian.type = "$ZhijianEquip";
@@ -6462,19 +6461,19 @@ XiuyeCard::XiuyeCard()
 
 bool XiuyeCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    const Card *oc = Sanguosha->getCard(subcards.first());
+    const Card *oc = Self->getRoomObject()->getCard(subcards.first());
     return oc->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, oc, targets);
 }
 
 bool XiuyeCard::targetFixed(const Player *Self) const
 {
-    const Card *oc = Sanguosha->getCard(subcards.first());
+    const Card *oc = Self->getRoomObject()->getCard(subcards.first());
     return oc->targetFixed(Self);
 }
 
 bool XiuyeCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
-    const Card *oc = Sanguosha->getCard(subcards.first());
+    const Card *oc = Self->getRoomObject()->getCard(subcards.first());
     if (oc->canRecast() && targets.length() == 0)
         return false;
     return oc->targetsFeasible(targets, Self);
@@ -6483,7 +6482,7 @@ bool XiuyeCard::targetsFeasible(const QList<const Player *> &targets, const Play
 const Card *XiuyeCard::validate(CardUseStruct &use) const
 {
     Room *room = use.from->getRoom();
-    const Card *card = Sanguosha->getCard(subcards.first());
+    const Card *card = room->getCard(subcards.first());
 
     use.from->tag["xiuye"] = (use.from->tag.value("xiuye", QVariantList()).toList() << subcards.first());
     use.from->showHiddenSkill("xiuye");
@@ -6494,7 +6493,7 @@ const Card *XiuyeCard::validate(CardUseStruct &use) const
 const Card *XiuyeCard::validateInResponse(ServerPlayer *user) const
 {
     Room *room = user->getRoom();
-    const Card *card = Sanguosha->getCard(subcards.first());
+    const Card *card = room->getCard(subcards.first());
     user->tag["xiuye"] = (user->tag.value("xiuye", QVariantList()).toList() << subcards.first());
     user->showHiddenSkill("xiuye");
     room->notifySkillInvoked(user, "xiuye");
@@ -6557,7 +6556,7 @@ public:
     {
         QList<int> discardpile = player->getRoom()->getDiscardPile();
         foreach (int id, discardpile) {
-            Card *c = Sanguosha->getCard(id);
+            Card *c = player->getRoom()->getCard(id);
             if (c->getSuit() == Card::Club && c->isKindOf("Nullification"))
                 return true;
         }

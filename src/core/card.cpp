@@ -94,7 +94,7 @@ int Card::getNumber() const
         else {
             int num = 0;
             foreach (int id, subcards) {
-                num += Sanguosha->getCard(id)->getNumber();
+                num += Sanguosha->currentRoomObject()->getCard(id)->getNumber();
             }
             return qMin(num, 13);
         }
@@ -130,11 +130,11 @@ Card::Suit Card::getSuit() const
         if (subcardsLength() == 0)
             return NoSuit;
         else if (subcardsLength() == 1)
-            return Sanguosha->getCard(subcards.first())->getSuit();
+            return Sanguosha->currentRoomObject()->getCard(subcards.first())->getSuit();
         else {
             Color color = Colorless;
             foreach (int id, subcards) {
-                Color color2 = Sanguosha->getCard(id)->getColor();
+                Color color2 = Sanguosha->currentRoomObject()->getCard(id)->getColor();
                 if (color == Colorless)
                     color = color2;
                 else if (color != color2)
@@ -568,7 +568,7 @@ const Card *Card::Parse(const QString &str)
         bool ok;
         int card_id = str.toInt(&ok);
         if (ok)
-            return Sanguosha->getCard(card_id)->getRealCard();
+            return Sanguosha->currentRoomObject()->getCard(card_id)->getRealCard();
         else
             return NULL;
     }

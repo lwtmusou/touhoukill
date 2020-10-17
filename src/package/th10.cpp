@@ -1395,7 +1395,7 @@ public:
                 if (damage.card->hasFlag("showncards"))
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
                 foreach (int id, damage.from->getShownHandcards()) {
-                    if (damage.card->getColor() == Sanguosha->getCard(id)->getColor())
+                    if (damage.card->getColor() == room->getCard(id)->getColor())
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
                 }
             }

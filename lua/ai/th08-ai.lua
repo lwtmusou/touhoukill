@@ -280,7 +280,7 @@ sgs.ai_skill_invoke.kaifeng_hegemony = true
 function lizhan_slash(player,objectName)
 	local ids=player:getTag("lizhan"):toIntList()
 	for _,id in sgs.qlist(ids) do
-		local card = sgs.Sanguosha:getCard(id)
+		local card = self.room:getCard(id)
 		if objectName=="notNatureSlash" then
 			if not card:isKindOf("NatureSlash") then
 				return id
@@ -642,7 +642,7 @@ sgs.ai_skill_use["@@xingyun"] = function(self, prompt)
 	local move = self.player:getTag("xingyun_move"):toMoveOneTime()
 	local ids = {}
 	for _, id in sgs.qlist(move.card_ids) do
-		if sgs.Sanguosha:getCard(id):getSuit() == sgs.Card_Heart
+		if self.room:getCard(id):getSuit() == sgs.Card_Heart
 		  and self.room:getCardPlace(id) == sgs.Player_PlaceHand then
 			table.insert(ids, id)
 		end
@@ -687,7 +687,7 @@ sgs.ai_skill_use["@@xingyun_hegemony"] = function(self, prompt)
 	local move = self.player:getTag("xingyun_move"):toMoveOneTime()
 	local ids = {}
 	for _, id in sgs.qlist(move.card_ids) do
-		if sgs.Sanguosha:getCard(id):getSuit() == sgs.Card_Heart
+		if self.room:getCard(id):getSuit() == sgs.Card_Heart
 		  and self.room:getCardPlace(id) == sgs.Player_PlaceHand then
 			table.insert(ids, id)
 		end
@@ -885,7 +885,7 @@ function yinghuo_skill.getTurnUseCard(self)
 	return sgs.Card_Parse("@YinghuoCard=" .. card:getEffectiveId())
 end
 sgs.ai_skill_use_func.YinghuoCard=function(card,use,self)
-	local tmp = sgs.Sanguosha:getCard((card:getSubcards():first()))
+	local tmp = self.room:getCard((card:getSubcards():first()))
 	if (tmp:isKindOf("Analeptic") or tmp:isKindOf("Peach")) then
 		use.card = card
 	else

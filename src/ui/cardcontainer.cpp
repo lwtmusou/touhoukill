@@ -346,7 +346,7 @@ void GuanxingBox::doGuanxing(const QList<int> &card_ids, bool up_only)
     up_items.clear();
 
     foreach (int card_id, card_ids) {
-        CardItem *card_item = new CardItem(Sanguosha->getCard(card_id));
+        CardItem *card_item = new CardItem(ClientInstance->getCard(card_id));
         card_item->setAutoBack(false);
         card_item->setFlag(QGraphicsItem::ItemIsFocusable);
         connect(card_item, SIGNAL(released()), this, SLOT(adjust()));

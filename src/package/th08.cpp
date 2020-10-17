@@ -566,7 +566,7 @@ void BuxianCard::onUse(Room *room, const CardUseStruct &card_use) const
 
 void BuxianCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const
 {
-    room->moveCardTo(Sanguosha->getCard(subcards.first()), NULL, Player::DrawPile);
+    room->moveCardTo(room->getCard(subcards.first()), NULL, Player::DrawPile);
     targets.first()->pindian(targets.last(), "buxian");
 }
 
@@ -732,7 +732,7 @@ public:
         ServerPlayer *tewi = qobject_cast<ServerPlayer *>(move.to);
         if (tewi != NULL && tewi->hasSkill(this) && move.to_place == Player::PlaceHand) {
             foreach (int id, move.card_ids) {
-                if (Sanguosha->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand) {
+                if (room->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand) {
                     ServerPlayer *owner = room->getCardOwner(id);
                     if (owner && owner == tewi)
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, tewi, tewi);
@@ -747,7 +747,7 @@ public:
         ServerPlayer *tewi = invoke->invoker;
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         foreach (int id, move.card_ids) {
-            if (Sanguosha->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand) {
+            if (room->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand) {
                 ServerPlayer *owner = room->getCardOwner(id);
                 if (owner && owner == tewi)
                     room->setCardFlag(id, "xingyun");
@@ -1070,7 +1070,7 @@ bool YinghuoCard::targetFilter(const QList<const Player *> &targets, const Playe
     if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return false;
 
-    const Card *oc = Sanguosha->getCard(subcards.first());
+    const Card *oc = Self->getRoomObject()->getCard(subcards.first());
     Card *new_card = Sanguosha->cloneCard(oc->objectName());
     DELETE_OVER_SCOPE(Card, new_card)
 
@@ -1083,7 +1083,7 @@ bool YinghuoCard::targetFixed(const Player *Self) const
     if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;
 
-    const Card *oc = Sanguosha->getCard(subcards.first());
+    const Card *oc = Self->getRoomObject()->getCard(subcards.first());
     Card *new_card = Sanguosha->cloneCard(oc->objectName());
     DELETE_OVER_SCOPE(Card, new_card)
 
@@ -1096,7 +1096,7 @@ bool YinghuoCard::targetsFeasible(const QList<const Player *> &targets, const Pl
     if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;
 
-    const Card *oc = Sanguosha->getCard(subcards.first());
+    const Card *oc = Self->getRoomObject()->getCard(subcards.first());
     Card *new_card = Sanguosha->cloneCard(oc->objectName());
     DELETE_OVER_SCOPE(Card, new_card)
 
@@ -1109,7 +1109,7 @@ const Card *YinghuoCard::validate(CardUseStruct &use) const
     use.from->showHiddenSkill("yinghuo");
     Room *room = use.from->getRoom();
 
-    const Card *card = Sanguosha->getCard(subcards.first());
+    const Card *card = room->getCard(subcards.first());
     YinghuoClear::yinghuo_record(room, use.from, card->objectName());
     Card *use_card = Sanguosha->cloneCard(card->objectName());
     use_card->setSkillName("yinghuo");
@@ -1121,7 +1121,7 @@ const Card *YinghuoCard::validate(CardUseStruct &use) const
 const Card *YinghuoCard::validateInResponse(ServerPlayer *user) const
 {
     Room *room = user->getRoom();
-    const Card *card = Sanguosha->getCard(subcards.first());
+    const Card *card = room->getCard(subcards.first());
     YinghuoClear::yinghuo_record(room, user, card->objectName());
     Card *use_card = Sanguosha->cloneCard(card->objectName());
     use_card->setSkillName("yinghuo");
@@ -1532,7 +1532,7 @@ public:
         return true;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
         QList<SkillInvokeDetail> d;
         if (triggerEvent == CardAsked) {
@@ -1557,7 +1557,7 @@ public:
             if (player != NULL && player->isAlive() && player->hasSkill(this) && player->getPhase() != Player::Play
                 && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
                 foreach (int id, move.card_ids) {
-                    if (Sanguosha->getCard(id)->isKindOf("Slash"))
+                    if (room->getCard(id)->isKindOf("Slash"))
                         d << SkillInvokeDetail(this, player, player);
                 }
             }

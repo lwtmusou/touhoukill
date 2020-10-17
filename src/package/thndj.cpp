@@ -260,7 +260,7 @@ public:
             foreach (ServerPlayer *p, room->getOtherPlayers(damage.to)) {
                 if (p->hasSkill(this)) {
                     foreach (int id, p->getPile("huanyue_pile")) {
-                        if (Sanguosha->getCard(id)->getTypeId() != damage.card->getTypeId()) {
+                        if (room->getCard(id)->getTypeId() != damage.card->getTypeId()) {
                             d << SkillInvokeDetail(this, p, p, NULL, false, damage.to);
                             break;
                         }
@@ -344,7 +344,7 @@ public:
             move.reason.m_skillName = "wanggou";
             room->moveCardsAtomic(move, true);
             room->getThread()->delay();
-            card = Sanguosha->getCard(id);
+            card = room->getCard(id);
 
             bool get = false;
             if (card->isKindOf("Slash") || card->isKindOf("FireAttack") || card->isKindOf("ArcheryAttack") || card->isKindOf("SavageAssault") || card->isKindOf("Duel")
@@ -497,7 +497,7 @@ public:
     {
         int card_id = invoke->invoker->tag["yuanhu_id"].toInt();
         bool visible = invoke->invoker->getShownHandcards().contains(card_id);
-        invoke->owner->obtainCard(Sanguosha->getCard(card_id), visible);
+        invoke->owner->obtainCard(room->getCard(card_id), visible);
 
         invoke->owner->tag["yuanhu_target"] = QVariant::fromValue(invoke->invoker);
         const Card *c = room->askForExchange(invoke->owner, objectName(), 2, 1, true, "@yuanhu-exchange:" + invoke->invoker->objectName(), true);
@@ -1260,7 +1260,7 @@ public:
                 if (aya && aya->isAlive() && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge && !judge->ignore_judge) {
                     bool can = true;
                     foreach (int id, aya->getPile("jinengPile")) {
-                        if (judge->card->getSuit() == Sanguosha->getCard(id)->getSuit()) {
+                        if (judge->card->getSuit() == room->getCard(id)->getSuit()) {
                             can = false;
                             break;
                         }
@@ -1687,8 +1687,8 @@ void YaoliCard::onEffect(const CardEffectStruct &effect) const
                 room->throwCard(discard, effect.to);
             }
 
-            const Card *thiscard = Sanguosha->getCard(subcards.first());
-            discard = Sanguosha->getCard(discard->getEffectiveId());
+            const Card *thiscard = room->getCard(subcards.first());
+            discard = room->getCard(discard->getEffectiveId());
             if (thiscard->getTypeId() == discard->getTypeId()) {
                 LogMessage l;
                 l.type = "#yaolistart";

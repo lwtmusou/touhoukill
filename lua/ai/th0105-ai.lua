@@ -244,7 +244,7 @@ sgs.ai_skill_cardask["@qiusuo"] = function(self, data)
 	for i = 1, 13 do
 		local n = 0
 		for _,id in sgs.qlist(self.player:getPile("zhenli"))do
-			if sgs.Sanguosha:getCard(id):getNumber() == i then
+			if self.room:getCard(id):getNumber() == i then
 				n = n + 1
 			end
 		end
@@ -267,7 +267,7 @@ sgs.ai_skill_cardask["@qiusuo"] = function(self, data)
 
 	local ids = {}
 	for _,id in sgs.qlist(self.player:getPile("zhenli"))do
-			if sgs.Sanguosha:getCard(id):getNumber() == point then
+			if self.room:getCard(id):getNumber() == point then
 				table.insert(ids, id)
 			end
 	end
@@ -493,7 +493,7 @@ sgs.ai_skill_cardask["@huantong"] = function(self, data)
 	local ids = self.player:getPile("dream")
 	local basics, others = {}, {}
 	for _,id in sgs.qlist(ids) do
-		local card=sgs.Sanguosha:getCard(id)
+		local card=self.room:getCard(id)
 		if card:isKindOf("BasicCard") then
 			table.insert(basics, card)
 		else
@@ -660,7 +660,7 @@ function turnUse_guaiqi(self)
 	local tricks = {}-- for use slash
 	local slashes = {}
 	for _,id in sgs.qlist(piles) do
-		local c = sgs.Sanguosha:getCard(id)
+		local c = self.room:getCard(id)
 		if c:isKindOf("TrickCard") then
 			table.insert(tricks, c)
 		end
@@ -670,7 +670,7 @@ function turnUse_guaiqi(self)
 	end
 	if (#slashes > 0) then
 		for _,id in sgs.qlist(piles) do
-			local c = sgs.Sanguosha:getCard(id)
+			local c = self.room:getCard(id)
 			if c:isKindOf("TrickCard") and not c:isKindOf("Nullification") and not table.contains(guaiqis,  c:objectName()) then
 				table.insert(guaiqis, c:objectName())
 			end
@@ -764,7 +764,7 @@ function sgs.ai_cardsview_valuable.guaiqi(self, class_name, player)
 		local piles = self.player:getPile("modian")
 		local modians = {}
 		for _,id in sgs.qlist(piles) do
-			local c = sgs.Sanguosha:getCard(id)
+			local c = self.room:getCard(id)
 			if c:isKindOf("TrickCard") then
 				table.insert(modians, c)
 			end
@@ -783,7 +783,7 @@ function sgs.ai_cardsview_valuable.guaiqi(self, class_name, player)
 		local piles = self.player:getPile("modian")
 		local modians = {}
 		for _,id in sgs.qlist(piles) do
-			local c = sgs.Sanguosha:getCard(id)
+			local c = self.room:getCard(id)
 			if c:isKindOf("Slash") then
 				table.insert(modians, c)
 			end
@@ -856,7 +856,7 @@ sgs.ai_skill_cardask["@modian"] = function(self, data)
 	local ids = self.player:getPile("modian")
 	local tricks = {}
 	for _,id in sgs.qlist(ids) do
-		local card = sgs.Sanguosha:getCard(id)
+		local card = self.room:getCard(id)
 		if not card:isKindOf("TrickCard") then
 			return "$" .. id
 		end
@@ -1045,8 +1045,8 @@ function qiren_skill.getTurnUseCard(self)
 	return sgs.Card_Parse("@QirenCard=" .. table.concat(use, "+"))
 end
 sgs.ai_skill_use_func.QirenCard=function(card,use,self)
-	local tmp = sgs.Sanguosha:getCard((card:getSubcards():first()))
-	local effect = sgs.Sanguosha:getCard((card:getSubcards():last()))
+	local tmp = self.room:getCard((card:getSubcards():first()))
+	local effect = self.room:getCard((card:getSubcards():last()))
 	local targets = {}
 	if tmp:isKindOf("AOE") then
 		for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
@@ -1199,7 +1199,7 @@ sgs.ai_skill_playerchosen.anliu = function(self, targets)
 	for _, target in sgs.qlist(targets) do
 		if self:isEnemy(target) then
 			for _,id in sgs.qlist(target:getShownHandcards()) do
-				if sgs.Sanguosha:getCard(id):isKindOf("BasicCard") then
+				if self.room:getCard(id):isKindOf("BasicCard") then
 					return target
 				end
 			end

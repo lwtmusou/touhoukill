@@ -104,7 +104,7 @@
 			end
 		else
 			for _,id in ipairs(card_ids) do
-				local card = sgs.Sanguosha:getCard(id)
+				local card = self.room:getCard(id)
 				if MatchType(card, "Crossbow|AOE|Duel") then
 					return huanggai, id
 				elseif card:isRed() and huatuo:isAlive() then
@@ -123,7 +123,7 @@
 				local cards = player:getCards("hes")
 				for _,id in sgs.qlist(cards) do
 					if id ~= EruptSignal[1] then
-						local acard = sgs.Sanguosha:getCard(id)
+						local acard = self.room:getCard(id)
 						if acard:isRed() then
 							return false
 						end
@@ -204,7 +204,7 @@
 		local caocao = sgs.RuthlessDetail.JianxiongActor[1]
 		local xiaoqiao = sgs.RuthlessDetail.TianxiangActor[1]
 		for _,id in ipairs(card_ids) do
-			local card = sgs.Sanguosha:getCard(id)
+			local card = self.room:getCard(id)
 			if MatchType(card, "Crossbow|AOE|Duel|ExNihilo|Peach") then
 				return caocao, id
 			else
@@ -321,7 +321,7 @@
 		local bottom = {}
 		local strict = self.player:getMark("StrictControl") > 0
 		for _,id in pairs(cards) do
-			local card = sgs.Sanguosha:getCard(id)
+			local card = self.room:getCard(id)
 			if MatchSuit(card, sgs.KOFControlSuit) or MatchType(card, sgs.KOFControlType) then --相符
 				if card:isKindOf("Peach") then --相符，但是桃子
 					if self:isWeak() then --相符、桃子、虚弱

@@ -997,7 +997,7 @@ sgs.ai_skill_askforyiji.jiyi = function(self, card_ids)
 	local toGive, allcards = {}, {}
 	local keep
 	for _, id in ipairs(card_ids) do
-		local card = sgs.Sanguosha:getCard(id)
+		local card = self.room:getCard(id)
 		if not keep and (isCard("Jink", card, self.player) or isCard("Analeptic", card, self.player)) then
 			keep = true
 		else
@@ -1137,7 +1137,7 @@ sgs.ai_skill_use["@@chunhen_hegemony"] = function(self, prompt)
 	local tmp = self.player:getTag("chunhen_cards"):toIntList()
 	local cards = {}
 	for _, card_id in sgs.qlist(tmp) do
-		table.insert(cards, sgs.Sanguosha:getCard(card_id))
+		table.insert(cards, self.room:getCard(card_id))
 	end
 	if #cards == 0 then return "." end
 	
@@ -1458,7 +1458,7 @@ sgs.ai_skill_askforag.xijian = function(self, card_ids)
 	local cards={}
 	local target = self.player:getTag("xijian_target"):toPlayer()
 	for _,card_id in pairs(card_ids) do
-		local card=sgs.Sanguosha:getCard(card_id)
+		local card=self.room:getCard(card_id)
 		table.insert(cards,card)
 	end
 	self:sortByCardNeed(cards, true)
@@ -1537,7 +1537,7 @@ sgs.ai_skill_cardask["@wangwu-invoke"] = function(self, data, pattern, target)
 		local card = data:toCardUse().card
 		local cards = {}
 		for _, id in sgs.qlist(self.player:getPile("siling")) do
-			local silingcard = sgs.Sanguosha:getCard(id)
+			local silingcard = self.room:getCard(id)
 			if (silingcard:sameColorWith(card)) then
 				table.insert(cards, silingcard)
 			end
@@ -1624,7 +1624,7 @@ sgs.ai_skill_invoke.shizhao = true
 sgs.ai_skill_askforag.shizhao = function(self, card_ids)
 	local cards = {}
 	for _,id in pairs (card_ids) do
-		table.insert(cards, sgs.Sanguosha:getCard(id))
+		table.insert(cards, self.room:getCard(id))
 	end
 	local current = self.room:getCurrent()
 	local inverse = not self:isFriend(current)

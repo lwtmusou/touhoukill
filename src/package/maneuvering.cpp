@@ -529,10 +529,9 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
     foreach (int id, cards->getSubcards())
         room->showCard(effect.to, id);
 
-    QString suit_str = Sanguosha->getCard(cards->getSubcards().first())->getSuitString();
     QStringList suits;
     foreach (int id, cards->getSubcards()) {
-        QString suit = Sanguosha->getWrappedCard(id)->getSuitString();
+        QString suit = room->getWrappedCard(id)->getSuitString();
         if (!suits.contains(suit))
             suits << suit;
         if (suits.length() >= 4)
@@ -577,7 +576,6 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
                 damage = true;
         }
         if (damage)
-            //room->damage(DamageStruct(this, effect.from, effect.to, 1 + effect.effectValue.last(), DamageStruct::Fire));
             room->damage(DamageStruct(effect.card, effect.from, effect.to, 1 + effect.effectValue.last(), DamageStruct::Fire));
         else
             effect.from->setFlags("FireAttackFailed_" + effect.to->objectName()); // For AI

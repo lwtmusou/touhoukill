@@ -52,7 +52,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         int id = invoke->invoker->tag["xiangqi_id"].toInt();
         invoke->invoker->tag.remove("xiangqi_id");
-        Card *showcard = Sanguosha->getCard(id);
+        Card *showcard = room->getCard(id);
         bool same = false;
         if (showcard->getTypeId() == damage.card->getTypeId())
             same = true;
@@ -139,7 +139,7 @@ MaihuoCard::MaihuoCard()
 
 void MaihuoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
-    room->moveCardTo(Sanguosha->getCard(subcards.first()), NULL, Player::DrawPile);
+    room->moveCardTo(room->getCard(subcards.first()), NULL, Player::DrawPile);
     QList<int> card_to_show = room->getNCards(2, false);
     CardsMoveStruct move(card_to_show, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, targets.first()->objectName()));
     room->moveCardsAtomic(move, true);
@@ -149,7 +149,7 @@ void MaihuoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
     dummy->deleteLater();
     foreach (int id, card_to_show) {
         dummy->addSubcard(id);
-        if (!Sanguosha->getCard(id)->isRed())
+        if (!room->getCard(id)->isRed())
             bothred = false;
     }
 
@@ -924,7 +924,7 @@ public:
             move.reason.m_skillName = "cuiji";
             room->moveCardsAtomic(move, true);
             room->getThread()->delay();
-            Card *card = Sanguosha->getCard(id);
+            Card *card = room->getCard(id);
             if (card->isRed() == isred) {
                 acquired = acquired + 1;
                 CardsMoveStruct move2(id, player, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_GOTBACK, player->objectName()));

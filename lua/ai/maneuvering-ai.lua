@@ -683,7 +683,7 @@ function SmartAI:useCardFireAttack(fire_attack, use) --尼玛 吃酒+火攻+丢�
 			if (fire_attack:isVirtualCard()) then
 				local num = 0
 				for _, id in sgs.qlist(fire_attack:getSubcards()) do
-					local card = sgs.sanguosha:getCard(id)
+					local card = self.room:getCard(id)
 					if unShowns:contains(card) then
 						num = num+1
 					end
