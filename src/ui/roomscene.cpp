@@ -2824,7 +2824,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         Q_ASSERT(button != NULL);
         const ViewAsSkill *vsSkill = button->getViewAsSkill();
         if (vsSkill != NULL) {
-            QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
+            QString pattern = ClientInstance->getCurrentCardUsePattern();
             QRegExp rx("@@?([_A-Za-z]+)(\\d+)?!?");
             CardUseStruct::CardUseReason reason = CardUseStruct::CARD_USE_REASON_UNKNOWN;
             if ((newStatus & Client::ClientStatusBasicMask) == Client::Responding) {
@@ -2902,7 +2902,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         cancel_button->setEnabled(ClientInstance->m_isDiscardActionRefusable);
         discard_button->setEnabled(false);
 
-        QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
+        QString pattern = ClientInstance->getCurrentCardUsePattern();
         QRegExp rx("@@?(\\w+)(-card)?(\\d+)?!?");
         //QRegExp rx("@@?([_A-Za-z]+)(\\d+)?!?");
         if (rx.exactMatch(pattern)) {
@@ -2959,7 +2959,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         cancel_button->setEnabled(false);
         discard_button->setEnabled(false);
 
-        QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
+        QString pattern = ClientInstance->getCurrentCardUsePattern();
         showorpindian_skill->setPattern(pattern);
         dashboard->startPending(showorpindian_skill);
 
@@ -3047,7 +3047,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         cancel_button->setEnabled(ClientInstance->m_isDiscardActionRefusable);
         discard_button->setEnabled(false);
 
-        QStringList yiji_info = Sanguosha->currentRoomObject()->getCurrentCardUsePattern().split("=");
+        QStringList yiji_info = ClientInstance->getCurrentCardUsePattern().split("=");
         yiji_skill->setCards(yiji_info.at(1));
         yiji_skill->setMaxNum(yiji_info.first().toInt());
         yiji_skill->setPlayerNames(yiji_info.last().split("+"));
@@ -3200,7 +3200,7 @@ void RoomScene::doCancelButton()
     }
     case Client::Responding: {
         dashboard->skillButtonDeactivated();
-        QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
+        QString pattern = ClientInstance->getCurrentCardUsePattern();
         if (pattern.isEmpty())
             return;
 

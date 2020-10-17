@@ -12,6 +12,7 @@
 #include "th09.h"
 #include "th10.h"
 #include "th15.h"
+
 #include <QCommandLinkButton>
 #include <QCoreApplication>
 #include <QMetaObject>
@@ -3352,7 +3353,7 @@ void ShenbaoDialog::popup()
 {
     Self->tag.remove("shenbao_choice");
 
-    QStringList choices = getAvailableChoices(Self, Sanguosha->currentRoomObject()->getCurrentCardUseReason(), Sanguosha->currentRoomObject()->getCurrentCardUsePattern());
+    QStringList choices = getAvailableChoices(Self, ClientInstance->getCurrentCardUseReason(), ClientInstance->getCurrentCardUsePattern());
 
     if (choices.isEmpty()) {
         emit onButtonClick();
@@ -3658,7 +3659,8 @@ public:
         if (skill == NULL)
             return false;
 
-        if (ShenbaoDialog::getAvailableChoices(Self, Sanguosha->currentRoomObject()->getCurrentCardUseReason(), Sanguosha->currentRoomObject()->getCurrentCardUsePattern()).contains(name))
+        if (ShenbaoDialog::getAvailableChoices(Self, Sanguosha->currentRoomObject()->getCurrentCardUseReason(), Sanguosha->currentRoomObject()->getCurrentCardUsePattern())
+                .contains(name))
             return skill->viewFilter(selected, to_select);
 
         return false;
@@ -3680,7 +3682,8 @@ public:
         if (skill == NULL)
             return NULL;
 
-        if (ShenbaoDialog::getAvailableChoices(Self, Sanguosha->currentRoomObject()->getCurrentCardUseReason(), Sanguosha->currentRoomObject()->getCurrentCardUsePattern()).contains(name))
+        if (ShenbaoDialog::getAvailableChoices(Self, Sanguosha->currentRoomObject()->getCurrentCardUseReason(), Sanguosha->currentRoomObject()->getCurrentCardUsePattern())
+                .contains(name))
             return skill->viewAs(cards);
 
         return NULL;
@@ -4912,7 +4915,7 @@ AnyunDialog::AnyunDialog(const QString &object)
 
 void AnyunDialog::popup()
 {
-    bool play = (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+    bool play = (ClientInstance->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
 
     foreach (QAbstractButton *button, group->buttons()) {
         layout->removeWidget(button);
@@ -4929,7 +4932,7 @@ void AnyunDialog::popup()
                 if (play && vs->isEnabledAtPlay(Self))
                     add = true;
                 if (!play) {
-                    QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
+                    QString pattern = ClientInstance->getCurrentCardUsePattern();
                     if (vs->isEnabledAtResponse(Self, pattern))
                         add = true;
                 }
@@ -5635,8 +5638,8 @@ void XianshiDialog::popup()
         method = Card::MethodUse;
 */
     QStringList checkedPatterns;
-    QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
-    bool play = (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+    QString pattern = ClientInstance->getCurrentCardUsePattern();
+    bool play = (ClientInstance->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
     QString xianshi_record = Self->property("xianshi_record").toString();
 
     if (play)
