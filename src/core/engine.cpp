@@ -1,5 +1,5 @@
 #include "engine.h"
-#include "RoomState.h"
+#include "RoomObject.h"
 #include "ai.h"
 #include "audio.h"
 #include "banpair.h"
@@ -427,7 +427,7 @@ Room *Engine::currentRoom()
     return room;
 }
 
-RoomState *Engine::currentRoomState()
+RoomObject *Engine::currentRoomState()
 {
     QObject *roomObject = currentRoomObject();
     Room *room = qobject_cast<Room *>(roomObject);

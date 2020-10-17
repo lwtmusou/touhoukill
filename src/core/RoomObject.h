@@ -9,14 +9,14 @@
 // generals, cards in the Engine). Each room or roomscene should have one and only one
 // associated RoomState.
 
-class RoomState
+class RoomObject
 {
 public:
-    explicit inline RoomState(bool isClient)
+    explicit inline RoomObject(bool isClient)
     {
         m_isClient = isClient;
     }
-    ~RoomState();
+    ~RoomObject();
     inline bool isClient() const
     {
         return m_isClient;

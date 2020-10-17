@@ -1,22 +1,22 @@
-#include "RoomState.h"
+#include "RoomObject.h"
 #include "WrappedCard.h"
 #include "engine.h"
 
-RoomState::~RoomState()
+RoomObject::~RoomObject()
 {
     foreach (Card *card, m_cards.values())
         delete card;
     m_cards.clear();
 }
 
-Card *RoomState::getCard(int cardId) const
+Card *RoomObject::getCard(int cardId) const
 {
     if (!m_cards.contains(cardId))
         return NULL;
     return m_cards[cardId];
 }
 
-void RoomState::resetCard(int cardId)
+void RoomObject::resetCard(int cardId)
 {
     Card *newCard = Card::Clone(Sanguosha->getEngineCard(cardId));
     if (newCard == NULL)
@@ -28,7 +28,7 @@ void RoomState::resetCard(int cardId)
 }
 
 // Reset all cards, generals' states of the room instance
-void RoomState::reset()
+void RoomObject::reset()
 {
     foreach (WrappedCard *card, m_cards.values())
         delete card;

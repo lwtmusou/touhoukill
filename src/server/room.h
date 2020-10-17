@@ -6,7 +6,7 @@
 #include <QStack>
 #include <QWaitCondition>
 
-#include "RoomState.h"
+#include "RoomObject.h"
 #include "protocol.h"
 #include "roomthread.h"
 #include "serverplayer.h"
@@ -390,7 +390,7 @@ public:
     void networkDelayTestCommand(ServerPlayer *player, const QVariant &);
     bool roleStatusCommand(ServerPlayer *player);
 
-    inline RoomState *getRoomState()
+    inline RoomObject *getRoomState()
     {
         return &_m_roomState;
     }
@@ -561,7 +561,7 @@ private:
 
     QVariantMap tag;
 
-    RoomState _m_roomState;
+    RoomObject _m_roomState;
 
     QVariant m_fillAGarg;
     ServerPlayer *m_fillAGWho;

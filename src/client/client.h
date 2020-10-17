@@ -35,12 +35,10 @@ public:
         AskForGongxin = 0x000B,
         AskForShowOrPindian = 0x000C,
         AskForGeneralTaken = 0x000D,
-        //AskForGeneralChosen = 0x01000D,
         AskForArrangement = 0x000E,
         AskForChoice = 0x000F,
         AskForTriggerOrder = 0x0010,
         AskForCardChosen = 0x0011,
-        //AskForSuit = 0x0012,
 
         RespondingUse = 0x0101,
         RespondingForDiscard = 0x0201,
@@ -187,7 +185,7 @@ public:
 
     void attachSkill(const QVariant &skill);
 
-    inline virtual RoomState *getRoomState()
+    inline virtual RoomObject *getRoomState()
     {
         return &_m_roomState;
     }
@@ -255,7 +253,7 @@ protected:
     Status status;
     int alive_count;
     int swap_pile;
-    RoomState _m_roomState;
+    RoomObject _m_roomState;
 
 private:
     ClientSocket *socket;

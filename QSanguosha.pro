@@ -24,6 +24,7 @@ CONFIG += precompiled_header
 PRECOMPILED_HEADER = src/pch.h
 
 SOURCES += \
+    src/core/RoomObject.cpp \
     swig/sanguosha_wrap.cxx \
     src/client/aux-skills.cpp \
     src/client/client.cpp \
@@ -38,7 +39,6 @@ SOURCES += \
     src/core/player.cpp \
     src/core/protocol.cpp \
     src/core/record-analysis.cpp \
-    src/core/RoomState.cpp \
     src/core/settings.cpp \
     src/core/skill.cpp \
     src/core/structs.cpp \
@@ -134,6 +134,7 @@ HEADERS += \
     src/client/client.h \
     src/client/clientplayer.h \
     src/client/clientstruct.h \
+    src/core/RoomObject.h \
     src/core/audio.h \
     src/core/banpair.h \
     src/core/card.h \
@@ -145,7 +146,6 @@ HEADERS += \
     src/core/player.h \
     src/core/protocol.h \
     src/core/record-analysis.h \
-    src/core/RoomState.h \
     src/core/settings.h \
     src/core/skill.h \
     src/core/structs.h \

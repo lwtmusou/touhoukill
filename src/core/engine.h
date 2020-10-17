@@ -1,7 +1,7 @@
 #ifndef _ENGINE_H
 #define _ENGINE_H
 
-#include "RoomState.h"
+#include "RoomObject.h"
 #include "card.h"
 #include "exppattern.h"
 #include "general.h"
@@ -119,7 +119,7 @@ public:
     void unregisterRoom();
     QObject *currentRoomObject();
     Room *currentRoom();
-    RoomState *currentRoomState();
+    RoomObject *currentRoomState();
 
     QString getCurrentCardUsePattern();
     CardUseStruct::CardUseReason getCurrentCardUseReason();
