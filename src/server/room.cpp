@@ -33,7 +33,7 @@
 using namespace QSanProtocol;
 
 Room::Room(QObject *parent, const QString &mode)
-    : QObject(parent)
+    : RoomObject(parent)
     , _m_lastMovementId(0)
     , mode(mode)
     , current(NULL)

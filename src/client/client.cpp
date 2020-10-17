@@ -25,7 +25,7 @@ using namespace JsonUtils;
 Client *ClientInstance = NULL;
 
 Client::Client(QObject *parent, const QString &filename)
-    : QObject(parent)
+    : RoomObject(parent)
     , m_isDiscardActionRefusable(true)
     , status(NotActive)
     , alive_count(1)

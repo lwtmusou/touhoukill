@@ -13,7 +13,7 @@ class Recorder;
 class Replayer;
 class QTextDocument;
 
-class Client : public QObject, public RoomObject
+class Client : public RoomObject
 {
     Q_OBJECT
     Q_PROPERTY(Client::Status status READ getStatus WRITE setStatus)

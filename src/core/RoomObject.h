@@ -5,14 +5,18 @@
 #include "player.h"
 #include "structs.h"
 
+#include <QObject>
+
 // RoomState is a singleton that stores virtual generals, cards (versus factory loaded
 // generals, cards in the Engine). Each room or roomscene should have one and only one
 // associated RoomState.
 
-class RoomObject
+class RoomObject : public QObject
 {
+    Q_OBJECT
+
 public:
-    explicit RoomObject();
+    explicit RoomObject(QObject *parent = NULL);
     ~RoomObject();
     Card *getCard(int cardId) const;
 

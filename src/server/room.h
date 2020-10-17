@@ -19,7 +19,7 @@ class GeneralSelector;
 struct lua_State;
 struct LogMessage;
 
-class Room : public QObject, public RoomObject
+class Room : public RoomObject
 {
     Q_OBJECT
     Q_ENUMS(GuanxingType)

@@ -2,7 +2,8 @@
 #include "WrappedCard.h"
 #include "engine.h"
 
-RoomObject::RoomObject()
+RoomObject::RoomObject(QObject *parent)
+    : QObject(parent)
 {
 }
 
