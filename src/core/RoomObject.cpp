@@ -2,6 +2,10 @@
 #include "WrappedCard.h"
 #include "engine.h"
 
+RoomObject::RoomObject()
+{
+}
+
 RoomObject::~RoomObject()
 {
     foreach (Card *card, m_cards.values())
@@ -28,7 +32,7 @@ void RoomObject::resetCard(int cardId)
 }
 
 // Reset all cards, generals' states of the room instance
-void RoomObject::reset()
+void RoomObject::resetState()
 {
     foreach (WrappedCard *card, m_cards.values())
         delete card;

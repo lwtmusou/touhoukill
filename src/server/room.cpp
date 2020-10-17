@@ -34,7 +34,6 @@ using namespace QSanProtocol;
 
 Room::Room(QObject *parent, const QString &mode)
     : QObject(parent)
-    , RoomObject(false)
     , _m_lastMovementId(0)
     , mode(mode)
     , current(NULL)
@@ -4491,7 +4490,7 @@ void Room::startGame()
     doBroadcastNotify(S_COMMAND_UPDATE_PILE, QVariant(m_drawPile->length()));
 
     if (mode != "02_1v1" && mode != "06_3v3" && mode != "06_XMode")
-        reset();
+        resetState();
 }
 
 bool Room::notifyProperty(ServerPlayer *playerToNotify, const ServerPlayer *propertyOwner, const char *propertyName, const QString &value)

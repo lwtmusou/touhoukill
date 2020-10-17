@@ -26,7 +26,6 @@ Client *ClientInstance = NULL;
 
 Client::Client(QObject *parent, const QString &filename)
     : QObject(parent)
-    , RoomObject(true)
     , m_isDiscardActionRefusable(true)
     , status(NotActive)
     , alive_count(1)
@@ -809,7 +808,7 @@ void Client::activate(const QVariant &playerId)
 void Client::startGame(const QVariant &arg)
 {
     Sanguosha->registerRoom(this);
-    reset();
+    resetState();
 
     JsonArray arr = arg.value<JsonArray>();
     lord_name = arr[0].toString();
