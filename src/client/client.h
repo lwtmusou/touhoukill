@@ -1,6 +1,7 @@
 #ifndef _CLIENT_H
 #define _CLIENT_H
 
+#include "RoomObject.h"
 #include "card.h"
 #include "clientplayer.h"
 #include "clientstruct.h"
@@ -12,7 +13,7 @@ class Recorder;
 class Replayer;
 class QTextDocument;
 
-class Client : public QObject
+class Client : public QObject, public RoomObject
 {
     Q_OBJECT
     Q_PROPERTY(Client::Status status READ getStatus WRITE setStatus)
@@ -185,15 +186,6 @@ public:
 
     void attachSkill(const QVariant &skill);
 
-    inline virtual RoomObject *getRoomState()
-    {
-        return &_m_roomState;
-    }
-    inline virtual Card *getCard(int cardId) const
-    {
-        return _m_roomState.getCard(cardId);
-    }
-
     inline void setCountdown(QSanProtocol::Countdown countdown)
     {
         m_mutexCountdown.lock();
@@ -253,7 +245,6 @@ protected:
     Status status;
     int alive_count;
     int swap_pile;
-    RoomObject _m_roomState;
 
 private:
     ClientSocket *socket;

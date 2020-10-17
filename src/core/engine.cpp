@@ -436,7 +436,7 @@ RoomObject *Engine::currentRoomState()
     } else {
         Client *client = qobject_cast<Client *>(roomObject);
         Q_ASSERT(client != NULL);
-        return client->getRoomState();
+        return client;
     }
 }
 
