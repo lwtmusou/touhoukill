@@ -948,7 +948,7 @@ public:
 
     virtual int getDistanceLimit(const Player *from, const Card *) const
     {
-        if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && from->hasSkill(objectName()) && from->isChained())
+        if (from->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && from->hasSkill(objectName()) && from->isChained())
             return 1000;
         else
             return 0;
@@ -956,7 +956,7 @@ public:
 
     virtual int getExtraTargetNum(const Player *player, const Card *) const
     {
-        if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && player->hasSkill(objectName()) && player->isChained())
+        if (player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && player->hasSkill(objectName()) && player->isChained())
             return 1000;
         else
             return 0;
@@ -1156,7 +1156,7 @@ public:
         if (!Self->getPile("jinengPile").contains(to_select->getEffectiveId()))
             return false;
 
-        switch (Sanguosha->currentRoomObject()->getCurrentCardUseReason()) {
+        switch (Self->getRoomObject()->getCurrentCardUseReason()) {
         case CardUseStruct::CARD_USE_REASON_PLAY: {
             if (to_select->getSuit() == Card::Club)
                 return true;
@@ -1175,7 +1175,7 @@ public:
         }
         case CardUseStruct::CARD_USE_REASON_RESPONSE:
         case CardUseStruct::CARD_USE_REASON_RESPONSE_USE: {
-            QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
+            QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
             return (to_select->getSuit() == Card::Heart && matchAvaliablePattern("jink", pattern))
                 || (to_select->getSuit() == Card::Spade && matchAvaliablePattern("slash", pattern))
                 || (to_select->getSuit() == Card::Diamond && matchAvaliablePattern("analeptic", pattern))
@@ -1486,7 +1486,7 @@ public:
 
     bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
     {
-        if (Sanguosha->currentRoomObject()->getCurrentCardUsePattern() == "@@" + objectName())
+        if (Self->getRoomObject()->getCurrentCardUsePattern() == "@@" + objectName())
             return false;
 
         return selected.isEmpty() && Self->canDiscard(Self, to_select->getEffectiveId());
@@ -1494,7 +1494,7 @@ public:
 
     const Card *viewAs(const QList<const Card *> &cards) const
     {
-        if (Sanguosha->currentRoomObject()->getCurrentCardUsePattern() == "@@" + objectName()) {
+        if (Self->getRoomObject()->getCurrentCardUsePattern() == "@@" + objectName()) {
             QString cardName = Self->property("yaolitrick").toString();
             Card *c = Sanguosha->cloneCard(cardName);
             if (c != NULL) {

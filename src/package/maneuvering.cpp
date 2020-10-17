@@ -53,6 +53,7 @@ QString Analeptic::getSubtype() const
 
 bool Analeptic::canRecover() const
 {
+    // TODO_Fs: how to kill this?
     return Sanguosha->currentRoomObject()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY || Card::canRecover();
 }
 
@@ -61,10 +62,10 @@ bool Analeptic::targetFilter(const QList<const Player *> &targets, const Player 
     if (targets.isEmpty()) {
         if (to_select == Self)
             return true;
-        if (Self->hasSkill("tianqu") && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"))
+        if (Self->hasSkill("tianqu") && Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"))
             return true;
     }
-    if (Self->hasSkill("riyue") && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed")) {
+    if (Self->hasSkill("riyue") && Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed")) {
         if ((canDamage() && isRed()) || (canRecover() && isBlack()))
             return true;
     }
@@ -105,7 +106,7 @@ void Analeptic::onEffect(const CardEffectStruct &effect) const
     Room *room = effect.to->getRoom();
     room->setEmotion(effect.to, "analeptic");
 
-    if (effect.to->hasFlag("Global_Dying") && Sanguosha->currentRoomObject()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY) {
+    if (effect.to->hasFlag("Global_Dying") && room->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY) {
         // recover hp
         RecoverStruct recover;
         recover.card = this;
@@ -508,7 +509,8 @@ bool FireAttack::targetFilter(const QList<const Player *> &targets, const Player
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
     if (targets.length() >= total_num)
         return false;
-    bool ignore = (Self->hasSkill("tianqu") && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
+    bool ignore
+        = (Self->hasSkill("tianqu") && Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
     if (to_select->isKongcheng() && !ignore)
         return false;
     return true;
@@ -603,7 +605,7 @@ bool IronChain::targetFilter(const QList<const Player *> &targets, const Player 
 
 bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
-    bool rec = (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) && can_recast;
+    bool rec = (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) && can_recast;
     if (rec) {
         QList<int> sub;
         if (isVirtualCard())
@@ -627,7 +629,7 @@ bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Play
     if (rec && Self->isCardLimited(this, Card::MethodUse))
         return targets.length() == 0;
 
-    if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
+    if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
         return targets.length() != 0;
 
     int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
@@ -690,8 +692,8 @@ bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Pl
 {
     if (!targets.isEmpty() || to_select == Self)
         return false;
-    bool ignore
-        = (Self && Self->hasSkill("tianqu") && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
+    bool ignore = (Self && Self->hasSkill("tianqu") && Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self
+                   && !hasFlag("IgnoreFailed"));
     if (to_select->containsTrick(objectName()) && !ignore)
         return false;
     int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);

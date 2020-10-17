@@ -402,14 +402,14 @@ QijiDialog::QijiDialog(const QString &object, bool left, bool right)
 void QijiDialog::popup()
 {
     Card::HandlingMethod method;
-    if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+    if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         method = Card::MethodResponse;
     else
         method = Card::MethodUse;
 
     QStringList checkedPatterns;
-    QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
-    bool play = (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+    QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
+    bool play = (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
 
     //collect avaliable patterns for specific skill
     QStringList validPatterns;
@@ -598,11 +598,11 @@ public:
         filter_pattern = ".|.|.|hand";
     }
 
-    static QStringList responsePatterns()
+    static QStringList responsePatterns(const Player *Self)
     {
-        QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
+        QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
         Card::HandlingMethod method;
-        if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+        if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
             method = Card::MethodResponse;
         else
             method = Card::MethodUse;
@@ -641,7 +641,7 @@ public:
             }
         }
 
-        QStringList checkedPatterns = responsePatterns();
+        QStringList checkedPatterns = responsePatterns(player);
         if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1 && player->getMark("Global_PreventPeach") > 0)
             return false;
         return !checkedPatterns.isEmpty();
@@ -657,7 +657,7 @@ public:
 
     virtual const Card *viewAs(const Card *originalCard) const
     {
-        QStringList checkedPatterns = responsePatterns();
+        QStringList checkedPatterns = responsePatterns(Self);
         if (checkedPatterns.length() == 1) {
             Card *card = Sanguosha->cloneCard(checkedPatterns.first());
             card->setSkillName(objectName());

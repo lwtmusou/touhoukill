@@ -1149,8 +1149,8 @@ public:
     virtual const Card *viewAs(const Card *originalCard) const
     {
         if (originalCard != NULL) {
-            bool play = (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
-            QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
+            bool play = (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+            QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
             if (play || matchAvaliablePattern("slash", pattern)) {
                 Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
                 slash->addSubcard(originalCard);
@@ -2302,7 +2302,7 @@ void HuayinCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
         playerTargets << p;
 
     if (!card->getSubcards().isEmpty() && !source->isCardLimited(card, Card::MethodUse, true)
-        && (Sanguosha->currentRoomObject()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY || card->isAvailable(source))
+        && (room->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY || card->isAvailable(source))
         && (card->targetFixed(source) || card->targetsFeasible(playerTargets, source))) {
         card->setSkillName("huayin");
         CardUseStruct use;
@@ -2343,7 +2343,7 @@ public:
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
         return matchAvaliablePattern("peach", pattern) && !player->isKongcheng() && player->getMark("Global_PreventPeach") == 0
-            && (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) && !player->hasFlag("Global_huayinFailed");
+            && (player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) && !player->hasFlag("Global_huayinFailed");
     }
 
     virtual const Card *viewAs() const

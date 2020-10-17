@@ -718,7 +718,7 @@ public:
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
         return matchAvaliablePattern("peach", pattern) && !player->isCurrent() && player->getMark("Global_PreventPeach") == 0
-            && (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
+            && (player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const
@@ -917,14 +917,14 @@ BeishuiDialog::BeishuiDialog(const QString &object, bool left, bool)
 void BeishuiDialog::popup()
 {
     Card::HandlingMethod method;
-    if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+    if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         method = Card::MethodResponse;
     else
         method = Card::MethodUse;
 
     QStringList checkedPatterns;
-    QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
-    bool play = (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+    QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
+    bool play = (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
 
     //collect avaliable patterns for specific skill
     QStringList validPatterns;
@@ -1038,9 +1038,9 @@ public:
         response_or_use = true;
     }
 
-    static QStringList responsePatterns()
+    static QStringList responsePatterns(const Player *Self)
     {
-        QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
+        QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
 
         Card::HandlingMethod method = Card::MethodUse;
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
@@ -1074,7 +1074,7 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &) const
     {
-        if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+        if (player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
             return false;
         if (player->getMark("beishui") > 0)
             return false;
@@ -1093,7 +1093,7 @@ public:
             }
         }
 
-        QStringList checkedPatterns = responsePatterns();
+        QStringList checkedPatterns = responsePatterns(player);
         if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1 && player->getMark("Global_PreventPeach") > 0)
             return false;
 
@@ -1113,7 +1113,7 @@ public:
             return NULL;
 
         QString name = Self->tag.value("beishui", QString()).toString();
-        QStringList checkedPatterns = responsePatterns();
+        QStringList checkedPatterns = responsePatterns(Self);
         if (checkedPatterns.length() == 1)
             name = checkedPatterns.first();
         if (name != NULL) {

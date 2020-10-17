@@ -1044,7 +1044,7 @@ public:
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
     {
-        QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
+        QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
         if (pattern == "@@bllmwuyu")
             return selected.isEmpty() && !to_select->isEquipped();
         return false;
@@ -1052,7 +1052,7 @@ public:
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const
     {
-        QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
+        QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
         if (pattern == "@@bllmwuyu") {
             if (cards.length() != 1)
                 return NULL;

@@ -298,7 +298,7 @@ void CompanionCard::use(Room *room, ServerPlayer *player, QList<ServerPlayer *> 
     room->detachSkillFromPlayer(player, "companion_attach", true);
 
     QString choice;
-    if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+    if (room->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
         QStringList choices;
         if (player->isWounded())
             choices << "recover";
@@ -1295,9 +1295,9 @@ public:
         response_or_use = true;
     }
 
-    static QStringList responsePatterns()
+    static QStringList responsePatterns(const Player *Self)
     {
-        QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
+        QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
 
         Card::HandlingMethod method = Card::MethodUse;
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
@@ -1331,7 +1331,7 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &) const
     {
-        if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+        if (player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
             return false;
         if (player->getMark("beishui") > 0)
             return false;
@@ -1350,7 +1350,7 @@ public:
             }
         }
 
-        QStringList checkedPatterns = responsePatterns();
+        QStringList checkedPatterns = responsePatterns(player);
         if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1 && player->getMark("Global_PreventPeach") > 0)
             return false;
 
@@ -1387,7 +1387,7 @@ public:
             return NULL;
 
         QString name = Self->tag.value("beishui_hegemony", QString()).toString();
-        QStringList checkedPatterns = responsePatterns();
+        QStringList checkedPatterns = responsePatterns(Self);
         if (checkedPatterns.length() == 1)
             name = checkedPatterns.first();
         if (name != NULL) {
@@ -1582,9 +1582,9 @@ public:
         response_or_use = true;
     }
 
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const
+    virtual bool isEnabledAtResponse(const Player *Self, const QString &pattern) const
     {
-        return matchAvaliablePattern("fire_attack", pattern) && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
+        return matchAvaliablePattern("fire_attack", pattern) && Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const
@@ -2933,7 +2933,7 @@ bool KuaizhaoHegemonyCard::targetFilter(const QList<const Player *> &targets, co
     if (targets.length() == 0)
         return !to_select->isCardLimited(trick, Card::MethodUse);
     else if (targets.length() == 1)
-        return trick->targetFilter(QList<const Player *>(), to_select, targets.first()) &&  !targets.first()->isProhibited(to_select, trick);
+        return trick->targetFilter(QList<const Player *>(), to_select, targets.first()) && !targets.first()->isProhibited(to_select, trick);
 
     return false;
 }

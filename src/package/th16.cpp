@@ -181,7 +181,7 @@ public:
 
     bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
     {
-        if (Sanguosha->currentRoomObject()->getCurrentCardUsePattern() == "@@zhaowei-card1")
+        if (Self->getRoomObject()->getCurrentCardUsePattern() == "@@zhaowei-card1")
             return false;
         else
             return Self->canDiscard(Self, to_select->getEffectiveId()) && selected.length() < Self->getMark("zhaowei_discardnum");
@@ -189,7 +189,7 @@ public:
 
     const Card *viewAs(const QList<const Card *> &cards) const
     {
-        if (Sanguosha->currentRoomObject()->getCurrentCardUsePattern() == "@@zhaowei-card1")
+        if (Self->getRoomObject()->getCurrentCardUsePattern() == "@@zhaowei-card1")
             return new ZhaoweiCard;
         else {
             if (cards.length() == Self->getMark("zhaowei_discardnum")) {
@@ -1673,7 +1673,7 @@ public:
     bool viewFilter(const Card *to_select) const
     {
         if (Self->getPile("spring").contains(to_select->getId())) {
-            if (Sanguosha->currentRoomObject()->getCurrentCardUsePattern() == "@@chunteng-card2!")
+            if (Self->getRoomObject()->getCurrentCardUsePattern() == "@@chunteng-card2!")
                 return true;
 
             bool ok = false;
@@ -1688,7 +1688,7 @@ public:
     const Card *viewAs(const Card *originalCard) const
     {
         Card *c = NULL;
-        if (Sanguosha->currentRoomObject()->getCurrentCardUsePattern() == "@@chunteng-card1") {
+        if (Self->getRoomObject()->getCurrentCardUsePattern() == "@@chunteng-card1") {
             c = new ChuntengCard;
             c->setSkillName(objectName());
         } else {

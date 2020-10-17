@@ -612,10 +612,10 @@ Card *Card::Clone(const Card *card)
 
 bool Card::targetFixed(const Player *Self) const
 {
-    bool ignore = (Self && Self->hasSkill("tianqu") && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
+    bool ignore = (Self && Self->hasSkill("tianqu") && Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
     if (ignore && !(isKindOf("SkillCard") || isKindOf("AOE") || isKindOf("GlobalEffect")))
         return false;
-    bool riyue_ignore = (Self && Self->hasSkill("riyue") && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
+    bool riyue_ignore = (Self && Self->hasSkill("riyue") && Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
     if (riyue_ignore && !(isKindOf("SkillCard") || isKindOf("AOE") || isKindOf("GlobalEffect")) && ((canDamage() && isRed()) || (canRecover() && isBlack())))
         return false;
 

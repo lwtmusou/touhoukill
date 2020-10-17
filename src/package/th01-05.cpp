@@ -1894,7 +1894,7 @@ public:
 
     virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const
     {
-        if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
+        if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
             return (to_select->isNDTrick() || to_select->isKindOf("Slash")) && !to_select->isEquipped() && !Self->getPile("modian").contains(to_select->getEffectiveId());
         else
             return Self->getPile("modian").contains(to_select->getEffectiveId());
@@ -1903,7 +1903,7 @@ public:
 
     const Card *viewAs(const Card *originalCard) const
     {
-        if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+        if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
             ModianCard *card = new ModianCard;
             card->addSubcard(originalCard);
             return card;
@@ -1977,7 +1977,7 @@ public:
     {
         if (player->getPile("modian").isEmpty())
             return false;
-        if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
+        if (player->getRoomObject()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
             return false;
         if (matchAvaliablePattern("slash", pattern)) {
             foreach (int id, player->getPile("modian")) {
@@ -2006,13 +2006,13 @@ public:
     {
         if (!Self->getPile("modian").contains(to_select->getEffectiveId()))
             return false;
-        if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+        if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
             if (selected.isEmpty())
                 return true;
             else if (selected.length() == 1)
                 return to_select->getTypeId() != selected.first()->getTypeId();
         } else {
-            QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
+            QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
             if (selected.isEmpty()) {
                 if (to_select->isKindOf("TrickCard"))
                     return matchAvaliablePattern("slash", pattern) || matchAvaliablePattern(to_select->objectName(), pattern);
@@ -2032,7 +2032,7 @@ public:
     virtual const Card *viewAs(const QList<const Card *> &cards) const
     {
         //Play
-        if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+        if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
             if (cards.length() == 1 && cards.first()->isKindOf("TrickCard")) {
                 Slash *slash = new Slash(cards.first()->getSuit(), cards.first()->getNumber());
                 slash->addSubcard(cards.first());
@@ -2055,7 +2055,7 @@ public:
                 }
             }
         } else { // RESPONSE_USE
-            QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
+            QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
             if (cards.length() == 1 && cards.first()->isKindOf("TrickCard") && matchAvaliablePattern("slash", pattern)) {
                 Slash *slash = new Slash(cards.first()->getSuit(), cards.first()->getNumber());
                 slash->addSubcard(cards.first());
@@ -2359,7 +2359,7 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        return !player->getShownHandcards().isEmpty() && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
+        return !player->getShownHandcards().isEmpty() && player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
             && matchAvaliablePattern("analeptic", pattern);
     }
 
@@ -2635,7 +2635,7 @@ bool QirenCard::isAvailable(const Player *player) const
     }
     //check times
     Card *card = Sanguosha->getCard(id);
-    bool play = player->getPhase() == Player::Play && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY;
+    bool play = player->getPhase() == Player::Play && player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY;
     if (card->isKindOf("Slash") && play) {
         if (!Slash::IsAvailable(player, card, true))
             return false;
@@ -2717,7 +2717,7 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &) const
     {
-        if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+        if (player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
             return false;
         //check main phase
         if (player->isCurrent()) {
@@ -2752,8 +2752,8 @@ public:
             if (Self->isCardLimited(to_select, Card::MethodUse))
                 return false;
             bool matchPattern = true;
-            if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-                QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
+            if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+                QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
                 ExpPattern p(pattern);
                 matchPattern = p.match(Self, to_select);
             }

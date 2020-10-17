@@ -209,14 +209,14 @@ XihuaDialog::XihuaDialog(const QString &object, bool left, bool right)
 void XihuaDialog::popup()
 {
     Card::HandlingMethod method;
-    if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+    if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         method = Card::MethodResponse;
     else
         method = Card::MethodUse;
 
     QStringList checkedPatterns;
-    QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
-    bool play = (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+    QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
+    bool play = (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
 
     //collect avaliable patterns for specific skill
     QStringList validPatterns;
@@ -480,7 +480,7 @@ bool XihuaCard::do_xihua(ServerPlayer *tanuki) const
 
 bool XihuaCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+    if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return false;
 
     if (user_string == NULL)
@@ -488,14 +488,14 @@ bool XihuaCard::targetFilter(const QList<const Player *> &targets, const Player 
     Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
     DELETE_OVER_SCOPE(Card, card)
     card->setSkillName("xihua");
-    if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && card->targetFixed(Self))
+    if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && card->targetFixed(Self))
         return false;
     return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
 }
 
-bool XihuaCard::targetFixed(const Player *) const
+bool XihuaCard::targetFixed(const Player *Self) const
 {
-    if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+    if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;
     if (user_string == NULL)
         return false;
@@ -507,7 +507,7 @@ bool XihuaCard::targetFixed(const Player *) const
 
 bool XihuaCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
-    if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+    if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;
 
     if (user_string == NULL)
@@ -579,11 +579,11 @@ public:
     {
     }
 
-    static QStringList responsePatterns()
+    static QStringList responsePatterns(const Player *Self)
     {
-        QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
+        QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
         Card::HandlingMethod method;
-        if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
+        if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
             method = Card::MethodResponse;
         else
             method = Card::MethodUse;
@@ -607,7 +607,7 @@ public:
     {
         if (player->isKongcheng())
             return false;
-        QStringList checkedPatterns = responsePatterns();
+        QStringList checkedPatterns = responsePatterns(player);
         if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1 && player->getMark("Global_PreventPeach") > 0)
             return false;
 
@@ -621,7 +621,7 @@ public:
 
     virtual const Card *viewAs() const
     {
-        QStringList checkedPatterns = responsePatterns();
+        QStringList checkedPatterns = responsePatterns(Self);
         if (checkedPatterns.length() == 1) {
             XihuaCard *card = new XihuaCard;
             card->setUserString(checkedPatterns.first());

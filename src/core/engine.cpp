@@ -1235,8 +1235,8 @@ const ViewAsSkill *Engine::getViewAsSkill(const QString &skill_name) const
 
 const ProhibitSkill *Engine::isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others) const
 {
-    bool ignore = (from->hasSkill("tianqu") && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to != from
-                   && !card->hasFlag("IgnoreFailed"));
+    bool ignore
+        = (from->hasSkill("tianqu") && from->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to != from && !card->hasFlag("IgnoreFailed"));
     if (ignore && !card->isKindOf("SkillCard"))
         return NULL;
     foreach (const ProhibitSkill *skill, prohibit_skills) {

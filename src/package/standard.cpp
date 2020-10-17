@@ -58,7 +58,7 @@ Card::CardType EquipCard::getTypeId() const
 
 bool EquipCard::isAvailable(const Player *player) const
 {
-    bool ignore = (player->hasSkill("tianqu") && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
+    bool ignore = (player->hasSkill("tianqu") && player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
     if (ignore)
         return true;
     return !player->isProhibited(player, this) && Card::isAvailable(player);
@@ -66,7 +66,8 @@ bool EquipCard::isAvailable(const Player *player) const
 
 bool EquipCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    bool ignore = (Self->hasSkill("tianqu") && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
+    bool ignore
+        = (Self->hasSkill("tianqu") && Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
     if (ignore)
         return targets.isEmpty();
     if (Self->hasFlag("Global_shehuoInvokerFailed"))

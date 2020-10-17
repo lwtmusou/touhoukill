@@ -156,7 +156,7 @@ void MagicAnaleptic::onEffect(const CardEffectStruct &effect) const
     Room *room = effect.to->getRoom();
     room->setEmotion(effect.to, "analeptic");
 
-    if (effect.to->hasFlag("Global_Dying") && Sanguosha->currentRoomObject()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY) {
+    if (effect.to->hasFlag("Global_Dying") && room->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY) {
         // recover hp
         RecoverStruct recover;
         recover.card = this;
@@ -198,7 +198,7 @@ bool SuperPeach::targetFixed(const Player *Self) const
         }
     }
 
-    if (globalDying && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
+    if (globalDying && Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
         return true;
     return false;
 }
@@ -222,7 +222,7 @@ void SuperPeach::onEffect(const CardEffectStruct &effect) const
 
 bool SuperPeach::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    if (Self->hasSkill("tianqu") && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed")) {
+    if (Self->hasSkill("tianqu") && Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed")) {
         if (Self != to_select)
             return true;
     }
@@ -230,7 +230,7 @@ bool SuperPeach::targetFilter(const QList<const Player *> &targets, const Player
     if (Self->hasFlag("Global_shehuoInvokerFailed"))
         return (to_select->hasFlag("Global_shehuoFailed") && to_select->isDebuffStatus());
 
-    if (Self->hasSkill("riyue") && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed")) {
+    if (Self->hasSkill("riyue") && Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed")) {
         if ((canDamage() && isRed()) || (canRecover() && isBlack()))
             return to_select->isDebuffStatus();
     }
@@ -246,7 +246,7 @@ bool SuperPeach::targetFilter(const QList<const Player *> &targets, const Player
             }
         }
 
-        if (globalDying && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+        if (globalDying && Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
             return to_select->hasFlag("Global_Dying") && to_select->objectName() == Self->property("currentdying").toString();
         } else {
             if (to_select->isDebuffStatus())
@@ -260,7 +260,7 @@ bool SuperPeach::isAvailable(const Player *player) const
 {
     if (!BasicCard::isAvailable(player))
         return false;
-    bool isPlay = Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY;
+    bool isPlay = player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY;
     bool ignore = (player->hasSkill("tianqu") && isPlay && !hasFlag("IgnoreFailed"));
     if (ignore)
         return true;
@@ -844,7 +844,8 @@ bool BoneHealing::targetFilter(const QList<const Player *> &targets, const Playe
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
     if (targets.length() >= total_num || to_select == Self)
         return false;
-    bool ignore = (Self->hasSkill("tianqu") && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
+    bool ignore
+        = (Self->hasSkill("tianqu") && Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
     if (ignore)
         return true;
 
@@ -881,8 +882,8 @@ QString SpringBreath::getSubtype() const
 
 bool SpringBreath::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    bool ignore
-        = (Self && Self->hasSkill("tianqu") && Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
+    bool ignore = (Self && Self->hasSkill("tianqu") && Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self
+                   && !hasFlag("IgnoreFailed"));
     return targets.isEmpty() && (!to_select->containsTrick(objectName()) || ignore);
 }
 

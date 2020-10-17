@@ -36,7 +36,7 @@ bool KnownBothHegemony::targetFilter(const QList<const Player *> &targets, const
 
 bool KnownBothHegemony::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
-    bool rec = (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) && can_recast;
+    bool rec = (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) && can_recast;
     if (rec) {
         QList<int> sub;
         if (isVirtualCard())
@@ -60,7 +60,7 @@ bool KnownBothHegemony::targetsFeasible(const QList<const Player *> &targets, co
     if (rec && Self->isCardLimited(this, Card::MethodUse))
         return targets.length() == 0;
 
-    if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
+    if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
         return targets.length() != 0;
 
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);

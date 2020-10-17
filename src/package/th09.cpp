@@ -173,7 +173,7 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &) const
     {
-        QString pattern = Sanguosha->currentRoomObject()->getCurrentCardUsePattern();
+        QString pattern = player->getRoomObject()->getCurrentCardUsePattern();
         if (!matchAvaliablePattern("peach", pattern))
             return false;
         bool globalDying = false;
@@ -1047,8 +1047,9 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        return hasZhanGenerals(player) && (matchAvaliablePattern("slash", pattern)) && (Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
-            && (!player->hasFlag("Global_tianrenFailed")) && !player->isCurrent();
+        return hasZhanGenerals(player) && (matchAvaliablePattern("slash", pattern))
+            && (player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) && (!player->hasFlag("Global_tianrenFailed"))
+            && !player->isCurrent();
     }
 
     virtual const Card *viewAs() const
@@ -1512,7 +1513,7 @@ NianliDialog::NianliDialog(const QString &object)
 
 void NianliDialog::popup()
 {
-    if (Sanguosha->currentRoomObject()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY) {
+    if (Self->getRoomObject()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY) {
         emit onButtonClick();
         return;
     }
@@ -2051,7 +2052,7 @@ public:
     bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
     {
         //if (Self->hasFlag("Global_mengxiangFailed")) {
-        if (Sanguosha->currentRoomObject()->getCurrentCardUsePattern() == "@@mengxiang-card2") {
+        if (Self->getRoomObject()->getCurrentCardUsePattern() == "@@mengxiang-card2") {
             if ((to_select->isKindOf("Jink") || to_select->isKindOf("Nullification")))
                 return false;
             if (to_select->isKindOf("Peach") && !to_select->isAvailable(Self))
@@ -2076,7 +2077,7 @@ public:
         if (cards.length() > 1)
             return NULL;
 
-        if (Sanguosha->currentRoomObject()->getCurrentCardUsePattern() == "@@mengxiang-card2") {
+        if (Self->getRoomObject()->getCurrentCardUsePattern() == "@@mengxiang-card2") {
             MengxiangCard *card = new MengxiangCard;
             card->addSubcards(cards);
             return card;
@@ -2447,18 +2448,18 @@ public:
         if (!Self->getPile("qsmian").contains(to_select->getId()))
             return false;
 
-        if (Sanguosha->currentRoomObject()->getCurrentCardUsePattern() == "@@mianling!")
+        if (Self->getRoomObject()->getCurrentCardUsePattern() == "@@mianling!")
             return Self->getPile("qsmian").length() - selected.length() > 1 + Self->getAliveSiblings().length();
         else
             return selected.length() == 0
-                && ((Sanguosha->currentRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
+                && ((Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
                         ? to_select->isAvailable(Self)
-                        : Sanguosha->matchExpPattern(Sanguosha->currentRoomObject()->getCurrentCardUsePattern(), Self, to_select));
+                        : Sanguosha->matchExpPattern(Self->getRoomObject()->getCurrentCardUsePattern(), Self, to_select));
     }
 
     const Card *viewAs(const QList<const Card *> &cards) const
     {
-        if (Sanguosha->currentRoomObject()->getCurrentCardUsePattern() == "@@mianling!") {
+        if (Self->getRoomObject()->getCurrentCardUsePattern() == "@@mianling!") {
             if (Self->getPile("qsmian").length() - cards.length() == 1 + Self->getAliveSiblings().length()) {
                 DummyCard *dc = new DummyCard;
                 dc->addSubcards(cards);
