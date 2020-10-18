@@ -191,39 +191,29 @@ void IQSanComponentSkin::QSanSimpleTextFont::paintText(QPainter *painter, QRect 
         QSanUiUtils::QSanFreeTypeFont::paintQString(painter, text, m_fontFace, m_color, actualSize, m_spacing, m_weight, pos, m_vertical ? Qt::Vertical : Qt::Horizontal, align);
 
     */
+    if(text.size() == 0) return;
     QFont f;
-    f.setWordSpacing(0);
     f.setWeight(m_weight);
     f.setPixelSize(m_fontSize.width());
     if (!m_family_name.isEmpty())
         f.setFamily(m_family_name);
 
-    // calculate the spacing.
-    QFontMetrics metric(f);
-    int estimate_width = metric.width(text);
-    if(m_vertical){
-        // spacing is determined by the height
-        f.setWordSpacing(min<qreal>(qreal(pos.height() - estimate_width) / (text.size() + 1), m_spacing));
-    } else {
-        f.setWordSpacing(min<qreal>(qreal(pos.width() - estimate_width) / (text.size() + 1), m_spacing));
-    }
-
     painter->setFont(f);
     painter->setPen(m_color);
     painter->setBrush(Qt::NoBrush);
 
-    QString text_to_paint = text;
-
-    // deal with vertical 
     if(m_vertical){
-        align = static_cast<Qt::Alignment>(align << 4);
-        QStringList new_texts;
-        for(auto &c : text) new_texts.append(QString(c));
-        text_to_paint = new_texts.join('\n');
-    }
-
-    painter->drawText(pos, text_to_paint, QTextOption(align));
-
+        QRect char_pos = pos;
+        //int interval = min(pos.height() / text.size(), m_fontSize.height() + m_spacing);
+        int interval = pos.height() / text.size(); // I N T E R V A L
+        for(auto & c: text){
+            painter->drawText(char_pos, align | Qt::TextDontClip, c);
+            char_pos.setY(char_pos.y() + interval);
+            char_pos.setHeight(interval);
+        }
+    } else {
+        painter->drawText(pos, align | Qt::TextDontClip, text);
+    }    
 }
 
 void IQSanComponentSkin::QSanSimpleTextFont::paintText(QGraphicsPixmapItem *item, QRect pos, Qt::Alignment align, const QString &text) const
