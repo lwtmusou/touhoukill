@@ -3353,7 +3353,7 @@ void ShenbaoDialog::popup()
 {
     Self->tag.remove("shenbao_choice");
 
-    QStringList choices = getAvailableChoices(Self, ClientInstance->getCurrentCardUseReason(), ClientInstance->getCurrentCardUsePattern());
+    QStringList choices = getAvailableChoices(Self, Self->getRoomObject()->getCurrentCardUseReason(), Self->getRoomObject()->getCurrentCardUsePattern());
 
     if (choices.isEmpty()) {
         emit onButtonClick();
@@ -4912,7 +4912,7 @@ AnyunDialog::AnyunDialog(const QString &object)
 
 void AnyunDialog::popup()
 {
-    bool play = (ClientInstance->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+    bool play = (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
 
     foreach (QAbstractButton *button, group->buttons()) {
         layout->removeWidget(button);
@@ -4929,7 +4929,7 @@ void AnyunDialog::popup()
                 if (play && vs->isEnabledAtPlay(Self))
                     add = true;
                 if (!play) {
-                    QString pattern = ClientInstance->getCurrentCardUsePattern();
+                    QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
                     if (vs->isEnabledAtResponse(Self, pattern))
                         add = true;
                 }
@@ -5635,8 +5635,8 @@ void XianshiDialog::popup()
         method = Card::MethodUse;
 */
     QStringList checkedPatterns;
-    QString pattern = ClientInstance->getCurrentCardUsePattern();
-    bool play = (ClientInstance->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+    QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
+    bool play = (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
     QString xianshi_record = Self->property("xianshi_record").toString();
 
     if (play)

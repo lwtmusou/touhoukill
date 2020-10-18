@@ -18,7 +18,6 @@ ClientPlayer::ClientPlayer(Client *client)
 
 int ClientPlayer::aliveCount(bool includeRemoved) const
 {
-    //return ClientInstance->alivePlayerCount();
     int n = ClientInstance->alivePlayerCount();
     if (!includeRemoved) {
         if (isRemoved())

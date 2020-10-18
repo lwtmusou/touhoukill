@@ -425,7 +425,8 @@ public:
 
         int selected = room->doGongxin(invoke->invoker, target, ids, "guizha");
         invoke->invoker->tag.remove("guizha");
-        room->obtainCard(invoke->invoker, selected);
+        if (selected != -1)
+            room->obtainCard(invoke->invoker, selected);
 
         return false;
     }
