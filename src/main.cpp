@@ -19,20 +19,28 @@ int main(int argc, char *argv[])
         new QApplication(argc, argv);
         QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath() + "/plugins");
 
-#ifdef Q_OS_OSX
+#ifndef Q_OS_WIN32
         if (QStyleFactory::keys().contains("Fusion", Qt::CaseInsensitive))
             qApp->setStyle(QStyleFactory::create("Fusion"));
 #endif
     }
 
+#ifndef Q_OS_ANDROID
     QDir::setCurrent(qApp->applicationDirPath());
+#else
+    QDir::setCurrent("/sdcard/Android/data/rocks.touhousatsu.app");
+#endif
 
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX)
     QDir dir(QString("lua"));
     if (dir.exists() && (dir.exists(QString("config.lua")))) {
         // things look good and use current dir
     } else {
+#ifndef Q_OS_ANDROID
         QDir::setCurrent(qApp->applicationFilePath().replace("games", "share"));
+#else
+        // extract data from assets
+#endif
     }
 #endif
 
