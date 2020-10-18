@@ -1200,7 +1200,7 @@ public:
         RecoverStruct recover = data.value<RecoverStruct>();
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-            d << SkillInvokeDetail(this, p, p, recover.to);
+            d << SkillInvokeDetail(this, p, p, recover.to, false, recover.to);
         }
         return d;
     }

@@ -770,10 +770,10 @@ function SmartAI:touhouDamageTransfer(player)
 end
 
 sgs.ai_skill_invoke.zhuxi =  function(self, data)
-	local r = data:toRecover()
-	return self:isFriend(r.to)
-	--local target = data:toPlayer()
-	--return self:isFriend(target)
+	--local r = data:toRecover()
+	--return self:isFriend(r.to)
+	local target = data:toPlayer()
+	return self:isFriend(target)
 end
 
 local zhuonong_skill = {}
