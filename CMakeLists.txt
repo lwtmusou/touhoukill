@@ -5,6 +5,7 @@ project(QSanguosha)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
@@ -13,7 +14,7 @@ set(CMAKE_AUTOUIC ON)
 
 add_definitions(-Wall)
 
-find_package(Qt5 COMPONENTS Widgets Network REQUIRED) # Locate the position of Qt5.
+find_package(Qt5 COMPONENTS Widgets Network LinguistTools REQUIRED) # Locate the position of Qt5.
 
 include_directories(
 	"src/client"
@@ -30,7 +31,7 @@ include_directories(
 )
 
 #add_compile_definitions(AUDIO_SUPPORT)
-
+add_compile_definitions(LUA_USE_LINUX)
 
 set (QSanguosha_HDRS
 	src/core/audio.h
@@ -38,7 +39,7 @@ set (QSanguosha_HDRS
 	src/core/compiler-specific.h
 	src/core/json.h
 	src/core/protocol.h
-	src/core/RoomState.h
+	src/core/RoomObject.h
 	src/core/structs.h
 	src/core/util.h
 	src/package/exppattern.h
@@ -91,7 +92,7 @@ set (QSanguosha_SRCS
 	src/core/player.cpp
 	src/core/protocol.cpp
 	src/core/record-analysis.cpp
-	src/core/RoomState.cpp
+	src/core/RoomObject.cpp
 	src/core/settings.cpp
 	src/core/skill.cpp
 	src/core/structs.cpp
@@ -222,12 +223,12 @@ set (QSanguosha_UIS
 	src/dialog/generaloverview.ui
 	src/dialog/mainwindow.ui
 )
-QT5_WRAP_UI(UIS ${QSanguosha_UIS})
+#QT5_WRAP_UI(UIS ${QSanguosha_UIS})
 
-#set ( QSanguosha_TRS 
-#)
 
-#qt5_create_translation(QM_FILES builds/sanguosha.ts)
+set(TS_FILES builds/sanguosha.ts)
+set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION "ts")
+qt5_add_translation(QM_FILES ${TS_FILES})
 
 set (QSanguosha_MOCS
 	src/client/aux-skills.h
@@ -321,8 +322,6 @@ set (QSanguosha_MOCS
 	src/package/hegemonyCard.h
 	src/package/playground.h
 )
-QT5_WRAP_CPP(MOCS ${QSanguosha_MOCS})
 
-#add_executable ( QSanguosha ${QSanguosha_SRCS} ${UIS} ${RSCS} ${TRS} ${MOCS} )
-add_executable (QSanguosha ${QSanguosha_SRCS} ${UIS} ${RSCS} ${MOCS})
-target_link_libraries (QSanguosha  Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network)
+add_executable (QSanguosha ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS})
+target_link_libraries (QSanguosha Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network dl)

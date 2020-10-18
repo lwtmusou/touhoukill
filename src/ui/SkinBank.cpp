@@ -16,6 +16,7 @@
 #include <QPropertyAnimation>
 #include <QStyleOptionGraphicsItem>
 #include <QTextItem>
+#include <QFontMetrics>
 
 using namespace std;
 using namespace JsonUtils;
@@ -139,7 +140,7 @@ bool IQSanComponentSkin::QSanSimpleTextFont::tryParse(const QVariant &args)
         m_fontSize.setWidth(size);
         m_fontSize.setHeight(size);
         m_spacing = 0;
-    } else {
+    } else if(JsonUtils::isNumberArray(arg[1], 0, 1)) {
         JsonArray arg1 = arg[1].value<JsonArray>();
         m_fontSize.setWidth(arg1[0].toInt());
         m_fontSize.setHeight(arg1[1].toInt());
@@ -193,23 +194,26 @@ void IQSanComponentSkin::QSanSimpleTextFont::paintText(QPainter *painter, QRect 
     QFont f;
     f.setWordSpacing(m_spacing);
     f.setWeight(m_weight);
+    //f.setPointSize(m_fontSize.width());
     if (!m_family_name.isEmpty())
         f.setFamily(m_family_name);
 
     painter->setFont(f);
     painter->setPen(m_color);
+    painter->setBrush(Qt::NoBrush);
 
-    // size
-    pos.setWidth(m_fontSize.width());
-    pos.setHeight(m_fontSize.height());
+    QString text_to_paint = text;
 
-    // Text option
-    QTextOption option;
-    option.setAlignment(align);
+    // deal with vertical 
+    if(m_vertical){
+        align = static_cast<Qt::Alignment>(align << 4);
+        QStringList new_texts;
+        for(auto &c : text) new_texts.append(QString(c));
+        text_to_paint = new_texts.join('\n');
+    }
 
-    // now only m_vertical and font name is not handled.
+    painter->drawText(pos, text_to_paint, QTextOption(align));
 
-    painter->drawText(pos, text, option);
 }
 
 void IQSanComponentSkin::QSanSimpleTextFont::paintText(QGraphicsPixmapItem *item, QRect pos, Qt::Alignment align, const QString &text) const
