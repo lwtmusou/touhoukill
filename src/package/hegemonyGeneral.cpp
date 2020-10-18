@@ -4325,6 +4325,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     suika_hegemony->setHeadMaxHpAdjustedValue(-1);
     related_skills.insertMulti("cuiji_hegemony", "#cuiji_hegemony");
     suika_hegemony->addCompanion("yugi_hegemony");
+    suika_hegemony->addCompanion("reimu_hegemony");
 
     General *kasen_hegemony = new General(this, "kasen_hegemony", "qun", 4);
     kasen_hegemony->addSkill("zhujiu");
