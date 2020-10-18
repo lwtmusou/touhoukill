@@ -1367,18 +1367,6 @@ QString Client::getReplayPath() const
         return QString();
 }
 
-void Client::setLines(const QString &filename)
-{
-    QRegExp rx(".+/(\\w+\\d?).ogg");
-    if (rx.exactMatch(filename)) {
-        QString skill_name = rx.capturedTexts().at(1);
-
-        QChar last_char = skill_name[skill_name.length() - 1];
-        if (last_char.isDigit())
-            skill_name.chop(1);
-    }
-}
-
 QTextDocument *Client::getLinesDoc() const
 {
     return lines_doc;
@@ -2132,7 +2120,7 @@ void Client::askForPlayerChosen(const QVariant &players)
     m_isDiscardActionRefusable = args[3].toBool();
 
     QString text;
-    QString description = Sanguosha->translate(ClientInstance->skill_name);
+    QString description = Sanguosha->translate(skill_name);
     QString prompt = args[2].toString();
     if (!prompt.isEmpty()) {
         QStringList texts = prompt.split(":");

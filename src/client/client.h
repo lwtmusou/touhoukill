@@ -81,7 +81,6 @@ public:
     bool save(const QString &filename) const;
     QList<QByteArray> getRecords() const;
     QString getReplayPath() const;
-    void setLines(const QString &skill_name);
     Replayer *getReplayer() const;
     QString getPlayerName(const QString &str);
     QString getSkillNameToInvoke() const;
