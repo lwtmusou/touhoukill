@@ -126,11 +126,13 @@ bool IQSanComponentSkin::QSanSimpleTextFont::tryParse(const QVariant &args)
     if (_m_fontBank.contains(fontPath))
         m_family_name = _m_fontBank[fontPath];
     else {
-        int id = QFontDatabase::addApplicationFont(fontPath);
+        int id = QFontDatabase::addApplicationFont("font/" + fontPath + ".ttf");
         if (id == -1)
-            return false;
-        m_family_name = QFontDatabase::applicationFontFamilies(id).at(0);
-        _m_fontBank[fontPath] = m_family_name;
+            m_family_name = fontPath;
+        else {
+            m_family_name = QFontDatabase::applicationFontFamilies(id).at(0);
+            _m_fontBank[fontPath] = m_family_name;
+        }
     }
     if (JsonUtils::isNumber(arg[1])) {
         int size = arg[1].toInt();
