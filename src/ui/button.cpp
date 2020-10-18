@@ -1,5 +1,6 @@
 #include "button.h"
 #include "audio.h"
+#include "engine.h"
 
 #include <QGraphicsDropShadowEffect>
 #include <QGraphicsRotation>
@@ -26,17 +27,6 @@ Button::Button(const QString &label, const QSizeF &size)
 {
     init();
 }
-
-/*void Button::setText(const QString &text)
-{
-    if (label != text) {
-        label = text;
-        delete m_icon;
-        delete m_colorReversedIcon;
-        initTextItems();
-        prepareIcons();
-    }
-}*/
 
 void Button::init()
 {
@@ -125,8 +115,6 @@ void Button::setFont(const QFont &font)
 
     title_item->setPixmap(*title);
 }
-
-#include "engine.h"
 
 void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *)
 {
