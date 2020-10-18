@@ -192,11 +192,21 @@ void IQSanComponentSkin::QSanSimpleTextFont::paintText(QPainter *painter, QRect 
 
     */
     QFont f;
-    f.setWordSpacing(m_spacing);
+    f.setWordSpacing(0);
     f.setWeight(m_weight);
-    //f.setPointSize(m_fontSize.width());
+    f.setPixelSize(m_fontSize.width());
     if (!m_family_name.isEmpty())
         f.setFamily(m_family_name);
+
+    // calculate the spacing.
+    QFontMetrics metric(f);
+    int estimate_width = metric.width(text);
+    if(m_vertical){
+        // spacing is determined by the height
+        f.setWordSpacing(min<qreal>(qreal(pos.height() - estimate_width) / (text.size() + 1), m_spacing));
+    } else {
+        f.setWordSpacing(min<qreal>(qreal(pos.width() - estimate_width) / (text.size() + 1), m_spacing));
+    }
 
     painter->setFont(f);
     painter->setPen(m_color);
