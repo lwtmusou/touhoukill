@@ -2634,11 +2634,8 @@ void RoomScene::useSelectedCard()
         guanxing_box->reply();
         break;
     }
-    case Client::AskForGongxin: {
-        ClientInstance->onPlayerReplyGongxin();
-        card_container->clear();
+    default:
         break;
-    }
     }
 
     const ViewAsSkill *skill = dashboard->currentSkill();
@@ -2795,9 +2792,12 @@ void RoomScene::doTimeout()
         }
         break;
     }
-    case Client::AskForGuanxing:
-    case Client::AskForGongxin: {
+    case Client::AskForGuanxing: {
         ok_button->click();
+        break;
+    }
+    case Client::AskForGongxin: {
+        cancel_button->click();
         break;
     }
     case Client::AskForGeneralTaken: {
@@ -3065,8 +3065,8 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         break;
     }
     case Client::AskForGongxin: {
-        ok_button->setEnabled(true);
-        cancel_button->setEnabled(false);
+        ok_button->setEnabled(false);
+        cancel_button->setEnabled(true);
         discard_button->setEnabled(false);
 
         break;
@@ -3256,6 +3256,11 @@ void RoomScene::doCancelButton()
         dashboard->stopPending();
         ClientInstance->onPlayerChoosePlayer(NULL);
         prompt_box->disappear();
+        break;
+    }
+    case Client::AskForGongxin: {
+        ClientInstance->onPlayerReplyGongxin();
+        card_container->clear();
         break;
     }
     default:
