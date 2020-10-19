@@ -2,7 +2,6 @@
 #include "RoomState.h"
 #include "ai.h"
 #include "audio.h"
-#include "banpair.h"
 #include "card.h"
 #include "client.h"
 #include "lua-wrapper.h"
@@ -384,12 +383,6 @@ int Engine::getGeneralCount(bool include_banned) const
         else if (isNormalGameMode(ServerInfo.GameMode) && Config.value("Banlist/Roles").toStringList().contains(general->objectName()))
             total--;
         else if (ServerInfo.GameMode == "04_1v3" && Config.value("Banlist/HulaoPass").toStringList().contains(general->objectName()))
-            total--;
-        else if (ServerInfo.GameMode == "06_XMode" && Config.value("Banlist/XMode").toStringList().contains(general->objectName()))
-            total--;
-        else if (isHegemonyGameMode(ServerInfo.GameMode) && Config.value("Banlist/Hegemony", "").toStringList().contains(general->objectName()))
-            total--;
-        else if (ServerInfo.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
             total--;
     }
 
@@ -890,8 +883,6 @@ QStringList Engine::getLords(bool contain_banned) const
             if (ServerInfo.GameMode.endsWith("p") || ServerInfo.GameMode.endsWith("pd") || ServerInfo.GameMode.endsWith("pz"))
                 if (Config.value("Banlist/Roles", "").toStringList().contains(lord))
                     continue;
-            if (Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
-                continue;
         }
         lords << lord;
     }
@@ -939,8 +930,6 @@ QStringList Engine::getRandomLords() const
                 continue;
         }
         if (getBanPackages().contains(general->getPackage()))
-            continue;
-        if (Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
             continue;
         if (banlist_ban.contains(general->objectName()))
             continue;

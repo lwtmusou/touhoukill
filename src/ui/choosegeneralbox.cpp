@@ -19,7 +19,6 @@
     *********************************************************************/
 
 #include "choosegeneralbox.h"
-#include "banpair.h"
 #include "button.h"
 #include "cardcontainer.h"
 #include "choosegeneraldialog.h" //#include "freechoosedialog.h"

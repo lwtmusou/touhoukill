@@ -1,7 +1,6 @@
 #include "room.h"
 #include "ai.h"
 #include "audio.h"
-#include "banpair.h"
 #include "engine.h"
 #include "gamerule.h"
 #include "generalselector.h"
@@ -3210,14 +3209,6 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign)
             existed << player->getGeneralName();
         if (player->getGeneral2())
             existed << player->getGeneral2Name();
-    }
-    if (Config.Enable2ndGeneral) {
-        foreach (QString name, BanPair::getAllBanSet())
-            existed << name;
-        if (to_assign.first()->getGeneral()) {
-            foreach (QString name, BanPair::getSecondBanSet())
-                existed << name;
-        }
     }
 
     const int max_choice = Config.value("MaxChoice", 6).toInt();

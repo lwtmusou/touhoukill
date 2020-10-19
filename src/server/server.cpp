@@ -1,6 +1,5 @@
 #include "server.h"
 #include "SkinBank.h"
-#include "banpair.h"
 #include "choosegeneraldialog.h"
 #include "engine.h"
 #include "nativesocket.h"
@@ -421,33 +420,23 @@ void BanlistDialog::switchTo(int item)
 {
     this->item = item;
     list = lists.at(item);
-    if (add2nd)
-        add2nd->setVisible((list->objectName() == "Pairs"));
 }
 
 BanlistDialog::BanlistDialog(QWidget *parent, bool view)
     : QDialog(parent)
-    , add2nd(NULL)
 {
     setWindowTitle(tr("Select generals that are excluded"));
 
     if (ban_list.isEmpty())
         ban_list << "Roles"
-                 << "1v1"
-                 << "HulaoPass"
-                 << "XMode"
-                 << "Basara"
-                 << "Hegemony"
-                 << "Pairs";
+                 << "HulaoPass";
     QVBoxLayout *layout = new QVBoxLayout;
 
     QTabWidget *tab = new QTabWidget;
     layout->addWidget(tab);
     connect(tab, SIGNAL(currentChanged(int)), this, SLOT(switchTo(int)));
 
-    foreach (QString item, ban_list) {
-        if (item == "Pairs")
-            continue;
+    foreach (const QString &item, ban_list) {
         QWidget *apage = new QWidget;
 
         list = new QListWidget;
@@ -466,41 +455,18 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
         tab->addTab(apage, Sanguosha->translate(item));
     }
 
-    QWidget *apage = new QWidget;
-
-    list = new QListWidget;
-    list->setObjectName("Pairs");
-    foreach (QString banned, BanPair::getAllBanSet().toList())
-        addGeneral(banned);
-    foreach (QString banned, BanPair::getSecondBanSet().toList())
-        add2ndGeneral(banned);
-    foreach (BanPair pair, BanPair::getBanPairSet().toList())
-        addPair(pair.first, pair.second);
-
-    QVBoxLayout *vlay = new QVBoxLayout;
-    vlay->addWidget(list);
-    apage->setLayout(vlay);
-    tab->addTab(apage, Sanguosha->translate("Pairs"));
-    lists << list;
-
     QPushButton *add = new QPushButton(tr("Add ..."));
     QPushButton *remove = new QPushButton(tr("Remove"));
-    if (!view)
-        add2nd = new QPushButton(tr("Add 2nd general ..."));
     QPushButton *ok = new QPushButton(tr("OK"));
 
     connect(ok, SIGNAL(clicked()), this, SLOT(accept()));
     connect(this, SIGNAL(accepted()), this, SLOT(saveAll()));
     connect(remove, SIGNAL(clicked()), this, SLOT(doRemoveButton()));
     connect(add, SIGNAL(clicked()), this, SLOT(doAddButton()));
-    if (!view)
-        connect(add2nd, SIGNAL(clicked()), this, SLOT(doAdd2ndButton()));
 
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
     if (!view) {
-        hlayout->addWidget(add2nd);
-        add2nd->hide();
         hlayout->addWidget(add);
         hlayout->addWidget(remove);
         list = lists.first();
@@ -512,8 +478,6 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
     setLayout(layout);
 
     foreach (QListWidget *alist, lists) {
-        if (alist->objectName() == "Pairs")
-            continue;
         alist->setViewMode(QListView::IconMode);
         alist->setDragDropMode(QListView::NoDragDrop);
     }
@@ -521,49 +485,17 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
 
 void BanlistDialog::addGeneral(const QString &name)
 {
-    if (list->objectName() == "Pairs") {
-        QString text = QString(tr("Banned for all: %1")).arg(Sanguosha->translate(name));
-        QListWidgetItem *item = new QListWidgetItem(text);
-        item->setData(Qt::UserRole, QVariant::fromValue(name));
-        list->addItem(item);
-    } else {
-        QIcon icon(G_ROOM_SKIN.getGeneralPixmap(name, QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY, false));
-        QString text = Sanguosha->translate(name);
-        QListWidgetItem *item = new QListWidgetItem(icon, text, list);
-        item->setSizeHint(QSize(60, 60));
-        item->setData(Qt::UserRole, name);
-    }
-}
-
-void BanlistDialog::add2ndGeneral(const QString &name)
-{
-    QString text = QString(tr("Banned for second general: %1")).arg(Sanguosha->translate(name));
-    QListWidgetItem *item = new QListWidgetItem(text);
-    item->setData(Qt::UserRole, QVariant::fromValue(QString("+%1").arg(name)));
-    list->addItem(item);
-}
-
-void BanlistDialog::addPair(const QString &first, const QString &second)
-{
-    QString trfirst = Sanguosha->translate(first);
-    QString trsecond = Sanguosha->translate(second);
-    QListWidgetItem *item = new QListWidgetItem(QString("%1 + %2").arg(trfirst, trsecond));
-    item->setData(Qt::UserRole, QVariant::fromValue(QString("%1+%2").arg(first, second)));
-    list->addItem(item);
+    QIcon icon(G_ROOM_SKIN.getGeneralPixmap(name, QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY, false));
+    QString text = Sanguosha->translate(name);
+    QListWidgetItem *item = new QListWidgetItem(icon, text, list);
+    item->setSizeHint(QSize(60, 60));
+    item->setData(Qt::UserRole, name);
 }
 
 void BanlistDialog::doAddButton()
 {
-    FreeChooseDialog *chooser = new FreeChooseDialog(this, (list->objectName() == "Pairs"));
-    connect(chooser, SIGNAL(general_chosen(QString)), this, SLOT(addGeneral(QString)));
-    connect(chooser, SIGNAL(pair_chosen(QString, QString)), this, SLOT(addPair(QString, QString)));
-    chooser->exec();
-}
-
-void BanlistDialog::doAdd2ndButton()
-{
     FreeChooseDialog *chooser = new FreeChooseDialog(this, false);
-    connect(chooser, SIGNAL(general_chosen(QString)), this, SLOT(add2ndGeneral(QString)));
+    connect(chooser, SIGNAL(general_chosen(QString)), this, SLOT(addGeneral(QString)));
     chooser->exec();
 }
 
@@ -591,7 +523,6 @@ void BanlistDialog::saveAll()
         switchTo(i);
         save();
     }
-    BanPair::loadBanPairs();
 }
 
 void ServerDialog::edit1v1Banlist()
