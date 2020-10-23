@@ -907,9 +907,30 @@ sgs.ai_choicemade_filter.skillChoice.zhuonong = function(self, player, args, dat
 		sgs.updateIntention(player, target, 40)
 	end
 end
-sgs.ai_skill_invoke.jijing =  true
-
-
+--sgs.ai_skill_invoke.jijing =  true
+sgs.ai_skill_playerchosen.jijing = function(self, targets)
+	local good_targets = {}
+	for _,p in sgs.qlist(targets) do
+		if self.player:isCurrent() and self.player:distanceTo(p) > 1 and not self:isFriend(p) then
+			table.insert(good_targets, p)
+		elseif not self.player:isCurrent() and self:isFriend(p) then
+			table.insert(good_targets, p)
+		end
+	end
+	
+	if #good_targets == 0 then return nil end
+	local sorttype = not self.player:isCurrent()
+	self:sort(good_targets, "defenseSlash")
+	
+	return good_targets[1]
+end
+sgs.ai_playerchosen_intention.jijing = function(self, from, to)
+	if not from:isCurrent() then
+		sgs.updateIntention(from, to, -20) 
+	--elseif from:isCurrent() then
+	--	sgs.updateIntention(from, to, 20) 
+	end
+end
 
 sgs.ai_skill_playerchosen.ganying = function(self, targets)
 	--if self:isWeak(self.player) then return self.player end
