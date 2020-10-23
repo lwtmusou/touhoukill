@@ -3827,6 +3827,12 @@ function SmartAI:willUsePeachTo(dying)
 		if self:getCardId("Peach") then return self:getCardId("Peach") end
 	end
 
+	--送葬带走
+	if self.player:hasSkill("songzang") and not self:isFriend(dying) then
+		card_str = self:getCardId("Peach")
+		if card_str then return card_str end
+	end
+
 	local damage = self.room:getTag("CurrentDamageStruct"):toDamage()
 	if type(damage) == "DamageStruct" and damage.to and damage.to:objectName() == dying:objectName() and damage.from
 		and (damage.from:objectName() == self.player:objectName()

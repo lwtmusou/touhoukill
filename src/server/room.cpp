@@ -254,6 +254,7 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason)
                         break;
                     QString cd = saver->property("currentdying").toString();
                     setPlayerProperty(saver, "currentdying", player->objectName());
+                    saver->tag["songzang_dying"] = dying_data;//record for ai, like skill songzang
 
                     thread->trigger(AskForPeaches, this, dying_data);
                     setPlayerProperty(saver, "currentdying", cd);
