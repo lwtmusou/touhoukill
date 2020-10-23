@@ -3832,6 +3832,10 @@ function SmartAI:willUsePeachTo(dying)
 		card_str = self:getCardId("Peach")
 		if card_str then return card_str end
 	end
+	if self:hasWeiya() then
+		if self:getCardsNum("Peach") < 2 then return "." end
+	end
+
 
 	local damage = self.room:getTag("CurrentDamageStruct"):toDamage()
 	if type(damage) == "DamageStruct" and damage.to and damage.to:objectName() == dying:objectName() and damage.from
