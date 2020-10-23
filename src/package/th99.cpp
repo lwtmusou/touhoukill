@@ -1461,12 +1461,12 @@ public:
         events << TargetSpecifying;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
         if (use.from != NULL && use.card != NULL && use.card->getTypeId() == Card::TypeTrick && !use.to.isEmpty()) {
-            foreach (ServerPlayer *p, room->getAlivePlayers()) {
+            foreach (ServerPlayer *p, use.to) {//room->getAlivePlayers()
                 if (p->hasSkill(this))
                     d << SkillInvokeDetail(this, p, p);
             }
@@ -1477,7 +1477,11 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        ServerPlayer *p = room->askForPlayerChosen(invoke->invoker, use.to, objectName(), "@dubi-cancel", true, true);
+        QStringList prompt_list;
+        prompt_list << "@dubi-cancel" << use.from->objectName() << use.card->objectName();
+        QString prompt = prompt_list.join(":");
+        invoke->invoker->tag["dubi_use"] = data; //for ai
+        ServerPlayer *p = room->askForPlayerChosen(invoke->invoker, use.to, objectName(), prompt, true, true);
         if (p != NULL) {
             room->loseHp(invoke->invoker);
             invoke->targets << p;

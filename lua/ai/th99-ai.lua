@@ -949,7 +949,57 @@ sgs.ai_skill_invoke.ganying = true
 		or (not to:getOffensiveHorse() and  getCardsNum("OffensiveHorse",to,self.player)<1 and card:isKindOf("OffensiveHorse"))
 	end
 end]]
+function SmartAI:canDubi()
+	if self:isWeak() then
+		return self:getCardsNum("Pecah") > 0  or self:getCardsNum("Analeptic") > 0
+	end
+	return true
+end
 
+sgs.ai_skill_playerchosen.dubi = function(self, targets)
+	local card=self.player:getTag("dubi_use"):toCardUse().card
+
+	if not self:canDubi() then return nil end
+	
+	--if card:isKindOf("AmazingGrace") then
+	if card:isKindOf("GodSalvation") then
+		for _, p in sgs.qlist(targets) do
+			if p:isWounded() and self:isEnemy(p) then
+				return p
+			end
+		end
+	end
+	--if card:isKindOf("IronChain") then
+	if card:isKindOf("Dismantlement") or card:isKindOf("Snatch") then
+		for _, p in sgs.qlist(targets) do
+			if self:isFriend(p) then
+				local dangerous =  self:getDangerousCard(p)
+				if dangerous then return p end
+			end
+		end
+	end
+	if card:isKindOf("Duel") then
+		for _, p in sgs.qlist(targets) do
+			if self:isFriend(p)  and self:isWeak(p) then
+				return p
+			end
+		end
+	end
+	if card:isKindOf("SavageAssault") then
+		for _, p in sgs.qlist(targets) do
+			if self:isFriend(p)  and getCardsNum("Slash", p, self.player) < 1  then
+				return p
+			end
+		end
+	end
+	if card:isKindOf("ArcheryAttack") then
+		for _, p in sgs.qlist(targets) do
+			if self:isFriend(p)  and getCardsNum("Jink", p, self.player) < 1  then
+				return p
+			end
+		end
+	end
+end
 
 
 sgs.ai_skill_cardask["@zhujiu"] = function(self, data)
