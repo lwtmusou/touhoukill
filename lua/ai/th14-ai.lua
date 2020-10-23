@@ -143,28 +143,59 @@ sgs.ai_cardneed.leiting = function(to, card, self)
 	end
 end
 
-sgs.ai_skill_cardask["@nizhuan-self"] = function(self, data)
+--[[sgs.ai_skill_cardask["@nizhuan-self"] = function(self, data)
 	if (sgs.ai_skill_invoke.nizhuan(self, data)) then
 		local dis = self:askForDiscard("Dummy", 1, 1, false, false)
 		return tostring(dis[1])
 	end
-end
+end]]
 sgs.ai_skill_invoke.nizhuan =function(self,data)
 	local use = self.player:getTag("nizhuan_carduse"):toCardUse()
-	local to=use.to:first()
-	if to then
-		return self:isFriend(to)
+	local to = use.to:first()
+	local target = data:toPlayer()
+	
+	local fakeDamage= sgs.DamageStruct()
+	fakeDamage.card = use.card
+	fakeDamage.damage=1
+	local finalDamage
+	if self.player:objectName() == to:objectName() then
+		--被杀
+		fakeDamage.nature = self:touhouDamageNature(card,target,self.player)
+		fakeDamage.from= target
+		fakeDamage.to = self.player
+		finalDamage = self:touhouDamage(fakeDamage, target,self.player)
+
+		if finalDamage.damage >= self.player:getHp() then 
+			return getCardsNum("Jink",target,self.player) > 0 
+					or  getCardsNum("Peach",target,self.player) > 0 
+					or (self:getCardsNum("Jink") == 0 and self:getCardsNum("Peach") == 0)
+		else
+			return getCardsNum("Jink", target, self.player) > 0 
+					or self:getCardsNum("Jink") == 0
+		end
+	else
+		--杀别人
+		fakeDamage.nature = self:touhouDamageNature(card,self.player,target)
+		fakeDamage.from= self.player
+		fakeDamage.to = target
+		finalDamage = self:touhouDamage(fakeDamage, self.player, target)
+
+		if finalDamage.damage >= target:getHp() then 
+			return self:getCardsNum("Jink") == 0 and self:getCardsNum("Peach") == 0
+		else
+			return self:getCardsNum("Jink") == 0
+		end
 	end
 	return false
 end
-sgs.ai_choicemade_filter.skillInvoke.nizhuan = function(self, player, args)
+--[[sgs.ai_choicemade_filter.skillInvoke.nizhuan = function(self, player, args)
 	local use = player:getTag("nizhuan_carduse"):toCardUse()
 	local to=use.to:first()
 	if  to and  args[#args] == "yes" then
 		sgs.updateIntention(player, to, -80)
 	end
-end
-function SmartAI:canNizhuan(player, attacker)
+end]]
+--[[function SmartAI:canNizhuan(player, attacker)
 	local seija = self.room:findPlayerBySkillName("nizhuan")
 	if not player:isWounded() then return false end
 	if player:getLostHp() <= attacker:getLostHp() then return false end
@@ -172,19 +203,37 @@ function SmartAI:canNizhuan(player, attacker)
 		return true
 	end
 	return false
-end
+end]]
 
-sgs.ai_skill_invoke.guizha =  true
-sgs.ai_skill_cardask["@guizha"] = function(self, data)
+--sgs.ai_skill_invoke.guizha =  true
+--[[sgs.ai_skill_cardask["@guizha"] = function(self, data)
 	for _,card in sgs.qlist(self.player:getCards("hs") ) do
 		if card:isKindOf("Peach") then
 			return "$" .. card:getId()
 		end
 	end
 	return "."
+end]]
+
+sgs.ai_skill_playerchosen.guizha = function(self, targets)
+
+	local targets2 = {}
+	for _,p in sgs.qlist(targets) do
+		if not self:isFriend(p)    then
+			if getCardsNum("Peach", p,self.player) > 0 or getCardsNum("Peach", p,self.player) > 0 then
+				return p
+			else
+				table.insert(targets2, p)
+			end
+		end
+	end
+	
+	if #targets2 > 0 then
+		self:sort(targets2,"handcard", true)
+		return targets2[1]
+	end
+	return nil
 end
-
-
 
 sgs.ai_skill_playerchosen.yuyin = function(self, targets)
 	for _,p in sgs.qlist(targets) do

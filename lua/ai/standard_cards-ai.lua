@@ -308,9 +308,9 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 	end
 
 	if self:touhouEffectNullify(slash,from,to) then return false end
-	if self:canNizhuan(to, from) then
+	--[[if self:canNizhuan(to, from) then
 		return false
-	end
+	end]]
 	if to:hasSkill("fenghua") then
 		for _, id in sgs.qlist(to:getPile("fenghua")) do
 			if sgs.Sanguosha:getCard(id):getSuit() == slash:getSuit() then
