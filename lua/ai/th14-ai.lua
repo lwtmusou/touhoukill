@@ -168,7 +168,7 @@ sgs.ai_skill_invoke.nizhuan =function(self,data)
 		if finalDamage.damage >= self.player:getHp() then 
 			return getCardsNum("Jink",target,self.player) > 0 
 					or  getCardsNum("Peach",target,self.player) > 0 
-					or (self:getCardsNum("Jink") == 0 and self:getCardsNum("Peach") == 0)
+					or (self:getCardsNum("Jink") == 0 and self:getCardsNum("Peach") == 0 and self:getCardsNum("Analeptic") == 0)
 		else
 			return getCardsNum("Jink", target, self.player) > 0 
 					or self:getCardsNum("Jink") == 0
@@ -181,7 +181,7 @@ sgs.ai_skill_invoke.nizhuan =function(self,data)
 		finalDamage = self:touhouDamage(fakeDamage, self.player, target)
 
 		if finalDamage.damage >= target:getHp() then 
-			return self:getCardsNum("Jink") == 0 and self:getCardsNum("Peach") == 0
+			return self:getCardsNum("Jink") == 0 and self:getCardsNum("Peach") == 0 and self:getCardsNum("Analeptic") == 0
 		else
 			return self:getCardsNum("Jink") == 0
 		end
@@ -220,7 +220,7 @@ sgs.ai_skill_playerchosen.guizha = function(self, targets)
 	local targets2 = {}
 	for _,p in sgs.qlist(targets) do
 		if not self:isFriend(p)    then
-			if getCardsNum("Peach", p,self.player) > 0 or getCardsNum("Peach", p,self.player) > 0 then
+			if getCardsNum("Peach", p,self.player) > 0 or getCardsNum("Analeptic", p,self.player) > 0 then
 				return p
 			else
 				table.insert(targets2, p)
