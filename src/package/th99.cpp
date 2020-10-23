@@ -1260,6 +1260,7 @@ public:
     }
 };
 
+/*
 JijingCard::JijingCard()
 {
 }
@@ -1335,7 +1336,7 @@ public:
     {
         return new JijingCard;
     }
-};
+};*/
 
 class Jijing : public TriggerSkill
 {
@@ -1343,8 +1344,8 @@ public:
     Jijing()
         : TriggerSkill("jijing")
     {
-        events << Damaged << Damage << EventPhaseChanging;
-        view_as_skill = new JijingVS;
+        events << Damage << EventPhaseChanging;
+        //view_as_skill = new JijingVS;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
@@ -1364,53 +1365,30 @@ public:
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const
     {
-        if (e != Damage && e != Damaged)
+        if (e == EventPhaseChanging)
             return QList<SkillInvokeDetail>();
 
         DamageStruct damage = data.value<DamageStruct>();
-
-        if (e == Damage) {
-            if (damage.from != NULL && damage.from->isAlive() && damage.from->hasSkill(this) && damage.from->getPhase() != Player::NotActive && damage.to->isAlive())
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from);
-        } else if (e == Damaged) {
-            ServerPlayer *p = room->getCurrent();
-            if (!p || !p->isCurrent() || p->isDead())
-                return QList<SkillInvokeDetail>();
-            if (damage.to->isAlive() && damage.to->hasSkill(this) && damage.to != p && damage.to->getPhase() == Player::NotActive)
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
+        if (damage.from == NULL || room->getCurrent() == NULL || room->getCurrent()->isDead())
+            return QList<SkillInvokeDetail>();
+            
+        QList<SkillInvokeDetail> d;
+        foreach(ServerPlayer *lunar, room->findPlayersBySkillName(objectName())) {
+            if (lunar->isCurrent() && lunar == damage.from)
+                d << SkillInvokeDetail(this, lunar, lunar);
+            else if (damage.from->isCurrent() && lunar != damage.from)
+                d << SkillInvokeDetail(this, lunar, lunar);
         }
-
-        return QList<SkillInvokeDetail>();
+        return d;
     }
 
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        DamageStruct damage = data.value<DamageStruct>();
-        QString prompt = QString("@jijing-%1").arg(triggerEvent == Damage ? 41 : 42);
-
-        if (triggerEvent == Damage) {
-            room->setPlayerProperty(invoke->invoker, "jijingInclude", damage.to->objectName());
-            prompt.append("i:").append(damage.to->objectName());
-        } else {
-            room->setPlayerProperty(invoke->invoker, "jijingInclude", QString());
-            prompt.append(":");
-        }
-
-        prompt.append("::").append(QString::number(qMax(1, invoke->invoker->getLostHp())));
-
-        if (room->askForUseCard(invoke->invoker, "@@jijing", prompt, -1, Card::MethodNone, true, "jijing")) {
-            // collect targets
-            foreach (ServerPlayer *p, room->getAllPlayers()) {
-                if (p->hasFlag("jijingSelected")) {
-                    invoke->targets << p;
-                    p->setFlags("-jijingSelected");
-                }
-            }
-
-            return true;
-        }
-
-        return false;
+        QString prompt = invoke->invoker->isCurrent() ? "@jijing-41" : ("@jijing-42:" + room->getCurrent()->objectName());
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(room->getCurrent()), objectName(), prompt, true, true);   
+        if (target != NULL)
+            invoke->targets << target;
+        return !invoke->targets.isEmpty();
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
@@ -2303,7 +2281,7 @@ TH99Package::TH99Package()
     addMetaObject<ZhuonongCard>();
     addMetaObject<YushouCard>();
     addMetaObject<PanduCard>();
-    addMetaObject<JijingCard>();
+    //addMetaObject<JijingCard>();
     skills << new DangjiaVS << new Luanying << new XiufuMove << new XunshiDistance << new LiyouDistance; //<< new GanyingHandler
 }
 
