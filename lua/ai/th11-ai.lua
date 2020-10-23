@@ -906,6 +906,33 @@ sgs.ai_skill_choice.cuiji_suit =function(self)
 
 end
 
+sgs.ai_skill_invoke.cuiji_hegemony = true
+sgs.ai_skill_choice.cuiji_hegemony_suit = function(self, choices, data)
+	local cards = self.player:getCards("hes")
+	local slash = false
+	local nonbasic = false
+	for _, c in sgs.qlist(cards) do
+		if c:isKindOf("Slash") then
+			slash = true
+		elseif c:getTypeId() ~= sgs.Card_TypeBasic and not c:isKindOf("Nullification") then
+			nonbasic = true
+		end
+		if slash and nonbasic then
+			break
+		end
+	end
+	
+	if slash or not nonbasic then 
+		return "nonbasic"
+	end
+	return "basic"
+end
+
+
+
+
+
+
 local baigui_skill = {}
 baigui_skill.name = "baigui"
 table.insert(sgs.ai_skills, baigui_skill)
