@@ -39,6 +39,8 @@ LightSlash::LightSlash(Suit suit, int number)
 
 void LightSlash::debuffEffect(const SlashEffectStruct &effect)
 {
+    if (effect.to->isDead())
+        return;
     int num = qMin(1 + effect.effectValue.first(), effect.to->getCards("h").length());
     if (num <= 0)
         return;
@@ -63,6 +65,8 @@ PowerSlash::PowerSlash(Suit suit, int number)
 
 void PowerSlash::debuffEffect(const SlashEffectStruct &effect)
 {
+    if (effect.to->isDead())
+        return;
     Room *room = effect.from->getRoom();
     QList<int> disable;
     foreach (const Card *c, effect.to->getCards("e")) {
@@ -119,6 +123,8 @@ LightJink::LightJink(Suit suit, int number)
 
 void LightJink::onEffect(const CardEffectStruct &effect) const
 {
+    if (effect.to->isDead())
+        return;
     int num = qMin(1 + effect.effectValue.first(), effect.to->getCards("h").length());
     if (num <= 0)
         return;
@@ -153,6 +159,8 @@ bool MagicAnaleptic::matchTypeOrName(const QString &pattern) const
 
 void MagicAnaleptic::onEffect(const CardEffectStruct &effect) const
 {
+    if (effect.to->isDead())
+        return;
     Room *room = effect.to->getRoom();
     room->setEmotion(effect.to, "analeptic");
 
@@ -205,6 +213,8 @@ bool SuperPeach::targetFixed(const Player *Self) const
 
 void SuperPeach::onEffect(const CardEffectStruct &effect) const
 {
+    if (effect.to->isDead())
+        return;
     Room *room = effect.to->getRoom();
     room->setEmotion(effect.from, "peach");
 
@@ -786,6 +796,8 @@ bool AwaitExhausted::targetFilter(const QList<const Player *> &targets, const Pl
 
 void AwaitExhausted::onEffect(const CardEffectStruct &effect) const
 {
+    if (effect.to->isDead())
+        return;
     Room *room = effect.from->getRoom();
     effect.to->drawCards(2 + effect.effectValue.first());
     int num = qMin(2 + effect.effectValue.last(), effect.to->getCards("ehs").length());
@@ -807,6 +819,8 @@ bool AllianceFeast::isCancelable(const CardEffectStruct &effect) const
 void AllianceFeast::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
+    if (effect.to->isDead())
+        return;
     if (!(effect.to->isChained() || !effect.to->getShownHandcards().isEmpty() || !effect.to->getBrokenEquips().isEmpty())) {
         room->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
     } else {
@@ -853,6 +867,8 @@ bool BoneHealing::targetFilter(const QList<const Player *> &targets, const Playe
 
 void BoneHealing::onEffect(const CardEffectStruct &effect) const
 {
+    if (effect.to->isDead())
+        return;
     Room *room = effect.to->getRoom();
     DamageStruct damage(effect.card, effect.from, effect.to, 1 + effect.effectValue.first());
     room->damage(damage);

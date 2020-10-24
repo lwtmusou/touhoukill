@@ -397,6 +397,8 @@ void Peach::onUse(Room *room, const CardUseStruct &card_use) const
 
 void Peach::onEffect(const CardEffectStruct &effect) const
 {
+    if (effect.to->isDead())
+        return;
     Room *room = effect.to->getRoom();
     room->setEmotion(effect.from, "peach");
 
@@ -1162,7 +1164,7 @@ void AmazingGrace::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.from->getRoom();
     QVariantList ag_list = room->getTag("AmazingGrace").toList();
-    if (ag_list.isEmpty())
+    if (ag_list.isEmpty() || effect.to->isDead())
         return;
     QList<int> card_ids;
     foreach (QVariant card_id, ag_list)
@@ -1204,6 +1206,8 @@ bool GodSalvation::isCancelable(const CardEffectStruct &effect) const
 
 void GodSalvation::onEffect(const CardEffectStruct &effect) const
 {
+    if (effect.to->isDead())
+        return;
     Room *room = effect.to->getRoom();
     if (!effect.to->isWounded())
         room->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
@@ -1225,6 +1229,8 @@ SavageAssault::SavageAssault(Suit suit, int number)
 
 void SavageAssault::onEffect(const CardEffectStruct &effect) const
 {
+    if (effect.to->isDead())
+        return;
     Room *room = effect.to->getRoom();
     int times = 1 + effect.effectValue.first();
     bool dodamage = false;
@@ -1257,6 +1263,8 @@ ArcheryAttack::ArcheryAttack(Card::Suit suit, int number)
 
 void ArcheryAttack::onEffect(const CardEffectStruct &effect) const
 {
+    if (effect.to->isDead())
+        return;
     Room *room = effect.to->getRoom();
     int times = 1 + effect.effectValue.first();
     bool dodamage = false;
@@ -1408,6 +1416,8 @@ bool ExNihilo::isAvailable(const Player *player) const
 
 void ExNihilo::onEffect(const CardEffectStruct &effect) const
 {
+    if (effect.to->isDead())
+        return;
     Room *room = effect.to->getRoom();
     int extra = 0;
     if (room->getMode() == "06_3v3" && Config.value("3v3/OfficialRule", "2013").toString() == "2013") {
@@ -1441,6 +1451,8 @@ void Duel::onEffect(const CardEffectStruct &effect) const
 {
     ServerPlayer *first = effect.to;
     ServerPlayer *second = effect.from;
+    if (first->isDead() || second->isDead())
+        return;
     Room *room = first->getRoom();
 
     room->setEmotion(first, "duel");
@@ -1511,7 +1523,7 @@ bool Snatch::targetFilter(const QList<const Player *> &targets, const Player *to
 
 void Snatch::onEffect(const CardEffectStruct &effect) const
 {
-    if (effect.from->isDead())
+    if (effect.from->isDead() || effect.to->isDead())
         return;
     if (effect.to->isAllNude()) {
         effect.to->getRoom()->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
@@ -1567,7 +1579,7 @@ bool Dismantlement::targetFilter(const QList<const Player *> &targets, const Pla
 
 void Dismantlement::onEffect(const CardEffectStruct &effect) const
 {
-    if (effect.from->isDead())
+    if (effect.from->isDead() || effect.to->isDead())
         return;
 
     Room *room = effect.to->getRoom();
@@ -2041,6 +2053,8 @@ void LureTiger::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
 
 void LureTiger::onEffect(const CardEffectStruct &effect) const
 {
+    if (effect.to->isDead())
+        return;
     Room *room = effect.to->getRoom();
     room->touhouLogmessage("#Shenyin1", effect.to, objectName(), QList<ServerPlayer *>());
 
@@ -2234,6 +2248,8 @@ void KnownBoth::onUse(Room *room, const CardUseStruct &card_use) const
 
 void KnownBoth::onEffect(const CardEffectStruct &effect) const
 {
+    if (effect.to->isDead())
+        return;
     if (effect.to->getCards("h").isEmpty()) {
         effect.to->getRoom()->setCardFlag(this, "-tianxieEffected_" + effect.to->objectName()); //only for skill tianxie
         return;

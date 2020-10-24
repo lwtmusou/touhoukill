@@ -102,6 +102,8 @@ void Analeptic::onUse(Room *room, const CardUseStruct &card_use) const
 
 void Analeptic::onEffect(const CardEffectStruct &effect) const
 {
+    if (effect.to->isDead())
+        return;
     Room *room = effect.to->getRoom();
     room->setEmotion(effect.to, "analeptic");
 
@@ -517,7 +519,7 @@ bool FireAttack::targetFilter(const QList<const Player *> &targets, const Player
 void FireAttack::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.from->getRoom();
-    if (effect.to->isKongcheng())
+    if (effect.to->isKongcheng() || effect.to->isDead())
         return;
 
     int num = qMin(1 + effect.effectValue.first(), effect.to->getHandcardNum());
@@ -658,6 +660,8 @@ void IronChain::onUse(Room *room, const CardUseStruct &card_use) const
 
 void IronChain::onEffect(const CardEffectStruct &effect) const
 {
+    if (effect.to->isDead())
+        return;
     effect.to->getRoom()->setPlayerProperty(effect.to, "chained", !effect.to->isChained());
 }
 
