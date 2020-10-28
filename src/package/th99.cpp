@@ -1371,9 +1371,9 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.from == NULL || room->getCurrent() == NULL || room->getCurrent()->isDead())
             return QList<SkillInvokeDetail>();
-            
+
         QList<SkillInvokeDetail> d;
-        foreach(ServerPlayer *lunar, room->findPlayersBySkillName(objectName())) {
+        foreach (ServerPlayer *lunar, room->findPlayersBySkillName(objectName())) {
             if (lunar->isCurrent() && lunar == damage.from)
                 d << SkillInvokeDetail(this, lunar, lunar);
             else if (damage.from->isCurrent() && lunar != damage.from)
@@ -1382,10 +1382,10 @@ public:
         return d;
     }
 
-    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         QString prompt = invoke->invoker->isCurrent() ? "@jijing-41" : ("@jijing-42:" + room->getCurrent()->objectName());
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(room->getCurrent()), objectName(), prompt, true, true);   
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(room->getCurrent()), objectName(), prompt, true, true);
         if (target != NULL)
             invoke->targets << target;
         return !invoke->targets.isEmpty();
@@ -1466,7 +1466,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
         if (use.from != NULL && use.card != NULL && use.card->getTypeId() == Card::TypeTrick && !use.to.isEmpty()) {
-            foreach (ServerPlayer *p, use.to) {//room->getAlivePlayers()
+            foreach (ServerPlayer *p, use.to) { //room->getAlivePlayers()
                 if (p->hasSkill(this))
                     d << SkillInvokeDetail(this, p, p);
             }
