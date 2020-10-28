@@ -408,7 +408,7 @@ SWIGFILES += $$_PRO_FILE_PWD_/swig/sanguosha.i
 SWIG_bin = "swig"
 contains(QMAKE_HOST.os, "Windows"): SWIG_bin = "$$_PRO_FILE_PWD_/tools/swig/swig.exe"
 
-swig.commands = "$$system_path($$PWD/tools/swig/swig) -c++ -lua -cppext cpp -o ${QMAKE_FILE_OUT} ${QMAKE_FILE_NAME}"
+swig.commands = "$$system_path($$SWIG_bin) -c++ -lua -cppext cpp -o ${QMAKE_FILE_OUT} ${QMAKE_FILE_NAME}"
 swig.CONFIG = target_predeps
 swig.dependency_type = TYPE_C
 swig.depends = $$SWIGFILES
