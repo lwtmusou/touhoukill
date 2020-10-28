@@ -24,7 +24,6 @@ CONFIG += precompiled_header
 PRECOMPILED_HEADER = src/pch.h
 
 SOURCES += \
-    swig/sanguosha_wrap.cxx \
     src/client/aux-skills.cpp \
     src/client/client.cpp \
     src/client/clientplayer.cpp \
@@ -404,14 +403,24 @@ android:DEFINES += "\"getlocaledecpoint()='.'\""
     INCLUDEPATH += src/lua
 }
 
+SWIGFILES += $$_PRO_FILE_PWD_/swig/sanguosha.i
+
+SWIG_bin = "swig"
+contains(QMAKE_HOST.os, "Windows"): SWIG_bin = "$$_PRO_FILE_PWD_/tools/swig/swig.exe"
+
+swig.commands = "$$system_path($$PWD/tools/swig/swig) -c++ -lua -cppext cpp -o ${QMAKE_FILE_OUT} ${QMAKE_FILE_NAME}"
+swig.CONFIG = target_predeps
+swig.dependency_type = TYPE_C
+swig.depends = $$SWIGFILES
+swig.input = SWIGFILES
+swig.name = "Generating ${QMAKE_FILE_NAME}..."
+swig.output = ${QMAKE_FILE_BASE}_wrap.cpp
+swig.variable_out = SOURCES
+
+QMAKE_EXTRA_COMPILERS += swig
 
 !build_pass{
     system("$$dirname(QMAKE_QMAKE)/lrelease $$_PRO_FILE_PWD_/builds/sanguosha.ts -qm $$_PRO_FILE_PWD_/sanguosha.qm")
-
-    SWIG_bin = "swig"
-    contains(QMAKE_HOST.os, "Windows"): SWIG_bin = "$$_PRO_FILE_PWD_/tools/swig/swig.exe"
-
-    system("$$SWIG_bin -c++ -lua $$_PRO_FILE_PWD_/swig/sanguosha.i")
 }
 
 TRANSLATIONS += builds/sanguosha.ts
