@@ -999,7 +999,6 @@ sgs.ai_skill_use_func.KuaizhaoHegemonyCard = function(card, use, self)
 		
 	else
 		to2 = dummy_use.to:first()
-		self.player:gainMark("@eee")
 	end
 	
 	if to1 and to2 then
