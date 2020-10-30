@@ -14,7 +14,7 @@ set(CMAKE_AUTOUIC ON)
 
 add_definitions(-Wall)
 
-find_package(Qt5 COMPONENTS Widgets Network LinguistTools REQUIRED) # Locate the position of Qt5.
+find_package(Qt5 COMPONENTS Widgets Network LinguistTools Multimedia REQUIRED) # Locate the position of Qt5.
 
 include_directories(
 	"src/client"
@@ -23,6 +23,7 @@ include_directories(
 	"src/lua"
 	"src/package"
 	"src/server"
+	"src/ogg"
 	"src/ui"
 	"src/util"
 	"src"
@@ -30,55 +31,13 @@ include_directories(
 	"include/vld"
 )
 
-#add_compile_definitions(AUDIO_SUPPORT)
+add_compile_definitions(AUDIO_SUPPORT)
 add_compile_definitions(LUA_USE_LINUX)
-
-set (QSanguosha_HDRS
-	src/core/audio.h
-	src/core/banpair.h
-	src/core/compiler-specific.h
-	src/core/json.h
-	src/core/protocol.h
-	src/core/RoomObject.h
-	src/core/structs.h
-	src/core/util.h
-	src/package/exppattern.h
-	#src/ui/sanfreetypefont.h
-	#src/ui/sanshadowtextfont.h
-	#src/ui/sansimpletextfont.h
-	#src/ui/sanuiutils.h
-	src/ui/SkinBank.h
-	src/ui/uiUtils.h
-	src/pch.h
-	src/lua/lzio.h
-	src/lua/lvm.h
-	src/lua/lundump.h
-	src/lua/lualib.h
-	src/lua/luaconf.h
-	src/lua/lua.hpp
-	src/lua/lua.h
-	src/lua/ltm.h
-	src/lua/ltable.h
-	src/lua/lstring.h
-	src/lua/lstate.h
-	src/lua/lparser.h
-	src/lua/lopcodes.h
-	src/lua/lobject.h
-	src/lua/lmem.h
-	src/lua/llimits.h
-	src/lua/llex.h
-	src/lua/lgc.h
-	src/lua/lfunc.h
-	src/lua/ldo.h
-	src/lua/ldebug.h
-	src/lua/lctype.h
-	src/lua/lcode.h
-	src/lua/lauxlib.h
-	src/lua/lapi.h
-	)
 
 set (QSanguosha_SRCS
 	swig/sanguosha_wrap.cxx
+	src/audio/audio.cpp
+	src/audio/OggFile.cpp
 	src/client/aux-skills.cpp
 	src/client/client.cpp
 	src/client/clientplayer.cpp
@@ -182,7 +141,6 @@ set (QSanguosha_SRCS
 	src/package/hegemonyCard.cpp
 	src/package/playground.cpp
 	src/ui/hegemonyrolecombobox.cpp
-	src/core/audio.cpp
 	src/lua/lzio.c
 	src/lua/lvm.c
 	src/lua/lundump.c
@@ -223,7 +181,6 @@ set (QSanguosha_UIS
 	src/dialog/generaloverview.ui
 	src/dialog/mainwindow.ui
 )
-#QT5_WRAP_UI(UIS ${QSanguosha_UIS})
 
 
 set(TS_FILES builds/sanguosha.ts)
@@ -231,6 +188,8 @@ set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION "ts")
 qt5_add_translation(QM_FILES ${TS_FILES})
 
 set (QSanguosha_MOCS
+	src/audio/audio.h
+	src/audio/OggFile.h
 	src/client/aux-skills.h
 	src/client/client.h
 	src/client/clientplayer.h
@@ -323,5 +282,51 @@ set (QSanguosha_MOCS
 	src/package/playground.h
 )
 
-add_executable (QSanguosha ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS})
-target_link_libraries (QSanguosha Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network dl)
+set(OGG_FILE
+src/ogg/scales.h
+src/ogg/lpc.c
+src/ogg/registry.c
+src/ogg/highlevel.h
+src/ogg/bitrate.c
+src/ogg/envelope.c
+src/ogg/window.c
+src/ogg/lsp.h
+src/ogg/psy.c
+src/ogg/window.h
+src/ogg/lookup_data.h
+src/ogg/registry.h
+src/ogg/info.c
+src/ogg/analysis.c
+src/ogg/lookup.h
+src/ogg/os.h
+src/ogg/backends.h
+src/ogg/masking.h
+src/ogg/lookup.c
+src/ogg/misc.h
+src/ogg/mapping0.c
+src/ogg/sharedbook.c
+src/ogg/mdct.h
+src/ogg/smallft.c
+src/ogg/codebook.h
+src/ogg/psy.h
+src/ogg/lsp.c
+src/ogg/envelope.h
+src/ogg/lpc.h
+src/ogg/codebook.c
+src/ogg/mdct.c
+src/ogg/block.c
+src/ogg/bitrate.h
+src/ogg/floor0.c
+src/ogg/codec_internal.h
+src/ogg/smallft.h
+src/ogg/synthesis.c
+src/ogg/floor1.c
+src/ogg/res0.c
+src/ogg/vorbisfile.c
+
+src/ogg/bitwise.c
+src/ogg/framing.c
+)
+
+add_executable (QSanguosha ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} ${OGG_FILE})
+target_link_libraries (QSanguosha Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::Multimedia dl)
