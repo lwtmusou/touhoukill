@@ -13,6 +13,8 @@
 #include "qsanbutton.h"
 #include "sprite.h"
 
+#include "window.h"
+
 class Window;
 class Button;
 class CardContainer;

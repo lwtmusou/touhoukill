@@ -5,74 +5,137 @@
 #include <QSet>
 #include <QStringList>
 #include <QTime>
+#include <QMutex>
 
 #include "audio.h"
 #include "util.h"
 
-static FMOD_SYSTEM *System = NULL;
-static FMOD_SOUNDGROUP *EffectGroup = NULL;
-static FMOD_SOUNDGROUP *BackgroundMusicGroup = NULL;
-
-class Sound
-{
+class OggPlayingList{
 public:
-    explicit Sound(const QString &fileName, bool backgroundMusic = false)
-        : m_sound(NULL)
-        , m_channel(NULL)
-    {
-        FMOD_MODE mode = FMOD_DEFAULT;
-        FMOD_SOUNDGROUP *soundGroup = EffectGroup;
-        if (backgroundMusic) {
-            mode |= FMOD_CREATESTREAM;
-            soundGroup = BackgroundMusicGroup;
+    QSet<OggPlayer *> oggs;
+    QMutex mutex;
+    OggPlayingList(){
+        oggs.clear();
+    }
+
+    void appendToList(OggPlayer *player){
+        mutex.lock();
+        oggs.insert(player);
+        mutex.unlock();
+    }
+
+    void removeFromList(OggPlayer *player){
+        mutex.lock();
+        oggs.remove(player);
+        mutex.unlock();
+    }
+
+    bool contains(OggPlayer *player){
+        mutex.lock();
+        bool res = oggs.contains(player);
+        mutex.unlock();
+        return res;
+    }
+
+    void updateVolume(float volume){
+        mutex.lock();
+        for(auto *p : oggs){
+            p->setVolume(volume);
         }
-
-        FMOD_System_CreateSound(System, fileName.toLatin1(), mode, NULL, &m_sound);
-        FMOD_Sound_SetSoundGroup(m_sound, soundGroup);
-        FMOD_System_Update(System);
+        mutex.unlock();
     }
 
-    ~Sound()
-    {
-        FMOD_Sound_Release(m_sound);
-        FMOD_System_Update(System);
-    }
-
-    void play(bool loop = false)
-    {
-        if (loop) {
-            FMOD_Sound_SetMode(m_sound, FMOD_LOOP_NORMAL);
+    void stopAll(){
+        mutex.lock();
+        for(auto *p : oggs){
+            emit p->tryToStop();
         }
-
-        FMOD_System_PlaySound(System, FMOD_CHANNEL_FREE, m_sound, false, &m_channel);
-        FMOD_System_Update(System);
+        mutex.unlock();
     }
 
-    void stop()
-    {
-        if (NULL != m_channel) {
-            FMOD_Channel_Stop(m_channel);
-            FMOD_System_Update(System);
-
-            m_channel = NULL;
-        }
+    int length(){
+        mutex.lock();
+        auto res = oggs.size();
+        mutex.unlock();
+        return res;
     }
-
-    bool isPlaying() const
-    {
-        FMOD_BOOL playing = false;
-        if (NULL != m_channel) {
-            FMOD_Channel_IsPlaying(m_channel, &playing);
-        }
-        return playing;
-    }
-
-private:
-    Q_DISABLE_COPY(Sound)
-
-    FMOD_SOUND *m_sound;
-    FMOD_CHANNEL *m_channel;
 };
+
+static OggPlayingList bgm_list;
+static OggPlayingList effective_list;
+
+OggPlayer::OggPlayer(const QString& filename, bool is_bgm) 
+    : filename(filename), repeat(false), is_bgm(is_bgm)
+{
+    output = nullptr;
+    ogg = nullptr;
+    QObject::connect(this, &OggPlayer::tryToStop, this, &OggPlayer::stop, Qt::QueuedConnection);
+};
+
+OggPlayer::~OggPlayer(){
+    if(output != nullptr){
+        output->stop();
+        delete output;
+    }
+    if(ogg != nullptr){
+        delete ogg;
+    }
+}
+
+void OggPlayer::run(){
+    if(ogg == nullptr)
+        ogg = new OggFile(filename);
+    
+    if(output == nullptr)
+        output = new QAudioOutput(ogg->getFormat());
+
+    QObject::connect(output, &QAudioOutput::stateChanged, [&](QAudio::State s){
+        if(s == QAudio::IdleState){
+            output->stop();
+            if(repeat){
+                output->reset();
+                ogg->reset();
+                output->start(ogg);
+            } else {
+                if(is_bgm) bgm_list.removeFromList(this);
+                else effective_list.removeFromList(this);
+                quit();
+            }
+        }
+    });
+
+    if(is_bgm) {
+        bgm_list.appendToList(this);
+        output->setVolume(Audio::bgm_volume);
+    } else {
+        effective_list.appendToList(this);
+        output->setVolume(Audio::volume);
+    }
+
+    output->start(ogg);
+    this->exec();
+}
+
+void OggPlayer::play(bool loop){
+    if(!this->isRunning()) this->start();
+}
+
+void OggPlayer::stop(){
+    if(output != nullptr) output->stop();
+    if(is_bgm) bgm_list.removeFromList(this);
+    else effective_list.removeFromList(this);
+    quit();
+}
+
+bool OggPlayer::isPlaying() const{
+    return this->isRunning();
+}
+
+void OggPlayer::setVolume(float volume){
+    if(output != nullptr) output->setVolume(volume);
+}
+
+
 
 class BackgroundMusicPlayList
 {
@@ -262,7 +325,7 @@ protected:
 private:
     void playNext()
     {
-        m_sound.reset(new Sound(m_playList->nextFileName(), true));
+        m_sound.reset(new OggPlayer(m_playList->nextFileName(), true));
         m_sound->play(1 == m_count);
     }
 
@@ -270,105 +333,78 @@ private:
 
 private:
     QScopedPointer<BackgroundMusicPlayList> m_playList;
-    QScopedPointer<Sound> m_sound;
+    QScopedPointer<OggPlayer> m_sound;
     int m_timer;
     int m_count;
 
     static const int m_interval = 500;
 };
 
-static QCache<QString, Sound> SoundCache;
+static QCache<QString, OggPlayer> SoundCache;
 static BackgroundMusicPlayer backgroundMusicPlayer;
 QString Audio::m_customBackgroundMusicFileName;
 
 void Audio::init()
 {
-    if (NULL == System) {
-        if (FMOD_OK == FMOD_System_Create(&System)) {
-            FMOD_System_Init(System, MAX_CHANNEL_COUNT, FMOD_INIT_NORMAL, NULL);
-
-            FMOD_System_CreateSoundGroup(System, "Effects", &EffectGroup);
-            FMOD_System_CreateSoundGroup(System, "BackgroundMusics", &BackgroundMusicGroup);
-            FMOD_SoundGroup_SetMaxAudible(BackgroundMusicGroup, 1);
-            FMOD_SoundGroup_SetMaxAudibleBehavior(BackgroundMusicGroup, FMOD_SOUNDGROUP_BEHAVIOR_MUTE);
-            FMOD_SoundGroup_SetMuteFadeSpeed(BackgroundMusicGroup, 2);
-        }
-    }
+    
 }
 
 void Audio::quit()
 {
-    if (NULL != System) {
-        stopAll();
-
-        FMOD_SoundGroup_Release(EffectGroup);
-        FMOD_SoundGroup_Release(BackgroundMusicGroup);
-        EffectGroup = NULL;
-        BackgroundMusicGroup = NULL;
-
-        SoundCache.clear();
-        backgroundMusicPlayer.shutdown();
-
-        FMOD_System_Release(System);
-        System = NULL;
-    }
+    
 }
+
+float Audio::volume = 1;
+float Audio::bgm_volume = 1;
+
 
 void Audio::play(const QString &fileName, bool continuePlayWhenPlaying /* = false*/)
 {
-    if (NULL != System) {
-        Sound *sound = SoundCache[fileName];
-        if (NULL == sound) {
-            sound = new Sound(fileName);
-            SoundCache.insert(fileName, sound);
-        } else if (!continuePlayWhenPlaying && sound->isPlaying()) {
-            return;
-        }
-
-        sound->play();
+    OggPlayer *sound = SoundCache[fileName];
+    if (NULL == sound) {
+        sound = new OggPlayer(fileName);
+        SoundCache.insert(fileName, sound);
+    } else if (!continuePlayWhenPlaying && sound->isPlaying()) {
+        return;
     }
+
+    sound->play();
 }
 
 void Audio::setEffectVolume(float volume)
 {
-    FMOD_SoundGroup_SetVolume(EffectGroup, volume);
+    Audio::volume = volume;
+    effective_list.updateVolume(volume);
 }
 
 void Audio::setBGMVolume(float volume)
 {
-    FMOD_SoundGroup_SetVolume(BackgroundMusicGroup, volume);
+    Audio::bgm_volume = volume;
+    bgm_list.updateVolume(volume);
 }
 
 void Audio::playBGM(const QString &fileNames, bool random /* = false*/, bool playAll, bool isGeneralName)
 {
-    if (NULL != System) {
-        if (!m_customBackgroundMusicFileName.isEmpty()) {
-            backgroundMusicPlayer.play(m_customBackgroundMusicFileName, random, playAll, isGeneralName);
-        } else {
-            backgroundMusicPlayer.play(fileNames, random, playAll, isGeneralName);
-        }
+    if (!m_customBackgroundMusicFileName.isEmpty()) {
+        backgroundMusicPlayer.play(m_customBackgroundMusicFileName, random, playAll, isGeneralName);
+    } else {
+        backgroundMusicPlayer.play(fileNames, random, playAll, isGeneralName);
     }
+}
+
+bool Audio::isBackgroundMusicPlaying(){
+    return bgm_list.length() > 0;
 }
 
 void Audio::stopBGM()
 {
     backgroundMusicPlayer.stop();
-
-    while (isBackgroundMusicPlaying()) {
-        FMOD_SoundGroup_Stop(BackgroundMusicGroup);
-    }
-}
-
-bool Audio::isBackgroundMusicPlaying()
-{
-    int numPlaying = 0;
-    FMOD_SoundGroup_GetNumPlaying(BackgroundMusicGroup, &numPlaying);
-    return numPlaying > 0;
+    bgm_list.stopAll();
 }
 
 void Audio::stopAll()
 {
-    FMOD_SoundGroup_Stop(EffectGroup);
+    effective_list.stopAll();
     stopBGM();
 
     resetCustomBackgroundMusicFileName();
@@ -382,11 +418,6 @@ QString Audio::getVersion()
      * bb = minor version number.
      * cc = development version number.
     */
-    unsigned int version = 0;
-    if (NULL != System && FMOD_OK == FMOD_System_GetVersion(System, &version)) {
-        return QString("%1.%2.%3").arg((version & 0xFFFF0000) >> 16, 0, 16).arg((version & 0xFF00) >> 8, 2, 16, QChar('0')).arg((version & 0xFF), 2, 16, QChar('0'));
-    }
-
     return "";
 }
 

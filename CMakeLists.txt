@@ -17,13 +17,13 @@ add_definitions(-Wall)
 find_package(Qt5 COMPONENTS Widgets Network LinguistTools Multimedia REQUIRED) # Locate the position of Qt5.
 
 include_directories(
+	"src/audio"
 	"src/client"
 	"src/core"
 	"src/dialog"
 	"src/lua"
 	"src/package"
 	"src/server"
-	"src/ogg"
 	"src/ui"
 	"src/util"
 	"src"

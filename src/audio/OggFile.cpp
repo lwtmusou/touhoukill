@@ -41,3 +41,7 @@ qint64 OggFile::readData(char *data, qint64 max_byte){
 qint64 OggFile::writeData(const char *data, qint64 max_byte){
   return 0; 
 }
+
+bool OggFile::reset(){
+  return ov_time_seek(&vf, 0) == 0;
+}
