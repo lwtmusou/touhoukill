@@ -72,51 +72,55 @@ public:
 static OggPlayingList bgm_list;
 static OggPlayingList effective_list;
 
-OggPlayer::OggPlayer(const QString &filename, bool is_bgm)
-    : filename(filename)
-    , repeat(false)
-    , is_bgm(is_bgm)
+
+OggPlayer::OggPlayer(const QString &file_name,  bool is_bgm)
+    : repeat(false), 
+      is_bgm(is_bgm)
 {
+    QFile f{file_name};
+    f.open(QIODevice::ReadOnly);
+    if(f.error() != QFileDevice::NoError){
+        f.close();
+        return;
+    }
+    this->encoding = f.readAll();
+    f.close();
+
+    buffer = new QBuffer(&encoding);
+    buffer->open(QIODevice::ReadOnly);
+    buffer->moveToThread(this);
+    buffer->seek(0);
+
+    ogg = new OggFile(this->buffer);
+    ogg->moveToThread(this);
     output = nullptr;
-    ogg = nullptr;
+    //output = new QAudioOutput(ogg->getFormat());
+    //output->moveToThread(this);
+
     QObject::connect(this, &OggPlayer::tryToStop, this, &OggPlayer::stop, Qt::QueuedConnection);
 }
 
 OggPlayer::~OggPlayer()
 {
-    if (output != nullptr) {
-        output->stop();
+    stop();
+    delete ogg;
+    ogg = nullptr;
+    if(output != nullptr){
+        QObject::disconnect(output, &QAudioOutput::stateChanged, this, &OggPlayer::onPlayingFinish);
         delete output;
+        output = nullptr;
     }
-    if (ogg != nullptr) {
-        delete ogg;
-    }
+    delete buffer;
+    buffer = nullptr;
 }
 
 void OggPlayer::run()
 {
-    if (ogg == nullptr)
-        ogg = new OggFile(filename);
-
-    if (output == nullptr)
+    if(output == nullptr){
         output = new QAudioOutput(ogg->getFormat());
-
-    QObject::connect(output, &QAudioOutput::stateChanged, [&](QAudio::State s) {
-        if (s == QAudio::IdleState) {
-            output->stop();
-            if (repeat) {
-                output->reset();
-                ogg->reset();
-                output->start(ogg);
-            } else {
-                if (is_bgm)
-                    bgm_list.removeFromList(this);
-                else
-                    effective_list.removeFromList(this);
-                quit();
-            }
-        }
-    });
+        QObject::connect(output, &QAudioOutput::stateChanged, this, &OggPlayer::onPlayingFinish, Qt::QueuedConnection);
+    } 
+    buffer->seek(0);
 
     if (is_bgm) {
         bgm_list.appendToList(this);
@@ -138,13 +142,27 @@ void OggPlayer::play(bool loop)
 
 void OggPlayer::stop()
 {
-    if (output != nullptr)
-        output->stop();
     if (is_bgm)
         bgm_list.removeFromList(this);
     else
         effective_list.removeFromList(this);
+
     quit();
+}
+
+void OggPlayer::onPlayingFinish(QAudio::State s){
+    if (s == QAudio::IdleState && output != nullptr) {
+        output->stop();
+        if (repeat) {
+            delete this->ogg;
+            buffer->seek(0);
+            output->reset();
+            ogg = new OggFile{this->buffer};
+            output->start(ogg);
+        } else {
+            this->stop();
+        }
+    }
 }
 
 bool OggPlayer::isPlaying() const

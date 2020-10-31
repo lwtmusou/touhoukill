@@ -6,6 +6,7 @@
 #include <QAudioOutput>
 #include <QString>
 #include <QThread>
+#include <QBuffer>
 
 #include "OggFile.h"
 
@@ -53,7 +54,7 @@ class OggPlayer : public QThread
 {
     Q_OBJECT
 public:
-    explicit OggPlayer(const QString &filename, bool is_bgm = false);
+    explicit OggPlayer(const QString &file_name, bool is_bgm = false);
     virtual ~OggPlayer();
     void play(bool loop = false);
 
@@ -67,12 +68,16 @@ protected:
     void run();
     void stop();
 
+    void onPlayingFinish(QAudio::State s);
+
 private:
     bool repeat;
     bool is_bgm;
-    QString filename;
     QAudioOutput *output;
+    QBuffer *buffer;
     OggFile *ogg;
+
+    QByteArray encoding;
 };
 
 #endif // AUDIO_SUPPORT

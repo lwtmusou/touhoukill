@@ -1,32 +1,27 @@
 #ifndef OGG_FILE_H
 #define OGG_FILE_H
 
+#include <QBuffer>
 #include <QIODevice>
-#include <QString>
 
 #include <vorbis/codec.h>
 #include <vorbis/vorbisfile.h>
 
 class QAudioFormat;
 
-class OggFile final : public QIODevice
-{
+class OggFile final : public QIODevice{
     Q_OBJECT
-
 public:
-    explicit OggFile(const QString &path);
+    explicit OggFile(QBuffer *buffer);
     ~OggFile();
-
-    bool reset() override;
 
     QAudioFormat getFormat();
 
 protected:
     qint64 readData(char *data, qint64 max_bytes) override;
     qint64 writeData(const char *data, qint64 max_bytes) override;
-
-private:
     OggVorbis_File vf;
+    ov_callbacks vcall;
 };
 
 #endif
