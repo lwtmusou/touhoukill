@@ -2838,8 +2838,8 @@ public:
         //QString pattern = ".|" + choice;
         //if (choice.contains("basic"))
         //    pattern = QString(choice.startsWith("non") ? "^" : "") + "BasicCard";
-        room->touhouLogmessage("#cuiji_choice", player, "cuiji_hegemony", QList<ServerPlayer *>(), "cuiji_hegemony:" + choice);
-        room->notifySkillInvoked(player, "cuiji_hegemony");
+        room->touhouLogmessage("#cuiji_choice", player, "cuiji_hegemony", QList<ServerPlayer *>(), choice); //"cuiji_hegemony:" + choice
+        //room->notifySkillInvoked(player, "cuiji_hegemony");
         int acquired = 0;
         QList<int> throwIds;
         while (acquired < 1) {
@@ -2881,8 +2881,9 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
+        room->notifySkillInvoked(invoke->invoker, objectName());
         DrawNCardsStruct draw = data.value<DrawNCardsStruct>();
         invoke->invoker->tag["cuiji_hegemony"] = 1;
         draw.n = draw.n - 1;
@@ -2913,7 +2914,6 @@ public:
     {
         invoke->invoker->tag.remove("cuiji_hegemony");
         CuijiHegemony::do_cuiji(invoke->invoker);
-
         return false;
     }
 };

@@ -3857,6 +3857,11 @@ function SmartAI:willUsePeachTo(dying)
 		if self:getCardId("Peach") then return self:getCardId("Peach") end
 	end
 
+    --送葬带走
+	if self.player:hasSkill("songzang") and not self:isFriend(dying) then
+		card_str = self:getCardId("Peach")
+		if card_str then return card_str end
+	end
 	--宴会用酒
 	if self.player:objectName() ~= dying:objectName() and self:isFriend(dying)
 	and  dying:hasLordSkill("yanhui") and self.player:getKingdom() == "zhan"

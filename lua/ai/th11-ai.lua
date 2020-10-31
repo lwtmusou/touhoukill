@@ -441,7 +441,7 @@ function Cansave(self,dying,need_peachs)
 
 	return peachs +1 >= need_peachs
 end
-sgs.ai_skill_cardask["@songzang"] = function(self,data)
+--[[sgs.ai_skill_cardask["@songzang"] = function(self,data)
 	local dying = data:toDying()
 	local source = self:findRealKiller(dying.who, dying.damage)
 	local executor = self:executorRewardOrPunish(dying.who, dying.damage)
@@ -529,12 +529,109 @@ sgs.ai_skill_cardask["@songzang"] = function(self,data)
 	if #cards==0 then return "." end
 	self:sortByKeepValue(cards)
 	return "$" .. cards[1]:getId()
-end
+end]]
 sgs.songzang_suit_value = {
 	spade = 4.9
 }
 sgs.ai_cardneed.songzang = function(to, card, self)
 	return  card:getSuit()==sgs.Card_Spade
+end
+
+function sgs.ai_cardsview_valuable.songzang(self, class_name, player)
+	if class_name ~= "Peach" then return nil end
+	local dying =self.player:getTag("songzang_dying"):toDying()
+	local source = self:findRealKiller(dying.who, dying.damage)
+	local executor = self:executorRewardOrPunish(dying.who, dying.damage)
+	local target=self.room:getCurrentDyingPlayer()
+	local need_kill=false
+	
+	if self.player:getRoom():getMode():find("hegemony") then
+		need_kill = self:isEnemy(target)
+	else
+		local self_role = self.player:getRole()
+		
+		local target_role=sgs.ai_role[target:objectName()]
+	
+		local need_peachs = math.abs(1-target:getHp())
+		if self_role== "loyalist" or self_role =="lord" then
+			if self:isEnemy(target)  then
+				if self:getOverflow()>0 then
+					need_kill=true
+				else
+					local can_save= Cansave(self,target,need_peachs)
+					if can_save then
+						need_kill=true
+					elseif target_role=="rebel"  then
+						if source and  self:isFriend(source) then
+						else
+							need_kill=true
+						end
+					end
+				end
+			end
+		end
+		if self_role== "renegade" then
+			local can_save=Cansave(self,target,need_peachs)
+			if self:isEnemy(target) then
+				if self:getOverflow()>0 and not (target:isLord() and self.room:alivePlayerCount()>2) then
+					need_kill=true
+				end
+				if can_save then
+					need_kill=true
+				elseif target_role=="rebel" then
+					if source and source:hasLordSkill("tymhwuyu") then
+					else
+						need_kill=true
+					end
+				end
+			else
+				if can_save then
+				elseif target_role=="rebel" then
+					if source and source:hasLordSkill("tymhwuyu") then
+					else
+						need_kill=true
+					end
+				end
+			end
+		end
+		if self_role== "rebel" then
+			if self:isFriend(target)
+			and source and not self:isFriend(source)
+			and not source:hasLordSkill("tymhwuyu") then
+				local card_str = self:willUsePeachTo(target)
+				if card_str =="." then
+					need_kill=true
+				end
+			end
+			if self:isEnemy(target) then
+				if self:getOverflow()>0 then
+					need_kill=true
+				elseif target:isLord() then
+					need_kill=true
+				else
+					need_kill = Cansave(self,target,need_peachs)
+				end
+			end
+		end
+
+	end
+	
+	if not need_kill  then return nil end
+	local cards ={}
+	for _,card in sgs.qlist(self.player:getCards("hes")) do
+		if card:getSuit()==sgs.Card_Spade then
+			table.insert(cards,card)
+		end
+	end
+	if #cards==0 then return nil end
+	self:sortByKeepValue(cards)
+	return "@SongzangCard="..cards[1]:getId()  --"$" .. cards[1]:getId()
+		
+		
+		
+		
+		
+	--return "@ShijieCard="..cards[1]:getId()
 end
 
 
@@ -808,6 +905,33 @@ sgs.ai_skill_choice.cuiji_suit =function(self)
 	end
 
 end
+
+sgs.ai_skill_invoke.cuiji_hegemony = true
+sgs.ai_skill_choice.cuiji_hegemony_suit = function(self, choices, data)
+	local cards = self.player:getCards("hes")
+	local slash = false
+	local nonbasic = false
+	for _, c in sgs.qlist(cards) do
+		if c:isKindOf("Slash") then
+			slash = true
+		elseif c:getTypeId() ~= sgs.Card_TypeBasic and not c:isKindOf("Nullification") then
+			nonbasic = true
+		end
+		if slash and nonbasic then
+			break
+		end
+	end
+	
+	if slash or not nonbasic then 
+		return "nonbasic"
+	end
+	return "basic"
+end
+
+
+
+
+
 
 local baigui_skill = {}
 baigui_skill.name = "baigui"

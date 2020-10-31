@@ -18,19 +18,17 @@ lessThan(QT_MINOR_VERSION, 6) {
 CONFIG += c++11
 CONFIG += lua
 
-VERSION = 0.9.8
+VERSION = 0.9.9
 
 CONFIG += precompiled_header
 PRECOMPILED_HEADER = src/pch.h
 
 SOURCES += \
     src/core/RoomObject.cpp \
-    swig/sanguosha_wrap.cxx \
     src/client/aux-skills.cpp \
     src/client/client.cpp \
     src/client/clientplayer.cpp \
     src/client/clientstruct.cpp \
-    src/core/banpair.cpp \
     src/core/card.cpp \
     src/core/engine.cpp \
     src/core/general.cpp \
@@ -136,7 +134,6 @@ HEADERS += \
     src/client/clientstruct.h \
     src/core/RoomObject.h \
     src/core/audio.h \
-    src/core/banpair.h \
     src/core/card.h \
     src/core/compiler-specific.h \
     src/core/engine.h \
@@ -410,14 +407,24 @@ else: DEFINES += LUA_USE_MKSTEMP
     INCLUDEPATH += src/lua
 }
 
+SWIGFILES += $$_PRO_FILE_PWD_/swig/sanguosha.i
+
+SWIG_bin = "swig"
+contains(QMAKE_HOST.os, "Windows"): SWIG_bin = "$$_PRO_FILE_PWD_/tools/swig/swig.exe"
+
+swig.commands = "$$system_path($$SWIG_bin) -c++ -lua -cppext cpp -o ${QMAKE_FILE_OUT} ${QMAKE_FILE_NAME}"
+swig.CONFIG = target_predeps
+swig.dependency_type = TYPE_C
+swig.depends = $$SWIGFILES
+swig.input = SWIGFILES
+swig.name = "Generating ${QMAKE_FILE_NAME}..."
+swig.output = ${QMAKE_FILE_BASE}_wrap.cpp
+swig.variable_out = SOURCES
+
+QMAKE_EXTRA_COMPILERS += swig
 
 !build_pass{
     system("$$dirname(QMAKE_QMAKE)/lrelease $$_PRO_FILE_PWD_/builds/sanguosha.ts -qm $$_PRO_FILE_PWD_/sanguosha.qm")
-
-    SWIG_bin = "swig"
-    contains(QMAKE_HOST.os, "Windows"): SWIG_bin = "$$_PRO_FILE_PWD_/tools/swig/swig.exe"
-
-    system("$$SWIG_bin -c++ -lua $$_PRO_FILE_PWD_/swig/sanguosha.i")
 }
 
 TRANSLATIONS += builds/sanguosha.ts

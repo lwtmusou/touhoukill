@@ -973,6 +973,46 @@ end
 sgs.ai_playerchosen_intention.kuaizhao = 80
 
 
+sgs.ai_skill_invoke.kuaizhao_hegemony = true
+local kuaizhao_hegemony_skill = {}
+kuaizhao_hegemony_skill.name = "kuaizhao_hegemony"
+table.insert(sgs.ai_skills, kuaizhao_hegemony_skill)
+function kuaizhao_hegemony_skill.getTurnUseCard(self)
+	if self.player:hasUsed("KuaizhaoHegemonyCard") then return nil end
+	return sgs.Card_Parse("@KuaizhaoHegemonyCard=.")
+end
+sgs.ai_skill_use_func.KuaizhaoHegemonyCard = function(card, use, self)
+	self:sort(self.friends, "handcard")
+	local to1, to2
+	to1 = self.player --使用者锁定为自己。
+	local dummy_use = { isDummy = true, to = sgs.SPlayerList()}
+	local dummy_card=sgs.cloneCard("known_both_hegemony", sgs.Card_NoSuit, 0)
+	dummy_card:setSkillName("_kuaizhao_hegemony")
+	dummy_card:deleteLater()
+	self:useTrickCard(dummy_card, dummy_use)
+	
+	if not dummy_use.card or dummy_use.to:isEmpty() then
+		local targets = self.room:getOtherPlayers(self.player)
+		local r = math.random(1, targets:length())
+		targets=sgs.QList2Table(targets)
+		to2 = targets[r]
+		
+	else
+		to2 = dummy_use.to:first()
+	end
+	
+	if to1 and to2 then
+		use.card = card
+		if use.to then
+			use.to:append(to1)
+			use.to:append(to2)
+			if use.to:length() >= 2 then return end
+		end
+	end
+end
+sgs.ai_use_priority.KuaizhaoHegemonyCard = sgs.ai_use_priority.KnownBothHegemony
+
+
 sgs.ai_skill_playerchosen.nengwudraw = function(self, targets)
 	local target =self:touhouFindPlayerToDraw(true, 1, targets)
 	if target then return target end

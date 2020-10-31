@@ -1,5 +1,4 @@
 #include "audio.h"
-#include "banpair.h"
 #include "mainwindow.h"
 #include "server.h"
 #include "settings.h"
@@ -56,7 +55,6 @@ int main(int argc, char *argv[])
 
     Sanguosha = new Engine;
     Config.init();
-    BanPair::loadBanPairs();
 
     if (qApp->arguments().contains("-server")) {
         Server *server = new Server(qApp);

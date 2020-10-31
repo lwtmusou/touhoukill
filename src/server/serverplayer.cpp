@@ -1,6 +1,5 @@
 #include "serverplayer.h"
 #include "ai.h"
-#include "banpair.h"
 #include "engine.h"
 #include "gamerule.h"
 #include "lua-wrapper.h"
@@ -326,15 +325,6 @@ QStringList ServerPlayer::getSelected() const
 QString ServerPlayer::findReasonable(const QStringList &generals, bool no_unreasonable)
 {
     foreach (QString name, generals) {
-        if (Config.Enable2ndGeneral) {
-            if (getGeneral()) {
-                if (!BanPair::isBanned(getGeneralName()) && BanPair::isBanned(getGeneralName(), name))
-                    continue;
-            } else {
-                if (BanPair::isBanned(name))
-                    continue;
-            }
-        }
         if (Config.GameMode == "zombie_mode") {
             QStringList ban_list = Config.value("Banlist/Zombie").toStringList();
             if (ban_list.contains(name))

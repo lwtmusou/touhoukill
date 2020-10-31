@@ -55,13 +55,9 @@ private:
     QListWidget *list;
     int item;
     QStringList ban_list;
-    QPushButton *add2nd;
 
 private slots:
     void addGeneral(const QString &name);
-    void add2ndGeneral(const QString &name);
-    void addPair(const QString &first, const QString &second);
-    void doAdd2ndButton();
     void doAddButton();
     void doRemoveButton();
     void save();

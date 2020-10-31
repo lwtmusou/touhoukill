@@ -2,7 +2,6 @@
 #include "RoomObject.h"
 #include "ai.h"
 #include "audio.h"
-#include "banpair.h"
 #include "card.h"
 #include "client.h"
 #include "lua-wrapper.h"
@@ -385,12 +384,6 @@ int Engine::getGeneralCount(bool include_banned) const
             total--;
         else if (ServerInfo.GameMode == "04_1v3" && Config.value("Banlist/HulaoPass").toStringList().contains(general->objectName()))
             total--;
-        else if (ServerInfo.GameMode == "06_XMode" && Config.value("Banlist/XMode").toStringList().contains(general->objectName()))
-            total--;
-        else if (isHegemonyGameMode(ServerInfo.GameMode) && Config.value("Banlist/Hegemony", "").toStringList().contains(general->objectName()))
-            total--;
-        else if (ServerInfo.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
-            total--;
     }
 
     return total;
@@ -560,7 +553,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const
 
 QString Engine::getVersionNumber() const
 {
-    return "20200926";
+    return "20201029";
 }
 
 QString Engine::getVersion() const
@@ -570,12 +563,12 @@ QString Engine::getVersion() const
 
 QString Engine::getVersionName() const
 {
-    return "V0.9.8";
+    return "V0.9.9";
 }
 
 QVersionNumber Engine::getQVersionNumber() const
 {
-    return QVersionNumber(0, 9, 8);
+    return QVersionNumber(0, 9, 9);
 }
 
 QString Engine::getMODName() const
@@ -840,8 +833,6 @@ QStringList Engine::getLords(bool contain_banned) const
             if (ServerInfo.GameMode.endsWith("p") || ServerInfo.GameMode.endsWith("pd") || ServerInfo.GameMode.endsWith("pz"))
                 if (Config.value("Banlist/Roles", "").toStringList().contains(lord))
                     continue;
-            if (Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
-                continue;
         }
         lords << lord;
     }
@@ -889,8 +880,6 @@ QStringList Engine::getRandomLords() const
                 continue;
         }
         if (getBanPackages().contains(general->getPackage()))
-            continue;
-        if (Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
             continue;
         if (banlist_ban.contains(general->objectName()))
             continue;

@@ -907,9 +907,30 @@ sgs.ai_choicemade_filter.skillChoice.zhuonong = function(self, player, args, dat
 		sgs.updateIntention(player, target, 40)
 	end
 end
-sgs.ai_skill_invoke.jijing =  true
-
-
+--sgs.ai_skill_invoke.jijing =  true
+sgs.ai_skill_playerchosen.jijing = function(self, targets)
+	local good_targets = {}
+	for _,p in sgs.qlist(targets) do
+		if self.player:isCurrent() and self.player:distanceTo(p) > 1 and not self:isFriend(p) then
+			table.insert(good_targets, p)
+		elseif not self.player:isCurrent() and self:isFriend(p) then
+			table.insert(good_targets, p)
+		end
+	end
+	
+	if #good_targets == 0 then return nil end
+	local sorttype = not self.player:isCurrent()
+	self:sort(good_targets, "defenseSlash")
+	
+	return good_targets[1]
+end
+sgs.ai_playerchosen_intention.jijing = function(self, from, to)
+	if not from:isCurrent() then
+		sgs.updateIntention(from, to, -20) 
+	--elseif from:isCurrent() then
+	--	sgs.updateIntention(from, to, 20) 
+	end
+end
 
 sgs.ai_skill_playerchosen.ganying = function(self, targets)
 	--if self:isWeak(self.player) then return self.player end
@@ -928,7 +949,57 @@ sgs.ai_skill_invoke.ganying = true
 		or (not to:getOffensiveHorse() and  getCardsNum("OffensiveHorse",to,self.player)<1 and card:isKindOf("OffensiveHorse"))
 	end
 end]]
+function SmartAI:canDubi()
+	if self:isWeak() then
+		return self:getCardsNum("Pecah") > 0  or self:getCardsNum("Analeptic") > 0
+	end
+	return true
+end
 
+sgs.ai_skill_playerchosen.dubi = function(self, targets)
+	local card=self.player:getTag("dubi_use"):toCardUse().card
+
+	if not self:canDubi() then return nil end
+	
+	--if card:isKindOf("AmazingGrace") then
+	if card:isKindOf("GodSalvation") then
+		for _, p in sgs.qlist(targets) do
+			if p:isWounded() and self:isEnemy(p) then
+				return p
+			end
+		end
+	end
+	--if card:isKindOf("IronChain") then
+	if card:isKindOf("Dismantlement") or card:isKindOf("Snatch") then
+		for _, p in sgs.qlist(targets) do
+			if self:isFriend(p) then
+				local dangerous =  self:getDangerousCard(p)
+				if dangerous then return p end
+			end
+		end
+	end
+	if card:isKindOf("Duel") then
+		for _, p in sgs.qlist(targets) do
+			if self:isFriend(p)  and self:isWeak(p) then
+				return p
+			end
+		end
+	end
+	if card:isKindOf("SavageAssault") then
+		for _, p in sgs.qlist(targets) do
+			if self:isFriend(p)  and getCardsNum("Slash", p, self.player) < 1  then
+				return p
+			end
+		end
+	end
+	if card:isKindOf("ArcheryAttack") then
+		for _, p in sgs.qlist(targets) do
+			if self:isFriend(p)  and getCardsNum("Jink", p, self.player) < 1  then
+				return p
+			end
+		end
+	end
+end
 
 
 sgs.ai_skill_cardask["@zhujiu"] = function(self, data)

@@ -687,7 +687,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                         effect.effectValue.first() = 0;
 
                     delete extraCard;
-                    effect.card->onEffect(effect); //do original effect
+                    if (effect.to->isAlive())
+                        effect.card->onEffect(effect); //do original effect
 
                     /*
                     if (effect.card->isNDTrick()) {
@@ -966,6 +967,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             //effect.drank = 0;
         }
 
+        if (effect.to->isDead())
+            break;
         //@todo: I want IronSlash to obtain function debuffEffect() from "Slash"  as an inheritance, But the variant slasheffect.slash is "Card".
         //using dynamic_cast may bring some terrible troubles.
         if (effect.slash->isKindOf("DebuffSlash") && !effect.slash->hasFlag("chunhua_black")) {
