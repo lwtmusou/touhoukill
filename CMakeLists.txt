@@ -116,10 +116,6 @@ set (QSanguosha_SRCS
 	src/ui/QSanSelectableItem.cpp
 	src/ui/rolecombobox.cpp
 	src/ui/roomscene.cpp
-	#src/ui/sanfreetypefont.cpp
-	#src/ui/sanshadowtextfont.cpp
-	#src/ui/sansimpletextfont.cpp
-	#src/ui/sanuiutils.cpp
 	src/ui/SkinBank.cpp
 	src/ui/skinitem.cpp
 	src/ui/sprite.cpp
@@ -127,7 +123,7 @@ set (QSanguosha_SRCS
 	src/ui/TablePile.cpp
 	src/ui/TimedProgressBar.cpp
 	src/ui/uiUtils.cpp
-	src/ui/window.cpp
+	src/ui/sgswindow.cpp
 	src/util/detector.cpp
 	src/util/nativesocket.cpp
 	src/util/recorder.cpp
@@ -266,7 +262,7 @@ set (QSanguosha_MOCS
 	src/ui/startscene.h
 	src/ui/TablePile.h
 	src/ui/TimedProgressBar.h
-	src/ui/window.h
+	src/ui/sgswindow.h
 	src/util/detector.h
 	src/util/nativesocket.h
 	src/util/recorder.h

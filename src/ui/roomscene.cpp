@@ -22,7 +22,7 @@
 #include "recorder.h"
 #include "settings.h"
 #include "uiUtils.h"
-#include "window.h"
+#include "sgswindow.h"
 
 #include <QApplication>
 #include <QCheckBox>

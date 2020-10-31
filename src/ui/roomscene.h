@@ -13,7 +13,7 @@
 #include "qsanbutton.h"
 #include "sprite.h"
 
-#include "window.h"
+#include "sgswindow.h"
 
 class Window;
 class Button;

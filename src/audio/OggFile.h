@@ -3,27 +3,30 @@
 
 #include <QIODevice>
 #include <QString>
-#include <vorbis/vorbisfile.h>
+
 #include <vorbis/codec.h>
+#include <vorbis/vorbisfile.h>
 
 class QAudioFormat;
 
-class OggFile final : public QIODevice {
-  Q_OBJECT
+class OggFile final : public QIODevice
+{
+    Q_OBJECT
+
 public:
-  explicit OggFile(const QString &path);
-  ~OggFile();
+    explicit OggFile(const QString &path);
+    ~OggFile();
 
-  bool reset() override;
+    bool reset() override;
 
-  QAudioFormat getFormat();
+    QAudioFormat getFormat();
 
 protected:
-  qint64 readData(char *data, qint64 max_bytes) override;
-  qint64 writeData(const char *data, qint64 max_bytes) override;
+    qint64 readData(char *data, qint64 max_bytes) override;
+    qint64 writeData(const char *data, qint64 max_bytes) override;
 
 private:
-  OggVorbis_File vf;
+    OggVorbis_File vf;
 };
 
 #endif

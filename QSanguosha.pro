@@ -101,18 +101,14 @@ SOURCES += \
     src/ui/QSanSelectableItem.cpp \
     src/ui/rolecombobox.cpp \
     src/ui/roomscene.cpp \
-    #src/ui/sanfreetypefont.cpp \
-    #src/ui/sanshadowtextfont.cpp \
-    #src/ui/sansimpletextfont.cpp \
-    #src/ui/sanuiutils.cpp \
     src/ui/SkinBank.cpp \
+    src/ui/sgswindow.cpp \
     src/ui/skinitem.cpp \
     src/ui/sprite.cpp \
     src/ui/startscene.cpp \
     src/ui/TablePile.cpp \
     src/ui/TimedProgressBar.cpp \
     src/ui/uiUtils.cpp \
-    src/ui/window.cpp \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
     src/util/recorder.cpp \
@@ -133,7 +129,7 @@ HEADERS += \
     src/client/clientplayer.h \
     src/client/clientstruct.h \
     src/core/RoomObject.h \
-    src/core/audio.h \
+    src/audio/audio.h \
     src/core/card.h \
     src/core/compiler-specific.h \
     src/core/engine.h \
@@ -207,18 +203,14 @@ HEADERS += \
     src/ui/QSanSelectableItem.h \
     src/ui/rolecombobox.h \
     src/ui/roomscene.h \
-    #src/ui/sanfreetypefont.h \
-    #src/ui/sanshadowtextfont.h \
-    #src/ui/sansimpletextfont.h \
-    #src/ui/sanuiutils.h \
     src/ui/SkinBank.h \
+    src/ui/sgswindow.h \
     src/ui/skinitem.h \
     src/ui/sprite.h \
     src/ui/startscene.h \
     src/ui/TablePile.h \
     src/ui/TimedProgressBar.h \
     src/ui/uiUtils.h \
-    src/ui/window.h \
     src/util/detector.h \
     src/util/nativesocket.h \
     src/util/recorder.h \
@@ -324,25 +316,74 @@ linux{
 }
 
 CONFIG(audio){
+    QT += multimedia
     DEFINES += AUDIO_SUPPORT
-    INCLUDEPATH += include/fmod
-    CONFIG(debug, debug|release): LIBS += -lfmodexL
-    else:LIBS += -lfmodex
-    SOURCES += src/core/audio.cpp
+    INCLUDEPATH += \
+        src/ogg \
+        src/audio
 
-    android{
-        CONFIG(debug, debug|release):ANDROID_EXTRA_LIBS += $$ANDROID_LIBPATH/libfmodexL.so
-        else:ANDROID_EXTRA_LIBS += $$ANDROID_LIBPATH/libfmodex.so
-    }
+    SOURCES += \
+        src/audio/audio.cpp \
+        src/audio/OggFile.cpp
+
+    HEADERS += \
+        src/audio/OggFile.h
+
+    SOURCES += \
+        src/ogg/psy.c \
+        src/ogg/registry.c \
+        src/ogg/res0.c \
+        src/ogg/sharedbook.c \
+        src/ogg/smallft.c \
+        src/ogg/synthesis.c \
+        src/ogg/vorbisfile.c \
+        src/ogg/window.c \
+        src/ogg/analysis.c \
+        src/ogg/bitrate.c \
+        src/ogg/bitwise.c \
+        src/ogg/block.c \
+        src/ogg/codebook.c \
+        src/ogg/envelope.c \
+        src/ogg/floor0.c \
+        src/ogg/floor1.c \
+        src/ogg/framing.c \
+        src/ogg/info.c \
+        src/ogg/lookup.c \
+        src/ogg/lpc.c \
+        src/ogg/lsp.c \
+        src/ogg/mapping0.c \
+        src/ogg/mdct.c \
+
+    HEADERS += \
+        src/ogg/backends.h \
+        src/ogg/bitrate.h \
+        src/ogg/codebook.h \
+        src/ogg/codec_internal.h \
+        src/ogg/crctable.h \
+        src/ogg/envelope.h \
+        src/ogg/highlevel.h \
+        src/ogg/lookup.h \
+        src/ogg/lookup_data.h \
+        src/ogg/lpc.h \
+        src/ogg/lsp.h \
+        src/ogg/masking.h \
+        src/ogg/mdct.h \
+        src/ogg/misc.h \
+        src/ogg/os.h \
+        src/ogg/psy.h \
+        src/ogg/registry.h \
+        src/ogg/scales.h \
+        src/ogg/smallft.h \
+        src/ogg/window.h
 }
 
 
 CONFIG(lua){
 
-linux: {
-android:DEFINES += "\"getlocaledecpoint()='.'\""
-else: DEFINES += LUA_USE_MKSTEMP
-}
+    linux: {
+        android:DEFINES += "\"getlocaledecpoint()='.'\""
+        else: DEFINES += LUA_USE_MKSTEMP
+    }
 
 
     SOURCES += \
@@ -428,12 +469,3 @@ QMAKE_EXTRA_COMPILERS += swig
 }
 
 TRANSLATIONS += builds/sanguosha.ts
-
-#CONFIG(debug, debug|release): LIBS += -lfreetype_D
-#else:LIBS += -lfreetype
-
-#INCLUDEPATH += $$_PRO_FILE_PWD_/include/freetype
-#DEPENDPATH += $$_PRO_FILE_PWD_/include/freetype
-
-#ANDROID_PACKAGE_SOURCE_DIR = $$_PRO_FILE_PWD_/resource/android
-
