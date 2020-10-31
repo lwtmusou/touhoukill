@@ -203,7 +203,7 @@ return
 	
 	["!mystia_hegemony"] = "米斯蒂娅·萝蕾拉",
 	["mystia_hegemony"]="米斯蒂娅",
-	[":yege_hegemony"] = "其他角色的出牌阶段开始时，若场上没有【乐不思蜀】，你可以将一张手牌当【乐不思蜀】对其使用。你以此法使用方块牌时，你摸一张牌。",
+	[":yege_hegemony"] = "其他角色的出牌阶段开始时，若场上没有【乐不思蜀】，你可以将一张手牌当【乐不思蜀】对其使用。你以此法使用<font size=\"5\", color=\"#FF0000\"><b>♦</b></font>牌时，你摸一张牌。",
 	["shinmyoumaru_hegemony"] = "少名针妙丸",
 	["seija_hegemony"] = "鬼人正邪",
 	
@@ -263,13 +263,13 @@ return
 	["suika_hegemony"] = "伊吹萃香",
 	[":doujiu_hegemony"] = "<font color=\"purple\"><b>主将技，</b></font>此武将牌上单独的阴阳鱼个数-1；当其他角色于其出牌阶段内使用【桃】或【酒】时，你可以摸一张牌并与其拼点，当你赢后，此牌无效，你回复1点体力，然后结束当前阶段。",
 	["cuiji_hegemony"] = "萃集",
-	[":cuiji_hegemony"] = "<font color=\"purple\"><b>副将技，</b></font>摸牌阶段，你可以少摸一张牌，你选择一项条件 【1一种花色】或【2基本牌】或【3非基本牌】，检索一张符合条件的牌并获得之。",
+	[":cuiji_hegemony"] = "<font color=\"purple\"><b>副将技，</b></font>摸牌阶段，你可以少摸一张牌，声明：基本牌，或非基本牌，或一种花色，然后检索一张符合条件的牌并获得之。",
 	["nonbasic"] = "非基本牌",
 	
 	["kasen_hegemony"] = "茨木華扇",
 	["hatate_hegemony"] = "姬海棠果",
 	["kuaizhao_hegemony"] = "快照",
-	[":kuaizhao_hegemony"] = "出牌阶段限一次，你可令一名角色视为对另一名角色使用【知己知彼（国）】。你使用【知己知彼（国）】执行所有选项。",
+	[":kuaizhao_hegemony"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以令一名角色视为对另一名角色使用【知己知彼（国）】；你须执行你使用的【知己知彼（国）】效果里的所有选项。",
 	
 --***********************
 --冬（雪）
@@ -315,11 +315,11 @@ return
 		
 	["letty_hegemony"]="蕾蒂",
 	["hanbo_hegemony"] = "寒波",
-	[":hanbo_hegemony"] = "<font color=\"blue\"><b>锁定技，</b></font>你对其他角色造成非属性伤害时，若其没有手牌，此伤害+1。",
+	[":hanbo_hegemony"] = "<font color=\"blue\"><b>锁定技，</b></font>当你对其他角色造成非属性伤害时，若其没有手牌，此伤害值+1。",
 	["#HanboEffect"] = "%from 的【<font color=\"yellow\"><b>寒波</b></font>】效果被触发， %to 没有手牌，伤害从 %arg 增加至 %arg2",
 	["dongzhi_hegemony"] = "冬至",
 	["dongzhi"] = "冬至",
-	[":dongzhi_hegemony"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可选择同一阵营的任意名有牌的角色，你依次弃置该角色x张牌（x为其装备区牌数+1）",
+	[":dongzhi_hegemony"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可以选择任意名同一阵营的有牌的角色，依次弃置这些角色各X张牌（X为其装备区里的牌数+1）。",
 	--["#DongzhiDamage"] = "%from 的 <font color=\"yellow\"><b>冬至</b></font>效果被触发，伤害由 %arg 点增加至 %arg2 点",
 	["$dongzhiAnimate"]= "skill=letty:dongzhi",
 	
