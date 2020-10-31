@@ -12,7 +12,7 @@ class QAudioFormat;
 class OggFile final : public QIODevice{
     Q_OBJECT
 public:
-    explicit OggFile(QBuffer *buffer);
+    explicit OggFile(QBuffer *buffer, const QString& name);
     ~OggFile();
 
     QAudioFormat getFormat();

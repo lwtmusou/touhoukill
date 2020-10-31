@@ -55,7 +55,7 @@ public:
     {
         mutex.lock();
         for (auto *p : oggs) {
-            emit p->tryToStop();
+            p->stop();
         }
         mutex.unlock();
     }
@@ -75,63 +75,69 @@ static OggPlayingList effective_list;
 
 OggPlayer::OggPlayer(const QString &file_name,  bool is_bgm)
     : repeat(false), 
-      is_bgm(is_bgm)
+      is_bgm(is_bgm),
+      file_name(file_name)
 {
     QFile f{file_name};
     f.open(QIODevice::ReadOnly);
     if(f.error() != QFileDevice::NoError){
         f.close();
+        valid = false;
         return;
     }
     this->encoding = f.readAll();
     f.close();
-
-    buffer = new QBuffer(&encoding);
-    buffer->open(QIODevice::ReadOnly);
-    buffer->moveToThread(this);
-    buffer->seek(0);
-
-    ogg = new OggFile(this->buffer);
-    ogg->moveToThread(this);
-    output = nullptr;
-    //output = new QAudioOutput(ogg->getFormat());
-    //output->moveToThread(this);
-
-    QObject::connect(this, &OggPlayer::tryToStop, this, &OggPlayer::stop, Qt::QueuedConnection);
+    valid = true;
 }
 
 OggPlayer::~OggPlayer()
 {
-    stop();
-    delete ogg;
-    ogg = nullptr;
-    if(output != nullptr){
-        QObject::disconnect(output, &QAudioOutput::stateChanged, this, &OggPlayer::onPlayingFinish);
-        delete output;
-        output = nullptr;
-    }
-    delete buffer;
-    buffer = nullptr;
+    if(isRunning()) stop();
+    terminate();
 }
 
 void OggPlayer::run()
 {
-    if(output == nullptr){
-        output = new QAudioOutput(ogg->getFormat());
-        QObject::connect(output, &QAudioOutput::stateChanged, this, &OggPlayer::onPlayingFinish, Qt::QueuedConnection);
-    } 
-    buffer->seek(0);
+    if(!valid) return;
+    do{
+        QBuffer buffer{&encoding};
+        buffer.open(QIODevice::ReadOnly);
+        buffer.seek(0);
 
-    if (is_bgm) {
-        bgm_list.appendToList(this);
-        output->setVolume(Audio::bgm_volume);
-    } else {
-        effective_list.appendToList(this);
-        output->setVolume(Audio::volume);
-    }
+        OggFile f{&buffer, file_name};
 
-    output->start(ogg);
-    this->exec();
+        QAudioOutput output{f.getFormat()};
+
+        if (is_bgm)
+            bgm_list.removeFromList(this);
+        else
+            effective_list.removeFromList(this);
+
+        connect(&output, &QAudioOutput::stateChanged, [&](QAudio::State s){
+            if(s == QAudio::IdleState){
+                this->quit();
+            }
+        });
+
+        connect(this, &OggPlayer::setVolume, &output, &QAudioOutput::setVolume);
+
+        if (is_bgm)
+            bgm_list.appendToList(this);
+        else
+            effective_list.appendToList(this);
+
+        output.start(&f);
+
+        exec();
+        if (is_bgm)
+            bgm_list.removeFromList(this);
+        else
+            effective_list.removeFromList(this);
+
+        disconnect(this, &OggPlayer::setVolume, &output, &QAudioOutput::setVolume);
+        buffer.close();
+        //sleep(1000);
+    } while(repeat);
 }
 
 void OggPlayer::play(bool loop)
@@ -142,38 +148,13 @@ void OggPlayer::play(bool loop)
 
 void OggPlayer::stop()
 {
-    if (is_bgm)
-        bgm_list.removeFromList(this);
-    else
-        effective_list.removeFromList(this);
-
+    this->repeat = false;
     quit();
-}
-
-void OggPlayer::onPlayingFinish(QAudio::State s){
-    if (s == QAudio::IdleState && output != nullptr) {
-        output->stop();
-        if (repeat) {
-            delete this->ogg;
-            buffer->seek(0);
-            output->reset();
-            ogg = new OggFile{this->buffer};
-            output->start(ogg);
-        } else {
-            this->stop();
-        }
-    }
 }
 
 bool OggPlayer::isPlaying() const
 {
     return this->isRunning();
-}
-
-void OggPlayer::setVolume(float volume)
-{
-    if (output != nullptr)
-        output->setVolume(volume);
 }
 
 class BackgroundMusicPlayList

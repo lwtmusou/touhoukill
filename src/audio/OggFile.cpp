@@ -43,14 +43,15 @@ static long tell_qbuffer(void *datasource){
     return buffer->pos();
 }
 
-OggFile::OggFile(QBuffer *buffer){
+OggFile::OggFile(QBuffer *buffer, const QString &filename){
     vcall.read_func = &read_from_qbuffer;
     vcall.seek_func = &seek_qbuffer;
     vcall.close_func = nullptr;
     vcall.tell_func = &tell_qbuffer;
 
     if(ov_open_callbacks(buffer, &this->vf, nullptr, 0, vcall)){
-        printf("Not a valid Ogg file.\n");
+        printf(filename.toUtf8());
+        printf(" isn't a valid Ogg file.\n");
     } else {
         open(QIODevice::ReadOnly);
     }

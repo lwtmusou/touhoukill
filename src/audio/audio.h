@@ -57,27 +57,22 @@ public:
     explicit OggPlayer(const QString &file_name, bool is_bgm = false);
     virtual ~OggPlayer();
     void play(bool loop = false);
-
+    void stop();
     bool isPlaying() const;
-    void setVolume(float volume);
 
 signals:
-    void tryToStop();
+    void setVolume(float volume);
 
 protected:
     void run();
-    void stop();
 
-    void onPlayingFinish(QAudio::State s);
 
 private:
     bool repeat;
     bool is_bgm;
-    QAudioOutput *output;
-    QBuffer *buffer;
-    OggFile *ogg;
-
     QByteArray encoding;
+    QString file_name;
+    bool valid;
 };
 
 #endif // AUDIO_SUPPORT
