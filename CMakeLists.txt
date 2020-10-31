@@ -344,7 +344,7 @@ src/ogg/framing.c
 
 
 
-add_executable (QSanguosha ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} ${OGG_FILE})
+add_executable (QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} ${OGG_FILE})
 target_link_libraries (QSanguosha Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::Multimedia)
 
 if (WIN32)
