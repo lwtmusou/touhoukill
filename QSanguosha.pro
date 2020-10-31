@@ -106,13 +106,13 @@ SOURCES += \
     src/ui/sansimpletextfont.cpp \
     src/ui/sanuiutils.cpp \
     src/ui/SkinBank.cpp \
+    src/ui/sgswindow.cpp \
     src/ui/skinitem.cpp \
     src/ui/sprite.cpp \
     src/ui/startscene.cpp \
     src/ui/TablePile.cpp \
     src/ui/TimedProgressBar.cpp \
     src/ui/uiUtils.cpp \
-    src/ui/window.cpp \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
     src/util/recorder.cpp \
@@ -212,13 +212,13 @@ HEADERS += \
     src/ui/sansimpletextfont.h \
     src/ui/sanuiutils.h \
     src/ui/SkinBank.h \
+    src/ui/sgswindow.h \
     src/ui/skinitem.h \
     src/ui/sprite.h \
     src/ui/startscene.h \
     src/ui/TablePile.h \
     src/ui/TimedProgressBar.h \
     src/ui/uiUtils.h \
-    src/ui/window.h \
     src/util/detector.h \
     src/util/nativesocket.h \
     src/util/recorder.h \

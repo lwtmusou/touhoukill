@@ -1,4 +1,4 @@
-#include "window.h"
+#include "sgswindow.h"
 #include "button.h"
 #include "settings.h"
 

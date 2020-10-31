@@ -15,7 +15,7 @@
 #include "startscene.h"
 #include "ui_mainwindow.h"
 #include "updatedialog.h"
-#include "window.h"
+#include "sgswindow.h"
 
 #include <QCheckBox>
 #include <QComboBox>
