@@ -45,10 +45,12 @@ else()
     set(SWIG_EXECUTABLE swig)
 endif()
 
+file(GLOB SWIGGENFILES swig/*.i)
+
 add_custom_command(OUTPUT sanguosha_wrap.cpp
                    COMMAND ${SWIG_EXECUTABLE} ARGS -c++ -lua -cppext cpp -o sanguosha_wrap.cpp ${CMAKE_CURRENT_LIST_DIR}/swig/sanguosha.i
                    MAIN_DEPENDENCY swig/sanguosha.i
-                   DEPENDS swig/sanguosha.i
+                   DEPENDS ${SWIGGENFILES}
                    COMMENT "Generating sanguosha_wrap.cpp ....")
 
 set (QSanguosha_SRCS
