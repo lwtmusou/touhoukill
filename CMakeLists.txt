@@ -12,9 +12,15 @@ set(CMAKE_AUTOUIC ON)
 
 #set( CMAKE_BUILD_TYPE Release )
 
-add_definitions(-Wall)
+# add_definitions(-Wall)
 
 find_package(Qt5 COMPONENTS Widgets Network LinguistTools Multimedia REQUIRED) # Locate the position of Qt5.
+
+if (WIN32)
+    find_package(Qt5 COMPONENTS WinExtras REQUIRED)
+else()
+    add_compile_definitions(LUA_USE_LINUX)
+endif()
 
 include_directories(
 	"src/audio"
@@ -32,17 +38,28 @@ include_directories(
 )
 
 add_compile_definitions(AUDIO_SUPPORT)
-add_compile_definitions(LUA_USE_LINUX)
+
+if (WIN32)
+    set(SWIG_EXECUTABLE ${CMAKE_CURRENT_LIST_DIR}/tools/swig/swig.exe)
+else()
+    set(SWIG_EXECUTABLE swig)
+endif()
+
+add_custom_command(OUTPUT sanguosha_wrap.cpp
+                   COMMAND ${SWIG_EXECUTABLE} ARGS -c++ -lua -cppext cpp -o sanguosha_wrap.cpp ${CMAKE_CURRENT_LIST_DIR}/swig/sanguosha.i
+                   MAIN_DEPENDENCY swig/sanguosha.i
+                   DEPENDS swig/sanguosha.i
+                   COMMENT "Generating sanguosha_wrap.cpp ....")
 
 set (QSanguosha_SRCS
-	swig/sanguosha_wrap.cxx
+        sanguosha_wrap.cpp
+
 	src/audio/audio.cpp
 	src/audio/OggFile.cpp
 	src/client/aux-skills.cpp
 	src/client/client.cpp
 	src/client/clientplayer.cpp
-	src/client/clientstruct.cpp
-	src/core/banpair.cpp
+        src/client/clientstruct.cpp
 	src/core/card.cpp
 	src/core/engine.cpp
 	src/core/general.cpp
@@ -283,6 +300,7 @@ src/ogg/scales.h
 src/ogg/lpc.c
 src/ogg/registry.c
 src/ogg/highlevel.h
+src/ogg/crctable.h
 src/ogg/bitrate.c
 src/ogg/envelope.c
 src/ogg/window.c
@@ -324,5 +342,14 @@ src/ogg/bitwise.c
 src/ogg/framing.c
 )
 
+
+
 add_executable (QSanguosha ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} ${OGG_FILE})
-target_link_libraries (QSanguosha Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::Multimedia dl)
+target_link_libraries (QSanguosha Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::Multimedia)
+
+if (WIN32)
+    target_link_libraries(QSanguosha Qt5::WinExtras)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+else()
+    target_link_libraries(QSanguosha dl)
+endif()
