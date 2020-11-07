@@ -533,6 +533,7 @@ private:
     QList<int> *m_discardPile;
     QStack<DamageStruct> m_damageStack;
     bool game_started;
+    bool game_started2;
     bool game_finished;
     bool game_paused;
     lua_State *L;

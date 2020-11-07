@@ -40,6 +40,7 @@ Room::Room(QObject *parent, const QString &mode)
     , m_drawPile(&pile1)
     , m_discardPile(&pile2)
     , game_started(false)
+    , game_started2(false)
     , game_finished(false)
     , game_paused(false)
     , L(NULL)
@@ -254,7 +255,7 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason)
                         break;
                     QString cd = saver->property("currentdying").toString();
                     setPlayerProperty(saver, "currentdying", player->objectName());
-                    saver->tag["songzang_dying"] = dying_data;//record for ai, like skill songzang
+                    saver->tag["songzang_dying"] = dying_data; //record for ai, like skill songzang
 
                     thread->trigger(AskForPeaches, this, dying_data);
                     setPlayerProperty(saver, "currentdying", cd);
@@ -3163,7 +3164,8 @@ ServerPlayer *Room::getOwner() const
 
 void Room::toggleReadyCommand(ServerPlayer *, const QVariant &)
 {
-    if (!game_started && isFull()) {
+    if (!game_started2 && isFull()) {
+        game_started2 = true;
         thread = new RoomThread(this);
         thread->start();
     }
