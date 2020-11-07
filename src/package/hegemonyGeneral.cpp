@@ -7,7 +7,8 @@
 #include "skill.h"
 #include "standard.h"
 #include "th06.h"
-//#include "th08.h"
+
+#include <random>
 
 class GameRule_AskForGeneralShowHead : public TriggerSkill
 {
@@ -2121,7 +2122,7 @@ public:
         //AI *ai = invoke->invoker->getAI();
         if (!invoke->invoker->isOnline()) { //  ai: Just make a random choice
             //QString general_name = room->askForChoice(invoke->invoker, objectName(), choices.join("+"));
-            int idx = qrand() % choices.length();
+            int idx = std::random_device()() % choices.length();
             QString general_name = choices.at(idx);
             const General *general = Sanguosha->getGeneral(general_name);
 
@@ -2136,7 +2137,7 @@ public:
             if (skill_names.isEmpty())
                 return false;
 
-            int skill_idx = qrand() % skill_names.length();
+            int skill_idx = std::random_device()() % skill_names.length();
             QString skill_name = skill_names.at(skill_idx);
             const Skill *skill = Sanguosha->getSkill(skill_name);
             skillProcess(room, invoke->invoker, general_name, skill);
@@ -4071,8 +4072,8 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     miko_hegemony->addCompanion("toziko_hegemony");
     miko_hegemony->addCompanion("seiga_hegemony");
     miko_hegemony->setHeadMaxHpAdjustedValue(-1);
-    related_skills.insertMulti("shezheng_hegemony", "#shezheng_hegemony");
-    related_skills.insertMulti("shezheng_hegemony", "#shezheng_viewhas");
+    related_skills.insert("shezheng_hegemony", "#shezheng_hegemony");
+    related_skills.insert("shezheng_hegemony", "#shezheng_viewhas");
 
     General *mamizou_hegemony = new General(this, "mamizou_hegemony", "wu", 4);
     mamizou_hegemony->addSkill("xihua");
@@ -4208,7 +4209,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     General *yorihime_hegemony = new General(this, "yorihime_hegemony", "shu", 4);
     yorihime_hegemony->addSkill(new PingyiHegemony);
     yorihime_hegemony->addSkill(new PingyiHegemonyHandler);
-    related_skills.insertMulti("pingyi_hegemony", "#pingyi_hegemony");
+    related_skills.insert("pingyi_hegemony", "#pingyi_hegemony");
 
     General *wriggle_hegemony = new General(this, "wriggle_hegemony", "shu", 3);
     wriggle_hegemony->addSkill(new YinghuoHegemony);
@@ -4255,7 +4256,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     aya_hegemony->addSkill("fengshen");
     aya_hegemony->addSkill("fengsu");
     aya_hegemony->addSkill(new FengsuHegemonyHandler);
-    related_skills.insertMulti("fengsu", "#fengsu_hegemony");
+    related_skills.insert("fengsu", "#fengsu_hegemony");
     aya_hegemony->addCompanion("momizi_hegemony");
 
     General *nitori_hegemony = new General(this, "nitori_hegemony", "qun", 3);
@@ -4323,7 +4324,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     suika_hegemony->addSkill(new CuijiHegemony);
     suika_hegemony->addSkill(new CuijiHEffect);
     suika_hegemony->setHeadMaxHpAdjustedValue(-1);
-    related_skills.insertMulti("cuiji_hegemony", "#cuiji_hegemony");
+    related_skills.insert("cuiji_hegemony", "#cuiji_hegemony");
     suika_hegemony->addCompanion("yugi_hegemony");
     suika_hegemony->addCompanion("reimu_hegemony");
 
@@ -4419,7 +4420,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     merry_hegemony->addSkill(new LuanyingHegemony);
     merry_hegemony->setHeadMaxHpAdjustedValue(-1);
     merry_hegemony->addSkill(new MengxianHegemony);
-    related_skills.insertMulti("mengxian_hegemony", "#mengxian_hegemony");
+    related_skills.insert("mengxian_hegemony", "#mengxian_hegemony");
 
     General *rinnosuke_hegemony = new General(this, "rinnosuke_hegemony", "wei", 4, true);
     rinnosuke_hegemony->addSkill("xiufu");

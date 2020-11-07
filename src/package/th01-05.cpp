@@ -5,6 +5,8 @@
 #include "maneuvering.h"
 #include "skill.h"
 
+#include <random>
+
 class Meiling : public TriggerSkill
 {
 public:
@@ -982,7 +984,7 @@ public:
             const Card *card = room->askForCard(to, ".!", prompt, data, Card::MethodDiscard);
             if (!card) {
                 // force discard!!!
-                int x = qrand() % hc.length();
+                int x = std::random_device()() % hc.length();
                 const Card *c = hc.value(x);
                 card = c;
                 room->throwCard(c, to);
@@ -1826,7 +1828,7 @@ void ModianCard::use(Room *room, ServerPlayer *src, QList<ServerPlayer *> &targe
         if (c == NULL) {
             QList<int> modians = alice->getPile("modian");
 
-            int x = qrand() % modians.length();
+            int x = std::random_device()() % modians.length();
             int id = modians.value(x);
             c = room->getCard(id);
         }
@@ -3077,14 +3079,14 @@ public:
         if (!card1) {
             // force !!!
             QList<const Card *> hc1 = invoke->invoker->getHandcards();
-            int x = qrand() % hc1.length();
+            int x = std::random_device()() % hc1.length();
             card1 = hc1.value(x);
         }
         const Card *card2 = room->askForCard(invoke->owner, ".|.|.|hand,equipped!", "@chenjue:" + current->objectName(), data, Card::MethodNone);
         if (!card2) {
             // force !!!
             QList<const Card *> hc2 = invoke->owner->getHandcards();
-            int y = qrand() % hc2.length();
+            int y = std::random_device()() % hc2.length();
             card2 = hc2.value(y);
         }
 
@@ -3307,8 +3309,8 @@ TH0105Package::TH0105Package()
     elly->addSkill(new LianmuTargetMod);
     elly->addSkill(new HuanweiEffect);
     elly->addSkill(new Huanwei);
-    related_skills.insertMulti("lianmu", "#lianmu_mod");
-    related_skills.insertMulti("huanwei", "#huanwei");
+    related_skills.insert("lianmu", "#lianmu_mod");
+    related_skills.insert("huanwei", "#huanwei");
 
     General *shinki = new General(this, "shinki$", "pc98", 4);
     shinki->addSkill(new SqChuangshi);
@@ -3323,13 +3325,13 @@ TH0105Package::TH0105Package()
     sariel->addSkill(new Baosi);
     sariel->addSkill(new BaosiDistance);
     sariel->addSkill(new Moyan);
-    related_skills.insertMulti("baosi", "#baosi-dist");
+    related_skills.insert("baosi", "#baosi-dist");
 
     General *konngara = new General(this, "konngara", "pc98", 4);
     konngara->addSkill(new Zongjiu);
     konngara->addSkill(new Xingyou);
     konngara->addSkill(new Xingyou2);
-    related_skills.insertMulti("xingyou", "#xingyou");
+    related_skills.insert("xingyou", "#xingyou");
 
     General *yumeko = new General(this, "yumeko", "pc98", 4);
     yumeko->addSkill(new Huanshu);

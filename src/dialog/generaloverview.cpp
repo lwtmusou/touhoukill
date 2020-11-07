@@ -341,7 +341,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
         nickname_item->setTextAlignment(Qt::AlignCenter);
 
         if (Sanguosha->isGeneralHidden(general_name)) {
-            nickname_item->setBackgroundColor(Qt::gray);
+            nickname_item->setBackground(QBrush(Qt::gray));
             nickname_item->setToolTip(tr("<font color=#FFFF33>This general is hidden</font>"));
         }
 
@@ -354,7 +354,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
         }
 
         if (Sanguosha->isGeneralHidden(general_name)) {
-            name_item->setBackgroundColor(Qt::gray);
+            name_item->setBackground(QBrush(Qt::gray));
             name_item->setToolTip(tr("<font color=#FFFF33>This general is hidden</font>"));
         }
 
@@ -376,8 +376,8 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
         }
         //add color for touhou kingdoms and packages.
         QColor kingdomColor = Sanguosha->getKingdomColor(general->getKingdom());
-        package_item->setBackgroundColor(kingdomColor);
-        kingdom_item->setBackgroundColor(kingdomColor);
+        package_item->setBackground(QBrush(kingdomColor));
+        kingdom_item->setBackground(QBrush(kingdomColor));
         if ((11 * kingdomColor.blue() + 30 * kingdomColor.red() + 59 * kingdomColor.green()) / 100 <= 0x7f) {
             QBrush b = package_item->foreground();
             b.setColor(Qt::white);

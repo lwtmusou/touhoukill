@@ -7,10 +7,10 @@
 
 #include <QCursor>
 #include <QDir>
+#include <QFontDatabase>
 #include <QGraphicsProxyWidget>
 #include <QGraphicsSceneWheelEvent>
 #include <QPainter>
-#include <QFontDatabase>
 #include <QScrollBar>
 
 const char *HEROSKIN_PIXMAP_PATH = "image/heroskin/fullskin/generals/full";
@@ -252,11 +252,10 @@ void HeroSkinContainer::paint(QPainter *painter, const QStyleOptionGraphicsItem 
         name = Sanguosha->translate(m_generalName);
     }
 
-    painter->drawText(QRect(34, -8, 100, 40),  Qt::AlignLeft | Qt::AlignJustify, name);
+    painter->drawText(QRect(34, -8, 100, 40), Qt::AlignLeft | Qt::AlignJustify, name);
 
     // paint shadow
     // https://forum.qt.io/topic/47422/how-to-draw-a-text-with-drop-shadow-in-the-image-using-qpainter/2
-
 }
 
 void HeroSkinContainer::close()
@@ -297,7 +296,7 @@ void HeroSkinContainer::swapWithSkinItemUsed(int skinIndex)
     oldSkinItemUsed->setPos(newSkinItemUsedPos);
     newSkinItemUsed->setPos(oldSkinItemUsedPos);
 
-    m_skins.swap(0, m_skins.indexOf(newSkinItemUsed));
+    m_skins.swapItemsAt(0, m_skins.indexOf(newSkinItemUsed));
 }
 
 const QFont &HeroSkinContainer::getAvatarNameFont()

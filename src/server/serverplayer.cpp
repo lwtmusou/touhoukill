@@ -80,7 +80,7 @@ int ServerPlayer::getRandomHandCardId() const
 
 const Card *ServerPlayer::getRandomHandCard() const
 {
-    int index = qrand() % handcards.length();
+    int index = std::random_device()() % handcards.length();
     return handcards.at(index);
 }
 
@@ -1860,7 +1860,7 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     QSet<QString> shows = showExtraTarget | showDistanceLimit | showResidueNum | showTargetFix | showTargetProhibit;
     shows = shows - disShowExtraTarget - disShowResidueNum;
 
-    return shows.toList();
+    return shows.values();
 }
 
 void ServerPlayer::copyFrom(ServerPlayer *sp)

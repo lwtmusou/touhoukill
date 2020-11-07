@@ -6,6 +6,8 @@
 #include "skill.h"
 #include "standard.h"
 
+#include <random>
+
 PuduCard::PuduCard()
 {
 }
@@ -1377,7 +1379,7 @@ void ShuxinCard::onEffect(const CardEffectStruct &effect) const
         }
 
         if (hc.length() > 0) {
-            int x = qrand() % hc.length();
+            int x = std::random_device()() % hc.length();
             const Card *c = hc.value(x);
             card = c;
             room->throwCard(c, effect.to);
@@ -1662,7 +1664,7 @@ TH12Package::TH12Package()
     kyouko_sp->addSkill(new Huisheng);
     kyouko_sp->addSkill(new HuishengTargetMod);
     kyouko_sp->addSkill(new Yexiang);
-    related_skills.insertMulti("huisheng", "#huisheng_effect");
+    related_skills.insert("huisheng", "#huisheng_effect");
 
     addMetaObject<PuduCard>();
     addMetaObject<WeizhiCard>();

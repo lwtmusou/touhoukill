@@ -5,6 +5,8 @@
 #include "skill.h"
 #include "testCard.h"
 
+#include <random>
+
 class MiyiVS : public ZeroCardViewAsSkill
 {
 public:
@@ -1761,11 +1763,11 @@ public:
         if (!room->askForUseCard(u.from, "@@chunteng-card2!", "@chunteng2", -1, Card::MethodNone, true, "_chunteng")) {
             QList<ServerPlayer *> p = room->getAllPlayers();
             p.removeAll(u.from);
-            ServerPlayer *target = p[qrand() % p.length()];
+            ServerPlayer *target = p[std::random_device()() % p.length()];
 
             Card *c = new Chunteng2Card;
             c->setSkillName("_chunteng");
-            c->addSubcard(u.from->getPile("spring")[qrand() % u.from->getPile("spring").length()]);
+            c->addSubcard(u.from->getPile("spring")[std::random_device()() % u.from->getPile("spring").length()]);
 
             CardUseStruct newUse(c, u.from, target);
             room->useCard(newUse);
@@ -1784,8 +1786,8 @@ TH16Package::TH16Package()
     //okina->addSkill(new MiyiTargetMod);
     okina->addSkill(new Zhaowei);
     okina->addSkill(new Zhuzhe);
-    //related_skills.insertMulti("miyi", "#miyi-tiger");
-    //related_skills.insertMulti("miyi", "#miyi-basic");
+    //related_skills.insert("miyi", "#miyi-tiger");
+    //related_skills.insert("miyi", "#miyi-basic");
 
     General *eternity = new General(this, "eternity", "tkz", 3);
     eternity->addSkill(new Diexing);
@@ -1807,7 +1809,7 @@ TH16Package::TH16Package()
     satono->addSkill(new Minghe);
     satono->addSkill(new Guwu);
     satono->addSkill(new GuwuGiveUseTM);
-    related_skills.insertMulti("guwu", "#guwu");
+    related_skills.insert("guwu", "#guwu");
 
     General *mai = new General(this, "mai", "tkz", 3);
     mai->addSkill(new Kuangwu);

@@ -2693,12 +2693,12 @@ TH09Package::TH09Package()
     hatate->addSkill(new Kuaizhao);
     hatate->addSkill(new KuaizhaoEffect);
     hatate->addSkill(new Duanjiao);
-    related_skills.insertMulti("kuaizhao", "#kuaizhao");
+    related_skills.insert("kuaizhao", "#kuaizhao");
 
     General *kokoro = new General(this, "kokoro$", "zhan", 4);
     kokoro->addSkill(new Nengwu);
     kokoro->addSkill(new Nengwu2);
-    related_skills.insertMulti("nengwu", "#nengwu2");
+    related_skills.insert("nengwu", "#nengwu2");
     kokoro->addSkill(new Xiwang);
 
     General *sumireko = new General(this, "sumireko$", "zhan", 4);
@@ -2706,7 +2706,7 @@ TH09Package::TH09Package()
     sumireko->addSkill(new NianliTargetMod);
     sumireko->addSkill(new Shenmi);
     sumireko->addSkill(new Liqun);
-    related_skills.insertMulti("nianli", "#nianlimod");
+    related_skills.insert("nianli", "#nianlimod");
 
     General *sumireko_sp = new General(this, "sumireko_sp", "zhan", 4);
     sumireko_sp->addSkill(new Mengxiang);

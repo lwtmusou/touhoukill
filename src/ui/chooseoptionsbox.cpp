@@ -179,7 +179,7 @@ int ChooseOptionsBox::getButtonWidth() const
     int biggest = 0;
     foreach (const QString &section, options) {
         foreach (const QString &choice, section.split("+")) {
-            const int width = fontMetrics.width(translate(choice));
+            const int width = fontMetrics.horizontalAdvance(translate(choice));
             if (width > biggest)
                 biggest = width;
         }

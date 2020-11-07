@@ -445,7 +445,7 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
                    skillName);
 
     if (Self->isSkillInvalid(_m_skill->objectName())) { //for SkillInvalid
-        painter->setRenderHints(QPainter::HighQualityAntialiasing);
+        painter->setRenderHints(QPainter::Antialiasing);
         QPen pen(Qt::red);
         pen.setWidth(3);
         painter->setPen(pen);
@@ -454,7 +454,7 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
     }
 
     if (getState() == S_STATE_CANPRESHOW) { //for  Hegemony mode S_STATE_CANPRESHOW
-        painter->setRenderHints(QPainter::HighQualityAntialiasing);
+        painter->setRenderHints(QPainter::Antialiasing);
         QPen pen(Qt::yellow);
         pen.setWidth(3);
         painter->setPen(pen);

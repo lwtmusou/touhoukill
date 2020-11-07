@@ -9,6 +9,7 @@
 #include "standard.h"
 
 #include <functional>
+#include <random>
 
 Slash::Slash(Suit suit, int number)
     : BasicCard(suit, number)
@@ -2154,7 +2155,7 @@ void Drowning::onEffect(const CardEffectStruct &effect) const
                     equips.removeOne(c);
             }
             if (!equips.isEmpty()) {
-                int x = qrand() % equips.length();
+                int x = std::random_device()() % equips.length();
                 card = equips.value(x);
             }
         }

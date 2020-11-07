@@ -7,6 +7,8 @@
 #include "settings.h"
 #include "standard.h"
 
+#include <random>
+
 AI::AI(ServerPlayer *player)
     : self(player)
 {
@@ -217,7 +219,7 @@ bool TrustAI::useCard(const Card *card)
 
 Card::Suit TrustAI::askForSuit(const QString &)
 {
-    return Card::AllSuits[qrand() % 4];
+    return Card::AllSuits[std::random_device()() % 4];
 }
 
 QString TrustAI::askForKingdom()
@@ -229,11 +231,11 @@ QString TrustAI::askForKingdom()
     kingdoms.removeOne("touhougod");
     QString selfKingdom = self->getGeneral()->getKingdom();
     if (!lord)
-        return kingdoms.at(qrand() % kingdoms.length());
+        return kingdoms.at(std::random_device()() % kingdoms.length());
 
     switch (self->getRoleEnum()) {
     case Player::Lord:
-        role = kingdoms.at(qrand() % kingdoms.length());
+        role = kingdoms.at(std::random_device()() % kingdoms.length());
         break;
     case Player::Renegade: {
         if (lord->getGeneral()->isLord() || self->hasSkill("hongfo"))
@@ -241,17 +243,17 @@ QString TrustAI::askForKingdom()
         else if (lord->getGeneral2() && lord->getGeneral2()->isLord())
             role = lord->getGeneral2()->getKingdom();
         else
-            role = kingdoms.at(qrand() % kingdoms.length());
+            role = kingdoms.at(std::random_device()() % kingdoms.length());
         break;
     }
     case Player::Rebel: {
         if (self->hasSkill("hongfo")) {
             kingdoms.removeOne(lord->getKingdom());
-            role = kingdoms.at(qrand() % kingdoms.length());
+            role = kingdoms.at(std::random_device()() % kingdoms.length());
         } else if (lord->getGeneral()->isLord())
             role = lord->getKingdom();
         else
-            role = kingdoms.at(qrand() % kingdoms.length());
+            role = kingdoms.at(std::random_device()() % kingdoms.length());
         break;
     }
     case Player::Loyalist: {
@@ -260,7 +262,7 @@ QString TrustAI::askForKingdom()
         else if (lord->getGeneral2() && lord->getGeneral2()->isLord())
             role = lord->getGeneral2()->getKingdom();
         else {
-            role = kingdoms.at(qrand() % kingdoms.length());
+            role = kingdoms.at(std::random_device()() % kingdoms.length());
         }
         break;
     }
@@ -283,7 +285,7 @@ bool TrustAI::askForSkillInvoke(const QString &skill_name, const QVariant &)
 QString TrustAI::askForChoice(const QString &, const QString &choice, const QVariant &)
 {
     QStringList choices = choice.split("+");
-    return choices.at(qrand() % choices.length());
+    return choices.at(std::random_device()() % choices.length());
 }
 
 QList<int> TrustAI::askForDiscard(const QString &, int discard_num, int, bool optional, bool include_equip)
@@ -329,7 +331,7 @@ int TrustAI::askForAG(const QList<int> &card_ids, bool refusable, const QString 
     if (refusable)
         return -1;
 
-    int r = qrand() % card_ids.length();
+    int r = std::random_device()() % card_ids.length();
     return card_ids.at(r);
 }
 
@@ -356,7 +358,7 @@ ServerPlayer *TrustAI::askForPlayerChosen(const QList<ServerPlayer *> &targets, 
     if (optional)
         return NULL;
 
-    int r = qrand() % targets.length();
+    int r = std::random_device()() % targets.length();
     return targets.at(r);
 }
 
@@ -458,7 +460,7 @@ bool LuaAI::getTable(lua_State *L, QList<int> &table)
 
     size_t len = lua_rawlen(L, -1);
 
-    size_t i;
+    int i;
     for (i = 0; i < len; i++) {
         lua_rawgeti(L, -1, i + 1);
         table << lua_tointeger(L, -1);

@@ -14,6 +14,8 @@
 #include <QNetworkInterface>
 #include <QStringList>
 
+#include <random>
+
 Q_GLOBAL_STATIC(Settings, ConfigInstance)
 
 static const qreal ViewWidth = 1280 * 0.8;
@@ -705,7 +707,7 @@ void Settings::init()
     EffectVolume = value("EffectVolume", 1.0f).toFloat();
 
     int length = 8;
-    int index = qrand() % length + 1;
+    int index = std::random_device()() % length + 1;
     QString bgFilename = QString("%1%2%3").arg("backdrop/hall/gensoukyou_").arg(index).arg(".jpg");
 
     BackgroundImage = bgFilename; // value("BackgroundImage", bgFilename).toString();

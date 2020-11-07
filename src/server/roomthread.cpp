@@ -325,7 +325,6 @@ void RoomThread::_handleTurnBrokenNormal(GameRule *game_rule)
 void RoomThread::run()
 {
     // initialize random seed for later use
-    qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
     Config.AIDelay = Config.OriginAIDelay;
     foreach (ServerPlayer *player, room->getPlayers()) {
         //Ensure that the game starts with all player's mutex locked
@@ -513,7 +512,8 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
         }
         if (r.length() == 1 && r.first()->preferredTarget == NULL) {
             // if the skill has only one instance of the invokedetail, we copy the tag to the old instance(overwrite the old ones), and use the old instance, delete the new one
-            foreach (const QSharedPointer<SkillInvokeDetail> &detail, (detailsList + triggered).toSet()) {
+            auto triggeredPlusDetails = detailsList + triggered;
+            foreach (const QSharedPointer<SkillInvokeDetail> &detail, QSet<QSharedPointer<SkillInvokeDetail> >(triggeredPlusDetails.begin(), triggeredPlusDetails.end())) {
                 if (detail->sameSkill(*r.first())) {
                     foreach (const QString &key, r.first()->tag.keys())
                         detail->tag[key] = r.first()->tag.value(key);
@@ -526,7 +526,8 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
             bool isPreferredTargetSkill = false;
             QList<QSharedPointer<SkillInvokeDetail> > s;
             // judge whether this skill in this event is a preferred-target skill, make a invoke list as s
-            foreach (const QSharedPointer<SkillInvokeDetail> &detail, (detailsList + triggered).toSet()) {
+            auto triggeredPlusDetails = detailsList + triggered;
+            foreach (const QSharedPointer<SkillInvokeDetail> &detail, QSet<QSharedPointer<SkillInvokeDetail> >(triggeredPlusDetails.begin(), triggeredPlusDetails.end())) {
                 if (detail->skill == r.first()->skill) {
                     s << detail;
                     if (detail->preferredTarget != NULL)

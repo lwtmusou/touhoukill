@@ -1678,7 +1678,7 @@ TH13Package::TH13Package()
     General *mamizou = new General(this, "mamizou", "slm", 4);
     mamizou->addSkill(new Xihua);
     mamizou->addSkill(new XihuaClear);
-    related_skills.insertMulti("xihua", "#xihua_clear");
+    related_skills.insert("xihua", "#xihua_clear");
 
     General *futo = new General(this, "futo", "slm", 3);
     futo->addSkill(new Shijie);
@@ -1696,7 +1696,7 @@ TH13Package::TH13Package()
     yoshika->addSkill(new Duzhua);
     yoshika->addSkill(new DuzhuaTargetMod);
     yoshika->addSkill(new Taotie);
-    related_skills.insertMulti("duzhua", "#duzhuaTargetMod");
+    related_skills.insert("duzhua", "#duzhuaTargetMod");
 
     General *kyouko = new General(this, "kyouko", "slm", 3);
     kyouko->addSkill(new Songjing);

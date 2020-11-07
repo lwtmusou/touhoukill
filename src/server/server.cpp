@@ -92,7 +92,7 @@ QWidget *ServerDialog::createPackageTab()
     extension_group->setExclusive(false);
 
     QStringList extensions = Sanguosha->getExtensions();
-    QSet<QString> ban_packages = Config.BanPackages.toSet();
+    QSet<QString> ban_packages(Config.BanPackages.begin(), Config.BanPackages.end());
 
     QGroupBox *box1 = new QGroupBox(tr("General package"));
     QGroupBox *box2 = new QGroupBox(tr("Card package"));
@@ -513,7 +513,7 @@ void BanlistDialog::save()
     for (int i = 0; i < list->count(); i++)
         banset << list->item(i)->data(Qt::UserRole).toString();
 
-    QStringList banlist = banset.toList();
+    QStringList banlist = banset.values();
     Config.setValue(QString("Banlist/%1").arg(ban_list.at(item)), QVariant::fromValue(banlist));
 }
 
@@ -814,7 +814,8 @@ Select3v3GeneralDialog::Select3v3GeneralDialog(QDialog *parent)
     : QDialog(parent)
 {
     setWindowTitle(tr("Select generals in extend 3v3 mode"));
-    ex_generals = Config.value("3v3/ExtensionGenerals").toStringList().toSet();
+    QStringList ex_generalsList = Config.value("3v3/ExtensionGenerals").toStringList();
+    ex_generals = QSet<QString>(ex_generalsList.begin(), ex_generalsList.end());
     QVBoxLayout *layout = new QVBoxLayout;
     tab_widget = new QTabWidget;
     fillTabWidget();
@@ -926,7 +927,7 @@ void Select3v3GeneralDialog::save3v3Generals()
         }
     }
 
-    QStringList list = ex_generals.toList();
+    QStringList list = ex_generals.values();
     QVariant data = QVariant::fromValue(list);
     Config.setValue("3v3/ExtensionGenerals", data);
 }
@@ -1070,7 +1071,7 @@ bool ServerDialog::config()
         }
     }
 
-    Config.BanPackages = ban_packages.toList();
+    Config.BanPackages = ban_packages.values();
     Config.setValue("BanPackages", Config.BanPackages);
 
     return true;
@@ -1161,7 +1162,7 @@ void Server::processRequest(const char *request)
     QString avatar = body[2].toString();
     bool reconnection_enabled = false;
 
-    QStringList ps = urlPath.split('/', QString::SkipEmptyParts);
+    QStringList ps = urlPath.split('/', Qt::SkipEmptyParts);
     QString messageBodyToSend;
     if (ps.length() == 0) {
         // default connected

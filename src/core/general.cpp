@@ -134,7 +134,8 @@ QList<const Skill *> General::getVisibleSkillList(bool relate_to_place, bool hea
 
 QSet<const Skill *> General::getVisibleSkills(bool relate_to_place, bool head_only) const
 {
-    return getVisibleSkillList(relate_to_place, head_only).toSet();
+    QList<const Skill *> list = getVisibleSkillList(relate_to_place, head_only);
+    return QSet<const Skill *>(list.begin(), list.end());
 }
 
 QSet<const TriggerSkill *> General::getTriggerSkills() const

@@ -37,7 +37,7 @@ include_directories(
     "include/vld"
 )
 
-add_compile_definitions(AUDIO_SUPPORT)
+add_compile_definitions(AUDIO_SUPPORT QT_DISABLE_DEPRECATED_BEFORE=0x60000)
 
 if (WIN32)
     set(SWIG_EXECUTABLE ${CMAKE_CURRENT_LIST_DIR}/tools/swig/swig.exe)

@@ -363,7 +363,7 @@ bool CardUseStruct::tryParse(const QVariant &usage, Room *room)
 
 void CardUseStruct::parse(const QString &str, Room *room)
 {
-    QStringList words = str.split("->", QString::KeepEmptyParts);
+    QStringList words = str.split("->", Qt::KeepEmptyParts);
     Q_ASSERT(words.length() == 1 || words.length() == 2);
 
     QString card_str = words.at(0);

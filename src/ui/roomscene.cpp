@@ -21,8 +21,8 @@
 #include "record-analysis.h"
 #include "recorder.h"
 #include "settings.h"
-#include "uiUtils.h"
 #include "sgswindow.h"
+#include "uiUtils.h"
 
 #include <QApplication>
 #include <QCheckBox>
@@ -702,7 +702,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         bool paused = arg[1].toBool();
         if (pausing_item->isVisible() != paused) {
             if (paused) {
-                QBrush pausing_brush(QColor(qrand() % 256, qrand() % 256, qrand() % 256));
+                QBrush pausing_brush(QColor(std::random_device()() % 256, std::random_device()() % 256, std::random_device()() % 256));
                 pausing_item->setBrush(pausing_brush);
                 bringToFront(pausing_item);
                 bringToFront(pausing_text);
@@ -1286,7 +1286,7 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer *> &seats)
         const Player *player = seats.at(i);
         for (int j = i; j < photos.length(); j++) {
             if (photos.at(j)->getPlayer() == player) {
-                photos.swap(i, j);
+                photos.swapItemsAt(i, j);
                 break;
             }
         }

@@ -18,6 +18,8 @@
 #include <QTimer>
 #include <QVBoxLayout>
 
+#include <random>
+
 using namespace std;
 using namespace QSanProtocol;
 using namespace JsonUtils;
@@ -1528,7 +1530,9 @@ void Client::gameOver(const QVariant &arg)
         return;
     }
 
-    QSet<QString> winners = winner.split("+").toSet();
+    QStringList winnersList = winner.split("+");
+
+    QSet<QString> winners = QSet<QString>(winnersList.begin(), winnersList.end());
     foreach (const ClientPlayer *player, players) {
         QString role = player->getRole();
         bool win = winners.contains(player->objectName()) || winners.contains(role);
@@ -2373,7 +2377,7 @@ void Client::onPlayerChooseOrder()
     if (button) {
         order = button->objectName();
     } else {
-        if (qrand() % 2 == 0)
+        if (std::random_device()() % 2 == 0)
             order = "warm";
         else
             order = "cool";

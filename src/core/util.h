@@ -4,20 +4,22 @@
 struct lua_State;
 class QVariant;
 
+#include "compiler-specific.h"
+
 #include <QList>
 #include <QSharedPointer>
 #include <QStringList>
 #include <QVariant>
 
-#include "compiler-specific.h"
 #include <algorithm>
+#include <random>
 
 template <typename T> void qShuffle(QList<T> &list)
 {
     int n = list.length();
     for (int i = 0; i < n; i++) {
-        int r = qrand() % (n - i) + i;
-        list.swap(i, r);
+        int r = std::random_device()() % (n - i) + i;
+        list.swapItemsAt(i, r);
     }
 }
 

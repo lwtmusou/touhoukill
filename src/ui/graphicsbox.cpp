@@ -39,7 +39,7 @@ GraphicsBox::~GraphicsBox()
 
 void GraphicsBox::paintGraphicsBoxStyle(QPainter *painter, const QString &boxTitle, const QRectF &rect)
 {
-    painter->setRenderHints(QPainter::HighQualityAntialiasing | QPainter::SmoothPixmapTransform);
+    painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
     painter->save();
     painter->setBrush(QBrush(G_COMMON_LAYOUT.graphicsBoxBackgroundColor));

@@ -7,6 +7,7 @@
 #include "standard.h"
 
 #include <QFile>
+#include <random>
 
 Skill::Skill(const QString &name, Frequency frequency, const QString &showType)
     : frequency(frequency)
@@ -99,7 +100,7 @@ void Skill::playAudioEffect(int index) const
 {
     if (!sources.isEmpty()) {
         if (index == -1)
-            index = qrand() % sources.length();
+            index = std::random_device()() % sources.length();
         else
             index--;
 

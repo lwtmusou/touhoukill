@@ -48,16 +48,11 @@ public:
         room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
 
         //get ganerals
-        QSet<QString> all = Sanguosha->getLimitedGeneralNames().toSet();
-        if (isNormalGameMode(room->getMode()))
-            all.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());
-        else if (room->getMode() == "06_XMode") {
-            foreach (ServerPlayer *p, room->getAlivePlayers())
-                all.subtract(p->tag["XModeBackup"].toStringList().toSet());
-        } else if (room->getMode() == "02_1v1") {
-            all.subtract(Config.value("Banlist/1v1", "").toStringList().toSet());
-            foreach (ServerPlayer *p, room->getAlivePlayers())
-                all.subtract(p->tag["1v1Arrange"].toStringList().toSet());
+        QStringList allList = Sanguosha->getLimitedGeneralNames();
+        QSet<QString> all = QSet<QString>(allList.begin(), allList.end());
+        if (isNormalGameMode(room->getMode())) {
+            QStringList rolesbanlist = Config.value("Banlist/Roles", "").toStringList();
+            all.subtract(QSet<QString>(rolesbanlist.begin(), rolesbanlist.end()));
         }
 
         QSet<QString> room_set;
@@ -75,7 +70,7 @@ public:
             room_set << name;
         }
 
-        QStringList names = (all - room_set).toList();
+        QStringList names = (all - room_set).values();
         qShuffle(names);
         if (names.isEmpty())
             return false;
@@ -4736,7 +4731,7 @@ public:
                 QString general = room->askForGeneral(invoke->invoker, general_list);
                 //forbid cheat
                 if (!general_list.contains(general))
-                    general = general_list.at(qrand() % general_list.length());
+                    general = general_list.at(std::random_device()() % general_list.length());
                 foreach (ServerPlayer *p, room->getAllPlayers(true)) {
                     if (p->isDead() && p->getGeneralName() == general) {
                         invoke->targets << p;
@@ -5134,20 +5129,15 @@ public:
 
     static QStringList GetAvailableGenerals(ServerPlayer *zuoci, bool init)
     {
-        QSet<QString> all = Sanguosha->getLimitedGeneralNames().toSet();
+        QSet<QString> all = QSet<QString>(Sanguosha->getLimitedGeneralNames().begin(), Sanguosha->getLimitedGeneralNames().end());
         Room *room = zuoci->getRoom();
-        if (isNormalGameMode(room->getMode()))
-            all.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());
-        else if (room->getMode() == "06_XMode") {
-            foreach (ServerPlayer *p, room->getAlivePlayers())
-                all.subtract(p->tag["XModeBackup"].toStringList().toSet());
-        } else if (room->getMode() == "02_1v1") {
-            all.subtract(Config.value("Banlist/1v1", "").toStringList().toSet());
-            foreach (ServerPlayer *p, room->getAlivePlayers())
-                all.subtract(p->tag["1v1Arrange"].toStringList().toSet());
+        if (isNormalGameMode(room->getMode())) {
+            QStringList rolebanlist = Config.value("Banlist/Roles", "").toStringList();
+            all.subtract(QSet<QString>(rolebanlist.begin(), rolebanlist.end()));
         }
+
         QSet<QString> huashen_set, room_set;
-        huashen_set = zuoci->getHiddenGenerals().toSet();
+        huashen_set = QSet<QString>(zuoci->getHiddenGenerals().begin(), zuoci->getHiddenGenerals().end());
 
         foreach (ServerPlayer *player, room->getAllPlayers(true)) {
             QString name = player->getGeneralName();
@@ -5166,7 +5156,7 @@ public:
                    << "koishi_god"
                    << "seiga_god"
                    << "youmu_god";
-        return (all - banned - huashen_set - room_set).toList();
+        return (all - banned - huashen_set - room_set).values();
 
         Q_UNUSED(init);
         //for test!!! do not remove
@@ -7101,12 +7091,12 @@ TouhouGodPackage::TouhouGodPackage()
     General *eirin_god = new General(this, "eirin_god", "touhougod", 4);
     eirin_god->addSkill(new Qiannian);
     eirin_god->addSkill(new QiannianMax);
-    related_skills.insertMulti("qiannian", "#qiannian_max");
+    related_skills.insert("qiannian", "#qiannian_max");
 
     General *kanako_god = new General(this, "kanako_god", "touhougod", 4);
     kanako_god->addSkill(new Qinlue);
     kanako_god->addSkill(new QinlueEffect);
-    related_skills.insertMulti("qinlue", "#qinlue_effect");
+    related_skills.insert("qinlue", "#qinlue_effect");
 
     General *byakuren_god = new General(this, "byakuren_god", "touhougod", 4);
     byakuren_god->addSkill(new Chaoren);
@@ -7133,9 +7123,9 @@ TouhouGodPackage::TouhouGodPackage()
     kaguya_god->addSkill(new ShenbaoDistance);
     kaguya_god->addSkill(new ShenbaoHandler);
     kaguya_god->addSkill(new ShenbaoViewHas);
-    related_skills.insertMulti("shenbao", "#shenbao_distance");
-    related_skills.insertMulti("shenbao", "#shenbao");
-    related_skills.insertMulti("shenbao", "#shenbao_viewhas");
+    related_skills.insert("shenbao", "#shenbao_distance");
+    related_skills.insert("shenbao", "#shenbao");
+    related_skills.insert("shenbao", "#shenbao_viewhas");
 
     General *komachi_god = new General(this, "komachi_god", "touhougod", 4);
     komachi_god->addSkill(new Yindu);
@@ -7146,7 +7136,7 @@ TouhouGodPackage::TouhouGodPackage()
     yuyuko_god->addSkill(new Fanhun);
     yuyuko_god->addSkill(new Yousi);
     yuyuko_god->addSkill(new YousiUI);
-    related_skills.insertMulti("yousi", "#yousi");
+    related_skills.insert("yousi", "#yousi");
 
     General *satori_god = new General(this, "satori_god", "touhougod", 3);
     satori_god->addSkill(new Kuixin);
@@ -7166,14 +7156,14 @@ TouhouGodPackage::TouhouGodPackage()
     nue_god->addSkill(new AnyunShowStaticSkill);
     nue_god->addSkill(new AnyunProhibit);
     nue_god->addSkill(new Benzun);
-    related_skills.insertMulti("anyun", "#anyunShowStatic");
-    related_skills.insertMulti("anyun", "#anyun_prohibit");
+    related_skills.insert("anyun", "#anyunShowStatic");
+    related_skills.insert("anyun", "#anyun_prohibit");
 
     General *marisa_god = new General(this, "marisa_god", "touhougod", 4);
     marisa_god->addSkill(new Chongneng);
     marisa_god->addSkill(new Huixing);
     marisa_god->addSkill(new HuixingTargetMod);
-    related_skills.insertMulti("huixing", "#huixing_effect");
+    related_skills.insert("huixing", "#huixing_effect");
 
     General *patchouli_god = new General(this, "patchouli_god", "touhougod", 3);
     patchouli_god->addSkill(new Xianshi);
@@ -7188,7 +7178,7 @@ TouhouGodPackage::TouhouGodPackage()
     yuka_god->addSkill(new Xiuye);
     yuka_god->addSkill(new Kuangji);
     yuka_god->addSkill(new KuangjiTargetMod);
-    related_skills.insertMulti("kuangji", "#kuangji_effect");
+    related_skills.insert("kuangji", "#kuangji_effect");
 
     General *tenshi_god = new General(this, "tenshi_god", "touhougod", 4);
     tenshi_god->addSkill(new Dimai);

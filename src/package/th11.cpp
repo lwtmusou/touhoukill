@@ -1099,7 +1099,7 @@ TH11Package::TH11Package()
     suika_sp->addSkill(new CuijiEffect);
     suika_sp->addSkill(new Baigui);
     suika_sp->addSkill(new Jiuchong);
-    related_skills.insertMulti("cuiji", "#cuiji");
+    related_skills.insert("cuiji", "#cuiji");
 
     addMetaObject<MaihuoCard>();
     addMetaObject<YaobanCard>();

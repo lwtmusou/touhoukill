@@ -211,7 +211,7 @@ void LeitingCard::onEffect(const CardEffectStruct &effect) const
     const Card *cards = room->askForCard(effect.from, ".|.|.|hand,equipped", "@leiting:" + effect.to->objectName(), QVariant::fromValue(effect.to));
     /*if (!cards) {
         //force discard!!!
-        int x = qrand() % hc.length();
+        int x = std::random_device()() % hc.length();
         cards = hc.value(x);
         room->throwCard(cards, effect.from);
     }*/
@@ -1200,7 +1200,7 @@ TH14Package::TH14Package()
     General *sekibanki = new General(this, "sekibanki", "hzc", 4);
     sekibanki->addSkill(new Feitou);
     sekibanki->addSkill(new FeitouTargetMod);
-    related_skills.insertMulti("feitou", "#feitoumod");
+    related_skills.insert("feitou", "#feitoumod");
 
     General *wakasagihime = new General(this, "wakasagihime", "hzc", 3);
     wakasagihime->addSkill(new Shizhu);

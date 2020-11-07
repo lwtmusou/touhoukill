@@ -112,7 +112,7 @@ void ConnectionDialog::accept()
             // The "observe" modifier is .....
 
             QString p = url.path();
-            QStringList ps = p.split('/', QString::SkipEmptyParts);
+            QStringList ps = p.split('/', Qt::SkipEmptyParts);
             if (ps.length() != 2) {
                 QMessageBox::warning(this, tr("Warning"), tr("This pattern is not supported, please recheck your input."));
                 return;

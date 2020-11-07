@@ -25,9 +25,9 @@ void Recorder::recordLine(const QString &line)
 {
     int elapsed = watch.elapsed();
     if (line.endsWith("\n"))
-        data.append(QString("%1 %2").arg(elapsed).arg(line));
+        data.append(QString("%1 %2").arg(elapsed).arg(line).toUtf8());
     else
-        data.append(QString("%1 %2\n").arg(elapsed).arg(line));
+        data.append(QString("%1 %2\n").arg(elapsed).arg(line).toUtf8());
 }
 
 bool Recorder::save(const QString &filename) const

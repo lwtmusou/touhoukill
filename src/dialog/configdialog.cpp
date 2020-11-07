@@ -9,6 +9,8 @@
 #include <QFileDialog>
 #include <QFontDialog>
 
+#include <random>
+
 ConfigDialog::ConfigDialog(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::ConfigDialog)
@@ -114,7 +116,7 @@ void ConfigDialog::on_resetBgButton_clicked()
     ui->bgPathLineEdit->clear();
 
     int length = 8;
-    int index = qrand() % length + 1;
+    int index = std::random_device()() % length + 1;
     QString filename = QString("%1%2%3").arg("backdrop/new-version").arg(index).arg(".jpg");
 
     Config.BackgroundImage = filename;

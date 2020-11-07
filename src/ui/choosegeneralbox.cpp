@@ -19,13 +19,13 @@
     *********************************************************************/
 
 #include "choosegeneralbox.h"
+#include "SkinBank.h"
 #include "button.h"
 #include "cardcontainer.h"
 #include "choosegeneraldialog.h" //#include "freechoosedialog.h"
 #include "client.h"
 #include "clientplayer.h"
 #include "engine.h"
-#include "SkinBank.h"
 
 #include <QApplication>
 #include <QGraphicsProxyWidget>
@@ -321,7 +321,7 @@ void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_onl
     convertContainer->setParentItem(this);
 
     //DO NOT USE qSort HERE FOR WE NEED TO KEEP THE INITIAL ORDER IN SOME CASES
-    qStableSort(generals.begin(), generals.end(), sortByKingdom);
+    std::stable_sort(generals.begin(), generals.end(), sortByKingdom);
 
     foreach (const QString &general, generals) {
         /*if (player) {

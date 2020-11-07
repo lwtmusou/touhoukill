@@ -2465,7 +2465,7 @@ TH07Package::TH07Package()
     ran->addSkill(new Shihui);
     ran->addSkill(new Huanzang);
     ran->addSkill(new HuanzangEffect);
-    related_skills.insertMulti("huanzang", "#huanzang");
+    related_skills.insert("huanzang", "#huanzang");
 
     General *youmu = new General(this, "youmu", "yym", 4, false);
     youmu->addSkill(new Shuangren);
@@ -2484,8 +2484,8 @@ TH07Package::TH07Package()
     chen->addSkill(new Dunjia);
     chen->addSkill(new QimenDistance);
     chen->addSkill(new QimenProhibitAI);
-    related_skills.insertMulti("qimen", "#qimen-dist");
-    related_skills.insertMulti("qimen", "#qimen-prohibit");
+    related_skills.insert("qimen", "#qimen-dist");
+    related_skills.insert("qimen", "#qimen-prohibit");
 
     General *letty = new General(this, "letty", "yym", 4);
     letty->addSkill(new Jiyi);
@@ -2513,8 +2513,8 @@ TH07Package::TH07Package()
     ran_sp->addSkill(new Jixiong);
     ran_sp->addSkill(new Jixiong1);
     ran_sp->addSkill(new Jixiong2);
-    related_skills.insertMulti("jixiong", "#jixiong1");
-    related_skills.insertMulti("jixiong", "#jixiong2");
+    related_skills.insert("jixiong", "#jixiong1");
+    related_skills.insert("jixiong", "#jixiong2");
 
     General *youki = new General(this, "youki", "yym", 4, true);
     youki->addSkill(new Shoushu);

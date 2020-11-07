@@ -72,15 +72,14 @@ public:
 static OggPlayingList bgm_list;
 static OggPlayingList effective_list;
 
-
-OggPlayer::OggPlayer(const QString &file_name,  bool is_bgm)
-    : repeat(false), 
-      is_bgm(is_bgm),
-      file_name(file_name)
+OggPlayer::OggPlayer(const QString &file_name, bool is_bgm)
+    : repeat(false)
+    , is_bgm(is_bgm)
+    , file_name(file_name)
 {
-    QFile f{file_name};
+    QFile f {file_name};
     f.open(QIODevice::ReadOnly);
-    if(f.error() != QFileDevice::NoError){
+    if (f.error() != QFileDevice::NoError) {
         f.close();
         valid = false;
         return;
@@ -92,29 +91,31 @@ OggPlayer::OggPlayer(const QString &file_name,  bool is_bgm)
 
 OggPlayer::~OggPlayer()
 {
-    if(isRunning()) stop();
+    if (isRunning())
+        stop();
     terminate();
 }
 
 void OggPlayer::run()
 {
-    if(!valid) return;
-    do{
-        QBuffer buffer{&encoding};
+    if (!valid)
+        return;
+    do {
+        QBuffer buffer {&encoding};
         buffer.open(QIODevice::ReadOnly);
         buffer.seek(0);
 
-        OggFile f{&buffer, file_name};
+        OggFile f {&buffer, file_name};
 
-        QAudioOutput output{f.getFormat()};
+        QAudioOutput output {f.getFormat()};
 
         if (is_bgm)
             bgm_list.removeFromList(this);
         else
             effective_list.removeFromList(this);
 
-        connect(&output, &QAudioOutput::stateChanged, [&](QAudio::State s){
-            if(s == QAudio::IdleState){
+        connect(&output, &QAudioOutput::stateChanged, [&](QAudio::State s) {
+            if (s == QAudio::IdleState) {
                 this->quit();
             }
         });
@@ -137,7 +138,7 @@ void OggPlayer::run()
         disconnect(this, &OggPlayer::setVolume, &output, &QAudioOutput::setVolume);
         buffer.close();
         //sleep(1000);
-    } while(repeat);
+    } while (repeat);
 }
 
 void OggPlayer::play(bool loop)
@@ -193,8 +194,13 @@ public:
         case Sequential:
             return this->m_fileNames == other.m_fileNames;
 
-        case Shuffle:
-            return this->m_fileNames.toSet() == other.m_fileNames.toSet();
+        case Shuffle: {
+            auto thisfilename = m_fileNames;
+            auto otherfilename = other.m_fileNames;
+            std::sort(thisfilename.begin(), thisfilename.end());
+            std::sort(otherfilename.begin(), otherfilename.end());
+            return thisfilename == otherfilename;
+        }
 
         default:
             return false;
@@ -228,7 +234,6 @@ private:
     {
         m_randomQueue = m_fileNames;
         m_randomQueue.prepend("");
-        qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
 
         if (m_openings.isEmpty())
             qShuffle(m_randomQueue);

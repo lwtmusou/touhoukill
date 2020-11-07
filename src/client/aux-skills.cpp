@@ -121,7 +121,7 @@ public:
 
     void setPlayerNames(const QStringList &names)
     {
-        set = names.toSet();
+        set = QSet<QString>(names.begin(), names.end());
     }
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
@@ -203,7 +203,7 @@ public:
 
     void setPlayerNames(const QStringList &names)
     {
-        set = names.toSet();
+        set = QSet<QString>(names.begin(), names.end());
     }
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const

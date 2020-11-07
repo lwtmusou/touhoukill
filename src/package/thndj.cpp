@@ -6,6 +6,8 @@
 #include "skill.h"
 #include "standard.h"
 
+#include <random>
+
 class Rexue : public TriggerSkill
 {
 public:
@@ -1683,7 +1685,7 @@ void YaoliCard::onEffect(const CardEffectStruct &effect) const
                         cards << c;
                 }
 
-                discard = cards.at(qrand() % cards.length());
+                discard = cards.at(std::random_device()() % cards.length());
                 room->throwCard(discard, effect.to);
             }
 
@@ -1900,24 +1902,24 @@ THNDJPackage::THNDJPackage()
     merry_ndj->addSkill(new Liexi);
     merry_ndj->addSkill(new LiexiTargetMod);
     merry_ndj->addSkill(new Mengwei);
-    related_skills.insertMulti("liexi", "#liexi");
+    related_skills.insert("liexi", "#liexi");
 
     General *renko_ndj = new General(this, "renko_ndj", "wai", 4);
     renko_ndj->addSkill(new Liangzi);
     renko_ndj->addSkill(new Kexue);
     renko_ndj->addSkill(new KexueEffect);
-    related_skills.insertMulti("kexue", "#kexue-effect");
+    related_skills.insert("kexue", "#kexue-effect");
 
     General *sanae_ndj = new General(this, "sanae_ndj", "fsl", 4);
     sanae_ndj->addSkill(new Xiubu);
     sanae_ndj->addSkill(new XiubuTargetMod);
-    related_skills.insertMulti("xiubu", "#xiubu-mod");
+    related_skills.insert("xiubu", "#xiubu-mod");
 
     General *aya_ndj = new General(this, "aya_ndj", "fsl", 3);
     aya_ndj->addSkill(new Jineng);
     aya_ndj->addSkill(new JinengTargetMod);
     aya_ndj->addSkill(new Kuaibao);
-    related_skills.insertMulti("jineng", "#jinengmod");
+    related_skills.insert("jineng", "#jinengmod");
 
     General *tenshi_ndj = new General(this, "tenshi_ndj", "zhan", 4);
     tenshi_ndj->addSkill(new Youle);

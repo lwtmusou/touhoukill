@@ -1017,7 +1017,7 @@ QList<CardItem *> Dashboard::removeCardItems(const QList<int> &card_ids, Player:
         Q_ASSERT(false);
 
     foreach (CardItem *card, result) {
-        card->setAcceptedMouseButtons(0);
+        card->setAcceptedMouseButtons(Qt::MouseButtons());
     }
 
     Q_ASSERT(result.size() == card_ids.size());

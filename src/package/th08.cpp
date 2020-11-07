@@ -1870,7 +1870,7 @@ TH08Package::TH08Package()
     tewi->addSkill(new Buxian);
     tewi->addSkill(new BuxianEffect);
     tewi->addSkill(new Xingyun);
-    related_skills.insertMulti("buxian", "#buxian");
+    related_skills.insert("buxian", "#buxian");
 
     General *mystia = new General(this, "mystia", "yyc", 3);
     mystia->addSkill(new Yege);
@@ -1880,7 +1880,7 @@ TH08Package::TH08Package()
     wriggle->addSkill(new Yinghuo);
     wriggle->addSkill(new YinghuoClear);
     wriggle->addSkill(new Chongqun);
-    related_skills.insertMulti("yinghuo", "#yinghuo");
+    related_skills.insert("yinghuo", "#yinghuo");
 
     General *keine_sp = new General(this, "keine_sp", "yyc", 3);
     keine_sp->addSkill(new Chuangshi);

@@ -2237,7 +2237,7 @@ TH99Package::TH99Package()
     General *yorihime = new General(this, "yorihime", "wai", 4);
     yorihime->addSkill(new Pingyi);
     yorihime->addSkill(new PingyiHandler);
-    related_skills.insertMulti("pingyi", "#pingyi_handle");
+    related_skills.insert("pingyi", "#pingyi_handle");
 
     General *sunny = new General(this, "sunny", "wai", 3);
     sunny->addSkill(new Zheshe);
@@ -2259,7 +2259,7 @@ TH99Package::TH99Package()
     kosuzu->addSkill(new Pandu);
     kosuzu->addSkill(new Bihuo);
     kosuzu->addSkill(new BihuoReturn);
-    related_skills.insertMulti("bihuo", "#bihuo");
+    related_skills.insert("bihuo", "#bihuo");
 
     General *cirno = new General(this, "cirno_sp", "wai", 3);
     cirno->addSkill(new Xunshi);

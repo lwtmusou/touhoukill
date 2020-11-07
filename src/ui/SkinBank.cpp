@@ -438,7 +438,7 @@ QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, const Q
             fileNames = skill->getSources();
         if (!fileNames.isEmpty()) {
             if (index < 0)
-                fileName = fileNames.at(qrand() % fileNames.length());
+                fileName = fileNames.at(std::random_device()() % fileNames.length());
             else {
                 if (fileNames.length() >= index)
                     return fileNames[index - 1];
@@ -628,7 +628,7 @@ QString IQSanComponentSkin::getRandomAudioFileName(const QString &key) const
     QStringList audios = getAudioFileNames(key);
     if (audios.isEmpty())
         return QString();
-    int r = qrand() % audios.length();
+    int r = std::random_device()() % audios.length();
     return audios[r];
 }
 

@@ -12,6 +12,8 @@
 #include <QPointer>
 #include <QVBoxLayout>
 
+#include <random>
+
 class Fsu0413Gepi : public TriggerSkill
 {
 public:
@@ -457,7 +459,7 @@ public:
                 delayedtricks << id;
         }
 
-        int obtainId = delayedtricks.at(qrand() % delayedtricks.length());
+        int obtainId = delayedtricks.at(std::random_device()() % delayedtricks.length());
         st.player->obtainCard(room->getCard(obtainId));
 
         return false;
@@ -839,7 +841,7 @@ PlaygroundPackage::PlaygroundPackage()
     Fsu0413->addSkill(new Fsu0413Gainian);
     Fsu0413->addSkill(new Fsu0413GainianDis);
     Fsu0413->addSkill(new Fsu0413Lese);
-    related_skills.insertMulti("fsu0413gainian", "#fsu0413gainian-dis");
+    related_skills.insert("fsu0413gainian", "#fsu0413gainian-dis");
 
     //    General *jmshtry = new General(this, "jmshtry", "touhougod", 5, true);
     //    jmshtry->addSkill(new JmshtryMdlKudi);
@@ -851,7 +853,7 @@ PlaygroundPackage::PlaygroundPackage()
     General *benmao = new General(this, "benmao", "touhougod", 5, true);
     benmao->addSkill(new BmMaoji);
     benmao->addSkill(new BmMaojiTrigger);
-    related_skills.insertMulti("bmmaoji", "#bmmaoji");
+    related_skills.insert("bmmaoji", "#bmmaoji");
 }
 
 ADD_PACKAGE(Playground)

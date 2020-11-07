@@ -1340,26 +1340,26 @@ TH15Package::TH15Package()
     junko->addSkill(new Chunhua);
     junko->addSkill(new ChunhuaEffect);
     junko->addSkill(new Shayi);
-    related_skills.insertMulti("chunhua", "#chunhua");
+    related_skills.insert("chunhua", "#chunhua");
 
     General *hecatia = new General(this, "hecatia", "gzz", 4);
     hecatia->addSkill(new Santi);
     hecatia->addSkill(new SantiEffect);
-    related_skills.insertMulti("santi", "#santi");
+    related_skills.insert("santi", "#santi");
 
     General *clownpiece = new General(this, "clownpiece", "gzz", 3);
     clownpiece->addSkill(new Yuyi);
     clownpiece->addSkill(new Skill("kuangluan"));
     clownpiece->addSkill(new Kuangluan1);
     clownpiece->addSkill(new Kuangluan2);
-    related_skills.insertMulti("kuangluan", "#kuangluan1");
-    related_skills.insertMulti("kuangluan", "#kuangluan2");
+    related_skills.insert("kuangluan", "#kuangluan1");
+    related_skills.insert("kuangluan", "#kuangluan2");
 
     General *sagume = new General(this, "sagume", "gzz", 4);
     sagume->addSkill(new Shehuo);
     sagume->addSkill(new ShehuoEffect);
     sagume->addSkill(new Shenyan);
-    related_skills.insertMulti("shehuo", "#shehuo");
+    related_skills.insert("shehuo", "#shehuo");
 
     General *doremy = new General(this, "doremy", "gzz", 3);
     doremy->addSkill(new Bumeng);
@@ -1372,7 +1372,7 @@ TH15Package::TH15Package()
     General *seiran = new General(this, "seiran", "gzz", 4);
     seiran->addSkill(new Yidan);
     seiran->addSkill(new YidanTargetMod);
-    related_skills.insertMulti("yidan", "#yidanmod");
+    related_skills.insert("yidan", "#yidanmod");
 
     addMetaObject<YuejianCard>();
     addMetaObject<YidanCard>();

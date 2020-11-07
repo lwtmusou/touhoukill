@@ -43,9 +43,6 @@ int main(int argc, char *argv[])
     }
 #endif
 
-    // initialize random seed for later use
-    qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
-
     QTranslator qt_translator, translator;
     qt_translator.load("qt_zh_CN.qm");
     translator.load("sanguosha.qm");
