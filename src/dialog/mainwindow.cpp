@@ -12,10 +12,10 @@
 #include "recorder.h"
 #include "roomscene.h"
 #include "server.h"
+#include "sgswindow.h"
 #include "startscene.h"
 #include "ui_mainwindow.h"
 #include "updatedialog.h"
-#include "sgswindow.h"
 
 #include <QCheckBox>
 #include <QComboBox>
@@ -119,9 +119,8 @@ MainWindow::MainWindow(QWidget *parent)
     //play title BGM
 #ifdef AUDIO_SUPPORT
     if (Config.EnableBgMusic) {
-        QString bgm = "audio/title/main.ogg";
         Audio::stopBGM();
-        Audio::playBGM(bgm, true, true);
+        Audio::playBGM(Audio::getBgmFileNames(QString(), false));
         Audio::setBGMVolume(Config.BGMVolume);
     }
 #endif
@@ -200,7 +199,7 @@ void MainWindow::gotoScene(QGraphicsScene *scene)
 #ifdef AUDIO_SUPPORT
     if (Config.EnableBgMusic && !Audio::isBackgroundMusicPlaying()) {
         Audio::stopBGM();
-        Audio::playBGM("audio/title/main.ogg", true, true);
+        Audio::playBGM(Audio::getBgmFileNames(QString(), false));
         Audio::setBGMVolume(Config.BGMVolume);
     }
 #endif
@@ -389,7 +388,7 @@ void MainWindow::gotoStartScene()
 #ifdef AUDIO_SUPPORT
     if (Config.EnableBgMusic && !Audio::isBackgroundMusicPlaying()) {
         Audio::stopBGM();
-        Audio::playBGM("audio/title/main.ogg", true, true);
+        Audio::playBGM(Audio::getBgmFileNames(QString(), false));
         Audio::setBGMVolume(Config.BGMVolume);
     }
 #endif

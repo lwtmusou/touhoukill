@@ -4055,8 +4055,7 @@ void RoomScene::speak()
         Config.setValue("EnableBgMusic", true);
 #ifdef AUDIO_SUPPORT
         Audio::stopBGM();
-        QString bgmusic_path = Config.value("BackgroundMusic", "audio/title/main.ogg").toString();
-        Audio::playBGM(bgmusic_path);
+        Audio::playBGM(Audio::getBgmFileNames(QString(), false));
         Audio::setBGMVolume(Config.BGMVolume);
 #endif
     } else if (text.startsWith(".StartBgMusic=")) {
@@ -4070,7 +4069,7 @@ void RoomScene::speak()
         }
 #ifdef AUDIO_SUPPORT
         Audio::stopBGM();
-        Audio::playBGM(path);
+        Audio::playBGM(QStringList(path));
         Audio::setBGMVolume(Config.BGMVolume);
 #endif
     } else if (text == ".StopBgMusic") {
@@ -5385,9 +5384,9 @@ void RoomScene::setLordBGM(QString lord)
     }
 
     if (!QFile::exists(bgm_path))
-        Audio::playBGM("audio/title/main.ogg", true, true);
+        Audio::playBGM(Audio::getBgmFileNames(QString(), true));
     else
-        Audio::playBGM(lord_name, true, false, true);
+        Audio::playBGM(Audio::getBgmFileNames(lord_name, false));
     Audio::setBGMVolume(Config.BGMVolume);
 
 #endif

@@ -334,9 +334,7 @@ set (QSanguosha_MOCS
 )
 
 set(OGG_FILE
-    src/audio/OggFile.h
     src/audio/audio.cpp
-    src/audio/OggFile.cpp
 
     src/ogg/backends.h
     src/ogg/bitrate.h
