@@ -319,17 +319,6 @@ void Audio::stopBGM()
     isBgmPlaying = false;
 }
 
-QString Audio::getVersion()
-{
-    /*
-     * FMOD version number.
-     * 0xaaaabbcc -> aaaa = major version number.
-     * bb = minor version number.
-     * cc = development version number.
-    */
-    return "";
-}
-
 QStringList Audio::getBgmFileNames(const QString fileNames, bool isGeneralName)
 {
     QStringList all;

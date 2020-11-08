@@ -20,8 +20,6 @@ public:
     static void stopBGM();
     static bool isBackgroundMusicPlaying();
 
-    static QString getVersion();
-
     static float volume;
     static float bgm_volume;
 

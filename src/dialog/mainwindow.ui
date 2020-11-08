@@ -64,7 +64,6 @@
     <addaction name="actionAbout_Qt"/>
     <addaction name="actionAbout_GPLv3"/>
     <addaction name="actionAbout_Lua"/>
-    <addaction name="actionAbout_fmod"/>
     <addaction name="separator"/>
     <addaction name="actionAcknowledgement_2"/>
     <addaction name="separator"/>
@@ -279,11 +278,6 @@
   <action name="actionView_ban_list">
    <property name="text">
     <string>View ban list</string>
-   </property>
-  </action>
-  <action name="actionAbout_fmod">
-   <property name="text">
-    <string>About fmod</string>
    </property>
   </action>
   <action name="actionAbout_Lua">

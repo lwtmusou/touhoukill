@@ -884,29 +884,6 @@ void MainWindow::on_actionView_ban_list_triggered()
     dialog->exec();
 }
 
-void MainWindow::on_actionAbout_fmod_triggered()
-{
-    QString content = tr("FMOD is a proprietary audio library made by Firelight Technologies");
-    content.append("<p align='center'> <img src='image/logo/fmod.png' /> </p> <br/>");
-
-    QString address = "http://www.fmod.org";
-    content.append(tr("Official site: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(address));
-
-#ifdef AUDIO_SUPPORT
-    content.append(tr("Current versionn %1 <br/>").arg(Audio::getVersion()));
-#endif
-
-    Window *window = new Window(tr("About fmod"), QSize(500, 260));
-    scene->addItem(window);
-
-    window->addContent(content);
-    window->addCloseButton(tr("OK"));
-    window->setZValue(32766);
-    window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0, scene && scene->inherits("RoomScene") ? scene->height() : 0);
-
-    window->appear();
-}
-
 void MainWindow::on_actionAbout_Lua_triggered()
 {
     QString content = tr("Lua is a powerful, fast, lightweight, embeddable scripting language.");
