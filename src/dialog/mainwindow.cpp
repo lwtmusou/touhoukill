@@ -59,7 +59,6 @@ public:
     explicit FitView(QGraphicsScene *scene)
         : QGraphicsView(scene)
     {
-        setSceneRect(Config.Rect);
         setRenderHints(QPainter::TextAntialiasing | QPainter::Antialiasing);
     }
 
@@ -69,16 +68,14 @@ public:
         MainWindow *main_window = qobject_cast<MainWindow *>(parentWidget());
         if (scene()->inherits("RoomScene")) {
             RoomScene *room_scene = qobject_cast<RoomScene *>(scene());
-            QRectF newSceneRect(0, 0, event->size().width(), event->size().height());
+            QRectF newSceneRect(0, 0, 1080. * event->size().width() / event->size().height(), 1080);
             room_scene->setSceneRect(newSceneRect);
             room_scene->adjustItems();
             setSceneRect(room_scene->sceneRect());
-            if (newSceneRect != room_scene->sceneRect())
-                fitInView(room_scene->sceneRect(), Qt::KeepAspectRatio);
-            else
-                resetTransform();
-            main_window->setBackgroundBrush(false);
-            return;
+            QTransform tf;
+            tf.scale(1080. / event->size().height(), 1080. / event->size().height());
+            setTransform(tf);
+            fitInView(newSceneRect, Qt::KeepAspectRatio);
         } else if (scene()->inherits("StartScene")) {
             StartScene *start_scene = qobject_cast<StartScene *>(scene());
             QRectF newSceneRect(-event->size().width() / 2, -event->size().height() / 2, event->size().width(), event->size().height());
@@ -86,9 +83,9 @@ public:
             setSceneRect(start_scene->sceneRect());
             if (newSceneRect != start_scene->sceneRect())
                 fitInView(start_scene->sceneRect(), Qt::KeepAspectRatio);
+            if (main_window)
+                main_window->setBackgroundBrush(true);
         }
-        if (main_window)
-            main_window->setBackgroundBrush(true);
     }
 };
 
