@@ -20,7 +20,7 @@ modao_skill.getTurnUseCard=function(self)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
-	local card_str = ("bone_healing:fengxiang[%s:%s]=%d"):format(suit, number, card_id)
+	local card_str = ("bone_healing:modao[%s:%s]=%d"):format(suit, number, card_id)
 	local skillcard = sgs.Card_Parse(card_str)
 	assert(skillcard)
 	return skillcard
