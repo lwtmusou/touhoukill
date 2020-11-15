@@ -14,22 +14,22 @@ class ClientPlayer : public Player
 
 public:
     explicit ClientPlayer(Client *client);
-    virtual QList<const Card *> getHandcards() const;
+    QList<const Card *> getHandcards() const override;
     void setCards(const QList<int> &card_ids);
     QTextDocument *getMarkDoc() const;
     void changePile(const QString &name, bool add, QList<int> card_ids);
     QString getDeathPixmapPath() const;
     void setHandcardNum(int n);
-    virtual QString getGameMode() const;
+    QString getGameMode() const override;
 
-    virtual void setFlags(const QString &flag);
-    virtual int aliveCount(bool includeRemoved = true) const;
-    virtual int getHandcardNum() const;
-    virtual void removeCard(const Card *card, Place place);
-    virtual void addCard(const Card *card, Place place);
+    void setFlags(const QString &flag) override;
+    int aliveCount(bool includeRemoved = true) const override;
+    int getHandcardNum() const override;
+    void removeCard(const Card *card, Place place) override;
+    void addCard(const Card *card, Place place) override;
     virtual void addKnownHandCard(const Card *card);
-    virtual bool isLastHandCard(const Card *card, bool contain = false) const;
-    virtual void setMark(const QString &mark, int value);
+    bool isLastHandCard(const Card *card, bool contain = false) const override;
+    void setMark(const QString &mark, int value) override;
 
 private:
     int handcard_num;

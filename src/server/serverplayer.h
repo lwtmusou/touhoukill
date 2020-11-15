@@ -50,7 +50,7 @@ public:
     bool askForSkillInvoke(const Skill *skill, const QVariant &data = QVariant(), const QString &prompt = QString());
     QList<int> forceToDiscard(int discard_num, bool include_equip, bool is_discard = true);
     QList<int> handCards() const;
-    virtual QList<const Card *> getHandcards() const;
+    QList<const Card *> getHandcards() const override;
     QList<const Card *> getCards(const QString &flags) const;
     DummyCard *wholeHandCards() const;
     bool hasNullification() const;
@@ -70,9 +70,9 @@ public:
     void loseMark(const QString &mark, int n = 1);
     void loseAllMarks(const QString &mark_name);
 
-    virtual void addSkill(const QString &skill_name, bool head_skill = true);
-    virtual void loseSkill(const QString &skill_name, bool head_skill = true);
-    virtual void setGender(General::Gender gender);
+    void addSkill(const QString &skill_name, bool head_skill = true) override;
+    void loseSkill(const QString &skill_name, bool head_skill = true) override;
+    void setGender(General::Gender gender) override;
 
     void setAI(AI *ai);
     AI *getAI() const;
@@ -84,11 +84,11 @@ public:
         return getState() == "robot" || getState() == "offline";
     }
 
-    virtual int aliveCount(bool includeRemoved = true) const;
-    virtual int getHandcardNum() const;
-    virtual void removeCard(const Card *card, Place place);
-    virtual void addCard(const Card *card, Place place);
-    virtual bool isLastHandCard(const Card *card, bool contain = false) const;
+    int aliveCount(bool includeRemoved = true) const override;
+    int getHandcardNum() const override;
+    void removeCard(const Card *card, Place place) override;
+    void addCard(const Card *card, Place place) override;
+    bool isLastHandCard(const Card *card, bool contain = false) const override;
 
     void addVictim(ServerPlayer *victim);
     QList<ServerPlayer *> getVictims() const;
@@ -107,7 +107,7 @@ public:
     void clearSelected();
 
     int getGeneralMaxHp() const;
-    virtual QString getGameMode() const;
+    QString getGameMode() const override;
 
     QString getIp() const;
     quint32 ipv4Address() const;

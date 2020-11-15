@@ -1495,7 +1495,7 @@ void PlayerCardContainer::onAvatarHoverEnter()
             heroSKinBtn = m_changePrimaryHeroSKinBtn;
 
             m_changeSecondaryHeroSkinBtn->hide();
-        } else if ((senderObj == _m_smallAvatarIcon)) { //|| (senderObj == _m_huashenItem && second_zuoci)
+        } else if (senderObj == _m_smallAvatarIcon) { //|| (senderObj == _m_huashenItem && second_zuoci)
             general = m_player->getGeneral2();
             avatarItem = _m_smallAvatarIcon;
             heroSKinBtn = m_changeSecondaryHeroSkinBtn;
@@ -1524,7 +1524,7 @@ void PlayerCardContainer::onAvatarHoverLeave()
 
         if (senderObj == _m_avatarIcon) { //|| (senderObj == _m_huashenItem && !second_zuoci))
             heroSKinBtn = m_changePrimaryHeroSKinBtn;
-        } else if ((senderObj == _m_smallAvatarIcon)) { //|| (senderObj == _m_huashenItem && second_zuoci)
+        } else if (senderObj == _m_smallAvatarIcon) { //|| (senderObj == _m_huashenItem && second_zuoci)
             heroSKinBtn = m_changeSecondaryHeroSkinBtn;
         }
 
