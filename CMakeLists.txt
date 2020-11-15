@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(QSanguosha)
+project(QSanguosha
+    VERSION 0.9.9
+    )
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -382,7 +384,10 @@ set(OGG_FILE
     src/ogg/window.c
 )
 
-
+if (WIN32)
+    set(QSanguosha_SRCS ${QSanguosha_SRCS} QSanguosha_resource.rc)
+    set(QSanguosha_Icon_RC ${CMAKE_CURRENT_LIST_DIR}/resource/icon/sgs.ico)
+endif()
 
 add_executable (QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} ${OGG_FILE})
 target_link_libraries (QSanguosha Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::Multimedia)
@@ -390,6 +395,7 @@ target_link_libraries (QSanguosha Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Q
 if (WIN32)
     target_link_libraries(QSanguosha Qt5::WinExtras)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+    configure_file(resource/QSanguosha_resource.rc.in QSanguosha_resource.rc @ONLY)
 else()
     target_link_libraries(QSanguosha dl)
 endif()
