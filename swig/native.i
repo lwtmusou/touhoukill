@@ -122,7 +122,7 @@ static int GetProperty(lua_State *lua)
     const char *property_name = luaL_checkstring(lua, 2);
     QVariant value = obj->property(property_name);
 
-    switch (value.type()) {
+    switch (static_cast<QMetaType::Type>(value.type())) {
     case QMetaType::Int: {
         lua_pushinteger(lua, value.toInt());
         break;

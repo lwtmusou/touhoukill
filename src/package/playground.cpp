@@ -541,6 +541,8 @@ public:
         PhaseChangeStruct st = data.value<PhaseChangeStruct>();
         if (st.player->isAlive() && st.player->hasSkill(this) && st.to == Player::Discard)
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, st.player, st.player, NULL, true);
+
+        return QList<SkillInvokeDetail>();
     }
 
     bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const

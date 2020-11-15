@@ -6043,7 +6043,7 @@ public:
 
     virtual int getExtraTargetNum(const Player *player, const Card *card) const
     {
-        if (!player->hasSkill(this) || !player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
+        if (!player->hasSkill(this) || player->getRoomObject()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY)
             return 0;
 
         if (card->isRed()) {

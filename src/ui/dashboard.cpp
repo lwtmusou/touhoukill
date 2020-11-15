@@ -212,7 +212,7 @@ void Dashboard::_adjustComponentZValues(bool killed)
             _layBetween(button_widget, _m_middleFrame, _m_roleComboBox);
     }
 
-    if (_m_rightFrameBg && _m_faceTurnedIcon && _m_equipRegions)
+    if (_m_rightFrameBg && _m_faceTurnedIcon)
         _layBetween(_m_rightFrameBg, _m_faceTurnedIcon, _m_equipRegions[3]);
     if (leftHiddenMark)
         _layUnder(leftHiddenMark);
