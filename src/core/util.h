@@ -27,8 +27,6 @@ template <typename T> void qShuffle(QList<T> &list)
 lua_State *CreateLuaState();
 void DoLuaScript(lua_State *L, const char *script);
 
-QVariant GetValueFromLuaState(lua_State *L, const char *table_name, const char *key);
-
 QStringList IntList2StringList(const QList<int> &intlist);
 QList<int> StringList2IntList(const QStringList &stringlist);
 QVariantList IntList2VariantList(const QList<int> &intlist);

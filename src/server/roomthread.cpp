@@ -355,7 +355,7 @@ void RoomThread::run()
         room->setPlayerProperty(lord, "general", "yuyuko_1v3");
 
         QList<const General *> generals = QList<const General *>();
-        foreach (QString pack_name, GetConfigFromLuaState(Sanguosha->getLuaState(), "hulao_packages").toStringList()) {
+        foreach (QString pack_name, Sanguosha->getConfigFromConfigFile("hulao_packages").toStringList()) {
             const Package *pack = Sanguosha->findChild<const Package *>(pack_name);
             if (pack)
                 generals << pack->findChildren<const General *>();

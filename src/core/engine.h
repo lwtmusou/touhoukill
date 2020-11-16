@@ -5,6 +5,7 @@
 #include "card.h"
 #include "exppattern.h"
 #include "general.h"
+#include "json.h"
 #include "package.h"
 #include "protocol.h"
 #include "skill.h"
@@ -121,6 +122,8 @@ public:
 
     QString GetMappedKingdom(const QString &role); //hegemony
 
+    QVariant getConfigFromConfigFile(const QString &key) const;
+
 private:
     QMutex m_mutex;
     QHash<QString, QString> translations;
@@ -148,6 +151,8 @@ private:
     QSet<QString> ban_package;
 
     lua_State *lua;
+
+    JsonObject configFile;
 };
 
 class SurrenderCard : public SkillCard
@@ -167,11 +172,6 @@ public:
     Q_INVOKABLE CheatCard();
     void onUse(Room *room, const CardUseStruct &use) const;
 };
-
-static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key)
-{
-    return GetValueFromLuaState(L, "config", key);
-}
 
 extern Engine *Sanguosha;
 

@@ -27,8 +27,7 @@ AboutUsDialog::AboutUsDialog(QWidget *parent)
 
     setLayout(layout);
 
-    QStringList developers = GetConfigFromLuaState(Sanguosha->getLuaState(), "developers").toStringList();
-    //developers.prepend(tr("TouhouSatsu"));
+    QStringList developers = Sanguosha->getConfigFromConfigFile("developers").toStringList();
     developers.prepend("hegemony");
     developers.prepend("TouhouSatsu");
 

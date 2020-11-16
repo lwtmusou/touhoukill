@@ -718,21 +718,20 @@ void Settings::init()
     NetworkOnly = value("NetworkOnly", false).toBool();
     RecordSavePath = value("RecordSavePath", "records/").toString();
 
-    lua_State *lua = Sanguosha->getLuaState();
     QStringList roles_ban, kof_ban, hulao_ban, xmode_ban, basara_ban, hegemony_ban, pairs_ban;
 
-    roles_ban = GetConfigFromLuaState(lua, "roles_ban").toStringList();
-    kof_ban = GetConfigFromLuaState(lua, "kof_ban").toStringList();
-    hulao_ban = GetConfigFromLuaState(lua, "hulao_ban").toStringList();
-    xmode_ban = GetConfigFromLuaState(lua, "xmode_ban").toStringList();
-    basara_ban = GetConfigFromLuaState(lua, "basara_ban").toStringList();
-    hegemony_ban = GetConfigFromLuaState(lua, "hegemony_ban").toStringList();
+    roles_ban = Sanguosha->getConfigFromConfigFile("roles_ban").toStringList();
+    kof_ban = Sanguosha->getConfigFromConfigFile("kof_ban").toStringList();
+    hulao_ban = Sanguosha->getConfigFromConfigFile("hulao_ban").toStringList();
+    xmode_ban = Sanguosha->getConfigFromConfigFile("xmode_ban").toStringList();
+    basara_ban = Sanguosha->getConfigFromConfigFile("basara_ban").toStringList();
+    hegemony_ban = Sanguosha->getConfigFromConfigFile("hegemony_ban").toStringList();
     hegemony_ban.append(basara_ban);
     foreach (QString general, Sanguosha->getLimitedGeneralNames()) {
         if (Sanguosha->getGeneral(general)->getKingdom() == "god" && !hegemony_ban.contains(general))
             hegemony_ban << general;
     }
-    pairs_ban = GetConfigFromLuaState(lua, "pairs_ban").toStringList();
+    pairs_ban = Sanguosha->getConfigFromConfigFile("pairs_ban").toStringList();
 
     QStringList banlist = value("Banlist/Roles").toStringList();
     if (banlist.isEmpty()) {
@@ -799,8 +798,8 @@ void Settings::init()
         setValue("ForbidPackages", forbid_packages);
     }
 
-    ExtraHiddenGenerals = GetConfigFromLuaState(lua, "extra_hidden_generals").toStringList();
-    RemovedHiddenGenerals = GetConfigFromLuaState(lua, "removed_hidden_generals").toStringList();
+    ExtraHiddenGenerals = Sanguosha->getConfigFromConfigFile("extra_hidden_generals").toStringList();
+    RemovedHiddenGenerals = Sanguosha->getConfigFromConfigFile("removed_hidden_generals").toStringList();
 
     AutoUpdateNeedsRestart = !EnableAutoUpdate;
     AutoUpdateDataRececived = false;

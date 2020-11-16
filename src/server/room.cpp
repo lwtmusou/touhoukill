@@ -3107,7 +3107,7 @@ void Room::addRobotCommand(ServerPlayer *player, const QVariant &)
         return;
     }
 
-    QStringList names = GetConfigFromLuaState(Sanguosha->getLuaState(), "robot_names").toStringList();
+    QStringList names = Sanguosha->getConfigFromConfigFile("robot_names").toStringList();
     qShuffle(names);
 
     int n = 0;

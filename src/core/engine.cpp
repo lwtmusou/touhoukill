@@ -34,19 +34,22 @@ Engine::Engine()
 {
     Sanguosha = this;
 
-    lua = CreateLuaState();
-    DoLuaScript(lua, "lua/config.lua");
+    JsonDocument doc = JsonDocument::fromFilePath("config/gameconfig.json");
+    if (doc.isValid())
+        configFile = doc.object();
 
-    QStringList package_names = GetConfigFromLuaState(lua, "package_names").toStringList();
+    lua = CreateLuaState();
+
+    QStringList package_names = getConfigFromConfigFile("package_names").toStringList();
     foreach (QString name, package_names)
         addPackage(name);
 
     metaobjects.insert(SurrenderCard::staticMetaObject.className(), &SurrenderCard::staticMetaObject);
     metaobjects.insert(CheatCard::staticMetaObject.className(), &CheatCard::staticMetaObject);
 
-    LordBGMConvertList = GetConfigFromLuaState(lua, "bgm_convert_pairs").toStringList();
-    LordBackdropConvertList = GetConfigFromLuaState(lua, "backdrop_convert_pairs").toStringList();
-    LatestGeneralList = GetConfigFromLuaState(lua, "latest_generals").toStringList();
+    LordBGMConvertList = getConfigFromConfigFile("bgm_convert_pairs").toStringList();
+    LordBackdropConvertList = getConfigFromConfigFile("backdrop_convert_pairs").toStringList();
+    LatestGeneralList = getConfigFromConfigFile("latest_generals").toStringList();
 
     DoLuaScript(lua, "lua/sanguosha.lua");
 
@@ -504,7 +507,7 @@ QStringList Engine::getKingdoms() const
     static QStringList kingdoms;
 
     if (kingdoms.isEmpty())
-        kingdoms = GetConfigFromLuaState(lua, "kingdoms").toStringList();
+        kingdoms = getConfigFromConfigFile("kingdoms").toStringList();
 
     return kingdoms;
 }
@@ -513,7 +516,7 @@ QStringList Engine::getHegemonyKingdoms() const
 {
     static QStringList hegemony_kingdoms;
     if (hegemony_kingdoms.isEmpty())
-        hegemony_kingdoms = GetConfigFromLuaState(lua, "hegemony_kingdoms").toStringList();
+        hegemony_kingdoms = getConfigFromConfigFile("hegemony_kingdoms").toStringList();
 
     return hegemony_kingdoms;
 }
@@ -522,7 +525,7 @@ QColor Engine::getKingdomColor(const QString &kingdom) const
 {
     static QMap<QString, QColor> color_map;
     if (color_map.isEmpty()) {
-        QVariantMap map = GetValueFromLuaState(lua, "config", "kingdom_colors").toMap();
+        QVariantMap map = getConfigFromConfigFile("kingdom_colors").toMap();
         QMapIterator<QString, QVariant> itor(map);
         while (itor.hasNext()) {
             itor.next();
@@ -544,7 +547,7 @@ QStringList Engine::getChattingEasyTexts() const
 {
     static QStringList easy_texts;
     if (easy_texts.isEmpty())
-        easy_texts = GetConfigFromLuaState(lua, "easy_text").toStringList();
+        easy_texts = getConfigFromConfigFile("easy_text").toStringList();
 
     return easy_texts;
 }
@@ -844,7 +847,7 @@ QStringList Engine::getLimitedGeneralNames() const
     QHashIterator<QString, const General *> itor(generals);
     if (ServerInfo.GameMode == "04_1v3") {
         QList<const General *> hulao_generals = QList<const General *>();
-        foreach (QString pack_name, GetConfigFromLuaState(lua, "hulao_packages").toStringList()) {
+        foreach (QString pack_name, getConfigFromConfigFile("hulao_packages").toStringList()) {
             const Package *pack = Sanguosha->findChild<const Package *>(pack_name);
             if (pack)
                 hulao_generals << pack->findChildren<const General *>();
@@ -1287,4 +1290,11 @@ QString Engine::GetMappedKingdom(const QString &role)
     if (kingdoms[role].isEmpty())
         return role;
     return kingdoms[role];
+}
+
+QVariant Engine::getConfigFromConfigFile(const QString &key) const
+{
+    // TODO: special case of "withHeroSkin" and "withBGM"
+
+    return configFile.value(key);
 }
