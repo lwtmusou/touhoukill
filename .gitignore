@@ -98,3 +98,4 @@ build
 .vscode
 .qmake.stash
 CMakeLists.txt.user
+/plugins/

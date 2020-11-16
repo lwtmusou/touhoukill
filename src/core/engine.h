@@ -31,7 +31,8 @@ public:
     Engine();
     ~Engine();
 
-    void addTranslationEntry(const char *key, const char *value);
+    void loadTranslations(const QString &locale);
+    void addTranslationEntry(const QString &key, const QString &value);
     QString translate(const QString &to_translate, bool addHegemony = false) const;
     lua_State *getLuaState() const;
 

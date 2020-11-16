@@ -51,7 +51,11 @@ Engine::Engine()
     LordBackdropConvertList = getConfigFromConfigFile("backdrop_convert_pairs").toStringList();
     LatestGeneralList = getConfigFromConfigFile("latest_generals").toStringList();
 
-    DoLuaScript(lua, "lua/sanguosha.lua");
+    QString locale = getConfigFromConfigFile("locale").toString();
+    if (locale.length() == 0)
+        locale = "zh_CN";
+
+    loadTranslations(locale);
 
     // available game modes
     modes["02p"] = tr("2 players");
@@ -91,9 +95,9 @@ lua_State *Engine::getLuaState() const
     return lua;
 }
 
-void Engine::addTranslationEntry(const char *key, const char *value)
+void Engine::addTranslationEntry(const QString &key, const QString &value)
 {
-    translations.insert(key, QString::fromUtf8(value));
+    translations.insert(key, value);
 }
 
 Engine::~Engine()
@@ -102,6 +106,27 @@ Engine::~Engine()
 #ifdef AUDIO_SUPPORT
     Audio::quit();
 #endif
+}
+
+void Engine::loadTranslations(const QString &locale)
+{
+    JsonDocument doc = JsonDocument::fromFilePath(QStringLiteral("lang/") + locale + QStringLiteral(".json"));
+    if (!doc.isValid() || !doc.isArray())
+        return;
+
+    JsonArray jarr = doc.array();
+
+    foreach (const QVariant &fileNameV, jarr) {
+        QString fileName = fileNameV.toString();
+        JsonDocument transDoc = JsonDocument::fromFilePath(fileName);
+        if (!transDoc.isValid() || !transDoc.isObject())
+            continue;
+
+        JsonObject ob = transDoc.object();
+
+        for (auto it = ob.cbegin(); it != ob.cend(); ++it)
+            addTranslationEntry(it.key(), it.value().toString());
+    }
 }
 
 void Engine::addSkills(const QList<const Skill *> &all_skills)
