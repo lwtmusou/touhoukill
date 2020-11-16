@@ -142,8 +142,10 @@ public:
             output->stop();
     }
 
-    void setVolume(float volume){
-        if(output != nullptr) output->setVolume(volume);
+    void setVolume(float volume)
+    {
+        if (output != nullptr)
+            output->setVolume(volume);
     }
 
 signals:
@@ -182,7 +184,7 @@ public slots:
 
     void quit()
     {
-        if(bgmSound != nullptr) delete bgmSound;
+        delete bgmSound;
         soundCache.clear();
     }
 
@@ -214,11 +216,12 @@ public slots:
 
     void stopBGM()
     {
-        if (bgmSound != nullptr){
+        if (bgmSound != nullptr) {
             disconnect(bgmSound, &OggPlayer::finished, this, &AudioInternal::playNextBgm);
             bgmSound->stop();
-            delete bgmSound;
         }
+
+        delete bgmSound;
         bgmSound = nullptr;
     }
 
@@ -230,7 +233,8 @@ public slots:
     void setBGMVolume(float volume)
     {
         this->bgm_volume = QAudio::convertVolume(volume, QAudio::LogarithmicVolumeScale, QAudio::LinearVolumeScale);
-        if(bgmSound != nullptr) bgmSound->setVolume(this->bgm_volume);
+        if (bgmSound != nullptr)
+            bgmSound->setVolume(this->bgm_volume);
     }
 
 signals:
@@ -248,7 +252,8 @@ signals:
 private slots:
     void playNextBgm()
     {
-        if(bgmFileNames.size() == 0) return;
+        if (bgmFileNames.size() == 0)
+            return;
         QString f = bgmFileNames.takeFirst();
         qShuffle(bgmFileNames);
         bgmFileNames.append(f);
@@ -259,7 +264,8 @@ private slots:
 private:
     void playBgmInternal()
     {
-        if(bgmFileNames.size() == 0) return;
+        if (bgmFileNames.size() == 0)
+            return;
         bgmSound = new OggPlayer(bgmFileNames.first(), this);
         bgmSound->setVolume(bgm_volume);
         connect(bgmSound, &OggPlayer::finished, this, &AudioInternal::playNextBgm);
@@ -284,7 +290,7 @@ void Audio::init()
         audioThread = new QThread;
         internal = new AudioInternal;
         QObject::connect(qApp, &QCoreApplication::aboutToQuit, []() -> void { Audio::quit(); });
-        QObject::connect(audioThread, &QThread::finished, [](){
+        QObject::connect(audioThread, &QThread::finished, []() {
             internal->deleteLater();
             internal = nullptr;
         });
