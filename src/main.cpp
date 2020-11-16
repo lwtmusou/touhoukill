@@ -24,7 +24,9 @@ int main(int argc, char *argv[])
 #endif
     }
 
+#ifdef QT_NO_DEBUG
     QDir::setCurrent(qApp->applicationDirPath());
+#endif
 
 #ifdef Q_OS_LINUX
     QDir dir(QString("lua"));
