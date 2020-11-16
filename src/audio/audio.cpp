@@ -142,6 +142,10 @@ public:
             output->stop();
     }
 
+    void setVolume(float volume){
+        if(output != nullptr) output->setVolume(volume);
+    }
+
 signals:
     void finished();
 
@@ -172,11 +176,13 @@ public:
 public slots:
     void init()
     {
+        bgm_volume = 1.0;
+        effective_volume = 1.0;
     }
 
     void quit()
     {
-        delete bgmSound;
+        if(bgmSound != nullptr) delete bgmSound;
         soundCache.clear();
     }
 
@@ -184,12 +190,14 @@ public slots:
     {
         if (soundCache.contains(fileName)) {
             OggPlayer *p = soundCache.object(fileName);
+            p->setVolume(effective_volume);
             if (!p->isPlaying())
                 p->play();
 
         } else {
             OggPlayer *player = new OggPlayer(fileName, this);
             soundCache.insert(fileName, player);
+            player->setVolume(effective_volume);
             player->play();
         }
     }
@@ -206,17 +214,23 @@ public slots:
 
     void stopBGM()
     {
-        if (bgmSound != nullptr)
+        if (bgmSound != nullptr){
             disconnect(bgmSound, &OggPlayer::finished, this, &AudioInternal::playNextBgm);
-        delete bgmSound;
+            bgmSound->stop();
+            delete bgmSound;
+        }
+        bgmSound = nullptr;
     }
 
     void setEffectVolume(float volume)
     {
+        this->effective_volume = QAudio::convertVolume(volume, QAudio::LogarithmicVolumeScale, QAudio::LinearVolumeScale);
     }
 
     void setBGMVolume(float volume)
     {
+        this->bgm_volume = QAudio::convertVolume(volume, QAudio::LogarithmicVolumeScale, QAudio::LinearVolumeScale);
+        if(bgmSound != nullptr) bgmSound->setVolume(this->bgm_volume);
     }
 
 signals:
@@ -234,6 +248,7 @@ signals:
 private slots:
     void playNextBgm()
     {
+        if(bgmFileNames.size() == 0) return;
         QString f = bgmFileNames.takeFirst();
         qShuffle(bgmFileNames);
         bgmFileNames.append(f);
@@ -244,7 +259,9 @@ private slots:
 private:
     void playBgmInternal()
     {
+        if(bgmFileNames.size() == 0) return;
         bgmSound = new OggPlayer(bgmFileNames.first(), this);
+        bgmSound->setVolume(bgm_volume);
         connect(bgmSound, &OggPlayer::finished, this, &AudioInternal::playNextBgm);
         bgmSound->play();
     }
@@ -252,6 +269,9 @@ private:
     QStringList bgmFileNames;
     QCache<QString, OggPlayer> soundCache;
     OggPlayer *bgmSound;
+
+    float bgm_volume;
+    float effective_volume;
 };
 
 static QThread *audioThread = nullptr;
@@ -264,7 +284,10 @@ void Audio::init()
         audioThread = new QThread;
         internal = new AudioInternal;
         QObject::connect(qApp, &QCoreApplication::aboutToQuit, []() -> void { Audio::quit(); });
-        QObject::connect(audioThread, &QThread::finished, internal, &AudioInternal::deleteLater);
+        QObject::connect(audioThread, &QThread::finished, [](){
+            internal->deleteLater();
+            internal = nullptr;
+        });
         internal->moveToThread(audioThread);
         audioThread->start();
         emit internal->init_S();
@@ -296,10 +319,14 @@ void Audio::play(const QString &fileName)
 
 void Audio::setEffectVolume(float volume)
 {
+    if (Q_UNLIKELY(internal != nullptr))
+        emit internal->setEffectVolume_S(volume);
 }
 
 void Audio::setBGMVolume(float volume)
 {
+    if (Q_UNLIKELY(internal != nullptr))
+        emit internal->setBGMVolume_S(volume);
 }
 
 void Audio::playBGM(const QStringList &fileNames)

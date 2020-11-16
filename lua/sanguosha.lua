@@ -10,7 +10,7 @@ function load_translation(file)
 		error(("file %s is should return a table!"):format(file))
 	end
 
-	sgs.LoadTranslationTable(t)
+	--sgs.LoadTranslationTable(t)
 end
 
 function load_translations()
