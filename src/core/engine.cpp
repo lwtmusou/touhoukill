@@ -4,7 +4,6 @@
 #include "audio.h"
 #include "card.h"
 #include "client.h"
-#include "lua-wrapper.h"
 #include "lua.hpp"
 #include "protocol.h"
 #include "settings.h"
@@ -175,42 +174,9 @@ void Engine::addPackage(Package *package)
         card->setId(cards.length());
         cards << card;
 
-        if (card->isKindOf("LuaBasicCard")) {
-            const LuaBasicCard *lcard = qobject_cast<const LuaBasicCard *>(card);
-            Q_ASSERT(lcard != NULL);
-            luaBasicCard_className2objectName.insert(lcard->getClassName(), lcard->objectName());
-            if (!luaBasicCards.keys().contains(lcard->getClassName()))
-                luaBasicCards.insert(lcard->getClassName(), lcard->clone());
-        } else if (card->isKindOf("LuaTrickCard")) {
-            const LuaTrickCard *lcard = qobject_cast<const LuaTrickCard *>(card);
-            Q_ASSERT(lcard != NULL);
-            luaTrickCard_className2objectName.insert(lcard->getClassName(), lcard->objectName());
-            if (!luaTrickCards.keys().contains(lcard->getClassName()))
-                luaTrickCards.insert(lcard->getClassName(), lcard->clone());
-        } else if (card->isKindOf("LuaWeapon")) {
-            const LuaWeapon *lcard = qobject_cast<const LuaWeapon *>(card);
-            Q_ASSERT(lcard != NULL);
-            luaWeapon_className2objectName.insert(lcard->getClassName(), lcard->objectName());
-            if (!luaWeapons.keys().contains(lcard->getClassName()))
-                luaWeapons.insert(lcard->getClassName(), lcard->clone());
-        } else if (card->isKindOf("LuaArmor")) {
-            const LuaArmor *lcard = qobject_cast<const LuaArmor *>(card);
-            Q_ASSERT(lcard != NULL);
-            luaArmor_className2objectName.insert(lcard->getClassName(), lcard->objectName());
-            if (!luaArmors.keys().contains(lcard->getClassName()))
-                luaArmors.insert(lcard->getClassName(), lcard->clone());
-        } /* else if (card->isKindOf("LuaTreasure")) {
-            const LuaTreasure *lcard = qobject_cast<const LuaTreasure *>(card);
-            Q_ASSERT(lcard != NULL);
-            luaTreasure_className2objectName.insert(lcard->getClassName(), lcard->objectName());
-            if (!luaTreasures.keys().contains(lcard->getClassName()))
-            luaTreasures.insert(lcard->getClassName(), lcard->clone());
-            }*/
-        else {
-            QString class_name = card->metaObject()->className();
-            metaobjects.insert(class_name, card->metaObject());
-            className2objectName.insert(class_name, card->objectName());
-        }
+        QString class_name = card->metaObject()->className();
+        metaobjects.insert(class_name, card->metaObject());
+        className2objectName.insert(class_name, card->objectName());
     }
 
     addSkills(package->getSkills());
@@ -465,71 +431,16 @@ Card *Engine::cloneCard(const Card *card) const
 Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const QStringList &flags) const
 {
     Card *card = NULL;
-    if (luaBasicCard_className2objectName.keys().contains(name)) {
-        const LuaBasicCard *lcard = luaBasicCards.value(name, NULL);
-        if (!lcard)
-            return NULL;
-        card = lcard->clone(suit, number);
-    } else if (luaBasicCard_className2objectName.values().contains(name)) {
-        QString class_name = luaBasicCard_className2objectName.key(name, name);
-        const LuaBasicCard *lcard = luaBasicCards.value(class_name, NULL);
-        if (!lcard)
-            return NULL;
-        card = lcard->clone(suit, number);
-    } else if (luaTrickCard_className2objectName.keys().contains(name)) {
-        const LuaTrickCard *lcard = luaTrickCards.value(name, NULL);
-        if (!lcard)
-            return NULL;
-        card = lcard->clone(suit, number);
-    } else if (luaTrickCard_className2objectName.values().contains(name)) {
-        QString class_name = luaTrickCard_className2objectName.key(name, name);
-        const LuaTrickCard *lcard = luaTrickCards.value(class_name, NULL);
-        if (!lcard)
-            return NULL;
-        card = lcard->clone(suit, number);
-    } else if (luaWeapon_className2objectName.keys().contains(name)) {
-        const LuaWeapon *lcard = luaWeapons.value(name, NULL);
-        if (!lcard)
-            return NULL;
-        card = lcard->clone(suit, number);
-    } else if (luaWeapon_className2objectName.values().contains(name)) {
-        QString class_name = luaWeapon_className2objectName.key(name, name);
-        const LuaWeapon *lcard = luaWeapons.value(class_name, NULL);
-        if (!lcard)
-            return NULL;
-        card = lcard->clone(suit, number);
-    } else if (luaArmor_className2objectName.keys().contains(name)) {
-        const LuaArmor *lcard = luaArmors.value(name, NULL);
-        if (!lcard)
-            return NULL;
-        card = lcard->clone(suit, number);
-    } else if (luaArmor_className2objectName.values().contains(name)) {
-        QString class_name = luaArmor_className2objectName.key(name, name);
-        const LuaArmor *lcard = luaArmors.value(class_name, NULL);
-        if (!lcard)
-            return NULL;
-        card = lcard->clone(suit, number);
-    } else if (luaTreasure_className2objectName.keys().contains(name)) {
-        const LuaTreasure *lcard = luaTreasures.value(name, NULL);
-        if (!lcard)
-            return NULL;
-        card = lcard->clone(suit, number);
-    } else if (luaTreasure_className2objectName.values().contains(name)) {
-        QString class_name = luaTreasure_className2objectName.key(name, name);
-        const LuaTreasure *lcard = luaTreasures.value(class_name, NULL);
-        if (!lcard)
-            return NULL;
-        card = lcard->clone(suit, number);
-    } else {
-        const QMetaObject *meta = metaobjects.value(name, NULL);
-        if (meta == NULL)
-            meta = metaobjects.value(className2objectName.key(name, QString()), NULL);
-        if (meta) {
-            QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
-            card_obj->setObjectName(className2objectName.value(name, name));
-            card = qobject_cast<Card *>(card_obj);
-        }
+
+    const QMetaObject *meta = metaobjects.value(name, NULL);
+    if (meta == NULL)
+        meta = metaobjects.value(className2objectName.key(name, QString()), NULL);
+    if (meta) {
+        QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
+        card_obj->setObjectName(className2objectName.value(name, name));
+        card = qobject_cast<Card *>(card_obj);
     }
+
     if (!card)
         return NULL;
     card->clearFlags();
@@ -592,18 +503,18 @@ QStringList Engine::getKingdoms() const
 {
     static QStringList kingdoms;
 
-    if (kingdoms.isEmpty()) {
+    if (kingdoms.isEmpty())
         kingdoms = GetConfigFromLuaState(lua, "kingdoms").toStringList();
-    }
+
     return kingdoms;
 }
 
 QStringList Engine::getHegemonyKingdoms() const
 {
     static QStringList hegemony_kingdoms;
-    if (hegemony_kingdoms.isEmpty()) {
+    if (hegemony_kingdoms.isEmpty())
         hegemony_kingdoms = GetConfigFromLuaState(lua, "hegemony_kingdoms").toStringList();
-    }
+
     return hegemony_kingdoms;
 }
 
@@ -1032,9 +943,6 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
             break;
     }
 
-    //QStringList general_list = all_generals.mid(0, count);
-    //Q_ASSERT(general_list.count() == count);
-
     return general_list;
 }
 
@@ -1071,7 +979,6 @@ QList<int> Engine::getRandomCards() const
     if (Config.GameMode == "06_3v3") {
         using_2012_3v3 = (Config.value("3v3/OfficialRule", "2013").toString() == "2012");
         using_2013_3v3 = (Config.value("3v3/OfficialRule", "2013").toString() == "2013");
-        //exclude_disaters = !Config.value("3v3/UsingExtension", false).toBool() || Config.value("3v3/ExcludeDisasters", true).toBool();
         exclude_disaters = Config.value("3v3/ExcludeDisasters", true).toBool();
     }
 
@@ -1090,15 +997,6 @@ QList<int> Engine::getRandomCards() const
         else if (card->getPackage() == "New3v3_2013Card" && using_2013_3v3)
             list << card->getId();
 
-        /* if (Config.GameMode == "02_1v1" && !Config.value("1v1/UsingCardExtension", false).toBool()) {
-            if (card->getPackage() == "New1v1Card")
-                list << card->getId();
-            continue;
-        } */
-
-        /* if (Config.GameMode == "06_3v3" && !Config.value("3v3/UsingExtension", false).toBool()
-            && card->getPackage() != "standard_cards" && card->getPackage() != "standard_ex_cards")
-            continue; */
         if (!getBanPackages().contains(card->getPackage())) {
             if (card->objectName().startsWith("known_both")) {
                 if (isHegemonyGameMode(Config.GameMode) && card->objectName() == "known_both_hegemony")

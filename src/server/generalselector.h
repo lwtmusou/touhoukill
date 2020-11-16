@@ -3,6 +3,8 @@
 
 #include "lua-wrapper.h"
 
+#include <QObject>
+
 class ServerPlayer;
 struct lua_State;
 class Room;

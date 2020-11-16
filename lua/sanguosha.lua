@@ -3,7 +3,6 @@
 package.path = package.path .. ";./lua/lib/?.lua"
 
 dofile "lua/utilities.lua"
-dofile "lua/sgs_ex.lua"
 
 function load_translation(file)
 	local t = dofile(file)
@@ -24,29 +23,6 @@ function load_translations()
 			load_translation(("%s/%s"):format(lang_dir, file))
 		end
 	end
-end
-
-function load_extensions()
-	local scripts = sgs.GetFileNames("extensions")
-	local package_names = {}
-	for _, script in ipairs(scripts) do
-		if script:match(".+%.lua$") then
-			local name = script:sub(script:find("%w+"))
-			local module_name = "extensions." .. name
-			local loaded = require(module_name)
-			if not loaded.hidden then
-				table.insert(package_names, name)
-				sgs.Sanguosha:addPackage(loaded.extension)
-			end
-		end
-	end
-	local lua_packages = ""
-	if #package_names > 0 then lua_packages = table.concat(package_names, "+") end
-	sgs.SetConfig("LuaPackages", lua_packages)
-end
-
-if not sgs.GetConfig("DisableLua", false) then
-	load_extensions()
 end
 
 local done_loading = sgs.Sanguosha:property("DoneLoading"):toBool()

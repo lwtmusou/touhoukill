@@ -18,11 +18,6 @@
 #include <QThread>
 
 class AI;
-class LuaBasicCard;
-class LuaTrickCard;
-class LuaWeapon;
-class LuaArmor;
-class LuaTreasure;
 class QVersionNumber;
 
 struct lua_State;
@@ -153,17 +148,6 @@ private:
     QSet<QString> ban_package;
 
     lua_State *lua;
-
-    QHash<QString, QString> luaBasicCard_className2objectName;
-    QHash<QString, const LuaBasicCard *> luaBasicCards;
-    QHash<QString, QString> luaTrickCard_className2objectName;
-    QHash<QString, const LuaTrickCard *> luaTrickCards;
-    QHash<QString, QString> luaWeapon_className2objectName;
-    QHash<QString, const LuaWeapon *> luaWeapons;
-    QHash<QString, QString> luaArmor_className2objectName;
-    QHash<QString, const LuaArmor *> luaArmors;
-    QHash<QString, QString> luaTreasure_className2objectName;
-    QHash<QString, const LuaTreasure *> luaTreasures;
 };
 
 class SurrenderCard : public SkillCard

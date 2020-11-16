@@ -1,7 +1,6 @@
 #include "card.h"
 #include "client.h"
 #include "engine.h"
-#include "lua-wrapper.h"
 #include "room.h"
 #include "settings.h"
 #include "standard.h"
@@ -517,10 +516,6 @@ const Card *Card::Parse(const QString &str)
         DummyCard *dummy = new DummyCard(StringList2IntList(card_strs));
         dummy->deleteLater();
         return dummy;
-    } else if (str.startsWith(QChar('#'))) {
-        LuaSkillCard *new_card = LuaSkillCard::Parse(str);
-        new_card->deleteLater();
-        return new_card;
     } else if (str.contains(QChar('='))) {
         QRegExp pattern("(\\w+):(\\w*)\\[(\\w+):(.+)\\]=(.+)");
         if (!pattern.exactMatch(str))
@@ -580,26 +575,10 @@ Card *Card::Clone(const Card *card)
     int number = card->getNumber();
 
     QObject *card_obj = NULL;
-    if (card->isKindOf("LuaBasicCard")) {
-        const LuaBasicCard *lcard = qobject_cast<const LuaBasicCard *>(card);
-        Q_ASSERT(lcard != NULL);
-        card_obj = lcard->clone();
-    } else if (card->isKindOf("LuaTrickCard")) {
-        const LuaTrickCard *lcard = qobject_cast<const LuaTrickCard *>(card);
-        Q_ASSERT(lcard != NULL);
-        card_obj = lcard->clone();
-    } else if (card->isKindOf("LuaWeapon")) {
-        const LuaWeapon *lcard = qobject_cast<const LuaWeapon *>(card);
-        Q_ASSERT(lcard != NULL);
-        card_obj = lcard->clone();
-    } else if (card->isKindOf("LuaArmor")) {
-        const LuaArmor *lcard = qobject_cast<const LuaArmor *>(card);
-        Q_ASSERT(lcard != NULL);
-        card_obj = lcard->clone();
-    } else {
-        const QMetaObject *meta = card->metaObject();
-        card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
-    }
+
+    const QMetaObject *meta = card->metaObject();
+    card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
+
     if (card_obj) {
         Card *new_card = qobject_cast<Card *>(card_obj);
         if (new_card == NULL) {

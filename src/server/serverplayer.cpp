@@ -2,7 +2,6 @@
 #include "ai.h"
 #include "engine.h"
 #include "gamerule.h"
-#include "lua-wrapper.h"
 #include "recorder.h"
 #include "settings.h"
 #include "skill.h"

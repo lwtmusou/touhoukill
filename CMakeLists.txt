@@ -66,7 +66,6 @@ set (QSanguosha_SRCS
     src/core/engine.cpp
     src/core/general.cpp
     src/core/json.cpp
-    src/core/lua-wrapper.cpp
     src/core/player.cpp
     src/core/protocol.cpp
     src/core/record-analysis.cpp
