@@ -1379,7 +1379,7 @@ void ShuxinCard::onEffect(const CardEffectStruct &effect) const
         }
 
         if (hc.length() > 0) {
-            int x = std::random_device()() % hc.length();
+            int x = QRandomGenerator::global()->generate() % hc.length();
             const Card *c = hc.value(x);
             card = c;
             room->throwCard(c, effect.to);

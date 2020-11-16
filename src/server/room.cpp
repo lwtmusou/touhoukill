@@ -1092,7 +1092,7 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
     }
 
     if (!validChoices.contains(answer))
-        answer = validChoices.at(std::random_device()() % validChoices.length());
+        answer = validChoices.at(QRandomGenerator::global()->generate() % validChoices.length());
     ChoiceMadeStruct s;
     s.player = player;
     s.type = ChoiceMadeStruct::SkillChoice;
@@ -1578,7 +1578,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
         const QVariant &clientReply = player->getClientReply();
         if (!success || !JsonUtils::isNumber(clientReply)) {
             // randomly choose a card
-            card_id = cards.at(std::random_device()() % cards.length())->getId();
+            card_id = cards.at(QRandomGenerator::global()->generate() % cards.length())->getId();
         } else
             card_id = clientReply.toInt();
 
@@ -1586,12 +1586,12 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
             foreach (int id, checked_disabled_ids)
                 unknownHandcards.removeOne(id);
             if (!unknownHandcards.isEmpty())
-                card_id = unknownHandcards.at(std::random_device()() % unknownHandcards.length());
+                card_id = unknownHandcards.at(QRandomGenerator::global()->generate() % unknownHandcards.length());
         }
     }
 
     if (!cards.contains(getCard(card_id)))
-        card_id = cards.at(std::random_device()() % cards.length())->getId();
+        card_id = cards.at(QRandomGenerator::global()->generate() % cards.length())->getId();
 
     Q_ASSERT(card_id != Card::S_UNKNOWN_CARD_ID);
 
@@ -2180,7 +2180,7 @@ QSharedPointer<SkillInvokeDetail> Room::askForTriggerOrder(ServerPlayer *player,
             }
         }
         if (answer.isNull() && !cancelable)
-            answer = sameTiming.value(std::random_device()() % sameTiming.length());
+            answer = sameTiming.value(QRandomGenerator::global()->generate() % sameTiming.length());
     }
 
     ChoiceMadeStruct s;
@@ -2803,7 +2803,7 @@ void Room::prepareForStart()
         } else if (mode == "04_1v3") {
             if (Config.RandomSeat)
                 qShuffle(m_players);
-            ServerPlayer *lord = m_players.at(std::random_device()() % 4);
+            ServerPlayer *lord = m_players.at(QRandomGenerator::global()->generate() % 4);
             for (int i = 0; i < 4; i++) {
                 ServerPlayer *player = m_players.at(i);
                 if (player == lord)
@@ -3261,13 +3261,15 @@ void Room::chooseGenerals()
     ServerPlayer *the_lord = getLord();
     if (Config.EnableSame)
         lord_list = Sanguosha->getRandomGenerals(Config.value("MaxChoice", 6).toInt());
-    else if (the_lord->getState() == "robot")
-        if (((std::random_device()() % 100 < (unsigned)nonlord_prob || lord_num == 0) && nonlord_num > 0) || Sanguosha->getLords().length() == 0)
+    else if (the_lord->getState() == "robot"){
+        unsigned ramdom_value = QRandomGenerator::global()->generate() % 100;
+        if (((ramdom_value < nonlord_prob || lord_num == 0) && nonlord_num > 0) || Sanguosha->getLords().length() == 0)
             lord_list = Sanguosha->getRandomGenerals(1);
         else
             lord_list = Sanguosha->getLords();
-    else
+    } else {
         lord_list = Sanguosha->getRandomLords();
+    }
     QString general = askForGeneral(the_lord, lord_list);
     the_lord->setGeneralName(general);
     broadcastProperty(the_lord, "general", general);
@@ -3380,7 +3382,7 @@ void Room::chooseHegemonyGenerals()
             QString name = player->getGeneralName();
             //QStringList roles;
             //roles << "wei" << "shu" << "wu" << "qun";
-            //int role_idx = std::random_device()() % roles.length();
+            //int role_idx = QRandomGenerator::global()->generate() % roles.length();
             QString role = Sanguosha->getGeneral(name)->getKingdom();
             if (role == "zhu")
                 role = "careerist";
@@ -3594,7 +3596,7 @@ QStringList Room::_chooseDefaultGenerals(ServerPlayer *player) const
         //if (!generals.isEmpty())
         //    break;
     }
-    int index = std::random_device()() % general_pairs.length();
+    int index = QRandomGenerator::global()->generate() % general_pairs.length();
     generals = general_pairs[index].split("+");
     return generals;
 
@@ -5667,7 +5669,7 @@ Card::Suit Room::askForSuit(ServerPlayer *player, const QString &reason)
     tryPause();
     notifyMoveFocus(player, S_COMMAND_CHOOSE_SUIT);
 
-    Card::Suit suit = Card::AllSuits[std::random_device()() % 4];
+    Card::Suit suit = Card::AllSuits[QRandomGenerator::global()->generate() % 4];
 
     AI *ai = player->getAI();
     if (ai)
@@ -6291,7 +6293,7 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
     if (choice && !targets.contains(choice))
         choice = NULL;
     if (choice == NULL && !optional)
-        choice = targets.at(std::random_device()() % targets.length());
+        choice = targets.at(QRandomGenerator::global()->generate() % targets.length());
     if (choice) {
         if (notify_skill) {
             notifySkillInvoked(player, skillName);
@@ -6354,7 +6356,7 @@ QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, Q
         return generals.first();
 
     if (default_choice.isEmpty())
-        default_choice = generals.at(std::random_device()() % generals.length());
+        default_choice = generals.at(QRandomGenerator::global()->generate() % generals.length());
 
     if (player->isOnline()) {
         JsonArray options = JsonUtils::toJsonArray(generals).value<JsonArray>();
@@ -6839,10 +6841,10 @@ int Room::askForRende(ServerPlayer *liubei, QList<int> &cards, const QString &sk
     }
 
     while (!optional && num > 0) {
-        int id = remain_cards[std::random_device()() % remain_cards.length()];
+        int id = remain_cards[QRandomGenerator::global()->generate() % remain_cards.length()];
         remain_cards.removeOne(id);
         num--;
-        give_map.insert(id, players[std::random_device()() % players.length()]);
+        give_map.insert(id, players[QRandomGenerator::global()->generate() % players.length()]);
     }
 
     if (give_map.isEmpty())

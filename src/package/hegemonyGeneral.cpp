@@ -8,8 +8,6 @@
 #include "standard.h"
 #include "th06.h"
 
-#include <random>
-
 class GameRule_AskForGeneralShowHead : public TriggerSkill
 {
 public:
@@ -2122,7 +2120,7 @@ public:
         //AI *ai = invoke->invoker->getAI();
         if (!invoke->invoker->isOnline()) { //  ai: Just make a random choice
             //QString general_name = room->askForChoice(invoke->invoker, objectName(), choices.join("+"));
-            int idx = std::random_device()() % choices.length();
+            int idx = QRandomGenerator::global()->generate() % choices.length();
             QString general_name = choices.at(idx);
             const General *general = Sanguosha->getGeneral(general_name);
 
@@ -2137,7 +2135,7 @@ public:
             if (skill_names.isEmpty())
                 return false;
 
-            int skill_idx = std::random_device()() % skill_names.length();
+            int skill_idx = QRandomGenerator::global()->generate() % skill_names.length();
             QString skill_name = skill_names.at(skill_idx);
             const Skill *skill = Sanguosha->getSkill(skill_name);
             skillProcess(room, invoke->invoker, general_name, skill);

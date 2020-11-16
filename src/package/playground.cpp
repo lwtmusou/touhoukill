@@ -459,7 +459,7 @@ public:
                 delayedtricks << id;
         }
 
-        int obtainId = delayedtricks.at(std::random_device()() % delayedtricks.length());
+        int obtainId = delayedtricks.at(QRandomGenerator::global()->generate() % delayedtricks.length());
         st.player->obtainCard(room->getCard(obtainId));
 
         return false;

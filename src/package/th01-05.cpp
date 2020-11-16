@@ -984,7 +984,7 @@ public:
             const Card *card = room->askForCard(to, ".!", prompt, data, Card::MethodDiscard);
             if (!card) {
                 // force discard!!!
-                int x = std::random_device()() % hc.length();
+                int x = QRandomGenerator::global()->generate() % hc.length();
                 const Card *c = hc.value(x);
                 card = c;
                 room->throwCard(c, to);
@@ -1828,7 +1828,7 @@ void ModianCard::use(Room *room, ServerPlayer *src, QList<ServerPlayer *> &targe
         if (c == NULL) {
             QList<int> modians = alice->getPile("modian");
 
-            int x = std::random_device()() % modians.length();
+            int x = QRandomGenerator::global()->generate() % modians.length();
             int id = modians.value(x);
             c = room->getCard(id);
         }
@@ -3079,14 +3079,14 @@ public:
         if (!card1) {
             // force !!!
             QList<const Card *> hc1 = invoke->invoker->getHandcards();
-            int x = std::random_device()() % hc1.length();
+            int x = QRandomGenerator::global()->generate() % hc1.length();
             card1 = hc1.value(x);
         }
         const Card *card2 = room->askForCard(invoke->owner, ".|.|.|hand,equipped!", "@chenjue:" + current->objectName(), data, Card::MethodNone);
         if (!card2) {
             // force !!!
             QList<const Card *> hc2 = invoke->owner->getHandcards();
-            int y = std::random_device()() % hc2.length();
+            int y = QRandomGenerator::global()->generate() % hc2.length();
             card2 = hc2.value(y);
         }
 

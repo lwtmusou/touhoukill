@@ -1465,7 +1465,7 @@ public:
 
                 if (hc.length() > 2) {
                     for (int i = 0; i < 2; ++i) {
-                        int x = std::random_device()() % hc.length();
+                        int x = QRandomGenerator::global()->generate() % hc.length();
                         const Card *c = hc.value(x);
                         hc.removeAt(x);
                         dc->addSubcard(c);
@@ -1995,7 +1995,7 @@ void YinyangCard::onEffect(const CardEffectStruct &effect) const
     card1 = room->askForCard(effect.to, ".|.|.|hand!", "@yinyang_discard");
     if (!card1) {
         // force discard!!!
-        int x = std::random_device()() % hc1.length();
+        int x = QRandomGenerator::global()->generate() % hc1.length();
         card1 = hc1.value(x);
         room->throwCard(card1, effect.to);
     }
@@ -2022,7 +2022,7 @@ void YinyangCard::onEffect(const CardEffectStruct &effect) const
     if (!card2) {
         // force discard!!!
         if (hc2.length() > 0) {
-            int x = std::random_device()() % hc2.length();
+            int x = QRandomGenerator::global()->generate() % hc2.length();
             card2 = hc2.value(x);
             room->throwCard(card2, effect.from);
         }

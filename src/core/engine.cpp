@@ -642,7 +642,7 @@ QString Engine::getRoles(const QString &mode) const
               << "G"
               << "Q"; //wei shu wu qun
         for (int i = 0; i < num; ++i) {
-            int role_idx = std::random_device()() % roles.length();
+            int role_idx = QRandomGenerator::global()->generate() % roles.length();
             role = role + roles[role_idx];
         }
         return role;
@@ -782,7 +782,7 @@ QStringList Engine::getRandomLords() const
     if (lord_num != -1 && lord_num < lords.length()) {
         int to_remove = lords.length() - lord_num;
         for (int i = 0; i < to_remove; i++) {
-            lords.removeAt(std::random_device()() % lords.length());
+            lords.removeAt(QRandomGenerator::global()->generate() % lords.length());
         }
     }
 
@@ -1031,7 +1031,7 @@ QList<int> Engine::getRandomCards() const
 
 QString Engine::getRandomGeneralName() const
 {
-    return generals.keys().at(std::random_device()() % generals.size());
+    return generals.keys().at(QRandomGenerator::global()->generate() % generals.size());
 }
 
 void Engine::playSystemAudioEffect(const QString &name) const

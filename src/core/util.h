@@ -10,15 +10,15 @@ class QVariant;
 #include <QSharedPointer>
 #include <QStringList>
 #include <QVariant>
+#include <QRandomGenerator>
 
 #include <algorithm>
-#include <random>
 
 template <typename T> void qShuffle(QList<T> &list)
 {
     int n = list.length();
     for (int i = 0; i < n; i++) {
-        int r = std::random_device()() % (n - i) + i;
+        int r = QRandomGenerator::global()->generate() % (n - i) + i;
         list.swapItemsAt(i, r);
     }
 }

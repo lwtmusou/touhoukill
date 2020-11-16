@@ -211,7 +211,7 @@ void LeitingCard::onEffect(const CardEffectStruct &effect) const
     const Card *cards = room->askForCard(effect.from, ".|.|.|hand,equipped", "@leiting:" + effect.to->objectName(), QVariant::fromValue(effect.to));
     /*if (!cards) {
         //force discard!!!
-        int x = std::random_device()() % hc.length();
+        int x = QRandomGenerator::global()->generate() % hc.length();
         cards = hc.value(x);
         room->throwCard(cards, effect.from);
     }*/

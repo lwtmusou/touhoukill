@@ -4731,7 +4731,7 @@ public:
                 QString general = room->askForGeneral(invoke->invoker, general_list);
                 //forbid cheat
                 if (!general_list.contains(general))
-                    general = general_list.at(std::random_device()() % general_list.length());
+                    general = general_list.at(QRandomGenerator::global()->generate() % general_list.length());
                 foreach (ServerPlayer *p, room->getAllPlayers(true)) {
                     if (p->isDead() && p->getGeneralName() == general) {
                         invoke->targets << p;

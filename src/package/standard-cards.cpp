@@ -2155,7 +2155,7 @@ void Drowning::onEffect(const CardEffectStruct &effect) const
                     equips.removeOne(c);
             }
             if (!equips.isEmpty()) {
-                int x = std::random_device()() % equips.length();
+                int x = QRandomGenerator::global()->generate() % equips.length();
                 card = equips.value(x);
             }
         }

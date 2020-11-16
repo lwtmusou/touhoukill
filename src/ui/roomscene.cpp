@@ -48,6 +48,7 @@
 #include <QTimer>
 #include <QTransform>
 #include <QtMath>
+#include <QRandomGenerator>
 
 using namespace QSanProtocol;
 
@@ -702,7 +703,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         bool paused = arg[1].toBool();
         if (pausing_item->isVisible() != paused) {
             if (paused) {
-                QBrush pausing_brush(QColor(std::random_device()() % 256, std::random_device()() % 256, std::random_device()() % 256));
+                QBrush pausing_brush(QColor::fromRgb(QRandomGenerator::global()->generate()));
                 pausing_item->setBrush(pausing_brush);
                 bringToFront(pausing_item);
                 bringToFront(pausing_text);

@@ -1763,11 +1763,11 @@ public:
         if (!room->askForUseCard(u.from, "@@chunteng-card2!", "@chunteng2", -1, Card::MethodNone, true, "_chunteng")) {
             QList<ServerPlayer *> p = room->getAllPlayers();
             p.removeAll(u.from);
-            ServerPlayer *target = p[std::random_device()() % p.length()];
+            ServerPlayer *target = p[QRandomGenerator::global()->generate() % p.length()];
 
             Card *c = new Chunteng2Card;
             c->setSkillName("_chunteng");
-            c->addSubcard(u.from->getPile("spring")[std::random_device()() % u.from->getPile("spring").length()]);
+            c->addSubcard(u.from->getPile("spring")[QRandomGenerator::global()->generate() % u.from->getPile("spring").length()]);
 
             CardUseStruct newUse(c, u.from, target);
             room->useCard(newUse);

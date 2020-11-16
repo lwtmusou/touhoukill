@@ -100,7 +100,7 @@ void Skill::playAudioEffect(int index) const
 {
     if (!sources.isEmpty()) {
         if (index == -1)
-            index = std::random_device()() % sources.length();
+            index = QRandomGenerator::global()->generate() % sources.length();
         else
             index--;
 

@@ -707,7 +707,7 @@ void Settings::init()
     EffectVolume = value("EffectVolume", 1.0f).toFloat();
 
     int length = 8;
-    int index = std::random_device()() % length + 1;
+    int index = QRandomGenerator::global()->generate() % length + 1;
     QString bgFilename = QString("%1%2%3").arg("backdrop/hall/gensoukyou_").arg(index).arg(".jpg");
 
     BackgroundImage = bgFilename; // value("BackgroundImage", bgFilename).toString();

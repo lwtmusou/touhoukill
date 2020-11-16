@@ -219,7 +219,7 @@ bool TrustAI::useCard(const Card *card)
 
 Card::Suit TrustAI::askForSuit(const QString &)
 {
-    return Card::AllSuits[std::random_device()() % 4];
+    return Card::AllSuits[QRandomGenerator::global()->generate() % 4];
 }
 
 QString TrustAI::askForKingdom()
@@ -231,11 +231,11 @@ QString TrustAI::askForKingdom()
     kingdoms.removeOne("touhougod");
     QString selfKingdom = self->getGeneral()->getKingdom();
     if (!lord)
-        return kingdoms.at(std::random_device()() % kingdoms.length());
+        return kingdoms.at(QRandomGenerator::global()->generate() % kingdoms.length());
 
     switch (self->getRoleEnum()) {
     case Player::Lord:
-        role = kingdoms.at(std::random_device()() % kingdoms.length());
+        role = kingdoms.at(QRandomGenerator::global()->generate() % kingdoms.length());
         break;
     case Player::Renegade: {
         if (lord->getGeneral()->isLord() || self->hasSkill("hongfo"))
@@ -243,17 +243,17 @@ QString TrustAI::askForKingdom()
         else if (lord->getGeneral2() && lord->getGeneral2()->isLord())
             role = lord->getGeneral2()->getKingdom();
         else
-            role = kingdoms.at(std::random_device()() % kingdoms.length());
+            role = kingdoms.at(QRandomGenerator::global()->generate() % kingdoms.length());
         break;
     }
     case Player::Rebel: {
         if (self->hasSkill("hongfo")) {
             kingdoms.removeOne(lord->getKingdom());
-            role = kingdoms.at(std::random_device()() % kingdoms.length());
+            role = kingdoms.at(QRandomGenerator::global()->generate() % kingdoms.length());
         } else if (lord->getGeneral()->isLord())
             role = lord->getKingdom();
         else
-            role = kingdoms.at(std::random_device()() % kingdoms.length());
+            role = kingdoms.at(QRandomGenerator::global()->generate() % kingdoms.length());
         break;
     }
     case Player::Loyalist: {
@@ -262,7 +262,7 @@ QString TrustAI::askForKingdom()
         else if (lord->getGeneral2() && lord->getGeneral2()->isLord())
             role = lord->getGeneral2()->getKingdom();
         else {
-            role = kingdoms.at(std::random_device()() % kingdoms.length());
+            role = kingdoms.at(QRandomGenerator::global()->generate() % kingdoms.length());
         }
         break;
     }
@@ -285,7 +285,7 @@ bool TrustAI::askForSkillInvoke(const QString &skill_name, const QVariant &)
 QString TrustAI::askForChoice(const QString &, const QString &choice, const QVariant &)
 {
     QStringList choices = choice.split("+");
-    return choices.at(std::random_device()() % choices.length());
+    return choices.at(QRandomGenerator::global()->generate() % choices.length());
 }
 
 QList<int> TrustAI::askForDiscard(const QString &, int discard_num, int, bool optional, bool include_equip)
@@ -331,7 +331,7 @@ int TrustAI::askForAG(const QList<int> &card_ids, bool refusable, const QString 
     if (refusable)
         return -1;
 
-    int r = std::random_device()() % card_ids.length();
+    int r = QRandomGenerator::global()->generate() % card_ids.length();
     return card_ids.at(r);
 }
 
@@ -358,7 +358,7 @@ ServerPlayer *TrustAI::askForPlayerChosen(const QList<ServerPlayer *> &targets, 
     if (optional)
         return NULL;
 
-    int r = std::random_device()() % targets.length();
+    int r = QRandomGenerator::global()->generate() % targets.length();
     return targets.at(r);
 }
 

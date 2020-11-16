@@ -17,8 +17,7 @@
 #include <QTextDocument>
 #include <QTimer>
 #include <QVBoxLayout>
-
-#include <random>
+#include <QRandomGenerator>
 
 using namespace std;
 using namespace QSanProtocol;
@@ -2377,7 +2376,7 @@ void Client::onPlayerChooseOrder()
     if (button) {
         order = button->objectName();
     } else {
-        if (std::random_device()() % 2 == 0)
+        if (QRandomGenerator::global()->generate() % 2 == 0)
             order = "warm";
         else
             order = "cool";

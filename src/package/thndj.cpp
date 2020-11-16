@@ -1685,7 +1685,7 @@ void YaoliCard::onEffect(const CardEffectStruct &effect) const
                         cards << c;
                 }
 
-                discard = cards.at(std::random_device()() % cards.length());
+                discard = cards.at(QRandomGenerator::global()->generate() % cards.length());
                 room->throwCard(discard, effect.to);
             }
 

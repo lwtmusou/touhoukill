@@ -79,7 +79,7 @@ int ServerPlayer::getRandomHandCardId() const
 
 const Card *ServerPlayer::getRandomHandCard() const
 {
-    int index = std::random_device()() % handcards.length();
+    int index = QRandomGenerator::global()->generate() % handcards.length();
     return handcards.at(index);
 }
 
