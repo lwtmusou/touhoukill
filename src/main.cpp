@@ -25,7 +25,9 @@ int main(int argc, char *argv[])
     }
 
 #ifndef Q_OS_ANDROID
+#ifdef QT_NO_DEBUG
     QDir::setCurrent(qApp->applicationDirPath());
+#endif
 #else
     QDir::setCurrent("/sdcard/Android/data/rocks.touhousatsu.app");
 #endif
