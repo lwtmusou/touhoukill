@@ -3859,8 +3859,13 @@ function SmartAI:willUsePeachTo(dying)
 
     --送葬带走
 	if self.player:hasSkill("songzang") and not self:isFriend(dying) then
-		card_str = self:getCardId("Peach")
-		if card_str then return card_str end
+		local songzang_str = self:getCardId("Peach")
+		if songzang_str then
+			local songzangcard = sgs.Card_Parse(songzang_str)
+			if (songzangcard:getSkillName() == "songzang") then
+				return songzang_str 
+			end
+		end
 	end
 	--宴会用酒
 	if self.player:objectName() ~= dying:objectName() and self:isFriend(dying)
