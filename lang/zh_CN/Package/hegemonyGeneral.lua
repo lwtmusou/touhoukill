@@ -261,7 +261,7 @@ return
     ["diaoping_hegemony:slashtarget"]= "<font color=\"#FF8000\"><b>%src </b></font> 使用了【%dest】，你可以发动“钓瓶”。",
 	
 	["suika_hegemony"] = "伊吹萃香",
-	[":doujiu_hegemony"] = "<font color=\"purple\"><b>主将技，</b></font>此武将牌上单独的阴阳鱼个数-1；当其他角色于其出牌阶段内使用【桃】或【酒】时，你可以摸一张牌并与其拼点，当你赢后，此牌无效，你回复1点体力，然后结束当前阶段。",
+	[":doujiu_hegemony"] = "<font color=\"purple\"><b>主将技，</b></font>此武将牌上单独的阴阳鱼个数-1；当其他角色使用【桃】或【酒】时，你可以摸一张牌并与其拼点，当你赢后，此牌无效，你回复1点体力。<font color=\"green\"><b>每阶段限一次。</b></font>",
 	["cuiji_hegemony"] = "萃集",
 	[":cuiji_hegemony"] = "<font color=\"purple\"><b>副将技，</b></font>摸牌阶段，你可以少摸一张牌，声明：基本牌，或非基本牌，或一种花色，然后检索一张符合条件的牌并获得之。",
 	["nonbasic"] = "非基本牌",

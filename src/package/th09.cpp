@@ -61,20 +61,31 @@ public:
     Doujiu()
         : TriggerSkill("doujiu")
     {
-        events << CardUsed;
+        events << CardUsed << EventPhaseChanging;
         relate_to_place = "head";
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
+        if (triggerEvent == EventPhaseChanging) {
+            foreach(ServerPlayer *p, room->getAllPlayers())
+                p->setFlags("-doujiu_used");
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseChanging)
+            return QList<SkillInvokeDetail>();
+        
         CardUseStruct use = data.value<CardUseStruct>();
         if (!use.card->isKindOf("Peach") && !use.card->isKindOf("Analeptic"))
             return QList<SkillInvokeDetail>();
-        if (use.from->getPhase() != Player::Play || use.from->isKongcheng() || !use.from->isAlive())
+        if (use.from->isKongcheng() || !use.from->isAlive())
             return QList<SkillInvokeDetail>();
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *suika, room->findPlayersBySkillName(objectName())) {
-            if (use.from != suika)
+            if (use.from != suika && !suika->hasFlag("doujiu_used"))
                 d << SkillInvokeDetail(this, suika, suika, NULL, false, use.from);
         }
         return d;
@@ -88,6 +99,7 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
+        invoke->invoker->setFlags("doujiu_used");
         invoke->invoker->drawCards(1);
         CardUseStruct use = data.value<CardUseStruct>();
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
@@ -99,7 +111,7 @@ public:
             }
             use.nullified_list << "_ALL_TARGETS";
             data = QVariant::fromValue(use);
-            room->setPlayerFlag(invoke->targets.first(), "Global_PlayPhaseTerminated");
+            //room->setPlayerFlag(invoke->targets.first(), "Global_PlayPhaseTerminated");
         }
         return false;
     }

@@ -8,9 +8,9 @@ end
 
 function SmartAI:cautionDoujiu(player,card)
 	player = player or self.player
-	if player:getPhase() ~=sgs.Player_Play then
-		return false
-	end
+	--if player:getPhase() ~=sgs.Player_Play then
+	--	return false
+	--end
 	local  zhan006 = self.room:findPlayerBySkillName("doujiu")
 	if not zhan006
 	or not self:isEnemy(zhan006)
