@@ -780,97 +780,16 @@ sgs.ai_slash_prohibit.anyu = function(self, from, to, card)
 end
 
 
---function SmartAI:getEnemyNumBySeat(from, to, target, include_neutral)
-qiyue_find_righter = function(room,target)
-	local righter
-	for _,p in sgs.qlist(room:getOtherPlayers(target)) do
-		if target:isAdjacentTo(p) then
-			if p:getSeat()-target:getSeat()==1 then
-				righter=p
-			end
-			if target:getSeat()-p:getSeat()==room:getOtherPlayers(target):length() then
-				righter=p
-			end
-		end
-	end
-	return righter
-end
-sgs.ai_skill_invoke.qiyue = function(self,data)
-	local current=self.room:getCurrent()
-	if self:isEnemy(current) then
-		if self.player:getMaxHp()== 1 then
-			if current:hasSkill("weiya") then
-				return false
-			end
-			local recover =  getCardsNum("Analeptic", self.player, self.player)
-			for _,p in ipairs(self.friends) do
-				recover = recover + getCardsNum("Peach", p, self.player)
-			end
-			return recover > 0
-		end
-		if self.player:getMaxHp()<3 or self.player:getHp()<3 then return true end
-		if #self.enemies<3 then return false end
-		enemyseat= current:getSeat()
-		selfseat=self.player:getSeat()
-		count=1
-		a =qiyue_find_righter (self.room,current)
-		while a:objectName()~=self.player:objectName() do
-			if self:isEnemy(a) then
-				count=count+1
-			end
-			a =qiyue_find_righter (self.room,a)
-		end
-		if count>=3 then
-			return true
-		end
-	end
-	return false
-end
-sgs.ai_skill_choice.qiyue=function(self)
-	if self.player:getMaxHp()>self.player:getHp() then
-		return "maxhp"
-	else
-		return "hp"
-	end
-end
-sgs.ai_choicemade_filter.skillInvoke.qiyue = function(self, player, args)
-	local to=self.room:getCurrent()
-	if args[#args] == "yes" then
-		if self:willSkipPlayPhase(to) and self:getOverflow(to,to:getMaxCards())>1 then
-			sgs.updateIntention(player, to, -20)
-		else
-			sgs.updateIntention(player, to, 60)
-		end
-	end
-end
 
 sgs.ai_skill_invoke.moqi = function(self,data)
-	local current = self.room:getCurrent()
-	if self:isEnemy(current) then
-		if not self:isWeak(self.player) and self:isWeak(current) then return true end
-		local recover =  getCardsNum("Analeptic", self.player, self.player)
-		for _,p in ipairs(self.friends) do
-			recover = recover + getCardsNum("Peach", p, self.player)
-		end
-		return recover >= 2
-	else
-		if current:getHandcardNum() >= 5 and self:isWeak(self.player) then
-			return true
-		end
-	end
-	return false
+	local use = data:toCardUse()
+	return self:isFriend(use.from)
 end
-
-sgs.ai_skill_playerchosen.moqi = function(self, targets)
-	for _,p in sgs.qlist(targets) do
-		if (self:isFriend(p)) then
-			return nil
-		end
-		if (self:isEnemy(p)) then
-			return p
-		end
+sgs.ai_choicemade_filter.skillInvoke.moqi = function(self, player, args ,data)
+	local use = data:toCardUse()
+	if use.from and args[#args] == "yes" then
+		sgs.updateIntention(player, use.from, 30)
 	end
-	return targets:first()
 end
 
 sgs.ai_skill_invoke.moqi_hegemony = function(self,data)

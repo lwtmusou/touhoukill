@@ -1309,80 +1309,7 @@ public:
     }
 };
 
-class Qiyue : public TriggerSkill
-{
-public:
-    Qiyue()
-        : TriggerSkill("qiyue")
-    {
-        events << EventPhaseStart;
-    }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
-    {
-        ServerPlayer *current = data.value<ServerPlayer *>();
-        if (current->getPhase() != Player::Start)
-            return QList<SkillInvokeDetail>();
-
-        QList<SkillInvokeDetail> d;
-        foreach (ServerPlayer *p, room->getOtherPlayers(current)) {
-            if (p->hasSkill(this))
-                d << SkillInvokeDetail(this, p, p, NULL, false, current);
-        }
-        return d;
-    }
-
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        QString prompt = "target:" + invoke->preferredTarget->objectName();
-        if (invoke->invoker->askForSkillInvoke(this, prompt)) {
-            invoke->invoker->drawCards(1, objectName());
-            QString choice = room->askForChoice(invoke->invoker, objectName(), "hp+maxhp", data);
-            (choice == "hp") ? room->loseHp(invoke->invoker) : room->loseMaxHp(invoke->invoker);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        invoke->targets.first()->skip(Player::Judge);
-        invoke->targets.first()->skip(Player::Draw);
-
-        return false;
-    }
-};
-
-class Moxue : public TriggerSkill
-{
-public:
-    Moxue()
-        : TriggerSkill("moxue")
-    {
-        events << MaxHpChanged;
-        frequency = Compulsory;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
-    {
-        ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player->hasSkill(this) && player->getMaxHp() == 1)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, NULL, true);
-
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        room->doLightbox("$moxueAnimate", 4000);
-        room->touhouLogmessage("#TriggerSkill", invoke->invoker, "moxue");
-        room->notifySkillInvoked(invoke->invoker, objectName());
-        invoke->invoker->drawCards(qMax(invoke->invoker->getHandcardNum(), 1));
-        return false;
-    }
-};
 
 class Moqi : public TriggerSkill
 {
@@ -1390,91 +1317,57 @@ public:
     Moqi()
         : TriggerSkill("moqi")
     {
-        events << DrawNCards << EventPhaseEnd << EventPhaseChanging;
+        events << CardUsed << EventPhaseChanging;
     }
 
-    void record(TriggerEvent e, Room *room, QVariant &data) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
-        if (e == EventPhaseChanging) {
+        if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.from == Player::Draw) {
-                foreach (ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->hasFlag("moqi_effect"))
-                        room->setPlayerFlag(p, "-moqi_effect");
-                    if (p->hasFlag("moqi_source"))
-                        room->setPlayerFlag(p, "-moqi_source");
-                }
+            if (change.from == Player::Play && change.player && change.player->isAlive()) {
+                change.player->setFlags("-moqi_first");
+                change.player->setFlags("-moqi_second");
+            }
+                
+
+        }
+        if (triggerEvent == CardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->isNDTrick() && use.from && use.from->isAlive() && use.from->getPhase() == Player::Play) {
+                if (!use.from->hasFlag("moqi_first"))
+                    use.from->setFlags("moqi_first");
+                else
+                    use.from->setFlags("moqi_second");
             }
         }
     }
+
+    //static bool can_add(CardUseStruct use)
+    //{
+    //    return use.card->isNDTrick() && !(use.card->isKindOf("IronChain") || use.card->isKindOf("LureTiger") || use.card->isKindOf("Nullification"));
+    //}
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
     {
-        if (triggerEvent == DrawNCards) {
-            QList<SkillInvokeDetail> d;
-            DrawNCardsStruct qnum = data.value<DrawNCardsStruct>();
-            //qnum.player->hasSkill(this)
-            if (qnum.n > 0) {
-                foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                    if (p != qnum.player)
-                        d << SkillInvokeDetail(this, p, p, NULL, false, qnum.player);
-                }
-            }
-            return d;
+        if (triggerEvent == EventPhaseChanging)
+            return QList<SkillInvokeDetail>();
+
+        CardUseStruct use = data.value<CardUseStruct>();
+        QList<SkillInvokeDetail> d;
+        if (use.card->isNDTrick() && use.from && use.from->isAlive() && use.from->getPhase() == Player::Play && !use.from->hasFlag("moqi_second")) {
+            QList<ServerPlayer *> owners = room->findPlayersBySkillName(objectName());
+            foreach(ServerPlayer *p, owners)
+                d << SkillInvokeDetail(this, p, p);             
         }
-        if (triggerEvent == EventPhaseEnd) {
-            ServerPlayer *current = data.value<ServerPlayer *>();
-            if (!current || current->isDead() || current->getPhase() != Player::Draw)
-                return QList<SkillInvokeDetail>();
-            if (current->hasFlag("moqi_effect")) {
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current, NULL, true);
-            }
-        }
-        return QList<SkillInvokeDetail>();
+        return d;
     }
 
-    bool cost(TriggerEvent triggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        if (triggerEvent == DrawNCards)
-            return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget));
-        return true;
-    }
-
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        if (triggerEvent == DrawNCards) {
-            DrawNCardsStruct qnum = data.value<DrawNCardsStruct>();
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), qnum.player->objectName());
-            qnum.n = qnum.n - 1;
-            data = QVariant::fromValue(qnum);
-            room->setPlayerFlag(qnum.player, "moqi_effect");
-            room->setPlayerFlag(invoke->invoker, "moqi_source");
-            invoke->invoker->drawCards(1);
-        }
-        if (triggerEvent == EventPhaseEnd) {
-            QList<ServerPlayer *> targets;
-            foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
-                if (p->hasFlag("moqi_source")) {
-                    targets << p;
-                }
-            }
-
-            bool useCard = targets.isEmpty();
-            if (!targets.isEmpty()) {
-                ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@moqi", true);
-                if (target == NULL)
-                    useCard = true;
-                else
-                    room->loseHp(target);
-            }
-
-            if (useCard) {
-                MagicAnaleptic *ana = new MagicAnaleptic(Card::NoSuit, 0);
-                ana->setSkillName("_moqi");
-                ana->deleteLater();
-                room->useCard(CardUseStruct(ana, invoke->invoker, invoke->invoker));
-            }
-        }
+        //add log?
+        CardUseStruct use = data.value<CardUseStruct>();
+        use.card->setFlags("mopao");
+        room->setPlayerFlag(invoke->invoker, objectName());
         return false;
     }
 };
