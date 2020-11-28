@@ -788,7 +788,7 @@ end
 sgs.ai_choicemade_filter.skillInvoke.moqi = function(self, player, args ,data)
 	local use = data:toCardUse()
 	if use.from and args[#args] == "yes" then
-		sgs.updateIntention(player, use.from, 30)
+		sgs.updateIntention(player, use.from, -30)
 	end
 end
 
