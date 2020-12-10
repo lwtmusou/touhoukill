@@ -368,7 +368,7 @@ return
 	[":luanying_hegemony"] = "<font color=\"purple\"><b>主将技，</b></font>此武将牌上单独的阴阳鱼个数-1；当其他角色使用基本牌时，你可以将一张与此牌颜色相同的“境界”交给其，令此牌无效。<font color=\"green\"><b>每阶段限一次。</b></font>",
     ["mengxian_hegemony"] = "梦现",
 	--[":mengxian_hegemony"] = "<font color=\"purple\"><b>副将技，</b></font>一名角色的弃牌阶段开始时，你可以弃置X张境界，令其的手牌上限于本回合+X。",
-	[":mengxian_hegemony"] = "<font color=\"purple\"><b>副将技，</b></font>与你阵营相同的角色使用【杀】对目标角色造成伤害时，你可弃置一张境界，防止此伤害，依次弃置目标角色两张牌。",
+	[":mengxian_hegemony"] = "<font color=\"purple\"><b>副将技，</b></font>当与你阵营相同的角色使用【杀】对目标角色造成伤害时，你可以将一张“境界”置入弃牌堆，防止此伤害，依次弃置该角色两张牌。",
 	["@mengxian_hegemony"] = "你可以发动“梦现”： 你可以防止 %src 对 %dest  的伤害， 并弃置%dest两张牌",
 	["~mengxian_hegemony"] = "选择一张境界 -> 确定",
 	
