@@ -122,6 +122,10 @@ return
 	["!patchouli_hegemony"] = "帕秋莉·诺蕾姬",
 	["bolan_hegemony"] = "博览",
 	[":bolan_hegemony"] = "当一名角色使用普通锦囊牌时或成为普通锦囊的目标后，若其与你阵营相同，你可以亮出牌堆顶的两张牌，然后获得其中的锦囊牌和与此牌花色相同的牌。<font color=\"green\"><b>每阶段限一次。</b></font>",
+	["hezhou_hegemony"] = "合咒",
+	[":hezhou_hegemony"] = "你于回合外可以将两张类别不同的牌当【桃】使用，当以此法使用的牌因结算完毕而置入弃牌堆后，你可以令一名其他角色获得这两张牌中的锦囊牌。",
+	["@hezhou_hegemony"] = "你可以发动“合咒” ，令一名其他角色获得 <font color=\"#FF8000\"><b>%src </b></font> ",
+	
 	
 	["meirin_hegemony"] = "红美铃",
 	["beishui_hegemony"] = "背水",

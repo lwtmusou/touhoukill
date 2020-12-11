@@ -1560,6 +1560,133 @@ public:
     }
 };
 
+
+
+
+class HezhouHegemonyVS : public ViewAsSkill
+{
+public:
+    HezhouHegemonyVS()
+        : ViewAsSkill("hezhou_hegemony")
+    {
+        response_or_use = true;
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    {
+        if (selected.length() == 0)
+            return true;
+        else if (selected.length() == 1) {
+            if (to_select->getTypeId() == selected.first()->getTypeId())
+                return false;
+            else {
+                QList<int> ids = Self->getPile("wooden_ox");
+                if (to_select->isKindOf("WoodenOx") && ids.contains(selected.first()->getId()))
+                    return false;
+                else if (selected.first()->isKindOf("WoodenOx") && ids.contains(to_select->getId()))
+                    return false;
+                else
+                    return true;
+            }
+        }
+        else
+            return false;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *) const
+    {
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    {
+        return matchAvaliablePattern("peach", pattern) && !player->isCurrent() && player->getMark("Global_PreventPeach") == 0
+            && (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const
+    {
+        if (cards.length() != 2)
+            return NULL;
+        Peach *peach = new Peach(Card::SuitToBeDecided, -1);
+        peach->addSubcards(cards);
+        peach->setSkillName(objectName());
+        return peach;
+    }
+};
+
+class HezhouHegemony : public TriggerSkill
+{
+public:
+    HezhouHegemony()
+        : TriggerSkill("hezhou_hegemony")
+    {
+        events << CardsMoveOneTime;
+        view_as_skill = new HezhouHegemonyVS;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
+        if (player != NULL && player->isAlive() && player->hasSkill(this) && move.to_place == Player::DiscardPile
+            && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE) {
+            const Card *card = move.reason.m_extraData.value<const Card *>();
+            if (card && card->getSkillName() == objectName()) {
+                foreach(int id, move.card_ids) {
+                    if (Sanguosha->getCard(id)->isKindOf("TrickCard") && room->getCardPlace(id) == Player::DiscardPile)
+                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+                }
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        ServerPlayer *player = invoke->invoker;
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        QString name = "";
+        foreach(int id, move.card_ids) {
+            if (Sanguosha->getCard(id)->isKindOf("TrickCard"))
+                name = Sanguosha->getCard(id)->objectName();
+        }
+        ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "@hezhou_hegemony:" + name, true, true);
+        if (target != NULL)
+            invoke->targets << target;
+        return target != NULL;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        ServerPlayer *target = invoke->targets.first();
+
+        QList<int> ids;
+        foreach(int id, move.card_ids) {
+            if (Sanguosha->getCard(id)->isKindOf("TrickCard") && room->getCardPlace(id) == Player::DiscardPile)
+                ids << id;
+        }
+
+        move.removeCardIds(ids);
+        data = QVariant::fromValue(move);
+
+        CardsMoveStruct mo;
+        mo.card_ids = ids;
+        mo.to = target;
+        mo.to_place = Player::PlaceHand;
+        room->moveCardsAtomic(mo, true);
+
+        return false;
+    }
+};
+
+
+
+
+
+
+
 class MoqiHgemony : public TriggerSkill
 {
 public:
@@ -4280,7 +4407,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
 
     General *patchouli_hegemony = new General(this, "patchouli_hegemony", "shu", 3);
     patchouli_hegemony->addSkill(new BolanHgemony);
-    patchouli_hegemony->addSkill("hezhou");
+    patchouli_hegemony->addSkill(new HezhouHegemony);
     patchouli_hegemony->addCompanion("koakuma_hegemony");
 
     General *meirin_hegemony = new General(this, "meirin_hegemony", "shu", 4);

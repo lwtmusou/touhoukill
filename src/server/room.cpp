@@ -6031,6 +6031,8 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
         log.type = "#GuanxingResult";
         if (skillName == "fengshui")
             log.type = "#fengshuiResult";
+        else if (skillName == "bolan")
+            log.type = "#bolanResult";
         log.from = zhuge;
         log.arg = QString::number(top_cards.length());
         log.arg2 = QString::number(bottom_cards.length());
