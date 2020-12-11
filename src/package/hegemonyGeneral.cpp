@@ -642,6 +642,129 @@ public:
     }
 };
 
+
+class MofaHegemony : public TriggerSkill
+{
+public:
+    MofaHegemony()
+        : TriggerSkill("mofa_hegemony")
+    {
+        events << DamageCaused << DamageInflicted;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent event, const Room *room, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.from == NULL || damage.to == NULL || damage.from->isDead() || damage.from == damage.to)
+            return QList<SkillInvokeDetail>();
+
+        if (event == DamageCaused) {
+            if (damage.from->hasSkill(this) 
+                && (!damage.to->hasShownGeneral() || !damage.to->hasShownGeneral2())) {
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
+            }
+        }
+        else if (event == DamageInflicted) {
+            if (damage.to->hasSkill(this) && damage.to->isAlive()
+                && (!damage.from->hasShownGeneral() || !damage.from->hasShownGeneral2())) {
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
+            }
+        }
+
+        return QList<SkillInvokeDetail>();
+    }
+
+
+    bool effect(TriggerEvent e , Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        DamageStruct damage = data.value<DamageStruct>();
+        if (e == DamageCaused) {
+            room->touhouLogmessage("#TouhouBuff", damage.from, objectName());
+            QList<ServerPlayer *> logto;
+            logto << damage.to;
+            room->touhouLogmessage("#mofa_damage", damage.from, QString::number(damage.damage + 1), logto, QString::number(damage.damage));
+            damage.damage = damage.damage + 1;
+        }
+        else if (e == DamageInflicted) {
+            room->touhouLogmessage("#TouhouBuff", damage.from, objectName());
+            QList<ServerPlayer *> logto;
+            logto << damage.to;
+            room->touhouLogmessage("#mofa_damage1", damage.from, QString::number(damage.damage - 1), logto, QString::number(damage.damage));
+            damage.damage = damage.damage - 1;
+
+        }      
+        data = QVariant::fromValue(damage);
+        if (damage.damage < 1)
+            return true;
+        return false;
+    }
+};
+
+class JiezouHegemonyVS : public OneCardViewAsSkill
+{
+public:
+    JiezouHegemonyVS()
+        : OneCardViewAsSkill("jiezou_hegemony")
+    {
+        filter_pattern = ".|spade";
+        response_or_use = true;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const
+    {
+        return !player->hasFlag("jiezou_hegemony");
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const
+    {
+        Snatch *card = new Snatch(originalCard->getSuit(), originalCard->getNumber());
+        card->addSubcard(originalCard);
+        card->setSkillName("jiezou_hegemony");
+        return card;
+    }
+};
+
+
+class JiezouHegemony : public TriggerSkill
+{
+public:
+    JiezouHegemony()
+        : TriggerSkill("jiezou_hegemony")
+    {
+        events << PreCardUsed;
+        view_as_skill = new JiezouHegemonyVS;
+    }
+
+    void record(TriggerEvent, Room *room, QVariant &data) const
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->getSkillName() == "jiezou_hegemony") {
+            room->setPlayerFlag(use.from, "jiezou_hegemony");
+        }
+    }
+};
+
+class JiezouTargetMod : public TargetModSkill
+{
+public:
+    JiezouTargetMod()
+        : TargetModSkill("#jiezoumod")
+    {
+        pattern = "Snatch";
+    }
+
+    virtual int getDistanceLimit(const Player *, const Card *card) const
+    {
+        if (card->getSkillName() == "jiezou_hegemony")
+            return 1000;
+        else
+            return 0;
+    }
+
+};
+
+
 //********  SPRING   **********
 
 class LizhiHegemony : public TriggerSkill
@@ -4026,7 +4149,10 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     reimu_hegemony->addCompanion("aya_hegemony");
 
     General *marisa_hegemony = new General(this, "marisa_hegemony", "zhu", 4);
-    marisa_hegemony->addSkill("mofa");
+    marisa_hegemony->addSkill(new MofaHegemony);
+    marisa_hegemony->addSkill(new JiezouHegemony);
+    marisa_hegemony->addSkill(new JiezouTargetMod);
+    related_skills.insertMulti("mofa_hegemony", "#jiezoumod");
     marisa_hegemony->addCompanion("patchouli_hegemony");
     marisa_hegemony->addCompanion("alice_hegemony");
     marisa_hegemony->addCompanion("nitori_hegemony");
