@@ -16,18 +16,18 @@ jobs:
     matrix:
       os: [ubuntu-latest, macos-latest, windows-latest]
 
-  steps:
-    - uses: actions/checkout@v1
-    
-    - name: Install Qt
-      uses: jurplel/install-qt-action@v2
+    steps:
+      - uses: actions/checkout@v1
+      
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
 
-    - uses: lukka/get-cmake@latest
+      - uses: lukka/get-cmake@latest
 
-    - name: Run CMake+Ninja without triplet
-      uses: lukka/run-cmake@v3
-      with:
-        cmakeGenerator: 'Ninja'  
-        cmakeListsOrSettingsJson: 'CMakeListsTxtBasic'
-        cmakeListsTxtPath: '${{ github.workspace }}/build/CMakeLists.txt'
-        buildDirectory: '${{ runner.workspace }}/build'
+      - name: Run CMake+Ninja without triplet
+        uses: lukka/run-cmake@v3
+        with:
+          cmakeGenerator: 'Ninja'  
+          cmakeListsOrSettingsJson: 'CMakeListsTxtBasic'
+          cmakeListsTxtPath: '${{ github.workspace }}/build/CMakeLists.txt'
+          buildDirectory: '${{ runner.workspace }}/build'
