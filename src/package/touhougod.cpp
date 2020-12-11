@@ -1494,7 +1494,7 @@ public:
     }
 };
 
-class Yibian : public TriggerSkill
+/*class Yibian : public TriggerSkill
 {
 public:
     Yibian()
@@ -1579,9 +1579,265 @@ public:
 
         return false;
     }
+};*/
+
+class Yibian : public TriggerSkill
+{
+public:
+    Yibian()
+        : TriggerSkill("yibian")
+    {
+        events << EventPhaseStart << GameStart;
+        frequency = Eternal;
+        //global = true;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == GameStart) {
+            ServerPlayer *reimu = data.value<ServerPlayer *>();
+            if (reimu && reimu->hasSkill(this)) {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (!p->hasShownRole()) {
+                        room->setPlayerProperty(p, "general_showed", false);
+                        room->setPlayerProperty(p, "general2_showed", false);
+                    }
+                }
+            }
+        }
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        QString role = invoke->invoker->getRole();
+        room->touhouLogmessage("#YibianShow", invoke->invoker, role, room->getAllPlayers());
+        room->broadcastProperty(invoke->invoker, "role");
+        room->setPlayerProperty(invoke->invoker, "role_shown", true); //important! to notify client
+
+        room->setPlayerProperty(invoke->invoker, "general_showed", true);
+        room->setPlayerProperty(invoke->invoker, "general2_showed", true);
+        return false;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        return invoke->invoker->askForSkillInvoke(this, data, "showrole");
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *reimu = room->findPlayerBySkillName(objectName());
+            if (!reimu)
+                return QList<SkillInvokeDetail>();
+
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player != NULL && player->getPhase() == Player::Start && !player->hasShownRole() && player->getMark("@disableShowRole") == 0) {
+
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+            }
+        }
+
+        
+        return QList<SkillInvokeDetail>();
+    }
 };
 
-FengyinCard::FengyinCard()
+class Tuizhi : public TriggerSkill
+{
+public:
+    Tuizhi()
+        : TriggerSkill("tuizhi")
+    {
+        events << CardUsed << CardResponded << TargetConfirmed << EventPhaseChanging;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->getMark("@disableShowRole") > 0)
+                        room->setPlayerMark(p, "@disableShowRole", 0);
+                }
+            }
+        }
+    }
+
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent event, const Room *room, const QVariant &data) const
+    {
+        if (event == EventPhaseChanging)
+            return QList<SkillInvokeDetail>();
+
+        if (event == CardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card && use.card->getSuit() == Card::Heart && use.card->getTypeId() != Card::TypeSkill) {
+                if (use.from && use.from->hasSkill(this)) {
+                    foreach(ServerPlayer *p, room->getOtherPlayers(use.from)) {
+                        if (p->hasShownRole())
+                            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
+                    }
+                }
+            }
+        }
+        else if (event == CardResponded) {
+            CardResponseStruct resp = data.value<CardResponseStruct>();
+            if (resp.m_isUse && resp.m_card && resp.m_card->getSuit() == Card::Heart) {
+                if (resp.m_from && resp.m_from->hasSkill(this)) {
+                    foreach(ServerPlayer *p, room->getOtherPlayers(resp.m_from)) {
+                        if (p->hasShownRole())
+                            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, resp.m_from, resp.m_from);
+                    }
+                }
+            }
+        }
+        else if (event == TargetConfirmed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.from && use.card->getSuit() == Card::Heart && use.card->getTypeId() != Card::TypeSkill) {
+                QList<SkillInvokeDetail> d;
+                foreach(ServerPlayer *p, use.to) {
+                    if (p->hasSkill(this) && p != use.from) {
+                        foreach(ServerPlayer *t, room->getOtherPlayers(p)) {
+                            if (t->hasShownRole()) {
+                                d << SkillInvokeDetail(this, p, p);
+                                break;
+                            }
+                        }
+                    }
+                }
+                return d;
+            }
+        }
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        QList<ServerPlayer *> targets;
+        foreach(ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
+            if (p->hasShownRole())
+                targets << p;
+        }
+
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@tuizhi", true, true);
+        if (target)
+            invoke->targets << target;
+        return target != NULL;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        ServerPlayer *target = invoke->targets.first();
+        QString role = target->getRole();
+        room->broadcastProperty(target, "role");
+        room->setPlayerProperty(target, "role_shown", false); //important! to notify client
+
+        room->touhouLogmessage("#TuizhiHide", target, role, room->getAllPlayers());
+
+        room->setPlayerProperty(target, "general_showed", false);
+        room->setPlayerProperty(target, "general2_showed", false);
+
+        room->setPlayerMark(target, "@disableShowRole", 1);//important! to notify client
+        return false;
+    }
+};
+
+class Tongjie : public TriggerSkill
+{
+public:
+    Tongjie()
+        : TriggerSkill("tongjie")
+    {
+        events << RoleShownChanged << EventPhaseStart << EventPhaseChanging;
+        frequency = Eternal;
+    }
+
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    {
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->getMark("@disableShowRole") > 0)
+                        room->setPlayerMark(p, "@disableShowRole", 0);
+                }
+            }
+        }
+        else if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player && player->getPhase() == Player::RoundStart && player->hasSkill(this)){
+                foreach(ServerPlayer *p, room->getOtherPlayers(player))
+                    room->setPlayerMark(p, "@disableShowRole", 1);
+            }
+        }
+    }
+
+    
+    QList<SkillInvokeDetail> triggerable(TriggerEvent event, const Room *room, const QVariant &data) const
+    {
+        if (room->getTag("FirstRound").toBool())
+            return QList<SkillInvokeDetail>();
+        //int round = room->getTag("Global_RoundCount").toInt();
+        //if (round < 1)
+        //    return QList<SkillInvokeDetail>();
+
+        if (event == RoleShownChanged) {
+            ServerPlayer *target = data.value<ServerPlayer *>();
+            if (target && target->isAlive() && target->hasShownRole()) {
+                int loyal = 0;
+                int rebel = 0;
+                int renegade = 0;
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (!p->hasShownRole())
+                        continue;
+                    QString role = p->getRole();
+                    if (p->isLord() || role == "loyalist")
+                        loyal++;
+                    else if (role == "rebel")
+                        rebel++;
+                    else
+                        renegade = 1;
+                }
+
+                bool cantrigger = false;
+                QString target_role = target->getRole();
+                if (target->isLord() || target_role == "loyalist")
+                    cantrigger = (loyal >= rebel && loyal >= renegade);
+                else if (target_role == "rebel")
+                    cantrigger = (rebel >= loyal && rebel >= renegade);
+                else
+                    cantrigger = (renegade >= loyal && renegade >= rebel);
+
+                if (!cantrigger)
+                    return QList<SkillInvokeDetail>();
+                QList<SkillInvokeDetail> d;
+                foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                    if (p != target)
+                        d << SkillInvokeDetail(this, p, p, NULL, true);                        
+                }
+                return d;
+            }
+        }
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        invoke->invoker->drawCards(1);
+        return false;
+    }
+};
+
+
+
+
+/*FengyinCard::FengyinCard()
 {
     will_throw = true;
 }
@@ -1623,6 +1879,7 @@ public:
         return card;
     }
 };
+*/
 
 class Huanxiang : public TriggerSkill
 {
@@ -7086,8 +7343,10 @@ TouhouGodPackage::TouhouGodPackage()
 
     General *reimu_god = new General(this, "reimu_god", "touhougod", 4);
     reimu_god->addSkill(new Yibian);
-    reimu_god->addSkill(new Fengyin);
-    reimu_god->addSkill(new Huanxiang);
+    reimu_god->addSkill(new Tuizhi);
+    reimu_god->addSkill(new Tongjie);
+    //reimu_god->addSkill(new Fengyin);
+    //reimu_god->addSkill(new Huanxiang);
 
     General *shikieiki_god = new General(this, "shikieiki_god", "touhougod", 4);
     shikieiki_god->addSkill(new Quanjie);
@@ -7207,7 +7466,7 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<ShenqiangCard>();
     addMetaObject<HuimieCard>();
     addMetaObject<ShenshouCard>();
-    addMetaObject<FengyinCard>();
+    //addMetaObject<FengyinCard>();
     addMetaObject<HuaxiangCard>();
     addMetaObject<ChaowoCard>();
     addMetaObject<ShowShenbaoCard>();

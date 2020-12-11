@@ -2264,6 +2264,8 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
         thread->trigger(RemoveStateChanged, this, pv);
     }
     if (strcmp(property_name, "role_shown") == 0) {
+        QVariant pv = QVariant::fromValue(player);
+        thread->trigger(RoleShownChanged, this, pv);
         player->setMark("AI_RoleShown", value.toBool() ? 1 : 0);
         roleStatusCommand(player);
         if (value.toBool())
