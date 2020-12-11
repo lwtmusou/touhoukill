@@ -16,7 +16,7 @@ set(CMAKE_AUTOUIC ON)
 
 # add_definitions(-Wall)
 
-find_package(Qt5 COMPONENTS Widgets Network LinguistTools Multimedia REQUIRED) # Locate the position of Qt5.
+find_package(Qt5 COMPONENTS Widgets Network LinguistTools Multimedia QuickWidgets Quick REQUIRED) # Locate the position of Qt5.
 
 if (WIN32)
     find_package(Qt5 COMPONENTS WinExtras REQUIRED)
@@ -389,7 +389,7 @@ if (WIN32)
 endif()
 
 add_executable (QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} ${OGG_FILE})
-target_link_libraries (QSanguosha Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::Multimedia)
+target_link_libraries (QSanguosha Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::Multimedia Qt5::QuickWidgets Qt5::Quick)
 
 if (WIN32)
     target_link_libraries(QSanguosha Qt5::WinExtras)
