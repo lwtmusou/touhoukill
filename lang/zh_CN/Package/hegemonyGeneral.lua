@@ -28,10 +28,10 @@ return
 	[":tongjie_hegemony"] = "<font color=\"blue\"><b>锁定技，</b></font>当其他角色明置一张武将牌时，你摸一张牌；其他角色不能于你的回合内明置武将牌。",
 
 	["mofa_hegemony"] = "魔法",
-	[":mofa_hegemony"] = "<font color=\"blue\"><b>锁定技，</b></font>当你对其他角色造成伤害时/受到其他角色造成的伤害时，若其有暗置的人物牌，此伤害+1/-1。",
+	[":mofa_hegemony"] = "<font color=\"blue\"><b>锁定技，</b></font>当你对其他角色造成伤害时，若其有暗置的人物牌，此伤害值+1；当你受到其他角色造成的伤害时，若其有暗置的人物牌，此伤害值-1。",
 	["#mofa_damage1"]= "%from 对 %to 的伤害由 %arg2 点减少到 %arg 点。",
 	["jiezou_hegemony"] = "借走",
-	[":jiezou_hegemony"] = "<font color=\"green\"><b>出牌阶段限一次</b></font>，你可以将一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌当做无距离限制的【顺手牵羊】使用。",
+	[":jiezou_hegemony"] = "<font color=\"green\"><b>出牌阶段限一次</b></font>，你可以将一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌当无距离限制的【顺手牵羊】使用。",
 
     
     ["marisa_hegemony"] = "雾雨魔理沙",
