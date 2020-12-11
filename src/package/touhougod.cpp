@@ -7098,6 +7098,10 @@ public:
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
+        ServerPlayer *tenshi = room->findPlayerBySkillName(objectName());
+        if (tenshi == NULL)
+            return;
+
         if (triggerEvent == GameStart) {
             if (room->getTag("dimai_card").toString().length() == 0)
                 room->setTag("dimai_card", "lightning");
