@@ -311,7 +311,7 @@ return{
 	["illustrator:reimu_god_4"] = "こぞう",
 	["origin:reimu_god_4"] = "p号：40076871，个人ID：5626224",
 
-	["yibian"] = "异变",
+	--[[["yibian"] = "异变",
 	[":yibian"] = "一名角色的准备阶段开始时，若其身份牌：暗置，其可以明置其身份牌，然后令一名与其阵营不同的角色摸一张牌；明置，其可以将一张牌交给一名与其阵营相同的其他角色。",
 	["#YibianShow"] = "%from 发动了 <font color=\"red\"><b>异变</b></font>，明置了身份牌，为 %arg 。",
 	["@yibian"] = "选择一名身份牌明置且与你阵营不同的角色，令其摸一张牌。",
@@ -323,6 +323,20 @@ return{
 	["huanxiang"] = "幻乡",
 	[":huanxiang"] = "<font color=\"blue\"><b>锁定技，</b></font>结束阶段开始时，若各现存阵营之间的身份牌明置的角色数均不相同，你弃置一张牌。否则你摸一张牌。",
 	["huanxiang_discard"] = "【幻乡】的效果被触发，你需要弃置一张牌",
+	]]
+	
+	["tuizhi"] = "退治",
+	[":tuizhi"] = "当你使用<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌时或成为其他角色使用<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌的目标后，你可以暗置一名其他角色的身份牌，且本回合其不能明置身份牌。",
+	--["tuizhi_hegemony:head"] = "暗置主将",
+	--["tuizhi_hegemony:deputy"] = "暗置副将",
+	["@tuizhi"] = "你可以选择一名角色，暗置身份牌",
+	["#TuizhiHide"] = "%from 将 %arg 的身份牌 暗置, 且 %from 本回合不能再明置身份牌。",
+	["tongjie"] = "同诘",
+	[":tongjie"] = "<font color=\"#808080\"><b>永久技，</b></font>当其他角色明置身份牌时，若其属于身份牌明置的角色数最多的阵营，你摸一张牌；其他角色不能于你的回合内明置身份牌。",
+	["yibian"] = "异变",
+	[":yibian"] = "<font color=\"#808080\"><b>永久技，</b></font>身份牌暗置的角色发动或触发其拥有的非永久技时，须明置其身份牌。一名角色准备阶段开始时，你令其选择是否明置身份牌。",
+    ["#YibianShow"] = "%from 因为<font color=\"red\"><b>异变</b></font>而明置了身份牌，为 %arg 。",
+	["yibian:showrole"] = "<font color=\"red\"><b>异变：</b></font> 你是否明置身份牌？",
 
 --*************************************
 	--shen012  势力：神 4血

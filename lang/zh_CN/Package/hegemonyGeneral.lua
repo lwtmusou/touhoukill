@@ -23,7 +23,7 @@ return
 	[":tuizhi_hegemony"] = "当你使用<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌时，你可以暗置一名其他角色的一张明置的人物牌。",
 	["tuizhi_hegemony:head"] = "暗置主将",
 	["tuizhi_hegemony:deputy"] = "暗置副将",
-	["@tuizhi"] = "你可以选择一名角色，暗置其一张人物牌",
+	["@tuizhi_hegemony"] = "你可以选择一名角色，暗置其一张人物牌",
 	["tongjie_hegemony"] = "同诘",
 	[":tongjie_hegemony"] = "<font color=\"blue\"><b>锁定技，</b></font>当其他角色明置一张武将牌时，你摸一张牌；其他角色不能于你的回合内明置武将牌。",
 
