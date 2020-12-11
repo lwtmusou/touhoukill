@@ -37,29 +37,6 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class YidanDialog : public QDialog
-{
-    Q_OBJECT
-
-public:
-    static YidanDialog *getInstance(const QString &object);
-
-public slots:
-    void popup();
-    void selectCard(QAbstractButton *button);
-
-private:
-    explicit YidanDialog(const QString &object);
-
-    QVBoxLayout *layout;
-    QButtonGroup *group;
-    //QHash<QString, const Card *> map;
-
-    QString object_name;
-
-signals:
-    void onButtonClick();
-};
 
 class YidanCard : public SkillCard
 {
