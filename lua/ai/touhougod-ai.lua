@@ -711,6 +711,7 @@ sgs.ai_cardneed.fengyin = function(to, card, self)
 	return  card:getSuit() == sgs.Card_Heart
 end
 
+--[[
  sgs.ai_skill_invoke.yibian = function(self,data)
 	if self.player:getRole() == "renegade" then
 		return true
@@ -783,6 +784,30 @@ sgs.ai_skill_askforyiji.yibian = function(self, card_ids)
 	 return nil, -1
 end
 sgs.ai_Yiji_intention.yibian = -30
+]]
+
+sgs.ai_skill_invoke.yibian =function(self,data)
+	for _,skill in sgs.qlist(self.player:getSkillList()) do
+		if (skill:getShowType() == "static" and not skill:isAttachedLordSkill()) then
+			return true
+		end
+	end
+	return false
+end
+
+sgs.ai_skill_playerchosen.tuizhi = function(self, targets)
+	for _,p  in sgs.qlist(targets) do
+		if self:isEnemy(p) then
+			return p
+		end
+	end
+	return nil
+end
+sgs.ai_cardneed.tuizhi = function(to, card, self)
+	return card:getSuit() == sgs.Card_Heart
+end
+
+
 sgs.ai_skill_invoke.huanxiang =  true
 
 

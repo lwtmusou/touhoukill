@@ -162,6 +162,10 @@ sgs.ai_skill_playerchosen.tuizhi_hegemony = function(self, targets)
 	return nil
 end
 
+sgs.ai_cardneed.tuizhi_hegemony = function(to, card, self)
+	return card:getSuit() == sgs.Card_Heart
+end
+
 table.insert(sgs.ai_global_flags, "bolisource")
 sgs.ai_skill_invoke.boli = function(self,data)
 	local judge=data:toJudge()
