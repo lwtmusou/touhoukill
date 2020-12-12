@@ -342,6 +342,9 @@ return
 	["#kokoro_sp"] = "追寻希望的付丧神",
 	["designer:kokoro_sp"] = "223",
 	
+	["illustrator:kokoro_sp"] = "Ny速@3日目V23a",
+	["origin:kokoro_sp"] = "p号：37640183；个人ID：218591",
+	
 	["mianling"] = "面灵",
 	[":mianling"] = "<font color=\"blue\"><b>锁定技，</b></font>当你从牌堆获得牌时，你须将牌堆顶等量的牌置于人物牌上，称为“面”，然后若“面”数大于X（X为存活角色数），你将多于X张的“面”置入弃牌堆；你能使用或打出“面”，以此法使用或打出的结算完毕后，你选择一项：弃置一张牌，或失去1点体力。（打出暂未实装）",
 	["@mianling-exchange"] = "你因“面灵”的效果，需要将 %arg 张“面”置入弃牌堆。",
