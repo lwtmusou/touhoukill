@@ -2065,7 +2065,7 @@
 <context>
     <name>Player</name>
     <message>
-        <location filename="../src/core/player.cpp" line="1647"/>
+        <location filename="../src/core/player.cpp" line="1653"/>
         <source>&lt;font color=%1&gt;No skills&lt;/font&gt;</source>
         <translation>&lt;font color=%1&gt;无技能&lt;/font&gt;</translation>
     </message>
@@ -2225,69 +2225,69 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="../src/server/room.cpp" line="2837"/>
+        <location filename="../src/server/room.cpp" line="2840"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3129"/>
+        <location filename="../src/server/room.cpp" line="3132"/>
         <source>Computer %1</source>
         <translation>电脑 %1</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2860"/>
+        <location filename="../src/server/room.cpp" line="2863"/>
         <source>&lt;font color=#000000&gt;Player &lt;b&gt;%1&lt;/b&gt; left the game&lt;/font&gt;</source>
         <translation>&lt;font color=#000000&gt;玩家 %1 离开了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3106"/>
+        <location filename="../src/server/room.cpp" line="3109"/>
         <source>This server is limited to add robot. YOU CAN ONLY ADD ROBOT USING &quot;Fill Robots&quot;.</source>
         <translation>这个服务器启用了限制添加电脑。&lt;b&gt;只允许使用“补全所有电脑”来添加电脑&lt;/b&gt;。</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3133"/>
+        <location filename="../src/server/room.cpp" line="3136"/>
         <source>Hello, I&apos;m a robot</source>
         <translation>大家好，我是一个机器人</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3143"/>
+        <location filename="../src/server/room.cpp" line="3146"/>
         <source>This server is limited to add robot. Please ensure that the number of players is more than 4 and there is more than a half human players.</source>
         <translation>这个服务器启用了限制添加电脑。请确定本模式人数大于4并且存在一半以上的真人玩家。</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3192"/>
+        <location filename="../src/server/room.cpp" line="3196"/>
         <source>&lt;font color=#EEB422&gt;Player &lt;b&gt;%1&lt;/b&gt; joined the game&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 加入了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3766"/>
+        <location filename="../src/server/room.cpp" line="3770"/>
         <source>Unable to parse player</source>
         <translation>不可分析的玩家</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3768"/>
+        <location filename="../src/server/room.cpp" line="3772"/>
         <source>Server is not waiting for reply from %1</source>
         <translation>服务器无法获取 %1 的响应</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3770"/>
+        <location filename="../src/server/room.cpp" line="3774"/>
         <source>Reply command should be %1 instead of %2</source>
         <translation>应答指令应为 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3772"/>
+        <location filename="../src/server/room.cpp" line="3776"/>
         <source>Reply serial should be %1 instead of %2</source>
         <translation>玩家序号应为 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="5532"/>
+        <location filename="../src/server/room.cpp" line="5536"/>
         <source>Card cannot be parsed:
  %1</source>
         <translation>卡牌字符串无法解析:
  %1</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="7029"/>
+        <location filename="../src/server/room.cpp" line="7035"/>
         <source>&lt;font color=#EEB422&gt;The network delay of player &lt;b&gt;%1&lt;/b&gt; is %2 milliseconds.&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 的网络延迟为 %2 毫秒&lt;/font&gt;</translation>
     </message>
@@ -3518,92 +3518,86 @@ P = 你自己, R = 你所在的房间</translation>
 <context>
     <name>UpdateDialog</name>
     <message>
-        <location filename="../src/dialog/updatedialog.cpp" line="43"/>
+        <location filename="../src/dialog/updatedialog.cpp" line="42"/>
         <source>Download/Update contents</source>
         <translation>下载/更新内容</translation>
     </message>
     <message>
-        <location filename="../src/dialog/updatedialog.cpp" line="54"/>
+        <location filename="../src/dialog/updatedialog.cpp" line="53"/>
         <source>Update</source>
         <translation>更新</translation>
     </message>
     <message>
-        <location filename="../src/dialog/updatedialog.cpp" line="63"/>
+        <location filename="../src/dialog/updatedialog.cpp" line="62"/>
         <source>Show Changelog</source>
         <translation>显示更新日志</translation>
     </message>
     <message>
-        <location filename="../src/dialog/updatedialog.cpp" line="70"/>
+        <location filename="../src/dialog/updatedialog.cpp" line="69"/>
         <source>Current Version</source>
         <translation>当前版本</translation>
     </message>
     <message>
-        <location filename="../src/dialog/updatedialog.cpp" line="72"/>
+        <location filename="../src/dialog/updatedialog.cpp" line="71"/>
         <source>Latest Version</source>
         <translation>最新版本</translation>
     </message>
     <message>
-        <location filename="../src/dialog/updatedialog.cpp" line="78"/>
+        <location filename="../src/dialog/updatedialog.cpp" line="77"/>
         <source>Base Contents</source>
         <translation>本体</translation>
     </message>
     <message>
-        <location filename="../src/dialog/updatedialog.cpp" line="83"/>
+        <location filename="../src/dialog/updatedialog.cpp" line="82"/>
         <source>Hero Skin</source>
         <translation>武将皮肤</translation>
     </message>
     <message>
-        <location filename="../src/dialog/updatedialog.cpp" line="87"/>
+        <location filename="../src/dialog/updatedialog.cpp" line="86"/>
         <source>BGM</source>
         <translation>背景音乐</translation>
     </message>
     <message>
-        <location filename="../src/dialog/updatedialog.cpp" line="194"/>
+        <location filename="../src/dialog/updatedialog.cpp" line="183"/>
         <source>New Version %1(%3) available.&lt;br /&gt;But we don&apos;t support auto-updating from %2 to %1 on this platform.&lt;br /&gt;Please download the full package by clicking &quot;Update&quot; button on the &quot;Base Contents&quot; column.</source>
         <translation>新版本 %1（%3）可用。&lt;br /&gt;但是在此平台上我们不支持从 %2 到 %1 的自动更新。&lt;br /&gt;请点击“本体”一栏的“更新”按钮下载完整包。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/updatedialog.cpp" line="202"/>
+        <location filename="../src/dialog/updatedialog.cpp" line="191"/>
         <source>New Version %1(%3) available.&lt;br /&gt;We support auto-updating from %2 to %1 on this platform.&lt;br /&gt;Click &quot;Update&quot; button on the &quot;Base Contents&quot; column to update now.</source>
         <translation>新版本 %1（%3）可用。&lt;br /&gt;在此平台上我们支持从 %2 到 %1 的自动更新。&lt;br /&gt;请点击“本体”一栏的“更新”按钮开始更新。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/updatedialog.cpp" line="213"/>
-        <location filename="../src/dialog/updatedialog.cpp" line="221"/>
-        <source>&lt;font color=red&gt;Warning: You have replaced lua/config.lua to 0.9.7 version.&lt;br /&gt;This will affect auto update for HeroSkin and BGM.&lt;br /&gt;&lt;br /&gt;This warning will show every time the game started before the original config.lua is put back.&lt;/font&gt;</source>
-        <translation>&lt;font color=red&gt;警告：您将 lua/config.lua 替换成了 0.9.7 版本。&lt;br /&gt;这将影响武将皮肤和背景音乐的更新。&lt;br /&gt;&lt;br /&gt;在原版 config.lua 替换回来之前，此警告将在每次游戏启动时显示。&lt;/font&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/dialog/updatedialog.cpp" line="397"/>
-        <location filename="../src/dialog/updatedialog.cpp" line="478"/>
-        <location filename="../src/dialog/updatedialog.cpp" line="495"/>
-        <location filename="../src/dialog/updatedialog.cpp" line="531"/>
+        <location filename="../src/dialog/updatedialog.cpp" line="363"/>
+        <location filename="../src/dialog/updatedialog.cpp" line="444"/>
+        <location filename="../src/dialog/updatedialog.cpp" line="461"/>
+        <location filename="../src/dialog/updatedialog.cpp" line="497"/>
         <source>Update Error</source>
         <translation>更新错误</translation>
     </message>
     <message>
-        <location filename="../src/dialog/updatedialog.cpp" line="397"/>
+        <location filename="../src/dialog/updatedialog.cpp" line="363"/>
         <source>An error occurred when downloading packages.
 URL is empty.</source>
         <translation>下载更新包失败。
 路径为空。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/updatedialog.cpp" line="478"/>
+        <location filename="../src/dialog/updatedialog.cpp" line="444"/>
         <source>An error occurred when downloading packages.
 Cannot download the update script.</source>
         <translation>下载更新包失败。
 无法下载更新脚本。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/updatedialog.cpp" line="495"/>
+        <location filename="../src/dialog/updatedialog.cpp" line="461"/>
         <source>An error occurred when downloading packages.
 Download pack checksum mismatch.</source>
         <translation>下载更新包失败。
 更新包校验码不匹配。</translation>
     </message>
     <message>
-        <location filename="../src/dialog/updatedialog.cpp" line="531"/>
+        <location filename="../src/dialog/updatedialog.cpp" line="497"/>
         <source>An error occurred when downloading packages.
 Cannot download the update pack.</source>
         <translation>下载更新包失败。
