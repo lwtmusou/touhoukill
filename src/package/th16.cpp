@@ -794,9 +794,9 @@ public:
 
     const Card *viewAs(const Card *originalCard) const
     {
-        AwaitExhausted *ae = new AwaitExhausted(Card::SuitToBeDecided, -1);
-        ae->addSubcard(originalCard);
-        return ae;
+        SavingEnergy *se = new SavingEnergy(Card::SuitToBeDecided, -1);
+        se->addSubcard(originalCard);
+        return se;
     }
 };
 
