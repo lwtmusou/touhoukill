@@ -92,7 +92,7 @@ sgs.ai_skillProperty.lingqi = function(self)
 	return "cause_judge"
 end
 
-sgs.ai_skill_invoke.qixiang =function(self,data)
+--[[sgs.ai_skill_invoke.qixiang =function(self,data)
 	local target= data:toJudge().who
 	if target and self:isFriend(target) then
 		return true
@@ -115,6 +115,14 @@ sgs.ai_choicemade_filter.skillInvoke.qixiang = function(self, player, args, data
 		end
 	end
 end
+]]
+
+sgs.ai_skill_playerchosen.qixiang = function(self,targets)
+	if #self.friends == 0 then return nil end
+	self:sort(self.friends, "handcard")
+	return self.friends[1]
+end
+sgs.ai_playerchosen_intention.qixiang = -60
 
 function fengmoBenefit(self, target)
 	if not self.player:hasSkill("qixiang") then
@@ -126,18 +134,11 @@ end
 sgs.ai_skill_cardask["@fengmo"] = function(self, data)
 	if not self:invokeTouhouJudge() then return nil end
     local target = self.player:getTag("fengmo_target"):toPlayer()
-	local current = self.room:getCurrent()
-	if not current then return nil end
 	
-	if self:isEnemy(current) and self:getOverflow(current, true) > 0 then
-		local cards={}
-		for _,card in sgs.qlist(self.player:getCards("hs")) do
-			if card:getSuit() ~=sgs.Card_Heart then
-				table.insert(cards, card)
-			end
-		end
-		local judge = data:toJudge()
-
+	
+	if self:isEnemy(target)  then
+		local cards= sgs.QList2Table(self.player:getCards("hs"))
+		self:sortByUseValue(cards,true)
 		if #cards ==0 then return "." end
 		return "$" .. cards[1]:getId()
 	end
