@@ -213,8 +213,12 @@ void ClientPlayer::setMark(const QString &mark, int value)
             if (this == Self && (itor.key() == "@HalfLife" || itor.key() == "@CompanionEffect" || itor.key() == "@Pioneer"))
                 continue;
 
-            QString mark_text = QString("<img src='image/mark/%1.png' />").arg(itor.key());
-            if (itor.value() != 1)
+            QString itorKey = itor.key();
+            if (itorKey == "@dimai_displaying")
+                itorKey.append(QString::number(itor.value()));
+
+            QString mark_text = QString("<img src='image/mark/%1.png' />").arg(itorKey);
+            if ((itor.key() != "@dimai_displaying") && (itor.value() != 1))
                 mark_text.append(QString("<font size='4'>%1</font>").arg(itor.value()));
             if (this != Self)
                 mark_text.append("<br>");

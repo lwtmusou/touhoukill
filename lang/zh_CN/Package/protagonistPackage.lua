@@ -27,23 +27,18 @@ return {
 	["origin:reimu_4"] = "p号：20132493",
 
 	["qixiang"] = "绮想",
-	--[":qixiang"] = "当一名角色的判定牌生效后，若其手牌数小于你的体力上限，你可以令其摸一张牌。",
-	[":qixiang"] = "当一名角色的红色判定牌生效后，你可以令其回复1点体力。",
-	["qixiang:target"] = "<font color=\"#00FF00\"><b>%src </b></font> 的 “%dest” 的红色判定牌已生效，你可以对其发动“绮想”，令其回复1点体力。",
+	[":qixiang"] = "当牌因使用打出弃置以外的原因进入弃牌堆后，你可以令一名角色获得其中的红桃牌。",
+	["@qixiang-select"] = "你可以发动“奇想”，令一名角色获得此次置入弃牌堆的红桃牌",
 
 	["fengmo"] = "封魔",
-	--[":fengmo"] = "当一名角色使用【闪】或【无懈可击】时，你可以令一名角色判定，若结果为红色，其于此回合内不能使用或打出除<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌外的牌。<font color=\"green\"><b>每阶段限一次。</b></font>",
-	[":fengmo"] = "当一名角色于其回合外使用【闪】或【无懈可击】时，你可以弃置一张手牌，判定，若结果花色与你弃置的牌不同，当前回合角色选择一项：于此回合内不能使用非<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>的牌，或受到前者造成1点伤害。",
+	[":fengmo"] = "一名角色于一个回合内首次使用基本牌时，你可以弃置一张手牌，令使用者判定，若结果为红色，此牌无效。",
 	["@fengmo"] = "你可以弃置一张手牌，发动“封魔”",
-    ["fengmo:card"] = "不能用花色不是红桃的牌",
-	["fengmo:damage"] = "受到使用者造成的伤害",
 
 	
 	["boli"] = "博丽",
-	--[":boli"] = "<font color=\"orange\"><b>主公技，</b></font>当非<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>的判定牌生效前，你可以令其他角色选择是否打出<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>手牌代替之。",
 	["@boli-retrial"]= "你可以响应 <font color=\"#00FF00\"><b>%dest </b></font> 的主公技“博丽”，打出一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>手牌，代替 <font color=\"#FF8000\"><b>%src </b></font> 的 “%arg” 判定牌。",
 	["boli:judge"] = "<font color=\"#00FF00\"><b>%src </b></font> 的 “%dest” 判定结果不为<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>，你可以发动主公技“博丽”，令其他角色选择是否打出一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>手牌代替之。",
-	[":boli"] = "<font color=\"orange\"><b>主公技，</b></font>当非<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>的判定牌生效前，你可以令其他角色选择是否打出<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>手牌替换之。",
+	[":boli"] = "<font color=\"orange\"><b>主公技，</b></font>当非<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>的判定牌生效前，你可以令其他角色选择是否打出<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>手牌代替之。",
 
 
 --************************************************
