@@ -46,16 +46,6 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class HuyuanCard : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE HuyuanCard();
-
-    virtual void onEffect(const CardEffectStruct &effect) const;
-};
-
 class GakungWuCard : public SkillCard
 {
     Q_OBJECT

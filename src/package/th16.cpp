@@ -782,194 +782,21 @@ public:
     }
 };
 
-namespace HuyuanNs {
-bool cardAvailable(const Card *c)
-{
-    switch (c->getSuit()) {
-    case Card::Spade:
-    case Card::Heart:
-    case Card::Club:
-    case Card::Diamond:
-        return true;
-        break;
-    default:
-        return false;
-    }
-
-    return false;
-}
-}
-
-class HuyuanDis : public ViewAsSkill
+class Zhenshe : public OneCardViewAsSkill
 {
 public:
-    HuyuanDis()
-        : ViewAsSkill("huyuandis")
+    Zhenshe()
+        : OneCardViewAsSkill("zhenshe")
     {
-        response_pattern = "@@huyuandis";
+        filter_pattern = ".|heart";
+        response_or_use = true;
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    const Card *viewAs(const Card *originalCard) const
     {
-        QStringList ls = Self->property("huyuansuits").toString().split(",");
-        foreach (const Card *c, selected) {
-            if (HuyuanNs::cardAvailable(c))
-                ls.removeAll(c->getSuitString());
-            else
-                return false;
-        }
-
-        if (ls.length() == 0)
-            return false;
-
-        return HuyuanNs::cardAvailable(to_select) && ls.contains(to_select->getSuitString());
-    }
-
-    const Card *viewAs(const QList<const Card *> &cards) const
-    {
-        QStringList ls = Self->property("huyuansuits").toString().split(",");
-        foreach (const Card *c, cards) {
-            if (HuyuanNs::cardAvailable(c))
-                ls.removeAll(c->getSuitString());
-            else
-                return NULL;
-        }
-
-        if (ls.length() == 0) {
-            DummyCard *card = new DummyCard;
-            card->addSubcards(cards);
-            return card;
-        }
-
-        return NULL;
-    }
-};
-
-HuyuanCard::HuyuanCard()
-{
-    handling_method = MethodNone;
-    will_throw = false;
-}
-
-void HuyuanCard::onEffect(const CardEffectStruct &effect) const
-{
-    Room *room = effect.from->getRoom();
-    QStringList suits;
-
-    foreach (int id, getSubcards()) {
-        room->showCard(effect.from, id);
-        const Card *c = Sanguosha->getCard(id);
-        if (HuyuanNs::cardAvailable(c))
-            suits << c->getSuitString();
-    }
-
-    room->setPlayerProperty(effect.to, "huyuansuits", suits.join(","));
-    bool discarded = false;
-    try {
-        QString prompt;
-        if (suits.length() == 1)
-            prompt = QString("@huyuandis1:") + effect.from->objectName() + QString("::") + suits.first();
-        else if (suits.length() == 2)
-            prompt = QString("@huyuandis2:") + effect.from->objectName() + QString("::") + suits.first() + QString(":") + suits.last();
-        else if (suits.length() == 3)
-            prompt = (QString("@huyuandis3%1:") + effect.from->objectName() + QString("::%2:%3")).arg(suits.first()).arg(suits.last()).arg(suits.at(1));
-
-        discarded = room->askForCard(effect.to, "@@huyuandis", prompt, suits);
-    } catch (TriggerEvent event) {
-        if (event == TurnBroken)
-            room->setPlayerProperty(effect.to, "huyuansuits", QVariant());
-
-        throw event;
-    }
-
-    room->setPlayerProperty(effect.to, "huyuansuits", QVariant());
-
-    if (discarded)
-        room->recover(effect.to, RecoverStruct());
-    else {
-        room->loseHp(effect.to);
-        if (effect.to->isAlive())
-            effect.to->drawCards(getSubcards().length(), "huyuan");
-    }
-}
-
-class HuyuanVS : public ViewAsSkill
-{
-public:
-    HuyuanVS()
-        : ViewAsSkill("huyuan")
-    {
-        response_pattern = "@@huyuan";
-    }
-
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
-    {
-        if (selected.length() >= 3)
-            return false;
-        if (to_select->isEquipped())
-            return false;
-        if (!HuyuanNs::cardAvailable(to_select))
-            return false;
-
-        foreach (const Card *card, selected) {
-            if (card->getSuit() == to_select->getSuit())
-                return false;
-        }
-
-        return true;
-    }
-
-    const Card *viewAs(const QList<const Card *> &cards) const
-    {
-        if (cards.length() == 0)
-            return NULL;
-
-        QSet<Card::Suit> suits;
-        foreach (const Card *card, cards) {
-            if (!HuyuanNs::cardAvailable(card))
-                return NULL;
-
-            suits.insert(card->getSuit());
-        }
-
-        if (suits.size() == cards.length()) {
-            HuyuanCard *hy = new HuyuanCard;
-            hy->addSubcards(cards);
-            return hy;
-        }
-
-        return NULL;
-    }
-};
-
-class Huyuan : public TriggerSkill
-{
-public:
-    Huyuan()
-        : TriggerSkill("huyuan")
-    {
-        events << EventPhaseStart;
-        view_as_skill = new HuyuanVS;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
-    {
-        ServerPlayer *p = data.value<ServerPlayer *>();
-
-        if (p != NULL && p->getPhase() == Player::Finish && p->hasSkill(this) && p->isAlive() && !p->isKongcheng())
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, p, p);
-
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        return room->askForUseCard(invoke->invoker, "@@huyuan", "@huyuaninvoke", -1, Card::MethodNone, true, "huyuan");
-    }
-
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &) const
-    {
-        return false;
+        AwaitExhausted *ae = new AwaitExhausted(Card::SuitToBeDecided, -1);
+        ae->addSubcard(originalCard);
+        return ae;
     }
 };
 
@@ -1682,7 +1509,7 @@ TH16Package::TH16Package()
 
     General *aun = new General(this, "aun", "tkz", 3);
     aun->addSkill(new Xunfo);
-    aun->addSkill(new Huyuan);
+    aun->addSkill(new Zhenshe);
 
     General *narumi = new General(this, "narumi", "tkz");
     narumi->addSkill(new Puti);
@@ -1707,7 +1534,6 @@ TH16Package::TH16Package()
     addMetaObject<MishenCard>();
     addMetaObject<LijiCard>();
     addMetaObject<MenfeiCard>();
-    addMetaObject<HuyuanCard>();
     addMetaObject<HuazhaoCard>();
     addMetaObject<ChuntengCard>();
     addMetaObject<Chunteng2Card>();
@@ -1717,7 +1543,7 @@ TH16Package::TH16Package()
     addMetaObject<KuangwuCard>();
     addMetaObject<ZhutiCard>();
 
-    skills << new HouhuDistance << new ZangfaDistance << new HuyuanDis;
+    skills << new HouhuDistance << new ZangfaDistance;
 }
 
 ADD_PACKAGE(TH16)
