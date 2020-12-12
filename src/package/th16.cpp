@@ -1037,12 +1037,19 @@ public:
 
     bool canAddTarget(const CardUseStruct &use) const
     {
+        bool flag = false;
+        use.card->setFlags("IgnoreFailed");
+        use.card->setFlags("xunshi");
         foreach (ServerPlayer *p, use.from->getRoom()->getAllPlayers()) {
-            if (!use.to.contains(p))
-                return true;
+            if (!use.to.contains(p) && use.card->targetFilter(QList<const Player *>(), p, use.from) && !use.from->isProhibited(p, use.card)) {
+                flag = true;
+                break;
+            }
         }
+        use.card->setFlags("-xunshi");
+        use.card->setFlags("-IgnoreFailed");
 
-        return false;
+        return flag;
     }
 
     bool canchain(const Player *p) const
@@ -1070,7 +1077,7 @@ public:
         use.card->setFlags("IgnoreFailed");
         use.card->setFlags("xunshi");
         foreach (ServerPlayer *p, use.from->getRoom()->getAllPlayers()) {
-            if (!use.to.contains(p) && use.card->targetFilter(targets, p, use.from) && !use.from->isProhibited(p, use.card))
+            if (!use.to.contains(p) && use.card->targetFilter(QList<const Player *>(), p, use.from) && !use.from->isProhibited(p, use.card))
                 r << p->objectName();
         }
         use.card->setFlags("-xunshi");
@@ -1088,7 +1095,7 @@ public:
             foreach (ServerPlayer *p, use.to) {
                 if (use.from->getNext() == p || use.from->getLast() == p) {
                     foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                        if (canchain(p) && !extraTargetNames(use).isEmpty())
+                        if (canchain(p))
                             d << SkillInvokeDetail(this, p, p);
                     }
                 }
