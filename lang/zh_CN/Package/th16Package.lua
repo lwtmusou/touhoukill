@@ -7,6 +7,7 @@ return {
 	["okina"] = "摩多罗隐岐奈",
 	["#okina"] = "究极的绝对秘神",
 	["designer:okina"] = "三国有单",
+	
 	["illustrator:okina"] = "べらぼう",
 	["origin:okina"] = "p号：64759772；个人ID：6259229",
 	
@@ -40,6 +41,9 @@ return {
 	["#eternity"] = "接近神的蝴蝶妖精",
 	["&eternity"] = "爱塔妮缇",
 	["designer:eternity"] = "七曜",
+	
+	["illustrator:eternity"] = "minusT",
+	["origin:eternity"] = "p号：65972608；个人ID：15772166",
 	
 	["diexing"] = "蝶形",
 	[":diexing"] = "<font color=\"blue\"><b>锁定技，</b></font>当你扣减体力后，你摸两张牌；当你一次性失去至少两张手牌后，你回复1点体力。",
@@ -96,6 +100,9 @@ return {
 	["#satono"] = "过于危险的背景舞者",
 	["designer:satono"] = "三国有单",
 	
+	["illustrator:satono"] = "kirero",
+	["origin:satono"] = "p号：66385589；个人ID：35490",
+	
 	["guwu"] = "鼓舞",
 	[":guwu"] = "当当前回合角色使用普通锦囊牌指定其上家或下家为目标时，你可以横置人物牌或装备区里的一张牌，令一名角色成为此牌的额外目标。",
 	["@guwu-invoke"] = "你可以成为额外目标",
@@ -109,6 +116,9 @@ return {
 	["mai"] = "丁礼田舞",
 	["#mai"] = "过于危险的背景舞者",
 	["designer:mai"] = "三国有单",
+	
+	["illustrator:mai"] = "kirero",
+	["origin:mai"] = "p号：66385589；个人ID：35490",
 	
 	["kuangwu"] = "狂舞",
 	[":kuangwu"] = "当当前回合角色使用基本牌指定其上家或下家为目标时，你可以横置人物牌或装备区里的一张牌，令一名角色成为此牌的额外目标。",
