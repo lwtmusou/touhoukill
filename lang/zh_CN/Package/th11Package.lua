@@ -170,8 +170,8 @@ return{
 
 	["illustrator:yamame_1"] = "銀児",
 	["origin:yamame_1"] = "p号：35228783，个人ID：1043393",
-	["illustrator:yamame_2"] = "ともかつ治臣",
-	["origin:yamame_2"] = "p号：11886525，个人ID：230418",
+	["illustrator:yamame_2"] = "うさ叉吉",
+	["origin:yamame_2"] = "p号：57287597；个人ID：3313233",
 
 	["chuanran"] = "传染",
 	[":chuanran"] = "<font color=\"blue\"><b>锁定技，</b></font>当你或处于连环状态的角色对另一名其他角色造成非属性伤害后，你令后者横置。",

@@ -327,7 +327,7 @@ return
 		
 	["letty_hegemony"]="蕾蒂",
 	["illustrator:letty_hegemony"] = "猫車",
-	["origin:letty_hegemony"] = "p号：39410238；个人id：167342",
+	["origin:letty_hegemony"] = "p号：39410238；个人ID：167342",
 	["hanbo_hegemony"] = "寒波",
 	[":hanbo_hegemony"] = "<font color=\"blue\"><b>锁定技，</b></font>当你对其他角色造成非属性伤害时，若其没有手牌，此伤害值+1。",
 	["#HanboEffect"] = "%from 的【<font color=\"yellow\"><b>寒波</b></font>】效果被触发， %to 没有手牌，伤害从 %arg 增加至 %arg2",
