@@ -1139,7 +1139,6 @@ public:
     }
 };
 
-
 YidanCard::YidanCard()
 {
     will_throw = false;
@@ -1151,7 +1150,8 @@ bool YidanCard::targetFilter(const QList<const Player *> &targets, const Player 
     DELETE_OVER_SCOPE(Card, card)
     card->addSubcards(subcards);
     card->setSkillName("yidan");
-    return card && !to_select->isKongcheng() && to_select->getShownHandcards().isEmpty() && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
+    return card && !to_select->isKongcheng() && to_select->getShownHandcards().isEmpty() && card->targetFilter(targets, to_select, Self)
+        && !Self->isProhibited(to_select, card, targets);
 }
 
 const Card *YidanCard::validate(CardUseStruct &card_use) const
@@ -1196,8 +1196,7 @@ public:
         view_as_skill = new YidanVS;
     }
 
-
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    void record(TriggerEvent, Room *room, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->getSkillName() == objectName()) {
@@ -1209,7 +1208,7 @@ public:
                 use.m_addHistory = false;
                 data = QVariant::fromValue(use);
             }
-        }  
+        }
     }
 };
 
@@ -1239,14 +1238,13 @@ public:
     }
 };
 
-
 class Xuechu : public TriggerSkill
 {
 public:
     Xuechu()
         : TriggerSkill("xuechu")
     {
-        events << TargetSpecified  << Damage;
+        events << TargetSpecified << Damage;
         frequency = Compulsory;
     }
 
@@ -1256,13 +1254,11 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.from && use.from->hasSkill(this) && use.card != NULL && use.card->isKindOf("Slash") && !use.to.isEmpty())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);
-            
-        }
-        else if (triggerEvent == Damage) {
 
+        } else if (triggerEvent == Damage) {
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.from && damage.from->isAlive() && damage.from->hasSkill(this) && damage.to->isAlive() && damage.to != damage.from)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
         }
 
         return QList<SkillInvokeDetail>();
@@ -1274,29 +1270,26 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             QVariantList jink_list = invoke->invoker->tag["Jink_" + use.card->toString()].toList();
 
-            foreach(ServerPlayer *target, use.to) {
+            foreach (ServerPlayer *target, use.to) {
                 int index = use.to.indexOf(target);
                 LogMessage log;
                 log.type = "#NoJink";
                 log.from = target;
                 room->sendLog(log);
-                jink_list[index] = 0;        
+                jink_list[index] = 0;
             }
-            
 
             invoke->invoker->tag["Jink_" + use.card->toString()] = jink_list;
-        }
-        else if (e == Damage) {
+        } else if (e == Damage) {
             DamageStruct damage = data.value<DamageStruct>();
             const Card *card = room->askForCard(damage.to, "Jink", "@xuechu", data, objectName());
             if (card != NULL)
                 room->recover(damage.to, RecoverStruct());
         }
-        
+
         return false;
     }
 };
-
 
 TH15Package::TH15Package()
     : Package("th15")

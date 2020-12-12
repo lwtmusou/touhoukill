@@ -53,7 +53,8 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
-        if (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral && player != NULL && player->getPhase() == Player::Start && !player->hasShownGeneral2() && player->disableShow(false).isEmpty())
+        if (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral && player != NULL && player->getPhase() == Player::Start && !player->hasShownGeneral2()
+            && player->disableShow(false).isEmpty())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         return QList<SkillInvokeDetail>();
     }
@@ -642,7 +643,6 @@ public:
     }
 };
 
-
 class MofaHegemony : public TriggerSkill
 {
 public:
@@ -652,21 +652,18 @@ public:
         events << DamageCaused << DamageInflicted;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent event, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent event, const Room *, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.from == NULL || damage.to == NULL || damage.from->isDead() || damage.from == damage.to)
             return QList<SkillInvokeDetail>();
 
         if (event == DamageCaused) {
-            if (damage.from->hasSkill(this) 
-                && (!damage.to->hasShownGeneral() || !damage.to->hasShownGeneral2())) {
+            if (damage.from->hasSkill(this) && (!damage.to->hasShownGeneral() || !damage.to->hasShownGeneral2())) {
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true);
             }
-        }
-        else if (event == DamageInflicted) {
-            if (damage.to->hasSkill(this) && damage.to->isAlive()
-                && (!damage.from->hasShownGeneral() || !damage.from->hasShownGeneral2())) {
+        } else if (event == DamageInflicted) {
+            if (damage.to->hasSkill(this) && damage.to->isAlive() && (!damage.from->hasShownGeneral() || !damage.from->hasShownGeneral2())) {
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
             }
         }
@@ -685,15 +682,14 @@ public:
         QString prompt = "";
         if (event == DamageCaused) {
             prompt = "notice1:" + damage.to->objectName() + ":" + QString::number(damage.damage);
-        }
-        else if (event == DamageInflicted) {
+        } else if (event == DamageInflicted) {
             prompt = "notice2:" + damage.from->objectName() + ":" + QString::number(damage.damage);
         }
 
         return room->askForSkillInvoke(invoke->invoker, objectName(), data, prompt);
     }
 
-    bool effect(TriggerEvent e , Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         room->notifySkillInvoked(invoke->invoker, objectName());
         DamageStruct damage = data.value<DamageStruct>();
@@ -703,15 +699,13 @@ public:
             logto << damage.to;
             room->touhouLogmessage("#mofa_damage", damage.from, QString::number(damage.damage + 1), logto, QString::number(damage.damage));
             damage.damage = damage.damage + 1;
-        }
-        else if (e == DamageInflicted) {
+        } else if (e == DamageInflicted) {
             room->touhouLogmessage("#TouhouBuff", damage.from, objectName());
             QList<ServerPlayer *> logto;
             logto << damage.to;
             room->touhouLogmessage("#mofa_damage1", damage.from, QString::number(damage.damage - 1), logto, QString::number(damage.damage));
             damage.damage = damage.damage - 1;
-
-        }      
+        }
         data = QVariant::fromValue(damage);
         if (damage.damage < 1)
             return true;
@@ -742,7 +736,6 @@ public:
         return card;
     }
 };
-
 
 class JiezouHegemony : public TriggerSkill
 {
@@ -779,9 +772,7 @@ public:
         else
             return 0;
     }
-
 };
-
 
 //********  SPRING   **********
 
@@ -1578,9 +1569,6 @@ public:
     }
 };
 
-
-
-
 class HezhouHegemonyVS : public ViewAsSkill
 {
 public:
@@ -1606,8 +1594,7 @@ public:
                 else
                     return true;
             }
-        }
-        else
+        } else
             return false;
     }
 
@@ -1651,7 +1638,7 @@ public:
             && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE) {
             const Card *card = move.reason.m_extraData.value<const Card *>();
             if (card && card->getSkillName() == objectName()) {
-                foreach(int id, move.card_ids) {
+                foreach (int id, move.card_ids) {
                     if (Sanguosha->getCard(id)->isKindOf("TrickCard") && room->getCardPlace(id) == Player::DiscardPile)
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
                 }
@@ -1665,7 +1652,7 @@ public:
         ServerPlayer *player = invoke->invoker;
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         QString name = "";
-        foreach(int id, move.card_ids) {
+        foreach (int id, move.card_ids) {
             if (Sanguosha->getCard(id)->isKindOf("TrickCard"))
                 name = Sanguosha->getCard(id)->objectName();
         }
@@ -1681,7 +1668,7 @@ public:
         ServerPlayer *target = invoke->targets.first();
 
         QList<int> ids;
-        foreach(int id, move.card_ids) {
+        foreach (int id, move.card_ids) {
             if (Sanguosha->getCard(id)->isKindOf("TrickCard") && room->getCardPlace(id) == Player::DiscardPile)
                 ids << id;
         }
@@ -1698,12 +1685,6 @@ public:
         return false;
     }
 };
-
-
-
-
-
-
 
 class MoqiHgemony : public TriggerSkill
 {
@@ -3201,7 +3182,7 @@ bool KuaizhaoHegemonyCard::targetFilter(const QList<const Player *> &targets, co
     if (targets.length() == 0)
         return !to_select->isCardLimited(trick, Card::MethodUse);
     else if (targets.length() == 1)
-        return trick->targetFilter(QList<const Player *>(), to_select, targets.first()) &&  !targets.first()->isProhibited(to_select, trick);
+        return trick->targetFilter(QList<const Player *>(), to_select, targets.first()) && !targets.first()->isProhibited(to_select, trick);
 
     return false;
 }
