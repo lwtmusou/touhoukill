@@ -65,10 +65,10 @@ public:
         relate_to_place = "head";
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
     {
         if (triggerEvent == EventPhaseChanging) {
-            foreach(ServerPlayer *p, room->getAllPlayers())
+            foreach (ServerPlayer *p, room->getAllPlayers())
                 p->setFlags("-doujiu_used");
         }
     }
@@ -77,7 +77,7 @@ public:
     {
         if (triggerEvent == EventPhaseChanging)
             return QList<SkillInvokeDetail>();
-        
+
         CardUseStruct use = data.value<CardUseStruct>();
         if (!use.card->isKindOf("Peach") && !use.card->isKindOf("Analeptic"))
             return QList<SkillInvokeDetail>();
@@ -2501,7 +2501,7 @@ public:
             return true;
 
         foreach (int id, player->getPile("qsmian")) {
-            if (Sanguosha->matchExpPattern(pattern, player, Sanguosha->getCard(id)))
+            if (matchAvaliablePattern(Sanguosha->getCard(id)->objectName(), pattern) && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
                 return true;
         }
 
@@ -2521,7 +2521,7 @@ public:
         : TriggerSkill("mianling")
     {
         view_as_skill = new MianlingVS;
-        events << BeforeCardsMove << CardFinished; // << ??
+        events << BeforeCardsMove << CardFinished;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
@@ -2537,7 +2537,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card != NULL && use.card->hasFlag("mianling") && use.from != NULL && use.from->isAlive())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);
-        } // else if ???
+        }
 
         return QList<SkillInvokeDetail>();
     }
