@@ -657,6 +657,7 @@ HezhouCard::HezhouCard()
 {
     will_throw = false;
     handling_method = Card::MethodNone;
+    m_skillName = "hezhou";
 }
 
 bool HezhouCard::do_hezhou(ServerPlayer *player) const
@@ -738,6 +739,7 @@ const Card *HezhouCard::validate(CardUseStruct &card_use) const
     player->showHiddenSkill("hezhou");
     Room *room = player->getRoom();
     QString to_use = user_string;
+    room->notifySkillInvoked(player, "hezhou");
 
     LogMessage log;
     log.type = card_use.to.isEmpty() ? "#HezhouNoTarget" : "#Hezhou";
@@ -763,7 +765,7 @@ const Card *HezhouCard::validate(CardUseStruct &card_use) const
 const Card *HezhouCard::validateInResponse(ServerPlayer *user) const
 {
     Room *room = user->getRoom();
-
+    room->notifySkillInvoked(user, "hezhou");
     LogMessage log;
     log.type = "#HezhouNoTarget";
     log.from = user;

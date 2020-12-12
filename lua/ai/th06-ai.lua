@@ -311,7 +311,97 @@ end
 sgs.ai_skill_invoke.bolan = true
 sgs.ai_skill_invoke.bolan_hegemony = true
 
+local hezhou_skill = {}
+hezhou_skill.name = "hezhou"
+table.insert(sgs.ai_skills, hezhou_skill)
+hezhou_skill.getTurnUseCard = function(self)
+	if (self.player:hasFlag("hezhou_used")) then return nil end
+
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	local HezhouCards = {}
+
+	local guhuo = "slash|jink|peach|ex_nihilo|snatch|dismantlement|amazing_grace|archery_attack|savage_assault"
+	local ban = table.concat(sgs.Sanguosha:getBanPackages(), "|")
+	if not ban:match("maneuvering") then guhuo = guhuo .. "|fire_attack|analeptic|thunder_slash|fire_slash" end
+	if not ban:match("test_card") then guhuo = guhuo .. "|super_peach|magic_analeptic|light_slash|iron_slash|power_slash" end
+	local guhuos = guhuo:split("|")
+	for i = 1, #guhuos do
+		local forbidden = guhuos[i]
+		local forbid = sgs.cloneCard(forbidden)
+		if not self.player:isLocked(forbid) and self:canUseXihuaCard(forbid, true) then --see more at th13-ai.lua
+			table.insert(HezhouCards,forbid)
+		end
+	end
+
+	self:sortByUseValue(HezhouCards, false)
+	for _,HezhouCard in pairs (HezhouCards) do
+		
+			local dummyuse = { isDummy = true }
+			if HezhouCard:isKindOf("BasicCard") then
+				self:useBasicCard(HezhouCard, dummyuse)
+			else
+				self:useTrickCard(HezhouCard, dummyuse)
+			end
+			if dummyuse.card then
+				local fakeCard = sgs.Card_Parse("@HezhouCard=.:" .. HezhouCard:objectName())
+				return fakeCard
+			end
+		
+	end
+	return nil
+end
+
+sgs.ai_skill_use_func.HezhouCard=function(card,use,self)
+	local userstring=card:toString()
+	userstring=(userstring:split(":"))[3]
+	local hezhoucard=sgs.cloneCard(userstring)
+	hezhoucard:setSkillName("hezhou")
+	if hezhoucard:getTypeId() == sgs.Card_TypeBasic then self:useBasicCard(hezhoucard, use)
+	else
+		assert(hezhoucard)
+		self:useTrickCard(hezhoucard, use)
+	end
+	if not use.card then return end
+	use.card=card
+end
+
 function sgs.ai_cardsview_valuable.hezhou(self, class_name, player)
+    if (player:hasFlag("hezhou_used")) then return nil end
+	if (sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_UNKNOWN) then
+		return nil
+	end
+	local classname2objectname = {
+		["Slash"] = "slash", ["Jink"] = "jink",
+		["Peach"] = "peach", ["Analeptic"] = "analeptic",
+		--["Nullification"] = "nullification",
+		["FireSlash"] = "fire_slash", ["ThunderSlash"] = "thunder_slash",
+		["ChainJink"] = "chain_jink", ["LightJink"] = "light_jink",
+		["MagicAnaleptic"] = "magic_analeptic",["SuperPeach"] = "super_peach"
+	}
+	
+	--[[if self.player:getRoom():getMode():find("hegemony") then
+		classname2objectname = {
+		["Slash"] = "slash", ["Jink"] = "jink",
+		["Peach"] = "peach", ["Analeptic"] = "analeptic",
+		["Nullification"] = "nullification",
+		["FireSlash"] = "fire_slash", ["ThunderSlash"] = "thunder_slash"
+		}
+	end]]
+	if classname2objectname[class_name] then
+		local viewcard = sgs.cloneCard(classname2objectname[class_name])
+		if self.player:isLocked(viewcard) then
+			return nil
+		end
+		
+		return "@HezhouCard=.:".. classname2objectname[class_name]
+		
+	end
+	
+end
+
+
+
+function sgs.ai_cardsview_valuable.hezhou_hegemony(self, class_name, player)
 	if self:touhouClassMatch(class_name, "Peach") then
 		if (sgs.Sanguosha:getCurrentCardUseReason() ~= sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE) then
 			return nil
@@ -375,11 +465,11 @@ function sgs.ai_cardsview_valuable.hezhou(self, class_name, player)
 		return nil
 	end
 end
-sgs.hezhou_keep_value = {
+sgs.hezhou_hegemony_keep_value = {
 	Peach = 10,
 	TrickCard = 8
 }
-sgs.ai_cardneed.hezhou = function(to, card, self)
+sgs.ai_cardneed.hezhou_hegemony = function(to, card, self)
 	local ClassName = {"TrickCard", "EquipCard", "BasicCard"}
 	for _,class in ipairs(ClassName)  do
 		if card:isKindOf(class) and getCardsNum(class, to, self.player) <1 then
@@ -388,14 +478,14 @@ sgs.ai_cardneed.hezhou = function(to, card, self)
 	end
 end
 
-sgs.ai_playerchosen_intention.hezhou = -70
-sgs.ai_no_playerchosen_intention.hezhou =function(self, from)
+sgs.ai_playerchosen_intention.hezhou_hegemony = -70
+sgs.ai_no_playerchosen_intention.hezhou_hegemony =function(self, from)
 	local lord =self.room:getLord()
 	if lord  then
 		sgs.updateIntention(from, lord, 10)
 	end
 end
-sgs.ai_skill_playerchosen.hezhou = function(self, targets)
+sgs.ai_skill_playerchosen.hezhou_hegemony = function(self, targets)
 	local target =self:touhouFindPlayerToDraw(false, 1)
 	if not target and #self.friends_noself>0 then
 		target= self.friends_noself[1]
