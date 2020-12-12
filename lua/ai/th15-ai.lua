@@ -380,97 +380,42 @@ local yidan_skill = {}
 yidan_skill.name = "yidan"
 table.insert(sgs.ai_skills, yidan_skill)
 yidan_skill.getTurnUseCard = function(self, inclusive)
-	--青兰ai弃疗了
-	if self.player:hasFlag("yidan_iron_slash" ) and self.player:hasFlag("yidan_light_slash" ) then
-		return nil
-	end
+	--青兰ai写起来相当弃疗
+	if (self.player:hasUsed("YidanCard")) then return nil end
+	
 	local cards = self.player:getCards("hs")
 	cards=self:touhouAppendExpandPileToList(self.player,cards)
 	if cards:isEmpty() then return nil end
 	local avail = sgs.QList2Table(cards)
-	self:sortByUseValue(avail)
-	local target
-	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if self:isEnemy(p) and not p:isDebuffStatus() then
-			target = p
-			break
-		end
-	end
-	if not target then return nil end
-	local card_name = "light_slash"
-	if self.player:hasFlag("yidan_light_slash") then
-		card_name = "iron_slash"
-	end
-
-	local slash = sgs.cloneCard(card_name, sgs.Card_SuitToBeDecided, -1)
-	slash:addSubcard(avail[1])
-	slash:setSkillName("yidan")
-	slash:deleteLater()
-	local str = slash:toString()
-	return sgs.Card_Parse(str)
-
-	--老版本
-	--[[local suits = {}
-	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if self:isEnemy(p) then
-			for _,c in sgs.qlist(p:getCards("es")) do
-				local suit = c:getSuit()
-				if not table.contains(suits,suit) then
-					table.insert(suits, suit)
-					if #suits >= 4 then break end
-				end
-			end
-		end
-		if #suits >= 4 then break end
-	end
-
-	if #suits == 0 then return nil end
-	local avail = {}
-	for _,c in sgs.qlist(cards) do
-		local suit = c:getSuit()
-		if table.contains(suits,suit) then
-			table.insert(avail, c)
-		end
-	end
+	
 	self:sortByUseValue(avail)
 	if #avail == 0 then return nil end
 
 	return sgs.Card_Parse("@YidanCard="..avail[1]:getEffectiveId())
-	]]
+	
 end
---[[sgs.ai_skill_use_func.YidanCard=function(card,use,self)
+sgs.ai_skill_use_func.YidanCard=function(card,use,self)
 	local target
 	local card_name = "light_slash"
-	if self.player:hasFlag("yidan_light_slash") then
-		card_name = "iron_slash"
-	end
+
 	local slash = sgs.cloneCard(card_name, sgs.Card_SuitToBeDecided, -1)
 	slash:addSubcard(card)
 	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if self:isEnemy(p) and not p:isDebuffStatus() then
-			target = p
-			break
-		end
-	end
-	--老版本
-	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if self:isEnemy(p) then
-			for _,c in sgs.qlist(p:getCards("es")) do
-				if  slash:getSuit() == c:getSuit() and not self.player:isProhibited(p, slash) then
-					target = p
-					break
-				end
-			end
+		if self:isEnemy(p) and not p:isKongcheng() and p:getShownHandcards():isEmpty() then
+			if  not self.player:isProhibited(p, slash) then
+				target = p
+				break
+			end	
 		end
 	end
 	if target then
-		use.card = card --card
+		use.card = card
 		if use.to then
 			use.to:append(target)
 			if use.to:length() >= 1 then return end
 		end
 	end
-end]]
+end
 
 
 sgs.ai_use_priority.YidanCard = sgs.ai_use_priority.ThunderSlash + 0.2
