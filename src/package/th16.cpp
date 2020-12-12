@@ -704,9 +704,10 @@ public:
 
     bool isEnabledAtResponse(const Player *player, const QString &pattern) const
     {
-        BoneHealing *bh = new BoneHealing(Card::SuitToBeDecided, -1);
-        DELETE_OVER_SCOPE(BoneHealing, bh)
-        return Sanguosha->matchExpPattern(pattern, player, bh);
+        //BoneHealing *bh = new BoneHealing(Card::SuitToBeDecided, -1);
+        //DELETE_OVER_SCOPE(BoneHealing, bh)
+        return matchAvaliablePattern("bone_healing", pattern);//Sanguosha->matchExpPattern(pattern, player, bh);
+            
     }
 
     const Card *viewAs(const Card *originalCard) const
@@ -790,6 +791,12 @@ public:
     {
         filter_pattern = ".|heart";
         response_or_use = true;
+    }
+
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    {
+        return matchAvaliablePattern("saving_energy", pattern);
+
     }
 
     const Card *viewAs(const Card *originalCard) const
