@@ -56,14 +56,78 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class GuwuCard : public SkillCard
+class GakungWuCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    GakungWuCard();
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    void onUse(Room *room, const CardUseStruct &card_use) const;
+
+    // prevent GakungWuCard instance
+    virtual void gakungwu() = 0;
+};
+
+class GuwuCard : public GakungWuCard
 {
     Q_OBJECT
 
 public:
     Q_INVOKABLE GuwuCard();
 
-    virtual void onEffect(const CardEffectStruct &effect) const;
+    void gakungwu()
+    {
+    }
+};
+
+class KuangwuCard : public GakungWuCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE KuangwuCard();
+
+    void gakungwu()
+    {
+    }
+};
+
+class MiZhiungHteiCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    MiZhiungHteiCard();
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    void onUse(Room *room, const CardUseStruct &card_use) const;
+
+    // prevent GakungWuCard instance
+    virtual void mizhiunhtei() = 0;
+};
+
+class MingheCard : public MiZhiungHteiCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE MingheCard();
+
+    void mizhiunhtei()
+    {
+    }
+};
+
+class ZhutiCard : public MiZhiungHteiCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ZhutiCard();
+
+    void mizhiunhtei()
+    {
+    }
 };
 
 class HuazhaoCard : public SkillCard
