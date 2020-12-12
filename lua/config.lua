@@ -202,6 +202,7 @@ config = {
 		"okina", "okina_sp","eternity", "nemuno", "aun", "narumi", "satono", "mai", "lilywhite_sp",
 		"eirin_ndj", "tenshi_ndj",
 		"yuka_god", "patchouli_god", "tenshi_god","kokoro_sp",
+		"koakuma", "suika", "seiran", "patchouli", "reimu_god", "reimu",
 	}
 }
 
