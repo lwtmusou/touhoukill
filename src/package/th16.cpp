@@ -702,12 +702,9 @@ public:
         return bh->isAvailable(player);
     }
 
-    bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    bool isEnabledAtResponse(const Player *, const QString &pattern) const
     {
-        //BoneHealing *bh = new BoneHealing(Card::SuitToBeDecided, -1);
-        //DELETE_OVER_SCOPE(BoneHealing, bh)
-        return matchAvaliablePattern("bone_healing", pattern);//Sanguosha->matchExpPattern(pattern, player, bh);
-            
+        return matchAvaliablePattern("bone_healing", pattern);
     }
 
     const Card *viewAs(const Card *originalCard) const
@@ -793,10 +790,9 @@ public:
         response_or_use = true;
     }
 
-    bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    bool isEnabledAtResponse(const Player *, const QString &pattern) const
     {
         return matchAvaliablePattern("saving_energy", pattern);
-
     }
 
     const Card *viewAs(const Card *originalCard) const
@@ -1068,10 +1064,6 @@ public:
 
     QStringList extraTargetNames(const CardUseStruct &use) const
     {
-        QList<const Player *> targets;
-        foreach (ServerPlayer *p, use.to)
-            targets << p;
-
         QStringList r;
 
         use.card->setFlags("IgnoreFailed");
