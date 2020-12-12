@@ -5,304 +5,193 @@
 #include "skill.h"
 #include "testCard.h"
 
-class MiyiVS : public ZeroCardViewAsSkill
-{
-public:
-    MiyiVS()
-        : ZeroCardViewAsSkill("miyi")
-    {
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const
-    {
-        return player->hasFlag("miyi") && !player->hasFlag("miyi_used");
-    }
-
-    virtual const Card *viewAs() const
-    {
-        LureTiger *c = new LureTiger(Card::NoSuit, 0);
-        c->setSkillName(objectName());
-        return c;
-    }
-};
-
-class Miyi : public TriggerSkill
-{
-public:
-    Miyi()
-        : TriggerSkill("miyi")
-    {
-        events << PreCardUsed << EventPhaseChanging;
-        view_as_skill = new MiyiVS;
-    }
-
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
-    {
-        if (triggerEvent == PreCardUsed) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->getTypeId() != Card::TypeSkill && use.from && use.from->isCurrent() && use.from->getPhase() == Player::Play) {
-                if (!use.from->hasFlag("miyi"))
-                    room->setPlayerFlag(use.from, "miyi");
-            }
-            if (use.card->getSkillName() == objectName()) {
-                if (!use.from->hasFlag("miyi_used"))
-                    room->setPlayerFlag(use.from, "miyi_used");
-            }
-        }
-        if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.from == Player::Play) {
-                foreach (ServerPlayer *p, room->getAlivePlayers()) {
-                    if (p->hasFlag("miyi"))
-                        room->setPlayerFlag(p, "-miyi");
-                    if (p->hasFlag("miyi_used"))
-                        room->setPlayerFlag(p, "-miyi_used");
-                }
-            }
-        }
-    }
-};
-
-ZhaoweiCard::ZhaoweiCard()
+MishenCard::MishenCard()
 {
 }
 
-bool ZhaoweiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *self) const
+bool MishenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    if (to_select == self)
-        return false;
+    LureTiger *lt = new LureTiger(Card::NoSuit, 0);
+    DELETE_OVER_SCOPE(LureTiger, lt)
+    return lt->targetFilter(targets, to_select, Self);
+}
 
-    if (targets.length() == 0)
-        return !to_select->isNude();
-    else if (targets.length() == 1) {
-        if (targets.first()->isKongcheng())
-            return false;
-        return targets.length() < self->getHandcardNum() && !to_select->isKongcheng();
+void MishenCard::onUse(Room *room, const CardUseStruct &card_use) const
+{
+    if (subcards.length() > 0)
+        card_use.from->addBrokenEquips(subcards);
+    else
+        room->setPlayerProperty(card_use.from, "chained", !card_use.from->isChained());
+
+    LureTiger *lt = new LureTiger(Card::NoSuit, 0);
+    if (lt->isAvailable(card_use.from) && !card_use.from->isProhibited(card_use.to.first(), lt)) {
+        CardUseStruct u = card_use;
+        u.card = lt;
+        room->useCard(u);
     } else
-        return targets.length() < self->getHandcardNum() && !to_select->isKongcheng();
+        delete lt;
 }
 
-void ZhaoweiCard::onUse(Room *room, const CardUseStruct &card_use) const
-{
-    if (card_use.from == NULL)
-        return;
-
-    card_use.from->tag["zhaowei_mod"] = 2;
-
-    if (card_use.to.length() == 1) {
-        QString choice = card_use.to.first()->isKongcheng() ? "zhaowei1" : room->askForChoice(card_use.from, "zhaowei", "zhaowei1+zhaowei2");
-        if (choice == "zhaowei1")
-            card_use.from->tag["zhaowei_mod"] = 1;
-    }
-
-    SkillCard::onUse(room, card_use);
-}
-
-void ZhaoweiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
-{
-    int zhaoweiMod = source->tag.value("zhaowei_mod").toInt();
-    source->tag.remove("zhaowei_mod");
-    if (zhaoweiMod == 1) {
-        int card_id = room->askForCardChosen(source, targets.first(), "hes", objectName(), false, Card::MethodNone);
-        source->obtainCard(Sanguosha->getCard(card_id));
-        targets.first()->drawCards(1);
-    } else if (zhaoweiMod == 2) {
-        QList<ServerPlayer *> targets_other;
-        foreach (ServerPlayer *p, targets) {
-            if (p->isKongcheng())
-                continue;
-            int card_id = room->askForCardChosen(source, p, "hs", objectName(), false, Card::MethodNone);
-            source->obtainCard(Sanguosha->getCard(card_id));
-            targets_other << p;
-        }
-
-        int num = targets_other.length();
-        if (num == 0)
-            return;
-
-        const Card *cards = NULL;
-        // hack for not leading to memory leak
-        DummyCard c;
-        if (source->getCardCount() <= num) {
-            c.addSubcards(source->getCards("hes"));
-            cards = &c;
-            room->throwCard(cards, source);
-        } else {
-            room->setPlayerMark(source, "zhaowei_discardnum", num);
-            try {
-                cards = room->askForCard(source, "@@zhaowei-card2!", "@zhaowei_discard:" + QString::number(num), num);
-                if (cards == NULL) {
-                    QList<const Card *> cs = source->getCards("hes");
-                    qShuffle(cs);
-                    cs = cs.mid(1, num);
-                    c.addSubcards(cs);
-                    cards = &c;
-                    room->throwCard(cards, source);
-                }
-            } catch (TriggerEvent event) {
-                room->setPlayerMark(source, "zhaowei_discardnum", 0);
-                throw event;
-            }
-        }
-
-        //obtain card
-        QList<int> ids = cards->getSubcards();
-        QList<int> disable;
-        room->fillAG(ids);
-        foreach (ServerPlayer *p, targets_other) {
-            QList<int> able;
-            foreach (int id, ids) {
-                if (!disable.contains(id)) {
-                    if (room->getCardPlace(id) == Player::DiscardPile)
-                        able << id;
-                    else {
-                        disable << id;
-                        room->takeAG(NULL, id, false, QList<ServerPlayer *>(), Player::DiscardPile);
-                    }
-                }
-            }
-            if (able.isEmpty())
-                break;
-            int select_id = room->askForAG(p, able, false, objectName());
-            room->takeAG(p, select_id, true, QList<ServerPlayer *>(), Player::DiscardPile);
-            disable << select_id;
-        }
-        room->clearAG();
-    }
-}
-
-class ZhaoweiVS : public ViewAsSkill
+class Mishen : public ViewAsSkill
 {
 public:
-    ZhaoweiVS()
-        : ViewAsSkill("zhaowei")
+    Mishen()
+        : ViewAsSkill("mishen")
     {
     }
 
     bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
     {
-        if (Sanguosha->getCurrentCardUsePattern() == "@@zhaowei-card1")
+        if (selected.length() > 0)
             return false;
-        else
-            return Self->canDiscard(Self, to_select->getEffectiveId()) && selected.length() < Self->getMark("zhaowei_discardnum");
+        return to_select->isEquipped() && !Self->isBrokenEquip(to_select->getEffectiveId());
     }
 
     const Card *viewAs(const QList<const Card *> &cards) const
     {
-        if (Sanguosha->getCurrentCardUsePattern() == "@@zhaowei-card1")
-            return new ZhaoweiCard;
+        if (Self->isChained() && cards.isEmpty())
+            return NULL;
+
+        MishenCard *c = new MishenCard;
+        c->addSubcards(cards);
+        return c;
+    }
+};
+
+class Liji : public ZeroCardViewAsSkill
+{
+public:
+    static QStringList CardNameList;
+
+    static bool canUse(const Player *from, const Player *to, const Card *c, int i = -1)
+    {
+        Q_UNUSED(i);
+        if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
+            return c->isAvailable(from) && !from->isProhibited(to, c);
+#if 0
+        // todo? or won't do?
+        else if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+            if (i == 2) {
+                if (Sanguosha->getCurrentCardUsePattern().contains("peach")) {
+                }
+            } else if (i == 3) {
+                // deal with AskForUseSlashTo
+            }
+        }
+#endif
+        return false;
+    }
+
+    Liji()
+        : ZeroCardViewAsSkill("liji")
+    {
+    }
+
+    const Card *viewAs() const
+    {
+        return new LijiCard;
+    }
+};
+
+// beware!! this matches EquipCard::Location
+QStringList Liji::CardNameList = {
+    "known_both", "iron_chain", "peach", "fire_slash", "lure_tiger",
+};
+
+LijiCard::LijiCard()
+{
+}
+
+bool LijiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    if (targets.length() > 0)
+        return false;
+
+    if ((Self->getNext() == to_select) || (Self->getLast() == to_select)) {
+        for (int i = static_cast<int>(EquipCard::WeaponLocation); i <= static_cast<int>(EquipCard::TreasureLocation); ++i) {
+            const EquipCard *equip = to_select->getEquip(i);
+            if (equip != NULL && !to_select->isBrokenEquip(equip->getId())) {
+                Card *c = Sanguosha->cloneCard(Liji::CardNameList.at(i), Card::NoSuit, 0);
+                DELETE_OVER_SCOPE(Card, c)
+                if (Liji::canUse(Self, to_select, c, i))
+                    return true;
+            }
+        }
+    } else
+        return false;
+
+    return false;
+}
+
+void LijiCard::onUse(Room *room, const CardUseStruct &card_use) const
+{
+    auto equips = card_use.to.first()->getEquips();
+    QList<int> ids;
+    foreach (auto c, equips) {
+        int id = c->getEffectiveId();
+        if (card_use.to.first()->isBrokenEquip(id))
+            ids << id;
         else {
-            if (cards.length() == Self->getMark("zhaowei_discardnum")) {
-                DummyCard *card = new DummyCard;
-                card->addSubcards(cards);
-                return card;
-            }
-        }
-        return NULL;
-    }
-
-    bool isEnabledAtPlay(const Player *) const
-    {
-        return false;
-    }
-
-    bool isEnabledAtResponse(const Player *, const QString &pattern) const
-    {
-        return pattern.startsWith("@@zhaowei-card");
-    }
-};
-
-class Zhaowei : public TriggerSkill
-{
-public:
-    Zhaowei()
-        : TriggerSkill("zhaowei")
-    {
-        events << EventPhaseStart << PreCardUsed << EventPhaseChanging;
-        view_as_skill = new ZhaoweiVS;
-    }
-
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
-    {
-        if (triggerEvent == PreCardUsed) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->getTypeId() != Card::TypeSkill && use.from && use.from->isCurrent()) {
-                room->setPlayerMark(use.from, "zhaowei", use.from->getMark("zhaowei") + 1);
-            }
-        }
-        if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive)
-                room->setPlayerMark(change.player, "zhaowei", 0);
+            int l = static_cast<int>(qobject_cast<const EquipCard *>(c->getRealCard())->location());
+            Card *e = Sanguosha->cloneCard(Liji::CardNameList.at(l), Card::NoSuit, 0);
+            DELETE_OVER_SCOPE(Card, e)
+            if (!Liji::canUse(card_use.from, card_use.to.first(), e, l))
+                ids << id;
         }
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
-    {
-        if (triggerEvent != EventPhaseStart)
-            return QList<SkillInvokeDetail>();
-        ServerPlayer *player = data.value<ServerPlayer *>();
-        if (!player->hasSkill(this) || player->isDead() || player->getPhase() != Player::Finish)
-            return QList<SkillInvokeDetail>();
-        if (player->getMark("zhaowei") <= player->getHandcardNum())
-            return QList<SkillInvokeDetail>();
-        foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-            if (!p->isNude())
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-        }
-        return QList<SkillInvokeDetail>();
-    }
+    if (ids.length() == equips.length())
+        return;
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        return room->askForUseCard(invoke->invoker, "@@zhaowei-card1", "@zhaowei");
-    }
-};
+    int id = room->askForCardChosen(card_use.from, card_use.to.first(), "e", "liji", false, Card::MethodNone, ids);
+    card_use.to.first()->addBrokenEquips(QList<int>() << id);
 
-ZhuzheCard::ZhuzheCard()
-{
-    target_fixed = true;
-}
+    const EquipCard *e = qobject_cast<const EquipCard *>(Sanguosha->getCard(id)->getRealCard());
+    if (e == NULL)
+        return;
 
-void ZhuzheCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
-{
-    foreach (ServerPlayer *p, room->getOtherPlayers(source)) {
-        if (p->getKingdom() != "tkz")
-            continue;
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), p->objectName());
-        const Card *c = room->askForCard(p, ".|.|.|hand,equipped", "@zhuzhe", QVariant(), Card::MethodNone, source, false, "zhuzhe");
-        if (c != NULL) {
-            source->obtainCard(c);
-            break;
-        }
+    Card *c = Sanguosha->cloneCard(Liji::CardNameList.at(static_cast<int>(e->location())), Card::NoSuit, 0);
+    if (c != NULL) {
+        c->setSkillName("liji");
+        CardUseStruct cardUse = card_use;
+        cardUse.card = c;
+        room->useCard(cardUse);
     }
 }
 
-class Zhuzhe : public ZeroCardViewAsSkill
+class Houguang : public TriggerSkill
 {
 public:
-    Zhuzhe()
-        : ZeroCardViewAsSkill("zhuzhe$")
+    Houguang()
+        : TriggerSkill("houguang$")
     {
+        events << CardFinished;
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
-        if (player->hasUsed("ZhuzheCard"))
-            return false;
-
-        QList<const Player *> siblings = player->getSiblings();
-        foreach (const Player *p, player->getSiblings()) {
-            if (p->getKingdom() == "tkz") {
-                return true;
+        CardUseStruct use = data.value<CardUseStruct>();
+        QList<SkillInvokeDetail> d;
+        if (use.from->hasLordSkill(this) && use.card != NULL && !use.card->isKindOf("SkillCard")) {
+            foreach (auto p, use.to) {
+                if (p->getKingdom() == "tkz" && p->isAlive() && p != use.from)
+                    d << SkillInvokeDetail(this, use.from, use.from, NULL, false, p);
             }
         }
-        return false;
+
+        return d;
     }
 
-    virtual const Card *viewAs() const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        return new ZhuzheCard;
+        if (room->askForSkillInvoke(invoke->targets.first(), "houguanghide", "hide")) {
+            room->touhouLogmessage("#Shenyin1", invoke->targets.first(), objectName(), QList<ServerPlayer *>());
+
+            room->setPlayerCardLimitation(invoke->targets.first(), "use", ".", "lure_tiger", true);
+            room->setPlayerProperty(invoke->targets.first(), "removed", true);
+        }
+
+        return false;
     }
 };
 
@@ -1780,13 +1669,9 @@ TH16Package::TH16Package()
     : Package("th16")
 {
     General *okina = new General(this, "okina$", "tkz", 4);
-    okina->addSkill(new Miyi);
-    //okina->addSkill(new MiyiBasicExceptSlash);
-    //okina->addSkill(new MiyiTargetMod);
-    okina->addSkill(new Zhaowei);
-    okina->addSkill(new Zhuzhe);
-    //related_skills.insertMulti("miyi", "#miyi-tiger");
-    //related_skills.insertMulti("miyi", "#miyi-basic");
+    okina->addSkill(new Mishen);
+    okina->addSkill(new Liji);
+    okina->addSkill(new Houguang);
 
     General *eternity = new General(this, "eternity", "tkz", 3);
     eternity->addSkill(new Diexing);
@@ -1822,8 +1707,8 @@ TH16Package::TH16Package()
     lili->addSkill(new Chunteng);
     lili->addSkill(new Huazhao);
 
-    addMetaObject<ZhaoweiCard>();
-    addMetaObject<ZhuzheCard>();
+    addMetaObject<MishenCard>();
+    addMetaObject<LijiCard>();
     addMetaObject<MenfeiCard>();
     addMetaObject<HuyuanCard>();
     addMetaObject<HuazhaoCard>();

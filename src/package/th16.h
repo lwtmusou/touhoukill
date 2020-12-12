@@ -4,26 +4,26 @@
 #include "card.h"
 #include "package.h"
 
-class ZhaoweiCard : public SkillCard
+class MishenCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE ZhaoweiCard();
+    Q_INVOKABLE MishenCard();
 
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    void onUse(Room *room, const CardUseStruct &card_use) const;
 };
 
-class ZhuzheCard : public SkillCard
+class LijiCard : public SkillCard
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE ZhuzheCard();
+    Q_INVOKABLE LijiCard();
 
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    void onUse(Room *room, const CardUseStruct &card_use) const;
 };
 
 class MenfeiCard : public SkillCard
