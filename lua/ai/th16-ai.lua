@@ -70,3 +70,49 @@ sgs.ai_playerchosen_intention.zangfa = function(self, from, to)
 	end
 end
 
+
+--天空璋：SP摩多罗隐岐奈 
+--[门扉]
+local menfei_skill = {}
+menfei_skill.name = "menfei"
+table.insert(sgs.ai_skills, menfei_skill)
+menfei_skill.getTurnUseCard = function(self)
+	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
+		if p:getMark("@door") > 0 then return nil end
+	end
+	return sgs.Card_Parse("@MenfeiCard=.")
+end
+
+sgs.ai_skill_use_func.MenfeiCard = function(card, use, self)
+	use.card = card
+	if use.to then
+		use.to:append(self.player)
+		if use.to:length() >= 1 then return end
+	end
+end
+
+
+--[后户]
+sgs.ai_skill_invoke.houhu =function(self,data)
+	local use = data:toCardUse()
+	local target 
+	for _,p in sgs.qlist(self.room:getAlivePlayers())do
+		if p:getMark("@door") > 0 then 
+			target = p
+			break
+		end
+	end
+	
+	if use.to:contains(target) then
+		return true
+	else
+		local res = wunian_judge(self,target, use.card)
+		if res==1 and self:isEnemy(target) then
+			return true
+		elseif res==2 and self:isFriend(target)  then
+			return true
+		end
+	end
+	return false
+end
+
