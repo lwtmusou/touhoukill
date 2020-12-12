@@ -460,7 +460,7 @@ return{
 	--shen017  势力：神 3血
 	["koishi_god"] = "神 古明地恋",
 	["&koishi_god"] = "神古明地恋",
-	["#koishi_god"] = "哈特曼的妖怪少女",
+	["#koishi_god"] = "哈德曼的妖怪少女",
 	["designer:koishi_god"] = "辰焰天明",
 
 	["illustrator:koishi_god"] = "茶葉",

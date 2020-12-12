@@ -704,12 +704,9 @@ public:
         return bh->isAvailable(player);
     }
 
-    bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    bool isEnabledAtResponse(const Player *, const QString &pattern) const
     {
-        //BoneHealing *bh = new BoneHealing(Card::SuitToBeDecided, -1);
-        //DELETE_OVER_SCOPE(BoneHealing, bh)
-        return matchAvaliablePattern("bone_healing", pattern);//Sanguosha->matchExpPattern(pattern, player, bh);
-            
+        return matchAvaliablePattern("bone_healing", pattern);
     }
 
     const Card *viewAs(const Card *originalCard) const
@@ -795,10 +792,9 @@ public:
         response_or_use = true;
     }
 
-    bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    bool isEnabledAtResponse(const Player *, const QString &pattern) const
     {
         return matchAvaliablePattern("saving_energy", pattern);
-
     }
 
     const Card *viewAs(const Card *originalCard) const
@@ -1039,12 +1035,19 @@ public:
 
     bool canAddTarget(const CardUseStruct &use) const
     {
+        bool flag = false;
+        use.card->setFlags("IgnoreFailed");
+        use.card->setFlags("xunshi");
         foreach (ServerPlayer *p, use.from->getRoom()->getAllPlayers()) {
-            if (!use.to.contains(p))
-                return true;
+            if (!use.to.contains(p) && use.card->targetFilter(QList<const Player *>(), p, use.from) && !use.from->isProhibited(p, use.card)) {
+                flag = true;
+                break;
+            }
         }
+        use.card->setFlags("-xunshi");
+        use.card->setFlags("-IgnoreFailed");
 
-        return false;
+        return flag;
     }
 
     bool canchain(const Player *p) const
@@ -1063,16 +1066,12 @@ public:
 
     QStringList extraTargetNames(const CardUseStruct &use) const
     {
-        QList<const Player *> targets;
-        foreach (ServerPlayer *p, use.to)
-            targets << p;
-
         QStringList r;
 
         use.card->setFlags("IgnoreFailed");
         use.card->setFlags("xunshi");
         foreach (ServerPlayer *p, use.from->getRoom()->getAllPlayers()) {
-            if (!use.to.contains(p) && use.card->targetFilter(targets, p, use.from) && !use.from->isProhibited(p, use.card))
+            if (!use.to.contains(p) && use.card->targetFilter(QList<const Player *>(), p, use.from) && !use.from->isProhibited(p, use.card))
                 r << p->objectName();
         }
         use.card->setFlags("-xunshi");
@@ -1090,7 +1089,7 @@ public:
             foreach (ServerPlayer *p, use.to) {
                 if (use.from->getNext() == p || use.from->getLast() == p) {
                     foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                        if (canchain(p) && !extraTargetNames(use).isEmpty())
+                        if (canchain(p))
                             d << SkillInvokeDetail(this, p, p);
                     }
                 }
