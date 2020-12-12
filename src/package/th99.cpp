@@ -1849,7 +1849,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
         if (use.card->isKindOf("Peach") || use.card->isKindOf("Slash") || use.card->isNDTrick()) {
-            // Fs: when modifiying this skill, check skill "Zhumao" in th16
+            // Fs: when modifiying this skill, check skill "GakungWu" (Guwu & Kuangwu) in th16
             use.card->setFlags("xunshi");
             use.card->setFlags("IgnoreFailed");
             foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
@@ -1890,7 +1890,7 @@ public:
     }
 };
 
-// Fs: when modifiying this skill, check skill "Zhumao" in th16
+// Fs: when modifiying this skill, check skill "GakungWu" (Guwu & Kuangwu) in th16
 class XunshiDistance : public TargetModSkill
 {
 public:

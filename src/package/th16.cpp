@@ -960,9 +960,10 @@ GakungWuCard::GakungWuCard()
     handling_method = Card::MethodNone;
 }
 
-bool GakungWuCard::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const
+bool GakungWuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    return targets.isEmpty();
+    QStringList l = Self->property((m_skillName + "availability").toLatin1().constData()).toString().split('+');
+    return targets.isEmpty() && l.contains(to_select->objectName());
 }
 
 void GakungWuCard::onUse(Room *room, const CardUseStruct &card_use) const
@@ -1051,6 +1052,26 @@ public:
         return false;
     }
 
+    QStringList extraTargetNames(const CardUseStruct &use) const
+    {
+        QList<const Player *> targets;
+        foreach (ServerPlayer *p, use.to)
+            targets << p;
+
+        QStringList r;
+
+        use.card->setFlags("IgnoreFailed");
+        use.card->setFlags("xunshi");
+        foreach (ServerPlayer *p, use.from->getRoom()->getAllPlayers()) {
+            if (!use.to.contains(p) && use.card->targetFilter(targets, p, use.from) && !use.from->isProhibited(p, use.card))
+                r << p->objectName();
+        }
+        use.card->setFlags("-xunshi");
+        use.card->setFlags("-IgnoreFailed");
+
+        return r;
+    }
+
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         QList<SkillInvokeDetail> d;
@@ -1060,7 +1081,7 @@ public:
             foreach (ServerPlayer *p, use.to) {
                 if (use.from->getNext() == p || use.from->getLast() == p) {
                     foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                        if (canchain(p))
+                        if (canchain(p) && !extraTargetNames(use).isEmpty())
                             d << SkillInvokeDetail(this, p, p);
                     }
                 }
@@ -1070,8 +1091,12 @@ public:
         return d;
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
+        CardUseStruct use = data.value<CardUseStruct>();
+        QStringList l = extraTargetNames(use);
+        room->setPlayerProperty(invoke->invoker, (objectName() + "availability").toLatin1().constData(), l.join('+'));
+
         if (room->askForUseCard(invoke->invoker, "@@" + objectName(), "@" + objectName() + "-invoke", -1, Card::MethodNone, true, objectName())) {
             invoke->targets << invoke->invoker->tag[objectName()].value<ServerPlayer *>();
             invoke->invoker->tag.remove(objectName());
