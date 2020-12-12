@@ -319,7 +319,9 @@ sgs.ai_cardneed.mofa = function(to, card, self)
 	return card:getSuit()==sgs.Card_Spade
 end
 
-
+sgs.ai_skill_invoke.mofa_hegemony =function(self,data)
+	return true
+end
 
 local wuyuvs_skill = {}
 wuyuvs_skill.name = "wuyu_attach"

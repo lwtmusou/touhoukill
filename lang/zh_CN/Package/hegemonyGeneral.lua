@@ -30,6 +30,9 @@ return
 	["mofa_hegemony"] = "魔法",
 	[":mofa_hegemony"] = "<font color=\"blue\"><b>锁定技，</b></font>当你对其他角色造成伤害时，若其有暗置的人物牌，此伤害值+1；当你受到其他角色造成的伤害时，若其有暗置的人物牌，此伤害值-1。",
 	["#mofa_damage1"]= "%from 对 %to 的伤害由 %arg2 点减少到 %arg 点。",
+	["mofa_hegemony:notice1"] = "魔法： 你即将对 <font color=\"#00FF00\"><b>%src </b></font> 造成 %dest 点伤害，是否亮将增加1点伤害",
+	["mofa_hegemony:notice2"] = "魔法： 你即将收到 <font color=\"#00FF00\"><b>%src </b></font> 造成的 %dest点伤害， 是否亮将减少1点伤害",
+
 	["jiezou_hegemony"] = "借走",
 	[":jiezou_hegemony"] = "<font color=\"green\"><b>出牌阶段限一次</b></font>，你可以将一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌当无距离限制的【顺手牵羊】使用。",
 

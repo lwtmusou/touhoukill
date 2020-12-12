@@ -674,6 +674,24 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
+    bool cost(TriggerEvent event, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    {
+        if (invoke->invoker->hasShownSkill(this))
+            return true;
+
+        //ServerPlayer *marisa = invoke->invoker;
+        //JudgeStruct *judge = data.value<JudgeStruct *>();
+        DamageStruct damage = data.value<DamageStruct>();
+        QString prompt = "";
+        if (event == DamageCaused) {
+            prompt = "notice1:" + damage.to->objectName() + ":" + QString::number(damage.damage);
+        }
+        else if (event == DamageInflicted) {
+            prompt = "notice2:" + damage.from->objectName() + ":" + QString::number(damage.damage);
+        }
+
+        return room->askForSkillInvoke(invoke->invoker, objectName(), data, prompt);
+    }
 
     bool effect(TriggerEvent e , Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
