@@ -7,6 +7,7 @@
 
 MishenCard::MishenCard()
 {
+    will_throw = false;
 }
 
 bool MishenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
@@ -24,6 +25,7 @@ void MishenCard::onUse(Room *room, const CardUseStruct &card_use) const
         room->setPlayerProperty(card_use.from, "chained", !card_use.from->isChained());
 
     LureTiger *lt = new LureTiger(Card::NoSuit, 0);
+    lt->setSkillName("mishen");
     if (lt->isAvailable(card_use.from) && !card_use.from->isProhibited(card_use.to.first(), lt)) {
         CardUseStruct u = card_use;
         u.card = lt;

@@ -1,5 +1,63 @@
 
+--天空璋：摩多罗
+--[秘神]
+local mishen_skill={}
+mishen_skill.name="mishen"
+table.insert(sgs.ai_skills,mishen_skill)
+mishen_skill.getTurnUseCard=function(self)
+	local avail = {}
+	for _,c in sgs.qlist(self.player:getCards("e")) do
+        if (not self.player:isBrokenEquip(c:getEffectiveId())) then
+            table.insert(avail, c)
+		end
+    end
 
+	self:sortByUseValue(avail,true)
+
+	--[[if #avail == 0 then 
+		if not self.player:isChained() then
+			local card_str = ("lure_tiger:mishen[%s:%s]=%d"):format("to_be_decided", 0, -1)
+			local skillcard = sgs.Card_Parse(card_str)
+			assert(skillcard)
+			return skillcard
+		end
+	else
+		local card = avail[1]
+		local suit = card:getSuitString()
+		local number = card:getNumberString()
+		local card_id = card:getEffectiveId()
+		local card_str = ("lure_tiger:mishen[%s:%s]=%d"):format(suit, number, card_id)
+		local skillcard = sgs.Card_Parse(card_str)
+		assert(skillcard)
+		return skillcard
+	end]]
+	if #avail == 0 then
+		if not self.player:isChained() then
+			return sgs.Card_Parse("@MishenCard=.")
+		end
+	else
+		return sgs.Card_Parse("@MishenCard=" .. avail[1]:getEffectiveId())
+	end
+end
+sgs.ai_skill_use_func.MishenCard = function(card, use, self)
+	local lt =sgs.cloneCard("lure_tiger")
+	lt:setSkillName("mishen")
+	
+	assert(lt)
+	self:useTrickCard(lt, use)
+	
+	if not use.card then return end
+	use.card=card
+end
+
+
+--[后光]
+sgs.ai_skill_invoke.houguang = true
+sgs.ai_skill_invoke.houguanghide =function(self,data)
+	local user = self.room:getLord()
+	if not user then  return false end
+	return self:isFriend(user)
+end
 
 
 --天空璋：坂田合欢
