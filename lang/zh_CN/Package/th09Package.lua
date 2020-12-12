@@ -10,16 +10,20 @@ return
 	["#suika"] = "不羁奔放的古豪",
 	["designer:suika"] = "星野梦美☆",
 
-	["illustrator:suika"] = "阿桜",
-	["origin:suika"] = "p号：24157010，个人ID：39753",--(貌似ok)
+	["illustrator:suika"] = "りすたる",
+	["origin:suika"] = "p号：36915940；个人id：87950",
 	["illustrator:suika_1"] = "ryosios",
 	["origin:suika_1"] = "p号：16940878，个人ID：1508165", --（作者表态可以用）
 	["illustrator:suika_2"] = "キツネ",
 	["origin:suika_2"] = "p号：28972709，个人ID：126905",--（表态可以用）
 	["illustrator:suika_3"] = "Tro",
 	["origin:suika_3"] = "p号：11675411，个人ID：52449",
+	["illustrator:suika_4"] = "未知",
+	["origin:suika_4"] = "未知",
 	["illustrator:suika_5"] = "伊吹のつ",
 	["origin:suika_5"] = "p号：43405095，个人ID：7013",
+	["illustrator:suika_6"] = "阿桜",
+	["origin:suika_6"] = "p号：24157010，个人ID：39753",--(貌似ok)
 
 	["zuiyue"] = "醉月",
 	[":zuiyue"] = "出牌阶段，若你于此阶段内使用过非基本牌，你可以视为使用【酒】。",
@@ -339,7 +343,7 @@ return
 	["designer:kokoro_sp"] = "223",
 	
 	["mianling"] = "面灵",
-	[":mianling"] = "当你从牌堆获得牌时，你须将牌堆顶等量的牌置于人物牌上，称为“面”，然后若“面”数大于X（X为存活角色数），你将多于X张的“面”置入弃牌堆；你能使用或打出“面”，以此法使用或打出的结算完毕后，你选择一项：弃置一张牌，或失去1点体力。（打出暂未实装）",
+	[":mianling"] = "<font color=\"blue\"><b>锁定技，</b></font>当你从牌堆获得牌时，你须将牌堆顶等量的牌置于人物牌上，称为“面”，然后若“面”数大于X（X为存活角色数），你将多于X张的“面”置入弃牌堆；你能使用或打出“面”，以此法使用或打出的结算完毕后，你选择一项：弃置一张牌，或失去1点体力。（打出暂未实装）",
 	["@mianling-exchange"] = "你因“面灵”的效果，需要将 %arg 张“面”置入弃牌堆。",
 	["@mianling-discard"] = "你因“面灵”的效果，需要弃置 1 张牌，否则失去 1 点体力。",
 	

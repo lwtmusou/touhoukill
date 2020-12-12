@@ -140,11 +140,13 @@ return
 	["#tewi"] = "幸运的白兔",
 	["designer:tewi"] = "星野梦美☆",
 
-	["illustrator:tewi"] = "カトウハルアキ",
+	["illustrator:tewi"] = "鳥居すみ",
+	["origin:tewi"] = "p号：32227729，个人ID：38915",
 	["illustrator:tewi_1"] = "すばち",
 	["origin:tewi_1"] = "p号：26687425，个人ID：22027",
-	["illustrator:tewi_2"] = "鳥居すみ",
-	["origin:tewi_2"] = "p号：32227729，个人ID：38915",
+	["illustrator:tewi_2"] = "カトウハルアキ",
+	["origin:tewi_2"] = "未知",
+
 
 	["buxian"] = "布陷",
 	[":buxian"] = "出牌阶段开始时或当你受到伤害后，你可以将一张手牌置于牌堆顶并选择有手牌的两名其他角色，令一者与另一者拼点，然后拼点赢的角色摸一张牌，受到1点无来源的伤害。",
@@ -190,14 +192,16 @@ return
 	["!wriggle"] = "莉格露·奈特巴格",
 	["designer:wriggle"] = "星野梦美☆",
 
-	["illustrator:wriggle"] = "底虫",
-	["origin:wriggle"] = "p号：2739572",
+	["illustrator:wriggle"] = "あすとら",
+	["origin:wriggle"] = "p号：55041769；个人id：1238467",
 	["illustrator:wriggle_1"] = "もりのほん",
 	["origin:wriggle_1"] = "p号：1509666，个人ID：258411",
 	["illustrator:wriggle_2"] = "ryosios",
 	["origin:wriggle_2"] = "p号：50353643，个人ID：1508165",
 	["illustrator:wriggle_3"] = "UGUME",
 	["origin:wriggle_3"] = "p号：45332511，个人ID：1457830",
+	["illustrator:wriggle_4"] = "底虫",
+	["origin:wriggle_4"] = "p号：2739572",
 
 	["yinghuo"] = "萤火",
 	["chongqun"] = "虫群",

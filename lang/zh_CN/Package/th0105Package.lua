@@ -122,12 +122,12 @@ return {
 	["#kana"] = "失去梦的少女骚灵" ,
 	["designer:kana"] = "三国有单",
 
-	["illustrator:kana"] = " c7肘 ",
-	["origin:kana"] = "p号：44923233,个人ID:217707",
+	["illustrator:kana"] = "Culter",
+	["origin:kana"] = "p号：37805413,个人ID:542147",
 	["illustrator:kana_1"] = "Magician",
 	["origin:kana_1"] = "p号：51366112,个人ID:5100338",
-	["illustrator:kana_2"] = "Culter",
-	["origin:kana_2"] = "p号：37805413,个人ID:542147",
+	["illustrator:kana_2"] = " c7肘 ",
+	["origin:kana_2"] = "p号：44923233,个人ID:217707",
 
 	["mengxiao"] = "梦消",
 	[":mengxiao"] = "结束阶段开始时，你可以将一张手牌当任意一次性的延时类锦囊牌置入判定区里；其他角色的准备阶段开始时，你可以将你判定区里的一张牌置入其判定区。",

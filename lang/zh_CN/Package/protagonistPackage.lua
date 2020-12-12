@@ -52,8 +52,8 @@ return {
 	["#marisa"] = "普通的魔法使",
 	["designer:marisa"] = "星野梦美☆",
 
-	["illustrator:marisa"] = "An2A",
-	["origin:marisa"] = "个人ID：173876",
+	["illustrator:marisa"] = "アバンドン蘭花@FANBOX",
+	["origin:marisa"] = "p号：74665842；个人id：1472125",
 	["illustrator:marisa_1"] = "えふぇ",
 	["origin:marisa_1"] = "p号：34689497，个人ID：292644",
 	["illustrator:marisa_2"] = "zen",
@@ -64,6 +64,8 @@ return {
 	["origin:marisa_4"] = "p号：20443348，个人ID：44778",
 	["illustrator:marisa_5"] = "popuru/ ポプル",
 	["origin:marisa_5"] = "p号：58341511，个人ID：12929463",
+	["illustrator:marisa_6"] = "An2A",
+	["origin:marisa_6"] = "个人ID：173876",
 
 	["mofa"] = "魔法",
 	[":mofa"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张手牌，令你于此回合内使用的【杀】或普通锦囊牌的伤害值基数+1，若以此法弃置<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，你摸一张牌。",

@@ -4,6 +4,8 @@ return {
 	["#Fsu0413"] = "咕咕咕开发者",
 	["Fsu0413"] = "咕咕Fs",
 	["designer:Fsu0413"] = "Fs",
+	["illustrator:Fsu0413"] = "Fs",
+	["origin:Fsu0413"] = "帅气自拍",
 
 	["fsu0413gepi"] = "嗝屁",
 	[":fsu0413gepi"] = "其他角色的准备阶段开始时，你可以令其弃置你的一张牌，若如此做，你令其一个技能（主公技、觉醒技和永久技除外）于此回合内无效，若以此法无效描述中不带“出牌阶段”的技能或不能无效技能时，其摸三张牌。" ,
@@ -41,9 +43,12 @@ return {
 	["#benmao"] = "笨猫",
 	["benmao"] = "神 蔚海幽浮",
 	["designer:benmao"] = "吉八弔千慧",
+	["illustrator:benmao"] = "猫星人",
+	["origin:benmao"] = "原形毕露",
+
 	["cv:benmao"] = "Tencent ZhiYan ft. Cat",
 	["&benmao"] = "神笨猫",
-	
+	["origin:benmao"] = "猫星人",
 	["bmmaoji"] = "猫击",
 	[":bmmaoji"] = "<font color=blue><b>锁定技，</b></font>你的手牌视为幻【杀】；当你使用【杀】对一个目标生效时，你将其抵消此【杀】的方式改为依次打出两张【杀】；当你成为一名未拥有“猫击”角色使用【杀】的目标后，你令其获得其装备区里的所有牌，然后令其获得“猫击”。",
 	["@bmmaoji-slash-start"] = "%src 对你使用了【杀】并触发了“猫击”，你需依次打出 %arg 张【杀】来抵消。",
