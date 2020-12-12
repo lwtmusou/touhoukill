@@ -1749,3 +1749,31 @@ sgs.ai_skill_choice.xianji= function(self, choices, data)
 	return "loseHP"
 end
 
+--神比那名居天子
+--[天道]
+sgs.ai_skill_invoke.tiandao = function(self,data)
+	local target = data:toPlayer()
+	local judge = self.player:getTag("tiandao"):toJudge()
+	local need_reverse = false
+	
+	local function judgeIsGood(isGood,need_reverse)
+		if need_reverse then
+			return not isGood
+		else
+			return  isGood
+		end
+	end
+	--静电 和 破坏 有逆转judgeisgood的时候  --暂时不管
+	--使用牌的本身收益暂时不管，ai目前只为了改动判定的后续结果
+	--
+	
+	if self:isEnemy(target) and judgeIsGood(judge:isGood(),need_reverse) then
+		--local res = wunian_judge(self, judge.who, judge.card)
+		return true
+	end
+	if self:isFriend(target) and not judgeIsGood(judge:isGood(),need_reverse) then
+		--local res = wunian_judge(self, judge.who, judge.card)
+		return true
+	end
+	return false
+end
