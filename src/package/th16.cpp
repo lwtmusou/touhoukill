@@ -13,7 +13,7 @@ bool MishenCard::targetFilter(const QList<const Player *> &targets, const Player
 {
     LureTiger *lt = new LureTiger(Card::NoSuit, 0);
     DELETE_OVER_SCOPE(LureTiger, lt)
-    return lt->targetFilter(targets, to_select, Self);
+    return lt->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, lt);
 }
 
 void MishenCard::onUse(Room *room, const CardUseStruct &card_use) const
@@ -107,7 +107,7 @@ bool LijiCard::targetFilter(const QList<const Player *> &targets, const Player *
     if (targets.length() > 0)
         return false;
 
-    if ((Self->getNext() == to_select) || (Self->getLast() == to_select)) {
+    if ((Self != to_select) && ((Self->getNext() == to_select) || (Self->getLast() == to_select))) {
         for (int i = static_cast<int>(EquipCard::WeaponLocation); i <= static_cast<int>(EquipCard::TreasureLocation); ++i) {
             const EquipCard *equip = to_select->getEquip(i);
             if (equip != NULL && !to_select->isBrokenEquip(equip->getId())) {
@@ -174,7 +174,7 @@ public:
         QList<SkillInvokeDetail> d;
         if (use.from->hasLordSkill(this) && use.card != NULL && !use.card->isKindOf("SkillCard")) {
             foreach (auto p, use.to) {
-                if (p->getKingdom() == "tkz" && p->isAlive() && p != use.from)
+                if (p->getKingdom() == "tkz" && p->isAlive() && p != use.from && !p->isRemoved())
                     d << SkillInvokeDetail(this, use.from, use.from, NULL, false, p);
             }
         }
