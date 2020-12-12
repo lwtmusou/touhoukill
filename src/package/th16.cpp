@@ -1086,6 +1086,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         use.to.append(invoke->targets);
         room->sortByActionOrder(use.to);
+        data = QVariant::fromValue<CardUseStruct>(use);
         return false;
     }
 };
@@ -1116,6 +1117,7 @@ bool MiZhiungHteiCard::targetFilter(const QList<const Player *> &, const Player 
 void MiZhiungHteiCard::onUse(Room *, const CardUseStruct &card_use) const
 {
     AllianceFeast *af = new AllianceFeast(Card::NoSuit, 0);
+    af->setSkillName(m_skillName);
     CardUseStruct u = card_use;
     u.card = af;
     card_use.from->tag[m_skillName] = QVariant::fromValue<CardUseStruct>(u);
