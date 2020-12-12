@@ -11,7 +11,7 @@ return
 	["designer:suika"] = "星野梦美☆",
 
 	["illustrator:suika"] = "りすたる",
-	["origin:suika"] = "p号：36915940；个人id：87950",
+	["origin:suika"] = "p号：36915940；个人ID：87950",
 	["illustrator:suika_1"] = "ryosios",
 	["origin:suika_1"] = "p号：16940878，个人ID：1508165", --（作者表态可以用）
 	["illustrator:suika_2"] = "キツネ",
@@ -297,7 +297,7 @@ return
 	["designer:sumireko_sp"] = "bullytou",
 
 	["illustrator:sumireko_sp"] = "EO@例大祭ひ19ab",
-	["origin:sumireko_sp"] = "p号：50349017；个人id：3261838",
+	["origin:sumireko_sp"] = "p号：50349017；个人ID：3261838",
 
 	["mengxiang"] = "梦乡",
 	[":mengxiang"] = "你可以跳过出牌阶段，若如此做，此回合的弃牌阶段结束时，你可以选择X名角色（X为你于此阶段内弃置的牌的牌数），观看这些角色各手牌并可以使用各一张手牌，以此法使用牌结算结束后，失去此牌的角色摸一张牌。",
@@ -322,7 +322,7 @@ return
 	["designer:yorigamis"] = "bullytou",
 
 	["illustrator:yorigamis"] = "ひそな",
-	["origin:yorigamis"] = "p号：66714217；个人id：173260",
+	["origin:yorigamis"] = "p号：66714217；个人ID：173260",
 
 	["jianshe"] = "俭奢",
 	[":jianshe"] = "其他角色的结束阶段开始时，你可以令其选择一项（若你于此回合内没有失去过手牌，你须先弃置一张手牌）：将手牌弃置至一张，若如此做，其回复1点体力；或摸一张牌，然后失去1点体力。",

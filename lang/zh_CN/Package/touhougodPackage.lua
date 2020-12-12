@@ -823,7 +823,7 @@ return{
 	["designer:yuka_god"] = "223",
 	
 	["illustrator:yuka_god"] = "河CY",
-	["origin:yuka_god"] = "p号：75887724；个人id：3869665",
+	["origin:yuka_god"] = "p号：75887724；个人ID：3869665",
 	
 	
 	["xiuye"] = "朽叶",
@@ -846,7 +846,7 @@ return{
 	["designer:tenshi_god"] = "三国有单",
 	
 	["illustrator:tenshi_god"] = "kannnu",
-	["origin:tenshi_god"] = "p号：35616984；个人id：798193",
+	["origin:tenshi_god"] = "p号：35616984；个人ID：798193",
 	
 	
 	["dimai"] = "地脉",

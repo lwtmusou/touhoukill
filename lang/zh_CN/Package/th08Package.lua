@@ -193,7 +193,7 @@ return
 	["designer:wriggle"] = "星野梦美☆",
 
 	["illustrator:wriggle"] = "あすとら",
-	["origin:wriggle"] = "p号：55041769；个人id：1238467",
+	["origin:wriggle"] = "p号：55041769；个人ID：1238467",
 	["illustrator:wriggle_1"] = "もりのほん",
 	["origin:wriggle_1"] = "p号：1509666，个人ID：258411",
 	["illustrator:wriggle_2"] = "ryosios",
