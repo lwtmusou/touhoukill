@@ -152,6 +152,7 @@ public:
             usedcard = response.m_card;
         }
         QString prompt = "@fengmo:" + invoke->preferredTarget->objectName() + ":" + usedcard->objectName();
+        invoke->invoker->tag["fengmo_target"] = QVariant::fromValue(invoke->preferredTarget);
         const Card *card = room->askForCard(invoke->invoker, ".|.|.|hand", prompt, data, Card::MethodDiscard, NULL, false, objectName());
         return card != NULL;
     }

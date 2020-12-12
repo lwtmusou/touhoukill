@@ -1,11 +1,14 @@
 
+
+
+
 --天空璋：坂田合欢
 --[磨刀]
 local modao_skill={}
 modao_skill.name="modao"
 table.insert(sgs.ai_skills,modao_skill)
 modao_skill.getTurnUseCard=function(self)
-	local cards = self.player:getCards("hs")
+	local cards = self.player:getCards("hes")
 	cards=self:touhouAppendExpandPileToList(self.player, cards)
 	cards=sgs.QList2Table(cards)
 	local card
@@ -27,6 +30,34 @@ modao_skill.getTurnUseCard=function(self)
 end
 sgs.ai_cardneed.modao = function(to, card, self)
 	return card:getSuit() == sgs.Card_Club
+end
+
+
+--天空璋：高丽野阿吽 
+--[镇社]
+local zhenshe_skill={}
+zhenshe_skill.name="zhenshe"
+table.insert(sgs.ai_skills,zhenshe_skill)
+zhenshe_skill.getTurnUseCard=function(self)
+	local cards = self.player:getCards("hes")
+	cards=self:touhouAppendExpandPileToList(self.player, cards)
+	cards=sgs.QList2Table(cards)
+	local card
+	self:sortByUseValue(cards,true)
+	for _,acard in ipairs(cards) do
+		if acard:getSuit() == sgs.Card_Heart then
+			card = acard
+			break
+		end
+	end
+	if not card then return nil end
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	local card_str = ("saving_energy:zhenshe[%s:%s]=%d"):format(suit, number, card_id)
+	local skillcard = sgs.Card_Parse(card_str)
+	assert(skillcard)
+	return skillcard
 end
 
 
