@@ -1200,6 +1200,7 @@ public:
         }
         use.card->setFlags("-zangfa");
         use.card->setFlags("-IgnoreFailed");
+        invoke->invoker->tag["zangfa_use"] = data;
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, listt, objectName(), "@zangfa:" + use.card->objectName(), true, true);
         //player->tag.remove("huanshi_source");
         if (target) {
