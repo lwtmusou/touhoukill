@@ -1027,7 +1027,7 @@ public:
     GakungWu(const QString &name, const QString &cardName)
         : TriggerSkill(name)
     {
-        events << TargetSpecifying;
+        events <<  CardUsed;//TargetSpecifying;
         view_as_skill = new GakungWuVs(name, cardName);
     }
 
