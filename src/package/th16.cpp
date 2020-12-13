@@ -109,7 +109,7 @@ bool LijiCard::targetFilter(const QList<const Player *> &targets, const Player *
     if (targets.length() > 0)
         return false;
 
-    if ((Self != to_select) && ((Self->getNext() == to_select) || (Self->getLast() == to_select))) {
+    if ((Self != to_select) && ((Self->getNextAlive() == to_select) || (Self->getLastAlive() == to_select))) {
         for (int i = static_cast<int>(EquipCard::WeaponLocation); i <= static_cast<int>(EquipCard::TreasureLocation); ++i) {
             const EquipCard *equip = to_select->getEquip(i);
             if (equip != NULL && !to_select->isBrokenEquip(equip->getId())) {
@@ -1087,7 +1087,7 @@ public:
         if (room->getCurrent() == use.from && use.from->isAlive() && use.from->getPhase() != Player::NotActive && use.card != NULL && !use.card->isKindOf("SkillCard")
             && cardMatch(use.card) && canAddTarget(use)) {
             foreach (ServerPlayer *p, use.to) {
-                if (use.from->getNext() == p || use.from->getLast() == p) {
+                if (use.from->getNextAlive() == p || use.from->getLastAlive() == p) {
                     foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                         if (canchain(p))
                             d << SkillInvokeDetail(this, p, p);
