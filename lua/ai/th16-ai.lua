@@ -91,7 +91,9 @@ sgs.ai_cardneed.modao = function(to, card, self)
 end
 
 
---天空璋：高丽野阿吽 
+--天空璋：高丽野阿吽
+--[寻佛]
+sgs.ai_skill_invoke.xunfo = true
 --[镇社]
 local zhenshe_skill={}
 zhenshe_skill.name="zhenshe"
