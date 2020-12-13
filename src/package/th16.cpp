@@ -1471,6 +1471,7 @@ public:
     {
         events << CardUsed << CardResponded;
         view_as_skill = new ChuntengVS;
+        related_pile = "spring";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
