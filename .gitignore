@@ -99,3 +99,5 @@ build
 .qmake.stash
 CMakeLists.txt.user
 /plugins/
+.cache
+compile_commands.json
