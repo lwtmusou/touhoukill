@@ -7,7 +7,7 @@ env:
   BUILD_TYPE: Release
 
 jobs:
-  build_ubuntu:
+  build-ubuntu:
     # The CMake configure and build commands are platform agnostic and should work equally
     # well on Windows or Mac.  You can convert this to a matrix build if you need
     # cross-platform coverage.
@@ -27,6 +27,31 @@ jobs:
       
       - name: install swig
         run: sudo apt install swig
+
+      - name: Run CMake+Ninja without triplet
+        uses: lukka/run-cmake@v3
+        with:
+          cmakeGenerator: 'Ninja'  
+          cmakeListsOrSettingsJson: 'CMakeListsTxtBasic'
+          cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
+          buildDirectory: '${{ runner.workspace }}/build'
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v1
+      
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+
+      - uses: lukka/get-cmake@latest
+      
+      - name: install swig
+        run: |
+        (New-Object System.Net.WebClient).DownloadFile("http://prdownloads.sourceforge.net/swig/swigwin-4.0.1.zip","swigwin-4.0.1.zip");
+        Expand-Archive .\swigwin-4.0.1.zip .;
+        echo "$((Get-Item .).FullName)/swigwin-4.0.1" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append;
+        swig -version;
 
       - name: Run CMake+Ninja without triplet
         uses: lukka/run-cmake@v3
