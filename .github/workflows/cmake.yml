@@ -40,16 +40,19 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v1
+
+      - name: install swig
+        run: |
+          New-Item -Path "." -Name "tools" -ItemType "directory";
+          (New-Object System.Net.WebClient).DownloadFile("http://prdownloads.sourceforge.net/swig/swigwin-4.0.1.zip","tools/swigwin-4.0.1.zip");
+          Expand-Archive .\tools\swigwin-4.0.1.zip .\tools;
+          Move-Item -Path ".\tools\swigwin-4.0.1" -Destination ".\tools\swig"
+          .\tools\swig\swig.exe --help
       
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
 
       - uses: lukka/get-cmake@latest
-      
-      - name: Choco install swig
-        uses: crazy-max/ghaction-chocolatey@v1
-        with:
-          args: install swig
 
       - name: Run CMake+Ninja without triplet
         uses: lukka/run-cmake@v3
