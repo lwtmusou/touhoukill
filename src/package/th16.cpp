@@ -1039,6 +1039,10 @@ public:
         use.card->setFlags("IgnoreFailed");
         use.card->setFlags("xunshi");
         foreach (ServerPlayer *p, use.from->getRoom()->getAllPlayers()) {
+            if (!use.to.contains(p) && use.card->isKindOf("Peach") && p->isWounded() && !use.from->isProhibited(p, use.card)) {
+                flag = true;
+                break;
+            }
             if (!use.to.contains(p) && use.card->targetFilter(QList<const Player *>(), p, use.from) && !use.from->isProhibited(p, use.card)) {
                 flag = true;
                 break;
@@ -1073,6 +1077,9 @@ public:
         foreach (ServerPlayer *p, use.from->getRoom()->getAllPlayers()) {
             if (!use.to.contains(p) && use.card->targetFilter(QList<const Player *>(), p, use.from) && !use.from->isProhibited(p, use.card))
                 r << p->objectName();
+            else if (!use.to.contains(p) && use.card->isKindOf("Peach") && p->isWounded() && !use.from->isProhibited(p, use.card)) {
+                r << p->objectName();
+            }
         }
         use.card->setFlags("-xunshi");
         use.card->setFlags("-IgnoreFailed");
@@ -1104,7 +1111,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         QStringList l = extraTargetNames(use);
         room->setPlayerProperty(invoke->invoker, (objectName() + "availability").toLatin1().constData(), l.join('+'));
-
+        invoke->invoker->tag[objectName()] = data;  //for ai
         if (room->askForUseCard(invoke->invoker, "@@" + objectName(), "@" + objectName() + "-invoke", -1, Card::MethodNone, true, objectName())) {
             invoke->targets << invoke->invoker->tag[objectName()].value<ServerPlayer *>();
             invoke->invoker->tag.remove(objectName());

@@ -256,6 +256,212 @@ sgs.ai_playerchosen_intention.zangfa = function(self, from, to)
 end
 
 
+function kuangwu_judge(self,target,use)
+    local card = use.card
+	if card:isKindOf("Peach") or card:isKindOf("Analeptic") then
+		return 2
+	end
+	if card:isKindOf("Slash") then
+		return 1
+	end
+	if card:isKindOf("AmazingGrace") then
+		return 3
+	end
+	if card:isKindOf("GodSalvation") then
+		if target:isWounded() then
+			return 2
+		else
+			return 1
+		end
+	end
+	if card:isKindOf("AwaitExhausted") then
+		return 2
+	end
+	
+	if card:isKindOf("IronChain") then
+		if target:isChained() then
+			return 2
+		else
+			return 1
+		end
+	end
+	if   card:isKindOf("Dismantlement") or card:isKindOf("Snatch") then
+		if self:isFriend(use.from ,target) and target:getCards("j"):length()>0 then
+			return 2
+		end
+		if self:isEnemy(use.from, target) and target:getCards("j"):length()>0  and target:isNude() then
+			return 2
+		end
+		return 1
+	end
+	return 1
+end
+
+--天空璋：尔子田里乃
+--[鼓舞]
+sgs.ai_skill_use["@@guwu"] = function(self, prompt)
+	local  l =self.player:property("guwuavailability"):toString():split("+")
+	local targets =sgs.QList2Table(self.room:getAlivePlayers())
+	self:sort(targets,"defense")
+	local avail_targets = {}
+	local use = self.player:getTag("guwu"):toCardUse()
+	
+	for _,p in ipairs(targets) do
+		if table.contains(l, p:objectName()) then  
+			local res = kuangwu_judge(self,target, use)
+			if res == 2 and self:isFriend(p) then 
+				table.insert(avail_targets, p:objectName())
+			elseif res == 1 and self:isEnemy(p) then
+				table.insert(avail_targets, p:objectName())
+			end
+		end
+	end
+
+	if #avail_targets == 0 then return "." end
+	
+
+	local avail = {}
+	for _,c in sgs.qlist(self.player:getCards("e")) do
+		if (not self.player:isBrokenEquip(c:getEffectiveId())) then
+            table.insert(avail, c)
+		end
+	end
+	
+	if #avail > 0 then
+		return "@GuwuCard=".. avail[1]:getId()  .. "->" .. avail_targets[1]
+	elseif not self.player:isChained() then
+		return "@GuwuCard=.->" .. avail_targets[1]
+	end
+	return "."
+end
+
+
+--[茗荷]
+--[[sgs.ai_skill_invoke.minghe =function(self,data)
+	local f = 0
+	local e = 0
+	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
+		if self:isFriend(p) then
+			if p:isChained() or not p:getShownHandcards():isEmpty() or not p:getBrokenEquips():isEmpty() then
+				f = f + 1
+				if p:getHp() > self.player:getHp()  then
+					f = f - 1
+				end
+			end
+		elseif self:isEnemy(p) then
+			if p:isChained() or not p:getShownHandcards():isEmpty() or not p:getBrokenEquips():isEmpty() then
+				e = e + 1
+				if p:getHp() > self.player:getHp()  then
+					e = e - 1
+				end
+			end
+		end
+	end
+	return f >= e 
+end
+]]
+sgs.ai_skill_use["@@minghe"] = function(self, prompt)
+	local targets={}
+	for _, p in ipairs(self.room:getAlivePlayers()) do
+		if p:isChained() or not p:getShownHandcards():isEmpty() or not p:getBrokenEquips():isEmpty() then
+			if self:isEnemy(p) and p:getHp() > self.player:getHp() then
+				table.insert(targets,p:objectName())
+			elseif self:isFriend(p) and p:getHp() <= self.player:getHp() then
+				table.insert(targets,p:objectName())
+			end
+		end
+	end
+	if #targets >1 then
+		return "@MingheCard=.->" .. table.concat(targets, "+")
+	end
+	return "."
+end
+
+
+
+--天空璋：丁礼田舞
+--[狂舞]
+sgs.ai_skill_use["@@kuangwu"] = function(self, prompt)
+	local  l =self.player:property("kuangwuavailability"):toString():split("+")
+	local targets =sgs.QList2Table(self.room:getAlivePlayers())
+	self:sort(targets,"defense")
+	local avail_targets = {}
+	local use = self.player:getTag("kuangwu"):toCardUse()
+	
+	for _,p in ipairs(targets) do
+		if table.contains(l, p:objectName()) then  
+			local res = kuangwu_judge(self,target, use)
+			if res == 2 and self:isFriend(p) then 
+				table.insert(avail_targets, p:objectName())
+			elseif res == 1 and self:isEnemy(p) then
+				table.insert(avail_targets, p:objectName())
+			end
+		end
+	end
+
+	if #avail_targets == 0 then return "." end
+	
+
+	local avail = {}
+	for _,c in sgs.qlist(self.player:getCards("e")) do
+		if (not self.player:isBrokenEquip(c:getEffectiveId())) then
+            table.insert(avail, c)
+		end
+	end
+	
+	if #avail > 0 then
+		return "@KuangwuCard=".. avail[1]:getId()  .. "->" .. avail_targets[1]
+	elseif not self.player:isChained() then
+		return "@KuangwuCard=.->" .. avail_targets[1]
+	end
+	return "."
+end
+
+--[竹屉]
+--[[sgs.ai_skill_invoke.zhuti =function(self,data)
+	local f = 0
+	local e = 0
+	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
+		if self:isFriend(p) then
+			if p:isChained() or not p:getShownHandcards():isEmpty() or not p:getBrokenEquips():isEmpty() then
+				
+				if p:getHp() > self.player:getHp()  then
+					f = f - 1
+				else
+					f = f + 1
+				end
+			end
+		elseif self:isEnemy(p) then
+			if p:isChained() or not p:getShownHandcards():isEmpty() or not p:getBrokenEquips():isEmpty() then
+				if p:getHp() > self.player:getHp()  then
+					e = e - 1
+				else
+					e = e + 1
+				end
+			end
+		end
+	end
+	return f >= e 
+end
+]]
+sgs.ai_skill_use["@@zhuti"] = function(self, prompt)
+	local targets={}
+	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
+		if p:isChained() or not p:getShownHandcards():isEmpty() or not p:getBrokenEquips():isEmpty() then
+			if self:isEnemy(p) and p:getHp() > self.player:getHp() then
+				table.insert(targets,p:objectName())
+			elseif self:isFriend(p) and p:getHp() <= self.player:getHp() then
+				table.insert(targets,p:objectName())
+			end
+		end
+	end
+	if #targets >1 then
+		return "@ZhutiCard=.->" .. table.concat(targets, "+")
+	end
+	return "."
+end
+
+
 --天空璋：SP摩多罗隐岐奈 
 --[门扉]
 local menfei_skill = {}
