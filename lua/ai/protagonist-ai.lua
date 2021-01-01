@@ -622,6 +622,36 @@ sgs.jiezou_suit_value = {
 }
 
 
+
+
+local jiezou_hegemony_skill = {}
+jiezou_hegemony_skill.name = "jiezou_hegemony"
+table.insert(sgs.ai_skills, jiezou_hegemony_skill)
+function jiezou_hegemony_skill.getTurnUseCard(self)
+	if self.player:hasFlag("jiezou_hegemony") then return nil end
+	local cards = self.player:getCards("hes")
+	cards=self:touhouAppendExpandPileToList(self.player, cards)
+	cards=sgs.QList2Table(cards)
+	local card
+	self:sortByUseValue(cards,true)
+	for _,acard in ipairs(cards) do
+		if acard:getSuit() == sgs.Card_Spade then
+			card = acard
+			break
+		end
+	end
+	if not card then return nil end
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	local card_str = ("snatch:jiezou_hegemony[%s:%s]=%d"):format(suit, number, card_id)
+	local skillcard = sgs.Card_Parse(card_str)
+	assert(skillcard)
+	return skillcard
+end
+
+
+
 function keycard_shoucang(card)
 	if card:isKindOf("Peach") or card:isKindOf("SavageAssault")
 	or card:isKindOf("ArcheryAttack") or card:isKindOf("ExNihilo") then
