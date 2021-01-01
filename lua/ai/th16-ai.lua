@@ -50,6 +50,98 @@ sgs.ai_skill_use_func.MishenCard = function(card, use, self)
 	use.card=card
 end
 
+sgs.ai_use_priority.MishenCard =  sgs.ai_use_priority.LureTiger
+
+
+--[里季]
+--武器：【知己知彼】；防具：【铁索连环】；进攻马：火【杀】；防御马：【桃】；宝物：【调虎离山】
+local liji_skill={}
+liji_skill.name="liji"
+table.insert(sgs.ai_skills,liji_skill)
+liji_skill.getTurnUseCard=function(self)
+	return sgs.Card_Parse("@LijiCard=.")
+end
+sgs.ai_skill_use_func.LijiCard = function(card, use, self)
+	local nextTarget = self.room:findPlayerByObjectName(self.player:getNextAlive():objectName())
+	local lastTarget = self.room:findPlayerByObjectName(self.player:getLastAlive():objectName())
+	
+	local function goodTarget(target)
+		local can = false
+		for _,c in sgs.qlist(target:getEquips()) do
+			if (not target:isBrokenEquip(c:getEffectiveId())) then
+				if c:isKindOf("Weapon") and self:isEnemy(target) then
+					can = true
+					break
+				elseif c:isKindOf("Armor") and self:isFriend(target) and target:isChained()  then
+					can = true
+					break
+				elseif c:isKindOf("Armor") and self:isEnemy(target) and not target:isChained()  then
+					can = true
+					break
+				elseif c:isKindOf("OffensiveHorse") and self:isEnemy(target)  then
+					can = true
+					break
+				elseif c:isKindOf("DefensiveHorse") and self:isFriend(target)  then
+					can = true
+					break
+				elseif c:isKindOf("Treasure") then
+					can = true
+					break
+				end
+			end
+		end
+		
+		return can
+	end
+	
+	if nextTarget and self.player:objectName() ~= nextTarget:objectName() then
+		local can = goodTarget(nextTarget)
+		if can then
+			use.card=card
+			if use.to then
+				use.to:append(nextTarget)
+				return
+			end
+		end
+	end
+	
+	if lastTarget and self.player:objectName() ~= lastTarget:objectName() then
+		local can = goodTarget(lastTarget)
+		if can then
+			use.card=card
+			if use.to then
+				use.to:append(lastTarget)
+				return
+			end
+		end
+	end
+end
+
+sgs.ai_use_priority.LijiCard =  sgs.ai_use_priority.LureTiger + 0.5
+
+sgs.ai_skill_cardchosen.liji = function(self, who, flags)
+
+	for _,c in sgs.qlist(who:getCards("e")) do
+		if (not who:isBrokenEquip(c:getEffectiveId())) then
+			if c:isKindOf("Weapon") and self:isEnemy(who) then
+				return c
+			elseif c:isKindOf("Armor") and self:isFriend(who) and who:isChained()  then
+				return c
+			elseif c:isKindOf("Armor") and self:isEnemy(who) and not who:isChained()  then
+				return c
+			elseif c:isKindOf("OffensiveHorse") and self:isEnemy(who)  then
+				return c
+			elseif c:isKindOf("DefensiveHorse") and self:isFriend(who)  then
+				return c
+			elseif c:isKindOf("Treasure") then
+				return c
+			end
+		end
+	end
+	
+	return who:getCards("e"):first()
+end
+
 
 --[后光]
 sgs.ai_skill_invoke.houguang = true
@@ -58,6 +150,8 @@ sgs.ai_skill_invoke.houguanghide =function(self,data)
 	if not user then  return false end
 	return self:isFriend(user)
 end
+
+
 
 
 --天空璋：坂田合欢
