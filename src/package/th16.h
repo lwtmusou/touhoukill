@@ -137,10 +137,11 @@ class ChuntengCard : public SkillCard
 public:
     Q_INVOKABLE ChuntengCard();
 
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    //virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class Chunteng2Card : public SkillCard
+/*class Chunteng2Card : public SkillCard
 {
     Q_OBJECT
 
@@ -148,7 +149,7 @@ public:
     Q_INVOKABLE Chunteng2Card();
 
     virtual void onEffect(const CardEffectStruct &effect) const;
-};
+};*/
 
 class TH16Package : public Package
 {

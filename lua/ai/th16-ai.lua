@@ -543,3 +543,38 @@ sgs.ai_skill_invoke.houhu =function(self,data)
 	return false
 end
 
+
+
+--天空璋：SP莉莉霍瓦特 
+--[春腾]
+sgs.ai_skill_use["@@chunteng-card"] = function(self, prompt)
+
+	if self.friends_noself == 0 then return nil end
+	local use = self.player:getTag("chunteng_use"):toCardUse()
+	local l = {}
+	for _, id in sgs.qlist(self.player:getPile("spring")) do
+		local c = sgs.Sanguosha:getCard(id)
+		if (c:getSuit() == use.card:getSuit()) then 
+			table.insert(l, c)
+		end
+	end
+	self:sortByUseValue(l,true)
+	--return "@ChuntengCard=".. l[1]:getId() .."->."
+	return "@ChuntengCard=".. l[1]:getId() .."->" .. self.friends_noself[1]:objectName()
+end
+
+sgs.ai_skill_discard.chunteng = function(self,discard_num)
+	local dis = {}
+	local effect = self.player:getTag("chunteng_effect"):toCardEffect()
+	if (effect.from:getPile("spring"):length() >= 2 or effect.from:isCurrent()) then
+		dis = self:askForDiscard("Dummy", 1, 1, false, false)
+	end
+	return dis
+end
+
+--[花朝]
+sgs.ai_skill_invoke.huazhao = true
+sgs.ai_skill_use["@@huazhao"] = function(self, prompt)
+	local l = self.player:getPile("spring")
+	return "@HuazhaoCard=".. l:first() .."->."
+end
