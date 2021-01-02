@@ -152,7 +152,43 @@ sgs.ai_skill_invoke.houguanghide =function(self,data)
 end
 
 
+--天空璋：爱塔妮缇拉尔瓦
+--[鳞洒]
+local linsa_skill={}
+linsa_skill.name="linsa"
+table.insert(sgs.ai_skills,linsa_skill)
+linsa_skill.getTurnUseCard=function(self)
+	if self.player:hasUsed("LinsaCard") then return nil end
+	local avail = {}
+	for _,c in sgs.qlist(self.player:getCards("hs")) do
+        if #self.friends_noself > 0  then
+            table.insert(avail, c)
+		elseif (c:getSuit() == sgs.Card_Heart or c:getSuit() == sgs.Card_Spade) and not c:isKindOf("Peach") then
+			table.insert(avail, c)
+		end
+    end
 
+	self:sortByUseValue(avail,true)
+
+	if #avail > 0 then
+		return sgs.Card_Parse("@LinsaCard=" .. avail[1]:getEffectiveId())
+	end
+end
+sgs.ai_skill_use_func.LinsaCard = function(card, use, self)
+	local targets = self.friends_noself
+	if (card:getSuit() == sgs.Card_Heart or card:getSuit() == sgs.Card_Spade) then
+		targets = self.enemies
+	end
+	self:sort(targets, "hp")
+	if #targets == 0 then return end
+	use.card=card
+	if use.to then
+		use.to:append(targets[1])
+		if use.to:length() >= 1 then return end
+	end
+	
+end
+sgs.ai_use_priority.LinsaCard =  sgs.ai_use_priority.Slash + 0.5
 
 --天空璋：坂田合欢
 --[磨刀]
