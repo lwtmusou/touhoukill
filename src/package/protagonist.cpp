@@ -168,7 +168,7 @@ public:
             p = use.from;
         } else {
             resp = data.value<CardResponseStruct>();
-            p = resp.m_who;
+            p = resp.m_from; //m_who
         }
 
         if (p == NULL)
