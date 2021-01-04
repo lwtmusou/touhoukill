@@ -140,10 +140,10 @@ return
 	["#tewi"] = "幸运的白兔",
 	["designer:tewi"] = "星野梦美☆",
 
-	["illustrator:tewi"] = "鳥居すみ",
-	["origin:tewi"] = "p号：32227729，个人ID：38915",
-	["illustrator:tewi_1"] = "すばち",
-	["origin:tewi_1"] = "p号：26687425，个人ID：22027",
+	["illustrator:tewi"] = "すばち",
+	["origin:tewi"] = "p号：26687425，个人ID：22027",
+	["illustrator:tewi_1"] = "鳥居すみ",
+	["origin:tewi_1"] = "p号：32227729，个人ID：38915",
 	["illustrator:tewi_2"] = "カトウハルアキ",
 	["origin:tewi_2"] = "未知",
 
