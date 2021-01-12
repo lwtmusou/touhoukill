@@ -1586,13 +1586,17 @@ public:
         ServerPlayer *p = data.value<ServerPlayer *>();
         if (p->getPhase() == Player::Play && p->hasFlag("yaolieffected")) {
             // Beware!! This should match Card::TypeBasic to Card::TypeEquip
-            for (int i = 1; i <= 3; ++i) {
+            // Tag "yaolieffect0" is for no actual effect
+            for (int i = 0; i <= 3; ++i) {
                 QString tagName = "yaolieffect" + QString::number(i);
                 if (p->tag.contains(tagName)) {
-                    ServerPlayer *owner = p->tag[tagName].value<ServerPlayer *>();
-                    SkillInvokeDetail d(this, owner, p, NULL, true, NULL, false);
-                    d.tag["yaolieffect"] = i;
-                    r << d;
+                    QVariantList owners = p->tag[tagName].toList();
+                    foreach (const QVariant &_owner, owners) {
+                        ServerPlayer *owner = _owner.value<ServerPlayer *>();
+                        SkillInvokeDetail d(this, owner, p, NULL, true, NULL, false);
+                        d.tag["yaolieffect"] = i;
+                        r << d;
+                    }
                 }
             }
         }
@@ -1605,15 +1609,27 @@ public:
         ServerPlayer *p = data.value<ServerPlayer *>();
         int i = invoke->tag["yaolieffect"].toInt();
 
-        LogMessage l;
-        l.type = "#yaolifinish";
-        l.from = p;
-        l.arg = el.at(i);
-        r->sendLog(l);
+        if (i != 0) {
+            LogMessage l;
+            l.type = "#yaolifinish";
+            l.from = p;
+            l.arg = el.at(i);
+            r->sendLog(l);
+        }
 
         QString tagName = "yaolieffect" + QString::number(i);
-        ServerPlayer *owner = p->tag.take(tagName).value<ServerPlayer *>();
-        r->setPlayerFlag(owner, "-yaoliselected");
+        QVariantList owners = p->tag[tagName].toList();
+        QVariantList ownersNew;
+        foreach (const QVariant &_owner, owners) {
+            if (_owner.value<ServerPlayer *>() != invoke->owner)
+                ownersNew << _owner;
+        }
+        if (ownersNew.isEmpty())
+            p->tag.remove(tagName);
+        else
+            p->tag[tagName] = ownersNew;
+
+        r->setPlayerFlag(invoke->owner, "-yaoliselected");
 
         return false;
     }
@@ -1670,6 +1686,9 @@ void YaoliCard::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.from->getRoom();
     room->setPlayerFlag(effect.to, "yaoliselected");
+    effect.from->setFlags("yaolieffected");
+
+    int yaoliTagTypeId = 0;
 
     if (effect.to->askForSkillInvoke("yaoli-draw", QVariant::fromValue(effect), "hahahahahaha:" + effect.from->objectName())) {
         effect.to->drawCards(1, "yaoli");
@@ -1697,13 +1716,18 @@ void YaoliCard::onEffect(const CardEffectStruct &effect) const
                 l.arg = Yaoli::el[static_cast<int>(thiscard->getTypeId())];
                 room->sendLog(l);
 
-                effect.from->setFlags("yaolieffected");
-                QString tagName = "yaolieffect" + QString::number(static_cast<int>(thiscard->getTypeId()));
-                if (!effect.from->tag.contains(tagName))
-                    effect.from->tag[tagName] = QVariant::fromValue(effect.to);
+                yaoliTagTypeId = static_cast<int>(thiscard->getTypeId());
             }
         }
     }
+
+    QString tagName = "yaolieffect" + QString::number(yaoliTagTypeId);
+
+    QVariantList yaoliTagList;
+    if (effect.from->tag.contains(tagName))
+        yaoliTagList = effect.from->tag.value(tagName).toList();
+
+    effect.from->tag[tagName] = (yaoliTagList << QVariant::fromValue(effect.to));
 }
 
 class YaoliBasic : public TriggerSkill
