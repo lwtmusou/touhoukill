@@ -1,3 +1,5 @@
+--魅魔
+--[魅灵]
 sgs.ai_skill_invoke.meiling = function(self,data)
 	local damage = self.player:getTag("meiling"):toDamage()
 	local will_damage = (self.player:distanceTo(damage.to)  > self.player:getLostHp())
@@ -25,6 +27,9 @@ sgs.ai_skill_invoke.meiling = function(self,data)
 	return point > 1
 end
 
+
+--冈崎梦美
+--[次元]
 sgs.ai_skill_choice.ciyuan = function(self, choices, data)
 	local choice_table = choices:split("+")
 	if choices:match("cancel") then
@@ -76,7 +81,7 @@ sgs.ai_skill_choice.ciyuan = function(self, choices, data)
 	end
 end
 
-
+--[时轨]
 sgs.ai_skill_invoke.shigui = function(self,data)
 	local phase = self.player:getPhase()
 	local pahseCount = self.player:getMark("shigui")
@@ -112,6 +117,7 @@ sgs.ai_need_bear.shigui = function(self, card,from,tos)
 	return false
 end
 
+--[虫洞]
 --[[sgs.ai_skill_invoke.chongdong = true
 sgs.ai_skill_cardask["@chongdong"] = function(self, data)
 	local current = self.room:getCurrent()
@@ -167,7 +173,8 @@ sgs.ai_choicemade_filter.skillInvoke.chongdong = function(self, player, args, da
 	end
 end
 
-
+--北白河千百合
+--[侦测]
 sgs.ai_skill_use["@@zhence"] = function(self, prompt)
 	local change = self.player:getTag("zhence"):toPhaseChange()
 	if change.to == sgs.Player_Draw or (change.to == sgs.Player_Play and self:getOverflow(self.player) < 2) then
@@ -188,6 +195,7 @@ sgs.ai_skill_use["@@zhence"] = function(self, prompt)
 	return "."
 end
 
+--[时驱]
 sgs.ai_skill_choice.shiqu = function(self, choices, data)
 	local current = self.room:getCurrent()
 	if self:isEnemy(current) and choices:match("shiqu_discard") and self:getOverflow(current) >= 2 then
@@ -233,12 +241,15 @@ sgs.ai_card_intention.ShiquCard = function(self, card, from, tos)
 end
 
 
+--朝仓理香子
+--旧技能
 sgs.ai_trick_prohibit.jinfa = function(self, from, to, card)
 	if not card:isKindOf("DelayedTrick")  then return false end
 	if self:isFriend(from,to) then return false end
 	return true
 end
 
+--[求索]
 sgs.ai_skill_cardask["@qiusuo"] = function(self, data)
 	local point_num = {}
 	for i = 1, 13 do
@@ -279,6 +290,7 @@ sgs.ai_skill_cardask["@qiusuo"] = function(self, data)
 end
 
 
+--卡娜·安娜贝拉尔
 --[[
 sgs.ai_skill_invoke.lubiao = function(self,data)
 	local current = self.room:getCurrent()
@@ -306,6 +318,7 @@ sgs.ai_choicemade_filter.skillInvoke.lubiao = function(self, player, args)
 end
 ]]
 
+--[梦消]
 sgs.ai_skill_choice.mengxiao = function(self, choices, data)
 	local current = self.room:getCurrent()
 	if choices:match("indulgence") then
@@ -363,7 +376,7 @@ sgs.ai_trick_prohibit.mengxiao = function(self, from, to, card)
 	return false
 end
 
-
+--[路标]
 sgs.ai_skill_invoke.lubiao =  true
 function lubiaoInvoke(self, card)
 	for _,p in sgs.qlist(self.room:getAlivePlayers())do
@@ -390,7 +403,8 @@ sgs.ai_damageInflicted.lubiao =function(self, damage)
 	return damage
 end
 
-
+--旧作幽香
+--[夜魇]
 sgs.ai_skill_invoke.yeyan =  true
 function yeyan_judge(self,target,card)
 	if card:isKindOf("AmazingGrace") then
@@ -440,14 +454,14 @@ sgs.ai_skill_cardask["yeyan-show"] = function(self, data)
 	return "."
 end
 
+--[幽月]
 sgs.ai_skill_invoke.youyue = true
 
-
-
+--梦月 ＆ 幻月
 --sgs.ai_skill_invoke.xuxiang = true
 sgs.ai_skill_invoke.huanjue = true
 
-
+--[幻痛]
 sgs.ai_skill_invoke.huantong = true
 local function  huantongValue(cards, self, damage, huantongDamage)
 	local tmp = damage
@@ -546,10 +560,12 @@ sgs.ai_cardneed.huantong = function(to, card, self)
 	end
 end
 
+--[梦湮]
 sgs.ai_skill_invoke.mengyan = true
 
 
-
+--艾丽
+--[镰幕]
 sgs.ai_skill_use["@@lianmu"] = function(self, prompt)
 	local slash = sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
 	slash:setSkillName("lianmu");
@@ -569,6 +585,7 @@ sgs.ai_skill_use["@@lianmu"] = function(self, prompt)
 	return "."
 end
 
+--[幻卫]
 sgs.ai_skill_invoke.huanwei =  true
 sgs.ai_damageCaused.huanwei = function(self, damage)
 	if damage.card and not damage.chain and not damage.transfer then
@@ -579,6 +596,9 @@ sgs.ai_damageCaused.huanwei = function(self, damage)
 	return damage
 end
 
+
+--神绮
+--[创世]
 sgs.ai_skill_use["@@sqchuangshi"] = function(self, prompt)
 	local targets={}
 	for _, p in ipairs(self.friends_noself) do
@@ -637,7 +657,7 @@ sgs.ai_skill_use["BasicCard+^Jink,TrickCard+^Nullification,EquipCard|.|.|sqchuan
 	return "."
 end
 
-
+--[源法]
 sgs.ai_skill_invoke.yuanfa  = function(self)
 	local f = 0
 	local e = 0
@@ -654,6 +674,8 @@ sgs.ai_skill_invoke.yuanfa  = function(self)
 end
 
 
+--旧作爱丽丝
+--[怪绮]
 function turnUse_guaiqi(self)
 	local piles = self.player:getPile("modian")
 	local guaiqis = {}-- for use trick
@@ -803,6 +825,7 @@ function sgs.ai_cardsview_valuable.guaiqi(self, class_name, player)
 	return nil
 end
 
+--[魔典]
 local modianvs_skill = {}
 modianvs_skill.name = "modian_attach"
 table.insert(sgs.ai_skills, modianvs_skill)
@@ -871,6 +894,8 @@ end
 	return "draw"
 end]]
 
+--萨丽艾尔
+--[报死]
 sgs.ai_skill_use["@@baosi"] = function(self, prompt)
 	self:sort(self.enemies,"defense")
 	local enemies = {}
@@ -883,7 +908,7 @@ sgs.ai_skill_use["@@baosi"] = function(self, prompt)
 	return "@BaosiCard=.->" .. table.concat(enemies, "+")
 end
 
-
+--[魔眼]
 local moyan_skill = {}
 moyan_skill.name = "moyan"
 table.insert(sgs.ai_skills, moyan_skill)
@@ -913,7 +938,7 @@ sgs.ai_use_value.MoyanCard = 2
 sgs.ai_use_priority.MoyanCard = sgs.ai_use_priority.ExNihilo - 0.2
  sgs.ai_card_intention.MoyanCard = 50
 
-
+--旧技能噩兆
 local ezhao_skill = {}
 ezhao_skill.name = "ezhao"
 table.insert(sgs.ai_skills, ezhao_skill)
@@ -942,9 +967,11 @@ sgs.ai_use_value.EzhaoCard = 2
 sgs.ai_use_priority.EzhaoCard = sgs.ai_use_priority.Slash + 0.2
 
 
-
+--矜羯罗
+--[星幽]
 sgs.ai_skill_invoke.xingyou =  true
 
+--[纵酒]
 local zongjiu_skill = {}
 zongjiu_skill.name = "zongjiu"
 table.insert(sgs.ai_skills, zongjiu_skill)
@@ -999,7 +1026,8 @@ end
 end]]
 
 
-
+--梦子
+--[奇刃]
 local qiren_skill = {}
 qiren_skill.name = "qiren"
 table.insert(sgs.ai_skills, qiren_skill)
@@ -1088,7 +1116,7 @@ sgs.ai_skill_use_func.QirenCard=function(card,use,self)
 	end
 end
 sgs.ai_use_priority.QirenCard = 10
-
+--[幻术]
 sgs.ai_skill_invoke.huanshu =  true
 
 
@@ -1100,8 +1128,8 @@ sgs.ai_skill_invoke.jinduan = function(self, data)
 	return false
 end
 
-
-
+-- 雪 ＆ 舞
+--[戮力]
 sgs.ai_skill_use["@@luli"] = function(self, prompt)
 
 	local num = self.player:getMark("luli")
@@ -1151,7 +1179,7 @@ sgs.ai_skill_cardask["@chenjue"] = function(self, data)
 	return "$" .. cards[1]:getId()
 end
 
-
+--[协舞]
 sgs.ai_skill_choice.xiewu = function(self, choices, data)
 	local target = data:toCardUse().from
 	if not target then
@@ -1177,6 +1205,9 @@ sgs.ai_choicemade_filter.skillChoice.xiewu = function(self, player, args, data)
 
 end
 
+
+--明罗
+--[暗流]
 sgs.ai_skill_invoke.anliu = function(self, data)
 	local target =self.player:getTag("anliu-target"):toPlayer()
 	return self:isEnemy(target)
