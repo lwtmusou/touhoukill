@@ -885,7 +885,8 @@ public:
         if (change.to == Player::NotActive) {
             foreach (ServerPlayer *p, room->getAllPlayers()) {
                 if (p->hasFlag("hezhou_used"))
-                    p->setFlags("-hezhou_used");
+                    room->setPlayerFlag(p, "-hezhou_used");
+                    //p->setFlags("-hezhou_used");
             }
         }
     }
