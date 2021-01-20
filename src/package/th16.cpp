@@ -390,7 +390,7 @@ public:
             ServerPlayer *p = data.value<ServerPlayer *>();
             if (p != NULL) {
                 if (!p->tag.contains("diexingHp"))
-                    p->tag["diexingHp"] = p->getGeneral()->getMaxHp();
+                    p->tag["diexingHp"] = p->getMaxHp(); //p->getGeneral()->getMaxHp();
 
                 p->tag["diexingHp2"] = p->tag.value("diexingHp");
                 p->tag["diexingHp"] = p->getHp();
