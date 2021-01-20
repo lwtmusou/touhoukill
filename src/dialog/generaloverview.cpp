@@ -326,7 +326,11 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
             name = Sanguosha->translate(general->objectName());
         kingdom = Sanguosha->translate(general->getKingdom());
         //gender = general->isMale() ? tr("Male") : (general->isFemale() ? tr("Female") : tr("NoGender"));
+        
         max_hp = QString::number(general->getMaxHp());
+        if (general->objectName().endsWith("hegemony"))
+            max_hp = QString::number(double(general->getMaxHp()) / 2);
+            
         package = Sanguosha->translate(general->getPackage());
 
         QString nickname = Sanguosha->translate("#" + general_name);
