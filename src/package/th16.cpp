@@ -1127,6 +1127,23 @@ public:
         use.to.append(invoke->targets);
         room->sortByActionOrder(use.to);
         data = QVariant::fromValue<CardUseStruct>(use);
+
+        //log notice
+        room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
+        room->notifySkillInvoked(invoke->invoker, objectName());
+
+        foreach(ServerPlayer *p, invoke->targets)
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), p->objectName());
+        
+        
+        LogMessage alog;
+        alog.type = "$Kuangwu";
+        alog.from = use.from;
+        alog.card_str = use.card->toString();
+        alog.to = invoke->targets;
+        alog.arg = objectName();
+        room->sendLog(alog);
+
         return false;
     }
 };
