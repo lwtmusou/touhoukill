@@ -57,7 +57,8 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        auto t = invoke->targets.first();
+        invoke->targets.first()->drawCards(1);
+        /*auto t = invoke->targets.first();
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         DummyCard c;
         foreach (int id, move.card_ids) {
@@ -66,7 +67,7 @@ public:
         }
 
         t->obtainCard(&c);
-
+        */
         return false;
     }
 };
