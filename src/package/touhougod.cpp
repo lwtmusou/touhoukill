@@ -5731,7 +5731,7 @@ public:
                 else
                     use.card->setFlags("mopao");
             } else if (use.card->isKindOf("Slash")) {
-                QString choice = "second";
+                choice = "second";
                 if (use.card->isKindOf("LightSlash") || use.card->isKindOf("PowerSlash")) {
                     QString choices = QString("%1_first+%2_second").arg(use.card->objectName()).arg(use.card->objectName());
                     choice = room->askForChoice(invoke->invoker, objectName(), choices);
