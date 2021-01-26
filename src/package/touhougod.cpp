@@ -6881,6 +6881,44 @@ public:
     }
 };
 
+class Kuangji : public TriggerSkill
+{
+public:
+    Kuangji()
+        : TriggerSkill("kuangji")
+    {
+        events << Damaged;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.to->isAlive() && damage.to->hasSkill(this))
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    {
+        int x = room->alivePlayerCount();
+        //if (room->getDrawPile().length() < x)
+        //    room->swapPile();
+        
+        QList<int> list = room->getNCards(x);
+        CardsMoveStruct move(list, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, invoke->invoker->objectName(), objectName(), QString()));
+        room->moveCardsAtomic(move, true);
+
+        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, invoke->invoker->objectName(), objectName(), QString());
+        DummyCard dummy(list);
+        room->throwCard(&dummy, reason, NULL);
+
+        return false;
+    }
+};
+
+
+/*
 KuangjiCard::KuangjiCard()
 {
     will_throw = true;
@@ -7040,7 +7078,7 @@ public:
         else
             return 0;
     }
-};
+};*/
 
 class Dimai : public TriggerSkill
 {
@@ -7450,8 +7488,8 @@ TouhouGodPackage::TouhouGodPackage()
     General *yuka_god = new General(this, "yuka_god", "touhougod", 4);
     yuka_god->addSkill(new Xiuye);
     yuka_god->addSkill(new Kuangji);
-    yuka_god->addSkill(new KuangjiTargetMod);
-    related_skills.insertMulti("kuangji", "#kuangji_effect");
+    //yuka_god->addSkill(new KuangjiTargetMod);
+    //related_skills.insertMulti("kuangji", "#kuangji_effect");
 
     General *tenshi_god = new General(this, "tenshi_god", "touhougod", 4);
     tenshi_god->addSkill(new Dimai);
@@ -7480,7 +7518,7 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<XianshiCard>();
     addMetaObject<WenyueCard>();
     addMetaObject<QianqiangCard>();
-    addMetaObject<KuangjiCard>();
+    //addMetaObject<KuangjiCard>();
     addMetaObject<XiuyeCard>();
     skills << new ChaorenLog << new Wendao << new RoleShownHandler << new ShenbaoAttach << new Ziwo << new Benwo << new Chaowo << new TiandaoDistance;
 }

@@ -249,7 +249,7 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class KuangjiCard : public SkillCard
+/*class KuangjiCard : public SkillCard
 {
     Q_OBJECT
 
@@ -261,7 +261,7 @@ public:
     //virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
-
+*/
 class XiuyeCard : public SkillCard
 {
     Q_OBJECT
