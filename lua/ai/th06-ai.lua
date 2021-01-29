@@ -1,4 +1,5 @@
-
+--蕾米莉亚·斯卡雷特
+--[渴血]
 function sgs.ai_cardsview_valuable.skltkexue_attach(self, class_name, player)
 	if class_name == "Peach" and player:getHp()> player:dyingThreshold() then
 		local dying = player:getRoom():getCurrentDyingPlayer()
@@ -93,6 +94,7 @@ end
 
 sgs.ai_skill_invoke.skltkexue =  true
 
+--[命运]
 --sgs.ai_skill_invoke.EightDiagram
 --sgs.ai_armor_value.EightDiagram
 --SmartAI:getFinalRetrial
@@ -130,7 +132,7 @@ sgs.ai_skillProperty.mingyun = function(self)
 end
 
 
-
+--[血裔]
 sgs.ai_skill_invoke.xueyi = function(self, data)
 	local to =data:toPlayer()
 	return self:isFriend(to)
@@ -146,7 +148,8 @@ sgs.ai_choicemade_filter.skillInvoke.xueyi = function(self, player, promptlist, 
 	end
 end
 
-
+--芙兰朵露·斯卡雷特
+--[破坏]
 sgs.ai_skill_invoke.pohuai =  true
 function SmartAI:pohuaiBenefit(player)
 	local value=0
@@ -199,6 +202,7 @@ sgs.ai_judge_model.pohuai = function(self, who)
 	return judge
 end
 
+--[浴血]
 sgs.yuxue_keep_value = {
 	Peach           = 5.5,
 	Analeptic       = 5.5,
@@ -241,11 +245,14 @@ sgs.ai_cardneed.yuxue = function(to, card, self)
 	 and card:isKindOf("Slash")
 end
 
+--[盛宴]
 sgs.ai_skill_invoke.shengyan = function(self)
 		return not self:needKongcheng(self.player, true)
 end
 
 
+--十六夜咲夜
+--[锁定]
 local suoding_skill = {}
 suoding_skill.name = "suoding"
 table.insert(sgs.ai_skills, suoding_skill)
@@ -294,7 +301,7 @@ sgs.ai_use_value.SuodingCard = 8
 sgs.ai_use_priority.SuodingCard =7
 sgs.ai_card_intention.SuodingCard = 20
 
-
+--[回溯]
 sgs.ai_skill_invoke.huisu = function(self)
 	return self:invokeTouhouJudge()
 end
@@ -308,9 +315,13 @@ sgs.ai_skillProperty.huisu = function(self)
 	return "cause_judge"
 end
 
+
+--帕秋莉·诺蕾姬
+--[博览]
 sgs.ai_skill_invoke.bolan = true
 sgs.ai_skill_invoke.bolan_hegemony = true
 
+--[合咒]
 local hezhou_skill = {}
 hezhou_skill.name = "hezhou"
 table.insert(sgs.ai_skills, hezhou_skill)
@@ -400,7 +411,7 @@ function sgs.ai_cardsview_valuable.hezhou(self, class_name, player)
 end
 
 
-
+--[合咒 国]
 function sgs.ai_cardsview_valuable.hezhou_hegemony(self, class_name, player)
 	if self:touhouClassMatch(class_name, "Peach") then
 		if (sgs.Sanguosha:getCurrentCardUseReason() ~= sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE) then
@@ -496,6 +507,10 @@ sgs.ai_skill_playerchosen.hezhou_hegemony = function(self, targets)
 	return nil
 end
 
+
+
+--红美铃
+--[太极]
 sgs.ai_skill_invoke.taiji = function(self, data)
 	local use=self.player:getTag("taiji"):toCardUse()
 	--默认只补给自己人
@@ -511,7 +526,7 @@ sgs.ai_skill_invoke.taiji = function(self, data)
 	return false
 end
 
-
+--[背水]
 local beishui_skill = {}
 beishui_skill.name = "beishui"
 table.insert(sgs.ai_skills, beishui_skill)
@@ -730,7 +745,8 @@ function sgs.ai_cardsview_valuable.beishui_hegemony(self, class_name, player)
 end
 
 
-
+--琪露诺
+--[冻结]
 sgs.ai_skill_invoke.dongjie = function(self, data)
 		local damage =self.player:getTag("dongjie"):toDamage()
 		local to = damage.to
@@ -766,6 +782,7 @@ sgs.dongjie_keep_value = {
 	Slash           = 6.4
 }
 
+--[冻结 国]
 sgs.ai_skill_invoke.dongjie_hegemony = function(self, data)
 	local damage =self.player:getTag("dongjie_hegemony"):toDamage()
 	local to = damage.to
@@ -777,6 +794,7 @@ sgs.ai_skill_invoke.dongjie_hegemony = function(self, data)
 	return self:isFriend(to) ~= to:faceUp()
 end
 
+--[冰魄]
 sgs.ai_skill_invoke.bingpo =  true
 sgs.ai_damageInflicted.bingpo =function(self, damage)
 	if damage.nature ~= sgs.DamageStruct_Fire then
@@ -790,6 +808,9 @@ end
 
 sgs.ai_skill_invoke.bingpo_hegemony =  true
 
+
+--露米娅
+--[真夜]
 sgs.ai_skill_playerchosen.zhenye = function(self, targets)
 	local target_table= sgs.QList2Table(targets)
 	self:sort(target_table,"hp")
@@ -813,8 +834,7 @@ sgs.ai_playerchosen_intention.zhenye =function(self, from, to)
 	sgs.updateIntention(from, to, intention)
 end
 
-
-
+--[真夜 国]
 sgs.ai_skill_playerchosen.zhenye_hegemony = function(self, targets)
 	local target_table= sgs.QList2Table(targets)    
     local do_turnup = true
@@ -837,6 +857,8 @@ sgs.ai_skill_playerchosen.zhenye_hegemony = function(self, targets)
 	return nil
 end
 
+
+--[暗域]
 sgs.ai_skill_invoke.anyu = true
 sgs.ai_skill_choice.anyu= function(self, choices, data)
 	if self.player:faceUp() then
@@ -870,7 +892,8 @@ sgs.ai_slash_prohibit.anyu = function(self, from, to, card)
 end
 
 
-
+--小恶魔
+--[魔契]
 sgs.ai_skill_invoke.moqi = function(self,data)
 	local use = data:toCardUse()
 	return self:isFriend(use.from)
@@ -886,6 +909,7 @@ sgs.ai_skill_invoke.moqi_hegemony = function(self,data)
 	return true
 end
 
+--[司书]
 local sishu_skill = {}
 sishu_skill.name = "sishu"
 table.insert(sgs.ai_skills, sishu_skill)
@@ -915,6 +939,9 @@ sgs.ai_skill_playerchosen.sishu = function(self, targets)
 end
 sgs.ai_playerchosen_intention.sishu = -20
 
+
+--大妖精
+--[具现]
 sgs.ai_skill_invoke.juxian = true
 sgs.ai_skill_invoke.juxian_hegemony = true
 
@@ -939,8 +966,7 @@ sgs.ai_skill_suit.juxian = function(self)
 		return sgs.string2suit[maxsuit] or sgs.Card_Spade
 end
 
-
---国战版
+--[半月 国]
 local banyue_hegemony_skill = {}
 banyue_hegemony_skill.name = "banyue_hegemony"
 table.insert(sgs.ai_skills, banyue_hegemony_skill)
@@ -984,7 +1010,7 @@ end
 sgs.ai_use_value.BanyueHegemonyCard = 3
 sgs.ai_use_priority.BanyueHegemonyCard =6
 
-
+--[半月]
 local banyue_skill = {}
 banyue_skill.name = "banyue"
 table.insert(sgs.ai_skills, banyue_skill)
@@ -1022,7 +1048,8 @@ sgs.ai_card_intention.BanyueCard = function(self, card, from, tos)
 	end
 end
 
-
+--SP猎人咲夜
+--[觅踪]
 sgs.ai_skill_playerchosen.mizong = function(self, targets)
 	for _,target in sgs.qlist(targets) do
 		if self:isWeak(target) and self:isEnemy(target) then
@@ -1042,6 +1069,7 @@ sgs.ai_skill_playerchosen.mizong = function(self, targets)
 end
 sgs.ai_playerchosen_intention.mizong = 20
 
+--[银刃]
 sgs.ai_skill_invoke.yinren = function(self, data)
 	local target = data:toPlayer()
 	return self:isEnemy(target)
@@ -1057,7 +1085,8 @@ sgs.ai_choicemade_filter.skillInvoke.yinren = function(self, player, promptlist,
 end
 
 
-
+--冴月麟
+--[消隐]
 sgs.ai_skill_invoke.xiaoyin = function(self, data)
 	local target = self.room:getCurrent()
 	return self:isEnemy(target) and self:isWeak(self.player)
@@ -1083,7 +1112,10 @@ sgs.ai_skill_use["@@xiaoyinVS!"] = function(self, prompt)
 	return "."
 end
 
+--幼灵梦SP露米娅
+--[嗜血]
 sgs.ai_skill_invoke.shixue =  true
+--[暗月]
 sgs.ai_skill_invoke.anyue = function(self, data)
 	local target = data:toPlayer()
 	if self:isEnemy(target) then

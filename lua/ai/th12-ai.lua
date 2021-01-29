@@ -1,4 +1,5 @@
-
+--圣白莲
+--[普渡]
 local pudu_skill = {}
 pudu_skill.name = "pudu"
 table.insert(sgs.ai_skills, pudu_skill)
@@ -38,10 +39,10 @@ sgs.ai_skill_use_func.PuduCard=function(card,use,self)
 end
 sgs.ai_card_intention.PuduCard = -100
 sgs.ai_use_priority.PuduCard = sgs.ai_use_priority.Analeptic + 0.2
-
+--[救赎]
 sgs.ai_skill_invoke.jiushu = true
 
-
+--[法华]
 local fahua_loyalist=function(self,from,to,card)
 	if self:touhouEffectNullify(card,from,to) then
 		return true
@@ -117,7 +118,8 @@ sgs.ai_trick_prohibit.fahua = function(self, from, to, card)
 end
 
 
-
+--封兽鵺
+--[未知]
 local weizhi_skill = {}
 weizhi_skill.name = "weizhi"
 table.insert(sgs.ai_skills, weizhi_skill)
@@ -253,7 +255,8 @@ sgs.ai_cardneed.weizhi = function(to, card, self)
 	end
 end
 
-sgs.ai_skill_invoke.weizhuang =  true
+--[伪装]
+--sgs.ai_skill_invoke.weizhuang =  true
 sgs.ai_skill_cardask["@weizhuang-discard"] = function(self, data)
 	local target =self.player:getTag("weizhuang_target"):toPlayer()
 	local use =data:toCardUse()
@@ -323,8 +326,10 @@ sgs.ai_skill_invoke.weizhuang =function(self,data)
 end
 
 
+--寅丸星
+--老版技能已经没用
 --function SmartAI:hasTrickEffective(card, to, from) ??
-sgs.ai_skill_cardask["@zhengyi"] = function(self, data)
+--[[sgs.ai_skill_cardask["@zhengyi"] = function(self, data)
 	local use =data:toCardUse()
 	if self:touhouCardUseEffectNullify(use,self.player) then
 		return "."
@@ -352,7 +357,7 @@ end
 sgs.ai_cardneed.zhengyi = function(to, card, self)
 	return  card:isRed()
 end
-
+]]
 
 sgs.ai_skill_playerchosen.baota = function(self, targets)
 	local target =self:touhouFindPlayerToDraw(false, 1)
@@ -372,7 +377,7 @@ sgs.ai_no_playerchosen_intention.baota =function(self, from)
 	end
 end
 
-
+--[净化]
 function sgs.ai_cardsview_valuable.jinghua(self, class_name, player)
 	if class_name == "Nullification" then
 		local reds = {}
@@ -395,10 +400,12 @@ sgs.ai_cardneed.jinghua = function(to, card, self)
 	return card:isRed()
 end
 sgs.ai_skill_invoke.jinghua = true
+--[威光]
 sgs.ai_skill_invoke.weiguang = true
 
 
-
+--村纱水蜜
+--[水难]
 sgs.ai_skill_invoke.shuinan = function(self,data)
 	local target=data:toPlayer()
 	if target and self:isEnemy(target) then
@@ -415,7 +422,7 @@ sgs.ai_choicemade_filter.skillInvoke.shuinan = function(self, player, args, data
 	end
 end
 
-
+--[溺惑]
 local nihuo_skill = {}
 nihuo_skill.name = "nihuo"
 table.insert(sgs.ai_skills, nihuo_skill)
@@ -497,6 +504,8 @@ sgs.ai_cardneed.nihuo = function(to, card, self)
 end
 
 
+--云居一轮
+--[理智]
 --SmartAI:getAoeValue(card, player)
 --sgs.ai_skill_cardask.aoe
 sgs.ai_skill_invoke.lizhi = function(self,data)
@@ -530,13 +539,13 @@ sgs.ai_cardneed.lizhi = function(to, card, self)
 		return  card:isKindOf("AOE")
 	end
 end
-
+--[理智 国]
 sgs.ai_skill_playerchosen.lizhi_hegemony = function(self,targets)
 	local target_table =sgs.QList2Table(targets)
 	self:sort(target_table,"handcard")
 	return target_table[1]
 end
-
+--[云上]
 sgs.ai_skill_invoke.yunshang =function(self,data)
 	local user = self.room:getTag("yunshang_use"):toCardUse().from
 	local card=self.room:getTag("yunshang_use"):toCardUse().card
@@ -550,9 +559,12 @@ sgs.ai_skill_invoke.yunshang =function(self,data)
 	return false
 end
 
+--娜兹玲
+--旧版技能已经没用
 sgs.ai_skill_invoke.souji = true
 sgs.ai_skill_invoke.tansuo = true
 
+--[寻宝]
 sgs.ai_skill_invoke.xunbao = true
 --[[sgs.ai_skill_askforag.xunbao = function(self, card_ids)
 	if #card_ids > 0 then
@@ -560,6 +572,7 @@ sgs.ai_skill_invoke.xunbao = true
 	end
 	return -1
 end]]
+--[灵摆]
 function sgs.ai_cardsview_valuable.lingbai(self, class_name, player)
 	if class_name == "Slash"  or  class_name == "Jink" then
 		if self.player:getMark("lingbai") == 0 then return nil end
@@ -602,7 +615,8 @@ lingbai_skill.getTurnUseCard = function(self, inclusive)
 	return slash
 end
 
-
+--多多良小伞
+--[遗忘]
 sgs.ai_skill_playerchosen.yiwang = function(self, targets)
 	local target_table= sgs.QList2Table(targets)
 	self:sort(target_table,"hp")
@@ -640,7 +654,7 @@ sgs.ai_need_bear.yiwang = function(self, card,from,tos)
 	return false
 end
 
-
+--[惊吓]
 sgs.ai_skill_choice.jingxia=function(self)
 	local damage=self.player:getTag("jingxia"):toDamage()
 	local from=damage.from
@@ -742,7 +756,7 @@ sgs.ai_skill_cardchosen.jingxia = function(self, who, flags)
 end
 --sgs.ai_playerchosen_intention.jingxia = 50
 sgs.ai_choicemade_filter.cardChosen.jingxia = sgs.ai_choicemade_filter.cardChosen.dismantlement
-
+--[惊吓 国]
 sgs.ai_skill_choice.jingxia_hegemony=function(self)
 	local damage=self.player:getTag("jingxia"):toDamage()
 	local from=damage.from
@@ -779,6 +793,8 @@ sgs.ai_skill_choice.jingxia_hegemony=function(self)
 	return "dismiss"
 end
 
+--云山
+--[变幻]
 sgs.ai_skill_invoke.bianhuan = function(self, data)
 	local damage =data:toDamage()
 	local x=self.player:getLostHp()
@@ -801,7 +817,7 @@ sgs.ai_skill_invoke.bianhuan = function(self, data)
 	return false
 end
 
-
+--[变幻 国]
 sgs.ai_skill_invoke.bianhuan_hegemony = function(self, data)
 	local damage =data:toDamage()
     if damage.from and self:isFriend(damage.from) and damage.nature ~= sgs.DamageStruct_Normal then
@@ -814,7 +830,7 @@ sgs.ai_skill_invoke.bianhuan_hegemony = function(self, data)
 
     return damage.damage > 1 or (not self:isFriend(damage.from) and effect)
 end
-
+--[怒火]
 local nuhuo_skill = {}
 nuhuo_skill.name = "nuhuo"
 table.insert(sgs.ai_skills, nuhuo_skill)
@@ -899,6 +915,9 @@ sgs.ai_playerchosen_intention.nuhuo =function(self, from, to)
 	end
 end
 
+
+--命莲
+--[善逝]
 sgs.ai_skill_invoke.shanshi = function(self, data)
 	local target = data:toPlayer()
 	return target and self:isFriend(target)
@@ -915,7 +934,7 @@ sgs.ai_skill_invoke.shanshi_hegemony = function(self, data)
 	return target and self:isFriend(target)
 end
 
-
+--[赎心]
 local shuxin_skill = {}
 shuxin_skill.name = "shuxin"
 table.insert(sgs.ai_skills, shuxin_skill)
@@ -1013,7 +1032,8 @@ sgs.ai_skill_cardask["@shuxin"] = function(self, data)
 end
 
 
-
+--SP幽谷响子
+--[回声]
 sgs.ai_skill_use["@@huisheng"] = function(self, prompt)
 	local use=self.room:getTag("huisheng_use"):toCardUse()
 	local target = use.from
@@ -1061,7 +1081,7 @@ sgs.ai_skill_use["@@huisheng"] = function(self, prompt)
 	return "@HuishengCard=.->" .. table.concat(targets, "+")
 end
 
-
+--[夜响]
 sgs.ai_skill_invoke.yexiang = function(self,data)
 	local target=data:toPlayer()
 	return self:isEnemy(target)

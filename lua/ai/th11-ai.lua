@@ -1,3 +1,5 @@
+--古明地觉
+--[想起]
 function SmartAI:xiangqiDamageEffect(to)
 	local fakeDamage=sgs.DamageStruct()
 	fakeDamage.card=nil
@@ -162,10 +164,11 @@ sgs.ai_cardneed.xiangqi = function(to, card, self)
 		or (not to:getOffensiveHorse() and  getCardsNum("OffensiveHorse",to,self.player)<1 and card:isKindOf("OffensiveHorse"))
 	end
 end
-
+--[读心 国]
 sgs.ai_skill_invoke.duxin_hegemony = true
 
 
+--  技能 护主 已经没用
 sgs.ai_skill_invoke.huzhu = function(self,data)
 	cards =self.player:getCards("hs")
 	cardname="Jink"
@@ -211,7 +214,7 @@ sgs.ai_choicemade_filter.skillInvoke.huzhu_change = function(self, player, args)
 	end
 end
 
-
+--[幽瞳]
 sgs.ai_skill_playerchosen.youtong = function(self, targets)
 	for _,p in sgs.qlist(targets) do
 		if self:isFriend(p) and p:hasSkill("duxin") then
@@ -228,6 +231,8 @@ sgs.ai_no_playerchosen_intention.youtong =function(self, from)
 	end
 end
 
+--古明地恋
+--[埋火]
 local maihuo_skill = {}
 maihuo_skill.name = "maihuo"
 table.insert(sgs.ai_skills, maihuo_skill)
@@ -288,7 +293,7 @@ sgs.ai_skill_property.maihuo = { effect = {{"DrawEffect"},{"DrawEffect"}},
 	end
 end]]
 
-
+--[无念]
 function wunian_judge(self,user,card)
 	if card:isKindOf("AmazingGrace") then
 		return 2
@@ -337,6 +342,8 @@ function SmartAI:getDamageSource(attacker)
 	return true
 end
 
+--灵乌路空
+--[耀斑]
 sgs.ai_skill_use["@@yaoban"] = function(self, prompt)
 	if self.player:isKongcheng() then return "." end
 
@@ -409,9 +416,11 @@ function SmartAI:copyHereSlash(card)
 	end
 	return new_slash
 end
+--[核热]
 sgs.ai_skill_invoke.here =  true
 
-
+--火焰猫燐
+--[怨灵]
 sgs.ai_skill_invoke.yuanling = function(self,data)
 	local target=self.player:getTag("yuanling"):toPlayer()
 	if self:isEnemy(target) then
@@ -419,7 +428,7 @@ sgs.ai_skill_invoke.yuanling = function(self,data)
 	end
 end
 
-
+--[送葬]
 function Cansave(self,dying,need_peachs)
 	local all =self.room:getAlivePlayers()
 	local peach_asked=true
@@ -634,7 +643,8 @@ function sgs.ai_cardsview_valuable.songzang(self, class_name, player)
 	--return "@ShijieCard="..cards[1]:getId()
 end
 
-
+--星熊勇仪
+--[怪力]
 function SmartAI:canGuaili(slash)
 	if not self.player:hasSkill("guaili") then return false end
 	for _,c in sgs.qlist(self.player:getCards("hs")) do
@@ -687,7 +697,7 @@ sgs.ai_cardneed.guaili = function(to, card, self)
 	end
 end
 
-
+--[酒豪]
 local jiuhao_skill = {}
 jiuhao_skill.name = "jiuhao"
 table.insert(sgs.ai_skills, jiuhao_skill)
@@ -719,7 +729,8 @@ sgs.ai_cardneed.jiuhao = function(to, card, self)
 end
 sgs.ai_use_priority.JiuhaoCard = sgs.ai_use_priority.Slash
 
-
+--水桥帕露西
+--[嫉妒]
 sgs.ai_skill_cardask["@jidu"] = function(self, data)
 	local use = data:toCardUse()
 	if self:touhouCardUseEffectNullify(use, self.player) then return "." end
@@ -741,7 +752,7 @@ sgs.ai_skill_cardask["@jidu"] = function(self, data)
 	if #cards <= 0 then return "." end
 	return "$" .. cards[1]:getId()
 end
-
+--[葛笼]
 sgs.ai_skill_invoke.gelong = function(self,data)
 	--local damage = data:toDamage()
 	--return not self:isFriend(damage.from)
@@ -755,14 +766,15 @@ sgs.ai_skill_choice.gelong= function(self)
 	return "gelong1"
 end
 
-
+--黑谷山女
+--[传染]
 sgs.ai_skill_invoke.chuanran =  true
 sgs.ai_skill_invoke.chuanran_hegemony  =function(self,data)
 	local player = data:toPlayer()
 	return not self:isFriend(player)
 end
 
-
+--[热病]
 sgs.ai_skill_playerchosen.rebing = function(self, targets)
 	local current = self.room:getCurrent()
 	local hasSlash  = getCardsNum("Slash", current, self.player) > 0
@@ -795,8 +807,8 @@ sgs.ai_skill_playerchosen.rebing = function(self, targets)
 	return nil
 end
 
-
-
+--琪斯美
+--[钓瓶]
 sgs.ai_skill_invoke.diaoping  =function(self,data)
 	if self.player:isKongcheng() then return false end
 	local use=self.player:getTag("diaoping_slash"):toCardUse()
@@ -893,6 +905,9 @@ sgs.ai_skill_invoke.diaoping_hegemony  =function(self,data)
     return true 
 end
 
+
+--地灵殿SP萃香
+--[萃集]
 sgs.ai_skill_choice.cuiji=function(self, choices, data)
 	local s = choices:split("+")
 	return s[#s]
@@ -905,7 +920,7 @@ sgs.ai_skill_choice.cuiji_suit =function(self)
 	end
 
 end
-
+--[萃集 国]
 sgs.ai_skill_invoke.cuiji_hegemony = true
 sgs.ai_skill_choice.cuiji_hegemony_suit = function(self, choices, data)
 	local cards = self.player:getCards("hes")
@@ -928,11 +943,7 @@ sgs.ai_skill_choice.cuiji_hegemony_suit = function(self, choices, data)
 	return "basic"
 end
 
-
-
-
-
-
+--[百鬼]
 local baigui_skill = {}
 baigui_skill.name = "baigui"
 table.insert(sgs.ai_skills, baigui_skill)
@@ -992,7 +1003,7 @@ sgs.ai_use_priority.baigui = sgs.ai_use_priority.SavageAssault
 sgs.ai_cardneed.baigui = function(to, card, self)
 	return  card:getSuit()==sgs.Card_Spade
 end
-
+--[酒虫]
 sgs.ai_view_as.jiuchong = function(card, player, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
