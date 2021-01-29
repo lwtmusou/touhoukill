@@ -1,3 +1,5 @@
+--少名针妙丸
+--[宝槌]
 sgs.ai_skill_cardask["@baochui"] = function(self, data)
 	local target = self.room:getCurrent()
 	if not self:isFriend(target) then return "." end
@@ -15,7 +17,7 @@ sgs.ai_choicemade_filter.cardResponded["@baochui"] = function(self, player, args
 	end
 end
 
-
+--[一寸]
 function SmartAI:yicunEffective(card, to, from)
 	if not to:hasSkill("yicun")  then return false end
 	if card:isKindOf("Slash")  then
@@ -41,6 +43,7 @@ end
 
 sgs.ai_skill_invoke.yicun =  true
 
+--[末裔]
 sgs.ai_skill_invoke.moyi = function(self, data)
 		local to =data:toPlayer()
 		return self:isFriend(to)
@@ -55,7 +58,8 @@ sgs.ai_choicemade_filter.skillInvoke.moyi = function(self, player, args, data)
 end
 
 
-
+--堀川雷鼓
+--[雷霆]
 --todo：雷霆弃牌丢出了已经装入木牛且移给他人的牌
 local leiting_skill = {}
 leiting_skill.name = "leiting"
@@ -143,6 +147,8 @@ sgs.ai_cardneed.leiting = function(to, card, self)
 	end
 end
 
+--鬼人正邪
+--[逆转]
 --[[sgs.ai_skill_cardask["@nizhuan-self"] = function(self, data)
 	if (sgs.ai_skill_invoke.nizhuan(self, data)) then
 		local dis = self:askForDiscard("Dummy", 1, 1, false, false)
@@ -205,6 +211,7 @@ end]]
 	return false
 end]]
 
+--[诡诈]
 --sgs.ai_skill_invoke.guizha =  true
 --[[sgs.ai_skill_cardask["@guizha"] = function(self, data)
 	for _,card in sgs.qlist(self.player:getCards("hs") ) do
@@ -235,6 +242,8 @@ sgs.ai_skill_playerchosen.guizha = function(self, targets)
 	return nil
 end
 
+--九十九弁弁
+--[余音]
 sgs.ai_skill_playerchosen.yuyin = function(self, targets)
 	for _,p in sgs.qlist(targets) do
 		if self:isEnemy(p) then
@@ -243,7 +252,7 @@ sgs.ai_skill_playerchosen.yuyin = function(self, targets)
 	end
 end
 sgs.ai_choicemade_filter.cardChosen.yuyin = sgs.ai_choicemade_filter.cardChosen.dismantlement
-
+--[无常]
 sgs.ai_skill_invoke.wuchang =function(self,data)
 	local current = self.room:getCurrent()
 	return self:isEnemy(current)
@@ -257,7 +266,8 @@ sgs.ai_choicemade_filter.skillInvoke.wuchang = function(self, player, args)
 	end
 end
 
-
+--九十九八桥
+--[残响]
 sgs.ai_skill_playerchosen.canxiang = function(self, targets)
 	for _,p in sgs.qlist(targets) do
 		if self:isEnemy(p) then
@@ -266,7 +276,7 @@ sgs.ai_skill_playerchosen.canxiang = function(self, targets)
 	end
 end
 sgs.ai_choicemade_filter.cardChosen.canxiang = sgs.ai_choicemade_filter.cardChosen.dismantlement
-
+--[俱亡]
 sgs.ai_skill_invoke.juwang =function(self,data)
 	local current = self.room:getCurrent()
 	return self:isEnemy(current)
@@ -283,8 +293,8 @@ sgs.ai_choicemade_filter.skillInvoke.juwang = function(self, player, args)
 end
 
 
-
-
+--今泉影狼
+--[狼影]
 sgs.ai_skill_invoke.langying =function(self,data)
 	local slash_source
 	local strs=data:toStringList()
@@ -328,7 +338,7 @@ sgs.ai_skill_invoke.langying =function(self,data)
 	return true
 end
 
-
+--[远吠]
 function SmartAI:yuanfeiValue(player)
 	local value = 0
 	local cards=self.player:getCards("hs")
@@ -431,7 +441,8 @@ sgs.ai_card_intention.YuanfeiCard = 60
 sgs.ai_card_intention.YuanfeiNearCard = 60
 
 
-
+--赤蛮奇
+--[飞头]
 sgs.ai_skill_invoke.feitou = true
 local feitou_skill = {}
 feitou_skill.name = "feitou"
@@ -462,12 +473,13 @@ function sgs.ai_cardsview_valuable.feitou(self, class_name, player)
 end
 
 
+--若鹭姬
+--[拾珠]
 sgs.ai_skill_invoke.shizhu =function(self,data)
 	return self:getCardsNum("Peach") == 0
 end
 
-
-
+--[恋歌]
 local liange_skill = {}
 liange_skill.name = "liange"
 table.insert(sgs.ai_skills, liange_skill)
@@ -508,6 +520,8 @@ sgs.ai_use_value.LiangeCard = 7
 sgs.ai_use_priority.LiangeCard = sgs.ai_use_priority.Peach + 0.2
 sgs.ai_card_intention.LiangeCard = -70
 
+--天邪鬼SP正邪
+--[天邪]
 sgs.ai_skill_invoke.tianxie =function(self,data)
 	local effect = self.player:getTag("tianxie"):toCardEffect()
 	if not effect.card:hasFlag("tianxieEffected_".. effect.to:objectName()) then
@@ -519,7 +533,7 @@ sgs.ai_skill_invoke.tianxie =function(self,data)
 	end
 	return false
 end
-
+--老技能？
 sgs.ai_skill_invoke.huobao =function(self,data)
 	local target = self.room:getCurrent()
 	return target and self:isEnemy(target)
@@ -530,5 +544,5 @@ sgs.ai_choicemade_filter.skillInvoke.huobao = function(self, player, args)
 		sgs.updateIntention(player, target, 50)
 	end
 end
-
+--[夺宝]
 sgs.ai_skill_invoke.duobao =  true

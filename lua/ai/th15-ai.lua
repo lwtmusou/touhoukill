@@ -1,4 +1,5 @@
-
+--纯狐
+--[瑕秽]
 function getChunhuaCard(player)
 	local damage = "snatch|dismantlement|amazing_grace|archery_attack|savage_assault|iron_chain|collateral|fire_attack|drowning|await_exhausted|known_both|duel|lure_tiger"
 	local recover = "slash|fire_slash|snatch|dismantlement|amazing_grace|archery_attack|savage_assault|iron_chain|collateral|fire_attack|drowning|await_exhausted|known_both|duel|lure_tiger"
@@ -35,6 +36,7 @@ sgs.ai_skill_cardchosen.xiahui = function(self, who, flags)
 	end
 end
 
+--[纯化]
 --[[
 sgs.ai_skill_invoke.chunhua = function(self, data)
 	local use = data:toCardUse()
@@ -70,6 +72,7 @@ sgs.ai_skill_choice.chunhua= function(self,  choices, data)
 	return "cancel"
 end
 
+--[杀意]
 sgs.ai_skill_invoke.shayi = true
 sgs.ai_skill_invoke.shayi_change = function(self, data)
 	local lord = self.room:getLord()
@@ -96,10 +99,13 @@ sgs.ai_skill_use["@@shayi"] = function(self, prompt)
 	return "."
 end
 
+--赫卡提亚·拉碧斯拉祖利
 sgs.shownCard_skill = "chunhua|santi"
+--[三体]
 sgs.ai_skill_invoke.santi =  true
 
-
+--克劳恩皮丝
+--[狂乱]
 sgs.ai_skill_invoke.kuangluan1 = function(self, data)
 	local target = data:toPlayer()
 
@@ -113,7 +119,7 @@ sgs.ai_skill_invoke.kuangluan2 = function(self, data)
 	if self:isFriend(target) and  target:hasSkill("santi") then return true end
 	return false
 end
-
+--[狱意]
 sgs.ai_skill_cardask["@yuyi_discard"] = function(self, data)
 	local damage = data:toDamage()
 	if self:isFriend(damage.from) or not self.player:canDiscard(damage.from, "hs")
@@ -196,7 +202,8 @@ end
 	return false
 end]]
 
-
+--稀神探女
+--[舌祸]
 sgs.ai_skill_use["BasicCard+^Jink,EquipCard|.|.|shehuo"] = function(self, prompt, method)
 	local target = self.player:getTag("shehuo_target"):toPlayer()
 	if not target or not self:isEnemy(target) then return "." end
@@ -223,6 +230,7 @@ sgs.ai_skill_use["TrickCard+^Nullification,EquipCard|.|.|shehuo"] = function(sel
 	return "."
 end
 
+--[慎言]
 sgs.ai_skill_use["@@shenyan"] = function(self, prompt)
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 
@@ -251,6 +259,8 @@ sgs.ai_skill_invoke.shenyan = function(self, data)
 	return current and self:isFriend(current)
 end
 
+--哆来咪·苏伊特
+--[捕梦]
 sgs.ai_skill_invoke.bumeng = function(self, data)
 	local from = data:toPlayer()
 	--from = findPlayerByObjectName(self.room, move.from:objectName(), true)
@@ -264,13 +274,14 @@ sgs.ai_choicemade_filter.skillInvoke.bumeng = function(self, player, args)
 		sgs.updateIntention(player, from, -20)
 	end
 end
+--[入梦]
 sgs.ai_skill_invoke.rumeng = function(self, data)
 	local current = self.room:getCurrent()
 	return current and self:isEnemy(current)
 end
 
 
-
+--铃瑚
 --[[sgs.ai_skill_playerchosen.yuejian = function(self,targets)
 	if #self.enemies == 0 then return nil end
 	self:sort(self.enemies,"defense")
@@ -283,7 +294,7 @@ end
 end
 sgs.ai_playerchosen_intention.yuejian = 10
 ]]
-
+--[月见]
 sgs.ai_skill_use["@@yuejian!"] = function(self, prompt)
 	local cardname = "await_exhausted"
 	local card=sgs.cloneCard(cardname, sgs.Card_NoSuit, 0)
@@ -358,7 +369,7 @@ sgs.ai_skill_use_func.YuejianCard = function(card, use, self)
 	end
 end
 sgs.ai_use_priority.YuejianCard = sgs.ai_use_priority.AwaitExhausted - 0.2
-
+--[浆果]
 function sgs.ai_cardsview_valuable.jiangguo(self, class_name, player)
 	if class_name == "Analeptic" then
 	    local dying = self.room:getCurrentDyingPlayer() 
@@ -375,7 +386,8 @@ function sgs.ai_cardsview_valuable.jiangguo(self, class_name, player)
 	end
 end
 
-
+--清兰
+--[异弹]
 local yidan_skill = {}
 yidan_skill.name = "yidan"
 table.insert(sgs.ai_skills, yidan_skill)
@@ -420,3 +432,5 @@ end
 
 sgs.ai_use_priority.YidanCard = sgs.ai_use_priority.ThunderSlash + 0.2
 --sgs.dynamic_value.damage_card.YidanCard = true
+
+--[血杵] 默认触发

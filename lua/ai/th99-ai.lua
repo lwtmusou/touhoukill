@@ -1,4 +1,5 @@
-
+--稗田阿求
+--[求闻]
 local qiuwen_skill = {}
 qiuwen_skill.name = "qiuwen"
 table.insert(sgs.ai_skills, qiuwen_skill)
@@ -13,9 +14,10 @@ end
 sgs.ai_use_value.QiuwenCard = 7
 sgs.ai_use_priority.QiuwenCard = 7
 
+--[早卒]
 sgs.ai_skill_invoke.zaozu =  true
 
-
+--[当家]
 local dangjiavs_skill = {}
 dangjiavs_skill.name = "dangjia_attach"
 table.insert(sgs.ai_skills, dangjiavs_skill)
@@ -110,7 +112,8 @@ function SmartAI:dangjiaIntention(player)
 	end
 end
 
-
+--森近霖之助
+--[修复]
 function choose_xiufuId(self, card_ids)
 	self.player:removeTag("xiufu_equipid")
 	self.player:removeTag("xiufu_target")
@@ -286,6 +289,10 @@ sgs.ai_use_value.xiufu = 7
 --sgs.ai_card_intention.XiufuCard = -70
 sgs.ai_playerchosen_intention.xiufu = -70
 
+
+
+--朱鹭子
+--[泛读]
 sgs.ai_skill_invoke.fandu = true
 sgs.ai_skill_playerchosen.fandu = function(self, targets)
 	if #self.enemies==0  then return targets:first() end
@@ -326,7 +333,7 @@ sgs.ai_skill_playerchosen.fandu = function(self, targets)
 	return targets:first()
 end
 
-
+--[讨还]
 sgs.ai_skill_invoke.taohuan = function(self, data)
 	local target = data:toPlayer()
 	if self:isFriend(target) then
@@ -350,6 +357,9 @@ sgs.ai_choicemade_filter.skillInvoke.taohuan = function(self, player, args, data
 	end
 end
 
+
+--宇佐见莲子
+--[识途]
 sgs.ai_skill_playerchosen.shitu = function(self, targets)
 	local target_table = self:getFriends(self.player)
 	if #target_table==0 then return false end
@@ -375,10 +385,8 @@ sgs.ai_skill_property.shitu = { effect = {{"DrawEffect"}, {"ExtraDrawPhase"}},
 	target =        {{"AlivePlayers"}, {"AlivePlayers"}},
 }
 
-
-sgs.ai_needToWake.yueshi=function(self,player)
-	return "Damage","StartPhase"
-end
+--玛艾露贝莉·赫恩
+--[梦现]
 sgs.ai_need_damaged.mengxian = function(self, attacker, player)
 	if player:hasSkills("mengxian+jingjie") and player:getMark("mengxian") == 0  then
 		if player:getPile("jingjie"):length()<=3 then
@@ -387,7 +395,7 @@ sgs.ai_need_damaged.mengxian = function(self, attacker, player)
 	end
 	return false
 end
-
+--[乱影]
 function SmartAI:canLuanying(player, card )
 	if not player:hasSkill("luanying") or  player:getPile("jingjie"):isEmpty()  then
 		return false
@@ -444,7 +452,7 @@ sgs.ai_skill_cardask["@luanying-invoke"] = function(self, data)
 	end
 	return "."
 end
-
+--[梦现 国]
 sgs.ai_skill_use["@@mengxian_hegemony"] = function(self, prompt)
     local current = self.room:getCurrent()
     if current and self:isFriend(current) and self:getOverflow(current) > 0  then
@@ -483,11 +491,19 @@ sgs.ai_skill_cardask["@mengxian_hegemony"] = function(self, data)
 	return "."
 end
 
+
+--绵月丰姬
+--[月使]
+sgs.ai_needToWake.yueshi=function(self,player)
+	return "Damage","StartPhase"
+end
+
 --国战版
 sgs.ai_skill_invoke.yueshi_hegemony  = function(self)
 	return self:invokeTouhouJudge()
 end
 
+--[连系]
 sgs.ai_skill_use["@@lianxi"] = function(self, prompt)
 	local need_recast=false
 	if self:getOverflow() <=0 then
@@ -562,6 +578,9 @@ sgs.ai_needToWake.yueshi=function(self,player)
 	return "Chained","StartPhase"
 end
 
+
+--绵月依姬
+--[凭依]
 local function pingyi_skillname(player)
 	local skillname
 	local room=player:getRoom()
@@ -665,7 +684,10 @@ sgs.ai_choicemade_filter.cardResponded["@pingyi-discard"] = function(self, playe
 	end
 end
 
+--桑尼·米尔克
+--技能 贪吃 已取消
 sgs.ai_skill_invoke.tanchi =  true
+--[折射]
 sgs.ai_skill_use["@@zheshe"] = function(self, data, method)
 	if not method then method = sgs.Card_MethodDiscard end
 	local friend_lost_hp = 10
@@ -768,7 +790,7 @@ function SmartAI:touhouDamageTransfer(player)
 	end]]
 	return false
 end
-
+--[助戏]
 sgs.ai_skill_invoke.zhuxi =  function(self, data)
 	--local r = data:toRecover()
 	--return self:isFriend(r.to)
@@ -776,6 +798,9 @@ sgs.ai_skill_invoke.zhuxi =  function(self, data)
 	return self:isFriend(target)
 end
 
+
+--露娜·切露德
+--[捉弄]
 local zhuonong_skill = {}
 zhuonong_skill.name = "zhuonong"
 table.insert(sgs.ai_skills, zhuonong_skill)
@@ -907,6 +932,7 @@ sgs.ai_choicemade_filter.skillChoice.zhuonong = function(self, player, args, dat
 		sgs.updateIntention(player, target, 40)
 	end
 end
+--[寂静]
 --sgs.ai_skill_invoke.jijing =  true
 sgs.ai_skill_playerchosen.jijing = function(self, targets)
 	local good_targets = {}
@@ -932,6 +958,9 @@ sgs.ai_playerchosen_intention.jijing = function(self, from, to)
 	end
 end
 
+
+--斯塔·萨菲雅
+--[感应]
 sgs.ai_skill_playerchosen.ganying = function(self, targets)
 	--if self:isWeak(self.player) then return self.player end
 	for _,p in sgs.qlist(targets) do
@@ -949,6 +978,7 @@ sgs.ai_skill_invoke.ganying = true
 		or (not to:getOffensiveHorse() and  getCardsNum("OffensiveHorse",to,self.player)<1 and card:isKindOf("OffensiveHorse"))
 	end
 end]]
+--[独避]
 function SmartAI:canDubi()
 	if self:isWeak() then
 		return self:getCardsNum("Pecah") > 0  or self:getCardsNum("Analeptic") > 0
@@ -1001,7 +1031,8 @@ sgs.ai_skill_playerchosen.dubi = function(self, targets)
 	end
 end
 
-
+--茨木華扇
+--[祝酒]
 sgs.ai_skill_cardask["@zhujiu"] = function(self, data)
 	local target = self.player:getTag("zhujiu_target"):toPlayer()
 	if not target or not self:isFriend(target)  then return "." end
@@ -1019,7 +1050,7 @@ sgs.ai_choicemade_filter.cardResponded["@zhujiu"] = function(self, player, args)
 	end
 end
 
-
+--[御兽]
 function SmartAI:yushouValue(from ,to)
 	if self:isFriend(from , to) then
 		return 0
@@ -1115,6 +1146,9 @@ end
 
 sgs.ai_use_priority.YushouCard = 8
 
+
+--本居小铃
+--[判读]
 local pandu_skill = {}
 pandu_skill.name = "pandu"
 table.insert(sgs.ai_skills, pandu_skill)
@@ -1155,7 +1189,7 @@ sgs.ai_skill_use_func.PanduCard=function(card,use,self)
 end
 sgs.ai_card_intention.PanduCard = 50
 sgs.ai_use_priority.PanduCard = sgs.ai_use_priority.Dismantlement -0.4
-
+--[避祸]
 sgs.ai_skill_playerchosen.bihuo = function(self, targets)
 	if #self.enemies ==0 then return nil end
 	local weak_targets={}
@@ -1230,8 +1264,10 @@ sgs.ai_slash_prohibit.bihuo = function(self, from, to, card)
 end
 
 
-
+--三月精SP琪露诺
+--[寻事]
 sgs.ai_skill_invoke.xunshi =  true
+--[急冻]
 sgs.ai_skill_cardask["jidong-discard"] = function(self, data)
 	local use = data:toCardUse()
 	if self:touhouCardUseEffectNullify(use, self.player) then return "." end
@@ -1288,7 +1324,8 @@ sgs.ai_choicemade_filter.cardResponded["jidong-confirm"] = function(self, player
 end
 
 
-
+--铃奈庵SP猯藏
+--[障目]
 sgs.ai_skill_invoke.zhangmu = function(self, data)
 	local use = self.player:getTag("zhangmu"):toCardUse()
 	if use.card:isKindOf("Slash") then
@@ -1362,6 +1399,7 @@ sgs.ai_skill_discard.zhangmu = function(self)
 	return to_discard
 end
 
+--[利诱]
 sgs.ai_skill_playerchosen.liyou = function(self, targets)
 	local cards = self.player:getCards("hes")
 	cards = sgs.QList2Table(cards)
@@ -1375,6 +1413,8 @@ sgs.ai_skill_playerchosen.liyou = function(self, targets)
 end
 sgs.ai_playerchosen_intention.liyou = -30
 
+--铃仙二号
+--[思乡]
 sgs.ai_skill_invoke.sixiang =  true
 sgs.ai_slash_prohibit.sixiang = function(self, from, to, card)
 	if not card:isKindOf("NatureSlash") then return false end
@@ -1398,7 +1438,7 @@ sgs.ai_slash_prohibit.sixiang = function(self, from, to, card)
 
 	return true
 end
-
+--[捣药]
 sgs.ai_skill_choice.daoyao= function(self, choices, data)
 	local target= data:toPlayer()
 	if choices:match("discard") and self:isEnemy(target) then
