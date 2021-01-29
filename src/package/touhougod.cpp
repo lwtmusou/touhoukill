@@ -6835,7 +6835,14 @@ public:
     {
         if (e == CardFinished) {
             CardUseStruct use = data.value<CardUseStruct>();
-            // Xiuye should not be virtual card!!
+            //for ai  //&&  !use.from->isOnline()  && use.card->getId() > 0
+            if ( use.card->getSuit() == Card::Club && use.from  &&  use.from->isAlive() && use.card->getSkillName() == objectName() && use.card->getEffectiveId() > 0) {
+                if (room->getCardPlace(use.card->getEffectiveId()) != Player::DiscardPile)
+                    return QList<SkillInvokeDetail>();
+                
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);
+            }
+            // when  player is online, Xiuye should not be virtual card!!
             if (use.card->getSuit() == Card::Club && use.from && use.from->isAlive() && use.from->tag.contains("xiuye") && use.card->getId() > 0) {
                 // iterate xiuye tag
                 if (!VariantList2IntList(use.from->tag.value("xiuye", QVariantList()).toList()).contains(use.card->getId()))
@@ -6859,7 +6866,7 @@ public:
     {
         if (e == CardFinished) {
             CardUseStruct use = data.value<CardUseStruct>();
-            invoke->invoker->addToPile("xiuye", use.card->getId());
+            invoke->invoker->addToPile("xiuye", use.card->getEffectiveId());
             QList<int> l = VariantList2IntList(use.from->tag.value("xiuye", QVariantList()).toList());
             l.removeAll(use.card->getId());
             use.from->tag["xiuye"] = IntList2VariantList(l);

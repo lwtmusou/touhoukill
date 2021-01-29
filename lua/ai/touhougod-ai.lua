@@ -1126,9 +1126,9 @@ function sgs.ai_cardsview_valuable.chaoren(self, class_name, player)
 	local number = acard:getNumberString()
 	local card_id = acard:getEffectiveId()
 
-	if class_name == "Slash" and acard:isKindOf("Slash") then
-		return (acard:objectName()..":chaoren[%s:%s]=%d"):format(suit, number, card_id)
-	end
+	--if class_name == "Slash" and acard:isKindOf("Slash") then
+	--	return (acard:objectName()..":chaoren[%s:%s]=%d"):format(suit, number, card_id)
+	--end
 	if acard:isKindOf(class_name) then
 		return (acard:objectName()..":chaoren[%s:%s]=%d"):format(suit, number, card_id)
 	end
@@ -1829,7 +1829,67 @@ end
 
 
 -- 神 风见幽香
---无
+--[朽叶]
+local function getXiuye(self)
+	local cards = {}
+	local pile = self.room:getDiscardPile()
+	if pile:isEmpty() then return cards end
+	for _, id in sgs.qlist(pile) do
+		local acard = sgs.Sanguosha:getCard(id)
+		if acard:getSuit() == sgs.Card_Club then
+			table.insert(cards, acard)
+		end
+	end
+	return cards
+end
+
+local xiuye_skill = {}
+xiuye_skill.name = "xiuye"
+table.insert(sgs.ai_skills, xiuye_skill)
+xiuye_skill.getTurnUseCard = function(self, inclusive)
+		 
+		local cards = getXiuye(self)
+		if #cards == 0 then return false end
+		self:sortByUseValue(cards,true)
+		local acard = cards[1]
+		
+		if not acard:isAvailable(self.player) then return false end
+		local suit =acard:getSuitString()
+		local number = acard:getNumberString()
+		local card_id = acard:getEffectiveId()
+		local slash_str = (acard:objectName()..":xiuye[%s:%s]=%d"):format(suit, number, card_id)
+
+		local slash = sgs.Card_Parse(slash_str)
+
+		assert(slash)
+		return slash
+
+end
+
+function sgs.ai_cardsview_valuable.xiuye(self, class_name, player)
+	if sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_RESPONSE then return nil end
+	local cards = getXiuye(self)
+	if #cards == 0 then return nil end
+	local acard
+	for _, c in ipairs(cards) do
+		if c:isKindOf(class_name) then 
+			acard = c
+			break
+		end
+	end
+    --if whether the first player can choose demonstration of the patent world,
+	if not acard then return nil end
+	local suit =acard:getSuitString()
+	local number = acard:getNumberString()
+	local card_id = acard:getEffectiveId()
+
+	return (acard:objectName()..":xiuye[%s:%s]=%d"):format(suit, number, card_id)
+	
+end
+
+
+--[狂季]
+sgs.ai_skill_invoke.kuangji =  true
 
 --神比那名居天子
 --[天道]
