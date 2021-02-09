@@ -978,6 +978,17 @@ sgs.ai_skill_invoke.ganying = true
 		or (not to:getOffensiveHorse() and  getCardsNum("OffensiveHorse",to,self.player)<1 and card:isKindOf("OffensiveHorse"))
 	end
 end]]
+
+sgs.ai_skill_playerchosen.ganying_hegemony = function(self, targets)
+	for _,p in sgs.qlist(targets) do
+		if self:isEnemy(p) and self:isWeak(p) then
+			return p
+		end
+	end
+	
+	return self.player
+end
+
 --[独避]
 function SmartAI:canDubi()
 	if self:isWeak() then
