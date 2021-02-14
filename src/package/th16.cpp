@@ -801,6 +801,8 @@ public:
     {
         SavingEnergy *se = new SavingEnergy(Card::SuitToBeDecided, -1);
         se->addSubcard(originalCard);
+        se->setSkillName(objectName());
+        se->setShowSkill(objectName());
         return se;
     }
 };
