@@ -2522,6 +2522,7 @@ public:
     {
         view_as_skill = new MianlingVS;
         events << BeforeCardsMove << CardFinished;
+        related_pile = "qsmian";
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
