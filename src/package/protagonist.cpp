@@ -55,19 +55,9 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         invoke->targets.first()->drawCards(1);
-        /*auto t = invoke->targets.first();
-        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        DummyCard c;
-        foreach (int id, move.card_ids) {
-            if (Sanguosha->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::DiscardPile)
-                c.addSubcard(id);
-        }
-
-        t->obtainCard(&c);
-        */
         return false;
     }
 };
@@ -132,10 +122,10 @@ public:
 
         if (room->getCurrent() != NULL && room->getCurrent()->isAlive() && room->getCurrent()->getPhase() != Player::NotActive && player != NULL && card->isKindOf("BasicCard")
             && player->getMark("fengmoRecord") == 1) {
-            foreach(ServerPlayer *reimu, room->findPlayersBySkillName(objectName())) {
+            foreach (ServerPlayer *reimu, room->findPlayersBySkillName(objectName())) {
                 if (reimu != player)
                     d << SkillInvokeDetail(this, reimu, reimu, NULL, false, player);
-            }    
+            }
         }
 
         return d;
@@ -147,8 +137,7 @@ public:
         const Card *usedcard = NULL;
         if (triggerEvent == CardUsed) {
             usedcard = data.value<CardUseStruct>().card;
-        }
-        else if (triggerEvent == CardResponded) {
+        } else if (triggerEvent == CardResponded) {
             CardResponseStruct response = data.value<CardResponseStruct>();
             usedcard = response.m_card;
         }
@@ -186,7 +175,6 @@ public:
 
         room->judge(j);
         if (j.isBad() && !j.ignore_judge) {
-            
             if (triggerEvent == CardUsed) {
                 use.nullified_list << "_ALL_TARGETS";
                 data = QVariant::fromValue(use);

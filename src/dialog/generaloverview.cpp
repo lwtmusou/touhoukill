@@ -326,11 +326,11 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
             name = Sanguosha->translate(general->objectName());
         kingdom = Sanguosha->translate(general->getKingdom());
         //gender = general->isMale() ? tr("Male") : (general->isFemale() ? tr("Female") : tr("NoGender"));
-        
+
         max_hp = QString::number(general->getMaxHp());
         if (general->objectName().endsWith("hegemony"))
             max_hp = QString::number(double(general->getMaxHp()) / 2);
-            
+
         package = Sanguosha->translate(general->getPackage());
 
         QString nickname = Sanguosha->translate("#" + general_name);
@@ -672,13 +672,12 @@ void GeneralOverview::askChangeSkin()
 
             if (pixmap.width() <= 1 && pixmap.height() <= 1)
                 pixmap = G_ROOM_SKIN.getCardMainPixmap(unique_general);
-        }
-        else
+        } else
             return;
     }
     ui->generalPhoto->setPixmap(pixmap);
-    ui->illustratorLineEdit->setText(getIllustratorInfo(general_name));//unique_general
-    ui->originLineEdit->setText(getOriginInfo(general_name));//unique_general
+    ui->illustratorLineEdit->setText(getIllustratorInfo(general_name)); //unique_general
+    ui->originLineEdit->setText(getOriginInfo(general_name)); //unique_general
 }
 
 void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders, const QStringList &kingdoms, int lower, int upper,

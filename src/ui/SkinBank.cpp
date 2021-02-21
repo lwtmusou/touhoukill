@@ -369,7 +369,7 @@ QPixmap QSanRoomSkin::getGeneralPixmap(const QString &generalName, GeneralIconSi
                 if (!tmpFiles.isEmpty())
                   
             }*/
-        }    
+        }
         QString key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(size).arg(name);
 
         if (isImageKeyDefined(key))
@@ -667,7 +667,7 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, bo
         groupKey = key.arg(S_SKIN_KEY_DEFAULT);
         QString fileNameToResolve = _readImageConfig(groupKey, clipRegion, clipping, scaleRegion, scaled);
         fileName = fileNameToResolve.arg(arg);
-        if (!QFile::exists(fileName)){
+        if (!QFile::exists(fileName)) {
             groupKey = key.arg(S_SKIN_KEY_DEFAULT_SECOND);
             QString fileNameToResolve = _readImageConfig(groupKey, clipRegion, clipping, scaleRegion, scaled);
             fileName = fileNameToResolve.arg(arg);
@@ -682,8 +682,7 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, bo
         if (skin_index > 0) {
             fileName.replace("image/", "image/heroskin/");
             fileName.replace(general_name, QString("%1_%2").arg(general_name).arg(skin_index));
-        }
-        else if (isHegemonyGameMode(ServerInfo.GameMode) && fileName.contains("image/fullskin/generals/full")) {//ignore avatar
+        } else if (isHegemonyGameMode(ServerInfo.GameMode) && fileName.contains("image/fullskin/generals/full")) { //ignore avatar
             QString tmpFileName = fileName;
             tmpFileName.replace(general_name, QString("%1").arg(general_name + "_hegemony"));
             if (QFile::exists(tmpFileName))
@@ -691,7 +690,7 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, bo
         }
     }
 
-    //test version 
+    //test version
     /*if (isGeneral && heroSkin) {
         QString unique_general = general_name;
         unique_general = unique_general.replace("_hegemony", "");
@@ -709,7 +708,6 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, bo
             }
         }
     }*/
-
 
     QPixmap pixmap = getPixmapFromFileName(fileName, cache);
     if (clipping) {

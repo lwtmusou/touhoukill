@@ -700,7 +700,7 @@ bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden
     }
 
     //Other modes
-    //For skill "yibian" of reimu_god 
+    //For skill "yibian" of reimu_god
     if (getMark("@disableShowRole") > 0 && !hasShownRole()) {
         if (skill->getFrequency() != Skill::Eternal && !skill->isAttachedLordSkill() && !hasEquipSkill(skill_name))
             return false;

@@ -357,10 +357,9 @@ public:
     {
         if (e == CardFinished)
             return true;
-        invoke->invoker->tag["nizhuan_carduse"] = data;//for ai
+        invoke->invoker->tag["nizhuan_carduse"] = data; //for ai
         return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget));
     }
-
 
     bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {

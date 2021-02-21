@@ -12,10 +12,10 @@
 #include "recorder.h"
 #include "roomscene.h"
 #include "server.h"
+#include "sgswindow.h"
 #include "startscene.h"
 #include "ui_mainwindow.h"
 #include "updatedialog.h"
-#include "sgswindow.h"
 
 #include <QCheckBox>
 #include <QComboBox>

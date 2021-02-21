@@ -1336,7 +1336,6 @@ public:
     }
 };
 
-
 class GanyingHegemony : public TriggerSkill
 {
 public:
@@ -1353,7 +1352,7 @@ public:
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.to->isDead())
                 return QList<SkillInvokeDetail>();
-            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (p != damage.to && damage.to->getHp() == p->getHp())
                     d << SkillInvokeDetail(this, p, p, NULL, false, damage.to);
             }
@@ -1362,7 +1361,7 @@ public:
         if (e == HpRecover) {
             RecoverStruct recover = data.value<RecoverStruct>();
             //recover.to
-            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (p != recover.to && recover.to->getHp() == p->getHp())
                     d << SkillInvokeDetail(this, p, p, NULL, false, recover.to);
             }
@@ -1371,21 +1370,20 @@ public:
         return d;
     }
 
-    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         QList<ServerPlayer *> listt;
         if (invoke->invoker->canDiscard(invoke->preferredTarget, "hs"))
             listt << invoke->preferredTarget;
         listt << invoke->invoker;
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker,listt, objectName(), "@ganying_hegemony:" + invoke->preferredTarget->objectName(), true, true);
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, listt, objectName(), "@ganying_hegemony:" + invoke->preferredTarget->objectName(), true, true);
         if (target != NULL) {
             invoke->targets << target;
             return true;
         }
-        
+
         return false;
     }
-
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
@@ -1394,15 +1392,12 @@ public:
             invoke->invoker->drawCards(1, objectName());
         else {
             if (invoke->invoker->canDiscard(invoke->targets.first(), "hs")) {
-                //ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, invoke->targets, "ganying", QString("@ganying:%1").arg(invoke->targets.first()->objectName()), true);
-                //if (target == NULL)
-                //    return false;
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
                 int id = room->askForCardChosen(invoke->invoker, target, "hs", objectName(), false, Card::MethodDiscard);
                 room->throwCard(id, target, invoke->invoker == target ? NULL : invoke->invoker);
             }
         }
-        
+
         return false;
     }
 };

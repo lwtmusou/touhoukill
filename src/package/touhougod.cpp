@@ -1597,7 +1597,7 @@ public:
         if (triggerEvent == GameStart) {
             ServerPlayer *reimu = data.value<ServerPlayer *>();
             if (reimu && reimu->hasSkill(this)) {
-                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (!p->hasShownRole()) {
                         room->setPlayerProperty(p, "general_showed", false);
                         room->setPlayerProperty(p, "general2_showed", false);
@@ -1619,7 +1619,7 @@ public:
         return false;
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         return invoke->invoker->askForSkillInvoke(this, data, "showrole");
     }
@@ -1633,12 +1633,10 @@ public:
 
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player != NULL && player->getPhase() == Player::Start && !player->hasShownRole() && player->getMark("@disableShowRole") == 0) {
-
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
             }
         }
 
-        
         return QList<SkillInvokeDetail>();
     }
 };
@@ -1657,14 +1655,13 @@ public:
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
-                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->getMark("@disableShowRole") > 0)
                         room->setPlayerMark(p, "@disableShowRole", 0);
                 }
             }
         }
     }
-
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent event, const Room *room, const QVariant &data) const
     {
@@ -1675,31 +1672,29 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card && use.card->getSuit() == Card::Heart && use.card->getTypeId() != Card::TypeSkill) {
                 if (use.from && use.from->hasSkill(this)) {
-                    foreach(ServerPlayer *p, room->getOtherPlayers(use.from)) {
+                    foreach (ServerPlayer *p, room->getOtherPlayers(use.from)) {
                         if (p->hasShownRole())
                             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
                     }
                 }
             }
-        }
-        else if (event == CardResponded) {
+        } else if (event == CardResponded) {
             CardResponseStruct resp = data.value<CardResponseStruct>();
             if (resp.m_isUse && resp.m_card && resp.m_card->getSuit() == Card::Heart) {
                 if (resp.m_from && resp.m_from->hasSkill(this)) {
-                    foreach(ServerPlayer *p, room->getOtherPlayers(resp.m_from)) {
+                    foreach (ServerPlayer *p, room->getOtherPlayers(resp.m_from)) {
                         if (p->hasShownRole())
                             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, resp.m_from, resp.m_from);
                     }
                 }
             }
-        }
-        else if (event == TargetConfirmed) {
+        } else if (event == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.from && use.card->getSuit() == Card::Heart && use.card->getTypeId() != Card::TypeSkill) {
                 QList<SkillInvokeDetail> d;
-                foreach(ServerPlayer *p, use.to) {
+                foreach (ServerPlayer *p, use.to) {
                     if (p->hasSkill(this) && p != use.from) {
-                        foreach(ServerPlayer *t, room->getOtherPlayers(p)) {
+                        foreach (ServerPlayer *t, room->getOtherPlayers(p)) {
                             if (t->hasShownRole()) {
                                 d << SkillInvokeDetail(this, p, p);
                                 break;
@@ -1717,7 +1712,7 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         QList<ServerPlayer *> targets;
-        foreach(ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
+        foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
             if (p->hasShownRole())
                 targets << p;
         }
@@ -1740,7 +1735,7 @@ public:
         room->setPlayerProperty(target, "general_showed", false);
         room->setPlayerProperty(target, "general2_showed", false);
 
-        room->setPlayerMark(target, "@disableShowRole", 1);//important! to notify client
+        room->setPlayerMark(target, "@disableShowRole", 1); //important! to notify client
         return false;
     }
 };
@@ -1755,28 +1750,25 @@ public:
         frequency = Eternal;
     }
 
-
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
     {
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
-                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->getMark("@disableShowRole") > 0)
                         room->setPlayerMark(p, "@disableShowRole", 0);
                 }
             }
-        }
-        else if (triggerEvent == EventPhaseStart) {
+        } else if (triggerEvent == EventPhaseStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player && player->getPhase() == Player::RoundStart && player->hasSkill(this)){
-                foreach(ServerPlayer *p, room->getOtherPlayers(player))
+            if (player && player->getPhase() == Player::RoundStart && player->hasSkill(this)) {
+                foreach (ServerPlayer *p, room->getOtherPlayers(player))
                     room->setPlayerMark(p, "@disableShowRole", 1);
             }
         }
     }
 
-    
     QList<SkillInvokeDetail> triggerable(TriggerEvent event, const Room *room, const QVariant &data) const
     {
         if (room->getTag("FirstRound").toBool())
@@ -1791,7 +1783,7 @@ public:
                 int loyal = 0;
                 int rebel = 0;
                 int renegade = 0;
-                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (!p->hasShownRole())
                         continue;
                     QString role = p->getRole();
@@ -1815,9 +1807,9 @@ public:
                 if (!cantrigger)
                     return QList<SkillInvokeDetail>();
                 QList<SkillInvokeDetail> d;
-                foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                     if (p != target)
-                        d << SkillInvokeDetail(this, p, p, NULL, true);                        
+                        d << SkillInvokeDetail(this, p, p, NULL, true);
                 }
                 return d;
             }
@@ -1833,9 +1825,6 @@ public:
         return false;
     }
 };
-
-
-
 
 /*FengyinCard::FengyinCard()
 {
@@ -6836,10 +6825,10 @@ public:
         if (e == CardFinished) {
             CardUseStruct use = data.value<CardUseStruct>();
             //for ai  //&&  !use.from->isOnline()  && use.card->getId() > 0
-            if ( use.card->getSuit() == Card::Club && use.from  &&  use.from->isAlive() && use.card->getSkillName() == objectName() && use.card->getEffectiveId() > 0) {
+            if (use.card->getSuit() == Card::Club && use.from && use.from->isAlive() && use.card->getSkillName() == objectName() && use.card->getEffectiveId() > 0) {
                 if (room->getCardPlace(use.card->getEffectiveId()) != Player::DiscardPile)
                     return QList<SkillInvokeDetail>();
-                
+
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, NULL, true);
             }
             // when  player is online, Xiuye should not be virtual card!!
@@ -6911,7 +6900,7 @@ public:
         int x = room->alivePlayerCount();
         //if (room->getDrawPile().length() < x)
         //    room->swapPile();
-        
+
         QList<int> list = room->getNCards(x);
         CardsMoveStruct move(list, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, invoke->invoker->objectName(), objectName(), QString()));
         room->moveCardsAtomic(move, true);
@@ -6923,7 +6912,6 @@ public:
         return false;
     }
 };
-
 
 /*
 KuangjiCard::KuangjiCard()

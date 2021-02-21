@@ -1029,7 +1029,7 @@ public:
     GakungWu(const QString &name, const QString &cardName)
         : TriggerSkill(name)
     {
-        events <<  CardUsed;//TargetSpecifying;
+        events << CardUsed; //TargetSpecifying;
         view_as_skill = new GakungWuVs(name, cardName);
     }
 
@@ -1113,7 +1113,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         QStringList l = extraTargetNames(use);
         room->setPlayerProperty(invoke->invoker, (objectName() + "availability").toLatin1().constData(), l.join('+'));
-        invoke->invoker->tag[objectName()] = data;  //for ai
+        invoke->invoker->tag[objectName()] = data; //for ai
         if (room->askForUseCard(invoke->invoker, "@@" + objectName(), "@" + objectName() + "-invoke", -1, Card::MethodNone, true, objectName())) {
             invoke->targets << invoke->invoker->tag[objectName()].value<ServerPlayer *>();
             invoke->invoker->tag.remove(objectName());
@@ -1134,10 +1134,9 @@ public:
         room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
         room->notifySkillInvoked(invoke->invoker, objectName());
 
-        foreach(ServerPlayer *p, invoke->targets)
+        foreach (ServerPlayer *p, invoke->targets)
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), p->objectName());
-        
-        
+
         LogMessage alog;
         alog.type = "$Kuangwu";
         alog.from = use.from;
@@ -1423,7 +1422,7 @@ void ChuntengCard::onEffect(const CardEffectStruct &effect) const
     room->obtainCard(effect.to, this, r, true);
 
     if (effect.to->getHandcardNum() > effect.from->getPile("spring").length()) {
-        effect.to->tag["chunteng_effect"] = QVariant::fromValue<CardEffectStruct>(effect);//for ai
+        effect.to->tag["chunteng_effect"] = QVariant::fromValue<CardEffectStruct>(effect); //for ai
         if (!room->askForDiscard(effect.to, "chunteng", 1, 1, true, true, "@chunteng-discard")) {
             DummyCard d;
             d.addSubcards(effect.from->getPile("spring"));
@@ -1482,7 +1481,7 @@ public:
 
     const Card *viewAs(const Card *originalCard) const
     {
-        Card *c  = new ChuntengCard;
+        Card *c = new ChuntengCard;
         c->setSkillName(objectName());
         c->addSubcard(originalCard);
         return c;
@@ -1540,7 +1539,7 @@ public:
     {
         CardUseStruct u = invoke->tag["u"].value<CardUseStruct>();
         room->setPlayerProperty(u.from, "chunteng1", QString::number(static_cast<int>(u.card->getSuit())));
-        invoke->invoker->tag["chunteng_use"] = QVariant::fromValue<CardUseStruct>(u);//for ai
+        invoke->invoker->tag["chunteng_use"] = QVariant::fromValue<CardUseStruct>(u); //for ai
         return room->askForUseCard(u.from, "@@chunteng-card", "@chunteng1:::" + u.card->getSuitString(), -1, Card::MethodNone, true, objectName());
     }
 
