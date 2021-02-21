@@ -467,7 +467,7 @@ public:
         ServerPlayer *player = invoke->invoker;
         QList<ServerPlayer *> listt;
         foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-            if (p->getHp() > player->getHp() && !p->isNude())
+            if (p->getHp() >= player->getHp() && !p->isNude())
                 listt << p;
         }
         ServerPlayer *target = room->askForPlayerChosen(player, listt, objectName(), "@" + objectName(), true, true);
@@ -571,7 +571,7 @@ public:
         ServerPlayer *player = invoke->invoker;
         QList<ServerPlayer *> listt;
         foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-            if (p->getHp() > player->getHp() && !p->isNude())
+            if (p->getHp() >= player->getHp() && !p->isNude())
                 listt << p;
         }
         ServerPlayer *target = room->askForPlayerChosen(player, listt, objectName(), "@" + objectName(), true, true);
