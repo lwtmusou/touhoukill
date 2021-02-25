@@ -1860,7 +1860,7 @@ xiuye_skill.getTurnUseCard = function(self, inclusive)
 		local slash_str = (acard:objectName()..":xiuye[%s:%s]=%d"):format(suit, number, card_id)
 
 		local slash = sgs.Card_Parse(slash_str)
-
+		--slash:setCanRecast(false) --不起作用
 		assert(slash)
 		return slash
 
