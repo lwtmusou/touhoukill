@@ -326,7 +326,7 @@ return{
 	]]
 	
 	["tuizhi"] = "退治",
-	[":tuizhi"] = "当你使用<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌时或成为其他角色使用<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌的目标后，你可以暗置一名其他角色的身份牌，且其于此回合内不能明置身份牌。",
+	[":tuizhi"] = "当你使用<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌时或成为其他角色使用<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌的目标后，你可以暗置一名其他角色的身份牌，令其于此回合内不能明置身份牌。",
 	--["tuizhi_hegemony:head"] = "暗置主将",
 	--["tuizhi_hegemony:deputy"] = "暗置副将",
 	["@tuizhi"] = "你可以选择一名其他角色，暗置其身份牌",
