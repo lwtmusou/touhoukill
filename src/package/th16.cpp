@@ -1167,9 +1167,12 @@ MiZhiungHteiCard::MiZhiungHteiCard()
 {
 }
 
-bool MiZhiungHteiCard::targetFilter(const QList<const Player *> &, const Player *, const Player *) const
+bool MiZhiungHteiCard::targetFilter(const QList<const Player *> &, const Player *to_select, const Player *Self) const
 {
-    return true;
+    AllianceFeast *af = new AllianceFeast(Card::NoSuit, 0);
+    DELETE_OVER_SCOPE(AllianceFeast, af)
+    af->setSkillName(m_skillName);
+    return !Self->isProhibited(to_select, af);
 }
 
 void MiZhiungHteiCard::onUse(Room *, const CardUseStruct &card_use) const
