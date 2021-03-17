@@ -1467,7 +1467,7 @@ public:
         QList<SkillInvokeDetail> d;
         if (use.from != NULL && use.card != NULL && use.card->getTypeId() == Card::TypeTrick && !use.to.isEmpty()) {
             foreach (ServerPlayer *p, use.to) { //room->getAlivePlayers()
-                if (p->hasSkill(this))
+                if (p->hasSkill(this) && p != use.from)
                     d << SkillInvokeDetail(this, p, p);
             }
         }
