@@ -1407,35 +1407,17 @@ public:
 
 ChuntengCard::ChuntengCard()
 {
-    //target_fixed = true;
+    target_fixed = true;
     will_throw = false;
     handling_method = Card::MethodNone;
 }
 
-//void ChuntengCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
-//{
-//    room->showCard(source, getEffectiveId());
-//}
-
-void ChuntengCard::onEffect(const CardEffectStruct &effect) const
+void ChuntengCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
 {
-    CardMoveReason r(CardMoveReason::S_REASON_GIVE, effect.from->objectName(), effect.to->objectName(), "chunteng", QString());
-    Room *room = effect.from->getRoom();
-    room->showCard(effect.from, getEffectiveId());
-    room->obtainCard(effect.to, this, r, true);
-
-    if (effect.to->getHandcardNum() > effect.from->getPile("spring").length()) {
-        effect.to->tag["chunteng_effect"] = QVariant::fromValue<CardEffectStruct>(effect); //for ai
-        if (!room->askForDiscard(effect.to, "chunteng", 1, 1, true, true, "@chunteng-discard")) {
-            DummyCard d;
-            d.addSubcards(effect.from->getPile("spring"));
-            CardMoveReason r2(CardMoveReason::S_REASON_PUT, effect.to->objectName(), QString(), "chunteng", QString());
-            room->throwCard(&d, r2, NULL);
-        }
-    }
+    room->showCard(source, getEffectiveId());
 }
 
-/*Chunteng2Card::Chunteng2Card()
+Chunteng2Card::Chunteng2Card()
 {
     will_throw = false;
     handling_method = Card::MethodNone;
@@ -1456,7 +1438,7 @@ void Chunteng2Card::onEffect(const CardEffectStruct &effect) const
             room->throwCard(&d, r2, NULL);
         }
     }
-}*/
+}
 
 class ChuntengVS : public OneCardViewAsSkill
 {
@@ -1470,8 +1452,8 @@ public:
     bool viewFilter(const Card *to_select) const
     {
         if (Self->getPile("spring").contains(to_select->getId())) {
-            //if (Sanguosha->getCurrentCardUsePattern() == "@@chunteng-card2!")
-            //    return true;
+            if (Sanguosha->getCurrentCardUsePattern() == "@@chunteng-card2!")
+                return true;
 
             bool ok = false;
             Card::Suit s = static_cast<Card::Suit>(Self->property("chunteng1").toString().toInt(&ok));
@@ -1484,9 +1466,17 @@ public:
 
     const Card *viewAs(const Card *originalCard) const
     {
-        Card *c = new ChuntengCard;
-        c->setSkillName(objectName());
+        Card *c = NULL;
+        if (Sanguosha->getCurrentCardUsePattern() == "@@chunteng-card1") {
+            c = new ChuntengCard;
+            c->setSkillName(objectName());
+        } else {
+            c = new Chunteng2Card;
+            c->setSkillName("_chunteng");
+        }
+
         c->addSubcard(originalCard);
+
         return c;
     }
 
@@ -1497,7 +1487,7 @@ public:
 
     bool isEnabledAtResponse(const Player *, const QString &pattern) const
     {
-        return pattern == "@@chunteng-card";
+        return pattern.startsWith("@@chunteng-card");
     }
 };
 
@@ -1542,11 +1532,10 @@ public:
     {
         CardUseStruct u = invoke->tag["u"].value<CardUseStruct>();
         room->setPlayerProperty(u.from, "chunteng1", QString::number(static_cast<int>(u.card->getSuit())));
-        invoke->invoker->tag["chunteng_use"] = QVariant::fromValue<CardUseStruct>(u); //for ai
-        return room->askForUseCard(u.from, "@@chunteng-card", "@chunteng1:::" + u.card->getSuitString(), -1, Card::MethodNone, true, objectName());
+        return room->askForUseCard(u.from, "@@chunteng-card1", "@chunteng1:::" + u.card->getSuitString(), -1, Card::MethodNone, true, objectName());
     }
 
-    /*bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         CardUseStruct u = invoke->tag["u"].value<CardUseStruct>();
         if (!room->askForUseCard(u.from, "@@chunteng-card2!", "@chunteng2", -1, Card::MethodNone, true, "_chunteng")) {
@@ -1563,7 +1552,7 @@ public:
         }
 
         return false;
-    }*/
+    }
 };
 
 TH16Package::TH16Package()
@@ -1611,7 +1600,7 @@ TH16Package::TH16Package()
     addMetaObject<MenfeiCard>();
     addMetaObject<HuazhaoCard>();
     addMetaObject<ChuntengCard>();
-    //addMetaObject<Chunteng2Card>();
+    addMetaObject<Chunteng2Card>();
     addMetaObject<LinsaCard>();
     addMetaObject<GuwuCard>();
     addMetaObject<MingheCard>();
