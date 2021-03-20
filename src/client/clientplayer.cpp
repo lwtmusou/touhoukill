@@ -18,7 +18,11 @@ ClientPlayer::ClientPlayer(Client *client)
 
 int ClientPlayer::aliveCount(bool includeRemoved) const
 {
-    int n = ClientInstance->alivePlayerCount();
+    const Client *client = qobject_cast<Client *>(parent());
+    if (client == NULL)
+        return -1;
+
+    int n = client->alivePlayerCount();
     if (!includeRemoved) {
         if (isRemoved())
             n--;
@@ -227,5 +231,5 @@ void ClientPlayer::setMark(const QString &mark, int value)
 RoomObject *ClientPlayer::getRoomObject() const
 {
     // TODO_Fs: Multiple Client pending
-    return ClientInstance;
+    return qobject_cast<Client *>(parent());
 }
