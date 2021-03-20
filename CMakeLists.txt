@@ -35,7 +35,6 @@ include_directories(
     "src/util"
     "src"
     "include"
-    "include/vld"
 )
 
 add_compile_definitions(AUDIO_SUPPORT QT_DISABLE_DEPRECATED_BEFORE=0x60000)
