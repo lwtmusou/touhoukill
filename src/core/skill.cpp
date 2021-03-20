@@ -337,7 +337,7 @@ bool OneCardViewAsSkill::viewFilter(const QList<const Card *> &selected, const C
 
 bool OneCardViewAsSkill::viewFilter(const Card *to_select) const
 {
-    if (!inherits("FilterSkill") && !filter_pattern.isEmpty()) {
+    if (!filter_pattern.isEmpty()) {
         QString pat = filter_pattern;
         if (pat.endsWith("!")) {
             if (Self->isJilei(to_select))
@@ -362,10 +362,8 @@ const Card *OneCardViewAsSkill::viewAs(const QList<const Card *> &cards) const
 }
 
 FilterSkill::FilterSkill(const QString &name)
-    : OneCardViewAsSkill(name)
+    : Skill(name, Skill::Compulsory, "static")
 {
-    frequency = Compulsory;
-    show_type = "static";
 }
 
 TriggerSkill::TriggerSkill(const QString &name)

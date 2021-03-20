@@ -44,11 +44,11 @@
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
 #include <QRadioButton>
+#include <QRandomGenerator>
 #include <QSequentialAnimationGroup>
 #include <QTimer>
 #include <QTransform>
 #include <QtMath>
-#include <QRandomGenerator>
 
 using namespace QSanProtocol;
 
@@ -3119,7 +3119,7 @@ void RoomScene::onSkillActivated()
             skill = Sanguosha->getViewAsSkill(dialog->objectName());
     }
 
-    if (skill && !skill->inherits("FilterSkill")) {
+    if (skill != NULL) {
         dashboard->startPending(skill);
         //ok_button->setEnabled(false);
         cancel_button->setEnabled(true);

@@ -130,12 +130,15 @@ protected:
     QString filter_pattern;
 };
 
-class FilterSkill : public OneCardViewAsSkill
+class FilterSkill : public Skill
 {
     Q_OBJECT
 
 public:
     explicit FilterSkill(const QString &name);
+
+    virtual bool viewFilter(const Card *to_select) const = 0;
+    virtual const Card *viewAs(const Card *originalCard) const = 0;
 };
 
 class TriggerSkill : public Skill

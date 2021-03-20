@@ -4919,7 +4919,7 @@ void AnyunDialog::popup()
         const General *g = Sanguosha->getGeneral(hidden);
         foreach (const Skill *skill, g->getSkillList()) {
             const ViewAsSkill *vs = Sanguosha->getViewAsSkill(skill->objectName());
-            if (vs && !vs->inherits("FilterSkill")) {
+            if (vs != NULL) {
                 bool add = false;
                 if (play && vs->isEnabledAtPlay(Self))
                     add = true;
