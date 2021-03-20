@@ -97,7 +97,7 @@ UpdateDialog::UpdateDialog(QWidget *parent)
 void UpdateDialog::checkForUpdate()
 {
     QNetworkRequest req;
-    req.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+    req.setAttribute(QNetworkRequest::RedirectPolicyAttribute, static_cast<int>(QNetworkRequest::NoLessSafeRedirectPolicy));
 
     req.setUrl(QUrl("https://www.touhousatsu.rocks/TouhouKillUpdate0.9.json"));
 
@@ -401,7 +401,7 @@ void UpdateDialog::startDownload()
     emit busy(true);
 
     QNetworkRequest reqPack;
-    reqPack.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+    reqPack.setAttribute(QNetworkRequest::RedirectPolicyAttribute, static_cast<int>(QNetworkRequest::NoLessSafeRedirectPolicy));
     reqPack.setUrl(QUrl(m_updatePack));
     packReply = downloadManager->get(reqPack);
     connect(packReply, &QNetworkReply::downloadProgress, this, &UpdateDialog::downloadProgress);
@@ -412,7 +412,7 @@ void UpdateDialog::startDownload()
     if (m_updateScript != "jni") {
 #endif
         QNetworkRequest reqScript;
-        reqScript.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+        reqScript.setAttribute(QNetworkRequest::RedirectPolicyAttribute, static_cast<int>(QNetworkRequest::NoLessSafeRedirectPolicy));
         reqScript.setUrl(QUrl(m_updateScript));
         scriptReply = downloadManager->get(reqScript);
         connect(scriptReply, &QNetworkReply::errorOccurred, this, &UpdateDialog::errScript);
