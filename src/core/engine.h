@@ -21,8 +21,6 @@
 class AI;
 class QVersionNumber;
 
-struct lua_State;
-
 class Engine : public QObject
 {
     Q_OBJECT
@@ -34,7 +32,6 @@ public:
     void loadTranslations(const QString &locale);
     void addTranslationEntry(const QString &key, const QString &value);
     QString translate(const QString &to_translate, bool addHegemony = false) const;
-    lua_State *getLuaState() const;
 
     void addPackage(Package *package);
     void addBanPackage(const QString &package_name);
@@ -150,8 +147,6 @@ private:
     QList<Card *> cards;
     QStringList lord_list;
     QSet<QString> ban_package;
-
-    lua_State *lua;
 
     JsonObject configFile;
 };

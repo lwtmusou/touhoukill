@@ -4,7 +4,6 @@
 #include "audio.h"
 #include "card.h"
 #include "client.h"
-#include "lua.hpp"
 #include "protocol.h"
 #include "settings.h"
 #include "structs.h"
@@ -37,8 +36,6 @@ Engine::Engine()
     JsonDocument doc = JsonDocument::fromFilePath("config/gameconfig.json");
     if (doc.isValid())
         configFile = doc.object();
-
-    lua = CreateLuaState();
 
     QStringList package_names = getConfigFromConfigFile("package_names").toStringList();
     foreach (QString name, package_names)
@@ -90,11 +87,6 @@ Engine::Engine()
     }
 }
 
-lua_State *Engine::getLuaState() const
-{
-    return lua;
-}
-
 void Engine::addTranslationEntry(const QString &key, const QString &value)
 {
     translations.insert(key, value);
@@ -102,7 +94,9 @@ void Engine::addTranslationEntry(const QString &key, const QString &value)
 
 Engine::~Engine()
 {
+#ifdef USE_LUA
     lua_close(lua);
+#endif
 #ifdef AUDIO_SUPPORT
     Audio::quit();
 #endif

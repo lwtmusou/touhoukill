@@ -4,7 +4,6 @@
 #include "engine.h"
 #include "gamerule.h"
 #include "generalselector.h"
-#include "lua.hpp"
 #include "server.h"
 #include "settings.h"
 #include "standard.h"
@@ -60,14 +59,6 @@ Room::Room(QObject *parent, const QString &mode)
 
     initCallbacks();
 
-    L = CreateLuaState();
-
-    DoLuaScript(L, "lua/sanguosha.lua");
-    if (isHegemonyGameMode(mode))
-        DoLuaScript(L, "lua/ai/hegemony-smart-ai.lua");
-    else
-        DoLuaScript(L, QFile::exists("lua/ai/private-smart-ai.lua") ? "lua/ai/private-smart-ai.lua" : "lua/ai/smart-ai.lua");
-
     connect(this, SIGNAL(signalSetProperty(ServerPlayer *, const char *, QVariant)), this, SLOT(slotSetProperty(ServerPlayer *, const char *, QVariant)), Qt::QueuedConnection);
 
     m_generalSelector = new GeneralSelector(this);
@@ -75,7 +66,6 @@ Room::Room(QObject *parent, const QString &mode)
 
 Room::~Room()
 {
-    lua_close(L); // it cause a huge memory leak if we don't do this when quit
 }
 
 void Room::initCallbacks()
@@ -3420,6 +3410,11 @@ void Room::chooseHegemonyGenerals()
     Config.setValue("Banlist/Roles", ban_list);
 }
 
+AI *Room::cloneAI(ServerPlayer *player)
+{
+    return new TrustAI(player);
+}
+
 void Room::assignRoles()
 {
     int n = m_players.count();
@@ -6489,6 +6484,10 @@ void Room::makeReviving(const QString &name)
     revivePlayer(player);
     setPlayerProperty(player, "maxhp", player->getGeneralMaxHp());
     setPlayerProperty(player, "hp", player->getMaxHp());
+}
+
+void Room::doScript(const QString &script)
+{
 }
 
 void Room::fillAG(const QList<int> &card_ids, ServerPlayer *who, const QList<int> &disabled_ids, const QList<int> &shownHandcard_ids)

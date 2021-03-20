@@ -29,7 +29,6 @@ include_directories(
     "src/client"
     "src/core"
     "src/dialog"
-    "src/lua"
     "src/package"
     "src/server"
     "src/ui"
@@ -41,23 +40,7 @@ include_directories(
 
 add_compile_definitions(AUDIO_SUPPORT QT_DISABLE_DEPRECATED_BEFORE=0x60000)
 
-if (WIN32)
-    set(SWIG_EXECUTABLE ${CMAKE_CURRENT_LIST_DIR}/tools/swig/swig.exe)
-else()
-    set(SWIG_EXECUTABLE swig)
-endif()
-
-file(GLOB SWIGGENFILES swig/*.i)
-
-add_custom_command(OUTPUT sanguosha_wrap.cpp
-                   COMMAND ${SWIG_EXECUTABLE} ARGS -c++ -lua -cppext cpp -o sanguosha_wrap.cpp ${CMAKE_CURRENT_LIST_DIR}/swig/sanguosha.i
-                   MAIN_DEPENDENCY swig/sanguosha.i
-                   DEPENDS ${SWIGGENFILES}
-                   COMMENT "Generating sanguosha_wrap.cpp ....")
-
 set (QSanguosha_SRCS
-    sanguosha_wrap.cpp
-
     src/client/aux-skills.cpp
     src/client/client.cpp
     src/client/clientplayer.cpp
@@ -155,40 +138,6 @@ set (QSanguosha_SRCS
     src/util/detector.cpp
     src/util/nativesocket.cpp
     src/util/recorder.cpp
-
-    src/lua/lapi.c
-    src/lua/lauxlib.c
-    src/lua/lbaselib.c
-    src/lua/lbitlib.c
-    src/lua/lcode.c
-    src/lua/lcorolib.c
-    src/lua/lctype.c
-    src/lua/ldblib.c
-    src/lua/ldebug.c
-    src/lua/ldo.c
-    src/lua/ldump.c
-    src/lua/lfunc.c
-    src/lua/lgc.c
-    src/lua/linit.c
-    src/lua/liolib.c
-    src/lua/llex.c
-    src/lua/lmathlib.c
-    src/lua/lmem.c
-    src/lua/loadlib.c
-    src/lua/lobject.c
-    src/lua/lopcodes.c
-    src/lua/loslib.c
-    src/lua/lparser.c
-    src/lua/lstate.c
-    src/lua/lstring.c
-    src/lua/lstrlib.c
-    src/lua/ltable.c
-    src/lua/ltablib.c
-    src/lua/ltm.c
-    src/lua/lundump.c
-    src/lua/lvm.c
-    src/lua/lzio.c
-
 )
 
 set (QSanguosha_UIS
@@ -305,33 +254,6 @@ set (QSanguosha_MOCS
     src/util/nativesocket.h
     src/util/recorder.h
     src/util/socket.h
-
-    src/lua/lapi.h
-    src/lua/lauxlib.h
-    src/lua/lcode.h
-    src/lua/lctype.h
-    src/lua/ldebug.h
-    src/lua/ldo.h
-    src/lua/lfunc.h
-    src/lua/lgc.h
-    src/lua/llex.h
-    src/lua/llimits.h
-    src/lua/lmem.h
-    src/lua/lobject.h
-    src/lua/lopcodes.h
-    src/lua/lparser.h
-    src/lua/lstate.h
-    src/lua/lstring.h
-    src/lua/ltable.h
-    src/lua/ltm.h
-    src/lua/lua.h
-    src/lua/luaconf.h
-    src/lua/lualib.h
-    src/lua/lundump.h
-    src/lua/lvm.h
-    src/lua/lzio.h
-
-    src/lua/lua.hpp
 )
 
 set(OGG_FILE

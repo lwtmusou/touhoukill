@@ -1,16 +1,15 @@
 #ifndef _UTIL_H
 #define _UTIL_H
 
-struct lua_State;
 class QVariant;
 
 #include "compiler-specific.h"
 
 #include <QList>
+#include <QRandomGenerator>
 #include <QSharedPointer>
 #include <QStringList>
 #include <QVariant>
-#include <QRandomGenerator>
 
 #include <algorithm>
 
@@ -22,10 +21,6 @@ template <typename T> void qShuffle(QList<T> &list)
         list.swapItemsAt(i, r);
     }
 }
-
-// lua interpreter related
-lua_State *CreateLuaState();
-void DoLuaScript(lua_State *L, const char *script);
 
 QStringList IntList2StringList(const QList<int> &intlist);
 QList<int> StringList2IntList(const QStringList &stringlist);

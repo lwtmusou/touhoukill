@@ -6,7 +6,6 @@
 #include "configdialog.h"
 #include "connectiondialog.h"
 #include "generaloverview.h"
-#include "lua.hpp"
 #include "pixmapanimation.h"
 #include "record-analysis.h"
 #include "recorder.h"
@@ -888,6 +887,9 @@ void MainWindow::on_actionAbout_Lua_triggered()
 
     QString address = "http://www.lua.org";
     content.append(tr("Official site: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(address));
+
+#define LUA_RELEASE "5.2.4"
+#define LUA_COPYRIGHT "Fake"
 
     content.append(tr("Current versionn %1 <br/>").arg(LUA_RELEASE));
     content.append(LUA_COPYRIGHT);

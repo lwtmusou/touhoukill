@@ -1,32 +1,8 @@
 #include "util.h"
-#include "lua.hpp"
 
 #include <QMessageBox>
 #include <QStringList>
 #include <QVariant>
-
-extern "C" {
-int luaopen_sgs(lua_State *);
-}
-
-lua_State *CreateLuaState()
-{
-    lua_State *L = luaL_newstate();
-    luaL_openlibs(L);
-    luaopen_sgs(L);
-
-    return L;
-}
-
-void DoLuaScript(lua_State *L, const char *script)
-{
-    int error = luaL_dofile(L, script);
-    if (error) {
-        QString error_msg = lua_tostring(L, -1);
-        QMessageBox::critical(NULL, QObject::tr("Lua script error"), error_msg);
-        exit(1);
-    }
-}
 
 QStringList IntList2StringList(const QList<int> &intlist)
 {
