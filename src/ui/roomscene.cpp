@@ -18,7 +18,6 @@
 #include "pixmapanimation.h"
 #include "playercardbox.h"
 #include "qsanbutton.h"
-#include "record-analysis.h"
 #include "recorder.h"
 #include "settings.h"
 #include "sgswindow.h"
@@ -3769,9 +3768,6 @@ void RoomScene::viewGenerals(const QString &reason, const QStringList &names)
     connect(dialog, SIGNAL(rejected()), dialog, SLOT(deleteLater()));
     dialog->setParent(main_window, Qt::Dialog);
     dialog->show();
-    //not used yet
-    //m_chooseGeneralBox->chooseGeneral(names, true, false,
-    //    Sanguosha->translate(reason));
 }
 
 void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players)
@@ -3780,16 +3776,10 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
     table->setRowCount(players.length());
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    RecAnalysis *record = new RecAnalysis(ClientInstance->getReplayPath());
-    QMap<QString, PlayerRecordStruct *> record_map = record->getRecordMap();
-
     static QStringList labels;
     if (labels.isEmpty()) {
         labels << tr("General") << tr("Name") << tr("Alive");
         labels << tr("Role");
-
-        labels << tr("TurnCount");
-        labels << tr("Recover") << tr("Damage") << tr("Damaged") << tr("Kill");
         labels << tr("Handcards");
     }
     table->setHorizontalHeaderLabels(labels);
@@ -3852,37 +3842,16 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
         table->setItem(i, 3, item);
 
         item = new QTableWidgetItem;
-        item->setText(QString::number(player->getMark("Global_TurnCount")));
-        table->setItem(i, 4, item);
-
-        PlayerRecordStruct *rec = record_map.value(player->objectName());
-        item = new QTableWidgetItem;
-        item->setText(QString::number(rec->m_recover));
-        table->setItem(i, 5, item);
-
-        item = new QTableWidgetItem;
-        item->setText(QString::number(rec->m_damage));
-        table->setItem(i, 6, item);
-
-        item = new QTableWidgetItem;
-        item->setText(QString::number(rec->m_damaged));
-        table->setItem(i, 7, item);
-
-        item = new QTableWidgetItem;
-        item->setText(QString::number(rec->m_kill));
-        table->setItem(i, 8, item);
-
-        item = new QTableWidgetItem;
         QString handcards = QString::fromUtf8(QByteArray::fromBase64(player->property("last_handcards").toString().toLatin1()));
         handcards.replace("<img src='image/system/log/spade.png' height = 12/>", tr("Spade"));
         handcards.replace("<img src='image/system/log/heart.png' height = 12/>", tr("Heart"));
         handcards.replace("<img src='image/system/log/club.png' height = 12/>", tr("Club"));
         handcards.replace("<img src='image/system/log/diamond.png' height = 12/>", tr("Diamond"));
         item->setText(handcards);
-        table->setItem(i, 9, item);
+        table->setItem(i, 4, item);
     }
 
-    for (int i = 2; i <= 10; i++)
+    for (int i = 2; i <= 4; i++)
         table->resizeColumnToContents(i);
 }
 

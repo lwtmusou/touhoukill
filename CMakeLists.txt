@@ -52,7 +52,6 @@ set (QSanguosha_SRCS
     src/core/json.cpp
     src/core/player.cpp
     src/core/protocol.cpp
-    src/core/record-analysis.cpp
     src/core/RoomObject.cpp
     src/core/settings.cpp
     src/core/skill.cpp
@@ -167,7 +166,6 @@ set (QSanguosha_MOCS
     src/core/lua-wrapper.h
     src/core/player.h
     src/core/protocol.h
-    src/core/record-analysis.h
     src/core/RoomObject.h
     src/core/settings.h
     src/core/skill.h
