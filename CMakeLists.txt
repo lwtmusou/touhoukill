@@ -40,6 +40,8 @@ include_directories(
 add_compile_definitions(AUDIO_SUPPORT QT_DISABLE_DEPRECATED_BEFORE=0x60000)
 
 set (QSanguosha_SRCS
+    src/audio/audio.cpp
+
     src/client/aux-skills.cpp
     src/client/client.cpp
     src/client/clientplayer.cpp
@@ -256,8 +258,6 @@ set (QSanguosha_MOCS
 )
 
 set(OGG_FILE
-    src/audio/audio.cpp
-
     src/ogg/backends.h
     src/ogg/bitrate.h
     src/ogg/codebook.h
@@ -309,8 +309,14 @@ if (WIN32)
     set(QSanguosha_Icon_RC ${CMAKE_CURRENT_LIST_DIR}/resource/icon/sgs.ico)
 endif()
 
-add_executable (QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} ${OGG_FILE})
-target_link_libraries (QSanguosha Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::Multimedia Qt5::QuickWidgets Qt5::Quick)
+add_library(oggvorbisfile STATIC ${OGG_FILE})
+
+if (MSVC)
+    target_compile_options(oggvorbisfile BEFORE PUBLIC "-wd4244" PUBLIC "-wd4305" PUBLIC "-wd4267")
+endif()
+
+add_executable (QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} )
+target_link_libraries (QSanguosha Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::Multimedia Qt5::QuickWidgets Qt5::Quick oggvorbisfile)
 
 if (WIN32)
     target_link_libraries(QSanguosha Qt5::WinExtras)
