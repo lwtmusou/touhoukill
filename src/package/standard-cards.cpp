@@ -1177,7 +1177,7 @@ void AmazingGrace::onEffect(const CardEffectStruct &effect) const
         int card_id = room->askForAG(effect.to, card_ids, false, objectName());
         card_ids.removeOne(card_id);
 
-        room->takeAG(effect.to, card_id);
+        room->takeAG(effect.to, card_id, true, QList<ServerPlayer *>(), Player::PlaceTable); // !!!! AG is taken from PlaceTable now!!!!!!!!!
         ag_list.removeOne(card_id);
         if (ag_list.isEmpty())
             break;

@@ -120,6 +120,36 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
+class ZhuozhiCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ZhuozhiCard();
+
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
+class WanshenCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE WanshenCard();
+
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
+class XieliCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE XieliCard();
+
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
 class TH99Package : public Package
 {
     Q_OBJECT
