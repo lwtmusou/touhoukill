@@ -2510,7 +2510,12 @@ public:
 
     bool isEnabledAtNullification(const ServerPlayer *player) const
     {
-        return !player->getPile("qsmian").isEmpty();
+        foreach (int id, player->getPile("qsmian")) {
+            if (Sanguosha->getCard(id)->isKindOf("Nullification"))
+                return true;
+        }
+
+        return false;
     }
 };
 
