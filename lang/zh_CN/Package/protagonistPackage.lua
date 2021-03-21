@@ -304,7 +304,7 @@ return {
 	["designer:marisa_old"] = "圆神狂热信徒",
 
 	["illustrator:marisa_old"] = "fancybetty",
-	["origin:marisa_old"] = "p号：，个人ID：",
+	["origin:marisa_old"] = "p号：52502794，个人ID：iLed@いきなりアニメ原画",
 	["illustrator:marisa_old_1"] = "カタケイ",
 	["origin:marisa_old_1"] = "p号：50400667，个人ID：90042",
 
