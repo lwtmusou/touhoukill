@@ -377,6 +377,6 @@ return{
 	["@kasenwanshen"] = "完",
 	["$WanshenAnimate"] = "skill=kasen_sp:wanshen",
 	["xieli"] = "邪力",
-	[":xieli"] = "出牌阶段，你可以横置装备区里的一张牌并视为使用【酒】。",
+	[":xieli"] = "出牌阶段，你可以横置装备区里的一张牌并视为使用【酒】。<br /><br />◆仅于出牌阶段空闲时间点可用。",
 
 }

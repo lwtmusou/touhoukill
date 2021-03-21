@@ -2282,13 +2282,11 @@ WanshenCard::WanshenCard()
 void WanshenCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
 {
     room->doLightbox("$WanshenAnimate", 4000);
-    room->setPlayerMark(source, "@kasenwanshen", 0);
+    room->setPlayerMark(source, "@kazenwanshen", 0);
 
     if (room->changeMaxHpForAwakenSkill(source)) {
         source->gainAnExtraTurn();
-        room->handleAcquireDetachSkills(source,
-                                        QStringList() << "-zhuozhi"
-                                                      << "xieli");
+        room->handleAcquireDetachSkills(source, "xieli");
     }
 }
 
@@ -2325,6 +2323,7 @@ void XieliCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) c
     source->addBrokenEquips(subcards);
 
     Analeptic *ana = new Analeptic(Card::NoSuit, -1);
+    ana->setFlags("Add_History");
     room->useCard(CardUseStruct(ana, source));
 }
 
