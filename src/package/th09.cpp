@@ -2465,7 +2465,7 @@ public:
             return selected.length() == 0
                 && ((Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
                         ? to_select->isAvailable(Self)
-                        : Sanguosha->matchExpPattern(Sanguosha->getCurrentCardUsePattern(), Self, to_select));
+                        : matchAvaliablePattern(to_select->objectName(), Sanguosha->getCurrentCardUsePattern()));
     }
 
     const Card *viewAs(const QList<const Card *> &cards) const
