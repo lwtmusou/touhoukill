@@ -153,7 +153,7 @@ void QAnimatedEffect::setStay(bool stay)
 
 SentbackEffect::SentbackEffect(bool stay)
 {
-    grayed = 0;
+    grayed = nullptr;
     setObjectName("backsender");
     index = 0;
     this->stay = stay;

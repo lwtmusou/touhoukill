@@ -108,8 +108,8 @@ class ZeroCardViewAsSkill : public ViewAsSkill
 public:
     explicit ZeroCardViewAsSkill(const QString &name);
 
-    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
-    virtual const Card *viewAs(const QList<const Card *> &cards) const;
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override;
+    const Card *viewAs(const QList<const Card *> &cards) const override;
     virtual const Card *viewAs() const = 0;
 };
 
@@ -120,8 +120,8 @@ class OneCardViewAsSkill : public ViewAsSkill
 public:
     explicit OneCardViewAsSkill(const QString &name);
 
-    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
-    virtual const Card *viewAs(const QList<const Card *> &cards) const;
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override;
+    const Card *viewAs(const QList<const Card *> &cards) const override;
 
     virtual bool viewFilter(const Card *to_select) const;
     virtual const Card *viewAs(const Card *originalCard) const = 0;
@@ -168,55 +168,6 @@ protected:
     bool global;
 };
 
-class MasochismSkill : public TriggerSkill
-{
-    Q_OBJECT
-
-public:
-    explicit MasochismSkill(const QString &name);
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const;
-    virtual QList<SkillInvokeDetail> triggerable(const Room *room, const DamageStruct &damage) const;
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
-    virtual void onDamaged(Room *room, QSharedPointer<SkillInvokeDetail> invoke, const DamageStruct &damage) const = 0;
-};
-
-class PhaseChangeSkill : public TriggerSkill
-{
-    Q_OBJECT
-
-public:
-    explicit PhaseChangeSkill(const QString &name);
-
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
-    virtual bool onPhaseChange(ServerPlayer *target) const = 0;
-};
-
-class DrawCardsSkill : public TriggerSkill
-{
-    Q_OBJECT
-
-public:
-    DrawCardsSkill(const QString &name, bool = false);
-
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
-    virtual int getDrawNum(const DrawNCardsStruct &draw) const = 0;
-
-protected:
-    bool is_initial;
-};
-
-class GameStartSkill : public TriggerSkill
-{
-    Q_OBJECT
-
-public:
-    explicit GameStartSkill(const QString &name);
-
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
-    virtual void onGameStart() const = 0;
-};
-
 class ProhibitSkill : public Skill
 {
     Q_OBJECT
@@ -249,8 +200,8 @@ class ShowDistanceSkill : public ZeroCardViewAsSkill
 public:
     ShowDistanceSkill(const QString &name);
 
-    const Card *viewAs() const;
-    virtual bool isEnabledAtPlay(const Player *player) const;
+    const Card *viewAs() const override;
+    bool isEnabledAtPlay(const Player *player) const override;
 };
 
 class MaxCardsSkill : public Skill
@@ -314,7 +265,7 @@ class SlashNoDistanceLimitSkill : public TargetModSkill
 public:
     explicit SlashNoDistanceLimitSkill(const QString &skill_name);
 
-    virtual int getDistanceLimit(const Player *from, const Card *card) const;
+    int getDistanceLimit(const Player *from, const Card *card) const override;
 
 protected:
     QString name;
@@ -328,9 +279,9 @@ class FakeMoveSkill : public TriggerSkill
 public:
     explicit FakeMoveSkill(const QString &skillname);
 
-    int getPriority() const;
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const;
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
+    int getPriority() const override;
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override;
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override;
 
 private:
     QString name;
@@ -415,8 +366,8 @@ class ArraySummonSkill : public ZeroCardViewAsSkill
 public:
     ArraySummonSkill(const QString &name);
 
-    const Card *viewAs() const;
-    virtual bool isEnabledAtPlay(const Player *player) const;
+    const Card *viewAs() const override;
+    bool isEnabledAtPlay(const Player *player) const override;
 };
 
 #endif

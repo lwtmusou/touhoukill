@@ -2,7 +2,7 @@
 
 WrappedCard::WrappedCard(Card *card)
     : Card(card->getSuit(), card->getNumber())
-    , m_card(NULL)
+    , m_card(nullptr)
     , m_isModified(false)
 {
     m_id = card->getId();
@@ -11,7 +11,7 @@ WrappedCard::WrappedCard(Card *card)
 
 WrappedCard::~WrappedCard()
 {
-    Q_ASSERT(m_card != NULL);
+    Q_ASSERT(m_card != nullptr);
     delete m_card;
 }
 
@@ -20,7 +20,7 @@ void WrappedCard::takeOver(Card *card)
     Q_ASSERT(getId() >= 0);
     Q_ASSERT(card != this);
     Q_ASSERT(m_card != card);
-    if (m_card != NULL) {
+    if (m_card != nullptr) {
         m_isModified = true;
         delete m_card;
     }
@@ -37,7 +37,7 @@ void WrappedCard::copyEverythingFrom(Card *card)
     Q_ASSERT(card->getId() >= 0);
     Q_ASSERT(card != this);
     Q_ASSERT(m_card != card);
-    if (m_card != NULL) {
+    if (m_card != nullptr) {
         m_isModified = true;
         m_card->deleteLater();
     }
@@ -52,7 +52,7 @@ void WrappedCard::copyEverythingFrom(Card *card)
 
 void WrappedCard::setFlags(const QString &flag) const
 {
-    Q_ASSERT(m_card != NULL);
+    Q_ASSERT(m_card != nullptr);
     Card::setFlags(flag);
     m_card->setFlags(flag);
     m_isModified = true;

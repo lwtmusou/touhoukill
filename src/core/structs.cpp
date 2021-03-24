@@ -96,9 +96,9 @@ QVariant CardMoveReason::toVariant() const
 }
 
 DamageStruct::DamageStruct()
-    : from(NULL)
-    , to(NULL)
-    , card(NULL)
+    : from(nullptr)
+    , to(nullptr)
+    , card(nullptr)
     , damage(1)
     , nature(Normal)
     , chain(false)
@@ -126,7 +126,7 @@ DamageStruct::DamageStruct(const Card *card, ServerPlayer *from, ServerPlayer *t
 }
 
 DamageStruct::DamageStruct(const QString &reason, ServerPlayer *from, ServerPlayer *to, int damage, DamageStruct::Nature nature)
-    : card(NULL)
+    : card(nullptr)
     , chain(false)
     , transfer(false)
     , by_user(true)
@@ -150,9 +150,9 @@ QString DamageStruct::getReason() const
 }
 
 CardEffectStruct::CardEffectStruct()
-    : card(NULL)
-    , from(NULL)
-    , to(NULL)
+    : card(nullptr)
+    , from(nullptr)
+    , to(nullptr)
     , multiple(false)
     , nullified(false)
     , canceled(false)
@@ -162,10 +162,10 @@ CardEffectStruct::CardEffectStruct()
 
 SlashEffectStruct::SlashEffectStruct()
     : jink_num(1)
-    , slash(NULL)
-    , jink(NULL)
-    , from(NULL)
-    , to(NULL)
+    , slash(nullptr)
+    , jink(nullptr)
+    , from(nullptr)
+    , to(nullptr)
     , drank(0)
     , nature(DamageStruct::Normal)
     , multiple(false)
@@ -176,33 +176,33 @@ SlashEffectStruct::SlashEffectStruct()
 }
 
 DyingStruct::DyingStruct()
-    : who(NULL)
-    , damage(NULL)
-    , nowAskingForPeaches(NULL)
+    : who(nullptr)
+    , damage(nullptr)
+    , nowAskingForPeaches(nullptr)
 {
 }
 
 DeathStruct::DeathStruct()
-    : who(NULL)
-    , damage(NULL)
-    , viewAsKiller(NULL)
+    : who(nullptr)
+    , damage(nullptr)
+    , viewAsKiller(nullptr)
     , useViewAsKiller(false)
 {
 }
 
 RecoverStruct::RecoverStruct()
     : recover(1)
-    , who(NULL)
-    , card(NULL)
+    , who(nullptr)
+    , card(nullptr)
 {
 }
 
 PindianStruct::PindianStruct()
-    : from(NULL)
-    , to(NULL)
-    , askedPlayer(NULL)
-    , from_card(NULL)
-    , to_card(NULL)
+    : from(nullptr)
+    , to(nullptr)
+    , askedPlayer(nullptr)
+    , from_card(nullptr)
+    , to_card(nullptr)
     , success(false)
 {
 }
@@ -213,15 +213,15 @@ bool PindianStruct::isSuccess() const
 }
 
 JudgeStruct::JudgeStruct()
-    : who(NULL)
-    , card(NULL)
+    : who(nullptr)
+    , card(nullptr)
     , pattern(".")
     , good(true)
     , time_consuming(false)
     , negative(false)
     , play_animation(true)
-    , retrial_by_response(NULL)
-    , relative_player(NULL)
+    , retrial_by_response(nullptr)
+    , relative_player(nullptr)
     , ignore_judge(false)
     , _m_result(TRIAL_RESULT_UNKNOWN)
 {
@@ -261,13 +261,13 @@ bool JudgeStruct::isGood(const Card *card) const
 PhaseChangeStruct::PhaseChangeStruct()
     : from(Player::NotActive)
     , to(Player::NotActive)
-    , player(NULL)
+    , player(nullptr)
 {
 }
 
 CardUseStruct::CardUseStruct()
-    : card(NULL)
-    , from(NULL)
+    : card(nullptr)
+    , from(nullptr)
     , m_isOwnerUse(true)
     , m_addHistory(true)
     , nullified_list(QStringList())
@@ -289,7 +289,7 @@ CardUseStruct::CardUseStruct(const Card *card, ServerPlayer *from, ServerPlayer 
 {
     this->card = card;
     this->from = from;
-    if (target != NULL)
+    if (target != nullptr)
         to << target;
     this->m_isOwnerUse = isOwnerUse;
     this->m_addHistory = true;
@@ -300,7 +300,7 @@ CardUseStruct::CardUseStruct(const Card *card, ServerPlayer *from, ServerPlayer 
 bool CardUseStruct::isValid(const QString &pattern) const
 {
     Q_UNUSED(pattern)
-    return card != NULL;
+    return card != nullptr;
     /*if (card == NULL) return false;
     if (!card->getSkillName().isEmpty()) {
     bool validSkill = false;
@@ -383,7 +383,7 @@ void CardUseStruct::parse(const QString &str, Room *room)
 
 QString CardUseStruct::toString() const
 {
-    if (card == NULL)
+    if (card == nullptr)
         return QString();
 
     QStringList l;
@@ -403,7 +403,7 @@ QString CardUseStruct::toString() const
 
 MarkChangeStruct::MarkChangeStruct()
     : num(1)
-    , player(NULL)
+    , player(nullptr)
 {
 }
 
@@ -419,23 +419,23 @@ bool SkillInvokeDetail::operator<(const SkillInvokeDetail &arg2) const // the op
         return false;
 
     std::function<Room *(ServerPlayer *)> getRoom = [this](ServerPlayer *p) -> Room * {
-        if (p != NULL)
+        if (p != nullptr)
             return p->getRoom();
         else {
             // let's treat it as a gamerule, the gamerule is created inside roomthread
             RoomThread *thread = qobject_cast<RoomThread *>(skill->thread());
-            if (thread == NULL)
-                return NULL;
+            if (thread == nullptr)
+                return nullptr;
 
             return thread->getRoom();
         }
 
-        return NULL;
+        return nullptr;
     };
 
     if (invoker != arg2.invoker) {
         Room *room = getRoom(owner);
-        if (room == NULL)
+        if (room == nullptr)
             return false;
 
         return room->getFront(invoker, arg2.invoker) == invoker;
@@ -483,20 +483,20 @@ SkillInvokeDetail::SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *ow
     , preferredTarget(preferredTarget)
     , showhidden(showHidden)
 {
-    if (target != NULL)
+    if (target != nullptr)
         targets << target;
 }
 
 bool SkillInvokeDetail::isValid() const // validity check
 {
-    return skill != NULL;
+    return skill != nullptr;
 }
 
 bool SkillInvokeDetail::preferredTargetLess(const SkillInvokeDetail &arg2) const
 {
     if (skill == arg2.skill && owner == arg2.owner && invoker == arg2.invoker) {
         // we compare preferred target to ensure the target selected is in the order of seat only in the case that 2 skills are the same
-        if (preferredTarget != NULL && arg2.preferredTarget != NULL)
+        if (preferredTarget != nullptr && arg2.preferredTarget != nullptr)
             return ServerPlayer::CompareByActionOrder(preferredTarget, arg2.preferredTarget);
     }
 
@@ -519,9 +519,9 @@ QVariant SkillInvokeDetail::toVariant() const
         ob["preferredtarget"] = preferredTarget->objectName();
         Room *room = preferredTarget->getRoom();
         ServerPlayer *current = room->getCurrent();
-        if (current == NULL)
+        if (current == nullptr)
             current = room->getLord();
-        if (current == NULL)
+        if (current == nullptr)
             current = preferredTarget;
 
         // send the seat info to the client so that we can compare the trigger order of tieqi-like skill in the client side
@@ -557,64 +557,64 @@ QStringList SkillInvokeDetail::toList() const
 }
 
 SkillAcquireDetachStruct::SkillAcquireDetachStruct()
-    : skill(NULL)
-    , player(NULL)
+    : skill(nullptr)
+    , player(nullptr)
     , isAcquire(false)
 {
 }
 
 ChoiceMadeStruct::ChoiceMadeStruct()
-    : player(NULL)
+    : player(nullptr)
 {
 }
 
 CardAskedStruct::CardAskedStruct()
-    : player(NULL)
+    : player(nullptr)
 {
 }
 
 HpLostStruct::HpLostStruct()
-    : player(NULL)
+    : player(nullptr)
     , num(0)
 {
 }
 
 JinkEffectStruct::JinkEffectStruct()
-    : jink(NULL)
+    : jink(nullptr)
 {
 }
 
 PhaseSkippingStruct::PhaseSkippingStruct()
     : phase(Player::NotActive)
-    , player(NULL)
+    , player(nullptr)
     , isCost(false)
 {
 }
 
 DrawNCardsStruct::DrawNCardsStruct()
-    : player(NULL)
+    : player(nullptr)
     , n(0)
     , isInitial(false)
 {
 }
 
 SkillInvalidStruct::SkillInvalidStruct()
-    : player(NULL)
-    , skill(NULL)
+    : player(nullptr)
+    , skill(nullptr)
     , invalid(false)
 {
 }
 
 ExtraTurnStruct::ExtraTurnStruct()
-    : player(NULL)
+    : player(nullptr)
     , set_phases(QList<Player::Phase>())
     , reason(QString())
-    , extraTarget(NULL)
+    , extraTarget(nullptr)
 {
 }
 
 BrokenEquipChangedStruct::BrokenEquipChangedStruct()
-    : player(NULL)
+    : player(nullptr)
     , ids(QList<int>())
     , broken(false)
     , moveFromEquip(false)
@@ -622,7 +622,7 @@ BrokenEquipChangedStruct::BrokenEquipChangedStruct()
 }
 
 ShownCardChangedStruct::ShownCardChangedStruct()
-    : player(NULL)
+    : player(nullptr)
     , ids(QList<int>())
     , shown(false)
     , moveFromHand(false)
@@ -630,7 +630,7 @@ ShownCardChangedStruct::ShownCardChangedStruct()
 }
 
 ShowGeneralStruct::ShowGeneralStruct()
-    : player(NULL)
+    : player(nullptr)
     , isHead(true)
     , isShow(true)
 {

@@ -7,7 +7,7 @@
 #include <QTextDocument>
 #include <QTextOption>
 
-ClientPlayer *Self = NULL;
+ClientPlayer *Self = nullptr;
 
 ClientPlayer::ClientPlayer(Client *client)
     : Player(client)
@@ -19,7 +19,7 @@ ClientPlayer::ClientPlayer(Client *client)
 int ClientPlayer::aliveCount(bool includeRemoved) const
 {
     const Client *client = qobject_cast<Client *>(parent());
-    if (client == NULL)
+    if (client == nullptr)
         return -1;
 
     int n = client->alivePlayerCount();

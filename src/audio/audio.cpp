@@ -116,7 +116,7 @@ public:
         });
     }
 
-    ~OggPlayer()
+    ~OggPlayer() override
     {
         stop();
     }

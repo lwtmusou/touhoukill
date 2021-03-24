@@ -22,14 +22,14 @@ Card *RoomObject::getCard(int cardId) const
 WrappedCard *RoomObject::getWrappedCard(int cardId) const
 {
     if (!m_cards.contains(cardId))
-        return NULL;
+        return nullptr;
     return m_cards[cardId];
 }
 
 void RoomObject::resetCard(int cardId)
 {
     Card *newCard = Card::Clone(Sanguosha->getEngineCard(cardId));
-    if (newCard == NULL)
+    if (newCard == nullptr)
         return;
     newCard->setFlags(m_cards[cardId]->getFlags());
     m_cards[cardId]->copyEverythingFrom(newCard);

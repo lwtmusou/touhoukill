@@ -40,7 +40,7 @@ bool Skill::isAttachedLordSkill() const
 
 bool Skill::shouldBeVisible(const Player *Self) const
 {
-    return Self != NULL;
+    return Self != nullptr;
 }
 
 QString Skill::getDescription(bool yellow, bool addHegemony) const
@@ -151,7 +151,7 @@ QStringList Skill::getSources() const
 
 QDialog *Skill::getDialog() const
 {
-    return NULL;
+    return nullptr;
 }
 
 bool Skill::matchAvaliablePattern(QString avaliablePattern, QString askedPattern) const
@@ -202,7 +202,7 @@ bool Skill::canPreshow() const
 {
     if (inherits("TriggerSkill")) {
         const TriggerSkill *triskill = qobject_cast<const TriggerSkill *>(this);
-        return triskill->getViewAsSkill() == NULL;
+        return triskill->getViewAsSkill() == nullptr;
     }
 
     return false;
@@ -264,41 +264,41 @@ bool ViewAsSkill::isEnabledAtNullification(const ServerPlayer *) const
 
 const ViewAsSkill *ViewAsSkill::parseViewAsSkill(const Skill *skill)
 {
-    if (skill == NULL)
-        return NULL;
+    if (skill == nullptr)
+        return nullptr;
     if (skill->inherits("ViewAsSkill")) {
         const ViewAsSkill *view_as_skill = qobject_cast<const ViewAsSkill *>(skill);
         return view_as_skill;
     }
     if (skill->inherits("TriggerSkill")) {
         const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
-        Q_ASSERT(trigger_skill != NULL);
+        Q_ASSERT(trigger_skill != nullptr);
         const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
-        if (view_as_skill != NULL)
+        if (view_as_skill != nullptr)
             return view_as_skill;
     }
     if (skill->inherits("DistanceSkill")) {
         const DistanceSkill *trigger_skill = qobject_cast<const DistanceSkill *>(skill);
-        Q_ASSERT(trigger_skill != NULL);
+        Q_ASSERT(trigger_skill != nullptr);
         const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
-        if (view_as_skill != NULL)
+        if (view_as_skill != nullptr)
             return view_as_skill;
     }
     if (skill->inherits("AttackRangeSkill")) {
         const AttackRangeSkill *trigger_skill = qobject_cast<const AttackRangeSkill *>(skill);
-        Q_ASSERT(trigger_skill != NULL);
+        Q_ASSERT(trigger_skill != nullptr);
         const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
-        if (view_as_skill != NULL)
+        if (view_as_skill != nullptr)
             return view_as_skill;
     }
     if (skill->inherits("MaxCardsSkill")) {
         const MaxCardsSkill *trigger_skill = qobject_cast<const MaxCardsSkill *>(skill);
-        Q_ASSERT(trigger_skill != NULL);
+        Q_ASSERT(trigger_skill != nullptr);
         const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
-        if (view_as_skill != NULL)
+        if (view_as_skill != nullptr)
             return view_as_skill;
     }
-    return NULL;
+    return nullptr;
 }
 
 QString ViewAsSkill::getExpandPile() const
@@ -316,7 +316,7 @@ const Card *ZeroCardViewAsSkill::viewAs(const QList<const Card *> &cards) const
     if (cards.isEmpty())
         return viewAs();
     else
-        return NULL;
+        return nullptr;
 }
 
 bool ZeroCardViewAsSkill::viewFilter(const QList<const Card *> &, const Card *) const
@@ -356,7 +356,7 @@ bool OneCardViewAsSkill::viewFilter(const Card *to_select) const
 const Card *OneCardViewAsSkill::viewAs(const QList<const Card *> &cards) const
 {
     if (cards.length() != 1)
-        return NULL;
+        return nullptr;
     else
         return viewAs(cards.first());
 }
@@ -368,7 +368,7 @@ FilterSkill::FilterSkill(const QString &name)
 
 TriggerSkill::TriggerSkill(const QString &name)
     : Skill(name)
-    , view_as_skill(NULL)
+    , view_as_skill(nullptr)
     , global(false)
 {
 }
@@ -400,9 +400,9 @@ QList<SkillInvokeDetail> TriggerSkill::triggerable(TriggerEvent, const Room *, c
 bool TriggerSkill::cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
 {
     if (invoke->isCompulsory) { //for hegemony
-        if (invoke->owner == NULL || invoke->owner != invoke->invoker)
+        if (invoke->owner == nullptr || invoke->owner != invoke->invoker)
             return true;
-        if (invoke->invoker != NULL) {
+        if (invoke->invoker != nullptr) {
             if (!invoke->invoker->hasSkill(this))
                 return true;
             if (invoke->invoker->hasShownSkill(this) || invoke->invoker->askForSkillInvoke(this, data))
@@ -413,11 +413,11 @@ bool TriggerSkill::cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> 
         }
         return true;
     } else {
-        if (invoke->invoker != NULL) {
+        if (invoke->invoker != nullptr) {
             //for ai
             invoke->invoker->tag[this->objectName()] = data;
             QVariant notify_data = data;
-            if (invoke->preferredTarget != NULL)
+            if (invoke->preferredTarget != nullptr)
                 notify_data = QVariant::fromValue(invoke->preferredTarget);
             return invoke->invoker->askForSkillInvoke(this, notify_data);
         }
@@ -428,73 +428,6 @@ bool TriggerSkill::cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> 
 
 bool TriggerSkill::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &) const
 {
-    return false;
-}
-
-MasochismSkill::MasochismSkill(const QString &name)
-    : TriggerSkill(name)
-{
-    events << Damaged;
-}
-
-QList<SkillInvokeDetail> MasochismSkill::triggerable(TriggerEvent, const Room *room, const QVariant &data) const
-{
-    DamageStruct damage = data.value<DamageStruct>();
-    return triggerable(room, damage);
-}
-
-QList<SkillInvokeDetail> MasochismSkill::triggerable(const Room *, const DamageStruct &) const
-{
-    return QList<SkillInvokeDetail>();
-}
-
-bool MasochismSkill::effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-{
-    DamageStruct damage = data.value<DamageStruct>();
-    onDamaged(room, invoke, damage);
-
-    return false;
-}
-
-PhaseChangeSkill::PhaseChangeSkill(const QString &name)
-    : TriggerSkill(name)
-{
-    events << EventPhaseStart;
-}
-
-bool PhaseChangeSkill::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
-{
-    ServerPlayer *player = data.value<ServerPlayer *>();
-    return onPhaseChange(player);
-}
-
-DrawCardsSkill::DrawCardsSkill(const QString &name, bool is_initial)
-    : TriggerSkill(name)
-    , is_initial(is_initial)
-{
-    if (is_initial)
-        events << DrawInitialCards;
-    else
-        events << DrawNCards;
-}
-
-bool DrawCardsSkill::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
-{
-    DrawNCardsStruct s = data.value<DrawNCardsStruct>();
-    s.n = getDrawNum(s);
-    data = QVariant::fromValue(s);
-    return false;
-}
-
-GameStartSkill::GameStartSkill(const QString &name)
-    : TriggerSkill(name)
-{
-    events << GameStart;
-}
-
-bool GameStartSkill::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &) const
-{
-    onGameStart();
     return false;
 }
 
@@ -642,7 +575,7 @@ bool FakeMoveSkill::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetai
 
 QList<SkillInvokeDetail> FakeMoveSkill::triggerable(TriggerEvent, const Room *room, const QVariant &) const
 {
-    ServerPlayer *owner = NULL;
+    ServerPlayer *owner = nullptr;
     foreach (ServerPlayer *p, room->getAllPlayers()) {
         if (p->hasSkill(this)) {
             owner = p;
@@ -653,7 +586,7 @@ QList<SkillInvokeDetail> FakeMoveSkill::triggerable(TriggerEvent, const Room *ro
     QString flag = QString("%1_InTempMoving").arg(name);
     foreach (ServerPlayer *p, room->getAllPlayers()) {
         if (p->hasFlag(flag))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, owner, p, NULL, true);
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, owner, p, nullptr, true);
     }
 
     return QList<SkillInvokeDetail>();
@@ -666,13 +599,13 @@ EquipSkill::EquipSkill(const QString &name)
 
 bool EquipSkill::equipAvailable(const Player *p, EquipCard::Location location, const QString &equipName, const Player *to /*= NULL*/)
 {
-    if (p == NULL)
+    if (p == nullptr)
         return false;
 
     if (p->getMark("Equips_Nullified_to_Yourself") > 0)
         return false;
 
-    if (to != NULL && to->getMark("Equips_of_Others_Nullified_to_You") > 0)
+    if (to != nullptr && to->getMark("Equips_of_Others_Nullified_to_You") > 0)
         return false;
 
     switch (location) {
@@ -697,7 +630,7 @@ bool EquipSkill::equipAvailable(const Player *p, EquipCard::Location location, c
 
 bool EquipSkill::equipAvailable(const Player *p, const EquipCard *card, const Player *to /*= NULL*/)
 {
-    if (card == NULL)
+    if (card == nullptr)
         return false;
 
     return equipAvailable(p, card->location(), card->objectName(), to);

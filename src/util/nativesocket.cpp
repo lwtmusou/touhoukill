@@ -10,7 +10,7 @@
 NativeServerSocket::NativeServerSocket()
 {
     server = new QTcpServer(this);
-    daemon = NULL;
+    daemon = nullptr;
     connect(server, SIGNAL(newConnection()), this, SLOT(processNewConnection()));
 }
 

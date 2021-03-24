@@ -30,10 +30,10 @@ UpdateDialog::UpdateDialog(QWidget *parent)
     , bar(new QProgressBar)
     , lbl(new QLabel)
     , downloadManager(new QNetworkAccessManager(this))
-    , scriptReply(NULL)
-    , packReply(NULL)
+    , scriptReply(nullptr)
+    , packReply(nullptr)
 #ifdef Q_OS_WIN
-    , taskbarButton(NULL)
+    , taskbarButton(nullptr)
 #endif
     , m_configLuaIs097(false)
     , m_finishedScript(false)
@@ -109,17 +109,17 @@ void UpdateDialog::checkForUpdate()
 void UpdateDialog::updateError(QNetworkReply::NetworkError)
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
-    if (reply != NULL) {
+    if (reply != nullptr) {
         Config.AutoUpdateDataRececived = true;
         Config.AutoUpdateNeedsRestart = true;
-        disconnect(reply, &QNetworkReply::finished, this, 0);
+        disconnect(reply, &QNetworkReply::finished, this, nullptr);
     }
 }
 
 void UpdateDialog::updateInfoReceived()
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
-    if (reply == NULL)
+    if (reply == nullptr)
         return;
 
     Config.AutoUpdateDataRececived = true;
@@ -303,7 +303,7 @@ QVersionNumber UpdateDialog::getVersionNumberForItem(UpdateDialog::UpdateItem it
 void UpdateDialog::updateClicked()
 {
     QPushButton *btn = qobject_cast<QPushButton *>(sender());
-    if (btn != NULL) {
+    if (btn != nullptr) {
         // previously we save the update item to objectName, so we need to extract the update item from objectName
         bool ok = false;
         UpdateItem item = static_cast<UpdateItem>(btn->objectName().toInt(&ok));
@@ -464,11 +464,11 @@ void UpdateDialog::errScript()
 #ifdef Q_OS_WIN
     taskbarButton->progress()->hide();
 #endif
-    if (scriptReply != NULL) {
+    if (scriptReply != nullptr) {
         disconnect(scriptReply, &QNetworkReply::errorOccurred, this, &UpdateDialog::errScript);
         disconnect(scriptReply, &QNetworkReply::finished, this, &UpdateDialog::finishedScript);
     }
-    if (packReply != NULL) {
+    if (packReply != nullptr) {
         disconnect(packReply, &QNetworkReply::downloadProgress, this, &UpdateDialog::downloadProgress);
         disconnect(packReply, &QNetworkReply::errorOccurred, this, &UpdateDialog::errPack);
         disconnect(packReply, &QNetworkReply::finished, this, &UpdateDialog::finishedPack);
@@ -517,11 +517,11 @@ void UpdateDialog::errPack()
 #ifdef Q_OS_WIN
     taskbarButton->progress()->hide();
 #endif
-    if (scriptReply != NULL) {
+    if (scriptReply != nullptr) {
         disconnect(scriptReply, &QNetworkReply::errorOccurred, this, &UpdateDialog::errScript);
         disconnect(scriptReply, &QNetworkReply::finished, this, &UpdateDialog::finishedScript);
     }
-    if (packReply != NULL) {
+    if (packReply != nullptr) {
         disconnect(packReply, &QNetworkReply::downloadProgress, this, &UpdateDialog::downloadProgress);
         disconnect(packReply, &QNetworkReply::errorOccurred, this, &UpdateDialog::errPack);
         disconnect(packReply, &QNetworkReply::finished, this, &UpdateDialog::finishedPack);

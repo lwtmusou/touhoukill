@@ -104,16 +104,16 @@ void TablePile::_fadeOutCardsLocked(const QList<CardItem *> &cards)
 void TablePile::showJudgeResult(int cardId, bool takeEffect)
 {
     _m_mutex_pileCards.lock();
-    CardItem *judgeCard = NULL;
+    CardItem *judgeCard = nullptr;
     QList<CardItem *> cardsToClear;
     for (int i = m_visibleCards.size() - 1; i >= 0; i--) {
         CardItem *item = m_visibleCards[i];
-        if (judgeCard == NULL && item->getCard() && item->getCard()->getId() == cardId)
+        if (judgeCard == nullptr && item->getCard() && item->getCard()->getId() == cardId)
             judgeCard = m_visibleCards[i];
         else
             cardsToClear.append(item);
     }
-    if (judgeCard == NULL)
+    if (judgeCard == nullptr)
         judgeCard = _createCard(cardId);
     m_visibleCards.clear();
     m_visibleCards.append(judgeCard);

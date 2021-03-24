@@ -513,7 +513,7 @@ public:
         filter_pattern = ".|.|.|hand!";
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const
+    const Card *viewAs(const Card *originalCard) const override
     {
         TribladeCard *c = new TribladeCard;
         c->addSubcard(originalCard);
@@ -531,7 +531,7 @@ public:
         view_as_skill = new TribladeSkillVS;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
         if (!damage.from || damage.from->isDead() || !equipAvailable(damage.from, EquipCard::WeaponLocation, objectName()) || !damage.from->canDiscard(damage.from, "hs"))
@@ -546,7 +546,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
         foreach (ServerPlayer *p, room->getOtherPlayers(damage.from)) {
@@ -587,7 +587,7 @@ public:
         return can;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
@@ -596,13 +596,13 @@ public:
         if (isHegemonyGameMode(room->getMode()))
             return QList<SkillInvokeDetail>();
 
-        if (use.card != NULL && use.card->isKindOf("Slash")) {
+        if (use.card != nullptr && use.card->isKindOf("Slash")) {
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *p, use.to) {
                 if (p->isAlive() && diff(use.from, p)) {
                     if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName(), p))
                         continue;
-                    d << SkillInvokeDetail(this, use.from, use.from, NULL, false, p);
+                    d << SkillInvokeDetail(this, use.from, use.from, nullptr, false, p);
                 }
             }
 
@@ -612,7 +612,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         invoke->invoker->tag["DoubleSwordTarget"] = QVariant::fromValue(invoke->preferredTarget);
         if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
@@ -622,7 +622,7 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         bool draw_card = false;
 
@@ -657,18 +657,18 @@ public:
         frequency = Compulsory;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
             return QList<SkillInvokeDetail>();
 
-        if (use.card != NULL && use.card->isKindOf("Slash")) {
+        if (use.card != nullptr && use.card->isKindOf("Slash")) {
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *p, use.to) {
                 if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName(), p))
                     continue;
-                d << SkillInvokeDetail(this, use.from, use.from, NULL, true, p);
+                d << SkillInvokeDetail(this, use.from, use.from, nullptr, true, p);
             }
 
             return d;
@@ -677,7 +677,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon", true);
         if (v) {
@@ -692,7 +692,7 @@ public:
         return true;
     }
 
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (invoke->targets.first()->getMark("Equips_of_Others_Nullified_to_You") == 0)
@@ -716,7 +716,7 @@ public:
         events << TargetSpecified;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (!use.card->isKindOf("Slash"))
@@ -729,7 +729,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         room->setEmotion(invoke->invoker, "weapon/blade");
 
@@ -767,28 +767,28 @@ public:
         response_or_use = true;
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const
+    bool isEnabledAtPlay(const Player *player) const override
     {
         bool avalilable = Slash::IsAvailable(player);
         return avalilable && player->getMark("Equips_Nullified_to_Yourself") == 0 && player->hasWeapon(objectName(), false, true);
         //&& EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
         return matchAvaliablePattern("slash", pattern) && player->getMark("Equips_Nullified_to_Yourself") == 0 && player->hasWeapon(objectName(), false, true);
         //EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
     }
 
-    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
     {
         return selected.length() < 2 && !to_select->isEquipped();
     }
 
-    virtual const Card *viewAs(const QList<const Card *> &cards) const
+    const Card *viewAs(const QList<const Card *> &cards) const override
     {
         if (cards.length() != 2)
-            return NULL;
+            return nullptr;
 
         Slash *slash = new Slash(Card::SuitToBeDecided, 0);
         slash->setSkillName(objectName());
@@ -816,17 +816,17 @@ public:
         response_pattern = "@Axe";
     }
 
-    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
     {
         if (Self->hasWeapon(objectName(), true) && to_select == Self->getWeapon()) //check if cannot throw selfweapon
             return false;
         return selected.length() < 2 && !Self->isJilei(to_select);
     }
 
-    virtual const Card *viewAs(const QList<const Card *> &cards) const
+    const Card *viewAs(const QList<const Card *> &cards) const override
     {
         if (cards.length() != 2)
-            return NULL;
+            return nullptr;
 
         DummyCard *card = new DummyCard;
         card->setSkillName(objectName());
@@ -845,13 +845,13 @@ public:
         view_as_skill = new AxeViewAsSkill;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if (!equipAvailable(effect.from, EquipCard::WeaponLocation, objectName()))
             return QList<SkillInvokeDetail>();
 
-        if (!effect.to->isAlive() || effect.jink == NULL)
+        if (!effect.to->isAlive() || effect.jink == nullptr)
             return QList<SkillInvokeDetail>();
 
         int cardLimit = 2;
@@ -863,7 +863,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         invoke->invoker->tag["axe_target"] = QVariant::fromValue(effect.to);
@@ -875,10 +875,10 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const override
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        room->slashResult(effect, NULL);
+        room->slashResult(effect, nullptr);
         return true;
     }
 };
@@ -898,7 +898,7 @@ public:
         frequency = NotCompulsory;
     }
 
-    virtual int getExtraTargetNum(const Player *from, const Card *card) const
+    int getExtraTargetNum(const Player *from, const Card *card) const override
     {
         bool isLastHandCard = false;
         if (from->isLastHandCard(card))
@@ -927,7 +927,7 @@ public:
         events << DamageCaused;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
         if (!equipAvailable(damage.from, EquipCard::WeaponLocation, objectName(), damage.to))
@@ -935,14 +935,14 @@ public:
 
         if (damage.card && damage.card->isKindOf("Slash") && damage.by_user && !damage.chain && !damage.transfer) {
             if (damage.to->getDefensiveHorse() && damage.from->canDiscard(damage.to, damage.to->getDefensiveHorse()->getEffectiveId()))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, nullptr, false, damage.to);
             if (damage.to->getOffensiveHorse() && damage.from->canDiscard(damage.to, damage.to->getOffensiveHorse()->getEffectiveId()))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, nullptr, false, damage.to);
         }
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         invoke->invoker->tag[this->objectName()] = data;
         if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
@@ -954,7 +954,7 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         QStringList horses;
         DamageStruct damage = data.value<DamageStruct>();
@@ -989,7 +989,7 @@ public:
         events << CardAsked;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         CardAskedStruct ask = data.value<CardAskedStruct>();
         if (!matchAvaliablePattern("jink", ask.pattern))
@@ -1007,7 +1007,7 @@ public:
         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
     }
 
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         if (invoke->invoker->askForSkillInvoke(this, data)) {
             const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "armor", true);
@@ -1018,7 +1018,7 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         int armor_id = -1;
         if (invoke->invoker->getArmor()) {
@@ -1047,7 +1047,7 @@ public:
         return false;
     }
 
-    int getEffectIndex(const ServerPlayer *, const Card *) const
+    int getEffectIndex(const ServerPlayer *, const Card *) const override
     {
         return -2;
     }
@@ -1069,7 +1069,7 @@ public:
         frequency = Compulsory;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.damage >= damage.to->getHp() && damage.to->isAlive() && damage.to->getArmor() && damage.to->getArmor()->objectName() == objectName()
@@ -1079,7 +1079,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         room->setEmotion(invoke->invoker, "armor/breast_plate");
         int id = invoke->invoker->getArmor()->getEffectiveId();
@@ -1125,7 +1125,7 @@ void AmazingGrace::clearRestCards(Room *room) const
         return;
     DummyCard *dummy = new DummyCard(VariantList2IntList(ag_list));
     CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString(), "amazing_grace", QString());
-    room->throwCard(dummy, reason, NULL);
+    room->throwCard(dummy, reason, nullptr);
     delete dummy;
 }
 
@@ -1140,7 +1140,7 @@ void AmazingGrace::doPreAction(Room *room, const CardUseStruct &use) const
         }
     }
     QList<int> card_ids = room->getNCards(count);
-    CardsMoveStruct move(card_ids, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, use.from->objectName(), objectName(), QString()));
+    CardsMoveStruct move(card_ids, nullptr, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, use.from->objectName(), objectName(), QString()));
     room->moveCardsAtomic(move, true);
     room->fillAG(card_ids);
     room->setTag("AmazingGrace", IntList2VariantList(card_ids));
@@ -1238,7 +1238,7 @@ void SavageAssault::onEffect(const CardEffectStruct &effect) const
     bool dodamage = false;
     for (int i = 0; i < times; i += 1) {
         QString prompt = QString("savage-assault-slash:%1:%2:%3").arg(effect.from->objectName()).arg(times).arg(i + 1);
-        const Card *slash = room->askForCard(effect.to, "slash", prompt, QVariant::fromValue(effect), Card::MethodResponse, effect.from->isAlive() ? effect.from : NULL);
+        const Card *slash = room->askForCard(effect.to, "slash", prompt, QVariant::fromValue(effect), Card::MethodResponse, effect.from->isAlive() ? effect.from : nullptr);
         if (slash) {
             if (slash->getSkillName() == "Spear")
                 room->setEmotion(effect.to, "weapon/spear");
@@ -1251,7 +1251,7 @@ void SavageAssault::onEffect(const CardEffectStruct &effect) const
 
     if (dodamage) {
         //room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to, 1 + effect.effectValue.last()));
-        room->damage(DamageStruct(effect.card, effect.from->isAlive() ? effect.from : NULL, effect.to, 1 + effect.effectValue.last()));
+        room->damage(DamageStruct(effect.card, effect.from->isAlive() ? effect.from : nullptr, effect.to, 1 + effect.effectValue.last()));
         room->getThread()->delay();
     }
 }
@@ -1272,7 +1272,7 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const
     bool dodamage = false;
     for (int i = 0; i < times; i += 1) {
         QString prompt = QString("archery-attack-jink:%1:%2:%3").arg(effect.from->objectName()).arg(times).arg(i + 1);
-        const Card *jink = room->askForCard(effect.to, "jink", prompt, QVariant::fromValue(effect), Card::MethodResponse, effect.from->isAlive() ? effect.from : NULL);
+        const Card *jink = room->askForCard(effect.to, "jink", prompt, QVariant::fromValue(effect), Card::MethodResponse, effect.from->isAlive() ? effect.from : nullptr);
         if (jink && jink->getSkillName() != "eight_diagram" && jink->getSkillName() != "bazhen")
             room->setEmotion(effect.to, "jink");
         if (!jink) {
@@ -1282,7 +1282,7 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const
     }
 
     if (dodamage) {
-        room->damage(DamageStruct(effect.card, effect.from->isAlive() ? effect.from : NULL, effect.to, 1 + effect.effectValue.last()));
+        room->damage(DamageStruct(effect.card, effect.from->isAlive() ? effect.from : nullptr, effect.to, 1 + effect.effectValue.last()));
         //room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to, 1 + effect.effectValue.last()));
         room->getThread()->delay();
     }
@@ -1325,7 +1325,7 @@ bool Collateral::targetFilter(const QList<const Player *> &targets, const Player
 bool Collateral::doCollateral(Room *room, ServerPlayer *killer, ServerPlayer *victim, const QString &prompt) const
 {
     bool useSlash = false;
-    if (killer->canSlash(victim, NULL, false))
+    if (killer->canSlash(victim, nullptr, false))
         useSlash = room->askForUseSlashTo(killer, victim, prompt);
     return useSlash;
 }
@@ -1388,7 +1388,7 @@ void Nullification::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> 
     // does nothing, just throw it
     if (room->getCardPlace(getEffectiveId()) == Player::PlaceTable) {
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName());
-        room->moveCardTo(this, source, NULL, Player::DiscardPile, reason);
+        room->moveCardTo(this, source, nullptr, Player::DiscardPile, reason);
     }
 }
 
@@ -1470,7 +1470,7 @@ void Duel::onEffect(const CardEffectStruct &effect) const
         for (int i = 0; i < times; i += 1) {
             QString prompt = QString("duel-slash:%1:%2:%3").arg(second->objectName()).arg(times).arg(i + 1);
             const Card *slash = room->askForCard(first, "slash", prompt, QVariant::fromValue(effect), Card::MethodResponse, second);
-            if (slash == NULL) {
+            if (slash == nullptr) {
                 dodamage = true;
                 break;
             } else if (slash->getSkillName() == "Spear")
@@ -1482,7 +1482,7 @@ void Duel::onEffect(const CardEffectStruct &effect) const
         qSwap(first, second);
     }
     //DamageStruct damage(this, second->isAlive() ? second : NULL, first, 1 + effect.effectValue.last());
-    DamageStruct damage(effect.card, second->isAlive() ? second : NULL, first, 1 + effect.effectValue.last());
+    DamageStruct damage(effect.card, second->isAlive() ? second : nullptr, first, 1 + effect.effectValue.last());
     if (second != effect.from)
         damage.by_user = false;
     room->damage(damage);
@@ -1716,7 +1716,7 @@ Lightning::Lightning(Suit suit, int number)
 
 void Lightning::takeEffect(ServerPlayer *target) const
 {
-    target->getRoom()->damage(DamageStruct(this, NULL, target, 3, DamageStruct::Thunder));
+    target->getRoom()->damage(DamageStruct(this, nullptr, target, 3, DamageStruct::Thunder));
 }
 
 // EX cards
@@ -1730,7 +1730,7 @@ public:
         events << DamageCaused;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
         if (!equipAvailable(damage.from, EquipCard::WeaponLocation, objectName(), damage.to))
@@ -1738,12 +1738,12 @@ public:
 
         if (damage.card && damage.by_user && damage.card->isKindOf("Slash") && damage.from->canDiscard(damage.to, "hes") && !damage.chain && !damage.transfer
             && damage.from != damage.to)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, false, damage.to);
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, nullptr, false, damage.to);
 
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         //bool ret = WeaponSkill::cost(triggerEvent, room, invoke, data);
         //if (ret)
@@ -1761,7 +1761,7 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         ServerPlayer *from = invoke->invoker;
         ServerPlayer *to = invoke->targets.first();
@@ -1796,19 +1796,19 @@ public:
         frequency = Compulsory;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if (!equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()))
             return QList<SkillInvokeDetail>();
 
         if (effect.slash->isBlack())
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, nullptr, true);
 
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "armor", true);
         if (v) {
@@ -1819,7 +1819,7 @@ public:
         return true;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const override
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         LogMessage log;
@@ -1849,10 +1849,10 @@ public:
     {
     }
 
-    virtual int getCorrect(const Player *from, const Player *to) const
+    int getCorrect(const Player *from, const Player *to) const override
     {
         int correct = 0;
-        const Horse *horse = NULL;
+        const Horse *horse = nullptr;
         if (from->getOffensiveHorse() && from->getMark("Equips_Nullified_to_Yourself") == 0) {
             horse = qobject_cast<const Horse *>(from->getOffensiveHorse()->getRealCard());
             if (horse && !from->isBrokenEquip(horse->getEffectiveId(), true))
@@ -1903,12 +1903,12 @@ public:
         filter_pattern = ".|.|.|hand";
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const
+    bool isEnabledAtPlay(const Player *player) const override
     {
         return !player->hasUsed("WoodenOxCard") && player->hasTreasure(objectName());
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const
+    const Card *viewAs(const Card *originalCard) const override
     {
         WoodenOxCard *card = new WoodenOxCard;
         card->addSubcard(originalCard);
@@ -1928,10 +1928,10 @@ public:
         global = true;
     }
 
-    void record(TriggerEvent, Room *room, QVariant &data) const
+    void record(TriggerEvent, Room *room, QVariant &data) const override
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        if (move.from == NULL)
+        if (move.from == nullptr)
             return;
 
         if (move.from->hasTreasure("wooden_ox")) {
@@ -1952,10 +1952,10 @@ public:
         }
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        if (move.from == NULL || move.from->getPile("wooden_ox").isEmpty())
+        if (move.from == nullptr || move.from->getPile("wooden_ox").isEmpty())
             return QList<SkillInvokeDetail>();
 
         for (int i = 0; i < move.card_ids.size(); i++) {
@@ -1967,18 +1967,18 @@ public:
                 if (!move.reason.m_playerId.isEmpty())
                     invoker = room->findPlayerByObjectName(move.reason.m_playerId);
 
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, qobject_cast<ServerPlayer *>(move.from), invoker, NULL, true);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, qobject_cast<ServerPlayer *>(move.from), invoker, nullptr, true);
             }
         }
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *to = qobject_cast<ServerPlayer *>(move.to);
         if (to && to->getTreasure() && to->getTreasure()->objectName() == "wooden_ox" && move.to_place == Player::PlaceEquip) {
-            CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, "", NULL, "wooden_ox", "");
+            CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, "", nullptr, "wooden_ox", "");
             to->addToPile("wooden_ox", invoke->owner->getPile("wooden_ox"), false, reason);
         } else
             invoke->owner->clearOnePrivatePile("wooden_ox");
@@ -2053,7 +2053,7 @@ void LureTiger::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
         if (targets.size() == 1)
             reason.m_targetId = targets.first()->objectName();
         reason.m_extraData = QVariant::fromValue((const Card *)this);
-        room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
+        room->moveCardTo(this, source, nullptr, Player::DiscardPile, reason, true);
     }
 }
 
@@ -2079,7 +2079,7 @@ public:
         global = true;
     }
 
-    void record(TriggerEvent, Room *room, QVariant &data) const
+    void record(TriggerEvent, Room *room, QVariant &data) const override
     {
         //the current player can also to be removed
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -2103,7 +2103,7 @@ public:
     {
     }
 
-    virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &, bool) const
+    bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &, bool) const override
     {
         return to->isRemoved() && card->getTypeId() != Card::TypeSkill;
     }
@@ -2148,7 +2148,7 @@ void Drowning::onEffect(const CardEffectStruct &effect) const
         QString pattern = QString("%1|.|.|equipped!").arg(subpattern);
         const Card *card = room->askForCard(effect.to, pattern, prompt, QVariant::fromValue(effect), Card::MethodNone);
         // force discard!!!
-        if (card == NULL) {
+        if (card == nullptr) {
             QList<const Card *> equips = effect.to->getCards("e");
             foreach (const Card *c, equips) {
                 if (effect.to->isJilei(c) || ids.contains(c->getEffectiveId()))
@@ -2240,7 +2240,7 @@ void KnownBoth::onUse(Room *room, const CardUseStruct &card_use) const
 
         CardMoveReason reason(CardMoveReason::S_REASON_RECAST, card_use.from->objectName());
         reason.m_skillName = getSkillName();
-        room->moveCardTo(this, card_use.from, NULL, Player::DiscardPile, reason);
+        room->moveCardTo(this, card_use.from, nullptr, Player::DiscardPile, reason);
         card_use.from->broadcastSkillInvoke("@recast");
 
         card_use.from->drawCards(1);
@@ -2327,7 +2327,7 @@ void KnownBoth::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
         if (targets.size() == 1)
             reason.m_targetId = targets.first()->objectName();
         reason.m_extraData = QVariant::fromValue((const Card *)this);
-        room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
+        room->moveCardTo(this, source, nullptr, Player::DiscardPile, reason, true);
     }
 }
 
@@ -2341,7 +2341,7 @@ public:
         global = true;
     }
 
-    void record(TriggerEvent e, Room *room, QVariant &data) const
+    void record(TriggerEvent e, Room *room, QVariant &data) const override
     {
         if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -2409,16 +2409,16 @@ public:
         global = true;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.to == Player::NotActive && change.player->isAlive() && !change.player->getPile("saving_energy").isEmpty())
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, NULL, change.player, NULL, true);
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, nullptr, change.player, nullptr, true);
 
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         QList<int> ids = invoke->invoker->getPile("saving_energy");
         DummyCard dummy(ids);
@@ -2436,7 +2436,7 @@ public:
         events << TargetSpecified << CardFinished; //EventPhaseChanging
     }
 
-    void record(TriggerEvent e, Room *room, QVariant &data) const
+    void record(TriggerEvent e, Room *room, QVariant &data) const override
     {
         if (e == CardFinished) {
             CardUseStruct use = data.value<CardUseStruct>();
@@ -2457,7 +2457,7 @@ public:
         }
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const override
     {
         if (e != TargetSpecified)
             return QList<SkillInvokeDetail>();
@@ -2465,13 +2465,13 @@ public:
         if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
             return QList<SkillInvokeDetail>();
 
-        if (use.card != NULL && use.card->isKindOf("Slash")) {
+        if (use.card != nullptr && use.card->isKindOf("Slash")) {
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *p, use.to) {
                 if (p->isAlive() && p->dyingThreshold() == 1) {
                     if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName(), p))
                         continue;
-                    d << SkillInvokeDetail(this, use.from, use.from, NULL, false, p);
+                    d << SkillInvokeDetail(this, use.from, use.from, nullptr, false, p);
                 }
             }
             return d;
@@ -2479,7 +2479,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
             room->setEmotion(invoke->invoker, "weapon/death_sickle");
@@ -2488,7 +2488,7 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
         ServerPlayer *target = invoke->targets.first();

@@ -55,7 +55,7 @@ const Card *DiscardSkill::viewAs(const QList<const Card *> &cards) const
         card->addSubcards(cards);
         return card;
     } else
-        return NULL;
+        return nullptr;
 }
 
 // -------------------------------------------
@@ -124,12 +124,12 @@ public:
         set = QSet<QString>(names.begin(), names.end());
     }
 
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const override
     {
         return targets.isEmpty() && set.contains(to_select->objectName());
     }
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override
     {
         ServerPlayer *target = targets.first();
 
@@ -184,7 +184,7 @@ bool YijiViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card
 const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards) const
 {
     if (cards.isEmpty() || cards.length() > max_num)
-        return NULL;
+        return nullptr;
 
     card->clearSubcards();
     card->addSubcards(cards);
@@ -206,7 +206,7 @@ public:
         set = QSet<QString>(names.begin(), names.end());
     }
 
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const override
     {
         return targets.isEmpty() && set.contains(to_select->objectName());
     }

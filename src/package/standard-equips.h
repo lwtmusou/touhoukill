@@ -25,9 +25,9 @@ class TribladeCard : public SkillCard
 
 public:
     Q_INVOKABLE TribladeCard();
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 
 class DoubleSword : public Weapon
@@ -125,7 +125,7 @@ class WoodenOxCard : public SkillCard
 public:
     Q_INVOKABLE WoodenOxCard();
 
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 
 class WoodenOx : public Treasure
@@ -135,7 +135,7 @@ class WoodenOx : public Treasure
 public:
     Q_INVOKABLE WoodenOx(Card::Suit suit = Diamond, int number = 4);
 
-    virtual void onUninstall(ServerPlayer *player) const;
+    void onUninstall(ServerPlayer *player) const override;
 };
 
 class DeathSickle : public Weapon

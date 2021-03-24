@@ -156,7 +156,7 @@ void GraphicsPixmapHoverItem::startChangeHeroSkinAnimation(const QString &genera
 
     emit skin_changing_start();
 
-    if (NULL != m_playerCardContainer) {
+    if (nullptr != m_playerCardContainer) {
         if (isPrimaryAvartarItem()) {
             m_heroSkinPixmap = m_playerCardContainer->_getAvatarIcon(generalName);
         } else {

@@ -465,15 +465,15 @@ const Card *Card::Parse(const QString &str)
             subcard_str = texts.at(4);
             user_string = texts.at(5);
         } else
-            return NULL;
+            return nullptr;
 
         if (subcard_str != ".")
             subcard_ids = subcard_str.split("+");
 
         SkillCard *card = Sanguosha->cloneSkillCard(card_name);
 
-        if (card == NULL)
-            return NULL;
+        if (card == nullptr)
+            return nullptr;
 
         card->addSubcards(StringList2IntList(subcard_ids));
 
@@ -519,7 +519,7 @@ const Card *Card::Parse(const QString &str)
     } else if (str.contains(QChar('='))) {
         QRegExp pattern("(\\w+):(\\w*)\\[(\\w+):(.+)\\]=(.+)");
         if (!pattern.exactMatch(str))
-            return NULL;
+            return nullptr;
 
         QStringList texts = pattern.capturedTexts();
         QString card_name = texts.at(1);
@@ -552,8 +552,8 @@ const Card *Card::Parse(const QString &str)
             number = number_string.toInt();
 
         Card *card = Sanguosha->cloneCard(card_name, suit, number);
-        if (card == NULL)
-            return NULL;
+        if (card == nullptr)
+            return nullptr;
 
         card->addSubcards(StringList2IntList(subcard_ids));
         card->setSkillName(m_skillName);
@@ -565,7 +565,7 @@ const Card *Card::Parse(const QString &str)
         if (ok)
             return Sanguosha->currentRoomObject()->getCard(card_id)->getRealCard();
         else
-            return NULL;
+            return nullptr;
     }
 }
 
@@ -574,23 +574,23 @@ Card *Card::Clone(const Card *card)
     Card::Suit suit = card->getSuit();
     int number = card->getNumber();
 
-    QObject *card_obj = NULL;
+    QObject *card_obj = nullptr;
 
     const QMetaObject *meta = card->metaObject();
     card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
 
     if (card_obj) {
         Card *new_card = qobject_cast<Card *>(card_obj);
-        if (new_card == NULL) {
+        if (new_card == nullptr) {
             delete card_obj;
-            return NULL;
+            return nullptr;
         }
         new_card->setId(card->getId());
         new_card->setObjectName(card->objectName());
         new_card->addSubcard(card->getId());
         return new_card;
     } else
-        return NULL;
+        return nullptr;
 }
 
 bool Card::targetFixed(const Player *Self) const
@@ -673,7 +673,7 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
 
     QVariant data = QVariant::fromValue(card_use);
     RoomThread *thread = room->getThread();
-    Q_ASSERT(thread != NULL);
+    Q_ASSERT(thread != nullptr);
     thread->trigger(PreCardUsed, room, data);
     card_use = data.value<CardUseStruct>();
 
@@ -685,7 +685,7 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
         reason.m_extraData = QVariant::fromValue(card_use.card);
 
         foreach (int id, used_cards) {
-            CardsMoveStruct move(id, NULL, Player::PlaceTable, reason);
+            CardsMoveStruct move(id, nullptr, Player::PlaceTable, reason);
             moves.append(move);
         }
         room->moveCardsAtomic(moves, true);
@@ -697,7 +697,7 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
         player->showHiddenSkill(skill_card->getSkillName());
         if (card_use.card->willThrow()) {
             CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName(), QString(), card_use.card->getSkillName(), QString());
-            room->moveCardTo(this, player, NULL, Player::DiscardPile, reason, true);
+            room->moveCardTo(this, player, nullptr, Player::DiscardPile, reason, true);
         }
     }
 
@@ -750,7 +750,7 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
         if (targets.size() == 1)
             reason.m_targetId = targets.first()->objectName();
         reason.m_extraData = QVariant::fromValue(this);
-        ServerPlayer *provider = NULL;
+        ServerPlayer *provider = nullptr;
         foreach (QString flag, getFlags()) {
             if (flag.startsWith("CardProvider_")) {
                 QStringList patterns = flag.split("_");
@@ -760,9 +760,9 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
         }
         //reason.m_provider = QVariant::fromValue(provider);
         ServerPlayer *from = source;
-        if (provider != NULL)
+        if (provider != nullptr)
             from = provider;
-        room->moveCardTo(this, from, NULL, Player::DiscardPile, reason, true);
+        room->moveCardTo(this, from, nullptr, Player::DiscardPile, reason, true);
     }
 }
 
@@ -837,7 +837,7 @@ bool Card::canDamage() const
 {
     if (getSkillName() == "xianshi" && Self) {
         QString selected_effect = Self->tag.value("xianshi", QString()).toString();
-        if (selected_effect != NULL) {
+        if (selected_effect != nullptr) {
             Card *extracard = Sanguosha->cloneCard(selected_effect);
             extracard->deleteLater();
             if (extracard->canDamage())
@@ -851,7 +851,7 @@ bool Card::canRecover() const
 {
     if (getSkillName() == "xianshi" && Self) {
         QString selected_effect = Self->tag.value("xianshi", QString()).toString();
-        if (selected_effect != NULL) {
+        if (selected_effect != nullptr) {
             if (selected_effect.contains("analeptic"))
                 return true;
             Card *extracard = Sanguosha->cloneCard(selected_effect);
@@ -1017,7 +1017,7 @@ const Card *ShowDistanceCard::validate(CardUseStruct &card_use) const
         bool head = card_use.from->inHeadSkills(skill->objectName());
         card_use.from->showGeneral(head);
     }
-    return NULL;
+    return nullptr;
 }
 
 ArraySummonCard::ArraySummonCard(const QString &name)
@@ -1038,5 +1038,5 @@ const Card *ArraySummonCard::validate(CardUseStruct &card_use) const
         card_use.from->showHiddenSkill(skill->objectName());
         skill->summonFriends(card_use.from);
     }
-    return NULL;
+    return nullptr;
 }

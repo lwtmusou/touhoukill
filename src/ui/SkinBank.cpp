@@ -99,7 +99,7 @@ const char *QSanRoomSkin::S_SKIN_KEY_CHOOSE_GENERAL_BOX_DEST_SEAT = "chooseGener
 const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_FONT = "generalCardItemCompanionFont-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_ICON = "generalCardItemCompanionIcon-%1";
 
-QSanSkinFactory *QSanSkinFactory::_sm_singleton = NULL;
+QSanSkinFactory *QSanSkinFactory::_sm_singleton = nullptr;
 QHash<QString, QString> IQSanComponentSkin::QSanSimpleTextFont::_m_fontBank;
 
 IQSanComponentSkin::QSanSimpleTextFont::QSanSimpleTextFont()
@@ -560,7 +560,7 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
         JsonDocument layoutDoc = JsonDocument::fromFilePath(layoutConfigName);
         if (!layoutDoc.isValid() || !layoutDoc.isObject()) {
             errorMsg = QString("Error when reading layout config file \"%1\": \n%2").arg(layoutConfigName).arg(layoutDoc.errorString());
-            QMessageBox::warning(NULL, "Config Error", errorMsg);
+            QMessageBox::warning(nullptr, "Config Error", errorMsg);
             success = false;
         }
         success = _loadLayoutConfig(layoutDoc.toVariant());
@@ -570,7 +570,7 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
         JsonDocument imageDoc = JsonDocument::fromFilePath(imageConfigName);
         if (!imageDoc.isValid() || !imageDoc.isObject()) {
             errorMsg = QString("Error when reading image config file \"%1\": \n%2").arg(imageConfigName).arg(imageDoc.errorString());
-            QMessageBox::warning(NULL, "Config Error", errorMsg);
+            QMessageBox::warning(nullptr, "Config Error", errorMsg);
             success = false;
         }
         success = _loadImageConfig(imageDoc.toVariant());
@@ -580,7 +580,7 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
         JsonDocument audioDoc = JsonDocument::fromFilePath(audioConfigName);
         if (!audioDoc.isValid() || !audioDoc.isObject()) {
             errorMsg = QString("Error when reading audio config file \"%1\": \n%2").arg(audioConfigName).arg(audioDoc.errorString());
-            QMessageBox::warning(NULL, "Config Error", errorMsg);
+            QMessageBox::warning(nullptr, "Config Error", errorMsg);
             success = false;
         }
         _m_audioConfig = audioDoc.object();
@@ -590,7 +590,7 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
         JsonDocument animDoc = JsonDocument::fromFilePath(animationConfigName);
         if (!animDoc.isValid() || !animDoc.isObject()) {
             errorMsg = QString("Error when reading animation config file \"%1\": \n%2").arg(animationConfigName).arg(animDoc.errorString());
-            QMessageBox::warning(NULL, "Config Error", errorMsg);
+            QMessageBox::warning(nullptr, "Config Error", errorMsg);
             success = false;
         }
         _m_animationConfig = animDoc.object();
@@ -1135,7 +1135,7 @@ const QSanRoomSkin &QSanSkinScheme::getRoomSkin() const
 
 QSanSkinFactory &QSanSkinFactory::getInstance()
 {
-    if (_sm_singleton == NULL) {
+    if (_sm_singleton == nullptr) {
 #ifdef Q_OS_WIN
         _sm_singleton = new QSanSkinFactory("skins/skinList.json");
 #else
@@ -1151,7 +1151,7 @@ void QSanSkinFactory::destroyInstance()
 {
     if (_sm_singleton) {
         delete _sm_singleton;
-        _sm_singleton = NULL;
+        _sm_singleton = nullptr;
     }
 }
 

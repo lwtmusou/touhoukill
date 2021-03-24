@@ -195,7 +195,7 @@ bool TrustAI::useCard(const Card *card)
         switch (equip->location()) {
         case EquipCard::WeaponLocation: {
             WrappedCard *weapon = self->getWeapon();
-            if (weapon == NULL)
+            if (weapon == nullptr)
                 return true;
             const Weapon *new_weapon = qobject_cast<const Weapon *>(equip);
             const Weapon *ole_weapon = qobject_cast<const Weapon *>(weapon->getRealCard());
@@ -277,7 +277,7 @@ QString TrustAI::askForKingdom()
 bool TrustAI::askForSkillInvoke(const QString &skill_name, const QVariant &)
 {
     const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
-    return skill != NULL && skill->getFrequency() == Skill::Frequent;
+    return skill != nullptr && skill->getFrequency() == Skill::Frequent;
     //    return false;
 }
 
@@ -298,7 +298,7 @@ QList<int> TrustAI::askForDiscard(const QString &, int discard_num, int, bool op
 
 const Card *TrustAI::askForNullification(const Card *, ServerPlayer *, ServerPlayer *, bool)
 {
-    return NULL;
+    return nullptr;
 }
 
 int TrustAI::askForCardChosen(ServerPlayer *, const QString &, const QString &, Card::HandlingMethod)
@@ -317,7 +317,7 @@ const Card *TrustAI::askForCard(const QString &pattern, const QString &prompt, c
         if (response_skill->matchPattern(self, card))
             return card;
 
-    return NULL;
+    return nullptr;
 }
 
 QString TrustAI::askForUseCard(const QString &, const QString &, const Card::HandlingMethod)
@@ -355,7 +355,7 @@ ServerPlayer *TrustAI::askForPlayerChosen(const QList<ServerPlayer *> &targets, 
     Q_UNUSED(reason);
 
     if (optional)
-        return NULL;
+        return nullptr;
 
     int r = QRandomGenerator::global()->generate() % targets.length();
     return targets.at(r);
@@ -373,12 +373,12 @@ const Card *TrustAI::askForSinglePeach(ServerPlayer *dying)
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 ServerPlayer *TrustAI::askForYiji(const QList<int> &, const QString &, int &)
 {
-    return NULL;
+    return nullptr;
 }
 
 void TrustAI::askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int> &bottom, int guanxing_type)

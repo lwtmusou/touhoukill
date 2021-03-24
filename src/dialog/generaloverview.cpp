@@ -155,7 +155,7 @@ QWidget *GeneralSearch::createInfoTab()
     i = 0;
     foreach (QString extension, extensions) {
         const Package *package = Sanguosha->findChild<const Package *>(extension);
-        if (package == NULL || package->getType() != Package::GeneralPack)
+        if (package == nullptr || package->getType() != Package::GeneralPack)
             continue;
         QCheckBox *checkbox = new QCheckBox;
         checkbox->setObjectName(extension);
@@ -251,7 +251,7 @@ static GeneralOverview *Overview;
 
 GeneralOverview *GeneralOverview::getInstance(QWidget *main_window)
 {
-    if (Overview == NULL)
+    if (Overview == nullptr)
         Overview = new GeneralOverview(main_window);
 
     return Overview;

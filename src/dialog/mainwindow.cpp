@@ -60,7 +60,7 @@ public:
         setRenderHints(QPainter::TextAntialiasing | QPainter::Antialiasing);
     }
 
-    virtual void resizeEvent(QResizeEvent *event)
+    void resizeEvent(QResizeEvent *event) override
     {
         QGraphicsView::resizeEvent(event);
         MainWindow *main_window = qobject_cast<MainWindow *>(parentWidget());
@@ -92,7 +92,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    scene = NULL;
+    scene = nullptr;
 
     setWindowTitle(tr("TouhouSatsu") + "    " + Sanguosha->getVersionName() + "    " + Sanguosha->getVersionNumber());
 
@@ -136,7 +136,7 @@ MainWindow::MainWindow(QWidget *parent)
     addAction(ui->actionShow_Hide_Menu);
     addAction(ui->actionFullscreen);
 
-    systray = NULL;
+    systray = nullptr;
 
     if (Config.EnableAutoUpdate)
         update_dialog->checkForUpdate();
@@ -207,7 +207,7 @@ void MainWindow::on_actionExit_triggered()
     result = QMessageBox::question(this, tr("TouhouSatsu"), tr("Are you sure to exit?"), QMessageBox::Ok | QMessageBox::Cancel);
     if (result == QMessageBox::Ok) {
         delete systray;
-        systray = NULL;
+        systray = nullptr;
         close();
     }
 }
@@ -414,14 +414,14 @@ void MainWindow::gotoStartScene()
     addAction(ui->actionFullscreen);
 
     delete systray;
-    systray = NULL;
+    systray = nullptr;
     if (ClientInstance) {
         if (Self) {
             delete Self;
-            Self = NULL;
+            Self = nullptr;
         }
         delete ClientInstance;
-        ClientInstance = NULL;
+        ClientInstance = nullptr;
     }
 }
 
@@ -538,7 +538,7 @@ void MainWindow::setBackgroundBrush(bool centerAsOrigin)
 
 void MainWindow::changeBackground()
 {
-    bool centerAsOrigin = scene != NULL && !scene->inherits("RoomScene");
+    bool centerAsOrigin = scene != nullptr && !scene->inherits("RoomScene");
     setBackgroundBrush(centerAsOrigin);
 
     if (scene->inherits("StartScene")) {
@@ -571,7 +571,7 @@ void MainWindow::on_actionShow_Hide_Menu_triggered()
 
 void MainWindow::on_actionMinimize_to_system_tray_triggered()
 {
-    if (systray == NULL) {
+    if (systray == nullptr) {
         QIcon icon("image/system/magatamas/5.png");
         systray = new QSystemTrayIcon(icon, this);
 
@@ -691,7 +691,7 @@ void BroadcastBox::accept()
 void MainWindow::on_actionBroadcast_triggered()
 {
     Server *server = findChild<Server *>();
-    if (server == NULL) {
+    if (server == nullptr) {
         QMessageBox::warning(this, tr("Warning"), tr("Server is not started yet!"));
         return;
     }

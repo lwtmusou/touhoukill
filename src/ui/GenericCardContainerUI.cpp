@@ -45,7 +45,7 @@ void GenericCardContainer::_destroyCard()
 {
     //CardItem *card = qobject_cast<CardItem *>(sender());
     CardItem *card = (CardItem *)sender();
-    if (card != NULL) {
+    if (card != nullptr) {
         card->setVisible(false);
         card->deleteLater();
     }
@@ -169,7 +169,7 @@ QPixmap PlayerCardContainer::_getPixmap(const QString &key, bool cache)
 
 void PlayerCardContainer::_paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QPixmap &pixmap, QGraphicsItem *parent)
 {
-    if (item == NULL) {
+    if (item == nullptr) {
         item = new QGraphicsPixmapItem(parent);
         item->setTransformationMode(Qt::SmoothTransformation);
     }
@@ -184,7 +184,7 @@ void PlayerCardContainer::_paintPixmap(QGraphicsPixmapItem *&item, const QRect &
 void PlayerCardContainer::_clearPixmap(QGraphicsPixmapItem *pixmap)
 {
     QPixmap dummy;
-    if (pixmap == NULL)
+    if (pixmap == nullptr)
         return;
     pixmap->setPixmap(dummy);
     pixmap->hide();
@@ -203,14 +203,14 @@ void PlayerCardContainer::showProgressBar(Countdown countdown)
 
 void PlayerCardContainer::updateAvatar()
 {
-    if (_m_avatarIcon == NULL) {
+    if (_m_avatarIcon == nullptr) {
         _m_avatarIcon = new GraphicsPixmapHoverItem(this, _getAvatarParent());
         _m_avatarIcon->setTransformationMode(Qt::SmoothTransformation);
 
         // _m_avatarIcon->setFlag(QGraphicsItem::ItemStacksBehindParent);
     }
 
-    const General *general = NULL;
+    const General *general = nullptr;
     if (m_player) {
         general = m_player->getAvatarGeneral();
         _m_layout->m_screenNameFont.paintText(_m_screenNameItem, _m_layout->m_screenNameArea, Qt::AlignCenter, m_player->screenName());
@@ -220,7 +220,7 @@ void PlayerCardContainer::updateAvatar()
         _m_layout->m_screenNameFont.paintText(_m_screenNameItem, _m_layout->m_screenNameArea, Qt::AlignCenter, QString());
     }
 
-    if (general != NULL) {
+    if (general != nullptr) {
         _m_avatarArea->setToolTip(m_player->getSkillDescription(true, "head"));
         QString name = general->objectName();
         QPixmap avatarIcon = _getAvatarIcon(name);
@@ -229,7 +229,7 @@ void PlayerCardContainer::updateAvatar()
         _paintPixmap(avatarIconTmp, avatarArea, avatarIcon, _getAvatarParent());
         // this is just avatar general, perhaps game has not started yet.
 
-        if (m_player->getGeneral() != NULL) {
+        if (m_player->getGeneral() != nullptr) {
             QString kingdom = m_player->getKingdom();
             if (!isHegemonyGameMode(ServerInfo.GameMode)) { // && m_player->getGeneral2()  == NULL
                 _paintPixmap(_m_kingdomIcon, _m_layout->m_kingdomIconArea, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON, kingdom), _getAvatarParent());
@@ -293,22 +293,22 @@ QPixmap PlayerCardContainer::paintByMask(QPixmap &source)
 void PlayerCardContainer::updateSmallAvatar()
 {
     updateAvatar();
-    if (_m_smallAvatarIcon == NULL) {
+    if (_m_smallAvatarIcon == nullptr) {
         _m_smallAvatarIcon = new GraphicsPixmapHoverItem(this, _getAvatarParent());
         _m_smallAvatarIcon->setTransformationMode(Qt::SmoothTransformation);
         //_m_smallAvatarIcon->setFlag(QGraphicsItem::ItemStacksBehindParent);
     }
 
-    const General *general = NULL;
+    const General *general = nullptr;
     bool fake_general = false;
     if (m_player)
         general = m_player->getGeneral2();
-    if (general == NULL && ServerInfo.Enable2ndGeneral && this->getPlayer() == Self) {
+    if (general == nullptr && ServerInfo.Enable2ndGeneral && this->getPlayer() == Self) {
         general = Sanguosha->getGeneral("reimu");
         fake_general = true;
     }
 
-    if (general != NULL) {
+    if (general != nullptr) {
         QPixmap smallAvatarIcon = G_ROOM_SKIN.getGeneralPixmap(general->objectName(), QSanRoomSkin::GeneralIconSize(_m_layout->m_smallAvatarSize));
         smallAvatarIcon = paintByMask(smallAvatarIcon);
         QGraphicsPixmapItem *smallAvatarIconTmp = _m_smallAvatarIcon;
@@ -441,7 +441,7 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
         } else {
             //button = (QPushButton *)(_m_privatePiles[pile_name]->widget());
             button = qobject_cast<QPushButton *>((_m_privatePiles[pile_name]->widget()));
-            if (button == NULL)
+            if (button == nullptr)
                 qWarning("PlayerCardContainer::updatePile: button == NULL");
         }
 
@@ -555,7 +555,7 @@ void PlayerCardContainer::_updateEquips()
 {
     for (int i = 0; i < 5; i++) {
         CardItem *equip = _m_equipCards[i];
-        if (equip == NULL)
+        if (equip == nullptr)
             continue;
 
         const EquipCard *equip_card = qobject_cast<const EquipCard *>(equip->getCard()->getRealCard());
@@ -622,7 +622,7 @@ void PlayerCardContainer::repaintAll()
     updateDelayedTricks();
     //_updatePrivatePilesGeometry();
 
-    if (_m_huashenAnimation != NULL) {
+    if (_m_huashenAnimation != nullptr) {
         startHuaShen(_m_huashenGeneralName, _m_huashenSkillName, _m_huashenGeneral2Name, _m_huashenSkill2Name);
     }
 
@@ -638,24 +638,24 @@ void PlayerCardContainer::repaintAll()
     _paintPixmap(_m_saveMeIcon, _m_layout->m_saveMeIconRegion, QSanRoomSkin::S_SKIN_KEY_SAVE_ME_ICON, _getAvatarParent());
     _paintPixmap(_m_actionIcon, _m_layout->m_actionedIconRegion, QSanRoomSkin::S_SKIN_KEY_ACTIONED_ICON, _getAvatarParent());
     _paintPixmap(_m_roleShownIcon, _m_layout->m_roleShownArea, QSanRoomSkin::S_SKIN_KEY_ROLE_SHOWN, _getAvatarParent());
-    if (NULL != m_changePrimaryHeroSKinBtn) {
+    if (nullptr != m_changePrimaryHeroSKinBtn) {
         m_changePrimaryHeroSKinBtn->setPos(_m_layout->m_changePrimaryHeroSkinBtnPos);
     }
-    if (NULL != m_changeSecondaryHeroSkinBtn) {
+    if (nullptr != m_changeSecondaryHeroSkinBtn) {
         m_changeSecondaryHeroSkinBtn->setPos(_m_layout->m_changeSecondaryHeroSkinBtnPos);
     }
 
-    if (_m_seatItem != NULL) {
+    if (_m_seatItem != nullptr) {
         _paintPixmap(_m_seatItem, _m_layout->m_seatIconRegion, _getPixmap(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER, QString::number(m_player->getInitialSeat())), _getAvatarParent());
         if (ServerInfo.Enable2ndGeneral && getPlayer() == Self)
             _paintPixmap(_m_seatItem, _m_layout->m_seatIconRegionDouble, _getPixmap(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER, QString::number(m_player->getInitialSeat())),
                          _getAvatarParent());
     }
 
-    if (!isHegemonyGameMode(ServerInfo.GameMode) && _m_roleComboBox != NULL)
+    if (!isHegemonyGameMode(ServerInfo.GameMode) && _m_roleComboBox != nullptr)
         _m_roleComboBox->setPos(_m_layout->m_roleComboBoxPos);
 
-    if (isHegemonyGameMode(ServerInfo.GameMode) && _m_hegemonyroleComboBox != NULL)
+    if (isHegemonyGameMode(ServerInfo.GameMode) && _m_hegemonyroleComboBox != nullptr)
         _m_hegemonyroleComboBox->setPos(_m_layout->m_roleComboBoxPos);
 
     _m_hpBox->setIconSize(_m_layout->m_magatamaSize);
@@ -731,7 +731,7 @@ QList<CardItem *> PlayerCardContainer::removeDelayedTricks(const QList<int> &car
     QList<CardItem *> result;
     foreach (int card_id, cardIds) {
         CardItem *item = CardItem::FindItem(_m_judgeCards, card_id);
-        Q_ASSERT(item != NULL);
+        Q_ASSERT(item != nullptr);
         int index = _m_judgeCards.indexOf(item);
         QRect start = _m_layout->m_delayedTrickFirstRegion;
         QPoint step = _m_layout->m_delayedTrickStep;
@@ -861,7 +861,7 @@ void PlayerCardContainer::addEquips(QList<CardItem *> &equips)
     foreach (CardItem *equip, equips) {
         const EquipCard *equip_card = qobject_cast<const EquipCard *>(equip->getCard()->getRealCard());
         int index = (int)(equip_card->location());
-        Q_ASSERT(_m_equipCards[index] == NULL);
+        Q_ASSERT(_m_equipCards[index] == nullptr);
         _m_equipCards[index] = equip;
         connect(equip, SIGNAL(mark_changed()), this, SLOT(_onEquipSelectChanged()));
         equip->setHomeOpacity(0.0);
@@ -889,7 +889,7 @@ void PlayerCardContainer::addEquips(QList<CardItem *> &equips)
         _mutexEquipAnim.unlock();
 
         const Skill *skill = Sanguosha->getSkill(equip_card->objectName());
-        if (skill == NULL)
+        if (skill == nullptr)
             continue;
         emit add_equip_skill(skill, true);
     }
@@ -903,12 +903,12 @@ QList<CardItem *> PlayerCardContainer::removeEquips(const QList<int> &cardIds)
     foreach (int card_id, cardIds) {
         const EquipCard *equip_card = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card_id));
         int index = (int)(equip_card->location());
-        Q_ASSERT(_m_equipCards[index] != NULL);
+        Q_ASSERT(_m_equipCards[index] != nullptr);
         CardItem *equip = _m_equipCards[index];
         equip->setHomeOpacity(0.0);
         equip->setPos(_m_layout->m_equipAreas[index].center());
         result.append(equip);
-        _m_equipCards[index] = NULL;
+        _m_equipCards[index] = nullptr;
         _mutexEquipAnim.lock();
         _m_equipAnim[index]->stop();
         _m_equipAnim[index]->clear();
@@ -924,7 +924,7 @@ QList<CardItem *> PlayerCardContainer::removeEquips(const QList<int> &cardIds)
         _mutexEquipAnim.unlock();
 
         const Skill *skill = Sanguosha->getSkill(equip_card->objectName());
-        if (skill != NULL)
+        if (skill != nullptr)
             emit remove_equip_skill(skill->objectName());
     }
     return result;
@@ -932,7 +932,7 @@ QList<CardItem *> PlayerCardContainer::removeEquips(const QList<int> &cardIds)
 
 void PlayerCardContainer::startHuaShen(QString generalName, QString skillName, QString general2Name, QString skill2Name)
 {
-    if (m_player == NULL)
+    if (m_player == nullptr)
         return;
 
     _m_huashenGeneralName = generalName;
@@ -972,14 +972,14 @@ void PlayerCardContainer::startHuaShen(QString generalName, QString skillName, Q
 
 void PlayerCardContainer::stopHuaShen()
 {
-    if (_m_huashenAnimation != NULL) {
+    if (_m_huashenAnimation != nullptr) {
         _m_huashenAnimation->stop();
         _m_huashenAnimation->deleteLater();
         delete _m_huashenItem;
         delete _m_huashenItem2;
-        _m_huashenAnimation = NULL;
-        _m_huashenItem = NULL;
-        _m_huashenItem2 = NULL;
+        _m_huashenAnimation = nullptr;
+        _m_huashenItem = nullptr;
+        _m_huashenItem2 = nullptr;
         _m_huashenGeneralName.clear();
         _m_huashenGeneral2Name.clear();
         _m_huashenSkillName.clear();
@@ -1003,52 +1003,52 @@ void PlayerCardContainer::updateAvatarTooltip()
 
 PlayerCardContainer::PlayerCardContainer()
 {
-    _m_layout = NULL;
-    _m_avatarArea = _m_smallAvatarArea = NULL;
-    _m_avatarNameItem = _m_smallAvatarNameItem = NULL;
-    _m_avatarIcon = NULL;
-    _m_smallAvatarIcon = NULL;
-    _m_circleItem = NULL;
-    _m_screenNameItem = NULL;
-    _m_chainIcon = NULL;
-    _m_faceTurnedIcon = _m_faceTurnedIcon2 = NULL;
-    _m_handCardBg = _m_handCardNumText = NULL;
-    _m_kingdomColorMaskIcon = _m_deathIcon = NULL;
-    _m_dashboardKingdomColorMaskIcon = _m_dashboardSecondaryKingdomColorMaskIcon = _m_deathIcon = NULL;
-    _m_actionIcon = NULL;
-    _m_kingdomIcon = NULL;
-    _m_saveMeIcon = NULL;
-    _m_phaseIcon = NULL;
-    _m_markItem = NULL;
-    _m_roleComboBox = NULL;
-    _m_hegemonyroleComboBox = NULL;
-    _m_roleShownIcon = NULL;
-    m_player = NULL;
-    _m_selectedFrame = NULL;
+    _m_layout = nullptr;
+    _m_avatarArea = _m_smallAvatarArea = nullptr;
+    _m_avatarNameItem = _m_smallAvatarNameItem = nullptr;
+    _m_avatarIcon = nullptr;
+    _m_smallAvatarIcon = nullptr;
+    _m_circleItem = nullptr;
+    _m_screenNameItem = nullptr;
+    _m_chainIcon = nullptr;
+    _m_faceTurnedIcon = _m_faceTurnedIcon2 = nullptr;
+    _m_handCardBg = _m_handCardNumText = nullptr;
+    _m_kingdomColorMaskIcon = _m_deathIcon = nullptr;
+    _m_dashboardKingdomColorMaskIcon = _m_dashboardSecondaryKingdomColorMaskIcon = _m_deathIcon = nullptr;
+    _m_actionIcon = nullptr;
+    _m_kingdomIcon = nullptr;
+    _m_saveMeIcon = nullptr;
+    _m_phaseIcon = nullptr;
+    _m_markItem = nullptr;
+    _m_roleComboBox = nullptr;
+    _m_hegemonyroleComboBox = nullptr;
+    _m_roleShownIcon = nullptr;
+    m_player = nullptr;
+    _m_selectedFrame = nullptr;
     _m_privatePileArea = new QGraphicsProxyWidget(this);
-    QWidget *pileArea = new QWidget(NULL, Qt::Tool); //It currently needn't to be visible.
+    QWidget *pileArea = new QWidget(nullptr, Qt::Tool); //It currently needn't to be visible.
     pileArea->setAttribute(Qt::WA_TranslucentBackground);
     pileArea->resize(1, 1);
     _m_privatePileArea->setWidget(pileArea);
-    leftDisableShowLock = rightDisableShowLock = NULL;
+    leftDisableShowLock = rightDisableShowLock = nullptr;
 
     for (int i = 0; i < 5; i++) {
-        _m_equipCards[i] = NULL;
-        _m_equipRegions[i] = NULL;
-        _m_equipAnim[i] = NULL;
-        _m_equipLabel[i] = NULL;
+        _m_equipCards[i] = nullptr;
+        _m_equipRegions[i] = nullptr;
+        _m_equipAnim[i] = nullptr;
+        _m_equipLabel[i] = nullptr;
     }
-    _m_huashenItem = NULL;
-    _m_huashenItem2 = NULL;
-    _m_huashenAnimation = NULL;
-    _m_extraSkillBg = NULL;
-    _m_extraSkillText = NULL;
+    _m_huashenItem = nullptr;
+    _m_huashenItem2 = nullptr;
+    _m_huashenAnimation = nullptr;
+    _m_extraSkillBg = nullptr;
+    _m_extraSkillText = nullptr;
 
-    _m_floatingArea = NULL;
+    _m_floatingArea = nullptr;
     _m_votesGot = 0;
     _m_maxVotes = 1;
-    _m_votesItem = NULL;
-    _m_distanceItem = NULL;
+    _m_votesItem = nullptr;
+    _m_distanceItem = nullptr;
     _m_groupMain = new QGraphicsPixmapItem(this);
     _m_groupMain->setFlag(ItemHasNoContents);
     _m_groupMain->setPos(0, 0);
@@ -1056,11 +1056,11 @@ PlayerCardContainer::PlayerCardContainer()
     _m_groupDeath->setFlag(ItemHasNoContents);
     _m_groupDeath->setPos(0, 0);
     _allZAdjusted = false;
-    m_changePrimaryHeroSKinBtn = NULL;
-    m_changeSecondaryHeroSkinBtn = NULL;
-    m_primaryHeroSkinContainer = NULL;
-    m_secondaryHeroSkinContainer = NULL;
-    _m_seatItem = NULL;
+    m_changePrimaryHeroSKinBtn = nullptr;
+    m_changeSecondaryHeroSkinBtn = nullptr;
+    m_primaryHeroSkinContainer = nullptr;
+    m_secondaryHeroSkinContainer = nullptr;
+    _m_seatItem = nullptr;
 }
 
 void PlayerCardContainer::hideAvatars()
@@ -1178,7 +1178,7 @@ void PlayerCardContainer::updateKingdom(const QString &kingdom)
 void PlayerCardContainer::_updateProgressBar()
 {
     QGraphicsItem *parent = _getProgressBarParent();
-    if (parent == NULL)
+    if (parent == nullptr)
         return;
     _m_progressBar->setOrientation(_m_layout->m_isProgressBarHorizontal ? Qt::Horizontal : Qt::Vertical);
     QRectF newRect = _m_layout->m_progressBarArea.getTranslatedRect(parent->boundingRect().toRect());
@@ -1300,7 +1300,7 @@ void PlayerCardContainer::killPlayer()
 void PlayerCardContainer::revivePlayer()
 {
     _m_votesGot = 0;
-    _m_groupMain->setGraphicsEffect(NULL);
+    _m_groupMain->setGraphicsEffect(nullptr);
     Q_ASSERT(_m_deathIcon);
     _m_deathIcon->hide();
     refresh();
@@ -1329,7 +1329,7 @@ void PlayerCardContainer::updateReformState()
 
 void PlayerCardContainer::showDistance()
 {
-    bool isNull = (_m_distanceItem == NULL);
+    bool isNull = (_m_distanceItem == nullptr);
     _paintPixmap(_m_distanceItem, _m_layout->m_votesIconRegion, _getPixmap(QSanRoomSkin::S_SKIN_KEY_VOTES_NUMBER, QString::number(Self->distanceTo(m_player))), _getAvatarParent());
     _m_distanceItem->setZValue(1.1);
     if (!Self->inMyAttackRange(m_player)) {
@@ -1338,7 +1338,7 @@ void PlayerCardContainer::showDistance()
         effect->setStrength(1.0);
         _m_distanceItem->setGraphicsEffect(effect);
     } else {
-        _m_distanceItem->setGraphicsEffect(NULL);
+        _m_distanceItem->setGraphicsEffect(nullptr);
     }
     if (_m_distanceItem->isVisible() && !isNull)
         _m_distanceItem->hide();
@@ -1357,7 +1357,7 @@ void PlayerCardContainer::onRemovedChanged()
 void PlayerCardContainer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItem *item = getMouseClickReceiver();
-    if (item != NULL && item->isUnderMouse() && isEnabled() && (flags() & QGraphicsItem::ItemIsSelectable)) {
+    if (item != nullptr && item->isUnderMouse() && isEnabled() && (flags() & QGraphicsItem::ItemIsSelectable)) {
         if (event->button() == Qt::RightButton)
             setSelected(false);
         else if (event->button() == Qt::LeftButton) {
@@ -1409,7 +1409,7 @@ void PlayerCardContainer::showHeroSkinList()
             heroSkinContainer->hide();
         }
     }
-    if (NULL != m_player) {
+    if (nullptr != m_player) {
         if (sender() == m_changePrimaryHeroSKinBtn) {
             showHeroSkinListHelper(m_player->getGeneral(), _m_avatarIcon); //, m_primaryHeroSkinContainer
         } else {
@@ -1420,7 +1420,7 @@ void PlayerCardContainer::showHeroSkinList()
 
 void PlayerCardContainer::showHeroSkinListHelper(const General *general, GraphicsPixmapHoverItem *avatarIcon) //, HeroSkinContainer *&heroSkinContainer
 {
-    if (NULL == general) {
+    if (nullptr == general) {
         return;
     }
 
@@ -1429,7 +1429,7 @@ void PlayerCardContainer::showHeroSkinListHelper(const General *general, Graphic
     //if (NULL == heroSkinContainer) {
     HeroSkinContainer *heroSkinContainer = RoomSceneInstance->findHeroSkinContainer(generalName);
     //}
-    if (NULL == heroSkinContainer) {
+    if (nullptr == heroSkinContainer) {
         heroSkinContainer = new HeroSkinContainer(generalName, general->getKingdom());
 
         connect(heroSkinContainer, SIGNAL(local_skin_changed(const QString &)), avatarIcon, SLOT(startChangeHeroSkinAnimation(const QString &)));
@@ -1457,19 +1457,19 @@ void PlayerCardContainer::showHeroSkinListHelper(const General *general, Graphic
 
 void PlayerCardContainer::heroSkinBtnMouseOutsideClicked()
 {
-    if (NULL != m_player) {
-        QSanButton *heroSKinBtn = NULL;
+    if (nullptr != m_player) {
+        QSanButton *heroSKinBtn = nullptr;
         if (sender() == m_changePrimaryHeroSKinBtn) {
             heroSKinBtn = m_changePrimaryHeroSKinBtn;
         } else {
             heroSKinBtn = m_changeSecondaryHeroSkinBtn;
         }
-        if (heroSKinBtn != NULL) {
+        if (heroSKinBtn != nullptr) {
             QGraphicsItem *parent = heroSKinBtn->parentItem();
-            if (NULL != parent && !parent->isUnderMouse()) {
+            if (nullptr != parent && !parent->isUnderMouse()) {
                 heroSKinBtn->hide();
 
-                if (Self == m_player && NULL != _m_screenNameItem && _m_screenNameItem->isVisible()) {
+                if (Self == m_player && nullptr != _m_screenNameItem && _m_screenNameItem->isVisible()) {
                     _m_screenNameItem->hide();
                 }
             }
@@ -1479,15 +1479,15 @@ void PlayerCardContainer::heroSkinBtnMouseOutsideClicked()
 
 void PlayerCardContainer::onAvatarHoverEnter()
 {
-    if (NULL != m_player) {
+    if (nullptr != m_player) {
         QObject *senderObj = sender();
 
         //bool second_zuoci = (m_player->getGeneralName() != "zuoci")
         //    && (m_player->getGeneral2Name() == "zuoci");
 
-        const General *general = NULL;
-        GraphicsPixmapHoverItem *avatarItem = NULL;
-        QSanButton *heroSKinBtn = NULL;
+        const General *general = nullptr;
+        GraphicsPixmapHoverItem *avatarItem = nullptr;
+        QSanButton *heroSKinBtn = nullptr;
 
         if (senderObj == _m_avatarIcon) { // || (senderObj == _m_huashenItem && !second_zuoci))
             general = m_player->getGeneral();
@@ -1503,7 +1503,7 @@ void PlayerCardContainer::onAvatarHoverEnter()
             m_changePrimaryHeroSKinBtn->hide();
         }
 
-        if (NULL != general && HeroSkinContainer::hasSkin(general->objectName()) && avatarItem->isSkinChangingFinished()) {
+        if (nullptr != general && HeroSkinContainer::hasSkin(general->objectName()) && avatarItem->isSkinChangingFinished()) {
             heroSKinBtn->show();
         }
         //if (heroSKinBtn == NULL)
@@ -1514,13 +1514,13 @@ void PlayerCardContainer::onAvatarHoverEnter()
 
 void PlayerCardContainer::onAvatarHoverLeave()
 {
-    if (NULL != m_player) {
+    if (nullptr != m_player) {
         QObject *senderObj = sender();
 
         //bool second_zuoci = (m_player->getGeneralName() != "zuoci")
         //    && (m_player->getGeneral2Name() == "zuoci");
 
-        QSanButton *heroSKinBtn = NULL;
+        QSanButton *heroSKinBtn = nullptr;
 
         if (senderObj == _m_avatarIcon) { //|| (senderObj == _m_huashenItem && !second_zuoci))
             heroSKinBtn = m_changePrimaryHeroSKinBtn;
@@ -1528,7 +1528,7 @@ void PlayerCardContainer::onAvatarHoverLeave()
             heroSKinBtn = m_changeSecondaryHeroSkinBtn;
         }
 
-        if ((NULL != heroSKinBtn) && (!heroSKinBtn->isMouseInside())) {
+        if ((nullptr != heroSKinBtn) && (!heroSKinBtn->isMouseInside())) {
             heroSKinBtn->hide();
             doAvatarHoverLeave();
         }
@@ -1537,7 +1537,7 @@ void PlayerCardContainer::onAvatarHoverLeave()
 
 void PlayerCardContainer::onSkinChangingStart()
 {
-    QSanButton *heroSKinBtn = NULL;
+    QSanButton *heroSKinBtn = nullptr;
     QString generalName;
 
     if (sender() == _m_avatarIcon) {
@@ -1548,18 +1548,18 @@ void PlayerCardContainer::onSkinChangingStart()
         generalName = m_player->getGeneral2Name();
     }
 
-    if (heroSKinBtn != NULL)
+    if (heroSKinBtn != nullptr)
         heroSKinBtn->hide();
 
-    if (generalName == "zuoci" && _m_huashenAnimation != NULL) {
+    if (generalName == "zuoci" && _m_huashenAnimation != nullptr) {
         stopHuaShen();
     }
 }
 
 void PlayerCardContainer::onSkinChangingFinished()
 {
-    GraphicsPixmapHoverItem *avatarItem = NULL;
-    QSanButton *heroSKinBtn = NULL;
+    GraphicsPixmapHoverItem *avatarItem = nullptr;
+    QSanButton *heroSKinBtn = nullptr;
     QString generalName;
 
     if (sender() == _m_avatarIcon) {
@@ -1584,10 +1584,10 @@ void PlayerCardContainer::onSkinChangingFinished()
 
 void PlayerCardContainer::stopHeroSkinChangingAnimation()
 {
-    if ((NULL != _m_avatarIcon) && !_m_avatarIcon->isSkinChangingFinished()) {
+    if ((nullptr != _m_avatarIcon) && !_m_avatarIcon->isSkinChangingFinished()) {
         _m_avatarIcon->stopChangeHeroSkinAnimation();
     }
-    if ((NULL != _m_smallAvatarIcon) && !_m_smallAvatarIcon->isSkinChangingFinished()) {
+    if ((nullptr != _m_smallAvatarIcon) && !_m_smallAvatarIcon->isSkinChangingFinished()) {
         _m_smallAvatarIcon->stopChangeHeroSkinAnimation();
     }
 }

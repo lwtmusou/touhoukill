@@ -599,7 +599,7 @@ void Settings::init()
             SmallFont.setFamily(font_family);
             TinyFont.setFamily(font_family);
         } else
-            QMessageBox::warning(NULL, tr("Warning"), tr("Font file %1 could not be loaded!").arg(font_path));
+            QMessageBox::warning(nullptr, tr("Warning"), tr("Font file %1 could not be loaded!").arg(font_path));
 
         BigFont.setPixelSize(56);
         SmallFont.setPixelSize(27);

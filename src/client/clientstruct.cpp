@@ -134,7 +134,7 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack)
         lack_label = new QLabel;
         layout->addRow(tr("Lack"), lack_label);
     } else
-        lack_label = NULL;
+        lack_label = nullptr;
 
     setLayout(layout);
 }

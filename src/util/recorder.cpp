@@ -88,7 +88,7 @@ Replayer::Replayer(QObject *parent, const QString &filename)
     , speed(1.0)
     , playing(true)
 {
-    QIODevice *device = NULL;
+    QIODevice *device = nullptr;
     if (filename.endsWith(".png")) {
         QByteArray *data = new QByteArray(Recorder::PNG2TXT(filename));
         QBuffer *buffer = new QBuffer(data);
@@ -98,7 +98,7 @@ Replayer::Replayer(QObject *parent, const QString &filename)
         device = file;
     }
 
-    if (device == NULL)
+    if (device == nullptr)
         return;
 
     if (!device->open(QIODevice::ReadOnly | QIODevice::Text))
@@ -112,7 +112,7 @@ Replayer::Replayer(QObject *parent, const QString &filename)
         device->readLine(line, sizeof(buffer_t));
 
         char *space = strchr(line, ' ');
-        if (space == NULL)
+        if (space == nullptr)
             continue;
 
         *space = '\0';

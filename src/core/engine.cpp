@@ -18,7 +18,7 @@
 
 #include <random>
 
-Engine *Sanguosha = NULL;
+Engine *Sanguosha = nullptr;
 
 void Engine::addPackage(const QString &name)
 {
@@ -127,7 +127,7 @@ void Engine::addSkills(const QList<const Skill *> &all_skills)
 {
     foreach (const Skill *skill, all_skills) {
         if (skills.contains(skill->objectName()))
-            QMessageBox::warning(NULL, "", tr("Duplicated skill : %1").arg(skill->objectName()));
+            QMessageBox::warning(nullptr, "", tr("Duplicated skill : %1").arg(skill->objectName()));
 
         skills.insert(skill->objectName(), skill);
 
@@ -406,7 +406,7 @@ Room *Engine::currentRoom()
 {
     QObject *roomObject = currentRoomObject();
     Room *room = qobject_cast<Room *>(roomObject);
-    Q_ASSERT(room != NULL);
+    Q_ASSERT(room != nullptr);
     return room;
 }
 
@@ -426,11 +426,11 @@ bool Engine::isGeneralHidden(const QString &general_name) const
 const Card *Engine::getEngineCard(int cardId) const
 {
     if (cardId == Card::S_UNKNOWN_CARD_ID)
-        return NULL;
+        return nullptr;
     else if (cardId < 0 || cardId >= cards.length()) {
         //Q_ASSERT(FALSE);
         Q_ASSERT(!(cardId < 0 || cardId >= cards.length()));
-        return NULL;
+        return nullptr;
     } else {
         Q_ASSERT(cards[cardId] != NULL);
         return cards[cardId];
@@ -439,11 +439,11 @@ const Card *Engine::getEngineCard(int cardId) const
 
 Card *Engine::cloneCard(const Card *card) const
 {
-    Q_ASSERT(card->metaObject() != NULL);
+    Q_ASSERT(card->metaObject() != nullptr);
     QString name = card->metaObject()->className();
     Card *result = cloneCard(name, card->getSuit(), card->getNumber(), card->getFlags());
-    if (result == NULL)
-        return NULL;
+    if (result == nullptr)
+        return nullptr;
     result->setId(card->getEffectiveId());
     result->setSkillName(card->getSkillName(false));
     result->setObjectName(card->objectName());
@@ -452,10 +452,10 @@ Card *Engine::cloneCard(const Card *card) const
 
 Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const QStringList &flags) const
 {
-    Card *card = NULL;
+    Card *card = nullptr;
 
     const QMetaObject *meta = metaobjects.value(name, NULL);
-    if (meta == NULL)
+    if (meta == nullptr)
         meta = metaobjects.value(className2objectName.key(name, QString()), NULL);
     if (meta) {
         QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
@@ -464,7 +464,7 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const 
     }
 
     if (!card)
-        return NULL;
+        return nullptr;
     card->clearFlags();
     if (!flags.isEmpty()) {
         foreach (QString flag, flags)
@@ -479,11 +479,11 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const
     if (meta) {
         QObject *card_obj = meta->newInstance();
         SkillCard *card = qobject_cast<SkillCard *>(card_obj);
-        if (card == NULL)
+        if (card == nullptr)
             delete card_obj;
         return card;
     } else
-        return NULL;
+        return nullptr;
 }
 
 QString Engine::getVersionNumber() const
@@ -630,7 +630,7 @@ int Engine::getPlayerCount(const QString &mode) const
 {
     if (isHegemonyGameMode(mode)) {
         QStringList modestrings = mode.split("_");
-        return modestrings.last().toInt(NULL, 10); //return 2;
+        return modestrings.last().toInt(nullptr, 10); //return 2;
     }
 
     if (modes.contains(mode)) {
@@ -1085,8 +1085,8 @@ const Skill *Engine::getSkill(const QString &skill_name) const
 const Skill *Engine::getSkill(const EquipCard *equip) const
 {
     const Skill *skill;
-    if (equip == NULL)
-        skill = NULL;
+    if (equip == nullptr)
+        skill = nullptr;
     else
         skill = /*Sanguosha->*/ getSkill(equip->objectName());
 
@@ -1104,14 +1104,14 @@ const TriggerSkill *Engine::getTriggerSkill(const QString &skill_name) const
     if (skill)
         return qobject_cast<const TriggerSkill *>(skill);
     else
-        return NULL;
+        return nullptr;
 }
 
 const ViewAsSkill *Engine::getViewAsSkill(const QString &skill_name) const
 {
     const Skill *skill = getSkill(skill_name);
-    if (skill == NULL)
-        return NULL;
+    if (skill == nullptr)
+        return nullptr;
 
     if (skill->inherits("ViewAsSkill"))
         return qobject_cast<const ViewAsSkill *>(skill);
@@ -1129,7 +1129,7 @@ const ViewAsSkill *Engine::getViewAsSkill(const QString &skill_name) const
         const MaxCardsSkill *distance_skill = qobject_cast<const MaxCardsSkill *>(skill);
         return distance_skill->getViewAsSkill();
     } else
-        return NULL;
+        return nullptr;
 }
 
 const ProhibitSkill *Engine::isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others) const
@@ -1137,13 +1137,13 @@ const ProhibitSkill *Engine::isProhibited(const Player *from, const Player *to, 
     bool ignore
         = (from->hasSkill("tianqu") && from->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to != from && !card->hasFlag("IgnoreFailed"));
     if (ignore && !card->isKindOf("SkillCard"))
-        return NULL;
+        return nullptr;
     foreach (const ProhibitSkill *skill, prohibit_skills) {
         if (skill->isProhibited(from, to, card, others))
             return skill;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 const ViewHasSkill *Engine::ViewHas(const Player *player, const QString &skill_name, const QString &flag, bool ignore_preshow) const
@@ -1153,7 +1153,7 @@ const ViewHasSkill *Engine::ViewHas(const Player *player, const QString &skill_n
             return skill;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 int Engine::correctDistance(const Player *from, const Player *to) const
@@ -1194,7 +1194,7 @@ int Engine::correctCardTarget(const TargetModSkill::ModType type, const Player *
     int x = 0;
     QString cardskill = card->getSkillName();
     bool checkDoubleHidden = false;
-    if (cardskill != NULL)
+    if (cardskill != nullptr)
         checkDoubleHidden = from->isHiddenSkill(cardskill);
 
     if (type == TargetModSkill::Residue) {

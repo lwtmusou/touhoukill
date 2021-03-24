@@ -27,7 +27,7 @@ const int SKIN_ITEM_HEIGHT = SKIN_ITEM_AREA.height();
 //(?:[A-Za-z_]+)(\\d+).png
 const QRegExp SKIN_FILE_NAME_PATTERN = QRegExp("(?:[A-Za-z_0-9]+)(\\d+).png");
 
-HeroSkinContainer *HeroSkinContainer::m_currentTopMostContainer = NULL;
+HeroSkinContainer *HeroSkinContainer::m_currentTopMostContainer = nullptr;
 QMap<QString, QStringList> HeroSkinContainer::m_generalToSkinFiles;
 QMap<QString, bool> HeroSkinContainer::m_generalToHasSkin;
 
@@ -35,7 +35,7 @@ HeroSkinContainer::HeroSkinContainer(const QString &generalName, const QString &
     : QGraphicsObject(parent)
     , m_generalName(generalName)
     , m_backgroundPixmap("image/system/heroskin-container.png")
-    , m_vScrollBar(NULL)
+    , m_vScrollBar(nullptr)
     , m_oldScrollValue(0)
 {
     setFlag(ItemIsMovable);
@@ -50,11 +50,11 @@ HeroSkinContainer::HeroSkinContainer(const QString &generalName, const QString &
 
     connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
 
-    QGraphicsPixmapItem *kingdomColorMaskIcon = NULL;
+    QGraphicsPixmapItem *kingdomColorMaskIcon = nullptr;
     PlayerCardContainer::_paintPixmap(kingdomColorMaskIcon, QRect(11, -5, 130, 40), //11, 6, 87, 21
                                       G_ROOM_SKIN.getPixmapFromFileName(QString(KINGDOM_COLORMASK_PIXMAP_PATH).arg(kingdom)), this);
 
-    QGraphicsPixmapItem *kingdomIcon = NULL;
+    QGraphicsPixmapItem *kingdomIcon = nullptr;
     PlayerCardContainer::_paintPixmap(kingdomIcon, QRect(9, 2, 28, 25), G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON, kingdom), this);
 
     QGraphicsPixmapItem *avatarNameItem = new QGraphicsPixmapItem(this);
@@ -276,7 +276,7 @@ void HeroSkinContainer::skinSelected(int skinIndex)
 
     swapWithSkinItemUsed(skinIndex);
 
-    if (NULL != m_vScrollBar) {
+    if (nullptr != m_vScrollBar) {
         m_vScrollBar->setValue(0);
     }
 
@@ -321,7 +321,7 @@ void HeroSkinContainer::mousePressEvent(QGraphicsSceneMouseEvent *)
 
 void HeroSkinContainer::bringToTopMost()
 {
-    if (NULL != m_currentTopMostContainer) {
+    if (nullptr != m_currentTopMostContainer) {
         if (this == m_currentTopMostContainer) {
             return;
         }
@@ -336,7 +336,7 @@ void HeroSkinContainer::bringToTopMost()
 
 void HeroSkinContainer::wheelEvent(QGraphicsSceneWheelEvent *event)
 {
-    if (NULL != m_vScrollBar) {
+    if (nullptr != m_vScrollBar) {
         int deltaValue = event->delta();
         int scrollBarValue = m_vScrollBar->value();
         scrollBarValue += (-deltaValue / 120) * m_vScrollBar->pageStep();

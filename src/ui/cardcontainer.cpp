@@ -178,14 +178,14 @@ bool CardContainer::_addCardItems(QList<CardItem *> &, const CardsMoveStruct &)
 
 bool CardContainer::retained()
 {
-    return close_button != NULL && close_button->isVisible();
+    return close_button != nullptr && close_button->isVisible();
 }
 
 void CardContainer::clear()
 {
     foreach (CardItem *item, items) {
         item->hide();
-        item = NULL;
+        item = nullptr;
         delete item;
     }
 
@@ -212,14 +212,14 @@ QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, Pla
 {
     QList<CardItem *> result;
     foreach (int card_id, card_ids) {
-        CardItem *to_take = NULL;
+        CardItem *to_take = nullptr;
         foreach (CardItem *item, items) {
             if (item->getCard()->getId() == card_id) {
                 to_take = item;
                 break;
             }
         }
-        if (to_take == NULL)
+        if (to_take == nullptr)
             continue;
 
         to_take->setEnabled(false);
@@ -371,7 +371,7 @@ void GuanxingBox::doGuanxing(const QList<int> &card_ids, bool up_only)
 void GuanxingBox::adjust()
 {
     CardItem *item = qobject_cast<CardItem *>(sender());
-    if (item == NULL)
+    if (item == nullptr)
         return;
 
     up_items.removeOne(item);

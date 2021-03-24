@@ -5,7 +5,7 @@
 #include <QPropertyAnimation>
 
 MagatamasBoxItem::MagatamasBoxItem()
-    : QGraphicsObject(NULL)
+    : QGraphicsObject(nullptr)
 {
     m_hp = 0;
     m_dyingHp = 1;
