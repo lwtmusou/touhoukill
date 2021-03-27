@@ -1494,93 +1494,6 @@ public:
     }
 };
 
-/*class Yibian : public TriggerSkill
-{
-public:
-    Yibian()
-        : TriggerSkill("yibian")
-    {
-        events << EventPhaseStart;
-        show_type = "static";
-    }
-
-    static bool sameRole(ServerPlayer *player1, ServerPlayer *player2)
-    {
-        QString role1 = (player1->isLord()) ? "loyalist" : player1->getRole();
-        QString role2 = (player2->isLord()) ? "loyalist" : player2->getRole();
-        if (role1 == role2 && role1 == "renegade")
-            return false;
-        return role1 == role2;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
-    {
-        ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player->getPhase() == Player::Start) {
-            ServerPlayer *reimu = room->findPlayerBySkillName(objectName());
-            if (!reimu)
-                return QList<SkillInvokeDetail>();
-            if (!player->hasShownRole())
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-            else if (!player->isNude()) {
-                foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-                    if (p->hasShownRole() && sameRole(player, p)) {
-                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
-                    }
-                }
-            }
-        }
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        if (!invoke->invoker->hasShownRole()) {
-            QString prompt = "yibian_notice";
-            return invoke->invoker->askForSkillInvoke(objectName(), prompt);
-        } else {
-            return true;
-        }
-        return false;
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
-    {
-        ServerPlayer *player = invoke->invoker;
-        if (!player->hasShownRole()) {
-            QString role = player->getRole();
-            room->touhouLogmessage("#YibianShow", invoke->invoker, role, room->getAllPlayers());
-            room->broadcastProperty(invoke->invoker, "role");
-            room->setPlayerProperty(invoke->invoker, "role_shown", true); //important! to notify client
-
-            QList<ServerPlayer *> targets;
-            foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-                if (p->hasShownRole() && !sameRole(player, p))
-                    targets << p;
-            }
-            if (targets.length() > 0) {
-                ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), "@yibian", false, true);
-                target->drawCards(1);
-            }
-        } else {
-            QList<ServerPlayer *> targets;
-            QList<int> ids;
-            foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-                if (p->hasShownRole() && sameRole(player, p)) {
-                    targets << p;
-                }
-            }
-            foreach (const Card *c, player->getCards("hes")) {
-                ids << c->getEffectiveId();
-            }
-            QString prompt = "yibian_give";
-            room->askForYiji(player, ids, objectName(), false, false, true, 1, targets, CardMoveReason(), prompt);
-        }
-
-        return false;
-    }
-};*/
-
 class Yibian : public TriggerSkill
 {
 public:
@@ -1826,50 +1739,6 @@ public:
     }
 };
 
-/*FengyinCard::FengyinCard()
-{
-    will_throw = true;
-}
-
-bool FengyinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
-{
-    return (targets.isEmpty() && to_select->hasShownRole());
-}
-
-void FengyinCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const
-{
-    ServerPlayer *target = targets.first();
-    QString role = target->getRole();
-    room->broadcastProperty(target, "role");
-    room->setPlayerProperty(target, "role_shown", false); //important! to notify client
-
-    room->touhouLogmessage("#FengyinHide", target, role, room->getAllPlayers());
-    target->turnOver();
-}
-
-class Fengyin : public OneCardViewAsSkill
-{
-public:
-    Fengyin()
-        : OneCardViewAsSkill("fengyin")
-    {
-        filter_pattern = ".|heart!";
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const
-    {
-        return !player->hasUsed("FengyinCard");
-    }
-
-    virtual const Card *viewAs(const Card *originalCard) const
-    {
-        FengyinCard *card = new FengyinCard;
-        card->addSubcard(originalCard);
-        return card;
-    }
-};
-*/
-
 class Huanxiang : public TriggerSkill
 {
 public:
@@ -1949,26 +1818,6 @@ public:
         else
             invoke->invoker->drawCards(1);
         return false;
-    }
-};
-
-class RoleShownHandler : public TriggerSkill
-{
-public:
-    RoleShownHandler()
-        : TriggerSkill("roleshownhandler")
-    {
-        events << GameStart;
-        global = true;
-    }
-
-    void record(TriggerEvent, Room *room, QVariant &) const
-    {
-        if (isHegemonyGameMode(ServerInfo.GameMode))
-            return;
-
-        foreach (ServerPlayer *p, room->getAlivePlayers())
-            room->setPlayerProperty(p, "role_shown", p->isLord() ? true : false);
     }
 };
 
@@ -7515,7 +7364,7 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<QianqiangCard>();
     //addMetaObject<KuangjiCard>();
     addMetaObject<XiuyeCard>();
-    skills << new ChaorenLog << new Wendao << new RoleShownHandler << new ShenbaoAttach << new Ziwo << new Benwo << new Chaowo << new TiandaoDistance;
+    skills << new ChaorenLog << new Wendao << new ShenbaoAttach << new Ziwo << new Benwo << new Chaowo << new TiandaoDistance;
 }
 
 ADD_PACKAGE(TouhouGod)

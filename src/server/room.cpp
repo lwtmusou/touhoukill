@@ -2242,39 +2242,47 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
 
     broadcastProperty(player, property_name);
 
-    //QVariant data = getTag("HpChangedData");
     if (strcmp(property_name, "hp") == 0) {
-        QVariant v = QVariant::fromValue(player);
-        thread->trigger(HpChanged, this, v);
+        if (game_started) {
+            QVariant v = QVariant::fromValue(player);
+            thread->trigger(HpChanged, this, v);
+        }
     }
-
     if (strcmp(property_name, "maxhp") == 0) {
-        QVariant v = QVariant::fromValue(player);
-        thread->trigger(MaxHpChanged, this, v);
+        if (game_started) {
+            QVariant v = QVariant::fromValue(player);
+            thread->trigger(MaxHpChanged, this, v);
+        }
     }
-
     if (strcmp(property_name, "chained") == 0) {
         if (player->isAlive())
             setEmotion(player, "chain");
-        QVariant v = QVariant::fromValue(player);
-        thread->trigger(ChainStateChanged, this, v);
+        if (game_started) {
+            QVariant v = QVariant::fromValue(player);
+            thread->trigger(ChainStateChanged, this, v);
+        }
     }
     if (strcmp(property_name, "removed") == 0) {
-        QVariant pv = QVariant::fromValue(player);
-        thread->trigger(RemoveStateChanged, this, pv);
+        if (game_started) {
+            QVariant pv = QVariant::fromValue(player);
+            thread->trigger(RemoveStateChanged, this, pv);
+        }
     }
     if (strcmp(property_name, "role_shown") == 0) {
-        QVariant pv = QVariant::fromValue(player);
-        thread->trigger(RoleShownChanged, this, pv);
+        if (game_started) {
+            QVariant pv = QVariant::fromValue(player);
+            thread->trigger(RoleShownChanged, this, pv);
+        }
         player->setMark("AI_RoleShown", value.toBool() ? 1 : 0);
         roleStatusCommand(player);
         if (value.toBool())
             player->setMark("AI_RolePredicted", 1);
     }
-
     if (strcmp(property_name, "kingdom") == 0) {
-        QVariant v = QVariant::fromValue(player);
-        thread->trigger(KingdomChanged, this, v);
+        if (game_started) {
+            QVariant v = QVariant::fromValue(player);
+            thread->trigger(KingdomChanged, this, v);
+        }
     }
 }
 
@@ -4456,6 +4464,8 @@ void Room::startGame()
         if (!isHegemonyGameMode(mode)) {
             setPlayerProperty(player, "general_showed", true);
             setPlayerProperty(player, "general2_showed", true);
+            if (player->isLord())
+                setPlayerProperty(player, "role_shown", true);
         }
     }
 
