@@ -1787,6 +1787,7 @@ public:
         : TriggerSkill("jianshe")
     {
         events << EventPhaseStart << CardsMoveOneTime << EventPhaseChanging;
+        global = true;
     }
 
     void record(TriggerEvent e, Room *room, QVariant &data) const
@@ -1819,43 +1820,47 @@ public:
 
         QList<SkillInvokeDetail> d;
         for (ServerPlayer *skiller : room->findPlayersBySkillName(objectName())) {
-            if (skiller != player && skiller->canDiscard(skiller, "hs"))
+            if (skiller != player && (skiller->hasFlag("jianshe_losed") || skiller->canDiscard(skiller, "hs")))
                 d << SkillInvokeDetail(this, skiller, skiller);
         }
         return d;
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
-        ServerPlayer *current = room->getCurrent();
+        ServerPlayer *current = data.value<ServerPlayer *>();
+        bool r = false;
+
         if (!invoke->invoker->hasFlag("jianshe_losed"))
-            return room->askForCard(invoke->invoker, ".|.|.|hand", "@jianshe-discard:" + current->objectName(), QVariant::fromValue(current), Card::MethodDiscard, NULL, false,
-                                    objectName());
+            r = room->askForCard(invoke->invoker, ".|.|.|hand", "@jianshe-discard:" + current->objectName(), QVariant::fromValue(current), Card::MethodDiscard, NULL, false,
+                                 objectName());
         else
-            return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(current));
+            r = invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(current));
+
+        if (r) {
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), current->objectName());
+            invoke->targets << current;
+        }
+
+        return r;
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
-        ServerPlayer *target = room->getCurrent();
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
-        if (target->getHandcardNum() > 1) {
-            QList<QString> uselist;
-            uselist << "jianshe_jian";
-            uselist << "jianshe_she";
-            QString use = room->askForChoice(target, objectName(), uselist.join("+"));
-            if (use == "jianshe_jian") {
-                room->drawCards(target, 1, objectName());
-                room->loseHp(target, 1);
-            } else {
-                int hands = target->getHandcardNum();
-                room->askForDiscard(target, "@jianshe-hint", hands - 1, hands - 1);
-                room->recover(target, RecoverStruct());
-            }
-        } else {
+        ServerPlayer *target = invoke->targets.first();
+        bool discarded = false;
+
+        int hands = target->getHandcardNum();
+        if (hands > 1)
+            discarded = room->askForDiscard(target, objectName(), hands - 1, hands - 1, true, false, "@jianshe-hint");
+
+        if (discarded)
+            room->recover(target, RecoverStruct());
+        else {
             room->drawCards(target, 1, objectName());
-            room->loseHp(target, 1);
+            room->loseHp(target);
         }
+
         return false;
     }
 };
