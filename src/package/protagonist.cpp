@@ -259,7 +259,7 @@ public:
         return !player->hasUsed("MofaCard") && !player->isKongcheng();
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         MofaCard *card = new MofaCard;
         card->addSubcard(originalCard);
@@ -356,7 +356,7 @@ public:
         return false;
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         WuyuCard *card = new WuyuCard;
         card->addSubcard(originalCard);
@@ -477,12 +477,12 @@ public:
         return false;
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override
     {
-        return !to_select->isEquipped() && selected.length() < 3;
+        return !to_select->isEquipped(Self) && selected.length() < 3;
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player * /*Self*/) const override
     {
         if (cards.length() > 0 && cards.length() <= 3) {
             SaiqianCard *card = new SaiqianCard;
@@ -577,7 +577,7 @@ public:
     {
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new JiezouCard;
     }
@@ -608,12 +608,12 @@ public:
         response_pattern = "@@shoucang";
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override
     {
-        if (to_select->isEquipped())
+        if (to_select->isEquipped(Self))
             return false;
         if (selected.isEmpty())
-            return !to_select->isEquipped();
+            return !to_select->isEquipped(Self);
         else if (selected.length() < 4) {
             foreach (const Card *c, selected) {
                 if (to_select->getSuit() == c->getSuit())
@@ -624,7 +624,7 @@ public:
             return false;
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player * /*Self*/) const override
     {
         if (cards.length() > 0 && cards.length() < 5) {
             ShoucangCard *card = new ShoucangCard;
@@ -726,12 +726,12 @@ public:
         response_pattern = "@@baoyi";
     }
 
-    bool viewFilter(const QList<const Card *> &, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &, const Card *to_select, const Player *Self) const override
     {
         return to_select->isKindOf("EquipCard") && !Self->isJilei(to_select);
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const override
     {
         bool has_delaytrick = false;
         BaoyiCard *card = new BaoyiCard;
@@ -828,7 +828,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>  /*invoke*/, QVariant &data) const override
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
         QList<ServerPlayer *> players;
@@ -888,12 +888,12 @@ public:
         response_pattern = "@@chunxi";
     }
 
-    bool viewFilter(const QList<const Card *> &, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &, const Card *to_select, const Player * /*Self*/) const override
     {
         return to_select->hasFlag("chunxi");
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player * /*Self*/) const override
     {
         if (cards.length() > 0) {
             ChunxiCard *card = new ChunxiCard;
@@ -1045,15 +1045,15 @@ public:
         return false;
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override
     {
         QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
         if (pattern == "@@bllmwuyu")
-            return selected.isEmpty() && !to_select->isEquipped();
+            return selected.isEmpty() && !to_select->isEquipped(Self);
         return false;
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const override
     {
         QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
         if (pattern == "@@bllmwuyu") {
@@ -1123,7 +1123,7 @@ public:
         return invoke->invoker->askForSkillInvoke(objectName());
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent, Room * /*room*/, QSharedPointer<SkillInvokeDetail>  /*invoke*/, QVariant &data) const override
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
         int z = (player->getLostHp() + 1) - player->getMark("@yu");
@@ -1156,7 +1156,7 @@ public:
         return BllmWuyu::BllmWuyuCost(room, invoke->invoker, "bllmcaiyu");
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent, Room * /*room*/, QSharedPointer<SkillInvokeDetail>  /*invoke*/, QVariant &data) const override
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
         player->drawCards(1);
@@ -1329,7 +1329,7 @@ public:
         return BllmWuyu::BllmWuyuCost(room, invoke->invoker, "bllmshuiyu");
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>  /*invoke*/, QVariant &data) const override
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
 
@@ -1363,9 +1363,9 @@ public:
         response_pattern = "@@qiangyu!";
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override
     {
-        if (to_select->isEquipped() || Self->isJilei(to_select))
+        if (to_select->isEquipped(Self) || Self->isJilei(to_select))
             return false;
         if (selected.length() >= 2)
             return false;
@@ -1373,7 +1373,7 @@ public:
         return true;
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const override
     {
         bool ok = cards.length() == 2;
         if (cards.length() == 1 && cards.first()->getSuit() == Card::Spade)
@@ -1499,7 +1499,7 @@ public:
         filter_pattern = ".|.|.|tianyi";
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         return originalCard;
     }
@@ -1661,7 +1661,7 @@ public:
         return !player->hasUsed("DfgzmSiyuCard") && !player->isKongcheng();
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         if (originalCard != nullptr) {
             DfgzmSiyuCard *card = new DfgzmSiyuCard;
@@ -2020,7 +2020,7 @@ public:
         return !player->hasUsed("YinyangCard");
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new YinyangCard;
     }
@@ -2113,12 +2113,12 @@ public:
         response_or_use = true;
     }
 
-    bool viewFilter(const QList<const Card *> &, const Card *to_select) const override
+    bool viewFilter(const Card *to_select, const Player * /*Self*/) const override
     {
         return !to_select->isKindOf("TrickCard");
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player *Self) const override
     {
         if (originalCard) {
             QString cardname = Self->property("toushi_card").toString();
@@ -2379,7 +2379,7 @@ public:
         return !player->hasUsed("BodongCard") && !player->isKongcheng();
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         if (originalCard != nullptr) {
             BodongCard *card = new BodongCard;

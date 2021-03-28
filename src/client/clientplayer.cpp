@@ -7,8 +7,6 @@
 #include <QTextDocument>
 #include <QTextOption>
 
-ClientPlayer *Self = nullptr;
-
 ClientPlayer::ClientPlayer(Client *client)
     : Player(client)
     , handcard_num(0)
@@ -205,7 +203,8 @@ void ClientPlayer::setMark(const QString &mark, int value)
     if (!mark.startsWith("@"))
         return;
 
-    // @todo: consider move all the codes below to PlayerCardContainerUI.cpp
+        // @todo: consider move all the codes below to PlayerCardContainerUI.cpp
+#if 0
     // set mark doc
     QString text = "";
     QMapIterator<QString, int> itor(marks);
@@ -226,10 +225,15 @@ void ClientPlayer::setMark(const QString &mark, int value)
     }
 
     mark_doc->setHtml(text);
+#endif
 }
 
 RoomObject *ClientPlayer::getRoomObject() const
 {
-    // TODO_Fs: Multiple Client pending
+    return getClient();
+}
+
+Client *ClientPlayer::getClient() const
+{
     return qobject_cast<Client *>(parent());
 }

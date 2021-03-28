@@ -15,8 +15,8 @@ public:
     void setIncludeEquip(bool include_equip);
     void setIsDiscard(bool is_discard);
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override;
-    const Card *viewAs(const QList<const Card *> &cards) const override;
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override;
+    const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const override;
 
 private:
     DummyCard *card;
@@ -38,8 +38,8 @@ public:
 
     void setPattern(const QString &pattern);
     void setRequest(const Card::HandlingMethod request);
-    bool viewFilter(const Card *to_select) const override;
-    const Card *viewAs(const Card *originalCard) const override;
+    bool viewFilter(const Card *to_select, const Player *Self) const override;
+    const Card *viewAs(const Card *originalCard, const Player *Self) const override;
 
     inline virtual Card::HandlingMethod getRequest() const
     {
@@ -72,8 +72,8 @@ public:
     void setMaxNum(int max_num);
     void setPlayerNames(const QStringList &names);
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override;
-    const Card *viewAs(const QList<const Card *> &cards) const override;
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override;
+    const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const override;
 
 private:
     YijiCard *card;
@@ -91,7 +91,7 @@ public:
     explicit ChoosePlayerSkill();
     void setPlayerNames(const QStringList &names);
 
-    const Card *viewAs() const override;
+    const Card *viewAs(const Player *Self) const override;
 
 private:
     ChoosePlayerCard *card;

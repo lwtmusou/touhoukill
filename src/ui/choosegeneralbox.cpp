@@ -22,10 +22,11 @@
 #include "SkinBank.h"
 #include "button.h"
 #include "cardcontainer.h"
-#include "choosegeneraldialog.h" //#include "freechoosedialog.h"
+#include "choosegeneraldialog.h"
 #include "client.h"
 #include "clientplayer.h"
 #include "engine.h"
+#include "roomscene.h"
 
 #include <QApplication>
 #include <QGraphicsProxyWidget>
@@ -237,7 +238,7 @@ void ChooseGeneralBox::paintLayout(QPainter *painter)
 QRectF ChooseGeneralBox::boundingRect() const
 {
     //confirm the general count of the first and second row
-    int first_row, second_row = 0;
+    int first_row = 0, second_row = 0;
 
     //arrange them in two rows if there are more than 6 generals.
     //Number of cards in the second row cannot be greater than that in the first row

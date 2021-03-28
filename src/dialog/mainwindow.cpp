@@ -203,8 +203,7 @@ void MainWindow::gotoScene(QGraphicsScene *scene)
 
 void MainWindow::on_actionExit_triggered()
 {
-    QMessageBox::StandardButton result;
-    result = QMessageBox::question(this, tr("TouhouSatsu"), tr("Are you sure to exit?"), QMessageBox::Ok | QMessageBox::Cancel);
+    QMessageBox::StandardButton result = QMessageBox::question(this, tr("TouhouSatsu"), tr("Are you sure to exit?"), QMessageBox::Ok | QMessageBox::Cancel);
     if (result == QMessageBox::Ok) {
         delete systray;
         systray = nullptr;
@@ -337,10 +336,14 @@ void MainWindow::enterRoom()
         Config.setValue("HistoryUrls", Config.HistoryIPs);
     }
 
+    Client *client = qobject_cast<Client *>(sender());
+    if (client == NULL)
+        return;
+
     ui->actionStart_Game->setEnabled(false);
     ui->actionStart_Server->setEnabled(false);
 
-    RoomScene *room_scene = new RoomScene(this);
+    RoomScene *room_scene = new RoomScene(this, client);
     ui->actionView_Discarded->setEnabled(true);
     ui->actionView_distance->setEnabled(true);
     ui->actionServerInformation->setEnabled(true);
@@ -415,14 +418,6 @@ void MainWindow::gotoStartScene()
 
     delete systray;
     systray = nullptr;
-    if (ClientInstance) {
-        if (Self) {
-            delete Self;
-            Self = nullptr;
-        }
-        delete ClientInstance;
-        ClientInstance = nullptr;
-    }
 }
 
 void MainWindow::startGameInAnotherInstance()

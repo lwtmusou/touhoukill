@@ -96,7 +96,7 @@ void MyPixmapItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QW
 void MyPixmapItem::initFaceBoardPos()
 {
     const int start_x = 5, start_y = 5;
-    int x, y;
+    int x = 0, y = 0;
     int icon_w = 16, icon_h = 16;
     int x_offset = 6, y_offset = 6;
 
@@ -113,7 +113,7 @@ void MyPixmapItem::initFaceBoardPos()
 void MyPixmapItem::initEasyTextPos()
 {
     const int start_x = 5, start_y = 5;
-    int y;
+    int y = 0;
     int icon_w = 210, icon_h = 12;
     int y_offset = 10;
 
@@ -132,7 +132,7 @@ ChatWidget::ChatWidget()
     setAcceptedMouseButtons(Qt::LeftButton);
 
     base = new QGraphicsRectItem(QRectF(base_pixmap.rect()), this);
-    QPushButton *returnButton, *chatfaceButton, *easytextButton;
+    QPushButton *returnButton = nullptr, *chatfaceButton = nullptr, *easytextButton = nullptr;
 
     returnButton = addButton("returnBt", -1);
     chatfaceButton = addButton("chatfaceBt", 24);

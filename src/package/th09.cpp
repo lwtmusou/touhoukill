@@ -23,7 +23,7 @@ public:
         return player->hasFlag("zuiyue") && Analeptic::IsAvailable(player);
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         Analeptic *ana = new Analeptic(Card::NoSuit, 0);
         ana->setSkillName(objectName());
@@ -177,16 +177,15 @@ public:
         if (!matchAvaliablePattern("peach", pattern))
             return false;
         bool globalDying = false;
-        if (Self) {
-            QList<const Player *> players = Self->getSiblings();
-            players << Self;
-            foreach (const Player *p, players) {
-                if (p->hasFlag("Global_Dying") && p->isAlive()) {
-                    globalDying = true;
-                    break;
-                }
+        QList<const Player *> players = player->getSiblings();
+        players << player;
+        foreach (const Player *p, players) {
+            if (p->hasFlag("Global_Dying") && p->isAlive()) {
+                globalDying = true;
+                break;
             }
         }
+
         if (globalDying) {
             foreach (const Player *p, player->getAliveSiblings()) {
                 if (p->hasLordSkill("yanhui") && p->hasFlag("Global_Dying"))
@@ -207,12 +206,12 @@ public:
         return Self && Self->getKingdom() == "zhan";
     }
 
-    bool viewFilter(const QList<const Card *> &, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &, const Card *to_select, const Player * /*Self*/) const override
     {
         return to_select->isKindOf("Peach") || to_select->isKindOf("Analeptic");
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         if (originalCard != nullptr) {
             YanhuiCard *card = new YanhuiCard;
@@ -763,7 +762,7 @@ public:
         response_pattern = "@@toupai";
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         ToupaiCard *card = new ToupaiCard;
         return card;
@@ -802,7 +801,7 @@ public:
         return room->askForUseCard(invoke->invoker, "@@toupai", "@toupai");
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent, Room * /*room*/, QSharedPointer<SkillInvokeDetail>  /*invoke*/, QVariant &data) const override
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
         return true;
@@ -1054,7 +1053,7 @@ public:
             && !player->isCurrent();
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new TianrenCard;
     }
@@ -1181,7 +1180,7 @@ public:
         return l.isAvailable(player);
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         Lightning *card = new Lightning(originalCard->getSuit(), originalCard->getNumber());
         card->addSubcard(originalCard);
@@ -1509,8 +1508,10 @@ NianliDialog::NianliDialog(const QString &object)
     connect(group, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(selectCard(QAbstractButton *)));
 }
 
-void NianliDialog::popup()
+void NianliDialog::popup(Player *_Self)
 {
+    Self = _Self;
+
     if (Self->getRoomObject()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY) {
         emit onButtonClick();
         return;
@@ -1612,7 +1613,7 @@ public:
         return !player->hasUsed("NianliCard");
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player *Self) const override
     {
         QString name = Self->tag.value("nianli", QString()).toString();
         if (name != nullptr) {
@@ -2047,7 +2048,7 @@ public:
         expand_pile = "#mengxiang_temp";
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override
     {
         //if (Self->hasFlag("Global_mengxiangFailed")) {
         if (Self->getRoomObject()->getCurrentCardUsePattern() == "@@mengxiang-card2") {
@@ -2070,7 +2071,7 @@ public:
         return pattern.startsWith("@@mengxiang");
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const override
     {
         if (cards.length() > 1)
             return nullptr;
@@ -2266,12 +2267,12 @@ public:
         expand_pile = "#jishi_temp";
     }
 
-    bool viewFilter(const QList<const Card *> &, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &, const Card *to_select, const Player *Self) const override
     {
         return Self->getPile("#jishi_temp").contains(to_select->getId());
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override //
+    const Card *viewAs(const QList<const Card *> &cards, const Player * /*Self*/) const override //
     {
         if (cards.isEmpty())
             return nullptr;
@@ -2443,7 +2444,7 @@ public:
         // response_or_use = true;
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override
     {
         if (!Self->getPile("qsmian").contains(to_select->getId()))
             return false;
@@ -2457,7 +2458,7 @@ public:
                         : Sanguosha->matchExpPattern(Self->getRoomObject()->getCurrentCardUsePattern(), Self, to_select));
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const override
     {
         if (Self->getRoomObject()->getCurrentCardUsePattern() == "@@mianling!") {
             if (Self->getPile("qsmian").length() - cards.length() == 1 + Self->getAliveSiblings().length()) {

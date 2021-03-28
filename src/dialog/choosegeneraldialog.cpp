@@ -4,6 +4,7 @@
 #include "engine.h"
 #include "general.h"
 #include "protocol.h"
+#include "roomscene.h"
 #include "settings.h"
 
 #include <QCheckBox>
@@ -348,7 +349,7 @@ QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals)
         QString general_name = general->objectName();
         QString text = QString("%1[%2]").arg(Sanguosha->translate(general_name)).arg(Sanguosha->translate(general->getPackage()));
 
-        QAbstractButton *button;
+        QAbstractButton *button = nullptr;
         if (pair_choose)
             button = new QCheckBox(text);
         else

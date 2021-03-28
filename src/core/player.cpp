@@ -1039,7 +1039,7 @@ QList<const Card *> Player::getEquips() const
 
 const EquipCard *Player::getEquip(int index) const
 {
-    WrappedCard *equip;
+    WrappedCard *equip = nullptr;
     switch (index) {
     case 0:
         equip = weapon;

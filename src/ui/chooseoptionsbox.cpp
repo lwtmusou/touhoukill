@@ -14,12 +14,12 @@ Mogara
 *********************************************************************/
 
 #include "chooseoptionsbox.h"
+#include "TimedProgressBar.h"
 #include "button.h"
 #include "client.h"
 #include "clientstruct.h"
 #include "engine.h"
-//#include "timed-progressbar.h"
-#include "TimedProgressBar.h"
+#include "roomscene.h"
 
 #include <QGraphicsProxyWidget>
 

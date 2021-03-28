@@ -34,12 +34,12 @@ void DiscardSkill::setIsDiscard(bool is_discard)
     this->is_discard = is_discard;
 }
 
-bool DiscardSkill::viewFilter(const QList<const Card *> &selected, const Card *card) const
+bool DiscardSkill::viewFilter(const QList<const Card *> &selected, const Card *card, const Player *Self) const
 {
     if (selected.length() >= num)
         return false;
 
-    if (!include_equip && card->isEquipped())
+    if (!include_equip && card->isEquipped(Self))
         return false;
 
     if (is_discard && Self->isCardLimited(card, Card::MethodDiscard))
@@ -48,7 +48,7 @@ bool DiscardSkill::viewFilter(const QList<const Card *> &selected, const Card *c
     return true;
 }
 
-const Card *DiscardSkill::viewAs(const QList<const Card *> &cards) const
+const Card *DiscardSkill::viewAs(const QList<const Card *> &cards, const Player * /*Self*/) const
 {
     if (cards.length() >= minnum) {
         card->clearSubcards();
@@ -84,12 +84,12 @@ bool ResponseSkill::matchPattern(const Player *player, const Card *card) const
     return pattern && pattern->match(player, card);
 }
 
-bool ResponseSkill::viewFilter(const Card *card) const
+bool ResponseSkill::viewFilter(const Card *card, const Player *Self) const
 {
     return matchPattern(Self, card);
 }
 
-const Card *ResponseSkill::viewAs(const Card *originalCard) const
+const Card *ResponseSkill::viewAs(const Card *originalCard, const Player * /*Self*/) const
 {
     return originalCard;
 }
@@ -176,12 +176,12 @@ void YijiViewAsSkill::setPlayerNames(const QStringList &names)
     card->setPlayerNames(names);
 }
 
-bool YijiViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card *card) const
+bool YijiViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card *card, const Player * /*Self*/) const
 {
     return ids.contains(card->getId()) && selected.length() < max_num;
 }
 
-const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards) const
+const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards, const Player * /*Self*/) const
 {
     if (cards.isEmpty() || cards.length() > max_num)
         return nullptr;
@@ -227,7 +227,7 @@ void ChoosePlayerSkill::setPlayerNames(const QStringList &names)
     card->setPlayerNames(names);
 }
 
-const Card *ChoosePlayerSkill::viewAs() const
+const Card *ChoosePlayerSkill::viewAs(const Player * /*Self*/) const
 {
     return card;
 }

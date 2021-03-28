@@ -53,12 +53,6 @@ public:
     virtual bool canPreshow() const; //hegemony
     virtual bool relateToPlace(bool head = true) const;
 
-    //for LUA
-    //inline void setRelateToPlace(const char *rtp)
-    //{
-    //    relate_to_place = rtp;
-    //}
-
 protected:
     Frequency frequency;
     QString limit_mark;
@@ -80,8 +74,8 @@ class ViewAsSkill : public Skill
 public:
     explicit ViewAsSkill(const QString &name);
 
-    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const = 0;
-    virtual const Card *viewAs(const QList<const Card *> &cards) const = 0;
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const = 0;
+    virtual const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const = 0;
 
     bool isAvailable(const Player *invoker, CardUseStruct::CardUseReason reason, const QString &pattern) const;
     virtual bool isEnabledAtPlay(const Player *player) const;
@@ -93,7 +87,7 @@ public:
     {
         return response_or_use;
     }
-    virtual QString getExpandPile() const;
+    virtual QString getExpandPile(const Player *Self) const;
 
 protected:
     QString response_pattern;
@@ -108,9 +102,9 @@ class ZeroCardViewAsSkill : public ViewAsSkill
 public:
     explicit ZeroCardViewAsSkill(const QString &name);
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override;
-    const Card *viewAs(const QList<const Card *> &cards) const override;
-    virtual const Card *viewAs() const = 0;
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override;
+    const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const override;
+    virtual const Card *viewAs(const Player *Self) const = 0;
 };
 
 class OneCardViewAsSkill : public ViewAsSkill
@@ -120,11 +114,11 @@ class OneCardViewAsSkill : public ViewAsSkill
 public:
     explicit OneCardViewAsSkill(const QString &name);
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override;
-    const Card *viewAs(const QList<const Card *> &cards) const override;
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override;
+    const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const override;
 
-    virtual bool viewFilter(const Card *to_select) const;
-    virtual const Card *viewAs(const Card *originalCard) const = 0;
+    virtual bool viewFilter(const Card *to_select, const Player *Self) const;
+    virtual const Card *viewAs(const Card *originalCard, const Player *Self) const = 0;
 
 protected:
     QString filter_pattern;
@@ -200,7 +194,7 @@ class ShowDistanceSkill : public ZeroCardViewAsSkill
 public:
     ShowDistanceSkill(const QString &name);
 
-    const Card *viewAs() const override;
+    const Card *viewAs(const Player *Self) const override;
     bool isEnabledAtPlay(const Player *player) const override;
 };
 
@@ -366,7 +360,7 @@ class ArraySummonSkill : public ZeroCardViewAsSkill
 public:
     ArraySummonSkill(const QString &name);
 
-    const Card *viewAs() const override;
+    const Card *viewAs(const Player *Self) const override;
     bool isEnabledAtPlay(const Player *player) const override;
 };
 

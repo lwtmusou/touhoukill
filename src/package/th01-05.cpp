@@ -374,7 +374,7 @@ public:
         response_pattern = "@@zhence";
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         FireAttack *fire = new FireAttack(Card::NoSuit, 0);
         fire->setSkillName("zhence");
@@ -454,7 +454,7 @@ void ShiquCard::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
     QString choice = effect.from->tag["shiqu"].toString();
-    Player::Phase phase;
+    Player::Phase phase = Player::PhaseNone;
     if (choice == "shiqu_start")
         phase = Player::Start;
     else if (choice == "shiqu_judge")
@@ -491,7 +491,7 @@ public:
         filter_pattern = ".|.|.|hand,equipped!";
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         if (originalCard != nullptr) {
             ShiquCard *card = new ShiquCard;
@@ -670,7 +670,7 @@ public:
         expand_pile = "zhenli";
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override
     {
         if (Self->getPile("zhenli").contains(to_select->getEffectiveId())) {
             if (selected.isEmpty())
@@ -681,7 +681,7 @@ public:
         return false;
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player * /*Self*/) const override
     {
         if (cards.length() > 0) {
             DummyCard *dc = new DummyCard;
@@ -1084,12 +1084,12 @@ public:
         expand_pile = "dream";
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override
     {
         return Self->getPile("dream").contains(to_select->getEffectiveId()) && selected.length() < 2;
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player * /*Self*/) const override
     {
         if (cards.length() == 2) {
             DummyCard *dc = new DummyCard;
@@ -1427,7 +1427,7 @@ public:
         response_pattern = "@@lianmu";
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         LianmuCard *slash = new LianmuCard;
         return slash;
@@ -1632,7 +1632,7 @@ public:
         response_pattern = "@@sqchuangshi";
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new SqChuangshiCard;
     }
@@ -1857,12 +1857,12 @@ public:
         return false;
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override
     {
-        return selected.isEmpty() && !to_select->isEquipped() && (to_select->isNDTrick() || to_select->isKindOf("Slash"));
+        return selected.isEmpty() && !to_select->isEquipped(Self) && (to_select->isNDTrick() || to_select->isKindOf("Slash"));
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player * /*Self*/) const override
     {
         if (cards.length() == 1) {
             ModianCard *card = new ModianCard;
@@ -1894,16 +1894,16 @@ public:
         return false;
     }
 
-    bool viewFilter(const QList<const Card *> &, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &, const Card *to_select, const Player *Self) const override
     {
         if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
-            return (to_select->isNDTrick() || to_select->isKindOf("Slash")) && !to_select->isEquipped() && !Self->getPile("modian").contains(to_select->getEffectiveId());
+            return (to_select->isNDTrick() || to_select->isKindOf("Slash")) && !to_select->isEquipped(Self) && !Self->getPile("modian").contains(to_select->getEffectiveId());
         else
             return Self->getPile("modian").contains(to_select->getEffectiveId());
         return false;
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player *Self) const override
     {
         if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
             ModianCard *card = new ModianCard;
@@ -2004,7 +2004,7 @@ public:
         return false;
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override
     {
         if (!Self->getPile("modian").contains(to_select->getEffectiveId()))
             return false;
@@ -2031,7 +2031,7 @@ public:
         return false;
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const override
     {
         //Play
         if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
@@ -2134,7 +2134,7 @@ public:
         response_pattern = "@@baosi";
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         BaosiCard *card = new BaosiCard;
         return card;
@@ -2268,7 +2268,7 @@ public:
         limit_mark = "@ezhao";
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new EzhaoCard;
     }
@@ -2312,7 +2312,7 @@ public:
         limit_mark = "@moyan";
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new MoyanCard;
     }
@@ -2365,7 +2365,7 @@ public:
             && matchAvaliablePattern("analeptic", pattern);
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         ZongjiuCard *card = new ZongjiuCard;
         card->addSubcard(originalCard);
@@ -2612,6 +2612,7 @@ bool QirenCard::targetsFeasible(const QList<const Player *> &targets, const Play
 
 bool QirenCard::isAvailable(const Player *player) const
 {
+    const Player *Self = player;
     int shownId = (Self->getShownHandcards().contains(subcards.first())) ? subcards.first() : subcards.last();
     int id = (Self->getShownHandcards().contains(subcards.first())) ? subcards.last() : subcards.first();
 
@@ -2739,9 +2740,9 @@ public:
         return !player->getShownHandcards().isEmpty() && !player->hasFlag("qirenUsed");
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override
     {
-        if (to_select->isEquipped())
+        if (to_select->isEquipped(Self))
             return false;
         if (to_select->isKindOf("Jink") || to_select->isKindOf("Nullification"))
             return false;
@@ -2767,7 +2768,7 @@ public:
         return false;
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player * /*Self*/) const override
     {
         if (cards.length() != 2)
             return nullptr;
@@ -2906,13 +2907,13 @@ public:
         response_pattern = "@@luli";
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *, const Player *Self) const override
     {
         int num = Self->getMark("luli");
         return selected.length() < num;
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player * /*Self*/) const override
     {
         if (cards.isEmpty())
             return nullptr;

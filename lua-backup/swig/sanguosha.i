@@ -1073,7 +1073,7 @@ public:
     virtual QString getPackage() const;
     virtual QString getClassName() const;
     virtual bool isVirtualCard() const;
-    virtual bool isEquipped() const;
+    virtual bool isEquipped(Self) const;
     virtual QString getCommonEffectName() const;
     virtual bool matchTypeOrName(const char *pattern) const;
 

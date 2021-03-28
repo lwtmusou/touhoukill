@@ -254,7 +254,7 @@ public:
         return !player->hasUsed("LeitingCard");
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new LeitingCard;
     }
@@ -357,10 +357,9 @@ public:
     {
         if (e == CardFinished)
             return true;
-        invoke->invoker->tag["nizhuan_carduse"] = data;//for ai
+        invoke->invoker->tag["nizhuan_carduse"] = data; //for ai
         return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget));
     }
-
 
     bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
@@ -714,12 +713,12 @@ public:
         return !player->hasUsed("YuanfeiCard");
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override
     {
         if (selected.length() >= 1)
             return false;
 
-        if (to_select->isEquipped())
+        if (to_select->isEquipped(Self))
             return false;
 
         if (Self->isJilei(to_select))
@@ -728,7 +727,7 @@ public:
         return true;
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player * /*Self*/) const override
     {
         if (cards.length() == 0)
             return new YuanfeiCard;
@@ -763,7 +762,7 @@ public:
         return matchAvaliablePattern("slash", pattern) && player->getPile("feitou").length() > 0;
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
         slash->addSubcard(originalCard);
@@ -984,7 +983,7 @@ public:
         return !player->hasUsed("LiangeCard");
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         LiangeCard *card = new LiangeCard;
         card->addSubcard(originalCard);

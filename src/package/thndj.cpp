@@ -190,7 +190,7 @@ public:
         expand_pile = "huanyue_pile";
     }
 
-    bool viewFilter(const Card *to_select) const override
+    bool viewFilter(const Card *to_select, const Player *Self) const override
     {
         if (!Self->getPile("huanyue_pile").contains(to_select->getId()))
             return false;
@@ -199,7 +199,7 @@ public:
         return to_select->getType() != name;
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         return originalCard;
     }
@@ -339,7 +339,7 @@ public:
         Room *room = player->getRoom();
         int acquired = 0;
         QList<int> throwIds;
-        const Card *card;
+        const Card *card = nullptr;
         while (acquired < 1) {
             int id = room->drawCard();
             CardsMoveStruct move(id, nullptr, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, player->objectName()));
@@ -575,7 +575,7 @@ public:
         return !player->isNude() && player->getMaxHp() < 4;
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         HunpoCard *card = new HunpoCard;
         card->addSubcard(originalCard);
@@ -691,7 +691,7 @@ public:
         response_pattern = "@@liexi";
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         Slash *s = new Slash(Card::NoSuit, 0);
         s->setSkillName(objectName());
@@ -1153,7 +1153,7 @@ public:
         return !player->getPile("jinengPile").isEmpty();
     }
 
-    bool viewFilter(const QList<const Card *> &, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &, const Card *to_select, const Player *Self) const override
     {
         if (!Self->getPile("jinengPile").contains(to_select->getEffectiveId()))
             return false;
@@ -1190,7 +1190,7 @@ public:
         return false;
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         if (originalCard == nullptr)
             return nullptr;
@@ -1486,7 +1486,7 @@ public:
         attached_lord_skill = attach;
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override
     {
         if (Self->getRoomObject()->getCurrentCardUsePattern() == "@@" + objectName())
             return false;
@@ -1494,7 +1494,7 @@ public:
         return selected.isEmpty() && Self->canDiscard(Self, to_select->getEffectiveId());
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const override
     {
         if (Self->getRoomObject()->getCurrentCardUsePattern() == "@@" + objectName()) {
             QString cardName = Self->property("yaolitrick").toString();

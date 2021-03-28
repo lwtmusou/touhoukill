@@ -67,7 +67,7 @@ public:
         return false;
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new SkltKexueCard;
     }
@@ -495,7 +495,7 @@ public:
         return !player->hasUsed("SuodingCard");
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new SuodingCard;
     }
@@ -692,7 +692,7 @@ public:
         response_or_use = true;
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override
     {
         if (selected.length() == 0)
             return true;
@@ -723,7 +723,7 @@ public:
             && (player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player * /*Self*/) const override
     {
         if (cards.length() != 2)
             return nullptr;
@@ -916,13 +916,14 @@ BeishuiDialog::BeishuiDialog(const QString &object, bool left, bool)
     connect(group, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(selectCard(QAbstractButton *)));
 }
 
-void BeishuiDialog::popup()
+void BeishuiDialog::popup(Player *_Self)
 {
-    Card::HandlingMethod method;
+    Self = _Self;
+
+    Card::HandlingMethod method = Card::MethodUse;
+
     if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         method = Card::MethodResponse;
-    else
-        method = Card::MethodUse;
 
     QStringList checkedPatterns;
     QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
@@ -995,8 +996,7 @@ QGroupBox *BeishuiDialog::createLeft()
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
     QStringList ban_list = Sanguosha->getBanPackages();
     foreach (const Card *card, cards) {
-        if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName())
-            && !ban_list.contains(card->getPackage())) { //!ServerInfo.Extensions.contains("!" + card->getPackage())
+        if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getPackage())) {
             Card *c = Sanguosha->cloneCard(card->objectName());
             c->setParent(this);
             layout->addWidget(createButton(c));
@@ -1102,13 +1102,13 @@ public:
         return !checkedPatterns.isEmpty();
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *, const Player *Self) const override
     {
         int num = qMax(1, Self->getHp());
         return selected.length() < num;
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const override
     {
         int num = qMax(1, Self->getHp());
         if (cards.length() != num)
@@ -1540,7 +1540,7 @@ public:
         limit_mark = "@sishu";
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new SishuCard;
     }
@@ -1650,7 +1650,7 @@ public:
         return !player->hasUsed("BanyueCard");
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new BanyueCard;
     }
@@ -1829,12 +1829,12 @@ public:
         response_or_use = true;
     }
 
-    bool viewFilter(const Card *c) const override
+    bool viewFilter(const Card *c, const Player *Self) const override
     {
-        return !c->isEquipped();
+        return !c->isEquipped(Self);
     }
 
-    const Card *viewAs(const Card *c) const override
+    const Card *viewAs(const Card *c, const Player * /*Self*/) const override
     {
         LureTiger *lure = new LureTiger(Card::SuitToBeDecided, 0);
         lure->addSubcard(c);

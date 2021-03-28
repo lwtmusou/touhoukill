@@ -1,6 +1,7 @@
 #include "SkinBank.h"
 #include "clientstruct.h"
 #include "engine.h"
+#include "math.h"
 #include "protocol.h"
 #include "settings.h"
 #include "uiUtils.h"
@@ -8,6 +9,7 @@
 #include <QCoreApplication>
 #include <QFile>
 #include <QFontDatabase>
+#include <QFontMetrics>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsProxyWidget>
 #include <QLabel>
@@ -16,7 +18,6 @@
 #include <QPropertyAnimation>
 #include <QStyleOptionGraphicsItem>
 #include <QTextItem>
-#include <QFontMetrics>
 
 using namespace std;
 using namespace JsonUtils;
@@ -140,7 +141,7 @@ bool IQSanComponentSkin::QSanSimpleTextFont::tryParse(const QVariant &args)
         m_fontSize.setWidth(size);
         m_fontSize.setHeight(size);
         m_spacing = 0;
-    } else if(JsonUtils::isNumberArray(arg[1], 0, 1)) {
+    } else if (JsonUtils::isNumberArray(arg[1], 0, 1)) {
         JsonArray arg1 = arg[1].value<JsonArray>();
         m_fontSize.setWidth(arg1[0].toInt());
         m_fontSize.setHeight(arg1[1].toInt());
@@ -191,7 +192,8 @@ void IQSanComponentSkin::QSanSimpleTextFont::paintText(QPainter *painter, QRect 
         QSanUiUtils::QSanFreeTypeFont::paintQString(painter, text, m_fontFace, m_color, actualSize, m_spacing, m_weight, pos, m_vertical ? Qt::Vertical : Qt::Horizontal, align);
 
     */
-    if(text.size() == 0) return;
+    if (text.size() == 0)
+        return;
     QFont f;
     f.setWeight(m_weight);
     f.setPixelSize(m_fontSize.width());
@@ -202,18 +204,18 @@ void IQSanComponentSkin::QSanSimpleTextFont::paintText(QPainter *painter, QRect 
     painter->setPen(m_color);
     painter->setBrush(Qt::NoBrush);
 
-    if(m_vertical){
+    if (m_vertical) {
         QRect char_pos = pos;
         //int interval = min(pos.height() / text.size(), m_fontSize.height() + m_spacing);
         int interval = pos.height() / text.size(); // I N T E R V A L
-        for(auto & c: text){
+        for (auto &c : text) {
             painter->drawText(char_pos, align | Qt::TextDontClip, c);
             char_pos.setY(char_pos.y() + interval);
             char_pos.setHeight(interval);
         }
     } else {
         painter->drawText(pos, align | Qt::TextDontClip, text);
-    }    
+    }
 }
 
 void IQSanComponentSkin::QSanSimpleTextFont::paintText(QGraphicsPixmapItem *item, QRect pos, Qt::Alignment align, const QString &text) const
@@ -263,10 +265,9 @@ void IQSanComponentSkin::QSanShadowTextFont::paintText(QGraphicsPixmapItem *pixm
 
 QString QSanRoomSkin::getButtonPixmapPath(const QString &groupName, const QString &buttonName, QSanButton::ButtonState state) const
 {
-    const char *key;
     QString qkey = QString(QSanRoomSkin::S_SKIN_KEY_BUTTON).arg(groupName);
     QByteArray arr = qkey.toLatin1();
-    key = arr.constData();
+    const char *key = arr.constData();
     if (!isImageKeyDefined(key))
         return QString();
     QString path = _m_imageConfig[key].toString();
@@ -780,7 +781,7 @@ QAbstractAnimation *QSanRoomSkin::createHuaShenAnimation(QPixmap &huashenAvatar,
     QPropertyAnimation *animation = new QPropertyAnimation(widget, "opacity");
     animation->setLoopCount(2000);
     JsonArray huashenConfig = _m_animationConfig["huashen"].value<JsonArray>();
-    int duration;
+    int duration = 0;
     if (tryParse(huashenConfig[0], duration) && huashenConfig[1].canConvert<JsonArray>()) {
         animation->setDuration(duration);
         JsonArray keyValues = huashenConfig[1].value<JsonArray>();
@@ -788,8 +789,8 @@ QAbstractAnimation *QSanRoomSkin::createHuaShenAnimation(QPixmap &huashenAvatar,
             QVariant keyValue = keyValues[i];
             if (!keyValue.canConvert<JsonArray>() || keyValue.value<JsonArray>().length() != 2)
                 continue;
-            double step;
-            double val;
+            double step = NAN;
+            double val = NAN;
             JsonArray keyArr = keyValue.value<JsonArray>();
             if (!tryParse(keyArr[0], step) || !tryParse(keyArr[1], val))
                 continue;
@@ -901,7 +902,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
 
     for (int i = 0; i < 2; i++) {
         JsonObject playerConfig;
-        PlayerCardContainerLayout *layout;
+        PlayerCardContainerLayout *layout = nullptr;
         if (i == 0) {
             layout = &_m_photoLayout;
             playerConfig = layoutConfig[S_SKIN_KEY_PHOTO].value<JsonObject>();
@@ -1210,7 +1211,7 @@ void QSanRoomSkin::getHeroSkinContainerGeneralIconPathAndClipRegion(const QStrin
     keys << customSkinKey << customSkinBaseKey << defaultSkinKey << defaultSkinBaseKey;
 
     int key_count = keys.count();
-    int i;
+    int i = 0;
     QString skin_key;
     for (i = 0; i < key_count; ++i) {
         skin_key = keys[i];

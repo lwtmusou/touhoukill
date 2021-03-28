@@ -776,7 +776,7 @@ void Dashboard::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     PlayerCardContainer::mouseReleaseEvent(mouseEvent);
 
     CardItem *to_select = nullptr;
-    int i;
+    int i = 0;
     for (i = 0; i < 5; i++) {
         if (_m_equipRegions[i]->isUnderMouse()) {
             to_select = _m_equipCards[i];
@@ -938,8 +938,8 @@ int Dashboard::getMiddleWidth()
 QList<CardItem *> Dashboard::cloneCardItems(QList<int> card_ids)
 {
     QList<CardItem *> result;
-    CardItem *card_item;
-    CardItem *new_card;
+    CardItem *card_item = nullptr;
+    CardItem *new_card = nullptr;
 
     foreach (int card_id, card_ids) {
         card_item = CardItem::FindItem(m_handCards, card_id);
@@ -957,7 +957,7 @@ QList<CardItem *> Dashboard::cloneCardItems(QList<int> card_ids)
 QList<CardItem *> Dashboard::removeHandCards(const QList<int> &card_ids)
 {
     QList<CardItem *> result;
-    CardItem *card_item;
+    CardItem *card_item = nullptr;
     foreach (int card_id, card_ids) {
         card_item = CardItem::FindItem(m_handCards, card_id);
         if (card_item == selected)
@@ -1243,8 +1243,8 @@ void Dashboard::startPending(const ViewAsSkill *skill)
                 retractPileCards(pile);
         }
         retractSpecialCard();
-        if (skill && !skill->getExpandPile().isEmpty()) {
-            foreach (const QString &pile_name, skill->getExpandPile().split(","))
+        if (skill && !skill->getExpandPile(Self).isEmpty()) {
+            foreach (const QString &pile_name, skill->getExpandPile(Self).split(","))
                 expandPileCards(pile_name);
         }
     }
@@ -1266,8 +1266,8 @@ void Dashboard::stopPending()
         if (view_as_skill->objectName().contains("guhuo")) {
             foreach (CardItem *item, m_handCards)
                 item->hideFootnote();
-        } else if (!view_as_skill->getExpandPile().isEmpty()) {
-            retractPileCards(view_as_skill->getExpandPile());
+        } else if (!view_as_skill->getExpandPile(Self).isEmpty()) {
+            retractPileCards(view_as_skill->getExpandPile(Self));
         }
     }
 
@@ -1312,7 +1312,8 @@ void Dashboard::expandPileCards(const QString &pile_name)
         foreach (const Player *p, Self->getAliveSiblings())
             pile += p->getPile(new_name);
     } else if (pile_name == "#xiuye_temp") {
-        foreach (const Card *c, ClientInstance->discarded_list) {
+        foreach (int id, ClientInstance->getDiscardPile()) {
+            const Card *c = ClientInstance->getCard(id);
             if (c->getSuit() == Card::Club && (c->isNDTrick() || c->getTypeId() == Card::TypeBasic))
                 pile << c->getEffectiveId();
         }
@@ -1403,7 +1404,7 @@ void Dashboard::retractPileCards(const QString &pile_name)
 
     if (pile.isEmpty())
         return;
-    CardItem *card_item;
+    CardItem *card_item = nullptr;
 
     foreach (int card_id, pile) {
         card_item = CardItem::FindItem(m_handCards, card_id);
@@ -1423,7 +1424,7 @@ void Dashboard::retractPileCards(const QString &pile_name)
 
 void Dashboard::retractSpecialCard()
 {
-    CardItem *card_item;
+    CardItem *card_item = nullptr;
     foreach (int card_id, _m_id_expanded) {
         card_item = CardItem::FindItem(m_handCards, card_id);
         if (card_item == selected)
@@ -1516,7 +1517,7 @@ void Dashboard::updatePending()
         pended = cards;
     foreach (CardItem *item, m_handCards) {
         if (!item->isSelected() || pendings.isEmpty())
-            item->setEnabled(view_as_skill->viewFilter(pended, item->getCard()));
+            item->setEnabled(view_as_skill->viewFilter(pended, item->getCard(), Self));
         if (!item->isEnabled())
             animations->effectOut(item);
     }
@@ -1524,7 +1525,7 @@ void Dashboard::updatePending()
     for (int i = 0; i < 5; i++) {
         CardItem *equip = _m_equipCards[i];
         if (equip && !equip->isMarked())
-            equip->setMarkable(view_as_skill->viewFilter(pended, equip->getCard()));
+            equip->setMarkable(view_as_skill->viewFilter(pended, equip->getCard(), Self));
         if (equip) {
             if (!equip->isMarkable() && (!_m_equipSkillBtns[i] || !_m_equipSkillBtns[i]->isEnabled()))
                 _m_equipRegions[i]->setOpacity(0.7);
@@ -1533,7 +1534,7 @@ void Dashboard::updatePending()
         }
     }
 
-    const Card *new_pending_card = view_as_skill->viewAs(cards);
+    const Card *new_pending_card = view_as_skill->viewAs(cards, Self);
     if (pending_card != new_pending_card) {
         if (pending_card && !pending_card->parent() && pending_card->isVirtualCard()) {
             delete pending_card;
@@ -1696,13 +1697,6 @@ void Dashboard::onAnimationFinished()
     GenericCardContainer::onAnimationFinished();
 }
 
-/*void Dashboard::onCardItemContextMenu()
-{
-if (NULL != _m_carditem_context_menu) {
-_m_carditem_context_menu->popup(QCursor::pos());
-}
-}*/
-
 void Dashboard::_initializeRemovedEffect()
 {
     _removedEffect = new QPropertyAnimation(this, "opacity", this);
@@ -1722,41 +1716,8 @@ void Dashboard::showSeat()
     }
     _paintPixmap(_m_seatItem, region, _getPixmap(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER, QString::number(m_player->getSeat())), _m_rightFrame);
     //save the seat number for later use
-    //m_player->setProperty("UI_Seat", m_player->getSeat()); //use InitalSeat instead
     _m_seatItem->setZValue(1.1);
 }
-
-//only for hegemony??
-/*void Dashboard::_createRoleComboBox()
-{
-    _m_roleComboBox = new RoleComboBox(rightFrame, true);
-}*/
-
-// for battle arry
-/*void Dashboard::repaintAll()
-{
-    PlayerCardContainer::repaintAll();
-    if (NULL != m_changeHeadHeroSkinButton) {
-        m_changeHeadHeroSkinButton->setPos(layout->m_changeHeadHeroSkinButtonPos);
-    }
-    if (NULL != m_changeDeputyHeroSkinButton) {
-        m_changeDeputyHeroSkinButton->setPos(layout->m_changeDeputyHeroSkinButtonPos);
-    }
-
-    QStringList kingdoms = Sanguosha->getKingdoms();
-    kingdoms.removeAll("god");
-    foreach(const QString &kingdom, kingdoms) {
-        _m_frameBorders[kingdom]->setSize(QSize(_dlayout->m_avatarArea.width() * 2 * 1.1, _dlayout->m_normalHeight * 1.2));
-        _m_frameBorders[kingdom]->setPos(-_dlayout->m_avatarArea.width() * 0.1, -_dlayout->m_normalHeight * 0.1);
-        double scale = G_ROOM_LAYOUT.scale;
-        QPixmap pix;
-        pix.load("image/system/roles/careerist.png");
-        int w = pix.width() * scale;
-        int h = pix.height() * scale;
-        _m_roleBorders[kingdom]->setPos(G_DASHBOARD_LAYOUT.m_roleComboBoxPos
-            - QPoint((_m_roleBorders[kingdom]->boundingRect().width() - w) / 2, (_m_roleBorders[kingdom]->boundingRect().height() - h) / 2));
-    }
-}*/
 
 void Dashboard::updateHiddenMark()
 {

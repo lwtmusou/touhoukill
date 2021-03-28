@@ -17,7 +17,7 @@ QList<int> StringList2IntList(const QStringList &stringlist)
     QList<int> intlist;
     for (int i = 0; i < stringlist.size(); i++) {
         QString n = stringlist.at(i);
-        bool ok;
+        bool ok = false;
         intlist.append(n.toInt(&ok));
         if (!ok)
             return QList<int>();
@@ -38,7 +38,7 @@ QList<int> VariantList2IntList(const QVariantList &variantlist)
     QList<int> intlist;
     for (int i = 0; i < variantlist.size(); i++) {
         QVariant n = variantlist.at(i);
-        bool ok;
+        bool ok = false;
         intlist.append(n.toInt(&ok));
         if (!ok)
             return QList<int>();

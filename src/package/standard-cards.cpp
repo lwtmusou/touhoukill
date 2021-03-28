@@ -513,7 +513,7 @@ public:
         filter_pattern = ".|.|.|hand!";
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         TribladeCard *c = new TribladeCard;
         c->addSubcard(originalCard);
@@ -780,12 +780,12 @@ public:
         //EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override
     {
-        return selected.length() < 2 && !to_select->isEquipped();
+        return selected.length() < 2 && !to_select->isEquipped(Self);
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const override
     {
         if (cards.length() != 2)
             return nullptr;
@@ -816,14 +816,14 @@ public:
         response_pattern = "@Axe";
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override
     {
         if (Self->hasWeapon(objectName(), true) && to_select == Self->getWeapon()) //check if cannot throw selfweapon
             return false;
         return selected.length() < 2 && !Self->isJilei(to_select);
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player * /*Self*/) const override
     {
         if (cards.length() != 2)
             return nullptr;
@@ -1908,7 +1908,7 @@ public:
         return !player->hasUsed("WoodenOxCard") && player->hasTreasure(objectName());
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         WoodenOxCard *card = new WoodenOxCard;
         card->addSubcard(originalCard);

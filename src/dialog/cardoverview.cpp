@@ -3,6 +3,7 @@
 #include "client.h"
 #include "clientstruct.h"
 #include "engine.h"
+#include "roomscene.h"
 #include "settings.h"
 #include "ui_cardoverview.h"
 

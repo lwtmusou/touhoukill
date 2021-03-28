@@ -99,13 +99,14 @@ public:
     static QStringList getAvailableNullificationChoices(const ServerPlayer *player);
 
 public slots:
-    void popup();
+    void popup(Player *Self);
     void selectSkill(QAbstractButton *button);
 
 private:
     explicit ShenbaoDialog(const QString &object);
 
     QButtonGroup *group;
+    Player *Self;
 
     static const QStringList equipViewAsSkills;
 
@@ -171,7 +172,7 @@ public:
     static AnyunDialog *getInstance(const QString &object);
 
 public slots:
-    void popup();
+    void popup(Player *Self);
     void selectSkill(QAbstractButton *button);
 
 private:
@@ -179,6 +180,7 @@ private:
 
     QVBoxLayout *layout;
     QButtonGroup *group;
+    Player *Self;
 
     QString object_name;
 
@@ -194,7 +196,7 @@ public:
     static XianshiDialog *getInstance(const QString &object, bool left = true, bool right = true);
 
 public slots:
-    void popup();
+    void popup(Player *Self);
     void selectCard(QAbstractButton *button);
 
 private:
@@ -205,6 +207,7 @@ private:
     QAbstractButton *createButton(const Card *card);
     QButtonGroup *group;
     QHash<QString, const Card *> map;
+    Player *Self;
 
     QString object_name;
 

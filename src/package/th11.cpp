@@ -182,7 +182,7 @@ public:
         return !player->hasUsed("MaihuoCard");
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         MaihuoCard *card = new MaihuoCard;
         card->addSubcard(originalCard);
@@ -272,7 +272,7 @@ public:
         response_pattern = "@@yaoban";
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         YaobanCard *card = new YaobanCard;
         card->addSubcard(originalCard);
@@ -452,7 +452,7 @@ public:
         return pattern.contains("peach");
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         SongzangCard *card = new SongzangCard;
         card->addSubcard(originalCard);
@@ -538,7 +538,7 @@ public:
         return player->hasFlag("jiuhao") && !player->hasFlag("jiuhaoused");
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         JiuhaoCard *slash = new JiuhaoCard;
         return slash;
@@ -1019,7 +1019,7 @@ public:
         return matchAvaliablePattern("savage_assault", pattern);
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         SavageAssault *sa = new SavageAssault(Card::SuitToBeDecided, -1);
         sa->addSubcard(originalCard);
@@ -1048,7 +1048,7 @@ public:
         return matchAvaliablePattern("analeptic", pattern) && Self->getRoomObject()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_RESPONSE;
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         Analeptic *ana = new Analeptic(originalCard->getSuit(), originalCard->getNumber());
         ana->addSubcard(originalCard);

@@ -1,4 +1,5 @@
 #include "playground.h"
+#include "client.h"
 #include "clientplayer.h"
 #include "engine.h"
 #include "general.h"
@@ -179,8 +180,10 @@ bool Fsu0413GainianDialog::isResponseOk(const Player *player, const QString &pat
     return false;
 }
 
-void Fsu0413GainianDialog::popup()
+void Fsu0413GainianDialog::popup(Player *_Self)
 {
+    Self = _Self;
+
     Self->tag.remove("fsu0413gainian");
     QStringList availableCards;
 
@@ -360,7 +363,7 @@ public:
         return false;
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player *Self) const override
     {
         if (!Self->tag.contains("fsu0413gainian") || Self->tag["fsu0413gainian"].toString().length() == 0)
             return nullptr;
@@ -504,12 +507,12 @@ public:
         limit_mark = "@fat";
     }
 
-    bool viewFilter(const QList<const Card *> &, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &, const Card *to_select, const Player *Self) const override
     {
-        return !to_select->isEquipped();
+        return !to_select->isEquipped(Self);
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const override
     {
         if (cards.length() == Self->getHandcardNum()) {
             Fsu0413Fei2ZhaiCard *fat = new Fsu0413Fei2ZhaiCard;
@@ -663,12 +666,12 @@ public:
     {
     }
 
-    bool viewFilter(const Card *c) const override
+    bool viewFilter(const Card *c, const Player *Self) const override
     {
         return Self->canDiscard(Self, c->getId());
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         Fsu0413JbdNashaCard *c = new Fsu0413JbdNashaCard;
         c->addSubcard(originalCard);

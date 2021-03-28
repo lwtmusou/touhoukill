@@ -824,7 +824,6 @@ QStringList Engine::getRandomLords() const
 
     qShuffle(nonlord_list);
 
-    int i;
     int addcount = 0;
     int extra = Config.value("NonLordMaxChoice", 6).toInt();
 
@@ -843,7 +842,7 @@ QStringList Engine::getRandomLords() const
         extra--;
     }
 
-    for (i = 0; addcount < extra; i++) {
+    for (int i = 0; addcount < extra; i++) {
         if (getGeneral(nonlord_list.at(i))->getKingdom() != "touhougod") {
             lords << nonlord_list.at(i);
             addcount++;
@@ -1084,11 +1083,10 @@ const Skill *Engine::getSkill(const QString &skill_name) const
 
 const Skill *Engine::getSkill(const EquipCard *equip) const
 {
-    const Skill *skill;
-    if (equip == nullptr)
-        skill = nullptr;
-    else
-        skill = /*Sanguosha->*/ getSkill(equip->objectName());
+    const Skill *skill = nullptr;
+
+    if (equip != nullptr)
+        skill = getSkill(equip->objectName());
 
     return skill;
 }

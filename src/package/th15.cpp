@@ -1052,7 +1052,7 @@ public:
         return true;
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player *Self) const override
     {
         if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
             YuejianCard *c = new YuejianCard;
@@ -1130,7 +1130,7 @@ public:
         return player->getPile("dango").length() > 0 && matchAvaliablePattern("magic_analeptic", pattern);
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         MagicAnaleptic *ana = new MagicAnaleptic(Card::SuitToBeDecided, -1);
         ana->addSubcard(originalCard);
@@ -1167,8 +1167,10 @@ YidanDialog::YidanDialog(const QString &object)
     connect(group, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(selectCard(QAbstractButton *)));
 }
 
-void YidanDialog::popup()
+void YidanDialog::popup(Player *_Self)
 {
+    Self = _Self;
+
     if (Self->getRoomObject()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY) {
         emit onButtonClick();
         return;
@@ -1253,7 +1255,7 @@ public:
         return !player->hasFlag("yidan_iron_slash") || !player->hasFlag("yidan_light_slash");
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player *Self) const override
     {
         QString name = Self->tag.value("yidan", QString()).toString();
         if (name != nullptr) {

@@ -38,7 +38,7 @@ public:
         return !player->hasUsed("PuduCard");
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new PuduCard;
     }
@@ -187,12 +187,12 @@ public:
         return !player->hasUsed("WeizhiCard") && !player->isNude();
     }
 
-    bool viewFilter(const QList<const Card *> &, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &, const Card *to_select, const Player *Self) const override
     {
         return !to_select->isKindOf("TrickCard") && !Self->isJilei(to_select);
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player * /*Self*/) const override
     {
         if (cards.length() > 0) {
             WeizhiCard *card = new WeizhiCard;
@@ -266,7 +266,7 @@ public:
         response_or_use = true;
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         Card *ncard = new Nullification(originalCard->getSuit(), originalCard->getNumber());
         ncard->addSubcard(originalCard);
@@ -601,7 +601,7 @@ public:
         return !player->hasUsed("NihuoCard");
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new NihuoCard;
     }
@@ -827,7 +827,8 @@ public:
     {
         if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (move.from != nullptr && move.from->getPhase() == Player::Discard && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD))
+            if (move.from != nullptr && move.from->getPhase() == Player::Discard
+                && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD))
                 move.from->addMark("tansuo", move.card_ids.length());
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -959,12 +960,12 @@ public:
         return false;
     }
 
-    bool viewFilter(const QList<const Card *> &, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &, const Card *to_select, const Player *Self) const override
     {
-        return !to_select->isEquipped();
+        return !to_select->isEquipped(Self);
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player *Self) const override
     {
         bool play = (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
         QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
@@ -1273,7 +1274,7 @@ public:
         return false;
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new NuhuoCard;
     }
@@ -1407,7 +1408,7 @@ public:
     {
     }
 
-    bool viewFilter(const QList<const Card *> &, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &, const Card *to_select, const Player *Self) const override
     {
         return !Self->isJilei(to_select) && to_select->isBlack();
     }
@@ -1417,7 +1418,7 @@ public:
         return pattern.startsWith("@@shuxinVS");
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player * /*Self*/) const override
     {
         if (cards.length() > 0) {
             DummyCard *dc = new DummyCard;
@@ -1436,7 +1437,7 @@ public:
     {
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new ShuxinCard;
     }
@@ -1497,7 +1498,7 @@ public:
         response_pattern = "@@huisheng";
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new HuishengCard;
     }

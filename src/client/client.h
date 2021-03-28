@@ -88,6 +88,11 @@ public:
     QTextDocument *getLinesDoc() const;
     QTextDocument *getPromptDoc() const;
 
+    ClientPlayer *getSelf() const;
+
+    QList<int> &getDiscardPile() override;
+    const QList<int> &getDiscardPile() const override;
+
     typedef void (Client::*Callback)(const QVariant &);
 
     void checkVersion(const QVariant &server_version);
@@ -216,7 +221,6 @@ public:
     QString highlight_skill_name; //for highlighting skill button when client is asked to use skill
     QString lord_name;
 
-    QList<const Card *> discarded_list;
     QStringList players_to_choose;
 
 public slots:
@@ -259,9 +263,11 @@ private:
     int pile_num;
     QString skill_to_invoke;
     QList<int> available_cards;
+    QList<int> discarded_list;
 
     unsigned int _m_lastServerSerial;
     bool m_isObjectNameRecorded;
+    ClientPlayer *Self;
 
     void updatePileNum();
     QString setPromptList(const QStringList &text);
@@ -362,7 +368,5 @@ signals:
     void head_preshowed();
     void deputy_preshowed(); //hegemony
 };
-
-extern Client *ClientInstance;
 
 #endif

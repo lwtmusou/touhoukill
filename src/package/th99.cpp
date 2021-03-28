@@ -29,7 +29,7 @@ public:
         return !player->hasUsed("QiuwenCard");
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new QiuwenCard;
     }
@@ -124,7 +124,7 @@ public:
         return Self && Self->getKingdom() == "wai";
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new DangjiaCard;
     }
@@ -344,12 +344,12 @@ public:
         expand_pile = "#xiufu_temp";
     }
 
-    bool viewFilter(const Card *to_select) const override
+    bool viewFilter(const Card *to_select, const Player *Self) const override
     {
         return Self->getPile("#xiufu_temp").contains(to_select->getId());
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         XiufuMoveCard *move = new XiufuMoveCard;
         move->addSubcard(originalCard);
@@ -370,7 +370,7 @@ public:
         return (!player->hasFlag("Global_xiufuFailed") && !player->hasFlag("xiufu_used")) || player->getMark("@xiufudebug") > 0;
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new XiufuCard;
     }
@@ -658,7 +658,7 @@ public:
         expand_pile = "jingjie";
     }
 
-    bool viewFilter(const Card *to_select) const override
+    bool viewFilter(const Card *to_select, const Player *Self) const override
     {
         if (!Self->getPile("jingjie").contains(to_select->getId()))
             return false;
@@ -670,7 +670,7 @@ public:
             return to_select->isRed();
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         return originalCard;
     }
@@ -791,6 +791,7 @@ LianxiCard::LianxiCard()
     m_skillName = "lianxi";
     can_recast = true;
 }
+
 bool LianxiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     IronChain *card = new IronChain(Card::NoSuit, 0);
@@ -799,7 +800,8 @@ bool LianxiCard::targetFilter(const QList<const Player *> &targets, const Player
     int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, card);
     return targets.length() < total_num && !Self->isProhibited(to_select, card) && !Self->isCardLimited(card, Card::MethodUse);
 }
-bool LianxiCard::targetsFeasible(const QList<const Player *> &targets, const Player *) const
+
+bool LianxiCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
     IronChain *card = new IronChain(Card::NoSuit, 0);
     card->setSkillName("lianxi");
@@ -807,6 +809,7 @@ bool LianxiCard::targetsFeasible(const QList<const Player *> &targets, const Pla
     int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, card);
     return targets.length() <= total_num;
 }
+
 const Card *LianxiCard::validate(CardUseStruct &card_use) const
 {
     card_use.from->showHiddenSkill("lianxi");
@@ -824,7 +827,7 @@ public:
         response_pattern = "@@lianxi";
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new LianxiCard;
     }
@@ -1113,7 +1116,7 @@ public:
         response_pattern = "@@zheshe";
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         ZhesheCard *card = new ZhesheCard;
         card->addSubcard(originalCard);
@@ -1254,89 +1257,11 @@ public:
         return !player->hasUsed("ZhuonongCard");
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new ZhuonongCard;
     }
 };
-
-/*
-JijingCard::JijingCard()
-{
-}
-
-bool JijingCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
-{
-    if (targets.length() >= qMax(1, Self->getLostHp()))
-        return false;
-
-    if (to_select->getPhase() != Player::NotActive)
-        return false;
-
-    QString include = Self->property("jijingInclude").toString();
-    if (!include.isEmpty()) {
-        bool flag = false;
-        foreach (const Player *p, targets) {
-            if (p->objectName() == include) {
-                flag = true;
-                break;
-            }
-        }
-        if (!flag)
-            return to_select->objectName() == include;
-    }
-
-    return true;
-}
-
-bool JijingCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
-{
-    if (targets.length() > qMax(1, Self->getLostHp()))
-        return false;
-
-    QString exclude = Self->property("jijingInclude").toString();
-    bool flag = false;
-    if (!exclude.isEmpty()) {
-        foreach (const Player *t, targets) {
-            if (t->objectName() == exclude) {
-                flag = true;
-                break;
-            }
-        }
-    } else
-        flag = true;
-
-    return flag;
-}
-
-void JijingCard::onUse(Room *room, const CardUseStruct &card_use) const
-{
-    LogMessage log;
-    log.from = card_use.from;
-    if (!card_use.card->targetFixed(card_use.from) || card_use.to.length() > 1 || !card_use.to.contains(card_use.from))
-        log.to = card_use.to;
-    log.type = "#UseCard";
-    log.card_str = card_use.card->toString();
-    room->sendLog(log);
-
-    foreach (ServerPlayer *p, card_use.to)
-        p->setFlags("jijingSelected");
-}
-
-class JijingVS : public ZeroCardViewAsSkill
-{
-public:
-    JijingVS()
-        : ZeroCardViewAsSkill("jijing")
-    {
-        response_pattern = "@@jijing";
-    }
-
-    const Card *viewAs() const
-    {
-        return new JijingCard;
-    }
-};*/
 
 class Jijing : public TriggerSkill
 {
@@ -1627,7 +1552,7 @@ public:
         return !player->hasUsed("YushouCard");
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new YushouCard;
     }
@@ -1671,7 +1596,7 @@ public:
         return !player->hasUsed("PanduCard");
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new PanduCard;
     }

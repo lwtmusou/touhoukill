@@ -353,14 +353,14 @@ public:
         response_or_use = true;
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player * /*Self*/) const override
     {
         if (selected.length() == 0 && to_select->getTypeId() == Card::TypeBasic)
             return true;
         return false;
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         if (originalCard != nullptr) {
             Slash *slash = new Slash(Card::SuitToBeDecided, -1);
@@ -492,7 +492,7 @@ public:
         return EquipSkill::equipAvailable(player, EquipCard::TreasureLocation, objectName()) && !player->hasFlag("JadeSeal_used");
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         KnownBoth *card = new KnownBoth(Card::SuitToBeDecided, -1);
         card->setSkillName(objectName());
@@ -561,7 +561,7 @@ public:
         return pattern == response_pattern;
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         Card *ncard = new Nullification(originalCard->getSuit(), originalCard->getNumber());
         ncard->addSubcard(originalCard);

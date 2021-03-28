@@ -45,7 +45,7 @@ public:
     static YidanDialog *getInstance(const QString &object);
 
 public slots:
-    void popup();
+    void popup(Player *_Self);
     void selectCard(QAbstractButton *button);
 
 private:
@@ -53,7 +53,7 @@ private:
 
     QVBoxLayout *layout;
     QButtonGroup *group;
-    //QHash<QString, const Card *> map;
+    Player *Self;
 
     QString object_name;
 

@@ -94,7 +94,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
         bool isInt = false;
         if (number.contains('~')) {
             QStringList params = number.split('~');
-            int from, to;
+            int from = 0, to = 0;
             if (!params.at(0).size())
                 from = 1;
             else

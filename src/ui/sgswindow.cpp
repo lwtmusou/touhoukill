@@ -14,7 +14,7 @@ Window::Window(const QString &title, const QSizeF &size, const QString &path)
 {
     setFlags(ItemIsMovable);
 
-    QPixmap *bg;
+    QPixmap *bg = nullptr;
     if (!path.isEmpty())
         bg = new QPixmap(path);
     else

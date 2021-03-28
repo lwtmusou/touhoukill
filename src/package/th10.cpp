@@ -37,14 +37,14 @@ public:
         return false;
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override
     {
         if (selected.length() >= 2)
             return false;
         return Self->getPile("shende").contains(to_select->getEffectiveId());
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player * /*Self*/) const override
     {
         if (cards.length() != 2)
             return nullptr;
@@ -162,7 +162,7 @@ public:
         return Self && Self->getKingdom() == "fsl";
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         GongfengCard *card = new GongfengCard;
         card->addSubcard(originalCard);
@@ -399,13 +399,13 @@ QijiDialog::QijiDialog(const QString &object, bool left, bool right)
     connect(group, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(selectCard(QAbstractButton *)));
 }
 
-void QijiDialog::popup()
+void QijiDialog::popup(Player *_Self)
 {
-    Card::HandlingMethod method;
+    Self = _Self;
+
+    Card::HandlingMethod method = Card::MethodUse;
     if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         method = Card::MethodResponse;
-    else
-        method = Card::MethodUse;
 
     QStringList checkedPatterns;
     QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
@@ -601,11 +601,10 @@ public:
     static QStringList responsePatterns(const Player *Self)
     {
         QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
-        Card::HandlingMethod method;
+        Card::HandlingMethod method = Card::MethodUse;
+
         if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
             method = Card::MethodResponse;
-        else
-            method = Card::MethodUse;
 
         QStringList checkedPatterns;
         const Skill *skill = Sanguosha->getSkill("qiji");
@@ -655,7 +654,7 @@ public:
         return player->getHandcardNum() == 1;
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player *Self) const override
     {
         QStringList checkedPatterns = responsePatterns(Self);
         if (checkedPatterns.length() == 1) {
@@ -780,7 +779,7 @@ public:
         return !player->hasUsed("FengshenCard") && !player->isKongcheng();
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         if (originalCard != nullptr) {
             FengshenCard *card = new FengshenCard;
@@ -862,8 +861,8 @@ void XinshangCard::onEffect(const CardEffectStruct &effect) const
     Room *room = effect.to->getRoom();
     effect.to->drawCards(1);
 
-    const Card *card
-        = room->askForCard(effect.to, ".S", "@xinshang-spadecard:" + effect.from->objectName(), QVariant::fromValue(effect.from), Card::MethodNone, nullptr, false, "xinshang", false);
+    const Card *card = room->askForCard(effect.to, ".S", "@xinshang-spadecard:" + effect.from->objectName(), QVariant::fromValue(effect.from), Card::MethodNone, nullptr, false,
+                                        "xinshang", false);
     if (card != nullptr) {
         room->obtainCard(effect.from, card);
         room->setPlayerFlag(effect.from, "xinshang_effect");
@@ -889,7 +888,7 @@ public:
         return !player->hasUsed("XinshangCard");
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new XinshangCard;
     }
@@ -1459,7 +1458,7 @@ public:
         return !player->hasUsed("FengrangCard") && card->isAvailable(player);
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new FengrangCard;
     }
@@ -1537,7 +1536,7 @@ public:
         return !player->hasUsed("JiliaoCard");
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new JiliaoCard;
     }
@@ -1618,7 +1617,7 @@ public:
         return !player->hasUsed("BujuCard");
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new BujuCard;
     }

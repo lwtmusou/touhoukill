@@ -52,7 +52,8 @@ static void qt_graphicsItem_highlightSelected(QGraphicsItem *item, QPainter *pai
     if (qMin(mbrect.width(), mbrect.height()) < qreal(1.0))
         return;
 
-    qreal itemPenWidth;
+    qreal itemPenWidth = 1.0;
+
     switch (item->type()) {
     case QGraphicsEllipseItem::Type:
         itemPenWidth = static_cast<QGraphicsEllipseItem *>(item)->pen().widthF();
@@ -73,7 +74,7 @@ static void qt_graphicsItem_highlightSelected(QGraphicsItem *item, QPainter *pai
         itemPenWidth = static_cast<QGraphicsLineItem *>(item)->pen().widthF();
         break;
     default:
-        itemPenWidth = 1.0;
+        break;
     }
     const qreal pad = itemPenWidth / 2;
 

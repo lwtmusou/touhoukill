@@ -15,6 +15,7 @@
 #include "generaloverview.h"
 #include "indicatoritem.h"
 #include "lightboxanimation.h"
+#include "math.h"
 #include "pixmapanimation.h"
 #include "playercardbox.h"
 #include "qsanbutton.h"
@@ -58,10 +59,11 @@ void RoomScene::resetPiles()
     // @todo: fix this...
 }
 
-RoomScene::RoomScene(QMainWindow *main_window)
+RoomScene::RoomScene(QMainWindow *main_window, Client *client)
     : m_skillButtonSank(false)
     , game_started(false)
     , main_window(main_window)
+    , client(client)
 {
     m_choiceDialog = nullptr;
     RoomSceneInstance = this;
@@ -852,7 +854,7 @@ void ReplayerControlBar::paint(QPainter *, const QStyleOptionGraphicsItem *, QWi
 
 ReplayerControlBar::ReplayerControlBar(Dashboard *dashboard)
 {
-    QSanButton *play, *uniform, *slow_down, *speed_up;
+    QSanButton *play = nullptr, *uniform = nullptr, *slow_down = nullptr, *speed_up = nullptr;
 
     uniform = new QSanButton("replay", "uniform", this);
     slow_down = new QSanButton("replay", "slow-down", this);
@@ -1080,7 +1082,7 @@ void RoomScene::_dispersePhotos(QList<Photo *> &photos, QRectF fillRegion, Qt::O
     Qt::Alignment hAlign = align & Qt::AlignHorizontal_Mask;
     Qt::Alignment vAlign = align & Qt::AlignVertical_Mask;
 
-    double startX = 0, startY = 0, stepX, stepY;
+    double startX = 0, startY = 0, stepX = NAN, stepY = NAN;
 
     if (orientation == Qt::Horizontal) {
         double maxWidth = fillRegion.width();
@@ -1206,7 +1208,7 @@ void RoomScene::updateTable()
     pausing_item->setRect(sceneRect());
     pausing_item->setPos(0, 0);
 
-    int *seatToRegion;
+    int *seatToRegion = regularSeatIndex[photos.length() - 1];
     bool pkMode = false;
     if (ServerInfo.GameMode == "04_1v3" && game_started) {
         seatToRegion = hulaoSeatIndex[Self->getSeat() - 1];
@@ -1214,8 +1216,6 @@ void RoomScene::updateTable()
     } else if (ServerInfo.GameMode == "06_3v3" && game_started) {
         seatToRegion = kof3v3SeatIndex[(Self->getSeat() - 1) % 3];
         pkMode = true;
-    } else {
-        seatToRegion = regularSeatIndex[photos.length() - 1];
     }
     QList<Photo *> photosInRegion[C_NUM_REGIONS];
     // TODO: out of bounds when regionIndex == 9
@@ -1836,7 +1836,7 @@ void RoomScene::chooseGeneral(const QStringList &generals, const bool single_res
     if (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral && !Self->hasFlag("Pingyi_Choose") && !generals.isEmpty()) {
         m_chooseGeneralBox->chooseGeneral(generals, false, single_result, QString(), nullptr, can_convert);
     } else {
-        QDialog *dialog;
+        QDialog *dialog = nullptr;
         if (generals.isEmpty())
             dialog = new FreeChooseDialog(main_window);
         else {
@@ -2107,8 +2107,8 @@ void RoomScene::toggleDiscards()
     CardOverview *overview = new CardOverview;
     overview->setWindowTitle(tr("Discarded pile"));
     QList<const Card *> cards;
-    foreach (const Card *card, ClientInstance->discarded_list)
-        cards << Sanguosha->getEngineCard(card->getId());
+    foreach (int id, ClientInstance->getDiscardPile())
+        cards << ClientInstance->getCard(id);
     overview->loadFromList(cards);
     overview->show();
 }
@@ -2492,7 +2492,8 @@ void RoomScene::addSkillButton(const Skill *skill, bool head)
     QDialog *dialog = skill->getDialog();
     if (dialog && !m_replayControl) {
         dialog->setParent(main_window, Qt::Dialog);
-        connect(btn, SIGNAL(skill_activated()), dialog, SLOT(popup()));
+        connect(btn, (void (QSanSkillButton::*)())(&QSanSkillButton::skill_activated),
+                [dialog]() -> void { QMetaObject::invokeMethod(dialog, "popup", Qt::DirectConnection, Q_ARG(Player *, Self)); });
         connect(btn, SIGNAL(skill_deactivated()), dialog, SLOT(reject()));
         disconnect(btn, SIGNAL(skill_activated()), this, SLOT(onSkillActivated()));
         connect(dialog, SIGNAL(onButtonClick()), this, SLOT(onSkillActivated()));
@@ -3137,7 +3138,7 @@ void RoomScene::onSkillActivated()
                 }
 
                 foreach (const Card *c, cards) {
-                    if (skill->viewFilter(QList<const Card *>(), c))
+                    if (skill->viewFilter(QList<const Card *>(), c, Self))
                         return;
                 }
                 instance_use = true;
@@ -3743,7 +3744,7 @@ void RoomScene::makeReviving()
         return;
     }
 
-    bool ok;
+    bool ok = false;
     QString item = QInputDialog::getItem(main_window, tr("Reviving wand"), tr("Please select a player to revive"), items, 0, false, &ok);
     if (ok) {
         int index = items.indexOf(item);
@@ -4655,8 +4656,7 @@ void RoomScene::surrender()
         return;
     }
 
-    QMessageBox::StandardButton button;
-    button = QMessageBox::question(main_window, tr("Surrender"), tr("Are you sure to surrender ?"));
+    QMessageBox::StandardButton button = QMessageBox::question(main_window, tr("Surrender"), tr("Are you sure to surrender ?"));
     if (button == QMessageBox::Ok || button == QMessageBox::Yes)
         ClientInstance->requestSurrender();
 }
@@ -4687,7 +4687,7 @@ void RoomScene::fillGenerals1v1(const QStringList &names)
     int n = names.length();
     double scaleRatio = 116.0 / G_COMMON_LAYOUT.m_cardNormalHeight;
     for (int i = 0; i < n; i++) {
-        int row, column;
+        int row = 0, column = 0;
         if (i < len) {
             row = 1;
             column = i;
@@ -4727,7 +4727,7 @@ void RoomScene::fillGenerals3v3(const QStringList &names)
     int n = names.length();
     double scaleRatio = 116.0 / G_COMMON_LAYOUT.m_cardNormalHeight;
     for (int i = 0; i < n; i++) {
-        int row, column;
+        int row = 0, column = 0;
         if (i < 8) {
             row = 1;
             column = i;
@@ -4776,11 +4776,10 @@ void RoomScene::bringToFront(QGraphicsItem *front_item)
 
 void RoomScene::takeGeneral(const QString &who, const QString &name, const QString &rule)
 {
-    bool self_taken;
+    bool self_taken = Self->getRole().startsWith("r");
     if (who == "warm")
         self_taken = Self->getRole().startsWith("l");
-    else
-        self_taken = Self->getRole().startsWith("r");
+
     QList<CardItem *> *to_add = self_taken ? &down_generals : &up_generals;
 
     CardItem *general_item = nullptr;
@@ -4797,7 +4796,7 @@ void RoomScene::takeGeneral(const QString &who, const QString &name, const QStri
     general_items.removeOne(general_item);
     to_add->append(general_item);
 
-    int x, y;
+    int x = 0, y = 0;
     if (ServerInfo.GameMode == "06_3v3") {
         x = 63 + (to_add->length() - 1) * (148 - 62);
         y = self_taken ? 452 : 85;
@@ -5215,6 +5214,11 @@ void RoomScene::addHeroSkinContainer(ClientPlayer *player, HeroSkinContainer *he
 QSet<HeroSkinContainer *> RoomScene::getHeroSkinContainers()
 {
     return m_heroSkinContainers;
+}
+
+Client *RoomScene::getClient() const
+{
+    return client;
 }
 
 void RoomScene::doSkinChange(const QString &generalName, int skinIndex)

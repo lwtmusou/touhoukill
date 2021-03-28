@@ -301,7 +301,7 @@ const ViewAsSkill *ViewAsSkill::parseViewAsSkill(const Skill *skill)
     return nullptr;
 }
 
-QString ViewAsSkill::getExpandPile() const
+QString ViewAsSkill::getExpandPile(const Player * /*Self*/) const
 {
     return expand_pile;
 }
@@ -311,15 +311,15 @@ ZeroCardViewAsSkill::ZeroCardViewAsSkill(const QString &name)
 {
 }
 
-const Card *ZeroCardViewAsSkill::viewAs(const QList<const Card *> &cards) const
+const Card *ZeroCardViewAsSkill::viewAs(const QList<const Card *> &cards, const Player *Self) const
 {
     if (cards.isEmpty())
-        return viewAs();
+        return viewAs(Self);
     else
         return nullptr;
 }
 
-bool ZeroCardViewAsSkill::viewFilter(const QList<const Card *> &, const Card *) const
+bool ZeroCardViewAsSkill::viewFilter(const QList<const Card *> &, const Card *, const Player * /*Self*/) const
 {
     return false;
 }
@@ -330,12 +330,12 @@ OneCardViewAsSkill::OneCardViewAsSkill(const QString &name)
 {
 }
 
-bool OneCardViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card *to_select) const
+bool OneCardViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const
 {
-    return selected.isEmpty() && !to_select->hasFlag("using") && viewFilter(to_select);
+    return selected.isEmpty() && !to_select->hasFlag("using") && viewFilter(to_select, Self);
 }
 
-bool OneCardViewAsSkill::viewFilter(const Card *to_select) const
+bool OneCardViewAsSkill::viewFilter(const Card *to_select, const Player *Self) const
 {
     if (!filter_pattern.isEmpty()) {
         QString pat = filter_pattern;
@@ -353,12 +353,12 @@ bool OneCardViewAsSkill::viewFilter(const Card *to_select) const
     return false;
 }
 
-const Card *OneCardViewAsSkill::viewAs(const QList<const Card *> &cards) const
+const Card *OneCardViewAsSkill::viewAs(const QList<const Card *> &cards, const Player *Self) const
 {
     if (cards.length() != 1)
         return nullptr;
     else
-        return viewAs(cards.first());
+        return viewAs(cards.first(), Self);
 }
 
 FilterSkill::FilterSkill(const QString &name)
@@ -462,7 +462,7 @@ ShowDistanceSkill::ShowDistanceSkill(const QString &name)
 {
 }
 
-const Card *ShowDistanceSkill::viewAs() const
+const Card *ShowDistanceSkill::viewAs(const Player * /*Self*/) const
 {
     SkillCard *card = Sanguosha->cloneSkillCard("ShowFengsu");
     card->setUserString(objectName());
@@ -684,7 +684,7 @@ ArraySummonSkill::ArraySummonSkill(const QString &name)
 {
 }
 
-const Card *ArraySummonSkill::viewAs() const
+const Card *ArraySummonSkill::viewAs(const Player * /*Self*/) const
 {
     QString name = objectName();
     name[0] = name[0].toUpper();

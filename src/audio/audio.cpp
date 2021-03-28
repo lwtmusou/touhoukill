@@ -47,7 +47,7 @@ class OggPlayer : public QObject
     Q_OBJECT
 
 public:
-    OggPlayer(const QString &fileName, QObject *parent = nullptr)
+    explicit OggPlayer(const QString &fileName, QObject *parent = nullptr)
         : QObject(parent)
         , output(nullptr)
     {
@@ -162,7 +162,7 @@ class AudioInternal : public QObject
     Q_OBJECT
 
 public:
-    AudioInternal(QObject *parent = nullptr)
+    explicit AudioInternal(QObject *parent = nullptr)
         : QObject(parent)
         , bgmSound(nullptr)
     {

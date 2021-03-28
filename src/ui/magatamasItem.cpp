@@ -28,7 +28,7 @@ void MagatamasBoxItem::setOrientation(Qt::Orientation orientation)
 
 void MagatamasBoxItem::_updateLayout()
 {
-    int xStep, yStep;
+    int xStep = 0, yStep = 0;
     if (m_orientation == Qt::Horizontal) {
         xStep = m_iconSize.width();
         yStep = 0;
@@ -129,7 +129,7 @@ void MagatamasBoxItem::_doHpChangeAnimation(int newHp)
 
     int width = m_imageArea.width();
     int height = m_imageArea.height();
-    int xStep, yStep;
+    int xStep = 0, yStep = 0;
     if (m_orientation == Qt::Horizontal) {
         xStep = width;
         yStep = 0;
@@ -179,7 +179,7 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     if (m_hp == m_maxHp)
         imageIndex = 5;
 
-    int xStep, yStep;
+    int xStep = 0, yStep = 0;
     if (m_orientation == Qt::Horizontal) {
         xStep = m_iconSize.width();
         yStep = 0;
@@ -200,18 +200,8 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     }
 
     if (m_maxHp <= 5) {
-        int i;
-        //down-up
-        /* for (i = 0; i < m_hp; i++) {
-            QRect rect(xStep * i, yStep * i, m_imageArea.width(), m_imageArea.height());
-            rect.translate(m_imageArea.topLeft());
-            painter->drawPixmap(rect, _icons[imageIndex]);
-        }
-        for (; i < m_maxHp; i++) {
-            QRect rect(xStep * i, yStep * i, m_imageArea.width(), m_imageArea.height());
-            rect.translate(m_imageArea.topLeft());
-            painter->drawPixmap(rect, _icons[0]);
-        } */
+        int i = 0;
+
         //up-down
         int lostHp = qMin(m_maxHp - m_hp, m_maxHp);
         for (i = 0; i < lostHp; ++i) {

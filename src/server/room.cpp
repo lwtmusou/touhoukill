@@ -2512,7 +2512,12 @@ void Room::swapPile()
     thread->trigger(DrawPileSwaped, this, qtimes);
 }
 
-QList<int> Room::getDiscardPile()
+QList<int> &Room::getDiscardPile()
+{
+    return *m_discardPile;
+}
+
+const QList<int> &Room::getDiscardPile() const
 {
     return *m_discardPile;
 }
@@ -5099,7 +5104,7 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
         players = m_players;
 
     // Notify clients
-    int moveId;
+    int moveId = 0;
     if (isLostPhase)
         moveId = _m_lastMovementId++;
     else
@@ -6086,7 +6091,7 @@ int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> e
     thread->trigger(ChoiceMade, this, decisionData);
 
     shenlvmeng->tag[skill_name] = QVariant::fromValue((ServerPlayer *)target);
-    int card_id;
+    int card_id = 0;
     AI *ai = shenlvmeng->getAI();
     if (ai) {
         if (enabled_ids.isEmpty()) {
@@ -6188,7 +6193,7 @@ QList<const Card *> Room::askForPindianRace(ServerPlayer *from, ServerPlayer *to
     if (to->getHandcardNum() == 1)
         to_card = to->getHandcards().first();
 
-    AI *ai;
+    AI *ai = nullptr;
     if (!from_card) {
         ai = from->getAI();
         if (ai)
@@ -6774,7 +6779,7 @@ int Room::askForRende(ServerPlayer *liubei, QList<int> &cards, const QString &sk
         AI *ai = liubei->getAI();
         if (ai) {
             setPlayerFlag(liubei, "Global_AIAskForRende");
-            int card_id;
+            int card_id = 0;
             ServerPlayer *who = ai->askForYiji(remain_cards, skill_name, card_id);
             setPlayerFlag(liubei, "-Global_AIAskForRende");
             if (!who)
@@ -6914,7 +6919,7 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &sk
     QList<int> ids;
     AI *ai = guojia->getAI();
     if (ai) {
-        int card_id;
+        int card_id = 0;
         ServerPlayer *who = ai->askForYiji(cards, skill_name, card_id);
         if (!who)
             return false;

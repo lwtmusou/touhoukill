@@ -33,6 +33,7 @@ public:
     void setMark(const QString &mark, int value) override;
 
     RoomObject *getRoomObject() const override;
+    Client *getClient() const;
 
 private:
     int handcard_num;
@@ -45,7 +46,5 @@ signals:
     void action_taken();
     void skill_state_changed(const QString &skill_name);
 };
-
-extern ClientPlayer *Self;
 
 #endif

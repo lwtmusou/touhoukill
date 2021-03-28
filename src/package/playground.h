@@ -18,7 +18,7 @@ public:
     bool isResponseOk(const Player *player, const QString &pattern) const;
 
 public slots:
-    void popup();
+    void popup(Player *Self);
     void selectCard(QAbstractButton *button);
 
 private:
@@ -31,6 +31,8 @@ private:
     QHash<QString, const Card *> map;
 
     QString object_name;
+
+    Player *Self;
 
 signals:
     void onButtonClick();

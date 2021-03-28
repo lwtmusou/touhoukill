@@ -12,7 +12,8 @@ ServerInfoStruct ServerInfo;
 
 time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance, int operationRate)
 {
-    time_t timeOut;
+    time_t timeOut = OperationTimeout * 500 * operationRate;
+
     if (OperationTimeout == 0)
         return 0;
     else if (command == QSanProtocol::S_COMMAND_CHOOSE_GENERAL || command == QSanProtocol::S_COMMAND_ASK_GENERAL)
@@ -21,8 +22,6 @@ time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QS
         timeOut = OperationTimeout * 2000;
     else if (command == QSanProtocol::S_COMMAND_NULLIFICATION)
         timeOut = NullificationCountDown * 1000;
-    else
-        timeOut = OperationTimeout * 500 * operationRate;
 
     if (instance == QSanProtocol::S_SERVER_INSTANCE)
         timeOut += Config.S_SERVER_TIMEOUT_GRACIOUS_PERIOD;

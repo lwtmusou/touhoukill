@@ -171,7 +171,7 @@ Card::Color Card::getColor() const
     }
 }
 
-bool Card::isEquipped() const
+bool Card::isEquipped(const Player *Self) const
 {
     return Self->hasEquip(this);
 }
@@ -560,7 +560,7 @@ const Card *Card::Parse(const QString &str)
         card->deleteLater();
         return card;
     } else {
-        bool ok;
+        bool ok = false;
         int card_id = str.toInt(&ok);
         if (ok)
             return Sanguosha->currentRoomObject()->getCard(card_id)->getRealCard();
@@ -835,6 +835,7 @@ bool Card::isMute() const
 
 bool Card::canDamage() const
 {
+#if 0
     if (getSkillName() == "xianshi" && Self) {
         QString selected_effect = Self->tag.value("xianshi", QString()).toString();
         if (selected_effect != nullptr) {
@@ -844,11 +845,13 @@ bool Card::canDamage() const
                 return true;
         }
     }
+#endif
     return can_damage;
 }
 
 bool Card::canRecover() const
 {
+#if 0
     if (getSkillName() == "xianshi" && Self) {
         QString selected_effect = Self->tag.value("xianshi", QString()).toString();
         if (selected_effect != nullptr) {
@@ -860,6 +863,7 @@ bool Card::canRecover() const
                 return true;
         }
     }
+#endif
     return can_recover;
 }
 

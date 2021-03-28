@@ -26,7 +26,6 @@ class Card : public QObject
     Q_PROPERTY(QString number_string READ getNumberString CONSTANT)
     Q_PROPERTY(QString type READ getType CONSTANT)
     Q_PROPERTY(bool mute READ isMute CONSTANT)
-    Q_PROPERTY(bool equipped READ isEquipped)
     Q_PROPERTY(Color color READ getColor)
     Q_PROPERTY(bool can_recast READ canRecast WRITE setCanRecast)
 
@@ -125,7 +124,7 @@ public:
         return metaObject()->className();
     }
     virtual bool isVirtualCard() const;
-    virtual bool isEquipped() const;
+    virtual bool isEquipped(const Player *Self) const;
     virtual QString getCommonEffectName() const;
     virtual bool matchTypeOrName(const QString &pattern) const;
 

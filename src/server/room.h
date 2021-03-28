@@ -260,7 +260,8 @@ public:
 
     void adjustSeats();
     void swapPile();
-    QList<int> getDiscardPile();
+    QList<int> &getDiscardPile() override;
+    const QList<int> &getDiscardPile() const override;
     inline QList<int> &getDrawPile()
     {
         return *m_drawPile;

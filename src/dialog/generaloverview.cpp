@@ -3,6 +3,7 @@
 #include "client.h"
 #include "clientstruct.h"
 #include "engine.h"
+#include "roomscene.h"
 #include "settings.h"
 #include "ui_generaloverview.h"
 
@@ -332,7 +333,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
         QString nickname = Sanguosha->translate("#" + general_name);
         if (nickname.startsWith("#") && general_name.contains("_"))
             nickname = Sanguosha->translate("#" + general_name.split("_").first());
-        QTableWidgetItem *nickname_item;
+        QTableWidgetItem *nickname_item = nullptr;
         if (!nickname.startsWith("#"))
             nickname_item = new QTableWidgetItem(nickname);
         else
@@ -412,7 +413,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
 
 void GeneralOverview::resetButtons()
 {
-    QLayoutItem *child;
+    QLayoutItem *child = nullptr;
     while ((child = button_layout->takeAt(0))) {
         QWidget *widget = child->widget();
         if (widget)

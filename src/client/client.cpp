@@ -13,11 +13,11 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QMessageBox>
+#include <QRandomGenerator>
 #include <QTextCursor>
 #include <QTextDocument>
 #include <QTimer>
 #include <QVBoxLayout>
-#include <QRandomGenerator>
 #include <chrono>
 
 using namespace std::chrono_literals;
@@ -25,8 +25,6 @@ using namespace std::chrono_literals;
 using namespace std;
 using namespace QSanProtocol;
 using namespace JsonUtils;
-
-Client *ClientInstance = nullptr;
 
 Client::Client(QObject *parent, const QString &filename)
     : RoomObject(parent)
@@ -36,8 +34,8 @@ Client::Client(QObject *parent, const QString &filename)
     , swap_pile(0)
     , heartbeatTimer(nullptr)
     , m_isObjectNameRecorded(false)
+    , Self(NULL)
 {
-    ClientInstance = this;
     m_isGameOver = false;
 
     m_callbacks[S_COMMAND_CHECK_VERSION] = &Client::checkVersion;
@@ -182,7 +180,6 @@ Client::Client(QObject *parent, const QString &filename)
 
 Client::~Client()
 {
-    ClientInstance = nullptr;
 }
 
 void Client::updateCard(const QVariant &val)
@@ -519,7 +516,7 @@ bool Client::_loseSingleCard(int card_id, CardsMoveStruct move)
         move.from->removeCard(card, move.from_place);
     else {
         if (move.from_place == Player::DiscardPile)
-            discarded_list.removeOne(card);
+            discarded_list.removeOne(card_id);
         else if (move.from_place == Player::DrawPile && !Self->hasFlag("marshalling"))
             pile_num--;
     }
@@ -535,7 +532,7 @@ bool Client::_getSingleCard(int card_id, CardsMoveStruct move)
         if (move.to_place == Player::DrawPile)
             pile_num++;
         else if (move.to_place == Player::DiscardPile)
-            discarded_list.prepend(card);
+            discarded_list.prepend(card_id);
     }
     return true;
 }
@@ -1381,6 +1378,21 @@ QTextDocument *Client::getPromptDoc() const
     return prompt_doc;
 }
 
+ClientPlayer *Client::getSelf() const
+{
+    return Self;
+}
+
+QList<int> &Client::getDiscardPile()
+{
+    return discarded_list;
+}
+
+const QList<int> &Client::getDiscardPile() const
+{
+    return discarded_list;
+}
+
 void Client::resetPiles(const QVariant &)
 {
     discarded_list.clear();
@@ -1407,10 +1419,9 @@ void Client::synchronizeDiscardPile(const QVariant &discard_pile)
 
     QList<int> discard;
     if (JsonUtils::tryParse(discard_pile, discard)) {
-        foreach (int id, discard) {
-            const Card *card = getCard(id);
-            discarded_list.append(card);
-        }
+        foreach (int id, discard)
+            discarded_list.append(id);
+
         updatePileNum();
     }
 }
@@ -1837,7 +1848,7 @@ void Client::takeAG(const QVariant &take_var)
 
     if (take[0].isNull()) {
         if (move_cards) {
-            discarded_list.prepend(card);
+            discarded_list.prepend(card_id);
             updatePileNum();
         }
         emit ag_taken(nullptr, card_id, move_cards);
@@ -2384,11 +2395,10 @@ void Client::onPlayerChooseOrder()
         else
             order = "cool";
     }
-    int req;
+    int req = (int)S_CAMP_COOL;
     if (order == "warm")
         req = (int)S_CAMP_WARM;
-    else
-        req = (int)S_CAMP_COOL;
+
     replyToServer(S_COMMAND_CHOOSE_ORDER, req);
     setStatus(NotActive);
 }

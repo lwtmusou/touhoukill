@@ -171,7 +171,7 @@ class RoomScene : public QGraphicsScene
     Q_OBJECT
 
 public:
-    RoomScene(QMainWindow *main_window);
+    RoomScene(QMainWindow *main_window, Client *client);
     ~RoomScene() override;
     void changeTextEditBackground();
     void adjustItems();
@@ -211,6 +211,8 @@ public:
     void addHeroSkinContainer(ClientPlayer *player, HeroSkinContainer *heroSkinContainer);
     HeroSkinContainer *findHeroSkinContainer(const QString &generalName) const;
     QSet<HeroSkinContainer *> getHeroSkinContainers();
+
+    Client *getClient() const;
 
     bool game_started; // from private to public
 
@@ -380,6 +382,8 @@ private:
     QPointF m_tableCenterPos;
     ReplayerControlBar *m_replayControl;
 
+    Client *client;
+
     struct _MoveCardsClassifier
     {
         inline _MoveCardsClassifier(const CardsMoveStruct &move)
@@ -530,5 +534,25 @@ signals:
 };
 
 extern RoomScene *RoomSceneInstance;
+
+Q_ALWAYS_INLINE Client *clientInstanceFunc()
+{
+    if (RoomSceneInstance != NULL)
+        return RoomSceneInstance->getClient();
+
+    return NULL;
+}
+
+Q_ALWAYS_INLINE ClientPlayer *selfFunc()
+{
+    Client *client = clientInstanceFunc();
+    if (client != NULL)
+        return client->getSelf();
+
+    return NULL;
+}
+
+#define ClientInstance clientInstanceFunc()
+#define Self selfFunc()
 
 #endif

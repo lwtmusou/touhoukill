@@ -48,6 +48,9 @@ public:
     // Reset all cards, generals' states of the room instance
     void resetState();
 
+    virtual QList<int> &getDiscardPile() = 0;
+    virtual const QList<int> &getDiscardPile() const = 0;
+
 protected:
     QHash<int, WrappedCard *> m_cards;
     QString m_currentCardUsePattern;

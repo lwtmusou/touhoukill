@@ -423,7 +423,7 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
         }
     } else {
         // retrieve menu and create a new pile if necessary
-        QPushButton *button;
+        QPushButton *button = nullptr;
         if (!_m_privatePiles.contains(pile_name)) {
             button = new QPushButton(_m_privatePileArea->widget());
             //button = new QPushButton;
@@ -940,11 +940,9 @@ void PlayerCardContainer::startHuaShen(QString generalName, QString skillName, Q
     _m_huashenGeneral2Name = general2Name;
     _m_huashenSkill2Name = skill2Name;
 
-    int huashen_size;
-    if (!generalName.isEmpty()) {
+    int huashen_size = _m_layout->m_smallAvatarSize; //4 or 1;
+    if (!generalName.isEmpty())
         huashen_size = (getPlayer() && getPlayer()->getGeneral2()) ? _m_layout->m_primaryAvatarSize : _m_layout->m_avatarSize; // 1 or 6;
-    } else
-        huashen_size = _m_layout->m_smallAvatarSize; //4 or 1;
 
     QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap((!generalName.isEmpty()) ? generalName : general2Name,
                                                   (QSanRoomSkin::GeneralIconSize)huashen_size); //(QSanRoomSkin::GeneralIconSize)_m_layout->m_avatarSize

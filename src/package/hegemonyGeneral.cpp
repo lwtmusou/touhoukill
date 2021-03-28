@@ -212,7 +212,7 @@ public:
     //   return Self && Self->getMark("@HalfLife") > 0;
     //}
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new HalfLifeCard;
     }
@@ -354,7 +354,7 @@ public:
         return false;
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new CompanionCard;
     }
@@ -436,7 +436,7 @@ public:
         return player->getMark("@Pioneer") > 0;
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new PioneerCard;
     }
@@ -539,7 +539,7 @@ public:
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
     {
-        ServerPlayer *player;
+        ServerPlayer *player = nullptr;
         if (triggerEvent != Death) {
             if (triggerEvent == EventAcquireSkill || triggerEvent == EventLoseSkill) {
                 SkillAcquireDetachStruct s = data.value<SkillAcquireDetachStruct>();
@@ -853,7 +853,7 @@ void QingtingHegemonyCard::use(Room *room, ServerPlayer *source, QList<ServerPla
     foreach (ServerPlayer *p, room->getOtherPlayers(source)) {
         if (p->isKongcheng())
             continue;
-        const Card *card;
+        const Card *card = nullptr;
         if (source->getMark("shengge") > 0 || p->getHandcardNum() == 1)
             card = new DummyCard(QList<int>() << room->askForCardChosen(source, p, "hs", "qingting"));
         else {
@@ -907,7 +907,7 @@ public:
         return !player->hasUsed("QingtingHegemonyCard") && checkQingting(player);
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new QingtingHegemonyCard;
     }
@@ -969,12 +969,12 @@ public:
         return !player->hasShownSkill("shezheng_hegemony");
     }
 
-    bool viewFilter(const QList<const Card *> &, const Card *) const override
+    bool viewFilter(const QList<const Card *> &, const Card *, const Player * /*Self*/) const override
     {
         return false;
     }
 
-    const Card *viewAs(const QList<const Card *> &) const override
+    const Card *viewAs(const QList<const Card *> &, const Player * /*Self*/) const override
     {
         return new ShowShezhengCard();
     }
@@ -1361,7 +1361,7 @@ public:
         return !checkedPatterns.isEmpty();
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *, const Player *Self) const override
     {
         //int num = qMax(1, Self->getHp());
         int roles = 1;
@@ -1375,7 +1375,7 @@ public:
         return selected.length() < num;
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const override
     {
         //int num = qMax(1, Self->getHp());
         int roles = 1;
@@ -1591,7 +1591,7 @@ public:
         return matchAvaliablePattern("fire_attack", pattern) && Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         if (originalCard) {
             FireAttack *card = new FireAttack(Card::SuitToBeDecided, -1);
@@ -1665,7 +1665,7 @@ public:
         response_pattern = "@@xushi_hegemony";
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         XushiHegemonyCard *c = new XushiHegemonyCard;
         c->addSubcard(originalCard);
@@ -1898,12 +1898,12 @@ public:
         response_pattern = "@@xingyun_hegemony";
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player * /*Self*/) const override
     {
         return selected.isEmpty() && to_select->hasFlag("xingyun");
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         if (originalCard) {
             XingyunHegemonyCard *card = new XingyunHegemonyCard;
@@ -2573,12 +2573,12 @@ public:
         return !player->hasShownSkill("fengsu");
     }
 
-    bool viewFilter(const QList<const Card *> &, const Card *) const override
+    bool viewFilter(const QList<const Card *> &, const Card *, const Player * /*Self*/) const override
     {
         return false;
     }
 
-    const Card *viewAs(const QList<const Card *> &) const override
+    const Card *viewAs(const QList<const Card *> &, const Player * /*Self*/) const override
     {
         return new ShowFengsuCard();
     }
@@ -2997,7 +2997,7 @@ public:
         return !player->hasUsed("KuaizhaoHegemonyCard");
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new KuaizhaoHegemonyCard;
     }
@@ -3071,7 +3071,7 @@ public:
         return matchAvaliablePattern("slash", pattern);
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         if (originalCard != nullptr) {
             Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
@@ -3343,7 +3343,7 @@ public:
         expand_pile = "#chunhen_temp";
     }
 
-    bool viewFilter(const QList<const Card *> &, const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &, const Card *to_select, const Player *Self) const override
     {
         return Self->getPile("#chunhen_temp").contains(to_select->getId());
     }
@@ -3358,7 +3358,7 @@ public:
         return pattern.startsWith("@@chunhen");
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const QList<const Card *> &cards, const Player * /*Self*/) const override
     {
         if (cards.isEmpty())
             return nullptr;
@@ -3581,7 +3581,7 @@ public:
         return player->getMark("@dongzhi") > 0;
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new DongzhiHegemonyCard;
     }
@@ -3779,7 +3779,7 @@ public:
         return !player->hasUsed("BanyueHegemonyCard");
     }
 
-    const Card *viewAs() const override
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new BanyueHegemonyCard;
     }
@@ -3795,7 +3795,7 @@ public:
         expand_pile = "jingjie";
     }
 
-    bool viewFilter(const Card *to_select) const override
+    bool viewFilter(const Card *to_select, const Player *Self) const override
     {
         if (!Self->getPile("jingjie").contains(to_select->getId()))
             return false;
@@ -3807,7 +3807,7 @@ public:
             return to_select->isRed();
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         return originalCard;
     }
@@ -3945,7 +3945,7 @@ public:
         filter_pattern = ".|.|.|jingjie";
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         return originalCard;
     }
