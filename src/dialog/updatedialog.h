@@ -39,7 +39,7 @@ private:
     };
 
 public:
-    explicit UpdateDialog(QWidget *parent = 0);
+    explicit UpdateDialog(QWidget *parent = nullptr);
     void setInfo(const QString &v, const QVersionNumber &vn, const QString &updatePackOrAddress, const QJsonObject &updateHash, const QString &updateScript);
 
 private:

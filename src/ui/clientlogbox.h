@@ -10,7 +10,7 @@ class ClientLogBox : public QTextEdit
     Q_OBJECT
 
 public:
-    explicit ClientLogBox(QWidget *parent = 0);
+    explicit ClientLogBox(QWidget *parent = nullptr);
     void appendLog(const QString &type, const QString &from_general, const QStringList &to, const QString card_str = QString(), const QString arg = QString(),
                    const QString arg2 = QString());
 

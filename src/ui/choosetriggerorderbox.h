@@ -67,12 +67,12 @@ public slots:
     void needDisabled(bool disabled);
 
 protected:
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
-    virtual QRectF boundingRect() const;
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
-    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) override;
+    QRectF boundingRect() const override;
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
 
     static QString displayedTextOf(const SkillInvokeDetailForClient &detail, int times);
 
@@ -97,7 +97,7 @@ class ChooseTriggerOrderBox : public GraphicsBox
 public:
     ChooseTriggerOrderBox();
 
-    virtual QRectF boundingRect() const;
+    QRectF boundingRect() const override;
     void chooseOption(const QVariantList &options, bool optional);
     void clear();
 

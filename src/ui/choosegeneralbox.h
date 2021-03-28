@@ -42,8 +42,8 @@ public:
     void hideCompanion();
 
 protected:
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 #ifdef Q_OS_ANDROID
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
@@ -71,12 +71,12 @@ class ChooseGeneralBox : public GraphicsBox
 public:
     explicit ChooseGeneralBox();
 
-    void paintLayout(QPainter *painter);
-    QRectF boundingRect() const;
+    void paintLayout(QPainter *painter) override;
+    QRectF boundingRect() const override;
     void clear();
 
 public slots:
-    void chooseGeneral(const QStringList &generals, bool m_viewOnly = false, bool single_result = false, const QString &reason = QString(), const Player *player = NULL,
+    void chooseGeneral(const QStringList &generals, bool m_viewOnly = false, bool single_result = false, const QString &reason = QString(), const Player *player = nullptr,
                        const bool can_convert = false);
     void reply();
     void adjustItems();

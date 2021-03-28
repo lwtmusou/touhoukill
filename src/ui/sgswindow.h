@@ -18,10 +18,10 @@ public:
     void keepWhenDisappear();
     void setTitle(const QString &title);
 
-    virtual QRectF boundingRect() const;
+    QRectF boundingRect() const override;
 
 protected:
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
 public slots:
     void appear();

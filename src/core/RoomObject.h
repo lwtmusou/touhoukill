@@ -16,8 +16,8 @@ class RoomObject : public QObject
     Q_OBJECT
 
 public:
-    explicit RoomObject(QObject *parent = NULL);
-    ~RoomObject();
+    explicit RoomObject(QObject *parent = nullptr);
+    ~RoomObject() override;
     Card *getCard(int cardId) const;
     WrappedCard *getWrappedCard(int cardId) const;
 

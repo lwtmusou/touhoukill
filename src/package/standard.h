@@ -47,7 +47,7 @@ public:
 
     QString getType() const override;
     CardType getTypeId() const override;
-    virtual bool isCancelable(const CardEffectStruct &effect) const override;
+    bool isCancelable(const CardEffectStruct &effect) const override;
 
 private:
     bool cancelable;
@@ -383,7 +383,7 @@ public:
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
     bool isAvailable(const Player *player) const override;
 
-    static bool IsAvailable(const Player *player, const Card *slash = NULL, bool considerSpecificAssignee = true);
+    static bool IsAvailable(const Player *player, const Card *slash = nullptr, bool considerSpecificAssignee = true);
     static bool IsSpecificAssignee(const Player *player, const Player *from, const Card *slash);
 
 protected:

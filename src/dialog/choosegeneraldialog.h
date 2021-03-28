@@ -15,10 +15,10 @@ class OptionButton : public QToolButton
     Q_OBJECT
 
 public:
-    explicit OptionButton(const QString &icon_path, const QString &caption = "", QWidget *parent = 0);
+    explicit OptionButton(const QString &icon_path, const QString &caption = "", QWidget *parent = nullptr);
 
 protected:
-    virtual void mouseDoubleClickEvent(QMouseEvent *);
+    void mouseDoubleClickEvent(QMouseEvent *) override;
 
 signals:
     void double_clicked();
@@ -32,7 +32,7 @@ public:
     explicit ChooseGeneralDialog(const QStringList &general_names, QWidget *parent, bool view_only = false, const QString &title = QString());
 
 public slots:
-    void done(int);
+    void done(int) override;
 
 protected:
     QDialog *m_freeChooseDialog;

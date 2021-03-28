@@ -38,8 +38,8 @@ public:
 
     Dashboard(QGraphicsItem *button_widget);
     //Dashboard(QGraphicsPixmapItem *button_widget);
-    virtual QRectF boundingRect() const;
-    void refresh();
+    QRectF boundingRect() const override;
+    void refresh() override;
     //void repaintAll();
     void setWidth(int width);
     int getMiddleWidth();
@@ -56,11 +56,11 @@ public:
     void hideControlButtons();
     void showControlButtons();
 
-    void setPlayer(ClientPlayer *player); //hegemony
-    void showSeat(); //hegemony
+    void setPlayer(ClientPlayer *player) override; //hegemony
+    void showSeat() override; //hegemony
 
-    virtual void showProgressBar(QSanProtocol::Countdown countdown);
-    virtual void hideProgressBar();
+    void showProgressBar(QSanProtocol::Countdown countdown) override;
+    void hideProgressBar() override;
 
     QRectF getAvatarAreaSceneBoundingRect() const
     {
@@ -73,15 +73,15 @@ public:
     void highlightEquip(QString skillName, bool hightlight);
 
     void setTrust(bool trust);
-    virtual void killPlayer();
-    virtual void revivePlayer();
+    void killPlayer() override;
+    void revivePlayer() override;
     virtual void setDeathColor();
     void selectCard(const QString &pattern, bool forward = true, bool multiple = false);
     void selectEquip(int position);
     void selectOnlyCard(bool need_only = false);
     void useSelected();
     const Card *getSelected() const;
-    void unselectAll(const CardItem *except = NULL);
+    void unselectAll(const CardItem *except = nullptr);
     void hideAvatar();
 
     void disableAllCards();
@@ -90,10 +90,10 @@ public:
 
     void adjustCards(bool playAnimation = true);
 
-    virtual QGraphicsItem *getMouseClickReceiver();
+    QGraphicsItem *getMouseClickReceiver() override;
 
-    QList<CardItem *> removeCardItems(const QList<int> &card_ids, Player::Place place);
-    virtual QList<CardItem *> cloneCardItems(QList<int> card_ids);
+    QList<CardItem *> removeCardItems(const QList<int> &card_ids, Player::Place place) override;
+    QList<CardItem *> cloneCardItems(QList<int> card_ids) override;
 
     // pending operations
     void startPending(const ViewAsSkill *skill);
@@ -161,68 +161,68 @@ public slots:
 
 protected:
     void _createExtraButtons();
-    virtual void _adjustComponentZValues(bool killed = false);
+    void _adjustComponentZValues(bool killed = false) override;
     virtual void addHandCards(QList<CardItem *> &cards);
     virtual QList<CardItem *> removeHandCards(const QList<int> &cardIds);
 
     // initialization of _m_layout is compulsory for children classes.
-    inline virtual QGraphicsItem *_getEquipParent()
+    inline QGraphicsItem *_getEquipParent() override
     {
         return _m_leftFrame;
     }
-    inline virtual QGraphicsItem *_getDelayedTrickParent()
+    inline QGraphicsItem *_getDelayedTrickParent() override
     {
         return _m_leftFrame;
     }
-    inline virtual QGraphicsItem *_getAvatarParent()
+    inline QGraphicsItem *_getAvatarParent() override
     {
         return _m_rightFrame;
     }
-    inline virtual QGraphicsItem *_getMarkParent()
+    inline QGraphicsItem *_getMarkParent() override
     {
         return _m_floatingArea;
     }
-    inline virtual QGraphicsItem *_getPhaseParent()
+    inline QGraphicsItem *_getPhaseParent() override
     {
         return _m_floatingArea;
     }
-    inline virtual QGraphicsItem *_getRoleComboBoxParent()
+    inline QGraphicsItem *_getRoleComboBoxParent() override
     {
         return _m_rightFrame;
     }
-    inline virtual QGraphicsItem *_getPileParent()
+    inline QGraphicsItem *_getPileParent() override
     {
         return _m_rightFrame;
     }
-    inline virtual QGraphicsItem *_getProgressBarParent()
+    inline QGraphicsItem *_getProgressBarParent() override
     {
         return _m_floatingArea;
     }
-    inline virtual QGraphicsItem *_getFocusFrameParent()
+    inline QGraphicsItem *_getFocusFrameParent() override
     {
         return _m_rightFrame;
     }
-    inline virtual QGraphicsItem *_getDeathIconParent()
+    inline QGraphicsItem *_getDeathIconParent() override
     {
         return _m_middleFrame;
     }
-    inline virtual QString getResourceKeyName()
+    inline QString getResourceKeyName() override
     {
         return QSanRoomSkin::S_SKIN_KEY_DASHBOARD;
     }
-    inline virtual QAbstractAnimation *_getPlayerRemovedEffect()
+    inline QAbstractAnimation *_getPlayerRemovedEffect() override
     {
         return _removedEffect;
     }
-    virtual QPointF getHeroSkinContainerPosition() const;
+    QPointF getHeroSkinContainerPosition() const override;
     //virtual const QSanShadowTextFont &getSkillNameFont() const {
     //    return G_DASHBOARD_LAYOUT.m_skillNameFont;
     //}
     //virtual const QRect &getSkillNameArea() const { return G_DASHBOARD_LAYOUT.m_skillNameArea; }
 
-    bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo);
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent);
+    bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo) override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
 
     //virtual bool sceneEventFilter(QGraphicsItem *watched, QEvent *event);
 
@@ -293,7 +293,7 @@ protected:
     QHash<QString, PixmapAnimation *> _m_roleBorders;
     void _createBattleArrayAnimations();
 
-    virtual void _initializeRemovedEffect();
+    void _initializeRemovedEffect() override;
     QPropertyAnimation *_removedEffect;
 
     QMenu *_m_sort_menu;
@@ -307,17 +307,17 @@ protected:
 #endif
 
 protected slots:
-    virtual void _onEquipSelectChanged();
+    void _onEquipSelectChanged() override;
 
-    virtual void onAnimationFinished();
+    void onAnimationFinished() override;
 
-    virtual void onAvatarHoverEnter();
-    virtual void doAvatarHoverLeave()
+    void onAvatarHoverEnter() override;
+    void doAvatarHoverLeave() override
     {
         _m_screenNameItem->hide();
     }
 
-    virtual bool isItemUnderMouse(QGraphicsItem *item) const;
+    bool isItemUnderMouse(QGraphicsItem *item) const override;
 
 private slots:
     void onCardItemClicked();

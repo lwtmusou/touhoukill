@@ -15,8 +15,8 @@ public:
     explicit RoleAssignDialog(QWidget *parent);
 
 protected:
-    virtual void accept();
-    virtual void reject();
+    void accept() override;
+    void reject() override;
 
 private:
     QListWidget *list;

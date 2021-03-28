@@ -45,7 +45,7 @@ public:
     QString getSubtype() const override;
     bool canRecover() const override;
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    static bool IsAvailable(const Player *player, const Card *analeptic = NULL);
+    static bool IsAvailable(const Player *player, const Card *analeptic = nullptr);
 
     bool isAvailable(const Player *player) const override;
     void onUse(Room *room, const CardUseStruct &card_use) const override;

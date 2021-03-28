@@ -18,8 +18,8 @@ class GongfengCard : public SkillCard
 public:
     Q_INVOKABLE GongfengCard();
 
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
 };
 
 class QijiDialog : public QDialog
@@ -55,8 +55,8 @@ class FengshenCard : public SkillCard
 public:
     Q_INVOKABLE FengshenCard();
 
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
 };
 
 class ShowFengsu : public ShowDistanceCard
@@ -74,7 +74,7 @@ class XinshangCard : public SkillCard
 public:
     Q_INVOKABLE XinshangCard();
 
-    virtual void onEffect(const CardEffectStruct &effect) const;
+    void onEffect(const CardEffectStruct &effect) const override;
 };
 
 class FengrangCard : public SkillCard
@@ -84,7 +84,7 @@ class FengrangCard : public SkillCard
 public:
     Q_INVOKABLE FengrangCard();
 
-    virtual const Card *validate(CardUseStruct &card_use) const;
+    const Card *validate(CardUseStruct &card_use) const override;
 };
 
 class JiliaoCard : public SkillCard
@@ -94,8 +94,8 @@ class JiliaoCard : public SkillCard
 public:
     Q_INVOKABLE JiliaoCard();
 
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 
 class BujuCard : public SkillCard
@@ -105,7 +105,7 @@ class BujuCard : public SkillCard
 public:
     Q_INVOKABLE BujuCard();
 
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 
 class TH10Package : public Package

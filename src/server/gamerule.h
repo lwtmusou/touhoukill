@@ -9,9 +9,9 @@ class GameRule : public TriggerSkill
 
 public:
     explicit GameRule(QObject *parent);
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const;
-    virtual int getPriority() const;
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override;
+    int getPriority() const override;
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override;
 
 private:
     void onPhaseProceed(ServerPlayer *player) const;
@@ -27,7 +27,7 @@ class HulaoPassMode : public GameRule
 
 public:
     explicit HulaoPassMode(QObject *parent);
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override;
 };
 
 #endif

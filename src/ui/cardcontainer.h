@@ -18,8 +18,8 @@ public:
     SanCloseButton();
 
 protected:
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
 signals:
     void clicked();
@@ -31,15 +31,15 @@ class CardContainer : public GenericCardContainer
 
 public:
     explicit CardContainer();
-    virtual QList<CardItem *> removeCardItems(const QList<int> &card_ids, Player::Place place);
+    QList<CardItem *> removeCardItems(const QList<int> &card_ids, Player::Place place) override;
     int getFirstEnabled() const;
     void startChoose();
     void startGongxin(const QList<int> &enabled_ids);
     void addCloseButton();
     void view(const ClientPlayer *player);
-    virtual QRectF boundingRect() const;
+    QRectF boundingRect() const override;
     ClientPlayer *m_currentPlayer;
-    virtual void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *);
+    void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) override;
     bool retained();
 
 public slots:
@@ -50,7 +50,7 @@ public slots:
 
 protected:
     QRectF _m_boundingRect;
-    virtual bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo);
+    bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo) override;
     //Button *confirm_button;
     int scene_width;
     int itemCount;

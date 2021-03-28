@@ -49,7 +49,7 @@ public:
     };
 
     explicit Client(QObject *parent, const QString &filename = QString());
-    ~Client();
+    ~Client() override;
 
     // cheat functions
     void requestCheatGetOneCard(int card_id);

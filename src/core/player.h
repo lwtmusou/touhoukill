@@ -314,7 +314,7 @@ public:
     QString getSkillDescription(bool yellow = true, const QString &flag = QString()) const;
 
     virtual bool isProhibited(const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
-    bool canSlashWithoutCrossbow(const Card *slash = NULL) const;
+    bool canSlashWithoutCrossbow(const Card *slash = nullptr) const;
     virtual bool isLastHandCard(const Card *card, bool contain = false) const = 0;
 
     inline bool isJilei(const Card *card) const

@@ -17,9 +17,9 @@ public:
     QPointF getFinish() const;
     void setFinish(const QPointF &finish);
 
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
-    virtual QRectF boundingRect() const;
+    QRectF boundingRect() const override;
 
 private:
     QPointF start, finish, real_finish;

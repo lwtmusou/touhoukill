@@ -31,10 +31,10 @@ class PixmapAnimation : public QObject, public QGraphicsItem
 public:
     PixmapAnimation();
 
-    QRectF boundingRect() const;
-    void advance(int phase);
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    void timerEvent(QTimerEvent *e);
+    QRectF boundingRect() const override;
+    void advance(int phase) override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    void timerEvent(QTimerEvent *e) override;
 
     void setPath(const QString &path, bool playback = false);
     void setSize(const QSize &size);

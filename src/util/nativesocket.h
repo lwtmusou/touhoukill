@@ -12,8 +12,8 @@ class NativeServerSocket : public ServerSocket
 public:
     NativeServerSocket();
 
-    virtual bool listen();
-    virtual void daemonize();
+    bool listen() override;
+    void daemonize() override;
 
 private slots:
     void processNewConnection();
@@ -32,13 +32,13 @@ public:
     NativeClientSocket();
     NativeClientSocket(QTcpSocket *socket);
 
-    virtual void connectToHost();
-    virtual void disconnectFromHost();
-    virtual void send(const QString &message);
-    virtual bool isConnected() const;
-    virtual QString peerName() const;
-    virtual QString peerAddress() const;
-    virtual quint32 ipv4Address() const;
+    void connectToHost() override;
+    void disconnectFromHost() override;
+    void send(const QString &message) override;
+    bool isConnected() const override;
+    QString peerName() const override;
+    QString peerAddress() const override;
+    quint32 ipv4Address() const override;
 
 private slots:
     void getMessage();

@@ -30,10 +30,10 @@ class BroadcastBox : public QDialog
     Q_OBJECT
 
 public:
-    BroadcastBox(Server *server, QWidget *parent = 0);
+    BroadcastBox(Server *server, QWidget *parent = nullptr);
 
 protected:
-    virtual void accept();
+    void accept() override;
 
 private:
     Server *server;
@@ -51,12 +51,12 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow() override;
     void setBackgroundBrush(bool center_as_origin);
 
 protected:
-    virtual void closeEvent(QCloseEvent *);
+    void closeEvent(QCloseEvent *) override;
 
 private:
     FitView *view;

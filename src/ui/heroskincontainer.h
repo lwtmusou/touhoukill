@@ -18,12 +18,12 @@ class HeroSkinContainer : public QGraphicsObject
     Q_OBJECT
 
 public:
-    HeroSkinContainer(const QString &generalName, const QString &kingdom, QGraphicsItem *parent = 0);
+    HeroSkinContainer(const QString &generalName, const QString &kingdom, QGraphicsItem *parent = nullptr);
 
-    ~HeroSkinContainer()
+    ~HeroSkinContainer() override
     {
         if (this == m_currentTopMostContainer) {
-            m_currentTopMostContainer = NULL;
+            m_currentTopMostContainer = nullptr;
         }
     }
 
@@ -34,16 +34,16 @@ public:
 
     void bringToTopMost();
 
-    virtual QRectF boundingRect() const;
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
+    QRectF boundingRect() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) override;
 
     static bool hasSkin(const QString &generalName);
     static int getNextSkinIndex(const QString &generalName, int skinIndex);
     void swapWithSkinItemUsed(int skinIndex);
 
 protected:
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *);
-    virtual void wheelEvent(QGraphicsSceneWheelEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *) override;
+    void wheelEvent(QGraphicsSceneWheelEvent *event) override;
 
 private:
     //CloseButton *close_button;

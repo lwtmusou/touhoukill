@@ -75,7 +75,7 @@ public:
 
     inline bool hasExtraTurn() const
     {
-        return nextExtraTurn != NULL;
+        return nextExtraTurn != nullptr;
     }
 
     inline ServerPlayer *getNextExtraTurn() const
@@ -94,7 +94,7 @@ public:
     }
 
 protected:
-    virtual void run();
+    void run() override;
 
 private:
     void _handleTurnBroken3v3(QList<ServerPlayer *> &first, QList<ServerPlayer *> &second, GameRule *game_rule);

@@ -39,11 +39,11 @@ public:
     void chooseCard(const QString &reason, const ClientPlayer *player, const QString &flags = "hej", bool handcardVisible = false, Card::HandlingMethod method = Card::MethodNone,
                     const QList<int> &disabledIds = QList<int>(), bool enableEmptyCard = true);
     void clear();
-    QRectF boundingRect() const;
+    QRectF boundingRect() const override;
 
 protected:
     // GraphicsBox interface
-    void paintLayout(QPainter *painter);
+    void paintLayout(QPainter *painter) override;
 
 private:
     void paintArea(const QString &name, QPainter *painter);

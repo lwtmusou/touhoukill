@@ -53,9 +53,9 @@ public:
     {
         return m_iconSize;
     }
-    virtual QRectF boundingRect() const;
+    QRectF boundingRect() const override;
     virtual void update();
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
 protected:
     void _autoAdjustPos();

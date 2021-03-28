@@ -28,8 +28,8 @@ public:
     explicit Photo();
     const ClientPlayer *getPlayer() const;
     void speak(const QString &content);
-    virtual void repaintAll();
-    QList<CardItem *> removeCardItems(const QList<int> &card_id, Player::Place place);
+    void repaintAll() override;
+    QList<CardItem *> removeCardItems(const QList<int> &card_id, Player::Place place) override;
 
     void setEmotion(const QString &emotion, bool permanent = false);
     void tremble();
@@ -44,80 +44,80 @@ public:
     };
 
     void setFrame(FrameType type);
-    virtual QRectF boundingRect() const;
-    QGraphicsItem *getMouseClickReceiver();
+    QRectF boundingRect() const override;
+    QGraphicsItem *getMouseClickReceiver() override;
     void playBattleArrayAnimations();
 
 public slots:
     void updatePhase();
     void hideEmotion();
     //void hideSkillName();
-    virtual void updateDuanchang();
-    virtual void refresh();
+    void updateDuanchang() override;
+    void refresh() override;
 
 protected:
-    inline virtual QGraphicsItem *_getEquipParent()
+    inline QGraphicsItem *_getEquipParent() override
     {
         return _m_groupMain;
     }
-    inline virtual QGraphicsItem *_getDelayedTrickParent()
+    inline QGraphicsItem *_getDelayedTrickParent() override
     {
         return _m_groupMain;
     }
-    inline virtual QGraphicsItem *_getAvatarParent()
+    inline QGraphicsItem *_getAvatarParent() override
     {
         return _m_groupMain;
     }
-    inline virtual QGraphicsItem *_getMarkParent()
+    inline QGraphicsItem *_getMarkParent() override
     {
         return _m_floatingArea;
     }
-    inline virtual QGraphicsItem *_getPhaseParent()
+    inline QGraphicsItem *_getPhaseParent() override
     {
         return _m_groupMain;
     }
-    inline virtual QGraphicsItem *_getRoleComboBoxParent()
+    inline QGraphicsItem *_getRoleComboBoxParent() override
     {
         return _m_groupMain;
     }
-    inline virtual QGraphicsItem *_getProgressBarParent()
+    inline QGraphicsItem *_getProgressBarParent() override
     {
         return this;
     }
-    inline virtual QGraphicsItem *_getFocusFrameParent()
+    inline QGraphicsItem *_getFocusFrameParent() override
     {
         return _m_groupMain;
     }
-    inline virtual QGraphicsItem *_getDeathIconParent()
+    inline QGraphicsItem *_getDeathIconParent() override
     {
         return _m_groupDeath;
     }
-    virtual QGraphicsItem *_getPileParent()
+    QGraphicsItem *_getPileParent() override
     {
         return _m_groupMain;
     }
-    inline virtual QString getResourceKeyName()
+    inline QString getResourceKeyName() override
     {
         return QSanRoomSkin::S_SKIN_KEY_PHOTO;
     }
-    inline virtual QAbstractAnimation *_getPlayerRemovedEffect()
+    inline QAbstractAnimation *_getPlayerRemovedEffect() override
     {
         return _blurEffect;
     }
 
-    virtual QPointF getHeroSkinContainerPosition() const;
+    QPointF getHeroSkinContainerPosition() const override;
 
     //virtual const QSanShadowTextFont &getSkillNameFont() const {
     //    return G_PHOTO_LAYOUT.m_skillNameFont;
     //}
     //virtual const QRect &getSkillNameArea() const { return G_PHOTO_LAYOUT.m_skillNameArea; }
 
-    virtual void _adjustComponentZValues(bool killed = false);
-    bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo);
+    void _adjustComponentZValues(bool killed = false) override;
+    bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo) override;
 
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     QPropertyAnimation *initializeBlurEffect(GraphicsPixmapHoverItem *icon);
-    virtual void _initializeRemovedEffect();
+    void _initializeRemovedEffect() override;
 
     FrameType _m_frameType;
     QGraphicsPixmapItem *_m_mainFrame;

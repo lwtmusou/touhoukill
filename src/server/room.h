@@ -41,7 +41,7 @@ public:
     typedef bool (Room::*ResponseVerifyFunction)(ServerPlayer *, const QVariant &, void *);
 
     explicit Room(QObject *parent, const QString &mode);
-    ~Room();
+    ~Room() override;
     ServerPlayer *addSocket(ClientSocket *socket);
 
     inline int getId() const
@@ -67,9 +67,9 @@ public:
     void outputEventStack();
     void enterDying(ServerPlayer *player, DamageStruct *reason);
     ServerPlayer *getCurrentDyingPlayer() const;
-    void killPlayer(ServerPlayer *victim, DamageStruct *reason = NULL);
+    void killPlayer(ServerPlayer *victim, DamageStruct *reason = nullptr);
     void revivePlayer(ServerPlayer *player);
-    QStringList aliveRoles(ServerPlayer *except = NULL) const;
+    QStringList aliveRoles(ServerPlayer *except = nullptr) const;
     void gameOver(const QString &winner, bool isSurrender = false);
     void saveWinnerTable(const QString &winner, bool isSurrender = false);
     void countDescription();
@@ -90,10 +90,10 @@ public:
     void clearPlayerCardLimitation(ServerPlayer *player, bool single_turn);
     void setPlayerDisableShow(ServerPlayer *player, const QString &flags, const QString &reason);
     void removePlayerDisableShow(ServerPlayer *player, const QString &reason);
-    void setCardFlag(const Card *card, const QString &flag, ServerPlayer *who = NULL);
-    void setCardFlag(int card_id, const QString &flag, ServerPlayer *who = NULL);
-    void clearCardFlag(const Card *card, ServerPlayer *who = NULL);
-    void clearCardFlag(int card_id, ServerPlayer *who = NULL);
+    void setCardFlag(const Card *card, const QString &flag, ServerPlayer *who = nullptr);
+    void setCardFlag(int card_id, const QString &flag, ServerPlayer *who = nullptr);
+    void clearCardFlag(const Card *card, ServerPlayer *who = nullptr);
+    void clearCardFlag(int card_id, ServerPlayer *who = nullptr);
     bool useCard(const CardUseStruct &card_use, bool add_history = true);
     void damage(const DamageStruct &data);
     void sendDamageLog(const DamageStruct &data);
@@ -113,14 +113,14 @@ public:
     void askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, GuanxingType guanxing_type = GuanxingBothSides, QString skillName = "");
     int doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids = QList<int>(), QString skill_name = "gongxin");
     int drawCard(bool bottom = false);
-    void fillAG(const QList<int> &card_ids, ServerPlayer *who = NULL, const QList<int> &disabled_ids = QList<int>(), const QList<int> &shownHandcard_ids = QList<int>());
+    void fillAG(const QList<int> &card_ids, ServerPlayer *who = nullptr, const QList<int> &disabled_ids = QList<int>(), const QList<int> &shownHandcard_ids = QList<int>());
     void takeAG(ServerPlayer *player, int card_id, bool move_cards = true, QList<ServerPlayer *> to_notify = QList<ServerPlayer *>(), Player::Place fromPlace = Player::DrawPile);
-    void clearAG(ServerPlayer *player = NULL);
-    void provide(const Card *card, ServerPlayer *who = NULL);
+    void clearAG(ServerPlayer *player = nullptr);
+    void provide(const Card *card, ServerPlayer *who = nullptr);
     QList<ServerPlayer *> getLieges(const QString &kingdom, ServerPlayer *lord) const;
     void sendLog(const LogMessage &log);
-    void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
-    void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);
+    void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = nullptr);
+    void showAllCards(ServerPlayer *player, ServerPlayer *to = nullptr);
     void retrial(const Card *card, ServerPlayer *player, JudgeStruct *judge, const QString &skill_name, bool exchange = false);
 
     // Ask a player to send a server request and returns the client response. Call is blocking until client
@@ -168,8 +168,8 @@ public:
     //        Validation function that verifies whether the reply is a valid one. The first parameter passed to the function
     //        is the response sender, the second parameter is the response content, the third parameter is funcArg passed in.
     // @return The player that first send a legal request to the server. NULL if no such request is received.
-    ServerPlayer *doBroadcastRaceRequest(QList<ServerPlayer *> &players, QSanProtocol::CommandType command, time_t timeOut, ResponseVerifyFunction validateFunc = NULL,
-                                         void *funcArg = NULL);
+    ServerPlayer *doBroadcastRaceRequest(QList<ServerPlayer *> &players, QSanProtocol::CommandType command, time_t timeOut, ResponseVerifyFunction validateFunc = nullptr,
+                                         void *funcArg = nullptr);
 
     // Notify a player of a event by sending S_SERVER_NOTIFICATION packets. No reply should be expected from
     // the client for S_SERVER_NOTIFICATION as it's a one way notice. Any message from the client in reply to this call
@@ -202,8 +202,8 @@ public:
     // player->getClientReply(), use the default value directly. If the return value is true, the reply value should still be
     // examined as a malicious client can have tampered with the content of the package for cheating purposes.
     bool getResult(ServerPlayer *player, time_t timeOut);
-    ServerPlayer *getRaceResult(QList<ServerPlayer *> &players, QSanProtocol::CommandType command, time_t timeOut, ResponseVerifyFunction validateFunc = NULL,
-                                void *funcArg = NULL);
+    ServerPlayer *getRaceResult(QList<ServerPlayer *> &players, QSanProtocol::CommandType command, time_t timeOut, ResponseVerifyFunction validateFunc = nullptr,
+                                void *funcArg = nullptr);
 
     // Verification functions
     bool verifyNullificationResponse(ServerPlayer *, const QVariant &, void *);
@@ -245,7 +245,7 @@ public:
     {
         doAnimate((QSanProtocol::AnimateType)type, arg1, arg2, players);
     }
-    void doBattleArrayAnimate(ServerPlayer *player, ServerPlayer *target = NULL);
+    void doBattleArrayAnimate(ServerPlayer *player, ServerPlayer *target = nullptr);
 
     void preparePlayers();
     void changePlayerGeneral(ServerPlayer *player, const QString &new_general);
@@ -317,9 +317,9 @@ public:
     void obtainCard(ServerPlayer *target, int card_id, bool unhide = true);
     void obtainCard(ServerPlayer *target, const Card *card, const CardMoveReason &reason, bool unhide = true);
 
-    void throwCard(int card_id, ServerPlayer *who, ServerPlayer *thrower = NULL, bool notifyLog = true);
-    void throwCard(const Card *card, ServerPlayer *who, ServerPlayer *thrower = NULL, bool notifyLog = true);
-    void throwCard(const Card *card, const CardMoveReason &reason, ServerPlayer *who, ServerPlayer *thrower = NULL, bool notifyLog = true);
+    void throwCard(int card_id, ServerPlayer *who, ServerPlayer *thrower = nullptr, bool notifyLog = true);
+    void throwCard(const Card *card, ServerPlayer *who, ServerPlayer *thrower = nullptr, bool notifyLog = true);
+    void throwCard(const Card *card, const CardMoveReason &reason, ServerPlayer *who, ServerPlayer *thrower = nullptr, bool notifyLog = true);
 
     void moveCardTo(const Card *card, ServerPlayer *dstPlayer, Player::Place dstPlace, bool forceMoveVisible = false);
     void moveCardTo(const Card *card, ServerPlayer *dstPlayer, Player::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible = false);
@@ -350,7 +350,7 @@ public:
                          Card::HandlingMethod method = Card::MethodNone, const QList<int> &disabled_ids = QList<int>());
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data, const QString &skill_name, int notice_index = -1);
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data = QVariant(),
-                           Card::HandlingMethod method = Card::MethodDiscard, ServerPlayer *to = NULL, bool isRetrial = false, const QString &skill_name = QString(),
+                           Card::HandlingMethod method = Card::MethodDiscard, ServerPlayer *to = nullptr, bool isRetrial = false, const QString &skill_name = QString(),
                            bool isProvision = false, int notice_index = -1);
     const Card *askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt, int notice_index = -1, Card::HandlingMethod method = Card::MethodUse,
                               bool addHistory = true, const QString &skill_name = QString());
@@ -385,8 +385,8 @@ public:
     void processResponse(ServerPlayer *player, const QSanProtocol::Packet *arg);
     void addRobotCommand(ServerPlayer *player, const QVariant &arg);
     void fillRobotsCommand(ServerPlayer *player, const QVariant &arg);
-    void broadcastInvoke(const QSanProtocol::AbstractPacket *packet, ServerPlayer *except = NULL);
-    void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
+    void broadcastInvoke(const QSanProtocol::AbstractPacket *packet, ServerPlayer *except = nullptr);
+    void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = nullptr);
     void networkDelayTestCommand(ServerPlayer *player, const QVariant &);
     bool roleStatusCommand(ServerPlayer *player);
 
@@ -567,7 +567,7 @@ private:
     void chooseGenerals();
     void chooseHegemonyGenerals();
     AI *cloneAI(ServerPlayer *player);
-    void broadcast(const QString &message, ServerPlayer *except = NULL);
+    void broadcast(const QString &message, ServerPlayer *except = nullptr);
     void initCallbacks();
     QString askForOrder(ServerPlayer *player, const QString &default_choice);
     QString askForRole(ServerPlayer *player, const QStringList &roles, const QString &scheme);

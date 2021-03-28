@@ -442,8 +442,8 @@ protected:
     PhotoLayout _m_photoLayout;
     CommonLayout _m_commonLayout;
     DashboardLayout _m_dashboardLayout;
-    virtual bool _loadLayoutConfig(const QVariant &layoutConfig);
-    virtual bool _loadAnimationConfig(const QVariant &animationConfig);
+    bool _loadLayoutConfig(const QVariant &layoutConfig) override;
+    bool _loadAnimationConfig(const QVariant &animationConfig) override;
 };
 
 class QSanSkinScheme

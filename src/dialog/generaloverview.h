@@ -45,7 +45,7 @@ signals:
                 const QStringList &packages);
 
 protected:
-    virtual void accept();
+    void accept() override;
 
 private:
     QWidget *createInfoTab();
@@ -66,8 +66,8 @@ class GeneralOverview : public QDialog
     Q_OBJECT
 
 public:
-    GeneralOverview(QWidget *parent = 0);
-    ~GeneralOverview();
+    GeneralOverview(QWidget *parent = nullptr);
+    ~GeneralOverview() override;
     void fillGenerals(const QList<const General *> &generals, bool init = true);
 
     static GeneralOverview *getInstance(QWidget *main_window);

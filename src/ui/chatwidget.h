@@ -14,18 +14,18 @@ class MyPixmapItem : public QObject, public QGraphicsPixmapItem
     Q_OBJECT
 
 public:
-    MyPixmapItem(const QPixmap &pixmap, QGraphicsItem *parentItem = 0);
-    ~MyPixmapItem();
+    MyPixmapItem(const QPixmap &pixmap, QGraphicsItem *parentItem = nullptr);
+    ~MyPixmapItem() override;
 
 public:
-    QRectF boundingRect() const;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+    QRectF boundingRect() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
     void setSize(int x, int y);
     QString itemName;
 
 private:
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    virtual void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override;
     void initFaceBoardPos();
     void initEasyTextPos();
     int mouseCanClick(int x, int y);
@@ -48,11 +48,11 @@ class ChatWidget : public QGraphicsObject
 
 public:
     ChatWidget();
-    ~ChatWidget();
-    virtual QRectF boundingRect() const;
+    ~ChatWidget() override;
+    QRectF boundingRect() const override;
 
 protected:
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
 private:
     QPixmap base_pixmap;

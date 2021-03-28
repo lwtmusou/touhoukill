@@ -267,26 +267,26 @@ public:
     {
         return messageBody;
     }
-    bool parse(const QByteArray &raw);
-    QByteArray toJson() const;
-    QString toString() const;
-    PacketDescription getPacketDestination() const
+    bool parse(const QByteArray &raw) override;
+    QByteArray toJson() const override;
+    QString toString() const override;
+    PacketDescription getPacketDestination() const override
     {
         return static_cast<PacketDescription>(packetDescription & S_DEST_MASK);
     }
-    PacketDescription getPacketSource() const
+    PacketDescription getPacketSource() const override
     {
         return static_cast<PacketDescription>(packetDescription & S_SRC_MASK);
     }
-    PacketDescription getPacketType() const
+    PacketDescription getPacketType() const override
     {
         return static_cast<PacketDescription>(packetDescription & S_TYPE_MASK);
     }
-    PacketDescription getPacketDescription() const
+    PacketDescription getPacketDescription() const override
     {
         return packetDescription;
     }
-    CommandType getCommandType() const
+    CommandType getCommandType() const override
     {
         return command;
     }

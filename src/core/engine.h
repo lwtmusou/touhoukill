@@ -27,7 +27,7 @@ class Engine : public QObject
 
 public:
     Engine();
-    ~Engine();
+    ~Engine() override;
 
     void loadTranslations(const QString &locale);
     void addTranslationEntry(const QString &key, const QString &value);
@@ -157,7 +157,7 @@ class SurrenderCard : public SkillCard
 
 public:
     Q_INVOKABLE SurrenderCard();
-    void onUse(Room *room, const CardUseStruct &use) const;
+    void onUse(Room *room, const CardUseStruct &use) const override;
 };
 
 class CheatCard : public SkillCard
@@ -166,7 +166,7 @@ class CheatCard : public SkillCard
 
 public:
     Q_INVOKABLE CheatCard();
-    void onUse(Room *room, const CardUseStruct &use) const;
+    void onUse(Room *room, const CardUseStruct &use) const override;
 };
 
 extern Engine *Sanguosha;

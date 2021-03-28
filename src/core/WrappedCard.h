@@ -24,33 +24,33 @@ class WrappedCard : public Card
 
 public:
     Q_INVOKABLE explicit WrappedCard(Card *card);
-    ~WrappedCard();
+    ~WrappedCard() override;
 
     inline void setId(int id) override
     {
         m_id = id;
-        Q_ASSERT(m_card != NULL);
+        Q_ASSERT(m_card != nullptr);
         m_card->setId(id);
     }
 
     inline void setNumber(int number) override
     {
         m_number = number;
-        Q_ASSERT(m_card != NULL);
+        Q_ASSERT(m_card != nullptr);
         m_card->setNumber(number);
     }
 
     inline void setSuit(Suit suit) override
     {
         m_suit = suit;
-        Q_ASSERT(m_card != NULL);
+        Q_ASSERT(m_card != nullptr);
         m_card->setSuit(suit);
     }
 
     inline void setSkillName(const QString &skillName) override
     {
         m_skillName = skillName;
-        Q_ASSERT(m_card != NULL);
+        Q_ASSERT(m_card != nullptr);
         m_card->setSkillName(skillName);
     }
 
@@ -66,7 +66,7 @@ public:
     // Inherited member functions
     inline void onNullified(ServerPlayer *target) const override
     {
-        Q_ASSERT(m_card != NULL);
+        Q_ASSERT(m_card != nullptr);
         m_card->onNullified(target);
     }
     inline bool isModified() const override
@@ -75,62 +75,62 @@ public:
     }
     inline QString getClassName() const override
     {
-        Q_ASSERT(m_card != NULL);
-        Q_ASSERT(m_card->metaObject() != NULL);
+        Q_ASSERT(m_card != nullptr);
+        Q_ASSERT(m_card->metaObject() != nullptr);
         return m_card->getClassName();
     }
 
     inline const Card *getRealCard() const override
     {
-        Q_ASSERT(m_card != NULL);
+        Q_ASSERT(m_card != nullptr);
         return m_card;
     }
 
     inline bool isMute() const override
     {
-        Q_ASSERT(m_card != NULL);
+        Q_ASSERT(m_card != nullptr);
         return m_card->isMute();
     }
 
     inline bool willThrow() const override
     {
-        Q_ASSERT(m_card != NULL);
+        Q_ASSERT(m_card != nullptr);
         return m_card->willThrow();
     }
 
     inline bool canRecast() const override
     {
-        Q_ASSERT(m_card != NULL);
+        Q_ASSERT(m_card != nullptr);
         return m_card->canRecast();
     }
 
     inline Card::HandlingMethod getHandlingMethod() const override
     {
-        Q_ASSERT(m_card != NULL);
+        Q_ASSERT(m_card != nullptr);
         return m_card->getHandlingMethod();
     }
 
     inline bool hasPreAction() const override
     {
-        Q_ASSERT(m_card != NULL);
+        Q_ASSERT(m_card != nullptr);
         return m_card->hasPreAction();
     }
 
     inline QString getPackage() const override
     {
-        Q_ASSERT(m_card != NULL);
+        Q_ASSERT(m_card != nullptr);
         return m_card->getPackage();
     }
 
     inline QString getCommonEffectName() const override
     {
-        Q_ASSERT(m_card != NULL);
+        Q_ASSERT(m_card != nullptr);
         return m_card->getCommonEffectName();
     }
 
     inline bool matchTypeOrName(const QString &pattern) const override
     {
-        Q_ASSERT(m_card != NULL);
+        Q_ASSERT(m_card != nullptr);
         return m_card->matchTypeOrName(pattern);
     }
 
@@ -192,7 +192,7 @@ public:
 
     inline bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, int &maxVotes) const override
     {
-        Q_ASSERT(m_card != NULL);
+        Q_ASSERT(m_card != nullptr);
         return m_card->targetFilter(targets, to_select, Self, maxVotes);
     }
 
@@ -203,49 +203,49 @@ public:
 
     inline const Card *validate(CardUseStruct &cardUse) const override
     {
-        Q_ASSERT(m_card != NULL);
+        Q_ASSERT(m_card != nullptr);
         return m_card->validate(cardUse);
     }
 
     inline const Card *validateInResponse(ServerPlayer *user) const override
     {
-        Q_ASSERT(m_card != NULL);
+        Q_ASSERT(m_card != nullptr);
         return m_card->validateInResponse(user);
     }
 
     inline void doPreAction(Room *room, const CardUseStruct &cardUse) const override
     {
-        Q_ASSERT(m_card != NULL);
+        Q_ASSERT(m_card != nullptr);
         m_card->doPreAction(room, cardUse);
     }
 
     inline void onUse(Room *room, const CardUseStruct &cardUse) const override
     {
-        Q_ASSERT(m_card != NULL);
+        Q_ASSERT(m_card != nullptr);
         m_card->onUse(room, cardUse);
     }
 
     inline void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override
     {
-        Q_ASSERT(m_card != NULL);
+        Q_ASSERT(m_card != nullptr);
         m_card->use(room, source, targets);
     }
 
     inline void onEffect(const CardEffectStruct &effect) const override
     {
-        Q_ASSERT(m_card != NULL);
+        Q_ASSERT(m_card != nullptr);
         m_card->onEffect(effect);
     }
 
     inline bool isCancelable(const CardEffectStruct &effect) const override
     {
-        Q_ASSERT(m_card != NULL);
+        Q_ASSERT(m_card != nullptr);
         return m_card->isCancelable(effect);
     }
 
     inline bool isKindOf(const char *cardType) const override
     {
-        Q_ASSERT(m_card != NULL);
+        Q_ASSERT(m_card != nullptr);
         return m_card->isKindOf(cardType);
     }
 
