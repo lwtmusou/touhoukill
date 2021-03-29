@@ -402,14 +402,6 @@ RoomObject *Engine::currentRoomObject()
     return room;
 }
 
-Room *Engine::currentRoom()
-{
-    QObject *roomObject = currentRoomObject();
-    Room *room = qobject_cast<Room *>(roomObject);
-    Q_ASSERT(room != nullptr);
-    return room;
-}
-
 bool Engine::isGeneralHidden(const QString &general_name) const
 {
     const General *general = getGeneral(general_name);

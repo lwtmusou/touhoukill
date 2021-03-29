@@ -3637,25 +3637,25 @@ bool Room::_setPlayerGeneral(ServerPlayer *player, const QString &generalName, b
 
 void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
 {
-#define _NO_BROADCAST_SPEAKING                     \
-    do {                                           \
-        broadcast = false;                         \
-        JsonArray nbbody;                          \
-        nbbody << player->objectName();            \
-        nbbody << arg;                             \
-        doNotify(player, S_COMMAND_SPEAK, nbbody); \
-    } while (false)
     bool broadcast = true;
+    auto noBroadcastSpeaking = [&broadcast, player, arg, this]() {
+        broadcast = false;
+        JsonArray nbbody;
+        nbbody << player->objectName();
+        nbbody << arg;
+        doNotify(player, S_COMMAND_SPEAK, nbbody);
+    };
+
     if (player && Config.EnableCheat) {
         QString sentence = QString::fromUtf8(QByteArray::fromBase64(arg.toString().toLatin1()));
         if (sentence == ".BroadcastRoles") {
-            _NO_BROADCAST_SPEAKING;
+            noBroadcastSpeaking();
             foreach (ServerPlayer *p, m_alivePlayers) {
                 broadcastProperty(p, "role", p->getRole());
                 setPlayerProperty(p, "role_shown", true);
             }
         } else if (sentence.startsWith(".BroadcastRoles=")) {
-            _NO_BROADCAST_SPEAKING;
+            noBroadcastSpeaking();
             QString name = sentence.mid(12);
             foreach (ServerPlayer *p, m_alivePlayers) {
                 if (p->objectName() == name || p->getGeneralName() == name) {
@@ -3665,7 +3665,7 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
                 }
             }
         } else if (sentence == ".ShowHandCards") {
-            _NO_BROADCAST_SPEAKING;
+            noBroadcastSpeaking();
             QString split("----------");
             split = split.toUtf8().toBase64();
             JsonArray body;
@@ -3685,7 +3685,7 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
             }
             doNotify(player, S_COMMAND_SPEAK, body);
         } else if (sentence.startsWith(".ShowHandCards=")) {
-            _NO_BROADCAST_SPEAKING;
+            noBroadcastSpeaking();
             QString name = sentence.mid(15);
             foreach (ServerPlayer *p, m_alivePlayers) {
                 if (p->objectName() == name || p->getGeneralName() == name) {
@@ -3703,7 +3703,7 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
                 }
             }
         } else if (sentence.startsWith(".ShowPrivatePile=")) {
-            _NO_BROADCAST_SPEAKING;
+            noBroadcastSpeaking();
             QStringList arg = sentence.mid(17).split(":");
             if (arg.length() == 2) {
                 QString name = arg.first();
@@ -3725,7 +3725,7 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
                 }
             }
         } else if (sentence.startsWith(".SetAIDelay=")) {
-            _NO_BROADCAST_SPEAKING;
+            noBroadcastSpeaking();
             bool ok = false;
             int delay = sentence.midRef(12).toInt(&ok);
             if (ok) {
@@ -3733,18 +3733,18 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
                 Config.setValue("OriginAIDelay", delay);
             }
         } else if (sentence.startsWith(".SetGameMode=")) {
-            _NO_BROADCAST_SPEAKING;
+            noBroadcastSpeaking();
             QString name = sentence.mid(13);
             setTag("NextGameMode", name);
         } else if (sentence.startsWith(".SecondGeneral=")) {
-            _NO_BROADCAST_SPEAKING;
+            noBroadcastSpeaking();
             QString prop = sentence.mid(15);
             setTag("NextGameSecondGeneral", !prop.isEmpty() && prop != "0" && prop != "false");
         } else if (sentence == ".Pause") {
-            _NO_BROADCAST_SPEAKING;
+            noBroadcastSpeaking();
             pauseCommand(player, "true");
         } else if (sentence == ".Resume") {
-            _NO_BROADCAST_SPEAKING;
+            noBroadcastSpeaking();
             pauseCommand(player, "false");
         }
     }
@@ -3757,8 +3757,6 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
         body << arg;
         doBroadcastNotify(S_COMMAND_SPEAK, body);
     }
-
-#undef _NO_BROADCAST_SPEAKING
 }
 
 void Room::processResponse(ServerPlayer *player, const Packet *packet)
@@ -5379,8 +5377,8 @@ void Room::filterCards(ServerPlayer *player, QList<const Card *> cards, bool ref
             bool converged = true;
             foreach (const FilterSkill *skill, filterSkills) {
                 Q_ASSERT(skill);
-                if (skill->viewFilter(cards[i])) {
-                    cards[i] = skill->viewAs(card);
+                if (skill->viewFilter(cards[i], player)) {
+                    cards[i] = skill->viewAs(card, player);
                     Q_ASSERT(cards[i] != NULL);
                     converged = false;
                     cardChanged[i] = true;

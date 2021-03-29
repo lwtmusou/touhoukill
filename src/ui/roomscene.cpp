@@ -15,7 +15,6 @@
 #include "generaloverview.h"
 #include "indicatoritem.h"
 #include "lightboxanimation.h"
-#include "math.h"
 #include "pixmapanimation.h"
 #include "playercardbox.h"
 #include "qsanbutton.h"
@@ -49,6 +48,7 @@
 #include <QTimer>
 #include <QTransform>
 #include <QtMath>
+#include <cmath>
 
 using namespace QSanProtocol;
 
@@ -2108,7 +2108,7 @@ void RoomScene::toggleDiscards()
     overview->setWindowTitle(tr("Discarded pile"));
     QList<const Card *> cards;
     foreach (int id, ClientInstance->getDiscardPile())
-        cards << ClientInstance->getCard(id);
+        cards << Sanguosha->getEngineCard(id);
     overview->loadFromList(cards);
     overview->show();
 }

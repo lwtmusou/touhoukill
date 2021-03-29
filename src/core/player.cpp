@@ -1883,15 +1883,9 @@ bool Player::hasShownSkill(const Skill *skill) const
 bool Player::hasShownSkill(const QString &skill_name) const
 {
     const Skill *skill = Sanguosha->getSkill(skill_name);
-    if (skill == nullptr) {
-        QObject *roomObject = Sanguosha->currentRoomObject();
-        Room *room = qobject_cast<Room *>(roomObject);
-        if (room != nullptr)
-            room->output("no such skill " + skill_name);
-        qWarning("%s", QString("no such skill " + skill_name).toStdString().c_str());
-
+    if (skill == nullptr)
         return false;
-    }
+
     return hasShownSkill(skill);
 }
 

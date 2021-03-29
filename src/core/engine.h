@@ -108,7 +108,6 @@ public:
 
     void registerRoom(RoomObject *room);
     void unregisterRoom();
-    Room *currentRoom();
     RoomObject *currentRoomObject();
 
     bool isGeneralHidden(const QString &general_name) const;

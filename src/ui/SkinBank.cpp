@@ -1,7 +1,6 @@
 #include "SkinBank.h"
 #include "clientstruct.h"
 #include "engine.h"
-#include "math.h"
 #include "protocol.h"
 #include "settings.h"
 #include "uiUtils.h"
@@ -18,6 +17,7 @@
 #include <QPropertyAnimation>
 #include <QStyleOptionGraphicsItem>
 #include <QTextItem>
+#include <cmath>
 
 using namespace std;
 using namespace JsonUtils;

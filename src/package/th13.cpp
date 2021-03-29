@@ -223,7 +223,7 @@ void XihuaDialog::popup(Player *_Self)
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
     QStringList ban_list = Sanguosha->getBanPackages();
     foreach (const Card *card, cards) {
-        if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) { //&& !ServerInfo.Extensions.contains("!" + card->getPackage())
+        if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) {
             QString name = card->objectName();
             QString pattern = card->objectName();
             if (pattern.contains("slash"))
@@ -327,7 +327,7 @@ QGroupBox *XihuaDialog::createRight()
 
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
     foreach (const Card *card, cards) {
-        if (card->isNDTrick() && !map.contains(card->objectName()) && !ban_list.contains(card->getPackage())) { // && !ServerInfo.Extensions.contains("!" + card->getPackage())
+        if (card->isNDTrick() && !map.contains(card->objectName()) && !ban_list.contains(card->getPackage())) {
             Card *c = Sanguosha->cloneCard(card->objectName());
             c->setSkillName(object_name);
             c->setParent(this);
@@ -592,10 +592,9 @@ public:
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         QStringList ban_list = Sanguosha->getBanPackages();
         foreach (const Card *card, cards) {
-            if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) { //!ServerInfo.Extensions.contains("!" + card->getPackage())
+            if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) {
                 QString p = card->objectName();
-                if (!checkedPatterns.contains(p) && skill->matchAvaliablePattern(p, pattern)
-                    && !XihuaClear::xihua_choice_limit(Self, p, method)) //&& !Self->isCardLimited(card, method)
+                if (!checkedPatterns.contains(p) && skill->matchAvaliablePattern(p, pattern) && !XihuaClear::xihua_choice_limit(Self, p, method))
                     checkedPatterns << p;
             }
         }
@@ -1582,7 +1581,7 @@ public:
         events << Damaged;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent  /*e*/, const Room * /*room*/, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent /*e*/, const Room * /*room*/, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.to->hasSkill(this) && damage.to->isAlive() && !damage.to->isKongcheng() && !damage.to->containsTrick("supply_shortage"))
@@ -1615,7 +1614,7 @@ public:
         return card != nullptr;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>  /*invoke*/, QVariant &data) const override
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> /*invoke*/, QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
         QList<ServerPlayer *> targets;

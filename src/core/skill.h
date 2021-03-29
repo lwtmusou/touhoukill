@@ -131,8 +131,8 @@ class FilterSkill : public Skill
 public:
     explicit FilterSkill(const QString &name);
 
-    virtual bool viewFilter(const Card *to_select) const = 0;
-    virtual const Card *viewAs(const Card *originalCard) const = 0;
+    virtual bool viewFilter(const Card *to_select, const Player *Self) const = 0;
+    virtual const Card *viewAs(const Card *originalCard, const Player *Self) const = 0;
 };
 
 class TriggerSkill : public Skill

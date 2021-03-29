@@ -417,7 +417,7 @@ void QijiDialog::popup(Player *_Self)
     if (object_name == "huaxiang") {
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         foreach (const Card *card, cards) {
-            if (card->isKindOf("BasicCard") && !ban_list.contains(card->getPackage())) { // && !ServerInfo.Extensions.contains("!" + card->getPackage())
+            if (card->isKindOf("BasicCard") && !ban_list.contains(card->getPackage())) {
                 QString name = card->objectName();
                 if (!validPatterns.contains(name)) {
                     if (name.contains("jink") && Self->getMaxHp() > 3)
@@ -431,7 +431,7 @@ void QijiDialog::popup(Player *_Self)
     } else {
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         foreach (const Card *card, cards) {
-            if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) { //&& !ServerInfo.Extensions.contains("!" + card->getPackage())
+            if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) {
                 QString name = card->objectName();
                 if (!validPatterns.contains(name))
                     validPatterns << card->objectName();
@@ -611,7 +611,7 @@ public:
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         QStringList ban_list = Sanguosha->getBanPackages();
         foreach (const Card *card, cards) {
-            if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) { //&& !ServerInfo.Extensions.contains("!" + card->getPackage())
+            if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) {
                 QString p = card->objectName();
                 if (!checkedPatterns.contains(p) && skill->matchAvaliablePattern(p, pattern) && !Self->isCardLimited(card, method))
                     checkedPatterns << p;

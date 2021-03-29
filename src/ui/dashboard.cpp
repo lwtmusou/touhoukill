@@ -1313,7 +1313,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
             pile += p->getPile(new_name);
     } else if (pile_name == "#xiuye_temp") {
         foreach (int id, ClientInstance->getDiscardPile()) {
-            const Card *c = ClientInstance->getCard(id);
+            const Card *c = Sanguosha->getEngineCard(id);
             if (c->getSuit() == Card::Club && (c->isNDTrick() || c->getTypeId() == Card::TypeBasic))
                 pile << c->getEffectiveId();
         }

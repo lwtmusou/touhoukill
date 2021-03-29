@@ -793,7 +793,7 @@ public:
             QStringList ban_list = Sanguosha->getBanPackages();
             foreach (const Card *card, cards) {
                 if (card->getTypeId() == Card::TypeTrick && !card->isNDTrick() && card->getSubtype() == "unmovable_delayed_trick" && !trick_list.contains(card->objectName())
-                    && !ban_list.contains(card->getPackage())) { // && !ServerInfo.Extensions.contains("!" + card->getPackage())
+                    && !ban_list.contains(card->getPackage())) {
                     if (!kana->containsTrick(card->objectName()))
                         trick_list << card->objectName();
                 }
@@ -1589,18 +1589,16 @@ public:
     {
     }
 
-    bool viewFilter(const Card *to_select) const override
+    bool viewFilter(const Card *to_select, const Player *Self) const override
     {
-        Room *room = Sanguosha->currentRoom();
-        ServerPlayer *player = room->getCardOwner(to_select->getId());
-        return player != nullptr && !player->isCurrent() && to_select->getSuit() == Card::Spade && to_select->isKindOf("Slash");
+        return !Self->isCurrent() && to_select->getSuit() == Card::Spade && to_select->isKindOf("Slash");
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player *Self) const override
     {
         Jink *jink = new Jink(originalCard->getSuit(), originalCard->getNumber());
         jink->setSkillName(objectName());
-        WrappedCard *card = Sanguosha->currentRoom()->getWrappedCard(originalCard->getId());
+        WrappedCard *card = Self->getRoomObject()->getWrappedCard(originalCard->getId());
         card->takeOver(jink);
         return card;
     }

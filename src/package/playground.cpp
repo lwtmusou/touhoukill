@@ -737,18 +737,16 @@ public:
     {
     }
 
-    bool viewFilter(const Card *to_select) const override
+    bool viewFilter(const Card *to_select, const Player *Self) const override
     {
-        const Room *room = Sanguosha->currentRoom();
-        Q_ASSERT(room != nullptr);
-        return room->getCardPlace(to_select->getId()) == Player::PlaceHand;
+        return !to_select->isEquipped(Self);
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const Card *originalCard, const Player *Self) const override
     {
         PowerSlash *slash = new PowerSlash(originalCard->getSuit(), originalCard->getNumber());
         slash->setSkillName("bmmaoji");
-        WrappedCard *wrap = Sanguosha->currentRoom()->getWrappedCard(originalCard->getId());
+        WrappedCard *wrap = Self->getRoomObject()->getWrappedCard(originalCard->getId());
         wrap->takeOver(slash);
         return wrap;
     }
