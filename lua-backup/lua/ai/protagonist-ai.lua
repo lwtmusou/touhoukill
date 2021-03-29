@@ -1,4 +1,4 @@
-
+--博丽灵梦
 --SmartAI:needRetrial(judge)
 function SmartAI:lingqiParse(self,target, data)
 	use = data:toCardUse()
@@ -92,7 +92,16 @@ sgs.ai_skillProperty.lingqi = function(self)
 	return "cause_judge"
 end
 
-sgs.ai_skill_invoke.qixiang =function(self,data)
+sgs.ai_slash_prohibit.lingqi = function(self, from, to, card)
+	if self:isFriend(from,to) then
+		return false
+	end
+	local wizard_type ,wizard = self:getFinalRetrial()
+	return  (wizard  and self:invokeTouhouJudge(to))
+end
+
+
+--[[sgs.ai_skill_invoke.qixiang =function(self,data)
 	local target= data:toJudge().who
 	if target and self:isFriend(target) then
 		return true
@@ -115,6 +124,15 @@ sgs.ai_choicemade_filter.skillInvoke.qixiang = function(self, player, args, data
 		end
 	end
 end
+]]
+
+--[绮想]
+sgs.ai_skill_playerchosen.qixiang = function(self,targets)
+	if #self.friends == 0 then return nil end
+	self:sort(self.friends, "handcard")
+	return self.friends[1]
+end
+sgs.ai_playerchosen_intention.qixiang = -60
 
 function fengmoBenefit(self, target)
 	if not self.player:hasSkill("qixiang") then
@@ -123,21 +141,15 @@ function fengmoBenefit(self, target)
 	return not target:isCurrent() and self.player:getMaxHp() > target:getHandcardNum() and self:isFriend(target)
 end
 
+--[封魔]
 sgs.ai_skill_cardask["@fengmo"] = function(self, data)
 	if not self:invokeTouhouJudge() then return nil end
     local target = self.player:getTag("fengmo_target"):toPlayer()
-	local current = self.room:getCurrent()
-	if not current then return nil end
 	
-	if self:isEnemy(current) and self:getOverflow(current, true) > 0 then
-		local cards={}
-		for _,card in sgs.qlist(self.player:getCards("hs")) do
-			if card:getSuit() ~=sgs.Card_Heart then
-				table.insert(cards, card)
-			end
-		end
-		local judge = data:toJudge()
-
+	
+	if self:isEnemy(target)  then
+		local cards= sgs.QList2Table(self.player:getCards("hs"))
+		self:sortByUseValue(cards,true)
 		if #cards ==0 then return "." end
 		return "$" .. cards[1]:getId()
 	end
@@ -149,10 +161,13 @@ sgs.ai_skill_choice.fengmo = function(self, choices, data)
 	return "card"
 end
 
+
+--[同诘]
 sgs.ai_skill_invoke.tongjie_hegemony =function(self,data)
 	return true
 end
 
+--[退治・国]
 sgs.ai_skill_playerchosen.tuizhi_hegemony = function(self, targets)
 	for _,p  in sgs.qlist(targets) do
 		if self:isEnemy(p) then
@@ -162,6 +177,12 @@ sgs.ai_skill_playerchosen.tuizhi_hegemony = function(self, targets)
 	return nil
 end
 
+sgs.ai_cardneed.tuizhi_hegemony = function(to, card, self)
+	return card:getSuit() == sgs.Card_Heart
+end
+
+
+--[博丽]
 table.insert(sgs.ai_global_flags, "bolisource")
 sgs.ai_skill_invoke.boli = function(self,data)
 	local judge=data:toJudge()
@@ -212,19 +233,15 @@ sgs.ai_choicemade_filter.cardResponded["@boli-retrial"] = function(self, player,
 	end
 end
 
-sgs.ai_slash_prohibit.lingqi = function(self, from, to, card)
-	if self:isFriend(from,to) then
-		return false
-	end
-	local wizard_type ,wizard = self:getFinalRetrial()
-	return  (wizard  and self:invokeTouhouJudge(to))
-end
 
 
 sgs.ai_skillProperty.boli = function(self)
 	return "noKingdom"
 end
 
+
+--雾雨魔理沙 
+--[魔法]
 --function SmartAI:hasHeavySlashDamage(from, slash, to, getValue)
 local mofa_skill = {}
 mofa_skill.name = "mofa"
@@ -319,8 +336,13 @@ sgs.ai_cardneed.mofa = function(to, card, self)
 	return card:getSuit()==sgs.Card_Spade
 end
 
+--[魔法 国]
+sgs.ai_skill_invoke.mofa_hegemony =function(self,data)
+	return true
+end
 
 
+--[雾雨]
 local wuyuvs_skill = {}
 wuyuvs_skill.name = "wuyu_attach"
 table.insert(sgs.ai_skills, wuyuvs_skill)
@@ -376,6 +398,9 @@ sgs.ai_skillProperty.wuyu = function(self)
 	return "noKingdom"
 end
 
+
+--SP无节操灵梦
+--[赛钱]
 function SmartAI:hasSkillsForSaiqian(player)
 	player = player or self.player
 	if player:hasSkills("xisan|yongheng|kongpiao") then
@@ -490,6 +515,9 @@ sgs.saiqian_suit_value = {
 	heart = 4.9
 }
 
+
+--SP大盗魔理沙
+--[借走]
 --find cost for jiezou
 function jiezouSpade(self,player)
 	local cards
@@ -615,6 +643,36 @@ sgs.jiezou_suit_value = {
 }
 
 
+
+--[借走 国]
+local jiezou_hegemony_skill = {}
+jiezou_hegemony_skill.name = "jiezou_hegemony"
+table.insert(sgs.ai_skills, jiezou_hegemony_skill)
+function jiezou_hegemony_skill.getTurnUseCard(self)
+	if self.player:hasFlag("jiezou_hegemony") then return nil end
+	local cards = self.player:getCards("hes")
+	cards=self:touhouAppendExpandPileToList(self.player, cards)
+	cards=sgs.QList2Table(cards)
+	local card
+	self:sortByUseValue(cards,true)
+	for _,acard in ipairs(cards) do
+		if acard:getSuit() == sgs.Card_Spade then
+			card = acard
+			break
+		end
+	end
+	if not card then return nil end
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	local card_str = ("snatch:jiezou_hegemony[%s:%s]=%d"):format(suit, number, card_id)
+	local skillcard = sgs.Card_Parse(card_str)
+	assert(skillcard)
+	return skillcard
+end
+
+
+--[收藏]
 function keycard_shoucang(card)
 	if card:isKindOf("Peach") or card:isKindOf("SavageAssault")
 	or card:isKindOf("ArcheryAttack") or card:isKindOf("ExNihilo") then
@@ -649,7 +707,8 @@ end
 
 
 
-
+--SP超魔理沙
+--[爆衣]
 sgs.ai_need_bear.baoyi = function(self, card,from,tos)
 	from = from or self.player
 	local Overflow = self:getOverflow(from) >1
@@ -763,7 +822,8 @@ sgs.ai_trick_prohibit.baoyi = function(self, from, to, card)
 end
 
 
-
+--妖妖梦SP灵梦
+--[职责]
 function SmartAI:zhizeValue(player)
 	if self:touhouHandCardsFix(player) or player:hasSkill("heibai") then
 		return 0
@@ -868,7 +928,7 @@ sgs.ai_skill_cardchosen.zhize = function(self, who, flags)
 	end
 end
 
-
+--[春息]
 sgs.ai_skill_use["@@chunxi"] = function(self, prompt)
 	local move = self.player:getTag("chunxi_move"):toMoveOneTime()
 	local ids = {}
@@ -925,7 +985,8 @@ sgs.chunxi_suit_value = {
 }
 
 
-
+--神灵庙SP灵梦
+--[五欲]
 function bllmwuyu_discard(player)
 	local cards = sgs.QList2Table(player:getCards("hes"))
 	local all_hearts={}
@@ -1095,6 +1156,8 @@ sgs.bllmwuyu_suit_value = {
 sgs.ai_use_priority.BllmWuyuCard =sgs.ai_use_priority.Slash +0.2
 
 
+--神灵庙SP魔理沙
+--[强欲]
 sgs.ai_skill_invoke.qiangyu = true
 sgs.ai_skill_cardask["qiangyu-discard"] = function(self, data)
 	local blacks = {}
@@ -1128,6 +1191,7 @@ sgs.qiangyu_suit_value = {
 	spade = 4.9
 }
 
+--[魔开]
 sgs.ai_skill_cardask["@mokai"] = function(self, data)
 	local cards = {}
 	for _,c in sgs.qlist(self.player:getCards("hes")) do
@@ -1157,7 +1221,7 @@ sgs.ai_skill_cardask["@mokai-dis"] = function(self)
 	return "$" .. pile:at(math.random(0, pile:length() - 1))
 end
 
-
+--旧版技能
 sgs.ai_skill_cardask["@guangji-invoke"] =function(self,data)
    local use = data:toCardUse()
    if self:touhouCardUseEffectNullify(use,self.player) then return "." end --此杀已经无效
@@ -1183,8 +1247,8 @@ sgs.ai_skill_invoke.xinghui = true
 
 
 
-
-
+--神灵庙SP早苗
+--[私欲]
 local dfgzmsiyu_skill = {}
 dfgzmsiyu_skill.name = "dfgzmsiyu"
 table.insert(sgs.ai_skills, dfgzmsiyu_skill)
@@ -1265,7 +1329,8 @@ end
 
 
 
-
+--神灵庙SP妖梦
+--[死欲]
 sgs.ai_slash_prohibit.hpymsiyu = function(self, from, to, card)
 	if self:isFriend(from,to) then
 		return false
@@ -1312,7 +1377,20 @@ sgs.ai_damage_prohibit.hpymsiyu = function(self, from, to, damage)
 	return recoverNum>0
 end
 
+function SmartAI:touhouBreakDamage(damage,to)
+	if to:hasSkill("hpymsiyu") and to:getPhase()==sgs.Player_NotActive then
+		if to:getHp()>0   then
+			return damage.damage>= to:getHp()
+		else
+			return damage.damage>0
+		end
+	end
+	return false
+end
 
+sgs.ai_skill_invoke.hpymsiyu =  true
+
+--[居合]
 sgs.ai_skill_invoke.juhe = true
 --sgs.ai_skill_discard.juhe = sgs.ai_skill_discard.gamerule
 sgs.ai_skill_discard.juhe = function(self,discard_num)
@@ -1353,20 +1431,10 @@ sgs.ai_skill_discard.juhe = function(self,discard_num)
 	end
 	return to_discard
 end
-function SmartAI:touhouBreakDamage(damage,to)
-	if to:hasSkill("hpymsiyu") and to:getPhase()==sgs.Player_NotActive then
-		if to:getHp()>0   then
-			return damage.damage>= to:getHp()
-		else
-			return damage.damage>0
-		end
-	end
-	return false
-end
-
-sgs.ai_skill_invoke.hpymsiyu =  true
 
 
+--旧作SP灵梦
+--[阴阳]
 local yinyang_skill = {}
 yinyang_skill.name = "yinyang"
 table.insert(sgs.ai_skills, yinyang_skill)
@@ -1430,7 +1498,7 @@ sgs.ai_skill_cardask["@yinyang_discard"] = function(self, data)
 	return "$" .. cards[1]:getId()
 end
 
-
+--[灵击]
 sgs.ai_skill_playerchosen.lingji = function(self, targets)
 	local target_table =sgs.QList2Table(targets)
 	self:sort(target_table, "hp")
@@ -1459,6 +1527,9 @@ sgs.lingji_suit_value = {
 }
 
 
+
+--旧作SP魔理沙
+--[偷师]
 sgs.ai_skill_use["@@toushi"] = function(self, prompt)
 	local cards = {}
 	for _,c in sgs.qlist(self:touhouAppendExpandPileToList(self.player, self.player:getCards("hes"))) do
@@ -1532,7 +1603,7 @@ sgs.ai_cardneed.toushi = function(to, card, self)
 	return card:isKindOf("BasicCard") or card:getSuit() == sgs.Card_Spade
 end
 
-
+--[魔力]
 sgs.ai_skill_playerchosen.moli = function(self, targets)
 	targets=sgs.QList2Table(targets)
 	self:sort(targets,"hp")
@@ -1551,7 +1622,8 @@ sgs.ai_no_playerchosen_intention.moli =function(self, from)
 	end
 end
 
-
+--绀珠传SP铃仙
+--[波动]
 local bodong_skill = {}
 bodong_skill.name = "bodong"
 table.insert(sgs.ai_skills, bodong_skill)
@@ -1597,6 +1669,7 @@ sgs.ai_use_value.BodongCard = 8
 sgs.ai_use_priority.BodongCard =7
 sgs.ai_card_intention.BodongCard = 20
 
+--[幻胧]
 --幻胧现在无脑摸好了
 sgs.ai_skill_invoke.huanlong =  true
 --sgs.ai_choicemade_filter.cardChosen.huanlong = sgs.ai_choicemade_filter.cardChosen.dismantlement

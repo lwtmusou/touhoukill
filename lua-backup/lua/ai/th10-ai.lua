@@ -1,5 +1,5 @@
-
-
+--八坂神奈子
+--[神德]
 sgs.ai_skill_invoke.shende = true
 sgs.ai_skill_discard.shende = function(self)
 	local to_discard = {}
@@ -50,8 +50,7 @@ sgs.shende_keep_value = {
 }
 
 
-
-
+--[供奉]
 local gongfengvs_skill = {}
 gongfengvs_skill.name = "gongfeng_attach"
 table.insert(sgs.ai_skills, gongfengvs_skill)
@@ -89,7 +88,8 @@ sgs.ai_skill_use_func.GongfengCard = function(card, use, self)
 end
 sgs.ai_card_intention.GongfengCard = -40
 
-
+--洩矢诹访子
+--[不输]
 function findBushuCard(self,from)
 	local selfPoint = self:getMaxCard():getNumber()
 	local fromCard
@@ -166,7 +166,7 @@ sgs.ai_cardneed.bushu = function(to, card, self)
 	end
 end
 
-
+--[传承]
 sgs.ai_skill_playerchosen.chuancheng = function(self,targets)
 	local target_table =sgs.QList2Table(targets)
 	if #target_table==0 then return false end
@@ -205,11 +205,15 @@ sgs.ai_skill_playerchosen.chuancheng_hegmony = function(self,targets)
 	return nil
 end
 
+
+--东风谷早苗
+--[祭仪]
 sgs.ai_skill_invoke.dfgzmjiyi  =function(self,data)
 	if self.player:isKongcheng() then return false end
 	return true
 end
 
+--[奇迹]
 local qiji_skill = {}
 qiji_skill.name = "qiji"
 table.insert(sgs.ai_skills, qiji_skill)
@@ -331,7 +335,8 @@ function sgs.ai_cardsview_valuable.qiji(self, class_name, player)
 	end
 end
 
-
+--射命丸文
+--[风神]
 local fengshen_skill = {}
 fengshen_skill.name = "fengshen"
 table.insert(sgs.ai_skills, fengshen_skill)
@@ -459,8 +464,8 @@ end
 
 
 
-
-
+--河城荷取
+--[心伤]
 local xinshang_skill = {}
 xinshang_skill.name = "xinshang"
 table.insert(sgs.ai_skills, xinshang_skill)
@@ -502,7 +507,7 @@ end
 sgs.ai_use_value.XinshangCard = sgs.ai_use_value.Dismantlement + 1
 sgs.ai_use_priority.XinshangCard = sgs.ai_use_priority.Dismantlement + 1
 sgs.ai_card_intention.XinshangCard = 50
-
+--[迷彩]
 sgs.ai_skill_invoke.micai =  true
 sgs.ai_damageInflicted.micai =function(self, damage)
 	if  damage.to:getHandcardNum() < damage.damage then
@@ -513,7 +518,8 @@ sgs.ai_damageInflicted.micai =function(self, damage)
 end
 
 
-
+--键山雏
+--[集厄]
 sgs.ai_skill_invoke.jie = function(self,data)
 	local damage = data:toDamage()
 
@@ -575,7 +581,7 @@ function SmartAI:canJie(player)
 end
 
 
-
+--[流刑]
 sgs.ai_skill_cardask["@liuxing"] = function(self,data)
 	local blacks ={}
 	for _, c in sgs.qlist(self.player:getCards("hs")) do
@@ -609,6 +615,9 @@ sgs.ai_choicemade_filter.skillChoice.liuxing = function(self, player, args, data
 	end
 end
 
+
+--SP高中生早苗
+--[常识]
 --[[function SmartAI:cautionChangshi()
 	local sanae = self.room:findPlayerBySkillName("changshi")
 	if sanae then return true end
@@ -633,73 +642,12 @@ sgs.ai_skill_choice.changshi= function(self, choices, data)
 
 	return "cancel"
 end
-
+--[纪念]
 sgs.ai_skill_invoke.jinian = true
 
-local buju_skill = {}
-buju_skill.name = "buju"
-table.insert(sgs.ai_skills, buju_skill)
-function buju_skill.getTurnUseCard(self)
-	if self.player:hasUsed("BujuCard") then return nil end
-	--if ( self:willShowForAttack() or self:willShowForDefence())
-	return sgs.Card_Parse("@BujuCard=.")
-	--end
-end
-sgs.ai_skill_use_func.BujuCard = function(card, use, self)
-	use.card=card
-end
-sgs.ai_use_value.BujuCard = 8
-sgs.ai_use_priority.BujuCard = 7
-sgs.ai_skill_discard.buju = function(self,discard_num, min_num)
-	--local next_player = self.player:getNextAlive()
-	local next_player =  self.room:nextPlayer(self.player)
-	local judgeReasons = self:touhouGetJudges(next_player)
-	local cards = self.player:getCards("hes")
-	cards = sgs.QList2Table(cards)
-	self:sortByKeepValue(cards)
 
-	local to_discard, tmp  = {}, {} --tmp for_judge
-	for _,reason in pairs (judgeReasons) do
-		local fakeJudge = self:touhouBulidJudge(reason, next_player)
-		if fakeJudge ~= nil then
-			fakeJudge.card = cards[1]
-			local judge_id = self:getRetrialCardId(cards, fakeJudge)
-			if judge_id == - 1 then
-				table.insert(tmp, fakeJudge.card:getEffectiveId())
-				table.remove(cards, 1)
-			else
-				local newCard = self.room:getCard(judge_id)
-				table.insert(tmp, judge_id)
-				table.removeOne(cards, newCard)
-			end
-		else
-			table.insert(tmp, -1)
-		end
-		if #tmp >= discard_num then
-			break
-		end
-	end
-
-	for index, id in pairs (tmp) do
-		if (id < 0) then
-			table.insert(to_discard, cards[1]:getEffectiveId())
-			table.remove(cards, 1)
-		else
-			table.insert(to_discard, id)
-		end
-	end
-
-	if #to_discard < discard_num then
-		for index, card in pairs (cards) do
-			table.insert(to_discard, card:getEffectiveId())
-			if (#to_discard >= discard_num) then break end
-		end
-	end
-
-	return to_discard
-end
-
-
+--犬走椛
+--[守护]
 sgs.ai_skill_playerchosen.shouhu = function(self, targets)
 	local t = sgs.QList2Table(targets)
 	self:sort(t,"hp",true)
@@ -719,6 +667,7 @@ sgs.ai_no_playerchosen_intention.shouhu =function(self, from)
 	end
 end
 
+--[哨戒]
 sgs.ai_skill_invoke.shaojie = function(self, data)
 	local current = data:toPlayer()
 	if current then
@@ -761,7 +710,8 @@ sgs.ai_damageInflicted.shaojie =function(self, damage)
 end
 
 
-
+--秋穰子
+--[丰穰]
 local fengrang_skill = {}
 fengrang_skill.name = "fengrang"
 table.insert(sgs.ai_skills, fengrang_skill)
@@ -780,11 +730,11 @@ end
 sgs.ai_use_priority.FengrangCard = sgs.ai_use_priority.AmazingGrace
 sgs.ai_use_value.FengrangCard = 3
 sgs.dynamic_value.benefit.FengrangCard = true
+--[收获]
 sgs.ai_skill_invoke.shouhuo =  true
 
-
-
-
+--秋静叶
+--[寂寥]
 function jiliaoParse(self, player)
 	local effect =false
 	if (self:hasSkills(sgs.lose_equip_skill, player) and  player:getCards("e"):length()>0)
@@ -878,7 +828,7 @@ sgs.ai_card_intention.JiliaoCard = function(self, card, from, tos)
 		sgs.updateIntentions(from, tos, 20)
 	end
 end
-
+--[终焉]
 sgs.ai_skill_invoke.zhongyan = function(self,data)
 	local damage = data:toDamage()
 	local target=damage.from
@@ -960,4 +910,67 @@ sgs.ai_damage_prohibit.zhongyan = function(self, from, to, damage)
 	return false
 end
 
+--SP犬走椛
+--[布局]
+local buju_skill = {}
+buju_skill.name = "buju"
+table.insert(sgs.ai_skills, buju_skill)
+function buju_skill.getTurnUseCard(self)
+	if self.player:hasUsed("BujuCard") then return nil end
+	--if ( self:willShowForAttack() or self:willShowForDefence())
+	return sgs.Card_Parse("@BujuCard=.")
+	--end
+end
+sgs.ai_skill_use_func.BujuCard = function(card, use, self)
+	use.card=card
+end
+sgs.ai_use_value.BujuCard = 8
+sgs.ai_use_priority.BujuCard = 7
+sgs.ai_skill_discard.buju = function(self,discard_num, min_num)
+	--local next_player = self.player:getNextAlive()
+	local next_player =  self.room:nextPlayer(self.player)
+	local judgeReasons = self:touhouGetJudges(next_player)
+	local cards = self.player:getCards("hes")
+	cards = sgs.QList2Table(cards)
+	self:sortByKeepValue(cards)
 
+	local to_discard, tmp  = {}, {} --tmp for_judge
+	for _,reason in pairs (judgeReasons) do
+		local fakeJudge = self:touhouBulidJudge(reason, next_player)
+		if fakeJudge ~= nil then
+			fakeJudge.card = cards[1]
+			local judge_id = self:getRetrialCardId(cards, fakeJudge)
+			if judge_id == - 1 then
+				table.insert(tmp, fakeJudge.card:getEffectiveId())
+				table.remove(cards, 1)
+			else
+				local newCard = sgs.Sanguosha:getCard(judge_id)
+				table.insert(tmp, judge_id)
+				table.removeOne(cards, newCard)
+			end
+		else
+			table.insert(tmp, -1)
+		end
+		if #tmp >= discard_num then
+			break
+		end
+	end
+
+	for index, id in pairs (tmp) do
+		if (id < 0) then
+			table.insert(to_discard, cards[1]:getEffectiveId())
+			table.remove(cards, 1)
+		else
+			table.insert(to_discard, id)
+		end
+	end
+
+	if #to_discard < discard_num then
+		for index, card in pairs (cards) do
+			table.insert(to_discard, card:getEffectiveId())
+			if (#to_discard >= discard_num) then break end
+		end
+	end
+
+	return to_discard
+end

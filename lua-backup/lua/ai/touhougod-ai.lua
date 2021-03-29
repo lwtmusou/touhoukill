@@ -1,4 +1,5 @@
-
+--神八云紫
+--[界线]
 sgs.ai_skill_cardask["@jiexiandamage"] = function(self, data)
 	local target=data:toDamage().to
 	local damage = data:toDamage()
@@ -75,7 +76,12 @@ sgs.ai_choicemade_filter.cardResponded["@jiexianrecover"] = function(self, playe
 	end
 end
 
+
+--神 蕾米莉亚·斯卡蕾特
+--[昼夜]
 sgs.ai_skill_invoke.zhouye =  true
+
+--[红雾]
 local hongwu_skill = {}
 hongwu_skill.name = "hongwu"
 table.insert(sgs.ai_skills, hongwu_skill)
@@ -119,6 +125,7 @@ sgs.ai_cardneed.hongwu = function(to, card, self)
 	return card:isRed()
 end
 
+--[神枪]
 local shenqiang_skill = {}
 shenqiang_skill.name = "shenqiang"
 table.insert(sgs.ai_skills, shenqiang_skill)
@@ -165,6 +172,7 @@ sgs.ai_cardneed.shenqiang = function(to, card, self)
 end
 sgs.ai_use_priority.ShenqiangCard = 7.6
 
+--[夜王]
 sgs.ai_damageInflicted.yewang=function(self,damage)
 	if damage.to:getMark("@ye") then
 		damage.damage=damage.damage-1
@@ -172,7 +180,8 @@ sgs.ai_damageInflicted.yewang=function(self,damage)
 	return damage
 end
 
-
+--神 琪露诺
+--[冰封]
 sgs.ai_skill_invoke.bingfeng =  true
 sgs.ai_damageCaused.bingfeng = function(self, damage)
 	if damage.card then
@@ -182,8 +191,11 @@ sgs.ai_damageCaused.bingfeng = function(self, damage)
 	end
 	return damage
 end
+--[武神]
 sgs.ai_skill_invoke.wushen =  true
 
+-- 神 灵乌路空
+--[失控]
 sgs.ai_skill_invoke.shikong =  true
 sgs.ai_cardneed.shikong = function(to, card, self)
 	if not self:willSkipPlayPhase(to) then
@@ -195,10 +207,16 @@ end
 function SmartAI:isShikongTarget(to, card, self)
 
 end
+--[熔毁]
 sgs.ai_skill_invoke.ronghui =  true
+--[聚变]
 sgs.ai_skill_invoke.jubian =  true
+--[恒星]
 sgs.ai_skill_invoke.hengxing =  true
 
+
+-- 神 伊吹萃香 
+--[萃想]
 sgs.ai_skill_askforag.cuixiang = function(self, card_ids)
 	local ids = card_ids
 	local cards = {}
@@ -241,6 +259,7 @@ sgs.ai_skill_askforag.cuixiang = function(self, card_ids)
 end
 sgs.ai_skill_invoke.cuixiang =  true
 
+--[虚影]
 sgs.ai_skill_discard.xuying = sgs.ai_skill_discard.gamerule
 sgs.ai_cardneed.xuying = function(to, card, self)
 	return getCardsNum("Jink", to, self.player) <2
@@ -248,7 +267,8 @@ sgs.ai_cardneed.xuying = function(to, card, self)
 end
 
 
-
+-- 神 芙兰朵露·斯卡雷特
+--[狂宴]
 sgs.ai_skill_invoke.kuangyan = function(self,data)
 	if self.player:getMark("@kinki")>0 then return true end
 	current=self.room:getCurrent()
@@ -271,6 +291,7 @@ sgs.ai_slash_prohibit.kuangyan = function(self, from, to, card)
 	return false
 end
 
+--[毁灭]
 local huimie_skill = {}
 huimie_skill.name = "huimie"
 table.insert(sgs.ai_skills, huimie_skill)
@@ -320,6 +341,7 @@ sgs.ai_skill_use_func.HuimieCard = function(card, use, self)
 		end
 end
 
+--[禁果]
 --function SmartAI:isWeak
 sgs.ai_skill_discard.jinguo = function(self, discard_num, min_num, optional, include_equip)
 	if optional then
@@ -388,6 +410,8 @@ sgs.ai_skill_discard.jinguo = function(self, discard_num, min_num, optional, inc
 end
 
 
+
+-- 神 十六夜咲夜
 function shijian_attack(self)
 	for _,p in pairs (self.enemies) do
 		if self:isWeak(p) and self:canAttack(p) then
@@ -396,8 +420,9 @@ function shijian_attack(self)
 	end
 	return false
 end
+--[时操]
 sgs.ai_skill_invoke.shicao =  true
-
+--[时停]
 sgs.ai_skill_invoke.shiting = function(self,data)
 	local current = self.room:getCurrent()
 	local nexter =  self.room:nextPlayer(current) --current:getNextAlive()
@@ -409,20 +434,21 @@ sgs.ai_skill_invoke.shiting = function(self,data)
 	if self:isWeak(self.player) then return true end
 	return shijian_attack(self)
 end
-
+--[幻在]
 sgs.ai_skill_invoke.huanzai = function(self,data)
 	if self.player:getMark("@clock") > 0 then return false end
 	if self:isWeak(self.player) then return true end
 	return shijian_attack(self)
 end
-
+--[伤魂]
 sgs.ai_skill_invoke.shanghun = function(self,data)
 	if self.player:getMark("@clock") > 0 then return false end
 	if self:isWeak(self.player) then return true end
 	return shijian_attack(self)
 end
 
-
+--神 魂魄妖梦
+--[半灵]
 sgs.ai_skill_choice.banling_plus=function(self, choices)
 	local x=self.player:getLingHp()
 	local y=self.player:getRenHp()
@@ -441,6 +467,7 @@ sgs.ai_skill_choice.banling_minus=function(self, choices)
 	return "rentili"
 end
 
+--[人鬼]
 --function getBestHp(player)
 sgs.ai_skill_invoke.rengui = true
 sgs.ai_skill_playerchosen.renguidiscard = function(self, targets)
@@ -462,8 +489,11 @@ sgs.ai_playerchosen_intention.renguidraw = -60
 sgs.ai_playerchosen_intention.renguidiscard = 60
 
 
-
+--神 铃仙·优昙华院·因幡
+--[凝视]
 sgs.ai_skill_invoke.ningshi =  true
+
+--[高傲]
 sgs.ai_trick_prohibit.gaoao = function(self, from, to, card)
 	if not card:isKindOf("DelayedTrick")  then return false end
 	if self:isFriend(from,to) then return false end
@@ -476,7 +506,8 @@ sgs.ai_skill_property.gaoao = { effect = {{"AntiDrawEffect"}},
 	target =        {{"SkillOwner"}},
 }
 
-
+--神 东风谷早苗
+--[神授]
 --sgs.ai_card_intention.Slash
 sgs.ai_skill_choice.shenshou=function(self, choices)
 	local x=self.player:getTag("shenshou_x"):toInt()
@@ -572,7 +603,8 @@ sgs.ai_cardneed.shenshou = function(to, card, self)
 end
 
 
-
+--神 博丽灵梦
+--此处为旧版。 
 function SmartAI:isRealFriend(player)
 	if self.player:getRole() == "renegade" then
 		return false
@@ -710,7 +742,8 @@ sgs.ai_cardneed.fengyin = function(to, card, self)
 	--应该判断若到了残局，不是那么需要红桃
 	return  card:getSuit() == sgs.Card_Heart
 end
-
+sgs.ai_skill_invoke.huanxiang =  true
+--[[
  sgs.ai_skill_invoke.yibian = function(self,data)
 	if self.player:getRole() == "renegade" then
 		return true
@@ -783,10 +816,38 @@ sgs.ai_skill_askforyiji.yibian = function(self, card_ids)
 	 return nil, -1
 end
 sgs.ai_Yiji_intention.yibian = -30
-sgs.ai_skill_invoke.huanxiang =  true
+]]
+
+
+--[异变]
+--只涉及静态技能的亮身份。其他技能则无脑发技能并亮身份。
+sgs.ai_skill_invoke.yibian =function(self,data)
+	for _,skill in sgs.qlist(self.player:getSkillList()) do
+		if (skill:getShowType() == "static" and not skill:isAttachedLordSkill()) then
+			return true
+		end
+	end
+	return false
+end
+--[退治]
+sgs.ai_skill_playerchosen.tuizhi = function(self, targets)
+	for _,p  in sgs.qlist(targets) do
+		if self:isEnemy(p) then
+			return p
+		end
+	end
+	return nil
+end
+sgs.ai_cardneed.tuizhi = function(to, card, self)
+	return card:getSuit() == sgs.Card_Heart
+end
 
 
 
+
+
+--神 四季映姬·夜摩仙那度 
+--[劝诫]
 sgs.ai_skill_invoke.quanjie = function(self,data)
 	local target=data:toPlayer()
 	if self:isEnemy(target) then
@@ -816,10 +877,12 @@ sgs.ai_skill_cardask["@quanjie-discard"] = function(self, data)
 	return "."
 end
 
-
+--[断罪]
 sgs.ai_skill_invoke.duanzui = true
 
 
+--神 红美铃
+--[华想]
 local huaxiang_skill = {}
 huaxiang_skill.name = "huaxiang"
 table.insert(sgs.ai_skills, huaxiang_skill)
@@ -948,8 +1011,7 @@ function sgs.ai_cardsview_valuable.huaxiang(self, class_name, player)
 end
 
 
-
-
+--[彩雨]
 sgs.ai_skill_invoke.caiyu = function(self,data)
 	local prompt = data:toString()
 	if prompt:match("discard") then
@@ -990,12 +1052,16 @@ sgs.ai_skill_discard.caiyu = function(self,discard_num)
 	return to_discard
 end
 
-
+--[绚烂]
 sgs.ai_skill_invoke.xuanlan = true
 
-
+--神 八意永琳
+--[千年]
 sgs.ai_skill_invoke.qiannian =  true
 
+
+--神 八坂神奈子
+--[侵略]
 sgs.ai_choicemade_filter.cardResponded["@qinlue-discard"] = function(self, player, args)
 	if args[#args] ~= "_nil_" then
 		local current=self.room:getCurrent()
@@ -1030,6 +1096,9 @@ sgs.qinlue_keep_value = {
 	EquipCard = 6.5
 }
 
+
+--神 圣白莲
+--[超人]
 local chaoren_skill = {}
 chaoren_skill.name = "chaoren"
 table.insert(sgs.ai_skills, chaoren_skill)
@@ -1057,16 +1126,17 @@ function sgs.ai_cardsview_valuable.chaoren(self, class_name, player)
 	local number = acard:getNumberString()
 	local card_id = acard:getEffectiveId()
 
-	if class_name == "Slash" and acard:isKindOf("Slash") then
-		return (acard:objectName()..":chaoren[%s:%s]=%d"):format(suit, number, card_id)
-	end
+	--if class_name == "Slash" and acard:isKindOf("Slash") then
+	--	return (acard:objectName()..":chaoren[%s:%s]=%d"):format(suit, number, card_id)
+	--end
 	if acard:isKindOf(class_name) then
 		return (acard:objectName()..":chaoren[%s:%s]=%d"):format(suit, number, card_id)
 	end
 end
 
 
-
+--神 古明地恋 
+--此处为旧版
 sgs.ai_needToWake.yizhi=function(self,player)
 	return "Dying","Unknown"
 end
@@ -1142,7 +1212,8 @@ sgs.ai_card_intention.ChaowoCard = -60
 
 
 
-
+--神 洩矢诹访子
+--[作祟]
 sgs.ai_skill_invoke.zuosui = function(self,data)
 	local damage =self.player:getTag("zuosui_damage"):toDamage()
 	local isSlash = true
@@ -1197,6 +1268,7 @@ sgs.ai_skill_choice.zuosui= function(self, choices, data)
 	end
 end
 
+--[沃饶]
 sgs.ai_skill_invoke.worao = function(self,data)
 	return true
 end
@@ -1232,11 +1304,13 @@ sgs.ai_skill_discard.worao = function(self)
 	table.insert(woraoGive, cards[1]:getId())
 	return woraoGive
 end
+--[神话]
 sgs.ai_skill_choice.shenhua = function(self, choices, data)
 	return "discardMark"
 end
 
-
+--神 丰聪耳神子
+--[弘佛]
 sgs.ai_skill_invoke.hongfo = function(self,data)
 	return true
 end
@@ -1249,6 +1323,7 @@ sgs.ai_skill_playerchosen.hongfo = function(self, targets)
 	return targets:first()
 end
 
+--[君威]
 sgs.ai_skill_invoke.junwei =  true
 sgs.ai_skill_cardask["@junwei-discard"] = function(self, data)
 	local target = self.player:getTag("junwei_target"):toPlayer()
@@ -1279,6 +1354,7 @@ function sgs.ai_slash_prohibit.junwei(self, from, to)
 	return true
 end
 
+--[问道]
 sgs.ai_skill_use["@@wendao"] = function(self, prompt)
 	if #self.enemies== 0    then return "." end
 	self:sort(self.enemies,"handcard")
@@ -1300,6 +1376,9 @@ sgs.ai_skill_use["@@wendao"] = function(self, prompt)
 end
 
 
+
+--神 蓬莱山辉夜 
+--[神宝]
 local shenbao_skill = {}
 shenbao_skill.name = "shenbao_attach"
 table.insert(sgs.ai_skills, shenbao_skill)
@@ -1350,6 +1429,9 @@ sgs.ai_view_as.shenbao_attach = function(card, player, card_place)
 	end
 end
 
+
+--神 小野塚小町
+--[引渡]
 function SmartAI:executorRewardOrPunish(victim,damage)
 	local komachi = self.room:findPlayerBySkillName("yindu")
 	local killer = self:findRealKiller(victim,damage)
@@ -1406,7 +1488,7 @@ sgs.ai_skill_invoke.yindu = function(self,data)
 	end
 end
 
-
+--[换命]
 sgs.ai_skill_invoke.huanming = function(self,data)
 	local target = data:toPlayer()
 	if self:isEnemy(target) then
@@ -1432,8 +1514,11 @@ sgs.ai_choicemade_filter.skillInvoke.huanming = function(self, player, args, dat
 	end
 end
 
+-- 神 西行寺幽幽子
+--没写对策ai
 
---心花
+--神 古明地觉
+--[心花]
 sgs.ai_skill_invoke.kuixin =  true
 local xinhua_skill = {}
 xinhua_skill.name = "xinhua"
@@ -1511,6 +1596,11 @@ function sgs.ai_cardsview_valuable.xinhua(self, class_name, player)
 	return "@XinhuaCard=" .. XinhuaCards[1]:getEffectiveId() .. ":" .. XinhuaCards[1]:objectName()
 end
 
+--神 射命丸文
+--无
+
+--神 霍青娥
+--[通灵]
 local badSkills={"mokai","guangji","xinghui","bendan","moxue","sisheng","jingdong","shishen","chunmian",
 "wangwu","shouye","zhouye","hongwu","shenqiang","yewang","jinguo","rengui","gaoao","caiyu","shenhua"}
 local key_skills={"feixiang","mingyun","yongheng","qiuwen","xiangqi","jiushu","hpymsiyu"}
@@ -1526,6 +1616,7 @@ sgs.ai_skill_choice.tongling = function(self, choices)
 	return "cancel"
 end
 
+--[入魔]
 function rumoNum(player)
 	local loyalist, rebel, renegade = 0, 0 , 0
 	for _,role in ipairs(player:getRoom():aliveRoles()) do
@@ -1576,6 +1667,17 @@ sgs.ai_skill_use_func.RumoCard=function(card,use,self)
 end
 
 
+--神 封兽鵺
+--完全随各个技能本体的ai
+
+-- 神 雾雨魔理沙
+--无
+
+--神 帕秋莉·诺蕾姬
+--无
+
+--神 爱丽丝·玛格特洛依德
+--[文乐]
 sgs.ai_skill_use["@@wenyue"] = function(self, prompt)
 	local cards = {}
 	for _,c  in sgs.qlist(self.player:getCards("hs")) do
@@ -1631,7 +1733,7 @@ sgs.ai_skill_choice.wenyue = function(self, choices, data)
 end
 sgs.ai_playerchosen_intention.wenyue = -20
 
-
+--[千枪]
 local qianqiang_skill = {}
 qianqiang_skill.name = "qianqiang"
 table.insert(sgs.ai_skills, qianqiang_skill)
@@ -1675,6 +1777,7 @@ sgs.ai_skill_use_func.QianqiangCard = function(card, use, self)
 	end
 end
 
+--[献祭]
 --爱丽丝文乐捞回来的数量
 local function xianji_num(self, alice, p)
 	local self_num = 0
@@ -1724,3 +1827,95 @@ sgs.ai_skill_choice.xianji= function(self, choices, data)
 	return "loseHP"
 end
 
+
+-- 神 风见幽香
+--[朽叶]
+local function getXiuye(self)
+	local cards = {}
+	local pile = self.room:getDiscardPile()
+	if pile:isEmpty() then return cards end
+	for _, id in sgs.qlist(pile) do
+		local acard = sgs.Sanguosha:getCard(id)
+		if acard:getSuit() == sgs.Card_Club then
+			table.insert(cards, acard)
+		end
+	end
+	return cards
+end
+
+local xiuye_skill = {}
+xiuye_skill.name = "xiuye"
+table.insert(sgs.ai_skills, xiuye_skill)
+xiuye_skill.getTurnUseCard = function(self, inclusive)
+		 
+		local cards = getXiuye(self)
+		if #cards == 0 then return false end
+		self:sortByUseValue(cards,true)
+		local acard = cards[1]
+		
+		if not acard:isAvailable(self.player) then return false end
+		local suit =acard:getSuitString()
+		local number = acard:getNumberString()
+		local card_id = acard:getEffectiveId()
+		local slash_str = (acard:objectName()..":xiuye[%s:%s]=%d"):format(suit, number, card_id)
+
+		local slash = sgs.Card_Parse(slash_str)
+		--slash:setCanRecast(false) --不起作用
+		assert(slash)
+		return slash
+
+end
+
+function sgs.ai_cardsview_valuable.xiuye(self, class_name, player)
+	if sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_RESPONSE then return nil end
+	local cards = getXiuye(self)
+	if #cards == 0 then return nil end
+	local acard
+	for _, c in ipairs(cards) do
+		if c:isKindOf(class_name) then 
+			acard = c
+			break
+		end
+	end
+    --if whether the first player can choose demonstration of the patent world,
+	if not acard then return nil end
+	local suit =acard:getSuitString()
+	local number = acard:getNumberString()
+	local card_id = acard:getEffectiveId()
+
+	return (acard:objectName()..":xiuye[%s:%s]=%d"):format(suit, number, card_id)
+	
+end
+
+
+--[狂季]
+sgs.ai_skill_invoke.kuangji =  true
+
+--神比那名居天子
+--[天道]
+sgs.ai_skill_invoke.tiandao = function(self,data)
+	local target = data:toPlayer()
+	local judge = self.player:getTag("tiandao"):toJudge()
+	local need_reverse = false
+	
+	local function judgeIsGood(isGood,need_reverse)
+		if need_reverse then
+			return not isGood
+		else
+			return  isGood
+		end
+	end
+	--静电 和 破坏 有逆转judgeisgood的时候  --暂时不管
+	--使用牌的本身收益暂时不管，ai目前只为了改动判定的后续结果
+	--
+	
+	if self:isEnemy(target) and judgeIsGood(judge:isGood(),need_reverse) then
+		--local res = wunian_judge(self, judge.who, judge.card)
+		return true
+	end
+	if self:isFriend(target) and not judgeIsGood(judge:isGood(),need_reverse) then
+		--local res = wunian_judge(self, judge.who, judge.card)
+		return true
+	end
+	return false
+end

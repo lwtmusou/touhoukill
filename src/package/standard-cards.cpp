@@ -1177,7 +1177,7 @@ void AmazingGrace::onEffect(const CardEffectStruct &effect) const
         int card_id = room->askForAG(effect.to, card_ids, false, objectName());
         card_ids.removeOne(card_id);
 
-        room->takeAG(effect.to, card_id);
+        room->takeAG(effect.to, card_id, true, QList<ServerPlayer *>(), Player::PlaceTable); // !!!! AG is taken from PlaceTable now!!!!!!!!!
         ag_list.removeOne(card_id);
         if (ag_list.isEmpty())
             break;
@@ -2386,8 +2386,7 @@ bool SavingEnergy::targetFilter(const QList<const Player *> &targets, const Play
 void SavingEnergy::takeEffect(ServerPlayer *target) const
 {
     target->skip(Player::Discard);
-    if (this->getEffectiveId() > -1)
-        target->addToPile("saving_energy", this);
+    target->setFlags("savingEnergy");
 }
 
 class SavingEnergySkill : public TriggerSkill
@@ -2396,24 +2395,22 @@ public:
     SavingEnergySkill()
         : TriggerSkill("saving_energy_effect")
     {
-        events << EventPhaseChanging;
+        events << EventPhaseStart;
         global = true;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
-        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        if (change.to == Player::NotActive && change.player->isAlive() && !change.player->getPile("saving_energy").isEmpty())
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, nullptr, change.player, nullptr, true);
+        ServerPlayer *p = data.value<ServerPlayer *>();
+        if (p->getPhase() == Player::Finish && p->hasFlag("savingEnergy"))
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, NULL, p, NULL, true);
 
         return QList<SkillInvokeDetail>();
     }
 
     bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        QList<int> ids = invoke->invoker->getPile("saving_energy");
-        DummyCard dummy(ids);
-        invoke->invoker->obtainCard(&dummy);
+        invoke->invoker->drawCards(2, "saving_energy");
         return false;
     }
 };

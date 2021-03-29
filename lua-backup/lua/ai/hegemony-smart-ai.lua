@@ -3829,8 +3829,13 @@ function SmartAI:willUsePeachTo(dying)
 
 	--送葬带走
 	if self.player:hasSkill("songzang") and not self:isFriend(dying) then
-		card_str = self:getCardId("Peach")
-		if card_str then return card_str end
+		local songzang_str = self:getCardId("Peach")
+		if songzang_str then
+			local songzangcard = sgs.Card_Parse(songzang_str)
+			if (songzangcard:getSkillName() == "songzang") then
+				return songzang_str 
+			end
+		end
 	end
 	if self:hasWeiya() then
 		if self:getCardsNum("Peach") < 2 then return "." end
@@ -7843,6 +7848,37 @@ function sgs.ai_cardsview_valuable.companion_attach(self, class_name, player)
     end
 end
 
+--目前仅仅为防止斗酒的损失而建立
+--还有很大改进余地
+function SmartAI:touhouIsPriorUseOtherCard(player,card,phase)
+	if not player or not card then return false end
+
+	phase = phase or sgs.Player_Play
+	local cardtypes ={"Slash","Analeptic","Peach",
+	"AmazingGrace","GodSalvation","SavageAssault","ArcheryAttack",
+	"Duel","ExNihilo","Snatch","Dismantlement","Collateral","IronChain",
+	"FireAttack","SupplyShortage","Indulgence","Lightning",
+	"EquipCard"}
+	local types={}
+	for _,t in pairs (cardtypes)do
+		if not card:isKindOf(t) and getCardsNum(t, player, self.player)>0 then
+			table.insert(types,t)
+		end
+	end
+	for _,c in sgs.qlist(player:getCards("hs"))do
+		if not (c:getId() == card:getId()) then
+			for _,t in pairs(types) do
+				if c:isKindOf(t) then
+					if self:touhouDummyUse(player,c) then
+						return true
+					end
+				end
+			end
+		end
+	end
+
+	return false
+end
 
 
 

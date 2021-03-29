@@ -53,7 +53,7 @@ public:
     void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 
-class FengyinCard : public SkillCard
+/*class FengyinCard : public SkillCard
 {
     Q_OBJECT
 
@@ -62,7 +62,7 @@ public:
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
     void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
-};
+};*/
 
 class HuaxiangCard : public SkillCard
 {
@@ -252,7 +252,7 @@ public:
     void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 
-class KuangjiCard : public SkillCard
+/*class KuangjiCard : public SkillCard
 {
     Q_OBJECT
 
@@ -263,7 +263,7 @@ public:
     bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
     void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
-
+*/
 class XiuyeCard : public SkillCard
 {
     Q_OBJECT

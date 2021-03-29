@@ -35,7 +35,6 @@ UpdateDialog::UpdateDialog(QWidget *parent)
 #ifdef Q_OS_WIN
     , taskbarButton(nullptr)
 #endif
-    , m_configLuaIs097(false)
     , m_finishedScript(false)
     , m_finishedPack(false)
     , m_busy(false)
@@ -99,7 +98,7 @@ void UpdateDialog::checkForUpdate()
     QNetworkRequest req;
     req.setAttribute(QNetworkRequest::RedirectPolicyAttribute, static_cast<int>(QNetworkRequest::NoLessSafeRedirectPolicy));
 
-    req.setUrl(QUrl("https://www.touhousatsu.rocks/TouhouKillUpdate0.9.json"));
+    req.setUrl(QUrl("https://www.touhousatsu.rocks/TouhouKillUpdate0.10.json"));
 
     QNetworkReply *reply = downloadManager->get(req);
     connect(reply, &QNetworkReply::errorOccurred, this, &UpdateDialog::updateError);
@@ -143,15 +142,10 @@ void UpdateDialog::updateInfoReceived()
 
     do {
         QJsonObject ob;
-        // check "Base" first, if there is no "Base" then check "Global" instead -- for compatibility with 0.9
-        // will remove "Global" judgment for 0.10
         ob = fullOb.value("Base").toObject();
         if (!ob.contains("LatestVersion") || !ob.value("LatestVersion").isString()) {
-            ob = fullOb.value("Global").toObject();
-            if (!ob.contains("LatestVersion") || !ob.value("LatestVersion").isString()) {
-                qDebug() << "Base/Global LatestVersion field is incorrect";
-                break;
-            }
+            qDebug() << "Base LatestVersion field is incorrect";
+            break;
         }
 
         parseVersionInfo(UiBase, ob);
@@ -184,11 +178,6 @@ void UpdateDialog::updateInfoReceived()
             updateButton[i]->setEnabled(false);
     }
 
-    if (m_configLuaIs097) {
-        updateButton[UiSkin]->setEnabled(false);
-        updateButton[UiBgm]->setEnabled(false);
-    }
-
     if (updateButton[UiBase]->isEnabled()) {
         if (m_updateContents[UiBase].updateHash.isEmpty() || m_updateContents[UiBase].updateScript.isEmpty()) {
             lbl->setText(tr("New Version %1(%3) available.<br />"
@@ -208,21 +197,6 @@ void UpdateDialog::updateInfoReceived()
             lbl->setTextFormat(Qt::RichText);
         }
 
-        if (m_configLuaIs097) {
-            lbl->setText(lbl->text() + "<br /><br />"
-                         + tr("<font color=red>Warning: You have replaced lua/config.lua to 0.9.7 version.<br />"
-                              "This will affect auto update for HeroSkin and BGM.<br /><br />"
-                              "This warning will show every time the game started before the original config.lua is put back.</font>"));
-        }
-
-        lbl->setVisible(true);
-        exec();
-    } else if (m_configLuaIs097) {
-        lbl->setText(tr("<font color=red>Warning: You have replaced lua/config.lua to 0.9.7 version.<br />"
-                        "This will affect auto update for HeroSkin and BGM.<br /><br />"
-                        "This warning will show every time the game started before the original config.lua is put back.</font>"));
-
-        lbl->setTextFormat(Qt::RichText);
         lbl->setVisible(true);
         exec();
     }
@@ -265,10 +239,6 @@ QVersionNumber UpdateDialog::getVersionNumberForItem(UpdateDialog::UpdateItem it
         return Sanguosha->getQVersionNumber();
     case UiSkin: {
         QVariant v = Sanguosha->getConfigFromConfigFile("withHeroSkin");
-        if (static_cast<QMetaType::Type>(v.type()) != QMetaType::QString) {
-            m_configLuaIs097 = true;
-            break;
-        }
 
         QString s = v.toString();
         if (s == "N/A")
@@ -280,10 +250,6 @@ QVersionNumber UpdateDialog::getVersionNumberForItem(UpdateDialog::UpdateItem it
     }
     case UiBgm: {
         QVariant v = Sanguosha->getConfigFromConfigFile("withBgm");
-        if (static_cast<QMetaType::Type>(v.type()) != QMetaType::QString) {
-            m_configLuaIs097 = true;
-            break;
-        }
 
         QString s = v.toString();
         if (s == "N/A")

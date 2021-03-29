@@ -356,7 +356,7 @@ public:
         return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget));
     }
 
-    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (e == CardFinished) {
@@ -461,7 +461,7 @@ public:
         ServerPlayer *player = invoke->invoker;
         QList<ServerPlayer *> listt;
         foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-            if (p->getHp() > player->getHp() && !p->isNude())
+            if (p->getHp() >= player->getHp() && !p->isNude())
                 listt << p;
         }
         ServerPlayer *target = room->askForPlayerChosen(player, listt, objectName(), "@" + objectName(), true, true);
@@ -565,7 +565,7 @@ public:
         ServerPlayer *player = invoke->invoker;
         QList<ServerPlayer *> listt;
         foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-            if (p->getHp() > player->getHp() && !p->isNude())
+            if (p->getHp() >= player->getHp() && !p->isNude())
                 listt << p;
         }
         ServerPlayer *target = room->askForPlayerChosen(player, listt, objectName(), "@" + objectName(), true, true);

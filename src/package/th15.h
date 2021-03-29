@@ -22,29 +22,6 @@ public:
     void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 
-class YidanDialog : public QDialog
-{
-    Q_OBJECT
-
-public:
-    static YidanDialog *getInstance(const QString &object);
-
-public slots:
-    void popup(Player *_Self);
-    void selectCard(QAbstractButton *button);
-
-private:
-    explicit YidanDialog(const QString &object);
-
-    QVBoxLayout *layout;
-    QButtonGroup *group;
-    Player *Self;
-
-    QString object_name;
-
-signals:
-    void onButtonClick();
-};
 
 class YidanCard : public SkillCard
 {

@@ -1569,6 +1569,9 @@ void ServerPlayer::addBrokenEquips(QList<int> card_ids)
     foreach (ServerPlayer *player, room->getAllPlayers(true))
         room->doNotify(player, S_COMMAND_SET_BROKEN_EQUIP, arg);
 
+    if (isCurrent())
+        setFlags("GameRule_brokenEquips");
+
     LogMessage log;
     log.type = "$AddBrokenEquip";
     log.from = this;
@@ -1674,7 +1677,22 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
             showGeneral();
         else if (!hasShownGeneral2() && ownSkill(skill_name) && inDeputySkills(skill_name))
             showGeneral(false);
-    } else { // for anyun
+    } else {
+        //for yibian
+        ServerPlayer *reimu = room->findPlayerBySkillName("yibian");
+        const Skill *skill = Sanguosha->getSkill(skill_name);
+        if (reimu && !hasShownRole() && skill->getFrequency() != Skill::Eternal && !skill->isAttachedLordSkill() && !hasEquipSkill(skill_name)) {
+            //&& ownSkill(skill_name)
+            QString role = getRole();
+            room->touhouLogmessage("#YibianShow", this, role, room->getAllPlayers());
+            room->broadcastProperty(this, "role");
+            room->setPlayerProperty(this, "role_shown", true); //important! to notify client
+
+            room->setPlayerProperty(this, "general_showed", true);
+            room->setPlayerProperty(this, "general2_showed", true);
+        }
+
+        // for anyun
         if (!canShowHiddenSkill() || !isHiddenSkill(skill_name))
             return;
         if (hasSkill(skill_name)) {

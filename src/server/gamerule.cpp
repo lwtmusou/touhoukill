@@ -230,7 +230,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
     }
     case EventPhaseStart: {
         ServerPlayer *current = data.value<ServerPlayer *>();
-        if (current && current->getPhase() == Player::Finish && !current->getBrokenEquips().isEmpty())
+        if (current && current->getPhase() == Player::Finish && !current->getBrokenEquips().isEmpty() && !current->hasFlag("GameRule_brokenEquips"))
             current->removeBrokenEquips(current->getBrokenEquips());
         break;
     }

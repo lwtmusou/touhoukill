@@ -1289,6 +1289,8 @@ public:
     Frequency getFrequency() const;
     QStringList getSources() const;
 	QString getLimitMark() const;
+
+    QString getShowType() const;
 };
 
 %extend Skill {

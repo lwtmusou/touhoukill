@@ -1,8 +1,9 @@
-
+--丰聪耳神子
+--[圣格]
 sgs.ai_needToWake.shengge=function(self,player)
 	return "Kongcheng","StartPhase"
 end
-
+--[倾听]
 local qingting_skill = {}
 qingting_skill.name = "qingting"
 table.insert(sgs.ai_skills, qingting_skill)
@@ -113,7 +114,7 @@ end
 sgs.ai_use_value.QingtingCard = 7
 sgs.ai_use_priority.QingtingCard = 7
 
-
+--[倾听 国]
 local qingting_hegemony_skill = {}
 qingting_hegemony_skill.name = "qingting_hegemony"
 table.insert(sgs.ai_skills, qingting_hegemony_skill)
@@ -137,6 +138,7 @@ end
 sgs.ai_use_value.QingtingHegemonyCard = 7
 sgs.ai_use_priority.QingtingHegemonyCard = 7
 
+--[敕令]
 sgs.ai_skill_invoke.chiling = function(self,data)
 	local isSlash=self.player:getTag("chiling_showslash"):toInt()
 	local slasher=self.player:getTag("chiling_givener"):toPlayer()
@@ -147,9 +149,11 @@ sgs.ai_skill_invoke.chiling = function(self,data)
 	end
 	return false
 end
-
+--[摄政 国]
 sgs.ai_skill_invoke.shezheng_hegemony = true
 
+--二岩猯藏
+--[戏画]
 measure_xihua = function(self,card)
 	local pattern = card:objectName()
 	if card:isKindOf("Slash") then
@@ -346,8 +350,6 @@ sgs.ai_skill_cardchosen.xihua = function(self, who, flags)
 end
 
 
-
-
 sgs.ai_cardneed.xihua = function(to, card, self)
     if not self.player:getRoom():getMode():find("hegemony") then
 	    return card:getNumber() > 10
@@ -357,7 +359,8 @@ sgs.ai_cardneed.xihua = function(to, card, self)
 end
 
 
-
+--物部布都
+--[尸解]
 function sgs.ai_cardsview_valuable.shijie(self, class_name, player)
 	if class_name == "Peach" then
 		local dying = player:getRoom():getCurrentDyingPlayer()
@@ -389,7 +392,7 @@ sgs.ai_skill_cardchosen.shijie = function(self, who, flags)
 	end
 	return who:getCards("e"):first()
 end
-
+--[风水]
 sgs.ai_skill_invoke.fengshui = function(self,data)
 	return true
 end
@@ -408,7 +411,8 @@ sgs.ai_skill_invoke.fengshui_retrial = function(self,data)
 	return false
 end
 
-
+--苏我屠自古
+--[雷矢]
 local leishi_skill = {}
 leishi_skill.name = "leishi"
 table.insert(sgs.ai_skills, leishi_skill)
@@ -457,8 +461,7 @@ sgs.ai_skill_use_func.LeishiCard = function(card, use, self)
 end
 sgs.dynamic_value.damage_card.LeishiCard = true
 
-
-
+--[愤怨]
 sgs.ai_skill_invoke.fenyuan = function(self,data)
 	local damage = self.player:getTag("fenyuanDying"):toDying().damage
 	if self.player:isLord() then
@@ -489,7 +492,7 @@ sgs.ai_skill_invoke.fenyuan = function(self,data)
 		end
 	end
 end
-
+--[忿雷]
 sgs.ai_skill_playerchosen.fenlei = function(self,targets)
 	if #self.enemies == 0 then return nil end
 	
@@ -497,6 +500,9 @@ sgs.ai_skill_playerchosen.fenlei = function(self,targets)
 	return self.enemies[1]
 end
 
+
+--霍青娥
+--[邪法]
 local xiefa_skill = {}
 xiefa_skill.name = "xiefa"
 table.insert(sgs.ai_skills, xiefa_skill)
@@ -593,7 +599,7 @@ sgs.ai_skill_use_func.XiefaCard = function(card, use, self)
 end
 
 
-
+--[穿壁]
 sgs.ai_skill_invoke.chuanbi = function(self,data)
 	local slash_source
 	local strs=data:toStringList()
@@ -638,7 +644,8 @@ sgs.ai_slash_prohibit.chuanbi = function(self, from, to, card)
 end
 
 
-
+--宫古芳香
+--[毒爪]
 local duzhua_skill = {}
 duzhua_skill.name = "duzhua"
 table.insert(sgs.ai_skills, duzhua_skill)
@@ -679,7 +686,7 @@ sgs.ai_cardneed.duzhua = function(to, card, self)
 		return  card:isRed()
 	end
 end
-
+--[饕餮]
 sgs.ai_skill_invoke.taotie =  function(self)
 	return self:invokeTouhouJudge()
 end
@@ -687,6 +694,8 @@ sgs.ai_skillProperty.taotie = function(self)
 	return "cause_judge"
 end
 
+
+--幽谷响子
 --[[
 sgs.ai_skill_use["@@huisheng"] = function(self, prompt)
 	local use=self.room:getTag("huisheng_use"):toCardUse()
@@ -735,8 +744,9 @@ sgs.ai_skill_use["@@huisheng"] = function(self, prompt)
 	return "@HuishengCard=.->" .. table.concat(targets, "+")
 end
 ]]
-
+--[诵经]
 sgs.ai_skill_invoke.songjing = true
+--[共振]
 sgs.ai_skill_cardask["@gongzhen"] = function(self, data, pattern, target)
 	local damage =data:toDamage()
 	if not self:isEnemy(damage.to) then return "." end
@@ -762,6 +772,8 @@ sgs.ai_choicemade_filter.cardResponded["@gongzhen"] = function(self, player, arg
 	end
 end
 
+--神灵庙SP幽幽子
+--[吹雪]
 sgs.ai_need_bear.chuixue = function(self, card,from,tos)
 	from = from or self.player
 	if self:getOverflow(from) ~=1 then return false end
@@ -797,6 +809,7 @@ end
 
 sgs.ai_playerchosen_intention.chuixue = 50
 
+--[无寿]
 --sgs.ai_card_intention.Slash
 --sgs.ai_armor_value.EightDiagram
 function SmartAI:lastEnemy(player,target)
@@ -843,7 +856,8 @@ sgs.ai_trick_prohibit.wushou = function(self, from, to, card)
 	return true
 end
 
-
+--神灵庙SP鵺
+--[不明]
 local function inBumingRange(bumingType,player,target)
 	if bumingType==0 then
 		return player:inMyAttackRange(target)
@@ -948,8 +962,8 @@ sgs.ai_skill_choice.buming=function(self)--因为有cardlimit  需要检测实�
 end
 
 sgs.ai_card_intention.BumingCard = 70
+--[正体]
 sgs.ai_skill_invoke.zhengti =  true
-
 
 --[[
 sgs.ai_skill_playerchosen.zhengti = function(self, targets)
@@ -1020,6 +1034,9 @@ function SmartAI:zhengtiParse(from,to)
 	return result, target
 end
 ]]
+
+--神灵庙SP小伞
+--[晴雨]
 sgs.ai_skill_invoke.qingyu = true
 sgs.ai_skill_cardask["@qingyu-discard"] = function(self, data)
 	local source=data:toPlayer()
@@ -1096,7 +1113,7 @@ sgs.ai_damage_prohibit.qingyu = function(self, from, to, damage)
 end
 
 
-
+--[过客]
 sgs.ai_skill_invoke.guoke = true
 sgs.ai_skill_choice.guoke= function(self, choices, data)
 	--player:isSkipped(sgs.Player_Play)

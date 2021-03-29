@@ -1390,7 +1390,7 @@ public:
         QList<SkillInvokeDetail> d;
         if (use.from != nullptr && use.card != nullptr && use.card->getTypeId() == Card::TypeTrick && !use.to.isEmpty()) {
             foreach (ServerPlayer *p, use.to) {
-                if (p->hasSkill(this))
+                if (p->hasSkill(this) && p != use.from)
                     d << SkillInvokeDetail(this, p, p);
             }
         }
@@ -1771,7 +1771,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
         if (use.card->isKindOf("Peach") || use.card->isKindOf("Slash") || use.card->isNDTrick()) {
-            // Fs: when modifiying this skill, check skill "Zhumao" in th16
+            // Fs: when modifiying this skill, check skill "GakungWu" (Guwu & Kuangwu) in th16
             use.card->setFlags("xunshi");
             use.card->setFlags("IgnoreFailed");
             foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
@@ -1809,7 +1809,7 @@ public:
     }
 };
 
-// Fs: when modifiying this skill, check skill "Zhumao" in th16
+// Fs: when modifiying this skill, check skill "GakungWu" (Guwu & Kuangwu) in th16
 class XunshiDistance : public TargetModSkill
 {
 public:
@@ -2126,6 +2126,160 @@ public:
     }
 };
 
+ZhuozhiCard::ZhuozhiCard()
+{
+    target_fixed = true;
+    will_throw = true;
+}
+
+void ZhuozhiCard ::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+{
+    QList<int> ids = room->getNCards(4);
+
+    CardsMoveStruct move(ids, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, source->objectName(), "zhuozhi", QString()));
+    room->moveCardsAtomic(move, true);
+    room->fillAG(ids);
+
+    int n = 1;
+    foreach (int id, ids) {
+        if (room->getCard(id)->isKindOf("Slash") || room->getCard(id)->getTypeId() == Card::TypeEquip) {
+            n = 2;
+            break;
+        }
+    }
+
+    QList<int> obtain_ids;
+    while (n--) {
+        int id = room->askForAG(source, ids, false, "zhuozhi");
+        ids.removeOne(id);
+        obtain_ids << id;
+        room->takeAG(source, id, false, QList<ServerPlayer *>(), Player::PlaceTable);
+    }
+
+    room->clearAG();
+
+    DummyCard obtainDummy;
+    obtainDummy.addSubcards(obtain_ids);
+    room->obtainCard(source, &obtainDummy);
+
+    DummyCard discardDummy;
+    discardDummy.addSubcards(ids);
+    room->throwCard(&discardDummy, NULL);
+}
+
+class Zhuozhi : public OneCardViewAsSkill
+{
+public:
+    Zhuozhi()
+        : OneCardViewAsSkill("zhuozhi")
+    {
+    }
+
+    bool isEnabledAtPlay(const Player *player) const
+    {
+        return !player->hasUsed("ZhuozhiCard");
+    }
+
+    bool viewFilter(const Card *to_select, const Player *Self) const
+    {
+        return !to_select->isEquipped(Self);
+    }
+
+    const Card *viewAs(const Card *originalCard, const Player *Self) const
+    {
+        ZhuozhiCard *c = new ZhuozhiCard;
+        c->addSubcard(originalCard);
+        return c;
+    }
+};
+
+WanshenCard::WanshenCard()
+{
+    target_fixed = true;
+}
+
+void WanshenCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+{
+    room->doLightbox("$WanshenAnimate", 4000);
+    room->setPlayerMark(source, "@kazenwanshen", 0);
+
+    if (room->changeMaxHpForAwakenSkill(source)) {
+        source->gainAnExtraTurn();
+        room->handleAcquireDetachSkills(source, "xieli");
+    }
+}
+
+class Wanshen : public ZeroCardViewAsSkill
+{
+public:
+    Wanshen()
+        : ZeroCardViewAsSkill("wanshen")
+    {
+        frequency = Limited;
+        limit_mark = "@kazenwanshen";
+    }
+
+    bool isEnabledAtPlay(const Player *player) const
+    {
+        return player->getMark("@kazenwanshen") > 0 && player->getEquips().count() > 2;
+    }
+
+    const Card *viewAs(const Player *Self) const
+    {
+        return new WanshenCard;
+    }
+};
+
+XieliCard::XieliCard()
+{
+    target_fixed = true;
+    will_throw = false;
+    handling_method = Card::MethodNone;
+}
+
+void XieliCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+{
+    source->addBrokenEquips(subcards);
+
+    Analeptic *ana = new Analeptic(Card::NoSuit, -1);
+    ana->setFlags("Add_History");
+    room->useCard(CardUseStruct(ana, source));
+}
+
+class Xieli : public OneCardViewAsSkill
+{
+public:
+    Xieli()
+        : OneCardViewAsSkill("xieli")
+    {
+    }
+
+    bool isEnabledAtPlay(const Player *player) const
+    {
+        if (!Analeptic::IsAvailable(player))
+            return false;
+
+        foreach (const Card *card, player->getEquips()) {
+            if (!player->isBrokenEquip(card->getId()))
+                return true;
+        }
+
+        return false;
+    }
+
+    bool viewFilter(const Card *to_select, const Player *Self) const
+    {
+        return to_select->isEquipped(Self) && !Self->isBrokenEquip(to_select->getId());
+    }
+
+    const Card *viewAs(const Card *originalCard, const Player *Self) const
+    {
+        XieliCard *c = new XieliCard;
+        c->addSubcard(originalCard);
+        return c;
+    }
+};
+
 TH99Package::TH99Package()
     : Package("th99")
 {
@@ -2192,6 +2346,11 @@ TH99Package::TH99Package()
     reisen2->addSkill(new Sixiang);
     reisen2->addSkill(new Daoyao);
 
+    General *kasensp = new General(this, "kasen_sp", "wai", 5);
+    kasensp->addSkill(new Zhuozhi);
+    kasensp->addSkill(new Wanshen);
+    kasensp->addRelateSkill("xieli");
+
     General *miyoi = new General(this, "miyoi", "wai", 4, false, true, true);
     Q_UNUSED(miyoi);
 
@@ -2204,7 +2363,11 @@ TH99Package::TH99Package()
     addMetaObject<ZhuonongCard>();
     addMetaObject<YushouCard>();
     addMetaObject<PanduCard>();
-    skills << new DangjiaVS << new Luanying << new XiufuMove << new XunshiDistance << new LiyouDistance;
+    addMetaObject<ZhuozhiCard>();
+    addMetaObject<WanshenCard>();
+    addMetaObject<XieliCard>();
+
+    skills << new DangjiaVS << new Luanying << new XiufuMove << new XunshiDistance << new LiyouDistance << new Xieli; //<< new GanyingHandler
 }
 
 ADD_PACKAGE(TH99)

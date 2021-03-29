@@ -6,6 +6,7 @@
 #include "uiUtils.h"
 
 #include <QCoreApplication>
+#include <QDir>
 #include <QFile>
 #include <QFontDatabase>
 #include <QFontMetrics>
@@ -373,8 +374,8 @@ QPixmap QSanRoomSkin::getCardAvatarPixmap(const QString &generalName, bool heroS
         name = name.mid(3);
     else if (ServerInfo.GameMode == "02_1v1" && name.startsWith("kof_"))
         name = name.mid(4);
-    else if (name.endsWith("_hegemony"))
-        name = name.replace("_hegemony", "");
+    //else if (name.endsWith("_hegemony"))
+    //    name = name.replace("_hegemony", "");
     return getGeneralPixmap(name, S_GENERAL_ICON_SIZE_TINY, heroSkin);
 }
 
@@ -388,9 +389,18 @@ QPixmap QSanRoomSkin::getGeneralPixmap(const QString &generalName, GeneralIconSi
     if (size == S_GENERAL_ICON_SIZE_CARD)
         return getCardMainPixmap(name, false, heroSkin);
     else {
-        if (name.endsWith("_hegemony"))
+        if (name.endsWith("_hegemony")) {
             name = name.replace("_hegemony", "");
+            /*if (size != S_GENERAL_ICON_SIZE_TINY) {
+               /*QDir dir("image/generals/full/avatar");
+               dir.setNameFilters(QStringList(QString("%1.png").arg(generalName)));
+                QStringList tmpFiles = dir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+                if (!tmpFiles.isEmpty())
+                  
+            }*/
+        }
         QString key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(size).arg(name);
+
         if (isImageKeyDefined(key))
             return getPixmap(key, QString(), false, heroSkin);
         else {
@@ -693,15 +703,40 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, bo
         }
     }
 
-    // Hero skin?
+    //process general image and Hero skin
     QString general_name = fileName.split("/").last().split(".").first();
-    if ((Sanguosha->getGeneral(general_name) || Sanguosha->getGeneral(general_name + "_hegemony")) && heroSkin) {
+    bool isGeneral = Sanguosha->getGeneral(general_name) || Sanguosha->getGeneral(general_name + "_hegemony");
+    if (isGeneral && heroSkin) {
         int skin_index = Config.value(QString("HeroSkin/%1").arg(general_name), 0).toInt();
         if (skin_index > 0) {
             fileName.replace("image/", "image/heroskin/");
             fileName.replace(general_name, QString("%1_%2").arg(general_name).arg(skin_index));
+        } else if (isHegemonyGameMode(ServerInfo.GameMode) && fileName.contains("image/fullskin/generals/full")) { //ignore avatar
+            QString tmpFileName = fileName;
+            tmpFileName.replace(general_name, QString("%1").arg(general_name + "_hegemony"));
+            if (QFile::exists(tmpFileName))
+                fileName = tmpFileName;
         }
     }
+
+    //test version
+    /*if (isGeneral && heroSkin) {
+        QString unique_general = general_name;
+        unique_general = unique_general.replace("_hegemony", "");
+        int skin_index = Config.value(QString("HeroSkin/%1").arg(unique_general), 0).toInt();
+        if (skin_index > 0) {
+            fileName.replace("image/", "image/heroskin/");
+            fileName.replace(general_name, QString("%1_%2").arg(unique_general).arg(skin_index));
+        }
+        else if (isHegemonyGameMode(ServerInfo.GameMode) 
+            && (fileName.contains("image/fullskin/generals/full") || fileName.contains("image/generals/avatar"))) {
+            if (!QFile::exists(fileName)) {
+                QString tmpFileName = fileName;
+                tmpFileName.replace(general_name, QString("%1").arg(unique_general));
+                fileName = tmpFileName;
+            }
+        }
+    }*/
 
     QPixmap pixmap = getPixmapFromFileName(fileName, cache);
     if (clipping) {
@@ -1188,6 +1223,14 @@ void QSanRoomSkin::getHeroSkinContainerGeneralIconPathAndClipRegion(const QStrin
     QString unique_general = generalName;
     if (unique_general.endsWith("_hegemony"))
         unique_general = unique_general.replace("_hegemony", "");
+    if (skinIndex == 0 && isHegemonyGameMode(ServerInfo.GameMode)) {
+        QDir dir("image/fullskin/generals/full");
+        dir.setNameFilters(QStringList(QString("%1.png").arg(generalName)));
+        QStringList tmpFiles = dir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+        if (!tmpFiles.isEmpty())
+            unique_general = generalName;
+    }
+
     QString customSkinBaseKey = QString(S_HERO_SKIN_KEY_GENERAL_ICON).arg(unique_general);
     QString customSkinKey = QString("%1-%2").arg(customSkinBaseKey).arg(skinIndex);
 

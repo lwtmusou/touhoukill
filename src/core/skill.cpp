@@ -396,8 +396,8 @@ QList<SkillInvokeDetail> TriggerSkill::triggerable(TriggerEvent, const Room *, c
 
 bool TriggerSkill::cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
 {
-    if (invoke->isCompulsory) { //for hegemony
-        if (invoke->owner == nullptr || invoke->owner != invoke->invoker)
+    if (invoke->isCompulsory) { //for hegemony_mode or reimu_god
+        if (invoke->owner == nullptr || invoke->owner != invoke->invoker || frequency == Eternal)
             return true;
         if (invoke->invoker != nullptr) {
             if (!invoke->invoker->hasSkill(this))

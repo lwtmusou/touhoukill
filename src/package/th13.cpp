@@ -1303,7 +1303,7 @@ public:
     {
         if (triggerEvent == EventPhaseEnd) {
             ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player->getPhase() != Player::Discard || !player->hasSkill(this))
+            if (player->getPhase() != Player::Discard || !player->hasSkill(this) || player->isDead())
                 return QList<SkillInvokeDetail>();
 
             int count = 0;

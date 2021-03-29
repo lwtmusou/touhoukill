@@ -1,4 +1,5 @@
-
+--蕾米莉亚·斯卡雷特
+--[渴血]
 function sgs.ai_cardsview_valuable.skltkexue_attach(self, class_name, player)
 	if class_name == "Peach" and player:getHp()> player:dyingThreshold() then
 		local dying = player:getRoom():getCurrentDyingPlayer()
@@ -93,6 +94,7 @@ end
 
 sgs.ai_skill_invoke.skltkexue =  true
 
+--[命运]
 --sgs.ai_skill_invoke.EightDiagram
 --sgs.ai_armor_value.EightDiagram
 --SmartAI:getFinalRetrial
@@ -130,7 +132,7 @@ sgs.ai_skillProperty.mingyun = function(self)
 end
 
 
-
+--[血裔]
 sgs.ai_skill_invoke.xueyi = function(self, data)
 	local to =data:toPlayer()
 	return self:isFriend(to)
@@ -146,7 +148,8 @@ sgs.ai_choicemade_filter.skillInvoke.xueyi = function(self, player, promptlist, 
 	end
 end
 
-
+--芙兰朵露·斯卡雷特
+--[破坏]
 sgs.ai_skill_invoke.pohuai =  true
 function SmartAI:pohuaiBenefit(player)
 	local value=0
@@ -199,6 +202,7 @@ sgs.ai_judge_model.pohuai = function(self, who)
 	return judge
 end
 
+--[浴血]
 sgs.yuxue_keep_value = {
 	Peach           = 5.5,
 	Analeptic       = 5.5,
@@ -241,11 +245,14 @@ sgs.ai_cardneed.yuxue = function(to, card, self)
 	 and card:isKindOf("Slash")
 end
 
+--[盛宴]
 sgs.ai_skill_invoke.shengyan = function(self)
 		return not self:needKongcheng(self.player, true)
 end
 
 
+--十六夜咲夜
+--[锁定]
 local suoding_skill = {}
 suoding_skill.name = "suoding"
 table.insert(sgs.ai_skills, suoding_skill)
@@ -294,7 +301,7 @@ sgs.ai_use_value.SuodingCard = 8
 sgs.ai_use_priority.SuodingCard =7
 sgs.ai_card_intention.SuodingCard = 20
 
-
+--[回溯]
 sgs.ai_skill_invoke.huisu = function(self)
 	return self:invokeTouhouJudge()
 end
@@ -308,10 +315,104 @@ sgs.ai_skillProperty.huisu = function(self)
 	return "cause_judge"
 end
 
+
+--帕秋莉·诺蕾姬
+--[博览]
 sgs.ai_skill_invoke.bolan = true
 sgs.ai_skill_invoke.bolan_hegemony = true
 
+--[合咒]
+local hezhou_skill = {}
+hezhou_skill.name = "hezhou"
+table.insert(sgs.ai_skills, hezhou_skill)
+hezhou_skill.getTurnUseCard = function(self)
+	if (self.player:hasFlag("hezhou_used")) then return nil end
+
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	local HezhouCards = {}
+
+	local guhuo = "slash|jink|peach|ex_nihilo|snatch|dismantlement|amazing_grace|archery_attack|savage_assault"
+	local ban = table.concat(sgs.Sanguosha:getBanPackages(), "|")
+	if not ban:match("maneuvering") then guhuo = guhuo .. "|fire_attack|analeptic|thunder_slash|fire_slash" end
+	if not ban:match("test_card") then guhuo = guhuo .. "|super_peach|magic_analeptic|light_slash|iron_slash|power_slash" end
+	local guhuos = guhuo:split("|")
+	for i = 1, #guhuos do
+		local forbidden = guhuos[i]
+		local forbid = sgs.cloneCard(forbidden)
+		if not self.player:isLocked(forbid) and self:canUseXihuaCard(forbid, true) then --see more at th13-ai.lua
+			table.insert(HezhouCards,forbid)
+		end
+	end
+
+	self:sortByUseValue(HezhouCards, false)
+	for _,HezhouCard in pairs (HezhouCards) do
+		
+			local dummyuse = { isDummy = true }
+			if HezhouCard:isKindOf("BasicCard") then
+				self:useBasicCard(HezhouCard, dummyuse)
+			else
+				self:useTrickCard(HezhouCard, dummyuse)
+			end
+			if dummyuse.card then
+				local fakeCard = sgs.Card_Parse("@HezhouCard=.:" .. HezhouCard:objectName())
+				return fakeCard
+			end
+		
+	end
+	return nil
+end
+
+sgs.ai_skill_use_func.HezhouCard=function(card,use,self)
+	local userstring=card:toString()
+	userstring=(userstring:split(":"))[3]
+	local hezhoucard=sgs.cloneCard(userstring)
+	hezhoucard:setSkillName("hezhou")
+	if hezhoucard:getTypeId() == sgs.Card_TypeBasic then self:useBasicCard(hezhoucard, use)
+	else
+		assert(hezhoucard)
+		self:useTrickCard(hezhoucard, use)
+	end
+	if not use.card then return end
+	use.card=card
+end
+
 function sgs.ai_cardsview_valuable.hezhou(self, class_name, player)
+    if (player:hasFlag("hezhou_used")) then return nil end
+	if (sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_UNKNOWN) then
+		return nil
+	end
+	local classname2objectname = {
+		["Slash"] = "slash", ["Jink"] = "jink",
+		["Peach"] = "peach", ["Analeptic"] = "analeptic",
+		--["Nullification"] = "nullification",
+		["FireSlash"] = "fire_slash", ["ThunderSlash"] = "thunder_slash",
+		["ChainJink"] = "chain_jink", ["LightJink"] = "light_jink",
+		["MagicAnaleptic"] = "magic_analeptic",["SuperPeach"] = "super_peach"
+	}
+	
+	--[[if self.player:getRoom():getMode():find("hegemony") then
+		classname2objectname = {
+		["Slash"] = "slash", ["Jink"] = "jink",
+		["Peach"] = "peach", ["Analeptic"] = "analeptic",
+		["Nullification"] = "nullification",
+		["FireSlash"] = "fire_slash", ["ThunderSlash"] = "thunder_slash"
+		}
+	end]]
+	if classname2objectname[class_name] then
+		local viewcard = sgs.cloneCard(classname2objectname[class_name])
+		if self.player:isLocked(viewcard) then
+			return nil
+		end
+		
+		return "@HezhouCard=.:".. classname2objectname[class_name]
+		
+	end
+	
+end
+
+
+--[合咒 国]
+function sgs.ai_cardsview_valuable.hezhou_hegemony(self, class_name, player)
 	if self:touhouClassMatch(class_name, "Peach") then
 		if (sgs.Sanguosha:getCurrentCardUseReason() ~= sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE) then
 			return nil
@@ -375,11 +476,11 @@ function sgs.ai_cardsview_valuable.hezhou(self, class_name, player)
 		return nil
 	end
 end
-sgs.hezhou_keep_value = {
+sgs.hezhou_hegemony_keep_value = {
 	Peach = 10,
 	TrickCard = 8
 }
-sgs.ai_cardneed.hezhou = function(to, card, self)
+sgs.ai_cardneed.hezhou_hegemony = function(to, card, self)
 	local ClassName = {"TrickCard", "EquipCard", "BasicCard"}
 	for _,class in ipairs(ClassName)  do
 		if card:isKindOf(class) and getCardsNum(class, to, self.player) <1 then
@@ -388,14 +489,14 @@ sgs.ai_cardneed.hezhou = function(to, card, self)
 	end
 end
 
-sgs.ai_playerchosen_intention.hezhou = -70
-sgs.ai_no_playerchosen_intention.hezhou =function(self, from)
+sgs.ai_playerchosen_intention.hezhou_hegemony = -70
+sgs.ai_no_playerchosen_intention.hezhou_hegemony =function(self, from)
 	local lord =self.room:getLord()
 	if lord  then
 		sgs.updateIntention(from, lord, 10)
 	end
 end
-sgs.ai_skill_playerchosen.hezhou = function(self, targets)
+sgs.ai_skill_playerchosen.hezhou_hegemony = function(self, targets)
 	local target =self:touhouFindPlayerToDraw(false, 1)
 	if not target and #self.friends_noself>0 then
 		target= self.friends_noself[1]
@@ -406,6 +507,10 @@ sgs.ai_skill_playerchosen.hezhou = function(self, targets)
 	return nil
 end
 
+
+
+--红美铃
+--[太极]
 sgs.ai_skill_invoke.taiji = function(self, data)
 	local use=self.player:getTag("taiji"):toCardUse()
 	--默认只补给自己人
@@ -421,7 +526,7 @@ sgs.ai_skill_invoke.taiji = function(self, data)
 	return false
 end
 
-
+--[背水]
 local beishui_skill = {}
 beishui_skill.name = "beishui"
 table.insert(sgs.ai_skills, beishui_skill)
@@ -640,7 +745,8 @@ function sgs.ai_cardsview_valuable.beishui_hegemony(self, class_name, player)
 end
 
 
-
+--琪露诺
+--[冻结]
 sgs.ai_skill_invoke.dongjie = function(self, data)
 		local damage =self.player:getTag("dongjie"):toDamage()
 		local to = damage.to
@@ -676,6 +782,7 @@ sgs.dongjie_keep_value = {
 	Slash           = 6.4
 }
 
+--[冻结 国]
 sgs.ai_skill_invoke.dongjie_hegemony = function(self, data)
 	local damage =self.player:getTag("dongjie_hegemony"):toDamage()
 	local to = damage.to
@@ -687,6 +794,7 @@ sgs.ai_skill_invoke.dongjie_hegemony = function(self, data)
 	return self:isFriend(to) ~= to:faceUp()
 end
 
+--[冰魄]
 sgs.ai_skill_invoke.bingpo =  true
 sgs.ai_damageInflicted.bingpo =function(self, damage)
 	if damage.nature ~= sgs.DamageStruct_Fire then
@@ -700,6 +808,9 @@ end
 
 sgs.ai_skill_invoke.bingpo_hegemony =  true
 
+
+--露米娅
+--[真夜]
 sgs.ai_skill_playerchosen.zhenye = function(self, targets)
 	local target_table= sgs.QList2Table(targets)
 	self:sort(target_table,"hp")
@@ -723,8 +834,7 @@ sgs.ai_playerchosen_intention.zhenye =function(self, from, to)
 	sgs.updateIntention(from, to, intention)
 end
 
-
-
+--[真夜 国]
 sgs.ai_skill_playerchosen.zhenye_hegemony = function(self, targets)
 	local target_table= sgs.QList2Table(targets)    
     local do_turnup = true
@@ -747,6 +857,8 @@ sgs.ai_skill_playerchosen.zhenye_hegemony = function(self, targets)
 	return nil
 end
 
+
+--[暗域]
 sgs.ai_skill_invoke.anyu = true
 sgs.ai_skill_choice.anyu= function(self, choices, data)
 	if self.player:faceUp() then
@@ -780,103 +892,24 @@ sgs.ai_slash_prohibit.anyu = function(self, from, to, card)
 end
 
 
---function SmartAI:getEnemyNumBySeat(from, to, target, include_neutral)
-qiyue_find_righter = function(room,target)
-	local righter
-	for _,p in sgs.qlist(room:getOtherPlayers(target)) do
-		if target:isAdjacentTo(p) then
-			if p:getSeat()-target:getSeat()==1 then
-				righter=p
-			end
-			if target:getSeat()-p:getSeat()==room:getOtherPlayers(target):length() then
-				righter=p
-			end
-		end
-	end
-	return righter
-end
-sgs.ai_skill_invoke.qiyue = function(self,data)
-	local current=self.room:getCurrent()
-	if self:isEnemy(current) then
-		if self.player:getMaxHp()== 1 then
-			if current:hasSkill("weiya") then
-				return false
-			end
-			local recover =  getCardsNum("Analeptic", self.player, self.player)
-			for _,p in ipairs(self.friends) do
-				recover = recover + getCardsNum("Peach", p, self.player)
-			end
-			return recover > 0
-		end
-		if self.player:getMaxHp()<3 or self.player:getHp()<3 then return true end
-		if #self.enemies<3 then return false end
-		enemyseat= current:getSeat()
-		selfseat=self.player:getSeat()
-		count=1
-		a =qiyue_find_righter (self.room,current)
-		while a:objectName()~=self.player:objectName() do
-			if self:isEnemy(a) then
-				count=count+1
-			end
-			a =qiyue_find_righter (self.room,a)
-		end
-		if count>=3 then
-			return true
-		end
-	end
-	return false
-end
-sgs.ai_skill_choice.qiyue=function(self)
-	if self.player:getMaxHp()>self.player:getHp() then
-		return "maxhp"
-	else
-		return "hp"
-	end
-end
-sgs.ai_choicemade_filter.skillInvoke.qiyue = function(self, player, args)
-	local to=self.room:getCurrent()
-	if args[#args] == "yes" then
-		if self:willSkipPlayPhase(to) and self:getOverflow(to,to:getMaxCards())>1 then
-			sgs.updateIntention(player, to, -20)
-		else
-			sgs.updateIntention(player, to, 60)
-		end
-	end
-end
-
+--小恶魔
+--[魔契]
 sgs.ai_skill_invoke.moqi = function(self,data)
-	local current = self.room:getCurrent()
-	if self:isEnemy(current) then
-		if not self:isWeak(self.player) and self:isWeak(current) then return true end
-		local recover =  getCardsNum("Analeptic", self.player, self.player)
-		for _,p in ipairs(self.friends) do
-			recover = recover + getCardsNum("Peach", p, self.player)
-		end
-		return recover >= 2
-	else
-		if current:getHandcardNum() >= 5 and self:isWeak(self.player) then
-			return true
-		end
-	end
-	return false
+	local use = data:toCardUse()
+	return self:isFriend(use.from)
 end
-
-sgs.ai_skill_playerchosen.moqi = function(self, targets)
-	for _,p in sgs.qlist(targets) do
-		if (self:isFriend(p)) then
-			return nil
-		end
-		if (self:isEnemy(p)) then
-			return p
-		end
+sgs.ai_choicemade_filter.skillInvoke.moqi = function(self, player, args ,data)
+	local use = data:toCardUse()
+	if use.from and args[#args] == "yes" then
+		sgs.updateIntention(player, use.from, -30)
 	end
-	return targets:first()
 end
 
 sgs.ai_skill_invoke.moqi_hegemony = function(self,data)
 	return true
 end
 
+--[司书]
 local sishu_skill = {}
 sishu_skill.name = "sishu"
 table.insert(sgs.ai_skills, sishu_skill)
@@ -906,6 +939,9 @@ sgs.ai_skill_playerchosen.sishu = function(self, targets)
 end
 sgs.ai_playerchosen_intention.sishu = -20
 
+
+--大妖精
+--[具现]
 sgs.ai_skill_invoke.juxian = true
 sgs.ai_skill_invoke.juxian_hegemony = true
 
@@ -930,8 +966,7 @@ sgs.ai_skill_suit.juxian = function(self)
 		return sgs.string2suit[maxsuit] or sgs.Card_Spade
 end
 
-
---国战版
+--[半月 国]
 local banyue_hegemony_skill = {}
 banyue_hegemony_skill.name = "banyue_hegemony"
 table.insert(sgs.ai_skills, banyue_hegemony_skill)
@@ -975,7 +1010,7 @@ end
 sgs.ai_use_value.BanyueHegemonyCard = 3
 sgs.ai_use_priority.BanyueHegemonyCard =6
 
-
+--[半月]
 local banyue_skill = {}
 banyue_skill.name = "banyue"
 table.insert(sgs.ai_skills, banyue_skill)
@@ -1013,7 +1048,8 @@ sgs.ai_card_intention.BanyueCard = function(self, card, from, tos)
 	end
 end
 
-
+--SP猎人咲夜
+--[觅踪]
 sgs.ai_skill_playerchosen.mizong = function(self, targets)
 	for _,target in sgs.qlist(targets) do
 		if self:isWeak(target) and self:isEnemy(target) then
@@ -1033,6 +1069,7 @@ sgs.ai_skill_playerchosen.mizong = function(self, targets)
 end
 sgs.ai_playerchosen_intention.mizong = 20
 
+--[银刃]
 sgs.ai_skill_invoke.yinren = function(self, data)
 	local target = data:toPlayer()
 	return self:isEnemy(target)
@@ -1048,7 +1085,8 @@ sgs.ai_choicemade_filter.skillInvoke.yinren = function(self, player, promptlist,
 end
 
 
-
+--冴月麟
+--[消隐]
 sgs.ai_skill_invoke.xiaoyin = function(self, data)
 	local target = self.room:getCurrent()
 	return self:isEnemy(target) and self:isWeak(self.player)
@@ -1074,7 +1112,10 @@ sgs.ai_skill_use["@@xiaoyinVS!"] = function(self, prompt)
 	return "."
 end
 
+--幼灵梦SP露米娅
+--[嗜血]
 sgs.ai_skill_invoke.shixue =  true
+--[暗月]
 sgs.ai_skill_invoke.anyue = function(self, data)
 	local target = data:toPlayer()
 	if self:isEnemy(target) then

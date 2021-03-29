@@ -1,4 +1,5 @@
-
+--年代记SP妹红
+--[死斗]
 sgs.ai_skill_playerchosen.sidou = function(self, targets)
 	if self.player:getHp()== 1 then
 		return nil
@@ -76,7 +77,7 @@ sgs.ai_skill_cardchosen.sidou = function(self, who, flags)
 end
 sgs.ai_choicemade_filter.cardChosen.sidou = sgs.ai_choicemade_filter.cardChosen.dismantlement
 
-
+--[物语]
 function SmartAI:findRealKiller(victim,damage)
 	local mouko = self.room:getLord()
 	if mouko and mouko:isAlive() and mouko:hasLordSkill("tymhwuyu") then
@@ -92,7 +93,8 @@ sgs.ai_skillProperty.tymhwuyu = function(self)
 	return "noKingdom"
 end
 
-
+--年代记SP辉夜
+--[幻月]
 --[[sgs.ai_skill_invoke.huanyue = function(self,data)
 	local damage = self.player:getTag("huanyue_damage"):toDamage()
 	if not self:isEnemy(damage.to) then return false end
@@ -125,7 +127,7 @@ sgs.ai_skill_invoke.sizhai = true
 ]]
 
 sgs.ai_skill_invoke.huanyue = true
-sgs.ai_skill_invoke.wanggou = true
+
 sgs.ai_skill_cardask["@huanyue"] = function(self, data)
 	local damage = data:toDamage()
 	if self:isEnemy(damage.to) then
@@ -140,7 +142,12 @@ sgs.ai_choicemade_filter.cardResponded["@huanyue"] = function(self, player, args
 		sgs.updateIntention(player, target, 80)
 	end
 end
+--[网购]
+sgs.ai_skill_invoke.wanggou = true
 
+
+--年代记SP紫
+--[援护]
 sgs.ai_skill_invoke.yuanhu = function(self,data)
 	local source = self.player:getTag("yuanhu"):toPlayer()
 	return source and self:isFriend(source)
@@ -199,6 +206,10 @@ sgs.ai_choicemade_filter.cardExchange.yuanhu = function(self, player, args)
 	end
 end
 
+
+
+--年代记SP妖梦
+--[魂魄]
 local hunpo_skill = {}
 hunpo_skill.name = "hunpo"
 table.insert(sgs.ai_skills, hunpo_skill)
@@ -221,7 +232,7 @@ sgs.ai_skill_use_func.HunpoCard = function(card, use, self)
 	use.card=card
 end
 
-
+--[反击]
 sgs.ai_skill_invoke.fanji = function(self,data)
 	local target=self.player:getTag("fanji_damage"):toDamage().from
 	local buff =self.player:getTag("fanji_damage"):toDamage().to
@@ -245,7 +256,8 @@ sgs.ai_skill_choice.fanji= function(self, choices, data)
 	return "hp"
 end
 
-
+--年代记SP玛艾露贝莉
+--[裂隙]
 sgs.ai_skill_use["@@liexi"] = function(self, prompt)
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 	local card=sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
@@ -297,6 +309,7 @@ sgs.ai_skill_invoke.liexi_extra = function(self,data)
 	end
 	return false
 end
+--[梦违]
 sgs.ai_skill_playerchosen.mengwei = function(self, targets)
 	local use = self.room:getTag("mengwei_extra"):toCardUse()
 	for _,p in sgs.qlist(targets) do
@@ -327,6 +340,8 @@ sgs.ai_skill_invoke.mengwei_extra = function(self,data)
 	end
 	return false
 end
+
+
 
 sgs.ai_skill_invoke.zaiwu = function(self,data)
 	local target = self.player:getTag("zaiwu"):toPlayer()
@@ -362,6 +377,12 @@ sgs.ai_choicemade_filter.skillInvoke.mengwei = function(self, player, args)
 	end
 end
 ]]
+
+--年代记SP莲子
+--无
+
+--年代记SP早苗
+--[修补]
 sgs.ai_skill_cardask["@xiubu-self"] = function(self, data)
 	if sgs.ai_skill_invoke.xiubu(self, data) then
 		local dis = self:askForDiscard("Dummy", 1, 1, false, false)
@@ -398,6 +419,8 @@ sgs.ai_cardneed.xiubu = function(to, card, self)
 	end
 end
 
+--年代记SP文
+--[机能]
 sgs.ai_skill_invoke.jineng =function(self,data)
 	--if not self:invokeTouhouJudge() then return false end
 	return true
@@ -515,7 +538,7 @@ function sgs.ai_cardsview_valuable.jineng(self, class_name, player)
 	return (cardname .. ":jineng[%s:%s]=%d"):format(suit, number, card_id)
 
 end
-
+--[快报]
 sgs.ai_skill_invoke.kuaibao =function(self,data)
 	local current = self.room:getCurrent()
 	if self:isEnemy(current) and not self:needToLoseHp(current, self.player, false, false) then
@@ -525,6 +548,7 @@ sgs.ai_skill_invoke.kuaibao =function(self,data)
 end
 
 --年代记SP天子
+--[忧乐]
 -- 忧乐："一名角色的非额外回合结束时，若你于此回合内造成或受到过伤害，你可以选择一名角色的一个有牌区域，令其弃置其中的X张牌（X为其中的牌数且至多为5），然后其获得一个额外的回合。"
 --忧乐：选择发动技能的目标 @todo:sort targets
 sgs.ai_skill_playerchosen.youle = function(self, targets)
@@ -558,3 +582,7 @@ sgs.ai_skill_choice.youle = function(self, choices, data)
 	end
 	return choices[1]
 end
+
+
+--年代记SP永琳
+--无

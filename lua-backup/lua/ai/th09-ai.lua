@@ -1,3 +1,5 @@
+--伊吹萃香
+--[醉月]
 --酒貌似是使用就根本就不过useBasicCard。。。。不能通过turnuse插入card列表。。。
 --而是在使用杀的usecard function里调用的 getCardId。。。这个函数丝毫不用到getTurnUse。。。
 
@@ -5,12 +7,12 @@ sgs.ai_cardneed.zuiyue = function(to, card, self)
 	return card:isKindOf("Slash")  or card:isKindOf("TrickCard")
 end
 
-
+--[斗酒]
 function SmartAI:cautionDoujiu(player,card)
 	player = player or self.player
-	if player:getPhase() ~=sgs.Player_Play then
-		return false
-	end
+	--if player:getPhase() ~=sgs.Player_Play then
+	--	return false
+	--end
 	local  zhan006 = self.room:findPlayerBySkillName("doujiu")
 	if not zhan006
 	or not self:isEnemy(zhan006)
@@ -64,6 +66,7 @@ sgs.ai_cardneed.doujiu = function(to, card, self)
 	return card:getNumber() > 10
 end
 
+--[宴会]
 local yanhuivs_skill = {}
 yanhuivs_skill.name = "yanhui_attach"
 table.insert(sgs.ai_skills, yanhuivs_skill)
@@ -99,7 +102,8 @@ sgs.ai_skill_use_func.YanhuiCard = function(card, use, self)
 end
 
 
-
+--四季映姬·夜摩仙那度
+--[审判]
 sgs.ai_skill_playerchosen.shenpan = function(self, targets)
 	--需要check damage prohibit
 	local target_table = self:getEnemies(self.player)
@@ -179,6 +183,7 @@ sgs.ai_playerchosen_intention.shenpan =function(self, from, to)
 	sgs.updateIntention(from, to, intention)
 end
 
+--[悔悟]
 function huiwu_judge(self,target,card)
 	if card:isKindOf("AmazingGrace") then
 		return 3
@@ -244,7 +249,7 @@ sgs.ai_benefitBySlashed.huiwu = function(self, card,source,target)
 	return true
 end
 
-
+--[花冢]
 sgs.ai_skill_invoke.huazhong = function(self, data)
 	if not self:invokeTouhouJudge() then return false end
 	local to =data:toPlayer()
@@ -270,9 +275,10 @@ sgs.ai_choicemade_filter.skillInvoke.huazhong = function(self, player, args, dat
 end
 
 
-
+--小野塚小町
+--[冥途]
 sgs.ai_skill_invoke.mingtu = true
-
+--[薄命]
 sgs.ai_skill_invoke.boming =  true
 sgs.ai_damageCaused.boming = function(self, damage)
 	if damage.card and not damage.chain and not damage.transfer then
@@ -289,6 +295,8 @@ sgs.ai_cardneed.boming = function(to, card, self)
 	end
 end
 
+--风见幽香
+--[威压]
 sgs.ai_skill_invoke.weiya =  true
 function SmartAI:hasWeiya(player)
 	player=player or self.player
@@ -320,6 +328,9 @@ sgs.ai_skill_cardask["@weiya"] = function(self, data, pattern, target)
 	return "."
 end
 
+
+--梅蒂欣·梅兰可莉
+--[剧毒]
 sgs.ai_skill_invoke.judu =function(self,data)
 	if not self:invokeTouhouJudge() then return false end
 	local target=data:toPlayer()
@@ -337,7 +348,7 @@ sgs.ai_skillProperty.judu = function(self)
 	return "cause_judge"
 end
 
-
+--[恨意]
 sgs.ai_skill_invoke.henyi =function(self,data)
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 	local card = sgs.cloneCard("archery_attack", sgs.Card_NoSuit, 0)
@@ -348,7 +359,8 @@ sgs.ai_skill_invoke.henyi =function(self,data)
 	return false
 end
 
-
+--文花帖SP文
+--[偷拍]
 --[[function SmartAI:toupaiValue(player)
 	if self:touhouHandCardsFix(player) or player:hasSkill("heibai") then
 		return 0
@@ -465,8 +477,11 @@ sgs.ai_card_intention.ToupaiCard = 50
 end]]
 --sgs.ai_playerchosen_intention.toupai = 60
 --sgs.ai_skill_askforag.toupai = function(self, card_ids)
+--[取材]
 sgs.ai_skill_invoke.qucai = true
 
+--比那名居天子
+--[绯想]
 --[[
 sgs.ai_skill_playerchosen.feixiang = function(self, targets)
 	local judge=self.player:getTag("feixiang_judge"):toJudge()
@@ -672,11 +687,11 @@ sgs.ai_skillProperty.feixiang = function(self)
 	return "wizard_harm"
 end
 
-
+--[地震]
 sgs.ai_skill_invoke.dizhen  = true
 
 
-
+--[天人]
 table.insert(sgs.ai_global_flags, "tianrenslashsource")
 table.insert(sgs.ai_global_flags, "tianrenjinksource")
 local tianren_slash_filter = function(self, player, carduse)
@@ -879,7 +894,8 @@ sgs.ai_skill_cardask["@tianren-jink"] = function(self)
 	return self:getCardId("Jink") or "."
 end
 
-
+--永江衣玖
+--[静电]
 sgs.ai_skill_invoke.jingdian =  true
 sgs.ai_damageInflicted.jingdian = function(self, damage)
 	if damage.nature == sgs.DamageStruct_Thunder and damage.to:hasSkill("jingdian") then
@@ -892,6 +908,7 @@ sgs.ai_benefitBySlashed.jingdian = function(self, card,source,target)
 	return true
 end
 
+--[雷云]
 local leiyun_skill = {}
 leiyun_skill.name = "leiyun"
 table.insert(sgs.ai_skills, leiyun_skill)
@@ -933,7 +950,8 @@ sgs.ai_skillProperty.leiyun = function(self)
 	return "use_delayed_trick"
 end
 
-
+--姬海棠果
+--[快照]
 function SmartAI:kuaizhaoValue(player)
 	if player:isKongcheng() then return 0 end
 	local value=0
@@ -972,7 +990,7 @@ sgs.ai_skill_playerchosen.kuaizhao = function(self, targets)
 end
 sgs.ai_playerchosen_intention.kuaizhao = 80
 
-
+--[快照 国]
 sgs.ai_skill_invoke.kuaizhao_hegemony = true
 local kuaizhao_hegemony_skill = {}
 kuaizhao_hegemony_skill.name = "kuaizhao_hegemony"
@@ -1012,7 +1030,8 @@ sgs.ai_skill_use_func.KuaizhaoHegemonyCard = function(card, use, self)
 end
 sgs.ai_use_priority.KuaizhaoHegemonyCard = sgs.ai_use_priority.KnownBothHegemony
 
-
+--秦心
+--[能舞]
 sgs.ai_skill_playerchosen.nengwudraw = function(self, targets)
 	local target =self:touhouFindPlayerToDraw(true, 1, targets)
 	if target then return target end
@@ -1036,7 +1055,7 @@ sgs.ai_playerchosen_intention.nengwudiscard = 40
 		or (not to:getOffensiveHorse() and  getCardsNum("OffensiveHorse",to,self.player)<1 and card:isKindOf("OffensiveHorse"))
 	end
 end]]
-
+--[希望]
 sgs.ai_skill_cardask["@xiwang"] = function(self, data)
 	local target = self.player:getTag("xiwang_target"):toPlayer()
 	if not target or not self:isFriend(target) then return "." end
@@ -1056,7 +1075,8 @@ sgs.ai_choicemade_filter.cardResponded["@xiwang"] = function(self, player, args)
 	end
 end
 
-
+--宇佐见堇子
+--[念力]
 function SmartAI:nianliColor(cards)
 	local black = 0
 	local red = 0
@@ -1125,11 +1145,17 @@ sgs.ai_skill_use_func.NianliCard=function(card,use,self)
 end
 
 
-
 sgs.ai_use_priority.NianliCard = 9
+
+--[深秘] 暂无想法
+
+
+--密封梦魇堇子
+--无ai
 
 
 --依神女苑&依神紫苑
+--[俭奢]
 --俭奢:其他角色的结束阶段开始时，你可以弃置一张手牌，令其选择一项：将手牌弃置至一张，若如此做，其回复1点体力；或摸一张牌，然后失去1点体力。
 --俭奢: 弃牌发动
 sgs.ai_skill_cardask["@jianshe-discard"] = function(self, data)
@@ -1183,3 +1209,7 @@ sgs.ai_skill_choice.jianshe = function(self, choices, data)
 	end
 	return choices[1]
 end
+
+
+--SP丧面秦心
+

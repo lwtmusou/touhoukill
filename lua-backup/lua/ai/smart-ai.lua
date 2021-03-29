@@ -1075,7 +1075,7 @@ function sgs.isRolePredictable(classical)
 	if not classical and sgs.GetConfig("RolePredictable", false) then return true end
 	local mode = string.lower(global_room:getMode())
 	if (not mode:find("0")) or mode:find("02p") or mode:find("02_1v1") or mode:find("04_1v3")
-		or mode == "06_3v3" or mode == "06_xmode" or (not classical) then return true end
+		or mode == "06_3v3" or mode == "06_xmode" then return true end
 	return false
 end
 
@@ -3859,8 +3859,13 @@ function SmartAI:willUsePeachTo(dying)
 
     --送葬带走
 	if self.player:hasSkill("songzang") and not self:isFriend(dying) then
-		card_str = self:getCardId("Peach")
-		if card_str then return card_str end
+		local songzang_str = self:getCardId("Peach")
+		if songzang_str then
+			local songzangcard = sgs.Card_Parse(songzang_str)
+			if (songzangcard:getSkillName() == "songzang") then
+				return songzang_str 
+			end
+		end
 	end
 	--宴会用酒
 	if self.player:objectName() ~= dying:objectName() and self:isFriend(dying)

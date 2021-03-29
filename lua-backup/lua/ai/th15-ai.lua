@@ -1,4 +1,5 @@
-
+--纯狐
+--[瑕秽]
 function getChunhuaCard(player)
 	local damage = "snatch|dismantlement|amazing_grace|archery_attack|savage_assault|iron_chain|collateral|fire_attack|drowning|await_exhausted|known_both|duel|lure_tiger"
 	local recover = "slash|fire_slash|snatch|dismantlement|amazing_grace|archery_attack|savage_assault|iron_chain|collateral|fire_attack|drowning|await_exhausted|known_both|duel|lure_tiger"
@@ -35,6 +36,7 @@ sgs.ai_skill_cardchosen.xiahui = function(self, who, flags)
 	end
 end
 
+--[纯化]
 --[[
 sgs.ai_skill_invoke.chunhua = function(self, data)
 	local use = data:toCardUse()
@@ -70,6 +72,7 @@ sgs.ai_skill_choice.chunhua= function(self,  choices, data)
 	return "cancel"
 end
 
+--[杀意]
 sgs.ai_skill_invoke.shayi = true
 sgs.ai_skill_invoke.shayi_change = function(self, data)
 	local lord = self.room:getLord()
@@ -96,10 +99,13 @@ sgs.ai_skill_use["@@shayi"] = function(self, prompt)
 	return "."
 end
 
+--赫卡提亚·拉碧斯拉祖利
 sgs.shownCard_skill = "chunhua|santi"
+--[三体]
 sgs.ai_skill_invoke.santi =  true
 
-
+--克劳恩皮丝
+--[狂乱]
 sgs.ai_skill_invoke.kuangluan1 = function(self, data)
 	local target = data:toPlayer()
 
@@ -113,7 +119,7 @@ sgs.ai_skill_invoke.kuangluan2 = function(self, data)
 	if self:isFriend(target) and  target:hasSkill("santi") then return true end
 	return false
 end
-
+--[狱意]
 sgs.ai_skill_cardask["@yuyi_discard"] = function(self, data)
 	local damage = data:toDamage()
 	if self:isFriend(damage.from) or not self.player:canDiscard(damage.from, "hs")
@@ -196,7 +202,8 @@ end
 	return false
 end]]
 
-
+--稀神探女
+--[舌祸]
 sgs.ai_skill_use["BasicCard+^Jink,EquipCard|.|.|shehuo"] = function(self, prompt, method)
 	local target = self.player:getTag("shehuo_target"):toPlayer()
 	if not target or not self:isEnemy(target) then return "." end
@@ -223,6 +230,7 @@ sgs.ai_skill_use["TrickCard+^Nullification,EquipCard|.|.|shehuo"] = function(sel
 	return "."
 end
 
+--[慎言]
 sgs.ai_skill_use["@@shenyan"] = function(self, prompt)
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 
@@ -251,6 +259,8 @@ sgs.ai_skill_invoke.shenyan = function(self, data)
 	return current and self:isFriend(current)
 end
 
+--哆来咪·苏伊特
+--[捕梦]
 sgs.ai_skill_invoke.bumeng = function(self, data)
 	local from = data:toPlayer()
 	--from = findPlayerByObjectName(self.room, move.from:objectName(), true)
@@ -264,13 +274,14 @@ sgs.ai_choicemade_filter.skillInvoke.bumeng = function(self, player, args)
 		sgs.updateIntention(player, from, -20)
 	end
 end
+--[入梦]
 sgs.ai_skill_invoke.rumeng = function(self, data)
 	local current = self.room:getCurrent()
 	return current and self:isEnemy(current)
 end
 
 
-
+--铃瑚
 --[[sgs.ai_skill_playerchosen.yuejian = function(self,targets)
 	if #self.enemies == 0 then return nil end
 	self:sort(self.enemies,"defense")
@@ -283,7 +294,7 @@ end
 end
 sgs.ai_playerchosen_intention.yuejian = 10
 ]]
-
+--[月见]
 sgs.ai_skill_use["@@yuejian!"] = function(self, prompt)
 	local cardname = "await_exhausted"
 	local card=sgs.cloneCard(cardname, sgs.Card_NoSuit, 0)
@@ -358,7 +369,7 @@ sgs.ai_skill_use_func.YuejianCard = function(card, use, self)
 	end
 end
 sgs.ai_use_priority.YuejianCard = sgs.ai_use_priority.AwaitExhausted - 0.2
-
+--[浆果]
 function sgs.ai_cardsview_valuable.jiangguo(self, class_name, player)
 	if class_name == "Analeptic" then
 	    local dying = self.room:getCurrentDyingPlayer() 
@@ -375,103 +386,51 @@ function sgs.ai_cardsview_valuable.jiangguo(self, class_name, player)
 	end
 end
 
-
+--清兰
+--[异弹]
 local yidan_skill = {}
 yidan_skill.name = "yidan"
 table.insert(sgs.ai_skills, yidan_skill)
 yidan_skill.getTurnUseCard = function(self, inclusive)
-	--青兰ai弃疗了
-	if self.player:hasFlag("yidan_iron_slash" ) and self.player:hasFlag("yidan_light_slash" ) then
-		return nil
-	end
+	--青兰ai写起来相当弃疗
+	if (self.player:hasUsed("YidanCard")) then return nil end
+	
 	local cards = self.player:getCards("hs")
 	cards=self:touhouAppendExpandPileToList(self.player,cards)
 	if cards:isEmpty() then return nil end
 	local avail = sgs.QList2Table(cards)
-	self:sortByUseValue(avail)
-	local target
-	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if self:isEnemy(p) and not p:isDebuffStatus() then
-			target = p
-			break
-		end
-	end
-	if not target then return nil end
-	local card_name = "light_slash"
-	if self.player:hasFlag("yidan_light_slash") then
-		card_name = "iron_slash"
-	end
-
-	local slash = sgs.cloneCard(card_name, sgs.Card_SuitToBeDecided, -1)
-	slash:addSubcard(avail[1])
-	slash:setSkillName("yidan")
-	slash:deleteLater()
-	local str = slash:toString()
-	return sgs.Card_Parse(str)
-
-	--老版本
-	--[[local suits = {}
-	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if self:isEnemy(p) then
-			for _,c in sgs.qlist(p:getCards("es")) do
-				local suit = c:getSuit()
-				if not table.contains(suits,suit) then
-					table.insert(suits, suit)
-					if #suits >= 4 then break end
-				end
-			end
-		end
-		if #suits >= 4 then break end
-	end
-
-	if #suits == 0 then return nil end
-	local avail = {}
-	for _,c in sgs.qlist(cards) do
-		local suit = c:getSuit()
-		if table.contains(suits,suit) then
-			table.insert(avail, c)
-		end
-	end
+	
 	self:sortByUseValue(avail)
 	if #avail == 0 then return nil end
 
 	return sgs.Card_Parse("@YidanCard="..avail[1]:getEffectiveId())
-	]]
+	
 end
---[[sgs.ai_skill_use_func.YidanCard=function(card,use,self)
+sgs.ai_skill_use_func.YidanCard=function(card,use,self)
 	local target
 	local card_name = "light_slash"
-	if self.player:hasFlag("yidan_light_slash") then
-		card_name = "iron_slash"
-	end
+
 	local slash = sgs.cloneCard(card_name, sgs.Card_SuitToBeDecided, -1)
 	slash:addSubcard(card)
 	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if self:isEnemy(p) and not p:isDebuffStatus() then
-			target = p
-			break
-		end
-	end
-	--老版本
-	for _,p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if self:isEnemy(p) then
-			for _,c in sgs.qlist(p:getCards("es")) do
-				if  slash:getSuit() == c:getSuit() and not self.player:isProhibited(p, slash) then
-					target = p
-					break
-				end
-			end
+		if self:isEnemy(p) and not p:isKongcheng() and p:getShownHandcards():isEmpty() then
+			if  not self.player:isProhibited(p, slash) then
+				target = p
+				break
+			end	
 		end
 	end
 	if target then
-		use.card = card --card
+		use.card = card
 		if use.to then
 			use.to:append(target)
 			if use.to:length() >= 1 then return end
 		end
 	end
-end]]
+end
 
 
 sgs.ai_use_priority.YidanCard = sgs.ai_use_priority.ThunderSlash + 0.2
 --sgs.dynamic_value.damage_card.YidanCard = true
+
+--[血杵] 默认触发

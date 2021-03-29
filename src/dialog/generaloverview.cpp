@@ -327,7 +327,11 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
             name = Sanguosha->translate(general->objectName());
         kingdom = Sanguosha->translate(general->getKingdom());
         //gender = general->isMale() ? tr("Male") : (general->isFemale() ? tr("Female") : tr("NoGender"));
+
         max_hp = QString::number(general->getMaxHp());
+        if (general->objectName().endsWith("hegemony"))
+            max_hp = QString::number(double(general->getMaxHp()) / 2);
+
         package = Sanguosha->translate(general->getPackage());
 
         QString nickname = Sanguosha->translate("#" + general_name);
@@ -438,11 +442,13 @@ bool GeneralOverview::hasSkin(const QString &general_name)
 QString GeneralOverview::getIllustratorInfo(const QString &general_name)
 {
     QString unique_general = general_name;
-    if (unique_general.endsWith("_hegemony"))
+    if (general_name.endsWith("_hegemony")) {
         unique_general = unique_general.replace("_hegemony", "");
+    }
     int skin_index = Config.value(QString("HeroSkin/%1").arg(unique_general), 0).toInt();
     QString suffix = (skin_index > 0) ? QString("_%1").arg(skin_index) : QString();
-    QString illustrator_text = Sanguosha->translate(QString("illustrator:%1%2").arg(unique_general).arg(suffix));
+    QString key = (general_name.endsWith("_hegemony") && skin_index == 0) ? general_name : unique_general;
+    QString illustrator_text = Sanguosha->translate(QString("illustrator:%1%2").arg(key).arg(suffix));
     if (!illustrator_text.startsWith("illustrator:"))
         return illustrator_text;
     else {
@@ -461,7 +467,8 @@ QString GeneralOverview::getOriginInfo(const QString &general_name)
         unique_general = unique_general.replace("_hegemony", "");
     int skin_index = Config.value(QString("HeroSkin/%1").arg(unique_general), 0).toInt();
     QString suffix = (skin_index > 0) ? QString("_%1").arg(skin_index) : QString();
-    QString illustrator_text = Sanguosha->translate(QString("origin:%1%2").arg(unique_general).arg(suffix));
+    QString key = (general_name.endsWith("_hegemony") && skin_index == 0) ? general_name : unique_general;
+    QString illustrator_text = Sanguosha->translate(QString("origin:%1%2").arg(key).arg(suffix));
     if (!illustrator_text.startsWith("origin:"))
         return illustrator_text;
     else {
@@ -648,14 +655,18 @@ void GeneralOverview::askChangeSkin()
         Config.beginGroup("HeroSkin");
         Config.remove(unique_general);
         Config.endGroup();
-        if (n > 1)
-            pixmap = G_ROOM_SKIN.getCardMainPixmap(unique_general);
-        else
+        if (n > 1) {
+            if (general_name.endsWith("_hegemony"))
+                pixmap = G_ROOM_SKIN.getCardMainPixmap(general_name);
+
+            if (pixmap.width() <= 1 && pixmap.height() <= 1)
+                pixmap = G_ROOM_SKIN.getCardMainPixmap(unique_general);
+        } else
             return;
     }
     ui->generalPhoto->setPixmap(pixmap);
-    ui->illustratorLineEdit->setText(getIllustratorInfo(unique_general));
-    ui->originLineEdit->setText(getOriginInfo(unique_general));
+    ui->illustratorLineEdit->setText(getIllustratorInfo(general_name)); //unique_general
+    ui->originLineEdit->setText(getOriginInfo(general_name)); //unique_general
 }
 
 void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders, const QStringList &kingdoms, int lower, int upper,
