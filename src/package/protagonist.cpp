@@ -17,7 +17,7 @@ public:
         events << CardsMoveOneTime;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         QList<SkillInvokeDetail> d;
@@ -45,10 +45,10 @@ public:
         return d;
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         auto t = room->askForPlayerChosen(invoke->invoker, room->getAllPlayers(), objectName(), "@qixiang-select", true, true);
-        if (t != NULL) {
+        if (t != nullptr) {
             invoke->targets << t;
             return true;
         }
@@ -56,7 +56,7 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         invoke->targets.first()->drawCards(1);
         return false;
@@ -72,7 +72,7 @@ public:
         events << CardResponded << CardUsed << EventPhaseChanging;
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
     {
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct c = data.value<PhaseChangeStruct>();
@@ -81,8 +81,8 @@ public:
                     p->setMark("fengmoRecord", 0);
             }
         } else {
-            ServerPlayer *player = NULL;
-            const Card *card = NULL;
+            ServerPlayer *player = nullptr;
+            const Card *card = nullptr;
             if (triggerEvent == CardUsed) {
                 player = data.value<CardUseStruct>().from;
                 card = data.value<CardUseStruct>().card;
@@ -93,7 +93,7 @@ public:
                     card = response.m_card;
             }
 
-            if (player != NULL && card != NULL && card->isKindOf("BasicCard") && room->getCurrent() != NULL && room->getCurrent()->isAlive()
+            if (player != nullptr && card != nullptr && card->isKindOf("BasicCard") && room->getCurrent() != nullptr && room->getCurrent()->isAlive()
                 && room->getCurrent()->getPhase() != Player::NotActive) {
                 int m = player->getMark("fengmoRecord");
                 player->setMark("fengmoRecord", m + 1);
@@ -101,12 +101,12 @@ public:
         }
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
     {
         QList<SkillInvokeDetail> d;
 
-        ServerPlayer *player = NULL;
-        const Card *card = NULL;
+        ServerPlayer *player = nullptr;
+        const Card *card = nullptr;
         if (triggerEvent == CardUsed) {
             player = data.value<CardUseStruct>().from;
             card = data.value<CardUseStruct>().card;
@@ -118,24 +118,24 @@ public:
         } else
             return d;
 
-        if (player == NULL || card == NULL)
+        if (player == nullptr || card == nullptr)
             return d;
 
-        if (room->getCurrent() != NULL && room->getCurrent()->isAlive() && room->getCurrent()->getPhase() != Player::NotActive && player != NULL && card->isKindOf("BasicCard")
+        if (room->getCurrent() != nullptr && room->getCurrent()->isAlive() && room->getCurrent()->getPhase() != Player::NotActive && player != nullptr && card->isKindOf("BasicCard")
             && player->getMark("fengmoRecord") == 1) {
             foreach (ServerPlayer *reimu, room->findPlayersBySkillName(objectName())) {
                 if (reimu != player)
-                    d << SkillInvokeDetail(this, reimu, reimu, NULL, false, player);
+                    d << SkillInvokeDetail(this, reimu, reimu, nullptr, false, player);
             }
         }
 
         return d;
     }
 
-    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         invoke->invoker->tag["fengmo_target"] = QVariant::fromValue(invoke->preferredTarget);
-        const Card *usedcard = NULL;
+        const Card *usedcard = nullptr;
         if (triggerEvent == CardUsed) {
             usedcard = data.value<CardUseStruct>().card;
         } else if (triggerEvent == CardResponded) {
@@ -144,15 +144,15 @@ public:
         }
         QString prompt = "@fengmo:" + invoke->preferredTarget->objectName() + ":" + usedcard->objectName();
         invoke->invoker->tag["fengmo_target"] = QVariant::fromValue(invoke->preferredTarget);
-        const Card *card = room->askForCard(invoke->invoker, ".|.|.|hand", prompt, data, Card::MethodDiscard, NULL, false, objectName());
-        return card != NULL;
+        const Card *card = room->askForCard(invoke->invoker, ".|.|.|hand", prompt, data, Card::MethodDiscard, nullptr, false, objectName());
+        return card != nullptr;
     }
 
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         CardUseStruct use;
         CardResponseStruct resp;
-        ServerPlayer *p = NULL;
+        ServerPlayer *p = nullptr;
 
         if (triggerEvent == CardUsed) {
             use = data.value<CardUseStruct>();
@@ -162,7 +162,7 @@ public:
             p = resp.m_from; //m_who
         }
 
-        if (p == NULL)
+        if (p == nullptr)
             return false;
 
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), p->objectName());

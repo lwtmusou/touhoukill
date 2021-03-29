@@ -1594,7 +1594,7 @@ public:
                     QVariantList owners = p->tag[tagName].toList();
                     foreach (const QVariant &_owner, owners) {
                         ServerPlayer *owner = _owner.value<ServerPlayer *>();
-                        SkillInvokeDetail d(this, owner, p, NULL, true, NULL, false);
+                        SkillInvokeDetail d(this, owner, p, nullptr, true, nullptr, false);
                         d.tag["yaolieffect"] = i;
                         r << d;
                     }

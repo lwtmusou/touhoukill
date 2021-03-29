@@ -625,7 +625,7 @@ public:
         events << TargetConfirmed << EventPhaseStart;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
     {
         QList<SkillInvokeDetail> d;
         if (triggerEvent == TargetConfirmed) {
@@ -644,7 +644,7 @@ public:
         return d;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         ServerPlayer *player = invoke->invoker;
         QList<int> list = room->getNCards(3);
@@ -677,7 +677,7 @@ bool HezhouCard::do_hezhou(ServerPlayer *player) const
     if (drawpile.length() >= 2)
         ids << drawpile.at(drawpile.length() - 2);
 
-    CardsMoveStruct move(ids, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, player->objectName(), objectName(), QString()));
+    CardsMoveStruct move(ids, nullptr, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, player->objectName(), objectName(), QString()));
     room->moveCardsAtomic(move, true);
 
     room->getThread()->delay();
@@ -689,7 +689,7 @@ bool HezhouCard::do_hezhou(ServerPlayer *player) const
 
     CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), objectName(), QString());
     DummyCard dummy(ids);
-    room->throwCard(&dummy, reason, NULL);
+    room->throwCard(&dummy, reason, nullptr);
 
     return success;
 }
@@ -699,7 +699,7 @@ bool HezhouCard::targetFilter(const QList<const Player *> &targets, const Player
     if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return false;
 
-    if (user_string == NULL)
+    if (user_string == nullptr)
         return false;
     Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
     DELETE_OVER_SCOPE(Card, card)
@@ -713,7 +713,7 @@ bool HezhouCard::targetFixed(const Player *player) const
 {
     if (player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;
-    if (user_string == NULL)
+    if (user_string == nullptr)
         return false;
 
     //return false defaultly
@@ -726,7 +726,7 @@ bool HezhouCard::targetsFeasible(const QList<const Player *> &targets, const Pla
     if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;
 
-    if (user_string == NULL)
+    if (user_string == nullptr)
         return false;
     Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
     card->setSkillName("hezhou");
@@ -761,7 +761,7 @@ const Card *HezhouCard::validate(CardUseStruct &card_use) const
 
         return use_card;
     } else
-        return NULL;
+        return nullptr;
 }
 
 const Card *HezhouCard::validateInResponse(ServerPlayer *user) const
@@ -785,7 +785,7 @@ const Card *HezhouCard::validateInResponse(ServerPlayer *user) const
         use_card->deleteLater();
         return use_card;
     } else
-        return NULL;
+        return nullptr;
 }
 
 class HezhouVS : public ZeroCardViewAsSkill
@@ -799,11 +799,9 @@ public:
     static QStringList responsePatterns(const Player *Self)
     {
         QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
-        Card::HandlingMethod method;
+        Card::HandlingMethod method = Card::MethodUse;
         if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
             method = Card::MethodResponse;
-        else
-            method = Card::MethodUse;
 
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         const Skill *skill = Sanguosha->getSkill("hezhou");
@@ -820,7 +818,7 @@ public:
         return checkedPatterns;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &) const
+    bool isEnabledAtResponse(const Player *player, const QString &) const override
     {
         if (player->hasFlag("hezhou_used"))
             return false;
@@ -832,12 +830,12 @@ public:
         return !checkedPatterns.isEmpty();
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const
+    bool isEnabledAtPlay(const Player *player) const override
     {
         return !player->hasFlag("hezhou_used");
     }
 
-    virtual const Card *viewAs(const Player *Self) const
+    const Card *viewAs(const Player *Self) const override
     {
         QStringList checkedPatterns = responsePatterns(Self);
         if (checkedPatterns.length() == 1) {
@@ -847,12 +845,12 @@ public:
         }
 
         QString name = Self->tag.value("hezhou", QString()).toString();
-        if (name != NULL) {
+        if (name != nullptr) {
             HezhouCard *card = new HezhouCard;
             card->setUserString(name);
             return card;
         } else
-            return NULL;
+            return nullptr;
     }
 };
 
@@ -866,12 +864,12 @@ public:
         view_as_skill = new HezhouVS;
     }
 
-    virtual QDialog *getDialog() const
+    QDialog *getDialog() const override
     {
         return QijiDialog::getInstance("hezhou");
     }
 
-    void record(TriggerEvent, Room *room, QVariant &data) const
+    void record(TriggerEvent, Room *room, QVariant &data) const override
     {
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.to == Player::NotActive) {
@@ -1401,7 +1399,7 @@ public:
         events << CardUsed << EventPhaseChanging;
     }
 
-    void record(TriggerEvent triggerEvent, Room *, QVariant &data) const
+    void record(TriggerEvent triggerEvent, Room *, QVariant &data) const override
     {
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -1436,7 +1434,7 @@ public:
         return d;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         //add log?
         CardUseStruct use = data.value<CardUseStruct>();

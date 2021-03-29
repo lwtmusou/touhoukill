@@ -2403,7 +2403,7 @@ public:
     {
         ServerPlayer *p = data.value<ServerPlayer *>();
         if (p->getPhase() == Player::Finish && p->hasFlag("savingEnergy"))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, NULL, p, NULL, true);
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, nullptr, p, nullptr, true);
 
         return QList<SkillInvokeDetail>();
     }

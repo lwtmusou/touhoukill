@@ -65,7 +65,7 @@ public:
         relate_to_place = "head";
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &) const
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &) const override
     {
         if (triggerEvent == EventPhaseChanging) {
             foreach (ServerPlayer *p, room->getAllPlayers())
@@ -73,7 +73,7 @@ public:
         }
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
     {
         if (triggerEvent == EventPhaseChanging)
             return QList<SkillInvokeDetail>();
@@ -1825,13 +1825,13 @@ public:
         return d;
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         ServerPlayer *current = data.value<ServerPlayer *>();
         bool r = false;
 
         if (!invoke->invoker->hasFlag("jianshe_losed"))
-            r = room->askForCard(invoke->invoker, ".|.|.|hand", "@jianshe-discard:" + current->objectName(), QVariant::fromValue(current), Card::MethodDiscard, NULL, false,
+            r = room->askForCard(invoke->invoker, ".|.|.|hand", "@jianshe-discard:" + current->objectName(), QVariant::fromValue(current), Card::MethodDiscard, nullptr, false,
                                  objectName());
         else
             r = invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(current));

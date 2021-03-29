@@ -356,7 +356,7 @@ public:
         return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget));
     }
 
-    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (e == CardFinished) {

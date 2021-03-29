@@ -2136,7 +2136,7 @@ void ZhuozhiCard ::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
 {
     QList<int> ids = room->getNCards(4);
 
-    CardsMoveStruct move(ids, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, source->objectName(), "zhuozhi", QString()));
+    CardsMoveStruct move(ids, nullptr, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, source->objectName(), "zhuozhi", QString()));
     room->moveCardsAtomic(move, true);
     room->fillAG(ids);
 
@@ -2164,7 +2164,7 @@ void ZhuozhiCard ::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
 
     DummyCard discardDummy;
     discardDummy.addSubcards(ids);
-    room->throwCard(&discardDummy, NULL);
+    room->throwCard(&discardDummy, nullptr);
 }
 
 class Zhuozhi : public OneCardViewAsSkill
@@ -2175,17 +2175,17 @@ public:
     {
     }
 
-    bool isEnabledAtPlay(const Player *player) const
+    bool isEnabledAtPlay(const Player *player) const override
     {
         return !player->hasUsed("ZhuozhiCard");
     }
 
-    bool viewFilter(const Card *to_select, const Player *Self) const
+    bool viewFilter(const Card *to_select, const Player *Self) const override
     {
         return !to_select->isEquipped(Self);
     }
 
-    const Card *viewAs(const Card *originalCard, const Player *Self) const
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         ZhuozhiCard *c = new ZhuozhiCard;
         c->addSubcard(originalCard);
@@ -2219,12 +2219,12 @@ public:
         limit_mark = "@kazenwanshen";
     }
 
-    bool isEnabledAtPlay(const Player *player) const
+    bool isEnabledAtPlay(const Player *player) const override
     {
         return player->getMark("@kazenwanshen") > 0 && player->getEquips().count() > 2;
     }
 
-    const Card *viewAs(const Player *Self) const
+    const Card *viewAs(const Player * /*Self*/) const override
     {
         return new WanshenCard;
     }
@@ -2254,7 +2254,7 @@ public:
     {
     }
 
-    bool isEnabledAtPlay(const Player *player) const
+    bool isEnabledAtPlay(const Player *player) const override
     {
         if (!Analeptic::IsAvailable(player))
             return false;
@@ -2267,12 +2267,12 @@ public:
         return false;
     }
 
-    bool viewFilter(const Card *to_select, const Player *Self) const
+    bool viewFilter(const Card *to_select, const Player *Self) const override
     {
         return to_select->isEquipped(Self) && !Self->isBrokenEquip(to_select->getId());
     }
 
-    const Card *viewAs(const Card *originalCard, const Player *Self) const
+    const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
         XieliCard *c = new XieliCard;
         c->addSubcard(originalCard);

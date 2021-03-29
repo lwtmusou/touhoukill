@@ -34,7 +34,7 @@ Client::Client(QObject *parent, const QString &filename)
     , swap_pile(0)
     , heartbeatTimer(nullptr)
     , m_isObjectNameRecorded(false)
-    , Self(NULL)
+    , Self(nullptr)
 {
     m_isGameOver = false;
 

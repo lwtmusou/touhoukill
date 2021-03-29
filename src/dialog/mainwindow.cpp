@@ -337,7 +337,7 @@ void MainWindow::enterRoom()
     }
 
     Client *client = qobject_cast<Client *>(sender());
-    if (client == NULL)
+    if (client == nullptr)
         return;
 
     ui->actionStart_Game->setEnabled(false);
