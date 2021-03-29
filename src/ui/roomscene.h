@@ -479,7 +479,7 @@ private slots:
     void showPlayerCards();
     void updateRolesBox();
     void updateRoles(const QString &roles);
-    void addSkillButton(const Skill *skill, bool head = true); //bool from_left = false
+    void addSkillButton(const Skill *skill, bool head = true);
 
     void resetPiles();
     void removeLightBox();

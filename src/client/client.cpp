@@ -1001,8 +1001,6 @@ QString Client::getPlayerName(const QString &str)
         general_name = Sanguosha->translate(general_name);
         if (player->getGeneral2())
             general_name.append("/" + Sanguosha->translate(player->getGeneral2Name()));
-        //if (ServerInfo.EnableSame || player->getGeneralName() == "anjiang")
-        //    general_name = QString("%1[%2]").arg(general_name).arg(player->getSeat());
 
         if (isHegemonyGameMode(ServerInfo.GameMode)) {
             if (ServerInfo.Enable2ndGeneral) {
@@ -1278,20 +1276,15 @@ void Client::trust()
     setStatus(NotActive);
 }
 
-void Client::preshow(const QString &skill_name, const bool isPreshowed) //, bool head
+void Client::preshow(const QString &skill_name, const bool isPreshowed)
 {
     JsonArray arg;
     arg << skill_name;
     arg << isPreshowed;
-    //arg << head;
     requestServer(S_COMMAND_PRESHOW, arg);
-    //notifyServer(S_COMMAND_SKIN_CHANGE, skinInfo);
     Self->setSkillPreshowed(skill_name, isPreshowed);
 
-    //emit head_preshowed();
-    //if (head)
     emit head_preshowed();
-    //else
     emit deputy_preshowed();
 }
 
@@ -1644,10 +1637,6 @@ void Client::warn(const QVariant &reason_var)
 
 void Client::askForGeneral(const QVariant &arg)
 {
-    //QStringList generals;
-    //if (!tryParse(arg, generals))
-    //    return;
-
     JsonArray args = arg.value<JsonArray>();
     QStringList generals;
     bool single_result = false;
@@ -1664,11 +1653,9 @@ void Client::askForGeneral(const QVariant &arg)
     }
 
     if (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral && !Self->hasFlag("Pingyi_Choose")) {
-        //Sanguosha->playSystemAudioEffect("lose");
         emit generals_got(generals, single_result, can_convert);
         setStatus(AskForGeneralTaken);
     } else {
-        //Sanguosha->playSystemAudioEffect("win");
         emit generals_got(generals, single_result, can_convert);
         setStatus(ExecDialog);
     }
@@ -1712,7 +1699,6 @@ void Client::askForChoice(const QVariant &ask_str)
     QStringList options = ask[1].toString().split("+");
     emit options_got(skill_name, options);
     setStatus(AskForChoice);
-    //setStatus(ExecDialog);
 }
 
 void Client::askForCardChosen(const QVariant &ask_str)
@@ -1733,7 +1719,6 @@ void Client::askForCardChosen(const QVariant &ask_str)
     JsonUtils::tryParse(ask[5], disabled_ids);
     bool enableEmptyCard = ask[6].toBool();
     emit cards_got(player, flags, reason, handcard_visible, method, disabled_ids, enableEmptyCard);
-    //setStatus(ExecDialog);
     setStatus(AskForCardChosen);
 }
 
@@ -1877,17 +1862,13 @@ void Client::askForSinglePeach(const QVariant &arg)
     // @todo: anti-cheating of askForSinglePeach is not done yet!!!
     QStringList pattern;
     pattern << "peach";
-    //<< "kusuri";
     if (dying == Self) {
         prompt_doc->setHtml(tr("You are dying, please provide %1 peach(es)(or analeptic) to save yourself").arg(peaches));
         pattern << "analeptic";
 
     } else {
         QString dying_general = getPlayerName(dying->objectName());
-        /*if (dying->hasLordSkill("yanhui") && Self->getKingdom() == "zhan") {
-            prompt_doc->setHtml(tr("%1 is dying, please provide %2 peach(es)(or analeptic) to save him").arg(dying_general).arg(peaches));
-            pattern << "analeptic";
-        } else*/
+
         prompt_doc->setHtml(tr("%1 is dying, please provide %2 peach(es) to save him").arg(dying_general).arg(peaches));
     }
 
@@ -1939,8 +1920,6 @@ void Client::askForAG(const QVariant &arg)
     m_isDiscardActionRefusable = arr.first().toBool();
     highlight_skill_name = arr.value(1).toString();
 
-    //if (!arg.isBool()) return;
-    //m_isDiscardActionRefusable = arg.asBool();
     setStatus(AskForAG);
 }
 
@@ -2419,7 +2398,6 @@ void Client::setAvailableCards(const QVariant &pile)
 
 void Client::clearHighlightSkillName()
 {
-    //if (!highlight_skill_name) return;
     highlight_skill_name = "";
 }
 
@@ -2428,6 +2406,5 @@ void Client::changeSkin(const QString &name, int index)
     JsonArray skinInfo;
     skinInfo << name << index;
 
-    //notifyToServer(S_COMMAND_SKIN_CHANGE, skinInfo);
     notifyServer(S_COMMAND_SKIN_CHANGE, skinInfo);
 }

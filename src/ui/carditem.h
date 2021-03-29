@@ -114,7 +114,6 @@ protected:
     QImage _m_footnoteImage;
     bool _m_showFootnote;
     QString footnote;
-    // QGraphicsPixmapItem *_m_footnoteItem;
 
     double m_opacityAtHome;
     bool m_isSelected;
@@ -128,7 +127,6 @@ protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent *) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *) override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-    //virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *);
     bool auto_back, frozen;
 
     QAbstractAnimation *m_currentAnimation;

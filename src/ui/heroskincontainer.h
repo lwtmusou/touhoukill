@@ -1,13 +1,8 @@
 #ifndef HEROSKINCONTAINER_H
 #define HEROSKINCONTAINER_H
 
-//#include "cardcontainer.h"
-//#include "QSanSelectableItem.h"
-//#include "carditem.h"
-//#include "GenericCardContainerUI.h"
-
-#include <QGraphicsObject>
 #include <QFont>
+#include <QGraphicsObject>
 
 class SanShadowTextFont;
 class SkinItem;
@@ -46,11 +41,9 @@ protected:
     void wheelEvent(QGraphicsSceneWheelEvent *event) override;
 
 private:
-    //CloseButton *close_button;
     void initSkins();
     void createSkinItem(int skinIndex, QGraphicsItem *parent, bool used = false);
     void fillSkins();
-    //void swapWithSkinItemUsed(int skinIndex);
 
     static QStringList getHeroSkinFiles(const QString &generalName);
     static const QFont &getAvatarNameFont();

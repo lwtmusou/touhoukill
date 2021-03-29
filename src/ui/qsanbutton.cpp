@@ -373,7 +373,7 @@ void QSanInvokeSkillButton::_repaint()
 
         if (i == S_STATE_CANPRESHOW) {
             QPixmap temp(_m_bgPixmap[i]);
-            temp.fill(Qt::transparent); //
+            temp.fill(Qt::transparent);
             QPainter painter(&temp);
             painter.setCompositionMode(QPainter::CompositionMode_Source);
             painter.drawPixmap(0, 0, _m_bgPixmap[i]);
@@ -392,7 +392,7 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
         int nline = _m_skill->objectName().indexOf("-");
         if (nline == -1)
             nline = _m_skill->objectName().indexOf("_");
-        QString engskillname = _m_skill->objectName().split("_").first(); //left(nline);
+        QString engskillname = _m_skill->objectName().split("_").first();
         QString HegSkillname = engskillname + "_hegemony";
         QString generalName = "";
 
@@ -516,12 +516,9 @@ void QSanInvokeSkillDock::update()
 
         int numButtons = regular_buttons.length();
         int lordskillNum = lordskill_buttons.length();
-        //Q_ASSERT(lordskillNum <= 6); // HuangTian, ZhiBa, DrJiuYuan and XianSi
         int rows = (numButtons == 0) ? 0 : (numButtons - 1) / 3 + 1;
         int rowH = G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height();
-        //G_DASHBOARD_LAYOUT.m_normalHeight
-        //  _m_width  G_DASHBOARD_LAYOUT.m_rightWidth
-        int *btnNum = new int[rows + 2 + 1]; //new int[rows + 2 + 1]; // we allocate one more row in case we need it.
+        int *btnNum = new int[rows + 2 + 1]; // we allocate one more row in case we need it.
         int remainingBtns = numButtons;
         int *lordBtnNum = new int[2 + 1]; //just consider 2 rows lord skills
 
@@ -532,10 +529,10 @@ void QSanInvokeSkillDock::update()
         }
         if (lordskillNum > 3) {
             int half = lordskillNum / 2;
-            lordBtnNum[0] = half; //btnNum[rows] = half;
-            lordBtnNum[1] = lordskillNum - half; //btnNum[rows + 1] = lordskillNum - half;
+            lordBtnNum[0] = half;
+            lordBtnNum[1] = lordskillNum - half;
         } else if (lordskillNum > 0) {
-            lordBtnNum[0] = lordskillNum; //btnNum[rows] = lordskillNum;
+            lordBtnNum[0] = lordskillNum;
         }
 
         // If the buttons in rows are 3, 1, then balance them to 2, 2
@@ -544,7 +541,7 @@ void QSanInvokeSkillDock::update()
                 btnNum[rows - 1] = 2;
                 btnNum[rows - 2] = 2;
             }
-        } else if (rows == 1 && btnNum[0] == 3) { //&& lordskillNum == 0
+        } else if (rows == 1 && btnNum[0] == 3) {
             btnNum[0] = 2;
             btnNum[1] = 1;
             rows = 2;
@@ -559,15 +556,11 @@ void QSanInvokeSkillDock::update()
             if (ServerInfo.Enable2ndGeneral)
                 btnWidth = (this->objectName() == "left") ? (_m_width + 30) / btnNum[i] : (_m_width - 20) / btnNum[i];
             for (int j = 0; j < btnNum[i]; j++) {
-                QSanInvokeSkillButton *button = regular_buttons[m++]; //all_buttons[m++];
+                QSanInvokeSkillButton *button = regular_buttons[m++];
                 button->setButtonWidth((QSanInvokeSkillButton::SkillButtonWidth)(btnNum[i] - 1));
                 button->setPos(btnWidth * j, rowTop);
                 if (ServerInfo.Enable2ndGeneral)
                     button->setPos(btnWidth * j + 30, rowTop);
-                //QStringList l;
-                //l << this->objectName() << button->getSkill()->objectName() << QString::number(_m_width) << QString::number(btnWidth)
-                //    << QString::number(btnWidth * j)  << QString::number(rowTop);
-                //RoomSceneInstance->addlog(l);
             }
         }
 
@@ -591,13 +584,7 @@ void QSanInvokeSkillDock::update()
                 if (btntype == 0)
                     btntype = 1;
                 button->setButtonWidth((QSanInvokeSkillButton::SkillButtonWidth)(btntype));
-                //button->setPos(0 - btnWidth * (j + 1) - 15, rowTop - G_DASHBOARD_LAYOUT.m_normalHeight);
                 button->setPos(0 - btnWidth * (j + 1) - G_DASHBOARD_LAYOUT.m_rightWidth + 45, rowTop - G_DASHBOARD_LAYOUT.m_normalHeight);
-                //
-                // QStringList l;
-                //l << this->objectName() << button->getSkill()->objectName() << QString::number(0 - btnWidth * (j + 1) - G_DASHBOARD_LAYOUT.m_rightWidth + 45)
-                //    << QString::number(rowTop - G_DASHBOARD_LAYOUT.m_normalHeight);
-                //RoomSceneInstance->addlog(l);
             }
         }
 

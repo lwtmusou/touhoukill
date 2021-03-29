@@ -35,11 +35,10 @@
 
 using namespace QSanProtocol;
 
-GeneralCardItem::GeneralCardItem(const QString &generalName) //, const int skinId
+GeneralCardItem::GeneralCardItem(const QString &generalName)
     : CardItem(generalName)
     , hasCompanion(false)
 {
-    //_skinId = skinId;
     setAcceptHoverEvents(true);
 
     const General *general = Sanguosha->getGeneral(generalName);
@@ -47,7 +46,6 @@ GeneralCardItem::GeneralCardItem(const QString &generalName) //, const int skinI
 
     setOuterGlowEffectEnabled(true);
     setOuterGlowColor(Sanguosha->getKingdomColor(general->getKingdom()));
-    //setOuterGlowColor(Sanguosha->getKingdomColor("wei"));
 #ifdef Q_OS_ANDROID
     moveRange = 1.0;
 #endif
@@ -73,14 +71,14 @@ void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
     }
 
     if (!_m_isUnknownGeneral)
-        painter->drawPixmap(rect, G_ROOM_SKIN.getCardMainPixmap(objectName(), false, false)); //G_ROOM_SKIN.getGeneralCardPixmap(objectName(), _skinId)
+        painter->drawPixmap(rect, G_ROOM_SKIN.getCardMainPixmap(objectName(), false, false));
     else
         painter->drawPixmap(rect, G_ROOM_SKIN.getPixmap("generalCardBack"));
 
     if (!hasCompanion)
         return;
 
-    QString kingdom = Sanguosha->getGeneral(objectName())->getKingdom(); //"wei";
+    QString kingdom = Sanguosha->getGeneral(objectName())->getKingdom();
     QPixmap icon = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_ICON, kingdom);
     painter->drawPixmap(boundingRect().center().x() - icon.width() / 2 + 3, boundingRect().bottom() - icon.height(), icon);
 
@@ -272,7 +270,6 @@ static bool sortByKingdom(const QString &gen1, const QString &gen2)
     static QMap<QString, int> kingdom_priority_map;
     if (kingdom_priority_map.isEmpty()) {
         QStringList kingdoms = Sanguosha->getKingdoms();
-        //kingdoms << "god";
         int i = 0;
         foreach (const QString &kingdom, kingdoms)
             kingdom_priority_map[kingdom] = i++;
@@ -295,7 +292,6 @@ void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_onl
         title = reason;
     if (this->m_viewOnly != view_only) {
         this->m_viewOnly = view_only;
-        //confirm->setText(view_only ? tr("confirm") : tr("fight"));
     }
     foreach (const QString &general, _generals) {
         if (general.endsWith("(lord)"))
@@ -325,13 +321,6 @@ void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_onl
     std::stable_sort(generals.begin(), generals.end(), sortByKingdom);
 
     foreach (const QString &general, generals) {
-        /*if (player) {
-            if (player->getGeneralName() == general)
-                skinId = player->getHeadSkinId();
-            else
-                skinId = player->getDeputySkinId();
-        }*/
-
         GeneralCardItem *general_item = new GeneralCardItem(general); //, skinId
         general_item->setProperty("source", general);
         general_item->setFlag(QGraphicsItem::ItemIsFocusable);
@@ -342,13 +331,6 @@ void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_onl
         } else {
             general_item->setAutoBack(true);
             connect(general_item, &GeneralCardItem::released, this, &ChooseGeneralBox::_adjust);
-            /*if (!Sanguosha->getConvertGenerals(general).isEmpty() && can_convert) {
-                Button *button = new Button(Sanguosha->translate("convert_general"), 0.45);
-                button->setPos((93 - button->boundingRect().width()) / 2, 130 - button->boundingRect().height());
-                button->setParentItem(general_item);
-                button->setObjectName(general);
-                connect(button, &Button::clicked, this, &ChooseGeneralBox::_onConvertButtonClicked);
-            }*/
         }
 
         if (!view_only) {
@@ -483,7 +465,6 @@ void ChooseGeneralBox::adjustItems()
     if (selected.length() == 2) {
         foreach (GeneralCardItem *card, items)
             card->setFrozen(true);
-        //confirm->setEnabled(true);
         const General *gen1 = Sanguosha->getGeneral(selected.first()->objectName());
         const General *gen2 = Sanguosha->getGeneral(selected.last()->objectName());
         bool can = (gen1->getKingdom() == gen2->getKingdom() || gen1->getKingdom() == "zhu" || gen2->getKingdom() == "zhu");
@@ -493,21 +474,7 @@ void ChooseGeneralBox::adjustItems()
         const General *seleted_general = Sanguosha->getGeneral(selected.first()->objectName());
         foreach (GeneralCardItem *card, items) {
             const General *general = Sanguosha->getGeneral(card->objectName());
-            /*if (BanPair::isBanned(seleted_general->objectName(), general->objectName())
-                || (general->getKingdom() != seleted_general->getKingdom() || general->isLord())) {
-                if (!card->isFrozen())
-                    card->setFrozen(true);
-                card->hideCompanion();
-            } else {
-                if (card->isFrozen())
-                    card->setFrozen(false);
-                if (general->isCompanionWith(selected.first()->objectName())) {
-                    selected.first()->showCompanion();
-                    card->showCompanion();
-                } else {
-                    card->hideCompanion();
-                }
-            }*/
+
             if (general->getKingdom() != seleted_general->getKingdom() && general->getKingdom() != "zhu" && seleted_general->getKingdom() != "zhu") {
                 if (!card->isFrozen())
                     card->setFrozen(true);
@@ -557,21 +524,13 @@ void ChooseGeneralBox::_initializeItems()
     int index = 0;
     foreach (const General *general, generals) {
         int party = 0;
-        //        bool has_lord = false;
         foreach (const General *other, generals) {
             if (other->getKingdom() == general->getKingdom()) {
                 party++;
-                //                if (other != general && other->isLord())
-                //                    has_lord = true;
             }
         }
         GeneralCardItem *item = items.at(index);
-        /*if ((party < 2 || (selected.isEmpty() && has_lord && party == 2))) {
-            if (!item->isFrozen())
-                item->setFrozen(true);
-        } else if (item->isFrozen()) {
-            item->setFrozen(false);
-        }*/
+
         // all enable
         if (item->isFrozen())
             item->setFrozen(false);
@@ -663,18 +622,8 @@ void ChooseGeneralBox::_onConvertButtonClicked()
     connect(origin_item, &GeneralCardItem::clicked, this, &ChooseGeneralBox::_onConvertClicked);
     generals << origin_item;
 
-    /*foreach (QString name, Sanguosha->getConvertGenerals(general)) {
-        GeneralCardItem *item = new GeneralCardItem(name, 0);
-        item->setParentItem(convertContainer);
-        item->setFlag(ItemIsMovable, false);
-        item->setObjectName(name);
-        item->setProperty("source", general);
-        connect(item, &GeneralCardItem::clicked, this, &ChooseGeneralBox::_onConvertClicked);
-        generals << item;
-    }*/
     convertContainer->fillGeneralCards(generals);
     convertContainer->setObjectName(general);
-    //convertContainer->setPos(-93 * (Sanguosha->getConvertGenerals(general).length() +  1.5), 0);
     convertContainer->show();
 }
 

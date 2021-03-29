@@ -51,7 +51,6 @@ public slots:
 protected:
     QRectF _m_boundingRect;
     bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo) override;
-    //Button *confirm_button;
     int scene_width;
     int itemCount;
     static const int cardInterval = 3;
@@ -92,7 +91,7 @@ private:
     QList<CardItem *> up_items, down_items;
     bool up_only;
 
-    static const int start_x = 76; // no Chinese comments in Source Codes!!
+    static const int start_x = 76;
     static const int start_y1 = 105;
     static const int start_y2 = 249;
     static const int middle_y = 173;

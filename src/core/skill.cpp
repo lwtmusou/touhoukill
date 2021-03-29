@@ -47,14 +47,12 @@ QString Skill::getDescription(bool yellow, bool addHegemony) const
 {
     bool normal_game = ServerInfo.DuringGame && isNormalGameMode(ServerInfo.GameMode);
     QString name = QString("%1%2").arg(objectName()).arg(normal_game ? "_p" : "");
-    //bool addHegemony = isHegemony && !objectName().endsWith("_hegemony");
     QString des_src = Sanguosha->translate(":" + name, addHegemony);
     if (normal_game && des_src.startsWith(":"))
         des_src = Sanguosha->translate(":" + objectName());
     if (des_src.startsWith(":"))
         return QString();
     QString desc = QString("<font color=%1>%2</font>").arg(yellow ? "#FFFF33" : "#FF0080").arg(des_src);
-    //if (isHegemonyGameMode(ServerInfo.GameMode) && !canPreshow())
     if (addHegemony && !canPreshow())
         desc.prepend(QString("<font color=gray>(%1)</font><br/>").arg(tr("this skill cannot preshow")));
     return desc;
@@ -345,7 +343,6 @@ bool OneCardViewAsSkill::viewFilter(const Card *to_select, const Player *Self) c
             pat.chop(1);
         } else if (response_or_use && pat.contains("hand")) {
             pat.replace("hand", "hand,wooden_ox");
-            //pat.replace("hand", handlist.join(","));
         }
         ExpPattern pattern(pat);
         return pattern.match(Self, to_select);
@@ -406,7 +403,6 @@ bool TriggerSkill::cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> 
             if (!invoke->invoker->hasSkill(this))
                 return true;
             if (invoke->invoker->hasShownSkill(this) || invoke->invoker->askForSkillInvoke(this, data))
-                //invoke->invoker->showHiddenSkill(objectName());
                 return true;
             else
                 return false;
@@ -473,7 +469,7 @@ bool ShowDistanceSkill::isEnabledAtPlay(const Player *player) const
 {
     if (!isHegemonyGameMode(ServerInfo.GameMode))
         return false;
-    //const DistanceSkill *skill = qobject_cast<const DistanceSkill *>(Sanguosha->getSkill(objectName()));
+
     const Skill *skill = Sanguosha->getSkill(objectName());
     if (skill) {
         if (!player->hasShownSkill(skill->objectName()))
@@ -665,15 +661,6 @@ BattleArraySkill::BattleArraySkill(const QString &name, const QString type) //
         view_as_skill = new ArraySummonSkill(objectName());
 }
 
-//bool BattleArraySkill::triggerable(const ServerPlayer *player) const
-//QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const
-//{
-//return  TriggerSkill::triggerable(        //TriggerSkill::triggerable(player) && player->aliveCount() >= 4;
-//if (room->getAlivePlayers().length() >= 4 && TriggerSkill::triggerable(triggerEvent, )
-
-//    return QList<SkillInvokeDetail>();
-//}
-
 void BattleArraySkill::summonFriends(ServerPlayer *player) const
 {
     player->summonFriends(array_type);
@@ -694,7 +681,6 @@ const Card *ArraySummonSkill::viewAs(const Player * /*Self*/) const
     return card;
 }
 
-//using namespace HegemonyMode;
 bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const
 {
     if (player->getAliveSiblings().length() < 3)
@@ -708,7 +694,6 @@ bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const
         QString type = skill->getArrayType();
 
         if (type == "Siege") {
-            //return true;
             if (player->willBeFriendWith(player->getNextAlive()) && player->willBeFriendWith(player->getLastAlive()))
                 return false;
             if (!player->willBeFriendWith(player->getNextAlive())) {

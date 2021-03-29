@@ -48,7 +48,6 @@ private:
     explicit BeishuiDialog(const QString &object, bool left = true, bool right = true);
 
     QGroupBox *createLeft();
-    //QGroupBox *createRight();
     QAbstractButton *createButton(const Card *card);
     QButtonGroup *group;
     QHash<QString, const Card *> map;

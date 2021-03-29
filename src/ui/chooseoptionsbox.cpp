@@ -56,7 +56,6 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
 {
     //repaint background
     this->options = options;
-    //title = QString("%1 %2").arg(Sanguosha->translate(skillName)).arg(tr("Please choose:"));
     title = QString("%1").arg(Sanguosha->translate(skillName));
     prepareGeometryChange();
 
@@ -96,8 +95,6 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
             }
 
             Button *button = new Button(text, QSizeF(buttonWidth, defaultButtonHeight));
-            //Button *button = new Button(translate(choice), QSizeF(500, defaultButtonHeight));
-            //Button *button = new Button(translate(choice), QSizeF(buttonWidth, defaultButtonHeight), Config.UIFont);
 
             button->setObjectName(choice);
             buttons << button;
@@ -118,18 +115,6 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
 
     moveToCenter();
     show();
-
-    /*for (int i = 0; i < buttons.length(); ++i) {
-        Button *button = buttons.at(i);
-
-        QPoint p = pos[button];
-
-        QPointF pos;
-        pos.setX(outerBlankWidth + (p.x() - 1) * (getButtonWidth() + interval));
-        pos.setY(topBlankWidth + defaultButtonHeight * (p.y() - 1) + (p.y() - 2) * interval + defaultButtonHeight / 2);
-
-        button->setPos(pos);
-    }*/
 
     y = topBlankWidth;
     for (int i = 0; i < buttons.length(); ++i) {
@@ -164,9 +149,7 @@ void ChooseOptionsBox::reply()
     QString choice = sender()->objectName();
     if (choice.isEmpty())
         choice = options.first();
-    //ClientInstance->onPlayerMakeChoice(choice);
     ClientInstance->onPlayerChooseOption(choice);
-    //ClientInstance->onPlayerMakeChoice();
 }
 
 int ChooseOptionsBox::getButtonWidth() const
@@ -174,7 +157,6 @@ int ChooseOptionsBox::getButtonWidth() const
     if (options.isEmpty())
         return minButtonWidth;
 
-    //QFontMetrics fontMetrics(Config.UIFont);
     QFontMetrics fontMetrics(Config.SmallFont);
     int biggest = 0;
     foreach (const QString &section, options) {

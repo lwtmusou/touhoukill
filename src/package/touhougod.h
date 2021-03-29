@@ -261,7 +261,6 @@ public:
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
     bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
-    //virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 

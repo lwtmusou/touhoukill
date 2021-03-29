@@ -917,8 +917,7 @@ TestCardPackage::TestCardPackage()
 
     cards
         // Equip
-        << new Gun(Card::Diamond, 1)//Card::Club, 13
-        //<< new Pillar(Card::Diamond, 1)
+        << new Gun(Card::Diamond, 1)
         << new Hakkero(Card::Spade, 11)
         << new JadeSeal(Card::Heart, 13)
         << new Pagoda(Card::Spade, 12)

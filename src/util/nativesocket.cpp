@@ -94,7 +94,6 @@ void NativeClientSocket::getMessage()
     while (socket->canReadLine()) {
         buffer_t msg;
         socket->readLine(msg, sizeof(msg));
-        //qDebug() << "RX: " << msg;
         bufferList << QByteArray(msg);
     }
     foreach (const QByteArray &arr, bufferList)

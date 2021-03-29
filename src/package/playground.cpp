@@ -846,9 +846,6 @@ PlaygroundPackage::PlaygroundPackage()
     Fsu0413->addSkill(new Fsu0413Lese);
     related_skills.insert("fsu0413gainian", "#fsu0413gainian-dis");
 
-    //    General *jmshtry = new General(this, "jmshtry", "touhougod", 5, true);
-    //    jmshtry->addSkill(new JmshtryMdlKudi);
-
     General *kitsuhattyou = new General(this, "kitsuhattyou", "touhougod", 3, false, true, true);
     kitsuhattyou->addSkill(new Fsu0413JbdNashaT);
     addMetaObject<Fsu0413JbdNashaCard>();

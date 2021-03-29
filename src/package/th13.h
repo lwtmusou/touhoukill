@@ -98,18 +98,6 @@ public:
     void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 
-/*class HuishengCard : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE HuishengCard();
-
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
-    virtual const Card *validate(CardUseStruct &card_use) const;
-};*/
-
 class BumingCard : public SkillCard
 {
     Q_OBJECT

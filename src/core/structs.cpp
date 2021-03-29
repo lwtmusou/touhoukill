@@ -15,14 +15,8 @@ bool CardsMoveStruct::tryParse(const QVariant &arg)
     if ((!JsonUtils::isNumber(args[0]) && !args[0].canConvert<JsonArray>()) || !JsonUtils::isNumberArray(args, 1, 2) || !JsonUtils::isStringArray(args, 3, 6))
         return false;
 
-    /*if (JsonUtils::isNumber(args[0])) {
-        int size = args[0].toInt();
-        for (int i = 0; i < size; i++)
-            card_ids.append(Card::S_UNKNOWN_CARD_ID);
-    } else */
-    if (!JsonUtils::tryParse(args[0], card_ids)) {
+    if (!JsonUtils::tryParse(args[0], card_ids))
         return false;
-    }
 
     from_place = (Player::Place)args[1].toInt();
     to_place = (Player::Place)args[2].toInt();
@@ -49,13 +43,6 @@ QVariant CardsMoveStruct::toVariant() const
             else
                 notify_ids.append(Card::S_UNKNOWN_CARD_ID);
         }
-        /*
-        int num = card_ids.length() - shown_ids.length();
-        notify_ids << shown_ids;
-        if (num > 0) {
-            for (int i = 0; i < num; i++)
-                notify_ids.append(Card::S_UNKNOWN_CARD_ID);
-        }*/
         arg << JsonUtils::toJsonArray(notify_ids);
     }
 
@@ -301,47 +288,6 @@ bool CardUseStruct::isValid(const QString &pattern) const
 {
     Q_UNUSED(pattern)
     return card != nullptr;
-    /*if (card == NULL) return false;
-    if (!card->getSkillName().isEmpty()) {
-    bool validSkill = false;
-    QString skillName = card->getSkillName();
-    QSet<const Skill *> skills = from->getVisibleSkills();
-    for (int i = 0; i < 4; i++) {
-    const EquipCard *equip = from->getEquip(i);
-    if (equip == NULL) continue;
-    const Skill *skill = Sanguosha->getSkill(equip);
-    if (skill)
-    skills.insert(skill);
-    }
-    foreach (const Skill *skill, skills) {
-    if (skill->objectName() != skillName) continue;
-    const ViewAsSkill *vsSkill = ViewAsSkill::parseViewAsSkill(skill);
-    if (vsSkill) {
-    if (!vsSkill->isAvailable(from, m_reason, pattern))
-    return false;
-    else {
-    validSkill = true;
-    break;
-    }
-    } else if (skill->getFrequency() == Skill::Wake) {
-    bool valid = (from->getMark(skill->objectName()) > 0);
-    if (!valid)
-    return false;
-    else
-    validSkill = true;
-    } else
-    return false;
-    }
-    if (!validSkill) return false;
-    }
-    if (card->targetFixed())
-    return true;
-    else {
-    QList<const Player *> targets;
-    foreach (const ServerPlayer *player, to)
-    targets.push_back(player);
-    return card->targetsFeasible(targets, from);
-    }*/
 }
 
 bool CardUseStruct::tryParse(const QVariant &usage, Room *room)

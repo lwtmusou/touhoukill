@@ -297,9 +297,6 @@ void DelayedTrick::onUse(Room *room, const CardUseStruct &card_use) const
     RoomThread *thread = room->getThread();
     thread->trigger(PreCardUsed, room, data);
 
-    //CardMoveReason reason(CardMoveReason::S_REASON_USE, use.from->objectName(), use.to.first()->objectName(), getSkillName(), QString());
-    //room->moveCardTo(this, use.from, use.to.first(), Player::PlaceDelayedTrick, reason, true);
-
     CardMoveReason reason(CardMoveReason::S_REASON_USE, use.from->objectName(), QString(), card_use.card->getSkillName(), QString());
     CardsMoveStruct move(card_use.card->getEffectiveId(), nullptr, Player::PlaceTable, reason);
     room->moveCardsAtomic(move, true);
@@ -321,7 +318,6 @@ void DelayedTrick::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
                 return;
         }
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), getSkillName(), QString());
-        //room->moveCardTo(this, room->getCardOwner(getEffectiveId()), NULL, Player::DiscardPile, reason, true);
         room->moveCardTo(this, source, nullptr, Player::DiscardPile, reason, true);
     } else {
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), targets.first()->objectName(), getSkillName(), QString());
@@ -482,8 +478,7 @@ void Weapon::onUse(Room *room, const CardUseStruct &card_use) const
     ServerPlayer *player = card_use.from;
     if (room->getMode() == "04_1v3" && use.card->isKindOf("Weapon")
         && (player->isCardLimited(use.card, Card::MethodUse)
-            || (!player->getHandPile().contains(getEffectiveId()) //!player->getPile("wooden_ox").contains(getEffectiveId())
-                || player->askForSkillInvoke("weapon_recast", QVariant::fromValue(use))))) {
+            || (!player->getHandPile().contains(getEffectiveId()) || player->askForSkillInvoke("weapon_recast", QVariant::fromValue(use))))) {
         CardMoveReason reason(CardMoveReason::S_REASON_RECAST, player->objectName());
         reason.m_eventName = "weapon_recast";
         room->moveCardTo(use.card, player, nullptr, Player::DiscardPile, reason);
@@ -596,8 +591,6 @@ QString Treasure::getCommonEffectName() const
 StandardPackage::StandardPackage()
     : Package("standard")
 {
-    //addGenerals();
-
     patterns["."] = new ExpPattern(".|.|.|hand");
     patterns[".S"] = new ExpPattern(".|spade|.|hand");
     patterns[".C"] = new ExpPattern(".|club|.|hand");

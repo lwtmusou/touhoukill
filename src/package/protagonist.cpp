@@ -344,7 +344,7 @@ public:
         : OneCardViewAsSkill("wuyu_attach")
     {
         attached_lord_skill = true;
-        filter_pattern = ".|spade|.|."; //".|spade|.|hand"
+        filter_pattern = ".|spade|.|.";
     }
 
     bool isEnabledAtPlay(const Player *player) const override
@@ -555,7 +555,7 @@ void JiezouCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
 {
     ServerPlayer *target = targets.first();
     int id = room->askForCardChosen(source, target, "hejs", "jiezou");
-    room->obtainCard(source, id, false); //room->getCardPlace(id) != Player::PlaceHand
+    room->obtainCard(source, id, false);
     const Card *spade = room->askForCard(source, ".|spade", "@jiezou_spadecard");
     if (spade == nullptr) {
         room->loseHp(source);
@@ -795,7 +795,6 @@ public:
                 break;
             CardUseStruct carduse;
             Slash *slash = new Slash(Card::NoSuit, 0);
-            //slash->deleteLater();
             slash->setSkillName("baoyi");
             carduse.card = slash;
             carduse.from = marisa;
@@ -828,7 +827,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>  /*invoke*/, QVariant &data) const override
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> /*invoke*/, QVariant &data) const override
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
         QList<ServerPlayer *> players;
@@ -1123,7 +1122,7 @@ public:
         return invoke->invoker->askForSkillInvoke(objectName());
     }
 
-    bool effect(TriggerEvent, Room * /*room*/, QSharedPointer<SkillInvokeDetail>  /*invoke*/, QVariant &data) const override
+    bool effect(TriggerEvent, Room * /*room*/, QSharedPointer<SkillInvokeDetail> /*invoke*/, QVariant &data) const override
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
         int z = (player->getLostHp() + 1) - player->getMark("@yu");
@@ -1156,7 +1155,7 @@ public:
         return BllmWuyu::BllmWuyuCost(room, invoke->invoker, "bllmcaiyu");
     }
 
-    bool effect(TriggerEvent, Room * /*room*/, QSharedPointer<SkillInvokeDetail>  /*invoke*/, QVariant &data) const override
+    bool effect(TriggerEvent, Room * /*room*/, QSharedPointer<SkillInvokeDetail> /*invoke*/, QVariant &data) const override
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
         player->drawCards(1);
@@ -1329,7 +1328,7 @@ public:
         return BllmWuyu::BllmWuyuCost(room, invoke->invoker, "bllmshuiyu");
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>  /*invoke*/, QVariant &data) const override
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> /*invoke*/, QVariant &data) const override
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
 
@@ -1787,7 +1786,7 @@ public:
     }
 };
 
-// #pragma message WARN("todo_lwtmusou: rewrite siyu, notice that skill records (flag, tag, marks, etc.) should be updated while siyu TurnBroken")
+#pragma message WARN("todo_lwtmusou: rewrite siyu, notice that skill records (flag, tag, marks, etc.) should be updated while siyu TurnBroken")
 // Fs: should check in every skill, better write the most records clear into the eventphasechanging(to = notactive) event
 // Fs: it's no need to check at here now, the extra turn is inserted after the whole round finished
 // Fs: seems like the only skill that need clean up in this skill is 'shitu' in th99 and 'qinlue' in touhougod.....
@@ -1797,7 +1796,7 @@ public:
     HpymSiyu()
         : TriggerSkill("hpymsiyu")
     {
-        events << EnterDying << EventPhaseChanging; //<< PostHpReduced
+        events << EnterDying << EventPhaseChanging;
         frequency = Compulsory;
     }
 
@@ -1871,7 +1870,6 @@ public:
             throw TurnBroken;
 
             Q_UNREACHABLE();
-            //return true; // prevent enterdying
         } else if (triggerEvent == EventPhaseChanging) {
             invoke->invoker->setMark("siyuinvoke", 0);
             if (invoke->invoker->getHp() < invoke->invoker->dyingThreshold()) {
@@ -2349,7 +2347,6 @@ void BodongCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
     QList<ServerPlayer *> newtargets = map.keys();
     room->sortByActionOrder(newtargets);
     foreach (ServerPlayer *sp, newtargets) {
-        //if (source == sp)
         QList<int> ids;
         QList<int> disable;
         foreach (const Card *c, sp->getCards("e")) {
@@ -2412,10 +2409,9 @@ public:
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
-        foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-            //if (p->canDiscard(player, "hs")) //p != player &&
+        foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName()))
             d << SkillInvokeDetail(this, p, p, nullptr, false, player);
-        }
+
         return d;
     }
 
@@ -2438,7 +2434,6 @@ ProtagonistPackage::ProtagonistPackage()
     : Package("protagonist")
 {
     General *reimu = new General(this, "reimu$", "zhu", 4);
-    //reimu->addSkill(new Lingqi);
     reimu->addSkill(new Qixiang);
     reimu->addSkill(new Fengmo);
     reimu->addSkill(new Boli);
@@ -2481,8 +2476,6 @@ ProtagonistPackage::ProtagonistPackage()
     General *marisa_slm = new General(this, "marisa_slm", "zhu", 3);
     marisa_slm->addSkill(new Qiangyu);
     marisa_slm->addSkill(new Mokai);
-    //marisa_slm->addSkill(new Guangji);
-    //marisa_slm->addSkill(new Xinghui);
 
     General *sanae_slm = new General(this, "sanae_slm", "zhu", 4);
     sanae_slm->addSkill(new DfgzmSiyu);

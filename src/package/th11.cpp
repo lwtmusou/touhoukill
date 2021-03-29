@@ -676,9 +676,6 @@ public:
             damage.from->drawCards(1);
             int max = qMin(damage.from->getCards("hes").length(), 2);
             if (max > 0) {
-                //const Card *cards = room->askForExchange(damage.from, objectName(), max, max, true, "@gelong:" + damage.to->objectName() + ":" + QString::number(max));
-                //room->obtainCard(damage.to, cards, false);
-
                 QList<int> disable;
                 DummyCard *dummy = new DummyCard;
                 for (int i = 0; i < max; i += 1) {

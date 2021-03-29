@@ -645,13 +645,13 @@ public:
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
     {
-        if (triggerEvent == Damaged) { //DamageDone?
+        if (triggerEvent == Damaged) {
             DamageStruct damage = data.value<DamageStruct>();
             if (!damage.to->hasFlag("henyi"))
                 damage.to->setFlags("henyi");
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
-            if (phase_change.from == Player::NotActive) { //Player::Play
+            if (phase_change.from == Player::NotActive) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->hasFlag("henyi"))
                         p->setFlags("-henyi");
@@ -801,7 +801,7 @@ public:
         return room->askForUseCard(invoke->invoker, "@@toupai", "@toupai");
     }
 
-    bool effect(TriggerEvent, Room * /*room*/, QSharedPointer<SkillInvokeDetail>  /*invoke*/, QVariant &data) const override
+    bool effect(TriggerEvent, Room * /*room*/, QSharedPointer<SkillInvokeDetail> /*invoke*/, QVariant &data) const override
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
         return true;
@@ -1282,7 +1282,6 @@ public:
     Duanjiao()
         : AttackRangeSkill("duanjiao")
     {
-        //view_as_skill = new ShowDistanceSkill(objectName());
     }
 
     int getFixed(const Player *target, bool) const override
@@ -1475,7 +1474,7 @@ public:
         ServerPlayer *lord = invoke->owner;
         int card_id = invoke->invoker->tag["xiwang_id"].toInt();
         invoke->invoker->tag.remove("xiwang_id");
-        room->obtainCard(lord, card_id, false); //room->getCardPlace(card_id) != Player::PlaceHand
+        room->obtainCard(lord, card_id, false);
         return false;
     }
 };
@@ -1986,7 +1985,7 @@ MengxiangTargetCard::MengxiangTargetCard()
 
 bool MengxiangTargetCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    return targets.length() < Self->getMark("mengxiang") && !to_select->isKongcheng(); //
+    return targets.length() < Self->getMark("mengxiang") && !to_select->isKongcheng();
 }
 
 void MengxiangTargetCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
@@ -2050,7 +2049,6 @@ public:
 
     bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override
     {
-        //if (Self->hasFlag("Global_mengxiangFailed")) {
         if (Self->getRoomObject()->getCurrentCardUsePattern() == "@@mengxiang-card2") {
             if ((to_select->isKindOf("Jink") || to_select->isKindOf("Nullification")))
                 return false;
@@ -2250,7 +2248,6 @@ void JishiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) c
     int x = subcards.length();
     CardsMoveStruct move;
     move.card_ids = subcards;
-    //move.from = source;
     move.to_place = Player::DrawPile;
     room->moveCardsAtomic(move, false);
     if (x > 1)
@@ -2272,7 +2269,7 @@ public:
         return Self->getPile("#jishi_temp").contains(to_select->getId());
     }
 
-    const Card *viewAs(const QList<const Card *> &cards, const Player * /*Self*/) const override //
+    const Card *viewAs(const QList<const Card *> &cards, const Player * /*Self*/) const override
     {
         if (cards.isEmpty())
             return nullptr;
@@ -2511,7 +2508,7 @@ public:
         : TriggerSkill("mianling")
     {
         view_as_skill = new MianlingVS;
-        events << BeforeCardsMove << CardFinished; // << ??
+        events << BeforeCardsMove << CardFinished;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
@@ -2527,7 +2524,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card != nullptr && use.card->hasFlag("mianling") && use.from != nullptr && use.from->isAlive())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, nullptr, true);
-        } // else if ???
+        }
 
         return QList<SkillInvokeDetail>();
     }

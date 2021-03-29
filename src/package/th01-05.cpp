@@ -223,8 +223,6 @@ public:
                     log.arg = QString::number(current->getMark("shigui"));
                     log.arg2 = current->getPhaseString();
                     room->doNotify(current, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
-                    //considering hiddenskill and losed skill, regardless of  doBroadcastNotify()
-                    //room->touhouLogmessage("#shigui_log", current, QString::number(current->getMark("shigui")), QList<ServerPlayer *>() << current);
                 }
             }
 
@@ -273,50 +271,6 @@ public:
         return false;
     }
 };
-
-/*class Chongdong : public TriggerSkill
-{
-public:
-    Chongdong()
-        : TriggerSkill("chongdong$")
-    {
-        events << Damaged;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
-    {
-        DamageStruct damage = data.value<DamageStruct>();
-        ServerPlayer *current = room->getCurrent();
-        if (damage.to->isAlive() && damage.to->hasLordSkill(this) && current && current->isAlive()) {
-            foreach (ServerPlayer *liege, room->getLieges("pc98", damage.to)) {
-                if (liege->canDiscard(liege, "hs"))
-                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
-            }
-        }
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
-    {
-        return invoke->invoker->askForSkillInvoke(this, data);
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
-    {
-        ServerPlayer *current = room->getCurrent();
-        foreach (ServerPlayer *liege, room->getLieges("pc98", invoke->invoker)) {
-            if (liege->canDiscard(liege, "hs")) {
-                const Card *card = room->askForCard(liege, ".|red|.|hand", "@chongdong", data, Card::MethodDiscard);
-                if (card != NULL) {
-                    room->touhouLogmessage("#chongdong", current, objectName());
-                    room->setPlayerFlag(current, "Global_TurnTerminated");
-                    break;
-                }
-            }
-        }
-        return false;
-    }
-};*/
 
 class Chongdong : public TriggerSkill
 {
@@ -1204,12 +1158,6 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        /*CardsMoveStruct move;
-        move.card_ids = invoke->invoker->getPile("dream");
-        move.to_place = Player::PlaceHand;
-        move.to = invoke->invoker;
-        room->moveCardsAtomic(move, false);*/
-
         room->notifySkillInvoked(invoke->invoker, objectName());
         room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
         CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, invoke->invoker->objectName(), nullptr, objectName(), "");
@@ -1540,7 +1488,6 @@ public:
             foreach (SkillInvalidStruct v, invalids) {
                 if (!v.skill || v.skill->objectName() == "huanwei") {
                     room->filterCards(v.player, v.player->getCards("hes"), true);
-                    //if (!v.invalid)
                 }
             }
         }
@@ -1920,7 +1867,6 @@ public:
     {
         events << GameStart << EventAcquireSkill << EventLoseSkill << EventPhaseChanging << Death << Debut << Revive << GeneralShown;
         view_as_skill = new ModianSelfVS;
-        //show_type = "static";
         related_pile = "modian";
     }
 
@@ -2159,7 +2105,6 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.from && use.from->hasSkill(this)) {
             if (use.card->isKindOf("Slash") || (use.card->isBlack() && use.card->isNDTrick() && !use.card->isKindOf("Nullification"))) {
-                //use.from->getRoom()->setCardFlag(use.card, "baosi");
                 use.card->setFlags("baosi");
                 foreach (ServerPlayer *p, room->getOtherPlayers(use.from)) {
                     if (!use.to.contains(p) && p->getHp() <= p->dyingThreshold() && use.card->targetFilter(QList<const Player *>(), p, use.from)
@@ -2193,20 +2138,8 @@ public:
         invoke->invoker->tag.remove("baosi");
         foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
             bool add = baosi_list.value(p->objectName(), false).toBool();
-            if (add) {
+            if (add)
                 use.to << p;
-                /*if (use.card->isKindOf("Collateral")) {
-                    QList<const Player *> targets;
-                    targets << p;
-                    QList<ServerPlayer *> victims;
-                    foreach (ServerPlayer *t, room->getOtherPlayers(p)) {
-                        if (use.card->targetFilter(targets, t, use.from))
-                            victims << t;
-                    }
-                    ServerPlayer *victim = room->askForPlayerChosen(use.from, victims, "baosi_col", "@baosi_col:" + p->objectName());
-                    p->tag["collateralVictim"] = QVariant::fromValue((ServerPlayer *)victim);
-                }*/
-            }
         }
 
         room->sortByActionOrder(use.to);
@@ -2449,7 +2382,6 @@ public:
         : TriggerSkill("#xingyou")
     {
         events << NumOfEvents;
-        // CardUsed << ShownCardChanged << CardsMoveOneTime << EventPhaseChanging << EventAcquireSkill << EventLoseSkill << EventSkillInvalidityChange;//<< SlashMissed
         frequency = Compulsory;
         show_type = "static";
     }

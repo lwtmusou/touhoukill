@@ -234,12 +234,12 @@ QStringList Engine::getBanPackages() const
     if (qApp->arguments().contains("-server"))
         return Config.BanPackages;
     else {
-        if (isHegemonyGameMode(ServerInfo.GameMode)) { // && ServerInfo.Enable2ndGeneral
+        if (isHegemonyGameMode(ServerInfo.GameMode)) {
             QStringList ban;
             QList<const Package *> packs = getPackages();
             QStringList needPacks;
             needPacks << "hegemonyGeneral"
-                      << "hegemony_card"; //<< "standard_cards" << "standard_ex_cards" << "test_card" << "maneuvering"
+                      << "hegemony_card";
             foreach (const Package *pa, packs) {
                 if (!needPacks.contains(pa->objectName()))
                     ban << pa->objectName();
@@ -420,7 +420,6 @@ const Card *Engine::getEngineCard(int cardId) const
     if (cardId == Card::S_UNKNOWN_CARD_ID)
         return nullptr;
     else if (cardId < 0 || cardId >= cards.length()) {
-        //Q_ASSERT(FALSE);
         Q_ASSERT(!(cardId < 0 || cardId >= cards.length()));
         return nullptr;
     } else {
@@ -1111,11 +1110,7 @@ const ViewAsSkill *Engine::getViewAsSkill(const QString &skill_name) const
     } else if (skill->inherits("DistanceSkill")) { //for hegemony showskill
         const DistanceSkill *distance_skill = qobject_cast<const DistanceSkill *>(skill);
         return distance_skill->getViewAsSkill();
-    } /*else if (skill->inherits("AttackRangeSkill")) {//for hegemony showskill
-        const AttackRangeSkill *distance_skill = qobject_cast<const AttackRangeSkill *>(skill);
-        return distance_skill->getViewAsSkill();
-    }*/
-    else if (skill->inherits("MaxCardsSkill")) { //for hegemony showskill
+    } else if (skill->inherits("MaxCardsSkill")) { //for hegemony showskill
         const MaxCardsSkill *distance_skill = qobject_cast<const MaxCardsSkill *>(skill);
         return distance_skill->getViewAsSkill();
     } else

@@ -296,11 +296,8 @@ QGroupBox *XihuaDialog::createLeft()
 
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
     QStringList ban_list = Sanguosha->getBanPackages();
-    QStringList log;
-    QStringList log1;
     foreach (const Card *card, cards) {
-        if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName())
-            && !ban_list.contains(card->getPackage())) { //&& !ServerInfo.Extensions.contains("!" + card->getPackage())
+        if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getPackage())) {
             Card *c = Sanguosha->cloneCard(card->objectName());
             c->setParent(this);
             layout->addWidget(createButton(c));
@@ -797,14 +794,6 @@ public:
 
         room->askForGuanxing(player, list, Room::GuanxingBothSides, objectName());
 
-        /*if (player->askForSkillInvoke("fengshui_retrial", data)) {
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), judge->who->objectName());
-
-            player->setFlags("-shijie_judge");
-            QList<int> list1 = room->getNCards(1);
-            Card *card = room->getCard(list1.first());
-            room->retrial(card, player, judge, objectName());
-        }*/
         player->setFlags("-shijie_judge");
         return false;
     }

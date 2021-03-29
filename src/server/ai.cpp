@@ -278,7 +278,6 @@ bool TrustAI::askForSkillInvoke(const QString &skill_name, const QVariant &)
 {
     const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
     return skill != nullptr && skill->getFrequency() == Skill::Frequent;
-    //    return false;
 }
 
 QString TrustAI::askForChoice(const QString &, const QString &choice, const QVariant &)

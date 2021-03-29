@@ -701,7 +701,7 @@ public:
             user = use.from;
         } else if (triggerEvent == CardResponded) {
             CardResponseStruct resp = data.value<CardResponseStruct>();
-            if (resp.m_isUse) { //!resp.m_isProvision && !resp.m_isRetrial
+            if (resp.m_isUse) {
                 card = resp.m_card;
                 user = resp.m_from;
             }
@@ -1270,7 +1270,6 @@ public:
         : TriggerSkill("jijing")
     {
         events << Damage << EventPhaseChanging;
-        //view_as_skill = new JijingVS;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
@@ -1352,7 +1351,6 @@ public:
 
         if (e == HpRecover) {
             RecoverStruct recover = data.value<RecoverStruct>();
-            //recover.to
             foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (p != recover.to && recover.to->getHp() == p->getHp())
                     d << SkillInvokeDetail(this, p, p, nullptr, false, recover.to);
@@ -1391,7 +1389,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
         if (use.from != nullptr && use.card != nullptr && use.card->getTypeId() == Card::TypeTrick && !use.to.isEmpty()) {
-            foreach (ServerPlayer *p, use.to) { //room->getAlivePlayers()
+            foreach (ServerPlayer *p, use.to) {
                 if (p->hasSkill(this))
                     d << SkillInvokeDetail(this, p, p);
             }
@@ -1468,7 +1466,7 @@ public:
         if (c) {
             invoke->owner->showHiddenSkill(objectName());
             CardMoveReason r(CardMoveReason::S_REASON_GIVE, invoke->owner->objectName(), objectName(), QString());
-            room->obtainCard(invoke->invoker, c, r, false); //room->getCardPlace(c->getEffectiveId()) != Player::PlaceHand
+            room->obtainCard(invoke->invoker, c, r, false);
 
             return true;
         }
@@ -1742,7 +1740,6 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        //int n = invoke->tag.value("n", 0).toInt();
         QVariantMap bihuo_list = invoke->invoker->tag.value("bihuo", QVariantMap()).toMap();
         int n = bihuo_list.value(invoke->owner->objectName(), 0).toInt();
         bihuo_list[invoke->owner->objectName()] = 0;
@@ -1803,9 +1800,6 @@ public:
         logto << invoke->invoker;
         room->touhouLogmessage("#xunshi", use.from, use.card->objectName(), logto, objectName());
 
-        //wtf!?  this flag can not detected in sgs.ai_choicemade_filter.cardChosen.snatch
-        // Fs: so delete this
-        // room->setCardFlag(use.card, "xunshi");
         invoke->invoker->drawCards(1);
         use.to << invoke->invoker;
         room->sortByActionOrder(use.to);
@@ -2210,8 +2204,7 @@ TH99Package::TH99Package()
     addMetaObject<ZhuonongCard>();
     addMetaObject<YushouCard>();
     addMetaObject<PanduCard>();
-    //addMetaObject<JijingCard>();
-    skills << new DangjiaVS << new Luanying << new XiufuMove << new XunshiDistance << new LiyouDistance; //<< new GanyingHandler
+    skills << new DangjiaVS << new Luanying << new XiufuMove << new XunshiDistance << new LiyouDistance;
 }
 
 ADD_PACKAGE(TH99)

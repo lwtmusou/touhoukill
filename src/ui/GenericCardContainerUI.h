@@ -298,9 +298,6 @@ protected:
     QAbstractAnimation *_m_huashenAnimation;
     QGraphicsItem *_m_huashenItem;
     QGraphicsItem *_m_huashenItem2;
-    //GraphicsWidgetHoverItem *_m_huashenItem;
-    //GraphicsPixmapHoverItem *_m_huashenItem;
-    //QGraphicsPixmapItem *_m_huashenItem;
 
     QString _m_huashenGeneralName;
     QString _m_huashenSkillName;
@@ -343,7 +340,7 @@ private:
     int _lastZ;
     bool _allZAdjusted;
 
-    void showHeroSkinListHelper(const General *general, GraphicsPixmapHoverItem *avatarIcon); //, HeroSkinContainer *&heroSkinContainer
+    void showHeroSkinListHelper(const General *general, GraphicsPixmapHoverItem *avatarIcon);
 
 signals:
     void selected_changed();

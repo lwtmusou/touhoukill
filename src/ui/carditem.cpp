@@ -64,7 +64,6 @@ void CardItem::setCard(const Card *card)
     if (card != nullptr) {
         if (card->isVirtualCard()) {
             m_cardId = Card::S_UNKNOWN_CARD_ID;
-            //Vcard = card;
             setObjectName(card->objectName());
             for (int i = 0; i <= Sanguosha->getCardCount() - 1; i++) {
                 if (Sanguosha->getEngineCard(i)->objectName() == card->objectName()) {
@@ -92,7 +91,6 @@ void CardItem::setEnabled(bool enabled)
 
 CardItem::~CardItem()
 {
-    //QMutexLocker locker(&m_animationMutex);
     m_animationMutex.lock();
     if (m_currentAnimation != nullptr) {
         m_currentAnimation->deleteLater();
@@ -137,7 +135,6 @@ void CardItem::goBack(bool playAnimation, bool doFade)
         if (m_currentAnimation != nullptr)
             m_currentAnimation->start();
     } else {
-        //QMutexLocker locker(&m_animationMutex);
         m_animationMutex.lock();
         if (m_currentAnimation != nullptr) {
             m_currentAnimation->stop();
@@ -151,7 +148,6 @@ void CardItem::goBack(bool playAnimation, bool doFade)
 
 QAbstractAnimation *CardItem::getGoBackAnimation(bool doFade, bool smoothTransition, int duration)
 {
-    //QMutexLocker locker(&m_animationMutex);
     m_animationMutex.lock();
     if (m_currentAnimation != nullptr) {
         m_currentAnimation->stop();
@@ -186,7 +182,6 @@ QAbstractAnimation *CardItem::getGoBackAnimation(bool doFade, bool smoothTransit
     m_animationMutex.unlock();
     connect(m_currentAnimation, SIGNAL(finished()), this, SIGNAL(movement_animation_finished()));
     connect(m_currentAnimation, SIGNAL(destroyed()), this, SLOT(currentAnimationDestroyed()));
-    //connect(m_currentAnimation, SIGNAL(finished()), this, SLOT(animationFinished()));
 
     return m_currentAnimation;
 }
@@ -239,12 +234,6 @@ bool CardItem::isEquipped() const
 void CardItem::setFrozen(bool is_frozen, bool)
 {
     frozen = is_frozen;
-    /*if (frozen != is_frozen) {
-        frozen = is_frozen;
-        if (update_movable || frozen)
-            setFlag(QGraphicsItem::ItemIsMovable, !frozen);
-        update();
-    }*/
 }
 
 CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id)

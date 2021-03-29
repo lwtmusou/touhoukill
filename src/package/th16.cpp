@@ -1203,7 +1203,6 @@ public:
         use.card->setFlags("-zangfa");
         use.card->setFlags("-IgnoreFailed");
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, listt, objectName(), "@zangfa:" + use.card->objectName(), true, true);
-        //player->tag.remove("huanshi_source");
         if (target) {
             invoke->targets << target;
             return true;
@@ -1782,12 +1781,8 @@ TH16Package::TH16Package()
 {
     General *okina = new General(this, "okina$", "tkz", 4);
     okina->addSkill(new Miyi);
-    //okina->addSkill(new MiyiBasicExceptSlash);
-    //okina->addSkill(new MiyiTargetMod);
     okina->addSkill(new Zhaowei);
     okina->addSkill(new Zhuzhe);
-    //related_skills.insert("miyi", "#miyi-tiger");
-    //related_skills.insert("miyi", "#miyi-basic");
 
     General *eternity = new General(this, "eternity", "tkz", 3);
     eternity->addSkill(new Diexing);

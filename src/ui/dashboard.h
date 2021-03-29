@@ -37,10 +37,8 @@ public:
     };
 
     Dashboard(QGraphicsItem *button_widget);
-    //Dashboard(QGraphicsPixmapItem *button_widget);
     QRectF boundingRect() const override;
     void refresh() override;
-    //void repaintAll();
     void setWidth(int width);
     int getMiddleWidth();
     inline QRectF getAvatarArea()
@@ -215,18 +213,10 @@ protected:
         return _removedEffect;
     }
     QPointF getHeroSkinContainerPosition() const override;
-    //virtual const QSanShadowTextFont &getSkillNameFont() const {
-    //    return G_DASHBOARD_LAYOUT.m_skillNameFont;
-    //}
-    //virtual const QRect &getSkillNameArea() const { return G_DASHBOARD_LAYOUT.m_skillNameArea; }
 
     bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo) override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
-
-    //virtual bool sceneEventFilter(QGraphicsItem *watched, QEvent *event);
-
-    //void _addHandCard(CardItem *card_item);
     void _addHandCard(CardItem *card_item, bool prepend = false, const QString &footnote = QString());
     void _adjustCards();
     void _adjustCards(const QList<CardItem *> &list, int y);
@@ -272,7 +262,6 @@ protected:
     QList<CardItem *> pendings;
     const Card *pending_card;
     const ViewAsSkill *view_as_skill;
-    //QStringList _m_pile_expanded;
     QMap<QString, QList<int> > _m_pile_expanded;
     QList<int> _m_id_expanded; //just for chaoren
 
@@ -297,7 +286,6 @@ protected:
     QPropertyAnimation *_removedEffect;
 
     QMenu *_m_sort_menu;
-    //QMenu *_m_carditem_context_menu;
 
     QList<CardItem *> _m_cardItemsAnimationFinished;
     QMutex m_mutexCardItemsAnimationFinished;
@@ -321,8 +309,6 @@ protected slots:
 
 private slots:
     void onCardItemClicked();
-
-    //void onCardItemContextMenu();
 
     void onCardItemDoubleClicked();
     void onCardItemThrown();

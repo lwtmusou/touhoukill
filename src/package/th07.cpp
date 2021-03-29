@@ -664,7 +664,6 @@ public:
             if (!damage.from || damage.from->isDead() || damage.from->getPhase() != Player::Play || damage.trigger_info != "shihui_first")
                 return QList<SkillInvokeDetail>();
 
-            //int maxnum = qMax(damage.from->getEquips().length(), 1);
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName()))
                 d << SkillInvokeDetail(this, p, p, nullptr, false, damage.from);
@@ -1061,8 +1060,7 @@ public:
                 if (card == nullptr)
                     return QList<SkillInvokeDetail>();
                 DELETE_OVER_SCOPE(Card, card)
-                if (card->isKindOf("Slash") //|| card->isKindOf("Peach")
-                    || (card->isNDTrick() && !card->isKindOf("Nullification"))) {
+                if (card->isKindOf("Slash") || (card->isNDTrick() && !card->isKindOf("Nullification"))) {
                     if (!player->isCardLimited(card, Card::MethodUse))
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
                 }
@@ -1451,8 +1449,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         ServerPlayer *player = use.from;
-        if (player && player->isAlive() && player->hasSkill(this) && use.card && use.card->isBlack()) { //&& use.to.length() == 1
-
+        if (player && player->isAlive() && player->hasSkill(this) && use.card && use.card->isBlack()) {
             if (use.card->isKindOf("Nullification") || use.card->isKindOf("Jink"))
                 return QList<SkillInvokeDetail>();
             if (player->hasFlag("Global_ProcessBroken")) //for turnbroken
@@ -1760,7 +1757,6 @@ void MocaoCard::onEffect(const CardEffectStruct &effect) const
     int card_id = room->askForCardChosen(effect.from, effect.to, "e", "mocao");
     room->obtainCard(effect.from, card_id);
     int num = qMax(1, qMin(5, effect.to->getLostHp()));
-    //if (effect.to->isWounded())
     effect.to->drawCards(num);
 }
 
@@ -1949,7 +1945,6 @@ public:
         : TriggerSkill("shizhao")
     {
         events << EventPhaseStart;
-        //frequency = Frequent;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
@@ -2293,7 +2288,6 @@ void HuayinCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
     room->showAllCards(source);
     Peach *card = new Peach(Card::SuitToBeDecided, -1);
     foreach (int id, source->handCards()) {
-        // room->showCard(source, id);
         if (!room->getCard(id)->isKindOf("BasicCard"))
             card->addSubcard(id);
     }

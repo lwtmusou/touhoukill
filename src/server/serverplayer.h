@@ -96,10 +96,6 @@ public:
     void startRecord();
     void saveRecord(const QString &filename);
 
-    //void setNext(ServerPlayer *next);
-    //ServerPlayer *getNext() const;
-    //ServerPlayer *getNextAlive(int n = 1) const;
-
     // 3v3 methods
     void addToSelected(const QString &general);
     QStringList getSelected() const;
@@ -224,7 +220,6 @@ private:
     QList<Phase> phases;
     int _m_phases_index;
     QList<PhaseStruct> _m_phases_state;
-    //ServerPlayer *next;
     QStringList selected; // 3v3 mode use only
     QDateTime test_time;
     QString m_clientResponseString;

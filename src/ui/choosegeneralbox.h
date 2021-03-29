@@ -21,10 +21,10 @@
 #ifndef _CHOOSE_GENERAL_BOX_H
 #define _CHOOSE_GENERAL_BOX_H
 
+#include "TimedProgressBar.h"
 #include "carditem.h"
 #include "graphicsbox.h"
 #include "protocol.h"
-#include "TimedProgressBar.h"
 
 #include <QTimer>
 
@@ -50,7 +50,7 @@ protected:
 #endif
 
 private:
-    GeneralCardItem(const QString &generalName); //, const int skinId
+    GeneralCardItem(const QString &generalName);
 
     bool hasCompanion;
 #ifdef Q_OS_ANDROID

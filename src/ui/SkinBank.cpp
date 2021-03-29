@@ -111,7 +111,6 @@ IQSanComponentSkin::QSanSimpleTextFont::QSanSimpleTextFont()
     , m_vertical(false)
     , m_fontSize(0, 0)
 {
-    //memset(this, 0, sizeof(*this));
 }
 
 bool IQSanComponentSkin::QSanSimpleTextFont::tryParse(const QVariant &args)
@@ -182,16 +181,6 @@ bool IQSanComponentSkin::isImageKeyDefined(const QString &key) const
 
 void IQSanComponentSkin::QSanSimpleTextFont::paintText(QPainter *painter, QRect pos, Qt::Alignment align, const QString &text) const
 {
-    /*
-    if (pos.width() <= 0 || pos.height() <= 0 || m_fontSize.width() <= 0 || m_fontSize.height() <= 0)
-        return;
-    QSize actualSize = m_fontSize;
-    if ((align & Qt::TextWrapAnywhere) && !m_vertical)
-        QSanUiUtils::QSanFreeTypeFont::paintQStringMultiLine(painter, text, m_fontFace, m_color, actualSize, m_spacing, pos, align);
-    else
-        QSanUiUtils::QSanFreeTypeFont::paintQString(painter, text, m_fontFace, m_color, actualSize, m_spacing, m_weight, pos, m_vertical ? Qt::Vertical : Qt::Horizontal, align);
-
-    */
     if (text.size() == 0)
         return;
     QFont f;
@@ -206,7 +195,6 @@ void IQSanComponentSkin::QSanSimpleTextFont::paintText(QPainter *painter, QRect 
 
     if (m_vertical) {
         QRect char_pos = pos;
-        //int interval = min(pos.height() / text.size(), m_fontSize.height() + m_spacing);
         int interval = pos.height() / text.size(); // I N T E R V A L
         for (auto &c : text) {
             painter->drawText(char_pos, align | Qt::TextDontClip, c);
@@ -244,7 +232,7 @@ void IQSanComponentSkin::QSanShadowTextFont::paintText(QPainter *painter, QRect 
     QImage shadow = QSanUiUtils::produceShadow(image, m_shadowColor, m_shadowRadius, m_shadowDecadeFactor);
     // now, overlay foreground on shadow
     painter->drawImage(pos.topLeft(), shadow);
-    painter->drawImage(pos.topLeft(), image); //pos, image);
+    painter->drawImage(pos.topLeft(), image);
 }
 
 void IQSanComponentSkin::QSanShadowTextFont::paintText(QGraphicsPixmapItem *pixmapItem, QRect pos, Qt::Alignment align, const QString &text) const
@@ -869,7 +857,6 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
 
     tryParse(config["roleNormalBgSize"], _m_commonLayout.m_roleNormalBgSize);
     QStringList kingdoms = Sanguosha->getHegemonyKingdoms();
-    //kingdoms << "wei" << "shu" << "wu" << "qun";
     kingdoms.removeAll("god");
     foreach (const QString &kingdom, kingdoms) {
         tryParse(config[QString(S_SKIN_KEY_ROLE_BOX_RECT).arg(kingdom)], _m_commonLayout.m_rolesRect[kingdom]);

@@ -252,7 +252,7 @@ public:
         if (!fldl->hasSkill(this) || fldl->isDead() || fldl->getPhase() != Player::Start)
             return QList<SkillInvokeDetail>();
 
-        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, fldl, fldl, nullptr, true); //fldl->hasShownSkill(this)
+        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, fldl, fldl, nullptr, true);
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const override
@@ -866,7 +866,6 @@ public:
     {
         if (e == TargetSpecified || e == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            //room->setCardFlag(use.card, "taiji_" + liege->objectName());
             ServerPlayer *user = (e == TargetSpecified) ? invoke->invoker : invoke->targets.first();
             ServerPlayer *target = (e == TargetSpecified) ? invoke->targets.first() : invoke->invoker;
             room->setCardFlag(use.card, "taiji_" + user->objectName());
@@ -909,8 +908,6 @@ BeishuiDialog::BeishuiDialog(const QString &object, bool left, bool)
     QHBoxLayout *layout = new QHBoxLayout;
     if (left)
         layout->addWidget(createLeft());
-    //if (right)
-    //    layout->addWidget(createRight());
     setLayout(layout);
 
     connect(group, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(selectCard(QAbstractButton *)));
@@ -1415,7 +1412,6 @@ public:
         if (triggerEvent == DrawNCards) {
             QList<SkillInvokeDetail> d;
             DrawNCardsStruct qnum = data.value<DrawNCardsStruct>();
-            //qnum.player->hasSkill(this)
             if (qnum.n > 0) {
                 foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                     if (p != qnum.player)
@@ -1755,7 +1751,7 @@ public:
     Yinren()
         : TriggerSkill("yinren")
     {
-        events << CardFinished << TargetSpecified; //EventPhaseChanging
+        events << CardFinished << TargetSpecified;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
@@ -2042,13 +2038,12 @@ public:
     Ziye()
         : TriggerSkill("ziye")
     {
-        events << Dying; // << Death;
+        events << Dying;
         frequency = Wake;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
-        //DeathStruct death = data.value<DeathStruct>();
         DyingStruct dying = data.value<DyingStruct>();
         if (dying.damage && dying.damage->from) {
             ServerPlayer *player = dying.damage->from;

@@ -289,7 +289,7 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
         }
     }
     bool has_shuangren_target = false;
-    if (Self->hasSkill("shuangren") && targets.length() >= 1) { //&& distance_limit
+    if (Self->hasSkill("shuangren") && targets.length() >= 1) {
         foreach (const Player *p, targets) {
             if (Self->distanceTo(p, rangefix) > Self->getAttackRange(true)) { //double hidden, like shuangren + tianqu. since tianqu has be used, you can not use shuangren.
                 has_shuangren_target = true;
@@ -771,13 +771,11 @@ public:
     {
         bool avalilable = Slash::IsAvailable(player);
         return avalilable && player->getMark("Equips_Nullified_to_Yourself") == 0 && player->hasWeapon(objectName(), false, true);
-        //&& EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
     }
 
     bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
         return matchAvaliablePattern("slash", pattern) && player->getMark("Equips_Nullified_to_Yourself") == 0 && player->hasWeapon(objectName(), false, true);
-        //EquipSkill::equipAvailable(player, EquipCard::WeaponLocation, objectName());
     }
 
     bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override
@@ -1250,7 +1248,6 @@ void SavageAssault::onEffect(const CardEffectStruct &effect) const
     }
 
     if (dodamage) {
-        //room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to, 1 + effect.effectValue.last()));
         room->damage(DamageStruct(effect.card, effect.from->isAlive() ? effect.from : nullptr, effect.to, 1 + effect.effectValue.last()));
         room->getThread()->delay();
     }
@@ -1283,7 +1280,6 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const
 
     if (dodamage) {
         room->damage(DamageStruct(effect.card, effect.from->isAlive() ? effect.from : nullptr, effect.to, 1 + effect.effectValue.last()));
-        //room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to, 1 + effect.effectValue.last()));
         room->getThread()->delay();
     }
 }
@@ -1481,7 +1477,6 @@ void Duel::onEffect(const CardEffectStruct &effect) const
 
         qSwap(first, second);
     }
-    //DamageStruct damage(this, second->isAlive() ? second : NULL, first, 1 + effect.effectValue.last());
     DamageStruct damage(effect.card, second->isAlive() ? second : nullptr, first, 1 + effect.effectValue.last());
     if (second != effect.from)
         damage.by_user = false;
@@ -1745,10 +1740,6 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
-        //bool ret = WeaponSkill::cost(triggerEvent, room, invoke, data);
-        //if (ret)
-        //    room->setEmotion(invoke->invoker, "weapon/ice_sword");
-        //return ret;
         invoke->invoker->tag[this->objectName()] = data;
         if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
             const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon", true);
@@ -2433,7 +2424,7 @@ public:
     DeathSickleSkill()
         : WeaponSkill("DeathSickle")
     {
-        events << TargetSpecified << CardFinished; //EventPhaseChanging
+        events << TargetSpecified << CardFinished;
     }
 
     void record(TriggerEvent e, Room *room, QVariant &data) const override

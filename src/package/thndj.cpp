@@ -1383,7 +1383,7 @@ public:
             }
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
-            if (phase_change.from == Player::NotActive) { //Player::Play
+            if (phase_change.from == Player::NotActive) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->hasFlag("youle"))
                         p->setFlags("-youle");
@@ -1546,7 +1546,6 @@ public:
         : TriggerSkill("yaoli")
     {
         events << GameStart << EventAcquireSkill << EventLoseSkill << Death << Debut << Revive << GeneralShown << EventPhaseEnd;
-        // show_type = "static";
         view_as_skill = new YaoliVS("yaoli", false);
     }
 

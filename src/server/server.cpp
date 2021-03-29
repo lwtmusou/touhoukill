@@ -225,33 +225,9 @@ QWidget *ServerDialog::createAdvancedTab()
     second_general_checkbox = new QCheckBox(tr("Enable second general"));
     second_general_checkbox->setChecked(Config.Enable2ndGeneral);
 
-    //same_checkbox = new QCheckBox(tr("Enable Same"));
-    //same_checkbox->setChecked(Config.EnableSame);
-
-    //max_hp_label = new QLabel(tr("Max HP scheme"));
-    /* max_hp_scheme_ComboBox = new QComboBox;
-    max_hp_scheme_ComboBox->addItem(tr("Sum - X"));
-    max_hp_scheme_ComboBox->addItem(tr("Minimum"));
-    max_hp_scheme_ComboBox->addItem(tr("Maximum"));
-    max_hp_scheme_ComboBox->addItem(tr("Average"));
-    max_hp_scheme_ComboBox->setCurrentIndex(Config.MaxHpScheme); */
-
     prevent_awaken_below3_checkbox = new QCheckBox(tr("Prevent maxhp being less than 3 for awaken skills"));
     prevent_awaken_below3_checkbox->setChecked(Config.PreventAwakenBelow3);
-    //prevent_awaken_below3_checkbox->setEnabled(max_hp_scheme_ComboBox->currentIndex() != 0);
     prevent_awaken_below3_checkbox->setEnabled(false);
-
-    //scheme0_subtraction_label = new QLabel(tr("Subtraction for scheme 0"));
-    //scheme0_subtraction_label->setVisible(max_hp_scheme_ComboBox->currentIndex() == 0);
-    /* scheme0_subtraction_spinbox = new QSpinBox;
-    scheme0_subtraction_spinbox->setRange(-5, 12);
-    scheme0_subtraction_spinbox->setValue(Config.Scheme0Subtraction);
-    scheme0_subtraction_spinbox->setVisible(max_hp_scheme_ComboBox->currentIndex() == 0); */
-
-    //connect(max_hp_scheme_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setMaxHpSchemeBox()));
-
-    //enable_surprising_generals_checkbox = new QCheckBox(tr("Enable surprising generals"));
-    //enable_surprising_generals_checkbox->setChecked(Config.EnableSurprisingGenerals);
 
     address_edit = new QLineEdit;
     address_edit->setText(Config.Address);
@@ -266,7 +242,6 @@ QWidget *ServerDialog::createAdvancedTab()
 
     layout->addWidget(forbid_same_ip_checkbox);
     layout->addWidget(disable_chat_checkbox);
-    //layout->addWidget(random_seat_checkbox);
     layout->addLayout(HLay(random_seat_checkbox, assign_latest_general_checkbox));
     layout->addWidget(enable_cheat_checkbox);
     layout->addWidget(free_choose_checkbox);
@@ -278,14 +253,7 @@ QWidget *ServerDialog::createAdvancedTab()
     layout->addLayout(HLay(lord_maxchoice_label, lord_maxchoice_spinbox));
     layout->addLayout(HLay(new QLabel(tr("Upperlimit for non-lord")), nonlord_maxchoice_spinbox));
     layout->addWidget(second_general_checkbox);
-    //layout->addLayout(HLay(max_hp_label, max_hp_scheme_ComboBox));
-    //layout->addLayout(HLay(scheme0_subtraction_label, scheme0_subtraction_spinbox));
     layout->addWidget(prevent_awaken_below3_checkbox);
-    //layout->addLayout(HLay(basara_checkbox, hegemony_checkbox));
-    //layout->addLayout(HLay(hegemony_maxchoice_label, hegemony_maxchoice_spinbox));
-    //layout->addLayout(HLay(hegemony_maxshown_label, hegemony_maxshown_spinbox));
-    //layout->addWidget(same_checkbox);
-    //layout->addWidget(enable_surprising_generals_checkbox);
     layout->addLayout(HLay(new QLabel(tr("Address")), address_edit));
     layout->addWidget(detect_button);
     layout->addLayout(HLay(new QLabel(tr("Port")), port_edit));
@@ -294,32 +262,9 @@ QWidget *ServerDialog::createAdvancedTab()
     QWidget *widget = new QWidget;
     widget->setLayout(layout);
 
-    //max_hp_label->setVisible(Config.Enable2ndGeneral);
-    //connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_label, SLOT(setVisible(bool)));
-    //max_hp_scheme_ComboBox->setVisible(Config.Enable2ndGeneral);
-    //connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_scheme_ComboBox, SLOT(setVisible(bool)));
-
-    if (Config.Enable2ndGeneral) {
-        //prevent_awaken_below3_checkbox->setVisible(max_hp_scheme_ComboBox->currentIndex() != 0);
-        //scheme0_subtraction_label->setVisible(max_hp_scheme_ComboBox->currentIndex() == 0);
-        //scheme0_subtraction_spinbox->setVisible(max_hp_scheme_ComboBox->currentIndex() == 0);
-    } else {
+    if (!Config.Enable2ndGeneral)
         prevent_awaken_below3_checkbox->setVisible(false);
-        //scheme0_subtraction_label->setVisible(false);
-        //scheme0_subtraction_spinbox->setVisible(false);
-    }
-    //connect(second_general_checkbox, SIGNAL(toggled(bool)), this, SLOT(setMaxHpSchemeBox()));
 
-    /*hegemony_maxchoice_label->setVisible(Config.EnableHegemony);
-    connect(hegemony_checkbox, SIGNAL(toggled(bool)), hegemony_maxchoice_label, SLOT(setVisible(bool)));
-    hegemony_maxchoice_spinbox->setVisible(Config.EnableHegemony);
-    connect(hegemony_checkbox, SIGNAL(toggled(bool)), hegemony_maxchoice_spinbox, SLOT(setVisible(bool)));
-
-    hegemony_maxshown_label->setVisible(Config.EnableHegemony);
-    connect(hegemony_checkbox, SIGNAL(toggled(bool)), hegemony_maxshown_label, SLOT(setVisible(bool)));
-    hegemony_maxshown_spinbox->setVisible(Config.EnableHegemony);
-    connect(hegemony_checkbox, SIGNAL(toggled(bool)), hegemony_maxshown_spinbox, SLOT(setVisible(bool)));
-    */
     return widget;
 }
 
@@ -353,7 +298,6 @@ QWidget *ServerDialog::createMiscTab()
 
     ai_enable_checkbox = new QCheckBox(tr("Enable AI"));
     ai_enable_checkbox->setChecked(Config.EnableAI);
-    //ai_enable_checkbox->setEnabled(false); // Force to enable AI for disabling it causes crashes!!
 
     ai_delay_spinbox = new QSpinBox;
     ai_delay_spinbox->setMinimum(0);
@@ -406,14 +350,6 @@ QWidget *ServerDialog::createMiscTab()
 
 void ServerDialog::updateButtonEnablility(QAbstractButton *button)
 {
-    if (!button)
-        return;
-    if (button->objectName().contains("1v1") || button->objectName().contains("1v3")) {
-        //basara_checkbox->setChecked(false);
-        //basara_checkbox->setEnabled(false);
-    } else {
-        //basara_checkbox->setEnabled(true);
-    }
 }
 
 void BanlistDialog::switchTo(int item)
@@ -552,21 +488,8 @@ QGroupBox *ServerDialog::create1v1Box()
     else if (rule == "OL")
         officialComboBox->setCurrentIndex(2);
 
-    //kof_using_extension_checkbox = new QCheckBox(tr("General extensions"));
-    //kof_using_extension_checkbox->setChecked(Config.value("1v1/UsingExtension", false).toBool());
-
-    //kof_card_extension_checkbox = new QCheckBox(tr("Card extensions"));
-    //kof_card_extension_checkbox->setChecked(Config.value("1v1/UsingCardExtension", false).toBool());
-
     vlayout->addLayout(HLay(new QLabel(tr("Rule option")), official_1v1_ComboBox));
 
-    /*QHBoxLayout *hlayout = new QHBoxLayout;
-    hlayout->addWidget(new QLabel(tr("Extension setting")));
-    hlayout->addStretch();
-    hlayout->addWidget(kof_using_extension_checkbox);
-    hlayout->addWidget(kof_card_extension_checkbox);
-
-    vlayout->addLayout(hlayout);*/
     box->setLayout(vlayout);
 
     return box;
@@ -580,21 +503,6 @@ QGroupBox *ServerDialog::create3v3Box()
 
     QVBoxLayout *vlayout = new QVBoxLayout;
 
-    /*official_3v3_radiobutton = new QRadioButton(tr("Official mode"));
-
-    QComboBox *officialComboBox = new QComboBox;
-    officialComboBox->addItem(tr("Classical"), "Classical");
-    officialComboBox->addItem("2012", "2012");
-    officialComboBox->addItem("2013", "2013");
-
-    official_3v3_ComboBox = officialComboBox;
-
-    QString rule = Config.value("3v3/OfficialRule", "2013").toString();
-    if (rule == "2012")
-    officialComboBox->setCurrentIndex(1);
-    else if (rule == "2013")
-    officialComboBox->setCurrentIndex(2);
-    */
     QRadioButton *extend = new QRadioButton(tr("Extension mode"));
     QPushButton *extend_edit_button = new QPushButton(tr("General selection ..."));
     extend_edit_button->setEnabled(false);
@@ -617,17 +525,12 @@ QGroupBox *ServerDialog::create3v3Box()
     else if (scheme == "AllRoles")
         roleChooseComboBox->setCurrentIndex(2);
 
-    //vlayout->addLayout(HLay(official_3v3_radiobutton, official_3v3_ComboBox));
     vlayout->addLayout(HLay(extend, extend_edit_button));
     vlayout->addWidget(exclude_disaster_checkbox);
     vlayout->addLayout(HLay(new QLabel(tr("Role choose")), role_choose_ComboBox));
     box->setLayout(vlayout);
 
-    //bool using_extension = Config.value("3v3/UsingExtension", false).toBool();
-    //if (using_extension)
     extend->setChecked(true);
-    // else
-    //     official_3v3_radiobutton->setChecked(true);
 
     return box;
 }
@@ -887,7 +790,6 @@ void Select3v3GeneralDialog::fillListWidget(QListWidget *list, const Package *pa
 
 void ServerDialog::setMiniCheckBox()
 {
-    //mini_scene_ComboBox->setEnabled(false);
 }
 
 void ServerDialog::checkCurrentBtnIsHegemonyMode(bool v)
@@ -956,18 +858,12 @@ bool ServerDialog::config()
     Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
     Config.DisableChat = disable_chat_checkbox->isChecked();
     Config.Enable2ndGeneral = second_general_checkbox->isChecked();
-    //Config.EnableSame = same_checkbox->isChecked();
-    //Config.EnableBasara = basara_checkbox->isChecked() && basara_checkbox->isEnabled();
-    //Config.EnableHegemony = hegemony_checkbox->isChecked() && hegemony_checkbox->isEnabled();
-    //Config.MaxHpScheme = max_hp_scheme_ComboBox->currentIndex();
     if (Config.MaxHpScheme == 0) {
-        //Config.Scheme0Subtraction = scheme0_subtraction_spinbox->value();
         Config.PreventAwakenBelow3 = false;
     } else {
         Config.Scheme0Subtraction = 3;
         Config.PreventAwakenBelow3 = prevent_awaken_below3_checkbox->isChecked();
     }
-    //Config.EnableSurprisingGenerals = enable_surprising_generals_checkbox->isChecked();
     Config.Address = address_edit->text();
     Config.CountDownSeconds = game_start_spinbox->value();
     Config.NullificationCountDown = nullification_spinbox->value();
@@ -1016,8 +912,6 @@ bool ServerDialog::config()
     Config.setValue("ForbidSIMC", Config.ForbidSIMC);
     Config.setValue("DisableChat", Config.DisableChat);
     Config.setValue("Enable2ndGeneral", Config.Enable2ndGeneral);
-    //Config.setValue("EnableSame", Config.EnableSame);
-    //Config.setValue("EnableSurprisingGenerals", Config.EnableSurprisingGenerals);
     Config.setValue("MaxHpScheme", Config.MaxHpScheme);
     Config.setValue("Scheme0Subtraction", Config.Scheme0Subtraction);
     Config.setValue("PreventAwakenBelow3", Config.PreventAwakenBelow3);
@@ -1036,24 +930,7 @@ bool ServerDialog::config()
     Config.setValue("ServerPort", Config.ServerPort);
     Config.setValue("Address", Config.Address);
     Config.setValue("DisableLua", disable_lua_checkbox->isChecked());
-#if 0
-    Config.beginGroup("3v3");
-    //Config.setValue("UsingExtension", !official_3v3_radiobutton->isChecked());
-    Config.setValue("RoleChoose", role_choose_ComboBox->itemData(role_choose_ComboBox->currentIndex()).toString());
-    Config.setValue("ExcludeDisaster", exclude_disaster_checkbox->isChecked());
-    //Config.setValue("OfficialRule", official_3v3_ComboBox->itemData(official_3v3_ComboBox->currentIndex()).toString());
-    Config.endGroup();
 
-    Config.beginGroup("1v1");
-    Config.setValue("Rule", official_1v1_ComboBox->itemData(official_1v1_ComboBox->currentIndex()).toString());
-    //Config.setValue("UsingExtension", kof_using_extension_checkbox->isChecked());
-    //Config.setValue("UsingCardExtension", kof_card_extension_checkbox->isChecked());
-    Config.endGroup();
-
-    //Config.beginGroup("XMode");
-    //Config.setValue("RoleChooseX", role_choose_xmode_ComboBox->itemData(role_choose_xmode_ComboBox->currentIndex()).toString());
-    //Config.endGroup();
-#endif
     if (Config.GameMode.startsWith("hegemony_")) {
         Config.setValue("HegemonyFirstShowReward", Config.HegemonyFirstShowReward);
         Config.setValue("HegemonyCompanionReward", Config.HegemonyCompanionReward);

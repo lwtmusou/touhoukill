@@ -74,7 +74,6 @@ public:
 
     inline void insertRelatedSkills(const QString &main_skill, const QString &related_skill)
     {
-        //related_skills.insert(main_skill, related_skill);
         related_skills.insert(main_skill, related_skill);
     }
 

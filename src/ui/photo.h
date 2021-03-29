@@ -33,7 +33,6 @@ public:
 
     void setEmotion(const QString &emotion, bool permanent = false);
     void tremble();
-    //void showSkillName(const QString &skill_name,bool isSelf);
 
     enum FrameType
     {
@@ -51,7 +50,6 @@ public:
 public slots:
     void updatePhase();
     void hideEmotion();
-    //void hideSkillName();
     void updateDuanchang() override;
     void refresh() override;
 
@@ -107,11 +105,6 @@ protected:
 
     QPointF getHeroSkinContainerPosition() const override;
 
-    //virtual const QSanShadowTextFont &getSkillNameFont() const {
-    //    return G_PHOTO_LAYOUT.m_skillNameFont;
-    //}
-    //virtual const QRect &getSkillNameArea() const { return G_PHOTO_LAYOUT.m_skillNameArea; }
-
     void _adjustComponentZValues(bool killed = false) override;
     bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo) override;
 
@@ -122,7 +115,6 @@ protected:
     FrameType _m_frameType;
     QGraphicsPixmapItem *_m_mainFrame;
     Sprite *emotion_item;
-    //QGraphicsPixmapItem *_m_skillNameItem;
     QGraphicsPixmapItem *_m_focusFrame;
     QGraphicsPixmapItem *_m_onlineStatusItem;
     QGraphicsRectItem *_m_duanchangMask;

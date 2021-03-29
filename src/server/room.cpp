@@ -522,7 +522,6 @@ void Room::gameOver(const QString &winner, bool isSurrender)
     game_finished = true;
     saveWinnerTable(winner, isSurrender);
 
-    //defaultHeroSkin();
     emit game_over(winner);
 
     Config.AIDelay = Config.OriginAIDelay;
@@ -550,9 +549,8 @@ void Room::slashEffect(const SlashEffectStruct &effect)
 {
     QVariant data = QVariant::fromValue(effect);
     if (thread->trigger(SlashEffected, this, data)) {
-        if (!effect.to->hasFlag("Global_NonSkillNullify"))
-            ; //setEmotion(effect.to, "skill_nullify");
-        else
+        if (!effect.to->hasFlag("Global_NonSkillNullify")) {
+        } else
             effect.to->setFlags("-Global_NonSkillNullify");
         if (effect.slash)
             effect.to->removeQinggangTag(effect.slash);
@@ -598,7 +596,6 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
         return;
     if (Sanguosha->getSkill(skill_name) && Sanguosha->getSkill(skill_name)->getFrequency() == Skill::Eternal)
         return;
-    //if (player->getAcquiredSkills(head ? "head" : "deputy").contains(skill_name))
     if (player->getAcquiredSkills().contains(skill_name))
         player->detachSkill(skill_name, head);
     else if (!acquire_only)
@@ -632,7 +629,6 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
         foreach (const Skill *skill, Sanguosha->getRelatedSkills(skill_name)) {
             if (skill->isVisible())
                 detachSkillFromPlayer(player, skill->objectName(), is_equip, acquire_only, sendlog, head);
-            //detachSkillFromPlayer(player, skill->objectName());
         }
     }
 }
@@ -708,7 +704,6 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
                 thread->addTriggerSkill(trigger_skill);
             }
             if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
-                //addPlayerMark(player, skill->getLimitMark());
                 setPlayerMark(player, skill->getLimitMark(), 1);
             if (skill->isVisible()) {
                 JsonArray args;
@@ -844,7 +839,7 @@ ServerPlayer *Room::getRaceResult(QList<ServerPlayer *> &players, QSanProtocol::
         }
 
         // original line is:
-        // if (validateFunc == NULL || (winner->m_isClientResponseReady && (this->*validateFunc)(winner, winner->getClientReply(), funcArg))) {
+        // if (validateFunc == nullptr || (winner->m_isClientResponseReady && (this->*validateFunc)(winner, winner->getClientReply(), funcArg))) {
         // but I prefer m_isClientResponseReady is judged first since disconnection makes m_isClientResponseReady = false
         // processResponse makes m_isClientResponseReady = true
         if (winner->m_isClientResponseReady && (validateFunc == nullptr || (this->*validateFunc)(winner, winner->getClientReply(), funcArg))) {
@@ -1360,12 +1355,9 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
                 }
             }
         }
-        if (isHegNullification) {
-            QString log = trick->getFullName(true);
-            //heg_nullification_selection = askForChoice(repliedPlayer, "heg_nullification%log:" + log, "single%to:" + to->objectName() +
-            //    "+all%to:" + to->objectName() + "%log:" + Sanguosha->translate(to->getRole()), data);
+        if (isHegNullification)
             heg_nullification_selection = askForChoice(repliedPlayer, "heg_nullification", "single+all", data);
-        }
+
         if (heg_nullification_selection.contains("all"))
             heg_nullification_selection = "all";
         else
@@ -1976,7 +1968,8 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
 }
 
 void Room::doExtraAmazingGrace(ServerPlayer *from, ServerPlayer *target, int times)
-{ //couple xianshi
+{
+    //couple xianshi
     target->gainMark("@MMP");
     int count = getAllPlayers().length();
     QList<int> card_ids = getNCards(count);
@@ -2227,11 +2220,9 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
 #else
     player->setProperty(property_name, value);
 #endif // QT_DEBUG
-    //player->setProperty(property_name, value);
 
     broadcastProperty(player, property_name);
 
-    //QVariant data = getTag("HpChangedData");
     if (strcmp(property_name, "hp") == 0) {
         QVariant v = QVariant::fromValue(player);
         thread->trigger(HpChanged, this, v);
@@ -3050,15 +3041,13 @@ void Room::processRequestPreshow(ServerPlayer *player, const QVariant &arg)
         return;
 
     JsonArray args = arg.value<JsonArray>();
-    //if (args.size() != 3 || !JsonUtils::isString(args[0]) || !JsonUtils::isBool(args[1]) || !JsonUtils::isBool(args[2])) return;
     if (args.size() != 2 || !JsonUtils::isString(args[0]) || !JsonUtils::isBool(args[1]))
         return;
     player->acquireLock(ServerPlayer::SEMA_MUTEX);
 
     const QString skill_name = args[0].toString();
     const bool isPreshowed = args[1].toBool();
-    //const bool head = args[2].toBool();
-    player->setSkillPreshowed(skill_name, isPreshowed); // , head
+    player->setSkillPreshowed(skill_name, isPreshowed);
 
     player->releaseLock(ServerPlayer::SEMA_MUTEX);
 }
@@ -3245,7 +3234,6 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign)
 void Room::chooseGenerals()
 {
     QStringList ban_list = Config.value("Banlist/Roles").toStringList();
-    //Sanguosha->banRandomGods(); //why this function add the rest gods into banlist....
     // for lord.
     int lord_num = Config.value("LordMaxChoice", 6).toInt();
     int nonlord_num = Config.value("NonLordMaxChoice", 6).toInt();
@@ -3353,39 +3341,17 @@ void Room::chooseHegemonyGenerals()
         }
     }
 
-    /*if (Config.Enable2ndGeneral) {
-        //QList<ServerPlayer *> to_assign = m_players;
-        assignGeneralsForPlayers(to_assign);
-        foreach(ServerPlayer *player, to_assign)
-            _setupChooseGeneralRequestArgs(player);
-
-        doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
-        foreach(ServerPlayer *player, to_assign) {
-            if (player->getGeneral2() != NULL)
-                continue;
-            QString generalName = player->getClientReply().toString();
-            if (!player->m_isClientResponseReady || !_setPlayerGeneral(player, generalName, false))
-                _setPlayerGeneral(player, _chooseDefaultGeneral(player), false);
-        }
-    }*/
-
     //@todo
-    //int i = 1;
     foreach (ServerPlayer *player, m_players) {
         QStringList names;
         if (player->getGeneral()) {
             QString name = player->getGeneralName();
-            //QStringList roles;
-            //roles << "wei" << "shu" << "wu" << "qun";
-            //int role_idx = QRandomGenerator::global()->generate() % roles.length();
             QString role = Sanguosha->getGeneral(name)->getKingdom();
             if (role == "zhu")
                 role = "careerist";
             names.append(name);
-            //player->setActualGeneral1Name(name);
             player->setRole(role);
             player->setGeneralName("anjiang");
-            //notifyProperty(player, player, "actual_general1");
             foreach (ServerPlayer *p, getOtherPlayers(player))
                 notifyProperty(p, player, "general");
             notifyProperty(player, player, "general", name);
@@ -3394,9 +3360,7 @@ void Room::chooseHegemonyGenerals()
         if (player->getGeneral2()) {
             QString name = player->getGeneral2Name();
             names.append(name);
-            //player->setActualGeneral2Name(name);
             player->setGeneral2Name("anjiang");
-            //notifyProperty(player, player, "actual_general2");
             foreach (ServerPlayer *p, getOtherPlayers(player))
                 notifyProperty(p, player, "general2");
             notifyProperty(player, player, "general2", name);
@@ -3587,14 +3551,9 @@ QStringList Room::_chooseDefaultGenerals(ServerPlayer *player) const
                 continue;
             const General *general1 = Sanguosha->getGeneral(a);
             const General *general2 = Sanguosha->getGeneral(b);
-            if ((general1->getKingdom() == general2->getKingdom()) || (general1->getKingdom() == "zhu") || (general2->getKingdom() == "zhu")) {
+            if ((general1->getKingdom() == general2->getKingdom()) || (general1->getKingdom() == "zhu") || (general2->getKingdom() == "zhu"))
                 general_pairs << (a + "+" + b);
-                //generals << a << b;
-                //break;
-            }
         }
-        //if (!generals.isEmpty())
-        //    break;
     }
     int index = QRandomGenerator::global()->generate() % general_pairs.length();
     generals = general_pairs[index].split("+");
@@ -3610,8 +3569,6 @@ QStringList Room::_chooseDefaultGenerals(ServerPlayer *player) const
         QString choice2 = m_generalSelector->selectSecond(player, candidates);
         generals << choice1 << choice2;
     }
-
-    //m_generalSelector->selectGenerals(player, player->getSelected());
 
     Q_ASSERT(!generals.isEmpty());
     return generals;
@@ -3857,7 +3814,7 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
         if (skill->inherits("TargetModSkill")) {
             const TargetModSkill *tm = qobject_cast<const TargetModSkill *>(skill);
             if (tm->getResidueNum(card_use.from, card) > 500)
-                showTMskill = true; //&& card_use.from->isHiddenSkill()
+                showTMskill = true;
         }
     }
     bool slash_not_record = key.contains("Slash") && slash_count > 0 && (card_use.from->hasWeapon("Crossbow") || showTMskill);
@@ -4182,7 +4139,6 @@ void Room::damage(const DamageStruct &data)
         damage_data = qdata.value<DamageStruct>();
     }
 
-    // Predamage
     if (thread->trigger(Predamage, this, qdata)) {
         if (damage_data.card && damage_data.card->isKindOf("Slash"))
             damage_data.to->removeQinggangTag(damage_data.card);
@@ -4412,7 +4368,6 @@ void Room::startGame()
             const General *general1 = Sanguosha->getGeneral(generals.first());
             Q_ASSERT(general1);
             int max_hp = general1->getMaxHp();
-            //if (Config.Enable2ndGeneral) {
             const General *general2 = Sanguosha->getGeneral(generals.last());
             max_hp = (general1->getMaxHpHead() + general2->getMaxHpDeputy());
             if (general1->isCompanionWith(generals.last()))
@@ -4420,7 +4375,6 @@ void Room::startGame()
 
             player->setMark("HalfMaxHpLeft", max_hp % 2);
             max_hp = max_hp / 2;
-            //}
             player->setMaxHp(max_hp);
         } else
             player->setMaxHp(player->getGeneralMaxHp());
@@ -4711,9 +4665,9 @@ QList<CardsMoveOneTimeStruct> Room::_mergeMoves(QList<CardsMoveStruct> cards_mov
             moveOneTime.shown_ids.append(move.shown_ids);
             for (int i = 0; i < move.card_ids.size(); i++) {
                 moveOneTime.from_places.append(move.from_place);
-                moveOneTime.origin_from_places.append(move.from_place); //move.origin_from_place??
+                moveOneTime.origin_from_places.append(move.from_place);
                 moveOneTime.from_pile_names.append(move.from_pile_name);
-                moveOneTime.origin_from_pile_names.append(move.from_pile_name); //move.origin_from_pile_name??
+                moveOneTime.origin_from_pile_names.append(move.from_pile_name);
                 moveOneTime.open.append(move.open);
             }
             if (move.is_last_handcard)
@@ -5234,35 +5188,21 @@ void Room::preparePlayers()
     if (isHegemonyGameMode(mode)) {
         foreach (ServerPlayer *player, m_players) {
             QString general1_name = tag[player->objectName()].toStringList().at(0);
-            //if (!player->property("Duanchang").toString().split(",").contains("head")) {
-            //foreach(const Skill *skill, Sanguosha->getGeneral(general1_name)->getVisibleSkillList(true, true))
             QList<const Skill *> skills = Sanguosha->getGeneral(general1_name)->getSkillList(true, true);
             foreach (const Skill *skill, skills)
                 player->addSkill(skill->objectName());
-            //}
-
-            //if (Config.Enable2ndGeneral) {
             QString general2_name = tag[player->objectName()].toStringList().at(1);
-            //if (!player->property("Duanchang").toString().split(",").contains("deputy")) {
-            //foreach(const Skill *skill, Sanguosha->getGeneral(general2_name)->getVisibleSkillList(true, false))
             QList<const Skill *> skills2 = Sanguosha->getGeneral(general2_name)->getSkillList(true, false);
             foreach (const Skill *skill, skills2)
                 player->addSkill(skill->objectName(), false);
-            //}
-
-            //}
 
             JsonArray args;
-            args << (int)QSanProtocol::S_GAME_EVENT_PREPARE_SKILL; //(int)QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+            args << (int)QSanProtocol::S_GAME_EVENT_PREPARE_SKILL;
             doNotify(player, QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
             notifyProperty(player, player, "flags", "AutoPreshowAvailable");
-            //setPlayerFlag(player, "AutoPreshowAvailable");
             player->notifyPreshow();
-            //setPlayerFlag(player, "-AutoPreshowAvailable");
             notifyProperty(player, player, "flags", "-AutoPreshowAvailable");
-
-            //player->setGender(General::Sexless);
         }
 
     } else {
@@ -5296,7 +5236,6 @@ void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general)
         players.removeOne(player);
     foreach (ServerPlayer *p, players)
         notifyProperty(p, player, "general");
-    //setPlayerProperty(player, "general", new_general); //
     Q_ASSERT(player->getGeneral() != nullptr);
     if (new_general != "anjiang")
         player->setGender(player->getGeneral()->getGender());
@@ -5324,7 +5263,6 @@ void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general
         players.removeOne(player);
     foreach (ServerPlayer *p, players)
         notifyProperty(p, player, "general2");
-    //setPlayerProperty(player, "general2", new_general);
     Q_ASSERT(player->getGeneral2() != nullptr);
     if (!isHegemonyGameMode(mode) && player->getGeneral2()) {
         foreach (const Skill *skill, player->getGeneral2()->getSkillList(true, false)) {
@@ -6014,7 +5952,6 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
     }
 
     bool length_equal = top_cards.length() + bottom_cards.length() == cards.length();
-    // bool result_equal = top_cards.toSet() + bottom_cards.toSet() == cards.toSet();
     auto allcards = top_cards + bottom_cards;
     bool result_equal = QSet<int>(allcards.begin(), allcards.end()) == QSet<int>(cards.begin(), cards.end());
 
@@ -6334,7 +6271,7 @@ void Room::_setupChooseGeneralRequestArgs(ServerPlayer *player)
     JsonArray options;
     if (isHegemonyGameMode(mode)) {
         options << JsonUtils::toJsonArray(player->getSelected());
-        options << false; //!Config.Enable2ndGeneral; //false;
+        options << false;
         options << false;
     } else {
         options = JsonUtils::toJsonArray(player->getSelected()).value<JsonArray>();
@@ -6790,7 +6727,7 @@ int Room::askForRende(ServerPlayer *liubei, QList<int> &cards, const QString &sk
             JsonArray arg;
             arg << JsonUtils::toJsonArray(remain_cards);
             arg << optional;
-            arg << num; //max_num;
+            arg << num;
             JsonArray player_names;
             foreach (ServerPlayer *player, players)
                 player_names << player->objectName();
@@ -7223,12 +7160,8 @@ void Room::transformGeneral(ServerPlayer *player, QString general_name, int head
         return; //check sujiang
 
     QStringList names;
-    //names << player->getActualGeneral1Name() << player->getActualGeneral2Name();
     QStringList generals = getTag(player->objectName()).toStringList();
     names << generals.first() << generals.last();
-
-    //handleUsedGeneral("-" + player->getActualGeneral2Name());
-    //handleUsedGeneral(general_name);
 
     player->removeGeneral(head);
     QList<const TriggerSkill *> game_start;
@@ -7238,12 +7171,11 @@ void Room::transformGeneral(ServerPlayer *player, QString general_name, int head
             const TriggerSkill *tr = qobject_cast<const TriggerSkill *>(skill);
             if (tr != nullptr) {
                 getThread()->addTriggerSkill(tr);
-                if (tr->getTriggerEvents().contains(GameStart)) // && !tr->triggerable(GameStart, this, player, void_data).isEmpty()
+                if (tr->getTriggerEvents().contains(GameStart))
                     game_start << tr;
             }
         }
         player->addSkill(skill->objectName(), head);
-        //invoke->invoker->sendSkillsToOthers(head);//check shown
     }
 
     if (head) {
@@ -7276,14 +7208,5 @@ void Room::transformGeneral(ServerPlayer *player, QString general_name, int head
         QVariant v = QVariant::fromValue(player);
         thread->trigger(GameStart, this, v);
     }
-    /*foreach(const TriggerSkill *skill, game_start) {
-    if (skill->cost(GameStart, this, player, void_data, player))
-    skill->effect(GameStart, this, player, void_data, player);
-    }*/
-
-    //do not consider CompanionEffect
-    //if (Sanguosha->getGeneral(names[0])->isCompanionWith(general_name))
-    //	setPlayerMark(player, "CompanionEffect", 1);
-    //if (need_show)
     player->showGeneral(head);
 }

@@ -209,12 +209,7 @@ void LeitingCard::onEffect(const CardEffectStruct &effect) const
     }
 
     const Card *cards = room->askForCard(effect.from, ".|.|.|hand,equipped", "@leiting:" + effect.to->objectName(), QVariant::fromValue(effect.to));
-    /*if (!cards) {
-        //force discard!!!
-        int x = QRandomGenerator::global()->generate() % hc.length();
-        cards = hc.value(x);
-        room->throwCard(cards, effect.from);
-    }*/
+
     if (cards == nullptr)
         return;
     if (cards->getSuit() == Card::Heart) {
@@ -584,7 +579,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName());
-        room->obtainCard(invoke->invoker, id, false); //room->getCardPlace(id) != Player::PlaceHand
+        room->obtainCard(invoke->invoker, id, false);
         return false;
     }
 };
@@ -997,7 +992,7 @@ public:
     Tianxie()
         : TriggerSkill("tianxie")
     {
-        events << SlashHit << PostCardEffected; //<< CardFinished
+        events << SlashHit << PostCardEffected;
     }
 
     void record(TriggerEvent e, Room *room, QVariant &data) const override
@@ -1012,7 +1007,6 @@ public:
     {
         if (e != PostCardEffected)
             return QList<SkillInvokeDetail>();
-        //CardUseStruct use = data.value<CardUseStruct>();
         CardEffectStruct effect = data.value<CardEffectStruct>();
         if (effect.card->isKindOf("EquipCard") || effect.card->isKindOf("SkillCard"))
             return QList<SkillInvokeDetail>();

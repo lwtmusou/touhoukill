@@ -652,18 +652,6 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
     log.card_str = card_use.card->toString(hidden);
     room->sendLog(log);
 
-    /*if (card_use.card->isKindOf("Collateral")) { // put it here for I don't wanna repeat these codes in Card::onUse
-        ServerPlayer *victim = card_use.to.first()->tag["collateralVictim"].value<ServerPlayer *>();
-        if (victim) {
-            LogMessage log;
-            log.type = "#CollateralSlash";
-            log.from = card_use.from;
-            log.to << victim;
-            room->sendLog(log);
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, card_use.to.first()->objectName(), victim->objectName());
-        }
-    }*/
-
     QList<int> used_cards;
     QList<CardsMoveStruct> moves;
     if (card_use.card->isVirtualCard())
@@ -758,7 +746,7 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
                 break;
             }
         }
-        //reason.m_provider = QVariant::fromValue(provider);
+
         ServerPlayer *from = source;
         if (provider != nullptr)
             from = provider;
@@ -1014,8 +1002,7 @@ ShowDistanceCard::ShowDistanceCard()
 
 const Card *ShowDistanceCard::validate(CardUseStruct &card_use) const
 {
-    QString c = toString().split(":").last(); //damn it again!
-    //const DistanceSkill *skill = qobject_cast<const DistanceSkill *>(Sanguosha->getSkill(c));
+    QString c = toString().split(":").last();
     const Skill *skill = Sanguosha->getSkill(c);
     if (skill) {
         bool head = card_use.from->inHeadSkills(skill->objectName());
@@ -1038,7 +1025,6 @@ const Card *ArraySummonCard::validate(CardUseStruct &card_use) const
 {
     const BattleArraySkill *skill = qobject_cast<const BattleArraySkill *>(Sanguosha->getTriggerSkill(objectName()));
     if (skill) {
-        //card_use.from->showSkill(skill->objectName(), card_use.card->getSkillPosition());                           //new function by weidouncle
         card_use.from->showHiddenSkill(skill->objectName());
         skill->summonFriends(card_use.from);
     }

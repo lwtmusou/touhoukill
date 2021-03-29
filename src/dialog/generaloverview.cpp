@@ -279,7 +279,7 @@ GeneralOverview::GeneralOverview(QWidget *parent)
             ui->changeGeneralButton->show();
         else
             ui->changeGeneralButton->hide();
-        //
+
         if (!isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral)
             ui->changeGeneral2Button->show();
         else
@@ -362,19 +362,15 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
         QTableWidgetItem *kingdom_item = new QTableWidgetItem(kingdom);
         kingdom_item->setTextAlignment(Qt::AlignCenter);
 
-        //QTableWidgetItem *gender_item = new QTableWidgetItem(gender);
-        //gender_item->setTextAlignment(Qt::AlignCenter);
-
         QTableWidgetItem *max_hp_item = new QTableWidgetItem(max_hp);
         max_hp_item->setTextAlignment(Qt::AlignCenter);
 
         QTableWidgetItem *package_item = new QTableWidgetItem(package);
         package_item->setTextAlignment(Qt::AlignCenter);
 
-        if (Config.value("LuaPackages", QString()).toString().split("+").contains(general->getPackage())) {
-            //package_item->setBackgroundColor(QColor(0x66, 0xCC, 0xFF));
+        if (Config.value("LuaPackages", QString()).toString().split("+").contains(general->getPackage()))
             package_item->setToolTip(tr("<font color=#FFFF33>This is an Lua extension</font>"));
-        }
+
         //add color for touhou kingdoms and packages.
         QColor kingdomColor = Sanguosha->getKingdomColor(general->getKingdom());
         package_item->setBackground(QBrush(kingdomColor));
@@ -394,13 +390,6 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
         ui->tableWidget->setItem(i, 3, max_hp_item);
         ui->tableWidget->setItem(i, 4, package_item);
     }
-    //original width
-    //ui->tableWidget->setColumnWidth(0, 80);
-    //ui->tableWidget->setColumnWidth(1, 95);
-    //ui->tableWidget->setColumnWidth(2, 40);
-    //ui->tableWidget->setColumnWidth(3, 50);
-    //ui->tableWidget->setColumnWidth(3, 60);
-    //ui->tableWidget->setColumnWidth(4, 85);
 
     ui->tableWidget->setColumnWidth(0, 115);
     ui->tableWidget->setColumnWidth(1, 110);
@@ -595,7 +584,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     } else {
         QString companions_text = general->getCompanions();
         if (companions_text.isEmpty())
-            ui->companionLineEdit->clear(); //->setText(tr("None"));
+            ui->companionLineEdit->clear();
         else
             ui->companionLineEdit->setText(companions_text);
         ui->companionLineEdit->show();
@@ -632,7 +621,6 @@ void GeneralOverview::askTransfiguration()
         int row = ui->tableWidget->currentRow();
         QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
         ClientInstance->requestCheatChangeGeneral(general_name, isSecondaryHero);
-        //ClientInstance->requestCheatChangeGeneral(general_name, false);
     }
 }
 

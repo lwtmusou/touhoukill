@@ -124,7 +124,6 @@ void CardContainer::fillGeneralCards(const QList<CardItem *> &card_item, const Q
     }
 
     scene_width = RoomSceneInstance->sceneRect().width();
-    //confirm_button->hide();
 
     items.append(card_items);
     itemCount = items.length();
@@ -161,14 +160,11 @@ void CardContainer::fillGeneralCards(const QList<CardItem *> &card_item, const Q
         item->setFlag(QGraphicsItem::ItemIsFocusable);
         if (disabled_item.contains(item))
             item->setEnabled(false);
-        //item->setOuterGlowEffectEnabled(true);
         item->show();
     }
 
-    //close_button->setPos(boundingRect().center().x() - close_button->boundingRect().width() / 2, boundingRect().height() - 40);
     close_button->setPos(boundingRect().topRight().x() - boundingRect().width() / 10, boundingRect().topRight().y() + boundingRect().height() / 10);
     close_button->show();
-    //confirm_button->setPos(boundingRect().center().x() - confirm_button->boundingRect().width() / 2, boundingRect().height() - 40);
 }
 
 bool CardContainer::_addCardItems(QList<CardItem *> &, const CardsMoveStruct &)

@@ -710,7 +710,7 @@ void Settings::init()
     int index = QRandomGenerator::global()->generate() % length + 1;
     QString bgFilename = QString("%1%2%3").arg("backdrop/hall/gensoukyou_").arg(index).arg(".jpg");
 
-    BackgroundImage = bgFilename; // value("BackgroundImage", bgFilename).toString();
+    BackgroundImage = bgFilename;
     TableBgImage = value("TableBgImage", "backdrop/default.jpg").toString();
     UseLordBackdrop = value("UseLordBackdrop", true).toBool();
 

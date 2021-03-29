@@ -15,7 +15,6 @@
 
 const char *HEROSKIN_PIXMAP_PATH = "image/heroskin/fullskin/generals/full";
 const char *KINGDOM_COLORMASK_PIXMAP_PATH = "image/kingdom/frame/dashboard/%1.png";
-//"image/fullskin/kingdom/frame/dashboard/%1.png";
 
 const int LEFT_MARGIN = 5;
 const int AVAILABLE_AREA_WIDTH = 400;
@@ -24,7 +23,6 @@ const int Y_START_POS = 32;
 
 const int SKIN_ITEM_WIDTH = SKIN_ITEM_AREA.width();
 const int SKIN_ITEM_HEIGHT = SKIN_ITEM_AREA.height();
-//(?:[A-Za-z_]+)(\\d+).png
 const QRegExp SKIN_FILE_NAME_PATTERN = QRegExp("(?:[A-Za-z_0-9]+)(\\d+).png");
 
 HeroSkinContainer *HeroSkinContainer::m_currentTopMostContainer = nullptr;
@@ -43,9 +41,6 @@ HeroSkinContainer::HeroSkinContainer(const QString &generalName, const QString &
 
     QSanButton *closeButton = new QSanButton("player_container", "close-heroskin", this); //"change-heroskin"
 
-    //QSanButton *closeButton = new QSanButton("card_container",
-    //"close", this);
-
     closeButton->setPos(385, 5);
 
     connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
@@ -57,9 +52,7 @@ HeroSkinContainer::HeroSkinContainer(const QString &generalName, const QString &
     QGraphicsPixmapItem *kingdomIcon = nullptr;
     PlayerCardContainer::_paintPixmap(kingdomIcon, QRect(9, 2, 28, 25), G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON, kingdom), this);
 
-    QGraphicsPixmapItem *avatarNameItem = new QGraphicsPixmapItem(this);
-    //getAvatarNameFont().paintText(avatarNameItem, QRect(34, -8, 100, 40), //34, -8, 60, 40
-    //                              Qt::AlignLeft | Qt::AlignJustify, name);
+    new QGraphicsPixmapItem(this);
 
     initSkins();
     fillSkins();
@@ -306,11 +299,6 @@ const QFont &HeroSkinContainer::getAvatarNameFont()
     static QString family = QFontDatabase::applicationFontFamilies(id).at(0);
     static QFont font(family);
     font.setPixelSize(18);
-    // shadowRadius = 1
-    // shadowDecadeFactor = 10
-    // shadowColor = QColor(50, 50, 50, 200)
-    //static const SanShadowTextFont avatarNameFont("SimLi", QSize(18, 18), 1, 10, QColor(50, 50, 50, 200));
-    //SanShadowTextFont avatarNameFont("SimLi");
     return font;
 }
 

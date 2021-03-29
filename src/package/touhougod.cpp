@@ -1956,8 +1956,7 @@ public:
         QStringList checkedPatterns;
         QStringList ban_list = Sanguosha->getBanPackages();
         foreach (const Card *card, cards) {
-            if ((card->isKindOf("BasicCard") || card->isKindOf("Nullification"))
-                && !ban_list.contains(card->getPackage())) { //&& !ServerInfo.Extensions.contains("!" + card->getPackage())
+            if ((card->isKindOf("BasicCard") || card->isKindOf("Nullification")) && !ban_list.contains(card->getPackage())) {
                 QString name = card->objectName();
                 if (!checkedPatterns.contains(name) && skill->matchAvaliablePattern(name, pattern) && !Self->isCardLimited(card, method)) {
                     if (name.contains("jink") && Self->getMaxHp() > 3)
@@ -2248,7 +2247,7 @@ public:
         ServerPlayer *current = change.player;
 
         QString prompt = "@qinlue-discard:" + current->objectName();
-        const Card *card = room->askForCard(source, "Slash,Weapon", prompt, QVariant::fromValue(current), Card::MethodDiscard, current, false, "qinlue"); //"Slash,EquipCard"
+        const Card *card = room->askForCard(source, "Slash,Weapon", prompt, QVariant::fromValue(current), Card::MethodDiscard, current, false, "qinlue");
         return card != nullptr;
     }
 
@@ -3353,11 +3352,7 @@ void ShenbaoDialog::popup(Player *_Self)
 
     if (choices.isEmpty()) {
         emit onButtonClick();
-    } /*else if (choices.length() == 1) {
-        Self->tag["shenbao_choice"] = choices.first();
-        emit onButtonClick();
-    }*/
-    else {
+    } else {
         QList<QAbstractButton *> btns = group->buttons();
         foreach (QAbstractButton *btn, btns)
             btn->setEnabled(choices.contains(btn->objectName()));
@@ -3377,14 +3372,12 @@ QStringList ShenbaoDialog::getAvailableChoices(const Player *player, CardUseStru
             EquipCard::Location location = equipCard->location();
             switch (location) {
             case EquipCard::WeaponLocation: {
-                //if (!(player->hasWeapon(skillName) && !player->hasWeapon(skillName, true)))
                 const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "weapon", true);
                 if (v && v->objectName().contains("shenbao"))
                     available = true;
                 break;
             }
             case EquipCard::ArmorLocation: {
-                //if (!(player->hasArmorEffect(skillName) && !player->hasArmorEffect(skillName, true)))
                 const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "armor", true);
                 if (v && v->objectName().contains("shenbao"))
                     available = true;
@@ -3392,7 +3385,6 @@ QStringList ShenbaoDialog::getAvailableChoices(const Player *player, CardUseStru
             }
 
             case EquipCard::TreasureLocation: {
-                //if (!(player->hasTreasure(skillName) && !player->hasTreasure(skillName, true)))
                 const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "treasure", true);
                 if (v && v->objectName().contains("shenbao"))
                     available = true;
@@ -3429,7 +3421,6 @@ QStringList ShenbaoDialog::getAvailableChoices(const Player *player, CardUseStru
 QStringList ShenbaoDialog::getAvailableNullificationChoices(const ServerPlayer *player)
 {
     QStringList choices;
-    //const Skill *shenbao = Sanguosha->getSkill("#shenbao_viewhas");
     foreach (const QString &skillName, equipViewAsSkills) {
         EquipCard *equipCard = qobject_cast<EquipCard *>(Sanguosha->cloneCard(skillName));
         bool available = false;
@@ -3437,14 +3428,12 @@ QStringList ShenbaoDialog::getAvailableNullificationChoices(const ServerPlayer *
             EquipCard::Location location = equipCard->location();
             switch (location) {
             case EquipCard::WeaponLocation: {
-                //if (!(player->hasWeapon(skillName) && !player->hasWeapon(skillName, true)))
                 const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "weapon", true);
                 if (v && v->objectName().contains("shenbao"))
                     available = true;
                 break;
             }
             case EquipCard::ArmorLocation: {
-                //if (!(player->hasArmorEffect(skillName) && !player->hasArmorEffect(skillName, true)))
                 const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "armor", true);
                 if (v && v->objectName().contains("shenbao"))
                     available = true;
@@ -3452,7 +3441,6 @@ QStringList ShenbaoDialog::getAvailableNullificationChoices(const ServerPlayer *
             }
 
             case EquipCard::TreasureLocation: {
-                //if (!(player->hasTreasure(skillName) && !player->hasTreasure(skillName, true)))
                 const ViewHasSkill *v = Sanguosha->ViewHas(player, skillName, "treasure", true);
                 if (v && v->objectName().contains("shenbao"))
                     available = true;
@@ -3670,8 +3658,6 @@ public:
         if (name == "ShowShenbao") {
             return new ShowShenbaoCard();
         }
-        //if (name == "cancel")
-        //    return NULL;
 
         const ViewAsSkill *skill = Sanguosha->getViewAsSkill(name);
         if (skill == nullptr)
@@ -3766,8 +3752,6 @@ public:
         }
 
         //only consider hegemony mode??  need check items?? no need
-        //if (skill_name == "shenbao")
-        //    return true;
         if (flag == "weapon") {
             if ((skill_name == "Crossbow" || skill_name == "SixSwords") && !player->hasShownSkill("shenbao"))
                 return false;
@@ -3794,7 +3778,6 @@ public:
                 if (real_related_weapon->objectName() == weapon_name || real_related_weapon->isKindOf(weapon_name.toStdString().c_str()))
                     return true;
             }
-            //    return (weapon == NULL || weapon->objectName() != skill_name || player->isBrokenEquip(weapon->getEffectiveId()));
         } else if (flag == "armor") {
             QString armor_name = skill_name;
             foreach (const Player *p, player->getAliveSiblings()) {
@@ -3818,7 +3801,6 @@ public:
                 if (real_related_armor->objectName() == armor_name || real_related_armor->isKindOf(armor_name.toStdString().c_str()))
                     return true;
             }
-            //return (armor == NULL || armor->objectName() != skill_name || player->isBrokenEquip(armor->getEffectiveId()));
         } else if (flag == "treasure") {
             QString treasure_name = skill_name;
             if (skill_name != "wooden_ox") {
@@ -3845,9 +3827,6 @@ public:
                 if (real_related_treasure->objectName() == treasure_name || real_related_treasure->isKindOf(treasure_name.toStdString().c_str()))
                     return true;
             }
-
-            //    return (treasure && treasure->objectName() == skill_name && player->isBrokenEquip(treasure->getEffectiveId()));
-            //    return (treasure == NULL || treasure->objectName() != skill_name || player->isBrokenEquip(treasure->getEffectiveId()));
         }
 
         return false;
@@ -4064,7 +4043,6 @@ public:
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
     {
         ServerPlayer *yuyuko = nullptr;
-        //bool notify = false;
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player->hasSkill("yousi")) {
@@ -4107,7 +4085,7 @@ public:
     Kuixin()
         : TriggerSkill("kuixin")
     {
-        events << CardFinished; // << TargetConfirmed << TargetSpecified;
+        events << CardFinished;
         frequency = Compulsory;
     }
 
@@ -5514,11 +5492,6 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        //QStringList ban_list;
-        //ban_list << "Jink"
-        //         << "Nullification";
-        //if (ban_list.contains(use.card->getClassName()))
-        //    return QList<SkillInvokeDetail>();
         if (use.card->isKindOf("Jink") || use.card->isKindOf("Nullification"))
             return QList<SkillInvokeDetail>();
         if (use.from && use.from->isAlive() && use.from->hasSkill(this) && use.from->getMark("@star") > 0 && use.to.length() == 1 && !use.from->hasFlag("Global_ProcessBroken")) {
@@ -5669,8 +5642,7 @@ QGroupBox *XianshiDialog::createLeft()
     QStringList ban_list = Sanguosha->getBanPackages();
 
     foreach (const Card *card, cards) {
-        if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName())
-            && !ban_list.contains(card->getPackage())) { //&& !ServerInfo.Extensions.contains("!" + card->getPackage())
+        if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getPackage())) {
             Card *c = Sanguosha->cloneCard(card->objectName());
             c->setParent(this);
             layout->addWidget(createButton(c));
@@ -5831,10 +5803,6 @@ public:
         QString selected_effect = Self->tag.value("xianshi", QString()).toString();
         bool play = (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
         if (play) {
-            //if (matchAvaliablePattern(selected_effect, "BasicCard"))
-            //    return c->isNDTrick() && c->isAvailable(Self);
-            //else
-            //    return c->isKindOf("BasicCard") && c->isAvailable(Self);
             if (!c->isAvailable(Self))
                 return false;
 
@@ -5842,10 +5810,6 @@ public:
             QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
             if (!matchAvaliablePattern(c->objectName(), pattern))
                 return false;
-            //if (matchAvaliablePattern(selected_effect, "BasicCard"))
-            //    return c->isNDTrick() && matchAvaliablePattern(c->objectName(), pattern);
-            //else
-            //    return c->isKindOf("BasicCard") && matchAvaliablePattern(c->objectName(), pattern);
         }
         if (selected_effect.contains("slash"))
             return !c->isKindOf("Slash");
@@ -5871,29 +5835,6 @@ public:
         if (xianshi_record == nullptr)
             return false;
         return true;
-
-        //ignore check
-        /*QStringList checkedPatterns;
-        QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-        bool basic_pattern = false;
-        bool trick_pattern = false;
-        foreach (const Card *card, cards) {
-            if (card->isKindOf("BasicCard") && !basic_pattern && matchAvaliablePattern(card->objectName(), pattern))
-                basic_pattern = true;
-            else if (card->isKindOf("TrickCard") && !trick_pattern && matchAvaliablePattern(card->objectName(), pattern))
-                trick_pattern = true;
-            if (trick_pattern && basic_pattern)
-                break;
-        }
-
-        foreach (QString name, xianshi_record.split("+")) {
-            if (matchAvaliablePattern(name, "BasicCard") && trick_pattern)
-                return true;
-            else if (matchAvaliablePattern(name, "TrickCard") && basic_pattern)
-                return true;
-        }
-
-        return !checkedPatterns.isEmpty();*/
     }
 
     bool isEnabledAtPlay(const Player *player) const override
@@ -5932,7 +5873,7 @@ public:
         if (xianshi_record == nullptr)
             return false;
         foreach (QString name, xianshi_record.split("+")) {
-            if (!name.contains("nullification")) { //matchAvaliablePattern(name, "BasicCard")
+            if (!name.contains("nullification")) {
                 record = true;
                 break;
             }
@@ -6033,26 +5974,10 @@ public:
         if (card->isRed()) {
             if (card->canDamage())
                 return 1000;
-            /*if (card->getSkillName() == "xianshi") {
-                QString selected_effect = Self->tag.value("xianshi", QString()).toString();
-                if (selected_effect != NULL) {
-                    Card *extracard = Sanguosha->cloneCard(selected_effect);
-                    extracard->deleteLater();
-                    if (extracard->canDamage())
-                        return 1000;
-                }
-            }*/
 
         } else if (card->isBlack()) {
             if (card->canRecover())
                 return 1000;
-            /*if (card->isKindOf("Peach"))
-                return 1000;
-            if (card->getSkillName() == "xianshi") {
-                QString selected_effect = Self->tag.value("xianshi", QString()).toString();
-                if (selected_effect != NULL && (selected_effect.contains("peach") || selected_effect.contains("analeptic") || selected_effect.contains("god_salvation")))
-                    return 1000;
-            }*/
         }
 
         return 0;
@@ -6659,7 +6584,6 @@ public:
 
     bool viewFilter(const QList<const Card *> &, const Card *to_select, const Player *Self) const override
     {
-        //const Card *card = Self->tag.value("kuangji").value<const Card *>();
         QString kuangji_name = Self->property("kuangji_name").toString();
         return uniqueName(to_select->objectName()) == uniqueName(kuangji_name);
     }
@@ -6688,11 +6612,6 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        //QStringList ban_list;
-        //ban_list << "Jink"
-        //    << "Nullification";
-        //if (ban_list.contains(use.card->getClassName()))
-        //    return QList<SkillInvokeDetail>();
         if (use.from && use.from->isAlive() && use.from->hasSkill(this) && use.to.length() == 1) {
             if ((use.card->isKindOf("BasicCard") || use.card->isNDTrick())) {
                 if (!use.from->canDiscard(use.from, "hs"))
@@ -6706,7 +6625,6 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        //invoke->invoker->tag["kuangji"] = QVariant::fromValue(use.card);
         room->setPlayerProperty(invoke->invoker, "kuangji_name", use.card->objectName());
         ServerPlayer *target = use.to.first();
         room->setPlayerFlag(invoke->invoker, "Global_kuangjiTargetmodFailed");
@@ -6892,15 +6810,10 @@ public:
         QString exclude = tag.toString();
         if (exclude == "")
             exclude = "lightning";
-        /*if (!tag.isNull() && tag.canConvert(QVariant::String)) {
-            QString exclude = tag.toString();
-            names.removeAll(exclude);
-        }*/
+
         int pos = names.indexOf(exclude) + 1;
         if (pos >= names.length())
             pos = 0;
-        //ServerPlayer *current = room->getCurrent();
-        //QString choice = room->askForChoice(current, "qizhi", names.join("+"), QVariant());
         QString next = names.at(pos);
         room->setTag("dimai_card", next);
         room->touhouLogmessage("#dimai", nullptr, next);
