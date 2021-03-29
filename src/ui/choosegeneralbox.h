@@ -50,7 +50,7 @@ protected:
 #endif
 
 private:
-    GeneralCardItem(const QString &generalName);
+    explicit GeneralCardItem(const QString &generalName);
 
     bool hasCompanion;
 #ifdef Q_OS_ANDROID

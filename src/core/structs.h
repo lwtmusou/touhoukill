@@ -452,7 +452,7 @@ struct PhaseStruct
 
 struct CardResponseStruct
 {
-    inline CardResponseStruct(const Card *card = nullptr, ServerPlayer *who = nullptr, bool isuse = false, bool isRetrial = false, bool isProvision = false, ServerPlayer *from = nullptr)
+    inline explicit CardResponseStruct(const Card *card = nullptr, ServerPlayer *who = nullptr, bool isuse = false, bool isRetrial = false, bool isProvision = false, ServerPlayer *from = nullptr)
         : m_card(card)
         , m_who(who)
         , m_isUse(isuse)

@@ -30,7 +30,7 @@ class NativeClientSocket : public ClientSocket
 
 public:
     NativeClientSocket();
-    NativeClientSocket(QTcpSocket *socket);
+    explicit NativeClientSocket(QTcpSocket *socket);
 
     void connectToHost() override;
     void disconnectFromHost() override;

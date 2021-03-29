@@ -12,7 +12,7 @@ class ConfigDialog : public QDialog
 {
     Q_OBJECT
 public:
-    ConfigDialog(QWidget *parent = nullptr);
+    explicit ConfigDialog(QWidget *parent = nullptr);
     ~ConfigDialog() override;
 
 private:

@@ -30,7 +30,7 @@ class BroadcastBox : public QDialog
     Q_OBJECT
 
 public:
-    BroadcastBox(Server *server, QWidget *parent = nullptr);
+    explicit BroadcastBox(Server *server, QWidget *parent = nullptr);
 
 protected:
     void accept() override;

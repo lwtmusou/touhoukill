@@ -22,7 +22,7 @@ class GeneralSearch : public QDialog
     Q_OBJECT
 
 public:
-    GeneralSearch(GeneralOverview *parent);
+    explicit GeneralSearch(GeneralOverview *parent);
 
 private:
     QCheckBox *include_hidden_checkbox;
@@ -66,7 +66,7 @@ class GeneralOverview : public QDialog
     Q_OBJECT
 
 public:
-    GeneralOverview(QWidget *parent = nullptr);
+    explicit GeneralOverview(QWidget *parent = nullptr);
     ~GeneralOverview() override;
     void fillGenerals(const QList<const General *> &generals, bool init = true);
 

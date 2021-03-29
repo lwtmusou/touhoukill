@@ -17,7 +17,7 @@ class Sprite : public QObject, public QGraphicsPixmapItem
     Q_PROPERTY(qreal scale READ scale WRITE setScale)
 
 public:
-    Sprite(QGraphicsItem *parent = nullptr)
+    explicit Sprite(QGraphicsItem *parent = nullptr)
         : QGraphicsPixmapItem(parent)
     {
     }
@@ -56,7 +56,7 @@ class EffectAnimation : public QObject
     Q_OBJECT
 
 public:
-    EffectAnimation(QObject *parent = nullptr);
+    explicit EffectAnimation(QObject *parent = nullptr);
 
     void fade(QGraphicsItem *map);
     void emphasize(QGraphicsItem *map, bool stay = true);
@@ -77,7 +77,7 @@ class EmphasizeEffect : public QAnimatedEffect
     Q_OBJECT
 
 public:
-    EmphasizeEffect(bool stay = false);
+    explicit EmphasizeEffect(bool stay = false);
 
 protected:
     void draw(QPainter *painter) override;
@@ -89,7 +89,7 @@ class SentbackEffect : public QAnimatedEffect
     Q_OBJECT
 
 public:
-    SentbackEffect(bool stay = false);
+    explicit SentbackEffect(bool stay = false);
 
 protected:
     void draw(QPainter *painter) override;
@@ -104,7 +104,7 @@ class FadeEffect : public QAnimatedEffect
     Q_OBJECT
 
 public:
-    FadeEffect(bool stay = false);
+    explicit FadeEffect(bool stay = false);
 
 protected:
     void draw(QPainter *painter) override;

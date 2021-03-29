@@ -18,7 +18,7 @@ class CardOverview : public QDialog
 public:
     static CardOverview *getInstance(QWidget *main_window);
 
-    CardOverview(QWidget *parent = nullptr);
+    explicit CardOverview(QWidget *parent = nullptr);
     void loadFromAll();
     void loadFromList(const QList<const Card *> &list);
 

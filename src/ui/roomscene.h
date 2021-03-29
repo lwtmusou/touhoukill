@@ -47,7 +47,7 @@ class ScriptExecutor : public QDialog
     Q_OBJECT
 
 public:
-    ScriptExecutor(QWidget *parent);
+    explicit ScriptExecutor(QWidget *parent);
 
 public slots:
     void doScript();
@@ -58,7 +58,7 @@ class DeathNoteDialog : public QDialog
     Q_OBJECT
 
 public:
-    DeathNoteDialog(QWidget *parent);
+    explicit DeathNoteDialog(QWidget *parent);
 
 protected:
     void accept() override;
@@ -73,7 +73,7 @@ class DamageMakerDialog : public QDialog
     Q_OBJECT
 
 public:
-    DamageMakerDialog(QWidget *parent);
+    explicit DamageMakerDialog(QWidget *parent);
 
 protected:
     void accept() override;
@@ -107,7 +107,7 @@ class ReplayerControlBar : public QGraphicsObject
     Q_OBJECT
 
 public:
-    ReplayerControlBar(Dashboard *dashboard);
+    explicit ReplayerControlBar(Dashboard *dashboard);
     static QString FormatTime(int secs);
     QRectF boundingRect() const override;
 
@@ -386,7 +386,7 @@ private:
 
     struct _MoveCardsClassifier
     {
-        inline _MoveCardsClassifier(const CardsMoveStruct &move)
+        inline explicit _MoveCardsClassifier(const CardsMoveStruct &move)
         {
             m_card_ids = move.card_ids;
         }
@@ -537,19 +537,19 @@ extern RoomScene *RoomSceneInstance;
 
 Q_ALWAYS_INLINE Client *clientInstanceFunc()
 {
-    if (RoomSceneInstance != NULL)
+    if (RoomSceneInstance != nullptr)
         return RoomSceneInstance->getClient();
 
-    return NULL;
+    return nullptr;
 }
 
 Q_ALWAYS_INLINE ClientPlayer *selfFunc()
 {
     Client *client = clientInstanceFunc();
-    if (client != NULL)
+    if (client != nullptr)
         return client->getSelf();
 
-    return NULL;
+    return nullptr;
 }
 
 #define ClientInstance clientInstanceFunc()

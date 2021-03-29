@@ -36,7 +36,7 @@ public:
         SpecialPack
     };
 
-    Package(const QString &name, Type pack_type = GeneralPack)
+    explicit Package(const QString &name, Type pack_type = GeneralPack)
     {
         setObjectName(name);
         type = pack_type;
@@ -95,7 +95,7 @@ public:
         packages()[name] = pack;
     }
 
-    static PackageHash &packages(void);
+    static PackageHash &packages();
 };
 
 #define ADD_PACKAGE(name) static PackageAdder name##PackageAdder(#name, new name##Package);

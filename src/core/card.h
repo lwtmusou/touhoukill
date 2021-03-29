@@ -252,7 +252,7 @@ class ArraySummonCard : public SkillCard
     Q_OBJECT
 
 public:
-    Q_INVOKABLE ArraySummonCard(const QString &name);
+    Q_INVOKABLE explicit ArraySummonCard(const QString &name);
 
     const Card *validate(CardUseStruct &card_use) const override;
 };

@@ -14,7 +14,7 @@ class MyPixmapItem : public QObject, public QGraphicsPixmapItem
     Q_OBJECT
 
 public:
-    MyPixmapItem(const QPixmap &pixmap, QGraphicsItem *parentItem = nullptr);
+    explicit MyPixmapItem(const QPixmap &pixmap, QGraphicsItem *parentItem = nullptr);
     ~MyPixmapItem() override;
 
 public:

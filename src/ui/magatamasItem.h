@@ -11,7 +11,7 @@ class MagatamasBoxItem : public QGraphicsObject
 
 public:
     MagatamasBoxItem();
-    MagatamasBoxItem(QGraphicsItem *parent);
+    explicit MagatamasBoxItem(QGraphicsItem *parent);
     inline int getHp() const
     {
         return m_hp;

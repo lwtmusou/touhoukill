@@ -35,7 +35,7 @@ class RoleComboBox : public QGraphicsObject
     Q_OBJECT
 
 public:
-    RoleComboBox(QGraphicsItem *photo);
+    explicit RoleComboBox(QGraphicsItem *photo);
     static const int S_ROLE_COMBO_BOX_WIDTH = 25;
     static const int S_ROLE_COMBO_BOX_HEIGHT = 26;
     static const int S_ROLE_COMBO_BOX_GAP = 5;

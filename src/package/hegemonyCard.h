@@ -9,7 +9,7 @@ class SixSwords : public Weapon
     Q_OBJECT
 
 public:
-    Q_INVOKABLE SixSwords(Card::Suit suit = Diamond, int number = 6);
+    Q_INVOKABLE explicit SixSwords(Card::Suit suit = Diamond, int number = 6);
 };
 
 class DoubleSwordHegemony : public Weapon
@@ -58,7 +58,7 @@ class BefriendAttacking : public SingleTargetTrick
     Q_OBJECT
 
 public:
-    Q_INVOKABLE BefriendAttacking(Card::Suit suit = Heart, int number = 9);
+    Q_INVOKABLE explicit BefriendAttacking(Card::Suit suit = Heart, int number = 9);
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
     void onEffect(const CardEffectStruct &effect) const override;

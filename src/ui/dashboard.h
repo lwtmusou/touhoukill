@@ -36,7 +36,7 @@ public:
         ByNumber
     };
 
-    Dashboard(QGraphicsItem *button_widget);
+    explicit Dashboard(QGraphicsItem *button_widget);
     QRectF boundingRect() const override;
     void refresh() override;
     void setWidth(int width);

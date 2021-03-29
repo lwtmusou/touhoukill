@@ -115,7 +115,7 @@ class ZhuozhiCard : public SkillCard
 public:
     Q_INVOKABLE ZhuozhiCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 
 class WanshenCard : public SkillCard
@@ -125,7 +125,7 @@ class WanshenCard : public SkillCard
 public:
     Q_INVOKABLE WanshenCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 
 class XieliCard : public SkillCard
@@ -135,7 +135,7 @@ class XieliCard : public SkillCard
 public:
     Q_INVOKABLE XieliCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 
 class TH99Package : public Package

@@ -32,10 +32,10 @@ class JsonDocument
 {
 public:
     JsonDocument();
-    JsonDocument(const QVariant &var);
+    explicit JsonDocument(const QVariant &var);
 
-    JsonDocument(const JsonArray &array);
-    JsonDocument(const JsonObject &object);
+    explicit JsonDocument(const JsonArray &array);
+    explicit JsonDocument(const JsonObject &object);
 
     QByteArray toJson(bool isIndented = false) const;
     static JsonDocument fromJson(const QByteArray &json, bool allowComment = false);

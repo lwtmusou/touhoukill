@@ -30,7 +30,7 @@ class HegemonyRoleComboBox : public QGraphicsObject
     Q_OBJECT
 
 public:
-    HegemonyRoleComboBox(QGraphicsItem *photo, bool circle = false);
+    explicit HegemonyRoleComboBox(QGraphicsItem *photo, bool circle = false);
     static const int COMPACT_BORDER_WIDTH = 1;
     static const int COMPACT_ITEM_LENGTH = 10;
 

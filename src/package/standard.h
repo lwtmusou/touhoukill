@@ -108,7 +108,7 @@ class GodSalvation : public GlobalEffect
     Q_OBJECT
 
 public:
-    Q_INVOKABLE GodSalvation(Card::Suit suit = Heart, int number = 1);
+    Q_INVOKABLE explicit GodSalvation(Card::Suit suit = Heart, int number = 1);
     bool isCancelable(const CardEffectStruct &effect) const override;
     void onEffect(const CardEffectStruct &effect) const override;
 };
@@ -157,7 +157,7 @@ class ArcheryAttack : public AOE
     Q_OBJECT
 
 public:
-    Q_INVOKABLE ArcheryAttack(Card::Suit suit = Heart, int number = 1);
+    Q_INVOKABLE explicit ArcheryAttack(Card::Suit suit = Heart, int number = 1);
     void onEffect(const CardEffectStruct &effect) const override;
 };
 

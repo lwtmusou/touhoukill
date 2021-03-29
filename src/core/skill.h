@@ -192,7 +192,7 @@ class ShowDistanceSkill : public ZeroCardViewAsSkill
     Q_OBJECT
 
 public:
-    ShowDistanceSkill(const QString &name);
+    explicit ShowDistanceSkill(const QString &name);
 
     const Card *viewAs(const Player *Self) const override;
     bool isEnabledAtPlay(const Player *player) const override;
@@ -321,7 +321,7 @@ class ViewHasSkill : public Skill
     Q_OBJECT
 
 public:
-    ViewHasSkill(const QString &name);
+    explicit ViewHasSkill(const QString &name);
 
     virtual bool ViewHas(const Player *player, const QString &skill_name, const QString &flag, bool ignore_preshow = false) const = 0;
     inline bool isGlobal() const
@@ -356,7 +356,7 @@ class ArraySummonSkill : public ZeroCardViewAsSkill
     Q_OBJECT
 
 public:
-    ArraySummonSkill(const QString &name);
+    explicit ArraySummonSkill(const QString &name);
 
     const Card *viewAs(const Player *Self) const override;
     bool isEnabledAtPlay(const Player *player) const override;

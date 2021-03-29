@@ -11,7 +11,7 @@ class AboutUsDialog : public QDialog
     Q_OBJECT
 
 public:
-    AboutUsDialog(QWidget *parent);
+    explicit AboutUsDialog(QWidget *parent);
 
 private:
     QListWidget *list;

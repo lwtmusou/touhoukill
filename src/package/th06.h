@@ -69,12 +69,12 @@ public:
     Q_INVOKABLE HezhouCard();
 
     bool do_hezhou(ServerPlayer *player) const;
-    virtual bool targetFixed(const Player *Self) const;
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
+    bool targetFixed(const Player *Self) const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
 
-    virtual const Card *validate(CardUseStruct &card_use) const;
-    virtual const Card *validateInResponse(ServerPlayer *user) const;
+    const Card *validate(CardUseStruct &card_use) const override;
+    const Card *validateInResponse(ServerPlayer *user) const override;
 };
 
 class SishuCard : public SkillCard

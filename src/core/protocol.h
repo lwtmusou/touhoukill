@@ -219,7 +219,7 @@ public:
 
     time_t current;
     time_t max;
-    inline Countdown(CountdownType type = S_COUNTDOWN_NO_LIMIT, time_t current = 0, time_t max = 0)
+    inline explicit Countdown(CountdownType type = S_COUNTDOWN_NO_LIMIT, time_t current = 0, time_t max = 0)
         : type(type)
         , current(current)
         , max(max)
@@ -256,7 +256,7 @@ public:
     unsigned int globalSerial;
     unsigned int localSerial;
 
-    Packet(int packetDescription = S_DESC_UNKNOWN, CommandType command = S_COMMAND_UNKNOWN);
+    explicit Packet(int packetDescription = S_DESC_UNKNOWN, CommandType command = S_COMMAND_UNKNOWN);
     unsigned int createGlobalSerial();
     inline void setMessageBody(const QVariant &value)
     {
