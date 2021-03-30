@@ -29,7 +29,7 @@ class ChooseOptionsBox : public GraphicsBox
 public:
     explicit ChooseOptionsBox();
 
-    QRectF boundingRect() const;
+    QRectF boundingRect() const override;
 
     inline void setSkillName(const QString &skillName)
     {

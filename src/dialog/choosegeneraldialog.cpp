@@ -46,7 +46,7 @@ void OptionButton::mouseDoubleClickEvent(QMouseEvent *e)
 ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidget *parent, bool view_only, const QString &title)
     : QDialog(parent)
 {
-    m_freeChooseDialog = NULL;
+    m_freeChooseDialog = nullptr;
     if (title.isEmpty())
         setWindowTitle(tr("Choose general"));
     else
@@ -106,7 +106,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         }
     }
 
-    QLayout *layout = NULL;
+    QLayout *layout = nullptr;
     const int columns = tooManyGenerals ? G_COMMON_LAYOUT.m_chooseGeneralBoxSwitchIconEachRowForTooManyGenerals : G_COMMON_LAYOUT.m_chooseGeneralBoxSwitchIconEachRow;
     if (generals.length() <= columns) {
         layout = new QHBoxLayout;
@@ -187,7 +187,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
     // progress bar & free choose button
     QHBoxLayout *last_layout = new QHBoxLayout;
     if (view_only || ServerInfo.OperationTimeout == 0) {
-        progress_bar = NULL;
+        progress_bar = nullptr;
     } else {
         progress_bar = new QSanCommandProgressBar();
         progress_bar->setFixedWidth(300);
@@ -216,10 +216,10 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
 
 void ChooseGeneralDialog::done(int result)
 {
-    if (m_freeChooseDialog != NULL) {
+    if (m_freeChooseDialog != nullptr) {
         m_freeChooseDialog->reject();
         delete m_freeChooseDialog;
-        m_freeChooseDialog = NULL;
+        m_freeChooseDialog = nullptr;
     }
     QDialog::done(result);
 }
@@ -348,7 +348,7 @@ QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals)
         QString general_name = general->objectName();
         QString text = QString("%1[%2]").arg(Sanguosha->translate(general_name)).arg(Sanguosha->translate(general->getPackage()));
 
-        QAbstractButton *button;
+        QAbstractButton *button = nullptr;
         if (pair_choose)
             button = new QCheckBox(text);
         else
@@ -383,7 +383,7 @@ QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals)
 
 void FreeChooseDialog::uncheckExtraButton(QAbstractButton *click_button)
 {
-    QAbstractButton *first = NULL;
+    QAbstractButton *first = nullptr;
     QList<QAbstractButton *> buttons = group->buttons();
     foreach (QAbstractButton *button, buttons) {
         if (!button->isChecked())
@@ -392,7 +392,7 @@ void FreeChooseDialog::uncheckExtraButton(QAbstractButton *click_button)
         if (button == click_button)
             continue;
 
-        if (first == NULL)
+        if (first == nullptr)
             first = button;
         else {
             first->setChecked(false);

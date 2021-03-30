@@ -45,7 +45,7 @@ class ServerInfoWidget : public QWidget
     Q_OBJECT
 
 public:
-    ServerInfoWidget(bool show_lack = false);
+    explicit ServerInfoWidget(bool show_lack = false);
     void fill(const ServerInfoStruct &info, const QString &address);
     void updateLack(int count);
     void clear();

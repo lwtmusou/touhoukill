@@ -220,7 +220,7 @@ public:
 
     time_t current;
     time_t max;
-    inline Countdown(CountdownType type = S_COUNTDOWN_NO_LIMIT, time_t current = 0, time_t max = 0)
+    inline explicit Countdown(CountdownType type = S_COUNTDOWN_NO_LIMIT, time_t current = 0, time_t max = 0)
         : type(type)
         , current(current)
         , max(max)
@@ -257,7 +257,7 @@ public:
     unsigned int globalSerial;
     unsigned int localSerial;
 
-    Packet(int packetDescription = S_DESC_UNKNOWN, CommandType command = S_COMMAND_UNKNOWN);
+    explicit Packet(int packetDescription = S_DESC_UNKNOWN, CommandType command = S_COMMAND_UNKNOWN);
     unsigned int createGlobalSerial();
     inline void setMessageBody(const QVariant &value)
     {
@@ -267,26 +267,26 @@ public:
     {
         return messageBody;
     }
-    bool parse(const QByteArray &raw);
-    QByteArray toJson() const;
-    QString toString() const;
-    PacketDescription getPacketDestination() const
+    bool parse(const QByteArray &raw) override;
+    QByteArray toJson() const override;
+    QString toString() const override;
+    PacketDescription getPacketDestination() const override
     {
         return static_cast<PacketDescription>(packetDescription & S_DEST_MASK);
     }
-    PacketDescription getPacketSource() const
+    PacketDescription getPacketSource() const override
     {
         return static_cast<PacketDescription>(packetDescription & S_SRC_MASK);
     }
-    PacketDescription getPacketType() const
+    PacketDescription getPacketType() const override
     {
         return static_cast<PacketDescription>(packetDescription & S_TYPE_MASK);
     }
-    PacketDescription getPacketDescription() const
+    PacketDescription getPacketDescription() const override
     {
         return packetDescription;
     }
-    CommandType getCommandType() const
+    CommandType getCommandType() const override
     {
         return command;
     }

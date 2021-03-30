@@ -21,9 +21,9 @@ class CardItem : public QSanSelectableItem
 public:
     explicit CardItem(const Card *card);
     explicit CardItem(const QString &general_name);
-    ~CardItem();
+    ~CardItem() override;
 
-    virtual QRectF boundingRect() const;
+    QRectF boundingRect() const override;
     virtual void setEnabled(bool enabled);
 
     const Card *getCard() const;
@@ -122,13 +122,13 @@ protected:
     bool _m_isUnknownGeneral;
     static const int _S_CLICK_JITTER_TOLERANCE;
     static const int _S_MOVE_JITTER_TOLERANCE;
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *);
-    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *);
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *) override;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *) override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     //virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *);
     bool auto_back, frozen;
 

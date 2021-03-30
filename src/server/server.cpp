@@ -106,7 +106,7 @@ QWidget *ServerDialog::createPackageTab()
     int row = 0, column = 0;
     foreach (QString extension, extensions) {
         const Package *package = Sanguosha->findChild<const Package *>(extension);
-        if (package == NULL)
+        if (package == nullptr)
             continue;
 
         bool forbid_package = Config.value("ForbidPackages").toStringList().contains(extension);
@@ -892,7 +892,7 @@ void ServerDialog::setMiniCheckBox()
 void ServerDialog::checkCurrentBtnIsHegemonyMode(bool v)
 {
     QRadioButton *but = qobject_cast<QRadioButton *>(sender());
-    if (but != NULL && v)
+    if (but != nullptr && v)
         hegemonyBox->setEnabled(but->objectName().startsWith("hegemony_"));
 }
 
@@ -901,7 +901,7 @@ void Select3v3GeneralDialog::toggleCheck()
     QWidget *widget = tab_widget->currentWidget();
     QListWidget *list = qobject_cast<QListWidget *>(widget);
 
-    if (list == NULL || list->item(0) == NULL)
+    if (list == nullptr || list->item(0) == nullptr)
         return;
 
     bool checked = list->item(0)->checkState() != Qt::Checked;
@@ -1085,7 +1085,7 @@ Server::Server(QObject *parent)
     //synchronize ServerInfo on the server side to avoid ambiguous usage of Config and ServerInfo
     ServerInfo.parse(Sanguosha->getSetupString());
 
-    current = NULL;
+    current = nullptr;
     createNewRoom();
 
     connect(server, SIGNAL(new_connection(ClientSocket *)), this, SLOT(processNewConnection(ClientSocket *)));
@@ -1119,7 +1119,7 @@ Room *Server::createNewRoom()
     Room *new_room = new Room(this, Config.GameMode);
     if (!new_room->getLuaState()) {
         delete new_room;
-        return NULL;
+        return nullptr;
     }
     current = new_room;
     rooms.insert(current);
@@ -1242,7 +1242,7 @@ void Server::processRequest(const char *request)
         return;
     }
 
-    if (current == NULL || current->isFull() || current->isFinished())
+    if (current == nullptr || current->isFull() || current->isFinished())
         createNewRoom();
 
     ServerPlayer *player = current->addSocket(socket);

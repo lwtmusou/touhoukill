@@ -5,7 +5,7 @@
 #include <QPropertyAnimation>
 
 MagatamasBoxItem::MagatamasBoxItem()
-    : QGraphicsObject(NULL)
+    : QGraphicsObject(nullptr)
 {
     m_hp = 0;
     m_dyingHp = 1;
@@ -28,7 +28,7 @@ void MagatamasBoxItem::setOrientation(Qt::Orientation orientation)
 
 void MagatamasBoxItem::_updateLayout()
 {
-    int xStep, yStep;
+    int xStep = 0, yStep = 0;
     if (m_orientation == Qt::Horizontal) {
         xStep = m_iconSize.width();
         yStep = 0;
@@ -129,7 +129,7 @@ void MagatamasBoxItem::_doHpChangeAnimation(int newHp)
 
     int width = m_imageArea.width();
     int height = m_imageArea.height();
-    int xStep, yStep;
+    int xStep = 0, yStep = 0;
     if (m_orientation == Qt::Horizontal) {
         xStep = width;
         yStep = 0;
@@ -179,7 +179,7 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     if (m_hp == m_maxHp)
         imageIndex = 5;
 
-    int xStep, yStep;
+    int xStep = 0, yStep = 0;
     if (m_orientation == Qt::Horizontal) {
         xStep = m_iconSize.width();
         yStep = 0;
@@ -200,7 +200,7 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     }
 
     if (m_maxHp <= 5) {
-        int i;
+        int i = 0;
         //down-up
         /* for (i = 0; i < m_hp; i++) {
             QRect rect(xStep * i, yStep * i, m_imageArea.width(), m_imageArea.height());

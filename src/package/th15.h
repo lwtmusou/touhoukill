@@ -33,8 +33,8 @@ class YuejianCard : public SkillCard
 public:
     Q_INVOKABLE YuejianCard();
 
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 
 
@@ -45,10 +45,10 @@ class YidanCard : public SkillCard
 public:
     Q_INVOKABLE YidanCard();
 
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
     //virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
 
-    virtual const Card *validate(CardUseStruct &card_use) const;
+    const Card *validate(CardUseStruct &card_use) const override;
 };
 
 class TH15Package : public Package

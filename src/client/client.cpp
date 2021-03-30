@@ -22,7 +22,7 @@ using namespace std;
 using namespace QSanProtocol;
 using namespace JsonUtils;
 
-Client *ClientInstance = NULL;
+Client *ClientInstance = nullptr;
 
 Client::Client(QObject *parent, const QString &filename)
     : QObject(parent)
@@ -31,7 +31,7 @@ Client::Client(QObject *parent, const QString &filename)
     , alive_count(1)
     , swap_pile(0)
     , _m_roomState(true)
-    , heartbeatTimer(NULL)
+    , heartbeatTimer(nullptr)
     , m_isObjectNameRecorded(false)
 {
     ClientInstance = this;
@@ -147,8 +147,8 @@ Client::Client(QObject *parent, const QString &filename)
     players << Self;
 
     if (!filename.isEmpty()) {
-        socket = NULL;
-        recorder = NULL;
+        socket = nullptr;
+        recorder = nullptr;
 
         replayer = new Replayer(this, filename);
         connect(replayer, SIGNAL(command_parsed(QString)), this, SLOT(processServerPacket(QString)));
@@ -163,7 +163,7 @@ Client::Client(QObject *parent, const QString &filename)
         connect(socket, SIGNAL(error_message(QString)), this, SIGNAL(error_message(QString)));
         socket->connectToHost();
 
-        replayer = NULL;
+        replayer = nullptr;
     }
 
     lines_doc = new QTextDocument(this);
@@ -179,7 +179,7 @@ Client::Client(QObject *parent, const QString &filename)
 
 Client::~Client()
 {
-    ClientInstance = NULL;
+    ClientInstance = nullptr;
 }
 
 void Client::updateCard(const QVariant &val)
@@ -209,7 +209,7 @@ void Client::updateCard(const QVariant &val)
         card->setSkillName(skillName);
         card->setObjectName(objectName);
         WrappedCard *wrapped = Sanguosha->getWrappedCard(cardId);
-        Q_ASSERT(wrapped != NULL);
+        Q_ASSERT(wrapped != nullptr);
         wrapped->copyEverythingFrom(card);
     }
 }
@@ -220,7 +220,7 @@ void Client::setPlayerSkillInvalidity(const QVariant &arg)
     if (a.length() == 3) {
         QString playerName = a.first().toString();
         ClientPlayer *player = getPlayer(playerName);
-        if (player == NULL)
+        if (player == nullptr)
             return;
 
         QString skill_name = a.value(1).toString();
@@ -384,7 +384,7 @@ void Client::setup(const QVariant &setup_json)
 
         notifyServer(S_COMMAND_TOGGLE_READY);
     } else {
-        QMessageBox::warning(NULL, tr("Warning"), tr("Setup string can not be parsed: %1").arg(setup_str));
+        QMessageBox::warning(nullptr, tr("Warning"), tr("Setup string can not be parsed: %1").arg(setup_str));
     }
 }
 
@@ -392,7 +392,7 @@ void Client::disconnectFromHost()
 {
     if (socket) {
         socket->disconnectFromHost();
-        socket = NULL;
+        socket = nullptr;
     }
 }
 
@@ -501,7 +501,7 @@ void Client::removePlayer(const QVariant &player_name)
     QString name = player_name.toString();
     ClientPlayer *player = findChild<ClientPlayer *>(name);
     if (player) {
-        player->setParent(NULL);
+        player->setParent(nullptr);
         alive_count--;
         emit player_removed(name);
         players.removeOne(player);
@@ -711,7 +711,7 @@ void Client::onPlayerResponseCard(const Card *card, const QList<const Player *> 
     }
     if ((status & ClientStatusBasicMask) == Responding)
         _m_roomState.setCurrentCardUsePattern(QString());
-    if (card == NULL) {
+    if (card == nullptr) {
         replyToServer(S_COMMAND_RESPONSE_CARD);
     } else {
         JsonArray targetNames;
@@ -761,7 +761,7 @@ void Client::arrangeSeats(const QVariant &seats_arr)
     for (int i = 0; i < player_names.length(); i++) {
         ClientPlayer *player = findChild<ClientPlayer *>(player_names.at(i));
 
-        Q_ASSERT(player != NULL);
+        Q_ASSERT(player != nullptr);
 
         player->setSeat(i + 1);
         if (i > 0) {
@@ -907,7 +907,7 @@ void Client::disableShow(const QVariant &arg)
         return;
 
     ClientPlayer *p = getPlayer(args[0].toString());
-    if (p == NULL)
+    if (p == nullptr)
         return;
 
     bool set = args[1].toBool();
@@ -967,7 +967,7 @@ void Client::setKnownCards(const QVariant &set_str)
         return;
     QString name = set[0].toString();
     ClientPlayer *player = getPlayer(name);
-    if (player == NULL)
+    if (player == nullptr)
         return;
     QList<int> ids;
     JsonUtils::tryParse(set[1], ids);
@@ -1006,7 +1006,7 @@ QString Client::getPlayerName(const QString &str)
 
         if (isHegemonyGameMode(ServerInfo.GameMode)) {
             if (ServerInfo.Enable2ndGeneral) {
-                if (player->getGeneralName() == "anjiang" && player->getGeneral2() != NULL && player->getGeneral2Name() == "anjiang") {
+                if (player->getGeneralName() == "anjiang" && player->getGeneral2() != nullptr && player->getGeneral2Name() == "anjiang") {
                     general_name = Sanguosha->translate(QString("SEAT(%1)").arg(QString::number(player->getInitialSeat())));
                 }
             } else if (player->getGeneralName() == "anjiang") {
@@ -1060,7 +1060,7 @@ QString Client::setPromptList(const QStringList &texts)
 void Client::commandFormatWarning(const QString &str, const QRegExp &rx, const char *command)
 {
     QString text = tr("The argument (%1) of command %2 does not conform the format %3").arg(str).arg(command).arg(rx.pattern());
-    QMessageBox::warning(NULL, tr("Command format warning"), text);
+    QMessageBox::warning(nullptr, tr("Command format warning"), text);
 }
 
 QString Client::_processCardPattern(const QString &pattern)
@@ -1202,25 +1202,25 @@ void Client::askForNullification(const QVariant &arg)
     if (!target_player || !target_player->getGeneral())
         return;
 
-    ClientPlayer *source = NULL;
+    ClientPlayer *source = nullptr;
     if (!source_name.isNull())
         source = getPlayer(source_name.toString());
 
     const Card *trick_card = Sanguosha->findChild<const Card *>(trick_name);
     if (Config.NeverNullifyMyTrick && source == Self) {
         if (trick_card->isKindOf("SingleTargetTrick") || trick_card->isKindOf("IronChain")) {
-            onPlayerResponseCard(NULL);
+            onPlayerResponseCard(nullptr);
             return;
         }
     }
     if (m_noNullificationThisTime && m_noNullificationTrickName == trick_name) {
         if (trick_card->isKindOf("AOE") || trick_card->isKindOf("GlobalEffect")) {
-            onPlayerResponseCard(NULL);
+            onPlayerResponseCard(nullptr);
             return;
         }
     }
 
-    if (source == NULL) {
+    if (source == nullptr) {
         prompt_doc->setHtml(
             tr("Do you want to use nullification to trick card %1 from %2?").arg(Sanguosha->translate(trick_card->objectName())).arg(getPlayerName(target_player->objectName())));
     } else {
@@ -1247,10 +1247,10 @@ void Client::onPlayerChooseCard(int card_id)
 
 void Client::onPlayerChoosePlayer(const Player *player)
 {
-    if (player == NULL && !m_isDiscardActionRefusable)
+    if (player == nullptr && !m_isDiscardActionRefusable)
         player = findChild<const Player *>(players_to_choose.first());
 
-    replyToServer(S_COMMAND_CHOOSE_PLAYER, (player == NULL) ? QVariant() : player->objectName());
+    replyToServer(S_COMMAND_CHOOSE_PLAYER, (player == nullptr) ? QVariant() : player->objectName());
     setStatus(NotActive);
 }
 
@@ -1434,7 +1434,7 @@ void Client::setCardFlag(const QVariant &pattern_str)
     QString flag = pattern[1].toString();
 
     Card *card = Sanguosha->getCard(id);
-    if (card != NULL)
+    if (card != nullptr)
         card->setFlags(flag);
 }
 
@@ -1635,7 +1635,7 @@ void Client::warn(const QVariant &reason_var)
         msg = tr("Unknown warning: %1").arg(reason);
 
     disconnectFromHost();
-    QMessageBox::warning(NULL, tr("Warning"), msg);
+    QMessageBox::warning(nullptr, tr("Warning"), msg);
 }
 
 void Client::askForGeneral(const QVariant &arg)
@@ -1723,7 +1723,7 @@ void Client::askForCardChosen(const QVariant &ask_str)
     bool handcard_visible = ask[3].toBool();
     Card::HandlingMethod method = (Card::HandlingMethod)ask[4].toInt();
     ClientPlayer *player = getPlayer(player_name);
-    if (player == NULL)
+    if (player == nullptr)
         return;
     QList<int> disabled_ids;
     JsonUtils::tryParse(ask[5], disabled_ids);
@@ -1847,7 +1847,7 @@ void Client::takeAG(const QVariant &take_var)
             discarded_list.prepend(card);
             updatePileNum();
         }
-        emit ag_taken(NULL, card_id, move_cards);
+        emit ag_taken(nullptr, card_id, move_cards);
     } else {
         ClientPlayer *taker = getPlayer(take[0].toString());
         if (move_cards)
@@ -1901,7 +1901,7 @@ void Client::askForSinglePeach(const QVariant &arg)
         if (!has_skill) {
             pattern.removeOne("peach");
             if (pattern.isEmpty()) {
-                onPlayerResponseCard(NULL);
+                onPlayerResponseCard(nullptr);
                 return;
             }
         } else {
@@ -2391,7 +2391,7 @@ void Client::onPlayerChooseOrder()
         else
             order = "cool";
     }
-    int req;
+    int req = 0;
     if (order == "warm")
         req = (int)S_CAMP_WARM;
     else

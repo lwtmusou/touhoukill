@@ -11,7 +11,7 @@ class MagatamasBoxItem : public QGraphicsObject
 
 public:
     MagatamasBoxItem();
-    MagatamasBoxItem(QGraphicsItem *parent);
+    explicit MagatamasBoxItem(QGraphicsItem *parent);
     inline int getHp() const
     {
         return m_hp;
@@ -53,9 +53,9 @@ public:
     {
         return m_iconSize;
     }
-    virtual QRectF boundingRect() const;
+    QRectF boundingRect() const override;
     virtual void update();
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
 
 protected:
     void _autoAdjustPos();

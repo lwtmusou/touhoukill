@@ -33,7 +33,7 @@ class Engine : public QObject
 
 public:
     Engine();
-    ~Engine();
+    ~Engine() override;
 
     void addTranslationEntry(const char *key, const char *value);
     QString translate(const QString &to_translate, bool addHegemony = false) const;
@@ -179,7 +179,7 @@ class SurrenderCard : public SkillCard
 
 public:
     Q_INVOKABLE SurrenderCard();
-    void onUse(Room *room, const CardUseStruct &use) const;
+    void onUse(Room *room, const CardUseStruct &use) const override;
 };
 
 class CheatCard : public SkillCard
@@ -188,7 +188,7 @@ class CheatCard : public SkillCard
 
 public:
     Q_INVOKABLE CheatCard();
-    void onUse(Room *room, const CardUseStruct &use) const;
+    void onUse(Room *room, const CardUseStruct &use) const override;
 };
 
 static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key)

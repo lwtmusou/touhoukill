@@ -12,7 +12,7 @@ using namespace JsonUtils;
 QHash<QString, const int *> SanSimpleTextFont::m_fontBank;
 
 SanSimpleTextFont::SanSimpleTextFont()
-    : m_fontFace(NULL)
+    : m_fontFace(nullptr)
     , m_fontSize(QSize(12, 12))
     , m_color(Qt::white)
     , m_spacing(0)

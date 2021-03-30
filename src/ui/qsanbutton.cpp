@@ -245,10 +245,10 @@ QSanSkillButton::QSanSkillButton(QGraphicsItem *parent)
     _m_emitDeactivateSignal = false;
     _m_canEnable = true;
     _m_canDisable = true;
-    _m_skill = NULL;
-    _m_viewAsSkill = NULL;
+    _m_skill = nullptr;
+    _m_viewAsSkill = nullptr;
     connect(this, SIGNAL(clicked()), this, SLOT(onMouseClick()));
-    _m_skill = NULL;
+    _m_skill = nullptr;
 }
 
 void QSanSkillButton::_setSkillType(SkillType type)
@@ -258,7 +258,7 @@ void QSanSkillButton::_setSkillType(SkillType type)
 
 void QSanSkillButton::onMouseClick()
 {
-    if (_m_skill == NULL)
+    if (_m_skill == nullptr)
         return;
 
     if (!Self->hasPreshowedSkill(_m_skill) && _m_state == QSanButton::S_STATE_CANPRESHOW) {
@@ -280,13 +280,13 @@ void QSanSkillButton::onMouseClick()
 
 void QSanSkillButton::setSkill(const Skill *skill)
 {
-    Q_ASSERT(skill != NULL);
+    Q_ASSERT(skill != nullptr);
     _m_skill = skill;
     // This is a nasty trick because the server side decides to choose a nasty design
     // such that sometimes the actual viewas skill is nested inside a trigger skill.
     // Since the trigger skill is not relevant, we flatten it before we create the button.
     _m_viewAsSkill = ViewAsSkill::parseViewAsSkill(_m_skill);
-    if (skill == NULL)
+    if (skill == nullptr)
         skill = _m_skill;
 
     Skill::Frequency freq = skill->getFrequency();
@@ -296,7 +296,7 @@ void QSanSkillButton::setSkill(const Skill *skill)
         _setSkillType(QSanInvokeSkillButton::S_SKILL_ARRAY);
         _m_emitActivateSignal = true;
         _m_emitDeactivateSignal = true;
-    } else if (freq == Skill::Frequent || (freq == Skill::NotFrequent && skill->inherits("TriggerSkill") && !skill->inherits("EquipSkill") && _m_viewAsSkill == NULL)) {
+    } else if (freq == Skill::Frequent || (freq == Skill::NotFrequent && skill->inherits("TriggerSkill") && !skill->inherits("EquipSkill") && _m_viewAsSkill == nullptr)) {
         setStyle(QSanButton::S_STYLE_TOGGLE);
         setState(freq == Skill::Frequent ? QSanButton::S_STATE_DOWN : QSanButton::S_STATE_UP);
         _setSkillType(QSanInvokeSkillButton::S_SKILL_FREQUENT);
@@ -494,7 +494,7 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
 
 QSanSkillButton *QSanInvokeSkillDock::addSkillButtonByName(const QString &skillName)
 {
-    Q_ASSERT(getSkillButtonByName(skillName) == NULL);
+    Q_ASSERT(getSkillButtonByName(skillName) == nullptr);
     QSanInvokeSkillButton *button = new QSanInvokeSkillButton(this);
 
     const Skill *skill = Sanguosha->getSkill(skillName);
@@ -639,13 +639,13 @@ QSanInvokeSkillButton *QSanInvokeSkillDock::getSkillButtonByName(const QString &
         if (button->getSkill()->objectName() == skillName)
             return button;
     }
-    return NULL;
+    return nullptr;
 }
 
 bool QSanButton::isMouseInside() const
 {
     QGraphicsScene *scenePtr = scene();
-    if (NULL == scenePtr) {
+    if (nullptr == scenePtr) {
         return false;
     }
 

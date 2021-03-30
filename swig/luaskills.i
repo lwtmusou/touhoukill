@@ -334,12 +334,11 @@ private:
 
 #include <QMessageBox>
 
-
 static void Error(lua_State *L)
 {
     const char *error_string = lua_tostring(L, -1);
     lua_pop(L, 1);
-    QMessageBox::warning(NULL, "Lua script error!", error_string);
+    QMessageBox::warning(nullptr, "Lua script error!", error_string);
 }
 
 void LuaTriggerSkill::record(TriggerEvent triggerEvent, Room *room, QVariant &data) const
@@ -385,7 +384,7 @@ QList<SkillInvokeDetail> LuaTriggerSkill::triggerable(TriggerEvent triggerEvent,
     } else {
         lua_pushnil(L);
         while (lua_next(L, -2)) {
-            void *SkillInvokeDetailPtr = NULL;
+            void *SkillInvokeDetailPtr = nullptr;
             int result = SWIG_ConvertPtr(L, -1, &SkillInvokeDetailPtr, SWIGTYPE_p_SkillInvokeDetail, 0);
             lua_pop(L, 1);
             if (SWIG_IsOK(result)) {
@@ -708,7 +707,7 @@ bool LuaFilterSkill::viewFilter(const Card *to_select) const
 const Card *LuaFilterSkill::viewAs(const Card *originalCard) const
 {
     if (view_as == 0)
-        return NULL;
+        return nullptr;
 
     lua_State *L = Sanguosha->getLuaState();
 
@@ -720,7 +719,7 @@ const Card *LuaFilterSkill::viewAs(const Card *originalCard) const
     int error = lua_pcall(L, 2, 1, 0);
     if (error) {
         Error(L);
-        return NULL;
+        return nullptr;
     }
 
     void *card_ptr;
@@ -730,7 +729,7 @@ const Card *LuaFilterSkill::viewAs(const Card *originalCard) const
         const Card *card = static_cast<const Card *>(card_ptr);
         return card;
     } else
-        return NULL;
+        return nullptr;
 }
 
 // ----------------------
@@ -776,7 +775,7 @@ bool LuaViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card 
 const Card *LuaViewAsSkill::viewAs(const QList<const Card *> &cards) const
 {
     if (view_as == 0)
-        return NULL;
+        return nullptr;
 
     lua_State *L = Sanguosha->getLuaState();
 
@@ -794,7 +793,7 @@ const Card *LuaViewAsSkill::viewAs(const QList<const Card *> &cards) const
     int error = lua_pcall(L, 2, 1, 0);
     if (error) {
         Error(L);
-        return NULL;
+        return nullptr;
     }
 
     void *card_ptr;
@@ -804,7 +803,7 @@ const Card *LuaViewAsSkill::viewAs(const QList<const Card *> &cards) const
         const Card *card = static_cast<const Card *>(card_ptr);
         return card;
     } else
-        return NULL;
+        return nullptr;
 }
 
 bool LuaViewAsSkill::shouldBeVisible(const Player *player) const

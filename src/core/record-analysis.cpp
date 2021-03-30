@@ -11,7 +11,7 @@ using namespace QSanProtocol;
 
 RecAnalysis::RecAnalysis(const QString &dir)
     : m_recordPlayers(0)
-    , m_currentPlayer(NULL)
+    , m_currentPlayer(nullptr)
 {
     initialize(dir);
 }
@@ -24,7 +24,7 @@ void RecAnalysis::initialize(const QString &dir)
     } else {
         QFile file(dir);
         if (file.open(QIODevice::ReadOnly)) {
-            char header;
+            char header = 0;
             file.getChar(&header);
             if (header == 0) {
                 QByteArray lines = file.readAll();
@@ -128,7 +128,7 @@ void RecAnalysis::initialize(const QString &dir)
                 }
             } else {
                 PlayerRecordStruct *record = getPlayer(who);
-                if (record == NULL)
+                if (record == nullptr)
                     continue;
 
                 if (self_info.at(1) == "general") {
@@ -258,7 +258,7 @@ PlayerRecordStruct *RecAnalysis::getPlayerRecord(const Player *player) const
     if (m_recordMap.keys().contains(player->objectName()))
         return m_recordMap[player->objectName()];
     else
-        return NULL;
+        return nullptr;
 }
 
 QMap<QString, PlayerRecordStruct *> RecAnalysis::getRecordMap() const

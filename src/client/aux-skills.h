@@ -15,8 +15,8 @@ public:
     void setIncludeEquip(bool include_equip);
     void setIsDiscard(bool is_discard);
 
-    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
-    virtual const Card *viewAs(const QList<const Card *> &cards) const;
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override;
+    const Card *viewAs(const QList<const Card *> &cards) const override;
 
 private:
     DummyCard *card;
@@ -38,8 +38,8 @@ public:
 
     virtual void setPattern(const QString &pattern);
     virtual void setRequest(const Card::HandlingMethod request);
-    virtual bool viewFilter(const Card *to_select) const;
-    virtual const Card *viewAs(const Card *originalCard) const;
+    bool viewFilter(const Card *to_select) const override;
+    const Card *viewAs(const Card *originalCard) const override;
 
     inline Card::HandlingMethod getRequest() const
     {
@@ -57,7 +57,7 @@ class ShowOrPindianSkill : public ResponseSkill
 
 public:
     ShowOrPindianSkill();
-    virtual bool matchPattern(const Player *player, const Card *card) const;
+    bool matchPattern(const Player *player, const Card *card) const override;
 };
 
 class YijiCard;
@@ -72,8 +72,8 @@ public:
     void setMaxNum(int max_num);
     void setPlayerNames(const QStringList &names);
 
-    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
-    virtual const Card *viewAs(const QList<const Card *> &cards) const;
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override;
+    const Card *viewAs(const QList<const Card *> &cards) const override;
 
 private:
     YijiCard *card;
@@ -91,7 +91,7 @@ public:
     explicit ChoosePlayerSkill();
     void setPlayerNames(const QStringList &names);
 
-    virtual const Card *viewAs() const;
+    const Card *viewAs() const override;
 
 private:
     ChoosePlayerCard *card;

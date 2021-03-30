@@ -118,8 +118,8 @@ QString QSanUiUtils::QSanFreeTypeFont::resolveFont(const QString &fontName)
 int *QSanUiUtils::QSanFreeTypeFont::loadFont(const QString &fontName)
 {
     if (!_ftLibInitialized && !_initLibrary())
-        return NULL;
-    FT_Face face = NULL;
+        return nullptr;
+    FT_Face face = nullptr;
     QString resolvedPath = resolveFont(fontName);
     QByteArray arr = resolvedPath.toLatin1();
     const char *fontPath = arr.constData();
@@ -130,7 +130,7 @@ int *QSanUiUtils::QSanFreeTypeFont::loadFont(const QString &fontName)
         qWarning("Cannot open font file: %s.", fontPath);
     else
         return (int *)face;
-    return 0;
+    return nullptr;
 }
 
 static QMutex _paintTextMutex;
@@ -138,13 +138,13 @@ static QMutex _paintTextMutex;
 bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text, int *font, QColor color, QSize &fontSize, int spacing, int weight, QRect boundingBox,
                                                  Qt::Orientation orient, Qt::Alignment align)
 {
-    if (!_ftLibInitialized || font == NULL || painter == NULL || text.isNull())
+    if (!_ftLibInitialized || font == nullptr || painter == nullptr || text.isNull())
         return false;
 
     QVector<uint> charcodes = text.toUcs4();
     int len = charcodes.size();
     int pixelsAdded = (weight >> 6) * 2;
-    int xstep, ystep;
+    int xstep = 0, ystep = 0;
     Qt::Alignment hAlign = align & Qt::AlignHorizontal_Mask;
     Qt::Alignment vAlign = align & Qt::AlignVertical_Mask;
     if (hAlign == 0)
@@ -207,7 +207,7 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text
     _paintTextMutex.lock();
     FT_Face face = (FT_Face)font;
     FT_GlyphSlot slot = face->glyph;
-    FT_Error error;
+    FT_Error error = 0;
     error = FT_Set_Pixel_Sizes(face, fontSize.width(), fontSize.height());
     FT_UInt previous = 0;
     int currentX = 0;
@@ -258,7 +258,7 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text
                 break;
             uchar *fontPtr = &_FONT_PIXEL(0, y);
             uchar *imagePtr = &_NEW_PIXEL(currentX, currentY + y, 3);
-            int fontClippedCols;
+            int fontClippedCols = 0;
             if (fontCols + currentX < cols)
                 fontClippedCols = fontCols;
             else
@@ -351,7 +351,7 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text
 bool QSanUiUtils::QSanFreeTypeFont::paintQStringMultiLine(QPainter *painter, QString text, int *font, QColor color, QSize &fontSize, int spacing, QRect boundingBox,
                                                           Qt::Alignment align)
 {
-    if (!_ftLibInitialized || font == NULL || painter == NULL)
+    if (!_ftLibInitialized || font == nullptr || painter == nullptr)
         return false;
 
     QVector<uint> charcodes = text.toUcs4();
@@ -360,7 +360,7 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQStringMultiLine(QPainter *painter, QSt
     int numLines = (len - 1) / charsPerLine + 1;
     QPoint topLeft = boundingBox.topLeft();
     boundingBox.moveTopLeft(QPoint(0, 0));
-    int xstep;
+    int xstep = 0;
     if (align & Qt::AlignJustify)
         xstep = boundingBox.width() / len;
     else
@@ -447,7 +447,7 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQStringMultiLine(QPainter *painter, QSt
             uchar *imagePtr = &_NEW_PIXEL(currentX, currentY + y, 3);
 #undef _NEW_PIXEL
 #undef _FONT_PIXEL
-            int fontClippedCols;
+            int fontClippedCols = 0;
             if (fontCols + currentX < cols)
                 fontClippedCols = fontCols;
             else

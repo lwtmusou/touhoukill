@@ -1,6 +1,7 @@
 #include "SkinBank.h"
 #include "clientstruct.h"
 #include "engine.h"
+#include <cmath>
 #include "protocol.h"
 #include "settings.h"
 #include "uiUtils.h"
@@ -97,7 +98,7 @@ const char *QSanRoomSkin::S_SKIN_KEY_CHOOSE_GENERAL_BOX_DEST_SEAT = "chooseGener
 const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_FONT = "generalCardItemCompanionFont-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_ICON = "generalCardItemCompanionIcon-%1";
 
-QSanSkinFactory *QSanSkinFactory::_sm_singleton = NULL;
+QSanSkinFactory *QSanSkinFactory::_sm_singleton = nullptr;
 QHash<QString, int *> IQSanComponentSkin::QSanSimpleTextFont::_m_fontBank;
 
 IQSanComponentSkin::QSanSimpleTextFont::QSanSimpleTextFont()
@@ -224,7 +225,7 @@ void IQSanComponentSkin::QSanShadowTextFont::paintText(QGraphicsPixmapItem *pixm
 
 QString QSanRoomSkin::getButtonPixmapPath(const QString &groupName, const QString &buttonName, QSanButton::ButtonState state) const
 {
-    const char *key;
+    const char *key = nullptr;
     QString qkey = QString(QSanRoomSkin::S_SKIN_KEY_BUTTON).arg(groupName);
     QByteArray arr = qkey.toLatin1();
     key = arr.constData();
@@ -530,7 +531,7 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
         JsonDocument layoutDoc = JsonDocument::fromFilePath(layoutConfigName);
         if (!layoutDoc.isValid() || !layoutDoc.isObject()) {
             errorMsg = QString("Error when reading layout config file \"%1\": \n%2").arg(layoutConfigName).arg(layoutDoc.errorString());
-            QMessageBox::warning(NULL, "Config Error", errorMsg);
+            QMessageBox::warning(nullptr, "Config Error", errorMsg);
             success = false;
         }
         success = _loadLayoutConfig(layoutDoc.toVariant());
@@ -540,7 +541,7 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
         JsonDocument imageDoc = JsonDocument::fromFilePath(imageConfigName);
         if (!imageDoc.isValid() || !imageDoc.isObject()) {
             errorMsg = QString("Error when reading image config file \"%1\": \n%2").arg(imageConfigName).arg(imageDoc.errorString());
-            QMessageBox::warning(NULL, "Config Error", errorMsg);
+            QMessageBox::warning(nullptr, "Config Error", errorMsg);
             success = false;
         }
         success = _loadImageConfig(imageDoc.toVariant());
@@ -550,7 +551,7 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
         JsonDocument audioDoc = JsonDocument::fromFilePath(audioConfigName);
         if (!audioDoc.isValid() || !audioDoc.isObject()) {
             errorMsg = QString("Error when reading audio config file \"%1\": \n%2").arg(audioConfigName).arg(audioDoc.errorString());
-            QMessageBox::warning(NULL, "Config Error", errorMsg);
+            QMessageBox::warning(nullptr, "Config Error", errorMsg);
             success = false;
         }
         _m_audioConfig = audioDoc.object();
@@ -560,7 +561,7 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
         JsonDocument animDoc = JsonDocument::fromFilePath(animationConfigName);
         if (!animDoc.isValid() || !animDoc.isObject()) {
             errorMsg = QString("Error when reading animation config file \"%1\": \n%2").arg(animationConfigName).arg(animDoc.errorString());
-            QMessageBox::warning(NULL, "Config Error", errorMsg);
+            QMessageBox::warning(nullptr, "Config Error", errorMsg);
             success = false;
         }
         _m_animationConfig = animDoc.object();
@@ -775,7 +776,7 @@ QAbstractAnimation *QSanRoomSkin::createHuaShenAnimation(QPixmap &huashenAvatar,
     QPropertyAnimation *animation = new QPropertyAnimation(widget, "opacity");
     animation->setLoopCount(2000);
     JsonArray huashenConfig = _m_animationConfig["huashen"].value<JsonArray>();
-    int duration;
+    int duration = 0;
     if (tryParse(huashenConfig[0], duration) && huashenConfig[1].canConvert<JsonArray>()) {
         animation->setDuration(duration);
         JsonArray keyValues = huashenConfig[1].value<JsonArray>();
@@ -783,8 +784,8 @@ QAbstractAnimation *QSanRoomSkin::createHuaShenAnimation(QPixmap &huashenAvatar,
             QVariant keyValue = keyValues[i];
             if (!keyValue.canConvert<JsonArray>() || keyValue.value<JsonArray>().length() != 2)
                 continue;
-            double step;
-            double val;
+            double step = NAN;
+            double val = NAN;
             JsonArray keyArr = keyValue.value<JsonArray>();
             if (!tryParse(keyArr[0], step) || !tryParse(keyArr[1], val))
                 continue;
@@ -896,7 +897,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
 
     for (int i = 0; i < 2; i++) {
         JsonObject playerConfig;
-        PlayerCardContainerLayout *layout;
+        PlayerCardContainerLayout *layout = nullptr;
         if (i == 0) {
             layout = &_m_photoLayout;
             playerConfig = layoutConfig[S_SKIN_KEY_PHOTO].value<JsonObject>();
@@ -1130,7 +1131,7 @@ const QSanRoomSkin &QSanSkinScheme::getRoomSkin() const
 
 QSanSkinFactory &QSanSkinFactory::getInstance()
 {
-    if (_sm_singleton == NULL) {
+    if (_sm_singleton == nullptr) {
 #ifdef Q_OS_WIN
         _sm_singleton = new QSanSkinFactory("skins/skinList.json");
 #else
@@ -1146,7 +1147,7 @@ void QSanSkinFactory::destroyInstance()
 {
     if (_sm_singleton) {
         delete _sm_singleton;
-        _sm_singleton = NULL;
+        _sm_singleton = nullptr;
     }
 }
 
@@ -1213,7 +1214,7 @@ void QSanRoomSkin::getHeroSkinContainerGeneralIconPathAndClipRegion(const QStrin
     keys << customSkinKey << customSkinBaseKey << defaultSkinKey << defaultSkinBaseKey;
 
     int key_count = keys.count();
-    int i;
+    int i = 0;
     QString skin_key;
     for (i = 0; i < key_count; ++i) {
         skin_key = keys[i];

@@ -8,8 +8,8 @@
 class ExpPattern : public CardPattern
 {
 public:
-    ExpPattern(const QString &exp);
-    virtual bool match(const Player *player, const Card *card) const;
+    explicit ExpPattern(const QString &exp);
+    bool match(const Player *player, const Card *card) const override;
 
 private:
     QString exp;

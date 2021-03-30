@@ -72,7 +72,7 @@ void ConnectionDialog::showAvatarList()
 
     setFixedSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
 
-    if (avatarList->model() == NULL) {
+    if (avatarList->model() == nullptr) {
         QList<const General *> generals = Sanguosha->findChildren<const General *>();
         QMutableListIterator<const General *> itor = generals;
         while (itor.hasNext()) {
@@ -350,7 +350,7 @@ UdpDetectorDialog::UdpDetectorDialog(QDialog *parent)
 
     setLayout(layout);
 
-    detector = NULL;
+    detector = nullptr;
     connect(detect_button, SIGNAL(clicked()), this, SLOT(startDetection()));
     connect(list, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(chooseAddress(QListWidgetItem *)));
 
@@ -374,7 +374,7 @@ void UdpDetectorDialog::stopDetection()
     detect_button->setEnabled(true);
     detector->stop();
     delete detector;
-    detector = NULL;
+    detector = nullptr;
 }
 
 void UdpDetectorDialog::addServerAddress(const QString &server_name, const QString &address_)

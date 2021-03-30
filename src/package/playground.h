@@ -43,8 +43,8 @@ class Fsu0413Fei2ZhaiCard : public SkillCard
 public:
     Q_INVOKABLE Fsu0413Fei2ZhaiCard();
 
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 
 class Fsu0413JbdNashaCard : public SkillCard
@@ -54,8 +54,8 @@ class Fsu0413JbdNashaCard : public SkillCard
 public:
     Q_INVOKABLE Fsu0413JbdNashaCard();
 
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
 };
 
 class PlaygroundPackage : public Package

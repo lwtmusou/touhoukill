@@ -33,7 +33,7 @@ bool QSanSelectableItem::_load(const QString &filename, QSize size, bool useNewS
         QImageReader reader(filename);
         QString error_string = reader.errorString();
         QString warning = tr("Can not load image %1[%2], error string is %3").arg(filename).arg(metaObject()->className()).arg(error_string);
-        QMessageBox::warning(NULL, tr("Warning"), warning);
+        QMessageBox::warning(nullptr, tr("Warning"), warning);
     } else {
         if (useNewSize) {
             _m_width = size.width();
@@ -98,7 +98,7 @@ QVariant QSanSelectableItem::itemChange(GraphicsItemChange change, const QVarian
             effect->setColor(QColor(0xCC, 0x00, 0x00));
             setGraphicsEffect(effect);
         } else
-            setGraphicsEffect(NULL);
+            setGraphicsEffect(nullptr);
 
         emit selected_changed();
     } else if (change == ItemEnabledHasChanged) {

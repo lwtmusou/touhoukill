@@ -38,10 +38,10 @@ using namespace QSanProtocol;
 Photo::Photo()
     : PlayerCardContainer()
 {
-    _m_mainFrame = NULL;
-    m_player = NULL;
-    _m_focusFrame = NULL;
-    _m_onlineStatusItem = NULL;
+    _m_mainFrame = nullptr;
+    m_player = nullptr;
+    _m_focusFrame = nullptr;
+    _m_onlineStatusItem = nullptr;
     _m_layout = &G_PHOTO_LAYOUT;
     _m_frameType = S_FRAME_NO_FRAME;
     setAcceptHoverEvents(true);
@@ -80,7 +80,7 @@ void Photo::refresh()
         _layBetween(_m_onlineStatusItem, _m_mainFrame, _m_chainIcon);
         if (!_m_onlineStatusItem->isVisible())
             _m_onlineStatusItem->show();
-    } else if (_m_onlineStatusItem != NULL && state_str == "online")
+    } else if (_m_onlineStatusItem != nullptr && state_str == "online")
         _m_onlineStatusItem->hide();
 }
 

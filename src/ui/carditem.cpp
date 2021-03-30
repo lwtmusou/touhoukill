@@ -15,11 +15,11 @@
 
 void CardItem::_initialize()
 {
-    setAcceptedMouseButtons(0);
+    setAcceptedMouseButtons(nullptr);
 
     setFlag(QGraphicsItem::ItemIsMovable);
     m_opacityAtHome = 1.0;
-    m_currentAnimation = NULL;
+    m_currentAnimation = nullptr;
     _m_width = G_COMMON_LAYOUT.m_cardNormalWidth;
     _m_height = G_COMMON_LAYOUT.m_cardNormalHeight;
     _m_showFootnote = true;
@@ -29,7 +29,7 @@ void CardItem::_initialize()
     auto_back = true;
     frozen = false;
     outerGlowEffectEnabled = false;
-    outerGlowEffect = NULL;
+    outerGlowEffect = nullptr;
     outerGlowColor = Qt::white;
 
     resetTransform();
@@ -48,7 +48,7 @@ CardItem::CardItem(const QString &general_name)
     m_cardId = Card::S_UNKNOWN_CARD_ID;
     _initialize();
     changeGeneral(general_name);
-    m_currentAnimation = NULL;
+    m_currentAnimation = nullptr;
     m_opacityAtHome = 1.0;
 }
 
@@ -59,7 +59,7 @@ QRectF CardItem::boundingRect() const
 
 void CardItem::setCard(const Card *card)
 {
-    if (card != NULL) {
+    if (card != nullptr) {
         if (card->isVirtualCard()) {
             m_cardId = Card::S_UNKNOWN_CARD_ID;
             //Vcard = card;
@@ -73,7 +73,7 @@ void CardItem::setCard(const Card *card)
         } else {
             m_cardId = card->getId();
             const Card *engineCard = Sanguosha->getEngineCard(m_cardId);
-            Q_ASSERT(engineCard != NULL);
+            Q_ASSERT(engineCard != nullptr);
             setObjectName(engineCard->objectName());
             setToolTip(engineCard->getDescription());
         }
@@ -92,9 +92,9 @@ CardItem::~CardItem()
 {
     //QMutexLocker locker(&m_animationMutex);
     m_animationMutex.lock();
-    if (m_currentAnimation != NULL) {
+    if (m_currentAnimation != nullptr) {
         m_currentAnimation->deleteLater();
-        m_currentAnimation = NULL;
+        m_currentAnimation = nullptr;
     }
     m_animationMutex.unlock();
 }
@@ -132,15 +132,15 @@ void CardItem::goBack(bool playAnimation, bool doFade)
 {
     if (playAnimation) {
         getGoBackAnimation(doFade);
-        if (m_currentAnimation != NULL)
+        if (m_currentAnimation != nullptr)
             m_currentAnimation->start();
     } else {
         //QMutexLocker locker(&m_animationMutex);
         m_animationMutex.lock();
-        if (m_currentAnimation != NULL) {
+        if (m_currentAnimation != nullptr) {
             m_currentAnimation->stop();
             delete m_currentAnimation;
-            m_currentAnimation = NULL;
+            m_currentAnimation = nullptr;
         }
         setPos(homePos());
         m_animationMutex.unlock();
@@ -151,10 +151,10 @@ QAbstractAnimation *CardItem::getGoBackAnimation(bool doFade, bool smoothTransit
 {
     //QMutexLocker locker(&m_animationMutex);
     m_animationMutex.lock();
-    if (m_currentAnimation != NULL) {
+    if (m_currentAnimation != nullptr) {
         m_currentAnimation->stop();
         delete m_currentAnimation;
-        m_currentAnimation = NULL;
+        m_currentAnimation = nullptr;
     }
     QPropertyAnimation *goback = new QPropertyAnimation(this, "pos");
     goback->setEndValue(home_pos);
@@ -193,13 +193,13 @@ void CardItem::currentAnimationDestroyed()
 {
     QObject *ca = sender();
     if (ca == m_currentAnimation)
-        m_currentAnimation = NULL;
+        m_currentAnimation = nullptr;
 }
 
 void CardItem::animationFinished()
 {
     QMutexLocker locker(&m_animationMutex);
-    m_currentAnimation = NULL;
+    m_currentAnimation = nullptr;
 }
 
 void CardItem::showFrame(const QString &result)
@@ -248,7 +248,7 @@ void CardItem::setFrozen(bool is_frozen, bool)
 CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id)
 {
     foreach (CardItem *item, items) {
-        if (item->getCard() == NULL) {
+        if (item->getCard() == nullptr) {
             if (card_id == Card::S_UNKNOWN_CARD_ID)
                 return item;
             else
@@ -258,7 +258,7 @@ CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id)
             return item;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 const int CardItem::_S_CLICK_JITTER_TOLERANCE = 1600;
@@ -326,7 +326,7 @@ void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
 void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
     //check painter?
-    if (NULL == painter) {
+    if (nullptr == painter) {
         return;
     }
 
@@ -375,7 +375,7 @@ void CardItem::setOuterGlowEffectEnabled(const bool &willPlay)
     if (outerGlowEffectEnabled == willPlay)
         return;
     if (willPlay) {
-        if (outerGlowEffect == NULL) {
+        if (outerGlowEffect == nullptr) {
             outerGlowEffect = new QGraphicsDropShadowEffect(this);
             outerGlowEffect->setOffset(0);
             outerGlowEffect->setBlurRadius(18);
@@ -385,7 +385,7 @@ void CardItem::setOuterGlowEffectEnabled(const bool &willPlay)
         }
         connect(this, &CardItem::hoverChanged, outerGlowEffect, &QGraphicsDropShadowEffect::setEnabled);
     } else {
-        if (outerGlowEffect != NULL) {
+        if (outerGlowEffect != nullptr) {
             disconnect(this, &CardItem::hoverChanged, outerGlowEffect, &QGraphicsDropShadowEffect::setEnabled);
             outerGlowEffect->setEnabled(false);
         }

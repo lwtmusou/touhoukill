@@ -81,7 +81,7 @@ void KnownBothHegemony::onUse(Room *room, const CardUseStruct &card_use) const
 
         CardMoveReason reason(CardMoveReason::S_REASON_RECAST, card_use.from->objectName());
         reason.m_skillName = getSkillName();
-        room->moveCardTo(this, card_use.from, NULL, Player::DiscardPile, reason);
+        room->moveCardTo(this, card_use.from, nullptr, Player::DiscardPile, reason);
         card_use.from->broadcastSkillInvoke("@recast");
 
         card_use.from->drawCards(1);
@@ -369,7 +369,7 @@ void AwaitExhaustedHegemony::use(Room *room, ServerPlayer *source, QList<ServerP
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
         if (targets.size() == 1)
             reason.m_targetId = targets.first()->objectName();
-        room->moveCardTo(&dummy, source, NULL, Player::DiscardPile, reason, true);
+        room->moveCardTo(&dummy, source, nullptr, Player::DiscardPile, reason, true);
     }
 }
 
@@ -389,7 +389,7 @@ public:
         global = true;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
@@ -398,13 +398,13 @@ public:
         if (!isHegemonyGameMode(room->getMode()))
             return QList<SkillInvokeDetail>();
 
-        if (use.card != NULL && use.card->isKindOf("Slash")) {
+        if (use.card != nullptr && use.card->isKindOf("Slash")) {
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *p, use.to) {
                 if (p->isAlive() && !p->hasShownAllGenerals()) {
                     if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName(), p))
                         continue;
-                    d << SkillInvokeDetail(this, use.from, use.from, NULL, false, p);
+                    d << SkillInvokeDetail(this, use.from, use.from, nullptr, false, p);
                 }
             }
 
@@ -414,7 +414,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
             const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon", true);
@@ -427,7 +427,7 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         //canshow?
         QStringList select;
@@ -474,7 +474,7 @@ public:
     {
     }
 
-    virtual int getExtra(const Player *target, bool) const
+    int getExtra(const Player *target, bool) const override
     {
         foreach (const Player *p, target->getAliveSiblings()) {
             if (p->hasWeapon("SixSwords") && p->isFriendWith(target) && p->getMark("Equips_Nullified_to_Yourself") == 0)

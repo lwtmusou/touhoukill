@@ -18,7 +18,7 @@ class QiankunHegemony : public MaxCardsSkill
 public:
     explicit QiankunHegemony(const QString &);
 
-    virtual int getExtra(const Player *target) const;
+    int getExtra(const Player *target) const override;
 };
 
 class HalfLifeCard : public SkillCard
@@ -28,7 +28,7 @@ class HalfLifeCard : public SkillCard
 public:
     Q_INVOKABLE HalfLifeCard();
 
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 
 class CompanionCard : public SkillCard
@@ -38,7 +38,7 @@ class CompanionCard : public SkillCard
 public:
     Q_INVOKABLE CompanionCard();
 
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 
 class PioneerCard : public SkillCard
@@ -48,7 +48,7 @@ class PioneerCard : public SkillCard
 public:
     Q_INVOKABLE PioneerCard();
 
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 
 class QingtingHegemonyCard : public SkillCard
@@ -58,7 +58,7 @@ class QingtingHegemonyCard : public SkillCard
 public:
     Q_INVOKABLE QingtingHegemonyCard();
 
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 
 class ShowShezhengCard : public SkillCard
@@ -68,7 +68,7 @@ class ShowShezhengCard : public SkillCard
 public:
     Q_INVOKABLE ShowShezhengCard();
 
-    const Card *validate(CardUseStruct &card_use) const;
+    const Card *validate(CardUseStruct &card_use) const override;
 };
 
 class XushiHegemonyCard : public SkillCard
@@ -78,8 +78,8 @@ class XushiHegemonyCard : public SkillCard
 public:
     Q_INVOKABLE XushiHegemonyCard();
 
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 
 class XingyunHegemonyCard : public SkillCard
@@ -89,7 +89,7 @@ class XingyunHegemonyCard : public SkillCard
 public:
     Q_INVOKABLE XingyunHegemonyCard();
 
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 
 class ShowFengsuCard : public SkillCard
@@ -99,7 +99,7 @@ class ShowFengsuCard : public SkillCard
 public:
     Q_INVOKABLE ShowFengsuCard();
 
-    const Card *validate(CardUseStruct &card_use) const;
+    const Card *validate(CardUseStruct &card_use) const override;
 };
 
 class ChunhenHegemonyCard : public SkillCard
@@ -109,7 +109,7 @@ class ChunhenHegemonyCard : public SkillCard
 public:
     Q_INVOKABLE ChunhenHegemonyCard();
 
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 
 class DongzhiHegemonyCard : public SkillCard
@@ -119,9 +119,9 @@ class DongzhiHegemonyCard : public SkillCard
 public:
     Q_INVOKABLE DongzhiHegemonyCard();
 
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class BanyueHegemonyCard : public SkillCard
@@ -131,10 +131,10 @@ class BanyueHegemonyCard : public SkillCard
 public:
     Q_INVOKABLE BanyueHegemonyCard();
 
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 
 // taken from LijianCard
@@ -145,10 +145,10 @@ class KuaizhaoHegemonyCard : public SkillCard
 public:
     Q_INVOKABLE KuaizhaoHegemonyCard();
 
-    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
-    void onUse(Room *room, const CardUseStruct &card_use) const;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 
 class HegemonyGeneralPackage : public Package

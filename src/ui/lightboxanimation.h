@@ -13,13 +13,13 @@ class RectObject : public QGraphicsObject
     Q_OBJECT
 
 public:
-    explicit RectObject(const QBrush &brush = QBrush(), QGraphicsItem *parent = NULL);
-    explicit RectObject(const QRectF &rect, const QBrush &brush = QBrush(), QGraphicsItem *parent = NULL);
-    explicit RectObject(qreal x, qreal y, qreal w, qreal h, const QBrush &brush = QBrush(), QGraphicsItem *parent = NULL);
+    explicit RectObject(const QBrush &brush = QBrush(), QGraphicsItem *parent = nullptr);
+    explicit RectObject(const QRectF &rect, const QBrush &brush = QBrush(), QGraphicsItem *parent = nullptr);
+    explicit RectObject(qreal x, qreal y, qreal w, qreal h, const QBrush &brush = QBrush(), QGraphicsItem *parent = nullptr);
 
 protected:
-    QRectF boundingRect() const;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
+    QRectF boundingRect() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) override;
 
 private:
     QRectF m_boundingRect;
@@ -38,10 +38,10 @@ public:
     LightboxAnimation(const QString &general_name, const QString &skill_name, const QRectF &rect);
 
 protected:
-    QRectF boundingRect() const;
+    QRectF boundingRect() const override;
 
 private:
-    void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *)
+    void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) override
     {
     }
 

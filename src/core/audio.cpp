@@ -10,16 +10,16 @@
 #include "fmod.h"
 #include "util.h"
 
-static FMOD_SYSTEM *System = NULL;
-static FMOD_SOUNDGROUP *EffectGroup = NULL;
-static FMOD_SOUNDGROUP *BackgroundMusicGroup = NULL;
+static FMOD_SYSTEM *System = nullptr;
+static FMOD_SOUNDGROUP *EffectGroup = nullptr;
+static FMOD_SOUNDGROUP *BackgroundMusicGroup = nullptr;
 
 class Sound
 {
 public:
     explicit Sound(const QString &fileName, bool backgroundMusic = false)
-        : m_sound(NULL)
-        , m_channel(NULL)
+        : m_sound(nullptr)
+        , m_channel(nullptr)
     {
         FMOD_MODE mode = FMOD_DEFAULT;
         FMOD_SOUNDGROUP *soundGroup = EffectGroup;
@@ -28,7 +28,7 @@ public:
             soundGroup = BackgroundMusicGroup;
         }
 
-        FMOD_System_CreateSound(System, fileName.toLatin1(), mode, NULL, &m_sound);
+        FMOD_System_CreateSound(System, fileName.toLatin1(), mode, nullptr, &m_sound);
         FMOD_Sound_SetSoundGroup(m_sound, soundGroup);
         FMOD_System_Update(System);
     }
@@ -51,18 +51,18 @@ public:
 
     void stop()
     {
-        if (NULL != m_channel) {
+        if (nullptr != m_channel) {
             FMOD_Channel_Stop(m_channel);
             FMOD_System_Update(System);
 
-            m_channel = NULL;
+            m_channel = nullptr;
         }
     }
 
     bool isPlaying() const
     {
         FMOD_BOOL playing = false;
-        if (NULL != m_channel) {
+        if (nullptr != m_channel) {
             FMOD_Channel_IsPlaying(m_channel, &playing);
         }
         return playing;
@@ -253,7 +253,7 @@ public:
     }
 
 protected:
-    virtual void timerEvent(QTimerEvent *)
+    void timerEvent(QTimerEvent *) override
     {
         if (!m_sound->isPlaying()) {
             playNext();
@@ -284,9 +284,9 @@ QString Audio::m_customBackgroundMusicFileName;
 
 void Audio::init()
 {
-    if (NULL == System) {
+    if (nullptr == System) {
         if (FMOD_OK == FMOD_System_Create(&System)) {
-            FMOD_System_Init(System, MAX_CHANNEL_COUNT, FMOD_INIT_NORMAL, NULL);
+            FMOD_System_Init(System, MAX_CHANNEL_COUNT, FMOD_INIT_NORMAL, nullptr);
 
             FMOD_System_CreateSoundGroup(System, "Effects", &EffectGroup);
             FMOD_System_CreateSoundGroup(System, "BackgroundMusics", &BackgroundMusicGroup);
@@ -299,27 +299,27 @@ void Audio::init()
 
 void Audio::quit()
 {
-    if (NULL != System) {
+    if (nullptr != System) {
         stopAll();
 
         FMOD_SoundGroup_Release(EffectGroup);
         FMOD_SoundGroup_Release(BackgroundMusicGroup);
-        EffectGroup = NULL;
-        BackgroundMusicGroup = NULL;
+        EffectGroup = nullptr;
+        BackgroundMusicGroup = nullptr;
 
         SoundCache.clear();
         backgroundMusicPlayer.shutdown();
 
         FMOD_System_Release(System);
-        System = NULL;
+        System = nullptr;
     }
 }
 
 void Audio::play(const QString &fileName, bool continuePlayWhenPlaying /* = false*/)
 {
-    if (NULL != System) {
+    if (nullptr != System) {
         Sound *sound = SoundCache[fileName];
-        if (NULL == sound) {
+        if (nullptr == sound) {
             sound = new Sound(fileName);
             SoundCache.insert(fileName, sound);
         } else if (!continuePlayWhenPlaying && sound->isPlaying()) {
@@ -342,7 +342,7 @@ void Audio::setBGMVolume(float volume)
 
 void Audio::playBGM(const QString &fileNames, bool random /* = false*/, bool playAll, bool isGeneralName)
 {
-    if (NULL != System) {
+    if (nullptr != System) {
         if (!m_customBackgroundMusicFileName.isEmpty()) {
             backgroundMusicPlayer.play(m_customBackgroundMusicFileName, random, playAll, isGeneralName);
         } else {
@@ -384,7 +384,7 @@ QString Audio::getVersion()
      * cc = development version number.
     */
     unsigned int version = 0;
-    if (NULL != System && FMOD_OK == FMOD_System_GetVersion(System, &version)) {
+    if (nullptr != System && FMOD_OK == FMOD_System_GetVersion(System, &version)) {
         return QString("%1.%2.%3").arg((version & 0xFFFF0000) >> 16, 0, 16).arg((version & 0xFF00) >> 8, 2, 16, QChar('0')).arg((version & 0xFF), 2, 16, QChar('0'));
     }
 

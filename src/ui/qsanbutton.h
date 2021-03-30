@@ -49,7 +49,7 @@ public:
         return _m_style;
     }
     void setRect(QRect rect);
-    virtual QRectF boundingRect() const;
+    QRectF boundingRect() const override;
     bool insideButton(QPointF pos) const;
     virtual void setEnabled(bool enabled);
     bool isDown();
@@ -58,12 +58,12 @@ public slots:
     void click();
 
 protected:
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
-    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
-    virtual void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
+    void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
     virtual void _onMouseClick(bool inside);
     ButtonState _m_state;
     ButtonStyle _m_style;
@@ -139,13 +139,13 @@ public:
             return;
         QSanButton::setEnabled(enabled);
     }*/
-    explicit QSanSkillButton(QGraphicsItem *parent = NULL);
+    explicit QSanSkillButton(QGraphicsItem *parent = nullptr);
     inline const ViewAsSkill *getViewAsSkill() const
     {
         return _m_viewAsSkill;
     }
-    void setState(ButtonState state, bool ignore_change = false);
-    void setEnabled(bool enabled);
+    void setState(ButtonState state, bool ignore_change = false) override;
+    void setEnabled(bool enabled) override;
 
 protected:
     virtual void _setSkillType(SkillType type);
@@ -174,7 +174,7 @@ class QSanInvokeSkillButton : public QSanSkillButton
     Q_OBJECT
 
 public:
-    explicit inline QSanInvokeSkillButton(QGraphicsItem *parent = NULL)
+    explicit inline QSanInvokeSkillButton(QGraphicsItem *parent = nullptr)
         : QSanSkillButton(parent)
     {
         _m_enumWidth = S_WIDTH_NARROW;
@@ -199,8 +199,8 @@ public:
 protected:
     // this function does not update the button's bg and is therefore not exposed to outside
     // classes.
-    virtual void _repaint();
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void _repaint() override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     SkillButtonWidth _m_enumWidth;
 };
 
@@ -223,7 +223,7 @@ public:
     }
     inline void removeSkillButton(QSanInvokeSkillButton *button)
     {
-        if (button == NULL)
+        if (button == nullptr)
             return;
         _m_buttons.removeAll(button);
         disconnect(button);
@@ -234,14 +234,14 @@ public:
     inline QSanSkillButton *removeSkillButtonByName(const QString &skillName)
     {
         QSanInvokeSkillButton *button = getSkillButtonByName(skillName);
-        if (button != NULL)
+        if (button != nullptr)
             removeSkillButton(button);
         update();
         return button;
     }
     QSanInvokeSkillButton *getSkillButtonByName(const QString &skillName) const;
     void update();
-    virtual QRectF boundingRect() const
+    QRectF boundingRect() const override
     {
         return QRectF(0, -height(), width(), height());
     }
@@ -251,7 +251,7 @@ public:
     }
 
 protected:
-    virtual void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *)
+    void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) override
     {
     }
     QList<QSanInvokeSkillButton *> _m_buttons;

@@ -15,7 +15,7 @@ class RecAnalysis : public QObject
 
 public:
     explicit RecAnalysis(const QString &dir = QString());
-    ~RecAnalysis();
+    ~RecAnalysis() override;
 
     static const unsigned int M_ALL_PLAYER = 0xFFFF;
     void initialize(const QString &dir = QString());

@@ -12,18 +12,18 @@ class BubbleChatBox : public QGraphicsObject
     Q_OBJECT
 
 public:
-    explicit BubbleChatBox(const QRect &area, QGraphicsItem *parent = 0);
-    ~BubbleChatBox();
+    explicit BubbleChatBox(const QRect &area, QGraphicsItem *parent = nullptr);
+    ~BubbleChatBox() override;
 
-    virtual QRectF boundingRect() const;
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
-    virtual QPainterPath shape() const;
+    QRectF boundingRect() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) override;
+    QPainterPath shape() const override;
 
     void setText(const QString &text);
     void setArea(const QRect &newArea);
 
 protected:
-    QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
 private:
     void updatePos();

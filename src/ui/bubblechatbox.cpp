@@ -19,13 +19,13 @@ const int ANIMATION_DURATION = 500;
 class BubbleChatLabel : public QGraphicsTextItem
 {
 public:
-    explicit BubbleChatLabel(QGraphicsItem *parent = 0)
+    explicit BubbleChatLabel(QGraphicsItem *parent = nullptr)
         : QGraphicsTextItem(parent)
         , m_doc(document())
     {
     }
 
-    virtual QRectF boundingRect() const
+    QRectF boundingRect() const override
     {
         return m_rect;
     }

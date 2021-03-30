@@ -153,7 +153,7 @@ void QAnimatedEffect::setStay(bool stay)
 
 SentbackEffect::SentbackEffect(bool stay)
 {
-    grayed = 0;
+    grayed = nullptr;
     setObjectName("backsender");
     index = 0;
     this->stay = stay;
@@ -184,9 +184,9 @@ void SentbackEffect::draw(QPainter *painter)
         QImage image = pixmap.toImage();
         int width = image.width();
         int height = image.height();
-        int gray;
+        int gray = 0;
 
-        QRgb col;
+        QRgb col = 0;
 
         for (int i = 0; i < width; ++i) {
             for (int j = 0; j < height; ++j) {

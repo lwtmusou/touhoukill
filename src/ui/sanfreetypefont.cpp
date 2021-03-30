@@ -15,7 +15,7 @@
 SanFreeTypeFont *const SanFreeTypeFont::m_instance = new SanFreeTypeFont;
 
 SanFreeTypeFont::SanFreeTypeFont()
-    : m_ftLib(NULL)
+    : m_ftLib(nullptr)
 {
     FT_Error error = FT_Init_FreeType(&m_ftLib);
     if (error) {
@@ -54,14 +54,14 @@ QString SanFreeTypeFont::resolveFont(const QString &fontName)
 const int *SanFreeTypeFont::loadFont(const QString &fontName)
 {
     if (!m_ftLib) {
-        return NULL;
+        return nullptr;
     }
 
     QString resolvedPath = resolveFont(fontName);
     QByteArray arr = resolvedPath.toLatin1();
     const char *const fontPath = arr.constData();
 
-    FT_Face face = NULL;
+    FT_Face face = nullptr;
     FT_Error error = FT_New_Face(m_ftLib, fontPath, 0, &face);
     if (error) {
         if (error == FT_Err_Unknown_File_Format) {
@@ -70,7 +70,7 @@ const int *SanFreeTypeFont::loadFont(const QString &fontName)
             qWarning("Cannot open font file: %s.", fontPath);
         }
 
-        return NULL;
+        return nullptr;
     } else {
         return (const int *const)face;
     }
@@ -79,7 +79,7 @@ const int *SanFreeTypeFont::loadFont(const QString &fontName)
 bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text, const int *const font, const QColor &color, QSize &fontSize, int spacing, int weight,
                                   QRect &boundingBox, const Qt::Orientation &orient, const Qt::Alignment &align)
 {
-    if (!m_ftLib || font == NULL || painter == NULL || text.isEmpty()) {
+    if (!m_ftLib || font == nullptr || painter == nullptr || text.isEmpty()) {
         return false;
     }
 
@@ -97,7 +97,7 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text, 
 
     QVector<uint> charcodes = text.toUcs4();
     int len = charcodes.size();
-    int xstep, ystep;
+    int xstep = 0, ystep = 0;
 
     if (orient == Qt::Vertical) {
         xstep = 0;
@@ -216,7 +216,7 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text, 
             const uchar *fontPtr = &FONT_PIXEL(0, y);
             uchar *imagePtr = &NEW_FONT_PIXEL(currentX, currentY + y, 3);
 
-            int fontClippedCols;
+            int fontClippedCols = 0;
             if (fontCols + currentX < cols) {
                 fontClippedCols = fontCols;
             } else {
@@ -258,7 +258,7 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text, 
 
     m_paintTextMutex.unlock();
 
-    int xstart, ystart;
+    int xstart = 0, ystart = 0;
     if (orient == Qt::Vertical) {
         if (hAlign & Qt::AlignLeft) {
             xstart = spacing;
@@ -323,7 +323,7 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text, 
 bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QString &text, const int *const font, const QColor &color, QSize &fontSize, int spacing, int weight,
                                            QRect &boundingBox, const Qt::Alignment &align)
 {
-    if (!m_ftLib || font == NULL || painter == NULL || text.isEmpty()) {
+    if (!m_ftLib || font == nullptr || painter == nullptr || text.isEmpty()) {
         return false;
     }
 
@@ -335,7 +335,7 @@ bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QStrin
     QPoint topLeft = boundingBox.topLeft();
     boundingBox.moveTopLeft(QPoint(0, 0));
 
-    int xstep;
+    int xstep = 0;
     // AlignJustifx means the text should fill out the whole rect space
     // so we increase the step
     if (align & Qt::AlignJustify) {
@@ -449,7 +449,7 @@ bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QStrin
             const uchar *fontPtr = &FONT_PIXEL(0, y);
             uchar *imagePtr = &NEW_FONT_PIXEL(currentX, currentY + y, 3);
 
-            int fontClippedCols;
+            int fontClippedCols = 0;
             if (fontCols + currentX < cols) {
                 fontClippedCols = fontCols;
             } else {
@@ -500,7 +500,7 @@ bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QStrin
     Qt::Alignment hAlign = align & Qt::AlignHorizontal_Mask;
     Qt::Alignment vAlign = align & Qt::AlignVertical_Mask;
 
-    int xstart, ystart;
+    int xstart = 0, ystart = 0;
     if (hAlign & Qt::AlignLeft) {
         xstart = spacing;
     } else if (hAlign & Qt::AlignHCenter || align & Qt::AlignJustify) {

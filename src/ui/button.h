@@ -17,16 +17,16 @@ public:
     void setMute(bool mute);
     void setFont(const QFont &font);
 
-    virtual QRectF boundingRect() const;
+    QRectF boundingRect() const override;
     //void setText(const QString &text);
 
 protected:
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
-    virtual void timerEvent(QTimerEvent *);
+    void timerEvent(QTimerEvent *) override;
 
     //QGraphicsPixmapItem *m_icon;
     //QGraphicsPixmapItem *m_colorReversedIcon;

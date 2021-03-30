@@ -40,10 +40,10 @@ const int ChooseTriggerOrderBox::interval = 15;
 const int ChooseTriggerOrderBox::m_leftBlankWidth = 37;
 
 SkillInvokeDetailForClient::SkillInvokeDetailForClient()
-    : skill(NULL)
-    , owner(NULL)
-    , invoker(NULL)
-    , preferredTarget(NULL)
+    : skill(nullptr)
+    , owner(nullptr)
+    , invoker(nullptr)
+    , preferredTarget(nullptr)
     , preferredTargetSeat(-1)
 {
 }
@@ -73,17 +73,17 @@ bool SkillInvokeDetailForClient::tryParse(const QVariantMap &map)
 
     if (map.contains("skill"))
         skill = Sanguosha->getSkill(map.value("skill").toString());
-    if (skill == NULL)
+    if (skill == nullptr)
         return false;
 
     if (map.contains("invoker"))
         invoker = ClientInstance->getPlayer(map.value("invoker").toString());
-    if (invoker == NULL)
+    if (invoker == nullptr)
         return false;
 
     if (map.contains("owner"))
         owner = ClientInstance->getPlayer(map.value("owner").toString());
-    if (owner == NULL)
+    if (owner == nullptr)
         owner = invoker;
 
     if (map.contains("preferredtarget"))
@@ -99,13 +99,13 @@ bool SkillInvokeDetailForClient::tryParse(const QString &str)
 {
     QStringList l = str.split(":");
     skill = Sanguosha->getSkill(l.first());
-    if (skill == NULL)
+    if (skill == nullptr)
         return false;
     invoker = ClientInstance->getPlayer(l.value(2));
-    if (invoker == NULL)
+    if (invoker == nullptr)
         return false;
     owner = ClientInstance->getPlayer(l.value(1));
-    if (owner == NULL)
+    if (owner == nullptr)
         owner = invoker;
 
     if (l.length() > 3) {
@@ -174,7 +174,7 @@ void TriggerOptionButton::paint(QPainter *painter, const QStyleOptionGraphicsIte
     painter->restore();
 
     QString generalName;
-    if (detail.preferredTarget != NULL)
+    if (detail.preferredTarget != nullptr)
         generalName = detail.preferredTarget->getGeneralName();
     else
         generalName = detail.owner->getGeneralName();
@@ -265,7 +265,7 @@ ChooseTriggerOrderBox::ChooseTriggerOrderBox()
     : optional(true)
     , m_minimumWidth(0)
     , cancel(new Button(tr("cancel"), 0.6))
-    , progressBar(NULL)
+    , progressBar(nullptr)
 {
     cancel->hide();
     cancel->setParentItem(this);
@@ -375,10 +375,10 @@ void ChooseTriggerOrderBox::chooseOption(const QVariantList &options, bool optio
 
 void ChooseTriggerOrderBox::clear()
 {
-    if (progressBar != NULL) {
+    if (progressBar != nullptr) {
         progressBar->hide();
         progressBar->deleteLater();
-        progressBar = NULL;
+        progressBar = nullptr;
     }
 
     foreach (TriggerOptionButton *button, optionButtons)

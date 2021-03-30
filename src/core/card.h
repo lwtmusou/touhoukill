@@ -229,10 +229,10 @@ public:
     void setUserString(const QString &user_string);
     QString getUserString() const;
 
-    virtual QString getSubtype() const;
-    virtual QString getType() const;
-    virtual CardType getTypeId() const;
-    virtual QString toString(bool hidden = false) const;
+    QString getSubtype() const override;
+    QString getType() const override;
+    CardType getTypeId() const override;
+    QString toString(bool hidden = false) const override;
 
 protected:
     QString user_string;
@@ -245,7 +245,7 @@ class ShowDistanceCard : public SkillCard
 public:
     Q_INVOKABLE ShowDistanceCard();
 
-    const Card *validate(CardUseStruct &card_use) const;
+    const Card *validate(CardUseStruct &card_use) const override;
 };
 
 class ArraySummonCard : public SkillCard
@@ -253,9 +253,9 @@ class ArraySummonCard : public SkillCard
     Q_OBJECT
 
 public:
-    Q_INVOKABLE ArraySummonCard(const QString &name);
+    Q_INVOKABLE explicit ArraySummonCard(const QString &name);
 
-    const Card *validate(CardUseStruct &card_use) const;
+    const Card *validate(CardUseStruct &card_use) const override;
 };
 
 class DummyCard : public SkillCard
@@ -266,9 +266,9 @@ public:
     DummyCard();
     explicit DummyCard(const QList<int> &subcards);
 
-    virtual QString getSubtype() const;
-    virtual QString getType() const;
-    virtual QString toString(bool hidden = false) const;
+    QString getSubtype() const override;
+    QString getType() const override;
+    QString toString(bool hidden = false) const override;
 };
 
 #endif

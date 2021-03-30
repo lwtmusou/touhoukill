@@ -12,7 +12,7 @@ ServerInfoStruct ServerInfo;
 
 time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance, int operationRate)
 {
-    time_t timeOut;
+    time_t timeOut = 0;
     if (OperationTimeout == 0)
         return 0;
     else if (command == QSanProtocol::S_COMMAND_CHOOSE_GENERAL || command == QSanProtocol::S_COMMAND_ASK_GENERAL)
@@ -134,7 +134,7 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack)
         lack_label = new QLabel;
         layout->addRow(tr("Lack"), lack_label);
     } else
-        lack_label = NULL;
+        lack_label = nullptr;
 
     setLayout(layout);
 }

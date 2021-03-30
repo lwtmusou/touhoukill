@@ -43,7 +43,7 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
     if (type.startsWith("$")) {
         QString log_name;
         foreach (QString one_card, card_str.split("+")) {
-            const Card *card = NULL;
+            const Card *card = nullptr;
             if (type == "$JudgeResult" || type == "$PasteCard")
                 card = Sanguosha->getCard(one_card.toInt());
             else
@@ -84,7 +84,7 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
             RoomSceneInstance->showIndicator(from_general, to);
 
         const Card *card = Card::Parse(card_str);
-        if (card == NULL)
+        if (card == nullptr)
             return;
 
         QString card_name = card->getLogName();

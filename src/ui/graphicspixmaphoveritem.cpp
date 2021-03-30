@@ -5,6 +5,8 @@
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 
+#include <cmath>
+
 const char *CHANGE_SKIN_EMOTION_NAME = "skin_changing";
 
 QList<QPixmap> GraphicsPixmapHoverItem::m_skinChangingFrames;
@@ -52,7 +54,7 @@ static void qt_graphicsItem_highlightSelected(QGraphicsItem *item, QPainter *pai
     if (qMin(mbrect.width(), mbrect.height()) < qreal(1.0))
         return;
 
-    qreal itemPenWidth;
+    qreal itemPenWidth = NAN;
     switch (item->type()) {
     case QGraphicsEllipseItem::Type:
         itemPenWidth = static_cast<QGraphicsEllipseItem *>(item)->pen().widthF();
@@ -156,7 +158,7 @@ void GraphicsPixmapHoverItem::startChangeHeroSkinAnimation(const QString &genera
 
     emit skin_changing_start();
 
-    if (NULL != m_playerCardContainer) {
+    if (nullptr != m_playerCardContainer) {
         if (isPrimaryAvartarItem()) {
             m_heroSkinPixmap = m_playerCardContainer->_getAvatarIcon(generalName);
         } else {

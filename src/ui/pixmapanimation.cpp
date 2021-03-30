@@ -31,7 +31,7 @@
 const int PixmapAnimation::S_DEFAULT_INTERVAL = 50;
 
 PixmapAnimation::PixmapAnimation()
-    : QGraphicsItem(0)
+    : QGraphicsItem(nullptr)
 {
     m_fix_rect = false;
     hideonstop = false;
@@ -189,7 +189,7 @@ PixmapAnimation *PixmapAnimation::GetPixmapAnimation(QGraphicsItem *parent, cons
         return pma;
     } else {
         delete pma;
-        return NULL;
+        return nullptr;
     }
 }
 

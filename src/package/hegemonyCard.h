@@ -9,7 +9,7 @@ class SixSwords : public Weapon
     Q_OBJECT
 
 public:
-    Q_INVOKABLE SixSwords(Card::Suit suit = Diamond, int number = 6);
+    Q_INVOKABLE explicit SixSwords(Card::Suit suit = Diamond, int number = 6);
 };
 
 class DoubleSwordHegemony : public Weapon
@@ -27,12 +27,12 @@ class AwaitExhaustedHegemony : public TrickCard
 public:
     Q_INVOKABLE AwaitExhaustedHegemony(Card::Suit suit, int number);
 
-    virtual QString getSubtype() const;
-    virtual bool isAvailable(const Player *player) const;
+    QString getSubtype() const override;
+    bool isAvailable(const Player *player) const override;
 
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
 };
 
 class KnownBothHegemony : public TrickCard
@@ -41,13 +41,13 @@ class KnownBothHegemony : public TrickCard
 
 public:
     Q_INVOKABLE KnownBothHegemony(Card::Suit suit, int number);
-    virtual QString getSubtype() const;
+    QString getSubtype() const override;
 
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
-    virtual bool isAvailable(const Player *player) const;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
+    bool isAvailable(const Player *player) const override;
 
 private:
     void doKnownBoth(const QString &choice, const CardEffectStruct &effect) const;
@@ -58,11 +58,11 @@ class BefriendAttacking : public SingleTargetTrick
     Q_OBJECT
 
 public:
-    Q_INVOKABLE BefriendAttacking(Card::Suit suit = Heart, int number = 9);
+    Q_INVOKABLE explicit BefriendAttacking(Card::Suit suit = Heart, int number = 9);
 
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
-    virtual bool isAvailable(const Player *player) const;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
+    bool isAvailable(const Player *player) const override;
 };
 
 class HegNullification : public Nullification

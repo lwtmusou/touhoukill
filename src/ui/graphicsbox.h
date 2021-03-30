@@ -29,16 +29,16 @@ class GraphicsBox : public QGraphicsObject
 
 public:
     explicit GraphicsBox(const QString &title = QString());
-    virtual ~GraphicsBox();
+    ~GraphicsBox() override;
 
     static void paintGraphicsBoxStyle(QPainter *painter, const QString &title, const QRectF &rect);
     static void stylize(QGraphicsObject *target);
     static void moveToCenter(QGraphicsObject *target);
 
 protected:
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
-    virtual QRectF boundingRect() const = 0;
+    QRectF boundingRect() const override = 0;
 
     virtual void paintLayout(QPainter *painter)
     {

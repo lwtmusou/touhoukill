@@ -24,8 +24,8 @@ class UdpDetector : public Detector
 
 public:
     UdpDetector();
-    virtual void detect();
-    virtual void stop();
+    void detect() override;
+    void stop() override;
 
 private slots:
     void onReadReady();

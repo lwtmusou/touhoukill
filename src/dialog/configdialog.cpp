@@ -251,7 +251,7 @@ void ConfigDialog::on_resetBgMusicButton_clicked()
 
 void ConfigDialog::on_changeAppFontButton_clicked()
 {
-    bool ok;
+    bool ok = 0;
     QFont font = QFontDialog::getFont(&ok, Config.AppFont, this);
     if (ok) {
         Config.AppFont = font;
@@ -264,7 +264,7 @@ void ConfigDialog::on_changeAppFontButton_clicked()
 
 void ConfigDialog::on_setTextEditFontButton_clicked()
 {
-    bool ok;
+    bool ok = 0;
     QFont font = QFontDialog::getFont(&ok, Config.UIFont, this);
     if (ok) {
         Config.UIFont = font;

@@ -112,7 +112,7 @@ QList<const Skill *> General::getSkillList(bool relate_to_place, bool head_only)
     QList<const Skill *> skills;
     foreach (QString skill_name, skillname_list) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
-        Q_ASSERT(skill != NULL);
+        Q_ASSERT(skill != nullptr);
         if (relate_to_place && !skill->relateToPlace(!head_only))
             skills << skill;
         else if (!relate_to_place)

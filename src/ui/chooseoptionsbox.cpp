@@ -24,7 +24,7 @@ Mogara
 #include <QGraphicsProxyWidget>
 
 ChooseOptionsBox::ChooseOptionsBox()
-    : progressBar(NULL)
+    : progressBar(nullptr)
 {
 }
 //====================
@@ -203,10 +203,10 @@ QString ChooseOptionsBox::translate(const QString &option) const
 
 void ChooseOptionsBox::clear()
 {
-    if (progressBar != NULL) {
+    if (progressBar != nullptr) {
         progressBar->hide();
         progressBar->deleteLater();
-        progressBar = NULL;
+        progressBar = nullptr;
     }
 
     foreach (Button *button, buttons)

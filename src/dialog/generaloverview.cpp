@@ -155,7 +155,7 @@ QWidget *GeneralSearch::createInfoTab()
     i = 0;
     foreach (QString extension, extensions) {
         const Package *package = Sanguosha->findChild<const Package *>(extension);
-        if (package == NULL || package->getType() != Package::GeneralPack)
+        if (package == nullptr || package->getType() != Package::GeneralPack)
             continue;
         QCheckBox *checkbox = new QCheckBox;
         checkbox->setObjectName(extension);
@@ -251,7 +251,7 @@ static GeneralOverview *Overview;
 
 GeneralOverview *GeneralOverview::getInstance(QWidget *main_window)
 {
-    if (Overview == NULL)
+    if (Overview == nullptr)
         Overview = new GeneralOverview(main_window);
 
     return Overview;
@@ -336,7 +336,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
         QString nickname = Sanguosha->translate("#" + general_name);
         if (nickname.startsWith("#") && general_name.contains("_"))
             nickname = Sanguosha->translate("#" + general_name.split("_").first());
-        QTableWidgetItem *nickname_item;
+        QTableWidgetItem *nickname_item = nullptr;
         if (!nickname.startsWith("#"))
             nickname_item = new QTableWidgetItem(nickname);
         else
@@ -416,7 +416,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
 
 void GeneralOverview::resetButtons()
 {
-    QLayoutItem *child;
+    QLayoutItem *child = nullptr;
     while ((child = button_layout->takeAt(0))) {
         QWidget *widget = child->widget();
         if (widget)

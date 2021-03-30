@@ -30,12 +30,12 @@ class HegemonyRoleComboBox : public QGraphicsObject
     Q_OBJECT
 
 public:
-    HegemonyRoleComboBox(QGraphicsItem *photo, bool circle = false);
+    explicit HegemonyRoleComboBox(QGraphicsItem *photo, bool circle = false);
     static const int COMPACT_BORDER_WIDTH = 1;
     static const int COMPACT_ITEM_LENGTH = 10;
 
-    QRectF boundingRect() const;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    QRectF boundingRect() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     inline bool isExpanding() const
     {
         return expanding;
@@ -48,7 +48,7 @@ private:
     QString fixed_role;
 
 protected:
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 
 public slots:
     void fix(const QString &role);

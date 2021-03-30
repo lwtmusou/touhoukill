@@ -45,8 +45,8 @@ const int PlayerCardBox::intervalBetweenRows = 5;
 const int PlayerCardBox::intervalBetweenCards = 3;
 
 PlayerCardBox::PlayerCardBox()
-    : player(NULL)
-    , progressBar(NULL)
+    : player(nullptr)
+    , progressBar(nullptr)
     , rowCount(0)
     , intervalsBetweenAreas(-1)
     , intervalsBetweenRows(0)
@@ -150,7 +150,7 @@ void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player
 
 QRectF PlayerCardBox::boundingRect() const
 {
-    if (player == NULL)
+    if (player == nullptr)
         return QRectF();
 
     if (rowCount == 0)
@@ -211,10 +211,10 @@ void PlayerCardBox::paintLayout(QPainter *painter)
 
 void PlayerCardBox::clear()
 {
-    if (progressBar != NULL) {
+    if (progressBar != nullptr) {
         progressBar->hide();
         progressBar->deleteLater();
-        progressBar = NULL;
+        progressBar = nullptr;
 
         progressBarItem->deleteLater();
     }

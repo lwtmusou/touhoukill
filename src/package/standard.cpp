@@ -95,7 +95,7 @@ void EquipCard::onUse(Room *room, const CardUseStruct &card_use) const
     thread->trigger(PreCardUsed, room, data);
 
     CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), card_use.card->getSkillName(), QString());
-    CardsMoveStruct move(card_use.card->getEffectiveId(), NULL, Player::PlaceTable, reason);
+    CardsMoveStruct move(card_use.card->getEffectiveId(), nullptr, Player::PlaceTable, reason);
     room->moveCardsAtomic(move, true);
 
     thread->trigger(CardUsed, room, data);
@@ -106,7 +106,7 @@ void EquipCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
 {
     if (targets.isEmpty()) {
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), getSkillName(), QString());
-        room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
+        room->moveCardTo(this, source, nullptr, Player::DiscardPile, reason, true);
         return;
     }
     int equipped_id = Card::S_UNKNOWN_CARD_ID;
@@ -118,7 +118,7 @@ void EquipCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
     CardsMoveStruct move1(getEffectiveId(), target, Player::PlaceEquip, CardMoveReason(CardMoveReason::S_REASON_USE, target->objectName()));
     exchangeMove.push_back(move1);
     if (equipped_id != Card::S_UNKNOWN_CARD_ID) {
-        CardsMoveStruct move2(equipped_id, NULL, Player::DiscardPile, CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, target->objectName()));
+        CardsMoveStruct move2(equipped_id, nullptr, Player::DiscardPile, CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, target->objectName()));
         exchangeMove.push_back(move2);
     }
     LogMessage log;
@@ -300,7 +300,7 @@ void DelayedTrick::onUse(Room *room, const CardUseStruct &card_use) const
     //room->moveCardTo(this, use.from, use.to.first(), Player::PlaceDelayedTrick, reason, true);
 
     CardMoveReason reason(CardMoveReason::S_REASON_USE, use.from->objectName(), QString(), card_use.card->getSkillName(), QString());
-    CardsMoveStruct move(card_use.card->getEffectiveId(), NULL, Player::PlaceTable, reason);
+    CardsMoveStruct move(card_use.card->getEffectiveId(), nullptr, Player::PlaceTable, reason);
     room->moveCardsAtomic(move, true);
     //show hidden after move Event to avoid filter card
     use.from->showHiddenSkill(getSkillName());
@@ -321,7 +321,7 @@ void DelayedTrick::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
         }
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), getSkillName(), QString());
         //room->moveCardTo(this, room->getCardOwner(getEffectiveId()), NULL, Player::DiscardPile, reason, true);
-        room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
+        room->moveCardTo(this, source, nullptr, Player::DiscardPile, reason, true);
     } else {
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), targets.first()->objectName(), getSkillName(), QString());
         room->moveCardTo(this, source, targets.first(), Player::PlaceDelayedTrick, reason, true);
@@ -338,7 +338,7 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const
     Room *room = effect.to->getRoom();
 
     CardMoveReason reason(CardMoveReason::S_REASON_USE, effect.to->objectName(), getSkillName(), QString());
-    room->moveCardTo(this, NULL, Player::PlaceTable, reason, true);
+    room->moveCardTo(this, nullptr, Player::PlaceTable, reason, true);
 
     LogMessage log;
     log.from = effect.to;
@@ -353,14 +353,14 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const
     if (judge_struct.negative == judge_struct.isBad()) {
         if (effect.to->isAlive() && !judge_struct.ignore_judge)
             takeEffect(effect.to);
-        if (room->getCardOwner(getEffectiveId()) == NULL) {
+        if (room->getCardOwner(getEffectiveId()) == nullptr) {
             CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
-            room->throwCard(this, reason, NULL);
+            room->throwCard(this, reason, nullptr);
         }
     } else if (movable) {
         onNullified(effect.to);
     } else if (returnable && effect.to->isAlive()) {
-        if (room->getCardOwner(getEffectiveId()) == NULL) {
+        if (room->getCardOwner(getEffectiveId()) == nullptr) {
             if (isVirtualCard()) {
                 Card *delayTrick = Sanguosha->cloneCard(objectName());
                 WrappedCard *vs_card = Sanguosha->getWrappedCard(getEffectiveId());
@@ -376,9 +376,9 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const
             room->moveCardsAtomic(move, true);
         }
     } else {
-        if (room->getCardOwner(getEffectiveId()) == NULL) {
+        if (room->getCardOwner(getEffectiveId()) == nullptr) {
             CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
-            room->throwCard(this, reason, NULL);
+            room->throwCard(this, reason, nullptr);
         }
     }
 }
@@ -391,7 +391,7 @@ void DelayedTrick::onNullified(ServerPlayer *target) const
     if (movable) {
         QList<ServerPlayer *> players = room->getOtherPlayers(target);
         players << target;
-        ServerPlayer *next = NULL; //next meaning this next one
+        ServerPlayer *next = nullptr; //next meaning this next one
         bool next2next = false; //it's meaning another next(a second next) is necessary
         foreach (ServerPlayer *player, players) {
             if (player->containsTrick(objectName()))
@@ -417,7 +417,7 @@ void DelayedTrick::onNullified(ServerPlayer *target) const
                 break;
 
             CardUseStruct use;
-            use.from = NULL;
+            use.from = nullptr;
             use.to << player;
             use.card = this;
             QVariant data = QVariant::fromValue(use);
@@ -441,7 +441,7 @@ void DelayedTrick::onNullified(ServerPlayer *target) const
             onNullified(next);
     } else {
         CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, target->objectName());
-        room->throwCard(this, reason, NULL);
+        room->throwCard(this, reason, nullptr);
     }
 }
 
@@ -485,7 +485,7 @@ void Weapon::onUse(Room *room, const CardUseStruct &card_use) const
                 || player->askForSkillInvoke("weapon_recast", QVariant::fromValue(use))))) {
         CardMoveReason reason(CardMoveReason::S_REASON_RECAST, player->objectName());
         reason.m_eventName = "weapon_recast";
-        room->moveCardTo(use.card, player, NULL, Player::DiscardPile, reason);
+        room->moveCardTo(use.card, player, nullptr, Player::DiscardPile, reason);
         player->broadcastSkillInvoke("@recast");
 
         LogMessage log;

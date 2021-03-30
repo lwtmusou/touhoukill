@@ -12,14 +12,14 @@ RoomState::~RoomState()
 Card *RoomState::getCard(int cardId) const
 {
     if (!m_cards.contains(cardId))
-        return NULL;
+        return nullptr;
     return m_cards[cardId];
 }
 
 void RoomState::resetCard(int cardId)
 {
     Card *newCard = Card::Clone(Sanguosha->getEngineCard(cardId));
-    if (newCard == NULL)
+    if (newCard == nullptr)
         return;
     newCard->setFlags(m_cards[cardId]->getFlags());
     m_cards[cardId]->copyEverythingFrom(newCard);

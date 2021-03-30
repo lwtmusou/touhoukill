@@ -165,10 +165,10 @@ public slots:
 
 protected:
     // overrider parent functions
-    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
     // initialization of _m_layout is compulsory for children classes.
     virtual QGraphicsItem *_getEquipParent() = 0;
@@ -331,7 +331,7 @@ protected slots:
     }
     virtual bool isItemUnderMouse(QGraphicsItem *item) const
     {
-        if (item != NULL)
+        if (item != nullptr)
             return item->isUnderMouse();
 
         return false;

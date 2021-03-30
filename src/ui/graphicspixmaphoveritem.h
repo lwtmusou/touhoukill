@@ -11,7 +11,7 @@ class GraphicsPixmapHoverItem : public QObject, public QGraphicsPixmapItem
     Q_OBJECT
 
 public:
-    explicit GraphicsPixmapHoverItem(PlayerCardContainer *playerCardContainer, QGraphicsItem *parent = 0);
+    explicit GraphicsPixmapHoverItem(PlayerCardContainer *playerCardContainer, QGraphicsItem *parent = nullptr);
 
     void stopChangeHeroSkinAnimation();
     bool isSkinChangingFinished() const
@@ -19,16 +19,16 @@ public:
         return (0 == m_timer);
     }
 
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *) override;
 
 public slots:
     void startChangeHeroSkinAnimation(const QString &generalName);
 
 protected:
-    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *);
-    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *);
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *) override;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *) override;
 
-    virtual void timerEvent(QTimerEvent *);
+    void timerEvent(QTimerEvent *) override;
 
 private:
     bool isPrimaryAvartarItem() const;

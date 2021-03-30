@@ -9,9 +9,9 @@ class QSanSelectableItem : public QGraphicsObject
     Q_OBJECT
 
 public:
-    QSanSelectableItem(const QString &filename, bool center_as_origin = false);
+    explicit QSanSelectableItem(const QString &filename, bool center_as_origin = false);
     explicit QSanSelectableItem(bool center_as_origin = false);
-    virtual QRectF boundingRect() const;
+    QRectF boundingRect() const override;
     bool load(const QString &filename, bool center_as_origin = false);
     bool load(const QString &filename, QSize newSize, bool center_as_origin = false);
     void setPixmap(const QPixmap &pixmap);
@@ -24,8 +24,8 @@ public:
     void setMarkable(bool selectable);
 
 protected:
-    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     int _m_width, _m_height;
     QPixmap _m_mainPixmap;
 

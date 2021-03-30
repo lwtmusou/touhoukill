@@ -100,7 +100,7 @@ public:
 
 AI *Room::cloneAI(ServerPlayer *player)
 {
-    if (L == NULL)
+    if (L == nullptr)
         return new TrustAI(player);
 
     if (!Config.EnableAI)
@@ -292,7 +292,7 @@ const Card *LuaAI::askForCard(const QString &pattern, const QString &prompt, con
         return TrustAI::askForCard(pattern, prompt, data);
     }
 
-    if (result == NULL)
+    if (result == nullptr)
         return TrustAI::askForCard(pattern, prompt, data);
 
     return Card::Parse(result);
@@ -342,7 +342,7 @@ const Card *LuaAI::askForSinglePeach(ServerPlayer *dying)
     }
     const char *result = lua_tostring(L, -1);
     lua_pop(L, 1);
-    if (result == NULL)
+    if (result == nullptr)
         return TrustAI::askForSinglePeach(dying);
 
     return Card::Parse(result);
@@ -420,7 +420,7 @@ ServerPlayer *LuaAI::askForYiji(const QList<int> &cards, const QString &reason, 
         const char *error_msg = lua_tostring(L, -1);
         lua_pop(L, 1);
         room->output(error_msg);
-        return NULL;
+        return nullptr;
     }
 
     void *player_ptr;
@@ -433,7 +433,7 @@ ServerPlayer *LuaAI::askForYiji(const QList<int> &cards, const QString &reason, 
         return static_cast<ServerPlayer *>(player_ptr);
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void LuaAI::filterEvent(TriggerEvent event, const QVariant &data)
@@ -445,7 +445,7 @@ void LuaAI::filterEvent(TriggerEvent event, const QVariant &data)
 
     pushCallback(L, __FUNCTION__);
     lua_pushinteger(L, event);
-    SWIG_NewPointerObj(L, 0, SWIGTYPE_p_ServerPlayer, 0);
+    SWIG_NewPointerObj(L, nullptr, SWIGTYPE_p_ServerPlayer, 0);
     SWIG_NewPointerObj(L, &data, SWIGTYPE_p_QVariant, 0);
 
     int error = lua_pcall(L, 4, 0, 0);
