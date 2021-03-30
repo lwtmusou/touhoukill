@@ -301,13 +301,8 @@ ServerPlayer *Room::getCurrentDyingPlayer() const
     return who;
 }
 
-void Room::revivePlayer(ServerPlayer *player)
+void Room::revivePlayer(ServerPlayer *player, bool initialize)
 {
-    QString mode = Config.GameMode;
-    bool initialize = true;
-    if (mode.endsWith("1v1"))
-        initialize = false;
-
     player->setAlive(true);
     player->throwAllMarks(false);
     broadcastProperty(player, "alive");

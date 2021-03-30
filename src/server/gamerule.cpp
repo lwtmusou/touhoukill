@@ -1029,9 +1029,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         bool skipRewardAndPunish = death.who->hasFlag("skipRewardAndPunish") ? true : false;
         death.who->bury();
 
-        if (room->getTag("SkipNormalDeathProcess").toBool())
-            return false;
-
         ServerPlayer *killer = nullptr;
         if (death.useViewAsKiller)
             killer = death.viewAsKiller;
@@ -1044,6 +1041,9 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             if (kill_count > 1 && kill_count < 8)
                 room->setEmotion(killer, QString("multi_kill%1").arg(QString::number(kill_count)));
         }
+
+        if (room->getTag("SkipNormalDeathProcess").toBool())
+            return false;
 
         if (killer && !skipRewardAndPunish)
             rewardAndPunish(killer, death.who);
@@ -1280,7 +1280,7 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const
         player->setPhase(Player::NotActive);
         room->broadcastProperty(player, "phase");
     }
-    room->revivePlayer(player);
+    room->revivePlayer(player, false);
     room->changeHero(player, new_general, true, true);
     Q_ASSERT(player->getGeneral() != nullptr);
     if (player->getGeneral()->getKingdom() == "zhu" || player->getGeneral()->getKingdom() == "touhougod") {

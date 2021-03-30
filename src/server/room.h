@@ -68,7 +68,7 @@ public:
     void enterDying(ServerPlayer *player, DamageStruct *reason);
     ServerPlayer *getCurrentDyingPlayer() const;
     void killPlayer(ServerPlayer *victim, DamageStruct *reason = nullptr);
-    void revivePlayer(ServerPlayer *player);
+    void revivePlayer(ServerPlayer *player, bool initialize = true);
     QStringList aliveRoles(ServerPlayer *except = nullptr) const;
     void gameOver(const QString &winner, bool isSurrender = false);
     void saveWinnerTable(const QString &winner, bool isSurrender = false);
