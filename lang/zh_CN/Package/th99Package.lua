@@ -367,8 +367,8 @@ return{
 	["#kasen_sp"] = "奸佞邪智的鬼",
 	["designer:kasen_sp"] = "dawda",
 	
-	["illustrator:kasen_sp"] = "谁",
-	["origin:kasen_sp"] = "多少",
+	["illustrator:kasen_sp"] = "井戸さん",
+	["origin:kasen_sp"] = "p号：29151823；个人id：75376",
 	
 	["zhuozhi"] = "酌志",
 	[":zhuozhi"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张手牌，亮出牌堆顶四张牌并获得其中一张牌。若其中有装备牌或【杀】，你额外获得一张牌。",
