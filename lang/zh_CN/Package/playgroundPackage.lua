@@ -60,4 +60,11 @@ return {
 	["$bmmaoji3"] = "笨猫笨猫笨",
 	["~benmao"] = "喵",
 
+	["otaku"] = "肥宅",
+	
+	["fsu0413fei2zhai"] = "肥宅",
+	[":fsu0413fei2zhai"] = "限定技：出牌阶段，你可以弃置所有手牌，然后你重复此流程直到你没有手牌，然后你获得弃牌堆中所有的【桃】和仙【桃】并获得技能“废宅”。",
+	["$Fsu0413Fei2ZhaiAnimate"]= "skill=otaku:fsu0413fei2zhai",
+	["fsu0413fei4zhai"] = "废宅",
+	[":fsu0413fei4zhai"] = "永久技，你跳过弃牌阶段。",
 }

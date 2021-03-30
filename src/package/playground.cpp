@@ -477,17 +477,19 @@ void Fsu0413Fei2ZhaiCard::onUse(Room *room, const CardUseStruct &card_use) const
 
 void Fsu0413Fei2ZhaiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
 {
-    while (!source->isNude() && source->isAlive())
+    while (!source->isKongcheng() && source->isAlive())
         source->throwAllHandCards();
 
-    DummyCard dummy;
-    foreach (int id, room->getDiscardPile()) {
-        if (Sanguosha->getCard(id)->isKindOf("Peach"))
-            dummy.addSubcard(id);
-    }
+    if (source->isAlive()) {
+        DummyCard dummy;
+        foreach (int id, room->getDiscardPile()) {
+            if (Sanguosha->getCard(id)->isKindOf("Peach"))
+                dummy.addSubcard(id);
+        }
 
-    source->obtainCard(&dummy);
-    room->handleAcquireDetachSkills(source, "fsu0413fei4zhai");
+        source->obtainCard(&dummy);
+        room->handleAcquireDetachSkills(source, "fsu0413fei4zhai");
+    }
 }
 
 class Fsu0413Fei2Zhai : public ViewAsSkill
@@ -844,6 +846,9 @@ PlaygroundPackage::PlaygroundPackage()
     //    General *jmshtry = new General(this, "jmshtry", "touhougod", 5, true);
     //    jmshtry->addSkill(new JmshtryMdlKudi);
 
+    General *otaku = new General(this, "otaku", "touhougod", 1, true, true, true);
+    otaku->addSkill(new Fsu0413Fei2Zhai);
+
     General *kitsuhattyou = new General(this, "kitsuhattyou", "touhougod", 3, false, true, true);
     kitsuhattyou->addSkill(new Fsu0413JbdNashaT);
     addMetaObject<Fsu0413JbdNashaCard>();
@@ -852,6 +857,9 @@ PlaygroundPackage::PlaygroundPackage()
     benmao->addSkill(new BmMaoji);
     benmao->addSkill(new BmMaojiTrigger);
     related_skills.insertMulti("bmmaoji", "#bmmaoji");
+
+    addMetaObject<Fsu0413Fei2ZhaiCard>();
+    skills << new Fsu0413Fei4Zhai;
 }
 
 ADD_PACKAGE(Playground)

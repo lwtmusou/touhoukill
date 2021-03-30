@@ -2489,6 +2489,8 @@ void RoomScene::addSkillButton(const Skill *skill, bool head)
         connect(btn, SIGNAL(skill_deactivated()), this, SLOT(onSkillDeactivated()));
         if (btn->getViewAsSkill()->objectName() == "mizhao")
             connect(btn, SIGNAL(skill_activated()), dashboard, SLOT(selectAll()));
+        if (btn->getViewAsSkill()->objectName() == "fsu0413fei2zhai")
+            connect(btn, SIGNAL(skill_activated()), dashboard, SLOT(selectAll()));
     }
 
     QDialog *dialog = skill->getDialog();
