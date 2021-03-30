@@ -67,4 +67,6 @@ return {
 	["$Fsu0413Fei2ZhaiAnimate"]= "skill=otaku:fsu0413fei2zhai",
 	["fsu0413fei4zhai"] = "废宅",
 	[":fsu0413fei4zhai"] = "永久技，你跳过弃牌阶段。",
+	["#GirlPraying"] = "少女 %from 祈祷中…………",
+	["#ReviveOtaku"] = "%from 成功转生！",
 }
