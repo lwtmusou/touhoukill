@@ -319,6 +319,7 @@ return
 	--zhan013  势力：战 4血
 	["yorigamis"] = "依神女苑&依神紫苑",
 	["#yorigamis"] = "最凶最恶的双子", 
+	["&yorigamis"] = "依神姐妹",
 	["designer:yorigamis"] = "bullytou",
 
 	["illustrator:yorigamis"] = "ひそな",
