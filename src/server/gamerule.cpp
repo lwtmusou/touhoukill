@@ -6,16 +6,7 @@
 #include "settings.h"
 #include "standard.h"
 #include "testCard.h"
-
 #include <QTime>
-
-#define APRILFOOLDEBUG 0
-
-#if APRILFOOLDEBUG
-#define APRILFOOL true
-#else
-#define APRILFOOL (QDateTime::currentDateTime().date().month() == 4 && QDateTime::currentDateTime().date().day() == 1)
-#endif
 
 GameRule::GameRule(QObject *)
     : TriggerSkill("game_rule")
@@ -230,51 +221,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             else
                 player->play(set_phases);
         }
-
-        if (APRILFOOL) {
-            if (!isHegemonyGameMode(room->getMode())) {
-                foreach (ServerPlayer *p, room->getAllPlayers(true)) {
-                    if (p->isDead() && p->getGeneral()->isFemale()) {
-                        const General *oldgeneral = p->getGeneral();
-                        QString kingdom = p->getKingdom();
-                        room->revivePlayer(p, false);
-                        room->changeHero(p, "otaku", true);
-                        room->setPlayerProperty(p, "kingdom", kingdom);
-
-                        if (!p->faceUp())
-                            p->turnOver();
-
-                        if (p->isChained())
-                            room->setPlayerProperty(p, "chained", false);
-
-                        room->setTag("FirstRound", true);
-                        DrawNCardsStruct s;
-                        s.player = p;
-                        s.isInitial = true;
-                        s.n = oldgeneral->getMaxHp();
-                        QVariant data = QVariant::fromValue(s);
-                        room->getThread()->trigger(DrawInitialCards, room, data);
-                        s = data.value<DrawNCardsStruct>();
-                        int num = s.n;
-                        try {
-                            p->drawCards(num, "initialDraw");
-                            room->setTag("FirstRound", false);
-                        } catch (TriggerEvent triggerEvent) {
-                            if (triggerEvent == TurnBroken)
-                                room->setTag("FirstRound", false);
-                            throw triggerEvent;
-                        }
-                        room->getThread()->trigger(AfterDrawInitialCards, room, data);
-
-                        LogMessage l;
-                        l.type = "#ReviveOtaku";
-                        l.from = p;
-                        room->sendLog(l);
-                    }
-                }
-            }
-        }
-
         break;
     }
     case EventPhaseProceeding: {
@@ -478,19 +424,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
 
         if (use.card->isKindOf("Slash"))
             use.from->tag.remove("Jink_" + use.card->toString());
-
-        if (APRILFOOL) {
-            if (!isHegemonyGameMode(room->getMode())) {
-                if (!use.card->isKindOf("SkillCard") && use.from != nullptr && use.from->isFemale()) {
-                    LogMessage l;
-                    l.type = "#GirlPraying";
-                    l.from = use.from;
-                    room->sendLog(l);
-
-                    room->loseMaxHp(use.from);
-                }
-            }
-        }
 
         break;
     }
@@ -1608,11 +1541,6 @@ QString GameRule::getWinner(ServerPlayer *victim) const
         }
 
     } else {
-        if (APRILFOOL) {
-            if (victim->isFemale())
-                return QString();
-        }
-
         QStringList alive_roles = room->aliveRoles(victim);
         switch (victim->getRoleEnum()) {
         case Player::Lord: {
