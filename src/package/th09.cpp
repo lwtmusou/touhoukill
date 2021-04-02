@@ -1881,7 +1881,7 @@ public:
         Room *room = player->getRoom();
         foreach (ServerPlayer *p, targets) {
             if (p->isCardLimited("use,response", "ysjie"))
-                room->removePlayerCardLimitation(p, "use,response", ".|.|.|.", "ysjie");
+                room->removePlayerCardLimitation(p, "use,response", ".|.|.|.$1", "ysjie");
         }
     }
 
