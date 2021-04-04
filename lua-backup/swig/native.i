@@ -148,7 +148,7 @@ static int Alert(lua_State *lua)
 {
     const char *msg = luaL_checkstring(lua, 1);
 
-    QMessageBox::warning(NULL, "Lua warning", msg);
+    QMessageBox::warning(nullptr, "Lua warning", msg);
 
     return 0;
 }

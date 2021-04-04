@@ -6661,24 +6661,6 @@ public:
     }
 };
 
-class KuangjiTargetMod : public TargetModSkill
-{
-public:
-    KuangjiTargetMod()
-        : TargetModSkill("#kuangji_effect")
-    {
-        pattern = "BasicCard,TrickCard";
-    }
-
-    int getDistanceLimit(const Player *player, const Card *) const override
-    {
-        if (player->hasFlag("Global_kuangjiTargetmodFailed"))
-            return 1000;
-        else
-            return 0;
-    }
-};
-
 class Dimai : public TriggerSkill
 {
 private:
