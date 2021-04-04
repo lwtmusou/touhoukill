@@ -155,50 +155,6 @@ QDialog *Skill::getDialog() const
     return nullptr;
 }
 
-bool Skill::matchAvaliablePattern(QString avaliablePattern, QString askedPattern) const
-{
-    //avaliablePattern specifying to a real card
-    Card *card = Sanguosha->cloneCard(avaliablePattern);
-    //for askForPeach
-    if (askedPattern == "peach+analeptic")
-        askedPattern = "peach,analeptic";
-    //ignore spliting "#"
-    QStringList factors = askedPattern.split('|');
-    bool checkpoint = false;
-    QStringList card_types = factors.at(0).split(',');
-
-    foreach (QString or_name, card_types) {
-        checkpoint = false;
-        foreach (QString name, or_name.split('+')) {
-            if (name == ".") {
-                checkpoint = true;
-            } else {
-                bool isInt = false;
-                bool positive = true;
-                if (name.startsWith('^')) {
-                    positive = false;
-                    name = name.mid(1);
-                }
-
-                //sometimes, the first character need to Upper
-                QString kindOfName = name.left(1).toUpper() + name.right(name.length() - 1);
-                if (name.contains(card->objectName()) || card->isKindOf(kindOfName.toLocal8Bit().data()) || ("%" + card->objectName() == name)
-                    || (card->getEffectiveId() == name.toInt(&isInt) && isInt))
-                    checkpoint = positive;
-                else
-                    checkpoint = !positive;
-            }
-            if (!checkpoint)
-                break;
-        }
-        if (checkpoint)
-            break;
-    }
-
-    delete card;
-    return checkpoint;
-}
-
 bool Skill::canPreshow() const
 {
     if (inherits("TriggerSkill")) {

@@ -1127,7 +1127,11 @@ public:
 
     bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        return player->getPile("dango").length() > 0 && matchAvaliablePattern("magic_analeptic", pattern);
+        MagicAnaleptic *card = new MagicAnaleptic(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(MagicAnaleptic, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        return cardPattern != nullptr && cardPattern->match(player, card) && player->getPile("dango").length() > 0;
     }
 
     const Card *viewAs(const Card *originalCard) const override

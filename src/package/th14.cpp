@@ -605,13 +605,11 @@ public:
         if (!current || !current->isAlive() || current == s.player || !s.player->hasSkill(this))
             return QList<SkillInvokeDetail>();
 
-        if (matchAvaliablePattern("jink", s.pattern)) {
-            Jink *jink = new Jink(Card::NoSuit, 0);
-            jink->deleteLater();
-            if (s.player->isCardLimited(jink, s.method))
-                return QList<SkillInvokeDetail>();
+        Jink jink(Card::NoSuit, 0);
+        const CardPattern *cardPattern = Sanguosha->getPattern(s.pattern);
+        if (cardPattern != nullptr && cardPattern->match(s.player, &jink) && !s.player->isCardLimited(&jink, s.method)) // ??? isCardLimited????
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, s.player, s.player, nullptr, false, current);
-        }
+
         return QList<SkillInvokeDetail>();
     }
 
@@ -759,7 +757,11 @@ public:
 
     bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        return matchAvaliablePattern("slash", pattern) && player->getPile("feitou").length() > 0;
+        Slash *card = new Slash(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(Slash, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        return cardPattern != nullptr && cardPattern->match(player, card) && player->getPile("feitou").length() > 0;
     }
 
     const Card *viewAs(const Card *originalCard) const override

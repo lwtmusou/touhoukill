@@ -749,14 +749,15 @@ public:
             return QList<SkillInvokeDetail>();
 
         CardAskedStruct ask = data.value<CardAskedStruct>();
-        if (!matchAvaliablePattern("jink", ask.pattern))
+        ChainJink j(Card::SuitToBeDecided, -1);
+        const CardPattern *cardPattern = Sanguosha->getPattern(ask.pattern);
+
+        if (!(cardPattern != nullptr && cardPattern->match(ask.player, &j)))
             return QList<SkillInvokeDetail>();
 
         ServerPlayer *player = ask.player;
         if (equipAvailable(player, EquipCard::ArmorLocation, objectName()) && player->getArmor() && player->getArmor()->objectName() == objectName()) {
-            Card *jink = Sanguosha->cloneCard("chain_jink");
-            DELETE_OVER_SCOPE(Card, jink)
-            if (player->isCardLimited(jink, ask.method))
+            if (player->isCardLimited(&j, ask.method))
                 return QList<SkillInvokeDetail>();
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         }

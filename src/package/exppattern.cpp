@@ -25,6 +25,10 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
 {
     QStringList factors = exp.split('|');
 
+    // TODO: HACK!!!!
+    if (factors.isEmpty())
+        return true;
+
     bool checkpoint = false;
     QStringList card_types = factors.at(0).split(',');
     foreach (QString or_name, card_types) {

@@ -1141,22 +1141,28 @@ public:
         return Slash::IsAvailable(player);
     }
 
-    bool isEnabledAtResponse(const Player *, const QString &pattern) const override
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        return matchAvaliablePattern("jink", pattern) || matchAvaliablePattern("slash", pattern);
+        Slash *slash = new Slash(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(Slash, slash)
+        Jink *jink = new Jink(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(Jink, jink)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+        return cardPattern != nullptr && (cardPattern->match(player, slash) || cardPattern->match(player, jink));
     }
 
     const Card *viewAs(const Card *originalCard) const override
     {
         if (originalCard != nullptr) {
             bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
-            QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-            if (play || matchAvaliablePattern("slash", pattern)) {
-                Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
+            Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
+            const CardPattern *cardPattern = Sanguosha->getPattern(Sanguosha->getCurrentCardUsePattern());
+            if (play || cardPattern->match(Self, slash)) {
                 slash->addSubcard(originalCard);
                 slash->setSkillName(objectName());
                 return slash;
             } else {
+                delete slash;
                 Jink *jink = new Jink(originalCard->getSuit(), originalCard->getNumber());
                 jink->addSubcard(originalCard);
                 jink->setSkillName(objectName());
@@ -2342,7 +2348,11 @@ public:
 
     bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        return matchAvaliablePattern("peach", pattern) && !player->isKongcheng() && player->getMark("Global_PreventPeach") == 0
+        Peach *card = new Peach(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(Peach, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        return cardPattern != nullptr && cardPattern->match(player, card) && !player->isKongcheng() && player->getMark("Global_PreventPeach") == 0
             && (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) && !player->hasFlag("Global_huayinFailed");
     }
 
