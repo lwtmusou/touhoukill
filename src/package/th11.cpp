@@ -1011,9 +1011,13 @@ public:
         response_or_use = true;
     }
 
-    bool isEnabledAtResponse(const Player *, const QString &pattern) const override
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        return matchAvaliablePattern("savage_assault", pattern);
+        SavageAssault *card = new SavageAssault(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(SavageAssault, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        return cardPattern != nullptr && cardPattern->match(player, card);
     }
 
     const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
@@ -1040,17 +1044,21 @@ public:
         return Analeptic::IsAvailable(player);
     }
 
-    bool isEnabledAtResponse(const Player *Self, const QString &pattern) const override
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        return matchAvaliablePattern("analeptic", pattern) && Self->getRoomObject()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_RESPONSE;
+        Analeptic *card = new Analeptic(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(Analeptic, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        return cardPattern != nullptr && cardPattern->match(player, card) && player->getRoomObject()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_RESPONSE;
     }
 
     const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
-        Analeptic *ana = new Analeptic(originalCard->getSuit(), originalCard->getNumber());
-        ana->addSubcard(originalCard);
-        ana->setSkillName(objectName());
-        return ana;
+        Analeptic *analeptic = new Analeptic(originalCard->getSuit(), originalCard->getNumber());
+        analeptic->addSubcard(originalCard);
+        analeptic->setSkillName(objectName());
+        return analeptic;
     }
 };
 

@@ -2040,6 +2040,7 @@ public:
     static QStringList responsePatterns(const Player *Self)
     {
         QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
 
         Card::HandlingMethod method = Card::MethodUse;
         ;
@@ -2047,13 +2048,12 @@ public:
             method = Card::MethodResponse;
 
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-        const Skill *skill = Sanguosha->getSkill("huaxiang");
         QStringList checkedPatterns;
         QStringList ban_list = Sanguosha->getBanPackages();
         foreach (const Card *card, cards) {
             if ((card->isKindOf("BasicCard") || card->isKindOf("Nullification")) && !ban_list.contains(card->getPackage())) {
                 QString name = card->objectName();
-                if (!checkedPatterns.contains(name) && skill->matchAvaliablePattern(name, pattern) && !Self->isCardLimited(card, method)) {
+                if (!checkedPatterns.contains(name) && (cardPattern != nullptr && cardPattern->match(Self, card)) && !Self->isCardLimited(card, method)) {
                     if (name.contains("jink") && Self->getMaxHp() > 3)
                         continue;
                     else if (name.contains("peach") && Self->getMaxHp() > 2)
@@ -4302,6 +4302,7 @@ public:
     static QStringList responsePatterns(const Player *Self)
     {
         QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
 
         QStringList validPatterns;
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
@@ -4318,8 +4319,10 @@ public:
 
         QStringList checkedPatterns;
         foreach (QString str, validPatterns) {
-            const Skill *skill = Sanguosha->getSkill("xinhua");
-            if (skill->matchAvaliablePattern(str, pattern))
+            Card *card = Sanguosha->cloneCard(str);
+            DELETE_OVER_SCOPE(Card, card)
+
+            if (cardPattern != nullptr && cardPattern->match(Self, card))
                 checkedPatterns << str;
         }
         return checkedPatterns;
@@ -4983,6 +4986,8 @@ void AnyunDialog::popup(Player *_Self)
 {
     Self = _Self;
     bool play = (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+    Self->tag.remove(object_name);
+
 
     foreach (QAbstractButton *button, group->buttons()) {
         layout->removeWidget(button);
@@ -5017,7 +5022,6 @@ void AnyunDialog::popup(Player *_Self)
         }
     }
 
-    Self->tag.remove(object_name);
     exec();
 }
 
@@ -5689,19 +5693,23 @@ XianshiDialog::XianshiDialog(const QString &object, bool left, bool right)
 void XianshiDialog::popup(Player *_Self)
 {
     Self = _Self;
+    Self->tag.remove(object_name);
 
     QStringList checkedPatterns;
     QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
+    const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
     bool play = (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
     QString xianshi_record = Self->property("xianshi_record").toString();
 
     if (play)
         checkedPatterns = xianshi_record.split("+");
     else {
-        const Skill *skill = Sanguosha->getSkill(object_name);
 
         foreach (QString name, xianshi_record.split("+")) {
-            if (!skill->matchAvaliablePattern(name, pattern)) // need check SqChuangshi
+            Card *c = Sanguosha->cloneCard(name);
+            DELETE_OVER_SCOPE(Card, c)
+
+            if (!(cardPattern != nullptr && cardPattern->match(Self, c)))
                 checkedPatterns << name;
         }
     }
@@ -5713,7 +5721,6 @@ void XianshiDialog::popup(Player *_Self)
         button->setEnabled(enabled);
     }
 
-    Self->tag.remove(object_name);
     exec();
 }
 
@@ -5903,7 +5910,8 @@ public:
 
         } else {
             QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
-            if (!matchAvaliablePattern(c->objectName(), pattern))
+            const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+            if (!(cardPattern != nullptr && cardPattern->match(Self, c)))
                 return false;
         }
         if (selected_effect.contains("slash"))
@@ -6503,15 +6511,15 @@ public:
         expand_pile = "#xiuye_temp";
     }
 
-    bool isEnabledAtResponse(const Player *player, const QString &) const override
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
         if (player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
             return false;
-        QString pattern = player->getRoomObject()->getCurrentCardUsePattern();
         foreach (int id, player->getRoomObject()->getDiscardPile()) {
             const Card *c = player->getRoomObject()->getCard(id);
             if (c->getSuit() == Card::Club && (c->getTypeId() == Card::TypeBasic || c->isNDTrick())) {
-                if (this->matchAvaliablePattern(c->objectName(), pattern))
+                const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+                if (cardPattern != nullptr && cardPattern->match(player, c))
                     return true;
             }
         }
@@ -6536,7 +6544,10 @@ public:
             return to_select->isAvailable(Self);
         else {
             QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
-            return this->matchAvaliablePattern(to_select->objectName(), pattern);
+            const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+            Card *c = Sanguosha->cloneCard(to_select->objectName());
+            DELETE_OVER_SCOPE(Card, c)
+            return cardPattern != nullptr && cardPattern->match(Self, c);
         }
         return false;
     }

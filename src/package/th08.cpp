@@ -267,9 +267,13 @@ public:
         response_or_use = true;
     }
 
-    bool isEnabledAtResponse(const Player *Self, const QString &pattern) const override
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        return matchAvaliablePattern("fire_attack", pattern) && Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
+        FireAttack *card = new FireAttack(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(FireAttack, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        return cardPattern != nullptr && cardPattern->match(player, card) && player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
     }
 
     const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
@@ -1146,6 +1150,7 @@ public:
     static QStringList responsePatterns(const Player *Self)
     {
         QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
 
         QStringList validPatterns;
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
@@ -1162,8 +1167,10 @@ public:
 
         QStringList checkedPatterns;
         foreach (QString str, validPatterns) {
-            const Skill *skill = Sanguosha->getSkill("yinghuo");
-            if (skill->matchAvaliablePattern(str, pattern) && !YinghuoClear::yinghuo_choice_limit(Self, str))
+            Card *card = Sanguosha->cloneCard(str);
+            DELETE_OVER_SCOPE(Card, card)
+
+            if (cardPattern != nullptr && cardPattern->match(Self, card) && !YinghuoClear::yinghuo_choice_limit(Self, str))
                 checkedPatterns << str;
         }
         return checkedPatterns;
@@ -1510,15 +1517,17 @@ public:
     }
     bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        if ((!player->hasFlag("Global_huweiFailed") && matchAvaliablePattern("slash", pattern)
+        Slash *card = new Slash(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(Slash, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        if ((!player->hasFlag("Global_huweiFailed") && (cardPattern != nullptr && cardPattern->match(player, card))
              && player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)) {
-            Slash *tmpslash = new Slash(Card::NoSuit, 0);
-            tmpslash->deleteLater();
-            if (player->isCardLimited(tmpslash, Card::MethodUse))
+            if (player->isCardLimited(card, Card::MethodUse))
                 return false;
             //check avaliable target
             foreach (const Player *p, player->getAliveSiblings()) {
-                if (tmpslash->targetFilter(QList<const Player *>(), p, player))
+                if (card->targetFilter(QList<const Player *>(), p, player))
                     return true;
             }
         }
@@ -1546,9 +1555,12 @@ public:
         QList<SkillInvokeDetail> d;
         if (triggerEvent == CardAsked) {
             CardAskedStruct s = data.value<CardAskedStruct>();
-            if (matchAvaliablePattern("slash", s.pattern) && s.player->hasSkill(this) && s.player->getPhase() != Player::Play) {
-                Slash *tmpslash = new Slash(Card::NoSuit, 0);
-                tmpslash->deleteLater();
+            const CardPattern *cardPattern = Sanguosha->getPattern(s.pattern);
+
+            Slash *tmpslash = new Slash(Card::NoSuit, 0);
+            tmpslash->deleteLater();
+
+            if (cardPattern != nullptr && cardPattern->match(s.player, tmpslash) && s.player->hasSkill(this) && s.player->getPhase() != Player::Play) {
                 if (!s.player->isCardLimited(tmpslash, s.method))
                     d << SkillInvokeDetail(this, s.player, s.player);
             }

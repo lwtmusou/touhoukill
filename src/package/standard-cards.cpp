@@ -775,7 +775,10 @@ public:
 
     bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        return matchAvaliablePattern("slash", pattern) && player->getMark("Equips_Nullified_to_Yourself") == 0 && player->hasWeapon(objectName(), false, true);
+        Slash *card = new Slash(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(Slash, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+        return cardPattern != nullptr && cardPattern->match(player, card) && player->getMark("Equips_Nullified_to_Yourself") == 0 && player->hasWeapon(objectName(), false, true);
     }
 
     bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override
@@ -990,7 +993,12 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         CardAskedStruct ask = data.value<CardAskedStruct>();
-        if (!matchAvaliablePattern("jink", ask.pattern))
+        Card *jink = Sanguosha->cloneCard("jink");
+        DELETE_OVER_SCOPE(Card, jink)
+
+        const CardPattern *pattern = Sanguosha->getPattern(ask.pattern);
+
+        if (!(pattern != nullptr && pattern->match(ask.player, jink)))
             return QList<SkillInvokeDetail>();
 
         ServerPlayer *player = ask.player;
@@ -998,8 +1006,6 @@ public:
             return QList<SkillInvokeDetail>();
 
         //since skill yuanfei,we need check
-        Card *jink = Sanguosha->cloneCard("jink");
-        DELETE_OVER_SCOPE(Card, jink)
         if (player->isCardLimited(jink, ask.method))
             return QList<SkillInvokeDetail>();
         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);

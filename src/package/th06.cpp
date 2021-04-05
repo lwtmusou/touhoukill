@@ -798,20 +798,19 @@ public:
 
     static QStringList responsePatterns(const Player *Self)
     {
-        QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
+        const CardPattern *pattern = Sanguosha->getPattern(Self->getRoomObject()->getCurrentCardUsePattern());
         Card::HandlingMethod method = Card::MethodUse;
         if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
             method = Card::MethodResponse;
 
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-        const Skill *skill = Sanguosha->getSkill("hezhou");
 
         QStringList checkedPatterns;
         QStringList ban_list = Sanguosha->getBanPackages();
         foreach (const Card *card, cards) {
             if (((card->isNDTrick() && !card->isKindOf("Nullification")) || card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) {
                 QString name = card->objectName();
-                if (!checkedPatterns.contains(name) && skill->matchAvaliablePattern(name, pattern) && !Self->isCardLimited(card, method))
+                if (!checkedPatterns.contains(name) && (pattern != nullptr && pattern->match(Self, card)) && !Self->isCardLimited(card, method))
                     checkedPatterns << name;
             }
         }
@@ -998,6 +997,7 @@ BeishuiDialog::BeishuiDialog(const QString &object, bool left, bool)
 void BeishuiDialog::popup(Player *_Self)
 {
     Self = _Self;
+    Self->tag.remove(object_name);
 
     Card::HandlingMethod method = Card::MethodUse;
 
@@ -1006,6 +1006,8 @@ void BeishuiDialog::popup(Player *_Self)
 
     QStringList checkedPatterns;
     QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
+    const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
     bool play = (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
 
     //collect avaliable patterns for specific skill
@@ -1022,13 +1024,10 @@ void BeishuiDialog::popup(Player *_Self)
 
     //then match it and check "CardLimit"
     foreach (QString str, validPatterns) {
-        const Skill *skill = Sanguosha->getSkill(object_name);
-        if (play || skill->matchAvaliablePattern(str, pattern)) {
-            Card *card = Sanguosha->cloneCard(str);
-            DELETE_OVER_SCOPE(Card, card)
-            if (!Self->isCardLimited(card, method))
-                checkedPatterns << str;
-        }
+        Card *card = Sanguosha->cloneCard(str);
+        DELETE_OVER_SCOPE(Card, card)
+        if (play || (cardPattern != nullptr && cardPattern->match(Self, card)) && !Self->isCardLimited(card, method))
+            checkedPatterns << str;
     }
     //while responsing, if only one pattern were checked, emit click()
 
@@ -1052,7 +1051,6 @@ void BeishuiDialog::popup(Player *_Self)
         button->setEnabled(enabled);
     }
 
-    Self->tag.remove(object_name);
     exec();
 }
 
@@ -1121,18 +1119,17 @@ public:
 
     static QStringList responsePatterns(const Player *Self)
     {
-        QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
+        const CardPattern *pattern = Sanguosha->getPattern(Self->getRoomObject()->getCurrentCardUsePattern());
 
         Card::HandlingMethod method = Card::MethodUse;
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-        const Skill *skill = Sanguosha->getSkill("beishui");
 
         QStringList checkedPatterns;
         QStringList ban_list = Sanguosha->getBanPackages();
         foreach (const Card *card, cards) {
             if ((card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) {
                 QString name = card->objectName();
-                if (!checkedPatterns.contains(name) && skill->matchAvaliablePattern(name, pattern) && !Self->isCardLimited(card, method))
+                if (!checkedPatterns.contains(name) && (pattern != nullptr && pattern->match(Self, card)) && !Self->isCardLimited(card, method))
                     checkedPatterns << name;
             }
         }

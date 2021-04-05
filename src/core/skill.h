@@ -48,7 +48,6 @@ public:
     QString getRelatedMark() const;
     QString getRelatedPileName() const;
     QStringList getSources() const;
-    bool matchAvaliablePattern(QString avaliablePattern, QString askedPattern) const;
     QString getShowType() const; //nue_god
     virtual bool canPreshow() const; //hegemony
     virtual bool relateToPlace(bool head = true) const;

@@ -27,7 +27,8 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
-        if (isHegemonyGameMode(ServerInfo.GameMode) && player != nullptr && player->getPhase() == Player::Start && !player->hasShownGeneral() && player->disableShow(true).isEmpty())
+        if (isHegemonyGameMode(ServerInfo.GameMode) && player != nullptr && player->getPhase() == Player::Start && !player->hasShownGeneral()
+            && player->disableShow(true).isEmpty())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         return QList<SkillInvokeDetail>();
     }
@@ -315,17 +316,9 @@ public:
         return player->getMark("@CompanionEffect") > 0;
     }
 
-    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
+    bool isEnabledAtResponse(const Player *, const QString &pattern) const override
     {
-        if (pattern.contains("peach")) {
-            if (player->hasFlag("Global_Dying"))
-                return true;
-            foreach (const Player *p, player->getAliveSiblings()) {
-                if (p->hasFlag("Global_Dying"))
-                    return true;
-            }
-        }
-        return false;
+        return pattern.contains("peach");
     }
 
     const Card *viewAs(const Player * /*Self*/) const override
@@ -1471,17 +1464,17 @@ public:
     static QStringList responsePatterns(const Player *Self)
     {
         QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
 
         Card::HandlingMethod method = Card::MethodUse;
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-        const Skill *skill = Sanguosha->getSkill("beishui_hegemony");
 
         QStringList checkedPatterns;
         QStringList ban_list = Sanguosha->getBanPackages();
         foreach (const Card *card, cards) {
             if ((card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) {
                 QString name = card->objectName();
-                if (!checkedPatterns.contains(name) && skill->matchAvaliablePattern(name, pattern) && !Self->isCardLimited(card, method))
+                if (!checkedPatterns.contains(name) && (cardPattern != nullptr && cardPattern->match(Self, card)) && !Self->isCardLimited(card, method))
                     checkedPatterns << name;
             }
         }
@@ -1645,7 +1638,11 @@ public:
 
     bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        return matchAvaliablePattern("peach", pattern) && !player->isCurrent() && player->getMark("Global_PreventPeach") == 0
+        Peach *card = new Peach(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(Peach, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        return cardPattern != nullptr && cardPattern->match(player, card) && !player->isCurrent() && player->getMark("Global_PreventPeach") == 0
             && (player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
     }
 
@@ -1866,9 +1863,12 @@ public:
         response_or_use = true;
     }
 
-    bool isEnabledAtResponse(const Player *Self, const QString &pattern) const override
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        return matchAvaliablePattern("fire_attack", pattern) && Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
+        FireAttack *card = new FireAttack(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(FireAttack, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+        return cardPattern != nullptr && cardPattern->match(player, card) && player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
     }
 
     const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
@@ -3309,9 +3309,12 @@ public:
         return Slash::IsAvailable(player);
     }
 
-    bool isEnabledAtResponse(const Player *, const QString &pattern) const override
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        return matchAvaliablePattern("slash", pattern);
+        Slash *card = new Slash(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(Slash, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+        return cardPattern != nullptr && cardPattern->match(player, card);
     }
 
     const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override

@@ -32,8 +32,13 @@ public:
     {
         if (player->getMark("Global_PreventPeach") > 0)
             return false;
-        if (player->getPile("shende").length() >= 2)
-            return matchAvaliablePattern("peach", pattern);
+        if (player->getPile("shende").length() >= 2) {
+            Peach *card = new Peach(Card::SuitToBeDecided, -1);
+            DELETE_OVER_SCOPE(Peach, card)
+            const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+            return cardPattern != nullptr && cardPattern->match(player, card);
+        }
         return false;
     }
 
@@ -402,6 +407,7 @@ QijiDialog::QijiDialog(const QString &object, bool left, bool right)
 void QijiDialog::popup(Player *_Self)
 {
     Self = _Self;
+    Self->tag.remove(object_name);
 
     Card::HandlingMethod method = Card::MethodUse;
     if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
@@ -410,6 +416,7 @@ void QijiDialog::popup(Player *_Self)
     QStringList checkedPatterns;
     QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
     bool play = (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+    const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
 
     //collect avaliable patterns for specific skill
     QStringList validPatterns;
@@ -440,13 +447,10 @@ void QijiDialog::popup(Player *_Self)
     }
     //then match it and check "CardLimit"
     foreach (QString str, validPatterns) {
-        const Skill *skill = Sanguosha->getSkill(object_name);
-        if (play || skill->matchAvaliablePattern(str, pattern)) {
-            Card *card = Sanguosha->cloneCard(str);
-            DELETE_OVER_SCOPE(Card, card)
-            if (!Self->isCardLimited(card, method))
-                checkedPatterns << str;
-        }
+        Card *card = Sanguosha->cloneCard(str);
+        DELETE_OVER_SCOPE(Card, card)
+        if (play || (cardPattern != nullptr && cardPattern->match(Self, card)) && !Self->isCardLimited(card, method))
+            checkedPatterns << str;
     }
     //while responsing, if only one pattern were checked, emit click()
 
@@ -485,7 +489,6 @@ void QijiDialog::popup(Player *_Self)
         button->setEnabled(enabled);
     }
 
-    Self->tag.remove(object_name);
     exec();
 }
 
@@ -596,20 +599,20 @@ public:
 
     static QStringList responsePatterns(const Player *Self)
     {
-        QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
+        const CardPattern *pattern = Sanguosha->getPattern(Self->getRoomObject()->getCurrentCardUsePattern());
+
         Card::HandlingMethod method = Card::MethodUse;
 
         if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
             method = Card::MethodResponse;
 
         QStringList checkedPatterns;
-        const Skill *skill = Sanguosha->getSkill("qiji");
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         QStringList ban_list = Sanguosha->getBanPackages();
         foreach (const Card *card, cards) {
             if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) {
                 QString p = card->objectName();
-                if (!checkedPatterns.contains(p) && skill->matchAvaliablePattern(p, pattern) && !Self->isCardLimited(card, method))
+                if (!checkedPatterns.contains(p) && (pattern != nullptr && pattern->match(Self, card)) && !Self->isCardLimited(card, method))
                     checkedPatterns << p;
             }
         }

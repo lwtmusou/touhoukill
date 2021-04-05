@@ -152,8 +152,12 @@ Fsu0413GainianDialog *Fsu0413GainianDialog::getInstance(const QString &object)
     return instance;
 }
 
-bool Fsu0413GainianDialog::isResponseOk(const Player *player, const QString &pattern) const
+bool Fsu0413GainianDialog::isResponseOk(const Player *player, const QString &_pattern) const
 {
+    const CardPattern *pattern = Sanguosha->getPattern(_pattern);
+    if (pattern == nullptr)
+        return false;
+
     foreach (const Card *c, map) {
         QScopedPointer<Card> copy(Sanguosha->cloneCard(c));
         copy->setSkillName("fsu0413gainian");
@@ -161,7 +165,7 @@ bool Fsu0413GainianDialog::isResponseOk(const Player *player, const QString &pat
             if (handCard->isKindOf("DelayedTrick")) {
                 copy->clearSubcards();
                 copy->addSubcard(handCard);
-                if ((copy->matchTypeOrName(pattern) || Sanguosha->matchExpPattern(pattern, player, copy.data())) && !player->isCardLimited(copy.data(), Card::MethodUse))
+                if (pattern->match(player, copy.data()) && !player->isCardLimited(copy.data(), Card::MethodUse))
                     return true;
             }
         }
@@ -171,7 +175,7 @@ bool Fsu0413GainianDialog::isResponseOk(const Player *player, const QString &pat
             if (handCard != nullptr && handCard->isKindOf("DelayedTrick")) {
                 copy->clearSubcards();
                 copy->addSubcard(handCard);
-                if ((copy->matchTypeOrName(pattern) || Sanguosha->matchExpPattern(pattern, player, copy.data())) && !player->isCardLimited(copy.data(), Card::MethodUse))
+                if (pattern->match(player, copy.data()) && !player->isCardLimited(copy.data(), Card::MethodUse))
                     return true;
             }
         }
@@ -188,6 +192,12 @@ void Fsu0413GainianDialog::popup(Player *_Self)
     QStringList availableCards;
 
     if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+        const CardPattern *pattern = Sanguosha->getPattern(Self->getRoomObject()->getCurrentCardUsePattern());
+        if (pattern == nullptr) {
+            emit onButtonClick();
+            return;
+        }
+
         foreach (const Card *c, map) {
             QScopedPointer<Card> copy(Sanguosha->cloneCard(c));
             copy->setSkillName("fsu0413gainian");
@@ -195,9 +205,7 @@ void Fsu0413GainianDialog::popup(Player *_Self)
                 if (handCard->isKindOf("DelayedTrick")) {
                     copy->clearSubcards();
                     copy->addSubcard(handCard);
-                    if ((copy->matchTypeOrName(Self->getRoomObject()->getCurrentCardUsePattern())
-                         || Sanguosha->matchExpPattern(Self->getRoomObject()->getCurrentCardUsePattern(), Self, copy.data()))
-                        && !Self->isCardLimited(copy.data(), Card::MethodUse)) {
+                    if (pattern->match(Self, copy.data()) && !Self->isCardLimited(copy.data(), Card::MethodUse)) {
                         availableCards << copy->objectName();
                         break;
                     }
@@ -209,9 +217,7 @@ void Fsu0413GainianDialog::popup(Player *_Self)
                 if (handCard != nullptr && handCard->isKindOf("DelayedTrick")) {
                     copy->clearSubcards();
                     copy->addSubcard(handCard);
-                    if ((copy->matchTypeOrName(Self->getRoomObject()->getCurrentCardUsePattern())
-                         || Sanguosha->matchExpPattern(Self->getRoomObject()->getCurrentCardUsePattern(), Self, copy.data()))
-                        && !Self->isCardLimited(copy.data(), Card::MethodUse)) {
+                    if (pattern->match(Self, copy.data()) && !Self->isCardLimited(copy.data(), Card::MethodUse)) {
                         availableCards << copy->objectName();
                         break;
                     }
@@ -490,7 +496,7 @@ void Fsu0413Fei2ZhaiCard::use(Room *room, ServerPlayer *source, QList<ServerPlay
     if (source->isAlive()) {
         DummyCard dummy;
         foreach (int id, room->getDiscardPile()) {
-        if (room->getCard(id)->isKindOf("Peach"))
+            if (room->getCard(id)->isKindOf("Peach"))
                 dummy.addSubcard(id);
         }
 

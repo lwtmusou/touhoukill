@@ -183,33 +183,35 @@ public:
         return false;
     }
 
-    bool isEnabledAtResponse(const Player *player, const QString &) const override
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        QString pattern = player->getRoomObject()->getCurrentCardUsePattern();
-        if (!matchAvaliablePattern("peach", pattern))
-            return false;
-        bool globalDying = false;
-        QList<const Player *> players = player->getSiblings();
-        players << player;
-        foreach (const Player *p, players) {
-            if (p->hasFlag("Global_Dying") && p->isAlive()) {
-                globalDying = true;
-                break;
+        Peach *card = new Peach(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(Peach, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        if (cardPattern != nullptr && cardPattern->match(player, card)) {
+            bool globalDying = false;
+
+            QList<const Player *> players = player->getSiblings();
+            players << player;
+            foreach (const Player *p, players) {
+                if (p->hasFlag("Global_Dying") && p->isAlive()) {
+                    globalDying = true;
+                    break;
+                }
+            }
+            if (globalDying) {
+                foreach (const Player *p, player->getAliveSiblings()) {
+                    if (p->hasLordSkill("yanhui") && p->hasFlag("Global_Dying"))
+                        return true;
+                }
+            } else {
+                foreach (const Player *p, player->getAliveSiblings()) {
+                    if (p->hasLordSkill("yanhui") && (p->isWounded() || p->isDebuffStatus()))
+                        return true;
+                }
             }
         }
-
-        if (globalDying) {
-            foreach (const Player *p, player->getAliveSiblings()) {
-                if (p->hasLordSkill("yanhui") && p->hasFlag("Global_Dying"))
-                    return true;
-            }
-        } else {
-            foreach (const Player *p, player->getAliveSiblings()) {
-                if (p->hasLordSkill("yanhui") && (p->isWounded() || p->isDebuffStatus()))
-                    return true;
-            }
-        }
-
         return false;
     }
 
@@ -1060,7 +1062,11 @@ public:
 
     bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        return hasZhanGenerals(player) && (matchAvaliablePattern("slash", pattern))
+        Slash *card = new Slash(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(Slash, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        return hasZhanGenerals(player) && (cardPattern != nullptr && cardPattern->match(player, card))
             && (player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) && (!player->hasFlag("Global_tianrenFailed"))
             && !player->isCurrent();
     }
@@ -1088,24 +1094,38 @@ public:
         if (!player->hasLordSkill(objectName()) || player->isCurrent())
             return QList<SkillInvokeDetail>();
 
-        QString pattern = s.pattern;
-        QString prompt = s.prompt;
-
-        bool can = (matchAvaliablePattern("slash", pattern) || matchAvaliablePattern("jink", pattern));
-        if ((!can) || prompt.startsWith("@tianren"))
+        const CardPattern *cardPattern = Sanguosha->getPattern(s.pattern);
+        if (cardPattern == nullptr)
             return QList<SkillInvokeDetail>();
 
-        if (matchAvaliablePattern("slash", pattern))
-            pattern = "slash";
-        else
-            pattern = "jink";
-        Card *dummy = Sanguosha->cloneCard(pattern);
-        DELETE_OVER_SCOPE(Card, dummy)
+        QString prompt = s.prompt;
+        if (prompt.startsWith("@tianren"))
+            return QList<SkillInvokeDetail>();
+
+        bool isslash = false;
+        Slash slash(Card::SuitToBeDecided, -1);
+        Jink jink(Card::SuitToBeDecided, -1);
+        Card *dummy = nullptr;
+
+        if (cardPattern->match(s.player, &slash)) {
+            isslash = true;
+            dummy = &slash;
+        } else if (cardPattern->match(s.player, &jink)) {
+            isslash = false;
+            dummy = &jink;
+        }
+
+        if (dummy == nullptr)
+            return QList<SkillInvokeDetail>();
+
         if (player->isCardLimited(dummy, s.method))
             return QList<SkillInvokeDetail>();
 
-        if (!room->getLieges("zhan", player).isEmpty())
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+        if (!room->getLieges("zhan", player).isEmpty()) {
+            SkillInvokeDetail d(this, player, player);
+            d.tag["isSlash"] = isslash;
+            return QList<SkillInvokeDetail>() << d;
+        }
         return QList<SkillInvokeDetail>();
     }
 
@@ -1115,7 +1135,7 @@ public:
         QString pattern = s.pattern;
         //for ai  to add global flag
         //slashsource or jinksource
-        if (matchAvaliablePattern("slash", pattern))
+        if (invoke->tag.value("isSlash").toBool())
             room->setTag("tianren_slash", true);
         else
             room->setTag("tianren_slash", false);
@@ -1125,7 +1145,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         QString pattern = data.value<CardAskedStruct>().pattern;
-        if (matchAvaliablePattern("slash", pattern))
+        if (invoke->tag.value("isSlash").toBool())
             pattern = "slash";
         else
             pattern = "jink";
@@ -1183,7 +1203,9 @@ public:
     bool isEnabledAtResponse(const Player *p, const QString &pattern) const override
     {
         Lightning l(Card::SuitToBeDecided, -1);
-        return l.isAvailable(p) && matchAvaliablePattern("lightning", pattern);
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        return l.isAvailable(p) && (cardPattern != nullptr && cardPattern->match(p, &l));
     }
 
     bool isEnabledAtPlay(const Player *player) const override
@@ -1522,6 +1544,7 @@ NianliDialog::NianliDialog(const QString &object)
 void NianliDialog::popup(Player *_Self)
 {
     Self = _Self;
+    Self->tag.remove(object_name);
 
     if (Self->getRoomObject()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY) {
         emit onButtonClick();
@@ -1556,7 +1579,6 @@ void NianliDialog::popup(Player *_Self)
         delete c;
     }
 
-    Self->tag.remove(object_name);
     exec();
 }
 
@@ -2465,11 +2487,17 @@ public:
 
         if (Self->getRoomObject()->getCurrentCardUsePattern() == "@@mianling!")
             return Self->getPile("qsmian").length() - selected.length() > 1 + Self->getAliveSiblings().length();
-        else
-            return selected.length() == 0
-                && ((Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
-                        ? to_select->isAvailable(Self)
-                        : matchAvaliablePattern(to_select->objectName(), Self->getRoomObject()->getCurrentCardUsePattern()));
+        else {
+            if (selected.length() != 0)
+                return false;
+            if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
+                return to_select->isAvailable(Self);
+
+            Card *c = Sanguosha->cloneCard(to_select->objectName());
+            DELETE_OVER_SCOPE(Card, c)
+            const CardPattern *cardPattern = Sanguosha->getPattern(Self->getRoomObject()->getCurrentCardUsePattern());
+            return cardPattern != nullptr && cardPattern->match(Self, c);
+        }
     }
 
     const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const override
@@ -2505,8 +2533,11 @@ public:
             return true;
 
         foreach (int id, player->getPile("qsmian")) {
-            if (matchAvaliablePattern(player->getRoomObject()->getCard(id)->objectName(), pattern)
-                && player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
+            Card *card = Sanguosha->cloneCard(player->getRoomObject()->getCard(id));
+            DELETE_OVER_SCOPE(Card, card)
+            const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+            if ((cardPattern != nullptr && cardPattern->match(player, card)) && player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
                 return true;
         }
 

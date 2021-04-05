@@ -955,7 +955,14 @@ public:
 
     bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        if (player->getMark("lingbai") > 0 && (matchAvaliablePattern("slash", pattern) || matchAvaliablePattern("jink", pattern)))
+        Slash s(Card::SuitToBeDecided, -1);
+        Jink j(Card::SuitToBeDecided, -1);
+
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+        if (cardPattern == nullptr)
+            return false;
+
+        if (player->getMark("lingbai") > 0 && (cardPattern->match(player, &s) || cardPattern->match(player, &j)))
             return true;
         return false;
     }
@@ -969,16 +976,24 @@ public:
     {
         bool play = (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
         QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
-        if (play || matchAvaliablePattern("slash", pattern)) {
-            Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+        if (cardPattern == nullptr)
+            return nullptr;
+
+        Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
+        if (play || cardPattern->match(Self, slash)) {
             slash->addSubcard(originalCard);
             slash->setSkillName(objectName());
             return slash;
-        } else if (matchAvaliablePattern("jink", pattern)) {
+        } else {
+            delete slash;
             Jink *jink = new Jink(originalCard->getSuit(), originalCard->getNumber());
-            jink->addSubcard(originalCard);
-            jink->setSkillName(objectName());
-            return jink;
+            if (cardPattern->match(Self, jink)) {
+                jink->addSubcard(originalCard);
+                jink->setSkillName(objectName());
+                return jink;
+            } else
+                delete jink;
         }
         return nullptr;
     }

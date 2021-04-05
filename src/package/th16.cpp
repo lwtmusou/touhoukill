@@ -704,9 +704,13 @@ public:
         return bh->isAvailable(player);
     }
 
-    bool isEnabledAtResponse(const Player *, const QString &pattern) const override
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        return matchAvaliablePattern("bone_healing", pattern);
+        BoneHealing *card = new BoneHealing(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(BoneHealing, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        return cardPattern != nullptr && cardPattern->match(player, card);
     }
 
     const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
@@ -792,9 +796,13 @@ public:
         response_or_use = true;
     }
 
-    bool isEnabledAtResponse(const Player *, const QString &pattern) const override
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        return matchAvaliablePattern("saving_energy", pattern);
+        SavingEnergy *card = new SavingEnergy(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(SavingEnergy, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        return cardPattern != nullptr && cardPattern->match(player, card);
     }
 
     const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override

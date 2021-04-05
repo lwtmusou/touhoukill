@@ -209,6 +209,7 @@ XihuaDialog::XihuaDialog(const QString &object, bool left, bool right)
 void XihuaDialog::popup(Player *_Self)
 {
     Self = _Self;
+    Self->tag.remove(object_name);
 
     Card::HandlingMethod method = Card::MethodUse;
     if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
@@ -217,6 +218,7 @@ void XihuaDialog::popup(Player *_Self)
     QStringList checkedPatterns;
     QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
     bool play = (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+    const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
 
     //collect avaliable patterns for specific skill
     QStringList validPatterns;
@@ -242,13 +244,10 @@ void XihuaDialog::popup(Player *_Self)
 
     //then match it and check "CardLimit"
     foreach (QString str, validPatterns) {
-        const Skill *skill = Sanguosha->getSkill(object_name);
-        if (play || skill->matchAvaliablePattern(str, pattern)) {
-            Card *card = Sanguosha->cloneCard(str);
-            DELETE_OVER_SCOPE(Card, card)
-            if (!Self->isCardLimited(card, method))
-                checkedPatterns << str;
-        }
+        Card *card = Sanguosha->cloneCard(str);
+        DELETE_OVER_SCOPE(Card, card)
+        if (play || (cardPattern != nullptr && cardPattern->match(Self, card)) && !Self->isCardLimited(card, method))
+            checkedPatterns << str;
     }
 
     //while responsing, if only one pattern were checked, emit click()
@@ -274,7 +273,6 @@ void XihuaDialog::popup(Player *_Self)
         button->setEnabled(enabled);
     }
 
-    Self->tag.remove(object_name);
     exec();
 }
 
@@ -579,19 +577,18 @@ public:
     static QStringList responsePatterns(const Player *Self)
     {
         QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
-
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
         Card::HandlingMethod method = Card::MethodUse;
         if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
             method = Card::MethodResponse;
 
         QStringList checkedPatterns;
-        const Skill *skill = Sanguosha->getSkill("xihua");
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         QStringList ban_list = Sanguosha->getBanPackages();
         foreach (const Card *card, cards) {
             if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) {
                 QString p = card->objectName();
-                if (!checkedPatterns.contains(p) && skill->matchAvaliablePattern(p, pattern) && !XihuaClear::xihua_choice_limit(Self, p, method))
+                if (!checkedPatterns.contains(p) && (cardPattern != nullptr && cardPattern->match(Self, card)) && !XihuaClear::xihua_choice_limit(Self, p, method))
                     checkedPatterns << p;
             }
         }
@@ -1047,14 +1044,15 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         CardAskedStruct s = data.value<CardAskedStruct>();
-        if (matchAvaliablePattern("jink", s.pattern)) {
+        Jink j(Card::SuitToBeDecided, -1);
+        const CardPattern *cardPattern = Sanguosha->getPattern(s.pattern);
+
+        if (cardPattern != nullptr && cardPattern->match(s.player, &j)) {
             ServerPlayer *current = room->getCurrent();
             if (!s.player->hasSkill(this) || !current || !current->isAlive() || (current->getWeapon() != nullptr))
                 return QList<SkillInvokeDetail>();
 
-            Jink *jink = new Jink(Card::NoSuit, 0);
-            jink->deleteLater();
-            if (s.player->isCardLimited(jink, s.method))
+            if (s.player->isCardLimited(&j, s.method))
                 return QList<SkillInvokeDetail>();
 
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, s.player, s.player);
