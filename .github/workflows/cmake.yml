@@ -36,26 +36,26 @@ jobs:
           cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
           buildDirectory: '${{ runner.workspace }}/build'
 
-  build-windows:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v1
+  #build-windows:
+  #  runs-on: windows-latest
+  #  steps:
+  #    - uses: actions/checkout@v1
+  #
+  #    - name: install swig
+  #      run: |
+  #        New-Item -Path "." -Name "tools" -ItemType "directory";
+  #        (New-Object System.Net.WebClient).DownloadFile("http://prdownloads.sourceforge.net/swig/swigwin-4.0.1.zip",#"tools/swigwin-4.0.1.zip");
+  #        Expand-Archive .\tools\swigwin-4.0.1.zip .\tools;
+  #        Move-Item -Path ".\tools\swigwin-4.0.1" -Destination ".\tools\swig"
+  #        .\tools\swig\swig.exe --help
+  #    
+  #    - name: Install Qt
+  #      uses: jurplel/install-qt-action@v2
 
-      - name: install swig
-        run: |
-          New-Item -Path "." -Name "tools" -ItemType "directory";
-          (New-Object System.Net.WebClient).DownloadFile("http://prdownloads.sourceforge.net/swig/swigwin-4.0.1.zip","tools/swigwin-4.0.1.zip");
-          Expand-Archive .\tools\swigwin-4.0.1.zip .\tools;
-          Move-Item -Path ".\tools\swigwin-4.0.1" -Destination ".\tools\swig"
-          .\tools\swig\swig.exe --help
-      
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v2
+  #    - uses: lukka/get-cmake@latest
 
-      - uses: lukka/get-cmake@latest
-
-      - name: Run CMake+Ninja without triplet
-        uses: ashutoshvarma/action-cmake-build@master
-        with:
-          build-dir: '${{ runner.workspace }}/build'
-          configure-options: "-G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH:STRING=%{QT5_DIR}"
+  #    - name: Run CMake+Ninja without triplet
+  #      uses: ashutoshvarma/action-cmake-build@master
+  #      with:
+  #        build-dir: '${{ runner.workspace }}/build'
+  #        configure-options: "-G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH:STRING=%{QT5_DIR}"
