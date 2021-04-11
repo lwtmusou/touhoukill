@@ -77,7 +77,7 @@ public:
         if (use.card->getSkillName() == "xianshi") {
             QString cardname = use.from->property("xianshi_card").toString();
             if (cardname != nullptr) {
-                Card *card = Sanguosha->cloneCard(cardname);
+                Card *card = use.from->getRoomObject()->cloneCard(cardname);
                 if (card != nullptr && card->canDamage())
                     return true;
 
@@ -1143,7 +1143,6 @@ public:
     }
 };
 
-
 YidanCard::YidanCard()
 {
     will_throw = false;
@@ -1151,7 +1150,7 @@ YidanCard::YidanCard()
 
 bool YidanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    Card *card = Sanguosha->cloneCard("light_slash");
+    Card *card = Self->getRoomObject()->cloneCard("light_slash");
     DELETE_OVER_SCOPE(Card, card)
     card->addSubcards(subcards);
     card->setSkillName("yidan");
@@ -1162,7 +1161,7 @@ bool YidanCard::targetFilter(const QList<const Player *> &targets, const Player 
 const Card *YidanCard::validate(CardUseStruct &card_use) const
 {
     card_use.from->showHiddenSkill("yidan");
-    Card *card = Sanguosha->cloneCard("light_slash");
+    Card *card = card_use.from->getRoomObject()->cloneCard("light_slash");
     card->setSkillName("yidan");
     card->addSubcards(subcards);
     return card;

@@ -2141,7 +2141,7 @@ public:
     {
         if (originalCard) {
             QString cardname = Self->property("toushi_card").toString();
-            Card *card = Sanguosha->cloneCard(cardname, originalCard->getSuit(), originalCard->getNumber());
+            Card *card = Self->getRoomObject()->cloneCard(cardname, originalCard->getSuit(), originalCard->getNumber());
             card->addSubcard(originalCard);
             card->setSkillName("toushi");
             return card;
@@ -2197,7 +2197,7 @@ public:
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player->getPhase() == Player::Play) {
                 QString cardname = player->property("toushi_card").toString();
-                Card *card = Sanguosha->cloneCard(cardname);
+                Card *card = player->getRoomObject()->cloneCard(cardname);
                 if (card == nullptr)
                     return QList<SkillInvokeDetail>();
                 DELETE_OVER_SCOPE(Card, card)
@@ -2225,7 +2225,7 @@ public:
 
         ServerPlayer *current = data.value<ServerPlayer *>();
         QString cardname = current->property("toushi_card").toString();
-        Card *card = Sanguosha->cloneCard(cardname);
+        Card *card = room->cloneCard(cardname);
         QString prompt = "@toushi:" + card->objectName();
         delete card;
 

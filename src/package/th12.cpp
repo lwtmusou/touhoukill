@@ -1472,8 +1472,7 @@ bool HuishengCard::targetFilter(const QList<const Player *> &targets, const Play
 {
     QString cardname = Self->property("huisheng_card").toString();
     QString str = Self->property("huisheng_target").toString();
-    Card *new_card = Sanguosha->cloneCard(cardname);
-    DELETE_OVER_SCOPE(Card, new_card)
+    Card *new_card = Self->getRoomObject()->cloneCard(cardname);
     new_card->setSkillName("huisheng");
     if (new_card->isKindOf("Peach"))
         return to_select->objectName() == str && new_card->isAvailable(to_select);
@@ -1487,8 +1486,7 @@ bool HuishengCard::targetFilter(const QList<const Player *> &targets, const Play
 bool HuishengCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
     QString cardname = Self->property("huisheng_card").toString();
-    Card *new_card = Sanguosha->cloneCard(cardname);
-    DELETE_OVER_SCOPE(Card, new_card)
+    Card *new_card = Self->getRoomObject()->cloneCard(cardname);
     new_card->setSkillName("huisheng");
 
     if (targets.length() < 1)
@@ -1499,7 +1497,7 @@ bool HuishengCard::targetsFeasible(const QList<const Player *> &targets, const P
 const Card *HuishengCard::validate(CardUseStruct &card_use) const
 {
     QString cardname = card_use.from->property("huisheng_card").toString();
-    Card *card = Sanguosha->cloneCard(cardname);
+    Card *card = card_use.from->getRoomObject()->cloneCard(cardname);
     card->setSkillName("huisheng");
     return card;
 }
@@ -1542,8 +1540,7 @@ public:
         if (use.from && use.to.length() == 1 && (use.card->isKindOf("BasicCard") || use.card->isNDTrick())) {
             ServerPlayer *source = use.to.first();
             if (use.from != source && source->hasSkill(this) && source->isAlive() && use.from->isAlive()) {
-                Card *card = Sanguosha->cloneCard(use.card->objectName());
-                DELETE_OVER_SCOPE(Card, card)
+                Card *card = use.from->getRoomObject()->cloneCard(use.card->objectName());
                 if (!source->isCardLimited(card, Card::MethodUse) && !source->isProhibited(use.from, card))
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, source, source);
             }
@@ -1555,7 +1552,7 @@ public:
     {
         room->setTag("huisheng_use", data);
         CardUseStruct use = data.value<CardUseStruct>();
-        Card *card = Sanguosha->cloneCard(use.card->objectName());
+        Card *card = room->cloneCard(use.card->objectName());
 
         QString prompt = "@huisheng-use:" + use.from->objectName() + ":" + card->objectName();
         room->setPlayerProperty(invoke->invoker, "huisheng_card", card->objectName());

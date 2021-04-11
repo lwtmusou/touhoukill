@@ -665,7 +665,7 @@ HezhouCard::HezhouCard()
 bool HezhouCard::do_hezhou(ServerPlayer *player) const
 {
     Room *room = player->getRoom();
-    Card *hezhoucard = Sanguosha->cloneCard(player->tag["hezhou_choice"].toString());
+    Card *hezhoucard = room->cloneCard(player->tag["hezhou_choice"].toString());
     DELETE_OVER_SCOPE(Card, hezhoucard)
 
     QList<int> ids;
@@ -701,7 +701,7 @@ bool HezhouCard::targetFilter(const QList<const Player *> &targets, const Player
 
     if (user_string == nullptr)
         return false;
-    Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+    Card *card = Self->getRoomObject()->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
     DELETE_OVER_SCOPE(Card, card)
     card->setSkillName("hezhou");
     if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && card->targetFixed(Self))
@@ -728,7 +728,7 @@ bool HezhouCard::targetsFeasible(const QList<const Player *> &targets, const Pla
 
     if (user_string == nullptr)
         return false;
-    Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+    Card *card = Self->getRoomObject()->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
     card->setSkillName("hezhou");
     if (card->canRecast() && targets.length() == 0)
         return false;
@@ -755,7 +755,7 @@ const Card *HezhouCard::validate(CardUseStruct &card_use) const
     bool success = do_hezhou(player);
     room->setPlayerFlag(player, "hezhou_used");
     if (success) {
-        Card *use_card = Sanguosha->cloneCard(to_use);
+        Card *use_card = room->cloneCard(to_use);
         use_card->setSkillName("hezhou");
         use_card->deleteLater();
 
@@ -780,7 +780,7 @@ const Card *HezhouCard::validateInResponse(ServerPlayer *user) const
     bool success = do_hezhou(user);
     room->setPlayerFlag(user, "hezhou_used");
     if (success) {
-        Card *use_card = Sanguosha->cloneCard(user_string);
+        Card *use_card = room->cloneCard(user_string);
         use_card->setSkillName("hezhou");
         use_card->deleteLater();
         return use_card;
@@ -1024,7 +1024,7 @@ void BeishuiDialog::popup(Player *_Self)
 
     //then match it and check "CardLimit"
     foreach (QString str, validPatterns) {
-        Card *card = Sanguosha->cloneCard(str);
+            Card *card = Self->getRoomObject()->cloneCard(str);
         DELETE_OVER_SCOPE(Card, card)
         if (play || (cardPattern != nullptr && cardPattern->match(Self, card)) && !Self->isCardLimited(card, method))
             checkedPatterns << str;
@@ -1074,7 +1074,7 @@ QGroupBox *BeishuiDialog::createLeft()
     QStringList ban_list = Sanguosha->getBanPackages();
     foreach (const Card *card, cards) {
         if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getPackage())) {
-            Card *c = Sanguosha->cloneCard(card->objectName());
+            Card *c = Self->getRoomObject()->cloneCard(card->objectName());
             c->setParent(this);
             layout->addWidget(createButton(c));
         }
@@ -1143,9 +1143,9 @@ public:
             return false;
         if (Slash::IsAvailable(player) || Analeptic::IsAvailable(player))
             return true;
-        Card *card = Sanguosha->cloneCard("peach", Card::NoSuit, 0);
+        Card *card = player->getRoomObject()->cloneCard("peach", Card::NoSuit, 0);
         DELETE_OVER_SCOPE(Card, card)
-        Card *card1 = Sanguosha->cloneCard("super_peach", Card::NoSuit, 0);
+        Card *card1 = player->getRoomObject()->cloneCard("super_peach", Card::NoSuit, 0);
         DELETE_OVER_SCOPE(Card, card1)
         return card->isAvailable(player) || card1->isAvailable(player);
     }
@@ -1195,7 +1195,7 @@ public:
         if (checkedPatterns.length() == 1)
             name = checkedPatterns.first();
         if (name != nullptr) {
-            Card *card = Sanguosha->cloneCard(name);
+            Card *card = Self->getRoomObject()->cloneCard(name);
             card->setSkillName(objectName());
             card->addSubcards(cards);
             return card;

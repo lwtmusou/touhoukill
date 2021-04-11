@@ -1488,10 +1488,8 @@ public:
             return false;
         if (Slash::IsAvailable(player) || Analeptic::IsAvailable(player))
             return true;
-        Card *card = Sanguosha->cloneCard("peach", Card::NoSuit, 0);
-        DELETE_OVER_SCOPE(Card, card)
-        Card *card1 = Sanguosha->cloneCard("super_peach", Card::NoSuit, 0);
-        DELETE_OVER_SCOPE(Card, card1)
+        Card *card = player->getRoomObject()->cloneCard("peach", Card::NoSuit, 0);
+        Card *card1 = player->getRoomObject()->cloneCard("super_peach", Card::NoSuit, 0);
         return card->isAvailable(player) || card1->isAvailable(player);
     }
 
@@ -1556,7 +1554,7 @@ public:
         if (checkedPatterns.length() == 1)
             name = checkedPatterns.first();
         if (name != nullptr) {
-            Card *card = Sanguosha->cloneCard(name);
+            Card *card = Self->getRoomObject()->cloneCard(name);
             card->setSkillName(objectName());
             card->addSubcards(cards);
             return card;
@@ -3955,8 +3953,7 @@ BanyueHegemonyCard::BanyueHegemonyCard()
 
 bool BanyueHegemonyCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    Card *card = Sanguosha->cloneCard("befriend_attacking");
-    DELETE_OVER_SCOPE(Card, card)
+    Card *card = Self->getRoomObject()->cloneCard("befriend_attacking");
     if (targets.isEmpty()) {
         return (to_select == Self || to_select->hasShownOneGeneral()) && (!to_select->isCardLimited(card, Card::HandlingMethod::MethodUse));
     } else if (targets.length() == 1) {
@@ -3998,7 +3995,7 @@ void BanyueHegemonyCard::use(Room *room, ServerPlayer *source, QList<ServerPlaye
     room->loseHp(source);
     ServerPlayer *to1 = targets.first();
     ServerPlayer *to2 = targets.last();
-    Card *card = Sanguosha->cloneCard("befriend_attacking");
+    Card *card = room->cloneCard("befriend_attacking");
     card->setSkillName("_banyue_hegemony");
 
     CardUseStruct use;

@@ -1568,7 +1568,7 @@ void NianliDialog::popup(Player *_Self)
         group->addButton(button);
 
         bool can = true;
-        Card *c = Sanguosha->cloneCard(card_name);
+        Card *c = Self->getRoomObject()->cloneCard(card_name);
         c->setSkillName("nianli");
         if (Self->isCardLimited(c, Card::MethodUse) || !c->isAvailable(Self))
             can = false;
@@ -1597,7 +1597,7 @@ NianliCard::NianliCard()
 
 bool NianliCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    Card *new_card = Sanguosha->cloneCard(user_string, Card::SuitToBeDecided, 0);
+    Card *new_card = Self->getRoomObject()->cloneCard(user_string, Card::SuitToBeDecided, 0);
     DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("nianli");
     if (new_card->targetFixed(Self))
@@ -1607,7 +1607,7 @@ bool NianliCard::targetFilter(const QList<const Player *> &targets, const Player
 
 bool NianliCard::targetFixed(const Player *Self) const
 {
-    Card *new_card = Sanguosha->cloneCard(user_string, Card::SuitToBeDecided, 0);
+    Card *new_card = Self->getRoomObject()->cloneCard(user_string, Card::SuitToBeDecided, 0);
     DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("nianli");
     return new_card && new_card->targetFixed(Self);
@@ -1615,7 +1615,7 @@ bool NianliCard::targetFixed(const Player *Self) const
 
 bool NianliCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
-    Card *new_card = Sanguosha->cloneCard(user_string, Card::SuitToBeDecided, 0);
+    Card *new_card = Self->getRoomObject()->cloneCard(user_string, Card::SuitToBeDecided, 0);
     DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("nianli");
     return new_card && new_card->targetsFeasible(targets, Self);
@@ -1626,7 +1626,7 @@ const Card *NianliCard::validate(CardUseStruct &card_use) const
     QString to_use = user_string;
     QList<int> ids = card_use.from->getRoom()->getNCards(2);
 
-    Card *use_card = Sanguosha->cloneCard(to_use, Card::SuitToBeDecided, 0);
+    Card *use_card = card_use.from->getRoomObject()->cloneCard(to_use, Card::SuitToBeDecided, 0);
     use_card->setSkillName("nianli");
     use_card->addSubcards(ids);
     use_card->deleteLater();
@@ -2493,7 +2493,7 @@ public:
             if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
                 return to_select->isAvailable(Self);
 
-            Card *c = Sanguosha->cloneCard(to_select->objectName());
+            Card *c = Self->getRoomObject()->cloneCard(to_select->objectName());
             DELETE_OVER_SCOPE(Card, c)
             const CardPattern *cardPattern = Sanguosha->getPattern(Self->getRoomObject()->getCurrentCardUsePattern());
             return cardPattern != nullptr && cardPattern->match(Self, c);
@@ -2533,7 +2533,7 @@ public:
             return true;
 
         foreach (int id, player->getPile("qsmian")) {
-            Card *card = Sanguosha->cloneCard(player->getRoomObject()->getCard(id));
+            Card *card = player->getRoomObject()->cloneCard(player->getRoomObject()->getCard(id));
             DELETE_OVER_SCOPE(Card, card)
             const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
 

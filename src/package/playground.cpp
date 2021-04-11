@@ -159,13 +159,13 @@ bool Fsu0413GainianDialog::isResponseOk(const Player *player, const QString &_pa
         return false;
 
     foreach (const Card *c, map) {
-        QScopedPointer<Card> copy(Sanguosha->cloneCard(c));
+        Card *copy = player->getRoomObject()->cloneCard(c);
         copy->setSkillName("fsu0413gainian");
         foreach (const Card *handCard, player->getHandcards()) {
             if (handCard->isKindOf("DelayedTrick")) {
                 copy->clearSubcards();
                 copy->addSubcard(handCard);
-                if (pattern->match(player, copy.data()) && !player->isCardLimited(copy.data(), Card::MethodUse))
+                if (pattern->match(player, copy) && !player->isCardLimited(copy, Card::MethodUse))
                     return true;
             }
         }
@@ -175,7 +175,7 @@ bool Fsu0413GainianDialog::isResponseOk(const Player *player, const QString &_pa
             if (handCard != nullptr && handCard->isKindOf("DelayedTrick")) {
                 copy->clearSubcards();
                 copy->addSubcard(handCard);
-                if (pattern->match(player, copy.data()) && !player->isCardLimited(copy.data(), Card::MethodUse))
+                if (pattern->match(player, copy) && !player->isCardLimited(copy, Card::MethodUse))
                     return true;
             }
         }
@@ -199,13 +199,13 @@ void Fsu0413GainianDialog::popup(Player *_Self)
         }
 
         foreach (const Card *c, map) {
-            QScopedPointer<Card> copy(Sanguosha->cloneCard(c));
+            Card *copy = Self->getRoomObject()->cloneCard(c);
             copy->setSkillName("fsu0413gainian");
             foreach (const Card *handCard, Self->getHandcards()) {
                 if (handCard->isKindOf("DelayedTrick")) {
                     copy->clearSubcards();
                     copy->addSubcard(handCard);
-                    if (pattern->match(Self, copy.data()) && !Self->isCardLimited(copy.data(), Card::MethodUse)) {
+                    if (pattern->match(Self, copy) && !Self->isCardLimited(copy, Card::MethodUse)) {
                         availableCards << copy->objectName();
                         break;
                     }
@@ -217,7 +217,7 @@ void Fsu0413GainianDialog::popup(Player *_Self)
                 if (handCard != nullptr && handCard->isKindOf("DelayedTrick")) {
                     copy->clearSubcards();
                     copy->addSubcard(handCard);
-                    if (pattern->match(Self, copy.data()) && !Self->isCardLimited(copy.data(), Card::MethodUse)) {
+                    if (pattern->match(Self, copy) && !Self->isCardLimited(copy, Card::MethodUse)) {
                         availableCards << copy->objectName();
                         break;
                     }
@@ -235,13 +235,13 @@ void Fsu0413GainianDialog::popup(Player *_Self)
         }
     } else if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
         foreach (const Card *c, map) {
-            QScopedPointer<Card> copy(Sanguosha->cloneCard(c));
+            Card *copy = Self->getRoomObject()->cloneCard(c);
             copy->setSkillName("fsu0413gainian");
             foreach (const Card *handCard, Self->getHandcards()) {
                 if (handCard->isKindOf("DelayedTrick")) {
                     copy->clearSubcards();
                     copy->addSubcard(handCard);
-                    if (copy->isAvailable(Self) && !Self->isCardLimited(copy.data(), Card::MethodUse)) {
+                    if (copy->isAvailable(Self) && !Self->isCardLimited(copy, Card::MethodUse)) {
                         availableCards << copy->objectName();
                         break;
                     }
@@ -253,7 +253,7 @@ void Fsu0413GainianDialog::popup(Player *_Self)
                 if (handCard != nullptr && handCard->isKindOf("DelayedTrick")) {
                     copy->clearSubcards();
                     copy->addSubcard(handCard);
-                    if (copy->isAvailable(Self) && !Self->isCardLimited(copy.data(), Card::MethodUse)) {
+                    if (copy->isAvailable(Self) && !Self->isCardLimited(copy, Card::MethodUse)) {
                         availableCards << copy->objectName();
                         break;
                     }
@@ -306,7 +306,7 @@ void Fsu0413GainianDialog::createButtons()
     QStringList ban_list = Sanguosha->getBanPackages();
     foreach (const Card *card, cards) {
         if (card->inherits("DelayedTrick") && !map.contains(card->objectName()) && !ban_list.contains(card->getPackage())) {
-            Card *c = Sanguosha->cloneCard(card->objectName());
+            Card *c = Self->getRoomObject()->cloneCard(card->objectName());
             c->setParent(this);
             layout->addWidget(createButton(c));
         }
@@ -374,7 +374,7 @@ public:
         if (!Self->tag.contains("fsu0413gainian") || Self->tag["fsu0413gainian"].toString().length() == 0)
             return nullptr;
 
-        Card *c = Sanguosha->cloneCard(Self->tag["fsu0413gainian"].toString());
+        Card *c = Self->getRoomObject()->cloneCard(Self->tag["fsu0413gainian"].toString());
         if (c == nullptr)
             return nullptr;
 

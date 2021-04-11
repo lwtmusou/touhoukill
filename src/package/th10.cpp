@@ -447,7 +447,7 @@ void QijiDialog::popup(Player *_Self)
     }
     //then match it and check "CardLimit"
     foreach (QString str, validPatterns) {
-        Card *card = Sanguosha->cloneCard(str);
+            Card *card = Self->getRoomObject()->cloneCard(str);
         DELETE_OVER_SCOPE(Card, card)
         if (play || (cardPattern != nullptr && cardPattern->match(Self, card)) && !Self->isCardLimited(card, method))
             checkedPatterns << str;
@@ -512,7 +512,7 @@ QGroupBox *QijiDialog::createLeft()
     QStringList ban_list = Sanguosha->getBanPackages();
     foreach (const Card *card, cards) {
         if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getPackage())) {
-            Card *c = Sanguosha->cloneCard(card->objectName());
+            Card *c = Self->getRoomObject()->cloneCard(card->objectName());
             c->setParent(this);
             layout->addWidget(createButton(c));
         }
@@ -544,7 +544,7 @@ QGroupBox *QijiDialog::createRight()
                     continue;
             }
 
-            Card *c = Sanguosha->cloneCard(card->objectName());
+            Card *c = Self->getRoomObject()->cloneCard(card->objectName());
             c->setSkillName(object_name);
             c->setParent(this);
 
@@ -657,7 +657,7 @@ public:
     {
         QStringList checkedPatterns = responsePatterns(Self);
         if (checkedPatterns.length() == 1) {
-            Card *card = Sanguosha->cloneCard(checkedPatterns.first());
+            Card *card = Self->getRoomObject()->cloneCard(checkedPatterns.first());
             card->setSkillName(objectName());
             card->addSubcard(originalCard);
             card->setCanRecast(false);
@@ -666,7 +666,7 @@ public:
 
         QString name = Self->tag.value("qiji", QString()).toString();
         if (name != nullptr) {
-            Card *card = Sanguosha->cloneCard(name);
+            Card *card = Self->getRoomObject()->cloneCard(name);
             card->setSkillName(objectName());
             card->addSubcard(originalCard);
             card->setCanRecast(false);

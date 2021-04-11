@@ -6,6 +6,7 @@
 #include <QObject>
 
 class Room;
+class RoomObject;
 class Player;
 class ServerPlayer;
 class Client;
@@ -194,7 +195,7 @@ public:
     static QString Suit2String(Suit suit);
     static const int S_UNKNOWN_CARD_ID;
 
-    static const Card *Parse(const QString &str);
+    static const Card *Parse(const QString &str, RoomObject *room);
     virtual QString toString(bool hidden = false) const;
 
     virtual QString getEffectName() const;

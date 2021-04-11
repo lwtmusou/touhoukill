@@ -244,7 +244,7 @@ void XihuaDialog::popup(Player *_Self)
 
     //then match it and check "CardLimit"
     foreach (QString str, validPatterns) {
-        Card *card = Sanguosha->cloneCard(str);
+            Card *card = Self->getRoomObject()->cloneCard(str);
         DELETE_OVER_SCOPE(Card, card)
         if (play || (cardPattern != nullptr && cardPattern->match(Self, card)) && !Self->isCardLimited(card, method))
             checkedPatterns << str;
@@ -296,7 +296,7 @@ QGroupBox *XihuaDialog::createLeft()
     QStringList ban_list = Sanguosha->getBanPackages();
     foreach (const Card *card, cards) {
         if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getPackage())) {
-            Card *c = Sanguosha->cloneCard(card->objectName());
+            Card *c = Self->getRoomObject()->cloneCard(card->objectName());
             c->setParent(this);
             layout->addWidget(createButton(c));
         }
@@ -323,7 +323,7 @@ QGroupBox *XihuaDialog::createRight()
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
     foreach (const Card *card, cards) {
         if (card->isNDTrick() && !map.contains(card->objectName()) && !ban_list.contains(card->getPackage())) {
-            Card *c = Sanguosha->cloneCard(card->objectName());
+            Card *c = Self->getRoomObject()->cloneCard(card->objectName());
             c->setSkillName(object_name);
             c->setParent(this);
 
@@ -392,8 +392,7 @@ public:
     }
     static bool xihua_choice_limit(const Player *player, QString pattern, Card::HandlingMethod method)
     {
-        Card *c = Sanguosha->cloneCard(pattern);
-        DELETE_OVER_SCOPE(Card, c)
+        Card *c = player->getRoomObject()->cloneCard(pattern);
         if (pattern.contains("slash"))
             pattern = "slash";
         else if (pattern.contains("jink"))
@@ -443,8 +442,7 @@ XihuaCard::XihuaCard()
 bool XihuaCard::do_xihua(ServerPlayer *tanuki) const
 {
     Room *room = tanuki->getRoom();
-    Card *xihuacard = Sanguosha->cloneCard(tanuki->tag["xihua_choice"].toString());
-    DELETE_OVER_SCOPE(Card, xihuacard)
+    Card *xihuacard = room->cloneCard(tanuki->tag["xihua_choice"].toString());
     //record xihua cardname which has used
     ServerPlayer *current = room->getCurrent();
     if (current && current->isAlive() && current->isCurrent())
@@ -480,8 +478,7 @@ bool XihuaCard::targetFilter(const QList<const Player *> &targets, const Player 
 
     if (user_string == nullptr)
         return false;
-    Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
-    DELETE_OVER_SCOPE(Card, card)
+    Card *card = Self->getRoomObject()->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
     card->setSkillName("xihua");
     if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && card->targetFixed(Self))
         return false;
@@ -507,7 +504,7 @@ bool XihuaCard::targetsFeasible(const QList<const Player *> &targets, const Play
 
     if (user_string == nullptr)
         return false;
-    Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+    Card *card = Self->getRoomObject()->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
     card->setSkillName("xihua");
     if (card->canRecast() && targets.length() == 0)
         return false;
@@ -532,7 +529,7 @@ const Card *XihuaCard::validate(CardUseStruct &card_use) const
     xihua_general->tag["xihua_choice"] = QVariant::fromValue(to_use);
     bool success = do_xihua(xihua_general);
     if (success) {
-        Card *use_card = Sanguosha->cloneCard(to_use);
+        Card *use_card = room->cloneCard(to_use);
         use_card->setSkillName("xihua");
         use_card->addSubcard(xihua_general->tag["xihua_id"].toInt());
         use_card->deleteLater();
@@ -557,7 +554,7 @@ const Card *XihuaCard::validateInResponse(ServerPlayer *user) const
     user->showHiddenSkill("xihua");
     bool success = do_xihua(user);
     if (success) {
-        Card *use_card = Sanguosha->cloneCard(user_string);
+        Card *use_card = room->cloneCard(user_string);
         use_card->setSkillName("xihua");
         use_card->addSubcard(user->tag["xihua_id"].toInt());
         use_card->deleteLater();

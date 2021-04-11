@@ -414,9 +414,9 @@ ShowDistanceSkill::ShowDistanceSkill(const QString &name)
 {
 }
 
-const Card *ShowDistanceSkill::viewAs(const Player * /*Self*/) const
+const Card *ShowDistanceSkill::viewAs(const Player *Self) const
 {
-    SkillCard *card = Sanguosha->cloneSkillCard("ShowFengsu");
+    SkillCard *card = Self->getRoomObject()->cloneSkillCard("ShowFengsu");
     card->setUserString(objectName());
     return card;
 }
@@ -627,12 +627,12 @@ ArraySummonSkill::ArraySummonSkill(const QString &name)
 {
 }
 
-const Card *ArraySummonSkill::viewAs(const Player * /*Self*/) const
+const Card *ArraySummonSkill::viewAs(const Player *Self) const
 {
     QString name = objectName();
     name[0] = name[0].toUpper();
     name += "Summon";
-    Card *card = Sanguosha->cloneSkillCard(name);
+    Card *card = Self->getRoomObject()->cloneSkillCard(name);
     card->setShowSkill(objectName());
     return card;
 }

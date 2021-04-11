@@ -83,7 +83,7 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
         foreach (QString to, tos)
             RoomSceneInstance->showIndicator(from_general, to);
 
-        const Card *card = Card::Parse(card_str);
+        const Card *card = Card::Parse(card_str, ClientInstance);
         if (card == nullptr)
             return;
 

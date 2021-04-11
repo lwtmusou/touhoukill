@@ -993,7 +993,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         CardAskedStruct ask = data.value<CardAskedStruct>();
-        Card *jink = Sanguosha->cloneCard("jink");
+        Card *jink = ask.player->getRoomObject()->cloneCard("jink");
         DELETE_OVER_SCOPE(Card, jink)
 
         const CardPattern *pattern = Sanguosha->getPattern(ask.pattern);

@@ -815,7 +815,7 @@ public:
             log.card_str = QString::number(card_id);
             room->sendLog(log);
 
-            Card *delayTrick = Sanguosha->cloneCard(choice);
+            Card *delayTrick = room->cloneCard(choice);
             WrappedCard *vs_card = room->getWrappedCard(card_id);
             vs_card->setSkillName(objectName());
             vs_card->takeOver(delayTrick);
@@ -1944,7 +1944,7 @@ public:
         bool trick = false;
         foreach (int id, player->getPile("modian")) {
             if (player->getRoomObject()->getCard(id)->isKindOf("TrickCard")) {
-                Card *trickCard = Sanguosha->cloneCard(player->getRoomObject()->getCard(id));
+                Card *trickCard = player->getRoomObject()->cloneCard(player->getRoomObject()->getCard(id));
                 DELETE_OVER_SCOPE(Card, trickCard)
                 if (cardPattern->match(player, trickCard)) {
                     trick = true;
@@ -1978,7 +1978,7 @@ public:
                 return false;
 
             Slash s(Card::SuitToBeDecided, -1);
-            Card *trickCard = Sanguosha->cloneCard(to_select->objectName());
+            Card *trickCard = Self->getRoomObject()->cloneCard(to_select->objectName());
             DELETE_OVER_SCOPE(Card, trickCard);
 
             if (selected.isEmpty()) {
@@ -1991,7 +1991,7 @@ public:
                 if (selected.first()->isKindOf("Slash"))
                     return cardPattern->match(Self, trickCard);
                 else {
-                    Card *trickCard2 = Sanguosha->cloneCard(selected.first()->objectName());
+                    Card *trickCard2 = Self->getRoomObject()->cloneCard(selected.first()->objectName());
                     DELETE_OVER_SCOPE(Card, trickCard2);
 
                     return cardPattern->match(Self, trickCard2);
@@ -2021,7 +2021,7 @@ public:
             if ((t == nullptr) || (s == nullptr))
                 return nullptr;
 
-            f = Sanguosha->cloneCard(t->objectName());
+            f = Self->getRoomObject()->cloneCard(t->objectName());
         }
 
         if (f == nullptr)
@@ -2042,7 +2042,7 @@ public:
             } else if (cards.length() == 2) {
                 foreach (const Card *c, cards) {
                     if (c->isKindOf("TrickCard")) {
-                        Card *card = Sanguosha->cloneCard(c->objectName());
+                        Card *card = Self->getRoomObject()->cloneCard(c->objectName());
                         foreach (const Card *c, cards) {
                             if (c->isKindOf("Slash")) {
                                 card->addSubcard(c);
@@ -2064,7 +2064,7 @@ public:
             } else if (cards.length() == 2) {
                 foreach (const Card *c, cards) {
                     if (c->isKindOf("TrickCard") && matchAvaliablePattern(c->objectName(), pattern)) {
-                        Card *card = Sanguosha->cloneCard(c->objectName());
+                        Card *card = Self->getRoomObject()->cloneCard(c->objectName());
                         foreach (const Card *c, cards) {
                             if (c->isKindOf("Slash")) {
                                 card->addSubcard(c);

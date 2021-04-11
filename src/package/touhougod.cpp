@@ -1970,7 +1970,7 @@ bool HuaxiangCard::targetFilter(const QList<const Player *> &targets, const Play
     if (user_string == nullptr)
         return false;
 
-    Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+    Card *card = Self->getRoomObject()->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
     DELETE_OVER_SCOPE(Card, card)
     card->setSkillName("huaxiang");
     return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
@@ -1983,7 +1983,7 @@ bool HuaxiangCard::targetFixed(const Player *Self) const
 
     if (!user_string.isEmpty())
         return false;
-    Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+    Card *card = Self->getRoomObject()->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
     DELETE_OVER_SCOPE(Card, card)
     card->setSkillName("huaxiang");
     return card && card->targetFixed(Self);
@@ -1996,7 +1996,7 @@ bool HuaxiangCard::targetsFeasible(const QList<const Player *> &targets, const P
 
     if (user_string == nullptr)
         return false;
-    Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+    Card *card = Self->getRoomObject()->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
     DELETE_OVER_SCOPE(Card, card)
     card->setSkillName("huaxiang");
     return card && card->targetsFeasible(targets, Self);
@@ -2009,7 +2009,7 @@ const Card *HuaxiangCard::validate(CardUseStruct &card_use) const
     card_use.from->getRoom()->touhouLogmessage("#InvokeSkill", card_use.from, "huaxiang");
     card_use.from->addToPile("rainbow", subcards.first());
 
-    Card *use_card = Sanguosha->cloneCard(to_use, Card::NoSuit, 0);
+    Card *use_card = card_use.from->getRoomObject()->cloneCard(to_use, Card::NoSuit, 0);
     use_card->setSkillName("huaxiang");
     use_card->deleteLater();
     return use_card;
@@ -2021,7 +2021,7 @@ const Card *HuaxiangCard::validateInResponse(ServerPlayer *user) const
     Room *room = user->getRoom();
     room->touhouLogmessage("#InvokeSkill", user, "huaxiang");
     user->addToPile("rainbow", subcards.first());
-    Card *use_card = Sanguosha->cloneCard(user_string, Card::NoSuit, 0);
+    Card *use_card = user->getRoomObject()->cloneCard(user_string, Card::NoSuit, 0);
     use_card->setSkillName("huaxiang");
     use_card->deleteLater();
 
@@ -2076,10 +2076,8 @@ public:
         if (Slash::IsAvailable(player) || Analeptic::IsAvailable(player))
             return true;
         if (player->getMaxHp() <= 2) {
-            Card *card = Sanguosha->cloneCard("peach", Card::NoSuit, 0);
-            DELETE_OVER_SCOPE(Card, card)
-            Card *card1 = Sanguosha->cloneCard("super_peach", Card::NoSuit, 0);
-            DELETE_OVER_SCOPE(Card, card1)
+            Card *card = player->getRoomObject()->cloneCard("peach", Card::NoSuit, 0);
+            Card *card1 = player->getRoomObject()->cloneCard("super_peach", Card::NoSuit, 0);
             return card->isAvailable(player) || card1->isAvailable(player);
         }
         return false;
@@ -3461,7 +3459,7 @@ QStringList ShenbaoDialog::getAvailableChoices(const Player *player, CardUseStru
     QStringList choices;
 
     foreach (const QString &skillName, equipViewAsSkills) {
-        EquipCard *equipCard = qobject_cast<EquipCard *>(Sanguosha->cloneCard(skillName));
+        EquipCard *equipCard = qobject_cast<EquipCard *>(player->getRoomObject()->cloneCard(skillName));
         bool available = false;
         if (equipCard != nullptr) {
             EquipCard::Location location = equipCard->location();
@@ -3517,7 +3515,7 @@ QStringList ShenbaoDialog::getAvailableNullificationChoices(const ServerPlayer *
 {
     QStringList choices;
     foreach (const QString &skillName, equipViewAsSkills) {
-        EquipCard *equipCard = qobject_cast<EquipCard *>(Sanguosha->cloneCard(skillName));
+        EquipCard *equipCard = qobject_cast<EquipCard *>(player->getRoomObject()->cloneCard(skillName));
         bool available = false;
         if (equipCard != nullptr) {
             EquipCard::Location location = equipCard->location();
@@ -3580,7 +3578,7 @@ ShenbaoDialog::ShenbaoDialog(const QString &object)
     foreach (const QString &skillName, equipViewAsSkills) {
         QCommandLinkButton *btn = new QCommandLinkButton(Sanguosha->translate(skillName));
         btn->setObjectName(skillName);
-        const Card *equip = Sanguosha->cloneCard(skillName);
+        const Card *equip = Self->getRoomObject()->cloneCard(skillName);
         if (equip)
             btn->setToolTip(equip->getDescription());
 
@@ -4319,7 +4317,7 @@ public:
 
         QStringList checkedPatterns;
         foreach (QString str, validPatterns) {
-            Card *card = Sanguosha->cloneCard(str);
+            Card *card = Self->getRoomObject()->cloneCard(str);
             DELETE_OVER_SCOPE(Card, card)
 
             if (cardPattern != nullptr && cardPattern->match(Self, card))
@@ -4988,7 +4986,6 @@ void AnyunDialog::popup(Player *_Self)
     bool play = (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
     Self->tag.remove(object_name);
 
-
     foreach (QAbstractButton *button, group->buttons()) {
         layout->removeWidget(button);
         group->removeButton(button);
@@ -5598,7 +5595,7 @@ public:
                 ServerPlayer *target = use.to.first();
                 if (target->isAlive() && !target->isRemoved()) {
                     ServerPlayer *next = qobject_cast<ServerPlayer *>(target->getNextAlive(1));
-                    Card *card = Sanguosha->cloneCard(use.card->objectName());
+                    Card *card = use.from->getRoomObject()->cloneCard(use.card->objectName());
                     card->setSkillName("huixing");
                     card->deleteLater();
                     if (next && next != target && !use.from->isCardLimited(card, Card::MethodUse) && !use.from->isProhibited(next, card)) {
@@ -5623,7 +5620,7 @@ public:
     {
         invoke->invoker->loseMark("@star");
         CardUseStruct use = data.value<CardUseStruct>();
-        Card *card = Sanguosha->cloneCard(use.card->objectName());
+        Card *card = room->cloneCard(use.card->objectName());
         //copy flag
         QStringList flags;
         flags << "mopao"
@@ -5704,9 +5701,8 @@ void XianshiDialog::popup(Player *_Self)
     if (play)
         checkedPatterns = xianshi_record.split("+");
     else {
-
         foreach (QString name, xianshi_record.split("+")) {
-            Card *c = Sanguosha->cloneCard(name);
+            Card *c = Self->getRoomObject()->cloneCard(name);
             DELETE_OVER_SCOPE(Card, c)
 
             if (!(cardPattern != nullptr && cardPattern->match(Self, c)))
@@ -5745,7 +5741,7 @@ QGroupBox *XianshiDialog::createLeft()
 
     foreach (const Card *card, cards) {
         if (card->getTypeId() == Card::TypeBasic && !map.contains(card->objectName()) && !ban_list.contains(card->getPackage())) {
-            Card *c = Sanguosha->cloneCard(card->objectName());
+            Card *c = Self->getRoomObject()->cloneCard(card->objectName());
             c->setParent(this);
             layout->addWidget(createButton(c));
         }
@@ -5772,7 +5768,7 @@ QGroupBox *XianshiDialog::createRight()
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
     foreach (const Card *card, cards) {
         if (card->isNDTrick() && !map.contains(card->objectName()) && !ban_list.contains(card->getPackage())) {
-            Card *c = Sanguosha->cloneCard(card->objectName());
+            Card *c = Self->getRoomObject()->cloneCard(card->objectName());
             c->setSkillName(object_name);
             c->setParent(this);
 
@@ -5824,7 +5820,7 @@ XianshiCard::XianshiCard()
 bool XianshiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     const Card *oc = Self->getRoomObject()->getCard(subcards.first());
-    Card *card = Sanguosha->cloneCard(oc->objectName());
+    Card *card = Self->getRoomObject()->cloneCard(oc->objectName());
     DELETE_OVER_SCOPE(Card, card)
     card->addSubcard(oc);
     card->setSkillName("xianshi");
@@ -5834,7 +5830,7 @@ bool XianshiCard::targetFilter(const QList<const Player *> &targets, const Playe
 bool XianshiCard::targetFixed(const Player *Self) const
 {
     const Card *oc = Self->getRoomObject()->getCard(subcards.first());
-    Card *card = Sanguosha->cloneCard(oc->objectName());
+    Card *card = Self->getRoomObject()->cloneCard(oc->objectName());
     DELETE_OVER_SCOPE(Card, card)
     card->addSubcard(oc);
     card->setSkillName("xianshi");
@@ -5844,7 +5840,7 @@ bool XianshiCard::targetFixed(const Player *Self) const
 bool XianshiCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
     const Card *oc = Self->getRoomObject()->getCard(subcards.first());
-    Card *card = Sanguosha->cloneCard(oc->objectName());
+    Card *card = Self->getRoomObject()->cloneCard(oc->objectName());
     DELETE_OVER_SCOPE(Card, card)
     card->addSubcard(oc);
     card->setSkillName("xianshi");
@@ -5858,7 +5854,7 @@ const Card *XianshiCard::validate(CardUseStruct &use) const
     QString xianshi_name = user_string;
     use.from->showHiddenSkill("xianshi");
     const Card *card = use.from->getRoom()->getCard(subcards.first());
-    Card *use_card = Sanguosha->cloneCard(card->objectName(), card->getSuit(), card->getNumber());
+    Card *use_card = use.from->getRoomObject()->cloneCard(card->objectName(), card->getSuit(), card->getNumber());
     use_card->setSkillName("xianshi");
 
     use_card->addSubcard(subcards.first());
@@ -5878,7 +5874,7 @@ const Card *XianshiCard::validateInResponse(ServerPlayer *user) const
     user->showHiddenSkill("xianshi");
 
     const Card *card = room->getCard(subcards.first());
-    Card *use_card = Sanguosha->cloneCard(card->objectName(), card->getSuit(), card->getNumber());
+    Card *use_card = room->cloneCard(card->objectName(), card->getSuit(), card->getNumber());
     use_card->setSkillName("xianshi");
     use_card->addSubcard(subcards.first());
     use_card->deleteLater();
@@ -6545,7 +6541,7 @@ public:
         else {
             QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
             const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
-            Card *c = Sanguosha->cloneCard(to_select->objectName());
+            Card *c = Self->getRoomObject()->cloneCard(to_select->objectName());
             DELETE_OVER_SCOPE(Card, c)
             return cardPattern != nullptr && cardPattern->match(Self, c);
         }
@@ -6831,7 +6827,7 @@ public:
                 exclude = "lightning";
             room->touhouLogmessage("#dimai_judge", current, objectName(), QList<ServerPlayer *>(), exclude);
 
-            DelayedTrick *c = qobject_cast<DelayedTrick *>(Sanguosha->cloneCard(exclude, Card::NoSuit, 0));
+            DelayedTrick *c = qobject_cast<DelayedTrick *>(room->cloneCard(exclude, Card::NoSuit, 0));
             if (c == nullptr)
                 room->touhouLogmessage("#dimai_unknownErr", current, exclude);
             else {

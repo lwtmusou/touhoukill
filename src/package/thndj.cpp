@@ -1511,7 +1511,7 @@ public:
     {
         if (Self->getRoomObject()->getCurrentCardUsePattern() == "@@" + objectName()) {
             QString cardName = Self->property("yaolitrick").toString();
-            Card *c = Sanguosha->cloneCard(cardName);
+            Card *c = Self->getRoomObject()->cloneCard(cardName);
             if (c != nullptr) {
                 c->setSkillName("_yaolitrick");
                 c->setCanRecast(false);
@@ -1799,7 +1799,7 @@ public:
         if (use.card->isNDTrick() && use.from != nullptr && use.from->isAlive() && use.from->tag.contains("yaolieffect2") && use.card->getSkillName() != "yaolitrick") {
             QString cardName = use.card->getClassName();
 
-            Card *c = Sanguosha->cloneCard(cardName);
+            Card *c = use.from->getRoomObject()->cloneCard(cardName);
             if (c != nullptr) {
                 DELETE_OVER_SCOPE(Card, c)
                 c->setSkillName("_yaolitrick");

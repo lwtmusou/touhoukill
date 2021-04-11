@@ -1004,7 +1004,7 @@ public:
     const Card *viewAs(const Player *Self) const override
     {
         QString cardname = Self->property("xiezou_card").toString();
-        Card *card = Sanguosha->cloneCard(cardname);
+        Card *card = Self->getRoomObject()->cloneCard(cardname);
 
         card->setSkillName("xiezou");
         return card;
@@ -1056,7 +1056,7 @@ public:
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player->getPhase() == Player::Play && player->hasSkill(this) && player->isAlive()) {
                 QString cardname = player->property("xiezou_card").toString();
-                Card *card = Sanguosha->cloneCard(cardname);
+                Card *card = player->getRoomObject()->cloneCard(cardname);
                 if (card == nullptr)
                     return QList<SkillInvokeDetail>();
                 DELETE_OVER_SCOPE(Card, card)
@@ -1072,7 +1072,7 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         QString cardname = invoke->invoker->property("xiezou_card").toString();
-        Card *card = Sanguosha->cloneCard(cardname);
+        Card *card = room->cloneCard(cardname);
         QString prompt = "@xiezou:" + card->objectName();
         delete card;
         room->setPlayerFlag(invoke->invoker, "Global_InstanceUse_Failed");
@@ -1311,7 +1311,7 @@ public:
     const Card *viewAs(const Player *Self) const override
     {
         QString cardname = Self->property("yaoshu_card").toString();
-        Card *card = Sanguosha->cloneCard(cardname);
+        Card *card = Self->getRoomObject()->cloneCard(cardname);
 
         card->setSkillName("yaoshu");
         return card;
@@ -1350,7 +1350,7 @@ public:
             if (player->hasFlag("Global_ProcessBroken") || !player->hasSkill(this))
                 return QList<SkillInvokeDetail>();
 
-            const Card *c = Sanguosha->cloneCard(use.card->objectName());
+            const Card *c = player->getRoomObject()->cloneCard(use.card->objectName());
             if (c == nullptr)
                 return QList<SkillInvokeDetail>();
             DELETE_OVER_SCOPE(const Card, c)
@@ -1391,7 +1391,7 @@ bool QimenCard::targetFilter(const QList<const Player *> &targets, const Player 
     int maxnum = qimenMax(Self);
 
     QString cardname = Self->property("qimen_card").toString();
-    Card *new_card = Sanguosha->cloneCard(cardname);
+    Card *new_card = Self->getRoomObject()->cloneCard(cardname);
     DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("qimen");
     if (targets.isEmpty() && new_card && to_select->getEquips().length() >= maxnum && !Self->isProhibited(to_select, new_card, targets))
@@ -1403,7 +1403,7 @@ bool QimenCard::targetFilter(const QList<const Player *> &targets, const Player 
 bool QimenCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
     QString cardname = Self->property("qimen_card").toString();
-    Card *new_card = Sanguosha->cloneCard(cardname);
+    Card *new_card = Self->getRoomObject()->cloneCard(cardname);
     DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("qimen");
 
@@ -1416,7 +1416,7 @@ const Card *QimenCard::validate(CardUseStruct &card_use) const
 {
     card_use.from->showHiddenSkill("qimen");
     QString cardname = card_use.from->property("qimen_card").toString();
-    Card *card = Sanguosha->cloneCard(cardname);
+    Card *card = card_use.from->getRoomObject()->cloneCard(cardname);
     card->setSkillName("qimen");
     return card;
 }
@@ -1463,7 +1463,7 @@ public:
 
             if (use.card->isNDTrick() || use.card->getTypeId() == Card::TypeBasic) {
                 int maxnum = qimenMax(player);
-                Card *c = Sanguosha->cloneCard(use.card->objectName());
+                Card *c = use.from->getRoomObject()->cloneCard(use.card->objectName());
                 DELETE_OVER_SCOPE(Card, c)
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->getEquips().length() >= maxnum && !player->isCardLimited(c, Card::MethodUse) && !player->isProhibited(p, c))
