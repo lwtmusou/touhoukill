@@ -1,78 +1,110 @@
 #include "CardFace.h"
-#include "player.h"
 #include "RoomObject.h"
+#include "player.h"
 #include "room.h"
 
 #include <QObject>
 #include <QString>
 
-QString CardFace::name() const {
-    return this->metaObject()->className();
+CardFace::CardFace()
+    : target_fixed(false)
+    , will_throw(true)
+    , has_preact(false)
+    , can_recast(false)
+    , can_damage(false)
+    , can_recover(false)
+    , has_effectvalue(true)
+{
 }
 
-QString CardFace::description() const {
+CardFace::~CardFace()
+{
+}
+
+QString CardFace::name() const
+{
+    return staticMetaObject.className();
+}
+
+QString CardFace::description() const
+{
     return QString();
 }
 
-QString CardFace::commmonEffectName() const {
+QString CardFace::commmonEffectName() const
+{
     return QString();
 }
 
-QString CardFace::effectName() const {
+QString CardFace::effectName() const
+{
     return QString();
 }
 
-QString CardFace::showSkillName() const {
+QString CardFace::showSkillName() const
+{
     return QString();
 }
 
-bool CardFace::isKindOf(const char *cardType) const {
-    Q_ASSERT(cardType);
-    return inherits(cardType);
+bool CardFace::isKindOf(const char *cardType) const
+{
+    // TODO: return staticMetaObject.inherits(&(Sanguosha->getCardFace(cardType)->staticMetaObject));
+    (void)cardType;
+    return false;
 }
 
-bool CardFace::matchType(const QString &pattern) const {
-    for(const auto &ptn : pattern.split("+")){
-        if (typeName() == ptn || subTypeName() == ptn) return true;
+bool CardFace::matchType(const QString &pattern) const
+{
+    foreach (const QString &ptn, pattern.split("+")) {
+        if (typeName() == ptn || subTypeName() == ptn)
+            return true;
     }
     return false;
 }
 
-bool CardFace::isNDTrick() const {
+bool CardFace::isNDTrick() const
+{
     return false;
 }
 
-bool CardFace::canDamage() const {
-    return false;
+bool CardFace::canDamage() const
+{
+    return can_damage;
 }
 
-bool CardFace::canRecover() const {
-    return false;
+bool CardFace::canRecover() const
+{
+    return can_recover;
 }
 
-bool CardFace::canRecast() const {
-    return false;
+bool CardFace::canRecast() const
+{
+    return can_recast;
 }
 
-bool CardFace::hasEffectValue() const {
-    return false;
+bool CardFace::hasEffectValue() const
+{
+    return has_effectvalue;
 }
 
-bool CardFace::willThrow() const {
-    return true;
+bool CardFace::willThrow() const
+{
+    return will_throw;
 }
 
-bool CardFace::hasPreAction() const {
-    return true;
+bool CardFace::hasPreAction() const
+{
+    return has_preact;
 }
 
-CardFace::HandlingMethod CardFace::defaultHandlingMethod() const {
+CardFace::HandlingMethod CardFace::defaultHandlingMethod() const
+{
     return MethodNone;
 }
 
-bool CardFace::targetFixed(const Player *Self, const Card *card) const
+bool CardFace::targetFixed(const Player *, const Card *) const
 {
-    return false;
+    return target_fixed;
 }
 
 bool CardFace::targetsFeasible(const QList<const Player *> &targets, const Player *Self, const Card *card) const
@@ -83,7 +115,7 @@ bool CardFace::targetsFeasible(const QList<const Player *> &targets, const Playe
         return !targets.isEmpty();
 }
 
-bool CardFace::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card) const
+bool CardFace::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *) const
 {
     return targets.isEmpty() && to_select != Self;
 }
@@ -110,15 +142,13 @@ const Card *CardFace::validate(const CardUseStruct &use) const
     return use.card;
 }
 
-const Card *CardFace::validateInResponse(ServerPlayer *user, const Card *original_card) const
+const Card *CardFace::validateInResponse(ServerPlayer *, const Card *original_card) const
 {
     return original_card;
 }
 
-
 void CardFace::doPreAction(Room *, const CardUseStruct &) const
 {
-
 }
 
 void CardFace::onUse(Room *room, const CardUseStruct &use) const
@@ -193,7 +223,7 @@ void CardFace::use(Room *room, const CardUseStruct &use) const
     if (isNDTrick() && source && source->getMark("magic_drank") > 0)
         magic_drank = source->getMark("magic_drank");
 
-    for (ServerPlayer *target : use.to) {
+    foreach (ServerPlayer *target, use.to) {
         CardEffectStruct effect;
         effect.card = use.card;
         effect.from = source;
@@ -248,7 +278,6 @@ void CardFace::use(Room *room, const CardUseStruct &use) const
 
 void CardFace::onEffect(const CardEffectStruct &) const
 {
-
 }
 
 bool CardFace::isCancelable(const CardEffectStruct &) const
@@ -256,6 +285,6 @@ bool CardFace::isCancelable(const CardEffectStruct &) const
     return false;
 }
 
-void CardFace::onNullified(ServerPlayer *target) const {
-
+void CardFace::onNullified(ServerPlayer *target) const
+{
 }
