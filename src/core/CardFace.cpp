@@ -48,7 +48,7 @@ QString CardFace::showSkillName() const
 
 bool CardFace::isKindOf(const char *cardType) const
 {
-    // TODO: return staticMetaObject.inherits(&(Sanguosha->getCardFace(cardType)->staticMetaObject));
+    // TODO: return staticMetaObject.inherits(&(Sanguosha->getCardFace(cardType)->staticMetaObject)); // depends on Qt 5.7
     (void)cardType;
     return false;
 }

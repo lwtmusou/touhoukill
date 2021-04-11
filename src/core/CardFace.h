@@ -32,8 +32,9 @@ public:
     virtual QString commmonEffectName() const;
     virtual QString effectName() const;
 
-    // Maybe move this to the SkillCard sub class??
+    // FIXME: Maybe move this to the SkillCard sub class??
     // Fs: A 'Slash' may show skill due to something like 'make a card to use or response as [Slash]'
+    // Seems this should belongs to Card
     virtual QString showSkillName() const;
 
     // type property
