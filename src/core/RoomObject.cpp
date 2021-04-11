@@ -38,7 +38,7 @@ Card *CardFactory::cloneCard(const QString &name, Card::Suit suit, int number, c
     const QMetaObject *meta = metaObjects.value(name, NULL);
     if (meta != nullptr) {
         QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
-        card_obj->setObjectName(className2objectName.value(name, name));
+        // card_obj->setObjectName(className2objectName.value(name, name));
         card = qobject_cast<Card *>(card_obj);
     }
 
