@@ -60,7 +60,7 @@ public:
     // Fs: these identifier should be overriden by the Card, they are set by CardFace instead.
     virtual bool canDamage() const;
     virtual bool canRecover() const;
-    virtual bool canRecast() const;
+    virtual bool canRecast() const; // Fs: seems like this should belong to card
     virtual bool hasEffectValue() const;
     virtual bool willThrow() const;
     // FIXME: Do we really this function? What will happen if we provide a PreAction that does nothing?
