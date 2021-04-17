@@ -41,11 +41,6 @@ QString CardFace::effectName() const
     return QString();
 }
 
-QString CardFace::showSkillName() const
-{
-    return QString();
-}
-
 bool CardFace::isKindOf(const char *cardType) const
 {
     // TODO: return staticMetaObject.inherits(&(Sanguosha->getCardFace(cardType)->staticMetaObject)); // depends on Qt 5.7
@@ -97,10 +92,6 @@ bool CardFace::hasPreAction() const
     return has_preact;
 }
 
-CardFace::HandlingMethod CardFace::defaultHandlingMethod() const
-{
-    return MethodNone;
-}
 
 bool CardFace::targetFixed(const Player *, const Card *) const
 {

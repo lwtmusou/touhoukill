@@ -6,10 +6,12 @@
 #include <QMetaObject>
 #include <QString>
 
+
 class Player;
 class ServerPlayer;
 class Room;
 class Card;
+
 
 struct CardUseStruct;
 struct CardEffectStruct;
@@ -32,11 +34,6 @@ public:
     virtual QString commmonEffectName() const;
     virtual QString effectName() const;
 
-    // FIXME: Maybe move this to the SkillCard sub class??
-    // Fs: A 'Slash' may show skill due to something like 'make a card to use or response as [Slash]'
-    // Seems this should belongs to Card
-    virtual QString showSkillName() const;
-
     // type property
     enum CardType
     {
@@ -57,29 +54,19 @@ public:
     // Fs: This is just a convenience function....
     virtual bool isNDTrick() const;
 
-    // property identifier
-    // Fs: these identifier should be overriden by the Card, they are set by CardFace instead.
+    // property identifier. 
+    // CardFace provides the default value of these property
+    // But they could be dynamic and explained by Card itself. 
+    // For example, some skill may let Slash not be regarded as damage card?
     virtual bool canDamage() const;
     virtual bool canRecover() const;
-    virtual bool canRecast() const; // Fs: seems like this should belong to card
+    virtual bool canRecast() const;
     virtual bool hasEffectValue() const;
     virtual bool willThrow() const;
-    // FIXME: Do we really this function? What will happen if we provide a PreAction that does nothing?
-    // Fs: AmazingGrase depends on this one
     virtual bool hasPreAction() const;
 
-    // card handling method
-    enum HandlingMethod
-    {
-        MethodNone,
-        MethodUse,
-        MethodResponse,
-        MethodDiscard,
-        MethodRecast,
-        MethodPindian
-    };
-    // FIXME: I think the handling method is given by actual case (skill or rules) and is not part of the CardFace which is believed to be the pure functional model according to the description.
-    virtual HandlingMethod defaultHandlingMethod() const;
+    // This is method is removed from the face. It's clear that this is totally dynamic. 
+    // virtual Card::HandlingMethod defaultHandlingMethod() const;
 
     // Functions
     virtual bool targetFixed(const Player *Self, const Card *card) const;

@@ -271,4 +271,166 @@ public:
     QString toString(bool hidden = false) const override;
 };
 
+class CardFace;
+
+namespace RefactorProposal {
+
+// To keep compatibility, the new card class is defined here.
+// After its interface is carefully examined, we will push it to replace existing class.
+
+class Card final {
+    Q_GADGET
+public:
+    // Maybe enum color?
+    enum Suit 
+    {
+        Spade,
+        Club,
+        Heart,
+        Diamond,
+        NoSuitBlack,
+        NoSuitRed,
+        NoSuit,
+        SuitToBeDecided = -1
+    };
+
+    enum Color {
+        Red,
+        Black,
+        Colorless
+    };
+
+    enum HandlingMethod
+    {
+        MethodNone,
+        MethodUse,
+        MethodResponse,
+        MethodDiscard,
+        MethodRecast,
+        MethodPindian
+    };
+
+    // constructor to create real card
+    explicit Card(const CardFace *face, Suit suit = SuitToBeDecided, int number = -1, int id = -1);
+    
+    // Suit method
+    Card::Suit suit() const;
+    inline void setSuit(Suit suit) { m_suit = suit; }
+    QString suitString() const;
+    inline bool isRed() const { return suit() == Heart || suit() == Diamond || suit() == NoSuitRed; }
+    inline bool isBlack() const { return suit() == Spade || suit() == Club || suit() == NoSuitBlack; }
+    Color color() const;
+
+    // Number method
+    int number() const;
+    inline void setNumber(int number) { m_number = number; }
+    inline QString numberString() const {return QString::number(m_number); }
+
+    // id
+    inline int id() const { return m_id; }
+    int effectiveID() const;
+
+    // name
+    QString name() const;
+    QString fullName(bool include_suit = false) const;
+    QString logName() const;
+
+    // skill name
+    inline QString skillName() const { return m_skill_name; }
+    inline void setSkillName(const QString &skill_name) { m_skill_name = skill_name; }
+    inline QString showSkillName() const { return m_show_skill_name; }
+    inline void setShowSkillName(const QString &show_skill_name) { m_show_skill_name = show_skill_name; }
+
+    // handling method
+    inline Card::HandlingMethod handleMethod() const { return m_handling_method; }
+    
+    // property (override the CardFace)
+    inline bool canDamage() const { return m_can_damage; };
+    void setCanDamage(bool can) { m_can_damage = can; }
+    inline bool canRecover() const {return m_can_recover; }
+    void setCanRecover(bool can) { m_can_recover = can; }
+    inline bool canRecast() const { return m_can_recast; }
+    void setCanRecast(bool can) { m_can_recast = can; }
+    inline bool hasEffectValue() const;
+    void setHasEffectValue(bool has) { m_has_effect_value = has; }
+    inline bool thrownAfterUse() const { return m_thrown_after_use; }
+    void thrownAfterUse(bool thrown) { m_thrown_after_use = thrown; }
+
+    // Face (functional model)
+    // Face cannot be changed once given
+    inline const CardFace *face() const { return m_face; }
+
+    // Flags
+    inline const QStringList &flags() const { return m_flags; }
+    void addFlag(const QString &flag);
+    void addFlags(const QStringList &flags);
+    void removeFlag(const QString &flag);
+    void removeFlag(const QStringList &flag);
+    inline void clearFlags() { m_flags.clear(); }
+    inline bool hasFlag(const QString &flag) const {return flags().contains(flag); }
+
+    // Virtual Card
+    bool isVirtualCard() const;
+    const Card *realCard() const;
+
+    // Subcard
+    const QList<int> &subcards() const { return m_sub_cards; }
+    void addSubcard(int card_id);
+    void addSubcard(const Card *card);
+    void addSubcards(const QList<int> &subcards);
+    inline void clearSubcards() { m_sub_cards.clear(); }
+    QString subcardString() const; // Used for converting card to string
+
+    // Status
+    // FIXME: move this method to player?
+    bool isEquipped(const Player *self) const;
+
+    // UI property
+    inline bool isMute() const { return m_mute; }
+    inline void setMute(bool mute) { m_mute = mute; }
+
+    // toString
+    QString toString() const;
+
+    // helpers
+    static Card *Clone(const Card *other);
+    static QString SuitToString(Suit suit);
+    static const Card *parse(const QString &str, RoomObject *room);
+
+private:
+    // basic information
+    const CardFace *m_face; // functional model
+    Suit m_suit;
+    int m_number;
+    int m_id; // real card has id.
+
+    QList<int> m_sub_cards; // for real card this should be empty.
+    
+    // Skill name related
+    QString m_skill_name;
+    QString m_show_skill_name;
+
+    // handling method
+    Card::HandlingMethod m_handling_method;
+
+    // property
+    bool m_can_damage;
+    bool m_can_recover;
+    bool m_can_recast;
+    bool m_has_effect_value;
+    bool m_thrown_after_use;
+
+    // flags
+    // Flag should be unique right?
+    // FIXME: replace QStringList with QStringSet?
+    QStringList m_flags; 
+
+    // UI
+    bool m_mute;
+
+};
+
+};
+
+
 #endif
