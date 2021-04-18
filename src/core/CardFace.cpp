@@ -6,19 +6,37 @@
 #include <QObject>
 #include <QString>
 
+class CardFacePrivate
+{
+public:
+    CardFacePrivate()
+        : target_fixed(false)
+        , will_throw(true)
+        , has_preact(false)
+        , can_recast(false)
+        , can_damage(false)
+        , can_recover(false)
+        , has_effectvalue(true)
+    {
+    }
+
+    bool target_fixed;
+    bool will_throw;
+    bool has_preact;
+    bool can_recast;
+    bool can_damage;
+    bool can_recover;
+    bool has_effectvalue;
+};
+
 CardFace::CardFace()
-    : target_fixed(false)
-    , will_throw(true)
-    , has_preact(false)
-    , can_recast(false)
-    , can_damage(false)
-    , can_recover(false)
-    , has_effectvalue(true)
+    : d(new CardFacePrivate)
 {
 }
 
 CardFace::~CardFace()
 {
+    delete d;
 }
 
 QString CardFace::name() const
@@ -64,38 +82,37 @@ bool CardFace::isNDTrick() const
 
 bool CardFace::canDamage() const
 {
-    return can_damage;
+    return d->can_damage;
 }
 
 bool CardFace::canRecover() const
 {
-    return can_recover;
+    return d->can_recover;
 }
 
 bool CardFace::canRecast() const
 {
-    return can_recast;
+    return d->can_recast;
 }
 
 bool CardFace::hasEffectValue() const
 {
-    return has_effectvalue;
+    return d->has_effectvalue;
 }
 
 bool CardFace::willThrow() const
 {
-    return will_throw;
+    return d->will_throw;
 }
 
 bool CardFace::hasPreAction() const
 {
-    return has_preact;
+    return d->has_preact;
 }
-
 
 bool CardFace::targetFixed(const Player *, const Card *) const
 {
-    return target_fixed;
+    return d->target_fixed;
 }
 
 bool CardFace::targetsFeasible(const QList<const Player *> &targets, const Player *Self, const Card *card) const

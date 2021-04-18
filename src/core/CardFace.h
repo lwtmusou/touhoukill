@@ -6,12 +6,11 @@
 #include <QMetaObject>
 #include <QString>
 
-
 class Player;
 class ServerPlayer;
 class Room;
 class Card;
-
+class CardFacePrivate;
 
 struct CardUseStruct;
 struct CardEffectStruct;
@@ -54,9 +53,9 @@ public:
     // Fs: This is just a convenience function....
     virtual bool isNDTrick() const;
 
-    // property identifier. 
+    // property identifier.
     // CardFace provides the default value of these property
-    // But they could be dynamic and explained by Card itself. 
+    // But they could be dynamic and explained by Card itself.
     // For example, some skill may let Slash not be regarded as damage card?
     virtual bool canDamage() const;
     virtual bool canRecover() const;
@@ -65,7 +64,7 @@ public:
     virtual bool willThrow() const;
     virtual bool hasPreAction() const;
 
-    // This is method is removed from the face. It's clear that this is totally dynamic. 
+    // This is method is removed from the face. It's clear that this is totally dynamic.
     // virtual Card::HandlingMethod defaultHandlingMethod() const;
 
     // Functions
@@ -93,13 +92,7 @@ public:
     virtual void onNullified(ServerPlayer *target) const;
 
 protected:
-    bool target_fixed;
-    bool will_throw;
-    bool has_preact;
-    bool can_recast;
-    bool can_damage;
-    bool can_recover;
-    bool has_effectvalue;
+    CardFacePrivate *d;
 };
 
 #endif
