@@ -68,8 +68,15 @@ public:
     static bool canUse(const Player *from, const Player *to, const Card *c, int i = -1)
     {
         Q_UNUSED(i);
-        if (from->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
-            return c->isAvailable(from) && !from->isProhibited(to, c);
+        if (from->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+            bool r = false;
+            c->setFlags("IgnoreFailed");
+            c->setFlags("houhu");
+            r = c->isAvailable(from) && !from->isProhibited(to, c) && c->targetFilter(QList<const Player *>(), to, from);
+            c->setFlags("-houhu");
+            c->setFlags("-IgnoreFailed");
+            return r;
+        }
 #if 0
         // todo? or won't do?
         else if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {

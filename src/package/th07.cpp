@@ -2337,7 +2337,7 @@ public:
 
     bool isEnabledAtPlay(const Player *player) const override
     {
-        return !player->isKongcheng() && !player->hasFlag("Global_huayinFailed");
+        return !player->isKongcheng() && !player->hasFlag("Global_huayinFailed") && player->isWounded();
     }
 
     bool isEnabledAtResponse(const Player *player, const QString &pattern) const override

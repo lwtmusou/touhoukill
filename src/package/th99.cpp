@@ -2243,6 +2243,7 @@ void XieliCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) c
 
     Analeptic *ana = new Analeptic(Card::NoSuit, -1);
     ana->setFlags("Add_History");
+    ana->setSkillName("_xieli");
     room->useCard(CardUseStruct(ana, source));
 }
 
