@@ -1800,7 +1800,7 @@ void ModianCard::use(Room *room, ServerPlayer *src, QList<ServerPlayer *> &targe
 {
     ServerPlayer *alice = targets.first();
     if (src == alice)
-        src->showHiddenSkill("modian");
+        src->showHiddenSkill("modian"); // why not use "setShowSkill?"
 
     room->setPlayerFlag(alice, "modianInvoked");
     room->notifySkillInvoked(alice, "modian");
@@ -1998,7 +1998,7 @@ public:
         bool trick = false;
         foreach (int id, player->getPile("modian")) {
             if (Sanguosha->getCard(id)->isKindOf("TrickCard")) {
-                Card *trickCard = Sanguosha->cloneCard(Sanguosha->getCard(id));
+                Card *trickCard = Sanguosha->cloneCard(Sanguosha->getCard(id)->objectName());
                 DELETE_OVER_SCOPE(Card, trickCard)
                 if (cardPattern->match(player, trickCard)) {
                     trick = true;
@@ -2038,7 +2038,6 @@ public:
             if (selected.isEmpty()) {
                 if (to_select->isKindOf("TrickCard"))
                     return cardPattern->match(Self, &s) || cardPattern->match(Self, trickCard);
-
             } else if (selected.length() == 1) {
                 if (to_select->getTypeId() == selected.first()->getTypeId())
                     return false;

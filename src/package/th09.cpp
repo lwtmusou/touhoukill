@@ -2535,7 +2535,7 @@ public:
             return true;
 
         foreach (int id, player->getPile("qsmian")) {
-            Card *card = Sanguosha->cloneCard(Sanguosha->getCard(id));
+            Card *card = Sanguosha->cloneCard(Sanguosha->getCard(id)->objectName());
             DELETE_OVER_SCOPE(Card, card)
             const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
 
