@@ -546,7 +546,8 @@ public:
     {
         if (triggerEvent == DamageDone) {
             DamageStruct damage = data.value<DamageStruct>();
-            damage.from->setFlags("fsu0413fei4zhaidamaged");
+            if (damage.from != nullptr)
+                damage.from->setFlags("fsu0413fei4zhaidamaged");
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             change.player->setFlags("-fsu0413fei4zhaidamaged");
