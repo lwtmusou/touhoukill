@@ -36,17 +36,6 @@ signals:
     void onButtonClick();
 };
 
-class Fsu0413Fei2ZhaiCard : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE Fsu0413Fei2ZhaiCard();
-
-    void onUse(Room *room, const CardUseStruct &card_use) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
-};
-
 class Fsu0413JbdNashaCard : public SkillCard
 {
     Q_OBJECT
