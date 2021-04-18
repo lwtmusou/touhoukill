@@ -1076,7 +1076,7 @@ public:
         } else {
             Analeptic card(Card::NoSuit, 0);
             if (Self->isCardLimited(&card, Card::MethodUse))
-                return false;
+                return nullptr;
 
             const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
             if (cardPattern != nullptr && cardPattern->match(Self, &card))
