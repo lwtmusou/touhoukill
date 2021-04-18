@@ -57,8 +57,14 @@ public:
     // CardFace provides the default value of these property
     // But they could be dynamic and explained by Card itself.
     // For example, some skill may let Slash not be regarded as damage card?
+    // Fs: There is a skill which has a skill named "Xianshi" for God Patchouli in TouhouKill. It needs an extremely hacked Card/CardFace which changes all the effect of a certain Card.
+    // Return value of "canDamage" and "canRecover" is affected by "Xianshi" in this case.
     virtual bool canDamage() const;
     virtual bool canRecover() const;
+    // Fs: canRecast should be property of Card.
+    // Seems like it should be dealt in UI and GameRule instead of the logic in Card/CardFace itself.
+    // Currently CardFace::onUse and CardFace::targetFixed/targetFeasible are hacked to support recast
+    // Note: In HulaoPass mode, all weapon can be recast according to the game rule.
     virtual bool canRecast() const;
     virtual bool hasEffectValue() const;
     virtual bool willThrow() const;
@@ -75,6 +81,7 @@ public:
     // FIXME: return tuple/pair rather than a pure bool and combine two functions together?
     // Fs: This depends on implementation of all cards, although I believe that this function is initially only for skill 'yeyan'
     // In fact return value of the function with maxVotes has no use, only 'maxVotes' is used in current UI.
+    // Fs (Edit 2021/4/18): Maybe a single targetFilter with a return value of Integer is enough?
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card, int &maxVotes) const;
 
     virtual bool isAvailable(const Player *player, const Card *card) const;
@@ -91,7 +98,7 @@ public:
     virtual bool isCancelable(const CardEffectStruct &effect) const;
     virtual void onNullified(ServerPlayer *target) const;
 
-protected:
+private:
     CardFacePrivate *d;
 };
 
