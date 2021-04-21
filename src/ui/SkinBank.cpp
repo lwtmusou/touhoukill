@@ -389,16 +389,9 @@ QPixmap QSanRoomSkin::getGeneralPixmap(const QString &generalName, GeneralIconSi
     if (size == S_GENERAL_ICON_SIZE_CARD)
         return getCardMainPixmap(name, false, heroSkin);
     else {
-        if (name.endsWith("_hegemony")) {
+        if (name.endsWith("_hegemony"))
             name = name.replace("_hegemony", "");
-            /*if (size != S_GENERAL_ICON_SIZE_TINY) {
-               /*QDir dir("image/generals/full/avatar");
-               dir.setNameFilters(QStringList(QString("%1.png").arg(generalName)));
-                QStringList tmpFiles = dir.entryList(QDir::Files | QDir::NoDotAndDotDot);
-                if (!tmpFiles.isEmpty())
-                  
-            }*/
-        }
+
         QString key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(size).arg(name);
 
         if (isImageKeyDefined(key))
