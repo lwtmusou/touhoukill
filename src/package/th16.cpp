@@ -68,8 +68,15 @@ public:
     static bool canUse(const Player *from, const Player *to, const Card *c, int i = -1)
     {
         Q_UNUSED(i);
-        if (from->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
-            return c->isAvailable(from) && !from->isProhibited(to, c);
+        if (from->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+            bool r = false;
+            c->setFlags("IgnoreFailed");
+            c->setFlags("houhu");
+            r = c->isAvailable(from) && !from->isProhibited(to, c) && c->targetFilter(QList<const Player *>(), to, from);
+            c->setFlags("-houhu");
+            c->setFlags("-IgnoreFailed");
+            return r;
+        }
 #if 0
         // todo? or won't do?
         else if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
@@ -113,8 +120,7 @@ bool LijiCard::targetFilter(const QList<const Player *> &targets, const Player *
         for (int i = static_cast<int>(EquipCard::WeaponLocation); i <= static_cast<int>(EquipCard::TreasureLocation); ++i) {
             const EquipCard *equip = to_select->getEquip(i);
             if (equip != nullptr && !to_select->isBrokenEquip(equip->getId())) {
-                Card *c = Sanguosha->cloneCard(Liji::CardNameList.at(i), Card::NoSuit, 0);
-                DELETE_OVER_SCOPE(Card, c)
+                Card *c = Self->getRoomObject()->cloneCard(Liji::CardNameList.at(i), Card::NoSuit, 0);
                 if (Liji::canUse(Self, to_select, c, i))
                     return true;
             }
@@ -135,8 +141,7 @@ void LijiCard::onUse(Room *room, const CardUseStruct &card_use) const
             ids << id;
         else {
             int l = static_cast<int>(qobject_cast<const EquipCard *>(c->getRealCard())->location());
-            Card *e = Sanguosha->cloneCard(Liji::CardNameList.at(l), Card::NoSuit, 0);
-            DELETE_OVER_SCOPE(Card, e)
+            Card *e = room->cloneCard(Liji::CardNameList.at(l), Card::NoSuit, 0);
             if (!Liji::canUse(card_use.from, card_use.to.first(), e, l))
                 ids << id;
         }
@@ -152,7 +157,7 @@ void LijiCard::onUse(Room *room, const CardUseStruct &card_use) const
     if (e == nullptr)
         return;
 
-    Card *c = Sanguosha->cloneCard(Liji::CardNameList.at(static_cast<int>(e->location())), Card::NoSuit, 0);
+    Card *c = room->cloneCard(Liji::CardNameList.at(static_cast<int>(e->location())), Card::NoSuit, 0);
     if (c != nullptr) {
         c->setSkillName("liji");
         CardUseStruct cardUse = card_use;
@@ -704,9 +709,13 @@ public:
         return bh->isAvailable(player);
     }
 
-    bool isEnabledAtResponse(const Player *, const QString &pattern) const override
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        return matchAvaliablePattern("bone_healing", pattern);
+        BoneHealing *card = new BoneHealing(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(BoneHealing, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        return cardPattern != nullptr && cardPattern->match(player, card);
     }
 
     const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
@@ -792,9 +801,13 @@ public:
         response_or_use = true;
     }
 
-    bool isEnabledAtResponse(const Player *, const QString &pattern) const override
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        return matchAvaliablePattern("saving_energy", pattern);
+        SavingEnergy *card = new SavingEnergy(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(SavingEnergy, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        return cardPattern != nullptr && cardPattern->match(player, card);
     }
 
     const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
@@ -1010,7 +1023,7 @@ public:
         if (Self->isChained() && cards.isEmpty())
             return nullptr;
 
-        Card *c = Sanguosha->cloneSkillCard(cardName);
+        Card *c = Self->getRoomObject()->cloneSkillCard(cardName);
         if (c != nullptr) {
             c->addSubcards(cards);
             return c;
@@ -1199,9 +1212,9 @@ public:
         response_pattern = "@@" + name;
     }
 
-    const Card *viewAs(const Player * /*Self*/) const override
+    const Card *viewAs(const Player *Self) const override
     {
-        return Sanguosha->cloneSkillCard(cardName);
+        return Self->getRoomObject()->cloneSkillCard(cardName);
     }
 
 private:

@@ -41,8 +41,8 @@ Engine::Engine()
     foreach (QString name, package_names)
         addPackage(name);
 
-    metaobjects.insert(SurrenderCard::staticMetaObject.className(), &SurrenderCard::staticMetaObject);
-    metaobjects.insert(CheatCard::staticMetaObject.className(), &CheatCard::staticMetaObject);
+    CardFactory::addCardMetaObject(SurrenderCard::staticMetaObject.className(), &SurrenderCard::staticMetaObject);
+    CardFactory::addCardMetaObject(CheatCard::staticMetaObject.className(), &CheatCard::staticMetaObject);
 
     LordBGMConvertList = getConfigFromConfigFile("bgm_convert_pairs").toStringList();
     LordBackdropConvertList = getConfigFromConfigFile("backdrop_convert_pairs").toStringList();
@@ -197,8 +197,8 @@ void Engine::addPackage(Package *package)
         cards << card;
 
         QString class_name = card->metaObject()->className();
-        metaobjects.insert(class_name, card->metaObject());
-        className2objectName.insert(class_name, card->objectName());
+        CardFactory::addCardMetaObject(class_name, card->metaObject());
+        CardFactory::addCardMetaObject(card->objectName(), card->metaObject());
     }
 
     addSkills(package->getSkills());
@@ -221,7 +221,7 @@ void Engine::addPackage(Package *package)
 
     QList<const QMetaObject *> metas = package->getMetaObjects();
     foreach (const QMetaObject *meta, metas)
-        metaobjects.insert(meta->className(), meta);
+        CardFactory::addCardMetaObject(meta->className(), meta);
 }
 
 void Engine::addBanPackage(const QString &package_name)
@@ -426,55 +426,6 @@ const Card *Engine::getEngineCard(int cardId) const
         Q_ASSERT(cards[cardId] != NULL);
         return cards[cardId];
     }
-}
-
-Card *Engine::cloneCard(const Card *card) const
-{
-    Q_ASSERT(card->metaObject() != nullptr);
-    QString name = card->metaObject()->className();
-    Card *result = cloneCard(name, card->getSuit(), card->getNumber(), card->getFlags());
-    if (result == nullptr)
-        return nullptr;
-    result->setId(card->getEffectiveId());
-    result->setSkillName(card->getSkillName(false));
-    result->setObjectName(card->objectName());
-    return result;
-}
-
-Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const QStringList &flags) const
-{
-    Card *card = nullptr;
-
-    const QMetaObject *meta = metaobjects.value(name, NULL);
-    if (meta == nullptr)
-        meta = metaobjects.value(className2objectName.key(name, QString()), NULL);
-    if (meta) {
-        QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
-        card_obj->setObjectName(className2objectName.value(name, name));
-        card = qobject_cast<Card *>(card_obj);
-    }
-
-    if (!card)
-        return nullptr;
-    card->clearFlags();
-    if (!flags.isEmpty()) {
-        foreach (QString flag, flags)
-            card->setFlags(flag);
-    }
-    return card;
-}
-
-SkillCard *Engine::cloneSkillCard(const QString &name) const
-{
-    const QMetaObject *meta = metaobjects.value(name, NULL);
-    if (meta) {
-        QObject *card_obj = meta->newInstance();
-        SkillCard *card = qobject_cast<SkillCard *>(card_obj);
-        if (card == nullptr)
-            delete card_obj;
-        return card;
-    } else
-        return nullptr;
 }
 
 QString Engine::getVersionNumber() const

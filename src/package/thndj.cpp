@@ -1144,8 +1144,15 @@ public:
     {
         if (player->getPile("jinengPile").isEmpty())
             return false;
-        return matchAvaliablePattern("slash", pattern) || matchAvaliablePattern("jink", pattern) || matchAvaliablePattern("analeptic", pattern)
-            || matchAvaliablePattern("known_both", pattern);
+
+        Slash s(Card::SuitToBeDecided, -1);
+        Jink j(Card::SuitToBeDecided, -1);
+        Analeptic a(Card::SuitToBeDecided, -1);
+        KnownBoth k(Card::SuitToBeDecided, -1);
+
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        return cardPattern != nullptr && (cardPattern->match(player, &s) || cardPattern->match(player, &j) || cardPattern->match(player, &a) || cardPattern->match(player, &k));
     }
 
     bool isEnabledAtPlay(const Player *player) const override
@@ -1178,10 +1185,16 @@ public:
         case CardUseStruct::CARD_USE_REASON_RESPONSE:
         case CardUseStruct::CARD_USE_REASON_RESPONSE_USE: {
             QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
-            return (to_select->getSuit() == Card::Heart && matchAvaliablePattern("jink", pattern))
-                || (to_select->getSuit() == Card::Spade && matchAvaliablePattern("slash", pattern))
-                || (to_select->getSuit() == Card::Diamond && matchAvaliablePattern("analeptic", pattern))
-                || (to_select->getSuit() == Card::Club && matchAvaliablePattern("known_both", pattern));
+            Slash s(Card::SuitToBeDecided, -1);
+            Jink j(Card::SuitToBeDecided, -1);
+            Analeptic a(Card::SuitToBeDecided, -1);
+            KnownBoth k(Card::SuitToBeDecided, -1);
+
+            const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+            return (cardPattern != nullptr && (to_select->getSuit() == Card::Heart && cardPattern->match(Self, &j))
+                    || (to_select->getSuit() == Card::Spade && cardPattern->match(Self, &s)) || (to_select->getSuit() == Card::Diamond && cardPattern->match(Self, &a))
+                    || (to_select->getSuit() == Card::Club && cardPattern->match(Self, &k)));
         }
         default:
             break;
@@ -1498,7 +1511,7 @@ public:
     {
         if (Self->getRoomObject()->getCurrentCardUsePattern() == "@@" + objectName()) {
             QString cardName = Self->property("yaolitrick").toString();
-            Card *c = Sanguosha->cloneCard(cardName);
+            Card *c = Self->getRoomObject()->cloneCard(cardName);
             if (c != nullptr) {
                 c->setSkillName("_yaolitrick");
                 c->setCanRecast(false);
@@ -1786,7 +1799,7 @@ public:
         if (use.card->isNDTrick() && use.from != nullptr && use.from->isAlive() && use.from->tag.contains("yaolieffect2") && use.card->getSkillName() != "yaolitrick") {
             QString cardName = use.card->getClassName();
 
-            Card *c = Sanguosha->cloneCard(cardName);
+            Card *c = use.from->getRoomObject()->cloneCard(cardName);
             if (c != nullptr) {
                 DELETE_OVER_SCOPE(Card, c)
                 c->setSkillName("_yaolitrick");

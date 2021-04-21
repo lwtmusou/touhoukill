@@ -296,7 +296,7 @@ bool CardUseStruct::tryParse(const QVariant &usage, Room *room)
     if (arr.length() < 2 || !JsonUtils::isString(arr.first()) || !arr.value(1).canConvert<JsonArray>())
         return false;
 
-    card = Card::Parse(arr.first().toString());
+    card = Card::Parse(arr.first().toString(), room);
     JsonArray targets = arr.value(1).value<JsonArray>();
 
     for (int i = 0; i < targets.size(); i++) {
@@ -318,7 +318,7 @@ void CardUseStruct::parse(const QString &str, Room *room)
     if (words.length() == 2 && !words.at(1).isEmpty())
         target_str = words.at(1);
 
-    card = Card::Parse(card_str);
+    card = Card::Parse(card_str, room);
 
     if (target_str != ".") {
         QStringList target_names = target_str.split("+");

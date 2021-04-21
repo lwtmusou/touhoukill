@@ -1163,8 +1163,7 @@ bool Room::isCanceled(const CardEffectStruct &effect)
             if ((xianshi_result == 0 && !result) || (xianshi_result == 1 && result)) {
                 QString xianshi_name = p->property("xianshi_card").toString();
                 if (xianshi_name != nullptr && p->isAlive() && target->isAlive()) {
-                    CardEffectStruct extraEffect;
-                    Card *extraCard = Sanguosha->cloneCard(xianshi_name);
+                    Card *extraCard = cloneCard(xianshi_name);
                     if (extraCard->isKindOf("Slash")) {
                         DamageStruct::Nature nature = DamageStruct::Normal;
                         if (extraCard->isKindOf("FireSlash"))
@@ -1234,7 +1233,7 @@ bool Room::verifyNullificationResponse(ServerPlayer *player, const QVariant &res
     if (player != nullptr && response.canConvert<JsonArray>()) {
         JsonArray responseArray = response.value<JsonArray>();
         if (JsonUtils::isString(responseArray[0]))
-            card = Card::Parse(responseArray[0].toString());
+            card = Card::Parse(responseArray[0].toString(), this);
     }
     return card != nullptr;
 }
@@ -1295,7 +1294,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     if (repliedPlayer != nullptr) {
         JsonArray clientReply = repliedPlayer->getClientReply().value<JsonArray>();
         if (clientReply.size() > 0 && JsonUtils::isString(clientReply[0]))
-            card = Card::Parse(clientReply[0].toString());
+            card = Card::Parse(clientReply[0].toString(), this);
     }
     if (card == nullptr) {
         foreach (ServerPlayer *player, validAiPlayers) {
@@ -1656,7 +1655,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             bool success = doRequest(player, S_COMMAND_RESPONSE_CARD, arg, true);
             JsonArray clientReply = player->getClientReply().value<JsonArray>();
             if (success && !clientReply.isEmpty())
-                card = Card::Parse(clientReply[0].toString());
+                card = Card::Parse(clientReply[0].toString(), this);
         }
     }
 
@@ -2008,7 +2007,7 @@ const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, 
             bool success = doRequest(player, S_COMMAND_SHOW_CARD, requestor->getGeneralName(), true);
             JsonArray clientReply = player->getClientReply().value<JsonArray>();
             if (success && clientReply.size() > 0 && JsonUtils::isString(clientReply[0]))
-                card = Card::Parse(clientReply[0].toString());
+                card = Card::Parse(clientReply[0].toString(), this);
             if (card == nullptr)
                 card = player->getRandomHandCard();
         }
@@ -2052,7 +2051,7 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying)
         if (!success || clientReply.isEmpty() || !JsonUtils::isString(clientReply[0]))
             return nullptr;
 
-        card = Card::Parse(clientReply[0].toString());
+        card = Card::Parse(clientReply[0].toString(), this);
     }
 
     if (card && player->isCardLimited(card, card->getHandlingMethod()))
@@ -3848,7 +3847,7 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
             }
 
             if (card->isKindOf("DelayedTrick") && card->isVirtualCard() && card->subcardsLength() == 1) {
-                Card *trick = Sanguosha->cloneCard(card);
+                Card *trick = use.from->getRoomObject()->cloneCard(card);
                 Q_ASSERT(trick != nullptr);
                 WrappedCard *wrapped = getWrappedCard(card->getSubcards().first());
                 wrapped->takeOver(trick);
@@ -5038,7 +5037,7 @@ void Room::updateCardsOnGet(const CardsMoveStruct &move)
             WrappedCard *card = qobject_cast<WrappedCard *>(getCard(move.card_ids[i]));
             const Card *engine_card = Sanguosha->getEngineCard(move.card_ids[i]);
             if (card->getSuit() != engine_card->getSuit() || card->getNumber() != engine_card->getNumber()) {
-                Card *trick = Sanguosha->cloneCard(card->getRealCard());
+                Card *trick = player->getRoomObject()->cloneCard(card->getRealCard());
                 trick->setSuit(engine_card->getSuit());
                 trick->setNumber(engine_card->getNumber());
                 card->takeOver(trick);
@@ -6110,7 +6109,7 @@ const Card *Room::askForPindian(ServerPlayer *player, ServerPlayer *from, Server
         int card_id = player->getRandomHandCardId();
         return getCard(card_id);
     } else {
-        const Card *card = Card::Parse(clientReply[0].toString());
+        const Card *card = Card::Parse(clientReply[0].toString(), this);
         if (card->isVirtualCard()) {
             const Card *real_card = getCard(card->getEffectiveId());
             delete card;
@@ -6177,7 +6176,7 @@ QList<const Card *> Room::askForPindianRace(ServerPlayer *from, ServerPlayer *to
             int card_id = player->getRandomHandCardId();
             c = getCard(card_id);
         } else {
-            const Card *card = Card::Parse(clientReply[0].toString());
+            const Card *card = Card::Parse(clientReply[0].toString(), this);
             if (card == nullptr) {
                 int card_id = player->getRandomHandCardId();
                 c = getCard(card_id);

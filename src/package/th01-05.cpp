@@ -815,7 +815,7 @@ public:
             log.card_str = QString::number(card_id);
             room->sendLog(log);
 
-            Card *delayTrick = Sanguosha->cloneCard(choice);
+            Card *delayTrick = room->cloneCard(choice);
             WrappedCard *vs_card = room->getWrappedCard(card_id);
             vs_card->setSkillName(objectName());
             vs_card->takeOver(delayTrick);
@@ -1747,7 +1747,7 @@ void ModianCard::use(Room *room, ServerPlayer *src, QList<ServerPlayer *> &targe
 {
     ServerPlayer *alice = targets.first();
     if (src == alice)
-        src->showHiddenSkill("modian");
+        src->showHiddenSkill("modian"); // why not use "setShowSkill?"
 
     room->setPlayerFlag(alice, "modianInvoked");
     room->notifySkillInvoked(alice, "modian");
@@ -1919,13 +1919,22 @@ public:
     {
         return !player->getPile("modian").isEmpty();
     }
+
     bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
         if (player->getPile("modian").isEmpty())
             return false;
         if (player->getRoomObject()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
             return false;
-        if (matchAvaliablePattern("slash", pattern)) {
+
+        Slash *slash = new Slash(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(Slash, slash)
+
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+        if (cardPattern == nullptr)
+            return false;
+
+        if (cardPattern->match(player, slash)) {
             foreach (int id, player->getPile("modian")) {
                 if (player->getRoomObject()->getCard(id)->isKindOf("TrickCard"))
                     return true;
@@ -1934,9 +1943,13 @@ public:
 
         bool trick = false;
         foreach (int id, player->getPile("modian")) {
-            if (player->getRoomObject()->getCard(id)->isKindOf("TrickCard") && matchAvaliablePattern(player->getRoomObject()->getCard(id)->objectName(), pattern)) {
-                trick = true;
-                break;
+            if (player->getRoomObject()->getCard(id)->isKindOf("TrickCard")) {
+                Card *trickCard = player->getRoomObject()->cloneCard(player->getRoomObject()->getCard(id)->objectName());
+                DELETE_OVER_SCOPE(Card, trickCard)
+                if (cardPattern->match(player, trickCard)) {
+                    trick = true;
+                    break;
+                }
             }
         }
         if (trick) {
@@ -1952,6 +1965,7 @@ public:
     {
         if (!Self->getPile("modian").contains(to_select->getEffectiveId()))
             return false;
+
         if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
             if (selected.isEmpty())
                 return true;
@@ -1959,16 +1973,28 @@ public:
                 return to_select->getTypeId() != selected.first()->getTypeId();
         } else {
             QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
+            const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+            if (cardPattern == nullptr)
+                return false;
+
+            Slash s(Card::SuitToBeDecided, -1);
+            Card *trickCard = Self->getRoomObject()->cloneCard(to_select->objectName());
+            DELETE_OVER_SCOPE(Card, trickCard);
+
             if (selected.isEmpty()) {
                 if (to_select->isKindOf("TrickCard"))
-                    return matchAvaliablePattern("slash", pattern) || matchAvaliablePattern(to_select->objectName(), pattern);
+                    return cardPattern->match(Self, &s) || cardPattern->match(Self, trickCard);
             } else if (selected.length() == 1) {
                 if (to_select->getTypeId() == selected.first()->getTypeId())
                     return false;
                 if (selected.first()->isKindOf("Slash"))
-                    return matchAvaliablePattern(to_select->objectName(), pattern);
-                else
-                    return (matchAvaliablePattern(selected.first()->objectName(), pattern));
+                    return cardPattern->match(Self, trickCard);
+                else {
+                    Card *trickCard2 = Self->getRoomObject()->cloneCard(selected.first()->objectName());
+                    DELETE_OVER_SCOPE(Card, trickCard2);
+
+                    return cardPattern->match(Self, trickCard2);
+                }
             }
             return false;
         }
@@ -1977,6 +2003,33 @@ public:
 
     const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const override
     {
+        Card *f = nullptr;
+        const Card *s = nullptr;
+        if (cards.length() == 1 && cards.first()->isKindOf("TrickCard")) {
+            f = new Slash(Card::SuitToBeDecided, -1);
+            s = cards.first();
+        } else if (cards.length() == 2) {
+            const Card *t = nullptr;
+
+            foreach (const Card *c, cards) {
+                if (c->isKindOf("TrickCard"))
+                    t = c;
+                else if (c->isKindOf("Slash"))
+                    s = c;
+            }
+            if ((t == nullptr) || (s == nullptr))
+                return nullptr;
+
+            f = Self->getRoomObject()->cloneCard(t->objectName());
+        }
+
+        if (f == nullptr)
+            return nullptr;
+
+        f->addSubcard(s);
+        f->setSkillName(objectName());
+        return f;
+#if 0
         //Play
         if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
             if (cards.length() == 1 && cards.first()->isKindOf("TrickCard")) {
@@ -1988,7 +2041,7 @@ public:
             } else if (cards.length() == 2) {
                 foreach (const Card *c, cards) {
                     if (c->isKindOf("TrickCard")) {
-                        Card *card = Sanguosha->cloneCard(c->objectName());
+                        Card *card = Self->getRoomObject()->cloneCard(c->objectName());
                         foreach (const Card *c, cards) {
                             if (c->isKindOf("Slash")) {
                                 card->addSubcard(c);
@@ -2010,7 +2063,7 @@ public:
             } else if (cards.length() == 2) {
                 foreach (const Card *c, cards) {
                     if (c->isKindOf("TrickCard") && matchAvaliablePattern(c->objectName(), pattern)) {
-                        Card *card = Sanguosha->cloneCard(c->objectName());
+                        Card *card = Self->getRoomObject()->cloneCard(c->objectName());
                         foreach (const Card *c, cards) {
                             if (c->isKindOf("Slash")) {
                                 card->addSubcard(c);
@@ -2023,6 +2076,7 @@ public:
                 }
             }
         }
+#endif
         return nullptr;
     }
 
@@ -2292,8 +2346,12 @@ public:
 
     bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        return !player->getShownHandcards().isEmpty() && player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
-            && matchAvaliablePattern("analeptic", pattern);
+        Analeptic *analeptic = new Analeptic(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(Analeptic, analeptic)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        return cardPattern != nullptr && cardPattern->match(player, analeptic) && !player->getShownHandcards().isEmpty()
+            && player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
     }
 
     const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override

@@ -359,7 +359,7 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const
     } else if (returnable && effect.to->isAlive()) {
         if (room->getCardOwner(getEffectiveId()) == nullptr) {
             if (isVirtualCard()) {
-                Card *delayTrick = Sanguosha->cloneCard(objectName());
+                Card *delayTrick = room->cloneCard(objectName());
                 WrappedCard *vs_card = room->getWrappedCard(getEffectiveId());
                 vs_card->setSkillName(getSkillName());
                 vs_card->takeOver(delayTrick);

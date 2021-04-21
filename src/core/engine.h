@@ -36,9 +36,6 @@ public:
     void addPackage(Package *package);
     void addBanPackage(const QString &package_name);
     QStringList getBanPackages() const;
-    Card *cloneCard(const Card *card) const;
-    Card *cloneCard(const QString &name, Card::Suit suit = Card::SuitToBeDecided, int number = -1, const QStringList &flags = QStringList()) const;
-    SkillCard *cloneSkillCard(const QString &name) const;
     QString getVersionNumber() const;
     QString getVersion() const;
     QString getVersionName() const;
@@ -125,8 +122,6 @@ private:
     QMutex m_mutex;
     QHash<QString, QString> translations;
     QHash<QString, const General *> generals;
-    QHash<QString, const QMetaObject *> metaobjects;
-    QHash<QString, QString> className2objectName;
     QHash<QString, const Skill *> skills;
     QHash<QThread *, RoomObject *> m_rooms;
     QMap<QString, QString> modes;

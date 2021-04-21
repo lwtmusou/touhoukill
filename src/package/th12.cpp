@@ -955,7 +955,14 @@ public:
 
     bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        if (player->getMark("lingbai") > 0 && (matchAvaliablePattern("slash", pattern) || matchAvaliablePattern("jink", pattern)))
+        Slash s(Card::SuitToBeDecided, -1);
+        Jink j(Card::SuitToBeDecided, -1);
+
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+        if (cardPattern == nullptr)
+            return false;
+
+        if (player->getMark("lingbai") > 0 && (cardPattern->match(player, &s) || cardPattern->match(player, &j)))
             return true;
         return false;
     }
@@ -969,16 +976,24 @@ public:
     {
         bool play = (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
         QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
-        if (play || matchAvaliablePattern("slash", pattern)) {
-            Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+        if (cardPattern == nullptr)
+            return nullptr;
+
+        Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
+        if (play || cardPattern->match(Self, slash)) {
             slash->addSubcard(originalCard);
             slash->setSkillName(objectName());
             return slash;
-        } else if (matchAvaliablePattern("jink", pattern)) {
+        } else {
+            delete slash;
             Jink *jink = new Jink(originalCard->getSuit(), originalCard->getNumber());
-            jink->addSubcard(originalCard);
-            jink->setSkillName(objectName());
-            return jink;
+            if (cardPattern->match(Self, jink)) {
+                jink->addSubcard(originalCard);
+                jink->setSkillName(objectName());
+                return jink;
+            } else
+                delete jink;
         }
         return nullptr;
     }
@@ -1457,8 +1472,7 @@ bool HuishengCard::targetFilter(const QList<const Player *> &targets, const Play
 {
     QString cardname = Self->property("huisheng_card").toString();
     QString str = Self->property("huisheng_target").toString();
-    Card *new_card = Sanguosha->cloneCard(cardname);
-    DELETE_OVER_SCOPE(Card, new_card)
+    Card *new_card = Self->getRoomObject()->cloneCard(cardname);
     new_card->setSkillName("huisheng");
     if (new_card->isKindOf("Peach"))
         return to_select->objectName() == str && new_card->isAvailable(to_select);
@@ -1472,8 +1486,7 @@ bool HuishengCard::targetFilter(const QList<const Player *> &targets, const Play
 bool HuishengCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
     QString cardname = Self->property("huisheng_card").toString();
-    Card *new_card = Sanguosha->cloneCard(cardname);
-    DELETE_OVER_SCOPE(Card, new_card)
+    Card *new_card = Self->getRoomObject()->cloneCard(cardname);
     new_card->setSkillName("huisheng");
 
     if (targets.length() < 1)
@@ -1484,7 +1497,7 @@ bool HuishengCard::targetsFeasible(const QList<const Player *> &targets, const P
 const Card *HuishengCard::validate(CardUseStruct &card_use) const
 {
     QString cardname = card_use.from->property("huisheng_card").toString();
-    Card *card = Sanguosha->cloneCard(cardname);
+    Card *card = card_use.from->getRoomObject()->cloneCard(cardname);
     card->setSkillName("huisheng");
     return card;
 }
@@ -1527,8 +1540,7 @@ public:
         if (use.from && use.to.length() == 1 && (use.card->isKindOf("BasicCard") || use.card->isNDTrick())) {
             ServerPlayer *source = use.to.first();
             if (use.from != source && source->hasSkill(this) && source->isAlive() && use.from->isAlive()) {
-                Card *card = Sanguosha->cloneCard(use.card->objectName());
-                DELETE_OVER_SCOPE(Card, card)
+                Card *card = use.from->getRoomObject()->cloneCard(use.card->objectName());
                 if (!source->isCardLimited(card, Card::MethodUse) && !source->isProhibited(use.from, card))
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, source, source);
             }
@@ -1540,7 +1552,7 @@ public:
     {
         room->setTag("huisheng_use", data);
         CardUseStruct use = data.value<CardUseStruct>();
-        Card *card = Sanguosha->cloneCard(use.card->objectName());
+        Card *card = room->cloneCard(use.card->objectName());
 
         QString prompt = "@huisheng-use:" + use.from->objectName() + ":" + card->objectName();
         room->setPlayerProperty(invoke->invoker, "huisheng_card", card->objectName());

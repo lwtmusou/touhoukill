@@ -221,6 +221,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             else
                 player->play(set_phases);
         }
+        room->autoCleanupClonedCards();
         break;
     }
     case EventPhaseProceeding: {
@@ -612,7 +613,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                         }
                     }
 
-                    Card *extraCard = Sanguosha->cloneCard(xianshi_name);
+                    Card *extraCard = room->cloneCard(xianshi_name);
                     if (extraCard->isKindOf("Slash")) {
                         DamageStruct::Nature nature = DamageStruct::Normal;
                         if (extraCard->isKindOf("FireSlash"))
@@ -759,7 +760,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
 
             QString xianshi_name = effect.to->property("xianshi_card").toString();
             if (xianshi_name != nullptr && effect.from && effect.to && effect.from->isAlive() && effect.to->isAlive()) {
-                Card *extraCard = Sanguosha->cloneCard(xianshi_name);
+                Card *extraCard = room->cloneCard(xianshi_name);
                 if (extraCard->isKindOf("Slash")) {
                     DamageStruct::Nature nature = DamageStruct::Normal;
                     if (extraCard->isKindOf("FireSlash"))
@@ -857,7 +858,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             }
 
             CardEffectStruct extraEffect;
-            Card *extraCard = Sanguosha->cloneCard(xianshi_name);
+            Card *extraCard = room->cloneCard(xianshi_name);
             extraCard->addSubcards(effect.slash->getSubcards());
             extraCard->deleteLater();
             if (extraCard->isKindOf("Peach")) {

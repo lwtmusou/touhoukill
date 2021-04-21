@@ -121,8 +121,8 @@ public:
         if (player == nullptr || card == nullptr)
             return d;
 
-        if (room->getCurrent() != nullptr && room->getCurrent()->isAlive() && room->getCurrent()->getPhase() != Player::NotActive && player != nullptr && card->isKindOf("BasicCard")
-            && player->getMark("fengmoRecord") == 1) {
+        if (room->getCurrent() != nullptr && room->getCurrent()->isAlive() && room->getCurrent()->getPhase() != Player::NotActive && player != nullptr
+            && card->isKindOf("BasicCard") && player->getMark("fengmoRecord") == 1) {
             foreach (ServerPlayer *reimu, room->findPlayersBySkillName(objectName())) {
                 if (reimu != player)
                     d << SkillInvokeDetail(this, reimu, reimu, nullptr, false, player);
@@ -1050,14 +1050,12 @@ public:
     {
         if (pattern.contains("@@bllmwuyu"))
             return true;
-        Analeptic *card = new Analeptic(Card::NoSuit, 0);
-        card->deleteLater();
-        if (player->isCardLimited(card, Card::MethodUse))
+        Analeptic card(Card::NoSuit, 0);
+        if (player->isCardLimited(&card, Card::MethodUse))
             return false;
 
-        if (matchAvaliablePattern("analeptic", pattern))
-            return true;
-        return false;
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+        return cardPattern != nullptr && cardPattern->match(player, &card);
     }
 
     bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override
@@ -1077,10 +1075,17 @@ public:
             BllmShiyuDummy *shiyu = new BllmShiyuDummy;
             shiyu->addSubcards(cards);
             return shiyu;
-        } else if (matchAvaliablePattern("analeptic", pattern))
-            return new BllmShiyuCard;
-        else
-            return new BllmWuyuCard;
+        } else {
+            Analeptic card(Card::NoSuit, 0);
+            if (Self->isCardLimited(&card, Card::MethodUse))
+                return nullptr;
+
+            const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+            if (cardPattern != nullptr && cardPattern->match(Self, &card))
+                return new BllmShiyuCard;
+            else
+                return new BllmWuyuCard;
+        }
     }
 };
 
@@ -2136,7 +2141,7 @@ public:
     {
         if (originalCard) {
             QString cardname = Self->property("toushi_card").toString();
-            Card *card = Sanguosha->cloneCard(cardname, originalCard->getSuit(), originalCard->getNumber());
+            Card *card = Self->getRoomObject()->cloneCard(cardname, originalCard->getSuit(), originalCard->getNumber());
             card->addSubcard(originalCard);
             card->setSkillName("toushi");
             return card;
@@ -2192,7 +2197,7 @@ public:
             ServerPlayer *player = data.value<ServerPlayer *>();
             if (player->getPhase() == Player::Play) {
                 QString cardname = player->property("toushi_card").toString();
-                Card *card = Sanguosha->cloneCard(cardname);
+                Card *card = player->getRoomObject()->cloneCard(cardname);
                 if (card == nullptr)
                     return QList<SkillInvokeDetail>();
                 DELETE_OVER_SCOPE(Card, card)
@@ -2220,7 +2225,7 @@ public:
 
         ServerPlayer *current = data.value<ServerPlayer *>();
         QString cardname = current->property("toushi_card").toString();
-        Card *card = Sanguosha->cloneCard(cardname);
+        Card *card = room->cloneCard(cardname);
         QString prompt = "@toushi:" + card->objectName();
         delete card;
 

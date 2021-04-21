@@ -428,7 +428,7 @@ bool Card::isVirtualCard() const
     return m_id < 0;
 }
 
-const Card *Card::Parse(const QString &str)
+const Card *Card::Parse(const QString &str, RoomObject *room)
 {
     static QMap<QString, Card::Suit> suit_map;
     if (suit_map.isEmpty()) {
@@ -470,7 +470,7 @@ const Card *Card::Parse(const QString &str)
         if (subcard_str != ".")
             subcard_ids = subcard_str.split("+");
 
-        SkillCard *card = Sanguosha->cloneSkillCard(card_name);
+        SkillCard *card = room->cloneSkillCard(card_name);
 
         if (card == nullptr)
             return nullptr;
@@ -551,7 +551,7 @@ const Card *Card::Parse(const QString &str)
         else
             number = number_string.toInt();
 
-        Card *card = Sanguosha->cloneCard(card_name, suit, number);
+        Card *card = room->cloneCard(card_name, suit, number);
         if (card == nullptr)
             return nullptr;
 

@@ -47,6 +47,7 @@ set (QSanguosha_SRCS
     src/client/clientplayer.cpp
     src/client/clientstruct.cpp
     src/core/card.cpp
+    src/core/CardFace.cpp
     src/core/engine.cpp
     src/core/general.cpp
     src/core/json.cpp
@@ -159,6 +160,7 @@ set (QSanguosha_MOCS
     src/client/clientplayer.h
     src/client/clientstruct.h
     src/core/card.h
+    src/core/CardFace.h
     src/core/compiler-specific.h
     src/core/engine.h
     src/core/general.h

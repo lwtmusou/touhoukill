@@ -27,7 +27,8 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
-        if (isHegemonyGameMode(ServerInfo.GameMode) && player != nullptr && player->getPhase() == Player::Start && !player->hasShownGeneral() && player->disableShow(true).isEmpty())
+        if (isHegemonyGameMode(ServerInfo.GameMode) && player != nullptr && player->getPhase() == Player::Start && !player->hasShownGeneral()
+            && player->disableShow(true).isEmpty())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         return QList<SkillInvokeDetail>();
     }
@@ -315,17 +316,9 @@ public:
         return player->getMark("@CompanionEffect") > 0;
     }
 
-    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
+    bool isEnabledAtResponse(const Player *, const QString &pattern) const override
     {
-        if (pattern.contains("peach")) {
-            if (player->hasFlag("Global_Dying"))
-                return true;
-            foreach (const Player *p, player->getAliveSiblings()) {
-                if (p->hasFlag("Global_Dying"))
-                    return true;
-            }
-        }
-        return false;
+        return pattern.contains("peach");
     }
 
     const Card *viewAs(const Player * /*Self*/) const override
@@ -1471,17 +1464,17 @@ public:
     static QStringList responsePatterns(const Player *Self)
     {
         QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
 
         Card::HandlingMethod method = Card::MethodUse;
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-        const Skill *skill = Sanguosha->getSkill("beishui_hegemony");
 
         QStringList checkedPatterns;
         QStringList ban_list = Sanguosha->getBanPackages();
         foreach (const Card *card, cards) {
             if ((card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) {
                 QString name = card->objectName();
-                if (!checkedPatterns.contains(name) && skill->matchAvaliablePattern(name, pattern) && !Self->isCardLimited(card, method))
+                if (!checkedPatterns.contains(name) && (cardPattern != nullptr && cardPattern->match(Self, card)) && !Self->isCardLimited(card, method))
                     checkedPatterns << name;
             }
         }
@@ -1495,10 +1488,8 @@ public:
             return false;
         if (Slash::IsAvailable(player) || Analeptic::IsAvailable(player))
             return true;
-        Card *card = Sanguosha->cloneCard("peach", Card::NoSuit, 0);
-        DELETE_OVER_SCOPE(Card, card)
-        Card *card1 = Sanguosha->cloneCard("super_peach", Card::NoSuit, 0);
-        DELETE_OVER_SCOPE(Card, card1)
+        Card *card = player->getRoomObject()->cloneCard("peach", Card::NoSuit, 0);
+        Card *card1 = player->getRoomObject()->cloneCard("super_peach", Card::NoSuit, 0);
         return card->isAvailable(player) || card1->isAvailable(player);
     }
 
@@ -1563,7 +1554,7 @@ public:
         if (checkedPatterns.length() == 1)
             name = checkedPatterns.first();
         if (name != nullptr) {
-            Card *card = Sanguosha->cloneCard(name);
+            Card *card = Self->getRoomObject()->cloneCard(name);
             card->setSkillName(objectName());
             card->addSubcards(cards);
             return card;
@@ -1645,7 +1636,11 @@ public:
 
     bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        return matchAvaliablePattern("peach", pattern) && !player->isCurrent() && player->getMark("Global_PreventPeach") == 0
+        Peach *card = new Peach(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(Peach, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        return cardPattern != nullptr && cardPattern->match(player, card) && !player->isCurrent() && player->getMark("Global_PreventPeach") == 0
             && (player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
     }
 
@@ -1866,9 +1861,12 @@ public:
         response_or_use = true;
     }
 
-    bool isEnabledAtResponse(const Player *Self, const QString &pattern) const override
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        return matchAvaliablePattern("fire_attack", pattern) && Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
+        FireAttack *card = new FireAttack(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(FireAttack, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+        return cardPattern != nullptr && cardPattern->match(player, card) && player->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
     }
 
     const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
@@ -3309,9 +3307,12 @@ public:
         return Slash::IsAvailable(player);
     }
 
-    bool isEnabledAtResponse(const Player *, const QString &pattern) const override
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        return matchAvaliablePattern("slash", pattern);
+        Slash *card = new Slash(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(Slash, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+        return cardPattern != nullptr && cardPattern->match(player, card);
     }
 
     const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
@@ -3952,8 +3953,7 @@ BanyueHegemonyCard::BanyueHegemonyCard()
 
 bool BanyueHegemonyCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    Card *card = Sanguosha->cloneCard("befriend_attacking");
-    DELETE_OVER_SCOPE(Card, card)
+    Card *card = Self->getRoomObject()->cloneCard("befriend_attacking");
     if (targets.isEmpty()) {
         return (to_select == Self || to_select->hasShownOneGeneral()) && (!to_select->isCardLimited(card, Card::HandlingMethod::MethodUse));
     } else if (targets.length() == 1) {
@@ -3995,7 +3995,7 @@ void BanyueHegemonyCard::use(Room *room, ServerPlayer *source, QList<ServerPlaye
     room->loseHp(source);
     ServerPlayer *to1 = targets.first();
     ServerPlayer *to2 = targets.last();
-    Card *card = Sanguosha->cloneCard("befriend_attacking");
+    Card *card = room->cloneCard("befriend_attacking");
     card->setSkillName("_banyue_hegemony");
 
     CardUseStruct use;
