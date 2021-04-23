@@ -134,7 +134,7 @@ bool CardFace::targetFilter(const QList<const Player *> &targets, const Player *
 bool CardFace::isAvailable(const Player *player, const Card *card) const
 {
     return !player->isCardLimited(fixme_cast< ::Card *>(card), fixme_cast< ::Card::HandlingMethod>(card->handleMethod()))
-        || (card->canRecast() && !player->isCardLimited(fixme_cast< ::Card *>(card), ::Card::MethodRecast));
+        || (card->canRecast() && !player->isCardLimited(fixme_cast< ::Card *>(card), fixme_cast< ::Card::HandlingMethod>(Card::MethodRecast)));
 }
 
 bool CardFace::ignoreCardValidity(const Player *) const
