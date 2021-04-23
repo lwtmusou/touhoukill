@@ -35,4 +35,11 @@ bool isHegemonyGameMode(const QString &mode);
     QScopedPointer<type> __##var##_scoped(var); \
     Q_UNUSED(__##var##_scoped);
 
+namespace RefactorProposal {
+template <typename T1, typename T2> QT_DEPRECATED_X("FIXME: THIS SHOULD BE REMOVED AFTER REFACTORING") T1 fixme_cast(T2 t2)
+{
+    return (T1)t2;
+}
+}
+
 #endif

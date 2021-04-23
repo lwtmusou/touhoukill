@@ -2,9 +2,12 @@
 #include "RoomObject.h"
 #include "player.h"
 #include "room.h"
+#include "util.h"
 
 #include <QObject>
 #include <QString>
+
+namespace RefactorProposal {
 
 class CardFacePrivate
 {
@@ -13,7 +16,6 @@ public:
         : target_fixed(false)
         , will_throw(true)
         , has_preact(false)
-        , can_recast(false)
         , can_damage(false)
         , can_recover(false)
         , has_effectvalue(true)
@@ -23,7 +25,6 @@ public:
     bool target_fixed;
     bool will_throw;
     bool has_preact;
-    bool can_recast;
     bool can_damage;
     bool can_recover;
     bool has_effectvalue;
@@ -90,11 +91,6 @@ bool CardFace::canRecover() const
     return d->can_recover;
 }
 
-bool CardFace::canRecast() const
-{
-    return d->can_recast;
-}
-
 bool CardFace::hasEffectValue() const
 {
     return d->has_effectvalue;
@@ -137,7 +133,8 @@ bool CardFace::targetFilter(const QList<const Player *> &targets, const Player *
 
 bool CardFace::isAvailable(const Player *player, const Card *card) const
 {
-    return !player->isCardLimited(card, card->getHandlingMethod()) || (card->canRecast() && !player->isCardLimited(card, Card::MethodRecast));
+    return !player->isCardLimited(fixme_cast< ::Card *>(card), fixme_cast< ::Card::HandlingMethod>(card->handleMethod()))
+        || (card->canRecast() && !player->isCardLimited(fixme_cast< ::Card *>(card), ::Card::MethodRecast));
 }
 
 bool CardFace::ignoreCardValidity(const Player *) const
@@ -147,7 +144,7 @@ bool CardFace::ignoreCardValidity(const Player *) const
 
 const Card *CardFace::validate(const CardUseStruct &use) const
 {
-    return use.card;
+    return fixme_cast<Card *>(use.card);
 }
 
 const Card *CardFace::validateInResponse(ServerPlayer *, const Card *original_card) const
@@ -171,7 +168,7 @@ void CardFace::onUse(Room *room, const CardUseStruct &use) const
         room->reverseFor3v3(card_use.card, player, targets);
     card_use.to = targets;
 
-    bool hidden = (card_use.card->getTypeId() == Card::TypeSkill && !card_use.card->willThrow());
+    bool hidden = (card_use.card->getTypeId() == ::Card::TypeSkill && !card_use.card->willThrow());
     LogMessage log;
     log.from = player;
     if (!card_use.card->targetFixed(card_use.from) || card_use.to.length() > 1 || !card_use.to.contains(card_use.from))
@@ -193,7 +190,7 @@ void CardFace::onUse(Room *room, const CardUseStruct &use) const
     thread->trigger(PreCardUsed, room, data);
     card_use = data.value<CardUseStruct>();
 
-    if (card_use.card->getTypeId() != Card::TypeSkill) {
+    if (card_use.card->getTypeId() != ::Card::TypeSkill) {
         CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), card_use.card->getSkillName(), QString());
         if (card_use.to.size() == 1)
             reason.m_targetId = card_use.to.first()->objectName();
@@ -293,6 +290,8 @@ bool CardFace::isCancelable(const CardEffectStruct &) const
     return false;
 }
 
-void CardFace::onNullified(ServerPlayer *target) const
+void CardFace::onNullified(ServerPlayer *, const Card *) const
 {
+}
+
 }

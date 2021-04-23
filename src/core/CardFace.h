@@ -9,14 +9,17 @@
 class Player;
 class ServerPlayer;
 class Room;
-class Card;
-class CardFacePrivate;
 
 struct CardUseStruct;
 struct CardEffectStruct;
 
+namespace RefactorProposal {
+
+class CardFacePrivate;
+class Card;
+
 /**
- * @interface The functional model of a given card. 
+ * @interface The functional model of a given card.
  */
 class CardFace
 {
@@ -65,7 +68,7 @@ public:
     // Seems like it should be dealt in UI and GameRule instead of the logic in Card/CardFace itself.
     // Currently CardFace::onUse and CardFace::targetFixed/targetFeasible are hacked to support recast
     // Note: In HulaoPass mode, all weapon can be recast according to the game rule.
-    virtual bool canRecast() const;
+    // virtual bool canRecast() const;
     virtual bool hasEffectValue() const;
     virtual bool willThrow() const;
     virtual bool hasPreAction() const;
@@ -96,10 +99,12 @@ public:
 
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isCancelable(const CardEffectStruct &effect) const;
-    virtual void onNullified(ServerPlayer *target) const;
+    virtual void onNullified(ServerPlayer *target, const Card *card) const;
 
 private:
     CardFacePrivate *d;
 };
+
+}
 
 #endif
