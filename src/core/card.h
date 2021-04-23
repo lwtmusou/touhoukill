@@ -4,6 +4,7 @@
 #include <QIcon>
 #include <QMap>
 #include <QObject>
+#include <qobjectdefs.h>
 
 class Room;
 class RoomObject;
@@ -112,7 +113,7 @@ public:
     virtual Card::HandlingMethod getHandlingMethod() const;
 
     virtual void setFlags(const QString &flag) const;
-    inline virtual void setFlags(const QStringList &fs)
+    virtual void setFlags(const QStringList &fs)
     {
         flags = fs;
     }
@@ -120,7 +121,7 @@ public:
     virtual void clearFlags() const;
 
     virtual QString getPackage() const;
-    inline virtual QString getClassName() const
+    virtual QString getClassName() const
     {
         return metaObject()->className();
     }
@@ -152,7 +153,7 @@ public:
     virtual bool isAvailable(const Player *player) const;
     virtual bool ignoreCardValidty(const Player *player) const;
 
-    inline virtual const Card *getRealCard() const
+    virtual const Card *getRealCard() const
     {
         return this;
     }
@@ -168,21 +169,21 @@ public:
     virtual QString showSkill() const;
     virtual void setShowSkill(const QString &skill_name);
 
-    inline virtual bool isKindOf(const char *cardType) const
+    virtual bool isKindOf(const char *cardType) const
     {
         Q_ASSERT(cardType);
         return inherits(cardType);
     }
-    inline virtual QStringList getFlags() const
+    virtual QStringList getFlags() const
     {
         return flags;
     }
 
-    inline virtual bool isModified() const
+    virtual bool isModified() const
     {
         return false;
     }
-    inline virtual void onNullified(ServerPlayer * /* target */) const
+    virtual void onNullified(ServerPlayer * /* target */) const
     {
         return;
     }
@@ -271,18 +272,19 @@ public:
     QString toString(bool hidden = false) const override;
 };
 
-class CardFace;
-
 namespace RefactorProposal {
+
+class CardPrivate;
+class CardFace;
 
 // To keep compatibility, the new card class is defined here.
 // After its interface is carefully examined, we will push it to replace existing class.
 
-class Card final {
+class Card final
+{
     Q_GADGET
 public:
-    // Maybe enum color?
-    enum Suit 
+    enum Suit
     {
         Spade,
         Club,
@@ -294,11 +296,16 @@ public:
         SuitToBeDecided = -1
     };
 
-    enum Color {
+    Q_ENUM(Suit)
+
+    enum Color
+    {
         Red,
         Black,
         Colorless
     };
+
+    Q_ENUM(Color)
 
     enum HandlingMethod
     {
@@ -310,24 +317,64 @@ public:
         MethodPindian
     };
 
+    Q_ENUM(HandlingMethod)
+
+    enum Number
+    {
+        // Regular numbers
+        NumberA = 1,
+        Number2,
+        Number3,
+        Number4,
+        Number5,
+        Number6,
+        Number7,
+        Number8,
+        Number9,
+        Number10,
+        NumberJ,
+        NumberQ,
+        NumberK,
+
+        // Alternative notation
+        Number1 = NumberA,
+        NumberX = Number10,
+        Number11 = NumberJ,
+        Number12 = NumberQ,
+        Number13 = NumberK,
+
+        // Extremely simplified notation
+        A = NumberA,
+        X = Number10,
+        J = NumberJ,
+        Q = NumberQ,
+        K = NumberK,
+
+        // Special numbers
+        NumberNA = 0,
+        NumberToBeDecided = -1
+    };
+    Q_ENUM(Number);
+
     // constructor to create real card
-    explicit Card(const CardFace *face, Suit suit = SuitToBeDecided, int number = -1, int id = -1);
-    
+    explicit Card(const CardFace *face, Suit suit = SuitToBeDecided, Number number = Number::NumberToBeDecided, int id = -1);
+    ~Card();
+
     // Suit method
     Card::Suit suit() const;
-    inline void setSuit(Suit suit) { m_suit = suit; }
+    void setSuit(Suit suit);
     QString suitString() const;
-    inline bool isRed() const { return suit() == Heart || suit() == Diamond || suit() == NoSuitRed; }
-    inline bool isBlack() const { return suit() == Spade || suit() == Club || suit() == NoSuitBlack; }
+    bool isRed() const;
+    bool isBlack() const;
     Color color() const;
 
     // Number method
-    int number() const;
-    inline void setNumber(int number) { m_number = number; }
-    inline QString numberString() const {return QString::number(m_number); }
+    Card::Number number() const;
+    void setNumber(Card::Number number);
+    QString numberString() const;
 
     // id
-    inline int id() const { return m_id; }
+    int id() const;
     int effectiveID() const;
 
     // name
@@ -336,61 +383,64 @@ public:
     QString logName() const;
 
     // skill name
-    inline QString skillName() const { return m_skill_name; }
-    inline void setSkillName(const QString &skill_name) { m_skill_name = skill_name; }
-    inline QString showSkillName() const { return m_show_skill_name; }
-    inline void setShowSkillName(const QString &show_skill_name) { m_show_skill_name = show_skill_name; }
+    QString skillName() const;
+    void setSkillName(const QString &skill_name);
+    QString showSkillName() const;
+    void setShowSkillName(const QString &show_skill_name);
 
     // handling method
-    inline Card::HandlingMethod handleMethod() const { return m_handling_method; }
-    
+    Card::HandlingMethod handleMethod() const;
+    void setHandleMethod(Card::HandlingMethod method);
+
     // property (override the CardFace)
-    inline bool canDamage() const { return m_can_damage; };
-    void setCanDamage(bool can) { m_can_damage = can; }
-    inline bool canRecover() const {return m_can_recover; }
-    void setCanRecover(bool can) { m_can_recover = can; }
-    inline bool canRecast() const { return m_can_recast; }
-    void setCanRecast(bool can) { m_can_recast = can; }
-    inline bool hasEffectValue() const;
-    void setHasEffectValue(bool has) { m_has_effect_value = has; }
-    inline bool thrownAfterUse() const { return m_thrown_after_use; }
-    void thrownAfterUse(bool thrown) { m_thrown_after_use = thrown; }
+    bool canDamage() const;
+    void setCanDamage(bool can);
+    bool canRecover() const;
+    void setCanRecover(bool can);
+    bool canRecast() const;
+    void setCanRecast(bool can);
+    bool hasEffectValue() const;
+    void setHasEffectValue(bool has);
+    bool throwWhenUsing() const;
+    void setThrowWhenUsing(bool thrown);
 
     // Face (functional model)
-    // Face cannot be changed once given
-    inline const CardFace *face() const { return m_face; }
+    const CardFace *face() const;
+    // For compulsory view as skill. (Doesn't this kind of skill should return a new card and make that card as subcard?)
+    void setFace(const CardFace *face);
 
     // Flags
-    inline const QStringList &flags() const { return m_flags; }
+    const QSet<QString> &flags() const;
     void addFlag(const QString &flag);
-    void addFlags(const QStringList &flags);
+    void addFlags(const QSet<QString> &flags);
     void removeFlag(const QString &flag);
-    void removeFlag(const QStringList &flag);
-    inline void clearFlags() { m_flags.clear(); }
-    inline bool hasFlag(const QString &flag) const {return flags().contains(flag); }
+    void removeFlag(const QSet<QString> &flag);
+    void clearFlags();
+    bool hasFlag(const QString &flag) const;
 
     // Virtual Card
     bool isVirtualCard() const;
-    const Card *realCard() const;
 
     // Subcard
-    const QList<int> &subcards() const { return m_sub_cards; }
+    const QSet<int> &subcards() const;
     void addSubcard(int card_id);
     void addSubcard(const Card *card);
-    void addSubcards(const QList<int> &subcards);
-    inline void clearSubcards() { m_sub_cards.clear(); }
+    void addSubcards(const QSet<int> &subcards);
+    void clearSubcards();
     QString subcardString() const; // Used for converting card to string
 
     // Status
-    // FIXME: move this method to player?
-    bool isEquipped(const Player *self) const;
+    // Same method as Player::hasEquip
+    // bool isEquipped(const Player *self) const;
 
     // UI property
-    inline bool isMute() const { return m_mute; }
-    inline void setMute(bool mute) { m_mute = mute; }
+    bool mute() const;
+    void setMute(bool mute);
 
     // toString
-    QString toString() const;
+    // What's the meaning of this hidden card?
+    // FIXME: Should this still exist? 
+    QString toString(bool hidden) const;
 
     // helpers
     static Card *Clone(const Card *other);
@@ -398,39 +448,11 @@ public:
     static const Card *parse(const QString &str, RoomObject *room);
 
 private:
-    // basic information
-    const CardFace *m_face; // functional model
-    Suit m_suit;
-    int m_number;
-    int m_id; // real card has id.
-
-    QList<int> m_sub_cards; // for real card this should be empty.
-    
-    // Skill name related
-    QString m_skill_name;
-    QString m_show_skill_name;
-
-    // handling method
-    Card::HandlingMethod m_handling_method;
-
-    // property
-    bool m_can_damage;
-    bool m_can_recover;
-    bool m_can_recast;
-    bool m_has_effect_value;
-    bool m_thrown_after_use;
-
-    // flags
-    // Flag should be unique right?
-    // FIXME: replace QStringList with QStringSet?
-    QStringList m_flags; 
-
-    // UI
-    bool m_mute;
-
+    explicit Card(CardPrivate *p);
+    Q_DISABLE_COPY_MOVE(Card); // no copy is allowed.
+    CardPrivate *d;
 };
 
 };
-
 
 #endif

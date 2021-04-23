@@ -5,6 +5,9 @@
 #include "settings.h"
 #include "standard.h"
 #include "structs.h"
+
+#include "CardFace.h"
+
 #include <QFile>
 
 const int Card::S_UNKNOWN_CARD_ID = -1;
@@ -1030,3 +1033,446 @@ const Card *ArraySummonCard::validate(CardUseStruct &card_use) const
     }
     return nullptr;
 }
+
+namespace RefactorProposal {
+
+class CardPrivate
+{
+public:
+    // basic information
+    const CardFace *face; // functional model
+    Card::Suit suit;
+    Card::Number number;
+    int id; // real card has id.
+
+    QSet<int> sub_cards; // for real card this should be empty.
+
+    // Skill name related
+    QString skill_name;
+    QString show_skill_name;
+
+    // handling method
+    Card::HandlingMethod handling_method;
+
+    // property
+    bool can_damage;
+    bool can_recover;
+    bool can_recast;
+    bool has_effect_value;
+    bool throw_when_using;
+
+    // flags
+    // Flag should be unique right?
+    QSet<QString> flags;
+
+    // UI (Why server side?)
+    bool mute;
+};
+
+Card::Card(const CardFace *face, Suit suit, Number number, int id)
+{
+    d = new CardPrivate;
+    // initialize d
+    d->face = face;
+    d->suit = suit;
+    d->number = number;
+    d->id = id;
+
+    d->sub_cards.clear();
+    d->handling_method = HandlingMethod::MethodNone;
+
+    // initialized with the default info from the face.
+    d->can_damage = face->canDamage();
+    d->can_recover = face->canRecover();
+    d->can_recast = false;
+    d->has_effect_value = face->hasEffectValue();
+    d->throw_when_using = face->throwWhenUsing();
+
+    d->flags.clear();
+
+    d->mute = false;
+}
+
+Card::~Card()
+{
+    delete d;
+}
+
+Card::Suit Card::suit() const
+{
+    if (d->suit != NoSuit && d->suit != SuitToBeDecided)
+        return d->suit;
+    if (isVirtualCard()) {
+        if (d->sub_cards.size() == 0)
+            return NoSuit;
+        else if (d->sub_cards.size() == 0)
+            return fixme_cast<Card::Suit>(Sanguosha->currentRoomObject()->getCard(*d->sub_cards.begin())->getSuit());
+        else {
+            Color color = Colorless;
+            foreach (int id, d->sub_cards) {
+                Color color2 = fixme_cast<Color>(Sanguosha->currentRoomObject()->getCard(id)->getColor());
+                if (color == Colorless)
+                    color = color2;
+                else if (color != color2)
+                    return NoSuit;
+            }
+            return (color == Red) ? NoSuitRed : NoSuitBlack;
+        }
+    } else
+        return d->suit;
+}
+
+void Card::setSuit(Suit suit)
+{
+    d->suit = suit;
+}
+
+QString Card::suitString() const
+{
+    return SuitToString(d->suit);
+}
+
+bool Card::isRed() const
+{
+    return suit() == Heart || suit() == Diamond || suit() == NoSuitRed;
+}
+
+bool Card::isBlack() const
+{
+    return suit() == Spade || suit() == Club || suit() == NoSuitBlack;
+}
+
+Card::Color Card::color() const
+{
+    if (isRed())
+        return Red;
+    if (isBlack())
+        return Black;
+    return Colorless;
+}
+
+Card::Number Card::number() const
+{
+    return d->number;
+}
+
+void Card::setNumber(Number number)
+{
+    d->number = number;
+}
+
+QString Card::numberString() const
+{
+    Card::Number number = this->number();
+    if (isVirtualCard()) {
+        if (d->sub_cards.size() == 0 || d->sub_cards.size() >= 2)
+            number = Number::NumberNA;
+    }
+    if (number == 10)
+        return "10";
+    else {
+        static const char *number_string = "-A23456789-JQK";
+        return QString(number_string[static_cast<int>(number)]);
+    }
+}
+
+int Card::id() const
+{
+    return d->id;
+}
+
+int Card::effectiveID() const
+{
+    if (isVirtualCard()) {
+        if (d->sub_cards.isEmpty())
+            return -1;
+        else
+            return *d->sub_cards.begin();
+    } else
+        return d->id;
+}
+
+QString Card::name() const
+{
+    return d->face->name();
+}
+
+QString Card::fullName(bool include_suit) const
+{
+    QString name = this->name();
+    if (include_suit) {
+        QString suit_name = Sanguosha->translate(suitString());
+        return QString("%1%2 %3").arg(suit_name).arg(numberString()).arg(name);
+    } else
+        return QString("%1 %2").arg(numberString()).arg(name);
+}
+
+QString Card::logName() const
+{
+    QString suit_char;
+    QString number_string;
+
+    switch (suit()) {
+    case Spade:
+    case Heart:
+    case Club:
+    case Diamond: {
+        suit_char = QString("<img src='image/system/log/%1.png' height = 12/>").arg(suitString());
+        break;
+    }
+    case NoSuitRed: {
+        // FIXME: use tr here will raise error since card does not inherits QObject.
+        suit_char = Sanguosha->translate("NoSuitRed");
+        break;
+    }
+    case NoSuitBlack: {
+        suit_char = Sanguosha->translate("NoSuitRed");
+        break;
+    }
+    case NoSuit: {
+        suit_char = Sanguosha->translate("NoSuitRed");
+        break;
+    }
+    default:
+        break;
+    }
+
+    // FIXME: Should we compare the Number with int directly?
+    if (d->number > 0 && d->number <= 13)
+        number_string = numberString();
+
+    return QString("%1[%2%3]").arg(name()).arg(suit_char).arg(number_string);
+}
+
+QString Card::skillName() const
+{
+    return d->skill_name;
+}
+
+void Card::setSkillName(const QString &skill_name)
+{
+    d->skill_name = skill_name;
+}
+
+QString Card::showSkillName() const
+{
+    return d->show_skill_name;
+}
+
+void Card::setShowSkillName(const QString &show_skill_name)
+{
+    d->show_skill_name = show_skill_name;
+}
+
+Card::HandlingMethod Card::handleMethod() const
+{
+    return d->handling_method;
+}
+
+void Card::setHandleMethod(Card::HandlingMethod method)
+{
+    d->handling_method = method;
+}
+
+bool Card::canDamage() const
+{
+    return d->can_damage;
+}
+
+void Card::setCanDamage(bool can_damage)
+{
+    d->can_damage = can_damage;
+}
+
+bool Card::canRecover() const
+{
+    return d->can_recover;
+}
+
+void Card::setCanRecover(bool can_recover)
+{
+    d->can_recover = can_recover;
+}
+
+bool Card::canRecast() const
+{
+    return d->can_recast;
+}
+
+void Card::setCanRecast(bool can_recast)
+{
+    d->can_recast = can_recast;
+}
+
+bool Card::hasEffectValue() const
+{
+    return d->has_effect_value;
+}
+
+void Card::setHasEffectValue(bool has_effect_value)
+{
+    d->has_effect_value = has_effect_value;
+}
+
+bool Card::throwWhenUsing() const
+{
+    return d->throw_when_using;
+}
+
+void Card::setThrowWhenUsing(bool throw_when_using)
+{
+    d->throw_when_using = throw_when_using;
+}
+
+const CardFace *Card::face() const
+{
+    return d->face;
+}
+
+void Card::setFace(const CardFace *face)
+{
+    d->face = face;
+}
+
+const QSet<QString> &Card::flags() const
+{
+    return d->flags;
+}
+
+void Card::addFlag(const QString &flag)
+{
+    d->flags.insert(flag);
+}
+
+void Card::addFlags(const QSet<QString> &flags)
+{
+    foreach (const QString &flag, flags) {
+        d->flags.insert(flag);
+    }
+}
+
+void Card::removeFlag(const QString &flag)
+{
+    d->flags.remove(flag);
+}
+
+void Card::removeFlag(const QSet<QString> &flags)
+{
+    foreach (const QString &flag, flags) {
+        d->flags.remove(flag);
+    }
+}
+
+void Card::clearFlags()
+{
+    d->flags.clear();
+}
+
+bool Card::hasFlag(const QString &flag) const
+{
+    return d->flags.contains(flag);
+}
+
+bool Card::isVirtualCard() const
+{
+    return id() < 0;
+}
+
+const QSet<int> &Card::subcards() const
+{
+    return d->sub_cards;
+}
+
+void Card::addSubcard(int card_id)
+{
+    Q_ASSERT(card_id >= 0);
+    d->sub_cards.insert(card_id);
+}
+
+void Card::addSubcard(const Card *card)
+{
+    d->sub_cards.insert(card->effectiveID());
+}
+
+void Card::addSubcards(const QSet<int> &subcards)
+{
+    foreach (int id, subcards) {
+        d->sub_cards.insert(id);
+    }
+}
+
+void Card::clearSubcards()
+{
+    d->sub_cards.clear();
+}
+
+QString Card::subcardString() const
+{
+    if (subcards().isEmpty())
+        return ".";
+
+    QStringList str;
+    foreach (int subcard, subcards())
+        str << QString::number(subcard);
+
+    return str.join("+");
+}
+
+bool Card::mute() const
+{
+    return d->mute;
+}
+
+void Card::setMute(bool mute)
+{
+    d->mute = mute;
+}
+
+QString Card::toString(bool hidden) const
+{
+    if (!isVirtualCard())
+        return QString::number(id());
+    else
+        return QString("%1:%2[%3:%4]=%5").arg(name()).arg(skillName()).arg(suitString()).arg(numberString()).arg(subcardString());
+}
+
+Card::Card(CardPrivate *d)
+{
+    this->d = new CardPrivate(*d);
+}
+
+Card *Card::Clone(const Card *other)
+{
+    return new Card(other->d);
+}
+
+QString Card::SuitToString(Suit suit)
+{
+    switch (suit) {
+    case Spade:
+        return "spade";
+    case Heart:
+        return "heart";
+    case Club:
+        return "club";
+    case Diamond:
+        return "diamond";
+    case NoSuitBlack:
+        return "no_suit_black";
+    case NoSuitRed:
+        return "no_suit_red";
+    default:
+        return "no_suit";
+    }
+}
+
+const Card *parse(const QString &str, RoomObject *room){
+    // FIXME: Should we get rid of this function? 
+    // We can replace this with a neat version by providing:
+    // - CardFace name
+    // - suit, number, or id?
+    // - subcards id
+    return nullptr;
+}
+
+};

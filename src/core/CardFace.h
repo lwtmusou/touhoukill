@@ -70,7 +70,7 @@ public:
     // Note: In HulaoPass mode, all weapon can be recast according to the game rule.
     // virtual bool canRecast() const;
     virtual bool hasEffectValue() const;
-    virtual bool willThrow() const;
+    virtual bool throwWhenUsing() const;
     virtual bool hasPreAction() const;
 
     // This is method is removed from the face. It's clear that this is totally dynamic.

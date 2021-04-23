@@ -14,7 +14,7 @@ class CardFacePrivate
 public:
     CardFacePrivate()
         : target_fixed(false)
-        , will_throw(true)
+        , throw_when_using(true)
         , has_preact(false)
         , can_damage(false)
         , can_recover(false)
@@ -23,7 +23,7 @@ public:
     }
 
     bool target_fixed;
-    bool will_throw;
+    bool throw_when_using;
     bool has_preact;
     bool can_damage;
     bool can_recover;
@@ -96,9 +96,9 @@ bool CardFace::hasEffectValue() const
     return d->has_effectvalue;
 }
 
-bool CardFace::willThrow() const
+bool CardFace::throwWhenUsing() const
 {
-    return d->will_throw;
+    return d->throw_when_using;
 }
 
 bool CardFace::hasPreAction() const
