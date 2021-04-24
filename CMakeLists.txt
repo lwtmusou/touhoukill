@@ -20,6 +20,8 @@ find_package(Qt5 COMPONENTS Widgets Network LinguistTools Multimedia QuickWidget
 
 if (WIN32)
     find_package(Qt5 COMPONENTS WinExtras REQUIRED)
+elseif(APPLE)
+    add_compile_definitions(LUA_USE_MACOSX)
 else()
     add_compile_definitions(LUA_USE_LINUX)
 endif()
