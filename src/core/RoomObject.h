@@ -36,6 +36,8 @@ class Card;
 class CardFace;
 }
 
+class RoomObjectPrivate;
+
 class RoomObject : public QObject
 {
     Q_OBJECT
@@ -46,22 +48,10 @@ public:
     Card *getCard(int cardId) const;
     WrappedCard *getWrappedCard(int cardId) const;
 
-    inline QString getCurrentCardUsePattern() const
-    {
-        return m_currentCardUsePattern;
-    }
-    inline void setCurrentCardUsePattern(const QString &newPattern)
-    {
-        m_currentCardUsePattern = newPattern;
-    }
-    inline CardUseStruct::CardUseReason getCurrentCardUseReason() const
-    {
-        return m_currentCardUseReason;
-    }
-    inline void setCurrentCardUseReason(CardUseStruct::CardUseReason reason)
-    {
-        m_currentCardUseReason = reason;
-    }
+    QString getCurrentCardUsePattern() const;
+    void setCurrentCardUsePattern(const QString &newPattern);
+    CardUseStruct::CardUseReason getCurrentCardUseReason() const;
+    void setCurrentCardUseReason(CardUseStruct::CardUseReason reason);
 
     // Update a card in the room.
     // @param cardId
@@ -93,13 +83,8 @@ public:
                                       RefactorProposal::Card::Number number = RefactorProposal::Card::NumberToBeDecided);
     void cardDeleting(const RefactorProposal::Card *card);
 
-protected:
-    QHash<int, WrappedCard *> m_cards;
-    QString m_currentCardUsePattern;
-    CardUseStruct::CardUseReason m_currentCardUseReason;
-    PreRefactor::CardFactory cardFactory;
-    QList<QPointer<Card> > m_clonedCardsPreRefactor;
-    QList<const RefactorProposal::Card *> m_clonedCards;
+private:
+    RoomObjectPrivate *d;
 };
 
 #endif
