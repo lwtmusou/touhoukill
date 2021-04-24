@@ -1099,6 +1099,10 @@ Card::Card(RoomObject *room, const CardFace *face, Suit suit, Number number, int
 
 Card::~Card()
 {
+    // Since room keeps the pointer of the Card object, we should notify Room about deletion
+    if (d->room != nullptr)
+        d->room->cardDeleting(this);
+
     delete d;
 }
 
@@ -1240,15 +1244,16 @@ QString Card::logName() const
     }
     case NoSuitRed: {
         // FIXME: use tr here will raise error since card does not inherits QObject.
-        suit_char = Sanguosha->translate("NoSuitRed");
+        // Fs: so use QObject::tr
+        suit_char = QObject::tr("NoSuitRed");
         break;
     }
     case NoSuitBlack: {
-        suit_char = Sanguosha->translate("NoSuitRed");
+        suit_char = QObject::tr("NoSuitBlack");
         break;
     }
     case NoSuit: {
-        suit_char = Sanguosha->translate("NoSuitRed");
+        suit_char = QObject::tr("NoSuit");
         break;
     }
     default:

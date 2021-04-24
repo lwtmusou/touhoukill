@@ -9,6 +9,8 @@
 #include <QObject>
 #include <QPointer>
 
+namespace PreRefactor {
+
 class CardFactory
 {
 public:
@@ -27,6 +29,12 @@ public:
 private:
     static QHash<QString, const QMetaObject *> metaObjects;
 };
+}
+
+namespace RefactorProposal {
+class Card;
+class CardFace;
+}
 
 class RoomObject : public QObject
 {
@@ -71,15 +79,27 @@ public:
     Card *cloneCard(const Card *card);
     Card *cloneCard(const QString &name, Card::Suit suit = Card::SuitToBeDecided, int number = -1, const QStringList &flags = QStringList());
     SkillCard *cloneSkillCard(const QString &name);
-
     void autoCleanupClonedCards();
+
+    RefactorProposal::Card *cloneCard(const RefactorProposal::Card *card);
+#if 0
+    RefactorProposal::Card *cloneCard(const QString &name, RefactorProposal::Card::Suit suit = RefactorProposal::Card::SuitToBeDecided,
+                                      RefactorProposal::Card::Number number = RefactorProposal::Card::NumberToBeDecided);
+#else
+    // Fs: after Refactor done, replace the function to the one with default value
+    RefactorProposal::Card *cloneCard(const QString &name, RefactorProposal::Card::Suit suit, RefactorProposal::Card::Number number);
+#endif
+    RefactorProposal::Card *cloneCard(const RefactorProposal::CardFace *cardFace, RefactorProposal::Card::Suit suit = RefactorProposal::Card::SuitToBeDecided,
+                                      RefactorProposal::Card::Number number = RefactorProposal::Card::NumberToBeDecided);
+    void cardDeleting(const RefactorProposal::Card *card);
 
 protected:
     QHash<int, WrappedCard *> m_cards;
     QString m_currentCardUsePattern;
     CardUseStruct::CardUseReason m_currentCardUseReason;
-    CardFactory cardFactory;
-    QList<QPointer<Card> > m_clonedCards;
+    PreRefactor::CardFactory cardFactory;
+    QList<QPointer<Card> > m_clonedCardsPreRefactor;
+    QList<const RefactorProposal::Card *> m_clonedCards;
 };
 
 #endif

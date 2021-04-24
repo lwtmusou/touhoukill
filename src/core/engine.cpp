@@ -42,8 +42,8 @@ Engine::Engine()
     foreach (QString name, package_names)
         addPackage(name);
 
-    CardFactory::addCardMetaObject(SurrenderCard::staticMetaObject.className(), &SurrenderCard::staticMetaObject);
-    CardFactory::addCardMetaObject(CheatCard::staticMetaObject.className(), &CheatCard::staticMetaObject);
+    PreRefactor::CardFactory::addCardMetaObject(SurrenderCard::staticMetaObject.className(), &SurrenderCard::staticMetaObject);
+    PreRefactor::CardFactory::addCardMetaObject(CheatCard::staticMetaObject.className(), &CheatCard::staticMetaObject);
 
     LordBGMConvertList = getConfigFromConfigFile("bgm_convert_pairs").toStringList();
     LordBackdropConvertList = getConfigFromConfigFile("backdrop_convert_pairs").toStringList();
@@ -198,8 +198,8 @@ void Engine::addPackage(Package *package)
         cards << card;
 
         QString class_name = card->metaObject()->className();
-        CardFactory::addCardMetaObject(class_name, card->metaObject());
-        CardFactory::addCardMetaObject(card->objectName(), card->metaObject());
+        PreRefactor::CardFactory::addCardMetaObject(class_name, card->metaObject());
+        PreRefactor::CardFactory::addCardMetaObject(card->objectName(), card->metaObject());
     }
 
     addSkills(package->getSkills());
@@ -222,7 +222,7 @@ void Engine::addPackage(Package *package)
 
     QList<const QMetaObject *> metas = package->getMetaObjects();
     foreach (const QMetaObject *meta, metas)
-        CardFactory::addCardMetaObject(meta->className(), meta);
+        PreRefactor::CardFactory::addCardMetaObject(meta->className(), meta);
 }
 
 void Engine::addBanPackage(const QString &package_name)
