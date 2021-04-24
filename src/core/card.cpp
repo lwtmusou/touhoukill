@@ -1469,11 +1469,6 @@ Card::Card(CardPrivate *d)
     this->d = new CardPrivate(*d);
 }
 
-Card *Card::Clone(const Card *other)
-{
-    return new Card(other->d);
-}
-
 QString Card::SuitToString(Suit suit)
 {
     switch (suit) {

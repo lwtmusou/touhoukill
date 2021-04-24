@@ -448,7 +448,7 @@ public:
     QString toString(bool hidden) const;
 
     // helpers
-    static Card *Clone(const Card *other);
+    // static Card *Clone(const Card *other);
     static QString SuitToString(Suit suit);
     static const Card *parse(const QString &str, RoomObject *room);
 
