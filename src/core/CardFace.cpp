@@ -1,5 +1,6 @@
 #include "CardFace.h"
 #include "RoomObject.h"
+#include "engine.h"
 #include "player.h"
 #include "room.h"
 #include "util.h"
@@ -62,9 +63,7 @@ QString CardFace::effectName() const
 
 bool CardFace::isKindOf(const char *cardType) const
 {
-    // TODO: return staticMetaObject.inherits(&(Sanguosha->getCardFace(cardType)->staticMetaObject)); // depends on Qt 5.7
-    (void)cardType;
-    return false;
+    return staticMetaObject.inherits(&(Sanguosha->getCardFace(cardType)->staticMetaObject)); // depends on Qt 5.7
 }
 
 bool CardFace::matchType(const QString &pattern) const

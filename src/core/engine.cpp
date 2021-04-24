@@ -1,4 +1,5 @@
 #include "engine.h"
+#include "CardFace.h"
 #include "RoomObject.h"
 #include "ai.h"
 #include "audio.h"
@@ -1250,6 +1251,16 @@ QString Engine::GetMappedKingdom(const QString &role)
 QVariant Engine::getConfigFromConfigFile(const QString &key) const
 {
     // TODO: special case of "withHeroSkin" and "withBGM"
-
     return configFile.value(key);
+}
+
+void Engine::registerCardFace(const RefactorProposal::CardFace *cardFace)
+{
+    if (cardFace != nullptr)
+        cardFaces[cardFace->name()] = cardFace;
+}
+
+const RefactorProposal::CardFace *Engine::getCardFace(const QString &name) const
+{
+    return cardFaces.value(name, nullptr);
 }
