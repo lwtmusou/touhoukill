@@ -353,11 +353,13 @@ public:
         // Special numbers
         NumberNA = 0,
         NumberToBeDecided = -1
+
+        // TODO: Add -2
     };
     Q_ENUM(Number);
 
     // constructor to create real card
-    explicit Card(const CardFace *face, Suit suit = SuitToBeDecided, Number number = Number::NumberToBeDecided, int id = -1);
+    explicit Card(RoomObject *room, const CardFace *face, Suit suit = SuitToBeDecided, Number number = Number::NumberToBeDecided, int id = -1);
     ~Card();
 
     // Suit method
@@ -436,6 +438,9 @@ public:
     // UI property
     bool mute() const;
     void setMute(bool mute);
+
+    // room Object
+    RoomObject *room() const;
 
     // toString
     // What's the meaning of this hidden card?

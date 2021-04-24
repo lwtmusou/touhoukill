@@ -1062,14 +1062,16 @@ public:
     bool throw_when_using;
 
     // flags
-    // Flag should be unique right?
     QSet<QString> flags;
 
     // UI (Why server side?)
     bool mute;
+
+    // The room
+    RoomObject *room;
 };
 
-Card::Card(const CardFace *face, Suit suit, Number number, int id)
+Card::Card(RoomObject *room, const CardFace *face, Suit suit, Number number, int id)
 {
     d = new CardPrivate;
     // initialize d
@@ -1091,6 +1093,8 @@ Card::Card(const CardFace *face, Suit suit, Number number, int id)
     d->flags.clear();
 
     d->mute = false;
+
+    d->room = room;
 }
 
 Card::~Card()
@@ -1105,8 +1109,8 @@ Card::Suit Card::suit() const
     if (isVirtualCard()) {
         if (d->sub_cards.size() == 0)
             return NoSuit;
-        else if (d->sub_cards.size() == 0)
-            return fixme_cast<Card::Suit>(Sanguosha->currentRoomObject()->getCard(*d->sub_cards.begin())->getSuit());
+        else if (d->sub_cards.size() == 1)
+            return fixme_cast<Card::Suit>(Sanguosha->currentRoomObject()->getCard(*d->sub_cards.constBegin())->getSuit());
         else {
             Color color = Colorless;
             foreach (int id, d->sub_cards) {
@@ -1153,11 +1157,25 @@ Card::Color Card::color() const
 
 Card::Number Card::number() const
 {
-    return d->number;
+    if (d->number != NumberNA && d->number != NumberToBeDecided)
+        return d->number;
+    if (isVirtualCard()) {
+        if (d->sub_cards.size() == 0)
+            return NumberNA;
+        else if (d->sub_cards.size() == 1)
+            return fixme_cast<Card::Number>(Sanguosha->currentRoomObject()->getCard(*d->sub_cards.constBegin())->getNumber());
+        else {
+            return NumberNA;
+        }
+    } else
+        return d->number;
 }
 
 void Card::setNumber(Number number)
 {
+    // FIXME: Check the boundary for number.
+    // The parameter is given a Number type, but how?
+    // overload it?
     d->number = number;
 }
 
@@ -1187,7 +1205,7 @@ int Card::effectiveID() const
         if (d->sub_cards.isEmpty())
             return -1;
         else
-            return *d->sub_cards.begin();
+            return *d->sub_cards.constBegin();
     } else
         return d->id;
 }
@@ -1238,7 +1256,7 @@ QString Card::logName() const
     }
 
     // FIXME: Should we compare the Number with int directly?
-    if (d->number > 0 && d->number <= 13)
+    if (number() > NumberA && number() <= NumberK)
         number_string = numberString();
 
     return QString("%1[%2%3]").arg(name()).arg(suit_char).arg(number_string);
@@ -1428,6 +1446,11 @@ void Card::setMute(bool mute)
     d->mute = mute;
 }
 
+RoomObject *Card::room() const
+{
+    return d->room;
+}
+
 QString Card::toString(bool hidden) const
 {
     if (!isVirtualCard())
@@ -1466,8 +1489,9 @@ QString Card::SuitToString(Suit suit)
     }
 }
 
-const Card *parse(const QString &str, RoomObject *room){
-    // FIXME: Should we get rid of this function? 
+const Card *parse(const QString &str, RoomObject *room)
+{
+    // FIXME: Should we get rid of this function?
     // We can replace this with a neat version by providing:
     // - CardFace name
     // - suit, number, or id?
