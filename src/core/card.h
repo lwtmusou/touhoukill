@@ -455,7 +455,7 @@ public:
 
 private:
     explicit Card(CardPrivate *p);
-    Q_DISABLE_COPY_MOVE(Card); // no copy is allowed.
+    Q_DISABLE_COPY_MOVE(Card) // no copy is allowed.
     CardPrivate *d;
 };
 

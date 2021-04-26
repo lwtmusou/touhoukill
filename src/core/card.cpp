@@ -1071,33 +1071,26 @@ public:
     // The room
     RoomObject *room;
 
-    // Fs: no constructor?
+    CardPrivate(RoomObject *room, const CardFace *face, Card::Suit suit, Card::Number number, int id)
+        : face(face)
+        , suit(suit)
+        , number(number)
+        , id(id)
+        , handling_method(Card::MethodNone)
+        , can_damage(face->canDamage())
+        , can_recover(face->canRecover())
+        , can_recast(false)
+        , has_effect_value(face->hasEffectValue())
+        , throw_when_using(face->throwWhenUsing())
+        , mute(false)
+        , room(room)
+    {
+    }
 };
 
 Card::Card(RoomObject *room, const CardFace *face, Suit suit, Number number, int id)
+    : d(new CardPrivate(room, face, suit, number, id))
 {
-    d = new CardPrivate;
-    // initialize d
-    d->face = face;
-    d->suit = suit;
-    d->number = number;
-    d->id = id;
-
-    d->sub_cards.clear();
-    d->handling_method = HandlingMethod::MethodNone;
-
-    // initialized with the default info from the face.
-    d->can_damage = face->canDamage();
-    d->can_recover = face->canRecover();
-    d->can_recast = false;
-    d->has_effect_value = face->hasEffectValue();
-    d->throw_when_using = face->throwWhenUsing();
-
-    d->flags.clear();
-
-    d->mute = false;
-
-    d->room = room;
 }
 
 Card::~Card()
@@ -1116,6 +1109,7 @@ Card::Suit Card::suit() const
 
     if (isVirtualCard()) {
         // I don't want to check room != nullptr here because virtual cards must be created by RoomObject
+        Q_ASSERT(room() != nullptr);
         if (d->sub_cards.size() == 0)
             return NoSuit;
         else if (d->sub_cards.size() == 1)
@@ -1173,6 +1167,7 @@ Card::Number Card::number() const
 
     if (isVirtualCard()) {
         // I don't want to check room != nullptr here because virtual cards must be created by RoomObject
+        Q_ASSERT(room() != nullptr);
         if (d->sub_cards.size() == 0)
             return NumberNA;
         else if (d->sub_cards.size() == 1)
@@ -1364,7 +1359,7 @@ const CardFace *Card::face() const
 void Card::setFace(const CardFace *face)
 {
     d->face = face;
-    // Some properties should get updated as well. 
+    // Some properties should get updated as well.
     d->can_damage = face->canDamage();
     d->can_recover = face->canRecover();
     d->has_effect_value = face->hasEffectValue();
