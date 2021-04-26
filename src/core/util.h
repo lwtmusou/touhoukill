@@ -12,6 +12,7 @@ class QVariant;
 #include <QVariant>
 
 #include <algorithm>
+#include <type_traits>
 
 template <typename T> void qShuffle(QList<T> &list)
 {
@@ -39,6 +40,7 @@ namespace RefactorProposal {
 
 template <typename T1, typename T2> QT_DEPRECATED_X("FIXME: THIS SHOULD BE REMOVED AFTER REFACTORING") T1 fixme_cast(T2 t2)
 {
+    static_assert(!std::is_same<T1, T2>::value, "T1 and T2 should not be the same type.");
     return (T1)t2;
 }
 
