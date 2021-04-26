@@ -298,4 +298,9 @@ QString BasicCard::typeName() const
     return "basic";
 }
 
+QString BasicCard::subTypeName() const
+{
+    return "basic";
+}
+
 }

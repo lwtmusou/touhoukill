@@ -61,11 +61,14 @@ public:
     // For example, some skill may let Slash not be regarded as damage card?
     // Fs: There is a skill which has a skill named "Xianshi" for God Patchouli in TouhouKill. It needs an extremely hacked Card/CardFace which changes all the effect of a certain Card.
     // Return value of "canDamage" and "canRecover" is affected by "Xianshi" in this case.
+    // TODO_Fs: ***non-virtual*** property setters for simplifying logic, only reimplement these functions when complex logic is needed
     virtual bool canDamage() const;
     virtual bool canRecover() const;
     // Fs: canRecast should be property of Card.
     // Seems like it should be dealt in UI and GameRule instead of the logic in Card/CardFace itself.
     // Currently CardFace::onUse and CardFace::targetFixed/targetFeasible are hacked to support recast
+    // TODO_Fs: This may be changed to using skillcard/recastcard when UI/client detects a recast operation
+    // so that there will be no logic in CardFace for implementing recasting
     // Note: In HulaoPass mode, all weapon can be recast according to the game rule.
     // virtual bool canRecast() const;
     virtual bool hasEffectValue() const;
@@ -109,6 +112,117 @@ public:
 
     CardType type() const override;
     QString typeName() const override;
+    QString subTypeName() const override;
+};
+
+class EquipCard : public CardFace
+{
+    Q_GADGET
+
+public:
+    enum Location
+    {
+        WeaponLocation,
+        ArmorLocation,
+        DefensiveHorseLocation,
+        OffensiveHorseLocation,
+        TreasureLocation
+    };
+    Q_ENUM(Location)
+
+    EquipCard();
+
+    CardType type() const override;
+    QString typeName() const override;
+
+    virtual Location location() const = 0;
+};
+
+class Weapon : public EquipCard
+{
+    Q_GADGET
+
+public:
+    Weapon();
+
+    QString subTypeName() const override;
+    Location location() const override;
+};
+
+class Armor : public EquipCard
+{
+    Q_GADGET
+
+public:
+    Armor();
+
+    QString subTypeName() const override;
+    Location location() const override;
+};
+
+class DefensiveHorse : public EquipCard
+{
+    Q_GADGET
+
+public:
+    DefensiveHorse();
+
+    QString subTypeName() const override;
+    Location location() const override;
+};
+
+class OffensiveHorse : public EquipCard
+{
+    Q_GADGET
+
+public:
+    OffensiveHorse();
+
+    QString subTypeName() const override;
+    Location location() const override;
+};
+
+class Treasure : public EquipCard
+{
+    Q_GADGET
+
+public:
+    Treasure();
+
+    QString subTypeName() const override;
+    Location location() const override;
+};
+
+class TrickCard : public CardFace
+{
+    Q_GADGET
+
+public:
+    TrickCard();
+
+    CardType type() const override;
+    QString typeName() const override;
+};
+
+class NonDelayedTrick : public TrickCard
+{
+    Q_GADGET
+
+public:
+    NonDelayedTrick();
+
+    QString subTypeName() const override;
+    bool isNDTrick() const override;
+};
+
+class DelayedTrick : public TrickCard
+{
+    Q_GADGET
+
+public:
+    DelayedTrick();
+
+    QString subTypeName() const override;
 };
 
 }
