@@ -1054,7 +1054,7 @@ public:
     // handling method
     Card::HandlingMethod handling_method;
 
-    // property
+    // property - Fs: use tristate?
     bool can_damage;
     bool can_recover;
     bool can_recast;
@@ -1065,10 +1065,13 @@ public:
     QSet<QString> flags;
 
     // UI (Why server side?)
+    // Fs: because the notification is from server! (Exactly, Room)
     bool mute;
 
     // The room
     RoomObject *room;
+
+    // Fs: no constructor?
 };
 
 Card::Card(RoomObject *room, const CardFace *face, Suit suit, Number number, int id)
@@ -1108,26 +1111,30 @@ Card::~Card()
 
 Card::Suit Card::suit() const
 {
-    if (d->suit != NoSuit && d->suit != SuitToBeDecided)
+    if (d->suit != SuitToBeDecided)
         return d->suit;
+
     if (isVirtualCard()) {
+        // I don't want to check room != nullptr here because virtual cards must be created by RoomObject
         if (d->sub_cards.size() == 0)
             return NoSuit;
         else if (d->sub_cards.size() == 1)
-            return fixme_cast<Card::Suit>(Sanguosha->currentRoomObject()->getCard(*d->sub_cards.constBegin())->getSuit());
-        else {
-            Color color = Colorless;
-            foreach (int id, d->sub_cards) {
-                Color color2 = fixme_cast<Color>(Sanguosha->currentRoomObject()->getCard(id)->getColor());
-                if (color == Colorless)
-                    color = color2;
-                else if (color != color2)
-                    return NoSuit;
-            }
-            return (color == Red) ? NoSuitRed : NoSuitBlack;
+            return fixme_cast<Card::Suit>(room()->getCard(*d->sub_cards.constBegin())->getSuit());
+        Color color = Colorless;
+        foreach (int id, d->sub_cards) {
+            Color color2 = fixme_cast<Color>(room()->getCard(id)->getColor());
+            if (color == Colorless)
+                color = color2;
+            else if (color != color2)
+                return NoSuit;
         }
-    } else
-        return d->suit;
+        return (color == Red) ? NoSuitRed : NoSuitBlack;
+    }
+
+    if (d->suit == SuitToBeDecided)
+        return NoSuit; // NoSuit non-virtual card actually exists, but only with FilterSkill
+
+    return d->suit;
 }
 
 void Card::setSuit(Suit suit)
@@ -1161,13 +1168,15 @@ Card::Color Card::color() const
 
 Card::Number Card::number() const
 {
-    if (d->number != NumberNA && d->number != NumberToBeDecided)
+    if (d->number != NumberToBeDecided)
         return d->number;
+
     if (isVirtualCard()) {
+        // I don't want to check room != nullptr here because virtual cards must be created by RoomObject
         if (d->sub_cards.size() == 0)
             return NumberNA;
         else if (d->sub_cards.size() == 1)
-            return fixme_cast<Card::Number>(Sanguosha->currentRoomObject()->getCard(*d->sub_cards.constBegin())->getNumber());
+            return fixme_cast<Card::Number>(room()->getCard(*d->sub_cards.constBegin())->getNumber());
         else {
             return NumberNA;
         }
@@ -1190,7 +1199,7 @@ QString Card::numberString() const
         if (d->sub_cards.size() == 0 || d->sub_cards.size() >= 2)
             number = Number::NumberNA;
     }
-    if (number == 10)
+    if (number == X)
         return "10";
     else {
         static const char *number_string = "-A23456789-JQK";
@@ -1489,7 +1498,7 @@ QString Card::SuitToString(Suit suit)
     }
 }
 
-const Card *parse(const QString &str, RoomObject *room)
+const Card *Card::Parse(const QString &str, RoomObject *room)
 {
     // FIXME: Should we get rid of this function?
     // We can replace this with a neat version by providing:

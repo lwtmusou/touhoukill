@@ -10,13 +10,12 @@ class Player;
 class ServerPlayer;
 class Room;
 
-struct CardUseStruct;
-struct CardEffectStruct;
-
 namespace RefactorProposal {
 
 class CardFacePrivate;
 class Card;
+struct CardUseStruct;
+struct CardEffectStruct;
 
 /**
  * @interface The functional model of a given card.
@@ -79,13 +78,9 @@ public:
     // Functions
     virtual bool targetFixed(const Player *Self, const Card *card) const;
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self, const Card *card) const;
-    // FIXME: the following two functions should be merged into one.
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card) const;
-    // FIXME: return tuple/pair rather than a pure bool and combine two functions together?
-    // Fs: This depends on implementation of all cards, although I believe that this function is initially only for skill 'yeyan'
-    // In fact return value of the function with maxVotes has no use, only 'maxVotes' is used in current UI.
-    // Fs (Edit 2021/4/18): Maybe a single targetFilter with a return value of Integer is enough?
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card, int &maxVotes) const;
+
+    // This is the merged targetFilter implementation.
+    virtual int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card) const;
 
     virtual bool isAvailable(const Player *player, const Card *card) const;
 
@@ -103,6 +98,17 @@ public:
 
 private:
     CardFacePrivate *d;
+};
+
+class BasicCard : public CardFace
+{
+    Q_GADGET
+
+public:
+    BasicCard();
+
+    CardType type() const override;
+    QString typeName() const override;
 };
 
 }

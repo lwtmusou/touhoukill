@@ -40,6 +40,36 @@ struct DamageStruct
     QString getReason() const;
 };
 
+struct CardUseStruct
+{
+    enum CardUseReason
+    {
+        CARD_USE_REASON_UNKNOWN = 0x00,
+        CARD_USE_REASON_PLAY = 0x01,
+        CARD_USE_REASON_RESPONSE = 0x02,
+        CARD_USE_REASON_RESPONSE_USE = 0x12
+    } m_reason;
+
+    CardUseStruct();
+    CardUseStruct(const Card *card, ServerPlayer *from, const QList<ServerPlayer *> &to = QList<ServerPlayer *>(), bool isOwnerUse = true);
+    CardUseStruct(const Card *card, ServerPlayer *from, ServerPlayer *target, bool isOwnerUse = true);
+    bool isValid(const QString &pattern) const;
+    void parse(const QString &str, Room *room);
+    bool tryParse(const QVariant &usage, Room *room);
+
+    QString toString() const;
+
+    const Card *card;
+    ServerPlayer *from;
+    QList<ServerPlayer *> to;
+    bool m_isOwnerUse;
+    bool m_addHistory;
+    bool m_isHandcard;
+    bool m_isLastHandcard;
+    QList<int> m_showncards;
+    QStringList nullified_list;
+};
+
 struct CardEffectStruct
 {
     CardEffectStruct();
@@ -56,26 +86,7 @@ struct CardEffectStruct
     QList<int> effectValue;
 };
 
-struct SlashEffectStruct
-{
-    SlashEffectStruct();
-
-    int jink_num;
-
-    const Card *slash;
-    const Card *jink;
-
-    ServerPlayer *from;
-    ServerPlayer *to;
-
-    int drank;
-
-    DamageStruct::Nature nature;
-    bool multiple;
-    bool nullified;
-    bool canceled;
-    QList<int> effectValue;
-};
+namespace RefactorProposal {
 
 struct CardUseStruct
 {
@@ -105,6 +116,45 @@ struct CardUseStruct
     bool m_isLastHandcard;
     QList<int> m_showncards;
     QStringList nullified_list;
+};
+
+struct CardEffectStruct
+{
+    CardEffectStruct();
+
+    const Card *card;
+
+    ServerPlayer *from;
+    ServerPlayer *to;
+
+    bool multiple; // helper to judge whether the card has multiple targets
+    // does not make sense if the card inherits SkillCard
+    bool nullified;
+    bool canceled; //for cancel process, like "yuyi"
+    QList<int> effectValue;
+};
+
+}
+
+struct SlashEffectStruct
+{
+    SlashEffectStruct();
+
+    int jink_num;
+
+    const Card *slash;
+    const Card *jink;
+
+    ServerPlayer *from;
+    ServerPlayer *to;
+
+    int drank;
+
+    DamageStruct::Nature nature;
+    bool multiple;
+    bool nullified;
+    bool canceled;
+    QList<int> effectValue;
 };
 
 class CardMoveReason
@@ -452,7 +502,8 @@ struct PhaseStruct
 
 struct CardResponseStruct
 {
-    inline explicit CardResponseStruct(const Card *card = nullptr, ServerPlayer *who = nullptr, bool isuse = false, bool isRetrial = false, bool isProvision = false, ServerPlayer *from = nullptr)
+    inline explicit CardResponseStruct(const Card *card = nullptr, ServerPlayer *who = nullptr, bool isuse = false, bool isRetrial = false, bool isProvision = false,
+                                       ServerPlayer *from = nullptr)
         : m_card(card)
         , m_who(who)
         , m_isUse(isuse)
@@ -509,8 +560,8 @@ struct SkillInvokeDetail
     explicit SkillInvokeDetail(const TriggerSkill *skill = nullptr, ServerPlayer *owner = nullptr, ServerPlayer *invoker = nullptr,
                                const QList<ServerPlayer *> &targets = QList<ServerPlayer *>(), bool isCompulsory = false, ServerPlayer *preferredTarget = nullptr,
                                bool showHidden = true);
-    SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, bool isCompulsory = false, ServerPlayer *preferredTarget = nullptr,
-                      bool showHidden = true);
+    SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, bool isCompulsory = false,
+                      ServerPlayer *preferredTarget = nullptr, bool showHidden = true);
 
     const TriggerSkill *skill; // the skill
     ServerPlayer *owner; // skill owner. 2 structs with the same skill and skill owner are treated as of a same skill.
@@ -792,4 +843,9 @@ Q_DECLARE_METATYPE(ExtraTurnStruct)
 Q_DECLARE_METATYPE(BrokenEquipChangedStruct)
 Q_DECLARE_METATYPE(ShownCardChangedStruct)
 Q_DECLARE_METATYPE(ShowGeneralStruct)
+
+// refactor
+Q_DECLARE_METATYPE(RefactorProposal::CardUseStruct)
+Q_DECLARE_METATYPE(RefactorProposal::CardEffectStruct)
+
 #endif

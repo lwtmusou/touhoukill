@@ -54,6 +54,7 @@ QString Analeptic::getSubtype() const
 bool Analeptic::canRecover() const
 {
     // TODO_Fs: add RoomObject variable to Card
+    // Now implemented in new Card
     return Sanguosha->currentRoomObject()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY || Card::canRecover();
 }
 

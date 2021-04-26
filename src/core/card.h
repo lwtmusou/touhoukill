@@ -444,13 +444,14 @@ public:
 
     // toString
     // What's the meaning of this hidden card?
-    // FIXME: Should this still exist? 
-    QString toString(bool hidden) const;
+    // Fs: SkillCard with subcard which does not always need to show to others
+    // FIXME: Should this still exist?
+    QString toString(bool hidden = false) const;
 
     // helpers
     // static Card *Clone(const Card *other);
     static QString SuitToString(Suit suit);
-    static const Card *parse(const QString &str, RoomObject *room);
+    static const Card *Parse(const QString &str, RoomObject *room);
 
 private:
     explicit Card(CardPrivate *p);

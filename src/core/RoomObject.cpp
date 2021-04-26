@@ -96,7 +96,12 @@ RoomObject::~RoomObject()
     delete d;
 }
 
-Card *RoomObject::getCard(int cardId) const
+Card *RoomObject::getCard(int cardId)
+{
+    return getWrappedCard(cardId);
+}
+
+const Card *RoomObject::getCard(int cardId) const
 {
     return getWrappedCard(cardId);
 }

@@ -118,16 +118,9 @@ bool CardFace::targetsFeasible(const QList<const Player *> &targets, const Playe
         return !targets.isEmpty();
 }
 
-bool CardFace::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *) const
+int CardFace::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *) const
 {
-    return targets.isEmpty() && to_select != Self;
-}
-
-bool CardFace::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card, int &maxVotes) const
-{
-    bool canSelect = targetFilter(targets, to_select, Self, card);
-    maxVotes = canSelect ? 1 : 0;
-    return canSelect;
+    return (targets.isEmpty() && to_select != Self) ? 1 : 0;
 }
 
 bool CardFace::isAvailable(const Player *player, const Card *card) const
@@ -143,7 +136,7 @@ bool CardFace::ignoreCardValidity(const Player *) const
 
 const Card *CardFace::validate(const CardUseStruct &use) const
 {
-    return fixme_cast<Card *>(use.card);
+    return use.card;
 }
 
 const Card *CardFace::validateInResponse(ServerPlayer *, const Card *original_card) const
@@ -164,24 +157,24 @@ void CardFace::onUse(Room *room, const CardUseStruct &use) const
 
     QList<ServerPlayer *> targets = card_use.to;
     if (room->getMode() == "06_3v3" && (isKindOf("AOE") || isKindOf("GlobalEffect")))
-        room->reverseFor3v3(card_use.card, player, targets);
+        room->reverseFor3v3(fixme_cast< ::Card *>(card_use.card), player, targets);
     card_use.to = targets;
 
-    bool hidden = (card_use.card->getTypeId() == ::Card::TypeSkill && !card_use.card->willThrow());
+    bool hidden = (type() == TypeSkill && !card_use.card->throwWhenUsing());
     LogMessage log;
     log.from = player;
-    if (!card_use.card->targetFixed(card_use.from) || card_use.to.length() > 1 || !card_use.to.contains(card_use.from))
+    if (!targetFixed(card_use.from, card_use.card) || card_use.to.length() > 1 || !card_use.to.contains(card_use.from))
         log.to = card_use.to;
     log.type = "#UseCard";
     log.card_str = card_use.card->toString(hidden);
     room->sendLog(log);
 
-    QList<int> used_cards;
+    QSet<int> used_cards;
     QList<CardsMoveStruct> moves;
     if (card_use.card->isVirtualCard())
-        used_cards.append(card_use.card->getSubcards());
+        used_cards.unite(card_use.card->subcards());
     else
-        used_cards << card_use.card->getEffectiveId();
+        used_cards.insert(card_use.card->effectiveID());
 
     QVariant data = QVariant::fromValue(card_use);
     RoomThread *thread = room->getThread();
@@ -189,8 +182,8 @@ void CardFace::onUse(Room *room, const CardUseStruct &use) const
     thread->trigger(PreCardUsed, room, data);
     card_use = data.value<CardUseStruct>();
 
-    if (card_use.card->getTypeId() != ::Card::TypeSkill) {
-        CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), card_use.card->getSkillName(), QString());
+    if (type() != TypeSkill) {
+        CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), card_use.card->skillName(), QString());
         if (card_use.to.size() == 1)
             reason.m_targetId = card_use.to.first()->objectName();
 
@@ -202,15 +195,13 @@ void CardFace::onUse(Room *room, const CardUseStruct &use) const
         }
         room->moveCardsAtomic(moves, true);
         // show general
-        player->showHiddenSkill(card_use.card->getSkillName());
+        player->showHiddenSkill(card_use.card->showSkillName());
     } else {
-        const SkillCard *skill_card = qobject_cast<const SkillCard *>(card_use.card);
-        // show general
-        player->showHiddenSkill(skill_card->getSkillName());
-        if (card_use.card->willThrow()) {
-            CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName(), QString(), card_use.card->getSkillName(), QString());
-            room->moveCardTo(card_use.card, player, nullptr, Player::DiscardPile, reason, true);
+        if (card_use.card->throwWhenUsing()) {
+            CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName(), QString(), card_use.card->skillName(), QString());
+            room->moveCardTo(fixme_cast< ::Card *>(card_use.card), player, nullptr, Player::DiscardPile, reason, true);
         }
+        player->showHiddenSkill(card_use.card->showSkillName());
     }
 
     thread->trigger(CardUsed, room, data);
@@ -253,19 +244,19 @@ void CardFace::use(Room *room, const CardUseStruct &use) const
 
         room->setTag("targets" + use.card->toString(), QVariant::fromValue(players));
 
-        room->cardEffect(effect);
+        room->cardEffect(*(fixme_cast< ::CardEffectStruct *>(&effect)));
     }
     room->removeTag("targets" + use.card->toString()); //for ai?
     if (magic_drank > 0)
         room->setPlayerMark(source, "magic_drank", 0);
 
-    if (room->getCardPlace(use.card->getEffectiveId()) == Player::PlaceTable) {
-        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), use.card->getSkillName(), QString());
+    if (room->getCardPlace(use.card->effectiveID()) == Player::PlaceTable) {
+        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), use.card->skillName(), QString());
         if (use.to.size() == 1)
             reason.m_targetId = use.to.first()->objectName();
         reason.m_extraData = QVariant::fromValue(use.card);
         ServerPlayer *provider = nullptr;
-        foreach (QString flag, use.card->getFlags()) {
+        foreach (const QString &flag, use.card->flags()) {
             if (flag.startsWith("CardProvider_")) {
                 QStringList patterns = flag.split("_");
                 provider = room->findPlayerByObjectName(patterns.at(1));
@@ -276,7 +267,7 @@ void CardFace::use(Room *room, const CardUseStruct &use) const
         ServerPlayer *from = source;
         if (provider != nullptr)
             from = provider;
-        room->moveCardTo(use.card, from, nullptr, Player::DiscardPile, reason, true);
+        room->moveCardTo(fixme_cast< ::Card *>(use.card), from, nullptr, Player::DiscardPile, reason, true);
     }
 }
 
@@ -291,6 +282,20 @@ bool CardFace::isCancelable(const CardEffectStruct &) const
 
 void CardFace::onNullified(ServerPlayer *, const Card *) const
 {
+}
+
+BasicCard::BasicCard()
+{
+}
+
+CardFace::CardType BasicCard::type() const
+{
+    return TypeBasic;
+}
+
+QString BasicCard::typeName() const
+{
+    return "basic";
 }
 
 }

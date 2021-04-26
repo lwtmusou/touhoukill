@@ -45,7 +45,10 @@ class RoomObject : public QObject
 public:
     explicit RoomObject(QObject *parent = nullptr);
     ~RoomObject() override;
-    Card *getCard(int cardId) const;
+
+    Card *getCard(int cardId);
+    const Card *getCard(int cardId) const;
+
     WrappedCard *getWrappedCard(int cardId) const;
 
     QString getCurrentCardUsePattern() const;

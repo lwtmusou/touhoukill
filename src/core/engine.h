@@ -107,6 +107,7 @@ public:
     int correctCardTarget(const TargetModSkill::ModType type, const Player *from, const Card *card) const;
     int correctAttackRange(const Player *target, bool include_weapon = true, bool fixed = false) const;
 
+    // currently only used in Card (Pre-Refactor version)
     void registerRoom(RoomObject *room);
     void unregisterRoom();
     RoomObject *currentRoomObject();

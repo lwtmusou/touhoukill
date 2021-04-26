@@ -581,3 +581,113 @@ ShowGeneralStruct::ShowGeneralStruct()
     , isShow(true)
 {
 }
+
+namespace RefactorProposal {
+
+CardUseStruct::CardUseStruct()
+    : card(nullptr)
+    , from(nullptr)
+    , m_isOwnerUse(true)
+    , m_addHistory(true)
+    , nullified_list(QStringList())
+{
+}
+
+CardUseStruct::CardUseStruct(const Card *card, ServerPlayer *from, const QList<ServerPlayer *> &to, bool isOwnerUse)
+{
+    this->card = card;
+    this->from = from;
+    this->to = to;
+    this->m_isOwnerUse = isOwnerUse;
+    this->m_addHistory = true;
+    this->m_isHandcard = false;
+    this->m_isLastHandcard = false;
+}
+
+CardUseStruct::CardUseStruct(const Card *card, ServerPlayer *from, ServerPlayer *target, bool isOwnerUse)
+{
+    this->card = card;
+    this->from = from;
+    if (target != nullptr)
+        to << target;
+    this->m_isOwnerUse = isOwnerUse;
+    this->m_addHistory = true;
+    this->m_isHandcard = false;
+    this->m_isLastHandcard = false;
+}
+
+bool CardUseStruct::isValid(const QString &pattern) const
+{
+    Q_UNUSED(pattern)
+    return card != nullptr;
+}
+
+bool CardUseStruct::tryParse(const QVariant &usage, Room *room)
+{
+    JsonArray arr = usage.value<JsonArray>();
+    if (arr.length() < 2 || !JsonUtils::isString(arr.first()) || !arr.value(1).canConvert<JsonArray>())
+        return false;
+
+    card = Card::Parse(arr.first().toString(), room);
+    JsonArray targets = arr.value(1).value<JsonArray>();
+
+    for (int i = 0; i < targets.size(); i++) {
+        if (!JsonUtils::isString(targets.value(i)))
+            return false;
+        to << room->findChild<ServerPlayer *>(targets.value(i).toString());
+    }
+    return true;
+}
+
+void CardUseStruct::parse(const QString &str, Room *room)
+{
+    QStringList words = str.split("->", Qt::KeepEmptyParts);
+    Q_ASSERT(words.length() == 1 || words.length() == 2);
+
+    QString card_str = words.at(0);
+    QString target_str = ".";
+
+    if (words.length() == 2 && !words.at(1).isEmpty())
+        target_str = words.at(1);
+
+    card = Card::Parse(card_str, room);
+
+    if (target_str != ".") {
+        QStringList target_names = target_str.split("+");
+        foreach (QString target_name, target_names)
+            to << room->findChild<ServerPlayer *>(target_name);
+    }
+}
+
+QString CardUseStruct::toString() const
+{
+    if (card == nullptr)
+        return QString();
+
+    QStringList l;
+    l << card->toString();
+
+    if (to.isEmpty())
+        l << ".";
+    else {
+        QStringList tos;
+        foreach (ServerPlayer *p, to)
+            tos << p->objectName();
+
+        l << tos.join("+");
+    }
+    return l.join("->");
+}
+
+CardEffectStruct::CardEffectStruct()
+    : card(nullptr)
+    , from(nullptr)
+    , to(nullptr)
+    , multiple(false)
+    , nullified(false)
+    , canceled(false)
+    , effectValue(QList<int>() << 0 << 0)
+{
+}
+
+}
