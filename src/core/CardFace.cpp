@@ -51,7 +51,7 @@ QString CardFace::description() const
     return QString();
 }
 
-QString CardFace::commmonEffectName() const
+QString CardFace::commonEffectName() const
 {
     return QString();
 }

@@ -32,7 +32,7 @@ public:
     // FIXME: replace `name` with objectName ?
     virtual QString name() const;
     virtual QString description() const;
-    virtual QString commmonEffectName() const;
+    virtual QString commonEffectName() const;
     virtual QString effectName() const;
 
     // type property

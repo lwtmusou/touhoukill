@@ -9,6 +9,9 @@
 #include "CardFace.h"
 
 #include <QFile>
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
+#include <QRegularExpressionMatchIterator>
 
 const int Card::S_UNKNOWN_CARD_ID = -1;
 
@@ -1077,14 +1080,20 @@ public:
         , number(number)
         , id(id)
         , handling_method(Card::MethodNone)
-        , can_damage(face->canDamage())
-        , can_recover(face->canRecover())
+        , can_damage(false)
+        , can_recover(false)
         , can_recast(false)
-        , has_effect_value(face->hasEffectValue())
-        , throw_when_using(face->throwWhenUsing())
+        , has_effect_value(false)
+        , throw_when_using(false)
         , mute(false)
         , room(room)
     {
+        if (face != nullptr) {
+            can_damage = face->canDamage();
+            can_recover = face->canRecover();
+            has_effect_value = face->hasEffectValue();
+            throw_when_using = face->throwWhenUsing();
+        }
     }
 };
 
@@ -1112,7 +1121,8 @@ Card::Suit Card::suit() const
         Q_ASSERT(room() != nullptr);
         if (d->sub_cards.size() == 0)
             return NoSuit;
-        else if (d->sub_cards.size() == 1)
+
+        if (d->sub_cards.size() == 1)
             return fixme_cast<Card::Suit>(room()->getCard(*d->sub_cards.constBegin())->getSuit());
         Color color = Colorless;
         foreach (int id, d->sub_cards) {
@@ -1170,13 +1180,12 @@ Card::Number Card::number() const
         Q_ASSERT(room() != nullptr);
         if (d->sub_cards.size() == 0)
             return NumberNA;
-        else if (d->sub_cards.size() == 1)
+        if (d->sub_cards.size() == 1)
             return fixme_cast<Card::Number>(room()->getCard(*d->sub_cards.constBegin())->getNumber());
-        else {
-            return NumberNA;
-        }
-    } else
-        return d->number;
+
+        return NumberNA;
+    }
+    return d->number;
 }
 
 void Card::setNumber(Number number)
@@ -1194,12 +1203,12 @@ QString Card::numberString() const
         if (d->sub_cards.size() == 0 || d->sub_cards.size() >= 2)
             number = Number::NumberNA;
     }
+
     if (number == X)
         return "10";
-    else {
-        static const char *number_string = "-A23456789-JQK";
-        return QString(number_string[static_cast<int>(number)]);
-    }
+
+    static const char *number_string = "-A23456789-JQK";
+    return QString(number_string[static_cast<int>(number)]);
 }
 
 int Card::id() const
@@ -1212,15 +1221,19 @@ int Card::effectiveID() const
     if (isVirtualCard()) {
         if (d->sub_cards.isEmpty())
             return -1;
-        else
-            return *d->sub_cards.constBegin();
-    } else
-        return d->id;
+
+        return *d->sub_cards.constBegin();
+    }
+
+    return d->id;
 }
 
 QString Card::name() const
 {
-    return d->face->name();
+    if (d->face != nullptr)
+        return d->face->name();
+
+    return "DummyCard";
 }
 
 QString Card::fullName(bool include_suit) const
@@ -1229,8 +1242,9 @@ QString Card::fullName(bool include_suit) const
     if (include_suit) {
         QString suit_name = Sanguosha->translate(suitString());
         return QString("%1%2 %3").arg(suit_name).arg(numberString()).arg(name);
-    } else
-        return QString("%1 %2").arg(numberString()).arg(name);
+    }
+
+    return QString("%1 %2").arg(numberString()).arg(name);
 }
 
 QString Card::logName() const
@@ -1359,14 +1373,16 @@ const CardFace *Card::face() const
 void Card::setFace(const CardFace *face)
 {
     d->face = face;
-    // Some properties should get updated as well.
-    d->can_damage = face->canDamage();
-    d->can_recover = face->canRecover();
-    d->has_effect_value = face->hasEffectValue();
-    d->throw_when_using = face->throwWhenUsing();
+    if (face != nullptr) {
+        // Some properties should get updated as well.
+        d->can_damage = face->canDamage();
+        d->can_recover = face->canRecover();
+        d->has_effect_value = face->hasEffectValue();
+        d->throw_when_using = face->throwWhenUsing();
+    }
 }
 
-const QSet<QString> &Card::flags() const
+QSet<QString> Card::flags() const
 {
     return d->flags;
 }
@@ -1378,9 +1394,8 @@ void Card::addFlag(const QString &flag)
 
 void Card::addFlags(const QSet<QString> &flags)
 {
-    foreach (const QString &flag, flags) {
+    foreach (const QString &flag, flags)
         d->flags.insert(flag);
-    }
 }
 
 void Card::removeFlag(const QString &flag)
@@ -1390,9 +1405,8 @@ void Card::removeFlag(const QString &flag)
 
 void Card::removeFlag(const QSet<QString> &flags)
 {
-    foreach (const QString &flag, flags) {
+    foreach (const QString &flag, flags)
         d->flags.remove(flag);
-    }
 }
 
 void Card::clearFlags()
@@ -1428,9 +1442,8 @@ void Card::addSubcard(const Card *card)
 
 void Card::addSubcards(const QSet<int> &subcards)
 {
-    foreach (int id, subcards) {
+    foreach (int id, subcards)
         d->sub_cards.insert(id);
-    }
 }
 
 void Card::clearSubcards()
@@ -1467,15 +1480,34 @@ RoomObject *Card::room() const
 
 QString Card::toString(bool hidden) const
 {
-    if (!isVirtualCard())
-        return QString::number(id());
-    else
-        return QString("%1:%2[%3:%4]=%5").arg(name()).arg(skillName()).arg(suitString()).arg(numberString()).arg(subcardString());
+    if (d->face == nullptr)
+        return "$" + subcardString();
+
+    if (d->face->isKindOf("SkillCard")) {
+        QString str;
+        if (!hidden)
+            str = QString("@%1[%2:%3]=%4").arg(d->face->name()).arg(suitString()).arg(numberString()).arg(subcardString());
+        else
+            str = QString("@%1[no_suit:-]=.").arg(d->face->name());
+
+// TODO: user string for SkillCard
+#if 0
+        if (!user_string.isEmpty())
+            return QString("%1:%2").arg(str).arg(user_string);
+#endif
+
+        return str;
+    }
+
+    if (isVirtualCard())
+        return QString("%1:%2[%3:%4]=%5").arg(d->face->name()).arg(skillName()).arg(suitString()).arg(numberString()).arg(subcardString());
+
+    return QString::number(d->id);
 }
 
 Card::Card(CardPrivate *d)
+    : d(new CardPrivate(*d))
 {
-    this->d = new CardPrivate(*d);
 }
 
 QString Card::SuitToString(Suit suit)
@@ -1498,14 +1530,195 @@ QString Card::SuitToString(Suit suit)
     }
 }
 
-const Card *Card::Parse(const QString &str, RoomObject *room)
+Card *Card::Parse(const QString &str, RoomObject *room)
 {
-    // FIXME: Should we get rid of this function?
-    // We can replace this with a neat version by providing:
-    // - CardFace name
-    // - suit, number, or id?
-    // - subcards id
+    // This should match Card::toString since this is the reverse function of Card::toString
+
+    static QMap<QString, Suit> suit_map;
+    if (suit_map.isEmpty()) {
+        suit_map.insert("spade", Spade);
+        suit_map.insert("club", Club);
+        suit_map.insert("heart", Heart);
+        suit_map.insert("diamond", Diamond);
+        suit_map.insert("no_suit_red", NoSuitRed);
+        suit_map.insert("no_suit_black", NoSuitBlack);
+        suit_map.insert("no_suit", NoSuit);
+        suit_map.insert("to_be_decided", SuitToBeDecided);
+    }
+
+    // for skill cards
+    if (str.startsWith(QChar('@'))) {
+        QRegularExpression pattern("^@(\\w+)=([^:]+)(:.+)?$");
+        QRegularExpression ex_pattern("^@(\\w*)\\[(\\w+):(.+)\\]=([^:]+)(:.+)?$");
+
+        QStringList texts;
+        QString card_name;
+        QString card_suit;
+        QString card_number;
+        QStringList subcard_ids;
+        QString subcard_str;
+        QString user_string;
+        Suit suit = NoSuit;
+        Number number = NumberNA;
+
+        QRegularExpressionMatch match;
+        if ((match = pattern.match(str)).hasMatch()) {
+            texts = match.capturedTexts();
+            card_name = texts.at(1);
+            subcard_str = texts.at(2);
+            user_string = texts.at(3);
+        } else if ((match = ex_pattern.match(str)).hasMatch()) {
+            texts = match.capturedTexts();
+            card_name = texts.at(1);
+            card_suit = texts.at(2);
+            card_number = texts.at(3);
+            subcard_str = texts.at(4);
+            user_string = texts.at(5);
+        } else
+            return nullptr;
+
+        if (subcard_str != ".")
+            subcard_ids = subcard_str.split("+");
+
+        const CardFace *skillCardFace = Sanguosha->getCardFace(card_name);
+        if (skillCardFace == nullptr)
+            return nullptr;
+
+        if (!card_suit.isEmpty())
+            suit = suit_map.value(card_suit, NoSuit);
+
+        if (!card_number.isEmpty()) {
+            if (card_number == "A")
+                number = A;
+            else if (card_number == "J")
+                number = J;
+            else if (card_number == "Q")
+                number = Q;
+            else if (card_number == "K")
+                number = K;
+            else
+                number = static_cast<Number>(card_number.toInt());
+        }
+
+        Card *card = room->cloneCard(skillCardFace, suit, number);
+        card->addSubcards(List2Set(StringList2IntList(subcard_ids)));
+        // TODO: UserString of Card
+        return card;
+    }
+
+    // for dummy cards
+    if (str.startsWith(QChar('$'))) {
+        QString copy = str;
+        copy.remove(QChar('$'));
+        QStringList card_strs = copy.split("+");
+
+        Card *card = room->cloneCard(nullptr, SuitToBeDecided, NumberToBeDecided);
+        card->addSubcards(List2Set(StringList2IntList(card_strs)));
+
+        return card;
+    }
+
+    // for regular virtual cards
+    if (str.contains(QChar('='))) {
+        QRegularExpression pattern("^(\\w+):(\\w*)\\[(\\w+):(.+)\\]=(.+)$");
+        QRegularExpressionMatch match = pattern.match(str);
+        if (!match.hasMatch())
+            return nullptr;
+
+        QStringList texts = match.capturedTexts();
+        QString card_name = texts.at(1);
+        QString m_skillName = texts.at(2);
+        QString suit_string = texts.at(3);
+        QString number_string = texts.at(4);
+        QString subcard_str = texts.at(5);
+        QStringList subcard_ids;
+        if (subcard_str != ".")
+            subcard_ids = subcard_str.split("+");
+
+        Suit suit = suit_map.value(suit_string, Card::SuitToBeDecided);
+
+        Number number = NumberNA;
+        if (number_string == "A")
+            number = A;
+        else if (number_string == "J")
+            number = J;
+        else if (number_string == "Q")
+            number = Q;
+        else if (number_string == "K")
+            number = K;
+        else
+            number = static_cast<Number>(number_string.toInt());
+
+        Card *card = room->cloneCard(card_name, suit, number);
+        if (card == nullptr)
+            return nullptr;
+
+        card->addSubcards(List2Set(StringList2IntList(subcard_ids)));
+        card->setSkillName(m_skillName);
+
+        return card;
+    }
+
+    // for actual cards: str is Card ID
+    {
+        bool ok = false;
+        int id = str.toInt(&ok);
+        if (ok && id >= 0)
+            return fixme_cast<Card *>(room->getCard(id));
+    }
     return nullptr;
 }
 
-};
+#ifndef REFACTORPROPOSAL_NO_COMPATIBILITY
+QString Card::getDescription(bool a) const
+{
+    Q_UNUSED(a)
+
+    if (d->face != nullptr)
+        return d->face->description();
+
+    return QString();
+}
+
+QString Card::getCommonEffectName() const
+{
+    if (d->face != nullptr)
+        return d->face->commonEffectName();
+
+    return QString();
+}
+
+QString Card::getEffectName() const
+{
+    if (d->face != nullptr)
+        return d->face->effectName();
+
+    return QString();
+}
+
+QString Card::getType() const
+{
+    if (d->face != nullptr)
+        return d->face->typeName();
+
+    return "DummyCard";
+}
+
+QString Card::getSubType() const
+{
+    if (d->face != nullptr)
+        return d->face->subTypeName();
+
+    return "DummyCard";
+}
+
+::Card::CardType Card::getTypeId() const
+{
+    if (d->face != nullptr)
+        return fixme_cast< ::Card::CardType>(d->face->type());
+
+    return ::Card::TypeSkill; // original DummyCard is SkillCard
+}
+#endif
+
+}

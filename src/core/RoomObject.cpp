@@ -185,15 +185,22 @@ RefactorProposal::Card *RoomObject::cloneCard(const RefactorProposal::Card *card
 
 RefactorProposal::Card *RoomObject::cloneCard(const QString &name, RefactorProposal::Card::Suit suit, RefactorProposal::Card::Number number)
 {
-    return cloneCard(Sanguosha->getCardFace(name), suit, number);
+    const RefactorProposal::CardFace *face = nullptr;
+    if (name != "DummyCard")
+        face = Sanguosha->getCardFace(name);
+
+    return cloneCard(face, suit, number);
 }
 
 RefactorProposal::Card *RoomObject::cloneCard(const RefactorProposal::CardFace *cardFace, RefactorProposal::Card::Suit suit, RefactorProposal::Card::Number number)
 {
+    // Design change: dummy cards does not have CardFace
+#if 0
     if (cardFace == nullptr) {
         qDebug() << "RoomObject::cloneCard - cardFace is nullptr";
         return nullptr;
     }
+#endif
 
     RefactorProposal::Card *c = new RefactorProposal::Card(this, cardFace, suit, number);
     d->clonedCards << c;

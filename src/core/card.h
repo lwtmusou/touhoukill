@@ -4,6 +4,7 @@
 #include <QIcon>
 #include <QMap>
 #include <QObject>
+#include <QSet>
 #include <qobjectdefs.h>
 
 class Room;
@@ -356,7 +357,7 @@ public:
 
         // TODO: Add -2
     };
-    Q_ENUM(Number);
+    Q_ENUM(Number)
 
     // constructor to create real card
     explicit Card(RoomObject *room, const CardFace *face, Suit suit = SuitToBeDecided, Number number = Number::NumberToBeDecided, int id = -1);
@@ -385,6 +386,7 @@ public:
     QString logName() const;
 
     // skill name
+    // TODO_Fs: add mechanics to underscore-prefixed effect identifier
     QString skillName() const;
     void setSkillName(const QString &skill_name);
     QString showSkillName() const;
@@ -412,7 +414,7 @@ public:
     void setFace(const CardFace *face);
 
     // Flags
-    const QSet<QString> &flags() const;
+    QSet<QString> flags() const;
     void addFlag(const QString &flag);
     void addFlags(const QSet<QString> &flags);
     void removeFlag(const QString &flag);
@@ -451,7 +453,99 @@ public:
     // helpers
     // static Card *Clone(const Card *other);
     static QString SuitToString(Suit suit);
-    static const Card *Parse(const QString &str, RoomObject *room);
+    static Card *Parse(const QString &str, RoomObject *room);
+
+#ifndef REFACTORPROPOSAL_NO_COMPATIBILITY
+    // @@compatibility
+    inline QString getSuitString() const
+    {
+        return suitString();
+    }
+    inline int getId() const
+    {
+        return id();
+    }
+    inline int getEffectiveId() const
+    {
+        return effectiveID();
+    }
+    inline int getNumber() const
+    {
+        return static_cast<int>(number());
+    }
+    inline Suit getSuit() const
+    {
+        return suit();
+    }
+    inline Color getColor() const
+    {
+        return color();
+    }
+    inline QString getFullName(bool a = false) const
+    {
+        return fullName(a);
+    }
+    inline QString getLogName() const
+    {
+        return logName();
+    }
+    inline QString getName() const
+    {
+        return name();
+    }
+    inline QString getSkillName(bool a = true) const
+    {
+        return skillName(/* a */);
+    }
+    QString getDescription(bool a = true) const; // can't be inlined
+    inline HandlingMethod getHandlingMethod() const
+    {
+        return handleMethod();
+    }
+    inline void setHandlingMethod(HandlingMethod m)
+    {
+        setHandleMethod(m);
+    }
+    // getPackage
+    inline QString getClassName() const
+    {
+        return name();
+    }
+    QString getCommonEffectName() const;
+    QString getEffectName() const;
+    QString getType() const;
+    QString getSubType() const;
+    ::Card::CardType getTypeId() const;
+    inline Card *getRealCard()
+    {
+        return this;
+    }
+    inline const Card *getRealCard() const
+    {
+        return this;
+    }
+    inline QString showSkill() const
+    {
+        return showSkillName();
+    }
+    inline void setShowSkill(const QString &s)
+    {
+        setShowSkillName(s);
+    }
+    inline QStringList getFlags() const
+    {
+        return flags().values();
+    }
+    inline void setFlags(const QString &s) //const
+    {
+        if (s.startsWith(QChar('-'))) {
+            QString r = s.mid(1);
+            removeFlag(r);
+        }
+
+        addFlag(s);
+    }
+#endif
 
 private:
     explicit Card(CardPrivate *p);
@@ -459,6 +553,6 @@ private:
     CardPrivate *d;
 };
 
-};
+}
 
 #endif
