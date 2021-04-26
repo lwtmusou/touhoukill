@@ -1364,6 +1364,11 @@ const CardFace *Card::face() const
 void Card::setFace(const CardFace *face)
 {
     d->face = face;
+    // Some properties should get updated as well. 
+    d->can_damage = face->canDamage();
+    d->can_recover = face->canRecover();
+    d->has_effect_value = face->hasEffectValue();
+    d->throw_when_using = face->throwWhenUsing();
 }
 
 const QSet<QString> &Card::flags() const
