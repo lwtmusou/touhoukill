@@ -85,9 +85,19 @@ bool CardFace::canDamage() const
     return d->can_damage;
 }
 
+void CardFace::setCanDamage(bool can)
+{
+    d->can_damage = can;
+}
+
 bool CardFace::canRecover() const
 {
     return d->can_recover;
+}
+
+void CardFace::setCanRecover(bool can)
+{
+    d->can_recover = can;
 }
 
 bool CardFace::hasEffectValue() const
@@ -95,9 +105,19 @@ bool CardFace::hasEffectValue() const
     return d->has_effectvalue;
 }
 
+void CardFace::setHasEffectValue(bool can)
+{
+    d->has_effectvalue = can;
+}
+
 bool CardFace::throwWhenUsing() const
 {
     return d->throw_when_using;
+}
+
+void CardFace::setThrowWhenUsing(bool can)
+{
+    d->throw_when_using = can;
 }
 
 bool CardFace::hasPreAction() const
@@ -105,9 +125,19 @@ bool CardFace::hasPreAction() const
     return d->has_preact;
 }
 
+void CardFace::setHasPreAction(bool can)
+{
+    d->has_preact = can;
+}
+
 bool CardFace::targetFixed(const Player *, const Card *) const
 {
     return d->target_fixed;
+}
+
+void CardFace::setTargetFixed(bool can)
+{
+    d->target_fixed = can;
 }
 
 bool CardFace::targetsFeasible(const QList<const Player *> &targets, const Player *Self, const Card *card) const
@@ -298,9 +328,143 @@ QString BasicCard::typeName() const
     return "basic";
 }
 
-QString BasicCard::subTypeName() const
+EquipCard::EquipCard()
 {
-    return "basic";
 }
 
+CardFace::CardType EquipCard::type() const
+{
+    return TypeEquip;
+}
+
+QString EquipCard::typeName() const
+{
+    return "equip";
+}
+
+Weapon::Weapon()
+{
+}
+
+QString Weapon::subTypeName() const
+{
+    return "weapon";
+}
+
+EquipCard::Location Weapon::location() const
+{
+    return WeaponLocation;
+}
+
+Armor::Armor()
+{
+}
+
+QString Armor::subTypeName() const
+{
+    return "armor";
+}
+
+EquipCard::Location Armor::location() const
+{
+    return ArmorLocation;
+}
+
+DefensiveHorse::DefensiveHorse()
+{
+}
+
+QString DefensiveHorse::subTypeName() const
+{
+    return "defensive_horse";
+}
+
+EquipCard::Location DefensiveHorse::location() const
+{
+    return DefensiveHorseLocation;
+}
+
+OffensiveHorse::OffensiveHorse()
+{
+}
+
+QString OffensiveHorse::subTypeName() const
+{
+    return "offensive_horse";
+}
+
+EquipCard::Location OffensiveHorse::location() const
+{
+    return OffensiveHorseLocation;
+}
+
+Treasure::Treasure()
+{
+}
+
+QString Treasure::subTypeName() const
+{
+    return "treasure";
+}
+
+EquipCard::Location Treasure::location() const
+{
+    return TreasureLocation;
+}
+
+TrickCard::TrickCard()
+{
+}
+
+CardFace::CardType TrickCard::type() const
+{
+    return TypeTrick;
+}
+
+QString TrickCard::typeName() const
+{
+    return "trick";
+}
+
+NonDelayedTrick::NonDelayedTrick()
+{
+}
+
+QString NonDelayedTrick::subTypeName() const
+{
+    return "non_delayed_trick";
+}
+
+bool NonDelayedTrick::isNDTrick() const
+{
+    return true;
+}
+
+DelayedTrick::DelayedTrick()
+{
+}
+
+QString DelayedTrick::subTypeName() const
+{
+    return "delayed_trick";
+}
+
+SkillCard::SkillCard()
+{
+}
+
+CardFace::CardType RefactorProposal::SkillCard::type() const
+{
+    return TypeSkill;
+}
+
+QString RefactorProposal::SkillCard::typeName() const
+{
+    return "skill";
+}
+
+QString RefactorProposal::SkillCard::subTypeName() const
+{
+    return "skill";
+}
 }

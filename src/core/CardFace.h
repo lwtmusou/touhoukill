@@ -63,7 +63,9 @@ public:
     // Return value of "canDamage" and "canRecover" is affected by "Xianshi" in this case.
     // TODO_Fs: ***non-virtual*** property setters for simplifying logic, only reimplement these functions when complex logic is needed
     virtual bool canDamage() const;
+    void setCanDamage(bool can);
     virtual bool canRecover() const;
+    void setCanRecover(bool can);
     // Fs: canRecast should be property of Card.
     // Seems like it should be dealt in UI and GameRule instead of the logic in Card/CardFace itself.
     // Currently CardFace::onUse and CardFace::targetFixed/targetFeasible are hacked to support recast
@@ -72,14 +74,19 @@ public:
     // Note: In HulaoPass mode, all weapon can be recast according to the game rule.
     // virtual bool canRecast() const;
     virtual bool hasEffectValue() const;
+    void setHasEffectValue(bool can);
     virtual bool throwWhenUsing() const;
+    void setThrowWhenUsing(bool can);
     virtual bool hasPreAction() const;
+    void setHasPreAction(bool can);
 
     // This is method is removed from the face. It's clear that this is totally dynamic.
     // virtual Card::HandlingMethod defaultHandlingMethod() const;
 
     // Functions
     virtual bool targetFixed(const Player *Self, const Card *card) const;
+    void setTargetFixed(bool can);
+
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self, const Card *card) const;
 
     // This is the merged targetFilter implementation.
@@ -112,7 +119,6 @@ public:
 
     CardType type() const override;
     QString typeName() const override;
-    QString subTypeName() const override;
 };
 
 class EquipCard : public CardFace
@@ -222,6 +228,18 @@ class DelayedTrick : public TrickCard
 public:
     DelayedTrick();
 
+    QString subTypeName() const override;
+};
+
+class SkillCard : public CardFace
+{
+    Q_GADGET
+
+public:
+    SkillCard();
+
+    CardType type() const override;
+    QString typeName() const override;
     QString subTypeName() const override;
 };
 
