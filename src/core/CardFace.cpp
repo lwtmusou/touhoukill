@@ -63,7 +63,19 @@ QString CardFace::effectName() const
 
 bool CardFace::isKindOf(const char *cardType) const
 {
-    return staticMetaObject.inherits(&(Sanguosha->getCardFace(cardType)->staticMetaObject)); // depends on Qt 5.7
+    const QMetaObject *object = &staticMetaObject;
+    while (object != nullptr) {
+        if (strcmp(object->className(), cardType) == 0)
+            return true;
+
+        // Refactoring: strip RefactorProposal:: from classname
+        if (strncmp(object->className(), "RefactorProposal::", 18) == 0 && strcmp(object->className() + 18, cardType) == 0)
+            return true;
+
+        object = object->superClass();
+    }
+
+    return false;
 }
 
 bool CardFace::matchType(const QString &pattern) const
@@ -155,8 +167,7 @@ int CardFace::targetFilter(const QList<const Player *> &targets, const Player *t
 
 bool CardFace::isAvailable(const Player *player, const Card *card) const
 {
-    return !player->isCardLimited(fixme_cast< ::Card *>(card), fixme_cast< ::Card::HandlingMethod>(card->handleMethod()))
-        || (card->canRecast() && !player->isCardLimited(fixme_cast< ::Card *>(card), fixme_cast< ::Card::HandlingMethod>(Card::MethodRecast)));
+    return !player->isCardLimited(fixme_cast< ::Card *>(card), fixme_cast< ::Card::HandlingMethod>(card->handleMethod()));
 }
 
 bool CardFace::ignoreCardValidity(const Player *) const
