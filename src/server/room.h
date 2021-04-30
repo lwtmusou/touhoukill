@@ -614,4 +614,9 @@ signals:
     void signalSetProperty(ServerPlayer *player, const char *property_name, const QVariant &value);
 };
 
+#undef QSGS_STATE_ROOM
+#undef QSGS_STATE_GAME
+#undef QSGS_LOGIC
+#undef QSGS_SOCKET
+
 #endif

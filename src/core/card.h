@@ -387,7 +387,7 @@ public:
 
     // skill name
     // TODO_Fs: add mechanics to underscore-prefixed effect identifier
-    const QString &skillName() const;
+    QString skillName(bool removePrefix = true) const;
     void setSkillName(const QString &skill_name);
     const QString &showSkillName() const;
     void setShowSkillName(const QString &show_skill_name);
@@ -445,12 +445,12 @@ public:
     void setUserString(const QString &str);
 
     // room Object
-    RoomObject *room() const;
+    RoomObject *room();
+    const RoomObject *room() const;
 
     // toString
     // What's the meaning of this hidden card?
     // Fs: SkillCard with subcard which does not always need to show to others
-    // FIXME: Should this still exist?
     QString toString(bool hidden = false) const;
 
     // helpers
@@ -460,6 +460,8 @@ public:
 
 #ifndef REFACTORPROPOSAL_NO_COMPATIBILITY
     // @@compatibility
+    // TODO_Fs: We should get rid of usage of these functions eventually.
+    // These functions are for compatibility with old code (and/or LUA interface?)
     inline QString getSuitString() const
     {
         return suitString();
@@ -539,7 +541,7 @@ public:
     {
         return flags().values();
     }
-    inline void setFlags(const QString &s) const
+    inline void setFlags(const QString &s) const /* mutable */
     {
         if (s.startsWith(QChar('-'))) {
             QString r = s.mid(1);

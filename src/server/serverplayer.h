@@ -16,6 +16,11 @@ struct PhaseStruct;
 #include <QDateTime>
 #include <QSemaphore>
 
+#define QSGS_STATE_ROOM
+#define QSGS_STATE_GAME
+#define QSGS_LOGIC
+#define QSGS_SOCKET
+
 class ServerPlayer : public Player
 {
     Q_OBJECT
@@ -24,56 +29,59 @@ class ServerPlayer : public Player
 public:
     explicit ServerPlayer(Room *room);
 
-    void setSocket(ClientSocket *socket);
+    QSGS_SOCKET void setSocket(ClientSocket *socket);
 
-    void invoke(const QSanProtocol::AbstractPacket *packet);
-    void invoke(const char *method, const QString &arg = ".");
-    QString reportHeader() const;
-    void unicast(const QString &message);
-    void drawCard(const Card *card);
-    Room *getRoom() const;
-    void broadcastSkillInvoke(const Card *card) const;
-    void broadcastSkillInvoke(const QString &card_name) const;
-    int getRandomHandCardId() const;
-    const Card *getRandomHandCard() const;
-    void obtainCard(const Card *card, bool unhide = true);
-    void throwAllEquips();
-    void throwAllHandCards();
-    void throwAllHandCardsAndEquips();
-    void throwAllCards();
-    void bury();
-    void throwAllMarks(bool visible_only = true);
-    void clearOnePrivatePile(QString pile_name);
-    void clearPrivatePiles();
-    void drawCards(int n, const QString &reason = QString());
-    bool askForSkillInvoke(const QString &skill_name, const QVariant &data = QVariant(), const QString &prompt = QString());
-    bool askForSkillInvoke(const Skill *skill, const QVariant &data = QVariant(), const QString &prompt = QString());
-    QList<int> forceToDiscard(int discard_num, bool include_equip, bool is_discard = true);
-    QList<int> handCards() const;
-    QList<const Card *> getHandcards() const override;
-    QList<const Card *> getCards(const QString &flags) const;
-    DummyCard *wholeHandCards() const;
-    bool hasNullification() const;
-    bool pindian(ServerPlayer *target, const QString &reason, const Card *card1 = nullptr);
-    void turnOver();
-    void play(QList<Player::Phase> set_phases = QList<Player::Phase>());
-    bool changePhase(Player::Phase from, Player::Phase to);
+    QSGS_SOCKET void invoke(const QSanProtocol::AbstractPacket *packet);
+    QSGS_SOCKET void invoke(const char *method, const QString &arg = ".");
+    QSGS_SOCKET QString reportHeader() const;
+    QSGS_SOCKET void unicast(const QString &message);
 
-    QList<Player::Phase> &getPhases();
-    int getPhasesIndex() const;
-    void skip(Player::Phase phase, bool isCost = false, bool sendLog = true);
-    void insertPhases(QList<Player::Phase> new_phases, int index = -1);
-    void exchangePhases(Player::Phase phase, Player::Phase phase1);
-    bool isSkipped(Player::Phase phase);
+    QSGS_LOGIC void drawCard(const Card *card);
+    QSGS_STATE_ROOM Room *getRoom() const;
+    QSGS_LOGIC void broadcastSkillInvoke(const Card *card) const;
+    QSGS_LOGIC void broadcastSkillInvoke(const QString &card_name) const;
+    QSGS_STATE_GAME int getRandomHandCardId() const;
+    QSGS_STATE_GAME const Card *getRandomHandCard() const;
+    QSGS_LOGIC void obtainCard(const Card *card, bool unhide = true);
+    QSGS_LOGIC void throwAllEquips();
+    QSGS_LOGIC void throwAllHandCards();
+    QSGS_LOGIC void throwAllHandCardsAndEquips();
+    QSGS_LOGIC void throwAllCards();
+    QSGS_LOGIC void bury();
+    QSGS_LOGIC void throwAllMarks(bool visible_only = true);
+    QSGS_LOGIC void clearOnePrivatePile(QString pile_name);
+    QSGS_LOGIC void clearPrivatePiles();
+    QSGS_LOGIC void drawCards(int n, const QString &reason = QString());
+    QSGS_LOGIC bool askForSkillInvoke(const QString &skill_name, const QVariant &data = QVariant(), const QString &prompt = QString());
+    QSGS_LOGIC bool askForSkillInvoke(const Skill *skill, const QVariant &data = QVariant(), const QString &prompt = QString());
+    QSGS_LOGIC QList<int> forceToDiscard(int discard_num, bool include_equip, bool is_discard = true);
+    QSGS_STATE_GAME QList<int> handCards() const;
+    QSGS_STATE_GAME QList<const Card *> getHandcards() const override;
+    QSGS_STATE_GAME QList<const Card *> getCards(const QString &flags) const;
+    QSGS_STATE_GAME DummyCard *wholeHandCards() const;
+    QSGS_STATE_GAME bool hasNullification() const;
+    QSGS_LOGIC bool pindian(ServerPlayer *target, const QString &reason, const Card *card1 = nullptr);
+    QSGS_LOGIC void turnOver();
+    QSGS_LOGIC void play(QList<Player::Phase> set_phases = QList<Player::Phase>());
+    QSGS_LOGIC bool changePhase(Player::Phase from, Player::Phase to);
 
-    void gainMark(const QString &mark, int n = 1);
-    void loseMark(const QString &mark, int n = 1);
-    void loseAllMarks(const QString &mark_name);
+    QSGS_STATE_GAME QList<Player::Phase> &getPhases();
+    QSGS_STATE_GAME int getPhasesIndex() const;
+    QSGS_LOGIC void skip(Player::Phase phase, bool isCost = false, bool sendLog = true);
+    QSGS_LOGIC void insertPhases(QList<Player::Phase> new_phases, int index = -1);
+    QSGS_LOGIC void exchangePhases(Player::Phase phase, Player::Phase phase1);
+    QSGS_STATE_GAME bool isSkipped(Player::Phase phase);
 
-    void addSkill(const QString &skill_name, bool head_skill = true) override;
-    void loseSkill(const QString &skill_name, bool head_skill = true) override;
-    void setGender(General::Gender gender) override;
+    QSGS_LOGIC void gainMark(const QString &mark, int n = 1);
+    QSGS_LOGIC void loseMark(const QString &mark, int n = 1);
+    QSGS_LOGIC void loseAllMarks(const QString &mark_name);
 
+    QSGS_LOGIC void addSkill(const QString &skill_name, bool head_skill = true) override;
+    QSGS_LOGIC void loseSkill(const QString &skill_name, bool head_skill = true) override;
+    QSGS_LOGIC void setGender(General::Gender gender) override;
+
+    // TODO_Fs: remove AI related code from Server
+#if 1
     void setAI(AI *ai);
     AI *getAI() const;
     AI *getSmartAI() const;
@@ -83,52 +91,51 @@ public:
     {
         return getState() == "robot" || getState() == "offline";
     }
+#endif
 
-    int aliveCount(bool includeRemoved = true) const override;
-    int getHandcardNum() const override;
-    void removeCard(const Card *card, Place place) override;
-    void addCard(const Card *card, Place place) override;
-    bool isLastHandCard(const Card *card, bool contain = false) const override;
+    QSGS_STATE_GAME int aliveCount(bool includeRemoved = true) const override; // TODO_Fs: this function should belong to room?
+    QSGS_STATE_GAME int getHandcardNum() const override;
+    QSGS_LOGIC void removeCard(const Card *card, Place place) override;
+    QSGS_LOGIC void addCard(const Card *card, Place place) override;
+    QSGS_STATE_GAME bool isLastHandCard(const Card *card, bool contain = false) const override;
 
-    void addVictim(ServerPlayer *victim);
-    QList<ServerPlayer *> getVictims() const;
-
+    // utilities?
     void startRecord();
     void saveRecord(const QString &filename);
 
     // 3v3 methods
-    void addToSelected(const QString &general);
-    QStringList getSelected() const;
-    QString findReasonable(const QStringList &generals, bool no_unreasonable = false);
-    void clearSelected();
+    QSGS_LOGIC void addToSelected(const QString &general);
+    QSGS_STATE_GAME QStringList getSelected() const;
+    QString findReasonable(const QStringList &generals, bool no_unreasonable = false); // ???
+    QSGS_LOGIC void clearSelected();
 
-    int getGeneralMaxHp() const;
-    QString getGameMode() const override;
+    QSGS_STATE_GAME int getGeneralMaxHp() const;
+    QSGS_STATE_GAME QString getGameMode() const override;
 
-    QString getIp() const;
-    quint32 ipv4Address() const;
-    void introduceTo(ServerPlayer *player);
-    void marshal(ServerPlayer *player) const;
+    QSGS_SOCKET QString getIp() const;
+    QSGS_SOCKET quint32 ipv4Address() const;
+    QSGS_SOCKET void introduceTo(ServerPlayer *player);
+    QSGS_LOGIC void marshal(ServerPlayer *player) const;
 
-    void addToPile(const QString &pile_name, const Card *card, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
-    void addToPile(const QString &pile_name, int card_id, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
-    void addToPile(const QString &pile_name, QList<int> card_ids, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
-    void addToPile(const QString &pile_name, QList<int> card_ids, bool open, CardMoveReason reason, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
-    void addToShownHandCards(QList<int> card_ids);
-    void removeShownHandCards(QList<int> card_ids, bool sendLog = false, bool moveFromHand = false);
-    void addBrokenEquips(QList<int> card_ids);
-    void removeBrokenEquips(QList<int> card_ids, bool sendLog = true, bool moveFromEquip = false);
-    void addHiddenGenerals(const QStringList &generals);
-    void removeHiddenGenerals(const QStringList &generals);
-    void gainAnExtraTurn();
+    QSGS_LOGIC void addToPile(const QString &pile_name, const Card *card, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
+    QSGS_LOGIC void addToPile(const QString &pile_name, int card_id, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
+    QSGS_LOGIC void addToPile(const QString &pile_name, QList<int> card_ids, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
+    QSGS_LOGIC void addToPile(const QString &pile_name, QList<int> card_ids, bool open, CardMoveReason reason, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
+    QSGS_LOGIC void addToShownHandCards(QList<int> card_ids);
+    QSGS_LOGIC void removeShownHandCards(QList<int> card_ids, bool sendLog = false, bool moveFromHand = false);
+    QSGS_LOGIC void addBrokenEquips(QList<int> card_ids);
+    QSGS_LOGIC void removeBrokenEquips(QList<int> card_ids, bool sendLog = true, bool moveFromEquip = false);
+    QSGS_LOGIC void addHiddenGenerals(const QStringList &generals);
+    QSGS_LOGIC void removeHiddenGenerals(const QStringList &generals);
+    QSGS_LOGIC void gainAnExtraTurn();
 
-    void showHiddenSkill(const QString &skill_name);
-    QStringList checkTargetModSkillShow(const CardUseStruct &use);
+    QSGS_LOGIC void showHiddenSkill(const QString &skill_name);
+    QSGS_LOGIC QStringList checkTargetModSkillShow(const CardUseStruct &use);
 
-    void copyFrom(ServerPlayer *sp);
+    void copyFrom(ServerPlayer *sp); // ???
 
-    void startNetworkDelayTest();
-    qint64 endNetworkDelayTest();
+    QSGS_LOGIC void startNetworkDelayTest();
+    QSGS_LOGIC qint64 endNetworkDelayTest();
 
     //Synchronization helpers
     enum SemaphoreType
@@ -136,46 +143,46 @@ public:
         SEMA_MUTEX, // used to protect mutex access to member variables
         SEMA_COMMAND_INTERACTIVE // used to wait for response from client
     };
-    inline QSemaphore *getSemaphore(SemaphoreType type)
+    QSGS_SOCKET inline QSemaphore *getSemaphore(SemaphoreType type)
     {
         return semas[type];
     }
-    inline void acquireLock(SemaphoreType type)
+    QSGS_SOCKET inline void acquireLock(SemaphoreType type)
     {
         semas[type]->acquire();
     }
-    inline bool tryAcquireLock(SemaphoreType type, int timeout = 0)
+    QSGS_SOCKET inline bool tryAcquireLock(SemaphoreType type, int timeout = 0)
     {
         return semas[type]->tryAcquire(1, timeout);
     }
-    inline void releaseLock(SemaphoreType type)
+    QSGS_SOCKET inline void releaseLock(SemaphoreType type)
     {
         semas[type]->release();
     }
-    inline void drainLock(SemaphoreType type)
+    QSGS_SOCKET inline void drainLock(SemaphoreType type)
     {
         while (semas[type]->tryAcquire()) {
         }
     }
-    inline void drainAllLocks()
+    QSGS_SOCKET inline void drainAllLocks()
     {
         for (int i = 0; i < S_NUM_SEMAPHORES; i++) {
             drainLock((SemaphoreType)i);
         }
     }
-    inline QString getClientReplyString()
+    QSGS_SOCKET inline QString getClientReplyString()
     {
         return m_clientResponseString;
     }
-    inline void setClientReplyString(const QString &val)
+    QSGS_SOCKET inline void setClientReplyString(const QString &val)
     {
         m_clientResponseString = val;
     }
-    inline const QVariant &getClientReply()
+    QSGS_SOCKET inline const QVariant &getClientReply()
     {
         return _m_clientResponse;
     }
-    inline void setClientReply(const QVariant &val)
+    QSGS_SOCKET inline void setClientReply(const QVariant &val)
     {
         _m_clientResponse = val;
     }
@@ -189,20 +196,20 @@ public:
     // static function
     static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b);
 
-    void notifyPreshow(); //hegemony
-    void showGeneral(bool head_general = true, bool trigger_event = true, bool sendLog = true, bool ignore_rule = true);
-    void hideGeneral(bool head_general = true);
-    void removeGeneral(bool head_general = true);
-    void sendSkillsToOthers(bool head_skill = true);
-    void disconnectSkillsFromOthers(bool head_skill = true);
-    int getPlayerNumWithSameKingdom(const QString &reason, const QString &_to_calculate = QString()) const;
-    bool askForGeneralShow(bool one = true, bool refusable = false);
+    QSGS_LOGIC void notifyPreshow(); //hegemony
+    QSGS_LOGIC void showGeneral(bool head_general = true, bool trigger_event = true, bool sendLog = true, bool ignore_rule = true);
+    QSGS_LOGIC void hideGeneral(bool head_general = true);
+    QSGS_LOGIC void removeGeneral(bool head_general = true);
+    QSGS_LOGIC void sendSkillsToOthers(bool head_skill = true);
+    QSGS_LOGIC void disconnectSkillsFromOthers(bool head_skill = true);
+    QSGS_STATE_GAME int getPlayerNumWithSameKingdom(const QString &reason, const QString &_to_calculate = QString()) const;
+    QSGS_LOGIC bool askForGeneralShow(bool one = true, bool refusable = false);
 
-    bool inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const;
-    bool inFormationRalation(ServerPlayer *teammate) const;
-    void summonFriends(const QString type);
+    QSGS_STATE_GAME bool inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const;
+    QSGS_STATE_GAME bool inFormationRalation(ServerPlayer *teammate) const;
+    QSGS_LOGIC void summonFriends(const QString type);
 
-    RoomObject *getRoomObject() const override;
+    QSGS_STATE_ROOM RoomObject *getRoomObject() const override;
 
 protected:
     //Synchronization helpers
@@ -215,7 +222,6 @@ private:
     Room *room;
     AI *ai;
     AI *trust_ai;
-    QList<ServerPlayer *> victims;
     Recorder *recorder;
     QList<Phase> phases;
     int _m_phases_index;
@@ -234,5 +240,10 @@ signals:
     void request_got(const QString &request);
     void message_ready(const QString &msg);
 };
+
+#undef QSGS_STATE_ROOM
+#undef QSGS_STATE_GAME
+#undef QSGS_LOGIC
+#undef QSGS_SOCKET
 
 #endif

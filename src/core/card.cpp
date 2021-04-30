@@ -1287,9 +1287,13 @@ QString Card::logName() const
     return QString("%1[%2%3]").arg(name()).arg(suit_char).arg(number_string);
 }
 
-const QString &Card::skillName() const
+QString Card::skillName(bool removePrefix) const
 {
-    return d->skill_name;
+    QString r = d->skill_name;
+    if (removePrefix && r.startsWith('_'))
+        r = r.mid(1);
+
+    return r;
 }
 
 void Card::setSkillName(const QString &skill_name)
@@ -1485,7 +1489,12 @@ void Card::setUserString(const QString &str)
     d->user_string = str;
 }
 
-RoomObject *Card::room() const
+RoomObject *Card::room()
+{
+    return d->room;
+}
+
+const RoomObject *Card::room() const
 {
     return d->room;
 }

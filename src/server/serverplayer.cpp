@@ -1058,16 +1058,6 @@ AI *ServerPlayer::getSmartAI() const
     return ai;
 }
 
-void ServerPlayer::addVictim(ServerPlayer *victim)
-{
-    victims.append(victim);
-}
-
-QList<ServerPlayer *> ServerPlayer::getVictims() const
-{
-    return victims;
-}
-
 int ServerPlayer::getGeneralMaxHp() const
 {
     int max_hp = 0;
