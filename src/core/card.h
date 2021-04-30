@@ -387,9 +387,9 @@ public:
 
     // skill name
     // TODO_Fs: add mechanics to underscore-prefixed effect identifier
-    QString skillName() const;
+    const QString &skillName() const;
     void setSkillName(const QString &skill_name);
-    QString showSkillName() const;
+    const QString &showSkillName() const;
     void setShowSkillName(const QString &show_skill_name);
 
     // handling method
@@ -414,12 +414,12 @@ public:
     void setFace(const CardFace *face);
 
     // Flags
-    QSet<QString> flags() const;
-    void addFlag(const QString &flag);
-    void addFlags(const QSet<QString> &flags);
-    void removeFlag(const QString &flag);
-    void removeFlag(const QSet<QString> &flag);
-    void clearFlags();
+    const QSet<QString> &flags() const;
+    void addFlag(const QString &flag) const /* mutable */;
+    void addFlags(const QSet<QString> &flags) const /* mutable */;
+    void removeFlag(const QString &flag) const /* mutable */;
+    void removeFlag(const QSet<QString> &flag) const /* mutable */;
+    void clearFlags() const /* mutable */;
     bool hasFlag(const QString &flag) const;
 
     // Virtual Card
@@ -440,6 +440,9 @@ public:
     // UI property
     bool mute() const;
     void setMute(bool mute);
+
+    QString userString() const;
+    void setUserString(const QString &str);
 
     // room Object
     RoomObject *room() const;
@@ -536,7 +539,7 @@ public:
     {
         return flags().values();
     }
-    inline void setFlags(const QString &s) //const
+    inline void setFlags(const QString &s) const
     {
         if (s.startsWith(QChar('-'))) {
             QString r = s.mid(1);
@@ -544,6 +547,10 @@ public:
         }
 
         addFlag(s);
+    }
+    inline QString getUserString() const
+    {
+        return userString();
     }
 #endif
 

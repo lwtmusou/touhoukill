@@ -1067,6 +1067,8 @@ public:
     // flags
     QSet<QString> flags;
 
+    QString user_string;
+
     // UI (Why server side?)
     // Fs: because the notification is from server! (Exactly, Room)
     bool mute;
@@ -1285,7 +1287,7 @@ QString Card::logName() const
     return QString("%1[%2%3]").arg(name()).arg(suit_char).arg(number_string);
 }
 
-QString Card::skillName() const
+const QString &Card::skillName() const
 {
     return d->skill_name;
 }
@@ -1295,7 +1297,7 @@ void Card::setSkillName(const QString &skill_name)
     d->skill_name = skill_name;
 }
 
-QString Card::showSkillName() const
+const QString &Card::showSkillName() const
 {
     return d->show_skill_name;
 }
@@ -1382,34 +1384,34 @@ void Card::setFace(const CardFace *face)
     }
 }
 
-QSet<QString> Card::flags() const
+const QSet<QString> &Card::flags() const
 {
     return d->flags;
 }
 
-void Card::addFlag(const QString &flag)
+void Card::addFlag(const QString &flag) const /* mutable */
 {
     d->flags.insert(flag);
 }
 
-void Card::addFlags(const QSet<QString> &flags)
+void Card::addFlags(const QSet<QString> &flags) const /* mutable */
 {
     foreach (const QString &flag, flags)
         d->flags.insert(flag);
 }
 
-void Card::removeFlag(const QString &flag)
+void Card::removeFlag(const QString &flag) const /* mutable */
 {
     d->flags.remove(flag);
 }
 
-void Card::removeFlag(const QSet<QString> &flags)
+void Card::removeFlag(const QSet<QString> &flags) const /* mutable */
 {
     foreach (const QString &flag, flags)
         d->flags.remove(flag);
 }
 
-void Card::clearFlags()
+void Card::clearFlags() const /* mutable */
 {
     d->flags.clear();
 }
@@ -1473,6 +1475,10 @@ void Card::setMute(bool mute)
     d->mute = mute;
 }
 
+QString Card::userString() const
+{
+}
+
 RoomObject *Card::room() const
 {
     return d->room;
@@ -1490,11 +1496,8 @@ QString Card::toString(bool hidden) const
         else
             str = QString("@%1[no_suit:-]=.").arg(d->face->name());
 
-// TODO: user string for SkillCard
-#if 0
-        if (!user_string.isEmpty())
-            return QString("%1:%2").arg(str).arg(user_string);
-#endif
+        if (!d->user_string.isEmpty())
+            str = str + (QString(":%1").arg(d->user_string));
 
         return str;
     }
@@ -1602,7 +1605,9 @@ Card *Card::Parse(const QString &str, RoomObject *room)
 
         Card *card = room->cloneCard(skillCardFace, suit, number);
         card->addSubcards(List2Set(StringList2IntList(subcard_ids)));
-        // TODO: UserString of Card
+        if (!user_string.isEmpty())
+            card->setUserString(user_string.mid(1));
+
         return card;
     }
 

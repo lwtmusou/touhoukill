@@ -2567,18 +2567,6 @@ ServerPlayer *Room::findPlayerByObjectName(const QString &name, bool) const
     return nullptr;
 }
 
-void Room::installEquip(ServerPlayer *player, const QString &equip_name)
-{
-    if (player == nullptr)
-        return;
-
-    int card_id = getCardFromPile(equip_name);
-    if (card_id == -1)
-        return;
-
-    moveCardTo(getCard(card_id), player, Player::PlaceEquip, true);
-}
-
 void Room::resetAI(ServerPlayer *player)
 {
     AI *smart_ai = player->getSmartAI();
@@ -2940,7 +2928,7 @@ void Room::cheat(ServerPlayer *player, const QVariant &args)
         return;
     if (!args.canConvert<JsonArray>() || !args.value<JsonArray>().value(0).canConvert(QVariant::Int))
         return;
-    //@todo: synchronize this
+
     player->m_cheatArgs = args;
     makeCheat(player);
 }
@@ -3508,31 +3496,6 @@ void Room::adjustSeats()
             broadcastProperty(player, "inital_seat");
         }
     }
-}
-
-int Room::getCardFromPile(const QString &card_pattern)
-{
-    if (m_drawPile->isEmpty())
-        swapPile();
-
-    if (card_pattern.startsWith("@")) {
-        if (card_pattern == "@duanliang") {
-            foreach (int card_id, *m_drawPile) {
-                const Card *card = getCard(card_id);
-                if (card->isBlack() && (card->isKindOf("BasicCard") || card->isKindOf("EquipCard")))
-                    return card_id;
-            }
-        }
-    } else {
-        QString card_name = card_pattern;
-        foreach (int card_id, *m_drawPile) {
-            const Card *card = getCard(card_id);
-            if (card->objectName() == card_name)
-                return card_id;
-        }
-    }
-
-    return -1;
 }
 
 QString Room::_chooseDefaultGeneral(ServerPlayer *player) const

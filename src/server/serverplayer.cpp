@@ -1141,6 +1141,7 @@ void ServerPlayer::introduceTo(ServerPlayer *player)
         room->doBroadcastNotify(players, S_COMMAND_ADD_PLAYER, introduce_str);
     }
 
+    // TODO: It seems like the following code should goto marshal()
     if (!isHegemonyGameMode(room->getMode()))
         return;
     if (hasShownGeneral()) {
