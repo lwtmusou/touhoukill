@@ -1475,8 +1475,14 @@ void Card::setMute(bool mute)
     d->mute = mute;
 }
 
-QString Card::userString() const
+const QString &Card::userString() const
 {
+    return d->user_string;
+}
+
+void Card::setUserString(const QString &str)
+{
+    d->user_string = str;
 }
 
 RoomObject *Card::room() const

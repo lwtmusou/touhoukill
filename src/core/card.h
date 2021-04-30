@@ -441,7 +441,7 @@ public:
     bool mute() const;
     void setMute(bool mute);
 
-    QString userString() const;
+    const QString &userString() const;
     void setUserString(const QString &str);
 
     // room Object
