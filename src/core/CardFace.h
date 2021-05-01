@@ -10,8 +10,6 @@ class Player;
 class ServerPlayer;
 class Room;
 
-namespace RefactorProposal {
-
 class CardFacePrivate;
 class Card;
 struct CardUseStruct;
@@ -85,11 +83,23 @@ public:
 
     // Functions
     virtual bool targetFixed(const Player *Self, const Card *card) const;
-    void setTargetFixed(bool can);
+    void setTargetFixed(bool fixed);
 
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self, const Card *card) const;
 
     // This is the merged targetFilter implementation.
+    /**
+     * Calculate the maximum vote for specific target.
+     * 
+     * @param targets The lists where all selected targets are.
+     * @param to_select The player to be judged.
+     * @param Self The user of the card.
+     * @param card the card itself
+     * 
+     * @return the maximum vote for to_select.
+     * 
+     * @note to_select will be selectable until its appearance in targets >= its maximum vote. 
+     */
     virtual int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card) const;
 
     virtual bool isAvailable(const Player *player, const Card *card) const;
@@ -106,7 +116,7 @@ public:
     virtual bool isCancelable(const CardEffectStruct &effect) const;
     virtual void onNullified(ServerPlayer *target, const Card *card) const;
 
-private:
+protected:
     CardFacePrivate *d;
 };
 
@@ -229,6 +239,7 @@ public:
     DelayedTrick();
 
     QString subTypeName() const override;
+    virtual void takeEffect(ServerPlayer *target) const;
 };
 
 class SkillCard : public CardFace
@@ -242,7 +253,5 @@ public:
     QString typeName() const override;
     QString subTypeName() const override;
 };
-
-}
 
 #endif

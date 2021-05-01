@@ -1,15 +1,16 @@
 #ifndef _ROOM_STATE_H
 #define _ROOM_STATE_H
 
-#include "WrappedCard.h"
+// #include "WrappedCard.h"
 #include "player.h"
 #include "structs.h"
+#include "card.h"
 
 #include <QList>
 #include <QObject>
 #include <QPointer>
 
-namespace PreRefactor {
+class SkillCard;
 
 class CardFactory
 {
@@ -29,12 +30,9 @@ public:
 private:
     static QHash<QString, const QMetaObject *> metaObjects;
 };
-}
 
-namespace RefactorProposal {
 class Card;
 class CardFace;
-}
 
 class RoomObjectPrivate;
 
@@ -49,7 +47,7 @@ public:
     Card *getCard(int cardId);
     const Card *getCard(int cardId) const;
 
-    WrappedCard *getWrappedCard(int cardId) const;
+    // WrappedCard *getWrappedCard(int cardId) const;
 
     QString getCurrentCardUsePattern() const;
     void setCurrentCardUsePattern(const QString &newPattern);
@@ -69,22 +67,20 @@ public:
     virtual QList<int> &getDiscardPile() = 0;
     virtual const QList<int> &getDiscardPile() const = 0;
 
-    Card *cloneCard(const Card *card);
-    Card *cloneCard(const QString &name, Card::Suit suit = Card::SuitToBeDecided, int number = -1, const QStringList &flags = QStringList());
     SkillCard *cloneSkillCard(const QString &name);
     void autoCleanupClonedCards();
 
-    RefactorProposal::Card *cloneCard(const RefactorProposal::Card *card);
+    Card *cloneCard(const Card *card);
 #if 0
-    RefactorProposal::Card *cloneCard(const QString &name, RefactorProposal::Card::Suit suit = RefactorProposal::Card::SuitToBeDecided,
-                                      RefactorProposal::Card::Number number = RefactorProposal::Card::NumberToBeDecided);
+    Card *cloneCard(const QString &name, Card::Suit suit = Card::SuitToBeDecided,
+                                      Card::Number number = Card::NumberToBeDecided);
 #else
     // Fs: after Refactor done, replace the function to the one with default value
-    RefactorProposal::Card *cloneCard(const QString &name, RefactorProposal::Card::Suit suit, RefactorProposal::Card::Number number);
+    Card *cloneCard(const QString &name, Card::Suit suit, Card::Number number);
 #endif
-    RefactorProposal::Card *cloneCard(const RefactorProposal::CardFace *cardFace, RefactorProposal::Card::Suit suit = RefactorProposal::Card::SuitToBeDecided,
-                                      RefactorProposal::Card::Number number = RefactorProposal::Card::NumberToBeDecided);
-    void cardDeleting(const RefactorProposal::Card *card);
+    Card *cloneCard(const CardFace *cardFace, Card::Suit suit = Card::SuitToBeDecided,
+                                      Card::Number number = Card::NumberToBeDecided);
+    void cardDeleting(const Card *card);
 
 private:
     RoomObjectPrivate *d;

@@ -1,8 +1,9 @@
 #ifndef _PLAYER_H
 #define _PLAYER_H
 
-#include "WrappedCard.h"
+// #include "WrappedCard.h"
 #include "general.h"
+#include "card.h"
 
 #include <QObject>
 #include <QTcpSocket>
@@ -233,8 +234,9 @@ public:
 
     virtual QString getGameMode() const = 0;
 
-    void setEquip(WrappedCard *equip);
-    void removeEquip(WrappedCard *equip);
+    // FIXME(xusine): At present I don't know how to use WrapperCard but just use const Card *instread;
+    void setEquip(const Card *equip);
+    void removeEquip(const Card *equip);
     bool hasEquip(const Card *card) const;
     bool hasEquip() const;
 
@@ -249,11 +251,11 @@ public:
     virtual void addCard(const Card *card, Place place) = 0;
     virtual QList<const Card *> getHandcards() const = 0;
 
-    WrappedCard *getWeapon() const;
-    WrappedCard *getArmor() const;
-    WrappedCard *getDefensiveHorse() const;
-    WrappedCard *getOffensiveHorse() const;
-    WrappedCard *getTreasure() const;
+    const Card *getWeapon() const;
+    const Card *getArmor() const;
+    const Card *getDefensiveHorse() const;
+    const Card *getOffensiveHorse() const;
+    const Card *getTreasure() const;
     QList<const Card *> getEquips() const;
     const EquipCard *getEquip(int index) const;
 
@@ -410,7 +412,7 @@ private:
     bool general2_showed; //hegemony
 
     Phase phase;
-    WrappedCard *weapon, *armor, *defensive_horse, *offensive_horse, *treasure;
+    const Card *weapon, *armor, *defensive_horse, *offensive_horse, *treasure;
     bool face_up;
     bool chained;
     bool removed;

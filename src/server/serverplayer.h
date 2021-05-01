@@ -4,6 +4,7 @@
 class Room;
 class AI;
 class Recorder;
+class DummyCard;
 
 class CardMoveReason;
 struct PhaseStruct;

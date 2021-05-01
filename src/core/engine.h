@@ -3,6 +3,7 @@
 
 #include "RoomObject.h"
 #include "card.h"
+#include "CardFace.h"
 #include "exppattern.h"
 #include "general.h"
 #include "json.h"
@@ -20,10 +21,7 @@
 
 class AI;
 class QVersionNumber;
-
-namespace RefactorProposal {
 class CardFace;
-}
 
 class Engine : public QObject
 {
@@ -124,15 +122,15 @@ public:
     QVariant getConfigFromConfigFile(const QString &key) const;
 
     // Refactoring
-    void registerCardFace(const RefactorProposal::CardFace *cardFace);
-    const RefactorProposal::CardFace *getCardFace(const QString &name) const;
+    void registerCardFace(const CardFace *cardFace);
+    const CardFace *getCardFace(const QString &name) const;
 
 private:
     QMutex m_mutex;
     QHash<QString, QString> translations;
     QHash<QString, const General *> generals;
     QHash<QString, const Skill *> skills;
-    QHash<QString, const RefactorProposal::CardFace *> cardFaces;
+    QHash<QString, const CardFace *> cardFaces;
     QHash<QThread *, RoomObject *> m_rooms;
     QMap<QString, QString> modes;
     QMultiMap<QString, QString> related_skills;
