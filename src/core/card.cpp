@@ -192,6 +192,11 @@ int Card::id() const
     return d->id;
 }
 
+void Card::setID(int id)
+{
+    d->id = id;
+}
+
 int Card::effectiveID() const
 {
     if (isVirtualCard()) {
@@ -204,7 +209,7 @@ int Card::effectiveID() const
     return d->id;
 }
 
-QString Card::name() const
+QString Card::faceName() const
 {
     if (d->face != nullptr)
         return d->face->name();
@@ -214,7 +219,7 @@ QString Card::name() const
 
 QString Card::fullName(bool include_suit) const
 {
-    QString name = this->name();
+    QString name = this->faceName();
     if (include_suit) {
         QString suit_name = Sanguosha->translate(suitString());
         return QString("%1%2 %3").arg(suit_name).arg(numberString()).arg(name);
@@ -258,7 +263,7 @@ QString Card::logName() const
     if (number() > NumberA && number() <= NumberK)
         number_string = numberString();
 
-    return QString("%1[%2%3]").arg(name()).arg(suit_char).arg(number_string);
+    return QString("%1[%2%3]").arg(faceName()).arg(suit_char).arg(number_string);
 }
 
 QString Card::skillName(bool removePrefix) const
@@ -473,6 +478,11 @@ const RoomObject *Card::room() const
     return d->room;
 }
 
+void Card::setRoomObject(RoomObject *room)
+{
+    d->room = room;
+}
+
 QString Card::toString(bool hidden) const
 {
     if (d->face == nullptr)
@@ -662,4 +672,3 @@ Card *Card::Parse(const QString &str, RoomObject *room)
     }
     return nullptr;
 }
-

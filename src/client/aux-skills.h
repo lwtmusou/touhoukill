@@ -5,10 +5,11 @@
 
 class DiscardSkill : public ViewAsSkill
 {
-    Q_OBJECT
+    Q_GADGET
 
 public:
     explicit DiscardSkill();
+    ~DiscardSkill() override;
 
     void setNum(int num);
     void setMinNum(int minnum);
@@ -19,7 +20,7 @@ public:
     const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const override;
 
 private:
-    DummyCard *card;
+    Card *card; // it should be a dummy card.
     int num;
     int minnum;
     bool include_equip;
@@ -30,7 +31,7 @@ class CardPattern;
 
 class ResponseSkill : public OneCardViewAsSkill
 {
-    Q_OBJECT
+    Q_GADGET
 
 public:
     ResponseSkill();
@@ -53,7 +54,7 @@ protected:
 
 class ShowOrPindianSkill : public ResponseSkill
 {
-    Q_OBJECT
+    Q_GADGET
 
 public:
     ShowOrPindianSkill();
@@ -64,10 +65,11 @@ class YijiCard;
 
 class YijiViewAsSkill : public ViewAsSkill
 {
-    Q_OBJECT
+    Q_GADGET
 
 public:
     explicit YijiViewAsSkill();
+    ~YijiViewAsSkill() override;
     void setCards(const QString &card_str);
     void setMaxNum(int max_num);
     void setPlayerNames(const QStringList &names);
@@ -76,7 +78,8 @@ public:
     const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const override;
 
 private:
-    YijiCard *card;
+    YijiCard *face;
+    Card *card;
     QList<int> ids;
     int max_num;
 };
@@ -85,16 +88,18 @@ class ChoosePlayerCard;
 
 class ChoosePlayerSkill : public ZeroCardViewAsSkill
 {
-    Q_OBJECT
+    Q_GADGET
 
 public:
     explicit ChoosePlayerSkill();
+    ~ChoosePlayerSkill() override;
     void setPlayerNames(const QStringList &names);
 
     const Card *viewAs(const Player *Self) const override;
 
 private:
-    ChoosePlayerCard *card;
+    ChoosePlayerCard *face;
+    Card *card;
 };
 
 #endif

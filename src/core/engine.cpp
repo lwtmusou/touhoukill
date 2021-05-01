@@ -42,8 +42,8 @@ Engine::Engine()
     foreach (QString name, package_names)
         addPackage(name);
 
-    PreRefactor::CardFactory::addCardMetaObject(SurrenderCard::staticMetaObject.className(), &SurrenderCard::staticMetaObject);
-    PreRefactor::CardFactory::addCardMetaObject(CheatCard::staticMetaObject.className(), &CheatCard::staticMetaObject);
+    CardFactory::registerCardFace(new SurrenderCard);
+    CardFactory::registerCardFace(new CheatCard);
 
     LordBGMConvertList = getConfigFromConfigFile("bgm_convert_pairs").toStringList();
     LordBackdropConvertList = getConfigFromConfigFile("backdrop_convert_pairs").toStringList();
@@ -192,18 +192,21 @@ void Engine::addPackage(Package *package)
     patterns.insert(package->getPatterns());
     related_skills.unite(package->getRelatedSkills());
 
-    QList<Card *> all_cards = package->findChildren<Card *>();
-    foreach (Card *card, all_cards) {
-        card->setId(cards.length());
-        cards << card;
+    foreach (auto face, package->cardFaces()) {
+        // TODO: How to register skill card???
+        CardFactory::registerCardFace(face);
+    }
 
-        QString class_name = card->metaObject()->className();
-        PreRefactor::CardFactory::addCardMetaObject(class_name, card->metaObject());
-        PreRefactor::CardFactory::addCardMetaObject(card->objectName(), card->metaObject());
+    foreach (auto face, package->cards().keys()) {
+        auto infos = package->cards().values(face);
+        foreach (auto info, infos) {
+            cards << new Card(nullptr, face, info.first, info.second, cards.length());
+        }
     }
 
     addSkills(package->getSkills());
 
+    // Also decouple general from child here. here.
     QList<General *> all_generals = package->findChildren<General *>();
     foreach (General *general, all_generals) {
         addSkills(general->findChildren<const Skill *>());
@@ -219,10 +222,6 @@ void Engine::addPackage(Package *package)
         if (general->isLord())
             lord_list << general->objectName();
     }
-
-    QList<const QMetaObject *> metas = package->getMetaObjects();
-    foreach (const QMetaObject *meta, metas)
-        PreRefactor::CardFactory::addCardMetaObject(meta->className(), meta);
 }
 
 void Engine::addBanPackage(const QString &package_name)
@@ -953,28 +952,28 @@ QList<int> Engine::getRandomCards() const
     foreach (Card *card, cards) {
         card->clearFlags();
 
-        if (exclude_disaters && card->isKindOf("Disaster"))
+        if (exclude_disaters && card->face()->isKindOf("Disaster"))
             continue;
 
-        if (card->getPackage() == "New3v3Card" && (using_2012_3v3 || using_2013_3v3))
-            list << card->getId();
-        else if (card->getPackage() == "New3v3_2013Card" && using_2013_3v3)
-            list << card->getId();
+        if (getPackageNameByCard(card) == "New3v3Card" && (using_2012_3v3 || using_2013_3v3))
+            list << card->id();
+        else if (getPackageNameByCard(card) == "New3v3_2013Card" && using_2013_3v3)
+            list << card->id();
 
-        if (!getBanPackages().contains(card->getPackage())) {
-            if (card->objectName().startsWith("known_both")) {
-                if (isHegemonyGameMode(Config.GameMode) && card->objectName() == "known_both_hegemony")
-                    list << card->getId();
-                else if (!isHegemonyGameMode(Config.GameMode) && card->objectName() == "known_both")
-                    list << card->getId();
+        if (!getBanPackages().contains(getPackageNameByCard(card))) {
+            if (card->faceName().startsWith("known_both")) {
+                if (isHegemonyGameMode(Config.GameMode) && card->faceName() == "known_both_hegemony")
+                    list << card->id();
+                else if (!isHegemonyGameMode(Config.GameMode) && card->faceName() == "known_both")
+                    list << card->id();
 
-            } else if (card->objectName().startsWith("DoubleSword")) {
-                if (isHegemonyGameMode(Config.GameMode) && card->objectName() == "DoubleSwordHegemony")
-                    list << card->getId();
-                else if (!isHegemonyGameMode(Config.GameMode) && card->objectName() == "DoubleSword")
-                    list << card->getId();
+            } else if (card->faceName().startsWith("DoubleSword")) {
+                if (isHegemonyGameMode(Config.GameMode) && card->faceName() == "DoubleSwordHegemony")
+                    list << card->id();
+                else if (!isHegemonyGameMode(Config.GameMode) && card->faceName() == "DoubleSword")
+                    list << card->id();
             } else
-                list << card->getId();
+                list << card->id();
         }
     }
     // remove two crossbows and one nullification?
@@ -1029,7 +1028,7 @@ const Skill *Engine::getSkill(const EquipCard *equip) const
     const Skill *skill = nullptr;
 
     if (equip != nullptr)
-        skill = getSkill(equip->objectName());
+        skill = getSkill(equip->name());
 
     return skill;
 }
@@ -1073,7 +1072,7 @@ const ProhibitSkill *Engine::isProhibited(const Player *from, const Player *to, 
 {
     bool ignore
         = (from->hasSkill("tianqu") && from->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to != from && !card->hasFlag("IgnoreFailed"));
-    if (ignore && !card->isKindOf("SkillCard"))
+    if (ignore && !card->face()->isKindOf("SkillCard"))
         return nullptr;
     foreach (const ProhibitSkill *skill, prohibit_skills) {
         if (skill->isProhibited(from, to, card, others))
@@ -1129,7 +1128,7 @@ int Engine::correctMaxCards(const Player *target, bool fixed, const QString &exc
 int Engine::correctCardTarget(const TargetModSkill::ModType type, const Player *from, const Card *card) const
 {
     int x = 0;
-    QString cardskill = card->getSkillName();
+    QString cardskill = card->skillName();
     bool checkDoubleHidden = false;
     if (cardskill != nullptr)
         checkDoubleHidden = from->isHiddenSkill(cardskill);
@@ -1209,9 +1208,10 @@ int Engine::operationTimeRate(QSanProtocol::CommandType command, QVariant msg)
 
 SurrenderCard::SurrenderCard()
 {
-    target_fixed = true;
-    mute = true;
-    handling_method = Card::MethodNone;
+    setTargetFixed(true);
+    // target_fixed = true;
+    // mute = true;
+    // handling_method = Card::MethodNone;
 }
 
 void SurrenderCard::onUse(Room *room, const CardUseStruct &use) const
@@ -1221,14 +1221,14 @@ void SurrenderCard::onUse(Room *room, const CardUseStruct &use) const
 
 CheatCard::CheatCard()
 {
-    target_fixed = true;
-    mute = true;
-    handling_method = Card::MethodNone;
+    setTargetFixed(true);
+    // mute = true;
+    // handling_method = Card::MethodNone;
 }
 
 void CheatCard::onUse(Room *room, const CardUseStruct &use) const
 {
-    QString cheatString = getUserString();
+    QString cheatString = use.card->userString();
     JsonDocument doc = JsonDocument::fromJson(cheatString.toUtf8().constData());
     if (doc.isValid())
         room->cheat(use.from, doc.toVariant());
@@ -1254,13 +1254,13 @@ QVariant Engine::getConfigFromConfigFile(const QString &key) const
     return configFile.value(key);
 }
 
-void Engine::registerCardFace(const RefactorProposal::CardFace *cardFace)
+void Engine::registerCardFace(const CardFace *cardFace)
 {
     if (cardFace != nullptr)
         cardFaces[cardFace->name()] = cardFace;
 }
 
-const RefactorProposal::CardFace *Engine::getCardFace(const QString &name) const
+const CardFace *Engine::getCardFace(const QString &name) const
 {
     return cardFaces.value(name, nullptr);
 }

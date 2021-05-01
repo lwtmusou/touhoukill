@@ -288,7 +288,7 @@ public:
     explicit EquipSkill(const QString &name);
 
     static bool equipAvailable(const Player *p, EquipCard::Location location, const QString &equip_name, const Player *to = nullptr);
-    static bool equipAvailable(const Player *p, const EquipCard *card, const Player *to = nullptr);
+    static bool equipAvailable(const Player *p, const Card *equip, const Player *to = nullptr);
 };
 
 class WeaponSkill : public EquipSkill

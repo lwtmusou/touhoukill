@@ -53,6 +53,7 @@ set (QSanguosha_SRCS
     src/core/engine.cpp
     src/core/general.cpp
     src/core/json.cpp
+    src/core/package.cpp
     src/core/player.cpp
     src/core/protocol.cpp
     src/core/RoomObject.cpp
@@ -60,7 +61,6 @@ set (QSanguosha_SRCS
     src/core/skill.cpp
     src/core/structs.cpp
     src/core/util.cpp
-    src/core/WrappedCard.cpp
     src/dialog/AboutUs.cpp
     src/dialog/cardoverview.cpp
     src/dialog/choosegeneraldialog.cpp
@@ -76,7 +76,6 @@ set (QSanguosha_SRCS
     src/package/hegemonyCard.cpp
     src/package/hegemonyGeneral.cpp
     src/package/maneuvering.cpp
-    src/package/package.cpp
     src/package/playground.cpp
     src/package/protagonist.cpp
     src/package/standard-cards.cpp
@@ -168,6 +167,7 @@ set (QSanguosha_MOCS
     src/core/general.h
     src/core/json.h
     src/core/lua-wrapper.h
+    src/core/package.h
     src/core/player.h
     src/core/protocol.h
     src/core/RoomObject.h
@@ -175,7 +175,6 @@ set (QSanguosha_MOCS
     src/core/skill.h
     src/core/structs.h
     src/core/util.h
-    src/core/WrappedCard.h
     src/dialog/AboutUs.h
     src/dialog/cardoverview.h
     src/dialog/choosegeneraldialog.h
@@ -190,7 +189,6 @@ set (QSanguosha_MOCS
     src/package/hegemonyCard.h
     src/package/hegemonyGeneral.h
     src/package/maneuvering.h
-    src/package/package.h
     src/package/playground.h
     src/package/protagonist.h
     src/package/standard-equips.h

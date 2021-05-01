@@ -257,7 +257,7 @@ public:
     const Card *getOffensiveHorse() const;
     const Card *getTreasure() const;
     QList<const Card *> getEquips() const;
-    const EquipCard *getEquip(int index) const;
+    const Card *getEquip(int index) const;
 
     bool hasWeapon(const QString &weapon_name, bool selfOnly = false, bool ignore_preshow = false) const;
     bool hasArmorEffect(const QString &armor_name, bool selfOnly = false) const;

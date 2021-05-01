@@ -125,6 +125,8 @@ public:
     void registerCardFace(const CardFace *cardFace);
     const CardFace *getCardFace(const QString &name) const;
 
+    QString getPackageNameByCard(const Card *c) const; 
+
 private:
     QMutex m_mutex;
     QHash<QString, QString> translations;
@@ -155,19 +157,27 @@ private:
 
 class SurrenderCard : public SkillCard
 {
-    Q_OBJECT
+    Q_GADGET
 
 public:
     Q_INVOKABLE SurrenderCard();
+
+    QString name() const override {
+        return staticMetaObject.className();
+    }
     void onUse(Room *room, const CardUseStruct &use) const override;
 };
 
 class CheatCard : public SkillCard
 {
-    Q_OBJECT
+    Q_GADGET
 
 public:
     Q_INVOKABLE CheatCard();
+
+    QString name() const override {
+        return staticMetaObject.className();
+    }
     void onUse(Room *room, const CardUseStruct &use) const override;
 };
 

@@ -102,6 +102,8 @@ public:
     };
     Q_ENUM(Number)
 
+    static const int S_UNKNOWN_CARD_ID = -1;
+
     // constructor to create real card
     explicit Card(RoomObject *room, const CardFace *face, Suit suit = SuitToBeDecided, Number number = Number::NumberToBeDecided, int id = -1);
     ~Card();
@@ -121,10 +123,11 @@ public:
 
     // id
     int id() const;
+    void setID(int id);
     int effectiveID() const;
 
     // name
-    QString name() const;
+    QString faceName() const;
     QString fullName(bool include_suit = false) const;
     QString logName() const;
 
@@ -190,6 +193,7 @@ public:
     // room Object
     RoomObject *room();
     const RoomObject *room() const;
+    void setRoomObject(RoomObject *room);
 
     // toString
     // What's the meaning of this hidden card?

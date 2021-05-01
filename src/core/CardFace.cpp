@@ -8,7 +8,6 @@
 #include <QObject>
 #include <QString>
 
-namespace RefactorProposal {
 
 class CardFacePrivate
 {
@@ -68,8 +67,8 @@ bool CardFace::isKindOf(const char *cardType) const
         if (strcmp(object->className(), cardType) == 0)
             return true;
 
-        // Refactoring: strip RefactorProposal:: from classname
-        if (strncmp(object->className(), "RefactorProposal::", 18) == 0 && strcmp(object->className() + 18, cardType) == 0)
+        // Refactoring: strip  from classname
+        if (strncmp(object->className(), "", 18) == 0 && strcmp(object->className() + 18, cardType) == 0)
             return true;
 
         object = object->superClass();
@@ -167,7 +166,7 @@ int CardFace::targetFilter(const QList<const Player *> &targets, const Player *t
 
 bool CardFace::isAvailable(const Player *player, const Card *card) const
 {
-    return !player->isCardLimited(fixme_cast< ::Card *>(card), fixme_cast< ::Card::HandlingMethod>(card->handleMethod()));
+    return !player->isCardLimited(card, card->handleMethod());
 }
 
 bool CardFace::ignoreCardValidity(const Player *) const
@@ -198,7 +197,7 @@ void CardFace::onUse(Room *room, const CardUseStruct &use) const
 
     QList<ServerPlayer *> targets = card_use.to;
     if (room->getMode() == "06_3v3" && (isKindOf("AOE") || isKindOf("GlobalEffect")))
-        room->reverseFor3v3(fixme_cast< ::Card *>(card_use.card), player, targets);
+        room->reverseFor3v3(card_use.card, player, targets);
     card_use.to = targets;
 
     bool hidden = (type() == TypeSkill && !card_use.card->throwWhenUsing());
@@ -240,7 +239,7 @@ void CardFace::onUse(Room *room, const CardUseStruct &use) const
     } else {
         if (card_use.card->throwWhenUsing()) {
             CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName(), QString(), card_use.card->skillName(), QString());
-            room->moveCardTo(fixme_cast< ::Card *>(card_use.card), player, nullptr, Player::DiscardPile, reason, true);
+            room->moveCardTo(card_use.card, player, nullptr, Player::DiscardPile, reason, true);
         }
         player->showHiddenSkill(card_use.card->showSkillName());
     }
@@ -285,7 +284,7 @@ void CardFace::use(Room *room, const CardUseStruct &use) const
 
         room->setTag("targets" + use.card->toString(), QVariant::fromValue(players));
 
-        room->cardEffect(*(fixme_cast< ::CardEffectStruct *>(&effect)));
+        room->cardEffect(*(RefactorProposal::fixme_cast< ::CardEffectStruct *>(&effect)));
     }
     room->removeTag("targets" + use.card->toString()); //for ai?
     if (magic_drank > 0)
@@ -308,7 +307,7 @@ void CardFace::use(Room *room, const CardUseStruct &use) const
         ServerPlayer *from = source;
         if (provider != nullptr)
             from = provider;
-        room->moveCardTo(fixme_cast< ::Card *>(use.card), from, nullptr, Player::DiscardPile, reason, true);
+        room->moveCardTo(use.card, from, nullptr, Player::DiscardPile, reason, true);
     }
 }
 
@@ -464,18 +463,17 @@ SkillCard::SkillCard()
 {
 }
 
-CardFace::CardType RefactorProposal::SkillCard::type() const
+CardFace::CardType SkillCard::type() const
 {
     return TypeSkill;
 }
 
-QString RefactorProposal::SkillCard::typeName() const
+QString SkillCard::typeName() const
 {
     return "skill";
 }
 
-QString RefactorProposal::SkillCard::subTypeName() const
+QString SkillCard::subTypeName() const
 {
     return "skill";
-}
 }

@@ -1,45 +1,58 @@
 #include "RoomObject.h"
-#include "WrappedCard.h"
 #include "engine.h"
 
-QHash<QString, const QMetaObject *> PreRefactor::CardFactory::metaObjects;
+QHash<QString, const CardFace *> CardFactory::faces;
 
-void PreRefactor::CardFactory::addCardMetaObject(const QString &key, const QMetaObject *staticMetaObject)
-{
-    metaObjects[key] = staticMetaObject;
+// void CardFactory::addCardMetaObject(const QString &key, const QMetaObject *staticMetaObject)
+// {
+//     metaObjects[key] = staticMetaObject;
+// }
+
+// void CardFactory::removeCardMetaObject(const QString &key)
+// {
+//     metaObjects.remove(key);
+// }
+
+void CardFactory::registerCardFace(const CardFace *cardFace) {
+    faces.insert(cardFace->name(), cardFace);
 }
 
-void PreRefactor::CardFactory::removeCardMetaObject(const QString &key)
-{
-    metaObjects.remove(key);
+void CardFactory::unregisterCardFace(const QString &name) {
+    auto face = faces.find(name);
+    if(face != faces.end()){
+        auto handle = *face;
+        faces.erase(face);
+        delete handle;
+    }
 }
 
-PreRefactor::CardFactory::CardFactory()
+
+CardFactory::CardFactory()
 {
 }
 
-Card *PreRefactor::CardFactory::cloneCard(const Card *card) const
+Card *CardFactory::cloneCard(const Card *card) const
 {
-    Q_ASSERT(card->metaObject() != nullptr);
-    QString name = card->metaObject()->className();
-    Card *result = cloneCard(name, card->getSuit(), card->getNumber(), card->getFlags());
+    Q_ASSERT(card->face() != nullptr);
+    auto name = card->faceName();
+    Card *result = cloneCard(name, card->suit(), card->number(), card->flags());
     if (result == nullptr)
         return nullptr;
-    result->setId(card->getEffectiveId());
-    result->setSkillName(card->getSkillName(false));
-    result->setObjectName(card->objectName());
+    result->setID(card->effectiveID());
+    result->setSkillName(card->skillName(false));
+    // result->setName(card->name());
     return result;
 }
 
-Card *PreRefactor::CardFactory::cloneCard(const QString &name, Card::Suit suit, int number, const QStringList &flags) const
+Card *CardFactory::cloneCard(const QString &name, Card::Suit suit, Card::Number number, const QSet<QString> &flags) const
 {
     Card *card = nullptr;
 
-    const QMetaObject *meta = metaObjects.value(name, NULL);
-    if (meta != nullptr) {
-        QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
+    const CardFace *face = faces.value(name, nullptr);
+    if (face != nullptr) {
+        Card *card = new Card(nullptr, face, suit, number);
         // card_obj->setObjectName(className2objectName.value(name, name));
-        card = qobject_cast<Card *>(card_obj);
+        // TODO: Bind the roomObject
     }
 
     if (card == nullptr)
@@ -47,34 +60,36 @@ Card *PreRefactor::CardFactory::cloneCard(const QString &name, Card::Suit suit, 
     card->clearFlags();
     if (!flags.isEmpty()) {
         foreach (const QString &flag, flags)
-            card->setFlags(flag);
+            card->addFlag(flag);
     }
     return card;
 }
 
-SkillCard *PreRefactor::CardFactory::cloneSkillCard(const QString &name) const
+Card *CardFactory::cloneSkillCard(const QString &name) const
 {
-    const QMetaObject *meta = metaObjects.value(name, NULL);
-    if (meta != nullptr) {
-        QObject *card_obj = meta->newInstance();
-        SkillCard *card = qobject_cast<SkillCard *>(card_obj);
-        if (card == nullptr)
-            delete card_obj;
-        return card;
-    }
+    // TODO: Here we have to manually maintain all the skill card face.
 
-    return nullptr;
+    // const QMetaObject *meta = metaObjects.value(name, NULL);
+    // if (meta != nullptr) {
+    //     QObject *card_obj = meta->newInstance();
+    //     SkillCard *card = qobject_cast<SkillCard *>(card_obj);
+    //     if (card == nullptr)
+    //         delete card_obj;
+    //     return card;
+    // }
+
+    return cloneCard(name);
 }
 
 class RoomObjectPrivate
 {
 public:
-    QHash<int, WrappedCard *> cards;
+    QHash<int, Card *> cards;
     QString currentCardUsePattern;
     CardUseStruct::CardUseReason currentCardUseReason;
-    PreRefactor::CardFactory cardFactory;
+    CardFactory cardFactory;
     QList<QPointer<Card> > clonedCardsPreRefactor;
-    QList<const RefactorProposal::Card *> clonedCards;
+    QList<const Card *> clonedCards;
 
     RoomObjectPrivate()
     {
@@ -98,15 +113,12 @@ RoomObject::~RoomObject()
 
 Card *RoomObject::getCard(int cardId)
 {
-    return getWrappedCard(cardId);
+    if (!d->cards.contains(cardId))
+        return nullptr;
+    return d->cards[cardId];
 }
 
 const Card *RoomObject::getCard(int cardId) const
-{
-    return getWrappedCard(cardId);
-}
-
-WrappedCard *RoomObject::getWrappedCard(int cardId) const
 {
     if (!d->cards.contains(cardId))
         return nullptr;
@@ -135,26 +147,28 @@ void RoomObject::setCurrentCardUseReason(CardUseStruct::CardUseReason reason)
 
 void RoomObject::resetCard(int cardId)
 {
-    Card *newCard = Card::Clone(Sanguosha->getEngineCard(cardId));
-    if (newCard == nullptr)
-        return;
-    newCard->setFlags(d->cards[cardId]->getFlags());
-    d->cards[cardId]->copyEverythingFrom(newCard);
-    newCard->clearFlags();
-    d->cards[cardId]->setModified(false);
+    // It depends on how we achieve the filter skill.
+
+    // Card *newCard = Card::Clone(Sanguosha->getEngineCard(cardId));
+    // if (newCard == nullptr)
+    //     return;
+    // newCard->setFlags(d->cards[cardId]->getFlags());
+    // d->cards[cardId]->copyEverythingFrom(newCard);
+    // newCard->clearFlags();
+    // d->cards[cardId]->setModified(false);
 }
 
 // Reset all cards, generals' states of the room instance
 void RoomObject::resetState()
 {
-    foreach (WrappedCard *card, d->cards.values())
+    foreach (Card *card, d->cards.values())
         delete card;
     d->cards.clear();
 
     int n = Sanguosha->getCardCount();
     for (int i = 0; i < n; i++) {
         const Card *card = Sanguosha->getEngineCard(i);
-        d->cards[i] = new WrappedCard(Card::Clone(card));
+        d->cards[i] = cloneCard(card);
     }
 }
 
@@ -163,36 +177,27 @@ Card *RoomObject::cloneCard(const Card *card)
     Card *c = d->cardFactory.cloneCard(card);
     if (c == nullptr)
         return nullptr;
-
+    c->setRoomObject(this);
     d->clonedCardsPreRefactor << c;
     return c;
 }
 
-Card *RoomObject::cloneCard(const QString &name, Card::Suit suit, int number, const QStringList &flags)
+Card *RoomObject::cloneCard(const QString &name, Card::Suit suit, Card::Number number, const QSet<QString> &flags)
 {
     Card *c = d->cardFactory.cloneCard(name, suit, number, flags);
     if (c == nullptr)
         return nullptr;
-
+    c->setRoomObject(this);
     d->clonedCardsPreRefactor << c;
     return c;
 }
 
-RefactorProposal::Card *RoomObject::cloneCard(const RefactorProposal::Card *card)
-{
-    return cloneCard(card->face(), card->suit(), card->number());
-}
+// Card *RoomObject::cloneCard(const Card *card)
+// {
+//     return cloneCard(card->face(), card->suit(), card->number());
+// }
 
-RefactorProposal::Card *RoomObject::cloneCard(const QString &name, RefactorProposal::Card::Suit suit, RefactorProposal::Card::Number number)
-{
-    const RefactorProposal::CardFace *face = nullptr;
-    if (name != "DummyCard")
-        face = Sanguosha->getCardFace(name);
-
-    return cloneCard(face, suit, number);
-}
-
-RefactorProposal::Card *RoomObject::cloneCard(const RefactorProposal::CardFace *cardFace, RefactorProposal::Card::Suit suit, RefactorProposal::Card::Number number)
+Card *RoomObject::cloneCard(const CardFace *cardFace, Card::Suit suit, Card::Number number, const QSet<QString> &flags)
 {
     // Design change: dummy cards does not have CardFace
 #if 0
@@ -202,19 +207,19 @@ RefactorProposal::Card *RoomObject::cloneCard(const RefactorProposal::CardFace *
     }
 #endif
 
-    RefactorProposal::Card *c = new RefactorProposal::Card(this, cardFace, suit, number);
+    Card *c = new Card(this, cardFace, suit, number);
     d->clonedCards << c;
     return c;
 }
 
-void RoomObject::cardDeleting(const RefactorProposal::Card *card)
+void RoomObject::cardDeleting(const Card *card)
 {
     d->clonedCards.removeAll(card);
 }
 
-SkillCard *RoomObject::cloneSkillCard(const QString &name)
+Card *RoomObject::cloneSkillCard(const QString &name)
 {
-    SkillCard *c = d->cardFactory.cloneSkillCard(name);
+    Card *c = d->cardFactory.cloneSkillCard(name);
     if (c == nullptr)
         return nullptr;
 

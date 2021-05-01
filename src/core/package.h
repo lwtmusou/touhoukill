@@ -8,8 +8,10 @@ class Player;
 #include <QHash>
 #include <QMap>
 #include <QObject>
+#include <QPair>
 #include <QStringList>
 
+#include "card.h"
 #include "json.h"
 
 class CardPattern
@@ -21,6 +23,8 @@ public:
         return true;
     }
 };
+
+class CardFace;
 
 class Package : public QObject
 {
@@ -47,17 +51,17 @@ public:
         return metaobjects;
     }
 
-    QList<const Skill *> getSkills() const
+    const QList<const Skill *> &getSkills() const
     {
         return skills;
     }
 
-    QMap<QString, const CardPattern *> getPatterns() const
+    const QMap<QString, const CardPattern *> &getPatterns() const
     {
         return patterns;
     }
 
-    QMultiMap<QString, QString> getRelatedSkills() const
+    const QMultiMap<QString, QString> &getRelatedSkills() const
     {
         return related_skills;
     }
@@ -77,11 +81,23 @@ public:
         related_skills.insert(main_skill, related_skill);
     }
 
+    const QList<const CardFace *> &cardFaces() const
+    {
+        return this->faces;
+    }
+
+    const QMultiMap<const CardFace *, QPair<Card::Suit, Card::Number> > cards() const
+    {
+        return this->all_cards;
+    }
+
 protected:
     QList<const QMetaObject *> metaobjects;
     QList<const Skill *> skills;
+    QList<const CardFace *> faces;
     QMap<QString, const CardPattern *> patterns;
     QMultiMap<QString, QString> related_skills;
+    QMultiMap<const CardFace *, QPair<Card::Suit, Card::Number> > all_cards;
     Type type;
 };
 

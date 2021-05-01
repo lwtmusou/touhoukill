@@ -46,8 +46,8 @@ void ClientPlayer::addCard(const Card *card, Place place)
         break;
     }
     case PlaceEquip: {
-        WrappedCard *equip = getRoomObject()->getWrappedCard(card->getEffectiveId());
-        setEquip(equip);
+        // WrappedCard *equip = getRoomObject()->getWrappedCard(card->getEffectiveId());
+        setEquip(getRoomObject()->getCard(card->effectiveID()));
         break;
     }
     case PlaceDelayedTrick: {
@@ -70,17 +70,17 @@ bool ClientPlayer::isLastHandCard(const Card *card, bool contain) const
     if (!card->isVirtualCard()) {
         if (known_cards.length() != 1)
             return false;
-        return known_cards.first()->getId() == card->getEffectiveId();
-    } else if (card->getSubcards().length() > 0) {
+        return known_cards.first()->id() == card->effectiveID();
+    } else if (card->subcards().size() > 0) {
         if (!contain) {
-            foreach (int card_id, card->getSubcards()) {
+            foreach (int card_id, card->subcards()) {
                 if (!known_cards.contains(getRoomObject()->getCard(card_id)))
                     return false;
             }
-            return known_cards.length() == card->getSubcards().length();
+            return known_cards.length() == card->subcards().size();
         } else {
             foreach (const Card *ncard, known_cards) {
-                if (!card->getSubcards().contains(ncard->getEffectiveId()))
+                if (!card->subcards().contains(ncard->effectiveID()))
                     return false;
             }
             return true;
@@ -99,8 +99,8 @@ void ClientPlayer::removeCard(const Card *card, Place place)
         break;
     }
     case PlaceEquip: {
-        WrappedCard *equip = getRoomObject()->getWrappedCard(card->getEffectiveId());
-        removeEquip(equip);
+        // WrappedCard *equip = getRoomObject()->getWrappedCard(card->getEffectiveId());
+        removeEquip(getRoomObject()->getCard(card->effectiveID()));
         break;
     }
     case PlaceDelayedTrick: {

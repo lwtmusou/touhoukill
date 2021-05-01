@@ -28,7 +28,7 @@ public:
 
     // text property
     // FIXME: replace `name` with objectName ?
-    virtual QString name() const;
+    virtual QString name() const = 0;
     virtual QString description() const;
     virtual QString commonEffectName() const;
     virtual QString effectName() const;
@@ -163,6 +163,8 @@ public:
 
     QString subTypeName() const override;
     Location location() const override;
+
+    virtual int range() const;
 };
 
 class Armor : public EquipCard
