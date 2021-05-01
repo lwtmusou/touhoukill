@@ -41,6 +41,33 @@ include_directories(
 
 add_compile_definitions(AUDIO_SUPPORT QT_DISABLE_DEPRECATED_BEFORE=0x60000)
 
+set (QSanguosha_PKG_SRCS
+    src/package/hegemonyCard.cpp
+    src/package/hegemonyGeneral.cpp
+    src/package/maneuvering.cpp
+    src/package/playground.cpp
+    src/package/protagonist.cpp
+    src/package/standard-cards.cpp
+    src/package/standard.cpp
+    src/package/testCard.cpp
+    src/package/th01-05.cpp
+    src/package/th06.cpp
+    src/package/th07.cpp
+    src/package/th08.cpp
+    src/package/th09.cpp
+    src/package/th10.cpp
+    src/package/th11.cpp
+    src/package/th12.cpp
+    src/package/th13.cpp
+    src/package/th14.cpp
+    src/package/th15.cpp
+    src/package/th16.cpp
+    src/package/th17.cpp
+    src/package/th99.cpp
+    src/package/thndj.cpp
+    src/package/touhougod.cpp
+)
+
 set (QSanguosha_SRCS
     src/audio/audio.cpp
 
@@ -116,6 +143,8 @@ set (QSanguosha_SRCS
     src/util/detector.cpp
     src/util/nativesocket.cpp
     src/util/recorder.cpp
+
+    #${QSanguosha_PKG_SRCS}
 )
 
 set (QSanguosha_UIS
@@ -129,6 +158,34 @@ set (QSanguosha_UIS
 set(TS_FILES builds/sanguosha.ts)
 set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION "ts")
 qt5_add_translation(QM_FILES ${TS_FILES})
+
+set (QSanguosha_PKG_MOCS
+    src/package/hegemonyCard.h
+    src/package/hegemonyGeneral.h
+    src/package/maneuvering.h
+    src/package/playground.h
+    src/package/protagonist.h
+    src/package/standard-equips.h
+    src/package/standard.h
+    src/package/testCard.h
+    src/package/th01-05.h
+    src/package/th06.h
+    src/package/th07.h
+    src/package/th08.h
+    src/package/th09.h
+    src/package/th10.h
+    src/package/th11.h
+    src/package/th12.h
+    src/package/th13.h
+    src/package/th14.h
+    src/package/th15.h
+    src/package/th16.h
+    src/package/th17.h
+    src/package/th99.h
+    src/package/thndj.h
+    src/package/touhougod.h
+
+)
 
 set (QSanguosha_MOCS
     src/audio/audio.h
@@ -207,6 +264,8 @@ set (QSanguosha_MOCS
     src/util/nativesocket.h
     src/util/recorder.h
     src/util/socket.h
+
+    #${QSanguosha_PKG_MOCS}
 )
 
 set(OGG_FILE
