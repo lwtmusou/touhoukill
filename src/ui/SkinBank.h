@@ -334,6 +334,7 @@ public:
     QPixmap getCardSuitPixmap(Card::Suit suit) const;
     QPixmap getCardTianyiPixmap() const;
     QPixmap getCardNumberPixmap(int point, bool isBlack) const;
+    QPixmap getCardNumberPixmap(Card::Number point, bool isBlack) const;
     QPixmap getCardJudgeIconPixmap(const QString &judgeName) const;
     QPixmap getCardFramePixmap(const QString &frameType) const;
     QPixmap getCardAvatarPixmap(const QString &generalName, bool heroSkin = true) const;

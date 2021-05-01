@@ -5,7 +5,6 @@
 #include "nativesocket.h"
 #include "recorder.h"
 #include "settings.h"
-#include "standard.h"
 
 #include <QApplication>
 #include <QCheckBox>

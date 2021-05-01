@@ -5,7 +5,6 @@
 #include "protocol.h"
 #include "room.h"
 #include "settings.h"
-#include "standard.h"
 
 #include <QTime>
 #include <functional>

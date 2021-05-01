@@ -45,8 +45,8 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
                 }
                 //sometimes, the first character need to Upper
                 QString kindOfName = name.left(1).toUpper() + name.right(name.length() - 1);
-                if (card->isKindOf(kindOfName.toLocal8Bit().data()) || (card->objectName() == name) || ("%" + card->objectName() == name)
-                    || (card->getEffectiveId() == name.toInt(&isInt) && isInt))
+                if (card->face()->isKindOf(kindOfName.toLocal8Bit().data()) || (card->face()->name() == name) || ("%" + card->faceName() == name)
+                    || (card->effectiveID() == name.toInt(&isInt) && isInt))
                     checkpoint = positive;
                 else
                     checkpoint = !positive;
@@ -74,7 +74,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
             positive = false;
             suit = suit.mid(1);
         }
-        if (card->getSuitString() == suit || (card->isBlack() && suit == "black") || (card->isRed() && suit == "red"))
+        if (card->suitString() == suit || (card->isBlack() && suit == "black") || (card->isRed() && suit == "red"))
             checkpoint = positive;
         else
             checkpoint = !positive;
@@ -88,7 +88,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
 
     checkpoint = false;
     QStringList card_numbers = factors.at(2).split(',');
-    int cdn = card->getNumber();
+    int cdn = static_cast<int>(card->getNumber());
 
     foreach (QString number, card_numbers) {
         if (number == ".") {
@@ -133,9 +133,9 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
 
         QList<int> ids;
         if (card->isVirtualCard())
-            ids = card->getSubcards();
+            ids = card->subcards();
         else
-            ids << card->getEffectiveId();
+            ids << card->effectiveID();
 
         if (!ids.isEmpty()) {
             foreach (int id, ids) {
@@ -146,16 +146,16 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
                 foreach (QString p, place.split(",")) {
                     if (p == "equipped" && player->hasEquip(card)) {
                         checkpoint = true;
-                    } else if (p == "hand" && card->getEffectiveId() >= 0) {
+                    } else if (p == "hand" && card->effectiveID() >= 0) {
                         foreach (const Card *c, player->getHandcards()) {
                             if (c->getEffectiveId() == id) {
                                 checkpoint = true;
                                 break;
                             }
                         }
-                    } else if (p == "handOnly" && card->getEffectiveId() >= 0) { // exclude shownHandCard
+                    } else if (p == "handOnly" && card->effectiveID() >= 0) { // exclude shownHandCard
                         foreach (const Card *c, player->getHandcards()) {
-                            if (c->getEffectiveId() == id && !player->getShownHandcards().contains(id)) {
+                            if (c->effectiveID() == id && !player->getShownHandcards().contains(id)) {
                                 checkpoint = true;
                                 break;
                             }
@@ -169,9 +169,9 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
                             }
                     } else if ((p == "sqchuangshi") && card->getEffectiveId() >= 0 && !player->hasEquip(card)) {
                         checkpoint = true;
-                    } else if (p == "shehuo" && card->getEffectiveId() >= 0 && !player->hasEquip(card)) {
+                    } else if (p == "shehuo" && card->effectiveID() >= 0 && !player->hasEquip(card)) {
                         checkpoint = true;
-                    } else if (p == "benwo" && (card->isVirtualCard() || !player->getHandcards().contains(player->getRoomObject()->getCard(card->getId())))) {
+                    } else if (p == "benwo" && (card->isVirtualCard() || !player->getHandcards().contains(player->getRoomObject()->getCard(card->id())))) {
                         return false;
                     } else if (!player->getPile(p).isEmpty() && player->getPile(p).contains(id)) {
                         checkpoint = true;
@@ -204,7 +204,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
         return true;
     else if (color == "black" && card->isBlack())
         return true;
-    else if (color == "colorless" && card->getSuit() == Card::NoSuit)
+    else if (color == "colorless" && card->suit() == Card::NoSuit)
         return true;
 
     return false;

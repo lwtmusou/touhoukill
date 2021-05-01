@@ -10,28 +10,17 @@
 #include <QObject>
 #include <QPointer>
 
-class CardFactory
-{
-public:
-    // static methods for Engine. Used to add metaobjects
-    // this staticMetaObject is used to call "newInstance" function to create a new card
-    // static void addCardMetaObject(const QString &key, const QMetaObject *staticMetaObject);
-    // static void removeCardMetaObject(const QString &key);
+namespace CardFactory {
+// static methods for Engine. Used to add metaobjects
+// this staticMetaObject is used to call "newInstance" function to create a new card
+// static void addCardMetaObject(const QString &key, const QMetaObject *staticMetaObject);
+// static void removeCardMetaObject(const QString &key);
 
-    static void registerCardFace(const CardFace *face);
-    static void unregisterCardFace(const QString &name);
+void registerCardFace(const CardFace *face);
+const CardFace *cardFace(const QString &name);
+void unregisterCardFace(const QString &name);
 
-public:
-    CardFactory();
-
-    Card *cloneCard(const Card *card) const;
-    Card *cloneCard(const QString &name, Card::Suit suit = Card::SuitToBeDecided, Card::Number number = Card::NumberToBeDecided,
-                    const QSet<QString> &flags = QSet<QString>()) const;
-    Card *cloneSkillCard(const QString &name) const;
-
-private:
-    static QHash<QString, const CardFace *> faces;
-};
+}
 
 class Card;
 class CardFace;
@@ -71,9 +60,12 @@ public:
 
     Card *cloneSkillCard(const QString &name);
 
+    Card *cloneDummyCard();
+
     Card *cloneCard(const Card *card);
-    Card *cloneCard(const QString &name, Card::Suit suit = Card::SuitToBeDecided, Card::Number number = Card::NumberToBeDecided, const QSet<QString> &flags = QSet<QString>());
-    Card *cloneCard(const CardFace *cardFace, Card::Suit suit = Card::SuitToBeDecided, Card::Number number = Card::NumberToBeDecided, const QSet<QString> &flags = QSet<QString>());
+    Card *cloneCard(const QString &name, Card::Suit suit = Card::SuitToBeDecided, Card::Number number = Card::NumberToBeDecided);
+    Card *cloneCard(const CardFace *cardFace = nullptr, Card::Suit suit = Card::SuitToBeDecided, Card::Number number = Card::NumberToBeDecided);
+
     void cardDeleting(const Card *card);
 
 private:

@@ -3,7 +3,6 @@
 #include "engine.h"
 #include "room.h"
 #include "settings.h"
-#include "standard.h"
 #include "structs.h"
 
 #include "CardFace.h"
@@ -162,6 +161,9 @@ Card::Number Card::number() const
 
         return NumberNA;
     }
+
+    Q_ASSERT(d->number != NumberToBeDecided); // I wonder NoNumber non-virtual card actually exists even with FilterSkill
+
     return d->number;
 }
 

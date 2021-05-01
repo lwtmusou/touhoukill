@@ -4,7 +4,6 @@
 #include "player.h"
 #include "room.h"
 #include "settings.h"
-#include "standard.h"
 
 #include <QFile>
 #include <random>

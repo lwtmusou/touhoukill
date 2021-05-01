@@ -3,7 +3,6 @@
 #include "engine.h"
 #include "room.h"
 #include "settings.h"
-#include "standard.h"
 
 Player::Player(QObject *parent)
     : QObject(parent)
@@ -1255,9 +1254,10 @@ void Player::removeDelayedTrick(const Card *trick)
 bool Player::containsTrick(const QString &trick_name) const
 {
     foreach (int trick_id, judging_area) {
-        //WrappedCard *trick = getRoomObject()->getWrappedCard(trick_id);
         const Card *trick = getRoomObject()->getCard(trick_id);
-        if (trick->faceName()() == trick_name) // TODO: Wait! I don't know how to distinguish between card->name() and card->faceName()()
+        // TODO: Wait! I don't know how to distinguish between card->name() and card->faceName()()
+        // Fs: Just use a unified name! Don't you feel it's difficult to distinguish 2 names now?
+        if (trick->faceName() == trick_name)
             return true;
     }
     return false;
