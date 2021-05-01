@@ -356,6 +356,11 @@ QPixmap QSanRoomSkin::getCardTianyiPixmap() const
     return getPixmap(QSanRoomSkin::S_SKIN_KEY_CARD_TIANYI, "tianyi", true);
 }
 
+QPixmap QSanRoomSkin::getCardNumberPixmap(Card::Number point, bool isBlack) const
+{
+    return getCardNumberPixmap(static_cast<int>(point), isBlack);
+}
+
 QPixmap QSanRoomSkin::getCardNumberPixmap(int point, bool isBlack) const
 {
     QString pathKey = isBlack ? S_SKIN_KEY_HAND_CARD_NUMBER_BLACK : S_SKIN_KEY_HAND_CARD_NUMBER_RED;

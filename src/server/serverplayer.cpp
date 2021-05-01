@@ -5,7 +5,6 @@
 #include "recorder.h"
 #include "settings.h"
 #include "skill.h"
-#include "standard.h"
 
 using namespace QSanProtocol;
 using namespace JsonUtils;

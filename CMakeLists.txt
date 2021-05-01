@@ -100,7 +100,6 @@ set (QSanguosha_SRCS
     src/dialog/updatedialog.cpp
     src/main.cpp
     src/package/exppattern.cpp
-    src/server/ai.cpp
     src/server/gamerule.cpp
     src/server/generalselector.cpp
     src/server/room.cpp
@@ -220,7 +219,6 @@ set (QSanguosha_MOCS
     src/dialog/updatedialog.h
     src/package/exppattern.h
     src/pch.h
-    src/server/ai.h
     src/server/gamerule.h
     src/server/generalselector.h
     src/server/room.h

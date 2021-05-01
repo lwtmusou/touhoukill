@@ -1,11 +1,8 @@
 #include "gamerule.h"
 #include "engine.h"
-#include "maneuvering.h"
 #include "room.h"
 #include "serverplayer.h"
 #include "settings.h"
-#include "standard.h"
-#include "testCard.h"
 #include <QTime>
 
 GameRule::GameRule(QObject *)

@@ -2,7 +2,6 @@
 #include "client.h"
 #include "engine.h"
 #include "skill.h"
-#include "standard.h"
 
 #include <QTextDocument>
 #include <QTextOption>

@@ -3,7 +3,6 @@
 #include "client.h"
 #include "clientplayer.h"
 #include "engine.h"
-#include "standard.h"
 
 DiscardSkill::DiscardSkill()
     : ViewAsSkill("discard")

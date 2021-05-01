@@ -3,7 +3,6 @@
 #include "engine.h"
 #include "graphicspixmaphoveritem.h"
 #include "roomscene.h"
-#include "standard.h"
 
 #include <QGraphicsColorizeEffect>
 #include <QGraphicsProxyWidget>

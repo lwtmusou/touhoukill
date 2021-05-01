@@ -1,24 +1,19 @@
 #include "RoomObject.h"
 #include "engine.h"
+namespace CardFactory {
+QHash<QString, const CardFace *> faces;
 
-QHash<QString, const CardFace *> CardFactory::faces;
-
-// void CardFactory::addCardMetaObject(const QString &key, const QMetaObject *staticMetaObject)
-// {
-//     metaObjects[key] = staticMetaObject;
-// }
-
-// void CardFactory::removeCardMetaObject(const QString &key)
-// {
-//     metaObjects.remove(key);
-// }
-
-void CardFactory::registerCardFace(const CardFace *cardFace)
+void registerCardFace(const CardFace *cardFace)
 {
     faces.insert(cardFace->name(), cardFace);
 }
 
-void CardFactory::unregisterCardFace(const QString &name)
+const CardFace *cardFace(const QString &name)
+{
+    return faces.value(name, nullptr);
+}
+
+void unregisterCardFace(const QString &name)
 {
     auto face = faces.find(name);
     if (face != faces.end()) {
@@ -27,59 +22,6 @@ void CardFactory::unregisterCardFace(const QString &name)
         delete handle;
     }
 }
-
-CardFactory::CardFactory()
-{
-}
-
-Card *CardFactory::cloneCard(const Card *card) const
-{
-    Q_ASSERT(card->face() != nullptr);
-    auto name = card->faceName();
-    Card *result = cloneCard(name, card->suit(), card->number(), card->flags());
-    if (result == nullptr)
-        return nullptr;
-    result->setID(card->effectiveID());
-    result->setSkillName(card->skillName(false));
-    // result->setName(card->name());
-    return result;
-}
-
-Card *CardFactory::cloneCard(const QString &name, Card::Suit suit, Card::Number number, const QSet<QString> &flags) const
-{
-    Card *card = nullptr;
-
-    const CardFace *face = faces.value(name, nullptr);
-    if (face != nullptr) {
-        Card *card = new Card(nullptr, face, suit, number);
-        // card_obj->setObjectName(className2objectName.value(name, name));
-        // TODO: Bind the roomObject
-    }
-
-    if (card == nullptr)
-        return nullptr;
-    card->clearFlags();
-    if (!flags.isEmpty()) {
-        foreach (const QString &flag, flags)
-            card->addFlag(flag);
-    }
-    return card;
-}
-
-Card *CardFactory::cloneSkillCard(const QString &name) const
-{
-    // TODO: Here we have to manually maintain all the skill card face.
-
-    // const QMetaObject *meta = metaObjects.value(name, NULL);
-    // if (meta != nullptr) {
-    //     QObject *card_obj = meta->newInstance();
-    //     SkillCard *card = qobject_cast<SkillCard *>(card_obj);
-    //     if (card == nullptr)
-    //         delete card_obj;
-    //     return card;
-    // }
-
-    return cloneCard(name);
 }
 
 class RoomObjectPrivate
@@ -88,7 +30,6 @@ public:
     QHash<int, Card *> cards;
     QString currentCardUsePattern;
     CardUseStruct::CardUseReason currentCardUseReason;
-    CardFactory cardFactory;
     QList<const Card *> clonedCards;
 
     RoomObjectPrivate()
@@ -173,25 +114,22 @@ void RoomObject::resetState()
 
 Card *RoomObject::cloneCard(const Card *card)
 {
-    Card *c = d->cardFactory.cloneCard(card);
-    if (c == nullptr)
-        return nullptr;
-    c->setRoomObject(this);
-    d->clonedCards << c;
-    return c;
+    return cloneCard(card->face(), card->suit(), card->number());
 }
 
-Card *RoomObject::cloneCard(const QString &name, Card::Suit suit, Card::Number number, const QSet<QString> &flags)
+Card *RoomObject::cloneCard(const QString &name, Card::Suit suit, Card::Number number)
 {
-    Card *c = d->cardFactory.cloneCard(name, suit, number, flags);
-    if (c == nullptr)
-        return nullptr;
-    c->setRoomObject(this);
-    d->clonedCards << c;
-    return c;
+    CardFace *face = nullptr;
+
+    if (!name.isEmpty()) {
+        face = CardFactory::cardFace(name);
+        if (face == nullptr)
+            return nullptr;
+    }
+    return cloneCard(face, suit, number);
 }
 
-Card *RoomObject::cloneCard(const CardFace *cardFace, Card::Suit suit, Card::Number number, const QSet<QString> &flags)
+Card *RoomObject::cloneCard(const CardFace *cardFace, Card::Suit suit, Card::Number number)
 {
     // Design change: dummy cards does not have CardFace
 #if 0
@@ -208,7 +146,9 @@ Card *RoomObject::cloneCard(const CardFace *cardFace, Card::Suit suit, Card::Num
 
 void RoomObject::cardDeleting(const Card *card)
 {
-    d->clonedCards.removeAll(card);
+    if (card != nullptr)
+        d->clonedCards.removeAll(card);
+    delete card;
 }
 
 Card *RoomObject::cloneSkillCard(const QString &name)
@@ -218,4 +158,9 @@ Card *RoomObject::cloneSkillCard(const QString &name)
         return nullptr;
 
     return c;
+}
+
+Card *RoomObject::cloneDummyCard()
+{
+    return cloneCard();
 }
