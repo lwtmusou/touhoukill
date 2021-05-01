@@ -69,6 +69,7 @@ public:
             can_recover = face->canRecover();
             has_effect_value = face->hasEffectValue();
             throw_when_using = face->throwWhenUsing();
+            handling_method = face->defaultHandlingMethod();
         }
     }
 };
@@ -364,6 +365,7 @@ void Card::setFace(const CardFace *face)
         d->can_recover = face->canRecover();
         d->has_effect_value = face->hasEffectValue();
         d->throw_when_using = face->throwWhenUsing();
+        d->handling_method = face->defaultHandlingMethod();
     }
 }
 

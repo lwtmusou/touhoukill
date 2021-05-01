@@ -118,7 +118,7 @@ bool ShowOrPindianSkill::matchPattern(const Player *player, const Card *card) co
 
 class YijiCard : public SkillCard
 {
-    Q_GADGET
+    Q_OBJECT
 public:
     YijiCard()
     {
@@ -128,11 +128,6 @@ public:
         // will_throw = false;
         // FIXME: How to pass the handling method to the card?
         // handling_method = Card::MethodNone;
-    }
-
-    QString name() const override
-    {
-        return staticMetaObject.className();
     }
 
     void setPlayerNames(const QStringList &names)
@@ -175,6 +170,7 @@ YijiViewAsSkill::YijiViewAsSkill()
 {
     face = new YijiCard;
     card = new Card(nullptr, face);
+    card->setHandleMethod(Card::MethodNone);
     // card->setParent(this);
 }
 
@@ -222,17 +218,12 @@ const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards, const Play
 
 class ChoosePlayerCard : public SkillCard
 {
-    Q_GADGET
+    Q_OBJECT
 public:
     ChoosePlayerCard()
     {
         // target_fixed = false;
         setTargetFixed(false);
-    }
-
-    QString name() const override
-    {
-        return staticMetaObject.className();
     }
 
     void setPlayerNames(const QStringList &names)

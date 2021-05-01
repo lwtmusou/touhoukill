@@ -18,6 +18,7 @@ public:
         , can_damage(false)
         , can_recover(false)
         , has_effectvalue(true)
+        , default_method(Card::MethodNone)
     {
     }
 
@@ -27,6 +28,8 @@ public:
     bool can_damage;
     bool can_recover;
     bool has_effectvalue;
+
+    Card::HandlingMethod default_method;
 };
 
 CardFace::CardFace()
@@ -41,7 +44,7 @@ CardFace::~CardFace()
 
 QString CardFace::name() const
 {
-    return staticMetaObject.className();
+    return this->metaObject()->className();
 }
 
 QString CardFace::description() const

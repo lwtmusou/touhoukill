@@ -22,7 +22,7 @@ public:
 
 class GlobalEffect : public TrickCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Q_INVOKABLE GlobalEffect()
@@ -37,7 +37,7 @@ public:
 
 class GodSalvation : public GlobalEffect
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Q_INVOKABLE explicit GodSalvation();
@@ -47,7 +47,7 @@ public:
 
 class AmazingGrace : public GlobalEffect
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Q_INVOKABLE AmazingGrace(Card::Suit suit, int number);
@@ -62,7 +62,7 @@ private:
 
 class AOE : public TrickCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     AOE()
@@ -77,7 +77,7 @@ public:
 
 class SavageAssault : public AOE
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Q_INVOKABLE SavageAssault(Card::Suit suit, int number);
@@ -86,7 +86,7 @@ public:
 
 class ArcheryAttack : public AOE
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Q_INVOKABLE explicit ArcheryAttack();
@@ -95,7 +95,7 @@ public:
 
 class SingleTargetTrick : public TrickCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     SingleTargetTrick()
@@ -108,7 +108,7 @@ public:
 
 class Collateral : public SingleTargetTrick
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Q_INVOKABLE Collateral();
@@ -122,7 +122,7 @@ private:
 
 class ExNihilo : public SingleTargetTrick
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Q_INVOKABLE ExNihilo();
@@ -134,7 +134,7 @@ public:
 
 class Duel : public SingleTargetTrick
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Q_INVOKABLE Duel(Card::Suit suit, int number);
@@ -144,7 +144,7 @@ public:
 
 class Indulgence : public DelayedTrick
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Q_INVOKABLE Indulgence(Card::Suit suit, int number);
@@ -156,7 +156,7 @@ public:
 
 class Disaster : public DelayedTrick
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Disaster(Card::Suit suit, int number);
@@ -168,7 +168,7 @@ public:
 
 class Lightning : public Disaster
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Q_INVOKABLE Lightning(Card::Suit suit, int number);
@@ -178,7 +178,7 @@ public:
 
 class Nullification : public SingleTargetTrick
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Q_INVOKABLE Nullification(Card::Suit suit, int number);
@@ -191,7 +191,7 @@ public:
 
 class Slash : public BasicCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Q_INVOKABLE Slash(Card::Suit suit, int number);
@@ -216,7 +216,7 @@ protected:
 
 class Jink : public BasicCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Q_INVOKABLE Jink(Card::Suit suit, int number);
@@ -226,7 +226,7 @@ public:
 
 class Peach : public BasicCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Q_INVOKABLE Peach(Card::Suit suit, int number);
@@ -240,7 +240,7 @@ public:
 
 class Snatch : public SingleTargetTrick
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Q_INVOKABLE Snatch(Card::Suit suit, int number);
@@ -253,7 +253,7 @@ public:
 
 class Dismantlement : public SingleTargetTrick
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Q_INVOKABLE Dismantlement(Card::Suit suit, int number);
@@ -266,7 +266,7 @@ public:
 
 class LureTiger : public TrickCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Q_INVOKABLE LureTiger(Card::Suit suit, int number);
@@ -280,7 +280,7 @@ public:
 
 class Drowning : public AOE
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Q_INVOKABLE Drowning(Card::Suit suit, int number);
@@ -291,7 +291,7 @@ public:
 
 class KnownBoth : public TrickCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Q_INVOKABLE KnownBoth(Card::Suit suit, int number);
@@ -306,7 +306,7 @@ public:
 
 class SavingEnergy : public DelayedTrick
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Q_INVOKABLE SavingEnergy(Card::Suit suit, int number);

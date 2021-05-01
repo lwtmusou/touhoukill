@@ -157,27 +157,21 @@ private:
 
 class SurrenderCard : public SkillCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Q_INVOKABLE SurrenderCard();
 
-    QString name() const override {
-        return staticMetaObject.className();
-    }
     void onUse(Room *room, const CardUseStruct &use) const override;
 };
 
 class CheatCard : public SkillCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Q_INVOKABLE CheatCard();
 
-    QString name() const override {
-        return staticMetaObject.className();
-    }
     void onUse(Room *room, const CardUseStruct &use) const override;
 };
 

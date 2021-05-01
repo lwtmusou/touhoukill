@@ -3,32 +3,32 @@
 
 // Fs: do not use "#pragma once" because every header file does not use it
 
-#include <QMetaObject>
+#include <QObject>
 #include <QString>
+
+#include "card.h"
 
 class Player;
 class ServerPlayer;
 class Room;
 
 class CardFacePrivate;
-class Card;
 struct CardUseStruct;
 struct CardEffectStruct;
 
 /**
  * @interface The functional model of a given card.
  */
-class CardFace
+class CardFace : public QObject
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     CardFace();
     virtual ~CardFace();
 
     // text property
-    // FIXME: replace `name` with objectName ?
-    virtual QString name() const = 0;
+    QString name() const;
     virtual QString description() const;
     virtual QString commonEffectName() const;
     virtual QString effectName() const;
@@ -78,8 +78,8 @@ public:
     virtual bool hasPreAction() const;
     void setHasPreAction(bool can);
 
-    // This is method is removed from the face. It's clear that this is totally dynamic.
-    // virtual Card::HandlingMethod defaultHandlingMethod() const;
+    // This method provides a default handling method suggested by the card face. For instance, some cards are believed to be response (like jink) only.
+    virtual Card::HandlingMethod defaultHandlingMethod() const;
 
     // Functions
     virtual bool targetFixed(const Player *Self, const Card *card) const;
@@ -122,7 +122,7 @@ protected:
 
 class BasicCard : public CardFace
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     BasicCard();
@@ -133,7 +133,7 @@ public:
 
 class EquipCard : public CardFace
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     enum Location
@@ -156,7 +156,7 @@ public:
 
 class Weapon : public EquipCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Weapon();
@@ -169,7 +169,7 @@ public:
 
 class Armor : public EquipCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Armor();
@@ -180,7 +180,7 @@ public:
 
 class DefensiveHorse : public EquipCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     DefensiveHorse();
@@ -191,7 +191,7 @@ public:
 
 class OffensiveHorse : public EquipCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     OffensiveHorse();
@@ -202,7 +202,7 @@ public:
 
 class Treasure : public EquipCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Treasure();
@@ -213,7 +213,7 @@ public:
 
 class TrickCard : public CardFace
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     TrickCard();
@@ -224,7 +224,7 @@ public:
 
 class NonDelayedTrick : public TrickCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     NonDelayedTrick();
@@ -235,7 +235,7 @@ public:
 
 class DelayedTrick : public TrickCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     DelayedTrick();
@@ -246,7 +246,7 @@ public:
 
 class SkillCard : public CardFace
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     SkillCard();

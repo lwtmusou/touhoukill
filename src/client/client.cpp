@@ -610,6 +610,7 @@ void Client::requestCheatRunScript(const QString &script)
     JsonDocument doc(cheatReq);
     QString cheatStr = QString::fromUtf8(doc.toJson());
     Card *card = cloneCard("CheatCard");
+    card->setHandleMethod(Card::MethodNone);
     card->setUserString(cheatStr);
     onPlayerResponseCard(card);
 }
@@ -625,6 +626,7 @@ void Client::requestCheatRevive(const QString &name)
     JsonDocument doc(cheatReq);
     QString cheatStr = QString::fromUtf8(doc.toJson());
     Card *card = cloneCard("CheatCard");
+    card->setHandleMethod(Card::MethodNone);
     onPlayerResponseCard(card);
 }
 
@@ -645,6 +647,7 @@ void Client::requestCheatDamage(const QString &source, const QString &target, Da
     QString cheatStr = QString::fromUtf8(doc.toJson());
     Card *card = cloneCard("CheatCard");
     card->setUserString(cheatStr);
+    card->setHandleMethod(Card::MethodNone);
     onPlayerResponseCard(card);
 }
 
@@ -660,6 +663,7 @@ void Client::requestCheatKill(const QString &killer, const QString &victim)
     QString cheatStr = QString::fromUtf8(doc.toJson());
     Card *card = cloneCard("CheatCard");
     card->setUserString(cheatStr);
+    card->setHandleMethod(Card::MethodNone);
     onPlayerResponseCard(card);
 }
 
@@ -675,6 +679,7 @@ void Client::requestCheatGetOneCard(int card_id)
     QString cheatStr = QString::fromUtf8(doc.toJson());
     Card *card = cloneCard("CheatCard");
     card->setUserString(cheatStr);
+    card->setHandleMethod(Card::MethodNone);
     onPlayerResponseCard(card);
 }
 
@@ -691,6 +696,7 @@ void Client::requestCheatChangeGeneral(const QString &name, bool isSecondaryHero
     QString cheatStr = QString::fromUtf8(doc.toJson());
     Card *card = cloneCard("CheatCard");
     card->setUserString(cheatStr);
+    card->setHandleMethod(Card::MethodNone);
     onPlayerResponseCard(card);
 }
 
@@ -1296,7 +1302,9 @@ void Client::requestSurrender()
     if (getStatus() != Playing)
         return;
 
-    onPlayerResponseCard(cloneCard("SurrenderCard"));
+    auto card = cloneCard("SurrenderCard");
+    card->setHandleMethod(Card::MethodNone);
+    onPlayerResponseCard(card);
 }
 
 void Client::speakToServer(const QString &text)
