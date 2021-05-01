@@ -11,7 +11,6 @@ class Player;
 #include <QPair>
 #include <QStringList>
 
-#include "card.h"
 #include "json.h"
 
 class CardPattern
@@ -25,12 +24,11 @@ public:
 };
 
 class CardFace;
+class CardDescriptor;
+class General;
 
-class Package : public QObject
+class Package
 {
-    Q_OBJECT
-    Q_ENUMS(Type)
-
 public:
     enum Type
     {
@@ -40,65 +38,37 @@ public:
         SpecialPack
     };
 
-    explicit Package(const QString &name, Type pack_type = GeneralPack)
-    {
-        setObjectName(name);
-        type = pack_type;
-    }
+    explicit Package(const QString &name, Type pack_type = GeneralPack);
 
-    QList<const QMetaObject *> getMetaObjects() const
-    {
-        return metaobjects;
-    }
+    const QString &getName() const;
 
-    const QList<const Skill *> &getSkills() const
-    {
-        return skills;
-    }
+    const QList<const Skill *> &getSkills() const;
+    const QMap<QString, const CardPattern *> &getPatterns() const;
+    const QMultiMap<QString, QString> &getRelatedSkills() const;
 
-    const QMap<QString, const CardPattern *> &getPatterns() const
-    {
-        return patterns;
-    }
+    Type getType() const;
 
-    const QMultiMap<QString, QString> &getRelatedSkills() const
-    {
-        return related_skills;
-    }
+    void insertRelatedSkills(const QString &main_skill, const QString &related_skill);
 
-    Type getType() const
-    {
-        return type;
-    }
+    const QList<const CardFace *> &getCardFaces() const;
+    const QMultiMap<const CardFace *, CardDescriptor> &getCards() const;
+    const QList<General *> &getGeneral() const;
 
-    template <typename T> void addMetaObject()
-    {
-        metaobjects << &T::staticMetaObject;
-    }
-
-    inline void insertRelatedSkills(const QString &main_skill, const QString &related_skill)
-    {
-        related_skills.insert(main_skill, related_skill);
-    }
-
-    const QList<const CardFace *> &cardFaces() const
-    {
-        return this->faces;
-    }
-
-    const QMultiMap<const CardFace *, QPair<Card::Suit, Card::Number> > cards() const
-    {
-        return this->all_cards;
-    }
+    Package &operator<<(const CardFace *face); // register face.
+    Package &operator<<(const Skill *skill);
+    Package &operator<<(General *general);
 
 protected:
-    QList<const QMetaObject *> metaobjects;
+    QString name;
+    Package::Type type;
+
+    QList<General *> generals;
+
     QList<const Skill *> skills;
     QList<const CardFace *> faces;
     QMap<QString, const CardPattern *> patterns;
     QMultiMap<QString, QString> related_skills;
-    QMultiMap<const CardFace *, QPair<Card::Suit, Card::Number> > all_cards;
-    Type type;
+    QMultiMap<const CardFace *, CardDescriptor> all_cards;
 };
 
 typedef QHash<QString, Package *> PackageHash;

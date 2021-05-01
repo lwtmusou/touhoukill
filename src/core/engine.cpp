@@ -185,30 +185,29 @@ QList<const ViewAsSkill *> Engine::getViewAsSkills() const
 
 void Engine::addPackage(Package *package)
 {
-    if (findChild<const Package *>(package->objectName()))
+    if (findChild<const Package *>(package->getName()))
         return;
 
-    package->setParent(this);
+    // package->setParent(this);
     patterns.insert(package->getPatterns());
     related_skills.unite(package->getRelatedSkills());
 
-    foreach (auto face, package->cardFaces()) {
+    foreach (auto face, package->getCardFaces()) {
         // TODO: How to register skill card???
         CardFactory::registerCardFace(face);
     }
 
-    foreach (auto face, package->cards().keys()) {
-        auto infos = package->cards().values(face);
+    foreach (auto face, package->getCards().keys()) {
+        auto infos = package->getCards().values(face);
         foreach (auto info, infos) {
-            cards << new Card(nullptr, face, info.first, info.second, cards.length());
+            cards << new Card(nullptr, face, info.suit, info.number, cards.length());
         }
     }
 
     addSkills(package->getSkills());
 
-    // Also decouple general from child here. here.
-    QList<General *> all_generals = package->findChildren<General *>();
-    foreach (General *general, all_generals) {
+    foreach (General *general, package->getGeneral()) {
+        // TODO: Shall we split skill and general?
         addSkills(general->findChildren<const Skill *>());
         foreach (QString skill_name, general->getExtraSkillSet()) {
             if (skill_name.startsWith("#"))
@@ -241,8 +240,8 @@ QStringList Engine::getBanPackages() const
             needPacks << "hegemonyGeneral"
                       << "hegemony_card";
             foreach (const Package *pa, packs) {
-                if (!needPacks.contains(pa->objectName()))
-                    ban << pa->objectName();
+                if (!needPacks.contains(pa->getName()))
+                    ban << pa->getName();
             }
             return ban;
         } else {
@@ -458,7 +457,7 @@ QStringList Engine::getExtensions() const
     QStringList extensions;
     QList<const Package *> packages = findChildren<const Package *>();
     foreach (const Package *package, packages)
-        extensions << package->objectName();
+        extensions << package->getName();
 
     return extensions;
 }
@@ -809,8 +808,10 @@ QStringList Engine::getLimitedGeneralNames() const
         QList<const General *> hulao_generals = QList<const General *>();
         foreach (QString pack_name, getConfigFromConfigFile("hulao_packages").toStringList()) {
             const Package *pack = Sanguosha->findChild<const Package *>(pack_name);
-            if (pack)
-                hulao_generals << pack->findChildren<const General *>();
+            if (pack) {
+                foreach (General *general, pack->getGeneral())
+                    hulao_generals << general;
+            }
         }
 
         foreach (const General *general, hulao_generals) {

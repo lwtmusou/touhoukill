@@ -21,8 +21,8 @@ struct CardUseStruct;
 class CardPrivate;
 class CardFace;
 
-// To keep compatibility, the new card class is defined here.
-// After its interface is carefully examined, we will push it to replace existing class.
+
+
 
 class Card final
 {
@@ -209,6 +209,15 @@ private:
     explicit Card(CardPrivate *p);
     Q_DISABLE_COPY_MOVE(Card) // no copy is allowed.
     CardPrivate *d;
+};
+
+
+/**
+ * @struct For creating new cards.
+ */ 
+struct CardDescriptor {
+    Card::Suit suit;
+    Card::Number number;
 };
 
 #endif
