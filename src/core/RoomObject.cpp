@@ -13,19 +13,20 @@ QHash<QString, const CardFace *> CardFactory::faces;
 //     metaObjects.remove(key);
 // }
 
-void CardFactory::registerCardFace(const CardFace *cardFace) {
+void CardFactory::registerCardFace(const CardFace *cardFace)
+{
     faces.insert(cardFace->name(), cardFace);
 }
 
-void CardFactory::unregisterCardFace(const QString &name) {
+void CardFactory::unregisterCardFace(const QString &name)
+{
     auto face = faces.find(name);
-    if(face != faces.end()){
+    if (face != faces.end()) {
         auto handle = *face;
         faces.erase(face);
         delete handle;
     }
 }
-
 
 CardFactory::CardFactory()
 {
@@ -88,7 +89,6 @@ public:
     QString currentCardUsePattern;
     CardUseStruct::CardUseReason currentCardUseReason;
     CardFactory cardFactory;
-    QList<QPointer<Card> > clonedCardsPreRefactor;
     QList<const Card *> clonedCards;
 
     RoomObjectPrivate()
@@ -105,7 +105,6 @@ RoomObject::RoomObject(QObject *parent)
 RoomObject::~RoomObject()
 {
     qDeleteAll(d->cards);
-    qDeleteAll(d->clonedCardsPreRefactor);
     qDeleteAll(d->clonedCards);
 
     delete d;
@@ -178,7 +177,7 @@ Card *RoomObject::cloneCard(const Card *card)
     if (c == nullptr)
         return nullptr;
     c->setRoomObject(this);
-    d->clonedCardsPreRefactor << c;
+    d->clonedCards << c;
     return c;
 }
 
@@ -188,14 +187,9 @@ Card *RoomObject::cloneCard(const QString &name, Card::Suit suit, Card::Number n
     if (c == nullptr)
         return nullptr;
     c->setRoomObject(this);
-    d->clonedCardsPreRefactor << c;
+    d->clonedCards << c;
     return c;
 }
-
-// Card *RoomObject::cloneCard(const Card *card)
-// {
-//     return cloneCard(card->face(), card->suit(), card->number());
-// }
 
 Card *RoomObject::cloneCard(const CardFace *cardFace, Card::Suit suit, Card::Number number, const QSet<QString> &flags)
 {
@@ -223,14 +217,5 @@ Card *RoomObject::cloneSkillCard(const QString &name)
     if (c == nullptr)
         return nullptr;
 
-    d->clonedCardsPreRefactor << c;
     return c;
-}
-
-void RoomObject::autoCleanupClonedCards()
-{
-    for (QList<QPointer<Card> >::iterator it = d->clonedCardsPreRefactor.begin(); it != d->clonedCardsPreRefactor.end(); ++it) {
-        if ((*it).isNull())
-            d->clonedCardsPreRefactor.erase(it);
-    }
 }

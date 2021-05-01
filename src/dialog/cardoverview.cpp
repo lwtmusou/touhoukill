@@ -58,7 +58,7 @@ void CardOverview::loadFromAll()
         ui->tableWidget->setCurrentItem(ui->tableWidget->item(0, 0));
 
         const Card *card = Sanguosha->getEngineCard(0);
-        if (card->getTypeId() == Card::TypeEquip) {
+        if (card->face()->type() == CardFace::TypeEquip) {
             ui->playAudioEffectButton->show();
             ui->malePlayButton->hide();
             ui->femalePlayButton->hide();
@@ -81,7 +81,7 @@ void CardOverview::loadFromList(const QList<const Card *> &list)
         ui->tableWidget->setCurrentItem(ui->tableWidget->item(0, 0));
 
         const Card *card = list.first();
-        if (card->getTypeId() == Card::TypeEquip) {
+        if (card->face()->type() == CardFace::TypeEquip) {
             ui->playAudioEffectButton->show();
             ui->malePlayButton->hide();
             ui->femalePlayButton->hide();
@@ -95,12 +95,12 @@ void CardOverview::loadFromList(const QList<const Card *> &list)
 
 void CardOverview::addCard(int i, const Card *card)
 {
-    QString name = Sanguosha->translate(card->objectName());
-    QIcon suit_icon = QIcon(QString("image/system/suit/%1.png").arg(card->getSuitString()));
-    QString suit_str = Sanguosha->translate(card->getSuitString());
-    QString point = card->getNumberString();
-    QString type = Sanguosha->translate(card->getType());
-    QString subtype = Sanguosha->translate(card->getSubtype());
+    QString name = Sanguosha->translate(card->faceName());
+    QIcon suit_icon = QIcon(QString("image/system/suit/%1.png").arg(card->suitString()));
+    QString suit_str = Sanguosha->translate(card->suitString());
+    QString point = card->numberString();
+    QString type = Sanguosha->translate(card->face()->type());
+    QString subtype = Sanguosha->translate(card->face()->subTypeName());
     QString package = Sanguosha->translate(card->getPackage());
 
     QTableWidgetItem *name_item = new QTableWidgetItem(name);

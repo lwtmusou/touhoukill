@@ -25,7 +25,8 @@ public:
     CardFactory();
 
     Card *cloneCard(const Card *card) const;
-    Card *cloneCard(const QString &name, Card::Suit suit = Card::SuitToBeDecided, Card::Number number = Card::NumberToBeDecided, const QSet<QString> &flags = QSet<QString>()) const;
+    Card *cloneCard(const QString &name, Card::Suit suit = Card::SuitToBeDecided, Card::Number number = Card::NumberToBeDecided,
+                    const QSet<QString> &flags = QSet<QString>()) const;
     Card *cloneSkillCard(const QString &name) const;
 
 private:
@@ -69,7 +70,6 @@ public:
     virtual const QList<int> &getDiscardPile() const = 0;
 
     Card *cloneSkillCard(const QString &name);
-    void autoCleanupClonedCards();
 
     Card *cloneCard(const Card *card);
     Card *cloneCard(const QString &name, Card::Suit suit = Card::SuitToBeDecided, Card::Number number = Card::NumberToBeDecided, const QSet<QString> &flags = QSet<QString>());

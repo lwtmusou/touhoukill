@@ -1046,10 +1046,10 @@ bool Player::hasWeapon(const QString &weapon_name, bool, bool ignore_preshow) co
 
     if (!weapon || isBrokenEquip(weapon->effectiveID(), true))
         return false;
-    if (weapon->faceName()() == weapon_name || weapon->face()->isKindOf(weapon_name.toStdString().c_str()))
+    if (weapon->faceName() == weapon_name || weapon->face()->isKindOf(weapon_name.toStdString().c_str()))
         return true;
     const Card *real_weapon = Sanguosha->getEngineCard(weapon->effectiveID());
-    return real_weapon->faceName()() == weapon_name || real_weapon->face()->isKindOf(weapon_name.toStdString().c_str());
+    return real_weapon->faceName() == weapon_name || real_weapon->face()->isKindOf(weapon_name.toStdString().c_str());
 }
 
 bool Player::hasArmorEffect(const QString &armor_name, bool) const
@@ -1062,10 +1062,10 @@ bool Player::hasArmorEffect(const QString &armor_name, bool) const
 
     if (!armor || isBrokenEquip(armor->effectiveID(), true))
         return false;
-    if (armor->faceName()() == armor_name || armor->face()->isKindOf(armor_name.toStdString().c_str()))
+    if (armor->faceName() == armor_name || armor->face()->isKindOf(armor_name.toStdString().c_str()))
         return true;
     const Card *real_armor = Sanguosha->getEngineCard(armor->effectiveID());
-    return real_armor->faceName()() == armor_name || real_armor->face()->isKindOf(armor_name.toStdString().c_str());
+    return real_armor->faceName() == armor_name || real_armor->face()->isKindOf(armor_name.toStdString().c_str());
 }
 
 bool Player::hasTreasure(const QString &treasure_name, bool) const
@@ -1078,10 +1078,10 @@ bool Player::hasTreasure(const QString &treasure_name, bool) const
 
     if (!treasure || isBrokenEquip(treasure->effectiveID(), true))
         return false;
-    if (treasure->faceName()() == treasure_name || treasure->face()->isKindOf(treasure_name.toStdString().c_str()))
+    if (treasure->faceName() == treasure_name || treasure->face()->isKindOf(treasure_name.toStdString().c_str()))
         return true;
     const Card *real_treasure = Sanguosha->getEngineCard(treasure->effectiveID());
-    return real_treasure->faceName()() == treasure_name || real_treasure->face()->isKindOf(treasure_name.toStdString().c_str());
+    return real_treasure->faceName() == treasure_name || real_treasure->face()->isKindOf(treasure_name.toStdString().c_str());
 }
 
 QList<const Card *> Player::getJudgingArea() const
@@ -1335,17 +1335,16 @@ bool Player::canSlash(const Player *other, const Card *slash, bool distance_limi
     const Card *new_shash = getRoomObject()->cloneCard("Slash");
     // newslash->deleteLater();
 #define THIS_SLASH (slash == nullptr ? new_shash : slash)
-    if (isProhibited(other, THIS_SLASH, others)){
+    if (isProhibited(other, THIS_SLASH, others)) {
         getRoomObject()->cardDeleting(new_shash);
         return false;
     }
 
-    if (distance_limit){
+    if (distance_limit) {
         bool res = distanceTo(other, rangefix) <= getAttackRange() + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, this, THIS_SLASH);
         getRoomObject()->cardDeleting(new_shash);
         return res;
-    }
-    else
+    } else
         return true;
 #undef THIS_SLASH
 }

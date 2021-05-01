@@ -1318,7 +1318,6 @@ void Client::addHistory(const QVariant &history)
     int times = args[1].toInt();
     if (add_str == "pushPile") {
         emit card_used();
-        autoCleanupClonedCards();
         return;
     } else if (add_str == ".") {
         Self->clearHistory();
