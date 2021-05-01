@@ -1309,10 +1309,10 @@ void RoomScene::enableTargets(const Card *card)
     bool enabled = true;
     if (card != nullptr) {
         Client::Status status = ClientInstance->getStatus();
-        if (status == Client::Playing && !card->isAvailable(Self))
+        if (status == Client::Playing && !card->face()->isAvailable(Self, card))
             enabled = false;
         if (status == Client::Responding || status == Client::RespondingUse) {
-            Card::HandlingMethod method = card->getHandlingMethod();
+            Card::HandlingMethod method = card->handleMethod();
             if (status == Client::Responding && method == Card::MethodUse)
                 method = Card::MethodResponse;
             if (Self->isCardLimited(card, method))
@@ -1346,21 +1346,21 @@ void RoomScene::enableTargets(const Card *card)
 
     Client::Status status = ClientInstance->getStatus();
 
-    if (card->targetFixed(Self)
+    if (card->face()->targetFixed(Self, card)
         || ((status & Client::ClientStatusBasicMask) == Client::Responding
-            && (status == Client::Responding || (card->getTypeId() != Card::TypeSkill && status != Client::RespondingUse)))
+            && (status == Client::Responding || (card->face()->type() != CardFace::TypeSkill && status != Client::RespondingUse)))
         || ClientInstance->getStatus() == Client::AskForShowOrPindian) {
         foreach (PlayerCardContainer *item, item2player.keys()) {
             QGraphicsItem *animationTarget = item->getMouseClickReceiver();
             animations->effectOut(animationTarget);
             item->setFlag(QGraphicsItem::ItemIsSelectable, false);
         }
-        if (card->isKindOf("AOE") && status == Client::RespondingUse)
-            ok_button->setEnabled(card->isAvailable(Self));
-        else if (card->isKindOf("Peach") && status == Client::RespondingUse)
-            ok_button->setEnabled(card->isAvailable(Self));
-        else if (card->isKindOf("QirenCard") && status == Client::RespondingUse)
-            ok_button->setEnabled(card->isAvailable(Self));
+        if (card->face()->isKindOf("AOE") && status == Client::RespondingUse)
+            ok_button->setEnabled(card->face()->isAvailable(Self, card));
+        else if (card->face()->isKindOf("Peach") && status == Client::RespondingUse)
+            ok_button->setEnabled(card->face()->isAvailable(Self, card));
+        else if (card->face()->isKindOf("QirenCard") && status == Client::RespondingUse)
+            ok_button->setEnabled(card->face()->isAvailable(Self, card));
         else
             ok_button->setEnabled(true);
         return;
@@ -1369,7 +1369,7 @@ void RoomScene::enableTargets(const Card *card)
     updateTargetsEnablity(card);
 
     if (selected_targets.isEmpty()) {
-        if (card->isKindOf("Slash") && Self->hasFlag("slashTargetFixToOne")) {
+        if (card->face()->isKindOf("Slash") && Self->hasFlag("slashTargetFixToOne")) {
             unselectAllTargets();
             foreach (Photo *photo, photos) {
                 if (photo->flags() & QGraphicsItem::ItemIsSelectable)
@@ -1379,7 +1379,7 @@ void RoomScene::enableTargets(const Card *card)
                     }
             }
         } else if (Config.EnableAutoTarget) {
-            if (!card->targetsFeasible(selected_targets, Self)) {
+            if (!card->face()->targetsFeasible(selected_targets, Self, card)) {
                 unselectAllTargets();
                 int count = 0;
                 foreach (Photo *photo, photos)
@@ -1393,7 +1393,7 @@ void RoomScene::enableTargets(const Card *card)
         }
     }
 
-    ok_button->setEnabled(card->targetsFeasible(selected_targets, Self));
+    ok_button->setEnabled(card->face()->targetsFeasible(selected_targets, Self, card));
 }
 
 void RoomScene::updateTargetsEnablity(const Card *card)
@@ -1407,7 +1407,7 @@ void RoomScene::updateTargetsEnablity(const Card *card)
         int maxVotes = 0;
 
         if (card) {
-            card->targetFilter(selected_targets, player, Self, maxVotes);
+            card->face()->targetFilter(selected_targets, player, Self, card);
             item->setMaxVotes(maxVotes);
         }
 
@@ -1443,14 +1443,14 @@ void RoomScene::updateSelectedTargets()
             foreach (const Player *cp, selected_targets) {
                 QList<const Player *> tempPlayers = QList<const Player *>(selected_targets);
                 tempPlayers.removeAll(cp);
-                if (!card->targetFilter(tempPlayers, cp, Self) || Sanguosha->isProhibited(Self, cp, card, selected_targets)) {
+                if (card->face()->targetFilter(tempPlayers, cp, Self, card) == 0 || Sanguosha->isProhibited(Self, cp, card, selected_targets)) {
                     selected_targets.clear();
                     unselectAllTargets();
                     return;
                 }
             }
         }
-        ok_button->setEnabled(card->targetsFeasible(selected_targets, Self));
+        ok_button->setEnabled(card->face()->targetsFeasible(selected_targets, Self, card));
     } else {
         selected_targets.clear();
     }
@@ -1677,8 +1677,8 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
                     submenu->addSeparator();
                     foreach (const Card *card, known) {
-                        const Card *engine_card = Sanguosha->getEngineCard(card->getId());
-                        submenu->addAction(G_ROOM_SKIN.getCardSuitPixmap(engine_card->getSuit()), engine_card->getFullName());
+                        const Card *engine_card = Sanguosha->getEngineCard(card->id());
+                        submenu->addAction(G_ROOM_SKIN.getCardSuitPixmap(engine_card->suit()), engine_card->fullName());
                     }
                 }
             }
@@ -2440,7 +2440,7 @@ void RoomScene::onEnabledChange()
 
 void RoomScene::useCard(const Card *card)
 {
-    if (card->targetFixed(Self) || card->targetsFeasible(selected_targets, Self))
+    if (card->face()->targetFixed(Self, card) || card->face()->targetsFeasible(selected_targets, Self, card))
         ClientInstance->onPlayerResponseCard(card, selected_targets);
     enableTargets(nullptr);
 }
@@ -2451,7 +2451,7 @@ void RoomScene::callViewAsSkill()
     if (card == nullptr)
         return;
 
-    if (card->isAvailable(Self)) {
+    if (card->face()->isAvailable(Self, card)) {
         // use card
         dashboard->stopPending();
         useCard(card);
@@ -2892,14 +2892,14 @@ void RoomScene::onSkillActivated()
         cancel_button->setEnabled(true);
 
         const Card *card = dashboard->pendingCard();
-        if (card && card->targetFixed(Self) && card->isAvailable(Self) && !Self->hasFlag("Global_InstanceUse_Failed")) {
+        if (card && card->face()->targetFixed(Self, card) && card->face()->isAvailable(Self, card) && !Self->hasFlag("Global_InstanceUse_Failed")) {
             bool instance_use = skill->inherits("ZeroCardViewAsSkill");
             if (!instance_use) {
                 QList<const Card *> cards;
                 cards << Self->getHandcards() << Self->getEquips();
 
                 foreach (const QString &name, dashboard->getPileExpanded()) {
-                    QList<int> pile = Self->getPile(name);
+                    IDSet pile = Self->getPile(name);
                     foreach (int id, pile)
                         cards << ClientInstance->getCard(id);
                 }
@@ -3871,7 +3871,7 @@ void RoomScene::showPlayerCards()
         } else {
             QList<const Card *> cards;
             foreach (const Card *card, player->getHandcards()) {
-                const Card *engine_card = Sanguosha->getEngineCard(card->getId());
+                const Card *engine_card = Sanguosha->getEngineCard(card->id());
                 if (engine_card)
                     cards << engine_card;
             }
@@ -3905,10 +3905,12 @@ void RoomScene::showPile(const QList<int> &card_ids, const QString &name, const 
             foreach (int id, card_ids) {
                 zhenlis << ClientInstance->getCard(id);
             }
-            std::sort(zhenlis.begin(), zhenlis.end(), Card::CompareByNumber);
+            std::sort(zhenlis.begin(), zhenlis.end(), [](const Card *a, const Card *b){
+                return a->number() < b->number();
+            });
             QList<int> zhenids;
             foreach (Card *c, zhenlis)
-                zhenids << c->getId();
+                zhenids << c->id();
             pileContainer->fillCards(zhenids);
         } else
             pileContainer->fillCards(card_ids);

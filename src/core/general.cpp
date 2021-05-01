@@ -9,7 +9,7 @@
 #include <QSize>
 
 General::General(Package *package, const QString &name, const QString &kingdom, int max_hp, bool male, bool hidden, bool never_shown)
-    : QObject(package)
+    : package(package)
     , kingdom(kingdom)
     , max_hp(max_hp)
     , gender(male ? Male : Female)

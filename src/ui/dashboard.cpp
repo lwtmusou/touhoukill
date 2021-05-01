@@ -405,7 +405,7 @@ void Dashboard::addHandCards(QList<CardItem *> &card_items)
 void Dashboard::_addHandCard(CardItem *card_item, bool prepend, const QString &footnote)
 {
     if (ClientInstance->getStatus() == Client::Playing && card_item->getCard())
-        card_item->setEnabled(card_item->getCard()->isAvailable(Self));
+        card_item->setEnabled(card_item->getCard()->face()->isAvailable(Self, card_item->getCard()));
     else
         card_item->setEnabled(false);
 
@@ -437,7 +437,7 @@ void Dashboard::selectCard(const QString &pattern, bool forward, bool multiple)
     // find all cards that match the card type
     QList<CardItem *> matches;
     foreach (CardItem *card_item, m_handCards) {
-        if (card_item->isEnabled() && (pattern == "." || card_item->getCard()->matchTypeOrName(pattern)))
+        if (card_item->isEnabled() && (pattern == "." || card_item->getCard()->face()->matchType(pattern)))
             matches << card_item;
     }
 
@@ -581,7 +581,7 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName, const bool 
     for (int i = 0; i < 5; i++) {
         if (!_m_equipCards[i])
             continue;
-        const EquipCard *equip = qobject_cast<const EquipCard *>(_m_equipCards[i]->getCard()->getRealCard());
+        const EquipCard *equip = qobject_cast<const EquipCard *>(_m_equipCards[i]->getCard()->face());
         Q_ASSERT(equip);
         // @todo: we must fix this in the server side - add a skill to the card itself instead
         // of getting it from the engine.
@@ -656,7 +656,7 @@ void Dashboard::highlightEquip(QString skillName, bool highlight)
     for (i = 0; i < 5; i++) {
         if (!_m_equipCards[i])
             continue;
-        if (_m_equipCards[i]->getCard()->objectName() == skillName)
+        if (_m_equipCards[i]->getCard()->faceName() == skillName)
             break;
     }
     if (i != 5)
@@ -1041,17 +1041,17 @@ void Dashboard::updateSmallAvatar()
 
 static bool CompareByNumber(const CardItem *a, const CardItem *b)
 {
-    return Card::CompareByNumber(a->getCard(), b->getCard());
+    return a->getCard()->number() < b->getCard()->number(); //Card::CompareByNumber(a->getCard(), b->getCard());
 }
 
 static bool CompareBySuit(const CardItem *a, const CardItem *b)
 {
-    return Card::CompareBySuit(a->getCard(), b->getCard());
+    return a->getCard()->suit() < b->getCard()->suit(); // Card::CompareBySuit(a->getCard(), b->getCard());
 }
 
 static bool CompareByType(const CardItem *a, const CardItem *b)
 {
-    return Card::CompareByType(a->getCard(), b->getCard());
+    return a->getCard()->face()->type() < b->getCard()->face()->type(); //Card::CompareByType(a->getCard(), b->getCard());
 }
 
 void Dashboard::sortCards()
@@ -1155,7 +1155,7 @@ void Dashboard::enableCards()
     expandSpecialCard();
 
     foreach (CardItem *card_item, m_handCards) {
-        card_item->setEnabled(card_item->getCard()->isAvailable(Self));
+        card_item->setEnabled(card_item->getCard()->face()->isAvailable(Self, card_item->getCard()));
     }
     m_mutexEnableCards.unlock();
 }
@@ -1265,16 +1265,16 @@ void Dashboard::expandPileCards(const QString &pile_name)
         return;
 
     QString new_name = pile_name;
-    QList<int> pile;
+    IDSet pile;
     if (new_name.startsWith("%")) {
         new_name = new_name.mid(1);
         foreach (const Player *p, Self->getAliveSiblings())
-            pile += p->getPile(new_name);
+            pile.unite(p->getPile(new_name));
     } else if (pile_name == "#xiuye_temp") {
         foreach (int id, ClientInstance->getDiscardPile()) {
             const Card *c = Sanguosha->getEngineCard(id);
-            if (c->getSuit() == Card::Club && (c->isNDTrick() || c->getTypeId() == Card::TypeBasic))
-                pile << c->getEffectiveId();
+            if (c->suit() == Card::Club && (c->face()->isNDTrick() || c->face()->type() == CardFace::TypeBasic))
+                pile << c->effectiveID();
         }
     } else {
         pile = Self->getPile(new_name);
@@ -1283,7 +1283,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
     if (pile.isEmpty())
         return;
 
-    QList<CardItem *> card_items = _createCards(pile);
+    QList<CardItem *> card_items = _createCards(pile.values()); // FIXME: Replace with IDSet
     if (pile_name == "zhenli")
         std::sort(card_items.begin(), card_items.end(), CompareByNumber);
     foreach (CardItem *card_item, card_items) {
@@ -1321,7 +1321,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
     foreach (CardItem *card_item, card_items)
         card_item->setAcceptedMouseButtons(Qt::LeftButton);
     update();
-    _m_pile_expanded[pile_name] = pile;
+    _m_pile_expanded[pile_name] = pile.values(); // FIXME: Replace with IDSet
 }
 
 void Dashboard::expandSpecialCard()
@@ -1406,9 +1406,9 @@ void Dashboard::updateChaoren()
 }
 void Dashboard::updateHandPile()
 {
-    WrappedCard *t = Self->getTreasure();
+    const Card *t = Self->getTreasure();
     if (t) {
-        if (Self->isBrokenEquip(t->getEffectiveId(), true))
+        if (Self->isBrokenEquip(t->effectiveID(), true))
             retractPileCards("wooden_ox");
     }
 }
@@ -1457,7 +1457,7 @@ void Dashboard::updatePending()
     foreach (CardItem *item, m_handCards) {
         if (item->getFootnote() == Sanguosha->translate("shown_card"))
             item->hideFootnote();
-        if (Self->isShownHandcard(item->getCard()->getEffectiveId())) {
+        if (Self->isShownHandcard(item->getCard()->effectiveID())) {
             item->setFootnote(Sanguosha->translate("shown_card"));
             item->showFootnote();
         }
@@ -1493,7 +1493,8 @@ void Dashboard::updatePending()
 
     const Card *new_pending_card = view_as_skill->viewAs(cards, Self);
     if (pending_card != new_pending_card) {
-        if (pending_card && !pending_card->parent() && pending_card->isVirtualCard()) {
+        if (pending_card && pending_card->isVirtualCard()) {
+            // FIXME: How to release these cards.
             delete pending_card;
             pending_card = nullptr;
         }
@@ -1501,8 +1502,8 @@ void Dashboard::updatePending()
             foreach (CardItem *item, m_handCards) {
                 item->hideFootnote();
                 if (new_pending_card && item->getCard() == cards.first()) {
-                    const SkillCard *guhuo = qobject_cast<const SkillCard *>(new_pending_card);
-                    item->setFootnote(Sanguosha->translate(guhuo->getUserString()));
+                    // const SkillCard *guhuo = qobject_cast<const SkillCard *>(new_pending_card->face());
+                    item->setFootnote(Sanguosha->translate(new_pending_card->userString()));
                     item->showFootnote();
                 }
             }

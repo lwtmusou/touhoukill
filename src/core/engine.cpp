@@ -185,28 +185,30 @@ QList<const ViewAsSkill *> Engine::getViewAsSkills() const
 
 void Engine::addPackage(Package *package)
 {
-    if (findChild<const Package *>(package->getName()))
+    if (packages.contains(package))
         return;
 
-    // package->setParent(this);
-    patterns.insert(package->getPatterns());
-    related_skills.unite(package->getRelatedSkills());
+    packages << package;
 
-    foreach (auto face, package->getCardFaces()) {
+    // package->setParent(this);
+    patterns.insert(package->patterns());
+    related_skills.unite(package->relatedSkills());
+
+    foreach (auto face, package->cardFaces()) {
         // TODO: How to register skill card???
         CardFactory::registerCardFace(face);
     }
 
-    foreach (auto face, package->getCards().keys()) {
-        auto infos = package->getCards().values(face);
+    foreach (auto face, package->cards().keys()) {
+        auto infos = package->cards().values(face);
         foreach (auto info, infos) {
             cards << new Card(nullptr, face, info.suit, info.number, cards.length());
         }
     }
 
-    addSkills(package->getSkills());
+    addSkills(package->skills());
 
-    foreach (General *general, package->getGeneral()) {
+    foreach (General *general, package->generals()) {
         // TODO: Shall we split skill and general?
         addSkills(general->findChildren<const Skill *>());
         foreach (QString skill_name, general->getExtraSkillSet()) {
@@ -235,13 +237,13 @@ QStringList Engine::getBanPackages() const
     else {
         if (isHegemonyGameMode(ServerInfo.GameMode)) {
             QStringList ban;
-            QList<const Package *> packs = getPackages();
+            const QList<const Package *> &packs = getPackages();
             QStringList needPacks;
             needPacks << "hegemonyGeneral"
                       << "hegemony_card";
             foreach (const Package *pa, packs) {
-                if (!needPacks.contains(pa->getName()))
-                    ban << pa->getName();
+                if (!needPacks.contains(pa->name()))
+                    ban << pa->name();
             }
             return ban;
         } else {
@@ -257,7 +259,16 @@ QStringList Engine::getBanPackages() const
 
 QList<const Package *> Engine::getPackages() const
 {
-    return findChildren<const Package *>();
+    return packages;
+}
+
+const Package *Engine::findPackage(const QString &name) const 
+{
+    foreach (auto pkg, packages) {
+        if(pkg->name() == name) return pkg;
+    }
+
+    return nullptr;
 }
 
 QString Engine::translate(const QString &to_translate, bool addHegemony) const
@@ -455,9 +466,9 @@ QString Engine::getMODName() const
 QStringList Engine::getExtensions() const
 {
     QStringList extensions;
-    QList<const Package *> packages = findChildren<const Package *>();
+    const QList<const Package *> &packages = getPackages();
     foreach (const Package *package, packages)
-        extensions << package->getName();
+        extensions << package->name();
 
     return extensions;
 }
@@ -549,7 +560,7 @@ QString Engine::getSetupString() const
         mode = mode + Config.value("1v1/Rule", "2013").toString();
     else if (mode == "06_3v3")
         mode = mode + Config.value("3v3/OfficialRule", "2013").toString();
-    setup_items << server_name << Config.GameMode << QString::number(timeout) << QString::number(Config.NullificationCountDown) << Sanguosha->getBanPackages().join("+") << flags;
+    setup_items << server_name << Config.GameMode << QString::number(timeout) << QString::number(Config.NullificationCountDown) << getBanPackages().join("+") << flags;
 
     return setup_items.join(":");
 }
@@ -807,9 +818,9 @@ QStringList Engine::getLimitedGeneralNames() const
     if (ServerInfo.GameMode == "04_1v3") {
         QList<const General *> hulao_generals = QList<const General *>();
         foreach (QString pack_name, getConfigFromConfigFile("hulao_packages").toStringList()) {
-            const Package *pack = Sanguosha->findChild<const Package *>(pack_name);
+            const Package *pack = findPackage(pack_name);
             if (pack) {
-                foreach (General *general, pack->getGeneral())
+                foreach (General *general, pack->generals())
                     hulao_generals << general;
             }
         }

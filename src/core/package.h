@@ -12,6 +12,7 @@ class Player;
 #include <QStringList>
 
 #include "json.h"
+#include "card.h"
 
 class CardPattern
 {
@@ -24,7 +25,7 @@ public:
 };
 
 class CardFace;
-class CardDescriptor;
+struct CardDescriptor;
 class General;
 
 class Package
@@ -40,35 +41,35 @@ public:
 
     explicit Package(const QString &name, Type pack_type = GeneralPack);
 
-    const QString &getName() const;
+    const QString &name() const;
 
-    const QList<const Skill *> &getSkills() const;
-    const QMap<QString, const CardPattern *> &getPatterns() const;
-    const QMultiMap<QString, QString> &getRelatedSkills() const;
+    const QList<const Skill *> &skills() const;
+    const QMap<QString, const CardPattern *> &patterns() const;
+    const QMultiMap<QString, QString> &relatedSkills() const;
 
-    Type getType() const;
+    Type type() const;
 
     void insertRelatedSkills(const QString &main_skill, const QString &related_skill);
 
-    const QList<const CardFace *> &getCardFaces() const;
-    const QMultiMap<const CardFace *, CardDescriptor> &getCards() const;
-    const QList<General *> &getGeneral() const;
+    const QList<const CardFace *> &cardFaces() const;
+    const QMultiMap<const CardFace *, CardDescriptor> &cards() const;
+    const QList<General *> &generals() const;
 
     Package &operator<<(const CardFace *face); // register face.
     Package &operator<<(const Skill *skill);
     Package &operator<<(General *general);
 
 protected:
-    QString name;
-    Package::Type type;
+    QString m_name;
+    Package::Type m_type;
 
-    QList<General *> generals;
+    QList<General *> m_generals;
 
-    QList<const Skill *> skills;
-    QList<const CardFace *> faces;
-    QMap<QString, const CardPattern *> patterns;
-    QMultiMap<QString, QString> related_skills;
-    QMultiMap<const CardFace *, CardDescriptor> all_cards;
+    QList<const Skill *> m_skills;
+    QList<const CardFace *> m_faces;
+    QMap<QString, const CardPattern *> m_patterns;
+    QMultiMap<QString, QString> m_related_skills;
+    QMultiMap<const CardFace *, CardDescriptor> m_all_cards;
 };
 
 typedef QHash<QString, Package *> PackageHash;

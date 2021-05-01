@@ -348,7 +348,7 @@ QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName, bool cache, boo
 
 QPixmap QSanRoomSkin::getCardSuitPixmap(Card::Suit suit) const
 {
-    return getPixmap(QSanRoomSkin::S_SKIN_KEY_HAND_CARD_SUIT, Card::Suit2String(suit), true);
+    return getPixmap(QSanRoomSkin::S_SKIN_KEY_HAND_CARD_SUIT, Card::SuitToString(suit), true);
 }
 
 QPixmap QSanRoomSkin::getCardTianyiPixmap() const

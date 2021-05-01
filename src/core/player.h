@@ -2,8 +2,8 @@
 #define _PLAYER_H
 
 // #include "WrappedCard.h"
-#include "general.h"
 #include "card.h"
+#include "general.h"
 
 #include <QObject>
 #include <QTcpSocket>
@@ -102,11 +102,11 @@ public:
     // property setters/getters
     int getChaoren() const; //for chaoren
     void setChaoren(int chaoren);
-    QList<int> getShownHandcards() const;
-    void setShownHandcards(QList<int> &ids);
+    const IDSet &getShownHandcards() const;
+    void setShownHandcards(const IDSet &ids);
     bool isShownHandcard(int id) const;
-    QList<int> getBrokenEquips() const;
-    void setBrokenEquips(QList<int> &ids);
+    const IDSet &getBrokenEquips() const;
+    void setBrokenEquips(const IDSet &ids);
     bool isBrokenEquip(int id, bool consider_shenbao = false) const;
     QStringList getHiddenGenerals() const;
     void setHiddenGenerals(const QStringList &generals);
@@ -287,13 +287,13 @@ public:
     bool canSlash(const Player *other, bool distance_limit = true, int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
     int getCardCount(bool include_equip = true, bool = false) const;
 
-    QList<int> getPile(const QString &pile_name) const;
+    IDSet getPile(const QString &pile_name) const;
     QStringList getPileNames() const;
     QString getPileName(int card_id) const;
 
     bool pileOpen(const QString &pile_name, const QString &player) const;
     void setPileOpen(const QString &pile_name, const QString &player);
-    QList<int> getHandPile() const;
+    IDSet getHandPile() const;
     QStringList getHandPileList(bool view_as_skill = true) const;
 
     void addHistory(const QString &name, int times = 1);
@@ -376,7 +376,7 @@ public:
 
 protected:
     QMap<QString, int> marks;
-    QMap<QString, QList<int> > piles;
+    QMap<QString, IDSet> piles;
     QMap<QString, QStringList> pile_open;
     QSet<QString> acquired_skills;
     QSet<QString> acquired_skills2;
@@ -386,8 +386,8 @@ protected:
     QSet<QString> flags;
     QHash<QString, int> history;
     QStringList skill_invalid;
-    QList<int> shown_handcards;
-    QList<int> broken_equips;
+    IDSet shown_handcards;
+    IDSet broken_equips;
     QStringList hidden_generals; //for anyun
     QString shown_hidden_general;
 

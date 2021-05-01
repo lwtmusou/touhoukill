@@ -5,7 +5,7 @@
 
 class DiscardSkill : public ViewAsSkill
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     explicit DiscardSkill();
@@ -31,7 +31,7 @@ class CardPattern;
 
 class ResponseSkill : public OneCardViewAsSkill
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     ResponseSkill();
@@ -54,7 +54,7 @@ protected:
 
 class ShowOrPindianSkill : public ResponseSkill
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     ShowOrPindianSkill();
@@ -65,7 +65,7 @@ class YijiCard;
 
 class YijiViewAsSkill : public ViewAsSkill
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     explicit YijiViewAsSkill();
@@ -88,7 +88,7 @@ class ChoosePlayerCard;
 
 class ChoosePlayerSkill : public ZeroCardViewAsSkill
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     explicit ChoosePlayerSkill();

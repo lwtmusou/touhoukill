@@ -60,7 +60,7 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const
             bool on_effect = room->cardEffect(trick, nullptr, player);
             effected << trick;
             if (!on_effect)
-                trick->onNullified(player);
+                trick->face()->onNullified(player, trick);
         }
         break;
     }
@@ -218,7 +218,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             else
                 player->play(set_phases);
         }
-        room->autoCleanupClonedCards();
+        // FIXME: replace with valid function here.
+        // room->autoCleanupClonedCards();
         break;
     }
     case EventPhaseProceeding: {
@@ -299,9 +300,9 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             }
 
             card_use.from->broadcastSkillInvoke(card_use.card);
-            if (!card_use.card->getSkillName().isNull() && card_use.card->getSkillName(true) == card_use.card->getSkillName(false) && card_use.m_isOwnerUse
-                && card_use.from->hasSkill(card_use.card->getSkillName()))
-                room->notifySkillInvoked(card_use.from, card_use.card->getSkillName());
+            if (!card_use.card->skillName().isNull() && card_use.card->skillName(true) == card_use.card->skillName(false) && card_use.m_isOwnerUse
+                && card_use.from->hasSkill(card_use.card->skillName()))
+                room->notifySkillInvoked(card_use.from, card_use.card->skillName());
         }
         break;
     }
@@ -310,8 +311,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             CardUseStruct card_use = data.value<CardUseStruct>();
             RoomThread *thread = room->getThread();
 
-            if (card_use.card->hasPreAction())
-                card_use.card->doPreAction(room, card_use);
+            if (card_use.card->face()->hasPreAction())
+                card_use.card->face()->doPreAction(room, card_use);
 
             if (card_use.from) {
                 thread->trigger(TargetSpecifying, room, data);
@@ -324,26 +325,26 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             }
 
             //1) exclude SkillCard 2)changed move reason (USE) 3)keep extraData
-            if (card_use.card && card_use.card->getTypeId() != Card::TypeSkill && !(card_use.card->isVirtualCard() && card_use.card->getSubcards().isEmpty())
+            if (card_use.card && card_use.card->face()->type() != CardFace::TypeSkill && !(card_use.card->isVirtualCard() && card_use.card->subcards().isEmpty())
                 && card_use.to.isEmpty()) {
-                if (room->getCardPlace(card_use.card->getEffectiveId()) == Player::PlaceTable) {
-                    CardMoveReason reason(CardMoveReason::S_REASON_USE, card_use.from->objectName(), QString(), card_use.card->getSkillName(), QString());
+                if (room->getCardPlace(card_use.card->effectiveID()) == Player::PlaceTable) {
+                    CardMoveReason reason(CardMoveReason::S_REASON_USE, card_use.from->objectName(), QString(), card_use.card->skillName(), QString());
                     reason.m_extraData = QVariant::fromValue(card_use.card);
                     room->moveCardTo(card_use.card, card_use.from, nullptr, Player::DiscardPile, reason, true);
                 }
             }
             //since use.to is empty, break the whole process
-            if (card_use.card && card_use.card->getTypeId() != Card::TypeSkill && card_use.to.isEmpty()) {
-                if (card_use.card->isKindOf("Slash") && card_use.from->isAlive())
+            if (card_use.card && card_use.card->face()->type() != CardFace::TypeSkill && card_use.to.isEmpty()) {
+                if (card_use.card->face()->isKindOf("Slash") && card_use.from->isAlive())
                     room->setPlayerMark(card_use.from, "drank", 0);
-                if (card_use.card->isNDTrick() && card_use.from->isAlive()) //clear magic_drank while using Nullification
+                if (card_use.card->face()->isNDTrick() && card_use.from->isAlive()) //clear magic_drank while using Nullification
                     room->setPlayerMark(card_use.from, "magic_drank", 0);
                 break;
             }
 
             try {
                 QVariantList jink_list_backup;
-                if (card_use.card->isKindOf("Slash")) {
+                if (card_use.card->face()->isKindOf("Slash")) {
                     jink_list_backup = card_use.from->tag["Jink_" + card_use.card->toString()].toList();
                     QVariantList jink_list;
                     int jink_num = 1;
@@ -359,10 +360,10 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 }
                 card_use = data.value<CardUseStruct>();
                 room->setTag("CardUseNullifiedList", QVariant::fromValue(card_use.nullified_list));
-                if (card_use.card->isNDTrick() && !card_use.card->isKindOf("Nullification"))
+                if (card_use.card->face()->isNDTrick() && !card_use.card->face()->isKindOf("Nullification"))
                     room->setCardFlag(card_use.card, "LastTrickTarget_" + card_use.to.last()->objectName());
 
-                card_use.card->use(room, card_use.from, card_use.to);
+                card_use.card->face()->use(room, card_use);
                 if (!jink_list_backup.isEmpty())
                     card_use.from->tag["Jink_" + card_use.card->toString()] = QVariant::fromValue(jink_list_backup);
             } catch (TriggerEvent triggerEvent) {
@@ -371,8 +372,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
 
                 //copy from Room::useCard()
                 if (triggerEvent == TurnBroken) {
-                    if (room->getCardPlace(card_use.card->getEffectiveId()) == Player::PlaceTable) {
-                        CardMoveReason reason(CardMoveReason::S_REASON_UNKNOWN, card_use.from->objectName(), QString(), card_use.card->getSkillName(), QString());
+                    if (room->getCardPlace(card_use.card->effectiveID()) == Player::PlaceTable) {
+                        CardMoveReason reason(CardMoveReason::S_REASON_UNKNOWN, card_use.from->objectName(), QString(), card_use.card->skillName(), QString());
                         if (card_use.to.size() == 1)
                             reason.m_targetId = card_use.to.first()->objectName();
                         room->moveCardTo(card_use.card, card_use.from, nullptr, Player::DiscardPile, reason, true);
@@ -411,15 +412,15 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         CardUseStruct use = data.value<CardUseStruct>();
         room->clearCardFlag(use.card);
 
-        if (use.card->isNDTrick())
+        if (use.card->face()->isNDTrick())
             room->removeTag(use.card->toString() + "HegNullificationTargets");
 
-        if (use.card->isKindOf("AOE") || use.card->isKindOf("GlobalEffect")) {
+        if (use.card->face()->isKindOf("AOE") || use.card->face()->isKindOf("GlobalEffect")) {
             foreach (ServerPlayer *p, room->getAlivePlayers())
                 room->doNotify(p, QSanProtocol::S_COMMAND_NULLIFICATION_ASKED, QVariant("."));
         }
 
-        if (use.card->isKindOf("Slash"))
+        if (use.card->face()->isKindOf("Slash"))
             use.from->tag.remove("Jink_" + use.card->toString());
 
         break;
@@ -565,15 +566,15 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
     case CardEffected: {
         if (data.canConvert<CardEffectStruct>()) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (!effect.card->isKindOf("Slash") && effect.nullified) {
+            if (!effect.card->face()->isKindOf("Slash") && effect.nullified) {
                 LogMessage log;
                 log.type = "#CardNullified";
                 log.from = effect.to;
-                log.arg = effect.card->objectName();
+                log.arg = effect.card->faceName();
                 room->sendLog(log);
                 room->setEmotion(effect.to, "skill_nullify");
                 return true;
-            } else if (effect.card->getTypeId() == Card::TypeTrick) {
+            } else if (effect.card->face()->type() == CardFace::TypeTrick) {
                 if (room->isCanceled(effect)) {
                     effect.to->setFlags("Global_NonSkillNullify");
                     return true;
@@ -581,13 +582,13 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     room->getThread()->trigger(TrickEffect, room, data);
                 }
             }
-            if (effect.to->isAlive() || effect.card->isKindOf("Slash")) {
+            if (effect.to->isAlive() || effect.card->face()->isKindOf("Slash")) {
                 //record for skill tianxie
-                if (!effect.card->isKindOf("Slash"))
+                if (!effect.card->face()->isKindOf("Slash"))
                     room->setCardFlag(effect.card, "tianxieEffected_" + effect.to->objectName());
                 //do chunhua effect
-                if (effect.card->hasFlag("chunhua") && !effect.card->isKindOf("Slash")) {
-                    room->touhouLogmessage("#Chunhua", effect.to, effect.card->objectName());
+                if (effect.card->hasFlag("chunhua") && !effect.card->face()->isKindOf("Slash")) {
+                    room->touhouLogmessage("#Chunhua", effect.to, effect.card->faceName());
                     if (effect.card->hasFlag("chunhua_black")) {
                         DamageStruct d = DamageStruct(effect.card, effect.from, effect.to, 1 + effect.effectValue.first(), DamageStruct::Normal);
                         room->damage(d);
@@ -598,95 +599,96 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                         recover.recover = 1 + effect.effectValue.first();
                         room->recover(effect.to, recover);
                     }
-                } else if (effect.card->getSkillName() == "xianshi") { // deal xianshi extra effect and original effect
+                } else if (effect.card->skillName() == "xianshi") { // deal xianshi extra effect and original effect
                     QString xianshi_name;
                     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
                     foreach (const Card *card, cards) {
-                        if (card->isNDTrick() || card->isKindOf("BasicCard")) {
-                            if (effect.card->hasFlag("xianshi_" + card->objectName())) {
-                                xianshi_name = card->objectName();
+                        if (card->face()->isNDTrick() || card->face()->isKindOf("BasicCard")) {
+                            if (effect.card->hasFlag("xianshi_" + card->faceName())) {
+                                xianshi_name = card->faceName();
                                 break;
                             }
                         }
                     }
 
                     Card *extraCard = room->cloneCard(xianshi_name);
-                    if (extraCard->isKindOf("Slash")) {
+                    if (extraCard->face()->isKindOf("Slash")) {
                         DamageStruct::Nature nature = DamageStruct::Normal;
-                        if (extraCard->isKindOf("FireSlash"))
+                        if (extraCard->face()->isKindOf("FireSlash"))
                             nature = DamageStruct::Fire;
-                        else if (extraCard->isKindOf("ThunderSlash"))
+                        else if (extraCard->face()->isKindOf("ThunderSlash"))
                             nature = DamageStruct::Thunder;
                         int damageValue = 1;
 
-                        if (extraCard->isKindOf("DebuffSlash")) {
+                        if (extraCard->face()->isKindOf("DebuffSlash")) {
                             SlashEffectStruct extraEffect;
                             extraEffect.from = effect.from;
                             extraEffect.slash = extraCard;
 
                             extraEffect.to = effect.to;
                             extraEffect.effectValue.first() = effect.effectValue.first();
-
-                            if (extraCard->isKindOf("IronSlash"))
+#if 0
+                            if (extraCard->face()->isKindOf("IronSlash"))
                                 IronSlash::debuffEffect(extraEffect);
-                            else if (extraCard->isKindOf("LightSlash"))
+                            else if (extraCard->face()->isKindOf("LightSlash"))
                                 LightSlash::debuffEffect(extraEffect);
-                            else if (extraCard->isKindOf("PowerSlash"))
+                            else if (extraCard->face()->isKindOf("PowerSlash"))
                                 PowerSlash::debuffEffect(extraEffect);
+#endif
                         }
 
-                        if (!extraCard->isKindOf("LightSlash") && !extraCard->isKindOf("PowerSlash")) {
+                        if (!extraCard->face()->isKindOf("LightSlash") && !extraCard->face()->isKindOf("PowerSlash")) {
                             damageValue = damageValue + effect.effectValue.first();
                         }
 
                         DamageStruct d = DamageStruct(effect.card, effect.from, effect.to, damageValue, nature);
                         room->damage(d);
 
-                    } else if (!effect.card->isKindOf("Slash")) { //if original effect is slash, deal extra effect after slash hit.
-                        if (extraCard->isKindOf("Peach")) {
+                    } else if (!effect.card->face()->isKindOf("Slash")) { //if original effect is slash, deal extra effect after slash hit.
+                        if (extraCard->face()->isKindOf("Peach")) {
                             CardEffectStruct extraEffect;
-                            extraCard->addSubcards(effect.card->getSubcards());
-                            extraCard->deleteLater();
+                            extraCard->addSubcards(effect.card->subcards());
 
                             extraEffect.card = effect.card;
                             extraEffect.from = effect.from;
                             extraEffect.to = effect.to;
                             extraEffect.multiple = effect.multiple;
-                            if (effect.card->isNDTrick())
+                            if (effect.card->face()->isNDTrick())
                                 extraEffect.effectValue.first() = effect.effectValue.first();
-                            extraCard->onEffect(extraEffect);
-                        } else if (extraCard->isKindOf("Analeptic")) {
+                            extraCard->face()->onEffect(extraEffect);
+                        } else if (extraCard->face()->isKindOf("Analeptic")) {
                             RecoverStruct recover;
                             recover.card = effect.card;
                             recover.who = effect.from;
-                            if (effect.card->isNDTrick())
+                            if (effect.card->face()->isNDTrick())
                                 recover.recover = 1 + effect.effectValue.first();
                             room->recover(effect.to, recover);
-                        } else if (extraCard->isKindOf("AmazingGrace")) {
+                        } else if (extraCard->face()->isKindOf("AmazingGrace")) {
                             effect.from->getRoom()->doExtraAmazingGrace(effect.from, effect.to, 1 + effect.effectValue.first());
                         } else {
                             CardEffectStruct extraEffect;
-                            extraCard->addSubcards(effect.card->getSubcards());
-                            extraCard->deleteLater();
+                            extraCard->addSubcards(effect.card->subcards());
+                            // extraCard->deleteLater();
                             extraEffect.card = effect.card;
                             extraEffect.from = effect.from;
                             extraEffect.to = effect.to;
                             extraEffect.multiple = effect.multiple;
-                            if (effect.card->isNDTrick())
+                            if (effect.card->face()->isNDTrick())
                                 extraEffect.effectValue.first() = effect.effectValue.first();
-                            extraCard->onEffect(extraEffect);
+                            extraCard->face()->onEffect(extraEffect);
                         }
                     }
                     //xianshi_extra effect will use magic_drank whilefirst effect, then clean it.  //need check
-                    if (effect.effectValue.first() > 0 && effect.card->isNDTrick() && extraCard->hasEffectValue())
+                    if (effect.effectValue.first() > 0 && effect.card->face()->isNDTrick() && extraCard->hasEffectValue())
                         effect.effectValue.first() = 0;
 
-                    delete extraCard;
+                    room->cardDeleting(extraCard);
+                    
                     if (effect.to->isAlive())
-                        effect.card->onEffect(effect); //do original effect
+                        effect.card->face()->onEffect(effect); //do original effect
 
                 } else
-                    effect.card->onEffect(effect);
+                    effect.card->face()->onEffect(effect);
             }
         }
 
@@ -698,7 +700,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             LogMessage log;
             log.type = "#CardNullified";
             log.from = effect.to;
-            log.arg = effect.slash->objectName();
+            log.arg = effect.slash->faceName();
             room->sendLog(log);
             room->setEmotion(effect.to, "skill_nullify");
             return true;
@@ -729,94 +731,96 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             const Card *jink = room->askForCard(effect.to, "jink", "slash-jink:" + slasher, data, Card::MethodUse, effect.from);
             room->slashResult(effect, room->isJinkEffected(effect, jink) ? jink : nullptr);
         } else {
-            DummyCard *jink = new DummyCard;
+            Card *jink = room->cloneCard("DummyCard");
             // Since GameRule is created by RoomThread not Engine, and this function also runs at RoomThread not main thread, so this jink must be on the RoomThread
             // Because the RoomThread has no event loop, so a deleteLater is absolutely safe for it can be deleted only by the time of the deletion of RoomThread
-            jink->deleteLater();
+            // jink->deleteLater();
             const Card *asked_jink = nullptr;
             for (int i = effect.jink_num; i > 0; i--) {
                 QString prompt = QString("@multi-jink%1:%2::%3").arg(i == effect.jink_num ? "-start" : QString()).arg(slasher).arg(i);
                 asked_jink = room->askForCard(effect.to, "jink", prompt, data, Card::MethodUse, effect.from);
                 if (!room->isJinkEffected(effect, asked_jink)) {
-                    delete jink;
+                    room->cardDeleting(jink);
                     room->slashResult(effect, nullptr);
                     return false;
                 } else {
-                    jink->addSubcard(asked_jink->getEffectiveId());
+                    jink->addSubcard(asked_jink->effectiveID());
                 }
             }
             room->slashResult(effect, jink);
+            room->cardDeleting(jink);
         }
 
         break;
     }
     case JinkEffect: {
         JinkEffectStruct j = data.value<JinkEffectStruct>();
-        if (j.jink != nullptr && j.jink->getSkillName() == "xianshi") {
+        if (j.jink != nullptr && j.jink->skillName() == "xianshi") {
             SlashEffectStruct effect = j.slashEffect;
 
             QString xianshi_name = effect.to->property("xianshi_card").toString();
             if (xianshi_name != nullptr && effect.from && effect.to && effect.from->isAlive() && effect.to->isAlive()) {
                 Card *extraCard = room->cloneCard(xianshi_name);
-                if (extraCard->isKindOf("Slash")) {
+                if (extraCard->face()->isKindOf("Slash")) {
                     DamageStruct::Nature nature = DamageStruct::Normal;
-                    if (extraCard->isKindOf("FireSlash"))
+                    if (extraCard->face()->isKindOf("FireSlash"))
                         nature = DamageStruct::Fire;
-                    else if (extraCard->isKindOf("ThunderSlash"))
+                    else if (extraCard->face()->isKindOf("ThunderSlash"))
                         nature = DamageStruct::Thunder;
                     int damageValue = 1;
 
-                    if (extraCard->isKindOf("DebuffSlash")) {
+                    if (extraCard->face()->isKindOf("DebuffSlash")) {
                         SlashEffectStruct extraEffect;
                         extraEffect.from = effect.to;
                         extraEffect.slash = extraCard;
                         extraEffect.to = effect.from;
-
-                        if (extraCard->isKindOf("IronSlash"))
+#if 0
+                        if (extraCard->face()->isKindOf("IronSlash"))
                             IronSlash::debuffEffect(extraEffect);
-                        else if (extraCard->isKindOf("LightSlash"))
+                        else if (extraCard->face()->isKindOf("LightSlash"))
                             LightSlash::debuffEffect(extraEffect);
-                        else if (extraCard->isKindOf("PowerSlash"))
+                        else if (extraCard->face()->isKindOf("PowerSlash"))
                             PowerSlash::debuffEffect(extraEffect);
+#endif
                     }
 
                     DamageStruct d = DamageStruct(j.jink, effect.to, effect.from, damageValue, nature);
                     room->damage(d);
 
-                } else if (extraCard->isKindOf("Peach")) {
+                } else if (extraCard->face()->isKindOf("Peach")) {
                     CardEffectStruct extraEffect;
-                    extraCard->addSubcards(j.jink->getSubcards());
-                    extraCard->deleteLater();
+                    extraCard->addSubcards(j.jink->subcards());
+                    // extraCard->deleteLater();
 
                     extraEffect.card = j.jink;
                     extraEffect.from = effect.to;
                     extraEffect.to = effect.from;
                     extraEffect.multiple = effect.multiple;
-                    extraCard->onEffect(extraEffect);
-                } else if (extraCard->isKindOf("Analeptic")) {
+                    extraCard->face()->onEffect(extraEffect);
+                } else if (extraCard->face()->isKindOf("Analeptic")) {
                     RecoverStruct recover;
                     recover.card = j.jink;
                     recover.to = effect.from;
                     recover.who = effect.to;
                     room->recover(effect.from, recover);
-                } else if (extraCard->isKindOf("AmazingGrace")) {
+                } else if (extraCard->face()->isKindOf("AmazingGrace")) {
                     effect.from->getRoom()->doExtraAmazingGrace(effect.from, effect.from, 1);
                 } else { // trick card
                     CardEffectStruct extraEffect;
-                    extraCard->addSubcards(j.jink->getSubcards());
-                    extraCard->deleteLater();
+                    extraCard->addSubcards(j.jink->subcards());
+                    // extraCard->deleteLater();
                     extraEffect.card = j.jink;
                     extraEffect.from = effect.to;
                     extraEffect.to = effect.from;
                     extraEffect.multiple = effect.multiple;
-                    extraCard->onEffect(extraEffect);
+                    extraCard->face()->onEffect(extraEffect);
                 }
 
-                delete extraCard;
+                room->cardDeleting(extraCard);
             }
         }
 
-        if (j.jink != nullptr && j.jink->isKindOf("NatureJink")) {
+        if (j.jink != nullptr && j.jink->face()->isKindOf("NatureJink")) {
             SlashEffectStruct effect = j.slashEffect;
             //process advanced_jink
             if (effect.from && effect.to && effect.from->isAlive() && effect.to->isAlive()) {
@@ -824,7 +828,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 new_effect.card = j.jink;
                 new_effect.from = effect.to;
                 new_effect.to = effect.from;
-                j.jink->onEffect(new_effect);
+                j.jink->face()->onEffect(new_effect);
             }
         }
 
@@ -834,7 +838,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         //do chunhua effect
         if (effect.slash->hasFlag("chunhua")) {
-            room->touhouLogmessage("#Chunhua", effect.to, effect.slash->objectName());
+            room->touhouLogmessage("#Chunhua", effect.to, effect.slash->faceName());
             effect.nature = DamageStruct::Normal;
             if (effect.slash->hasFlag("chunhua_red")) {
                 RecoverStruct recover;
@@ -844,34 +848,34 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 room->recover(effect.to, recover);
                 break;
             }
-        } else if (effect.slash->getSkillName() == "xianshi") {
+        } else if (effect.slash->skillName() == "xianshi") {
             QString xianshi_name;
             QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
             foreach (const Card *card, cards) {
-                if (effect.slash->hasFlag("xianshi_" + card->objectName())) {
-                    xianshi_name = card->objectName();
+                if (effect.slash->hasFlag("xianshi_" + card->faceName())) {
+                    xianshi_name = card->faceName();
                     break;
                 }
             }
 
             CardEffectStruct extraEffect;
             Card *extraCard = room->cloneCard(xianshi_name);
-            extraCard->addSubcards(effect.slash->getSubcards());
-            extraCard->deleteLater();
-            if (extraCard->isKindOf("Peach")) {
+            extraCard->addSubcards(effect.slash->subcards());
+            // extraCard->deleteLater();
+            if (extraCard->face()->isKindOf("Peach")) {
                 extraEffect.card = effect.slash;
                 extraEffect.from = effect.from;
                 extraEffect.to = effect.to;
                 extraEffect.multiple = effect.multiple;
                 extraEffect.effectValue.first() = extraEffect.effectValue.first();
-                extraCard->onEffect(extraEffect);
-            } else if (extraCard->isKindOf("Analeptic")) {
+                extraCard->face()->onEffect(extraEffect);
+            } else if (extraCard->face()->isKindOf("Analeptic")) {
                 RecoverStruct recover;
                 recover.card = effect.slash;
                 recover.who = effect.from;
                 recover.recover = 1;
                 room->recover(effect.to, recover);
-            } else if (extraCard->isKindOf("AmazingGrace")) {
+            } else if (extraCard->face()->isKindOf("AmazingGrace")) {
                 effect.from->getRoom()->doExtraAmazingGrace(effect.from, effect.to, 1);
             } else {
                 extraEffect.card = effect.slash;
@@ -880,15 +884,15 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 extraEffect.multiple = effect.multiple;
                 //Trick damage effect + drank
                 if (extraCard->canDamage()) {
-                    if (extraCard->isKindOf("BoneHealing"))
+                    if (extraCard->face()->isKindOf("BoneHealing"))
                         extraEffect.effectValue.first() = extraEffect.effectValue.first() + effect.drank;
                     else
                         extraEffect.effectValue.last() = extraEffect.effectValue.last() + effect.drank;
                 }
-                extraCard->onEffect(extraEffect);
+                extraCard->face()->onEffect(extraEffect);
             }
 
-            delete extraCard;
+            room->cardDeleting(extraCard);
         }
 
         if (effect.to->isDead())
@@ -896,13 +900,15 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
 
         //@todo: I want IronSlash to obtain function debuffEffect() from "Slash"  as an inheritance, But the variant slasheffect.slash is "Card".
         //using dynamic_cast may bring some terrible troubles.
-        if (effect.slash->isKindOf("DebuffSlash") && !effect.slash->hasFlag("chunhua_black")) {
-            if (effect.slash->isKindOf("IronSlash"))
+        if (effect.slash->face()->isKindOf("DebuffSlash") && !effect.slash->hasFlag("chunhua_black")) {
+#if 0
+            if (effect.slash->face()->isKindOf("IronSlash"))
                 IronSlash::debuffEffect(effect);
-            else if (effect.slash->isKindOf("LightSlash"))
+            else if (effect.slash->face()->isKindOf("LightSlash"))
                 LightSlash::debuffEffect(effect);
-            else if (effect.slash->isKindOf("PowerSlash"))
+            else if (effect.slash->face()->isKindOf("PowerSlash"))
                 PowerSlash::debuffEffect(effect);
+#endif
         }
 
         if (effect.drank > 0)
@@ -1012,7 +1018,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         LogMessage log;
         log.type = "$InitialJudge";
         log.from = judge->who;
-        log.card_str = QString::number(judge->card->getEffectiveId());
+        log.card_str = QString::number(judge->card->effectiveID());
         room->sendLog(log);
 
         room->moveCardTo(judge->card, nullptr, judge->who, Player::PlaceJudge,
@@ -1026,7 +1032,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         LogMessage log;
         log.type = "$JudgeResult";
         log.from = judge->who;
-        log.card_str = QString::number(judge->card->getEffectiveId());
+        log.card_str = QString::number(judge->card->effectiveID());
         room->sendLog(log);
 
         int delay = Config.AIDelay;
@@ -1044,7 +1050,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
     case FinishJudge: {
         JudgeStruct *judge = data.value<JudgeStruct *>();
 
-        if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge) {
+        if (room->getCardPlace(judge->card->effectiveID()) == Player::PlaceJudge) {
             CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, judge->who->objectName(), QString(), judge->reason);
             if (judge->retrial_by_response) {
                 reason.m_extraData = QVariant::fromValue(judge->retrial_by_response);
@@ -1151,25 +1157,25 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
         if (player != nullptr) {
-            QList<int> shownIds;
+            IDSet shownIds;
             foreach (int id, move.card_ids) {
                 if (player->isShownHandcard(id))
                     shownIds << id;
             }
             if (!shownIds.isEmpty()) {
                 player->removeShownHandCards(shownIds, false, true);
-                move.shown_ids = shownIds;
+                move.shown_ids = shownIds.values();
                 data = QVariant::fromValue(move);
             }
 
-            QList<int> brokenIds;
+            IDSet brokenIds;
             foreach (int id, move.card_ids) {
                 if (player->isBrokenEquip(id))
                     brokenIds << id;
             }
             if (!brokenIds.isEmpty()) {
                 player->removeBrokenEquips(brokenIds, false, true);
-                move.broken_ids = brokenIds;
+                move.broken_ids = brokenIds.values();
                 data = QVariant::fromValue(move);
             }
         }

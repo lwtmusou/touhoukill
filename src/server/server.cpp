@@ -105,7 +105,7 @@ QWidget *ServerDialog::createPackageTab()
     int i = 0, j = 0;
     int row = 0, column = 0;
     foreach (QString extension, extensions) {
-        const Package *package = Sanguosha->findChild<const Package *>(extension);
+        const Package *package = Sanguosha->findPackage(extension);
         if (package == nullptr)
             continue;
 
@@ -118,7 +118,7 @@ QWidget *ServerDialog::createPackageTab()
 
         extension_group->addButton(checkbox);
 
-        switch (package->getType()) {
+        switch (package->type()) {
         case Package::GeneralPack: {
             if (extension == "standard" || extension == "test")
                 continue;
@@ -739,9 +739,9 @@ Select3v3GeneralDialog::Select3v3GeneralDialog(QDialog *parent)
 
 void Select3v3GeneralDialog::fillTabWidget()
 {
-    QList<const Package *> packages = Sanguosha->findChildren<const Package *>();
+    const QList<const Package *> &packages = Sanguosha->getPackages();
     foreach (const Package *package, packages) {
-        switch (package->getType()) {
+        switch (package->type()) {
         case Package::GeneralPack:
         case Package::MixedPack: {
             QListWidget *list = new QListWidget;
@@ -749,7 +749,7 @@ void Select3v3GeneralDialog::fillTabWidget()
             list->setDragDropMode(QListView::NoDragDrop);
             fillListWidget(list, package);
 
-            tab_widget->addTab(list, Sanguosha->translate(package->objectName()));
+            tab_widget->addTab(list, Sanguosha->translate(package->name()));
         }
         default:
             break;
@@ -759,7 +759,7 @@ void Select3v3GeneralDialog::fillTabWidget()
 
 void Select3v3GeneralDialog::fillListWidget(QListWidget *list, const Package *pack)
 {
-    QList<const General *> generals = pack->findChildren<const General *>();
+    QList<General *> generals = pack->generals();
     foreach (const General *general, generals) {
         if (Sanguosha->isGeneralHidden(general->objectName()))
             continue;
@@ -770,7 +770,7 @@ void Select3v3GeneralDialog::fillListWidget(QListWidget *list, const Package *pa
 
         bool checked = false;
         if (ex_generals.isEmpty()) {
-            checked = (pack->objectName() == "standard" || pack->objectName() == "wind") && general->objectName() != "yuji";
+            checked = (pack->name() == "standard" || pack->name() == "wind") && general->objectName() != "yuji";
         } else
             checked = ex_generals.contains(general->objectName());
 

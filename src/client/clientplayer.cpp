@@ -134,17 +134,18 @@ void ClientPlayer::changePile(const QString &name, bool add, QList<int> card_ids
         emit pile_changed(name);
     else {
         if (add) {
-            piles[name].append(card_ids);
+            foreach (int id, card_ids)
+                piles[name] << id;
         } else {
             foreach (int card_id, card_ids) {
                 if (piles[name].isEmpty())
                     break;
                 if (piles[name].contains(Card::S_UNKNOWN_CARD_ID) && !piles[name].contains(card_id))
-                    piles[name].removeOne(Card::S_UNKNOWN_CARD_ID);
+                    piles[name].remove(Card::S_UNKNOWN_CARD_ID);
                 else if (piles[name].contains(card_id))
-                    piles[name].removeOne(card_id);
+                    piles[name].remove(card_id);
                 else
-                    piles[name].takeLast();
+                    piles[name].remove(*piles[name].cbegin());
             }
         }
 

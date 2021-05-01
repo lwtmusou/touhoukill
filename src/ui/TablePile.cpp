@@ -13,7 +13,7 @@ QList<CardItem *> TablePile::removeCardItems(const QList<int> &card_ids, Player:
     _disperseCards(result, m_cardsDisplayRegion, Qt::AlignCenter, false, true);
     foreach (CardItem *card, result) {
         for (int i = m_visibleCards.size() - 1; i >= 0; i--) {
-            if (m_visibleCards[i]->getCard() && m_visibleCards[i]->getCard()->getId() == card->getId()) {
+            if (m_visibleCards[i]->getCard() && m_visibleCards[i]->getCard()->id() == card->getCard()->id()) {
                 card->setPos(m_visibleCards[i]->pos());
                 break;
             }
@@ -108,7 +108,7 @@ void TablePile::showJudgeResult(int cardId, bool takeEffect)
     QList<CardItem *> cardsToClear;
     for (int i = m_visibleCards.size() - 1; i >= 0; i--) {
         CardItem *item = m_visibleCards[i];
-        if (judgeCard == nullptr && item->getCard() && item->getCard()->getId() == cardId)
+        if (judgeCard == nullptr && item->getCard() && item->getCard()->id() == cardId)
             judgeCard = m_visibleCards[i];
         else
             cardsToClear.append(item);

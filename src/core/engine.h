@@ -1,9 +1,9 @@
 #ifndef _ENGINE_H
 #define _ENGINE_H
 
+#include "CardFace.h"
 #include "RoomObject.h"
 #include "card.h"
-#include "CardFace.h"
 #include "exppattern.h"
 #include "general.h"
 #include "json.h"
@@ -65,6 +65,7 @@ public:
 
     void addPackage(const QString &name);
     QList<const Package *> getPackages() const;
+    const Package *findPackage(const QString &name) const;
 
     const General *getGeneral(const QString &name) const;
     const QList<QString> getGenerals() const;
@@ -125,7 +126,7 @@ public:
     void registerCardFace(const CardFace *cardFace);
     const CardFace *getCardFace(const QString &name) const;
 
-    QString getPackageNameByCard(const Card *c) const; 
+    QString getPackageNameByCard(const Card *c) const;
 
 private:
     QMutex m_mutex;
@@ -137,6 +138,9 @@ private:
     QMap<QString, QString> modes;
     QMultiMap<QString, QString> related_skills;
     mutable QMap<QString, const CardPattern *> patterns;
+
+    // Package
+    QList<const Package *> packages;
 
     // special skills
     QList<const ProhibitSkill *> prohibit_skills;

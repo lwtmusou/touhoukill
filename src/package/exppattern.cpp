@@ -88,7 +88,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
 
     checkpoint = false;
     QStringList card_numbers = factors.at(2).split(',');
-    int cdn = static_cast<int>(card->getNumber());
+    int cdn = static_cast<int>(card->number());
 
     foreach (QString number, card_numbers) {
         if (number == ".") {
@@ -131,11 +131,11 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
         bool findOneShow = false; //only for check palce "show"
         bool needCheckShow = place.split(",").contains("show"); //only for check palce "show"
 
-        QList<int> ids;
+        IDSet ids;
         if (card->isVirtualCard())
             ids = card->subcards();
         else
-            ids << card->effectiveID();
+            ids.insert(card->effectiveID());
 
         if (!ids.isEmpty()) {
             foreach (int id, ids) {
@@ -148,7 +148,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
                         checkpoint = true;
                     } else if (p == "hand" && card->effectiveID() >= 0) {
                         foreach (const Card *c, player->getHandcards()) {
-                            if (c->getEffectiveId() == id) {
+                            if (c->effectiveID() == id) {
                                 checkpoint = true;
                                 break;
                             }
@@ -167,7 +167,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
                                 checkpoint = true;
                                 break;
                             }
-                    } else if ((p == "sqchuangshi") && card->getEffectiveId() >= 0 && !player->hasEquip(card)) {
+                    } else if ((p == "sqchuangshi") && card->effectiveID() >= 0 && !player->hasEquip(card)) {
                         checkpoint = true;
                     } else if (p == "shehuo" && card->effectiveID() >= 0 && !player->hasEquip(card)) {
                         checkpoint = true;

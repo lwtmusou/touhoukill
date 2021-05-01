@@ -103,7 +103,7 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
             QString meth = eff ? tr("carry out") : tr("use skill");
             QString suffix = eff ? tr("effect") : "";
 
-            QSet<int> card_ids = card->subcards();
+            IDSet card_ids = card->subcards();
             QStringList subcard_list;
             foreach (int card_id, card_ids) {
                 const Card *subcard = Sanguosha->getEngineCard(card_id);

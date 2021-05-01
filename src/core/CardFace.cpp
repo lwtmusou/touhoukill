@@ -211,7 +211,7 @@ void CardFace::onUse(Room *room, const CardUseStruct &use) const
     log.card_str = card_use.card->toString(hidden);
     room->sendLog(log);
 
-    QSet<int> used_cards;
+    IDSet used_cards;
     QList<CardsMoveStruct> moves;
     if (card_use.card->isVirtualCard())
         used_cards.unite(card_use.card->subcards());

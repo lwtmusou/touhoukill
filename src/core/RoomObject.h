@@ -1,9 +1,7 @@
 #ifndef _ROOM_STATE_H
 #define _ROOM_STATE_H
 
-// #include "WrappedCard.h"
 #include "card.h"
-#include "player.h"
 #include "structs.h"
 
 #include <QList>
@@ -13,8 +11,6 @@
 namespace CardFactory {
 // static methods for Engine. Used to add metaobjects
 // this staticMetaObject is used to call "newInstance" function to create a new card
-// static void addCardMetaObject(const QString &key, const QMetaObject *staticMetaObject);
-// static void removeCardMetaObject(const QString &key);
 
 void registerCardFace(const CardFace *face);
 const CardFace *cardFace(const QString &name);

@@ -312,8 +312,9 @@ public:
     QSGS_STATE_GAME Player::Place getCardPlace(int card_id) const;
     QSGS_STATE_GAME ServerPlayer *getCardOwner(int card_id) const;
     QSGS_STATE_GAME void setCardMapping(int card_id, ServerPlayer *owner, Player::Place place);
+    // FIXME: Replace their return value to IDSet.
     QSGS_STATE_GAME QList<int> getCardIdsOnTable(const Card *) const;
-    QSGS_STATE_GAME QList<int> getCardIdsOnTable(const QList<int> &card_ids) const;
+    QSGS_STATE_GAME QList<int> getCardIdsOnTable(const IDSet &card_ids) const;
 
     QSGS_LOGIC void drawCards(ServerPlayer *player, int n, const QString &reason = QString());
     QSGS_LOGIC void drawCards(QList<ServerPlayer *> players, int n, const QString &reason = QString());

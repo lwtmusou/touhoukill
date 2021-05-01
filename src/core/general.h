@@ -79,6 +79,7 @@ public slots:
     void lastWord() const;
 
 private:
+    const Package *package;
     QString kingdom;
     int max_hp;
     Gender gender;

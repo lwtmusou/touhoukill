@@ -21,8 +21,7 @@ struct CardUseStruct;
 class CardPrivate;
 class CardFace;
 
-
-
+using IDSet = QSet<int>;
 
 class Card final
 {
@@ -131,6 +130,10 @@ public:
     QString fullName(bool include_suit = false) const;
     QString logName() const;
 
+    // match pattern
+    // FIXME: This function is only referenced in Dashboard::selectCard. Let's find a way to get rid of it?
+    
+
     // skill name
     // TODO_Fs: add mechanics to underscore-prefixed effect identifier
     QString skillName(bool removePrefix = true) const;
@@ -172,10 +175,10 @@ public:
     bool isVirtualCard() const;
 
     // Subcard
-    const QSet<int> &subcards() const;
+    const IDSet &subcards() const;
     void addSubcard(int card_id);
     void addSubcard(const Card *card);
-    void addSubcards(const QSet<int> &subcards);
+    void addSubcards(const IDSet &subcards);
     void clearSubcards();
     QString subcardString() const; // Used for converting card to string
 
@@ -211,11 +214,11 @@ private:
     CardPrivate *d;
 };
 
-
 /**
  * @struct For creating new cards.
- */ 
-struct CardDescriptor {
+ */
+struct CardDescriptor
+{
     Card::Suit suit;
     Card::Number number;
 };

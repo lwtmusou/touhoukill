@@ -161,12 +161,12 @@ void Player::setChaoren(int chaoren)
     }
 }
 
-QList<int> Player::getShownHandcards() const
+const IDSet &Player::getShownHandcards() const
 {
     return shown_handcards;
 }
 
-void Player::setShownHandcards(QList<int> &ids)
+void Player::setShownHandcards(const IDSet &ids)
 {
     this->shown_handcards = ids;
     emit showncards_changed();
@@ -179,12 +179,12 @@ bool Player::isShownHandcard(int id) const
     return shown_handcards.contains(id);
 }
 
-QList<int> Player::getBrokenEquips() const
+const IDSet &Player::getBrokenEquips() const
 {
     return broken_equips;
 }
 
-void Player::setBrokenEquips(QList<int> &ids)
+void Player::setBrokenEquips(const IDSet &ids)
 {
     this->broken_equips = ids;
     emit brokenEquips_changed();
@@ -1192,7 +1192,7 @@ bool Player::canDiscard(const Player *to, const QString &flags, const QString &r
         if (!to->getShownHandcards().isEmpty())
             return true;
     } else if (flags.contains("h")) {
-        if ((to->getHandcardNum() - to->getShownHandcards().length()) > 0)
+        if ((to->getHandcardNum() - to->getShownHandcards().size()) > 0)
             return true;
     }
     if (flags.contains(judging_flag) && !to->getJudgingArea().isEmpty())
@@ -1374,7 +1374,7 @@ int Player::getCardCount(bool include_equip, bool include_judging) const
     return count;
 }
 
-QList<int> Player::getPile(const QString &pile_name) const
+IDSet Player::getPile(const QString &pile_name) const
 {
     if (pile_name == "shown_card")
         return getShownHandcards();
@@ -1392,7 +1392,7 @@ QStringList Player::getPileNames() const
 QString Player::getPileName(int card_id) const
 {
     foreach (QString pile_name, piles.keys()) {
-        QList<int> pile = piles[pile_name];
+        const IDSet pile = piles[pile_name];
         if (pile.contains(card_id))
             return pile_name;
     }
@@ -1412,14 +1412,14 @@ void Player::setPileOpen(const QString &pile_name, const QString &player)
     pile_open[pile_name].append(player);
 }
 
-QList<int> Player::getHandPile() const
+IDSet Player::getHandPile() const
 {
-    QList<int> result;
+    IDSet result;
     foreach (const QString &pile, getPileNames()) {
 #pragma message WARN("todo_Fs: chaoren is not handpile. the cards on chaoren can't be used in an ViewAsSkill")
         if (pile.startsWith("&") || (pile == "wooden_ox" && hasTreasure("wooden_ox")) || (pile == "chaoren" && hasSkill("chaoren"))) {
             foreach (int id, getPile(pile))
-                result.append(id);
+                result << id;
         }
     }
     return result;
@@ -1711,7 +1711,7 @@ void Player::copyFrom(Player *p)
     Player *a = p;
 
     b->marks = QMap<QString, int>(a->marks);
-    b->piles = QMap<QString, QList<int> >(a->piles);
+    b->piles = QMap<QString, IDSet >(a->piles);
     b->acquired_skills = QSet<QString>(a->acquired_skills);
     b->acquired_skills2 = QSet<QString>(a->acquired_skills2);
     b->flags = QSet<QString>(a->flags);

@@ -119,11 +119,11 @@ Card *RoomObject::cloneCard(const Card *card)
 
 Card *RoomObject::cloneCard(const QString &name, Card::Suit suit, Card::Number number)
 {
-    CardFace *face = nullptr;
+    const CardFace *face = nullptr;
 
     if (!name.isEmpty()) {
         face = CardFactory::cardFace(name);
-        if (face == nullptr)
+        if (face == nullptr && name != "DummyCard")
             return nullptr;
     }
     return cloneCard(face, suit, number);
@@ -153,11 +153,7 @@ void RoomObject::cardDeleting(const Card *card)
 
 Card *RoomObject::cloneSkillCard(const QString &name)
 {
-    Card *c = d->cardFactory.cloneSkillCard(name);
-    if (c == nullptr)
-        return nullptr;
-
-    return c;
+    return cloneCard(name);
 }
 
 Card *RoomObject::cloneDummyCard()

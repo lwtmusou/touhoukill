@@ -1,71 +1,71 @@
 #include "package.h"
 
 Package::Package(const QString &name, Type pack_type)
-    : name(name)
-    , type(pack_type)
+    : m_name(name)
+    , m_type(pack_type)
 {
 }
 
-const QString &Package::getName() const
+const QString &Package::name() const
 {
-    return name;
+    return m_name;
 }
 
-const QList<const Skill *> &Package::getSkills() const
+const QList<const Skill *> &Package::skills() const
 {
-    return skills;
+    return m_skills;
 }
 
-const QMap<QString, const CardPattern *> &Package::getPatterns() const
+const QMap<QString, const CardPattern *> &Package::patterns() const
 {
-    return patterns;
+    return m_patterns;
 }
 
-const QMultiMap<QString, QString> &Package::getRelatedSkills() const
+const QMultiMap<QString, QString> &Package::relatedSkills() const
 {
-    return related_skills;
+    return m_related_skills;
 }
 
-Package::Type Package::getType() const
+Package::Type Package::type() const
 {
-    return type;
+    return m_type;
 }
 
 void Package::insertRelatedSkills(const QString &main_skill, const QString &related_skill)
 {
-    related_skills.insert(main_skill, related_skill);
+    m_related_skills.insert(main_skill, related_skill);
 }
 
-const QList<const CardFace *> &Package::getCardFaces() const
+const QList<const CardFace *> &Package::cardFaces() const
 {
-    return faces;
+    return m_faces;
 }
 
-const QMultiMap<const CardFace *, CardDescriptor> &Package::getCards() const
+const QMultiMap<const CardFace *, CardDescriptor> &Package::cards() const
 {
-    return all_cards;
+    return m_all_cards;
 }
 
-const QList<General *> &Package::getGeneral() const
+const QList<General *> &Package::generals() const
 {
-    return generals;
+    return m_generals;
 }
 
 Package &Package::operator<<(const CardFace *face)
 {
-    faces << face;
+    m_faces << face;
     return *this;
 }
 
 Package &Package::operator<<(const Skill *skill)
 {
-    skills << skill;
+    m_skills << skill;
     return *this;
 }
 
 Package &Package::operator<<(General *general)
 {
-    generals << general;
+    m_generals << general;
     return *this;
 }
 

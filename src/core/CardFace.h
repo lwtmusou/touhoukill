@@ -28,7 +28,7 @@ public:
     virtual ~CardFace();
 
     // text property
-    QString name() const;
+    virtual QString name() const; // For Lua skill card. Lua skill card would provide dynamic name.
     virtual QString description() const;
     virtual QString commonEffectName() const;
     virtual QString effectName() const;
@@ -152,6 +152,10 @@ public:
     QString typeName() const override;
 
     virtual Location location() const = 0;
+
+    virtual void onInstall(ServerPlayer *player) const;
+    virtual void onUninstall(ServerPlayer *player) const;
+
 };
 
 class Weapon : public EquipCard
@@ -176,6 +180,7 @@ public:
 
     QString subTypeName() const override;
     Location location() const override;
+
 };
 
 class DefensiveHorse : public EquipCard
@@ -187,6 +192,8 @@ public:
 
     QString subTypeName() const override;
     Location location() const override;
+
+    virtual int correction() const;
 };
 
 class OffensiveHorse : public EquipCard
@@ -198,6 +205,9 @@ public:
 
     QString subTypeName() const override;
     Location location() const override;
+
+    virtual int correction() const;
+
 };
 
 class Treasure : public EquipCard

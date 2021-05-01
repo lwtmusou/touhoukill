@@ -1075,7 +1075,7 @@ public:
     virtual bool isVirtualCard() const;
     virtual bool isEquipped(Self) const;
     virtual QString getCommonEffectName() const;
-    virtual bool matchTypeOrName(const char *pattern) const;
+    virtual bool matchType(const char *pattern) const;
 
     virtual void addSubcard(int card_id);
     virtual void addSubcard(const Card *card);

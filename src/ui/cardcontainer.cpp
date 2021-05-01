@@ -95,7 +95,7 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
         if (disabled_ids.contains(item->getCard()->effectiveID()))
             item->setEnabled(false);
 
-        if (shownHandcard_ids.contains(item->id())) {
+        if (shownHandcard_ids.contains(item->getId())) {
             item->setFootnote(Sanguosha->translate("shown_card"));
             item->showFootnote();
         }

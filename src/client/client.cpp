@@ -245,7 +245,7 @@ void Client::setShownHandCards(const QVariant &card_var)
     JsonUtils::tryParse(card_str[1], card_ids);
 
     ClientPlayer *player = getPlayer(who);
-    player->setShownHandcards(card_ids);
+    player->setShownHandcards(IDSet(card_ids.begin(), card_ids.end()));
     player->changePile("shown_card", true, card_ids);
 }
 
@@ -263,7 +263,7 @@ void Client::setBrokenEquips(const QVariant &card_var)
 
     ClientPlayer *player = getPlayer(who);
 
-    player->setBrokenEquips(card_ids);
+    player->setBrokenEquips(IDSet(card_ids.begin(), card_ids.end()));
 }
 
 void Client::setHiddenGenerals(const QVariant &arg)
@@ -2021,7 +2021,7 @@ void Client::showAllCards(const QVariant &arg)
     if (who)
         who->setCards(card_ids);
 
-    emit gongxin(card_ids, false, QList<int>(), who->getShownHandcards());
+    emit gongxin(card_ids, false, IDSet(), who->getShownHandcards());
 }
 
 void Client::askForGongxin(const QVariant &args)
@@ -2042,7 +2042,7 @@ void Client::askForGongxin(const QVariant &args)
 
     who->setCards(card_ids);
 
-    emit gongxin(card_ids, enable_heart, enabled_ids, who->getShownHandcards());
+    emit gongxin(card_ids, enable_heart, IDSet(enabled_ids.begin(), enabled_ids.end()), who->getShownHandcards());
     setStatus(AskForGongxin);
 }
 
