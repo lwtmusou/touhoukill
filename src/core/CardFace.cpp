@@ -8,7 +8,6 @@
 #include <QObject>
 #include <QString>
 
-
 class CardFacePrivate
 {
 public:
@@ -284,7 +283,7 @@ void CardFace::use(Room *room, const CardUseStruct &use) const
 
         room->setTag("targets" + use.card->toString(), QVariant::fromValue(players));
 
-        room->cardEffect(*(RefactorProposal::fixme_cast< ::CardEffectStruct *>(&effect)));
+        room->cardEffect(effect);
     }
     room->removeTag("targets" + use.card->toString()); //for ai?
     if (magic_drank > 0)

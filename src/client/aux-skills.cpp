@@ -1,9 +1,9 @@
 #include "aux-skills.h"
+#include "CardFace.h"
 #include "client.h"
 #include "clientplayer.h"
 #include "engine.h"
 #include "standard.h"
-#include "CardFace.h"
 
 DiscardSkill::DiscardSkill()
     : ViewAsSkill("discard")
@@ -130,7 +130,8 @@ public:
         // handling_method = Card::MethodNone;
     }
 
-    QString name() const override {
+    QString name() const override
+    {
         return staticMetaObject.className();
     }
 
@@ -229,7 +230,8 @@ public:
         setTargetFixed(false);
     }
 
-    QString name() const override {
+    QString name() const override
+    {
         return staticMetaObject.className();
     }
 
@@ -254,7 +256,8 @@ ChoosePlayerSkill::ChoosePlayerSkill()
     card = new Card(nullptr, face);
 }
 
-ChoosePlayerSkill::~ChoosePlayerSkill(){
+ChoosePlayerSkill::~ChoosePlayerSkill()
+{
     delete face;
     face = nullptr;
     delete card;
@@ -270,3 +273,5 @@ const Card *ChoosePlayerSkill::viewAs(const Player * /*Self*/) const
 {
     return card;
 }
+
+#include "aux-skills.moc"

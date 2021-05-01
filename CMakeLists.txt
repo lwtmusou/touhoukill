@@ -73,30 +73,6 @@ set (QSanguosha_SRCS
     src/dialog/updatedialog.cpp
     src/main.cpp
     src/package/exppattern.cpp
-    src/package/hegemonyCard.cpp
-    src/package/hegemonyGeneral.cpp
-    src/package/maneuvering.cpp
-    src/package/playground.cpp
-    src/package/protagonist.cpp
-    src/package/standard-cards.cpp
-    src/package/standard.cpp
-    src/package/testCard.cpp
-    src/package/th01-05.cpp
-    src/package/th06.cpp
-    src/package/th07.cpp
-    src/package/th08.cpp
-    src/package/th09.cpp
-    src/package/th10.cpp
-    src/package/th11.cpp
-    src/package/th12.cpp
-    src/package/th13.cpp
-    src/package/th14.cpp
-    src/package/th15.cpp
-    src/package/th16.cpp
-    src/package/th17.cpp
-    src/package/th99.cpp
-    src/package/thndj.cpp
-    src/package/touhougod.cpp
     src/server/ai.cpp
     src/server/gamerule.cpp
     src/server/generalselector.cpp
@@ -186,30 +162,6 @@ set (QSanguosha_MOCS
     src/dialog/roleassigndialog.h
     src/dialog/updatedialog.h
     src/package/exppattern.h
-    src/package/hegemonyCard.h
-    src/package/hegemonyGeneral.h
-    src/package/maneuvering.h
-    src/package/playground.h
-    src/package/protagonist.h
-    src/package/standard-equips.h
-    src/package/standard.h
-    src/package/testCard.h
-    src/package/th01-05.h
-    src/package/th06.h
-    src/package/th07.h
-    src/package/th08.h
-    src/package/th09.h
-    src/package/th10.h
-    src/package/th11.h
-    src/package/th12.h
-    src/package/th13.h
-    src/package/th14.h
-    src/package/th15.h
-    src/package/th16.h
-    src/package/th17.h
-    src/package/th99.h
-    src/package/thndj.h
-    src/package/touhougod.h
     src/pch.h
     src/server/ai.h
     src/server/gamerule.h

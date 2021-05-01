@@ -6,8 +6,8 @@ class Card;
 class ServerPlayer;
 class QDialog;
 
+#include "CardFace.h"
 #include "room.h"
-#include "standard.h"
 #include "structs.h"
 
 #include <QDialog>

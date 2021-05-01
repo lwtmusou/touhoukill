@@ -190,7 +190,7 @@ void Client::updateCard(const QVariant &val)
         Card *card = getCard(cardId);
         // TODO: How to handle the Filter skill?
         // if (!card->isModified())
-            //return;
+        //return;
         resetCard(cardId);
     } else {
         // update card
@@ -1207,15 +1207,15 @@ void Client::askForNullification(const QVariant &arg)
     if (!source_name.isNull())
         source = getPlayer(source_name.toString());
 
-    const Card *trick_card = Sanguosha->findChild<const Card *>(trick_name);
+    const CardFace *trick_card = Sanguosha->getCardFace(trick_name);
     if (Config.NeverNullifyMyTrick && source == Self) {
-        if (trick_card->face()->isKindOf("SingleTargetTrick") || trick_card->face()->isKindOf("IronChain")) {
+        if (trick_card->isKindOf("SingleTargetTrick") || trick_card->isKindOf("IronChain")) {
             onPlayerResponseCard(nullptr);
             return;
         }
     }
     if (m_noNullificationThisTime && m_noNullificationTrickName == trick_name) {
-        if (trick_card->face()->isKindOf("AOE") || trick_card->face()->isKindOf("GlobalEffect")) {
+        if (trick_card->isKindOf("AOE") || trick_card->isKindOf("GlobalEffect")) {
             onPlayerResponseCard(nullptr);
             return;
         }
@@ -1223,7 +1223,7 @@ void Client::askForNullification(const QVariant &arg)
 
     if (source == nullptr) {
         prompt_doc->setHtml(
-            tr("Do you want to use nullification to trick card %1 from %2?").arg(Sanguosha->translate(trick_card->faceName())).arg(getPlayerName(target_player->objectName())));
+            tr("Do you want to use nullification to trick card %1 from %2?").arg(Sanguosha->translate(trick_card->name())).arg(getPlayerName(target_player->objectName())));
     } else {
         prompt_doc->setHtml(tr("%1 used trick card %2 to %3 <br>Do you want to use nullification?")
                                 .arg(getPlayerName(source->objectName()))
