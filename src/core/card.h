@@ -21,11 +21,15 @@ struct CardUseStruct;
 class CardPrivate;
 class CardFace;
 
+// Fs: I prefer following:
+// typedef QSet<int> IDSet;
+// Are there any advantages using 'using' instead of 'typedef'?
 using IDSet = QSet<int>;
 
 class Card final
 {
     Q_GADGET
+
 public:
     enum Suit
     {
@@ -137,7 +141,6 @@ public:
     // FIXME: This function is only referenced in Dashboard::selectCard. Let's find a way to get rid of it?
 
     // skill name
-    // TODO_Fs: add mechanics to underscore-prefixed effect identifier
     QString skillName(bool removePrefix = true) const;
     void setSkillName(const QString &skill_name);
     const QString &showSkillName() const;
@@ -223,6 +226,7 @@ struct CardDescriptor
 {
     Card::Suit suit;
     Card::Number number;
+    const CardFace *face;
 };
 
 #endif
