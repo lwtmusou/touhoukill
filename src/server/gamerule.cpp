@@ -683,7 +683,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                         effect.effectValue.first() = 0;
 
                     room->cardDeleting(extraCard);
-                    
+
                     if (effect.to->isAlive())
                         effect.card->face()->onEffect(effect); //do original effect
 
@@ -1199,10 +1199,7 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const
         player->tag.remove("1v1ChangeGeneral");
     } else {
         QStringList list = player->tag["1v1Arrange"].toStringList();
-        if (player->getAI())
-            new_general = list.first();
-        else
-            new_general = room->askForGeneral(player, list);
+        new_general = room->askForGeneral(player, list);
         list.removeOne(new_general);
         player->tag["1v1Arrange"] = QVariant::fromValue(list);
     }

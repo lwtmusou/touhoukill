@@ -1,5 +1,4 @@
 #include "roomthread.h"
-#include "ai.h"
 #include "engine.h"
 #include "gamerule.h"
 #include "protocol.h"
@@ -791,15 +790,9 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data)
             }
         }
 
-        foreach (AI *ai, room->ais)
-            ai->filterEvent(triggerEvent, data);
-
         event_stack.pop_back();
 
-    } catch (TriggerEvent triggerEvent) {
-        foreach (AI *ai, room->ais)
-            ai->filterEvent(triggerEvent, data);
-
+    } catch (TriggerEvent) {
         event_stack.pop_back();
         throw;
     }

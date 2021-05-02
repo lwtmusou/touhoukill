@@ -1,7 +1,6 @@
 #include "engine.h"
 #include "CardFace.h"
 #include "RoomObject.h"
-#include "ai.h"
 #include "audio.h"
 #include "card.h"
 #include "client.h"
@@ -262,10 +261,11 @@ QList<const Package *> Engine::getPackages() const
     return packages;
 }
 
-const Package *Engine::findPackage(const QString &name) const 
+const Package *Engine::findPackage(const QString &name) const
 {
     foreach (auto pkg, packages) {
-        if(pkg->name() == name) return pkg;
+        if (pkg->name() == name)
+            return pkg;
     }
 
     return nullptr;
@@ -1275,4 +1275,10 @@ void Engine::registerCardFace(const CardFace *cardFace)
 const CardFace *Engine::getCardFace(const QString &name) const
 {
     return cardFaces.value(name, nullptr);
+}
+
+QString Engine::getPackageNameByCard(const Card *c) const
+{
+    // TODO!!!!!
+    return QString();
 }

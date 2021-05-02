@@ -101,7 +101,7 @@ public:
     };
     Q_ENUM(Number)
 
-    static const int S_UNKNOWN_CARD_ID = -1;
+    static const int S_UNKNOWN_CARD_ID;
 
     // constructor to create real card
     explicit Card(RoomObject *room, const CardFace *face, Suit suit = SuitToBeDecided, Number number = Number::NumberToBeDecided, int id = -1);
@@ -130,9 +130,11 @@ public:
     QString fullName(bool include_suit = false) const;
     QString logName() const;
 
+    // ??
+    bool isModified() const;
+
     // match pattern
     // FIXME: This function is only referenced in Dashboard::selectCard. Let's find a way to get rid of it?
-    
 
     // skill name
     // TODO_Fs: add mechanics to underscore-prefixed effect identifier

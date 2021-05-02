@@ -12,6 +12,8 @@
 #include <QRegularExpressionMatch>
 #include <QRegularExpressionMatchIterator>
 
+const int Card::S_UNKNOWN_CARD_ID = -1;
+
 class CardPrivate
 {
 public:
@@ -267,6 +269,17 @@ QString Card::logName() const
         number_string = numberString();
 
     return QString("%1[%2%3]").arg(faceName()).arg(suit_char).arg(number_string);
+}
+
+bool Card::isModified() const
+{
+    Q_ASSERT(!isVirtualCard());
+
+    if (isVirtualCard())
+        return false;
+
+    const Card *c = Sanguosha->getEngineCard(id());
+    return (c->face() != face()) || (c->suit() != suit()) || (c->number() != number()) || (!skillName(false).isEmpty());
 }
 
 QString Card::skillName(bool removePrefix) const

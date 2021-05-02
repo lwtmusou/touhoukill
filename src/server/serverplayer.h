@@ -2,7 +2,6 @@
 #define _SERVER_PLAYER_H
 
 class Room;
-class AI;
 class Recorder;
 class DummyCard;
 
@@ -80,19 +79,6 @@ public:
     QSGS_LOGIC void addSkill(const QString &skill_name, bool head_skill = true) override;
     QSGS_LOGIC void loseSkill(const QString &skill_name, bool head_skill = true) override;
     QSGS_LOGIC void setGender(General::Gender gender) override;
-
-    // TODO_Fs: remove AI related code from Server
-#if 1
-    void setAI(AI *ai);
-    AI *getAI() const;
-    AI *getSmartAI() const;
-
-    bool isOnline() const;
-    inline bool isOffline() const
-    {
-        return getState() == "robot" || getState() == "offline";
-    }
-#endif
 
     QSGS_STATE_GAME int aliveCount(bool includeRemoved = true) const override; // TODO_Fs: this function should belong to room?
     QSGS_STATE_GAME int getHandcardNum() const override;
@@ -221,8 +207,6 @@ private:
     ClientSocket *socket;
     QList<const Card *> handcards;
     Room *room;
-    AI *ai;
-    AI *trust_ai;
     Recorder *recorder;
     QList<Phase> phases;
     int _m_phases_index;

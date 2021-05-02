@@ -78,7 +78,8 @@ public:
     virtual bool hasPreAction() const;
     void setHasPreAction(bool can);
 
-    // This method provides a default handling method suggested by the card face. For instance, some cards are believed to be response (like jink) only.
+    // This method provides a default handling method suggested by the card face.
+    // Almost every actual card has its handlingMethod to be Card::Use.
     virtual Card::HandlingMethod defaultHandlingMethod() const;
 
     // Functions
@@ -153,9 +154,8 @@ public:
 
     virtual Location location() const = 0;
 
-    virtual void onInstall(ServerPlayer *player) const;
-    virtual void onUninstall(ServerPlayer *player) const;
-
+    virtual void onInstall(ServerPlayer *player) const = 0;
+    virtual void onUninstall(ServerPlayer *player) const = 0;
 };
 
 class Weapon : public EquipCard
@@ -168,7 +168,7 @@ public:
     QString subTypeName() const override;
     Location location() const override;
 
-    virtual int range() const;
+    virtual int range() const = 0;
 };
 
 class Armor : public EquipCard
@@ -180,7 +180,6 @@ public:
 
     QString subTypeName() const override;
     Location location() const override;
-
 };
 
 class DefensiveHorse : public EquipCard
@@ -193,7 +192,8 @@ public:
     QString subTypeName() const override;
     Location location() const override;
 
-    virtual int correction() const;
+    // TODO_Fs: this should be implemented using DistanceSkill
+    // virtual int correction() const;
 };
 
 class OffensiveHorse : public EquipCard
@@ -206,8 +206,7 @@ public:
     QString subTypeName() const override;
     Location location() const override;
 
-    virtual int correction() const;
-
+    // virtual int correction() const;
 };
 
 class Treasure : public EquipCard
@@ -251,7 +250,7 @@ public:
     DelayedTrick();
 
     QString subTypeName() const override;
-    virtual void takeEffect(ServerPlayer *target) const;
+    virtual void takeEffect(ServerPlayer *target) const = 0;
 };
 
 class SkillCard : public CardFace

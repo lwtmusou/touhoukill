@@ -87,15 +87,11 @@ void RoomObject::setCurrentCardUseReason(CardUseStruct::CardUseReason reason)
 
 void RoomObject::resetCard(int cardId)
 {
-    // It depends on how we achieve the filter skill.
+    // TODO_Fs: error check and sanity check
+    delete d->cards[cardId];
+    d->cards[cardId] = cloneCard(Sanguosha->getEngineCard(cardId));
 
-    // Card *newCard = Card::Clone(Sanguosha->getEngineCard(cardId));
-    // if (newCard == nullptr)
-    //     return;
-    // newCard->setFlags(d->cards[cardId]->getFlags());
-    // d->cards[cardId]->copyEverythingFrom(newCard);
-    // newCard->clearFlags();
-    // d->cards[cardId]->setModified(false);
+    // It does not depend on how we achieve the filter skill.
 }
 
 // Reset all cards, generals' states of the room instance

@@ -143,6 +143,11 @@ void CardFace::setHasPreAction(bool can)
     d->has_preact = can;
 }
 
+Card::HandlingMethod CardFace::defaultHandlingMethod() const
+{
+    return Card::MethodUse;
+}
+
 bool CardFace::targetFixed(const Player *, const Card *) const
 {
     return d->target_fixed;

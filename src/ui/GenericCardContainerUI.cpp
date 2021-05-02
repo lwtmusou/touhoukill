@@ -783,12 +783,12 @@ QPixmap PlayerCardContainer::_getEquipPixmap(const Card *equip)
         const DefensiveHorse *horse = qobject_cast<const DefensiveHorse *>(face);
         Q_ASSERT(horse);
         if (horse)
-            distance = QString("+%1").arg(QString::number(horse->correction()));
+            distance = "+1";
     } else if (index == 3) {
         const OffensiveHorse *horse = qobject_cast<const OffensiveHorse *>(face);
         Q_ASSERT(horse);
         if (horse)
-            distance = QString::number(horse->correction());
+            distance = "-1";
     }
     if (index != 1 && index != 4) {
         _m_layout->m_equipFont.paintText(&painter, _m_layout->m_equipDistanceArea, Qt::AlignLeft | Qt::AlignVCenter, distance);

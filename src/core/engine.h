@@ -19,7 +19,6 @@
 #include <QStringList>
 #include <QThread>
 
-class AI;
 class QVersionNumber;
 class CardFace;
 

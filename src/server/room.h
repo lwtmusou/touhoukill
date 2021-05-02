@@ -37,7 +37,6 @@ public:
     void outputEventStack();
     void saveWinnerTable(const QString &winner, bool isSurrender = false);
     void countDescription();
-    void resetAI(ServerPlayer *player);
 
     friend class RoomThread;
     friend class RoomThread3v3;
@@ -533,7 +532,6 @@ private:
     bool game_finished;
     bool game_paused;
     lua_State *L;
-    QList<AI *> ais;
     bool fill_robot;
 
     RoomThread *thread;
@@ -574,7 +572,6 @@ private:
     void assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign);
     void chooseGenerals();
     void chooseHegemonyGenerals();
-    AI *cloneAI(ServerPlayer *player);
     void broadcast(const QString &message, ServerPlayer *except = nullptr);
     void initCallbacks();
     QString askForOrder(ServerPlayer *player, const QString &default_choice);

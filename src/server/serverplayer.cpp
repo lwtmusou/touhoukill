@@ -1,5 +1,4 @@
 #include "serverplayer.h"
-#include "ai.h"
 #include "engine.h"
 #include "gamerule.h"
 #include "recorder.h"
@@ -18,8 +17,6 @@ ServerPlayer::ServerPlayer(Room *room)
     , m_isWaitingReply(false)
     , socket(nullptr)
     , room(room)
-    , ai(nullptr)
-    , trust_ai(new TrustAI(this))
     , recorder(nullptr)
     , _m_phases_index(0)
 {
@@ -1031,31 +1028,6 @@ void ServerPlayer::setGender(General::Gender gender)
     args << objectName();
     args << (int)gender;
     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
-}
-
-bool ServerPlayer::isOnline() const
-{
-    return getState() == "online";
-}
-
-void ServerPlayer::setAI(AI *ai)
-{
-    this->ai = ai;
-}
-
-AI *ServerPlayer::getAI() const
-{
-    if (getState() == "online")
-        return nullptr;
-    else if (getState() != "robot" && !Config.EnableCheat)
-        return trust_ai;
-    else
-        return ai;
-}
-
-AI *ServerPlayer::getSmartAI() const
-{
-    return ai;
 }
 
 int ServerPlayer::getGeneralMaxHp() const

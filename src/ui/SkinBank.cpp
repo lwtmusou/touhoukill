@@ -105,12 +105,12 @@ QSanSkinFactory *QSanSkinFactory::_sm_singleton = nullptr;
 QHash<QString, QString> IQSanComponentSkin::QSanSimpleTextFont::_m_fontBank;
 
 IQSanComponentSkin::QSanSimpleTextFont::QSanSimpleTextFont()
-    : m_family_name("")
+    : m_fontSize(0, 0)
     , m_spacing(0)
     , m_weight(0)
     , m_color(Qt::black)
     , m_vertical(false)
-    , m_fontSize(0, 0)
+
 {
 }
 

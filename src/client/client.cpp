@@ -188,8 +188,8 @@ void Client::updateCard(const QVariant &val)
         int cardId = val.toInt();
         Card *card = getCard(cardId);
         // TODO: How to handle the Filter skill?
-        // if (!card->isModified())
-        //return;
+        if (!card->isModified())
+            return;
         resetCard(cardId);
     } else {
         // update card
@@ -200,18 +200,21 @@ void Client::updateCard(const QVariant &val)
         Card::Number number = static_cast<Card::Number>(args[2].toInt());
         QString cardName = args[3].toString();
         QString skillName = args[4].toString();
-        QString objectName = args[5].toString();
+        // QString objectName = args[5].toString();
         QStringList flags;
         JsonUtils::tryParse(args[6], flags);
 
-        Card *card = cloneCard(cardName, suit, number);
-        card->setID(cardId);
-        card->setSkillName(skillName);
+        const CardFace *face = CardFactory::cardFace(cardName);
+        // since we are modifying actual card, the Face must not be nullptr
+        if (face != nullptr) {
+            Card *c = getCard(cardId);
+            c->setSuit(suit);
+            c->setNumber(number);
+            c->setSkillName(skillName);
+            c->setFace(face);
+        }
         // TODO: Figure out the objectName here.
         //card->setObjectName(objectName);
-        // WrappedCard *wrapped = getWrappedCard(cardId);
-        // Q_ASSERT(wrapped != nullptr);
-        // wrapped->copyEverythingFrom(card);
     }
 }
 
