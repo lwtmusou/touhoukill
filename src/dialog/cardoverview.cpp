@@ -58,7 +58,7 @@ void CardOverview::loadFromAll()
         ui->tableWidget->setCurrentItem(ui->tableWidget->item(0, 0));
 
         const Card *card = Sanguosha->getEngineCard(0);
-        if (card->getTypeId() == Card::TypeEquip) {
+        if (card->face()->type() == CardFace::TypeEquip) {
             ui->playAudioEffectButton->show();
             ui->malePlayButton->hide();
             ui->femalePlayButton->hide();
@@ -81,7 +81,7 @@ void CardOverview::loadFromList(const QList<const Card *> &list)
         ui->tableWidget->setCurrentItem(ui->tableWidget->item(0, 0));
 
         const Card *card = list.first();
-        if (card->getTypeId() == Card::TypeEquip) {
+        if (card->face()->type() == CardFace::TypeEquip) {
             ui->playAudioEffectButton->show();
             ui->malePlayButton->hide();
             ui->femalePlayButton->hide();
@@ -95,16 +95,16 @@ void CardOverview::loadFromList(const QList<const Card *> &list)
 
 void CardOverview::addCard(int i, const Card *card)
 {
-    QString name = Sanguosha->translate(card->objectName());
-    QIcon suit_icon = QIcon(QString("image/system/suit/%1.png").arg(card->getSuitString()));
-    QString suit_str = Sanguosha->translate(card->getSuitString());
-    QString point = card->getNumberString();
-    QString type = Sanguosha->translate(card->getType());
-    QString subtype = Sanguosha->translate(card->getSubtype());
-    QString package = Sanguosha->translate(card->getPackage());
+    QString name = Sanguosha->translate(card->faceName());
+    QIcon suit_icon = QIcon(QString("image/system/suit/%1.png").arg(card->suitString()));
+    QString suit_str = Sanguosha->translate(card->suitString());
+    QString point = card->numberString();
+    QString type = Sanguosha->translate(card->face()->name());
+    QString subtype = Sanguosha->translate(card->face()->subTypeName());
+    QString package; //= Sanguosha->translate(card->getPackage());
 
     QTableWidgetItem *name_item = new QTableWidgetItem(name);
-    name_item->setData(Qt::UserRole, card->getId());
+    name_item->setData(Qt::UserRole, card->id());
 
     ui->tableWidget->setItem(i, 0, name_item);
     ui->tableWidget->setItem(i, 1, new QTableWidgetItem(suit_icon, suit_str));
@@ -113,10 +113,12 @@ void CardOverview::addCard(int i, const Card *card)
     ui->tableWidget->setItem(i, 4, new QTableWidgetItem(subtype));
 
     QTableWidgetItem *package_item = new QTableWidgetItem(package);
+#if 0
     if (Config.value("LuaPackages", QString()).toString().split("+").contains(card->getPackage())) {
         package_item->setBackground(QBrush(qRgb(0x66, 0xCC, 0xFF)));
         package_item->setToolTip(tr("<font color=#FFFF33>This is an Lua extension</font>"));
     }
+#endif
     ui->tableWidget->setItem(i, 5, package_item);
 }
 
@@ -130,12 +132,12 @@ void CardOverview::on_tableWidget_itemSelectionChanged()
     int row = ui->tableWidget->currentRow();
     int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
     const Card *card = Sanguosha->getEngineCard(card_id);
-    QString pixmap_path = QString("image/big-card/%1.png").arg(card->objectName());
+    QString pixmap_path = QString("image/big-card/%1.png").arg(card->faceName());
     ui->cardLabel->setPixmap(pixmap_path);
 
-    ui->cardDescriptionBox->setText(card->getDescription(false));
+    ui->cardDescriptionBox->setText(card->face()->description());
 
-    if (card->getTypeId() == Card::TypeEquip) {
+    if (card->face()->type() == CardFace::TypeEquip) {
         ui->playAudioEffectButton->show();
         ui->malePlayButton->hide();
         ui->femalePlayButton->hide();
@@ -174,7 +176,7 @@ void CardOverview::on_malePlayButton_clicked()
     if (row >= 0) {
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
         const Card *card = Sanguosha->getEngineCard(card_id);
-        Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(card->objectName(), true));
+        Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(card->faceName(), true));
     }
 }
 
@@ -184,7 +186,7 @@ void CardOverview::on_femalePlayButton_clicked()
     if (row >= 0) {
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
         const Card *card = Sanguosha->getEngineCard(card_id);
-        Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(card->objectName(), false));
+        Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(card->faceName(), false));
     }
 }
 
@@ -194,13 +196,13 @@ void CardOverview::on_playAudioEffectButton_clicked()
     if (row >= 0) {
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
         const Card *card = Sanguosha->getEngineCard(card_id);
-        if (card->getTypeId() == Card::TypeEquip) {
-            QString effectName = card->getEffectName();
+        if (card->face()->type() == CardFace::TypeEquip) {
+            QString effectName = card->face()->effectName();
             if (effectName == "vscrossbow")
                 effectName = "crossbow";
             QString fileName = G_ROOM_SKIN.getPlayerAudioEffectPath(effectName, QString("equip"), -1);
             if (!QFile::exists(fileName))
-                fileName = G_ROOM_SKIN.getPlayerAudioEffectPath(card->getCommonEffectName(), QString("common"), -1);
+                fileName = G_ROOM_SKIN.getPlayerAudioEffectPath(card->face()->commonEffectName(), QString("common"), -1);
             Sanguosha->playAudioEffect(fileName);
         }
     }

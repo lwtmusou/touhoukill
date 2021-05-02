@@ -92,7 +92,7 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
         item->setFlag(QGraphicsItem::ItemIsFocusable);
 
         item->setAcceptedMouseButtons(Qt::LeftButton);
-        if (disabled_ids.contains(item->getCard()->getEffectiveId()))
+        if (disabled_ids.contains(item->getCard()->effectiveID()))
             item->setEnabled(false);
 
         if (shownHandcard_ids.contains(item->getId())) {
@@ -210,7 +210,7 @@ QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, Pla
     foreach (int card_id, card_ids) {
         CardItem *to_take = nullptr;
         foreach (CardItem *item, items) {
-            if (item->getCard()->getId() == card_id) {
+            if (item->getCard()->id() == card_id) {
                 to_take = item;
                 break;
             }
@@ -237,7 +237,7 @@ int CardContainer::getFirstEnabled() const
 {
     foreach (CardItem *card, items) {
         if (card->isEnabled())
-            return card->getCard()->getId();
+            return card->getCard()->id();
     }
     return -1;
 }
@@ -258,7 +258,7 @@ void CardContainer::startGongxin(const QList<int> &enabled_ids)
 
     foreach (CardItem *item, items) {
         const Card *card = item->getCard();
-        if (card && enabled_ids.contains(card->getEffectiveId())) {
+        if (card && enabled_ids.contains(card->effectiveID())) {
             connect(item, SIGNAL(double_clicked()), this, SLOT(gongxinItem()));
         } else
             item->setEnabled(false);
@@ -275,7 +275,7 @@ void CardContainer::grabItem()
     CardItem *card_item = qobject_cast<CardItem *>(sender());
     if (card_item && !collidesWithItem(card_item)) {
         card_item->disconnect(this);
-        emit item_chosen(card_item->getCard()->getId());
+        emit item_chosen(card_item->getCard()->id());
     }
 }
 
@@ -284,7 +284,7 @@ void CardContainer::chooseItem()
     CardItem *card_item = qobject_cast<CardItem *>(sender());
     if (card_item) {
         card_item->disconnect(this);
-        emit item_chosen(card_item->getCard()->getId());
+        emit item_chosen(card_item->getCard()->id());
     }
 }
 
@@ -292,7 +292,7 @@ void CardContainer::gongxinItem()
 {
     CardItem *card_item = qobject_cast<CardItem *>(sender());
     if (card_item) {
-        emit item_gongxined(card_item->getCard()->getId());
+        emit item_gongxined(card_item->getCard()->id());
         clear();
     }
 }
@@ -319,7 +319,7 @@ void CardContainer::view(const ClientPlayer *player)
     QList<int> card_ids;
     QList<const Card *> cards = player->getHandcards();
     foreach (const Card *card, cards)
-        card_ids << card->getEffectiveId();
+        card_ids << card->effectiveID();
 
     fillCards(card_ids);
 }
@@ -408,10 +408,10 @@ void GuanxingBox::reply()
 {
     QList<int> up_cards, down_cards;
     foreach (CardItem *card_item, up_items)
-        up_cards << card_item->getCard()->getId();
+        up_cards << card_item->getCard()->id();
 
     foreach (CardItem *card_item, down_items)
-        down_cards << card_item->getCard()->getId();
+        down_cards << card_item->getCard()->id();
 
     ClientInstance->onPlayerReplyGuanxing(up_cards, down_cards);
     clear();

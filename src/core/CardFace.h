@@ -3,34 +3,32 @@
 
 // Fs: do not use "#pragma once" because every header file does not use it
 
-#include <QMetaObject>
+#include <QObject>
 #include <QString>
+
+#include "card.h"
 
 class Player;
 class ServerPlayer;
 class Room;
 
-namespace RefactorProposal {
-
 class CardFacePrivate;
-class Card;
 struct CardUseStruct;
 struct CardEffectStruct;
 
 /**
  * @interface The functional model of a given card.
  */
-class CardFace
+class CardFace : public QObject
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     CardFace();
     virtual ~CardFace();
 
     // text property
-    // FIXME: replace `name` with objectName ?
-    virtual QString name() const;
+    virtual QString name() const; // For Lua skill card. Lua skill card would provide dynamic name.
     virtual QString description() const;
     virtual QString commonEffectName() const;
     virtual QString effectName() const;
@@ -80,16 +78,29 @@ public:
     virtual bool hasPreAction() const;
     void setHasPreAction(bool can);
 
-    // This is method is removed from the face. It's clear that this is totally dynamic.
-    // virtual Card::HandlingMethod defaultHandlingMethod() const;
+    // This method provides a default handling method suggested by the card face.
+    // Almost every actual card has its handlingMethod to be Card::Use.
+    virtual Card::HandlingMethod defaultHandlingMethod() const;
 
     // Functions
     virtual bool targetFixed(const Player *Self, const Card *card) const;
-    void setTargetFixed(bool can);
+    void setTargetFixed(bool fixed);
 
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self, const Card *card) const;
 
     // This is the merged targetFilter implementation.
+    /**
+     * Calculate the maximum vote for specific target.
+     * 
+     * @param targets The lists where all selected targets are.
+     * @param to_select The player to be judged.
+     * @param Self The user of the card.
+     * @param card the card itself
+     * 
+     * @return the maximum vote for to_select.
+     * 
+     * @note to_select will be selectable until its appearance in targets >= its maximum vote. 
+     */
     virtual int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card) const;
 
     virtual bool isAvailable(const Player *player, const Card *card) const;
@@ -106,13 +117,13 @@ public:
     virtual bool isCancelable(const CardEffectStruct &effect) const;
     virtual void onNullified(ServerPlayer *target, const Card *card) const;
 
-private:
+protected:
     CardFacePrivate *d;
 };
 
 class BasicCard : public CardFace
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     BasicCard();
@@ -123,7 +134,7 @@ public:
 
 class EquipCard : public CardFace
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     enum Location
@@ -142,22 +153,27 @@ public:
     QString typeName() const override;
 
     virtual Location location() const = 0;
+
+    virtual void onInstall(ServerPlayer *player) const = 0;
+    virtual void onUninstall(ServerPlayer *player) const = 0;
 };
 
 class Weapon : public EquipCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Weapon();
 
     QString subTypeName() const override;
     Location location() const override;
+
+    virtual int range() const = 0;
 };
 
 class Armor : public EquipCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Armor();
@@ -168,29 +184,34 @@ public:
 
 class DefensiveHorse : public EquipCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     DefensiveHorse();
 
     QString subTypeName() const override;
     Location location() const override;
+
+    // TODO_Fs: this should be implemented using DistanceSkill
+    // virtual int correction() const;
 };
 
 class OffensiveHorse : public EquipCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     OffensiveHorse();
 
     QString subTypeName() const override;
     Location location() const override;
+
+    // virtual int correction() const;
 };
 
 class Treasure : public EquipCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     Treasure();
@@ -201,7 +222,7 @@ public:
 
 class TrickCard : public CardFace
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     TrickCard();
@@ -212,7 +233,7 @@ public:
 
 class NonDelayedTrick : public TrickCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     NonDelayedTrick();
@@ -223,17 +244,18 @@ public:
 
 class DelayedTrick : public TrickCard
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     DelayedTrick();
 
     QString subTypeName() const override;
+    virtual void takeEffect(ServerPlayer *target) const = 0;
 };
 
 class SkillCard : public CardFace
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     SkillCard();
@@ -242,7 +264,5 @@ public:
     QString typeName() const override;
     QString subTypeName() const override;
 };
-
-}
 
 #endif

@@ -132,7 +132,7 @@ QString DamageStruct::getReason() const
     if (reason != QString())
         return reason;
     else if (card)
-        return card->objectName();
+        return card->faceName();
     return QString();
 }
 

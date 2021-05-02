@@ -1,17 +1,23 @@
 #include "aux-skills.h"
+#include "CardFace.h"
 #include "client.h"
 #include "clientplayer.h"
 #include "engine.h"
-#include "standard.h"
 
 DiscardSkill::DiscardSkill()
     : ViewAsSkill("discard")
-    , card(new DummyCard)
+    , card(new Card(nullptr, nullptr)) // FIXME: Make it available to access the RoomObject so that DummyCard could be created.
     , num(0)
     , include_equip(false)
     , is_discard(true)
 {
-    card->setParent(this);
+    // card->setParent(this);
+}
+
+DiscardSkill::~DiscardSkill()
+{
+    delete card;
+    card = nullptr;
 }
 
 void DiscardSkill::setNum(int num)
@@ -39,7 +45,7 @@ bool DiscardSkill::viewFilter(const QList<const Card *> &selected, const Card *c
     if (selected.length() >= num)
         return false;
 
-    if (!include_equip && card->isEquipped(Self))
+    if (!include_equip && Self->hasEquip(card))
         return false;
 
     if (is_discard && Self->isCardLimited(card, Card::MethodDiscard))
@@ -52,7 +58,8 @@ const Card *DiscardSkill::viewAs(const QList<const Card *> &cards, const Player 
 {
     if (cards.length() >= minnum) {
         card->clearSubcards();
-        card->addSubcards(cards);
+        foreach (const Card *c, cards)
+            card->addSubcard(c);
         return card;
     } else
         return nullptr;
@@ -110,13 +117,16 @@ bool ShowOrPindianSkill::matchPattern(const Player *player, const Card *card) co
 
 class YijiCard : public SkillCard
 {
+    Q_OBJECT
 public:
     YijiCard()
     {
-        target_fixed = false;
-        mute = true;
-        will_throw = false;
-        handling_method = Card::MethodNone;
+        setTargetFixed(false);
+        // mute = true;
+        setThrowWhenUsing(false);
+        // will_throw = false;
+        // FIXME: How to pass the handling method to the card?
+        // handling_method = Card::MethodNone;
     }
 
     void setPlayerNames(const QStringList &names)
@@ -124,26 +134,27 @@ public:
         set = QSet<QString>(names.begin(), names.end());
     }
 
-    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const override
+    int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *, const Card *card) const override
     {
-        return targets.isEmpty() && set.contains(to_select->objectName());
+        return targets.isEmpty() && set.contains(to_select->objectName()) ? 1 : 0;
     }
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override
+    void use(Room *room, const CardUseStruct &use) const override
     {
-        ServerPlayer *target = targets.first();
+        ServerPlayer *source = use.from;
+        ServerPlayer *target = use.to.first();
 
         room->broadcastSkillInvoke("rende");
         CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), target->objectName(), "nosrende", QString());
-        room->obtainCard(target, this, reason, false);
+        room->obtainCard(target, use.card, reason, false);
 
         int old_value = source->getMark("nosrende");
-        int new_value = old_value + subcards.length();
+        int new_value = old_value + use.card->subcards().size();
         room->setPlayerMark(source, "nosrende", new_value);
 
         if (old_value < 2 && new_value >= 2) {
             RecoverStruct recover;
-            recover.card = this;
+            recover.card = use.card;
             recover.who = source;
             room->recover(source, recover);
         }
@@ -156,8 +167,18 @@ private:
 YijiViewAsSkill::YijiViewAsSkill()
     : ViewAsSkill("yiji")
 {
-    card = new YijiCard;
-    card->setParent(this);
+    face = new YijiCard;
+    card = new Card(nullptr, face);
+    card->setHandleMethod(Card::MethodNone);
+    // card->setParent(this);
+}
+
+YijiViewAsSkill::~YijiViewAsSkill()
+{
+    delete face;
+    face = nullptr;
+    delete card;
+    card = nullptr;
 }
 
 void YijiViewAsSkill::setCards(const QString &card_str)
@@ -173,12 +194,12 @@ void YijiViewAsSkill::setMaxNum(int max_num)
 
 void YijiViewAsSkill::setPlayerNames(const QStringList &names)
 {
-    card->setPlayerNames(names);
+    face->setPlayerNames(names);
 }
 
 bool YijiViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card *card, const Player * /*Self*/) const
 {
-    return ids.contains(card->getId()) && selected.length() < max_num;
+    return ids.contains(card->id()) && selected.length() < max_num;
 }
 
 const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards, const Player * /*Self*/) const
@@ -187,18 +208,21 @@ const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards, const Play
         return nullptr;
 
     card->clearSubcards();
-    card->addSubcards(cards);
+    foreach (const Card *c, cards)
+        card->addSubcard(c);
     return card;
 }
 
 // ------------------------------------------------
 
-class ChoosePlayerCard : public DummyCard
+class ChoosePlayerCard : public SkillCard
 {
+    Q_OBJECT
 public:
     ChoosePlayerCard()
     {
-        target_fixed = false;
+        // target_fixed = false;
+        setTargetFixed(false);
     }
 
     void setPlayerNames(const QStringList &names)
@@ -206,9 +230,9 @@ public:
         set = QSet<QString>(names.begin(), names.end());
     }
 
-    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const override
+    int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *, const Card *) const override
     {
-        return targets.isEmpty() && set.contains(to_select->objectName());
+        return targets.isEmpty() && set.contains(to_select->objectName()) ? 1 : 0;
     }
 
 private:
@@ -218,16 +242,26 @@ private:
 ChoosePlayerSkill::ChoosePlayerSkill()
     : ZeroCardViewAsSkill("choose_player")
 {
-    card = new ChoosePlayerCard;
-    card->setParent(this);
+    face = new ChoosePlayerCard;
+    card = new Card(nullptr, face);
+}
+
+ChoosePlayerSkill::~ChoosePlayerSkill()
+{
+    delete face;
+    face = nullptr;
+    delete card;
+    card = nullptr;
 }
 
 void ChoosePlayerSkill::setPlayerNames(const QStringList &names)
 {
-    card->setPlayerNames(names);
+    face->setPlayerNames(names);
 }
 
 const Card *ChoosePlayerSkill::viewAs(const Player * /*Self*/) const
 {
     return card;
 }
+
+#include "aux-skills.moc"

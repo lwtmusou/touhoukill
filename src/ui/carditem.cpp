@@ -64,19 +64,19 @@ void CardItem::setCard(const Card *card)
     if (card != nullptr) {
         if (card->isVirtualCard()) {
             m_cardId = Card::S_UNKNOWN_CARD_ID;
-            setObjectName(card->objectName());
+            setObjectName(card->faceName());
             for (int i = 0; i <= Sanguosha->getCardCount() - 1; i++) {
-                if (Sanguosha->getEngineCard(i)->objectName() == card->objectName()) {
-                    setToolTip(Sanguosha->getEngineCard(i)->getDescription());
+                if (Sanguosha->getEngineCard(i)->faceName() == card->faceName()) {
+                    setToolTip(Sanguosha->getEngineCard(i)->face()->description());
                     break;
                 }
             }
         } else {
-            m_cardId = card->getId();
+            m_cardId = card->id();
             const Card *engineCard = Sanguosha->getEngineCard(m_cardId);
             Q_ASSERT(engineCard != nullptr);
-            setObjectName(engineCard->objectName());
-            setToolTip(engineCard->getDescription());
+            setObjectName(engineCard->faceName());
+            setToolTip(engineCard->face()->description());
         }
     } else {
         m_cardId = Card::S_UNKNOWN_CARD_ID;
@@ -245,7 +245,7 @@ CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id)
             else
                 continue;
         }
-        if (item->getCard()->getId() == card_id)
+        if (item->getCard()->id() == card_id)
             return item;
     }
 
@@ -337,8 +337,8 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidge
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardMainArea, G_ROOM_SKIN.getPixmap("generalCardBack", QString(), true));
     const Card *card = Sanguosha->getEngineCard(m_cardId);
     if (card) {
-        painter->drawPixmap(G_COMMON_LAYOUT.m_cardSuitArea, G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
-        painter->drawPixmap(G_COMMON_LAYOUT.m_cardNumberArea, G_ROOM_SKIN.getCardNumberPixmap(card->getNumber(), card->isBlack()));
+        painter->drawPixmap(G_COMMON_LAYOUT.m_cardSuitArea, G_ROOM_SKIN.getCardSuitPixmap(card->suit()));
+        painter->drawPixmap(G_COMMON_LAYOUT.m_cardNumberArea, G_ROOM_SKIN.getCardNumberPixmap(card->number(), card->isBlack()));
         QRect rect = G_COMMON_LAYOUT.m_cardFootnoteArea;
         // Deal with stupid QT...
         if (_m_showFootnote)

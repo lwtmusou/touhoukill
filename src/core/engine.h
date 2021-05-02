@@ -1,6 +1,7 @@
 #ifndef _ENGINE_H
 #define _ENGINE_H
 
+#include "CardFace.h"
 #include "RoomObject.h"
 #include "card.h"
 #include "exppattern.h"
@@ -18,12 +19,8 @@
 #include <QStringList>
 #include <QThread>
 
-class AI;
 class QVersionNumber;
-
-namespace RefactorProposal {
 class CardFace;
-}
 
 class Engine : public QObject
 {
@@ -67,6 +64,7 @@ public:
 
     void addPackage(const QString &name);
     QList<const Package *> getPackages() const;
+    const Package *findPackage(const QString &name) const;
 
     const General *getGeneral(const QString &name) const;
     const QList<QString> getGenerals() const;
@@ -124,19 +122,24 @@ public:
     QVariant getConfigFromConfigFile(const QString &key) const;
 
     // Refactoring
-    void registerCardFace(const RefactorProposal::CardFace *cardFace);
-    const RefactorProposal::CardFace *getCardFace(const QString &name) const;
+    void registerCardFace(const CardFace *cardFace);
+    const CardFace *getCardFace(const QString &name) const;
+
+    QString getPackageNameByCard(const Card *c) const;
 
 private:
     QMutex m_mutex;
     QHash<QString, QString> translations;
     QHash<QString, const General *> generals;
     QHash<QString, const Skill *> skills;
-    QHash<QString, const RefactorProposal::CardFace *> cardFaces;
+    QHash<QString, const CardFace *> cardFaces;
     QHash<QThread *, RoomObject *> m_rooms;
     QMap<QString, QString> modes;
     QMultiMap<QString, QString> related_skills;
     mutable QMap<QString, const CardPattern *> patterns;
+
+    // Package
+    QList<const Package *> packages;
 
     // special skills
     QList<const ProhibitSkill *> prohibit_skills;
@@ -161,6 +164,7 @@ class SurrenderCard : public SkillCard
 
 public:
     Q_INVOKABLE SurrenderCard();
+
     void onUse(Room *room, const CardUseStruct &use) const override;
 };
 
@@ -170,6 +174,7 @@ class CheatCard : public SkillCard
 
 public:
     Q_INVOKABLE CheatCard();
+
     void onUse(Room *room, const CardUseStruct &use) const override;
 };
 

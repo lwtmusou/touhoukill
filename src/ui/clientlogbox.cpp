@@ -50,9 +50,9 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
                 card = Sanguosha->getEngineCard(one_card.toInt());
             if (card) {
                 if (log_name.isEmpty())
-                    log_name = card->getLogName();
+                    log_name = card->logName();
                 else
-                    log_name += ", " + card->getLogName();
+                    log_name += ", " + card->logName();
             }
         }
         log_name = bold(log_name, Qt::yellow);
@@ -87,7 +87,7 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
         if (card == nullptr)
             return;
 
-        QString card_name = card->getLogName();
+        QString card_name = card->logName();
         card_name = bold(card_name, Qt::yellow);
 
         QString reason = tr("using");
@@ -97,41 +97,40 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
             reason = tr("recasting");
 
         if (card->isVirtualCard()) {
-            QString skill_name = Sanguosha->translate(card->getSkillName());
+            QString skill_name = Sanguosha->translate(card->skillName());
             skill_name = bold(skill_name, Qt::yellow);
-            bool eff = (card->getSkillName(false) != card->getSkillName(true));
+            bool eff = (card->skillName(false) != card->skillName(true));
             QString meth = eff ? tr("carry out") : tr("use skill");
             QString suffix = eff ? tr("effect") : "";
 
-            QList<int> card_ids = card->getSubcards();
+            IDSet card_ids = card->subcards();
             QStringList subcard_list;
             foreach (int card_id, card_ids) {
                 const Card *subcard = Sanguosha->getEngineCard(card_id);
-                subcard_list << bold(subcard->getLogName(), Qt::yellow);
+                subcard_list << bold(subcard->logName(), Qt::yellow);
             }
 
             QString subcard_str = subcard_list.join(", ");
-            if (card->getTypeId() == Card::TypeSkill && !card->isKindOf("YanxiaoCard")) {
-                const SkillCard *skill_card = qobject_cast<const SkillCard *>(card);
-                if (subcard_list.isEmpty() || !skill_card->willThrow())
+            if (card->face()->type() == CardFace::TypeSkill) {
+                if (subcard_list.isEmpty() || !card->throwWhenUsing())
                     log = tr("%from %2 [%1] %3").arg(skill_name).arg(meth).arg(suffix);
                 else
                     log = tr("%from %3 [%1] %4, and the cost is %2").arg(skill_name).arg(subcard_str).arg(meth).arg(suffix);
             } else {
-                if (subcard_list.isEmpty() || card->getSkillName().contains("guhuo"))
+                if (subcard_list.isEmpty() || card->skillName().contains("guhuo"))
                     log = tr("%from %4 [%1] %5, %3 [%2]").arg(skill_name).arg(card_name).arg(reason).arg(meth).arg(suffix);
                 else
                     log = tr("%from %5 [%1] %6 %4 %2 as %3").arg(skill_name).arg(subcard_str).arg(card_name).arg(reason).arg(meth).arg(suffix);
             }
 
             delete card;
-        } else if (card->getSkillName() != QString()) {
-            const Card *real = Sanguosha->getEngineCard(card->getEffectiveId());
-            QString skill_name = Sanguosha->translate(card->getSkillName());
+        } else if (!card->skillName().isEmpty()) {
+            const Card *real = Sanguosha->getEngineCard(card->effectiveID());
+            QString skill_name = Sanguosha->translate(card->skillName());
             skill_name = bold(skill_name, Qt::yellow);
 
-            QString subcard_str = bold(real->getLogName(), Qt::yellow);
-            if (card->isKindOf("DelayedTrick"))
+            QString subcard_str = bold(real->logName(), Qt::yellow);
+            if (card->face()->isKindOf("DelayedTrick"))
                 log = tr("%from %5 [%1] %6 %4 %2 as %3").arg(skill_name).arg(subcard_str).arg(card_name).arg(reason).arg(tr("use skill")).arg(QString());
             else
                 log = tr("Due to the effect of [%1], %from %4 %2 as %3").arg(skill_name).arg(subcard_str).arg(card_name).arg(reason);

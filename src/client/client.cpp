@@ -5,7 +5,6 @@
 #include "nativesocket.h"
 #include "recorder.h"
 #include "settings.h"
-#include "standard.h"
 
 #include <QApplication>
 #include <QCheckBox>
@@ -188,6 +187,7 @@ void Client::updateCard(const QVariant &val)
         // reset card
         int cardId = val.toInt();
         Card *card = getCard(cardId);
+        // TODO: How to handle the Filter skill?
         if (!card->isModified())
             return;
         resetCard(cardId);
@@ -197,20 +197,24 @@ void Client::updateCard(const QVariant &val)
         Q_ASSERT(args.size() >= 5);
         int cardId = args[0].toInt();
         Card::Suit suit = (Card::Suit)args[1].toInt();
-        int number = args[2].toInt();
+        Card::Number number = static_cast<Card::Number>(args[2].toInt());
         QString cardName = args[3].toString();
         QString skillName = args[4].toString();
-        QString objectName = args[5].toString();
+        // QString objectName = args[5].toString();
         QStringList flags;
         JsonUtils::tryParse(args[6], flags);
 
-        Card *card = cloneCard(cardName, suit, number, flags);
-        card->setId(cardId);
-        card->setSkillName(skillName);
-        card->setObjectName(objectName);
-        WrappedCard *wrapped = getWrappedCard(cardId);
-        Q_ASSERT(wrapped != nullptr);
-        wrapped->copyEverythingFrom(card);
+        const CardFace *face = CardFactory::cardFace(cardName);
+        // since we are modifying actual card, the Face must not be nullptr
+        if (face != nullptr) {
+            Card *c = getCard(cardId);
+            c->setSuit(suit);
+            c->setNumber(number);
+            c->setSkillName(skillName);
+            c->setFace(face);
+        }
+        // TODO: Figure out the objectName here.
+        //card->setObjectName(objectName);
     }
 }
 
@@ -244,7 +248,7 @@ void Client::setShownHandCards(const QVariant &card_var)
     JsonUtils::tryParse(card_str[1], card_ids);
 
     ClientPlayer *player = getPlayer(who);
-    player->setShownHandcards(card_ids);
+    player->setShownHandcards(IDSet(card_ids.begin(), card_ids.end()));
     player->changePile("shown_card", true, card_ids);
 }
 
@@ -262,7 +266,7 @@ void Client::setBrokenEquips(const QVariant &card_var)
 
     ClientPlayer *player = getPlayer(who);
 
-    player->setBrokenEquips(card_ids);
+    player->setBrokenEquips(IDSet(card_ids.begin(), card_ids.end()));
 }
 
 void Client::setHiddenGenerals(const QVariant &arg)
@@ -607,7 +611,8 @@ void Client::requestCheatRunScript(const QString &script)
     cheatReq << script;
     JsonDocument doc(cheatReq);
     QString cheatStr = QString::fromUtf8(doc.toJson());
-    CheatCard *card = new CheatCard;
+    Card *card = cloneCard("CheatCard");
+    card->setHandleMethod(Card::MethodNone);
     card->setUserString(cheatStr);
     onPlayerResponseCard(card);
 }
@@ -622,8 +627,8 @@ void Client::requestCheatRevive(const QString &name)
     cheatReq << name;
     JsonDocument doc(cheatReq);
     QString cheatStr = QString::fromUtf8(doc.toJson());
-    CheatCard *card = new CheatCard;
-    card->setUserString(cheatStr);
+    Card *card = cloneCard("CheatCard");
+    card->setHandleMethod(Card::MethodNone);
     onPlayerResponseCard(card);
 }
 
@@ -642,8 +647,9 @@ void Client::requestCheatDamage(const QString &source, const QString &target, Da
     cheatReq << QVariant(cheatArg);
     JsonDocument doc(cheatReq);
     QString cheatStr = QString::fromUtf8(doc.toJson());
-    CheatCard *card = new CheatCard;
+    Card *card = cloneCard("CheatCard");
     card->setUserString(cheatStr);
+    card->setHandleMethod(Card::MethodNone);
     onPlayerResponseCard(card);
 }
 
@@ -657,8 +663,9 @@ void Client::requestCheatKill(const QString &killer, const QString &victim)
     cheatReq << QVariant(JsonArray() << killer << victim);
     JsonDocument doc(cheatReq);
     QString cheatStr = QString::fromUtf8(doc.toJson());
-    CheatCard *card = new CheatCard;
+    Card *card = cloneCard("CheatCard");
     card->setUserString(cheatStr);
+    card->setHandleMethod(Card::MethodNone);
     onPlayerResponseCard(card);
 }
 
@@ -672,8 +679,9 @@ void Client::requestCheatGetOneCard(int card_id)
     cheatReq << card_id;
     JsonDocument doc(cheatReq);
     QString cheatStr = QString::fromUtf8(doc.toJson());
-    CheatCard *card = new CheatCard;
+    Card *card = cloneCard("CheatCard");
     card->setUserString(cheatStr);
+    card->setHandleMethod(Card::MethodNone);
     onPlayerResponseCard(card);
 }
 
@@ -688,8 +696,9 @@ void Client::requestCheatChangeGeneral(const QString &name, bool isSecondaryHero
     cheatReq << isSecondaryHero;
     JsonDocument doc(cheatReq);
     QString cheatStr = QString::fromUtf8(doc.toJson());
-    CheatCard *card = new CheatCard;
+    Card *card = cloneCard("CheatCard");
     card->setUserString(cheatStr);
+    card->setHandleMethod(Card::MethodNone);
     onPlayerResponseCard(card);
 }
 
@@ -715,15 +724,17 @@ void Client::onPlayerResponseCard(const Card *card, const QList<const Player *> 
         replyToServer(S_COMMAND_RESPONSE_CARD);
     } else {
         JsonArray targetNames;
-        if (!card->targetFixed(Self)) {
+        if (!card->face()->targetFixed(Self, card)) {
             foreach (const Player *target, targets)
                 targetNames << target->objectName();
         }
 
         replyToServer(S_COMMAND_RESPONSE_CARD, JsonArray() << card->toString() << QVariant::fromValue(targetNames));
 
-        if (card->isVirtualCard() && !card->parent())
-            delete card;
+        // FIXME: When to recycle the card?
+        if (card->isVirtualCard())
+            // delete card;
+            cardDeleting(card);
     }
 
     setStatus(NotActive);
@@ -953,9 +964,9 @@ void Client::exchangeKnownCards(const QVariant &players)
     ClientPlayer *a = getPlayer(args[0].toString()), *b = getPlayer(args[1].toString());
     QList<int> a_known, b_known;
     foreach (const Card *card, a->getHandcards())
-        a_known << card->getId();
+        a_known << card->id();
     foreach (const Card *card, b->getHandcards())
-        b_known << card->getId();
+        b_known << card->id();
     a->setCards(b_known);
     b->setCards(a_known);
 }
@@ -1204,7 +1215,7 @@ void Client::askForNullification(const QVariant &arg)
     if (!source_name.isNull())
         source = getPlayer(source_name.toString());
 
-    const Card *trick_card = Sanguosha->findChild<const Card *>(trick_name);
+    const CardFace *trick_card = Sanguosha->getCardFace(trick_name);
     if (Config.NeverNullifyMyTrick && source == Self) {
         if (trick_card->isKindOf("SingleTargetTrick") || trick_card->isKindOf("IronChain")) {
             onPlayerResponseCard(nullptr);
@@ -1220,7 +1231,7 @@ void Client::askForNullification(const QVariant &arg)
 
     if (source == nullptr) {
         prompt_doc->setHtml(
-            tr("Do you want to use nullification to trick card %1 from %2?").arg(Sanguosha->translate(trick_card->objectName())).arg(getPlayerName(target_player->objectName())));
+            tr("Do you want to use nullification to trick card %1 from %2?").arg(Sanguosha->translate(trick_card->name())).arg(getPlayerName(target_player->objectName())));
     } else {
         prompt_doc->setHtml(tr("%1 used trick card %2 to %3 <br>Do you want to use nullification?")
                                 .arg(getPlayerName(source->objectName()))
@@ -1293,7 +1304,9 @@ void Client::requestSurrender()
     if (getStatus() != Playing)
         return;
 
-    onPlayerResponseCard(new SurrenderCard);
+    auto card = cloneCard("SurrenderCard");
+    card->setHandleMethod(Card::MethodNone);
+    onPlayerResponseCard(card);
 }
 
 void Client::speakToServer(const QString &text)
@@ -1315,7 +1328,6 @@ void Client::addHistory(const QVariant &history)
     int times = args[1].toInt();
     if (add_str == "pushPile") {
         emit card_used();
-        autoCleanupClonedCards();
         return;
     } else if (add_str == ".") {
         Self->clearHistory();
@@ -1431,7 +1443,7 @@ void Client::setCardFlag(const QVariant &pattern_str)
 
     Card *card = getCard(id);
     if (card != nullptr)
-        card->setFlags(flag);
+        card->addFlag(flag);
 }
 
 void Client::updatePileNum()
@@ -1796,10 +1808,10 @@ void Client::onPlayerDiscardCards(const Card *cards)
 {
     if (cards) {
         JsonArray arr;
-        foreach (int card_id, cards->getSubcards())
+        foreach (int card_id, cards->subcards())
             arr << card_id;
-        if (cards->isVirtualCard() && !cards->parent())
-            delete cards;
+        if (cards->isVirtualCard()) // TODO: Delete card
+            cardDeleting(cards);
         replyToServer(S_COMMAND_DISCARD_CARD, arr);
     } else {
         replyToServer(S_COMMAND_DISCARD_CARD);
@@ -1873,8 +1885,7 @@ void Client::askForSinglePeach(const QVariant &arg)
         prompt_doc->setHtml(tr("%1 is dying, please provide %2 peach(es) to save him").arg(dying_general).arg(peaches));
     }
 
-    Peach *temp_peach = new Peach(Card::NoSuit, 0);
-    temp_peach->deleteLater();
+    Card *temp_peach = cloneCard("Peach");
     if (Self->getMark("Global_PreventPeach") > 0 || Self->isProhibited(dying, temp_peach)) {
         bool has_skill = false;
         foreach (const Skill *skill, Self->getVisibleSkillList(true)) {
@@ -1895,6 +1906,7 @@ void Client::askForSinglePeach(const QVariant &arg)
             Self->setCardLimitation("use", "Peach", "Global_PreventPeach");
         }
     }
+    cardDeleting(temp_peach); // Delete of card peach.
 
     setCurrentCardUsePattern(pattern.join("+"));
     m_isDiscardActionRefusable = true;
@@ -2012,7 +2024,7 @@ void Client::showAllCards(const QVariant &arg)
     if (who)
         who->setCards(card_ids);
 
-    emit gongxin(card_ids, false, QList<int>(), who->getShownHandcards());
+    emit gongxin(card_ids, false, IDSet(), who->getShownHandcards());
 }
 
 void Client::askForGongxin(const QVariant &args)
@@ -2033,7 +2045,7 @@ void Client::askForGongxin(const QVariant &args)
 
     who->setCards(card_ids);
 
-    emit gongxin(card_ids, enable_heart, enabled_ids, who->getShownHandcards());
+    emit gongxin(card_ids, enable_heart, IDSet(enabled_ids.begin(), enabled_ids.end()), who->getShownHandcards());
     setStatus(AskForGongxin);
 }
 
@@ -2140,7 +2152,7 @@ void Client::onPlayerReplyYiji(const Card *card, const Player *to)
         replyToServer(S_COMMAND_SKILL_YIJI);
     else {
         JsonArray req;
-        req << JsonUtils::toJsonArray(card->getSubcards());
+        req << JsonUtils::toJsonArray(card->subcards().values());
         req << to->objectName();
         replyToServer(S_COMMAND_SKILL_YIJI, req);
     }

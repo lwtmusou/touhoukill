@@ -3,7 +3,6 @@
 #include "engine.h"
 #include "room.h"
 #include "settings.h"
-#include "standard.h"
 
 Player::Player(QObject *parent)
     : QObject(parent)
@@ -162,12 +161,12 @@ void Player::setChaoren(int chaoren)
     }
 }
 
-QList<int> Player::getShownHandcards() const
+const IDSet &Player::getShownHandcards() const
 {
     return shown_handcards;
 }
 
-void Player::setShownHandcards(QList<int> &ids)
+void Player::setShownHandcards(const IDSet &ids)
 {
     this->shown_handcards = ids;
     emit showncards_changed();
@@ -180,12 +179,12 @@ bool Player::isShownHandcard(int id) const
     return shown_handcards.contains(id);
 }
 
-QList<int> Player::getBrokenEquips() const
+const IDSet &Player::getBrokenEquips() const
 {
     return broken_equips;
 }
 
-void Player::setBrokenEquips(QList<int> &ids)
+void Player::setBrokenEquips(const IDSet &ids)
 {
     this->broken_equips = ids;
     emit brokenEquips_changed();
@@ -391,10 +390,10 @@ int Player::getAttackRange(bool include_weapon) const
     int original_range = 1, weapon_range = 0;
 
     if (include_weapon) {
-        const Weapon *card = qobject_cast<const Weapon *>(weapon->getRealCard());
-        Q_ASSERT(card);
-        if (!isBrokenEquip(card->getEffectiveId(), true))
-            weapon_range = card->getRange();
+        const Weapon *face = dynamic_cast<const Weapon *>(weapon->face());
+        Q_ASSERT(face);
+        if (!isBrokenEquip(weapon->effectiveID(), true))
+            weapon_range = face->range();
     }
 
     int real_range = qMax(original_range, weapon_range) + Sanguosha->correctAttackRange(this, include_weapon, false);
@@ -888,11 +887,11 @@ void Player::setPhaseString(const QString &phase_str)
     setPhase(phase_map.value(phase_str, NotActive));
 }
 
-void Player::setEquip(WrappedCard *equip)
+void Player::setEquip(const Card *equip)
 {
-    const EquipCard *card = qobject_cast<const EquipCard *>(equip->getRealCard());
-    Q_ASSERT(card != nullptr);
-    switch (card->location()) {
+    const EquipCard *face = dynamic_cast<const EquipCard *>(equip->face());
+    Q_ASSERT(face != nullptr);
+    switch (face->location()) {
     case EquipCard::WeaponLocation:
         weapon = equip;
         break;
@@ -911,11 +910,11 @@ void Player::setEquip(WrappedCard *equip)
     }
 }
 
-void Player::removeEquip(WrappedCard *equip)
+void Player::removeEquip(const Card *equip)
 {
-    const EquipCard *card = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(equip->getId()));
-    Q_ASSERT(card != nullptr);
-    switch (card->location()) {
+    const EquipCard *face = dynamic_cast<const EquipCard *>(equip->face());
+    Q_ASSERT(face != nullptr);
+    switch (face->location()) {
     case EquipCard::WeaponLocation:
         weapon = nullptr;
         break;
@@ -939,20 +938,20 @@ bool Player::hasEquip(const Card *card) const
     Q_ASSERT(card != nullptr);
     int weapon_id = -1, armor_id = -1, def_id = -1, off_id = -1, tr_id = -1;
     if (weapon)
-        weapon_id = weapon->getEffectiveId();
+        weapon_id = weapon->effectiveID();
     if (armor)
-        armor_id = armor->getEffectiveId();
+        armor_id = armor->effectiveID();
     if (defensive_horse)
-        def_id = defensive_horse->getEffectiveId();
+        def_id = defensive_horse->effectiveID();
     if (offensive_horse)
-        off_id = offensive_horse->getEffectiveId();
+        off_id = offensive_horse->effectiveID();
     if (treasure)
-        tr_id = treasure->getEffectiveId();
+        tr_id = treasure->effectiveID();
     QList<int> ids;
     if (card->isVirtualCard())
-        ids << card->getSubcards();
+        ids << card->effectiveID();
     else
-        ids << card->getId();
+        ids << card->id();
 
     if (ids.isEmpty())
         return false;
@@ -968,27 +967,27 @@ bool Player::hasEquip() const
     return weapon != nullptr || armor != nullptr || defensive_horse != nullptr || offensive_horse != nullptr || treasure != nullptr;
 }
 
-WrappedCard *Player::getWeapon() const
+const Card *Player::getWeapon() const
 {
     return weapon;
 }
 
-WrappedCard *Player::getArmor() const
+const Card *Player::getArmor() const
 {
     return armor;
 }
 
-WrappedCard *Player::getDefensiveHorse() const
+const Card *Player::getDefensiveHorse() const
 {
     return defensive_horse;
 }
 
-WrappedCard *Player::getOffensiveHorse() const
+const Card *Player::getOffensiveHorse() const
 {
     return offensive_horse;
 }
 
-WrappedCard *Player::getTreasure() const
+const Card *Player::getTreasure() const
 {
     return treasure;
 }
@@ -1010,9 +1009,9 @@ QList<const Card *> Player::getEquips() const
     return equips;
 }
 
-const EquipCard *Player::getEquip(int index) const
+const Card *Player::getEquip(int index) const
 {
-    WrappedCard *equip = nullptr;
+    const Card *equip = nullptr;
     switch (index) {
     case 0:
         equip = weapon;
@@ -1030,12 +1029,10 @@ const EquipCard *Player::getEquip(int index) const
         equip = treasure;
         break;
     default:
+        // TODO: Raise warning here.
         return nullptr;
     }
-    if (equip != nullptr)
-        return qobject_cast<const EquipCard *>(equip->getRealCard());
-
-    return nullptr;
+    return equip;
 }
 
 bool Player::hasWeapon(const QString &weapon_name, bool, bool ignore_preshow) const
@@ -1046,12 +1043,12 @@ bool Player::hasWeapon(const QString &weapon_name, bool, bool ignore_preshow) co
     if (Sanguosha->ViewHas(this, weapon_name, "weapon", ignore_preshow) != nullptr)
         return true;
 
-    if (!weapon || isBrokenEquip(weapon->getEffectiveId(), true))
+    if (!weapon || isBrokenEquip(weapon->effectiveID(), true))
         return false;
-    if (weapon->objectName() == weapon_name || weapon->isKindOf(weapon_name.toStdString().c_str()))
+    if (weapon->faceName() == weapon_name || weapon->face()->isKindOf(weapon_name.toStdString().c_str()))
         return true;
-    const Card *real_weapon = Sanguosha->getEngineCard(weapon->getEffectiveId());
-    return real_weapon->objectName() == weapon_name || real_weapon->isKindOf(weapon_name.toStdString().c_str());
+    const Card *real_weapon = Sanguosha->getEngineCard(weapon->effectiveID());
+    return real_weapon->faceName() == weapon_name || real_weapon->face()->isKindOf(weapon_name.toStdString().c_str());
 }
 
 bool Player::hasArmorEffect(const QString &armor_name, bool) const
@@ -1062,12 +1059,12 @@ bool Player::hasArmorEffect(const QString &armor_name, bool) const
     if (Sanguosha->ViewHas(this, armor_name, "armor"))
         return true;
 
-    if (!armor || isBrokenEquip(armor->getEffectiveId(), true))
+    if (!armor || isBrokenEquip(armor->effectiveID(), true))
         return false;
-    if (armor->objectName() == armor_name || armor->isKindOf(armor_name.toStdString().c_str()))
+    if (armor->faceName() == armor_name || armor->face()->isKindOf(armor_name.toStdString().c_str()))
         return true;
-    const Card *real_armor = Sanguosha->getEngineCard(armor->getEffectiveId());
-    return real_armor->objectName() == armor_name || real_armor->isKindOf(armor_name.toStdString().c_str());
+    const Card *real_armor = Sanguosha->getEngineCard(armor->effectiveID());
+    return real_armor->faceName() == armor_name || real_armor->face()->isKindOf(armor_name.toStdString().c_str());
 }
 
 bool Player::hasTreasure(const QString &treasure_name, bool) const
@@ -1078,12 +1075,12 @@ bool Player::hasTreasure(const QString &treasure_name, bool) const
     if (Sanguosha->ViewHas(this, treasure_name, "treasure"))
         return true;
 
-    if (!treasure || isBrokenEquip(treasure->getEffectiveId(), true))
+    if (!treasure || isBrokenEquip(treasure->effectiveID(), true))
         return false;
-    if (treasure->objectName() == treasure_name || treasure->isKindOf(treasure_name.toStdString().c_str()))
+    if (treasure->faceName() == treasure_name || treasure->face()->isKindOf(treasure_name.toStdString().c_str()))
         return true;
-    const Card *real_treasure = Sanguosha->getEngineCard(treasure->getEffectiveId());
-    return real_treasure->objectName() == treasure_name || real_treasure->isKindOf(treasure_name.toStdString().c_str());
+    const Card *real_treasure = Sanguosha->getEngineCard(treasure->effectiveID());
+    return real_treasure->faceName() == treasure_name || real_treasure->face()->isKindOf(treasure_name.toStdString().c_str());
 }
 
 QList<const Card *> Player::getJudgingArea() const
@@ -1195,7 +1192,7 @@ bool Player::canDiscard(const Player *to, const QString &flags, const QString &r
         if (!to->getShownHandcards().isEmpty())
             return true;
     } else if (flags.contains("h")) {
-        if ((to->getHandcardNum() - to->getShownHandcards().length()) > 0)
+        if ((to->getHandcardNum() - to->getShownHandcards().size()) > 0)
             return true;
     }
     if (flags.contains(judging_flag) && !to->getJudgingArea().isEmpty())
@@ -1231,7 +1228,7 @@ bool Player::canDiscard(const Player *to, const QString &flags, const QString &r
 bool Player::canDiscard(const Player *to, int card_id, const QString &reason) const
 {
     if (reason == "sidou") {
-        if (to->getWeapon() && card_id == to->getWeapon()->getEffectiveId())
+        if (to->getWeapon() && card_id == to->getWeapon()->effectiveID())
             return false;
     }
 
@@ -1244,12 +1241,12 @@ bool Player::canDiscard(const Player *to, int card_id, const QString &reason) co
 
 void Player::addDelayedTrick(const Card *trick)
 {
-    judging_area << trick->getId();
+    judging_area << trick->id();
 }
 
 void Player::removeDelayedTrick(const Card *trick)
 {
-    int index = judging_area.indexOf(trick->getId());
+    int index = judging_area.indexOf(trick->id());
     if (index >= 0)
         judging_area.removeAt(index);
 }
@@ -1257,8 +1254,10 @@ void Player::removeDelayedTrick(const Card *trick)
 bool Player::containsTrick(const QString &trick_name) const
 {
     foreach (int trick_id, judging_area) {
-        WrappedCard *trick = getRoomObject()->getWrappedCard(trick_id);
-        if (trick->objectName() == trick_name)
+        const Card *trick = getRoomObject()->getCard(trick_id);
+        // TODO: Wait! I don't know how to distinguish between card->name() and card->faceName()()
+        // Fs: Just use a unified name! Don't you feel it's difficult to distinguish 2 names now?
+        if (trick->faceName() == trick_name)
             return true;
     }
     return false;
@@ -1332,15 +1331,20 @@ bool Player::canSlash(const Player *other, const Card *slash, bool distance_limi
     if (other == this || !other->isAlive())
         return false;
 
-    Slash *newslash = new Slash(Card::NoSuit, 0);
-    newslash->deleteLater();
-#define THIS_SLASH (slash == NULL ? newslash : slash)
-    if (isProhibited(other, THIS_SLASH, others))
+    // Slash *newslash = new Slash(Card::NoSuit, 0);
+    const Card *new_shash = getRoomObject()->cloneCard("Slash");
+    // newslash->deleteLater();
+#define THIS_SLASH (slash == nullptr ? new_shash : slash)
+    if (isProhibited(other, THIS_SLASH, others)) {
+        getRoomObject()->cardDeleting(new_shash);
         return false;
+    }
 
-    if (distance_limit)
-        return distanceTo(other, rangefix) <= getAttackRange() + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, this, THIS_SLASH);
-    else
+    if (distance_limit) {
+        bool res = distanceTo(other, rangefix) <= getAttackRange() + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, this, THIS_SLASH);
+        getRoomObject()->cardDeleting(new_shash);
+        return res;
+    } else
         return true;
 #undef THIS_SLASH
 }
@@ -1370,7 +1374,7 @@ int Player::getCardCount(bool include_equip, bool include_judging) const
     return count;
 }
 
-QList<int> Player::getPile(const QString &pile_name) const
+IDSet Player::getPile(const QString &pile_name) const
 {
     if (pile_name == "shown_card")
         return getShownHandcards();
@@ -1388,7 +1392,7 @@ QStringList Player::getPileNames() const
 QString Player::getPileName(int card_id) const
 {
     foreach (QString pile_name, piles.keys()) {
-        QList<int> pile = piles[pile_name];
+        const IDSet pile = piles[pile_name];
         if (pile.contains(card_id))
             return pile_name;
     }
@@ -1408,14 +1412,14 @@ void Player::setPileOpen(const QString &pile_name, const QString &player)
     pile_open[pile_name].append(player);
 }
 
-QList<int> Player::getHandPile() const
+IDSet Player::getHandPile() const
 {
-    QList<int> result;
+    IDSet result;
     foreach (const QString &pile, getPileNames()) {
 #pragma message WARN("todo_Fs: chaoren is not handpile. the cards on chaoren can't be used in an ViewAsSkill")
         if (pile.startsWith("&") || (pile == "wooden_ox" && hasTreasure("wooden_ox")) || (pile == "chaoren" && hasSkill("chaoren"))) {
             foreach (int id, getPile(pile))
-                result.append(id);
+                result << id;
         }
     }
     return result;
@@ -1479,17 +1483,17 @@ bool Player::hasEquipSkill(const QString &skill_name) const
     }
 
     if (weapon) {
-        const Weapon *weaponc = qobject_cast<const Weapon *>(weapon->getRealCard());
+        const Weapon *weaponc = dynamic_cast<const Weapon *>(weapon->face());
         if (Sanguosha->getSkill(weaponc) && Sanguosha->getSkill(weaponc)->objectName() == skill_name)
             return true;
     }
     if (armor) {
-        const Armor *armorc = qobject_cast<const Armor *>(armor->getRealCard());
+        const Armor *armorc = dynamic_cast<const Armor *>(armor->face());
         if (Sanguosha->getSkill(armorc) && Sanguosha->getSkill(armorc)->objectName() == skill_name)
             return true;
     }
     if (treasure) {
-        const Treasure *treasurec = qobject_cast<const Treasure *>(treasure->getRealCard());
+        const Treasure *treasurec = dynamic_cast<const Treasure *>(treasure->face());
         if (Sanguosha->getSkill(treasurec) && Sanguosha->getSkill(treasurec)->objectName() == skill_name)
             return true;
     }
@@ -1584,12 +1588,12 @@ bool Player::isProhibited(const Player *to, const Card *card, const QList<const 
 
 bool Player::canSlashWithoutCrossbow(const Card *slash) const
 {
-    Slash *newslash = new Slash(Card::NoSuit, 0);
-    newslash->deleteLater();
+    const Card *newslash = getRoomObject()->cloneCard("Slash");
 #define THIS_SLASH (slash == NULL ? newslash : slash)
     int slash_count = getSlashCount();
     int valid_slash_count = 1;
     valid_slash_count += Sanguosha->correctCardTarget(TargetModSkill::Residue, this, THIS_SLASH);
+    getRoomObject()->cardDeleting(newslash);
     return slash_count < valid_slash_count;
 #undef THIS_SLASH
 }
@@ -1642,8 +1646,8 @@ bool Player::isCardLimited(const Card *card, Card::HandlingMethod method, bool i
 {
     if (method == Card::MethodNone)
         return false;
-    if (card->getTypeId() == Card::TypeSkill && method == card->getHandlingMethod()) {
-        foreach (int card_id, card->getSubcards()) {
+    if (card->face()->type() == CardFace::TypeSkill && method == card->handleMethod()) {
+        foreach (int card_id, card->subcards()) {
             const Card *c = getRoomObject()->getCard(card_id);
             QMap<QString, QStringList> map = card_limitation[method];
             QMap<QString, QStringList>::iterator it;
@@ -1707,7 +1711,7 @@ void Player::copyFrom(Player *p)
     Player *a = p;
 
     b->marks = QMap<QString, int>(a->marks);
-    b->piles = QMap<QString, QList<int> >(a->piles);
+    b->piles = QMap<QString, IDSet >(a->piles);
     b->acquired_skills = QSet<QString>(a->acquired_skills);
     b->acquired_skills2 = QSet<QString>(a->acquired_skills2);
     b->flags = QSet<QString>(a->flags);

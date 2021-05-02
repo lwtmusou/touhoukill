@@ -2,7 +2,6 @@
 #include "client.h"
 #include "engine.h"
 #include "skill.h"
-#include "standard.h"
 
 #include <QTextDocument>
 #include <QTextOption>
@@ -46,8 +45,8 @@ void ClientPlayer::addCard(const Card *card, Place place)
         break;
     }
     case PlaceEquip: {
-        WrappedCard *equip = getRoomObject()->getWrappedCard(card->getEffectiveId());
-        setEquip(equip);
+        // WrappedCard *equip = getRoomObject()->getWrappedCard(card->getEffectiveId());
+        setEquip(getRoomObject()->getCard(card->effectiveID()));
         break;
     }
     case PlaceDelayedTrick: {
@@ -70,17 +69,17 @@ bool ClientPlayer::isLastHandCard(const Card *card, bool contain) const
     if (!card->isVirtualCard()) {
         if (known_cards.length() != 1)
             return false;
-        return known_cards.first()->getId() == card->getEffectiveId();
-    } else if (card->getSubcards().length() > 0) {
+        return known_cards.first()->id() == card->effectiveID();
+    } else if (card->subcards().size() > 0) {
         if (!contain) {
-            foreach (int card_id, card->getSubcards()) {
+            foreach (int card_id, card->subcards()) {
                 if (!known_cards.contains(getRoomObject()->getCard(card_id)))
                     return false;
             }
-            return known_cards.length() == card->getSubcards().length();
+            return known_cards.length() == card->subcards().size();
         } else {
             foreach (const Card *ncard, known_cards) {
-                if (!card->getSubcards().contains(ncard->getEffectiveId()))
+                if (!card->subcards().contains(ncard->effectiveID()))
                     return false;
             }
             return true;
@@ -99,8 +98,8 @@ void ClientPlayer::removeCard(const Card *card, Place place)
         break;
     }
     case PlaceEquip: {
-        WrappedCard *equip = getRoomObject()->getWrappedCard(card->getEffectiveId());
-        removeEquip(equip);
+        // WrappedCard *equip = getRoomObject()->getWrappedCard(card->getEffectiveId());
+        removeEquip(getRoomObject()->getCard(card->effectiveID()));
         break;
     }
     case PlaceDelayedTrick: {
@@ -135,17 +134,18 @@ void ClientPlayer::changePile(const QString &name, bool add, QList<int> card_ids
         emit pile_changed(name);
     else {
         if (add) {
-            piles[name].append(card_ids);
+            foreach (int id, card_ids)
+                piles[name] << id;
         } else {
             foreach (int card_id, card_ids) {
                 if (piles[name].isEmpty())
                     break;
                 if (piles[name].contains(Card::S_UNKNOWN_CARD_ID) && !piles[name].contains(card_id))
-                    piles[name].removeOne(Card::S_UNKNOWN_CARD_ID);
+                    piles[name].remove(Card::S_UNKNOWN_CARD_ID);
                 else if (piles[name].contains(card_id))
-                    piles[name].removeOne(card_id);
+                    piles[name].remove(card_id);
                 else
-                    piles[name].takeLast();
+                    piles[name].remove(*piles[name].cbegin());
             }
         }
 

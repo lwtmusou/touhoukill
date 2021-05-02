@@ -41,42 +41,10 @@ include_directories(
 
 add_compile_definitions(AUDIO_SUPPORT QT_DISABLE_DEPRECATED_BEFORE=0x60000)
 
-set (QSanguosha_SRCS
-    src/audio/audio.cpp
-
-    src/client/aux-skills.cpp
-    src/client/client.cpp
-    src/client/clientplayer.cpp
-    src/client/clientstruct.cpp
-    src/core/card.cpp
-    src/core/CardFace.cpp
-    src/core/engine.cpp
-    src/core/general.cpp
-    src/core/json.cpp
-    src/core/player.cpp
-    src/core/protocol.cpp
-    src/core/RoomObject.cpp
-    src/core/settings.cpp
-    src/core/skill.cpp
-    src/core/structs.cpp
-    src/core/util.cpp
-    src/core/WrappedCard.cpp
-    src/dialog/AboutUs.cpp
-    src/dialog/cardoverview.cpp
-    src/dialog/choosegeneraldialog.cpp
-    src/dialog/configdialog.cpp
-    src/dialog/connectiondialog.cpp
-    src/dialog/distanceviewdialog.cpp
-    src/dialog/generaloverview.cpp
-    src/dialog/mainwindow.cpp
-    src/dialog/roleassigndialog.cpp
-    src/dialog/updatedialog.cpp
-    src/main.cpp
-    src/package/exppattern.cpp
+set (QSanguosha_PKG_SRCS
     src/package/hegemonyCard.cpp
     src/package/hegemonyGeneral.cpp
     src/package/maneuvering.cpp
-    src/package/package.cpp
     src/package/playground.cpp
     src/package/protagonist.cpp
     src/package/standard-cards.cpp
@@ -98,7 +66,40 @@ set (QSanguosha_SRCS
     src/package/th99.cpp
     src/package/thndj.cpp
     src/package/touhougod.cpp
-    src/server/ai.cpp
+)
+
+set (QSanguosha_SRCS
+    src/audio/audio.cpp
+
+    src/client/aux-skills.cpp
+    src/client/client.cpp
+    src/client/clientplayer.cpp
+    src/client/clientstruct.cpp
+    src/core/card.cpp
+    src/core/CardFace.cpp
+    src/core/engine.cpp
+    src/core/general.cpp
+    src/core/json.cpp
+    src/core/package.cpp
+    src/core/player.cpp
+    src/core/protocol.cpp
+    src/core/RoomObject.cpp
+    src/core/settings.cpp
+    src/core/skill.cpp
+    src/core/structs.cpp
+    src/core/util.cpp
+    src/dialog/AboutUs.cpp
+    src/dialog/cardoverview.cpp
+    src/dialog/choosegeneraldialog.cpp
+    src/dialog/configdialog.cpp
+    src/dialog/connectiondialog.cpp
+    src/dialog/distanceviewdialog.cpp
+    src/dialog/generaloverview.cpp
+    src/dialog/mainwindow.cpp
+    src/dialog/roleassigndialog.cpp
+    src/dialog/updatedialog.cpp
+    src/main.cpp
+    src/package/exppattern.cpp
     src/server/gamerule.cpp
     src/server/generalselector.cpp
     src/server/room.cpp
@@ -141,6 +142,8 @@ set (QSanguosha_SRCS
     src/util/detector.cpp
     src/util/nativesocket.cpp
     src/util/recorder.cpp
+
+    #${QSanguosha_PKG_SRCS}
 )
 
 set (QSanguosha_UIS
@@ -155,42 +158,10 @@ set(TS_FILES builds/sanguosha.ts)
 set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION "ts")
 qt5_add_translation(QM_FILES ${TS_FILES})
 
-set (QSanguosha_MOCS
-    src/audio/audio.h
-    src/client/aux-skills.h
-    src/client/client.h
-    src/client/clientplayer.h
-    src/client/clientstruct.h
-    src/core/card.h
-    src/core/CardFace.h
-    src/core/compiler-specific.h
-    src/core/engine.h
-    src/core/general.h
-    src/core/json.h
-    src/core/lua-wrapper.h
-    src/core/player.h
-    src/core/protocol.h
-    src/core/RoomObject.h
-    src/core/settings.h
-    src/core/skill.h
-    src/core/structs.h
-    src/core/util.h
-    src/core/WrappedCard.h
-    src/dialog/AboutUs.h
-    src/dialog/cardoverview.h
-    src/dialog/choosegeneraldialog.h
-    src/dialog/configdialog.h
-    src/dialog/connectiondialog.h
-    src/dialog/distanceviewdialog.h
-    src/dialog/generaloverview.h
-    src/dialog/mainwindow.h
-    src/dialog/roleassigndialog.h
-    src/dialog/updatedialog.h
-    src/package/exppattern.h
+set (QSanguosha_PKG_MOCS
     src/package/hegemonyCard.h
     src/package/hegemonyGeneral.h
     src/package/maneuvering.h
-    src/package/package.h
     src/package/playground.h
     src/package/protagonist.h
     src/package/standard-equips.h
@@ -212,8 +183,42 @@ set (QSanguosha_MOCS
     src/package/th99.h
     src/package/thndj.h
     src/package/touhougod.h
+
+)
+
+set (QSanguosha_MOCS
+    src/audio/audio.h
+    src/client/aux-skills.h
+    src/client/client.h
+    src/client/clientplayer.h
+    src/client/clientstruct.h
+    src/core/card.h
+    src/core/CardFace.h
+    src/core/compiler-specific.h
+    src/core/engine.h
+    src/core/general.h
+    src/core/json.h
+    src/core/lua-wrapper.h
+    src/core/package.h
+    src/core/player.h
+    src/core/protocol.h
+    src/core/RoomObject.h
+    src/core/settings.h
+    src/core/skill.h
+    src/core/structs.h
+    src/core/util.h
+    src/dialog/AboutUs.h
+    src/dialog/cardoverview.h
+    src/dialog/choosegeneraldialog.h
+    src/dialog/configdialog.h
+    src/dialog/connectiondialog.h
+    src/dialog/distanceviewdialog.h
+    src/dialog/generaloverview.h
+    src/dialog/mainwindow.h
+    src/dialog/roleassigndialog.h
+    src/dialog/updatedialog.h
+    src/package/exppattern.h
     src/pch.h
-    src/server/ai.h
     src/server/gamerule.h
     src/server/generalselector.h
     src/server/room.h
@@ -257,6 +262,8 @@ set (QSanguosha_MOCS
     src/util/nativesocket.h
     src/util/recorder.h
     src/util/socket.h
+
+    #${QSanguosha_PKG_MOCS}
 )
 
 set(OGG_FILE

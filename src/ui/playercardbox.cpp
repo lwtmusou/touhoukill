@@ -255,13 +255,13 @@ void PlayerCardBox::arrangeCards(const QList<const Card *> &cards, const QPoint 
         item->setParentItem(this);
         item->setFlag(ItemIsMovable, false);
         if (card) {
-            item->setEnabled(!disabledIds.contains(card->getEffectiveId()) && (method != Card::MethodDiscard || Self->canDiscard(player, card->getEffectiveId())));
+            item->setEnabled(!disabledIds.contains(card->effectiveID()) && (method != Card::MethodDiscard || Self->canDiscard(player, card->effectiveID())));
             if (shownCards.contains(card)) {
                 item->setFootnote(Sanguosha->translate("shown_card"));
                 item->showFootnote();
             }
             if (this->player->getJudgingArea().contains(card)) {
-                item->setFootnote(Sanguosha->translate(card->objectName()));
+                item->setFootnote(Sanguosha->translate(card->faceName()));
                 item->showFootnote();
             }
         } else

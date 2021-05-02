@@ -1,11 +1,9 @@
 #include "roomthread.h"
-#include "ai.h"
 #include "engine.h"
 #include "gamerule.h"
 #include "protocol.h"
 #include "room.h"
 #include "settings.h"
-#include "standard.h"
 
 #include <QTime>
 #include <functional>
@@ -356,9 +354,10 @@ void RoomThread::run()
 
         QList<const General *> generals = QList<const General *>();
         foreach (QString pack_name, Sanguosha->getConfigFromConfigFile("hulao_packages").toStringList()) {
-            const Package *pack = Sanguosha->findChild<const Package *>(pack_name);
+            const Package *pack = Sanguosha->findPackage(pack_name);
             if (pack)
-                generals << pack->findChildren<const General *>();
+                foreach (auto gn, pack->generals())
+                    generals << gn;
         }
 
         QStringList names;
@@ -791,15 +790,9 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data)
             }
         }
 
-        foreach (AI *ai, room->ais)
-            ai->filterEvent(triggerEvent, data);
-
         event_stack.pop_back();
 
-    } catch (TriggerEvent triggerEvent) {
-        foreach (AI *ai, room->ais)
-            ai->filterEvent(triggerEvent, data);
-
+    } catch (TriggerEvent) {
         event_stack.pop_back();
         throw;
     }

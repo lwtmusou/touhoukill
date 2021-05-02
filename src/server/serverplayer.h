@@ -2,8 +2,8 @@
 #define _SERVER_PLAYER_H
 
 class Room;
-class AI;
 class Recorder;
+class DummyCard;
 
 class CardMoveReason;
 struct PhaseStruct;
@@ -58,7 +58,7 @@ public:
     QSGS_STATE_GAME QList<int> handCards() const;
     QSGS_STATE_GAME QList<const Card *> getHandcards() const override;
     QSGS_STATE_GAME QList<const Card *> getCards(const QString &flags) const;
-    QSGS_STATE_GAME DummyCard *wholeHandCards() const;
+    QSGS_STATE_GAME Card *wholeHandCards() const; // FIXME: Memory Leakage!!!
     QSGS_STATE_GAME bool hasNullification() const;
     QSGS_LOGIC bool pindian(ServerPlayer *target, const QString &reason, const Card *card1 = nullptr);
     QSGS_LOGIC void turnOver();
@@ -79,19 +79,6 @@ public:
     QSGS_LOGIC void addSkill(const QString &skill_name, bool head_skill = true) override;
     QSGS_LOGIC void loseSkill(const QString &skill_name, bool head_skill = true) override;
     QSGS_LOGIC void setGender(General::Gender gender) override;
-
-    // TODO_Fs: remove AI related code from Server
-#if 1
-    void setAI(AI *ai);
-    AI *getAI() const;
-    AI *getSmartAI() const;
-
-    bool isOnline() const;
-    inline bool isOffline() const
-    {
-        return getState() == "robot" || getState() == "offline";
-    }
-#endif
 
     QSGS_STATE_GAME int aliveCount(bool includeRemoved = true) const override; // TODO_Fs: this function should belong to room?
     QSGS_STATE_GAME int getHandcardNum() const override;
@@ -119,12 +106,12 @@ public:
 
     QSGS_LOGIC void addToPile(const QString &pile_name, const Card *card, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
     QSGS_LOGIC void addToPile(const QString &pile_name, int card_id, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
-    QSGS_LOGIC void addToPile(const QString &pile_name, QList<int> card_ids, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
-    QSGS_LOGIC void addToPile(const QString &pile_name, QList<int> card_ids, bool open, CardMoveReason reason, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
-    QSGS_LOGIC void addToShownHandCards(QList<int> card_ids);
-    QSGS_LOGIC void removeShownHandCards(QList<int> card_ids, bool sendLog = false, bool moveFromHand = false);
-    QSGS_LOGIC void addBrokenEquips(QList<int> card_ids);
-    QSGS_LOGIC void removeBrokenEquips(QList<int> card_ids, bool sendLog = true, bool moveFromEquip = false);
+    QSGS_LOGIC void addToPile(const QString &pile_name, const IDSet &card_ids, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
+    QSGS_LOGIC void addToPile(const QString &pile_name, const IDSet &card_ids, bool open, CardMoveReason reason, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
+    QSGS_LOGIC void addToShownHandCards(const IDSet &card_ids);
+    QSGS_LOGIC void removeShownHandCards(const IDSet &card_ids, bool sendLog = false, bool moveFromHand = false);
+    QSGS_LOGIC void addBrokenEquips(const IDSet &card_ids);
+    QSGS_LOGIC void removeBrokenEquips(const IDSet &card_ids, bool sendLog = true, bool moveFromEquip = false);
     QSGS_LOGIC void addHiddenGenerals(const QStringList &generals);
     QSGS_LOGIC void removeHiddenGenerals(const QStringList &generals);
     QSGS_LOGIC void gainAnExtraTurn();
@@ -220,8 +207,6 @@ private:
     ClientSocket *socket;
     QList<const Card *> handcards;
     Room *room;
-    AI *ai;
-    AI *trust_ai;
     Recorder *recorder;
     QList<Phase> phases;
     int _m_phases_index;

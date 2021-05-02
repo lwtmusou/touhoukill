@@ -369,7 +369,7 @@ struct CardsMoveStruct
         return from < other.from || from_place < other.from_place || from_pile_name < other.from_pile_name || from_player_name < other.from_player_name;
     }
 
-    QList<int> card_ids;
+    QList<int> card_ids; // TODO: Replace with IDSet
     Player::Place from_place, to_place;
     QString from_player_name, to_player_name;
     QString from_pile_name, to_pile_name;

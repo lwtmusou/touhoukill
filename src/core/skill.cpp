@@ -4,7 +4,6 @@
 #include "player.h"
 #include "room.h"
 #include "settings.h"
-#include "standard.h"
 
 #include <QFile>
 #include <random>
@@ -416,7 +415,7 @@ ShowDistanceSkill::ShowDistanceSkill(const QString &name)
 
 const Card *ShowDistanceSkill::viewAs(const Player *Self) const
 {
-    SkillCard *card = Self->getRoomObject()->cloneSkillCard("ShowFengsu");
+    Card *card = Self->getRoomObject()->cloneSkillCard("ShowFengsu");
     card->setUserString(objectName());
     return card;
 }
@@ -500,7 +499,7 @@ SlashNoDistanceLimitSkill::SlashNoDistanceLimitSkill(const QString &skill_name)
 
 int SlashNoDistanceLimitSkill::getDistanceLimit(const Player *from, const Card *card) const
 {
-    if (from->hasSkill(name) && card->getSkillName() == name)
+    if (from->hasSkill(name) && card->skillName() == name)
         return 1000;
     else
         return 0;
@@ -580,12 +579,15 @@ bool EquipSkill::equipAvailable(const Player *p, EquipCard::Location location, c
     return true;
 }
 
-bool EquipSkill::equipAvailable(const Player *p, const EquipCard *card, const Player *to /*= NULL*/)
+bool EquipSkill::equipAvailable(const Player *p, const Card *equip, const Player *to /*= NULL*/)
 {
-    if (card == nullptr)
+    if (equip == nullptr)
         return false;
 
-    return equipAvailable(p, card->location(), card->objectName(), to);
+    const EquipCard *face = dynamic_cast<const EquipCard *>(equip->face());
+    Q_ASSERT(face != nullptr);
+
+    return equipAvailable(p, face->location(), equip->faceName(), to);
 }
 
 WeaponSkill::WeaponSkill(const QString &name)
@@ -633,7 +635,7 @@ const Card *ArraySummonSkill::viewAs(const Player *Self) const
     name[0] = name[0].toUpper();
     name += "Summon";
     Card *card = Self->getRoomObject()->cloneSkillCard(name);
-    card->setShowSkill(objectName());
+    card->setShowSkillName(objectName());
     return card;
 }
 

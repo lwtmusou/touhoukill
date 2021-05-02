@@ -202,7 +202,7 @@ protected:
     void _clearPixmap(QGraphicsPixmapItem *item);
     QPixmap _getPixmap(const QString &key, bool cache = false);
     QPixmap _getPixmap(const QString &key, const QString &arg, bool cache = false);
-    QPixmap _getEquipPixmap(const EquipCard *equip);
+    QPixmap _getEquipPixmap(const Card *equip);
     virtual void _adjustComponentZValues(bool killed = false);
     void _updateFloatingArea();
     // We use QList of cards instead of a single card as parameter here, just in case

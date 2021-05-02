@@ -1,7 +1,8 @@
 #ifndef _PLAYER_H
 #define _PLAYER_H
 
-#include "WrappedCard.h"
+// #include "WrappedCard.h"
+#include "card.h"
 #include "general.h"
 
 #include <QObject>
@@ -101,11 +102,11 @@ public:
     // property setters/getters
     int getChaoren() const; //for chaoren
     void setChaoren(int chaoren);
-    QList<int> getShownHandcards() const;
-    void setShownHandcards(QList<int> &ids);
+    const IDSet &getShownHandcards() const;
+    void setShownHandcards(const IDSet &ids);
     bool isShownHandcard(int id) const;
-    QList<int> getBrokenEquips() const;
-    void setBrokenEquips(QList<int> &ids);
+    const IDSet &getBrokenEquips() const;
+    void setBrokenEquips(const IDSet &ids);
     bool isBrokenEquip(int id, bool consider_shenbao = false) const;
     QStringList getHiddenGenerals() const;
     void setHiddenGenerals(const QStringList &generals);
@@ -233,8 +234,9 @@ public:
 
     virtual QString getGameMode() const = 0;
 
-    void setEquip(WrappedCard *equip);
-    void removeEquip(WrappedCard *equip);
+    // FIXME(xusine): At present I don't know how to use WrapperCard but just use const Card *instread;
+    void setEquip(const Card *equip);
+    void removeEquip(const Card *equip);
     bool hasEquip(const Card *card) const;
     bool hasEquip() const;
 
@@ -249,13 +251,13 @@ public:
     virtual void addCard(const Card *card, Place place) = 0;
     virtual QList<const Card *> getHandcards() const = 0;
 
-    WrappedCard *getWeapon() const;
-    WrappedCard *getArmor() const;
-    WrappedCard *getDefensiveHorse() const;
-    WrappedCard *getOffensiveHorse() const;
-    WrappedCard *getTreasure() const;
+    const Card *getWeapon() const;
+    const Card *getArmor() const;
+    const Card *getDefensiveHorse() const;
+    const Card *getOffensiveHorse() const;
+    const Card *getTreasure() const;
     QList<const Card *> getEquips() const;
-    const EquipCard *getEquip(int index) const;
+    const Card *getEquip(int index) const;
 
     bool hasWeapon(const QString &weapon_name, bool selfOnly = false, bool ignore_preshow = false) const;
     bool hasArmorEffect(const QString &armor_name, bool selfOnly = false) const;
@@ -285,13 +287,13 @@ public:
     bool canSlash(const Player *other, bool distance_limit = true, int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
     int getCardCount(bool include_equip = true, bool = false) const;
 
-    QList<int> getPile(const QString &pile_name) const;
+    IDSet getPile(const QString &pile_name) const;
     QStringList getPileNames() const;
     QString getPileName(int card_id) const;
 
     bool pileOpen(const QString &pile_name, const QString &player) const;
     void setPileOpen(const QString &pile_name, const QString &player);
-    QList<int> getHandPile() const;
+    IDSet getHandPile() const;
     QStringList getHandPileList(bool view_as_skill = true) const;
 
     void addHistory(const QString &name, int times = 1);
@@ -374,7 +376,7 @@ public:
 
 protected:
     QMap<QString, int> marks;
-    QMap<QString, QList<int> > piles;
+    QMap<QString, IDSet> piles;
     QMap<QString, QStringList> pile_open;
     QSet<QString> acquired_skills;
     QSet<QString> acquired_skills2;
@@ -384,8 +386,8 @@ protected:
     QSet<QString> flags;
     QHash<QString, int> history;
     QStringList skill_invalid;
-    QList<int> shown_handcards;
-    QList<int> broken_equips;
+    IDSet shown_handcards;
+    IDSet broken_equips;
     QStringList hidden_generals; //for anyun
     QString shown_hidden_general;
 
@@ -410,7 +412,7 @@ private:
     bool general2_showed; //hegemony
 
     Phase phase;
-    WrappedCard *weapon, *armor, *defensive_horse, *offensive_horse, *treasure;
+    const Card *weapon, *armor, *defensive_horse, *offensive_horse, *treasure;
     bool face_up;
     bool chained;
     bool removed;

@@ -105,12 +105,12 @@ QSanSkinFactory *QSanSkinFactory::_sm_singleton = nullptr;
 QHash<QString, QString> IQSanComponentSkin::QSanSimpleTextFont::_m_fontBank;
 
 IQSanComponentSkin::QSanSimpleTextFont::QSanSimpleTextFont()
-    : m_family_name("")
+    : m_fontSize(0, 0)
     , m_spacing(0)
     , m_weight(0)
     , m_color(Qt::black)
     , m_vertical(false)
-    , m_fontSize(0, 0)
+
 {
 }
 
@@ -348,12 +348,17 @@ QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName, bool cache, boo
 
 QPixmap QSanRoomSkin::getCardSuitPixmap(Card::Suit suit) const
 {
-    return getPixmap(QSanRoomSkin::S_SKIN_KEY_HAND_CARD_SUIT, Card::Suit2String(suit), true);
+    return getPixmap(QSanRoomSkin::S_SKIN_KEY_HAND_CARD_SUIT, Card::SuitToString(suit), true);
 }
 
 QPixmap QSanRoomSkin::getCardTianyiPixmap() const
 {
     return getPixmap(QSanRoomSkin::S_SKIN_KEY_CARD_TIANYI, "tianyi", true);
+}
+
+QPixmap QSanRoomSkin::getCardNumberPixmap(Card::Number point, bool isBlack) const
+{
+    return getCardNumberPixmap(static_cast<int>(point), isBlack);
 }
 
 QPixmap QSanRoomSkin::getCardNumberPixmap(int point, bool isBlack) const
