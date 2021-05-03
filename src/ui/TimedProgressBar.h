@@ -18,7 +18,7 @@ public:
         , m_step(0)
         , m_max(0)
         , m_val(0)
-        , m_mutex(QMutex::Recursive)
+        , m_mutex()
     {
         setTextVisible(false);
     }
@@ -61,7 +61,7 @@ protected:
     bool m_autoHide;
     int m_timer;
     time_t m_step, m_max, m_val;
-    QMutex m_mutex;
+    QRecursiveMutex m_mutex;
 };
 
 #include "protocol.h"
