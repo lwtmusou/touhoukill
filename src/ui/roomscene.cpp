@@ -1920,10 +1920,7 @@ void RoomScene::toggleDiscards()
 {
     CardOverview *overview = new CardOverview;
     overview->setWindowTitle(tr("Discarded pile"));
-    QList<const Card *> cards;
-    foreach (int id, ClientInstance->getDiscardPile())
-        cards << Sanguosha->getEngineCard(id);
-    overview->loadFromList(cards);
+    overview->loadFromList(ClientInstance->getDiscardPile());
     overview->show();
 }
 
@@ -3857,23 +3854,16 @@ void RoomScene::showPlayerCards()
         const ClientPlayer *player = ClientInstance->getPlayer(player_name);
         if (names.length() > 1) {
             QString pile_name = names.last();
-            QList<const Card *> cards;
-            foreach (int id, player->getPile(pile_name)) {
-                const Card *card = Sanguosha->getEngineCard(id);
-                if (card)
-                    cards << card;
-            }
 
             CardOverview *overview = new CardOverview;
             overview->setWindowTitle(QString("%1 %2").arg(ClientInstance->getPlayerName(player_name)).arg(Sanguosha->translate(pile_name)));
-            overview->loadFromList(cards);
+            overview->loadFromList(player->getPile(pile_name));
             overview->show();
         } else {
-            QList<const Card *> cards;
+            IDSet cards;
             foreach (const Card *card, player->getHandcards()) {
-                const Card *engine_card = Sanguosha->getEngineCard(card->id());
-                if (engine_card)
-                    cards << engine_card;
+                if (card->id() >= 0)
+                    cards << card->id();
             }
 
             CardOverview *overview = new CardOverview;

@@ -20,14 +20,15 @@ public:
 
     explicit CardOverview(QWidget *parent = nullptr);
     void loadFromAll();
-    void loadFromList(const QList<const Card *> &list);
+    void loadFromList(const QList<int> &list);
+    void loadFromList(const IDSet &list);
 
     ~CardOverview() override;
 
 private:
     Ui::CardOverview *ui;
 
-    void addCard(int i, const Card *card);
+    void addCard(int i, const CardDescriptor &card, int id);
 
 private slots:
     void on_femalePlayButton_clicked();
