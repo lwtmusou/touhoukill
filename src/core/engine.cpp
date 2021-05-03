@@ -198,12 +198,7 @@ void Engine::addPackage(Package *package)
         CardFactory::registerCardFace(face);
     }
 
-    foreach (auto face, package->cards().keys()) {
-        auto infos = package->cards().values(face);
-        foreach (auto info, infos) {
-            cards << new Card(nullptr, face, info.suit, info.number, cards.length());
-        }
-    }
+    cards << package->cards();
 
     addSkills(package->skills());
 
@@ -425,15 +420,20 @@ bool Engine::isGeneralHidden(const QString &general_name) const
         return !Config.RemovedHiddenGenerals.contains(general_name);
 }
 
-const Card *Engine::getEngineCard(int cardId) const
+const CardDescriptor &Engine::getEngineCard(int cardId) const
 {
+    static CardDescriptor nullDescriptor = {
+        Card::NoSuit,
+        Card::NumberNA,
+        nullptr,
+    };
+
     if (cardId == Card::S_UNKNOWN_CARD_ID)
-        return nullptr;
+        return nullDescriptor;
     else if (cardId < 0 || cardId >= cards.length()) {
         Q_ASSERT(!(cardId < 0 || cardId >= cards.length()));
-        return nullptr;
+        return nullDescriptor;
     } else {
-        Q_ASSERT(cards[cardId] != NULL);
         return cards[cardId];
     }
 }
@@ -961,10 +961,10 @@ QList<int> Engine::getRandomCards() const
         exclude_disaters = true;
 
     QList<int> list;
-    foreach (Card *card, cards) {
-        card->clearFlags();
+    foreach (const CardDescriptor &card, cards) {
+#if 0
 
-        if (exclude_disaters && card->face()->isKindOf("Disaster"))
+        if (exclude_disaters && card.face->isKindOf("Disaster"))
             continue;
 
         if (getPackageNameByCard(card) == "New3v3Card" && (using_2012_3v3 || using_2013_3v3))
@@ -987,6 +987,7 @@ QList<int> Engine::getRandomCards() const
             } else
                 list << card->id();
         }
+#endif
     }
     // remove two crossbows and one nullification?
     if (using_2012_3v3 || using_2013_3v3)

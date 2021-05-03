@@ -1047,8 +1047,10 @@ bool Player::hasWeapon(const QString &weapon_name, bool, bool ignore_preshow) co
         return false;
     if (weapon->faceName() == weapon_name || weapon->face()->isKindOf(weapon_name.toStdString().c_str()))
         return true;
-    const Card *real_weapon = Sanguosha->getEngineCard(weapon->effectiveID());
-    return real_weapon->faceName() == weapon_name || real_weapon->face()->isKindOf(weapon_name.toStdString().c_str());
+
+    // TODO_Fs: Consider view-as weapon later
+    const CardDescriptor &real_weapon = Sanguosha->getEngineCard(weapon->effectiveID());
+    return real_weapon.face->name() == weapon_name || real_weapon.face->isKindOf(weapon_name.toStdString().c_str());
 }
 
 bool Player::hasArmorEffect(const QString &armor_name, bool) const
@@ -1063,8 +1065,8 @@ bool Player::hasArmorEffect(const QString &armor_name, bool) const
         return false;
     if (armor->faceName() == armor_name || armor->face()->isKindOf(armor_name.toStdString().c_str()))
         return true;
-    const Card *real_armor = Sanguosha->getEngineCard(armor->effectiveID());
-    return real_armor->faceName() == armor_name || real_armor->face()->isKindOf(armor_name.toStdString().c_str());
+    const CardDescriptor &real_weapon = Sanguosha->getEngineCard(weapon->effectiveID());
+    return real_weapon.face->name() == armor_name || real_weapon.face->isKindOf(armor_name.toStdString().c_str());
 }
 
 bool Player::hasTreasure(const QString &treasure_name, bool) const
@@ -1079,8 +1081,8 @@ bool Player::hasTreasure(const QString &treasure_name, bool) const
         return false;
     if (treasure->faceName() == treasure_name || treasure->face()->isKindOf(treasure_name.toStdString().c_str()))
         return true;
-    const Card *real_treasure = Sanguosha->getEngineCard(treasure->effectiveID());
-    return real_treasure->faceName() == treasure_name || real_treasure->face()->isKindOf(treasure_name.toStdString().c_str());
+    const CardDescriptor &real_weapon = Sanguosha->getEngineCard(weapon->effectiveID());
+    return real_weapon.face->name() == treasure_name || real_weapon.face->isKindOf(treasure_name.toStdString().c_str());
 }
 
 QList<const Card *> Player::getJudgingArea() const
@@ -1711,7 +1713,7 @@ void Player::copyFrom(Player *p)
     Player *a = p;
 
     b->marks = QMap<QString, int>(a->marks);
-    b->piles = QMap<QString, IDSet >(a->piles);
+    b->piles = QMap<QString, IDSet>(a->piles);
     b->acquired_skills = QSet<QString>(a->acquired_skills);
     b->acquired_skills2 = QSet<QString>(a->acquired_skills2);
     b->flags = QSet<QString>(a->flags);

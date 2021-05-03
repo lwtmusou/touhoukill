@@ -11,8 +11,8 @@ class Player;
 #include <QPair>
 #include <QStringList>
 
-#include "json.h"
 #include "card.h"
+#include "json.h"
 
 class CardPattern
 {
@@ -52,7 +52,7 @@ public:
     void insertRelatedSkills(const QString &main_skill, const QString &related_skill);
 
     const QList<const CardFace *> &cardFaces() const;
-    const QMultiMap<const CardFace *, CardDescriptor> &cards() const;
+    const QList<CardDescriptor> &cards() const;
     const QList<General *> &generals() const;
 
     Package &operator<<(const CardFace *face); // register face.
@@ -69,7 +69,8 @@ protected:
     QList<const CardFace *> m_faces;
     QMap<QString, const CardPattern *> m_patterns;
     QMultiMap<QString, QString> m_related_skills;
-    QMultiMap<const CardFace *, CardDescriptor> m_all_cards;
+    // QMultiMap<const CardFace *, CardDescriptor> m_all_cards;
+    QList<CardDescriptor> m_all_cards;
 };
 
 typedef QHash<QString, Package *> PackageHash;

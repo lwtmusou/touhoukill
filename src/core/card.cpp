@@ -82,10 +82,6 @@ Card::Card(RoomObject *room, const CardFace *face, Suit suit, Number number, int
 
 Card::~Card()
 {
-    // Since room keeps the pointer of the Card object, we should notify Room about deletion
-    if (d->room != nullptr)
-        d->room->cardDeleting(this);
-
     delete d;
 }
 
@@ -179,17 +175,12 @@ void Card::setNumber(Number number)
 
 QString Card::numberString() const
 {
-    Card::Number number = this->number();
     if (isVirtualCard()) {
         if (d->sub_cards.size() == 0 || d->sub_cards.size() >= 2)
-            number = Number::NumberNA;
+            return NumberToString(NumberNA);
     }
 
-    if (number == X)
-        return "10";
-
-    static const char *number_string = "-A23456789-JQK";
-    return QString(number_string[static_cast<int>(number)]);
+    return NumberToString(number());
 }
 
 int Card::id() const
@@ -278,8 +269,8 @@ bool Card::isModified() const
     if (isVirtualCard())
         return false;
 
-    const Card *c = Sanguosha->getEngineCard(id());
-    return (c->face() != face()) || (c->suit() != suit()) || (c->number() != number()) || (!skillName(false).isEmpty());
+    const CardDescriptor &c = Sanguosha->getEngineCard(id());
+    return (c.face != face()) || (c.suit != suit()) || (c.number != number()) || (!skillName(false).isEmpty());
 }
 
 QString Card::skillName(bool removePrefix) const
@@ -549,6 +540,15 @@ QString Card::SuitToString(Suit suit)
     }
 }
 
+QString Card::NumberToString(Number number)
+{
+    if (number == X)
+        return "10";
+
+    static const char *number_string = "-A23456789-JQK";
+    return QString(number_string[static_cast<int>(number)]);
+}
+
 Card *Card::Parse(const QString &str, RoomObject *room)
 {
     // This should match Card::toString since this is the reverse function of Card::toString
@@ -633,10 +633,7 @@ Card *Card::Parse(const QString &str, RoomObject *room)
         copy.remove(QChar('$'));
         QStringList card_strs = copy.split("+");
 
-        Card *card = room->cloneCard(nullptr, SuitToBeDecided, NumberToBeDecided);
-        card->addSubcards(List2Set(StringList2IntList(card_strs)));
-
-        return card;
+        return room->cloneDummyCard(List2Set(StringList2IntList(card_strs)));
     }
 
     // for regular virtual cards
@@ -688,4 +685,61 @@ Card *Card::Parse(const QString &str, RoomObject *room)
             return room->getCard(id);
     }
     return nullptr;
+}
+
+QString CardDescriptor::fullName(bool include_suit) const
+{
+    QString name = face->name();
+    if (include_suit) {
+        QString suit_name = Sanguosha->translate(Card::SuitToString(suit));
+        return QString("%1%2 %3").arg(suit_name).arg(Card::NumberToString(number)).arg(name);
+    }
+
+    return QString("%1 %2").arg(Card::NumberToString(number)).arg(name);
+}
+
+QString CardDescriptor::logName() const
+{
+    QString suit_char;
+    QString number_string;
+
+    switch (suit) {
+    case Card::Spade:
+    case Card::Heart:
+    case Card::Club:
+    case Card::Diamond: {
+        suit_char = QString("<img src='image/system/log/%1.png' height = 12/>").arg(Card::SuitToString(suit));
+        break;
+    }
+    case Card::NoSuitRed: {
+        suit_char = QObject::tr("NoSuitRed");
+        break;
+    }
+    case Card::NoSuitBlack: {
+        suit_char = QObject::tr("NoSuitBlack");
+        break;
+    }
+    case Card::NoSuit: {
+        suit_char = QObject::tr("NoSuit");
+        break;
+    }
+    default:
+        break;
+    }
+
+    // FIXME: Should we compare the Number with int directly?
+    if (number > Card::NumberA && number <= Card::NumberK)
+        number_string = Card::NumberToString(number);
+
+    return QString("%1[%2%3]").arg(face->name()).arg(suit_char).arg(number_string);
+}
+
+bool CardDescriptor::isBlack() const
+{
+    return suit == Card::Spade || suit == Card::Club || suit == Card::NoSuitBlack;
+}
+
+bool CardDescriptor::isRed() const
+{
+    return suit == Card::Heart || suit == Card::Diamond || suit == Card::NoSuitRed;
 }

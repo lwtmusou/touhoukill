@@ -55,12 +55,12 @@ public:
     virtual const QList<int> &getDiscardPile() const = 0;
 
     Card *cloneSkillCard(const QString &name);
-
     Card *cloneDummyCard();
-
+    Card *cloneDummyCard(const IDSet &idSet);
     Card *cloneCard(const Card *card);
     Card *cloneCard(const QString &name, Card::Suit suit = Card::SuitToBeDecided, Card::Number number = Card::NumberToBeDecided);
     Card *cloneCard(const CardFace *cardFace = nullptr, Card::Suit suit = Card::SuitToBeDecided, Card::Number number = Card::NumberToBeDecided);
+    Card *cloneCard(const CardDescriptor &descriptor);
 
     void cardDeleting(const Card *card);
 

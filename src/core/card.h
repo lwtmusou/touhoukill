@@ -5,7 +5,6 @@
 #include <QMap>
 #include <QObject>
 #include <QSet>
-#include <qobjectdefs.h>
 
 class Room;
 class RoomObject;
@@ -14,6 +13,9 @@ class ServerPlayer;
 class Client;
 class ClientPlayer;
 class CardItem;
+class DiscardSkill;
+class YijiViewAsSkill;
+class ChoosePlayerSkill;
 
 struct CardEffectStruct;
 struct CardUseStruct;
@@ -29,6 +31,11 @@ using IDSet = QSet<int>;
 class Card final
 {
     Q_GADGET
+
+    friend class RoomObject;
+    friend class DiscardSkill;
+    friend class YijiViewAsSkill;
+    friend class ChoosePlayerSkill;
 
 public:
     enum Suit
@@ -107,10 +114,12 @@ public:
 
     static const int S_UNKNOWN_CARD_ID;
 
+private:
     // constructor to create real card
     explicit Card(RoomObject *room, const CardFace *face, Suit suit = SuitToBeDecided, Number number = Number::NumberToBeDecided, int id = -1);
     ~Card();
 
+public:
     // Suit method
     Card::Suit suit() const;
     void setSuit(Suit suit);
@@ -121,7 +130,7 @@ public:
 
     // Number method
     Card::Number number() const;
-    void setNumber(Card::Number number);
+    void setNumber(Number number);
     QString numberString() const;
 
     // id
@@ -211,6 +220,7 @@ public:
     // helpers
     // static Card *Clone(const Card *other);
     static QString SuitToString(Suit suit);
+    static QString NumberToString(Number number);
     static Card *Parse(const QString &str, RoomObject *room);
 
 private:
@@ -227,6 +237,14 @@ struct CardDescriptor
     Card::Suit suit;
     Card::Number number;
     const CardFace *face;
+    // or following? or both?
+    // QString faceName;
+
+    // share some interfaces of Card?
+    QString fullName(bool include_suit = false) const;
+    QString logName() const;
+    bool isBlack() const;
+    bool isRed() const;
 };
 
 #endif

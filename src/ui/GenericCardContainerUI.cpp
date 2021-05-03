@@ -735,11 +735,11 @@ void PlayerCardContainer::addDelayedTricks(QList<CardItem *> &tricks)
         _paintPixmap(item, start, G_ROOM_SKIN.getCardJudgeIconPixmap(trick->getCard()->faceName()));
         trick->setHomeOpacity(0.0);
         trick->setHomePos(start.center());
-        const Card *card = Sanguosha->getEngineCard(trick->getCard()->effectiveID());
+        const CardDescriptor &card = Sanguosha->getEngineCard(trick->getCard()->effectiveID());
         QString toolTip = QString("<font color=#FFFF33><b>%1 [</b><img src='image/system/log/%2.png' height = 12/><b>%3]</b></font>")
-                              .arg(Sanguosha->translate(card->faceName()))
-                              .arg(card->suitString())
-                              .arg(card->numberString());
+                              .arg(Sanguosha->translate(card.face->name()))
+                              .arg(Card::SuitToString(card.suit))
+                              .arg(Card::NumberToString(card.number));
         item->setToolTip(toolTip);
         _m_judgeCards.append(trick);
         _m_judgeIcons.append(item);
@@ -748,7 +748,7 @@ void PlayerCardContainer::addDelayedTricks(QList<CardItem *> &tricks)
 
 QPixmap PlayerCardContainer::_getEquipPixmap(const Card *equip)
 {
-    const Card *realCard = Sanguosha->getEngineCard(equip->effectiveID());
+    const CardDescriptor &realCard = Sanguosha->getEngineCard(equip->effectiveID());
     QPixmap equipIcon(_m_layout->m_equipAreas[0].size());
     equipIcon.fill(Qt::transparent);
     QPainter painter(&equipIcon);
@@ -760,13 +760,13 @@ QPixmap PlayerCardContainer::_getEquipPixmap(const Card *equip)
     // equip name
     _m_layout->m_equipFont.paintText(&painter, _m_layout->m_equipTextArea, Qt::AlignLeft | Qt::AlignCenter, Sanguosha->translate(equip->faceName()));
     // equip suit
-    painter.drawPixmap(_m_layout->m_equipSuitArea, G_ROOM_SKIN.getCardSuitPixmap(realCard->suit()));
+    painter.drawPixmap(_m_layout->m_equipSuitArea, G_ROOM_SKIN.getCardSuitPixmap(realCard.suit));
 
     // equip point
-    if (realCard->isRed()) {
-        _m_layout->m_equipPointFontRed.paintText(&painter, _m_layout->m_equipPointArea, Qt::AlignLeft | Qt::AlignVCenter, realCard->numberString());
+    if (realCard.isRed()) {
+        _m_layout->m_equipPointFontRed.paintText(&painter, _m_layout->m_equipPointArea, Qt::AlignLeft | Qt::AlignVCenter, Card::NumberToString(realCard.number));
     } else {
-        _m_layout->m_equipPointFontBlack.paintText(&painter, _m_layout->m_equipPointArea, Qt::AlignLeft | Qt::AlignVCenter, realCard->numberString());
+        _m_layout->m_equipPointFontBlack.paintText(&painter, _m_layout->m_equipPointArea, Qt::AlignLeft | Qt::AlignVCenter, Card::NumberToString(realCard.number));
     }
 
     auto face = qobject_cast<const EquipCard *>(equip->face());
@@ -854,7 +854,7 @@ QList<CardItem *> PlayerCardContainer::removeEquips(const QList<int> &cardIds)
 {
     QList<CardItem *> result;
     foreach (int card_id, cardIds) {
-        const EquipCard *equip_card = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card_id)->face());
+        const EquipCard *equip_card = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card_id).face);
         int index = (int)(equip_card->location());
         Q_ASSERT(_m_equipCards[index] != nullptr);
         CardItem *equip = _m_equipCards[index];

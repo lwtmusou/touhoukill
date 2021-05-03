@@ -510,7 +510,7 @@ void Room::gameOver(const QString &winner, bool isSurrender)
         if (player->getHandcardNum() > 0) {
             QStringList handcards;
             foreach (const Card *card, player->getHandcards())
-                handcards << Sanguosha->getEngineCard(card->id())->logName();
+                handcards << Sanguosha->getEngineCard(card->id()).logName();
             QString handcard = handcards.join(", ").toUtf8().toBase64();
             setPlayerProperty(player, "last_handcards", handcard);
         }
@@ -3467,7 +3467,7 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
                 if (!p->isKongcheng()) {
                     QStringList handcards;
                     foreach (const Card *card, p->getHandcards())
-                        handcards << QString("<b>%1</b>").arg(Sanguosha->getEngineCard(card->id())->logName());
+                        handcards << QString("<b>%1</b>").arg(Sanguosha->getEngineCard(card->id()).logName());
                     QString hand = handcards.join(", ");
                     hand = hand.toUtf8().toBase64();
                     JsonArray body;
@@ -3484,7 +3484,7 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
                     if (!p->isKongcheng()) {
                         QStringList handcards;
                         foreach (const Card *card, p->getHandcards())
-                            handcards << QString("<b>%1</b>").arg(Sanguosha->getEngineCard(card->id())->logName());
+                            handcards << QString("<b>%1</b>").arg(Sanguosha->getEngineCard(card->id()).logName());
                         QString hand = handcards.join(", ");
                         hand = hand.toUtf8().toBase64();
                         JsonArray body;
@@ -3505,7 +3505,7 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
                         if (!p->getPile(pile_name).isEmpty()) {
                             QStringList pile_cards;
                             foreach (int id, p->getPile(pile_name))
-                                pile_cards << QString("<b>%1</b>").arg(Sanguosha->getEngineCard(id)->logName());
+                                pile_cards << QString("<b>%1</b>").arg(Sanguosha->getEngineCard(id).logName());
                             QString pile = pile_cards.join(", ");
                             pile = pile.toUtf8().toBase64();
                             JsonArray body;
@@ -5889,7 +5889,7 @@ const Card *Room::askForPindian(ServerPlayer *player, ServerPlayer *from, Server
         const Card *card = Card::Parse(clientReply[0].toString(), this);
         if (card->isVirtualCard()) {
             const Card *real_card = getCard(card->effectiveID());
-            delete card;
+            cardDeleting(card);
             return real_card;
         } else
             return card;
@@ -5948,7 +5948,7 @@ QList<const Card *> Room::askForPindianRace(ServerPlayer *from, ServerPlayer *to
                 c = getCard(card_id);
             } else if (card->isVirtualCard()) {
                 const Card *real_card = getCard(card->effectiveID());
-                delete card;
+                cardDeleting(card);
                 c = real_card;
             } else
                 c = card;

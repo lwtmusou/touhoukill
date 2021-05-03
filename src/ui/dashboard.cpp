@@ -1272,9 +1272,9 @@ void Dashboard::expandPileCards(const QString &pile_name)
             pile.unite(p->getPile(new_name));
     } else if (pile_name == "#xiuye_temp") {
         foreach (int id, ClientInstance->getDiscardPile()) {
-            const Card *c = Sanguosha->getEngineCard(id);
-            if (c->suit() == Card::Club && (c->face()->isNDTrick() || c->face()->type() == CardFace::TypeBasic))
-                pile << c->effectiveID();
+            const CardDescriptor &c = Sanguosha->getEngineCard(id);
+            if (c.suit == Card::Club && (c.face->isNDTrick() || c.face->type() == CardFace::TypeBasic))
+                pile << id;
         }
     } else {
         pile = Self->getPile(new_name);
@@ -1494,8 +1494,7 @@ void Dashboard::updatePending()
     const Card *new_pending_card = view_as_skill->viewAs(cards, Self);
     if (pending_card != new_pending_card) {
         if (pending_card && pending_card->isVirtualCard()) {
-            // FIXME: How to release these cards.
-            delete pending_card;
+            ClientInstance->cardDeleting(pending_card);
             pending_card = nullptr;
         }
         if (view_as_skill->objectName().contains("guhuo") && ClientInstance->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {

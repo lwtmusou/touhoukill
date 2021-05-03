@@ -43,16 +43,22 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
     if (type.startsWith("$")) {
         QString log_name;
         foreach (QString one_card, card_str.split("+")) {
-            const Card *card = nullptr;
-            if (type == "$JudgeResult" || type == "$PasteCard")
-                card = ClientInstance->getCard(one_card.toInt());
-            else
-                card = Sanguosha->getEngineCard(one_card.toInt());
-            if (card) {
-                if (log_name.isEmpty())
-                    log_name = card->logName();
-                else
-                    log_name += ", " + card->logName();
+            if (type == "$JudgeResult" || type == "$PasteCard") {
+                const Card *card = ClientInstance->getCard(one_card.toInt());
+                if (card) {
+                    if (log_name.isEmpty())
+                        log_name = card->logName();
+                    else
+                        log_name += ", " + card->logName();
+                }
+            } else {
+                const CardDescriptor &card = Sanguosha->getEngineCard(one_card.toInt());
+                if (card.face != nullptr) {
+                    if (log_name.isEmpty())
+                        log_name = card.logName();
+                    else
+                        log_name += ", " + card.logName();
+                }
             }
         }
         log_name = bold(log_name, Qt::yellow);
@@ -106,8 +112,8 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
             IDSet card_ids = card->subcards();
             QStringList subcard_list;
             foreach (int card_id, card_ids) {
-                const Card *subcard = Sanguosha->getEngineCard(card_id);
-                subcard_list << bold(subcard->logName(), Qt::yellow);
+                const CardDescriptor &subcard = Sanguosha->getEngineCard(card_id);
+                subcard_list << bold(subcard.logName(), Qt::yellow);
             }
 
             QString subcard_str = subcard_list.join(", ");
@@ -123,13 +129,13 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
                     log = tr("%from %5 [%1] %6 %4 %2 as %3").arg(skill_name).arg(subcard_str).arg(card_name).arg(reason).arg(meth).arg(suffix);
             }
 
-            delete card;
+            ClientInstance->cardDeleting(card);
         } else if (!card->skillName().isEmpty()) {
-            const Card *real = Sanguosha->getEngineCard(card->effectiveID());
+            const CardDescriptor &real = Sanguosha->getEngineCard(card->effectiveID());
             QString skill_name = Sanguosha->translate(card->skillName());
             skill_name = bold(skill_name, Qt::yellow);
 
-            QString subcard_str = bold(real->logName(), Qt::yellow);
+            QString subcard_str = bold(real.logName(), Qt::yellow);
             if (card->face()->isKindOf("DelayedTrick"))
                 log = tr("%from %5 [%1] %6 %4 %2 as %3").arg(skill_name).arg(subcard_str).arg(card_name).arg(reason).arg(tr("use skill")).arg(QString());
             else

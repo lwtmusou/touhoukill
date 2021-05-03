@@ -1677,8 +1677,8 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
                     submenu->addSeparator();
                     foreach (const Card *card, known) {
-                        const Card *engine_card = Sanguosha->getEngineCard(card->id());
-                        submenu->addAction(G_ROOM_SKIN.getCardSuitPixmap(engine_card->suit()), engine_card->fullName());
+                        const CardDescriptor &engine_card = Sanguosha->getEngineCard(card->id());
+                        submenu->addAction(G_ROOM_SKIN.getCardSuitPixmap(engine_card.suit), engine_card.fullName());
                     }
                 }
             }
@@ -3905,9 +3905,7 @@ void RoomScene::showPile(const QList<int> &card_ids, const QString &name, const 
             foreach (int id, card_ids) {
                 zhenlis << ClientInstance->getCard(id);
             }
-            std::sort(zhenlis.begin(), zhenlis.end(), [](const Card *a, const Card *b){
-                return a->number() < b->number();
-            });
+            std::sort(zhenlis.begin(), zhenlis.end(), [](const Card *a, const Card *b) { return a->number() < b->number(); });
             QList<int> zhenids;
             foreach (Card *c, zhenlis)
                 zhenids << c->id();

@@ -30,7 +30,7 @@ public:
     QHash<int, Card *> cards;
     QString currentCardUsePattern;
     CardUseStruct::CardUseReason currentCardUseReason;
-    QList<const Card *> clonedCards;
+    QList<Card *> clonedCards;
 
     RoomObjectPrivate()
     {
@@ -45,8 +45,11 @@ RoomObject::RoomObject(QObject *parent)
 
 RoomObject::~RoomObject()
 {
-    qDeleteAll(d->cards);
-    qDeleteAll(d->clonedCards);
+    foreach (Card *c, d->cards)
+        delete c;
+
+    foreach (Card *c, d->clonedCards)
+        delete c;
 
     delete d;
 }
@@ -102,10 +105,8 @@ void RoomObject::resetState()
     d->cards.clear();
 
     int n = Sanguosha->getCardCount();
-    for (int i = 0; i < n; i++) {
-        const Card *card = Sanguosha->getEngineCard(i);
-        d->cards[i] = cloneCard(card);
-    }
+    for (int i = 0; i < n; i++)
+        d->cards[i] = cloneCard(Sanguosha->getEngineCard(i));
 }
 
 Card *RoomObject::cloneCard(const Card *card)
@@ -140,10 +141,17 @@ Card *RoomObject::cloneCard(const CardFace *cardFace, Card::Suit suit, Card::Num
     return c;
 }
 
+Card *RoomObject::cloneCard(const CardDescriptor &descriptor)
+{
+    return cloneCard(descriptor.face, descriptor.suit, descriptor.number);
+}
+
 void RoomObject::cardDeleting(const Card *card)
 {
+    // const_cast is necessary for this function since card may be const
+    // but for Room, this Card is variable
     if (card != nullptr)
-        d->clonedCards.removeAll(card);
+        d->clonedCards.removeAll(const_cast<Card *>(card));
     delete card;
 }
 
@@ -155,4 +163,15 @@ Card *RoomObject::cloneSkillCard(const QString &name)
 Card *RoomObject::cloneDummyCard()
 {
     return cloneCard();
+}
+
+Card *RoomObject::cloneDummyCard(const IDSet &idSet)
+{
+    Card *c = cloneCard();
+    if (c == nullptr)
+        return nullptr;
+
+    c->addSubcards(idSet);
+
+    return c;
 }

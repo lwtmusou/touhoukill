@@ -20,7 +20,6 @@
 #include <QThread>
 
 class QVersionNumber;
-class CardFace;
 
 class Engine : public QObject
 {
@@ -83,7 +82,7 @@ public:
     void addSkills(const QList<const Skill *> &skills);
 
     int getCardCount() const;
-    const Card *getEngineCard(int cardId) const;
+    const CardDescriptor &getEngineCard(int cardId) const;
 
     QStringList getLords(bool contain_banned = false) const;
     QStringList getRandomLords() const;
@@ -151,7 +150,7 @@ private:
     QList<const TriggerSkill *> global_trigger_skills;
     QList<const ViewAsSkill *> viewas_skills;
 
-    QList<Card *> cards;
+    QList<CardDescriptor> cards;
     QStringList lord_list;
     QSet<QString> ban_package;
 

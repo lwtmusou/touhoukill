@@ -41,7 +41,7 @@ const QList<const CardFace *> &Package::cardFaces() const
     return m_faces;
 }
 
-const QMultiMap<const CardFace *, CardDescriptor> &Package::cards() const
+const QList<CardDescriptor> &Package::cards() const
 {
     return m_all_cards;
 }

@@ -44,7 +44,7 @@ CardFace::~CardFace()
 
 QString CardFace::name() const
 {
-    return this->metaObject()->className();
+    return metaObject()->className();
 }
 
 QString CardFace::description() const
@@ -64,19 +64,7 @@ QString CardFace::effectName() const
 
 bool CardFace::isKindOf(const char *cardType) const
 {
-    const QMetaObject *object = &staticMetaObject;
-    while (object != nullptr) {
-        if (strcmp(object->className(), cardType) == 0)
-            return true;
-
-        // Refactoring: strip  from classname
-        if (strncmp(object->className(), "", 18) == 0 && strcmp(object->className() + 18, cardType) == 0)
-            return true;
-
-        object = object->superClass();
-    }
-
-    return false;
+    return inherits(cardType);
 }
 
 bool CardFace::matchType(const QString &pattern) const
