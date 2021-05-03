@@ -36,7 +36,6 @@ include_directories(
     "src/ui"
     "src/util"
     "src"
-    "include"
 )
 
 add_compile_definitions(AUDIO_SUPPORT QT_DISABLE_DEPRECATED_BEFORE=0x60000)
@@ -318,14 +317,28 @@ if (WIN32)
     set(QSanguosha_Icon_RC ${CMAKE_CURRENT_LIST_DIR}/resource/icon/sgs.ico)
 endif()
 
-add_library(oggvorbisfile STATIC ${OGG_FILE})
-
-if (MSVC)
-    target_compile_options(oggvorbisfile BEFORE PUBLIC "-wd4244" PUBLIC "-wd4305" PUBLIC "-wd4267")
+find_package(PkgConfig)
+if (PKG_CONFIG_FOUND)
+    pkg_check_modules(oggvorbisfile IMPORTED_TARGET GLOBAL ogg>=1.0.0 vorbis>=1.0.0 vorbisfile>=1.0.0)
 endif()
 
 add_executable (QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} )
-target_link_libraries (QSanguosha Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::Multimedia Qt5::QuickWidgets Qt5::Quick oggvorbisfile)
+
+target_link_libraries (QSanguosha Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::Multimedia Qt5::QuickWidgets Qt5::Quick )
+
+if (NOT oggvorbisfile_FOUND)
+    include_directories("include/oggvorbisfile")
+    add_library(oggvorbisfile STATIC ${OGG_FILE})
+
+    if (MSVC)
+        target_compile_options(oggvorbisfile BEFORE PUBLIC "-wd4244" PUBLIC "-wd4305" PUBLIC "-wd4267")
+    endif()
+    target_link_libraries (QSanguosha oggvorbisfile)
+else()
+    # target_compile_options(QSanguosha oggvorbisfile_CFLAGS)
+    target_link_libraries (QSanguosha PkgConfig::oggvorbisfile)
+endif()
+
 
 if (WIN32)
     target_link_libraries(QSanguosha Qt5::WinExtras)
