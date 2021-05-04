@@ -1551,6 +1551,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                              bool isRetrial, const QString &skill_name, bool isProvision, int notice_index)
 {
     Q_ASSERT(pattern != "slash" || method != Card::MethodUse); // use askForUseSlashTo instead
+    // FIXME: Q_ASSERT(method != Card::MethodUse); // Use ask for use card instead
     tryPause();
     notifyMoveFocus(player, S_COMMAND_RESPONSE_CARD);
 
