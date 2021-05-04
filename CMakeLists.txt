@@ -11,7 +11,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # add_definitions(-Wall)
 
-find_package(Qt5 COMPONENTS Widgets Network LinguistTools Multimedia QuickWidgets Quick REQUIRED) # Locate the position of Qt5.
+find_package(Qt5 COMPONENTS Widgets Network LinguistTools Multimedia  REQUIRED) # Locate the position of Qt5.
 
 if (WIN32)
     find_package(Qt5 COMPONENTS WinExtras REQUIRED)
@@ -274,7 +274,7 @@ set_property(TARGET QSanguosha PROPERTY AUTOMOC ON)
 set_property(TARGET QSanguosha PROPERTY AUTOUIC ON)
 set_property(TARGET QSanguosha PROPERTY AUTORCC ON)
 
-target_link_libraries (QSanguosha Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::Multimedia Qt5::QuickWidgets Qt5::Quick )
+target_link_libraries (QSanguosha Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::Multimedia )
 target_compile_definitions(QSanguosha PUBLIC AUDIO_SUPPORT QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
 
 if (NOT oggvorbisfile_FOUND)
