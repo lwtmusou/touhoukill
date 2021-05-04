@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.16)
 
 project(QSanguosha
     VERSION 0.9.9
@@ -6,11 +6,6 @@ project(QSanguosha
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
 
 #set( CMAKE_BUILD_TYPE Release )
 
@@ -264,54 +259,6 @@ set (QSanguosha_MOCS
 
     #${QSanguosha_PKG_MOCS}
 )
-
-set(OGG_FILE
-    src/ogg/backends.h
-    src/ogg/bitrate.h
-    src/ogg/codebook.h
-    src/ogg/codec_internal.h
-    src/ogg/crctable.h
-    src/ogg/envelope.h
-    src/ogg/highlevel.h
-    src/ogg/lookup.h
-    src/ogg/lookup_data.h
-    src/ogg/lpc.h
-    src/ogg/lsp.h
-    src/ogg/masking.h
-    src/ogg/mdct.h
-    src/ogg/misc.h
-    src/ogg/os.h
-    src/ogg/psy.h
-    src/ogg/registry.h
-    src/ogg/scales.h
-    src/ogg/smallft.h
-    src/ogg/window.h
-
-    src/ogg/analysis.c
-    src/ogg/bitrate.c
-    src/ogg/bitwise.c
-    src/ogg/block.c
-    src/ogg/codebook.c
-    src/ogg/envelope.c
-    src/ogg/floor0.c
-    src/ogg/floor1.c
-    src/ogg/framing.c
-    src/ogg/info.c
-    src/ogg/lookup.c
-    src/ogg/lpc.c
-    src/ogg/lsp.c
-    src/ogg/mapping0.c
-    src/ogg/mdct.c
-    src/ogg/psy.c
-    src/ogg/registry.c
-    src/ogg/res0.c
-    src/ogg/sharedbook.c
-    src/ogg/smallft.c
-    src/ogg/synthesis.c
-    src/ogg/vorbisfile.c
-    src/ogg/window.c
-)
-
 if (WIN32)
     set(QSanguosha_SRCS ${QSanguosha_SRCS} QSanguosha_resource.rc)
     set(QSanguosha_Icon_RC ${CMAKE_CURRENT_LIST_DIR}/resource/icon/sgs.ico)
@@ -324,9 +271,60 @@ endif()
 
 add_executable (QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} )
 
+set_property(TARGET QSanguosha PROPERTY AUTOMOC ON)
+set_property(TARGET QSanguosha PROPERTY AUTOUIC ON)
+set_property(TARGET QSanguosha PROPERTY AUTORCC ON)
+
 target_link_libraries (QSanguosha Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::Multimedia Qt5::QuickWidgets Qt5::Quick )
 
 if (NOT oggvorbisfile_FOUND)
+    set(OGG_FILE
+        src/ogg/backends.h
+        src/ogg/bitrate.h
+        src/ogg/codebook.h
+        src/ogg/codec_internal.h
+        src/ogg/crctable.h
+        src/ogg/envelope.h
+        src/ogg/highlevel.h
+        src/ogg/lookup.h
+        src/ogg/lookup_data.h
+        src/ogg/lpc.h
+        src/ogg/lsp.h
+        src/ogg/masking.h
+        src/ogg/mdct.h
+        src/ogg/misc.h
+        src/ogg/os.h
+        src/ogg/psy.h
+        src/ogg/registry.h
+        src/ogg/scales.h
+        src/ogg/smallft.h
+        src/ogg/window.h
+
+        src/ogg/analysis.c
+        src/ogg/bitrate.c
+        src/ogg/bitwise.c
+        src/ogg/block.c
+        src/ogg/codebook.c
+        src/ogg/envelope.c
+        src/ogg/floor0.c
+        src/ogg/floor1.c
+        src/ogg/framing.c
+        src/ogg/info.c
+        src/ogg/lookup.c
+        src/ogg/lpc.c
+        src/ogg/lsp.c
+        src/ogg/mapping0.c
+        src/ogg/mdct.c
+        src/ogg/psy.c
+        src/ogg/registry.c
+        src/ogg/res0.c
+        src/ogg/sharedbook.c
+        src/ogg/smallft.c
+        src/ogg/synthesis.c
+        src/ogg/vorbisfile.c
+        src/ogg/window.c
+    )
+
     include_directories("include/oggvorbisfile")
     add_library(oggvorbisfile STATIC ${OGG_FILE})
 
