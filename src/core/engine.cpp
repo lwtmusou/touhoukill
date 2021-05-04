@@ -440,7 +440,7 @@ const CardDescriptor &Engine::getEngineCard(int cardId) const
 
 QString Engine::getVersionNumber() const
 {
-    return "20210331";
+    return QT_STRINGIFY(VERSIONNUMBER);
 }
 
 QString Engine::getVersion() const
@@ -450,12 +450,12 @@ QString Engine::getVersion() const
 
 QString Engine::getVersionName() const
 {
-    return "V0.10.2";
+    return "V" QT_STRINGIFY(VERSION);
 }
 
 QVersionNumber Engine::getQVersionNumber() const
 {
-    return QVersionNumber(0, 10, 2);
+    return QVersionNumber::fromString(QT_STRINGIFY(VERSION));
 }
 
 QString Engine::getMODName() const

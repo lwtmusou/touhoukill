@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.16)
 
 project(QSanguosha
-    VERSION 0.9.9
+    VERSION 0.10.3
     )
+
+set(VERSION_NUMBER_QSanguosha 20210504)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-#set( CMAKE_BUILD_TYPE Release )
 
 # add_definitions(-Wall)
 
@@ -33,7 +33,6 @@ include_directories(
     "src"
 )
 
-add_compile_definitions(AUDIO_SUPPORT QT_DISABLE_DEPRECATED_BEFORE=0x60000)
 
 set (QSanguosha_PKG_SRCS
     src/package/hegemonyCard.cpp
@@ -276,6 +275,7 @@ set_property(TARGET QSanguosha PROPERTY AUTOUIC ON)
 set_property(TARGET QSanguosha PROPERTY AUTORCC ON)
 
 target_link_libraries (QSanguosha Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::Multimedia Qt5::QuickWidgets Qt5::Quick )
+target_compile_definitions(QSanguosha PUBLIC AUDIO_SUPPORT QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
 
 if (NOT oggvorbisfile_FOUND)
     set(OGG_FILE
