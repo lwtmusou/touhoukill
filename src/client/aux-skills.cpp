@@ -6,7 +6,6 @@
 
 DiscardSkill::DiscardSkill()
     : ViewAsSkill("discard")
-    , card(new Card(nullptr, nullptr)) // FIXME: Make it available to access the RoomObject so that DummyCard could be created.
     , num(0)
     , include_equip(false)
     , is_discard(true)
@@ -16,8 +15,6 @@ DiscardSkill::DiscardSkill()
 
 DiscardSkill::~DiscardSkill()
 {
-    delete card;
-    card = nullptr;
 }
 
 void DiscardSkill::setNum(int num)
@@ -54,9 +51,12 @@ bool DiscardSkill::viewFilter(const QList<const Card *> &selected, const Card *c
     return true;
 }
 
-const Card *DiscardSkill::viewAs(const QList<const Card *> &cards, const Player * /*Self*/) const
+const Card *DiscardSkill::viewAs(const QList<const Card *> &cards, const Player *Self) const
 {
     if (cards.length() >= minnum) {
+        auto logic = Self->getRoomObject();
+        auto card = logic->cloneDummyCard();
+        card->setHandleMethod(Card::MethodNone);
         card->clearSubcards();
         foreach (const Card *c, cards)
             card->addSubcard(c);
@@ -167,18 +167,11 @@ private:
 YijiViewAsSkill::YijiViewAsSkill()
     : ViewAsSkill("yiji")
 {
-    face = new YijiCard;
-    card = new Card(nullptr, face);
-    card->setHandleMethod(Card::MethodNone);
     // card->setParent(this);
 }
 
 YijiViewAsSkill::~YijiViewAsSkill()
 {
-    delete face;
-    face = nullptr;
-    delete card;
-    card = nullptr;
 }
 
 void YijiViewAsSkill::setCards(const QString &card_str)
@@ -194,7 +187,6 @@ void YijiViewAsSkill::setMaxNum(int max_num)
 
 void YijiViewAsSkill::setPlayerNames(const QStringList &names)
 {
-    face->setPlayerNames(names);
 }
 
 bool YijiViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card *card, const Player * /*Self*/) const
@@ -202,10 +194,13 @@ bool YijiViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card
     return ids.contains(card->id()) && selected.length() < max_num;
 }
 
-const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards, const Player * /*Self*/) const
+const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards, const Player *player) const
 {
     if (cards.isEmpty() || cards.length() > max_num)
         return nullptr;
+
+    auto card = player->getRoomObject()->cloneSkillCard("YijiCard");
+    card->setHandleMethod(Card::MethodNone);
 
     card->clearSubcards();
     foreach (const Card *c, cards)
@@ -242,26 +237,20 @@ private:
 ChoosePlayerSkill::ChoosePlayerSkill()
     : ZeroCardViewAsSkill("choose_player")
 {
-    face = new ChoosePlayerCard;
-    card = new Card(nullptr, face);
 }
 
 ChoosePlayerSkill::~ChoosePlayerSkill()
 {
-    delete face;
-    face = nullptr;
-    delete card;
-    card = nullptr;
+    
 }
 
 void ChoosePlayerSkill::setPlayerNames(const QStringList &names)
 {
-    face->setPlayerNames(names);
 }
 
-const Card *ChoosePlayerSkill::viewAs(const Player * /*Self*/) const
+const Card *ChoosePlayerSkill::viewAs(const Player *player) const
 {
-    return card;
+    return player->getRoomObject()->cloneSkillCard("ChoosePlayerCard");
 }
 
 #include "aux-skills.moc"

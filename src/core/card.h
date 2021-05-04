@@ -33,9 +33,6 @@ class Card final
     Q_GADGET
 
     friend class RoomObject;
-    friend class DiscardSkill;
-    friend class YijiViewAsSkill;
-    friend class ChoosePlayerSkill;
 
 public:
     enum Suit

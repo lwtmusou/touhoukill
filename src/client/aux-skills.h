@@ -20,7 +20,6 @@ public:
     const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const override;
 
 private:
-    Card *card; // it should be a dummy card.
     int num;
     int minnum;
     bool include_equip;
@@ -78,8 +77,6 @@ public:
     const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const override;
 
 private:
-    YijiCard *face;
-    Card *card;
     QList<int> ids;
     int max_num;
 };
@@ -97,9 +94,6 @@ public:
 
     const Card *viewAs(const Player *Self) const override;
 
-private:
-    ChoosePlayerCard *face;
-    Card *card;
 };
 
 #endif
