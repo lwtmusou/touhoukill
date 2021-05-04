@@ -1,3 +1,4 @@
+#include "aux-skills.h"
 #include "engine.h"
 #include "CardFace.h"
 #include "RoomObject.h"
@@ -43,6 +44,8 @@ Engine::Engine()
 
     CardFactory::registerCardFace(new SurrenderCard);
     CardFactory::registerCardFace(new CheatCard);
+    CardFactory::registerCardFace(new ChoosePlayerCard);
+    CardFactory::registerCardFace(new YijiCard);
 
     LordBGMConvertList = getConfigFromConfigFile("bgm_convert_pairs").toStringList();
     LordBackdropConvertList = getConfigFromConfigFile("backdrop_convert_pairs").toStringList();

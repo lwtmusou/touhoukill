@@ -60,7 +60,21 @@ public:
     bool matchPattern(const Player *player, const Card *card) const override;
 };
 
-class YijiCard;
+class YijiCard : public SkillCard
+{
+    Q_OBJECT
+public:
+    YijiCard();
+
+    void setPlayerNames(const QStringList &names);
+
+    int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *, const Card *card) const override;
+
+    void use(Room *room, const CardUseStruct &use) const override;
+
+private:
+    QSet<QString> set;
+};
 
 class YijiViewAsSkill : public ViewAsSkill
 {
@@ -81,7 +95,19 @@ private:
     int max_num;
 };
 
-class ChoosePlayerCard;
+class ChoosePlayerCard : public SkillCard
+{
+    Q_OBJECT
+public:
+    ChoosePlayerCard();
+
+    void setPlayerNames(const QStringList &names);
+
+    int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *, const Card *) const override;
+
+private:
+    QSet<QString> set;
+};
 
 class ChoosePlayerSkill : public ZeroCardViewAsSkill
 {
@@ -93,7 +119,6 @@ public:
     void setPlayerNames(const QStringList &names);
 
     const Card *viewAs(const Player *Self) const override;
-
 };
 
 #endif

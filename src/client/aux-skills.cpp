@@ -115,54 +115,48 @@ bool ShowOrPindianSkill::matchPattern(const Player *player, const Card *card) co
 
 // -------------------------------------------
 
-class YijiCard : public SkillCard
+YijiCard::YijiCard()
 {
-    Q_OBJECT
-public:
-    YijiCard()
-    {
-        setTargetFixed(false);
-        // mute = true;
-        setThrowWhenUsing(false);
-        // will_throw = false;
-        // FIXME: How to pass the handling method to the card?
-        // handling_method = Card::MethodNone;
+    setTargetFixed(false);
+    // mute = true;
+    setThrowWhenUsing(false);
+    // will_throw = false;
+    // FIXME: How to pass the handling method to the card?
+    // handling_method = Card::MethodNone;
+}
+
+void YijiCard::setPlayerNames(const QStringList &names)
+{
+    set = QSet<QString>(names.begin(), names.end());
+}
+
+int YijiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *, const Card *card) const
+{
+    return targets.isEmpty() && set.contains(to_select->objectName()) ? 1 : 0;
+}
+
+void YijiCard::use(Room *room, const CardUseStruct &use) const
+{
+    ServerPlayer *source = use.from;
+    ServerPlayer *target = use.to.first();
+
+    room->broadcastSkillInvoke("rende");
+    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), target->objectName(), "nosrende", QString());
+    room->obtainCard(target, use.card, reason, false);
+
+    int old_value = source->getMark("nosrende");
+    int new_value = old_value + use.card->subcards().size();
+    room->setPlayerMark(source, "nosrende", new_value);
+
+    if (old_value < 2 && new_value >= 2) {
+        RecoverStruct recover;
+        recover.card = use.card;
+        recover.who = source;
+        room->recover(source, recover);
     }
+}
 
-    void setPlayerNames(const QStringList &names)
-    {
-        set = QSet<QString>(names.begin(), names.end());
-    }
-
-    int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *, const Card *card) const override
-    {
-        return targets.isEmpty() && set.contains(to_select->objectName()) ? 1 : 0;
-    }
-
-    void use(Room *room, const CardUseStruct &use) const override
-    {
-        ServerPlayer *source = use.from;
-        ServerPlayer *target = use.to.first();
-
-        room->broadcastSkillInvoke("rende");
-        CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), target->objectName(), "nosrende", QString());
-        room->obtainCard(target, use.card, reason, false);
-
-        int old_value = source->getMark("nosrende");
-        int new_value = old_value + use.card->subcards().size();
-        room->setPlayerMark(source, "nosrende", new_value);
-
-        if (old_value < 2 && new_value >= 2) {
-            RecoverStruct recover;
-            recover.card = use.card;
-            recover.who = source;
-            room->recover(source, recover);
-        }
-    }
-
-private:
-    QSet<QString> set;
-};
+// -------------------------------------------
 
 YijiViewAsSkill::YijiViewAsSkill()
     : ViewAsSkill("yiji")
@@ -210,29 +204,22 @@ const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards, const Play
 
 // ------------------------------------------------
 
-class ChoosePlayerCard : public SkillCard
+ChoosePlayerCard::ChoosePlayerCard()
 {
-    Q_OBJECT
-public:
-    ChoosePlayerCard()
-    {
-        // target_fixed = false;
-        setTargetFixed(false);
-    }
+    setTargetFixed(false);
+}
 
-    void setPlayerNames(const QStringList &names)
-    {
-        set = QSet<QString>(names.begin(), names.end());
-    }
+void ChoosePlayerCard::setPlayerNames(const QStringList &names)
+{
+    set = QSet<QString>(names.begin(), names.end());
+}
 
-    int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *, const Card *) const override
-    {
-        return targets.isEmpty() && set.contains(to_select->objectName()) ? 1 : 0;
-    }
+int ChoosePlayerCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *, const Card *) const
+{
+    return targets.isEmpty() && set.contains(to_select->objectName()) ? 1 : 0;
+}
 
-private:
-    QSet<QString> set;
-};
+// ------------------------------------------------
 
 ChoosePlayerSkill::ChoosePlayerSkill()
     : ZeroCardViewAsSkill("choose_player")
@@ -241,7 +228,6 @@ ChoosePlayerSkill::ChoosePlayerSkill()
 
 ChoosePlayerSkill::~ChoosePlayerSkill()
 {
-    
 }
 
 void ChoosePlayerSkill::setPlayerNames(const QStringList &names)
@@ -252,5 +238,3 @@ const Card *ChoosePlayerSkill::viewAs(const Player *player) const
 {
     return player->getRoomObject()->cloneSkillCard("ChoosePlayerCard");
 }
-
-#include "aux-skills.moc"
