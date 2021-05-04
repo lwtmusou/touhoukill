@@ -18,7 +18,7 @@ public:
         , can_damage(false)
         , can_recover(false)
         , has_effectvalue(true)
-        , default_method(Card::MethodNone)
+        , default_method(Card::MethodUse)
     {
     }
 
@@ -133,7 +133,12 @@ void CardFace::setHasPreAction(bool can)
 
 Card::HandlingMethod CardFace::defaultHandlingMethod() const
 {
-    return Card::MethodUse;
+    return d->default_method;
+}
+
+void CardFace::setDefaultHandlingMethod(Card::HandlingMethod can)
+{
+    d->default_method = can;
 }
 
 bool CardFace::targetFixed(const Player *, const Card *) const
