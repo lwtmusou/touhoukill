@@ -1273,7 +1273,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
     } else if (pile_name == "#xiuye_temp") {
         foreach (int id, ClientInstance->getDiscardPile()) {
             const CardDescriptor &c = Sanguosha->getEngineCard(id);
-            if (c.suit == Card::Club && (c.face->isNDTrick() || c.face->type() == CardFace::TypeBasic))
+            if (c.suit == Card::Club && (c.face()->isNDTrick() || c.face()->type() == CardFace::TypeBasic))
                 pile << id;
         }
     } else {

@@ -392,7 +392,6 @@ void RoomThread::run()
         room->startGame();
     }
 
-    Sanguosha->registerRoom(room);
     if (room->getMode() == "04_1v3")
         game_rule = new HulaoPassMode(this);
     else
@@ -462,7 +461,6 @@ void RoomThread::run()
     } catch (TriggerEvent triggerEvent) {
         if (triggerEvent == GameFinished) {
             game_rule->deleteLater();
-            Sanguosha->unregisterRoom();
             return;
         } else
             Q_ASSERT(false);

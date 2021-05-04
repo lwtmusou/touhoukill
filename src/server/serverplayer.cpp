@@ -380,7 +380,7 @@ void ServerPlayer::removeCard(const Card *card, Place place)
     case PlaceEquip: {
         const EquipCard *equip = qobject_cast<const EquipCard *>(card->face());
         if (equip == nullptr)
-            equip = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card->effectiveID()).face);
+            equip = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card->effectiveID()).face());
         Q_ASSERT(equip != nullptr);
         equip->onUninstall(this);
 

@@ -104,11 +104,6 @@ public:
     int correctCardTarget(const TargetModSkill::ModType type, const Player *from, const Card *card) const;
     int correctAttackRange(const Player *target, bool include_weapon = true, bool fixed = false) const;
 
-    // currently only used in Card (Pre-Refactor version)
-    void registerRoom(RoomObject *room);
-    void unregisterRoom();
-    RoomObject *currentRoomObject();
-
     bool isGeneralHidden(const QString &general_name) const;
 
     QStringList LordBGMConvertList;
@@ -120,18 +115,12 @@ public:
 
     QVariant getConfigFromConfigFile(const QString &key) const;
 
-    // Refactoring
-    void registerCardFace(const CardFace *cardFace);
-    const CardFace *getCardFace(const QString &name) const;
-
     QString getPackageNameByCard(const Card *c) const;
 
 private:
-    QMutex m_mutex;
     QHash<QString, QString> translations;
     QHash<QString, const General *> generals;
     QHash<QString, const Skill *> skills;
-    QHash<QString, const CardFace *> cardFaces;
     QHash<QThread *, RoomObject *> m_rooms;
     QMap<QString, QString> modes;
     QMultiMap<QString, QString> related_skills;

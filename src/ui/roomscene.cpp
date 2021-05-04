@@ -1407,7 +1407,7 @@ void RoomScene::updateTargetsEnablity(const Card *card)
         int maxVotes = 0;
 
         if (card) {
-            card->face()->targetFilter(selected_targets, player, Self, card);
+            maxVotes = card->face()->targetFilter(selected_targets, player, Self, card);
             item->setMaxVotes(maxVotes);
         }
 

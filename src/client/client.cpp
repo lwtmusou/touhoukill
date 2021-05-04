@@ -819,7 +819,6 @@ void Client::activate(const QVariant &playerId)
 
 void Client::startGame(const QVariant &arg)
 {
-    Sanguosha->registerRoom(this);
     resetState();
 
     JsonArray arr = arg.value<JsonArray>();
@@ -1215,7 +1214,7 @@ void Client::askForNullification(const QVariant &arg)
     if (!source_name.isNull())
         source = getPlayer(source_name.toString());
 
-    const CardFace *trick_card = Sanguosha->getCardFace(trick_name);
+    const CardFace *trick_card = CardFactory::cardFace(trick_name);
     if (Config.NeverNullifyMyTrick && source == Self) {
         if (trick_card->isKindOf("SingleTargetTrick") || trick_card->isKindOf("IronChain")) {
             onPlayerResponseCard(nullptr);
@@ -1545,7 +1544,6 @@ void Client::gameOver(const QVariant &arg)
 
     if (winner == ".") {
         emit standoff();
-        Sanguosha->unregisterRoom();
         return;
     }
 
@@ -1560,7 +1558,6 @@ void Client::gameOver(const QVariant &arg)
         p->setProperty("win", win);
     }
 
-    Sanguosha->unregisterRoom();
     emit game_over();
 }
 

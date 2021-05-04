@@ -143,7 +143,7 @@ Card *RoomObject::cloneCard(const CardFace *cardFace, Card::Suit suit, Card::Num
 
 Card *RoomObject::cloneCard(const CardDescriptor &descriptor)
 {
-    return cloneCard(descriptor.face, descriptor.suit, descriptor.number);
+    return cloneCard(descriptor.face(), descriptor.suit, descriptor.number);
 }
 
 void RoomObject::cardDeleting(const Card *card)

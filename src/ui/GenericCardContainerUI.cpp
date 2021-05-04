@@ -737,7 +737,7 @@ void PlayerCardContainer::addDelayedTricks(QList<CardItem *> &tricks)
         trick->setHomePos(start.center());
         const CardDescriptor &card = Sanguosha->getEngineCard(trick->getCard()->effectiveID());
         QString toolTip = QString("<font color=#FFFF33><b>%1 [</b><img src='image/system/log/%2.png' height = 12/><b>%3]</b></font>")
-                              .arg(Sanguosha->translate(card.face->name()))
+                              .arg(Sanguosha->translate(card.face()->name()))
                               .arg(Card::SuitToString(card.suit))
                               .arg(Card::NumberToString(card.number));
         item->setToolTip(toolTip);
@@ -854,7 +854,7 @@ QList<CardItem *> PlayerCardContainer::removeEquips(const QList<int> &cardIds)
 {
     QList<CardItem *> result;
     foreach (int card_id, cardIds) {
-        const EquipCard *equip_card = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card_id).face);
+        const EquipCard *equip_card = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card_id).face());
         int index = (int)(equip_card->location());
         Q_ASSERT(_m_equipCards[index] != nullptr);
         CardItem *equip = _m_equipCards[index];

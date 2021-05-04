@@ -270,7 +270,7 @@ bool Card::isModified() const
         return false;
 
     const CardDescriptor &c = Sanguosha->getEngineCard(id());
-    return (c.face != face()) || (c.suit != suit()) || (c.number != number()) || (!skillName(false).isEmpty());
+    return (c.face() != face()) || (c.suit != suit()) || (c.number != number()) || (!skillName(false).isEmpty());
 }
 
 QString Card::skillName(bool removePrefix) const
@@ -599,7 +599,7 @@ Card *Card::Parse(const QString &str, RoomObject *room)
         if (subcard_str != ".")
             subcard_ids = subcard_str.split("+");
 
-        const CardFace *skillCardFace = Sanguosha->getCardFace(card_name);
+        const CardFace *skillCardFace = CardFactory::cardFace(card_name);
         if (skillCardFace == nullptr)
             return nullptr;
 
@@ -689,7 +689,7 @@ Card *Card::Parse(const QString &str, RoomObject *room)
 
 QString CardDescriptor::fullName(bool include_suit) const
 {
-    QString name = face->name();
+    QString name = face()->name();
     if (include_suit) {
         QString suit_name = Sanguosha->translate(Card::SuitToString(suit));
         return QString("%1%2 %3").arg(suit_name).arg(Card::NumberToString(number)).arg(name);
@@ -731,7 +731,7 @@ QString CardDescriptor::logName() const
     if (number > Card::NumberA && number <= Card::NumberK)
         number_string = Card::NumberToString(number);
 
-    return QString("%1[%2%3]").arg(face->name()).arg(suit_char).arg(number_string);
+    return QString("%1[%2%3]").arg(face()->name()).arg(suit_char).arg(number_string);
 }
 
 bool CardDescriptor::isBlack() const
@@ -742,4 +742,9 @@ bool CardDescriptor::isBlack() const
 bool CardDescriptor::isRed() const
 {
     return suit == Card::Heart || suit == Card::Diamond || suit == Card::NoSuitRed;
+}
+
+const CardFace *CardDescriptor::face() const
+{
+    return CardFactory::cardFace(faceName);
 }

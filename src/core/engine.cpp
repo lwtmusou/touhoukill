@@ -387,29 +387,6 @@ int Engine::getGeneralCount(bool include_banned) const
     return total;
 }
 
-void Engine::registerRoom(RoomObject *room)
-{
-    m_mutex.lock();
-    m_rooms[QThread::currentThread()] = room;
-    m_mutex.unlock();
-}
-
-void Engine::unregisterRoom()
-{
-    m_mutex.lock();
-    m_rooms.remove(QThread::currentThread());
-    m_mutex.unlock();
-}
-
-RoomObject *Engine::currentRoomObject()
-{
-    m_mutex.lock();
-    RoomObject *room = m_rooms[QThread::currentThread()];
-    Q_ASSERT(room);
-    m_mutex.unlock();
-    return room;
-}
-
 bool Engine::isGeneralHidden(const QString &general_name) const
 {
     const General *general = getGeneral(general_name);
@@ -425,11 +402,7 @@ bool Engine::isGeneralHidden(const QString &general_name) const
 
 const CardDescriptor &Engine::getEngineCard(int cardId) const
 {
-    static CardDescriptor nullDescriptor = {
-        Card::NoSuit,
-        Card::NumberNA,
-        nullptr,
-    };
+    static CardDescriptor nullDescriptor = {QString(), Card::NoSuit, Card::NumberNA, QString()};
 
     if (cardId == Card::S_UNKNOWN_CARD_ID)
         return nullDescriptor;
@@ -967,7 +940,7 @@ QList<int> Engine::getRandomCards() const
     foreach (const CardDescriptor &card, cards) {
 #if 0
 
-        if (exclude_disaters && card.face->isKindOf("Disaster"))
+        if (exclude_disaters && card.face()->isKindOf("Disaster"))
             continue;
 
         if (getPackageNameByCard(card) == "New3v3Card" && (using_2012_3v3 || using_2013_3v3))
@@ -1268,17 +1241,6 @@ QVariant Engine::getConfigFromConfigFile(const QString &key) const
 {
     // TODO: special case of "withHeroSkin" and "withBGM"
     return configFile.value(key);
-}
-
-void Engine::registerCardFace(const CardFace *cardFace)
-{
-    if (cardFace != nullptr)
-        cardFaces[cardFace->name()] = cardFace;
-}
-
-const CardFace *Engine::getCardFace(const QString &name) const
-{
-    return cardFaces.value(name, nullptr);
 }
 
 QString Engine::getPackageNameByCard(const Card *c) const

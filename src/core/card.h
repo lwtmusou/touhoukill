@@ -231,17 +231,19 @@ private:
  */
 struct CardDescriptor
 {
+    // const CardFace *face;
+    // or following? or both?
+    QString faceName;
     Card::Suit suit;
     Card::Number number;
-    const CardFace *face;
-    // or following? or both?
-    // QString faceName;
+    QString package;
 
     // share some interfaces of Card?
     QString fullName(bool include_suit = false) const;
     QString logName() const;
     bool isBlack() const;
     bool isRed() const;
+    const CardFace *face() const;
 };
 
 #endif

@@ -66,16 +66,16 @@ void CardItem::setCard(const Card *card)
             m_cardId = Card::S_UNKNOWN_CARD_ID;
             setObjectName(card->faceName());
             for (int i = 0; i <= Sanguosha->getCardCount() - 1; i++) {
-                if (Sanguosha->getEngineCard(i).face->name() == card->faceName()) {
-                    setToolTip(Sanguosha->getEngineCard(i).face->description());
+                if (Sanguosha->getEngineCard(i).face()->name() == card->faceName()) {
+                    setToolTip(Sanguosha->getEngineCard(i).face()->description());
                     break;
                 }
             }
         } else {
             m_cardId = card->id();
             const CardDescriptor &engineCard = Sanguosha->getEngineCard(m_cardId);
-            setObjectName(engineCard.face->name());
-            setToolTip(engineCard.face->description());
+            setObjectName(engineCard.face()->name());
+            setToolTip(engineCard.face()->description());
         }
     } else {
         m_cardId = Card::S_UNKNOWN_CARD_ID;
@@ -335,7 +335,7 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidge
     else
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardMainArea, G_ROOM_SKIN.getPixmap("generalCardBack", QString(), true));
     const CardDescriptor &card = Sanguosha->getEngineCard(m_cardId);
-    if (card.face) {
+    if (card.face()) {
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardSuitArea, G_ROOM_SKIN.getCardSuitPixmap(card.suit));
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardNumberArea, G_ROOM_SKIN.getCardNumberPixmap(card.number, card.isBlack()));
         QRect rect = G_COMMON_LAYOUT.m_cardFootnoteArea;
