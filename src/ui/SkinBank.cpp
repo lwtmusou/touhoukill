@@ -541,7 +541,7 @@ bool IQSanComponentSkin::_loadImageConfig(const QVariant &config)
         _m_imageConfig = config.value<JsonObject>();
     else {
         JsonObject object = config.value<JsonObject>();
-        const QList<QString> &keys = object.keys();
+        const QStringList &keys = object.keys();
         foreach (const QString &key, keys)
             _m_imageConfig[key] = object[key];
     }

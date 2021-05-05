@@ -229,7 +229,7 @@ QString General::getCompanions() const
     QStringList name;
     foreach (const QString &general, companions)
         name << QString("%1").arg(Sanguosha->translate(general));
-    QList<QString> generals = Sanguosha->getGenerals();
+    QStringList generals = Sanguosha->getGenerals();
     foreach (QString gname, generals) {
         const General *gnr = Sanguosha->getGeneral(gname);
         if (!gnr)

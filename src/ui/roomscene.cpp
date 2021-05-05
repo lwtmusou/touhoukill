@@ -541,7 +541,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
     }
     case S_GAME_EVENT_UPDATE_PRESHOW: {
         JsonObject preshow_map = arg[1].value<JsonObject>();
-        QList<QString> skill_names = preshow_map.keys();
+        QStringList skill_names = preshow_map.keys();
         foreach (const QString &skill, skill_names) {
             bool showed = preshow_map[skill].toBool();
 
@@ -1254,7 +1254,7 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer *> &seats)
         }
     }
 
-    QList<QString> names = name2photo.keys();
+    QStringList names = name2photo.keys();
     foreach (const QString &who, names) {
         if (m_bubbleChatBoxs.contains(who)) {
             m_bubbleChatBoxs[who]->setArea(getBubbleChatBoxShowArea(who));

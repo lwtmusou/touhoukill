@@ -90,8 +90,8 @@ void RoleAssignDialog::accept()
     QStringList role_list = Sanguosha->getRoleList(ServerInfo.GameMode);
     QStringList real_list;
 
-    QList<QString> names;
-    QList<QString> roles;
+    QStringList names;
+    QStringList roles;
     if (Config.FreeAssignSelf) {
         QString name = list->item(0)->data(Qt::UserRole).toString();
         QString role = role_mapping.value(name);

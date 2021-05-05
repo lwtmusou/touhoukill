@@ -1981,7 +1981,7 @@ void Client::askForAssign(const QVariant &)
     emit assign_asked();
 }
 
-void Client::onPlayerAssignRole(const QList<QString> &names, const QList<QString> &roles)
+void Client::onPlayerAssignRole(const QStringList &names, const QStringList &roles)
 {
     Q_ASSERT(names.size() == roles.size());
 

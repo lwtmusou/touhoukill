@@ -1,8 +1,8 @@
-#include "aux-skills.h"
 #include "engine.h"
 #include "CardFace.h"
 #include "RoomObject.h"
 #include "audio.h"
+#include "aux-skills.h"
 #include "card.h"
 #include "client.h"
 #include "protocol.h"
@@ -359,7 +359,7 @@ const General *Engine::getGeneral(const QString &name) const
     return generals.value(name, NULL);
 }
 
-const QList<QString> Engine::getGenerals() const
+const QStringList Engine::getGenerals() const
 {
     return generals.keys();
 }
@@ -1198,9 +1198,7 @@ int Engine::operationTimeRate(QSanProtocol::CommandType command, QVariant msg)
 SurrenderCard::SurrenderCard()
 {
     setTargetFixed(true);
-    // target_fixed = true;
-    // mute = true;
-    // handling_method = Card::MethodNone;
+    setDefaultHandlingMethod(Card::MethodNone);
 }
 
 void SurrenderCard::onUse(Room *room, const CardUseStruct &use) const
@@ -1211,8 +1209,7 @@ void SurrenderCard::onUse(Room *room, const CardUseStruct &use) const
 CheatCard::CheatCard()
 {
     setTargetFixed(true);
-    // mute = true;
-    // handling_method = Card::MethodNone;
+    setDefaultHandlingMethod(Card::MethodNone);
 }
 
 void CheatCard::onUse(Room *room, const CardUseStruct &use) const
@@ -1241,10 +1238,4 @@ QVariant Engine::getConfigFromConfigFile(const QString &key) const
 {
     // TODO: special case of "withHeroSkin" and "withBGM"
     return configFile.value(key);
-}
-
-QString Engine::getPackageNameByCard(const Card *c) const
-{
-    // TODO!!!!!
-    return QString();
 }

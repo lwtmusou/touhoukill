@@ -36,7 +36,7 @@ private:
     int sizey;
     QList<QRect> faceboardPos;
     QList<QRect> easytextPos;
-    QList<QString> easytext;
+    QStringList easytext;
 
 signals:
     void my_pixmap_item_msg(QString);

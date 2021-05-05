@@ -74,7 +74,7 @@ public:
     void onPlayerDiscardCards(const Card *card);
     void onPlayerReplyYiji(const Card *card, const Player *to);
     void onPlayerReplyGuanxing(const QList<int> &up_cards, const QList<int> &down_cards);
-    void onPlayerAssignRole(const QList<QString> &names, const QList<QString> &roles);
+    void onPlayerAssignRole(const QStringList &names, const QStringList &roles);
     QList<const ClientPlayer *> getPlayers() const;
     void speakToServer(const QString &text);
     ClientPlayer *getPlayer(const QString &name);

@@ -66,7 +66,7 @@ public:
     const Package *findPackage(const QString &name) const;
 
     const General *getGeneral(const QString &name) const;
-    const QList<QString> getGenerals() const;
+    const QStringList getGenerals() const;
     int getGeneralCount(bool include_banned = false) const;
     const Skill *getSkill(const QString &skill_name) const;
     const Skill *getSkill(const EquipCard *card) const;
@@ -114,8 +114,6 @@ public:
     QString GetMappedKingdom(const QString &role); //hegemony
 
     QVariant getConfigFromConfigFile(const QString &key) const;
-
-    QString getPackageNameByCard(const Card *c) const;
 
 private:
     QHash<QString, QString> translations;

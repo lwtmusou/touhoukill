@@ -107,7 +107,7 @@ void CardOverview::addCard(int i, const CardDescriptor &card, int id)
     QString point = Card::NumberToString(card.number);
     QString type = Sanguosha->translate(card.face()->name());
     QString subtype = Sanguosha->translate(card.face()->subTypeName());
-    QString package; //= Sanguosha->translate(card->getPackage());
+    QString package = Sanguosha->translate(card.package);
 
     QTableWidgetItem *name_item = new QTableWidgetItem(name);
     name_item->setData(Qt::UserRole, id);
@@ -119,12 +119,11 @@ void CardOverview::addCard(int i, const CardDescriptor &card, int id)
     ui->tableWidget->setItem(i, 4, new QTableWidgetItem(subtype));
 
     QTableWidgetItem *package_item = new QTableWidgetItem(package);
-#if 0
-    if (Config.value("LuaPackages", QString()).toString().split("+").contains(card->getPackage())) {
+    if (Config.value("LuaPackages", QString()).toString().split("+").contains(card.package)) {
         package_item->setBackground(QBrush(qRgb(0x66, 0xCC, 0xFF)));
         package_item->setToolTip(tr("<font color=#FFFF33>This is an Lua extension</font>"));
     }
-#endif
+
     ui->tableWidget->setItem(i, 5, package_item);
 }
 

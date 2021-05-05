@@ -1983,7 +1983,7 @@ const Player *Player::getLord(bool include_death) const
 QList<const Skill *> Player::getHeadSkillList(bool visible_only, bool include_acquired, bool include_equip) const
 {
     QList<const Skill *> skillList;
-    QList<QString> skillslist;
+    QStringList skillslist;
     if (include_acquired)
         skillslist = skills.keys() + acquired_skills.values();
     else
@@ -2008,7 +2008,7 @@ QList<const Skill *> Player::getHeadSkillList(bool visible_only, bool include_ac
 QList<const Skill *> Player::getDeputySkillList(bool visible_only, bool include_acquired, bool include_equip) const
 {
     QList<const Skill *> skillList;
-    QList<QString> skillslist;
+    QStringList skillslist;
     if (include_acquired)
         skillslist = skills2.keys() + acquired_skills2.values();
     else

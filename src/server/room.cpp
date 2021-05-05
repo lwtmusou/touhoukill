@@ -6864,7 +6864,7 @@ void Room::countDescription()
         return;
 
     QTextStream stream(&file);
-    QList<QString> all = Sanguosha->getLimitedGeneralNames();
+    QStringList all = Sanguosha->getLimitedGeneralNames();
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
     QMultiMap<int, QString> map;

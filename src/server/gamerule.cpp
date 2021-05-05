@@ -1425,7 +1425,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const
                 }
             }
 
-            QList<QString> roles = role_count.keys();
+            QStringList roles = role_count.keys();
             foreach (QString role, roles) {
                 QList<ServerPlayer *> players = role_count[role];
                 if (players.length() == dead_role_count[role].length()) //all dead
