@@ -229,6 +229,7 @@ local zhenshe_skill={}
 zhenshe_skill.name="zhenshe"
 table.insert(sgs.ai_skills,zhenshe_skill)
 zhenshe_skill.getTurnUseCard=function(self)
+	if self.player:hasFlag("zhenshe") then return nil end
 	local cards = self.player:getCards("hes")
 	cards=self:touhouAppendExpandPileToList(self.player, cards)
 	cards=sgs.QList2Table(cards)
