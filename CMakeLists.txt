@@ -74,6 +74,7 @@ set (QSanguosha_SRCS
     src/core/GameLogic.cpp
     src/core/general.cpp
     src/core/json.cpp
+    src/core/lua-wrapper.cpp
     src/core/package.cpp
     src/core/player.cpp
     src/core/protocol.cpp
@@ -268,6 +269,9 @@ endif()
 find_package(PkgConfig)
 if (PKG_CONFIG_FOUND)
     pkg_check_modules(oggvorbisfile IMPORTED_TARGET GLOBAL ogg>=1.0.0 vorbis>=1.0.0 vorbisfile>=1.0.0)
+
+    # Should we use "lua>=5.4 to indicate a lua 5.4? Lua is not even source compatible between minor versions!"
+    pkg_search_module(lua54 IMPORTED_TARGET GLOBAL lua-5.4 lua5.4 lua54)
 endif()
 
 add_executable (QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} )
@@ -325,6 +329,12 @@ if (NOT oggvorbisfile_FOUND)
         src/ogg/synthesis.c
         src/ogg/vorbisfile.c
         src/ogg/window.c
+
+        include/oggvorbisfile/ogg/ogg.h
+        include/oggvorbisfile/ogg/os_types.h
+        include/oggvorbisfile/ogg/config_types.h
+        include/oggvorbisfile/vorbis/codec.h
+        include/oggvorbisfile/vorbis/vorbisfile.h
     )
 
     include_directories("include/oggvorbisfile")
@@ -337,6 +347,79 @@ if (NOT oggvorbisfile_FOUND)
 else()
     # target_compile_options(QSanguosha oggvorbisfile_CFLAGS)
     target_link_libraries (QSanguosha PkgConfig::oggvorbisfile)
+endif()
+
+if (NOT lua54_FOUND)
+    set(LUA_FILE
+        src/lua/lfunc.c
+        src/lua/lgc.c
+        src/lua/linit.c
+        src/lua/liolib.c
+        src/lua/llex.c
+        src/lua/lmathlib.c
+        src/lua/lmem.c
+        src/lua/loadlib.c
+        src/lua/lobject.c
+        src/lua/lopcodes.c
+        src/lua/loslib.c
+        src/lua/lparser.c
+        src/lua/lstate.c
+        src/lua/lstring.c
+        src/lua/lstrlib.c
+        src/lua/ltable.c
+        src/lua/ltablib.c
+        src/lua/ltm.c
+        src/lua/lundump.c
+        src/lua/lutf8lib.c
+        src/lua/lvm.c
+        src/lua/lzio.c
+        src/lua/lapi.h
+        src/lua/lcode.h
+        src/lua/lctype.h
+        src/lua/ldebug.h
+        src/lua/ldo.h
+        src/lua/lfunc.h
+        src/lua/lgc.h
+        src/lua/ljumptab.h
+        src/lua/llex.h
+        src/lua/llimits.h
+        src/lua/lmem.h
+        src/lua/lobject.h
+        src/lua/lopcodes.h
+        src/lua/lopnames.h
+        src/lua/lparser.h
+        src/lua/lprefix.h
+        src/lua/lstate.h
+        src/lua/lstring.h
+        src/lua/ltable.h
+        src/lua/ltm.h
+        src/lua/lundump.h
+        src/lua/lvm.h
+        src/lua/lzio.h
+        src/lua/lapi.c
+        src/lua/lauxlib.c
+        src/lua/lbaselib.c
+        src/lua/lcode.c
+        src/lua/lcorolib.c
+        src/lua/lctype.c
+        src/lua/ldblib.c
+        src/lua/ldebug.c
+        src/lua/ldo.c
+        src/lua/ldump.c
+
+        include/lua/lua.hpp
+        include/lua/luaconf.h
+        include/lua/lualib.h
+        include/lua/lauxlib.h
+        include/lua/lua.h
+    )
+
+    include_directories("include/lua")
+    add_library(lua54 STATIC ${LUA_FILE})
+
+    target_link_libraries(QSanguosha lua54)
+else()
+    target_link_libraries(QSanguosha PkgConfig::lua54)
 endif()
 
 

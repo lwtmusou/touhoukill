@@ -20,6 +20,7 @@
 #include <QThread>
 
 class QVersionNumber;
+class LuaState;
 
 class Engine : public QObject
 {
@@ -142,6 +143,8 @@ private:
     QSet<QString> ban_package;
 
     JsonObject configFile;
+
+    LuaState *l;
 };
 
 class SurrenderCard : public SkillCard

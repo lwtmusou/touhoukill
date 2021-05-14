@@ -5,6 +5,7 @@
 #include "aux-skills.h"
 #include "card.h"
 #include "client.h"
+#include "lua-wrapper.h"
 #include "protocol.h"
 #include "settings.h"
 #include "structs.h"
@@ -31,6 +32,7 @@ void Engine::addPackage(const QString &name)
 }
 
 Engine::Engine()
+    : l(new LuaState(this))
 {
     Sanguosha = this;
 
@@ -97,9 +99,6 @@ void Engine::addTranslationEntry(const QString &key, const QString &value)
 
 Engine::~Engine()
 {
-#ifdef USE_LUA
-    lua_close(lua);
-#endif
 #ifdef AUDIO_SUPPORT
     Audio::quit();
 #endif

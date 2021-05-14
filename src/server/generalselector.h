@@ -6,7 +6,6 @@
 #include <QObject>
 
 class ServerPlayer;
-struct lua_State;
 class Room;
 
 class GeneralSelector : public QObject
@@ -27,16 +26,6 @@ public:
 private:
     void initialize();
     void callLuaInitialize();
-    lua_State *L;
-
-    LuaFunction initializeFunc;
-    LuaFunction selectFirstFunc;
-    LuaFunction selectSecondFunc;
-    LuaFunction selectPairFunc;
-    LuaFunction select3v3Func;
-    LuaFunction select1v1Func;
-    LuaFunction arrange3v3Func;
-    LuaFunction arrange1v1Func;
 };
 
 #endif
