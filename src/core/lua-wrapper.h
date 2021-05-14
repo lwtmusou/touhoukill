@@ -40,6 +40,9 @@ public:
     static const QList<const CardFace *> &cardFaces();
     static const QList<const Skill *> &skills();
 
+    static const QString &luaVersion();
+    static const QString &luaCopyright();
+
 private:
     LuaMultiThreadedEnvironmentPrivate *d;
     Q_DISABLE_COPY_MOVE(LuaMultiThreadEnvironment)
