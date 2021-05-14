@@ -122,7 +122,9 @@ const QString &LuaMultiThreadEnvironment::luaCopyright()
 LuaMultiThreadEnvironment::LuaMultiThreadEnvironment()
     : d(new LuaMultiThreadedEnvironmentPrivate)
 {
-    LuaState *firstLuaState = luaStatePerThread();
+    LuaState *firstLuaState = new LuaState;
+    d->stateStorage.setLocalData(firstLuaState);
+
     // TODO: first LuaState is created, we should collect data from LuaState
     // notably Package, CardFace and Skill
     // Package maintains CardDescriptorList and GeneralList
