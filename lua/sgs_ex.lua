@@ -35,8 +35,8 @@ sgs_ex.TableType = {
     CardDescription = 1024,
 }
 
-sgs_ex.CardPackage = function(desc) {
-
-}
+sgs_ex.CardPackage = function(desc) 
+    
+end
 
 return sgs_ex

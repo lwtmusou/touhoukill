@@ -3,7 +3,7 @@
 -- Assuming standard module and module "sgs" imported
 
 -- compatible with Lua 5.3
-if _VERSION = "Lua 5.3" then
+if _VERSION == "Lua 5.3" then
     fail = nil
 end
 
