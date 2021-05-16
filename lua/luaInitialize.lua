@@ -119,3 +119,14 @@ sgs.CardFaces = {}
 sgs.Skills = {}
 
 -- TODO: load extensions
+
+local loadBuiltinExtensions = function()
+    -- TODO: builtin extensions might be accessed via Lua file with checksum
+    -- All packages may be loaded via Lua with checksum, with a few builtin CardFaces and Skills available in CPP
+    -- A builtin extension updater is needed in CPP to provide the needed checksum algorithm
+end
+
+local loadInstalledExtensions = function()
+    -- TODO: allow to load checksum-mismatched Lua file with warning
+    -- It is possible to provide an extension shop, which downloads and validates extension by using checksum
+end
