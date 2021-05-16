@@ -44,20 +44,44 @@ sgs_ex.TableType = {
 -- Enough error check is necessary
 -- Lua is a weak-type scripting language after all, but we should make it more robust
 -- return fail plus an error message for error
-sgs_ex.Package = function(desc)
+-- if string "ignoreErrorCheck" is given as last parameter, it ignores any error check
+sgs_ex.Package = function(desc, ...)
     if type(desc) ~= "table" then
         return fail, "sgs_ex.Package: desc is not table"
     end
+
+    local ignoreErrorCheck = desc.ignoreErrorCheck
+    if not ignoreErrorCheck then
+        local vararg = {...}
+        if vararg[#vararg] == "ignoreErrorCheck" then
+            ignoreErrorCheck = true
+        end
+    end
+
+    if ignoreErrorCheck then
+        warn("sgs_ex.Package: ignoring error check on table " .. desc.name)
+        if not desc.type then
+            if desc.cards then
+                desc.type = sgs_ex.TableType.CardPackage
+            else
+                desc.type = sgs_ex.TableType.GeneralPackage
+            end
+        end
+        desc.ignoreErrorCheck = true
+        return desc
+    end
+
     if (not desc.name) or (type(desc.name) ~= "string") then
         return fail, "sgs_ex.Package: type of item 'name' is incorrect"
     end
 
     local r = {}
 
-    r.packageType = sgs_ex.TableType.Package
+    r.type = sgs_ex.TableType.Package
+    r.name = desc.name
     if desc.cards and (type(desc.cards) == "table") then
         if desc.generals then
-            warn("sgs_ex.Package: " .. desc.name .. " should contain either cards or generals, currently ignoring generals")
+            warn("sgs_ex.Package: " .. desc.name .. " should contain either cards or generals, currently both, ignoring generals")
         end
 
         for _, c in ipairs(desc.cards) do
@@ -66,7 +90,7 @@ sgs_ex.Package = function(desc)
             end
         end
 
-        r.packageType = sgs_ex.TableType.CardPackage
+        r.type = sgs_ex.TableType.CardPackage
         r.cards = desc.cards
     elseif desc.generals and (type(desc.generals) == "table") then
         for _, g in ipairs(desc.generals) do -- use pairs?
@@ -75,7 +99,7 @@ sgs_ex.Package = function(desc)
             end
         end
 
-        r.packageType = sgs_ex.TableType.GeneralPackage
+        r.type = sgs_ex.TableType.GeneralPackage
         r.generals = desc.generals
     else
         return fail, ("sgs_ex.Package: " .. desc.name .. " should contain either cards or generals as table(array), currently none exists")
@@ -96,7 +120,17 @@ sgs_ex.Package = function(desc)
     end
 
     if desc.cardFaces then
-        -- Zhao Hulu Hua Piao
+        if type(desc.cardFaces) ~= "table" then
+            warn("sgs_ex.Package: desc.cardFaces is not table, ignoring.")
+        else
+            for _, s in ipairs(desc.cardFaces) do -- use pairs?
+                if (type(s) ~= "table") or ((s.type & sgs_ex.TableType.FirstTypeMask) ~= sgs_ex.TableType.CardFace) then
+                    return fail, ("sgs_ex.Package: No. " .. tostring(_) .. " of desc.cardFaces is not CardFace")
+                end
+            end
+
+            r.cardFaces = desc.cardFaces
+        end
     end
 
     return r

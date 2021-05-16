@@ -48,7 +48,7 @@ package.loaded.coroutine = nil
 
 -- To make a trusted runtime environment, only the above initialization seems not enough
 -- e.g. dofile or require are not safe if it loads maliciously crafted bytecode.
--- we can't control how lua bytecode works since we are using Lua from distribution package managers
+-- we can't control how lua bytecode works since we are using Lua from distribution package managers if possible
 
 -- dofile with qrc support
 local originalDofile = dofile
