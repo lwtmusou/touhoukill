@@ -60,6 +60,7 @@ public:
     QSGS_STATE_GAME QList<const Card *> getCards(const QString &flags) const;
     QSGS_STATE_GAME Card *wholeHandCards() const; // FIXME: Memory Leakage!!!
     QSGS_STATE_GAME bool hasNullification() const;
+    // FIXME: Trying to move this function to the game-logic.h
     QSGS_LOGIC bool pindian(ServerPlayer *target, const QString &reason, const Card *card1 = nullptr);
     QSGS_LOGIC void turnOver();
     QSGS_LOGIC void play(QList<Player::Phase> set_phases = QList<Player::Phase>());
