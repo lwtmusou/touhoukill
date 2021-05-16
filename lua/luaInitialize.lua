@@ -59,7 +59,7 @@ dofile = function(filename)
 
     if string.sub(filename, 1, 4) == "qrc:" then
         -- TODO: load contents from QRC
-        local resourceContent = sgs.contentFromQrc(filename)
+        local resourceContent = sgs.qrc:get(filename):contents()
         if resourceContent then
             local func, err = load(resourceContent, filename, "t")
             if func then
@@ -82,7 +82,7 @@ loadfile = function(filename, ...)
 
     if string.sub(filename, 1, 4) == "qrc:" then
         -- TODO: load contents from QRC
-        local resourceContent = sgs.contentFromQrc(filename)
+        local resourceContent = sgs.qrc:get(filename):contents()
         if resourceContent then
             return load(resourceContent, filename, ...)
         end
@@ -109,10 +109,20 @@ end
 -- 1. load utilities
 dofile("qrc:/utilities.lua")
 
+
+local QrcLoadFunction = function(name, fileName)
+    return dofile(fileName)
+end
+local QrcSearchFunction = function(name)
+    local fileName = "qrc:/" .. name .. ".lua"
+    if sgs.qrc:contains(fileName) then
+        return QrcLoadFunction, fileName
+    end
+end
+table.insert(package.serchers, 1, QrcSearchFunction)
+
 -- 3. load extensions
--- sgs_ex = require("qrc:/sgs_ex.lua")
-sgs_ex = dofile("qrc:/sgs_ex.lua")
-package.loaded["sgs_ex"] = sgs_ex
+sgs_ex = require("sgs_ex")
 
 sgs.Packages = {}
 sgs.CardFaces = {}
@@ -121,12 +131,12 @@ sgs.Skills = {}
 -- TODO: load extensions
 
 local loadBuiltinExtensions = function()
-    -- TODO: builtin extensions might be accessed via Lua file with checksum
+    -- TODO: builtin extensions might be accessed via Lua file with checksum check, discard it if checksum mismatches.
     -- All packages may be loaded via Lua with checksum, with a few builtin CardFaces and Skills available in CPP
     -- A builtin extension updater is needed in CPP to provide the needed checksum algorithm
 end
 
 local loadInstalledExtensions = function()
-    -- TODO: allow to load checksum-mismatched Lua file with warning
+    -- TODO: allow to load Lua file with checksum check, warn about it (instead of discard) if checksum mismatches
     -- It is possible to provide an extension shop, which downloads and validates extension by using checksum
 end
