@@ -37,9 +37,49 @@ sgs_ex.TableType = {
     -- ViewHasSkill = 519, -- What does 'View Has' mean?
 
     Trigger = 768,
-    CardDescriptior = 1024,
+    CardDescriptor = 1024,
     GeneralDescriptor = 1280,
 }
+
+local maybeIgnoreErrorCheck = function(functionName, desc, ...)
+    local ignoreErrorCheck = desc.ignoreErrorCheck
+    if not ignoreErrorCheck then
+        local vararg = {...}
+        if vararg[#vararg] == "ignoreErrorCheck" then
+            ignoreErrorCheck = true
+        end
+    end
+
+    if ignoreErrorCheck then
+        warn(functionName .. ": ignoring error check on table " .. desc.name)
+        desc.ignoreErrorCheck = true
+    end
+
+    return ignoreErrorCheck
+end
+
+-- return 1 or 3 values, where:
+-- only true if it is valid
+-- fail plus 0 and an error message: toBeValidated is nil
+-- fail plus 1 and an error message: toBeValidated is not table
+-- fail plus 2 and an error message: at least one item in toBeValidated is invalid
+local typeValidate = function(functionName, toBeValidated, nameOfToBeValidated, validateFunc, invalidOutput)
+    if not toBeValidated then
+        return fail, 0, (functionName .. ": " .. nameOfToBeValidated .. " is nil.")
+    end
+
+    if type(toBeValidated) ~= "table" then
+        return fail, 1, (functionName .. ": " .. nameOfToBeValidated .. " is not table.")
+    end
+
+    for _, i in iparis(toBeValidated) do
+        if not validateFunc(i) then
+            return fail, 2, (functionName .. ": No. " .. tostring(_) .. " of " .. nameOfToBeValidated .. " is " .. invalidOutput)
+        end
+    end
+
+    return true
+end
 
 -- Enough error check is necessary
 -- Lua is a weak-type scripting language after all, but we should make it more robust
@@ -50,16 +90,7 @@ sgs_ex.Package = function(desc, ...)
         return fail, "sgs_ex.Package: desc is not table"
     end
 
-    local ignoreErrorCheck = desc.ignoreErrorCheck
-    if not ignoreErrorCheck then
-        local vararg = {...}
-        if vararg[#vararg] == "ignoreErrorCheck" then
-            ignoreErrorCheck = true
-        end
-    end
-
-    if ignoreErrorCheck then
-        warn("sgs_ex.Package: ignoring error check on table " .. desc.name)
+    if maybeIgnoreErrorCheck("sgs_ex.Package", desc, ...) then
         if not desc.type then
             if desc.cards then
                 desc.type = sgs_ex.TableType.CardPackage
@@ -67,7 +98,6 @@ sgs_ex.Package = function(desc, ...)
                 desc.type = sgs_ex.TableType.GeneralPackage
             end
         end
-        desc.ignoreErrorCheck = true
         return desc
     end
 
@@ -76,27 +106,32 @@ sgs_ex.Package = function(desc, ...)
     end
 
     local r = {}
+    local isValid, num, msg
 
     r.type = sgs_ex.TableType.Package
     r.name = desc.name
-    if desc.cards and (type(desc.cards) == "table") then
+    if desc.cards then
+        isValid, num, msg = typeValidate("sgs_ex.Package", desc.cards, "desc.cards", function(c)
+            return (type(c) == "table") and ((c.type & sgs_ex.TableType.FirstTypeMask) == sgs_ex.TableType.CardDescriptor)
+        end, "not CardDescriptor")
+
+        if not isValid then
+            return fail, msg
+        end
+
         if desc.generals then
             warn("sgs_ex.Package: " .. desc.name .. " should contain either cards or generals, currently both, ignoring generals")
         end
 
-        for _, c in ipairs(desc.cards) do
-            if (type(c) ~= "table") or ((c.type & sgs_ex.TableType.FirstTypeMask) ~= sgs_ex.TableType.CardDescriptior) then
-                return fail, ("sgs_ex.Package: No. " .. tostring(_) .. " of desc.cards is not CardDescriptor")
-            end
-        end
-
         r.type = sgs_ex.TableType.CardPackage
         r.cards = desc.cards
-    elseif desc.generals and (type(desc.generals) == "table") then
-        for _, g in ipairs(desc.generals) do -- use pairs?
-            if (type(g) ~= "table") or ((g.type & sgs_ex.TableType.FirstTypeMask) ~= sgs_ex.TableType.GeneralDescriptor) then
-                return fail, ("sgs_ex.Package: No. " .. tostring(_) .. " of desc.generals is not General")
-            end
+    elseif desc.generals then
+        isValid, num, msg = typeValidate("sgs_ex.Package", desc.generals, "desc.generals", function(c)
+            return (type(c) == "table") and ((c.type & sgs_ex.TableType.FirstTypeMask) == sgs_ex.TableType.GeneralDescriptor)
+        end, "not GeneralDescriptor")
+
+        if not isValid then
+            return fail, msg
         end
 
         r.type = sgs_ex.TableType.GeneralPackage
@@ -105,32 +140,36 @@ sgs_ex.Package = function(desc, ...)
         return fail, ("sgs_ex.Package: " .. desc.name .. " should contain either cards or generals as table(array), currently none exists")
     end
 
-    if desc.skills then
-        if type(desc.skills) ~= "table" then
-            warn("sgs_ex.Package: desc.skills is not table, ignoring.")
-        else
-            for _, s in ipairs(desc.skills) do -- use pairs?
-                if (type(s) ~= "table") or ((s.type & sgs_ex.TableType.FirstTypeMask) ~= sgs_ex.TableType.Skill) then
-                    return fail, ("sgs_ex.Package: No. " .. tostring(_) .. " of desc.skills is not Skill")
-                end
-            end
+    isValid, num, msg = typeValidate("sgs_ex.Package", desc.skills, "desc.skills", function(c)
+        return (type(c) == "table") and ((c.type & sgs_ex.TableType.FirstTypeMask) == sgs_ex.TableType.Skill)
+    end, "not Skill")
 
-            r.skills = desc.skills
+    if not isValid then
+        if num == 0 then
+            -- do nothing
+        elseif num == 1 then
+            warn(msg)
+        else
+            return fail, msg
         end
+    else
+        r.skills = desc.skills
     end
 
-    if desc.cardFaces then
-        if type(desc.cardFaces) ~= "table" then
-            warn("sgs_ex.Package: desc.cardFaces is not table, ignoring.")
-        else
-            for _, s in ipairs(desc.cardFaces) do -- use pairs?
-                if (type(s) ~= "table") or ((s.type & sgs_ex.TableType.FirstTypeMask) ~= sgs_ex.TableType.CardFace) then
-                    return fail, ("sgs_ex.Package: No. " .. tostring(_) .. " of desc.cardFaces is not CardFace")
-                end
-            end
+    isValid, num, msg = typeValidate("sgs_ex.Package", desc.cardFaces, "desc.cardFaces", function(c)
+        return (type(c) == "table") and ((c.type & sgs_ex.TableType.FirstTypeMask) == sgs_ex.TableType.CardFace)
+    end, "not CardFace")
 
-            r.cardFaces = desc.cardFaces
+    if not isValid then
+        if num == 0 then
+            -- do nothing
+        elseif num == 1 then
+            warn(msg)
+        else
+            return fail, msg
         end
+    else
+        r.cardFaces = desc.cardFaces
     end
 
     return r
