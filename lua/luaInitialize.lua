@@ -91,6 +91,19 @@ loadfile = function(filename, ...)
     return originalLoadfile(filename, ...)
 end
 
+local QrcLoadFunction = function(name, fileName)
+    return dofile(fileName)
+end
+local QrcSearchFunction = function(name)
+    local name_ = string.gsub(name, "%.", "/")
+    local fileName = "qrc:/" .. name_ .. ".lua"
+    if sgs.qrc:contains(fileName) then
+        return QrcLoadFunction, fileName
+    end
+    return nil
+end
+table.insert(package.serchers, 1, QrcSearchFunction)
+
 -- how to implement require with qrc support?
 -- we can't simply append 'qrc:/' to 'package.path'
 -- just use following:
@@ -106,23 +119,17 @@ end
 --    This is what we need to refactor
 --    do not create new instance of skills / card faces / generals in Lua
 
+-- in addition, we may do following things
+-- a. check version of builtin extensions
+
 -- 1. load utilities
 dofile("qrc:/utilities.lua")
 
-
-local QrcLoadFunction = function(name, fileName)
-    return dofile(fileName)
-end
-local QrcSearchFunction = function(name)
-    local fileName = "qrc:/" .. name .. ".lua"
-    if sgs.qrc:contains(fileName) then
-        return QrcLoadFunction, fileName
-    end
-end
-table.insert(package.serchers, 1, QrcSearchFunction)
-
 -- 3. load extensions
 sgs_ex = require("sgs_ex")
+
+-- Descriptors here
+-- Should it be k-v pair or sequence?
 
 sgs.Packages = {}
 sgs.CardFaces = {}
@@ -130,8 +137,38 @@ sgs.Skills = {}
 
 -- TODO: load extensions
 
+local loadExtension = function(name, isBuiltin)
+    -- checksum check is done before this function is called
+    -- each extension is a Lua table which has a key named 'type' and a value of 'sgs_ex.TableType.Package'
+    -- should we require or dofile the table?
+    local extensionPrefix = "extension."
+    if isBuiltin then
+        extensionPrefix = "builtinExtension."
+    end
+
+    local extension = require(extensionPrefix .. name)
+    if extension then
+        if (type(extension) == "table") and ((extension.type & sgs_ex.TableType.FirstTypeMask) == sgs_ex.TableType.Package) then
+            table.insert(sgs.Packages, extension)
+            if extension.cardFaces then
+                for _, c in iparis(extension.cardFaces) do
+                    table.insert(sgs.CardFaces, c)
+                end
+            end
+            if extension.skills then
+                for _, s in ipairs(extension.skills) do
+                    table.insert(sgs.Skills, s)
+                end
+            end
+            return true
+        end
+    end
+
+    return false
+end
+
 local loadBuiltinExtensions = function()
-    -- TODO: builtin extensions might be accessed via Lua file with checksum check, discard it if checksum mismatches.
+    -- TODO: builtin extensions might be accessed via Lua file with checksum check. Disable connection to server if checksum mismatches
     -- All packages may be loaded via Lua with checksum, with a few builtin CardFaces and Skills available in CPP
     -- A builtin extension updater is needed in CPP to provide the needed checksum algorithm
 end
