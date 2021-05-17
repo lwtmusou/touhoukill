@@ -18,10 +18,9 @@ namespace RefactorProposal {
  * In the server, it needs to notify the clients when the game state is changed.
  * In the client, it needs to notify the UI when the game state is changed.
  * 
- */ 
-class GameState : public QObject
+ */
+class GameState
 {
-    Q_OBJECT
 public:
     GameState();
     virtual ~GameState();
@@ -147,9 +146,9 @@ public:
     // Reset all cards, generals' states of the room instance
     virtual void resetState();
 
-    virtual void adjustSeats(); 
+    virtual void adjustSeats();
 
-    virtual bool roleStatusCommand(Player *player); 
+    virtual bool roleStatusCommand(Player *player);
     virtual void updateRoleStatistic();
 
     QString getCurrentCardUsePattern() const;
