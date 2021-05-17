@@ -1,6 +1,6 @@
 
 -- Initialization script for QSanguosha
--- Assuming standard module and module "sgs" imported
+-- Assuming standard module (w/o coroutine) and module "sgs" imported
 
 -- compatible with Lua 5.3
 if _VERSION == "Lua 5.3" then
@@ -41,10 +41,6 @@ end
 io.popen = function()
     error("QSanguosha won't support running an exectuable for preventing malicious use.")
 end
-
--- disable coroutine since it uses sjlj, which is not c++-exception aware
-coroutine = nil
-package.loaded.coroutine = nil
 
 -- To make a trusted runtime environment, only the above initialization seems not enough
 -- e.g. dofile or require are not safe if it loads maliciously crafted bytecode.

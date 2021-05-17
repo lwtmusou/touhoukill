@@ -5,6 +5,37 @@
 #include <QThreadStorage>
 #include <lua.hpp>
 
+namespace {
+// IMPORTANT! This should be updated when Lua updates.
+// Currently we are cutting 'coroutine' lib out of standard Lua simply because it uses sjlj across calling stack, where it is not C++-exception-aware.
+// Also we need to add our own 'sgs' lib to our preload modules to provide our functionality.
+// Codes are copied from linit.c. MAKE SURE to update when Lua updates
+
+constexpr const char *sgs_libname = "sgs";
+
+const luaL_Reg sgs_libs[] = {{LUA_GNAME, luaopen_base},
+                             {LUA_LOADLIBNAME, luaopen_package},
+                             {LUA_TABLIBNAME, luaopen_table},
+                             {LUA_IOLIBNAME, luaopen_io},
+                             {LUA_OSLIBNAME, luaopen_os},
+                             {LUA_STRLIBNAME, luaopen_string},
+                             {LUA_MATHLIBNAME, luaopen_math},
+                             {LUA_UTF8LIBNAME, luaopen_utf8},
+                             {LUA_DBLIBNAME, luaopen_debug},
+                             // {sgs_libname, luaopen_sgs}, // currently (as for 2021/5/17) it is unavailable
+                             {NULL, NULL}};
+
+void sgs_openlibs(lua_State *L)
+{
+    const luaL_Reg *lib;
+    for (lib = sgs_libs; lib->func; lib++) {
+        luaL_requiref(L, lib->name, lib->func, 1);
+        lua_pop(L, 1); /* remove lib */
+    }
+}
+
+}
+
 class LuaStatePrivate final
 {
 public:
@@ -13,10 +44,8 @@ public:
     LuaStatePrivate()
     {
         l = luaL_newstate();
-        luaL_openlibs(l);
+        sgs_openlibs(l);
 
-        // The sgs module (Although I don't want to use a single module anymore)
-        // luaopen_sgs(l);
 #if 0
         // dostring the initial Lua code from qrc
         QFile f(":/luaInitial.lua");
