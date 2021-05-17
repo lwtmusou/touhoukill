@@ -5,6 +5,10 @@
 #include <QThreadStorage>
 #include <lua.hpp>
 
+extern "C" {
+int luaopen_sgs(lua_State *l);
+}
+
 namespace {
 // IMPORTANT! This should be updated when Lua updates.
 // Currently we are cutting 'coroutine' lib out of standard Lua simply because it uses sjlj across calling stack, where it is not C++-exception-aware.
@@ -22,7 +26,7 @@ const luaL_Reg sgs_libs[] = {{LUA_GNAME, luaopen_base},
                              {LUA_MATHLIBNAME, luaopen_math},
                              {LUA_UTF8LIBNAME, luaopen_utf8},
                              {LUA_DBLIBNAME, luaopen_debug},
-                             // {sgs_libname, luaopen_sgs}, // currently (as for 2021/5/17) it is unavailable
+                             {sgs_libname, luaopen_sgs},
                              {NULL, NULL}};
 
 void sgs_openlibs(lua_State *L)

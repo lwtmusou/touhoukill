@@ -21,6 +21,32 @@ else()
     add_compile_definitions(LUA_USE_LINUX)
 endif()
 
+
+find_program(swig swig)
+if (WIN32)
+    find_program(swig swig.exe ${CMAKE_CURRENT_LIST_DIR}/tools/swig)
+endif()
+
+if (swig STREQUAL "swig-NOTFOUND")
+    set(SWIGERRMSG "swig is not found, make sure you have installed swig in your PATH.")
+    if (WIN32)
+        set(SWIGERRMSG "${SWIGERRMSG} Alternatively in Windows, you may put swigwin to ${CMAKE_CURRENT_LIST_DIR}/tools/swig folder.")
+    endif()
+
+    message(FATAL_ERROR ${SWIGERRMSG})
+endif()
+
+set(QSanguosha_SWIGS
+    src/swig/sgs.i
+    )
+
+add_custom_command(OUTPUT sanguosha_wrap.cpp
+                   COMMAND ${swig} -c++ -lua -cppext cpp -nodefaultctor -nodefaultdtor -o sanguosha_wrap.cpp -I${CMAKE_CURRENT_LIST_DIR}/src/swig ${CMAKE_CURRENT_LIST_DIR}/src/swig/sgs.i
+                   MAIN_DEPENDENCY src/swig/sgs.i
+                   DEPENDS ${QSanguosha_SWIGS}
+                   COMMENT "Generating sanguosha_wrap.cpp using SWIG...")
+
+
 include_directories(
     "src/audio"
     "src/client"
@@ -62,6 +88,8 @@ set (QSanguosha_PKG_SRCS
 )
 
 set (QSanguosha_SRCS
+    sanguosha_wrap.cpp
+
     src/audio/audio.cpp
 
     src/client/aux-skills.cpp
@@ -423,7 +451,6 @@ if (NOT lua54_FOUND)
 else()
     target_link_libraries(QSanguosha PkgConfig::lua54)
 endif()
-
 
 if (WIN32)
     target_link_libraries(QSanguosha Qt5::WinExtras)
