@@ -327,6 +327,16 @@ return {
 	
 	["illustrator:reisen_gzz"] = "まさる.jp",
 	["origin:reisen_gzz"] = "p号：59883222，个人ID：6547201",
+	["illustrator:reisen_gzz_1"] = "カズ",
+	["origin:reisen_gzz_1"] = "p号：50347089；个人ID：137496",
+	["illustrator:reisen_gzz_2"] = "さわやか鮫肌",
+	["origin:reisen_gzz_2"] = "p号：62378359；个人ID：176236",
+	["illustrator:reisen_gzz_3"] = "皆村春樹",
+	["origin:reisen_gzz_3"] = "p号：68395875；个人ID：6098",
+	["illustrator:reisen_gzz_4"] = "えふぇ",
+	["origin:reisen_gzz_4"] = "p号：50003628；个人ID：292644",
+	["illustrator:reisen_gzz_5"] = "Goback",
+	["origin:reisen_gzz_5"] = "p号：81985109；个人ID：5846268",
 	
 	["bodong"] = "波动" ,
 	[":bodong"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张手牌并选择场上一至三张装备牌，依次横置之。",

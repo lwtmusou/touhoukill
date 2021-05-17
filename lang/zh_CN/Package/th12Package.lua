@@ -208,7 +208,7 @@ return{
 	["designer:myouren"] = "辰焰天明",
 
 	["illustrator:myouren"] = "腦子",
-	["origin:myouren"] = "p号：27969549,个人ID:3101656",
+	["origin:myouren"] = "p号：27969549,个人ID：3101656",
 
 	["shanshi"] = "善逝" ,
 	[":shanshi"] = "当你于一名其他角色的回合内失去牌后或一名其他角色于你的回合内失去牌后，你可以令你与其各摸一张牌。<font color=\"green\"><b>每阶段限一次。</b></font>" ,

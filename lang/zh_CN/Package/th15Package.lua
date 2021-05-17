@@ -111,6 +111,14 @@ return {
 	 
 	["illustrator:doremy_1"] = "CUBY",
 	["origin:doremy_1"] = "p号：50318152",
+	["illustrator:doremy_2"] = "HeikoKuru1224",
+	["origin:doremy_2"] = "p号：77932528；个人ID：35452386",
+	["illustrator:doremy_3"] = "あいに*",
+	["origin:doremy_3"] = "p号：76225193；个人ID：1513922",
+	["illustrator:doremy_4"] = "カタケイ",
+	["origin:doremy_4"] = "p号：74406452；个人ID：90042",
+	["illustrator:doremy_5"] = "here /ヘレ@お仕事募集中",
+	["origin:doremy_5"] = "p号：84307074；个人ID：5061948",
 	
 	["bumeng"] = "捕梦",
 	[":bumeng"] = "当其他角色的牌因其弃置而进入弃牌堆后，你可以令其获得其中的一张牌，明置之，然后你可以获得剩余的一张牌，明置之。<font color=\"green\"><b>每回合限一次。</b></font>",

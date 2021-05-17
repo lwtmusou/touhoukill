@@ -53,6 +53,12 @@ return{
 	["origin:koishi_4"] = "p号：46128559，个人ID：6074371",
 	["illustrator:koishi_5"] = "ばじりす9",
 	["origin:koishi_5"] = "p号：43629562，个人ID：6074371",
+	["illustrator:koishi_6"] = "アバンドン蘭花",
+	["origin:koishi_6"] = "p号：61263633；个人ID：1472125",
+	["illustrator:koishi_7"] = "雪灯籠",
+	["origin:koishi_7"] = "p号：64479141；个人ID：21248049",
+	["illustrator:koishi_8"] = "ぢせ",
+	["origin:koishi_8"] = "p号：81542324；个人ID：4790",
 
 	["maihuo"] = "埋火",
 	[":maihuo"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将一张手牌置于牌堆顶，令一名其他角色：亮出堆顶的两张牌并获得之，然后若均为红色，你选择一项：回复1点体力，或摸两张牌。",

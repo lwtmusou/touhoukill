@@ -256,7 +256,7 @@ return
 	["illustrator:mokou_sp_2"] = "しろし",
 	["origin:mokou_sp_2"] = "p号：24380429，个人ID：76048",
 	["illustrator:mokou_sp_3"] = "Lowlight.K ",
-	["origin:mokou_sp_3"] = "(p号: 10738620)",
+	["origin:mokou_sp_3"] = "(p号： 10738620)",
 
 	["huwei"] = "护卫",
 	[":huwei"] = "当你于出牌阶段外：需要使用或打出【杀】时，你可以摸两张牌；使用、打出或弃置一张【杀】时，你可以令一名其他角色摸两张牌。",

@@ -39,7 +39,7 @@ return
 	["designer:yukari"] = "三国有单",
 
 	["illustrator:yukari"] = "菊月",
-	["origin:yukari"] = "p号:51599308，个人ID：429883" ,
+	["origin:yukari"] = "p号：51599308，个人ID：429883" ,
 	["illustrator:yukari_1"] = "An2A",
 	["origin:yukari_1"] = "个人ID：173876",
 	["illustrator:yukari_2"] = "会帆",
@@ -72,7 +72,7 @@ return
 
 	["illustrator:ran"] = "粗茶",
 	["origin:ran"] = "p号：49351680，个人ID：10210",
-	["illustrator:ran_1"] = "akeboshi kagayo (p号:)",
+	["illustrator:ran_1"] = "akeboshi kagayo (p号：)",
 	["illustrator:ran_2"] = "ryosios",
 	["origin:ran_2"] = "p号：19945874，个人ID：1508165",
 	["illustrator:ran_3"] = "NAbyssor",
@@ -296,6 +296,8 @@ return
 	["origin:yukari_sp_2"] = "p号：10250212，个人ID：61513",
 	["illustrator:yukari_sp_3"] = "ファルまろ",
 	["origin:yukari_sp_3"] = "p号：41579000，个人ID：1218472",
+	["illustrator:yukari_sp_4"] = "thkani",
+	["origin:yukari_sp_4"] = "p号：65608311；个人ID：13134696",
 
 
 	["jingjie"]= "境界",
@@ -347,9 +349,9 @@ return
 	["designer:ran_sp"] = "辰焰天明",
 
 	["illustrator:ran_sp"] = "ryosios",
-	["origin:ran_sp"] = "p号：50353532,个人ID:1508165",
+	["origin:ran_sp"] = "p号：50353532,个人ID：1508165",
 	["illustrator:ran_sp_1"] = " shigureru ",
-	["origin:ran_sp_1"] = "p号：49772616,个人ID:1036097",
+	["origin:ran_sp_1"] = "p号：49772616,个人ID：1036097",
 
 	["shizhao"] = "示兆" ,
 	[":shizhao"] = "一名已受伤的角色的准备阶段开始时，你可以观看牌堆顶的X张牌（X为其已损失的体力值）并可以将其中的一张牌置入弃牌堆。" ,
@@ -367,7 +369,7 @@ return
 	["designer:youki"] = "辰焰天明",
 
 	["illustrator:youki"] = "砂雲",
-	["origin:youki"] = "p号：1779336,个人ID:295604",
+	["origin:youki"] = "p号：1779336,个人ID：295604",
 
 	["shoushu"] = "授术" ,
 	[":shoushu"] = "当你使用或打出的基本牌因结算完毕而置入弃牌堆后，你可以令一名其他角色获得之，然后令其弃置一张手牌。<font color=\"green\"><b>每阶段限一次。</b></font>",
@@ -384,12 +386,12 @@ return
 	["designer:leira"] = "辰焰天明",
 
 	["illustrator:leira"] = "  Jenevan ",
-	["origin:leira"] = "p号：25866611,个人ID:32142",
+	["origin:leira"] = "p号：25866611,个人ID：32142",
 	
 	["illustrator:leira_1"] = " kaoru ",
-	["origin:leira_1"] = "p号：22577448 ,个人ID:743845",
+	["origin:leira_1"] = "p号：22577448 ,个人ID：743845",
 	["illustrator:leira_2"] = " ふぇっちー ",
-	["origin:leira_2"] = "p号：8628466,个人ID:32142",
+	["origin:leira_2"] = "p号：8628466,个人ID：32142",
 	
 	["huayin"] = "华音" ,
 	[":huayin"] = "当你需要使用【桃】时，你可以展示所有手牌，将其中的所有非基本牌当【桃】使用，若如此做，当此【桃】结算结束后，你将所有手牌当【无中生有】使用。" ,

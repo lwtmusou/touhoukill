@@ -302,7 +302,7 @@ return{
 	["designer:cirno_sp"] = "bullytou",
 
 	["illustrator:cirno_sp"] = "隂宅",
-	["origin:cirno_sp"] = "p号：无,个人ID:979179",
+	["origin:cirno_sp"] = "p号：无,个人ID：979179",
 	["illustrator:cirno_sp_1"] = "ゆき",
 	["origin:cirno_sp_1"] = "p号：20341828，个人ID：20341828",
 	["illustrator:cirno_sp_2"] = "玉之けだま",
@@ -326,9 +326,9 @@ return{
 	["designer:mamizou_sp"] = "星野梦美☆",
 
 	["illustrator:mamizou_sp"] = "抽风男",
-	["origin:mamizou_sp"] = "p号：44181708,个人ID:9838093",
+	["origin:mamizou_sp"] = "p号：44181708,个人ID：9838093",
 	["illustrator:mamizou_sp_1"] = "りひと",
-	["origin:mamizou_sp_1"] = "p号：53048830,个人ID:1463626",
+	["origin:mamizou_sp_1"] = "p号：53048830,个人ID：1463626",
 	["illustrator:mamizou_sp_2"] = "Cube85",
 	["origin:mamizou_sp_2"] = "p号：56868591，个人ID：1490102",
 
@@ -350,9 +350,9 @@ return{
 	["designer:reisen2"] = "辰焰天明",
 
 	["illustrator:reisen2"] = " 小龍 ",
-	["origin:reisen2"] = "p号：56463981,个人ID:8780063",
+	["origin:reisen2"] = "p号：56463981,个人ID：8780063",
 	["illustrator:reisen2_1"] = "くろぬこネーロ",
-	["origin:reisen2_1"] = "p号：33268695,个人ID:335493",
+	["origin:reisen2_1"] = "p号：33268695,个人ID：335493",
 
 	["sixiang"] = "思乡",
 	[":sixiang"] = "<font color=\"blue\"><b>锁定技，</b></font>一名角色的准备阶段开始时，若你不处于连环状态，你回复1点体力，然后横置。",
@@ -368,7 +368,7 @@ return{
 	["designer:kasen_sp"] = "dawda",
 	
 	["illustrator:kasen_sp"] = "井戸さん",
-	["origin:kasen_sp"] = "p号：29151823；个人id：75376",
+	["origin:kasen_sp"] = "p号：29151823；个人ID：75376",
 	
 	["zhuozhi"] = "酌志",
 	[":zhuozhi"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张手牌，亮出牌堆顶四张牌并获得其中一张牌。若其中有装备牌或【杀】，你额外获得一张牌。",

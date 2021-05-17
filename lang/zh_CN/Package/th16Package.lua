@@ -135,8 +135,15 @@ return {
 	["#lilywhite_sp"] = "不息的春音",
 	["&lilywhite_sp"] = "天空璋莉莉白",
 	["designer:lilywhite_sp"] = "dawda",
+	
 	["illustrator:lilywhite_sp"] = "名乗る名は無い",
 	["origin:lilywhite_sp"] = "p号：56488470；个人ID：2022926",
+	["illustrator:lilywhite_sp_1"] = "ぢせ",
+	["origin:lilywhite_sp_1"] = "p号：81187146；个人ID：4790",
+	["illustrator:lilywhite_sp_2"] = "ゆたまろ*",
+	["origin:lilywhite_sp_2"] = "p号：56683839；个人ID：1566535",
+	["illustrator:lilywhite_sp_3"] = "ゆたまろ",
+	["origin:lilywhite_sp_3"] = "p号：66592374；个人ID：1566535",
 
 	["huazhao"] = "花朝",
 	["spring"] = "春",

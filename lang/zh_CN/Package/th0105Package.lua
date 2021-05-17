@@ -29,15 +29,15 @@ return {
 	["designer:yumemi"] = "三国有单",
 
 	["illustrator:yumemi"] = "poppy",
-	["origin:yumemi"] = "个人ID:3596054",
+	["origin:yumemi"] = "个人ID：3596054",
 	["illustrator:yumemi_1"] = "Yukian",
-	["origin:yumemi_1"] = "p号： 42368069,个人ID:4440",
+	["origin:yumemi_1"] = "p号： 42368069,个人ID：4440",
 	["illustrator:yumemi_2"] = "qyx",
-	["origin:yumemi_2"] = "个人ID:31564",
+	["origin:yumemi_2"] = "个人ID：31564",
 	["illustrator:yumemi_3"] = "隂宅",
-	["origin:yumemi_3"] = "个人ID:979179",
+	["origin:yumemi_3"] = "个人ID：979179",
 	["illustrator:yumemi_4"] = " えに ",
-	["origin:yumemi_4"] = "p号： 54506014,个人ID:3217912",
+	["origin:yumemi_4"] = "p号： 54506014,个人ID：3217912",
 
 
 	["ciyuan"] = "次元",
@@ -74,15 +74,15 @@ return {
 	["designer:chiyuri"] = "三国有单",
 
 	["illustrator:chiyuri"] = "・・・（mitei）",
-	["origin:chiyuri"] = "p号： 50573343,个人ID:4752685",
+	["origin:chiyuri"] = "p号： 50573343,个人ID：4752685",
 	["illustrator:chiyuri_1"] = "伊吹のつ",
-	["origin:chiyuri_1"] = "p号： 51921215,个人ID:7013",
+	["origin:chiyuri_1"] = "p号： 51921215,个人ID：7013",
 	["illustrator:chiyuri_2"] = "miya (tsumazukanai)",
-	["origin:chiyuri_2"] = "p号：,个人ID:",
+	["origin:chiyuri_2"] = "p号：,个人ID：",
 	["illustrator:chiyuri_3"] = " 朧月カケル ",
-	["origin:chiyuri_3"] = "p号：1969063,个人ID:47896",
+	["origin:chiyuri_3"] = "p号：1969063,个人ID：47896",
 	["illustrator:chiyuri_4"] = "ワダンテ",
-	["origin:chiyuri_4"] = "p号：51430579 ,个人ID:3811457",
+	["origin:chiyuri_4"] = "p号：51430579 ,个人ID：3811457",
 
 	["zhence"] = "侦测",
 	[":zhence"] = "摸牌阶段开始前或出牌阶段开始前，你可以视为使用【火攻】，若如此做，当你使用此牌造成伤害后，你摸一张牌并跳过此阶段。",
@@ -107,7 +107,7 @@ return {
 	["designer:rikako"] = "辰焰天明",
 
 	["illustrator:rikako"] = "べる",
-	["origin:rikako"] = "p号：7874458 ,个人ID:125888",
+	["origin:rikako"] = "p号：7874458 ,个人ID：125888",
 	["zhenli"] = "真理",
 	[":zhenli"] = "<font color=\"blue\"><b>锁定技，</b></font>分发起始手牌后，你摸二十四张牌；当你从牌堆顶摸牌后，你将之扣置于人物牌上，称为“真理”。",
 	["qiusuo"] = "求索",
@@ -123,11 +123,11 @@ return {
 	["designer:kana"] = "三国有单",
 
 	["illustrator:kana"] = "Culter",
-	["origin:kana"] = "p号：37805413,个人ID:542147",
+	["origin:kana"] = "p号：37805413,个人ID：542147",
 	["illustrator:kana_1"] = "Magician",
-	["origin:kana_1"] = "p号：51366112,个人ID:5100338",
+	["origin:kana_1"] = "p号：51366112,个人ID：5100338",
 	["illustrator:kana_2"] = " c7肘 ",
-	["origin:kana_2"] = "p号：44923233,个人ID:217707",
+	["origin:kana_2"] = "p号：44923233,个人ID：217707",
 
 	["mengxiao"] = "梦消",
 	[":mengxiao"] = "结束阶段开始时，你可以将一张手牌当任意一次性的延时类锦囊牌置入判定区里；其他角色的准备阶段开始时，你可以将你判定区里的一张牌置入其判定区。",
@@ -145,11 +145,11 @@ return {
 	["designer:yuka_old"] = "辰焰天明",
 
 	["illustrator:yuka_old"] = "ヨークタウンCV-5",
-	["origin:yuka_old"] = "p号：57810973,个人ID:4602524",
+	["origin:yuka_old"] = "p号：57810973,个人ID：4602524",
 	["illustrator:yuka_old_1"] = "fancybetty ",
 	["origin:yuka_old_1"] = ":",
 	["illustrator:yuka_old_2"] = "くろぬこネーロ",
-	["origin:yuka_old_2"] = "p号：32809829,个人ID:335493",
+	["origin:yuka_old_2"] = "p号：32809829,个人ID：335493",
 
 	["yeyan"] = "夜魇",
 	[":yeyan"] = "<font color=\"blue\"><b>锁定技，</b></font>当你使用【杀】或普通锦囊牌指定目标后，除你外的目标角色各弃置一张手牌并令你选择一项：展示一张与之类别相同的手牌；或令此牌对其无效。",
@@ -170,13 +170,13 @@ return {
 	["designer:gengetsumugetsu"] = "辰焰天明",
 
 	["illustrator:gengetsumugetsu"] = " tengu ",
-	["origin:gengetsumugetsu"] = "p号：55411659,个人ID:4767631",
+	["origin:gengetsumugetsu"] = "p号：55411659,个人ID：4767631",
 	["illustrator:gengetsumugetsu_1"] = "二酸化炭素",
-	["origin:gengetsumugetsu_1"] = "p号：55591943,个人ID:9149093",
+	["origin:gengetsumugetsu_1"] = "p号：55591943,个人ID：9149093",
 	["illustrator:gengetsumugetsu_2"] = "カタケイ",
-	["origin:gengetsumugetsu_2"] = "p号：59852466,个人ID:90042",
+	["origin:gengetsumugetsu_2"] = "p号：59852466,个人ID：90042",
 	["illustrator:gengetsumugetsu_3"] = "べらぼう",
-	["origin:gengetsumugetsu_3"] = "p号：54503236,个人ID:6259229",
+	["origin:gengetsumugetsu_3"] = "p号：54503236,个人ID：6259229",
 
 	["huantong"] = "幻痛",
 	[":huantong"] = "当你或一名在你攻击范围内的角色受到伤害时，若伤害值为1，你可以将牌堆顶的一张牌扣置于人物牌上，称为“梦幻”，然后你可以展示两张“梦幻”，将伤害值改为X点（X为其中的基本牌数），并令其获得其中的基本牌和将其余的置入弃牌堆。 ",
@@ -195,13 +195,13 @@ return {
 	["designer:elly"] = "工藤",
 
 	["illustrator:elly"] = "ミルキャラ",
-	["origin:elly"] = "p号：23409861,个人ID:19359",
+	["origin:elly"] = "p号：23409861,个人ID：19359",
 	["illustrator:elly_1"] = "sheya",
-	["origin:elly_1"] = "p号：59479020,个人ID:11764388",
+	["origin:elly_1"] = "p号：59479020,个人ID：11764388",
 	["illustrator:elly_2"] = "shouen kigashi ",
 	["origin:elly_2"] = "",
 	["illustrator:elly_3"] = "菊月",
-	["origin:elly_3"] = "p号：43923582,个人ID:429883",
+	["origin:elly_3"] = "p号：43923582,个人ID：429883",
 
 	["lianmu"] = "镰幕",
 	[":lianmu"] = "当你使用【杀】结算结束后，若此牌未造成过伤害，你可以视为使用【杀】（无距离限制）并能额外选择一个目标。<font color=\"green\"><b>每阶段限一次。</b></font>",
@@ -221,11 +221,11 @@ return {
 
 
 	["illustrator:shinki"] = "音無空太",
-	["origin:shinki"] = "p号：50941526,个人ID:6273920",
+	["origin:shinki"] = "p号：50941526,个人ID：6273920",
 	["illustrator:shinki_1"] = "Vetina",
-	["origin:shinki_1"] = "p号：13059449,个人ID:516980",
+	["origin:shinki_1"] = "p号：13059449,个人ID：516980",
 	["illustrator:shinki_2"] = "Hysteria",
-	["origin:shinki_2"] = "p号：,个人ID:1777704",
+	["origin:shinki_2"] = "p号：,个人ID：1777704",
 
 	["sqchuangshi"] = "创世",
 	[":sqchuangshi"] = "出牌阶段开始时，你可以选择至少一名角色，令这些角色各可以使用一张牌。",
@@ -251,9 +251,9 @@ return {
 	["illustrator:alice_old_1"] = " cierra (ra-bit) ",
 	["origin:alice_old_1"] = "",
 	["illustrator:alice_old_2"] = " ミーモク",
-	["origin:alice_old_2"] = "p号：29830485,个人ID:1021390",
+	["origin:alice_old_2"] = "p号：29830485,个人ID：1021390",
 	["illustrator:alice_old_3"] = " MAKI",
-	["origin:alice_old_3"] = "p号：15034012,个人ID:1251",
+	["origin:alice_old_3"] = "p号：15034012,个人ID：1251",
 
 	["modian_attach"] = "魔典给牌",
 	[":modian_attach"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将一张【杀】或普通锦囊牌置于有“魔典”技能的角色的人物牌上。",
@@ -275,7 +275,7 @@ return {
 	["designer:sariel"] = "辰焰天明",
 
 	["illustrator:sariel"] = "昙竹九月",
-	["origin:sariel"] = "p号：57699329,个人ID:14176578",
+	["origin:sariel"] = "p号：57699329,个人ID：14176578",
 	["illustrator:sariel_1"] = "撸姬姬",
 	["origin:sariel_1"] = "p号：59006234",
 
@@ -301,7 +301,7 @@ return {
 	["illustrator:konngara"] = "カタケイ",
 	["origin:konngara"] = "p号：40023503",
 	["illustrator:konngara_1"] = "Culter",
-	["origin:konngara_1"] = "p号：40459277,个人ID:542147",
+	["origin:konngara_1"] = "p号：40459277,个人ID：542147",
 	
 	
 	["zongjiu"] = "纵酒",
@@ -341,7 +341,7 @@ return {
 	["designer:yukimai"] = "dawda",
 
 	["illustrator:yukimai"] = "Vima",
-	["origin:yukimai"] = "p号：46982048,个人ID:546819",
+	["origin:yukimai"] = "p号：46982048,个人ID：546819",
 	["illustrator:yukimai_1"] = " 葉山",
 	["origin:yukimai_1"] = "p号：45046858",
 	["illustrator:yukimai_2"] = " 葉山",

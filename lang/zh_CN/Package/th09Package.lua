@@ -254,6 +254,9 @@ return
 	["origin:kokoro_3"] = "p号：39419401",
 	["illustrator:kokoro_4"] = "NEKO♨BFG1 II",
 	["origin:kokoro_4"] = "p号：38162749，个人ID：2600911",
+	["illustrator:kokoro_5"] = "ちろたた/tirotata",
+	["origin:kokoro_5"] = "p号：68574773；个人ID：4743526",
+	
 
 	["nengwu"] = "能舞",
 	--[":nengwu"] = "当你于摸牌阶段外回复体力后或获得牌后，你可以令一名在你攻击范围内的角色摸一张牌；当你于出牌阶段外受到伤害后或失去手牌后，你可以弃置你攻击范围内一名角色的一张手牌。",
@@ -345,6 +348,10 @@ return
 	
 	["illustrator:kokoro_sp"] = "Ny速@3日目V23a",
 	["origin:kokoro_sp"] = "p号：37640183；个人ID：218591",
+	["illustrator:kokoro_sp_1"] = "poppy",
+	["origin:kokoro_sp_1"] = "p号：38073917；个人ID：3596054",
+	["illustrator:kokoro_sp_2"] = "ぢせ",
+	["origin:kokoro_sp_2"] = "p号：75568924；个人ID：4790",
 	
 	["mianling"] = "面灵",
 	[":mianling"] = "<font color=\"blue\"><b>锁定技，</b></font>当你从牌堆获得牌时，你须将牌堆顶等量的牌置于人物牌上，称为“面”，然后若“面”数大于存活角色数，你将X张的“面”置入弃牌堆（X为“面”数与存活角色数之差）；你能使用“面”，以此法使用牌结算完毕后，你选择一项：弃置一张牌，或失去1点体力。",
