@@ -128,7 +128,6 @@ LuaMultiThreadEnvironment::LuaMultiThreadEnvironment()
     // TODO: first LuaState is created, we should collect data from LuaState
     // notably Package, CardFace and Skill
     // Package maintains CardDescriptorList and GeneralList
-    Q_UNUSED(firstLuaState);
 }
 
 LuaMultiThreadEnvironment *LuaMultiThreadEnvironment::self()

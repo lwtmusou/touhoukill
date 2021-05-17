@@ -3998,12 +3998,11 @@ void RoomScene::onGameStart()
 
     connect(Self, SIGNAL(skill_state_changed(QString)), this, SLOT(skillStateChange(QString)));
     trust_button->setEnabled(true);
+
 #ifdef AUDIO_SUPPORT
-
     setLordBGM();
-    setLordBackdrop();
-
 #endif
+    setLordBackdrop();
 
     game_started = true;
 

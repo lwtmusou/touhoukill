@@ -394,7 +394,8 @@ protected:
 private:
     QString screen_name;
     bool owner;
-    const General *general, *general2;
+    const General *general;
+    const General *general2;
     General::Gender m_gender;
     int hp, max_hp;
     int renhp, linghp; //for banling
@@ -412,7 +413,11 @@ private:
     bool general2_showed; //hegemony
 
     Phase phase;
-    const Card *weapon, *armor, *defensive_horse, *offensive_horse, *treasure;
+    const Card *weapon;
+    const Card *armor;
+    const Card *defensive_horse;
+    const Card *offensive_horse;
+    const Card *treasure;
     bool face_up;
     bool chained;
     bool removed;
