@@ -38,6 +38,7 @@ endif()
 
 set(QSanguosha_SWIGS
     src/swig/sgs.i
+    src/swig/naturalvar.i
     )
 
 add_custom_command(OUTPUT sanguosha_wrap.cpp

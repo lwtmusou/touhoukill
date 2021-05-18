@@ -55,7 +55,7 @@ dofile = function(filename)
 
     if string.sub(filename, 1, 4) == "qrc:" then
         -- TODO: load contents from QRC
-        local resourceContent = sgs.qrc:get(filename):contents()
+        local resourceContent = sgs.qrc:contents(filename)
         if resourceContent then
             local func, err = load(resourceContent, filename, "t")
             if func then
@@ -78,7 +78,7 @@ loadfile = function(filename, ...)
 
     if string.sub(filename, 1, 4) == "qrc:" then
         -- TODO: load contents from QRC
-        local resourceContent = sgs.qrc:get(filename):contents()
+        local resourceContent = sgs.qrc:contents(filename)
         if resourceContent then
             return load(resourceContent, filename, ...)
         end
@@ -98,7 +98,7 @@ local QrcSearchFunction = function(name)
     end
     return nil
 end
-table.insert(package.serchers, 1, QrcSearchFunction)
+table.insert(package.searchers, 1, QrcSearchFunction)
 
 -- how to implement require with qrc support?
 -- we can't simply append 'qrc:/' to 'package.path'
