@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>luaInitialize.lua</file>
+        <file>sgs_ex.lua</file>
+        <file>utilities.lua</file>
+    </qresource>
+</RCC>

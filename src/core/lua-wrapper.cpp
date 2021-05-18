@@ -27,12 +27,11 @@ const luaL_Reg sgs_libs[] = {{LUA_GNAME, luaopen_base},
                              {LUA_UTF8LIBNAME, luaopen_utf8},
                              {LUA_DBLIBNAME, luaopen_debug},
                              {sgs_libname, luaopen_sgs},
-                             {NULL, NULL}};
+                             {nullptr, nullptr}};
 
 void sgs_openlibs(lua_State *L)
 {
-    const luaL_Reg *lib;
-    for (lib = sgs_libs; lib->func; lib++) {
+    for (const luaL_Reg *lib = sgs_libs; lib->func; lib++) {
         luaL_requiref(L, lib->name, lib->func, 1);
         lua_pop(L, 1); /* remove lib */
     }
@@ -50,9 +49,8 @@ public:
         l = luaL_newstate();
         sgs_openlibs(l);
 
-#if 0
         // dostring the initial Lua code from qrc
-        QFile f(":/luaInitial.lua");
+        QFile f(":/luaInitialize.lua");
         f.open(QFile::ReadOnly);
         QByteArray arr = f.readAll();
         f.close();
@@ -77,7 +75,6 @@ public:
                 qDebug() << errorText;
             }
         }
-#endif
     }
 
     ~LuaStatePrivate()

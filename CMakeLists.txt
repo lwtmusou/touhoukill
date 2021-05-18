@@ -304,7 +304,7 @@ if (PKG_CONFIG_FOUND)
     pkg_search_module(lua54 IMPORTED_TARGET GLOBAL lua-5.4 lua5.4 lua54)
 endif()
 
-add_executable (QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} )
+add_executable (QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc )
 
 set_property(TARGET QSanguosha PROPERTY AUTOMOC ON)
 set_property(TARGET QSanguosha PROPERTY AUTOUIC ON)

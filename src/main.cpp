@@ -33,16 +33,11 @@ int main(int argc, char *argv[])
 #endif
 
 #if defined(Q_OS_LINUX)
-    QDir dir(QString("lua"));
-    if (dir.exists() && (dir.exists(QString("config.lua")))) {
-        // things look good and use current dir
-    } else {
 #ifndef Q_OS_ANDROID
-        QDir::setCurrent(qApp->applicationFilePath().replace("games", "share"));
+    QDir::setCurrent(qApp->applicationFilePath().replace("games", "share"));
 #else
-        // extract data from assets
+    // extract data from assets
 #endif
-    }
 #endif
 
     QTranslator qt_translator, translator;
