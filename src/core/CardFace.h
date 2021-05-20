@@ -15,6 +15,7 @@ class Room;
 class CardFacePrivate;
 struct CardUseStruct;
 struct CardEffectStruct;
+struct JudgeStruct;
 
 /**
  * @interface The functional model of a given card.
@@ -106,13 +107,17 @@ public:
 
     virtual bool isAvailable(const Player *player, const Card *card) const;
 
+    // TODO_Fs: Actually I don't know the use case of this function.
+    // Is it only for skill "tianqu"?
     virtual bool ignoreCardValidity(const Player *player) const;
     virtual const Card *validate(const CardUseStruct &cardUse) const;
     virtual const Card *validateInResponse(ServerPlayer *user, const Card *original_card) const;
 
     virtual void doPreAction(Room *room, const CardUseStruct &card_use) const;
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
-    virtual void use(Room *room, const CardUseStruct &use) const;
+
+    // TODO_Fs: Aren't the names of these 2 functions easy to be misunderstood?
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const; // Shouldn't this be "processOfUsing" / "usingProcess" or something like this?
+    virtual void use(Room *room, const CardUseStruct &use) const; // Shouldn't this be "onUse"?
 
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isCancelable(const CardEffectStruct &effect) const;
@@ -252,6 +257,23 @@ public:
 
     QString subTypeName() const override;
     virtual void takeEffect(ServerPlayer *target) const = 0;
+
+    // returns a copy of d if d is not nullptr.
+    JudgeStruct judge() const;
+
+protected:
+    // d is initialized to be nullptr when constructing.
+    // DelayedTrick don't own this struct. DO REMEMBER TO CLEANUP d WHEN DelayedTrick IS DESTRUCTING.
+    // A suggested way for initializing d is as follows (Let's take Indulgence as an example of inherited DelayedTrick):
+#if 0
+    Indulgence::Indulgence()
+    {
+        static JudgeStruct j;
+        // do some tweaks about j for Indulgence
+        d = &j;
+    }
+#endif
+    JudgeStruct *d;
 };
 
 class SkillCard : public CardFace

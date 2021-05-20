@@ -451,12 +451,21 @@ bool NonDelayedTrick::isNDTrick() const
 }
 
 DelayedTrick::DelayedTrick()
+    : d(nullptr)
 {
 }
 
 QString DelayedTrick::subTypeName() const
 {
     return "delayed_trick";
+}
+
+JudgeStruct DelayedTrick::judge() const
+{
+    if (d == nullptr)
+        return JudgeStruct();
+
+    return *d;
 }
 
 SkillCard::SkillCard()

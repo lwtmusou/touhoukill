@@ -41,6 +41,7 @@ sgs_ex.TableType = {
     GeneralDescriptor = 1280,
 }
 
+-- if string "ignoreErrorCheck" is given as last parameter of all functions, ignores any error check
 local maybeIgnoreErrorCheck = function(functionName, desc, ...)
     local ignoreErrorCheck = desc.ignoreErrorCheck
     if not ignoreErrorCheck then
@@ -81,10 +82,141 @@ local typeValidate = function(functionName, toBeValidated, nameOfToBeValidated, 
     return true
 end
 
+-- Should this be the public interface?
+sgs_ex.CardFace = function(desc, ...)
+    local args = {...}
+    local funcName = "sgs_ex.CardFace"
+    if args[1] and type(args[1]) == "string" then
+        funcName = args[1]
+    end
+
+    if type(desc) ~= "table" then
+        return fail, funcName .. ": desc is not table"
+    end
+
+    -- Never ignore error check on desc.type since it contains the most important information of the card - The Card type
+    if not desc.type then
+        return fail, funcName .. ": desc does not contain a valid Type"
+    elseif desc.type & sgs_ex.TableType.FirstTypeMask ~= sgs_ex.TableType.CardFace then
+        return fail, funcName .. ": desc does not contain a valid Card Type"
+    end
+
+    if maybeIgnoreErrorCheck(funcName, desc, ...) then
+        return desc
+    end
+
+    -- Card Face common
+    -- As a Card Face, the following are mandatory
+    -- name -> string
+    -- type (which is specified by desc.type using SecondTypeMask / ThirdTypeMask)
+    -- subTypeName -> string
+    -- (if different than default) properties, including
+    --  - target_fixed = function(player, card) -> boolean
+    --  - throw_when_using = function() -> boolean
+    --  - has_preact = function() -> boolean
+    --  - can_damage = function() -> boolean
+    --  - can_recover = function() -> boolean
+    --  - has_effectvalue = function() -> boolean
+    --  - default_method = function() -> Card_HandlingMethod
+    -- these may be a fixed value or Lua Function, depanding on its usage. Function prototype is provided in case a function should be used.
+    -- methods, including
+    --  - targetsFeasible - function(playerList, player, card) -> boolean
+    --  - targetFilter - function(playerList, player, player, card) -> integer
+    --  - isAvailable - function(player, card) -> boolean
+    --  - validate - function(cardUse) -> card
+    --  - validateInResponse - function(player, card) -> card
+    --  - doPreAction - function(room, cardUse)
+    --  - onUse - function(room, cardUse)
+    --  - use - function(room, cardUse)
+    --  - onEffect(cardEffect)
+    --  - isCancelable(cardEffect) -> boolean
+    --  - onNullified(player, card)
+    -- All of them are optional but this card does nothing if none is provided.
+
+    -- TODO: implementations
+end
+
+sgs_ex.BasicCard = function(desc, ...)
+    -- BasicCard is no more than Card, except for its card type
+    if type(desc) ~= "table" then
+        return fail, "sgs_ex.BasicCard: desc is not table"
+    end
+
+    if not desc.type then
+        desc.type = sgs_ex.TableType.BasicCard
+    end
+
+    return sgs_ex.CardFace(desc, "sgs_ex.BasicCard", ...)
+end
+
+sgs_ex.TrickCard = function(desc, ...)
+    local args = {...}
+    local funcName = "sgs_ex.TrickCard"
+    if args[1] and type(args[1]) == "string" then
+        funcName = args[1]
+    end
+    -- TrickCard has 2 subtypes: NonDelayedTrick and DelayedTrick
+    -- For NonDelayedTrick, it is almost same as BasicCard
+    -- For DelayedTrick, there should be a JudgeStruct attached to it
+    -- Implement NonDelayedTrick and DelayedTrick separately and use this function as a backend
+
+    -- TODO: implementations
+    return sgs_ex.CardFace(desc, funcNAme, ...)
+end
+
+sgs_ex.NonDelayedTrick = function(desc, ...)
+    -- TODO: designation and implementations
+    return sgs_ex.TrickCard(desc, "sgs_ex.NonDelayedTrick", ...)
+end
+
+sgs_ex.DelayedTrick = function(desc, ...)
+    -- TODO: designation and implementations
+    return sgs_ex.TrickCard(desc, "sgs_ex.DelayedTrick", ...)
+end
+
+sgs_ex.EquipCard = function(desc, ...)
+    local args = {...}
+    local funcName = "sgs_ex.EquipCard"
+    if args[1] and type(args[1]) == "string" then
+        funcName = args[1]
+    end
+    -- EquipCard has 5 subtypes which are corresponding to the 5 types of Equip card in Sanguosha.
+    -- The process of using EquipCard is totally different than using BasicCard and TrickCard. (Deal with it in C++?)
+    -- Implement 5 subtypes separately and use this function as a backend
+    -- EquipCard has 2 optional function:
+    --  - onInstall
+    --  - onUninstall (for silverlion record, although this event seems able to record in a Trigger)
+
+    -- TODO: implementations
+end
+
+sgs_ex.Weapon = function(desc, ...)
+    -- In addition to EquipCard, Weapons have an additional property which is 'range'
+    -- 'range' is mandatory in definations of Weapon so check it in this function
+
+    -- TODO: implementations
+    return sgs_ex.EquipCard(desc, "sgs_ex.Weapon", ...)
+end
+
+sgs_ex.Armor = function(desc, ...)
+
+end
+
+sgs_ex.DefensiveHorse = function(desc, ...)
+
+end
+
+sgs_ex.OffensiveHorse = function(desc, ...)
+
+end
+
+sgs_ex.Treasure = function(desc, ...)
+
+end
+
 -- Enough error check is necessary
 -- Lua is a weak-type scripting language after all, but we should make it more robust
 -- return fail plus an error message for error
--- if string "ignoreErrorCheck" is given as last parameter, it ignores any error check
 sgs_ex.Package = function(desc, ...)
     if type(desc) ~= "table" then
         return fail, "sgs_ex.Package: desc is not table"
