@@ -167,9 +167,11 @@ public:
     virtual int priority() const = 0;
 
     // Should not trigger other events and affect other things in principle
-    virtual void record(TriggerEvent event, Room *room, QVariant &data) const;
-    virtual QList<TriggerDetail> triggerable(TriggerEvent event, const Room *room, QVariant &data) const = 0;
-    virtual bool trigger(TriggerEvent event, Room *room, TriggerDetail detail, QVariant &data) const;
+    virtual void record(TriggerEvent event, ::Room *room, QVariant &data) const;
+    virtual QList<TriggerDetail> triggerable(TriggerEvent event, const ::Room *room, QVariant &data) const = 0;
+
+    // TODO: make TriggerDetail implicitly shared
+    virtual bool trigger(TriggerEvent event, ::Room *room, TriggerDetail detail, QVariant &data) const;
 
 private:
     TriggerPrivate *d;
@@ -184,10 +186,10 @@ public:
 
     // fixed 0
     int priority() const final override;
-    QList<TriggerDetail> triggerable(TriggerEvent, const Room *room, QVariant &) const final override;
+    QList<TriggerDetail> triggerable(TriggerEvent, const ::Room *room, QVariant &) const final override;
 };
 
-class TriggerSkill : public ::Skill, public Trigger
+class TriggerSkill : public Skill, public Trigger
 {
     Q_OBJECT
 
@@ -202,9 +204,9 @@ public:
 
     // force subclass override this function
     // virtual QList<TriggerDetail> triggerable(TriggerEvent event, const Room *room, QVariant &data) const = 0;
-    bool trigger(TriggerEvent event, Room *room, TriggerDetail detail, QVariant &data) const final override;
-    virtual bool cost(TriggerEvent event, Room *room, TriggerDetail detail, QVariant &data) const;
-    virtual bool effect(TriggerEvent event, Room *room, TriggerDetail detail, QVariant &data) const = 0;
+    bool trigger(TriggerEvent event, ::Room *room, TriggerDetail detail, QVariant &data) const final override;
+    virtual bool cost(TriggerEvent event, ::Room *room, TriggerDetail detail, QVariant &data) const;
+    virtual bool effect(TriggerEvent event, ::Room *room, TriggerDetail detail, QVariant &data) const = 0;
 };
 
 class EquipSkill : public TriggerSkill
@@ -228,7 +230,7 @@ public:
 
     // Since it may use only Record, override this function here
     // Optional override in subclass
-    QList<TriggerDetail> triggerable(TriggerEvent event, const Room *room, QVariant &data) const override;
+    QList<TriggerDetail> triggerable(TriggerEvent event, const ::Room *room, QVariant &data) const override;
 };
 }
 
