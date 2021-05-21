@@ -695,12 +695,18 @@ class TriggerPrivate
 public:
     TriggerEvents e;
     bool global;
-    int priority;
+    QString name;
+
+    TriggerPrivate()
+        : global(false)
+    {
+    }
 };
 
-Trigger::Trigger()
+Trigger::Trigger(const QString &name)
     : d(new TriggerPrivate)
 {
+    d->name = name;
 }
 
 Trigger::~Trigger()
@@ -708,9 +714,24 @@ Trigger::~Trigger()
     delete d;
 }
 
-TriggerEvents Trigger::triggerEvents()
+QString Trigger::name() const
 {
+    return d->name;
+}
+
+TriggerEvents Trigger::triggerEvents() const
+{
+    if (d->e.contains(NumOfEvents))
+        return TriggerEvents() << NumOfEvents;
+
     return d->e;
+}
+
+bool Trigger::canTrigger(TriggerEvent e) const
+{
+    Q_ASSERT(e != NumOfEvents);
+
+    return d->e.contains(NumOfEvents) || d->e.contains(e);
 }
 
 void Trigger::addTriggerEvent(TriggerEvent e)
@@ -733,16 +754,6 @@ void Trigger::setGlobal(bool global)
     d->global = global;
 }
 
-int Trigger::priority() const
-{
-    return d->priority;
-}
-
-void Trigger::setPriority(int priority)
-{
-    d->priority = priority;
-}
-
 void Trigger::record(TriggerEvent, Room *, QVariant &) const
 {
     // Intenally empty
@@ -754,17 +765,18 @@ bool Trigger::trigger(TriggerEvent, Room *, TriggerDetail, QVariant &) const
 }
 
 Rule::Rule(const QString &name)
+    : Trigger(name)
 {
-    setObjectName(name);
 }
 
 Rule::~Rule()
 {
 }
 
-QString Rule::name() const
+int Rule::priority() const
 {
-    return objectName();
+    // for rule
+    return 0;
 }
 
 QList<TriggerDetail> Rule::triggerable(TriggerEvent, const Room *room, QVariant &) const
@@ -775,12 +787,14 @@ QList<TriggerDetail> Rule::triggerable(TriggerEvent, const Room *room, QVariant 
 
 TriggerSkill::TriggerSkill(const QString &name)
     : Skill(name)
+    , Trigger(name)
 {
 }
 
-QString TriggerSkill::name() const
+int TriggerSkill::priority() const
 {
-    return objectName();
+    // for regular skill
+    return 3;
 }
 
 bool TriggerSkill::trigger(TriggerEvent event, Room *room, TriggerDetail detail, QVariant &data) const
@@ -811,6 +825,32 @@ bool TriggerSkill::cost(TriggerEvent, Room *, TriggerDetail detail, QVariant &) 
         invoke = detail.invoker->askForSkillInvoke(this);
 
     return invoke;
+}
+
+EquipSkill::EquipSkill(const QString &name)
+    : TriggerSkill(name)
+{
+}
+
+int EquipSkill::priority() const
+{
+    // for EquipSkill
+    return 2;
+}
+
+GlobalRecord::GlobalRecord(const QString &name)
+    : Trigger(name)
+{
+}
+
+int GlobalRecord::priority() const
+{
+    return 10;
+}
+
+QList<TriggerDetail> GlobalRecord::triggerable(TriggerEvent, const Room *, QVariant &) const
+{
+    return QList<TriggerDetail>();
 }
 
 }

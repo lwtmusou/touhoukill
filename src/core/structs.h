@@ -851,6 +851,8 @@ enum TriggerEvent
     GeneralHidden,
     GeneralRemoved,
 
+    // This is the Num Of Events and also All events when used in Trigger::addTriggerEvent[s].
+    // Add this event to Trigger makes it trigger for all events
     NumOfEvents
 };
 

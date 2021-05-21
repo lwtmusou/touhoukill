@@ -144,18 +144,27 @@ class TriggerPrivate;
 class Trigger // DO NOT INHERIT QObject since it is used in QObject-derived class
 {
 public:
-    Trigger();
+    Trigger(const QString &name);
     virtual ~Trigger();
-    virtual QString name() const = 0;
+    QString name() const; // ... so we have to use a QString name() here
 
-    TriggerEvents triggerEvents();
+    TriggerEvents triggerEvents() const;
+    bool canTrigger(TriggerEvent e) const;
     void addTriggerEvent(TriggerEvent e);
     void addTriggerEvents(TriggerEvents e);
     bool isGlobal() const;
     void setGlobal(bool global);
 
-    int priority() const;
-    void setPriority(int priority);
+    // Let the trigger type to set its priority!
+    // Record with event process (Fake move, etc): 10
+    // ----- Separater: 5 -----
+    // Regular skill: 3
+    // Equip skill: 2
+    // Skill which is meant to change rule: 1 (return true afterwards!)
+    // Rule: 0
+    // ----- Separater: -5 -----
+    // Other priority is undefined for now
+    virtual int priority() const = 0;
 
     // Should not trigger other events and affect other things in principle
     virtual void record(TriggerEvent event, Room *room, QVariant &data) const;
@@ -167,15 +176,14 @@ private:
     Q_DISABLE_COPY_MOVE(Trigger)
 };
 
-class Rule : public QObject, public Trigger
+class Rule : public Trigger
 {
-    Q_OBJECT
-
 public:
     Rule(const QString &name);
     ~Rule() override;
 
-    QString name() const final override;
+    // fixed 0
+    int priority() const final override;
     QList<TriggerDetail> triggerable(TriggerEvent, const Room *room, QVariant &) const final override;
 };
 
@@ -185,16 +193,42 @@ class TriggerSkill : public ::Skill, public Trigger
 
 public:
     TriggerSkill(const QString &name);
-    QString name() const final override;
 
     // Removed functions:
     // const ViewAsSkill *getViewAsSkill(...) const;
+
+    // 3 by default, optional override
+    int priority() const override;
 
     // force subclass override this function
     // virtual QList<TriggerDetail> triggerable(TriggerEvent event, const Room *room, QVariant &data) const = 0;
     bool trigger(TriggerEvent event, Room *room, TriggerDetail detail, QVariant &data) const final override;
     virtual bool cost(TriggerEvent event, Room *room, TriggerDetail detail, QVariant &data) const;
     virtual bool effect(TriggerEvent event, Room *room, TriggerDetail detail, QVariant &data) const = 0;
+};
+
+class EquipSkill : public TriggerSkill
+{
+    Q_OBJECT
+
+public:
+    EquipSkill(const QString &name);
+
+    // fixed 2
+    int priority() const final override;
+};
+
+class GlobalRecord : public Trigger
+{
+public:
+    GlobalRecord(const QString &name);
+
+    // fixed 10
+    int priority() const final override;
+
+    // Since it may use only Record, override this function here
+    // Optional override in subclass
+    QList<TriggerDetail> triggerable(TriggerEvent event, const Room *room, QVariant &data) const override;
 };
 }
 
