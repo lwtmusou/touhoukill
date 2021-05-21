@@ -12,6 +12,7 @@ class QDialog;
 
 #include <QDialog>
 #include <QObject>
+#include <QSet>
 
 class Skill : public QObject
 {
@@ -133,6 +134,69 @@ public:
     virtual bool viewFilter(const Card *to_select, const Player *Self) const = 0;
     virtual const Card *viewAs(const Card *originalCard, const Player *Self) const = 0;
 };
+
+namespace RefactorProposal {
+
+typedef QSet<TriggerEvent> TriggerEvents;
+
+class TriggerPrivate;
+
+class Trigger // DO NOT INHERIT QObject since it is used in QObject-derived class
+{
+public:
+    Trigger();
+    virtual ~Trigger();
+    virtual QString name() const = 0;
+
+    TriggerEvents triggerEvents();
+    void addTriggerEvent(TriggerEvent e);
+    void addTriggerEvents(TriggerEvents e);
+    bool isGlobal() const;
+    void setGlobal(bool global);
+
+    int priority() const;
+    void setPriority(int priority);
+
+    // Should not trigger other events and affect other things in principle
+    virtual void record(TriggerEvent event, Room *room, QVariant &data) const;
+    virtual QList<TriggerDetail> triggerable(TriggerEvent event, const Room *room, QVariant &data) const = 0;
+    virtual bool trigger(TriggerEvent event, Room *room, TriggerDetail detail, QVariant &data) const;
+
+private:
+    TriggerPrivate *d;
+    Q_DISABLE_COPY_MOVE(Trigger)
+};
+
+class Rule : public QObject, public Trigger
+{
+    Q_OBJECT
+
+public:
+    Rule(const QString &name);
+    ~Rule() override;
+
+    QString name() const final override;
+    QList<TriggerDetail> triggerable(TriggerEvent, const Room *room, QVariant &) const final override;
+};
+
+class TriggerSkill : public ::Skill, public Trigger
+{
+    Q_OBJECT
+
+public:
+    TriggerSkill(const QString &name);
+    QString name() const final override;
+
+    // Removed functions:
+    // const ViewAsSkill *getViewAsSkill(...) const;
+
+    // force subclass override this function
+    // virtual QList<TriggerDetail> triggerable(TriggerEvent event, const Room *room, QVariant &data) const = 0;
+    bool trigger(TriggerEvent event, Room *room, TriggerDetail detail, QVariant &data) const final override;
+    virtual bool cost(TriggerEvent event, Room *room, TriggerDetail detail, QVariant &data) const;
+    virtual bool effect(TriggerEvent event, Room *room, TriggerDetail detail, QVariant &data) const = 0;
+};
+}
 
 class TriggerSkill : public Skill
 {

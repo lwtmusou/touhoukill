@@ -770,9 +770,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data)
 
             // if cost returned false, we don't process with the skill's left trigger times(use the trick of set it as triggered)
             // if effect returned true, exit the whole loop.
-            bool do_cost = true;
-
-            if (do_cost && invoke->skill->cost(triggerEvent, room, invoke, data)) {
+            if (invoke->skill->cost(triggerEvent, room, invoke, data)) {
                 //show hidden skill firstly
                 if (invoke->owner)
                     invoke->owner->showHiddenSkill(invoke->skill->objectName());

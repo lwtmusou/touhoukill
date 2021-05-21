@@ -687,3 +687,130 @@ bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const
     }
     return false;
 }
+
+namespace RefactorProposal {
+
+class TriggerPrivate
+{
+public:
+    TriggerEvents e;
+    bool global;
+    int priority;
+};
+
+Trigger::Trigger()
+    : d(new TriggerPrivate)
+{
+}
+
+Trigger::~Trigger()
+{
+    delete d;
+}
+
+TriggerEvents Trigger::triggerEvents()
+{
+    return d->e;
+}
+
+void Trigger::addTriggerEvent(TriggerEvent e)
+{
+    d->e.insert(e);
+}
+
+void Trigger::addTriggerEvents(TriggerEvents e)
+{
+    d->e.unite(e);
+}
+
+bool Trigger::isGlobal() const
+{
+    return d->global;
+}
+
+void Trigger::setGlobal(bool global)
+{
+    d->global = global;
+}
+
+int Trigger::priority() const
+{
+    return d->priority;
+}
+
+void Trigger::setPriority(int priority)
+{
+    d->priority = priority;
+}
+
+void Trigger::record(TriggerEvent, Room *, QVariant &) const
+{
+    // Intenally empty
+}
+
+bool Trigger::trigger(TriggerEvent, Room *, TriggerDetail, QVariant &) const
+{
+    return false;
+}
+
+Rule::Rule(const QString &name)
+{
+    setObjectName(name);
+}
+
+Rule::~Rule()
+{
+}
+
+QString Rule::name() const
+{
+    return objectName();
+}
+
+QList<TriggerDetail> Rule::triggerable(TriggerEvent, const Room *room, QVariant &) const
+{
+    TriggerDetail d(room, this);
+    return QList<TriggerDetail>() << d;
+}
+
+TriggerSkill::TriggerSkill(const QString &name)
+    : Skill(name)
+{
+}
+
+QString TriggerSkill::name() const
+{
+    return objectName();
+}
+
+bool TriggerSkill::trigger(TriggerEvent event, Room *room, TriggerDetail detail, QVariant &data) const
+{
+    if (!detail.effectOnly) {
+        if (!cost(event, room, detail, data))
+            return false;
+
+        if (detail.owner->hasSkill(this) && !detail.owner->hasShownSkill(this))
+            detail.owner->showHiddenSkill(name());
+
+        if (detail.preferredTarget != nullptr && detail.targets.isEmpty())
+            detail.targets << detail.preferredTarget;
+    }
+
+    return effect(event, room, detail, data);
+}
+
+bool TriggerSkill::cost(TriggerEvent, Room *, TriggerDetail detail, QVariant &) const
+{
+    if ((detail.owner == nullptr) || (detail.owner != detail.invoker) || (frequency == Eternal) || (detail.invoker == nullptr))
+        return true;
+
+    // detail.owner == detail.invoker
+    bool isCompulsory = detail.isCompulsory && (detail.invoker->hasSkill(this) && !detail.invoker->hasShownSkill(this));
+    bool invoke = true;
+    if (!isCompulsory)
+        invoke = detail.invoker->askForSkillInvoke(this);
+
+    return invoke;
+}
+
+}

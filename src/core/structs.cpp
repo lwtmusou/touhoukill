@@ -502,6 +502,141 @@ QStringList SkillInvokeDetail::toList() const
     return l;
 }
 
+namespace RefactorProposal {
+
+bool TriggerDetail::operator<(const TriggerDetail &arg2) const // the operator < for sorting the invoke order.
+{
+    //  we sort firstly according to the priority, then the seat of invoker, at last whether it is a skill of an equip.
+    if (!isValid() || !arg2.isValid())
+        return false;
+
+    if (trigger->priority() > arg2.trigger->priority())
+        return true;
+    else if (trigger->priority() < arg2.trigger->priority())
+        return false;
+
+    return room->getFront(invoker, arg2.invoker) == invoker;
+    // Let's just use different priority for EquipSkill!
+}
+
+bool TriggerDetail::sameTrigger(const TriggerDetail &arg2) const
+{
+    // it only judge the skill name, the skill invoker and the skill owner. It don't judge the skill target because it is chosen by the skill invoker
+    return trigger == arg2.trigger && owner == arg2.owner && invoker == arg2.invoker;
+}
+
+bool TriggerDetail::sameTimingWith(const TriggerDetail &arg2) const
+{
+    // used to judge 2 skills has the same timing. only 2 structs with the same priority and the same invoker and the same "whether or not it is a skill of equip"
+    if (!isValid() || !arg2.isValid())
+        return false;
+
+    return trigger->priority() == arg2.trigger->priority() && invoker == arg2.invoker;
+}
+
+TriggerDetail::TriggerDetail(const Room *room, const Trigger *trigger /*= NULL*/, ServerPlayer *owner /*= NULL*/, ServerPlayer *invoker /*= NULL*/,
+                             const QList<ServerPlayer *> &targets /*= QList<ServerPlayer *>()*/, bool isCompulsory /*= false*/, ServerPlayer *preferredTarget /*= NULL*/,
+                             bool showHidden)
+    : room(room)
+    , trigger(trigger)
+    , owner(owner)
+    , invoker(invoker)
+    , targets(targets)
+    , isCompulsory(isCompulsory)
+    , triggered(false)
+    , preferredTarget(preferredTarget)
+    , showhidden(showHidden)
+{
+}
+
+TriggerDetail::TriggerDetail(const Room *room, const Trigger *trigger, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, bool isCompulsory /*= false*/,
+                             ServerPlayer *preferredTarget /*= NULL*/, bool showHidden)
+    : room(room)
+    , trigger(trigger)
+    , owner(owner)
+    , invoker(invoker)
+    , isCompulsory(isCompulsory)
+    , triggered(false)
+    , preferredTarget(preferredTarget)
+    , showhidden(showHidden)
+{
+    if (target != nullptr)
+        targets << target;
+}
+
+bool TriggerDetail::isValid() const // validity check
+{
+    return trigger != nullptr;
+}
+
+bool TriggerDetail::preferredTargetLess(const TriggerDetail &arg2) const
+{
+    if (trigger == arg2.trigger && owner == arg2.owner && invoker == arg2.invoker) {
+        // we compare preferred target to ensure the target selected is in the order of seat only in the case that 2 skills are the same
+        if (preferredTarget != nullptr && arg2.preferredTarget != nullptr)
+            return ServerPlayer::CompareByActionOrder(preferredTarget, arg2.preferredTarget);
+    }
+
+    return false;
+}
+
+QVariant TriggerDetail::toVariant() const
+{
+    if (!isValid())
+        return QVariant();
+
+    JsonObject ob;
+    if (trigger)
+        ob["skill"] = trigger->name();
+    if (owner)
+        ob["owner"] = owner->objectName();
+    if (invoker)
+        ob["invoker"] = invoker->objectName();
+    if (preferredTarget) {
+        ob["preferredtarget"] = preferredTarget->objectName();
+        ServerPlayer *current = room->getCurrent();
+        if (current == nullptr)
+            current = room->getLord();
+        if (current == nullptr)
+            current = preferredTarget;
+
+        // send the seat info to the client so that we can compare the trigger order of tieqi-like skill in the client side
+        int seat = preferredTarget->getSeat() - current->getSeat();
+        if (seat < 0)
+            seat += room->getPlayers().length();
+
+        ob["preferredtargetseat"] = seat;
+    }
+    return ob;
+}
+
+QStringList TriggerDetail::toList() const
+{
+    QStringList l;
+    if (!isValid())
+        l << QString() << QString() << QString() << QString();
+    else {
+        std::function<void(const QObject *)> insert = [&l](const QObject *item) {
+            if (item)
+                l << item->objectName();
+            else
+                l << QString();
+        };
+
+        if (trigger != nullptr)
+            l << trigger->name();
+        else
+            l << QString();
+        insert(owner);
+        insert(invoker);
+        insert(preferredTarget);
+    }
+
+    return l;
+}
+
+}
+
 SkillAcquireDetachStruct::SkillAcquireDetachStruct()
     : skill(nullptr)
     , player(nullptr)

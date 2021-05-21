@@ -937,6 +937,8 @@ QList<int> Engine::getRandomCards() const
 
     QList<int> list;
     foreach (const CardDescriptor &card, cards) {
+        // TODO: deal with this in separated rule
+        Q_UNUSED(card);
 #if 0
 
         if (exclude_disaters && card.face()->isKindOf("Disaster"))
