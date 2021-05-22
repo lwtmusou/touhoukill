@@ -6,7 +6,7 @@ project(QSanguosha
 
 set(VERSION_NUMBER_QSanguosha 20210504)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # add_definitions(-Wall)

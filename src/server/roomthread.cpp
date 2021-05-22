@@ -351,9 +351,10 @@ void RoomThread::run()
         QList<const General *> generals = QList<const General *>();
         foreach (QString pack_name, Sanguosha->getConfigFromConfigFile("hulao_packages").toStringList()) {
             const Package *pack = Sanguosha->findPackage(pack_name);
-            if (pack)
+            if (pack) {
                 foreach (auto gn, pack->generals())
                     generals << gn;
+            }
         }
 
         QStringList names;
