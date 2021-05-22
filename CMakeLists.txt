@@ -1,4 +1,9 @@
-cmake_minimum_required(VERSION 3.16)
+# CMake 3.20 is needed for USE_SWIG_DEPENDENCIES
+cmake_minimum_required(VERSION 3.20)
+
+if ( NOT ( ( CMAKE_GENERATOR MATCHES "Makefiles" ) OR ( CMAKE_GENERATOR MATCHES "Ninja" ) ) )
+    message(FATAL_ERROR "We only support makefile and ninja generator.")
+endif()
 
 project(QSanguosha
     VERSION 0.10.3
@@ -27,32 +32,16 @@ else()
     add_compile_definitions(LUA_USE_LINUX)
 endif()
 
-
-find_program(swig swig)
+find_program(SWIG_EXECUTABLE swig)
 if (WIN32)
-    find_program(swig swig.exe ${CMAKE_CURRENT_LIST_DIR}/tools/swig)
+    find_program(SWIG_EXECUTABLE swig.exe ${CMAKE_CURRENT_LIST_DIR}/tools/swig)
 endif()
 
-if (swig STREQUAL "swig-NOTFOUND")
-    set(SWIGERRMSG "swig is not found, make sure you have installed swig in your PATH.")
-    if (WIN32)
-        set(SWIGERRMSG "${SWIGERRMSG} Alternatively in Windows, you may put swigwin to ${CMAKE_CURRENT_LIST_DIR}/tools/swig folder.")
-    endif()
+set(SWIG_USE_SWIG_DEPENDENCIES true)
+set(CMAKE_SWIG_FLAGS "-nodefaultctor" "-nodefaultdtor")
 
-    message(FATAL_ERROR ${SWIGERRMSG})
-endif()
-
-set(QSanguosha_SWIGS
-    src/swig/sgs.i
-    src/swig/naturalvar.i
-    )
-
-add_custom_command(OUTPUT sanguosha_wrap.cpp
-                   COMMAND ${swig} -c++ -lua -cppext cpp -nodefaultctor -nodefaultdtor -o sanguosha_wrap.cpp -I${CMAKE_CURRENT_LIST_DIR}/src/swig ${CMAKE_CURRENT_LIST_DIR}/src/swig/sgs.i
-                   MAIN_DEPENDENCY src/swig/sgs.i
-                   DEPENDS ${QSanguosha_SWIGS}
-                   COMMENT "Generating sanguosha_wrap.cpp using SWIG...")
-
+find_package(SWIG COMPONENTS lua REQUIRED)
+include(UseSWIG)
 
 include_directories(
     "src/audio"
@@ -66,6 +55,30 @@ include_directories(
     "src"
 )
 
+find_package(PkgConfig)
+if (PKG_CONFIG_FOUND)
+    pkg_check_modules(oggvorbisfile IMPORTED_TARGET GLOBAL ogg>=1.0.0 vorbis>=1.0.0 vorbisfile>=1.0.0)
+
+    # Should we use "lua>=5.4 to indicate a lua 5.4? Lua is not even source compatible between minor versions!"
+    pkg_search_module(lua54 IMPORTED_TARGET GLOBAL lua-5.4 lua5.4 lua54)
+endif()
+
+set_property(SOURCE src/swig/sgs.i
+    PROPERTY
+    CPLUSPLUS ON
+    )
+swig_add_library(sanguosha_wrap
+    TYPE STATIC
+    LANGUAGE lua
+    SOURCES src/swig/sgs.i
+    )
+
+# ONLY FOR THEIR INCLUDE DIRECTORIES! Compile fails if we don't add the link libraries.
+# Seems wierd since we don't even link the libraries here
+target_link_libraries(sanguosha_wrap Qt5::Core)
+if (lua54_FOUND)
+    target_link_libraries(sanguosha_wrap PkgConfig::lua54)
+endif()
 
 set (QSanguosha_PKG_SRCS
     src/package/hegemonyCard.cpp
@@ -95,7 +108,6 @@ set (QSanguosha_PKG_SRCS
 )
 
 set (QSanguosha_SRCS
-    sanguosha_wrap.cpp
 
     src/audio/audio.cpp
 
@@ -302,21 +314,13 @@ if (WIN32)
     set(QSanguosha_Icon_RC ${CMAKE_CURRENT_LIST_DIR}/resource/icon/sgs.ico)
 endif()
 
-find_package(PkgConfig)
-if (PKG_CONFIG_FOUND)
-    pkg_check_modules(oggvorbisfile IMPORTED_TARGET GLOBAL ogg>=1.0.0 vorbis>=1.0.0 vorbisfile>=1.0.0)
-
-    # Should we use "lua>=5.4 to indicate a lua 5.4? Lua is not even source compatible between minor versions!"
-    pkg_search_module(lua54 IMPORTED_TARGET GLOBAL lua-5.4 lua5.4 lua54)
-endif()
-
 add_executable (QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc )
 
 set_property(TARGET QSanguosha PROPERTY AUTOMOC ON)
 set_property(TARGET QSanguosha PROPERTY AUTOUIC ON)
 set_property(TARGET QSanguosha PROPERTY AUTORCC ON)
 
-target_link_libraries (QSanguosha Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::Multimedia )
+target_link_libraries (QSanguosha sanguosha_wrap Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::Multimedia)
 target_compile_definitions(QSanguosha PUBLIC AUDIO_SUPPORT QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
 
 if (NOT oggvorbisfile_FOUND)
