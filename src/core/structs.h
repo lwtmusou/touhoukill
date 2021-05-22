@@ -86,56 +86,6 @@ struct CardEffectStruct
     QList<int> effectValue;
 };
 
-namespace RefactorProposal {
-
-struct CardUseStruct
-{
-    enum CardUseReason
-    {
-        CARD_USE_REASON_UNKNOWN = 0x00,
-        CARD_USE_REASON_PLAY = 0x01,
-        CARD_USE_REASON_RESPONSE = 0x02,
-        CARD_USE_REASON_RESPONSE_USE = 0x12
-    } m_reason;
-
-    CardUseStruct();
-    CardUseStruct(const Card *card, ServerPlayer *from, const QList<ServerPlayer *> &to = QList<ServerPlayer *>(), bool isOwnerUse = true);
-    CardUseStruct(const Card *card, ServerPlayer *from, ServerPlayer *target, bool isOwnerUse = true);
-    bool isValid(const QString &pattern) const;
-    void parse(const QString &str, Room *room);
-    bool tryParse(const QVariant &usage, Room *room);
-
-    QString toString() const;
-
-    const Card *card;
-    ServerPlayer *from;
-    QList<ServerPlayer *> to;
-    bool m_isOwnerUse;
-    bool m_addHistory;
-    bool m_isHandcard;
-    bool m_isLastHandcard;
-    QList<int> m_showncards;
-    QStringList nullified_list;
-};
-
-struct CardEffectStruct
-{
-    CardEffectStruct();
-
-    const Card *card;
-
-    ServerPlayer *from;
-    ServerPlayer *to;
-
-    bool multiple; // helper to judge whether the card has multiple targets
-    // does not make sense if the card inherits SkillCard
-    bool nullified;
-    bool canceled; //for cancel process, like "yuyi"
-    QList<int> effectValue;
-};
-
-}
-
 struct SlashEffectStruct
 {
     SlashEffectStruct();
@@ -885,9 +835,5 @@ Q_DECLARE_METATYPE(ExtraTurnStruct)
 Q_DECLARE_METATYPE(BrokenEquipChangedStruct)
 Q_DECLARE_METATYPE(ShownCardChangedStruct)
 Q_DECLARE_METATYPE(ShowGeneralStruct)
-
-// refactor
-Q_DECLARE_METATYPE(RefactorProposal::CardUseStruct)
-Q_DECLARE_METATYPE(RefactorProposal::CardEffectStruct)
 
 #endif

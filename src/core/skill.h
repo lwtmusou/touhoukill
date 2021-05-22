@@ -171,6 +171,9 @@ public:
     virtual QList<TriggerDetail> triggerable(TriggerEvent event, const ::Room *room, QVariant &data) const = 0;
 
     // TODO: make TriggerDetail implicitly shared
+    // But Even if it's implicitly shared, this should also be a pointer instead of a variable
+    // Since it may potenally modifies its tag and/or target
+    // What if we make the TriggerDetail const after its construction?
     virtual bool trigger(TriggerEvent event, ::Room *room, TriggerDetail detail, QVariant &data) const;
 
 private:
