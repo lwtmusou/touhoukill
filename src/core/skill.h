@@ -17,7 +17,6 @@ class QDialog;
 class Skill : public QObject
 {
     Q_OBJECT
-    Q_ENUMS(Frequency)
 
 public:
     enum Frequency
@@ -30,6 +29,7 @@ public:
         Wake,
         Eternal
     };
+    Q_ENUM(Frequency)
 
     explicit Skill(const QString &name, Frequency frequent = NotFrequent, const QString &showType = "trigger");
     bool isLordSkill() const;
@@ -318,7 +318,6 @@ protected:
 class TargetModSkill : public Skill
 {
     Q_OBJECT
-    Q_ENUMS(ModType)
 
 public:
     enum ModType
@@ -327,6 +326,7 @@ public:
         DistanceLimit,
         ExtraTarget
     };
+    Q_ENUM(ModType)
 
     explicit TargetModSkill(const QString &name);
     virtual QString getPattern() const;

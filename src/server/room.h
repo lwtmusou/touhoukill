@@ -27,7 +27,6 @@ struct LogMessage;
 class Room : public RoomObject
 {
     Q_OBJECT
-    Q_ENUMS(GuanxingType)
 
 public:
     explicit Room(QObject *parent, const QString &mode);
@@ -44,6 +43,7 @@ public:
     friend class RoomThread1v1;
 
     QSGS_LOGIC enum GuanxingType { GuanxingUpOnly = 1, GuanxingBothSides = 0, GuanxingDownOnly = -1 };
+    Q_ENUM(GuanxingType)
 
     QSGS_SOCKET typedef void (Room::*Callback)(ServerPlayer *, const QVariant &);
     QSGS_SOCKET typedef bool (Room::*ResponseVerifyFunction)(ServerPlayer *, const QVariant &, void *);

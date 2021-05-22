@@ -19,7 +19,6 @@ typedef int LuaFunction;
 class AI : public QObject
 {
     Q_OBJECT
-    Q_ENUMS(Relation)
 
 public:
     explicit AI(ServerPlayer *player);
@@ -31,6 +30,8 @@ public:
         Enemy,
         Neutrality
     };
+    Q_ENUM(Relation)
+
     static Relation GetRelation3v3(const ServerPlayer *a, const ServerPlayer *b);
     static Relation GetRelation(const ServerPlayer *a, const ServerPlayer *b);
     Relation relationTo(const ServerPlayer *other) const;

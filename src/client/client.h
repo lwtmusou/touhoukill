@@ -17,7 +17,6 @@ class Client : public RoomObject
 {
     Q_OBJECT
     Q_PROPERTY(Client::Status status READ getStatus WRITE setStatus)
-    Q_ENUMS(Status)
 
 public:
     enum Status
@@ -47,6 +46,7 @@ public:
 
         ClientStatusBasicMask = 0x00FF
     };
+    Q_ENUM(Status)
 
     explicit Client(QObject *parent, const QString &filename = QString());
     ~Client() override;

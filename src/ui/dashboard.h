@@ -26,7 +26,6 @@ class QWinTaskbarButton;
 class Dashboard : public PlayerCardContainer
 {
     Q_OBJECT
-    Q_ENUMS(SortType)
 
 public:
     enum SortType
@@ -35,6 +34,7 @@ public:
         BySuit,
         ByNumber
     };
+    Q_ENUM(SortType)
 
     explicit Dashboard(QGraphicsItem *button_widget);
     QRectF boundingRect() const override;
