@@ -469,3 +469,5 @@ if (WIN32)
 else()
     target_link_libraries(QSanguosha dl)
 endif()
+
+target_compile_definitions(QSanguosha PUBLIC -DOV_EXCLUDE_STATIC_CALLBACKS)
