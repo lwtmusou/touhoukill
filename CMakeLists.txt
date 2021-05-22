@@ -9,7 +9,13 @@ set(VERSION_NUMBER_QSanguosha 20210504)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# add_definitions(-Wall)
+if (MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W3")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W3")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
+endif()
 
 find_package(Qt5 COMPONENTS Widgets Network LinguistTools Multimedia  REQUIRED) # Locate the position of Qt5.
 

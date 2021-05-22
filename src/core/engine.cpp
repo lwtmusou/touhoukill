@@ -924,6 +924,7 @@ QStringList Engine::getLatestGenerals(const QSet<QString> &ban_set) const
 
 QList<int> Engine::getRandomCards() const
 {
+    // TODO: reimplement this function in separated class Mode
     bool exclude_disaters = false, using_2012_3v3 = false, using_2013_3v3 = false;
 
     if (Config.GameMode == "06_3v3") {
@@ -935,9 +936,11 @@ QList<int> Engine::getRandomCards() const
     if (Config.GameMode == "04_1v3")
         exclude_disaters = true;
 
+    Q_UNUSED(exclude_disaters);
+
     QList<int> list;
     foreach (const CardDescriptor &card, cards) {
-        // TODO: deal with this in separated rule
+        // TODO: deal with this in separated class Mode
         Q_UNUSED(card);
 #if 0
 
