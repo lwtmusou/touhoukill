@@ -1,10 +1,6 @@
 #ifndef _UTIL_H
 #define _UTIL_H
 
-class QVariant;
-
-#include "compiler-specific.h"
-
 #include <QList>
 #include <QRandomGenerator>
 #include <QSharedPointer>
@@ -47,7 +43,7 @@ namespace RefactorProposal {
 
 template <typename T1, typename T2> QT_DEPRECATED_X("FIXME: THIS SHOULD BE REMOVED AFTER REFACTORING") inline T1 fixme_cast(T2 t2)
 {
-    static_assert(!std::is_same<T1, T2>::value, "T1 and T2 should not be the same type.");
+    static_assert(!std::is_same<T1, T2>::value, "Refactor seems complete and now is the time to remove this fixme_cast.");
     return (T1)t2;
 }
 

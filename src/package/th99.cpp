@@ -455,8 +455,6 @@ public:
     }
 };
 
-#pragma message WARN("todo_fs: split ServerPlayer::pindian to 2 parts")
-
 class Taohuan : public TriggerSkill
 {
 public:
@@ -1040,7 +1038,6 @@ public:
         if (skill != nullptr && skill_owner != nullptr) {
             yori->tag["pingyi_skill"] = skill->objectName();
             yori->tag["pingyi_originalOwner"] = QVariant::fromValue(skill_owner);
-#pragma message WARN("todo_fs: pingyi_from and pingyi_invalidSkill could large than 1")
             skill_owner->tag["pingyi_from"] = QVariant::fromValue(yori);
             skill_owner->tag["pingyi_invalidSkill"] = skill->objectName();
 

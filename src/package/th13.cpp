@@ -244,7 +244,7 @@ void XihuaDialog::popup(Player *_Self)
 
     //then match it and check "CardLimit"
     foreach (QString str, validPatterns) {
-            Card *card = Self->getRoomObject()->cloneCard(str);
+        Card *card = Self->getRoomObject()->cloneCard(str);
         DELETE_OVER_SCOPE(Card, card)
         if (play || (cardPattern != nullptr && cardPattern->match(Self, card)) && !Self->isCardLimited(card, method))
             checkedPatterns << str;
@@ -897,7 +897,6 @@ public:
     }
 };
 
-#pragma message WARN("todo_lwtmusou:target filter can not get useCardLimit, such as skill zhouye")
 XiefaCard::XiefaCard()
 {
     will_throw = false;

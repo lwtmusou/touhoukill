@@ -1294,7 +1294,6 @@ public:
     }
 };
 
-#pragma message WARN("todo_lwtmusou:check this skill after rewriting QijiDialog.")
 class ChuangshiVS : public ZeroCardViewAsSkill
 {
 public:

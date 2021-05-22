@@ -447,7 +447,7 @@ void QijiDialog::popup(Player *_Self)
     }
     //then match it and check "CardLimit"
     foreach (QString str, validPatterns) {
-            Card *card = Self->getRoomObject()->cloneCard(str);
+        Card *card = Self->getRoomObject()->cloneCard(str);
         DELETE_OVER_SCOPE(Card, card)
         if (play || (cardPattern != nullptr && cardPattern->match(Self, card)) && !Self->isCardLimited(card, method))
             checkedPatterns << str;
@@ -1061,7 +1061,6 @@ public:
     }
 };
 
-#pragma message WARN("todo_fs: check this skill whether it needs record, since changshi return a skill which has already invalided by Skill pingyi")
 class Changshi : public TriggerSkill
 {
 public:
@@ -1168,7 +1167,6 @@ public:
     }
 };
 
-#pragma message WARN("todo_lwtmusou: develop a method to change move.is_last_handcard,which move to discardpile")
 class Jinian : public TriggerSkill
 {
 public:

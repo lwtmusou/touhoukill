@@ -219,7 +219,6 @@ set (QSanguosha_MOCS
     src/client/clientstruct.h
     src/core/card.h
     src/core/CardFace.h
-    src/core/compiler-specific.h
     src/core/engine.h
     src/core/game-logic.h
     src/core/game-state.h

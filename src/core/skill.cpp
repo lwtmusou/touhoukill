@@ -756,7 +756,7 @@ void Trigger::setGlobal(bool global)
 
 void Trigger::record(TriggerEvent, Room *, QVariant &) const
 {
-    // Intenally empty
+    // Intentionally empty
 }
 
 bool Trigger::trigger(TriggerEvent, Room *, TriggerDetail, QVariant &) const

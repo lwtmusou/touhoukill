@@ -1418,8 +1418,7 @@ IDSet Player::getHandPile() const
 {
     IDSet result;
     foreach (const QString &pile, getPileNames()) {
-#pragma message WARN("todo_Fs: chaoren is not handpile. the cards on chaoren can't be used in an ViewAsSkill")
-        if (pile.startsWith("&") || (pile == "wooden_ox" && hasTreasure("wooden_ox")) || (pile == "chaoren" && hasSkill("chaoren"))) {
+        if (pile.startsWith("&") || (pile == "wooden_ox" && hasTreasure("wooden_ox"))) {
             foreach (int id, getPile(pile))
                 result << id;
         }

@@ -8,10 +8,6 @@
 #include <QTime>
 #include <functional>
 
-#ifdef QSAN_UI_LIBRARY_AVAILABLE
-#pragma message WARN("UI elements detected in server side!!!")
-#endif
-
 using namespace JsonUtils;
 using namespace QSanProtocol;
 
