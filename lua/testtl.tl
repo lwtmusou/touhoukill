@@ -7,5 +7,7 @@ local tl = {
 	end
 }
 
+tl.xx = 2
+
 return tl
 
