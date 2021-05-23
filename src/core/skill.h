@@ -183,14 +183,20 @@ public:
     void setGlobal(bool global);
 
     // Let the trigger type to set its priority!
+    // Triggers whose priority is not in range {-5,5} are considered to be record with event process
+
     // Record with event process (Fake move, etc): 10
-    // ----- Separater: 5 -----
+    // ----- Separator: 5 -----
     // Regular skill: 3
     // Equip skill: 2
-    // Skill which is meant to change rule: 1 (return true afterwards!)
-    // Rule: 0
-    // ----- Separater: -5 -----
+    // Triggers which is meant to change rule: 1 (return true afterwards!)
+    // Game Rule: 0
+    // Scenario specific rule: -1
+    // ----- Separator: -5 -----
     // Other priority is undefined for now
+    // Note that a minus priority is processed after game rule.
+    // It may not be what you think since game rule does a lot of things which may not be explained by its name
+    // E.g., Minus priority of event TurnStart triggers after turn ends since game rule process the whole turn during its trigger with priority 0.
     virtual int priority() const = 0;
 
     // Should not trigger other events and affect other things in principle
@@ -198,9 +204,6 @@ public:
     virtual QList<TriggerDetail> triggerable(TriggerEvent event, const ::Room *room, QVariant &data) const = 0;
 
     // TODO: make TriggerDetail implicitly shared
-    // But Even if it's implicitly shared, this should also be a pointer instead of a variable
-    // Since it may potenally modifies its tag and/or target
-    // What if we make the TriggerDetail const after its construction?
     virtual bool trigger(TriggerEvent event, ::Room *room, TriggerDetail detail, QVariant &data) const;
 
 private:
@@ -235,8 +238,11 @@ public:
     // force subclass override this function
     // virtual QList<TriggerDetail> triggerable(TriggerEvent event, const Room *room, QVariant &data) const = 0;
     bool trigger(TriggerEvent event, ::Room *room, TriggerDetail detail, QVariant &data) const final override;
-    virtual bool cost(TriggerEvent event, ::Room *room, TriggerDetail detail, QVariant &data) const;
-    virtual bool effect(TriggerEvent event, ::Room *room, TriggerDetail detail, QVariant &data) const = 0;
+
+    // Limited modification to TriggerDetail, notably tag and target
+    virtual bool cost(TriggerEvent event, ::Room *room, TriggerDetail &detail, QVariant &data) const;
+    // No modification to TriggerDetail since the cost is done
+    virtual bool effect(TriggerEvent event, ::Room *room, const TriggerDetail &detail, QVariant &data) const = 0;
 };
 
 class EquipSkill : public TriggerSkill

@@ -742,7 +742,7 @@ bool TriggerSkill::trigger(TriggerEvent event, Room *room, TriggerDetail detail,
     return effect(event, room, detail, data);
 }
 
-bool TriggerSkill::cost(TriggerEvent, Room *, TriggerDetail detail, QVariant &) const
+bool TriggerSkill::cost(TriggerEvent, Room *, TriggerDetail &detail, QVariant &) const
 {
     if ((detail.owner == nullptr) || (detail.owner != detail.invoker) || (getFrequency() == Eternal) || (detail.invoker == nullptr))
         return true;
