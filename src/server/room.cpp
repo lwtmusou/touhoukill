@@ -1382,6 +1382,9 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
             result = _askForNullification(trick, from, to, positive, aiHelper);
         }
     }
+    // TODO: deal with Pagoda when refactoring Nullification
+    Q_UNUSED(pagoda);
+#if 0
     if (pagoda == 0 && result && EquipSkill::equipAvailable(repliedPlayer, EquipCard::TreasureLocation, "Pagoda")) {
         bool isLastTarget = true;
         foreach (QString flag, trick->flags()) {
@@ -1398,7 +1401,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
         if (!isLastTarget && askForSkillInvoke(repliedPlayer, "Pagoda", data))
             trick->addFlag("PagodaNullifiation");
     }
-
+#endif
     removeTag("NullificatonType");
 
     if (isHegNullification && heg_nullification_selection == "all" && result) {

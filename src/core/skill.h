@@ -57,7 +57,7 @@ public:
     // This seems able to be done in a global trigger with priority 3 to trigger a formation summon in start phase.
     // Since a summon may also be done in the spare time during play phase, a common button for the summon is preferred.
     // The summon itself should be a function of GameLogic
-    void setupForArraySummon(ArrayType arrayType);
+    void setupForBattleArray(ArrayType arrayType);
 
     bool isLordSkill() const;
     bool isAttachedLordSkill() const;
@@ -246,6 +246,9 @@ class EquipSkill : public TriggerSkill
 public:
     EquipSkill(const QString &name);
 
+    static bool equipAvailable(const ::Player *p, EquipCard::Location location, const QString &equip_name, const ::Player *to = nullptr);
+    static bool equipAvailable(const ::Player *p, const Card *equip, const ::Player *to = nullptr);
+
     // fixed 2
     int priority() const final override;
 };
@@ -261,6 +264,21 @@ public:
     // Since it may use only Record, override this function here
     // Optional override in subclass
     QList<TriggerDetail> triggerable(TriggerEvent event, const ::Room *room, QVariant &data) const override;
+};
+
+// a nasty way for 'fake moves', usually used in the process of multi-card chosen
+class FakeMoveRecordPrivate;
+class FakeMoveRecord : public GlobalRecord
+{
+public:
+    FakeMoveRecord(const QString &skillName);
+    ~FakeMoveRecord() final override;
+
+    QList<TriggerDetail> triggerable(TriggerEvent event, const ::Room *room, QVariant &data) const final override;
+    bool trigger(TriggerEvent event, ::Room *room, TriggerDetail detail, QVariant &data) const final override;
+
+private:
+    FakeMoveRecordPrivate *d;
 };
 }
 
@@ -394,57 +412,6 @@ protected:
     QString name;
 };
 
-// a nasty way for 'fake moves', usually used in the process of multi-card chosen
-class FakeMoveSkill : public TriggerSkill
-{
-    Q_OBJECT
-
-public:
-    explicit FakeMoveSkill(const QString &skillname);
-
-    int getPriority() const override;
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override;
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override;
-
-private:
-    QString name;
-};
-
-class EquipSkill : public TriggerSkill
-{
-    Q_OBJECT
-
-public:
-    explicit EquipSkill(const QString &name);
-
-    static bool equipAvailable(const Player *p, EquipCard::Location location, const QString &equip_name, const Player *to = nullptr);
-    static bool equipAvailable(const Player *p, const Card *equip, const Player *to = nullptr);
-};
-
-class WeaponSkill : public EquipSkill
-{
-    Q_OBJECT
-
-public:
-    explicit WeaponSkill(const QString &name);
-};
-
-class ArmorSkill : public EquipSkill
-{
-    Q_OBJECT
-
-public:
-    explicit ArmorSkill(const QString &name);
-};
-
-class TreasureSkill : public EquipSkill
-{
-    Q_OBJECT
-
-public:
-    explicit TreasureSkill(const QString &name);
-};
-
 class ViewHasSkill : public Skill
 {
     Q_OBJECT
@@ -460,35 +427,6 @@ public:
 
 protected:
     bool global;
-};
-
-class BattleArraySkill : public TriggerSkill
-{
-    Q_OBJECT
-
-public:
-    BattleArraySkill(const QString &name, const QString arrayType);
-
-    virtual void summonFriends(ServerPlayer *player) const;
-
-    inline QString getArrayType() const
-    {
-        return array_type;
-    }
-
-private:
-    QString array_type;
-};
-
-class ArraySummonSkill : public ZeroCardViewAsSkill
-{
-    Q_OBJECT
-
-public:
-    explicit ArraySummonSkill(const QString &name);
-
-    const Card *viewAs(const Player *Self) const override;
-    bool isEnabledAtPlay(const Player *player) const override;
 };
 
 #endif

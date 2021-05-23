@@ -17,7 +17,7 @@ Skill::Skill(const QString &name, Frequency frequency, ShowType showType, bool l
     setObjectName(name);
 }
 
-void Skill::setupForArraySummon(ArrayType arrayType)
+void Skill::setupForBattleArray(ArrayType arrayType)
 {
     // TODO: implementation
     Q_UNIMPLEMENTED();
@@ -499,110 +499,45 @@ int SlashNoDistanceLimitSkill::getDistanceLimit(const Player *from, const Card *
         return 0;
 }
 
-FakeMoveSkill::FakeMoveSkill(const QString &name)
-    : TriggerSkill(QString("#%1-fake-move").arg(name), Compulsory)
-    , name(name)
-{
-    events << BeforeCardsMove << CardsMoveOneTime;
-    global = true;
-}
-
-int FakeMoveSkill::getPriority() const
-{
-    return 10;
-}
-
-bool FakeMoveSkill::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &) const
-{
-    return true;
-}
-
-QList<SkillInvokeDetail> FakeMoveSkill::triggerable(TriggerEvent, const Room *room, const QVariant &) const
-{
-    ServerPlayer *owner = nullptr;
-    foreach (ServerPlayer *p, room->getAllPlayers()) {
-        if (p->hasSkill(this)) {
-            owner = p;
-            break;
-        }
-    }
-
-    QString flag = QString("%1_InTempMoving").arg(name);
-    foreach (ServerPlayer *p, room->getAllPlayers()) {
-        if (p->hasFlag(flag))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, owner, p, nullptr, true);
-    }
-
-    return QList<SkillInvokeDetail>();
-}
-
-EquipSkill::EquipSkill(const QString &name)
-    : TriggerSkill(name)
-{
-}
-
-bool EquipSkill::equipAvailable(const Player *p, EquipCard::Location location, const QString &equipName, const Player *to /*= NULL*/)
-{
-    if (p == nullptr)
-        return false;
-
-    if (p->getMark("Equips_Nullified_to_Yourself") > 0)
-        return false;
-
-    if (to != nullptr && to->getMark("Equips_of_Others_Nullified_to_You") > 0)
-        return false;
-
-    switch (location) {
-    case EquipCard::WeaponLocation:
-        if (!p->hasWeapon(equipName))
-            return false;
-        break;
-    case EquipCard::ArmorLocation:
-        if (!p->hasArmorEffect(equipName))
-            return false;
-        break;
-    case EquipCard::TreasureLocation:
-        if (!p->hasTreasure(equipName))
-            return false;
-        break;
-    default:
-        break; // shenmegui?
-    }
-
-    return true;
-}
-
-bool EquipSkill::equipAvailable(const Player *p, const Card *equip, const Player *to /*= NULL*/)
-{
-    if (equip == nullptr)
-        return false;
-
-    const EquipCard *face = dynamic_cast<const EquipCard *>(equip->face());
-    Q_ASSERT(face != nullptr);
-
-    return equipAvailable(p, face->location(), equip->faceName(), to);
-}
-
-WeaponSkill::WeaponSkill(const QString &name)
-    : EquipSkill(name)
-{
-}
-
-ArmorSkill::ArmorSkill(const QString &name)
-    : EquipSkill(name)
-{
-}
-
-TreasureSkill::TreasureSkill(const QString &name)
-    : EquipSkill(name)
-{
-}
-
 ViewHasSkill::ViewHasSkill(const QString &name)
     : Skill(name, Compulsory)
     , global(false)
 {
 }
+
+#if 0
+// In case the code are used in future when Skill::setupForBattleArray implementation
+
+
+class BattleArraySkill : public ::TriggerSkill
+{
+    // Q_OBJECT
+
+public:
+    BattleArraySkill(const QString &name, const QString arrayType);
+
+    virtual void summonFriends(ServerPlayer *player) const;
+
+    inline QString getArrayType() const
+    {
+        return array_type;
+    }
+
+private:
+    QString array_type;
+};
+
+class ArraySummonSkill : public ZeroCardViewAsSkill
+{
+    // Q_OBJECT
+
+public:
+    explicit ArraySummonSkill(const QString &name);
+
+    const Card *viewAs(const Player *Self) const override;
+    bool isEnabledAtPlay(const Player *player) const override;
+};
+
 
 BattleArraySkill::BattleArraySkill(const QString &name, const QString type) //
     : TriggerSkill(name)
@@ -680,6 +615,7 @@ bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const
     }
     return false;
 }
+#endif
 
 namespace RefactorProposal {
 
@@ -825,6 +761,52 @@ EquipSkill::EquipSkill(const QString &name)
 {
 }
 
+bool EquipSkill::equipAvailable(const Player *p, EquipCard::Location location, const QString &equipName, const Player *to)
+{
+    if (p == nullptr)
+        return false;
+
+    if (p->getMark("Equips_Nullified_to_Yourself") > 0)
+        return false;
+
+    // for StarSP Pangtong? It needs investigation for real 'Armor ignored by someone' effect
+    // But 'Armor ignored by someone' is too complicated while its effect has just few differences compared to 'Armor invalid'
+    // So we just use 'Armor invalid' everywhere
+    // I prefer removing 'to' from this function and use regular QinggangSword method or a simular one for StarSP Pangtong
+    if (to != nullptr && to->getMark("Equips_of_Others_Nullified_to_You") > 0)
+        return false;
+
+    switch (location) {
+    case EquipCard::WeaponLocation:
+        if (!p->hasWeapon(equipName))
+            return false;
+        break;
+    case EquipCard::ArmorLocation:
+        if (!p->hasArmorEffect(equipName))
+            return false;
+        break;
+    case EquipCard::TreasureLocation:
+        if (!p->hasTreasure(equipName))
+            return false;
+        break;
+    default:
+        break; // shenmegui?
+    }
+
+    return true;
+}
+
+bool EquipSkill::equipAvailable(const Player *p, const Card *equip, const Player *to /*= NULL*/)
+{
+    if (equip == nullptr)
+        return false;
+
+    const EquipCard *face = qobject_cast<const EquipCard *>(equip->face());
+    Q_ASSERT(face != nullptr);
+
+    return equipAvailable(p, face->location(), equip->faceName(), to);
+}
+
 int EquipSkill::priority() const
 {
     // for EquipSkill
@@ -844,6 +826,49 @@ int GlobalRecord::priority() const
 QList<TriggerDetail> GlobalRecord::triggerable(TriggerEvent, const Room *, QVariant &) const
 {
     return QList<TriggerDetail>();
+}
+
+class FakeMoveRecordPrivate
+{
+public:
+    QString skillName;
+};
+
+FakeMoveRecord::FakeMoveRecord(const QString &skillName)
+    : GlobalRecord(skillName + QStringLiteral("-fakeMove"))
+    , d(new FakeMoveRecordPrivate)
+{
+    addTriggerEvents({BeforeCardsMove, CardsMoveOneTime});
+    d->skillName = skillName;
+}
+
+FakeMoveRecord::~FakeMoveRecord()
+{
+    delete d;
+}
+
+QList<TriggerDetail> FakeMoveRecord::triggerable(TriggerEvent, const Room *room, QVariant &) const
+{
+    ServerPlayer *owner = nullptr;
+    foreach (ServerPlayer *p, room->getAllPlayers()) {
+        if (p->hasSkill(d->skillName)) {
+            owner = p;
+            break;
+        }
+    }
+
+    QString flag = QString(QStringLiteral("%1_InTempMoving")).arg(d->skillName);
+    foreach (ServerPlayer *p, room->getAllPlayers()) {
+        if (p->hasFlag(flag))
+            return {TriggerDetail(room, this, owner, p, nullptr)};
+    }
+
+    return {};
+}
+
+bool FakeMoveRecord::trigger(TriggerEvent, Room *, TriggerDetail, QVariant &) const
+{
+    return true;
 }
 
 }
