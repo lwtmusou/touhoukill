@@ -13,7 +13,7 @@ class CardFace;
 class Skill;
 struct lua_State;
 
-class LuaState : public QObject
+class LuaState final : public QObject
 {
     Q_OBJECT
 
@@ -32,7 +32,7 @@ private:
 };
 
 // A wrapper for "LuaState *const" which supports implicit type conversion to lua_State *
-class LuaStatePointer
+class LuaStatePointer final
 {
 public:
     LuaStatePointer(const LuaStatePointer &) = default;
@@ -80,7 +80,7 @@ private:
     QPointer<LuaState> d;
 };
 
-class LuaMultiThreadEnvironment
+class LuaMultiThreadEnvironment final
 {
 public:
     static LuaStatePointer luaStateForCurrentThread();
