@@ -10,9 +10,9 @@
 
 Skill::Skill(const QString &name, Frequency frequency, ShowType showType, bool lordSkill, bool attachedLordSkill)
     : frequency(frequency)
-    , attached_lord_skill(attachedLordSkill)
     , show_type(showType)
     , lord_skill(lordSkill)
+    , attached_lord_skill(attachedLordSkill)
 {
     setObjectName(name);
 }
@@ -168,9 +168,8 @@ bool Skill::relateToPlace(bool head) const
 }
 
 ViewAsSkill::ViewAsSkill(const QString &name)
-    : Skill(name)
+    : Skill(name, NotFrequent, ShowViewAs)
 {
-    show_type = ShowViewAs;
 }
 
 bool ViewAsSkill::isAvailable(const Player *invoker, CardUseStruct::CardUseReason reason, const QString &pattern) const
@@ -309,14 +308,12 @@ const Card *OneCardViewAsSkill::viewAs(const QList<const Card *> &cards, const P
 }
 
 FilterSkill::FilterSkill(const QString &name)
-    : Skill(name)
+    : Skill(name, Compulsory, ShowStatic)
 {
-    frequency = Compulsory;
-    show_type = ShowStatic;
 }
 
-TriggerSkill::TriggerSkill(const QString &name)
-    : Skill(name)
+TriggerSkill::TriggerSkill(const QString &name, Frequency frequency)
+    : Skill(name, frequency)
     , view_as_skill(nullptr)
     , global(false)
 {
@@ -349,7 +346,7 @@ QList<SkillInvokeDetail> TriggerSkill::triggerable(TriggerEvent, const Room *, c
 bool TriggerSkill::cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
 {
     if (invoke->isCompulsory) { //for hegemony_mode or reimu_god
-        if (invoke->owner == nullptr || invoke->owner != invoke->invoker || frequency == Eternal)
+        if (invoke->owner == nullptr || invoke->owner != invoke->invoker || getFrequency() == Eternal)
             return true;
         if (invoke->invoker != nullptr) {
             if (!invoke->invoker->hasSkill(this))
@@ -395,11 +392,9 @@ ProhibitSkill::ProhibitSkill(const QString &name)
 }
 
 DistanceSkill::DistanceSkill(const QString &name)
-    : Skill(name)
+    : Skill(name, Compulsory, ShowStatic)
 {
     view_as_skill = new ShowDistanceSkill(objectName());
-    frequency = Compulsory;
-    show_type = ShowStatic;
 }
 
 const ViewAsSkill *DistanceSkill::getViewAsSkill() const
@@ -433,11 +428,9 @@ bool ShowDistanceSkill::isEnabledAtPlay(const Player *player) const
 }
 
 MaxCardsSkill::MaxCardsSkill(const QString &name)
-    : Skill(name)
+    : Skill(name, Compulsory, ShowStatic)
 {
     view_as_skill = new ShowDistanceSkill(objectName());
-    frequency = Compulsory;
-    show_type = ShowStatic;
 }
 
 const ViewAsSkill *MaxCardsSkill::getViewAsSkill() const
@@ -446,10 +439,9 @@ const ViewAsSkill *MaxCardsSkill::getViewAsSkill() const
 }
 
 TargetModSkill::TargetModSkill(const QString &name)
-    : Skill(name)
+    : Skill(name, Compulsory)
 {
     pattern = "Slash";
-    frequency = Compulsory;
 }
 
 QString TargetModSkill::getPattern() const
@@ -473,11 +465,9 @@ int TargetModSkill::getExtraTargetNum(const Player *, const Card *) const
 }
 
 AttackRangeSkill::AttackRangeSkill(const QString &name)
-    : Skill(name)
+    : Skill(name, Compulsory, ShowStatic)
 {
     view_as_skill = new ShowDistanceSkill(objectName()); //alternative method: add ShowDistanceSkill to specific AttackRangeSkills.
-    frequency = Compulsory;
-    show_type = ShowStatic;
 }
 
 const ViewAsSkill *AttackRangeSkill::getViewAsSkill() const
@@ -510,11 +500,10 @@ int SlashNoDistanceLimitSkill::getDistanceLimit(const Player *from, const Card *
 }
 
 FakeMoveSkill::FakeMoveSkill(const QString &name)
-    : TriggerSkill(QString("#%1-fake-move").arg(name))
+    : TriggerSkill(QString("#%1-fake-move").arg(name), Compulsory)
     , name(name)
 {
     events << BeforeCardsMove << CardsMoveOneTime;
-    frequency = Compulsory;
     global = true;
 }
 
@@ -610,10 +599,9 @@ TreasureSkill::TreasureSkill(const QString &name)
 }
 
 ViewHasSkill::ViewHasSkill(const QString &name)
-    : Skill(name)
+    : Skill(name, Compulsory)
     , global(false)
 {
-    frequency = Compulsory;
 }
 
 BattleArraySkill::BattleArraySkill(const QString &name, const QString type) //
@@ -820,7 +808,7 @@ bool TriggerSkill::trigger(TriggerEvent event, Room *room, TriggerDetail detail,
 
 bool TriggerSkill::cost(TriggerEvent, Room *, TriggerDetail detail, QVariant &) const
 {
-    if ((detail.owner == nullptr) || (detail.owner != detail.invoker) || (frequency == Eternal) || (detail.invoker == nullptr))
+    if ((detail.owner == nullptr) || (detail.owner != detail.invoker) || (getFrequency() == Eternal) || (detail.invoker == nullptr))
         return true;
 
     // detail.owner == detail.invoker

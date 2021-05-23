@@ -80,18 +80,18 @@ public:
     virtual bool canPreshow() const; //hegemony
     virtual bool relateToPlace(bool head = true) const;
 
-protected:
+private:
     Frequency frequency;
+    ShowType show_type;
+    bool lord_skill;
+    bool attached_lord_skill;
+    QStringList sources;
+
+protected:
     QString limit_mark;
     QString related_mark; //while changing hero, this will be removed
     QString related_pile;
-    bool attached_lord_skill;
-    ShowType show_type;
     QString relate_to_place;
-
-private:
-    bool lord_skill;
-    QStringList sources;
 };
 
 class ViewAsSkill : public Skill
@@ -269,7 +269,7 @@ class TriggerSkill : public Skill
     Q_OBJECT
 
 public:
-    explicit TriggerSkill(const QString &name);
+    explicit TriggerSkill(const QString &name, Frequency frequency = NotFrequent);
     const ViewAsSkill *getViewAsSkill() const;
     QList<TriggerEvent> getTriggerEvents() const;
 
