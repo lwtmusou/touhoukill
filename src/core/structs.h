@@ -539,8 +539,11 @@ namespace RefactorProposal {
 
 class Trigger;
 
-struct TriggerDetail
+class TriggerDetailPrivate;
+
+class TriggerDetail
 {
+public:
     // TODO: use RefactorProposal::GameLogic / RoomObject / Player instead of Room / ::ServerPlayer
     explicit TriggerDetail(const ::Room *room, const Trigger *trigger = nullptr, ::ServerPlayer *owner = nullptr, ::ServerPlayer *invoker = nullptr,
                            const QList< ::ServerPlayer *> &targets = QList< ::ServerPlayer *>(), bool isCompulsory = false, ::ServerPlayer *preferredTarget = nullptr,
@@ -548,17 +551,24 @@ struct TriggerDetail
     TriggerDetail(const ::Room *room, const Trigger *trigger, ::ServerPlayer *owner, ::ServerPlayer *invoker, ::ServerPlayer *target, bool isCompulsory = false,
                   ::ServerPlayer *preferredTarget = nullptr, bool showHidden = true);
 
-    const ::Room *room;
-    const Trigger *trigger; // the trigger
-    ::ServerPlayer *owner; // skill owner. 2 structs with the same skill and skill owner are treated as of a same skill.
-    ::ServerPlayer *invoker; // skill invoker. When invoking skill, we sort firstly according to the priority, then the seat of invoker, at last weather it is a skill of an equip.
-    QList< ::ServerPlayer *> targets; // skill targets.
-    bool isCompulsory; // judge the skill is compulsory or not. It is set in the skill's triggerable
-    bool triggered; // judge whether the skill is triggered
-    ::ServerPlayer *preferredTarget; // the preferred target of a certain skill
-    bool showhidden;
-    bool effectOnly;
-    QVariantMap tag; // used to add a tag to the struct. useful for skills like Tieqi and Liegong to save a QVariantList for assisting to assign targets
+    TriggerDetail(const TriggerDetail &other);
+    TriggerDetail &operator=(const TriggerDetail &other);
+
+    const ::Room *room() const;
+    const Trigger *trigger() const;
+    ::ServerPlayer *owner() const;
+    ::ServerPlayer *invoker() const;
+    QList< ::ServerPlayer *> targets() const;
+    bool isCompulsory() const;
+    bool triggered() const;
+    ::ServerPlayer *preferredTarget() const;
+    bool showhidden() const;
+    bool effectOnly() const;
+    const QVariantMap &tag() const;
+
+    void addTarget(::ServerPlayer *target);
+    void setTriggered(bool t);
+    QVariantMap &tag();
 
     bool operator<(const TriggerDetail &arg2) const; // the operator < for sorting the invoke order.
     // the operator ==. it only judge the skill name, the skill invoker, and the skill owner. it don't judge the skill target because it is chosen by the skill invoker
@@ -571,6 +581,9 @@ struct TriggerDetail
 
     QVariant toVariant() const;
     QStringList toList() const;
+
+private:
+    TriggerDetailPrivate *d;
 };
 
 }

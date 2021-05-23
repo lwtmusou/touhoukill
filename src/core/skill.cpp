@@ -728,15 +728,15 @@ int TriggerSkill::priority() const
 
 bool TriggerSkill::trigger(TriggerEvent event, Room *room, TriggerDetail detail, QVariant &data) const
 {
-    if (!detail.effectOnly) {
+    if (!detail.effectOnly()) {
         if (!cost(event, room, detail, data))
             return false;
 
-        if (detail.owner->hasSkill(this) && !detail.owner->hasShownSkill(this))
-            detail.owner->showHiddenSkill(name());
+        if (detail.owner()->hasSkill(this) && !detail.owner()->hasShownSkill(this))
+            detail.owner()->showHiddenSkill(name());
 
-        if (detail.preferredTarget != nullptr && detail.targets.isEmpty())
-            detail.targets << detail.preferredTarget;
+        if (detail.preferredTarget() != nullptr && detail.targets().isEmpty())
+            detail.addTarget(detail.preferredTarget());
     }
 
     return effect(event, room, detail, data);
@@ -744,14 +744,14 @@ bool TriggerSkill::trigger(TriggerEvent event, Room *room, TriggerDetail detail,
 
 bool TriggerSkill::cost(TriggerEvent, Room *, TriggerDetail &detail, QVariant &) const
 {
-    if ((detail.owner == nullptr) || (detail.owner != detail.invoker) || (getFrequency() == Eternal) || (detail.invoker == nullptr))
+    if ((detail.owner() == nullptr) || (detail.owner() != detail.invoker()) || (getFrequency() == Eternal) || (detail.invoker() == nullptr))
         return true;
 
     // detail.owner == detail.invoker
-    bool isCompulsory = detail.isCompulsory && (detail.invoker->hasSkill(this) && !detail.invoker->hasShownSkill(this));
+    bool isCompulsory = detail.isCompulsory() && (detail.invoker()->hasSkill(this) && !detail.invoker()->hasShownSkill(this));
     bool invoke = true;
     if (!isCompulsory)
-        invoke = detail.invoker->askForSkillInvoke(this);
+        invoke = detail.invoker()->askForSkillInvoke(this);
 
     return invoke;
 }

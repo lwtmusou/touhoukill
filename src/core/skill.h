@@ -274,7 +274,7 @@ public:
 
 // a nasty way for 'fake moves', usually used in the process of multi-card chosen
 class FakeMoveRecordPrivate;
-class FakeMoveRecord : public GlobalRecord
+class FakeMoveRecord final : public GlobalRecord
 {
 public:
     FakeMoveRecord(const QString &skillName);

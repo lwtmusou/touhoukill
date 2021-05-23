@@ -504,25 +504,64 @@ QStringList SkillInvokeDetail::toList() const
 
 namespace RefactorProposal {
 
+class TriggerDetailSharedData : public QSharedData
+{
+public:
+    const ::Room *room;
+    const Trigger *trigger; // the trigger
+    ::ServerPlayer *owner; // skill owner. 2 structs with the same skill and skill owner are treated as of a same skill.
+    ::ServerPlayer *invoker; // skill invoker. When invoking skill, we sort firstly according to the priority, then the seat of invoker, at last weather it is a skill of an equip.
+    QList< ::ServerPlayer *> targets; // skill targets.
+    bool isCompulsory; // judge the skill is compulsory or not. It is set in the skill's triggerable
+    bool triggered; // judge whether the skill is triggered
+    ::ServerPlayer *preferredTarget; // the preferred target of a certain skill
+    bool showhidden;
+    bool effectOnly;
+    QVariantMap tag; // used to add a tag to the struct. useful for skills like Tieqi and Liegong to save a QVariantList for assisting to assign targets
+
+    TriggerDetailSharedData()
+        : room(nullptr)
+        , trigger(nullptr)
+        , owner(nullptr)
+        , invoker(nullptr)
+        , isCompulsory(false)
+        , triggered(false)
+        , preferredTarget(nullptr)
+        , showhidden(false)
+        , effectOnly(false)
+    {
+    }
+};
+
+class TriggerDetailPrivate
+{
+public:
+    QSharedDataPointer<TriggerDetailSharedData> d;
+
+    TriggerDetailPrivate() = default;
+    TriggerDetailPrivate(const TriggerDetailPrivate &) = default;
+    TriggerDetailPrivate &operator=(const TriggerDetailPrivate &) = default;
+};
+
 bool TriggerDetail::operator<(const TriggerDetail &arg2) const // the operator < for sorting the invoke order.
 {
     //  we sort firstly according to the priority, then the seat of invoker, at last whether it is a skill of an equip.
     if (!isValid() || !arg2.isValid())
         return false;
 
-    if (trigger->priority() > arg2.trigger->priority())
+    if (trigger()->priority() > arg2.trigger()->priority())
         return true;
-    else if (trigger->priority() < arg2.trigger->priority())
+    else if (trigger()->priority() < arg2.trigger()->priority())
         return false;
 
-    return room->getFront(invoker, arg2.invoker) == invoker;
+    return room()->getFront(invoker(), arg2.invoker()) == invoker();
     // Let's just use different priority for EquipSkill!
 }
 
 bool TriggerDetail::sameTrigger(const TriggerDetail &arg2) const
 {
     // it only judge the skill name, the skill invoker and the skill owner. It don't judge the skill target because it is chosen by the skill invoker
-    return trigger == arg2.trigger && owner == arg2.owner && invoker == arg2.invoker;
+    return trigger() == arg2.trigger() && owner() == arg2.owner() && invoker() == arg2.invoker();
 }
 
 bool TriggerDetail::sameTimingWith(const TriggerDetail &arg2) const
@@ -531,50 +570,135 @@ bool TriggerDetail::sameTimingWith(const TriggerDetail &arg2) const
     if (!isValid() || !arg2.isValid())
         return false;
 
-    return trigger->priority() == arg2.trigger->priority() && invoker == arg2.invoker;
+    return trigger()->priority() == arg2.trigger()->priority() && invoker() == arg2.invoker();
 }
 
 TriggerDetail::TriggerDetail(const Room *room, const Trigger *trigger /*= NULL*/, ServerPlayer *owner /*= NULL*/, ServerPlayer *invoker /*= NULL*/,
                              const QList<ServerPlayer *> &targets /*= QList<ServerPlayer *>()*/, bool isCompulsory /*= false*/, ServerPlayer *preferredTarget /*= NULL*/,
                              bool showHidden)
-    : room(room)
-    , trigger(trigger)
-    , owner(owner)
-    , invoker(invoker)
-    , targets(targets)
-    , isCompulsory(isCompulsory)
-    , triggered(false)
-    , preferredTarget(preferredTarget)
-    , showhidden(showHidden)
+    : d(new TriggerDetailPrivate)
 {
+    d->d->room = (room);
+    d->d->trigger = (trigger);
+    d->d->owner = (owner);
+    d->d->invoker = (invoker);
+    d->d->targets = (targets);
+    d->d->isCompulsory = (isCompulsory);
+    d->d->triggered = (false);
+    d->d->preferredTarget = (preferredTarget);
+    d->d->showhidden = (showHidden);
 }
 
 TriggerDetail::TriggerDetail(const Room *room, const Trigger *trigger, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, bool isCompulsory /*= false*/,
                              ServerPlayer *preferredTarget /*= NULL*/, bool showHidden)
-    : room(room)
-    , trigger(trigger)
-    , owner(owner)
-    , invoker(invoker)
-    , isCompulsory(isCompulsory)
-    , triggered(false)
-    , preferredTarget(preferredTarget)
-    , showhidden(showHidden)
+    : d(new TriggerDetailPrivate)
 {
+    d->d->room = (room);
+    d->d->trigger = (trigger);
+    d->d->owner = (owner);
+    d->d->invoker = (invoker);
+    d->d->isCompulsory = (isCompulsory);
+    d->d->triggered = (false);
+    d->d->preferredTarget = (preferredTarget);
+    d->d->showhidden = (showHidden);
+
     if (target != nullptr)
-        targets << target;
+        d->d->targets << target;
+}
+
+TriggerDetail::TriggerDetail(const TriggerDetail &other)
+    : d(new TriggerDetailPrivate(*other.d))
+{
+}
+
+TriggerDetail &TriggerDetail::operator=(const TriggerDetail &other)
+{
+    delete d;
+    d = new TriggerDetailPrivate(*other.d);
+    return *this;
+}
+
+const Room *TriggerDetail::room() const
+{
+    return d->d->room;
+}
+
+const Trigger *TriggerDetail::trigger() const
+{
+    return d->d->trigger;
+}
+
+ServerPlayer *TriggerDetail::owner() const
+{
+    return d->d->owner;
+}
+
+ServerPlayer *TriggerDetail::invoker() const
+{
+    return d->d->invoker;
+}
+
+QList<ServerPlayer *> TriggerDetail::targets() const
+{
+    return d->d->targets;
+}
+
+bool TriggerDetail::isCompulsory() const
+{
+    return d->d->isCompulsory;
+}
+
+bool TriggerDetail::triggered() const
+{
+    return d->d->triggered;
+}
+
+ServerPlayer *TriggerDetail::preferredTarget() const
+{
+    return d->d->preferredTarget;
+}
+
+bool TriggerDetail::showhidden() const
+{
+    return d->d->showhidden;
+}
+
+bool TriggerDetail::effectOnly() const
+{
+    return d->d->effectOnly;
+}
+
+const QVariantMap &TriggerDetail::tag() const
+{
+    return d->d->tag;
+}
+
+void TriggerDetail::addTarget(ServerPlayer *target)
+{
+    d->d->targets << target;
+}
+
+void TriggerDetail::setTriggered(bool t)
+{
+    d->d->triggered = t;
+}
+
+QVariantMap &TriggerDetail::tag()
+{
+    return d->d->tag;
 }
 
 bool TriggerDetail::isValid() const // validity check
 {
-    return trigger != nullptr;
+    return room() != nullptr && trigger() != nullptr;
 }
 
 bool TriggerDetail::preferredTargetLess(const TriggerDetail &arg2) const
 {
-    if (trigger == arg2.trigger && owner == arg2.owner && invoker == arg2.invoker) {
+    if (trigger() == arg2.trigger() && owner() == arg2.owner() && invoker() == arg2.invoker()) {
         // we compare preferred target to ensure the target selected is in the order of seat only in the case that 2 skills are the same
-        if (preferredTarget != nullptr && arg2.preferredTarget != nullptr)
-            return ServerPlayer::CompareByActionOrder(preferredTarget, arg2.preferredTarget);
+        if (preferredTarget() != nullptr && arg2.preferredTarget() != nullptr)
+            return ServerPlayer::CompareByActionOrder(preferredTarget(), arg2.preferredTarget());
     }
 
     return false;
@@ -586,24 +710,24 @@ QVariant TriggerDetail::toVariant() const
         return QVariant();
 
     JsonObject ob;
-    if (trigger)
-        ob["skill"] = trigger->name();
-    if (owner)
-        ob["owner"] = owner->objectName();
-    if (invoker)
-        ob["invoker"] = invoker->objectName();
-    if (preferredTarget) {
-        ob["preferredtarget"] = preferredTarget->objectName();
-        ServerPlayer *current = room->getCurrent();
+    if (trigger())
+        ob["skill"] = trigger()->name();
+    if (owner())
+        ob["owner"] = owner()->objectName();
+    if (invoker())
+        ob["invoker"] = invoker()->objectName();
+    if (preferredTarget()) {
+        ob["preferredtarget"] = preferredTarget()->objectName();
+        ServerPlayer *current = room()->getCurrent();
         if (current == nullptr)
-            current = room->getLord();
+            current = room()->getLord();
         if (current == nullptr)
-            current = preferredTarget;
+            current = preferredTarget();
 
         // send the seat info to the client so that we can compare the trigger order of tieqi-like skill in the client side
-        int seat = preferredTarget->getSeat() - current->getSeat();
+        int seat = preferredTarget()->getSeat() - current->getSeat();
         if (seat < 0)
-            seat += room->getPlayers().length();
+            seat += room()->getPlayers().length();
 
         ob["preferredtargetseat"] = seat;
     }
@@ -623,13 +747,13 @@ QStringList TriggerDetail::toList() const
                 l << QString();
         };
 
-        if (trigger != nullptr)
-            l << trigger->name();
+        if (trigger() != nullptr)
+            l << trigger()->name();
         else
             l << QString();
-        insert(owner);
-        insert(invoker);
-        insert(preferredTarget);
+        insert(owner());
+        insert(invoker());
+        insert(preferredTarget());
     }
 
     return l;
