@@ -284,7 +284,12 @@ static QThread *audioThread = nullptr;
 static AudioInternal *internal = nullptr;
 static bool isBgmPlaying = false;
 
-void Audio::init()
+namespace Audio {
+namespace {
+const int MAX_CHANNEL_COUNT = 100;
+}
+
+void init()
 {
     if (Q_LIKELY(audioThread == nullptr)) {
         audioThread = new QThread;
@@ -300,7 +305,7 @@ void Audio::init()
     }
 }
 
-void Audio::quit()
+void quit()
 {
     if (Q_UNLIKELY(internal != nullptr)) {
         emit internal->quit_S();
@@ -314,45 +319,45 @@ void Audio::quit()
     }
 }
 
-float Audio::volume = 1;
-float Audio::bgm_volume = 1;
+float volume = 1;
+float bgm_volume = 1;
 
-void Audio::play(const QString &fileName)
+void play(const QString &fileName)
 {
     if (Q_UNLIKELY(internal != nullptr))
         emit internal->play_S(fileName);
 }
 
-void Audio::setEffectVolume(float volume)
+void setEffectVolume(float volume)
 {
     if (Q_UNLIKELY(internal != nullptr))
         emit internal->setEffectVolume_S(volume);
 }
 
-void Audio::setBGMVolume(float volume)
+void setBGMVolume(float volume)
 {
     if (Q_UNLIKELY(internal != nullptr))
         emit internal->setBGMVolume_S(volume);
 }
 
-void Audio::playBGM(const QStringList &fileNames)
+void playBGM(const QStringList &fileNames)
 {
     isBgmPlaying = true;
     emit internal->playBGM_S(fileNames);
 }
 
-bool Audio::isBackgroundMusicPlaying()
+bool isBackgroundMusicPlaying()
 {
     return isBgmPlaying;
 }
 
-void Audio::stopBGM()
+void stopBGM()
 {
     emit internal->stopBGM_S();
     isBgmPlaying = false;
 }
 
-QStringList Audio::getBgmFileNames(const QString fileNames, bool isGeneralName)
+QStringList getBgmFileNames(const QString fileNames, bool isGeneralName)
 {
     QStringList all;
     if (fileNames.endsWith(".ogg")) {
@@ -390,6 +395,7 @@ QStringList Audio::getBgmFileNames(const QString fileNames, bool isGeneralName)
     }
 
     return all;
+}
 }
 
 #include "audio.moc"

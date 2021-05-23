@@ -5,29 +5,25 @@
 
 #include <QString>
 
-class Audio
-{
-public:
-    static void init();
-    static void quit();
+namespace Audio {
+void init();
+void quit();
 
-    static void play(const QString &fileName);
+void play(const QString &fileName);
 
-    static void setEffectVolume(float volume);
-    static void setBGMVolume(float volume);
+void setEffectVolume(float volume);
+void setBGMVolume(float volume);
 
-    static void playBGM(const QStringList &fileNames);
-    static void stopBGM();
-    static bool isBackgroundMusicPlaying();
+void playBGM(const QStringList &fileNames);
+void stopBGM();
+bool isBackgroundMusicPlaying();
 
-    static float volume;
-    static float bgm_volume;
+extern float volume;
+extern float bgm_volume;
 
-    static QStringList getBgmFileNames(const QString fileNames, bool isGeneralName = false);
+QStringList getBgmFileNames(const QString fileNames, bool isGeneralName = false);
 
-private:
-    static const int MAX_CHANNEL_COUNT = 100;
-};
+}
 
 #endif // AUDIO_SUPPORT
 
