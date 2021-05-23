@@ -285,9 +285,6 @@ static AudioInternal *internal = nullptr;
 static bool isBgmPlaying = false;
 
 namespace Audio {
-namespace {
-const int MAX_CHANNEL_COUNT = 100;
-}
 
 void init()
 {
