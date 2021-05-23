@@ -56,6 +56,9 @@ dofile = function(filename)
     if string.sub(filename, 1, 4) == "qrc:" then
         -- TODO: load contents from QRC
         local resourceContent = sgs.qrc:contents(filename)
+        if filename == "qrc:/sgs_ex.lua" then
+            print(type(resourceContent))
+        end
         if resourceContent then
             local func, err = load(resourceContent, filename, "t")
             if func then
@@ -88,12 +91,14 @@ loadfile = function(filename, ...)
 end
 
 local QrcLoadFunction = function(name, fileName)
+    print(name, fileName)
     return dofile(fileName)
 end
 local QrcSearchFunction = function(name)
     local name_ = string.gsub(name, "%.", "/")
     local fileName = "qrc:/" .. name_ .. ".lua"
     if sgs.qrc:contains(fileName) then
+        print(name, fileName)
         return QrcLoadFunction, fileName
     end
     return nil
@@ -123,6 +128,10 @@ dofile("qrc:/utilities.lua")
 
 -- 3. load extensions
 sgs_ex = require("sgs_ex")
+tl = require("tl")
+tl.loader()
+
+dofile("lua/testtest.lua")
 
 -- Descriptors here
 -- Should it be k-v pair or sequence?
@@ -156,6 +165,7 @@ local loadExtension = function(name, isBuiltin)
                     table.insert(sgs.Skills, s)
                 end
             end
+            table.insert(sgs.Packages, extension)
             return true
         end
     end

@@ -75,7 +75,7 @@ swig_add_library(sanguosha_wrap
 
 # ONLY FOR THEIR INCLUDE DIRECTORIES! Compile fails if we don't add the link libraries.
 # Seems wierd since we don't even link the libraries here
-target_link_libraries(sanguosha_wrap Qt5::Core)
+target_link_libraries(sanguosha_wrap Qt5::Core Qt5::Widgets)
 if (lua54_FOUND)
     target_link_libraries(sanguosha_wrap PkgConfig::lua54)
 endif()

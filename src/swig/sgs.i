@@ -8,6 +8,7 @@
 #include <QFileInfo>
 #include <QString>
 #include <QByteArray>
+#include <QMessageBox>
 
 typedef void *LuaQrcWrapper;
 LuaQrcWrapper qrc = nullptr;
@@ -30,7 +31,7 @@ private:
         if (!fileName.startsWith("qrc:"))
             return QByteArray();
 
-        fileName.chop(3);
+        fileName = fileName.mid(3);
         QFile f(fileName);
         if (!f.exists())
             return QByteArray();
@@ -62,3 +63,7 @@ public:
     void setParent(QObject *parent);
     void deleteLater();
 };
+
+namespace QMessageBox {
+    void information(QWidget *,const char *,const char *);
+}
