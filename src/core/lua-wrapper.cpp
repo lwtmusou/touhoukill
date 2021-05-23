@@ -98,11 +98,6 @@ lua_State *LuaState::data()
     return d->l;
 }
 
-const lua_State *LuaState::data() const
-{
-    return d->l;
-}
-
 class LuaMultiThreadedEnvironmentPrivate
 {
 public:
@@ -112,7 +107,7 @@ public:
     QList<const Skill *> skills;
 };
 
-LuaState *LuaMultiThreadEnvironment::luaStatePerThread()
+LuaStatePointer LuaMultiThreadEnvironment::luaStateForCurrentThread()
 {
     auto *storage = &(self()->d->stateStorage);
 
@@ -155,9 +150,12 @@ LuaMultiThreadEnvironment::LuaMultiThreadEnvironment()
     LuaState *firstLuaState = new LuaState;
     d->stateStorage.setLocalData(firstLuaState);
 
+    LuaStatePointer firstLuaStatePtr = firstLuaState;
     // TODO: first LuaState is created, we should collect data from LuaState
     // notably Package, CardFace and Skill
     // Package maintains CardDescriptorList and GeneralList
+    Q_UNIMPLEMENTED();
+    Q_UNUSED(firstLuaStatePtr);
 }
 
 LuaMultiThreadEnvironment *LuaMultiThreadEnvironment::self()

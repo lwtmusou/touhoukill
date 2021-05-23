@@ -32,7 +32,7 @@ void Engine::addPackage(const QString &name)
 }
 
 Engine::Engine()
-    : l(LuaMultiThreadEnvironment::luaStatePerThread())
+    : l(LuaMultiThreadEnvironment::luaStateForCurrentThread())
 {
     Sanguosha = this;
 
