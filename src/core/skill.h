@@ -31,7 +31,34 @@ public:
     };
     Q_ENUM(Frequency)
 
-    explicit Skill(const QString &name, Frequency frequent = NotFrequent, const QString &showType = "trigger");
+    enum ArrayType
+    {
+        None,
+        Formation,
+        Siege
+    };
+    Q_ENUM(ArrayType)
+
+    enum ShowType
+    {
+        ShowTrigger,
+        ShowStatic,
+        ShowViewAs,
+    };
+    Q_ENUM(ShowType)
+
+    // do not use even ANY symbols in skill name anymore!
+    // use multi-parameterized ones instead
+    explicit Skill(const QString &name, Frequency frequency = NotFrequent, ShowType showType = ShowTrigger, bool lordSkill = false, bool attachedLordSkill = false);
+
+    // TODO: refactor propersal:
+    // Battle Array Skill should not be a separate type
+    // Currently BattleArraySkill runs SummonArray when turn starts.
+    // This seems able to be done in a global trigger with priority 3 to trigger a formation summon in start phase.
+    // Since a summon may also be done in the spare time during play phase, a common button for the summon is preferred.
+    // The summon itself should be a function of GameLogic
+    void setupForArraySummon(ArrayType arrayType);
+
     bool isLordSkill() const;
     bool isAttachedLordSkill() const;
     virtual bool shouldBeVisible(const Player *Self) const; // usually for attached skill
@@ -49,7 +76,7 @@ public:
     QString getRelatedMark() const;
     QString getRelatedPileName() const;
     QStringList getSources() const;
-    QString getShowType() const; //nue_god
+    ShowType getShowType() const; //nue_god
     virtual bool canPreshow() const; //hegemony
     virtual bool relateToPlace(bool head = true) const;
 
@@ -59,7 +86,7 @@ protected:
     QString related_mark; //while changing hero, this will be removed
     QString related_pile;
     bool attached_lord_skill;
-    QString show_type;
+    ShowType show_type;
     QString relate_to_place;
 
 private:

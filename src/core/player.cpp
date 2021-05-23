@@ -687,7 +687,7 @@ bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden
     if (include_hidden && !isSkillInvalid("anyun")
         && (skills.contains("anyun") || skills2.contains("anyun") || acquired_skills.contains("anyun") || acquired_skills2.contains("anyun")) && !skill->isLordSkill()
         && !skill->isAttachedLordSkill() && skill->getFrequency() != Skill::Limited && skill->getFrequency() != Skill::Wake && skill->getFrequency() != Skill::Eternal
-        && (skill->getShowType() != "static" || hasFlag("has_anyu_state"))) {
+        && (skill->getShowType() != Skill::ShowStatic || hasFlag("has_anyu_state"))) {
         QString shown = shown_hidden_general;
         if (shown == nullptr) {
             foreach (QString hidden, hidden_generals) {

@@ -8,23 +8,20 @@
 #include <QFile>
 #include <random>
 
-Skill::Skill(const QString &name, Frequency frequency, const QString &showType)
+Skill::Skill(const QString &name, Frequency frequency, ShowType showType, bool lordSkill, bool attachedLordSkill)
     : frequency(frequency)
-    , attached_lord_skill(false)
+    , attached_lord_skill(attachedLordSkill)
     , show_type(showType)
-    , relate_to_place(QString())
+    , lord_skill(lordSkill)
 {
-    static QChar lord_symbol('$');
+    setObjectName(name);
+}
 
-    if (name.endsWith(lord_symbol)) {
-        QString copy = name;
-        copy.remove(lord_symbol);
-        setObjectName(copy);
-        lord_skill = true;
-    } else {
-        setObjectName(name);
-        lord_skill = false;
-    }
+void Skill::setupForArraySummon(ArrayType arrayType)
+{
+    // TODO: implementation
+    Q_UNIMPLEMENTED();
+    Q_UNUSED(arrayType);
 }
 
 bool Skill::isLordSkill() const
@@ -121,7 +118,7 @@ Skill::Frequency Skill::getFrequency() const
     return frequency;
 }
 
-QString Skill::getShowType() const
+Skill::ShowType Skill::getShowType() const
 {
     return show_type;
 }
@@ -171,11 +168,9 @@ bool Skill::relateToPlace(bool head) const
 }
 
 ViewAsSkill::ViewAsSkill(const QString &name)
-    : Skill(name, Skill::NotFrequent, "viewas")
-    , response_pattern(QString())
-    , response_or_use(false)
-    , expand_pile(QString())
+    : Skill(name)
 {
+    show_type = ShowViewAs;
 }
 
 bool ViewAsSkill::isAvailable(const Player *invoker, CardUseStruct::CardUseReason reason, const QString &pattern) const
@@ -314,8 +309,10 @@ const Card *OneCardViewAsSkill::viewAs(const QList<const Card *> &cards, const P
 }
 
 FilterSkill::FilterSkill(const QString &name)
-    : Skill(name, Skill::Compulsory, "static")
+    : Skill(name)
 {
+    frequency = Compulsory;
+    show_type = ShowStatic;
 }
 
 TriggerSkill::TriggerSkill(const QString &name)
@@ -393,14 +390,16 @@ int MaxCardsSkill::getFixed(const Player *) const
 }
 
 ProhibitSkill::ProhibitSkill(const QString &name)
-    : Skill(name, Skill::Compulsory)
+    : Skill(name)
 {
 }
 
 DistanceSkill::DistanceSkill(const QString &name)
-    : Skill(name, Skill::Compulsory, "static")
+    : Skill(name)
 {
     view_as_skill = new ShowDistanceSkill(objectName());
+    frequency = Compulsory;
+    show_type = ShowStatic;
 }
 
 const ViewAsSkill *DistanceSkill::getViewAsSkill() const
@@ -434,9 +433,11 @@ bool ShowDistanceSkill::isEnabledAtPlay(const Player *player) const
 }
 
 MaxCardsSkill::MaxCardsSkill(const QString &name)
-    : Skill(name, Skill::Compulsory, "static")
+    : Skill(name)
 {
     view_as_skill = new ShowDistanceSkill(objectName());
+    frequency = Compulsory;
+    show_type = ShowStatic;
 }
 
 const ViewAsSkill *MaxCardsSkill::getViewAsSkill() const
@@ -445,9 +446,10 @@ const ViewAsSkill *MaxCardsSkill::getViewAsSkill() const
 }
 
 TargetModSkill::TargetModSkill(const QString &name)
-    : Skill(name, Skill::Compulsory)
+    : Skill(name)
 {
     pattern = "Slash";
+    frequency = Compulsory;
 }
 
 QString TargetModSkill::getPattern() const
@@ -471,9 +473,11 @@ int TargetModSkill::getExtraTargetNum(const Player *, const Card *) const
 }
 
 AttackRangeSkill::AttackRangeSkill(const QString &name)
-    : Skill(name, Skill::Compulsory, "static")
+    : Skill(name)
 {
     view_as_skill = new ShowDistanceSkill(objectName()); //alternative method: add ShowDistanceSkill to specific AttackRangeSkills.
+    frequency = Compulsory;
+    show_type = ShowStatic;
 }
 
 const ViewAsSkill *AttackRangeSkill::getViewAsSkill() const
@@ -606,9 +610,10 @@ TreasureSkill::TreasureSkill(const QString &name)
 }
 
 ViewHasSkill::ViewHasSkill(const QString &name)
-    : Skill(name, Skill::Compulsory)
+    : Skill(name)
     , global(false)
 {
+    frequency = Compulsory;
 }
 
 BattleArraySkill::BattleArraySkill(const QString &name, const QString type) //
