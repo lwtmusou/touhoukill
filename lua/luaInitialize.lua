@@ -156,6 +156,7 @@ local loadExtension = function(name, isBuiltin)
                     table.insert(sgs.Skills, s)
                 end
             end
+            table.insert(sgs.Packages, extension)
             return true
         end
     end
