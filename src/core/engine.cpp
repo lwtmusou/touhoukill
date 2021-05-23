@@ -84,7 +84,7 @@ Engine::Engine()
     modes["hegemony_09"] = tr("hegemony 9 players");
     modes["hegemony_10"] = tr("hegemony 10 players");
 
-    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
+    connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 
     foreach (const Skill *skill, skills.values()) {
         Skill *mutable_skill = const_cast<Skill *>(skill);
@@ -228,7 +228,7 @@ void Engine::addBanPackage(const QString &package_name)
 
 QStringList Engine::getBanPackages() const
 {
-    if (qApp->arguments().contains("-server"))
+    if (QCoreApplication::instance()->arguments().contains("-server"))
         return Config.BanPackages;
     else {
         if (isHegemonyGameMode(ServerInfo.GameMode)) {

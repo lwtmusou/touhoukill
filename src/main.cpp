@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 
 #ifndef Q_OS_ANDROID
 #ifdef QT_NO_DEBUG
-    QDir::setCurrent(qApp->applicationDirPath());
+    QDir::setCurrent(QCoreApplication::instance()->applicationDirPath());
 #endif
 #else
     QDir::setCurrent("/sdcard/Android/data/rocks.touhousatsu.app");
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 
 #if defined(Q_OS_LINUX)
 #ifndef Q_OS_ANDROID
-    QDir::setCurrent(qApp->applicationFilePath().replace("games", "share"));
+    QDir::setCurrent(QCoreApplication::instance()->applicationFilePath().replace("games", "share"));
 #else
     // extract data from assets
 #endif
@@ -44,14 +44,14 @@ int main(int argc, char *argv[])
     qt_translator.load("qt_zh_CN.qm");
     translator.load("sanguosha.qm");
 
-    qApp->installTranslator(&qt_translator);
-    qApp->installTranslator(&translator);
+    QCoreApplication::instance()->installTranslator(&qt_translator);
+    QCoreApplication::instance()->installTranslator(&translator);
 
     Sanguosha = new Engine;
     Config.init();
 
-    if (qApp->arguments().contains("-server")) {
-        Server *server = new Server(qApp);
+    if (QCoreApplication::instance()->arguments().contains("-server")) {
+        Server *server = new Server(QCoreApplication::instance());
         printf("Server is starting on port %u\n", Config.ServerPort);
 
         if (server->listen())
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
         else
             printf("Starting failed!\n");
 
-        return qApp->exec();
+        return QCoreApplication::instance()->exec();
     }
 
     QFile file("sanguosha.qss");
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     Sanguosha->setParent(main_window);
     main_window->show();
 
-    foreach (QString arg, qApp->arguments()) {
+    foreach (QString arg, QCoreApplication::instance()->arguments()) {
         if (arg.startsWith("-connect:")) {
             arg.remove("-connect:");
             Config.HostAddress = arg;
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    int execResult = qApp->exec();
-    delete qApp;
+    int execResult = QCoreApplication::instance()->exec();
+    delete QCoreApplication::instance();
     return execResult;
 }

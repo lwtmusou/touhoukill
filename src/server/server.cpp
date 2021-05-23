@@ -967,7 +967,7 @@ Server::Server(QObject *parent)
     createNewRoom();
 
     connect(server, SIGNAL(new_connection(ClientSocket *)), this, SLOT(processNewConnection(ClientSocket *)));
-    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
+    connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 }
 
 void Server::broadcast(const QString &msg)

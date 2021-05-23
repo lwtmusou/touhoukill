@@ -294,7 +294,7 @@ void init()
     if (Q_LIKELY(audioThread == nullptr)) {
         audioThread = new QThread;
         internal = new AudioInternal;
-        QObject::connect(qApp, &QCoreApplication::aboutToQuit, []() -> void { Audio::quit(); });
+        QObject::connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, []() -> void { Audio::quit(); });
         QObject::connect(audioThread, &QThread::finished, []() {
             internal->deleteLater();
             internal = nullptr;
