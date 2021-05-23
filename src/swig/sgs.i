@@ -30,7 +30,7 @@ private:
         if (!fileName.startsWith("qrc:"))
             return QByteArray();
 
-        fileName.chop(3);
+        fileName = fileName.mid(3);
         QFile f(fileName);
         if (!f.exists())
             return QByteArray();
