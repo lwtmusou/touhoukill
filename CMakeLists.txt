@@ -471,3 +471,4 @@ else()
 endif()
 
 target_compile_definitions(QSanguosha PUBLIC -DOV_EXCLUDE_STATIC_CALLBACKS)
+target_precompile_headers(QSanguosha PUBLIC src/pch.h)
