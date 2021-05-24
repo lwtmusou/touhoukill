@@ -39,11 +39,6 @@ QVariant LogMessage::toJsonValue() const
     return json_log;
 }
 
-QString EventTriplet::toString() const
-{
-    return QString("event[%1], room[%2]\n").arg(_m_event).arg(_m_room->getId());
-}
-
 RoomThread::RoomThread(Room *room)
     : room(room)
     , game_rule(nullptr)
@@ -464,11 +459,6 @@ void RoomThread::run()
     }
 }
 
-const QList<EventTriplet> *RoomThread::getEventStack() const
-{
-    return &event_stack;
-}
-
 bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room)
 {
     QVariant data;
@@ -685,9 +675,6 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
 // player is deleted. a lot of things is able to put in data. make a struct for every triggerevent isn't absolutely unreasonable.
 bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data)
 {
-    EventTriplet triplet(triggerEvent, room);
-    event_stack.push_back(triplet);
-
     // find all the skills, do the record first. it do the things only for record. it should not and must not interfere the procedure of other skills.
     QList<const TriggerSkill *> skillList = skill_table[triggerEvent];
     foreach (const TriggerSkill *skill, skillList)
@@ -696,99 +683,92 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data)
     QList<QSharedPointer<SkillInvokeDetail> > details;
     QList<QSharedPointer<SkillInvokeDetail> > triggered;
     bool interrupt = false;
-    try {
-        forever {
-            getSkillAndSort(triggerEvent, room, details, triggered, data);
+    forever {
+        getSkillAndSort(triggerEvent, room, details, triggered, data);
 
-            QList<QSharedPointer<SkillInvokeDetail> > sameTiming;
-            // search for the first skills which can trigger
-            foreach (const QSharedPointer<SkillInvokeDetail> &ptr, details) {
-                if (ptr->triggered)
-                    continue;
-                if (sameTiming.isEmpty())
-                    sameTiming << ptr;
-                else if (ptr->sameTimingWith(*sameTiming.first())) {
-                    if (!ptr->isCompulsory)
-                        sameTiming << ptr;
-                    else {
-                        // For Compulsory Skill at the same timing, just add the first one into sameTiming. etc. like QinggangSword
-                        bool sameTimingCompulsory = false;
-                        foreach (const QSharedPointer<SkillInvokeDetail> &detail, sameTiming) {
-                            if (detail->skill == ptr->skill) {
-                                sameTimingCompulsory = true;
-                                break;
-                            }
-                        }
-                        if (!sameTimingCompulsory)
-                            sameTiming << ptr;
-                    }
-                }
-            }
-
-            // if not found, it means that all the skills is triggered done, we can exit the loop now.
+        QList<QSharedPointer<SkillInvokeDetail> > sameTiming;
+        // search for the first skills which can trigger
+        foreach (const QSharedPointer<SkillInvokeDetail> &ptr, details) {
+            if (ptr->triggered)
+                continue;
             if (sameTiming.isEmpty())
-                break;
-
-            QSharedPointer<SkillInvokeDetail> invoke = sameTiming.first();
-            // treat the invoker is NULL, if the triggered skill is some kind of gamerule
-            // if the priority is bigger than 5 or smaller than -5, that means it could be some kind of record skill,
-            //    notify-client skill or fakemove skill, then no need to select the trigger order at this time
-            if (sameTiming.length() >= 2 && invoke->invoker != nullptr && (invoke->skill->getPriority() >= -5 && invoke->skill->getPriority() <= 5)) {
-                // select the triggerorder of same timing
-                // if there is a compulsory skill or compulsory effect, it shouldn't be able to cancel
-                bool has_compulsory = false;
-                foreach (const QSharedPointer<SkillInvokeDetail> &detail, sameTiming) {
-                    if (detail->isCompulsory) {
-                        if (invoke->owner == nullptr) {
-                            has_compulsory = true;
-                            break;
-                        } else if (invoke->owner && invoke->owner->hasShownSkill(detail->skill->objectName())) {
-                            has_compulsory = true;
+                sameTiming << ptr;
+            else if (ptr->sameTimingWith(*sameTiming.first())) {
+                if (!ptr->isCompulsory)
+                    sameTiming << ptr;
+                else {
+                    // For Compulsory Skill at the same timing, just add the first one into sameTiming. etc. like QinggangSword
+                    bool sameTimingCompulsory = false;
+                    foreach (const QSharedPointer<SkillInvokeDetail> &detail, sameTiming) {
+                        if (detail->skill == ptr->skill) {
+                            sameTimingCompulsory = true;
                             break;
                         }
                     }
-                }
-                // since the invoker of the sametiming list is the same, we can use sameTiming.first()->invoker to judge the invoker of this time
-                QSharedPointer<SkillInvokeDetail> detailSelected = room->askForTriggerOrder(sameTiming.first()->invoker, sameTiming, !has_compulsory, data);
-                if (detailSelected.isNull() || !detailSelected->isValid()) {
-                    // if cancel is pushed when it is cancelable, we set all the sametiming as triggered, and add all the skills to triggeredList, continue the next loop
-                    foreach (const QSharedPointer<SkillInvokeDetail> &ptr, sameTiming) {
-                        ptr->triggered = true;
-                        triggered << ptr;
-                    }
-                    continue;
-                } else
-                    invoke = detailSelected;
-            }
-
-            // if not cancelled, then we add the selected skill to triggeredList, and add the triggered times of the skill. then we process with the skill's cost and effect.
-            invoke->triggered = true;
-            triggered << invoke;
-
-            // if cost returned false, we don't process with the skill's left trigger times(use the trick of set it as triggered)
-            // if effect returned true, exit the whole loop.
-            if (invoke->skill->cost(triggerEvent, room, invoke, data)) {
-                //show hidden skill firstly
-                if (invoke->owner)
-                    invoke->owner->showHiddenSkill(invoke->skill->objectName());
-
-                // if we don't insert the target in the cost and there is a preferred target, we set the preferred target as the only target of the skill
-                if (invoke->preferredTarget != nullptr && invoke->targets.isEmpty())
-                    invoke->targets << invoke->preferredTarget;
-                // the show general of hegemony mode can be inserted here
-                if (invoke->skill->effect(triggerEvent, room, invoke, data)) {
-                    interrupt = true;
-                    break;
+                    if (!sameTimingCompulsory)
+                        sameTiming << ptr;
                 }
             }
         }
 
-        event_stack.pop_back();
+        // if not found, it means that all the skills is triggered done, we can exit the loop now.
+        if (sameTiming.isEmpty())
+            break;
 
-    } catch (TriggerEvent) {
-        event_stack.pop_back();
-        throw;
+        QSharedPointer<SkillInvokeDetail> invoke = sameTiming.first();
+        // treat the invoker is NULL, if the triggered skill is some kind of gamerule
+        // if the priority is bigger than 5 or smaller than -5, that means it could be some kind of record skill,
+        //    notify-client skill or fakemove skill, then no need to select the trigger order at this time
+        if (sameTiming.length() >= 2 && invoke->invoker != nullptr && (invoke->skill->getPriority() >= -5 && invoke->skill->getPriority() <= 5)) {
+            // select the triggerorder of same timing
+            // if there is a compulsory skill or compulsory effect, it shouldn't be able to cancel
+            bool has_compulsory = false;
+            foreach (const QSharedPointer<SkillInvokeDetail> &detail, sameTiming) {
+                if (detail->isCompulsory) {
+                    if (invoke->owner == nullptr) {
+                        has_compulsory = true;
+                        break;
+                    } else if (invoke->owner && invoke->owner->hasShownSkill(detail->skill->objectName())) {
+                        has_compulsory = true;
+                        break;
+                    }
+                }
+            }
+            // since the invoker of the sametiming list is the same, we can use sameTiming.first()->invoker to judge the invoker of this time
+            QSharedPointer<SkillInvokeDetail> detailSelected = room->askForTriggerOrder(sameTiming.first()->invoker, sameTiming, !has_compulsory, data);
+            if (detailSelected.isNull() || !detailSelected->isValid()) {
+                // if cancel is pushed when it is cancelable, we set all the sametiming as triggered, and add all the skills to triggeredList, continue the next loop
+                foreach (const QSharedPointer<SkillInvokeDetail> &ptr, sameTiming) {
+                    ptr->triggered = true;
+                    triggered << ptr;
+                }
+                continue;
+            } else
+                invoke = detailSelected;
+        }
+
+        // if not cancelled, then we add the selected skill to triggeredList, and add the triggered times of the skill. then we process with the skill's cost and effect.
+        invoke->triggered = true;
+        triggered << invoke;
+
+        // if cost returned false, we don't process with the skill's left trigger times(use the trick of set it as triggered)
+        // if effect returned true, exit the whole loop.
+        if (invoke->skill->cost(triggerEvent, room, invoke, data)) {
+            //show hidden skill firstly
+            if (invoke->owner)
+                invoke->owner->showHiddenSkill(invoke->skill->objectName());
+
+            // if we don't insert the target in the cost and there is a preferred target, we set the preferred target as the only target of the skill
+            if (invoke->preferredTarget != nullptr && invoke->targets.isEmpty())
+                invoke->targets << invoke->preferredTarget;
+            // the show general of hegemony mode can be inserted here
+            if (invoke->skill->effect(triggerEvent, room, invoke, data)) {
+                interrupt = true;
+                break;
+            }
+        }
     }
+
     return interrupt;
 }
 

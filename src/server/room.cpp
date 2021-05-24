@@ -185,15 +185,6 @@ void Room::output(const QString &message)
     emit room_message(message);
 }
 
-void Room::outputEventStack()
-{
-    QString msg = "End of Event Stack.";
-    foreach (EventTriplet triplet, *thread->getEventStack())
-        msg.prepend(triplet.toString());
-    msg.prepend("Event Stack:\n");
-    output(msg);
-}
-
 void Room::enterDying(ServerPlayer *player, DamageStruct *reason)
 {
     if (player->dyingThreshold() > player->getMaxHp()) {

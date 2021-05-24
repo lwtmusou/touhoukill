@@ -33,7 +33,6 @@ public:
     ~Room() override;
     RoomThread *getThread() const;
     void output(const QString &message);
-    void outputEventStack();
     void saveWinnerTable(const QString &winner, bool isSurrender = false);
     void countDescription();
 

@@ -23,21 +23,6 @@ struct LogMessage
     QString arg2;
 };
 
-class EventTriplet
-{
-public:
-    inline EventTriplet(TriggerEvent triggerEvent, Room *room)
-        : _m_event(triggerEvent)
-        , _m_room(room)
-    {
-    }
-    QString toString() const;
-
-private:
-    TriggerEvent _m_event;
-    Room *_m_room;
-};
-
 class RoomThread : public QThread
 {
     Q_OBJECT
@@ -62,7 +47,6 @@ public:
     ServerPlayer *findHulaoPassNext(ServerPlayer *uuz, QList<ServerPlayer *> league);
     void actionNormal(GameRule *game_rule);
 
-    const QList<EventTriplet> *getEventStack() const;
     inline GameRule *gameRule() const
     {
         return game_rule;
@@ -107,7 +91,6 @@ private:
     QList<const TriggerSkill *> skill_table[NumOfEvents];
     QSet<QString> skillSet;
 
-    QList<EventTriplet> event_stack;
     GameRule *game_rule;
 
     ServerPlayer *nextExtraTurn;
