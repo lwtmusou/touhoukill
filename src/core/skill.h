@@ -182,6 +182,11 @@ public:
     bool isGlobal() const;
     void setGlobal(bool global);
 
+    virtual Q_ALWAYS_INLINE bool isEquipSkill() const
+    {
+        return false;
+    }
+
     // Let the trigger type to set its priority!
     // Triggers whose priority is not in range {-5,5} are considered to be record with event process
 
@@ -251,6 +256,11 @@ class EquipSkill : public TriggerSkill
 
 public:
     EquipSkill(const QString &name);
+
+    Q_ALWAYS_INLINE bool isEquipSkill() const final override
+    {
+        return true;
+    }
 
     static bool equipAvailable(const ::Player *p, EquipCard::Location location, const QString &equip_name, const ::Player *to = nullptr);
     static bool equipAvailable(const ::Player *p, const Card *equip, const ::Player *to = nullptr);

@@ -2057,6 +2057,62 @@ QSharedPointer<SkillInvokeDetail> Room::askForTriggerOrder(ServerPlayer *player,
     return answer;
 }
 
+QSharedPointer<RefactorProposal::TriggerDetail> Room::askForTriggerOrder(ServerPlayer *player, const QList<QSharedPointer<RefactorProposal::TriggerDetail> > &sameTiming,
+                                                                         bool cancelable, const QVariant &)
+{
+    // TODO: remove this
+    using RefactorProposal::fixme_cast;
+    using RefactorProposal::Trigger;
+    using RefactorProposal::TriggerDetail;
+
+    tryPause();
+
+    Q_ASSERT(!sameTiming.isEmpty());
+
+    QSharedPointer<TriggerDetail> answer;
+
+    if (sameTiming.length() == 1)
+        answer = sameTiming.first();
+    else {
+        notifyMoveFocus(player, S_COMMAND_TRIGGER_ORDER);
+
+        QString reply;
+
+        JsonArray arr;
+        foreach (const QSharedPointer<TriggerDetail> &ptr, sameTiming)
+            arr << ptr->toVariant();
+        JsonArray arr2;
+        arr2 << QVariant(arr) << cancelable;
+
+        bool success = doRequest(player, S_COMMAND_TRIGGER_ORDER, arr2, true);
+        const QVariant &clientReply = player->getClientReply();
+        if (success && JsonUtils::isString(clientReply))
+            reply = clientReply.toString();
+
+        if (reply != "cancel") {
+            QStringList replyList = reply.split(":");
+            foreach (const QSharedPointer<TriggerDetail> &ptr, sameTiming) {
+                if (ptr->trigger()->name() == replyList.first() && (ptr->owner() == nullptr || ptr->owner()->objectName() == replyList.value(1))
+                    && ptr->invoker()->objectName() == replyList.value(2)) {
+                    answer = ptr;
+                    break;
+                }
+            }
+        }
+        if (answer.isNull() && !cancelable)
+            answer = sameTiming.value(QRandomGenerator::global()->generate() % sameTiming.length());
+    }
+
+    ChoiceMadeStruct s;
+    s.player = player;
+    s.type = ChoiceMadeStruct::TriggerOrder;
+    if (!answer.isNull())
+        s.args = answer->toList();
+    QVariant d = QVariant::fromValue(s);
+    thread->trigger(ChoiceMade, this, d);
+    return answer;
+}
+
 void Room::addPlayerHistory(ServerPlayer *player, const QString &key, int times)
 {
     if (player) {

@@ -942,10 +942,7 @@ bool RoomThread::triggerRefactorProposal(TriggerEvent e, QVariant &data)
             }
 
             // since the invoker of the sametiming list is the same, we can use sameTiming.first()->invoker to judge the invoker of this time
-            // TODO: following line should be:
-            // QWeakPointer<TriggerDetail> detailSelected = room->askForTriggerOrder(sameTiming.first().invoker(), sameTiming, !has_compulsory, data);
-            // Since the correspond askForTriggerOrder function is not ready, temporary put a todo here
-            QSharedPointer<TriggerDetail> detailSelected = sameTiming.first();
+            QSharedPointer<TriggerDetail> detailSelected = room->askForTriggerOrder(sameTiming.first()->invoker(), sameTiming, !has_compulsory, data);
 
             if (detailSelected.isNull() || !detailSelected->isValid()) {
                 // if cancel is pushed when it is cancelable, we set all the sametiming as triggered, and add all the skills to triggeredList, continue the next loop

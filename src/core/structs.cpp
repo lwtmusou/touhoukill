@@ -552,8 +552,10 @@ bool TriggerDetail::operator<(const TriggerDetail &arg2) const // the operator <
     else if (trigger()->priority() < arg2.trigger()->priority())
         return false;
 
-    return room()->getFront(invoker(), arg2.invoker()) == invoker();
-    // Let's just use different priority for EquipSkill!
+    if (invoker() != nullptr && arg2.invoker() != nullptr && invoker() != arg2.invoker())
+        return room()->getFront(invoker(), arg2.invoker()) == invoker();
+
+    return !trigger()->isEquipSkill() && arg2.trigger()->isEquipSkill();
 }
 
 bool TriggerDetail::sameTrigger(const TriggerDetail &arg2) const
@@ -568,7 +570,7 @@ bool TriggerDetail::sameTimingWith(const TriggerDetail &arg2) const
     if (!isValid() || !arg2.isValid())
         return false;
 
-    return trigger()->priority() == arg2.trigger()->priority() && invoker() == arg2.invoker();
+    return trigger()->priority() == arg2.trigger()->priority() && invoker() == arg2.invoker() && trigger()->isEquipSkill() == arg2.trigger()->isEquipSkill();
 }
 
 TriggerDetail::TriggerDetail(const Room *room, const Trigger *trigger /*= NULL*/, ServerPlayer *owner /*= NULL*/, ServerPlayer *invoker /*= NULL*/,
