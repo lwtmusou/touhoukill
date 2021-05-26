@@ -37,6 +37,11 @@ public:
     // player is deleted. a lot of things is able to put in data. make a struct for every triggerevent isn't absolutely unreasonable.
     bool trigger(TriggerEvent triggerEvent, Room *room, QVariant &data);
 
+    // refactor proposal: Temporarily use fixme_cast
+    void getTriggerAndSort(TriggerEvent e, QList<QSharedPointer<RefactorProposal::TriggerDetail> > &detailsList,
+                           const QList<QSharedPointer<RefactorProposal::TriggerDetail> > &triggered, const QVariant &data);
+    bool triggerRefactorProposal(TriggerEvent e, QVariant &data);
+
     void addPlayerSkills(ServerPlayer *player, bool invoke_game_start = false);
 
     void addTriggerSkill(const TriggerSkill *skill);
@@ -86,7 +91,6 @@ private:
     void _handleTurnBrokenNormal(GameRule *game_rule);
 
     Room *room;
-    QString order;
 
     QList<const TriggerSkill *> skill_table[NumOfEvents];
     QSet<QString> skillSet;

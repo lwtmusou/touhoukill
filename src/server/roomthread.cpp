@@ -4,6 +4,7 @@
 #include "protocol.h"
 #include "room.h"
 #include "settings.h"
+#include "util.h"
 
 #include <QTime>
 #include <functional>
@@ -769,6 +770,203 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data)
         }
     }
 
+    return interrupt;
+}
+
+void RoomThread::getTriggerAndSort(TriggerEvent e, QList<QSharedPointer<RefactorProposal::TriggerDetail> > &detailsList,
+                                   const QList<QSharedPointer<RefactorProposal::TriggerDetail> > &triggered, const QVariant &data)
+{
+    // TODO: remove this
+    using RefactorProposal::fixme_cast;
+    using RefactorProposal::Trigger;
+    using RefactorProposal::TriggerDetail;
+
+    // used to get all the skills which can be triggered now, and sort them.
+    // everytime this function is called, it will get all the skiils and judge the triggerable one by one
+    QList<const Trigger *> triggerList = fixme_cast<QList<const Trigger *> >(skill_table[e]);
+    QList<QSharedPointer<TriggerDetail> > details; // We create a new list everytime this function is called
+    foreach (const Trigger *skill, triggerList) {
+        // judge every skill
+        QList<TriggerDetail> triggerable = skill->triggerable(e, room, data);
+
+        // assuming triggerable[X].trigger() equals with each other
+        QMutableListIterator<TriggerDetail> it_triggerable(triggerable);
+        while (it_triggerable.hasNext()) {
+            const TriggerDetail &t = it_triggerable.next();
+            if (!t.isValid())
+                it_triggerable.remove(); // remove the invalid item from the list
+        }
+
+        if (triggerable.isEmpty()) // i.e. there is no valid item returned from the skill's triggerable
+            continue;
+
+        QHash<const Trigger *, QList<QSharedPointer<TriggerDetail> > > totalR; // we create a list for every skill
+
+        foreach (const TriggerDetail &t, triggerable) {
+            // we copy construct a new SkillInvokeDetail in the heap area (because the return value from triggerable is in the stack). use a shared pointer to point to it, and add it to the new list.
+            // because the shared pointer will destroy the item it point to when all the instances of the pointer is destroyed, so there is no memory leak.
+            QSharedPointer<TriggerDetail> ptr(new TriggerDetail(t));
+            totalR[t.trigger()].append(ptr);
+        }
+
+        foreach (const QList<QSharedPointer<TriggerDetail> > &_r, totalR) {
+            QList<QSharedPointer<TriggerDetail> > r = _r;
+            if (r.length() == 1) {
+                // if the skill has only one instance of the invokedetail, we copy the tag to the old instance(overwrite the old ones), and use the old instance, delete the new one
+                auto triggeredPlusDetails = detailsList + triggered;
+                foreach (const QSharedPointer<TriggerDetail> &detail, QSet<QSharedPointer<TriggerDetail> >(triggeredPlusDetails.begin(), triggeredPlusDetails.end())) {
+                    if (detail->sameTrigger(*r.first())) {
+                        foreach (const QString &key, r.first()->tag().keys())
+                            detail->tag()[key] = r.first()->tag().value(key);
+                        r.clear();
+                        r << detail;
+                        break;
+                    }
+                }
+            } else {
+                QList<QSharedPointer<TriggerDetail> > s;
+                // make a invoke list as s
+                auto triggeredPlusDetails = detailsList + triggered;
+                foreach (const QSharedPointer<TriggerDetail> &detail, QSet<QSharedPointer<TriggerDetail> >(triggeredPlusDetails.begin(), triggeredPlusDetails.end())) {
+                    if (detail->trigger() == r.first()->trigger()) {
+                        s << detail;
+                    }
+                }
+                std::stable_sort(s.begin(), s.end(),
+                                 [](const QSharedPointer<TriggerDetail> &a1, const QSharedPointer<TriggerDetail> &a2) { return a1->triggered() && !a2->triggered(); });
+                // because these are of one single skill, so we can pick the invoke list using a trick like this
+                s.append(r);
+                r = s.mid(0, r.length());
+
+                // TODO: copy tag?
+            }
+
+            details << r;
+        }
+    }
+
+    // do a stable sort to details use the operator < of SkillInvokeDetail in which judge the priority, the seat of invoker, and whether it is a skill of an equip.
+    std::stable_sort(details.begin(), details.end(), [](const QSharedPointer<TriggerDetail> &a1, const QSharedPointer<TriggerDetail> &a2) { return *a1 < *a2; });
+
+    // mark the skills which missed the trigger timing as it has triggered
+    QSharedPointer<TriggerDetail> over_trigger = (triggered.isEmpty() ? QSharedPointer<TriggerDetail>() : triggered.last());
+
+    QListIterator<QSharedPointer<TriggerDetail> > it(details);
+    it.toBack();
+    while (it.hasPrevious()) {
+        // search the last skill which triggered times isn't 0 from back to front. if found, save it to over_trigger.
+        // if over_trigger is valid, then mark the skills which missed the trigger timing as it has triggered.
+        const QSharedPointer<TriggerDetail> &detail = it.previous();
+        if (over_trigger.isNull() || !over_trigger->isValid()) {
+            if (detail->triggered())
+                over_trigger = detail;
+        } else if (*detail < *over_trigger)
+            detail->setTriggered(true);
+    }
+
+    detailsList = details;
+}
+
+bool RoomThread::triggerRefactorProposal(TriggerEvent e, QVariant &data)
+{
+    // TODO: remove this
+    using RefactorProposal::fixme_cast;
+    using RefactorProposal::Trigger;
+    using RefactorProposal::TriggerDetail;
+
+    // find all the skills, do the record first. it do the things only for record. it should not and must not interfere the procedure of other skills.
+    QList<const Trigger *> triggerList = fixme_cast<QList<const Trigger *> >(skill_table[e]);
+    foreach (const Trigger *trigger, triggerList)
+        trigger->record(e, room, data);
+
+    QList<QSharedPointer<TriggerDetail> > details;
+    QList<QSharedPointer<TriggerDetail> > triggered;
+    bool interrupt = false;
+    forever {
+        getTriggerAndSort(e, details, triggered, data);
+
+        QList<QSharedPointer<TriggerDetail> > sameTiming;
+        // search for the first skills which can trigger
+        foreach (QSharedPointer<TriggerDetail> ptr, details) {
+            if (ptr->triggered())
+                continue;
+            bool sameTimingCompulsory = false;
+            if (sameTiming.isEmpty())
+                sameTiming << ptr;
+            else if (ptr->sameTimingWith(*sameTiming.first())) {
+                if (!ptr->isCompulsory() && !ptr->effectOnly())
+                    sameTiming << ptr;
+                else {
+                    // For Compulsory Skill / Effect Only at the same timing, just add the first one into sameTiming. etc. like QinggangSword
+                    if (!sameTimingCompulsory) {
+                        foreach (QSharedPointer<TriggerDetail> detail, sameTiming) {
+                            if (detail->trigger() == ptr->trigger()) {
+                                sameTimingCompulsory = true;
+                                break;
+                            }
+                        }
+                        if (!sameTimingCompulsory)
+                            sameTiming << ptr;
+                    }
+                }
+            }
+        }
+
+        // if not found, it means that all the triggers is triggered, we can exit the loop now.
+        if (sameTiming.isEmpty())
+            break;
+
+        QSharedPointer<TriggerDetail> invoke = sameTiming.first();
+        // Treat the trigger is Rule if the invoker is nullptr
+        // if the priority is bigger than 5 or smaller than -5, that means it could be some kind of record skill,
+        //    notify-client skill or fakemove skill, then no need to select the trigger order at this time
+        if (sameTiming.length() >= 2 && invoke->invoker() != nullptr && (invoke->trigger()->priority() >= -5 && invoke->trigger()->priority() <= 5)) {
+            // select the triggerorder of same timing
+            // if there is a compulsory skill or compulsory effect, it shouldn't be able to cancel
+            bool has_compulsory = false;
+            foreach (QSharedPointer<TriggerDetail> detail, sameTiming) {
+                if (detail->effectOnly()) {
+                    has_compulsory = true;
+                    break;
+                }
+
+                if (detail->isCompulsory()) {
+                    if (detail->owner() == nullptr) {
+                        has_compulsory = true;
+                        break;
+                    } else if (detail->owner()->hasShownSkill(detail->trigger()->name())) {
+                        has_compulsory = true;
+                        break;
+                    }
+                }
+            }
+
+            // since the invoker of the sametiming list is the same, we can use sameTiming.first()->invoker to judge the invoker of this time
+            // TODO: following line should be:
+            // QWeakPointer<TriggerDetail> detailSelected = room->askForTriggerOrder(sameTiming.first().invoker(), sameTiming, !has_compulsory, data);
+            // Since the correspond askForTriggerOrder function is not ready, temporary put a todo here
+            QSharedPointer<TriggerDetail> detailSelected = sameTiming.first();
+
+            if (detailSelected.isNull() || !detailSelected->isValid()) {
+                // if cancel is pushed when it is cancelable, we set all the sametiming as triggered, and add all the skills to triggeredList, continue the next loop
+                for (QSharedPointer<TriggerDetail> ptr : sameTiming) {
+                    ptr->setTriggered(true);
+                    triggered << ptr;
+                }
+                continue;
+            } else
+                invoke = detailSelected;
+        }
+
+        // if not cancelled, then we add the selected skill to triggeredList, and add the triggered times of the skill. then we process with the skill's cost and effect.
+        invoke->setTriggered(true);
+        triggered << invoke;
+
+        if (invoke->trigger()->trigger(e, room, *invoke, data)) {
+            interrupt = true;
+            break;
+        }
+    }
     return interrupt;
 }
 

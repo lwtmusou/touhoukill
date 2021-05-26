@@ -201,7 +201,7 @@ public:
 
     // Should not trigger other events and affect other things in principle
     virtual void record(TriggerEvent event, ::Room *room, QVariant &data) const;
-    virtual QList<TriggerDetail> triggerable(TriggerEvent event, const ::Room *room, QVariant &data) const = 0;
+    virtual QList<TriggerDetail> triggerable(TriggerEvent event, const ::Room *room, const QVariant &data) const = 0;
 
     // TODO: make TriggerDetail implicitly shared
     virtual bool trigger(TriggerEvent event, ::Room *room, TriggerDetail detail, QVariant &data) const;
@@ -219,7 +219,7 @@ public:
 
     // fixed 0
     int priority() const final override;
-    QList<TriggerDetail> triggerable(TriggerEvent, const ::Room *room, QVariant &) const final override;
+    QList<TriggerDetail> triggerable(TriggerEvent, const ::Room *room, const QVariant &) const final override;
 };
 
 class TriggerSkill : public Skill, public Trigger
@@ -269,7 +269,7 @@ public:
 
     // Since it may use only Record, override this function here
     // Optional override in subclass
-    QList<TriggerDetail> triggerable(TriggerEvent event, const ::Room *room, QVariant &data) const override;
+    QList<TriggerDetail> triggerable(TriggerEvent event, const ::Room *room, const QVariant &data) const override;
 };
 
 // a nasty way for 'fake moves', usually used in the process of multi-card chosen
@@ -280,7 +280,7 @@ public:
     FakeMoveRecord(const QString &skillName);
     ~FakeMoveRecord() final override;
 
-    QList<TriggerDetail> triggerable(TriggerEvent event, const ::Room *room, QVariant &data) const final override;
+    QList<TriggerDetail> triggerable(TriggerEvent event, const ::Room *room, const QVariant &data) const final override;
     bool trigger(TriggerEvent event, ::Room *room, TriggerDetail detail, QVariant &data) const final override;
 
 private:

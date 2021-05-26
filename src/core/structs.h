@@ -546,10 +546,9 @@ class TriggerDetail
 public:
     // TODO: use RefactorProposal::GameLogic / RoomObject / Player instead of Room / ::ServerPlayer
     explicit TriggerDetail(const ::Room *room, const Trigger *trigger = nullptr, ::ServerPlayer *owner = nullptr, ::ServerPlayer *invoker = nullptr,
-                           const QList< ::ServerPlayer *> &targets = QList< ::ServerPlayer *>(), bool isCompulsory = false, ::ServerPlayer *preferredTarget = nullptr,
-                           bool showHidden = true);
+                           const QList< ::ServerPlayer *> &targets = QList< ::ServerPlayer *>(), bool isCompulsory = false, bool showHidden = true);
     TriggerDetail(const ::Room *room, const Trigger *trigger, ::ServerPlayer *owner, ::ServerPlayer *invoker, ::ServerPlayer *target, bool isCompulsory = false,
-                  ::ServerPlayer *preferredTarget = nullptr, bool showHidden = true);
+                  bool showHidden = true);
 
     TriggerDetail(const TriggerDetail &other);
     TriggerDetail &operator=(const TriggerDetail &other);
@@ -561,7 +560,6 @@ public:
     QList< ::ServerPlayer *> targets() const;
     bool isCompulsory() const;
     bool triggered() const;
-    ::ServerPlayer *preferredTarget() const;
     bool showhidden() const;
     bool effectOnly() const;
     const QVariantMap &tag() const;
@@ -573,11 +571,9 @@ public:
     bool operator<(const TriggerDetail &arg2) const; // the operator < for sorting the invoke order.
     // the operator ==. it only judge the skill name, the skill invoker, and the skill owner. it don't judge the skill target because it is chosen by the skill invoker
     bool sameTrigger(const TriggerDetail &arg2) const;
-    bool sameSkill(const TriggerDetail &arg2) const;
     // used to judge 2 skills has the same timing. only 2 structs with the same priority and the same invoker and the same "whether or not it is a skill of equip"
     bool sameTimingWith(const TriggerDetail &arg2) const;
     bool isValid() const; // validity check
-    bool preferredTargetLess(const TriggerDetail &arg2) const;
 
     QVariant toVariant() const;
     QStringList toList() const;

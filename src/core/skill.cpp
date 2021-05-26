@@ -708,7 +708,7 @@ int Rule::priority() const
     return 0;
 }
 
-QList<TriggerDetail> Rule::triggerable(TriggerEvent, const Room *room, QVariant &) const
+QList<TriggerDetail> Rule::triggerable(TriggerEvent, const Room *room, const QVariant &) const
 {
     TriggerDetail d(room, this);
     return QList<TriggerDetail>() << d;
@@ -734,9 +734,6 @@ bool TriggerSkill::trigger(TriggerEvent event, Room *room, TriggerDetail detail,
 
         if (detail.owner()->hasSkill(this) && !detail.owner()->hasShownSkill(this))
             detail.owner()->showHiddenSkill(name());
-
-        if (detail.preferredTarget() != nullptr && detail.targets().isEmpty())
-            detail.addTarget(detail.preferredTarget());
     }
 
     return effect(event, room, detail, data);
@@ -823,7 +820,7 @@ int GlobalRecord::priority() const
     return 10;
 }
 
-QList<TriggerDetail> GlobalRecord::triggerable(TriggerEvent, const Room *, QVariant &) const
+QList<TriggerDetail> GlobalRecord::triggerable(TriggerEvent, const Room *, const QVariant &) const
 {
     return QList<TriggerDetail>();
 }
@@ -847,7 +844,7 @@ FakeMoveRecord::~FakeMoveRecord()
     delete d;
 }
 
-QList<TriggerDetail> FakeMoveRecord::triggerable(TriggerEvent, const Room *room, QVariant &) const
+QList<TriggerDetail> FakeMoveRecord::triggerable(TriggerEvent, const Room *room, const QVariant &) const
 {
     ServerPlayer *owner = nullptr;
     foreach (ServerPlayer *p, room->getAllPlayers()) {
