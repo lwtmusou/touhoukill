@@ -162,8 +162,6 @@ public:
     virtual const Card *viewAs(const Card *originalCard, const Player *Self) const = 0;
 };
 
-namespace RefactorProposal {
-
 typedef QSet<TriggerEvent> TriggerEvents;
 
 class TriggerPrivate;
@@ -295,34 +293,6 @@ public:
 
 private:
     FakeMoveRecordPrivate *d;
-};
-}
-
-class TriggerSkill : public Skill
-{
-    Q_OBJECT
-
-public:
-    explicit TriggerSkill(const QString &name, Frequency frequency = NotFrequent);
-    const ViewAsSkill *getViewAsSkill() const;
-    QList<TriggerEvent> getTriggerEvents() const;
-
-    virtual int getPriority() const;
-    virtual void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const;
-
-    virtual QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const;
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const;
-
-    inline bool isGlobal() const
-    {
-        return global;
-    }
-
-protected:
-    const ViewAsSkill *view_as_skill;
-    QList<TriggerEvent> events;
-    bool global;
 };
 
 class ProhibitSkill : public Skill

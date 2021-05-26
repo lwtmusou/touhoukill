@@ -546,13 +546,6 @@ bool ServerPlayer::hasNullification() const
                 const ViewAsSkill *vsskill = qobject_cast<const ViewAsSkill *>(skill);
                 if (vsskill->isEnabledAtNullification(this))
                     return true;
-            } else if (skill->inherits("TriggerSkill")) {
-                const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
-                if (trigger_skill && trigger_skill->getViewAsSkill()) {
-                    const ViewAsSkill *vsskill = qobject_cast<const ViewAsSkill *>(trigger_skill->getViewAsSkill());
-                    if (vsskill && vsskill->isEnabledAtNullification(this))
-                        return true;
-                }
             }
         }
     }
@@ -655,7 +648,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     PindianStruct *pindian_star = &pindian_struct;
     QVariant data = QVariant::fromValue(pindian_star);
     Q_ASSERT(thread != nullptr);
-    thread->trigger(PindianVerifying, room, data);
+    thread->trigger(PindianVerifying, data);
 
     PindianStruct *new_star = data.value<PindianStruct *>();
     pindian_struct.from_number = new_star->from_number;
@@ -681,7 +674,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
 
     pindian_star = &pindian_struct;
     data = QVariant::fromValue(pindian_star);
-    thread->trigger(Pindian, room, data);
+    thread->trigger(Pindian, data);
 
     if (room->getCardPlace(pindian_struct.from_card->effectiveID()) == Player::PlaceTable) {
         CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, pindian_struct.from->objectName(), pindian_struct.to->objectName(), pindian_struct.reason, QString());
@@ -698,7 +691,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     s.type = ChoiceMadeStruct::Pindian;
     s.args << reason << objectName() << QString::number(pindian_struct.from_card->effectiveID()) << target->objectName() << QString::number(pindian_struct.to_card->effectiveID());
     QVariant decisionData = QVariant::fromValue(s);
-    thread->trigger(ChoiceMade, room, decisionData);
+    thread->trigger(ChoiceMade, decisionData);
 
     return pindian_struct.success;
 }
@@ -716,7 +709,7 @@ void ServerPlayer::turnOver()
 
     Q_ASSERT(room->getThread() != nullptr);
     QVariant v = QVariant::fromValue(this);
-    room->getThread()->trigger(TurnedOver, room, v);
+    room->getThread()->trigger(TurnedOver, v);
 }
 
 bool ServerPlayer::changePhase(Player::Phase from, Player::Phase to)
@@ -732,7 +725,7 @@ bool ServerPlayer::changePhase(Player::Phase from, Player::Phase to)
     phase_change.to = to;
     QVariant data = QVariant::fromValue(phase_change);
 
-    bool skip = thread->trigger(EventPhaseChanging, room, data);
+    bool skip = thread->trigger(EventPhaseChanging, data);
     if (skip && to != NotActive) {
         setPhase(from);
         return true;
@@ -746,12 +739,12 @@ bool ServerPlayer::changePhase(Player::Phase from, Player::Phase to)
 
     QVariant thisVariant = QVariant::fromValue(this);
 
-    if (!thread->trigger(EventPhaseStart, room, thisVariant)) {
+    if (!thread->trigger(EventPhaseStart, thisVariant)) {
         if (getPhase() != NotActive)
-            thread->trigger(EventPhaseProceeding, room, thisVariant);
+            thread->trigger(EventPhaseProceeding, thisVariant);
     }
     if (getPhase() != NotActive)
-        thread->trigger(EventPhaseEnd, room, thisVariant);
+        thread->trigger(EventPhaseEnd, thisVariant);
 
     return false;
 }
@@ -789,7 +782,7 @@ void ServerPlayer::play(QList<Player::Phase> set_phases)
         setPhase(PhaseNone);
         QVariant data = QVariant::fromValue(phase_change);
 
-        bool skip = thread->trigger(EventPhaseChanging, room, data);
+        bool skip = thread->trigger(EventPhaseChanging, data);
         phase_change = data.value<PhaseChangeStruct>();
         _m_phases_state[i].phase = phases[i] = phase_change.to;
 
@@ -802,19 +795,19 @@ void ServerPlayer::play(QList<Player::Phase> set_phases)
             s.phase = phases[i];
             s.player = this;
             QVariant d = QVariant::fromValue(s);
-            bool cancel_skip = thread->trigger(EventPhaseSkipping, room, d);
+            bool cancel_skip = thread->trigger(EventPhaseSkipping, d);
             if (!cancel_skip)
                 continue;
         }
 
         QVariant thisVariant = QVariant::fromValue(this);
 
-        if (!thread->trigger(EventPhaseStart, room, thisVariant)) {
+        if (!thread->trigger(EventPhaseStart, thisVariant)) {
             if (getPhase() != NotActive)
-                thread->trigger(EventPhaseProceeding, room, thisVariant);
+                thread->trigger(EventPhaseProceeding, thisVariant);
         }
         if (getPhase() != NotActive)
-            thread->trigger(EventPhaseEnd, room, thisVariant);
+            thread->trigger(EventPhaseEnd, thisVariant);
         else
             break;
     }
@@ -918,7 +911,7 @@ void ServerPlayer::gainMark(const QString &mark, int n)
     change.player = this;
     QVariant n_data = QVariant::fromValue(change);
     if (mark.startsWith("@")) {
-        if (room->getThread()->trigger(PreMarkChange, room, n_data))
+        if (room->getThread()->trigger(PreMarkChange, n_data))
             return;
         n = n_data.value<MarkChangeStruct>().num;
     }
@@ -941,7 +934,7 @@ void ServerPlayer::gainMark(const QString &mark, int n)
     room->setPlayerMark(this, mark, value);
 
     if (mark.startsWith("@"))
-        room->getThread()->trigger(MarkChanged, room, n_data);
+        room->getThread()->trigger(MarkChanged, n_data);
 }
 
 void ServerPlayer::loseMark(const QString &mark, int n)
@@ -956,7 +949,7 @@ void ServerPlayer::loseMark(const QString &mark, int n)
     QVariant n_data = QVariant::fromValue(change);
 
     if (mark.startsWith("@")) {
-        if (room->getThread()->trigger(PreMarkChange, room, n_data))
+        if (room->getThread()->trigger(PreMarkChange, n_data))
             return;
         n = -(n_data.value<MarkChangeStruct>().num);
     }
@@ -984,7 +977,7 @@ void ServerPlayer::loseMark(const QString &mark, int n)
     room->setPlayerMark(this, mark, value);
 
     if (mark.startsWith("@"))
-        room->getThread()->trigger(MarkChanged, room, n_data);
+        room->getThread()->trigger(MarkChanged, n_data);
 }
 
 void ServerPlayer::loseAllMarks(const QString &mark_name)
@@ -1489,7 +1482,7 @@ void ServerPlayer::addToShownHandCards(const IDSet &card_ids)
     s.player = this;
     s.shown = true;
     QVariant v = QVariant::fromValue(s);
-    room->getThread()->trigger(ShownCardChanged, room, v);
+    room->getThread()->trigger(ShownCardChanged, v);
 
     room->filterCards(this, this->getCards("hs"), true);
 }
@@ -1525,7 +1518,7 @@ void ServerPlayer::removeShownHandCards(const IDSet &card_ids, bool sendLog, boo
     s.shown = false;
     s.moveFromHand = moveFromHand;
     QVariant v = QVariant::fromValue(s);
-    room->getThread()->trigger(ShownCardChanged, room, v);
+    room->getThread()->trigger(ShownCardChanged, v);
 }
 
 void ServerPlayer::addBrokenEquips(const IDSet &card_ids)
@@ -1555,7 +1548,7 @@ void ServerPlayer::addBrokenEquips(const IDSet &card_ids)
     b.ids = card_ids.values(); // FIXME: Replace with IDSet
     b.broken = true;
     QVariant bv = QVariant::fromValue(b);
-    room->getThread()->trigger(BrokenEquipChanged, room, bv);
+    room->getThread()->trigger(BrokenEquipChanged, bv);
 }
 
 void ServerPlayer::removeBrokenEquips(const IDSet &card_ids, bool sendLog, bool moveFromEquip)
@@ -1587,7 +1580,7 @@ void ServerPlayer::removeBrokenEquips(const IDSet &card_ids, bool sendLog, bool 
     b.broken = false;
     b.moveFromEquip = moveFromEquip;
     QVariant bv = QVariant::fromValue(b);
-    room->getThread()->trigger(BrokenEquipChanged, room, bv);
+    room->getThread()->trigger(BrokenEquipChanged, bv);
 }
 
 void ServerPlayer::addHiddenGenerals(const QStringList &generals)
@@ -2047,7 +2040,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         s.isHead = head_general;
         s.isShow = true;
         QVariant _head = QVariant::fromValue(s);
-        room->getThread()->trigger(GeneralShown, room, _head);
+        room->getThread()->trigger(GeneralShown, _head);
     }
 
     room->filterCards(this, getCards("hes"), true);
@@ -2140,7 +2133,7 @@ void ServerPlayer::hideGeneral(bool head_general)
     s.isHead = head_general;
     s.isShow = false;
     QVariant _head = QVariant::fromValue(s);
-    room->getThread()->trigger(GeneralHidden, room, _head);
+    room->getThread()->trigger(GeneralHidden, _head);
 
     room->filterCards(this, getCards("he"), true);
     setSkillsPreshowed(head_general ? "h" : "d");
@@ -2232,7 +2225,7 @@ void ServerPlayer::removeGeneral(bool head_general)
     s.isShow = false;
     QVariant _from = QVariant::fromValue(s);
 
-    room->getThread()->trigger(GeneralRemoved, room, _from);
+    room->getThread()->trigger(GeneralRemoved, _from);
 
     room->filterCards(this, getCards("hes"), true);
 }
@@ -2264,7 +2257,7 @@ void ServerPlayer::disconnectSkillsFromOthers(bool head_skill /* = true */)
         s.isAcquire = false;
         QVariant data = QVariant::fromValue(s);
         //for filter cards??
-        room->getThread()->trigger(EventLoseSkill, room, data);
+        room->getThread()->trigger(EventLoseSkill, data);
 
         JsonArray args;
         args << (int)QSanProtocol::S_GAME_EVENT_DETACH_SKILL;

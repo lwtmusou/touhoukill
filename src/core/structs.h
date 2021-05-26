@@ -505,38 +505,6 @@ struct CardAskedStruct
     Card::HandlingMethod method;
 };
 
-struct SkillInvokeDetail
-{
-    explicit SkillInvokeDetail(const TriggerSkill *skill = nullptr, ServerPlayer *owner = nullptr, ServerPlayer *invoker = nullptr,
-                               const QList<ServerPlayer *> &targets = QList<ServerPlayer *>(), bool isCompulsory = false, ServerPlayer *preferredTarget = nullptr,
-                               bool showHidden = true);
-    SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, bool isCompulsory = false,
-                      ServerPlayer *preferredTarget = nullptr, bool showHidden = true);
-
-    const TriggerSkill *skill; // the skill
-    ServerPlayer *owner; // skill owner. 2 structs with the same skill and skill owner are treated as of a same skill.
-    ServerPlayer *invoker; // skill invoker. When invoking skill, we sort firstly according to the priority, then the seat of invoker, at last weather it is a skill of an equip.
-    QList<ServerPlayer *> targets; // skill targets.
-    bool isCompulsory; // judge the skill is compulsory or not. It is set in the skill's triggerable
-    bool triggered; // judge whether the skill is triggered
-    ServerPlayer *preferredTarget; // the preferred target of a certain skill
-    bool showhidden;
-    QVariantMap tag; // used to add a tag to the struct. useful for skills like Tieqi and Liegong to save a QVariantList for assisting to assign targets
-
-    bool operator<(const SkillInvokeDetail &arg2) const; // the operator < for sorting the invoke order.
-    // the operator ==. it only judge the skill name, the skill invoker, and the skill owner. it don't judge the skill target because it is chosen by the skill invoker
-    bool sameSkill(const SkillInvokeDetail &arg2) const;
-    // used to judge 2 skills has the same timing. only 2 structs with the same priority and the same invoker and the same "whether or not it is a skill of equip"
-    bool sameTimingWith(const SkillInvokeDetail &arg2) const;
-    bool isValid() const; // validity check
-    bool preferredTargetLess(const SkillInvokeDetail &arg2) const;
-
-    QVariant toVariant() const;
-    QStringList toList() const;
-};
-
-namespace RefactorProposal {
-
 class Trigger;
 
 class TriggerDetailPrivate;
@@ -581,8 +549,6 @@ public:
 private:
     TriggerDetailPrivate *d;
 };
-
-}
 
 struct HpLostStruct
 {

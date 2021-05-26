@@ -219,7 +219,7 @@ void CardFace::onUse(Room *room, const CardUseStruct &use) const
     QVariant data = QVariant::fromValue(card_use);
     RoomThread *thread = room->getThread();
     Q_ASSERT(thread != nullptr);
-    thread->trigger(PreCardUsed, room, data);
+    thread->trigger(PreCardUsed, data);
     card_use = data.value<CardUseStruct>();
 
     if (type() != TypeSkill) {
@@ -244,8 +244,8 @@ void CardFace::onUse(Room *room, const CardUseStruct &use) const
         player->showHiddenSkill(card_use.card->showSkillName());
     }
 
-    thread->trigger(CardUsed, room, data);
-    thread->trigger(CardFinished, room, data);
+    thread->trigger(CardUsed, data);
+    thread->trigger(CardFinished, data);
 }
 
 void CardFace::use(Room *room, const CardUseStruct &use) const

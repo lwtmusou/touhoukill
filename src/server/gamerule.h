@@ -3,15 +3,11 @@
 
 #include "skill.h"
 
-class GameRule : public TriggerSkill
+class GameRule : public Rule
 {
-    Q_OBJECT
-
 public:
-    explicit GameRule(QObject *parent);
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override;
-    int getPriority() const override;
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override;
+    GameRule();
+    bool trigger(TriggerEvent triggerEvent, Room *room, TriggerDetail invoke, QVariant &data) const override;
 
 private:
     void onPhaseProceed(ServerPlayer *player) const;
@@ -19,15 +15,6 @@ private:
     void changeGeneral1v1(ServerPlayer *player) const;
     void changeGeneralXMode(ServerPlayer *player) const;
     QString getWinner(ServerPlayer *victim) const;
-};
-
-class HulaoPassMode : public GameRule
-{
-    Q_OBJECT
-
-public:
-    explicit HulaoPassMode(QObject *parent);
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override;
 };
 
 #endif

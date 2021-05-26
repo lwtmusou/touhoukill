@@ -1048,10 +1048,7 @@ const ViewAsSkill *Engine::getViewAsSkill(const QString &skill_name) const
 
     if (skill->inherits("ViewAsSkill"))
         return qobject_cast<const ViewAsSkill *>(skill);
-    else if (skill->inherits("TriggerSkill")) {
-        const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
-        return trigger_skill->getViewAsSkill();
-    } else if (skill->inherits("DistanceSkill")) { //for hegemony showskill
+    else if (skill->inherits("DistanceSkill")) { //for hegemony showskill
         const DistanceSkill *distance_skill = qobject_cast<const DistanceSkill *>(skill);
         return distance_skill->getViewAsSkill();
     } else if (skill->inherits("MaxCardsSkill")) { //for hegemony showskill

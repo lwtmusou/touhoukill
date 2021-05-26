@@ -150,11 +150,6 @@ QDialog *Skill::getDialog() const
 
 bool Skill::canPreshow() const
 {
-    if (inherits("TriggerSkill")) {
-        const TriggerSkill *triskill = qobject_cast<const TriggerSkill *>(this);
-        return triskill->getViewAsSkill() == nullptr;
-    }
-
     return false;
 }
 
@@ -216,13 +211,6 @@ const ViewAsSkill *ViewAsSkill::parseViewAsSkill(const Skill *skill)
     if (skill->inherits("ViewAsSkill")) {
         const ViewAsSkill *view_as_skill = qobject_cast<const ViewAsSkill *>(skill);
         return view_as_skill;
-    }
-    if (skill->inherits("TriggerSkill")) {
-        const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
-        Q_ASSERT(trigger_skill != nullptr);
-        const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
-        if (view_as_skill != nullptr)
-            return view_as_skill;
     }
     if (skill->inherits("DistanceSkill")) {
         const DistanceSkill *trigger_skill = qobject_cast<const DistanceSkill *>(skill);
@@ -310,70 +298,6 @@ const Card *OneCardViewAsSkill::viewAs(const QList<const Card *> &cards, const P
 FilterSkill::FilterSkill(const QString &name)
     : Skill(name, Compulsory, ShowStatic)
 {
-}
-
-TriggerSkill::TriggerSkill(const QString &name, Frequency frequency)
-    : Skill(name, frequency)
-    , view_as_skill(nullptr)
-    , global(false)
-{
-}
-
-const ViewAsSkill *TriggerSkill::getViewAsSkill() const
-{
-    return view_as_skill;
-}
-
-QList<TriggerEvent> TriggerSkill::getTriggerEvents() const
-{
-    return events;
-}
-
-int TriggerSkill::getPriority() const
-{
-    return 2;
-}
-
-void TriggerSkill::record(TriggerEvent, Room *, QVariant &) const
-{
-}
-
-QList<SkillInvokeDetail> TriggerSkill::triggerable(TriggerEvent, const Room *, const QVariant &) const
-{
-    return QList<SkillInvokeDetail>();
-}
-
-bool TriggerSkill::cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-{
-    if (invoke->isCompulsory) { //for hegemony_mode or reimu_god
-        if (invoke->owner == nullptr || invoke->owner != invoke->invoker || getFrequency() == Eternal)
-            return true;
-        if (invoke->invoker != nullptr) {
-            if (!invoke->invoker->hasSkill(this))
-                return true;
-            if (invoke->invoker->hasShownSkill(this) || invoke->invoker->askForSkillInvoke(this, data))
-                return true;
-            else
-                return false;
-        }
-        return true;
-    } else {
-        if (invoke->invoker != nullptr) {
-            //for ai
-            invoke->invoker->tag[this->objectName()] = data;
-            QVariant notify_data = data;
-            if (invoke->preferredTarget != nullptr)
-                notify_data = QVariant::fromValue(invoke->preferredTarget);
-            return invoke->invoker->askForSkillInvoke(this, notify_data);
-        }
-    }
-
-    return false;
-}
-
-bool TriggerSkill::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &) const
-{
-    return false;
 }
 
 int MaxCardsSkill::getExtra(const Player *) const
@@ -616,8 +540,6 @@ bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const
     return false;
 }
 #endif
-
-namespace RefactorProposal {
 
 class TriggerPrivate
 {
@@ -866,6 +788,4 @@ QList<TriggerDetail> FakeMoveRecord::triggerable(TriggerEvent, const Room *room,
 bool FakeMoveRecord::trigger(TriggerEvent, Room *, TriggerDetail, QVariant &) const
 {
     return true;
-}
-
 }

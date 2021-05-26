@@ -384,10 +384,8 @@ public:
     QSGS_LOGIC QString askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice = QString());
     QSGS_LOGIC QString askForGeneral(ServerPlayer *player, const QString &generals, QString default_choice = QString());
     QSGS_LOGIC const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
-    QSGS_LOGIC QSharedPointer<SkillInvokeDetail> askForTriggerOrder(ServerPlayer *player, const QList<QSharedPointer<SkillInvokeDetail> > &sameTiming, bool cancelable,
-                                                                    const QVariant &data);
-    QSGS_LOGIC QSharedPointer<RefactorProposal::TriggerDetail> askForTriggerOrder(ServerPlayer *player, const QList<QSharedPointer<RefactorProposal::TriggerDetail> > &sameTiming,
-                                                                                  bool cancelable, const QVariant &data);
+    QSGS_LOGIC QSharedPointer<TriggerDetail> askForTriggerOrder(ServerPlayer *player, const QList<QSharedPointer<TriggerDetail> > &sameTiming, bool cancelable,
+                                                                const QVariant &data);
     QSGS_LOGIC void addPlayerHistory(ServerPlayer *player, const QString &key, int times = 1);
     QSGS_LOGIC void transformGeneral(ServerPlayer *player, QString general_name, int head);
 
