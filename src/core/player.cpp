@@ -1570,7 +1570,6 @@ QString Player::getSkillDescription(bool yellow, const QString &flag) const
             continue;
 
         QString skill_name = Sanguosha->translate(skill->objectName());
-        bool addHegemony = isHegemonyGameMode(ServerInfo.GameMode) && !skill->objectName().endsWith("_hegemony");
         QString desc = skill->getDescription();
         desc.replace("\n", "<br/>");
         description.append(QString("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(color).arg(skill_name).arg(desc));
