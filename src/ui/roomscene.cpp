@@ -623,7 +623,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         QString player_name = arg[1].toString();
         QString skill_name = arg[2].toString();
         const Skill *skill = Sanguosha->getSkill(skill_name);
-        if (skill && skill->isAttachedLordSkill())
+        if (skill && skill->isAttachedSkill())
             return;
 
         ClientPlayer *player = ClientInstance->getPlayer(player_name);
@@ -2611,7 +2611,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
 
         } else {
             const Skill *skill = button->getSkill();
-            if (skill->getFrequency() == Skill::Wake) {
+            if (skill->isLimited() && skill->isCompulsory()) {
                 button->setEnabled(Self->getMark(skill->objectName()) > 0);
             } else
                 button->setEnabled(false);
@@ -5005,7 +5005,7 @@ void RoomScene::highlightSkillButton(QString skill_name, bool highlight)
     foreach (QSanSkillButton *button, m_skillButtons) {
         QString button_name = button->getSkill()->objectName();
         if (button_name == skill_name || skill_name.startsWith(button_name)) {
-            if (button->getSkill()->getFrequency() != Skill::Wake) {
+            if (button->getSkill()->isCompulsory() && button->getSkill()->isLimited()) {
                 if (!button->isDown()) {
                     if (highlight)
                         button->setState(QSanButton::S_STATE_HOVER, true);

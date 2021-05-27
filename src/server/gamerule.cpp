@@ -124,7 +124,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, TriggerDetail, QVa
                 }
                 if (isHegemonyGameMode(room->getMode())) {
                     foreach (const Skill *skill, player->getVisibleSkillList()) {
-                        if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName()))) {
+                        if (skill->isLimited() && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName()))) {
                             JsonArray arg;
                             arg << player->objectName();
                             arg << skill->getLimitMark();
@@ -135,7 +135,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, TriggerDetail, QVa
                     }
                 } else {
                     foreach (const Skill *skill, player->getVisibleSkillList()) {
-                        if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
+                        if (skill->isLimited() && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
                             room->setPlayerMark(player, skill->getLimitMark(), 1);
                     }
                 }

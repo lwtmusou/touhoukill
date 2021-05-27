@@ -150,7 +150,7 @@ TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const SkillInv
 
 void TriggerOptionButton::construct()
 {
-    setToolTip(detail.skill->getDescription(true, isHegemonyGameMode(ServerInfo.GameMode)));
+    setToolTip(detail.skill->getDescription());
 
     setAcceptedMouseButtons(Qt::LeftButton);
     setAcceptHoverEvents(true);

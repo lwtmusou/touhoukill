@@ -14,23 +14,13 @@ class QDialog;
 #include <QObject>
 #include <QSet>
 
+class SkillPrivate;
+
 class Skill : public QObject
 {
     Q_OBJECT
 
 public:
-    enum Frequency
-    {
-        Frequent,
-        NotFrequent,
-        Compulsory,
-        NotCompulsory,
-        Limited,
-        Wake,
-        Eternal
-    };
-    Q_ENUM(Frequency)
-
     enum ArrayType
     {
         None,
@@ -47,51 +37,78 @@ public:
     };
     Q_ENUM(ShowType)
 
+    enum Category
+    {
+        SkillNoFlag = 0x0,
+
+        SkillLord = 0x1,
+
+        SkillCompulsory = 0x2,
+        SkillEternalBit = 0x4,
+        SkillEternal = SkillEternalBit | SkillCompulsory,
+
+        SkillLimited = 0x8,
+        SkillWake = SkillCompulsory | SkillLimited,
+
+        SkillHead = 0x10,
+        SkillDeputy = 0x20,
+        SkillRelateToPlaceMask = SkillHead | SkillDeputy,
+
+        SkillArrayFormation = 0x40,
+        SkillArraySiege = 0x80,
+        SkillArrayMask = SkillArrayFormation | SkillArraySiege,
+
+        SkillAttached = 0x100,
+        SkillHidden = 0x200,
+    };
+    Q_DECLARE_FLAGS(Categories, Category)
+
     // do not use even ANY symbols in skill name anymore!
-    // use multi-parameterized ones instead
-    explicit Skill(const QString &name, Frequency frequency = NotFrequent, ShowType showType = ShowTrigger, bool lordSkill = false, bool attachedLordSkill = false);
+    // use Flag-based ones
+    explicit Skill(const QString &name, const Categories &skillCategories = SkillNoFlag, ShowType showType = ShowTrigger);
+    ~Skill() override;
 
     // TODO: refactor propersal:
     // Battle Array Skill should not be a separate type
     // Currently BattleArraySkill runs SummonArray when turn starts.
-    // This seems able to be done in a global trigger with priority 3 to trigger a formation summon in start phase.
+    // This seems able to be done in a global trigger with priority 2 to trigger a formation summon in start phase.
     // Since a summon may also be done in the spare time during play phase, a common button for the summon is preferred.
     // The summon itself should be a function of GameLogic
-    void setupForBattleArray(ArrayType arrayType);
+    void setupForBattleArray();
 
     bool isLordSkill() const;
-    bool isAttachedLordSkill() const;
-    virtual bool shouldBeVisible(const Player *Self) const; // usually for attached skill
-    QString getDescription(bool yellow = true, bool addHegemony = false) const;
+    bool isAttachedSkill() const;
+    QString getDescription() const;
     QString getNotice(int index) const;
     bool isVisible() const;
+
+    bool isCompulsory() const;
+    bool isEternal() const;
+    bool isLimited() const;
+
+    virtual bool isFrequent() const;
 
     virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const;
     virtual QDialog *getDialog() const;
 
     void initMediaSource();
     void playAudioEffect(int index = -1) const;
-    Frequency getFrequency() const;
     QString getLimitMark() const;
     QString getRelatedMark() const;
     QString getRelatedPileName() const;
     QStringList getSources() const;
     ShowType getShowType() const; //nue_god
     virtual bool canPreshow() const; //hegemony
-    virtual bool relateToPlace(bool head = true) const;
+    bool relateToPlace(bool head = true) const;
 
 private:
-    Frequency frequency;
-    ShowType show_type;
-    bool lord_skill;
-    bool attached_lord_skill;
     QStringList sources;
+    SkillPrivate *d;
 
 protected:
     QString limit_mark;
     QString related_mark; //while changing hero, this will be removed
     QString related_pile;
-    QString relate_to_place;
 };
 
 class ViewAsSkill : public Skill
@@ -190,8 +207,8 @@ public:
 
     // Record with event process (Fake move, etc): 10
     // ----- Separator: 5 -----
-    // Regular skill: 3
-    // Equip skill: 2
+    // Regular skill: 2
+    // Equip skill: 2 (with isEquipSkill set to True)
     // Triggers which is meant to change rule: 1 (return true afterwards!)
     // Game Rule: 0
     // Scenario specific rule: -1
@@ -235,7 +252,7 @@ public:
     // Removed functions:
     // const ViewAsSkill *getViewAsSkill(...) const;
 
-    // 3 by default, optional override
+    // 2 by default, optional override
     int priority() const override;
 
     // force subclass override this function

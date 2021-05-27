@@ -8,49 +8,50 @@
 #include <QFile>
 #include <random>
 
-Skill::Skill(const QString &name, Frequency frequency, ShowType showType, bool lordSkill, bool attachedLordSkill)
-    : frequency(frequency)
-    , show_type(showType)
-    , lord_skill(lordSkill)
-    , attached_lord_skill(attachedLordSkill)
+class SkillPrivate final
+{
+public:
+    Skill::Categories categories;
+    Skill::ShowType showType;
+};
+
+Skill::Skill(const QString &name, const Categories &skillCategories, ShowType showType)
+    : d(new SkillPrivate {skillCategories, showType})
 {
     setObjectName(name);
 }
 
-void Skill::setupForBattleArray(ArrayType arrayType)
+Skill::~Skill()
+{
+    delete d;
+}
+
+void Skill::setupForBattleArray()
 {
     // TODO: implementation
     Q_UNIMPLEMENTED();
-    Q_UNUSED(arrayType);
 }
 
 bool Skill::isLordSkill() const
 {
-    return lord_skill;
+    return d->categories & SkillLord;
 }
 
-bool Skill::isAttachedLordSkill() const
+bool Skill::isAttachedSkill() const
 {
-    return attached_lord_skill;
+    return d->categories & SkillAttached;
 }
 
-bool Skill::shouldBeVisible(const Player *Self) const
-{
-    return Self != nullptr;
-}
-
-QString Skill::getDescription(bool yellow, bool addHegemony) const
+QString Skill::getDescription() const
 {
     bool normal_game = ServerInfo.DuringGame && isNormalGameMode(ServerInfo.GameMode);
     QString name = QString("%1%2").arg(objectName()).arg(normal_game ? "_p" : "");
-    QString des_src = Sanguosha->translate(":" + name, addHegemony);
+    QString des_src = Sanguosha->translate(":" + name);
     if (normal_game && des_src.startsWith(":"))
         des_src = Sanguosha->translate(":" + objectName());
     if (des_src.startsWith(":"))
         return QString();
-    QString desc = QString("<font color=%1>%2</font>").arg(yellow ? "#FFFF33" : "#FF0080").arg(des_src);
-    if (addHegemony && !canPreshow())
-        desc.prepend(QString("<font color=gray>(%1)</font><br/>").arg(tr("this skill cannot preshow")));
+    QString desc = QString("<font color=%1>%2</font>").arg("#FF0080").arg(des_src);
     return desc;
 }
 
@@ -64,7 +65,27 @@ QString Skill::getNotice(int index) const
 
 bool Skill::isVisible() const
 {
-    return !objectName().startsWith("#");
+    return !(d->categories & SkillHidden);
+}
+
+bool Skill::isCompulsory() const
+{
+    return d->categories & SkillCompulsory;
+}
+
+bool Skill::isEternal() const
+{
+    return d->categories & SkillEternal;
+}
+
+bool Skill::isLimited() const
+{
+    return d->categories & SkillLimited;
+}
+
+bool Skill::isFrequent() const
+{
+    return false;
 }
 
 int Skill::getEffectIndex(const ServerPlayer *, const Card *) const
@@ -113,14 +134,9 @@ void Skill::playAudioEffect(int index) const
     }
 }
 
-Skill::Frequency Skill::getFrequency() const
-{
-    return frequency;
-}
-
 Skill::ShowType Skill::getShowType() const
 {
-    return show_type;
+    return d->showType;
 }
 
 QString Skill::getLimitMark() const
@@ -156,14 +172,14 @@ bool Skill::canPreshow() const
 bool Skill::relateToPlace(bool head) const
 {
     if (head)
-        return relate_to_place == "head";
+        return d->categories & SkillHead;
     else
-        return relate_to_place == "deputy";
+        return d->categories & SkillDeputy;
     return false;
 }
 
 ViewAsSkill::ViewAsSkill(const QString &name)
-    : Skill(name, NotFrequent, ShowViewAs)
+    : Skill(name, SkillNoFlag, ShowViewAs)
 {
 }
 
@@ -296,7 +312,7 @@ const Card *OneCardViewAsSkill::viewAs(const QList<const Card *> &cards, const P
 }
 
 FilterSkill::FilterSkill(const QString &name)
-    : Skill(name, Compulsory, ShowStatic)
+    : Skill(name, SkillCompulsory, ShowStatic)
 {
 }
 
@@ -316,7 +332,7 @@ ProhibitSkill::ProhibitSkill(const QString &name)
 }
 
 DistanceSkill::DistanceSkill(const QString &name)
-    : Skill(name, Compulsory, ShowStatic)
+    : Skill(name, SkillCompulsory, ShowStatic)
 {
     view_as_skill = new ShowDistanceSkill(objectName());
 }
@@ -352,7 +368,7 @@ bool ShowDistanceSkill::isEnabledAtPlay(const Player *player) const
 }
 
 MaxCardsSkill::MaxCardsSkill(const QString &name)
-    : Skill(name, Compulsory, ShowStatic)
+    : Skill(name, SkillCompulsory, ShowStatic)
 {
     view_as_skill = new ShowDistanceSkill(objectName());
 }
@@ -363,7 +379,7 @@ const ViewAsSkill *MaxCardsSkill::getViewAsSkill() const
 }
 
 TargetModSkill::TargetModSkill(const QString &name)
-    : Skill(name, Compulsory)
+    : Skill(name, SkillCompulsory)
 {
     pattern = "Slash";
 }
@@ -389,7 +405,7 @@ int TargetModSkill::getExtraTargetNum(const Player *, const Card *) const
 }
 
 AttackRangeSkill::AttackRangeSkill(const QString &name)
-    : Skill(name, Compulsory, ShowStatic)
+    : Skill(name, SkillCompulsory, ShowStatic)
 {
     view_as_skill = new ShowDistanceSkill(objectName()); //alternative method: add ShowDistanceSkill to specific AttackRangeSkills.
 }
@@ -424,7 +440,7 @@ int SlashNoDistanceLimitSkill::getDistanceLimit(const Player *from, const Card *
 }
 
 ViewHasSkill::ViewHasSkill(const QString &name)
-    : Skill(name, Compulsory)
+    : Skill(name, SkillCompulsory)
     , global(false)
 {
 }
@@ -645,7 +661,7 @@ TriggerSkill::TriggerSkill(const QString &name)
 int TriggerSkill::priority() const
 {
     // for regular skill
-    return 3;
+    return 2;
 }
 
 bool TriggerSkill::trigger(TriggerEvent event, Room *room, TriggerDetail detail, QVariant &data) const
@@ -663,7 +679,7 @@ bool TriggerSkill::trigger(TriggerEvent event, Room *room, TriggerDetail detail,
 
 bool TriggerSkill::cost(TriggerEvent, Room *, TriggerDetail &detail, QVariant &) const
 {
-    if ((detail.owner() == nullptr) || (detail.owner() != detail.invoker()) || (getFrequency() == Eternal) || (detail.invoker() == nullptr))
+    if ((detail.owner() == nullptr) || (detail.owner() != detail.invoker()) || isEternal() || (detail.invoker() == nullptr))
         return true;
 
     // detail.owner == detail.invoker

@@ -175,7 +175,7 @@ QString General::getSkillDescription(bool include_name, bool yellow) const
 
     foreach (const Skill *skill, getVisibleSkillList()) {
         QString skill_name = Sanguosha->translate(skill->objectName());
-        QString desc = skill->getDescription(yellow, addHegemony);
+        QString desc = skill->getDescription();
         desc.replace("\n", "<br/>");
         description.append(QString("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(yellow ? "#FFFF33" : "#FF0080").arg(skill_name).arg(desc));
     }

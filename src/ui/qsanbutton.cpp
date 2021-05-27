@@ -267,15 +267,17 @@ void QSanSkillButton::onMouseClick()
 void QSanSkillButton::setSkill(const Skill *skill)
 {
     Q_ASSERT(skill != nullptr);
-    _m_skill = skill;
+    if (skill == nullptr)
+        skill = _m_skill;
+    else
+        _m_skill = skill;
     // This is a nasty trick because the server side decides to choose a nasty design
     // such that sometimes the actual viewas skill is nested inside a trigger skill.
     // Since the trigger skill is not relevant, we flatten it before we create the button.
     _m_viewAsSkill = ViewAsSkill::parseViewAsSkill(_m_skill);
-    if (skill == nullptr)
-        skill = _m_skill;
 
-    Skill::Frequency freq = skill->getFrequency();
+    // TODO: refactor this
+#if 0
     if (skill->inherits("BattleArraySkill")) {
         setStyle(QSanButton::S_STYLE_TOGGLE);
         setState(QSanButton::S_STATE_DISABLED);
@@ -292,7 +294,7 @@ void QSanSkillButton::setSkill(const Skill *skill)
         _m_canDisable = false;
     } else if (freq == Skill::Limited || freq == Skill::NotFrequent) {
         setState(QSanButton::S_STATE_DISABLED);
-        if (skill->isAttachedLordSkill())
+        if (skill->isAttachedSkill())
             _setSkillType(QSanInvokeSkillButton::S_SKILL_ATTACHEDLORD);
         else if (freq == Skill::Limited)
             _setSkillType(QSanInvokeSkillButton::S_SKILL_ONEOFF_SPELL);
@@ -326,7 +328,8 @@ void QSanSkillButton::setSkill(const Skill *skill)
         _m_canDisable = true;
     } else
         Q_ASSERT(false);
-    setToolTip(skill->getDescription(true, isHegemonyGameMode(ServerInfo.GameMode)));
+#endif
+    setToolTip(skill->getDescription());
 
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
         if (!Self->hasShownSkill(skill) && skill->canPreshow())
@@ -501,13 +504,9 @@ void QSanInvokeSkillDock::update()
         QList<QSanInvokeSkillButton *> regular_buttons, lordskill_buttons, all_buttons;
 
         foreach (QSanInvokeSkillButton *btn, _m_buttons) {
-            if (!btn->getSkill()->shouldBeVisible(Self)) {
-                btn->setVisible(false);
-                continue;
-            } else {
-                btn->setVisible(true);
-            }
-            if (btn->getSkill()->isAttachedLordSkill())
+            btn->setVisible(btn->getSkill()->isVisible());
+
+            if (btn->getSkill()->isAttachedSkill())
                 lordskill_buttons << btn;
             else
                 regular_buttons << btn;

@@ -915,7 +915,7 @@ void PlayerCardContainer::startHuaShen(QString generalName, QString skillName, Q
     _m_layout->m_extraSkillFont.paintText(_m_extraSkillText, _m_layout->m_extraSkillTextArea, Qt::AlignCenter, Sanguosha->translate(skill_name).left(2));
     if (!skill_name.isEmpty()) {
         _m_extraSkillText->show();
-        _m_extraSkillBg->setToolTip(Sanguosha->getSkill(skill_name)->getDescription(true, isHegemonyGameMode(ServerInfo.GameMode)));
+        _m_extraSkillBg->setToolTip(Sanguosha->getSkill(skill_name)->getDescription());
     }
     _adjustComponentZValues();
 }
