@@ -74,7 +74,7 @@ swig_add_library(sanguosha_wrap
     )
 
 # ONLY FOR THEIR INCLUDE DIRECTORIES! Compile fails if we don't add the link libraries.
-# Seems wierd since we don't even link the libraries here
+# Seems weird since we don't even link the libraries here
 target_link_libraries(sanguosha_wrap Qt5::Core)
 if (lua54_FOUND)
     target_link_libraries(sanguosha_wrap PkgConfig::lua54)
@@ -383,7 +383,6 @@ if (NOT oggvorbisfile_FOUND)
     endif()
     target_link_libraries (QSanguosha oggvorbisfile)
 else()
-    # target_compile_options(QSanguosha oggvorbisfile_CFLAGS)
     target_link_libraries (QSanguosha PkgConfig::oggvorbisfile)
 endif()
 
