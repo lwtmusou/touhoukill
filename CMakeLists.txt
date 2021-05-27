@@ -75,7 +75,7 @@ swig_add_library(sanguosha_wrap
 
 # ONLY FOR THEIR INCLUDE DIRECTORIES! Compile fails if we don't add the link libraries.
 # Seems wierd since we don't even link the libraries here
-target_link_libraries(sanguosha_wrap Qt5::Core)
+target_link_libraries(sanguosha_wrap Qt::Core)
 if (lua54_FOUND)
     target_link_libraries(sanguosha_wrap PkgConfig::lua54)
 endif()
@@ -198,7 +198,7 @@ set (QSanguosha_UIS
 
 set(TS_FILES builds/sanguosha.ts)
 set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION "ts")
-qt5_add_translation(QM_FILES ${TS_FILES})
+qt_add_translation(QM_FILES ${TS_FILES})
 
 set (QSanguosha_PKG_MOCS
     src/package/hegemonyCard.h
@@ -318,7 +318,7 @@ set_property(TARGET QSanguosha PROPERTY AUTOMOC ON)
 set_property(TARGET QSanguosha PROPERTY AUTOUIC ON)
 set_property(TARGET QSanguosha PROPERTY AUTORCC ON)
 
-target_link_libraries (QSanguosha sanguosha_wrap Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::Multimedia)
+target_link_libraries (QSanguosha sanguosha_wrap Qt::Core Qt::Gui Qt::Widgets Qt::Network Qt::Multimedia)
 target_compile_definitions(QSanguosha PUBLIC AUDIO_SUPPORT QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
 
 if (NOT oggvorbisfile_FOUND)
@@ -461,7 +461,7 @@ else()
 endif()
 
 if (WIN32)
-    target_link_libraries(QSanguosha Qt5::WinExtras)
+    target_link_libraries(QSanguosha Qt::WinExtras)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
     configure_file(resource/QSanguosha_resource.rc.in QSanguosha_resource.rc @ONLY)
 else()
