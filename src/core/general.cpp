@@ -171,7 +171,6 @@ QString General::getPackage() const
 QString General::getSkillDescription(bool include_name, bool yellow) const
 {
     QString description;
-    bool addHegemony = objectName().endsWith("_hegemony");
 
     foreach (const Skill *skill, getVisibleSkillList()) {
         QString skill_name = Sanguosha->translate(skill->objectName());
