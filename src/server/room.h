@@ -14,7 +14,6 @@
 class TriggerSkill;
 class ProhibitSkill;
 class TrickCard;
-class GeneralSelector;
 
 struct lua_State;
 struct LogMessage;
@@ -404,11 +403,6 @@ public:
     QSGS_LOGIC void updateCardsOnLose(const CardsMoveStruct &move);
     QSGS_LOGIC void updateCardsOnGet(const CardsMoveStruct &move);
 
-    /* AI Related */ GeneralSelector *generalSelector() const
-    {
-        return m_generalSelector;
-    }
-
     QSGS_LOGIC void cheat(ServerPlayer *player, const QVariant &args);
     QSGS_LOGIC bool makeSurrender(ServerPlayer *player);
 
@@ -568,8 +562,6 @@ private:
     mutable QMutex m_mutex;
 
     volatile bool playerPropertySet;
-
-    GeneralSelector *m_generalSelector;
 
     static QString generatePlayerName();
     void prepareForStart();

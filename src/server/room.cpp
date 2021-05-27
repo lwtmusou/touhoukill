@@ -2,7 +2,6 @@
 #include "audio.h"
 #include "engine.h"
 #include "gamerule.h"
-#include "generalselector.h"
 #include "server.h"
 #include "settings.h"
 #include "structs.h"
@@ -53,8 +52,6 @@ Room::Room(QObject *parent, const QString &mode)
     initCallbacks();
 
     connect(this, SIGNAL(signalSetProperty(ServerPlayer *, const char *, QVariant)), this, SLOT(slotSetProperty(ServerPlayer *, const char *, QVariant)), Qt::QueuedConnection);
-
-    m_generalSelector = new GeneralSelector(this);
 }
 
 Room::~Room()
@@ -3354,7 +3351,7 @@ void Room::adjustSeats()
 QString Room::_chooseDefaultGeneral(ServerPlayer *player) const
 {
     Q_ASSERT(!player->getSelected().isEmpty());
-    QString choice = m_generalSelector->selectFirst(player, player->getSelected());
+    QString choice = player->getSelected().first();
     return choice;
 }
 
@@ -3378,20 +3375,6 @@ QStringList Room::_chooseDefaultGenerals(ServerPlayer *player) const
     }
     int index = QRandomGenerator::global()->generate() % general_pairs.length();
     generals = general_pairs[index].split("+");
-    return generals;
-
-    if (isHegemonyGameMode(mode)) {
-        QString choice = m_generalSelector->selectPair(player, candidates);
-        generals = choice.split("+");
-
-    } else {
-        QString choice1 = m_generalSelector->selectFirst(player, candidates);
-        candidates.removeAll(choice1);
-        QString choice2 = m_generalSelector->selectSecond(player, candidates);
-        generals << choice1 << choice2;
-    }
-
-    Q_ASSERT(!generals.isEmpty());
     return generals;
 }
 

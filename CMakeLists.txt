@@ -144,7 +144,6 @@ set (QSanguosha_SRCS
     src/main.cpp
     src/package/exppattern.cpp
     src/server/gamerule.cpp
-    src/server/generalselector.cpp
     src/server/room.cpp
     src/server/roomthread.cpp
     src/server/server.cpp
@@ -264,7 +263,6 @@ set (QSanguosha_MOCS
     src/package/exppattern.h
     src/pch.h
     src/server/gamerule.h
-    src/server/generalselector.h
     src/server/room.h
     src/server/roomthread.h
     src/server/server.h
