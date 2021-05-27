@@ -3,18 +3,25 @@
 
 #ifndef __cplusplus
 
-#include <math.h>
-#include <time.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <qglobal.h>
+
+#include <lua.h>
 
 #else
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <ctime>
 #include <functional>
+#include <random>
 #include <sstream>
+#include <type_traits>
 
 #include <QtGlobal>
 
@@ -23,15 +30,18 @@
 
 #include <QAbstractAnimation>
 #include <QAbstractButton>
+#include <QAbstractListModel>
 #include <QAction>
 #include <QAnimationGroup>
 #include <QApplication>
 #include <QAtomicPointer>
+#include <QAudioOutput>
 #include <QBitmap>
 #include <QBoxLayout>
 #include <QBrush>
 #include <QBuffer>
 #include <QButtonGroup>
+#include <QByteArray>
 #include <QCache>
 #include <QCheckBox>
 #include <QClipboard>
@@ -44,6 +54,7 @@
 #include <QCryptographicHash>
 #include <QCursor>
 #include <QDateTime>
+#include <QDebug>
 #include <QDesktopServices>
 #include <QDialog>
 #include <QDialogButtonBox>
@@ -53,6 +64,7 @@
 #include <QElapsedTimer>
 #include <QFile>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QFocusEvent>
 #include <QFont>
 #include <QFontDatabase>
@@ -74,9 +86,11 @@
 #include <QGraphicsRotation>
 #include <QGraphicsScale>
 #include <QGraphicsScene>
+#include <QGraphicsSceneEvent>
 #include <QGraphicsSceneHoverEvent>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneWheelEvent>
+#include <QGraphicsSimpleTextItem>
 #include <QGraphicsTextItem>
 #include <QGraphicsView>
 #include <QGraphicsWidget>
@@ -84,6 +98,7 @@
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QHash>
+#include <QHeaderView>
 #include <QHostAddress>
 #include <QHostInfo>
 #include <QIcon>
@@ -97,6 +112,7 @@
 #include <QLayoutItem>
 #include <QLineEdit>
 #include <QList>
+#include <QListView>
 #include <QListWidget>
 #include <QMainWindow>
 #include <QMap>
@@ -109,6 +125,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkInterface>
 #include <QNetworkReply>
+#include <QNetworkRequest>
 #include <QObject>
 #include <QPaintEvent>
 #include <QPainter>
@@ -126,10 +143,14 @@
 #include <QPropertyAnimation>
 #include <QPushButton>
 #include <QRadioButton>
+#include <QRandomGenerator>
 #include <QRect>
 #include <QRectF>
 #include <QRegExp>
 #include <QRegion>
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
+#include <QRegularExpressionMatchIterator>
 #include <QScrollBar>
 #include <QSemaphore>
 #include <QSequentialAnimationGroup>
@@ -162,12 +183,15 @@
 #include <QTextOption>
 #include <QTextStream>
 #include <QThread>
+#include <QThreadStorage>
 #include <QTime>
 #include <QTimer>
 #include <QTimerEvent>
 #include <QToolButton>
 #include <QTransform>
+#include <QTranslator>
 #include <QUdpSocket>
+#include <QUrl>
 #include <QVBoxLayout>
 #include <QVariant>
 #include <QVariantList>
@@ -181,6 +205,9 @@
 #include <QWinTaskbarProgress>
 #endif
 
+#include <lua.hpp>
 #endif
+
+#include <vorbis/vorbisfile.h>
 
 #endif

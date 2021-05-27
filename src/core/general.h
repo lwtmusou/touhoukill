@@ -11,7 +11,7 @@ class QSize;
 #include <QSet>
 #include <QStringList>
 
-class General : public QObject
+class General final : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString kingdom READ getKingdom CONSTANT)

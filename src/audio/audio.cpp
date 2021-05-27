@@ -11,8 +11,9 @@
 #include <QFileInfo>
 #include <QThread>
 
+#include <vorbis/vorbisfile.h>
+
 #include "util.h"
-#include "vorbis/vorbisfile.h"
 
 static size_t read_from_qbuffer(void *ptr, size_t size, size_t nmemb, void *datasource)
 {

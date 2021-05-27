@@ -22,7 +22,7 @@
 class QVersionNumber;
 class LuaState;
 
-class Engine : public QObject
+class Engine final : public QObject
 {
     Q_OBJECT
 
