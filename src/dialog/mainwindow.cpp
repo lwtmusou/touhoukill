@@ -485,7 +485,7 @@ void MainWindow::on_actionAbout_triggered()
 #ifdef QT_NO_DEBUG
     config = QStringLiteral("release");
 #else
-    config = "debug";
+    config = QStringLiteral("debug");
 #endif
 
     content.append(tr("Current version: %1 %2 (%3)<br/>").arg(Sanguosha->getVersion()).arg(config).arg(Sanguosha->getVersionName()));
