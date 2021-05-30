@@ -67,7 +67,7 @@ void Settings::loadSettingsFromConfigIni()
 #ifdef Q_OS_WIN
             (QStringLiteral("config.ini"), QSettings::IniFormat)
 #else
-            ("QSanguosha.org", "QSanguosha")
+            (QStringLiteral("QSanguosha.org"), QStringLiteral("QSanguosha"))
 #endif
                 ;
         {
@@ -534,7 +534,7 @@ void Settings::loadSettingsFromConfigIni()
 #ifdef Q_OS_WIN32
             UserName = oldConfig.value(QStringLiteral("UserName"), QString::fromUtf8(qgetenv("USERNAME"))).toString();
 #else
-            UserName = oldConfig.value("USERNAME", qgetenv("USER")).toString();
+            UserName = oldConfig.value(QStringLiteral("USERNAME"), QString::fromUtf8(qgetenv("USER"))).toString();
 #endif
 
             if (UserName == QStringLiteral("Admin") || UserName == QStringLiteral("Administrator"))
@@ -647,9 +647,9 @@ void Settings::init()
     LimitRobot = value(QStringLiteral("LimitRobot"), false).toBool();
 
 #ifdef Q_OS_WIN32
-    UserName = value(QStringLiteral("UserName"), qgetenv("USERNAME")).toString();
+    UserName = value(QStringLiteral("UserName"), QString::fromUtf8(qgetenv("USERNAME"))).toString();
 #else
-    UserName = value("USERNAME", qgetenv("USER")).toString();
+    UserName = value(QStringLiteral("USERNAME"), QString::fromUtf8(qgetenv("USER"))).toString();
 #endif
 
     if (UserName == QStringLiteral("Admin") || UserName == QStringLiteral("Administrator"))

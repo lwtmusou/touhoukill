@@ -19,8 +19,8 @@ int main(int argc, char *argv[])
         QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath() + QStringLiteral("/plugins"));
 
 #ifndef Q_OS_WIN32
-        if (QStyleFactory::keys().contains("Fusion", Qt::CaseInsensitive))
-            qApp->setStyle(QStyleFactory::create("Fusion"));
+        if (QStyleFactory::keys().contains(QStringLiteral("Fusion"), Qt::CaseInsensitive))
+            qApp->setStyle(QStyleFactory::create(QStringLiteral("Fusion")));
 #endif
     }
 
@@ -29,12 +29,12 @@ int main(int argc, char *argv[])
     QDir::setCurrent(QCoreApplication::instance()->applicationDirPath());
 #endif
 #else
-    QDir::setCurrent("/sdcard/Android/data/rocks.touhousatsu.app");
+    QDir::setCurrent(QStringLiteral("/sdcard/Android/data/rocks.touhousatsu.app"));
 #endif
 
 #if defined(Q_OS_LINUX)
 #ifndef Q_OS_ANDROID
-    QDir::setCurrent(QCoreApplication::instance()->applicationFilePath().replace("games", "share"));
+    QDir::setCurrent(QCoreApplication::instance()->applicationFilePath().replace(QStringLiteral("games"), QStringLiteral("share")));
 #else
     // extract data from assets
 #endif

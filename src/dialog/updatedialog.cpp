@@ -291,11 +291,11 @@ void UpdateDialog::parsePackageInfo(UpdateDialog::UpdateItem item, const QJsonOb
 #if defined(Q_OS_WIN)
     QJsonValue value = ob.value(QStringLiteral("Win"));
 #elif defined(Q_OS_ANDROID)
-    QJsonValue value = ob.value("And");
+    QJsonValue value = ob.value(QStringLiteral("And"));
 #elif defined(Q_OS_MACOS)
-    QJsonValue value = ob.value("Mac");
+    QJsonValue value = ob.value(QStringLiteral("Mac"));
 #else
-    QJsonValue value = ob.value("Oth");
+    QJsonValue value = ob.value(QStringLiteral("Oth"));
 #endif
     if (value.isString()) {
         m_updateContents[item].updatePack = value.toString();
@@ -329,8 +329,8 @@ void UpdateDialog::startUpdate()
     } else {
 #endif
         QStringList arg;
-        arg << "-c" << ("\"./UpdateScript.sh " + QString::number(QCoreApplication::applicationPid()) + "\"");
-        QProcess::startDetached("sh", arg, QCoreApplication::applicationDirPath());
+        arg << QStringLiteral("-c") << (QStringLiteral("\"./UpdateScript.sh ") + QString::number(QCoreApplication::applicationPid()) + QStringLiteral("\""));
+        QProcess::startDetached(QStringLiteral("sh"), arg, QCoreApplication::applicationDirPath());
 #ifdef Q_OS_ANDROID
     }
 #endif
@@ -375,7 +375,7 @@ void UpdateDialog::startDownload()
     connect(packReply, &QNetworkReply::finished, this, &UpdateDialog::finishedPack);
 
 #ifdef Q_OS_ANDROID
-    if (m_updateScript != "jni") {
+    if (m_updateScript != QStringLiteral("jni")) {
 #endif
         QNetworkRequest reqScript;
         reqScript.setAttribute(QNetworkRequest::RedirectPolicyAttribute, static_cast<int>(QNetworkRequest::NoLessSafeRedirectPolicy));
@@ -407,7 +407,7 @@ void UpdateDialog::finishedScript()
 #if defined(Q_OS_WIN)
     QString suffix = QStringLiteral(".vbs");
 #else
-    QString suffix = ".sh";
+    QString suffix = QStringLiteral(".sh");
 #endif
     QByteArray arr = scriptReply->readAll();
     QFile file;
@@ -450,9 +450,9 @@ void UpdateDialog::finishedPack()
 #if defined(Q_OS_WIN)
     QString suffix = QStringLiteral(".7z");
 #elif defined(Q_OS_ANDROID)
-    QString suffix = ".apk";
+    QString suffix = QStringLiteral(".apk");
 #else
-    QString suffix = ".tar.xz";
+    QString suffix = QStringLiteral(".tar.xz");
 #endif
     QByteArray arr = packReply->readAll();
 

@@ -171,7 +171,7 @@ Client::Client(QObject *parent, const QString &filename)
     prompt_doc = new QTextDocument(this);
     prompt_doc->setTextWidth(350);
 #ifdef Q_OS_LINUX
-    prompt_doc->setDefaultFont(QFont("DroidSansFallback"));
+    prompt_doc->setDefaultFont(QFont(QStringLiteral("DroidSansFallback")));
 #else
     prompt_doc->setDefaultFont(QFont(QStringLiteral("SimHei")));
 #endif

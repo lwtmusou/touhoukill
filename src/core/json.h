@@ -82,19 +82,9 @@ namespace JsonUtils {
 inline bool isNumber(const QVariant &var)
 {
     //three number types defined by JsonCPP
-    return  var.userType() == QMetaType::Double || 
-            var.userType() == QMetaType::Int || 
-            var.userType() == QMetaType::UInt ||
-
-            var.userType() == QMetaType::Long ||
-            var.userType() == QMetaType::LongLong ||
-
-            var.userType() == QMetaType::ULong ||
-            var.userType() == QMetaType::ULongLong ||
-
-            var.userType() == QMetaType::UShort ||
-            var.userType() == QMetaType::Short
-            ;
+    return var.userType() == QMetaType::Double || var.userType() == QMetaType::Int || var.userType() == QMetaType::UInt || var.userType() == QMetaType::Long
+        || var.userType() == QMetaType::LongLong || var.userType() == QMetaType::ULong || var.userType() == QMetaType::ULongLong || var.userType() == QMetaType::UShort
+        || var.userType() == QMetaType::Short;
 }
 
 inline bool isString(const QVariant &var)

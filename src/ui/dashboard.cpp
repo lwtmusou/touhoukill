@@ -909,7 +909,7 @@ int Dashboard::getMiddleWidth()
     return _m_width - G_DASHBOARD_LAYOUT.m_leftWidth - rwidth;
 }
 
-QList<CardItem *> Dashboard::cloneCardItems(QList<int> card_ids)
+QList<CardItem *> Dashboard::cloneCardItems(const QList<int> &card_ids)
 {
     QList<CardItem *> result;
     CardItem *card_item = nullptr;
