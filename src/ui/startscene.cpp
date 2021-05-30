@@ -78,7 +78,7 @@ void StartScene::switchToServer(Server *server)
     server_log->move(-400, -180);
     server_log->setFrameShape(QFrame::NoFrame);
 #ifdef Q_OS_LINUX
-    server_log->setFont(QFont("DroidSansFallback", 12));
+    server_log->setFont(QFont(QStringLiteral("DroidSansFallback"), 12));
 #else
     server_log->setFont(QFont(QStringLiteral("Verdana"), 12));
 #endif
