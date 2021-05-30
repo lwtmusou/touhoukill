@@ -85,11 +85,6 @@ Engine::Engine()
     modes["hegemony_10"] = tr("hegemony 10 players");
 
     connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
-
-    foreach (const Skill *skill, skills.values()) {
-        Skill *mutable_skill = const_cast<Skill *>(skill);
-        mutable_skill->initMediaSource();
-    }
 }
 
 void Engine::addTranslationEntry(const QString &key, const QString &value)
@@ -1004,11 +999,14 @@ void Engine::playAudioEffect(const QString &filename) const
 #endif
 }
 
-void Engine::playSkillAudioEffect(const QString &skill_name, int index) const
+void Engine::playSkillAudioEffect(const QString &, int) const
 {
+    // TODO: move this function to UI
+#if 0
     const Skill *skill = skills.value(skill_name, NULL);
     if (skill)
         skill->playAudioEffect(index);
+#endif
 }
 
 const Skill *Engine::getSkill(const QString &skill_name) const

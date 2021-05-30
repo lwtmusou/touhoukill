@@ -54,11 +54,11 @@ void ServerPlayer::broadcastSkillInvoke(const Card *card) const
             room->broadcastSkillInvoke(card->face()->commonEffectName(), "common");
         return;
     } else {
-        int index = skill->getEffectIndex(this, card);
+        int index = skill->getAudioEffectIndex(this, card);
         if (index == 0)
             return;
 
-        if ((index == -1 && skill->getSources().isEmpty()) || index == -2) {
+        if (index == -1 || index == -2) {
             if (card->face()->commonEffectName().isNull())
                 broadcastSkillInvoke(card->faceName());
             else
@@ -1289,8 +1289,8 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     QStringList hegemony_limitmarks;
     if (isHegemonyGameMode(room->getMode())) {
         foreach (const Skill *skill, getSkillList(false, false))
-            if (skill->isLimited() && getMark(skill->getLimitMark()) > 0 && (this != player && !hasShownSkill(skill)))
-                hegemony_limitmarks.append(skill->getLimitMark());
+            if (skill->isLimited() && getMark(skill->limitMark()) > 0 && (this != player && !hasShownSkill(skill)))
+                hegemony_limitmarks.append(skill->limitMark());
     }
 
     foreach (QString mark_name, marks.keys()) {
@@ -1924,11 +1924,11 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         if (!property("Duanchang").toString().split(",").contains("head")) {
             sendSkillsToOthers();
             foreach (const Skill *skill, getHeadSkillList()) {
-                if (skill->isLimited() && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && hasShownSkill(skill)) {
+                if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && hasShownSkill(skill)) {
                     JsonArray arg;
                     arg << objectName();
-                    arg << skill->getLimitMark();
-                    arg << getMark(skill->getLimitMark());
+                    arg << skill->limitMark();
+                    arg << getMark(skill->limitMark());
                     room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
                 }
             }
@@ -1967,11 +1967,11 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         if (!property("Duanchang").toString().split(",").contains("deputy")) {
             sendSkillsToOthers(false);
             foreach (const Skill *skill, getDeputySkillList()) {
-                if (skill->isLimited() && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && hasShownSkill(skill)) {
+                if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && hasShownSkill(skill)) {
                     JsonArray arg;
                     arg << objectName();
-                    arg << skill->getLimitMark();
-                    arg << getMark(skill->getLimitMark());
+                    arg << skill->limitMark();
+                    arg << getMark(skill->limitMark());
                     room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
                 }
             }
@@ -2070,11 +2070,11 @@ void ServerPlayer::hideGeneral(bool head_general)
         disconnectSkillsFromOthers();
 
         foreach (const Skill *skill, getVisibleSkillList()) {
-            if (skill->isLimited() && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && !hasShownSkill(skill)
-                && getMark(skill->getLimitMark()) > 0) {
+            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && !hasShownSkill(skill)
+                && getMark(skill->limitMark()) > 0) {
                 JsonArray arg;
                 arg << objectName();
-                arg << skill->getLimitMark();
+                arg << skill->limitMark();
                 arg << 0;
                 foreach (ServerPlayer *p, room->getOtherPlayers(this, true))
                     room->doNotify(p, QSanProtocol::S_COMMAND_SET_MARK, arg);
@@ -2104,11 +2104,11 @@ void ServerPlayer::hideGeneral(bool head_general)
         disconnectSkillsFromOthers(false);
 
         foreach (const Skill *skill, getVisibleSkillList()) {
-            if (skill->isLimited() && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && !hasShownSkill(skill)
-                && getMark(skill->getLimitMark()) > 0) {
+            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && !hasShownSkill(skill)
+                && getMark(skill->limitMark()) > 0) {
                 JsonArray arg;
                 arg << objectName();
-                arg << skill->getLimitMark();
+                arg << skill->limitMark();
                 arg << 0;
                 foreach (ServerPlayer *p, room->getOtherPlayers(this, true))
                     room->doNotify(p, QSanProtocol::S_COMMAND_SET_MARK, arg);

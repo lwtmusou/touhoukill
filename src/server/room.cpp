@@ -285,8 +285,8 @@ void Room::revivePlayer(ServerPlayer *player, bool initialize)
         touhouLogmessage("#Revive", player);
 
         foreach (const Skill *skill, player->getVisibleSkillList()) {
-            if (skill->isLimited() && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
-                setPlayerMark(player, skill->getLimitMark(), 1);
+            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
+                setPlayerMark(player, skill->limitMark(), 1);
         }
 
         player->drawCards(4);
@@ -684,8 +684,8 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
                 const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
                 thread->addTriggerSkill(trigger_skill);
             }
-            if (skill->isLimited() && !skill->getLimitMark().isEmpty())
-                setPlayerMark(player, skill->getLimitMark(), 1);
+            if (skill->isLimited() && !skill->limitMark().isEmpty())
+                setPlayerMark(player, skill->limitMark(), 1);
             if (skill->isVisible()) {
                 JsonArray args;
                 args << QSanProtocol::S_GAME_EVENT_ACQUIRE_SKILL << player->objectName() << actual_skill << head;
@@ -2478,8 +2478,8 @@ void Room::changeHero(ServerPlayer *player, const QString &new_general, bool ful
                 if (invokeStart && trigger->triggerEvents().contains(GameStart))
                     game_start = true;
             }
-            if (skill->isLimited() && !skill->getLimitMark().isEmpty())
-                setPlayerMark(player, skill->getLimitMark(), 1);
+            if (skill->isLimited() && !skill->limitMark().isEmpty())
+                setPlayerMark(player, skill->limitMark(), 1);
             SkillAcquireDetachStruct s;
             s.isAcquire = true;
             s.player = player;
@@ -5175,8 +5175,8 @@ void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open, boo
         const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
         thread->addTriggerSkill(trigger_skill);
     }
-    if (skill->isLimited() && !skill->getLimitMark().isEmpty())
-        setPlayerMark(player, skill->getLimitMark(), 1);
+    if (skill->isLimited() && !skill->limitMark().isEmpty())
+        setPlayerMark(player, skill->limitMark(), 1);
 
     if (skill->isVisible()) {
         if (open) {
@@ -6904,11 +6904,11 @@ void Room::transformGeneral(ServerPlayer *player, QString general_name, int head
     setTag(player->objectName(), names);
 
     foreach (const Skill *skill, Sanguosha->getGeneral(general_name)->getSkillList(true, head)) {
-        if (skill->isLimited() && !skill->getLimitMark().isEmpty()) {
-            player->setMark(skill->getLimitMark(), 1);
+        if (skill->isLimited() && !skill->limitMark().isEmpty()) {
+            player->setMark(skill->limitMark(), 1);
             JsonArray arg;
             arg << player->objectName();
-            arg << skill->getLimitMark();
+            arg << skill->limitMark();
             arg << 1;
             doNotify(player, S_COMMAND_SET_MARK, arg);
         }

@@ -2261,6 +2261,9 @@ void RoomScene::addSkillButton(const Skill *skill, bool head)
             connect(btn, SIGNAL(skill_activated()), dashboard, SLOT(selectAll()));
     }
 
+    // TODO: Dialog
+    // This seems to be for ViewAsSkill rather than Skill
+#if 0
     QDialog *dialog = skill->getDialog();
     if (dialog && !m_replayControl) {
         dialog->setParent(main_window, Qt::Dialog);
@@ -2274,6 +2277,7 @@ void RoomScene::addSkillButton(const Skill *skill, bool head)
         else if (dialog->objectName() == "anyun")
             connect(dialog, SIGNAL(onButtonClick()), this, SLOT(anyunSelectSkill()));
     }
+#endif
 
     m_skillButtons.append(btn);
 }
@@ -2909,7 +2913,7 @@ void RoomScene::onSkillActivated()
             }
             if (instance_use)
                 useSelectedCard();
-        } else if (skill->inherits("OneCardViewAsSkill") && !skill->getDialog() && Config.EnableIntellectualSelection)
+        } else if (skill->inherits("OneCardViewAsSkill") && Config.EnableIntellectualSelection)
             dashboard->selectOnlyCard(ClientInstance->getStatus() == Client::Playing);
     }
 }

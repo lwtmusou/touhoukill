@@ -23,9 +23,9 @@ class Skill : public QObject
 public:
     enum ArrayType
     {
-        None,
-        Formation,
-        Siege
+        ArrayNone,
+        ArrayFormation,
+        ArraySiege
     };
     Q_ENUM(ArrayType)
 
@@ -76,39 +76,52 @@ public:
     // The summon itself should be a function of GameLogic
     void setupForBattleArray();
 
+    // Category getters
     bool isLordSkill() const;
     bool isAttachedSkill() const;
-    QString getDescription() const;
-    QString getNotice(int index) const;
-    bool isVisible() const;
-
     bool isCompulsory() const;
     bool isEternal() const;
     bool isLimited() const;
-
-    virtual bool isFrequent() const;
-
-    virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const;
-    virtual QDialog *getDialog() const;
-
-    void initMediaSource();
-    void playAudioEffect(int index = -1) const;
-    QString getLimitMark() const;
-    QString getRelatedMark() const;
-    QString getRelatedPileName() const;
-    QStringList getSources() const;
-    ShowType getShowType() const; //nue_god
-    virtual bool canPreshow() const; //hegemony
+    inline bool isWake() const
+    {
+        return isLimited() && isCompulsory();
+    }
+    bool isHidden() const;
+    inline bool isVisible() const
+    {
+        return !isHidden();
+    }
     bool relateToPlace(bool head = true) const;
+    ArrayType arrayType() const;
+
+    // ShowType getter
+    ShowType getShowType() const;
+
+    // Other variable getters / setters
+    const QString &limitMark() const;
+    void setLimitMark(const QString &m);
+    const QString &relatedMark() const;
+    void setRelatedMark(const QString &m);
+    const QString &relatedPile() const;
+    void setRelatedPile(const QString &m);
+    bool canPreshow() const;
+    void setCanPreshow(bool c);
+    bool isFrequent() const;
+    void setFrequent(bool c);
+
+    // For audio effect
+    // Certain skill requires a logic for its audio effect
+    // Currently it is judged by server side
+    virtual int getAudioEffectIndex(const ServerPlayer *player, const Card *card) const;
+
+    // current UI related, temporary left it alone
+    // All these functions should belong to UI.
+    // Maybe something like "Description provider" in UI will be ideal?
+    QString Q_DECL_DEPRECATED getDescription() const;
+    QString Q_DECL_DEPRECATED getNotice(int index) const;
 
 private:
-    QStringList sources;
     SkillPrivate *d;
-
-protected:
-    QString limit_mark;
-    QString related_mark; //while changing hero, this will be removed
-    QString related_pile;
 };
 
 class ViewAsSkill : public Skill

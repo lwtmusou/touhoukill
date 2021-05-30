@@ -13,10 +13,15 @@ class SkillPrivate final
 public:
     Skill::Categories categories;
     Skill::ShowType showType;
+    bool preshow;
+    bool frequent;
+    QString limit_mark;
+    QString related_mark;
+    QString related_pile;
 };
 
 Skill::Skill(const QString &name, const Categories &skillCategories, ShowType showType)
-    : d(new SkillPrivate {skillCategories, showType})
+    : d(new SkillPrivate {skillCategories, showType, false, false, QString(), QString(), QString()})
 {
     setObjectName(name);
 }
@@ -63,9 +68,9 @@ QString Skill::getNotice(int index) const
     return Sanguosha->translate(QString("~%1%2").arg(objectName()).arg(index));
 }
 
-bool Skill::isVisible() const
+bool Skill::isHidden() const
 {
-    return !(d->categories & SkillHidden);
+    return d->categories & SkillHidden;
 }
 
 bool Skill::isCompulsory() const
@@ -85,53 +90,17 @@ bool Skill::isLimited() const
 
 bool Skill::isFrequent() const
 {
-    return false;
+    return d->frequent;
 }
 
-int Skill::getEffectIndex(const ServerPlayer *, const Card *) const
+void Skill::setFrequent(bool c)
+{
+    d->frequent = c;
+}
+
+int Skill::getAudioEffectIndex(const ServerPlayer *, const Card *) const
 {
     return -1;
-}
-
-void Skill::initMediaSource()
-{
-    sources.clear();
-    for (int i = 1;; i++) {
-        QString effect_file = QString("audio/skill/%1%2.ogg").arg(objectName()).arg(QString::number(i));
-        if (QFile::exists(effect_file))
-            sources << effect_file;
-        else
-            break;
-    }
-
-    if (sources.isEmpty()) {
-        QString effect_file = QString("audio/skill/%1.ogg").arg(objectName());
-        if (QFile::exists(effect_file))
-            sources << effect_file;
-    }
-}
-
-void Skill::playAudioEffect(int index) const
-{
-    if (!sources.isEmpty()) {
-        if (index == -1)
-            index = QRandomGenerator::global()->generate() % sources.length();
-        else
-            index--;
-
-        // check length
-        QString filename;
-        if (index >= 0 && index < sources.length())
-            filename = sources.at(index);
-        else if (index >= sources.length()) {
-            while (index >= sources.length())
-                index -= sources.length();
-            filename = sources.at(index);
-        } else
-            filename = sources.first();
-
-        Sanguosha->playAudioEffect(filename);
-    }
 }
 
 Skill::ShowType Skill::getShowType() const
@@ -139,34 +108,44 @@ Skill::ShowType Skill::getShowType() const
     return d->showType;
 }
 
-QString Skill::getLimitMark() const
+const QString &Skill::limitMark() const
 {
-    return limit_mark;
+    return d->limit_mark;
 }
 
-QString Skill::getRelatedMark() const
+void Skill::setLimitMark(const QString &m)
 {
-    return related_mark;
+    d->limit_mark = m;
 }
 
-QString Skill::getRelatedPileName() const
+const QString &Skill::relatedMark() const
 {
-    return related_pile;
+    return d->related_mark;
 }
 
-QStringList Skill::getSources() const
+void Skill::setRelatedMark(const QString &m)
 {
-    return sources;
+    d->related_mark = m;
 }
 
-QDialog *Skill::getDialog() const
+const QString &Skill::relatedPile() const
 {
-    return nullptr;
+    return d->related_pile;
+}
+
+void Skill::setRelatedPile(const QString &m)
+{
+    d->related_pile = m;
 }
 
 bool Skill::canPreshow() const
 {
-    return false;
+    return d->preshow;
+}
+
+void Skill::setCanPreshow(bool c)
+{
+    d->preshow = c;
 }
 
 bool Skill::relateToPlace(bool head) const
@@ -176,6 +155,14 @@ bool Skill::relateToPlace(bool head) const
     else
         return d->categories & SkillDeputy;
     return false;
+}
+
+Skill::ArrayType Skill::arrayType() const
+{
+    if (d->categories & SkillArrayMask)
+        return (d->categories & SkillArrayFormation) ? ArrayFormation : ArraySiege;
+
+    return ArrayNone;
 }
 
 ViewAsSkill::ViewAsSkill(const QString &name)
