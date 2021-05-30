@@ -549,7 +549,7 @@ QString Card::NumberToString(Number number)
         return QStringLiteral("10");
 
     static const char *number_string = "-A23456789-JQK";
-    return QLatin1Char(number_string[static_cast<int>(number)]);
+    return QChar(QLatin1Char(number_string[static_cast<int>(number)]));
 }
 
 Card *Card::Parse(const QString &str, RoomObject *room)
