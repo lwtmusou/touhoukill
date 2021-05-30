@@ -57,7 +57,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
 
     QList<const General *> generals;
     foreach (QString general_name, general_names) {
-        if (general_name.contains("(lord)")) {
+        if (general_name.contains(QStringLiteral("(lord)"))) {
             general_name.chop(6);
             lord_name = general_name;
             continue;
@@ -91,7 +91,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
 
         OptionButton *button = new OptionButton(QString(), caption);
         if (no_icon) {
-            button->setIcon(QIcon("image/system/no-general-icon.png"));
+            button->setIcon(QIcon(QStringLiteral("image/system/no-general-icon.png")));
             button->setIconSize(QSize(G_COMMON_LAYOUT.m_chooseGeneralBoxDenseIconSize.width(), 1));
         } else {
             button->setIcon(QIcon(G_ROOM_SKIN.getGeneralPixmap(general->objectName(), icon_type, false)));
@@ -103,7 +103,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         if (!view_only) {
             mapper->setMapping(button, general->objectName());
             connect(button, SIGNAL(double_clicked()), mapper, SLOT(map()));
-            connect(button, SIGNAL(double_clicked()), this, SLOT(accept()));
+            connect(button, &OptionButton::double_clicked, this, &QDialog::accept);
         }
     }
 
@@ -170,8 +170,9 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
     if (!view_only) {
         if (isHegemonyGameMode(ServerInfo.GameMode)) {
             //need a seat prompt
-            QLabel *seat_label = new QLabel(
-                tr("Your seat is %1. role is %2").arg(Sanguosha->translate("CAPITAL(" + QString::number(Self->getSeat()) + ")")).arg(Sanguosha->translate(Self->getRole())));
+            QLabel *seat_label = new QLabel(tr("Your seat is %1. role is %2")
+                                                .arg(Sanguosha->translate(QStringLiteral("CAPITAL(") + QString::number(Self->getSeat()) + QStringLiteral(")")))
+                                                .arg(Sanguosha->translate(Self->getRole())));
             dialog_layout->addWidget(seat_label);
         } else {
             // role prompt
@@ -179,7 +180,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
             if (lord_name.size())
                 role_label->setText(tr("The lord has chosen %1. Your seat is %2. %3")
                                         .arg(Sanguosha->translate(lord_name))
-                                        .arg(Sanguosha->translate("CAPITAL(" + QString::number(Self->getSeat()) + ")"))
+                                        .arg(Sanguosha->translate(QStringLiteral("CAPITAL(") + QString::number(Self->getSeat()) + QStringLiteral(")")))
                                         .arg(role_label->text()));
             dialog_layout->addWidget(role_label);
         }
@@ -202,7 +203,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
 
     if (!view_only && free_choose) {
         QPushButton *free_choose_button = new QPushButton(tr("Free choose ..."));
-        connect(free_choose_button, SIGNAL(clicked()), this, SLOT(freeChoose()));
+        connect(free_choose_button, &QAbstractButton::clicked, this, &ChooseGeneralDialog::freeChoose);
         last_layout->addWidget(free_choose_button);
     }
 
@@ -229,7 +230,7 @@ void ChooseGeneralDialog::freeChoose()
 {
     QDialog *dialog = new FreeChooseDialog(this);
 
-    connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(dialog, &QDialog::accepted, this, &QDialog::accept);
     connect(dialog, SIGNAL(general_chosen(QString)), ClientInstance, SLOT(onPlayerChooseGeneral(QString)));
 
     m_freeChooseDialog = dialog;
@@ -260,19 +261,19 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
     QStringList kingdoms;
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
         kingdoms << Sanguosha->getHegemonyKingdoms();
-        kingdoms << "zhu";
+        kingdoms << QStringLiteral("zhu");
     } else
         kingdoms << Sanguosha->getKingdoms();
 
     foreach (QString kingdom, kingdoms) {
         QList<const General *> generals = map[kingdom];
 
-        if (kingdom == "zhu") {
+        if (kingdom == QStringLiteral("zhu")) {
             QList<const General *> addGgenerals;
             foreach (const General *g, generals) {
-                if (g->objectName().endsWith("hegemony") && isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral)
+                if (g->objectName().endsWith(QStringLiteral("hegemony")) && isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral)
                     addGgenerals << g;
-                else if (!g->objectName().endsWith("hegemony") && (!isHegemonyGameMode(ServerInfo.GameMode) || !ServerInfo.Enable2ndGeneral))
+                else if (!g->objectName().endsWith(QStringLiteral("hegemony")) && (!isHegemonyGameMode(ServerInfo.GameMode) || !ServerInfo.Enable2ndGeneral))
                     addGgenerals << g;
             }
             if (!addGgenerals.isEmpty())
@@ -281,15 +282,15 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
 
         if (!generals.isEmpty()) {
             QWidget *tab = createTab(generals);
-            tab_widget->addTab(tab, QIcon(G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON, kingdom)), Sanguosha->translate(kingdom));
+            tab_widget->addTab(tab, QIcon(G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON), kingdom)), Sanguosha->translate(kingdom));
         }
     }
 
     QPushButton *ok_button = new QPushButton(tr("OK"));
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(chooseGeneral()));
+    connect(ok_button, &QAbstractButton::clicked, this, &FreeChooseDialog::chooseGeneral);
 
     QPushButton *cancel_button = new QPushButton(tr("Cancel"));
-    connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(cancel_button, &QAbstractButton::clicked, this, &QDialog::reject);
 
     QHBoxLayout *button_layout = new QHBoxLayout;
     button_layout->addStretch();
@@ -340,14 +341,14 @@ QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals)
 
     QGridLayout *layout = new QGridLayout;
     layout->setOriginCorner(Qt::TopLeftCorner);
-    QIcon lord_icon("image/system/roles/lord.png");
+    QIcon lord_icon(QStringLiteral("image/system/roles/lord.png"));
 
     const int columns = 4;
 
     for (int i = 0; i < generals.length(); i++) {
         const General *general = generals.at(i);
         QString general_name = general->objectName();
-        QString text = QString("%1[%2]").arg(Sanguosha->translate(general_name)).arg(Sanguosha->translate(general->getPackage()));
+        QString text = QStringLiteral("%1[%2]").arg(Sanguosha->translate(general_name)).arg(Sanguosha->translate(general->getPackage()));
 
         QAbstractButton *button = nullptr;
         if (pair_choose)
@@ -376,7 +377,7 @@ QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals)
     tab->setLayout(tablayout);
 
     if (pair_choose) {
-        connect(group, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(uncheckExtraButton(QAbstractButton *)));
+        connect(group, &QButtonGroup::buttonClicked, this, &FreeChooseDialog::uncheckExtraButton);
     }
 
     return tab;

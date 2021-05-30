@@ -97,7 +97,7 @@ public:
 
         format.setChannelCount(vi->channels);
         format.setSampleRate(vi->rate);
-        format.setCodec("audio/pcm");
+        format.setCodec(QStringLiteral("audio/pcm"));
         format.setSampleSize(16);
         format.setByteOrder(QAudioFormat::LittleEndian);
         format.setSampleType(QAudioFormat::SignedInt);
@@ -199,9 +199,10 @@ public slots:
 
         } else {
             OggPlayer *player = new OggPlayer(fileName, this);
-            soundCache.insert(fileName, player);
-            player->setVolume(effective_volume);
-            player->play();
+            if (soundCache.insert(fileName, player)) {
+                player->setVolume(effective_volume);
+                player->play();
+            }
         }
     }
 
@@ -355,20 +356,20 @@ void stopBGM()
     isBgmPlaying = false;
 }
 
-QStringList getBgmFileNames(const QString fileNames, bool isGeneralName)
+QStringList getBgmFileNames(const QString &fileNames, bool isGeneralName)
 {
     QStringList all;
-    if (fileNames.endsWith(".ogg")) {
-        all = fileNames.split(";");
+    if (fileNames.endsWith(QStringLiteral(".ogg"))) {
+        all = fileNames.split(QStringLiteral(";"));
         return all;
     }
 
     if (isGeneralName) { //fileNames is  generalName
         //just support title only
-        QString path = "audio/bgm/";
+        QString path = QStringLiteral("audio/bgm/");
         QDir dir(path);
         QStringList filter;
-        filter << fileNames + "_*.ogg";
+        filter << fileNames + QStringLiteral("_*.ogg");
         dir.setNameFilters(filter);
         QList<QFileInfo> file_info(dir.entryInfoList(filter));
 
@@ -378,16 +379,16 @@ QStringList getBgmFileNames(const QString fileNames, bool isGeneralName)
                 all << fileName;
         }
     } else {
-        QString path = "audio/title/";
+        QString path = QStringLiteral("audio/title/");
         QDir dir(path);
         QStringList filter;
-        filter << "*.ogg";
+        filter << QStringLiteral("*.ogg");
         dir.setNameFilters(filter);
         QList<QFileInfo> file_info(dir.entryInfoList(filter));
 
         foreach (QFileInfo file, file_info) {
             QString fileName = path + file.fileName();
-            if ((file.fileName().startsWith("main") || file.fileName().startsWith("opening")))
+            if ((file.fileName().startsWith(QStringLiteral("main")) || file.fileName().startsWith(QStringLiteral("opening"))))
                 all << fileName;
         }
     }

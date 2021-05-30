@@ -30,9 +30,9 @@ time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QS
 
 bool ServerInfoStruct::parse(const QString &str)
 {
-    QRegExp rx("(.*):(@?\\w+):(\\d+):(\\d+):([+\\w]*):([RCFSTBHAMN123a-r]*)");
+    QRegExp rx(QStringLiteral("(.*):(@?\\w+):(\\d+):(\\d+):([+\\w]*):([RCFSTBHAMN123a-r]*)"));
     if (!rx.exactMatch(str)) {
-        qWarning("%s", qPrintable("Setup string error!"));
+        qWarning("%s", qPrintable(QStringLiteral("Setup string error!")));
         return false;
     }
 
@@ -46,43 +46,43 @@ bool ServerInfoStruct::parse(const QString &str)
         Name = QString::fromUtf8(QByteArray::fromBase64(server_name.toLatin1()));
 
         GameMode = texts.at(2);
-        if (GameMode.startsWith("02_1v1") || GameMode.startsWith("06_3v3")) {
+        if (GameMode.startsWith(QStringLiteral("02_1v1")) || GameMode.startsWith(QStringLiteral("06_3v3"))) {
             GameMode = GameMode.mid(0, 6);
             GameRuleMode = GameMode.mid(6);
         }
         OperationTimeout = texts.at(3).toInt();
         NullificationCountDown = texts.at(4).toInt();
 
-        QStringList ban_packages = texts.at(5).split("+");
+        QStringList ban_packages = texts.at(5).split(QStringLiteral("+"));
         const QList<const Package *> &packages = Sanguosha->getPackages();
         foreach (const Package *package, packages) {
             QString package_name = package->name();
             if (ban_packages.contains(package_name))
-                package_name = "!" + package_name;
+                package_name = QStringLiteral("!") + package_name;
 
             Extensions << package_name;
         }
 
         QString flags = texts.at(6);
 
-        RandomSeat = flags.contains("R");
-        EnableCheat = flags.contains("C");
-        FreeChoose = EnableCheat && flags.contains("F");
-        Enable2ndGeneral = flags.contains("S");
-        EnableSame = flags.contains("T");
-        EnableAI = flags.contains("A");
-        DisableChat = flags.contains("M");
+        RandomSeat = flags.contains(QStringLiteral("R"));
+        EnableCheat = flags.contains(QStringLiteral("C"));
+        FreeChoose = EnableCheat && flags.contains(QStringLiteral("F"));
+        Enable2ndGeneral = flags.contains(QStringLiteral("S"));
+        EnableSame = flags.contains(QStringLiteral("T"));
+        EnableAI = flags.contains(QStringLiteral("A"));
+        DisableChat = flags.contains(QStringLiteral("M"));
 
-        if (flags.contains("1"))
+        if (flags.contains(QStringLiteral("1")))
             MaxHpScheme = 1;
-        else if (flags.contains("2"))
+        else if (flags.contains(QStringLiteral("2")))
             MaxHpScheme = 2;
-        else if (flags.contains("3"))
+        else if (flags.contains(QStringLiteral("3")))
             MaxHpScheme = 3;
         else {
             MaxHpScheme = 0;
             for (char c = 'a'; c <= 'r'; c++) {
-                if (flags.contains(c)) {
+                if (flags.contains(QLatin1Char(c))) {
                     Scheme0Subtraction = int(c) - int('a') - 5;
                     break;
                 }
@@ -181,13 +181,13 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
 
     list_widget->clear();
 
-    static QIcon enabled_icon("image/system/enabled.png");
-    static QIcon disabled_icon("image/system/disabled.png");
+    static QIcon enabled_icon(QStringLiteral("image/system/enabled.png"));
+    static QIcon disabled_icon(QStringLiteral("image/system/disabled.png"));
 
     foreach (QString extension, info.Extensions) {
-        bool checked = !extension.startsWith("!");
+        bool checked = !extension.startsWith(QStringLiteral("!"));
         if (!checked)
-            extension.remove("!");
+            extension.remove(QStringLiteral("!"));
 
         QString package_name = Sanguosha->translate(extension);
         QCheckBox *checkbox = new QCheckBox(package_name);
@@ -200,7 +200,7 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
 void ServerInfoWidget::updateLack(int count)
 {
     if (lack_label) {
-        QString path = QString("image/system/number/%1.png").arg(count);
+        QString path = QStringLiteral("image/system/number/%1.png").arg(count);
         lack_label->setPixmap(QPixmap(path));
     }
 }

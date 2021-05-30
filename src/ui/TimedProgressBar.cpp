@@ -98,7 +98,7 @@ void QSanCommandProgressBar::paintEvent(QPaintEvent *)
     painter.drawPixmap(0, 0, percent * width, height, prog, 0, 0, drawWidth, prog.height());
 }
 
-void QSanCommandProgressBar::setCountdown(Countdown countdown)
+void QSanCommandProgressBar::setCountdown(const Countdown &countdown)
 {
     m_mutex.lock();
     m_hasTimer = (countdown.type != Countdown::S_COUNTDOWN_NO_LIMIT);

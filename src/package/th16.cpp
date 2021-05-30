@@ -982,7 +982,7 @@ GakungWuCard::GakungWuCard()
 
 bool GakungWuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    QStringList l = Self->property((m_skillName + "availability").toLatin1().constData()).toString().split('+');
+    QStringList l = Self->property((m_skillName + "availability").toLatin1().constData()).toString().split(QLatin1Char('+');
     return targets.isEmpty() && l.contains(to_select->objectName());
 }
 

@@ -78,7 +78,7 @@ protected:
     QPixmap _m_bgPixmap[S_NUM_BUTTON_STATES];
 
 private:
-    bool _isMouseInside(const QPointF &pos) const
+    bool _isMouseInside(QPointF pos) const
     {
         return _m_mask.contains(QPoint(pos.x(), pos.y()));
     }
@@ -109,19 +109,19 @@ public:
     {
         QString arg1;
         if (type == QSanSkillButton::S_SKILL_AWAKEN)
-            arg1 = "awaken";
+            arg1 = QStringLiteral("awaken");
         else if (type == QSanSkillButton::S_SKILL_ARRAY)
-            arg1 = "array";
+            arg1 = QStringLiteral("array");
         else if (type == QSanSkillButton::S_SKILL_COMPULSORY)
-            arg1 = "compulsory";
+            arg1 = QStringLiteral("compulsory");
         else if (type == QSanSkillButton::S_SKILL_FREQUENT)
-            arg1 = "frequent";
+            arg1 = QStringLiteral("frequent");
         else if (type == QSanSkillButton::S_SKILL_ONEOFF_SPELL)
-            arg1 = "oneoff";
+            arg1 = QStringLiteral("oneoff");
         else if (type == QSanSkillButton::S_SKILL_PROACTIVE)
-            arg1 = "proactive";
+            arg1 = QStringLiteral("proactive");
         else if (type == QSanSkillButton::S_SKILL_ATTACHEDLORD)
-            arg1 = "attachedlord";
+            arg1 = QStringLiteral("attachedlord");
         return arg1;
     }
     virtual void setSkill(const Skill *skill);

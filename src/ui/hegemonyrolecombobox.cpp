@@ -19,9 +19,9 @@
     *********************************************************************/
 
 #include "hegemonyrolecombobox.h"
+#include "SkinBank.h"
 #include "engine.h"
 #include "roomscene.h"
-#include "SkinBank.h"
 
 void HegemonyRoleComboBox::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -39,7 +39,7 @@ void HegemonyRoleComboBox::mousePressEvent(QGraphicsSceneMouseEvent *event)
         return;
     }
     QStringList kingdoms = Sanguosha->getHegemonyKingdoms();
-    kingdoms.removeAll("god");
+    kingdoms.removeAll(QStringLiteral("god"));
     foreach (const QString &kingdom, kingdoms) {
         if (G_COMMON_LAYOUT.m_rolesRect.value(kingdom, QRect()).contains(point)) {
             kingdoms_excluded[kingdom] = !kingdoms_excluded.value(kingdom);
@@ -68,17 +68,17 @@ void HegemonyRoleComboBox::paint(QPainter *painter, const QStyleOptionGraphicsIt
     double scale = G_ROOM_LAYOUT.scale;
     if (!fixed_role.isEmpty()) {
         QPixmap pix;
-        pix.load(QString("image/system/roles/%1.png").arg(fixed_role));
+        pix.load(QStringLiteral("image/system/roles/%1.png").arg(fixed_role));
         painter->drawPixmap(0, 0, (int)(pix.width() * scale), (int)(pix.height() * scale), pix);
         return;
     }
     QStringList kingdoms = Sanguosha->getHegemonyKingdoms();
-    kingdoms.removeAll("god");
+    kingdoms.removeAll(QStringLiteral("god"));
 
     if (!expanding) {
         if (circle) {
             QPixmap pix;
-            pix.load("image/system/roles/unknown.png");
+            pix.load(QStringLiteral("image/system/roles/unknown.png"));
             painter->drawPixmap(1, 0, (int)(28 * scale), (int)(28 * scale), pix);
         } else {
             QColor grey = G_COMMON_LAYOUT.m_roleDarkColor;
@@ -95,11 +95,11 @@ void HegemonyRoleComboBox::paint(QPainter *painter, const QStyleOptionGraphicsIt
             }
         }
     } else {
-        QPixmap pix = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_EXPANDING_ROLE_BOX);
+        QPixmap pix = G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_EXPANDING_ROLE_BOX));
         painter->drawPixmap(0, 0, (int)(pix.width() * scale), (int)(pix.height() * scale), pix);
         foreach (const QString &kingdom, kingdoms) {
             if (kingdoms_excluded.value(kingdom))
-                painter->drawPixmap(G_COMMON_LAYOUT.m_rolesRect.value(kingdom), G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK, kingdom));
+                painter->drawPixmap(G_COMMON_LAYOUT.m_rolesRect.value(kingdom), G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK), kingdom));
         }
     }
 }
@@ -107,7 +107,7 @@ void HegemonyRoleComboBox::paint(QPainter *painter, const QStyleOptionGraphicsIt
 QRectF HegemonyRoleComboBox::boundingRect() const
 {
     double scale = G_ROOM_LAYOUT.scale;
-    static QRect rect = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_EXPANDING_ROLE_BOX).rect();
+    static QRect rect = G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_EXPANDING_ROLE_BOX)).rect();
     return QRectF(rect.x(), rect.y(), (int)(rect.width() * scale), (int)(rect.height() * scale));
 }
 
@@ -117,7 +117,7 @@ HegemonyRoleComboBox::HegemonyRoleComboBox(QGraphicsItem *photo, bool circle)
     , expanding(false)
 {
     QStringList kingdoms = Sanguosha->getHegemonyKingdoms();
-    kingdoms.removeAll("god");
+    kingdoms.removeAll(QStringLiteral("god"));
     foreach (const QString &kingdom, kingdoms)
         kingdoms_excluded[kingdom] = false;
 
@@ -127,7 +127,7 @@ HegemonyRoleComboBox::HegemonyRoleComboBox(QGraphicsItem *photo, bool circle)
 
 void HegemonyRoleComboBox::fix(const QString &role)
 {
-    if (role == "god")
+    if (role == QStringLiteral("god"))
         return;
     fixed_role = role;
     update();

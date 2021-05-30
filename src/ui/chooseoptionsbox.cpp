@@ -56,7 +56,7 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
 {
     //repaint background
     this->options = options;
-    title = QString("%1").arg(Sanguosha->translate(skillName));
+    title = QStringLiteral("%1").arg(Sanguosha->translate(skillName));
     prepareGeometryChange();
 
     const int buttonWidth = getButtonWidth();
@@ -66,30 +66,30 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
     foreach (const QString &option, options) {
         y = 0;
         ++x;
-        foreach (const QString &choice, option.split("+")) {
+        foreach (const QString &choice, option.split(QStringLiteral("+"))) {
             ++y;
-            QStringList choices = choice.split("%");
+            QStringList choices = choice.split(QStringLiteral("%"));
             QString choice_ = choices.at(0);
             QString text = translate(choice_);
             foreach (const QString &element, choices) {
-                if (element.startsWith("from:")) {
-                    QStringList froms = element.split(":");
+                if (element.startsWith(QStringLiteral("from:"))) {
+                    QStringList froms = element.split(QStringLiteral(":"));
                     if (!froms.at(1).isEmpty()) {
                         QString from = ClientInstance->getPlayerName(froms.at(1));
-                        text.replace("%from", from);
+                        text.replace(QStringLiteral("%from"), from);
                     }
-                } else if (element.startsWith("to:")) {
-                    QStringList tos = element.split(":");
+                } else if (element.startsWith(QStringLiteral("to:"))) {
+                    QStringList tos = element.split(QStringLiteral(":"));
                     QStringList to_list;
                     for (int i = 1; i < tos.length(); i++)
                         to_list << ClientInstance->getPlayerName(tos.at(i));
-                    QString to = to_list.join(", ");
-                    text.replace("%to", to);
-                } else if (element.startsWith("log:")) {
-                    QStringList logs = element.split(":");
+                    QString to = to_list.join(QStringLiteral(", "));
+                    text.replace(QStringLiteral("%to"), to);
+                } else if (element.startsWith(QStringLiteral("log:"))) {
+                    QStringList logs = element.split(QStringLiteral(":"));
                     if (!logs.at(1).isEmpty()) {
                         QString log = logs.at(1);
-                        text.replace("%log", log);
+                        text.replace(QStringLiteral("%log"), log);
                     }
                 }
             }
@@ -101,15 +101,15 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
             button->setParentItem(this);
             pos[button] = QPoint(x, y);
 
-            QString original_tooltip = QString(":%1").arg(title);
+            QString original_tooltip = QStringLiteral(":%1").arg(title);
             QString tooltip = Sanguosha->translate(original_tooltip);
             if (tooltip == original_tooltip) {
-                original_tooltip = QString(":%1").arg(choice);
+                original_tooltip = QStringLiteral(":%1").arg(choice);
                 tooltip = Sanguosha->translate(original_tooltip);
             }
             connect(button, &Button::clicked, this, &ChooseOptionsBox::reply);
             if (tooltip != original_tooltip)
-                button->setToolTip(QString("<font color=yellow>%2</font>").arg(tooltip));
+                button->setToolTip(QStringLiteral("<font color=yellow>%2</font>").arg(tooltip));
         }
     }
 
@@ -160,7 +160,7 @@ int ChooseOptionsBox::getButtonWidth() const
     QFontMetrics fontMetrics(Config.SmallFont);
     int biggest = 0;
     foreach (const QString &section, options) {
-        foreach (const QString &choice, section.split("+")) {
+        foreach (const QString &choice, section.split(QStringLiteral("+"))) {
             const int width = fontMetrics.horizontalAdvance(translate(choice));
             if (width > biggest)
                 biggest = width;
@@ -176,7 +176,7 @@ int ChooseOptionsBox::getButtonWidth() const
 
 QString ChooseOptionsBox::translate(const QString &option) const
 {
-    QString title = QString("%1:%2").arg(skillName).arg(option);
+    QString title = QStringLiteral("%1:%2").arg(skillName).arg(option);
     QString translated = Sanguosha->translate(title);
     if (translated == title)
         translated = Sanguosha->translate(option);

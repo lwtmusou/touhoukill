@@ -18,7 +18,7 @@ General::General(Package *package, const QString &name, const QString &kingdom, 
     , head_max_hp_adjusted_value(0)
     , deputy_max_hp_adjusted_value(0)
 {
-    static QChar lord_symbol('$');
+    static QLatin1Char lord_symbol('$');
     if (name.endsWith(lord_symbol)) {
         QString copy = name;
         copy.remove(lord_symbol);
@@ -175,24 +175,25 @@ QString General::getSkillDescription(bool include_name, bool yellow) const
     foreach (const Skill *skill, getVisibleSkillList()) {
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription();
-        desc.replace("\n", "<br/>");
-        description.append(QString("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(yellow ? "#FFFF33" : "#FF0080").arg(skill_name).arg(desc));
+        desc.replace(QStringLiteral("\n"), QStringLiteral("<br/>"));
+        description.append(
+            QStringLiteral("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(yellow ? QStringLiteral("#FFFF33") : QStringLiteral("#FF0080")).arg(skill_name).arg(desc));
     }
 
     if (include_name) {
         QString color_str = Sanguosha->getKingdomColor(kingdom).name();
-        QString g_name = Sanguosha->translate("!" + objectName());
-        if (g_name.startsWith("!"))
+        QString g_name = Sanguosha->translate(QStringLiteral("!") + objectName());
+        if (g_name.startsWith(QStringLiteral("!")))
             g_name = Sanguosha->translate(objectName());
-        QString name = QString("<font color=%1><b>%2</b></font>     ").arg(color_str).arg(g_name);
-        name.prepend(QString("<img src='image/kingdom/icon/%1.png'/>    ").arg(kingdom));
+        QString name = QStringLiteral("<font color=%1><b>%2</b></font>     ").arg(color_str).arg(g_name);
+        name.prepend(QStringLiteral("<img src='image/kingdom/icon/%1.png'/>    ").arg(kingdom));
         for (int i = 0; i < max_hp; i++)
-            name.append("<img src='image/system/magatamas/5.png' height = 12/>");
-        if (hasSkill("banling")) {
+            name.append(QStringLiteral("<img src='image/system/magatamas/5.png' height = 12/>"));
+        if (hasSkill(QStringLiteral("banling"))) {
             for (int i = 0; i < max_hp; i++)
-                name.append("<img src='image/system/magatamas/1.png' height = 12/>");
+                name.append(QStringLiteral("<img src='image/system/magatamas/1.png' height = 12/>"));
         }
-        name.append("<br/> <br/>");
+        name.append(QStringLiteral("<br/> <br/>"));
         description.prepend(name);
     }
 
@@ -201,12 +202,12 @@ QString General::getSkillDescription(bool include_name, bool yellow) const
 
 void General::lastWord() const
 {
-    QString filename = QString("audio/death/%1.ogg").arg(objectName());
+    QString filename = QStringLiteral("audio/death/%1.ogg").arg(objectName());
     bool fileExists = QFile::exists(filename);
     if (!fileExists) {
-        QStringList origin_generals = objectName().split("_");
+        QStringList origin_generals = objectName().split(QStringLiteral("_"));
         if (origin_generals.length() > 1)
-            filename = QString("audio/death/%1.ogg").arg(origin_generals.first());
+            filename = QStringLiteral("audio/death/%1.ogg").arg(origin_generals.first());
     }
     Sanguosha->playAudioEffect(filename);
 }
@@ -227,16 +228,16 @@ QString General::getCompanions() const
 {
     QStringList name;
     foreach (const QString &general, companions)
-        name << QString("%1").arg(Sanguosha->translate(general));
+        name << QStringLiteral("%1").arg(Sanguosha->translate(general));
     QStringList generals = Sanguosha->getGenerals();
     foreach (QString gname, generals) {
         const General *gnr = Sanguosha->getGeneral(gname);
         if (!gnr)
             continue;
         if (gnr->companions.contains(objectName()))
-            name << QString("%1").arg(Sanguosha->translate(gnr->objectName()));
+            name << QStringLiteral("%1").arg(Sanguosha->translate(gnr->objectName()));
     }
-    return name.join(" ");
+    return name.join(QStringLiteral(" "));
 }
 
 void General::setHeadMaxHpAdjustedValue(int adjusted_value /* = -1 */)

@@ -20,7 +20,7 @@ public:
     QString related_pile;
 };
 
-Skill::Skill(const QString &name, const Categories &skillCategories, ShowType showType)
+Skill::Skill(const QString &name, Skill::Categories skillCategories, ShowType showType)
     : d(new SkillPrivate {skillCategories, showType, false, false, QString(), QString(), QString()})
 {
     setObjectName(name);
@@ -50,22 +50,22 @@ bool Skill::isAttachedSkill() const
 QString Skill::getDescription() const
 {
     bool normal_game = ServerInfo.DuringGame && isNormalGameMode(ServerInfo.GameMode);
-    QString name = QString("%1%2").arg(objectName()).arg(normal_game ? "_p" : "");
-    QString des_src = Sanguosha->translate(":" + name);
-    if (normal_game && des_src.startsWith(":"))
-        des_src = Sanguosha->translate(":" + objectName());
-    if (des_src.startsWith(":"))
+    QString name = QStringLiteral("%1%2").arg(objectName()).arg(normal_game ? QStringLiteral("_p") : QString());
+    QString des_src = Sanguosha->translate(QStringLiteral(":") + name);
+    if (normal_game && des_src.startsWith(QStringLiteral(":")))
+        des_src = Sanguosha->translate(QStringLiteral(":") + objectName());
+    if (des_src.startsWith(QStringLiteral(":")))
         return QString();
-    QString desc = QString("<font color=%1>%2</font>").arg("#FF0080").arg(des_src);
+    QString desc = QStringLiteral("<font color=%1>%2</font>").arg(QStringLiteral("#FF0080")).arg(des_src);
     return desc;
 }
 
 QString Skill::getNotice(int index) const
 {
     if (index == -1)
-        return Sanguosha->translate("~" + objectName());
+        return Sanguosha->translate(QStringLiteral("~") + objectName());
 
-    return Sanguosha->translate(QString("~%1%2").arg(objectName()).arg(index));
+    return Sanguosha->translate(QStringLiteral("~%1%2").arg(objectName()).arg(index));
 }
 
 bool Skill::isHidden() const
@@ -270,19 +270,19 @@ OneCardViewAsSkill::OneCardViewAsSkill(const QString &name)
 
 bool OneCardViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const
 {
-    return selected.isEmpty() && !to_select->hasFlag("using") && viewFilter(to_select, Self);
+    return selected.isEmpty() && !to_select->hasFlag(QStringLiteral("using")) && viewFilter(to_select, Self);
 }
 
 bool OneCardViewAsSkill::viewFilter(const Card *to_select, const Player *Self) const
 {
     if (!filter_pattern.isEmpty()) {
         QString pat = filter_pattern;
-        if (pat.endsWith("!")) {
+        if (pat.endsWith(QStringLiteral("!"))) {
             if (Self->isJilei(to_select))
                 return false;
             pat.chop(1);
-        } else if (response_or_use && pat.contains("hand")) {
-            pat.replace("hand", "hand,wooden_ox");
+        } else if (response_or_use && pat.contains(QStringLiteral("hand"))) {
+            pat.replace(QStringLiteral("hand"), QStringLiteral("hand,wooden_ox"));
         }
         ExpPattern pattern(pat);
         return pattern.match(Self, to_select);
@@ -336,7 +336,7 @@ ShowDistanceSkill::ShowDistanceSkill(const QString &name)
 
 const Card *ShowDistanceSkill::viewAs(const Player *Self) const
 {
-    Card *card = Self->getRoomObject()->cloneSkillCard("ShowFengsu");
+    Card *card = Self->getRoomObject()->cloneSkillCard(QStringLiteral("ShowFengsu"));
     card->setUserString(objectName());
     return card;
 }
@@ -368,7 +368,7 @@ const ViewAsSkill *MaxCardsSkill::getViewAsSkill() const
 TargetModSkill::TargetModSkill(const QString &name)
     : Skill(name, SkillCompulsory)
 {
-    pattern = "Slash";
+    pattern = QStringLiteral("Slash");
 }
 
 QString TargetModSkill::getPattern() const
@@ -413,7 +413,7 @@ int AttackRangeSkill::getFixed(const Player *, bool) const
 }
 
 SlashNoDistanceLimitSkill::SlashNoDistanceLimitSkill(const QString &skill_name)
-    : TargetModSkill(QString("#%1-slash-ndl").arg(skill_name))
+    : TargetModSkill(QStringLiteral("#%1-slash-ndl").arg(skill_name))
     , name(skill_name)
 {
 }
@@ -593,7 +593,7 @@ void Trigger::addTriggerEvent(TriggerEvent e)
     d->e.insert(e);
 }
 
-void Trigger::addTriggerEvents(TriggerEvents e)
+void Trigger::addTriggerEvents(const TriggerEvents &e)
 {
     d->e.unite(e);
 }
@@ -613,7 +613,7 @@ void Trigger::record(TriggerEvent, Room *, QVariant &) const
     // Intentionally empty
 }
 
-bool Trigger::trigger(TriggerEvent, Room *, TriggerDetail, QVariant &) const
+bool Trigger::trigger(TriggerEvent, Room *, const TriggerDetail &, QVariant &) const
 {
     return false;
 }
@@ -651,8 +651,9 @@ int TriggerSkill::priority() const
     return 2;
 }
 
-bool TriggerSkill::trigger(TriggerEvent event, Room *room, TriggerDetail detail, QVariant &data) const
+bool TriggerSkill::trigger(TriggerEvent event, Room *room, const TriggerDetail &_detail, QVariant &data) const
 {
+    TriggerDetail detail = _detail;
     if (!detail.effectOnly()) {
         if (!cost(event, room, detail, data))
             return false;
@@ -688,14 +689,14 @@ bool EquipSkill::equipAvailable(const Player *p, EquipCard::Location location, c
     if (p == nullptr)
         return false;
 
-    if (p->getMark("Equips_Nullified_to_Yourself") > 0)
+    if (p->getMark(QStringLiteral("Equips_Nullified_to_Yourself")) > 0)
         return false;
 
     // for StarSP Pangtong? It needs investigation for real 'Armor ignored by someone' effect
     // But 'Armor ignored by someone' is too complicated while its effect has just few differences compared to 'Armor invalid'
     // So we just use 'Armor invalid' everywhere
     // I prefer removing 'to' from this function and use regular QinggangSword method or a simular one for StarSP Pangtong
-    if (to != nullptr && to->getMark("Equips_of_Others_Nullified_to_You") > 0)
+    if (to != nullptr && to->getMark(QStringLiteral("Equips_of_Others_Nullified_to_You")) > 0)
         return false;
 
     switch (location) {
@@ -788,7 +789,7 @@ QList<TriggerDetail> FakeMoveRecord::triggerable(TriggerEvent, const Room *room,
     return {};
 }
 
-bool FakeMoveRecord::trigger(TriggerEvent, Room *, TriggerDetail, QVariant &) const
+bool FakeMoveRecord::trigger(TriggerEvent, Room *, const TriggerDetail &, QVariant &) const
 {
     return true;
 }

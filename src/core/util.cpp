@@ -48,10 +48,10 @@ QList<int> VariantList2IntList(const QVariantList &variantlist)
 
 bool isNormalGameMode(const QString &mode)
 {
-    return mode.endsWith("p") || mode.endsWith("pd") || mode.endsWith("pz");
+    return mode.endsWith(QStringLiteral("p")) || mode.endsWith(QStringLiteral("pd")) || mode.endsWith(QStringLiteral("pz"));
 }
 
 bool isHegemonyGameMode(const QString &mode)
 {
-    return mode.startsWith("hegemony");
+    return mode.startsWith(QStringLiteral("hegemony"));
 }

@@ -78,7 +78,7 @@ public:
         m_instanceType = type;
     }
     void setCountdown(QSanProtocol::CommandType command);
-    void setCountdown(QSanProtocol::Countdown countdown);
+    void setCountdown(const QSanProtocol::Countdown &countdown);
 
 protected:
     void paintEvent(QPaintEvent *) override;

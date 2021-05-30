@@ -5,7 +5,7 @@
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 
-const char *CHANGE_SKIN_EMOTION_NAME = "skin_changing";
+const char *const CHANGE_SKIN_EMOTION_NAME = "skin_changing";
 
 QList<QPixmap> GraphicsPixmapHoverItem::m_skinChangingFrames;
 int GraphicsPixmapHoverItem::m_skinChangingFrameCount = 0;
@@ -187,9 +187,9 @@ void GraphicsPixmapHoverItem::stopChangeHeroSkinAnimation()
 
 void GraphicsPixmapHoverItem::initSkinChangingFrames()
 {
-    m_skinChangingFrameCount = PixmapAnimation::GetFrameCount(CHANGE_SKIN_EMOTION_NAME);
+    m_skinChangingFrameCount = PixmapAnimation::GetFrameCount(QString::fromUtf8(CHANGE_SKIN_EMOTION_NAME));
     for (int i = 0; i < m_skinChangingFrameCount; ++i) {
-        QString fileName = QString("image/system/emotion/%1/%2.png").arg(CHANGE_SKIN_EMOTION_NAME).arg(QString::number(i));
+        QString fileName = QStringLiteral("image/system/emotion/%1/%2.png").arg(QString::fromUtf8(CHANGE_SKIN_EMOTION_NAME)).arg(QString::number(i));
 
         QPixmap framePixmap = G_ROOM_SKIN.getPixmapFromFileName(fileName);
         m_skinChangingFrames << framePixmap.scaled(framePixmap.width() + 25, framePixmap.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);

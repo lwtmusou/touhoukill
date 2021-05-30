@@ -44,7 +44,7 @@ CardFace::~CardFace()
 
 QString CardFace::name() const
 {
-    return metaObject()->className();
+    return QString::fromUtf8(metaObject()->className());
 }
 
 QString CardFace::description() const
@@ -69,7 +69,7 @@ bool CardFace::isKindOf(const char *cardType) const
 
 bool CardFace::matchType(const QString &pattern) const
 {
-    foreach (const QString &ptn, pattern.split("+")) {
+    foreach (const QString &ptn, pattern.split(QStringLiteral("+"))) {
         if (typeName() == ptn || subTypeName() == ptn)
             return true;
     }
@@ -196,7 +196,7 @@ void CardFace::onUse(Room *room, const CardUseStruct &use) const
     room->sortByActionOrder(card_use.to);
 
     QList<ServerPlayer *> targets = card_use.to;
-    if (room->getMode() == "06_3v3" && (isKindOf("AOE") || isKindOf("GlobalEffect")))
+    if (room->getMode() == QStringLiteral("06_3v3") && (isKindOf("AOE") || isKindOf("GlobalEffect")))
         room->reverseFor3v3(card_use.card, player, targets);
     card_use.to = targets;
 
@@ -205,7 +205,7 @@ void CardFace::onUse(Room *room, const CardUseStruct &use) const
     log.from = player;
     if (!targetFixed(card_use.from, card_use.card) || card_use.to.length() > 1 || !card_use.to.contains(card_use.from))
         log.to = card_use.to;
-    log.type = "#UseCard";
+    log.type = QStringLiteral("#UseCard");
     log.card_str = card_use.card->toString(hidden);
     room->sendLog(log);
 
@@ -252,11 +252,11 @@ void CardFace::use(Room *room, const CardUseStruct &use) const
 {
     ServerPlayer *source = use.from;
 
-    QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
-    bool all_nullified = nullified_list.contains("_ALL_TARGETS");
+    QStringList nullified_list = room->getTag(QStringLiteral("CardUseNullifiedList")).toStringList();
+    bool all_nullified = nullified_list.contains(QStringLiteral("_ALL_TARGETS"));
     int magic_drank = 0;
-    if (isNDTrick() && source && source->getMark("magic_drank") > 0)
-        magic_drank = source->getMark("magic_drank");
+    if (isNDTrick() && source && source->getMark(QStringLiteral("magic_drank")) > 0)
+        magic_drank = source->getMark(QStringLiteral("magic_drank"));
 
     foreach (ServerPlayer *target, use.to) {
         CardEffectStruct effect;
@@ -265,14 +265,14 @@ void CardFace::use(Room *room, const CardUseStruct &use) const
         effect.to = target;
         effect.multiple = (use.to.length() > 1);
         effect.nullified = (all_nullified || nullified_list.contains(target->objectName()));
-        if (use.card->hasFlag("mopao"))
+        if (use.card->hasFlag(QStringLiteral("mopao")))
             effect.effectValue.first() = effect.effectValue.first() + 1;
-        if (use.card->hasFlag("mopao2"))
+        if (use.card->hasFlag(QStringLiteral("mopao2")))
             effect.effectValue.last() = effect.effectValue.last() + 1;
-        if (source != nullptr && source->getMark("kuangji_value") > 0) {
-            effect.effectValue.first() = effect.effectValue.first() + source->getMark("kuangji_value");
-            effect.effectValue.last() = effect.effectValue.last() + source->getMark("kuangji_value");
-            room->setPlayerMark(source, "kuangji_value", 0);
+        if (source != nullptr && source->getMark(QStringLiteral("kuangji_value")) > 0) {
+            effect.effectValue.first() = effect.effectValue.first() + source->getMark(QStringLiteral("kuangji_value"));
+            effect.effectValue.last() = effect.effectValue.last() + source->getMark(QStringLiteral("kuangji_value"));
+            room->setPlayerMark(source, QStringLiteral("kuangji_value"), 0);
         }
 
         effect.effectValue.first() = effect.effectValue.first() + magic_drank;
@@ -282,13 +282,13 @@ void CardFace::use(Room *room, const CardUseStruct &use) const
                 players.append(QVariant::fromValue(use.to.at(i)));
         }
 
-        room->setTag("targets" + use.card->toString(), QVariant::fromValue(players));
+        room->setTag(QStringLiteral("targets") + use.card->toString(), QVariant::fromValue(players));
 
         room->cardEffect(effect);
     }
-    room->removeTag("targets" + use.card->toString()); //for ai?
+    room->removeTag(QStringLiteral("targets") + use.card->toString()); //for ai?
     if (source != nullptr && magic_drank > 0)
-        room->setPlayerMark(source, "magic_drank", 0);
+        room->setPlayerMark(source, QStringLiteral("magic_drank"), 0);
 
     if (room->getCardPlace(use.card->effectiveID()) == Player::PlaceTable) {
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source != nullptr ? source->objectName() : QString(), QString(), use.card->skillName(), QString());
@@ -297,8 +297,8 @@ void CardFace::use(Room *room, const CardUseStruct &use) const
         reason.m_extraData = QVariant::fromValue(use.card);
         ServerPlayer *provider = nullptr;
         foreach (const QString &flag, use.card->flags()) {
-            if (flag.startsWith("CardProvider_")) {
-                QStringList patterns = flag.split("_");
+            if (flag.startsWith(QStringLiteral("CardProvider_"))) {
+                QStringList patterns = flag.split(QStringLiteral("_"));
                 provider = room->findPlayerByObjectName(patterns.at(1));
                 break;
             }
@@ -335,7 +335,7 @@ CardFace::CardType BasicCard::type() const
 
 QString BasicCard::typeName() const
 {
-    return "basic";
+    return QStringLiteral("basic");
 }
 
 EquipCard::EquipCard()
@@ -349,7 +349,7 @@ CardFace::CardType EquipCard::type() const
 
 QString EquipCard::typeName() const
 {
-    return "equip";
+    return QStringLiteral("equip");
 }
 
 Weapon::Weapon()
@@ -358,7 +358,7 @@ Weapon::Weapon()
 
 QString Weapon::subTypeName() const
 {
-    return "weapon";
+    return QStringLiteral("weapon");
 }
 
 EquipCard::Location Weapon::location() const
@@ -372,7 +372,7 @@ Armor::Armor()
 
 QString Armor::subTypeName() const
 {
-    return "armor";
+    return QStringLiteral("armor");
 }
 
 EquipCard::Location Armor::location() const
@@ -386,7 +386,7 @@ DefensiveHorse::DefensiveHorse()
 
 QString DefensiveHorse::subTypeName() const
 {
-    return "defensive_horse";
+    return QStringLiteral("defensive_horse");
 }
 
 EquipCard::Location DefensiveHorse::location() const
@@ -400,7 +400,7 @@ OffensiveHorse::OffensiveHorse()
 
 QString OffensiveHorse::subTypeName() const
 {
-    return "offensive_horse";
+    return QStringLiteral("offensive_horse");
 }
 
 EquipCard::Location OffensiveHorse::location() const
@@ -414,7 +414,7 @@ Treasure::Treasure()
 
 QString Treasure::subTypeName() const
 {
-    return "treasure";
+    return QStringLiteral("treasure");
 }
 
 EquipCard::Location Treasure::location() const
@@ -433,7 +433,7 @@ CardFace::CardType TrickCard::type() const
 
 QString TrickCard::typeName() const
 {
-    return "trick";
+    return QStringLiteral("trick");
 }
 
 NonDelayedTrick::NonDelayedTrick()
@@ -442,7 +442,7 @@ NonDelayedTrick::NonDelayedTrick()
 
 QString NonDelayedTrick::subTypeName() const
 {
-    return "non_delayed_trick";
+    return QStringLiteral("non_delayed_trick");
 }
 
 bool NonDelayedTrick::isNDTrick() const
@@ -457,7 +457,7 @@ DelayedTrick::DelayedTrick()
 
 QString DelayedTrick::subTypeName() const
 {
-    return "delayed_trick";
+    return QStringLiteral("delayed_trick");
 }
 
 JudgeStruct DelayedTrick::judge() const
@@ -479,10 +479,10 @@ CardFace::CardType SkillCard::type() const
 
 QString SkillCard::typeName() const
 {
-    return "skill";
+    return QStringLiteral("skill");
 }
 
 QString SkillCard::subTypeName() const
 {
-    return "skill";
+    return QStringLiteral("skill");
 }

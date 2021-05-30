@@ -18,28 +18,28 @@ Recorder::Recorder(QObject *parent)
 
 void Recorder::record(const char *line)
 {
-    recordLine(line);
+    recordLine(QString::fromUtf8(line));
 }
 
 void Recorder::recordLine(const QString &line)
 {
     int elapsed = watch.elapsed();
-    if (line.endsWith("\n"))
-        data.append(QString("%1 %2").arg(elapsed).arg(line).toUtf8());
+    if (line.endsWith(QStringLiteral("\n")))
+        data.append(QStringLiteral("%1 %2").arg(elapsed).arg(line).toUtf8());
     else
-        data.append(QString("%1 %2\n").arg(elapsed).arg(line).toUtf8());
+        data.append(QStringLiteral("%1 %2\n").arg(elapsed).arg(line).toUtf8());
 }
 
 bool Recorder::save(const QString &filename) const
 {
     qDebug("%s", filename.toUtf8().data());
-    if (filename.endsWith(".txt")) {
+    if (filename.endsWith(QStringLiteral(".txt"))) {
         QFile file(filename);
         if (file.open(QIODevice::WriteOnly | QIODevice::Text))
             return file.write(data) != -1;
         else
             return false;
-    } else if (filename.endsWith(".png")) {
+    } else if (filename.endsWith(QStringLiteral(".png"))) {
         return TXT2PNG(data).save(filename);
     } else
         return false;
@@ -51,7 +51,7 @@ QList<QByteArray> Recorder::getRecords() const
     return records;
 }
 
-QImage Recorder::TXT2PNG(QByteArray txtData)
+QImage Recorder::TXT2PNG(const QByteArray &txtData)
 {
     QByteArray data = qCompress(txtData, 9);
     qint32 actual_size = data.size();
@@ -89,11 +89,11 @@ Replayer::Replayer(QObject *parent, const QString &filename)
     , playing(true)
 {
     QIODevice *device = nullptr;
-    if (filename.endsWith(".png")) {
+    if (filename.endsWith(QStringLiteral(".png"))) {
         QByteArray *data = new QByteArray(Recorder::PNG2TXT(filename));
         QBuffer *buffer = new QBuffer(data);
         device = buffer;
-    } else if (filename.endsWith(".txt")) {
+    } else if (filename.endsWith(QStringLiteral(".txt"))) {
         QFile *file = new QFile(filename);
         device = file;
     }
@@ -116,7 +116,7 @@ Replayer::Replayer(QObject *parent, const QString &filename)
             continue;
 
         *space = '\0';
-        QString cmd = space + 1;
+        QString cmd = QString::fromUtf8(space + 1);
         int elapsed = atoi(line);
 
         Pair pair;

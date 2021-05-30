@@ -54,7 +54,7 @@ bool JsonWriteFunc(QIODevice &device, const QSettings::SettingsMap &map)
 
 void registerCustomFormat1()
 {
-    QSettings::registerFormat("json", JsonReadFunc, JsonWriteFunc);
+    QSettings::registerFormat(QStringLiteral("json"), JsonReadFunc, JsonWriteFunc);
 }
 }
 
@@ -65,13 +65,13 @@ void Settings::loadSettingsFromConfigIni()
     {
         QSettings oldConfig
 #ifdef Q_OS_WIN
-            ("config.ini", QSettings::IniFormat)
+            (QStringLiteral("config.ini"), QSettings::IniFormat)
 #else
             ("QSanguosha.org", "QSanguosha")
 #endif
                 ;
         {
-            QVariant value(oldConfig.value(QStringLiteral("1v1/Rule"), "2013").toString());
+            QVariant value(oldConfig.value(QStringLiteral("1v1/Rule"), QStringLiteral("2013")).toString());
             setValue(QStringLiteral("1v1/Rule"), value);
         }
 
@@ -96,12 +96,12 @@ void Settings::loadSettingsFromConfigIni()
         }
 
         {
-            QVariant value(oldConfig.value(QStringLiteral("3v3/OfficialRule"), "2013").toString());
+            QVariant value(oldConfig.value(QStringLiteral("3v3/OfficialRule"), QStringLiteral("2013")).toString());
             setValue(QStringLiteral("3v3/OfficialRule"), value);
         }
 
         {
-            QVariant value(oldConfig.value(QStringLiteral("3v3/RoleChoose"), "Normal").toString());
+            QVariant value(oldConfig.value(QStringLiteral("3v3/RoleChoose"), QStringLiteral("Normal")).toString());
             setValue(QStringLiteral("3v3/RoleChoose"), value);
         }
 
@@ -146,7 +146,7 @@ void Settings::loadSettingsFromConfigIni()
         }
 
         {
-            QVariant value(oldConfig.value(QStringLiteral("BackgroundMusic"), "audio/title/main.ogg").toString());
+            QVariant value(oldConfig.value(QStringLiteral("BackgroundMusic"), QStringLiteral("audio/title/main.ogg")).toString());
             setValue(QStringLiteral("BackgroundMusic"), value);
         }
 
@@ -211,7 +211,7 @@ void Settings::loadSettingsFromConfigIni()
         }
 
         {
-            QVariant value(oldConfig.value(QStringLiteral("DefaultFontPath"), "font/simli.ttf").toString());
+            QVariant value(oldConfig.value(QStringLiteral("DefaultFontPath"), QStringLiteral("font/simli.ttf")).toString());
             setValue(QStringLiteral("DefaultFontPath"), value);
         }
 
@@ -351,7 +351,7 @@ void Settings::loadSettingsFromConfigIni()
         }
 
         {
-            QVariant value(oldConfig.value(QStringLiteral("GameMode"), "08p").toString());
+            QVariant value(oldConfig.value(QStringLiteral("GameMode"), QStringLiteral("08p")).toString());
             setValue(QStringLiteral("GameMode"), value);
         }
 
@@ -366,7 +366,7 @@ void Settings::loadSettingsFromConfigIni()
         }
 
         {
-            QVariant value(oldConfig.value(QStringLiteral("HostAddress"), "127.0.0.1").toString());
+            QVariant value(oldConfig.value(QStringLiteral("HostAddress"), QStringLiteral("127.0.0.1")).toString());
             setValue(QStringLiteral("HostAddress"), value);
         }
 
@@ -481,7 +481,7 @@ void Settings::loadSettingsFromConfigIni()
         }
 
         {
-            QVariant value(oldConfig.value(QStringLiteral("RecordSavePath"), "records/").toString());
+            QVariant value(oldConfig.value(QStringLiteral("RecordSavePath"), QStringLiteral("records/")).toString());
             setValue(QStringLiteral("RecordSavePath"), value);
         }
 
@@ -501,17 +501,17 @@ void Settings::loadSettingsFromConfigIni()
         }
 
         {
-            QVariant value(oldConfig.value(QStringLiteral("TableBgImage"), "backdrop/default.jpg").toString());
+            QVariant value(oldConfig.value(QStringLiteral("TableBgImage"), QStringLiteral("backdrop/default.jpg")).toString());
             setValue(QStringLiteral("TableBgImage"), value);
         }
 
         {
-            QVariant value(oldConfig.value(QStringLiteral("TextEditColor"), "white").toString());
+            QVariant value(oldConfig.value(QStringLiteral("TextEditColor"), QStringLiteral("white")).toString());
             setValue(QStringLiteral("TextEditColor"), value);
         }
 
         {
-            QVariant value(oldConfig.value(QStringLiteral("ToolTipBackgroundColor"), "#000000").toString());
+            QVariant value(oldConfig.value(QStringLiteral("ToolTipBackgroundColor"), QStringLiteral("#000000")).toString());
             setValue(QStringLiteral("ToolTipBackgroundColor"), value);
         }
 
@@ -526,18 +526,18 @@ void Settings::loadSettingsFromConfigIni()
         }
 
         {
-            QVariant value(oldConfig.value(QStringLiteral("UserAvatar"), "keine_sp").toString());
+            QVariant value(oldConfig.value(QStringLiteral("UserAvatar"), QStringLiteral("keine_sp")).toString());
             setValue(QStringLiteral("UserAvatar"), value);
         }
 
         {
 #ifdef Q_OS_WIN32
-            UserName = oldConfig.value("UserName", qgetenv("USERNAME")).toString();
+            UserName = oldConfig.value(QStringLiteral("UserName"), QString::fromUtf8(qgetenv("USERNAME"))).toString();
 #else
             UserName = oldConfig.value("USERNAME", qgetenv("USER")).toString();
 #endif
 
-            if (UserName == "Admin" || UserName == "Administrator")
+            if (UserName == QStringLiteral("Admin") || UserName == QStringLiteral("Administrator"))
                 UserName = tr("Sanguosha-fans");
 
             QVariant value(UserName);
@@ -572,26 +572,26 @@ void Settings::loadSettingsFromConfigIni()
         }
 
         {
-            QVariant value(oldConfig.value(QStringLiteral("XMode/RoleChooseX"), "Normal").toString());
+            QVariant value(oldConfig.value(QStringLiteral("XMode/RoleChooseX"), QStringLiteral("Normal")).toString());
             setValue(QStringLiteral("XMode/RoleChooseX"), value);
         }
     }
 
-    QFile::remove("config.ini");
+    QFile::remove(QStringLiteral("config.ini"));
 }
 
 Settings::Settings()
-    : QSettings("config.json", QSettings::CustomFormat1)
+    : QSettings(QStringLiteral("config.json"), QSettings::CustomFormat1)
     , Rect(-ViewWidth / 2, -ViewHeight / 2, ViewWidth, ViewHeight)
 {
-    if (!QFile::exists("config.json"))
+    if (!QFile::exists(QStringLiteral("config.json")))
         loadSettingsFromConfigIni();
 }
 
 void Settings::init()
 {
-    if (!QCoreApplication::instance()->arguments().contains("-server")) {
-        QString font_path = value("DefaultFontPath", "font/simli.ttf").toString();
+    if (!QCoreApplication::instance()->arguments().contains(QStringLiteral("-server"))) {
+        QString font_path = value(QStringLiteral("DefaultFontPath"), QStringLiteral("font/simli.ttf")).toString();
         int font_id = QFontDatabase::addApplicationFont(font_path);
         if (font_id != -1) {
             QString font_family = QFontDatabase::applicationFontFamilies(font_id).first();
@@ -607,199 +607,196 @@ void Settings::init()
 
         SmallFont.setWeight(QFont::Bold);
 
-        AppFont = value("AppFont", QApplication::font("QMainWindow")).value<QFont>();
-        UIFont = value("UIFont", QApplication::font("QTextEdit")).value<QFont>();
-        TextEditColor = QColor(value("TextEditColor", "white").toString());
-        ToolTipBackgroundColor = value("ToolTipBackgroundColor", "#000000").toString();
+        AppFont = value(QStringLiteral("AppFont"), QApplication::font("QMainWindow")).value<QFont>();
+        UIFont = value(QStringLiteral("UIFont"), QApplication::font("QTextEdit")).value<QFont>();
+        TextEditColor = QColor(value(QStringLiteral("TextEditColor"), QStringLiteral("white")).toString());
+        ToolTipBackgroundColor = value(QStringLiteral("ToolTipBackgroundColor"), QStringLiteral("#000000")).toString();
     }
 
-    CountDownSeconds = value("CountDownSeconds", 3).toInt();
-    GameMode = value("GameMode", "08p").toString();
+    CountDownSeconds = value(QStringLiteral("CountDownSeconds"), 3).toInt();
+    GameMode = value(QStringLiteral("GameMode"), QStringLiteral("08p")).toString();
 
-    QStringList banpackagelist = value("BanPackages").toStringList();
+    QStringList banpackagelist = value(QStringLiteral("BanPackages")).toStringList();
 
-    setValue("BanPackages", banpackagelist);
+    setValue(QStringLiteral("BanPackages"), banpackagelist);
 
-    BanPackages = value("BanPackages").toStringList();
+    BanPackages = value(QStringLiteral("BanPackages")).toStringList();
 
-    RandomSeat = value("RandomSeat", true).toBool();
-    AssignLatestGeneral = value("AssignLatestGeneral", false).toBool();
-    EnableCheat = value("EnableCheat", false).toBool();
-    FreeChoose = EnableCheat && value("FreeChoose", false).toBool();
-    ForbidSIMC = value("ForbidSIMC", false).toBool();
-    DisableChat = value("DisableChat", false).toBool();
-    FreeAssignSelf = EnableCheat && value("FreeAssignSelf", false).toBool();
-    Enable2ndGeneral = value("Enable2ndGeneral", false).toBool();
-    EnableSame = value("EnableSame", false).toBool();
-    MaxHpScheme = value("MaxHpScheme", 0).toInt();
-    Scheme0Subtraction = value("Scheme0Subtraction", 3).toInt();
-    PreventAwakenBelow3 = value("PreventAwakenBelow3", false).toBool();
-    Address = value("Address", QString()).toString();
-    EnableAI = value("EnableAI", true).toBool();
-    OriginAIDelay = value("OriginAIDelay", 1000).toInt();
-    AlterAIDelayAD = value("AlterAIDelayAD", false).toBool();
-    AIDelayAD = value("AIDelayAD", 0).toInt();
-    AIProhibitBlindAttack = value("AIProhibitBlindAttack", false).toBool();
-    SurrenderAtDeath = value("SurrenderAtDeath", false).toBool();
-    LuckCardLimitation = value("LuckCardLimitation", 0).toInt();
-    ServerPort = value("ServerPort", 9527u).toUInt();
-    DisableLua = value("DisableLua", false).toBool();
-    LimitRobot = value("LimitRobot", false).toBool();
+    RandomSeat = value(QStringLiteral("RandomSeat"), true).toBool();
+    AssignLatestGeneral = value(QStringLiteral("AssignLatestGeneral"), false).toBool();
+    EnableCheat = value(QStringLiteral("EnableCheat"), false).toBool();
+    FreeChoose = EnableCheat && value(QStringLiteral("FreeChoose"), false).toBool();
+    ForbidSIMC = value(QStringLiteral("ForbidSIMC"), false).toBool();
+    DisableChat = value(QStringLiteral("DisableChat"), false).toBool();
+    FreeAssignSelf = EnableCheat && value(QStringLiteral("FreeAssignSelf"), false).toBool();
+    Enable2ndGeneral = value(QStringLiteral("Enable2ndGeneral"), false).toBool();
+    EnableSame = value(QStringLiteral("EnableSame"), false).toBool();
+    MaxHpScheme = value(QStringLiteral("MaxHpScheme"), 0).toInt();
+    Scheme0Subtraction = value(QStringLiteral("Scheme0Subtraction"), 3).toInt();
+    PreventAwakenBelow3 = value(QStringLiteral("PreventAwakenBelow3"), false).toBool();
+    Address = value(QStringLiteral("Address"), QString()).toString();
+    EnableAI = value(QStringLiteral("EnableAI"), true).toBool();
+    OriginAIDelay = value(QStringLiteral("OriginAIDelay"), 1000).toInt();
+    AlterAIDelayAD = value(QStringLiteral("AlterAIDelayAD"), false).toBool();
+    AIDelayAD = value(QStringLiteral("AIDelayAD"), 0).toInt();
+    AIProhibitBlindAttack = value(QStringLiteral("AIProhibitBlindAttack"), false).toBool();
+    SurrenderAtDeath = value(QStringLiteral("SurrenderAtDeath"), false).toBool();
+    LuckCardLimitation = value(QStringLiteral("LuckCardLimitation"), 0).toInt();
+    ServerPort = value(QStringLiteral("ServerPort"), 9527u).toUInt();
+    DisableLua = value(QStringLiteral("DisableLua"), false).toBool();
+    LimitRobot = value(QStringLiteral("LimitRobot"), false).toBool();
 
 #ifdef Q_OS_WIN32
-    UserName = value("UserName", qgetenv("USERNAME")).toString();
+    UserName = value(QStringLiteral("UserName"), qgetenv("USERNAME")).toString();
 #else
     UserName = value("USERNAME", qgetenv("USER")).toString();
 #endif
 
-    if (UserName == "Admin" || UserName == "Administrator")
+    if (UserName == QStringLiteral("Admin") || UserName == QStringLiteral("Administrator"))
         UserName = tr("Sanguosha-fans");
-    ServerName = value("ServerName", tr("%1's server").arg(UserName)).toString();
+    ServerName = value(QStringLiteral("ServerName"), tr("%1's server").arg(UserName)).toString();
 
-    if (!contains("HostUrl")) {
-        if (contains("HostAddress")) {
-            QString h = value("HostAddress").toString();
-            setValue("HostUrl", QString("qths://" + h));
-            remove("HostAddress");
+    if (!contains(QStringLiteral("HostUrl"))) {
+        if (contains(QStringLiteral("HostAddress"))) {
+            QString h = value(QStringLiteral("HostAddress")).toString();
+            setValue(QStringLiteral("HostUrl"), (QStringLiteral("qths://") + h));
+            remove(QStringLiteral("HostAddress"));
         }
     }
-    HostAddress = value("HostUrl", "qths://127.0.0.1").toString();
-    UserAvatar = value("UserAvatar", "keine_sp").toString();
+    HostAddress = value(QStringLiteral("HostUrl"), QStringLiteral("qths://127.0.0.1")).toString();
+    UserAvatar = value(QStringLiteral("UserAvatar"), QStringLiteral("keine_sp")).toString();
 
-    if (!(contains("HistoryUrls"))) {
-        if (contains("HistoryIPs")) {
-            QStringList l = value("HistoryIPs").toStringList();
+    if (!(contains(QStringLiteral("HistoryUrls")))) {
+        if (contains(QStringLiteral("HistoryIPs"))) {
+            QStringList l = value(QStringLiteral("HistoryIPs")).toStringList();
             QStringList l2;
             foreach (const QString &i, l)
-                l2 << ("qths://" + i);
+                l2 << (QStringLiteral("qths://") + i);
 
-            setValue("HistoryUrls", l2);
-            remove("HistoryIPs");
+            setValue(QStringLiteral("HistoryUrls"), l2);
+            remove(QStringLiteral("HistoryIPs"));
         }
     }
-    HistoryIPs = value("HistoryUrls").toStringList();
-    DetectorPort = value("DetectorPort", 9526u).toUInt();
-    MaxCards = value("MaxCards", 12).toInt();
+    HistoryIPs = value(QStringLiteral("HistoryUrls")).toStringList();
+    DetectorPort = value(QStringLiteral("DetectorPort"), 9526u).toUInt();
+    MaxCards = value(QStringLiteral("MaxCards"), 12).toInt();
 
-    HegemonyFirstShowReward = value("HegemonyFirstShowReward", "None").toString();
-    HegemonyCompanionReward = value("HegemonyCompanionReward", "Instant").toString();
-    HegemonyHalfHpReward = value("HegemonyHalfHpReward", "Instant").toString();
-    HegemonyCareeristKillReward = value("HegemonyCareeristKillReward", "AsUsual").toString();
+    HegemonyFirstShowReward = value(QStringLiteral("HegemonyFirstShowReward"), QStringLiteral("None")).toString();
+    HegemonyCompanionReward = value(QStringLiteral("HegemonyCompanionReward"), QStringLiteral("Instant")).toString();
+    HegemonyHalfHpReward = value(QStringLiteral("HegemonyHalfHpReward"), QStringLiteral("Instant")).toString();
+    HegemonyCareeristKillReward = value(QStringLiteral("HegemonyCareeristKillReward"), QStringLiteral("AsUsual")).toString();
 
-    EnableHotKey = value("EnableHotKey", true).toBool();
-    NeverNullifyMyTrick = value("NeverNullifyMyTrick", true).toBool();
-    EnableMinimizeDialog = value("EnableMinimizeDialog", false).toBool();
-    EnableAutoTarget = value("EnableAutoTarget", true).toBool();
-    EnableIntellectualSelection = value("EnableIntellectualSelection", true).toBool();
-    EnableDoubleClick = value("EnableDoubleClick", false).toBool();
-    EnableAutoUpdate = value("EnableAutoUpdate", true).toBool();
-    BubbleChatBoxDelaySeconds = value("BubbleChatBoxDelaySeconds", 2).toInt();
-    DefaultHeroSkin = value("DefaultHeroSkin", true).toBool();
+    EnableHotKey = value(QStringLiteral("EnableHotKey"), true).toBool();
+    NeverNullifyMyTrick = value(QStringLiteral("NeverNullifyMyTrick"), true).toBool();
+    EnableMinimizeDialog = value(QStringLiteral("EnableMinimizeDialog"), false).toBool();
+    EnableAutoTarget = value(QStringLiteral("EnableAutoTarget"), true).toBool();
+    EnableIntellectualSelection = value(QStringLiteral("EnableIntellectualSelection"), true).toBool();
+    EnableDoubleClick = value(QStringLiteral("EnableDoubleClick"), false).toBool();
+    EnableAutoUpdate = value(QStringLiteral("EnableAutoUpdate"), true).toBool();
+    BubbleChatBoxDelaySeconds = value(QStringLiteral("BubbleChatBoxDelaySeconds"), 2).toInt();
+    DefaultHeroSkin = value(QStringLiteral("DefaultHeroSkin"), true).toBool();
 
-    NullificationCountDown = value("NullificationCountDown", 8).toInt();
-    OperationTimeout = value("OperationTimeout", 15).toInt();
-    OperationNoLimit = value("OperationNoLimit", false).toBool();
-    EnableEffects = value("EnableEffects", true).toBool();
-    EnableLastWord = value("EnableLastWord", true).toBool();
-    EnableBgMusic = value("EnableBgMusic", true).toBool();
-    UseLordBGM = value("UseLordBGM", true).toBool();
-    BGMVolume = value("BGMVolume", 1.0f).toFloat();
-    EffectVolume = value("EffectVolume", 1.0f).toFloat();
+    NullificationCountDown = value(QStringLiteral("NullificationCountDown"), 8).toInt();
+    OperationTimeout = value(QStringLiteral("OperationTimeout"), 15).toInt();
+    OperationNoLimit = value(QStringLiteral("OperationNoLimit"), false).toBool();
+    EnableEffects = value(QStringLiteral("EnableEffects"), true).toBool();
+    EnableLastWord = value(QStringLiteral("EnableLastWord"), true).toBool();
+    EnableBgMusic = value(QStringLiteral("EnableBgMusic"), true).toBool();
+    UseLordBGM = value(QStringLiteral("UseLordBGM"), true).toBool();
+    BGMVolume = value(QStringLiteral("BGMVolume"), 1.0f).toFloat();
+    EffectVolume = value(QStringLiteral("EffectVolume"), 1.0f).toFloat();
 
     int length = 8;
     int index = QRandomGenerator::global()->generate() % length + 1;
-    QString bgFilename = QString("%1%2%3").arg("backdrop/hall/gensoukyou_").arg(index).arg(".jpg");
+    QString bgFilename = QStringLiteral("%1%2%3").arg(QStringLiteral("backdrop/hall/gensoukyou_")).arg(index).arg(QStringLiteral(".jpg"));
 
     BackgroundImage = bgFilename;
-    TableBgImage = value("TableBgImage", "backdrop/default.jpg").toString();
-    UseLordBackdrop = value("UseLordBackdrop", true).toBool();
+    TableBgImage = value(QStringLiteral("TableBgImage"), QStringLiteral("backdrop/default.jpg")).toString();
+    UseLordBackdrop = value(QStringLiteral("UseLordBackdrop"), true).toBool();
 
-    EnableAutoSaveRecord = value("EnableAutoSaveRecord", false).toBool();
-    NetworkOnly = value("NetworkOnly", false).toBool();
-    RecordSavePath = value("RecordSavePath", "records/").toString();
+    EnableAutoSaveRecord = value(QStringLiteral("EnableAutoSaveRecord"), false).toBool();
+    NetworkOnly = value(QStringLiteral("NetworkOnly"), false).toBool();
+    RecordSavePath = value(QStringLiteral("RecordSavePath"), QStringLiteral("records/")).toString();
 
     QStringList roles_ban, kof_ban, hulao_ban, xmode_ban, basara_ban, hegemony_ban, pairs_ban;
 
-    roles_ban = Sanguosha->getConfigFromConfigFile("roles_ban").toStringList();
-    kof_ban = Sanguosha->getConfigFromConfigFile("kof_ban").toStringList();
-    hulao_ban = Sanguosha->getConfigFromConfigFile("hulao_ban").toStringList();
-    xmode_ban = Sanguosha->getConfigFromConfigFile("xmode_ban").toStringList();
-    basara_ban = Sanguosha->getConfigFromConfigFile("basara_ban").toStringList();
-    hegemony_ban = Sanguosha->getConfigFromConfigFile("hegemony_ban").toStringList();
+    roles_ban = Sanguosha->getConfigFromConfigFile(QStringLiteral("roles_ban")).toStringList();
+    kof_ban = Sanguosha->getConfigFromConfigFile(QStringLiteral("kof_ban")).toStringList();
+    hulao_ban = Sanguosha->getConfigFromConfigFile(QStringLiteral("hulao_ban")).toStringList();
+    xmode_ban = Sanguosha->getConfigFromConfigFile(QStringLiteral("xmode_ban")).toStringList();
+    basara_ban = Sanguosha->getConfigFromConfigFile(QStringLiteral("basara_ban")).toStringList();
+    hegemony_ban = Sanguosha->getConfigFromConfigFile(QStringLiteral("hegemony_ban")).toStringList();
     hegemony_ban.append(basara_ban);
     foreach (QString general, Sanguosha->getLimitedGeneralNames()) {
-        if (Sanguosha->getGeneral(general)->getKingdom() == "god" && !hegemony_ban.contains(general))
+        if (Sanguosha->getGeneral(general)->getKingdom() == QStringLiteral("god") && !hegemony_ban.contains(general))
             hegemony_ban << general;
     }
-    pairs_ban = Sanguosha->getConfigFromConfigFile("pairs_ban").toStringList();
+    pairs_ban = Sanguosha->getConfigFromConfigFile(QStringLiteral("pairs_ban")).toStringList();
 
-    QStringList banlist = value("Banlist/Roles").toStringList();
+    QStringList banlist = value(QStringLiteral("Banlist/Roles")).toStringList();
     if (banlist.isEmpty()) {
         foreach (QString ban_general, roles_ban)
             banlist << ban_general;
 
-        setValue("Banlist/Roles", banlist);
+        setValue(QStringLiteral("Banlist/Roles"), banlist);
     }
 
-    banlist = value("Banlist/1v1").toStringList();
+    banlist = value(QStringLiteral("Banlist/1v1")).toStringList();
     if (banlist.isEmpty()) {
         foreach (QString ban_general, kof_ban)
             banlist << ban_general;
 
-        setValue("Banlist/1v1", banlist);
+        setValue(QStringLiteral("Banlist/1v1"), banlist);
     }
 
-    banlist = value("Banlist/HulaoPass").toStringList();
+    banlist = value(QStringLiteral("Banlist/HulaoPass")).toStringList();
     if (banlist.isEmpty()) {
         foreach (QString ban_general, hulao_ban)
             banlist << ban_general;
 
-        setValue("Banlist/HulaoPass", banlist);
+        setValue(QStringLiteral("Banlist/HulaoPass"), banlist);
     }
 
-    banlist = value("Banlist/XMode").toStringList();
+    banlist = value(QStringLiteral("Banlist/XMode")).toStringList();
     if (banlist.isEmpty()) {
         foreach (QString ban_general, xmode_ban)
             banlist << ban_general;
 
-        setValue("Banlist/XMode", banlist);
+        setValue(QStringLiteral("Banlist/XMode"), banlist);
     }
 
-    banlist = value("Banlist/Basara").toStringList();
+    banlist = value(QStringLiteral("Banlist/Basara")).toStringList();
     if (banlist.isEmpty()) {
         foreach (QString ban_general, basara_ban)
             banlist << ban_general;
 
-        setValue("Banlist/Basara", banlist);
+        setValue(QStringLiteral("Banlist/Basara"), banlist);
     }
 
-    banlist = value("Banlist/Hegemony").toStringList();
+    banlist = value(QStringLiteral("Banlist/Hegemony")).toStringList();
     if (banlist.isEmpty()) {
         foreach (QString ban_general, hegemony_ban)
             banlist << ban_general;
-        setValue("Banlist/Hegemony", banlist);
+        setValue(QStringLiteral("Banlist/Hegemony"), banlist);
     }
 
-    banlist = value("Banlist/Pairs").toStringList();
+    banlist = value(QStringLiteral("Banlist/Pairs")).toStringList();
     if (banlist.isEmpty()) {
         foreach (QString ban_general, pairs_ban)
             banlist << ban_general;
 
-        setValue("Banlist/Pairs", banlist);
+        setValue(QStringLiteral("Banlist/Pairs"), banlist);
     }
 
-    QStringList forbid_packages = value("ForbidPackages").toStringList();
+    QStringList forbid_packages = value(QStringLiteral("ForbidPackages")).toStringList();
     if (forbid_packages.isEmpty()) {
-        forbid_packages << "New3v3Card"
-                        << "New3v3_2013Card"
-                        << "New1v1Card"
-                        << "test";
+        forbid_packages << QStringLiteral("New3v3Card") << QStringLiteral("New3v3_2013Card") << QStringLiteral("New1v1Card") << QStringLiteral("test");
 
-        setValue("ForbidPackages", forbid_packages);
+        setValue(QStringLiteral("ForbidPackages"), forbid_packages);
     }
 
-    ExtraHiddenGenerals = Sanguosha->getConfigFromConfigFile("extra_hidden_generals").toStringList();
-    RemovedHiddenGenerals = Sanguosha->getConfigFromConfigFile("removed_hidden_generals").toStringList();
+    ExtraHiddenGenerals = Sanguosha->getConfigFromConfigFile(QStringLiteral("extra_hidden_generals")).toStringList();
+    RemovedHiddenGenerals = Sanguosha->getConfigFromConfigFile(QStringLiteral("removed_hidden_generals")).toStringList();
 
     AutoUpdateNeedsRestart = !EnableAutoUpdate;
     AutoUpdateDataRececived = false;
@@ -809,7 +806,7 @@ const QString &Settings::getQSSFileContent()
 {
     static QString qssFileContent;
     if (qssFileContent.isEmpty()) {
-        QFile file("sanguosha.qss");
+        QFile file(QStringLiteral("sanguosha.qss"));
         if (file.open(QIODevice::ReadOnly)) {
             QTextStream stream(&file);
             qssFileContent = stream.readAll();

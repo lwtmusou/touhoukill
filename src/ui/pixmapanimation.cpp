@@ -26,6 +26,9 @@
 #include <QPainter>
 #include <QPixmapCache>
 #include <QTimer>
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 const int PixmapAnimation::S_DEFAULT_INTERVAL = 50;
 
@@ -55,10 +58,10 @@ void PixmapAnimation::setPath(const QString &path, bool playback)
     current = 0;
 
     int i = 0;
-    QString pic_path = QString("%1%2%3").arg(path).arg(i++).arg(".png");
+    QString pic_path = QStringLiteral("%1%2%3").arg(path).arg(i++).arg(QStringLiteral(".png"));
     do {
         frames << G_ROOM_SKIN.getPixmapFromFileName(pic_path);
-        pic_path = QString("%1%2%3").arg(path).arg(i++).arg(".png");
+        pic_path = QStringLiteral("%1%2%3").arg(path).arg(i++).arg(QStringLiteral(".png"));
     } while (QFile::exists(pic_path));
 
     if (playback) {
@@ -68,7 +71,7 @@ void PixmapAnimation::setPath(const QString &path, bool playback)
     }
 }
 
-void PixmapAnimation::setSize(const QSize &size)
+void PixmapAnimation::setSize(QSize size)
 {
     m_fix_rect = true;
     m_size = size;
@@ -119,7 +122,7 @@ void PixmapAnimation::start(bool permanent, int interval)
     if (!permanent)
         connect(this, &PixmapAnimation::finished, this, &PixmapAnimation::deleteLater);
     if (m_timer > 0)
-        QTimer::singleShot(m_timer, this, SLOT(end()));
+        QTimer::singleShot(m_timer, this, &PixmapAnimation::end);
 }
 
 void PixmapAnimation::stop()
@@ -145,7 +148,7 @@ void PixmapAnimation::preStart()
     this->show();
     _m_timerId = startTimer(S_DEFAULT_INTERVAL);
     if (m_timer > 0)
-        QTimer::singleShot(m_timer, this, SLOT(end()));
+        QTimer::singleShot(m_timer, this, &PixmapAnimation::end);
 }
 
 void PixmapAnimation::end()
@@ -157,30 +160,30 @@ void PixmapAnimation::end()
 PixmapAnimation *PixmapAnimation::GetPixmapAnimation(QGraphicsItem *parent, const QString &emotion, bool playback, int duration)
 {
     PixmapAnimation *pma = new PixmapAnimation();
-    pma->setPath(QString("image/system/emotion/%1/").arg(emotion), playback);
+    pma->setPath(QStringLiteral("image/system/emotion/%1/").arg(emotion), playback);
     if (duration > 0)
         pma->setPlayTime(duration);
     if (pma->valid()) {
-        if (emotion == "no-success") {
+        if (emotion == QStringLiteral("no-success")) {
             pma->moveBy(pma->boundingRect().width() * 0.25, pma->boundingRect().height() * 0.25);
             pma->setScale(0.5);
-        } else if (emotion == "success") {
+        } else if (emotion == QStringLiteral("success")) {
             pma->moveBy(pma->boundingRect().width() * 0.1, pma->boundingRect().height() * 0.1);
             pma->setScale(0.8);
-        } else if (emotion.contains("double_sword"))
+        } else if (emotion.contains(QStringLiteral("double_sword")))
             pma->moveBy(13, -20);
-        else if (emotion.contains("fan") || emotion.contains("guding_blade"))
+        else if (emotion.contains(QStringLiteral("fan")) || emotion.contains(QStringLiteral("guding_blade")))
             pma->moveBy(0, -20);
-        else if (emotion.contains("/spear"))
+        else if (emotion.contains(QStringLiteral("/spear")))
             pma->moveBy(-20, -20);
 
         pma->moveBy((parent->boundingRect().width() - pma->boundingRect().width()) / 2, (parent->boundingRect().height() - pma->boundingRect().height()) / 2);
 
         pma->setParentItem(parent);
         pma->setZValue(20002.0);
-        if (emotion.contains("weapon")) {
+        if (emotion.contains(QStringLiteral("weapon"))) {
             pma->hide();
-            QTimer::singleShot(600, pma, SLOT(preStart()));
+            QTimer::singleShot(600ms, pma, &PixmapAnimation::preStart);
         } else
             pma->preStart();
 
@@ -205,8 +208,8 @@ QPixmap PixmapAnimation::GetFrameFromCache(const QString &filename)
 
 int PixmapAnimation::GetFrameCount(const QString &emotion)
 {
-    QString path = QString("image/system/emotion/%1/").arg(emotion);
+    QString path = QStringLiteral("image/system/emotion/%1/").arg(emotion);
     QDir dir(path);
-    dir.setNameFilters(QStringList("*.png"));
+    dir.setNameFilters(QStringList(QStringLiteral("*.png")));
     return dir.entryList(QDir::Files | QDir::NoDotAndDotDot).count();
 }

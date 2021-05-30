@@ -24,7 +24,7 @@ QString LogMessage::toString() const
         if (player != nullptr)
             tos << player->objectName();
 
-    return QString("%1:%2->%3:%4:%5:%6").arg(type).arg(from ? from->objectName() : "").arg(tos.join("+")).arg(card_str).arg(arg).arg(arg2);
+    return QStringLiteral("%1:%2->%3:%4:%5:%6").arg(type).arg(from ? from->objectName() : QString()).arg(tos.join(QStringLiteral("+"))).arg(card_str).arg(arg).arg(arg2);
 }
 
 QVariant LogMessage::toJsonValue() const
@@ -35,7 +35,7 @@ QVariant LogMessage::toJsonValue() const
             tos << player->objectName();
 
     QStringList log;
-    log << type << (from ? from->objectName() : "") << tos.join("+") << card_str << arg << arg2;
+    log << type << (from ? from->objectName() : QString()) << tos.join(QStringLiteral("+")) << card_str << arg << arg2;
     QVariant json_log = JsonUtils::toJsonArray(log);
     return json_log;
 }
@@ -76,7 +76,7 @@ ServerPlayer *RoomThread::find3v3Next(QList<ServerPlayer *> &first, QList<Server
 {
     bool all_actioned = true;
     foreach (ServerPlayer *player, room->m_alivePlayers) {
-        if (!player->hasFlag("actioned")) {
+        if (!player->hasFlag(QStringLiteral("actioned"))) {
             all_actioned = false;
             break;
         }
@@ -84,7 +84,7 @@ ServerPlayer *RoomThread::find3v3Next(QList<ServerPlayer *> &first, QList<Server
 
     if (all_actioned) {
         foreach (ServerPlayer *player, room->m_alivePlayers) {
-            room->setPlayerFlag(player, "-actioned");
+            room->setPlayerFlag(player, QStringLiteral("-actioned"));
             QVariant v = QVariant::fromValue(player);
             trigger(ActionedReset, v);
         }
@@ -95,7 +95,7 @@ ServerPlayer *RoomThread::find3v3Next(QList<ServerPlayer *> &first, QList<Server
             if (p->isAlive())
                 first_alive << p;
         }
-        return room->askForPlayerChosen(first.first(), first_alive, "3v3-action", "@3v3-action");
+        return room->askForPlayerChosen(first.first(), first_alive, QStringLiteral("3v3-action"), QStringLiteral("@3v3-action"));
     }
 
     ServerPlayer *current = room->getCurrent();
@@ -105,7 +105,7 @@ ServerPlayer *RoomThread::find3v3Next(QList<ServerPlayer *> &first, QList<Server
             another = first.at(1);
         else
             another = first.last();
-        if (!another->hasFlag("actioned") && another->isAlive())
+        if (!another->hasFlag(QStringLiteral("actioned")) && another->isAlive())
             return another;
     }
 
@@ -114,12 +114,12 @@ ServerPlayer *RoomThread::find3v3Next(QList<ServerPlayer *> &first, QList<Server
         targets.clear();
         qSwap(first, second);
         foreach (ServerPlayer *player, first) {
-            if (!player->hasFlag("actioned") && player->isAlive())
+            if (!player->hasFlag(QStringLiteral("actioned")) && player->isAlive())
                 targets << player;
         }
     } while (targets.isEmpty());
 
-    return room->askForPlayerChosen(first.first(), targets, "3v3-action", "@3v3-action");
+    return room->askForPlayerChosen(first.first(), targets, QStringLiteral("3v3-action"), QStringLiteral("@3v3-action"));
 }
 
 void RoomThread::run3v3(QList<ServerPlayer *> &first, QList<ServerPlayer *> &second, GameRule *game_rule, ServerPlayer *current)
@@ -129,7 +129,7 @@ void RoomThread::run3v3(QList<ServerPlayer *> &first, QList<ServerPlayer *> &sec
             room->setCurrent(current);
             QVariant v = QVariant::fromValue(current);
             trigger(TurnStart, v);
-            room->setPlayerFlag(current, "actioned");
+            room->setPlayerFlag(current, QStringLiteral("actioned"));
             current = find3v3Next(first, second);
         }
     } catch (TriggerEvent triggerEvent) {
@@ -151,8 +151,8 @@ void RoomThread::_handleTurnBroken3v3(QList<ServerPlayer *> &first, QList<Server
             game_rule->trigger(EventPhaseEnd, room, TriggerDetail(room), data);
             player->changePhase(player->getPhase(), Player::NotActive);
         }
-        if (!player->hasFlag("actioned"))
-            room->setPlayerFlag(player, "actioned");
+        if (!player->hasFlag(QStringLiteral("actioned")))
+            room->setPlayerFlag(player, QStringLiteral("actioned"));
 
         ServerPlayer *next = find3v3Next(first, second);
         run3v3(first, second, game_rule, next);
@@ -165,7 +165,7 @@ void RoomThread::_handleTurnBroken3v3(QList<ServerPlayer *> &first, QList<Server
     }
 }
 
-ServerPlayer *RoomThread::findHulaoPassNext(ServerPlayer *, QList<ServerPlayer *>)
+ServerPlayer *RoomThread::findHulaoPassNext(ServerPlayer *, const QList<ServerPlayer *> &)
 {
     ServerPlayer *current = room->getCurrent();
     return qobject_cast<ServerPlayer *>(current->getNextAlive(1, false));
@@ -199,7 +199,7 @@ void RoomThread::actionHulaoPass(ServerPlayer *uuz, QList<ServerPlayer *> league
     }
 }
 
-void RoomThread::_handleTurnBrokenHulaoPass(ServerPlayer *uuz, QList<ServerPlayer *> league, GameRule *game_rule)
+void RoomThread::_handleTurnBrokenHulaoPass(ServerPlayer *uuz, const QList<ServerPlayer *> &league, GameRule *game_rule)
 {
     try {
         ServerPlayer *player = room->getCurrent();
@@ -238,15 +238,15 @@ void RoomThread::actionNormal(GameRule *game_rule)
                 ServerPlayer *nextExtraTurnCopy = nextExtraTurn;
                 QVariant data = QVariant::fromValue(nextExtraTurn);
                 nextExtraTurn = nullptr;
-                room->setTag("touhou-extra", true);
-                nextExtraTurnCopy->tag["touhou-extra"] = true;
+                room->setTag(QStringLiteral("touhou-extra"), true);
+                nextExtraTurnCopy->tag[QStringLiteral("touhou-extra")] = true;
                 trigger(TurnStart, data);
 
                 if (room->isFinished())
                     return;
-                nextExtraTurnCopy->tag["touhou-extra"] = false;
-                nextExtraTurnCopy->tag.remove("ExtraTurnInfo");
-                room->setTag("touhou-extra", false);
+                nextExtraTurnCopy->tag[QStringLiteral("touhou-extra")] = false;
+                nextExtraTurnCopy->tag.remove(QStringLiteral("ExtraTurnInfo"));
+                room->setTag(QStringLiteral("touhou-extra"), false);
 
                 current = extraTurnReturn;
                 extraTurnReturn = nullptr;
@@ -274,8 +274,8 @@ void RoomThread::_handleTurnBrokenNormal(GameRule *game_rule)
             player->changePhase(player->getPhase(), Player::NotActive);
         }
 
-        if (room->getTag("touhou-extra").toBool()) {
-            room->setTag("touhou-extra", false);
+        if (room->getTag(QStringLiteral("touhou-extra")).toBool()) {
+            room->setTag(QStringLiteral("touhou-extra"), false);
             if (extraTurnReturn != nullptr) {
                 player = extraTurnReturn;
                 extraTurnReturn = nullptr;
@@ -288,14 +288,14 @@ void RoomThread::_handleTurnBrokenNormal(GameRule *game_rule)
             ServerPlayer *nextExtraTurnCopy = nextExtraTurn;
             QVariant data = QVariant::fromValue(nextExtraTurn);
             nextExtraTurn = nullptr;
-            room->setTag("touhou-extra", true);
-            nextExtraTurnCopy->tag["touhou-extra"] = true;
+            room->setTag(QStringLiteral("touhou-extra"), true);
+            nextExtraTurnCopy->tag[QStringLiteral("touhou-extra")] = true;
             trigger(TurnStart, data);
 
             if (room->isFinished())
                 return;
-            nextExtraTurnCopy->tag["touhou-extra"] = false;
-            room->setTag("touhou-extra", false);
+            nextExtraTurnCopy->tag[QStringLiteral("touhou-extra")] = false;
+            room->setTag(QStringLiteral("touhou-extra"), false);
 
             player = extraTurnReturn;
             extraTurnReturn = nullptr;
@@ -340,12 +340,12 @@ void RoomThread::run()
     } else
         room->doBroadcastNotify(S_COMMAND_START_IN_X_SECONDS, QVariant(0));
 
-    if (room->getMode() == "04_1v3") {
+    if (room->getMode() == QStringLiteral("04_1v3")) {
         ServerPlayer *lord = room->getPlayers().first();
-        room->setPlayerProperty(lord, "general", "yuyuko_1v3");
+        room->setPlayerProperty(lord, "general", QStringLiteral("yuyuko_1v3"));
 
         QList<const General *> generals = QList<const General *>();
-        foreach (QString pack_name, Sanguosha->getConfigFromConfigFile("hulao_packages").toStringList()) {
+        foreach (QString pack_name, Sanguosha->getConfigFromConfigFile(QStringLiteral("hulao_packages")).toStringList()) {
             const Package *pack = Sanguosha->findPackage(pack_name);
             if (pack) {
                 foreach (auto gn, pack->generals())
@@ -360,7 +360,7 @@ void RoomThread::run()
             names << general->objectName();
         }
 
-        foreach (const QString &name, Config.value("Banlist/HulaoPass").toStringList())
+        foreach (const QString &name, Config.value(QStringLiteral("Banlist/HulaoPass")).toStringList())
             if (names.contains(name))
                 names.removeOne(name);
 
@@ -396,7 +396,7 @@ void RoomThread::run()
         QString order;
         QList<ServerPlayer *> warm, cool;
         QList<ServerPlayer *> first, second;
-        if (room->getMode() == "06_3v3") {
+        if (room->getMode() == QStringLiteral("06_3v3")) {
             foreach (ServerPlayer *player, room->m_players) {
                 switch (player->getRoleEnum()) {
                 case Player::Lord:
@@ -413,8 +413,8 @@ void RoomThread::run()
                     break;
                 }
             }
-            order = room->askForOrder(cool.first(), "cool");
-            if (order == "warm") {
+            order = room->askForOrder(cool.first(), QStringLiteral("cool"));
+            if (order == QStringLiteral("warm")) {
                 first = warm;
                 second = cool;
             } else {
@@ -425,9 +425,9 @@ void RoomThread::run()
         constructTriggerTable();
         QVariant v;
         trigger(GameStart, v);
-        if (room->getMode() == "06_3v3") {
+        if (room->getMode() == QStringLiteral("06_3v3")) {
             run3v3(first, second, game_rule, first.first());
-        } else if (room->getMode() == "04_1v3") {
+        } else if (room->getMode() == QStringLiteral("04_1v3")) {
             ServerPlayer *uuz = room->getLord();
             QList<ServerPlayer *> league = room->getPlayers();
             league.removeOne(uuz);
@@ -435,9 +435,9 @@ void RoomThread::run()
             room->setCurrent(league.first());
             actionHulaoPass(uuz, league, game_rule);
         } else {
-            if (room->getMode() == "02_1v1") {
+            if (room->getMode() == QStringLiteral("02_1v1")) {
                 ServerPlayer *first = room->getPlayers().first();
-                if (first->getRole() != "renegade")
+                if (first->getRole() != QStringLiteral("renegade"))
                     first = room->getPlayers().at(1);
                 ServerPlayer *second = room->getOtherPlayers(first).first();
                 QVariant v1 = QVariant::fromValue(first);
@@ -620,7 +620,7 @@ bool RoomThread::trigger(TriggerEvent e, QVariant &data)
 
             if (detailSelected.isNull() || !detailSelected->isValid()) {
                 // if cancel is pushed when it is cancelable, we set all the sametiming as triggered, and add all the skills to triggeredList, continue the next loop
-                for (QSharedPointer<TriggerDetail> ptr : sameTiming) {
+                for (QSharedPointer<TriggerDetail> ptr : qAsConst(sameTiming)) {
                     ptr->setTriggered(true);
                     triggered << ptr;
                 }

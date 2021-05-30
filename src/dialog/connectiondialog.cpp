@@ -24,6 +24,9 @@
 #include <QTimer>
 #include <QUrl>
 #include <QWidget>
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 AvatarModel::AvatarModel(const QList<const General *> &list)
     : list(list)
@@ -101,7 +104,7 @@ void ConnectionDialog::accept()
     }
 
     QUrl url(hostComboBox->currentText());
-    if (url.isValid() && (url.scheme() == "qths") && !url.host().isEmpty()) {
+    if (url.isValid() && (url.scheme() == QStringLiteral("qths")) && !url.host().isEmpty()) {
         // modifiers
         if (!url.path().isEmpty()) {
             // now we are planning to support the following 2 modifiers:
@@ -112,15 +115,15 @@ void ConnectionDialog::accept()
             // The "observe" modifier is .....
 
             QString p = url.path();
-            QStringList ps = p.split('/', Qt::SkipEmptyParts);
+            QStringList ps = p.split(QLatin1Char('/'), Qt::SkipEmptyParts);
             if (ps.length() != 2) {
                 QMessageBox::warning(this, tr("Warning"), tr("This pattern is not supported, please recheck your input."));
                 return;
             } else {
                 // check valid ps.first
-                if (ps.first() == "reconnect") {
+                if (ps.first() == QStringLiteral("reconnect")) {
                     // correct reconnection indicator
-                } else if (ps.first() == "observe") {
+                } else if (ps.first() == QStringLiteral("observe")) {
                     // warning, not implemented
                     QMessageBox::warning(this, tr("Warning"), tr("This operation is not implemented yet. Sorry for my laziness."));
                     return;
@@ -130,7 +133,7 @@ void ConnectionDialog::accept()
                 }
 
                 // check valid ps.last
-                if (!ps.last().startsWith("sgs")) {
+                if (!ps.last().startsWith(QStringLiteral("sgs"))) {
                     QMessageBox::warning(this, tr("Warning"), tr("The connection name is incorrect, please recheck your input."));
                     return;
                 }
@@ -164,8 +167,8 @@ void ConnectionDialog::accept()
     Config.UserName = username;
     Config.HostAddress = hostComboBox->currentText();
 
-    Config.setValue("UserName", Config.UserName);
-    Config.setValue("HostUrl", Config.HostAddress);
+    Config.setValue(QStringLiteral("UserName"), Config.UserName);
+    Config.setValue(QStringLiteral("HostUrl"), Config.HostAddress);
 
     QDialog::accept();
 }
@@ -297,8 +300,8 @@ void ConnectionDialog::on_changeAvatarButton_clicked()
 void ConnectionDialog::on_fillreconnect_clicked()
 {
     QUrl u(hostComboBox->currentText());
-    if (u.isValid() && (u.scheme() == "qths") && !u.host().isEmpty()) {
-        u.setPath(QString(QStringLiteral("/reconnect/")).append(Config.value("LastSelfObjectName", QString(QStringLiteral("sgs1"))).toString()));
+    if (u.isValid() && (u.scheme() == QStringLiteral("qths")) && !u.host().isEmpty()) {
+        u.setPath(QString(QStringLiteral("/reconnect/")).append(Config.value(QStringLiteral("LastSelfObjectName"), QString(QStringLiteral("sgs1"))).toString()));
         hostComboBox->setEditText(u.toString());
     } else
         QMessageBox::warning(this, tr("Warning"), tr("Please fill the server information before we fill reconnection information for you."));
@@ -310,17 +313,17 @@ void ConnectionDialog::on_avatarList_doubleClicked(const QModelIndex &index)
     QPixmap avatar(G_ROOM_SKIN.getGeneralPixmap(general_name, QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE));
     avatarPixmap->setPixmap(avatar);
     Config.UserAvatar = general_name;
-    Config.setValue("UserAvatar", general_name);
+    Config.setValue(QStringLiteral("UserAvatar"), general_name);
     hideAvatarList();
 }
 
 void ConnectionDialog::on_clearHistoryButton_clicked()
 {
     hostComboBox->clear();
-    hostComboBox->setEditText("qths://");
+    hostComboBox->setEditText(QStringLiteral("qths://"));
 
     Config.HistoryIPs.clear();
-    Config.remove("HistoryUrls");
+    Config.remove(QStringLiteral("HistoryUrls"));
 }
 
 void ConnectionDialog::on_detectLANButton_clicked()
@@ -351,8 +354,8 @@ UdpDetectorDialog::UdpDetectorDialog(QDialog *parent)
     setLayout(layout);
 
     detector = nullptr;
-    connect(detect_button, SIGNAL(clicked()), this, SLOT(startDetection()));
-    connect(list, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(chooseAddress(QListWidgetItem *)));
+    connect(detect_button, &QAbstractButton::clicked, this, &UdpDetectorDialog::startDetection);
+    connect(list, &QListWidget::itemDoubleClicked, this, &UdpDetectorDialog::chooseAddress);
 
     detect_button->click();
 }
@@ -363,8 +366,8 @@ void UdpDetectorDialog::startDetection()
     detect_button->setEnabled(false);
 
     detector = new UdpDetector;
-    connect(detector, SIGNAL(detected(QString, QString)), this, SLOT(addServerAddress(QString, QString)));
-    QTimer::singleShot(2000, this, SLOT(stopDetection()));
+    connect(detector, &Detector::detected, this, &UdpDetectorDialog::addServerAddress);
+    QTimer::singleShot(2s, this, &UdpDetectorDialog::stopDetection);
 
     detector->detect();
 }
@@ -380,9 +383,9 @@ void UdpDetectorDialog::stopDetection()
 void UdpDetectorDialog::addServerAddress(const QString &server_name, const QString &address_)
 {
     QString address = address_;
-    if (address.startsWith("::ffff:"))
+    if (address.startsWith(QStringLiteral("::ffff:")))
         address.remove(0, 7);
-    QString label = QString("%1 [%2]").arg(server_name).arg(address);
+    QString label = QStringLiteral("%1 [%2]").arg(server_name).arg(address);
     QListWidgetItem *item = new QListWidgetItem(label);
     item->setData(Qt::UserRole, address);
 
@@ -394,6 +397,6 @@ void UdpDetectorDialog::chooseAddress(QListWidgetItem *item)
     accept();
 
     QString address = item->data(Qt::UserRole).toString();
-    address.prepend("qths://");
+    address.prepend(QStringLiteral("qths://"));
     emit address_chosen(address);
 }

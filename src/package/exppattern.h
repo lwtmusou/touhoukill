@@ -13,7 +13,7 @@ public:
 
 private:
     QString exp;
-    bool matchOne(const Player *player, const Card *card, QString exp) const;
+    bool matchOne(const Player *player, const Card *card, const QString &exp) const;
 };
 
 #endif

@@ -202,7 +202,7 @@ bool PindianStruct::isSuccess() const
 JudgeStruct::JudgeStruct()
     : who(nullptr)
     , card(nullptr)
-    , pattern(".")
+    , pattern(QStringLiteral("."))
     , good(true)
     , time_consuming(false)
     , negative(false)
@@ -309,19 +309,19 @@ bool CardUseStruct::tryParse(const QVariant &usage, Room *room)
 
 void CardUseStruct::parse(const QString &str, Room *room)
 {
-    QStringList words = str.split("->", Qt::KeepEmptyParts);
+    QStringList words = str.split(QStringLiteral("->"), Qt::KeepEmptyParts);
     Q_ASSERT(words.length() == 1 || words.length() == 2);
 
     QString card_str = words.at(0);
-    QString target_str = ".";
+    QString target_str = QStringLiteral(".");
 
     if (words.length() == 2 && !words.at(1).isEmpty())
         target_str = words.at(1);
 
     card = Card::Parse(card_str, room);
 
-    if (target_str != ".") {
-        QStringList target_names = target_str.split("+");
+    if (target_str != QStringLiteral(".")) {
+        QStringList target_names = target_str.split(QStringLiteral("+"));
         foreach (QString target_name, target_names)
             to << room->findChild<ServerPlayer *>(target_name);
     }
@@ -336,15 +336,15 @@ QString CardUseStruct::toString() const
     l << card->toString();
 
     if (to.isEmpty())
-        l << ".";
+        l << QStringLiteral(".");
     else {
         QStringList tos;
         foreach (ServerPlayer *p, to)
             tos << p->objectName();
 
-        l << tos.join("+");
+        l << tos.join(QStringLiteral("+"));
     }
-    return l.join("->");
+    return l.join(QStringLiteral("->"));
 }
 
 MarkChangeStruct::MarkChangeStruct()
@@ -467,6 +467,11 @@ TriggerDetail &TriggerDetail::operator=(const TriggerDetail &other)
     return *this;
 }
 
+TriggerDetail::~TriggerDetail()
+{
+    delete d;
+}
+
 const Room *TriggerDetail::room() const
 {
     return d->d->room;
@@ -544,11 +549,11 @@ QVariant TriggerDetail::toVariant() const
 
     JsonObject ob;
     if (trigger())
-        ob["skill"] = trigger()->name();
+        ob[QStringLiteral("skill")] = trigger()->name();
     if (owner())
-        ob["owner"] = owner()->objectName();
+        ob[QStringLiteral("owner")] = owner()->objectName();
     if (invoker())
-        ob["invoker"] = invoker()->objectName();
+        ob[QStringLiteral("invoker")] = invoker()->objectName();
 
     return ob;
 }

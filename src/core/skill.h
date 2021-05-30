@@ -65,7 +65,7 @@ public:
 
     // do not use even ANY symbols in skill name anymore!
     // use Flag-based ones
-    explicit Skill(const QString &name, const Categories &skillCategories = SkillNoFlag, ShowType showType = ShowTrigger);
+    explicit Skill(const QString &name, Skill::Categories skillCategories = SkillNoFlag, ShowType showType = ShowTrigger);
     ~Skill() override;
 
     // TODO: refactor propersal:
@@ -206,7 +206,7 @@ public:
     TriggerEvents triggerEvents() const;
     bool canTrigger(TriggerEvent e) const;
     void addTriggerEvent(TriggerEvent e);
-    void addTriggerEvents(TriggerEvents e);
+    void addTriggerEvents(const TriggerEvents &e);
     bool isGlobal() const;
     void setGlobal(bool global);
 
@@ -237,7 +237,7 @@ public:
     virtual QList<TriggerDetail> triggerable(TriggerEvent event, const ::Room *room, const QVariant &data) const = 0;
 
     // TODO: make TriggerDetail implicitly shared
-    virtual bool trigger(TriggerEvent event, ::Room *room, TriggerDetail detail, QVariant &data) const;
+    virtual bool trigger(TriggerEvent event, ::Room *room, const TriggerDetail &detail, QVariant &data) const;
 
 private:
     TriggerPrivate *d;
@@ -270,7 +270,7 @@ public:
 
     // force subclass override this function
     // virtual QList<TriggerDetail> triggerable(TriggerEvent event, const Room *room, QVariant &data) const = 0;
-    bool trigger(TriggerEvent event, ::Room *room, TriggerDetail detail, QVariant &data) const final override;
+    bool trigger(TriggerEvent event, ::Room *room, const TriggerDetail &detail, QVariant &data) const final override;
 
     // Limited modification to TriggerDetail, notably tag and target
     virtual bool cost(TriggerEvent event, ::Room *room, TriggerDetail &detail, QVariant &data) const;
@@ -319,7 +319,7 @@ public:
     ~FakeMoveRecord() final override;
 
     QList<TriggerDetail> triggerable(TriggerEvent event, const ::Room *room, const QVariant &data) const final override;
-    bool trigger(TriggerEvent event, ::Room *room, TriggerDetail detail, QVariant &data) const final override;
+    bool trigger(TriggerEvent event, ::Room *room, const TriggerDetail &detail, QVariant &data) const final override;
 
 private:
     FakeMoveRecordPrivate *d;

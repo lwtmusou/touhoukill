@@ -66,17 +66,17 @@ void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player
     bool equip = false;
     bool judging = false;
 
-    if ((flags.contains("h") || flags.contains("s")) && !player->isKongcheng()) {
+    if ((flags.contains(QStringLiteral("h")) || flags.contains(QStringLiteral("s"))) && !player->isKongcheng()) {
         updateNumbers(player->getHandcardNum());
         handcard = true;
     }
 
-    if (flags.contains("e") && player->hasEquip()) {
+    if (flags.contains(QStringLiteral("e")) && player->hasEquip()) {
         updateNumbers(player->getEquips().length());
         equip = true;
     }
 
-    if (flags.contains("j") && !player->getJudgingArea().isEmpty()) {
+    if (flags.contains(QStringLiteral("j")) && !player->getJudgingArea().isEmpty()) {
         updateNumbers(player->getJudgingArea().length());
         judging = true;
     }
@@ -183,7 +183,7 @@ void PlayerCardBox::paintLayout(QPainter *painter)
     // font
     IQSanComponentSkin::QSanSimpleTextFont font;
     JsonArray array;
-    array << "@DroidSansFallback" << 16 << 2;
+    array << QStringLiteral("@DroidSansFallback") << 16 << 2;
     JsonArray array4;
     array4 << 228 << 213 << 160 << 255;
     array << QVariant::fromValue(array4);
@@ -191,15 +191,15 @@ void PlayerCardBox::paintLayout(QPainter *painter)
 
     int index = 0;
 
-    if ((flags.contains("h") || flags.contains("s")) && !player->isKongcheng()) {
+    if ((flags.contains(QStringLiteral("h")) || flags.contains(QStringLiteral("s"))) && !player->isKongcheng()) {
         font.paintText(painter, nameRects.at(index), Qt::AlignCenter, tr("Handcard area"));
         ++index;
     }
-    if (flags.contains("e") && player->hasEquip()) {
+    if (flags.contains(QStringLiteral("e")) && player->hasEquip()) {
         font.paintText(painter, nameRects.at(index), Qt::AlignCenter, tr("Equip area"));
         ++index;
     }
-    if (flags.contains("j") && !player->getJudgingArea().isEmpty()) {
+    if (flags.contains(QStringLiteral("j")) && !player->getJudgingArea().isEmpty()) {
         font.paintText(painter, nameRects.at(index), Qt::AlignCenter, tr("Judging area"));
         ++index;
     }
@@ -222,12 +222,12 @@ void PlayerCardBox::clear()
     disappear();
 }
 
-int PlayerCardBox::getRowCount(const int &cardNumber) const
+int PlayerCardBox::getRowCount(int cardNumber) const
 {
     return (cardNumber + maxCardNumberInOneRow - 1) / maxCardNumberInOneRow;
 }
 
-void PlayerCardBox::updateNumbers(const int &cardNumber)
+void PlayerCardBox::updateNumbers(int cardNumber)
 {
     ++intervalsBetweenAreas;
     if (cardNumber > maxCardsInOneRow)
@@ -245,7 +245,7 @@ void PlayerCardBox::updateNumbers(const int &cardNumber)
     nameRects << QRect(verticalBlankWidth, y, placeNameAreaWidth, height);
 }
 
-void PlayerCardBox::arrangeCards(const QList<const Card *> &cards, const QPoint &topLeft, bool enableEmptyCard, const QList<const Card *> &shownCards)
+void PlayerCardBox::arrangeCards(const QList<const Card *> &cards, QPoint topLeft, bool enableEmptyCard, const QList<const Card *> &shownCards)
 {
     QList<CardItem *> areaItems;
     foreach (const Card *card, cards) {
@@ -257,7 +257,7 @@ void PlayerCardBox::arrangeCards(const QList<const Card *> &cards, const QPoint 
         if (card) {
             item->setEnabled(!disabledIds.contains(card->effectiveID()) && (method != Card::MethodDiscard || Self->canDiscard(player, card->effectiveID())));
             if (shownCards.contains(card)) {
-                item->setFootnote(Sanguosha->translate("shown_card"));
+                item->setFootnote(Sanguosha->translate(QStringLiteral("shown_card")));
                 item->showFootnote();
             }
             if (this->player->getJudgingArea().contains(card)) {

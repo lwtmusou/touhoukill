@@ -190,7 +190,7 @@ public:
 
     void attachSkill(const QVariant &skill);
 
-    inline void setCountdown(QSanProtocol::Countdown countdown)
+    inline void setCountdown(const QSanProtocol::Countdown &countdown)
     {
         m_mutexCountdown.lock();
         m_countdown = countdown;
@@ -274,8 +274,8 @@ private:
     QString _processCardPattern(const QString &pattern);
     void commandFormatWarning(const QString &str, const QRegExp &rx, const char *command);
 
-    bool _loseSingleCard(int card_id, CardsMoveStruct move);
-    bool _getSingleCard(int card_id, CardsMoveStruct move);
+    bool _loseSingleCard(int card_id, const CardsMoveStruct &move);
+    bool _getSingleCard(int card_id, const CardsMoveStruct &move);
 
 private slots:
     void processServerPacket(const QString &cmd);

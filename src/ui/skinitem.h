@@ -10,7 +10,7 @@ class SkinItem : public QGraphicsObject
     Q_OBJECT
 
 public:
-    SkinItem(const QString &skinName, const QRect &clipRect, int skinIndex, bool used, QGraphicsItem *parent = nullptr);
+    SkinItem(const QString &skinName, QRect clipRect, int skinIndex, bool used, QGraphicsItem *parent = nullptr);
 
     void setUsed(bool used)
     {

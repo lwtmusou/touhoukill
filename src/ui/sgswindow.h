@@ -11,7 +11,7 @@ class Window : public QGraphicsObject
     Q_OBJECT
 
 public:
-    explicit Window(const QString &title, const QSizeF &size, const QString &path = QString());
+    explicit Window(const QString &title, QSizeF size, const QString &path = QString());
     void addContent(const QString &content);
     Button *addCloseButton(const QString &label);
     void shift(int pos_x = 0, int pos_y = 0);

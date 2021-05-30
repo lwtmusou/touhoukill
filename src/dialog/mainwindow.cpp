@@ -1,3 +1,4 @@
+
 #include "mainwindow.h"
 #include "AboutUs.h"
 #include "audio.h"
@@ -54,6 +55,7 @@
 
 class FitView : public QGraphicsView
 {
+    Q_OBJECT
 public:
     explicit FitView(QGraphicsScene *scene)
         : QGraphicsView(scene)
@@ -95,19 +97,19 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     scene = nullptr;
 
-    setWindowTitle(tr("TouhouSatsu") + "    " + Sanguosha->getVersionName() + "    " + Sanguosha->getVersionNumber());
+    setWindowTitle(tr("TouhouSatsu") + QStringLiteral("    ") + Sanguosha->getVersionName() + QStringLiteral("    ") + Sanguosha->getVersionNumber());
 
     connection_dialog = new ConnectionDialog(this);
-    connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(exec()));
-    connect(connection_dialog, SIGNAL(accepted()), this, SLOT(startConnection()));
+    connect(ui->actionStart_Game, &QAction::triggered, connection_dialog, &QDialog::exec);
+    connect(connection_dialog, &QDialog::accepted, this, &MainWindow::startConnection);
 
     config_dialog = new ConfigDialog(this);
-    connect(ui->actionConfigure, SIGNAL(triggered()), config_dialog, SLOT(show()));
-    connect(config_dialog, SIGNAL(bg_changed()), this, SLOT(changeBackground()));
-    connect(config_dialog, SIGNAL(tableBg_changed()), this, SLOT(changeTableBg()));
+    connect(ui->actionConfigure, &QAction::triggered, config_dialog, &QWidget::show);
+    connect(config_dialog, &ConfigDialog::bg_changed, this, &MainWindow::changeBackground);
+    connect(config_dialog, &ConfigDialog::tableBg_changed, this, &MainWindow::changeTableBg);
 
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-    connect(ui->actionAcknowledgement_2, SIGNAL(triggered()), this, SLOT(on_actionAcknowledgement_triggered()));
+    connect(ui->actionAcknowledgement_2, &QAction::triggered, this, &MainWindow::on_actionAcknowledgement_triggered);
 
     update_dialog = new UpdateDialog(this);
 
@@ -145,11 +147,11 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::restoreFromConfig()
 {
-    int width = Config.value("WindowWidth", 1366).toInt();
-    int height = Config.value("WindowHeight", 706).toInt();
-    int x = Config.value("WindowX", -8).toInt();
-    int y = Config.value("WindowY", -8).toInt();
-    bool maximized = Config.value("WindowMaximized", false).toBool();
+    int width = Config.value(QStringLiteral("WindowWidth"), 1366).toInt();
+    int height = Config.value(QStringLiteral("WindowHeight"), 706).toInt();
+    int x = Config.value(QStringLiteral("WindowX"), -8).toInt();
+    int y = Config.value(QStringLiteral("WindowY"), -8).toInt();
+    bool maximized = Config.value(QStringLiteral("WindowMaximized"), false).toBool();
 
     if (maximized)
         setWindowState(Qt::WindowMaximized);
@@ -169,11 +171,11 @@ void MainWindow::restoreFromConfig()
 
 void MainWindow::closeEvent(QCloseEvent *)
 {
-    Config.setValue("WindowWidth", width());
-    Config.setValue("WindowHeight", height());
-    Config.setValue("WindowX", x());
-    Config.setValue("WindowY", y());
-    Config.setValue("WindowMaximized", bool(windowState() & Qt::WindowMaximized));
+    Config.setValue(QStringLiteral("WindowWidth"), width());
+    Config.setValue(QStringLiteral("WindowHeight"), height());
+    Config.setValue(QStringLiteral("WindowX"), x());
+    Config.setValue(QStringLiteral("WindowY"), y());
+    Config.setValue(QStringLiteral("WindowMaximized"), bool(windowState() & Qt::WindowMaximized));
 }
 
 MainWindow::~MainWindow()
@@ -227,12 +229,12 @@ void MainWindow::on_actionStart_Server_triggered()
     server->daemonize();
 
     ui->actionStart_Game->disconnect();
-    connect(ui->actionStart_Game, SIGNAL(triggered()), this, SLOT(startGameInAnotherInstance()));
+    connect(ui->actionStart_Game, &QAction::triggered, this, &MainWindow::startGameInAnotherInstance);
 
     StartScene *start_scene = qobject_cast<StartScene *>(scene);
     if (start_scene) {
         start_scene->switchToServer(server);
-        if (Config.value("EnableMinimizeDialog", false).toBool())
+        if (Config.value(QStringLiteral("EnableMinimizeDialog"), false).toBool())
             on_actionMinimize_to_system_tray_triggered();
     }
 }
@@ -251,7 +253,7 @@ void MainWindow::checkVersion(const QString &server_version, const QString &serv
 
     if (server_version == client_version) {
         client->signup();
-        connect(client, SIGNAL(server_connected()), SLOT(enterRoom()));
+        connect(client, &Client::server_connected, this, &MainWindow::enterRoom);
         return;
     }
 
@@ -282,14 +284,14 @@ void MainWindow::startConnection()
 {
     Client *client = new Client(this);
 
-    connect(client, SIGNAL(version_checked(QString, QString)), SLOT(checkVersion(QString, QString)));
-    connect(client, SIGNAL(error_message(QString)), SLOT(networkError(QString)));
+    connect(client, &Client::version_checked, this, &MainWindow::checkVersion);
+    connect(client, &Client::error_message, this, &MainWindow::networkError);
 }
 
 void MainWindow::on_actionReplay_triggered()
 {
     QString location = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    QString last_dir = Config.value("LastReplayDir").toString();
+    QString last_dir = Config.value(QStringLiteral("LastReplayDir")).toString();
     if (!last_dir.isEmpty())
         location = last_dir;
 
@@ -300,10 +302,10 @@ void MainWindow::on_actionReplay_triggered()
 
     QFileInfo file_info(filename);
     last_dir = file_info.absoluteDir().path();
-    Config.setValue("LastReplayDir", last_dir);
+    Config.setValue(QStringLiteral("LastReplayDir"), last_dir);
 
     Client *client = new Client(this, filename);
-    connect(client, SIGNAL(server_connected()), SLOT(enterRoom()));
+    connect(client, &Client::server_connected, this, &MainWindow::enterRoom);
     client->signup();
 }
 
@@ -320,7 +322,7 @@ void BackLoader::preload()
     foreach (QString emotion, emotions) {
         int n = PixmapAnimation::GetFrameCount(emotion);
         for (int i = 0; i < n; i++) {
-            QString filename = QString("image/system/emotion/%1/%2.png").arg(emotion).arg(QString::number(i));
+            QString filename = QStringLiteral("image/system/emotion/%1/%2.png").arg(emotion).arg(QString::number(i));
             G_ROOM_SKIN.getPixmapFromFileName(filename);
         }
     }
@@ -334,7 +336,7 @@ void MainWindow::enterRoom()
         if (Config.HistoryIPs.contains(Config.HostAddress))
             Config.HistoryIPs.removeAll(Config.HostAddress);
         Config.HistoryIPs.prepend(Config.HostAddress);
-        Config.setValue("HistoryUrls", Config.HistoryIPs);
+        Config.setValue(QStringLiteral("HistoryUrls"), Config.HistoryIPs);
     }
 
     Client *client = qobject_cast<Client *>(sender());
@@ -352,21 +354,21 @@ void MainWindow::enterRoom()
     ui->actionNever_nullify_my_trick->setEnabled(true);
     ui->actionSaveRecord->setEnabled(true);
 
-    connect(ClientInstance, SIGNAL(surrender_enabled(bool)), ui->actionSurrender, SLOT(setEnabled(bool)));
+    connect(ClientInstance, &Client::surrender_enabled, ui->actionSurrender, &QAction::setEnabled);
 
-    connect(ui->actionView_Discarded, SIGNAL(triggered()), room_scene, SLOT(toggleDiscards()));
+    connect(ui->actionView_Discarded, &QAction::triggered, room_scene, &RoomScene::toggleDiscards);
     connect(ui->actionView_distance, SIGNAL(triggered()), room_scene, SLOT(viewDistance()));
-    connect(ui->actionServerInformation, SIGNAL(triggered()), room_scene, SLOT(showServerInformation()));
-    connect(ui->actionSurrender, SIGNAL(triggered()), room_scene, SLOT(surrender()));
+    connect(ui->actionServerInformation, &QAction::triggered, room_scene, &RoomScene::showServerInformation);
+    connect(ui->actionSurrender, &QAction::triggered, room_scene, &RoomScene::surrender);
     connect(ui->actionSaveRecord, SIGNAL(triggered()), room_scene, SLOT(saveReplayRecord()));
 
     if (ServerInfo.EnableCheat) {
         ui->menuCheat->setEnabled(true);
 
-        connect(ui->actionDeath_note, SIGNAL(triggered()), room_scene, SLOT(makeKilling()));
-        connect(ui->actionDamage_maker, SIGNAL(triggered()), room_scene, SLOT(makeDamage()));
-        connect(ui->actionRevive_wand, SIGNAL(triggered()), room_scene, SLOT(makeReviving()));
-        connect(ui->actionExecute_script_at_server_side, SIGNAL(triggered()), room_scene, SLOT(doScript()));
+        connect(ui->actionDeath_note, &QAction::triggered, room_scene, &RoomScene::makeKilling);
+        connect(ui->actionDamage_maker, &QAction::triggered, room_scene, &RoomScene::makeDamage);
+        connect(ui->actionRevive_wand, &QAction::triggered, room_scene, &RoomScene::makeReviving);
+        connect(ui->actionExecute_script_at_server_side, &QAction::triggered, room_scene, &RoomScene::doScript);
     } else {
         ui->menuCheat->setEnabled(false);
         ui->actionDeath_note->disconnect();
@@ -375,8 +377,8 @@ void MainWindow::enterRoom()
         ui->actionExecute_script_at_server_side->disconnect();
     }
 
-    connect(room_scene, SIGNAL(restart()), this, SLOT(startConnection()));
-    connect(room_scene, SIGNAL(return_to_start()), this, SLOT(gotoStartScene()));
+    connect(room_scene, &RoomScene::restart, this, &MainWindow::startConnection);
+    connect(room_scene, &RoomScene::return_to_start, this, &MainWindow::gotoStartScene);
 
     gotoScene(room_scene);
 }
@@ -444,7 +446,7 @@ void MainWindow::on_actionEnable_Hotkey_toggled(bool checked)
 {
     if (Config.EnableHotKey != checked) {
         Config.EnableHotKey = checked;
-        Config.setValue("EnableHotKey", checked);
+        Config.setValue(QStringLiteral("EnableHotKey"), checked);
     }
 }
 
@@ -452,22 +454,22 @@ void MainWindow::on_actionNever_nullify_my_trick_toggled(bool checked)
 {
     if (Config.NeverNullifyMyTrick != checked) {
         Config.NeverNullifyMyTrick = checked;
-        Config.setValue("NeverNullifyMyTrick", checked);
+        Config.setValue(QStringLiteral("NeverNullifyMyTrick"), checked);
     }
 }
 
 void MainWindow::on_actionAbout_triggered()
 {
     // Cao Cao's pixmap
-    QString content = "<center><img src='image/system/shencc.png'> <br /> </center>";
+    QString content = QStringLiteral("<center><img src='image/system/shencc.png'> <br /> </center>");
 
     // Cao Cao' poem
     QString poem = tr("Disciples dressed in blue, my heart worries for you. You are the cause, of this song without pause");
-    content.append(QString("<p align='right'><i>%1</i></p>").arg(poem));
+    content.append(QStringLiteral("<p align='right'><i>%1</i></p>").arg(poem));
 
     // Cao Cao's signature
     QString signature = tr("\"A Short Song\" by Cao Cao");
-    content.append(QString("<p align='right'><i>%1</i></p>").arg(signature));
+    content.append(QStringLiteral("<p align='right'><i>%1</i></p>").arg(signature));
 
     //QString email = "moligaloo@gmail.com";
     //content.append(tr("This is the open source clone of the popular <b>Sanguosha</b> game,"
@@ -481,21 +483,21 @@ void MainWindow::on_actionAbout_triggered()
     QString config;
 
 #ifdef QT_NO_DEBUG
-    config = "release";
+    config = QStringLiteral("release");
 #else
     config = "debug";
 #endif
 
     content.append(tr("Current version: %1 %2 (%3)<br/>").arg(Sanguosha->getVersion()).arg(config).arg(Sanguosha->getVersionName()));
 
-    const char *date = __DATE__;
-    const char *time = __TIME__;
+    QString date = QStringLiteral(__DATE__);
+    QString time = QStringLiteral(__TIME__);
     content.append(tr("Compilation time: %1 %2 <br/>").arg(date).arg(time));
 
-    QString project_url = "https://github.com/lwtmusou/touhoukill";
+    QString project_url = QStringLiteral("https://github.com/lwtmusou/touhoukill");
     content.append(tr("Source code: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(project_url));
 
-    QString forum_url = "http://qsanguosha.org";
+    QString forum_url = QStringLiteral("http://qsanguosha.org");
     content.append(tr("Forum: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(forum_url));
 
     Window *window = new Window(tr("About QSanguosha"), QSize(420, 465));
@@ -568,11 +570,11 @@ void MainWindow::on_actionShow_Hide_Menu_triggered()
 void MainWindow::on_actionMinimize_to_system_tray_triggered()
 {
     if (systray == nullptr) {
-        QIcon icon("image/system/magatamas/5.png");
+        QIcon icon(QStringLiteral("image/system/magatamas/5.png"));
         systray = new QSystemTrayIcon(icon, this);
 
         QAction *appear = new QAction(tr("Show main window"), this);
-        connect(appear, SIGNAL(triggered()), this, SLOT(show()));
+        connect(appear, &QAction::triggered, this, &QWidget::show);
 
         QMenu *menu = new QMenu;
         menu->addAction(appear);
@@ -597,51 +599,40 @@ void MainWindow::on_actionRole_assign_table_triggered()
     QStringList headers;
     headers << tr("Count") << tr("Lord") << tr("Loyalist") << tr("Rebel") << tr("Renegade");
     foreach (QString header, headers)
-        content += QString("<th>%1</th>").arg(header);
+        content += QStringLiteral("<th>%1</th>").arg(header);
 
-    content = QString("<tr>%1</tr>").arg(content);
+    content = QStringLiteral("<tr>%1</tr>").arg(content);
 
     QStringList rows;
-    rows << "2 1 0 1 0"
-         << "3 1 0 1 1"
-         << "4 1 0 2 1"
-         << "5 1 1 2 1"
-         << "6 1 1 3 1"
-         << "6d 1 1 2 2"
-         << "7 1 2 3 1"
-         << "8 1 2 4 1"
-         << "8d 1 2 3 2"
-         << "8z 1 3 4 0"
-         << "9 1 3 4 1"
-         << "10 1 3 4 2"
-         << "10z 1 4 5 0"
-         << "10o 1 3 5 1";
+    rows << QStringLiteral("2 1 0 1 0") << QStringLiteral("3 1 0 1 1") << QStringLiteral("4 1 0 2 1") << QStringLiteral("5 1 1 2 1") << QStringLiteral("6 1 1 3 1")
+         << QStringLiteral("6d 1 1 2 2") << QStringLiteral("7 1 2 3 1") << QStringLiteral("8 1 2 4 1") << QStringLiteral("8d 1 2 3 2") << QStringLiteral("8z 1 3 4 0")
+         << QStringLiteral("9 1 3 4 1") << QStringLiteral("10 1 3 4 2") << QStringLiteral("10z 1 4 5 0") << QStringLiteral("10o 1 3 5 1");
 
     foreach (QString row, rows) {
-        QStringList cells = row.split(" ");
+        QStringList cells = row.split(QStringLiteral(" "));
         QString header = cells.takeFirst();
-        if (header.endsWith("d")) {
+        if (header.endsWith(QStringLiteral("d"))) {
             header.chop(1);
             header += tr(" (double renegade)");
         }
-        if (header.endsWith("z")) {
+        if (header.endsWith(QStringLiteral("z"))) {
             header.chop(1);
             header += tr(" (no renegade)");
         }
-        if (header.endsWith("o")) {
+        if (header.endsWith(QStringLiteral("o"))) {
             header.chop(1);
             header += tr(" (single renegade)");
         }
 
         QString row_content;
-        row_content = QString("<td>%1</td>").arg(header);
+        row_content = QStringLiteral("<td>%1</td>").arg(header);
         foreach (QString cell, cells)
-            row_content += QString("<td>%1</td>").arg(cell);
+            row_content += QStringLiteral("<td>%1</td>").arg(cell);
 
-        content += QString("<tr>%1</tr>").arg(row_content);
+        content += QStringLiteral("<tr>%1</tr>").arg(row_content);
     }
 
-    content = QString("<table border='1'>%1</table").arg(content);
+    content = QStringLiteral("<table border='1'>%1</table").arg(content);
 
     Window *window = new Window(tr("Role assign table"), QSize(240, 450));
     scene->addItem(window);
@@ -698,7 +689,7 @@ void MainWindow::on_actionBroadcast_triggered()
 
 void MainWindow::on_actionAcknowledgement_triggered()
 {
-    Window *window = new Window(QString(), QSize(1000, 677), "image/system/acknowledgement.png");
+    Window *window = new Window(QString(), QSize(1000, 677), QStringLiteral("image/system/acknowledgement.png"));
     scene->addItem(window);
 
     Button *button = window->addCloseButton(tr("OK"));
@@ -723,13 +714,13 @@ void MainWindow::on_actionPC_Console_Start_triggered()
 
     server->createNewRoom();
 
-    Config.HostAddress = "qths://127.0.0.1";
+    Config.HostAddress = QStringLiteral("qths://127.0.0.1");
     startConnection();
 }
 
 void MainWindow::on_actionReplay_file_convert_triggered()
 {
-    QString filename = QFileDialog::getOpenFileName(this, tr("Please select a replay file"), Config.value("LastReplayDir").toString(),
+    QString filename = QFileDialog::getOpenFileName(this, tr("Please select a replay file"), Config.value(QStringLiteral("LastReplayDir")).toString(),
                                                     tr("Pure text replay file (*.txt);; Image replay file (*.png)"));
 
     if (filename.isEmpty())
@@ -740,14 +731,14 @@ void MainWindow::on_actionReplay_file_convert_triggered()
         QFileInfo info(filename);
         QString tosave = info.absoluteDir().absoluteFilePath(info.baseName());
 
-        if (filename.endsWith(".txt")) {
-            tosave.append(".png");
+        if (filename.endsWith(QStringLiteral(".txt"))) {
+            tosave.append(QStringLiteral(".png"));
 
             // txt to png
             Recorder::TXT2PNG(file.readAll()).save(tosave);
 
-        } else if (filename.endsWith(".png")) {
-            tosave.append(".txt");
+        } else if (filename.endsWith(QStringLiteral(".png"))) {
+            tosave.append(QStringLiteral(".txt"));
 
             // png to txt
             QByteArray data = Recorder::PNG2TXT(filename);
@@ -768,9 +759,9 @@ void MainWindow::on_actionView_ban_list_triggered()
 void MainWindow::on_actionAbout_Lua_triggered()
 {
     QString content = tr("Lua is a powerful, fast, lightweight, embeddable scripting language.");
-    content.append("<p align='center'> <img src='image/logo/lua.png' /> </p> <br/>");
+    content.append(QStringLiteral("<p align='center'> <img src='image/logo/lua.png' /> </p> <br/>"));
 
-    QString address = "http://www.lua.org";
+    QString address = QStringLiteral("http://www.lua.org");
     content.append(tr("Official site: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(address));
 
     content.append(tr("Current versionn %1 <br/>").arg(LuaMultiThreadEnvironment::luaVersion()));
@@ -791,9 +782,9 @@ void MainWindow::on_actionAbout_GPLv3_triggered()
 {
     QString content = tr(
         "The GNU General Public License is the most widely used free software license, which guarantees end users the freedoms to use, study, share, and modify the software.");
-    content.append("<p align='center'> <img src='image/logo/gplv3.png' /> </p> <br/>");
+    content.append(QStringLiteral("<p align='center'> <img src='image/logo/gplv3.png' /> </p> <br/>"));
 
-    QString address = "http://gplv3.fsf.org";
+    QString address = QStringLiteral("http://gplv3.fsf.org");
     content.append(tr("Official site: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(address));
 
     Window *window = new Window(tr("About GPLv3"), QSize(500, 225));
@@ -830,3 +821,5 @@ void MainWindow::on_actionDownload_Hero_Skin_and_BGM_triggered()
         }
     }
 }
+
+#include "mainwindow.moc"

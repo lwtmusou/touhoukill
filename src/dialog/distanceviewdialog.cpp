@@ -69,8 +69,8 @@ DistanceViewDialog::DistanceViewDialog(QWidget *parent)
     RoomScene::FillPlayerNames(ui->from, false);
     RoomScene::FillPlayerNames(ui->to, false);
 
-    connect(ui->from, SIGNAL(currentIndexChanged(int)), this, SLOT(showDistance()));
-    connect(ui->to, SIGNAL(currentIndexChanged(int)), this, SLOT(showDistance()));
+    connect(ui->from, &QComboBox::currentIndexChanged, this, &DistanceViewDialog::showDistance);
+    connect(ui->to, &QComboBox::currentIndexChanged, this, &DistanceViewDialog::showDistance);
 
     layout->addRow(tr("From"), ui->from);
     layout->addRow(tr("To"), ui->to);
@@ -119,7 +119,7 @@ void DistanceViewDialog::showDistance()
         ui->left->setText(QString::number(left_distance));
 
         int min = qMin(left_distance, right_distance);
-        ui->min->setText(QString("min(%1, %2)=%3").arg(left_distance).arg(right_distance).arg(min));
+        ui->min->setText(QStringLiteral("min(%1, %2)=%3").arg(left_distance).arg(right_distance).arg(min));
     }
 
     foreach (QLineEdit *edit, ui->distance_edits) {
@@ -128,7 +128,7 @@ void DistanceViewDialog::showDistance()
         int correct = distance_skill->getCorrect(from, to);
 
         if (correct > 0)
-            edit->setText(QString("+%1").arg(correct));
+            edit->setText(QStringLiteral("+%1").arg(correct));
         else if (correct < 0)
             edit->setText(QString::number(correct));
         else

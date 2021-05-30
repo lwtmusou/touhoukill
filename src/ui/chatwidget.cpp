@@ -21,13 +21,13 @@ MyPixmapItem::~MyPixmapItem()
 void MyPixmapItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     setVisible(false);
-    QString msg = "";
+    QString msg;
     int result = mouseCanClick(event->pos().x(), event->pos().y());
     if (result == -1)
         return;
-    if (itemName == "faceboard")
-        msg = "<#" + QString::number(result + 1) + "#>";
-    else if (itemName == "easytextboard")
+    if (itemName == QStringLiteral("faceboard"))
+        msg = QStringLiteral("<#") + QString::number(result + 1) + QStringLiteral("#>");
+    else if (itemName == QStringLiteral("easytextboard"))
         msg = easytext.at(result);
     emit my_pixmap_item_msg(msg);
 }
@@ -49,9 +49,9 @@ void MyPixmapItem::setSize(int x, int y)
 int MyPixmapItem::mouseCanClick(int x, int y)
 {
     int result = -1;
-    if (itemName == "faceboard")
+    if (itemName == QStringLiteral("faceboard"))
         result = mouseOnIcon(x, y);
-    else if (itemName == "easytextboard")
+    else if (itemName == QStringLiteral("easytextboard"))
         result = mouseOnText(x, y);
     return result;
 }
@@ -125,7 +125,7 @@ void MyPixmapItem::initEasyTextPos()
 }
 
 ChatWidget::ChatWidget()
-    : base_pixmap("image/system/chatface/base.png")
+    : base_pixmap(QStringLiteral("image/system/chatface/base.png"))
 {
     setFlags(ItemIsFocusable);
     setAcceptHoverEvents(true);
@@ -134,29 +134,29 @@ ChatWidget::ChatWidget()
     base = new QGraphicsRectItem(QRectF(base_pixmap.rect()), this);
     QPushButton *returnButton = nullptr, *chatfaceButton = nullptr, *easytextButton = nullptr;
 
-    returnButton = addButton("returnBt", -1);
-    chatfaceButton = addButton("chatfaceBt", 24);
-    easytextButton = addButton("easytextBt", 48 + 1);
+    returnButton = addButton(QStringLiteral("returnBt"), -1);
+    chatfaceButton = addButton(QStringLiteral("chatfaceBt"), 24);
+    easytextButton = addButton(QStringLiteral("easytextBt"), 48 + 1);
 
-    chat_face_board = new MyPixmapItem(QPixmap("image/system/chatface/faceboard.png"), this);
+    chat_face_board = new MyPixmapItem(QPixmap(QStringLiteral("image/system/chatface/faceboard.png")), this);
     chat_face_board->setSize(160, 180);
     chat_face_board->setPos(-160 + 74, -180 - 1); // 24 + 24 + 24 + 2 = 74
     chat_face_board->setZValue(10000);
     chat_face_board->setVisible(false);
-    chat_face_board->itemName = "faceboard";
+    chat_face_board->itemName = QStringLiteral("faceboard");
 
-    easy_text_board = new MyPixmapItem(QPixmap("image/system/chatface/easytextboard.png"), this);
+    easy_text_board = new MyPixmapItem(QPixmap(QStringLiteral("image/system/chatface/easytextboard.png")), this);
     easy_text_board->setSize(180, 222);
     easy_text_board->setPos(-106, -223);
     easy_text_board->setZValue(10000);
     easy_text_board->setVisible(false);
-    easy_text_board->itemName = "easytextboard";
+    easy_text_board->itemName = QStringLiteral("easytextboard");
 
-    connect(chat_face_board, SIGNAL(my_pixmap_item_msg(QString)), this, SIGNAL(chat_widget_msg(QString)));
-    connect(easy_text_board, SIGNAL(my_pixmap_item_msg(QString)), this, SIGNAL(chat_widget_msg(QString)));
-    connect(chatfaceButton, SIGNAL(clicked()), this, SLOT(showFaceBoard()));
-    connect(easytextButton, SIGNAL(clicked()), this, SLOT(showEasyTextBoard()));
-    connect(returnButton, SIGNAL(clicked()), this, SLOT(sendText()));
+    connect(chat_face_board, &MyPixmapItem::my_pixmap_item_msg, this, &ChatWidget::chat_widget_msg);
+    connect(easy_text_board, &MyPixmapItem::my_pixmap_item_msg, this, &ChatWidget::chat_widget_msg);
+    connect(chatfaceButton, &QAbstractButton::clicked, this, &ChatWidget::showFaceBoard);
+    connect(easytextButton, &QAbstractButton::clicked, this, &ChatWidget::showEasyTextBoard);
+    connect(returnButton, &QAbstractButton::clicked, this, &ChatWidget::sendText);
 }
 
 ChatWidget::~ChatWidget()
@@ -179,7 +179,7 @@ void ChatWidget::sendText()
 {
     chat_face_board->setVisible(false);
     easy_text_board->setVisible(false);
-    emit(return_button_click());
+    emit return_button_click();
 }
 
 QRectF ChatWidget::boundingRect() const
@@ -197,8 +197,8 @@ QPushButton *ChatWidget::createButton(const QString &name)
     QPushButton *button = new QPushButton;
     button->setEnabled(true);
 
-    QPixmap iconOn(QString("image/system/chatface/%1On.png").arg(name));
-    QPixmap iconOff(QString("image/system/chatface/%1.png").arg(name));
+    QPixmap iconOn(QStringLiteral("image/system/chatface/%1On.png").arg(name));
+    QPixmap iconOff(QStringLiteral("image/system/chatface/%1.png").arg(name));
 
     QIcon icon;
     icon.addPixmap(iconOff, QIcon::Normal, QIcon::Off);

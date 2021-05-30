@@ -57,7 +57,7 @@ public:
     void setPlayer(ClientPlayer *player) override; //hegemony
     void showSeat() override; //hegemony
 
-    void showProgressBar(QSanProtocol::Countdown countdown) override;
+    void showProgressBar(const QSanProtocol::Countdown &countdown) override;
     void hideProgressBar() override;
 
     QRectF getAvatarAreaSceneBoundingRect() const
@@ -65,10 +65,10 @@ public:
         return _m_rightFrame->sceneBoundingRect();
     }
     QSanSkillButton *removeSkillButton(const QString &skillName, bool head);
-    QSanSkillButton *addSkillButton(const QString &skillName, const bool &head = true);
+    QSanSkillButton *addSkillButton(const QString &skillName, bool head = true);
     bool isAvatarUnderMouse();
 
-    void highlightEquip(QString skillName, bool hightlight);
+    void highlightEquip(const QString &skillName, bool hightlight);
 
     void setTrust(bool trust);
     void killPlayer() override;
@@ -91,7 +91,7 @@ public:
     QGraphicsItem *getMouseClickReceiver() override;
 
     QList<CardItem *> removeCardItems(const QList<int> &card_ids, Player::Place place) override;
-    QList<CardItem *> cloneCardItems(QList<int> card_ids) override;
+    QList<CardItem *> cloneCardItems(QList<int> card_ids);
 
     // pending operations
     void startPending(const ViewAsSkill *skill);
@@ -206,7 +206,7 @@ protected:
     }
     inline QString getResourceKeyName() override
     {
-        return QSanRoomSkin::S_SKIN_KEY_DASHBOARD;
+        return QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_DASHBOARD);
     }
     inline QAbstractAnimation *_getPlayerRemovedEffect() override
     {

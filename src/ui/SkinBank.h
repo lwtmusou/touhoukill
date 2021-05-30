@@ -464,7 +464,7 @@ public:
     static void destroyInstance();
     const QString &getCurrentSkinName() const;
     const QSanSkinScheme &getCurrentSkinScheme();
-    bool switchSkin(QString skinName);
+    bool switchSkin(const QString &skinName);
 
     QString S_DEFAULT_SKIN_NAME;
     QString S_COMPACT_SKIN_NAME;

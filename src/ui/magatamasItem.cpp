@@ -38,9 +38,9 @@ void MagatamasBoxItem::_updateLayout()
     }
 
     for (int i = 0; i < 6; i++) {
-        _icons[i] = G_ROOM_SKIN.getPixmap(QString(QSanRoomSkin::S_SKIN_KEY_MAGATAMAS).arg(QString::number(i)), QString(), true)
+        _icons[i] = G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_MAGATAMAS).arg(QString::number(i)), QString(), true)
                         .scaled(m_iconSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-        _dyingIcons[i] = G_ROOM_SKIN.getPixmap(QString(QSanRoomSkin::S_SKIN_KEY_MAGATAMAS_DYINGLINE).arg(QString::number(i)), QString(), true)
+        _dyingIcons[i] = G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_MAGATAMAS_DYINGLINE).arg(QString::number(i)), QString(), true)
                              .scaled(m_iconSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     }
 
@@ -53,8 +53,8 @@ void MagatamasBoxItem::_updateLayout()
             bgSize.setWidth((yStep + 1) * i);
             bgSize.setHeight(m_iconSize.width());
         }
-        _bgImages[i]
-            = G_ROOM_SKIN.getPixmap(QString(QSanRoomSkin::S_SKIN_KEY_MAGATAMAS_BG).arg(QString::number(i))).scaled(bgSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        _bgImages[i] = G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_MAGATAMAS_BG).arg(QString::number(i)))
+                           .scaled(bgSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     }
 }
 
@@ -159,7 +159,7 @@ void MagatamasBoxItem::_doHpChangeAnimation(int newHp)
         grow->setEndValue(4);
         grow->setDuration(500);
 
-        connect(fade, SIGNAL(finished()), aniMaga, SLOT(deleteLater()));
+        connect(fade, &QAbstractAnimation::finished, aniMaga, &QObject::deleteLater);
 
         QParallelAnimationGroup *group = new QParallelAnimationGroup;
         group->addAnimation(fade);
@@ -229,12 +229,12 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
             rect.translate(xStep * 0.5, yStep * 0.5);
         G_COMMON_LAYOUT.m_hpFont[imageIndex].paintText(painter, rect, Qt::AlignCenter, QString::number(m_hp));
         rect.translate(xStep, yStep);
-        G_COMMON_LAYOUT.m_hpFont[imageIndex].paintText(painter, rect, Qt::AlignCenter, "/");
+        G_COMMON_LAYOUT.m_hpFont[imageIndex].paintText(painter, rect, Qt::AlignCenter, QStringLiteral("/"));
         rect.translate(xStep, yStep);
         G_COMMON_LAYOUT.m_hpFont[imageIndex].paintText(painter, rect, Qt::AlignCenter, QString::number(m_maxHp));
         if (m_dyingHp > 1) {
             rect.translate(xStep, yStep);
-            QString dyingLine = QString("%1 %2 %3").arg(QString("(")).arg(QString::number(m_dyingHp - 1)).arg(QString(")"));
+            QString dyingLine = QStringLiteral("%1 %2 %3").arg(QStringLiteral("(")).arg(QString::number(m_dyingHp - 1)).arg(QStringLiteral(")"));
             G_COMMON_LAYOUT.m_hpFont[imageIndex].paintText(painter, rect, Qt::AlignLeft, dyingLine);
         }
     }

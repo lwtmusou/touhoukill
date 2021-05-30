@@ -2,10 +2,10 @@
 
 #include <QPainter>
 
-const char *HEROSKIN_USED_ICON = "image/system/heroskin-used.png";
-const char *HEROSKIN_SELECT_FRAME_ICON = "image/system/frame/heroskin-select.png";
+const char *const HEROSKIN_USED_ICON = "image/system/heroskin-used.png";
+const char *const HEROSKIN_SELECT_FRAME_ICON = "image/system/frame/heroskin-select.png";
 
-SkinItem::SkinItem(const QString &skinName, const QRect &clipRect, int skinIndex, bool used, QGraphicsItem *parent /* = 0*/)
+SkinItem::SkinItem(const QString &skinName, QRect clipRect, int skinIndex, bool used, QGraphicsItem *parent /* = 0*/)
     : QGraphicsObject(parent)
     , m_skinPixmap(skinName)
     , m_clipRect(clipRect)
@@ -80,12 +80,12 @@ void SkinItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *)
 
 const QPixmap &SkinItem::getUsedIcon()
 {
-    static const QPixmap usedIcon(HEROSKIN_USED_ICON);
+    static const QPixmap usedIcon(QString::fromUtf8(HEROSKIN_USED_ICON));
     return usedIcon;
 }
 
 const QPixmap &SkinItem::getSelectFrameIcon()
 {
-    static const QPixmap selectFrameIcon(HEROSKIN_SELECT_FRAME_ICON);
+    static const QPixmap selectFrameIcon(QString::fromUtf8(HEROSKIN_SELECT_FRAME_ICON));
     return selectFrameIcon;
 }

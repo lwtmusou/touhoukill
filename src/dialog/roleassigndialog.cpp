@@ -25,18 +25,18 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
     QStringList role_list = Sanguosha->getRoleList(ServerInfo.GameMode);
 
     if (Config.FreeAssignSelf) {
-        QString text = QString("%1[%2]").arg(Self->screenName()).arg(Sanguosha->translate("lord"));
+        QString text = QStringLiteral("%1[%2]").arg(Self->screenName()).arg(Sanguosha->translate(QStringLiteral("lord")));
 
         QListWidgetItem *item = new QListWidgetItem(text, list);
         item->setData(Qt::UserRole, Self->objectName());
 
-        role_mapping.insert(Self->objectName(), "lord");
+        role_mapping.insert(Self->objectName(), QStringLiteral("lord"));
     } else {
         QList<const ClientPlayer *> players = ClientInstance->getPlayers();
         for (int i = 0; i < players.length(); i++) {
             QString role = role_list.at(i);
             const ClientPlayer *player = players.at(i);
-            QString text = QString("%1[%2]").arg(player->screenName()).arg(Sanguosha->translate(role));
+            QString text = QStringLiteral("%1[%2]").arg(player->screenName()).arg(Sanguosha->translate(role));
 
             QListWidgetItem *item = new QListWidgetItem(text, list);
             item->setData(Qt::UserRole, player->objectName());
@@ -48,10 +48,10 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
     QVBoxLayout *vlayout = new QVBoxLayout;
 
     role_ComboBox = new QComboBox;
-    role_ComboBox->addItem(tr("Lord"), "lord");
-    role_ComboBox->addItem(tr("Loyalist"), "loyalist");
-    role_ComboBox->addItem(tr("Renegade"), "renegade");
-    role_ComboBox->addItem(tr("Rebel"), "rebel");
+    role_ComboBox->addItem(tr("Lord"), QStringLiteral("lord"));
+    role_ComboBox->addItem(tr("Loyalist"), QStringLiteral("loyalist"));
+    role_ComboBox->addItem(tr("Renegade"), QStringLiteral("renegade"));
+    role_ComboBox->addItem(tr("Rebel"), QStringLiteral("rebel"));
 
     QPushButton *moveUpButton = new QPushButton(tr("Move up"));
     QPushButton *moveDownButton = new QPushButton(tr("Move down"));
@@ -79,8 +79,8 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
 
     connect(role_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateRole(int)));
     connect(list, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(updateRole(QListWidgetItem *)));
-    connect(moveUpButton, SIGNAL(clicked()), this, SLOT(moveUp()));
-    connect(moveDownButton, SIGNAL(clicked()), this, SLOT(moveDown()));
+    connect(moveUpButton, &QAbstractButton::clicked, this, &RoleAssignDialog::moveUp);
+    connect(moveDownButton, &QAbstractButton::clicked, this, &RoleAssignDialog::moveDown);
     connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 }
@@ -106,7 +106,7 @@ void RoleAssignDialog::accept()
         QString name = list->item(i)->data(Qt::UserRole).toString();
         QString role = role_mapping.value(name);
 
-        if (i == 0 && role != "lord") {
+        if (i == 0 && role != QStringLiteral("lord")) {
             QMessageBox::warning(this, tr("Warning"), tr("The first assigned role must be lord!"));
             return;
         }
@@ -138,7 +138,7 @@ void RoleAssignDialog::updateRole(int index)
     QString name = list->currentItem()->data(Qt::UserRole).toString();
     QString role = role_ComboBox->itemData(index).toString();
     ClientPlayer *player = ClientInstance->getPlayer(name);
-    QString text = QString("%1[%2]").arg(player->screenName()).arg(Sanguosha->translate(role));
+    QString text = QStringLiteral("%1[%2]").arg(player->screenName()).arg(Sanguosha->translate(role));
     list->currentItem()->setText(text);
     role_mapping[name] = role;
 }
@@ -147,10 +147,10 @@ void RoleAssignDialog::updateRole(QListWidgetItem *current)
 {
     static QMap<QString, int> mapping;
     if (mapping.isEmpty()) {
-        mapping["lord"] = 0;
-        mapping["loyalist"] = 1;
-        mapping["renegade"] = 2;
-        mapping["rebel"] = 3;
+        mapping[QStringLiteral("lord")] = 0;
+        mapping[QStringLiteral("loyalist")] = 1;
+        mapping[QStringLiteral("renegade")] = 2;
+        mapping[QStringLiteral("rebel")] = 3;
     }
 
     QString name = current->data(Qt::UserRole).toString();

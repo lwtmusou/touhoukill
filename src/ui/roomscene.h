@@ -226,7 +226,7 @@ public slots:
     // choice dialog
     void chooseGeneral(const QStringList &generals, const bool single_result, const bool can_convert);
     void chooseSuit(const QStringList &suits);
-    void chooseCard(const ClientPlayer *playerName, const QString &flags, const QString &reason, bool handcard_visible, Card::HandlingMethod method, QList<int> disabled_ids,
+    void chooseCard(const ClientPlayer *playerName, const QString &flags, const QString &reason, bool handcard_visible, Card::HandlingMethod method, const QList<int> &disabled_ids,
                     bool enableEmptyCard);
     void chooseKingdom(const QStringList &kingdoms);
     void chooseOption(const QString &skillName, const QStringList &options);
@@ -259,12 +259,12 @@ public slots:
     void doOkButton();
     void doCancelButton();
     void doDiscardButton();
-    void highlightSkillButton(QString skill_name, bool highlight);
+    void highlightSkillButton(const QString &skill_name, bool highlight);
     bool isHighlightStatus(Client::Status status);
-    void setLordBGM(QString lord = QString());
-    void setLordBackdrop(QString lord = QString());
+    void setLordBGM(const QString &lord = QString());
+    void setLordBackdrop(const QString &lord = QString());
     void anyunSelectSkill(); //for anyun
-    void addlog(QStringList l); //for client test
+    void addlog(const QStringList &l); //for client test
     void doSkinChange(const QString &generalName, int skinIndex);
     inline QPointF tableCenterPos()
     {
@@ -446,7 +446,7 @@ private:
 
     // re-layout attempts
 
-    void _dispersePhotos(QList<Photo *> &photos, QRectF disperseRegion, Qt::Orientation orientation, Qt::Alignment align);
+    void _dispersePhotos(QList<Photo *> &photos, const QRectF &disperseRegion, Qt::Orientation orientation, Qt::Alignment align);
 
     void _cancelAllFocus();
     // for miniscenes
@@ -459,7 +459,7 @@ private:
 private slots:
     void fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids = QList<int>(), const QList<int> &shownHandcard_ids = QList<int>());
     void updateSkillButtons();
-    void acquireSkill(const ClientPlayer *player, const QString &skill_name, const bool &head = true);
+    void acquireSkill(const ClientPlayer *player, const QString &skill_name, bool head = true);
     void updateSelectedTargets();
     void updateTrustButton();
     void onSkillActivated();
@@ -470,7 +470,7 @@ private slots:
     void hideAvatars();
     void changeHp(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);
     void changeMaxHp(const QString &who, int delta);
-    void moveFocus(const QStringList &who, QSanProtocol::Countdown);
+    void moveFocus(const QStringList &who, const QSanProtocol::Countdown&);
     void setEmotion(const QString &who, const QString &emotion);
     void setEmotion(const QString &who, const QString &emotion, bool permanent);
     void showSkillInvocation(const QString &who, const QString &skill_name);
@@ -493,7 +493,7 @@ private slots:
     void onGameOver();
     void onStandoff();
 
-    void appendChatEdit(QString txt);
+    void appendChatEdit(const QString &txt);
     void appendChatBox(QString txt);
     void showBubbleChatBox(const QString &who, const QString &line);
 
@@ -505,7 +505,7 @@ private slots:
     void attachSkill(const QString &skill_name, bool from_left);
     void detachSkill(const QString &skill_name, bool head);
 
-    void doGongxin(const QList<int> &card_ids, bool enable_heart, QList<int> enabled_ids, QList<int> shownHandcard_ids = QList<int>());
+    void doGongxin(const QList<int> &card_ids, bool enable_heart, const QList<int> &enabled_ids, const QList<int> &shownHandcard_ids = QList<int>());
 
     void startAssign();
 

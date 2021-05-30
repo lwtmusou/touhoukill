@@ -70,9 +70,9 @@ LightboxAnimation::LightboxAnimation(const QString &general_name, const QString 
 
     generalPixmap = new QSanSelectableItem;
     generalPixmap->setParentItem(this);
-    generalPixmap->load("image/animate/skill_bg.png", QSize(1000, 550), false);
+    generalPixmap->load(QStringLiteral("image/animate/skill_bg.png"), QSize(1000, 550), false);
     generalPixmap->setTransformOriginPoint(generalPixmap->boundingRect().width() / 2, generalPixmap->boundingRect().height() / 2);
-    generalPixmap->setPixmap(G_ROOM_SKIN.getPixmap(G_ROOM_SKIN.S_SKIN_KEY_LIGHTBOX, general_name, true, false));
+    generalPixmap->setPixmap(G_ROOM_SKIN.getPixmap(QString::fromUtf8(G_ROOM_SKIN.S_SKIN_KEY_LIGHTBOX), general_name, true, false));
     generalPixmap->setScale(0.3);
     generalPixmap->setPos(-generalPixmap->boundingRect().width(), rect.height() / 2.5 - generalPixmap->boundingRect().height() / 2);
     generalPixmap->setZValue(0);
@@ -84,7 +84,7 @@ LightboxAnimation::LightboxAnimation(const QString &general_name, const QString 
 
     skillName = new QGraphicsTextItem(Sanguosha->translate(skill_name), this);
     skillName->setScale(10);
-    QFont font("LiSu");
+    QFont font(QStringLiteral("LiSu"));
     font.setPixelSize(90);
     skillName->setFont(font);
     skillName->setDefaultTextColor(Qt::white);

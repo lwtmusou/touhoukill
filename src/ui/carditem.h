@@ -98,7 +98,7 @@ public:
         emit clicked();
     }
 
-    void setOuterGlowEffectEnabled(const bool &willPlay);
+    void setOuterGlowEffectEnabled(bool willPlay);
     bool isOuterGlowEffectEnabled() const;
 
     void setOuterGlowColor(const QColor &color);

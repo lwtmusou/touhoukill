@@ -73,16 +73,17 @@ void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
     if (!_m_isUnknownGeneral)
         painter->drawPixmap(rect, G_ROOM_SKIN.getCardMainPixmap(objectName(), false, false));
     else
-        painter->drawPixmap(rect, G_ROOM_SKIN.getPixmap("generalCardBack"));
+        painter->drawPixmap(rect, G_ROOM_SKIN.getPixmap(QStringLiteral("generalCardBack")));
 
     if (!hasCompanion)
         return;
 
     QString kingdom = Sanguosha->getGeneral(objectName())->getKingdom();
-    QPixmap icon = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_ICON, kingdom);
+    QPixmap icon = G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_ICON), kingdom);
     painter->drawPixmap(boundingRect().center().x() - icon.width() / 2 + 3, boundingRect().bottom() - icon.height(), icon);
 
-    painter->drawPixmap(G_COMMON_LAYOUT.m_generalCardItemCompanionPromptRegion, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_FONT, kingdom));
+    painter->drawPixmap(G_COMMON_LAYOUT.m_generalCardItemCompanionPromptRegion,
+                        G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_FONT), kingdom));
 }
 
 void GeneralCardItem::showCompanion()
@@ -215,13 +216,13 @@ void ChooseGeneralBox::paintLayout(QPainter *painter)
     if (general_number > 5)
         split_line_y += (card_to_center_line + G_COMMON_LAYOUT.m_cardNormalHeight);
 
-    QPixmap line = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_CHOOSE_GENERAL_BOX_SPLIT_LINE);
+    QPixmap line = G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_CHOOSE_GENERAL_BOX_SPLIT_LINE));
     const int line_length = boundingRect().width() - 2 * left_blank_width;
     const QRectF rect = boundingRect();
 
     painter->drawPixmap(left_blank_width, split_line_y, line, (line.width() - line_length) / 2, rect.y(), line_length, line.height());
 
-    QPixmap seat = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_CHOOSE_GENERAL_BOX_DEST_SEAT);
+    QPixmap seat = G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_CHOOSE_GENERAL_BOX_DEST_SEAT));
     QRect seat1_rect(rect.center().x() - G_COMMON_LAYOUT.m_cardNormalWidth - card_to_center_line - 2, split_line_y + split_line_to_card_seat - 2,
                      G_COMMON_LAYOUT.m_cardNormalWidth + 4, G_COMMON_LAYOUT.m_cardNormalHeight + 4);
     painter->drawPixmap(seat1_rect, seat);
@@ -294,7 +295,7 @@ void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_onl
         this->m_viewOnly = view_only;
     }
     foreach (const QString &general, _generals) {
-        if (general.endsWith("(lord)"))
+        if (general.endsWith(QStringLiteral("(lord)")))
             generals.removeOne(general);
     }
 
@@ -302,7 +303,7 @@ void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_onl
     if (!view_only) {
         title = single_result ? tr("Please select one general") : tr("Please select the same nationality generals");
         if (!single_result && Self->getSeat() > 0)
-            title.prepend(Sanguosha->translate(QString("SEAT(%1)").arg(Self->getSeat())) + " ");
+            title.prepend(Sanguosha->translate(QStringLiteral("SEAT(%1)").arg(Self->getSeat())) + QStringLiteral(" "));
     }
 
     prepareGeometryChange();
@@ -312,7 +313,7 @@ void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_onl
     int z = generals.length();
 
     convertContainer = new CardContainer;
-    convertContainer->setObjectName("");
+    convertContainer->setObjectName(QString());
     convertContainer->hide();
     convertContainer->setZValue(z + 3);
     convertContainer->setParentItem(this);
@@ -467,7 +468,7 @@ void ChooseGeneralBox::adjustItems()
             card->setFrozen(true);
         const General *gen1 = Sanguosha->getGeneral(selected.first()->objectName());
         const General *gen2 = Sanguosha->getGeneral(selected.last()->objectName());
-        bool can = (gen1->getKingdom() == gen2->getKingdom() || gen1->getKingdom() == "zhu" || gen2->getKingdom() == "zhu");
+        bool can = (gen1->getKingdom() == gen2->getKingdom() || gen1->getKingdom() == QStringLiteral("zhu") || gen2->getKingdom() == QStringLiteral("zhu"));
         confirm->setEnabled(can);
     } else if (selected.length() == 1) {
         selected.first()->hideCompanion();
@@ -475,7 +476,8 @@ void ChooseGeneralBox::adjustItems()
         foreach (GeneralCardItem *card, items) {
             const General *general = Sanguosha->getGeneral(card->objectName());
 
-            if (general->getKingdom() != seleted_general->getKingdom() && general->getKingdom() != "zhu" && seleted_general->getKingdom() != "zhu") {
+            if (general->getKingdom() != seleted_general->getKingdom() && general->getKingdom() != QStringLiteral("zhu")
+                && seleted_general->getKingdom() != QStringLiteral("zhu")) {
                 if (!card->isFrozen())
                     card->setFrozen(true);
                 card->hideCompanion();
@@ -497,7 +499,7 @@ void ChooseGeneralBox::adjustItems()
         foreach (GeneralCardItem *card, items) {
             card->hideCompanion();
             foreach (GeneralCardItem *other, items) {
-                if (other->objectName().endsWith("(lord)"))
+                if (other->objectName().endsWith(QStringLiteral("(lord)")))
                     continue;
                 const General *hero = Sanguosha->getGeneral(card->objectName());
                 if (card != other && hero->isCompanionWith(other->objectName())) {
@@ -556,7 +558,7 @@ void ChooseGeneralBox::reply()
     if (!selected.isEmpty()) {
         generals = selected.first()->objectName();
         if (selected.length() == 2)
-            generals += ("+" + selected.last()->objectName());
+            generals += (QStringLiteral("+") + selected.last()->objectName());
     }
     ClientInstance->onPlayerChooseGeneral(generals);
 }
@@ -610,7 +612,7 @@ void ChooseGeneralBox::_onConvertButtonClicked()
         convertContainer->clear();
     }
     if (convertContainer->objectName() == general) {
-        convertContainer->setObjectName("");
+        convertContainer->setObjectName(QString());
         return;
     }
     QList<CardItem *> generals;

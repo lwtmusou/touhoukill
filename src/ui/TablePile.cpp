@@ -118,7 +118,7 @@ void TablePile::showJudgeResult(int cardId, bool takeEffect)
     m_visibleCards.clear();
     m_visibleCards.append(judgeCard);
     _fadeOutCardsLocked(cardsToClear);
-    PixmapAnimation::GetPixmapAnimation(judgeCard, takeEffect ? "judgegood" : "judgebad");
+    PixmapAnimation::GetPixmapAnimation(judgeCard, takeEffect ? QStringLiteral("judgegood") : QStringLiteral("judgebad"));
     _m_mutex_pileCards.unlock();
 
     adjustCards();

@@ -520,6 +520,7 @@ public:
 
     TriggerDetail(const TriggerDetail &other);
     TriggerDetail &operator=(const TriggerDetail &other);
+    ~TriggerDetail();
 
     const ::Room *room() const;
     const Trigger *trigger() const;

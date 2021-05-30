@@ -50,7 +50,7 @@ public:
         sgs_openlibs(l);
 
         // dostring the initial Lua code from qrc
-        QFile f(":/luaInitialize.lua");
+        QFile f(QStringLiteral(":/luaInitialize.lua"));
         f.open(QFile::ReadOnly);
         QByteArray arr = f.readAll();
         f.close();
@@ -65,7 +65,7 @@ public:
 
         int luaRet = luaL_dostring(l, arr.constData());
         if (luaRet != LUA_OK) {
-            QString errorText = lua_tostring(l, -1);
+            QString errorText = QString::fromUtf8(lua_tostring(l, -1));
             lua_pop(l, 1);
             if (errorDealingMethod == 1) {
                 throw luaRet;
@@ -134,13 +134,13 @@ const QList<const Skill *> &LuaMultiThreadEnvironment::skills()
 
 const QString &LuaMultiThreadEnvironment::luaVersion()
 {
-    static QString v = LUA_RELEASE;
+    static QString v = QStringLiteral(LUA_RELEASE);
     return v;
 }
 
 const QString &LuaMultiThreadEnvironment::luaCopyright()
 {
-    static QString v = LUA_COPYRIGHT;
+    static QString v = QStringLiteral(LUA_COPYRIGHT);
     return v;
 }
 

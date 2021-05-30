@@ -130,7 +130,7 @@ QTextDocument *ClientPlayer::getMarkDoc() const
 
 void ClientPlayer::changePile(const QString &name, bool add, QList<int> card_ids)
 {
-    if (name == "shown_card" || name == "huashencard")
+    if (name == QStringLiteral("shown_card") || name == QStringLiteral("huashencard"))
         emit pile_changed(name);
     else {
         if (add) {
@@ -149,7 +149,7 @@ void ClientPlayer::changePile(const QString &name, bool add, QList<int> card_ids
             }
         }
 
-        if (!name.startsWith("#"))
+        if (!name.startsWith(QStringLiteral("#")))
             emit pile_changed(name);
     }
 }
@@ -157,18 +157,18 @@ void ClientPlayer::changePile(const QString &name, bool add, QList<int> card_ids
 QString ClientPlayer::getDeathPixmapPath() const
 {
     QString basename;
-    if (ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode") {
-        if (getRole() == "lord" || getRole() == "renegade")
-            basename = "marshal";
+    if (ServerInfo.GameMode == QStringLiteral("06_3v3") || ServerInfo.GameMode == QStringLiteral("06_XMode")) {
+        if (getRole() == QStringLiteral("lord") || getRole() == QStringLiteral("renegade"))
+            basename = QStringLiteral("marshal");
         else
-            basename = "guard";
+            basename = QStringLiteral("guard");
     } else
         basename = getRole();
 
     if (basename.isEmpty())
-        basename = "unknown";
+        basename = QStringLiteral("unknown");
 
-    return QString("image/system/death/%1.png").arg(basename);
+    return QStringLiteral("image/system/death/%1.png").arg(basename);
 }
 
 void ClientPlayer::setHandcardNum(int n)
@@ -185,7 +185,7 @@ void ClientPlayer::setFlags(const QString &flag)
 {
     Player::setFlags(flag);
 
-    if (flag.endsWith("actioned"))
+    if (flag.endsWith(QStringLiteral("actioned")))
         emit action_taken();
 
     emit skill_state_changed(flag);
@@ -197,10 +197,10 @@ void ClientPlayer::setMark(const QString &mark, int value)
         return;
     marks[mark] = value;
 
-    if (mark == "drank" || mark == "magic_drank")
+    if (mark == QStringLiteral("drank") || mark == QStringLiteral("magic_drank"))
         emit drank_changed();
 
-    if (!mark.startsWith("@"))
+    if (!mark.startsWith(QStringLiteral("@")))
         return;
 
         // @todo: consider move all the codes below to PlayerCardContainerUI.cpp

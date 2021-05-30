@@ -72,33 +72,33 @@ bool SkillInvokeDetailForClient::tryParse(const QVariantMap &map)
 {
     *this = SkillInvokeDetailForClient();
 
-    if (map.contains("skill"))
-        skill = Sanguosha->getSkill(map.value("skill").toString());
+    if (map.contains(QStringLiteral("skill")))
+        skill = Sanguosha->getSkill(map.value(QStringLiteral("skill")).toString());
     if (skill == nullptr)
         return false;
 
-    if (map.contains("invoker"))
-        invoker = ClientInstance->getPlayer(map.value("invoker").toString());
+    if (map.contains(QStringLiteral("invoker")))
+        invoker = ClientInstance->getPlayer(map.value(QStringLiteral("invoker")).toString());
     if (invoker == nullptr)
         return false;
 
-    if (map.contains("owner"))
-        owner = ClientInstance->getPlayer(map.value("owner").toString());
+    if (map.contains(QStringLiteral("owner")))
+        owner = ClientInstance->getPlayer(map.value(QStringLiteral("owner")).toString());
     if (owner == nullptr)
         owner = invoker;
 
-    if (map.contains("preferredtarget"))
-        preferredTarget = ClientInstance->getPlayer(map.value("preferredtarget").toString());
+    if (map.contains(QStringLiteral("preferredtarget")))
+        preferredTarget = ClientInstance->getPlayer(map.value(QStringLiteral("preferredtarget")).toString());
 
-    if (map.contains("preferredtargetseat"))
-        preferredTargetSeat = map.value("preferredtargetseat").toInt();
+    if (map.contains(QStringLiteral("preferredtargetseat")))
+        preferredTargetSeat = map.value(QStringLiteral("preferredtargetseat")).toInt();
 
     return true;
 }
 
 bool SkillInvokeDetailForClient::tryParse(const QString &str)
 {
-    QStringList l = str.split(":");
+    QStringList l = str.split(QStringLiteral(":"));
     skill = Sanguosha->getSkill(l.first());
     if (skill == nullptr)
         return false;
@@ -127,7 +127,7 @@ QString SkillInvokeDetailForClient::toString() const
         l << preferredTarget->objectName();
         l << QString::number(preferredTargetSeat);
     }
-    return l.join(":");
+    return l.join(QStringLiteral(":"));
 }
 
 TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const QVariantMap &skillDetail, int width)
@@ -237,7 +237,7 @@ QString TriggerOptionButton::displayedTextOf(const SkillInvokeDetailForClient &d
         text = tr("%1 (of %2's)").arg(text).arg(Sanguosha->translate(detail.owner->getFootnoteName()));
 
     if (times > 1)
-        text += QString(" * %1").arg(times);
+        text += QStringLiteral(" * %1").arg(times);
 
     return text;
 }
@@ -270,7 +270,7 @@ ChooseTriggerOrderBox::ChooseTriggerOrderBox()
 {
     cancel->hide();
     cancel->setParentItem(this);
-    cancel->setObjectName("cancel");
+    cancel->setObjectName(QStringLiteral("cancel"));
     connect(cancel, &Button::clicked, this, &ChooseTriggerOrderBox::reply);
 }
 
@@ -400,7 +400,7 @@ void ChooseTriggerOrderBox::reply()
 
     if (choice.isEmpty()) {
         if (optional)
-            choice = "cancel";
+            choice = QStringLiteral("cancel");
         else {
             QVariantMap m = options.first().toMap();
             SkillInvokeDetailForClient detail;

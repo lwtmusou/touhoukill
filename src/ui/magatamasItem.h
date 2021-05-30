@@ -45,7 +45,7 @@ public:
         return anchorEnabled;
     }
     void setIconSize(QSize size);
-    inline void setImageArea(const QRect &rect)
+    inline void setImageArea(QRect rect)
     {
         m_imageArea = rect;
     }

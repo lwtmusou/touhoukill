@@ -210,7 +210,7 @@ QString Card::faceName() const
     if (d->face != nullptr)
         return d->face->name();
 
-    return "DummyCard";
+    return QStringLiteral("DummyCard");
 }
 
 QString Card::fullName(bool include_suit) const
@@ -218,10 +218,10 @@ QString Card::fullName(bool include_suit) const
     QString name = this->faceName();
     if (include_suit) {
         QString suit_name = Sanguosha->translate(suitString());
-        return QString("%1%2 %3").arg(suit_name).arg(numberString()).arg(name);
+        return QStringLiteral("%1%2 %3").arg(suit_name).arg(numberString()).arg(name);
     }
 
-    return QString("%1 %2").arg(numberString()).arg(name);
+    return QStringLiteral("%1 %2").arg(numberString()).arg(name);
 }
 
 QString Card::logName() const
@@ -234,7 +234,7 @@ QString Card::logName() const
     case Heart:
     case Club:
     case Diamond: {
-        suit_char = QString("<img src='image/system/log/%1.png' height = 12/>").arg(suitString());
+        suit_char = QStringLiteral("<img src='image/system/log/%1.png' height = 12/>").arg(suitString());
         break;
     }
     case NoSuitRed: {
@@ -259,7 +259,7 @@ QString Card::logName() const
     if (number() > NumberA && number() <= NumberK)
         number_string = numberString();
 
-    return QString("%1[%2%3]").arg(faceName()).arg(suit_char).arg(number_string);
+    return QStringLiteral("%1[%2%3]").arg(faceName()).arg(suit_char).arg(number_string);
 }
 
 bool Card::isModified() const
@@ -276,7 +276,7 @@ bool Card::isModified() const
 QString Card::skillName(bool removePrefix) const
 {
     QString r = d->skill_name;
-    if (removePrefix && r.startsWith('_'))
+    if (removePrefix && r.startsWith(QLatin1Char('_')))
         r = r.mid(1);
 
     return r;
@@ -447,13 +447,13 @@ void Card::clearSubcards()
 QString Card::subcardString() const
 {
     if (subcards().isEmpty())
-        return ".";
+        return QStringLiteral(".");
 
     QStringList str;
     foreach (int subcard, subcards())
         str << QString::number(subcard);
 
-    return str.join("+");
+    return str.join(QStringLiteral("+"));
 }
 
 bool Card::mute() const
@@ -494,23 +494,23 @@ void Card::setRoomObject(RoomObject *room)
 QString Card::toString(bool hidden) const
 {
     if (d->face == nullptr)
-        return "$" + subcardString();
+        return QStringLiteral("$") + subcardString();
 
     if (d->face->isKindOf("SkillCard")) {
         QString str;
         if (!hidden)
-            str = QString("@%1[%2:%3]=%4").arg(d->face->name()).arg(suitString()).arg(numberString()).arg(subcardString());
+            str = QStringLiteral("@%1[%2:%3]=%4").arg(d->face->name()).arg(suitString()).arg(numberString()).arg(subcardString());
         else
-            str = QString("@%1[no_suit:-]=.").arg(d->face->name());
+            str = QStringLiteral("@%1[no_suit:-]=.").arg(d->face->name());
 
         if (!d->user_string.isEmpty())
-            str = str + (QString(":%1").arg(d->user_string));
+            str = str + (QStringLiteral(":%1").arg(d->user_string));
 
         return str;
     }
 
     if (isVirtualCard())
-        return QString("%1:%2[%3:%4]=%5").arg(d->face->name()).arg(skillName()).arg(suitString()).arg(numberString()).arg(subcardString());
+        return QStringLiteral("%1:%2[%3:%4]=%5").arg(d->face->name()).arg(skillName()).arg(suitString()).arg(numberString()).arg(subcardString());
 
     return QString::number(d->id);
 }
@@ -524,32 +524,32 @@ QString Card::SuitToString(Suit suit)
 {
     switch (suit) {
     case Spade:
-        return "spade";
+        return QStringLiteral("spade");
     case Heart:
-        return "heart";
+        return QStringLiteral("heart");
     case Club:
-        return "club";
+        return QStringLiteral("club");
     case Diamond:
-        return "diamond";
+        return QStringLiteral("diamond");
     case NoSuitBlack:
-        return "no_suit_black";
+        return QStringLiteral("no_suit_black");
     case NoSuitRed:
-        return "no_suit_red";
+        return QStringLiteral("no_suit_red");
     default:
-        return "no_suit";
+        return QStringLiteral("no_suit");
     }
 }
 
 QString Card::NumberToString(Number number)
 {
     if (number == NumberToBeDecided) // I just wonder the case actually exists
-        return "TBD";
+        return QStringLiteral("TBD");
 
     if (number == X)
-        return "10";
+        return QStringLiteral("10");
 
     static const char *number_string = "-A23456789-JQK";
-    return QString(number_string[static_cast<int>(number)]);
+    return QLatin1Char(number_string[static_cast<int>(number)]);
 }
 
 Card *Card::Parse(const QString &str, RoomObject *room)
@@ -558,20 +558,20 @@ Card *Card::Parse(const QString &str, RoomObject *room)
 
     static QMap<QString, Suit> suit_map;
     if (suit_map.isEmpty()) {
-        suit_map.insert("spade", Spade);
-        suit_map.insert("club", Club);
-        suit_map.insert("heart", Heart);
-        suit_map.insert("diamond", Diamond);
-        suit_map.insert("no_suit_red", NoSuitRed);
-        suit_map.insert("no_suit_black", NoSuitBlack);
-        suit_map.insert("no_suit", NoSuit);
-        suit_map.insert("to_be_decided", SuitToBeDecided);
+        suit_map.insert(QStringLiteral("spade"), Spade);
+        suit_map.insert(QStringLiteral("club"), Club);
+        suit_map.insert(QStringLiteral("heart"), Heart);
+        suit_map.insert(QStringLiteral("diamond"), Diamond);
+        suit_map.insert(QStringLiteral("no_suit_red"), NoSuitRed);
+        suit_map.insert(QStringLiteral("no_suit_black"), NoSuitBlack);
+        suit_map.insert(QStringLiteral("no_suit"), NoSuit);
+        suit_map.insert(QStringLiteral("to_be_decided"), SuitToBeDecided);
     }
 
     // for skill cards
-    if (str.startsWith(QChar('@'))) {
-        QRegularExpression pattern("^@(\\w+)=([^:]+)(:.+)?$");
-        QRegularExpression ex_pattern("^@(\\w*)\\[(\\w+):(.+)\\]=([^:]+)(:.+)?$");
+    if (str.startsWith(QLatin1Char('@'))) {
+        QRegularExpression pattern(QStringLiteral("^@(\\w+)=([^:]+)(:.+)?$"));
+        QRegularExpression ex_pattern(QStringLiteral("^@(\\w*)\\[(\\w+):(.+)\\]=([^:]+)(:.+)?$"));
 
         QStringList texts;
         QString card_name;
@@ -599,8 +599,8 @@ Card *Card::Parse(const QString &str, RoomObject *room)
         } else
             return nullptr;
 
-        if (subcard_str != ".")
-            subcard_ids = subcard_str.split("+");
+        if (subcard_str != QStringLiteral("."))
+            subcard_ids = subcard_str.split(QStringLiteral("+"));
 
         const CardFace *skillCardFace = CardFactory::cardFace(card_name);
         if (skillCardFace == nullptr)
@@ -610,13 +610,13 @@ Card *Card::Parse(const QString &str, RoomObject *room)
             suit = suit_map.value(card_suit, NoSuit);
 
         if (!card_number.isEmpty()) {
-            if (card_number == "A")
+            if (card_number == QStringLiteral("A"))
                 number = A;
-            else if (card_number == "J")
+            else if (card_number == QStringLiteral("J"))
                 number = J;
-            else if (card_number == "Q")
+            else if (card_number == QStringLiteral("Q"))
                 number = Q;
-            else if (card_number == "K")
+            else if (card_number == QStringLiteral("K"))
                 number = K;
             else
                 number = static_cast<Number>(card_number.toInt());
@@ -631,17 +631,17 @@ Card *Card::Parse(const QString &str, RoomObject *room)
     }
 
     // for dummy cards
-    if (str.startsWith(QChar('$'))) {
+    if (str.startsWith(QLatin1Char('$'))) {
         QString copy = str;
-        copy.remove(QChar('$'));
-        QStringList card_strs = copy.split("+");
+        copy.remove(QLatin1Char('$'));
+        QStringList card_strs = copy.split(QStringLiteral("+"));
 
         return room->cloneDummyCard(List2Set(StringList2IntList(card_strs)));
     }
 
     // for regular virtual cards
-    if (str.contains(QChar('='))) {
-        QRegularExpression pattern("^(\\w+):(\\w*)\\[(\\w+):(.+)\\]=(.+)$");
+    if (str.contains(QLatin1Char('='))) {
+        QRegularExpression pattern(QStringLiteral("^(\\w+):(\\w*)\\[(\\w+):(.+)\\]=(.+)$"));
         QRegularExpressionMatch match = pattern.match(str);
         if (!match.hasMatch())
             return nullptr;
@@ -653,19 +653,19 @@ Card *Card::Parse(const QString &str, RoomObject *room)
         QString number_string = texts.at(4);
         QString subcard_str = texts.at(5);
         QStringList subcard_ids;
-        if (subcard_str != ".")
-            subcard_ids = subcard_str.split("+");
+        if (subcard_str != QStringLiteral("."))
+            subcard_ids = subcard_str.split(QStringLiteral("+"));
 
         Suit suit = suit_map.value(suit_string, Card::SuitToBeDecided);
 
         Number number = NumberNA;
-        if (number_string == "A")
+        if (number_string == QStringLiteral("A"))
             number = A;
-        else if (number_string == "J")
+        else if (number_string == QStringLiteral("J"))
             number = J;
-        else if (number_string == "Q")
+        else if (number_string == QStringLiteral("Q"))
             number = Q;
-        else if (number_string == "K")
+        else if (number_string == QStringLiteral("K"))
             number = K;
         else
             number = static_cast<Number>(number_string.toInt());
@@ -695,10 +695,10 @@ QString CardDescriptor::fullName(bool include_suit) const
     QString name = face()->name();
     if (include_suit) {
         QString suit_name = Sanguosha->translate(Card::SuitToString(suit));
-        return QString("%1%2 %3").arg(suit_name).arg(Card::NumberToString(number)).arg(name);
+        return QStringLiteral("%1%2 %3").arg(suit_name).arg(Card::NumberToString(number)).arg(name);
     }
 
-    return QString("%1 %2").arg(Card::NumberToString(number)).arg(name);
+    return QStringLiteral("%1 %2").arg(Card::NumberToString(number)).arg(name);
 }
 
 QString CardDescriptor::logName() const
@@ -711,7 +711,7 @@ QString CardDescriptor::logName() const
     case Card::Heart:
     case Card::Club:
     case Card::Diamond: {
-        suit_char = QString("<img src='image/system/log/%1.png' height = 12/>").arg(Card::SuitToString(suit));
+        suit_char = QStringLiteral("<img src='image/system/log/%1.png' height = 12/>").arg(Card::SuitToString(suit));
         break;
     }
     case Card::NoSuitRed: {
@@ -734,7 +734,7 @@ QString CardDescriptor::logName() const
     if (number > Card::NumberA && number <= Card::NumberK)
         number_string = Card::NumberToString(number);
 
-    return QString("%1[%2%3]").arg(face()->name()).arg(suit_char).arg(number_string);
+    return QStringLiteral("%1[%2%3]").arg(face()->name()).arg(suit_char).arg(number_string);
 }
 
 bool CardDescriptor::isBlack() const

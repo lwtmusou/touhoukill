@@ -51,7 +51,7 @@ void ServerPlayer::broadcastSkillInvoke(const Card *card) const
         if (card->face()->commonEffectName().isNull())
             broadcastSkillInvoke(card->faceName());
         else
-            room->broadcastSkillInvoke(card->face()->commonEffectName(), "common");
+            room->broadcastSkillInvoke(card->face()->commonEffectName(), QStringLiteral("common"));
         return;
     } else {
         int index = skill->getAudioEffectIndex(this, card);
@@ -62,7 +62,7 @@ void ServerPlayer::broadcastSkillInvoke(const Card *card) const
             if (card->face()->commonEffectName().isNull())
                 broadcastSkillInvoke(card->faceName());
             else
-                room->broadcastSkillInvoke(card->face()->commonEffectName(), "common");
+                room->broadcastSkillInvoke(card->face()->commonEffectName(), QStringLiteral("common"));
         } else
             room->broadcastSkillInvoke(skill_name, index);
     }
@@ -92,7 +92,7 @@ void ServerPlayer::throwAllEquips()
     if (equips.isEmpty())
         return;
 
-    Card *card = room->cloneCard("DummyCard");
+    Card *card = room->cloneCard(QStringLiteral("DummyCard"));
     foreach (const Card *equip, equips) {
         if (!isJilei(card))
             card->addSubcard(equip);
@@ -117,7 +117,7 @@ void ServerPlayer::throwAllHandCardsAndEquips()
 void ServerPlayer::throwAllMarks(bool visible_only)
 {
     foreach (QString mark_name, marks.keys()) {
-        if (!mark_name.startsWith("@"))
+        if (!mark_name.startsWith(QStringLiteral("@")))
             continue;
 
         int n = marks.value(mark_name, 0);
@@ -129,19 +129,18 @@ void ServerPlayer::throwAllMarks(bool visible_only)
         marks.clear();
 }
 
-void ServerPlayer::clearOnePrivatePile(QString pile_name)
+void ServerPlayer::clearOnePrivatePile(const QString &pile_name)
 {
     if (!piles.contains(pile_name))
         return;
-    IDSet pile = piles[pile_name];
 
-    Card *dummy = room->cloneCard("DummyCard");
+    Card *dummy = room->cloneCard(QStringLiteral("DummyCard"));
     CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, objectName());
     bool notifyLog = true;
     QString new_name = pile_name;
-    if (new_name.startsWith("#")) {
+    if (new_name.startsWith(QStringLiteral("#"))) {
         foreach (QString flag, getFlagList()) {
-            if (flag == new_name.mid(1) + "_InTempMoving") {
+            if (flag == new_name.mid(1) + QStringLiteral("_InTempMoving")) {
                 notifyLog = false;
                 break;
             }
@@ -172,13 +171,13 @@ void ServerPlayer::bury()
     if (isRemoved())
         room->setPlayerProperty(this, "removed", false);
 
-    this->tag.remove("Huashen_skill");
-    this->tag.remove("Huashen_target");
+    this->tag.remove(QStringLiteral("Huashen_skill"));
+    this->tag.remove(QStringLiteral("Huashen_target"));
 }
 
 void ServerPlayer::throwAllCards()
 {
-    Card *card = isKongcheng() ? room->cloneCard("DummyCard") : wholeHandCards();
+    Card *card = isKongcheng() ? room->cloneCard(QStringLiteral("DummyCard")) : wholeHandCards();
     foreach (const Card *equip, getEquips())
         card->addSubcard(equip);
     if (card->subcards().size() != 0)
@@ -211,9 +210,9 @@ QList<int> ServerPlayer::forceToDiscard(int discard_num, bool include_equip, boo
 {
     QList<int> to_discard;
 
-    QString flags = "h";
+    QString flags = QStringLiteral("h");
     if (include_equip)
-        flags.append("e");
+        flags.append(QStringLiteral("e"));
 
     QList<const Card *> all_cards = getCards(flags);
     qShuffle(all_cards);
@@ -257,9 +256,9 @@ void ServerPlayer::setSocket(ClientSocket *socket)
     disconnect(this, SLOT(sendMessage(QString)));
 
     if (socket) {
-        connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
-        connect(socket, SIGNAL(message_got(const char *)), this, SLOT(getMessage(const char *)));
-        connect(this, SIGNAL(message_ready(QString)), this, SLOT(sendMessage(QString)));
+        connect(socket, &ClientSocket::disconnected, this, &ServerPlayer::disconnected);
+        connect(socket, &ClientSocket::message_got, this, &ServerPlayer::getMessage);
+        connect(this, &ServerPlayer::message_ready, this, &ServerPlayer::sendMessage);
     }
 
     this->socket = socket;
@@ -267,8 +266,8 @@ void ServerPlayer::setSocket(ClientSocket *socket)
 
 void ServerPlayer::getMessage(const char *message)
 {
-    QString request = message;
-    if (request.endsWith("\n"))
+    QString request = QString::fromUtf8(message);
+    if (request.endsWith(QStringLiteral("\n")))
         request.chop(1);
 
     emit request_got(request);
@@ -319,13 +318,13 @@ QStringList ServerPlayer::getSelected() const
 QString ServerPlayer::findReasonable(const QStringList &generals, bool no_unreasonable)
 {
     foreach (QString name, generals) {
-        if (Config.GameMode == "zombie_mode") {
-            QStringList ban_list = Config.value("Banlist/Zombie").toStringList();
+        if (Config.GameMode == QStringLiteral("zombie_mode")) {
+            QStringList ban_list = Config.value(QStringLiteral("Banlist/Zombie")).toStringList();
             if (ban_list.contains(name))
                 continue;
         }
-        if (Config.GameMode.endsWith("p") || Config.GameMode.endsWith("pd") || Config.GameMode.endsWith("pz")) {
-            QStringList ban_list = Config.value("Banlist/Roles").toStringList();
+        if (Config.GameMode.endsWith(QStringLiteral("p")) || Config.GameMode.endsWith(QStringLiteral("pd")) || Config.GameMode.endsWith(QStringLiteral("pz"))) {
+            QStringList ban_list = Config.value(QStringLiteral("Banlist/Roles")).toStringList();
             if (ban_list.contains(name))
                 continue;
         }
@@ -361,13 +360,13 @@ void ServerPlayer::invoke(const AbstractPacket *packet)
 
 void ServerPlayer::invoke(const char *method, const QString &arg)
 {
-    unicast(QString("%1 %2").arg(method).arg(arg));
+    unicast(QStringLiteral("%1 %2").arg(QString::fromUtf8(method)).arg(arg));
 }
 
 QString ServerPlayer::reportHeader() const
 {
     QString name = objectName();
-    return QString("%1 ").arg(name.isEmpty() ? tr("Anonymous") : name);
+    return QStringLiteral("%1 ").arg(name.isEmpty() ? tr("Anonymous") : name);
 }
 
 void ServerPlayer::removeCard(const Card *card, Place place)
@@ -390,14 +389,14 @@ void ServerPlayer::removeCard(const Card *card, Place place)
 
         bool show_log = true;
         foreach (QString flag, flags) {
-            if (flag.endsWith("_InTempMoving")) {
+            if (flag.endsWith(QStringLiteral("_InTempMoving"))) {
                 show_log = false;
                 break;
             }
         }
         if (show_log) {
             LogMessage log;
-            log.type = "$Uninstall";
+            log.type = QStringLiteral("$Uninstall");
             log.card_str = room->getCard(card->effectiveID())->toString();
             log.from = this;
             room->sendLog(log);
@@ -485,23 +484,23 @@ QList<const Card *> ServerPlayer::getHandcards() const
 QList<const Card *> ServerPlayer::getCards(const QString &flags) const
 {
     QList<const Card *> cards;
-    if (flags.contains("h") && flags.contains("s"))
+    if (flags.contains(QStringLiteral("h")) && flags.contains(QStringLiteral("s")))
         cards << handcards;
-    else if (flags.contains("h")) {
+    else if (flags.contains(QStringLiteral("h"))) {
         foreach (const Card *c, handcards) {
             if (!shown_handcards.contains(c->effectiveID()))
                 cards << c;
         }
-    } else if (flags.contains("s")) {
+    } else if (flags.contains(QStringLiteral("s"))) {
         foreach (const Card *c, handcards) {
             if (shown_handcards.contains(c->effectiveID()))
                 cards << c;
         }
     }
 
-    if (flags.contains("e"))
+    if (flags.contains(QStringLiteral("e")))
         cards << getEquips();
-    if (flags.contains("j"))
+    if (flags.contains(QStringLiteral("j")))
         cards << getJudgingArea();
 
     return cards;
@@ -512,7 +511,7 @@ Card *ServerPlayer::wholeHandCards() const
     if (isKongcheng())
         return nullptr;
 
-    Card *dummy_card = room->cloneCard("DummyCard");
+    Card *dummy_card = room->cloneCard(QStringLiteral("DummyCard"));
     foreach (const Card *card, handcards)
         dummy_card->addSubcard(card->id());
 
@@ -526,14 +525,14 @@ bool ServerPlayer::hasNullification() const
             return true;
     }
 
-    if (hasTreasure("wooden_ox")) {
-        foreach (int id, getPile("wooden_ox")) {
+    if (hasTreasure(QStringLiteral("wooden_ox"))) {
+        foreach (int id, getPile(QStringLiteral("wooden_ox"))) {
             if (room->getCard(id)->face()->isKindOf("Nullification"))
                 return true;
         }
     }
 
-    if (hasSkill("chaoren")) {
+    if (hasSkill(QStringLiteral("chaoren"))) {
         bool ok = false;
         int id = property("chaoren").toInt(&ok);
         if (ok && id > -1 && room->getCard(id)->face()->isKindOf("Nullification"))
@@ -558,7 +557,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     room->tryPause();
 
     LogMessage log;
-    log.type = "#Pindian";
+    log.type = QStringLiteral("#Pindian");
     log.from = this;
     log.to << target;
     room->sendLog(log);
@@ -578,7 +577,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     if (card1 == nullptr) {
         card1 = room->askForPindian(this, this, target, reason, pindian);
         if (card1 && isShownHandcard(card1->effectiveID())) {
-            log2.type = "$PindianResult";
+            log2.type = QStringLiteral("$PindianResult");
             log2.from = pindian_struct.from;
             log2.card_str = QString::number(card1->effectiveID());
             room->sendLog(log2);
@@ -596,7 +595,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
             card1 = room->getCard(card_id);
         }
         if (card1 && isShownHandcard(card1->effectiveID())) {
-            log2.type = "$PindianResult";
+            log2.type = QStringLiteral("$PindianResult");
             log2.from = pindian_struct.from;
             log2.card_str = QString::number(card1->effectiveID());
             room->sendLog(log2);
@@ -633,13 +632,13 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     pindian_struct.to_number = static_cast<int>(card2->number());
 
     if (!card1_result_logged) {
-        log2.type = "$PindianResult";
+        log2.type = QStringLiteral("$PindianResult");
         log2.from = pindian_struct.from;
         log2.card_str = QString::number(pindian_struct.from_card->effectiveID());
         room->sendLog(log2);
     }
 
-    log2.type = "$PindianResult";
+    log2.type = QStringLiteral("$PindianResult");
     log2.from = pindian_struct.to;
     log2.card_str = QString::number(pindian_struct.to_card->effectiveID());
     room->sendLog(log2);
@@ -655,7 +654,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     pindian_struct.to_number = new_star->to_number;
     pindian_struct.success = (new_star->from_number > new_star->to_number);
 
-    log.type = pindian_struct.success ? "#PindianSuccess" : "#PindianFailure";
+    log.type = pindian_struct.success ? QStringLiteral("#PindianSuccess") : QStringLiteral("#PindianFailure");
     log.from = this;
     log.to.clear();
     log.to << target;
@@ -702,9 +701,9 @@ void ServerPlayer::turnOver()
     room->broadcastProperty(this, "faceup");
 
     LogMessage log;
-    log.type = "#TurnOver";
+    log.type = QStringLiteral("#TurnOver");
     log.from = this;
-    log.arg = faceUp() ? "face_up" : "face_down";
+    log.arg = faceUp() ? QStringLiteral("face_up") : QStringLiteral("face_down");
     room->sendLog(log);
 
     Q_ASSERT(room->getThread() != nullptr);
@@ -767,7 +766,7 @@ void ServerPlayer::play(QList<Player::Phase> set_phases)
     }
 
     for (int i = 0; i < _m_phases_state.size(); i++) {
-        if (isDead() || hasFlag("Global_TurnTerminated")) {
+        if (isDead() || hasFlag(QStringLiteral("Global_TurnTerminated"))) {
             changePhase(getPhase(), NotActive);
             break;
         }
@@ -839,19 +838,13 @@ void ServerPlayer::skip(Player::Phase phase, bool isCost, bool sendLog)
 
     static QStringList phase_strings;
     if (phase_strings.isEmpty())
-        phase_strings << "round_start"
-                      << "start"
-                      << "judge"
-                      << "draw"
-                      << "play"
-                      << "discard"
-                      << "finish"
-                      << "not_active";
+        phase_strings << QStringLiteral("round_start") << QStringLiteral("start") << QStringLiteral("judge") << QStringLiteral("draw") << QStringLiteral("play")
+                      << QStringLiteral("discard") << QStringLiteral("finish") << QStringLiteral("not_active");
     int index = static_cast<int>(phase);
 
     if (sendLog) {
         LogMessage log;
-        log.type = "#SkipPhase";
+        log.type = QStringLiteral("#SkipPhase");
         log.from = this;
         log.arg = phase_strings.at(index);
         room->sendLog(log);
@@ -910,7 +903,7 @@ void ServerPlayer::gainMark(const QString &mark, int n)
     change.num = n;
     change.player = this;
     QVariant n_data = QVariant::fromValue(change);
-    if (mark.startsWith("@")) {
+    if (mark.startsWith(QStringLiteral("@"))) {
         if (room->getThread()->trigger(PreMarkChange, n_data))
             return;
         n = n_data.value<MarkChangeStruct>().num;
@@ -925,7 +918,7 @@ void ServerPlayer::gainMark(const QString &mark, int n)
     int value = getMark(mark) + n;
 
     LogMessage log;
-    log.type = "#GetMark";
+    log.type = QStringLiteral("#GetMark");
     log.from = this;
     log.arg = mark;
     log.arg2 = QString::number(n);
@@ -933,7 +926,7 @@ void ServerPlayer::gainMark(const QString &mark, int n)
     room->sendLog(log);
     room->setPlayerMark(this, mark, value);
 
-    if (mark.startsWith("@"))
+    if (mark.startsWith(QStringLiteral("@")))
         room->getThread()->trigger(MarkChanged, n_data);
 }
 
@@ -948,7 +941,7 @@ void ServerPlayer::loseMark(const QString &mark, int n)
 
     QVariant n_data = QVariant::fromValue(change);
 
-    if (mark.startsWith("@")) {
+    if (mark.startsWith(QStringLiteral("@"))) {
         if (room->getThread()->trigger(PreMarkChange, n_data))
             return;
         n = -(n_data.value<MarkChangeStruct>().num);
@@ -968,7 +961,7 @@ void ServerPlayer::loseMark(const QString &mark, int n)
     }
 
     LogMessage log;
-    log.type = "#LoseMark";
+    log.type = QStringLiteral("#LoseMark");
     log.from = this;
     log.arg = mark;
     log.arg2 = QString::number(n);
@@ -976,7 +969,7 @@ void ServerPlayer::loseMark(const QString &mark, int n)
     room->sendLog(log);
     room->setPlayerMark(this, mark, value);
 
-    if (mark.startsWith("@"))
+    if (mark.startsWith(QStringLiteral("@")))
         room->getThread()->trigger(MarkChanged, n_data);
 }
 
@@ -1157,13 +1150,13 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     room->notifyProperty(player, this, "inital_seat");
 
     if (isHegemonyGameMode(room->getMode())) {
-        QVariant RoleConfirmedTag = room->getTag(this->objectName() + "_RoleConfirmed");
+        QVariant RoleConfirmedTag = room->getTag(this->objectName() + QStringLiteral("_RoleConfirmed"));
         bool roleConfirmed = RoleConfirmedTag.canConvert(QVariant::Bool) && RoleConfirmedTag.toBool();
         if (player == this || hasShownOneGeneral() || roleConfirmed) {
             room->notifyProperty(player, this, "kingdom");
             room->notifyProperty(player, this, "role");
         } else {
-            room->notifyProperty(player, this, "kingdom", "god");
+            room->notifyProperty(player, this, "kingdom", QStringLiteral("god"));
         }
     } else {
         if (getKingdom() != getGeneral()->getKingdom())
@@ -1294,7 +1287,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     }
 
     foreach (QString mark_name, marks.keys()) {
-        if (mark_name.startsWith("@") && !hegemony_limitmarks.contains(mark_name)) {
+        if (mark_name.startsWith(QStringLiteral("@")) && !hegemony_limitmarks.contains(mark_name)) {
             int value = getMark(mark_name);
             if (value > 0) {
                 JsonArray arg_mark;
@@ -1333,13 +1326,13 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     room->doNotify(player, QSanProtocol::S_COMMAND_LOG_EVENT, arg_tooltip);
 
     //since "banling", we should notify hp after notifying skill
-    if (this->hasSkill("banling")) {
+    if (this->hasSkill(QStringLiteral("banling"))) {
         room->notifyProperty(player, this, "renhp");
         room->notifyProperty(player, this, "linghp");
     }
 
-    if (this->hasSkill("anyun", true)) {
-        QString g = hidden_generals.join("|");
+    if (this->hasSkill(QStringLiteral("anyun"), true)) {
+        QString g = hidden_generals.join(QStringLiteral("|"));
         JsonArray arg;
         arg << objectName();
         if (this == player)
@@ -1354,7 +1347,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         JsonArray arg;
         arg << objectName();
         arg << true;
-        arg << "h";
+        arg << QStringLiteral("h");
         arg << reason;
         room->doNotify(player, S_COMMAND_DISABLE_SHOW, arg);
     }
@@ -1362,7 +1355,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         JsonArray arg;
         arg << objectName();
         arg << true;
-        arg << "d";
+        arg << QStringLiteral("d");
         arg << reason;
         room->doNotify(player, S_COMMAND_DISABLE_SHOW, arg);
     }
@@ -1387,19 +1380,19 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     }
 
     //for huashen  like skill pingyi
-    QString huashen_skill = this->tag.value("Huashen_skill", QString()).toString();
-    QString huashen_target = this->tag.value("Huashen_target", QString()).toString();
-    QString huashen_place = this->tag.value("Huashen_place", QString()).toString();
-    if (huashen_skill != nullptr && huashen_target != nullptr) {
+    QString huashen_skill = this->tag.value(QStringLiteral("Huashen_skill"), QString()).toString();
+    QString huashen_target = this->tag.value(QStringLiteral("Huashen_target"), QString()).toString();
+    QString huashen_place = this->tag.value(QStringLiteral("Huashen_place"), QString()).toString();
+    if (!huashen_skill.isNull() && !huashen_target.isNull()) {
         JsonArray huanshen_arg;
         huanshen_arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
         huanshen_arg << objectName();
-        if ((huashen_place != "deputy")) {
+        if ((huashen_place != QStringLiteral("deputy"))) {
             huanshen_arg << huashen_target;
             huanshen_arg << huashen_skill;
         }
         huanshen_arg << QString() << QString();
-        if (!(huashen_place != "deputy")) {
+        if (!(huashen_place != QStringLiteral("deputy"))) {
             huanshen_arg << huashen_target;
             huanshen_arg << huashen_skill;
         }
@@ -1407,11 +1400,11 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     }
 
     // for chaoren
-    if (player == this && hasSkill("chaoren"))
+    if (player == this && hasSkill(QStringLiteral("chaoren")))
         room->notifyProperty(player, this, "chaoren");
 }
 
-void ServerPlayer::addToPile(const QString &pile_name, const Card *card, bool open, QList<ServerPlayer *> open_players)
+void ServerPlayer::addToPile(const QString &pile_name, const Card *card, bool open, const QList<ServerPlayer *> &open_players)
 {
     IDSet card_ids;
     if (card->isVirtualCard())
@@ -1421,19 +1414,19 @@ void ServerPlayer::addToPile(const QString &pile_name, const Card *card, bool op
     return addToPile(pile_name, card_ids, open, open_players);
 }
 
-void ServerPlayer::addToPile(const QString &pile_name, int card_id, bool open, QList<ServerPlayer *> open_players)
+void ServerPlayer::addToPile(const QString &pile_name, int card_id, bool open, const QList<ServerPlayer *> &open_players)
 {
     IDSet card_ids;
     card_ids << card_id;
     return addToPile(pile_name, card_ids, open, open_players);
 }
 
-void ServerPlayer::addToPile(const QString &pile_name, const IDSet &card_ids, bool open, QList<ServerPlayer *> open_players)
+void ServerPlayer::addToPile(const QString &pile_name, const IDSet &card_ids, bool open, const QList<ServerPlayer *> &open_players)
 {
     return addToPile(pile_name, card_ids, open, CardMoveReason(), open_players);
 }
 
-void ServerPlayer::addToPile(const QString &pile_name, const IDSet &card_ids, bool open, CardMoveReason reason, QList<ServerPlayer *> open_players)
+void ServerPlayer::addToPile(const QString &pile_name, const IDSet &card_ids, bool open, const CardMoveReason &reason, QList<ServerPlayer *> open_players)
 {
     if (open)
         open_players = room->getAllPlayers();
@@ -1471,9 +1464,9 @@ void ServerPlayer::addToShownHandCards(const IDSet &card_ids)
         room->doNotify(player, S_COMMAND_SET_SHOWN_HANDCARD, arg);
 
     LogMessage log;
-    log.type = "$AddShownHand";
+    log.type = QStringLiteral("$AddShownHand");
     log.from = this;
-    log.card_str = IntList2StringList(add_ids.values()).join("+");
+    log.card_str = IntList2StringList(add_ids.values()).join(QStringLiteral("+"));
     room->sendLog(log);
     room->getThread()->delay();
 
@@ -1484,7 +1477,7 @@ void ServerPlayer::addToShownHandCards(const IDSet &card_ids)
     QVariant v = QVariant::fromValue(s);
     room->getThread()->trigger(ShownCardChanged, v);
 
-    room->filterCards(this, this->getCards("hs"), true);
+    room->filterCards(this, this->getCards(QStringLiteral("hs")), true);
 }
 
 void ServerPlayer::removeShownHandCards(const IDSet &card_ids, bool sendLog, bool moveFromHand)
@@ -1505,9 +1498,9 @@ void ServerPlayer::removeShownHandCards(const IDSet &card_ids, bool sendLog, boo
 
     if (sendLog) {
         LogMessage log;
-        log.type = "$RemoveShownHand";
+        log.type = QStringLiteral("$RemoveShownHand");
         log.from = this;
-        log.card_str = IntList2StringList(card_ids.values()).join("+"); // FIXME: Replace with IDSet
+        log.card_str = IntList2StringList(card_ids.values()).join(QStringLiteral("+")); // FIXME: Replace with IDSet
         room->sendLog(log);
         room->getThread()->delay();
     }
@@ -1534,12 +1527,12 @@ void ServerPlayer::addBrokenEquips(const IDSet &card_ids)
         room->doNotify(player, S_COMMAND_SET_BROKEN_EQUIP, arg);
 
     if (isCurrent())
-        setFlags("GameRule_brokenEquips");
+        setFlags(QStringLiteral("GameRule_brokenEquips"));
 
     LogMessage log;
-    log.type = "$AddBrokenEquip";
+    log.type = QStringLiteral("$AddBrokenEquip");
     log.from = this;
-    log.card_str = IntList2StringList(card_ids.values()).join("+"); // FIXME: Replace with IDSet
+    log.card_str = IntList2StringList(card_ids.values()).join(QStringLiteral("+")); // FIXME: Replace with IDSet
     room->sendLog(log);
     room->getThread()->delay();
 
@@ -1568,9 +1561,9 @@ void ServerPlayer::removeBrokenEquips(const IDSet &card_ids, bool sendLog, bool 
 
     if (sendLog) {
         LogMessage log;
-        log.type = "$RemoveBrokenEquip";
+        log.type = QStringLiteral("$RemoveBrokenEquip");
         log.from = this;
-        log.card_str = IntList2StringList(card_ids.values()).join("+"); // FIXME: Replace with IDSet
+        log.card_str = IntList2StringList(card_ids.values()).join(QStringLiteral("+")); // FIXME: Replace with IDSet
         room->sendLog(log);
         room->getThread()->delay();
     }
@@ -1587,7 +1580,7 @@ void ServerPlayer::addHiddenGenerals(const QStringList &generals)
 {
     hidden_generals << generals;
 
-    QString g = hidden_generals.join("|");
+    QString g = hidden_generals.join(QStringLiteral("|"));
     JsonArray arg;
     arg << objectName();
     arg << g;
@@ -1602,7 +1595,7 @@ void ServerPlayer::removeHiddenGenerals(const QStringList &generals)
     foreach (QString name, generals)
         hidden_generals.removeOne(name);
 
-    QString g = hidden_generals.join("|");
+    QString g = hidden_generals.join(QStringLiteral("|"));
     JsonArray arg;
     arg << objectName();
     arg << g;
@@ -1618,12 +1611,12 @@ void ServerPlayer::removeHiddenGenerals(const QStringList &generals)
     room->doBroadcastNotify(S_COMMAND_SET_SHOWN_HIDDEN_GENERAL, arg1);
 
     foreach (QString name, generals) {
-        room->touhouLogmessage("#RemoveHiddenGeneral", this, name);
+        room->touhouLogmessage(QStringLiteral("#RemoveHiddenGeneral"), this, name);
         foreach (const Skill *skill, Sanguosha->getGeneral(name)->getVisibleSkillList()) {
-            room->handleAcquireDetachSkills(this, "-" + skill->objectName(), true);
+            room->handleAcquireDetachSkills(this, QStringLiteral("-") + skill->objectName(), true);
         }
     }
-    room->filterCards(this, this->getCards("hes"), true);
+    room->filterCards(this, this->getCards(QStringLiteral("hes")), true);
 }
 
 void ServerPlayer::gainAnExtraTurn()
@@ -1633,7 +1626,7 @@ void ServerPlayer::gainAnExtraTurn()
 
 void ServerPlayer::showHiddenSkill(const QString &skill_name)
 {
-    if (skill_name == nullptr)
+    if (skill_name.isNull())
         return;
 
     if (isHegemonyGameMode(room->getMode())) {
@@ -1643,12 +1636,12 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
             showGeneral(false);
     } else {
         //for yibian
-        ServerPlayer *reimu = room->findPlayerBySkillName("yibian");
+        ServerPlayer *reimu = room->findPlayerBySkillName(QStringLiteral("yibian"));
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if (reimu && !hasShownRole() && !skill->isEternal() && !skill->isAttachedSkill() && !hasEquipSkill(skill_name)) {
             //&& ownSkill(skill_name)
             QString role = getRole();
-            room->touhouLogmessage("#YibianShow", this, role, room->getAllPlayers());
+            room->touhouLogmessage(QStringLiteral("#YibianShow"), this, role, room->getAllPlayers());
             room->broadcastProperty(this, "role");
             room->setPlayerProperty(this, "role_shown", true); //important! to notify client
 
@@ -1673,21 +1666,21 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
             else if (generals.length() == 1)
                 generalName = generals.first();
             else {
-                generalName = room->askForChoice(this, "showSameHiddenSkills", generals.join("+"));
+                generalName = room->askForChoice(this, QStringLiteral("showSameHiddenSkills"), generals.join(QStringLiteral("+")));
             }
 
-            if (generalName != nullptr) {
-                room->touhouLogmessage("#ShowHiddenGeneral", this, generalName);
+            if (!generalName.isNull()) {
+                room->touhouLogmessage(QStringLiteral("#ShowHiddenGeneral"), this, generalName);
 
                 JsonArray arg;
                 arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
                 arg << objectName();
-                if (inHeadSkills("anyun")) {
+                if (inHeadSkills(QStringLiteral("anyun"))) {
                     arg << generalName;
                     arg << skill_name;
                 }
                 arg << QString() << QString();
-                if (!inHeadSkills("anyun")) {
+                if (!inHeadSkills(QStringLiteral("anyun"))) {
                     arg << generalName;
                     arg << skill_name;
                 }
@@ -1703,7 +1696,7 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
                     if (!skill->isLordSkill() && !skill->isAttachedSkill() && !skill->isLimited() && !skill->isEternal())
                         room->handleAcquireDetachSkills(this, skill->objectName(), true);
                 }
-                room->filterCards(this, this->getCards("hes"), true);
+                room->filterCards(this, this->getCards(QStringLiteral("hes")), true);
 
                 //keep showing huashen for a short time
                 if (getPhase() == Player::Finish)
@@ -1721,7 +1714,7 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
         if (!canShowHiddenSkill())
             return QStringList();
         QString cardskill = use.card->skillName(); //check double hidden skill
-        if (cardskill != nullptr && use.from->isHiddenSkill(cardskill))
+        if (!cardskill.isNull() && use.from->isHiddenSkill(cardskill))
             return QStringList();
     }
 
@@ -1809,29 +1802,30 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     //only consider the folloing cards
     //Peach , EquipCard , ExNihilo, Analeptic, Lightning
 
-    use.card->addFlag("IgnoreFailed");
+    use.card->addFlag(QStringLiteral("IgnoreFailed"));
     if (use.card->face()->targetFixed(use.from, use.card) && !use.to.contains(use.from) && !use.card->face()->isKindOf("AOE") && !use.card->face()->isKindOf("GlobalEffect")) {
-        if (isHiddenSkill("tianqu") && room->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
-            showTargetFix << "tianqu";
+        if (isHiddenSkill(QStringLiteral("tianqu")) && room->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
+            showTargetFix << QStringLiteral("tianqu");
     }
-    use.card->addFlag("-IgnoreFailed");
+    use.card->addFlag(QStringLiteral("-IgnoreFailed"));
 
     //check prohibit
     foreach (ServerPlayer *p, use.to) {
         if (use.from->isProhibited(p, use.card) && room->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
-            showTargetProhibit << "tianqu";
+            showTargetProhibit << QStringLiteral("tianqu");
             break;
         } else if (use.card->face()->isKindOf("Peach")) {
             if (!p->isWounded() && room->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
-                showTargetProhibit << "tianqu";
+                showTargetProhibit << QStringLiteral("tianqu");
                 break;
             }
-            if (p != use.from && (!p->hasLordSkill("yanhui") || p->getKingdom() != "zhan") && room->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
-                showTargetProhibit << "tianqu";
+            if (p != use.from && (!p->hasLordSkill(QStringLiteral("yanhui")) || p->getKingdom() != QStringLiteral("zhan"))
+                && room->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+                showTargetProhibit << QStringLiteral("tianqu");
                 break;
             }
         } else if (use.card->face()->isKindOf("DelayedTrick") && p->containsTrick(use.card->faceName()) && room->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
-            showTargetProhibit << "tianqu";
+            showTargetProhibit << QStringLiteral("tianqu");
             break;
         }
     }
@@ -1884,7 +1878,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         return;
     QString general_name;
 
-    QVariant RoleConfirmedTag = room->getTag(this->objectName() + "_RoleConfirmed");
+    QVariant RoleConfirmedTag = room->getTag(this->objectName() + QStringLiteral("_RoleConfirmed"));
 
     bool roleConfirmed = RoleConfirmedTag.canConvert(QVariant::Bool) && RoleConfirmedTag.toBool();
     bool notify_role = !roleConfirmed;
@@ -1893,10 +1887,10 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
 
     if (head_general) {
         //ignore anjiang
-        if (getGeneralName() != "anjiang")
+        if (getGeneralName() != QStringLiteral("anjiang"))
             return;
 
-        setSkillsPreshowed("h");
+        setSkillsPreshowed(QStringLiteral("h"));
         notifyPreshow();
         room->setPlayerProperty(this, "general_showed", true);
 
@@ -1912,7 +1906,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         room->changePlayerGeneral(this, general_name);
 
         //change skinhero
-        int skin_id = room->getTag(general_name + "_skin_id").toInt();
+        int skin_id = room->getTag(general_name + QStringLiteral("_skin_id")).toInt();
         JsonArray val;
         val << (int)QSanProtocol::S_GAME_EVENT_SKIN_CHANGED;
         val << objectName();
@@ -1921,7 +1915,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         val << true;
         room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val);
 
-        if (!property("Duanchang").toString().split(",").contains("head")) {
+        if (!property("Duanchang").toString().split(QStringLiteral(",")).contains(QStringLiteral("head"))) {
             sendSkillsToOthers();
             foreach (const Skill *skill, getHeadSkillList()) {
                 if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && hasShownSkill(skill)) {
@@ -1936,10 +1930,10 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
 
     } else {
         //ignore anjiang
-        if (getGeneral2Name() != "anjiang")
+        if (getGeneral2Name() != QStringLiteral("anjiang"))
             return;
 
-        setSkillsPreshowed("d");
+        setSkillsPreshowed(QStringLiteral("d"));
         notifyPreshow();
         room->setPlayerProperty(this, "general2_showed", true);
 
@@ -1955,7 +1949,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         room->changePlayerGeneral2(this, general_name);
 
         //change skinhero
-        int skin_id = room->getTag(general_name + "_skin_id").toInt();
+        int skin_id = room->getTag(general_name + QStringLiteral("_skin_id")).toInt();
         JsonArray val;
         val << (int)QSanProtocol::S_GAME_EVENT_SKIN_CHANGED;
         val << objectName();
@@ -1964,7 +1958,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         val << false;
         room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val);
 
-        if (!property("Duanchang").toString().split(",").contains("deputy")) {
+        if (!property("Duanchang").toString().split(QStringLiteral(",")).contains(QStringLiteral("deputy"))) {
             sendSkillsToOthers(false);
             foreach (const Skill *skill, getDeputySkillList()) {
                 if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && hasShownSkill(skill)) {
@@ -1985,40 +1979,40 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         int i = 1;
         foreach (ServerPlayer *p, room->getOtherPlayers(this, true)) {
             if (p->getRole() == role) {
-                QVariant RoleConfirmedTag1 = room->getTag(p->objectName() + "_RoleConfirmed");
+                QVariant RoleConfirmedTag1 = room->getTag(p->objectName() + QStringLiteral("_RoleConfirmed"));
                 bool roleConfirmed1 = RoleConfirmedTag1.canConvert(QVariant::Bool) && RoleConfirmedTag1.toBool();
-                if (roleConfirmed1 && p->getRole() != "careerist")
+                if (roleConfirmed1 && p->getRole() != QStringLiteral("careerist"))
                     ++i;
             }
         }
 
-        if (role != "careerist") {
+        if (role != QStringLiteral("careerist")) {
             if ((i + 1) > (room->getPlayers().length() / 2)) { // set hidden careerist
                 foreach (ServerPlayer *p, room->getOtherPlayers(this, true)) {
-                    QVariant RoleConfirmedTag1 = room->getTag(p->objectName() + "_RoleConfirmed");
+                    QVariant RoleConfirmedTag1 = room->getTag(p->objectName() + QStringLiteral("_RoleConfirmed"));
                     bool roleConfirmed1 = RoleConfirmedTag1.canConvert(QVariant::Bool) && RoleConfirmedTag1.toBool();
                     if (p->isAlive() && !roleConfirmed1 && role == p->getRole()) {
-                        p->setRole("careerist");
-                        room->notifyProperty(p, p, "role", "careerist");
+                        p->setRole(QStringLiteral("careerist"));
+                        room->notifyProperty(p, p, "role", QStringLiteral("careerist"));
                     }
                 }
             }
         }
 
         if (i > (room->getPlayers().length() / 2))
-            role = "careerist";
+            role = QStringLiteral("careerist");
 
         room->setPlayerProperty(this, "role", role);
-        room->setTag(this->objectName() + "_RoleConfirmed", true);
+        room->setTag(this->objectName() + QStringLiteral("_RoleConfirmed"), true);
     }
 
     if (sendLog) {
         LogMessage log;
-        log.type = "#HegemonyReveal";
+        log.type = QStringLiteral("#HegemonyReveal");
         log.from = this;
         log.arg = getGeneralName();
         if (Config.Enable2ndGeneral || isHegemonyGameMode(room->getMode())) {
-            log.type = "#HegemonyRevealDouble";
+            log.type = QStringLiteral("#HegemonyRevealDouble");
             log.arg2 = getGeneral2Name();
         }
         room->sendLog(log);
@@ -2027,9 +2021,9 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
     if (trigger_event) {
         Q_ASSERT(room->getThread() != nullptr);
 
-        if (room->getTag("TheFirstToShowRewarded").isNull()) {
-            setMark("TheFirstToShowReward", 1);
-            room->setTag("TheFirstToShowRewarded", true);
+        if (room->getTag(QStringLiteral("TheFirstToShowRewarded")).isNull()) {
+            setMark(QStringLiteral("TheFirstToShowReward"), 1);
+            room->setTag(QStringLiteral("TheFirstToShowRewarded"), true);
         }
 
         ShowGeneralStruct s;
@@ -2040,7 +2034,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         room->getThread()->trigger(GeneralShown, _head);
     }
 
-    room->filterCards(this, getCards("hes"), true);
+    room->filterCards(this, getCards(QStringLiteral("hes")), true);
 }
 
 void ServerPlayer::hideGeneral(bool head_general)
@@ -2048,24 +2042,24 @@ void ServerPlayer::hideGeneral(bool head_general)
     room->tryPause();
 
     if (head_general) {
-        if (getGeneralName() == "anjiang")
+        if (getGeneralName() == QStringLiteral("anjiang"))
             return;
 
-        setSkillsPreshowed("h", false);
+        setSkillsPreshowed(QStringLiteral("h"), false);
         // dirty hack for temporary convenience.
-        room->setPlayerProperty(this, "flags", "hiding");
+        room->setPlayerProperty(this, "flags", QStringLiteral("hiding"));
         notifyPreshow();
         room->setPlayerProperty(this, "general_showed", false);
-        room->setPlayerProperty(this, "flags", "-hiding");
+        room->setPlayerProperty(this, "flags", QStringLiteral("-hiding"));
 
         JsonArray arg;
         arg << (int)S_GAME_EVENT_CHANGE_HERO;
         arg << objectName();
-        arg << "anjiang";
+        arg << QStringLiteral("anjiang");
         arg << false;
         arg << false;
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
-        room->changePlayerGeneral(this, "anjiang");
+        room->changePlayerGeneral(this, QStringLiteral("anjiang"));
 
         disconnectSkillsFromOthers();
 
@@ -2082,24 +2076,24 @@ void ServerPlayer::hideGeneral(bool head_general)
         }
 
     } else {
-        if (getGeneral2Name() == "anjiang")
+        if (getGeneral2Name() == QStringLiteral("anjiang"))
             return;
 
-        setSkillsPreshowed("d", false);
+        setSkillsPreshowed(QStringLiteral("d"), false);
         // dirty hack for temporary convenience
-        room->setPlayerProperty(this, "flags", "hiding");
+        room->setPlayerProperty(this, "flags", QStringLiteral("hiding"));
         notifyPreshow();
         room->setPlayerProperty(this, "general2_showed", false);
-        room->setPlayerProperty(this, "flags", "-hiding");
+        room->setPlayerProperty(this, "flags", QStringLiteral("-hiding"));
 
         JsonArray arg;
         arg << (int)S_GAME_EVENT_CHANGE_HERO;
         arg << objectName();
-        arg << "anjiang";
+        arg << QStringLiteral("anjiang");
         arg << true;
         arg << false;
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
-        room->changePlayerGeneral2(this, "anjiang");
+        room->changePlayerGeneral2(this, QStringLiteral("anjiang"));
 
         disconnectSkillsFromOthers(false);
 
@@ -2117,7 +2111,7 @@ void ServerPlayer::hideGeneral(bool head_general)
     }
 
     LogMessage log;
-    log.type = "#BasaraConceal";
+    log.type = QStringLiteral("#BasaraConceal");
     log.from = this;
     log.arg = getGeneralName();
     log.arg2 = getGeneral2Name();
@@ -2132,8 +2126,8 @@ void ServerPlayer::hideGeneral(bool head_general)
     QVariant _head = QVariant::fromValue(s);
     room->getThread()->trigger(GeneralHidden, _head);
 
-    room->filterCards(this, getCards("he"), true);
-    setSkillsPreshowed(head_general ? "h" : "d");
+    room->filterCards(this, getCards(QStringLiteral("he")), true);
+    setSkillsPreshowed(head_general ? QStringLiteral("h") : QStringLiteral("d"));
     notifyPreshow();
 }
 
@@ -2142,7 +2136,7 @@ void ServerPlayer::removeGeneral(bool head_general)
 {
     QString general_name, from_general;
     room->tryPause();
-    room->setEmotion(this, "remove");
+    room->setEmotion(this, QStringLiteral("remove"));
 
     QStringList names = room->getTag(objectName()).toStringList();
 
@@ -2151,12 +2145,12 @@ void ServerPlayer::removeGeneral(bool head_general)
             showGeneral(); //zoushi?
 
         from_general = getGeneralName();
-        if (from_general.contains("sujiang"))
+        if (from_general.contains(QStringLiteral("sujiang")))
             return;
 
         from_general = names.first();
         General::Gender gender = Sanguosha->getGeneral(from_general)->getGender();
-        general_name = gender == General::Male ? "sujiang" : "sujiangf"; //need image
+        general_name = gender == General::Male ? QStringLiteral("sujiang") : QStringLiteral("sujiangf"); //need image
 
         room->setPlayerProperty(this, "general_showed", true);
 
@@ -2169,7 +2163,7 @@ void ServerPlayer::removeGeneral(bool head_general)
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral(this, general_name);
 
-        setSkillsPreshowed("h", false);
+        setSkillsPreshowed(QStringLiteral("h"), false);
         disconnectSkillsFromOthers();
 
         foreach (const Skill *skill, getHeadSkillList()) {
@@ -2181,12 +2175,12 @@ void ServerPlayer::removeGeneral(bool head_general)
             showGeneral(false);
 
         from_general = getGeneral2Name();
-        if (from_general.contains("sujiang"))
+        if (from_general.contains(QStringLiteral("sujiang")))
             return;
         from_general = names.last();
         General::Gender gender = Sanguosha->getGeneral(from_general)->getGender();
 
-        general_name = gender == General::Male ? "sujiang" : "sujiangf";
+        general_name = gender == General::Male ? QStringLiteral("sujiang") : QStringLiteral("sujiangf");
 
         room->setPlayerProperty(this, "general2_showed", true);
 
@@ -2199,7 +2193,7 @@ void ServerPlayer::removeGeneral(bool head_general)
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral2(this, general_name);
 
-        setSkillsPreshowed("d", false);
+        setSkillsPreshowed(QStringLiteral("d"), false);
         disconnectSkillsFromOthers(false);
 
         foreach (const Skill *skill, getDeputySkillList()) {
@@ -2209,9 +2203,9 @@ void ServerPlayer::removeGeneral(bool head_general)
     }
 
     LogMessage log;
-    log.type = "#BasaraRemove";
+    log.type = QStringLiteral("#BasaraRemove");
     log.from = this;
-    log.arg = head_general ? "head_general" : "deputy_general";
+    log.arg = head_general ? QStringLiteral("head_general") : QStringLiteral("deputy_general");
     log.arg2 = from_general;
     room->sendLog(log);
 
@@ -2224,7 +2218,7 @@ void ServerPlayer::removeGeneral(bool head_general)
 
     room->getThread()->trigger(GeneralRemoved, _from);
 
-    room->filterCards(this, getCards("hes"), true);
+    room->filterCards(this, getCards(QStringLiteral("hes")), true);
 }
 
 void ServerPlayer::sendSkillsToOthers(bool head_skill)
@@ -2272,8 +2266,8 @@ int ServerPlayer::getPlayerNumWithSameKingdom(const QString &, const QString &_t
     QString to_calculate = _to_calculate;
 
     if (to_calculate.isEmpty()) {
-        if (getRole() == "careerist")
-            to_calculate = "careerist";
+        if (getRole() == QStringLiteral("careerist"))
+            to_calculate = QStringLiteral("careerist");
         else
             to_calculate = getRole();
     }
@@ -2284,8 +2278,8 @@ int ServerPlayer::getPlayerNumWithSameKingdom(const QString &, const QString &_t
     foreach (ServerPlayer *p, players) {
         if (!p->hasShownOneGeneral())
             continue;
-        if (p->getRole() == "careerist") { // if player is careerist, DO NOT COUNT AS SOME KINGDOM!!!!!
-            if (to_calculate == "careerist")
+        if (p->getRole() == QStringLiteral("careerist")) { // if player is careerist, DO NOT COUNT AS SOME KINGDOM!!!!!
+            if (to_calculate == QStringLiteral("careerist"))
                 num = 1;
             continue;
         }
@@ -2304,24 +2298,24 @@ bool ServerPlayer::askForGeneralShow(bool one, bool refusable)
     QStringList choices;
 
     if (!hasShownGeneral() && disableShow(true).isEmpty())
-        choices << "show_head_general";
+        choices << QStringLiteral("show_head_general");
     if (!hasShownGeneral2() && disableShow(false).isEmpty())
-        choices << "show_deputy_general";
+        choices << QStringLiteral("show_deputy_general");
     if (choices.isEmpty())
         return false;
     if (!one && choices.length() == 2)
-        choices << "show_both_generals";
+        choices << QStringLiteral("show_both_generals");
     if (refusable)
-        choices.append("cancel");
+        choices.append(QStringLiteral("cancel"));
 
-    QString choice = room->askForChoice(this, "GameRule_AskForGeneralShow", choices.join("+"));
+    QString choice = room->askForChoice(this, QStringLiteral("GameRule_AskForGeneralShow"), choices.join(QStringLiteral("+")));
 
-    if (choice == "show_head_general" || choice == "show_both_generals")
+    if (choice == QStringLiteral("show_head_general") || choice == QStringLiteral("show_both_generals"))
         showGeneral();
-    if (choice == "show_deputy_general" || choice == "show_both_generals")
+    if (choice == QStringLiteral("show_deputy_general") || choice == QStringLiteral("show_both_generals"))
         showGeneral(false);
 
-    return choice.startsWith("s");
+    return choice.startsWith(QStringLiteral("s"));
 }
 
 bool ServerPlayer::inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const
@@ -2340,35 +2334,35 @@ bool ServerPlayer::inFormationRalation(ServerPlayer *teammate) const
     return teammates.length() > 1 && teammates.contains(teammate);
 }
 
-void ServerPlayer::summonFriends(const QString type)
+void ServerPlayer::summonFriends(const QString &type)
 {
     room->tryPause();
 
     if (aliveCount() < 4)
         return;
     LogMessage log;
-    log.type = "#InvokeSkill";
+    log.type = QStringLiteral("#InvokeSkill");
     log.from = this;
-    log.arg = "GameRule_AskForArraySummon";
+    log.arg = QStringLiteral("GameRule_AskForArraySummon");
     room->sendLog(log);
     LogMessage log2;
-    log2.type = "#SummonType";
-    log2.arg = (type == "Siege") ? "summon_type_siege" : "summon_type_formation";
+    log2.type = QStringLiteral("#SummonType");
+    log2.arg = (type == QStringLiteral("Siege")) ? QStringLiteral("summon_type_siege") : QStringLiteral("summon_type_formation");
     room->sendLog(log2);
 
-    if (type == "Siege") {
+    if (type == QStringLiteral("Siege")) {
         if (isFriendWith(getNextAlive()) && isFriendWith(getLastAlive()))
             return;
         bool failed = true;
         if (!isFriendWith(getNextAlive()) && getNextAlive()->hasShownOneGeneral()) {
             ServerPlayer *target = qobject_cast<ServerPlayer *>(getNextAlive(2));
             if (!target->hasShownOneGeneral()) {
-                QString prompt = target->willBeFriendWith(this) ? "SiegeSummon" : "SiegeSummon!";
+                QString prompt = target->willBeFriendWith(this) ? QStringLiteral("SiegeSummon") : QStringLiteral("SiegeSummon!");
                 bool success = room->askForSkillInvoke(target, prompt);
                 LogMessage log;
-                log.type = "#SummonResult";
+                log.type = QStringLiteral("#SummonResult");
                 log.from = target;
-                log.arg = success ? "summon_success" : "summon_failed";
+                log.arg = success ? QStringLiteral("summon_success") : QStringLiteral("summon_failed");
                 room->sendLog(log);
                 if (success) {
                     target->askForGeneralShow();
@@ -2379,12 +2373,12 @@ void ServerPlayer::summonFriends(const QString type)
         if (!isFriendWith(getLastAlive()) && getLastAlive()->hasShownOneGeneral()) {
             ServerPlayer *target = qobject_cast<ServerPlayer *>(getLastAlive(2));
             if (!target->hasShownOneGeneral()) {
-                QString prompt = target->willBeFriendWith(this) ? "SiegeSummon" : "SiegeSummon!";
+                QString prompt = target->willBeFriendWith(this) ? QStringLiteral("SiegeSummon") : QStringLiteral("SiegeSummon!");
                 bool success = room->askForSkillInvoke(target, prompt);
                 LogMessage log;
-                log.type = "#SummonResult";
+                log.type = QStringLiteral("#SummonResult");
                 log.from = target;
-                log.arg = success ? "summon_success" : "summon_failed";
+                log.arg = success ? QStringLiteral("summon_success") : QStringLiteral("summon_failed");
                 room->sendLog(log);
                 if (success) {
                     target->askForGeneralShow();
@@ -2393,9 +2387,9 @@ void ServerPlayer::summonFriends(const QString type)
             }
         }
         if (failed)
-            room->setPlayerFlag(this, "Global_SummonFailed");
+            room->setPlayerFlag(this, QStringLiteral("Global_SummonFailed"));
 
-    } else if (type == "Formation") {
+    } else if (type == QStringLiteral("Formation")) {
         int n = aliveCount(false);
         int asked = n;
         bool failed = true;
@@ -2404,12 +2398,12 @@ void ServerPlayer::summonFriends(const QString type)
             if (isFriendWith(target))
                 continue;
             else if (!target->hasShownOneGeneral()) {
-                QString prompt = target->willBeFriendWith(this) ? "FormationSummon" : "FormationSummon!";
+                QString prompt = target->willBeFriendWith(this) ? QStringLiteral("FormationSummon") : QStringLiteral("FormationSummon!");
                 bool success = room->askForSkillInvoke(target, prompt);
                 LogMessage log;
-                log.type = "#SummonResult";
+                log.type = QStringLiteral("#SummonResult");
                 log.from = target;
-                log.arg = success ? "summon_success" : "summon_failed";
+                log.arg = success ? QStringLiteral("summon_success") : QStringLiteral("summon_failed");
                 room->sendLog(log);
 
                 if (success) {
@@ -2433,12 +2427,12 @@ void ServerPlayer::summonFriends(const QString type)
                 continue;
             else {
                 if (!target->hasShownOneGeneral()) {
-                    QString prompt = target->willBeFriendWith(this) ? "FormationSummon" : "FormationSummon!";
+                    QString prompt = target->willBeFriendWith(this) ? QStringLiteral("FormationSummon") : QStringLiteral("FormationSummon!");
                     bool success = room->askForSkillInvoke(target, prompt);
                     LogMessage log;
-                    log.type = "#SummonResult";
+                    log.type = QStringLiteral("#SummonResult");
                     log.from = target;
-                    log.arg = success ? "summon_success" : "summon_failed";
+                    log.arg = success ? QStringLiteral("summon_success") : QStringLiteral("summon_failed");
                     room->sendLog(log);
 
                     if (success) {
@@ -2451,7 +2445,7 @@ void ServerPlayer::summonFriends(const QString type)
             }
         }
         if (failed)
-            room->setPlayerFlag(this, "Global_SummonFailed");
+            room->setPlayerFlag(this, QStringLiteral("Global_SummonFailed"));
     }
 }
 

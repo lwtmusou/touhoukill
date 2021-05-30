@@ -13,8 +13,8 @@
 #include <QPainter>
 #include <QScrollBar>
 
-const char *HEROSKIN_PIXMAP_PATH = "image/heroskin/fullskin/generals/full";
-const char *KINGDOM_COLORMASK_PIXMAP_PATH = "image/kingdom/frame/dashboard/%1.png";
+const char *const HEROSKIN_PIXMAP_PATH = "image/heroskin/fullskin/generals/full";
+const char *const KINGDOM_COLORMASK_PIXMAP_PATH = "image/kingdom/frame/dashboard/%1.png";
 
 const int LEFT_MARGIN = 5;
 const int AVAILABLE_AREA_WIDTH = 400;
@@ -23,7 +23,7 @@ const int Y_START_POS = 32;
 
 const int SKIN_ITEM_WIDTH = SKIN_ITEM_AREA.width();
 const int SKIN_ITEM_HEIGHT = SKIN_ITEM_AREA.height();
-const QRegExp SKIN_FILE_NAME_PATTERN = QRegExp("(?:[A-Za-z_0-9]+)(\\d+).png");
+const QRegExp SKIN_FILE_NAME_PATTERN = QRegExp(QStringLiteral("(?:[A-Za-z_0-9]+)(\\d+).png"));
 
 HeroSkinContainer *HeroSkinContainer::m_currentTopMostContainer = nullptr;
 QMap<QString, QStringList> HeroSkinContainer::m_generalToSkinFiles;
@@ -32,25 +32,25 @@ QMap<QString, bool> HeroSkinContainer::m_generalToHasSkin;
 HeroSkinContainer::HeroSkinContainer(const QString &generalName, const QString &kingdom, QGraphicsItem *parent /* = 0*/)
     : QGraphicsObject(parent)
     , m_generalName(generalName)
-    , m_backgroundPixmap("image/system/heroskin-container.png")
+    , m_backgroundPixmap(QStringLiteral("image/system/heroskin-container.png"))
     , m_vScrollBar(nullptr)
     , m_oldScrollValue(0)
 {
     setFlag(ItemIsMovable);
     setCursor(Qt::ArrowCursor);
 
-    QSanButton *closeButton = new QSanButton("player_container", "close-heroskin", this); //"change-heroskin"
+    QSanButton *closeButton = new QSanButton(QStringLiteral("player_container"), QStringLiteral("close-heroskin"), this); //"change-heroskin"
 
     closeButton->setPos(385, 5);
 
-    connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
+    connect(closeButton, &QSanButton::clicked, this, &HeroSkinContainer::close);
 
     QGraphicsPixmapItem *kingdomColorMaskIcon = nullptr;
     PlayerCardContainer::_paintPixmap(kingdomColorMaskIcon, QRect(11, -5, 130, 40), //11, 6, 87, 21
-                                      G_ROOM_SKIN.getPixmapFromFileName(QString(KINGDOM_COLORMASK_PIXMAP_PATH).arg(kingdom)), this);
+                                      G_ROOM_SKIN.getPixmapFromFileName(QString::fromUtf8(KINGDOM_COLORMASK_PIXMAP_PATH).arg(kingdom)), this);
 
     QGraphicsPixmapItem *kingdomIcon = nullptr;
-    PlayerCardContainer::_paintPixmap(kingdomIcon, QRect(9, 2, 28, 25), G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON, kingdom), this);
+    PlayerCardContainer::_paintPixmap(kingdomIcon, QRect(9, 2, 28, 25), G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON), kingdom), this);
 
     new QGraphicsPixmapItem(this);
 
@@ -108,19 +108,19 @@ bool caseInsensitiveLessThan(const QString &s1, const QString &s2)
 QStringList HeroSkinContainer::getHeroSkinFiles(const QString &generalName)
 {
     QString unique_general = generalName;
-    if (unique_general.endsWith("_hegemony"))
-        unique_general = unique_general.replace("_hegemony", "");
+    if (unique_general.endsWith(QStringLiteral("_hegemony")))
+        unique_general = unique_general.replace(QStringLiteral("_hegemony"), QString());
 
     if (!m_generalToSkinFiles.contains(unique_general)) {
-        QDir dir(HEROSKIN_PIXMAP_PATH);
+        QDir dir(QString::fromUtf8(HEROSKIN_PIXMAP_PATH));
 
-        dir.setNameFilters(QStringList(QString("%1_*.png").arg(unique_general)));
+        dir.setNameFilters(QStringList(QStringLiteral("%1_*.png").arg(unique_general)));
         QStringList tmpFiles = dir.entryList(QDir::Files | QDir::NoDotAndDotDot);
 
         QStringList heroSkinFiles;
         //filter files
         foreach (const QString &file, tmpFiles) {
-            if (file.count("_") == unique_general.count("_") + 1)
+            if (file.count(QStringLiteral("_")) == unique_general.count(QStringLiteral("_")) + 1)
                 heroSkinFiles << file;
         }
 
@@ -139,9 +139,9 @@ void HeroSkinContainer::initSkins()
     dummyRectItem->setFlag(ItemHasNoContents);
     dummyRectItem->setFlag(ItemClipsChildrenToShape);
     QString unique_general = m_generalName;
-    if (unique_general.endsWith("_hegemony"))
-        unique_general = unique_general.replace("_hegemony", "");
-    int skinIndexUsed = Config.value(QString("HeroSkin/%1").arg(unique_general), 0).toInt();
+    if (unique_general.endsWith(QStringLiteral("_hegemony")))
+        unique_general = unique_general.replace(QStringLiteral("_hegemony"), QString());
+    int skinIndexUsed = Config.value(QStringLiteral("HeroSkin/%1").arg(unique_general), 0).toInt();
     createSkinItem(skinIndexUsed, dummyRectItem, true);
 
     QStringList files = getHeroSkinFiles(m_generalName);
@@ -166,7 +166,7 @@ void HeroSkinContainer::createSkinItem(int skinIndex, QGraphicsItem *parent, boo
     G_ROOM_SKIN.getHeroSkinContainerGeneralIconPathAndClipRegion(m_generalName, skinIndex, generalIconPath, clipRegion);
     if (QFile::exists(generalIconPath)) {
         SkinItem *skinItem = new SkinItem(generalIconPath, clipRegion, skinIndex, used, parent);
-        connect(skinItem, SIGNAL(clicked(int)), this, SLOT(skinSelected(int)));
+        connect(skinItem, &SkinItem::clicked, this, &HeroSkinContainer::skinSelected);
         m_skins << skinItem;
         m_skinIndexToItem[skinIndex] = skinItem;
     }
@@ -187,10 +187,10 @@ void HeroSkinContainer::fillSkins()
 
     if (skinCount > 3) {
         m_vScrollBar = new QScrollBar(Qt::Vertical);
-        m_vScrollBar->setObjectName("sgsVSB");
+        m_vScrollBar->setObjectName(QStringLiteral("sgsVSB"));
         m_vScrollBar->setStyleSheet(Settings::getQSSFileContent());
         m_vScrollBar->setFocusPolicy(Qt::StrongFocus);
-        connect(m_vScrollBar, SIGNAL(valueChanged(int)), this, SLOT(scrollBarValueChanged(int)));
+        connect(m_vScrollBar, &QAbstractSlider::valueChanged, this, &HeroSkinContainer::scrollBarValueChanged);
 
         m_vScrollBar->setMaximum((rows - 1) * (SKIN_ITEM_HEIGHT + Y_STEP));
         m_vScrollBar->setPageStep(12 + (rows - 1) * 3);
@@ -240,8 +240,8 @@ void HeroSkinContainer::paint(QPainter *painter, const QStyleOptionGraphicsItem 
     // paint text.
     painter->setFont(getAvatarNameFont());
     // get name.
-    QString name = Sanguosha->translate("&" + m_generalName);
-    if (name.startsWith("&")) {
+    QString name = Sanguosha->translate(QStringLiteral("&") + m_generalName);
+    if (name.startsWith(QStringLiteral("&"))) {
         name = Sanguosha->translate(m_generalName);
     }
 
@@ -259,9 +259,9 @@ void HeroSkinContainer::close()
 void HeroSkinContainer::skinSelected(int skinIndex)
 {
     QString unique_general = m_generalName;
-    if (unique_general.endsWith("_hegemony"))
-        unique_general = unique_general.replace("_hegemony", "");
-    Config.beginGroup("HeroSkin");
+    if (unique_general.endsWith(QStringLiteral("_hegemony")))
+        unique_general = unique_general.replace(QStringLiteral("_hegemony"), QString());
+    Config.beginGroup(QStringLiteral("HeroSkin"));
     (0 == skinIndex) ? Config.remove(unique_general) : Config.setValue(unique_general, skinIndex);
     Config.endGroup();
 
@@ -295,7 +295,7 @@ void HeroSkinContainer::swapWithSkinItemUsed(int skinIndex)
 const QFont &HeroSkinContainer::getAvatarNameFont()
 {
     // load font
-    static int id = QFontDatabase::addApplicationFont("font/simli");
+    static int id = QFontDatabase::addApplicationFont(QStringLiteral("font/simli"));
     static QString family = QFontDatabase::applicationFontFamilies(id).at(0);
     static QFont font(family);
     font.setPixelSize(18);

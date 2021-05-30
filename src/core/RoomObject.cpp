@@ -120,7 +120,7 @@ Card *RoomObject::cloneCard(const QString &name, Card::Suit suit, Card::Number n
 
     if (!name.isEmpty()) {
         face = CardFactory::cardFace(name);
-        if (face == nullptr && name != "DummyCard")
+        if (face == nullptr && name != QStringLiteral("DummyCard"))
             return nullptr;
     }
     return cloneCard(face, suit, number);

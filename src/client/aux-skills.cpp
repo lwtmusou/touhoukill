@@ -5,7 +5,7 @@
 #include "engine.h"
 
 DiscardSkill::DiscardSkill()
-    : ViewAsSkill("discard")
+    : ViewAsSkill(QStringLiteral("discard"))
     , num(0)
     , include_equip(false)
     , is_discard(true)
@@ -68,7 +68,7 @@ const Card *DiscardSkill::viewAs(const QList<const Card *> &cards, const Player 
 // -------------------------------------------
 
 ResponseSkill::ResponseSkill()
-    : OneCardViewAsSkill("response-skill")
+    : OneCardViewAsSkill(QStringLiteral("response-skill"))
 {
     request = Card::MethodResponse;
 }
@@ -105,7 +105,7 @@ const Card *ResponseSkill::viewAs(const Card *originalCard, const Player * /*Sel
 
 ShowOrPindianSkill::ShowOrPindianSkill()
 {
-    setObjectName("showorpindian-skill");
+    setObjectName(QStringLiteral("showorpindian-skill"));
 }
 
 bool ShowOrPindianSkill::matchPattern(const Player *player, const Card *card) const
@@ -140,13 +140,13 @@ void YijiCard::use(Room *room, const CardUseStruct &use) const
     ServerPlayer *source = use.from;
     ServerPlayer *target = use.to.first();
 
-    room->broadcastSkillInvoke("rende");
-    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), target->objectName(), "nosrende", QString());
+    room->broadcastSkillInvoke(QStringLiteral("rende"));
+    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), target->objectName(), QStringLiteral("nosrende"), QString());
     room->obtainCard(target, use.card, reason, false);
 
-    int old_value = source->getMark("nosrende");
+    int old_value = source->getMark(QStringLiteral("nosrende"));
     int new_value = old_value + use.card->subcards().size();
-    room->setPlayerMark(source, "nosrende", new_value);
+    room->setPlayerMark(source, QStringLiteral("nosrende"), new_value);
 
     if (old_value < 2 && new_value >= 2) {
         RecoverStruct recover;
@@ -159,7 +159,7 @@ void YijiCard::use(Room *room, const CardUseStruct &use) const
 // -------------------------------------------
 
 YijiViewAsSkill::YijiViewAsSkill()
-    : ViewAsSkill("yiji")
+    : ViewAsSkill(QStringLiteral("yiji"))
 {
     // card->setParent(this);
 }
@@ -170,7 +170,7 @@ YijiViewAsSkill::~YijiViewAsSkill()
 
 void YijiViewAsSkill::setCards(const QString &card_str)
 {
-    QStringList cards = card_str.split("+");
+    QStringList cards = card_str.split(QStringLiteral("+"));
     ids = StringList2IntList(cards);
 }
 
@@ -193,7 +193,7 @@ const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards, const Play
     if (cards.isEmpty() || cards.length() > max_num)
         return nullptr;
 
-    auto card = player->getRoomObject()->cloneSkillCard("YijiCard");
+    auto card = player->getRoomObject()->cloneSkillCard(QStringLiteral("YijiCard"));
     card->setHandleMethod(Card::MethodNone);
 
     card->clearSubcards();
@@ -222,7 +222,7 @@ int ChoosePlayerCard::targetFilter(const QList<const Player *> &targets, const P
 // ------------------------------------------------
 
 ChoosePlayerSkill::ChoosePlayerSkill()
-    : ZeroCardViewAsSkill("choose_player")
+    : ZeroCardViewAsSkill(QStringLiteral("choose_player"))
 {
 }
 
@@ -236,5 +236,5 @@ void ChoosePlayerSkill::setPlayerNames(const QStringList &names)
 
 const Card *ChoosePlayerSkill::viewAs(const Player *player) const
 {
-    return player->getRoomObject()->cloneSkillCard("ChoosePlayerCard");
+    return player->getRoomObject()->cloneSkillCard(QStringLiteral("ChoosePlayerCard"));
 }

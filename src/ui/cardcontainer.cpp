@@ -11,7 +11,7 @@
 CardContainer::CardContainer()
     : scene_width(0)
     , itemCount(0)
-    , _m_background("image/system/card-container.png")
+    , _m_background(QStringLiteral("image/system/card-container.png"))
 {
     setTransform(QTransform::fromTranslate(-_m_background.width() / 2, -_m_background.height() / 2), true);
     _m_boundingRect = QRectF(QPoint(0, 0), _m_background.size());
@@ -21,7 +21,7 @@ CardContainer::CardContainer()
     close_button->setParentItem(this);
     close_button->setPos(517, 21);
     close_button->hide();
-    connect(close_button, SIGNAL(clicked()), this, SLOT(clear()));
+    connect(close_button, &SanCloseButton::clicked, this, &CardContainer::clear);
 }
 
 void CardContainer::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
@@ -96,7 +96,7 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
             item->setEnabled(false);
 
         if (shownHandcard_ids.contains(item->getId())) {
-            item->setFootnote(Sanguosha->translate("shown_card"));
+            item->setFootnote(Sanguosha->translate(QStringLiteral("shown_card")));
             item->showFootnote();
         }
 
@@ -246,8 +246,8 @@ void CardContainer::startChoose()
 {
     close_button->hide();
     foreach (CardItem *item, items) {
-        connect(item, SIGNAL(leave_hover()), this, SLOT(grabItem()));
-        connect(item, SIGNAL(double_clicked()), this, SLOT(chooseItem()));
+        connect(item, &CardItem::leave_hover, this, &CardContainer::grabItem);
+        connect(item, &CardItem::double_clicked, this, &CardContainer::chooseItem);
     }
 }
 
@@ -259,7 +259,7 @@ void CardContainer::startGongxin(const QList<int> &enabled_ids)
     foreach (CardItem *item, items) {
         const Card *card = item->getCard();
         if (card && enabled_ids.contains(card->effectiveID())) {
-            connect(item, SIGNAL(double_clicked()), this, SLOT(gongxinItem()));
+            connect(item, &CardItem::double_clicked, this, &CardContainer::gongxinItem);
         } else
             item->setEnabled(false);
     }
@@ -298,7 +298,7 @@ void CardContainer::gongxinItem()
 }
 
 SanCloseButton::SanCloseButton()
-    : QSanSelectableItem("image/system/close.png", false)
+    : QSanSelectableItem(QStringLiteral("image/system/close.png"), false)
 {
     setFlag(ItemIsFocusable);
     setAcceptedMouseButtons(Qt::LeftButton);
@@ -325,7 +325,7 @@ void CardContainer::view(const ClientPlayer *player)
 }
 
 GuanxingBox::GuanxingBox()
-    : QSanSelectableItem("image/system/guanxing-box.png", true)
+    : QSanSelectableItem(QStringLiteral("image/system/guanxing-box.png"), true)
 {
     setFlag(ItemIsFocusable);
     setFlag(ItemIsMovable);
@@ -345,7 +345,7 @@ void GuanxingBox::doGuanxing(const QList<int> &card_ids, bool up_only)
         CardItem *card_item = new CardItem(ClientInstance->getCard(card_id));
         card_item->setAutoBack(false);
         card_item->setFlag(QGraphicsItem::ItemIsFocusable);
-        connect(card_item, SIGNAL(released()), this, SLOT(adjust()));
+        connect(card_item, &CardItem::released, this, &GuanxingBox::adjust);
 
         up_items << card_item;
         card_item->setParentItem(this);

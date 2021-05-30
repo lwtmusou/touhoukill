@@ -61,12 +61,12 @@ QWidget *ServerDialog::createBasicTab()
     timeout_spinbox->setSuffix(tr(" seconds"));
     nolimit_checkbox = new QCheckBox(tr("No limit"));
     nolimit_checkbox->setChecked(Config.OperationNoLimit);
-    connect(nolimit_checkbox, SIGNAL(toggled(bool)), timeout_spinbox, SLOT(setDisabled(bool)));
+    connect(nolimit_checkbox, &QAbstractButton::toggled, timeout_spinbox, &QWidget::setDisabled);
 
     // add 1v1 banlist edit button
     QPushButton *edit_button = new QPushButton(tr("Banlist ..."));
     edit_button->setFixedWidth(100);
-    connect(edit_button, SIGNAL(clicked()), this, SLOT(edit1v1Banlist()));
+    connect(edit_button, &QAbstractButton::clicked, this, &ServerDialog::edit1v1Banlist);
 
     QFormLayout *form_layout = new QFormLayout;
     form_layout->addRow(tr("Server name"), server_name_edit);
@@ -109,7 +109,7 @@ QWidget *ServerDialog::createPackageTab()
         if (package == nullptr)
             continue;
 
-        bool forbid_package = Config.value("ForbidPackages").toStringList().contains(extension);
+        bool forbid_package = Config.value(QStringLiteral("ForbidPackages")).toStringList().contains(extension);
         QCheckBox *checkbox = new QCheckBox;
         checkbox->setObjectName(extension);
         checkbox->setText(Sanguosha->translate(extension));
@@ -120,7 +120,7 @@ QWidget *ServerDialog::createPackageTab()
 
         switch (package->type()) {
         case Package::GeneralPack: {
-            if (extension == "standard" || extension == "test")
+            if (extension == QStringLiteral("standard") || extension == QStringLiteral("test"))
                 continue;
             row = i / 5;
             column = i % 5;
@@ -171,7 +171,7 @@ QWidget *ServerDialog::createAdvancedTab()
     free_choose_checkbox->setVisible(Config.EnableCheat);
 
     free_assign_checkbox = new QCheckBox(tr("Assign role and seat freely"));
-    free_assign_checkbox->setChecked(Config.value("FreeAssign").toBool());
+    free_assign_checkbox->setChecked(Config.value(QStringLiteral("FreeAssign")).toBool());
     free_assign_checkbox->setVisible(Config.EnableCheat);
 
     free_assign_self_checkbox = new QCheckBox(tr("Assign only your own role"));
@@ -179,42 +179,42 @@ QWidget *ServerDialog::createAdvancedTab()
     free_assign_self_checkbox->setEnabled(free_assign_checkbox->isChecked());
     free_assign_self_checkbox->setVisible(Config.EnableCheat);
 
-    connect(enable_cheat_checkbox, SIGNAL(toggled(bool)), free_choose_checkbox, SLOT(setVisible(bool)));
-    connect(enable_cheat_checkbox, SIGNAL(toggled(bool)), free_assign_checkbox, SLOT(setVisible(bool)));
-    connect(enable_cheat_checkbox, SIGNAL(toggled(bool)), free_assign_self_checkbox, SLOT(setVisible(bool)));
-    connect(free_assign_checkbox, SIGNAL(toggled(bool)), free_assign_self_checkbox, SLOT(setEnabled(bool)));
+    connect(enable_cheat_checkbox, &QAbstractButton::toggled, free_choose_checkbox, &QWidget::setVisible);
+    connect(enable_cheat_checkbox, &QAbstractButton::toggled, free_assign_checkbox, &QWidget::setVisible);
+    connect(enable_cheat_checkbox, &QAbstractButton::toggled, free_assign_self_checkbox, &QWidget::setVisible);
+    connect(free_assign_checkbox, &QAbstractButton::toggled, free_assign_self_checkbox, &QWidget::setEnabled);
 
     pile_swapping_label = new QLabel(tr("Pile-swapping limitation"));
     pile_swapping_label->setToolTip(tr("<font color=#FFFF33>-1 means no limitations</font>"));
     pile_swapping_spinbox = new QSpinBox;
     pile_swapping_spinbox->setRange(-1, 15);
-    pile_swapping_spinbox->setValue(Config.value("PileSwappingLimitation", 5).toInt());
+    pile_swapping_spinbox->setValue(Config.value(QStringLiteral("PileSwappingLimitation"), 5).toInt());
 
     without_lordskill_checkbox = new QCheckBox(tr("Without Lordskill"));
-    without_lordskill_checkbox->setChecked(Config.value("WithoutLordskill", false).toBool());
+    without_lordskill_checkbox->setChecked(Config.value(QStringLiteral("WithoutLordskill"), false).toBool());
 
     sp_convert_checkbox = new QCheckBox(tr("Enable SP Convert"));
-    sp_convert_checkbox->setChecked(Config.value("EnableSPConvert", true).toBool());
+    sp_convert_checkbox->setChecked(Config.value(QStringLiteral("EnableSPConvert"), true).toBool());
 
     maxchoice_spinbox = new QSpinBox;
     maxchoice_spinbox->setRange(3, 10);
-    maxchoice_spinbox->setValue(Config.value("MaxChoice", 6).toInt());
+    maxchoice_spinbox->setValue(Config.value(QStringLiteral("MaxChoice"), 6).toInt());
 
     godlimit_label = new QLabel(tr("Upperlimit for gods"));
     godlimit_label->setToolTip(tr("<font color=#FFFF33>-1 means that all gods may appear in your general chosen dialog!</font>"));
     godlimit_spinbox = new QSpinBox;
     godlimit_spinbox->setRange(-1, 8);
-    godlimit_spinbox->setValue(Config.value("GodLimit", 1).toInt());
+    godlimit_spinbox->setValue(Config.value(QStringLiteral("GodLimit"), 1).toInt());
 
     lord_maxchoice_label = new QLabel(tr("Upperlimit for lord"));
     lord_maxchoice_label->setToolTip(tr("<font color=#FFFF33>-1 means that all lords are available</font>"));
     lord_maxchoice_spinbox = new QSpinBox;
     lord_maxchoice_spinbox->setRange(-1, 10);
-    lord_maxchoice_spinbox->setValue(Config.value("LordMaxChoice", 6).toInt());
+    lord_maxchoice_spinbox->setValue(Config.value(QStringLiteral("LordMaxChoice"), 6).toInt());
 
     nonlord_maxchoice_spinbox = new QSpinBox;
     nonlord_maxchoice_spinbox->setRange(0, 10);
-    nonlord_maxchoice_spinbox->setValue(Config.value("NonLordMaxChoice", 6).toInt());
+    nonlord_maxchoice_spinbox->setValue(Config.value(QStringLiteral("NonLordMaxChoice"), 6).toInt());
 
     forbid_same_ip_checkbox = new QCheckBox(tr("Forbid same IP with multiple connection"));
     forbid_same_ip_checkbox->setChecked(Config.ForbidSIMC);
@@ -234,7 +234,7 @@ QWidget *ServerDialog::createAdvancedTab()
     address_edit->setPlaceholderText(tr("Public IP or domain"));
 
     QPushButton *detect_button = new QPushButton(tr("Detect my WAN IP"));
-    connect(detect_button, SIGNAL(clicked()), this, SLOT(onDetectButtonClicked()));
+    connect(detect_button, &QAbstractButton::clicked, this, &ServerDialog::onDetectButtonClicked);
 
     port_edit = new QLineEdit;
     port_edit->setText(QString::number(Config.ServerPort));
@@ -314,7 +314,7 @@ QWidget *ServerDialog::createMiscTab()
     ai_delay_ad_spinbox->setValue(Config.AIDelayAD);
     ai_delay_ad_spinbox->setSuffix(tr(" millisecond"));
     ai_delay_ad_spinbox->setEnabled(ai_delay_altered_checkbox->isChecked());
-    connect(ai_delay_altered_checkbox, SIGNAL(toggled(bool)), ai_delay_ad_spinbox, SLOT(setEnabled(bool)));
+    connect(ai_delay_altered_checkbox, &QAbstractButton::toggled, ai_delay_ad_spinbox, &QWidget::setEnabled);
 
     ai_prohibit_blind_attack_checkbox = new QCheckBox(tr("Prohibit Blind Attack"));
     ai_prohibit_blind_attack_checkbox->setToolTip(tr("<font color=#FFFF33>ai will not blindly attack,if this is checked</font>"));
@@ -364,13 +364,12 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
     setWindowTitle(tr("Select generals that are excluded"));
 
     if (ban_list.isEmpty())
-        ban_list << "Roles"
-                 << "HulaoPass";
+        ban_list << QStringLiteral("Roles") << QStringLiteral("HulaoPass");
     QVBoxLayout *layout = new QVBoxLayout;
 
     QTabWidget *tab = new QTabWidget;
     layout->addWidget(tab);
-    connect(tab, SIGNAL(currentChanged(int)), this, SLOT(switchTo(int)));
+    connect(tab, &QTabWidget::currentChanged, this, &BanlistDialog::switchTo);
 
     foreach (const QString &item, ban_list) {
         QWidget *apage = new QWidget;
@@ -378,7 +377,7 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
         list = new QListWidget;
         list->setObjectName(item);
 
-        QStringList banlist = Config.value(QString("Banlist/%1").arg(item)).toStringList();
+        QStringList banlist = Config.value(QStringLiteral("Banlist/%1").arg(item)).toStringList();
         foreach (QString name, banlist)
             addGeneral(name);
 
@@ -395,10 +394,10 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
     QPushButton *remove = new QPushButton(tr("Remove"));
     QPushButton *ok = new QPushButton(tr("OK"));
 
-    connect(ok, SIGNAL(clicked()), this, SLOT(accept()));
-    connect(this, SIGNAL(accepted()), this, SLOT(saveAll()));
-    connect(remove, SIGNAL(clicked()), this, SLOT(doRemoveButton()));
-    connect(add, SIGNAL(clicked()), this, SLOT(doAddButton()));
+    connect(ok, &QAbstractButton::clicked, this, &QDialog::accept);
+    connect(this, &QDialog::accepted, this, &BanlistDialog::saveAll);
+    connect(remove, &QAbstractButton::clicked, this, &BanlistDialog::doRemoveButton);
+    connect(add, &QAbstractButton::clicked, this, &BanlistDialog::doAddButton);
 
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
@@ -431,7 +430,7 @@ void BanlistDialog::addGeneral(const QString &name)
 void BanlistDialog::doAddButton()
 {
     FreeChooseDialog *chooser = new FreeChooseDialog(this, false);
-    connect(chooser, SIGNAL(general_chosen(QString)), this, SLOT(addGeneral(QString)));
+    connect(chooser, &FreeChooseDialog::general_chosen, this, &BanlistDialog::addGeneral);
     chooser->exec();
 }
 
@@ -450,7 +449,7 @@ void BanlistDialog::save()
         banset << list->item(i)->data(Qt::UserRole).toString();
 
     QStringList banlist = banset.values();
-    Config.setValue(QString("Banlist/%1").arg(ban_list.at(item)), QVariant::fromValue(banlist));
+    Config.setValue(QStringLiteral("Banlist/%1").arg(ban_list.at(item)), QVariant::fromValue(banlist));
 }
 
 void BanlistDialog::saveAll()
@@ -470,22 +469,22 @@ void ServerDialog::edit1v1Banlist()
 QGroupBox *ServerDialog::create1v1Box()
 {
     QGroupBox *box = new QGroupBox(tr("1v1 options"));
-    box->setEnabled(Config.GameMode == "02_1v1");
+    box->setEnabled(Config.GameMode == QStringLiteral("02_1v1"));
     box->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     QVBoxLayout *vlayout = new QVBoxLayout;
 
     QComboBox *officialComboBox = new QComboBox;
-    officialComboBox->addItem(tr("Classical"), "Classical");
-    officialComboBox->addItem("2013", "2013");
-    officialComboBox->addItem("OL", "OL");
+    officialComboBox->addItem(tr("Classical"), QStringLiteral("Classical"));
+    officialComboBox->addItem(QStringLiteral("2013"), QStringLiteral("2013"));
+    officialComboBox->addItem(QStringLiteral("OL"), QStringLiteral("OL"));
 
     official_1v1_ComboBox = officialComboBox;
 
-    QString rule = Config.value("1v1/Rule", "2013").toString();
-    if (rule == "2013")
+    QString rule = Config.value(QStringLiteral("1v1/Rule"), QStringLiteral("2013")).toString();
+    if (rule == QStringLiteral("2013"))
         officialComboBox->setCurrentIndex(1);
-    else if (rule == "OL")
+    else if (rule == QStringLiteral("OL"))
         officialComboBox->setCurrentIndex(2);
 
     vlayout->addLayout(HLay(new QLabel(tr("Rule option")), official_1v1_ComboBox));
@@ -498,7 +497,7 @@ QGroupBox *ServerDialog::create1v1Box()
 QGroupBox *ServerDialog::create3v3Box()
 {
     QGroupBox *box = new QGroupBox(tr("3v3 options"));
-    box->setEnabled(Config.GameMode == "06_3v3");
+    box->setEnabled(Config.GameMode == QStringLiteral("06_3v3"));
     box->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     QVBoxLayout *vlayout = new QVBoxLayout;
@@ -506,23 +505,23 @@ QGroupBox *ServerDialog::create3v3Box()
     QRadioButton *extend = new QRadioButton(tr("Extension mode"));
     QPushButton *extend_edit_button = new QPushButton(tr("General selection ..."));
     extend_edit_button->setEnabled(false);
-    connect(extend, SIGNAL(toggled(bool)), extend_edit_button, SLOT(setEnabled(bool)));
-    connect(extend_edit_button, SIGNAL(clicked()), this, SLOT(select3v3Generals()));
+    connect(extend, &QAbstractButton::toggled, extend_edit_button, &QWidget::setEnabled);
+    connect(extend_edit_button, &QAbstractButton::clicked, this, &ServerDialog::select3v3Generals);
 
     exclude_disaster_checkbox = new QCheckBox(tr("Exclude disasters"));
-    exclude_disaster_checkbox->setChecked(Config.value("3v3/ExcludeDisasters", true).toBool());
+    exclude_disaster_checkbox->setChecked(Config.value(QStringLiteral("3v3/ExcludeDisasters"), true).toBool());
 
     QComboBox *roleChooseComboBox = new QComboBox;
-    roleChooseComboBox->addItem(tr("Normal"), "Normal");
-    roleChooseComboBox->addItem(tr("Random"), "Random");
-    roleChooseComboBox->addItem(tr("All roles"), "AllRoles");
+    roleChooseComboBox->addItem(tr("Normal"), QStringLiteral("Normal"));
+    roleChooseComboBox->addItem(tr("Random"), QStringLiteral("Random"));
+    roleChooseComboBox->addItem(tr("All roles"), QStringLiteral("AllRoles"));
 
     role_choose_ComboBox = roleChooseComboBox;
 
-    QString scheme = Config.value("3v3/RoleChoose", "Normal").toString();
-    if (scheme == "Random")
+    QString scheme = Config.value(QStringLiteral("3v3/RoleChoose"), QStringLiteral("Normal")).toString();
+    if (scheme == QStringLiteral("Random"))
         roleChooseComboBox->setCurrentIndex(1);
-    else if (scheme == "AllRoles")
+    else if (scheme == QStringLiteral("AllRoles"))
         roleChooseComboBox->setCurrentIndex(2);
 
     vlayout->addLayout(HLay(extend, extend_edit_button));
@@ -538,20 +537,20 @@ QGroupBox *ServerDialog::create3v3Box()
 QGroupBox *ServerDialog::createXModeBox()
 {
     QGroupBox *box = new QGroupBox(tr("XMode options"));
-    box->setEnabled(Config.GameMode == "06_XMode");
+    box->setEnabled(Config.GameMode == QStringLiteral("06_XMode"));
     box->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     QComboBox *roleChooseComboBox = new QComboBox;
-    roleChooseComboBox->addItem(tr("Normal"), "Normal");
-    roleChooseComboBox->addItem(tr("Random"), "Random");
-    roleChooseComboBox->addItem(tr("All roles"), "AllRoles");
+    roleChooseComboBox->addItem(tr("Normal"), QStringLiteral("Normal"));
+    roleChooseComboBox->addItem(tr("Random"), QStringLiteral("Random"));
+    roleChooseComboBox->addItem(tr("All roles"), QStringLiteral("AllRoles"));
 
     role_choose_xmode_ComboBox = roleChooseComboBox;
 
-    QString scheme = Config.value("XMode/RoleChooseX", "Normal").toString();
-    if (scheme == "Random")
+    QString scheme = Config.value(QStringLiteral("XMode/RoleChooseX"), QStringLiteral("Normal")).toString();
+    if (scheme == QStringLiteral("Random"))
         roleChooseComboBox->setCurrentIndex(1);
-    else if (scheme == "AllRoles")
+    else if (scheme == QStringLiteral("AllRoles"))
         roleChooseComboBox->setCurrentIndex(2);
 
     box->setLayout(HLay(new QLabel(tr("Role choose")), role_choose_xmode_ComboBox));
@@ -561,38 +560,38 @@ QGroupBox *ServerDialog::createXModeBox()
 QGroupBox *ServerDialog::createHegemonyBox()
 {
     QGroupBox *box = new QGroupBox(tr("Hegemony options"));
-    box->setEnabled(Config.GameMode.startsWith("hegemony_"));
+    box->setEnabled(Config.GameMode.startsWith(QStringLiteral("hegemony_")));
     box->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     QComboBox *firstshow = new QComboBox;
-    firstshow->addItem(tr("Not Used"), "None");
-    firstshow->addItem(tr("Instant"), "Instant");
-    firstshow->addItem(tr("Postponed"), "Postponed");
+    firstshow->addItem(tr("Not Used"), QStringLiteral("None"));
+    firstshow->addItem(tr("Instant"), QStringLiteral("Instant"));
+    firstshow->addItem(tr("Postponed"), QStringLiteral("Postponed"));
     hegemony_first_show = firstshow;
-    if (Config.HegemonyFirstShowReward == "Instant")
+    if (Config.HegemonyFirstShowReward == QStringLiteral("Instant"))
         firstshow->setCurrentIndex(1);
-    else if (Config.HegemonyFirstShowReward == "Postponed")
+    else if (Config.HegemonyFirstShowReward == QStringLiteral("Postponed"))
         firstshow->setCurrentIndex(2);
 
     QComboBox *companion = new QComboBox;
-    companion->addItem(tr("Instant"), "Instant");
-    companion->addItem(tr("Postponed"), "Postponed");
+    companion->addItem(tr("Instant"), QStringLiteral("Instant"));
+    companion->addItem(tr("Postponed"), QStringLiteral("Postponed"));
     hegemony_companion = companion;
-    if (Config.HegemonyCompanionReward == "Postponed")
+    if (Config.HegemonyCompanionReward == QStringLiteral("Postponed"))
         companion->setCurrentIndex(1);
 
     QComboBox *halfhpdraw = new QComboBox;
-    halfhpdraw->addItem(tr("Instant"), "Instant");
-    halfhpdraw->addItem(tr("Postponed"), "Postponed");
+    halfhpdraw->addItem(tr("Instant"), QStringLiteral("Instant"));
+    halfhpdraw->addItem(tr("Postponed"), QStringLiteral("Postponed"));
     hegemony_half_hp_draw = halfhpdraw;
-    if (Config.HegemonyHalfHpReward == "Postponed")
+    if (Config.HegemonyHalfHpReward == QStringLiteral("Postponed"))
         halfhpdraw->setCurrentIndex(1);
 
     QComboBox *careeristkill = new QComboBox;
-    careeristkill->addItem(tr("As Usual"), "AsUsual");
-    careeristkill->addItem(tr("Always draw 3"), "AlwaysDraw3");
+    careeristkill->addItem(tr("As Usual"), QStringLiteral("AsUsual"));
+    careeristkill->addItem(tr("Always draw 3"), QStringLiteral("AlwaysDraw3"));
     hegemony_careerist_kill = careeristkill;
-    if (Config.HegemonyCareeristKillReward == "AlwaysDraw3")
+    if (Config.HegemonyCareeristKillReward == QStringLiteral("AlwaysDraw3"))
         careeristkill->setCurrentIndex(1);
 
     QFormLayout *l = new QFormLayout;
@@ -625,24 +624,24 @@ QGroupBox *ServerDialog::createGameModeBox()
         if (itor.key() == Config.GameMode)
             button->setChecked(true);
 
-        connect(button, SIGNAL(toggled(bool)), this, SLOT(checkCurrentBtnIsHegemonyMode(bool)));
+        connect(button, &QAbstractButton::toggled, this, &ServerDialog::checkCurrentBtnIsHegemonyMode);
 
-        if (itor.key() == "02_1v1") {
+        if (itor.key() == QStringLiteral("02_1v1")) {
             QGroupBox *box = create1v1Box();
-            connect(button, SIGNAL(toggled(bool)), box, SLOT(setEnabled(bool)));
+            connect(button, &QAbstractButton::toggled, box, &QWidget::setEnabled);
 
             item_list << button << box;
-        } else if (itor.key() == "06_3v3") {
+        } else if (itor.key() == QStringLiteral("06_3v3")) {
             QGroupBox *box = create3v3Box();
-            connect(button, SIGNAL(toggled(bool)), box, SLOT(setEnabled(bool)));
+            connect(button, &QAbstractButton::toggled, box, &QWidget::setEnabled);
 
             item_list << button << box;
-        } else if (itor.key() == "06_XMode") {
+        } else if (itor.key() == QStringLiteral("06_XMode")) {
             QGroupBox *box = createXModeBox();
-            connect(button, SIGNAL(toggled(bool)), box, SLOT(setEnabled(bool)));
+            connect(button, &QAbstractButton::toggled, box, &QWidget::setEnabled);
 
             item_list << button << box;
-        } else if (itor.key() == "hegemony_10") {
+        } else if (itor.key() == QStringLiteral("hegemony_10")) {
             hegemonyBox = createHegemonyBox();
 
             item_list << button << hegemonyBox;
@@ -690,8 +689,8 @@ QLayout *ServerDialog::createButtonLayout()
     button_layout->addWidget(ok_button);
     button_layout->addWidget(cancel_button);
 
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(onOkButtonClicked()));
-    connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(ok_button, &QAbstractButton::clicked, this, &ServerDialog::onOkButtonClicked);
+    connect(cancel_button, &QAbstractButton::clicked, this, &QDialog::reject);
 
     return button_layout;
 }
@@ -717,14 +716,14 @@ Select3v3GeneralDialog::Select3v3GeneralDialog(QDialog *parent)
     : QDialog(parent)
 {
     setWindowTitle(tr("Select generals in extend 3v3 mode"));
-    QStringList ex_generalsList = Config.value("3v3/ExtensionGenerals").toStringList();
+    QStringList ex_generalsList = Config.value(QStringLiteral("3v3/ExtensionGenerals")).toStringList();
     ex_generals = QSet<QString>(ex_generalsList.begin(), ex_generalsList.end());
     QVBoxLayout *layout = new QVBoxLayout;
     tab_widget = new QTabWidget;
     fillTabWidget();
 
     QPushButton *ok_button = new QPushButton(tr("OK"));
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(ok_button, &QAbstractButton::clicked, this, &QDialog::accept);
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
     hlayout->addWidget(ok_button);
@@ -734,7 +733,7 @@ Select3v3GeneralDialog::Select3v3GeneralDialog(QDialog *parent)
     setLayout(layout);
     setMinimumWidth(550);
 
-    connect(this, SIGNAL(accepted()), this, SLOT(save3v3Generals()));
+    connect(this, &QDialog::accepted, this, &Select3v3GeneralDialog::save3v3Generals);
 }
 
 void Select3v3GeneralDialog::fillTabWidget()
@@ -770,7 +769,7 @@ void Select3v3GeneralDialog::fillListWidget(QListWidget *list, const Package *pa
 
         bool checked = false;
         if (ex_generals.isEmpty()) {
-            checked = (pack->name() == "standard" || pack->name() == "wind") && general->objectName() != "yuji";
+            checked = (pack->name() == QStringLiteral("standard") || pack->name() == QStringLiteral("wind")) && general->objectName() != QStringLiteral("yuji");
         } else
             checked = ex_generals.contains(general->objectName());
 
@@ -785,7 +784,7 @@ void Select3v3GeneralDialog::fillListWidget(QListWidget *list, const Package *pa
     list->setContextMenuPolicy(Qt::ActionsContextMenu);
     list->setResizeMode(QListView::Adjust);
 
-    connect(action, SIGNAL(triggered()), this, SLOT(toggleCheck()));
+    connect(action, &QAction::triggered, this, &Select3v3GeneralDialog::toggleCheck);
 }
 
 void ServerDialog::setMiniCheckBox()
@@ -796,7 +795,7 @@ void ServerDialog::checkCurrentBtnIsHegemonyMode(bool v)
 {
     QRadioButton *but = qobject_cast<QRadioButton *>(sender());
     if (but != nullptr && v)
-        hegemonyBox->setEnabled(but->objectName().startsWith("hegemony_"));
+        hegemonyBox->setEnabled(but->objectName().startsWith(QStringLiteral("hegemony_")));
 }
 
 void Select3v3GeneralDialog::toggleCheck()
@@ -831,7 +830,7 @@ void Select3v3GeneralDialog::save3v3Generals()
 
     QStringList list = ex_generals.values();
     QVariant data = QVariant::fromValue(list);
-    Config.setValue("3v3/ExtensionGenerals", data);
+    Config.setValue(QStringLiteral("3v3/ExtensionGenerals"), data);
 }
 
 void ServerDialog::select3v3Generals()
@@ -885,57 +884,57 @@ bool ServerDialog::config()
 
     Config.GameMode = objname;
 
-    if (Config.GameMode.startsWith("hegemony_")) {
+    if (Config.GameMode.startsWith(QStringLiteral("hegemony_"))) {
         Config.HegemonyFirstShowReward = hegemony_first_show->itemData(hegemony_first_show->currentIndex()).toString();
         Config.HegemonyCompanionReward = hegemony_companion->itemData(hegemony_companion->currentIndex()).toString();
         Config.HegemonyHalfHpReward = hegemony_half_hp_draw->itemData(hegemony_half_hp_draw->currentIndex()).toString();
         Config.HegemonyCareeristKillReward = hegemony_careerist_kill->itemData(hegemony_careerist_kill->currentIndex()).toString();
     }
 
-    Config.setValue("ServerName", Config.ServerName);
-    Config.setValue("GameMode", Config.GameMode);
-    Config.setValue("OperationTimeout", Config.OperationTimeout);
-    Config.setValue("OperationNoLimit", Config.OperationNoLimit);
-    Config.setValue("RandomSeat", Config.RandomSeat);
-    Config.setValue("AssignLatestGeneral", Config.AssignLatestGeneral);
-    Config.setValue("EnableCheat", Config.EnableCheat);
-    Config.setValue("FreeChoose", Config.FreeChoose);
-    Config.setValue("FreeAssign", Config.EnableCheat && free_assign_checkbox->isChecked());
-    Config.setValue("FreeAssignSelf", Config.FreeAssignSelf);
-    Config.setValue("PileSwappingLimitation", pile_swapping_spinbox->value());
-    Config.setValue("WithoutLordskill", without_lordskill_checkbox->isChecked());
-    Config.setValue("EnableSPConvert", sp_convert_checkbox->isChecked());
-    Config.setValue("MaxChoice", maxchoice_spinbox->value());
-    Config.setValue("GodLimit", godlimit_spinbox->value());
-    Config.setValue("LordMaxChoice", lord_maxchoice_spinbox->value());
-    Config.setValue("NonLordMaxChoice", nonlord_maxchoice_spinbox->value());
-    Config.setValue("ForbidSIMC", Config.ForbidSIMC);
-    Config.setValue("DisableChat", Config.DisableChat);
-    Config.setValue("Enable2ndGeneral", Config.Enable2ndGeneral);
-    Config.setValue("MaxHpScheme", Config.MaxHpScheme);
-    Config.setValue("Scheme0Subtraction", Config.Scheme0Subtraction);
-    Config.setValue("PreventAwakenBelow3", Config.PreventAwakenBelow3);
-    Config.setValue("CountDownSeconds", game_start_spinbox->value());
-    Config.setValue("NullificationCountDown", nullification_spinbox->value());
-    Config.setValue("EnableMinimizeDialog", Config.EnableMinimizeDialog);
-    Config.setValue("EnableAI", Config.EnableAI);
-    Config.setValue("OriginAIDelay", Config.OriginAIDelay);
-    Config.setValue("AlterAIDelayAD", ai_delay_altered_checkbox->isChecked());
-    Config.setValue("AIDelayAD", Config.AIDelayAD);
-    Config.setValue("AIProhibitBlindAttack", Config.AIProhibitBlindAttack);
-    Config.setValue("LimitRobot", Config.LimitRobot);
+    Config.setValue(QStringLiteral("ServerName"), Config.ServerName);
+    Config.setValue(QStringLiteral("GameMode"), Config.GameMode);
+    Config.setValue(QStringLiteral("OperationTimeout"), Config.OperationTimeout);
+    Config.setValue(QStringLiteral("OperationNoLimit"), Config.OperationNoLimit);
+    Config.setValue(QStringLiteral("RandomSeat"), Config.RandomSeat);
+    Config.setValue(QStringLiteral("AssignLatestGeneral"), Config.AssignLatestGeneral);
+    Config.setValue(QStringLiteral("EnableCheat"), Config.EnableCheat);
+    Config.setValue(QStringLiteral("FreeChoose"), Config.FreeChoose);
+    Config.setValue(QStringLiteral("FreeAssign"), Config.EnableCheat && free_assign_checkbox->isChecked());
+    Config.setValue(QStringLiteral("FreeAssignSelf"), Config.FreeAssignSelf);
+    Config.setValue(QStringLiteral("PileSwappingLimitation"), pile_swapping_spinbox->value());
+    Config.setValue(QStringLiteral("WithoutLordskill"), without_lordskill_checkbox->isChecked());
+    Config.setValue(QStringLiteral("EnableSPConvert"), sp_convert_checkbox->isChecked());
+    Config.setValue(QStringLiteral("MaxChoice"), maxchoice_spinbox->value());
+    Config.setValue(QStringLiteral("GodLimit"), godlimit_spinbox->value());
+    Config.setValue(QStringLiteral("LordMaxChoice"), lord_maxchoice_spinbox->value());
+    Config.setValue(QStringLiteral("NonLordMaxChoice"), nonlord_maxchoice_spinbox->value());
+    Config.setValue(QStringLiteral("ForbidSIMC"), Config.ForbidSIMC);
+    Config.setValue(QStringLiteral("DisableChat"), Config.DisableChat);
+    Config.setValue(QStringLiteral("Enable2ndGeneral"), Config.Enable2ndGeneral);
+    Config.setValue(QStringLiteral("MaxHpScheme"), Config.MaxHpScheme);
+    Config.setValue(QStringLiteral("Scheme0Subtraction"), Config.Scheme0Subtraction);
+    Config.setValue(QStringLiteral("PreventAwakenBelow3"), Config.PreventAwakenBelow3);
+    Config.setValue(QStringLiteral("CountDownSeconds"), game_start_spinbox->value());
+    Config.setValue(QStringLiteral("NullificationCountDown"), nullification_spinbox->value());
+    Config.setValue(QStringLiteral("EnableMinimizeDialog"), Config.EnableMinimizeDialog);
+    Config.setValue(QStringLiteral("EnableAI"), Config.EnableAI);
+    Config.setValue(QStringLiteral("OriginAIDelay"), Config.OriginAIDelay);
+    Config.setValue(QStringLiteral("AlterAIDelayAD"), ai_delay_altered_checkbox->isChecked());
+    Config.setValue(QStringLiteral("AIDelayAD"), Config.AIDelayAD);
+    Config.setValue(QStringLiteral("AIProhibitBlindAttack"), Config.AIProhibitBlindAttack);
+    Config.setValue(QStringLiteral("LimitRobot"), Config.LimitRobot);
 
-    Config.setValue("SurrenderAtDeath", Config.SurrenderAtDeath);
-    Config.setValue("LuckCardLimitation", Config.LuckCardLimitation);
-    Config.setValue("ServerPort", Config.ServerPort);
-    Config.setValue("Address", Config.Address);
-    Config.setValue("DisableLua", disable_lua_checkbox->isChecked());
+    Config.setValue(QStringLiteral("SurrenderAtDeath"), Config.SurrenderAtDeath);
+    Config.setValue(QStringLiteral("LuckCardLimitation"), Config.LuckCardLimitation);
+    Config.setValue(QStringLiteral("ServerPort"), Config.ServerPort);
+    Config.setValue(QStringLiteral("Address"), Config.Address);
+    Config.setValue(QStringLiteral("DisableLua"), disable_lua_checkbox->isChecked());
 
-    if (Config.GameMode.startsWith("hegemony_")) {
-        Config.setValue("HegemonyFirstShowReward", Config.HegemonyFirstShowReward);
-        Config.setValue("HegemonyCompanionReward", Config.HegemonyCompanionReward);
-        Config.setValue("HegemonyHalfHpReward", Config.HegemonyHalfHpReward);
-        Config.setValue("HegemonyCareeristKillReward", Config.HegemonyCareeristKillReward);
+    if (Config.GameMode.startsWith(QStringLiteral("hegemony_"))) {
+        Config.setValue(QStringLiteral("HegemonyFirstShowReward"), Config.HegemonyFirstShowReward);
+        Config.setValue(QStringLiteral("HegemonyCompanionReward"), Config.HegemonyCompanionReward);
+        Config.setValue(QStringLiteral("HegemonyHalfHpReward"), Config.HegemonyHalfHpReward);
+        Config.setValue(QStringLiteral("HegemonyCareeristKillReward"), Config.HegemonyCareeristKillReward);
     }
 
     QSet<QString> ban_packages;
@@ -949,7 +948,7 @@ bool ServerDialog::config()
     }
 
     Config.BanPackages = ban_packages.values();
-    Config.setValue("BanPackages", Config.BanPackages);
+    Config.setValue(QStringLiteral("BanPackages"), Config.BanPackages);
 
     return true;
 }
@@ -966,15 +965,15 @@ Server::Server(QObject *parent)
     current = nullptr;
     createNewRoom();
 
-    connect(server, SIGNAL(new_connection(ClientSocket *)), this, SLOT(processNewConnection(ClientSocket *)));
-    connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
+    connect(server, &ServerSocket::new_connection, this, &Server::processNewConnection);
+    connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, this, &QObject::deleteLater);
 }
 
 void Server::broadcast(const QString &msg)
 {
-    QString to_sent = msg.toUtf8().toBase64();
+    QString to_sent = QString::fromUtf8(msg.toUtf8().toBase64());
     JsonArray arg;
-    arg << "." << to_sent;
+    arg << QStringLiteral(".") << to_sent;
 
     Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
     packet.setMessageBody(arg);
@@ -1002,8 +1001,8 @@ Room *Server::createNewRoom()
     current = new_room;
     rooms.insert(current);
 
-    connect(current, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
-    connect(current, SIGNAL(game_over(QString)), this, SLOT(gameOver()));
+    connect(current, &Room::room_message, this, &Server::server_message);
+    connect(current, &Room::game_over, this, &Server::gameOver);
 
     return current;
 }
@@ -1015,7 +1014,7 @@ void Server::processNewConnection(ClientSocket *socket)
     socket->send((packet.toString()));
     emit server_message(tr("%1 connected").arg(socket->peerName()));
 
-    connect(socket, SIGNAL(message_got(const char *)), this, SLOT(processRequest(const char *)));
+    connect(socket, &ClientSocket::message_got, this, &Server::processRequest);
 }
 
 void Server::processRequest(const char *request)
@@ -1025,9 +1024,9 @@ void Server::processRequest(const char *request)
 
     Packet signup;
     if (!signup.parse(request) || signup.getCommandType() != S_COMMAND_SIGNUP) {
-        emit server_message(tr("Invalid signup string: %1").arg(request));
+        emit server_message(tr("Invalid signup string: %1").arg(QString::fromUtf8(request)));
         QSanProtocol::Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_WARN);
-        packet.setMessageBody("INVALID_FORMAT");
+        packet.setMessageBody(QStringLiteral("INVALID_FORMAT"));
         socket->send(packet.toString());
         socket->disconnectFromHost();
         return;
@@ -1039,32 +1038,32 @@ void Server::processRequest(const char *request)
     QString avatar = body[2].toString();
     bool reconnection_enabled = false;
 
-    QStringList ps = urlPath.split('/', Qt::SkipEmptyParts);
+    QStringList ps = urlPath.split(QLatin1Char('/'), Qt::SkipEmptyParts);
     QString messageBodyToSend;
     if (ps.length() == 0) {
         // default connected
     } else {
         if (ps.length() != 2) {
-            messageBodyToSend = "INVALID_OPERATION";
+            messageBodyToSend = QStringLiteral("INVALID_OPERATION");
             emit server_message(tr("invalid operation: more than 2 parts"));
         } else {
             // check valid ps.first
-            if (ps.first() == "reconnect") {
+            if (ps.first() == QStringLiteral("reconnect")) {
                 reconnection_enabled = true;
-            } else if (ps.first() == "observe") {
+            } else if (ps.first() == QStringLiteral("observe")) {
                 // warning, not implemented
                 emit server_message(tr("unimplemented operation: %1").arg(ps.first()));
-                messageBodyToSend = "OPERATION_NOT_IMPLEMENTED";
+                messageBodyToSend = QStringLiteral("OPERATION_NOT_IMPLEMENTED");
             } else {
                 emit server_message(tr("invalid operation: %1").arg(ps.first()));
-                messageBodyToSend = "INVALID_OPERATION";
+                messageBodyToSend = QStringLiteral("INVALID_OPERATION");
             }
         }
         if (messageBodyToSend.isEmpty()) {
             // check valid ps.last
-            if (!ps.last().startsWith("sgs")) {
+            if (!ps.last().startsWith(QStringLiteral("sgs"))) {
                 emit server_message(tr("reconnect username incorrect: %1").arg(ps.last()));
-                messageBodyToSend = "USERNAME_INCORRECT";
+                messageBodyToSend = QStringLiteral("USERNAME_INCORRECT");
             } else {
                 QString num = ps.last().mid(3);
                 bool ok = false;
@@ -1073,7 +1072,7 @@ void Server::processRequest(const char *request)
                     // valid connection name
                 } else {
                     emit server_message(tr("reconnect username incorrect: %1").arg(ps.last()));
-                    messageBodyToSend = "USERNAME_INCORRECT";
+                    messageBodyToSend = QStringLiteral("USERNAME_INCORRECT");
                 }
             }
         }
@@ -1094,7 +1093,7 @@ void Server::processRequest(const char *request)
             return;
         } else {
             addresses.insert(addr);
-            connect(socket, SIGNAL(disconnected()), this, SLOT(cleanupSimc()));
+            connect(socket, &ClientSocket::disconnected, this, &Server::cleanupSimc);
         }
     }
 
@@ -1105,7 +1104,7 @@ void Server::processRequest(const char *request)
 
     if (reconnection_enabled) {
         ServerPlayer *player = players.value(ps.last());
-        if (player && player->getState() == "offline" && !player->getRoom()->isFinished()) {
+        if (player && player->getState() == QStringLiteral("offline") && !player->getRoom()->isFinished()) {
             player->getRoom()->reconnect(player, socket);
             return;
         }
@@ -1113,7 +1112,7 @@ void Server::processRequest(const char *request)
         // player not found
         emit server_message(tr("reconnect username not found: %1").arg(ps.last()));
         QSanProtocol::Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_WARN);
-        packet.setMessageBody("USERNAME_INCORRECT");
+        packet.setMessageBody(QStringLiteral("USERNAME_INCORRECT"));
         socket->send(packet.toString());
         socket->disconnectFromHost();
 

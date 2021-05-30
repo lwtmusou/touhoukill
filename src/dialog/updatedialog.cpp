@@ -48,7 +48,7 @@ UpdateDialog::UpdateDialog(QWidget *parent)
         currentVersion[i] = new QLabel;
         currentVersion[i]->setText(getVersionNumberForItem(static_cast<UpdateItem>(i)).toString());
         currentVersion[i]->setAlignment(Qt::AlignCenter);
-        latestVersion[i] = new QLabel("X.X.X");
+        latestVersion[i] = new QLabel(QStringLiteral("X.X.X"));
         latestVersion[i]->setAlignment(Qt::AlignCenter);
         updateButton[i] = new QPushButton(tr("Update"));
         // save the update item here for later use. See UpdateDialog::updateClicked
@@ -98,7 +98,7 @@ void UpdateDialog::checkForUpdate()
     QNetworkRequest req;
     req.setAttribute(QNetworkRequest::RedirectPolicyAttribute, static_cast<int>(QNetworkRequest::NoLessSafeRedirectPolicy));
 
-    req.setUrl(QUrl("https://www.touhousatsu.rocks/TouhouKillUpdate0.10.json"));
+    req.setUrl(QUrl(QStringLiteral("https://www.touhousatsu.rocks/TouhouKillUpdate0.10.json")));
 
     QNetworkReply *reply = downloadManager->get(req);
     connect(reply, &QNetworkReply::errorOccurred, this, &UpdateDialog::updateError);
@@ -142,8 +142,8 @@ void UpdateDialog::updateInfoReceived()
 
     do {
         QJsonObject ob;
-        ob = fullOb.value("Base").toObject();
-        if (!ob.contains("LatestVersion") || !ob.value("LatestVersion").isString()) {
+        ob = fullOb.value(QStringLiteral("Base")).toObject();
+        if (!ob.contains(QStringLiteral("LatestVersion")) || !ob.value(QStringLiteral("LatestVersion")).isString()) {
             qDebug() << "Base LatestVersion field is incorrect";
             break;
         }
@@ -153,8 +153,8 @@ void UpdateDialog::updateInfoReceived()
 
     do {
         QJsonObject ob;
-        ob = fullOb.value("HeroSkin").toObject();
-        if (!ob.contains("LatestVersion") || !ob.value("LatestVersion").isString()) {
+        ob = fullOb.value(QStringLiteral("HeroSkin")).toObject();
+        if (!ob.contains(QStringLiteral("LatestVersion")) || !ob.value(QStringLiteral("LatestVersion")).isString()) {
             qDebug() << "HeroSkin LatestVersion field is incorrect";
             break;
         }
@@ -164,8 +164,8 @@ void UpdateDialog::updateInfoReceived()
 
     do {
         QJsonObject ob;
-        ob = fullOb.value("BGM").toObject();
-        if (!ob.contains("LatestVersion") || !ob.value("LatestVersion").isString()) {
+        ob = fullOb.value(QStringLiteral("BGM")).toObject();
+        if (!ob.contains(QStringLiteral("LatestVersion")) || !ob.value(QStringLiteral("LatestVersion")).isString()) {
             qDebug() << "BGM LatestVersion field is incorrect";
             break;
         }
@@ -204,30 +204,30 @@ void UpdateDialog::updateInfoReceived()
 
 void UpdateDialog::parseVersionInfo(UpdateDialog::UpdateItem item, const QJsonObject &ob)
 {
-    QVersionNumber ver = QVersionNumber::fromString(ob.value("LatestVersionNumber").toString());
+    QVersionNumber ver = QVersionNumber::fromString(ob.value(QStringLiteral("LatestVersionNumber")).toString());
     latestVersion[item]->setText(ver.toString());
 
     if (item == UiBase) {
-        if (ob.contains("ChangeLog"))
-            m_baseChangeLog = ob.value("ChangeLog").toString();
+        if (ob.contains(QStringLiteral("ChangeLog")))
+            m_baseChangeLog = ob.value(QStringLiteral("ChangeLog")).toString();
         else
             changelogBtn->setVisible(false);
 
-        m_baseVersionNumber = ob.value("LatestVersion").toString();
+        m_baseVersionNumber = ob.value(QStringLiteral("LatestVersion")).toString();
     }
 
     if (ver > getVersionNumberForItem(item)) {
         // there is a new version available now!!
-        QString from = QString("From") + getVersionNumberForItem(item).toString();
+        QString from = QStringLiteral("From") + getVersionNumberForItem(item).toString();
         if (ob.contains(from))
             parsePackageInfo(item, ob.value(from).toObject());
         else {
             QVersionNumber pref = QVersionNumber::commonPrefix(Sanguosha->getQVersionNumber(), ver);
-            from = QString("From") + pref.toString();
+            from = QStringLiteral("From") + pref.toString();
             if (ob.contains(from))
                 parsePackageInfo(item, ob.value(from).toObject());
             else
-                parsePackageInfo(item, ob.value("FullPack").toObject());
+                parsePackageInfo(item, ob.value(QStringLiteral("FullPack")).toObject());
         }
     }
 }
@@ -238,10 +238,10 @@ QVersionNumber UpdateDialog::getVersionNumberForItem(UpdateDialog::UpdateItem it
     case UiBase:
         return Sanguosha->getQVersionNumber();
     case UiSkin: {
-        QVariant v = Sanguosha->getConfigFromConfigFile("withHeroSkin");
+        QVariant v = Sanguosha->getConfigFromConfigFile(QStringLiteral("withHeroSkin"));
 
         QString s = v.toString();
-        if (s == "N/A")
+        if (s == QStringLiteral("N/A"))
             return QVersionNumber();
         else if (s.length() != 0)
             return QVersionNumber::fromString(s);
@@ -249,10 +249,10 @@ QVersionNumber UpdateDialog::getVersionNumberForItem(UpdateDialog::UpdateItem it
         break;
     }
     case UiBgm: {
-        QVariant v = Sanguosha->getConfigFromConfigFile("withBgm");
+        QVariant v = Sanguosha->getConfigFromConfigFile(QStringLiteral("withBgm"));
 
         QString s = v.toString();
-        if (s == "N/A")
+        if (s == QStringLiteral("N/A"))
             return QVersionNumber();
         else if (s.length() != 0)
             return QVersionNumber::fromString(s);
@@ -289,7 +289,7 @@ void UpdateDialog::updateClicked()
 void UpdateDialog::parsePackageInfo(UpdateDialog::UpdateItem item, const QJsonObject &ob)
 {
 #if defined(Q_OS_WIN)
-    QJsonValue value = ob.value("Win");
+    QJsonValue value = ob.value(QStringLiteral("Win"));
 #elif defined(Q_OS_ANDROID)
     QJsonValue value = ob.value("And");
 #elif defined(Q_OS_MACOS)
@@ -301,9 +301,9 @@ void UpdateDialog::parsePackageInfo(UpdateDialog::UpdateItem item, const QJsonOb
         m_updateContents[item].updatePack = value.toString();
     } else if (value.isObject()) {
         QJsonObject updateOb = value.toObject();
-        QString updateScript = updateOb.value("UpdateScript").toString();
-        QString updatePack = updateOb.value("UpdatePack").toString();
-        QJsonObject updateHash = updateOb.value("UpdatePackHash").toObject();
+        QString updateScript = updateOb.value(QStringLiteral("UpdateScript")).toString();
+        QString updatePack = updateOb.value(QStringLiteral("UpdatePack")).toString();
+        QJsonObject updateHash = updateOb.value(QStringLiteral("UpdatePackHash")).toObject();
         if (!updateScript.isEmpty() && !updatePack.isEmpty() && !updateHash.isEmpty()) {
             m_updateContents[item].updateScript = updateScript;
             m_updateContents[item].updatePack = updatePack;
@@ -320,8 +320,8 @@ void UpdateDialog::startUpdate()
 // we should run update script and then exit this main program.
 #if defined(Q_OS_WIN)
     QStringList arg;
-    arg << "UpdateScript.vbs" << QString::number(QCoreApplication::applicationPid());
-    QProcess::startDetached("wscript", arg, QCoreApplication::applicationDirPath());
+    arg << QStringLiteral("UpdateScript.vbs") << QString::number(QCoreApplication::applicationPid());
+    QProcess::startDetached(QStringLiteral("wscript"), arg, QCoreApplication::applicationDirPath());
 #else
 #ifdef Q_OS_ANDROID
     if (m_updateScript == "jni") {
@@ -342,8 +342,8 @@ void UpdateDialog::startUpdate()
 
 bool UpdateDialog::packHashVerify(const QByteArray &arr)
 {
-    static const QMap<QString, QCryptographicHash::Algorithm> algorithms {std::make_pair<QString, QCryptographicHash::Algorithm>("MD5", QCryptographicHash::Md5),
-                                                                          std::make_pair<QString, QCryptographicHash::Algorithm>("SHA1", QCryptographicHash::Sha1)};
+    static const QMap<QString, QCryptographicHash::Algorithm> algorithms {std::make_pair<QString, QCryptographicHash::Algorithm>(QStringLiteral("MD5"), QCryptographicHash::Md5),
+                                                                          std::make_pair<QString, QCryptographicHash::Algorithm>(QStringLiteral("SHA1"), QCryptographicHash::Sha1)};
 
     foreach (const QString &str, algorithms.keys()) {
         if (m_updateHash.contains(str)) {
@@ -405,13 +405,13 @@ void UpdateDialog::downloadProgress(quint64 downloaded, quint64 total)
 void UpdateDialog::finishedScript()
 {
 #if defined(Q_OS_WIN)
-    QString suffix = ".vbs";
+    QString suffix = QStringLiteral(".vbs");
 #else
     QString suffix = ".sh";
 #endif
     QByteArray arr = scriptReply->readAll();
     QFile file;
-    file.setFileName(QString("UpdateScript") + suffix);
+    file.setFileName(QStringLiteral("UpdateScript") + suffix);
     file.open(QIODevice::WriteOnly | QIODevice::Truncate);
     file.write(arr);
     file.close();
@@ -448,7 +448,7 @@ void UpdateDialog::errScript()
 void UpdateDialog::finishedPack()
 {
 #if defined(Q_OS_WIN)
-    QString suffix = ".7z";
+    QString suffix = QStringLiteral(".7z");
 #elif defined(Q_OS_ANDROID)
     QString suffix = ".apk";
 #else
@@ -467,7 +467,7 @@ void UpdateDialog::finishedPack()
     }
 
     QFile file;
-    file.setFileName(QString("UpdatePack") + suffix);
+    file.setFileName(QStringLiteral("UpdatePack") + suffix);
     file.open(QIODevice::WriteOnly | QIODevice::Truncate);
     file.write(arr);
     file.close();

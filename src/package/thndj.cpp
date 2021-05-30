@@ -1876,7 +1876,7 @@ public:
                     break;
 
                 ServerPlayer *t = room->askForPlayerChosen(
-                    use.from, ts, "yaoli", QStringLiteral("@yaoliequip") + (discard ? QStringLiteral("") : QStringLiteral("i")) + ":::" + QString::number(x), true, false);
+                    use.from, ts, "yaoli", QStringLiteral("@yaoliequip") + (discard ? QString() : QStringLiteral("i")) + ":::" + QString::number(x), true, false);
 
                 if (t != nullptr) {
                     int id = room->askForCardChosen(use.from, t, "ej", "yaoliequip", false, Card::MethodDiscard);

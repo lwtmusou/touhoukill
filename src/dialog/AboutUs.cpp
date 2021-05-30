@@ -27,16 +27,16 @@ AboutUsDialog::AboutUsDialog(QWidget *parent)
 
     setLayout(layout);
 
-    QStringList developers = Sanguosha->getConfigFromConfigFile("developers").toStringList();
-    developers.prepend("hegemony");
-    developers.prepend("TouhouSatsu");
+    QStringList developers = Sanguosha->getConfigFromConfigFile(QStringLiteral("developers")).toStringList();
+    developers.prepend(QStringLiteral("hegemony"));
+    developers.prepend(QStringLiteral("TouhouSatsu"));
 
     foreach (QString name, developers) {
         QListWidgetItem *item = new QListWidgetItem(name, list);
         item->setData(Qt::UserRole, name);
     }
 
-    connect(list, SIGNAL(currentRowChanged(int)), this, SLOT(loadContent(int)));
+    connect(list, &QListWidget::currentRowChanged, this, &AboutUsDialog::loadContent);
 
     if (!developers.isEmpty())
         loadContent(0);
@@ -45,7 +45,7 @@ AboutUsDialog::AboutUsDialog(QWidget *parent)
 void AboutUsDialog::loadContent(int row)
 {
     QString name = list->item(row)->data(Qt::UserRole).toString();
-    QString filename = QString("developers/%1.htm").arg(name);
+    QString filename = QStringLiteral("developers/%1.htm").arg(name);
     QFile file(filename);
     if (file.open(QIODevice::ReadOnly)) {
         QTextStream stream(&file);

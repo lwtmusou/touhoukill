@@ -15,7 +15,7 @@ class OptionButton : public QToolButton
     Q_OBJECT
 
 public:
-    explicit OptionButton(const QString &icon_path, const QString &caption = "", QWidget *parent = nullptr);
+    explicit OptionButton(const QString &icon_path, const QString &caption = QString(), QWidget *parent = nullptr);
 
 protected:
     void mouseDoubleClickEvent(QMouseEvent *) override;

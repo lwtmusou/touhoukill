@@ -467,5 +467,5 @@ else()
     target_link_libraries(QSanguosha dl)
 endif()
 
-target_compile_definitions(QSanguosha PUBLIC -DOV_EXCLUDE_STATIC_CALLBACKS)
+target_compile_definitions(QSanguosha PUBLIC -DOV_EXCLUDE_STATIC_CALLBACKS PUBLIC -DQT_NO_CAST_FROM_ASCII)
 target_precompile_headers(QSanguosha PUBLIC src/pch.h)

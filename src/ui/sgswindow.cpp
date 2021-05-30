@@ -8,7 +8,7 @@
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
 
-Window::Window(const QString &title, const QSizeF &size, const QString &path)
+Window::Window(const QString &title, QSizeF size, const QString &path)
     : size(size)
     , keep_when_disappear(false)
 {
@@ -18,7 +18,7 @@ Window::Window(const QString &title, const QSizeF &size, const QString &path)
     if (!path.isEmpty())
         bg = new QPixmap(path);
     else
-        bg = size.width() > size.height() ? new QPixmap("image/system/tip.png") : new QPixmap("image/system/about.png");
+        bg = size.width() > size.height() ? new QPixmap(QStringLiteral("image/system/tip.png")) : new QPixmap(QStringLiteral("image/system/about.png"));
     QImage bgimg = bg->toImage();
     outimg = new QImage(size.toSize(), QImage::Format_ARGB32);
 
@@ -89,7 +89,7 @@ Button *Window::addCloseButton(const QString &label)
     qreal y = size.height() - ok_button->boundingRect().height() - 25;
     ok_button->setPos(x, y);
 
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(disappear()));
+    connect(ok_button, &Button::clicked, this, &Window::disappear);
     return ok_button;
 }
 
@@ -151,18 +151,18 @@ void Window::disappear()
     group->start(QAbstractAnimation::DeleteWhenStopped);
 
     if (!keep_when_disappear)
-        connect(group, SIGNAL(finished()), this, SLOT(deleteLater()));
+        connect(group, &QAbstractAnimation::finished, this, &QObject::deleteLater);
 }
 
 void Window::setTitle(const QString &title)
 {
     QString style;
-    style.append("font-size:18pt; ");
-    style.append("color:#77c379; ");
-    style.append(QString("font-family: %1").arg(Config.SmallFont.family()));
+    style.append(QStringLiteral("font-size:18pt; "));
+    style.append(QStringLiteral("color:#77c379; "));
+    style.append(QStringLiteral("font-family: %1").arg(Config.SmallFont.family()));
 
     QString content;
-    content.append(QString("<h style=\"%1\">%2</h>").arg(style).arg(title));
+    content.append(QStringLiteral("<h style=\"%1\">%2</h>").arg(style).arg(title));
 
     titleItem->setHtml(content);
     titleItem->setPos(size.width() / 2 - titleItem->boundingRect().width() / 2, 10);

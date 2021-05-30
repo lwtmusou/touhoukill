@@ -32,7 +32,7 @@ public:
     QSGS_SOCKET void setSocket(ClientSocket *socket);
 
     QSGS_SOCKET void invoke(const QSanProtocol::AbstractPacket *packet);
-    QSGS_SOCKET void invoke(const char *method, const QString &arg = ".");
+    QSGS_SOCKET void invoke(const char *method, const QString &arg = QStringLiteral("."));
     QSGS_SOCKET QString reportHeader() const;
     QSGS_SOCKET void unicast(const QString &message);
 
@@ -49,7 +49,7 @@ public:
     QSGS_LOGIC void throwAllCards();
     QSGS_LOGIC void bury();
     QSGS_LOGIC void throwAllMarks(bool visible_only = true);
-    QSGS_LOGIC void clearOnePrivatePile(QString pile_name);
+    QSGS_LOGIC void clearOnePrivatePile(const QString &pile_name);
     QSGS_LOGIC void clearPrivatePiles();
     QSGS_LOGIC void drawCards(int n, const QString &reason = QString());
     QSGS_LOGIC bool askForSkillInvoke(const QString &skill_name, const QVariant &data = QVariant(), const QString &prompt = QString());
@@ -105,10 +105,10 @@ public:
     QSGS_SOCKET void introduceTo(ServerPlayer *player);
     QSGS_LOGIC void marshal(ServerPlayer *player) const;
 
-    QSGS_LOGIC void addToPile(const QString &pile_name, const Card *card, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
-    QSGS_LOGIC void addToPile(const QString &pile_name, int card_id, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
-    QSGS_LOGIC void addToPile(const QString &pile_name, const IDSet &card_ids, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
-    QSGS_LOGIC void addToPile(const QString &pile_name, const IDSet &card_ids, bool open, CardMoveReason reason, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
+    QSGS_LOGIC void addToPile(const QString &pile_name, const Card *card, bool open = true, const QList<ServerPlayer *> &open_players = QList<ServerPlayer *>());
+    QSGS_LOGIC void addToPile(const QString &pile_name, int card_id, bool open = true, const QList<ServerPlayer *> &open_players = QList<ServerPlayer *>());
+    QSGS_LOGIC void addToPile(const QString &pile_name, const IDSet &card_ids, bool open = true, const QList<ServerPlayer *> &open_players = QList<ServerPlayer *>());
+    QSGS_LOGIC void addToPile(const QString &pile_name, const IDSet &card_ids, bool open, const CardMoveReason &reason, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
     QSGS_LOGIC void addToShownHandCards(const IDSet &card_ids);
     QSGS_LOGIC void removeShownHandCards(const IDSet &card_ids, bool sendLog = false, bool moveFromHand = false);
     QSGS_LOGIC void addBrokenEquips(const IDSet &card_ids);
@@ -195,7 +195,7 @@ public:
 
     QSGS_STATE_GAME bool inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const;
     QSGS_STATE_GAME bool inFormationRalation(ServerPlayer *teammate) const;
-    QSGS_LOGIC void summonFriends(const QString type);
+    QSGS_LOGIC void summonFriends(const QString &type);
 
     QSGS_STATE_ROOM RoomObject *getRoomObject() const override;
 

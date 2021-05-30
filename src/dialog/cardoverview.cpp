@@ -35,7 +35,7 @@ CardOverview::CardOverview(QWidget *parent)
     ui->tableWidget->setSortingEnabled(false);
 
     if (ServerInfo.EnableCheat)
-        connect(ui->getCardButton, SIGNAL(clicked()), this, SLOT(askCard()));
+        connect(ui->getCardButton, &QAbstractButton::clicked, this, &CardOverview::askCard);
     else
         ui->getCardButton->hide();
 
@@ -102,7 +102,7 @@ void CardOverview::loadFromList(const IDSet &list)
 void CardOverview::addCard(int i, const CardDescriptor &card, int id)
 {
     QString name = Sanguosha->translate(card.face()->name());
-    QIcon suit_icon = QIcon(QString("image/system/suit/%1.png").arg(Card::SuitToString(card.suit)));
+    QIcon suit_icon = QIcon(QStringLiteral("image/system/suit/%1.png").arg(Card::SuitToString(card.suit)));
     QString suit_str = Sanguosha->translate(Card::SuitToString(card.suit));
     QString point = Card::NumberToString(card.number);
     QString type = Sanguosha->translate(card.face()->name());
@@ -119,7 +119,7 @@ void CardOverview::addCard(int i, const CardDescriptor &card, int id)
     ui->tableWidget->setItem(i, 4, new QTableWidgetItem(subtype));
 
     QTableWidgetItem *package_item = new QTableWidgetItem(package);
-    if (Config.value("LuaPackages", QString()).toString().split("+").contains(card.package)) {
+    if (Config.value(QStringLiteral("LuaPackages"), QString()).toString().split(QStringLiteral("+")).contains(card.package)) {
         package_item->setBackground(QBrush(qRgb(0x66, 0xCC, 0xFF)));
         package_item->setToolTip(tr("<font color=#FFFF33>This is an Lua extension</font>"));
     }
@@ -137,7 +137,7 @@ void CardOverview::on_tableWidget_itemSelectionChanged()
     int row = ui->tableWidget->currentRow();
     int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
     const CardDescriptor &card = Sanguosha->getEngineCard(card_id);
-    QString pixmap_path = QString("image/big-card/%1.png").arg(card.face()->name());
+    QString pixmap_path = QStringLiteral("image/big-card/%1.png").arg(card.face()->name());
     ui->cardLabel->setPixmap(pixmap_path);
 
     ui->cardDescriptionBox->setText(card.face()->description());
@@ -203,11 +203,11 @@ void CardOverview::on_playAudioEffectButton_clicked()
         const CardDescriptor &card = Sanguosha->getEngineCard(card_id);
         if (card.face()->name() == CardFace::TypeEquip) {
             QString effectName = card.face()->effectName();
-            if (effectName == "vscrossbow")
-                effectName = "crossbow";
-            QString fileName = G_ROOM_SKIN.getPlayerAudioEffectPath(effectName, QString("equip"), -1);
+            if (effectName == QStringLiteral("vscrossbow"))
+                effectName = QStringLiteral("crossbow");
+            QString fileName = G_ROOM_SKIN.getPlayerAudioEffectPath(effectName, QStringLiteral("equip"), -1);
             if (!QFile::exists(fileName))
-                fileName = G_ROOM_SKIN.getPlayerAudioEffectPath(card.face()->commonEffectName(), QString("common"), -1);
+                fileName = G_ROOM_SKIN.getPlayerAudioEffectPath(card.face()->commonEffectName(), QStringLiteral("common"), -1);
             Sanguosha->playAudioEffect(fileName);
         }
     }

@@ -203,7 +203,7 @@ enum Game3v3Camp
 };
 
 //static consts
-extern const char *S_PLAYER_SELF_REFERENCE_ID;
+extern const char *const S_PLAYER_SELF_REFERENCE_ID;
 
 extern const int S_ALL_ALIVE_PLAYERS;
 

@@ -1,3 +1,4 @@
+
 #include "bubblechatbox.h"
 #include "settings.h"
 
@@ -18,6 +19,8 @@ const int ANIMATION_DURATION = 500;
 
 class BubbleChatLabel : public QGraphicsTextItem
 {
+    Q_OBJECT
+
 public:
     explicit BubbleChatLabel(QGraphicsItem *parent = nullptr)
         : QGraphicsTextItem(parent)
@@ -53,9 +56,9 @@ private:
     QTextDocument *m_doc;
 };
 
-BubbleChatBox::BubbleChatBox(const QRect &area, QGraphicsItem *parent /* = 0*/)
+BubbleChatBox::BubbleChatBox(QRect area, QGraphicsItem *parent /* = 0*/)
     : QGraphicsObject(parent)
-    , m_backgroundPixmap("image/system/bubble.png")
+    , m_backgroundPixmap(QStringLiteral("image/system/bubble.png"))
     , m_rect(m_backgroundPixmap.rect())
     , m_area(area)
     , m_chatLabel(new BubbleChatLabel(this))
@@ -67,7 +70,7 @@ BubbleChatBox::BubbleChatBox(const QRect &area, QGraphicsItem *parent /* = 0*/)
     setFlag(ItemClipsChildrenToShape);
     setOpacity(0);
 
-    connect(&m_timer, SIGNAL(timeout()), this, SLOT(clear()));
+    connect(&m_timer, &QTimer::timeout, this, &BubbleChatBox::clear);
 
     m_appearAndDisappear->setStartValue(0);
     m_appearAndDisappear->setEndValue(1);
@@ -108,7 +111,7 @@ void BubbleChatBox::setText(const QString &text)
     }
 
     QFontMetrics fm(m_chatLabel->font());
-    int imgCount = text.count("</img>");
+    int imgCount = text.count(QStringLiteral("</img>"));
     int width = qAbs(fm.horizontalAdvance(plainText)) + imgCount * CHAT_FACE_WIDTH;
     int lineCount = 1;
     if (width > PIXELS_PER_LINE) {
@@ -156,7 +159,7 @@ void BubbleChatBox::setText(const QString &text)
     m_timer.start(Config.BubbleChatBoxDelaySeconds * 1000);
 }
 
-void BubbleChatBox::setArea(const QRect &newArea)
+void BubbleChatBox::setArea(QRect newArea)
 {
     m_area = newArea;
     updatePos();
@@ -185,3 +188,5 @@ void BubbleChatBox::updatePos()
     int yOffset = (m_area.height() - m_rect.height()) / 2;
     setPos(QPointF(m_area.left() + xOffset, m_area.top() + yOffset));
 }
+
+#include "bubblechatbox.moc"

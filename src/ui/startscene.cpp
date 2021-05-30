@@ -10,7 +10,7 @@
 StartScene::StartScene()
 {
     // game logo
-    logo = new QSanSelectableItem("image/logo/logo.png", true);
+    logo = new QSanSelectableItem(QStringLiteral("image/logo/logo.png"), true);
     logo->moveBy(0, -Config.Rect.height() / 4);
     addItem(logo);
 
@@ -28,7 +28,7 @@ void StartScene::addButton(QAction *action)
     Button *button = new Button(action->text());
     button->setMute(false);
 
-    connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
+    connect(button, &Button::clicked, action, &QAction::trigger);
     addItem(button);
 
     QRectF rect = button->boundingRect();
@@ -80,14 +80,14 @@ void StartScene::switchToServer(Server *server)
 #ifdef Q_OS_LINUX
     server_log->setFont(QFont("DroidSansFallback", 12));
 #else
-    server_log->setFont(QFont("Verdana", 12));
+    server_log->setFont(QFont(QStringLiteral("Verdana"), 12));
 #endif
     server_log->setTextColor(Config.TextEditColor);
     setServerLogBackground();
     addWidget(server_log);
 
     printServerInfo();
-    connect(server, SIGNAL(server_message(QString)), server_log, SLOT(append(QString)));
+    connect(server, &Server::server_message, server_log, &QTextEdit::append);
     update();
 }
 
@@ -104,13 +104,13 @@ void StartScene::printServerInfo()
     items.sort();
 
     foreach (QString item, items) {
-        if (item.startsWith("192.168.") || item.startsWith("10."))
+        if (item.startsWith(QStringLiteral("192.168.")) || item.startsWith(QStringLiteral("10.")))
             server_log->append(tr("Your LAN address: %1, this address is available only for hosts that in the same LAN").arg(item));
-        else if (item == "127.0.0.1")
+        else if (item == QStringLiteral("127.0.0.1"))
             server_log->append(tr("Your loopback address %1, this address is available only for your host").arg(item));
-        else if (item.startsWith("5."))
+        else if (item.startsWith(QStringLiteral("5.")))
             server_log->append(tr("Your Hamachi address: %1, the address is available for users that joined the same Hamachi network").arg(item));
-        else if (!item.startsWith("169.254."))
+        else if (!item.startsWith(QStringLiteral("169.254.")))
             server_log->append(tr("Your other address: %1, if this is a public IP, that will be available for all cases").arg(item));
     }
 

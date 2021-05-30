@@ -32,14 +32,14 @@ public:
     }
     virtual QList<CardItem *> removeCardItems(const QList<int> &card_ids, Player::Place place) = 0;
     virtual void addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo);
-    virtual QList<CardItem *> cloneCardItems(QList<int> card_ids);
+    virtual QList<CardItem *> cloneCardItems(const QList<int> &card_ids);
 
 protected:
     // @return Whether the card items should be destroyed after animation
     virtual bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo) = 0;
     QList<CardItem *> _createCards(QList<int> card_ids);
     CardItem *_createCard(int card_id);
-    void _disperseCards(QList<CardItem *> &cards, QRectF fillRegion, Qt::Alignment align, bool useHomePos, bool keepOrder);
+    void _disperseCards(QList<CardItem *> &cards, const QRectF &fillRegion, Qt::Alignment align, bool useHomePos, bool keepOrder);
     void _playMoveCardsAnimation(QList<CardItem *> &cards, bool destroyCards);
     int _m_highestZ;
 
@@ -67,7 +67,7 @@ class PlayerCardContainer : public GenericCardContainer
 
 public:
     PlayerCardContainer();
-    virtual void showProgressBar(QSanProtocol::Countdown countdown);
+    virtual void showProgressBar(const QSanProtocol::Countdown &countdown);
     virtual void hideProgressBar();
     void hideAvatars();
     //const ClientPlayer *getPlayer() const;
@@ -104,12 +104,12 @@ public:
     virtual void killPlayer();
     virtual void revivePlayer();
     virtual QGraphicsItem *getMouseClickReceiver() = 0;
-    virtual void startHuaShen(QString generalName, QString skillName, QString general2Name, QString skill2Name);
+    virtual void startHuaShen(const QString &generalName, const QString &skillName, const QString &general2Name, const QString &skill2Name);
     virtual void stopHuaShen();
     virtual void updateAvatarTooltip();
     virtual void setRoleShown(bool shown = false);
 
-    static void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QPixmap &pixmap, QGraphicsItem *parent);
+    static void _paintPixmap(QGraphicsPixmapItem *&item, QRect rect, const QPixmap &pixmap, QGraphicsItem *parent);
 
     inline void hookMouseEvents();
 
@@ -194,9 +194,9 @@ protected:
     void _updateProgressBar(); // a dirty function used by the class itself only.
     void _updateDeathIcon();
     void _updateEquips();
-    void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QString &key);
-    void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QString &key, QGraphicsItem *parent);
-    void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QPixmap &pixmap);
+    void _paintPixmap(QGraphicsPixmapItem *&item, QRect rect, const QString &key);
+    void _paintPixmap(QGraphicsPixmapItem *&item, QRect rect, const QString &key, QGraphicsItem *parent);
+    void _paintPixmap(QGraphicsPixmapItem *&item, QRect rect, const QPixmap &pixmap);
     //public
     //void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QPixmap &pixmap, QGraphicsItem *parent);
     void _clearPixmap(QGraphicsPixmapItem *item);

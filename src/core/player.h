@@ -268,8 +268,8 @@ public:
     bool isNude() const;
     bool isAllNude() const;
 
-    bool canDiscard(const Player *to, const QString &flags, const QString &reason = "") const;
-    bool canDiscard(const Player *to, int card_id, const QString &reason = "") const;
+    bool canDiscard(const Player *to, const QString &flags, const QString &reason = QString()) const;
+    bool canDiscard(const Player *to, int card_id, const QString &reason = QString()) const;
 
     void addMark(const QString &mark, int add_num = 1);
     void removeMark(const QString &mark, int remove_num = 1);
@@ -350,10 +350,10 @@ public:
     bool inHeadSkills(const QString &skill_name) const;
     bool inDeputySkills(const QString &skill_name) const;
     void setSkillPreshowed(const QString &skill, bool preshowed = true); //hegemony
-    void setSkillsPreshowed(const QString &flag = "hd", bool preshowed = true);
+    void setSkillsPreshowed(const QString &flag = QStringLiteral("hd"), bool preshowed = true);
     bool hasPreshowedSkill(const QString &name) const;
     bool hasPreshowedSkill(const Skill *skill) const;
-    bool isHidden(const bool &head_general) const;
+    bool isHidden(bool head_general) const;
 
     bool hasShownGeneral() const;
     void setGeneralShowed(bool showed);

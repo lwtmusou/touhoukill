@@ -226,14 +226,14 @@ bool QSanButton::isDown()
 QSanSkillButton::QSanSkillButton(QGraphicsItem *parent)
     : QSanButton(parent)
 {
-    _m_groupName = QSanRoomSkin::S_SKIN_KEY_BUTTON_SKILL;
+    _m_groupName = QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_BUTTON_SKILL);
     _m_emitActivateSignal = false;
     _m_emitDeactivateSignal = false;
     _m_canEnable = true;
     _m_canDisable = true;
     _m_skill = nullptr;
     _m_viewAsSkill = nullptr;
-    connect(this, SIGNAL(clicked()), this, SLOT(onMouseClick()));
+    connect(this, &QSanButton::clicked, this, &QSanSkillButton::onMouseClick);
     _m_skill = nullptr;
 }
 
@@ -352,7 +352,7 @@ void QSanSkillButton::setState(ButtonState state, bool ignore_change)
 void QSanSkillButton::setEnabled(bool enabled)
 {
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
-        if (!enabled && _m_skill->canPreshow() && (!Self->hasShownSkill(_m_skill) || Self->hasFlag("hiding"))) {
+        if (!enabled && _m_skill->canPreshow() && (!Self->hasShownSkill(_m_skill) || Self->hasFlag(QStringLiteral("hiding")))) {
             setState(Self->hasPreshowedSkill(_m_skill) ? S_STATE_DISABLED : S_STATE_CANPRESHOW);
         } else {
             QSanButton::setEnabled(enabled);
@@ -392,12 +392,12 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
 {
     painter->drawPixmap(0, 0, _m_bgPixmap[(int)_m_state]);
     if (_m_skillType == S_SKILL_ATTACHEDLORD) {
-        int nline = _m_skill->objectName().indexOf("-");
+        int nline = _m_skill->objectName().indexOf(QStringLiteral("-"));
         if (nline == -1)
-            nline = _m_skill->objectName().indexOf("_");
-        QString engskillname = _m_skill->objectName().split("_").first();
-        QString HegSkillname = engskillname + "_hegemony";
-        QString generalName = "";
+            nline = _m_skill->objectName().indexOf(QStringLiteral("_"));
+        QString engskillname = _m_skill->objectName().split(QStringLiteral("_")).first();
+        QString HegSkillname = engskillname + QStringLiteral("_hegemony");
+        QString generalName;
 
         foreach (const Player *p, Self->getSiblings()) {
             const General *general = p->getGeneral();
@@ -413,7 +413,7 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
                 }
             }
         }
-        if (generalName == "") {
+        if (generalName.isNull()) {
             const General *general = Self->getGeneral();
             if (general && (general->hasSkill(engskillname) || general->hasSkill(HegSkillname)))
                 generalName = general->objectName();
@@ -423,14 +423,13 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
                     generalName = general2->objectName();
                 }
             }
-        }
-        if (generalName != "") {
-            if (generalName.endsWith("_hegemony"))
-                generalName = generalName.replace("_hegemony", "");
+        } else {
+            if (generalName.endsWith(QStringLiteral("_hegemony")))
+                generalName = generalName.replace(QStringLiteral("_hegemony"), QString());
 
-            QString path = G_ROOM_SKIN.getButtonPixmapPath(G_ROOM_SKIN.S_SKIN_KEY_BUTTON_SKILL, getSkillTypeString(_m_skillType), _m_state);
-            int n = path.lastIndexOf("/");
-            path = path.left(n + 1) + generalName + ".png";
+            QString path = G_ROOM_SKIN.getButtonPixmapPath(QString::fromUtf8(G_ROOM_SKIN.S_SKIN_KEY_BUTTON_SKILL), getSkillTypeString(_m_skillType), _m_state);
+            int n = path.lastIndexOf(QStringLiteral("/"));
+            path = path.left(n + 1) + generalName + QStringLiteral(".png");
             QPixmap pixmap = G_ROOM_SKIN.getPixmapFromFileName(path);
             if (!pixmap.isNull()) {
                 int h = pixmap.height() - _m_bgPixmap[(int)_m_state].height();
@@ -553,7 +552,7 @@ void QSanInvokeSkillDock::update()
             int rowTop = (RoomSceneInstance->m_skillButtonSank) ? (-rowH - 2 * (rows - i - 1)) : ((-rows + i) * rowH);
             int btnWidth = (_m_width - 20) / btnNum[i];
             if (ServerInfo.Enable2ndGeneral)
-                btnWidth = (this->objectName() == "left") ? (_m_width + 30) / btnNum[i] : (_m_width - 20) / btnNum[i];
+                btnWidth = (this->objectName() == QStringLiteral("left")) ? (_m_width + 30) / btnNum[i] : (_m_width - 20) / btnNum[i];
             for (int j = 0; j < btnNum[i]; j++) {
                 QSanInvokeSkillButton *button = regular_buttons[m++];
                 button->setButtonWidth((QSanInvokeSkillButton::SkillButtonWidth)(btnNum[i] - 1));

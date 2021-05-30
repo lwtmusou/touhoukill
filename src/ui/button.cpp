@@ -19,7 +19,7 @@ Button::Button(const QString &label, qreal scale)
     init();
 }
 
-Button::Button(const QString &label, const QSizeF &size)
+Button::Button(const QString &label, QSizeF size)
     : label(label)
     , size(size)
     , mute(true)
@@ -54,7 +54,7 @@ void Button::init()
 
     title_item->setGraphicsEffect(de);
 
-    QImage bgimg("image/system/button/button.png");
+    QImage bgimg(QStringLiteral("image/system/button/button.png"));
     outimg = new QImage(size.toSize(), QImage::Format_ARGB32);
 
     qreal pad = 10;
@@ -120,7 +120,7 @@ void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *)
 {
     setFocus(Qt::MouseFocusReason);
     if (!mute)
-        Sanguosha->playSystemAudioEffect("button-hover");
+        Sanguosha->playSystemAudioEffect(QStringLiteral("button-hover"));
     if (!timer_id)
         timer_id = QObject::startTimer(40);
 }
@@ -133,7 +133,7 @@ void Button::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void Button::mouseReleaseEvent(QGraphicsSceneMouseEvent *)
 {
     if (!mute)
-        Sanguosha->playSystemAudioEffect("button-down");
+        Sanguosha->playSystemAudioEffect(QStringLiteral("button-down"));
     emit clicked();
 }
 

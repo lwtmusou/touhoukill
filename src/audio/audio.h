@@ -21,7 +21,7 @@ bool isBackgroundMusicPlaying();
 extern float volume;
 extern float bgm_volume;
 
-QStringList getBgmFileNames(const QString fileNames, bool isGeneralName = false);
+QStringList getBgmFileNames(const QString &fileNames, bool isGeneralName = false);
 
 }
 

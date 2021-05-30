@@ -170,18 +170,18 @@ bool JsonUtils::tryParse(const QVariant &arg, Qt::Alignment &align)
     if (!JsonUtils::isString(arg))
         return false;
     QString alignStr = arg.toString().toLower();
-    if (alignStr.contains("left"))
+    if (alignStr.contains(QStringLiteral("left")))
         align = Qt::AlignLeft;
-    else if (alignStr.contains("right"))
+    else if (alignStr.contains(QStringLiteral("right")))
         align = Qt::AlignRight;
-    else if (alignStr.contains("center"))
+    else if (alignStr.contains(QStringLiteral("center")))
         align = Qt::AlignHCenter;
 
-    if (alignStr.contains("top"))
+    if (alignStr.contains(QStringLiteral("top")))
         align |= Qt::AlignTop;
-    else if (alignStr.contains("bottom"))
+    else if (alignStr.contains(QStringLiteral("bottom")))
         align |= Qt::AlignBottom;
-    else if (alignStr.contains("center"))
+    else if (alignStr.contains(QStringLiteral("center")))
         align |= Qt::AlignVCenter;
 
     return true;

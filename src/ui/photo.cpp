@@ -67,7 +67,7 @@ void Photo::refresh()
     if (!m_player)
         return;
     QString state_str = m_player->getState();
-    if (!state_str.isEmpty() && state_str != "online") {
+    if (!state_str.isEmpty() && state_str != QStringLiteral("online")) {
         QRect rect = G_PHOTO_LAYOUT.m_onlineStatusArea;
         QImage image(rect.size(), QImage::Format_ARGB32);
         image.fill(Qt::transparent);
@@ -79,7 +79,7 @@ void Photo::refresh()
         _layBetween(_m_onlineStatusItem, _m_mainFrame, _m_chainIcon);
         if (!_m_onlineStatusItem->isVisible())
             _m_onlineStatusItem->show();
-    } else if (_m_onlineStatusItem != nullptr && state_str == "online")
+    } else if (_m_onlineStatusItem != nullptr && state_str == QStringLiteral("online"))
         _m_onlineStatusItem->hide();
 }
 
@@ -92,7 +92,7 @@ void Photo::repaintAll()
 {
     resetTransform();
     setTransform(QTransform::fromTranslate(-G_PHOTO_LAYOUT.m_normalWidth / 2, -G_PHOTO_LAYOUT.m_normalHeight / 2), true);
-    _paintPixmap(_m_mainFrame, G_PHOTO_LAYOUT.m_mainFrameArea, QSanRoomSkin::S_SKIN_KEY_MAINFRAME);
+    _paintPixmap(_m_mainFrame, G_PHOTO_LAYOUT.m_mainFrameArea, QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_MAINFRAME));
     setFrame(_m_frameType);
     hideSkillName(); // @todo: currently we don't adjust skillName's position for simplicity,
     // consider repainting it instead of hiding it in the future.
@@ -117,12 +117,12 @@ void Photo::_adjustComponentZValues(bool killed)
 
 void Photo::setEmotion(const QString &emotion, bool permanent)
 {
-    if (emotion == ".") {
+    if (emotion == QStringLiteral(".")) {
         hideEmotion();
         return;
     }
 
-    QString path = QString("image/system/emotion/%1.png").arg(emotion);
+    QString path = QStringLiteral("image/system/emotion/%1.png").arg(emotion);
     if (QFile::exists(path)) {
         QPixmap pixmap = QPixmap(path);
         emotion_item->setPixmap(pixmap);
@@ -176,7 +176,7 @@ void Photo::updateDuanchang()
 {
     if (!m_player)
         return;
-    _m_duanchangMask->setVisible(m_player->getMark("@duanchang") > 0);
+    _m_duanchangMask->setVisible(m_player->getMark(QStringLiteral("@duanchang")) > 0);
 }
 
 const ClientPlayer *Photo::getPlayer() const
@@ -245,7 +245,7 @@ void Photo::setFrame(FrameType type)
                 _m_focusFrame->hide();
         }
     } else {
-        _paintPixmap(_m_focusFrame, G_PHOTO_LAYOUT.m_focusFrameArea, _getPixmap(QSanRoomSkin::S_SKIN_KEY_FOCUS_FRAME, QString::number(type)), _m_groupMain);
+        _paintPixmap(_m_focusFrame, G_PHOTO_LAYOUT.m_focusFrameArea, _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_FOCUS_FRAME), QString::number(type)), _m_groupMain);
         _layBetween(_m_focusFrame, _m_avatarArea, _m_mainFrame);
         _m_focusFrame->show();
     }
@@ -346,7 +346,7 @@ void Photo::_initializeRemovedEffect()
 void Photo::_createBattleArrayAnimations()
 {
     QStringList kingdoms = Sanguosha->getKingdoms();
-    kingdoms.removeAll("god");
+    kingdoms.removeAll(QStringLiteral("god"));
     foreach (const QString &kingdom, kingdoms) {
         _m_frameBorders[kingdom] = new PixmapAnimation();
         _m_frameBorders[kingdom]->setZValue(30000);
@@ -355,8 +355,8 @@ void Photo::_createBattleArrayAnimations()
         _m_frameBorders[kingdom]->setParentItem(_getFocusFrameParent());
         _m_roleBorders[kingdom]->setParentItem(_getRoleComboBoxParent());
         _m_frameBorders[kingdom]->setSize(QSize(G_PHOTO_LAYOUT.m_normalWidth * 1.2, G_PHOTO_LAYOUT.m_normalHeight * 1.2));
-        _m_frameBorders[kingdom]->setPath(QString("image/kingdom/battlearray/small/%1/").arg(kingdom));
-        _m_roleBorders[kingdom]->setPath(QString("image/kingdom/battlearray/roles/%1/").arg(kingdom));
+        _m_frameBorders[kingdom]->setPath(QStringLiteral("image/kingdom/battlearray/small/%1/").arg(kingdom));
+        _m_roleBorders[kingdom]->setPath(QStringLiteral("image/kingdom/battlearray/roles/%1/").arg(kingdom));
         _m_frameBorders[kingdom]->setPlayTime(2000);
         _m_roleBorders[kingdom]->setPlayTime(2000);
         if (!_m_frameBorders[kingdom]->valid()) {
@@ -369,7 +369,7 @@ void Photo::_createBattleArrayAnimations()
         _m_frameBorders[kingdom]->setPos(-G_PHOTO_LAYOUT.m_normalWidth * 0.1, -G_PHOTO_LAYOUT.m_normalHeight * 0.1);
         double scale = G_ROOM_LAYOUT.scale;
         QPixmap pix;
-        pix.load("image/system/roles/careerist.png");
+        pix.load(QStringLiteral("image/system/roles/careerist.png"));
         int w = pix.width() * scale;
         int h = pix.height() * scale;
         _m_roleBorders[kingdom]->setPos(G_PHOTO_LAYOUT.m_roleComboBoxPos

@@ -7,7 +7,7 @@
 #include <QPropertyAnimation>
 #include <QSequentialAnimationGroup>
 
-IndicatorItem::IndicatorItem(const QPointF &start, const QPointF &real_finish, Player *player)
+IndicatorItem::IndicatorItem(QPointF start, QPointF real_finish, Player *player)
     : start(start)
     , finish(start)
     , real_finish(real_finish)
@@ -35,7 +35,7 @@ void IndicatorItem::doAnimation()
 
     group->start(QAbstractAnimation::DeleteWhenStopped);
 
-    connect(group, SIGNAL(finished()), this, SLOT(deleteLater()));
+    connect(group, &QAbstractAnimation::finished, this, &QObject::deleteLater);
 }
 
 QPointF IndicatorItem::getFinish() const
@@ -43,7 +43,7 @@ QPointF IndicatorItem::getFinish() const
     return finish;
 }
 
-void IndicatorItem::setFinish(const QPointF &finish)
+void IndicatorItem::setFinish(QPointF finish)
 {
     this->finish = finish;
     update();

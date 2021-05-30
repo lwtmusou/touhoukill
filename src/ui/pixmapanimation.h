@@ -37,7 +37,7 @@ public:
     void timerEvent(QTimerEvent *e) override;
 
     void setPath(const QString &path, bool playback = false);
-    void setSize(const QSize &size);
+    void setSize(QSize size);
     void setHideonStop(bool hide);
     void setPlayTime(int msecs);
     bool valid();

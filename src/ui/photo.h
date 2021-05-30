@@ -96,7 +96,7 @@ protected:
     }
     inline QString getResourceKeyName() override
     {
-        return QSanRoomSkin::S_SKIN_KEY_PHOTO;
+        return QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_PHOTO);
     }
     inline QAbstractAnimation *_getPlayerRemovedEffect() override
     {

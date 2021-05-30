@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
         new QCoreApplication(argc, argv);
     } else {
         new QApplication(argc, argv);
-        QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath() + "/plugins");
+        QCoreApplication::addLibraryPath(QCoreApplication::applicationDirPath() + QStringLiteral("/plugins"));
 
 #ifndef Q_OS_WIN32
         if (QStyleFactory::keys().contains("Fusion", Qt::CaseInsensitive))
@@ -41,8 +41,8 @@ int main(int argc, char *argv[])
 #endif
 
     QTranslator qt_translator, translator;
-    qt_translator.load("qt_zh_CN.qm");
-    translator.load("sanguosha.qm");
+    qt_translator.load(QStringLiteral("qt_zh_CN.qm"));
+    translator.load(QStringLiteral("sanguosha.qm"));
 
     QCoreApplication::instance()->installTranslator(&qt_translator);
     QCoreApplication::instance()->installTranslator(&translator);
@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     Sanguosha = new Engine;
     Config.init();
 
-    if (QCoreApplication::instance()->arguments().contains("-server")) {
+    if (QCoreApplication::instance()->arguments().contains(QStringLiteral("-server"))) {
         Server *server = new Server(QCoreApplication::instance());
         printf("Server is starting on port %u\n", Config.ServerPort);
 
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
         return r;
     }
 
-    QFile file("sanguosha.qss");
+    QFile file(QStringLiteral("sanguosha.qss"));
     if (file.open(QIODevice::ReadOnly)) {
         QTextStream stream(&file);
         qApp->setStyleSheet(stream.readAll());
@@ -82,10 +82,10 @@ int main(int argc, char *argv[])
     main_window->show();
 
     foreach (QString arg, QCoreApplication::instance()->arguments()) {
-        if (arg.startsWith("-connect:")) {
-            arg.remove("-connect:");
+        if (arg.startsWith(QStringLiteral("-connect:"))) {
+            arg.remove(QStringLiteral("-connect:"));
             Config.HostAddress = arg;
-            Config.setValue("HostUrl", arg);
+            Config.setValue(QStringLiteral("HostUrl"), arg);
 
             main_window->startConnection();
             break;
