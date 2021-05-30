@@ -770,8 +770,8 @@ void Player::setSkillInvalidity(const Skill *skill, bool invalidity)
 {
     if (skill == nullptr)
         setSkillInvalidity("_ALL_SKILLS", invalidity);
-
-    setSkillInvalidity(skill->objectName(), invalidity);
+    else
+        setSkillInvalidity(skill->objectName(), invalidity);
 }
 
 void Player::setSkillInvalidity(const QString &skill_name, bool invalidity)

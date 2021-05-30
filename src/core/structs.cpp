@@ -459,6 +459,9 @@ TriggerDetail::TriggerDetail(const TriggerDetail &other)
 
 TriggerDetail &TriggerDetail::operator=(const TriggerDetail &other)
 {
+    if (&other == this)
+        return *this;
+
     delete d;
     d = new TriggerDetailPrivate(*other.d);
     return *this;

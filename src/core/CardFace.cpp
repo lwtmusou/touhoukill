@@ -269,7 +269,7 @@ void CardFace::use(Room *room, const CardUseStruct &use) const
             effect.effectValue.first() = effect.effectValue.first() + 1;
         if (use.card->hasFlag("mopao2"))
             effect.effectValue.last() = effect.effectValue.last() + 1;
-        if (source->getMark("kuangji_value") > 0) {
+        if (source != nullptr && source->getMark("kuangji_value") > 0) {
             effect.effectValue.first() = effect.effectValue.first() + source->getMark("kuangji_value");
             effect.effectValue.last() = effect.effectValue.last() + source->getMark("kuangji_value");
             room->setPlayerMark(source, "kuangji_value", 0);
@@ -287,11 +287,11 @@ void CardFace::use(Room *room, const CardUseStruct &use) const
         room->cardEffect(effect);
     }
     room->removeTag("targets" + use.card->toString()); //for ai?
-    if (magic_drank > 0)
+    if (source != nullptr && magic_drank > 0)
         room->setPlayerMark(source, "magic_drank", 0);
 
     if (room->getCardPlace(use.card->effectiveID()) == Player::PlaceTable) {
-        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), use.card->skillName(), QString());
+        CardMoveReason reason(CardMoveReason::S_REASON_USE, source != nullptr ? source->objectName() : QString(), QString(), use.card->skillName(), QString());
         if (use.to.size() == 1)
             reason.m_targetId = use.to.first()->objectName();
         reason.m_extraData = QVariant::fromValue(use.card);

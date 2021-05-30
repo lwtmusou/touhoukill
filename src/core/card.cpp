@@ -542,6 +542,9 @@ QString Card::SuitToString(Suit suit)
 
 QString Card::NumberToString(Number number)
 {
+    if (number == NumberToBeDecided) // I just wonder the case actually exists
+        return "TBD";
+
     if (number == X)
         return "10";
 

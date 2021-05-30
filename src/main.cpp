@@ -59,7 +59,9 @@ int main(int argc, char *argv[])
         else
             printf("Starting failed!\n");
 
-        return QCoreApplication::instance()->exec();
+        int r = QCoreApplication::instance()->exec();
+        delete qApp;
+        return r;
     }
 
     QFile file("sanguosha.qss");

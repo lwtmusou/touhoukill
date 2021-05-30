@@ -83,7 +83,7 @@ public:
     virtual void turnPlayerOver(Player *player) = 0;
 
     virtual void letPlayerPlay(Player *target, QList<Player::Phase> phases = QList<Player::Phase>()) = 0;
-    virtual void changePlayerPhase(Player *target, Player::Phase from , Player::Phase to) = 0;
+    virtual void changePlayerPhase(Player *target, Player::Phase from, Player::Phase to) = 0;
     virtual void skipPlayerPhase(Player *player, Player::Phase phase, bool is_cost = false, bool send_log = true) = 0;
     virtual void insertPlayerPhases(Player *player, QList<Player::Phase> new_phases, int index = -1) = 0;
     virtual void exchangePlayerPhases(Player *player, Player::Phase from, Player::Phase to) = 0;
@@ -121,7 +121,8 @@ public:
 
     virtual void sendLog(const LogMessage &log) = 0;
     virtual void sendLog(const QString &logtype, Player *logfrom, const QString &logarg = QString(), const QList<Player *> &logto = QList<Player *>(),
-                            const QString &logarg2 = QString()) = 0;
+                         const QString &logarg2 = QString())
+        = 0;
 
     virtual void showCard(Player *player, int card_id, Player *only_viewer = nullptr) = 0;
     virtual void showAllCards(Player *player, Player *to = nullptr) = 0;
@@ -189,8 +190,9 @@ public:
 
     virtual void addToPlayerPile(Player *owner, const QString &pile_name, const Card *card, bool open = true, QList<Player *> open_target = QList<Player *>()) = 0;
     virtual void addToPlayerPile(Player *owner, const QString &pile_name, int card_id, bool open = true, QList<Player *> open_target = QList<Player *>()) = 0;
-    virtual void addToPlayerPile(Player *owner, const QString &pile_name,const  IDSet &card_id, bool open = true, QList<Player *> open_target = QList<Player *>()) = 0;
-    virtual void addToPlayerPile(Player *owner, const QString &pile_name,const  IDSet &card_id, bool open, CardMoveReason reason, QList<Player *> open_target = QList<Player *>()) = 0;
+    virtual void addToPlayerPile(Player *owner, const QString &pile_name, const IDSet &card_id, bool open = true, QList<Player *> open_target = QList<Player *>()) = 0;
+    virtual void addToPlayerPile(Player *owner, const QString &pile_name, const IDSet &card_id, bool open, CardMoveReason reason, QList<Player *> open_target = QList<Player *>())
+        = 0;
 
     virtual void addToPlayerShowHandCards(Player *target, const IDSet &card_ids) = 0;
     virtual void addToPlayerShowHandCards(Player *target, const IDSet &card_ids, bool send_log = false, bool move_from_hand = false) = 0;
@@ -208,7 +210,8 @@ public:
     virtual void moveCardTo(const Card *card, Player *dstPlayer, Player::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible = false) = 0;
     virtual void moveCardTo(const Card *card, Player *srcPlayer, Player *dstPlayer, Player::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible = false) = 0;
     virtual void moveCardTo(const Card *card, Player *srcPlayer, Player *dstPlayer, Player::Place dstPlace, const QString &pileName, const CardMoveReason &reason,
-                               bool forceMoveVisible = false) = 0;
+                            bool forceMoveVisible = false)
+        = 0;
 
     virtual void moveCardsAtomic(QList<CardsMoveStruct> cards_move, bool forceMoveVisible) = 0;
     virtual void moveCardsAtomic(CardsMoveStruct cards_move, bool forceMoveVisible) = 0;
@@ -221,11 +224,13 @@ public:
     // askForUseCard / askForUseSlashTo (Card::MethodUse)
     // TODO: askForUseCard supports the recast here. (Add additional parameter to this function, or change method -> QList<Card::HandlingMethod>)
     virtual const Card *askForUseCard(Player *player, const QString &pattern, const QString &prompt, int notice_index = -1, Card::HandlingMethod method = Card::MethodUse,
-                                         bool addHistory = true, const QString &skill_name = QString()) = 0;
-    virtual const Card *askForUseSlashTo(Player *slasher, Player *victim, const QString &prompt, bool distance_limit = true, bool disable_extra = false,
-                                            bool addHistory = false) = 0;
+                                      bool addHistory = true, const QString &skill_name = QString())
+        = 0;
+    virtual const Card *askForUseSlashTo(Player *slasher, Player *victim, const QString &prompt, bool distance_limit = true, bool disable_extra = false, bool addHistory = false)
+        = 0;
     virtual const Card *askForUseSlashTo(Player *slasher, QList<Player *> victims, const QString &prompt, bool distance_limit = true, bool disable_extra = false,
-                                            bool addHistory = false) = 0;
+                                         bool addHistory = false)
+        = 0;
     virtual const Card *askForUseJink(Player *player, ...) = 0;
 
     virtual void askForLuckCard() = 0;
@@ -240,25 +245,29 @@ public:
 
     // TODO: Add pattern to askForDiscard (Card::MethodDiscard)
     virtual bool askForDiscard(Player *target, const QString &reason, int discard_num, int min_num, bool optional = false, bool include_equip = false,
-                                  const QString &prompt = QString()) = 0;
+                               const QString &prompt = QString())
+        = 0;
     virtual void doJileiShow(Player *player, const IDSet &jilei_ids) = 0;
     virtual void forcePlayerDiscard(const Player *target, int discard_num, int include_equip, bool is_discard = true) = 0;
 
     // TODO: Add pattern to askForExchange (Card::MethodNone)
     virtual const Card *askForExchange(Player *player, const QString &reason, int discard_num, int min_num, bool include_equip = false, const QString &prompt = QString(),
-                                          bool optional = false) = 0;
+                                       bool optional = false)
+        = 0;
 
     // TODO: Fix the process of nullification.
     virtual bool askForNullification(const Card *trick, Player *from, Player *to, bool positive) = 0;
     virtual bool isCanceled(const CardEffectStruct &effect) = 0;
 
     virtual int askForCardChosen(Player *player, Player *who, const QString &flags, const QString &reason, bool handcard_visible = false,
-                                    Card::HandlingMethod method = Card::MethodNone, const QList<int> &disabled_ids = QList<int>()) = 0;
+                                 Card::HandlingMethod method = Card::MethodNone, const QList<int> &disabled_ids = QList<int>())
+        = 0;
 
     virtual const Card *askForCard(Player *player, const QString &pattern, const QString &prompt, const QVariant &data, const QString &skill_name, int notice_index = -1) = 0;
     virtual const Card *askForCard(Player *player, const QString &pattern, const QString &prompt, const QVariant &data = QVariant(),
-                                      Card::HandlingMethod method = Card::MethodDiscard, Player *to = nullptr, bool isRetrial = false, const QString &skill_name = QString(),
-                                      bool isProvision = false, int notice_index = -1) = 0;
+                                   Card::HandlingMethod method = Card::MethodDiscard, Player *to = nullptr, bool isRetrial = false, const QString &skill_name = QString(),
+                                   bool isProvision = false, int notice_index = -1)
+        = 0;
 
     virtual const Card *askForResponse(Player *, ...) = 0;
 
@@ -267,24 +276,27 @@ public:
     virtual const Card *askForCardShow(Player *player, Player *requestor, const QString &reason) = 0;
 
     virtual int askForRende(Player *liubei, QList<int> &cards, const QString &skill_name = QString(), bool visible = false, bool optional = true, int max_num = -1,
-                               QList<Player *> players = QList<Player *>(), CardMoveReason reason = CardMoveReason(), const QString &prompt = QString(), bool notify_skill = false) = 0;
+                            QList<Player *> players = QList<Player *>(), CardMoveReason reason = CardMoveReason(), const QString &prompt = QString(), bool notify_skill = false)
+        = 0;
     virtual bool askForYiji(Player *guojia, QList<int> &cards, const QString &skill_name = QString(), bool is_preview = false, bool visible = false, bool optional = true,
-                               int max_num = -1, QList<Player *> players = QList<Player *>(), CardMoveReason reason = CardMoveReason(), const QString &prompt = QString(),
-                               bool notify_skill = false) = 0;
+                            int max_num = -1, QList<Player *> players = QList<Player *>(), CardMoveReason reason = CardMoveReason(), const QString &prompt = QString(),
+                            bool notify_skill = false)
+        = 0;
 
     virtual const Card *askForPindian(PindianStruct &pindian) = 0;
     virtual QList<const Card *> askForPindianRace(Player *from, Player *to, const QString &reason) = 0;
 
     virtual Player *askForPlayerChosen(Player *player, const QList<Player *> &targets, const QString &reason, const QString &prompt = QString(), bool optional = false,
-                                          bool notify_skill = false) = 0;
+                                       bool notify_skill = false)
+        = 0;
 
     virtual QString askForGeneral(Player *player, const QStringList &generals, QString default_choice = QString()) = 0;
     virtual QString askForGeneral(Player *player, const QString &generals, QString default_choice = QString()) = 0;
 
     virtual const Card *askForSinglePeach(Player *player, Player *dying) = 0; // Replace with askForUseCard
 
-    virtual QSharedPointer<SkillInvokeDetail> askForTriggerOrder(Player *player, const QList<QSharedPointer<SkillInvokeDetail> > &sameTiming, bool cancelable,
-                                                                    const QVariant &data) = 0;
+    // virtual QSharedPointer<SkillInvokeDetail> askForTriggerOrder(Player *player, const QList<QSharedPointer<SkillInvokeDetail> > &sameTiming, bool cancelable,
+    //                                                                  const QVariant &data) = 0;
 
     virtual void updateCardsOnLose(const CardsMoveStruct &move) = 0;
     virtual void updateCardsOnGet(const CardsMoveStruct &move) = 0;
