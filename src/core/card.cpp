@@ -542,14 +542,25 @@ QString Card::SuitToString(Suit suit)
 
 QString Card::NumberToString(Number number)
 {
-    if (number == NumberToBeDecided) // I just wonder the case actually exists
-        return QStringLiteral("TBD");
+    static const QHash<Number, QString> r {
+        {NumberToBeDecided, QStringLiteral("TBD")},
+        {NumberNA, QStringLiteral("-")},
+        {NumberA, QStringLiteral("A")},
+        {Number2, QStringLiteral("2")},
+        {Number3, QStringLiteral("3")},
+        {Number4, QStringLiteral("4")},
+        {Number5, QStringLiteral("5")},
+        {Number6, QStringLiteral("6")},
+        {Number7, QStringLiteral("7")},
+        {Number8, QStringLiteral("8")},
+        {Number9, QStringLiteral("9")},
+        {Number10, QStringLiteral("10")},
+        {NumberJ, QStringLiteral("J")},
+        {NumberQ, QStringLiteral("Q")},
+        {NumberK, QStringLiteral("K")},
+    };
 
-    if (number == X)
-        return QStringLiteral("10");
-
-    static const char *number_string = "-A23456789-JQK";
-    return QChar(QLatin1Char(number_string[static_cast<int>(number)]));
+    return r.value(number);
 }
 
 Card *Card::Parse(const QString &str, RoomObject *room)
