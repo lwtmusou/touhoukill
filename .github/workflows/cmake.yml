@@ -12,13 +12,15 @@ jobs:
     # well on Windows or Mac.  You can convert this to a matrix build if you need
     # cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     #strategy:
     #  matrix:
     #    os: [, macos-latest, windows-latest]
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+        with:
+          path: touhoukill-refactor
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
@@ -33,7 +35,7 @@ jobs:
         with:
           cmakeGenerator: 'Ninja'
           cmakeListsOrSettingsJson: 'CMakeListsTxtBasic'
-          cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
+          cmakeListsTxtPath: '${{ github.workspace }}/touhoukill-refactor/CMakeLists.txt'
           buildDirectory: '${{ runner.workspace }}/build'
 
   #build-windows:
@@ -62,12 +64,14 @@ jobs:
   build-mingw:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+        with:
+          path: touhoukill-refactor
 
       - uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
-          install: winpty mingw-w64-x86_64-cmake mingw-w64-x86_64-qt5 mingw-w64-x86_64-swig mingw-w64-x86_64-lua mingw-w64-x86_64-toolchain mingw-w64-x86_64-ninja
+          install: mingw-w64-x86_64-cmake mingw-w64-x86_64-qt5 mingw-w64-x86_64-swig mingw-w64-x86_64-lua mingw-w64-x86_64-toolchain mingw-w64-x86_64-ninja
 
       - name: run cmake+ninja
         shell: msys2 {0}
@@ -75,7 +79,7 @@ jobs:
           mkdir -p "${{ github.workspace }}/build"
           cd "${{ github.workspace }}/build"
           rm -rf `ls -A`
-          cmake -GNinja ..
+          cmake -GNinja "${{ github.workspace }}/touhoukill-refactor"
           ninja -k0
 
   #build-ucrt:
