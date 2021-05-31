@@ -38,6 +38,40 @@ jobs:
           cmakeListsTxtPath: '${{ github.workspace }}/touhoukill-refactor/CMakeLists.txt'
           buildDirectory: '${{ runner.workspace }}/build'
 
+  # build-macos:
+  
+  build-msvc:
+    runs-on: windows-latest
+    steps:
+      - uses: action/checkout@v2
+        with:
+          path: touhoukill-refactor
+      
+      - name: install swig
+        run: |
+          New-Item -Path "." -Name "tools" -ItemType "directory";
+          (New-Object System.Net.WebClient).DownloadFile("http://prdownloads.sourceforge.net/swig/swigwin-4.0.1.zip",#"tools/swigwin-4.0.1.zip");
+          Expand-Archive .\tools\swigwin-4.0.1.zip .\tools;
+          Move-Item -Path ".\tools\swigwin-4.0.1" -Destination ".\tools\swig"
+          .\tools\swig\swig.exe --help
+    
+      - name: install Qt
+        run : |
+          New-Item -Path "." -Name "Qt" -ItemType "directory";
+          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20210511/Qt5.15.2-Windows-x86_64-VS2019-16.9.5-20210513.7z",#"Qt/Qt5.15.2-Windows-x86_64-VS2019-16.9.5-20210513.7z");
+          Expand-Archive .\Qt\Qt5.15.2-Windows-x86_64-VS2019-16.9.5-20210513.7z .\Qt;
+          .\Qt\Qt5.15.2-Windows-x86_64-VS2019-16.9.5\bin\qmake -query
+
+      - name: run cmake+ninja
+        shell: cmd.exe
+        run : |
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          mkdir "build"
+          cd "build"
+          rmdir /s /q *
+          cmd /c cmake -GNinja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt\Qt5.15.2-Windows-x86_64-VS2019-16.9.5" "${{ github.workspace }}/touhoukill-refactor"
+          ninja -k0
+
   #build-windows:
   #  runs-on: windows-latest
   #  steps:
@@ -82,23 +116,23 @@ jobs:
           cmake -GNinja "${{ github.workspace }}/touhoukill-refactor"
           ninja -k0
 
-  build-ucrt:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          path: touhoukill-refactor
+  # build-ucrt:
+    # runs-on: windows-latest
+    # steps:
+      # - uses: actions/checkout@v2
+        # with:
+          # path: touhoukill-refactor
 
-      - uses: msys2/setup-msys2@v2
-        with:
-          msystem: UCRT64
-          install: mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-qt5 mingw-w64-ucrt-x86_64-swig mingw-w64-ucrt-x86_64-lua mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-ninja
+      # - uses: msys2/setup-msys2@v2
+        # with:
+          # msystem: UCRT64
+          # install: mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-qt5 mingw-w64-ucrt-x86_64-swig mingw-w64-ucrt-x86_64-lua mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-ninja
 
-      - name: run cmake+ninja
-        shell: msys2 {0}
-        run : |
-          mkdir -p "${{ github.workspace }}/build"
-          cd "${{ github.workspace }}/build"
-          rm -rf `ls -A`
-          cmake -GNinja "${{ github.workspace }}/touhoukill-refactor"
-          ninja -k0
+      # - name: run cmake+ninja
+        # shell: msys2 {0}
+        # run : |
+          # mkdir -p "${{ github.workspace }}/build"
+          # cd "${{ github.workspace }}/build"
+          # rm -rf `ls -A`
+          # cmake -GNinja "${{ github.workspace }}/touhoukill-refactor"
+          # ninja -k0
