@@ -50,7 +50,7 @@ jobs:
       - name: install swig
         run: |
           New-Item -Path "." -Name "tools" -ItemType "directory";
-          (New-Object System.Net.WebClient).DownloadFile("http://prdownloads.sourceforge.net/swig/swigwin-4.0.1.zip",#"tools/swigwin-4.0.1.zip");
+          (New-Object System.Net.WebClient).DownloadFile("http://prdownloads.sourceforge.net/swig/swigwin-4.0.1.zip","tools/swigwin-4.0.1.zip");
           Expand-Archive .\tools\swigwin-4.0.1.zip .\tools;
           Move-Item -Path ".\tools\swigwin-4.0.1" -Destination ".\tools\swig"
           .\tools\swig\swig.exe --help
@@ -58,7 +58,7 @@ jobs:
       - name: install Qt
         run : |
           New-Item -Path "." -Name "Qt" -ItemType "directory";
-          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20210511/Qt5.15.2-Windows-x86_64-VS2019-16.9.5-20210513.7z",#"Qt/Qt5.15.2-Windows-x86_64-VS2019-16.9.5-20210513.7z");
+          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20210511/Qt5.15.2-Windows-x86_64-VS2019-16.9.5-20210513.7z","Qt/Qt5.15.2-Windows-x86_64-VS2019-16.9.5-20210513.7z");
           Expand-Archive .\Qt\Qt5.15.2-Windows-x86_64-VS2019-16.9.5-20210513.7z .\Qt;
           .\Qt\Qt5.15.2-Windows-x86_64-VS2019-16.9.5\bin\qmake -query
 
