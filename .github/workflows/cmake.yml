@@ -102,7 +102,7 @@ jobs:
           mkdir "build"
           cd "build"
           rmdir /s /q *
-          cmd /c cmake -G"MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt\Qt5.15.2-Windows-x86-MinGW8.1.0" "${{ github.workspace }}/touhoukill-refactor"
+          cmd /c cmake -G"MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt\Qt5.15.2-Windows-x86_64-MinGW8.1.0" "${{ github.workspace }}/touhoukill-refactor"
           mingw32-make -k
 
   build-mingwmsys:
