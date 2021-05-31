@@ -82,4 +82,23 @@ jobs:
           cmake -GNinja "${{ github.workspace }}/touhoukill-refactor"
           ninja -k0
 
-  #build-ucrt:
+  build-ucrt:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: touhoukill-refactor
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          install: mingw-w64-ucrt64-cmake mingw-w64-ucrt64-qt5 mingw-w64-ucrt64-swig mingw-w64-ucrt64-lua mingw-w64-ucrt64-toolchain mingw-w64-ucrt64-ninja
+
+      - name: run cmake+ninja
+        shell: msys2 {0}
+        run : |
+          mkdir -p "${{ github.workspace }}/build"
+          cd "${{ github.workspace }}/build"
+          rm -rf `ls -A`
+          cmake -GNinja "${{ github.workspace }}/touhoukill-refactor"
+          ninja -k0
