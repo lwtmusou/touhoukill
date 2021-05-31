@@ -92,7 +92,7 @@ jobs:
       - uses: msys2/setup-msys2@v2
         with:
           msystem: UCRT64
-          install: mingw-w64-ucrt64-cmake mingw-w64-ucrt64-qt5 mingw-w64-ucrt64-swig mingw-w64-ucrt64-lua mingw-w64-ucrt64-toolchain mingw-w64-ucrt64-ninja
+          install: mingw-w64-ucrt-cmake mingw-w64-ucrt-qt5 mingw-w64-ucrt-swig mingw-w64-ucrt-lua mingw-w64-ucrt-toolchain mingw-w64-ucrt-ninja
 
       - name: run cmake+ninja
         shell: msys2 {0}
