@@ -91,9 +91,9 @@ jobs:
       - name: install Qt
         run : |
           New-Item -Path "." -Name "Qt" -ItemType "directory";
-          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20201217/Qt5.15.2-Windows-x86_64-MinGW8.1.0-20201214.7z","Qt/Qt5.15.2-Windows-x86-MinGW8.1.0-20201214.7z");
-          cmd /c cd Qt "&&" 7z x Qt5.15.2-Windows-x86-MinGW8.1.0-20201214.7z
-          .\Qt\Qt5.15.2-Windows-x86-MinGW8.1.0\bin\qmake -query
+          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20201217/Qt5.15.2-Windows-x86_64-MinGW8.1.0-20201214.7z","Qt/Qt5.15.2-Windows-x86_64-MinGW8.1.0-20201214.7z");
+          cmd /c cd Qt "&&" 7z x Qt5.15.2-Windows-x86_64-MinGW8.1.0-20201214.7z
+          .\Qt\Qt5.15.2-Windows-x86_64-MinGW8.1.0\bin\qmake -query
 
       - name: run cmake+ninja
         shell: cmd
