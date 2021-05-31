@@ -63,7 +63,7 @@ jobs:
           .\Qt\Qt5.15.2-Windows-x86_64-VS2019-16.9.5\bin\qmake -query
 
       - name: run cmake+ninja
-        shell: cmd.exe
+        shell: cmd
         run : |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
           mkdir "build"
