@@ -67,13 +67,13 @@ jobs:
       - uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
-          install: mingw-w64-x86_64-cmake mingw-w64-x86_64-qt5 mingw-w64-x86_64-swig mingw-w64-x86_64-lua mingw-w64-x86_64-toolchain mingw-w64-x86_64-ninja
+          install: winpty mingw-w64-x86_64-cmake mingw-w64-x86_64-qt5 mingw-w64-x86_64-swig mingw-w64-x86_64-lua mingw-w64-x86_64-toolchain mingw-w64-x86_64-ninja
 
       - name: run cmake+ninja
         shell: msys2 {0}
         run : |
-          mkdir -p ${{ github.workspace }}/build
-          cd ${{ github.workspace }}/build
+          mkdir -p "${{ github.workspace }}/build"
+          cd "${{ github.workspace }}/build"
           rm -rf `ls -A`
           cmake -GNinja ..
           ninja -k0
