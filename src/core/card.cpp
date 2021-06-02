@@ -93,7 +93,7 @@ Card::Suit Card::suit() const
     if (isVirtualCard()) {
         // I don't want to check room != nullptr here because virtual cards must be created by RoomObject
         Q_ASSERT(room() != nullptr);
-        if (d->sub_cards.size() == 0)
+        if (d->sub_cards.empty())
             return NoSuit;
 
         if (d->sub_cards.size() == 1)
@@ -152,7 +152,7 @@ Card::Number Card::number() const
     if (isVirtualCard()) {
         // I don't want to check room != nullptr here because virtual cards must be created by RoomObject
         Q_ASSERT(room() != nullptr);
-        if (d->sub_cards.size() == 0)
+        if (d->sub_cards.empty())
             return NumberNA;
         if (d->sub_cards.size() == 1)
             return room()->getCard(*d->sub_cards.constBegin())->number();
@@ -176,7 +176,7 @@ void Card::setNumber(Number number)
 QString Card::numberString() const
 {
     if (isVirtualCard()) {
-        if (d->sub_cards.size() == 0 || d->sub_cards.size() >= 2)
+        if (d->sub_cards.empty() || d->sub_cards.size() >= 2)
             return NumberToString(NumberNA);
     }
 

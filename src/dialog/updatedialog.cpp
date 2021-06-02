@@ -105,7 +105,7 @@ void UpdateDialog::checkForUpdate()
     connect(reply, &QNetworkReply::finished, this, &UpdateDialog::updateInfoReceived);
 }
 
-void UpdateDialog::updateError(QNetworkReply::NetworkError)
+void UpdateDialog::updateError(QNetworkReply::NetworkError /*unused*/)
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
     if (reply != nullptr) {

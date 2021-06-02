@@ -318,7 +318,10 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
     for (int i = 0; i < copy_generals.length(); i++) {
         const General *general = copy_generals[i];
         QString general_name = general->objectName();
-        QString name, kingdom, max_hp, package;
+        QString name;
+        QString kingdom;
+        QString max_hp;
+        QString package;
 
         //we show full name here, since long name cannot be  displayed clearly on carditem
         name = Sanguosha->translate(QStringLiteral("!") + general->objectName());
@@ -406,10 +409,9 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
 void GeneralOverview::resetButtons()
 {
     QLayoutItem *child = nullptr;
-    while ((child = button_layout->takeAt(0))) {
+    while ((child = button_layout->takeAt(0)) != nullptr) {
         QWidget *widget = child->widget();
-        if (widget)
-            delete widget;
+        delete widget;
     }
 }
 
@@ -529,7 +531,7 @@ void GeneralOverview::addCopyAction(QCommandLinkButton *button)
 void GeneralOverview::copyLines()
 {
     QAction *action = qobject_cast<QAction *>(sender());
-    if (action) {
+    if (action != nullptr) {
         QClipboard *clipboard = QApplication::clipboard();
         clipboard->setText(action->data().toString());
     }
@@ -546,7 +548,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     QList<const Skill *> skills = general->getVisibleSkillList();
     foreach (QString skill_name, general->getRelatedSkillNames()) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
-        if (skill && skill->isVisible())
+        if ((skill != nullptr) && skill->isVisible())
             skills << skill;
     }
 
@@ -608,7 +610,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
 void GeneralOverview::playAudioEffect()
 {
     QObject *button = sender();
-    if (button) {
+    if (button != nullptr) {
         QString source = button->objectName();
         if (!source.isEmpty())
             Sanguosha->playAudioEffect(source);
@@ -618,7 +620,7 @@ void GeneralOverview::playAudioEffect()
 void GeneralOverview::askTransfiguration()
 {
     QPushButton *button = qobject_cast<QPushButton *>(sender());
-    bool isSecondaryHero = (button && button->objectName() == ui->changeGeneral2Button->objectName());
+    bool isSecondaryHero = ((button != nullptr) && button->objectName() == ui->changeGeneral2Button->objectName());
     if (ServerInfo.EnableCheat && Self) {
         if (isSecondaryHero)
             ui->changeGeneral2Button->setEnabled(false);
@@ -630,7 +632,7 @@ void GeneralOverview::askTransfiguration()
     }
 }
 
-void GeneralOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem *)
+void GeneralOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem * /*unused*/)
 {
     if (ServerInfo.EnableCheat && Self) {
         askTransfiguration();

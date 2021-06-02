@@ -49,7 +49,7 @@ void HegemonyRoleComboBox::mousePressEvent(QGraphicsSceneMouseEvent *event)
     update();
 }
 
-void HegemonyRoleComboBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void HegemonyRoleComboBox::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     /*
       --------------------
@@ -89,7 +89,7 @@ void HegemonyRoleComboBox::paint(QPainter *painter, const QStyleOptionGraphicsIt
             int index = 0;
             foreach (const QString &kingdom, kingdoms) {
                 painter->setBrush(QBrush(kingdoms_excluded.value(kingdom) ? grey : G_COMMON_LAYOUT.m_rolesColor.value(kingdom)));
-                painter->drawRect(COMPACT_BORDER_WIDTH + ((index % 2) ? COMPACT_BORDER_WIDTH + COMPACT_ITEM_LENGTH : 0),
+                painter->drawRect(COMPACT_BORDER_WIDTH + ((index % 2) != 0 ? COMPACT_BORDER_WIDTH + COMPACT_ITEM_LENGTH : 0),
                                   COMPACT_BORDER_WIDTH + (COMPACT_BORDER_WIDTH + COMPACT_ITEM_LENGTH) * (index / 2), COMPACT_ITEM_LENGTH, COMPACT_ITEM_LENGTH);
                 ++index;
             }

@@ -36,7 +36,7 @@ QRectF RectObject::boundingRect() const
     return m_boundingRect;
 }
 
-void RectObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void RectObject::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     painter->setPen(Qt::NoPen);
     painter->setBrush(m_brush);

@@ -14,9 +14,7 @@ MyPixmapItem::MyPixmapItem(const QPixmap &pixmap, QGraphicsItem *parentItem)
     easytext = Sanguosha->getChattingEasyTexts();
 }
 
-MyPixmapItem::~MyPixmapItem()
-{
-}
+MyPixmapItem::~MyPixmapItem() = default;
 
 void MyPixmapItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -88,17 +86,21 @@ QRectF MyPixmapItem::boundingRect() const
     return QRectF(QPointF(0, 0), QSizeF(sizex, sizey));
 }
 
-void MyPixmapItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void MyPixmapItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     painter->drawPixmap(boundingRect().toRect(), pixmap());
 }
 
 void MyPixmapItem::initFaceBoardPos()
 {
-    const int start_x = 5, start_y = 5;
-    int x = 0, y = 0;
-    int icon_w = 16, icon_h = 16;
-    int x_offset = 6, y_offset = 6;
+    const int start_x = 5;
+    const int start_y = 5;
+    int x = 0;
+    int y = 0;
+    int icon_w = 16;
+    int icon_h = 16;
+    int x_offset = 6;
+    int y_offset = 6;
 
     // total 7 x 8 icons in QList <QRect> faceboardPos;
     for (int j = 0; j < 8; j++) {
@@ -112,9 +114,11 @@ void MyPixmapItem::initFaceBoardPos()
 
 void MyPixmapItem::initEasyTextPos()
 {
-    const int start_x = 5, start_y = 5;
+    const int start_x = 5;
+    const int start_y = 5;
     int y = 0;
-    int icon_w = 210, icon_h = 12;
+    int icon_w = 210;
+    int icon_h = 12;
     int y_offset = 10;
 
     // only 10 text QList <QRect> easytextPos;
@@ -132,7 +136,9 @@ ChatWidget::ChatWidget()
     setAcceptedMouseButtons(Qt::LeftButton);
 
     base = new QGraphicsRectItem(QRectF(base_pixmap.rect()), this);
-    QPushButton *returnButton = nullptr, *chatfaceButton = nullptr, *easytextButton = nullptr;
+    QPushButton *returnButton = nullptr;
+    QPushButton *chatfaceButton = nullptr;
+    QPushButton *easytextButton = nullptr;
 
     returnButton = addButton(QStringLiteral("returnBt"), -1);
     chatfaceButton = addButton(QStringLiteral("chatfaceBt"), 24);
@@ -159,9 +165,7 @@ ChatWidget::ChatWidget()
     connect(returnButton, &QAbstractButton::clicked, this, &ChatWidget::sendText);
 }
 
-ChatWidget::~ChatWidget()
-{
-}
+ChatWidget::~ChatWidget() = default;
 
 void ChatWidget::showEasyTextBoard()
 {
@@ -187,7 +191,7 @@ QRectF ChatWidget::boundingRect() const
     return QRectF(-1, 0, 24 * 3 + 2, 24);
 }
 
-void ChatWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void ChatWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     painter->drawPixmap(base->pos(), base_pixmap);
 }

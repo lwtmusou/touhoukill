@@ -5,7 +5,7 @@
 #include <QParallelAnimationGroup>
 #include <QTimer>
 
-QList<CardItem *> TablePile::removeCardItems(const QList<int> &card_ids, Player::Place)
+QList<CardItem *> TablePile::removeCardItems(const QList<int> &card_ids, Player::Place /*place*/)
 {
     QList<CardItem *> result;
     _m_mutex_pileCards.lock();
@@ -13,7 +13,7 @@ QList<CardItem *> TablePile::removeCardItems(const QList<int> &card_ids, Player:
     _disperseCards(result, m_cardsDisplayRegion, Qt::AlignCenter, false, true);
     foreach (CardItem *card, result) {
         for (int i = m_visibleCards.size() - 1; i >= 0; i--) {
-            if (m_visibleCards[i]->getCard() && m_visibleCards[i]->getCard()->id() == card->getCard()->id()) {
+            if ((m_visibleCards[i]->getCard() != nullptr) && m_visibleCards[i]->getCard()->id() == card->getCard()->id()) {
                 card->setPos(m_visibleCards[i]->pos());
                 break;
             }
@@ -36,7 +36,7 @@ void TablePile::setSize(double width, double height)
     setTransform(QTransform::fromTranslate(-width / 2, -height / 2), true);
 }
 
-void TablePile::timerEvent(QTimerEvent *)
+void TablePile::timerEvent(QTimerEvent * /*event*/)
 {
     QList<CardItem *> oldCards;
     _m_mutex_pileCards.lock();
@@ -108,7 +108,7 @@ void TablePile::showJudgeResult(int cardId, bool takeEffect)
     QList<CardItem *> cardsToClear;
     for (int i = m_visibleCards.size() - 1; i >= 0; i--) {
         CardItem *item = m_visibleCards[i];
-        if (judgeCard == nullptr && item->getCard() && item->getCard()->id() == cardId)
+        if (judgeCard == nullptr && (item->getCard() != nullptr) && item->getCard()->id() == cardId)
             judgeCard = m_visibleCards[i];
         else
             cardsToClear.append(item);

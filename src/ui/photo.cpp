@@ -35,7 +35,6 @@ using namespace QSanProtocol;
 // make layers (drawing order) configurable
 
 Photo::Photo()
-    : PlayerCardContainer()
 {
     _m_mainFrame = nullptr;
     m_player = nullptr;
@@ -64,7 +63,7 @@ Photo::Photo()
 void Photo::refresh()
 {
     PlayerCardContainer::refresh();
-    if (!m_player)
+    if (m_player == nullptr)
         return;
     QString state_str = m_player->getState();
     if (!state_str.isEmpty() && state_str != QStringLiteral("online")) {
@@ -174,7 +173,7 @@ void Photo::hideEmotion()
 
 void Photo::updateDuanchang()
 {
-    if (!m_player)
+    if (m_player == nullptr)
         return;
     _m_duanchangMask->setVisible(m_player->getMark(QStringLiteral("@duanchang")) > 0);
 }
@@ -184,7 +183,7 @@ const ClientPlayer *Photo::getPlayer() const
     return m_player;
 }
 
-void Photo::speak(const QString &)
+void Photo::speak(const QString & /*unused*/)
 {
     //@@todo:complete it
 }
@@ -236,8 +235,8 @@ void Photo::setFrame(FrameType type)
 {
     _m_frameType = type;
     if (type == S_FRAME_NO_FRAME) {
-        if (_m_focusFrame) {
-            if (_m_saveMeIcon && _m_saveMeIcon->isVisible())
+        if (_m_focusFrame != nullptr) {
+            if ((_m_saveMeIcon != nullptr) && _m_saveMeIcon->isVisible())
                 setFrame(S_FRAME_SOS);
             else if (m_player->getPhase() != Player::NotActive)
                 setFrame(S_FRAME_PLAYING);
@@ -261,7 +260,7 @@ void Photo::updatePhase()
         setFrame(S_FRAME_NO_FRAME);
 }
 
-void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 }

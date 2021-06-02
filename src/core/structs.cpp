@@ -131,7 +131,7 @@ QString DamageStruct::getReason() const
 {
     if (reason != QString())
         return reason;
-    else if (card)
+    else if (card != nullptr)
         return card->faceName();
     return QString();
 }
@@ -257,7 +257,6 @@ CardUseStruct::CardUseStruct()
     , from(nullptr)
     , m_isOwnerUse(true)
     , m_addHistory(true)
-    , nullified_list(QStringList())
 {
 }
 
@@ -548,11 +547,11 @@ QVariant TriggerDetail::toVariant() const
         return QVariant();
 
     JsonObject ob;
-    if (trigger())
+    if (trigger() != nullptr)
         ob[QStringLiteral("skill")] = trigger()->name();
-    if (owner())
+    if (owner() != nullptr)
         ob[QStringLiteral("owner")] = owner()->objectName();
-    if (invoker())
+    if (invoker() != nullptr)
         ob[QStringLiteral("invoker")] = invoker()->objectName();
 
     return ob;
@@ -565,7 +564,7 @@ QStringList TriggerDetail::toList() const
         l << QString() << QString() << QString();
     else {
         std::function<void(const QObject *)> insert = [&l](const QObject *item) {
-            if (item)
+            if (item != nullptr)
                 l << item->objectName();
             else
                 l << QString();
@@ -633,7 +632,6 @@ SkillInvalidStruct::SkillInvalidStruct()
 
 ExtraTurnStruct::ExtraTurnStruct()
     : player(nullptr)
-    , set_phases(QList<Player::Phase>())
     , reason(QString())
     , extraTarget(nullptr)
 {
@@ -641,7 +639,6 @@ ExtraTurnStruct::ExtraTurnStruct()
 
 BrokenEquipChangedStruct::BrokenEquipChangedStruct()
     : player(nullptr)
-    , ids(QList<int>())
     , broken(false)
     , moveFromEquip(false)
 {
@@ -649,7 +646,6 @@ BrokenEquipChangedStruct::BrokenEquipChangedStruct()
 
 ShownCardChangedStruct::ShownCardChangedStruct()
     : player(nullptr)
-    , ids(QList<int>())
     , shown(false)
     , moveFromHand(false)
 {

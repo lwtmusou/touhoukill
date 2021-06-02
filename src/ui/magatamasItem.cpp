@@ -28,7 +28,8 @@ void MagatamasBoxItem::setOrientation(Qt::Orientation orientation)
 
 void MagatamasBoxItem::_updateLayout()
 {
-    int xStep = 0, yStep = 0;
+    int xStep = 0;
+    int yStep = 0;
     if (m_orientation == Qt::Horizontal) {
         xStep = m_iconSize.width();
         yStep = 0;
@@ -129,7 +130,8 @@ void MagatamasBoxItem::_doHpChangeAnimation(int newHp)
 
     int width = m_imageArea.width();
     int height = m_imageArea.height();
-    int xStep = 0, yStep = 0;
+    int xStep = 0;
+    int yStep = 0;
     if (m_orientation == Qt::Horizontal) {
         xStep = width;
         yStep = 0;
@@ -171,7 +173,7 @@ void MagatamasBoxItem::_doHpChangeAnimation(int newHp)
     }
 }
 
-void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     if (m_maxHp <= 0)
         return;
@@ -179,7 +181,8 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     if (m_hp == m_maxHp)
         imageIndex = 5;
 
-    int xStep = 0, yStep = 0;
+    int xStep = 0;
+    int yStep = 0;
     if (m_orientation == Qt::Horizontal) {
         xStep = m_iconSize.width();
         yStep = 0;

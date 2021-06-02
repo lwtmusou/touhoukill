@@ -17,7 +17,7 @@ void unregisterCardFace(const QString &name)
 {
     auto face = faces.find(name);
     if (face != faces.end()) {
-        auto handle = *face;
+        const auto *handle = *face;
         faces.erase(face);
         delete handle;
     }
@@ -32,9 +32,7 @@ public:
     CardUseStruct::CardUseReason currentCardUseReason;
     QList<Card *> clonedCards;
 
-    RoomObjectPrivate()
-    {
-    }
+    RoomObjectPrivate() = default;
 };
 
 RoomObject::RoomObject(QObject *parent)

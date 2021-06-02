@@ -22,7 +22,7 @@ QRectF SkinItem::boundingRect() const
     return QRectF(getSelectFrameIcon().rect());
 }
 
-void SkinItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void SkinItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     static QPixmap tempPix(getSelectFrameIcon().size());
     tempPix.fill(Qt::transparent);
@@ -52,7 +52,7 @@ void SkinItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidge
     painter->drawPixmap(0, 0, tempPix);
 }
 
-void SkinItem::hoverEnterEvent(QGraphicsSceneHoverEvent *)
+void SkinItem::hoverEnterEvent(QGraphicsSceneHoverEvent * /*event*/)
 {
     if (!m_used) {
         m_hoverEnter = true;
@@ -60,7 +60,7 @@ void SkinItem::hoverEnterEvent(QGraphicsSceneHoverEvent *)
     }
 }
 
-void SkinItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
+void SkinItem::hoverLeaveEvent(QGraphicsSceneHoverEvent * /*event*/)
 {
     if (!m_used) {
         m_hoverEnter = false;
@@ -68,7 +68,7 @@ void SkinItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
     }
 }
 
-void SkinItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *)
+void SkinItem::mouseReleaseEvent(QGraphicsSceneMouseEvent * /*event*/)
 {
     if (!m_used && isUnderMouse()) {
         m_hoverEnter = false;

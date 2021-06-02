@@ -43,7 +43,7 @@ void StartScene::addButton(QAction *action)
 
 void StartScene::setServerLogBackground()
 {
-    if (server_log) {
+    if (server_log != nullptr) {
         // make its background the same as background, looks transparent
         QPalette palette;
         palette.setBrush(QPalette::Base, backgroundBrush());
@@ -97,7 +97,7 @@ void StartScene::printServerInfo()
     QList<QHostAddress> addresses = QNetworkInterface::allAddresses();
     foreach (QHostAddress address, addresses) {
         quint32 ipv4 = address.toIPv4Address();
-        if (ipv4)
+        if (ipv4 != 0u)
             items << address.toString();
     }
 

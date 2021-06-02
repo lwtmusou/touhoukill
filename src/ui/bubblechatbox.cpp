@@ -87,7 +87,7 @@ QRectF BubbleChatBox::boundingRect() const
     return m_rect;
 }
 
-void BubbleChatBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void BubbleChatBox::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
     painter->drawPixmap(m_rect.toRect(), m_backgroundPixmap);
@@ -167,7 +167,7 @@ void BubbleChatBox::setArea(QRect newArea)
 
 QVariant BubbleChatBox::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-    if (change == ItemSceneHasChanged && scene()) {
+    if (change == ItemSceneHasChanged && (scene() != nullptr)) {
         scene()->addItem(m_chatLabel);
     }
 

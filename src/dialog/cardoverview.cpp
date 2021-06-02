@@ -169,7 +169,7 @@ void CardOverview::askCard()
     }
 }
 
-void CardOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem *)
+void CardOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem * /*unused*/)
 {
     if (Self)
         askCard();

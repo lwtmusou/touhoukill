@@ -123,7 +123,7 @@ QString SkillInvokeDetailForClient::toString() const
     l << skill->objectName();
     l << owner->objectName();
     l << invoker->objectName();
-    if (preferredTarget) {
+    if (preferredTarget != nullptr) {
         l << preferredTarget->objectName();
         l << QString::number(preferredTargetSeat);
     }
@@ -164,7 +164,7 @@ QFont TriggerOptionButton::defaultFont()
     return font;
 }
 
-void TriggerOptionButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void TriggerOptionButton::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     painter->setRenderHint(QPainter::Antialiasing);
     painter->save();
@@ -202,12 +202,12 @@ void TriggerOptionButton::mousePressEvent(QGraphicsSceneMouseEvent *event)
     event->accept();
 }
 
-void TriggerOptionButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *)
+void TriggerOptionButton::mouseReleaseEvent(QGraphicsSceneMouseEvent * /*event*/)
 {
     emit clicked();
 }
 
-void TriggerOptionButton::hoverEnterEvent(QGraphicsSceneHoverEvent *)
+void TriggerOptionButton::hoverEnterEvent(QGraphicsSceneHoverEvent * /*event*/)
 {
     QPropertyAnimation *animation = new QPropertyAnimation(this, "opacity");
     animation->setEndValue(1.0);
@@ -216,7 +216,7 @@ void TriggerOptionButton::hoverEnterEvent(QGraphicsSceneHoverEvent *)
     emit hovered(true);
 }
 
-void TriggerOptionButton::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
+void TriggerOptionButton::hoverLeaveEvent(QGraphicsSceneHoverEvent * /*event*/)
 {
     QPropertyAnimation *animation = new QPropertyAnimation(this, "opacity");
     animation->setEndValue(initialOpacity);
@@ -229,7 +229,7 @@ QString TriggerOptionButton::displayedTextOf(const SkillInvokeDetailForClient &d
 {
     QString skillName = detail.skill->objectName();
     QString text = Sanguosha->translate(skillName);
-    if (detail.preferredTarget) {
+    if (detail.preferredTarget != nullptr) {
         QString targetName = detail.preferredTarget->getFootnoteName();
         text = tr("%1 (use upon %2)").arg(text).arg(Sanguosha->translate(targetName));
     }
@@ -359,7 +359,7 @@ void ChooseTriggerOrderBox::chooseOption(const QVariantList &options, bool optio
     }
 
     if (ServerInfo.OperationTimeout != 0) {
-        if (!progressBar) {
+        if (progressBar == nullptr) {
             progressBar = new QSanCommandProgressBar;
             progressBar->setMaximumWidth(boundingRect().width() - 16);
             progressBar->setMaximumHeight(12);
@@ -395,7 +395,7 @@ void ChooseTriggerOrderBox::clear()
 void ChooseTriggerOrderBox::reply()
 {
     QString choice;
-    if (sender())
+    if (sender() != nullptr)
         choice = sender()->objectName();
 
     if (choice.isEmpty()) {

@@ -39,12 +39,12 @@ void Skill::setupForBattleArray()
 
 bool Skill::isLordSkill() const
 {
-    return d->categories & SkillLord;
+    return (d->categories & SkillLord) != 0;
 }
 
 bool Skill::isAttachedSkill() const
 {
-    return d->categories & SkillAttached;
+    return (d->categories & SkillAttached) != 0;
 }
 
 QString Skill::getDescription() const
@@ -70,22 +70,22 @@ QString Skill::getNotice(int index) const
 
 bool Skill::isHidden() const
 {
-    return d->categories & SkillHidden;
+    return (d->categories & SkillHidden) != 0;
 }
 
 bool Skill::isCompulsory() const
 {
-    return d->categories & SkillCompulsory;
+    return (d->categories & SkillCompulsory) != 0;
 }
 
 bool Skill::isEternal() const
 {
-    return d->categories & SkillEternal;
+    return (d->categories & SkillEternal) != 0;
 }
 
 bool Skill::isLimited() const
 {
-    return d->categories & SkillLimited;
+    return (d->categories & SkillLimited) != 0;
 }
 
 bool Skill::isFrequent() const
@@ -98,7 +98,7 @@ void Skill::setFrequent(bool c)
     d->frequent = c;
 }
 
-int Skill::getAudioEffectIndex(const ServerPlayer *, const Card *) const
+int Skill::getAudioEffectIndex(const ServerPlayer * /*unused*/, const Card * /*unused*/) const
 {
     return -1;
 }
@@ -151,16 +151,16 @@ void Skill::setCanPreshow(bool c)
 bool Skill::relateToPlace(bool head) const
 {
     if (head)
-        return d->categories & SkillHead;
+        return (d->categories & SkillHead) != 0;
     else
-        return d->categories & SkillDeputy;
+        return (d->categories & SkillDeputy) != 0;
     return false;
 }
 
 Skill::ArrayType Skill::arrayType() const
 {
-    if (d->categories & SkillArrayMask)
-        return (d->categories & SkillArrayFormation) ? ArrayFormation : ArraySiege;
+    if ((d->categories & SkillArrayMask) != 0)
+        return ((d->categories & SkillArrayFormation) != 0) ? ArrayFormation : ArraySiege;
 
     return ArrayNone;
 }
@@ -185,12 +185,12 @@ bool ViewAsSkill::isAvailable(const Player *invoker, CardUseStruct::CardUseReaso
     }
 }
 
-bool ViewAsSkill::isEnabledAtPlay(const Player *) const
+bool ViewAsSkill::isEnabledAtPlay(const Player * /*unused*/) const
 {
     return response_pattern.isEmpty();
 }
 
-bool ViewAsSkill::isEnabledAtResponse(const Player *, const QString &pattern) const
+bool ViewAsSkill::isEnabledAtResponse(const Player * /*unused*/, const QString &pattern) const
 {
     if (!response_pattern.isEmpty())
         return pattern == response_pattern;
@@ -202,7 +202,7 @@ QStringList ViewAsSkill::getDialogCardOptions() const
     return QStringList();
 }
 
-bool ViewAsSkill::isEnabledAtNullification(const ServerPlayer *) const
+bool ViewAsSkill::isEnabledAtNullification(const ServerPlayer * /*unused*/) const
 {
     return false;
 }
@@ -257,7 +257,7 @@ const Card *ZeroCardViewAsSkill::viewAs(const QList<const Card *> &cards, const 
         return nullptr;
 }
 
-bool ZeroCardViewAsSkill::viewFilter(const QList<const Card *> &, const Card *, const Player * /*Self*/) const
+bool ZeroCardViewAsSkill::viewFilter(const QList<const Card *> & /*selected*/, const Card * /*to_select*/, const Player * /*Self*/) const
 {
     return false;
 }
@@ -303,12 +303,12 @@ FilterSkill::FilterSkill(const QString &name)
 {
 }
 
-int MaxCardsSkill::getExtra(const Player *) const
+int MaxCardsSkill::getExtra(const Player * /*unused*/) const
 {
     return 0;
 }
 
-int MaxCardsSkill::getFixed(const Player *) const
+int MaxCardsSkill::getFixed(const Player * /*unused*/) const
 {
     return -1;
 }
@@ -347,7 +347,7 @@ bool ShowDistanceSkill::isEnabledAtPlay(const Player *player) const
         return false;
 
     const Skill *skill = Sanguosha->getSkill(objectName());
-    if (skill) {
+    if (skill != nullptr) {
         if (!player->hasShownSkill(skill->objectName()))
             return true;
     }
@@ -376,17 +376,17 @@ QString TargetModSkill::getPattern() const
     return pattern;
 }
 
-int TargetModSkill::getResidueNum(const Player *, const Card *) const
+int TargetModSkill::getResidueNum(const Player * /*unused*/, const Card * /*unused*/) const
 {
     return 0;
 }
 
-int TargetModSkill::getDistanceLimit(const Player *, const Card *) const
+int TargetModSkill::getDistanceLimit(const Player * /*unused*/, const Card * /*unused*/) const
 {
     return 0;
 }
 
-int TargetModSkill::getExtraTargetNum(const Player *, const Card *) const
+int TargetModSkill::getExtraTargetNum(const Player * /*unused*/, const Card * /*unused*/) const
 {
     return 0;
 }
@@ -402,12 +402,12 @@ const ViewAsSkill *AttackRangeSkill::getViewAsSkill() const
     return view_as_skill;
 }
 
-int AttackRangeSkill::getExtra(const Player *, bool) const
+int AttackRangeSkill::getExtra(const Player * /*unused*/, bool /*unused*/) const
 {
     return 0;
 }
 
-int AttackRangeSkill::getFixed(const Player *, bool) const
+int AttackRangeSkill::getFixed(const Player * /*unused*/, bool /*unused*/) const
 {
     return -1;
 }
@@ -608,12 +608,12 @@ void Trigger::setGlobal(bool global)
     d->global = global;
 }
 
-void Trigger::record(TriggerEvent, Room *, QVariant &) const
+void Trigger::record(TriggerEvent /*unused*/, Room * /*unused*/, QVariant & /*unused*/) const
 {
     // Intentionally empty
 }
 
-bool Trigger::trigger(TriggerEvent, Room *, const TriggerDetail &, QVariant &) const
+bool Trigger::trigger(TriggerEvent /*unused*/, Room * /*unused*/, const TriggerDetail & /*unused*/, QVariant & /*unused*/) const
 {
     return false;
 }
@@ -623,9 +623,7 @@ Rule::Rule(const QString &name)
 {
 }
 
-Rule::~Rule()
-{
-}
+Rule::~Rule() = default;
 
 int Rule::priority() const
 {
@@ -633,7 +631,7 @@ int Rule::priority() const
     return 0;
 }
 
-QList<TriggerDetail> Rule::triggerable(TriggerEvent, const Room *room, const QVariant &) const
+QList<TriggerDetail> Rule::triggerable(TriggerEvent /*event*/, const Room *room, const QVariant & /*data*/) const
 {
     TriggerDetail d(room, this);
     return QList<TriggerDetail>() << d;
@@ -665,7 +663,7 @@ bool TriggerSkill::trigger(TriggerEvent event, Room *room, const TriggerDetail &
     return effect(event, room, detail, data);
 }
 
-bool TriggerSkill::cost(TriggerEvent, Room *, TriggerDetail &detail, QVariant &) const
+bool TriggerSkill::cost(TriggerEvent /*unused*/, Room * /*unused*/, TriggerDetail &detail, QVariant & /*unused*/) const
 {
     if ((detail.owner() == nullptr) || (detail.owner() != detail.invoker()) || isEternal() || (detail.invoker() == nullptr))
         return true;
@@ -746,7 +744,7 @@ int GlobalRecord::priority() const
     return 10;
 }
 
-QList<TriggerDetail> GlobalRecord::triggerable(TriggerEvent, const Room *, const QVariant &) const
+QList<TriggerDetail> GlobalRecord::triggerable(TriggerEvent /*event*/, const Room * /*room*/, const QVariant & /*data*/) const
 {
     return QList<TriggerDetail>();
 }
@@ -770,7 +768,7 @@ FakeMoveRecord::~FakeMoveRecord()
     delete d;
 }
 
-QList<TriggerDetail> FakeMoveRecord::triggerable(TriggerEvent, const Room *room, const QVariant &) const
+QList<TriggerDetail> FakeMoveRecord::triggerable(TriggerEvent /*event*/, const Room *room, const QVariant & /*data*/) const
 {
     ServerPlayer *owner = nullptr;
     foreach (ServerPlayer *p, room->getAllPlayers()) {
@@ -789,7 +787,7 @@ QList<TriggerDetail> FakeMoveRecord::triggerable(TriggerEvent, const Room *room,
     return {};
 }
 
-bool FakeMoveRecord::trigger(TriggerEvent, Room *, const TriggerDetail &, QVariant &) const
+bool FakeMoveRecord::trigger(TriggerEvent /*event*/, Room * /*room*/, const TriggerDetail & /*detail*/, QVariant & /*data*/) const
 {
     return true;
 }

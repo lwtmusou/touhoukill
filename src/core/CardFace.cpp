@@ -141,7 +141,7 @@ void CardFace::setDefaultHandlingMethod(Card::HandlingMethod can)
     d->default_method = can;
 }
 
-bool CardFace::targetFixed(const Player *, const Card *) const
+bool CardFace::targetFixed(const Player * /*unused*/, const Card * /*unused*/) const
 {
     return d->target_fixed;
 }
@@ -159,7 +159,7 @@ bool CardFace::targetsFeasible(const QList<const Player *> &targets, const Playe
         return !targets.isEmpty();
 }
 
-int CardFace::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *) const
+int CardFace::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card * /*unused*/) const
 {
     return (targets.isEmpty() && to_select != Self) ? 1 : 0;
 }
@@ -169,7 +169,7 @@ bool CardFace::isAvailable(const Player *player, const Card *card) const
     return !player->isCardLimited(card, card->handleMethod());
 }
 
-bool CardFace::ignoreCardValidity(const Player *) const
+bool CardFace::ignoreCardValidity(const Player * /*unused*/) const
 {
     return false;
 }
@@ -179,12 +179,12 @@ const Card *CardFace::validate(const CardUseStruct &use) const
     return use.card;
 }
 
-const Card *CardFace::validateInResponse(ServerPlayer *, const Card *original_card) const
+const Card *CardFace::validateInResponse(ServerPlayer * /*unused*/, const Card *original_card) const
 {
     return original_card;
 }
 
-void CardFace::doPreAction(Room *, const CardUseStruct &) const
+void CardFace::doPreAction(Room * /*unused*/, const CardUseStruct & /*unused*/) const
 {
 }
 
@@ -255,7 +255,7 @@ void CardFace::use(Room *room, const CardUseStruct &use) const
     QStringList nullified_list = room->getTag(QStringLiteral("CardUseNullifiedList")).toStringList();
     bool all_nullified = nullified_list.contains(QStringLiteral("_ALL_TARGETS"));
     int magic_drank = 0;
-    if (isNDTrick() && source && source->getMark(QStringLiteral("magic_drank")) > 0)
+    if (isNDTrick() && (source != nullptr) && source->getMark(QStringLiteral("magic_drank")) > 0)
         magic_drank = source->getMark(QStringLiteral("magic_drank"));
 
     foreach (ServerPlayer *target, use.to) {
@@ -311,22 +311,20 @@ void CardFace::use(Room *room, const CardUseStruct &use) const
     }
 }
 
-void CardFace::onEffect(const CardEffectStruct &) const
+void CardFace::onEffect(const CardEffectStruct & /*unused*/) const
 {
 }
 
-bool CardFace::isCancelable(const CardEffectStruct &) const
+bool CardFace::isCancelable(const CardEffectStruct & /*unused*/) const
 {
     return false;
 }
 
-void CardFace::onNullified(ServerPlayer *, const Card *) const
+void CardFace::onNullified(ServerPlayer * /*unused*/, const Card * /*unused*/) const
 {
 }
 
-BasicCard::BasicCard()
-{
-}
+BasicCard::BasicCard() = default;
 
 CardFace::CardType BasicCard::type() const
 {
@@ -338,9 +336,7 @@ QString BasicCard::typeName() const
     return QStringLiteral("basic");
 }
 
-EquipCard::EquipCard()
-{
-}
+EquipCard::EquipCard() = default;
 
 CardFace::CardType EquipCard::type() const
 {
@@ -352,9 +348,7 @@ QString EquipCard::typeName() const
     return QStringLiteral("equip");
 }
 
-Weapon::Weapon()
-{
-}
+Weapon::Weapon() = default;
 
 QString Weapon::subTypeName() const
 {
@@ -366,9 +360,7 @@ EquipCard::Location Weapon::location() const
     return WeaponLocation;
 }
 
-Armor::Armor()
-{
-}
+Armor::Armor() = default;
 
 QString Armor::subTypeName() const
 {
@@ -380,9 +372,7 @@ EquipCard::Location Armor::location() const
     return ArmorLocation;
 }
 
-DefensiveHorse::DefensiveHorse()
-{
-}
+DefensiveHorse::DefensiveHorse() = default;
 
 QString DefensiveHorse::subTypeName() const
 {
@@ -394,9 +384,7 @@ EquipCard::Location DefensiveHorse::location() const
     return DefensiveHorseLocation;
 }
 
-OffensiveHorse::OffensiveHorse()
-{
-}
+OffensiveHorse::OffensiveHorse() = default;
 
 QString OffensiveHorse::subTypeName() const
 {
@@ -408,9 +396,7 @@ EquipCard::Location OffensiveHorse::location() const
     return OffensiveHorseLocation;
 }
 
-Treasure::Treasure()
-{
-}
+Treasure::Treasure() = default;
 
 QString Treasure::subTypeName() const
 {
@@ -422,9 +408,7 @@ EquipCard::Location Treasure::location() const
     return TreasureLocation;
 }
 
-TrickCard::TrickCard()
-{
-}
+TrickCard::TrickCard() = default;
 
 CardFace::CardType TrickCard::type() const
 {
@@ -436,9 +420,7 @@ QString TrickCard::typeName() const
     return QStringLiteral("trick");
 }
 
-NonDelayedTrick::NonDelayedTrick()
-{
-}
+NonDelayedTrick::NonDelayedTrick() = default;
 
 QString NonDelayedTrick::subTypeName() const
 {
@@ -468,9 +450,7 @@ JudgeStruct DelayedTrick::judge() const
     return *d;
 }
 
-SkillCard::SkillCard()
-{
-}
+SkillCard::SkillCard() = default;
 
 CardFace::CardType SkillCard::type() const
 {

@@ -33,7 +33,7 @@ void TimedProgressBar::hide()
     QProgressBar::hide();
 }
 
-void TimedProgressBar::timerEvent(QTimerEvent *)
+void TimedProgressBar::timerEvent(QTimerEvent * /*event*/)
 {
     bool emitTimeout = false;
     bool doHide = false;
@@ -76,7 +76,7 @@ void QSanCommandProgressBar::setCountdown(CommandType command)
     m_mutex.unlock();
 }
 
-void QSanCommandProgressBar::paintEvent(QPaintEvent *)
+void QSanCommandProgressBar::paintEvent(QPaintEvent * /*unused*/)
 {
     m_mutex.lock();
     int val = m_val;

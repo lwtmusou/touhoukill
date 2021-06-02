@@ -39,7 +39,7 @@ void ClientPlayer::addCard(const Card *card, Place place)
 {
     switch (place) {
     case PlaceHand: {
-        if (card)
+        if (card != nullptr)
             known_cards << card;
         handcard_num++;
         break;
@@ -70,7 +70,7 @@ bool ClientPlayer::isLastHandCard(const Card *card, bool contain) const
         if (known_cards.length() != 1)
             return false;
         return known_cards.first()->id() == card->effectiveID();
-    } else if (card->subcards().size() > 0) {
+    } else if (!card->subcards().empty()) {
         if (!contain) {
             foreach (int card_id, card->subcards()) {
                 if (!known_cards.contains(getRoomObject()->getCard(card_id)))
@@ -93,7 +93,7 @@ void ClientPlayer::removeCard(const Card *card, Place place)
     switch (place) {
     case PlaceHand: {
         handcard_num--;
-        if (card)
+        if (card != nullptr)
             known_cards.removeOne(card);
         break;
     }

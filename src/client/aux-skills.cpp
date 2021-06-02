@@ -13,9 +13,7 @@ DiscardSkill::DiscardSkill()
     // card->setParent(this);
 }
 
-DiscardSkill::~DiscardSkill()
-{
-}
+DiscardSkill::~DiscardSkill() = default;
 
 void DiscardSkill::setNum(int num)
 {
@@ -54,8 +52,8 @@ bool DiscardSkill::viewFilter(const QList<const Card *> &selected, const Card *c
 const Card *DiscardSkill::viewAs(const QList<const Card *> &cards, const Player *Self) const
 {
     if (cards.length() >= minnum) {
-        auto logic = Self->getRoomObject();
-        auto card = logic->cloneDummyCard();
+        auto *logic = Self->getRoomObject();
+        auto *card = logic->cloneDummyCard();
         card->setHandleMethod(Card::MethodNone);
         card->clearSubcards();
         foreach (const Card *c, cards)
@@ -88,7 +86,7 @@ bool ResponseSkill::matchPattern(const Player *player, const Card *card) const
     if (request != Card::MethodNone && player->isCardLimited(card, request))
         return false;
 
-    return pattern && pattern->match(player, card);
+    return (pattern != nullptr) && pattern->match(player, card);
 }
 
 bool ResponseSkill::viewFilter(const Card *card, const Player *Self) const
@@ -110,7 +108,7 @@ ShowOrPindianSkill::ShowOrPindianSkill()
 
 bool ShowOrPindianSkill::matchPattern(const Player *player, const Card *card) const
 {
-    return pattern && pattern->match(player, card);
+    return (pattern != nullptr) && pattern->match(player, card);
 }
 
 // -------------------------------------------
@@ -130,7 +128,7 @@ void YijiCard::setPlayerNames(const QStringList &names)
     set = QSet<QString>(names.begin(), names.end());
 }
 
-int YijiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *, const Card *card) const
+int YijiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player * /*Self*/, const Card *card) const
 {
     return targets.isEmpty() && set.contains(to_select->objectName()) ? 1 : 0;
 }
@@ -164,9 +162,7 @@ YijiViewAsSkill::YijiViewAsSkill()
     // card->setParent(this);
 }
 
-YijiViewAsSkill::~YijiViewAsSkill()
-{
-}
+YijiViewAsSkill::~YijiViewAsSkill() = default;
 
 void YijiViewAsSkill::setCards(const QString &card_str)
 {
@@ -193,7 +189,7 @@ const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards, const Play
     if (cards.isEmpty() || cards.length() > max_num)
         return nullptr;
 
-    auto card = player->getRoomObject()->cloneSkillCard(QStringLiteral("YijiCard"));
+    auto *card = player->getRoomObject()->cloneSkillCard(QStringLiteral("YijiCard"));
     card->setHandleMethod(Card::MethodNone);
 
     card->clearSubcards();
@@ -214,7 +210,7 @@ void ChoosePlayerCard::setPlayerNames(const QStringList &names)
     set = QSet<QString>(names.begin(), names.end());
 }
 
-int ChoosePlayerCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *, const Card *) const
+int ChoosePlayerCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player * /*Self*/, const Card * /*card*/) const
 {
     return targets.isEmpty() && set.contains(to_select->objectName()) ? 1 : 0;
 }
@@ -226,9 +222,7 @@ ChoosePlayerSkill::ChoosePlayerSkill()
 {
 }
 
-ChoosePlayerSkill::~ChoosePlayerSkill()
-{
-}
+ChoosePlayerSkill::~ChoosePlayerSkill() = default;
 
 void ChoosePlayerSkill::setPlayerNames(const QStringList &names)
 {

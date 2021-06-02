@@ -52,7 +52,7 @@ QRectF QSanButton::boundingRect() const
     return QRectF(0, 0, _m_size.width(), _m_size.height());
 }
 
-void QSanButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void QSanButton::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     painter->drawPixmap(0, 0, _m_bgPixmap[(int)_m_state]);
 }
@@ -126,7 +126,7 @@ void QSanButton::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
         setState(S_STATE_HOVER);
 }
 
-void QSanButton::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
+void QSanButton::hoverLeaveEvent(QGraphicsSceneHoverEvent * /*event*/)
 {
     if (_m_state == S_STATE_DISABLED || _m_state == S_STATE_CANPRESHOW)
         return;
@@ -388,7 +388,7 @@ void QSanInvokeSkillButton::_repaint()
     update();
 }
 
-void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     painter->drawPixmap(0, 0, _m_bgPixmap[(int)_m_state]);
     if (_m_skillType == S_SKILL_ATTACHEDLORD) {
@@ -415,7 +415,7 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
         }
         if (generalName.isNull()) {
             const General *general = Self->getGeneral();
-            if (general && (general->hasSkill(engskillname) || general->hasSkill(HegSkillname)))
+            if ((general != nullptr) && (general->hasSkill(engskillname) || general->hasSkill(HegSkillname)))
                 generalName = general->objectName();
             if (ServerInfo.Enable2ndGeneral) {
                 const General *general2 = Self->getGeneral2();
@@ -443,7 +443,7 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
     if (_m_enumWidth != S_WIDTH_WIDE)
         skillName = skillName.left(2);
     // need adjust rect?
-    font.paintText(painter, (ButtonState)_m_state ? G_DASHBOARD_LAYOUT.m_skillTextAreaDown[_m_enumWidth] : G_DASHBOARD_LAYOUT.m_skillTextArea[_m_enumWidth], Qt::AlignCenter,
+    font.paintText(painter, (ButtonState)_m_state != 0 ? G_DASHBOARD_LAYOUT.m_skillTextAreaDown[_m_enumWidth] : G_DASHBOARD_LAYOUT.m_skillTextArea[_m_enumWidth], Qt::AlignCenter,
                    skillName);
 
     if (Self->isSkillInvalid(_m_skill->objectName())) { //for SkillInvalid
@@ -500,7 +500,9 @@ void QSanInvokeSkillDock::setWidth(int width)
 void QSanInvokeSkillDock::update()
 {
     if (!_m_buttons.isEmpty()) {
-        QList<QSanInvokeSkillButton *> regular_buttons, lordskill_buttons, all_buttons;
+        QList<QSanInvokeSkillButton *> regular_buttons;
+        QList<QSanInvokeSkillButton *> lordskill_buttons;
+        QList<QSanInvokeSkillButton *> all_buttons;
 
         foreach (QSanInvokeSkillButton *btn, _m_buttons) {
             btn->setVisible(btn->getSkill()->isVisible());

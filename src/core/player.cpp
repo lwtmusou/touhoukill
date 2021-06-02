@@ -214,7 +214,7 @@ bool Player::canShowHiddenSkill() const
 {
     if (!shown_hidden_general.isNull()) {
         const General *hidden = Sanguosha->getGeneral(shown_hidden_general);
-        if (hidden)
+        if (hidden != nullptr)
             return false;
     }
     return !hidden_generals.isEmpty();
@@ -227,7 +227,7 @@ bool Player::isHiddenSkill(const QString &skill_name) const
     QString name = getShownHiddenGeneral();
     if (!name.isNull()) {
         const General *hidden = Sanguosha->getGeneral(name);
-        if (hidden && hidden->hasSkill(skill_name))
+        if ((hidden != nullptr) && hidden->hasSkill(skill_name))
             return false;
     }
     return hasSkill(skill_name);
@@ -387,7 +387,8 @@ int Player::getAttackRange(bool include_weapon) const
     if (fixeddis > 0)
         return fixeddis;
 
-    int original_range = 1, weapon_range = 0;
+    int original_range = 1;
+    int weapon_range = 0;
 
     if (include_weapon) {
         const Weapon *face = qobject_cast<const Weapon *>(weapon->face());
@@ -523,7 +524,7 @@ void Player::setGeneral(const General *new_general)
     if (general != new_general) {
         general = new_general;
 
-        if (new_general && kingdom.isEmpty())
+        if ((new_general != nullptr) && kingdom.isEmpty())
             setKingdom(new_general->getKingdom());
 
         emit general_changed();
@@ -539,7 +540,7 @@ void Player::setGeneralName(const QString &general_name)
 
 QString Player::getGeneralName() const
 {
-    if (general)
+    if (general != nullptr)
         return general->objectName();
     else
         return QString();
@@ -557,7 +558,7 @@ void Player::setGeneral2Name(const QString &general_name)
 
 QString Player::getGeneral2Name() const
 {
-    if (general2)
+    if (general2 != nullptr)
         return general2->objectName();
     else
         return QString();
@@ -570,9 +571,9 @@ const General *Player::getGeneral2() const
 
 QString Player::getFootnoteName() const
 {
-    if (general && general->objectName() != QStringLiteral("anjiang"))
+    if ((general != nullptr) && general->objectName() != QStringLiteral("anjiang"))
         return getGeneralName();
-    else if (general2 && general2->objectName() != QStringLiteral("anjiang"))
+    else if ((general2 != nullptr) && general2->objectName() != QStringLiteral("anjiang"))
         return general2->objectName();
     else {
         return Sanguosha->translate(QStringLiteral("SEAT(%1)").arg(QString::number(getInitialSeat())));
@@ -628,7 +629,7 @@ Player::Role Player::getRoleEnum() const
 
 const General *Player::getAvatarGeneral() const
 {
-    if (general)
+    if (general != nullptr)
         return general;
 
     QString general_name = property("avatar").toString();
@@ -725,10 +726,10 @@ bool Player::hasSkills(const QString &skill_name, bool include_lose) const
 
 bool Player::hasInnateSkill(const QString &skill_name) const
 {
-    if (general && general->hasSkill(skill_name))
+    if ((general != nullptr) && general->hasSkill(skill_name))
         return true;
 
-    if (general2 && general2->hasSkill(skill_name))
+    if ((general2 != nullptr) && general2->hasSkill(skill_name))
         return true;
 
     return false;
@@ -800,7 +801,7 @@ bool Player::isSkillInvalid(const QString &skill_name) const
 {
     if (skill_name != QStringLiteral("_ALL_SKILLS")) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
-        if (skill && (skill->isEternal() || skill->isAttachedSkill()))
+        if ((skill != nullptr) && (skill->isEternal() || skill->isAttachedSkill()))
             return false;
     }
 
@@ -938,16 +939,20 @@ void Player::removeEquip(const Card *equip)
 bool Player::hasEquip(const Card *card) const
 {
     Q_ASSERT(card != nullptr);
-    int weapon_id = -1, armor_id = -1, def_id = -1, off_id = -1, tr_id = -1;
-    if (weapon)
+    int weapon_id = -1;
+    int armor_id = -1;
+    int def_id = -1;
+    int off_id = -1;
+    int tr_id = -1;
+    if (weapon != nullptr)
         weapon_id = weapon->effectiveID();
-    if (armor)
+    if (armor != nullptr)
         armor_id = armor->effectiveID();
-    if (defensive_horse)
+    if (defensive_horse != nullptr)
         def_id = defensive_horse->effectiveID();
-    if (offensive_horse)
+    if (offensive_horse != nullptr)
         off_id = offensive_horse->effectiveID();
-    if (treasure)
+    if (treasure != nullptr)
         tr_id = treasure->effectiveID();
     QList<int> ids;
     if (card->isVirtualCard())
@@ -997,15 +1002,15 @@ const Card *Player::getTreasure() const
 QList<const Card *> Player::getEquips() const
 {
     QList<const Card *> equips;
-    if (weapon)
+    if (weapon != nullptr)
         equips << weapon;
-    if (armor)
+    if (armor != nullptr)
         equips << armor;
-    if (defensive_horse)
+    if (defensive_horse != nullptr)
         equips << defensive_horse;
-    if (offensive_horse)
+    if (offensive_horse != nullptr)
         equips << offensive_horse;
-    if (treasure)
+    if (treasure != nullptr)
         equips << treasure;
 
     return equips;
@@ -1037,7 +1042,7 @@ const Card *Player::getEquip(int index) const
     return equip;
 }
 
-bool Player::hasWeapon(const QString &weapon_name, bool, bool ignore_preshow) const
+bool Player::hasWeapon(const QString &weapon_name, bool /*unused*/, bool ignore_preshow) const
 {
     if (getMark(QStringLiteral("Equips_Nullified_to_Yourself")) > 0)
         return false;
@@ -1045,7 +1050,7 @@ bool Player::hasWeapon(const QString &weapon_name, bool, bool ignore_preshow) co
     if (Sanguosha->ViewHas(this, weapon_name, QStringLiteral("weapon"), ignore_preshow) != nullptr)
         return true;
 
-    if (!weapon || isBrokenEquip(weapon->effectiveID(), true))
+    if ((weapon == nullptr) || isBrokenEquip(weapon->effectiveID(), true))
         return false;
     if (weapon->faceName() == weapon_name || weapon->face()->isKindOf(weapon_name.toStdString().c_str()))
         return true;
@@ -1055,15 +1060,15 @@ bool Player::hasWeapon(const QString &weapon_name, bool, bool ignore_preshow) co
     return real_weapon.face()->name() == weapon_name || real_weapon.face()->isKindOf(weapon_name.toStdString().c_str());
 }
 
-bool Player::hasArmorEffect(const QString &armor_name, bool) const
+bool Player::hasArmorEffect(const QString &armor_name, bool /*unused*/) const
 {
     if (!tag[QStringLiteral("Qinggang")].toStringList().isEmpty() || getMark(QStringLiteral("Armor_Nullified")) > 0 || getMark(QStringLiteral("Equips_Nullified_to_Yourself")) > 0)
         return false;
 
-    if (Sanguosha->ViewHas(this, armor_name, QStringLiteral("armor")))
+    if (Sanguosha->ViewHas(this, armor_name, QStringLiteral("armor")) != nullptr)
         return true;
 
-    if (!armor || isBrokenEquip(armor->effectiveID(), true))
+    if ((armor == nullptr) || isBrokenEquip(armor->effectiveID(), true))
         return false;
     if (armor->faceName() == armor_name || armor->face()->isKindOf(armor_name.toStdString().c_str()))
         return true;
@@ -1071,15 +1076,15 @@ bool Player::hasArmorEffect(const QString &armor_name, bool) const
     return real_weapon.face()->name() == armor_name || real_weapon.face()->isKindOf(armor_name.toStdString().c_str());
 }
 
-bool Player::hasTreasure(const QString &treasure_name, bool) const
+bool Player::hasTreasure(const QString &treasure_name, bool /*unused*/) const
 {
     if (getMark(QStringLiteral("Equips_Nullified_to_Yourself")) > 0)
         return false;
 
-    if (Sanguosha->ViewHas(this, treasure_name, QStringLiteral("treasure")))
+    if (Sanguosha->ViewHas(this, treasure_name, QStringLiteral("treasure")) != nullptr)
         return true;
 
-    if (!treasure || isBrokenEquip(treasure->effectiveID(), true))
+    if ((treasure == nullptr) || isBrokenEquip(treasure->effectiveID(), true))
         return false;
     if (treasure->faceName() == treasure_name || treasure->face()->isKindOf(treasure_name.toStdString().c_str()))
         return true;
@@ -1135,8 +1140,10 @@ int Player::getMaxCards(const QString &except) const
     int origin = Sanguosha->correctMaxCards(this, true, except);
     if (origin == 0)
         origin = qMax(getHp(), 0);
-    int rule = 0, total = 0, extra = 0;
-    if (Config.MaxHpScheme == 3 && general2) {
+    int rule = 0;
+    int total = 0;
+    int extra = 0;
+    if (Config.MaxHpScheme == 3 && (general2 != nullptr)) {
         total = general->getMaxHp() + general2->getMaxHp();
         if (total % 2 != 0 && getMark(QStringLiteral("AwakenLostMaxHp")) == 0)
             rule = 1;
@@ -1148,7 +1155,7 @@ int Player::getMaxCards(const QString &except) const
 
 QString Player::getKingdom() const
 {
-    if (kingdom.isEmpty() && general)
+    if (kingdom.isEmpty() && (general != nullptr))
         return general->getKingdom();
     else
         return kingdom;
@@ -1203,19 +1210,19 @@ bool Player::canDiscard(const Player *to, const QString &flags, const QString &r
         return true;
     if (flags.contains(equip_flag)) {
         QSet<QString> Equips;
-        if (to->getWeapon()) {
+        if (to->getWeapon() != nullptr) {
             Equips << QStringLiteral("weapon");
         }
-        if (to->getArmor()) {
+        if (to->getArmor() != nullptr) {
             Equips << QStringLiteral("armor");
         }
-        if (to->getDefensiveHorse()) {
+        if (to->getDefensiveHorse() != nullptr) {
             Equips << QStringLiteral("dh");
         }
-        if (to->getOffensiveHorse()) {
+        if (to->getOffensiveHorse() != nullptr) {
             Equips << QStringLiteral("oh");
         }
-        if (to->getTreasure()) {
+        if (to->getTreasure() != nullptr) {
             Equips << QStringLiteral("treasure");
         }
 
@@ -1232,7 +1239,7 @@ bool Player::canDiscard(const Player *to, const QString &flags, const QString &r
 bool Player::canDiscard(const Player *to, int card_id, const QString &reason) const
 {
     if (reason == QStringLiteral("sidou")) {
-        if (to->getWeapon() && card_id == to->getWeapon()->effectiveID())
+        if ((to->getWeapon() != nullptr) && card_id == to->getWeapon()->effectiveID())
             return false;
     }
 
@@ -1370,7 +1377,7 @@ int Player::getCardCount(bool include_equip, bool include_judging) const
             count++;
         if (offensive_horse != nullptr)
             count++;
-        if (treasure)
+        if (treasure != nullptr)
             count++;
     }
     if (include_judging)
@@ -1485,19 +1492,19 @@ bool Player::hasEquipSkill(const QString &skill_name) const
         }
     }
 
-    if (weapon) {
+    if (weapon != nullptr) {
         const Weapon *weaponc = qobject_cast<const Weapon *>(weapon->face());
-        if (Sanguosha->getSkill(weaponc) && Sanguosha->getSkill(weaponc)->objectName() == skill_name)
+        if ((Sanguosha->getSkill(weaponc) != nullptr) && Sanguosha->getSkill(weaponc)->objectName() == skill_name)
             return true;
     }
-    if (armor) {
+    if (armor != nullptr) {
         const Armor *armorc = qobject_cast<const Armor *>(armor->face());
-        if (Sanguosha->getSkill(armorc) && Sanguosha->getSkill(armorc)->objectName() == skill_name)
+        if ((Sanguosha->getSkill(armorc) != nullptr) && Sanguosha->getSkill(armorc)->objectName() == skill_name)
             return true;
     }
-    if (treasure) {
+    if (treasure != nullptr) {
         const Treasure *treasurec = qobject_cast<const Treasure *>(treasure->face());
-        if (Sanguosha->getSkill(treasurec) && Sanguosha->getSkill(treasurec)->objectName() == skill_name)
+        if ((Sanguosha->getSkill(treasurec) != nullptr) && Sanguosha->getSkill(treasurec)->objectName() == skill_name)
             return true;
     }
     return false;
@@ -1509,7 +1516,7 @@ QSet<const TriggerSkill *> Player::getTriggerSkills() const
 
     foreach (QString skill_name, skills.keys() + skills2.keys() + acquired_skills.values() + acquired_skills2.values()) {
         const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
-        if (skill && !hasEquipSkill(skill->objectName()))
+        if ((skill != nullptr) && !hasEquipSkill(skill->objectName()))
             skillList << skill;
     }
 
@@ -1529,7 +1536,7 @@ QList<const Skill *> Player::getSkillList(bool include_equip, bool visible_only)
     foreach (QString skill_name, skills.keys() + skills2.keys() + acquired_skills.values() + acquired_skills2.values()) {
         //foreach (QString skill_name, skills_originalOrder + skills2_originalOrder + acquired_skills.toList() + acquired_skills2.toList()) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
-        if (skill && (include_equip || !hasEquipSkill(skill->objectName())) && (!visible_only || skill->isVisible()))
+        if ((skill != nullptr) && (include_equip || !hasEquipSkill(skill->objectName())) && (!visible_only || skill->isVisible()))
             skillList << skill;
     }
 
@@ -1585,7 +1592,7 @@ QString Player::getSkillDescription(bool yellow, const QString &flag) const
 
 bool Player::isProhibited(const Player *to, const Card *card, const QList<const Player *> &others) const
 {
-    return Sanguosha->isProhibited(this, to, card, others);
+    return Sanguosha->isProhibited(this, to, card, others) != nullptr;
 }
 
 bool Player::canSlashWithoutCrossbow(const Card *slash) const
@@ -1745,7 +1752,7 @@ void Player::copyFrom(Player *p)
 QList<const Player *> Player::getSiblings() const
 {
     QList<const Player *> siblings;
-    if (parent()) {
+    if (parent() != nullptr) {
         siblings = parent()->findChildren<const Player *>();
         siblings.removeOne(this);
     }
@@ -1775,7 +1782,7 @@ bool Player::hasShownSkill(const Skill *skill) const
 
     if (skill->inherits("TriggerSkill")) {
         const TriggerSkill *tr_skill = qobject_cast<const TriggerSkill *>(skill);
-        if (tr_skill && tr_skill->isGlobal() && !(skills.contains(tr_skill->objectName()) || skills2.contains(tr_skill->objectName())))
+        if ((tr_skill != nullptr) && tr_skill->isGlobal() && !(skills.contains(tr_skill->objectName()) || skills2.contains(tr_skill->objectName())))
             return true;
     }
 
@@ -1885,12 +1892,12 @@ bool Player::hasShownGeneral2() const
 
 bool Player::hasShownOneGeneral() const
 {
-    return general_showed || (general2 && general2_showed);
+    return general_showed || ((general2 != nullptr) && general2_showed);
 }
 
 bool Player::hasShownAllGenerals() const
 {
-    return general_showed && (!general2 || general2_showed);
+    return general_showed && ((general2 == nullptr) || general2_showed);
 }
 
 void Player::setGeneralShowed(bool showed)
@@ -1973,7 +1980,7 @@ const Player *Player::getLord(bool include_death) const
     QList<const Player *> sib = include_death ? getSiblings() : getAliveSiblings();
     sib << this;
     foreach (const Player *p, sib) {
-        if (p->getGeneral() && p->getGeneral()->isLord() && p->getKingdom() == kingdom)
+        if ((p->getGeneral() != nullptr) && p->getGeneral()->isLord() && p->getKingdom() == kingdom)
             return p;
     }
 
@@ -2110,7 +2117,8 @@ QStringList Player::disableShow(bool head) const
 
 bool Player::canShowGeneral(const QString &flags) const
 {
-    bool head = true, deputy = true;
+    bool head = true;
+    bool deputy = true;
     foreach (const QString &dis_str, disable_show) {
         QStringList dis_list = dis_str.split(QLatin1Char(','));
         if (dis_list.at(0).contains(QStringLiteral("h")))
@@ -2162,5 +2170,5 @@ bool Player::canTransform(bool head) const
     if (head)
         return !getGeneralName().contains(QStringLiteral("sujiang"));
     else
-        return getGeneral2() && !getGeneral2Name().contains(QStringLiteral("sujiang"));
+        return (getGeneral2() != nullptr) && !getGeneral2Name().contains(QStringLiteral("sujiang"));
 }

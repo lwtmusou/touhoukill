@@ -116,12 +116,12 @@ void Button::setFont(const QFont &font)
     title_item->setPixmap(*title);
 }
 
-void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *)
+void Button::hoverEnterEvent(QGraphicsSceneHoverEvent * /*event*/)
 {
     setFocus(Qt::MouseFocusReason);
     if (!mute)
         Sanguosha->playSystemAudioEffect(QStringLiteral("button-hover"));
-    if (!timer_id)
+    if (timer_id == 0)
         timer_id = QObject::startTimer(40);
 }
 
@@ -130,7 +130,7 @@ void Button::mousePressEvent(QGraphicsSceneMouseEvent *event)
     event->accept();
 }
 
-void Button::mouseReleaseEvent(QGraphicsSceneMouseEvent *)
+void Button::mouseReleaseEvent(QGraphicsSceneMouseEvent * /*event*/)
 {
     if (!mute)
         Sanguosha->playSystemAudioEffect(QStringLiteral("button-down"));
@@ -142,7 +142,7 @@ QRectF Button::boundingRect() const
     return QRectF(QPointF(), size);
 }
 
-void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     QRectF rect = boundingRect();
 
@@ -150,7 +150,7 @@ void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget 
     painter->fillRect(rect, QColor(255, 255, 255, glow * 10));
 }
 
-void Button::timerEvent(QTimerEvent *)
+void Button::timerEvent(QTimerEvent * /*event*/)
 {
     update();
     if (hasFocus()) {
@@ -159,7 +159,7 @@ void Button::timerEvent(QTimerEvent *)
     } else {
         if (glow > 0)
             glow--;
-        else if (timer_id) {
+        else if (timer_id != 0) {
             QObject::killTimer(timer_id);
             timer_id = 0;
         }

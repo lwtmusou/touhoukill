@@ -197,7 +197,7 @@ void IQSanComponentSkin::QSanSimpleTextFont::paintText(QPainter *painter, QRect 
     if (m_vertical) {
         QRect char_pos = pos;
         int interval = pos.height() / text.size(); // I N T E R V A L
-        for (auto &c : text) {
+        for (const auto &c : text) {
             painter->drawText(char_pos, align | Qt::TextDontClip, c);
             char_pos.setY(char_pos.y() + interval);
             char_pos.setHeight(interval);
@@ -339,7 +339,7 @@ QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName, bool cache, boo
         name = name.mid(4);
     else if (name.endsWith(QStringLiteral("_hegemony"))) {
         const General *general = Sanguosha->getGeneral(name);
-        if (!general)
+        if (general == nullptr)
             name = name.replace(QStringLiteral("_hegemony"), QString());
     }
 
@@ -463,32 +463,32 @@ QRect IQSanComponentSkin::AnchoredRect::getTranslatedRect(QRect parentRect, QSiz
 {
     QPoint parentAnchor;
     Qt::Alignment hAlign = m_anchorParent & Qt::AlignHorizontal_Mask;
-    if (hAlign & Qt::AlignRight)
+    if ((hAlign & Qt::AlignRight) != 0)
         parentAnchor.setX(parentRect.right());
-    else if (hAlign & Qt::AlignHCenter)
+    else if ((hAlign & Qt::AlignHCenter) != 0)
         parentAnchor.setX(parentRect.center().x());
     else
         parentAnchor.setX(parentRect.left());
     Qt::Alignment vAlign = m_anchorParent & Qt::AlignVertical_Mask;
-    if (vAlign & Qt::AlignBottom)
+    if ((vAlign & Qt::AlignBottom) != 0)
         parentAnchor.setY(parentRect.bottom());
-    else if (vAlign & Qt::AlignVCenter)
+    else if ((vAlign & Qt::AlignVCenter) != 0)
         parentAnchor.setY(parentRect.center().y());
     else
         parentAnchor.setY(parentRect.top());
 
     QPoint childAnchor;
     hAlign = m_anchorChild & Qt::AlignHorizontal_Mask;
-    if (hAlign & Qt::AlignRight)
+    if ((hAlign & Qt::AlignRight) != 0)
         childAnchor.setX(size.width());
-    else if (hAlign & Qt::AlignHCenter)
+    else if ((hAlign & Qt::AlignHCenter) != 0)
         childAnchor.setX(size.width() / 2);
     else
         childAnchor.setX(0);
     vAlign = m_anchorChild & Qt::AlignVertical_Mask;
-    if (vAlign & Qt::AlignBottom)
+    if ((vAlign & Qt::AlignBottom) != 0)
         childAnchor.setY(size.height());
-    else if (vAlign & Qt::AlignVCenter)
+    else if ((vAlign & Qt::AlignVCenter) != 0)
         childAnchor.setY(size.height() / 2);
     else
         childAnchor.setY(0);
@@ -703,7 +703,7 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, bo
 
     //process general image and Hero skin
     QString general_name = fileName.split(QStringLiteral("/")).last().split(QStringLiteral(".")).first();
-    bool isGeneral = Sanguosha->getGeneral(general_name) || Sanguosha->getGeneral(general_name + QStringLiteral("_hegemony"));
+    bool isGeneral = (Sanguosha->getGeneral(general_name) != nullptr) || (Sanguosha->getGeneral(general_name + QStringLiteral("_hegemony")) != nullptr);
     if (isGeneral && heroSkin) {
         int skin_index = Config.value(QStringLiteral("HeroSkin/%1").arg(general_name), 0).toInt();
         if (skin_index > 0) {
@@ -785,7 +785,7 @@ QPixmap IQSanComponentSkin::getPixmapFromFileName(const QString &fileName, bool 
     }
 }
 
-bool QSanRoomSkin::_loadAnimationConfig(const QVariant &)
+bool QSanRoomSkin::_loadAnimationConfig(const QVariant & /*config*/)
 {
     return true;
 }
@@ -1163,14 +1163,14 @@ QSanSkinFactory &QSanSkinFactory::getInstance()
         _sm_singleton = new QSanSkinFactory("skins/skinListAlt.json");
 #endif
 
-        QObject::connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, []() { _sm_singleton->destroyInstance(); });
+        QObject::connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, []() { QSanSkinFactory::destroyInstance(); });
     }
     return *_sm_singleton;
 }
 
 void QSanSkinFactory::destroyInstance()
 {
-    if (_sm_singleton) {
+    if (_sm_singleton != nullptr) {
         delete _sm_singleton;
         _sm_singleton = nullptr;
     }

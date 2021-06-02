@@ -60,7 +60,7 @@ void GeneralCardItem::changeGeneral(const QString &generalName)
     setOuterGlowColor(Sanguosha->getKingdomColor(general->getKingdom()));
 }
 
-void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
@@ -237,7 +237,8 @@ void ChooseGeneralBox::paintLayout(QPainter *painter)
 QRectF ChooseGeneralBox::boundingRect() const
 {
     //confirm the general count of the first and second row
-    int first_row = 0, second_row = 0;
+    int first_row = 0;
+    int second_row = 0;
 
     //arrange them in two rows if there are more than 6 generals.
     //Number of cards in the second row cannot be greater than that in the first row
@@ -253,7 +254,7 @@ QRectF ChooseGeneralBox::boundingRect() const
 
     int height = top_blank_width + G_COMMON_LAYOUT.m_cardNormalHeight + bottom_blank_width;
 
-    if (second_row)
+    if (second_row != 0)
         height += (card_to_center_line + G_COMMON_LAYOUT.m_cardNormalHeight);
 
     //No need to reserve space for button
@@ -284,7 +285,7 @@ static bool sortByKingdom(const QString &gen1, const QString &gen2)
         return false;
 }
 
-void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_only, bool single_result, const QString &reason, const Player *, const bool)
+void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_only, bool single_result, const QString &reason, const Player * /*unused*/, const bool /*unused*/)
 {
     //repaint background
     QStringList generals = _generals;
@@ -395,7 +396,7 @@ void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_onl
         _initializeItems();
 
     if (view_only || ServerInfo.OperationTimeout != 0) {
-        if (!progress_bar) {
+        if (progress_bar == nullptr) {
             progress_bar = new QSanCommandProgressBar();
             progress_bar->setMaximumWidth(boundingRect().width() - 10);
             progress_bar->setMaximumHeight(12);

@@ -102,8 +102,10 @@ QWidget *ServerDialog::createPackageTab()
     box1->setLayout(layout1);
     box2->setLayout(layout2);
 
-    int i = 0, j = 0;
-    int row = 0, column = 0;
+    int i = 0;
+    int j = 0;
+    int row = 0;
+    int column = 0;
     foreach (QString extension, extensions) {
         const Package *package = Sanguosha->findPackage(extension);
         if (package == nullptr)
@@ -819,7 +821,7 @@ void Select3v3GeneralDialog::save3v3Generals()
     for (int i = 0; i < tab_widget->count(); i++) {
         QWidget *widget = tab_widget->widget(i);
         QListWidget *list = qobject_cast<QListWidget *>(widget);
-        if (list) {
+        if (list != nullptr) {
             for (int j = 0; j < list->count(); j++) {
                 QListWidgetItem *item = list->item(j);
                 if (item->checkState() == Qt::Checked)
@@ -994,7 +996,7 @@ void Server::daemonize()
 Room *Server::createNewRoom()
 {
     Room *new_room = new Room(this, Config.GameMode);
-    if (!new_room->getLuaState()) {
+    if (new_room->getLuaState() == nullptr) {
         delete new_room;
         return nullptr;
     }
@@ -1104,7 +1106,7 @@ void Server::processRequest(const char *request)
 
     if (reconnection_enabled) {
         ServerPlayer *player = players.value(ps.last());
-        if (player && player->getState() == QStringLiteral("offline") && !player->getRoom()->isFinished()) {
+        if ((player != nullptr) && player->getState() == QStringLiteral("offline") && !player->getRoom()->isFinished()) {
             player->getRoom()->reconnect(player, socket);
             return;
         }

@@ -24,7 +24,7 @@ CardContainer::CardContainer()
     connect(close_button, &SanCloseButton::clicked, this, &CardContainer::clear);
 }
 
-void CardContainer::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void CardContainer::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     painter->drawPixmap(0, 0, _m_background);
 }
@@ -167,7 +167,7 @@ void CardContainer::fillGeneralCards(const QList<CardItem *> &card_item, const Q
     close_button->show();
 }
 
-bool CardContainer::_addCardItems(QList<CardItem *> &, const CardsMoveStruct &)
+bool CardContainer::_addCardItems(QList<CardItem *> & /*card_items*/, const CardsMoveStruct & /*moveInfo*/)
 {
     return true;
 }
@@ -190,7 +190,7 @@ void CardContainer::clear()
         items = items_stack.pop();
         bool retained = retained_stack.pop();
         fillCards();
-        if (retained && close_button)
+        if (retained && (close_button != nullptr))
             close_button->show();
     } else {
         close_button->hide();
@@ -204,7 +204,7 @@ void CardContainer::freezeCards(bool is_frozen)
         item->setFrozen(is_frozen);
 }
 
-QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, Player::Place)
+QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, Player::Place /*place*/)
 {
     QList<CardItem *> result;
     foreach (int card_id, card_ids) {
@@ -227,7 +227,7 @@ QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, Pla
 
         copy->setAcceptedMouseButtons(Qt::MouseButtons());
 
-        if (m_currentPlayer)
+        if (m_currentPlayer != nullptr)
             to_take->showAvatar(m_currentPlayer->getGeneral());
     }
     return result;
@@ -258,7 +258,7 @@ void CardContainer::startGongxin(const QList<int> &enabled_ids)
 
     foreach (CardItem *item, items) {
         const Card *card = item->getCard();
-        if (card && enabled_ids.contains(card->effectiveID())) {
+        if ((card != nullptr) && enabled_ids.contains(card->effectiveID())) {
             connect(item, &CardItem::double_clicked, this, &CardContainer::gongxinItem);
         } else
             item->setEnabled(false);
@@ -273,7 +273,7 @@ void CardContainer::addCloseButton()
 void CardContainer::grabItem()
 {
     CardItem *card_item = qobject_cast<CardItem *>(sender());
-    if (card_item && !collidesWithItem(card_item)) {
+    if ((card_item != nullptr) && !collidesWithItem(card_item)) {
         card_item->disconnect(this);
         emit item_chosen(card_item->getCard()->id());
     }
@@ -282,7 +282,7 @@ void CardContainer::grabItem()
 void CardContainer::chooseItem()
 {
     CardItem *card_item = qobject_cast<CardItem *>(sender());
-    if (card_item) {
+    if (card_item != nullptr) {
         card_item->disconnect(this);
         emit item_chosen(card_item->getCard()->id());
     }
@@ -291,7 +291,7 @@ void CardContainer::chooseItem()
 void CardContainer::gongxinItem()
 {
     CardItem *card_item = qobject_cast<CardItem *>(sender());
-    if (card_item) {
+    if (card_item != nullptr) {
         emit item_gongxined(card_item->getCard()->id());
         clear();
     }
@@ -309,7 +309,7 @@ void SanCloseButton::mousePressEvent(QGraphicsSceneMouseEvent *event)
     event->accept();
 }
 
-void SanCloseButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *)
+void SanCloseButton::mouseReleaseEvent(QGraphicsSceneMouseEvent * /*event*/)
 {
     emit clicked();
 }
@@ -406,7 +406,8 @@ void GuanxingBox::clear()
 
 void GuanxingBox::reply()
 {
-    QList<int> up_cards, down_cards;
+    QList<int> up_cards;
+    QList<int> down_cards;
     foreach (CardItem *card_item, up_items)
         up_cards << card_item->getCard()->id();
 

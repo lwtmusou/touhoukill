@@ -33,7 +33,7 @@ AvatarModel::AvatarModel(const QList<const General *> &list)
 {
 }
 
-int AvatarModel::rowCount(const QModelIndex &) const
+int AvatarModel::rowCount(const QModelIndex & /*parent*/) const
 {
     return list.size();
 }
@@ -256,9 +256,7 @@ ConnectionDialog::ConnectionDialog(QWidget *parent)
     connectbtn->setFocus();
 }
 
-ConnectionDialog::~ConnectionDialog()
-{
-}
+ConnectionDialog::~ConnectionDialog() = default;
 
 void ConnectionDialog::showEvent(QShowEvent *e)
 {

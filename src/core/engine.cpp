@@ -25,7 +25,7 @@ Engine *Sanguosha = nullptr;
 void Engine::addPackage(const QString &name)
 {
     Package *pack = PackageAdder::packages()[name];
-    if (pack)
+    if (pack != nullptr)
         addPackage(pack);
     else
         qWarning("Package %s cannot be loaded!", qPrintable(name));
@@ -142,7 +142,7 @@ void Engine::addSkills(const QList<const Skill *> &all_skills)
             attackrange_skills << qobject_cast<const AttackRangeSkill *>(skill);
         else if (skill->inherits("TriggerSkill")) {
             const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
-            if (trigger_skill && trigger_skill->isGlobal())
+            if ((trigger_skill != nullptr) && trigger_skill->isGlobal())
                 global_trigger_skills << trigger_skill;
         } else if (skill->inherits("ViewAsSkill"))
             viewas_skills << qobject_cast<const ViewAsSkill *>(skill);
@@ -293,7 +293,7 @@ int Engine::getRoleIndex() const
 const CardPattern *Engine::getPattern(const QString &name) const
 {
     const CardPattern *ptn = patterns.value(name, NULL);
-    if (ptn)
+    if (ptn != nullptr)
         return ptn;
 
     ExpPattern *expptn = new ExpPattern(name);
@@ -337,7 +337,7 @@ QList<const Skill *> Engine::getRelatedSkills(const QString &skill_name) const
 const Skill *Engine::getMainSkill(const QString &skill_name) const
 {
     const Skill *skill = getSkill(skill_name);
-    if (!skill || skill->isVisible() || related_skills.keys().contains(skill_name))
+    if ((skill == nullptr) || skill->isVisible() || related_skills.keys().contains(skill_name))
         return skill;
     foreach (QString key, related_skills.keys()) {
         foreach (QString name, related_skills.values(key))
@@ -352,7 +352,7 @@ const General *Engine::getGeneral(const QString &name) const
     return generals.value(name, NULL);
 }
 
-const QStringList Engine::getGenerals() const
+QStringList Engine::getGenerals() const
 {
     return generals.keys();
 }
@@ -383,7 +383,7 @@ int Engine::getGeneralCount(bool include_banned) const
 bool Engine::isGeneralHidden(const QString &general_name) const
 {
     const General *general = getGeneral(general_name);
-    if (!general)
+    if (general == nullptr)
         return false;
     if (!general->isVisible())
         return false;
@@ -786,7 +786,7 @@ QStringList Engine::getLimitedGeneralNames() const
         QList<const General *> hulao_generals = QList<const General *>();
         foreach (QString pack_name, getConfigFromConfigFile(QStringLiteral("hulao_packages")).toStringList()) {
             const Package *pack = findPackage(pack_name);
-            if (pack) {
+            if (pack != nullptr) {
                 foreach (General *general, pack->generals())
                     hulao_generals << general;
             }
@@ -917,7 +917,9 @@ QStringList Engine::getLatestGenerals(const QSet<QString> &ban_set) const
 QList<int> Engine::getRandomCards() const
 {
     // TODO: reimplement this function in separated class Mode
-    bool exclude_disaters = false, using_2012_3v3 = false, using_2013_3v3 = false;
+    bool exclude_disaters = false;
+    bool using_2012_3v3 = false;
+    bool using_2013_3v3 = false;
 
     if (Config.GameMode == QStringLiteral("06_3v3")) {
         using_2012_3v3 = (Config.value(QStringLiteral("3v3/OfficialRule"), QStringLiteral("2013")).toString() == QStringLiteral("2012"));
@@ -996,7 +998,7 @@ void Engine::playAudioEffect(const QString &filename) const
 #endif
 }
 
-void Engine::playSkillAudioEffect(const QString &, int) const
+void Engine::playSkillAudioEffect(const QString & /*unused*/, int /*unused*/) const
 {
     // TODO: move this function to UI
 #if 0
@@ -1029,7 +1031,7 @@ QStringList Engine::getSkillNames() const
 const TriggerSkill *Engine::getTriggerSkill(const QString &skill_name) const
 {
     const Skill *skill = getSkill(skill_name);
-    if (skill)
+    if (skill != nullptr)
         return qobject_cast<const TriggerSkill *>(skill);
     else
         return nullptr;

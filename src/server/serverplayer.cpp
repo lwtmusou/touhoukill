@@ -97,7 +97,7 @@ void ServerPlayer::throwAllEquips()
         if (!isJilei(card))
             card->addSubcard(equip);
     }
-    if (card->subcards().size() > 0)
+    if (!card->subcards().empty())
         room->throwCard(card, this);
     room->cardDeleting(card);
 }
@@ -180,7 +180,7 @@ void ServerPlayer::throwAllCards()
     Card *card = isKongcheng() ? room->cloneCard(QStringLiteral("DummyCard")) : wholeHandCards();
     foreach (const Card *equip, getEquips())
         card->addSubcard(equip);
-    if (card->subcards().size() != 0)
+    if (!card->subcards().empty())
         room->throwCard(card, this);
     room->cardDeleting(card);
 
@@ -246,7 +246,7 @@ int ServerPlayer::getHandcardNum() const
 
 void ServerPlayer::setSocket(ClientSocket *socket)
 {
-    if (this->socket) {
+    if (this->socket != nullptr) {
         disconnect(this->socket);
         this->socket->disconnect(this);
         this->socket->disconnectFromHost();
@@ -255,7 +255,7 @@ void ServerPlayer::setSocket(ClientSocket *socket)
 
     disconnect(this, SLOT(sendMessage(QString)));
 
-    if (socket) {
+    if (socket != nullptr) {
         connect(socket, &ClientSocket::disconnected, this, &ServerPlayer::disconnected);
         connect(socket, &ClientSocket::message_got, this, &ServerPlayer::getMessage);
         connect(this, &ServerPlayer::message_ready, this, &ServerPlayer::sendMessage);
@@ -277,7 +277,7 @@ void ServerPlayer::unicast(const QString &message)
 {
     emit message_ready(message);
 
-    if (recorder)
+    if (recorder != nullptr)
         recorder->recordLine(message);
 }
 
@@ -301,7 +301,7 @@ void ServerPlayer::startRecord()
 
 void ServerPlayer::saveRecord(const QString &filename)
 {
-    if (recorder)
+    if (recorder != nullptr)
         recorder->save(filename);
 }
 
@@ -345,7 +345,7 @@ void ServerPlayer::clearSelected()
 
 void ServerPlayer::sendMessage(const QString &message)
 {
-    if (socket) {
+    if (socket != nullptr) {
 #ifndef QT_NO_DEBUG
         printf("%s", qPrintable(objectName()));
 #endif
@@ -450,7 +450,7 @@ bool ServerPlayer::isLastHandCard(const Card *card, bool contain) const
 {
     if (!card->isVirtualCard()) {
         return handcards.length() == 1 && handcards.first()->effectiveID() == card->effectiveID();
-    } else if (card->subcards().size() > 0) {
+    } else if (!card->subcards().empty()) {
         if (!contain) {
             foreach (int card_id, card->subcards()) {
                 if (!handcards.contains(room->getCard(card_id)))
@@ -576,7 +576,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     PindianStruct *pindian = &pindian_struct; //for tmp record.
     if (card1 == nullptr) {
         card1 = room->askForPindian(this, this, target, reason, pindian);
-        if (card1 && isShownHandcard(card1->effectiveID())) {
+        if ((card1 != nullptr) && isShownHandcard(card1->effectiveID())) {
             log2.type = QStringLiteral("$PindianResult");
             log2.from = pindian_struct.from;
             log2.card_str = QString::number(card1->effectiveID());
@@ -594,7 +594,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
             int card_id = card1->effectiveID();
             card1 = room->getCard(card_id);
         }
-        if (card1 && isShownHandcard(card1->effectiveID())) {
+        if ((card1 != nullptr) && isShownHandcard(card1->effectiveID())) {
             log2.type = QStringLiteral("$PindianResult");
             log2.from = pindian_struct.from;
             log2.card_str = QString::number(card1->effectiveID());
@@ -1059,7 +1059,7 @@ QString ServerPlayer::getGameMode() const
 
 QString ServerPlayer::getIp() const
 {
-    if (socket)
+    if (socket != nullptr)
         return socket->peerAddress();
     else
         return QString();
@@ -1067,10 +1067,10 @@ QString ServerPlayer::getIp() const
 
 quint32 ServerPlayer::ipv4Address() const
 {
-    if (socket)
+    if (socket != nullptr)
         return socket->ipv4Address();
     else
-        return 0u;
+        return 0U;
 }
 
 void ServerPlayer::introduceTo(ServerPlayer *player)
@@ -1081,7 +1081,7 @@ void ServerPlayer::introduceTo(ServerPlayer *player)
     JsonArray introduce_str;
     introduce_str << objectName() << screen_name.toUtf8().toBase64() << avatar;
 
-    if (player)
+    if (player != nullptr)
         room->doNotify(player, S_COMMAND_ADD_PLAYER, introduce_str);
     else {
         QList<ServerPlayer *> players = room->getPlayers();
@@ -1638,7 +1638,7 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
         //for yibian
         ServerPlayer *reimu = room->findPlayerBySkillName(QStringLiteral("yibian"));
         const Skill *skill = Sanguosha->getSkill(skill_name);
-        if (reimu && !hasShownRole() && !skill->isEternal() && !skill->isAttachedSkill() && !hasEquipSkill(skill_name)) {
+        if ((reimu != nullptr) && !hasShownRole() && !skill->isEternal() && !skill->isAttachedSkill() && !hasEquipSkill(skill_name)) {
             //&& ownSkill(skill_name)
             QString role = getRole();
             room->touhouLogmessage(QStringLiteral("#YibianShow"), this, role, room->getAllPlayers());
@@ -1871,7 +1871,7 @@ void ServerPlayer::notifyPreshow()
     room->doNotify(this, QSanProtocol::S_COMMAND_LOG_EVENT, args2);
 }
 
-void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendLog, bool)
+void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendLog, bool /*unused*/)
 {
     QStringList names = room->getTag(objectName()).toStringList();
     if (names.isEmpty())
@@ -2134,7 +2134,8 @@ void ServerPlayer::hideGeneral(bool head_general)
 void ServerPlayer::removeGeneral(bool head_general)
 
 {
-    QString general_name, from_general;
+    QString general_name;
+    QString from_general;
     room->tryPause();
     room->setEmotion(this, QStringLiteral("remove"));
 
@@ -2167,7 +2168,7 @@ void ServerPlayer::removeGeneral(bool head_general)
         disconnectSkillsFromOthers();
 
         foreach (const Skill *skill, getHeadSkillList()) {
-            if (skill)
+            if (skill != nullptr)
                 room->detachSkillFromPlayer(this, skill->objectName(), false, false, false, true); //sendlog  head deputy
         }
     } else {
@@ -2197,7 +2198,7 @@ void ServerPlayer::removeGeneral(bool head_general)
         disconnectSkillsFromOthers(false);
 
         foreach (const Skill *skill, getDeputySkillList()) {
-            if (skill)
+            if (skill != nullptr)
                 room->detachSkillFromPlayer(this, skill->objectName(), false, false, false, false);
         }
     }
@@ -2261,7 +2262,7 @@ void ServerPlayer::disconnectSkillsFromOthers(bool head_skill /* = true */)
     }
 }
 
-int ServerPlayer::getPlayerNumWithSameKingdom(const QString &, const QString &_to_calculate) const
+int ServerPlayer::getPlayerNumWithSameKingdom(const QString & /*unused*/, const QString &_to_calculate) const
 {
     QString to_calculate = _to_calculate;
 

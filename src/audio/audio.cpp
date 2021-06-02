@@ -34,7 +34,7 @@ static int seek_qbuffer(void *datasource, ogg_int64_t off, int whence)
     else if (whence == SEEK_END)
         res = buffer->seek(off + buffer->size() - 1);
 
-    return (res == true) ? 0 : 1;
+    return (res) ? 0 : 1;
 }
 
 static long tell_qbuffer(void *datasource)
@@ -74,7 +74,7 @@ public:
         vcall.close_func = nullptr;
         vcall.tell_func = &tell_qbuffer;
 
-        if (ov_open_callbacks(&buffer, &vf, nullptr, 0, vcall)) {
+        if (ov_open_callbacks(&buffer, &vf, nullptr, 0, vcall) != 0) {
             return;
         } else {
             qint64 ret = 1;
@@ -93,7 +93,7 @@ public:
             }
         }
 
-        const auto vi = ov_info(&vf, -1);
+        const auto *vi = ov_info(&vf, -1);
 
         format.setChannelCount(vi->channels);
         format.setSampleRate(vi->rate);
@@ -254,7 +254,7 @@ signals:
 private slots:
     void playNextBgm()
     {
-        if (bgmFileNames.size() == 0)
+        if (bgmFileNames.empty())
             return;
         QString f = bgmFileNames.takeFirst();
         qShuffle(bgmFileNames);
@@ -266,7 +266,7 @@ private slots:
 private:
     void playBgmInternal()
     {
-        if (bgmFileNames.size() == 0)
+        if (bgmFileNames.empty())
             return;
         bgmSound = new OggPlayer(bgmFileNames.first(), this);
         bgmSound->setVolume(bgm_volume);

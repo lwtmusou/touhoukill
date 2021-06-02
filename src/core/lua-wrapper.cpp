@@ -31,7 +31,7 @@ const luaL_Reg sgs_libs[] = {{LUA_GNAME, luaopen_base},
 
 void sgs_openlibs(lua_State *L)
 {
-    for (const luaL_Reg *lib = sgs_libs; lib->func; lib++) {
+    for (const luaL_Reg *lib = sgs_libs; lib->func != nullptr; lib++) {
         luaL_requiref(L, lib->name, lib->func, 1);
         lua_pop(L, 1); /* remove lib */
     }

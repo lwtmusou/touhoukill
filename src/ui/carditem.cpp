@@ -102,7 +102,7 @@ void CardItem::changeGeneral(const QString &general_name)
 {
     setObjectName(general_name);
     const General *general = Sanguosha->getGeneral(general_name);
-    if (general) {
+    if (general != nullptr) {
         _m_isUnknownGeneral = false;
         setToolTip(general->getSkillDescription(true));
     } else {
@@ -230,7 +230,7 @@ bool CardItem::isEquipped() const
     return Self->hasEquip(card);
 }
 
-void CardItem::setFrozen(bool is_frozen, bool)
+void CardItem::setFrozen(bool is_frozen, bool /*unused*/)
 {
     frozen = is_frozen;
 }
@@ -301,19 +301,19 @@ void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         emit toggle_discards();
 }
 
-void CardItem::hoverEnterEvent(QGraphicsSceneHoverEvent *)
+void CardItem::hoverEnterEvent(QGraphicsSceneHoverEvent * /*event*/)
 {
     emit enter_hover();
     emit hoverChanged(true); //hegemony
 }
 
-void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
+void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent * /*event*/)
 {
     emit leave_hover();
     emit hoverChanged(false); //hegemony
 }
 
-void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     //check painter?
     if (nullptr == painter) {
@@ -335,7 +335,7 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidge
     else
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardMainArea, G_ROOM_SKIN.getPixmap(QStringLiteral("generalCardBack"), QString(), true));
     const CardDescriptor &card = Sanguosha->getEngineCard(m_cardId);
-    if (card.face()) {
+    if (card.face() != nullptr) {
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardSuitArea, G_ROOM_SKIN.getCardSuitPixmap(card.suit));
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardNumberArea, G_ROOM_SKIN.getCardNumberPixmap(card.number, card.isBlack()));
         QRect rect = G_COMMON_LAYOUT.m_cardFootnoteArea;
@@ -390,7 +390,7 @@ bool CardItem::isOuterGlowEffectEnabled() const
 
 void CardItem::setOuterGlowColor(const QColor &color)
 {
-    if (!outerGlowEffect || outerGlowColor == color)
+    if ((outerGlowEffect == nullptr) || outerGlowColor == color)
         return;
     outerGlowColor = color;
     outerGlowEffect->setColor(color);

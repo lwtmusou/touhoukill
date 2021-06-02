@@ -40,7 +40,8 @@ int main(int argc, char *argv[])
 #endif
 #endif
 
-    QTranslator qt_translator, translator;
+    QTranslator qt_translator;
+    QTranslator translator;
     qt_translator.load(QStringLiteral("qt_zh_CN.qm"));
     translator.load(QStringLiteral("sanguosha.qm"));
 

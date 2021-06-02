@@ -67,7 +67,7 @@ public:
     const Package *findPackage(const QString &name) const;
 
     const General *getGeneral(const QString &name) const;
-    const QStringList getGenerals() const;
+    QStringList getGenerals() const;
     int getGeneralCount(bool include_banned = false) const;
     const Skill *getSkill(const QString &skill_name) const;
     const Skill *getSkill(const EquipCard *card) const;

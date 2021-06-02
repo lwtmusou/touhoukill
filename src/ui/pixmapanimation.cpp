@@ -42,7 +42,7 @@ PixmapAnimation::PixmapAnimation()
 
 void PixmapAnimation::advance(int phase)
 {
-    if (phase)
+    if (phase != 0)
         current++;
 
     if (current >= frames.size())
@@ -88,7 +88,7 @@ void PixmapAnimation::setPlayTime(int msecs)
     m_timer = msecs;
 }
 
-void PixmapAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void PixmapAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     if (m_fix_rect)
         painter->drawPixmap(0, 0, m_size.width(), m_size.height(), frames.at(current));
@@ -111,7 +111,7 @@ bool PixmapAnimation::valid()
     return !frames.isEmpty();
 }
 
-void PixmapAnimation::timerEvent(QTimerEvent *)
+void PixmapAnimation::timerEvent(QTimerEvent * /*event*/)
 {
     advance(1);
 }

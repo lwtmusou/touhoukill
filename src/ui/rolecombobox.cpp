@@ -27,7 +27,7 @@ void RoleComboBoxItem::setRole(const QString &role)
         load(QStringLiteral("image/system/roles/%1.png").arg(m_role), m_size, false);
 }
 
-void RoleComboBoxItem::mousePressEvent(QGraphicsSceneMouseEvent *)
+void RoleComboBoxItem::mousePressEvent(QGraphicsSceneMouseEvent * /*event*/)
 {
     emit clicked();
 }
@@ -41,7 +41,8 @@ RoleComboBox::RoleComboBox(QGraphicsItem *parent)
     m_currentRole->setParentItem(this);
     connect(m_currentRole, &RoleComboBoxItem::clicked, this, &RoleComboBox::expand);
 
-    items << new RoleComboBoxItem(QStringLiteral("loyalist"), index, size) << new RoleComboBoxItem(QStringLiteral("rebel"), index, size) << new RoleComboBoxItem(QStringLiteral("renegade"), index, size);
+    items << new RoleComboBoxItem(QStringLiteral("loyalist"), index, size) << new RoleComboBoxItem(QStringLiteral("rebel"), index, size)
+          << new RoleComboBoxItem(QStringLiteral("renegade"), index, size);
     for (int i = 0; i < items.length(); i++) {
         RoleComboBoxItem *item = items.at(i);
         item->setPos(0, (i + 1) * (S_ROLE_COMBO_BOX_HEIGHT + S_ROLE_COMBO_BOX_GAP));
@@ -54,7 +55,7 @@ RoleComboBox::RoleComboBox(QGraphicsItem *parent)
     }
 }
 
-void RoleComboBox::paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *)
+void RoleComboBox::paint(QPainter * /*painter*/, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
 }
 

@@ -24,7 +24,7 @@ QString LogMessage::toString() const
         if (player != nullptr)
             tos << player->objectName();
 
-    return QStringLiteral("%1:%2->%3:%4:%5:%6").arg(type).arg(from ? from->objectName() : QString()).arg(tos.join(QStringLiteral("+"))).arg(card_str).arg(arg).arg(arg2);
+    return QStringLiteral("%1:%2->%3:%4:%5:%6").arg(type).arg(from != nullptr ? from->objectName() : QString()).arg(tos.join(QStringLiteral("+"))).arg(card_str).arg(arg).arg(arg2);
 }
 
 QVariant LogMessage::toJsonValue() const
@@ -35,7 +35,7 @@ QVariant LogMessage::toJsonValue() const
             tos << player->objectName();
 
     QStringList log;
-    log << type << (from ? from->objectName() : QString()) << tos.join(QStringLiteral("+")) << card_str << arg << arg2;
+    log << type << (from != nullptr ? from->objectName() : QString()) << tos.join(QStringLiteral("+")) << card_str << arg << arg2;
     QVariant json_log = JsonUtils::toJsonArray(log);
     return json_log;
 }
@@ -165,7 +165,7 @@ void RoomThread::_handleTurnBroken3v3(QList<ServerPlayer *> &first, QList<Server
     }
 }
 
-ServerPlayer *RoomThread::findHulaoPassNext(ServerPlayer *, const QList<ServerPlayer *> &)
+ServerPlayer *RoomThread::findHulaoPassNext(ServerPlayer * /*unused*/, const QList<ServerPlayer *> & /*unused*/)
 {
     ServerPlayer *current = room->getCurrent();
     return qobject_cast<ServerPlayer *>(current->getNextAlive(1, false));
@@ -347,7 +347,7 @@ void RoomThread::run()
         QList<const General *> generals = QList<const General *>();
         foreach (QString pack_name, Sanguosha->getConfigFromConfigFile(QStringLiteral("hulao_packages")).toStringList()) {
             const Package *pack = Sanguosha->findPackage(pack_name);
-            if (pack) {
+            if (pack != nullptr) {
                 foreach (auto gn, pack->generals())
                     generals << gn;
             }
@@ -394,8 +394,10 @@ void RoomThread::run()
     // start game
     try {
         QString order;
-        QList<ServerPlayer *> warm, cool;
-        QList<ServerPlayer *> first, second;
+        QList<ServerPlayer *> warm;
+        QList<ServerPlayer *> cool;
+        QList<ServerPlayer *> first;
+        QList<ServerPlayer *> second;
         if (room->getMode() == QStringLiteral("06_3v3")) {
             foreach (ServerPlayer *player, room->m_players) {
                 switch (player->getRoleEnum()) {

@@ -24,14 +24,18 @@ Window::Window(const QString &title, QSizeF size, const QString &path)
 
     qreal pad = 10;
 
-    int w = bgimg.width(), h = bgimg.height();
-    int tw = outimg->width(), th = outimg->height();
+    int w = bgimg.width();
+    int h = bgimg.height();
+    int tw = outimg->width();
+    int th = outimg->height();
 
-    qreal xc = (w - 2 * pad) / (tw - 2 * pad), yc = (h - 2 * pad) / (th - 2 * pad);
+    qreal xc = (w - 2 * pad) / (tw - 2 * pad);
+    qreal yc = (h - 2 * pad) / (th - 2 * pad);
 
     for (int i = 0; i < tw; i++) {
         for (int j = 0; j < th; j++) {
-            int x = i, y = j;
+            int x = i;
+            int y = j;
 
             if (x >= pad && x <= (tw - pad))
                 x = pad + (x - pad) * xc;
@@ -109,7 +113,7 @@ QRectF Window::boundingRect() const
     return QRectF(QPointF(), size);
 }
 
-void Window::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void Window::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     QRectF window_rect = boundingRect();
 

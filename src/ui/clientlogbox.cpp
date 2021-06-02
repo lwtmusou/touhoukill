@@ -45,7 +45,7 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
         foreach (QString one_card, card_str.split(QStringLiteral("+"))) {
             if (type == QStringLiteral("$JudgeResult") || type == QStringLiteral("$PasteCard")) {
                 const Card *card = ClientInstance->getCard(one_card.toInt());
-                if (card) {
+                if (card != nullptr) {
                     if (log_name.isEmpty())
                         log_name = card->logName();
                     else

@@ -98,7 +98,8 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, const QString 
         bool isInt = false;
         if (number.contains(QLatin1Char('~'))) {
             QStringList params = number.split(QLatin1Char('~'));
-            int from = 0, to = 0;
+            int from = 0;
+            int to = 0;
             if (params.at(0).isEmpty())
                 from = 1;
             else
@@ -126,7 +127,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, const QString 
 
     checkpoint = false;
     QString place = factors.at(3);
-    if (!player || place == QStringLiteral("."))
+    if ((player == nullptr) || place == QStringLiteral("."))
         checkpoint = true;
     if (!checkpoint) {
         bool findOneShow = false; //only for check palce "show"

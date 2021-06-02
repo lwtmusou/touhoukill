@@ -196,7 +196,7 @@ void Settings::loadSettingsFromConfigIni()
         }
 
         {
-            QVariant value(oldConfig.value(QStringLiteral("BGMVolume"), 1.0f).toFloat());
+            QVariant value(oldConfig.value(QStringLiteral("BGMVolume"), 1.0F).toFloat());
             setValue(QStringLiteral("BGMVolume"), value);
         }
 
@@ -221,7 +221,7 @@ void Settings::loadSettingsFromConfigIni()
         }
 
         {
-            QVariant value(oldConfig.value(QStringLiteral("DetectorPort"), 9526u).toUInt());
+            QVariant value(oldConfig.value(QStringLiteral("DetectorPort"), 9526U).toUInt());
             setValue(QStringLiteral("DetectorPort"), value);
         }
 
@@ -236,7 +236,7 @@ void Settings::loadSettingsFromConfigIni()
         }
 
         {
-            QVariant value(oldConfig.value(QStringLiteral("EffectVolume"), 1.0f).toFloat());
+            QVariant value(oldConfig.value(QStringLiteral("EffectVolume"), 1.0F).toFloat());
             setValue(QStringLiteral("EffectVolume"), value);
         }
 
@@ -491,7 +491,7 @@ void Settings::loadSettingsFromConfigIni()
         }
 
         {
-            QVariant value(oldConfig.value(QStringLiteral("ServerPort"), 9527u).toUInt());
+            QVariant value(oldConfig.value(QStringLiteral("ServerPort"), 9527U).toUInt());
             setValue(QStringLiteral("ServerPort"), value);
         }
 
@@ -642,7 +642,7 @@ void Settings::init()
     AIProhibitBlindAttack = value(QStringLiteral("AIProhibitBlindAttack"), false).toBool();
     SurrenderAtDeath = value(QStringLiteral("SurrenderAtDeath"), false).toBool();
     LuckCardLimitation = value(QStringLiteral("LuckCardLimitation"), 0).toInt();
-    ServerPort = value(QStringLiteral("ServerPort"), 9527u).toUInt();
+    ServerPort = value(QStringLiteral("ServerPort"), 9527U).toUInt();
     DisableLua = value(QStringLiteral("DisableLua"), false).toBool();
     LimitRobot = value(QStringLiteral("LimitRobot"), false).toBool();
 
@@ -678,7 +678,7 @@ void Settings::init()
         }
     }
     HistoryIPs = value(QStringLiteral("HistoryUrls")).toStringList();
-    DetectorPort = value(QStringLiteral("DetectorPort"), 9526u).toUInt();
+    DetectorPort = value(QStringLiteral("DetectorPort"), 9526U).toUInt();
     MaxCards = value(QStringLiteral("MaxCards"), 12).toInt();
 
     HegemonyFirstShowReward = value(QStringLiteral("HegemonyFirstShowReward"), QStringLiteral("None")).toString();
@@ -703,8 +703,8 @@ void Settings::init()
     EnableLastWord = value(QStringLiteral("EnableLastWord"), true).toBool();
     EnableBgMusic = value(QStringLiteral("EnableBgMusic"), true).toBool();
     UseLordBGM = value(QStringLiteral("UseLordBGM"), true).toBool();
-    BGMVolume = value(QStringLiteral("BGMVolume"), 1.0f).toFloat();
-    EffectVolume = value(QStringLiteral("EffectVolume"), 1.0f).toFloat();
+    BGMVolume = value(QStringLiteral("BGMVolume"), 1.0F).toFloat();
+    EffectVolume = value(QStringLiteral("EffectVolume"), 1.0F).toFloat();
 
     int length = 8;
     int index = QRandomGenerator::global()->generate() % length + 1;
@@ -718,7 +718,13 @@ void Settings::init()
     NetworkOnly = value(QStringLiteral("NetworkOnly"), false).toBool();
     RecordSavePath = value(QStringLiteral("RecordSavePath"), QStringLiteral("records/")).toString();
 
-    QStringList roles_ban, kof_ban, hulao_ban, xmode_ban, basara_ban, hegemony_ban, pairs_ban;
+    QStringList roles_ban;
+    QStringList kof_ban;
+    QStringList hulao_ban;
+    QStringList xmode_ban;
+    QStringList basara_ban;
+    QStringList hegemony_ban;
+    QStringList pairs_ban;
 
     roles_ban = Sanguosha->getConfigFromConfigFile(QStringLiteral("roles_ban")).toStringList();
     kof_ban = Sanguosha->getConfigFromConfigFile(QStringLiteral("kof_ban")).toStringList();

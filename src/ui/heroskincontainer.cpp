@@ -229,7 +229,7 @@ QRectF HeroSkinContainer::boundingRect() const
     return QRectF(QPoint(0, 0), m_backgroundPixmap.size());
 }
 
-void HeroSkinContainer::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void HeroSkinContainer::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
 {
     // draw pixel map
     painter->drawPixmap(0, 0, m_backgroundPixmap);
@@ -302,7 +302,7 @@ const QFont &HeroSkinContainer::getAvatarNameFont()
     return font;
 }
 
-void HeroSkinContainer::mousePressEvent(QGraphicsSceneMouseEvent *)
+void HeroSkinContainer::mousePressEvent(QGraphicsSceneMouseEvent * /*event*/)
 {
     bringToTopMost();
 }
