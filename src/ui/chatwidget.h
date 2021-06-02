@@ -15,7 +15,7 @@ class MyPixmapItem : public QObject, public QGraphicsPixmapItem
 
 public:
     explicit MyPixmapItem(const QPixmap &pixmap, QGraphicsItem *parentItem = nullptr);
-    ~MyPixmapItem() override;
+    ~MyPixmapItem() override = default;
 
 public:
     QRectF boundingRect() const override;
@@ -48,7 +48,7 @@ class ChatWidget : public QGraphicsObject
 
 public:
     ChatWidget();
-    ~ChatWidget() override;
+    ~ChatWidget() override = default;
     QRectF boundingRect() const override;
 
 protected:

@@ -5184,8 +5184,6 @@ CommandLinkDoubleClickButton::CommandLinkDoubleClickButton(const QString &text, 
 {
 }
 
-CommandLinkDoubleClickButton::~CommandLinkDoubleClickButton() = default;
-
 void CommandLinkDoubleClickButton::mouseDoubleClickEvent(QMouseEvent *event)
 {
     emit double_clicked(QPrivateSignal());

@@ -49,7 +49,7 @@ public:
     Q_ENUM(Status)
 
     explicit Client(QObject *parent, const QString &filename = QString());
-    ~Client() override;
+    ~Client() override = default;
 
     // cheat functions
     void requestCheatGetOneCard(int card_id);

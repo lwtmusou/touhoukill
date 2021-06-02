@@ -157,7 +157,7 @@ public:
     explicit CommandLinkDoubleClickButton(QWidget *parent = Q_NULLPTR);
     explicit CommandLinkDoubleClickButton(const QString &text, QWidget *parent = Q_NULLPTR);
     explicit CommandLinkDoubleClickButton(const QString &text, const QString &description, QWidget *parent = Q_NULLPTR);
-    ~CommandLinkDoubleClickButton() override;
+    ~CommandLinkDoubleClickButton() override = default;
 
 signals:
     void double_clicked(QPrivateSignal);
@@ -470,7 +470,7 @@ private slots:
     void hideAvatars();
     void changeHp(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);
     void changeMaxHp(const QString &who, int delta);
-    void moveFocus(const QStringList &who, const QSanProtocol::Countdown&);
+    void moveFocus(const QStringList &who, const QSanProtocol::Countdown &);
     void setEmotion(const QString &who, const QString &emotion);
     void setEmotion(const QString &who, const QString &emotion, bool permanent);
     void showSkillInvocation(const QString &who, const QString &skill_name);

@@ -324,8 +324,6 @@ void CardFace::onNullified(ServerPlayer * /*unused*/, const Card * /*unused*/) c
 {
 }
 
-BasicCard::BasicCard() = default;
-
 CardFace::CardType BasicCard::type() const
 {
     return TypeBasic;
@@ -335,8 +333,6 @@ QString BasicCard::typeName() const
 {
     return QStringLiteral("basic");
 }
-
-EquipCard::EquipCard() = default;
 
 CardFace::CardType EquipCard::type() const
 {
@@ -348,8 +344,6 @@ QString EquipCard::typeName() const
     return QStringLiteral("equip");
 }
 
-Weapon::Weapon() = default;
-
 QString Weapon::subTypeName() const
 {
     return QStringLiteral("weapon");
@@ -359,8 +353,6 @@ EquipCard::Location Weapon::location() const
 {
     return WeaponLocation;
 }
-
-Armor::Armor() = default;
 
 QString Armor::subTypeName() const
 {
@@ -372,8 +364,6 @@ EquipCard::Location Armor::location() const
     return ArmorLocation;
 }
 
-DefensiveHorse::DefensiveHorse() = default;
-
 QString DefensiveHorse::subTypeName() const
 {
     return QStringLiteral("defensive_horse");
@@ -383,8 +373,6 @@ EquipCard::Location DefensiveHorse::location() const
 {
     return DefensiveHorseLocation;
 }
-
-OffensiveHorse::OffensiveHorse() = default;
 
 QString OffensiveHorse::subTypeName() const
 {
@@ -396,8 +384,6 @@ EquipCard::Location OffensiveHorse::location() const
     return OffensiveHorseLocation;
 }
 
-Treasure::Treasure() = default;
-
 QString Treasure::subTypeName() const
 {
     return QStringLiteral("treasure");
@@ -408,8 +394,6 @@ EquipCard::Location Treasure::location() const
     return TreasureLocation;
 }
 
-TrickCard::TrickCard() = default;
-
 CardFace::CardType TrickCard::type() const
 {
     return TypeTrick;
@@ -419,8 +403,6 @@ QString TrickCard::typeName() const
 {
     return QStringLiteral("trick");
 }
-
-NonDelayedTrick::NonDelayedTrick() = default;
 
 QString NonDelayedTrick::subTypeName() const
 {
@@ -449,8 +431,6 @@ JudgeStruct DelayedTrick::judge() const
 
     return *d;
 }
-
-SkillCard::SkillCard() = default;
 
 CardFace::CardType SkillCard::type() const
 {

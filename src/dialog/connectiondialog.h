@@ -32,7 +32,7 @@ class ConnectionDialog : public QDialog
 
 public:
     explicit ConnectionDialog(QWidget *parent);
-    ~ConnectionDialog() override;
+    ~ConnectionDialog() override = default;
     void hideAvatarList();
     void showAvatarList();
 

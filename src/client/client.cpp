@@ -177,8 +177,6 @@ Client::Client(QObject *parent, const QString &filename)
 #endif
 }
 
-Client::~Client() = default;
-
 void Client::updateCard(const QVariant &val)
 {
     if (JsonUtils::isNumber(val.type())) {

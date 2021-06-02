@@ -305,6 +305,6 @@ public:
     virtual bool makeSurrender(Player *player) = 0;
 };
 
-};
+}
 
 #endif

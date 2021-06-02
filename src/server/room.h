@@ -29,7 +29,7 @@ class Room : public RoomObject
 
 public:
     explicit Room(QObject *parent, const QString &mode);
-    ~Room() override;
+    ~Room() override = default;
     RoomThread *getThread() const;
     void output(const QString &message);
     void saveWinnerTable(const QString &winner, bool isSurrender = false);

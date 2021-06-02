@@ -132,7 +132,8 @@ class BasicCard : public CardFace
     Q_OBJECT
 
 public:
-    BasicCard();
+    BasicCard() = default;
+    ~BasicCard() override = default;
 
     CardType type() const override;
     QString typeName() const override;
@@ -153,7 +154,8 @@ public:
     };
     Q_ENUM(Location)
 
-    EquipCard();
+    EquipCard() = default;
+    ~EquipCard() override = default;
 
     CardType type() const override;
     QString typeName() const override;
@@ -169,7 +171,8 @@ class Weapon : public EquipCard
     Q_OBJECT
 
 public:
-    Weapon();
+    Weapon() = default;
+    ~Weapon() override = default;
 
     QString subTypeName() const override;
     Location location() const override;
@@ -182,7 +185,8 @@ class Armor : public EquipCard
     Q_OBJECT
 
 public:
-    Armor();
+    Armor() = default;
+    ~Armor() override = default;
 
     QString subTypeName() const override;
     Location location() const override;
@@ -193,7 +197,8 @@ class DefensiveHorse : public EquipCard
     Q_OBJECT
 
 public:
-    DefensiveHorse();
+    DefensiveHorse() = default;
+    ~DefensiveHorse() override = default;
 
     QString subTypeName() const override;
     Location location() const override;
@@ -207,7 +212,8 @@ class OffensiveHorse : public EquipCard
     Q_OBJECT
 
 public:
-    OffensiveHorse();
+    OffensiveHorse() = default;
+    ~OffensiveHorse() override = default;
 
     QString subTypeName() const override;
     Location location() const override;
@@ -220,7 +226,8 @@ class Treasure : public EquipCard
     Q_OBJECT
 
 public:
-    Treasure();
+    Treasure() = default;
+    ~Treasure() override = default;
 
     QString subTypeName() const override;
     Location location() const override;
@@ -231,7 +238,8 @@ class TrickCard : public CardFace
     Q_OBJECT
 
 public:
-    TrickCard();
+    TrickCard() = default;
+    ~TrickCard() override = default;
 
     CardType type() const override;
     QString typeName() const override;
@@ -242,7 +250,8 @@ class NonDelayedTrick : public TrickCard
     Q_OBJECT
 
 public:
-    NonDelayedTrick();
+    NonDelayedTrick() = default;
+    ~NonDelayedTrick() override = default;
 
     QString subTypeName() const override;
     bool isNDTrick() const override;
@@ -254,6 +263,7 @@ class DelayedTrick : public TrickCard
 
 public:
     DelayedTrick();
+    ~DelayedTrick() override = default;
 
     QString subTypeName() const override;
     virtual void takeEffect(ServerPlayer *target) const = 0;
@@ -281,7 +291,8 @@ class SkillCard : public CardFace
     Q_OBJECT
 
 public:
-    SkillCard();
+    SkillCard() = default;
+    ~SkillCard() override = default;
 
     CardType type() const override;
     QString typeName() const override;

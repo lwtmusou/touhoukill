@@ -9,7 +9,7 @@ class DiscardSkill : public ViewAsSkill
 
 public:
     explicit DiscardSkill();
-    ~DiscardSkill() override;
+    ~DiscardSkill() override = default;
 
     void setNum(int num);
     void setMinNum(int minnum);
@@ -82,7 +82,7 @@ class YijiViewAsSkill : public ViewAsSkill
 
 public:
     explicit YijiViewAsSkill();
-    ~YijiViewAsSkill() override;
+    ~YijiViewAsSkill() override = default;
     void setCards(const QString &card_str);
     void setMaxNum(int max_num);
     void setPlayerNames(const QStringList &names);
@@ -115,7 +115,7 @@ class ChoosePlayerSkill : public ZeroCardViewAsSkill
 
 public:
     explicit ChoosePlayerSkill();
-    ~ChoosePlayerSkill() override;
+    ~ChoosePlayerSkill() override = default;
     void setPlayerNames(const QStringList &names);
 
     const Card *viewAs(const Player *Self) const override;

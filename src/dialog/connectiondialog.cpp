@@ -256,8 +256,6 @@ ConnectionDialog::ConnectionDialog(QWidget *parent)
     connectbtn->setFocus();
 }
 
-ConnectionDialog::~ConnectionDialog() = default;
-
 void ConnectionDialog::showEvent(QShowEvent *e)
 {
     nameLineEdit->setText(Config.UserName);

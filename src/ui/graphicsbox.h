@@ -29,7 +29,7 @@ class GraphicsBox : public QGraphicsObject
 
 public:
     explicit GraphicsBox(const QString &title = QString());
-    ~GraphicsBox() override;
+    ~GraphicsBox() override = default;
 
     static void paintGraphicsBoxStyle(QPainter *painter, const QString &title, const QRectF &rect);
     static void stylize(QGraphicsObject *target);

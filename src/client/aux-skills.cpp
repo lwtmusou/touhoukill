@@ -13,8 +13,6 @@ DiscardSkill::DiscardSkill()
     // card->setParent(this);
 }
 
-DiscardSkill::~DiscardSkill() = default;
-
 void DiscardSkill::setNum(int num)
 {
     this->num = num;
@@ -162,8 +160,6 @@ YijiViewAsSkill::YijiViewAsSkill()
     // card->setParent(this);
 }
 
-YijiViewAsSkill::~YijiViewAsSkill() = default;
-
 void YijiViewAsSkill::setCards(const QString &card_str)
 {
     QStringList cards = card_str.split(QStringLiteral("+"));
@@ -221,8 +217,6 @@ ChoosePlayerSkill::ChoosePlayerSkill()
     : ZeroCardViewAsSkill(QStringLiteral("choose_player"))
 {
 }
-
-ChoosePlayerSkill::~ChoosePlayerSkill() = default;
 
 void ChoosePlayerSkill::setPlayerNames(const QStringList &names)
 {

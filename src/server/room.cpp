@@ -54,8 +54,6 @@ Room::Room(QObject *parent, const QString &mode)
     connect(this, &Room::signalSetProperty, this, &Room::slotSetProperty, Qt::QueuedConnection);
 }
 
-Room::~Room() = default;
-
 void Room::initCallbacks()
 {
     // init request response pair

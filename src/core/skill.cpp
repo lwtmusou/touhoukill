@@ -20,7 +20,7 @@ public:
     QString related_pile;
 };
 
-Skill::Skill(const QString &name, Skill::Categories skillCategories, ShowType showType)
+Skill::Skill(const QString &name, Categories skillCategories, ShowType showType)
     : d(new SkillPrivate {skillCategories, showType, false, false, QString(), QString(), QString()})
 {
     setObjectName(name);
