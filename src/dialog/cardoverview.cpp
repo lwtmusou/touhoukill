@@ -56,7 +56,7 @@ void CardOverview::loadFromAll()
         ui->tableWidget->setCurrentItem(ui->tableWidget->item(0, 0));
 
         const CardDescriptor &card = Sanguosha->getEngineCard(0);
-        if (card.face()->type() == CardFace::TypeEquip) {
+        if (card.face()->type() == QSanguosha::TypeEquip) {
             ui->playAudioEffectButton->show();
             ui->malePlayButton->hide();
             ui->femalePlayButton->hide();
@@ -82,7 +82,7 @@ void CardOverview::loadFromList(const QList<int> &list)
         ui->tableWidget->setCurrentItem(ui->tableWidget->item(0, 0));
 
         const CardDescriptor &card = Sanguosha->getEngineCard(list.first());
-        if (card.face()->type() == CardFace::TypeEquip) {
+        if (card.face()->type() == QSanguosha::TypeEquip) {
             ui->playAudioEffectButton->show();
             ui->malePlayButton->hide();
             ui->femalePlayButton->hide();
@@ -142,7 +142,7 @@ void CardOverview::on_tableWidget_itemSelectionChanged()
 
     ui->cardDescriptionBox->setText(card.face()->description());
 
-    if (card.face()->type() == CardFace::TypeEquip) {
+    if (card.face()->type() == QSanguosha::TypeEquip) {
         ui->playAudioEffectButton->show();
         ui->malePlayButton->hide();
         ui->femalePlayButton->hide();
@@ -201,7 +201,7 @@ void CardOverview::on_playAudioEffectButton_clicked()
     if (row >= 0) {
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
         const CardDescriptor &card = Sanguosha->getEngineCard(card_id);
-        if (card.face()->name() == CardFace::TypeEquip) {
+        if (card.face()->name() == QSanguosha::TypeEquip) {
             QString effectName = card.face()->effectName();
             if (effectName == QStringLiteral("vscrossbow"))
                 effectName = QStringLiteral("crossbow");

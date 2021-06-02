@@ -718,7 +718,7 @@ EquipSkill::EquipSkill(const QString &name)
 {
 }
 
-bool EquipSkill::equipAvailable(const Player *p, EquipCard::Location location, const QString &equipName, const Player *to)
+bool EquipSkill::equipAvailable(const Player *p, QSanguosha::EquipLocation location, const QString &equipName, const Player *to)
 {
     if (p == nullptr)
         return false;
@@ -734,15 +734,15 @@ bool EquipSkill::equipAvailable(const Player *p, EquipCard::Location location, c
         return false;
 
     switch (location) {
-    case EquipCard::WeaponLocation:
+    case QSanguosha::WeaponLocation:
         if (!p->hasWeapon(equipName))
             return false;
         break;
-    case EquipCard::ArmorLocation:
+    case QSanguosha::ArmorLocation:
         if (!p->hasArmorEffect(equipName))
             return false;
         break;
-    case EquipCard::TreasureLocation:
+    case QSanguosha::TreasureLocation:
         if (!p->hasTreasure(equipName))
             return false;
         break;

@@ -1,16 +1,15 @@
 #ifndef TOUHOUKILL_CARDFACE_H_
 #define TOUHOUKILL_CARDFACE_H_
 
-// Fs: do not use "#pragma once" because every header file does not use it
+#include "global.h"
 
 #include <QObject>
 #include <QString>
 
-#include "card.h"
-
 class Player;
 class ServerPlayer;
 class Room;
+class Card;
 
 class CardFacePrivate;
 struct CardUseStruct;
@@ -35,16 +34,7 @@ public:
     virtual QString effectName() const;
 
     // type property
-    enum CardType
-    {
-        TypeUnknown,
-        TypeSkill,
-        TypeBasic,
-        TypeTrick,
-        TypeEquip
-    };
-
-    virtual CardType type() const = 0;
+    virtual QSanguosha::CardType type() const = 0;
     virtual QString typeName() const = 0;
     virtual QString subTypeName() const = 0;
     virtual bool isKindOf(const char *cardType) const;
@@ -135,7 +125,7 @@ public:
     BasicCard() = default;
     ~BasicCard() override = default;
 
-    CardType type() const override;
+    QSanguosha::CardType type() const override;
     QString typeName() const override;
 };
 
@@ -144,23 +134,13 @@ class EquipCard : public CardFace
     Q_OBJECT
 
 public:
-    enum Location
-    {
-        WeaponLocation,
-        ArmorLocation,
-        DefensiveHorseLocation,
-        OffensiveHorseLocation,
-        TreasureLocation
-    };
-    Q_ENUM(Location)
-
     EquipCard() = default;
     ~EquipCard() override = default;
 
-    CardType type() const override;
+    QSanguosha::CardType type() const override;
     QString typeName() const override;
 
-    virtual Location location() const = 0;
+    virtual QSanguosha::EquipLocation location() const = 0;
 
     virtual void onInstall(ServerPlayer *player) const = 0;
     virtual void onUninstall(ServerPlayer *player) const = 0;
@@ -175,7 +155,7 @@ public:
     ~Weapon() override = default;
 
     QString subTypeName() const override;
-    Location location() const override;
+    QSanguosha::EquipLocation location() const override;
 
     virtual int range() const = 0;
 };
@@ -189,7 +169,7 @@ public:
     ~Armor() override = default;
 
     QString subTypeName() const override;
-    Location location() const override;
+    QSanguosha::EquipLocation location() const override;
 };
 
 class DefensiveHorse : public EquipCard
@@ -201,7 +181,7 @@ public:
     ~DefensiveHorse() override = default;
 
     QString subTypeName() const override;
-    Location location() const override;
+    QSanguosha::EquipLocation location() const override;
 
     // TODO_Fs: this should be implemented using DistanceSkill
     // virtual int correction() const;
@@ -216,7 +196,7 @@ public:
     ~OffensiveHorse() override = default;
 
     QString subTypeName() const override;
-    Location location() const override;
+    QSanguosha::EquipLocation location() const override;
 
     // virtual int correction() const;
 };
@@ -230,7 +210,7 @@ public:
     ~Treasure() override = default;
 
     QString subTypeName() const override;
-    Location location() const override;
+    QSanguosha::EquipLocation location() const override;
 };
 
 class TrickCard : public CardFace
@@ -241,7 +221,7 @@ public:
     TrickCard() = default;
     ~TrickCard() override = default;
 
-    CardType type() const override;
+    QSanguosha::CardType type() const override;
     QString typeName() const override;
 };
 
@@ -294,7 +274,7 @@ public:
     SkillCard() = default;
     ~SkillCard() override = default;
 
-    CardType type() const override;
+    QSanguosha::CardType type() const override;
     QString typeName() const override;
     QString subTypeName() const override;
 };

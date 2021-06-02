@@ -1369,7 +1369,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     // TODO: deal with Pagoda when refactoring Nullification
     Q_UNUSED(pagoda);
 #if 0
-    if (pagoda == 0 && result && EquipSkill::equipAvailable(repliedPlayer, EquipCard::TreasureLocation, "Pagoda")) {
+    if (pagoda == 0 && result && EquipSkill::equipAvailable(repliedPlayer, QSanguosha::TreasureLocation, "Pagoda")) {
         bool isLastTarget = true;
         foreach (QString flag, trick->flags()) {
             if (flag.startsWith("LastTrickTarget_")) {
@@ -1970,7 +1970,7 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying)
     if (card != nullptr) {
         card = card->face()->validateInResponse(player, card);
         QSanguosha::HandlingMethod method = QSanguosha::MethodUse;
-        if ((card != nullptr) && card->face()->type() == CardFace::TypeSkill) { //keep TypeSkill after face()->validateInResponse
+        if ((card != nullptr) && card->face()->type() == QSanguosha::TypeSkill) { //keep TypeSkill after face()->validateInResponse
             method = card->handleMethod();
         }
 

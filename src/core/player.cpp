@@ -895,19 +895,19 @@ void Player::setEquip(const Card *equip)
     const EquipCard *face = qobject_cast<const EquipCard *>(equip->face());
     Q_ASSERT(face != nullptr);
     switch (face->location()) {
-    case EquipCard::WeaponLocation:
+    case QSanguosha::WeaponLocation:
         weapon = equip;
         break;
-    case EquipCard::ArmorLocation:
+    case QSanguosha::ArmorLocation:
         armor = equip;
         break;
-    case EquipCard::DefensiveHorseLocation:
+    case QSanguosha::DefensiveHorseLocation:
         defensive_horse = equip;
         break;
-    case EquipCard::OffensiveHorseLocation:
+    case QSanguosha::OffensiveHorseLocation:
         offensive_horse = equip;
         break;
-    case EquipCard::TreasureLocation:
+    case QSanguosha::TreasureLocation:
         treasure = equip;
         break;
     }
@@ -918,19 +918,19 @@ void Player::removeEquip(const Card *equip)
     const EquipCard *face = qobject_cast<const EquipCard *>(equip->face());
     Q_ASSERT(face != nullptr);
     switch (face->location()) {
-    case EquipCard::WeaponLocation:
+    case QSanguosha::WeaponLocation:
         weapon = nullptr;
         break;
-    case EquipCard::ArmorLocation:
+    case QSanguosha::ArmorLocation:
         armor = nullptr;
         break;
-    case EquipCard::DefensiveHorseLocation:
+    case QSanguosha::DefensiveHorseLocation:
         defensive_horse = nullptr;
         break;
-    case EquipCard::OffensiveHorseLocation:
+    case QSanguosha::OffensiveHorseLocation:
         offensive_horse = nullptr;
         break;
-    case EquipCard::TreasureLocation:
+    case QSanguosha::TreasureLocation:
         treasure = nullptr;
         break;
     }
@@ -1655,7 +1655,7 @@ bool Player::isCardLimited(const Card *card, QSanguosha::HandlingMethod method, 
 {
     if (method == QSanguosha::MethodNone)
         return false;
-    if (card->face()->type() == CardFace::TypeSkill && method == card->handleMethod()) {
+    if (card->face()->type() == QSanguosha::TypeSkill && method == card->handleMethod()) {
         foreach (int card_id, card->subcards()) {
             const Card *c = getRoomObject()->getCard(card_id);
             QMap<QString, QStringList> map = card_limitation[method];

@@ -314,7 +314,7 @@ public:
         return true;
     }
 
-    static bool equipAvailable(const ::Player *p, EquipCard::Location location, const QString &equip_name, const ::Player *to = nullptr);
+    static bool equipAvailable(const ::Player *p, QSanguosha::EquipLocation location, const QString &equip_name, const ::Player *to = nullptr);
     static bool equipAvailable(const ::Player *p, const Card *equip, const ::Player *to = nullptr);
 
     // fixed 2

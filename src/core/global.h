@@ -77,6 +77,26 @@ enum Number
 };
 Q_ENUM_NS(Number)
 
+enum CardType
+{
+    TypeUnknown,
+    TypeSkill,
+    TypeBasic,
+    TypeTrick,
+    TypeEquip
+};
+Q_ENUM_NS(CardType)
+
+enum EquipLocation
+{
+    WeaponLocation,
+    ArmorLocation,
+    DefensiveHorseLocation,
+    OffensiveHorseLocation,
+    TreasureLocation
+};
+Q_ENUM_NS(EquipLocation)
+
 }
 
 #endif // GLOBAL_H

@@ -312,7 +312,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, const TriggerDetai
             }
 
             //1) exclude SkillCard 2)changed move reason (USE) 3)keep extraData
-            if ((card_use.card != nullptr) && card_use.card->face()->type() != CardFace::TypeSkill && !(card_use.card->isVirtualCard() && card_use.card->subcards().isEmpty())
+            if ((card_use.card != nullptr) && card_use.card->face()->type() != QSanguosha::TypeSkill && !(card_use.card->isVirtualCard() && card_use.card->subcards().isEmpty())
                 && card_use.to.isEmpty()) {
                 if (room->getCardPlace(card_use.card->effectiveID()) == Player::PlaceTable) {
                     CardMoveReason reason(CardMoveReason::S_REASON_USE, card_use.from->objectName(), QString(), card_use.card->skillName(), QString());
@@ -321,7 +321,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, const TriggerDetai
                 }
             }
             //since use.to is empty, break the whole process
-            if ((card_use.card != nullptr) && card_use.card->face()->type() != CardFace::TypeSkill && card_use.to.isEmpty()) {
+            if ((card_use.card != nullptr) && card_use.card->face()->type() != QSanguosha::TypeSkill && card_use.to.isEmpty()) {
                 if (card_use.card->face()->isKindOf("Slash") && card_use.from->isAlive())
                     room->setPlayerMark(card_use.from, QStringLiteral("drank"), 0);
                 if (card_use.card->face()->isNDTrick() && card_use.from->isAlive()) //clear magic_drank while using Nullification
@@ -561,7 +561,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, const TriggerDetai
                 room->sendLog(log);
                 room->setEmotion(effect.to, QStringLiteral("skill_nullify"));
                 return true;
-            } else if (effect.card->face()->type() == CardFace::TypeTrick) {
+            } else if (effect.card->face()->type() == QSanguosha::TypeTrick) {
                 if (room->isCanceled(effect)) {
                     effect.to->setFlags(QStringLiteral("Global_NonSkillNullify"));
                     return true;

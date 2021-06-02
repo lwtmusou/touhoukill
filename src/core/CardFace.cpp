@@ -8,6 +8,8 @@
 #include <QObject>
 #include <QString>
 
+using namespace QSanguosha;
+
 class CardFacePrivate
 {
 public:
@@ -18,7 +20,7 @@ public:
         , can_damage(false)
         , can_recover(false)
         , has_effectvalue(true)
-        , default_method(QSanguosha::MethodUse)
+        , default_method(MethodUse)
     {
     }
 
@@ -29,7 +31,7 @@ public:
     bool can_recover;
     bool has_effectvalue;
 
-    QSanguosha::HandlingMethod default_method;
+    HandlingMethod default_method;
 };
 
 CardFace::CardFace()
@@ -131,12 +133,12 @@ void CardFace::setHasPreAction(bool can)
     d->has_preact = can;
 }
 
-QSanguosha::HandlingMethod CardFace::defaultHandlingMethod() const
+HandlingMethod CardFace::defaultHandlingMethod() const
 {
     return d->default_method;
 }
 
-void CardFace::setDefaultHandlingMethod(QSanguosha::HandlingMethod can)
+void CardFace::setDefaultHandlingMethod(HandlingMethod can)
 {
     d->default_method = can;
 }
@@ -324,7 +326,7 @@ void CardFace::onNullified(ServerPlayer * /*unused*/, const Card * /*unused*/) c
 {
 }
 
-CardFace::CardType BasicCard::type() const
+CardType BasicCard::type() const
 {
     return TypeBasic;
 }
@@ -334,7 +336,7 @@ QString BasicCard::typeName() const
     return QStringLiteral("basic");
 }
 
-CardFace::CardType EquipCard::type() const
+CardType EquipCard::type() const
 {
     return TypeEquip;
 }
@@ -349,7 +351,7 @@ QString Weapon::subTypeName() const
     return QStringLiteral("weapon");
 }
 
-EquipCard::Location Weapon::location() const
+EquipLocation Weapon::location() const
 {
     return WeaponLocation;
 }
@@ -359,7 +361,7 @@ QString Armor::subTypeName() const
     return QStringLiteral("armor");
 }
 
-EquipCard::Location Armor::location() const
+EquipLocation Armor::location() const
 {
     return ArmorLocation;
 }
@@ -369,7 +371,7 @@ QString DefensiveHorse::subTypeName() const
     return QStringLiteral("defensive_horse");
 }
 
-EquipCard::Location DefensiveHorse::location() const
+EquipLocation DefensiveHorse::location() const
 {
     return DefensiveHorseLocation;
 }
@@ -379,7 +381,7 @@ QString OffensiveHorse::subTypeName() const
     return QStringLiteral("offensive_horse");
 }
 
-EquipCard::Location OffensiveHorse::location() const
+EquipLocation OffensiveHorse::location() const
 {
     return OffensiveHorseLocation;
 }
@@ -389,12 +391,12 @@ QString Treasure::subTypeName() const
     return QStringLiteral("treasure");
 }
 
-EquipCard::Location Treasure::location() const
+EquipLocation Treasure::location() const
 {
     return TreasureLocation;
 }
 
-CardFace::CardType TrickCard::type() const
+CardType TrickCard::type() const
 {
     return TypeTrick;
 }
@@ -432,7 +434,7 @@ JudgeStruct DelayedTrick::judge() const
     return *d;
 }
 
-CardFace::CardType SkillCard::type() const
+CardType SkillCard::type() const
 {
     return TypeSkill;
 }

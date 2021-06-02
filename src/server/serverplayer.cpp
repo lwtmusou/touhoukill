@@ -1708,7 +1708,7 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
 
 QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
 {
-    if (use.card == nullptr || use.card->face()->type() == CardFace::TypeSkill)
+    if (use.card == nullptr || use.card->face()->type() == QSanguosha::TypeSkill)
         return QStringList();
     if (!isHegemonyGameMode(room->getMode())) {
         if (!canShowHiddenSkill())

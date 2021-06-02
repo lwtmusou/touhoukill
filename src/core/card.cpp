@@ -32,7 +32,7 @@ public:
     QString show_skill_name;
 
     // handling method
-    QSanguosha::HandlingMethod handling_method;
+    HandlingMethod handling_method;
 
     // property - Fs: use tristate?
     bool can_damage;
@@ -669,7 +669,7 @@ Card *Card::Parse(const QString &str, RoomObject *room)
         if (subcard_str != QStringLiteral("."))
             subcard_ids = subcard_str.split(QStringLiteral("+"));
 
-        Suit suit = suit_map.value(suit_string, QSanguosha::SuitToBeDecided);
+        Suit suit = suit_map.value(suit_string, SuitToBeDecided);
 
         Number number = NumberNA;
         if (number_string == QStringLiteral("A"))
