@@ -1203,8 +1203,8 @@ void Dashboard::startPending(const ViewAsSkill *skill)
                 retractPileCards(pile);
         }
         retractSpecialCard();
-        if ((skill != nullptr) && !skill->getExpandPile(Self).isEmpty()) {
-            foreach (const QString &pile_name, skill->getExpandPile(Self).split(QStringLiteral(",")))
+        if ((skill != nullptr) && !skill->expandPile(Self).isEmpty()) {
+            foreach (const QString &pile_name, skill->expandPile(Self).split(QStringLiteral(",")))
                 expandPileCards(pile_name);
         }
     }
@@ -1226,8 +1226,8 @@ void Dashboard::stopPending()
         if (view_as_skill->objectName().contains(QStringLiteral("guhuo"))) {
             foreach (CardItem *item, m_handCards)
                 item->hideFootnote();
-        } else if (!view_as_skill->getExpandPile(Self).isEmpty()) {
-            retractPileCards(view_as_skill->getExpandPile(Self));
+        } else if (!view_as_skill->expandPile(Self).isEmpty()) {
+            retractPileCards(view_as_skill->expandPile(Self));
         }
     }
 

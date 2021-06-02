@@ -543,7 +543,7 @@ bool ServerPlayer::hasNullification() const
         if (hasSkill(skill->objectName())) {
             if (skill->inherits("ViewAsSkill")) {
                 const ViewAsSkill *vsskill = qobject_cast<const ViewAsSkill *>(skill);
-                if (vsskill->isEnabledAtNullification(this))
+                if (vsskill->isEnabledAtResponse(this, CardUseStruct::CARD_USE_REASON_RESPONSE_USE, QStringLiteral("nullification")))
                     return true;
             }
         }

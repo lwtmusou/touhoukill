@@ -41,7 +41,7 @@ public:
 
     virtual void gameOver(const QString &winner, bool isSurrender = false) = 0;
 
-    // TODO: Move all these functions to Slash::onEffect (Also the events for slash)
+    // TODO: Move all these functions to Slash::onEffect (Also remove all the events specific to slash)
     // virtual void slashEffect(const SlashEffectStruct &effect) = 0;
     // virtual void slashResult(const SlashEffectStruct &effect, const Card *jink) = 0;
 

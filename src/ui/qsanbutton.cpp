@@ -274,7 +274,9 @@ void QSanSkillButton::setSkill(const Skill *skill)
     // This is a nasty trick because the server side decides to choose a nasty design
     // such that sometimes the actual viewas skill is nested inside a trigger skill.
     // Since the trigger skill is not relevant, we flatten it before we create the button.
-    _m_viewAsSkill = ViewAsSkill::parseViewAsSkill(_m_skill);
+    // Fs: kill the nasty trick here, we won't use view_as_skill anymore
+    // _m_viewAsSkill = ViewAsSkill::parseViewAsSkill(_m_skill);
+    _m_viewAsSkill = qobject_cast<const ViewAsSkill *>(_m_skill);
 
     // TODO: refactor this
 #if 0

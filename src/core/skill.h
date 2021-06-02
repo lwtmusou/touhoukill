@@ -124,32 +124,42 @@ private:
     SkillPrivate *d;
 };
 
+class ViewAsSkillPrivate;
+
 class ViewAsSkill : public Skill
 {
     Q_OBJECT
 
 public:
     explicit ViewAsSkill(const QString &name);
+    ~ViewAsSkill() override;
 
+    // helper function
+    bool isAvailable(const Player *invoker, CardUseStruct::CardUseReason reason, const QString &pattern) const;
+
+    // property setters / getters
+    Card::HandlingMethod handlingMethod() const;
+    Q_ALWAYS_INLINE bool isResponseOrUse() const
+    {
+        return handlingMethod() == Card::MethodUse || handlingMethod() == Card::MethodResponse;
+    }
+    void setHandlingMethod(Card::HandlingMethod method);
+
+    virtual QString expandPile(const Player *Self) const; // virtual for Huashen related skill. Intentionally return by value for easy override
+    void setExpandPile(const QString &expand);
+
+    const QString &responsePattern() const;
+    void setResponsePattern(const QString &pattern);
+
+    // logic related implementations
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const = 0;
     virtual const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const = 0;
 
-    bool isAvailable(const Player *invoker, CardUseStruct::CardUseReason reason, const QString &pattern) const;
     virtual bool isEnabledAtPlay(const Player *player) const;
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const;
-    virtual bool isEnabledAtNullification(const ServerPlayer *player) const;
-    virtual QStringList getDialogCardOptions() const;
-    static const ViewAsSkill *parseViewAsSkill(const Skill *skill);
-    inline bool isResponseOrUse() const
-    {
-        return response_or_use;
-    }
-    virtual QString getExpandPile(const Player *Self) const;
+    virtual bool isEnabledAtResponse(const Player *player, CardUseStruct::CardUseReason reason, const QString &pattern) const;
 
-protected:
-    QString response_pattern;
-    bool response_or_use;
-    QString expand_pile;
+private:
+    ViewAsSkillPrivate *d;
 };
 
 class ZeroCardViewAsSkill : public ViewAsSkill
@@ -159,10 +169,13 @@ class ZeroCardViewAsSkill : public ViewAsSkill
 public:
     explicit ZeroCardViewAsSkill(const QString &name);
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override;
-    const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const override;
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const final override;
+    const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const final override;
+
     virtual const Card *viewAs(const Player *Self) const = 0;
 };
+
+class OneCardViewAsSkillPrivate;
 
 class OneCardViewAsSkill : public ViewAsSkill
 {
@@ -170,16 +183,21 @@ class OneCardViewAsSkill : public ViewAsSkill
 
 public:
     explicit OneCardViewAsSkill(const QString &name);
+    ~OneCardViewAsSkill() override;
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const override;
-    const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const override;
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const final override;
+    const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const final override;
 
     virtual bool viewFilter(const Card *to_select, const Player *Self) const;
     virtual const Card *viewAs(const Card *originalCard, const Player *Self) const = 0;
 
-protected:
-    QString filter_pattern;
+    void setFilterPattern(const QString &p);
+
+private:
+    OneCardViewAsSkillPrivate *d;
 };
+
+class FilterSkillPrivate;
 
 class FilterSkill : public Skill
 {
@@ -187,9 +205,15 @@ class FilterSkill : public Skill
 
 public:
     explicit FilterSkill(const QString &name);
+    ~FilterSkill() override;
 
-    virtual bool viewFilter(const Card *to_select, const Player *Self) const = 0;
+    virtual bool viewFilter(const Card *to_select, const Player *Self) const;
     virtual const Card *viewAs(const Card *originalCard, const Player *Self) const = 0;
+
+    void setFilterPattern(const QString &p);
+
+private:
+    FilterSkillPrivate *d;
 };
 
 typedef QSet<TriggerEvent> TriggerEvents;

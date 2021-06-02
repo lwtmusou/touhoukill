@@ -165,9 +165,28 @@ Skill::ArrayType Skill::arrayType() const
     return ArrayNone;
 }
 
+class ViewAsSkillPrivate
+{
+public:
+    QString response_pattern;
+    Card::HandlingMethod method;
+    QString expand_pile;
+
+    ViewAsSkillPrivate()
+        : method(Card::MethodNone)
+    {
+    }
+};
+
 ViewAsSkill::ViewAsSkill(const QString &name)
     : Skill(name, SkillNoFlag, ShowViewAs)
+    , d(new ViewAsSkillPrivate)
 {
+}
+
+ViewAsSkill::~ViewAsSkill()
+{
+    delete d;
 }
 
 bool ViewAsSkill::isAvailable(const Player *invoker, CardUseStruct::CardUseReason reason, const QString &pattern) const
@@ -179,7 +198,7 @@ bool ViewAsSkill::isAvailable(const Player *invoker, CardUseStruct::CardUseReaso
         return isEnabledAtPlay(invoker);
     case CardUseStruct::CARD_USE_REASON_RESPONSE:
     case CardUseStruct::CARD_USE_REASON_RESPONSE_USE:
-        return isEnabledAtResponse(invoker, pattern);
+        return isEnabledAtResponse(invoker, reason, pattern);
     default:
         return false;
     }
@@ -187,61 +206,44 @@ bool ViewAsSkill::isAvailable(const Player *invoker, CardUseStruct::CardUseReaso
 
 bool ViewAsSkill::isEnabledAtPlay(const Player * /*unused*/) const
 {
-    return response_pattern.isEmpty();
+    return d->response_pattern.isEmpty();
 }
 
-bool ViewAsSkill::isEnabledAtResponse(const Player * /*unused*/, const QString &pattern) const
+bool ViewAsSkill::isEnabledAtResponse(const Player * /*unused*/, CardUseStruct::CardUseReason /*reason*/, const QString &pattern) const
 {
-    if (!response_pattern.isEmpty())
-        return pattern == response_pattern;
+    if (!d->response_pattern.isEmpty())
+        return pattern == d->response_pattern;
     return false;
 }
 
-QStringList ViewAsSkill::getDialogCardOptions() const
+Card::HandlingMethod ViewAsSkill::handlingMethod() const
 {
-    return QStringList();
+    return d->method;
 }
 
-bool ViewAsSkill::isEnabledAtNullification(const ServerPlayer * /*unused*/) const
+void ViewAsSkill::setHandlingMethod(Card::HandlingMethod method)
 {
-    return false;
+    d->method = method;
 }
 
-const ViewAsSkill *ViewAsSkill::parseViewAsSkill(const Skill *skill)
+QString ViewAsSkill::expandPile(const Player * /*Self*/) const
 {
-    if (skill == nullptr)
-        return nullptr;
-    if (skill->inherits("ViewAsSkill")) {
-        const ViewAsSkill *view_as_skill = qobject_cast<const ViewAsSkill *>(skill);
-        return view_as_skill;
-    }
-    if (skill->inherits("DistanceSkill")) {
-        const DistanceSkill *trigger_skill = qobject_cast<const DistanceSkill *>(skill);
-        Q_ASSERT(trigger_skill != nullptr);
-        const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
-        if (view_as_skill != nullptr)
-            return view_as_skill;
-    }
-    if (skill->inherits("AttackRangeSkill")) {
-        const AttackRangeSkill *trigger_skill = qobject_cast<const AttackRangeSkill *>(skill);
-        Q_ASSERT(trigger_skill != nullptr);
-        const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
-        if (view_as_skill != nullptr)
-            return view_as_skill;
-    }
-    if (skill->inherits("MaxCardsSkill")) {
-        const MaxCardsSkill *trigger_skill = qobject_cast<const MaxCardsSkill *>(skill);
-        Q_ASSERT(trigger_skill != nullptr);
-        const ViewAsSkill *view_as_skill = trigger_skill->getViewAsSkill();
-        if (view_as_skill != nullptr)
-            return view_as_skill;
-    }
-    return nullptr;
+    return d->expand_pile;
 }
 
-QString ViewAsSkill::getExpandPile(const Player * /*Self*/) const
+void ViewAsSkill::setExpandPile(const QString &expand)
 {
-    return expand_pile;
+    d->expand_pile = expand;
+}
+
+const QString &ViewAsSkill::responsePattern() const
+{
+    return d->response_pattern;
+}
+
+void ViewAsSkill::setResponsePattern(const QString &pattern)
+{
+    d->response_pattern = pattern;
 }
 
 ZeroCardViewAsSkill::ZeroCardViewAsSkill(const QString &name)
@@ -262,10 +264,23 @@ bool ZeroCardViewAsSkill::viewFilter(const QList<const Card *> & /*selected*/, c
     return false;
 }
 
+class OneCardViewAsSkillPrivate
+{
+public:
+    QString filter_pattern;
+
+    virtual ~OneCardViewAsSkillPrivate() = default;
+};
+
 OneCardViewAsSkill::OneCardViewAsSkill(const QString &name)
     : ViewAsSkill(name)
-    , filter_pattern(QString())
+    , d(new OneCardViewAsSkillPrivate)
 {
+}
+
+OneCardViewAsSkill::~OneCardViewAsSkill()
+{
+    delete d;
 }
 
 bool OneCardViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const
@@ -275,19 +290,15 @@ bool OneCardViewAsSkill::viewFilter(const QList<const Card *> &selected, const C
 
 bool OneCardViewAsSkill::viewFilter(const Card *to_select, const Player *Self) const
 {
-    if (!filter_pattern.isEmpty()) {
-        QString pat = filter_pattern;
-        if (pat.endsWith(QStringLiteral("!"))) {
-            if (Self->isJilei(to_select))
-                return false;
-            pat.chop(1);
-        } else if (response_or_use && pat.contains(QStringLiteral("hand"))) {
-            pat.replace(QStringLiteral("hand"), QStringLiteral("hand,wooden_ox"));
-        }
-        ExpPattern pattern(pat);
-        return pattern.match(Self, to_select);
-    }
+    if (!d->filter_pattern.isEmpty())
+        return ExpPattern(d->filter_pattern).match(Self, to_select);
+
     return false;
+}
+
+void OneCardViewAsSkill::setFilterPattern(const QString &p)
+{
+    d->filter_pattern = p;
 }
 
 const Card *OneCardViewAsSkill::viewAs(const QList<const Card *> &cards, const Player *Self) const
@@ -298,9 +309,34 @@ const Card *OneCardViewAsSkill::viewAs(const QList<const Card *> &cards, const P
         return viewAs(cards.first(), Self);
 }
 
+class FilterSkillPrivate : public OneCardViewAsSkillPrivate
+{
+public:
+    ~FilterSkillPrivate() override = default;
+};
+
 FilterSkill::FilterSkill(const QString &name)
     : Skill(name, SkillCompulsory, ShowStatic)
+    , d(new FilterSkillPrivate)
 {
+}
+
+FilterSkill::~FilterSkill()
+{
+    delete d;
+}
+
+bool FilterSkill::viewFilter(const Card *to_select, const Player *Self) const
+{
+    if (!d->filter_pattern.isEmpty())
+        return ExpPattern(d->filter_pattern).match(Self, to_select);
+
+    return false;
+}
+
+void FilterSkill::setFilterPattern(const QString &p)
+{
+    d->filter_pattern = p;
 }
 
 int MaxCardsSkill::getExtra(const Player * /*unused*/) const

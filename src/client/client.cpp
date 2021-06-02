@@ -1882,7 +1882,7 @@ void Client::askForSinglePeach(const QVariant &arg)
     if (Self->getMark(QStringLiteral("Global_PreventPeach")) > 0 || Self->isProhibited(dying, temp_peach)) {
         bool has_skill = false;
         foreach (const Skill *skill, Self->getVisibleSkillList(true)) {
-            const ViewAsSkill *view_as_skill = ViewAsSkill::parseViewAsSkill(skill);
+            const ViewAsSkill *view_as_skill = qobject_cast<const ViewAsSkill *>(skill);
             if ((view_as_skill != nullptr) && view_as_skill->isAvailable(Self, CardUseStruct::CARD_USE_REASON_RESPONSE_USE, pattern.join(QStringLiteral("+")))) {
                 has_skill = true;
                 break;
