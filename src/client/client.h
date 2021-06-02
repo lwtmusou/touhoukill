@@ -300,7 +300,7 @@ signals:
     void kingdoms_got(const QStringList &kingdoms);
     void suits_got(const QStringList &suits);
     void options_got(const QString &skillName, const QStringList &options);
-    void cards_got(const ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible, Card::HandlingMethod method, QList<int> disabled_ids,
+    void cards_got(const ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible, QSanguosha::HandlingMethod method, QList<int> disabled_ids,
                    bool enableEmptyCard);
     void roles_got(const QString &scheme, const QStringList &roles);
     void directions_got();

@@ -41,7 +41,7 @@ bool DiscardSkill::viewFilter(const QList<const Card *> &selected, const Card *c
     if (!include_equip && Self->hasEquip(card))
         return false;
 
-    if (is_discard && Self->isCardLimited(card, Card::MethodDiscard))
+    if (is_discard && Self->isCardLimited(card, QSanguosha::MethodDiscard))
         return false;
 
     return true;
@@ -52,7 +52,7 @@ const Card *DiscardSkill::viewAs(const QList<const Card *> &cards, const Player 
     if (cards.length() >= minnum) {
         auto *logic = Self->getRoomObject();
         auto *card = logic->cloneDummyCard();
-        card->setHandleMethod(Card::MethodNone);
+        card->setHandleMethod(QSanguosha::MethodNone);
         card->clearSubcards();
         foreach (const Card *c, cards)
             card->addSubcard(c);
@@ -66,7 +66,7 @@ const Card *DiscardSkill::viewAs(const QList<const Card *> &cards, const Player 
 ResponseSkill::ResponseSkill()
     : OneCardViewAsSkill(QStringLiteral("response-skill"))
 {
-    request = Card::MethodResponse;
+    request = QSanguosha::MethodResponse;
 }
 
 void ResponseSkill::setPattern(const QString &pattern)
@@ -74,14 +74,14 @@ void ResponseSkill::setPattern(const QString &pattern)
     this->pattern = Sanguosha->getPattern(pattern);
 }
 
-void ResponseSkill::setRequest(const Card::HandlingMethod request)
+void ResponseSkill::setRequest(const QSanguosha::HandlingMethod request)
 {
     this->request = request;
 }
 
 bool ResponseSkill::matchPattern(const Player *player, const Card *card) const
 {
-    if (request != Card::MethodNone && player->isCardLimited(card, request))
+    if (request != QSanguosha::MethodNone && player->isCardLimited(card, request))
         return false;
 
     return (pattern != nullptr) && pattern->match(player, card);
@@ -118,7 +118,7 @@ YijiCard::YijiCard()
     setThrowWhenUsing(false);
     // will_throw = false;
     // FIXME: How to pass the handling method to the card?
-    // handling_method = Card::MethodNone;
+    // handling_method = QSanguosha::MethodNone;
 }
 
 void YijiCard::setPlayerNames(const QStringList &names)
@@ -186,7 +186,7 @@ const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards, const Play
         return nullptr;
 
     auto *card = player->getRoomObject()->cloneSkillCard(QStringLiteral("YijiCard"));
-    card->setHandleMethod(Card::MethodNone);
+    card->setHandleMethod(QSanguosha::MethodNone);
 
     card->clearSubcards();
     foreach (const Card *c, cards)

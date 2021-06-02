@@ -221,9 +221,9 @@ public:
 
     // interactive methods
     virtual bool activate(Player *player) = 0;
-    // askForUseCard / askForUseSlashTo (Card::MethodUse)
-    // TODO: askForUseCard supports the recast here. (Add additional parameter to this function, or change method -> QList<Card::HandlingMethod>)
-    virtual const Card *askForUseCard(Player *player, const QString &pattern, const QString &prompt, int notice_index = -1, Card::HandlingMethod method = Card::MethodUse,
+    // askForUseCard / askForUseSlashTo (QSanguosha::MethodUse)
+    // TODO: askForUseCard supports the recast here. (Add additional parameter to this function, or change method -> QList<QSanguosha::HandlingMethod>)
+    virtual const Card *askForUseCard(Player *player, const QString &pattern, const QString &prompt, int notice_index = -1, QSanguosha::HandlingMethod method = QSanguosha::MethodUse,
                                       bool addHistory = true, const QString &skill_name = QString())
         = 0;
     virtual const Card *askForUseSlashTo(Player *slasher, Player *victim, const QString &prompt, bool distance_limit = true, bool disable_extra = false, bool addHistory = false)
@@ -235,7 +235,7 @@ public:
 
     virtual void askForLuckCard() = 0;
 
-    virtual Card::Suit askForSuit(Player *player, const QString &reason) = 0;
+    virtual QSanguosha::Suit askForSuit(Player *player, const QString &reason) = 0;
 
     virtual QString askForKingdom(Player *player) = 0;
 
@@ -243,14 +243,14 @@ public:
 
     virtual QString askForChoice(Player *player, const QString &skill_name, const QString &choices, const QVariant &data = QVariant()) = 0;
 
-    // TODO: Add pattern to askForDiscard (Card::MethodDiscard)
+    // TODO: Add pattern to askForDiscard (QSanguosha::MethodDiscard)
     virtual bool askForDiscard(Player *target, const QString &reason, int discard_num, int min_num, bool optional = false, bool include_equip = false,
                                const QString &prompt = QString())
         = 0;
     virtual void doJileiShow(Player *player, const IDSet &jilei_ids) = 0;
     virtual void forcePlayerDiscard(const Player *target, int discard_num, int include_equip, bool is_discard = true) = 0;
 
-    // TODO: Add pattern to askForExchange (Card::MethodNone)
+    // TODO: Add pattern to askForExchange (QSanguosha::MethodNone)
     virtual const Card *askForExchange(Player *player, const QString &reason, int discard_num, int min_num, bool include_equip = false, const QString &prompt = QString(),
                                        bool optional = false)
         = 0;
@@ -260,12 +260,12 @@ public:
     virtual bool isCanceled(const CardEffectStruct &effect) = 0;
 
     virtual int askForCardChosen(Player *player, Player *who, const QString &flags, const QString &reason, bool handcard_visible = false,
-                                 Card::HandlingMethod method = Card::MethodNone, const QList<int> &disabled_ids = QList<int>())
+                                 QSanguosha::HandlingMethod method = QSanguosha::MethodNone, const QList<int> &disabled_ids = QList<int>())
         = 0;
 
     virtual const Card *askForCard(Player *player, const QString &pattern, const QString &prompt, const QVariant &data, const QString &skill_name, int notice_index = -1) = 0;
     virtual const Card *askForCard(Player *player, const QString &pattern, const QString &prompt, const QVariant &data = QVariant(),
-                                   Card::HandlingMethod method = Card::MethodDiscard, Player *to = nullptr, bool isRetrial = false, const QString &skill_name = QString(),
+                                   QSanguosha::HandlingMethod method = QSanguosha::MethodDiscard, Player *to = nullptr, bool isRetrial = false, const QString &skill_name = QString(),
                                    bool isProvision = false, int notice_index = -1)
         = 0;
 

@@ -37,18 +37,18 @@ public:
     virtual bool matchPattern(const Player *player, const Card *card) const;
 
     void setPattern(const QString &pattern);
-    void setRequest(const Card::HandlingMethod request);
+    void setRequest(const QSanguosha::HandlingMethod request);
     bool viewFilter(const Card *to_select, const Player *Self) const override;
     const Card *viewAs(const Card *originalCard, const Player *Self) const override;
 
-    inline virtual Card::HandlingMethod getRequest() const
+    inline virtual QSanguosha::HandlingMethod getRequest() const
     {
         return request;
     }
 
 protected:
     const CardPattern *pattern;
-    Card::HandlingMethod request;
+    QSanguosha::HandlingMethod request;
 };
 
 class ShowOrPindianSkill : public ResponseSkill

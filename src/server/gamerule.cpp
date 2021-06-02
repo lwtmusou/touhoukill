@@ -715,7 +715,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, const TriggerDetai
             break;
         }
         if (effect.jink_num == 1) {
-            const Card *jink = room->askForCard(effect.to, QStringLiteral("jink"), QStringLiteral("slash-jink:") + slasher, data, Card::MethodUse, effect.from);
+            const Card *jink = room->askForCard(effect.to, QStringLiteral("jink"), QStringLiteral("slash-jink:") + slasher, data, QSanguosha::MethodUse, effect.from);
             room->slashResult(effect, room->isJinkEffected(effect, jink) ? jink : nullptr);
         } else {
             Card *jink = room->cloneCard(QStringLiteral("DummyCard"));
@@ -725,7 +725,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, const TriggerDetai
             const Card *asked_jink = nullptr;
             for (int i = effect.jink_num; i > 0; i--) {
                 QString prompt = QStringLiteral("@multi-jink%1:%2::%3").arg(i == effect.jink_num ? QStringLiteral("-start") : QString()).arg(slasher).arg(i);
-                asked_jink = room->askForCard(effect.to, QStringLiteral("jink"), prompt, data, Card::MethodUse, effect.from);
+                asked_jink = room->askForCard(effect.to, QStringLiteral("jink"), prompt, data, QSanguosha::MethodUse, effect.from);
                 if (!room->isJinkEffected(effect, asked_jink)) {
                     room->cardDeleting(jink);
                     room->slashResult(effect, nullptr);

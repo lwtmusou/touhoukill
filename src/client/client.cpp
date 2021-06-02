@@ -192,8 +192,8 @@ void Client::updateCard(const QVariant &val)
         JsonArray args = val.value<JsonArray>();
         Q_ASSERT(args.size() >= 5);
         int cardId = args[0].toInt();
-        Card::Suit suit = (Card::Suit)args[1].toInt();
-        Card::Number number = static_cast<Card::Number>(args[2].toInt());
+        QSanguosha::Suit suit = (QSanguosha::Suit)args[1].toInt();
+        QSanguosha::Number number = static_cast<QSanguosha::Number>(args[2].toInt());
         QString cardName = args[3].toString();
         QString skillName = args[4].toString();
         // QString objectName = args[5].toString();
@@ -609,7 +609,7 @@ void Client::requestCheatRunScript(const QString &script)
     JsonDocument doc(cheatReq);
     QString cheatStr = QString::fromUtf8(doc.toJson());
     Card *card = cloneCard(QStringLiteral("CheatCard"));
-    card->setHandleMethod(Card::MethodNone);
+    card->setHandleMethod(QSanguosha::MethodNone);
     card->setUserString(cheatStr);
     onPlayerResponseCard(card);
 }
@@ -625,7 +625,7 @@ void Client::requestCheatRevive(const QString &name)
     JsonDocument doc(cheatReq);
     QString cheatStr = QString::fromUtf8(doc.toJson());
     Card *card = cloneCard(QStringLiteral("CheatCard"));
-    card->setHandleMethod(Card::MethodNone);
+    card->setHandleMethod(QSanguosha::MethodNone);
     onPlayerResponseCard(card);
 }
 
@@ -647,7 +647,7 @@ void Client::requestCheatDamage(const QString &source, const QString &target, Da
     QString cheatStr = QString::fromUtf8(doc.toJson());
     Card *card = cloneCard(QStringLiteral("CheatCard"));
     card->setUserString(cheatStr);
-    card->setHandleMethod(Card::MethodNone);
+    card->setHandleMethod(QSanguosha::MethodNone);
     onPlayerResponseCard(card);
 }
 
@@ -663,7 +663,7 @@ void Client::requestCheatKill(const QString &killer, const QString &victim)
     QString cheatStr = QString::fromUtf8(doc.toJson());
     Card *card = cloneCard(QStringLiteral("CheatCard"));
     card->setUserString(cheatStr);
-    card->setHandleMethod(Card::MethodNone);
+    card->setHandleMethod(QSanguosha::MethodNone);
     onPlayerResponseCard(card);
 }
 
@@ -679,7 +679,7 @@ void Client::requestCheatGetOneCard(int card_id)
     QString cheatStr = QString::fromUtf8(doc.toJson());
     Card *card = cloneCard(QStringLiteral("CheatCard"));
     card->setUserString(cheatStr);
-    card->setHandleMethod(Card::MethodNone);
+    card->setHandleMethod(QSanguosha::MethodNone);
     onPlayerResponseCard(card);
 }
 
@@ -696,7 +696,7 @@ void Client::requestCheatChangeGeneral(const QString &name, bool isSecondaryHero
     QString cheatStr = QString::fromUtf8(doc.toJson());
     Card *card = cloneCard(QStringLiteral("CheatCard"));
     card->setUserString(cheatStr);
-    card->setHandleMethod(Card::MethodNone);
+    card->setHandleMethod(QSanguosha::MethodNone);
     onPlayerResponseCard(card);
 }
 
@@ -1113,15 +1113,15 @@ void Client::askForCardOrUseCard(const QVariant &cardUsage)
 
     Status status = Responding;
     if (usage.size() >= 3 && JsonUtils::isNumber(usage[2])) {
-        Card::HandlingMethod method = (Card::HandlingMethod)(usage[2].toInt());
+        QSanguosha::HandlingMethod method = (QSanguosha::HandlingMethod)(usage[2].toInt());
         switch (method) {
-        case Card::MethodDiscard:
+        case QSanguosha::MethodDiscard:
             status = RespondingForDiscard;
             break;
-        case Card::MethodUse:
+        case QSanguosha::MethodUse:
             status = RespondingUse;
             break;
-        case Card::MethodResponse:
+        case QSanguosha::MethodResponse:
             status = Responding;
             break;
         default:
@@ -1301,7 +1301,7 @@ void Client::requestSurrender()
         return;
 
     auto *card = cloneCard(QStringLiteral("SurrenderCard"));
-    card->setHandleMethod(Card::MethodNone);
+    card->setHandleMethod(QSanguosha::MethodNone);
     onPlayerResponseCard(card);
 }
 
@@ -1715,7 +1715,7 @@ void Client::askForCardChosen(const QVariant &ask_str)
     QString reason = ask[2].toString();
     highlight_skill_name = reason;
     bool handcard_visible = ask[3].toBool();
-    Card::HandlingMethod method = (Card::HandlingMethod)ask[4].toInt();
+    QSanguosha::HandlingMethod method = (QSanguosha::HandlingMethod)ask[4].toInt();
     ClientPlayer *player = getPlayer(player_name);
     if (player == nullptr)
         return;

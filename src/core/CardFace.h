@@ -81,8 +81,8 @@ public:
 
     // This method provides a default handling method suggested by the card face.
     // Almost every actual card has its handlingMethod to be Card::Use.
-    virtual Card::HandlingMethod defaultHandlingMethod() const;
-    void setDefaultHandlingMethod(Card::HandlingMethod can);
+    virtual QSanguosha::HandlingMethod defaultHandlingMethod() const;
+    void setDefaultHandlingMethod(QSanguosha::HandlingMethod can);
 
     // Functions
     virtual bool targetFixed(const Player *Self, const Card *card) const;

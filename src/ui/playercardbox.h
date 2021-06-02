@@ -36,7 +36,7 @@ class PlayerCardBox : public GraphicsBox
 public:
     explicit PlayerCardBox();
 
-    void chooseCard(const QString &reason, const ClientPlayer *player, const QString &flags = QStringLiteral("hej"), bool handcardVisible = false, Card::HandlingMethod method = Card::MethodNone,
+    void chooseCard(const QString &reason, const ClientPlayer *player, const QString &flags = QStringLiteral("hej"), bool handcardVisible = false, QSanguosha::HandlingMethod method = QSanguosha::MethodNone,
                     const QList<int> &disabledIds = QList<int>(), bool enableEmptyCard = true);
     void clear();
     QRectF boundingRect() const override;
@@ -54,7 +54,7 @@ private:
     const ClientPlayer *player;
     QString flags;
     bool handcardVisible;
-    Card::HandlingMethod method;
+    QSanguosha::HandlingMethod method;
     QList<int> disabledIds;
     QList<CardItem *> items;
 

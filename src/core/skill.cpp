@@ -169,11 +169,11 @@ class ViewAsSkillPrivate
 {
 public:
     QString response_pattern;
-    Card::HandlingMethod method;
+    QSanguosha::HandlingMethod method;
     QString expand_pile;
 
     ViewAsSkillPrivate()
-        : method(Card::MethodNone)
+        : method(QSanguosha::MethodNone)
     {
     }
 };
@@ -216,12 +216,12 @@ bool ViewAsSkill::isEnabledAtResponse(const Player * /*unused*/, CardUseStruct::
     return false;
 }
 
-Card::HandlingMethod ViewAsSkill::handlingMethod() const
+QSanguosha::HandlingMethod ViewAsSkill::handlingMethod() const
 {
     return d->method;
 }
 
-void ViewAsSkill::setHandlingMethod(Card::HandlingMethod method)
+void ViewAsSkill::setHandlingMethod(QSanguosha::HandlingMethod method)
 {
     d->method = method;
 }

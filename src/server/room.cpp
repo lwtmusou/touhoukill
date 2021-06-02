@@ -1264,7 +1264,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
         return false;
 
     card = card->face()->validateInResponse(repliedPlayer, card);
-    if (card != nullptr && repliedPlayer->isCardLimited(card, Card::MethodUse))
+    if (card != nullptr && repliedPlayer->isCardLimited(card, QSanguosha::MethodUse))
         card = nullptr;
     if (card == nullptr)
         return _askForNullification(trick, from, to, positive, aiHelper);
@@ -1395,7 +1395,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     return result;
 }
 
-int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason, bool handcard_visible, Card::HandlingMethod method,
+int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason, bool handcard_visible, QSanguosha::HandlingMethod method,
                            const QList<int> &disabled_ids)
 {
     tryPause();
@@ -1467,7 +1467,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     QList<const Card *> cards = who->getCards(flags);
     QList<const Card *> knownCards = who->getCards(flags);
     foreach (const Card *card, cards) {
-        if ((method == Card::MethodDiscard && !player->canDiscard(who, card->effectiveID(), reason)) || checked_disabled_ids.contains(card->effectiveID())) {
+        if ((method == QSanguosha::MethodDiscard && !player->canDiscard(who, card->effectiveID(), reason)) || checked_disabled_ids.contains(card->effectiveID())) {
             cards.removeOne(card);
             knownCards.removeOne(card);
         } else if (unknownHandcards.contains(card->effectiveID()))
@@ -1527,14 +1527,14 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
 
 const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data, const QString &skill_name, int notice_index)
 {
-    return askForCard(player, pattern, prompt, data, Card::MethodDiscard, nullptr, false, skill_name, false, notice_index);
+    return askForCard(player, pattern, prompt, data, QSanguosha::MethodDiscard, nullptr, false, skill_name, false, notice_index);
 }
 
-const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data, Card::HandlingMethod method, ServerPlayer *to,
+const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data, QSanguosha::HandlingMethod method, ServerPlayer *to,
                              bool isRetrial, const QString &skill_name, bool isProvision, int notice_index)
 {
-    Q_ASSERT(pattern != QStringLiteral("slash") || method != Card::MethodUse); // use askForUseSlashTo instead
-    // FIXME: Q_ASSERT(method != Card::MethodUse); // Use ask for use card instead
+    Q_ASSERT(pattern != QStringLiteral("slash") || method != QSanguosha::MethodUse); // use askForUseSlashTo instead
+    // FIXME: Q_ASSERT(method != QSanguosha::MethodUse); // Use ask for use card instead
     tryPause();
     notifyMoveFocus(player, S_COMMAND_RESPONSE_CARD);
 
@@ -1547,7 +1547,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     s.prompt = prompt;
     s.method = method;
     QVariant asked_data = QVariant::fromValue(s);
-    if ((method == Card::MethodUse || method == Card::MethodResponse) && !isRetrial && !player->hasFlag(QStringLiteral("continuing")))
+    if ((method == QSanguosha::MethodUse || method == QSanguosha::MethodResponse) && !isRetrial && !player->hasFlag(QStringLiteral("continuing")))
         thread->trigger(CardAsked, asked_data);
 
     //case 1. for the player died since a counter attack from juwang target
@@ -1560,9 +1560,9 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         return nullptr;
     }
     CardUseStruct::CardUseReason reason = CardUseStruct::CARD_USE_REASON_UNKNOWN;
-    if (method == Card::MethodResponse)
+    if (method == QSanguosha::MethodResponse)
         reason = CardUseStruct::CARD_USE_REASON_RESPONSE;
-    else if (method == Card::MethodUse)
+    else if (method == QSanguosha::MethodUse)
         reason = CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
     setCurrentCardUseReason(reason);
 
@@ -1619,16 +1619,16 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                 broadcastResetCard(getPlayers(), card->effectiveID());
         }
 
-        if ((method == Card::MethodUse || method == Card::MethodResponse) && !isRetrial) {
+        if ((method == QSanguosha::MethodUse || method == QSanguosha::MethodResponse) && !isRetrial) {
             LogMessage log;
             log.card_str = card->toString();
             log.from = player;
             log.type = QStringLiteral("#%1").arg(card->faceName());
-            if (method == Card::MethodResponse)
+            if (method == QSanguosha::MethodResponse)
                 log.type += QStringLiteral("_Resp");
             sendLog(log);
             player->broadcastSkillInvoke(card);
-        } else if (method == Card::MethodDiscard) {
+        } else if (method == QSanguosha::MethodDiscard) {
             LogMessage log;
             log.type = skill_name.isEmpty() ? QStringLiteral("$DiscardCard") : QStringLiteral("$DiscardCardWithSkill");
             log.from = player;
@@ -1693,7 +1693,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         }
 
         //move1
-        if (method == Card::MethodUse) {
+        if (method == QSanguosha::MethodUse) {
             CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, player->objectName(), QString(), card->skillName(), QString());
 
             reason.m_extraData = QVariant::fromValue(card);
@@ -1703,31 +1703,31 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                 moveCardTo(card, getCardOwner(card->effectiveID()), nullptr, Player::PlaceTable, reason, true);
             else
                 moveCardTo(card, player, nullptr, Player::PlaceTable, reason, true);
-        } else if (method == Card::MethodDiscard) {
+        } else if (method == QSanguosha::MethodDiscard) {
             CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName());
             moveCardTo(card, player, nullptr, Player::DiscardPile, reason, pattern != QStringLiteral(".") && pattern != QStringLiteral(".."));
-        } else if (method != Card::MethodNone && !isRetrial) {
+        } else if (method != QSanguosha::MethodNone && !isRetrial) {
             CardMoveReason reason(CardMoveReason::S_REASON_RESPONSE, player->objectName());
             reason.m_skillName = card->skillName();
             reason.m_extraData = QVariant::fromValue(card);
             if (theProvider != nullptr)
-                moveCardTo(card, theProvider, nullptr, isProvision ? Player::PlaceTable : Player::DiscardPile, reason, method != Card::MethodPindian);
+                moveCardTo(card, theProvider, nullptr, isProvision ? Player::PlaceTable : Player::DiscardPile, reason, method != QSanguosha::MethodPindian);
             else if (!card->isVirtualCard() && (getCardOwner(card->effectiveID()) != nullptr) && getCardOwner(card->effectiveID()) != player) //only for Skill Xinhua
-                moveCardTo(card, getCardOwner(card->effectiveID()), nullptr, isProvision ? Player::PlaceTable : Player::DiscardPile, reason, method != Card::MethodPindian);
+                moveCardTo(card, getCardOwner(card->effectiveID()), nullptr, isProvision ? Player::PlaceTable : Player::DiscardPile, reason, method != QSanguosha::MethodPindian);
             else
-                moveCardTo(card, player, nullptr, isProvision ? Player::PlaceTable : Player::DiscardPile, reason, method != Card::MethodPindian);
+                moveCardTo(card, player, nullptr, isProvision ? Player::PlaceTable : Player::DiscardPile, reason, method != QSanguosha::MethodPindian);
         }
         //move2
-        if ((method == Card::MethodUse || method == Card::MethodResponse) && !isRetrial) {
+        if ((method == QSanguosha::MethodUse || method == QSanguosha::MethodResponse) && !isRetrial) {
             if (!card->skillName().isNull() && card->skillName(true) == card->skillName(false) && player->hasSkill(card->skillName()))
                 notifySkillInvoked(player, card->skillName());
-            CardResponseStruct resp(card, to, method == Card::MethodUse, isRetrial, isProvision, player);
+            CardResponseStruct resp(card, to, method == QSanguosha::MethodUse, isRetrial, isProvision, player);
             resp.m_isHandcard = isHandcard;
             resp.m_isShowncard = isShowncard;
             QVariant data = QVariant::fromValue(resp);
             thread->trigger(CardResponded, data);
             resp = data.value<CardResponseStruct>();
-            if (method == Card::MethodUse) {
+            if (method == QSanguosha::MethodUse) {
                 if (getCardPlace(card->effectiveID()) == Player::PlaceTable) {
                     CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, player->objectName(), QString(), card->skillName(), QString());
                     reason.m_extraData = QVariant::fromValue(card);
@@ -1755,10 +1755,10 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     return result;
 }
 
-const Card *Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt, int notice_index, Card::HandlingMethod method, bool addHistory,
+const Card *Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt, int notice_index, QSanguosha::HandlingMethod method, bool addHistory,
                                 const QString &skill_name)
 {
-    Q_ASSERT(method != Card::MethodResponse);
+    Q_ASSERT(method != QSanguosha::MethodResponse);
 
     tryPause();
     notifyMoveFocus(player, S_COMMAND_RESPONSE_CARD);
@@ -1824,7 +1824,7 @@ const Card *Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> 
     foreach (ServerPlayer *victim, victims)
         setPlayerFlag(victim, QStringLiteral("SlashAssignee"));
 
-    const Card *slash = askForUseCard(slasher, QStringLiteral("slash"), prompt, -1, Card::MethodUse, addHistory);
+    const Card *slash = askForUseCard(slasher, QStringLiteral("slash"), prompt, -1, QSanguosha::MethodUse, addHistory);
     if (slash == nullptr) {
         setPlayerFlag(slasher, QStringLiteral("-slashTargetFix"));
         setPlayerFlag(slasher, QStringLiteral("-slashTargetFixToOne"));
@@ -1969,7 +1969,7 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying)
         card = nullptr;
     if (card != nullptr) {
         card = card->face()->validateInResponse(player, card);
-        Card::HandlingMethod method = Card::MethodUse;
+        QSanguosha::HandlingMethod method = QSanguosha::MethodUse;
         if ((card != nullptr) && card->face()->type() == CardFace::TypeSkill) { //keep TypeSkill after face()->validateInResponse
             method = card->handleMethod();
         }
@@ -3600,7 +3600,7 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
         if (!card_use.m_showncards.isEmpty())
             setCardFlag(card_use.card, QStringLiteral("showncards"));
     }
-    if (card_use.from->isCardLimited(card, card->handleMethod()) && (!card->canRecast() || card_use.from->isCardLimited(card, Card::MethodRecast)))
+    if (card_use.from->isCardLimited(card, card->handleMethod()) && (!card->canRecast() || card_use.from->isCardLimited(card, QSanguosha::MethodRecast)))
         return true;
 
     QString key;
@@ -5396,14 +5396,14 @@ void Room::askForLuckCard()
     }
 }
 
-Card::Suit Room::askForSuit(ServerPlayer *player, const QString &reason)
+QSanguosha::Suit Room::askForSuit(ServerPlayer *player, const QString &reason)
 {
     tryPause();
     notifyMoveFocus(player, S_COMMAND_CHOOSE_SUIT);
 
-    static const QList<Card::Suit> all_suits = {Card::Spade, Card::Club, Card::Heart, Card::Diamond};
+    static const QList<QSanguosha::Suit> all_suits = {QSanguosha::Spade, QSanguosha::Club, QSanguosha::Heart, QSanguosha::Diamond};
 
-    Card::Suit suit = all_suits[QRandomGenerator::global()->generate() % 4];
+    QSanguosha::Suit suit = all_suits[QRandomGenerator::global()->generate() % 4];
 
     bool success = doRequest(player, S_COMMAND_CHOOSE_SUIT, JsonArray() << reason << player->objectName(), true);
 
@@ -5411,13 +5411,13 @@ Card::Suit Room::askForSuit(ServerPlayer *player, const QString &reason)
         QVariant clientReply = player->getClientReply();
         QString suitStr = clientReply.toString();
         if (suitStr == QStringLiteral("spade"))
-            suit = Card::Spade;
+            suit = QSanguosha::Spade;
         else if (suitStr == QStringLiteral("club"))
-            suit = Card::Club;
+            suit = QSanguosha::Club;
         else if (suitStr == QStringLiteral("heart"))
-            suit = Card::Heart;
+            suit = QSanguosha::Heart;
         else if (suitStr == QStringLiteral("diamond"))
-            suit = Card::Diamond;
+            suit = QSanguosha::Diamond;
     }
 
     ChoiceMadeStruct s;

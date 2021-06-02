@@ -112,7 +112,7 @@ Card *RoomObject::cloneCard(const Card *card)
     return cloneCard(card->face(), card->suit(), card->number());
 }
 
-Card *RoomObject::cloneCard(const QString &name, Card::Suit suit, Card::Number number)
+Card *RoomObject::cloneCard(const QString &name, QSanguosha::Suit suit, QSanguosha::Number number)
 {
     const CardFace *face = nullptr;
 
@@ -124,7 +124,7 @@ Card *RoomObject::cloneCard(const QString &name, Card::Suit suit, Card::Number n
     return cloneCard(face, suit, number);
 }
 
-Card *RoomObject::cloneCard(const CardFace *cardFace, Card::Suit suit, Card::Number number)
+Card *RoomObject::cloneCard(const CardFace *cardFace, QSanguosha::Suit suit, QSanguosha::Number number)
 {
     // Design change: dummy cards does not have CardFace
 #if 0

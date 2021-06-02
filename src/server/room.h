@@ -338,31 +338,31 @@ public:
     // interactive methods
     QSGS_LOGIC void activate(ServerPlayer *player, CardUseStruct &card_use);
     QSGS_LOGIC void askForLuckCard();
-    QSGS_LOGIC Card::Suit askForSuit(ServerPlayer *player, const QString &reason);
+    QSGS_LOGIC QSanguosha::Suit askForSuit(ServerPlayer *player, const QString &reason);
     QSGS_LOGIC QString askForKingdom(ServerPlayer *player);
     QSGS_LOGIC bool askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data = QVariant(), const QString &prompt = QString());
     QSGS_LOGIC bool askForSkillInvoke(ServerPlayer *player, const Skill *skill, const QVariant &data = QVariant(), const QString &prompt = QString());
     QSGS_LOGIC QString askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices, const QVariant &data = QVariant());
-    // TODO: Add pattern to askForDiscard (Card::MethodDiscard)
+    // TODO: Add pattern to askForDiscard (QSanguosha::MethodDiscard)
     QSGS_LOGIC bool askForDiscard(ServerPlayer *target, const QString &reason, int discard_num, int min_num, bool optional = false, bool include_equip = false,
                                   const QString &prompt = QString());
     QSGS_LOGIC void doJileiShow(ServerPlayer *player, QList<int> jilei_ids);
-    // TODO: Add pattern to askForExchange (Card::MethodNone)
+    // TODO: Add pattern to askForExchange (QSanguosha::MethodNone)
     QSGS_LOGIC const Card *askForExchange(ServerPlayer *player, const QString &reason, int discard_num, int min_num, bool include_equip = false, const QString &prompt = QString(),
                                           bool optional = false);
     QSGS_LOGIC bool askForNullification(const Card *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
     QSGS_LOGIC bool isCanceled(const CardEffectStruct &effect);
     QSGS_LOGIC int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason, bool handcard_visible = false,
-                                    Card::HandlingMethod method = Card::MethodNone, const QList<int> &disabled_ids = QList<int>());
+                                    QSanguosha::HandlingMethod method = QSanguosha::MethodNone, const QList<int> &disabled_ids = QList<int>());
     // TODO: Break askForCard to askForResponse, and askForJink.
     QSGS_LOGIC const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data, const QString &skill_name, int notice_index = -1);
     QSGS_LOGIC const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data = QVariant(),
-                                      Card::HandlingMethod method = Card::MethodDiscard, ServerPlayer *to = nullptr, bool isRetrial = false, const QString &skill_name = QString(),
-                                      bool isProvision = false, int notice_index = -1);
-    // askForUseCard / askForUseSlashTo (Card::MethodUse)
-    // TODO: askForUseCard supports the recast here. (Add additional parameter to this function, or change method -> QList<Card::HandlingMethod>)
-    QSGS_LOGIC const Card *askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt, int notice_index = -1, Card::HandlingMethod method = Card::MethodUse,
-                                         bool addHistory = true, const QString &skill_name = QString());
+                                      QSanguosha::HandlingMethod method = QSanguosha::MethodDiscard, ServerPlayer *to = nullptr, bool isRetrial = false,
+                                      const QString &skill_name = QString(), bool isProvision = false, int notice_index = -1);
+    // askForUseCard / askForUseSlashTo (QSanguosha::MethodUse)
+    // TODO: askForUseCard supports the recast here. (Add additional parameter to this function, or change method -> QList<QSanguosha::HandlingMethod>)
+    QSGS_LOGIC const Card *askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt, int notice_index = -1,
+                                         QSanguosha::HandlingMethod method = QSanguosha::MethodUse, bool addHistory = true, const QString &skill_name = QString());
     QSGS_LOGIC const Card *askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const QString &prompt, bool distance_limit = true, bool disable_extra = false,
                                             bool addHistory = false);
     QSGS_LOGIC const Card *askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const QString &prompt, bool distance_limit = true, bool disable_extra = false,

@@ -226,8 +226,8 @@ public slots:
     // choice dialog
     void chooseGeneral(const QStringList &generals, const bool single_result, const bool can_convert);
     void chooseSuit(const QStringList &suits);
-    void chooseCard(const ClientPlayer *playerName, const QString &flags, const QString &reason, bool handcard_visible, Card::HandlingMethod method, const QList<int> &disabled_ids,
-                    bool enableEmptyCard);
+    void chooseCard(const ClientPlayer *playerName, const QString &flags, const QString &reason, bool handcard_visible, QSanguosha::HandlingMethod method,
+                    const QList<int> &disabled_ids, bool enableEmptyCard);
     void chooseKingdom(const QStringList &kingdoms);
     void chooseOption(const QString &skillName, const QStringList &options);
     void chooseOrder(QSanProtocol::Game3v3ChooseOrderCommand reason);

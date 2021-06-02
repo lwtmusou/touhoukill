@@ -139,8 +139,8 @@ RoomScene::RoomScene(QMainWindow *main_window, Client *client)
     connect(ClientInstance, &Client::generals_viewed, this, &RoomScene::viewGenerals);
     connect(ClientInstance, &Client::suits_got, this, &RoomScene::chooseSuit);
     connect(ClientInstance, &Client::options_got, this, &RoomScene::chooseOption);
-    connect(ClientInstance, SIGNAL(cards_got(const ClientPlayer *, QString, QString, bool, Card::HandlingMethod, QList<int>, bool)), this,
-            SLOT(chooseCard(const ClientPlayer *, QString, QString, bool, Card::HandlingMethod, QList<int>, bool)));
+    connect(ClientInstance, SIGNAL(cards_got(const ClientPlayer *, QString, QString, bool, QSanguosha::HandlingMethod, QList<int>, bool)), this,
+            SLOT(chooseCard(const ClientPlayer *, QString, QString, bool, QSanguosha::HandlingMethod, QList<int>, bool)));
     connect(ClientInstance, &Client::roles_got, this, &RoomScene::chooseRole);
     connect(ClientInstance, &Client::directions_got, this, &RoomScene::chooseDirection);
     connect(ClientInstance, &Client::orders_got, this, &RoomScene::chooseOrder);
@@ -1323,13 +1323,13 @@ void RoomScene::enableTargets(const Card *card)
         if (status == Client::Playing && !card->face()->isAvailable(Self, card))
             enabled = false;
         if (status == Client::Responding || status == Client::RespondingUse) {
-            Card::HandlingMethod method = card->handleMethod();
-            if (status == Client::Responding && method == Card::MethodUse)
-                method = Card::MethodResponse;
+            QSanguosha::HandlingMethod method = card->handleMethod();
+            if (status == Client::Responding && method == QSanguosha::MethodUse)
+                method = QSanguosha::MethodResponse;
             if (Self->isCardLimited(card, method))
                 enabled = false;
         }
-        if (status == Client::RespondingForDiscard && Self->isCardLimited(card, Card::MethodDiscard))
+        if (status == Client::RespondingForDiscard && Self->isCardLimited(card, QSanguosha::MethodDiscard))
             enabled = false;
     }
     if (!enabled) {
@@ -1800,7 +1800,7 @@ void RoomScene::chooseOption(const QString &skillName, const QStringList &option
     m_chooseOptionsBox->chooseOption(options);
 }
 
-void RoomScene::chooseCard(const ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible, Card::HandlingMethod method,
+void RoomScene::chooseCard(const ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible, QSanguosha::HandlingMethod method,
                            const QList<int> &disabled_ids, bool enableEmptyCard)
 {
     QApplication::alert(main_window);
@@ -2734,13 +2734,13 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                 pattern = pattern.mid(0, pattern.length() - 1);
             response_skill->setPattern(pattern);
             if (newStatus == Client::RespondingForDiscard)
-                response_skill->setRequest(Card::MethodDiscard);
+                response_skill->setRequest(QSanguosha::MethodDiscard);
             else if (newStatus == Client::RespondingNonTrigger)
-                response_skill->setRequest(Card::MethodNone);
+                response_skill->setRequest(QSanguosha::MethodNone);
             else if (newStatus == Client::RespondingUse)
-                response_skill->setRequest(Card::MethodUse);
+                response_skill->setRequest(QSanguosha::MethodUse);
             else
-                response_skill->setRequest(Card::MethodResponse);
+                response_skill->setRequest(QSanguosha::MethodResponse);
             dashboard->startPending(response_skill);
             if (Config.EnableIntellectualSelection)
                 dashboard->selectOnlyCard();

@@ -346,7 +346,7 @@ QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName, bool cache, boo
     return getPixmap(QString::fromUtf8(S_SKIN_KEY_HAND_CARD_MAIN_PHOTO), name, cache, heroSkin);
 }
 
-QPixmap QSanRoomSkin::getCardSuitPixmap(Card::Suit suit) const
+QPixmap QSanRoomSkin::getCardSuitPixmap(QSanguosha::Suit suit) const
 {
     return getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_HAND_CARD_SUIT), Card::SuitToString(suit), true);
 }
@@ -356,7 +356,7 @@ QPixmap QSanRoomSkin::getCardTianyiPixmap() const
     return getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_CARD_TIANYI), QStringLiteral("tianyi"), true);
 }
 
-QPixmap QSanRoomSkin::getCardNumberPixmap(Card::Number point, bool isBlack) const
+QPixmap QSanRoomSkin::getCardNumberPixmap(QSanguosha::Number point, bool isBlack) const
 {
     return getCardNumberPixmap(static_cast<int>(point), isBlack);
 }

@@ -304,6 +304,7 @@ set (QSanguosha_MOCS
     src/util/nativesocket.h
     src/util/recorder.h
     src/util/socket.h
+    src/core/global.h
 
     #${QSanguosha_PKG_MOCS}
 )

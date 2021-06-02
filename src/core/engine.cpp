@@ -307,21 +307,21 @@ bool Engine::matchExpPattern(const QString &pattern, const Player *player, const
     return p.match(player, card);
 }
 
-Card::HandlingMethod Engine::getCardHandlingMethod(const QString &method_name) const
+QSanguosha::HandlingMethod Engine::getCardHandlingMethod(const QString &method_name) const
 {
     if (method_name == QStringLiteral("use"))
-        return Card::MethodUse;
+        return QSanguosha::MethodUse;
     else if (method_name == QStringLiteral("response"))
-        return Card::MethodResponse;
+        return QSanguosha::MethodResponse;
     else if (method_name == QStringLiteral("discard"))
-        return Card::MethodDiscard;
+        return QSanguosha::MethodDiscard;
     else if (method_name == QStringLiteral("recast"))
-        return Card::MethodRecast;
+        return QSanguosha::MethodRecast;
     else if (method_name == QStringLiteral("pindian"))
-        return Card::MethodPindian;
+        return QSanguosha::MethodPindian;
     else {
         Q_ASSERT(false);
-        return Card::MethodNone;
+        return QSanguosha::MethodNone;
     }
 }
 
@@ -395,7 +395,7 @@ bool Engine::isGeneralHidden(const QString &general_name) const
 
 const CardDescriptor &Engine::getEngineCard(int cardId) const
 {
-    static CardDescriptor nullDescriptor = {QString(), Card::NoSuit, Card::NumberNA, QString()};
+    static CardDescriptor nullDescriptor = {QString(), QSanguosha::NoSuit, QSanguosha::NumberNA, QString()};
 
     if (cardId == Card::S_UNKNOWN_CARD_ID)
         return nullDescriptor;
@@ -1199,7 +1199,7 @@ int Engine::operationTimeRate(QSanProtocol::CommandType command, const QVariant 
 SurrenderCard::SurrenderCard()
 {
     setTargetFixed(true);
-    setDefaultHandlingMethod(Card::MethodNone);
+    setDefaultHandlingMethod(QSanguosha::MethodNone);
 }
 
 void SurrenderCard::onUse(Room *room, const CardUseStruct &use) const
@@ -1210,7 +1210,7 @@ void SurrenderCard::onUse(Room *room, const CardUseStruct &use) const
 CheatCard::CheatCard()
 {
     setTargetFixed(true);
-    setDefaultHandlingMethod(Card::MethodNone);
+    setDefaultHandlingMethod(QSanguosha::MethodNone);
 }
 
 void CheatCard::onUse(Room *room, const CardUseStruct &use) const

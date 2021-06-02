@@ -1,6 +1,8 @@
 #ifndef _CARD_H
 #define _CARD_H
 
+#include "global.h"
+
 #include <QIcon>
 #include <QMap>
 #include <QObject>
@@ -35,99 +37,26 @@ class Card final
     friend class RoomObject;
 
 public:
-    enum Suit
-    {
-        Spade,
-        Club,
-        Heart,
-        Diamond,
-        NoSuitBlack,
-        NoSuitRed,
-        NoSuit,
-        SuitToBeDecided = -1
-    };
-
-    Q_ENUM(Suit)
-
-    enum Color
-    {
-        Red,
-        Black,
-        Colorless
-    };
-
-    Q_ENUM(Color)
-
-    enum HandlingMethod
-    {
-        MethodNone,
-        MethodUse,
-        MethodResponse,
-        MethodDiscard,
-        MethodRecast,
-        MethodPindian
-    };
-
-    Q_ENUM(HandlingMethod)
-
-    enum Number
-    {
-        // Regular numbers
-        NumberA = 1,
-        Number2,
-        Number3,
-        Number4,
-        Number5,
-        Number6,
-        Number7,
-        Number8,
-        Number9,
-        Number10,
-        NumberJ,
-        NumberQ,
-        NumberK,
-
-        // Alternative notation
-        Number1 = NumberA,
-        NumberX = Number10,
-        Number11 = NumberJ,
-        Number12 = NumberQ,
-        Number13 = NumberK,
-
-        // Extremely simplified notation
-        A = NumberA,
-        X = Number10,
-        J = NumberJ,
-        Q = NumberQ,
-        K = NumberK,
-
-        // Special numbers
-        NumberNA = 0,
-        NumberToBeDecided = -1
-
-        // TODO: Add -2
-    };
-    Q_ENUM(Number)
-
     static const int S_UNKNOWN_CARD_ID;
 
 private:
     // constructor to create real card
-    explicit Card(RoomObject *room, const CardFace *face, Suit suit = SuitToBeDecided, Number number = Number::NumberToBeDecided, int id = -1);
+    explicit Card(RoomObject *room, const CardFace *face, QSanguosha::Suit suit = QSanguosha::SuitToBeDecided, QSanguosha::Number number = QSanguosha::NumberToBeDecided,
+                  int id = -1);
     ~Card();
 
 public:
     // Suit method
-    Card::Suit suit() const;
-    void setSuit(Suit suit);
+    QSanguosha::Suit suit() const;
+    void setSuit(QSanguosha::Suit suit);
     QString suitString() const;
     bool isRed() const;
     bool isBlack() const;
-    Color color() const;
+    QSanguosha::Color color() const;
 
     // Number method
-    Card::Number number() const;
-    void setNumber(Number number);
+    QSanguosha::Number number() const;
+    void setNumber(QSanguosha::Number number);
     QString numberString() const;
 
     // id
@@ -153,8 +82,8 @@ public:
     void setShowSkillName(const QString &show_skill_name);
 
     // handling method
-    Card::HandlingMethod handleMethod() const;
-    void setHandleMethod(Card::HandlingMethod method);
+    QSanguosha::HandlingMethod handleMethod() const;
+    void setHandleMethod(QSanguosha::HandlingMethod method);
 
     // property (override the CardFace)
     bool canDamage() const;
@@ -216,8 +145,8 @@ public:
 
     // helpers
     // static Card *Clone(const Card *other);
-    static QString SuitToString(Suit suit);
-    static QString NumberToString(Number number);
+    static QString SuitToString(QSanguosha::Suit suit);
+    static QString NumberToString(QSanguosha::Number number);
     static Card *Parse(const QString &str, RoomObject *room);
 
 private:
@@ -234,8 +163,8 @@ struct CardDescriptor
     // const CardFace *face;
     // or following? or both?
     QString faceName;
-    Card::Suit suit;
-    Card::Number number;
+    QSanguosha::Suit suit;
+    QSanguosha::Number number;
     QString package;
 
     // share some interfaces of Card?

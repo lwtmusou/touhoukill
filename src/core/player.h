@@ -322,17 +322,17 @@ public:
 
     inline bool isJilei(const Card *card) const
     {
-        return isCardLimited(card, Card::MethodDiscard);
+        return isCardLimited(card, QSanguosha::MethodDiscard);
     }
     inline bool isLocked(const Card *card) const
     {
-        return isCardLimited(card, Card::MethodUse);
+        return isCardLimited(card, QSanguosha::MethodUse);
     }
 
     void setCardLimitation(const QString &limit_list, const QString &pattern, const QString &reason, bool single_turn = false);
     void removeCardLimitation(const QString &limit_list, const QString &pattern, const QString &reason, bool clearReason = false);
     void clearCardLimitation(bool single_turn = false);
-    bool isCardLimited(const Card *card, Card::HandlingMethod method, bool isHandcard = false) const;
+    bool isCardLimited(const Card *card, QSanguosha::HandlingMethod method, bool isHandcard = false) const;
     bool isCardLimited(const QString &limit_list, const QString &reason) const;
 
     // just for convenience
@@ -427,7 +427,7 @@ private:
 
     QString next;
 
-    QMap<Card::HandlingMethod, QMap<QString, QStringList> > card_limitation; //method, reason , pattern
+    QMap<QSanguosha::HandlingMethod, QMap<QString, QStringList> > card_limitation; //method, reason , pattern
     QStringList disable_show;
 
 signals:

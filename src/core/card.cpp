@@ -14,13 +14,15 @@
 
 const int Card::S_UNKNOWN_CARD_ID = -1;
 
+using namespace QSanguosha;
+
 class CardPrivate
 {
 public:
     // basic information
     const CardFace *face; // functional model
-    Card::Suit suit;
-    Card::Number number;
+    Suit suit;
+    Number number;
     int id; // real card has id.
 
     IDSet sub_cards; // for real card this should be empty.
@@ -30,7 +32,7 @@ public:
     QString show_skill_name;
 
     // handling method
-    Card::HandlingMethod handling_method;
+    QSanguosha::HandlingMethod handling_method;
 
     // property - Fs: use tristate?
     bool can_damage;
@@ -51,12 +53,12 @@ public:
     // The room
     RoomObject *room;
 
-    CardPrivate(RoomObject *room, const CardFace *face, Card::Suit suit, Card::Number number, int id)
+    CardPrivate(RoomObject *room, const CardFace *face, Suit suit, Number number, int id)
         : face(face)
         , suit(suit)
         , number(number)
         , id(id)
-        , handling_method(Card::MethodNone)
+        , handling_method(MethodNone)
         , can_damage(false)
         , can_recover(false)
         , can_recast(false)
@@ -85,7 +87,7 @@ Card::~Card()
     delete d;
 }
 
-Card::Suit Card::suit() const
+Suit Card::suit() const
 {
     if (d->suit != SuitToBeDecided)
         return d->suit;
@@ -135,7 +137,7 @@ bool Card::isBlack() const
     return suit() == Spade || suit() == Club || suit() == NoSuitBlack;
 }
 
-Card::Color Card::color() const
+Color Card::color() const
 {
     if (isRed())
         return Red;
@@ -144,7 +146,7 @@ Card::Color Card::color() const
     return Colorless;
 }
 
-Card::Number Card::number() const
+Number Card::number() const
 {
     if (d->number != NumberToBeDecided)
         return d->number;
@@ -297,12 +299,12 @@ void Card::setShowSkillName(const QString &show_skill_name)
     d->show_skill_name = show_skill_name;
 }
 
-Card::HandlingMethod Card::handleMethod() const
+HandlingMethod Card::handleMethod() const
 {
     return d->handling_method;
 }
 
-void Card::setHandleMethod(Card::HandlingMethod method)
+void Card::setHandleMethod(HandlingMethod method)
 {
     d->handling_method = method;
 }
@@ -667,7 +669,7 @@ Card *Card::Parse(const QString &str, RoomObject *room)
         if (subcard_str != QStringLiteral("."))
             subcard_ids = subcard_str.split(QStringLiteral("+"));
 
-        Suit suit = suit_map.value(suit_string, Card::SuitToBeDecided);
+        Suit suit = suit_map.value(suit_string, QSanguosha::SuitToBeDecided);
 
         Number number = NumberNA;
         if (number_string == QStringLiteral("A"))
@@ -718,22 +720,22 @@ QString CardDescriptor::logName() const
     QString number_string;
 
     switch (suit) {
-    case Card::Spade:
-    case Card::Heart:
-    case Card::Club:
-    case Card::Diamond: {
+    case Spade:
+    case Heart:
+    case Club:
+    case Diamond: {
         suit_char = QStringLiteral("<img src='image/system/log/%1.png' height = 12/>").arg(Card::SuitToString(suit));
         break;
     }
-    case Card::NoSuitRed: {
+    case NoSuitRed: {
         suit_char = QObject::tr("NoSuitRed");
         break;
     }
-    case Card::NoSuitBlack: {
+    case NoSuitBlack: {
         suit_char = QObject::tr("NoSuitBlack");
         break;
     }
-    case Card::NoSuit: {
+    case NoSuit: {
         suit_char = QObject::tr("NoSuit");
         break;
     }
@@ -742,7 +744,7 @@ QString CardDescriptor::logName() const
     }
 
     // FIXME: Should we compare the Number with int directly?
-    if (number > Card::NumberA && number <= Card::NumberK)
+    if (number > NumberA && number <= NumberK)
         number_string = Card::NumberToString(number);
 
     return QStringLiteral("%1[%2%3]").arg(face()->name()).arg(suit_char).arg(number_string);
@@ -750,12 +752,12 @@ QString CardDescriptor::logName() const
 
 bool CardDescriptor::isBlack() const
 {
-    return suit == Card::Spade || suit == Card::Club || suit == Card::NoSuitBlack;
+    return suit == Spade || suit == Club || suit == NoSuitBlack;
 }
 
 bool CardDescriptor::isRed() const
 {
-    return suit == Card::Heart || suit == Card::Diamond || suit == Card::NoSuitRed;
+    return suit == Heart || suit == Diamond || suit == NoSuitRed;
 }
 
 const CardFace *CardDescriptor::face() const

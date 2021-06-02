@@ -1179,7 +1179,7 @@ void Dashboard::startPending(const ViewAsSkill *skill)
     bool expand = ((skill != nullptr) && skill->isResponseOrUse());
     if (!expand && (skill != nullptr) && skill->inherits("ResponseSkill")) {
         const ResponseSkill *resp_skill = qobject_cast<const ResponseSkill *>(skill);
-        if ((resp_skill != nullptr) && (resp_skill->getRequest() == Card::MethodResponse || resp_skill->getRequest() == Card::MethodUse))
+        if ((resp_skill != nullptr) && (resp_skill->getRequest() == QSanguosha::MethodResponse || resp_skill->getRequest() == QSanguosha::MethodUse))
             expand = true;
     }
     //deal askForCard at first, then use the card automaticly
@@ -1274,7 +1274,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
     } else if (pile_name == QStringLiteral("#xiuye_temp")) {
         foreach (int id, ClientInstance->getDiscardPile()) {
             const CardDescriptor &c = Sanguosha->getEngineCard(id);
-            if (c.suit == Card::Club && (c.face()->isNDTrick() || c.face()->type() == CardFace::TypeBasic))
+            if (c.suit == QSanguosha::Club && (c.face()->isNDTrick() || c.face()->type() == CardFace::TypeBasic))
                 pile << id;
         }
     } else {

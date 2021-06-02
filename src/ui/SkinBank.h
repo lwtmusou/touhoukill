@@ -331,10 +331,10 @@ public:
     QPixmap getButtonPixmap(const QString &groupName, const QString &buttonName, QSanButton::ButtonState state) const;
     QPixmap getSkillButtonPixmap(QSanButton::ButtonState state, QSanInvokeSkillButton::SkillType type, QSanInvokeSkillButton::SkillButtonWidth width) const;
     QPixmap getCardMainPixmap(const QString &cardName, bool cache = false, bool heroSkin = true) const;
-    QPixmap getCardSuitPixmap(Card::Suit suit) const;
+    QPixmap getCardSuitPixmap(QSanguosha::Suit suit) const;
     QPixmap getCardTianyiPixmap() const;
     QPixmap getCardNumberPixmap(int point, bool isBlack) const;
-    QPixmap getCardNumberPixmap(Card::Number point, bool isBlack) const;
+    QPixmap getCardNumberPixmap(QSanguosha::Number point, bool isBlack) const;
     QPixmap getCardJudgeIconPixmap(const QString &judgeName) const;
     QPixmap getCardFramePixmap(const QString &frameType) const;
     QPixmap getCardAvatarPixmap(const QString &generalName, bool heroSkin = true) const;

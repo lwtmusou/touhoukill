@@ -206,7 +206,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, const QString 
         return true;
     else if (color == QStringLiteral("black") && card->isBlack())
         return true;
-    else if (color == QStringLiteral("colorless") && card->suit() == Card::NoSuit)
+    else if (color == QStringLiteral("colorless") && card->suit() == QSanguosha::NoSuit)
         return true;
 
     return false;

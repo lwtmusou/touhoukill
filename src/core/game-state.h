@@ -88,11 +88,11 @@ public:
     virtual const Player *getLord() const;
     virtual const Player *getCurrent() const;
 
-    virtual void addPlayerEquip(Player *player, const Card *equip, Card::HandlingMethod method);
-    virtual void removePlayerEquip(Player *player, const Card *equip, Card::HandlingMethod method);
+    virtual void addPlayerEquip(Player *player, const Card *equip, QSanguosha::HandlingMethod method);
+    virtual void removePlayerEquip(Player *player, const Card *equip, QSanguosha::HandlingMethod method);
 
-    virtual void addPlayerDelayTrick(Player *player, const Card *dt, Card::HandlingMethod method);
-    virtual void removePlayerDelayTrick(Player *player, const Card *dt, Card::HandlingMethod method);
+    virtual void addPlayerDelayTrick(Player *player, const Card *dt, QSanguosha::HandlingMethod method);
+    virtual void removePlayerDelayTrick(Player *player, const Card *dt, QSanguosha::HandlingMethod method);
 
     virtual void addPlayerCard(Player *player, const Card *card, Place place);
     virtual void removePlayerCard(Player *player, const Card *card, Place place);
@@ -127,8 +127,8 @@ public:
     virtual Card *cloneDummyCard();
     virtual Card *cloneDummyCard(const IDSet &idSet);
     virtual Card *cloneCard(const Card *card);
-    virtual Card *cloneCard(const QString &name, Card::Suit suit = Card::SuitToBeDecided, Card::Number number = Card::NumberToBeDecided);
-    virtual Card *cloneCard(const CardFace *cardFace = nullptr, Card::Suit suit = Card::SuitToBeDecided, Card::Number number = Card::NumberToBeDecided);
+    virtual Card *cloneCard(const QString &name, QSanguosha::Suit suit = QSanguosha::SuitToBeDecided, QSanguosha::Number number = QSanguosha::NumberToBeDecided);
+    virtual Card *cloneCard(const CardFace *cardFace = nullptr, QSanguosha::Suit suit = QSanguosha::SuitToBeDecided, QSanguosha::Number number = QSanguosha::NumberToBeDecided);
     virtual Card *cloneCard(const CardDescriptor &descriptor);
 
     void cardDeleting(const Card *card);

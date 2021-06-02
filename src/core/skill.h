@@ -138,12 +138,12 @@ public:
     bool isAvailable(const Player *invoker, CardUseStruct::CardUseReason reason, const QString &pattern) const;
 
     // property setters / getters
-    Card::HandlingMethod handlingMethod() const;
+    QSanguosha::HandlingMethod handlingMethod() const;
     Q_ALWAYS_INLINE bool isResponseOrUse() const
     {
-        return handlingMethod() == Card::MethodUse || handlingMethod() == Card::MethodResponse;
+        return handlingMethod() == QSanguosha::MethodUse || handlingMethod() == QSanguosha::MethodResponse;
     }
-    void setHandlingMethod(Card::HandlingMethod method);
+    void setHandlingMethod(QSanguosha::HandlingMethod method);
 
     virtual QString expandPile(const Player *Self) const; // virtual for Huashen related skill. Intentionally return by value for easy override
     void setExpandPile(const QString &expand);

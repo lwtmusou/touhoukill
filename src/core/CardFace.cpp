@@ -18,7 +18,7 @@ public:
         , can_damage(false)
         , can_recover(false)
         , has_effectvalue(true)
-        , default_method(Card::MethodUse)
+        , default_method(QSanguosha::MethodUse)
     {
     }
 
@@ -29,7 +29,7 @@ public:
     bool can_recover;
     bool has_effectvalue;
 
-    Card::HandlingMethod default_method;
+    QSanguosha::HandlingMethod default_method;
 };
 
 CardFace::CardFace()
@@ -131,12 +131,12 @@ void CardFace::setHasPreAction(bool can)
     d->has_preact = can;
 }
 
-Card::HandlingMethod CardFace::defaultHandlingMethod() const
+QSanguosha::HandlingMethod CardFace::defaultHandlingMethod() const
 {
     return d->default_method;
 }
 
-void CardFace::setDefaultHandlingMethod(Card::HandlingMethod can)
+void CardFace::setDefaultHandlingMethod(QSanguosha::HandlingMethod can)
 {
     d->default_method = can;
 }

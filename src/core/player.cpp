@@ -1342,7 +1342,7 @@ bool Player::canSlash(const Player *other, const Card *slash, bool distance_limi
     if (other == this || !other->isAlive())
         return false;
 
-    // Slash *newslash = new Slash(Card::NoSuit, 0);
+    // Slash *newslash = new Slash(QSanguosha::NoSuit, 0);
     const Card *new_shash = getRoomObject()->cloneCard(QStringLiteral("Slash"));
     // newslash->deleteLater();
 #define THIS_SLASH (slash == nullptr ? new_shash : slash)
@@ -1616,7 +1616,7 @@ void Player::setCardLimitation(const QString &limit_list, const QString &pattern
         _pattern = _pattern + symb;
     }
     foreach (QString limit, limit_type) {
-        Card::HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
+        QSanguosha::HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
         card_limitation[method][reason] << _pattern;
     }
 }
@@ -1628,7 +1628,7 @@ void Player::removeCardLimitation(const QString &limit_list, const QString &patt
     if (!_pattern.endsWith(QStringLiteral("$1")) && !_pattern.endsWith(QStringLiteral("$0")))
         _pattern = _pattern + QStringLiteral("$0");
     foreach (QString limit, limit_type) {
-        Card::HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
+        QSanguosha::HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
         card_limitation[method][reason].removeOne(_pattern);
         if (card_limitation[method][reason].isEmpty() || _pattern.endsWith(QStringLiteral("$1")) || clearReason)
             card_limitation[method].remove(reason);
@@ -1637,9 +1637,9 @@ void Player::removeCardLimitation(const QString &limit_list, const QString &patt
 
 void Player::clearCardLimitation(bool single_turn)
 {
-    QList<Card::HandlingMethod> limit_type;
-    limit_type << Card::MethodUse << Card::MethodResponse << Card::MethodDiscard << Card::MethodRecast << Card::MethodPindian;
-    foreach (Card::HandlingMethod method, limit_type) {
+    QList<QSanguosha::HandlingMethod> limit_type;
+    limit_type << QSanguosha::MethodUse << QSanguosha::MethodResponse << QSanguosha::MethodDiscard << QSanguosha::MethodRecast << QSanguosha::MethodPindian;
+    foreach (QSanguosha::HandlingMethod method, limit_type) {
         QMap<QString, QStringList> map = card_limitation[method];
         QMap<QString, QStringList>::iterator it;
         for (it = map.begin(); it != map.end(); ++it) {
@@ -1651,9 +1651,9 @@ void Player::clearCardLimitation(bool single_turn)
     }
 }
 
-bool Player::isCardLimited(const Card *card, Card::HandlingMethod method, bool isHandcard) const
+bool Player::isCardLimited(const Card *card, QSanguosha::HandlingMethod method, bool isHandcard) const
 {
-    if (method == Card::MethodNone)
+    if (method == QSanguosha::MethodNone)
         return false;
     if (card->face()->type() == CardFace::TypeSkill && method == card->handleMethod()) {
         foreach (int card_id, card->subcards()) {
@@ -1691,7 +1691,7 @@ bool Player::isCardLimited(const QString &limit_list, const QString &reason) con
 {
     QStringList limit_type = limit_list.split(QStringLiteral(","));
     foreach (QString limit, limit_type) {
-        Card::HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
+        QSanguosha::HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
         if (card_limitation[method].contains(reason))
             return true;
     }
@@ -1744,7 +1744,7 @@ void Player::copyFrom(Player *p)
     b->chained = a->chained;
     b->judging_area = QList<int>(a->judging_area);
     b->fixed_distance = QHash<const Player *, int>(a->fixed_distance);
-    b->card_limitation = QMap<Card::HandlingMethod, QMap<QString, QStringList> >(a->card_limitation);
+    b->card_limitation = QMap<QSanguosha::HandlingMethod, QMap<QString, QStringList> >(a->card_limitation);
 
     b->tag = QVariantMap(a->tag);
 }

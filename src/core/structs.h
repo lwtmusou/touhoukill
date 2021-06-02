@@ -502,7 +502,7 @@ struct CardAskedStruct
     QString pattern;
     QString prompt;
     ServerPlayer *player;
-    Card::HandlingMethod method;
+    QSanguosha::HandlingMethod method;
 };
 
 class Trigger;
