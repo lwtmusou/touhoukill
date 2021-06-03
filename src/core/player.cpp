@@ -1355,7 +1355,7 @@ bool Player::canSlash(const Player *other, const Card *slash, bool distance_limi
     }
 
     if (distance_limit) {
-        bool res = distanceTo(other, rangefix) <= getAttackRange() + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, this, THIS_SLASH);
+        bool res = distanceTo(other, rangefix) <= getAttackRange() + Sanguosha->correctCardTarget(ModDistance, this, THIS_SLASH);
         getRoomObject()->cardDeleting(new_shash);
         return res;
     } else
@@ -1604,7 +1604,7 @@ bool Player::canSlashWithoutCrossbow(const Card *slash) const
 #define THIS_SLASH (slash == NULL ? newslash : slash)
     int slash_count = getSlashCount();
     int valid_slash_count = 1;
-    valid_slash_count += Sanguosha->correctCardTarget(TargetModSkill::Residue, this, THIS_SLASH);
+    valid_slash_count += Sanguosha->correctCardTarget(ModResidue, this, THIS_SLASH);
     getRoomObject()->cardDeleting(newslash);
     return slash_count < valid_slash_count;
 #undef THIS_SLASH

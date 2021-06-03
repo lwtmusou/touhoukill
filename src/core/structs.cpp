@@ -1,21 +1,25 @@
 #include "structs.h"
 #include "exppattern.h"
+#include "global.h"
 #include "json.h"
 #include "protocol.h"
 #include "room.h"
 #include "skill.h"
+
 #include <functional>
+
+using namespace QSanguosha;
 
 CardsMoveStruct::CardsMoveStruct()
 {
-    from_place = QSanguosha::PlaceUnknown;
-    to_place = QSanguosha::PlaceUnknown;
+    from_place = PlaceUnknown;
+    to_place = PlaceUnknown;
     from = nullptr;
     to = nullptr;
     is_last_handcard = false;
 }
 
-CardsMoveStruct::CardsMoveStruct(const QList<int> &ids, Player *from, Player *to, QSanguosha::Place from_place, QSanguosha::Place to_place, const CardMoveReason &reason)
+CardsMoveStruct::CardsMoveStruct(const QList<int> &ids, Player *from, Player *to, Place from_place, Place to_place, const CardMoveReason &reason)
 {
     this->card_ids = ids;
     this->from_place = from_place;
@@ -30,10 +34,10 @@ CardsMoveStruct::CardsMoveStruct(const QList<int> &ids, Player *from, Player *to
         to_player_name = to->objectName();
 }
 
-CardsMoveStruct::CardsMoveStruct(const QList<int> &ids, Player *to, QSanguosha::Place to_place, const CardMoveReason &reason)
+CardsMoveStruct::CardsMoveStruct(const QList<int> &ids, Player *to, Place to_place, const CardMoveReason &reason)
 {
     this->card_ids = ids;
-    this->from_place = QSanguosha::PlaceUnknown;
+    this->from_place = PlaceUnknown;
     this->to_place = to_place;
     this->from = nullptr;
     this->to = to;
@@ -43,7 +47,7 @@ CardsMoveStruct::CardsMoveStruct(const QList<int> &ids, Player *to, QSanguosha::
         to_player_name = to->objectName();
 }
 
-CardsMoveStruct::CardsMoveStruct(int id, Player *from, Player *to, QSanguosha::Place from_place, QSanguosha::Place to_place, const CardMoveReason &reason)
+CardsMoveStruct::CardsMoveStruct(int id, Player *from, Player *to, Place from_place, Place to_place, const CardMoveReason &reason)
 {
     this->card_ids << id;
     this->from_place = from_place;
@@ -58,10 +62,10 @@ CardsMoveStruct::CardsMoveStruct(int id, Player *from, Player *to, QSanguosha::P
         to_player_name = to->objectName();
 }
 
-CardsMoveStruct::CardsMoveStruct(int id, Player *to, QSanguosha::Place to_place, const CardMoveReason &reason)
+CardsMoveStruct::CardsMoveStruct(int id, Player *to, Place to_place, const CardMoveReason &reason)
 {
     this->card_ids << id;
-    this->from_place = QSanguosha::PlaceUnknown;
+    this->from_place = PlaceUnknown;
     this->to_place = to_place;
     this->from = nullptr;
     this->to = to;
@@ -93,8 +97,8 @@ bool CardsMoveStruct::tryParse(const QVariant &arg)
     if (!JsonUtils::tryParse(args[0], card_ids))
         return false;
 
-    from_place = (QSanguosha::Place)args[1].toInt();
-    to_place = (QSanguosha::Place)args[2].toInt();
+    from_place = (Place)args[1].toInt();
+    to_place = (Place)args[2].toInt();
     from_player_name = args[3].toString();
     to_player_name = args[4].toString();
     from_pile_name = args[5].toString();
@@ -133,7 +137,7 @@ QVariant CardsMoveStruct::toVariant() const
 
 bool CardsMoveStruct::isRelevant(const Player *player) const
 {
-    return player != nullptr && (from == player || (to == player && to_place != QSanguosha::PlaceSpecial));
+    return player != nullptr && (from == player || (to == player && to_place != PlaceSpecial));
 }
 
 bool CardMoveReason::tryParse(const QVariant &arg)
@@ -326,8 +330,8 @@ bool JudgeStruct::isGood(const Card *card) const
 }
 
 PhaseChangeStruct::PhaseChangeStruct()
-    : from(QSanguosha::PhaseNotActive)
-    , to(QSanguosha::PhaseNotActive)
+    : from(PhaseNotActive)
+    , to(PhaseNotActive)
     , player(nullptr)
 {
 }
@@ -690,7 +694,7 @@ JinkEffectStruct::JinkEffectStruct()
 }
 
 PhaseSkippingStruct::PhaseSkippingStruct()
-    : phase(QSanguosha::PhaseNotActive)
+    : phase(PhaseNotActive)
     , player(nullptr)
     , isCost(false)
 {

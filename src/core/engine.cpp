@@ -7,6 +7,7 @@
 #include "client.h"
 #include "exppattern.h"
 #include "general.h"
+#include "global.h"
 #include "lua-wrapper.h"
 #include "package.h"
 #include "protocol.h"
@@ -24,6 +25,8 @@
 #include <QVersionNumber>
 
 #include <random>
+
+using namespace QSanguosha;
 
 Engine *Sanguosha = nullptr;
 
@@ -307,21 +310,21 @@ bool Engine::matchExpPattern(const QString &pattern, const Player *player, const
     return p.match(player, card);
 }
 
-QSanguosha::HandlingMethod Engine::getCardHandlingMethod(const QString &method_name) const
+HandlingMethod Engine::getCardHandlingMethod(const QString &method_name) const
 {
     if (method_name == QStringLiteral("use"))
-        return QSanguosha::MethodUse;
+        return MethodUse;
     else if (method_name == QStringLiteral("response"))
-        return QSanguosha::MethodResponse;
+        return MethodResponse;
     else if (method_name == QStringLiteral("discard"))
-        return QSanguosha::MethodDiscard;
+        return MethodDiscard;
     else if (method_name == QStringLiteral("recast"))
-        return QSanguosha::MethodRecast;
+        return MethodRecast;
     else if (method_name == QStringLiteral("pindian"))
-        return QSanguosha::MethodPindian;
+        return MethodPindian;
     else {
         Q_ASSERT(false);
-        return QSanguosha::MethodNone;
+        return MethodNone;
     }
 }
 
@@ -395,7 +398,7 @@ bool Engine::isGeneralHidden(const QString &general_name) const
 
 const CardDescriptor &Engine::getEngineCard(int cardId) const
 {
-    static CardDescriptor nullDescriptor = {QString(), QSanguosha::NoSuit, QSanguosha::NumberNA, QString()};
+    static CardDescriptor nullDescriptor = {QString(), NoSuit, NumberNA, QString()};
 
     if (cardId == Card::S_UNKNOWN_CARD_ID)
         return nullDescriptor;
@@ -1106,7 +1109,7 @@ int Engine::correctMaxCards(const Player *target, bool fixed, const QString &exc
     return extra;
 }
 
-int Engine::correctCardTarget(const TargetModSkill::ModType type, const Player *from, const Card *card) const
+int Engine::correctCardTarget(const TargetModType type, const Player *from, const Card *card) const
 {
     int x = 0;
     QString cardskill = card->skillName();
@@ -1114,7 +1117,7 @@ int Engine::correctCardTarget(const TargetModSkill::ModType type, const Player *
     if (!cardskill.isNull())
         checkDoubleHidden = from->isHiddenSkill(cardskill);
 
-    if (type == TargetModSkill::Residue) {
+    if (type == ModResidue) {
         foreach (const TargetModSkill *skill, targetmod_skills) {
             ExpPattern p(skill->getPattern());
             if (p.match(from, card)) {
@@ -1127,7 +1130,7 @@ int Engine::correctCardTarget(const TargetModSkill::ModType type, const Player *
                 x += residue;
             }
         }
-    } else if (type == TargetModSkill::DistanceLimit) {
+    } else if (type == ModDistance) {
         foreach (const TargetModSkill *skill, targetmod_skills) {
             ExpPattern p(skill->getPattern());
             if (p.match(from, card)) {
@@ -1141,7 +1144,7 @@ int Engine::correctCardTarget(const TargetModSkill::ModType type, const Player *
                 x += distance_limit;
             }
         }
-    } else if (type == TargetModSkill::ExtraTarget) {
+    } else if (type == ModTarget) {
         foreach (const TargetModSkill *skill, targetmod_skills) {
             ExpPattern p(skill->getPattern());
             if (p.match(from, card) && from->getMark(QStringLiteral("chuangshi_user")) == 0) {

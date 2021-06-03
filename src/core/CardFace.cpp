@@ -474,7 +474,7 @@ public:
 SurrenderCard::SurrenderCard()
 {
     setTargetFixed(true);
-    setDefaultHandlingMethod(QSanguosha::MethodNone);
+    setDefaultHandlingMethod(MethodNone);
 }
 
 void SurrenderCard::onUse(Room *room, const CardUseStruct &use) const
@@ -485,7 +485,7 @@ void SurrenderCard::onUse(Room *room, const CardUseStruct &use) const
 CheatCard::CheatCard()
 {
     setTargetFixed(true);
-    setDefaultHandlingMethod(QSanguosha::MethodNone);
+    setDefaultHandlingMethod(MethodNone);
 }
 
 void CheatCard::onUse(Room *room, const CardUseStruct &use) const

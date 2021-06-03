@@ -379,14 +379,6 @@ class TargetModSkill : public Skill
     Q_OBJECT
 
 public:
-    enum ModType
-    {
-        Residue,
-        DistanceLimit,
-        ExtraTarget
-    };
-    Q_ENUM(ModType)
-
     explicit TargetModSkill(const QString &name);
     virtual QString getPattern() const;
 

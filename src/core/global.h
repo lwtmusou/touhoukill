@@ -143,6 +143,13 @@ enum Role
 };
 Q_ENUM_NS(Role)
 
+enum TargetModType
+{
+    ModResidue,
+    ModDistance,
+    ModTarget
+};
+Q_ENUM_NS(TargetModType)
 }
 
 #endif // GLOBAL_H

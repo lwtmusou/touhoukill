@@ -32,9 +32,6 @@ class CardDescriptor;
 class Card;
 class RoomObject;
 
-// TODO: kill this
-#include "skill.h"
-
 class Engine final : public QObject
 {
     Q_OBJECT
@@ -116,7 +113,7 @@ public:
     const ViewHasSkill *ViewHas(const Player *player, const QString &skill_name, const QString &flag, bool ignore_preshow = false) const;
     int correctDistance(const Player *from, const Player *to) const;
     int correctMaxCards(const Player *target, bool fixed = false, const QString &except = QString()) const;
-    int correctCardTarget(const TargetModSkill::ModType type, const Player *from, const Card *card) const;
+    int correctCardTarget(const QSanguosha::TargetModType type, const Player *from, const Card *card) const;
     int correctAttackRange(const Player *target, bool include_weapon = true, bool fixed = false) const;
 
     bool isGeneralHidden(const QString &general_name) const;

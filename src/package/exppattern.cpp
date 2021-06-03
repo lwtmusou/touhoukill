@@ -1,4 +1,5 @@
 #include "exppattern.h"
+#include "CardFace.h"
 #include "RoomObject.h"
 #include "card.h"
 #include "engine.h"

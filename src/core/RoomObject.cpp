@@ -3,6 +3,8 @@
 #include "card.h"
 #include "engine.h"
 
+using namespace QSanguosha;
+
 namespace CardFactory {
 QHash<QString, const CardFace *> faces;
 
@@ -115,7 +117,7 @@ Card *RoomObject::cloneCard(const Card *card)
     return cloneCard(card->face(), card->suit(), card->number());
 }
 
-Card *RoomObject::cloneCard(const QString &name, QSanguosha::Suit suit, QSanguosha::Number number)
+Card *RoomObject::cloneCard(const QString &name, Suit suit, Number number)
 {
     const CardFace *face = nullptr;
 
@@ -127,7 +129,7 @@ Card *RoomObject::cloneCard(const QString &name, QSanguosha::Suit suit, QSanguos
     return cloneCard(face, suit, number);
 }
 
-Card *RoomObject::cloneCard(const CardFace *cardFace, QSanguosha::Suit suit, QSanguosha::Number number)
+Card *RoomObject::cloneCard(const CardFace *cardFace, Suit suit, Number number)
 {
     // Design change: dummy cards does not have CardFace
 #if 0

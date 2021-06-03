@@ -133,7 +133,7 @@ int YijiCard::targetFilter(const QList<const Player *> &targets, const Player *t
     return targets.isEmpty() && set.contains(to_select->objectName()) ? 1 : 0;
 }
 
-void YijiCard::use(Room *, const CardUseStruct &) const
+void YijiCard::use(Room * /*room*/, const CardUseStruct & /*use*/) const
 {
 }
 
