@@ -134,7 +134,6 @@ void CardContainer::fillGeneralCards(const QList<CardItem *> &card_item, const Q
     bool one_row = true;
     int width = (card_width + cardInterval) * itemCount - cardInterval + 50;
     if (width * 1.5 > scene_width) {
-        width = (card_width + cardInterval) * ((itemCount + 1) / 2) - cardInterval + 50;
         one_row = false;
     }
     int first_row = one_row ? itemCount : (itemCount + 1) / 2;

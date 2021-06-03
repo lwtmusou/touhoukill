@@ -223,7 +223,7 @@ void Engine::addBanPackage(const QString &package_name)
 
 QStringList Engine::getBanPackages() const
 {
-    if (QCoreApplication::instance()->arguments().contains(QStringLiteral("-server")))
+    if (QCoreApplication::arguments().contains(QStringLiteral("-server")))
         return Config.BanPackages;
     else {
         if (isHegemonyGameMode(ServerInfo.GameMode)) {

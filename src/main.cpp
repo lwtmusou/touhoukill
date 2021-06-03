@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 
 #ifndef Q_OS_ANDROID
 #ifdef QT_NO_DEBUG
-    QDir::setCurrent(QCoreApplication::instance()->applicationDirPath());
+    QDir::setCurrent(QCoreApplication::applicationDirPath());
 #endif
 #else
     QDir::setCurrent(QStringLiteral("/sdcard/Android/data/rocks.touhousatsu.app"));
@@ -45,13 +45,13 @@ int main(int argc, char *argv[])
     qt_translator.load(QStringLiteral("qt_zh_CN.qm"));
     translator.load(QStringLiteral("sanguosha.qm"));
 
-    QCoreApplication::instance()->installTranslator(&qt_translator);
-    QCoreApplication::instance()->installTranslator(&translator);
+    QCoreApplication::installTranslator(&qt_translator);
+    QCoreApplication::installTranslator(&translator);
 
     Sanguosha = new Engine;
     Config.init();
 
-    if (QCoreApplication::instance()->arguments().contains(QStringLiteral("-server"))) {
+    if (QCoreApplication::arguments().contains(QStringLiteral("-server"))) {
         Server *server = new Server(QCoreApplication::instance());
         printf("Server is starting on port %u\n", Config.ServerPort);
 
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
         else
             printf("Starting failed!\n");
 
-        int r = QCoreApplication::instance()->exec();
+        int r = QCoreApplication::exec();
         delete qApp;
         return r;
     }
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    int execResult = QCoreApplication::instance()->exec();
+    int execResult = QCoreApplication::exec();
     delete QCoreApplication::instance();
     return execResult;
 }

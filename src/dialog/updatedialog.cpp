@@ -149,7 +149,7 @@ void UpdateDialog::updateInfoReceived()
         }
 
         parseVersionInfo(UiBase, ob);
-    } while (0);
+    } while (false);
 
     do {
         QJsonObject ob;
@@ -160,7 +160,7 @@ void UpdateDialog::updateInfoReceived()
         }
 
         parseVersionInfo(UiSkin, ob);
-    } while (0);
+    } while (false);
 
     do {
         QJsonObject ob;
@@ -171,7 +171,7 @@ void UpdateDialog::updateInfoReceived()
         }
 
         parseVersionInfo(UiBgm, ob);
-    } while (0);
+    } while (false);
 
     for (int i = 0; i < UiMax; ++i) {
         if (m_updateContents[i].updatePack.isEmpty())

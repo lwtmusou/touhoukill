@@ -28,7 +28,7 @@ public:
     {
     }
 
-    QRectF boundingRect() const override
+    Q_REQUIRED_RESULT QRectF boundingRect() const override
     {
         return m_rect;
     }

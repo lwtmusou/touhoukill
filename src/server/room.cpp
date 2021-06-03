@@ -1713,7 +1713,8 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             if (theProvider != nullptr)
                 moveCardTo(card, theProvider, nullptr, isProvision ? QSanguosha::PlaceTable : QSanguosha::PlaceDiscardPile, reason, method != QSanguosha::MethodPindian);
             else if (!card->isVirtualCard() && (getCardOwner(card->effectiveID()) != nullptr) && getCardOwner(card->effectiveID()) != player) //only for Skill Xinhua
-                moveCardTo(card, getCardOwner(card->effectiveID()), nullptr, isProvision ? QSanguosha::PlaceTable : QSanguosha::PlaceDiscardPile, reason, method != QSanguosha::MethodPindian);
+                moveCardTo(card, getCardOwner(card->effectiveID()), nullptr, isProvision ? QSanguosha::PlaceTable : QSanguosha::PlaceDiscardPile, reason,
+                           method != QSanguosha::MethodPindian);
             else
                 moveCardTo(card, player, nullptr, isProvision ? QSanguosha::PlaceTable : QSanguosha::PlaceDiscardPile, reason, method != QSanguosha::MethodPindian);
         }
@@ -3623,7 +3624,8 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
     if (card == nullptr)
         return false;
 
-    if (card_use.from->getPhase() == QSanguosha::PhasePlay && add_history && (card_use.m_reason == CardUseStruct::CARD_USE_REASON_PLAY || card->hasFlag(QStringLiteral("Add_History")))) {
+    if (card_use.from->getPhase() == QSanguosha::PhasePlay && add_history
+        && (card_use.m_reason == CardUseStruct::CARD_USE_REASON_PLAY || card->hasFlag(QStringLiteral("Add_History")))) {
         if (!slash_not_record) {
             card_use.m_addHistory = true;
             addPlayerHistory(card_use.from, key);
@@ -4167,9 +4169,8 @@ void Room::startGame()
             QStringList generals = getTag(player->objectName()).toStringList();
             const General *general1 = Sanguosha->getGeneral(generals.first());
             Q_ASSERT(general1);
-            int max_hp = general1->getMaxHp();
             const General *general2 = Sanguosha->getGeneral(generals.last());
-            max_hp = (general1->getMaxHpHead() + general2->getMaxHpDeputy());
+            int max_hp = (general1->getMaxHpHead() + general2->getMaxHpDeputy());
             if (general1->isCompanionWith(generals.last()))
                 player->setMark(QStringLiteral("CompanionEffect"), 1);
 
@@ -4849,7 +4850,8 @@ void Room::updateCardsOnGet(const CardsMoveStruct &move)
 
     player = (ServerPlayer *)move.to;
     if (player != nullptr
-        && (move.to_place == QSanguosha::PlaceHand || move.to_place == QSanguosha::PlaceEquip || move.to_place == QSanguosha::PlaceJudge || move.to_place == QSanguosha::PlaceSpecial)) {
+        && (move.to_place == QSanguosha::PlaceHand || move.to_place == QSanguosha::PlaceEquip || move.to_place == QSanguosha::PlaceJudge
+            || move.to_place == QSanguosha::PlaceSpecial)) {
         QList<const Card *> cards;
         foreach (int cardId, move.card_ids)
             cards.append(getCard(cardId));
@@ -4885,7 +4887,8 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
             cards_moves[i].open = forceVisible
                 || cards_moves[i].isRelevant(player)
                 // forceVisible will override cards to be visible
-                || cards_moves[i].to_place == QSanguosha::PlaceEquip || cards_moves[i].from_place == QSanguosha::PlaceEquip || cards_moves[i].to_place == QSanguosha::PlaceDelayedTrick
+                || cards_moves[i].to_place == QSanguosha::PlaceEquip || cards_moves[i].from_place == QSanguosha::PlaceEquip
+                || cards_moves[i].to_place == QSanguosha::PlaceDelayedTrick
                 || cards_moves[i].from_place == QSanguosha::PlaceDelayedTrick
                 // only cards moved to hand/special can be invisible
                 || cards_moves[i].from_place == QSanguosha::PlaceDiscardPile
@@ -5710,8 +5713,8 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
         }
         JsonArray clientReply = zhuge->getClientReply().value<JsonArray>();
         if (clientReply.size() == 2) {
-            success &= JsonUtils::tryParse(clientReply[0], top_cards);
-            success &= JsonUtils::tryParse(clientReply[1], bottom_cards);
+            JsonUtils::tryParse(clientReply[0], top_cards);
+            JsonUtils::tryParse(clientReply[1], bottom_cards);
             if (guanxing_type == GuanxingDownOnly) {
                 bottom_cards = top_cards;
                 top_cards.clear();

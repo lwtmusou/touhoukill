@@ -871,6 +871,7 @@ void Client::setStatus(Status status)
         setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
     else
         setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_UNKNOWN);
+
     emit status_changed(old_status, status);
 }
 
@@ -2178,6 +2179,7 @@ void Client::log(const QVariant &log_str)
             if ((from != nullptr) && from != Self)
                 from->setHandcardNum(0);
         }
+
         emit log_received(log);
     }
 }

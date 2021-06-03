@@ -25,6 +25,7 @@ void MyPixmapItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
         msg = QStringLiteral("<#") + QString::number(result + 1) + QStringLiteral("#>");
     else if (itemName == QStringLiteral("easytextboard"))
         msg = easytext.at(result);
+
     emit my_pixmap_item_msg(msg);
 }
 

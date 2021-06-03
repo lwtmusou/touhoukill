@@ -559,8 +559,8 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
             errorMsg = QStringLiteral("Error when reading layout config file \"%1\": \n%2").arg(layoutConfigName).arg(layoutDoc.errorString());
             QMessageBox::warning(nullptr, QStringLiteral("Config Error"), errorMsg);
             success = false;
-        }
-        success = _loadLayoutConfig(layoutDoc.toVariant());
+        } else
+            success = _loadLayoutConfig(layoutDoc.toVariant());
     }
 
     if (!imageConfigName.isNull()) {
@@ -569,8 +569,8 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
             errorMsg = QStringLiteral("Error when reading image config file \"%1\": \n%2").arg(imageConfigName).arg(imageDoc.errorString());
             QMessageBox::warning(nullptr, QStringLiteral("Config Error"), errorMsg);
             success = false;
-        }
-        success = _loadImageConfig(imageDoc.toVariant());
+        } else
+            success = _loadImageConfig(imageDoc.toVariant());
     }
 
     if (!audioConfigName.isNull()) {
@@ -579,8 +579,8 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
             errorMsg = QStringLiteral("Error when reading audio config file \"%1\": \n%2").arg(audioConfigName).arg(audioDoc.errorString());
             QMessageBox::warning(nullptr, QStringLiteral("Config Error"), errorMsg);
             success = false;
-        }
-        _m_audioConfig = audioDoc.object();
+        } else
+            _m_audioConfig = audioDoc.object();
     }
 
     if (!animationConfigName.isNull()) {
@@ -589,8 +589,8 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
             errorMsg = QStringLiteral("Error when reading animation config file \"%1\": \n%2").arg(animationConfigName).arg(animDoc.errorString());
             QMessageBox::warning(nullptr, QStringLiteral("Config Error"), errorMsg);
             success = false;
-        }
-        _m_animationConfig = animDoc.object();
+        } else
+            _m_animationConfig = animDoc.object();
     }
 
     return success;

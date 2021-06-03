@@ -394,9 +394,6 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
 {
     painter->drawPixmap(0, 0, _m_bgPixmap[(int)_m_state]);
     if (_m_skillType == S_SKILL_ATTACHEDLORD) {
-        int nline = _m_skill->objectName().indexOf(QStringLiteral("-"));
-        if (nline == -1)
-            nline = _m_skill->objectName().indexOf(QStringLiteral("_"));
         QString engskillname = _m_skill->objectName().split(QStringLiteral("_")).first();
         QString HegSkillname = engskillname + QStringLiteral("_hegemony");
         QString generalName;
