@@ -2,6 +2,7 @@
 #include "engine.h"
 #include "gamerule.h"
 #include "recorder.h"
+#include "room.h"
 #include "settings.h"
 #include "skill.h"
 

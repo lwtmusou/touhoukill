@@ -8,17 +8,8 @@
 #include <QObject>
 #include <QSet>
 
-class Room;
 class RoomObject;
 class Player;
-class ServerPlayer;
-class Client;
-class ClientPlayer;
-class CardItem;
-class DiscardSkill;
-class YijiViewAsSkill;
-class ChoosePlayerSkill;
-
 struct CardEffectStruct;
 struct CardUseStruct;
 
@@ -66,9 +57,6 @@ public:
 
     // ??
     bool isModified() const;
-
-    // match pattern
-    // FIXME: This function is only referenced in Dashboard::selectCard. Let's find a way to get rid of it?
 
     // skill name
     QString skillName(bool removePrefix = true) const;

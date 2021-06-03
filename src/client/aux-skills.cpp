@@ -131,25 +131,8 @@ int YijiCard::targetFilter(const QList<const Player *> &targets, const Player *t
     return targets.isEmpty() && set.contains(to_select->objectName()) ? 1 : 0;
 }
 
-void YijiCard::use(Room *room, const CardUseStruct &use) const
+void YijiCard::use(Room *, const CardUseStruct &) const
 {
-    ServerPlayer *source = use.from;
-    ServerPlayer *target = use.to.first();
-
-    room->broadcastSkillInvoke(QStringLiteral("rende"));
-    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), target->objectName(), QStringLiteral("nosrende"), QString());
-    room->obtainCard(target, use.card, reason, false);
-
-    int old_value = source->getMark(QStringLiteral("nosrende"));
-    int new_value = old_value + use.card->subcards().size();
-    room->setPlayerMark(source, QStringLiteral("nosrende"), new_value);
-
-    if (old_value < 2 && new_value >= 2) {
-        RecoverStruct recover;
-        recover.card = use.card;
-        recover.who = source;
-        room->recover(source, recover);
-    }
 }
 
 // -------------------------------------------

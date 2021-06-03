@@ -181,7 +181,7 @@ const Card *CardFace::validate(const CardUseStruct &use) const
     return use.card;
 }
 
-const Card *CardFace::validateInResponse(ServerPlayer * /*unused*/, const Card *original_card) const
+const Card *CardFace::validateInResponse(Player * /*unused*/, const Card *original_card) const
 {
     return original_card;
 }
@@ -322,7 +322,7 @@ bool CardFace::isCancelable(const CardEffectStruct & /*unused*/) const
     return false;
 }
 
-void CardFace::onNullified(ServerPlayer * /*unused*/, const Card * /*unused*/) const
+void CardFace::onNullified(Player * /*unused*/, const Card * /*unused*/) const
 {
 }
 

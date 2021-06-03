@@ -21,6 +21,8 @@
 #include <QParallelAnimationGroup>
 #include <QVariant>
 
+class ClientPlayer;
+
 class GenericCardContainer : public QGraphicsObject
 {
     Q_OBJECT

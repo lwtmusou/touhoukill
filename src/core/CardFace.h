@@ -7,7 +7,6 @@
 #include <QString>
 
 class Player;
-class ServerPlayer;
 class Room;
 class Card;
 
@@ -101,7 +100,7 @@ public:
     // Is it only for skill "tianqu"?
     virtual bool ignoreCardValidity(const Player *player) const;
     virtual const Card *validate(const CardUseStruct &cardUse) const;
-    virtual const Card *validateInResponse(ServerPlayer *user, const Card *original_card) const;
+    virtual const Card *validateInResponse(Player *user, const Card *original_card) const;
 
     virtual void doPreAction(Room *room, const CardUseStruct &card_use) const;
 
@@ -111,7 +110,7 @@ public:
 
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isCancelable(const CardEffectStruct &effect) const;
-    virtual void onNullified(ServerPlayer *target, const Card *card) const;
+    virtual void onNullified(Player *target, const Card *card) const;
 
 protected:
     CardFacePrivate *d;
@@ -142,8 +141,8 @@ public:
 
     virtual QSanguosha::EquipLocation location() const = 0;
 
-    virtual void onInstall(ServerPlayer *player) const = 0;
-    virtual void onUninstall(ServerPlayer *player) const = 0;
+    virtual void onInstall(Player *player) const = 0;
+    virtual void onUninstall(Player *player) const = 0;
 };
 
 class Weapon : public EquipCard
@@ -246,7 +245,7 @@ public:
     ~DelayedTrick() override = default;
 
     QString subTypeName() const override;
-    virtual void takeEffect(ServerPlayer *target) const = 0;
+    virtual void takeEffect(Player *target) const = 0;
 
     // returns a copy of d if d is not nullptr.
     JudgeStruct judge() const;

@@ -28,6 +28,7 @@ Mogara
 class ClientPlayer;
 class QGraphicsProxyWidget;
 class QSanCommandProgressBar;
+class CardItem;
 
 class PlayerCardBox : public GraphicsBox
 {
@@ -36,8 +37,8 @@ class PlayerCardBox : public GraphicsBox
 public:
     explicit PlayerCardBox();
 
-    void chooseCard(const QString &reason, const ClientPlayer *player, const QString &flags = QStringLiteral("hej"), bool handcardVisible = false, QSanguosha::HandlingMethod method = QSanguosha::MethodNone,
-                    const QList<int> &disabledIds = QList<int>(), bool enableEmptyCard = true);
+    void chooseCard(const QString &reason, const ClientPlayer *player, const QString &flags = QStringLiteral("hej"), bool handcardVisible = false,
+                    QSanguosha::HandlingMethod method = QSanguosha::MethodNone, const QList<int> &disabledIds = QList<int>(), bool enableEmptyCard = true);
     void clear();
     QRectF boundingRect() const override;
 

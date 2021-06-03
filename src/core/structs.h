@@ -1,12 +1,16 @@
 #ifndef _STRUCTS_H
 #define _STRUCTS_H
 
-class Room;
-class TriggerSkill;
-class Card;
-class Slash;
+#include "global.h"
 
-#include "serverplayer.h"
+class Skill;
+class TriggerSkill;
+class ServerPlayer;
+class Card;
+class Player;
+
+// TODO: KILL THIS
+class Room;
 
 #include <QVariant>
 
@@ -243,80 +247,13 @@ struct CardsMoveOneTimeStruct
 
 struct CardsMoveStruct
 {
-    inline CardsMoveStruct()
-    {
-        from_place = QSanguosha::PlaceUnknown;
-        to_place = QSanguosha::PlaceUnknown;
-        from = nullptr;
-        to = nullptr;
-        is_last_handcard = false;
-    }
-
-    inline CardsMoveStruct(const QList<int> &ids, Player *from, Player *to, QSanguosha::Place from_place, QSanguosha::Place to_place, const CardMoveReason &reason)
-    {
-        this->card_ids = ids;
-        this->from_place = from_place;
-        this->to_place = to_place;
-        this->from = from;
-        this->to = to;
-        this->reason = reason;
-        is_last_handcard = false;
-        if (from)
-            from_player_name = from->objectName();
-        if (to)
-            to_player_name = to->objectName();
-    }
-
-    inline CardsMoveStruct(const QList<int> &ids, Player *to, QSanguosha::Place to_place, const CardMoveReason &reason)
-    {
-        this->card_ids = ids;
-        this->from_place = QSanguosha::PlaceUnknown;
-        this->to_place = to_place;
-        this->from = nullptr;
-        this->to = to;
-        this->reason = reason;
-        is_last_handcard = false;
-        if (to)
-            to_player_name = to->objectName();
-    }
-
-    inline CardsMoveStruct(int id, Player *from, Player *to, QSanguosha::Place from_place, QSanguosha::Place to_place, const CardMoveReason &reason)
-    {
-        this->card_ids << id;
-        this->from_place = from_place;
-        this->to_place = to_place;
-        this->from = from;
-        this->to = to;
-        this->reason = reason;
-        is_last_handcard = false;
-        if (from)
-            from_player_name = from->objectName();
-        if (to)
-            to_player_name = to->objectName();
-    }
-
-    inline CardsMoveStruct(int id, Player *to, QSanguosha::Place to_place, const CardMoveReason &reason)
-    {
-        this->card_ids << id;
-        this->from_place = QSanguosha::PlaceUnknown;
-        this->to_place = to_place;
-        this->from = nullptr;
-        this->to = to;
-        this->reason = reason;
-        is_last_handcard = false;
-        if (to)
-            to_player_name = to->objectName();
-    }
-
-    inline bool operator==(const CardsMoveStruct &other) const
-    {
-        return from == other.from && from_place == other.from_place && from_pile_name == other.from_pile_name && from_player_name == other.from_player_name;
-    }
-
-    inline bool operator<(const CardsMoveStruct &other) const
-    {
-        return from < other.from || from_place < other.from_place || from_pile_name < other.from_pile_name || from_player_name < other.from_player_name;
-    }
+    CardsMoveStruct();
+    CardsMoveStruct(const QList<int> &ids, Player *from, Player *to, QSanguosha::Place from_place, QSanguosha::Place to_place, const CardMoveReason &reason);
+    CardsMoveStruct(const QList<int> &ids, Player *to, QSanguosha::Place to_place, const CardMoveReason &reason);
+    CardsMoveStruct(int id, Player *from, Player *to, QSanguosha::Place from_place, QSanguosha::Place to_place, const CardMoveReason &reason);
+    CardsMoveStruct(int id, Player *to, QSanguosha::Place to_place, const CardMoveReason &reason);
+    bool operator==(const CardsMoveStruct &other) const;
+    bool operator<(const CardsMoveStruct &other) const;
 
     QList<int> card_ids; // TODO: Replace with IDSet
     QSanguosha::Place from_place, to_place;
@@ -335,10 +272,7 @@ struct CardsMoveStruct
 
     bool tryParse(const QVariant &arg);
     QVariant toVariant() const;
-    inline bool isRelevant(const Player *player) const
-    {
-        return player != nullptr && (from == player || (to == player && to_place != QSanguosha::PlaceSpecial));
-    }
+    bool isRelevant(const Player *player) const;
 };
 
 struct DyingStruct
@@ -803,7 +737,6 @@ Q_DECLARE_METATYPE(PhaseSkippingStruct)
 Q_DECLARE_METATYPE(DrawNCardsStruct)
 Q_DECLARE_METATYPE(QList<SkillInvalidStruct>)
 Q_DECLARE_METATYPE(const Card *)
-Q_DECLARE_METATYPE(ServerPlayer *)
 Q_DECLARE_METATYPE(JudgeStruct *)
 Q_DECLARE_METATYPE(PindianStruct *)
 Q_DECLARE_METATYPE(ExtraTurnStruct)

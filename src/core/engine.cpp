@@ -1190,6 +1190,8 @@ int Engine::operationTimeRate(QSanProtocol::CommandType command, const QVariant 
     return rate;
 }
 
+#include "room.h"
+
 SurrenderCard::SurrenderCard()
 {
     setTargetFixed(true);

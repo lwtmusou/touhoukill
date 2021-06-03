@@ -3,11 +3,12 @@
 
 class Player;
 class Card;
-class ServerPlayer;
-class QDialog;
+class RoomObject;
+
+// TODO: KILL THIS
+class Room;
 
 #include "CardFace.h"
-#include "room.h"
 #include "structs.h"
 
 #include <QDialog>

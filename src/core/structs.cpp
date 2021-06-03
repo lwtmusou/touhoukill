@@ -6,6 +6,81 @@
 #include "skill.h"
 #include <functional>
 
+CardsMoveStruct::CardsMoveStruct()
+{
+    from_place = QSanguosha::PlaceUnknown;
+    to_place = QSanguosha::PlaceUnknown;
+    from = nullptr;
+    to = nullptr;
+    is_last_handcard = false;
+}
+
+CardsMoveStruct::CardsMoveStruct(const QList<int> &ids, Player *from, Player *to, QSanguosha::Place from_place, QSanguosha::Place to_place, const CardMoveReason &reason)
+{
+    this->card_ids = ids;
+    this->from_place = from_place;
+    this->to_place = to_place;
+    this->from = from;
+    this->to = to;
+    this->reason = reason;
+    is_last_handcard = false;
+    if (from)
+        from_player_name = from->objectName();
+    if (to)
+        to_player_name = to->objectName();
+}
+
+CardsMoveStruct::CardsMoveStruct(const QList<int> &ids, Player *to, QSanguosha::Place to_place, const CardMoveReason &reason)
+{
+    this->card_ids = ids;
+    this->from_place = QSanguosha::PlaceUnknown;
+    this->to_place = to_place;
+    this->from = nullptr;
+    this->to = to;
+    this->reason = reason;
+    is_last_handcard = false;
+    if (to)
+        to_player_name = to->objectName();
+}
+
+CardsMoveStruct::CardsMoveStruct(int id, Player *from, Player *to, QSanguosha::Place from_place, QSanguosha::Place to_place, const CardMoveReason &reason)
+{
+    this->card_ids << id;
+    this->from_place = from_place;
+    this->to_place = to_place;
+    this->from = from;
+    this->to = to;
+    this->reason = reason;
+    is_last_handcard = false;
+    if (from)
+        from_player_name = from->objectName();
+    if (to)
+        to_player_name = to->objectName();
+}
+
+CardsMoveStruct::CardsMoveStruct(int id, Player *to, QSanguosha::Place to_place, const CardMoveReason &reason)
+{
+    this->card_ids << id;
+    this->from_place = QSanguosha::PlaceUnknown;
+    this->to_place = to_place;
+    this->from = nullptr;
+    this->to = to;
+    this->reason = reason;
+    is_last_handcard = false;
+    if (to)
+        to_player_name = to->objectName();
+}
+
+bool CardsMoveStruct::operator==(const CardsMoveStruct &other) const
+{
+    return from == other.from && from_place == other.from_place && from_pile_name == other.from_pile_name && from_player_name == other.from_player_name;
+}
+
+bool CardsMoveStruct::operator<(const CardsMoveStruct &other) const
+{
+    return from < other.from || from_place < other.from_place || from_pile_name < other.from_pile_name || from_player_name < other.from_player_name;
+}
+
 bool CardsMoveStruct::tryParse(const QVariant &arg)
 {
     JsonArray args = arg.value<JsonArray>();
@@ -54,6 +129,11 @@ QVariant CardsMoveStruct::toVariant() const
     arg << to_pile_name;
     arg << reason.toVariant();
     return arg;
+}
+
+bool CardsMoveStruct::isRelevant(const Player *player) const
+{
+    return player != nullptr && (from == player || (to == player && to_place != QSanguosha::PlaceSpecial));
 }
 
 bool CardMoveReason::tryParse(const QVariant &arg)
