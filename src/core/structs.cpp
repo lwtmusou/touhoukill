@@ -28,9 +28,9 @@ CardsMoveStruct::CardsMoveStruct(const QList<int> &ids, Player *from, Player *to
     this->to = to;
     this->reason = reason;
     is_last_handcard = false;
-    if (from)
+    if (from != nullptr)
         from_player_name = from->objectName();
-    if (to)
+    if (to != nullptr)
         to_player_name = to->objectName();
 }
 
@@ -43,7 +43,7 @@ CardsMoveStruct::CardsMoveStruct(const QList<int> &ids, Player *to, Place to_pla
     this->to = to;
     this->reason = reason;
     is_last_handcard = false;
-    if (to)
+    if (to != nullptr)
         to_player_name = to->objectName();
 }
 
@@ -56,9 +56,9 @@ CardsMoveStruct::CardsMoveStruct(int id, Player *from, Player *to, Place from_pl
     this->to = to;
     this->reason = reason;
     is_last_handcard = false;
-    if (from)
+    if (from != nullptr)
         from_player_name = from->objectName();
-    if (to)
+    if (to != nullptr)
         to_player_name = to->objectName();
 }
 
@@ -71,7 +71,7 @@ CardsMoveStruct::CardsMoveStruct(int id, Player *to, Place to_place, const CardM
     this->to = to;
     this->reason = reason;
     is_last_handcard = false;
-    if (to)
+    if (to != nullptr)
         to_player_name = to->objectName();
 }
 

@@ -28,7 +28,7 @@ class Skill;
 class MaxCardsSkill;
 class AttackRangeSkill;
 class Player;
-class CardDescriptor;
+struct CardDescriptor;
 class Card;
 class RoomObject;
 

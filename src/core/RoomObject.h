@@ -8,7 +8,7 @@
 #include <QPointer>
 
 class CardFace;
-class CardDescriptor;
+struct CardDescriptor;
 
 namespace CardFactory {
 // static methods for Engine. Used to add metaobjects
