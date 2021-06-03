@@ -68,14 +68,6 @@ public:
     explicit Skill(const QString &name, Skill::Categories skillCategories = SkillNoFlag, ShowType showType = ShowTrigger);
     ~Skill() override;
 
-    // TODO: refactor propersal:
-    // Battle Array Skill should not be a separate type
-    // Currently BattleArraySkill runs SummonArray when turn starts.
-    // This seems able to be done in a global trigger with priority 2 to trigger a formation summon in start phase.
-    // Since a summon may also be done in the spare time during play phase, a common button for the summon is preferred.
-    // The summon itself should be a function of GameLogic
-    void setupForBattleArray();
-
     // Category getters
     bool isLordSkill() const;
     bool isAttachedSkill() const;

@@ -68,7 +68,7 @@ enum Number
     Number12 = NumberQ,
     Number13 = NumberK,
 
-#if 0
+#ifdef NUMBER_EXTREMELY_SIMPILIFIED
     // Extremely simplified notation
     A = NumberA,
     X = Number10,

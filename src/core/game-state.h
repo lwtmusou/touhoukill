@@ -25,28 +25,6 @@ public:
     GameState();
     virtual ~GameState();
 
-    enum Place
-    {
-        PlaceHand,
-        PlaceEquip,
-        PlaceDelayedTrick,
-        PlaceJudge,
-        PlaceSpecial,
-        DiscardPile,
-        DrawPile,
-        PlaceTable,
-        PlaceUnknown,
-        PlaceWuGu
-    };
-
-    enum Role
-    {
-        Lord,
-        Loyalist,
-        Rebel,
-        Renegade
-    };
-
     // Game state records all the information required for one game, including
     // - Player update (if so all the setters of Player's properties should be hidden except this class.)
     // - Card management

@@ -223,8 +223,8 @@ public:
     virtual bool activate(Player *player) = 0;
     // askForUseCard / askForUseSlashTo (QSanguosha::MethodUse)
     // TODO: askForUseCard supports the recast here. (Add additional parameter to this function, or change method -> QList<QSanguosha::HandlingMethod>)
-    virtual const Card *askForUseCard(Player *player, const QString &pattern, const QString &prompt, int notice_index = -1, QSanguosha::HandlingMethod method = QSanguosha::MethodUse,
-                                      bool addHistory = true, const QString &skill_name = QString())
+    virtual const Card *askForUseCard(Player *player, const QString &pattern, const QString &prompt, int notice_index = -1,
+                                      QSanguosha::HandlingMethod method = QSanguosha::MethodUse, bool addHistory = true, const QString &skill_name = QString())
         = 0;
     virtual const Card *askForUseSlashTo(Player *slasher, Player *victim, const QString &prompt, bool distance_limit = true, bool disable_extra = false, bool addHistory = false)
         = 0;
@@ -265,8 +265,8 @@ public:
 
     virtual const Card *askForCard(Player *player, const QString &pattern, const QString &prompt, const QVariant &data, const QString &skill_name, int notice_index = -1) = 0;
     virtual const Card *askForCard(Player *player, const QString &pattern, const QString &prompt, const QVariant &data = QVariant(),
-                                   QSanguosha::HandlingMethod method = QSanguosha::MethodDiscard, Player *to = nullptr, bool isRetrial = false, const QString &skill_name = QString(),
-                                   bool isProvision = false, int notice_index = -1)
+                                   QSanguosha::HandlingMethod method = QSanguosha::MethodDiscard, Player *to = nullptr, bool isRetrial = false,
+                                   const QString &skill_name = QString(), bool isProvision = false, int notice_index = -1)
         = 0;
 
     virtual const Card *askForResponse(Player *, ...) = 0;

@@ -18,10 +18,37 @@ public:
     QString limit_mark;
     QString related_mark;
     QString related_pile;
+
+    SkillPrivate(Skill::Categories categories, Skill::ShowType showType)
+        : categories(categories)
+        , showType(showType)
+        , preshow(false)
+        , frequent(false)
+    {
+        if ((categories & Skill::SkillArrayMask) != 0)
+            setupForBattleArray();
+    }
+
+    ~SkillPrivate() = default;
+
+private:
+    Q_DISABLE_COPY_MOVE(SkillPrivate)
+
+    // TODO: refactor propersal:
+    // Battle Array Skill should not be a separate type
+    // Currently BattleArraySkill runs SummonArray when turn starts.
+    // This seems able to be done in a global trigger with priority 2 to trigger a formation summon in start phase.
+    // Since a summon may also be done in the spare time during play phase, a common button for the summon is preferred.
+    // The summon itself should be a function of GameLogic
+    void setupForBattleArray()
+    {
+        // TODO: implementation
+        Q_UNIMPLEMENTED();
+    }
 };
 
 Skill::Skill(const QString &name, Categories skillCategories, ShowType showType)
-    : d(new SkillPrivate {skillCategories, showType, false, false, QString(), QString(), QString()})
+    : d(new SkillPrivate(skillCategories, showType))
 {
     setObjectName(name);
 }
@@ -29,12 +56,6 @@ Skill::Skill(const QString &name, Categories skillCategories, ShowType showType)
 Skill::~Skill()
 {
     delete d;
-}
-
-void Skill::setupForBattleArray()
-{
-    // TODO: implementation
-    Q_UNIMPLEMENTED();
 }
 
 bool Skill::isLordSkill() const
