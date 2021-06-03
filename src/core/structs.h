@@ -1,16 +1,17 @@
 #ifndef _STRUCTS_H
 #define _STRUCTS_H
 
+#include "card.h"
 #include "global.h"
 
 class Skill;
 class TriggerSkill;
-class ServerPlayer;
 class Card;
 class Player;
 
-// TODO: KILL THIS
+// TODO: KILL THESE
 class Room;
+class ServerPlayer;
 
 #include <QVariant>
 

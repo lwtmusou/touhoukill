@@ -1,6 +1,7 @@
 #include "startscene.h"
 #include "audio.h"
 #include "engine.h"
+#include "util.h"
 
 #include <QGraphicsDropShadowEffect>
 #include <QNetworkInterface>

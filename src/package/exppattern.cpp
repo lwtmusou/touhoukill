@@ -1,5 +1,8 @@
 #include "exppattern.h"
+#include "RoomObject.h"
+#include "card.h"
 #include "engine.h"
+#include "player.h"
 
 ExpPattern::ExpPattern(const QString &exp)
 {

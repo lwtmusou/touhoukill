@@ -1,16 +1,9 @@
 #ifndef _ENGINE_H
 #define _ENGINE_H
 
-#include "CardFace.h"
-#include "RoomObject.h"
-#include "card.h"
-#include "exppattern.h"
-#include "general.h"
+#include "global.h"
 #include "json.h"
-#include "package.h"
 #include "protocol.h"
-#include "skill.h"
-#include "util.h"
 
 #include <QHash>
 #include <QList>
@@ -21,6 +14,26 @@
 
 class QVersionNumber;
 class LuaState;
+class CardPattern;
+class General;
+class ViewAsSkill;
+class TriggerSkill;
+class ProhibitSkill;
+class ViewHasSkill;
+class EquipCard;
+class TargetModSkill;
+class Package;
+class DistanceSkill;
+class Skill;
+class MaxCardsSkill;
+class AttackRangeSkill;
+class Player;
+class CardDescriptor;
+class Card;
+class RoomObject;
+
+// TODO: kill this
+#include "skill.h"
 
 class Engine final : public QObject
 {
@@ -146,26 +159,6 @@ private:
     JsonObject configFile;
 
     LuaState *l;
-};
-
-class SurrenderCard : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE SurrenderCard();
-
-    void onUse(Room *room, const CardUseStruct &use) const override;
-};
-
-class CheatCard : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE CheatCard();
-
-    void onUse(Room *room, const CardUseStruct &use) const override;
 };
 
 extern Engine *Sanguosha;

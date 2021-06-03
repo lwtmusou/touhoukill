@@ -5,6 +5,7 @@
 #include "server.h"
 #include "settings.h"
 #include "structs.h"
+#include "util.h"
 
 #include <QDateTime>
 #include <QDir>

@@ -1,8 +1,9 @@
 #include "player.h"
 #include "client.h"
 #include "engine.h"
-#include "room.h"
+#include "exppattern.h"
 #include "settings.h"
+#include "util.h"
 
 using namespace QSanguosha;
 

@@ -5,6 +5,7 @@
 #include "room.h"
 #include "settings.h"
 #include "skill.h"
+#include "util.h"
 
 using namespace QSanProtocol;
 using namespace JsonUtils;

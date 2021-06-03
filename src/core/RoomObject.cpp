@@ -1,5 +1,8 @@
 #include "RoomObject.h"
+#include "CardFace.h"
+#include "card.h"
 #include "engine.h"
+
 namespace CardFactory {
 QHash<QString, const CardFace *> faces;
 

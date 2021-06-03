@@ -6,6 +6,7 @@
 #include "heroskincontainer.h"
 #include "roomscene.h"
 #include "settings.h"
+#include "util.h"
 
 #include <QGraphicsProxyWidget>
 #include <QGraphicsScene>

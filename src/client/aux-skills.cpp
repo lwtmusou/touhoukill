@@ -3,6 +3,8 @@
 #include "client.h"
 #include "clientplayer.h"
 #include "engine.h"
+#include "package.h"
+#include "util.h"
 
 DiscardSkill::DiscardSkill()
     : ViewAsSkill(QStringLiteral("discard"))

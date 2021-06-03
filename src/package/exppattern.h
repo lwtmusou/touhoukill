@@ -1,9 +1,10 @@
 #ifndef _EXPPATTERN_H
 #define _EXPPATTERN_H
 
-#include "card.h"
 #include "package.h"
-#include "player.h"
+
+class Player;
+class Card;
 
 class ExpPattern : public CardPattern
 {

@@ -4,6 +4,7 @@
 #include "protocol.h"
 #include "settings.h"
 #include "uiUtils.h"
+#include "util.h"
 
 #include <QCoreApplication>
 #include <QDir>

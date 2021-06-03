@@ -1,6 +1,7 @@
 #include "roomthread.h"
 #include "engine.h"
 #include "gamerule.h"
+#include "package.h"
 #include "protocol.h"
 #include "room.h"
 #include "settings.h"

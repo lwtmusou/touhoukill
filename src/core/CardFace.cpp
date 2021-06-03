@@ -1,5 +1,6 @@
 #include "CardFace.h"
 #include "RoomObject.h"
+#include "card.h"
 #include "engine.h"
 #include "player.h"
 #include "room.h"
@@ -448,3 +449,51 @@ QString SkillCard::subTypeName() const
 {
     return QStringLiteral("skill");
 }
+
+// TODO: find a suitable place for them
+class SurrenderCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE SurrenderCard();
+
+    void onUse(Room *room, const CardUseStruct &use) const override;
+};
+
+class CheatCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE CheatCard();
+
+    void onUse(Room *room, const CardUseStruct &use) const override;
+};
+
+SurrenderCard::SurrenderCard()
+{
+    setTargetFixed(true);
+    setDefaultHandlingMethod(QSanguosha::MethodNone);
+}
+
+void SurrenderCard::onUse(Room *room, const CardUseStruct &use) const
+{
+    room->makeSurrender(use.from);
+}
+
+CheatCard::CheatCard()
+{
+    setTargetFixed(true);
+    setDefaultHandlingMethod(QSanguosha::MethodNone);
+}
+
+void CheatCard::onUse(Room *room, const CardUseStruct &use) const
+{
+    QString cheatString = use.card->userString();
+    JsonDocument doc = JsonDocument::fromJson(cheatString.toUtf8().constData());
+    if (doc.isValid())
+        room->cheat(use.from, doc.toVariant());
+}
+
+#include "CardFace.moc"

@@ -1,9 +1,11 @@
 #include "skill.h"
 #include "client.h"
 #include "engine.h"
+#include "exppattern.h"
 #include "player.h"
 #include "room.h"
 #include "settings.h"
+#include "util.h"
 
 #include <QFile>
 #include <random>

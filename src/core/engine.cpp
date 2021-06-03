@@ -5,10 +5,15 @@
 #include "aux-skills.h"
 #include "card.h"
 #include "client.h"
+#include "exppattern.h"
+#include "general.h"
 #include "lua-wrapper.h"
+#include "package.h"
 #include "protocol.h"
 #include "settings.h"
+#include "skill.h"
 #include "structs.h"
+#include "util.h"
 
 #include <QApplication>
 #include <QDir>
@@ -43,11 +48,6 @@ Engine::Engine()
     QStringList package_names = getConfigFromConfigFile(QStringLiteral("package_names")).toStringList();
     foreach (QString name, package_names)
         addPackage(name);
-
-    CardFactory::registerCardFace(new SurrenderCard);
-    CardFactory::registerCardFace(new CheatCard);
-    CardFactory::registerCardFace(new ChoosePlayerCard);
-    CardFactory::registerCardFace(new YijiCard);
 
     LordBGMConvertList = getConfigFromConfigFile(QStringLiteral("bgm_convert_pairs")).toStringList();
     LordBackdropConvertList = getConfigFromConfigFile(QStringLiteral("backdrop_convert_pairs")).toStringList();
@@ -1188,33 +1188,6 @@ int Engine::operationTimeRate(QSanProtocol::CommandType command, const QVariant 
             rate = 3;
     }
     return rate;
-}
-
-#include "room.h"
-
-SurrenderCard::SurrenderCard()
-{
-    setTargetFixed(true);
-    setDefaultHandlingMethod(QSanguosha::MethodNone);
-}
-
-void SurrenderCard::onUse(Room *room, const CardUseStruct &use) const
-{
-    room->makeSurrender(use.from);
-}
-
-CheatCard::CheatCard()
-{
-    setTargetFixed(true);
-    setDefaultHandlingMethod(QSanguosha::MethodNone);
-}
-
-void CheatCard::onUse(Room *room, const CardUseStruct &use) const
-{
-    QString cheatString = use.card->userString();
-    JsonDocument doc = JsonDocument::fromJson(cheatString.toUtf8().constData());
-    if (doc.isValid())
-        room->cheat(use.from, doc.toVariant());
 }
 
 QString Engine::GetMappedKingdom(const QString &role)

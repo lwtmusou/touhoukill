@@ -9,6 +9,7 @@
 #include "rolecombobox.h"
 #include "roomscene.h"
 #include "settings.h"
+#include "util.h"
 
 #include <QDrag>
 #include <QFile>

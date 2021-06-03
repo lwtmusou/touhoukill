@@ -3,6 +3,7 @@
 #include "choosegeneraldialog.h"
 #include "engine.h"
 #include "nativesocket.h"
+#include "package.h"
 #include "protocol.h"
 #include "room.h"
 #include "settings.h"

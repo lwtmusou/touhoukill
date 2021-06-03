@@ -1,6 +1,5 @@
 #include "util.h"
 
-#include <QMessageBox>
 #include <QStringList>
 #include <QVariant>
 

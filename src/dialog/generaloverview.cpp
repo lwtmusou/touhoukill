@@ -3,9 +3,11 @@
 #include "client.h"
 #include "clientstruct.h"
 #include "engine.h"
+#include "package.h"
 #include "roomscene.h"
 #include "settings.h"
 #include "ui_generaloverview.h"
+#include "util.h"
 
 #include <QClipboard>
 #include <QCommandLinkButton>

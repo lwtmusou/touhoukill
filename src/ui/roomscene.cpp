@@ -22,6 +22,7 @@
 #include "settings.h"
 #include "sgswindow.h"
 #include "uiUtils.h"
+#include "util.h"
 
 #include <QApplication>
 #include <QChar>

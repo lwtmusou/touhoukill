@@ -1,12 +1,14 @@
-#ifndef _ROOM_STATE_H
-#define _ROOM_STATE_H
+#ifndef QSANGUOSHA_ROOMOBJECT_H
+#define QSANGUOSHA_ROOMOBJECT_H
 
-#include "card.h"
 #include "structs.h"
 
 #include <QList>
 #include <QObject>
 #include <QPointer>
+
+class CardFace;
+class CardDescriptor;
 
 namespace CardFactory {
 // static methods for Engine. Used to add metaobjects

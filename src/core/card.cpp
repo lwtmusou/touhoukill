@@ -1,11 +1,9 @@
-#include "card.h"
-#include "client.h"
-#include "engine.h"
-#include "room.h"
-#include "settings.h"
-#include "structs.h"
 
+#include "card.h"
 #include "CardFace.h"
+#include "RoomObject.h"
+#include "engine.h"
+#include "util.h"
 
 #include <QFile>
 #include <QRegularExpression>

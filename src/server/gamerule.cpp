@@ -3,6 +3,8 @@
 #include "room.h"
 #include "serverplayer.h"
 #include "settings.h"
+#include "util.h"
+
 #include <QTime>
 
 GameRule::GameRule()

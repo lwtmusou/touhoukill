@@ -6,6 +6,7 @@
 #include "protocol.h"
 #include "roomscene.h"
 #include "settings.h"
+#include "util.h"
 
 #include <QCheckBox>
 #include <QGridLayout>
