@@ -360,21 +360,6 @@ public:
     explicit DistanceSkill(const QString &name);
 
     virtual int getCorrect(const Player *from, const Player *to) const = 0;
-    const ViewAsSkill *getViewAsSkill() const;
-
-protected:
-    const ViewAsSkill *view_as_skill;
-};
-
-class ShowDistanceSkill : public ZeroCardViewAsSkill
-{
-    Q_OBJECT
-
-public:
-    explicit ShowDistanceSkill(const QString &name);
-
-    const Card *viewAs(const Player *Self) const override;
-    bool isEnabledAtPlay(const Player *player) const override;
 };
 
 class MaxCardsSkill : public Skill
@@ -386,10 +371,6 @@ public:
 
     virtual int getExtra(const Player *target) const;
     virtual int getFixed(const Player *target) const;
-    const ViewAsSkill *getViewAsSkill() const;
-
-protected:
-    const ViewAsSkill *view_as_skill;
 };
 
 class TargetModSkill : public Skill
@@ -425,10 +406,6 @@ public:
 
     virtual int getExtra(const Player *target, bool include_weapon) const;
     virtual int getFixed(const Player *target, bool include_weapon) const;
-    const ViewAsSkill *getViewAsSkill() const;
-
-protected:
-    const ViewAsSkill *view_as_skill;
 };
 
 class SlashNoDistanceLimitSkill : public TargetModSkill

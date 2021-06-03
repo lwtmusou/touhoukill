@@ -8,6 +8,8 @@
 #include <QFile>
 #include <random>
 
+using namespace QSanguosha;
+
 class SkillPrivate final
 {
 public:
@@ -190,11 +192,11 @@ class ViewAsSkillPrivate
 {
 public:
     QString response_pattern;
-    QSanguosha::HandlingMethod method;
+    HandlingMethod method;
     QString expand_pile;
 
     ViewAsSkillPrivate()
-        : method(QSanguosha::MethodNone)
+        : method(MethodNone)
     {
     }
 };
@@ -237,12 +239,12 @@ bool ViewAsSkill::isEnabledAtResponse(const Player * /*unused*/, CardUseStruct::
     return false;
 }
 
-QSanguosha::HandlingMethod ViewAsSkill::handlingMethod() const
+HandlingMethod ViewAsSkill::handlingMethod() const
 {
     return d->method;
 }
 
-void ViewAsSkill::setHandlingMethod(QSanguosha::HandlingMethod method)
+void ViewAsSkill::setHandlingMethod(HandlingMethod method)
 {
     d->method = method;
 }
@@ -378,48 +380,11 @@ ProhibitSkill::ProhibitSkill(const QString &name)
 DistanceSkill::DistanceSkill(const QString &name)
     : Skill(name, SkillCompulsory, ShowStatic)
 {
-    view_as_skill = new ShowDistanceSkill(objectName());
-}
-
-const ViewAsSkill *DistanceSkill::getViewAsSkill() const
-{
-    return view_as_skill;
-}
-
-ShowDistanceSkill::ShowDistanceSkill(const QString &name)
-    : ZeroCardViewAsSkill(name)
-{
-}
-
-const Card *ShowDistanceSkill::viewAs(const Player *Self) const
-{
-    Card *card = Self->getRoomObject()->cloneSkillCard(QStringLiteral("ShowFengsu"));
-    card->setUserString(objectName());
-    return card;
-}
-
-bool ShowDistanceSkill::isEnabledAtPlay(const Player *player) const
-{
-    if (!isHegemonyGameMode(ServerInfo.GameMode))
-        return false;
-
-    const Skill *skill = Sanguosha->getSkill(objectName());
-    if (skill != nullptr) {
-        if (!player->hasShownSkill(skill->objectName()))
-            return true;
-    }
-    return false;
 }
 
 MaxCardsSkill::MaxCardsSkill(const QString &name)
     : Skill(name, SkillCompulsory, ShowStatic)
 {
-    view_as_skill = new ShowDistanceSkill(objectName());
-}
-
-const ViewAsSkill *MaxCardsSkill::getViewAsSkill() const
-{
-    return view_as_skill;
 }
 
 TargetModSkill::TargetModSkill(const QString &name)
@@ -451,12 +416,6 @@ int TargetModSkill::getExtraTargetNum(const Player * /*unused*/, const Card * /*
 AttackRangeSkill::AttackRangeSkill(const QString &name)
     : Skill(name, SkillCompulsory, ShowStatic)
 {
-    view_as_skill = new ShowDistanceSkill(objectName()); //alternative method: add ShowDistanceSkill to specific AttackRangeSkills.
-}
-
-const ViewAsSkill *AttackRangeSkill::getViewAsSkill() const
-{
-    return view_as_skill;
 }
 
 int AttackRangeSkill::getExtra(const Player * /*unused*/, bool /*unused*/) const
@@ -739,7 +698,7 @@ EquipSkill::EquipSkill(const QString &name)
 {
 }
 
-bool EquipSkill::equipAvailable(const Player *p, QSanguosha::EquipLocation location, const QString &equipName, const Player *to)
+bool EquipSkill::equipAvailable(const Player *p, EquipLocation location, const QString &equipName, const Player *to)
 {
     if (p == nullptr)
         return false;
@@ -755,15 +714,15 @@ bool EquipSkill::equipAvailable(const Player *p, QSanguosha::EquipLocation locat
         return false;
 
     switch (location) {
-    case QSanguosha::WeaponLocation:
+    case WeaponLocation:
         if (!p->hasWeapon(equipName))
             return false;
         break;
-    case QSanguosha::ArmorLocation:
+    case ArmorLocation:
         if (!p->hasArmorEffect(equipName))
             return false;
         break;
-    case QSanguosha::TreasureLocation:
+    case TreasureLocation:
         if (!p->hasTreasure(equipName))
             return false;
         break;
