@@ -146,10 +146,10 @@ void RoomThread::_handleTurnBroken3v3(QList<ServerPlayer *> &first, QList<Server
         ServerPlayer *player = room->getCurrent();
         QVariant v = QVariant::fromValue(player);
         trigger(TurnBroken, v);
-        if (player->getPhase() != Player::NotActive) {
+        if (player->getPhase() != QSanguosha::PhaseNotActive) {
             QVariant data = QVariant::fromValue(player);
             game_rule->trigger(EventPhaseEnd, room, TriggerDetail(room), data);
-            player->changePhase(player->getPhase(), Player::NotActive);
+            player->changePhase(player->getPhase(), QSanguosha::PhaseNotActive);
         }
         if (!player->hasFlag(QStringLiteral("actioned")))
             room->setPlayerFlag(player, QStringLiteral("actioned"));
@@ -206,10 +206,10 @@ void RoomThread::_handleTurnBrokenHulaoPass(ServerPlayer *uuz, const QList<Serve
         QVariant v = QVariant::fromValue(player);
         trigger(TurnBroken, v);
         ServerPlayer *next = findHulaoPassNext(uuz, league);
-        if (player->getPhase() != Player::NotActive) {
+        if (player->getPhase() != QSanguosha::PhaseNotActive) {
             QVariant data = QVariant::fromValue(player);
             game_rule->trigger(EventPhaseEnd, room, TriggerDetail(room), data);
-            player->changePhase(player->getPhase(), Player::NotActive);
+            player->changePhase(player->getPhase(), QSanguosha::PhaseNotActive);
         }
 
         room->setCurrent(next);
@@ -269,9 +269,9 @@ void RoomThread::_handleTurnBrokenNormal(GameRule *game_rule)
         QVariant data = QVariant::fromValue(player);
         trigger(TurnBroken, data);
 
-        if (player->getPhase() != Player::NotActive) {
+        if (player->getPhase() != QSanguosha::PhaseNotActive) {
             game_rule->trigger(EventPhaseEnd, room, TriggerDetail(room), data);
-            player->changePhase(player->getPhase(), Player::NotActive);
+            player->changePhase(player->getPhase(), QSanguosha::PhaseNotActive);
         }
 
         if (room->getTag(QStringLiteral("touhou-extra")).toBool()) {
@@ -401,16 +401,16 @@ void RoomThread::run()
         if (room->getMode() == QStringLiteral("06_3v3")) {
             foreach (ServerPlayer *player, room->m_players) {
                 switch (player->getRoleEnum()) {
-                case Player::Lord:
+                case QSanguosha::RoleLord:
                     warm.prepend(player);
                     break;
-                case Player::Loyalist:
+                case QSanguosha::RoleLoyalist:
                     warm.append(player);
                     break;
-                case Player::Renegade:
+                case QSanguosha::RoleRenegade:
                     cool.prepend(player);
                     break;
-                case Player::Rebel:
+                case QSanguosha::RoleRebel:
                     cool.append(player);
                     break;
                 }

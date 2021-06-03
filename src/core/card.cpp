@@ -108,7 +108,7 @@ Suit Card::suit() const
             else if (color != color2)
                 return NoSuit;
         }
-        return (color == Red) ? NoSuitRed : NoSuitBlack;
+        return (color == ColorRed) ? NoSuitRed : NoSuitBlack;
     }
 
     if (d->suit == SuitToBeDecided)
@@ -140,9 +140,9 @@ bool Card::isBlack() const
 Color Card::color() const
 {
     if (isRed())
-        return Red;
+        return ColorRed;
     if (isBlack())
-        return Black;
+        return ColorBlack;
     return Colorless;
 }
 
@@ -624,13 +624,13 @@ Card *Card::Parse(const QString &str, RoomObject *room)
 
         if (!card_number.isEmpty()) {
             if (card_number == QStringLiteral("A"))
-                number = A;
+                number = NumberA;
             else if (card_number == QStringLiteral("J"))
-                number = J;
+                number = NumberJ;
             else if (card_number == QStringLiteral("Q"))
-                number = Q;
+                number = NumberQ;
             else if (card_number == QStringLiteral("K"))
-                number = K;
+                number = NumberK;
             else
                 number = static_cast<Number>(card_number.toInt());
         }
@@ -673,13 +673,13 @@ Card *Card::Parse(const QString &str, RoomObject *room)
 
         Number number = NumberNA;
         if (number_string == QStringLiteral("A"))
-            number = A;
+            number = NumberA;
         else if (number_string == QStringLiteral("J"))
-            number = J;
+            number = NumberJ;
         else if (number_string == QStringLiteral("Q"))
-            number = Q;
+            number = NumberQ;
         else if (number_string == QStringLiteral("K"))
-            number = K;
+            number = NumberK;
         else
             number = static_cast<Number>(number_string.toInt());
 

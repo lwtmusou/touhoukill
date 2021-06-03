@@ -6,7 +6,6 @@ class TriggerSkill;
 class Card;
 class Slash;
 
-#include "player.h"
 #include "serverplayer.h"
 
 #include <QVariant>
@@ -210,15 +209,15 @@ public:
 struct CardsMoveOneTimeStruct
 {
     QList<int> card_ids;
-    QList<Player::Place> from_places;
-    Player::Place to_place;
+    QList<QSanguosha::Place> from_places;
+    QSanguosha::Place to_place;
     CardMoveReason reason;
     Player *from, *to;
     QStringList from_pile_names;
     QString to_pile_name;
 
-    QList<Player::Place> origin_from_places;
-    Player::Place origin_to_place;
+    QList<QSanguosha::Place> origin_from_places;
+    QSanguosha::Place origin_to_place;
     Player *origin_from, *origin_to;
     QStringList origin_from_pile_names;
     QString origin_to_pile_name; //for case of the movement transitted
@@ -246,14 +245,14 @@ struct CardsMoveStruct
 {
     inline CardsMoveStruct()
     {
-        from_place = Player::PlaceUnknown;
-        to_place = Player::PlaceUnknown;
+        from_place = QSanguosha::PlaceUnknown;
+        to_place = QSanguosha::PlaceUnknown;
         from = nullptr;
         to = nullptr;
         is_last_handcard = false;
     }
 
-    inline CardsMoveStruct(const QList<int> &ids, Player *from, Player *to, Player::Place from_place, Player::Place to_place, const CardMoveReason &reason)
+    inline CardsMoveStruct(const QList<int> &ids, Player *from, Player *to, QSanguosha::Place from_place, QSanguosha::Place to_place, const CardMoveReason &reason)
     {
         this->card_ids = ids;
         this->from_place = from_place;
@@ -268,10 +267,10 @@ struct CardsMoveStruct
             to_player_name = to->objectName();
     }
 
-    inline CardsMoveStruct(const QList<int> &ids, Player *to, Player::Place to_place, const CardMoveReason &reason)
+    inline CardsMoveStruct(const QList<int> &ids, Player *to, QSanguosha::Place to_place, const CardMoveReason &reason)
     {
         this->card_ids = ids;
-        this->from_place = Player::PlaceUnknown;
+        this->from_place = QSanguosha::PlaceUnknown;
         this->to_place = to_place;
         this->from = nullptr;
         this->to = to;
@@ -281,7 +280,7 @@ struct CardsMoveStruct
             to_player_name = to->objectName();
     }
 
-    inline CardsMoveStruct(int id, Player *from, Player *to, Player::Place from_place, Player::Place to_place, const CardMoveReason &reason)
+    inline CardsMoveStruct(int id, Player *from, Player *to, QSanguosha::Place from_place, QSanguosha::Place to_place, const CardMoveReason &reason)
     {
         this->card_ids << id;
         this->from_place = from_place;
@@ -296,10 +295,10 @@ struct CardsMoveStruct
             to_player_name = to->objectName();
     }
 
-    inline CardsMoveStruct(int id, Player *to, Player::Place to_place, const CardMoveReason &reason)
+    inline CardsMoveStruct(int id, Player *to, QSanguosha::Place to_place, const CardMoveReason &reason)
     {
         this->card_ids << id;
-        this->from_place = Player::PlaceUnknown;
+        this->from_place = QSanguosha::PlaceUnknown;
         this->to_place = to_place;
         this->from = nullptr;
         this->to = to;
@@ -320,7 +319,7 @@ struct CardsMoveStruct
     }
 
     QList<int> card_ids; // TODO: Replace with IDSet
-    Player::Place from_place, to_place;
+    QSanguosha::Place from_place, to_place;
     QString from_player_name, to_player_name;
     QString from_pile_name, to_pile_name;
     Player *from, *to;
@@ -328,7 +327,7 @@ struct CardsMoveStruct
     bool open; // helper to prevent sending card_id to unrelevant clients
     bool is_last_handcard;
 
-    Player::Place origin_from_place, origin_to_place;
+    QSanguosha::Place origin_from_place, origin_to_place;
     Player *origin_from, *origin_to;
     QString origin_from_pile_name, origin_to_pile_name; //for case of the movement transitted
     QList<int> broken_ids; //record broken equip IDs from EquipPlace
@@ -338,7 +337,7 @@ struct CardsMoveStruct
     QVariant toVariant() const;
     inline bool isRelevant(const Player *player) const
     {
-        return player != nullptr && (from == player || (to == player && to_place != Player::PlaceSpecial));
+        return player != nullptr && (from == player || (to == player && to_place != QSanguosha::PlaceSpecial));
     }
 };
 
@@ -424,8 +423,8 @@ struct PhaseChangeStruct
 {
     PhaseChangeStruct();
 
-    Player::Phase from;
-    Player::Phase to;
+    QSanguosha::Phase from;
+    QSanguosha::Phase to;
     ServerPlayer *player;
 };
 
@@ -433,7 +432,7 @@ struct PhaseSkippingStruct
 {
     PhaseSkippingStruct();
 
-    Player::Phase phase;
+    QSanguosha::Phase phase;
     ServerPlayer *player;
     bool isCost;
 };
@@ -442,11 +441,11 @@ struct PhaseStruct
 {
     inline PhaseStruct()
     {
-        phase = Player::PhaseNone;
+        phase = QSanguosha::PhaseNone;
         skipped = 0;
     }
 
-    Player::Phase phase;
+    QSanguosha::Phase phase;
     int skipped; // 0 - not skipped; 1 - skipped by effect; -1 - skipped by cost
 };
 
@@ -658,7 +657,7 @@ struct ExtraTurnStruct
     ExtraTurnStruct();
 
     ServerPlayer *player;
-    QList<Player::Phase> set_phases;
+    QList<QSanguosha::Phase> set_phases;
     QString reason;
     ServerPlayer *extraTarget; //record related target  --qinlue
 };

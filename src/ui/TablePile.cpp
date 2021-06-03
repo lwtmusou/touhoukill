@@ -5,7 +5,7 @@
 #include <QParallelAnimationGroup>
 #include <QTimer>
 
-QList<CardItem *> TablePile::removeCardItems(const QList<int> &card_ids, Player::Place /*place*/)
+QList<CardItem *> TablePile::removeCardItems(const QList<int> &card_ids, QSanguosha::Place /*place*/)
 {
     QList<CardItem *> result;
     _m_mutex_pileCards.lock();
@@ -128,7 +128,7 @@ bool TablePile::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStru
 {
     if (card_items.isEmpty())
         return false;
-    else if (moveInfo.from_place == Player::PlaceDelayedTrick && moveInfo.reason.m_reason == CardMoveReason::S_REASON_NATURAL_ENTER) {
+    else if (moveInfo.from_place == QSanguosha::PlaceDelayedTrick && moveInfo.reason.m_reason == CardMoveReason::S_REASON_NATURAL_ENTER) {
         foreach (CardItem *item, card_items) {
             item->deleteLater();
             card_items.clear();
@@ -156,7 +156,7 @@ bool TablePile::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStru
     foreach (CardItem *card_item, card_items) {
         card_item->setHomeOpacity(1.0);
         card_item->showFootnote();
-        if (moveInfo.from_place == Player::DrawPile || moveInfo.from_place == Player::PlaceJudge || moveInfo.from_place == Player::PlaceTable) {
+        if (moveInfo.from_place == QSanguosha::PlaceDrawPile || moveInfo.from_place == QSanguosha::PlaceJudge || moveInfo.from_place == QSanguosha::PlaceTable) {
             card_item->setOpacity(0.0);
             card_item->setPos(rightMostPos);
             rightMostPos += QPointF(G_COMMON_LAYOUT.m_cardNormalWidth, 0);

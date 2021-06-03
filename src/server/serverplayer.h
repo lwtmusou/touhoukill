@@ -7,11 +7,11 @@ class DummyCard;
 
 class CardMoveReason;
 struct PhaseStruct;
+struct CardUseStruct;
 
 #include "player.h"
 #include "protocol.h"
 #include "socket.h"
-#include "structs.h"
 
 #include <QDateTime>
 #include <QSemaphore>
@@ -63,15 +63,15 @@ public:
     // FIXME: Trying to move this function to the game-logic.h
     QSGS_LOGIC bool pindian(ServerPlayer *target, const QString &reason, const Card *card1 = nullptr);
     QSGS_LOGIC void turnOver();
-    QSGS_LOGIC void play(QList<Player::Phase> set_phases = QList<Player::Phase>());
-    QSGS_LOGIC bool changePhase(Player::Phase from, Player::Phase to);
+    QSGS_LOGIC void play(QList<QSanguosha::Phase> set_phases = QList<QSanguosha::Phase>());
+    QSGS_LOGIC bool changePhase(QSanguosha::Phase from, QSanguosha::Phase to);
 
-    QSGS_STATE_GAME QList<Player::Phase> &getPhases();
+    QSGS_STATE_GAME QList<QSanguosha::Phase> &getPhases();
     QSGS_STATE_GAME int getPhasesIndex() const;
-    QSGS_LOGIC void skip(Player::Phase phase, bool isCost = false, bool sendLog = true);
-    QSGS_LOGIC void insertPhases(QList<Player::Phase> new_phases, int index = -1);
-    QSGS_LOGIC void exchangePhases(Player::Phase phase, Player::Phase phase1);
-    QSGS_STATE_GAME bool isSkipped(Player::Phase phase);
+    QSGS_LOGIC void skip(QSanguosha::Phase phase, bool isCost = false, bool sendLog = true);
+    QSGS_LOGIC void insertPhases(QList<QSanguosha::Phase> new_phases, int index = -1);
+    QSGS_LOGIC void exchangePhases(QSanguosha::Phase phase, QSanguosha::Phase phase1);
+    QSGS_STATE_GAME bool isSkipped(QSanguosha::Phase phase);
 
     QSGS_LOGIC void gainMark(const QString &mark, int n = 1);
     QSGS_LOGIC void loseMark(const QString &mark, int n = 1);
@@ -83,8 +83,8 @@ public:
 
     QSGS_STATE_GAME int aliveCount(bool includeRemoved = true) const override; // TODO_Fs: this function should belong to room?
     QSGS_STATE_GAME int getHandcardNum() const override;
-    QSGS_LOGIC void removeCard(const Card *card, Place place) override;
-    QSGS_LOGIC void addCard(const Card *card, Place place) override;
+    QSGS_LOGIC void removeCard(const Card *card, QSanguosha::Place place) override;
+    QSGS_LOGIC void addCard(const Card *card, QSanguosha::Place place) override;
     QSGS_STATE_GAME bool isLastHandCard(const Card *card, bool contain = false) const override;
 
     // utilities?
@@ -108,7 +108,8 @@ public:
     QSGS_LOGIC void addToPile(const QString &pile_name, const Card *card, bool open = true, const QList<ServerPlayer *> &open_players = QList<ServerPlayer *>());
     QSGS_LOGIC void addToPile(const QString &pile_name, int card_id, bool open = true, const QList<ServerPlayer *> &open_players = QList<ServerPlayer *>());
     QSGS_LOGIC void addToPile(const QString &pile_name, const IDSet &card_ids, bool open = true, const QList<ServerPlayer *> &open_players = QList<ServerPlayer *>());
-    QSGS_LOGIC void addToPile(const QString &pile_name, const IDSet &card_ids, bool open, const CardMoveReason &reason, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
+    QSGS_LOGIC void addToPile(const QString &pile_name, const IDSet &card_ids, bool open, const CardMoveReason &reason,
+                              QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
     QSGS_LOGIC void addToShownHandCards(const IDSet &card_ids);
     QSGS_LOGIC void removeShownHandCards(const IDSet &card_ids, bool sendLog = false, bool moveFromHand = false);
     QSGS_LOGIC void addBrokenEquips(const IDSet &card_ids);
@@ -209,7 +210,7 @@ private:
     QList<const Card *> handcards;
     Room *room;
     Recorder *recorder;
-    QList<Phase> phases;
+    QList<QSanguosha::Phase> phases;
     int _m_phases_index;
     QList<PhaseStruct> _m_phases_state;
     QStringList selected; // 3v3 mode use only

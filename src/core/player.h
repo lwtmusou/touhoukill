@@ -1,9 +1,8 @@
 #ifndef _PLAYER_H
 #define _PLAYER_H
 
-// #include "WrappedCard.h"
-#include "card.h"
 #include "general.h"
+#include "global.h"
 
 #include <QObject>
 #include <QTcpSocket>
@@ -16,6 +15,7 @@ class DelayedTrick;
 class DistanceSkill;
 class TriggerSkill;
 class RoomObject;
+class Card;
 
 class Player : public QObject
 {
@@ -57,44 +57,6 @@ class Player : public QObject
     Q_PROPERTY(bool all_nude READ isAllNude)
 
 public:
-    enum Phase
-    {
-        RoundStart,
-        Start,
-        Judge,
-        Draw,
-        Play,
-        Discard,
-        Finish,
-        NotActive,
-        PhaseNone
-    };
-    Q_ENUM(Phase)
-
-    enum Place
-    {
-        PlaceHand,
-        PlaceEquip,
-        PlaceDelayedTrick,
-        PlaceJudge,
-        PlaceSpecial,
-        DiscardPile,
-        DrawPile,
-        PlaceTable,
-        PlaceUnknown,
-        PlaceWuGu
-    };
-    Q_ENUM(Place)
-
-    enum Role
-    {
-        Lord,
-        Loyalist,
-        Rebel,
-        Renegade
-    };
-    Q_ENUM(Role)
-
     explicit Player(QObject *parent);
 
     void setScreenName(const QString &screen_name);
@@ -148,7 +110,7 @@ public:
 
     void setRole(const QString &role);
     QString getRole() const;
-    Role getRoleEnum() const;
+    QSanguosha::Role getRoleEnum() const;
 
     void setGeneral(const General *general);
     void setGeneralName(const QString &general_name);
@@ -170,8 +132,8 @@ public:
     bool isAdjacentTo(const Player *another) const;
     QString getPhaseString() const;
     void setPhaseString(const QString &phase_str);
-    Phase getPhase() const;
-    void setPhase(Phase phase);
+    QSanguosha::Phase getPhase() const;
+    void setPhase(QSanguosha::Phase phase);
     bool isInMainPhase() const;
 
     int getAttackRange(bool include_weapon = true) const;
@@ -248,8 +210,8 @@ public:
     bool containsTrick(const QString &trick_name) const;
 
     virtual int getHandcardNum() const = 0;
-    virtual void removeCard(const Card *card, Place place) = 0;
-    virtual void addCard(const Card *card, Place place) = 0;
+    virtual void removeCard(const Card *card, QSanguosha::Place place) = 0;
+    virtual void addCard(const Card *card, QSanguosha::Place place) = 0;
     virtual QList<const Card *> getHandcards() const = 0;
 
     const Card *getWeapon() const;
@@ -413,7 +375,7 @@ private:
     bool general_showed;
     bool general2_showed; //hegemony
 
-    Phase phase;
+    QSanguosha::Phase phase;
     const Card *weapon;
     const Card *armor;
     const Card *defensive_horse;

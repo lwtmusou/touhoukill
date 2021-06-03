@@ -35,21 +35,21 @@ int ClientPlayer::getHandcardNum() const
     return handcard_num;
 }
 
-void ClientPlayer::addCard(const Card *card, Place place)
+void ClientPlayer::addCard(const Card *card, QSanguosha::Place place)
 {
     switch (place) {
-    case PlaceHand: {
+    case QSanguosha::PlaceHand: {
         if (card != nullptr)
             known_cards << card;
         handcard_num++;
         break;
     }
-    case PlaceEquip: {
+    case QSanguosha::PlaceEquip: {
         // WrappedCard *equip = getRoomObject()->getWrappedCard(card->getEffectiveId());
         setEquip(getRoomObject()->getCard(card->effectiveID()));
         break;
     }
-    case PlaceDelayedTrick: {
+    case QSanguosha::PlaceDelayedTrick: {
         addDelayedTrick(card);
         break;
     }
@@ -88,21 +88,21 @@ bool ClientPlayer::isLastHandCard(const Card *card, bool contain) const
     return false;
 }
 
-void ClientPlayer::removeCard(const Card *card, Place place)
+void ClientPlayer::removeCard(const Card *card, QSanguosha::Place place)
 {
     switch (place) {
-    case PlaceHand: {
+    case QSanguosha::PlaceHand: {
         handcard_num--;
         if (card != nullptr)
             known_cards.removeOne(card);
         break;
     }
-    case PlaceEquip: {
+    case QSanguosha::PlaceEquip: {
         // WrappedCard *equip = getRoomObject()->getWrappedCard(card->getEffectiveId());
         removeEquip(getRoomObject()->getCard(card->effectiveID()));
         break;
     }
-    case PlaceDelayedTrick: {
+    case QSanguosha::PlaceDelayedTrick: {
         removeDelayedTrick(card);
         break;
     }

@@ -18,8 +18,8 @@ bool CardsMoveStruct::tryParse(const QVariant &arg)
     if (!JsonUtils::tryParse(args[0], card_ids))
         return false;
 
-    from_place = (Player::Place)args[1].toInt();
-    to_place = (Player::Place)args[2].toInt();
+    from_place = (QSanguosha::Place)args[1].toInt();
+    to_place = (QSanguosha::Place)args[2].toInt();
     from_player_name = args[3].toString();
     to_player_name = args[4].toString();
     from_pile_name = args[5].toString();
@@ -246,8 +246,8 @@ bool JudgeStruct::isGood(const Card *card) const
 }
 
 PhaseChangeStruct::PhaseChangeStruct()
-    : from(Player::NotActive)
-    , to(Player::NotActive)
+    : from(QSanguosha::PhaseNotActive)
+    , to(QSanguosha::PhaseNotActive)
     , player(nullptr)
 {
 }
@@ -610,7 +610,7 @@ JinkEffectStruct::JinkEffectStruct()
 }
 
 PhaseSkippingStruct::PhaseSkippingStruct()
-    : phase(Player::NotActive)
+    : phase(QSanguosha::PhaseNotActive)
     , player(nullptr)
     , isCost(false)
 {

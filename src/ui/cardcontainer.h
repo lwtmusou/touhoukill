@@ -31,7 +31,7 @@ class CardContainer : public GenericCardContainer
 
 public:
     explicit CardContainer();
-    QList<CardItem *> removeCardItems(const QList<int> &card_ids, Player::Place place) override;
+    QList<CardItem *> removeCardItems(const QList<int> &card_ids, QSanguosha::Place place) override;
     int getFirstEnabled() const;
     void startChoose();
     void startGongxin(const QList<int> &enabled_ids);

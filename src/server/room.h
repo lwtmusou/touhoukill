@@ -115,7 +115,7 @@ public:
     QSGS_LOGIC void fillAG(const QList<int> &card_ids, ServerPlayer *who = nullptr, const QList<int> &disabled_ids = QList<int>(),
                            const QList<int> &shownHandcard_ids = QList<int>());
     QSGS_LOGIC void takeAG(ServerPlayer *player, int card_id, bool move_cards = true, QList<ServerPlayer *> to_notify = QList<ServerPlayer *>(),
-                           Player::Place fromPlace = Player::DrawPile);
+                           QSanguosha::Place fromPlace = QSanguosha::PlaceDrawPile);
     QSGS_LOGIC void clearAG(ServerPlayer *player = nullptr);
     QSGS_LOGIC void provide(const Card *card, ServerPlayer *who = nullptr);
     QSGS_STATE_GAME QList<ServerPlayer *> getLieges(const QString &kingdom, ServerPlayer *lord) const;
@@ -306,9 +306,9 @@ public:
 
     QSGS_LOGIC void setEmotion(ServerPlayer *target, const QString &emotion);
 
-    QSGS_STATE_GAME Player::Place getCardPlace(int card_id) const;
+    QSGS_STATE_GAME QSanguosha::Place getCardPlace(int card_id) const;
     QSGS_STATE_GAME ServerPlayer *getCardOwner(int card_id) const;
-    QSGS_STATE_GAME void setCardMapping(int card_id, ServerPlayer *owner, Player::Place place);
+    QSGS_STATE_GAME void setCardMapping(int card_id, ServerPlayer *owner, QSanguosha::Place place);
     // FIXME: Replace their return value to IDSet.
     QSGS_STATE_GAME QList<int> getCardIdsOnTable(const Card *) const;
     QSGS_STATE_GAME QList<int> getCardIdsOnTable(const IDSet &card_ids) const;
@@ -324,11 +324,11 @@ public:
     QSGS_LOGIC void throwCard(const Card *card, ServerPlayer *who, ServerPlayer *thrower = nullptr, bool notifyLog = true);
     QSGS_LOGIC void throwCard(const Card *card, const CardMoveReason &reason, ServerPlayer *who, ServerPlayer *thrower = nullptr, bool notifyLog = true);
 
-    QSGS_LOGIC void moveCardTo(const Card *card, ServerPlayer *dstPlayer, Player::Place dstPlace, bool forceMoveVisible = false);
-    QSGS_LOGIC void moveCardTo(const Card *card, ServerPlayer *dstPlayer, Player::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible = false);
-    QSGS_LOGIC void moveCardTo(const Card *card, ServerPlayer *srcPlayer, ServerPlayer *dstPlayer, Player::Place dstPlace, const CardMoveReason &reason,
+    QSGS_LOGIC void moveCardTo(const Card *card, ServerPlayer *dstPlayer, QSanguosha::Place dstPlace, bool forceMoveVisible = false);
+    QSGS_LOGIC void moveCardTo(const Card *card, ServerPlayer *dstPlayer, QSanguosha::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible = false);
+    QSGS_LOGIC void moveCardTo(const Card *card, ServerPlayer *srcPlayer, ServerPlayer *dstPlayer, QSanguosha::Place dstPlace, const CardMoveReason &reason,
                                bool forceMoveVisible = false);
-    QSGS_LOGIC void moveCardTo(const Card *card, ServerPlayer *srcPlayer, ServerPlayer *dstPlayer, Player::Place dstPlace, const QString &pileName, const CardMoveReason &reason,
+    QSGS_LOGIC void moveCardTo(const Card *card, ServerPlayer *srcPlayer, ServerPlayer *dstPlayer, QSanguosha::Place dstPlace, const QString &pileName, const CardMoveReason &reason,
                                bool forceMoveVisible = false);
     QSGS_LOGIC void moveCardsAtomic(QList<CardsMoveStruct> cards_move, bool forceMoveVisible);
     QSGS_LOGIC void moveCardsAtomic(const CardsMoveStruct &cards_move, bool forceMoveVisible);
@@ -435,7 +435,7 @@ private:
             return m_from < other.m_from || m_from_place < other.m_from_place || m_from_pile_name < other.m_from_pile_name || m_from_player_name < other.m_from_player_name;
         }
         Player *m_from;
-        Player::Place m_from_place;
+        QSanguosha::Place m_from_place;
         QString m_from_pile_name;
         QString m_from_player_name;
     };
@@ -464,12 +464,12 @@ private:
         }
         Player *m_from;
         Player *m_to;
-        Player::Place m_to_place;
+        QSanguosha::Place m_to_place;
         QString m_to_pile_name;
 
         Player *m_origin_from;
         Player *m_origin_to;
-        Player::Place m_origin_to_place;
+        QSanguosha::Place m_origin_to_place;
         QString m_origin_to_pile_name;
     };
 
@@ -501,7 +501,7 @@ private:
         }
         Player *m_from;
         Player *m_to;
-        Player::Place m_from_place, m_to_place;
+        QSanguosha::Place m_from_place, m_to_place;
         QString m_from_pile_name, m_to_pile_name;
         bool m_open;
         CardMoveReason m_reason;
@@ -545,7 +545,7 @@ private:
     bool _m_raceStarted;
     QAtomicPointer<ServerPlayer> _m_raceWinner;
 
-    QMap<int, Player::Place> place_map;
+    QMap<int, QSanguosha::Place> place_map;
     QMap<int, ServerPlayer *> owner_map;
 
     const Card *provided;

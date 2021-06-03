@@ -30,7 +30,7 @@ public:
     {
         _m_highestZ = 10000;
     }
-    virtual QList<CardItem *> removeCardItems(const QList<int> &card_ids, Player::Place place) = 0;
+    virtual QList<CardItem *> removeCardItems(const QList<int> &card_ids, QSanguosha::Place place) = 0;
     virtual void addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo);
     virtual QList<CardItem *> cloneCardItems(const QList<int> &card_ids);
 

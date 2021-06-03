@@ -368,8 +368,8 @@ void Dashboard::setDeathColor()
 
 bool Dashboard::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo)
 {
-    Player::Place place = moveInfo.to_place;
-    if (place == Player::PlaceSpecial) {
+    QSanguosha::Place place = moveInfo.to_place;
+    if (place == QSanguosha::PlaceSpecial) {
         foreach (CardItem *card, card_items)
             card->setHomeOpacity(0.0);
         QPoint avatarArea_center = (ServerInfo.Enable2ndGeneral) ? _dlayout->m_avatarAreaDouble.center() : _dlayout->m_avatarArea.center();
@@ -384,11 +384,11 @@ bool Dashboard::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStru
     _m_cardItemsAnimationFinished << card_items;
     m_mutexCardItemsAnimationFinished.unlock();
 
-    if (place == Player::PlaceEquip)
+    if (place == QSanguosha::PlaceEquip)
         addEquips(card_items);
-    else if (place == Player::PlaceDelayedTrick)
+    else if (place == QSanguosha::PlaceDelayedTrick)
         addDelayedTricks(card_items);
-    else if (place == Player::PlaceHand)
+    else if (place == QSanguosha::PlaceHand)
         addHandCards(card_items);
 
     adjustCards(true);
@@ -949,18 +949,18 @@ QList<CardItem *> Dashboard::removeHandCards(const QList<int> &card_ids)
     return result;
 }
 
-QList<CardItem *> Dashboard::removeCardItems(const QList<int> &card_ids, Player::Place place)
+QList<CardItem *> Dashboard::removeCardItems(const QList<int> &card_ids, QSanguosha::Place place)
 {
     CardItem *card_item = nullptr;
     QList<CardItem *> result;
     bool pileNeedAdjust = false;
-    if (place == Player::PlaceHand)
+    if (place == QSanguosha::PlaceHand)
         result = removeHandCards(card_ids);
-    else if (place == Player::PlaceEquip)
+    else if (place == QSanguosha::PlaceEquip)
         result = removeEquips(card_ids);
-    else if (place == Player::PlaceDelayedTrick)
+    else if (place == QSanguosha::PlaceDelayedTrick)
         result = removeDelayedTricks(card_ids);
-    else if (place == Player::PlaceSpecial) {
+    else if (place == QSanguosha::PlaceSpecial) {
         foreach (int card_id, card_ids) {
             card_item = _createCard(card_id);
             card_item->setOpacity(0.0);
@@ -996,16 +996,16 @@ QList<CardItem *> Dashboard::removeCardItems(const QList<int> &card_ids, Player:
     }
 
     Q_ASSERT(result.size() == card_ids.size());
-    if (place == Player::PlaceHand)
+    if (place == QSanguosha::PlaceHand)
         adjustCards();
-    else if (result.size() > 1 || place == Player::PlaceSpecial) {
+    else if (result.size() > 1 || place == QSanguosha::PlaceSpecial) {
         QRect rect(0, 0, _dlayout->m_disperseWidth, 0);
         QPointF center(0, 0);
-        if (place == Player::PlaceEquip || place == Player::PlaceDelayedTrick) {
+        if (place == QSanguosha::PlaceEquip || place == QSanguosha::PlaceDelayedTrick) {
             for (int i = 0; i < result.size(); i++)
                 center += result[i]->pos();
             center = 1.0 / result.length() * center;
-        } else if (place == Player::PlaceSpecial) {
+        } else if (place == QSanguosha::PlaceSpecial) {
             QPoint avatarArea_center = (ServerInfo.Enable2ndGeneral) ? _dlayout->m_avatarAreaDouble.center() : _dlayout->m_avatarArea.center();
             center = mapFromItem(_getAvatarParent(), avatarArea_center);
         } else
@@ -1013,7 +1013,7 @@ QList<CardItem *> Dashboard::removeCardItems(const QList<int> &card_ids, Player:
         rect.moveCenter(center.toPoint());
         _disperseCards(result, rect, Qt::AlignCenter, false, false);
 
-        if (place == Player::PlaceSpecial && pileNeedAdjust)
+        if (place == QSanguosha::PlaceSpecial && pileNeedAdjust)
             adjustCards();
     }
     update();

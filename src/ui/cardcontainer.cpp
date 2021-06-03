@@ -204,7 +204,7 @@ void CardContainer::freezeCards(bool is_frozen)
         item->setFrozen(is_frozen);
 }
 
-QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, Player::Place /*place*/)
+QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, QSanguosha::Place /*place*/)
 {
     QList<CardItem *> result;
     foreach (int card_id, card_ids) {

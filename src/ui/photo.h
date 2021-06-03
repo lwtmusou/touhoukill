@@ -29,7 +29,7 @@ public:
     const ClientPlayer *getPlayer() const;
     void speak(const QString &content);
     void repaintAll() override;
-    QList<CardItem *> removeCardItems(const QList<int> &card_id, Player::Place place) override;
+    QList<CardItem *> removeCardItems(const QList<int> &card_id, QSanguosha::Place place) override;
 
     void setEmotion(const QString &emotion, bool permanent = false);
     void tremble();

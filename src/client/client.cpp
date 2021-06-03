@@ -516,9 +516,9 @@ bool Client::_loseSingleCard(int card_id, const CardsMoveStruct &move)
     if (move.from != nullptr)
         move.from->removeCard(card, move.from_place);
     else {
-        if (move.from_place == Player::DiscardPile)
+        if (move.from_place == QSanguosha::PlaceDiscardPile)
             discarded_list.removeOne(card_id);
-        else if (move.from_place == Player::DrawPile && !Self->hasFlag(QStringLiteral("marshalling")))
+        else if (move.from_place == QSanguosha::PlaceDrawPile && !Self->hasFlag(QStringLiteral("marshalling")))
             pile_num--;
     }
     return true;
@@ -530,9 +530,9 @@ bool Client::_getSingleCard(int card_id, const CardsMoveStruct &move)
     if (move.to != nullptr)
         move.to->addCard(card, move.to_place);
     else {
-        if (move.to_place == Player::DrawPile)
+        if (move.to_place == QSanguosha::PlaceDrawPile)
             pile_num++;
-        else if (move.to_place == Player::DiscardPile)
+        else if (move.to_place == QSanguosha::PlaceDiscardPile)
             discarded_list.prepend(card_id);
     }
     return true;
@@ -550,9 +550,9 @@ void Client::getCards(const QVariant &arg)
             return;
         move.from = getPlayer(move.from_player_name);
         move.to = getPlayer(move.to_player_name);
-        Player::Place dstPlace = move.to_place;
+        QSanguosha::Place dstPlace = move.to_place;
 
-        if (dstPlace == Player::PlaceSpecial)
+        if (dstPlace == QSanguosha::PlaceSpecial)
             ((ClientPlayer *)move.to)->changePile(move.to_pile_name, true, move.card_ids);
         else {
             foreach (int card_id, move.card_ids)
@@ -576,8 +576,8 @@ void Client::loseCards(const QVariant &arg)
             return;
         move.from = getPlayer(move.from_player_name);
         move.to = getPlayer(move.to_player_name);
-        Player::Place srcPlace = move.from_place;
-        if (srcPlace == Player::PlaceSpecial)
+        QSanguosha::Place srcPlace = move.from_place;
+        if (srcPlace == QSanguosha::PlaceSpecial)
             ((ClientPlayer *)move.from)->changePile(move.from_pile_name, false, move.card_ids);
         else {
             foreach (int card_id, move.card_ids)
@@ -1846,7 +1846,7 @@ void Client::takeAG(const QVariant &take_var)
     } else {
         ClientPlayer *taker = getPlayer(take[0].toString());
         if (move_cards)
-            taker->addCard(card, Player::PlaceHand);
+            taker->addCard(card, QSanguosha::PlaceHand);
         emit ag_taken(taker, card_id, move_cards);
     }
 }
@@ -1942,7 +1942,7 @@ QList<const ClientPlayer *> Client::getPlayers() const
 
 void Client::alertFocus()
 {
-    if (Self->getPhase() == Player::Play)
+    if (Self->getPhase() == QSanguosha::PhasePlay)
         QApplication::alert(QApplication::focusWidget());
 }
 

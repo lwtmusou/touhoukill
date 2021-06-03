@@ -25,11 +25,6 @@ struct CardUseStruct;
 class CardPrivate;
 class CardFace;
 
-// Fs: I prefer following:
-// typedef QSet<int> IDSet;
-// Are there any advantages using 'using' instead of 'typedef'?
-using IDSet = QSet<int>;
-
 class Card final
 {
     Q_GADGET

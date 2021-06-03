@@ -337,8 +337,8 @@ void PlayerCardContainer::updatePhase()
 {
     if ((m_player == nullptr) || !m_player->isAlive())
         _clearPixmap(_m_phaseIcon);
-    else if (m_player->getPhase() != Player::NotActive) {
-        if (m_player->getPhase() == Player::PhaseNone)
+    else if (m_player->getPhase() != QSanguosha::PhaseNotActive) {
+        if (m_player->getPhase() == QSanguosha::PhaseNone)
             return;
         int index = static_cast<int>(m_player->getPhase());
         QRect phaseArea = _m_layout->m_phaseArea.getTranslatedRect(_getPhaseParent()->boundingRect().toRect());

@@ -369,14 +369,14 @@ QString ServerPlayer::reportHeader() const
     return QStringLiteral("%1 ").arg(name.isEmpty() ? tr("Anonymous") : name);
 }
 
-void ServerPlayer::removeCard(const Card *card, Place place)
+void ServerPlayer::removeCard(const Card *card, QSanguosha::Place place)
 {
     switch (place) {
-    case PlaceHand: {
+    case QSanguosha::PlaceHand: {
         handcards.removeOne(card);
         break;
     }
-    case PlaceEquip: {
+    case QSanguosha::PlaceEquip: {
         const EquipCard *equip = qobject_cast<const EquipCard *>(card->face());
         if (equip == nullptr)
             equip = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card->effectiveID()).face());
@@ -403,11 +403,11 @@ void ServerPlayer::removeCard(const Card *card, Place place)
         }
         break;
     }
-    case PlaceDelayedTrick: {
+    case QSanguosha::PlaceDelayedTrick: {
         removeDelayedTrick(card);
         break;
     }
-    case PlaceSpecial: {
+    case QSanguosha::PlaceSpecial: {
         int card_id = card->effectiveID();
         QString pile_name = getPileName(card_id);
 
@@ -422,14 +422,14 @@ void ServerPlayer::removeCard(const Card *card, Place place)
     }
 }
 
-void ServerPlayer::addCard(const Card *card, Place place)
+void ServerPlayer::addCard(const Card *card, QSanguosha::Place place)
 {
     switch (place) {
-    case PlaceHand: {
+    case QSanguosha::PlaceHand: {
         handcards << card;
         break;
     }
-    case PlaceEquip: {
+    case QSanguosha::PlaceEquip: {
         // WrappedCard *wrapped = room->getWrappedCard(card->getEffectiveId());
 
         const EquipCard *equip = qobject_cast<const EquipCard *>(card->face());
@@ -437,7 +437,7 @@ void ServerPlayer::addCard(const Card *card, Place place)
         equip->onInstall(this);
         break;
     }
-    case PlaceDelayedTrick: {
+    case QSanguosha::PlaceDelayedTrick: {
         addDelayedTrick(card);
         break;
     }
@@ -585,7 +585,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
         }
 
         CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, objectName(), target->objectName(), pindian_struct.reason, QString());
-        room->moveCardTo(card1, this, nullptr, Player::PlaceTable, reason1, false);
+        room->moveCardTo(card1, this, nullptr, QSanguosha::PlaceTable, reason1, false);
 
         card2 = room->askForPindian(target, this, target, reason, pindian);
 
@@ -603,24 +603,24 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
         }
 
         CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, objectName(), target->objectName(), pindian_struct.reason, QString());
-        room->moveCardTo(card1, this, nullptr, Player::PlaceTable, reason1, false);
+        room->moveCardTo(card1, this, nullptr, QSanguosha::PlaceTable, reason1, false);
 
         card2 = room->askForPindian(target, this, target, reason, pindian);
     }
     if (card2 != nullptr) {
         CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, target->objectName());
-        room->moveCardTo(card2, target, nullptr, Player::PlaceTable, reason2, false);
+        room->moveCardTo(card2, target, nullptr, QSanguosha::PlaceTable, reason2, false);
     }
 
     //check whether card is empty
     if (card1 == nullptr || card2 == nullptr) {
         if (card1 != nullptr) {
             CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, this->objectName(), target->objectName(), pindian_struct.reason, QString());
-            room->moveCardTo(card1, pindian_struct.from, nullptr, Player::DiscardPile, reason1, true);
+            room->moveCardTo(card1, pindian_struct.from, nullptr, QSanguosha::PlaceDiscardPile, reason1, true);
         }
         if (card2 != nullptr) {
             CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, pindian_struct.to->objectName());
-            room->moveCardTo(card2, pindian_struct.to, nullptr, Player::DiscardPile, reason2, true);
+            room->moveCardTo(card2, pindian_struct.to, nullptr, QSanguosha::PlaceDiscardPile, reason2, true);
         }
         //need trigger choice made?
         return false;
@@ -675,14 +675,14 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     data = QVariant::fromValue(pindian_star);
     thread->trigger(Pindian, data);
 
-    if (room->getCardPlace(pindian_struct.from_card->effectiveID()) == Player::PlaceTable) {
+    if (room->getCardPlace(pindian_struct.from_card->effectiveID()) == QSanguosha::PlaceTable) {
         CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, pindian_struct.from->objectName(), pindian_struct.to->objectName(), pindian_struct.reason, QString());
-        room->moveCardTo(pindian_struct.from_card, pindian_struct.from, nullptr, Player::DiscardPile, reason1, true);
+        room->moveCardTo(pindian_struct.from_card, pindian_struct.from, nullptr, QSanguosha::PlaceDiscardPile, reason1, true);
     }
 
-    if (room->getCardPlace(pindian_struct.to_card->effectiveID()) == Player::PlaceTable) {
+    if (room->getCardPlace(pindian_struct.to_card->effectiveID()) == QSanguosha::PlaceTable) {
         CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, pindian_struct.to->objectName());
-        room->moveCardTo(pindian_struct.to_card, pindian_struct.to, nullptr, Player::DiscardPile, reason2, true);
+        room->moveCardTo(pindian_struct.to_card, pindian_struct.to, nullptr, QSanguosha::PlaceDiscardPile, reason2, true);
     }
 
     ChoiceMadeStruct s;
@@ -711,12 +711,12 @@ void ServerPlayer::turnOver()
     room->getThread()->trigger(TurnedOver, v);
 }
 
-bool ServerPlayer::changePhase(Player::Phase from, Player::Phase to)
+bool ServerPlayer::changePhase(QSanguosha::Phase from, QSanguosha::Phase to)
 {
     RoomThread *thread = room->getThread();
     Q_ASSERT(room->getThread() != nullptr);
 
-    setPhase(PhaseNone);
+    setPhase(QSanguosha::PhaseNone);
 
     PhaseChangeStruct phase_change;
     phase_change.player = this;
@@ -725,7 +725,7 @@ bool ServerPlayer::changePhase(Player::Phase from, Player::Phase to)
     QVariant data = QVariant::fromValue(phase_change);
 
     bool skip = thread->trigger(EventPhaseChanging, data);
-    if (skip && to != NotActive) {
+    if (skip && to != QSanguosha::PhaseNotActive) {
         setPhase(from);
         return true;
     }
@@ -739,22 +739,23 @@ bool ServerPlayer::changePhase(Player::Phase from, Player::Phase to)
     QVariant thisVariant = QVariant::fromValue(this);
 
     if (!thread->trigger(EventPhaseStart, thisVariant)) {
-        if (getPhase() != NotActive)
+        if (getPhase() != QSanguosha::PhaseNotActive)
             thread->trigger(EventPhaseProceeding, thisVariant);
     }
-    if (getPhase() != NotActive)
+    if (getPhase() != QSanguosha::PhaseNotActive)
         thread->trigger(EventPhaseEnd, thisVariant);
 
     return false;
 }
 
-void ServerPlayer::play(QList<Player::Phase> set_phases)
+void ServerPlayer::play(QList<QSanguosha::Phase> set_phases)
 {
     if (!set_phases.isEmpty()) {
-        if (!set_phases.contains(NotActive))
-            set_phases << NotActive;
+        if (!set_phases.contains(QSanguosha::PhaseNotActive))
+            set_phases << QSanguosha::PhaseNotActive;
     } else {
-        set_phases << RoundStart << Start << Judge << Draw << Play << Discard << Finish << NotActive;
+        set_phases << QSanguosha::PhaseRoundStart << QSanguosha::PhaseStart << QSanguosha::PhaseJudge << QSanguosha::PhaseDraw << QSanguosha::PhasePlay << QSanguosha::PhaseDiscard
+                   << QSanguosha::PhaseFinish << QSanguosha::PhaseNotActive;
     }
 
     phases = set_phases;
@@ -767,7 +768,7 @@ void ServerPlayer::play(QList<Player::Phase> set_phases)
 
     for (int i = 0; i < _m_phases_state.size(); i++) {
         if (isDead() || hasFlag(QStringLiteral("Global_TurnTerminated"))) {
-            changePhase(getPhase(), NotActive);
+            changePhase(getPhase(), QSanguosha::PhaseNotActive);
             break;
         }
 
@@ -778,7 +779,7 @@ void ServerPlayer::play(QList<Player::Phase> set_phases)
         phase_change.to = phases[i];
 
         RoomThread *thread = room->getThread();
-        setPhase(PhaseNone);
+        setPhase(QSanguosha::PhaseNone);
         QVariant data = QVariant::fromValue(phase_change);
 
         bool skip = thread->trigger(EventPhaseChanging, data);
@@ -788,7 +789,7 @@ void ServerPlayer::play(QList<Player::Phase> set_phases)
         setPhase(phases[i]);
         room->broadcastProperty(this, "phase");
 
-        if (phases[i] != NotActive && (skip || _m_phases_state[i].skipped != 0)) {
+        if (phases[i] != QSanguosha::PhaseNotActive && (skip || _m_phases_state[i].skipped != 0)) {
             PhaseSkippingStruct s;
             s.isCost = _m_phases_state[i].skipped < 0;
             s.phase = phases[i];
@@ -802,17 +803,17 @@ void ServerPlayer::play(QList<Player::Phase> set_phases)
         QVariant thisVariant = QVariant::fromValue(this);
 
         if (!thread->trigger(EventPhaseStart, thisVariant)) {
-            if (getPhase() != NotActive)
+            if (getPhase() != QSanguosha::PhaseNotActive)
                 thread->trigger(EventPhaseProceeding, thisVariant);
         }
-        if (getPhase() != NotActive)
+        if (getPhase() != QSanguosha::PhaseNotActive)
             thread->trigger(EventPhaseEnd, thisVariant);
         else
             break;
     }
 }
 
-QList<Player::Phase> &ServerPlayer::getPhases()
+QList<QSanguosha::Phase> &ServerPlayer::getPhases()
 {
     return phases;
 }
@@ -822,7 +823,7 @@ int ServerPlayer::getPhasesIndex() const
     return _m_phases_index;
 }
 
-void ServerPlayer::skip(Player::Phase phase, bool isCost, bool sendLog)
+void ServerPlayer::skip(QSanguosha::Phase phase, bool isCost, bool sendLog)
 {
     for (int i = _m_phases_index; i < _m_phases_state.size(); i++) {
         if (_m_phases_state[i].phase == phase) {
@@ -851,7 +852,7 @@ void ServerPlayer::skip(Player::Phase phase, bool isCost, bool sendLog)
     }
 }
 
-void ServerPlayer::insertPhases(QList<Player::Phase> new_phases, int index)
+void ServerPlayer::insertPhases(QList<QSanguosha::Phase> new_phases, int index)
 {
     if (index == -1)
         index = _m_phases_index;
@@ -863,7 +864,7 @@ void ServerPlayer::insertPhases(QList<Player::Phase> new_phases, int index)
     }
 }
 
-void ServerPlayer::exchangePhases(Player::Phase phase1, Player::Phase phase2)
+void ServerPlayer::exchangePhases(QSanguosha::Phase phase1, QSanguosha::Phase phase2)
 {
     PhaseStruct _phase1;
     PhaseStruct _phase2;
@@ -887,7 +888,7 @@ void ServerPlayer::exchangePhases(Player::Phase phase1, Player::Phase phase2)
     }
 }
 
-bool ServerPlayer::isSkipped(Player::Phase phase)
+bool ServerPlayer::isSkipped(QSanguosha::Phase phase)
 {
     for (int i = _m_phases_index; i < _m_phases_state.size(); i++) {
         if (_m_phases_state[i].phase == phase)
@@ -1165,7 +1166,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
 
     if (isAlive()) {
         room->notifyProperty(player, this, "seat");
-        if (getPhase() != Player::NotActive)
+        if (getPhase() != QSanguosha::PhaseNotActive)
             room->notifyProperty(player, this, "phase");
     } else {
         room->notifyProperty(player, this, "alive");
@@ -1199,9 +1200,9 @@ void ServerPlayer::marshal(ServerPlayer *player) const
 #endif
             }
         }
-        move.from_place = DrawPile;
+        move.from_place = QSanguosha::PlaceDrawPile;
         move.to_player_name = objectName();
-        move.to_place = PlaceHand;
+        move.to_place = QSanguosha::PlaceHand;
 
         if (player == this)
             move.to = player;
@@ -1219,9 +1220,9 @@ void ServerPlayer::marshal(ServerPlayer *player) const
                 room->notifyUpdateCard(player, card->getId(), wrapped);
 #endif
         }
-        move.from_place = DrawPile;
+        move.from_place = QSanguosha::PlaceDrawPile;
         move.to_player_name = objectName();
-        move.to_place = PlaceEquip;
+        move.to_place = QSanguosha::PlaceEquip;
 
         moves << move;
     }
@@ -1236,9 +1237,9 @@ void ServerPlayer::marshal(ServerPlayer *player) const
                 room->notifyUpdateCard(player, card_id, wrapped);
 #endif
         }
-        move.from_place = DrawPile;
+        move.from_place = QSanguosha::PlaceDrawPile;
         move.to_player_name = objectName();
-        move.to_place = PlaceDelayedTrick;
+        move.to_place = QSanguosha::PlaceDelayedTrick;
 
         moves << move;
     }
@@ -1250,9 +1251,9 @@ void ServerPlayer::marshal(ServerPlayer *player) const
 
     if (!getPileNames().isEmpty()) {
         CardsMoveStruct move;
-        move.from_place = DrawPile;
+        move.from_place = QSanguosha::PlaceDrawPile;
         move.to_player_name = objectName();
-        move.to_place = PlaceSpecial;
+        move.to_place = QSanguosha::PlaceSpecial;
         foreach (QString pile, piles.keys()) {
             move.card_ids.clear();
             move.card_ids.append(piles[pile].values());
@@ -1440,7 +1441,7 @@ void ServerPlayer::addToPile(const QString &pile_name, const IDSet &card_ids, bo
     CardsMoveStruct move;
     move.card_ids = card_ids.values(); // FIXME: Replace here with IDSet
     move.to = this;
-    move.to_place = Player::PlaceSpecial;
+    move.to_place = QSanguosha::PlaceSpecial;
     move.reason = reason;
     room->moveCardsAtomic(move, open);
 }
@@ -1699,7 +1700,7 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
                 room->filterCards(this, this->getCards(QStringLiteral("hes")), true);
 
                 //keep showing huashen for a short time
-                if (getPhase() == Player::Finish)
+                if (getPhase() == QSanguosha::PhaseFinish)
                     room->getThread()->delay(1000);
             }
         }
@@ -1842,7 +1843,7 @@ void ServerPlayer::copyFrom(ServerPlayer *sp)
     ServerPlayer *a = sp;
 
     b->handcards = QList<const Card *>(a->handcards);
-    b->phases = QList<ServerPlayer::Phase>(a->phases);
+    b->phases = QList<QSanguosha::Phase>(a->phases);
     b->selected = QStringList(a->selected);
 
     Player *c = b;

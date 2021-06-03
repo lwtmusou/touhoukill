@@ -26,8 +26,8 @@ public:
     void setFlags(const QString &flag) override;
     int aliveCount(bool includeRemoved = true) const override;
     int getHandcardNum() const override;
-    void removeCard(const Card *card, Place place) override;
-    void addCard(const Card *card, Place place) override;
+    void removeCard(const Card *card, QSanguosha::Place place) override;
+    void addCard(const Card *card, QSanguosha::Place place) override;
     virtual void addKnownHandCard(const Card *card);
     bool isLastHandCard(const Card *card, bool contain = false) const override;
     void setMark(const QString &mark, int value) override;

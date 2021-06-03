@@ -4,6 +4,8 @@
 #include "room.h"
 #include "settings.h"
 
+using namespace QSanguosha;
+
 Player::Player(QObject *parent)
     : QObject(parent)
     , owner(false)
@@ -23,7 +25,7 @@ Player::Player(QObject *parent)
     , alive(true)
     , general_showed(false)
     , general2_showed(false) //hegemony
-    , phase(NotActive)
+    , phase(PhaseNotActive)
     , weapon(nullptr)
     , armor(nullptr)
     , defensive_horse(nullptr)
@@ -614,14 +616,14 @@ QString Player::getRole() const
     return role;
 }
 
-Player::Role Player::getRoleEnum() const
+Role Player::getRoleEnum() const
 {
     static QMap<QString, Role> role_map;
     if (role_map.isEmpty()) {
-        role_map.insert(QStringLiteral("lord"), Lord);
-        role_map.insert(QStringLiteral("loyalist"), Loyalist);
-        role_map.insert(QStringLiteral("rebel"), Rebel);
-        role_map.insert(QStringLiteral("renegade"), Renegade);
+        role_map.insert(QStringLiteral("lord"), RoleLord);
+        role_map.insert(QStringLiteral("loyalist"), RoleLoyalist);
+        role_map.insert(QStringLiteral("rebel"), RoleRebel);
+        role_map.insert(QStringLiteral("renegade"), RoleRenegade);
     }
 
     return role_map.value(role);
@@ -650,7 +652,7 @@ bool Player::isLord() const
 
 bool Player::isCurrent() const
 {
-    return phase != Player::NotActive;
+    return phase != PhaseNotActive;
 }
 
 bool Player::hasSkill(const QString &skill_name, bool include_lose, bool include_hidden) const
@@ -853,21 +855,21 @@ void Player::loseSkill(const QString &skill_name, bool head)
 QString Player::getPhaseString() const
 {
     switch (phase) {
-    case RoundStart:
+    case PhaseRoundStart:
         return QStringLiteral("round_start");
-    case Start:
+    case PhaseStart:
         return QStringLiteral("start");
-    case Judge:
+    case PhaseJudge:
         return QStringLiteral("judge");
-    case Draw:
+    case PhaseDraw:
         return QStringLiteral("draw");
-    case Play:
+    case PhasePlay:
         return QStringLiteral("play");
-    case Discard:
+    case PhaseDiscard:
         return QStringLiteral("discard");
-    case Finish:
+    case PhaseFinish:
         return QStringLiteral("finish");
-    case NotActive:
+    case PhaseNotActive:
     default:
         return QStringLiteral("not_active");
     }
@@ -877,17 +879,17 @@ void Player::setPhaseString(const QString &phase_str)
 {
     static QMap<QString, Phase> phase_map;
     if (phase_map.isEmpty()) {
-        phase_map.insert(QStringLiteral("round_start"), RoundStart);
-        phase_map.insert(QStringLiteral("start"), Start);
-        phase_map.insert(QStringLiteral("judge"), Judge);
-        phase_map.insert(QStringLiteral("draw"), Draw);
-        phase_map.insert(QStringLiteral("play"), Play);
-        phase_map.insert(QStringLiteral("discard"), Discard);
-        phase_map.insert(QStringLiteral("finish"), Finish);
-        phase_map.insert(QStringLiteral("not_active"), NotActive);
+        phase_map.insert(QStringLiteral("round_start"), PhaseRoundStart);
+        phase_map.insert(QStringLiteral("start"), PhaseStart);
+        phase_map.insert(QStringLiteral("judge"), PhaseJudge);
+        phase_map.insert(QStringLiteral("draw"), PhaseDraw);
+        phase_map.insert(QStringLiteral("play"), PhasePlay);
+        phase_map.insert(QStringLiteral("discard"), PhaseDiscard);
+        phase_map.insert(QStringLiteral("finish"), PhaseFinish);
+        phase_map.insert(QStringLiteral("not_active"), PhaseNotActive);
     }
 
-    setPhase(phase_map.value(phase_str, NotActive));
+    setPhase(phase_map.value(phase_str, PhaseNotActive));
 }
 
 void Player::setEquip(const Card *equip)
@@ -895,19 +897,19 @@ void Player::setEquip(const Card *equip)
     const EquipCard *face = qobject_cast<const EquipCard *>(equip->face());
     Q_ASSERT(face != nullptr);
     switch (face->location()) {
-    case QSanguosha::WeaponLocation:
+    case WeaponLocation:
         weapon = equip;
         break;
-    case QSanguosha::ArmorLocation:
+    case ArmorLocation:
         armor = equip;
         break;
-    case QSanguosha::DefensiveHorseLocation:
+    case DefensiveHorseLocation:
         defensive_horse = equip;
         break;
-    case QSanguosha::OffensiveHorseLocation:
+    case OffensiveHorseLocation:
         offensive_horse = equip;
         break;
-    case QSanguosha::TreasureLocation:
+    case TreasureLocation:
         treasure = equip;
         break;
     }
@@ -918,19 +920,19 @@ void Player::removeEquip(const Card *equip)
     const EquipCard *face = qobject_cast<const EquipCard *>(equip->face());
     Q_ASSERT(face != nullptr);
     switch (face->location()) {
-    case QSanguosha::WeaponLocation:
+    case WeaponLocation:
         weapon = nullptr;
         break;
-    case QSanguosha::ArmorLocation:
+    case ArmorLocation:
         armor = nullptr;
         break;
-    case QSanguosha::DefensiveHorseLocation:
+    case DefensiveHorseLocation:
         defensive_horse = nullptr;
         break;
-    case QSanguosha::OffensiveHorseLocation:
+    case OffensiveHorseLocation:
         offensive_horse = nullptr;
         break;
-    case QSanguosha::TreasureLocation:
+    case TreasureLocation:
         treasure = nullptr;
         break;
     }
@@ -1106,7 +1108,7 @@ QList<int> Player::getJudgingAreaID() const
     return judging_area;
 }
 
-Player::Phase Player::getPhase() const
+Phase Player::getPhase() const
 {
     return phase;
 }
@@ -1119,7 +1121,7 @@ void Player::setPhase(Phase phase)
 
 bool Player::isInMainPhase() const
 {
-    return phase == Start || phase == Judge || phase == Draw || phase == Play || phase == Discard || phase == Finish;
+    return phase == PhaseStart || phase == PhaseJudge || phase == PhaseDraw || phase == PhasePlay || phase == PhaseDiscard || phase == PhaseFinish;
 }
 
 bool Player::faceUp() const
@@ -1342,7 +1344,7 @@ bool Player::canSlash(const Player *other, const Card *slash, bool distance_limi
     if (other == this || !other->isAlive())
         return false;
 
-    // Slash *newslash = new Slash(QSanguosha::NoSuit, 0);
+    // Slash *newslash = new Slash(NoSuit, 0);
     const Card *new_shash = getRoomObject()->cloneCard(QStringLiteral("Slash"));
     // newslash->deleteLater();
 #define THIS_SLASH (slash == nullptr ? new_shash : slash)
@@ -1616,7 +1618,7 @@ void Player::setCardLimitation(const QString &limit_list, const QString &pattern
         _pattern = _pattern + symb;
     }
     foreach (QString limit, limit_type) {
-        QSanguosha::HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
+        HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
         card_limitation[method][reason] << _pattern;
     }
 }
@@ -1628,7 +1630,7 @@ void Player::removeCardLimitation(const QString &limit_list, const QString &patt
     if (!_pattern.endsWith(QStringLiteral("$1")) && !_pattern.endsWith(QStringLiteral("$0")))
         _pattern = _pattern + QStringLiteral("$0");
     foreach (QString limit, limit_type) {
-        QSanguosha::HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
+        HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
         card_limitation[method][reason].removeOne(_pattern);
         if (card_limitation[method][reason].isEmpty() || _pattern.endsWith(QStringLiteral("$1")) || clearReason)
             card_limitation[method].remove(reason);
@@ -1637,9 +1639,9 @@ void Player::removeCardLimitation(const QString &limit_list, const QString &patt
 
 void Player::clearCardLimitation(bool single_turn)
 {
-    QList<QSanguosha::HandlingMethod> limit_type;
-    limit_type << QSanguosha::MethodUse << QSanguosha::MethodResponse << QSanguosha::MethodDiscard << QSanguosha::MethodRecast << QSanguosha::MethodPindian;
-    foreach (QSanguosha::HandlingMethod method, limit_type) {
+    QList<HandlingMethod> limit_type;
+    limit_type << MethodUse << MethodResponse << MethodDiscard << MethodRecast << MethodPindian;
+    foreach (HandlingMethod method, limit_type) {
         QMap<QString, QStringList> map = card_limitation[method];
         QMap<QString, QStringList>::iterator it;
         for (it = map.begin(); it != map.end(); ++it) {
@@ -1651,11 +1653,11 @@ void Player::clearCardLimitation(bool single_turn)
     }
 }
 
-bool Player::isCardLimited(const Card *card, QSanguosha::HandlingMethod method, bool isHandcard) const
+bool Player::isCardLimited(const Card *card, HandlingMethod method, bool isHandcard) const
 {
-    if (method == QSanguosha::MethodNone)
+    if (method == MethodNone)
         return false;
-    if (card->face()->type() == QSanguosha::TypeSkill && method == card->handleMethod()) {
+    if (card->face()->type() == TypeSkill && method == card->handleMethod()) {
         foreach (int card_id, card->subcards()) {
             const Card *c = getRoomObject()->getCard(card_id);
             QMap<QString, QStringList> map = card_limitation[method];
@@ -1691,7 +1693,7 @@ bool Player::isCardLimited(const QString &limit_list, const QString &reason) con
 {
     QStringList limit_type = limit_list.split(QStringLiteral(","));
     foreach (QString limit, limit_type) {
-        QSanguosha::HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
+        HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
         if (card_limitation[method].contains(reason))
             return true;
     }
@@ -1744,7 +1746,7 @@ void Player::copyFrom(Player *p)
     b->chained = a->chained;
     b->judging_area = QList<int>(a->judging_area);
     b->fixed_distance = QHash<const Player *, int>(a->fixed_distance);
-    b->card_limitation = QMap<QSanguosha::HandlingMethod, QMap<QString, QStringList> >(a->card_limitation);
+    b->card_limitation = QMap<HandlingMethod, QMap<QString, QStringList> >(a->card_limitation);
 
     b->tag = QVariantMap(a->tag);
 }

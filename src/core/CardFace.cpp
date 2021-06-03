@@ -232,7 +232,7 @@ void CardFace::onUse(Room *room, const CardUseStruct &use) const
         reason.m_extraData = QVariant::fromValue(card_use.card);
 
         foreach (int id, used_cards) {
-            CardsMoveStruct move(id, nullptr, Player::PlaceTable, reason);
+            CardsMoveStruct move(id, nullptr, PlaceTable, reason);
             moves.append(move);
         }
         room->moveCardsAtomic(moves, true);
@@ -241,7 +241,7 @@ void CardFace::onUse(Room *room, const CardUseStruct &use) const
     } else {
         if (card_use.card->throwWhenUsing()) {
             CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName(), QString(), card_use.card->skillName(), QString());
-            room->moveCardTo(card_use.card, player, nullptr, Player::DiscardPile, reason, true);
+            room->moveCardTo(card_use.card, player, nullptr, PlaceDiscardPile, reason, true);
         }
         player->showHiddenSkill(card_use.card->showSkillName());
     }
@@ -292,7 +292,7 @@ void CardFace::use(Room *room, const CardUseStruct &use) const
     if (source != nullptr && magic_drank > 0)
         room->setPlayerMark(source, QStringLiteral("magic_drank"), 0);
 
-    if (room->getCardPlace(use.card->effectiveID()) == Player::PlaceTable) {
+    if (room->getCardPlace(use.card->effectiveID()) == PlaceTable) {
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source != nullptr ? source->objectName() : QString(), QString(), use.card->skillName(), QString());
         if (use.to.size() == 1)
             reason.m_targetId = use.to.first()->objectName();
@@ -309,7 +309,7 @@ void CardFace::use(Room *room, const CardUseStruct &use) const
         ServerPlayer *from = source;
         if (provider != nullptr)
             from = provider;
-        room->moveCardTo(use.card, from, nullptr, Player::DiscardPile, reason, true);
+        room->moveCardTo(use.card, from, nullptr, PlaceDiscardPile, reason, true);
     }
 }
 

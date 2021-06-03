@@ -188,21 +188,21 @@ void Photo::speak(const QString & /*unused*/)
     //@@todo:complete it
 }
 
-QList<CardItem *> Photo::removeCardItems(const QList<int> &card_ids, Player::Place place)
+QList<CardItem *> Photo::removeCardItems(const QList<int> &card_ids, QSanguosha::Place place)
 {
     QList<CardItem *> result;
-    if (place == Player::PlaceHand || place == Player::PlaceSpecial) {
+    if (place == QSanguosha::PlaceHand || place == QSanguosha::PlaceSpecial) {
         result = _createCards(card_ids);
         updateHandcardNum();
-    } else if (place == Player::PlaceEquip) {
+    } else if (place == QSanguosha::PlaceEquip) {
         result = removeEquips(card_ids);
-    } else if (place == Player::PlaceDelayedTrick) {
+    } else if (place == QSanguosha::PlaceDelayedTrick) {
         result = removeDelayedTricks(card_ids);
     }
 
     // if it is just one card from equip or judge area, we'd like to keep them
     // to start from the equip/trick icon.
-    if (result.size() > 1 || (place != Player::PlaceEquip && place != Player::PlaceDelayedTrick))
+    if (result.size() > 1 || (place != QSanguosha::PlaceEquip && place != QSanguosha::PlaceDelayedTrick))
         _disperseCards(result, G_PHOTO_LAYOUT.m_cardMoveRegion, Qt::AlignCenter, false, false);
 
     update();
@@ -215,17 +215,17 @@ bool Photo::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &
     double homeOpacity = 0.0;
     bool destroy = true;
 
-    Player::Place place = moveInfo.to_place;
+    QSanguosha::Place place = moveInfo.to_place;
 
     foreach (CardItem *card_item, card_items)
         card_item->setHomeOpacity(homeOpacity);
-    if (place == Player::PlaceEquip) {
+    if (place == QSanguosha::PlaceEquip) {
         addEquips(card_items);
         destroy = false;
-    } else if (place == Player::PlaceDelayedTrick) {
+    } else if (place == QSanguosha::PlaceDelayedTrick) {
         addDelayedTricks(card_items);
         destroy = false;
-    } else if (place == Player::PlaceHand) {
+    } else if (place == QSanguosha::PlaceHand) {
         updateHandcardNum();
     }
     return destroy;
@@ -238,7 +238,7 @@ void Photo::setFrame(FrameType type)
         if (_m_focusFrame != nullptr) {
             if ((_m_saveMeIcon != nullptr) && _m_saveMeIcon->isVisible())
                 setFrame(S_FRAME_SOS);
-            else if (m_player->getPhase() != Player::NotActive)
+            else if (m_player->getPhase() != QSanguosha::PhaseNotActive)
                 setFrame(S_FRAME_PLAYING);
             else
                 _m_focusFrame->hide();
@@ -254,7 +254,7 @@ void Photo::setFrame(FrameType type)
 void Photo::updatePhase()
 {
     PlayerCardContainer::updatePhase();
-    if (m_player->getPhase() != Player::NotActive)
+    if (m_player->getPhase() != QSanguosha::PhaseNotActive)
         setFrame(S_FRAME_PLAYING);
     else
         setFrame(S_FRAME_NO_FRAME);

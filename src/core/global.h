@@ -2,6 +2,12 @@
 #define QSANGUOSHA_GLOBAL_H
 
 #include <QMetaObject>
+#include <QSet>
+
+// Fs: I prefer following:
+// typedef QSet<int> IDSet;
+// Are there any advantages using 'using' instead of 'typedef'?
+using IDSet = QSet<int>;
 
 namespace QSanguosha {
 Q_NAMESPACE
@@ -21,8 +27,8 @@ Q_ENUM_NS(Suit)
 
 enum Color
 {
-    Red,
-    Black,
+    ColorRed,
+    ColorBlack,
     Colorless
 };
 Q_ENUM_NS(Color)
@@ -62,12 +68,14 @@ enum Number
     Number12 = NumberQ,
     Number13 = NumberK,
 
+#if 0
     // Extremely simplified notation
     A = NumberA,
     X = Number10,
     J = NumberJ,
     Q = NumberQ,
     K = NumberK,
+#endif
 
     // Special numbers
     NumberNA = 0,
@@ -96,6 +104,44 @@ enum EquipLocation
     TreasureLocation
 };
 Q_ENUM_NS(EquipLocation)
+
+enum Phase
+{
+    PhaseRoundStart,
+    PhaseStart,
+    PhaseJudge,
+    PhaseDraw,
+    PhasePlay,
+    PhaseDiscard,
+    PhaseFinish,
+    PhaseNotActive,
+    PhaseNone
+};
+Q_ENUM_NS(Phase)
+
+enum Place
+{
+    PlaceHand,
+    PlaceEquip,
+    PlaceDelayedTrick,
+    PlaceJudge,
+    PlaceSpecial,
+    PlaceDiscardPile,
+    PlaceDrawPile,
+    PlaceTable,
+    PlaceUnknown,
+    PlaceWuGu
+};
+Q_ENUM_NS(Place)
+
+enum Role
+{
+    RoleLord,
+    RoleLoyalist,
+    RoleRebel,
+    RoleRenegade
+};
+Q_ENUM_NS(Role)
 
 }
 

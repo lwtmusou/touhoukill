@@ -18,16 +18,16 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const
 {
     Room *room = player->getRoom();
     switch (player->getPhase()) {
-    case Player::PhaseNone: {
+    case QSanguosha::PhaseNone: {
         Q_ASSERT(false);
     }
-    case Player::RoundStart: {
+    case QSanguosha::PhaseRoundStart: {
         break;
     }
-    case Player::Start: {
+    case QSanguosha::PhaseStart: {
         break;
     }
-    case Player::Judge: {
+    case QSanguosha::PhaseJudge: {
         QList<const Card *> tricks = player->getJudgingArea();
         QList<const Card *> effected;
         while (!tricks.isEmpty() && player->isAlive()) {
@@ -49,7 +49,7 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const
         }
         break;
     }
-    case Player::Draw: {
+    case QSanguosha::PhaseDraw: {
         int num = 2;
         if (player->hasFlag(QStringLiteral("Global_FirstRound"))) {
             room->setPlayerFlag(player, QStringLiteral("-Global_FirstRound"));
@@ -72,7 +72,7 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const
         room->getThread()->trigger(AfterDrawNCards, qnum);
         break;
     }
-    case Player::Play: {
+    case QSanguosha::PhasePlay: {
         while (player->isAlive()) {
             CardUseStruct card_use;
             room->activate(player, card_use);
@@ -83,17 +83,17 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const
         }
         break;
     }
-    case Player::Discard: {
+    case QSanguosha::PhaseDiscard: {
         int discard_num = 0; //discard in one time
         discard_num = player->getHandcardNum() - player->getMaxCards();
         if (discard_num > 0)
             room->askForDiscard(player, QStringLiteral("gamerule"), discard_num, discard_num);
         break;
     }
-    case Player::Finish: {
+    case QSanguosha::PhaseFinish: {
         break;
     }
-    case Player::NotActive: {
+    case QSanguosha::PhaseNotActive: {
         break;
     }
     }
@@ -188,7 +188,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, const TriggerDetai
         room->sendLog(log);
         room->addPlayerMark(player, QStringLiteral("Global_TurnCount"));
 
-        QList<Player::Phase> set_phases;
+        QList<QSanguosha::Phase> set_phases;
         ExtraTurnStruct extra = player->tag[QStringLiteral("ExtraTurnInfo")].value<ExtraTurnStruct>();
         if (!extra.set_phases.isEmpty())
             set_phases = extra.set_phases;
@@ -216,15 +216,16 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, const TriggerDetai
     }
     case EventPhaseStart: {
         ServerPlayer *current = data.value<ServerPlayer *>();
-        if ((current != nullptr) && current->getPhase() == Player::Finish && !current->getBrokenEquips().isEmpty() && !current->hasFlag(QStringLiteral("GameRule_brokenEquips")))
+        if ((current != nullptr) && current->getPhase() == QSanguosha::PhaseFinish && !current->getBrokenEquips().isEmpty()
+            && !current->hasFlag(QStringLiteral("GameRule_brokenEquips")))
             current->removeBrokenEquips(current->getBrokenEquips());
         break;
     }
     case EventPhaseEnd: {
         ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player->getPhase() == Player::Play)
+        if (player->getPhase() == QSanguosha::PhasePlay)
             room->addPlayerHistory(player, QStringLiteral("."));
-        if (player->getPhase() == Player::Finish) {
+        if (player->getPhase() == QSanguosha::PhaseFinish) {
             foreach (ServerPlayer *p, room->getAllPlayers()) {
                 if (player->getMark(QStringLiteral("multi_kill_count")) > 0)
                     room->setPlayerMark(p, QStringLiteral("multi_kill_count"), 0);
@@ -235,7 +236,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, const TriggerDetai
     case EventPhaseChanging: {
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         ServerPlayer *player = change.player;
-        if (change.to == Player::NotActive) {
+        if (change.to == QSanguosha::PhaseNotActive) {
             foreach (ServerPlayer *p, room->getAllPlayers()) {
                 if (p->getMark(QStringLiteral("drank")) > 0) {
                     LogMessage log;
@@ -272,7 +273,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, const TriggerDetai
                         room->setPlayerFlag(p, QStringLiteral("-") + flag);
                 }
             }
-        } else if (change.to == Player::Play) {
+        } else if (change.to == QSanguosha::PhasePlay) {
             room->addPlayerHistory(player, QStringLiteral("."));
         }
 
@@ -314,10 +315,10 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, const TriggerDetai
             //1) exclude SkillCard 2)changed move reason (USE) 3)keep extraData
             if ((card_use.card != nullptr) && card_use.card->face()->type() != QSanguosha::TypeSkill && !(card_use.card->isVirtualCard() && card_use.card->subcards().isEmpty())
                 && card_use.to.isEmpty()) {
-                if (room->getCardPlace(card_use.card->effectiveID()) == Player::PlaceTable) {
+                if (room->getCardPlace(card_use.card->effectiveID()) == QSanguosha::PlaceTable) {
                     CardMoveReason reason(CardMoveReason::S_REASON_USE, card_use.from->objectName(), QString(), card_use.card->skillName(), QString());
                     reason.m_extraData = QVariant::fromValue(card_use.card);
-                    room->moveCardTo(card_use.card, card_use.from, nullptr, Player::DiscardPile, reason, true);
+                    room->moveCardTo(card_use.card, card_use.from, nullptr, QSanguosha::PlaceDiscardPile, reason, true);
                 }
             }
             //since use.to is empty, break the whole process
@@ -359,11 +360,11 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, const TriggerDetai
 
                 //copy from Room::useCard()
                 if (triggerEvent == TurnBroken) {
-                    if (room->getCardPlace(card_use.card->effectiveID()) == Player::PlaceTable) {
+                    if (room->getCardPlace(card_use.card->effectiveID()) == QSanguosha::PlaceTable) {
                         CardMoveReason reason(CardMoveReason::S_REASON_UNKNOWN, card_use.from->objectName(), QString(), card_use.card->skillName(), QString());
                         if (card_use.to.size() == 1)
                             reason.m_targetId = card_use.to.first()->objectName();
-                        room->moveCardTo(card_use.card, card_use.from, nullptr, Player::DiscardPile, reason, true);
+                        room->moveCardTo(card_use.card, card_use.from, nullptr, QSanguosha::PlaceDiscardPile, reason, true);
                     }
                     QVariant data = QVariant::fromValue(card_use);
                     card_use.from->setFlags(QStringLiteral("Global_ProcessBroken"));
@@ -382,8 +383,8 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, const TriggerDetai
                     }
 
                     foreach (int id, Sanguosha->getRandomCards()) {
-                        if (room->getCardPlace(id) == Player::PlaceTable || room->getCardPlace(id) == Player::PlaceJudge)
-                            room->moveCardTo(room->getCard(id), nullptr, Player::DiscardPile, true);
+                        if (room->getCardPlace(id) == QSanguosha::PlaceTable || room->getCardPlace(id) == QSanguosha::PlaceJudge)
+                            room->moveCardTo(room->getCard(id), nullptr, QSanguosha::PlaceDiscardPile, true);
                         if (room->getCard(id)->hasFlag(QStringLiteral("using")))
                             room->setCardFlag(id, QStringLiteral("-using"));
                     }
@@ -1008,7 +1009,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, const TriggerDetai
         log.card_str = QString::number(judge->card->effectiveID());
         room->sendLog(log);
 
-        room->moveCardTo(judge->card, nullptr, judge->who, Player::PlaceJudge,
+        room->moveCardTo(judge->card, nullptr, judge->who, QSanguosha::PlaceJudge,
                          CardMoveReason(CardMoveReason::S_REASON_JUDGE, judge->who->objectName(), QString(), QString(), judge->reason), true);
         judge->updateResult();
         break;
@@ -1037,13 +1038,13 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, const TriggerDetai
     case FinishJudge: {
         JudgeStruct *judge = data.value<JudgeStruct *>();
 
-        if (room->getCardPlace(judge->card->effectiveID()) == Player::PlaceJudge) {
+        if (room->getCardPlace(judge->card->effectiveID()) == QSanguosha::PlaceJudge) {
             CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, judge->who->objectName(), QString(), judge->reason);
             if (judge->retrial_by_response != nullptr) {
                 reason.m_extraData = QVariant::fromValue(judge->retrial_by_response);
             }
 
-            room->moveCardTo(judge->card, judge->who, nullptr, Player::DiscardPile, reason, true);
+            room->moveCardTo(judge->card, judge->who, nullptr, QSanguosha::PlaceDiscardPile, reason, true);
         }
 
         break;
@@ -1190,8 +1191,8 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const
         player->tag[QStringLiteral("1v1Arrange")] = QVariant::fromValue(list);
     }
 
-    if (player->getPhase() != Player::NotActive) {
-        player->setPhase(Player::NotActive);
+    if (player->getPhase() != QSanguosha::PhaseNotActive) {
+        player->setPhase(QSanguosha::PhaseNotActive);
         room->broadcastProperty(player, "phase");
     }
     room->revivePlayer(player, false);
@@ -1347,10 +1348,10 @@ QString GameRule::getWinner(ServerPlayer *victim) const
 
     if (room->getMode() == QStringLiteral("06_3v3")) {
         switch (victim->getRoleEnum()) {
-        case Player::Lord:
+        case QSanguosha::RoleLord:
             winner = QStringLiteral("renegade+rebel");
             break;
-        case Player::Renegade:
+        case QSanguosha::RoleRenegade:
             winner = QStringLiteral("lord+loyalist");
             break;
         default:
@@ -1454,15 +1455,15 @@ QString GameRule::getWinner(ServerPlayer *victim) const
     } else {
         QStringList alive_roles = room->aliveRoles(victim);
         switch (victim->getRoleEnum()) {
-        case Player::Lord: {
+        case QSanguosha::RoleLord: {
             if (alive_roles.length() == 1 && alive_roles.first() == QStringLiteral("renegade"))
                 winner = room->getAlivePlayers().first()->objectName();
             else
                 winner = QStringLiteral("rebel");
             break;
         }
-        case Player::Rebel:
-        case Player::Renegade: {
+        case QSanguosha::RoleRebel:
+        case QSanguosha::RoleRenegade: {
             if (!alive_roles.contains(QStringLiteral("rebel")) && !alive_roles.contains(QStringLiteral("renegade"))) {
                 winner = QStringLiteral("lord+loyalist");
                 if (victim->getRole() == QStringLiteral("renegade") && !alive_roles.contains(QStringLiteral("loyalist")))

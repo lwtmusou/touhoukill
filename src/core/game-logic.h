@@ -82,11 +82,11 @@ public:
 
     virtual void turnPlayerOver(Player *player) = 0;
 
-    virtual void letPlayerPlay(Player *target, QList<Player::Phase> phases = QList<Player::Phase>()) = 0;
-    virtual void changePlayerPhase(Player *target, Player::Phase from, Player::Phase to) = 0;
-    virtual void skipPlayerPhase(Player *player, Player::Phase phase, bool is_cost = false, bool send_log = true) = 0;
-    virtual void insertPlayerPhases(Player *player, QList<Player::Phase> new_phases, int index = -1) = 0;
-    virtual void exchangePlayerPhases(Player *player, Player::Phase from, Player::Phase to) = 0;
+    virtual void letPlayerPlay(Player *target, QList<QSanguosha::Phase> phases = QList<QSanguosha::Phase>()) = 0;
+    virtual void changePlayerPhase(Player *target, QSanguosha::Phase from, QSanguosha::Phase to) = 0;
+    virtual void skipPlayerPhase(Player *player, QSanguosha::Phase phase, bool is_cost = false, bool send_log = true) = 0;
+    virtual void insertPlayerPhases(Player *player, QList<QSanguosha::Phase> new_phases, int index = -1) = 0;
+    virtual void exchangePlayerPhases(Player *player, QSanguosha::Phase from, QSanguosha::Phase to) = 0;
 
     virtual void givePlayerAnExtraTurn(Player *benefiter) = 0;
 
@@ -113,7 +113,7 @@ public:
     // Let player select from the frame.
     virtual int askForAG(Player *player, const QList<int> &card_ids, bool refusable, const QString &reason) = 0;
     // Trigger Moving Card
-    virtual void takeAG(Player *player, int card_id, bool move_cards = true, QList<Player *> to_notify = QList<Player *>(), Player::Place fromPlace = Player::DrawPile) = 0;
+    virtual void takeAG(Player *player, int card_id, bool move_cards = true, QList<Player *> to_notify = QList<Player *>(), QSanguosha::Place fromPlace = Player::DrawPile) = 0;
     virtual void clearAG(Player *player = nullptr) = 0; // disappear the selecting frame.
 
     // Only available for CardAsked
@@ -206,10 +206,10 @@ public:
     virtual void clearPlayerPrivatePile(const Player *target, const QString &pile_name) = 0;
     virtual void clearPlayerAllPrivatePiles(const Player *target) = 0;
 
-    virtual void moveCardTo(const Card *card, Player *dstPlayer, Player::Place dstPlace, bool forceMoveVisible = false) = 0;
-    virtual void moveCardTo(const Card *card, Player *dstPlayer, Player::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible = false) = 0;
-    virtual void moveCardTo(const Card *card, Player *srcPlayer, Player *dstPlayer, Player::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible = false) = 0;
-    virtual void moveCardTo(const Card *card, Player *srcPlayer, Player *dstPlayer, Player::Place dstPlace, const QString &pileName, const CardMoveReason &reason,
+    virtual void moveCardTo(const Card *card, Player *dstPlayer, QSanguosha::Place dstPlace, bool forceMoveVisible = false) = 0;
+    virtual void moveCardTo(const Card *card, Player *dstPlayer, QSanguosha::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible = false) = 0;
+    virtual void moveCardTo(const Card *card, Player *srcPlayer, Player *dstPlayer, QSanguosha::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible = false) = 0;
+    virtual void moveCardTo(const Card *card, Player *srcPlayer, Player *dstPlayer, QSanguosha::Place dstPlace, const QString &pileName, const CardMoveReason &reason,
                             bool forceMoveVisible = false)
         = 0;
 
