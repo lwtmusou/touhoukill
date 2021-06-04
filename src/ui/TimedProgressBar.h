@@ -10,6 +10,7 @@
 class TimedProgressBar : public QProgressBar
 {
     Q_OBJECT
+
 public:
     inline TimedProgressBar()
         : m_hasTimer(false)

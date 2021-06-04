@@ -1164,7 +1164,9 @@ QSanSkinFactory &QSanSkinFactory::getInstance()
         _sm_singleton = new QSanSkinFactory("skins/skinListAlt.json");
 #endif
 
-        QObject::connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, []() { QSanSkinFactory::destroyInstance(); });
+        QObject::connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, []() {
+            QSanSkinFactory::destroyInstance();
+        });
     }
     return *_sm_singleton;
 }

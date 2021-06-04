@@ -443,7 +443,7 @@ public:
     const Trigger *trigger; // the trigger
     ::ServerPlayer *owner; // skill owner. 2 structs with the same skill and skill owner are treated as of a same skill.
     ::ServerPlayer *invoker; // skill invoker. When invoking skill, we sort firstly according to the priority, then the seat of invoker, at last weather it is a skill of an equip.
-    QList< ::ServerPlayer *> targets; // skill targets.
+    QList<::ServerPlayer *> targets; // skill targets.
     bool isCompulsory; // judge the skill is compulsory or not. It is set in the skill's triggerable
     bool triggered; // judge whether the skill is triggere
     bool showhidden;

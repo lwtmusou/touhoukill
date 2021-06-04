@@ -328,8 +328,8 @@ public:
     QSGS_LOGIC void moveCardTo(const Card *card, ServerPlayer *dstPlayer, QSanguosha::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible = false);
     QSGS_LOGIC void moveCardTo(const Card *card, ServerPlayer *srcPlayer, ServerPlayer *dstPlayer, QSanguosha::Place dstPlace, const CardMoveReason &reason,
                                bool forceMoveVisible = false);
-    QSGS_LOGIC void moveCardTo(const Card *card, ServerPlayer *srcPlayer, ServerPlayer *dstPlayer, QSanguosha::Place dstPlace, const QString &pileName, const CardMoveReason &reason,
-                               bool forceMoveVisible = false);
+    QSGS_LOGIC void moveCardTo(const Card *card, ServerPlayer *srcPlayer, ServerPlayer *dstPlayer, QSanguosha::Place dstPlace, const QString &pileName,
+                               const CardMoveReason &reason, bool forceMoveVisible = false);
     QSGS_LOGIC void moveCardsAtomic(QList<CardsMoveStruct> cards_move, bool forceMoveVisible);
     QSGS_LOGIC void moveCardsAtomic(const CardsMoveStruct &cards_move, bool forceMoveVisible);
     QSGS_LOGIC void moveCardsToEndOfDrawpile(const QList<int> &card_ids, bool forceVisible = false);
@@ -383,7 +383,7 @@ public:
     QSGS_LOGIC QString askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice = QString());
     QSGS_LOGIC QString askForGeneral(ServerPlayer *player, const QString &generals, const QString &default_choice = QString());
     QSGS_LOGIC const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
-    QSGS_LOGIC QSharedPointer<TriggerDetail> askForTriggerOrder(ServerPlayer *player, const QList<QSharedPointer<TriggerDetail> > &sameTiming, bool cancelable,
+    QSGS_LOGIC QSharedPointer<TriggerDetail> askForTriggerOrder(ServerPlayer *player, const QList<QSharedPointer<TriggerDetail>> &sameTiming, bool cancelable,
                                                                 const QVariant &data);
     QSGS_LOGIC void addPlayerHistory(ServerPlayer *player, const QString &key, int times = 1);
     QSGS_LOGIC void transformGeneral(ServerPlayer *player, const QString &general_name, int head);

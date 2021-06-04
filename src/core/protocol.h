@@ -299,6 +299,6 @@ protected:
     //helper functions
     static const int S_MAX_PACKET_SIZE;
 };
-}
+} // namespace QSanProtocol
 
 #endif

@@ -56,6 +56,7 @@
 class FitView : public QGraphicsView
 {
     Q_OBJECT
+
 public:
     explicit FitView(QGraphicsScene *scene)
         : QGraphicsView(scene)

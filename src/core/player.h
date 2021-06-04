@@ -389,7 +389,7 @@ private:
 
     QString next;
 
-    QMap<QSanguosha::HandlingMethod, QMap<QString, QStringList> > card_limitation; //method, reason , pattern
+    QMap<QSanguosha::HandlingMethod, QMap<QString, QStringList>> card_limitation; //method, reason , pattern
     QStringList disable_show;
 
 signals:

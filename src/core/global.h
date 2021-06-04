@@ -150,6 +150,6 @@ enum TargetModType
     ModTarget
 };
 Q_ENUM_NS(TargetModType)
-}
+} // namespace QSanguosha
 
 #endif // GLOBAL_H

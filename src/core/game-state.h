@@ -139,6 +139,6 @@ private:
     // QList<Player *> players;
 };
 
-}
+} // namespace RefactorProposal
 
 #endif

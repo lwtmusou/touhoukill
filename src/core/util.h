@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <type_traits>
 
-template <typename T> void qShuffle(QList<T> &list)
+template<typename T> void qShuffle(QList<T> &list)
 {
     int n = list.length();
     for (int i = 0; i < n; i++) {
@@ -26,7 +26,7 @@ QList<int> VariantList2IntList(const QVariantList &variantlist);
 
 // QList::toSet is got deleted by Qt since Qt 5.14
 // Can this be inlined?
-template <typename T> inline QSet<T> List2Set(const QList<T> &list)
+template<typename T> inline QSet<T> List2Set(const QList<T> &list)
 {
     return QSet<T>(list.begin(), list.end());
 }
@@ -41,12 +41,12 @@ bool isHegemonyGameMode(const QString &mode);
 
 namespace RefactorProposal {
 
-template <typename T1, typename T2> QT_DEPRECATED_X("FIXME: THIS SHOULD BE REMOVED AFTER REFACTORING") inline T1 fixme_cast(T2 t2)
+template<typename T1, typename T2> QT_DEPRECATED_X("FIXME: THIS SHOULD BE REMOVED AFTER REFACTORING") inline T1 fixme_cast(T2 t2)
 {
     static_assert(!std::is_same<T1, T2>::value, "Refactor seems complete and now is the time to remove this fixme_cast.");
     return *reinterpret_cast<T1 *>(&t2);
 }
 
-}
+} // namespace RefactorProposal
 
 #endif

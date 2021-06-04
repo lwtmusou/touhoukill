@@ -1386,8 +1386,8 @@ QString GameRule::getWinner(ServerPlayer *victim) const
         } else {
             QList<ServerPlayer *> winners;
             int careerist_threshold = (room->getPlayers().length() / 2);
-            QMap<QString, QList<ServerPlayer *> > role_count;
-            QMap<QString, QList<ServerPlayer *> > dead_role_count;
+            QMap<QString, QList<ServerPlayer *>> role_count;
+            QMap<QString, QList<ServerPlayer *>> dead_role_count;
             foreach (ServerPlayer *p, room->getAllPlayers(true)) {
                 QString role = p->getRole();
                 if (role_count.contains(role)) {

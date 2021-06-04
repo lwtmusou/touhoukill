@@ -32,7 +32,7 @@ public:
     void constructTriggerTable();
 
 private:
-    void getTriggerAndSort(TriggerEvent e, QList<QSharedPointer<TriggerDetail> > &detailsList, const QList<QSharedPointer<TriggerDetail> > &triggered, const QVariant &data);
+    void getTriggerAndSort(TriggerEvent e, QList<QSharedPointer<TriggerDetail>> &detailsList, const QList<QSharedPointer<TriggerDetail>> &triggered, const QVariant &data);
 
 public:
     bool trigger(TriggerEvent e, QVariant &data);

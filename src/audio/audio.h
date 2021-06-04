@@ -23,7 +23,7 @@ extern float bgm_volume;
 
 QStringList getBgmFileNames(const QString &fileNames, bool isGeneralName = false);
 
-}
+} // namespace Audio
 
 #endif // AUDIO_SUPPORT
 

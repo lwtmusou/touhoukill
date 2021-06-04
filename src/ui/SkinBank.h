@@ -449,6 +449,7 @@ class QSanSkinScheme
 {
     // Why do we need another layer above room skin? Because we may add lobby, login interface
     // in the future; and we may need to assemble a set of different skins into a scheme.
+
 public:
     bool load(const QVariant &configs);
     const QSanRoomSkin &getRoomSkin() const;

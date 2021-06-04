@@ -298,7 +298,7 @@ private:
     QGraphicsItem *_m_last_front_item;
     double _m_last_front_ZValue;
     GenericCardContainer *_getGenericCardContainer(QSanguosha::Place place, Player *player);
-    QMap<int, QList<QList<CardItem *> > > _m_cardsMoveStash;
+    QMap<int, QList<QList<CardItem *>>> _m_cardsMoveStash;
     Button *add_robot;
     Button *fill_robots;
     Button *return_to_main_menu;

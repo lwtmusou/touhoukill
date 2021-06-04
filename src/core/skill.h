@@ -272,7 +272,9 @@ public:
     QList<TriggerDetail> triggerable(TriggerEvent, const ::Room *room, const QVariant &) const final override;
 };
 
-class TriggerSkill : public Skill, public Trigger
+class TriggerSkill
+    : public Skill
+    , public Trigger
 {
     Q_OBJECT
 

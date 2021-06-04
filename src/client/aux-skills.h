@@ -63,6 +63,7 @@ public:
 class YijiCard : public SkillCard
 {
     Q_OBJECT
+
 public:
     YijiCard();
 
@@ -98,6 +99,7 @@ private:
 class ChoosePlayerCard : public SkillCard
 {
     Q_OBJECT
+
 public:
     ChoosePlayerCard();
 

@@ -27,7 +27,7 @@ void unregisterCardFace(const QString &name)
         delete handle;
     }
 }
-}
+} // namespace CardFactory
 
 class RoomObjectPrivate
 {

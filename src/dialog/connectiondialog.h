@@ -16,6 +16,7 @@ class UdpDetector;
 class AvatarModel : public QAbstractListModel
 {
     Q_OBJECT
+
 public:
     explicit AvatarModel(const QList<const General *> &list);
 

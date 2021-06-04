@@ -1995,7 +1995,7 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying)
     return result;
 }
 
-QSharedPointer<TriggerDetail> Room::askForTriggerOrder(ServerPlayer *player, const QList<QSharedPointer<TriggerDetail> > &sameTiming, bool cancelable, const QVariant & /*unused*/)
+QSharedPointer<TriggerDetail> Room::askForTriggerOrder(ServerPlayer *player, const QList<QSharedPointer<TriggerDetail>> &sameTiming, bool cancelable, const QVariant & /*unused*/)
 {
     tryPause();
 
@@ -4443,7 +4443,7 @@ void Room::_fillMoveInfo(CardsMoveStruct &moves, int card_index) const
 
 QList<CardsMoveOneTimeStruct> Room::_mergeMoves(QList<CardsMoveStruct> cards_moves)
 {
-    QMap<_MoveMergeClassifier, QList<CardsMoveStruct> > moveMap;
+    QMap<_MoveMergeClassifier, QList<CardsMoveStruct>> moveMap;
 
     foreach (CardsMoveStruct cards_move, cards_moves) {
         _MoveMergeClassifier classifier(cards_move);
@@ -4503,7 +4503,7 @@ QList<CardsMoveOneTimeStruct> Room::_mergeMoves(QList<CardsMoveStruct> cards_mov
 QList<CardsMoveStruct> Room::_separateMoves(QList<CardsMoveOneTimeStruct> moveOneTimes)
 {
     QList<_MoveSeparateClassifier> classifiers;
-    QList<QList<int> > ids;
+    QList<QList<int>> ids;
     QList<int> broken_ids;
     QList<int> shown_ids;
     foreach (CardsMoveOneTimeStruct moveOneTime, moveOneTimes) {
@@ -4525,7 +4525,7 @@ QList<CardsMoveStruct> Room::_separateMoves(QList<CardsMoveOneTimeStruct> moveOn
 
     QList<CardsMoveStruct> card_moves;
     int i = 0;
-    QMap<ServerPlayer *, QList<int> > from_handcards;
+    QMap<ServerPlayer *, QList<int>> from_handcards;
     foreach (_MoveSeparateClassifier cls, classifiers) {
         CardsMoveStruct card_move;
         ServerPlayer *from = (ServerPlayer *)cls.m_from;
@@ -4792,7 +4792,7 @@ QList<CardsMoveStruct> Room::_breakDownCardMoves(QList<CardsMoveStruct> &cards_m
         CardsMoveStruct &move = cards_moves[i];
         if (move.card_ids.empty())
             continue;
-        QMap<_MoveSourceClassifier, QList<int> > moveMap;
+        QMap<_MoveSourceClassifier, QList<int>> moveMap;
         // reassemble move sources
         for (int j = 0; j < move.card_ids.size(); j++) {
             _fillMoveInfo(move, j);

@@ -6,7 +6,7 @@
 #include <lua.hpp>
 
 extern "C" {
-int luaopen_sgs(lua_State *l);
+    int luaopen_sgs(lua_State *l);
 }
 
 namespace {
@@ -37,7 +37,7 @@ void sgs_openlibs(lua_State *L)
     }
 }
 
-}
+} // namespace
 
 class LuaStatePrivate final
 {

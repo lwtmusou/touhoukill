@@ -3924,7 +3924,9 @@ void RoomScene::showPile(const QList<int> &card_ids, const QString &name, const 
             foreach (int id, card_ids) {
                 zhenlis << ClientInstance->getCard(id);
             }
-            std::sort(zhenlis.begin(), zhenlis.end(), [](const Card *a, const Card *b) { return a->number() < b->number(); });
+            std::sort(zhenlis.begin(), zhenlis.end(), [](const Card *a, const Card *b) {
+                return a->number() < b->number();
+            });
             QList<int> zhenids;
             foreach (Card *c, zhenlis)
                 zhenids << c->id();

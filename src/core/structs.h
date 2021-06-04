@@ -448,7 +448,7 @@ class TriggerDetail
 public:
     // TODO: use RefactorProposal::GameLogic / RoomObject / Player instead of Room / ::ServerPlayer
     explicit TriggerDetail(const ::Room *room, const Trigger *trigger = nullptr, ::ServerPlayer *owner = nullptr, ::ServerPlayer *invoker = nullptr,
-                           const QList< ::ServerPlayer *> &targets = QList< ::ServerPlayer *>(), bool isCompulsory = false, bool showHidden = true);
+                           const QList<::ServerPlayer *> &targets = QList<::ServerPlayer *>(), bool isCompulsory = false, bool showHidden = true);
     TriggerDetail(const ::Room *room, const Trigger *trigger, ::ServerPlayer *owner, ::ServerPlayer *invoker, ::ServerPlayer *target, bool isCompulsory = false,
                   bool showHidden = true);
 
@@ -460,7 +460,7 @@ public:
     const Trigger *trigger() const;
     ::ServerPlayer *owner() const;
     ::ServerPlayer *invoker() const;
-    QList< ::ServerPlayer *> targets() const;
+    QList<::ServerPlayer *> targets() const;
     bool isCompulsory() const;
     bool triggered() const;
     bool showhidden() const;

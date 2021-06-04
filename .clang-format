@@ -1,48 +1,72 @@
 BasedOnStyle: Webkit
 
 AlignAfterOpenBracket: Align
-AlignConsecutiveAssignments: false
-AlignConsecutiveDeclarations: false
+AlignConsecutiveAssignments: None
+AlignConsecutiveDeclarations: None
+AlignConsecutiveMacros: None
+AlignConsecutiveBitFields: None
 AlignEscapedNewlinesLeft: true
 AlignTrailingComments: false
 AllowShortBlocksOnASingleLine: false
 AllowShortFunctionsOnASingleLine: None
-AllowShortIfStatementsOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
 AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortLambdasOnASingleLine: None
+AlwaysBreakTemplateDeclarations: No
 BinPackArguments: true
 BinPackParameters: true
+BitFieldColonSpacing: Both
 BreakBeforeBraces: Custom
 BraceWrapping:
+    AfterCaseLabel: false
     AfterClass: true
-    AfterControlStatement: false
+    AfterControlStatement: Never
     AfterEnum: true
     AfterFunction: true
     AfterNamespace: false
+    AfterObjCDeclaration: false
     AfterStruct: true
     AfterUnion: true
+    AfterExternBlock: true
     BeforeCatch: false
     BeforeElse: false
+    BeforeWhile: false
+    BeforeLambdaBody: false
     IndentBraces: false
+BreakConstructorInitializers: BeforeComma
+BreakInheritanceList: BeforeComma
+BreakStringLiterals: true
 ColumnLimit: 180
 Cpp11BracedListStyle: true
+DeriveLineEnding: true
+EmptyLineBeforeAccessModifier: Always
+FixNamespaceComments: true
 ForEachMacros: ['foreach', 'Q_FOREACH', 'forever', 'Q_FOREVER']
-# FixNamespaceComments: true
 IndentCaseLabels: false
-# IndentWidth: 4
+IndentExternBlock: Indent
+IndentGotoLabels: false
+IndentPPDirectives: None
+IndentWrappedFunctionNames: true
 KeepEmptyLinesAtTheStartOfBlocks: false
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: None
 PointerAlignment: Right
 ReflowComments: false
 SortIncludes: true
+SortUsingDeclarations: true
+# ShortNamespaceLines: 0
 SpaceAfterCStyleCast: false
-# SpaceAfterTemplateKeyword: false
+SpaceAfterTemplateKeyword: false
+SpaceAroundPointerQualifiers: After
 SpaceBeforeParens: ControlStatements
 SpaceInEmptyParentheses: false
 SpacesInAngles: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
-Standard: Cpp03
+Standard: Cpp11
+StatementAttributeLikeMacros: ['emit']
+StatementMacros: ['Q_UNUSED']
 UseTab: Never
 TabWidth: 4

@@ -18,7 +18,7 @@ void registerCardFace(const CardFace *face);
 const CardFace *cardFace(const QString &name);
 void unregisterCardFace(const QString &name);
 
-}
+} // namespace CardFactory
 
 class Card;
 class CardFace;

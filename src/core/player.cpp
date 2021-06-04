@@ -1747,7 +1747,7 @@ void Player::copyFrom(Player *p)
     b->chained = a->chained;
     b->judging_area = QList<int>(a->judging_area);
     b->fixed_distance = QHash<const Player *, int>(a->fixed_distance);
-    b->card_limitation = QMap<HandlingMethod, QMap<QString, QStringList> >(a->card_limitation);
+    b->card_limitation = QMap<HandlingMethod, QMap<QString, QStringList>>(a->card_limitation);
 
     b->tag = QVariantMap(a->tag);
 }
