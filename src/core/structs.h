@@ -452,7 +452,8 @@ struct PhaseStruct
 
 struct CardResponseStruct
 {
-    inline explicit CardResponseStruct(const Card *card = nullptr, ServerPlayer *who = nullptr, bool isuse = false, bool isRetrial = false, bool isProvision = false, ServerPlayer *from = nullptr)
+    inline explicit CardResponseStruct(const Card *card = nullptr, ServerPlayer *who = nullptr, bool isuse = false, bool isRetrial = false, bool isProvision = false,
+                                       ServerPlayer *from = nullptr)
         : m_card(card)
         , m_who(who)
         , m_isUse(isuse)
@@ -509,8 +510,8 @@ struct SkillInvokeDetail
     explicit SkillInvokeDetail(const TriggerSkill *skill = nullptr, ServerPlayer *owner = nullptr, ServerPlayer *invoker = nullptr,
                                const QList<ServerPlayer *> &targets = QList<ServerPlayer *>(), bool isCompulsory = false, ServerPlayer *preferredTarget = nullptr,
                                bool showHidden = true);
-    SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, bool isCompulsory = false, ServerPlayer *preferredTarget = nullptr,
-                      bool showHidden = true);
+    SkillInvokeDetail(const TriggerSkill *skill, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, bool isCompulsory = false,
+                      ServerPlayer *preferredTarget = nullptr, bool showHidden = true);
 
     const TriggerSkill *skill; // the skill
     ServerPlayer *owner; // skill owner. 2 structs with the same skill and skill owner are treated as of a same skill.

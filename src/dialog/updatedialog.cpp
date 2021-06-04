@@ -42,7 +42,9 @@ UpdateDialog::UpdateDialog(QWidget *parent)
     setWindowTitle(tr("Download/Update contents"));
     lbl->setVisible(false);
 
-    connect(this, &UpdateDialog::busy, [this](bool busy) -> void { m_busy = busy; });
+    connect(this, &UpdateDialog::busy, [this](bool busy) -> void {
+        m_busy = busy;
+    });
 
     for (int i = 0; i < UiMax; ++i) {
         currentVersion[i] = new QLabel;
@@ -60,7 +62,9 @@ UpdateDialog::UpdateDialog(QWidget *parent)
     }
 
     changelogBtn = new QPushButton(tr("Show Changelog"));
-    connect(changelogBtn, &QPushButton::clicked, [this]() -> void { QDesktopServices::openUrl(QUrl(m_baseChangeLog)); });
+    connect(changelogBtn, &QPushButton::clicked, [this]() -> void {
+        QDesktopServices::openUrl(QUrl(m_baseChangeLog));
+    });
 
     bar->setMaximum(10000);
 

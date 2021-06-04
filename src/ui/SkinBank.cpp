@@ -1,10 +1,10 @@
 #include "SkinBank.h"
 #include "clientstruct.h"
 #include "engine.h"
-#include <cmath>
 #include "protocol.h"
 #include "settings.h"
 #include "uiUtils.h"
+#include <cmath>
 
 #include <QCoreApplication>
 #include <QFile>
@@ -1138,7 +1138,9 @@ QSanSkinFactory &QSanSkinFactory::getInstance()
         _sm_singleton = new QSanSkinFactory("skins/skinListAlt.json");
 #endif
 
-        QObject::connect(qApp, &QCoreApplication::aboutToQuit, []() { _sm_singleton->destroyInstance(); });
+        QObject::connect(qApp, &QCoreApplication::aboutToQuit, []() {
+            _sm_singleton->destroyInstance();
+        });
     }
     return *_sm_singleton;
 }

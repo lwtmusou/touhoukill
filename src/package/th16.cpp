@@ -842,7 +842,7 @@ public:
     {
         if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.from == Player::Play && change.player->hasFlag("zhenshe") ) {
+            if (change.from == Player::Play && change.player->hasFlag("zhenshe")) {
                 room->setPlayerFlag(change.player, "-zhenshe");
             }
         }
@@ -852,10 +852,8 @@ public:
             if (use.card->getSkillName() == objectName())
                 room->setPlayerFlag(use.from, "zhenshe");
         }
-        
     }
 };
-
 
 class Puti : public TriggerSkill
 {

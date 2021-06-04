@@ -483,13 +483,13 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room)
     return trigger(triggerEvent, room, data);
 }
 
-void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QSharedPointer<SkillInvokeDetail> > &detailsList,
-                                 const QList<QSharedPointer<SkillInvokeDetail> > &triggered, const QVariant &data)
+void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QSharedPointer<SkillInvokeDetail>> &detailsList,
+                                 const QList<QSharedPointer<SkillInvokeDetail>> &triggered, const QVariant &data)
 {
     // used to get all the skills which can be triggered now, and sort them.
     // everytime this function is called, it will get all the skiils and judge the triggerable one by one
     QList<const TriggerSkill *> skillList = skill_table[triggerEvent];
-    QList<QSharedPointer<SkillInvokeDetail> > details; // We create a new list everytime this function is called
+    QList<QSharedPointer<SkillInvokeDetail>> details; // We create a new list everytime this function is called
     foreach (const TriggerSkill *skill, skillList) {
         // judge every skill
         QList<SkillInvokeDetail> triggerable = skill->triggerable(triggerEvent, room, data);
@@ -504,7 +504,7 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
         if (triggerable.isEmpty()) // i.e. there is no valid item returned from the skill's triggerable
             continue;
 
-        QList<QSharedPointer<SkillInvokeDetail> > r; // we create a list for every skill
+        QList<QSharedPointer<SkillInvokeDetail>> r; // we create a list for every skill
         foreach (const SkillInvokeDetail &t, triggerable) {
             // we copy construct a new SkillInvokeDetail in the heap area (because the return value from triggerable is in the stack). use a shared pointer to point to it, and add it to the new list.
             // because the shared pointer will destroy the item it point to when all the instances of the pointer is destroyed, so there is no memory leak.
@@ -524,7 +524,7 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
             }
         } else {
             bool isPreferredTargetSkill = false;
-            QList<QSharedPointer<SkillInvokeDetail> > s;
+            QList<QSharedPointer<SkillInvokeDetail>> s;
             // judge whether this skill in this event is a preferred-target skill, make a invoke list as s
             foreach (const QSharedPointer<SkillInvokeDetail> &detail, (detailsList + triggered).toSet()) {
                 if (detail->skill == r.first()->skill) {
@@ -534,15 +534,18 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
                 }
             }
             if (!isPreferredTargetSkill) {
-                std::stable_sort(s.begin(), s.end(),
-                                 [](const QSharedPointer<SkillInvokeDetail> &a1, const QSharedPointer<SkillInvokeDetail> &a2) { return a1->triggered && !a2->triggered; });
+                std::stable_sort(s.begin(), s.end(), [](const QSharedPointer<SkillInvokeDetail> &a1, const QSharedPointer<SkillInvokeDetail> &a2) {
+                    return a1->triggered && !a2->triggered;
+                });
                 // because these are of one single skill, so we can pick the invoke list using a trick like this
                 s.append(r);
                 r = s.mid(0, r.length());
             } else {
                 // do a stable sort to r and s since we should judge the trigger order
                 static std::function<bool(const QSharedPointer<SkillInvokeDetail> &, const QSharedPointer<SkillInvokeDetail> &)> preferredTargetLess
-                    = [](const QSharedPointer<SkillInvokeDetail> &a1, const QSharedPointer<SkillInvokeDetail> &a2) { return a1->preferredTargetLess(*a2); };
+                    = [](const QSharedPointer<SkillInvokeDetail> &a1, const QSharedPointer<SkillInvokeDetail> &a2) {
+                          return a1->preferredTargetLess(*a2);
+                      };
 
                 std::stable_sort(r.begin(), r.end(), preferredTargetLess);
                 std::stable_sort(s.begin(), s.end(), preferredTargetLess);
@@ -552,7 +555,7 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
                     // ASSUMING the values returned by TriggerSkill::triggerable are all with triggered == false
                     QSharedPointer<SkillInvokeDetail> over_trigger_prefferedTarget;
 
-                    QListIterator<QSharedPointer<SkillInvokeDetail> > s_it(s);
+                    QListIterator<QSharedPointer<SkillInvokeDetail>> s_it(s);
                     s_it.toBack();
                     while (s_it.hasPrevious()) {
                         const QSharedPointer<SkillInvokeDetail> p = s_it.previous();
@@ -566,14 +569,14 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
 
                     // find an over-triggered target, need to set all over-triggered items to triggered
                     if (!over_trigger_prefferedTarget.isNull() && over_trigger_prefferedTarget->isValid()) {
-                        QListIterator<QSharedPointer<SkillInvokeDetail> > r_it(r);
+                        QListIterator<QSharedPointer<SkillInvokeDetail>> r_it(r);
                         r_it.toBack();
                         while (r_it.hasPrevious()) {
                             const QSharedPointer<SkillInvokeDetail> p = r_it.previous();
                             if (preferredTargetLess(p, over_trigger_prefferedTarget))
                                 p->triggered = true;
                         }
-                        QListIterator<QSharedPointer<SkillInvokeDetail> > s_it(s);
+                        QListIterator<QSharedPointer<SkillInvokeDetail>> s_it(s);
                         s_it.toBack();
                         while (s_it.hasPrevious()) {
                             const QSharedPointer<SkillInvokeDetail> p = s_it.previous();
@@ -585,8 +588,8 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
 
                 {
                     // add new valid items to s and remove the invalid values from s, using r
-                    QListIterator<QSharedPointer<SkillInvokeDetail> > r_it(r);
-                    QMutableListIterator<QSharedPointer<SkillInvokeDetail> > s_it(s);
+                    QListIterator<QSharedPointer<SkillInvokeDetail>> r_it(r);
+                    QMutableListIterator<QSharedPointer<SkillInvokeDetail>> s_it(s);
                     while (r_it.hasNext() && s_it.hasNext()) {
                         QSharedPointer<SkillInvokeDetail> r_now = r_it.next();
                         QSharedPointer<SkillInvokeDetail> s_now = s_it.next();
@@ -667,12 +670,14 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
     }
 
     // do a stable sort to details use the operator < of SkillInvokeDetail in which judge the priority, the seat of invoker, and whether it is a skill of an equip.
-    std::stable_sort(details.begin(), details.end(), [](const QSharedPointer<SkillInvokeDetail> &a1, const QSharedPointer<SkillInvokeDetail> &a2) { return *a1 < *a2; });
+    std::stable_sort(details.begin(), details.end(), [](const QSharedPointer<SkillInvokeDetail> &a1, const QSharedPointer<SkillInvokeDetail> &a2) {
+        return *a1 < *a2;
+    });
 
     // mark the skills which missed the trigger timing as it has triggered
     QSharedPointer<SkillInvokeDetail> over_trigger = (triggered.isEmpty() ? QSharedPointer<SkillInvokeDetail>() : triggered.last());
 
-    QListIterator<QSharedPointer<SkillInvokeDetail> > it(details);
+    QListIterator<QSharedPointer<SkillInvokeDetail>> it(details);
     it.toBack();
     while (it.hasPrevious()) {
         // search the last skill which triggered times isn't 0 from back to front. if found, save it to over_trigger.
@@ -699,14 +704,14 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data)
     foreach (const TriggerSkill *skill, skillList)
         skill->record(triggerEvent, room, data);
 
-    QList<QSharedPointer<SkillInvokeDetail> > details;
-    QList<QSharedPointer<SkillInvokeDetail> > triggered;
+    QList<QSharedPointer<SkillInvokeDetail>> details;
+    QList<QSharedPointer<SkillInvokeDetail>> triggered;
     bool interrupt = false;
     try {
         forever {
             getSkillAndSort(triggerEvent, room, details, triggered, data);
 
-            QList<QSharedPointer<SkillInvokeDetail> > sameTiming;
+            QList<QSharedPointer<SkillInvokeDetail>> sameTiming;
             // search for the first skills which can trigger
             foreach (const QSharedPointer<SkillInvokeDetail> &ptr, details) {
                 if (ptr->triggered)

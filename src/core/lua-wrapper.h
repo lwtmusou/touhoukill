@@ -53,7 +53,7 @@ public:
     explicit LuaProhibitSkill(const char *name);
 
     bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>(),
-                              bool include_hidden = false) const override;
+                      bool include_hidden = false) const override;
 
     LuaFunction is_prohibited;
 };

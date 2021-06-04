@@ -10,7 +10,9 @@
 
 #include "QSanSelectableItem.h"
 
-class Sprite : public QObject, public QGraphicsPixmapItem
+class Sprite
+    : public QObject
+    , public QGraphicsPixmapItem
 {
     Q_OBJECT
     Q_PROPERTY(qreal opacity READ opacity WRITE setOpacity)

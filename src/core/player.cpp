@@ -1784,7 +1784,7 @@ void Player::copyFrom(Player *p)
     Player *a = p;
 
     b->marks = QMap<QString, int>(a->marks);
-    b->piles = QMap<QString, QList<int> >(a->piles);
+    b->piles = QMap<QString, QList<int>>(a->piles);
     b->acquired_skills = QSet<QString>(a->acquired_skills);
     b->acquired_skills2 = QSet<QString>(a->acquired_skills2);
     b->flags = QSet<QString>(a->flags);
@@ -1808,7 +1808,7 @@ void Player::copyFrom(Player *p)
     b->chained = a->chained;
     b->judging_area = QList<int>(a->judging_area);
     b->fixed_distance = QHash<const Player *, int>(a->fixed_distance);
-    b->card_limitation = QMap<Card::HandlingMethod, QMap<QString, QStringList> >(a->card_limitation);
+    b->card_limitation = QMap<Card::HandlingMethod, QMap<QString, QStringList>>(a->card_limitation);
 
     b->tag = QVariantMap(a->tag);
 }

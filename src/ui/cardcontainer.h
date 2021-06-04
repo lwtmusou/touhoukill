@@ -60,7 +60,7 @@ private:
     QList<CardItem *> items;
     SanCloseButton *close_button;
     QPixmap _m_background;
-    QStack<QList<CardItem *> > items_stack;
+    QStack<QList<CardItem *>> items_stack;
     QStack<bool> retained_stack;
 
     void _addCardItem(int card_id, const QPointF &pos);

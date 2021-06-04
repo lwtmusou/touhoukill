@@ -374,7 +374,7 @@ public:
     QString askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice = QString());
     QString askForGeneral(ServerPlayer *player, const QString &generals, QString default_choice = QString());
     const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
-    QSharedPointer<SkillInvokeDetail> askForTriggerOrder(ServerPlayer *player, const QList<QSharedPointer<SkillInvokeDetail> > &sameTiming, bool cancelable, const QVariant &data);
+    QSharedPointer<SkillInvokeDetail> askForTriggerOrder(ServerPlayer *player, const QList<QSharedPointer<SkillInvokeDetail>> &sameTiming, bool cancelable, const QVariant &data);
     void addPlayerHistory(ServerPlayer *player, const QString &key, int times = 1);
     void transformGeneral(ServerPlayer *player, QString general_name, int head);
 

@@ -248,7 +248,7 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
     group->setExclusive(!pair_choose);
 
     QList<const General *> all_generals = Sanguosha->findChildren<const General *>();
-    QMap<QString, QList<const General *> > map;
+    QMap<QString, QList<const General *>> map;
     foreach (const General *general, all_generals) {
         if (general->isTotallyHidden())
             continue;

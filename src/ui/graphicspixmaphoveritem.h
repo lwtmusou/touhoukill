@@ -6,7 +6,9 @@
 
 class PlayerCardContainer;
 
-class GraphicsPixmapHoverItem : public QObject, public QGraphicsPixmapItem
+class GraphicsPixmapHoverItem
+    : public QObject
+    , public QGraphicsPixmapItem
 {
     Q_OBJECT
 

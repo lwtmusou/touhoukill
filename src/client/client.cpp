@@ -377,7 +377,9 @@ void Client::setup(const QVariant &setup_json)
         emit server_connected();
 
         heartbeatTimer = new QTimer(this);
-        connect(heartbeatTimer, &QTimer::timeout, [this]() -> void { notifyServer(S_COMMAND_HEARTBEAT); });
+        connect(heartbeatTimer, &QTimer::timeout, [this]() -> void {
+            notifyServer(S_COMMAND_HEARTBEAT);
+        });
         heartbeatTimer->setSingleShot(false);
         heartbeatTimer->setInterval(60000);
         heartbeatTimer->start();

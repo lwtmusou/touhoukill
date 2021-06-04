@@ -371,7 +371,7 @@ public:
 
 protected:
     QMap<QString, int> marks;
-    QMap<QString, QList<int> > piles;
+    QMap<QString, QList<int>> piles;
     QMap<QString, QStringList> pile_open;
     QSet<QString> acquired_skills;
     QSet<QString> acquired_skills2;
@@ -417,7 +417,7 @@ private:
     QString next;
 
     //QMap<Card::HandlingMethod, QStringList> card_limitation;
-    QMap<Card::HandlingMethod, QMap<QString, QStringList> > card_limitation; //method, reason , pattern
+    QMap<Card::HandlingMethod, QMap<QString, QStringList>> card_limitation; //method, reason , pattern
     QStringList disable_show;
 
 signals:

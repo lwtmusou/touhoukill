@@ -112,6 +112,6 @@ bool tryParse(const QVariant &arg, QSize &result);
 bool tryParse(const QVariant &arg, QPoint &result);
 bool tryParse(const QVariant &arg, QColor &result);
 bool tryParse(const QVariant &arg, Qt::Alignment &align);
-}
+} // namespace JsonUtils
 
 #endif // JSON_H

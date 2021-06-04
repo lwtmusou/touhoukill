@@ -263,7 +263,7 @@ bool checkXijianMove(const Player *src, const Player *dist)
     }
     return false;
 }
-}
+} // namespace XijianFunc
 
 XijianCard::XijianCard()
 {

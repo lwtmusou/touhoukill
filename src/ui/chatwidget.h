@@ -9,7 +9,9 @@
 #include <QPixmap>
 #include <QPushButton>
 
-class MyPixmapItem : public QObject, public QGraphicsPixmapItem
+class MyPixmapItem
+    : public QObject
+    , public QGraphicsPixmapItem
 {
     Q_OBJECT
 

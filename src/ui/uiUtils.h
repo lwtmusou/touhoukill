@@ -36,7 +36,7 @@ bool paintQString(QPainter *painter, QString text, int *font, QColor color, QSiz
 
 // Currently, we online support horizotal layout for multiline text
 bool paintQStringMultiLine(QPainter *painter, QString text, int *font, QColor color, QSize &fontSize, int spacing, QRect boundingBox, Qt::Alignment align);
-}
-}
+} // namespace QSanFreeTypeFont
+} // namespace QSanUiUtils
 
 #endif

@@ -41,7 +41,7 @@ Dashboard::Dashboard(QGraphicsItem *widget) //QGraphicsPixmapItem *widget
 
     leftHiddenMark = nullptr; //?? intialization?
     rightHiddenMark = nullptr;
-    _m_pile_expanded = QMap<QString, QList<int> >(); //QStringList();
+    _m_pile_expanded = QMap<QString, QList<int>>(); //QStringList();
     for (int i = 0; i < 5; i++) {
         _m_equipSkillBtns[i] = nullptr;
         _m_isEquipsAnimOn[i] = false;

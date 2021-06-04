@@ -59,7 +59,6 @@ signals:
     void onButtonClick();
 };
 
-
 class HezhouCard : public SkillCard
 {
     Q_OBJECT

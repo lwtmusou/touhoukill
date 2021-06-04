@@ -37,7 +37,6 @@ public:
     void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
 };
 
-
 class YidanCard : public SkillCard
 {
     Q_OBJECT

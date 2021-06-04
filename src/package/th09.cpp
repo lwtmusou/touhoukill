@@ -56,7 +56,7 @@ public:
             if (change.from == Player::Play) {
                 room->setPlayerFlag(change.player, "-zuiyue");
                 room->setPlayerFlag(change.player, "-zuiyue_used");
-            }  
+            }
         }
     }
 };
@@ -1957,7 +1957,7 @@ public:
                 setYsJieLimit(a.player, targets);
             }
         } else if (triggerEvent == EventSkillInvalidityChange) {
-            QList<SkillInvalidStruct> invalids = data.value<QList<SkillInvalidStruct> >();
+            QList<SkillInvalidStruct> invalids = data.value<QList<SkillInvalidStruct>>();
             foreach (SkillInvalidStruct v, invalids) {
                 if (v.player == nullptr || !v.player->isCurrent())
                     continue;

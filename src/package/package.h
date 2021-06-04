@@ -67,7 +67,7 @@ public:
         return type;
     }
 
-    template <typename T> void addMetaObject()
+    template<typename T> void addMetaObject()
     {
         metaobjects << &T::staticMetaObject;
     }

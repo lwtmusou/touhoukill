@@ -54,7 +54,7 @@ void registerCustomFormat1()
 {
     QSettings::registerFormat("json", JsonReadFunc, JsonWriteFunc);
 }
-}
+} // namespace
 
 Q_COREAPP_STARTUP_FUNCTION(registerCustomFormat1)
 
