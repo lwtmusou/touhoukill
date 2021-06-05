@@ -1688,7 +1688,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         player->showHiddenSkill(showskill);
         const Skill *equipSkill = Sanguosha->getSkill(skill_name);
         if ((equipSkill != nullptr) && equipSkill->inherits("WeaponSkill")) {
-            const ViewHasSkill *v = Sanguosha->ViewHas(player, skill_name, QStringLiteral("weapon"), true);
+            const TreatAsEquippingSkill *v = Sanguosha->treatAsEquipping(player, skill_name, QSanguosha::WeaponLocation);
             if (v != nullptr)
                 player->showHiddenSkill(v->objectName());
         }

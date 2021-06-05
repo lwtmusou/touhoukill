@@ -223,7 +223,7 @@ public:
     const Card *getEquip(int index) const;
 
     bool hasWeapon(const QString &weapon_name, bool selfOnly = false, bool ignore_preshow = false) const;
-    bool hasArmorEffect(const QString &armor_name, bool selfOnly = false) const;
+    bool hasArmor(const QString &armor_name, bool selfOnly = false) const;
     bool hasTreasure(const QString &treasure_name, bool selfOnly = false) const;
 
     bool isKongcheng() const;

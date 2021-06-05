@@ -416,21 +416,13 @@ protected:
     QString name;
 };
 
-class ViewHasSkill : public Skill
+class TreatAsEquippingSkill : public Skill
 {
     Q_OBJECT
 
 public:
-    explicit ViewHasSkill(const QString &name);
-
-    virtual bool ViewHas(const Player *player, const QString &skill_name, const QString &flag, bool ignore_preshow = false) const = 0;
-    inline bool isGlobal() const
-    {
-        return global;
-    }
-
-protected:
-    bool global;
+    explicit TreatAsEquippingSkill(const QString &name);
+    virtual bool treatAs(const Player *player, const QString equipName, QSanguosha::EquipLocation location) const = 0;
 };
 
 #endif

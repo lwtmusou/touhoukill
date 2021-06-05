@@ -19,7 +19,7 @@ class General;
 class ViewAsSkill;
 class TriggerSkill;
 class ProhibitSkill;
-class ViewHasSkill;
+class TreatAsEquippingSkill;
 class EquipCard;
 class TargetModSkill;
 class Package;
@@ -110,7 +110,7 @@ public:
     void playSkillAudioEffect(const QString &skill_name, int index) const;
 
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
-    const ViewHasSkill *ViewHas(const Player *player, const QString &skill_name, const QString &flag, bool ignore_preshow = false) const;
+    const TreatAsEquippingSkill *treatAsEquipping(const Player *player, const QString &equipName, QSanguosha::EquipLocation location) const;
     int correctDistance(const Player *from, const Player *to) const;
     int correctMaxCards(const Player *target, bool fixed = false, const QString &except = QString()) const;
     int correctCardTarget(const QSanguosha::TargetModType type, const Player *from, const Card *card) const;
@@ -142,7 +142,7 @@ private:
     // special skills
     QList<const ProhibitSkill *> prohibit_skills;
     QList<const DistanceSkill *> distance_skills;
-    QList<const ViewHasSkill *> viewhas_skills;
+    QList<const TreatAsEquippingSkill *> viewhas_skills;
     QList<const MaxCardsSkill *> maxcards_skills;
     QList<const TargetModSkill *> targetmod_skills;
     QList<const AttackRangeSkill *> attackrange_skills;

@@ -648,7 +648,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
 
         if (!display) {
             // for shenbao
-            if (player->hasSkill(QStringLiteral("shenbao")) && (player->hasWeapon(skill_name) || player->hasArmorEffect(skill_name) || player->hasTreasure(skill_name)))
+            if (player->hasSkill(QStringLiteral("shenbao")) && (player->hasWeapon(skill_name) || player->hasArmor(skill_name) || player->hasTreasure(skill_name)))
                 display = true;
         }
 

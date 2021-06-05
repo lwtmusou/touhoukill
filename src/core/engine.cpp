@@ -133,8 +133,8 @@ void Engine::addSkills(const QList<const Skill *> &all_skills)
 
         if (skill->inherits("ProhibitSkill"))
             prohibit_skills << qobject_cast<const ProhibitSkill *>(skill);
-        else if (skill->inherits("ViewHasSkill"))
-            viewhas_skills << qobject_cast<const ViewHasSkill *>(skill);
+        else if (skill->inherits("TreatAsEquippingSkill"))
+            viewhas_skills << qobject_cast<const TreatAsEquippingSkill *>(skill);
         else if (skill->inherits("DistanceSkill"))
             distance_skills << qobject_cast<const DistanceSkill *>(skill);
         else if (skill->inherits("MaxCardsSkill"))
@@ -1066,10 +1066,10 @@ const ProhibitSkill *Engine::isProhibited(const Player *from, const Player *to, 
     return nullptr;
 }
 
-const ViewHasSkill *Engine::ViewHas(const Player *player, const QString &skill_name, const QString &flag, bool ignore_preshow) const
+const TreatAsEquippingSkill *Engine::treatAsEquipping(const Player *player, const QString &equipName, EquipLocation location) const
 {
-    foreach (const ViewHasSkill *skill, viewhas_skills) {
-        if (skill->ViewHas(player, skill_name, flag, ignore_preshow))
+    foreach (const TreatAsEquippingSkill *skill, viewhas_skills) {
+        if (skill->treatAs(player, equipName, location))
             return skill;
     }
 

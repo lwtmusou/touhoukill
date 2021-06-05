@@ -444,9 +444,8 @@ int SlashNoDistanceLimitSkill::getDistanceLimit(const Player *from, const Card *
         return 0;
 }
 
-ViewHasSkill::ViewHasSkill(const QString &name)
+TreatAsEquippingSkill::TreatAsEquippingSkill(const QString &name)
     : Skill(name, SkillCompulsory)
-    , global(false)
 {
 }
 
@@ -721,7 +720,7 @@ bool EquipSkill::equipAvailable(const Player *p, EquipLocation location, const Q
             return false;
         break;
     case ArmorLocation:
-        if (!p->hasArmorEffect(equipName))
+        if (!p->hasArmor(equipName))
             return false;
         break;
     case TreasureLocation:

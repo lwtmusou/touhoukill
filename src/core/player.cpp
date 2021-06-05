@@ -1050,11 +1050,12 @@ bool Player::hasWeapon(const QString &weapon_name, bool /*unused*/, bool ignore_
     if (getMark(QStringLiteral("Equips_Nullified_to_Yourself")) > 0)
         return false;
 
-    if (Sanguosha->ViewHas(this, weapon_name, QStringLiteral("weapon"), ignore_preshow) != nullptr)
+    if (Sanguosha->treatAsEquipping(this, weapon_name, WeaponLocation) != nullptr)
         return true;
 
     if ((weapon == nullptr) || isBrokenEquip(weapon->effectiveID(), true))
         return false;
+
     if (weapon->faceName() == weapon_name || weapon->face()->isKindOf(weapon_name.toStdString().c_str()))
         return true;
 
@@ -1063,19 +1064,21 @@ bool Player::hasWeapon(const QString &weapon_name, bool /*unused*/, bool ignore_
     return real_weapon.face()->name() == weapon_name || real_weapon.face()->isKindOf(weapon_name.toStdString().c_str());
 }
 
-bool Player::hasArmorEffect(const QString &armor_name, bool /*unused*/) const
+bool Player::hasArmor(const QString &armor_name, bool /*unused*/) const
 {
     if (!tag[QStringLiteral("Qinggang")].toStringList().isEmpty() || getMark(QStringLiteral("Armor_Nullified")) > 0 || getMark(QStringLiteral("Equips_Nullified_to_Yourself")) > 0)
         return false;
 
-    if (Sanguosha->ViewHas(this, armor_name, QStringLiteral("armor")) != nullptr)
+    if (Sanguosha->treatAsEquipping(this, armor_name, ArmorLocation) != nullptr)
         return true;
 
     if ((armor == nullptr) || isBrokenEquip(armor->effectiveID(), true))
         return false;
+
     if (armor->faceName() == armor_name || armor->face()->isKindOf(armor_name.toStdString().c_str()))
         return true;
-    const CardDescriptor &real_weapon = Sanguosha->getEngineCard(weapon->effectiveID());
+
+    const CardDescriptor &real_weapon = Sanguosha->getEngineCard(armor->effectiveID());
     return real_weapon.face()->name() == armor_name || real_weapon.face()->isKindOf(armor_name.toStdString().c_str());
 }
 
@@ -1084,14 +1087,16 @@ bool Player::hasTreasure(const QString &treasure_name, bool /*unused*/) const
     if (getMark(QStringLiteral("Equips_Nullified_to_Yourself")) > 0)
         return false;
 
-    if (Sanguosha->ViewHas(this, treasure_name, QStringLiteral("treasure")) != nullptr)
+    if (Sanguosha->treatAsEquipping(this, treasure_name, TreasureLocation) != nullptr)
         return true;
 
     if ((treasure == nullptr) || isBrokenEquip(treasure->effectiveID(), true))
         return false;
+
     if (treasure->faceName() == treasure_name || treasure->face()->isKindOf(treasure_name.toStdString().c_str()))
         return true;
-    const CardDescriptor &real_weapon = Sanguosha->getEngineCard(weapon->effectiveID());
+
+    const CardDescriptor &real_weapon = Sanguosha->getEngineCard(treasure->effectiveID());
     return real_weapon.face()->name() == treasure_name || real_weapon.face()->isKindOf(treasure_name.toStdString().c_str());
 }
 
