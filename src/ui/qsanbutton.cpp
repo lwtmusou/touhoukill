@@ -67,7 +67,7 @@ void QSanButton::setSize(QSize newSize)
     }
     Q_ASSERT(!_m_bgPixmap[0].isNull());
     QPixmap pixmap = _m_bgPixmap[0];
-    _m_mask = QRegion(pixmap.mask().scaled(newSize));
+    _m_mask = QRegion(pixmap.scaled(newSize).mask());
 }
 
 void QSanButton::setRect(QRect rect)

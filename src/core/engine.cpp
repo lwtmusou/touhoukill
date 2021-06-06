@@ -20,6 +20,8 @@
 #include <QDir>
 #include <QFile>
 #include <QMessageBox>
+#include <QRegularExpression>
+#include <QRegularExpressionMatchIterator>
 #include <QStringList>
 #include <QTextStream>
 #include <QVersionNumber>
@@ -553,16 +555,11 @@ QString Engine::getModeName(const QString &mode) const
 
 int Engine::getPlayerCount(const QString &mode) const
 {
-    if (isHegemonyGameMode(mode)) {
-        QStringList modestrings = mode.split(QStringLiteral("_"));
-        return modestrings.last().toInt(nullptr, 10); //return 2;
-    }
-
-    if (modes.contains(mode)) {
-        QRegExp rx(QStringLiteral("(\\d+)"));
-        int index = rx.indexIn(mode);
-        if (index != -1)
-            return rx.capturedTexts().first().toInt();
+    QRegularExpression rx(QStringLiteral("\\d+"));
+    QRegularExpressionMatchIterator it = rx.globalMatch(mode);
+    if (it.hasNext()) {
+        QRegularExpressionMatch match = it.next();
+        return match.captured().toInt(nullptr, 10);
     }
 
     return -1;

@@ -15,7 +15,6 @@
 #include <QMessageBox>
 #include <QMetaEnum>
 #include <QStringList>
-#include <QTextCodec>
 #include <QTextStream>
 #include <QTimer>
 #include <QTimerEvent>
@@ -972,7 +971,7 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
     JsonArray skillCommand;
     if (!prompt.isNull())
         skillCommand << skill_name << prompt;
-    else if (data.type() == QVariant::String)
+    else if (data.canConvert(QVariant::String))
         skillCommand << skill_name << data.toString();
     else {
         ServerPlayer *player = data.value<ServerPlayer *>();
@@ -3486,7 +3485,7 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
         } else if (sentence.startsWith(QStringLiteral(".SetAIDelay="))) {
             noBroadcastSpeaking();
             bool ok = false;
-            int delay = sentence.midRef(12).toInt(&ok);
+            int delay = sentence.mid(12).toInt(&ok);
             if (ok) {
                 Config.AIDelay = Config.OriginAIDelay = delay;
                 Config.setValue(QStringLiteral("OriginAIDelay"), delay);
@@ -6844,7 +6843,6 @@ void Room::countDescription()
 
     QTextStream stream(&file);
     QStringList all = Sanguosha->getLimitedGeneralNames();
-    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
     QMultiMap<int, QString> map;
     foreach (QString name, all) {
@@ -6854,7 +6852,7 @@ void Room::countDescription()
             QString skill_name = Sanguosha->translate(skill->objectName());
 
             QString desc = Sanguosha->translate(QStringLiteral(":") + skill->objectName());
-            QRegExp rx(QStringLiteral("<[^>]*>"));
+            QRegularExpression rx(QStringLiteral("<[^>]*>"));
             desc.remove(rx);
             QString skill_line = QStringLiteral("%1:%2").arg(skill_name).arg(desc);
             line = line + skill_line;

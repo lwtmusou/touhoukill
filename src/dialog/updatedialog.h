@@ -12,7 +12,7 @@ class QProgressBar;
 class QLabel;
 class QNetworkAccessManager;
 class QNetworkReply;
-#ifdef Q_OS_WIN
+#ifdef QT_WINEXTRAS_LIB
 class QWinTaskbarButton;
 #endif
 class QShowEvent;
@@ -54,7 +54,7 @@ private:
     QLabel *latestVersion[UiMax];
     QPushButton *updateButton[UiMax];
 
-#ifdef Q_OS_WIN
+#ifdef QT_WINEXTRAS_LIB
     QWinTaskbarButton *taskbarButton;
 #endif
 

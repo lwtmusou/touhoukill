@@ -49,7 +49,6 @@ void AboutUsDialog::loadContent(int row)
     QFile file(filename);
     if (file.open(QIODevice::ReadOnly)) {
         QTextStream stream(&file);
-        stream.setCodec("UTF-8");
         QString content = stream.readAll();
         content_box->setHtml(content);
     }

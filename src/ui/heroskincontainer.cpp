@@ -11,6 +11,8 @@
 #include <QGraphicsProxyWidget>
 #include <QGraphicsSceneWheelEvent>
 #include <QPainter>
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
 #include <QScrollBar>
 
 const char *const HEROSKIN_PIXMAP_PATH = "image/heroskin/fullskin/generals/full";
@@ -23,7 +25,7 @@ const int Y_START_POS = 32;
 
 const int SKIN_ITEM_WIDTH = SKIN_ITEM_AREA.width();
 const int SKIN_ITEM_HEIGHT = SKIN_ITEM_AREA.height();
-const QRegExp SKIN_FILE_NAME_PATTERN = QRegExp(QStringLiteral("(?:[A-Za-z_0-9]+)(\\d+).png"));
+const QRegularExpression SKIN_FILE_NAME_PATTERN(QRegularExpression::anchoredPattern(QStringLiteral("(?:[A-Za-z_0-9]+)(\\d+).png")));
 
 HeroSkinContainer *HeroSkinContainer::m_currentTopMostContainer = nullptr;
 QMap<QString, QStringList> HeroSkinContainer::m_generalToSkinFiles;
@@ -63,7 +65,9 @@ bool HeroSkinContainer::hasSkin(const QString &generalName)
     if (!m_generalToHasSkin.contains(generalName)) {
         QStringList files = HeroSkinContainer::getHeroSkinFiles(generalName);
         foreach (const QString &file, files) {
-            if (SKIN_FILE_NAME_PATTERN.exactMatch(file)) {
+            QRegularExpressionMatch match;
+            //if (SKIN_FILE_NAME_PATTERN.exactMatch(file)) {
+            if ((match = SKIN_FILE_NAME_PATTERN.match(file)).hasMatch()) {
                 m_generalToHasSkin[generalName] = true;
                 break;
             }
@@ -79,8 +83,9 @@ int HeroSkinContainer::getNextSkinIndex(const QString &generalName, int skinInde
 
     QStringList files = HeroSkinContainer::getHeroSkinFiles(generalName);
     foreach (const QString &file, files) {
-        if (SKIN_FILE_NAME_PATTERN.exactMatch(file)) {
-            int num = SKIN_FILE_NAME_PATTERN.capturedTexts().at(1).toInt();
+        QRegularExpressionMatch match;
+        if ((match = SKIN_FILE_NAME_PATTERN.match(file)).hasMatch()) {
+            int num = match.capturedTexts().at(1).toInt();
             if (num > skinIndex) {
                 result = num;
                 break;
@@ -146,8 +151,9 @@ void HeroSkinContainer::initSkins()
 
     QStringList files = getHeroSkinFiles(m_generalName);
     foreach (const QString &file, files) {
-        if (SKIN_FILE_NAME_PATTERN.exactMatch(file)) {
-            int skinIndex = SKIN_FILE_NAME_PATTERN.capturedTexts().at(1).toInt();
+        QRegularExpressionMatch match;
+        if ((match = SKIN_FILE_NAME_PATTERN.match(file)).hasMatch()) {
+            int skinIndex = match.capturedTexts().at(1).toInt();
             if (skinIndexUsed != skinIndex) {
                 createSkinItem(skinIndex, dummyRectItem);
             }

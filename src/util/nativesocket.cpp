@@ -1,7 +1,6 @@
 #include "nativesocket.h"
 #include "settings.h"
 
-#include <QRegExp>
 #include <QStringList>
 #include <QTcpSocket>
 #include <QUdpSocket>

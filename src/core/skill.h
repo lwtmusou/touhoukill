@@ -110,8 +110,8 @@ public:
     // current UI related, temporary left it alone
     // All these functions should belong to UI.
     // Maybe something like "Description provider" in UI will be ideal?
-    QString Q_DECL_DEPRECATED getDescription() const;
-    QString Q_DECL_DEPRECATED getNotice(int index) const;
+    Q_DECL_DEPRECATED QString getDescription() const;
+    Q_DECL_DEPRECATED QString getNotice(int index) const;
 
 private:
     SkillPrivate *d;

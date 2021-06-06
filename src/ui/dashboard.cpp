@@ -17,7 +17,7 @@
 #include <QPixmapCache>
 #include <QTimer>
 
-#ifdef Q_OS_WIN
+#ifdef QT_WINEXTRAS_LIB
 #include <QWinTaskbarButton>
 #include <QWinTaskbarProgress>
 #endif
@@ -77,7 +77,7 @@ Dashboard::Dashboard(QGraphicsItem *widget)
     connect(Self, &Player::showncards_changed, this, &Dashboard::updateShown);
     connect(Self, &Player::brokenEquips_changed, this, &Dashboard::updateHandPile);
 
-#ifdef Q_OS_WIN
+#ifdef QT_WINEXTRAS_LIB
     taskbarButton = new QWinTaskbarButton(this);
     taskbarButton->setWindow(RoomSceneInstance->mainWindow()->windowHandle());
     QWinTaskbarProgress *prog = taskbarButton->progress();
@@ -109,7 +109,7 @@ void Dashboard::showProgressBar(const QSanProtocol::Countdown &countdown)
     _m_progressBar->setCountdown(countdown);
     connect(_m_progressBar, &TimedProgressBar::timedOut, this, &Dashboard::progressBarTimedOut);
     _m_progressBar->show();
-#ifdef Q_OS_WIN
+#ifdef QT_WINEXTRAS_LIB
     if (_m_progressBar->hasTimer()) {
         connect(_m_progressBar, &QSanCommandProgressBar::timerStep, this, &Dashboard::updateTimedProgressBar, Qt::UniqueConnection);
         QWinTaskbarProgress *prog = taskbarButton->progress();
@@ -126,7 +126,7 @@ void Dashboard::showProgressBar(const QSanProtocol::Countdown &countdown)
 void Dashboard::hideProgressBar()
 {
     PlayerCardContainer::hideProgressBar();
-#ifdef Q_OS_WIN
+#ifdef QT_WINEXTRAS_LIB
     QWinTaskbarProgress *prog = taskbarButton->progress();
     prog->hide();
     prog->reset();
@@ -134,7 +134,7 @@ void Dashboard::hideProgressBar()
 #endif
 }
 
-#ifdef Q_OS_WIN
+#ifdef QT_WINEXTRAS_LIB
 void Dashboard::updateTimedProgressBar(time_t val, time_t max)
 {
     QWinTaskbarProgress *prog = taskbarButton->progress();

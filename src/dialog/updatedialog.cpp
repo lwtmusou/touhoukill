@@ -20,7 +20,7 @@
 #include <QUrl>
 #include <QVBoxLayout>
 #include <QVersionNumber>
-#ifdef Q_OS_WIN
+#ifdef QT_WINEXTRAS_LIB
 #include <QWinTaskbarButton>
 #include <QWinTaskbarProgress>
 #endif
@@ -32,7 +32,7 @@ UpdateDialog::UpdateDialog(QWidget *parent)
     , downloadManager(new QNetworkAccessManager(this))
     , scriptReply(nullptr)
     , packReply(nullptr)
-#ifdef Q_OS_WIN
+#ifdef QT_WINEXTRAS_LIB
     , taskbarButton(nullptr)
 #endif
     , m_finishedScript(false)
@@ -318,7 +318,7 @@ void UpdateDialog::parsePackageInfo(UpdateDialog::UpdateItem item, const QJsonOb
 
 void UpdateDialog::startUpdate()
 {
-#ifdef Q_OS_WIN
+#ifdef QT_WINEXTRAS_LIB
     taskbarButton->progress()->hide();
 #endif
 // we should run update script and then exit this main program.
@@ -392,7 +392,7 @@ void UpdateDialog::startDownload()
         m_finishedScript = true;
 #endif
 
-#ifdef Q_OS_WIN
+#ifdef QT_WINEXTRAS_LIB
     taskbarButton->progress()->reset();
     taskbarButton->progress()->show();
 #endif
@@ -401,7 +401,7 @@ void UpdateDialog::startDownload()
 void UpdateDialog::downloadProgress(quint64 downloaded, quint64 total)
 {
     bar->setValue(10000 * downloaded / total);
-#ifdef Q_OS_WIN
+#ifdef QT_WINEXTRAS_LIB
     taskbarButton->progress()->setValue(10000 * downloaded / total);
 #endif
 }
@@ -431,7 +431,7 @@ void UpdateDialog::finishedScript()
 
 void UpdateDialog::errScript()
 {
-#ifdef Q_OS_WIN
+#ifdef QT_WINEXTRAS_LIB
     taskbarButton->progress()->hide();
 #endif
     if (scriptReply != nullptr) {
@@ -463,7 +463,7 @@ void UpdateDialog::finishedPack()
     if (!packHashVerify(arr)) {
         Config.AutoUpdateNeedsRestart = true;
         QMessageBox::critical(this, tr("Update Error"), tr("An error occurred when downloading packages.\nDownload pack checksum mismatch."));
-#ifdef Q_OS_WIN
+#ifdef QT_WINEXTRAS_LIB
         taskbarButton->progress()->hide();
 #endif
         QDialog::reject();
@@ -484,7 +484,7 @@ void UpdateDialog::finishedPack()
 
 void UpdateDialog::errPack()
 {
-#ifdef Q_OS_WIN
+#ifdef QT_WINEXTRAS_LIB
     taskbarButton->progress()->hide();
 #endif
     if (scriptReply != nullptr) {
@@ -516,7 +516,7 @@ void UpdateDialog::showEvent(QShowEvent *e)
 {
     QDialog::showEvent(e);
 
-#ifdef Q_OS_WIN
+#ifdef QT_WINEXTRAS_LIB
     taskbarButton = new QWinTaskbarButton(this);
     taskbarButton->setWindow(windowHandle());
     QWinTaskbarProgress *prog = taskbarButton->progress();

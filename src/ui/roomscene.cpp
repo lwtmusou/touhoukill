@@ -2626,12 +2626,12 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         const ViewAsSkill *vsSkill = button->getViewAsSkill();
         if (vsSkill != nullptr) {
             QString pattern = ClientInstance->getCurrentCardUsePattern();
-            QRegExp rx(QStringLiteral("@@?([_A-Za-z]+)(\\d+)?!?"));
+            QRegularExpression rx(QRegularExpression::anchoredPattern(QStringLiteral("@@?([_A-Za-z]+)(\\d+)?!?")));
             CardUseStruct::CardUseReason reason = CardUseStruct::CARD_USE_REASON_UNKNOWN;
             if ((newStatus & Client::ClientStatusBasicMask) == Client::Responding) {
                 if (newStatus == Client::RespondingUse)
                     reason = CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
-                else if (newStatus == Client::Responding || rx.exactMatch(pattern))
+                else if (newStatus == Client::Responding || rx.match(pattern).hasMatch())
                     reason = CardUseStruct::CARD_USE_REASON_RESPONSE;
             } else if (newStatus == Client::Playing)
                 reason = CardUseStruct::CARD_USE_REASON_PLAY;
@@ -2700,9 +2700,10 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         discard_button->setEnabled(false);
 
         QString pattern = ClientInstance->getCurrentCardUsePattern();
-        QRegExp rx(QStringLiteral("@@?(\\w+)(-card)?(\\d+)?!?"));
-        if (rx.exactMatch(pattern)) {
-            QString skill_name = rx.capturedTexts().at(1);
+        QRegularExpression rx(QRegularExpression::anchoredPattern(QStringLiteral("@@?(\\w+)(-card)?(\\d+)?!?")));
+        QRegularExpressionMatch match;
+        if ((match = rx.match(pattern)).hasMatch()) {
+            QString skill_name = match.capturedTexts().at(1);
             const ViewAsSkill *skill = Sanguosha->getViewAsSkill(skill_name);
             if (skill != nullptr) {
                 CardUseStruct::CardUseReason reason = CardUseStruct::CARD_USE_REASON_RESPONSE;

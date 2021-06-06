@@ -41,6 +41,7 @@
 #include <QProgressBar>
 #include <QSettings>
 #include <QSpinBox>
+#include <QStandardPaths>
 #include <QStatusBar>
 #include <QSystemTrayIcon>
 #include <QTime>
@@ -48,7 +49,7 @@
 #include <QVariant>
 #include <QtMath>
 
-#ifdef Q_OS_WIN
+#ifdef QT_WINEXTRAS_LIB
 #include <QWinTaskbarButton>
 #include <QWinTaskbarProgress>
 #endif

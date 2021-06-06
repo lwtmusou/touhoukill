@@ -494,10 +494,11 @@ void GeneralOverview::addLines(const Skill *skill)
         button->setEnabled(false);
         button_layout->addWidget(button);
     } else {
-        QRegExp rx(QStringLiteral(".+/(\\w+\\d?).ogg"));
+        QRegularExpression rx(QRegularExpression::anchoredPattern(QStringLiteral(".+/(\\w+\\d?).ogg")));
         for (int i = 0; i < sources.length(); i++) {
             QString source = sources[i];
-            if (!rx.exactMatch(source))
+            QRegularExpressionMatch match;
+            if (!(match = rx.match(source)).hasMatch())
                 continue;
 
             QString button_text = skill_name;
@@ -508,7 +509,7 @@ void GeneralOverview::addLines(const Skill *skill)
             button->setObjectName(source);
             button_layout->addWidget(button);
 
-            QString filename = rx.capturedTexts().at(1);
+            QString filename = match.capturedTexts().at(1);
             QString skill_line = Sanguosha->translate(QStringLiteral("$") + filename);
             button->setDescription(skill_line);
 
@@ -675,6 +676,18 @@ void GeneralOverview::askChangeSkin()
 void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders, const QStringList &kingdoms, int lower, int upper,
                                   const QStringList &packages)
 {
+    Q_UNUSED(include_hidden);
+    Q_UNUSED(nickname);
+    Q_UNUSED(name);
+    Q_UNUSED(genders);
+    Q_UNUSED(kingdoms);
+    Q_UNUSED(lower);
+    Q_UNUSED(upper);
+    Q_UNUSED(packages);
+
+    Q_UNIMPLEMENTED();
+
+#if 0
     QList<const General *> generals;
     foreach (const General *general, all_generals) {
         QString general_name = general->objectName();
@@ -726,6 +739,7 @@ void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, 
             setWindowTitle(windowTitle() + QStringLiteral(" ") + tr("Search..."));
         fillGenerals(generals, false);
     }
+#endif
 }
 
 void GeneralOverview::fillAllGenerals()

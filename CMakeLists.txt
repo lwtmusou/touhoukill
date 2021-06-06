@@ -22,11 +22,20 @@ else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 endif()
 
-find_package(Qt5 COMPONENTS Widgets Network LinguistTools Multimedia  REQUIRED) # Locate the position of Qt5.
-
+set(QSANGUOSHA_QT5_COMPONENTS Core Widgets Network LinguistTools)
 if (WIN32)
-    find_package(Qt5 COMPONENTS WinExtras REQUIRED)
-elseif(APPLE)
+    set(QSANGUOSHA_QT5_COMPONENTS ${QSANGUOSHA_QT5_COMPONENTS} WinExtras)
+endif()
+set(QSANGUOSHA_QT6_COMPONENTS Core Widgets Network LinguistTools)
+
+find_package(Qt5 COMPONENTS ${QSANGUOSHA_QT5_COMPONENTS} OPTIONAL_COMPONENTS Multimedia) # Locate the position of Qt5.
+find_package(Qt6 COMPONENTS ${QSANGUOSHA_QT6_COMPONENTS} OPTIONAL_COMPONENTS Multimedia) # Locate the position of Qt6.
+
+if (NOT (Qt5_FOUND OR Qt6_FOUND))
+    message(FATAL_ERROR "at least one of Qt 5 and Qt 6 is needed")
+endif()
+
+if(APPLE)
     add_compile_definitions(LUA_USE_MACOSX)
 else()
     add_compile_definitions(LUA_USE_LINUX)
@@ -57,8 +66,6 @@ include_directories(
 
 find_package(PkgConfig)
 if (PKG_CONFIG_FOUND)
-    pkg_check_modules(oggvorbisfile IMPORTED_TARGET GLOBAL ogg>=1.0.0 vorbis>=1.0.0 vorbisfile>=1.0.0)
-
     # Should we use "lua>=5.4 to indicate a lua 5.4? Lua is not even source compatible between minor versions!"
     pkg_search_module(lua54 IMPORTED_TARGET GLOBAL lua-5.4 lua5.4 lua54)
 endif()
@@ -67,50 +74,9 @@ set_property(SOURCE src/swig/sgs.i
     PROPERTY
     CPLUSPLUS ON
     )
-swig_add_library(sanguosha_wrap
-    TYPE STATIC
-    LANGUAGE lua
-    SOURCES src/swig/sgs.i
-    )
-
-# ONLY FOR THEIR INCLUDE DIRECTORIES! Compile fails if we don't add the link libraries.
-# Seems weird since we don't even link the libraries here
-target_link_libraries(sanguosha_wrap Qt5::Core)
-if (lua54_FOUND)
-    target_link_libraries(sanguosha_wrap PkgConfig::lua54)
-endif()
-
-set (QSanguosha_PKG_SRCS
-    src/package/hegemonyCard.cpp
-    src/package/hegemonyGeneral.cpp
-    src/package/maneuvering.cpp
-    src/package/playground.cpp
-    src/package/protagonist.cpp
-    src/package/standard-cards.cpp
-    src/package/standard.cpp
-    src/package/testCard.cpp
-    src/package/th01-05.cpp
-    src/package/th06.cpp
-    src/package/th07.cpp
-    src/package/th08.cpp
-    src/package/th09.cpp
-    src/package/th10.cpp
-    src/package/th11.cpp
-    src/package/th12.cpp
-    src/package/th13.cpp
-    src/package/th14.cpp
-    src/package/th15.cpp
-    src/package/th16.cpp
-    src/package/th17.cpp
-    src/package/th99.cpp
-    src/package/thndj.cpp
-    src/package/touhougod.cpp
-)
 
 set (QSanguosha_SRCS
-
     src/audio/audio.cpp
-
     src/client/aux-skills.cpp
     src/client/client.cpp
     src/client/clientplayer.cpp
@@ -184,8 +150,6 @@ set (QSanguosha_SRCS
     src/util/detector.cpp
     src/util/nativesocket.cpp
     src/util/recorder.cpp
-
-    #${QSanguosha_PKG_SRCS}
 )
 
 set (QSanguosha_UIS
@@ -195,38 +159,9 @@ set (QSanguosha_UIS
     src/dialog/mainwindow.ui
 )
 
-
 set(TS_FILES builds/sanguosha.ts)
 set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION "ts")
-qt5_add_translation(QM_FILES ${TS_FILES})
-
-set (QSanguosha_PKG_MOCS
-    src/package/hegemonyCard.h
-    src/package/hegemonyGeneral.h
-    src/package/maneuvering.h
-    src/package/playground.h
-    src/package/protagonist.h
-    src/package/standard-equips.h
-    src/package/standard.h
-    src/package/testCard.h
-    src/package/th01-05.h
-    src/package/th06.h
-    src/package/th07.h
-    src/package/th08.h
-    src/package/th09.h
-    src/package/th10.h
-    src/package/th11.h
-    src/package/th12.h
-    src/package/th13.h
-    src/package/th14.h
-    src/package/th15.h
-    src/package/th16.h
-    src/package/th17.h
-    src/package/th99.h
-    src/package/thndj.h
-    src/package/touhougod.h
-
-)
+qt_add_translation(QM_FILES ${TS_FILES}) # assuming Qt6 and Qt5 QM files are same.....
 
 set (QSanguosha_MOCS
     src/audio/audio.h
@@ -305,86 +240,13 @@ set (QSanguosha_MOCS
     src/util/recorder.h
     src/util/socket.h
     src/core/global.h
-
-    #${QSanguosha_PKG_MOCS}
 )
+
 if (WIN32)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+    configure_file(resource/QSanguosha_resource.rc.in QSanguosha_resource.rc @ONLY)
     set(QSanguosha_SRCS ${QSanguosha_SRCS} QSanguosha_resource.rc)
     set(QSanguosha_Icon_RC ${CMAKE_CURRENT_LIST_DIR}/resource/icon/sgs.ico)
-endif()
-
-add_executable (QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc )
-
-set_property(TARGET QSanguosha PROPERTY AUTOMOC ON)
-set_property(TARGET QSanguosha PROPERTY AUTOUIC ON)
-set_property(TARGET QSanguosha PROPERTY AUTORCC ON)
-
-target_link_libraries (QSanguosha sanguosha_wrap Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::Multimedia)
-target_compile_definitions(QSanguosha PUBLIC AUDIO_SUPPORT QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
-
-if (NOT oggvorbisfile_FOUND)
-    set(OGG_FILE
-        src/ogg/backends.h
-        src/ogg/bitrate.h
-        src/ogg/codebook.h
-        src/ogg/codec_internal.h
-        src/ogg/crctable.h
-        src/ogg/envelope.h
-        src/ogg/highlevel.h
-        src/ogg/lookup.h
-        src/ogg/lookup_data.h
-        src/ogg/lpc.h
-        src/ogg/lsp.h
-        src/ogg/masking.h
-        src/ogg/mdct.h
-        src/ogg/misc.h
-        src/ogg/os.h
-        src/ogg/psy.h
-        src/ogg/registry.h
-        src/ogg/scales.h
-        src/ogg/smallft.h
-        src/ogg/window.h
-
-        src/ogg/analysis.c
-        src/ogg/bitrate.c
-        src/ogg/bitwise.c
-        src/ogg/block.c
-        src/ogg/codebook.c
-        src/ogg/envelope.c
-        src/ogg/floor0.c
-        src/ogg/floor1.c
-        src/ogg/framing.c
-        src/ogg/info.c
-        src/ogg/lookup.c
-        src/ogg/lpc.c
-        src/ogg/lsp.c
-        src/ogg/mapping0.c
-        src/ogg/mdct.c
-        src/ogg/psy.c
-        src/ogg/registry.c
-        src/ogg/res0.c
-        src/ogg/sharedbook.c
-        src/ogg/smallft.c
-        src/ogg/synthesis.c
-        src/ogg/vorbisfile.c
-        src/ogg/window.c
-
-        include/oggvorbisfile/ogg/ogg.h
-        include/oggvorbisfile/ogg/os_types.h
-        include/oggvorbisfile/ogg/config_types.h
-        include/oggvorbisfile/vorbis/codec.h
-        include/oggvorbisfile/vorbis/vorbisfile.h
-    )
-
-    include_directories("include/oggvorbisfile")
-    add_library(oggvorbisfile STATIC ${OGG_FILE})
-
-    if (MSVC)
-        target_compile_options(oggvorbisfile BEFORE PUBLIC "-wd4244" PUBLIC "-wd4305" PUBLIC "-wd4267")
-    endif()
-    target_link_libraries (QSanguosha oggvorbisfile)
-else()
-    target_link_libraries (QSanguosha PkgConfig::oggvorbisfile)
 endif()
 
 if (NOT lua54_FOUND)
@@ -454,19 +316,168 @@ if (NOT lua54_FOUND)
 
     include_directories("include/lua")
     add_library(lua54 STATIC ${LUA_FILE})
-
-    target_link_libraries(QSanguosha lua54)
-else()
-    target_link_libraries(QSanguosha PkgConfig::lua54)
 endif()
 
-if (WIN32)
-    target_link_libraries(QSanguosha Qt5::WinExtras)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-    configure_file(resource/QSanguosha_resource.rc.in QSanguosha_resource.rc @ONLY)
-else()
-    target_link_libraries(QSanguosha dl)
+if (Qt5Multimedia_FOUND OR Qt6Multimedia_FOUND)
+    if (PKG_CONFIG_FOUND)
+        pkg_check_modules(oggvorbisfile IMPORTED_TARGET GLOBAL ogg>=1.0.0 vorbis>=1.0.0 vorbisfile>=1.0.0)
+    endif()
+
+    if (NOT oggvorbisfile_FOUND)
+        set(OGG_FILE
+            src/ogg/backends.h
+            src/ogg/bitrate.h
+            src/ogg/codebook.h
+            src/ogg/codec_internal.h
+            src/ogg/crctable.h
+            src/ogg/envelope.h
+            src/ogg/highlevel.h
+            src/ogg/lookup.h
+            src/ogg/lookup_data.h
+            src/ogg/lpc.h
+            src/ogg/lsp.h
+            src/ogg/masking.h
+            src/ogg/mdct.h
+            src/ogg/misc.h
+            src/ogg/os.h
+            src/ogg/psy.h
+            src/ogg/registry.h
+            src/ogg/scales.h
+            src/ogg/smallft.h
+            src/ogg/window.h
+
+            src/ogg/analysis.c
+            src/ogg/bitrate.c
+            src/ogg/bitwise.c
+            src/ogg/block.c
+            src/ogg/codebook.c
+            src/ogg/envelope.c
+            src/ogg/floor0.c
+            src/ogg/floor1.c
+            src/ogg/framing.c
+            src/ogg/info.c
+            src/ogg/lookup.c
+            src/ogg/lpc.c
+            src/ogg/lsp.c
+            src/ogg/mapping0.c
+            src/ogg/mdct.c
+            src/ogg/psy.c
+            src/ogg/registry.c
+            src/ogg/res0.c
+            src/ogg/sharedbook.c
+            src/ogg/smallft.c
+            src/ogg/synthesis.c
+            src/ogg/vorbisfile.c
+            src/ogg/window.c
+
+            include/oggvorbisfile/ogg/ogg.h
+            include/oggvorbisfile/ogg/os_types.h
+            include/oggvorbisfile/ogg/config_types.h
+            include/oggvorbisfile/vorbis/codec.h
+            include/oggvorbisfile/vorbis/vorbisfile.h
+        )
+
+        include_directories("include/oggvorbisfile")
+        add_library(oggvorbisfile STATIC ${OGG_FILE})
+
+        if (MSVC)
+            target_compile_options(oggvorbisfile BEFORE PUBLIC "-wd4244" PUBLIC "-wd4305" PUBLIC "-wd4267")
+        endif()
+    endif()
 endif()
 
-target_compile_definitions(QSanguosha PUBLIC -DOV_EXCLUDE_STATIC_CALLBACKS PUBLIC -DQT_NO_CAST_FROM_ASCII)
-target_precompile_headers(QSanguosha PUBLIC src/pch.h)
+if (Qt5_FOUND)
+    add_executable (QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc )
+
+    set_property(TARGET QSanguosha PROPERTY AUTOMOC ON)
+    set_property(TARGET QSanguosha PROPERTY AUTOUIC ON)
+    set_property(TARGET QSanguosha PROPERTY AUTORCC ON)
+
+    swig_add_library(qsanguosha_wrap
+        TYPE STATIC
+        LANGUAGE lua
+        SOURCES src/swig/sgs.i
+        )
+
+    # ONLY FOR THEIR INCLUDE DIRECTORIES! Compile fails if we don't add the link libraries.
+    # Seems weird since we don't even link the libraries here
+    target_link_libraries(qsanguosha_wrap Qt5::Core)
+    if (lua54_FOUND)
+        target_link_libraries(qsanguosha_wrap PkgConfig::lua54)
+    endif()
+
+    target_link_libraries (QSanguosha qsanguosha_wrap Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network)
+    target_compile_definitions(QSanguosha PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
+
+    if (Qt5Multimedia_FOUND)
+        target_compile_definitions(QSanguosha PUBLIC AUDIO_SUPPORT)
+        target_link_libraries (QSanguosha Qt5::Multimedia)
+        if (NOT oggvorbisfile_FOUND)
+            target_link_libraries (QSanguosha oggvorbisfile)
+        else()
+            target_link_libraries (QSanguosha PkgConfig::oggvorbisfile)
+        endif()
+    endif()
+
+    if (WIN32)
+        target_link_libraries(QSanguosha Qt5::WinExtras)
+    else()
+        target_link_libraries(QSanguosha dl)
+    endif()
+
+    if (NOT lua54_FOUND)
+        target_link_libraries(QSanguosha lua54)
+    else()
+        target_link_libraries(QSanguosha PkgConfig::lua54)
+    endif()
+
+    target_compile_definitions(QSanguosha PUBLIC -DOV_EXCLUDE_STATIC_CALLBACKS PUBLIC -DQT_NO_CAST_FROM_ASCII)
+    target_precompile_headers(QSanguosha PUBLIC src/pch.h)
+endif()
+
+if (Qt6_FOUND)
+    add_executable (Q6Sanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc )
+
+    set_property(TARGET Q6Sanguosha PROPERTY AUTOMOC ON)
+    set_property(TARGET Q6Sanguosha PROPERTY AUTOUIC ON)
+    set_property(TARGET Q6Sanguosha PROPERTY AUTORCC ON)
+
+    swig_add_library(q6sanguosha_wrap
+        TYPE STATIC
+        LANGUAGE lua
+        SOURCES src/swig/sgs.i
+        )
+
+    # ONLY FOR THEIR INCLUDE DIRECTORIES! Compile fails if we don't add the link libraries.
+    # Seems weird since we don't even link the libraries here
+    target_link_libraries(q6sanguosha_wrap Qt6::Core)
+    if (lua54_FOUND)
+        target_link_libraries(q6sanguosha_wrap PkgConfig::lua54)
+    endif()
+
+    target_link_libraries(Q6Sanguosha q6sanguosha_wrap Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network)
+    target_compile_definitions(Q6Sanguosha PUBLIC VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
+
+    if (Qt6Multimedia_FOUND)
+        target_compile_definitions(QSanguosha PUBLIC AUDIO_SUPPORT)
+        target_link_libraries (QSanguosha Qt6::Multimedia)
+        if (NOT oggvorbisfile_FOUND)
+            target_link_libraries (QSanguosha oggvorbisfile)
+        else()
+            target_link_libraries (QSanguosha PkgConfig::oggvorbisfile)
+        endif()
+    endif()
+
+    if (NOT WIN32)
+        target_link_libraries(Q6Sanguosha dl)
+    endif()
+
+    if (NOT lua54_FOUND)
+        target_link_libraries(Q6Sanguosha lua54)
+    else()
+        target_link_libraries(Q6Sanguosha PkgConfig::lua54)
+    endif()
+
+    target_compile_definitions(Q6Sanguosha PUBLIC -DOV_EXCLUDE_STATIC_CALLBACKS PUBLIC -DQT_NO_CAST_FROM_ASCII)
+    target_precompile_headers(Q6Sanguosha PUBLIC src/pch.h)
+endif()

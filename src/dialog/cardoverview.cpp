@@ -201,7 +201,7 @@ void CardOverview::on_playAudioEffectButton_clicked()
     if (row >= 0) {
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
         const CardDescriptor &card = Sanguosha->getEngineCard(card_id);
-        if (card.face()->name() == QSanguosha::TypeEquip) {
+        if (card.face()->type() == QSanguosha::TypeEquip) {
             QString effectName = card.face()->effectName();
             if (effectName == QStringLiteral("vscrossbow"))
                 effectName = QStringLiteral("crossbow");

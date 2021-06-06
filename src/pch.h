@@ -35,7 +35,6 @@
 #include <QAnimationGroup>
 #include <QApplication>
 #include <QAtomicPointer>
-#include <QAudioOutput>
 #include <QBitmap>
 #include <QBoxLayout>
 #include <QBrush>
@@ -146,7 +145,6 @@
 #include <QRandomGenerator>
 #include <QRect>
 #include <QRectF>
-#include <QRegExp>
 #include <QRegion>
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
@@ -163,6 +161,7 @@
 #include <QSpinBox>
 #include <QSplitter>
 #include <QStack>
+#include <QStandardPaths>
 #include <QStatusBar>
 #include <QString>
 #include <QStringList>
@@ -175,7 +174,6 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QTextBrowser>
-#include <QTextCodec>
 #include <QTextCursor>
 #include <QTextDocument>
 #include <QTextEdit>
@@ -200,7 +198,15 @@
 #include <QWaitCondition>
 #include <QWidget>
 
-#ifdef Q_OS_WIN
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#include <QRegExp>
+#endif
+
+#ifdef QT_MULTIMEDIA_LIB
+#include <QAudioOutput>
+#endif
+
+#ifdef QT_WINEXTRAS_LIB
 #include <QWinTaskbarButton>
 #include <QWinTaskbarProgress>
 #endif

@@ -186,7 +186,9 @@ void IQSanComponentSkin::QSanSimpleTextFont::paintText(QPainter *painter, QRect 
     if (text.size() == 0)
         return;
     QFont f;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     f.setWeight(m_weight);
+#endif
     f.setPixelSize(m_fontSize.width());
     if (!m_family_name.isEmpty())
         f.setFamily(m_family_name);
@@ -1158,7 +1160,7 @@ const QSanRoomSkin &QSanSkinScheme::getRoomSkin() const
 QSanSkinFactory &QSanSkinFactory::getInstance()
 {
     if (_sm_singleton == nullptr) {
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN)
         _sm_singleton = new QSanSkinFactory("skins/skinList.json");
 #else
         _sm_singleton = new QSanSkinFactory("skins/skinListAlt.json");

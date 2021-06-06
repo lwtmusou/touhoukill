@@ -42,8 +42,14 @@ int main(int argc, char *argv[])
 
     QTranslator qt_translator;
     QTranslator translator;
-    qt_translator.load(QStringLiteral("qt_zh_CN.qm"));
-    translator.load(QStringLiteral("sanguosha.qm"));
+
+    if (!qt_translator.load(QStringLiteral("qt_zh_CN.qm"))) {
+        qDebug() << "Unable to load qt_zh_CN.qm";
+    }
+
+    if (!translator.load(QStringLiteral("sanguosha.qm"))) {
+        qDebug() << "Unable to load sanguosha.qm";
+    }
 
     QCoreApplication::installTranslator(&qt_translator);
     QCoreApplication::installTranslator(&translator);

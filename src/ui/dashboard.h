@@ -19,7 +19,7 @@
 #include <QPropertyAnimation>
 #include <QPushButton>
 
-#ifdef Q_OS_WIN
+#ifdef QT_WINEXTRAS_LIB
 class QWinTaskbarButton;
 #endif
 
@@ -151,7 +151,7 @@ public slots:
     void controlNullificationButton(bool show);
     void updateHandPile();
 
-#ifdef Q_OS_WIN
+#ifdef QT_WINEXTRAS_LIB
     void updateTimedProgressBar(time_t val, time_t max);
 #endif
     void onCardItemHover();
@@ -290,7 +290,7 @@ protected:
     QList<CardItem *> _m_cardItemsAnimationFinished;
     QMutex m_mutexCardItemsAnimationFinished;
 
-#ifdef Q_OS_WIN
+#ifdef QT_WINEXTRAS_LIB
     QWinTaskbarButton *taskbarButton;
 #endif
 

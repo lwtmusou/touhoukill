@@ -239,6 +239,7 @@ public:
 class AbstractPacket
 {
 public:
+    virtual ~AbstractPacket() = default;
     virtual bool parse(const QByteArray &) = 0;
     virtual QByteArray toJson() const = 0;
     virtual QString toString() const = 0;

@@ -14,6 +14,8 @@
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QRandomGenerator>
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
 #include <QTextCursor>
 #include <QTextDocument>
 #include <QTimer>
@@ -180,7 +182,11 @@ Client::Client(QObject *parent, const QString &filename)
 
 void Client::updateCard(const QVariant &val)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    if (JsonUtils::isNumber(QVariant(val.metaType()))) {
+#else
     if (JsonUtils::isNumber(val.type())) {
+#endif
         // reset card
         int cardId = val.toInt();
         Card *card = getCard(cardId);
@@ -1007,9 +1013,9 @@ Replayer *Client::getReplayer() const
 
 QString Client::getPlayerName(const QString &str)
 {
-    QRegExp rx(QStringLiteral("sgs\\d+"));
+    QRegularExpression rx(QRegularExpression::anchoredPattern(QStringLiteral("sgs\\d+")));
     QString general_name;
-    if (rx.exactMatch(str)) {
+    if (rx.match(str).hasMatch()) {
         ClientPlayer *player = getPlayer(str);
         general_name = player->getGeneralName();
         general_name = Sanguosha->translate(general_name);
@@ -1069,12 +1075,6 @@ QString Client::setPromptList(const QStringList &texts)
     return prompt;
 }
 
-void Client::commandFormatWarning(const QString &str, const QRegExp &rx, const char *command)
-{
-    QString text = tr("The argument (%1) of command %2 does not conform the format %3").arg(str).arg(QString::fromUtf8(command)).arg(rx.pattern());
-    QMessageBox::warning(nullptr, tr("Command format warning"), text);
-}
-
 QString Client::_processCardPattern(const QString &pattern)
 {
     const QChar c = pattern.at(pattern.length() - 1);
@@ -1104,9 +1104,10 @@ void Client::askForCardOrUseCard(const QVariant &cardUsage)
     m_isDiscardActionRefusable = !card_pattern.endsWith(QStringLiteral("!"));
 
     QString temp_pattern = _processCardPattern(card_pattern);
-    QRegExp rx(QStringLiteral("^@@?(\\w+)(-card)?$"));
-    if (rx.exactMatch(temp_pattern)) {
-        QString skill_name = rx.capturedTexts().at(1);
+    QRegularExpression rx(QRegularExpression::anchoredPattern(QStringLiteral("^@@?(\\w+)(-card)?$")));
+    QRegularExpressionMatch match;
+    if ((match = rx.match(temp_pattern)).hasMatch()) {
+        QString skill_name = match.capturedTexts().at(1);
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if (skill != nullptr) {
             QString text = prompt_doc->toHtml();

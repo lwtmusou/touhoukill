@@ -272,7 +272,6 @@ private:
     void updatePileNum();
     QString setPromptList(const QStringList &text);
     QString _processCardPattern(const QString &pattern);
-    void commandFormatWarning(const QString &str, const QRegExp &rx, const char *command);
 
     bool _loseSingleCard(int card_id, const CardsMoveStruct &move);
     bool _getSingleCard(int card_id, const CardsMoveStruct &move);
