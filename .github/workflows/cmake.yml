@@ -22,15 +22,17 @@ jobs:
         with:
           path: touhoukill-refactor
 
-      - name: Install Qt5
-        uses: jurplel/install-qt-action@v2
-        with:
-          version: '5.15.2'
-
       - name: Install Qt6
         uses: jurplel/install-qt-action@v2
         with:
           version: '6.1.0'
+          dir: '${{ github.workspace }}/Qt6/'
+
+      - name: Install Qt5
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: '5.15.2'
+          dir: '${{ github.workspace }}/Qt5/'
 
       - uses: lukka/get-cmake@latest
 
