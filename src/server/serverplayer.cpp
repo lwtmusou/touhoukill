@@ -1154,7 +1154,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
 
     if (isHegemonyGameMode(room->getMode())) {
         QVariant RoleConfirmedTag = room->getTag(this->objectName() + QStringLiteral("_RoleConfirmed"));
-        bool roleConfirmed = RoleConfirmedTag.canConvert(QVariant::Bool) && RoleConfirmedTag.toBool();
+        bool roleConfirmed = RoleConfirmedTag.canConvert<bool>() && RoleConfirmedTag.toBool();
         if (player == this || hasShownOneGeneral() || roleConfirmed) {
             room->notifyProperty(player, this, "kingdom");
             room->notifyProperty(player, this, "role");
@@ -1883,7 +1883,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
 
     QVariant RoleConfirmedTag = room->getTag(this->objectName() + QStringLiteral("_RoleConfirmed"));
 
-    bool roleConfirmed = RoleConfirmedTag.canConvert(QVariant::Bool) && RoleConfirmedTag.toBool();
+    bool roleConfirmed = RoleConfirmedTag.canConvert<bool>() && RoleConfirmedTag.toBool();
     bool notify_role = !roleConfirmed;
 
     room->tryPause();
@@ -1983,7 +1983,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         foreach (ServerPlayer *p, room->getOtherPlayers(this, true)) {
             if (p->getRole() == role) {
                 QVariant RoleConfirmedTag1 = room->getTag(p->objectName() + QStringLiteral("_RoleConfirmed"));
-                bool roleConfirmed1 = RoleConfirmedTag1.canConvert(QVariant::Bool) && RoleConfirmedTag1.toBool();
+                bool roleConfirmed1 = RoleConfirmedTag1.canConvert<bool>() && RoleConfirmedTag1.toBool();
                 if (roleConfirmed1 && p->getRole() != QStringLiteral("careerist"))
                     ++i;
             }
@@ -1993,7 +1993,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
             if ((i + 1) > (room->getPlayers().length() / 2)) { // set hidden careerist
                 foreach (ServerPlayer *p, room->getOtherPlayers(this, true)) {
                     QVariant RoleConfirmedTag1 = room->getTag(p->objectName() + QStringLiteral("_RoleConfirmed"));
-                    bool roleConfirmed1 = RoleConfirmedTag1.canConvert(QVariant::Bool) && RoleConfirmedTag1.toBool();
+                    bool roleConfirmed1 = RoleConfirmedTag1.canConvert<bool>() && RoleConfirmedTag1.toBool();
                     if (p->isAlive() && !roleConfirmed1 && role == p->getRole()) {
                         p->setRole(QStringLiteral("careerist"));
                         room->notifyProperty(p, p, "role", QStringLiteral("careerist"));

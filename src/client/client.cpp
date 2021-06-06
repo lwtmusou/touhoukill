@@ -182,11 +182,7 @@ Client::Client(QObject *parent, const QString &filename)
 
 void Client::updateCard(const QVariant &val)
 {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    if (JsonUtils::isNumber(QVariant(val.metaType()))) {
-#else
-    if (JsonUtils::isNumber(val.type())) {
-#endif
+    if (JsonUtils::isNumber(val)) {
         // reset card
         int cardId = val.toInt();
         Card *card = getCard(cardId);
