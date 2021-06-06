@@ -971,7 +971,7 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
     JsonArray skillCommand;
     if (!prompt.isNull())
         skillCommand << skill_name << prompt;
-    else if (data.canConvert(QVariant::String))
+    else if (data.canConvert<QString>())
         skillCommand << skill_name << data.toString();
     else {
         ServerPlayer *player = data.value<ServerPlayer *>();
@@ -985,7 +985,7 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
         invoked = false;
     } else {
         QVariant clientReply = player->getClientReply();
-        if (clientReply.canConvert(QVariant::Bool))
+        if (clientReply.canConvert<bool>())
             invoked = clientReply.toBool();
     }
 
@@ -1032,7 +1032,7 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
     else {
         bool success = doRequest(player, S_COMMAND_MULTIPLE_CHOICE, JsonArray() << skillname << choices, true);
         QVariant clientReply = player->getClientReply();
-        if (!success || !clientReply.canConvert(QVariant::String)) {
+        if (!success || !clientReply.canConvert<QString>()) {
             answer = QStringLiteral("cancel");
         } else
             answer = clientReply.toString();
@@ -2777,7 +2777,7 @@ void Room::cheat(ServerPlayer *player, const QVariant &args)
     player->m_cheatArgs = QVariant();
     if (!Config.EnableCheat)
         return;
-    if (!args.canConvert<JsonArray>() || !args.value<JsonArray>().value(0).canConvert(QVariant::Int))
+    if (!args.canConvert<JsonArray>() || !args.value<JsonArray>().value(0).canConvert<int>())
         return;
 
     player->m_cheatArgs = args;
@@ -2817,7 +2817,7 @@ bool Room::makeSurrender(ServerPlayer *initiator)
     int hegemony_give_up = 1;
     foreach (ServerPlayer *player, playersAlive) {
         bool result = false;
-        if (!player->m_isClientResponseReady || !player->getClientReply().canConvert(QVariant::Bool))
+        if (!player->m_isClientResponseReady || !player->getClientReply().canConvert<bool>())
             result = player->getState() != QStringLiteral("online");
         else
             result = player->getClientReply().toBool();

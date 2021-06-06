@@ -452,7 +452,7 @@ if (Qt6_FOUND)
     # Seems weird since we don't even link the libraries here
     target_link_libraries(q6sanguosha_wrap QSanguoshaLibs::lua54 Qt6::Core)
 
-    target_compile_definitions(Q6Sanguosha PUBLIC VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
+    target_compile_definitions(Q6Sanguosha PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60099 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
     target_link_libraries(Q6Sanguosha q6sanguosha_wrap QSanguoshaLibs::lua54)
 
     if (Qt6Multimedia_FOUND)

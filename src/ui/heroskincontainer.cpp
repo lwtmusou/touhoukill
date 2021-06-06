@@ -66,7 +66,6 @@ bool HeroSkinContainer::hasSkin(const QString &generalName)
         QStringList files = HeroSkinContainer::getHeroSkinFiles(generalName);
         foreach (const QString &file, files) {
             QRegularExpressionMatch match;
-            //if (SKIN_FILE_NAME_PATTERN.exactMatch(file)) {
             if ((match = SKIN_FILE_NAME_PATTERN.match(file)).hasMatch()) {
                 m_generalToHasSkin[generalName] = true;
                 break;
