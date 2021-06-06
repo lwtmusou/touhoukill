@@ -249,7 +249,9 @@ if (WIN32)
     configure_file(resource/QSanguosha_resource.rc.in QSanguosha_resource.rc @ONLY)
 endif()
 
-if (NOT lua54_FOUND)
+if (lua54_FOUND)
+    add_library(QSanguoshaLibs::lua54 ALIAS PkgConfig::lua54)
+else()
     set(LUA_FILE
         src/lua/lfunc.c
         src/lua/lgc.c
@@ -316,6 +318,7 @@ if (NOT lua54_FOUND)
 
     include_directories("include/lua")
     add_library(lua54 STATIC ${LUA_FILE})
+    add_library(QSanguoshaLibs::lua54 ALIAS lua54)
 endif()
 
 if (Qt5Multimedia_FOUND OR Qt6Multimedia_FOUND)
@@ -323,7 +326,9 @@ if (Qt5Multimedia_FOUND OR Qt6Multimedia_FOUND)
         pkg_check_modules(oggvorbisfile IMPORTED_TARGET GLOBAL ogg>=1.0.0 vorbis>=1.0.0 vorbisfile>=1.0.0)
     endif()
 
-    if (NOT oggvorbisfile_FOUND)
+    if (oggvorbisfile_FOUND)
+        add_library(QSanguoshaLibs::oggvorbisfile ALIAS PkgConfig::oggvorbisfile)
+    else()
         set(OGG_FILE
             src/ogg/backends.h
             src/ogg/bitrate.h
@@ -383,6 +388,7 @@ if (Qt5Multimedia_FOUND OR Qt6Multimedia_FOUND)
         if (MSVC)
             target_compile_options(oggvorbisfile BEFORE PUBLIC "-wd4244" PUBLIC "-wd4305" PUBLIC "-wd4267")
         endif()
+        add_library(QSanguoshaLibs::oggvorbisfile ALIAS oggvorbisfile)
     endif()
 endif()
 
@@ -401,20 +407,10 @@ if (Qt5_FOUND)
 
     # ONLY FOR THEIR INCLUDE DIRECTORIES! Compile fails if we don't add the link libraries.
     # Seems weird since we don't even link the libraries here
-    target_link_libraries(qsanguosha_wrap Qt5::Core)
-    if (lua54_FOUND)
-        target_link_libraries(qsanguosha_wrap PkgConfig::lua54)
-    endif()
+    target_link_libraries(qsanguosha_wrap QSanguoshaLibs::lua54 Qt5::Core)
 
     target_compile_definitions(QSanguosha PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
-
-    target_link_libraries(QSanguosha qsanguosha_wrap)
-
-    if (NOT lua54_FOUND)
-        target_link_libraries(QSanguosha lua54)
-    else()
-        target_link_libraries(QSanguosha PkgConfig::lua54)
-    endif()
+    target_link_libraries(QSanguosha qsanguosha_wrap QSanguoshaLibs::lua54)
 
     if (WIN32)
         target_link_libraries(QSanguosha Qt5::WinExtras)
@@ -422,12 +418,7 @@ if (Qt5_FOUND)
 
     if (Qt5Multimedia_FOUND)
         target_compile_definitions(QSanguosha PUBLIC AUDIO_SUPPORT)
-        if (NOT oggvorbisfile_FOUND)
-            target_link_libraries (QSanguosha oggvorbisfile)
-        else()
-            target_link_libraries (QSanguosha PkgConfig::oggvorbisfile)
-        endif()
-        target_link_libraries (QSanguosha Qt5::Multimedia)
+        target_link_libraries (QSanguosha QSanguoshaLibs::oggvorbisfile Qt5::Multimedia)
     endif()
 
     target_link_libraries (QSanguosha Qt5::Widgets Qt5::Gui Qt5::Network Qt5::Core)
@@ -455,28 +446,14 @@ if (Qt6_FOUND)
 
     # ONLY FOR THEIR INCLUDE DIRECTORIES! Compile fails if we don't add the link libraries.
     # Seems weird since we don't even link the libraries here
-    target_link_libraries(q6sanguosha_wrap Qt6::Core)
-    if (lua54_FOUND)
-        target_link_libraries(q6sanguosha_wrap PkgConfig::lua54)
-    endif()
+    target_link_libraries(q6sanguosha_wrap QSanguoshaLibs::lua54 Qt6::Core)
 
     target_compile_definitions(Q6Sanguosha PUBLIC VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
-    target_link_libraries(Q6Sanguosha q6sanguosha_wrap)
-
-    if (NOT lua54_FOUND)
-        target_link_libraries(Q6Sanguosha lua54)
-    else()
-        target_link_libraries(Q6Sanguosha PkgConfig::lua54)
-    endif()
+    target_link_libraries(Q6Sanguosha q6sanguosha_wrap QSanguoshaLibs::lua54)
 
     if (Qt6Multimedia_FOUND)
         target_compile_definitions(QS6anguosha PUBLIC AUDIO_SUPPORT)
-        target_link_libraries (Q6Sanguosha Qt6::Multimedia)
-        if (NOT oggvorbisfile_FOUND)
-            target_link_libraries (Q6Sanguosha oggvorbisfile)
-        else()
-            target_link_libraries (Q6Sanguosha PkgConfig::oggvorbisfile)
-        endif()
+        target_link_libraries (QSanguosha QSanguoshaLibs::oggvorbisfile Qt6::Multimedia)
     endif()
 
     target_link_libraries(Q6Sanguosha Qt6::Widgets Qt6::Gui Qt6::Network Qt6::Core)
