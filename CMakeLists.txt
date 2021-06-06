@@ -37,7 +37,7 @@ endif()
 
 if(APPLE)
     add_compile_definitions(LUA_USE_MACOSX)
-else()
+elseif(NOT WIN32)
     add_compile_definitions(LUA_USE_LINUX)
 endif()
 
