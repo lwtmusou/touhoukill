@@ -214,6 +214,8 @@
 #include <lua.hpp>
 #endif
 
+#ifdef AUDIO_SUPPORT
 #include <vorbis/vorbisfile.h>
+#endif
 
 #endif
