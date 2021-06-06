@@ -198,10 +198,6 @@
 #include <QWaitCondition>
 #include <QWidget>
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include <QRegExp>
-#endif
-
 #ifdef QT_MULTIMEDIA_LIB
 #include <QAudioOutput>
 #endif

@@ -686,60 +686,6 @@ void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, 
     Q_UNUSED(packages);
 
     Q_UNIMPLEMENTED();
-
-#if 0
-    QList<const General *> generals;
-    foreach (const General *general, all_generals) {
-        QString general_name = general->objectName();
-        if (!include_hidden && Sanguosha->isGeneralHidden(general_name))
-            continue;
-        if (!nickname.isEmpty()) {
-            QString v_nickname = nickname;
-            v_nickname.replace(QStringLiteral("?"), QStringLiteral("."));
-            v_nickname.replace(QStringLiteral("*"), QStringLiteral(".*"));
-            QRegExp rx(v_nickname);
-
-            QString g_nickname = Sanguosha->translate(QStringLiteral("#") + general_name);
-            if (g_nickname.startsWith(QStringLiteral("#")))
-                g_nickname = Sanguosha->translate(QStringLiteral("#") + general_name.split(QStringLiteral("_")).first());
-            if (!rx.exactMatch(g_nickname))
-                continue;
-        }
-        if (!name.isEmpty()) {
-            QString v_name = name;
-            v_name.replace(QStringLiteral("?"), QStringLiteral("."));
-            v_name.replace(QStringLiteral("*"), QStringLiteral(".*"));
-            QRegExp rx(v_name);
-
-            QString g_name = Sanguosha->translate(general_name);
-            if (!rx.exactMatch(g_name))
-                continue;
-        }
-        if (!genders.isEmpty()) {
-            if (general->isMale() && !genders.contains(QStringLiteral("male")))
-                continue;
-            if (general->isFemale() && !genders.contains(QStringLiteral("female")))
-                continue;
-            if (general->isNeuter() && !genders.contains(QStringLiteral("nogender")))
-                continue;
-        }
-        if (!kingdoms.isEmpty() && !kingdoms.contains(general->getKingdom()))
-            continue;
-        if (!(lower == 0 && upper == 0) && (general->getMaxHp() < lower || general->getMaxHp() > upper))
-            continue;
-        if (!packages.isEmpty() && !packages.contains(general->getPackage()))
-            continue;
-        generals << general;
-    }
-    if (generals.isEmpty()) {
-        QMessageBox::warning(this, tr("Warning"), tr("No generals are found"));
-    } else {
-        ui->returnButton->show();
-        if (windowTitle() == origin_window_title)
-            setWindowTitle(windowTitle() + QStringLiteral(" ") + tr("Search..."));
-        fillGenerals(generals, false);
-    }
-#endif
 }
 
 void GeneralOverview::fillAllGenerals()

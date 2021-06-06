@@ -42,7 +42,7 @@ elseif(NOT WIN32)
 endif()
 
 find_program(SWIG_EXECUTABLE swig)
-if (WIN32)
+if (CMAKE_HOST_WIN32)
     find_program(SWIG_EXECUTABLE swig.exe ${CMAKE_CURRENT_LIST_DIR}/tools/swig)
 endif()
 
@@ -393,7 +393,11 @@ if (Qt5Multimedia_FOUND OR Qt6Multimedia_FOUND)
 endif()
 
 if (Qt5_FOUND)
-    add_executable (QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc )
+    if (NOT ANDROID)
+        add_executable(QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc )
+    else()
+        add_library(QSanguosha MODULE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc )
+    endif()
 
     set_property(TARGET QSanguosha PROPERTY AUTOMOC ON)
     set_property(TARGET QSanguosha PROPERTY AUTOUIC ON)

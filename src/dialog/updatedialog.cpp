@@ -328,8 +328,9 @@ void UpdateDialog::startUpdate()
     QProcess::startDetached(QStringLiteral("wscript"), arg, QCoreApplication::applicationDirPath());
 #else
 #ifdef Q_OS_ANDROID
-    if (m_updateScript == "jni") {
+    if (m_updateScript == QStringLiteral("jni")) {
         // call jni
+        Q_UNIMPLEMENTED();
     } else {
 #endif
         QStringList arg;
