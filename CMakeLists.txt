@@ -244,9 +244,9 @@ set (QSanguosha_MOCS
 
 if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-    configure_file(resource/QSanguosha_resource.rc.in QSanguosha_resource.rc @ONLY)
     set(QSanguosha_SRCS ${QSanguosha_SRCS} QSanguosha_resource.rc)
     set(QSanguosha_Icon_RC ${CMAKE_CURRENT_LIST_DIR}/resource/icon/sgs.ico)
+    configure_file(resource/QSanguosha_resource.rc.in QSanguosha_resource.rc @ONLY)
 endif()
 
 if (NOT lua54_FOUND)
@@ -459,12 +459,12 @@ if (Qt6_FOUND)
     target_compile_definitions(Q6Sanguosha PUBLIC VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
 
     if (Qt6Multimedia_FOUND)
-        target_compile_definitions(QSanguosha PUBLIC AUDIO_SUPPORT)
-        target_link_libraries (QSanguosha Qt6::Multimedia)
+        target_compile_definitions(QS6anguosha PUBLIC AUDIO_SUPPORT)
+        target_link_libraries (Q6Sanguosha Qt6::Multimedia)
         if (NOT oggvorbisfile_FOUND)
-            target_link_libraries (QSanguosha oggvorbisfile)
+            target_link_libraries (Q6Sanguosha oggvorbisfile)
         else()
-            target_link_libraries (QSanguosha PkgConfig::oggvorbisfile)
+            target_link_libraries (Q6Sanguosha PkgConfig::oggvorbisfile)
         endif()
     endif()
 
