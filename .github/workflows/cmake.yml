@@ -66,17 +66,17 @@ jobs:
 
       - name: install Qt5
         run : |
-          New-Item -Path "." -Name "Qt" -ItemType "directory";
-          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20210511/Qt5.15.2-Windows-x86_64-VS2019-16.9.5-20210513.7z","Qt/Qt5.15.2-Windows-x86_64-VS2019-16.9.5-20210513.7z");
-          cmd /c cd Qt "&&" 7z x Qt5.15.2-Windows-x86_64-VS2019-16.9.5-20210513.7z
-          .\Qt\Qt5.15.2-Windows-x86_64-VS2019-16.9.5\bin\qmake -query
+          New-Item -Path "." -Name "Qt5" -ItemType "directory";
+          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20210511/Qt5.15.2-Windows-x86_64-VS2019-16.9.5-20210513.7z","Qt5/Qt5.15.2-Windows-x86_64-VS2019-16.9.5-20210513.7z");
+          cmd /c cd Qt5 "&&" 7z x Qt5.15.2-Windows-x86_64-VS2019-16.9.5-20210513.7z
+          .\Qt5\Qt5.15.2-Windows-x86_64-VS2019-16.9.5\bin\qmake -query
 
       - name: install Qt6
         run : |
-          New-Item -Path "." -Name "Qt" -ItemType "directory";
-          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20210511/Qt6.1.0-Windows-x86_64-VS2019-16.9.4-20210508.7z","Qt/Qt6.1.0-Windows-x86_64-VS2019-16.9.4-20210508.7z");
-          cmd /c cd Qt "&&" 7z x Qt6.1.0-Windows-x86_64-VS2019-16.9.4-20210508.7z
-          .\Qt\Qt6.1.0-Windows-x86_64-VS2019-16.9.4\bin\qmake -query
+          New-Item -Path "." -Name "Qt6" -ItemType "directory";
+          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20210511/Qt6.1.0-Windows-x86_64-VS2019-16.9.4-20210508.7z","Qt6/Qt6.1.0-Windows-x86_64-VS2019-16.9.4-20210508.7z");
+          cmd /c cd Qt6 "&&" 7z x Qt6.1.0-Windows-x86_64-VS2019-16.9.4-20210508.7z
+          .\Qt6\Qt6.1.0-Windows-x86_64-VS2019-16.9.4\bin\qmake -query
 
       - name: run cmake+ninja
         shell: cmd
@@ -86,7 +86,7 @@ jobs:
           mkdir "build"
           cd "build"
           rmdir /s /q *
-          cmd /c cmake -GNinja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt\Qt5.15.2-Windows-x86_64-VS2019-16.9.5;${{ github.workspace }}\Qt\Qt6.1.0-Windows-x86_64-VS2019-16.9.4" "${{ github.workspace }}/touhoukill-refactor"
+          cmd /c cmake -GNinja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt5\Qt5.15.2-Windows-x86_64-VS2019-16.9.5;${{ github.workspace }}\Qt6\Qt6.1.0-Windows-x86_64-VS2019-16.9.4" "${{ github.workspace }}/touhoukill-refactor"
           ninja -k0
 
   build-mingw81:
@@ -106,17 +106,17 @@ jobs:
 
       - name: install Qt5
         run : |
-          New-Item -Path "." -Name "Qt" -ItemType "directory";
-          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20201217/Qt5.15.2-Windows-x86_64-MinGW8.1.0-20201214.7z","Qt/Qt5.15.2-Windows-x86_64-MinGW8.1.0-20201214.7z");
-          cmd /c cd Qt "&&" 7z x Qt5.15.2-Windows-x86_64-MinGW8.1.0-20201214.7z
-          .\Qt\Qt5.15.2-Windows-x86_64-MinGW8.1.0\bin\qmake -query
+          New-Item -Path "." -Name "Qt5" -ItemType "directory";
+          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20201217/Qt5.15.2-Windows-x86_64-MinGW8.1.0-20201214.7z","Qt5/Qt5.15.2-Windows-x86_64-MinGW8.1.0-20201214.7z");
+          cmd /c cd Qt5 "&&" 7z x Qt5.15.2-Windows-x86_64-MinGW8.1.0-20201214.7z
+          .\Qt5\Qt5.15.2-Windows-x86_64-MinGW8.1.0\bin\qmake -query
 
       - name: install Qt6
         run : |
-          New-Item -Path "." -Name "Qt" -ItemType "directory";
-          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20210511/Qt6.1.0-Windows-x86_64-MinGW8.1.0-20210508.7z","Qt/Qt6.1.0-Windows-x86_64-MinGW8.1.0-20210508.7z");
-          cmd /c cd Qt "&&" 7z x Qt6.1.0-Windows-x86_64-MinGW8.1.0-20210508.7z
-          .\Qt\Qt6.1.0-Windows-x86_64-MinGW8.1.0\bin\qmake -query
+          New-Item -Path "." -Name "Qt6" -ItemType "directory";
+          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20210511/Qt6.1.0-Windows-x86_64-MinGW8.1.0-20210508.7z","Qt6/Qt6.1.0-Windows-x86_64-MinGW8.1.0-20210508.7z");
+          cmd /c cd Qt6 "&&" 7z x Qt6.1.0-Windows-x86_64-MinGW8.1.0-20210508.7z
+          .\Qt6\Qt6.1.0-Windows-x86_64-MinGW8.1.0\bin\qmake -query
 
       - name: run cmake+ninja
         shell: cmd
@@ -125,7 +125,7 @@ jobs:
           mkdir "build"
           cd "build"
           rmdir /s /q *
-          cmd /c cmake -G"MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt\Qt5.15.2-Windows-x86_64-MinGW8.1.0;${{ github.workspace }}\Qt\Qt6.1.0-Windows-x86_64-MinGW8.1.0" "${{ github.workspace }}/touhoukill-refactor"
+          cmd /c cmake -G"MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt5\Qt5.15.2-Windows-x86_64-MinGW8.1.0;${{ github.workspace }}\Qt6\Qt6.1.0-Windows-x86_64-MinGW8.1.0" "${{ github.workspace }}/touhoukill-refactor"
           mingw32-make -k -j%NUMBER_OF_PROCESSORS%
 
   build-mingwmsys5:
