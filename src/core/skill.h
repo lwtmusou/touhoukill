@@ -124,6 +124,8 @@ struct ViewAsSkillSelection
     // Expandable when next is not empty, with a list of "next"
     QString name;
     QList<ViewAsSkillSelection *> next;
+
+    ~ViewAsSkillSelection();
 };
 
 class ViewAsSkillPrivate;
@@ -160,7 +162,7 @@ public:
     virtual bool isEnabledAtPlay(const Player *player) const;
     virtual bool isEnabledAtResponse(const Player *player, CardUseStruct::CardUseReason reason, const QString &pattern) const;
 
-    virtual const ViewAsSkillSelection *selections() const;
+    virtual const ViewAsSkillSelection *selections(const Player *Self) const;
     virtual bool isSelectionEnabled(const QStringList &name, const Player *Self) const;
 
 private:
