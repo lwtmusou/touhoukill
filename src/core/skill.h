@@ -117,6 +117,15 @@ private:
     SkillPrivate *d;
 };
 
+// Selection, should be returned by Client::currentViewAsSkillSelectionChain
+struct ViewAsSkillSelection
+{
+    // Selectable when next is empty
+    // Expandable when next is not empty, with a list of "next"
+    QString name;
+    QList<ViewAsSkillSelection *> next;
+};
+
 class ViewAsSkillPrivate;
 
 class ViewAsSkill : public Skill
@@ -150,6 +159,9 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const;
     virtual bool isEnabledAtResponse(const Player *player, CardUseStruct::CardUseReason reason, const QString &pattern) const;
+
+    virtual const ViewAsSkillSelection *selections() const;
+    virtual bool isSelectionEnabled(const QStringList &name, const Player *Self) const;
 
 private:
     ViewAsSkillPrivate *d;

@@ -337,6 +337,9 @@ public:
 
     QVariantMap tag;
 
+    // it should features a setter, which set by UI
+    QStringList currentViewAsSkillSelectionChain() const;
+
 protected:
     QMap<QString, int> marks;
     QMap<QString, IDSet> piles;

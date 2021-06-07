@@ -241,6 +241,105 @@ bool ViewAsSkill::isEnabledAtResponse(const Player * /*unused*/, CardUseStruct::
     return false;
 }
 
+#if 0
+// Example for Guhuo
+class Guhuo : public OneCardViewAsSkill
+{
+    Guhuo()
+        : OneCardViewAsSkill(QStringLiteral("guhuo"))
+    {
+        // generate list of selections
+        root = new ViewAsSkillSelection {QStringLiteral("Guhuo")};
+        ViewAsSkillSelection *basicCard = new ViewAsSkillSelection {QStringLiteral("BasicCard")};
+        ViewAsSkillSelection *trickCard = new ViewAsSkillSelection {QStringLiteral("TrickCard")};
+        ViewAsSkillSelection *ndTrick = new ViewAsSkillSelection {QStringLiteral("NonDelayedTrick")};
+        ViewAsSkillSelection *dTrick = new ViewAsSkillSelection {QStringLiteral("DelayedTrick")};
+        root->next << basicCard << trickCard;
+        trickCard->next << ndTrick << dTrick;
+        _selections << root << basicCard << trickCard << ndTrick << dTrick;
+
+        QSet<QString> added;
+
+        int count = Sanguosha->getCardCount();
+        for (int i = 0; i < count; ++i) {
+            const CardDescriptor &descriptor = Sanguosha->getEngineCard(i);
+            const CardFace *face = descriptor.face();
+            if (!added.contains(face->name())) {
+                ViewAsSkillSelection *selection = new ViewAsSkillSelection {face->name()};
+                _selections << selection;
+                if (face->type() == QSanguosha::TypeBasic) {
+                    // deal with Slash
+                    if (face->name() == QStringLiteral("Slash"))
+                        selection->name = QStringLiteral("NormalSlash");
+                    basicCard->next << selection;
+                } else if (face->type() == QSanguosha::TypeTrick) {
+                    if (face->isNDTrick())
+                        ndTrick->next << selection;
+                    else
+                        dTrick->next << selection;
+                }
+                added << face->name();
+            }
+        }
+    }
+
+    ~Guhuo() override
+    {
+        qDeleteAll(_selections);
+    }
+
+    bool viewFilter(const Card *to_select, const Player *Self) const override
+    {
+        return !Self->hasEquip(to_select);
+    }
+
+    const Card *viewAs(const Card *originalCard, const Player *Self) const override
+    {
+        QString selectedName = Self->currentViewAsSkillSelectionChain().last();
+        if (selectedName == QStringLiteral("NormalSlash"))
+            selectedName = QStringLiteral("Slash");
+
+        Card *card = Self->getRoomObject()->cloneCard(QStringLiteral("GuhuoCard"));
+        card->addSubcard(originalCard);
+        card->setUserString(selectedName);
+        return card;
+    }
+
+    Q_REQUIRED_RESULT const ViewAsSkillSelection *selections() const override
+    {
+        return root;
+    }
+
+    bool isSelectionEnabled(const QStringList &name, const Player *Self) const override
+    {
+        // e.g. name is something like {"Guhuo", "TrickCard", "NonDelayedTrick", "Dismantlement"}
+        // e.g. name is something like {"Guhuo", "BasicCard", "FireSlash"}
+        QString selectedName = name.last();
+        if (selectedName == QStringLiteral("NormalSlash"))
+            selectedName = QStringLiteral("Slash");
+
+        Card *viewAsCard = Self->getRoomObject()->cloneCard(selectedName, QSanguosha::NoSuit, QSanguosha::NumberNA);
+        bool available = viewAsCard->face()->isAvailable(Self, viewAsCard);
+        Self->getRoomObject()->cardDeleting(viewAsCard);
+        return available;
+    }
+
+private:
+    QList<ViewAsSkillSelection *> _selections;
+    ViewAsSkillSelection *root;
+};
+#endif
+
+const ViewAsSkillSelection *ViewAsSkill::selections() const
+{
+    return nullptr;
+}
+
+bool ViewAsSkill::isSelectionEnabled(const QStringList & /*unused*/, const Player * /*unused*/) const
+{
+    return true;
+}
+
 HandlingMethod ViewAsSkill::handlingMethod() const
 {
     return d->method;

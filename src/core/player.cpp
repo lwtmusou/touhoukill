@@ -2180,3 +2180,9 @@ bool Player::canTransform(bool head) const
     else
         return (getGeneral2() != nullptr) && !getGeneral2Name().contains(QStringLiteral("sujiang"));
 }
+
+QStringList Player::currentViewAsSkillSelectionChain() const
+{
+    Q_UNIMPLEMENTED();
+    return QStringList();
+}
