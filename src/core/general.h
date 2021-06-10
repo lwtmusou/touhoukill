@@ -77,7 +77,6 @@ public:
     }
 
 public slots:
-    void lastWord() const;
 
 private:
     const Package *package;

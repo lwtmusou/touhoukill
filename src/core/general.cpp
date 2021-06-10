@@ -200,18 +200,6 @@ QString General::getSkillDescription(bool include_name, bool yellow) const
     return description;
 }
 
-void General::lastWord() const
-{
-    QString filename = QStringLiteral("audio/death/%1.ogg").arg(objectName());
-    bool fileExists = QFile::exists(filename);
-    if (!fileExists) {
-        QStringList origin_generals = objectName().split(QStringLiteral("_"));
-        if (origin_generals.length() > 1)
-            filename = QStringLiteral("audio/death/%1.ogg").arg(origin_generals.first());
-    }
-    Sanguosha->playAudioEffect(filename);
-}
-
 void General::addCompanion(const QString &name)
 {
     this->companions << name;

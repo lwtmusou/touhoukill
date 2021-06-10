@@ -104,11 +104,6 @@ public:
     QString getRandomGeneralName() const;
     QStringList getLimitedGeneralNames() const;
 
-    // TODO: move Audio-related functions to UI
-    void playSystemAudioEffect(const QString &name) const;
-    void playAudioEffect(const QString &filename) const;
-    void playSkillAudioEffect(const QString &skill_name, int index) const;
-
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
     const TreatAsEquippingSkill *treatAsEquipping(const Player *player, const QString &equipName, QSanguosha::EquipLocation location) const;
     int correctDistance(const Player *from, const Player *to) const;

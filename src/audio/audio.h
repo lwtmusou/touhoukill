@@ -27,4 +27,13 @@ QStringList getBgmFileNames(const QString &fileNames, bool isGeneralName = false
 
 #endif // AUDIO_SUPPORT
 
+namespace Audio {
+
+void playSystemAudioEffect(const QString &name);
+void playAudioEffect(const QString &filename);
+void playSkillAudioEffect(const QString &skill_name, int index);
+void GeneralLastWord(const QString &generalName);
+
+} // namespace Audio
+
 #endif

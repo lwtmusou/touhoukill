@@ -120,7 +120,7 @@ void Button::hoverEnterEvent(QGraphicsSceneHoverEvent * /*event*/)
 {
     setFocus(Qt::MouseFocusReason);
     if (!mute)
-        Sanguosha->playSystemAudioEffect(QStringLiteral("button-hover"));
+        Audio::playSystemAudioEffect(QStringLiteral("button-hover"));
     if (timer_id == 0)
         timer_id = QObject::startTimer(40);
 }
@@ -133,7 +133,7 @@ void Button::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void Button::mouseReleaseEvent(QGraphicsSceneMouseEvent * /*event*/)
 {
     if (!mute)
-        Sanguosha->playSystemAudioEffect(QStringLiteral("button-down"));
+        Audio::playSystemAudioEffect(QStringLiteral("button-down"));
     emit clicked();
 }
 

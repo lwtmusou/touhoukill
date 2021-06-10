@@ -13,6 +13,7 @@
 
 #include <vorbis/vorbisfile.h>
 
+#include "settings.h"
 #include "util.h"
 
 static size_t read_from_qbuffer(void *ptr, size_t size, size_t nmemb, void *datasource)
@@ -397,8 +398,53 @@ QStringList getBgmFileNames(const QString &fileNames, bool isGeneralName)
 
     return all;
 }
+
+} // namespace Audio
+#endif // AUDIO_SUPPORT
+
+namespace Audio {
+
+void playSystemAudioEffect(const QString &name)
+{
+    playAudioEffect(QStringLiteral("audio/system/%1.ogg").arg(name));
+}
+
+void playAudioEffect(const QString &filename)
+{
+#ifdef AUDIO_SUPPORT
+    if (!Config.EnableEffects)
+        return;
+    if (filename.isNull())
+        return;
+
+    Audio::play(filename);
+#endif
+}
+
+void playSkillAudioEffect(const QString & /*unused*/, int /*unused*/)
+{
+    // TODO: move this function to UI
+#if 0
+    const Skill *skill = skills.value(skill_name, NULL);
+    if (skill)
+        skill->playAudioEffect(index);
+#endif
+}
+
+void GeneralLastWord(const QString &generalName)
+{
+    QString filename = QStringLiteral("audio/death/%1.ogg").arg(generalName);
+    bool fileExists = QFile::exists(filename);
+    if (!fileExists) {
+        QStringList origin_generals = generalName.split(QStringLiteral("_"));
+        if (origin_generals.length() > 1)
+            filename = QStringLiteral("audio/death/%1.ogg").arg(origin_generals.first());
+    }
+    Audio::playAudioEffect(filename);
+}
+
 } // namespace Audio
 
+#ifdef AUDIO_SUPPORT
 #include "audio.moc"
-
-#endif // AUDIO_SUPPORT
+#endif

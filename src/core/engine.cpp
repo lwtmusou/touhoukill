@@ -981,33 +981,6 @@ QString Engine::getRandomGeneralName() const
     return generals.keys().at(QRandomGenerator::global()->generate() % generals.size());
 }
 
-void Engine::playSystemAudioEffect(const QString &name) const
-{
-    playAudioEffect(QStringLiteral("audio/system/%1.ogg").arg(name));
-}
-
-void Engine::playAudioEffect(const QString &filename) const
-{
-#ifdef AUDIO_SUPPORT
-    if (!Config.EnableEffects)
-        return;
-    if (filename.isNull())
-        return;
-
-    Audio::play(filename);
-#endif
-}
-
-void Engine::playSkillAudioEffect(const QString & /*unused*/, int /*unused*/) const
-{
-    // TODO: move this function to UI
-#if 0
-    const Skill *skill = skills.value(skill_name, NULL);
-    if (skill)
-        skill->playAudioEffect(index);
-#endif
-}
-
 const Skill *Engine::getSkill(const QString &skill_name) const
 {
     return skills.value(skill_name, NULL);

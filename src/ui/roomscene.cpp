@@ -467,7 +467,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         } else if (JsonUtils::isString(arg[2]))
             category = arg[2].toString();
         int type = arg[3].toInt();
-        Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(skillName, category, type));
+        Audio::playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(skillName, category, type));
         break;
     }
     case S_GAME_EVENT_JUDGE_RESULT: {
@@ -1218,7 +1218,7 @@ void RoomScene::addPlayer(ClientPlayer *player)
             name2photo[player->objectName()] = photo;
 
             if (!Self->hasFlag(QStringLiteral("marshalling")))
-                Sanguosha->playSystemAudioEffect(QStringLiteral("add-player"));
+                Audio::playSystemAudioEffect(QStringLiteral("add-player"));
 
             return;
         }
@@ -1231,7 +1231,7 @@ void RoomScene::removePlayer(const QString &player_name)
     if (photo != nullptr) {
         photo->setPlayer(nullptr);
         name2photo.remove(player_name);
-        Sanguosha->playSystemAudioEffect(QStringLiteral("remove-player"));
+        Audio::playSystemAudioEffect(QStringLiteral("remove-player"));
     }
 }
 
@@ -1717,7 +1717,7 @@ void RoomScene::chooseGeneral(const QStringList &generals, const bool single_res
 {
     QApplication::alert(main_window);
     if (!main_window->isActiveWindow())
-        Sanguosha->playSystemAudioEffect(QStringLiteral("prelude"));
+        Audio::playSystemAudioEffect(QStringLiteral("prelude"));
 
     if (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral && !Self->hasFlag(QStringLiteral("Pingyi_Choose")) && !generals.isEmpty()) {
         m_chooseGeneralBox->chooseGeneral(generals, false, single_result, QString(), nullptr, can_convert);
@@ -1795,7 +1795,7 @@ void RoomScene::chooseOption(const QString &skillName, const QStringList &option
 {
     QApplication::alert(main_window);
     if (!main_window->isActiveWindow())
-        Sanguosha->playSystemAudioEffect(QStringLiteral("pop-up"));
+        Audio::playSystemAudioEffect(QStringLiteral("pop-up"));
 
     m_chooseOptionsBox->setSkillName(skillName);
     m_chooseOptionsBox->chooseOption(options);
@@ -1806,7 +1806,7 @@ void RoomScene::chooseCard(const ClientPlayer *player, const QString &flags, con
 {
     QApplication::alert(main_window);
     if (!main_window->isActiveWindow())
-        Sanguosha->playSystemAudioEffect(QStringLiteral("pop-up"));
+        Audio::playSystemAudioEffect(QStringLiteral("pop-up"));
 
     m_playerCardBox->chooseCard(Sanguosha->translate(reason), player, flags, handcard_visible, method, disabled_ids, enableEmptyCard);
 }
@@ -1924,7 +1924,7 @@ void RoomScene::chooseTriggerOrder(const QVariantList &options, bool optional)
 {
     QApplication::alert(main_window);
     if (!main_window->isActiveWindow())
-        Sanguosha->playSystemAudioEffect(QStringLiteral("pop-up"));
+        Audio::playSystemAudioEffect(QStringLiteral("pop-up"));
 
     m_chooseTriggerOrderBox->chooseOption(options, optional);
 }
@@ -3167,7 +3167,7 @@ void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nat
 
     if (delta < 0) {
         if (losthp) {
-            Sanguosha->playSystemAudioEffect(QStringLiteral("hplost"));
+            Audio::playSystemAudioEffect(QStringLiteral("hplost"));
             QString from_general = ClientInstance->getPlayer(who)->objectName();
             log_box->appendLog(QStringLiteral("#GetHp"), from_general, QStringList(), QString(), QString::number(ClientInstance->getPlayer(who)->getHp()),
                                QString::number(ClientInstance->getPlayer(who)->getMaxHp()));
@@ -3191,7 +3191,7 @@ void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nat
             break;
         }
 
-        Sanguosha->playSystemAudioEffect(damage_effect);
+        Audio::playSystemAudioEffect(damage_effect);
 
         if (photo != nullptr) {
             setEmotion(who, QStringLiteral("damage"));
@@ -3216,7 +3216,7 @@ void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nat
 void RoomScene::changeMaxHp(const QString & /*unused*/, int delta)
 {
     if (delta < 0)
-        Sanguosha->playSystemAudioEffect(QStringLiteral("maxhplost"));
+        Audio::playSystemAudioEffect(QStringLiteral("maxhplost"));
 }
 
 void RoomScene::onStandoff()
@@ -3224,7 +3224,7 @@ void RoomScene::onStandoff()
     log_box->append(QString(tr("<font color='%1'>---------- Game Finish ----------</font>").arg(Config.TextEditColor.name())));
 
     freeze();
-    Sanguosha->playSystemAudioEffect(QStringLiteral("standoff"));
+    Audio::playSystemAudioEffect(QStringLiteral("standoff"));
 
     QDialog *dialog = new QDialog(main_window);
     dialog->resize(500, 600);
@@ -3258,7 +3258,7 @@ void RoomScene::onGameOver()
     else
         win_effect = QStringLiteral("lose");
 
-    Sanguosha->playSystemAudioEffect(win_effect);
+    Audio::playSystemAudioEffect(win_effect);
 #endif
     QDialog *dialog = new QDialog(main_window);
     dialog->resize(800, 600);
@@ -3711,7 +3711,7 @@ void RoomScene::killPlayer(const QString &who)
     }
 
     if (Config.EnableEffects && Config.EnableLastWord && !Self->hasFlag(QStringLiteral("marshalling")))
-        general->lastWord();
+        Audio::GeneralLastWord(general->objectName());
     m_roomMutex.unlock();
 }
 
@@ -4148,8 +4148,10 @@ void RoomScene::setEmotion(const QString &who, const QString &emotion, bool perm
         if (Config.value(QStringLiteral("NoEquipAnim"), false).toBool())
             return;
         QString name = emotion.split(QStringLiteral("/")).last();
-        Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(name, QStringLiteral("equip"), -1));
-    }
+        Audio::playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(name, QStringLiteral("equip"), -1));
+    } else if (emotion == QStringLiteral("chain"))
+        Audio::playAudioEffect(QStringLiteral("chained"));
+
     Photo *photo = name2photo[who];
     if (photo != nullptr) {
         photo->setEmotion(emotion, permanent);

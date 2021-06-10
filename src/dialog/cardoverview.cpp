@@ -1,5 +1,6 @@
 #include "cardoverview.h"
 #include "SkinBank.h"
+#include "audio.h"
 #include "client.h"
 #include "clientstruct.h"
 #include "engine.h"
@@ -181,7 +182,7 @@ void CardOverview::on_malePlayButton_clicked()
     if (row >= 0) {
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
         const CardDescriptor &card = Sanguosha->getEngineCard(card_id);
-        Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(card.face()->name(), true));
+        Audio::playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(card.face()->name(), true));
     }
 }
 
@@ -191,7 +192,7 @@ void CardOverview::on_femalePlayButton_clicked()
     if (row >= 0) {
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
         const CardDescriptor &card = Sanguosha->getEngineCard(card_id);
-        Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(card.face()->name(), false));
+        Audio::playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(card.face()->name(), false));
     }
 }
 
@@ -208,7 +209,7 @@ void CardOverview::on_playAudioEffectButton_clicked()
             QString fileName = G_ROOM_SKIN.getPlayerAudioEffectPath(effectName, QStringLiteral("equip"), -1);
             if (!QFile::exists(fileName))
                 fileName = G_ROOM_SKIN.getPlayerAudioEffectPath(card.face()->commonEffectName(), QStringLiteral("common"), -1);
-            Sanguosha->playAudioEffect(fileName);
+            Audio::playAudioEffect(fileName);
         }
     }
 }

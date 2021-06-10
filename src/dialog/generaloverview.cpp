@@ -1,5 +1,6 @@
 #include "generaloverview.h"
 #include "SkinBank.h"
+#include "audio.h"
 #include "client.h"
 #include "clientstruct.h"
 #include "engine.h"
@@ -568,9 +569,13 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
 
     if (!last_word.startsWith(QStringLiteral("~"))) {
         QCommandLinkButton *death_button = new QCommandLinkButton(tr("Death"), last_word);
+        death_button->setObjectName(general->objectName());
         button_layout->addWidget(death_button);
 
-        connect(death_button, &QAbstractButton::clicked, general, &General::lastWord);
+        connect(death_button, &QAbstractButton::clicked, this, [this]() -> void {
+            QString generalName = sender()->objectName();
+            Audio::GeneralLastWord(generalName);
+        });
 
         addCopyAction(death_button);
     }
@@ -616,7 +621,7 @@ void GeneralOverview::playAudioEffect()
     if (button != nullptr) {
         QString source = button->objectName();
         if (!source.isEmpty())
-            Sanguosha->playAudioEffect(source);
+            Audio::playAudioEffect(source);
     }
 }
 

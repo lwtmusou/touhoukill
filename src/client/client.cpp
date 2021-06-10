@@ -1,5 +1,6 @@
 #include "client.h"
 #include "SkinBank.h"
+#include "audio.h"
 #include "choosegeneraldialog.h"
 #include "engine.h"
 #include "nativesocket.h"
@@ -599,7 +600,7 @@ void Client::onPlayerChooseGeneral(const QString &item_name)
     setStatus(NotActive);
     if (!item_name.isEmpty()) {
         replyToServer(S_COMMAND_CHOOSE_GENERAL, item_name);
-        Sanguosha->playSystemAudioEffect(QStringLiteral("choose-item"));
+        Audio::playSystemAudioEffect(QStringLiteral("choose-item"));
     }
 }
 
@@ -1277,9 +1278,9 @@ void Client::trust()
     notifyServer(S_COMMAND_TRUST);
 
     if (Self->getState() == QStringLiteral("trust"))
-        Sanguosha->playSystemAudioEffect(QStringLiteral("untrust"));
+        Audio::playSystemAudioEffect(QStringLiteral("untrust"));
     else
-        Sanguosha->playSystemAudioEffect(QStringLiteral("trust"));
+        Audio::playSystemAudioEffect(QStringLiteral("trust"));
 
     setStatus(NotActive);
 }
@@ -2173,7 +2174,7 @@ void Client::log(const QVariant &log_str)
         emit log_received(QStringList() << QString());
     else {
         if (log.first().contains(QStringLiteral("#HegemonyReveal")))
-            Sanguosha->playSystemAudioEffect(QStringLiteral("choose-item"));
+            Audio::playSystemAudioEffect(QStringLiteral("choose-item"));
         else if (log.first() == QStringLiteral("#UseLuckCard")) {
             ClientPlayer *from = getPlayer(log.at(1));
             if ((from != nullptr) && from != Self)

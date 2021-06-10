@@ -1295,7 +1295,6 @@ bool Player::isDebuffStatus() const
 void Player::setChained(bool chained)
 {
     if (this->chained != chained) {
-        Sanguosha->playSystemAudioEffect(QStringLiteral("chained"));
         this->chained = chained;
         emit state_changed();
     }
