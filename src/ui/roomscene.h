@@ -456,6 +456,7 @@ private:
     QRectF m_tableRect;
     QSet<HeroSkinContainer *> m_heroSkinContainers;
 
+    void addSelection(const ViewAsSkill *skill, QMenu *menu, const ViewAsSkillSelection *selection, const QStringList &currentChain);
 private slots:
     void fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids = QList<int>(), const QList<int> &shownHandcard_ids = QList<int>());
     void updateSkillButtons();

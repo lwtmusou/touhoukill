@@ -2183,6 +2183,10 @@ bool Player::canTransform(bool head) const
 
 QStringList Player::currentViewAsSkillSelectionChain() const
 {
-    Q_UNIMPLEMENTED();
-    return QStringList();
+    return vschain;
+}
+
+void Player::setCurrentViewAsSkillSelectionChain(const QStringList &chain)
+{
+    vschain = chain;
 }

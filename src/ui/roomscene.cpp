@@ -2266,6 +2266,31 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
     }
 }
 
+void RoomScene::addSelection(const ViewAsSkill *skill, QMenu *menu, const ViewAsSkillSelection *selection, const QStringList &currentChain)
+{
+    foreach (const ViewAsSkillSelection *nexts, selection->next) {
+        QStringList appendedChain = QStringList(currentChain) << nexts->name;
+        bool enabled = skill->isSelectionEnabled(appendedChain, Self);
+        if (nexts->next.isEmpty()) {
+            QAction *action = menu->addAction(Sanguosha->translate(nexts->name));
+            action->setObjectName(appendedChain.join(QStringLiteral(".")));
+            action->setProperty("skillname", skill->objectName());
+            action->setEnabled(enabled);
+
+            connect(action, &QAction::triggered, action, [action]() -> void {
+                Self->setCurrentViewAsSkillSelectionChain(action->objectName().split(QStringLiteral(".")));
+            });
+            connect(action, &QAction::triggered, this, &RoomScene::onSkillActivated);
+        } else {
+            QMenu *subMenu = menu->addMenu(Sanguosha->translate(nexts->name));
+            subMenu->setEnabled(enabled);
+            subMenu->setObjectName(appendedChain.join(QStringLiteral(".")));
+            if (enabled)
+                addSelection(skill, subMenu, nexts, appendedChain);
+        }
+    }
+}
+
 void RoomScene::addSkillButton(const Skill *skill, bool head)
 {
     // check duplication
@@ -2283,25 +2308,39 @@ void RoomScene::addSkillButton(const Skill *skill, bool head)
             connect(btn, SIGNAL(skill_activated()), dashboard, SLOT(selectAll()));
         if (btn->getViewAsSkill()->objectName() == QStringLiteral("fsu0413fei2zhai"))
             connect(btn, SIGNAL(skill_activated()), dashboard, SLOT(selectAll()));
-    }
 
-    // TODO: Dialog
-    // This seems to be for ViewAsSkill rather than Skill
-#if 0
-    QDialog *dialog = skill->getDialog();
-    if (dialog && !m_replayControl) {
-        dialog->setParent(main_window, Qt::Dialog);
-        connect(btn, (void (QSanSkillButton::*)())(&QSanSkillButton::skill_activated),
-                [dialog]() -> void { QMetaObject::invokeMethod(dialog, "popup", Qt::DirectConnection, Q_ARG(Player *, Self)); });
-        connect(btn, SIGNAL(skill_deactivated()), dialog, SLOT(reject()));
-        disconnect(btn, SIGNAL(skill_activated()), this, SLOT(onSkillActivated()));
-        connect(dialog, SIGNAL(onButtonClick()), this, SLOT(onSkillActivated()));
-        if (dialog->objectName() == "qiji")
-            connect(dialog, SIGNAL(onButtonClick()), dashboard, SLOT(selectAll()));
-        else if (dialog->objectName() == "anyun")
-            connect(dialog, SIGNAL(onButtonClick()), this, SLOT(anyunSelectSkill()));
+        const ViewAsSkillSelection *selection = btn->getViewAsSkill()->selections(Self);
+        if (selection != nullptr && !selection->next.isEmpty() && !m_replayControl) {
+            connect(btn, (void (QSanSkillButton ::*)())(&QSanSkillButton::skill_activated), btn, [this, btn, selection]() -> void {
+                // QMenu *menu = new QMenu(this);
+                Self->setCurrentViewAsSkillSelectionChain(QStringList());
+                QMenu *menu = mainWindow()->findChild<QMenu *>(btn->getViewAsSkill()->objectName());
+                if (menu == nullptr) {
+                    menu = new QMenu;
+                    menu->setObjectName(btn->getViewAsSkill()->objectName());
+                    menu->setParent(mainWindow());
+                } else {
+                    menu->clear();
+                }
+
+                addSelection(btn->getViewAsSkill(), menu, selection, {selection->name});
+
+                connect(menu, &QMenu::aboutToHide, btn, [this, btn]() -> void {
+                    if (Self->currentViewAsSkillSelectionChain().isEmpty()) {
+                        dashboard->skillButtonDeactivated();
+                        return;
+                    }
+
+                    if (btn->getViewAsSkill()->objectName() == QStringLiteral("qiji"))
+                        dashboard->selectAll();
+                    if (btn->getViewAsSkill()->objectName() == QStringLiteral("anyun"))
+                        anyunSelectSkill();
+                });
+                menu->exec();
+            });
+            disconnect(btn, SIGNAL(skill_activated()), this, SLOT(onSkillActivated()));
+        }
     }
-#endif
 
     m_skillButtons.append(btn);
 }
@@ -2906,11 +2945,16 @@ void RoomScene::onSkillActivated()
 
     if (button != nullptr)
         skill = button->getViewAsSkill();
-
     else {
-        QDialog *dialog = qobject_cast<QDialog *>(sender());
-        if (dialog != nullptr)
-            skill = Sanguosha->getViewAsSkill(dialog->objectName());
+        QAction *action = qobject_cast<QAction *>(sender());
+
+        if (action != nullptr)
+            skill = Sanguosha->getViewAsSkill(action->property("skillname").toString());
+        else {
+            QDialog *dialog = qobject_cast<QDialog *>(sender());
+            if (dialog != nullptr)
+                skill = Sanguosha->getViewAsSkill(dialog->objectName());
+        }
     }
 
     if (skill != nullptr) {
