@@ -150,6 +150,16 @@ enum TargetModType
     ModTarget
 };
 Q_ENUM_NS(TargetModType)
+
+enum PackageType
+{
+    GeneralPack,
+    CardPack,
+    MixedPack,
+    SpecialPack
+};
+Q_ENUM_NS(PackageType)
+
 } // namespace QSanguosha
 
 #endif // GLOBAL_H

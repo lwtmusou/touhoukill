@@ -122,7 +122,7 @@ QWidget *ServerDialog::createPackageTab()
         extension_group->addButton(checkbox);
 
         switch (package->type()) {
-        case Package::GeneralPack: {
+        case QSanguosha::GeneralPack: {
             if (extension == QStringLiteral("standard") || extension == QStringLiteral("test"))
                 continue;
             row = i / 5;
@@ -132,7 +132,7 @@ QWidget *ServerDialog::createPackageTab()
             layout1->addWidget(checkbox, row, column + 1);
             break;
         }
-        case Package::CardPack: {
+        case QSanguosha::CardPack: {
             row = j / 5;
             column = j % 5;
             j++;
@@ -744,8 +744,8 @@ void Select3v3GeneralDialog::fillTabWidget()
     const QList<const Package *> &packages = Sanguosha->getPackages();
     foreach (const Package *package, packages) {
         switch (package->type()) {
-        case Package::GeneralPack:
-        case Package::MixedPack: {
+        case QSanguosha::GeneralPack:
+        case QSanguosha::MixedPack: {
             QListWidget *list = new QListWidget;
             list->setViewMode(QListView::IconMode);
             list->setDragDropMode(QListView::NoDragDrop);
