@@ -32,7 +32,7 @@ public:
     bool isLastHandCard(const Card *card, bool contain = false) const override;
     void setMark(const QString &mark, int value) override;
 
-    RoomObject *getRoomObject() const override;
+    RoomObject *roomObject() const override;
     Client *getClient() const;
 
 private:

@@ -116,7 +116,7 @@ public:
     QStringList LordBGMConvertList;
     QStringList LordBackdropConvertList;
     QStringList LatestGeneralList;
-    int operationTimeRate(QSanProtocol::CommandType command, const QVariant &msg);
+    int operationTimeRate(QSanProtocol::CommandType command, const QVariant &msg) const;
 
     QString GetMappedKingdom(const QString &role); //hegemony
 

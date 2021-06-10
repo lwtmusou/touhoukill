@@ -198,7 +198,7 @@ public:
     QSGS_STATE_GAME bool inFormationRalation(ServerPlayer *teammate) const;
     QSGS_LOGIC void summonFriends(const QString &type);
 
-    QSGS_STATE_ROOM RoomObject *getRoomObject() const override;
+    QSGS_STATE_ROOM RoomObject *roomObject() const override;
 
 protected:
     //Synchronization helpers

@@ -1104,7 +1104,7 @@ QList<const Card *> Player::getJudgingArea() const
 {
     QList<const Card *> cards;
     foreach (int card_id, judging_area)
-        cards.append(getRoomObject()->getCard(card_id));
+        cards.append(roomObject()->getCard(card_id));
     return cards;
 }
 
@@ -1252,7 +1252,7 @@ bool Player::canDiscard(const Player *to, int card_id, const QString &reason) co
     }
 
     if (this == to) {
-        if (isJilei(getRoomObject()->getCard(card_id)))
+        if (isJilei(roomObject()->getCard(card_id)))
             return false;
     }
     return true;
@@ -1273,7 +1273,7 @@ void Player::removeDelayedTrick(const Card *trick)
 bool Player::containsTrick(const QString &trick_name) const
 {
     foreach (int trick_id, judging_area) {
-        const Card *trick = getRoomObject()->getCard(trick_id);
+        const Card *trick = roomObject()->getCard(trick_id);
         // TODO: Wait! I don't know how to distinguish between card->name() and card->faceName()()
         // Fs: Just use a unified name! Don't you feel it's difficult to distinguish 2 names now?
         if (trick->faceName() == trick_name)
@@ -1350,17 +1350,17 @@ bool Player::canSlash(const Player *other, const Card *slash, bool distance_limi
         return false;
 
     // Slash *newslash = new Slash(NoSuit, 0);
-    const Card *new_shash = getRoomObject()->cloneCard(QStringLiteral("Slash"));
+    const Card *new_shash = roomObject()->cloneCard(QStringLiteral("Slash"));
     // newslash->deleteLater();
 #define THIS_SLASH (slash == nullptr ? new_shash : slash)
     if (isProhibited(other, THIS_SLASH, others)) {
-        getRoomObject()->cardDeleting(new_shash);
+        roomObject()->cardDeleting(new_shash);
         return false;
     }
 
     if (distance_limit) {
         bool res = distanceTo(other, rangefix) <= getAttackRange() + Sanguosha->correctCardTarget(ModDistance, this, THIS_SLASH);
-        getRoomObject()->cardDeleting(new_shash);
+        roomObject()->cardDeleting(new_shash);
         return res;
     } else
         return true;
@@ -1604,12 +1604,12 @@ bool Player::isProhibited(const Player *to, const Card *card, const QList<const 
 
 bool Player::canSlashWithoutCrossbow(const Card *slash) const
 {
-    const Card *newslash = getRoomObject()->cloneCard(QStringLiteral("Slash"));
+    const Card *newslash = roomObject()->cloneCard(QStringLiteral("Slash"));
 #define THIS_SLASH (slash == NULL ? newslash : slash)
     int slash_count = getSlashCount();
     int valid_slash_count = 1;
     valid_slash_count += Sanguosha->correctCardTarget(ModResidue, this, THIS_SLASH);
-    getRoomObject()->cardDeleting(newslash);
+    roomObject()->cardDeleting(newslash);
     return slash_count < valid_slash_count;
 #undef THIS_SLASH
 }
@@ -1664,7 +1664,7 @@ bool Player::isCardLimited(const Card *card, HandlingMethod method, bool isHandc
         return false;
     if (card->face()->type() == TypeSkill && method == card->handleMethod()) {
         foreach (int card_id, card->subcards()) {
-            const Card *c = getRoomObject()->getCard(card_id);
+            const Card *c = roomObject()->getCard(card_id);
             QMap<QString, QStringList> map = card_limitation[method];
             QMap<QString, QStringList>::iterator it;
             for (it = map.begin(); it != map.end(); ++it) {

@@ -333,7 +333,7 @@ public:
 
     const Player *getLord(bool include_death = false) const;
 
-    virtual RoomObject *getRoomObject() const = 0;
+    virtual RoomObject *roomObject() const = 0;
 
     QVariantMap tag;
 

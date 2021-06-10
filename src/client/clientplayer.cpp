@@ -46,7 +46,7 @@ void ClientPlayer::addCard(const Card *card, QSanguosha::Place place)
     }
     case QSanguosha::PlaceEquip: {
         // WrappedCard *equip = getRoomObject()->getWrappedCard(card->getEffectiveId());
-        setEquip(getRoomObject()->getCard(card->effectiveID()));
+        setEquip(roomObject()->getCard(card->effectiveID()));
         break;
     }
     case QSanguosha::PlaceDelayedTrick: {
@@ -73,7 +73,7 @@ bool ClientPlayer::isLastHandCard(const Card *card, bool contain) const
     } else if (!card->subcards().empty()) {
         if (!contain) {
             foreach (int card_id, card->subcards()) {
-                if (!known_cards.contains(getRoomObject()->getCard(card_id)))
+                if (!known_cards.contains(roomObject()->getCard(card_id)))
                     return false;
             }
             return known_cards.length() == card->subcards().size();
@@ -99,7 +99,7 @@ void ClientPlayer::removeCard(const Card *card, QSanguosha::Place place)
     }
     case QSanguosha::PlaceEquip: {
         // WrappedCard *equip = getRoomObject()->getWrappedCard(card->getEffectiveId());
-        removeEquip(getRoomObject()->getCard(card->effectiveID()));
+        removeEquip(roomObject()->getCard(card->effectiveID()));
         break;
     }
     case QSanguosha::PlaceDelayedTrick: {
@@ -120,7 +120,7 @@ void ClientPlayer::setCards(const QList<int> &card_ids)
 {
     known_cards.clear();
     foreach (int cardId, card_ids)
-        known_cards.append(getRoomObject()->getCard(cardId));
+        known_cards.append(roomObject()->getCard(cardId));
 }
 
 QTextDocument *ClientPlayer::getMarkDoc() const
@@ -232,7 +232,7 @@ void ClientPlayer::setMark(const QString &mark, int value)
 #endif
 }
 
-RoomObject *ClientPlayer::getRoomObject() const
+RoomObject *ClientPlayer::roomObject() const
 {
     return getClient();
 }

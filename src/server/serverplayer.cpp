@@ -2453,7 +2453,7 @@ void ServerPlayer::summonFriends(const QString &type)
     }
 }
 
-RoomObject *ServerPlayer::getRoomObject() const
+RoomObject *ServerPlayer::roomObject() const
 {
     return room;
 }

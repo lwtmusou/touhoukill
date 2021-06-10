@@ -52,7 +52,7 @@ bool DiscardSkill::viewFilter(const QList<const Card *> &selected, const Card *c
 const Card *DiscardSkill::viewAs(const QList<const Card *> &cards, const Player *Self) const
 {
     if (cards.length() >= minnum) {
-        auto *logic = Self->getRoomObject();
+        auto *logic = Self->roomObject();
         auto *card = logic->cloneDummyCard();
         card->setHandleMethod(QSanguosha::MethodNone);
         card->clearSubcards();
@@ -170,7 +170,7 @@ const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards, const Play
     if (cards.isEmpty() || cards.length() > max_num)
         return nullptr;
 
-    auto *card = player->getRoomObject()->cloneSkillCard(QStringLiteral("YijiCard"));
+    auto *card = player->roomObject()->cloneSkillCard(QStringLiteral("YijiCard"));
     card->setHandleMethod(QSanguosha::MethodNone);
 
     card->clearSubcards();
@@ -209,5 +209,5 @@ void ChoosePlayerSkill::setPlayerNames(const QStringList &names)
 
 const Card *ChoosePlayerSkill::viewAs(const Player *player) const
 {
-    return player->getRoomObject()->cloneSkillCard(QStringLiteral("ChoosePlayerCard"));
+    return player->roomObject()->cloneSkillCard(QStringLiteral("ChoosePlayerCard"));
 }
