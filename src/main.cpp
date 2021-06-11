@@ -12,6 +12,7 @@
 
 int main(int argc, char *argv[])
 {
+    // refactor proposal: do not check the first argument only!!!
     if (argc > 1 && strcmp(argv[1], "-server") == 0) {
         new QCoreApplication(argc, argv);
     } else {
@@ -49,6 +50,7 @@ int main(int argc, char *argv[])
     Sanguosha = new Engine;
     Config.init();
 
+    // refactor proposal: using QCommandLineParser
     if (QCoreApplication::arguments().contains(QStringLiteral("-server"))) {
         Server *server = new Server(QCoreApplication::instance());
         printf("Server is starting on port %u\n", Config.ServerPort);
@@ -78,6 +80,7 @@ int main(int argc, char *argv[])
     Sanguosha->setParent(main_window);
     main_window->show();
 
+    // refactor proposal: using QCommandLineParser
     foreach (QString arg, QCoreApplication::instance()->arguments()) {
         if (arg.startsWith(QStringLiteral("-connect:"))) {
             arg.remove(QStringLiteral("-connect:"));
