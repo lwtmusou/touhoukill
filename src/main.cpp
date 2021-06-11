@@ -24,20 +24,12 @@ int main(int argc, char *argv[])
 #endif
     }
 
-#ifndef Q_OS_ANDROID
-#ifdef QT_NO_DEBUG
-    QDir::setCurrent(QCoreApplication::applicationDirPath());
-#endif
-#else
+#ifdef Q_OS_ANDROID
     QDir::setCurrent(QStringLiteral("/sdcard/Android/data/rocks.touhousatsu.app"));
-#endif
-
-#if defined(Q_OS_LINUX)
-#ifndef Q_OS_ANDROID
-    QDir::setCurrent(QCoreApplication::instance()->applicationFilePath().replace(QStringLiteral("games"), QStringLiteral("share")));
-#else
     // extract data from assets
-#endif
+#else
+    // Deal with package manager later
+    // e.g.: in Linux distributions and Windows, we should put our data files to /prefix/share
 #endif
 
     QTranslator qt_translator;
