@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuGame">
@@ -98,6 +98,9 @@
    <property name="text">
     <string>Exit</string>
    </property>
+   <property name="menuRole">
+    <enum>QAction::QuitRole</enum>
+   </property>
   </action>
   <action name="actionConfigure">
    <property name="enabled">
@@ -109,6 +112,9 @@
    </property>
    <property name="text">
     <string>Configure</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::PreferencesRole</enum>
    </property>
   </action>
   <action name="actionStart_Server">
@@ -139,6 +145,9 @@
    <property name="text">
     <string>About</string>
    </property>
+   <property name="menuRole">
+    <enum>QAction::AboutRole</enum>
+   </property>
   </action>
   <action name="actionCard_Overview">
    <property name="text">
@@ -159,6 +168,9 @@
   <action name="actionAbout_Qt">
    <property name="text">
     <string>About Qt</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::AboutQtRole</enum>
    </property>
   </action>
   <action name="actionView_Discarded">
@@ -283,6 +295,9 @@
    <property name="text">
     <string>About Lua</string>
    </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
+   </property>
   </action>
   <action name="actionExecute_script_at_server_side">
    <property name="text">
@@ -297,6 +312,9 @@
   <action name="actionAbout_GPLv3">
    <property name="text">
     <string>About GPLv3</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
    </property>
   </action>
   <action name="actionNever_nullify_my_trick">
@@ -315,6 +333,9 @@
   <action name="actionAbout_Us">
    <property name="text">
     <string>About Us</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
    </property>
   </action>
   <action name="actionDownload_Hero_Skin_and_BGM">
