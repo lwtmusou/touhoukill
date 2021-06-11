@@ -3251,7 +3251,7 @@ void RoomScene::onGameOver()
     freeze();
     time_label_widget->initializeLabel();
     bool victory = Self->property("win").toBool();
-#ifdef AUDIO_SUPPORT
+
     QString win_effect;
     if (victory)
         win_effect = QStringLiteral("win");
@@ -3259,7 +3259,7 @@ void RoomScene::onGameOver()
         win_effect = QStringLiteral("lose");
 
     Audio::playSystemAudioEffect(win_effect);
-#endif
+
     QDialog *dialog = new QDialog(main_window);
     dialog->resize(800, 600);
     dialog->setWindowTitle(victory ? tr("Victory") : tr("Failure"));
@@ -3849,11 +3849,11 @@ void RoomScene::speak()
         broadcast = false;
         Config.EnableBgMusic = true;
         Config.setValue(QStringLiteral("EnableBgMusic"), true);
-#ifdef AUDIO_SUPPORT
+
         Audio::stopBGM();
         Audio::playBGM(Audio::getBgmFileNames(QString(), false));
         Audio::setBGMVolume(Config.BGMVolume);
-#endif
+
     } else if (text.startsWith(QStringLiteral(".StartBgMusic="))) {
         broadcast = false;
         Config.EnableBgMusic = true;
@@ -3863,18 +3863,17 @@ void RoomScene::speak()
             path = path.mid(1);
             Config.setValue(QStringLiteral("BackgroundMusic"), path);
         }
-#ifdef AUDIO_SUPPORT
+
         Audio::stopBGM();
         Audio::playBGM(QStringList(path));
         Audio::setBGMVolume(Config.BGMVolume);
-#endif
+
     } else if (text == QStringLiteral(".StopBgMusic")) {
         broadcast = false;
         Config.EnableBgMusic = false;
         Config.setValue(QStringLiteral("EnableBgMusic"), false);
-#ifdef AUDIO_SUPPORT
+
         Audio::stopBGM();
-#endif
     }
     if (broadcast) {
         if (game_started && ServerInfo.DisableChat)
@@ -4045,9 +4044,8 @@ void KOFOrderBox::killPlayer(const QString &general_name)
 
 void RoomScene::onGameStart()
 {
-#ifdef AUDIO_SUPPORT
     Audio::stopBGM();
-#endif
+
     if (ClientInstance->getReplayer() != nullptr && (m_chooseGeneralBox != nullptr))
         m_chooseGeneralBox->clear();
 
@@ -4075,9 +4073,8 @@ void RoomScene::onGameStart()
     connect(Self, &ClientPlayer::skill_state_changed, this, &RoomScene::skillStateChange);
     trust_button->setEnabled(true);
 
-#ifdef AUDIO_SUPPORT
     setLordBGM();
-#endif
+
     setLordBackdrop();
 
     game_started = true;
@@ -4101,9 +4098,9 @@ void RoomScene::freeze()
     }
     item2player.clear();
     chat_edit->setEnabled(false);
-#ifdef AUDIO_SUPPORT
+
     Audio::stopBGM();
-#endif
+
     dashboard->hideProgressBar();
     main_window->setStatusBar(nullptr);
 }
@@ -5145,7 +5142,6 @@ bool RoomScene::isHighlightStatus(Client::Status status)
 
 void RoomScene::setLordBGM(const QString &lord)
 {
-#ifdef AUDIO_SUPPORT
     if (!Config.EnableBgMusic)
         return;
     Audio::stopBGM();
@@ -5182,8 +5178,6 @@ void RoomScene::setLordBGM(const QString &lord)
     else
         Audio::playBGM(Audio::getBgmFileNames(lord_name, false));
     Audio::setBGMVolume(Config.BGMVolume);
-
-#endif
 }
 
 void RoomScene::setLordBackdrop(const QString &lord)

@@ -1,8 +1,6 @@
 #ifndef AUDIO_H
 #define AUDIO_H
 
-#ifdef AUDIO_SUPPORT
-
 #include <QString>
 
 namespace Audio {
@@ -22,12 +20,6 @@ extern float volume;
 extern float bgm_volume;
 
 QStringList getBgmFileNames(const QString &fileNames, bool isGeneralName = false);
-
-} // namespace Audio
-
-#endif // AUDIO_SUPPORT
-
-namespace Audio {
 
 void playSystemAudioEffect(const QString &name);
 void playAudioEffect(const QString &filename);

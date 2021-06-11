@@ -282,15 +282,20 @@ private:
     float bgm_volume;
     float effective_volume;
 };
-
 static QThread *audioThread = nullptr;
 static AudioInternal *internal = nullptr;
-static bool isBgmPlaying = false;
+
+#endif // AUDIO_SUPPORT
 
 namespace Audio {
+namespace {
+
+bool isBgmPlaying = false;
+}
 
 void init()
 {
+#ifdef AUDIO_SUPPORT
     if (Q_LIKELY(audioThread == nullptr)) {
         audioThread = new QThread;
         internal = new AudioInternal;
@@ -305,11 +310,13 @@ void init()
         audioThread->start();
         emit internal->init_S();
     }
+#endif
 }
 
 void quit()
 {
-    if (Q_UNLIKELY(internal != nullptr)) {
+#ifdef AUDIO_SUPPORT
+    if (Q_LIKELY(internal != nullptr)) {
         emit internal->quit_S();
 
         audioThread->quit();
@@ -319,6 +326,7 @@ void quit()
         delete audioThread;
         audioThread = nullptr;
     }
+#endif
 }
 
 float volume = 1;
@@ -326,26 +334,34 @@ float bgm_volume = 1;
 
 void play(const QString &fileName)
 {
-    if (Q_UNLIKELY(internal != nullptr))
+#ifdef AUDIO_SUPPORT
+    if (Q_LIKELY(internal != nullptr))
         emit internal->play_S(fileName);
+#endif
 }
 
 void setEffectVolume(float volume)
 {
-    if (Q_UNLIKELY(internal != nullptr))
+#ifdef AUDIO_SUPPORT
+    if (Q_LIKELY(internal != nullptr))
         emit internal->setEffectVolume_S(volume);
+#endif
 }
 
 void setBGMVolume(float volume)
 {
-    if (Q_UNLIKELY(internal != nullptr))
+#ifdef AUDIO_SUPPORT
+    if (Q_LIKELY(internal != nullptr))
         emit internal->setBGMVolume_S(volume);
+#endif
 }
 
 void playBGM(const QStringList &fileNames)
 {
+#ifdef AUDIO_SUPPORT
     isBgmPlaying = true;
     emit internal->playBGM_S(fileNames);
+#endif
 }
 
 bool isBackgroundMusicPlaying()
@@ -355,8 +371,10 @@ bool isBackgroundMusicPlaying()
 
 void stopBGM()
 {
+#ifdef AUDIO_SUPPORT
     emit internal->stopBGM_S();
     isBgmPlaying = false;
+#endif
 }
 
 QStringList getBgmFileNames(const QString &fileNames, bool isGeneralName)
@@ -398,11 +416,6 @@ QStringList getBgmFileNames(const QString &fileNames, bool isGeneralName)
 
     return all;
 }
-
-} // namespace Audio
-#endif // AUDIO_SUPPORT
-
-namespace Audio {
 
 void playSystemAudioEffect(const QString &name)
 {

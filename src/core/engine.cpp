@@ -99,9 +99,7 @@ void Engine::addTranslationEntry(const QString &key, const QString &value)
 
 Engine::~Engine()
 {
-#ifdef AUDIO_SUPPORT
     Audio::quit();
-#endif
 }
 
 void Engine::loadTranslations(const QString &locale)

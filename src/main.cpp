@@ -79,9 +79,7 @@ int main(int argc, char *argv[])
 
     qApp->setFont(Config.AppFont);
 
-#ifdef AUDIO_SUPPORT
     Audio::init();
-#endif
 
     MainWindow *main_window = new MainWindow;
 

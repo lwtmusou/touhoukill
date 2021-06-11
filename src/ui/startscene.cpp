@@ -54,9 +54,8 @@ void StartScene::setServerLogBackground()
 
 void StartScene::switchToServer(Server *server)
 {
-#ifdef AUDIO_SUPPORT
     Audio::quit();
-#endif
+
     // performs leaving animation
     QPropertyAnimation *logo_shift = new QPropertyAnimation(logo, "pos");
     logo_shift->setEndValue(QPointF(Config.Rect.center().rx() - 200, Config.Rect.center().ry() - 175));
