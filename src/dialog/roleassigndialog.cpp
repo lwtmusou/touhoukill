@@ -32,10 +32,10 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
 
         role_mapping.insert(Self->objectName(), QStringLiteral("lord"));
     } else {
-        QList<const ClientPlayer *> players = ClientInstance->getPlayers();
+        QList<const Player *> players = ClientInstance->getPlayers();
         for (int i = 0; i < players.length(); i++) {
             QString role = role_list.at(i);
-            const ClientPlayer *player = players.at(i);
+            const Player *player = players.at(i);
             QString text = QStringLiteral("%1[%2]").arg(player->screenName()).arg(Sanguosha->translate(role));
 
             QListWidgetItem *item = new QListWidgetItem(text, list);
@@ -137,7 +137,7 @@ void RoleAssignDialog::updateRole(int index)
 {
     QString name = list->currentItem()->data(Qt::UserRole).toString();
     QString role = role_ComboBox->itemData(index).toString();
-    ClientPlayer *player = ClientInstance->getPlayer(name);
+    Player *player = ClientInstance->getPlayer(name);
     QString text = QStringLiteral("%1[%2]").arg(player->screenName()).arg(Sanguosha->translate(role));
     list->currentItem()->setText(text);
     role_mapping[name] = role;

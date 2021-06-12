@@ -40,6 +40,47 @@ public:
     friend class RoomThreadXMode;
     friend class RoomThread1v1;
 
+    QSGS_STATE_ROOM int getLack() const;
+    QSGS_STATE_GAME bool isFinished() const;
+    QSGS_STATE_GAME QString getMode() const;
+    QSGS_STATE_GAME ServerPlayer *getCurrent() const;
+    QSGS_STATE_GAME void setCurrent(ServerPlayer *current);
+    QSGS_STATE_GAME int alivePlayerCount() const;
+    QSGS_STATE_GAME QList<ServerPlayer *> getOtherPlayers(ServerPlayer *except, bool include_dead = false) const;
+    QSGS_STATE_GAME QList<ServerPlayer *> getPlayers() const;
+    QSGS_STATE_GAME QList<ServerPlayer *> getAllPlayers(bool include_dead = false) const;
+    QSGS_STATE_GAME QList<ServerPlayer *> getAlivePlayers() const;
+    QSGS_STATE_GAME ServerPlayer *getCurrentDyingPlayer() const;
+    QSGS_STATE_GAME QStringList aliveRoles(ServerPlayer *except = nullptr) const;
+    QSGS_STATE_GAME ServerPlayer *getLord(const QString &kingdom = QStringLiteral("wei"), bool include_death = false) const;
+    QSGS_STATE_GAME QList<ServerPlayer *> getLieges(const QString &kingdom, ServerPlayer *lord) const;
+    QSGS_STATE_GAME inline QList<int> &getDrawPile()
+    {
+        return *m_drawPile;
+    }
+    QSGS_STATE_GAME inline const QList<int> &getDrawPile() const
+    {
+        return *m_drawPile;
+    }
+    QSGS_STATE_GAME ServerPlayer *findPlayer(const QString &general_name, bool include_dead = false) const;
+    QSGS_STATE_GAME QList<ServerPlayer *> findPlayersBySkillName(const QString &skill_name, bool include_hidden = true) const;
+    QSGS_STATE_GAME ServerPlayer *findPlayerBySkillName(const QString &skill_name) const;
+    QSGS_STATE_GAME ServerPlayer *findPlayerByObjectName(const QString &name, bool include_dead = false) const;
+    QSGS_STATE_GAME bool hasWelfare(const ServerPlayer *player) const;
+    QSGS_STATE_GAME ServerPlayer *getFront(ServerPlayer *a, ServerPlayer *b) const;
+    QSGS_STATE_GAME void sortByActionOrder(QList<ServerPlayer *> &players);
+    QSGS_STATE_GAME const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
+    QSGS_STATE_GAME void setTag(const QString &key, const QVariant &value);
+    QSGS_STATE_GAME QVariant getTag(const QString &key) const;
+    QSGS_STATE_GAME void removeTag(const QString &key);
+    QSGS_STATE_GAME QStringList getTagNames() const;
+    QSGS_STATE_GAME QSanguosha::Place getCardPlace(int card_id) const;
+    QSGS_STATE_GAME ServerPlayer *getCardOwner(int card_id) const;
+    QSGS_STATE_GAME void setCardMapping(int card_id, ServerPlayer *owner, QSanguosha::Place place);
+    // FIXME: Replace their return value to IDSet.
+    QSGS_STATE_GAME QList<int> getCardIdsOnTable(const Card *) const;
+    QSGS_STATE_GAME QList<int> getCardIdsOnTable(const IDSet &card_ids) const;
+
     QSGS_LOGIC enum GuanxingType { GuanxingUpOnly = 1, GuanxingBothSides = 0, GuanxingDownOnly = -1 };
     Q_ENUM(GuanxingType)
 
@@ -53,24 +94,13 @@ public:
         return _m_Id;
     }
     QSGS_STATE_ROOM bool isFull() const;
-    QSGS_STATE_GAME bool isFinished() const;
     QSGS_STATE_ROOM bool canPause(ServerPlayer *p) const;
     QSGS_STATE_ROOM void tryPause();
 
-    QSGS_STATE_ROOM int getLack() const;
-    QSGS_STATE_GAME QString getMode() const;
-    QSGS_STATE_GAME ServerPlayer *getCurrent() const;
-    QSGS_STATE_GAME void setCurrent(ServerPlayer *current);
-    QSGS_STATE_GAME int alivePlayerCount() const;
-    QSGS_STATE_GAME QList<ServerPlayer *> getOtherPlayers(ServerPlayer *except, bool include_dead = false) const;
-    QSGS_STATE_GAME QList<ServerPlayer *> getPlayers() const;
-    QSGS_STATE_GAME QList<ServerPlayer *> getAllPlayers(bool include_dead = false) const;
-    QSGS_STATE_GAME QList<ServerPlayer *> getAlivePlayers() const;
+    QSGS_LOGIC void setEmotion(ServerPlayer *target, const QString &emotion);
     QSGS_LOGIC void enterDying(ServerPlayer *player, DamageStruct *reason);
-    QSGS_STATE_GAME ServerPlayer *getCurrentDyingPlayer() const;
     QSGS_LOGIC void killPlayer(ServerPlayer *victim, DamageStruct *reason = nullptr);
     QSGS_LOGIC void revivePlayer(ServerPlayer *player, bool initialize = true);
-    QSGS_STATE_GAME QStringList aliveRoles(ServerPlayer *except = nullptr) const;
     QSGS_LOGIC void gameOver(const QString &winner, bool isSurrender = false);
     QSGS_LOGIC void slashEffect(const SlashEffectStruct &effect);
     QSGS_LOGIC void slashResult(const SlashEffectStruct &effect, const Card *jink);
@@ -108,7 +138,6 @@ public:
     QSGS_LOGIC void sendJudgeResult(const JudgeStruct *judge);
     QSGS_LOGIC QList<int> getNCards(int n, bool update_pile_number = true, bool bottom = false);
     QSGS_LOGIC void returnToTopDrawPile(const QList<int> &cards);
-    QSGS_STATE_GAME ServerPlayer *getLord(const QString &kingdom = QStringLiteral("wei"), bool include_death = false) const;
     QSGS_LOGIC void askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, GuanxingType guanxing_type = GuanxingBothSides, const QString &skillName = QString());
     QSGS_LOGIC int doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, const QList<int> &enabled_ids = QList<int>(), const QString &skill_name = QStringLiteral("gongxin"));
     QSGS_LOGIC int drawCard(bool bottom = false);
@@ -118,7 +147,6 @@ public:
                            QSanguosha::Place fromPlace = QSanguosha::PlaceDrawPile);
     QSGS_LOGIC void clearAG(ServerPlayer *player = nullptr);
     QSGS_LOGIC void provide(const Card *card, ServerPlayer *who = nullptr);
-    QSGS_STATE_GAME QList<ServerPlayer *> getLieges(const QString &kingdom, ServerPlayer *lord) const;
     QSGS_LOGIC void sendLog(const LogMessage &log);
     QSGS_LOGIC void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = nullptr);
     QSGS_LOGIC void showAllCards(ServerPlayer *player, ServerPlayer *to = nullptr);
@@ -262,27 +290,11 @@ public:
 
     QSGS_LOGIC void adjustSeats();
     QSGS_LOGIC void swapPile();
-    QSGS_STATE_GAME QList<int> &getDiscardPile() override;
-    QSGS_STATE_GAME const QList<int> &getDiscardPile() const override;
-    QSGS_STATE_GAME inline QList<int> &getDrawPile()
-    {
-        return *m_drawPile;
-    }
-    QSGS_STATE_GAME inline const QList<int> &getDrawPile() const
-    {
-        return *m_drawPile;
-    }
-    QSGS_STATE_GAME ServerPlayer *findPlayer(const QString &general_name, bool include_dead = false) const;
-    QSGS_STATE_GAME QList<ServerPlayer *> findPlayersBySkillName(const QString &skill_name, bool include_hidden = true) const;
-    QSGS_STATE_GAME ServerPlayer *findPlayerBySkillName(const QString &skill_name) const;
-    QSGS_STATE_GAME ServerPlayer *findPlayerByObjectName(const QString &name, bool include_dead = false) const;
     QSGS_LOGIC void changeHero(ServerPlayer *player, const QString &new_general, bool full_state, bool invoke_start = true, bool isSecondaryHero = false, bool sendLog = true);
     QSGS_LOGIC void swapSeat(ServerPlayer *a, ServerPlayer *b);
     lua_State *getLuaState() const;
     QSGS_LOGIC void setFixedDistance(Player *from, const Player *to, int distance);
     QSGS_LOGIC void reverseFor3v3(const Card *card, ServerPlayer *player, QList<ServerPlayer *> &list);
-    QSGS_STATE_GAME bool hasWelfare(const ServerPlayer *player) const;
-    QSGS_STATE_GAME ServerPlayer *getFront(ServerPlayer *a, ServerPlayer *b) const;
     QSGS_SOCKET void signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot);
     QSGS_STATE_ROOM ServerPlayer *getOwner() const;
     QSGS_LOGIC void updateStateItem();
@@ -290,28 +302,11 @@ public:
     QSGS_SOCKET void reconnect(ServerPlayer *player, ClientSocket *socket);
     QSGS_LOGIC void marshal(ServerPlayer *player);
 
-    QSGS_STATE_GAME void sortByActionOrder(QList<ServerPlayer *> &players);
     void defaultHeroSkin();
 
     // TODO: use sendLog() instead
     QSGS_LOGIC void touhouLogmessage(const QString &logtype, ServerPlayer *logfrom, const QString &logarg = QString(), const QList<ServerPlayer *> &logto = QList<ServerPlayer *>(),
                                      const QString &logarg2 = QString());
-
-    QSGS_STATE_GAME const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
-
-    QSGS_STATE_GAME void setTag(const QString &key, const QVariant &value);
-    QSGS_STATE_GAME QVariant getTag(const QString &key) const;
-    QSGS_STATE_GAME void removeTag(const QString &key);
-    QSGS_STATE_GAME QStringList getTagNames() const;
-
-    QSGS_LOGIC void setEmotion(ServerPlayer *target, const QString &emotion);
-
-    QSGS_STATE_GAME QSanguosha::Place getCardPlace(int card_id) const;
-    QSGS_STATE_GAME ServerPlayer *getCardOwner(int card_id) const;
-    QSGS_STATE_GAME void setCardMapping(int card_id, ServerPlayer *owner, QSanguosha::Place place);
-    // FIXME: Replace their return value to IDSet.
-    QSGS_STATE_GAME QList<int> getCardIdsOnTable(const Card *) const;
-    QSGS_STATE_GAME QList<int> getCardIdsOnTable(const IDSet &card_ids) const;
 
     QSGS_LOGIC void drawCards(ServerPlayer *player, int n, const QString &reason = QString());
     QSGS_LOGIC void drawCards(const QList<ServerPlayer *> &players, int n, const QString &reason = QString());
@@ -520,10 +515,9 @@ private:
     QList<ServerPlayer *> m_alivePlayers;
     int player_count;
     ServerPlayer *current;
-    QList<int> pile1, pile2;
+    QList<int> pile1;
     QList<int> table_cards;
     QList<int> *m_drawPile;
-    QList<int> *m_discardPile;
     QStack<DamageStruct> m_damageStack;
     bool game_started;
     bool game_started2;

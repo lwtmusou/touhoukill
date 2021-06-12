@@ -37,6 +37,8 @@ public:
     CardUseStruct::CardUseReason currentCardUseReason;
     QList<Card *> clonedCards;
 
+    QList<int> discardPile;
+
     RoomObjectPrivate() = default;
 };
 
@@ -110,6 +112,16 @@ void RoomObject::resetState()
     int n = Sanguosha->getCardCount();
     for (int i = 0; i < n; i++)
         d->cards[i] = cloneCard(Sanguosha->getEngineCard(i));
+}
+
+QList<int> &RoomObject::discardPile()
+{
+    return d->discardPile;
+}
+
+const QList<int> &RoomObject::discardPile() const
+{
+    return d->discardPile;
 }
 
 Card *RoomObject::cloneCard(const Card *card)

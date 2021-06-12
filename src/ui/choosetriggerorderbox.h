@@ -30,14 +30,14 @@ class QGraphicsProxyWidget;
 class QSanCommandProgressBar;
 
 class Skill;
-class ClientPlayer;
+class Player;
 
 struct SkillInvokeDetailForClient
 {
     const Skill *skill;
-    ClientPlayer *owner;
-    ClientPlayer *invoker; // it should be Self
-    ClientPlayer *preferredTarget;
+    Player *owner;
+    Player *invoker; // it should be Self
+    Player *preferredTarget;
     int preferredTargetSeat;
 
     SkillInvokeDetailForClient();

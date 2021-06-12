@@ -50,7 +50,7 @@ PlayerCardBox::PlayerCardBox()
 {
 }
 
-void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player, const QString &flags, bool handcardVisible, QSanguosha::HandlingMethod method,
+void PlayerCardBox::chooseCard(const QString &reason, const Player *player, const QString &flags, bool handcardVisible, QSanguosha::HandlingMethod method,
                                const QList<int> &disabledIds, bool enableEmptyCard)
 {
     nameRects.clear();

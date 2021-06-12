@@ -313,7 +313,7 @@ void SanCloseButton::mouseReleaseEvent(QGraphicsSceneMouseEvent * /*event*/)
     emit clicked();
 }
 
-void CardContainer::view(const ClientPlayer *player)
+void CardContainer::view(const Player *player)
 {
     QList<int> card_ids;
     QList<const Card *> cards = player->getHandcards();

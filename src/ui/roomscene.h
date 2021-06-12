@@ -226,8 +226,8 @@ public slots:
     // choice dialog
     void chooseGeneral(const QStringList &generals, const bool single_result, const bool can_convert);
     void chooseSuit(const QStringList &suits);
-    void chooseCard(const ClientPlayer *playerName, const QString &flags, const QString &reason, bool handcard_visible, QSanguosha::HandlingMethod method,
-                    const QList<int> &disabled_ids, bool enableEmptyCard);
+    void chooseCard(const Player *playerName, const QString &flags, const QString &reason, bool handcard_visible, QSanguosha::HandlingMethod method, const QList<int> &disabled_ids,
+                    bool enableEmptyCard);
     void chooseKingdom(const QStringList &kingdoms);
     void chooseOption(const QString &skillName, const QStringList &options);
     void chooseOrder(QSanProtocol::Game3v3ChooseOrderCommand reason);
@@ -271,7 +271,7 @@ public slots:
         return m_tableCenterPos;
     }
 
-    void showPile(const QList<int> &card_ids, const QString &name, const ClientPlayer *target);
+    void showPile(const QList<int> &card_ids, const QString &name, const Player *target);
     QString getCurrentShownPileName();
     void hidePile();
 
@@ -408,7 +408,7 @@ private:
     QString _translateMovement(const CardsMoveStruct &move);
 
     void useCard(const Card *card);
-    void fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players);
+    void fillTable(QTableWidget *table, const QList<const Player *> &players);
     void chooseSkillButton();
 
     void selectTarget(int order, bool multiple);
@@ -460,7 +460,7 @@ private:
 private slots:
     void fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids = QList<int>(), const QList<int> &shownHandcard_ids = QList<int>());
     void updateSkillButtons();
-    void acquireSkill(const ClientPlayer *player, const QString &skill_name, bool head = true);
+    void acquireSkill(const Player *player, const QString &skill_name, bool head = true);
     void updateSelectedTargets();
     void updateTrustButton();
     void onSkillActivated();
@@ -501,7 +501,7 @@ private slots:
     //animations
     void onEnabledChange();
 
-    void takeAmazingGrace(ClientPlayer *taker, int card_id, bool move_cards);
+    void takeAmazingGrace(Player *taker, int card_id, bool move_cards);
 
     void attachSkill(const QString &skill_name, bool from_left);
     void detachSkill(const QString &skill_name, bool head);
@@ -526,7 +526,7 @@ private slots:
 
     void skillStateChange(const QString &skill_name);
     void trust();
-    void skillInvalidityChange(ClientPlayer *player);
+    void skillInvalidityChange(Player *player);
 
 signals:
     void restart();

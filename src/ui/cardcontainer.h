@@ -36,9 +36,9 @@ public:
     void startChoose();
     void startGongxin(const QList<int> &enabled_ids);
     void addCloseButton();
-    void view(const ClientPlayer *player);
+    void view(const Player *player);
     QRectF boundingRect() const override;
-    ClientPlayer *m_currentPlayer;
+    Player *m_currentPlayer;
     void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) override;
     bool retained();
 

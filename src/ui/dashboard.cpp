@@ -1273,7 +1273,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
         foreach (const Player *p, Self->getAliveSiblings())
             pile.unite(p->getPile(new_name));
     } else if (pile_name == QStringLiteral("#xiuye_temp")) {
-        foreach (int id, ClientInstance->getDiscardPile()) {
+        foreach (int id, ClientInstance->discardPile()) {
             const CardDescriptor &c = Sanguosha->getEngineCard(id);
             if (c.suit == QSanguosha::Club && (c.face()->isNDTrick() || c.face()->type() == QSanguosha::TypeBasic))
                 pile << id;

@@ -29,7 +29,6 @@ Room::Room(QObject *parent, const QString &mode)
     , current(nullptr)
     , pile1(Sanguosha->getRandomCards())
     , m_drawPile(&pile1)
-    , m_discardPile(&pile2)
     , game_started(false)
     , game_started2(false)
     , game_finished(false)
@@ -2354,7 +2353,7 @@ void Room::broadcast(const QString &message, ServerPlayer *except)
 
 void Room::swapPile()
 {
-    if (m_discardPile->isEmpty()) {
+    if (discardPile().isEmpty()) {
         // the standoff
         gameOver(QStringLiteral("."));
     }
@@ -2368,7 +2367,7 @@ void Room::swapPile()
     if (limit > 0 && times == limit)
         gameOver(QStringLiteral("."));
 
-    qSwap(m_drawPile, m_discardPile);
+    qSwap(pile1, discardPile());
 
     doBroadcastNotify(S_COMMAND_RESET_PILE, QVariant());
     doBroadcastNotify(S_COMMAND_UPDATE_PILE, QVariant(m_drawPile->length()));
@@ -2380,16 +2379,6 @@ void Room::swapPile()
     QVariant qtimes;
     qtimes.setValue(times);
     thread->trigger(DrawPileSwaped, qtimes);
-}
-
-QList<int> &Room::getDiscardPile()
-{
-    return *m_discardPile;
-}
-
-const QList<int> &Room::getDiscardPile() const
-{
-    return *m_discardPile;
 }
 
 ServerPlayer *Room::findPlayer(const QString &general_name, bool include_dead) const
@@ -4150,7 +4139,7 @@ void Room::marshal(ServerPlayer *player)
                 doNotify(player, S_COMMAND_TAKE_AMAZING_GRACE, takeAGarg);
         }
 
-        QVariant discard = JsonUtils::toJsonArray(*m_discardPile);
+        QVariant discard = JsonUtils::toJsonArray(discardPile());
         doNotify(player, S_COMMAND_SYNCHRONIZE_DISCARD_PILE, discard);
     }
 }
@@ -4627,7 +4616,7 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
 
             switch (cards_move.from_place) {
             case QSanguosha::PlaceDiscardPile:
-                m_discardPile->removeOne(card_id);
+                discardPile().removeOne(card_id);
                 break;
             case QSanguosha::PlaceDrawPile:
                 m_drawPile->removeOne(card_id);
@@ -4671,7 +4660,7 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
 
             switch (cards_move.to_place) {
             case QSanguosha::PlaceDiscardPile:
-                m_discardPile->prepend(card_id);
+                discardPile().prepend(card_id);
                 break;
             case QSanguosha::PlaceDrawPile:
                 m_drawPile->prepend(card_id);
@@ -4731,7 +4720,7 @@ void Room::moveCardsToEndOfDrawpile(const QList<int> &card_ids, bool forceVisibl
 
             switch (cards_move.from_place) {
             case QSanguosha::PlaceDiscardPile:
-                m_discardPile->removeOne(card_id);
+                discardPile().removeOne(card_id);
                 break;
             case QSanguosha::PlaceDrawPile:
                 m_drawPile->removeOne(card_id);
@@ -6245,7 +6234,7 @@ void Room::takeAG(ServerPlayer *player, int card_id, bool move_cards, QList<Serv
         log.card_str = QString::number(card_id);
         sendLog(log);
 
-        m_discardPile->prepend(card_id);
+        discardPile().prepend(card_id);
         setCardMapping(card_id, nullptr, QSanguosha::PlaceDiscardPile);
     }
     JsonArray takeagargs = m_takeAGargs.value<JsonArray>();

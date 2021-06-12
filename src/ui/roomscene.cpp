@@ -140,8 +140,8 @@ RoomScene::RoomScene(QMainWindow *main_window, Client *client)
     connect(ClientInstance, &Client::generals_viewed, this, &RoomScene::viewGenerals);
     connect(ClientInstance, &Client::suits_got, this, &RoomScene::chooseSuit);
     connect(ClientInstance, &Client::options_got, this, &RoomScene::chooseOption);
-    connect(ClientInstance, SIGNAL(cards_got(const ClientPlayer *, QString, QString, bool, QSanguosha::HandlingMethod, QList<int>, bool)), this,
-            SLOT(chooseCard(const ClientPlayer *, QString, QString, bool, QSanguosha::HandlingMethod, QList<int>, bool)));
+    connect(ClientInstance, SIGNAL(cards_got(const Player *, QString, QString, bool, QSanguosha::HandlingMethod, QList<int>, bool)), this,
+            SLOT(chooseCard(const Player *, QString, QString, bool, QSanguosha::HandlingMethod, QList<int>, bool)));
     connect(ClientInstance, &Client::roles_got, this, &RoomScene::chooseRole);
     connect(ClientInstance, &Client::directions_got, this, &RoomScene::chooseDirection);
     connect(ClientInstance, &Client::orders_got, this, &RoomScene::chooseOrder);
@@ -426,7 +426,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
     GameEventType eventType = (GameEventType)arg[0].toInt();
     switch (eventType) {
     case S_GAME_EVENT_PLAYER_DYING: {
-        ClientPlayer *player = ClientInstance->getPlayer(arg[1].toString());
+        Player *player = ClientInstance->getPlayer(arg[1].toString());
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(QSanguosha::PlaceHand, player);
         container->setSaveMeIcon(true);
         Photo *photo = qobject_cast<Photo *>(container);
@@ -435,7 +435,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         break;
     }
     case S_GAME_EVENT_PLAYER_QUITDYING: {
-        ClientPlayer *player = ClientInstance->getPlayer(arg[1].toString());
+        Player *player = ClientInstance->getPlayer(arg[1].toString());
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(QSanguosha::PlaceHand, player);
         container->setSaveMeIcon(false);
         Photo *photo = qobject_cast<Photo *>(container);
@@ -444,7 +444,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         break;
     }
     case S_GAME_EVENT_HUASHEN: {
-        ClientPlayer *player = ClientInstance->getPlayer(arg[1].toString());
+        Player *player = ClientInstance->getPlayer(arg[1].toString());
         QString huashenGeneral = arg[2].toString();
         QString huashenSkill = arg[3].toString();
         QString huashenGeneral2 = arg[4].toString();
@@ -481,7 +481,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         QString skill_name = arg[2].toString();
         bool head = arg[3].toBool();
 
-        ClientPlayer *player = ClientInstance->getPlayer(player_name);
+        Player *player = ClientInstance->getPlayer(player_name);
         player->detachSkill(skill_name, head);
         if (player == Self)
             detachSkill(skill_name, head);
@@ -495,7 +495,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         QString player_name = arg[1].toString();
         QString skill_name = arg[2].toString();
         bool head_skill = arg[3].toBool();
-        ClientPlayer *player = ClientInstance->getPlayer(player_name);
+        Player *player = ClientInstance->getPlayer(player_name);
         player->acquireSkill(skill_name, head_skill);
         acquireSkill(player, skill_name, head_skill);
 
@@ -511,7 +511,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         QString skill_name = arg[2].toString();
         bool head_skill = arg[3].toBool();
 
-        ClientPlayer *player = ClientInstance->getPlayer(player_name);
+        Player *player = ClientInstance->getPlayer(player_name);
         player->addSkill(skill_name, head_skill);
 
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(QSanguosha::PlaceHand, player);
@@ -525,7 +525,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         QString player_name = arg[1].toString();
         QString skill_name = arg[2].toString();
         bool head = arg[3].toBool();
-        ClientPlayer *player = ClientInstance->getPlayer(player_name);
+        Player *player = ClientInstance->getPlayer(player_name);
         player->loseSkill(skill_name, head);
 
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(QSanguosha::PlaceHand, player);
@@ -561,7 +561,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         QString player_name = arg[1].toString();
         General::Gender gender = (General::Gender)arg[2].toInt();
 
-        ClientPlayer *player = ClientInstance->getPlayer(player_name);
+        Player *player = ClientInstance->getPlayer(player_name);
         player->setGender(gender);
 
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(QSanguosha::PlaceHand, player);
@@ -573,7 +573,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         QString newHeroName = arg[2].toString();
         bool isSecondaryHero = arg[3].toBool();
         bool sendLog = arg[4].toBool();
-        ClientPlayer *player = ClientInstance->getPlayer(playerName);
+        Player *player = ClientInstance->getPlayer(playerName);
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(QSanguosha::PlaceHand, player);
         if (container != nullptr)
             container->refresh();
@@ -619,7 +619,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         break;
     }
     case S_GAME_EVENT_PLAYER_REFORM: {
-        ClientPlayer *player = ClientInstance->getPlayer(arg[1].toString());
+        Player *player = ClientInstance->getPlayer(arg[1].toString());
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(QSanguosha::PlaceHand, player);
         container->updateReformState();
         break;
@@ -631,7 +631,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         if ((skill != nullptr) && skill->isAttachedSkill())
             return;
 
-        ClientPlayer *player = ClientInstance->getPlayer(player_name);
+        Player *player = ClientInstance->getPlayer(player_name);
         if (player == nullptr)
             return;
 
@@ -701,7 +701,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
             break;
         bool head = arg[4].toBool();
 
-        ClientPlayer *player = ClientInstance->getPlayer(player_name);
+        Player *player = ClientInstance->getPlayer(player_name);
 
         QList<PlayerCardContainer *> playerCardContainers;
         foreach (Photo *photo, photos) {
@@ -747,7 +747,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         QString player_name = arg[1].toString();
         bool shown = arg[2].toBool();
 
-        ClientPlayer *player = ClientInstance->getPlayer(player_name);
+        Player *player = ClientInstance->getPlayer(player_name);
         QList<PlayerCardContainer *> playerCardContainers;
         foreach (Photo *photo, photos) {
             playerCardContainers.append(photo);
@@ -1274,7 +1274,7 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer *> &seats)
     }
 
     bool all_robot = true;
-    foreach (const ClientPlayer *p, ClientInstance->getPlayers()) {
+    foreach (const Player *p, ClientInstance->getPlayers()) {
         if (p != Self && p->getState() != QStringLiteral("robot")) {
             all_robot = false;
             break;
@@ -1499,7 +1499,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
     case Qt::Key_F6: {
         if (!Self || !Self->isOwner() || ClientInstance->getPlayers().length() < Sanguosha->getPlayerCount(ServerInfo.GameMode))
             break;
-        foreach (const ClientPlayer *p, ClientInstance->getPlayers()) {
+        foreach (const Player *p, ClientInstance->getPlayers()) {
             if (p != Self && p->isAlive() && p->getState() != QStringLiteral("robot"))
                 break;
         }
@@ -1801,7 +1801,7 @@ void RoomScene::chooseOption(const QString &skillName, const QStringList &option
     m_chooseOptionsBox->chooseOption(options);
 }
 
-void RoomScene::chooseCard(const ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible, QSanguosha::HandlingMethod method,
+void RoomScene::chooseCard(const Player *player, const QString &flags, const QString &reason, bool handcard_visible, QSanguosha::HandlingMethod method,
                            const QList<int> &disabled_ids, bool enableEmptyCard)
 {
     QApplication::alert(main_window);
@@ -1933,7 +1933,7 @@ void RoomScene::toggleDiscards()
 {
     CardOverview *overview = new CardOverview;
     overview->setWindowTitle(tr("Discarded pile"));
-    overview->loadFromList(ClientInstance->getDiscardPile());
+    overview->loadFromList(ClientInstance->discardPile());
     overview->show();
 }
 
@@ -2010,7 +2010,7 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
             CardMoveReason reason = movement.reason;
             if (!reason.m_skillName.isEmpty() && (movement.from != nullptr) && movement.to_place != QSanguosha::PlaceHand && movement.to_place != QSanguosha::PlaceSpecial
                 && movement.to_place != QSanguosha::PlaceEquip && movement.to_place != QSanguosha::PlaceDelayedTrick) {
-                ClientPlayer *target = ClientInstance->getPlayer(movement.from->objectName());
+                Player *target = ClientInstance->getPlayer(movement.from->objectName());
                 if (!reason.m_playerId.isEmpty() && reason.m_playerId != movement.from->objectName())
                     target = ClientInstance->getPlayer(reason.m_playerId);
 
@@ -2345,7 +2345,7 @@ void RoomScene::addSkillButton(const Skill *skill, bool head)
     m_skillButtons.append(btn);
 }
 
-void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_name, bool head)
+void RoomScene::acquireSkill(const Player *player, const QString &skill_name, bool head)
 {
     QString type = QStringLiteral("#AcquireSkill");
     QString from_general = player->objectName();
@@ -3283,9 +3283,9 @@ void RoomScene::onGameOver()
     layout->addWidget(loser_box);
     dialog->setLayout(layout);
 
-    QList<const ClientPlayer *> winner_list;
-    QList<const ClientPlayer *> loser_list;
-    foreach (const ClientPlayer *player, ClientInstance->getPlayers()) {
+    QList<const Player *> winner_list;
+    QList<const Player *> loser_list;
+    foreach (const Player *player, ClientInstance->getPlayers()) {
         bool win = player->property("win").toBool();
         if (win)
             winner_list << player;
@@ -3339,7 +3339,7 @@ void RoomScene::saveReplayRecord(const bool auto_save, const bool network_only)
 {
     if (auto_save) {
         int human = 0;
-        foreach (const ClientPlayer *player, ClientInstance->getPlayers()) {
+        foreach (const Player *player, ClientInstance->getPlayers()) {
             if (player == Self) {
                 human++;
                 continue;
@@ -3508,7 +3508,7 @@ void RoomScene::FillPlayerNames(QComboBox *ComboBox, bool add_none)
     if (add_none)
         ComboBox->addItem(tr("None"), QStringLiteral("."));
     ComboBox->setIconSize(G_COMMON_LAYOUT.m_tinyAvatarSize);
-    foreach (const ClientPlayer *player, ClientInstance->getPlayers()) {
+    foreach (const Player *player, ClientInstance->getPlayers()) {
         QString general_name = Sanguosha->translate(player->getGeneralName());
         if (player->getGeneral() == nullptr)
             continue;
@@ -3555,8 +3555,8 @@ void RoomScene::makeReviving()
     }
 
     QStringList items;
-    QList<const ClientPlayer *> victims;
-    foreach (const ClientPlayer *player, ClientInstance->getPlayers()) {
+    QList<const Player *> victims;
+    foreach (const Player *player, ClientInstance->getPlayers()) {
         if (player->isDead()) {
             QString general_name = Sanguosha->translate(player->getGeneralName());
             items << QStringLiteral("%1 [%2]").arg(player->screenName()).arg(general_name);
@@ -3596,7 +3596,7 @@ void RoomScene::viewGenerals(const QString &reason, const QStringList &names)
     dialog->show();
 }
 
-void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players)
+void RoomScene::fillTable(QTableWidget *table, const QList<const Player *> &players)
 {
     table->setColumnCount(10);
     table->setRowCount(players.length());
@@ -3612,7 +3612,7 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
     table->setSelectionBehavior(QTableWidget::SelectRows);
 
     for (int i = 0; i < players.length(); i++) {
-        const ClientPlayer *player = players[i];
+        const Player *player = players[i];
 
         QTableWidgetItem *item = new QTableWidgetItem;
         item->setText(ClientInstance->getPlayerName(player->objectName()));
@@ -3686,7 +3686,7 @@ void RoomScene::killPlayer(const QString &who)
     const General *general = nullptr;
     m_roomMutex.lock();
 
-    ClientPlayer *player = ClientInstance->getPlayer(who);
+    Player *player = ClientInstance->getPlayer(who);
     if (player != nullptr) {
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(QSanguosha::PlaceHand, player);
         container->stopHuaShen();
@@ -3735,7 +3735,7 @@ void RoomScene::setDashboardShadow(const QString &who)
     dashboard->setDeathColor();
 }
 
-void RoomScene::takeAmazingGrace(ClientPlayer *taker, int card_id, bool move_cards)
+void RoomScene::takeAmazingGrace(Player *taker, int card_id, bool move_cards)
 {
     QList<int> card_ids;
     card_ids.append(card_id);
@@ -3774,9 +3774,9 @@ void RoomScene::showCard(const QString &player_name, int card_id)
 {
     QList<int> card_ids;
     card_ids << card_id;
-    const ClientPlayer *player = ClientInstance->getPlayer(player_name);
+    Player *player = ClientInstance->getPlayer(player_name);
 
-    GenericCardContainer *container = _getGenericCardContainer(QSanguosha::PlaceHand, (Player *)player);
+    GenericCardContainer *container = _getGenericCardContainer(QSanguosha::PlaceHand, player);
     QList<CardItem *> card_items = container->cloneCardItems(card_ids);
     CardMoveReason reason(CardMoveReason::S_REASON_DEMONSTRATE, player->objectName());
     bringToFront(m_tablePile);
@@ -3924,7 +3924,7 @@ void RoomScene::showPlayerCards()
     if (action != nullptr) {
         QStringList names = action->data().toString().split(QStringLiteral("."));
         QString player_name = names.first();
-        const ClientPlayer *player = ClientInstance->getPlayer(player_name);
+        const Player *player = ClientInstance->getPlayer(player_name);
         if (names.length() > 1) {
             QString pile_name = names.last();
 
@@ -3947,7 +3947,7 @@ void RoomScene::showPlayerCards()
     }
 }
 
-void RoomScene::showPile(const QList<int> &card_ids, const QString &name, const ClientPlayer *target)
+void RoomScene::showPile(const QList<int> &card_ids, const QString &name, const Player *target)
 {
     pileContainer->clear();
     bringToFront(pileContainer);
@@ -4349,7 +4349,7 @@ void RoomScene::doHuashen(const QString & /*unused*/, const QStringList &args)
     QString name = hargs.first();
     hargs.removeOne(name);
     hargs = hargs.first().split(QStringLiteral(":"));
-    ClientPlayer *player = ClientInstance->getPlayer(name);
+    Player *player = ClientInstance->getPlayer(name);
     bool owner = (hargs.first() != QStringLiteral("unknown"));
 
     QVariantList huashen_list;
@@ -4707,7 +4707,7 @@ void RoomScene::trust()
     ClientInstance->trust();
 }
 
-void RoomScene::skillInvalidityChange(ClientPlayer *player)
+void RoomScene::skillInvalidityChange(Player *player)
 {
     if (player != Self)
         return;

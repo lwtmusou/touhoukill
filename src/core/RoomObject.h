@@ -53,8 +53,8 @@ public:
     // Reset all cards, generals' states of the room instance
     void resetState();
 
-    virtual QList<int> &getDiscardPile() = 0;
-    virtual const QList<int> &getDiscardPile() const = 0;
+    QList<int> &discardPile();
+    const QList<int> &discardPile() const;
 
     Card *cloneSkillCard(const QString &name);
     Card *cloneDummyCard();

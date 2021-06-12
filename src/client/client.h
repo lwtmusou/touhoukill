@@ -75,9 +75,11 @@ public:
     void onPlayerReplyYiji(const Card *card, const Player *to);
     void onPlayerReplyGuanxing(const QList<int> &up_cards, const QList<int> &down_cards);
     void onPlayerAssignRole(const QStringList &names, const QStringList &roles);
-    QList<const ClientPlayer *> getPlayers() const;
+    QList<const Player *> getPlayers() const;
+    QList<const ClientPlayer *> getClientPlayers() const;
     void speakToServer(const QString &text);
-    ClientPlayer *getPlayer(const QString &name);
+    Player *getPlayer(const QString &name);
+    ClientPlayer *getClientPlayer(const QString &name);
     bool save(const QString &filename) const;
     QList<QByteArray> getRecords() const;
     QString getReplayPath() const;
@@ -89,9 +91,6 @@ public:
     QTextDocument *getPromptDoc() const;
 
     ClientPlayer *getSelf() const;
-
-    QList<int> &getDiscardPile() override;
-    const QList<int> &getDiscardPile() const override;
 
     typedef void (Client::*Callback)(const QVariant &);
 
@@ -263,7 +262,6 @@ private:
     int pile_num;
     QString skill_to_invoke;
     QList<int> available_cards;
-    QList<int> discarded_list;
 
     unsigned int _m_lastServerSerial;
     bool m_isObjectNameRecorded;
@@ -299,7 +297,7 @@ signals:
     void kingdoms_got(const QStringList &kingdoms);
     void suits_got(const QStringList &suits);
     void options_got(const QString &skillName, const QStringList &options);
-    void cards_got(const ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible, QSanguosha::HandlingMethod method, QList<int> disabled_ids,
+    void cards_got(const Player *player, const QString &flags, const QString &reason, bool handcard_visible, QSanguosha::HandlingMethod method, QList<int> disabled_ids,
                    bool enableEmptyCard);
     void roles_got(const QString &scheme, const QStringList &roles);
     void directions_got();
@@ -327,7 +325,7 @@ signals:
     void text_spoken(const QString &text);
     void line_spoken(const QString &line);
     void player_spoken(const QString &who, const QString &line);
-    void skill_invalidity_changed(ClientPlayer *player);
+    void skill_invalidity_changed(Player *player);
 
     void card_used();
 
@@ -347,7 +345,7 @@ signals:
     void surrender_enabled(bool enabled);
 
     void ag_filled(const QList<int> &card_ids, const QList<int> &disabled_ids, const QList<int> &shownHandcard_ids);
-    void ag_taken(ClientPlayer *taker, int card_id, bool move_cards);
+    void ag_taken(Player *taker, int card_id, bool move_cards);
     void ag_cleared();
 
     void generals_filled(const QStringList &general_names);

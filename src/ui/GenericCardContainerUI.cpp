@@ -378,7 +378,7 @@ void PlayerCardContainer::updateHp()
 
 void PlayerCardContainer::updatePile(const QString &pile_name)
 {
-    ClientPlayer *player = qobject_cast<ClientPlayer *>(sender());
+    Player *player = qobject_cast<Player *>(sender());
     if (player == nullptr)
         player = m_player;
     if (player == nullptr)
@@ -471,7 +471,7 @@ void PlayerCardContainer::showPile()
 {
     QPushButton *button = qobject_cast<QPushButton *>(sender());
     if (button != nullptr) {
-        const ClientPlayer *player = getPlayer();
+        const Player *player = getPlayer();
         if (player == nullptr)
             return;
         IDSet card_ids = player->getPile(button->objectName());
