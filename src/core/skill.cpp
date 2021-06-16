@@ -740,8 +740,6 @@ Rule::Rule(const QString &name)
 {
 }
 
-Rule::~Rule() = default;
-
 int Rule::priority() const
 {
     // for rule

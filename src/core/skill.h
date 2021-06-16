@@ -279,7 +279,7 @@ class Rule : public Trigger
 {
 public:
     Rule(const QString &name);
-    ~Rule() override;
+    ~Rule() override = default;
 
     // fixed 0
     int priority() const final override;
