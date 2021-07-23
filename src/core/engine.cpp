@@ -46,10 +46,12 @@ Engine::Engine()
 {
     Sanguosha = this;
 
+    // This file should be in qrc
     JsonDocument doc = JsonDocument::fromFilePath(QStringLiteral("config/gameconfig.json"));
     if (doc.isValid())
         configFile = doc.object();
 
+    // load it from config by Lua, using builtin extensions folder
     QStringList package_names = getConfigFromConfigFile(QStringLiteral("package_names")).toStringList();
     foreach (QString name, package_names)
         addPackage(name);
@@ -58,10 +60,10 @@ Engine::Engine()
     LordBackdropConvertList = getConfigFromConfigFile(QStringLiteral("backdrop_convert_pairs")).toStringList();
     LatestGeneralList = getConfigFromConfigFile(QStringLiteral("latest_generals")).toStringList();
 
+    // I'd like it to refactor to use Qt-builtin way for it
     QString locale = getConfigFromConfigFile(QStringLiteral("locale")).toString();
     if (locale.length() == 0)
         locale = QStringLiteral("zh_CN");
-
     loadTranslations(locale);
 
     // available game modes
@@ -89,6 +91,7 @@ Engine::Engine()
     modes[QStringLiteral("hegemony_09")] = tr("hegemony 9 players");
     modes[QStringLiteral("hegemony_10")] = tr("hegemony 10 players");
 
+    // Engine can't be a child of qApp, so we can only fall back to use...
     connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, this, &QObject::deleteLater);
 }
 
@@ -257,7 +260,7 @@ QList<const Package *> Engine::getPackages() const
 
 const Package *Engine::findPackage(const QString &name) const
 {
-    foreach (auto pkg, packages) {
+    foreach (const auto *pkg, packages) {
         if (pkg->name() == name)
             return pkg;
     }
@@ -269,7 +272,7 @@ QString Engine::translate(const QString &to_translate, bool addHegemony) const
 {
     QStringList list = to_translate.split(QStringLiteral("\\"));
     QString res;
-    foreach (QString str, list) {
+    foreach (const QString &str, list) {
         if (addHegemony && !str.endsWith(QStringLiteral("_hegemony"))) {
             QString strh = str + QStringLiteral("_hegemony");
             if (translations.contains(strh))
@@ -285,9 +288,9 @@ QString Engine::translate(const QString &to_translate, bool addHegemony) const
 
 int Engine::getRoleIndex() const
 {
-    if (ServerInfo.GameMode == QStringLiteral("06_3v3") || ServerInfo.GameMode == QStringLiteral("06_XMode")) {
+    if (ServerInfo.GameMode == QStringLiteral("06_3v3") || ServerInfo.GameMode == QStringLiteral("06_XMode"))
         return 4;
-    } else if (isHegemonyGameMode(ServerInfo.GameMode))
+    else if (isHegemonyGameMode(ServerInfo.GameMode))
         return 5;
     else
         return 1;

@@ -12,6 +12,12 @@
 typedef void *LuaQrcWrapper;
 LuaQrcWrapper qrc = nullptr;
 
+namespace BuiltinExtension {
+QStringList names();
+bool verifyChecksum(const QString &extensionName);
+void disableConnectToServer();
+} // namespace BuiltinExtension
+
 %}
 
 %include "naturalvar.i"
@@ -61,4 +67,16 @@ public:
     QVariant property(const char *name) const;
     void setParent(QObject *parent);
     void deleteLater();
+};
+
+class BuiltinExtension {
+private:
+    LuaQrcWrapper() = delete;
+    ~LuaQrcWrapper() = delete;
+    LuaQrcWrapper(const LuaQrcWrapper &) = delete;
+    LuaQrcWrapper &operator=(const LuaQrcWrapper&) = delete;
+public:
+    static QStringList names();
+    static bool verifyChecksum(const QString &extensionName);
+    static void disableConnectToServer();
 };

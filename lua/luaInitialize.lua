@@ -100,12 +100,6 @@ local QrcSearchFunction = function(name)
 end
 table.insert(package.searchers, 1, QrcSearchFunction)
 
--- how to implement require with qrc support?
--- we can't simply append 'qrc:/' to 'package.path'
--- just use following:
---   x = dofile("qrc://x.lua")
---   package.loaded.x = x
-
 -- original Sanguosha.lua does following things
 -- 1. load utilities
 --    It should be done in this script
@@ -117,6 +111,7 @@ table.insert(package.searchers, 1, QrcSearchFunction)
 
 -- in addition, we may do following things
 -- a. check version of builtin extensions
+-- b. check configuration of how we load extensions
 
 -- 1. load utilities
 dofile("qrc:/utilities.lua")
@@ -165,12 +160,37 @@ local loadExtension = function(name, isBuiltin)
 end
 
 local loadBuiltinExtensions = function()
-    -- TODO: builtin extensions might be accessed via Lua file with checksum check. Disable connection to server if checksum mismatches
-    -- All packages may be loaded via Lua with checksum, with a few builtin CardFaces and Skills available in CPP
-    -- A builtin extension updater is needed in CPP to provide the needed checksum algorithm
+    -- TODO: builtin extensions might be accessed via Luac file with checksum check. Disable connection to server if checksum mismatches
+    -- All packages may be loaded via Lua, with a few builtin CardFaces and Skills available in CPP
+    -- A builtin extension updater is needed in CPP to provide the needed checksum algorithm, since checksum is calculated in CPP
+
+    -- First, we should get names of all builtin extensions from CPP.
+    -- There was 'config.lua' who did this thing by just listing names of extensions in a table, but it isn't now.
+    -- We should find a place for putting the configurations somewhere.
+    local checksumFailed = false
+    local loadFailed = false
+
+    local builtinExtensionNames = sgs.BuiltExtension_names()
+    for _, name in ipairs(builtinExtensionNames) do
+        if not sgs.BuiltinExtension_verifyChecksum(name) then
+            warn("Checksum of " .. name .. " mismatches")
+            checksumFailed = true
+        end
+
+        if not loadExtension(name, true) then
+            warn("Builtin extension " .. name .. " has failed to load")
+            loadFailed = true
+        end
+    end
+
+    if checksumFailed or loadFailed then
+        sgs.BuiltinExtension_disableConnectToServer()
+    end
 end
 
 local loadInstalledExtensions = function()
     -- TODO: allow to load Lua file with checksum check, warn about it (instead of discard) if checksum mismatches
     -- It is possible to provide an extension shop, which downloads and validates extension by using checksum
+
+    -- load extension names from config file?
 end

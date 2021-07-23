@@ -63,15 +63,14 @@ public:
         // Temporary let's take method 3
         constexpr int errorDealingMethod = 3;
 
-        int luaRet = luaL_dostring(l, arr.constData());
-        if (luaRet != LUA_OK) {
+        if (int luaRet = luaL_dostring(l, arr.constData()); luaRet != LUA_OK) {
             QString errorText = QString::fromUtf8(lua_tostring(l, -1));
             lua_pop(l, 1);
-            if (errorDealingMethod == 1) {
+            if constexpr (errorDealingMethod == 1) {
                 throw luaRet;
-            } else if (errorDealingMethod == 2) {
+            } else if constexpr (errorDealingMethod == 2) {
                 // removed
-            } else if (errorDealingMethod == 3) {
+            } else if constexpr (errorDealingMethod == 3) {
                 qDebug() << errorText;
             }
         }
@@ -163,3 +162,32 @@ LuaMultiThreadEnvironment *LuaMultiThreadEnvironment::self()
     static LuaMultiThreadEnvironment instance;
     return &instance;
 }
+
+namespace BuiltinExtension {
+
+// collect Extension name and checksum when called first time and cache it
+// checksum should be in SHA256 or simular hashing algorithms
+// Qt provides QCryptographicHash for this job, which we used to verify the auto-update in legacy TouhouSatsu
+// Todo: find a way for trusted download of packages (PGP?)
+
+QStringList names()
+{
+    Q_UNIMPLEMENTED();
+    return QStringList();
+}
+
+bool verifyChecksum(const QString &)
+{
+    Q_UNIMPLEMENTED();
+    return true;
+}
+
+// Should this be here? Maybe Engine should be responsible for this instead
+// Exit program when a pure-server program runs, and disable connecting to any server (except for localhost) on main window
+// Does nothing when debug is on
+void disableConnectToServer()
+{
+    Q_UNIMPLEMENTED();
+}
+
+} // namespace BuiltinExtension

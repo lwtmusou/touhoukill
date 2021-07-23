@@ -100,4 +100,11 @@ private:
     static LuaMultiThreadEnvironment *self();
 };
 
+// I don't think these functions should be in this file.
+namespace BuiltinExtension {
+QStringList names();
+bool verifyChecksum(const QString &extensionName);
+void disableConnectToServer();
+} // namespace BuiltinExtension
+
 #endif
