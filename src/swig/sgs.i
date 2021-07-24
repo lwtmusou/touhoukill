@@ -9,29 +9,21 @@
 #include <QString>
 #include <QByteArray>
 
-typedef void *LuaQrcWrapper;
-LuaQrcWrapper qrc = nullptr;
-
-namespace BuiltinExtension {
-QStringList names();
-bool verifyChecksum(const QString &extensionName);
-void disableConnectToServer();
-} // namespace BuiltinExtension
-
 %}
 
+%include "cryptographic.i"
 %include "naturalvar.i"
 
-class LuaQrcWrapper {
+class qrc {
 private:
-    LuaQrcWrapper() = delete;
-    ~LuaQrcWrapper() = delete;
-    LuaQrcWrapper(const LuaQrcWrapper &) = delete;
-    LuaQrcWrapper &operator=(const LuaQrcWrapper&) = delete;
+    qrc() = delete;
+    ~qrc() = delete;
+    qrc(const LuaQrcWrapper &) = delete;
+    qrc &operator=(const LuaQrcWrapper&) = delete;
 };
 
-%extend LuaQrcWrapper {
-    QByteArray contents(const QString &n) noexcept {
+%extend qrc {
+    static QByteArray contents(const QString &n) noexcept {
         QString fileName = n;
         if (!fileName.startsWith("qrc:"))
             return QByteArray();
@@ -45,7 +37,7 @@ private:
         return f.readAll();
     }
 
-    bool contains(const QString &n) noexcept {
+    static bool contains(const QString &n) noexcept {
         QString fileName = n;
         if (!fileName.startsWith("qrc:"))
             return false;
@@ -55,8 +47,6 @@ private:
         return f.exists();
     }
 };
-
-extern LuaQrcWrapper qrc;
 
 class QObject {
 public:

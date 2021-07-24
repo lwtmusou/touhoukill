@@ -55,7 +55,7 @@ dofile = function(filename)
 
     if string.sub(filename, 1, 4) == "qrc:" then
         -- TODO: load contents from QRC
-        local resourceContent = sgs.qrc:contents(filename)
+        local resourceContent = sgs.qrc_contents(filename)
         if resourceContent then
             local func, err = load(resourceContent, filename, "t")
             if func then
@@ -78,7 +78,7 @@ loadfile = function(filename, ...)
 
     if string.sub(filename, 1, 4) == "qrc:" then
         -- TODO: load contents from QRC
-        local resourceContent = sgs.qrc:contents(filename)
+        local resourceContent = sgs.qrc_contents(filename)
         if resourceContent then
             return load(resourceContent, filename, ...)
         end
@@ -93,7 +93,7 @@ end
 local QrcSearchFunction = function(name)
     local name_ = string.gsub(name, "%.", "/")
     local fileName = "qrc:/" .. name_ .. ".lua"
-    if sgs.qrc:contains(fileName) then
+    if sgs.qrc_contains(fileName) then
         return QrcLoadFunction, fileName
     end
     return nil
