@@ -165,23 +165,6 @@ LuaMultiThreadEnvironment *LuaMultiThreadEnvironment::self()
 
 namespace BuiltinExtension {
 
-// collect Extension name and checksum when called first time and cache it
-// checksum should be in SHA256 or simular hashing algorithms
-// Qt provides QCryptographicHash for this job, which we used to verify the auto-update in legacy TouhouSatsu
-// Todo: find a way for trusted download of packages (PGP?)
-
-QStringList names()
-{
-    Q_UNIMPLEMENTED();
-    return QStringList();
-}
-
-bool verifyChecksum(const QString &)
-{
-    Q_UNIMPLEMENTED();
-    return true;
-}
-
 // Should this be here? Maybe Engine should be responsible for this instead
 // Exit program when a pure-server program runs, and disable connecting to any server (except for localhost) on main window
 // Does nothing when debug is on

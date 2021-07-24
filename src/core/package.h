@@ -4,6 +4,7 @@
 #include "global.h"
 
 #include <QCoreApplication>
+#include <QCryptographicHash>
 #include <QHash>
 #include <QMap>
 #include <QObject>
@@ -75,3 +76,7 @@ const QHash<QString, Package *> &packages();
     Q_COREAPP_STARTUP_FUNCTION(name##initializeFunc)
 
 #endif
+
+namespace BuiltinExtension {
+bool VerifyChecksum(const QString &path, const QString &hash, QCryptographicHash::Algorithm algorithm);
+} // namespace BuiltinExtension

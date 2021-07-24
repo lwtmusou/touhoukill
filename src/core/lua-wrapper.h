@@ -100,11 +100,12 @@ private:
     static LuaMultiThreadEnvironment *self();
 };
 
-// I don't think these functions should be in this file.
 namespace BuiltinExtension {
-QStringList names();
-bool verifyChecksum(const QString &extensionName);
-void disableConnectToServer();
-} // namespace BuiltinExtension
 
+// Should this be here? Maybe Engine should be responsible for this instead
+// Exit program when a pure-server program runs, and disable connecting to any server (except for localhost) on main window
+// Does nothing when debug is on
+void disableConnectToServer();
+
+} // namespace BuiltinExtension
 #endif

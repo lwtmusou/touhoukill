@@ -54,7 +54,6 @@ dofile = function(filename)
     end
 
     if string.sub(filename, 1, 4) == "qrc:" then
-        -- TODO: load contents from QRC
         local resourceContent = sgs.qrc_contents(filename)
         if resourceContent then
             local func, err = load(resourceContent, filename, "t")
@@ -73,7 +72,7 @@ end
 local originalLoadfile = loadfile
 loadfile = function(filename, ...)
     if not filename then
-        return nil, "QSanguosha does not support cin."
+        return fail, "QSanguosha does not support cin."
     end
 
     if string.sub(filename, 1, 4) == "qrc:" then
@@ -118,6 +117,7 @@ dofile("qrc:/utilities.lua")
 
 -- 3. load extensions
 sgs_ex = require("sgs_ex")
+JSON = require("JSON")
 
 -- Descriptors here
 -- Should it be k-v pair or sequence?
@@ -159,6 +159,51 @@ local loadExtension = function(name, isBuiltin)
     return false
 end
 
+local builtinExtensionDefinition = function()
+    local f, e = io.open("lua/builtinExtension/extensions.json")
+    if not f then
+        error("Builtin extension definition file is missing or failed to load, reason: " .. e)
+    end
+
+    local s, d = pcall(JSON.decode, JSON, f:read("a"))
+    f:close()
+    if not s then
+        error("JSON decode of extension definition file failed, reason: ".. d)
+    end
+
+    -- the builtin extension file may be a folder of Luac files or a single Luac file
+    -- How to calculate checksum of multiple files? Maybe one checksum per file?
+    return d
+end
+
+local verifyBuiltinExtensionChecksum = function(name, checksums)
+    -- INTENSIONALLY no slash here for supporting any terms of file here.
+    local extensionPath = "lua/builtinExtension/" .. name
+    local checksumKeys = table.keys(checksums)
+    for _, key in ipairs(checksumKeys) do
+        -- ".lua"
+        -- ".luac"
+        -- ".tl"
+        -- "/init.lua"
+        -- "/init.luac"
+        -- "/init.tl"
+        -- "/xxxxx.tl"
+        -- etc.
+        -- INTENSIONALLY no slash is added here
+        local extensionFile = extensionPath .. key
+        local ok = sgs.BuiltinExtension_VerifyChecksum(extensionFile, checksums[key].sha256, sgs.QCryptographicHash_Sha256)
+        if not ok then
+            return false
+        end
+        ok = sgs.BuiltinExtension_VerifyChecksum(extensionFile, checksums[key].keccak256, sgs.QCryptographicHash_Keccak_256)
+        if not ok then
+            return false
+        end
+    end
+
+    return true
+end
+
 local loadBuiltinExtensions = function()
     -- TODO: builtin extensions might be accessed via Luac file with checksum check. Disable connection to server if checksum mismatches
     -- All packages may be loaded via Lua, with a few builtin CardFaces and Skills available in CPP
@@ -170,9 +215,11 @@ local loadBuiltinExtensions = function()
     local checksumFailed = false
     local loadFailed = false
 
-    local builtinExtensionNames = sgs.BuiltExtension_names()
+    local def = builtinExtensionDefinition()
+
+    local builtinExtensionNames = table.keys(def)
     for _, name in ipairs(builtinExtensionNames) do
-        if not sgs.BuiltinExtension_verifyChecksum(name) then
+        if not verifyBuiltinExtensionChecksum(name, def[name]) then
             warn("Checksum of " .. name .. " mismatches")
             checksumFailed = true
         end
@@ -184,7 +231,7 @@ local loadBuiltinExtensions = function()
     end
 
     if checksumFailed or loadFailed then
-        sgs.BuiltinExtension_disableConnectToServer()
+        -- sgs.BuiltinExtension_disableConnectToServer()
     end
 end
 

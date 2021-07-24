@@ -58,15 +58,3 @@ public:
     void setParent(QObject *parent);
     void deleteLater();
 };
-
-class BuiltinExtension {
-private:
-    LuaQrcWrapper() = delete;
-    ~LuaQrcWrapper() = delete;
-    LuaQrcWrapper(const LuaQrcWrapper &) = delete;
-    LuaQrcWrapper &operator=(const LuaQrcWrapper&) = delete;
-public:
-    static QStringList names();
-    static bool verifyChecksum(const QString &extensionName);
-    static void disableConnectToServer();
-};

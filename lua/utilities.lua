@@ -117,6 +117,15 @@ function table:shuffle()
 	end
 end
 
+function table:keys()
+	local new = {}
+	for k in pairs(self) do
+		table.insert(new, k)
+	end
+
+	return new
+end
+
 function string:matchOne(option)
 	return self:match("^" .. option .. "%p") or self:match("%p" .. option .. "%p") or self:match("%p" .. option .. "$")
 end

@@ -3,5 +3,6 @@
         <file>luaInitialize.lua</file>
         <file>sgs_ex.lua</file>
         <file>utilities.lua</file>
+        <file>JSON.lua</file>
     </qresource>
 </RCC>
