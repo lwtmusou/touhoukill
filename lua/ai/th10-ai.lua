@@ -233,6 +233,9 @@ qiji_skill.getTurnUseCard = function(self)
 
 	local qiji = "peach|super_peach|savage_assault|archery_attack|ex_nihilo|god_salvation|dismantlement"
 	local qijis = qiji:split("|")
+	if self.room:getMode():find("hegemony") then 
+		table.removeOne(qijis, "super_peach")
+	end
 	for i = 1, #qijis do
 		local forbiden = qijis[i]
 		forbid = sgs.cloneCard(forbiden, card:getSuit(),card:getNumber())
