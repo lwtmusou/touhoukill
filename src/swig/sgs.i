@@ -8,6 +8,21 @@
 #include <QFileInfo>
 #include <QString>
 #include <QByteArray>
+#include <QCoreApplication>
+
+#ifdef QT_WIDGETS_LIB
+#include <QMessageBox>
+#else
+class QMessageBox
+{
+        static inline void warning(void *parent, const QString &title,
+             const QString &text){}
+        static inline void critical(void *parent, const QString &title,
+             const QString &text){}
+};
+#endif
+
+#include "lua-wrapper.h"
 
 %}
 
@@ -58,3 +73,25 @@ public:
     void setParent(QObject *parent);
     void deleteLater();
 };
+
+class QMessageBox {
+        static void warning(void *parent, const QString &title,
+             const QString &text);
+        static void critical(void *parent, const QString &title,
+             const QString &text);
+};
+
+extern bool isGui();
+
+%{
+extern bool isGui();
+
+bool isGui()
+{
+#ifdef QT_WIDGETS_LIB
+    return LuaMultiThreadEnvironment::luaStateForCurrentThread()->thread() == qApp->thread();
+#else
+    return false;
+#endif
+}
+%}

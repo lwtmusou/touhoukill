@@ -1,10 +1,24 @@
 
 -- Initialization script for QSanguosha
--- Assuming standard module (w/o coroutine) and module "sgs" imported
+-- Assuming standard module (w/o coroutine) and module "sgs" imported and is accessable globally
 
 -- compatible with Lua 5.3
 if _VERSION == "Lua 5.3" then
     fail = nil
+end
+
+-- if QSanguosha is built with QtWidgets and current thread is GUI thread, enable these functions
+if sgs.isGui() then
+    local originalWarn = warn
+    warn = function(f)
+        sgs.QMessageBox_warning(nil, "QSanguosha", f)
+        return originalWarn(f)
+    end
+    local originalError = error
+    error = function(f)
+        sgs.QMessageBox_critical(nil, "QSanguosha", f)
+        return originalError(f)
+    end
 end
 
 -- first, kill some function that shouldn't be used
@@ -159,16 +173,16 @@ local loadExtension = function(name, isBuiltin)
     return false
 end
 
-local builtinExtensionDefinition = function()
-    local f, e = io.open("lua/builtinExtension/extensions.json")
+local extensionDefinition = function(jsonFile)
+    local f, e = io.open(jsonFile)
     if not f then
-        error("Builtin extension definition file is missing or failed to load, reason: " .. e)
+        error("Extension definition file " .. jsonFile .. " is missing or failed to load, reason: " .. e)
     end
 
     local s, d = pcall(JSON.decode, JSON, f:read("a"))
     f:close()
     if not s then
-        error("JSON decode of extension definition file failed, reason: ".. d)
+        error("JSON decode of extension definition file " .. jsonFile .. " failed, reason: " .. d)
     end
 
     -- the builtin extension file may be a folder of Luac files or a single Luac file
@@ -176,11 +190,14 @@ local builtinExtensionDefinition = function()
     return d
 end
 
-local verifyBuiltinExtensionChecksum = function(name, checksums)
-    -- INTENSIONALLY no slash here for supporting any terms of file here.
-    local extensionPath = "lua/builtinExtension/" .. name
-    local checksumKeys = table.keys(checksums)
-    for _, key in ipairs(checksumKeys) do
+local verifyExtensionChecksum = function(name, checksums, isBuiltin)
+    -- INTENSIONALLY no suffix slash here for supporting any terms of file here.
+    local extensionPath = "lua/extension/" .. name
+    if isBuiltin then
+        extensionPath = "lua/builtinExtension/" .. name
+    end
+
+    for key, value in pairs(checksums) do
         -- ".lua"
         -- ".luac"
         -- ".tl"
@@ -191,11 +208,11 @@ local verifyBuiltinExtensionChecksum = function(name, checksums)
         -- etc.
         -- INTENSIONALLY no slash is added here
         local extensionFile = extensionPath .. key
-        local ok = sgs.BuiltinExtension_VerifyChecksum(extensionFile, checksums[key].sha256, sgs.QCryptographicHash_Sha256)
+        local ok = sgs.BuiltinExtension_VerifyChecksum(extensionFile, value.sha256, sgs.QCryptographicHash_Sha256)
         if not ok then
             return false
         end
-        ok = sgs.BuiltinExtension_VerifyChecksum(extensionFile, checksums[key].keccak256, sgs.QCryptographicHash_Keccak_256)
+        ok = sgs.BuiltinExtension_VerifyChecksum(extensionFile, value.keccak256, sgs.QCryptographicHash_Keccak_256)
         if not ok then
             return false
         end
@@ -215,11 +232,10 @@ local loadBuiltinExtensions = function()
     local checksumFailed = false
     local loadFailed = false
 
-    local def = builtinExtensionDefinition()
+    local def = extensionDefinition("lua/builtinExtension/extensions.json")
 
-    local builtinExtensionNames = table.keys(def)
-    for _, name in ipairs(builtinExtensionNames) do
-        if not verifyBuiltinExtensionChecksum(name, def[name]) then
+    for name, value in pairs(def) do
+        if not verifyExtensionChecksum(name, value, true) then
             warn("Checksum of " .. name .. " mismatches")
             checksumFailed = true
         end
@@ -236,8 +252,22 @@ local loadBuiltinExtensions = function()
 end
 
 local loadInstalledExtensions = function()
-    -- TODO: allow to load Lua file with checksum check, warn about it (instead of discard) if checksum mismatches
+    -- TODO: allow to load Lua file with checksum check, discard it if checksum mismatches
     -- It is possible to provide an extension shop, which downloads and validates extension by using checksum
 
     -- load extension names from config file?
+
+    local def = extensionDefinition("lua/extension/extensions.json")
+
+    -- this def contains an array of extension names
+    for _, name in ipairs(def) do
+        local subdef = extensionDefinition("lua/extension/" .. name .. ".json")
+        if not verifyExtensionChecksum(name, subdef, false) then
+            warn("Checksum of " .. name .. " mismatches thus not loaded.")
+        else
+            if not loadExtension(name, false) then
+                warn("Extension " .. name .. " has failed to load")
+            end
+        end
+    end
 end

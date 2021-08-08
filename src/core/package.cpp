@@ -130,7 +130,7 @@ const QHash<QString, Package *> &packages()
 
 namespace BuiltinExtension {
 
-// checksum should be in SHA256 or simular hashing algorithms
+// checksum should be in SHA256 and keccak256 algorithms
 // Qt provides QCryptographicHash for this job, which we used to verify the auto-update in legacy TouhouSatsu
 // Todo: find a way for trusted download of packages (PGP?)
 
