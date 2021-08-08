@@ -620,25 +620,19 @@ public:
     Bolan()
         : TriggerSkill("bolan")
     {
-        events << TargetConfirmed << EventPhaseStart;
+        events << TargetConfirmed;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
     {
         QList<SkillInvokeDetail> d;
-        if (triggerEvent == TargetConfirmed) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (!use.card->isNDTrick())
-                return d;
-            foreach (ServerPlayer *p, use.to) {
-                if (p->hasSkill(this) && p != use.from)
-                    d << SkillInvokeDetail(this, p, p);
-            }
-        } else if (triggerEvent == EventPhaseStart) {
-            ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player->hasSkill(this) && player->isAlive() && player->getPhase() == Player::Play)
-                d << SkillInvokeDetail(this, player, player);
-        }
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (!use.card->isKindOf("TrickCard"))
+            return d;
+        foreach(ServerPlayer *p, use.to) {
+            if (p->hasSkill(this) && p != use.from)
+                d << SkillInvokeDetail(this, p, p);
+        }   
         return d;
     }
 
@@ -806,7 +800,8 @@ public:
         QStringList checkedPatterns;
         QStringList ban_list = Sanguosha->getBanPackages();
         foreach (const Card *card, cards) {
-            if (((card->isNDTrick() && !card->isKindOf("Nullification")) || card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) {
+            //if (((card->isNDTrick() && !card->isKindOf("Nullification")) || card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) {
+            if ((card->isKindOf("Nullification") || card->objectName() == "peach") && !ban_list.contains(card->getPackage())) {
                 QString name = card->objectName();
                 if (!checkedPatterns.contains(name) && (pattern != nullptr && pattern->match(Self, card)) && !Self->isCardLimited(card, method))
                     checkedPatterns << name;
@@ -825,6 +820,7 @@ public:
             return false;
 
         return !checkedPatterns.isEmpty();
+
     }
 
     bool isEnabledAtPlay(const Player *player) const override
@@ -839,26 +835,31 @@ public:
             HezhouCard *card = new HezhouCard;
             card->setUserString(checkedPatterns.first());
             return card;
+        } /*else if (checkedPatterns.length() > 1) {
+            HezhouCard *card = new HezhouCard;
+            card->setUserString("nullification");
+            return card;
         }
+        else {
+            HezhouCard *card = new HezhouCard;
+            card->setUserString("ex_nihilo");
+            return card;
+        }*/
 
         QString name = Self->tag.value("hezhou", QString()).toString();
         if (name != nullptr) {
             HezhouCard *card = new HezhouCard;
             card->setUserString(name);
             return card;
-        } else
+        }
+        else
             return nullptr;
     }
 
-    /*virtual bool isEnabledAtNullification(const ServerPlayer *player) const
+    virtual bool isEnabledAtNullification(const ServerPlayer *player) const
     {
-        if (player->isKongcheng())
-            return false;
-        QString pattern = "nullification";
-        if (XihuaClear::xihua_choice_limit(player, pattern, Card::MethodResponse))
-            return false;
-        return true;
-    }*/
+        return !player->hasFlag("hezhou_used") && player->isCurrent();
+    }
 };
 
 class Hezhou : public TriggerSkill
@@ -873,7 +874,7 @@ public:
 
     QDialog *getDialog() const override
     {
-        return QijiDialog::getInstance("hezhou");
+        return QijiDialog::getInstance("hezhou", false);
     }
 
     void record(TriggerEvent, Room *room, QVariant &data) const override
