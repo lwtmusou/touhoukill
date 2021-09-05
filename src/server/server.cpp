@@ -85,10 +85,6 @@ QWidget *ServerDialog::createBasicTab()
 
 QWidget *ServerDialog::createPackageTab()
 {
-    disable_lua_checkbox = new QCheckBox(tr("Disable Lua"));
-    disable_lua_checkbox->setChecked(Config.DisableLua);
-    disable_lua_checkbox->setToolTip(tr("<font color=#FFFF33>The setting takes effect after reboot</font>"));
-
     extension_group = new QButtonGroup;
     extension_group->setExclusive(false);
 
@@ -147,7 +143,6 @@ QWidget *ServerDialog::createPackageTab()
 
     QWidget *widget = new QWidget;
     QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(disable_lua_checkbox);
     layout->addWidget(box1);
     layout->addWidget(box2);
 
@@ -878,7 +873,6 @@ bool ServerDialog::config()
     Config.AIProhibitBlindAttack = ai_prohibit_blind_attack_checkbox->isChecked();
     Config.LimitRobot = limit_robot_checkbox->isChecked();
     Config.ServerPort = port_edit->text().toInt();
-    Config.DisableLua = disable_lua_checkbox->isChecked();
     Config.SurrenderAtDeath = surrender_at_death_checkbox->isChecked();
     Config.LuckCardLimitation = luck_card_spinbox->value();
 
@@ -931,7 +925,6 @@ bool ServerDialog::config()
     Config.setValue(QStringLiteral("LuckCardLimitation"), Config.LuckCardLimitation);
     Config.setValue(QStringLiteral("ServerPort"), Config.ServerPort);
     Config.setValue(QStringLiteral("Address"), Config.Address);
-    Config.setValue(QStringLiteral("DisableLua"), disable_lua_checkbox->isChecked());
 
     if (Config.GameMode.startsWith(QStringLiteral("hegemony_"))) {
         Config.setValue(QStringLiteral("HegemonyFirstShowReward"), Config.HegemonyFirstShowReward);

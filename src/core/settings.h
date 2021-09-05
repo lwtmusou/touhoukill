@@ -58,7 +58,6 @@ public:
     bool SurrenderAtDeath;
     int LuckCardLimitation;
     ushort ServerPort;
-    bool DisableLua;
     bool LimitRobot;
 
     QStringList ExtraHiddenGenerals;

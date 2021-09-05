@@ -121,7 +121,6 @@ void Settings::init()
     SurrenderAtDeath = value(QStringLiteral("SurrenderAtDeath"), false).toBool();
     LuckCardLimitation = value(QStringLiteral("LuckCardLimitation"), 0).toInt();
     ServerPort = value(QStringLiteral("ServerPort"), 9527U).toUInt();
-    DisableLua = value(QStringLiteral("DisableLua"), false).toBool();
     LimitRobot = value(QStringLiteral("LimitRobot"), false).toBool();
 
 #ifdef Q_OS_WIN32

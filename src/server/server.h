@@ -144,7 +144,6 @@ private:
     QCheckBox *kof_using_extension_checkbox;
     QCheckBox *kof_card_extension_checkbox;
     QComboBox *role_choose_xmode_ComboBox;
-    QCheckBox *disable_lua_checkbox;
 
     QCheckBox *enable_surprising_generals_checkbox;
 
