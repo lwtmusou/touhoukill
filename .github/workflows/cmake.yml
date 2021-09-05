@@ -126,13 +126,12 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        qtversion: [5, 6]
         msys: [
           { sys: mingw64, env: x86_64 },
           { sys: ucrt64,  env: ucrt-x86_64 },
           { sys: clang64, env: clang-x86_64 },
         ]
-    name: build-msys-${{ matrix.msys.sys }}${{ matrix.qtversion }}
+    name: build-msys-${{ matrix.msys.sys }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -141,7 +140,7 @@ jobs:
       - uses: msys2/setup-msys2@v2
         with:
           msystem: ${{ matrix.msys.sys }}
-          install: mingw-w64-${{ matrix.msys.env }}-cmake mingw-w64-${{ matrix.msys.env }}-qt${{ matrix.qtversion }} mingw-w64-${{ matrix.msys.env }}-swig mingw-w64-${{ matrix.msys.env }}-toolchain mingw-w64-${{ matrix.msys.env }}-ninja
+          install: mingw-w64-${{ matrix.msys.env }}-cmake mingw-w64-${{ matrix.msys.env }}-qt5 mingw-w64-${{ matrix.msys.env }}-qt6 mingw-w64-${{ matrix.msys.env }}-swig mingw-w64-${{ matrix.msys.env }}-toolchain mingw-w64-${{ matrix.msys.env }}-ninja
           update: true
 
       - name: run cmake+ninja
