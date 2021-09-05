@@ -44,7 +44,7 @@ public:
     void addTranslationEntry(const QString &key, const QString &value);
     QString translate(const QString &to_translate, bool addHegemony = false) const;
 
-    void addPackage(Package *package);
+    void addPackage(const Package *package);
     void addBanPackage(const QString &package_name);
     QStringList getBanPackages() const;
     QString getVersionNumber() const;
@@ -72,7 +72,6 @@ public:
     QList<const Skill *> getRelatedSkills(const QString &skill_name) const;
     const Skill *getMainSkill(const QString &skill_name) const;
 
-    void addPackage(const QString &name);
     QList<const Package *> getPackages() const;
     const Package *findPackage(const QString &name) const;
 

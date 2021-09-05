@@ -32,15 +32,6 @@ using namespace QSanguosha;
 
 Engine *Sanguosha = nullptr;
 
-void Engine::addPackage(const QString &name)
-{
-    Package *pack = PackageAdder::packages()[name];
-    if (pack != nullptr)
-        addPackage(pack);
-    else
-        qWarning("Package %s cannot be loaded!", qPrintable(name));
-}
-
 Engine::Engine()
     : l(LuaMultiThreadEnvironment::luaStateForCurrentThread())
 {
@@ -51,10 +42,13 @@ Engine::Engine()
     if (doc.isValid())
         configFile = doc.object();
 
-    // load it from config by Lua, using builtin extensions folder
-    QStringList package_names = getConfigFromConfigFile(QStringLiteral("package_names")).toStringList();
-    foreach (QString name, package_names)
-        addPackage(name);
+    foreach (const CardFace *cardFace, LuaMultiThreadEnvironment::cardFaces())
+        CardFactory::registerCardFace(cardFace);
+
+    addSkills(LuaMultiThreadEnvironment::skills());
+
+    foreach (const Package *package, LuaMultiThreadEnvironment::packages())
+        addPackage(package);
 
     LordBGMConvertList = getConfigFromConfigFile(QStringLiteral("bgm_convert_pairs")).toStringList();
     LordBackdropConvertList = getConfigFromConfigFile(QStringLiteral("backdrop_convert_pairs")).toStringList();
@@ -185,7 +179,7 @@ QList<const ViewAsSkill *> Engine::getViewAsSkills() const
     return viewas_skills;
 }
 
-void Engine::addPackage(Package *package)
+void Engine::addPackage(const Package *package)
 {
     if (packages.contains(package))
         return;
@@ -196,24 +190,9 @@ void Engine::addPackage(Package *package)
     patterns.insert(package->patterns());
     related_skills.unite(package->relatedSkills());
 
-    foreach (auto face, package->cardFaces()) {
-        // TODO: How to register skill card???
-        CardFactory::registerCardFace(face);
-    }
-
     cards << package->cards();
 
-    addSkills(package->skills());
-
     foreach (General *general, package->generals()) {
-        // TODO: Shall we split skill and general?
-        addSkills(general->findChildren<const Skill *>());
-        foreach (QString skill_name, general->getExtraSkillSet()) {
-            if (skill_name.startsWith(QStringLiteral("#")))
-                continue;
-            foreach (const Skill *related, getRelatedSkills(skill_name))
-                general->addSkill(related->objectName());
-        }
         generals.insert(general->objectName(), general);
         if (isGeneralHidden(general->objectName()))
             continue;

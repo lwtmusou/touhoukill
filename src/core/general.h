@@ -51,7 +51,6 @@ public:
     Gender getGender() const;
     void setGender(Gender gender);
 
-    void addSkill(Skill *skill);
     void addSkill(const QString &skill_name);
     bool hasSkill(const QString &skill_name) const;
     QList<const Skill *> getSkillList(bool relate_to_place = false, bool head_only = true) const;
@@ -59,6 +58,7 @@ public:
     QSet<const Skill *> getVisibleSkills(bool relate_to_place = false, bool head_only = true) const;
     QSet<const TriggerSkill *> getTriggerSkills() const;
 
+    // only for general overview?
     void addRelateSkill(const QString &skill_name);
     QStringList getRelatedSkillNames() const;
 
@@ -71,11 +71,6 @@ public:
     void setHeadMaxHpAdjustedValue(int adjusted_value = -1);
     void setDeputyMaxHpAdjustedValue(int adjusted_value = -1);
 
-    inline QSet<QString> getExtraSkillSet() const
-    {
-        return extra_set;
-    }
-
 public slots:
 
 private:
@@ -85,8 +80,6 @@ private:
     Gender gender;
     bool lord;
     QSet<QString> skill_set;
-    QSet<QString> extra_set;
-    QStringList skillname_list;
     QStringList related_skills;
     bool hidden;
     bool never_shown;

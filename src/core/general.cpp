@@ -85,32 +85,20 @@ bool General::isVisible() const
     return true;
 }
 
-void General::addSkill(Skill *skill)
-{
-    skill->setParent(this);
-    skill_set << skill->objectName();
-    if (!skillname_list.contains(skill->objectName()))
-        skillname_list << skill->objectName();
-}
-
 void General::addSkill(const QString &skill_name)
 {
-    if (extra_set.contains(skill_name))
-        return;
-    extra_set << skill_name;
-    if (!skillname_list.contains(skill_name))
-        skillname_list << skill_name;
+    skill_set << skill_name;
 }
 
 bool General::hasSkill(const QString &skill_name) const
 {
-    return skill_set.contains(skill_name) || extra_set.contains(skill_name);
+    return skill_set.contains(skill_name);
 }
 
 QList<const Skill *> General::getSkillList(bool relate_to_place, bool head_only) const
 {
     QList<const Skill *> skills;
-    foreach (QString skill_name, skillname_list) {
+    foreach (QString skill_name, skill_set) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
         Q_ASSERT(skill != nullptr);
         if (relate_to_place && !skill->relateToPlace(!head_only))
@@ -141,7 +129,7 @@ QSet<const Skill *> General::getVisibleSkills(bool relate_to_place, bool head_on
 QSet<const TriggerSkill *> General::getTriggerSkills() const
 {
     QSet<const TriggerSkill *> skills;
-    foreach (QString skill_name, skillname_list) {
+    foreach (QString skill_name, skill_set) {
         const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
         if (skill != nullptr)
             skills << skill;
@@ -161,11 +149,7 @@ QStringList General::getRelatedSkillNames() const
 
 QString General::getPackage() const
 {
-    QObject *p = parent();
-    if (p != nullptr)
-        return p->objectName();
-    else
-        return QString(); // avoid null pointer exception;
+    return package->name();
 }
 
 QString General::getSkillDescription(bool include_name, bool yellow) const

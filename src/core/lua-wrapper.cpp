@@ -97,7 +97,7 @@ lua_State *LuaState::data()
     return d->l;
 }
 
-class LuaMultiThreadedEnvironmentPrivate
+class LuaMultiThreadEnvironmentPrivate
 {
 public:
     QThreadStorage<LuaState *> stateStorage;
@@ -144,7 +144,7 @@ const QString &LuaMultiThreadEnvironment::luaCopyright()
 }
 
 LuaMultiThreadEnvironment::LuaMultiThreadEnvironment()
-    : d(new LuaMultiThreadedEnvironmentPrivate)
+    : d(new LuaMultiThreadEnvironmentPrivate)
 {
     LuaState *firstLuaState = new LuaState;
     d->stateStorage.setLocalData(firstLuaState);

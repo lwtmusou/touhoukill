@@ -14,12 +14,12 @@
 #ifdef QT_WIDGETS_LIB
 #include <QMessageBox>
 #else
+class QWidget;
 class QMessageBox
 {
-        static inline void warning(void *parent, const QString &title,
-             const QString &text){}
-        static inline void critical(void *parent, const QString &title,
-             const QString &text){}
+public:
+    static inline void warning(QWidget *parent, const QString &title, const QString &text) {}
+    static inline void critical(QWidget *parent, const QString &title, const QString &text) {}
 };
 #endif
 
@@ -75,11 +75,12 @@ public:
     void deleteLater();
 };
 
+class QWidget;
+
 class QMessageBox {
-        static void warning(void *parent, const QString &title,
-             const QString &text);
-        static void critical(void *parent, const QString &title,
-             const QString &text);
+public:
+    static void warning(QWidget *parent, const QString &title, const QString &text);
+    static void critical(QWidget *parent, const QString &title, const QString &text);
 };
 
 extern bool isGui();

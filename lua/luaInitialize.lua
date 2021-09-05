@@ -262,7 +262,9 @@ local loadInstalledExtensions = function()
     -- this def contains an array of extension names
     for _, name in ipairs(def) do
         local subdef = extensionDefinition("lua/extension/" .. name .. ".json")
-        if not verifyExtensionChecksum(name, subdef, false) then
+        if subdef.test then
+            warn("Testing extension " .. name .. ", bypassing checksum check.")
+        elseif not verifyExtensionChecksum(name, subdef, false) then
             warn("Checksum of " .. name .. " mismatches thus not loaded.")
         else
             if not loadExtension(name, false) then
@@ -271,3 +273,6 @@ local loadInstalledExtensions = function()
         end
     end
 end
+
+loadBuiltinExtensions()
+loadInstalledExtensions()

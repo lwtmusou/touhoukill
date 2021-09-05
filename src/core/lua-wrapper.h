@@ -7,7 +7,7 @@
 
 class LuaStatePrivate;
 class LuaMultiThreadEnvironment;
-class LuaMultiThreadedEnvironmentPrivate;
+class LuaMultiThreadEnvironmentPrivate;
 class Package;
 class CardFace;
 class Skill;
@@ -93,7 +93,7 @@ public:
     static const QString &luaCopyright();
 
 private:
-    LuaMultiThreadedEnvironmentPrivate *d;
+    LuaMultiThreadEnvironmentPrivate *d;
     Q_DISABLE_COPY_MOVE(LuaMultiThreadEnvironment)
 
     LuaMultiThreadEnvironment();

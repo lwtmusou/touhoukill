@@ -30,7 +30,7 @@
 
 	"kingdom_colors": {
 		"pc98": "#a699cc",
-		"zhu": "853dcc",
+		"zhu": "#853dcc",
 		"hmx": "#cc1414",
 		"yym": "#3d3dcc",
 		"yyc": "#999999",
@@ -52,35 +52,6 @@
 		"qun": "#8A807A",
 		"god": "#96943D"
 	},
-
-	"package_names": [
-		"StandardCard",
-		"StandardExCard",
-		"TestCard",
-		"Maneuvering",
-		"HegemonyCard",
-
-		"Protagonist",
-		"TH0105",
-		"TH06",
-		"TH07",
-		"TH08",
-		"TH09",
-		"TH10",
-		"TH11",
-		"TH12",
-		"TH13",
-		"TH14",
-		"TH15",
-		"TH16",
-		"TH99",
-		"THNDJ",
-		"TouhouGod",
-		"HegemonyGeneral",
-		"Standard",
-		"Test",
-		"Playground"
-	],
 
 	"easy_text": [
 		"太慢了，做两个俯卧撑吧！",
