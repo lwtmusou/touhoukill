@@ -34,7 +34,7 @@ sgs_ex.TableType = {
     DistanceSkill = 516,
     MaxCardsSkill = 517,
     AttackRangeSkill = 518,
-    -- ViewHasSkill = 519, -- What does 'View Has' mean?
+    TreatAsEquippingSkill = 519,
 
     Trigger = 768,
     CardDescriptor = 1024,
@@ -161,7 +161,7 @@ sgs_ex.TrickCard = function(desc, ...)
     -- Implement NonDelayedTrick and DelayedTrick separately and use this function as a backend
 
     -- TODO: implementations
-    return sgs_ex.CardFace(desc, funcNAme, ...)
+    return sgs_ex.CardFace(desc, funcName, ...)
 end
 
 sgs_ex.NonDelayedTrick = function(desc, ...)

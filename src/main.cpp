@@ -13,6 +13,7 @@
 int main(int argc, char *argv[])
 {
     // refactor proposal: do not check the first argument only!!!
+    // note: QSanguoshaServer will be separated from main program, so we will be able to just 'execve' to QSanguoshaServer and we're done.
     if (argc > 1 && strcmp(argv[1], "-server") == 0) {
         new QCoreApplication(argc, argv);
     } else {
@@ -36,16 +37,15 @@ int main(int argc, char *argv[])
     QTranslator qt_translator;
     QTranslator translator;
 
-    if (!qt_translator.load(QStringLiteral("qt_zh_CN.qm"))) {
+    if (qt_translator.load(QStringLiteral("qt_zh_CN.qm")))
+        QCoreApplication::installTranslator(&qt_translator);
+    else
         qDebug() << "Unable to load qt_zh_CN.qm";
-    }
 
-    if (!translator.load(QStringLiteral("sanguosha.qm"))) {
+    if (translator.load(QStringLiteral("sanguosha.qm")))
+        QCoreApplication::installTranslator(&translator);
+    else
         qDebug() << "Unable to load sanguosha.qm";
-    }
-
-    QCoreApplication::installTranslator(&qt_translator);
-    QCoreApplication::installTranslator(&translator);
 
     Sanguosha = new Engine;
     Config.init();
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
             printf("Starting failed!\n");
 
         int r = QCoreApplication::exec();
-        delete qApp;
+        delete QCoreApplication::instance();
         return r;
     }
 
