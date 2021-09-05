@@ -9,6 +9,7 @@
 #include <QString>
 #include <QByteArray>
 #include <QCoreApplication>
+#include <QThread>
 
 #ifdef QT_WIDGETS_LIB
 #include <QMessageBox>
@@ -89,7 +90,7 @@ extern bool isGui();
 bool isGui()
 {
 #ifdef QT_WIDGETS_LIB
-    return LuaMultiThreadEnvironment::luaStateForCurrentThread()->thread() == qApp->thread();
+    return QThread::currentThread() == qApp->thread();
 #else
     return false;
 #endif
