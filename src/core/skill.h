@@ -114,7 +114,7 @@ public:
     Q_DECL_DEPRECATED QString getNotice(int index) const;
 
 private:
-    SkillPrivate *d;
+    SkillPrivate *const d;
 };
 
 // Selection, should be returned by Client::currentViewAsSkillSelectionChain
@@ -166,7 +166,7 @@ public:
     virtual bool isSelectionEnabled(const QStringList &name, const Player *Self) const;
 
 private:
-    ViewAsSkillPrivate *d;
+    ViewAsSkillPrivate *const d;
 };
 
 class ZeroCardViewAsSkill : public ViewAsSkill
@@ -201,7 +201,7 @@ public:
     void setFilterPattern(const QString &p);
 
 private:
-    OneCardViewAsSkillPrivate *d;
+    OneCardViewAsSkillPrivate *const d;
 };
 
 class FilterSkillPrivate;
@@ -220,7 +220,7 @@ public:
     void setFilterPattern(const QString &p);
 
 private:
-    FilterSkillPrivate *d;
+    FilterSkillPrivate *const d;
 };
 
 typedef QSet<TriggerEvent> TriggerEvents;
@@ -271,7 +271,7 @@ public:
     virtual bool trigger(TriggerEvent event, ::Room *room, const TriggerDetail &detail, QVariant &data) const;
 
 private:
-    TriggerPrivate *d;
+    TriggerPrivate *const d;
     Q_DISABLE_COPY_MOVE(Trigger)
 };
 
@@ -355,7 +355,7 @@ public:
     bool trigger(TriggerEvent event, ::Room *room, const TriggerDetail &detail, QVariant &data) const final override;
 
 private:
-    FakeMoveRecordPrivate *d;
+    FakeMoveRecordPrivate *const d;
 };
 
 class ProhibitSkill : public Skill

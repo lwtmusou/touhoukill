@@ -113,7 +113,7 @@ public:
     virtual void onNullified(Player *target, const Card *card) const;
 
 protected:
-    CardFacePrivate *d;
+    CardFacePrivate *const d;
 };
 
 class BasicCard : public CardFace

@@ -67,7 +67,7 @@ public:
     void cardDeleting(const Card *card);
 
 private:
-    RoomObjectPrivate *d;
+    RoomObjectPrivate *const d;
 };
 
 #endif
