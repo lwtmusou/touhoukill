@@ -12,10 +12,13 @@ class Skill;
 class TriggerSkill;
 class Package;
 
+class GeneralPrivate;
+
 class General final
 {
 public:
-    explicit General(Package *package, const QString &name, const QString &kingdom, int max_hp = 4, bool male = false, bool hidden = false, bool never_shown = false);
+    explicit General(Package *package, const QString &name, const QString &kingdom, int maxHp = 4, bool isLord = false, bool male = false, bool hidden = false,
+                     bool neverShown = false);
 
     QString name() const;
 
@@ -29,7 +32,6 @@ public:
     bool isHidden() const;
     bool isTotallyHidden() const;
 
-    bool isVisible() const;
     int getMaxHpHead() const;
     int getMaxHpDeputy() const;
 
@@ -57,20 +59,8 @@ public:
     void setDeputyMaxHpAdjustedValue(int adjusted_value = -1);
 
 private:
-    const Package *package;
-    QString kingdom;
-    int max_hp;
-    QSanguosha::Gender gender;
-    bool lord;
-    QSet<QString> skill_set;
-    QStringList related_skills;
-    bool hidden;
-    bool never_shown;
-    QStringList companions;
-    int head_max_hp_adjusted_value;
-    int deputy_max_hp_adjusted_value;
-
-    QString generalname;
+    GeneralPrivate *const d;
+    Q_DISABLE_COPY_MOVE(General)
 };
 
 #endif

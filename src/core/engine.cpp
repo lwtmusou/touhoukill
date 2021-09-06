@@ -370,8 +370,6 @@ bool Engine::isGeneralHidden(const QString &general_name) const
     const General *general = getGeneral(general_name);
     if (general == nullptr)
         return false;
-    if (!general->isVisible())
-        return false;
     if (!general->isHidden())
         return Config.ExtraHiddenGenerals.contains(general_name);
     else
