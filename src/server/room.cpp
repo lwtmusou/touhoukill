@@ -1,5 +1,6 @@
 #include "room.h"
 #include "audio.h"
+#include "card.h"
 #include "engine.h"
 #include "gamerule.h"
 #include "server.h"

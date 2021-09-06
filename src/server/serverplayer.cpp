@@ -1,4 +1,5 @@
 #include "serverplayer.h"
+#include "card.h"
 #include "engine.h"
 #include "gamerule.h"
 #include "recorder.h"

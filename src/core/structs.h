@@ -1,7 +1,6 @@
 #ifndef _STRUCTS_H
 #define _STRUCTS_H
 
-#include "card.h"
 #include "global.h"
 
 class Skill;
@@ -737,7 +736,6 @@ Q_DECLARE_METATYPE(JinkEffectStruct)
 Q_DECLARE_METATYPE(PhaseSkippingStruct)
 Q_DECLARE_METATYPE(DrawNCardsStruct)
 Q_DECLARE_METATYPE(QList<SkillInvalidStruct>)
-Q_DECLARE_METATYPE(const Card *)
 Q_DECLARE_METATYPE(JudgeStruct *)
 Q_DECLARE_METATYPE(PindianStruct *)
 Q_DECLARE_METATYPE(ExtraTurnStruct)

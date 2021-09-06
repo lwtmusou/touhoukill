@@ -138,6 +138,8 @@ private:
     CardPrivate *const d;
 };
 
+Q_DECLARE_METATYPE(const Card *)
+
 /**
  * @struct For creating new cards.
  */

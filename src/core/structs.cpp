@@ -1,4 +1,5 @@
 #include "structs.h"
+#include "card.h"
 #include "exppattern.h"
 #include "global.h"
 #include "json.h"
