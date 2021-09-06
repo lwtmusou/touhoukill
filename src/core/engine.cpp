@@ -192,7 +192,7 @@ void Engine::addPackage(const Package *package)
 
     cards << package->cards();
 
-    foreach (General *general, package->generals()) {
+    foreach (const General *general, package->generals()) {
         generals.insert(general->name(), general);
         if (isGeneralHidden(general->name()))
             continue;
@@ -765,7 +765,7 @@ QStringList Engine::getLimitedGeneralNames() const
         foreach (QString pack_name, getConfigFromConfigFile(QStringLiteral("hulao_packages")).toStringList()) {
             const Package *pack = findPackage(pack_name);
             if (pack != nullptr) {
-                foreach (General *general, pack->generals())
+                foreach (const General *general, pack->generals())
                     hulao_generals << general;
             }
         }

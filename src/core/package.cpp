@@ -9,7 +9,7 @@ public:
     QString name;
     PackageType type;
 
-    QList<General *> generals;
+    QList<const General *> generals;
 
     QList<const Skill *> skills;
     QList<const CardFace *> faces;
@@ -75,7 +75,7 @@ const QList<CardDescriptor> &Package::cards() const
     return d->all_cards;
 }
 
-const QList<General *> &Package::generals() const
+const QList<const General *> &Package::generals() const
 {
     return d->generals;
 }
@@ -92,7 +92,7 @@ Package &Package::operator<<(const Skill *skill)
     return *this;
 }
 
-Package &Package::operator<<(General *general)
+Package &Package::operator<<(const General *general)
 {
     d->generals << general;
     return *this;

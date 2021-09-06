@@ -49,11 +49,11 @@ public:
 
     const QList<const CardFace *> &cardFaces() const;
     const QList<CardDescriptor> &cards() const;
-    const QList<General *> &generals() const;
+    const QList<const General *> &generals() const;
 
     Package &operator<<(const CardFace *face); // register face.
     Package &operator<<(const Skill *skill);
-    Package &operator<<(General *general);
+    Package &operator<<(const General *general);
     Package &operator<<(const CardDescriptor &card);
 
 private:

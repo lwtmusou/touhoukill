@@ -756,7 +756,7 @@ void Select3v3GeneralDialog::fillTabWidget()
 
 void Select3v3GeneralDialog::fillListWidget(QListWidget *list, const Package *pack)
 {
-    QList<General *> generals = pack->generals();
+    QList<const General *> generals = pack->generals();
     foreach (const General *general, generals) {
         if (Sanguosha->isGeneralHidden(general->name()))
             continue;
