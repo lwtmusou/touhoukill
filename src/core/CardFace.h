@@ -262,7 +262,7 @@ protected:
         j = &js;
     }
 #endif
-    JudgeStruct *j;
+    const JudgeStruct *j;
 };
 
 class SkillCard : public CardFace
