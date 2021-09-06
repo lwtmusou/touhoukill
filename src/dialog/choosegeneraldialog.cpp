@@ -88,21 +88,21 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
 
     foreach (const General *general, generals) {
         QString caption;
-        caption = Sanguosha->translate(general->objectName());
+        caption = Sanguosha->translate(general->name());
 
         OptionButton *button = new OptionButton(QString(), caption);
         if (no_icon) {
             button->setIcon(QIcon(QStringLiteral("image/system/no-general-icon.png")));
             button->setIconSize(QSize(G_COMMON_LAYOUT.m_chooseGeneralBoxDenseIconSize.width(), 1));
         } else {
-            button->setIcon(QIcon(G_ROOM_SKIN.getGeneralPixmap(general->objectName(), icon_type, false)));
+            button->setIcon(QIcon(G_ROOM_SKIN.getGeneralPixmap(general->name(), icon_type, false)));
             button->setIconSize(icon_size);
         }
         button->setToolTip(general->getSkillDescription(true));
         buttons << button;
 
         if (!view_only) {
-            mapper->setMapping(button, general->objectName());
+            mapper->setMapping(button, general->name());
             connect(button, SIGNAL(double_clicked()), mapper, SLOT(map()));
             connect(button, &OptionButton::double_clicked, this, &QDialog::accept);
         }
@@ -117,7 +117,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
             const General *lord = Sanguosha->getGeneral(lord_name);
 
             QLabel *label = new QLabel;
-            label->setPixmap(G_ROOM_SKIN.getGeneralPixmap(lord->objectName(), icon_type, false));
+            label->setPixmap(G_ROOM_SKIN.getGeneralPixmap(lord->name(), icon_type, false));
             label->setToolTip(lord->getSkillDescription(true));
             layout->addWidget(label);
         }
@@ -133,7 +133,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
             const General *lord = Sanguosha->getGeneral(lord_name);
 
             QLabel *label = new QLabel;
-            label->setPixmap(G_ROOM_SKIN.getCardMainPixmap(lord->objectName(), false, false));
+            label->setPixmap(G_ROOM_SKIN.getCardMainPixmap(lord->name(), false, false));
             label->setToolTip(lord->getSkillDescription(true));
             lord_layout->addWidget(label);
         }
@@ -150,10 +150,10 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         layout = hlayout;
     }
 
-    QString default_name = generals.first()->objectName();
+    QString default_name = generals.first()->name();
     for (int i = 0; i < buttons.size(); i++) {
         if (buttons.at(i)->isEnabled()) {
-            default_name = generals.at(i)->objectName();
+            default_name = generals.at(i)->name();
             break;
         }
     }
@@ -250,10 +250,12 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
     group = new QButtonGroup(this);
     group->setExclusive(!pair_choose);
 
-    QList<const General *> all_generals = Sanguosha->findChildren<const General *>();
+    QStringList all_generals = Sanguosha->getGenerals();
     QMap<QString, QList<const General *>> map;
-    foreach (const General *general, all_generals) {
-        if (general->isTotallyHidden())
+    foreach (const QString &name, all_generals) {
+        const General *general = Sanguosha->getGeneral(name);
+
+        if (general == nullptr || general->isTotallyHidden())
             continue;
 
         map[general->getKingdom()] << general;
@@ -272,9 +274,9 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
         if (kingdom == QStringLiteral("zhu")) {
             QList<const General *> addGgenerals;
             foreach (const General *g, generals) {
-                if (g->objectName().endsWith(QStringLiteral("hegemony")) && isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral)
+                if (g->name().endsWith(QStringLiteral("hegemony")) && isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral)
                     addGgenerals << g;
-                else if (!g->objectName().endsWith(QStringLiteral("hegemony")) && (!isHegemonyGameMode(ServerInfo.GameMode) || !ServerInfo.Enable2ndGeneral))
+                else if (!g->name().endsWith(QStringLiteral("hegemony")) && (!isHegemonyGameMode(ServerInfo.GameMode) || !ServerInfo.Enable2ndGeneral))
                     addGgenerals << g;
             }
             if (!addGgenerals.isEmpty())
@@ -349,7 +351,7 @@ QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals)
 
     for (int i = 0; i < generals.length(); i++) {
         const General *general = generals.at(i);
-        QString general_name = general->objectName();
+        QString general_name = general->name();
         QString text = QStringLiteral("%1[%2]").arg(Sanguosha->translate(general_name)).arg(Sanguosha->translate(general->getPackage()));
 
         QAbstractButton *button = nullptr;

@@ -2796,7 +2796,7 @@ bool Room::makeSurrender(ServerPlayer *initiator)
         }
 
         if (player != initiator && player->isAlive() && player->getState() == QStringLiteral("online")) {
-            player->m_commandArgs = (initiator->getGeneral()->objectName());
+            player->m_commandArgs = (initiator->getGeneral()->name());
             playersAlive << player;
         }
     }
@@ -3373,10 +3373,10 @@ bool Room::_setPlayerGeneral(ServerPlayer *player, const QString &generalName, b
         return false;
 
     if (isFirst) {
-        player->setGeneralName(general->objectName());
+        player->setGeneralName(general->name());
         notifyProperty(player, player, "general");
     } else {
-        player->setGeneral2Name(general->objectName());
+        player->setGeneral2Name(general->name());
         notifyProperty(player, player, "general2");
     }
     return true;
@@ -6797,7 +6797,7 @@ void Room::saveWinnerTable(const QString &winner, bool isSurrender)
     foreach (ServerPlayer *p, getAllPlayers(true)) {
         QString originalName = p->tag.value(QStringLiteral("init_general"), QString()).toString();
         if (!originalName.isNull() && (Sanguosha->getGeneral(originalName) != nullptr))
-            line.append(Sanguosha->getGeneral(originalName)->objectName());
+            line.append(Sanguosha->getGeneral(originalName)->name());
         else
             line.append(p->getGeneralName());
         line.append(QStringLiteral(" "));

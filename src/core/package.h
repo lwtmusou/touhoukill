@@ -60,23 +60,8 @@ private:
     PackagePrivate *d;
 };
 
-namespace PackageAdder {
-typedef Package *(*PackageInitializer)();
-void registerPackageInitializer(const QString &name, PackageInitializer initializer);
-const QHash<QString, Package *> &packages();
-} // namespace PackageAdder
-
-#define ADD_PACKAGE(name)                                                                   \
-    namespace {                                                                             \
-    void name##initializeFunc()                                                             \
-    {                                                                                       \
-        PackageAdder::registerPackageInitializer(QStringLiteral(#name), name##Initializer); \
-    }                                                                                       \
-    }                                                                                       \
-    Q_COREAPP_STARTUP_FUNCTION(name##initializeFunc)
-
-#endif
-
 namespace BuiltinExtension {
 bool VerifyChecksum(const QString &path, const QString &hash, QCryptographicHash::Algorithm algorithm);
 } // namespace BuiltinExtension
+
+#endif

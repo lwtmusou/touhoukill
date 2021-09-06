@@ -216,7 +216,7 @@ void PlayerCardContainer::updateAvatar()
 
     if (general != nullptr) {
         _m_avatarArea->setToolTip(m_player->getSkillDescription(true, QStringLiteral("head")));
-        QString name = general->objectName();
+        QString name = general->name();
         QPixmap avatarIcon = _getAvatarIcon(name);
         QGraphicsPixmapItem *avatarIconTmp = _m_avatarIcon;
         QRect avatarArea = _m_layout->m_avatarArea;
@@ -247,9 +247,9 @@ void PlayerCardContainer::updateAvatar()
                              G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_DASHBOARD_KINGDOM_COLOR_MASK), kingdom), _getAvatarParent());
 
             _paintPixmap(_m_handCardBg, _m_layout->m_handCardArea, _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM), kingdom), _getAvatarParent());
-            QString name = Sanguosha->translate(QStringLiteral("&") + general->objectName());
+            QString name = Sanguosha->translate(QStringLiteral("&") + general->name());
             if (name.startsWith(QStringLiteral("&")))
-                name = Sanguosha->translate(general->objectName());
+                name = Sanguosha->translate(general->name());
             if (ServerInfo.Enable2ndGeneral && getPlayer() == Self)
                 _m_layout->m_avatarNameFont.paintText(_m_avatarNameItem, _m_layout->m_headAvatarNameArea, Qt::AlignLeft | Qt::AlignJustify, name);
             else
@@ -302,7 +302,7 @@ void PlayerCardContainer::updateSmallAvatar()
     }
 
     if (general != nullptr) {
-        QPixmap smallAvatarIcon = G_ROOM_SKIN.getGeneralPixmap(general->objectName(), QSanRoomSkin::GeneralIconSize(_m_layout->m_smallAvatarSize));
+        QPixmap smallAvatarIcon = G_ROOM_SKIN.getGeneralPixmap(general->name(), QSanRoomSkin::GeneralIconSize(_m_layout->m_smallAvatarSize));
         smallAvatarIcon = paintByMask(smallAvatarIcon);
         QGraphicsPixmapItem *smallAvatarIconTmp = _m_smallAvatarIcon;
         _paintPixmap(smallAvatarIconTmp, _m_layout->m_smallAvatarArea, smallAvatarIcon, _getAvatarParent());
@@ -318,9 +318,9 @@ void PlayerCardContainer::updateSmallAvatar()
                          G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_DASHBOARD_KINGDOM_COLOR_MASK), kingdom), _getAvatarParent());
         }
 
-        QString name = Sanguosha->translate(QStringLiteral("&") + general->objectName());
+        QString name = Sanguosha->translate(QStringLiteral("&") + general->name());
         if (name.startsWith(QStringLiteral("&")))
-            name = Sanguosha->translate(general->objectName());
+            name = Sanguosha->translate(general->name());
         if (!fake_general)
             _m_layout->m_smallAvatarNameFont.paintText(_m_smallAvatarNameItem, _m_layout->m_smallAvatarNameArea, Qt::AlignLeft | Qt::AlignJustify, name);
         _m_smallAvatarIcon->show();
@@ -1382,7 +1382,7 @@ void PlayerCardContainer::showHeroSkinListHelper(const General *general, Graphic
         return;
     }
 
-    QString generalName = general->objectName();
+    QString generalName = general->name();
     HeroSkinContainer *heroSkinContainer = RoomSceneInstance->findHeroSkinContainer(generalName);
     if (nullptr == heroSkinContainer) {
         heroSkinContainer = new HeroSkinContainer(generalName, general->getKingdom());
@@ -1453,7 +1453,7 @@ void PlayerCardContainer::onAvatarHoverEnter()
             m_changePrimaryHeroSKinBtn->hide();
         }
 
-        if (nullptr != general && HeroSkinContainer::hasSkin(general->objectName()) && avatarItem->isSkinChangingFinished())
+        if (nullptr != general && HeroSkinContainer::hasSkin(general->name()) && avatarItem->isSkinChangingFinished())
             heroSKinBtn->show();
     }
 }

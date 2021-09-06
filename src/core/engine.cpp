@@ -193,11 +193,11 @@ void Engine::addPackage(const Package *package)
     cards << package->cards();
 
     foreach (General *general, package->generals()) {
-        generals.insert(general->objectName(), general);
-        if (isGeneralHidden(general->objectName()))
+        generals.insert(general->name(), general);
+        if (isGeneralHidden(general->name()))
             continue;
         if (general->isLord())
-            lord_list << general->objectName();
+            lord_list << general->name();
     }
 }
 
@@ -354,11 +354,11 @@ int Engine::getGeneralCount(bool include_banned) const
         const General *general = itor.value();
         if (getBanPackages().contains(general->getPackage()))
             total--;
-        else if (isGeneralHidden(general->objectName()))
+        else if (isGeneralHidden(general->name()))
             total--;
-        else if (isNormalGameMode(ServerInfo.GameMode) && Config.value(QStringLiteral("Banlist/Roles")).toStringList().contains(general->objectName()))
+        else if (isNormalGameMode(ServerInfo.GameMode) && Config.value(QStringLiteral("Banlist/Roles")).toStringList().contains(general->name()))
             total--;
-        else if (ServerInfo.GameMode == QStringLiteral("04_1v3") && Config.value(QStringLiteral("Banlist/HulaoPass")).toStringList().contains(general->objectName()))
+        else if (ServerInfo.GameMode == QStringLiteral("04_1v3") && Config.value(QStringLiteral("Banlist/HulaoPass")).toStringList().contains(general->name()))
             total--;
     }
 
@@ -715,7 +715,7 @@ QStringList Engine::getRandomLords() const
         }
         if (getBanPackages().contains(general->getPackage()))
             continue;
-        if (banlist_ban.contains(general->objectName()))
+        if (banlist_ban.contains(general->name()))
             continue;
 
         nonlord_list << nonlord;
@@ -773,14 +773,14 @@ QStringList Engine::getLimitedGeneralNames() const
         }
 
         foreach (const General *general, hulao_generals) {
-            if (isGeneralHidden(general->objectName()) || general->isTotallyHidden() || general->objectName() == QStringLiteral("yuyuko_1v3"))
+            if (isGeneralHidden(general->name()) || general->isTotallyHidden() || general->name() == QStringLiteral("yuyuko_1v3"))
                 continue;
-            general_names << general->objectName();
+            general_names << general->name();
         }
     } else {
         while (itor.hasNext()) {
             itor.next();
-            if (!isGeneralHidden(itor.value()->objectName()) && !getBanPackages().contains(itor.value()->getPackage()))
+            if (!isGeneralHidden(itor.value()->name()) && !getBanPackages().contains(itor.value()->getPackage()))
                 general_names << itor.key();
         }
     }

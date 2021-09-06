@@ -210,7 +210,7 @@ void CardItem::hideFrame()
 
 void CardItem::showAvatar(const General *general)
 {
-    _m_avatarName = general->objectName();
+    _m_avatarName = general->name();
 }
 
 void CardItem::hideAvatar()

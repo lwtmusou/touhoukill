@@ -358,7 +358,7 @@ void RoomThread::run()
         foreach (const General *general, generals) {
             if (general->isTotallyHidden())
                 continue;
-            names << general->objectName();
+            names << general->name();
         }
 
         foreach (const QString &name, Config.value(QStringLiteral("Banlist/HulaoPass")).toStringList())

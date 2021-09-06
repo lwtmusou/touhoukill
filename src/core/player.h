@@ -91,8 +91,8 @@ public:
     int getLostHp() const;
     bool isWounded() const;
     int dyingThreshold() const;
-    General::Gender getGender() const;
-    virtual void setGender(General::Gender gender);
+    QSanguosha::Gender getGender() const;
+    virtual void setGender(QSanguosha::Gender gender);
     bool isMale() const;
     bool isFemale() const;
     bool isNeuter() const;
@@ -363,7 +363,7 @@ private:
     bool owner;
     const General *general;
     const General *general2;
-    General::Gender m_gender;
+    QSanguosha::Gender m_gender;
     int hp, max_hp;
     int renhp, linghp; //for banling
     int dyingFactor;

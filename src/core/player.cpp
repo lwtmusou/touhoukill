@@ -12,7 +12,7 @@ Player::Player(QObject *parent)
     , owner(false)
     , general(nullptr)
     , general2(nullptr)
-    , m_gender(General::Sexless)
+    , m_gender(Sexless)
     , hp(-1)
     , max_hp(-1)
     , renhp(-1)
@@ -277,29 +277,29 @@ bool Player::isWounded() const
         return getHp() < max_hp;
 }
 
-General::Gender Player::getGender() const
+Gender Player::getGender() const
 {
     return m_gender;
 }
 
-void Player::setGender(General::Gender gender)
+void Player::setGender(Gender gender)
 {
     m_gender = gender;
 }
 
 bool Player::isMale() const
 {
-    return m_gender == General::Male;
+    return m_gender == Male;
 }
 
 bool Player::isFemale() const
 {
-    return m_gender == General::Female;
+    return m_gender == Female;
 }
 
 bool Player::isNeuter() const
 {
-    return m_gender == General::Neuter;
+    return m_gender == Neuter;
 }
 
 int Player::getSeat() const
@@ -544,7 +544,7 @@ void Player::setGeneralName(const QString &general_name)
 QString Player::getGeneralName() const
 {
     if (general != nullptr)
-        return general->objectName();
+        return general->name();
     else
         return QString();
 }
@@ -562,7 +562,7 @@ void Player::setGeneral2Name(const QString &general_name)
 QString Player::getGeneral2Name() const
 {
     if (general2 != nullptr)
-        return general2->objectName();
+        return general2->name();
     else
         return QString();
 }
@@ -574,10 +574,10 @@ const General *Player::getGeneral2() const
 
 QString Player::getFootnoteName() const
 {
-    if ((general != nullptr) && general->objectName() != QStringLiteral("anjiang"))
+    if ((general != nullptr) && general->name() != QStringLiteral("anjiang"))
         return getGeneralName();
-    else if ((general2 != nullptr) && general2->objectName() != QStringLiteral("anjiang"))
-        return general2->objectName();
+    else if ((general2 != nullptr) && general2->name() != QStringLiteral("anjiang"))
+        return general2->name();
     else {
         return Sanguosha->translate(QStringLiteral("SEAT(%1)").arg(QString::number(getInitialSeat())));
     }

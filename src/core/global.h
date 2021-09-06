@@ -160,6 +160,15 @@ enum PackageType
 };
 Q_ENUM_NS(PackageType)
 
+enum Gender
+{
+    Sexless,
+    Male,
+    Female,
+    Neuter
+};
+Q_ENUM_NS(Gender)
+
 } // namespace QSanguosha
 
 #endif // GLOBAL_H

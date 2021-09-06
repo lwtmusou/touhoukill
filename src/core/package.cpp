@@ -104,30 +104,6 @@ Package &Package::operator<<(const CardDescriptor &card)
     return *this;
 }
 
-namespace PackageAdder {
-namespace {
-typedef QHash<QString, PackageInitializer> PackageHash;
-Q_GLOBAL_STATIC(PackageHash, Initializers)
-} // namespace
-
-void registerPackageInitializer(const QString &name, PackageInitializer initializer)
-{
-    Initializers->insert(name, initializer);
-}
-
-const QHash<QString, Package *> &packages()
-{
-    static QHash<QString, Package *> p;
-    if (p.isEmpty()) {
-        for (auto it = Initializers->cbegin(); it != Initializers->cend(); ++it)
-            p.insert(it.key(), (*(it.value()))());
-    }
-
-    return p;
-}
-
-} // namespace PackageAdder
-
 namespace BuiltinExtension {
 
 // checksum should be in SHA256 and keccak256 algorithms

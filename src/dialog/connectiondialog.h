@@ -18,13 +18,13 @@ class AvatarModel : public QAbstractListModel
     Q_OBJECT
 
 public:
-    explicit AvatarModel(const QList<const General *> &list);
+    explicit AvatarModel(const QStringList &list);
 
     int rowCount(const QModelIndex &) const override;
     QVariant data(const QModelIndex &index, int role) const override;
 
 private:
-    QList<const General *> list;
+    QStringList list;
 };
 
 class ConnectionDialog : public QDialog

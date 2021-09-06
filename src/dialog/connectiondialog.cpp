@@ -28,7 +28,7 @@
 
 using namespace std::chrono_literals;
 
-AvatarModel::AvatarModel(const QList<const General *> &list)
+AvatarModel::AvatarModel(const QStringList &list)
     : list(list)
 {
 }
@@ -44,15 +44,15 @@ QVariant AvatarModel::data(const QModelIndex &index, int role) const
     if (row < 0 || row >= list.length())
         return QVariant();
 
-    const General *general = list.at(row);
+    const QString &general = list.at(row);
 
     switch (role) {
     case Qt::UserRole:
-        return general->objectName();
+        return general;
     case Qt::DisplayRole:
-        return Sanguosha->translate(general->objectName());
+        return Sanguosha->translate(general);
     case Qt::DecorationRole: {
-        QIcon icon(G_ROOM_SKIN.getGeneralPixmap(general->objectName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE, false));
+        QIcon icon(G_ROOM_SKIN.getGeneralPixmap(general, QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE, false));
         return icon;
     }
     }
@@ -76,13 +76,14 @@ void ConnectionDialog::showAvatarList()
     setFixedSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
 
     if (avatarList->model() == nullptr) {
-        QList<const General *> generals = Sanguosha->findChildren<const General *>();
-        QMutableListIterator<const General *> itor = generals;
+        QStringList generals = Sanguosha->getGenerals();
+        QMutableListIterator<QString> itor = generals;
         while (itor.hasNext()) {
-            if (itor.next()->isTotallyHidden())
+            QString next = itor.next();
+            const General *general = Sanguosha->getGeneral(next);
+            if ((general == nullptr) || general->isTotallyHidden())
                 itor.remove();
         }
-
         AvatarModel *model = new AvatarModel(generals);
         model->setParent(this);
         avatarList->setModel(model);

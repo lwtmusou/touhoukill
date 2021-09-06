@@ -1,29 +1,23 @@
 #ifndef _GENERAL_H
 #define _GENERAL_H
 
-class Skill;
-class TriggerSkill;
-class Package;
-class QSize;
+#include "global.h"
 
 #include <QMap>
 #include <QObject>
 #include <QSet>
 #include <QStringList>
 
-class General final : public QObject
-{
-    Q_OBJECT
-    Q_PROPERTY(QString kingdom READ getKingdom CONSTANT)
-    Q_PROPERTY(int maxhp READ getMaxHp CONSTANT)
-    Q_PROPERTY(bool male READ isMale STORED false CONSTANT)
-    Q_PROPERTY(bool female READ isFemale STORED false CONSTANT)
-    Q_PROPERTY(Gender gender READ getGender CONSTANT)
-    Q_PROPERTY(bool lord READ isLord CONSTANT)
-    Q_PROPERTY(bool hidden READ isHidden CONSTANT)
+class Skill;
+class TriggerSkill;
+class Package;
 
+class General final
+{
 public:
     explicit General(Package *package, const QString &name, const QString &kingdom, int max_hp = 4, bool male = false, bool hidden = false, bool never_shown = false);
+
+    QString name() const;
 
     // property getters/setters
     int getMaxHp() const;
@@ -39,17 +33,8 @@ public:
     int getMaxHpHead() const;
     int getMaxHpDeputy() const;
 
-    enum Gender
-    {
-        Sexless,
-        Male,
-        Female,
-        Neuter
-    };
-    Q_ENUM(Gender)
-
-    Gender getGender() const;
-    void setGender(Gender gender);
+    QSanguosha::Gender getGender() const;
+    void setGender(QSanguosha::Gender gender);
 
     void addSkill(const QString &skill_name);
     bool hasSkill(const QString &skill_name) const;
@@ -71,13 +56,11 @@ public:
     void setHeadMaxHpAdjustedValue(int adjusted_value = -1);
     void setDeputyMaxHpAdjustedValue(int adjusted_value = -1);
 
-public slots:
-
 private:
     const Package *package;
     QString kingdom;
     int max_hp;
-    Gender gender;
+    QSanguosha::Gender gender;
     bool lord;
     QSet<QString> skill_set;
     QStringList related_skills;
@@ -86,6 +69,8 @@ private:
     QStringList companions;
     int head_max_hp_adjusted_value;
     int deputy_max_hp_adjusted_value;
+
+    QString generalname;
 };
 
 #endif

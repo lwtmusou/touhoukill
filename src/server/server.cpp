@@ -758,18 +758,18 @@ void Select3v3GeneralDialog::fillListWidget(QListWidget *list, const Package *pa
 {
     QList<General *> generals = pack->generals();
     foreach (const General *general, generals) {
-        if (Sanguosha->isGeneralHidden(general->objectName()))
+        if (Sanguosha->isGeneralHidden(general->name()))
             continue;
 
         QListWidgetItem *item = new QListWidgetItem(list);
-        item->setData(Qt::UserRole, general->objectName());
-        item->setIcon(QIcon(G_ROOM_SKIN.getGeneralPixmap(general->objectName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY, false)));
+        item->setData(Qt::UserRole, general->name());
+        item->setIcon(QIcon(G_ROOM_SKIN.getGeneralPixmap(general->name(), QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY, false)));
 
         bool checked = false;
         if (ex_generals.isEmpty()) {
-            checked = (pack->name() == QStringLiteral("standard") || pack->name() == QStringLiteral("wind")) && general->objectName() != QStringLiteral("yuji");
+            checked = (pack->name() == QStringLiteral("standard") || pack->name() == QStringLiteral("wind")) && general->name() != QStringLiteral("yuji");
         } else
-            checked = ex_generals.contains(general->objectName());
+            checked = ex_generals.contains(general->name());
 
         if (checked)
             item->setCheckState(Qt::Checked);

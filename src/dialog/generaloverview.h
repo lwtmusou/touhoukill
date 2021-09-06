@@ -68,6 +68,7 @@ class GeneralOverview : public QDialog
 public:
     explicit GeneralOverview(QWidget *parent = nullptr);
     ~GeneralOverview() override;
+    void fillGenerals(const QStringList &generals, bool init = true);
     void fillGenerals(const QList<const General *> &generals, bool init = true);
 
     static GeneralOverview *getInstance(QWidget *main_window);

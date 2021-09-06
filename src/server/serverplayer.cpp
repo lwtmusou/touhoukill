@@ -1007,7 +1007,7 @@ void ServerPlayer::loseSkill(const QString &skill_name, bool head_skill)
     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 }
 
-void ServerPlayer::setGender(General::Gender gender)
+void ServerPlayer::setGender(QSanguosha::Gender gender)
 {
     if (gender == getGender())
         return;
@@ -2153,8 +2153,8 @@ void ServerPlayer::removeGeneral(bool head_general)
             return;
 
         from_general = names.first();
-        General::Gender gender = Sanguosha->getGeneral(from_general)->getGender();
-        general_name = gender == General::Male ? QStringLiteral("sujiang") : QStringLiteral("sujiangf"); //need image
+        QSanguosha::Gender gender = Sanguosha->getGeneral(from_general)->getGender();
+        general_name = gender == QSanguosha::Male ? QStringLiteral("sujiang") : QStringLiteral("sujiangf"); //need image
 
         room->setPlayerProperty(this, "general_showed", true);
 
@@ -2182,9 +2182,9 @@ void ServerPlayer::removeGeneral(bool head_general)
         if (from_general.contains(QStringLiteral("sujiang")))
             return;
         from_general = names.last();
-        General::Gender gender = Sanguosha->getGeneral(from_general)->getGender();
+        QSanguosha::Gender gender = Sanguosha->getGeneral(from_general)->getGender();
 
-        general_name = gender == General::Male ? QStringLiteral("sujiang") : QStringLiteral("sujiangf");
+        general_name = gender == QSanguosha::Male ? QStringLiteral("sujiang") : QStringLiteral("sujiangf");
 
         room->setPlayerProperty(this, "general2_showed", true);
 

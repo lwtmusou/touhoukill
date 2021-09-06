@@ -8,6 +8,8 @@
 #include <QFile>
 #include <QSize>
 
+using namespace QSanguosha;
+
 General::General(Package *package, const QString &name, const QString &kingdom, int max_hp, bool male, bool hidden, bool never_shown)
     : package(package)
     , kingdom(kingdom)
@@ -23,11 +25,16 @@ General::General(Package *package, const QString &name, const QString &kingdom, 
         QString copy = name;
         copy.remove(lord_symbol);
         lord = true;
-        setObjectName(copy);
+        generalname = copy;
     } else {
         lord = false;
-        setObjectName(name);
+        generalname = name;
     }
+}
+
+QString General::name() const
+{
+    return generalname;
 }
 
 int General::getMaxHp() const
@@ -60,7 +67,7 @@ void General::setGender(Gender gender)
     this->gender = gender;
 }
 
-General::Gender General::getGender() const
+Gender General::getGender() const
 {
     return gender;
 }
@@ -166,9 +173,9 @@ QString General::getSkillDescription(bool include_name, bool yellow) const
 
     if (include_name) {
         QString color_str = Sanguosha->getKingdomColor(kingdom).name();
-        QString g_name = Sanguosha->translate(QStringLiteral("!") + objectName());
+        QString g_name = Sanguosha->translate(QStringLiteral("!") + name());
         if (g_name.startsWith(QStringLiteral("!")))
-            g_name = Sanguosha->translate(objectName());
+            g_name = Sanguosha->translate(name());
         QString name = QStringLiteral("<font color=%1><b>%2</b></font>     ").arg(color_str).arg(g_name);
         name.prepend(QStringLiteral("<img src='image/kingdom/icon/%1.png'/>    ").arg(kingdom));
         for (int i = 0; i < max_hp; i++)
@@ -193,7 +200,7 @@ bool General::isCompanionWith(const QString &name) const
 {
     const General *other = Sanguosha->getGeneral(name);
     Q_ASSERT(other);
-    return companions.contains(name) || other->companions.contains(objectName());
+    return companions.contains(name) || other->companions.contains(generalname);
 }
 
 QString General::getCompanions() const
@@ -206,8 +213,8 @@ QString General::getCompanions() const
         const General *gnr = Sanguosha->getGeneral(gname);
         if (gnr == nullptr)
             continue;
-        if (gnr->companions.contains(objectName()))
-            name << QStringLiteral("%1").arg(Sanguosha->translate(gnr->objectName()));
+        if (gnr->companions.contains(generalname))
+            name << QStringLiteral("%1").arg(Sanguosha->translate(gnr->name()));
     }
     return name.join(QStringLiteral(" "));
 }

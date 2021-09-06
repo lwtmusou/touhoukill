@@ -402,13 +402,13 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
         foreach (const Player *p, Self->getSiblings()) {
             const General *general = p->getGeneral();
             if (general->hasSkill(engskillname) || general->hasSkill(HegSkillname)) {
-                generalName = general->objectName();
+                generalName = general->name();
                 break;
             }
             if (ServerInfo.Enable2ndGeneral) {
                 const General *general2 = p->getGeneral2();
                 if (general2->hasSkill(engskillname) || general2->hasSkill(HegSkillname)) {
-                    generalName = general2->objectName();
+                    generalName = general2->name();
                     break;
                 }
             }
@@ -416,11 +416,11 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
         if (generalName.isNull()) {
             const General *general = Self->getGeneral();
             if ((general != nullptr) && (general->hasSkill(engskillname) || general->hasSkill(HegSkillname)))
-                generalName = general->objectName();
+                generalName = general->name();
             if (ServerInfo.Enable2ndGeneral) {
                 const General *general2 = Self->getGeneral2();
                 if (general2->hasSkill(engskillname) || general2->hasSkill(HegSkillname)) {
-                    generalName = general2->objectName();
+                    generalName = general2->name();
                 }
             }
         } else {

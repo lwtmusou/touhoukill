@@ -559,7 +559,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
 
     case S_GAME_EVENT_CHANGE_GENDER: {
         QString player_name = arg[1].toString();
-        General::Gender gender = (General::Gender)arg[2].toInt();
+        QSanguosha::Gender gender = (QSanguosha::Gender)arg[2].toInt();
 
         Player *player = ClientInstance->getPlayer(player_name);
         player->setGender(gender);
@@ -3698,7 +3698,7 @@ void RoomScene::killPlayer(const QString &who)
         general = Self->getGeneral();
         item2player.remove(dashboard);
         if (ServerInfo.GameMode == QStringLiteral("02_1v1"))
-            self_box->killPlayer(general->objectName());
+            self_box->killPlayer(general->name());
     } else {
         Photo *photo = name2photo[who];
         photo->killPlayer();
@@ -3707,11 +3707,11 @@ void RoomScene::killPlayer(const QString &who)
         item2player.remove(photo);
         general = photo->getPlayer()->getGeneral();
         if (ServerInfo.GameMode == QStringLiteral("02_1v1"))
-            enemy_box->killPlayer(general->objectName());
+            enemy_box->killPlayer(general->name());
     }
 
     if (Config.EnableEffects && Config.EnableLastWord && !Self->hasFlag(QStringLiteral("marshalling")))
-        Audio::GeneralLastWord(general->objectName());
+        Audio::GeneralLastWord(general->name());
     m_roomMutex.unlock();
 }
 
