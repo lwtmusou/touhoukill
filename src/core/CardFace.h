@@ -247,22 +247,22 @@ public:
     QString subTypeName() const override;
     virtual void takeEffect(Player *target) const = 0;
 
-    // returns a copy of d if d is not nullptr.
+    // returns a copy of j if j is not nullptr.
     JudgeStruct judge() const;
 
 protected:
-    // d is initialized to be nullptr when constructing.
+    // j is initialized to be nullptr when constructing.
     // DelayedTrick don't own this struct. DO REMEMBER TO CLEANUP d WHEN DelayedTrick IS DESTRUCTING.
-    // A suggested way for initializing d is as follows (Let's take Indulgence as an example of inherited DelayedTrick):
+    // A suggested way for initializing j is as follows (Let's take Indulgence as an example of inherited DelayedTrick):
 #if 0
     Indulgence::Indulgence()
     {
-        static JudgeStruct j;
-        // do some tweaks about j for Indulgence
-        d = &j;
+        static JudgeStruct js;
+        // do some tweaks about js for Indulgence
+        j = &js;
     }
 #endif
-    JudgeStruct *d;
+    JudgeStruct *j;
 };
 
 class SkillCard : public CardFace

@@ -418,7 +418,7 @@ bool NonDelayedTrick::isNDTrick() const
 }
 
 DelayedTrick::DelayedTrick()
-    : d(nullptr)
+    : j(nullptr)
 {
 }
 
@@ -429,10 +429,10 @@ QString DelayedTrick::subTypeName() const
 
 JudgeStruct DelayedTrick::judge() const
 {
-    if (d == nullptr)
+    if (j == nullptr)
         return JudgeStruct();
 
-    return *d;
+    return *j;
 }
 
 CardType SkillCard::type() const
