@@ -63,7 +63,23 @@ public:
         // Temporary let's take method 3
         constexpr int errorDealingMethod = 3;
 
-        if (int luaRet = luaL_dostring(l, arr.constData()); luaRet != LUA_OK) {
+        int luaRet = luaL_loadbuffer(l, arr.constData(), arr.length(), "qrc:/luaInstialize.lua");
+        if (luaRet != LUA_OK) {
+            QString errorText = QString::fromUtf8(lua_tostring(l, -1));
+            lua_pop(l, 1);
+            if constexpr (errorDealingMethod == 1) {
+                throw luaRet;
+            } else if constexpr (errorDealingMethod == 2) {
+                // removed
+            } else if constexpr (errorDealingMethod == 3) {
+                qDebug() << errorText;
+            }
+
+            return;
+        }
+
+        luaRet = lua_pcall(l, 0, LUA_MULTRET, 0);
+        if (luaRet != LUA_OK) {
             QString errorText = QString::fromUtf8(lua_tostring(l, -1));
             lua_pop(l, 1);
             if constexpr (errorDealingMethod == 1) {

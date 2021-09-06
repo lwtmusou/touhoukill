@@ -199,19 +199,19 @@ sgs_ex.Weapon = function(desc, ...)
 end
 
 sgs_ex.Armor = function(desc, ...)
-
+    return sgs_ex.EquipCard(desc, "sgs_ex.Armor", ...)
 end
 
 sgs_ex.DefensiveHorse = function(desc, ...)
-
+    return sgs_ex.EquipCard(desc, "sgs_ex.DefensiveHorse", ...)
 end
 
 sgs_ex.OffensiveHorse = function(desc, ...)
-
+    return sgs_ex.EquipCard(desc, "sgs_ex.OffensiveHorse", ...)
 end
 
 sgs_ex.Treasure = function(desc, ...)
-
+    return sgs_ex.EquipCard(desc, "sgs_ex.Treasure", ...)
 end
 
 -- Enough error check is necessary
