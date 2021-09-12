@@ -245,6 +245,7 @@ bool ViewAsSkill::isEnabledAtResponse(const Player * /*unused*/, CardUseStruct::
 // Example for Guhuo
 class Guhuo : public OneCardViewAsSkill
 {
+public:
     Guhuo()
         : OneCardViewAsSkill(QStringLiteral("guhuo"))
     {
@@ -263,7 +264,7 @@ class Guhuo : public OneCardViewAsSkill
         if (selectedName == QStringLiteral("NormalSlash"))
             selectedName = QStringLiteral("Slash");
 
-        Card *card = Self->getRoomObject()->cloneCard(QStringLiteral("GuhuoCard"));
+        Card *card = Self->roomObject()->cloneCard(QStringLiteral("GuhuoCard"));
         card->addSubcard(originalCard);
         card->setUserString(selectedName);
         return card;
@@ -318,9 +319,9 @@ class Guhuo : public OneCardViewAsSkill
         if (selectedName == QStringLiteral("NormalSlash"))
             selectedName = QStringLiteral("Slash");
 
-        Card *viewAsCard = Self->getRoomObject()->cloneCard(selectedName, QSanguosha::NoSuit, QSanguosha::NumberNA);
+        Card *viewAsCard = Self->roomObject()->cloneCard(selectedName, QSanguosha::NoSuit, QSanguosha::NumberNA);
         bool available = viewAsCard->face()->isAvailable(Self, viewAsCard);
-        Self->getRoomObject()->cardDeleting(viewAsCard);
+        Self->roomObject()->cardDeleting(viewAsCard);
         return available;
     }
 };

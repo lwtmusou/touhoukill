@@ -38,21 +38,11 @@ public:
 
     const QString &name() const;
 
-    const QList<const Skill *> &skills() const;
-    const QMap<QString, const CardPattern *> &patterns() const;
-    const QMultiMap<QString, QString> &relatedSkills() const;
-
     QSanguosha::PackageType type() const;
 
-    void insertRelatedSkills(const QString &main_skill, const QString &related_skill);
-    void insertPattern(const QString &name, const CardPattern *cardPattern);
-
-    const QList<const CardFace *> &cardFaces() const;
     const QList<CardDescriptor> &cards() const;
     const QList<const General *> &generals() const;
 
-    Package &operator<<(const CardFace *face); // register face.
-    Package &operator<<(const Skill *skill);
     Package &operator<<(const General *general);
     Package &operator<<(const CardDescriptor &card);
 

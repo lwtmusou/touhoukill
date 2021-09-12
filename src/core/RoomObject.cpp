@@ -164,7 +164,7 @@ Card *RoomObject::cloneCard(const CardDescriptor &descriptor)
 void RoomObject::cardDeleting(const Card *card)
 {
     // const_cast is necessary for this function since card may be const
-    // but for Room, this Card is variable
+    // but for non-const Room, this Card instance is definitely mutable
     if (card != nullptr)
         d->clonedCards.removeAll(const_cast<Card *>(card));
     delete card;

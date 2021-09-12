@@ -10,11 +10,6 @@ public:
     PackageType type;
 
     QList<const General *> generals;
-
-    QList<const Skill *> skills;
-    QList<const CardFace *> faces;
-    QMap<QString, const CardPattern *> patterns;
-    QMultiMap<QString, QString> related_skills;
     QList<CardDescriptor> all_cards;
 };
 
@@ -35,39 +30,9 @@ const QString &Package::name() const
     return d->name;
 }
 
-const QList<const Skill *> &Package::skills() const
-{
-    return d->skills;
-}
-
-const QMap<QString, const CardPattern *> &Package::patterns() const
-{
-    return d->patterns;
-}
-
-const QMultiMap<QString, QString> &Package::relatedSkills() const
-{
-    return d->related_skills;
-}
-
 PackageType Package::type() const
 {
     return d->type;
-}
-
-void Package::insertRelatedSkills(const QString &main_skill, const QString &related_skill)
-{
-    d->related_skills.insert(main_skill, related_skill);
-}
-
-void Package::insertPattern(const QString &name, const CardPattern *cardPattern)
-{
-    d->patterns.insert(name, cardPattern);
-}
-
-const QList<const CardFace *> &Package::cardFaces() const
-{
-    return d->faces;
 }
 
 const QList<CardDescriptor> &Package::cards() const
@@ -78,18 +43,6 @@ const QList<CardDescriptor> &Package::cards() const
 const QList<const General *> &Package::generals() const
 {
     return d->generals;
-}
-
-Package &Package::operator<<(const CardFace *face)
-{
-    d->faces << face;
-    return *this;
-}
-
-Package &Package::operator<<(const Skill *skill)
-{
-    d->skills << skill;
-    return *this;
 }
 
 Package &Package::operator<<(const General *general)

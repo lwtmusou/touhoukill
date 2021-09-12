@@ -5,6 +5,9 @@
 #include "json.h"
 #include "protocol.h"
 
+// TODO: kill this
+#include "lua-wrapper.h"
+
 #include <QHash>
 #include <QList>
 #include <QMetaObject>
@@ -13,7 +16,7 @@
 #include <QThread>
 
 class QVersionNumber;
-class LuaState;
+class LuaStatePointer;
 class CardPattern;
 class General;
 class ViewAsSkill;
@@ -149,7 +152,7 @@ private:
 
     JsonObject configFile;
 
-    LuaState *l;
+    LuaStatePointer l;
 };
 
 extern Engine *Sanguosha;

@@ -166,11 +166,51 @@ LuaMultiThreadEnvironment::LuaMultiThreadEnvironment()
     d->stateStorage.setLocalData(firstLuaState);
 
     LuaStatePointer firstLuaStatePtr = firstLuaState;
+
     // TODO: first LuaState is created, we should collect data from LuaState
     // notably Package, CardFace and Skill
     // Package maintains CardDescriptorList and GeneralList
-    Q_UNIMPLEMENTED();
-    Q_UNUSED(firstLuaStatePtr);
+
+    int type = lua_getglobal(firstLuaStatePtr, "sgs");
+    do {
+        if (type != LUA_TTABLE) {
+            qDebug() << "sgs is not a table";
+            break;
+        }
+
+        // CardFaces
+        type = lua_getfield(firstLuaStatePtr, -1, "CardFaces");
+        if (type != LUA_TTABLE) {
+            qDebug() << "sgs.CardFaces is not a table";
+        } else {
+            // deal with CardFaces
+            Q_UNIMPLEMENTED();
+        }
+        lua_pop(firstLuaStatePtr, 1);
+
+        // Skills
+        type = lua_getfield(firstLuaStatePtr, -1, "Skills");
+        if (type != LUA_TTABLE) {
+            qDebug() << "sgs.Skills is not a table";
+        } else {
+            // deal with Skills
+            Q_UNIMPLEMENTED();
+        }
+        lua_pop(firstLuaStatePtr, 1);
+
+        // Packages
+        type = lua_getfield(firstLuaStatePtr, -1, "Packages");
+        if (type != LUA_TTABLE) {
+            qDebug() << "sgs.Packages is not a table";
+        } else {
+            // deal with Packages
+            Q_UNIMPLEMENTED();
+        }
+        lua_pop(firstLuaStatePtr, 1);
+
+    } while (false);
+
+    lua_pop(firstLuaStatePtr, 1);
 }
 
 LuaMultiThreadEnvironment *LuaMultiThreadEnvironment::self()

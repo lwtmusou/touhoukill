@@ -186,10 +186,13 @@ void Engine::addPackage(const Package *package)
 
     packages << package;
 
-    // package->setParent(this);
+#if 0
+    // TODO: make pattern a globally available design instead of belongs to package
     patterns.insert(package->patterns());
-    related_skills.unite(package->relatedSkills());
 
+    // TODO: make related skills a property of skill
+    related_skills.unite(package->relatedSkills());
+#endif
     cards << package->cards();
 
     foreach (const General *general, package->generals()) {
