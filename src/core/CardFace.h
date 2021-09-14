@@ -7,7 +7,7 @@
 #include <QString>
 
 class Player;
-class Room;
+class RoomObject;
 class Card;
 
 class CardFacePrivate;
@@ -102,11 +102,11 @@ public:
     virtual const Card *validate(const CardUseStruct &cardUse) const;
     virtual const Card *validateInResponse(Player *user, const Card *original_card) const;
 
-    virtual void doPreAction(Room *room, const CardUseStruct &card_use) const;
+    virtual void doPreAction(RoomObject *room, const CardUseStruct &card_use) const;
 
     // TODO_Fs: Aren't the names of these 2 functions easy to be misunderstood?
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const; // Shouldn't this be "processOfUsing" / "usingProcess" or something like this?
-    virtual void use(Room *room, const CardUseStruct &use) const; // Shouldn't this be "onUse"?
+    virtual void onUse(RoomObject *room, const CardUseStruct &card_use) const; // Shouldn't this be "processOfUsing" / "usingProcess" or something like this?
+    virtual void use(RoomObject *room, const CardUseStruct &use) const; // Shouldn't this be "onUse"?
 
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isCancelable(const CardEffectStruct &effect) const;

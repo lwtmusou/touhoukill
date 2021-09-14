@@ -3,11 +3,13 @@
 
 #include "skill.h"
 
+class ServerPlayer;
+
 class GameRule : public Rule
 {
 public:
     GameRule();
-    bool trigger(TriggerEvent triggerEvent, Room *room, const TriggerDetail &invoke, QVariant &data) const override;
+    bool trigger(TriggerEvent triggerEvent, RoomObject *room, const TriggerDetail &invoke, QVariant &data) const override;
 
 private:
     void onPhaseProceed(ServerPlayer *player) const;

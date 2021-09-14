@@ -4,8 +4,11 @@
 #include "global.h"
 #include "json.h"
 #include "protocol.h"
-#include "room.h"
 #include "skill.h"
+#include "util.h"
+
+// TODO: kill this
+#include "room.h"
 
 #include <functional>
 
@@ -182,7 +185,7 @@ DamageStruct::DamageStruct()
 {
 }
 
-DamageStruct::DamageStruct(const Card *card, ServerPlayer *from, ServerPlayer *to, int damage, DamageStruct::Nature nature)
+DamageStruct::DamageStruct(const Card *card, Player *from, Player *to, int damage, DamageStruct::Nature nature)
     : chain(false)
     , transfer(false)
     , by_user(true)
@@ -197,7 +200,7 @@ DamageStruct::DamageStruct(const Card *card, ServerPlayer *from, ServerPlayer *t
     this->nature = nature;
 }
 
-DamageStruct::DamageStruct(const QString &reason, ServerPlayer *from, ServerPlayer *to, int damage, DamageStruct::Nature nature)
+DamageStruct::DamageStruct(const QString &reason, Player *from, Player *to, int damage, DamageStruct::Nature nature)
     : card(nullptr)
     , chain(false)
     , transfer(false)
@@ -345,7 +348,7 @@ CardUseStruct::CardUseStruct()
 {
 }
 
-CardUseStruct::CardUseStruct(const Card *card, ServerPlayer *from, const QList<ServerPlayer *> &to, bool isOwnerUse)
+CardUseStruct::CardUseStruct(const Card *card, Player *from, const QList<Player *> &to, bool isOwnerUse)
 {
     this->card = card;
     this->from = from;
@@ -356,7 +359,7 @@ CardUseStruct::CardUseStruct(const Card *card, ServerPlayer *from, const QList<S
     this->m_isLastHandcard = false;
 }
 
-CardUseStruct::CardUseStruct(const Card *card, ServerPlayer *from, ServerPlayer *target, bool isOwnerUse)
+CardUseStruct::CardUseStruct(const Card *card, Player *from, Player *target, bool isOwnerUse)
 {
     this->card = card;
     this->from = from;
@@ -374,7 +377,7 @@ bool CardUseStruct::isValid(const QString &pattern) const
     return card != nullptr;
 }
 
-bool CardUseStruct::tryParse(const QVariant &usage, Room *room)
+bool CardUseStruct::tryParse(const QVariant &usage, RoomObject *room)
 {
     JsonArray arr = usage.value<JsonArray>();
     if (arr.length() < 2 || !JsonUtils::isString(arr.first()) || !arr.value(1).canConvert<JsonArray>())
@@ -386,12 +389,12 @@ bool CardUseStruct::tryParse(const QVariant &usage, Room *room)
     for (int i = 0; i < targets.size(); i++) {
         if (!JsonUtils::isString(targets.value(i)))
             return false;
-        to << room->findChild<ServerPlayer *>(targets.value(i).toString());
+        to << room->findChild<Player *>(targets.value(i).toString());
     }
     return true;
 }
 
-void CardUseStruct::parse(const QString &str, Room *room)
+void CardUseStruct::parse(const QString &str, RoomObject *room)
 {
     QStringList words = str.split(QStringLiteral("->"), Qt::KeepEmptyParts);
     Q_ASSERT(words.length() == 1 || words.length() == 2);
@@ -407,7 +410,7 @@ void CardUseStruct::parse(const QString &str, Room *room)
     if (target_str != QStringLiteral(".")) {
         QStringList target_names = target_str.split(QStringLiteral("+"));
         foreach (QString target_name, target_names)
-            to << room->findChild<ServerPlayer *>(target_name);
+            to << room->findChild<Player *>(target_name);
     }
 }
 
@@ -423,7 +426,7 @@ QString CardUseStruct::toString() const
         l << QStringLiteral(".");
     else {
         QStringList tos;
-        foreach (ServerPlayer *p, to)
+        foreach (Player *p, to)
             tos << p->objectName();
 
         l << tos.join(QStringLiteral("+"));
@@ -440,11 +443,11 @@ MarkChangeStruct::MarkChangeStruct()
 class TriggerDetailSharedData : public QSharedData
 {
 public:
-    const ::Room *room;
+    const RoomObject *room;
     const Trigger *trigger; // the trigger
-    ::ServerPlayer *owner; // skill owner. 2 structs with the same skill and skill owner are treated as of a same skill.
-    ::ServerPlayer *invoker; // skill invoker. When invoking skill, we sort firstly according to the priority, then the seat of invoker, at last weather it is a skill of an equip.
-    QList<::ServerPlayer *> targets; // skill targets.
+    Player *owner; // skill owner. 2 structs with the same skill and skill owner are treated as of a same skill.
+    Player *invoker; // skill invoker. When invoking skill, we sort firstly according to the priority, then the seat of invoker, at last weather it is a skill of an equip.
+    QList<Player *> targets; // skill targets.
     bool isCompulsory; // judge the skill is compulsory or not. It is set in the skill's triggerable
     bool triggered; // judge whether the skill is triggere
     bool showhidden;
@@ -486,7 +489,9 @@ bool TriggerDetail::operator<(const TriggerDetail &arg2) const // the operator <
         return false;
 
     if (invoker() != nullptr && arg2.invoker() != nullptr && invoker() != arg2.invoker())
-        return room()->getFront(invoker(), arg2.invoker()) == invoker();
+        return RefactorProposal::fixme_cast<const Room *>(room())->getFront(RefactorProposal::fixme_cast<ServerPlayer *>(invoker()),
+                                                                            RefactorProposal::fixme_cast<ServerPlayer *>(arg2.invoker()))
+            == invoker();
 
     return !trigger()->isEquipSkill() && arg2.trigger()->isEquipSkill();
 }
@@ -506,8 +511,8 @@ bool TriggerDetail::sameTimingWith(const TriggerDetail &arg2) const
     return trigger()->priority() == arg2.trigger()->priority() && invoker() == arg2.invoker() && trigger()->isEquipSkill() == arg2.trigger()->isEquipSkill();
 }
 
-TriggerDetail::TriggerDetail(const Room *room, const Trigger *trigger /*= NULL*/, ServerPlayer *owner /*= NULL*/, ServerPlayer *invoker /*= NULL*/,
-                             const QList<ServerPlayer *> &targets /*= QList<ServerPlayer *>()*/, bool isCompulsory /*= false*/, bool showHidden)
+TriggerDetail::TriggerDetail(const RoomObject *room, const Trigger *trigger /*= NULL*/, Player *owner /*= NULL*/, Player *invoker /*= NULL*/,
+                             const QList<Player *> &targets /*= QList<Player *>()*/, bool isCompulsory /*= false*/, bool showHidden)
     : d(new TriggerDetailPrivate)
 {
     d->d->room = (room);
@@ -520,8 +525,7 @@ TriggerDetail::TriggerDetail(const Room *room, const Trigger *trigger /*= NULL*/
     d->d->showhidden = (showHidden);
 }
 
-TriggerDetail::TriggerDetail(const Room *room, const Trigger *trigger, ServerPlayer *owner, ServerPlayer *invoker, ServerPlayer *target, bool isCompulsory /*= false*/,
-                             bool showHidden)
+TriggerDetail::TriggerDetail(const RoomObject *room, const Trigger *trigger, Player *owner, Player *invoker, Player *target, bool isCompulsory /*= false*/, bool showHidden)
     : d(new TriggerDetailPrivate)
 {
     d->d->room = (room);
@@ -556,7 +560,7 @@ TriggerDetail::~TriggerDetail()
     delete d;
 }
 
-const Room *TriggerDetail::room() const
+const RoomObject *TriggerDetail::room() const
 {
     return d->d->room;
 }
@@ -566,17 +570,17 @@ const Trigger *TriggerDetail::trigger() const
     return d->d->trigger;
 }
 
-ServerPlayer *TriggerDetail::owner() const
+Player *TriggerDetail::owner() const
 {
     return d->d->owner;
 }
 
-ServerPlayer *TriggerDetail::invoker() const
+Player *TriggerDetail::invoker() const
 {
     return d->d->invoker;
 }
 
-QList<ServerPlayer *> TriggerDetail::targets() const
+QList<Player *> TriggerDetail::targets() const
 {
     return d->d->targets;
 }
@@ -606,7 +610,7 @@ const QVariantMap &TriggerDetail::tag() const
     return d->d->tag;
 }
 
-void TriggerDetail::addTarget(ServerPlayer *target)
+void TriggerDetail::addTarget(Player *target)
 {
     d->d->targets << target;
 }

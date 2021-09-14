@@ -197,7 +197,6 @@ public:
 
     virtual QString getGameMode() const = 0;
 
-    // FIXME(xusine): At present I don't know how to use WrapperCard but just use const Card *instread;
     void setEquip(const Card *equip);
     void removeEquip(const Card *equip);
     bool hasEquip(const Card *card) const;

@@ -5,12 +5,9 @@
 
 class Skill;
 class TriggerSkill;
+class RoomObject;
 class Card;
 class Player;
-
-// TODO: KILL THESE
-class Room;
-class ServerPlayer;
 
 #include <QVariant>
 
@@ -25,11 +22,11 @@ struct DamageStruct
     };
 
     DamageStruct();
-    DamageStruct(const Card *card, ServerPlayer *from, ServerPlayer *to, int damage = 1, Nature nature = Normal);
-    DamageStruct(const QString &reason, ServerPlayer *from, ServerPlayer *to, int damage = 1, Nature nature = Normal);
+    DamageStruct(const Card *card, Player *from, Player *to, int damage = 1, Nature nature = Normal);
+    DamageStruct(const QString &reason, Player *from, Player *to, int damage = 1, Nature nature = Normal);
 
-    ServerPlayer *from;
-    ServerPlayer *to;
+    Player *from;
+    Player *to;
     const Card *card;
     int damage;
     Nature nature;
@@ -54,17 +51,17 @@ struct CardUseStruct
     } m_reason;
 
     CardUseStruct();
-    CardUseStruct(const Card *card, ServerPlayer *from, const QList<ServerPlayer *> &to = QList<ServerPlayer *>(), bool isOwnerUse = true);
-    CardUseStruct(const Card *card, ServerPlayer *from, ServerPlayer *target, bool isOwnerUse = true);
+    CardUseStruct(const Card *card, Player *from, const QList<Player *> &to = QList<Player *>(), bool isOwnerUse = true);
+    CardUseStruct(const Card *card, Player *from, Player *target, bool isOwnerUse = true);
     bool isValid(const QString &pattern) const;
-    void parse(const QString &str, Room *room);
-    bool tryParse(const QVariant &usage, Room *room);
+    void parse(const QString &str, RoomObject *room);
+    bool tryParse(const QVariant &usage, RoomObject *room);
 
     QString toString() const;
 
     const Card *card;
-    ServerPlayer *from;
-    QList<ServerPlayer *> to;
+    Player *from;
+    QList<Player *> to;
     bool m_isOwnerUse;
     bool m_addHistory;
     bool m_isHandcard;
@@ -79,8 +76,8 @@ struct CardEffectStruct
 
     const Card *card;
 
-    ServerPlayer *from;
-    ServerPlayer *to;
+    Player *from;
+    Player *to;
 
     bool multiple; // helper to judge whether the card has multiple targets
     // does not make sense if the card inherits SkillCard
@@ -98,8 +95,8 @@ struct SlashEffectStruct
     const Card *slash;
     const Card *jink;
 
-    ServerPlayer *from;
-    ServerPlayer *to;
+    Player *from;
+    Player *to;
 
     int drank;
 
@@ -279,19 +276,19 @@ struct DyingStruct
 {
     DyingStruct();
 
-    ServerPlayer *who; // who is ask for help
+    Player *who; // who is ask for help
     DamageStruct *damage; // if it is NULL that means the dying is caused by losing hp
-    ServerPlayer *nowAskingForPeaches; // who is asking for peaches
+    Player *nowAskingForPeaches; // who is asking for peaches
 };
 
 struct DeathStruct
 {
     DeathStruct();
 
-    ServerPlayer *who; // who is dead
+    Player *who; // who is dead
     DamageStruct *damage; // if it is NULL that means the dying is caused by losing hp
 
-    ServerPlayer *viewAsKiller;
+    Player *viewAsKiller;
     bool useViewAsKiller;
 };
 
@@ -300,8 +297,8 @@ struct RecoverStruct
     RecoverStruct();
 
     int recover;
-    ServerPlayer *who;
-    ServerPlayer *to;
+    Player *who;
+    Player *to;
     const Card *card;
     QString reason;
 };
@@ -311,9 +308,9 @@ struct PindianStruct
     PindianStruct();
     bool isSuccess() const;
 
-    ServerPlayer *from;
-    ServerPlayer *to;
-    ServerPlayer *askedPlayer;
+    Player *from;
+    Player *to;
+    Player *askedPlayer;
     const Card *from_card;
     const Card *to_card;
     int from_number;
@@ -332,7 +329,7 @@ struct JudgeStruct
 
     bool isGood(const Card *card) const; // For AI
 
-    ServerPlayer *who;
+    Player *who;
     const Card *card;
     QString pattern;
     bool good;
@@ -340,8 +337,8 @@ struct JudgeStruct
     bool time_consuming;
     bool negative;
     bool play_animation;
-    ServerPlayer *retrial_by_response; // record whether the current judge card is provided by a response retrial
-    ServerPlayer *relative_player; // record relative player like skill owner of "huazhong", for processing the case like "huazhong -> dizhen -> huazhong"
+    Player *retrial_by_response; // record whether the current judge card is provided by a response retrial
+    Player *relative_player; // record relative player like skill owner of "huazhong", for processing the case like "huazhong -> dizhen -> huazhong"
     bool ignore_judge; //for tiandao
 
 private:
@@ -359,7 +356,7 @@ struct PhaseChangeStruct
 
     QSanguosha::Phase from;
     QSanguosha::Phase to;
-    ServerPlayer *player;
+    Player *player;
 };
 
 struct PhaseSkippingStruct
@@ -367,7 +364,7 @@ struct PhaseSkippingStruct
     PhaseSkippingStruct();
 
     QSanguosha::Phase phase;
-    ServerPlayer *player;
+    Player *player;
     bool isCost;
 };
 
@@ -385,8 +382,8 @@ struct PhaseStruct
 
 struct CardResponseStruct
 {
-    inline explicit CardResponseStruct(const Card *card = nullptr, ServerPlayer *who = nullptr, bool isuse = false, bool isRetrial = false, bool isProvision = false,
-                                       ServerPlayer *from = nullptr)
+    inline explicit CardResponseStruct(const Card *card = nullptr, Player *who = nullptr, bool isuse = false, bool isRetrial = false, bool isProvision = false,
+                                       Player *from = nullptr)
         : m_card(card)
         , m_who(who)
         , m_isUse(isuse)
@@ -400,12 +397,12 @@ struct CardResponseStruct
     }
 
     const Card *m_card;
-    ServerPlayer *m_who;
+    Player *m_who;
     bool m_isUse;
     bool m_isRetrial;
     bool m_isProvision;
     bool m_isHandcard;
-    ServerPlayer *m_from;
+    Player *m_from;
     bool m_isNullified;
     bool m_isShowncard;
 };
@@ -416,7 +413,7 @@ struct MarkChangeStruct
 
     int num;
     QString name;
-    ServerPlayer *player;
+    Player *player;
 };
 
 struct SkillAcquireDetachStruct
@@ -424,7 +421,7 @@ struct SkillAcquireDetachStruct
     SkillAcquireDetachStruct();
 
     const Skill *skill;
-    ServerPlayer *player;
+    Player *player;
     bool isAcquire;
 };
 
@@ -434,7 +431,7 @@ struct CardAskedStruct
 
     QString pattern;
     QString prompt;
-    ServerPlayer *player;
+    Player *player;
     QSanguosha::HandlingMethod method;
 };
 
@@ -445,28 +442,26 @@ class TriggerDetailPrivate;
 class TriggerDetail
 {
 public:
-    // TODO: use RefactorProposal::GameLogic / RoomObject / Player instead of Room / ::ServerPlayer
-    explicit TriggerDetail(const ::Room *room, const Trigger *trigger = nullptr, ::ServerPlayer *owner = nullptr, ::ServerPlayer *invoker = nullptr,
-                           const QList<::ServerPlayer *> &targets = QList<::ServerPlayer *>(), bool isCompulsory = false, bool showHidden = true);
-    TriggerDetail(const ::Room *room, const Trigger *trigger, ::ServerPlayer *owner, ::ServerPlayer *invoker, ::ServerPlayer *target, bool isCompulsory = false,
-                  bool showHidden = true);
+    explicit TriggerDetail(const RoomObject *room, const Trigger *trigger = nullptr, Player *owner = nullptr, Player *invoker = nullptr,
+                           const QList<Player *> &targets = QList<Player *>(), bool isCompulsory = false, bool showHidden = true);
+    TriggerDetail(const RoomObject *room, const Trigger *trigger, Player *owner, Player *invoker, Player *target, bool isCompulsory = false, bool showHidden = true);
 
     TriggerDetail(const TriggerDetail &other);
     TriggerDetail &operator=(const TriggerDetail &other);
     ~TriggerDetail();
 
-    const ::Room *room() const;
+    const RoomObject *room() const;
     const Trigger *trigger() const;
-    ::ServerPlayer *owner() const;
-    ::ServerPlayer *invoker() const;
-    QList<::ServerPlayer *> targets() const;
+    Player *owner() const;
+    Player *invoker() const;
+    QList<Player *> targets() const;
     bool isCompulsory() const;
     bool triggered() const;
     bool showhidden() const;
     bool effectOnly() const;
     const QVariantMap &tag() const;
 
-    void addTarget(::ServerPlayer *target);
+    void addTarget(Player *target);
     void setTriggered(bool t);
     QVariantMap &tag();
 
@@ -488,7 +483,7 @@ struct HpLostStruct
 {
     HpLostStruct();
 
-    ServerPlayer *player;
+    Player *player;
     int num;
 };
 
@@ -504,7 +499,7 @@ struct DrawNCardsStruct
 {
     DrawNCardsStruct();
 
-    ServerPlayer *player;
+    Player *player;
     int n;
     bool isInitial;
 };
@@ -513,7 +508,7 @@ struct SkillInvalidStruct
 {
     SkillInvalidStruct();
 
-    ServerPlayer *player;
+    Player *player;
     const Skill *skill;
     bool invalid;
 };
@@ -522,7 +517,7 @@ struct BrokenEquipChangedStruct
 {
     BrokenEquipChangedStruct();
 
-    ServerPlayer *player;
+    Player *player;
     QList<int> ids;
     bool broken;
     bool moveFromEquip;
@@ -532,7 +527,7 @@ struct ShownCardChangedStruct
 {
     ShownCardChangedStruct();
 
-    ServerPlayer *player;
+    Player *player;
     QList<int> ids;
     bool shown;
     bool moveFromHand;
@@ -542,7 +537,7 @@ struct ShowGeneralStruct
 {
     ShowGeneralStruct();
 
-    ServerPlayer *player;
+    Player *player;
     bool isHead;
     bool isShow;
 };
@@ -580,7 +575,7 @@ struct ChoiceMadeStruct
         NumOfChoices
     };
 
-    ServerPlayer *player;
+    Player *player;
     ChoiceType type;
     QStringList args;
     QVariant m_extraData;
@@ -590,10 +585,10 @@ struct ExtraTurnStruct
 {
     ExtraTurnStruct();
 
-    ServerPlayer *player;
+    Player *player;
     QList<QSanguosha::Phase> set_phases;
     QString reason;
-    ServerPlayer *extraTarget; //record related target  --qinlue
+    Player *extraTarget; //record related target  --qinlue
 };
 
 enum TriggerEvent

@@ -21,7 +21,7 @@ LogMessage::LogMessage()
 QString LogMessage::toString() const
 {
     QStringList tos;
-    foreach (ServerPlayer *player, to)
+    foreach (Player *player, to)
         if (player != nullptr)
             tos << player->objectName();
 
@@ -31,7 +31,7 @@ QString LogMessage::toString() const
 QVariant LogMessage::toJsonValue() const
 {
     QStringList tos;
-    foreach (ServerPlayer *player, to)
+    foreach (Player *player, to)
         if (player != nullptr)
             tos << player->objectName();
 
@@ -622,11 +622,11 @@ bool RoomThread::trigger(TriggerEvent e, QVariant &data)
             }
 
             // since the invoker of the sametiming list is the same, we can use sameTiming.first()->invoker to judge the invoker of this time
-            QSharedPointer<TriggerDetail> detailSelected = room->askForTriggerOrder(sameTiming.first()->invoker(), sameTiming, !has_compulsory, data);
+            QSharedPointer<TriggerDetail> detailSelected = room->askForTriggerOrder(qobject_cast<ServerPlayer *>(sameTiming.first()->invoker()), sameTiming, !has_compulsory, data);
 
             if (detailSelected.isNull() || !detailSelected->isValid()) {
                 // if cancel is pushed when it is cancelable, we set all the sametiming as triggered, and add all the skills to triggeredList, continue the next loop
-                for (QSharedPointer<TriggerDetail> ptr : qAsConst(sameTiming)) {
+                foreach (QSharedPointer<TriggerDetail> ptr, sameTiming) {
                     ptr->setTriggered(true);
                     triggered << ptr;
                 }

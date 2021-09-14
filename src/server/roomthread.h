@@ -8,6 +8,8 @@
 #include "structs.h"
 
 class GameRule;
+class Room;
+class ServerPlayer;
 
 struct LogMessage
 {
@@ -16,8 +18,8 @@ struct LogMessage
     QVariant toJsonValue() const;
 
     QString type;
-    ServerPlayer *from;
-    QList<ServerPlayer *> to;
+    Player *from;
+    QList<Player *> to;
     QString card_str;
     QString arg;
     QString arg2;

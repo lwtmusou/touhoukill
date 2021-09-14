@@ -2,7 +2,6 @@
 #include "CardFace.h"
 #include "RoomObject.h"
 #include "audio.h"
-#include "aux-skills.h"
 #include "card.h"
 #include "client.h"
 #include "exppattern.h"

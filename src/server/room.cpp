@@ -210,7 +210,9 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason)
                 LogMessage log;
                 log.type = QStringLiteral("#AskForPeaches");
                 log.from = player;
-                log.to = getAllPlayers();
+                // log.to = getAllPlayers();
+                for (ServerPlayer *p : getAllPlayers())
+                    log.to << p;
                 log.arg = QString::number(player->dyingThreshold() - player->getHp());
                 sendLog(log);
 
@@ -350,7 +352,7 @@ void Room::updateStateItem()
 
 void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason)
 {
-    ServerPlayer *killer = reason != nullptr ? reason->from : nullptr;
+    ServerPlayer *killer = reason != nullptr ? qobject_cast<ServerPlayer *>(reason->from) : nullptr;
 
     victim->setAlive(false);
 
@@ -546,7 +548,7 @@ void Room::slashResult(const SlashEffectStruct &effect, const Card *jink)
     } else {
         if (effect.to->isAlive() && jink != nullptr) {
             if (jink->skillName() != QStringLiteral("eight_diagram"))
-                setEmotion(effect.to, QStringLiteral("jink"));
+                setEmotion(qobject_cast<ServerPlayer *>(effect.to), QStringLiteral("jink"));
         }
         if (effect.slash != nullptr)
             effect.to->removeQinggangTag(effect.slash);
@@ -1092,7 +1094,7 @@ bool Room::isCanceled(const CardEffectStruct &effect)
             log.arg = effect.card->faceName();
             sendLog(log);
 
-            setEmotion(effect.to, QStringLiteral("skill_nullify"));
+            setEmotion(qobject_cast<ServerPlayer *>(effect.to), QStringLiteral("skill_nullify"));
             return true;
         }
     }
@@ -1107,7 +1109,7 @@ bool Room::isCanceled(const CardEffectStruct &effect)
     setTag(QStringLiteral("NullifyingCard"), decisionData);
     setTag(QStringLiteral("NullifyingTimes"), 0);
 
-    bool result = askForNullification(effect.card, effect.from, effect.to, true);
+    bool result = askForNullification(effect.card, qobject_cast<ServerPlayer *>(effect.from), qobject_cast<ServerPlayer *>(effect.to), true);
     if (getTag(QStringLiteral("HegNullificationValid")).toBool() && effect.card->face()->isNDTrick()) {
         foreach (ServerPlayer *p, m_players) {
             if (p->isAlive() && p->isFriendWith(effect.to))
@@ -1270,7 +1272,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
         return _askForNullification(trick, from, to, positive, aiHelper);
 
     doAnimate(S_ANIMATE_NULLIFICATION, repliedPlayer->objectName(), to->objectName());
-    useCard(CardUseStruct(card, repliedPlayer, QList<ServerPlayer *>()));
+    useCard(CardUseStruct(card, repliedPlayer, QList<Player *>()));
     //deal HegNullification
     bool isHegNullification = false;
     QString heg_nullification_selection;
@@ -3618,7 +3620,7 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
         && (card_use.m_reason == CardUseStruct::CARD_USE_REASON_PLAY || card->hasFlag(QStringLiteral("Add_History")))) {
         if (!slash_not_record) {
             card_use.m_addHistory = true;
-            addPlayerHistory(card_use.from, key);
+            addPlayerHistory(qobject_cast<ServerPlayer *>(card_use.from), key);
         }
         addPlayerHistory(nullptr, QStringLiteral("pushPile"));
     }
@@ -3626,10 +3628,11 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
     try {
         if (getCard(card_use.card->effectiveID()) == card) {
             if (use.from != nullptr) {
-                QStringList tarmod_detect = use.from->checkTargetModSkillShow(card_use);
+                QStringList tarmod_detect = qobject_cast<ServerPlayer *>(use.from)->checkTargetModSkillShow(card_use);
                 if (!tarmod_detect.isEmpty()) {
-                    QString to_show = askForChoice(card_use.from, QStringLiteral("tarmod_show"), tarmod_detect.join(QStringLiteral("+")), QVariant::fromValue(card_use));
-                    card_use.from->showHiddenSkill(to_show);
+                    QString to_show = askForChoice(qobject_cast<ServerPlayer *>(card_use.from), QStringLiteral("tarmod_show"), tarmod_detect.join(QStringLiteral("+")),
+                                                   QVariant::fromValue(card_use));
+                    qobject_cast<ServerPlayer *>(card_use.from)->showHiddenSkill(to_show);
                 }
             }
 
@@ -3662,7 +3665,7 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
                 CardMoveReason reason(CardMoveReason::S_REASON_UNKNOWN, card_use.from->objectName(), QString(), card_use.card->skillName(), QString());
                 if (card_use.to.size() == 1)
                     reason.m_targetId = card_use.to.first()->objectName();
-                moveCardTo(card_use.card, card_use.from, nullptr, QSanguosha::PlaceDiscardPile, reason, true);
+                moveCardTo(card_use.card, qobject_cast<ServerPlayer *>(card_use.from), nullptr, QSanguosha::PlaceDiscardPile, reason, true);
             }
             QVariant data = QVariant::fromValue(card_use);
             card_use.from->setFlags(QStringLiteral("Global_ProcessBroken"));
@@ -3882,7 +3885,7 @@ bool Room::cardEffect(const CardEffectStruct &effect)
             cancel = true;
         } else {
             if (!effect.to->hasFlag(QStringLiteral("Global_NonSkillNullify")))
-                setEmotion(effect.to, QStringLiteral("skill_nullify"));
+                setEmotion(qobject_cast<ServerPlayer *>(effect.to), QStringLiteral("skill_nullify"));
             else
                 effect.to->setFlags(QStringLiteral("-Global_NonSkillNullify"));
         }
@@ -3914,7 +3917,7 @@ void Room::damage(const DamageStruct &data)
         log2.from = damage_data.to;
         log2.arg = QStringLiteral("huanmeng");
         sendLog(log2);
-        notifySkillInvoked(damage_data.to, QStringLiteral("huanmeng"));
+        notifySkillInvoked(qobject_cast<ServerPlayer *>(damage_data.to), QStringLiteral("huanmeng"));
         if ((damage_data.card != nullptr) && damage_data.card->face()->isKindOf("Slash"))
             damage_data.to->removeQinggangTag(damage_data.card);
 
@@ -6383,7 +6386,7 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStruct *judge, c
 
     const Card *oldJudge = judge->card;
     judge->card = getCard(card->effectiveID());
-    ServerPlayer *rebyre = judge->retrial_by_response; //old judge provider
+    Player *rebyre = judge->retrial_by_response; //old judge provider
     judge->retrial_by_response = player;
 
     CardsMoveStruct move1(QList<int>(), judge->who, QSanguosha::PlaceJudge, CardMoveReason(CardMoveReason::S_REASON_RETRIAL, player->objectName(), skill_name, QString()));
@@ -6705,7 +6708,8 @@ void Room::touhouLogmessage(const QString &logtype, ServerPlayer *logfrom, const
 
     alog.type = logtype;
     alog.from = logfrom;
-    alog.to = logto;
+    for (ServerPlayer *p : logto)
+        alog.to << p;
     alog.arg = logarg;
     alog.arg2 = logarg2;
 

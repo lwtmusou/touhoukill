@@ -619,11 +619,11 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     if (card1 == nullptr || card2 == nullptr) {
         if (card1 != nullptr) {
             CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, this->objectName(), target->objectName(), pindian_struct.reason, QString());
-            room->moveCardTo(card1, pindian_struct.from, nullptr, QSanguosha::PlaceDiscardPile, reason1, true);
+            room->moveCardTo(card1, qobject_cast<ServerPlayer *>(pindian_struct.from), nullptr, QSanguosha::PlaceDiscardPile, reason1, true);
         }
         if (card2 != nullptr) {
             CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, pindian_struct.to->objectName());
-            room->moveCardTo(card2, pindian_struct.to, nullptr, QSanguosha::PlaceDiscardPile, reason2, true);
+            room->moveCardTo(card2, qobject_cast<ServerPlayer *>(pindian_struct.to), nullptr, QSanguosha::PlaceDiscardPile, reason2, true);
         }
         //need trigger choice made?
         return false;
@@ -680,12 +680,12 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
 
     if (room->getCardPlace(pindian_struct.from_card->effectiveID()) == QSanguosha::PlaceTable) {
         CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, pindian_struct.from->objectName(), pindian_struct.to->objectName(), pindian_struct.reason, QString());
-        room->moveCardTo(pindian_struct.from_card, pindian_struct.from, nullptr, QSanguosha::PlaceDiscardPile, reason1, true);
+        room->moveCardTo(pindian_struct.from_card, qobject_cast<ServerPlayer *>(pindian_struct.from), nullptr, QSanguosha::PlaceDiscardPile, reason1, true);
     }
 
     if (room->getCardPlace(pindian_struct.to_card->effectiveID()) == QSanguosha::PlaceTable) {
         CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, pindian_struct.to->objectName());
-        room->moveCardTo(pindian_struct.to_card, pindian_struct.to, nullptr, QSanguosha::PlaceDiscardPile, reason2, true);
+        room->moveCardTo(pindian_struct.to_card, qobject_cast<ServerPlayer *>(pindian_struct.to), nullptr, QSanguosha::PlaceDiscardPile, reason2, true);
     }
 
     ChoiceMadeStruct s;
@@ -1786,7 +1786,7 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     //only consider the folloing cards
     if (use.card->face()->isKindOf("Slash") || use.card->face()->isKindOf("SupplyShortage") || use.card->face()->isKindOf("Snatch")) {
         int distance = 1;
-        foreach (ServerPlayer *p, use.to) {
+        foreach (Player *p, use.to) {
             if (use.from->distanceTo(p) > distance)
                 distance = use.from->distanceTo(p);
 
@@ -1814,7 +1814,7 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     use.card->addFlag(QStringLiteral("-IgnoreFailed"));
 
     //check prohibit
-    foreach (ServerPlayer *p, use.to) {
+    foreach (Player *p, use.to) {
         if (use.from->isProhibited(p, use.card) && room->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
             showTargetProhibit << QStringLiteral("tianqu");
             break;

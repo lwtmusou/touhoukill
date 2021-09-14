@@ -71,7 +71,7 @@ public:
 
     int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *, const Card *card) const override;
 
-    void use(Room *, const CardUseStruct &) const override;
+    void use(RoomObject *, const CardUseStruct &) const override;
 
 private:
     QSet<QString> set;

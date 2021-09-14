@@ -3,8 +3,10 @@
 #include "card.h"
 #include "engine.h"
 #include "player.h"
-#include "room.h"
 #include "util.h"
+
+// TODO: kill this
+#include "room.h"
 
 #include <QObject>
 #include <QString>
@@ -187,20 +189,22 @@ const Card *CardFace::validateInResponse(Player * /*unused*/, const Card *origin
     return original_card;
 }
 
-void CardFace::doPreAction(Room * /*unused*/, const CardUseStruct & /*unused*/) const
+void CardFace::doPreAction(RoomObject * /*unused*/, const CardUseStruct & /*unused*/) const
 {
 }
 
-void CardFace::onUse(Room *room, const CardUseStruct &use) const
+void CardFace::onUse(RoomObject *room, const CardUseStruct &use) const
 {
     CardUseStruct card_use = use;
-    ServerPlayer *player = card_use.from;
+    Player *player = card_use.from;
 
-    room->sortByActionOrder(card_use.to);
+    // TODO
+    // room->sortByActionOrder(card_use.to);
 
-    QList<ServerPlayer *> targets = card_use.to;
-    if (room->getMode() == QStringLiteral("06_3v3") && (isKindOf("AOE") || isKindOf("GlobalEffect")))
-        room->reverseFor3v3(card_use.card, player, targets);
+    QList<Player *> targets = card_use.to;
+    // TODO
+    // if (room->getMode() == QStringLiteral("06_3v3") && (isKindOf("AOE") || isKindOf("GlobalEffect")))
+    //     room->reverseFor3v3(card_use.card, player, targets);
     card_use.to = targets;
 
     bool hidden = (type() == TypeSkill && !card_use.card->throwWhenUsing());
@@ -210,7 +214,7 @@ void CardFace::onUse(Room *room, const CardUseStruct &use) const
         log.to = card_use.to;
     log.type = QStringLiteral("#UseCard");
     log.card_str = card_use.card->toString(hidden);
-    room->sendLog(log);
+    RefactorProposal::fixme_cast<Room *>(room)->sendLog(log);
 
     IDSet used_cards;
     QList<CardsMoveStruct> moves;
@@ -220,7 +224,7 @@ void CardFace::onUse(Room *room, const CardUseStruct &use) const
         used_cards.insert(card_use.card->effectiveID());
 
     QVariant data = QVariant::fromValue(card_use);
-    RoomThread *thread = room->getThread();
+    RoomThread *thread = RefactorProposal::fixme_cast<Room *>(room)->getThread();
     Q_ASSERT(thread != nullptr);
     thread->trigger(PreCardUsed, data);
     card_use = data.value<CardUseStruct>();
@@ -236,32 +240,31 @@ void CardFace::onUse(Room *room, const CardUseStruct &use) const
             CardsMoveStruct move(id, nullptr, PlaceTable, reason);
             moves.append(move);
         }
-        room->moveCardsAtomic(moves, true);
-        // show general
-        player->showHiddenSkill(card_use.card->showSkillName());
+        RefactorProposal::fixme_cast<Room *>(room)->moveCardsAtomic(moves, true);
     } else {
         if (card_use.card->throwWhenUsing()) {
             CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName(), QString(), card_use.card->skillName(), QString());
-            room->moveCardTo(card_use.card, player, nullptr, PlaceDiscardPile, reason, true);
+            RefactorProposal::fixme_cast<Room *>(room)->moveCardTo(card_use.card, RefactorProposal::fixme_cast<ServerPlayer *>(player), nullptr, PlaceDiscardPile, reason, true);
         }
-        player->showHiddenSkill(card_use.card->showSkillName());
     }
+
+    RefactorProposal::fixme_cast<ServerPlayer *>(player)->showHiddenSkill(card_use.card->showSkillName());
 
     thread->trigger(CardUsed, data);
     thread->trigger(CardFinished, data);
 }
 
-void CardFace::use(Room *room, const CardUseStruct &use) const
+void CardFace::use(RoomObject *room, const CardUseStruct &use) const
 {
-    ServerPlayer *source = use.from;
+    Player *source = use.from;
 
-    QStringList nullified_list = room->getTag(QStringLiteral("CardUseNullifiedList")).toStringList();
+    QStringList nullified_list = use.nullified_list; // room->getTag(QStringLiteral("CardUseNullifiedList")).toStringList();
     bool all_nullified = nullified_list.contains(QStringLiteral("_ALL_TARGETS"));
     int magic_drank = 0;
     if (isNDTrick() && (source != nullptr) && source->getMark(QStringLiteral("magic_drank")) > 0)
         magic_drank = source->getMark(QStringLiteral("magic_drank"));
 
-    foreach (ServerPlayer *target, use.to) {
+    foreach (Player *target, use.to) {
         CardEffectStruct effect;
         effect.card = use.card;
         effect.from = source;
@@ -275,7 +278,7 @@ void CardFace::use(Room *room, const CardUseStruct &use) const
         if (source != nullptr && source->getMark(QStringLiteral("kuangji_value")) > 0) {
             effect.effectValue.first() = effect.effectValue.first() + source->getMark(QStringLiteral("kuangji_value"));
             effect.effectValue.last() = effect.effectValue.last() + source->getMark(QStringLiteral("kuangji_value"));
-            room->setPlayerMark(source, QStringLiteral("kuangji_value"), 0);
+            source->setMark(QStringLiteral("kuangji_value"), 0);
         }
 
         effect.effectValue.first() = effect.effectValue.first() + magic_drank;
@@ -285,32 +288,33 @@ void CardFace::use(Room *room, const CardUseStruct &use) const
                 players.append(QVariant::fromValue(use.to.at(i)));
         }
 
-        room->setTag(QStringLiteral("targets") + use.card->toString(), QVariant::fromValue(players));
+        //room->setTag(QStringLiteral("targets") + use.card->toString(), QVariant::fromValue(players));
 
-        room->cardEffect(effect);
+        // TODO: full card effect procedure //room->cardEffect(effect);
+        effect.card->face()->onEffect(effect);
     }
-    room->removeTag(QStringLiteral("targets") + use.card->toString()); //for ai?
+    //room->removeTag(QStringLiteral("targets") + use.card->toString()); //for ai?
     if (source != nullptr && magic_drank > 0)
-        room->setPlayerMark(source, QStringLiteral("magic_drank"), 0);
+        source->setMark(QStringLiteral("magic_drank"), 0);
 
-    if (room->getCardPlace(use.card->effectiveID()) == PlaceTable) {
+    if (RefactorProposal::fixme_cast<Room *>(room)->getCardPlace(use.card->effectiveID()) == PlaceTable) {
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source != nullptr ? source->objectName() : QString(), QString(), use.card->skillName(), QString());
         if (use.to.size() == 1)
             reason.m_targetId = use.to.first()->objectName();
         reason.m_extraData = QVariant::fromValue(use.card);
-        ServerPlayer *provider = nullptr;
+        Player *provider = nullptr;
         foreach (const QString &flag, use.card->flags()) {
             if (flag.startsWith(QStringLiteral("CardProvider_"))) {
                 QStringList patterns = flag.split(QStringLiteral("_"));
-                provider = room->findPlayerByObjectName(patterns.at(1));
+                provider = RefactorProposal::fixme_cast<Room *>(room)->findPlayerByObjectName(patterns.at(1));
                 break;
             }
         }
 
-        ServerPlayer *from = source;
+        Player *from = source;
         if (provider != nullptr)
             from = provider;
-        room->moveCardTo(use.card, from, nullptr, PlaceDiscardPile, reason, true);
+        RefactorProposal::fixme_cast<Room *>(room)->moveCardTo(use.card, RefactorProposal::fixme_cast<ServerPlayer *>(from), nullptr, PlaceDiscardPile, reason, true);
     }
 }
 
@@ -458,7 +462,7 @@ class SurrenderCard : public SkillCard
 public:
     Q_INVOKABLE SurrenderCard();
 
-    void onUse(Room *room, const CardUseStruct &use) const override;
+    void onUse(RoomObject *room, const CardUseStruct &use) const override;
 };
 
 class CheatCard : public SkillCard
@@ -468,7 +472,7 @@ class CheatCard : public SkillCard
 public:
     Q_INVOKABLE CheatCard();
 
-    void onUse(Room *room, const CardUseStruct &use) const override;
+    void onUse(RoomObject *room, const CardUseStruct &use) const override;
 };
 
 SurrenderCard::SurrenderCard()
@@ -477,9 +481,9 @@ SurrenderCard::SurrenderCard()
     setDefaultHandlingMethod(MethodNone);
 }
 
-void SurrenderCard::onUse(Room *room, const CardUseStruct &use) const
+void SurrenderCard::onUse(RoomObject *room, const CardUseStruct &use) const
 {
-    room->makeSurrender(use.from);
+    RefactorProposal::fixme_cast<Room *>(room)->makeSurrender(RefactorProposal::fixme_cast<ServerPlayer *>(use.from));
 }
 
 CheatCard::CheatCard()
@@ -488,12 +492,12 @@ CheatCard::CheatCard()
     setDefaultHandlingMethod(MethodNone);
 }
 
-void CheatCard::onUse(Room *room, const CardUseStruct &use) const
+void CheatCard::onUse(RoomObject *room, const CardUseStruct &use) const
 {
     QString cheatString = use.card->userString();
     JsonDocument doc = JsonDocument::fromJson(cheatString.toUtf8().constData());
     if (doc.isValid())
-        room->cheat(use.from, doc.toVariant());
+        RefactorProposal::fixme_cast<Room *>(room)->cheat(RefactorProposal::fixme_cast<ServerPlayer *>(use.from), doc.toVariant());
 }
 
 #include "CardFace.moc"
