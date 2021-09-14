@@ -435,7 +435,18 @@ void QijiDialog::popup(Player *_Self)
                 }
             }
         }
-    } else {
+    }
+    else if (object_name == "hezhou") {
+        QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+        foreach(const Card *card, cards) {
+            if (card->isNDTrick() && !ban_list.contains(card->getPackage())) { //&& !ServerInfo.Extensions.contains("!" + card->getPackage())
+                QString name = card->objectName();
+                if (!validPatterns.contains(name))
+                    validPatterns << card->objectName();
+            }
+        }
+    }
+    else {
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         foreach (const Card *card, cards) {
             if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) {
@@ -459,6 +470,7 @@ void QijiDialog::popup(Player *_Self)
         emit onButtonClick();
         return;
     }
+
 
     foreach (QAbstractButton *button, group->buttons()) {
         const Card *card = map[button->objectName()];
@@ -539,7 +551,7 @@ QGroupBox *QijiDialog::createRight()
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
     foreach (const Card *card, cards) {
         if (card->isNDTrick() && !map.contains(card->objectName()) && !ban_list.contains(card->getPackage())) {
-            if (object_name == "chuangshi") {
+            if (object_name == "chuangshi" || object_name == "hezhou") {
                 if (!card->isNDTrick() || card->isKindOf("AOE") || card->isKindOf("GlobalEffect"))
                     continue;
             }

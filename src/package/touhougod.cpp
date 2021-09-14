@@ -193,7 +193,7 @@ public:
             if (player && player->hasSkill("zhouye"))
                 set = true;
         } else if (triggerEvent == EventSkillInvalidityChange) {
-            QList<SkillInvalidStruct> invalids = data.value<QList<SkillInvalidStruct> >();
+            QList<SkillInvalidStruct> invalids = data.value<QList<SkillInvalidStruct>>();
             foreach (SkillInvalidStruct v, invalids) {
                 if (!v.skill || v.skill->objectName() == "zhouye") {
                     player = v.player;
@@ -2474,7 +2474,7 @@ public:
                     notifyLog = true;
             }
             if (triggerEvent == EventSkillInvalidityChange) {
-                QList<SkillInvalidStruct> invalids = data.value<QList<SkillInvalidStruct> >();
+                QList<SkillInvalidStruct> invalids = data.value<QList<SkillInvalidStruct>>();
                 foreach (SkillInvalidStruct v, invalids) {
                     if ((!v.skill || v.skill->objectName() == objectName()) && v.player == p && !v.invalid) {
                         notifyLog = true;
@@ -3800,7 +3800,7 @@ public:
             }
         }
         if (triggerEvent == EventSkillInvalidityChange) {
-            QList<SkillInvalidStruct> invalids = data.value<QList<SkillInvalidStruct> >();
+            QList<SkillInvalidStruct> invalids = data.value<QList<SkillInvalidStruct>>();
             foreach (SkillInvalidStruct v, invalids) {
                 if (!v.skill || v.skill->objectName() == "shenbao") {
                     QList<int> broken_equips = v.player->getBrokenEquips();
@@ -4147,7 +4147,7 @@ public:
             if (a.skill->objectName() == "yousi" && a.player->isCurrent())
                 yuyuko = a.player;
         } else if (triggerEvent == EventSkillInvalidityChange) {
-            QList<SkillInvalidStruct> invalids = data.value<QList<SkillInvalidStruct> >();
+            QList<SkillInvalidStruct> invalids = data.value<QList<SkillInvalidStruct>>();
             foreach (SkillInvalidStruct v, invalids) {
                 if (v.player->isCurrent() && (!v.skill || v.skill->objectName() == "yousi")) {
                     yuyuko = v.player;

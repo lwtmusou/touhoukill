@@ -20,6 +20,8 @@ public:
 
     bool isEnabledAtPlay(const Player *player) const override
     {
+        if (isHegemonyGameMode(ServerInfo.GameMode) && player->hasFlag("zuiyue_used"))
+            return false;
         return player->hasFlag("zuiyue") && Analeptic::IsAvailable(player);
     }
 
@@ -47,10 +49,14 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (!use.card->isKindOf("BasicCard") && !use.card->isKindOf("SkillCard") && use.from && use.from->hasSkill(this) && use.from->getPhase() == Player::Play)
                 room->setPlayerFlag(use.from, "zuiyue");
+            else if (isHegemonyGameMode(ServerInfo.GameMode) && use.card->getSkillName() == "zuiyue")
+                room->setPlayerFlag(use.from, "zuiyue_used");
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.from == Player::Play)
+            if (change.from == Player::Play) {
                 room->setPlayerFlag(change.player, "-zuiyue");
+                room->setPlayerFlag(change.player, "-zuiyue_used");
+            }
         }
     }
 };
@@ -1949,7 +1955,7 @@ public:
                 setYsJieLimit(a.player, targets);
             }
         } else if (triggerEvent == EventSkillInvalidityChange) {
-            QList<SkillInvalidStruct> invalids = data.value<QList<SkillInvalidStruct> >();
+            QList<SkillInvalidStruct> invalids = data.value<QList<SkillInvalidStruct>>();
             foreach (SkillInvalidStruct v, invalids) {
                 if (v.player == nullptr || !v.player->isCurrent())
                     continue;

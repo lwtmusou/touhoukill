@@ -791,24 +791,30 @@ public:
     }
 };
 
-class Zhenshe : public OneCardViewAsSkill
+class ZhensheVS : public OneCardViewAsSkill
 {
 public:
-    Zhenshe()
+    ZhensheVS()
         : OneCardViewAsSkill("zhenshe")
     {
         filter_pattern = ".|heart";
         response_or_use = true;
     }
 
-    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
+    bool isEnabledAtPlay(const Player *player) const override
     {
+        return !player->hasFlag("zhenshe");
+    }
+
+    /*bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
+    {
+        return false;
         SavingEnergy *card = new SavingEnergy(Card::SuitToBeDecided, -1);
         DELETE_OVER_SCOPE(SavingEnergy, card)
         const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
 
         return cardPattern != nullptr && cardPattern->match(player, card);
-    }
+    }*/
 
     const Card *viewAs(const Card *originalCard, const Player * /*Self*/) const override
     {
@@ -817,6 +823,33 @@ public:
         se->setSkillName(objectName());
         se->setShowSkill(objectName());
         return se;
+    }
+};
+
+class Zhenshe : public TriggerSkill
+{
+public:
+    Zhenshe()
+        : TriggerSkill("zhenshe")
+    {
+        events << PreCardUsed << EventPhaseChanging;
+        view_as_skill = new ZhensheVS;
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const override
+    {
+        if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.from == Player::Play && change.player->hasFlag("zhenshe")) {
+                room->setPlayerFlag(change.player, "-zhenshe");
+            }
+        }
+
+        if (e == PreCardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->getSkillName() == objectName())
+                room->setPlayerFlag(use.from, "zhenshe");
+        }
     }
 };
 

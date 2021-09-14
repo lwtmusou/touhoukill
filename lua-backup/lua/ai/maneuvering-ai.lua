@@ -169,7 +169,7 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 	end
 
 	if self.player:hasWeapon("Blade") and self:invokeTouhouJudge() then return true end
-	if self.player:hasFlag("zuiyue") then return true end
+	if self.player:hasFlag("zuiyue") and not self.player:hasFlag("zuiyue_used") then return true end
 	--勇仪主动吃酒
 	if  self:canGuaili(slash) then
 		return true
@@ -204,7 +204,7 @@ function SmartAI:searchForAnaleptic(use, enemy, slash)
 	if not use.to then return nil end
 
 	--使用酒不过getTurnUseCard。。。 而是过getCardId getCardId无法处理0牌转化。 只好暂时耦合
-	if use.from:hasFlag("zuiyue") and use.from:hasSkill("zuiyue") then
+	if use.from:hasFlag("zuiyue") and not use.from:hasFlag("zuiyue_used") and use.from:hasSkill("zuiyue") then
 		local ana = sgs.cloneCard("analeptic", sgs.Card_NoSuit, 0)
 		ana:setSkillName("zuiyue")
 		if sgs.Analeptic_IsAvailable(self.player, ana) then
