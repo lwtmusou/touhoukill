@@ -22,7 +22,8 @@
 #include "settings.h"
 #include "util.h"
 
-static size_t read_from_qbuffer(void *ptr, size_t size, size_t nmemb, void *datasource)
+namespace {
+size_t read_from_qbuffer(void *ptr, size_t size, size_t nmemb, void *datasource)
 {
     QBuffer *buffer = reinterpret_cast<QBuffer *>(datasource);
     auto res = buffer->read(size * nmemb);
@@ -30,7 +31,7 @@ static size_t read_from_qbuffer(void *ptr, size_t size, size_t nmemb, void *data
     return res.size();
 }
 
-static int seek_qbuffer(void *datasource, ogg_int64_t off, int whence)
+int seek_qbuffer(void *datasource, ogg_int64_t off, int whence)
 {
     QBuffer *buffer = reinterpret_cast<QBuffer *>(datasource);
     bool res = false;
@@ -44,11 +45,12 @@ static int seek_qbuffer(void *datasource, ogg_int64_t off, int whence)
     return (res) ? 0 : 1;
 }
 
-static long tell_qbuffer(void *datasource)
+long tell_qbuffer(void *datasource)
 {
     QBuffer *buffer = (QBuffer *)datasource;
     return buffer->pos();
 }
+} // namespace
 
 class OggPlayer : public QObject
 {
@@ -297,16 +299,15 @@ private:
     float bgm_volume;
     float effective_volume;
 };
-static QThread *audioThread = nullptr;
-static AudioInternal *internal = nullptr;
 
 #endif // AUDIO_SUPPORT
 
 namespace Audio {
 namespace {
-
+QThread *audioThread = nullptr;
+AudioInternal *internal = nullptr;
 bool isBgmPlaying = false;
-}
+} // namespace
 
 void init()
 {
