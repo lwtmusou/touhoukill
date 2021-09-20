@@ -409,6 +409,7 @@ if (Qt5_FOUND)
         SOURCES src/swig/sgs.i
         )
 
+    target_compile_definitions(qsanguosha_wrap PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
     # ONLY FOR THEIR INCLUDE DIRECTORIES! Compile fails if we don't add the link libraries.
     # Seems weird since we don't even link the libraries here
     target_link_libraries(qsanguosha_wrap QSanguoshaLibs::lua54 Qt5::Core Qt5::Gui Qt5::Widgets)
@@ -448,6 +449,7 @@ if (Qt6_FOUND)
         SOURCES src/swig/sgs.i
         )
 
+    target_compile_definitions(q6sanguosha_wrap PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x70000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
     # ONLY FOR THEIR INCLUDE DIRECTORIES! Compile fails if we don't add the link libraries.
     # Seems weird since we don't even link the libraries here
     target_link_libraries(q6sanguosha_wrap QSanguoshaLibs::lua54 Qt6::Core Qt6::Gui Qt6::Widgets)

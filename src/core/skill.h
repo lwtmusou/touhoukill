@@ -5,9 +5,6 @@ class Player;
 class Card;
 class RoomObject;
 
-// TODO: KILL THIS
-class Room;
-
 #include "CardFace.h"
 #include "structs.h"
 
