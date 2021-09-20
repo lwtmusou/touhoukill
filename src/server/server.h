@@ -6,7 +6,7 @@ class QGroupBox;
 class QLabel;
 class QRadioButton;
 
-#include "clientstruct.h"
+#include "serverinfostruct.h"
 #include "detector.h"
 #include "socket.h"
 

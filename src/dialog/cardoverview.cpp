@@ -2,9 +2,9 @@
 #include "SkinBank.h"
 #include "audio.h"
 #include "client.h"
-#include "clientstruct.h"
 #include "engine.h"
 #include "roomscene.h"
+#include "serverinfostruct.h"
 #include "settings.h"
 #include "ui_cardoverview.h"
 

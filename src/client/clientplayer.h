@@ -1,8 +1,8 @@
 #ifndef _CLIENT_PLAYER_H
 #define _CLIENT_PLAYER_H
 
-#include "clientstruct.h"
 #include "player.h"
+#include "serverinfostruct.h"
 
 class Client;
 class RoomObject;

@@ -1,6 +1,6 @@
 #include "TimedProgressBar.h"
 #include "SkinBank.h"
-#include "clientstruct.h"
+#include "serverinfostruct.h"
 
 #include <QPainter>
 

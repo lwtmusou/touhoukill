@@ -17,7 +17,7 @@ Mogara
 #include "TimedProgressBar.h"
 #include "button.h"
 #include "client.h"
-#include "clientstruct.h"
+#include "serverinfostruct.h"
 #include "engine.h"
 #include "roomscene.h"
 

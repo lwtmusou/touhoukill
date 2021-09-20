@@ -4,8 +4,8 @@
 #include "RoomObject.h"
 #include "card.h"
 #include "clientplayer.h"
-#include "clientstruct.h"
 #include "protocol.h"
+#include "serverinfostruct.h"
 #include "skill.h"
 #include "socket.h"
 

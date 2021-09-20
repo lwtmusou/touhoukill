@@ -9,7 +9,6 @@
 // TODO: kill this
 #include "room.h"
 
-#include <QFile>
 #include <random>
 
 using namespace QSanguosha;
@@ -76,7 +75,7 @@ bool Skill::isAttachedSkill() const
 
 QString Skill::getDescription() const
 {
-    bool normal_game = ServerInfo.DuringGame && isNormalGameMode(ServerInfo.GameMode);
+    bool normal_game = ServerInfo.DuringGame && isRoleGameMode(ServerInfo.GameMode);
     QString name = QStringLiteral("%1%2").arg(objectName()).arg(normal_game ? QStringLiteral("_p") : QString());
     QString des_src = Sanguosha->translate(QStringLiteral(":") + name);
     if (normal_game && des_src.startsWith(QStringLiteral(":")))

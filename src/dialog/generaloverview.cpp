@@ -2,7 +2,7 @@
 #include "SkinBank.h"
 #include "audio.h"
 #include "client.h"
-#include "clientstruct.h"
+#include "serverinfostruct.h"
 #include "engine.h"
 #include "package.h"
 #include "roomscene.h"

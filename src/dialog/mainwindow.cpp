@@ -96,6 +96,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+    Audio::init();
     ui->setupUi(this);
     scene = nullptr;
 
@@ -183,6 +184,7 @@ void MainWindow::closeEvent(QCloseEvent * /*event*/)
 MainWindow::~MainWindow()
 {
     delete ui;
+    Audio::quit();
 }
 
 void MainWindow::gotoScene(QGraphicsScene *scene)

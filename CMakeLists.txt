@@ -80,7 +80,7 @@ set (QSanguosha_SRCS
     src/client/aux-skills.cpp
     src/client/client.cpp
     src/client/clientplayer.cpp
-    src/client/clientstruct.cpp
+    src/dialog/serverinfowidget.cpp
     src/core/card.cpp
     src/core/CardFace.cpp
     src/core/engine.cpp
@@ -96,6 +96,7 @@ set (QSanguosha_SRCS
     src/core/settings.cpp
     src/core/skill.cpp
     src/core/structs.cpp
+    src/core/serverinfostruct.cpp
     src/core/util.cpp
     src/dialog/AboutUs.cpp
     src/dialog/cardoverview.cpp
@@ -167,7 +168,7 @@ set (QSanguosha_MOCS
     src/client/aux-skills.h
     src/client/client.h
     src/client/clientplayer.h
-    src/client/clientstruct.h
+    src/dialog/serverinfowidget.h
     src/core/card.h
     src/core/CardFace.h
     src/core/engine.h
@@ -183,6 +184,7 @@ set (QSanguosha_MOCS
     src/core/settings.h
     src/core/skill.h
     src/core/structs.h
+    src/core/serverinfostruct.h
     src/core/util.h
     src/dialog/AboutUs.h
     src/dialog/cardoverview.h

@@ -5,9 +5,6 @@
 #include "settings.h"
 #include "skill.h"
 
-#include <QFile>
-#include <QSize>
-
 using namespace QSanguosha;
 
 class GeneralPrivate

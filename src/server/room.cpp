@@ -382,7 +382,7 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason)
 
     broadcastProperty(victim, "alive");
     broadcastProperty(victim, "role");
-    if (isNormalGameMode(mode))
+    if (isRoleGameMode(mode))
         setPlayerProperty(victim, "role_shown", true);
 
     doBroadcastNotify(S_COMMAND_KILL_PLAYER, QVariant(victim->objectName()));

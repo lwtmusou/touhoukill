@@ -26,7 +26,7 @@ QList<int> VariantList2IntList(const QVariantList &variantlist);
 
 // QList::toSet is got deleted by Qt since Qt 5.14
 // Can this be inlined?
-template<typename T> inline QSet<T> List2Set(const QList<T> &list)
+template<typename T> Q_ALWAYS_INLINE QSet<T> List2Set(const QList<T> &list)
 {
     return QSet<T>(list.begin(), list.end());
 }
@@ -39,8 +39,14 @@ template<typename T> inline QList<const T *> NonConstList2ConstList(const QList<
     return cl;
 }
 
-bool isNormalGameMode(const QString &mode);
+bool isRoleGameMode(const QString &mode);
 bool isHegemonyGameMode(const QString &mode);
+
+// compatibility
+QT_DEPRECATED_X("use isRoleGameMode instead") Q_ALWAYS_INLINE bool isNormalGameMode(const QString &mode)
+{
+    return isRoleGameMode(mode);
+}
 
 // cannot use do...while false here......
 #define DELETE_OVER_SCOPE(type, var)            \

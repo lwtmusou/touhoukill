@@ -19,6 +19,7 @@
 #include "playercardbox.h"
 #include "qsanbutton.h"
 #include "recorder.h"
+#include "serverinfowidget.h"
 #include "settings.h"
 #include "sgswindow.h"
 #include "uiUtils.h"

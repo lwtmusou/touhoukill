@@ -808,7 +808,7 @@ void Client::arrangeSeats(const QVariant &seats_arr)
 
 void Client::notifyRoleChange(const QString &new_role)
 {
-    if (isNormalGameMode(ServerInfo.GameMode) && !new_role.isEmpty()) {
+    if (isRoleGameMode(ServerInfo.GameMode) && !new_role.isEmpty()) {
         QString prompt_str = tr("Your role is %1").arg(Sanguosha->translate(new_role));
         if (new_role != QStringLiteral("lord"))
             prompt_str += tr("\n wait for the lord player choosing general, please");

@@ -1,7 +1,7 @@
 #include "settings.h"
 #include "card.h"
 #include "engine.h"
-#include "photo.h"
+#include "general.h"
 
 #include <QApplication>
 #include <QDateTime>

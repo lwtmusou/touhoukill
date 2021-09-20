@@ -1,5 +1,5 @@
 #include "SkinBank.h"
-#include "clientstruct.h"
+#include "serverinfostruct.h"
 #include "engine.h"
 #include "protocol.h"
 #include "settings.h"

@@ -73,8 +73,6 @@ int main(int argc, char *argv[])
 
     qApp->setFont(Config.AppFont);
 
-    Audio::init();
-
     MainWindow *main_window = new MainWindow;
 
     Sanguosha->setParent(main_window);

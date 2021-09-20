@@ -1,15 +1,15 @@
 #include "engine.h"
 #include "CardFace.h"
 #include "RoomObject.h"
-#include "audio.h"
 #include "card.h"
-#include "client.h"
 #include "exppattern.h"
 #include "general.h"
 #include "global.h"
 #include "lua-wrapper.h"
 #include "package.h"
+#include "player.h"
 #include "protocol.h"
+#include "serverinfostruct.h"
 #include "settings.h"
 #include "skill.h"
 #include "structs.h"
@@ -95,7 +95,6 @@ void Engine::addTranslationEntry(const QString &key, const QString &value)
 
 Engine::~Engine()
 {
-    Audio::quit();
 }
 
 void Engine::loadTranslations(const QString &locale)
@@ -358,7 +357,7 @@ int Engine::getGeneralCount(bool include_banned) const
             total--;
         else if (isGeneralHidden(general->name()))
             total--;
-        else if (isNormalGameMode(ServerInfo.GameMode) && Config.value(QStringLiteral("Banlist/Roles")).toStringList().contains(general->name()))
+        else if (isRoleGameMode(ServerInfo.GameMode) && Config.value(QStringLiteral("Banlist/Roles")).toStringList().contains(general->name()))
             total--;
         else if (ServerInfo.GameMode == QStringLiteral("04_1v3") && Config.value(QStringLiteral("Banlist/HulaoPass")).toStringList().contains(general->name()))
             total--;
@@ -680,7 +679,7 @@ QStringList Engine::getRandomLords() const
 
     if (Config.GameMode == QStringLiteral("zombie_mode"))
         banlist_ban.append(Config.value(QStringLiteral("Banlist/Zombie")).toStringList());
-    else if (isNormalGameMode(Config.GameMode))
+    else if (isRoleGameMode(Config.GameMode))
         banlist_ban.append(Config.value(QStringLiteral("Banlist/Roles")).toStringList());
 
     QStringList lords;
@@ -829,7 +828,7 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 
     QStringList subtractList;
     bool needsubtract = true;
-    if (isNormalGameMode(ServerInfo.GameMode))
+    if (isRoleGameMode(ServerInfo.GameMode))
         subtractList = (Config.value(QStringLiteral("Banlist/Roles"), QStringList()).toStringList());
     else if (ServerInfo.GameMode == QStringLiteral("04_1v3"))
         subtractList = (Config.value(QStringLiteral("Banlist/HulaoPass"), QStringList()).toStringList());
@@ -874,7 +873,7 @@ QStringList Engine::getLatestGenerals(const QSet<QString> &ban_set) const
 
     QStringList subtractList;
     bool needsubtract = true;
-    if (isNormalGameMode(ServerInfo.GameMode))
+    if (isRoleGameMode(ServerInfo.GameMode))
         subtractList = (Config.value(QStringLiteral("Banlist/Roles"), QStringList()).toStringList());
     else if (ServerInfo.GameMode == QStringLiteral("04_1v3"))
         subtractList = (Config.value(QStringLiteral("Banlist/HulaoPass"), QStringList()).toStringList());
