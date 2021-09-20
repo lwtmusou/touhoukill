@@ -110,7 +110,60 @@ struct SlashEffectStruct
 class CardMoveReason
 {
 public:
-    int m_reason;
+    enum MoveReasonCategory
+    {
+        S_REASON_UNKNOWN = 0x00,
+        S_REASON_USE = 0x01,
+        S_REASON_RESPONSE = 0x02,
+        S_REASON_DISCARD = 0x03,
+        S_REASON_RECAST = 0x04, // ironchain etc.
+        S_REASON_PINDIAN = 0x05,
+        S_REASON_DRAW = 0x06,
+        S_REASON_GOTCARD = 0x07,
+        S_REASON_SHOW = 0x08,
+        S_REASON_TRANSFER = 0x09,
+        S_REASON_PUT = 0x0A,
+
+        //subcategory of use
+        S_REASON_LETUSE = 0x11, // use a card when self is not current
+
+        //subcategory of response
+        S_REASON_RETRIAL = 0x12,
+
+        //subcategory of discard
+        S_REASON_RULEDISCARD = 0x13, //  discard at one's Player::Discard for gamerule
+        S_REASON_THROW = 0x23, //  gamerule(dying or punish) as the cost of some skills
+        S_REASON_DISMANTLE = 0x33, //  one throw card of another
+
+        //subcategory of gotcard
+        S_REASON_GIVE = 0x17, // from one hand to another hand
+        S_REASON_EXTRACTION = 0x27, // from another's place to one's hand
+        S_REASON_GOTBACK = 0x37, // from placetable to hand
+        S_REASON_RECYCLE = 0x47, // from discardpile to hand
+        S_REASON_ROB = 0x57, // got a definite card from other's hand
+        S_REASON_PREVIEWGIVE = 0x67, // give cards after previewing, i.e. Yiji & Miji
+
+        //subcategory of show
+        S_REASON_TURNOVER = 0x18, // show n cards from drawpile
+        S_REASON_JUDGE = 0x28, // show a card from drawpile for judge
+        S_REASON_PREVIEW = 0x38, // Not done yet, plan for view some cards for self only(guanxing yiji miji)
+        S_REASON_DEMONSTRATE = 0x48, // show a card which copy one to move to table
+
+        //subcategory of transfer
+        S_REASON_SWAP = 0x19, // exchange card for two players
+        S_REASON_OVERRIDE = 0x29, // exchange cards from cards in game
+        S_REASON_EXCHANGE_FROM_PILE = 0x39, // exchange cards from cards moved out of game (for qixing only)
+
+        //subcategory of put
+        S_REASON_NATURAL_ENTER = 0x1A, //  a card with no-owner move into discardpile e.g. delayed trick enters discardpile
+        S_REASON_REMOVE_FROM_PILE = 0x2A, //  cards moved out of game go back into discardpile
+        S_REASON_JUDGEDONE = 0x3A, //  judge card move into discardpile
+        S_REASON_CHANGE_EQUIP = 0x4A, //  replace existed equip
+
+        S_MASK_BASIC_REASON = 0x0F,
+    };
+
+    MoveReasonCategory m_reason;
     QString m_playerId; // the cause (not the source) of the movement, such as "lusu" when "dimeng", or "zhanghe" when "qiaobian"
     QString m_targetId; // To keep this structure lightweight, currently this is only used for UI purpose.
     // It will be set to empty if multiple targets are involved. NEVER use it for trigger condition
@@ -124,13 +177,13 @@ public:
     {
         m_reason = S_REASON_UNKNOWN;
     }
-    inline CardMoveReason(int moveReason, const QString &playerId)
+    inline CardMoveReason(MoveReasonCategory moveReason, const QString &playerId)
     {
         m_reason = moveReason;
         m_playerId = playerId;
     }
 
-    inline CardMoveReason(int moveReason, const QString &playerId, const QString &skillName, const QString &eventName)
+    inline CardMoveReason(MoveReasonCategory moveReason, const QString &playerId, const QString &skillName, const QString &eventName)
     {
         m_reason = moveReason;
         m_playerId = playerId;
@@ -138,7 +191,7 @@ public:
         m_eventName = eventName;
     }
 
-    inline CardMoveReason(int moveReason, const QString &playerId, const QString &targetId, const QString &skillName, const QString &eventName)
+    inline CardMoveReason(MoveReasonCategory moveReason, const QString &playerId, const QString &targetId, const QString &skillName, const QString &eventName)
     {
         m_reason = moveReason;
         m_playerId = playerId;
@@ -155,56 +208,6 @@ public:
         return m_reason == other.m_reason && m_playerId == other.m_playerId && m_targetId == other.m_targetId && m_skillName == other.m_skillName
             && m_eventName == other.m_eventName;
     }
-
-    static const int S_REASON_UNKNOWN = 0x00;
-    static const int S_REASON_USE = 0x01;
-    static const int S_REASON_RESPONSE = 0x02;
-    static const int S_REASON_DISCARD = 0x03;
-    static const int S_REASON_RECAST = 0x04; // ironchain etc.
-    static const int S_REASON_PINDIAN = 0x05;
-    static const int S_REASON_DRAW = 0x06;
-    static const int S_REASON_GOTCARD = 0x07;
-    static const int S_REASON_SHOW = 0x08;
-    static const int S_REASON_TRANSFER = 0x09;
-    static const int S_REASON_PUT = 0x0A;
-
-    //subcategory of use
-    static const int S_REASON_LETUSE = 0x11; // use a card when self is not current
-
-    //subcategory of response
-    static const int S_REASON_RETRIAL = 0x12;
-
-    //subcategory of discard
-    static const int S_REASON_RULEDISCARD = 0x13; //  discard at one's Player::Discard for gamerule
-    static const int S_REASON_THROW = 0x23; //  gamerule(dying or punish) as the cost of some skills
-    static const int S_REASON_DISMANTLE = 0x33; //  one throw card of another
-
-    //subcategory of gotcard
-    static const int S_REASON_GIVE = 0x17; // from one hand to another hand
-    static const int S_REASON_EXTRACTION = 0x27; // from another's place to one's hand
-    static const int S_REASON_GOTBACK = 0x37; // from placetable to hand
-    static const int S_REASON_RECYCLE = 0x47; // from discardpile to hand
-    static const int S_REASON_ROB = 0x57; // got a definite card from other's hand
-    static const int S_REASON_PREVIEWGIVE = 0x67; // give cards after previewing, i.e. Yiji & Miji
-
-    //subcategory of show
-    static const int S_REASON_TURNOVER = 0x18; // show n cards from drawpile
-    static const int S_REASON_JUDGE = 0x28; // show a card from drawpile for judge
-    static const int S_REASON_PREVIEW = 0x38; // Not done yet, plan for view some cards for self only(guanxing yiji miji)
-    static const int S_REASON_DEMONSTRATE = 0x48; // show a card which copy one to move to table
-
-    //subcategory of transfer
-    static const int S_REASON_SWAP = 0x19; // exchange card for two players
-    static const int S_REASON_OVERRIDE = 0x29; // exchange cards from cards in game
-    static const int S_REASON_EXCHANGE_FROM_PILE = 0x39; // exchange cards from cards moved out of game (for qixing only)
-
-    //subcategory of put
-    static const int S_REASON_NATURAL_ENTER = 0x1A; //  a card with no-owner move into discardpile e.g. delayed trick enters discardpile
-    static const int S_REASON_REMOVE_FROM_PILE = 0x2A; //  cards moved out of game go back into discardpile
-    static const int S_REASON_JUDGEDONE = 0x3A; //  judge card move into discardpile
-    static const int S_REASON_CHANGE_EQUIP = 0x4A; //  replace existed equip
-
-    static const int S_MASK_BASIC_REASON = 0x0F;
 };
 
 struct CardsMoveOneTimeStruct

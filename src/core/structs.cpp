@@ -150,7 +150,7 @@ bool CardMoveReason::tryParse(const QVariant &arg)
     if (args.size() != 5 || !args[0].canConvert<int>() || !JsonUtils::isStringArray(args, 1, 4))
         return false;
 
-    m_reason = args[0].toInt();
+    m_reason = static_cast<MoveReasonCategory>(args[0].toInt());
     m_playerId = args[1].toString();
     m_skillName = args[2].toString();
     m_eventName = args[3].toString();
@@ -162,7 +162,7 @@ bool CardMoveReason::tryParse(const QVariant &arg)
 QVariant CardMoveReason::toVariant() const
 {
     JsonArray result;
-    result << m_reason;
+    result << static_cast<int>(m_reason);
     result << m_playerId;
     result << m_skillName;
     result << m_eventName;
