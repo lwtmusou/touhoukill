@@ -2982,9 +2982,16 @@ ServerPlayer *Room::getOwner() const
     return nullptr;
 }
 
-void Room::toggleReadyCommand(ServerPlayer * /*unused*/, const QVariant & /*unused*/)
+void Room::toggleReadyCommand(ServerPlayer *player, const QVariant & /*unused*/)
 {
-    if (!game_started2 && isFull()) {
+    player->setReady(true);
+
+    if (!game_started2) {
+        foreach (ServerPlayer *p, getPlayers()) {
+            if (!p->isReady())
+                return;
+        }
+
         game_started2 = true;
         thread = new RoomThread(this);
         thread->start();
@@ -2998,6 +3005,8 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
     player->setScreenName(screen_name);
 
     if (!is_robot) {
+        // TODO: since MG_SELF is removed, this notify is no longer usable.
+        // There should be another method to send this object name and remove the coupling in notifyProperty (such as send the player name through setup string)
         notifyProperty(player, player, "objectName");
 
         ServerPlayer *owner = getOwner();

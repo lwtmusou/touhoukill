@@ -22,6 +22,7 @@ ServerPlayer::ServerPlayer(Room *room)
     , room(room)
     , recorder(nullptr)
     , _m_phases_index(0)
+    , ready(false)
 {
     semas = new QSemaphore *[S_NUM_SEMAPHORES];
     for (int i = 0; i < S_NUM_SEMAPHORES; i++)
@@ -2457,4 +2458,14 @@ void ServerPlayer::summonFriends(const QString &type)
 RoomObject *ServerPlayer::roomObject() const
 {
     return room;
+}
+
+bool ServerPlayer::isReady() const
+{
+    return ready;
+}
+
+void ServerPlayer::setReady(bool ready)
+{
+    this->ready = ready;
 }

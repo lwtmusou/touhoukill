@@ -200,6 +200,9 @@ public:
 
     QSGS_STATE_ROOM RoomObject *roomObject() const override;
 
+    bool isReady() const;
+    void setReady(bool ready);
+
 protected:
     //Synchronization helpers
     QSemaphore **semas;
@@ -217,6 +220,8 @@ private:
     QDateTime test_time;
     QString m_clientResponseString;
     QVariant _m_clientResponse;
+
+    bool ready;
 
 private slots:
     void getMessage(const char *message);
