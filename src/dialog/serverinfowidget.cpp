@@ -3,7 +3,7 @@
 #include "engine.h"
 #include "package.h"
 #include "settings.h"
-#include "struct.h"
+#include "structs.h"
 
 #include <QCheckBox>
 #include <QFormLayout>
