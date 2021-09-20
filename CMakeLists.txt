@@ -458,8 +458,8 @@ if (Qt6_FOUND)
     target_link_libraries(Q6Sanguosha q6sanguosha_wrap QSanguoshaLibs::lua54)
 
     if (Qt6Multimedia_FOUND)
-        target_compile_definitions(QS6anguosha PUBLIC AUDIO_SUPPORT)
-        target_link_libraries (QSanguosha QSanguoshaLibs::oggvorbisfile Qt6::Multimedia)
+        target_compile_definitions(Q6Sanguosha PUBLIC AUDIO_SUPPORT)
+        target_link_libraries (Q6Sanguosha QSanguoshaLibs::oggvorbisfile Qt6::Multimedia)
     endif()
 
     target_link_libraries(Q6Sanguosha Qt6::Widgets Qt6::Gui Qt6::Network Qt6::Core)

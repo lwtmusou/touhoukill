@@ -2,7 +2,13 @@
 
 #ifdef AUDIO_SUPPORT
 
+#include <QAudioFormat>
+#if QT_VERSION > QT_VERSION_CHECK(6, 0, 0)
+#include <QAudioSink>
+#else
 #include <QAudioOutput>
+#endif
+
 #include <QBuffer>
 #include <QByteArray>
 #include <QCache>
@@ -47,6 +53,10 @@ static long tell_qbuffer(void *datasource)
 class OggPlayer : public QObject
 {
     Q_OBJECT
+
+#if QT_VERSION > QT_VERSION_CHECK(6, 0, 0)
+    typedef ::QAudioSink QAudioOutput;
+#endif
 
 public:
     explicit OggPlayer(const QString &fileName, QObject *parent = nullptr)
@@ -98,10 +108,15 @@ public:
 
         format.setChannelCount(vi->channels);
         format.setSampleRate(vi->rate);
+
+#if QT_VERSION > QT_VERSION_CHECK(6, 0, 0)
+        format.setSampleFormat(QAudioFormat::Int16);
+#else
         format.setCodec(QStringLiteral("audio/pcm"));
         format.setSampleSize(16);
         format.setByteOrder(QAudioFormat::LittleEndian);
         format.setSampleType(QAudioFormat::SignedInt);
+#endif
 
         ov_clear(&vf);
         buffer.close();
