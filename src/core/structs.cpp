@@ -1,14 +1,13 @@
 #include "structs.h"
+#include "RoomObject.h"
 #include "card.h"
 #include "exppattern.h"
 #include "global.h"
 #include "json.h"
+#include "player.h"
 #include "protocol.h"
 #include "skill.h"
 #include "util.h"
-
-// TODO: kill this
-#include "room.h"
 
 #include <functional>
 
@@ -443,7 +442,7 @@ MarkChangeStruct::MarkChangeStruct()
 class TriggerDetailSharedData : public QSharedData
 {
 public:
-    const RoomObject *room;
+    RoomObject *room;
     const Trigger *trigger; // the trigger
     Player *owner; // skill owner. 2 structs with the same skill and skill owner are treated as of a same skill.
     Player *invoker; // skill invoker. When invoking skill, we sort firstly according to the priority, then the seat of invoker, at last weather it is a skill of an equip.
@@ -489,9 +488,7 @@ bool TriggerDetail::operator<(const TriggerDetail &arg2) const // the operator <
         return false;
 
     if (invoker() != nullptr && arg2.invoker() != nullptr && invoker() != arg2.invoker())
-        return RefactorProposal::fixme_cast<const Room *>(room())->getFront(RefactorProposal::fixme_cast<ServerPlayer *>(invoker()),
-                                                                            RefactorProposal::fixme_cast<ServerPlayer *>(arg2.invoker()))
-            == invoker();
+        return room()->comparePlayerByActionOrder(invoker(), arg2.invoker());
 
     return !trigger()->isEquipSkill() && arg2.trigger()->isEquipSkill();
 }
@@ -511,7 +508,7 @@ bool TriggerDetail::sameTimingWith(const TriggerDetail &arg2) const
     return trigger()->priority() == arg2.trigger()->priority() && invoker() == arg2.invoker() && trigger()->isEquipSkill() == arg2.trigger()->isEquipSkill();
 }
 
-TriggerDetail::TriggerDetail(const RoomObject *room, const Trigger *trigger /*= NULL*/, Player *owner /*= NULL*/, Player *invoker /*= NULL*/,
+TriggerDetail::TriggerDetail(RoomObject *room, const Trigger *trigger /*= NULL*/, Player *owner /*= NULL*/, Player *invoker /*= NULL*/,
                              const QList<Player *> &targets /*= QList<Player *>()*/, bool isCompulsory /*= false*/, bool showHidden)
     : d(new TriggerDetailPrivate)
 {
@@ -525,7 +522,7 @@ TriggerDetail::TriggerDetail(const RoomObject *room, const Trigger *trigger /*= 
     d->d->showhidden = (showHidden);
 }
 
-TriggerDetail::TriggerDetail(const RoomObject *room, const Trigger *trigger, Player *owner, Player *invoker, Player *target, bool isCompulsory /*= false*/, bool showHidden)
+TriggerDetail::TriggerDetail(RoomObject *room, const Trigger *trigger, Player *owner, Player *invoker, Player *target, bool isCompulsory /*= false*/, bool showHidden)
     : d(new TriggerDetailPrivate)
 {
     d->d->room = (room);
@@ -560,7 +557,7 @@ TriggerDetail::~TriggerDetail()
     delete d;
 }
 
-const RoomObject *TriggerDetail::room() const
+RoomObject *TriggerDetail::room() const
 {
     return d->d->room;
 }

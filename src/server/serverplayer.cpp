@@ -1808,27 +1808,27 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
 
     use.card->addFlag(QStringLiteral("IgnoreFailed"));
     if (use.card->face()->targetFixed(use.from, use.card) && !use.to.contains(use.from) && !use.card->face()->isKindOf("AOE") && !use.card->face()->isKindOf("GlobalEffect")) {
-        if (isHiddenSkill(QStringLiteral("tianqu")) && room->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
+        if (isHiddenSkill(QStringLiteral("tianqu")) && room->currentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
             showTargetFix << QStringLiteral("tianqu");
     }
     use.card->addFlag(QStringLiteral("-IgnoreFailed"));
 
     //check prohibit
     foreach (Player *p, use.to) {
-        if (use.from->isProhibited(p, use.card) && room->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+        if (use.from->isProhibited(p, use.card) && room->currentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
             showTargetProhibit << QStringLiteral("tianqu");
             break;
         } else if (use.card->face()->isKindOf("Peach")) {
-            if (!p->isWounded() && room->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+            if (!p->isWounded() && room->currentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
                 showTargetProhibit << QStringLiteral("tianqu");
                 break;
             }
             if (p != use.from && (!p->hasLordSkill(QStringLiteral("yanhui")) || p->getKingdom() != QStringLiteral("zhan"))
-                && room->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+                && room->currentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
                 showTargetProhibit << QStringLiteral("tianqu");
                 break;
             }
-        } else if (use.card->face()->isKindOf("DelayedTrick") && p->containsTrick(use.card->faceName()) && room->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+        } else if (use.card->face()->isKindOf("DelayedTrick") && p->containsTrick(use.card->faceName()) && room->currentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
             showTargetProhibit << QStringLiteral("tianqu");
             break;
         }

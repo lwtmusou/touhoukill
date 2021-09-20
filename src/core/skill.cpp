@@ -749,7 +749,7 @@ int Rule::priority() const
     return 0;
 }
 
-QList<TriggerDetail> Rule::triggerable(TriggerEvent /*event*/, const RoomObject *room, const QVariant & /*data*/) const
+QList<TriggerDetail> Rule::triggerable(TriggerEvent /*event*/, RoomObject *room, const QVariant & /*data*/) const
 {
     TriggerDetail d(room, this);
     return QList<TriggerDetail>() << d;
@@ -862,7 +862,7 @@ int GlobalRecord::priority() const
     return 10;
 }
 
-QList<TriggerDetail> GlobalRecord::triggerable(TriggerEvent /*event*/, const RoomObject * /*room*/, const QVariant & /*data*/) const
+QList<TriggerDetail> GlobalRecord::triggerable(TriggerEvent /*event*/, RoomObject * /*room*/, const QVariant & /*data*/) const
 {
     return QList<TriggerDetail>();
 }
@@ -886,10 +886,10 @@ FakeMoveRecord::~FakeMoveRecord()
     delete d;
 }
 
-QList<TriggerDetail> FakeMoveRecord::triggerable(TriggerEvent /*event*/, const RoomObject *room, const QVariant & /*data*/) const
+QList<TriggerDetail> FakeMoveRecord::triggerable(TriggerEvent /*event*/, RoomObject *room, const QVariant & /*data*/) const
 {
     Player *owner = nullptr;
-    foreach (Player *p, RefactorProposal::fixme_cast<const Room *>(room)->getAllPlayers()) {
+    foreach (Player *p, room->players(false)) {
         if (p->hasSkill(d->skillName)) {
             owner = p;
             break;
@@ -897,7 +897,7 @@ QList<TriggerDetail> FakeMoveRecord::triggerable(TriggerEvent /*event*/, const R
     }
 
     QString flag = QString(QStringLiteral("%1_InTempMoving")).arg(d->skillName);
-    foreach (Player *p, RefactorProposal::fixme_cast<const Room *>(room)->getAllPlayers()) {
+    foreach (Player *p, room->players(false)) {
         if (p->hasFlag(flag))
             return {TriggerDetail(room, this, owner, p, nullptr)};
     }

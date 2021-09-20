@@ -31,6 +31,14 @@ template<typename T> inline QSet<T> List2Set(const QList<T> &list)
     return QSet<T>(list.begin(), list.end());
 }
 
+template<typename T> inline QList<const T *> NonConstList2ConstList(const QList<T *> &list)
+{
+    QList<const T *> cl;
+    foreach (T *i, list)
+        cl << i;
+    return cl;
+}
+
 bool isNormalGameMode(const QString &mode);
 bool isHegemonyGameMode(const QString &mode);
 

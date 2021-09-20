@@ -445,15 +445,15 @@ class TriggerDetailPrivate;
 class TriggerDetail
 {
 public:
-    explicit TriggerDetail(const RoomObject *room, const Trigger *trigger = nullptr, Player *owner = nullptr, Player *invoker = nullptr,
+    explicit TriggerDetail(RoomObject *room, const Trigger *trigger = nullptr, Player *owner = nullptr, Player *invoker = nullptr,
                            const QList<Player *> &targets = QList<Player *>(), bool isCompulsory = false, bool showHidden = true);
-    TriggerDetail(const RoomObject *room, const Trigger *trigger, Player *owner, Player *invoker, Player *target, bool isCompulsory = false, bool showHidden = true);
+    TriggerDetail(RoomObject *room, const Trigger *trigger, Player *owner, Player *invoker, Player *target, bool isCompulsory = false, bool showHidden = true);
 
     TriggerDetail(const TriggerDetail &other);
     TriggerDetail &operator=(const TriggerDetail &other);
     ~TriggerDetail();
 
-    const RoomObject *room() const;
+    RoomObject *room() const;
     const Trigger *trigger() const;
     Player *owner() const;
     Player *invoker() const;

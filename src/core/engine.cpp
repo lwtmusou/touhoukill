@@ -1004,7 +1004,7 @@ const ViewAsSkill *Engine::getViewAsSkill(const QString &skill_name) const
 
 const ProhibitSkill *Engine::isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others) const
 {
-    bool ignore = (from->hasSkill(QStringLiteral("tianqu")) && from->roomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to != from
+    bool ignore = (from->hasSkill(QStringLiteral("tianqu")) && from->roomObject()->currentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to != from
                    && !card->hasFlag(QStringLiteral("IgnoreFailed")));
     if (ignore && !card->face()->isKindOf("SkillCard"))
         return nullptr;

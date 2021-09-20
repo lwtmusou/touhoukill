@@ -2664,7 +2664,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         Q_ASSERT(button != nullptr);
         const ViewAsSkill *vsSkill = button->getViewAsSkill();
         if (vsSkill != nullptr) {
-            QString pattern = ClientInstance->getCurrentCardUsePattern();
+            QString pattern = ClientInstance->currentCardUsePattern();
             QRegularExpression rx(QRegularExpression::anchoredPattern(QStringLiteral("@@?([_A-Za-z]+)(\\d+)?!?")));
             CardUseStruct::CardUseReason reason = CardUseStruct::CARD_USE_REASON_UNKNOWN;
             if ((newStatus & Client::ClientStatusBasicMask) == Client::Responding) {
@@ -2738,7 +2738,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         cancel_button->setEnabled(ClientInstance->m_isDiscardActionRefusable);
         discard_button->setEnabled(false);
 
-        QString pattern = ClientInstance->getCurrentCardUsePattern();
+        QString pattern = ClientInstance->currentCardUsePattern();
         QRegularExpression rx(QRegularExpression::anchoredPattern(QStringLiteral("@@?(\\w+)(-card)?(\\d+)?!?")));
         QRegularExpressionMatch match;
         if ((match = rx.match(pattern)).hasMatch()) {
@@ -2795,7 +2795,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         cancel_button->setEnabled(false);
         discard_button->setEnabled(false);
 
-        QString pattern = ClientInstance->getCurrentCardUsePattern();
+        QString pattern = ClientInstance->currentCardUsePattern();
         showorpindian_skill->setPattern(pattern);
         dashboard->startPending(showorpindian_skill);
 
@@ -2881,7 +2881,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         cancel_button->setEnabled(ClientInstance->m_isDiscardActionRefusable);
         discard_button->setEnabled(false);
 
-        QStringList yiji_info = ClientInstance->getCurrentCardUsePattern().split(QStringLiteral("="));
+        QStringList yiji_info = ClientInstance->currentCardUsePattern().split(QStringLiteral("="));
         yiji_skill->setCards(yiji_info.at(1));
         yiji_skill->setMaxNum(yiji_info.first().toInt());
         yiji_skill->setPlayerNames(yiji_info.last().split(QStringLiteral("+")));
@@ -3038,7 +3038,7 @@ void RoomScene::doCancelButton()
     }
     case Client::Responding: {
         dashboard->skillButtonDeactivated();
-        QString pattern = ClientInstance->getCurrentCardUsePattern();
+        QString pattern = ClientInstance->currentCardUsePattern();
         if (pattern.isEmpty())
             return;
 

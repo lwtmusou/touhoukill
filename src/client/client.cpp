@@ -823,7 +823,7 @@ void Client::activate(const QVariant &playerId)
 
 void Client::startGame(const QVariant &arg)
 {
-    resetState();
+    resetAllCards();
 
     JsonArray arr = arg.value<JsonArray>();
     lord_name = arr[0].toString();

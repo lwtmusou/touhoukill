@@ -33,14 +33,32 @@ public:
     explicit RoomObject(QObject *parent = nullptr);
     ~RoomObject() override;
 
+    // -------------------- Player Related --------------------
+    // Sorted by action order if any
+    QList<Player *> players(bool include_dead = true);
+    QList<const Player *> players(bool include_dead = true) const;
+    // Register a player. DO NOT CALL THIS FUNCTION AFTER A GAME HAS BEEN STARTED!!!!
+    void registerPlayer(Player *player);
+    Player *findPlayer(const QString &objectName);
+    const Player *findPlayer(const QString &objectName) const;
+
+    Player *current();
+    const Player *current() const;
+    void setCurrent(Player *player);
+
+    void arrangeSeat(const QStringList &seatInfo);
+
+    void sortPlayersByActionOrder(QList<Player *> &players) const;
+    void sortPlayersByActionOrder(QList<const Player *> &players) const;
+    bool comparePlayerByActionOrder(const Player *a, const Player *b) const;
+
+    // --------------------- Card Related ---------------------
     Card *getCard(int cardId);
     const Card *getCard(int cardId) const;
 
-    // WrappedCard *getWrappedCard(int cardId) const;
-
-    QString getCurrentCardUsePattern() const;
+    QString currentCardUsePattern() const;
     void setCurrentCardUsePattern(const QString &newPattern);
-    CardUseStruct::CardUseReason getCurrentCardUseReason() const;
+    CardUseStruct::CardUseReason currentCardUseReason() const;
     void setCurrentCardUseReason(CardUseStruct::CardUseReason reason);
 
     // Update a card in the room.
@@ -50,8 +68,7 @@ public:
     //        Card to be updated in the room.
     // @return
     void resetCard(int cardId);
-    // Reset all cards, generals' states of the room instance
-    void resetState();
+    void resetAllCards();
 
     QList<int> &discardPile();
     const QList<int> &discardPile() const;

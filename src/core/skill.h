@@ -262,7 +262,12 @@ public:
 
     // Should not trigger other events and affect other things in principle
     virtual void record(TriggerEvent event, RoomObject *room, QVariant &data) const;
-    virtual QList<TriggerDetail> triggerable(TriggerEvent event, const RoomObject *room, const QVariant &data) const = 0;
+
+    // TODO: make RoomObject const:
+    // Current implementation is: To create a TriggerDetail in this function. All data saved in TriggerDetail is non-const
+    // This makes the RoomObject not able to be const even if it should be.
+    // EXACTLY STRICTLY NOTHING should be even TOUCHED in this function
+    virtual QList<TriggerDetail> triggerable(TriggerEvent event, RoomObject *room, const QVariant &data) const = 0;
 
     // TODO: make TriggerDetail implicitly shared
     virtual bool trigger(TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const;
@@ -280,7 +285,7 @@ public:
 
     // fixed 0
     int priority() const final override;
-    QList<TriggerDetail> triggerable(TriggerEvent, const RoomObject *room, const QVariant &) const final override;
+    QList<TriggerDetail> triggerable(TriggerEvent, RoomObject *room, const QVariant &) const final override;
 };
 
 class TriggerSkill
@@ -337,7 +342,7 @@ public:
 
     // Since it may use only Record, override this function here
     // Optional override in subclass
-    QList<TriggerDetail> triggerable(TriggerEvent event, const RoomObject *room, const QVariant &data) const override;
+    QList<TriggerDetail> triggerable(TriggerEvent event, RoomObject *room, const QVariant &data) const override;
 };
 
 // a nasty way for 'fake moves', usually used in the process of multi-card chosen
@@ -348,7 +353,7 @@ public:
     FakeMoveRecord(const QString &skillName);
     ~FakeMoveRecord() final override;
 
-    QList<TriggerDetail> triggerable(TriggerEvent event, const RoomObject *room, const QVariant &data) const final override;
+    QList<TriggerDetail> triggerable(TriggerEvent event, RoomObject *room, const QVariant &data) const final override;
     bool trigger(TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const final override;
 
 private:

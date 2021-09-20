@@ -160,7 +160,6 @@ set (QSanguosha_UIS
 )
 
 set(TS_FILES builds/sanguosha.ts)
-set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION "ts")
 qt_add_translation(QM_FILES ${TS_FILES}) # assuming Qt6 and Qt5 QM files are same.....
 
 set (QSanguosha_MOCS

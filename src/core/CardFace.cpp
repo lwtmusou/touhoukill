@@ -198,8 +198,7 @@ void CardFace::onUse(RoomObject *room, const CardUseStruct &use) const
     CardUseStruct card_use = use;
     Player *player = card_use.from;
 
-    // TODO
-    // room->sortByActionOrder(card_use.to);
+    room->sortPlayersByActionOrder(card_use.to);
 
     QList<Player *> targets = card_use.to;
     // TODO
@@ -306,7 +305,7 @@ void CardFace::use(RoomObject *room, const CardUseStruct &use) const
         foreach (const QString &flag, use.card->flags()) {
             if (flag.startsWith(QStringLiteral("CardProvider_"))) {
                 QStringList patterns = flag.split(QStringLiteral("_"));
-                provider = RefactorProposal::fixme_cast<Room *>(room)->findPlayerByObjectName(patterns.at(1));
+                provider = room->findPlayer(patterns.at(1));
                 break;
             }
         }

@@ -1126,7 +1126,7 @@ void Dashboard::reverseSelection()
 void Dashboard::cancelNullification()
 {
     ClientInstance->m_noNullificationThisTime = !ClientInstance->m_noNullificationThisTime;
-    if (ClientInstance->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE && ClientInstance->getCurrentCardUsePattern() == QStringLiteral("nullification")
+    if (ClientInstance->currentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE && ClientInstance->currentCardUsePattern() == QStringLiteral("nullification")
         && RoomSceneInstance->isCancelButtonEnabled()) {
         RoomSceneInstance->doCancelButton();
     }
@@ -1499,7 +1499,7 @@ void Dashboard::updatePending()
             ClientInstance->cardDeleting(pending_card);
             pending_card = nullptr;
         }
-        if (view_as_skill->objectName().contains(QStringLiteral("guhuo")) && ClientInstance->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+        if (view_as_skill->objectName().contains(QStringLiteral("guhuo")) && ClientInstance->currentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
             foreach (CardItem *item, m_handCards) {
                 item->hideFootnote();
                 if ((new_pending_card != nullptr) && item->getCard() == cards.first()) {
