@@ -26,7 +26,7 @@ public:
         QList<const DistanceSkill *> skills = Sanguosha->getDistanceSkills();
         foreach (const DistanceSkill *skill, skills) {
             bool show_skill = false;
-            foreach (const Player *p, ClientInstance->getPlayers()) {
+            foreach (const Player *p, ClientInstance->players()) {
                 if (p->hasSkill(skill->objectName())) {
                     show_skill = true;
                     break;
@@ -104,8 +104,8 @@ void DistanceViewDialog::showDistance()
     QString from_name = ui->from->itemData(ui->from->currentIndex()).toString();
     QString to_name = ui->to->itemData(ui->to->currentIndex()).toString();
 
-    const Player *from = ClientInstance->getPlayer(from_name);
-    const Player *to = ClientInstance->getPlayer(to_name);
+    const Player *from = ClientInstance->findPlayer(from_name);
+    const Player *to = ClientInstance->findPlayer(to_name);
 
     if (from->isRemoved() || to->isRemoved()) {
         ui->right->setText(tr("Not exist"));

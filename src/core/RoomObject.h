@@ -39,6 +39,9 @@ public:
     QList<const Player *> players(bool include_dead = true) const;
     // Register a player. DO NOT CALL THIS FUNCTION AFTER A GAME HAS BEEN STARTED!!!!
     void registerPlayer(Player *player);
+    void unregisterPlayer(Player *player);
+    void unregisterPlayer(const QString &objectName);
+
     Player *findPlayer(const QString &objectName);
     const Player *findPlayer(const QString &objectName) const;
 

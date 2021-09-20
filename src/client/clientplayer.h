@@ -28,7 +28,7 @@ public:
     int getHandcardNum() const override;
     void removeCard(const Card *card, QSanguosha::Place place) override;
     void addCard(const Card *card, QSanguosha::Place place) override;
-    virtual void addKnownHandCard(const Card *card);
+    void addKnownHandCard(const Card *card);
     bool isLastHandCard(const Card *card, bool contain = false) const override;
     void setMark(const QString &mark, int value) override;
 

@@ -75,11 +75,7 @@ public:
     void onPlayerReplyYiji(const Card *card, const Player *to);
     void onPlayerReplyGuanxing(const QList<int> &up_cards, const QList<int> &down_cards);
     void onPlayerAssignRole(const QStringList &names, const QStringList &roles);
-    QList<const Player *> getPlayers() const;
-    QList<const ClientPlayer *> getClientPlayers() const;
     void speakToServer(const QString &text);
-    Player *getPlayer(const QString &name);
-    ClientPlayer *getClientPlayer(const QString &name);
     bool save(const QString &filename) const;
     QList<QByteArray> getRecords() const;
     QString getReplayPath() const;
@@ -253,7 +249,6 @@ private:
     bool m_isGameOver;
     QHash<QSanProtocol::CommandType, Callback> m_interactions;
     QHash<QSanProtocol::CommandType, Callback> m_callbacks;
-    QList<const ClientPlayer *> players;
     QStringList ban_packages;
     Recorder *recorder;
     Replayer *replayer;
@@ -304,7 +299,7 @@ signals:
     void orders_got(QSanProtocol::Game3v3ChooseOrderCommand reason);
     void triggers_got(const QVariantList &options, bool optional);
 
-    void seats_arranged(const QList<const ClientPlayer *> &seats);
+    void seats_arranged(const QList<const Player *> &seats);
     void hp_changed(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);
     void maxhp_changed(const QString &who, int delta);
     void status_changed(Client::Status oldStatus, Client::Status newStatus);

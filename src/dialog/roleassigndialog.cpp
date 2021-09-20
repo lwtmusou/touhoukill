@@ -1,11 +1,12 @@
 #include "roleassigndialog.h"
-
 #include "client.h"
 #include "engine.h"
 #include "general.h"
 #include "player.h"
 #include "roomscene.h"
 #include "settings.h"
+#include "util.h"
+
 #include <QHBoxLayout>
 #include <QList>
 #include <QMessageBox>
@@ -32,7 +33,7 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
 
         role_mapping.insert(Self->objectName(), QStringLiteral("lord"));
     } else {
-        QList<const Player *> players = ClientInstance->getPlayers();
+        QList<const Player *> players = ConstClientInstance->players();
         for (int i = 0; i < players.length(); i++) {
             QString role = role_list.at(i);
             const Player *player = players.at(i);
@@ -137,7 +138,7 @@ void RoleAssignDialog::updateRole(int index)
 {
     QString name = list->currentItem()->data(Qt::UserRole).toString();
     QString role = role_ComboBox->itemData(index).toString();
-    Player *player = ClientInstance->getPlayer(name);
+    Player *player = ClientInstance->findPlayer(name);
     QString text = QStringLiteral("%1[%2]").arg(player->screenName()).arg(Sanguosha->translate(role));
     list->currentItem()->setText(text);
     role_mapping[name] = role;

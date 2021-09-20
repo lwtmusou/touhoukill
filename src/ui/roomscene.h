@@ -236,7 +236,7 @@ public slots:
     void chooseTriggerOrder(const QVariantList &options, bool optional);
 
     void bringToFront(QGraphicsItem *item);
-    void arrangeSeats(const QList<const ClientPlayer *> &seats);
+    void arrangeSeats(const QList<const Player *> &seats);
     void toggleDiscards();
     void enableTargets(const Card *card);
     void useSelectedCard();
@@ -554,6 +554,7 @@ Q_ALWAYS_INLINE ClientPlayer *selfFunc()
 }
 
 #define ClientInstance clientInstanceFunc()
+#define ConstClientInstance ((const Client *)clientInstanceFunc())
 #define Self selfFunc()
 
 #endif

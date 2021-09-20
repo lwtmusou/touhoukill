@@ -107,6 +107,23 @@ void RoomObject::registerPlayer(Player *player)
     d->players << player;
 }
 
+void RoomObject::unregisterPlayer(Player *player)
+{
+    d->players.removeAll(player);
+}
+
+void RoomObject::unregisterPlayer(const QString &objectName)
+{
+    for (auto it = d->players.begin(), lastIt = d->players.end(); it != d->players.end(); it == d->players.end() ? (it = d->players.begin()) : ++it) {
+        if ((*it)->objectName() == objectName) {
+            d->players.erase(it);
+            it = lastIt;
+        }
+
+        lastIt = it;
+    }
+}
+
 Player *RoomObject::findPlayer(const QString &objectName)
 {
     foreach (Player *p, d->players)
@@ -166,6 +183,13 @@ void RoomObject::arrangeSeat(const QStringList &_seatInfo)
                 break;
             }
         }
+    }
+
+    for (auto it = d->players.begin(); it != d->players.end(); ++it) {
+        auto nextIt = it + 1;
+        if (nextIt == d->players.end())
+            nextIt = d->players.begin();
+        (*it)->setNext(*nextIt);
     }
 
     if (d->current != nullptr) {

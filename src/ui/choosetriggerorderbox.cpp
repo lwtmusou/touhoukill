@@ -78,17 +78,17 @@ bool SkillInvokeDetailForClient::tryParse(const QVariantMap &map)
         return false;
 
     if (map.contains(QStringLiteral("invoker")))
-        invoker = ClientInstance->getPlayer(map.value(QStringLiteral("invoker")).toString());
+        invoker = ClientInstance->findPlayer(map.value(QStringLiteral("invoker")).toString());
     if (invoker == nullptr)
         return false;
 
     if (map.contains(QStringLiteral("owner")))
-        owner = ClientInstance->getPlayer(map.value(QStringLiteral("owner")).toString());
+        owner = ClientInstance->findPlayer(map.value(QStringLiteral("owner")).toString());
     if (owner == nullptr)
         owner = invoker;
 
     if (map.contains(QStringLiteral("preferredtarget")))
-        preferredTarget = ClientInstance->getPlayer(map.value(QStringLiteral("preferredtarget")).toString());
+        preferredTarget = ClientInstance->findPlayer(map.value(QStringLiteral("preferredtarget")).toString());
 
     if (map.contains(QStringLiteral("preferredtargetseat")))
         preferredTargetSeat = map.value(QStringLiteral("preferredtargetseat")).toInt();
@@ -102,15 +102,15 @@ bool SkillInvokeDetailForClient::tryParse(const QString &str)
     skill = Sanguosha->getSkill(l.first());
     if (skill == nullptr)
         return false;
-    invoker = ClientInstance->getPlayer(l.value(2));
+    invoker = ClientInstance->findPlayer(l.value(2));
     if (invoker == nullptr)
         return false;
-    owner = ClientInstance->getPlayer(l.value(1));
+    owner = ClientInstance->findPlayer(l.value(1));
     if (owner == nullptr)
         owner = invoker;
 
     if (l.length() > 3) {
-        preferredTarget = ClientInstance->getPlayer(l.value(3));
+        preferredTarget = ClientInstance->findPlayer(l.value(3));
         preferredTargetSeat = l.value(4).toInt();
     }
 
