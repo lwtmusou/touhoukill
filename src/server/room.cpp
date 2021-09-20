@@ -4243,10 +4243,7 @@ bool Room::notifyProperty(ServerPlayer *playerToNotify, const ServerPlayer *prop
     if (real_value.isNull())
         real_value = propertyOwner->property(propertyName).toString();
     JsonArray arg;
-    if (propertyOwner == playerToNotify)
-        arg << QString::fromUtf8(QSanProtocol::S_PLAYER_SELF_REFERENCE_ID);
-    else
-        arg << propertyOwner->objectName();
+    arg << propertyOwner->objectName();
     arg << QString::fromUtf8(propertyName);
     arg << real_value;
     return doNotify(playerToNotify, S_COMMAND_SET_PROPERTY, arg);
