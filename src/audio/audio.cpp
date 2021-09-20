@@ -304,8 +304,10 @@ private:
 
 namespace Audio {
 namespace {
+#ifdef AUDIO_SUPPORT
 QThread *audioThread = nullptr;
 AudioInternal *internal = nullptr;
+#endif
 bool isBgmPlaying = false;
 } // namespace
 
