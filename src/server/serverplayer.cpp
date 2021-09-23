@@ -1057,11 +1057,6 @@ int ServerPlayer::getGeneralMaxHp() const
     return max_hp;
 }
 
-QString ServerPlayer::getGameMode() const
-{
-    return room->getMode();
-}
-
 QString ServerPlayer::getIp() const
 {
     if (socket != nullptr)

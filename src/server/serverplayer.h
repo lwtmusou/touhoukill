@@ -98,7 +98,6 @@ public:
     QSGS_LOGIC void clearSelected();
 
     QSGS_STATE_GAME int getGeneralMaxHp() const;
-    QSGS_STATE_GAME QString getGameMode() const override;
 
     QSGS_SOCKET QString getIp() const;
     QSGS_SOCKET quint32 ipv4Address() const;

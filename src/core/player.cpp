@@ -754,7 +754,7 @@ bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const
     if (acquired_skills.contains(skill_name) || acquired_skills2.contains(skill_name))
         return true;
 
-    QString mode = getGameMode();
+    QString mode = ServerInfo.GameMode;
     if (mode == QStringLiteral("06_3v3") || mode == QStringLiteral("06_XMode") || mode == QStringLiteral("02_1v1")
         || Config.value(QStringLiteral("WithoutLordskill"), false).toBool())
         return false;

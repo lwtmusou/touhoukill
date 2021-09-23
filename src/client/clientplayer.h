@@ -21,7 +21,6 @@ public:
     void changePile(const QString &name, bool add, QList<int> card_ids);
     QString getDeathPixmapPath() const;
     void setHandcardNum(int n);
-    QString getGameMode() const override;
 
     void setFlags(const QString &flag) override;
     int aliveCount(bool includeRemoved = true) const override;

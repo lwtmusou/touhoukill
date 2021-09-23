@@ -176,11 +176,6 @@ void ClientPlayer::setHandcardNum(int n)
     handcard_num = n;
 }
 
-QString ClientPlayer::getGameMode() const
-{
-    return ServerInfo.GameMode;
-}
-
 void ClientPlayer::setFlags(const QString &flag)
 {
     Player::setFlags(flag);

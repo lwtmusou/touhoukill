@@ -196,8 +196,6 @@ public:
     bool isSkillInvalid(const Skill *skill) const;
     bool isSkillInvalid(const QString &skill_name) const;
 
-    virtual QString getGameMode() const = 0;
-
     void setEquip(const Card *equip);
     void removeEquip(const Card *equip);
     bool hasEquip(const Card *card) const;
