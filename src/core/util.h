@@ -42,11 +42,13 @@ template<typename T> inline QList<const T *> NonConstList2ConstList(const QList<
 bool isRoleGameMode(const QString &mode);
 bool isHegemonyGameMode(const QString &mode);
 
+#if 0
 // compatibility
 QT_DEPRECATED_X("use isRoleGameMode instead") Q_ALWAYS_INLINE bool isNormalGameMode(const QString &mode)
 {
     return isRoleGameMode(mode);
 }
+#endif
 
 // cannot use do...while false here......
 #define DELETE_OVER_SCOPE(type, var)            \
