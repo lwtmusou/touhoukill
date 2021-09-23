@@ -69,7 +69,7 @@ public:
     void setHasPreAction(bool can);
 
     // This method provides a default handling method suggested by the card face.
-    // Almost every actual card has its handlingMethod to be Card::Use.
+    // Almost every actual card has its handlingMethod to be QSanguosha::MethodUse.
     virtual QSanguosha::HandlingMethod defaultHandlingMethod() const;
     void setDefaultHandlingMethod(QSanguosha::HandlingMethod can);
 

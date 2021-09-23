@@ -27,8 +27,7 @@ public:
 
 private:
     // constructor to create real card
-    explicit Card(RoomObject *room, const CardFace *face, QSanguosha::Suit suit = QSanguosha::SuitToBeDecided, QSanguosha::Number number = QSanguosha::NumberToBeDecided,
-                  int id = -1);
+    Card(RoomObject *room, const CardFace *face, QSanguosha::Suit suit = QSanguosha::SuitToBeDecided, QSanguosha::Number number = QSanguosha::NumberToBeDecided, int id = -1);
     ~Card();
 
 public:
