@@ -2986,7 +2986,7 @@ void Room::toggleReadyCommand(ServerPlayer *player, const QVariant & /*unused*/)
 {
     player->setReady(true);
 
-    if (!game_started2) {
+    if (!game_started2 && isFull()) {
         foreach (ServerPlayer *p, getPlayers()) {
             if (!p->isReady())
                 return;
