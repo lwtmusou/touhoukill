@@ -254,14 +254,14 @@ public:
 
     ~Guhuo() override = default;
 
-    bool viewFilter(const Card *to_select, const Player *Self) const override
+    bool viewFilter(const Card *to_select, const Player *Self, const QStringList &) const override
     {
         return !Self->hasEquip(to_select);
     }
 
-    const Card *viewAs(const Card *originalCard, const Player *Self) const override
+    const Card *viewAs(const Card *originalCard, const Player *Self, const QStringList &CurrentViewAsSkillChain) const override
     {
-        QString selectedName = Self->currentViewAsSkillSelectionChain().last();
+        QString selectedName = CurrentViewAsSkillChain.last();
         if (selectedName == QStringLiteral("NormalSlash"))
             selectedName = QStringLiteral("Slash");
 
@@ -378,15 +378,16 @@ ZeroCardViewAsSkill::ZeroCardViewAsSkill(const QString &name)
 {
 }
 
-const Card *ZeroCardViewAsSkill::viewAs(const QList<const Card *> &cards, const Player *Self) const
+const Card *ZeroCardViewAsSkill::viewAs(const QList<const Card *> &cards, const Player *Self, const QStringList &CurrentViewAsSkillChain) const
 {
     if (cards.isEmpty())
-        return viewAs(Self);
+        return viewAs(Self, CurrentViewAsSkillChain);
     else
         return nullptr;
 }
 
-bool ZeroCardViewAsSkill::viewFilter(const QList<const Card *> & /*selected*/, const Card * /*to_select*/, const Player * /*Self*/) const
+bool ZeroCardViewAsSkill::viewFilter(const QList<const Card *> & /*selected*/, const Card * /*to_select*/, const Player * /*Self*/,
+                                     const QStringList & /*CurrentViewAsSkillChain*/) const
 {
     return false;
 }
@@ -410,12 +411,12 @@ OneCardViewAsSkill::~OneCardViewAsSkill()
     delete d;
 }
 
-bool OneCardViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const
+bool OneCardViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self, const QStringList &CurrentViewAsSkillChain) const
 {
-    return selected.isEmpty() && !to_select->hasFlag(QStringLiteral("using")) && viewFilter(to_select, Self);
+    return selected.isEmpty() && !to_select->hasFlag(QStringLiteral("using")) && viewFilter(to_select, Self, CurrentViewAsSkillChain);
 }
 
-bool OneCardViewAsSkill::viewFilter(const Card *to_select, const Player *Self) const
+bool OneCardViewAsSkill::viewFilter(const Card *to_select, const Player *Self, const QStringList & /*CurrentViewAsSkillChain*/) const
 {
     if (!d->filter_pattern.isEmpty())
         return ExpPattern(d->filter_pattern).match(Self, to_select);
@@ -428,12 +429,12 @@ void OneCardViewAsSkill::setFilterPattern(const QString &p)
     d->filter_pattern = p;
 }
 
-const Card *OneCardViewAsSkill::viewAs(const QList<const Card *> &cards, const Player *Self) const
+const Card *OneCardViewAsSkill::viewAs(const QList<const Card *> &cards, const Player *Self, const QStringList &CurrentViewAsSkillChain) const
 {
     if (cards.length() != 1)
         return nullptr;
     else
-        return viewAs(cards.first(), Self);
+        return viewAs(cards.first(), Self, CurrentViewAsSkillChain);
 }
 
 class FilterSkillPrivate : public OneCardViewAsSkillPrivate

@@ -1233,6 +1233,7 @@ void Dashboard::stopPending()
     }
 
     view_as_skill = nullptr;
+    RoomSceneInstance->setCurrentViewAsSkillSelectionChain(QStringList());
     pending_card = nullptr;
     foreach (const QString &pile, Self->getPileNames()) {
         if (pile.startsWith(QStringLiteral("&")) || pile == QStringLiteral("wooden_ox"))
@@ -1476,7 +1477,7 @@ void Dashboard::updatePending()
         pended = cards;
     foreach (CardItem *item, m_handCards) {
         if (!item->isSelected() || pendings.isEmpty())
-            item->setEnabled(view_as_skill->viewFilter(pended, item->getCard(), Self));
+            item->setEnabled(view_as_skill->viewFilter(pended, item->getCard(), Self, RoomSceneInstance->currentViewAsSkillSelectionChain()));
         if (!item->isEnabled())
             animations->effectOut(item);
     }
@@ -1484,7 +1485,7 @@ void Dashboard::updatePending()
     for (int i = 0; i < 5; i++) {
         CardItem *equip = _m_equipCards[i];
         if ((equip != nullptr) && !equip->isMarked())
-            equip->setMarkable(view_as_skill->viewFilter(pended, equip->getCard(), Self));
+            equip->setMarkable(view_as_skill->viewFilter(pended, equip->getCard(), Self, RoomSceneInstance->currentViewAsSkillSelectionChain()));
         if (equip != nullptr) {
             if (!equip->isMarkable() && ((_m_equipSkillBtns[i] == nullptr) || !_m_equipSkillBtns[i]->isEnabled()))
                 _m_equipRegions[i]->setOpacity(0.7);
@@ -1493,7 +1494,7 @@ void Dashboard::updatePending()
         }
     }
 
-    const Card *new_pending_card = view_as_skill->viewAs(cards, Self);
+    const Card *new_pending_card = view_as_skill->viewAs(cards, Self, RoomSceneInstance->currentViewAsSkillSelectionChain());
     if (pending_card != new_pending_card) {
         if ((pending_card != nullptr) && pending_card->isVirtualCard()) {
             ClientInstance->cardDeleting(pending_card);

@@ -2278,8 +2278,8 @@ void RoomScene::addSelection(const ViewAsSkill *skill, QMenu *menu, const ViewAs
             action->setProperty("skillname", skill->objectName());
             action->setEnabled(enabled);
 
-            connect(action, &QAction::triggered, action, [action]() -> void {
-                Self->setCurrentViewAsSkillSelectionChain(action->objectName().split(QStringLiteral(".")));
+            connect(action, &QAction::triggered, action, [this, action]() -> void {
+                setCurrentViewAsSkillSelectionChain(action->objectName().split(QStringLiteral(".")));
             });
             connect(action, &QAction::triggered, this, &RoomScene::onSkillActivated);
         } else {
@@ -2314,7 +2314,7 @@ void RoomScene::addSkillButton(const Skill *skill, bool head)
         if (selection != nullptr && !selection->next.isEmpty() && !m_replayControl) {
             connect(btn, (void (QSanSkillButton ::*)())(&QSanSkillButton::skill_activated), btn, [this, btn, selection]() -> void {
                 // QMenu *menu = new QMenu(this);
-                Self->setCurrentViewAsSkillSelectionChain(QStringList());
+                setCurrentViewAsSkillSelectionChain(QStringList());
                 QMenu *menu = mainWindow()->findChild<QMenu *>(btn->getViewAsSkill()->objectName());
                 if (menu == nullptr) {
                     menu = new QMenu;
@@ -2327,7 +2327,7 @@ void RoomScene::addSkillButton(const Skill *skill, bool head)
                 addSelection(btn->getViewAsSkill(), menu, selection, {selection->name});
 
                 connect(menu, &QMenu::aboutToHide, btn, [this, btn]() -> void {
-                    if (Self->currentViewAsSkillSelectionChain().isEmpty()) {
+                    if (currentViewAsSkillSelectionChain().isEmpty()) {
                         dashboard->skillButtonDeactivated();
                         return;
                     }
@@ -2976,7 +2976,7 @@ void RoomScene::onSkillActivated()
                 }
 
                 foreach (const Card *c, cards) {
-                    if (skill->viewFilter(QList<const Card *>(), c, Self))
+                    if (skill->viewFilter(QList<const Card *>(), c, Self, currentViewAsSkillSelectionChain()))
                         return;
                 }
                 instance_use = true;
@@ -5041,6 +5041,16 @@ QSet<HeroSkinContainer *> RoomScene::getHeroSkinContainers()
 Client *RoomScene::getClient() const
 {
     return client;
+}
+
+void RoomScene::setCurrentViewAsSkillSelectionChain(const QStringList &chain)
+{
+    vschain = chain;
+}
+
+QStringList RoomScene::currentViewAsSkillSelectionChain() const
+{
+    return vschain;
 }
 
 void RoomScene::doSkinChange(const QString &generalName, int skinIndex)

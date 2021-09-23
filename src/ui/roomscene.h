@@ -216,6 +216,9 @@ public:
 
     bool game_started; // from private to public
 
+    void setCurrentViewAsSkillSelectionChain(const QStringList &chain);
+    QStringList currentViewAsSkillSelectionChain() const;
+
 public slots:
     void addPlayer(ClientPlayer *player);
     void removePlayer(const QString &player_name);
@@ -455,6 +458,8 @@ private:
     QRectF _m_infoPlane;
     QRectF m_tableRect;
     QSet<HeroSkinContainer *> m_heroSkinContainers;
+
+    QStringList vschain;
 
     void addSelection(const ViewAsSkill *skill, QMenu *menu, const ViewAsSkillSelection *selection, const QStringList &currentChain);
 private slots:

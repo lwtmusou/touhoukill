@@ -35,7 +35,7 @@ void DiscardSkill::setIsDiscard(bool is_discard)
     this->is_discard = is_discard;
 }
 
-bool DiscardSkill::viewFilter(const QList<const Card *> &selected, const Card *card, const Player *Self) const
+bool DiscardSkill::viewFilter(const QList<const Card *> &selected, const Card *card, const Player *Self, const QStringList &CurrentViewAsSkillChain) const
 {
     if (selected.length() >= num)
         return false;
@@ -49,7 +49,7 @@ bool DiscardSkill::viewFilter(const QList<const Card *> &selected, const Card *c
     return true;
 }
 
-const Card *DiscardSkill::viewAs(const QList<const Card *> &cards, const Player *Self) const
+const Card *DiscardSkill::viewAs(const QList<const Card *> &cards, const Player *Self, const QStringList &CurrentViewAsSkillChain) const
 {
     if (cards.length() >= minnum) {
         auto *logic = Self->roomObject();
@@ -89,12 +89,12 @@ bool ResponseSkill::matchPattern(const Player *player, const Card *card) const
     return (pattern != nullptr) && pattern->match(player, card);
 }
 
-bool ResponseSkill::viewFilter(const Card *card, const Player *Self) const
+bool ResponseSkill::viewFilter(const Card *card, const Player *Self, const QStringList &CurrentViewAsSkillChain) const
 {
     return matchPattern(Self, card);
 }
 
-const Card *ResponseSkill::viewAs(const Card *originalCard, const Player * /*Self*/) const
+const Card *ResponseSkill::viewAs(const Card *originalCard, const Player * /*Self*/, const QStringList &CurrentViewAsSkillChain) const
 {
     return originalCard;
 }
@@ -160,12 +160,12 @@ void YijiViewAsSkill::setPlayerNames(const QStringList &names)
 {
 }
 
-bool YijiViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card *card, const Player * /*Self*/) const
+bool YijiViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card *card, const Player * /*Self*/, const QStringList &CurrentViewAsSkillChain) const
 {
     return ids.contains(card->id()) && selected.length() < max_num;
 }
 
-const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards, const Player *player) const
+const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards, const Player *player, const QStringList &CurrentViewAsSkillChain) const
 {
     if (cards.isEmpty() || cards.length() > max_num)
         return nullptr;
@@ -207,7 +207,7 @@ void ChoosePlayerSkill::setPlayerNames(const QStringList &names)
 {
 }
 
-const Card *ChoosePlayerSkill::viewAs(const Player *player) const
+const Card *ChoosePlayerSkill::viewAs(const Player *player, const QStringList &CurrentViewAsSkillChain) const
 {
     return player->roomObject()->cloneSkillCard(QStringLiteral("ChoosePlayerCard"));
 }

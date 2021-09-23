@@ -114,7 +114,7 @@ private:
     SkillPrivate *const d;
 };
 
-// Selection, should be returned by Client::currentViewAsSkillSelectionChain
+// Selection
 struct ViewAsSkillSelection
 {
     // Selectable when next is empty
@@ -184,8 +184,14 @@ public:
     }
 #endif
     // Current implementation needs overrides to call Self::currentViewAsSkillSelectionChain in viewFilter and viewAs. See example of Guhuo in skill.cpp
+#if 0
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const = 0;
     virtual const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const = 0;
+#endif
+    // A better choice seems to be just put the 2 parameters in this function
+    // since almost all skills will be implemented in Lua, which don't need to write the extra parameter if not needed
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self, const QStringList &CurrentViewAsSkillChain) const = 0;
+    virtual const Card *viewAs(const QList<const Card *> &cards, const Player *Self, const QStringList &CurrentViewAsSkillChain) const = 0;
 
     virtual bool isEnabledAtPlay(const Player *player) const;
     virtual bool isEnabledAtResponse(const Player *player, CardUseStruct::CardUseReason reason, const QString &pattern) const;
@@ -204,10 +210,10 @@ class ZeroCardViewAsSkill : public ViewAsSkill
 public:
     explicit ZeroCardViewAsSkill(const QString &name);
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const final override;
-    const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const final override;
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self, const QStringList &CurrentViewAsSkillChain) const final override;
+    const Card *viewAs(const QList<const Card *> &cards, const Player *Self, const QStringList &CurrentViewAsSkillChain) const final override;
 
-    virtual const Card *viewAs(const Player *Self) const = 0;
+    virtual const Card *viewAs(const Player *Self, const QStringList &CurrentViewAsSkillChain) const = 0;
 };
 
 class OneCardViewAsSkillPrivate;
@@ -220,11 +226,11 @@ public:
     explicit OneCardViewAsSkill(const QString &name);
     ~OneCardViewAsSkill() override;
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const final override;
-    const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const final override;
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self, const QStringList &CurrentViewAsSkillChain) const final override;
+    const Card *viewAs(const QList<const Card *> &cards, const Player *Self, const QStringList &CurrentViewAsSkillChain) const final override;
 
-    virtual bool viewFilter(const Card *to_select, const Player *Self) const;
-    virtual const Card *viewAs(const Card *originalCard, const Player *Self) const = 0;
+    virtual bool viewFilter(const Card *to_select, const Player *Self, const QStringList &CurrentViewAsSkillChain) const;
+    virtual const Card *viewAs(const Card *originalCard, const Player *Self, const QStringList &CurrentViewAsSkillChain) const = 0;
 
     void setFilterPattern(const QString &p);
 
@@ -335,7 +341,8 @@ public:
     int priority() const override;
 
     // force subclass override this function
-    // virtual QList<TriggerDetail> triggerable(TriggerEvent event, const Room *room, QVariant &data) const = 0;
+    // virtual QList<TriggerDetail> triggerable(TriggerEvent event, RoomObject *room, const QVariant &data) const = 0;
+
     bool trigger(TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const final override;
 
     // Limited modification to TriggerDetail, notably tag and target

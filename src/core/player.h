@@ -333,10 +333,6 @@ public:
 
     QVariantMap tag;
 
-    // it should features a setter, which set by UI
-    QStringList currentViewAsSkillSelectionChain() const;
-    void setCurrentViewAsSkillSelectionChain(const QStringList &chain);
-
 protected:
     QMap<QString, int> marks;
     QMap<QString, IDSet> piles;
@@ -391,7 +387,6 @@ private:
 
     QMap<QSanguosha::HandlingMethod, QMap<QString, QStringList>> card_limitation; //method, reason , pattern
     QStringList disable_show;
-    QStringList vschain;
 
 signals:
     void general_changed();
