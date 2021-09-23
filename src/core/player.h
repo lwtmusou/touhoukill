@@ -300,8 +300,6 @@ public:
     void addQinggangTag(const Card *card);
     void removeQinggangTag(const Card *card);
 
-    void copyFrom(Player *p);
-
     QList<const Player *> getSiblings() const;
     QList<const Player *> getAliveSiblings() const;
 

@@ -121,8 +121,6 @@ public:
     QSGS_LOGIC void showHiddenSkill(const QString &skill_name);
     QSGS_LOGIC QStringList checkTargetModSkillShow(const CardUseStruct &use);
 
-    void copyFrom(ServerPlayer *sp); // ???
-
     QSGS_LOGIC void startNetworkDelayTest();
     QSGS_LOGIC qint64 endNetworkDelayTest();
 

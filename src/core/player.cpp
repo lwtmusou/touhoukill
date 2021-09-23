@@ -1721,41 +1721,6 @@ void Player::removeQinggangTag(const Card *card)
     }
 }
 
-void Player::copyFrom(Player *p)
-{
-    Player *b = this;
-    Player *a = p;
-
-    b->marks = QMap<QString, int>(a->marks);
-    b->piles = QMap<QString, IDSet>(a->piles);
-    b->acquired_skills = QSet<QString>(a->acquired_skills);
-    b->acquired_skills2 = QSet<QString>(a->acquired_skills2);
-    b->flags = QSet<QString>(a->flags);
-    b->history = QHash<QString, int>(a->history);
-    b->m_gender = a->m_gender;
-
-    b->hp = a->hp;
-    b->max_hp = a->max_hp;
-    b->kingdom = a->kingdom;
-    b->role = a->role;
-    b->seat = a->seat;
-    b->alive = a->alive;
-
-    b->phase = a->phase;
-    b->weapon = a->weapon;
-    b->armor = a->armor;
-    b->defensive_horse = a->defensive_horse;
-    b->offensive_horse = a->offensive_horse;
-    b->treasure = a->treasure;
-    b->face_up = a->face_up;
-    b->chained = a->chained;
-    b->judging_area = QList<int>(a->judging_area);
-    b->fixed_distance = QHash<const Player *, int>(a->fixed_distance);
-    b->card_limitation = QMap<HandlingMethod, QMap<QString, QStringList>>(a->card_limitation);
-
-    b->tag = QVariantMap(a->tag);
-}
-
 QList<const Player *> Player::getSiblings() const
 {
     QList<const Player *> siblings;
