@@ -20,7 +20,7 @@ class Card;
 class Player : public QObject
 {
     Q_OBJECT
-
+#if 0
     Q_PROPERTY(QString screenname READ screenName WRITE setScreenName)
     Q_PROPERTY(int hp READ getHp WRITE setHp)
     Q_PROPERTY(int renhp READ getRenHp WRITE setRenHp)
@@ -55,6 +55,7 @@ class Player : public QObject
     Q_PROPERTY(bool kongcheng READ isKongcheng)
     Q_PROPERTY(bool nude READ isNude)
     Q_PROPERTY(bool all_nude READ isAllNude)
+#endif
 
 public:
     explicit Player(QObject *parent);
