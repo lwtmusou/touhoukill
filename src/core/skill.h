@@ -153,6 +153,37 @@ public:
     void setResponsePattern(const QString &pattern);
 
     // logic related implementations
+    // In fact, the best design is to put "CurrentViewAsSkillSelectionChain" as parameter of this function.
+    // By doing so makes this function doesn't depends on other things, such as Player, which seems off-topic.
+    // Since most skill doesn't need the parameter, I don't like every skill introduce this extra parameter
+    // There is a way for implementing this design, which is to make the function non-pure-virtual on both chain and non-chain variants like following.
+    // But I don't like this method which makes every ViewAsSkill able to make instance even if no function is overrided.
+#if 0
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const;
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self, const QStringList &CurrentViewAsSkillChain) const;
+    virtual const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const;
+    virtual const Card *viewAs(const QList<const Card *> &cards, const Player *Self, const QStringList &CurrentViewAsSkillChain) const;
+#endif
+
+    // Another way is to use vararg, just like what posix open() does. Put the optional const QStringList * in vararg and use it when it is needed like following.
+#if 0
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self, ...) const = 0;
+    virtual const Card *viewAs(const QList<const Card *> &cards, const Player *Self, ...) const = 0;
+#define VIEWASSKILL_RETRACT_CURRENT_SELECTION_CHAIN(chain)                                                                                                 \
+    va_list VIEWASSKILL_RETRACT_CURRENT_SELECTION_CHAIN_list;                                                                                              \
+    va_start(VIEWASSKILL_RETRACT_CURRENT_SELECTION_CHAIN_list, Self);                                                                                      \
+    const QStringList &chain = *(static_cast<const QStringList *>(va_arg(VIEWASSKILL_RETRACT_CURRENT_SELECTION_CHAIN_list, sizeof(const QStringList *)))); \
+    va_end(VIEWASSKILL_RETRACT_CURRENT_SELECTION_CHAIN_list);
+
+    bool SomeSkill::viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self, ...) const override
+    {
+        VIEWASSKILL_RETRACT_CURRENT_SELECTION_CHAIN(CurrentViewAsSkillChain)
+
+        QString currentSelected = CurrentViewAsSkillChain.last();
+        // do anything you like
+    }
+#endif
+    // Current implementation needs overrides to call Self::currentViewAsSkillSelectionChain in viewFilter and viewAs. See example of Guhuo in skill.cpp
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const = 0;
     virtual const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const = 0;
 

@@ -430,7 +430,7 @@ void Player::setFixedDistance(const Player *player, int distance)
 int Player::originalRightDistanceTo(const Player *other) const
 {
     int right = 0;
-    Player *next_p = parent()->findChild<Player *>(objectName());
+    const Player *next_p = this;
     while (next_p != other) {
         next_p = next_p->getNextAlive();
         right++;
