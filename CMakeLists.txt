@@ -161,7 +161,6 @@ set (QSanguosha_UIS
 )
 
 set(TS_FILES builds/sanguosha.ts)
-qt_add_translation(QM_FILES ${TS_FILES}) # assuming Qt6 and Qt5 QM files are same.....
 
 set (QSanguosha_MOCS
     src/audio/audio.h
@@ -394,10 +393,11 @@ if (Qt5Multimedia_FOUND OR Qt6Multimedia_FOUND)
 endif()
 
 if (Qt5_FOUND)
+    qt5_add_translation(QM_FILES5 ${TS_FILES})
     if (NOT ANDROID)
-        add_executable(QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc )
+        add_executable(QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc ${QM_FILES5} )
     else()
-        add_library(QSanguosha MODULE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc )
+        add_library(QSanguosha MODULE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc ${QM_FILES5} )
     endif()
 
     set_property(TARGET QSanguosha PROPERTY AUTOMOC ON)
@@ -438,7 +438,8 @@ if (Qt5_FOUND)
 endif()
 
 if (Qt6_FOUND)
-    add_executable (Q6Sanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc )
+    qt6_add_translation(QM_FILES6 ${TS_FILES})
+    add_executable (Q6Sanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc ${QM_FILES6} )
 
     set_property(TARGET Q6Sanguosha PROPERTY AUTOMOC ON)
     set_property(TARGET Q6Sanguosha PROPERTY AUTOUIC ON)
