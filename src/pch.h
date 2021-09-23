@@ -199,7 +199,12 @@
 #include <QWidget>
 
 #ifdef QT_MULTIMEDIA_LIB
+#include <QAudioFormat>
+#if QT_VERSION > QT_VERSION_CHECK(6, 0, 0)
+#include <QAudioSink>
+#else
 #include <QAudioOutput>
+#endif
 #endif
 
 #ifdef QT_WINEXTRAS_LIB
