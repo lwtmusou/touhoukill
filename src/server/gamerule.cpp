@@ -1008,17 +1008,17 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
         int card_id = room->drawCard();
 
         JudgeStruct *judge = data.value<JudgeStruct *>();
-        judge->card = room->getCard(card_id);
 
         LogMessage log;
         log.type = QStringLiteral("$InitialJudge");
         log.from = judge->who;
-        log.card_str = QString::number(judge->card->effectiveID());
+        log.card_str = QString::number(card_id);
         room->sendLog(log);
 
-        room->moveCardTo(judge->card, nullptr, qobject_cast<ServerPlayer *>(judge->who), QSanguosha::PlaceJudge,
+        room->moveCardTo(room->getCard(card_id), nullptr, qobject_cast<ServerPlayer *>(judge->who), QSanguosha::PlaceJudge,
                          CardMoveReason(CardMoveReason::S_REASON_JUDGE, judge->who->objectName(), QString(), QString(), judge->reason), true);
-        judge->updateResult();
+
+        judge->setCard(room->getCard(card_id));
         break;
     }
     case FinishRetrial: {
@@ -1027,7 +1027,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
         LogMessage log;
         log.type = QStringLiteral("$JudgeResult");
         log.from = judge->who;
-        log.card_str = QString::number(judge->card->effectiveID());
+        log.card_str = QString::number(judge->card()->effectiveID());
         room->sendLog(log);
 
         int delay = Config.AIDelay;
@@ -1045,13 +1045,13 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
     case FinishJudge: {
         JudgeStruct *judge = data.value<JudgeStruct *>();
 
-        if (room->getCardPlace(judge->card->effectiveID()) == QSanguosha::PlaceJudge) {
+        if (room->getCardPlace(judge->card()->effectiveID()) == QSanguosha::PlaceJudge) {
             CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, judge->who->objectName(), QString(), judge->reason);
             if (judge->retrial_by_response != nullptr) {
                 reason.m_extraData = QVariant::fromValue(judge->retrial_by_response);
             }
 
-            room->moveCardTo(judge->card, qobject_cast<ServerPlayer *>(judge->who), nullptr, QSanguosha::PlaceDiscardPile, reason, true);
+            room->moveCardTo(judge->card(), qobject_cast<ServerPlayer *>(judge->who), nullptr, QSanguosha::PlaceDiscardPile, reason, true);
         }
 
         break;

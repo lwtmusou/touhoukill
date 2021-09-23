@@ -59,8 +59,8 @@ public:
     void setDeputyMaxHpAdjustedValue(int adjusted_value = -1);
 
 private:
-    GeneralPrivate *const d;
     Q_DISABLE_COPY_MOVE(General)
+    GeneralPrivate *const d;
 };
 
 #endif

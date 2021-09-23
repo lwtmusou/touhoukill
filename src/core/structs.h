@@ -326,14 +326,22 @@ struct JudgeStruct
 {
     JudgeStruct();
     bool isGood() const;
-    bool isBad() const;
-    bool isEffected() const;
-    void updateResult();
+    inline bool isBad() const
+    {
+        return !isGood();
+    }
+    inline bool isEffected() const
+    {
+        return !negative == isGood();
+    }
 
-    bool isGood(const Card *card) const; // For AI
+    void setCard(const Card *card);
+    inline const Card *card() const
+    {
+        return m_card;
+    }
 
     Player *who;
-    const Card *card;
     QString pattern;
     bool good;
     QString reason;
@@ -351,6 +359,7 @@ private:
         TRIAL_RESULT_GOOD,
         TRIAL_RESULT_BAD
     } _m_result;
+    const Card *m_card;
 };
 
 struct PhaseChangeStruct
@@ -374,9 +383,9 @@ struct PhaseSkippingStruct
 struct PhaseStruct
 {
     inline PhaseStruct()
+        : phase(QSanguosha::PhaseNone)
+        , skipped(0)
     {
-        phase = QSanguosha::PhaseNone;
-        skipped = 0;
     }
 
     QSanguosha::Phase phase;
@@ -547,7 +556,11 @@ struct ShowGeneralStruct
 
 struct ChoiceMadeStruct
 {
-    ChoiceMadeStruct();
+    inline ChoiceMadeStruct()
+        : player(nullptr)
+        , type(NoChoice)
+    {
+    }
 
     enum ChoiceType
     {

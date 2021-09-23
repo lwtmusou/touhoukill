@@ -273,8 +273,8 @@ public:
     virtual bool trigger(TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const;
 
 private:
-    TriggerPrivate *const d;
     Q_DISABLE_COPY_MOVE(Trigger)
+    TriggerPrivate *const d;
 };
 
 class Rule : public Trigger

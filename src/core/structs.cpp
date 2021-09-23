@@ -288,7 +288,7 @@ bool PindianStruct::isSuccess() const
 
 JudgeStruct::JudgeStruct()
     : who(nullptr)
-    , card(nullptr)
+    , m_card(nullptr)
     , pattern(QStringLiteral("."))
     , good(true)
     , time_consuming(false)
@@ -301,14 +301,11 @@ JudgeStruct::JudgeStruct()
 {
 }
 
-bool JudgeStruct::isEffected() const
+void JudgeStruct::setCard(const Card *card)
 {
-    return negative ? isBad() : isGood();
-}
+    m_card = card;
 
-void JudgeStruct::updateResult()
-{
-    bool effected = (good == ExpPattern(pattern).match(who, card));
+    bool effected = (good == ExpPattern(pattern).match(who, m_card));
     if (effected)
         _m_result = TRIAL_RESULT_GOOD;
     else
@@ -319,17 +316,6 @@ bool JudgeStruct::isGood() const
 {
     Q_ASSERT(_m_result != TRIAL_RESULT_UNKNOWN);
     return _m_result == TRIAL_RESULT_GOOD;
-}
-
-bool JudgeStruct::isBad() const
-{
-    return !isGood();
-}
-
-bool JudgeStruct::isGood(const Card *card) const
-{
-    Q_ASSERT(card);
-    return (good == ExpPattern(pattern).match(who, card));
 }
 
 PhaseChangeStruct::PhaseChangeStruct()
@@ -674,13 +660,9 @@ SkillAcquireDetachStruct::SkillAcquireDetachStruct()
 {
 }
 
-ChoiceMadeStruct::ChoiceMadeStruct()
-    : player(nullptr)
-{
-}
-
 CardAskedStruct::CardAskedStruct()
     : player(nullptr)
+    , method(MethodNone)
 {
 }
 
@@ -718,7 +700,6 @@ SkillInvalidStruct::SkillInvalidStruct()
 
 ExtraTurnStruct::ExtraTurnStruct()
     : player(nullptr)
-    , reason(QString())
     , extraTarget(nullptr)
 {
 }

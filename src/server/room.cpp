@@ -445,7 +445,7 @@ void Room::judge(JudgeStruct &judge_struct)
 void Room::sendJudgeResult(const JudgeStruct *judge)
 {
     JsonArray arg;
-    arg << QSanProtocol::S_GAME_EVENT_JUDGE_RESULT << judge->card->effectiveID() << judge->isEffected() << judge->who->objectName() << judge->reason;
+    arg << QSanProtocol::S_GAME_EVENT_JUDGE_RESULT << judge->card()->effectiveID() << judge->isEffected() << judge->who->objectName() << judge->reason;
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
 }
 
@@ -6390,8 +6390,7 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStruct *judge, c
     bool triggerResponded = getCardOwner(card->effectiveID()) == player;
     bool isHandcard = (triggerResponded && getCardPlace(card->effectiveID()) == QSanguosha::PlaceHand);
 
-    const Card *oldJudge = judge->card;
-    judge->card = getCard(card->effectiveID());
+    const Card *oldJudge = judge->card();
     Player *rebyre = judge->retrial_by_response; //old judge provider
     judge->retrial_by_response = player;
 
@@ -6420,7 +6419,8 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStruct *judge, c
     moves.append(move1);
     moves.append(move2);
     moveCardsAtomic(moves, true);
-    judge->updateResult();
+
+    judge->setCard(getCard(card->effectiveID()));
 
     if (triggerResponded) {
         CardResponseStruct resp(card, judge->who, false, true, false, player);

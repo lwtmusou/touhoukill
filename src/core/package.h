@@ -47,6 +47,7 @@ public:
     Package &operator<<(const CardDescriptor &card);
 
 private:
+    Q_DISABLE_COPY_MOVE(Package)
     PackagePrivate *d;
 };
 
