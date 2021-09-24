@@ -122,10 +122,9 @@ public:
 
         output = new QAudioOutput(format);
 
-        connect(output, &QAudioOutput::stateChanged, [&](QAudio::State s) {
-            if (s == QAudio::IdleState) {
+        connect(output, &QAudioOutput::stateChanged, [this](QAudio::State s) {
+            if (s == QAudio::IdleState)
                 emit finished();
-            }
         });
     }
 
@@ -145,8 +144,10 @@ public:
     void play()
     {
         soundBuffer.reset();
-        if (output != nullptr)
+        if (output != nullptr) {
+            output->reset();
             output->start(&soundBuffer);
+        }
     }
 
     void stop()
@@ -206,7 +207,6 @@ public slots:
         OggPlayer *p = nullptr;
         if (soundCache.contains(fileName)) {
             p = soundCache.object(fileName);
-
         } else {
             OggPlayer *player = new OggPlayer(fileName, this);
             if (soundCache.insert(fileName, player)) {
