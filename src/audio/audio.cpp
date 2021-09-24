@@ -25,7 +25,7 @@
 namespace {
 size_t read_from_qbuffer(void *ptr, size_t size, size_t nmemb, void *datasource)
 {
-    QBuffer *buffer = reinterpret_cast<QBuffer *>(datasource);
+    QIODevice *buffer = reinterpret_cast<QIODevice *>(datasource);
     auto res = buffer->read(size * nmemb);
     memcpy(ptr, res.data(), res.size());
     return res.size();
@@ -33,7 +33,7 @@ size_t read_from_qbuffer(void *ptr, size_t size, size_t nmemb, void *datasource)
 
 int seek_qbuffer(void *datasource, ogg_int64_t off, int whence)
 {
-    QBuffer *buffer = reinterpret_cast<QBuffer *>(datasource);
+    QIODevice *buffer = reinterpret_cast<QIODevice *>(datasource);
     bool res = false;
     if (whence == SEEK_SET)
         res = buffer->seek(off);
@@ -47,7 +47,7 @@ int seek_qbuffer(void *datasource, ogg_int64_t off, int whence)
 
 long tell_qbuffer(void *datasource)
 {
-    QBuffer *buffer = (QBuffer *)datasource;
+    QIODevice *buffer = reinterpret_cast<QIODevice *>(datasource);
     return buffer->pos();
 }
 } // namespace
@@ -70,13 +70,7 @@ public:
 
         if (!xf.isOpen())
             return;
-
-        QByteArray arr = xf.readAll();
-        xf.close();
-
-        QBuffer buffer(&arr);
-        buffer.open(QIODevice::ReadOnly);
-        buffer.seek(0);
+        xf.seek(0);
 
         soundBuffer.open(QIODevice::WriteOnly);
 
@@ -87,7 +81,7 @@ public:
         vcall.close_func = nullptr;
         vcall.tell_func = &tell_qbuffer;
 
-        if (ov_open_callbacks(&buffer, &vf, nullptr, 0, vcall) != 0) {
+        if (ov_open_callbacks(&xf, &vf, nullptr, 0, vcall) != 0) {
             return;
         } else {
             qint64 ret = 1;
@@ -121,7 +115,7 @@ public:
 #endif
 
         ov_clear(&vf);
-        buffer.close();
+        xf.close();
 
         soundBuffer.close();
         soundBuffer.open(QIODevice::ReadOnly);
@@ -209,18 +203,22 @@ public slots:
 
     void play(const QString &fileName)
     {
+        OggPlayer *p = nullptr;
         if (soundCache.contains(fileName)) {
-            OggPlayer *p = soundCache.object(fileName);
-            p->setVolume(effective_volume);
-            if (!p->isPlaying())
-                p->play();
+            p = soundCache.object(fileName);
 
         } else {
             OggPlayer *player = new OggPlayer(fileName, this);
             if (soundCache.insert(fileName, player)) {
-                player->setVolume(effective_volume);
-                player->play();
+                p = player;
+                p->stop();
             }
+        }
+
+        if (p != nullptr) {
+            p->setVolume(effective_volume);
+            if (!p->isPlaying())
+                p->play();
         }
     }
 
