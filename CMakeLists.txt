@@ -393,11 +393,10 @@ if (Qt5Multimedia_FOUND OR Qt6Multimedia_FOUND)
 endif()
 
 if (Qt5_FOUND)
-    qt5_add_translation(QM_FILES5 ${TS_FILES})
     if (NOT ANDROID)
-        add_executable(QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc ${QM_FILES5} )
+        add_executable(QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc )
     else()
-        add_library(QSanguosha MODULE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc ${QM_FILES5} )
+        add_library(QSanguosha MODULE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc )
     endif()
 
     set_property(TARGET QSanguosha PROPERTY AUTOMOC ON)
