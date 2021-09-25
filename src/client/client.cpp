@@ -145,8 +145,8 @@ Client::Client(QObject *parent, const QString &filename)
     Self = new ClientPlayer(this);
     Self->setScreenName(Config.UserName);
     Self->setProperty("avatar", Config.UserAvatar);
-    connect(Self, &Player::phase_changed, this, &Client::alertFocus);
-    connect(Self, &Player::role_changed, this, &Client::notifyRoleChange);
+    // connect(Self, &Player::phase_changed, this, &Client::alertFocus);
+    // connect(Self, &Player::role_changed, this, &Client::notifyRoleChange);
 
     registerPlayer(Self);
 

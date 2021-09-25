@@ -104,10 +104,6 @@ public:
     void clearSubcards();
     QString subcardString() const; // Used for converting card to string
 
-    // Status
-    // Same method as Player::hasEquip
-    // bool isEquipped(const Player *self) const;
-
     // UI property
     bool mute() const;
     void setMute(bool mute);

@@ -675,27 +675,27 @@ void PlayerCardContainer::setPlayer(ClientPlayer *player)
     m_player = player;
     if (player != nullptr) {
         //notice that:  child class "Dashboard" has void with the same name "updateAvatar".
-        connect(player, &Player::general_changed, this, &PlayerCardContainer::updateAvatar);
-        connect(player, &ClientPlayer::general2_changed, this, &PlayerCardContainer::updateSmallAvatar);
-        connect(player, &Player::kingdom_changed, this, &PlayerCardContainer::updateAvatar);
-        connect(player, &ClientPlayer::state_changed, this, &PlayerCardContainer::refresh);
-        connect(player, &ClientPlayer::phase_changed, this, &PlayerCardContainer::updatePhase);
+        // connect(player, &Player::general_changed, this, &PlayerCardContainer::updateAvatar);
+        // connect(player, &ClientPlayer::general2_changed, this, &PlayerCardContainer::updateSmallAvatar);
+        // connect(player, &Player::kingdom_changed, this, &PlayerCardContainer::updateAvatar);
+        // connect(player, &ClientPlayer::state_changed, this, &PlayerCardContainer::refresh);
+        // connect(player, &ClientPlayer::phase_changed, this, &PlayerCardContainer::updatePhase);
         connect(player, &ClientPlayer::drank_changed, this, &PlayerCardContainer::updateDrankState);
         connect(player, &ClientPlayer::action_taken, this, &PlayerCardContainer::refresh);
         connect(player, &ClientPlayer::pile_changed, this, &PlayerCardContainer::updatePile);
-        if (isHegemonyGameMode(ServerInfo.GameMode))
-            connect(player, &ClientPlayer::kingdom_changed, _m_hegemonyroleComboBox, &HegemonyRoleComboBox::fix);
-        else
-            connect(player, &ClientPlayer::role_changed, _m_roleComboBox, &RoleComboBox::fix);
-        connect(player, &ClientPlayer::hp_changed, this, &PlayerCardContainer::updateHp);
-        connect(player, &ClientPlayer::removedChanged, this, &PlayerCardContainer::onRemovedChanged);
-        connect(player, &ClientPlayer::disable_show_changed, this, &PlayerCardContainer::refresh);
+        // if (isHegemonyGameMode(ServerInfo.GameMode))
+        //  connect(player, &ClientPlayer::kingdom_changed, _m_hegemonyroleComboBox, &HegemonyRoleComboBox::fix);
+        // else
+        //  connect(player, &ClientPlayer::role_changed, _m_roleComboBox, &RoleComboBox::fix);
+        // connect(player, &ClientPlayer::hp_changed, this, &PlayerCardContainer::updateHp);
+        // connect(player, &ClientPlayer::removedChanged, this, &PlayerCardContainer::onRemovedChanged);
+        // connect(player, &ClientPlayer::disable_show_changed, this, &PlayerCardContainer::refresh);
 
         QTextDocument *textDoc = m_player->getMarkDoc();
         Q_ASSERT(_m_markItem);
         _m_markItem->setDocument(textDoc);
-        connect(textDoc, &QTextDocument::contentsChanged, this, &PlayerCardContainer::updateMarks);
-        connect(player, &ClientPlayer::brokenEquips_changed, this, &PlayerCardContainer::updateBrokenEquips);
+        // connect(textDoc, &QTextDocument::contentsChanged, this, &PlayerCardContainer::updateMarks);
+        // connect(player, &ClientPlayer::brokenEquips_changed, this, &PlayerCardContainer::updateBrokenEquips);
     }
     updateAvatar();
     refresh();

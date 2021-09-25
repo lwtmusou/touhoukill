@@ -73,9 +73,9 @@ Dashboard::Dashboard(QGraphicsItem *widget)
     _m_sort_menu = new QMenu(RoomSceneInstance->mainWindow());
     //_m_carditem_context_menu = NULL;
 
-    connect(Self, &Player::chaoren_changed, this, &Dashboard::updateChaoren);
-    connect(Self, &Player::showncards_changed, this, &Dashboard::updateShown);
-    connect(Self, &Player::brokenEquips_changed, this, &Dashboard::updateHandPile);
+    // connect(Self, &Player::chaoren_changed, this, &Dashboard::updateChaoren);
+    // connect(Self, &Player::showncards_changed, this, &Dashboard::updateShown);
+    // connect(Self, &Player::brokenEquips_changed, this, &Dashboard::updateHandPile);
 
 #ifdef QT_WINEXTRAS_LIB
     taskbarButton = new QWinTaskbarButton(this);
@@ -1690,8 +1690,8 @@ void Dashboard::updateRightHiddenMark()
 void Dashboard::setPlayer(ClientPlayer *player)
 {
     PlayerCardContainer::setPlayer(player);
-    connect(player, &ClientPlayer::head_state_changed, this, &Dashboard::onHeadStateChanged);
-    connect(player, &ClientPlayer::deputy_state_changed, this, &Dashboard::onDeputyStateChanged);
+    // connect(player, &ClientPlayer::head_state_changed, this, &Dashboard::onHeadStateChanged);
+    // connect(player, &ClientPlayer::deputy_state_changed, this, &Dashboard::onDeputyStateChanged);
 }
 
 void Dashboard::onHeadStateChanged()

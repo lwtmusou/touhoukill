@@ -108,10 +108,10 @@ RoomScene::RoomScene(QMainWindow *main_window, Client *client)
     connect(Self, &ClientPlayer::pile_changed, dashboard, &PlayerCardContainer::updatePile);
 
     // add role ComboBox
-    if (isHegemonyGameMode(ServerInfo.GameMode))
-        connect(Self, &ClientPlayer::kingdom_changed, dashboard, &Dashboard::updateKingdom);
-    else
-        connect(Self, &Player::role_changed, dashboard, &PlayerCardContainer::updateRole);
+    // if (isHegemonyGameMode(ServerInfo.GameMode))
+    // connect(Self, &ClientPlayer::kingdom_changed, dashboard, &Dashboard::updateKingdom);
+    // else
+    // connect(Self, &Player::role_changed, dashboard, &PlayerCardContainer::updateRole);
 
     m_replayControl = nullptr;
     if (ClientInstance->getReplayer()) {
@@ -370,7 +370,7 @@ RoomScene::RoomScene(QMainWindow *main_window, Client *client)
 
         connect(add_robot, &Button::clicked, ClientInstance, &Client::addRobot);
         connect(fill_robots, &Button::clicked, ClientInstance, &Client::fillRobots);
-        connect(Self, &Player::owner_changed, this, &RoomScene::showOwnerButtons);
+        // connect(Self, &Player::owner_changed, this, &RoomScene::showOwnerButtons);
     }
 
     return_to_main_menu = new Button(tr("Return to main menu"));
@@ -786,7 +786,7 @@ QGraphicsItem *RoomScene::createDashboardButtons()
     trust_button->setStyle(QSanButton::S_STYLE_TOGGLE);
     trust_button->setRect(G_DASHBOARD_LAYOUT.m_trustButtonArea);
     connect(trust_button, &QSanButton::clicked, this, &RoomScene::trust);
-    connect(Self, &Player::state_changed, this, &RoomScene::updateTrustButton);
+    // connect(Self, &Player::state_changed, this, &RoomScene::updateTrustButton);
 
     // set them all disabled
     ok_button->setEnabled(false);

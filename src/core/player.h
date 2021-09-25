@@ -388,6 +388,8 @@ private:
     QMap<QSanguosha::HandlingMethod, QMap<QString, QStringList>> card_limitation; //method, reason , pattern
     QStringList disable_show;
 
+#if 0
+
 signals:
     void general_changed();
     void general2_changed();
@@ -405,6 +407,7 @@ signals:
     void head_state_changed();
     void deputy_state_changed(); //hegemony
     void disable_show_changed();
+#endif
 };
 
 #endif

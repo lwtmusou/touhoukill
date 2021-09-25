@@ -55,10 +55,8 @@ bool Player::isOwner() const
 
 void Player::setOwner(bool owner)
 {
-    if (this->owner != owner) {
+    if (this->owner != owner)
         this->owner = owner;
-        emit owner_changed(owner);
-    }
 }
 
 bool Player::hasShownRole() const
@@ -88,8 +86,6 @@ void Player::setHp(int hp)
             changed = true;
         }
     }
-    if (changed)
-        emit hp_changed();
 }
 
 int Player::getHp() const
@@ -115,7 +111,6 @@ void Player::setRenHp(int renhp)
         this->renhp = renhp;
         if (qMin(this->linghp, this->renhp) != this->hp)
             this->hp = qMin(this->linghp, this->renhp);
-        emit hp_changed();
     }
 }
 
@@ -125,7 +120,6 @@ void Player::setLingHp(int linghp)
         this->linghp = linghp;
         if (qMin(this->linghp, this->renhp) != this->hp)
             this->hp = qMin(this->linghp, this->renhp);
-        emit hp_changed();
     }
 }
 
@@ -133,7 +127,6 @@ void Player::setDyingFactor(int dyingFactor)
 {
     if (this->dyingFactor != dyingFactor)
         this->dyingFactor = dyingFactor;
-    emit hp_changed();
 }
 
 int Player::getRenHp() const
@@ -158,10 +151,8 @@ int Player::getChaoren() const
 
 void Player::setChaoren(int chaoren)
 {
-    if (this->chaoren != chaoren) {
+    if (this->chaoren != chaoren)
         this->chaoren = chaoren;
-        emit chaoren_changed();
-    }
 }
 
 const IDSet &Player::getShownHandcards() const
@@ -172,7 +163,6 @@ const IDSet &Player::getShownHandcards() const
 void Player::setShownHandcards(const IDSet &ids)
 {
     this->shown_handcards = ids;
-    emit showncards_changed();
 }
 
 bool Player::isShownHandcard(int id) const
@@ -190,7 +180,6 @@ const IDSet &Player::getBrokenEquips() const
 void Player::setBrokenEquips(const IDSet &ids)
 {
     this->broken_equips = ids;
-    emit brokenEquips_changed();
 }
 
 bool Player::isBrokenEquip(int id, bool consider_shenbao) const
@@ -261,7 +250,6 @@ void Player::setMaxHp(int max_hp)
     this->max_hp = max_hp;
     if (hp > max_hp)
         hp = max_hp;
-    emit hp_changed();
 }
 
 int Player::getLostHp() const
@@ -529,8 +517,6 @@ void Player::setGeneral(const General *new_general)
 
         if ((new_general != nullptr) && kingdom.isEmpty())
             setKingdom(new_general->getKingdom());
-
-        emit general_changed();
     }
 }
 
@@ -554,8 +540,6 @@ void Player::setGeneral2Name(const QString &general_name)
     const General *new_general = Sanguosha->getGeneral(general_name);
     if (general2 != new_general) {
         general2 = new_general;
-
-        emit general2_changed();
     }
 }
 
@@ -592,24 +576,14 @@ QString Player::getState() const
 
 void Player::setState(const QString &state)
 {
-    if (this->state != state) {
+    if (this->state != state)
         this->state = state;
-        emit state_changed();
-    }
 }
 
 void Player::setRole(const QString &role)
 {
-    if (this->role != role) {
+    if (this->role != role)
         this->role = role;
-        emit role_changed(role);
-        if (isHegemonyGameMode(ServerInfo.GameMode)) {
-            if (role == QStringLiteral("careerist"))
-                emit kingdom_changed(QStringLiteral("careerist"));
-            else
-                emit kingdom_changed(Sanguosha->GetMappedKingdom(role));
-        }
-    }
 }
 
 QString Player::getRole() const
@@ -1122,7 +1096,6 @@ Phase Player::getPhase() const
 void Player::setPhase(Phase phase)
 {
     this->phase = phase;
-    emit phase_changed();
 }
 
 bool Player::isInMainPhase() const
@@ -1137,10 +1110,8 @@ bool Player::faceUp() const
 
 void Player::setFaceUp(bool face_up)
 {
-    if (this->face_up != face_up) {
+    if (this->face_up != face_up)
         this->face_up = face_up;
-        emit state_changed();
-    }
 }
 
 int Player::getMaxCards(const QString &except) const
@@ -1180,7 +1151,6 @@ void Player::setKingdom(const QString &kingdom)
             if (!kingdoms.contains(kingdom))
                 return;
         }
-        emit kingdom_changed(kingdom);
     }
 }
 
@@ -1294,10 +1264,8 @@ bool Player::isDebuffStatus() const
 
 void Player::setChained(bool chained)
 {
-    if (this->chained != chained) {
+    if (this->chained != chained)
         this->chained = chained;
-        emit state_changed();
-    }
 }
 
 bool Player::isRemoved() const
@@ -1307,10 +1275,8 @@ bool Player::isRemoved() const
 
 void Player::setRemoved(bool removed)
 {
-    if (this->removed != removed) {
+    if (this->removed != removed)
         this->removed = removed;
-        emit removedChanged();
-    }
 }
 
 void Player::addMark(const QString &mark, int add_num)
@@ -1875,13 +1841,11 @@ bool Player::hasShownAllGenerals() const
 void Player::setGeneralShowed(bool showed)
 {
     this->general_showed = showed;
-    emit head_state_changed();
 }
 
 void Player::setGeneral2Showed(bool showed)
 {
     this->general2_showed = showed;
-    emit deputy_state_changed();
 }
 
 bool Player::ownSkill(const QString &skill_name) const
@@ -2050,7 +2014,6 @@ void Player::setDisableShow(const QString &flags, const QString &reason)
 
     QString dis_str = flags + QLatin1Char(',') + reason;
     disable_show << dis_str;
-    emit disable_show_changed();
 }
 
 void Player::removeDisableShow(const QString &reason)
@@ -2067,8 +2030,6 @@ void Player::removeDisableShow(const QString &reason)
 
     foreach (const QString &to_remove, remove_list)
         disable_show.removeOne(to_remove);
-
-    emit disable_show_changed();
 }
 
 QStringList Player::disableShow(bool head) const
