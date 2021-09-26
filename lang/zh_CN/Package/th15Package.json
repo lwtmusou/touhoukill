@@ -77,6 +77,14 @@
   "origin:doremy": "p号：52317687，个人ID：3202270",
   "illustrator:doremy_1": "CUBY",
   "origin:doremy_1": "p号：50318152",
+  "illustrator:doremy_2": "HeikoKuru1224",
+  "origin:doremy_2": "p号：77932528；个人ID：35452386",
+  "illustrator:doremy_3": "あいに*",
+  "origin:doremy_3": "p号：76225193；个人ID：1513922",
+  "illustrator:doremy_4": "カタケイ",
+  "origin:doremy_4": "p号：74406452；个人ID：90042",
+  "illustrator:doremy_5": "here /ヘレ@お仕事募集中",
+  "origin:doremy_5": "p号：84307074；个人ID：5061948",
   "bumeng": "捕梦",
   ":bumeng": "当其他角色的牌因其弃置而进入弃牌堆后，你可以令其获得其中的一张牌，明置之，然后你可以获得剩余的一张牌，明置之。<font color=\\\"green\\\"><b>每回合限一次。</b></font>",
   "rumeng": "入梦",
@@ -105,6 +113,9 @@
   "illustrator:seiran_1": "りひと",
   "origin:seiran_1": "p号：57754046",
   "yidan": "异弹",
-  ":yidan": "出牌阶段，你可以将一张手牌当缚【杀】或秽【杀】使用（无距离与次数限制，但处于异常状态的角色不是合法目标；这两种【杀】于此阶段各限转化一次）。",
-  "#yidan": "异弹"
+  ":yidan": "<font color=\\\"green\\\"><b>出牌段限一次，</b></font>你可以将一张手牌当不计入限制的使用次数的的秽【杀】对一名有手牌且无明置手牌的角色使用。",
+  "#yidan": "异弹",
+  "xuechu": "血杵",
+  ":xuechu": "<font color=\\\"blue\\\"><b>锁定技，</b></font>当你对其他角色造成伤害后，你令其选择是否弃置一张【闪】，若其选是，其回复1点体力；当你使用指定【杀】目标后，你令所有目标不能使用【闪】响应此牌。",
+  "@xuechu": "因“血杵”的效果，你可以弃置一张【闪】来回复1点体力"
 }
