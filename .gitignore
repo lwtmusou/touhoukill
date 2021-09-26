@@ -94,6 +94,8 @@ d3dcompiler_47.dll
 /libstdc++-6.dll
 /libwinpthread-1.dll
 
+*.autosave
+
 build
 .vscode
 .qmake.stash
