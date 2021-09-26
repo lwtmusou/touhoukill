@@ -1,7 +1,6 @@
 #ifndef _PLAYER_H
 #define _PLAYER_H
 
-#include "general.h"
 #include "global.h"
 
 #include <QObject>
@@ -15,7 +14,11 @@ class DelayedTrick;
 class DistanceSkill;
 class TriggerSkill;
 class RoomObject;
+class Skill;
 class Card;
+class General;
+
+class PlayerPrivate;
 
 class Player : public QObject
 {
@@ -58,26 +61,19 @@ class Player : public QObject
 #endif
 
 public:
-    explicit Player(QObject *parent);
+    explicit Player(RoomObject *parent);
+    ~Player() override;
 
     void setScreenName(const QString &screen_name);
     QString screenName() const;
 
     // property setters/getters
-    int getChaoren() const; //for chaoren
-    void setChaoren(int chaoren);
     const IDSet &getShownHandcards() const;
     void setShownHandcards(const IDSet &ids);
     bool isShownHandcard(int id) const;
     const IDSet &getBrokenEquips() const;
     void setBrokenEquips(const IDSet &ids);
     bool isBrokenEquip(int id, bool consider_shenbao = false) const;
-    QStringList getHiddenGenerals() const;
-    void setHiddenGenerals(const QStringList &generals);
-    QString getShownHiddenGeneral() const;
-    void setShownHiddenGeneral(const QString &general);
-    bool canShowHiddenSkill() const;
-    bool isHiddenSkill(const QString &skill_name) const;
 
     int getHp() const;
     int getRenHp() const; //for banling
@@ -93,13 +89,10 @@ public:
     bool isWounded() const;
     int dyingThreshold() const;
     QSanguosha::Gender getGender() const;
-    virtual void setGender(QSanguosha::Gender gender);
+    void setGender(QSanguosha::Gender gender);
     bool isMale() const;
     bool isFemale() const;
     bool isNeuter() const;
-
-    bool isOwner() const;
-    void setOwner(bool owner);
 
     bool hasShownRole() const;
     void setShownRole(bool shown);
@@ -110,16 +103,30 @@ public:
     void setKingdom(const QString &kingdom);
 
     void setRole(const QString &role);
-    QString getRole() const;
-    QSanguosha::Role getRoleEnum() const;
+    void setRole(QSanguosha::Role role);
+    QString getRoleString() const;
+    QSanguosha::Role getRole() const;
 
-    void setGeneral(const General *general);
-    void setGeneralName(const QString &general_name);
-    QString getGeneralName() const;
+    void setGeneral(const General *general, int pos = 0);
+    const General *getGeneral(int pos = 0) const;
+    QString getGeneralName(int pos = 0) const;
 
-    void setGeneral2Name(const QString &general_name);
-    QString getGeneral2Name() const;
-    const General *getGeneral2() const;
+    inline Q_DECL_DEPRECATED const General *getGeneral2() const
+    {
+        return getGeneral(1);
+    }
+    inline Q_DECL_DEPRECATED QString getGeneral2Name() const
+    {
+        return getGeneralName(1);
+    }
+    Q_DECL_DEPRECATED void setGeneralName(const QString &name, int pos = 0);
+    Q_DECL_DEPRECATED inline void setGeneral2Name(const QString &name)
+    {
+        QT_WARNING_PUSH
+        QT_WARNING_DISABLE_DEPRECATED
+        setGeneralName(name, 1);
+        QT_WARNING_POP
+    }
 
     QString getFootnoteName() const;
 
@@ -128,8 +135,6 @@ public:
 
     int getSeat() const;
     void setSeat(int seat);
-    int getInitialSeat() const;
-    void setInitialSeat(int seat);
     bool isAdjacentTo(const Player *another) const;
     QString getPhaseString() const;
     void setPhaseString(const QString &phase_str);
@@ -141,35 +146,41 @@ public:
     bool inMyAttackRange(const Player *other) const;
 
     bool isAlive() const;
-    bool isDead() const;
+    inline bool isDead() const
+    {
+        return !isAlive();
+    }
     void setAlive(bool alive);
 
     QString getFlags() const;
     QStringList getFlagList() const;
-    virtual void setFlags(const QString &flag);
+    void setFlags(const QString &flag);
     bool hasFlag(const QString &flag) const;
     void clearFlags();
 
     bool faceUp() const;
     void setFaceUp(bool face_up);
 
-    virtual int aliveCount(bool includeRemoved = true) const = 0;
     void setFixedDistance(const Player *player, int distance);
     int originalRightDistanceTo(const Player *other) const;
     int distanceTo(const Player *other, int distance_fix = 0) const;
 
-    void setNext(Player *next);
-    void setNext(const QString &next);
-    Player *getNext(bool ignoreRemoved = true) const;
-    QString getNextName() const;
-    Player *getLast(bool ignoreRemoved = true) const;
-    Player *getNextAlive(int n = 1, bool ignoreRemoved = true) const;
-    Player *getLastAlive(int n = 1, bool ignoreRemoved = true) const;
+    Player *getNext(bool ignoreRemoved = true);
+    Player *getLast(bool ignoreRemoved = true);
+    Player *getNextAlive(int n = 1, bool ignoreRemoved = true);
+    Player *getLastAlive(int n = 1, bool ignoreRemoved = true);
+
+    const Player *getNext(bool ignoreRemoved = true) const;
+    const Player *getLast(bool ignoreRemoved = true) const;
+    const Player *getNextAlive(int n = 1, bool ignoreRemoved = true) const;
+    const Player *getLastAlive(int n = 1, bool ignoreRemoved = true) const;
 
     const General *getAvatarGeneral() const;
-    const General *getGeneral() const;
 
-    bool isLord() const;
+    inline bool isLord() const
+    {
+        return getRole() == QSanguosha::RoleLord;
+    }
     bool isCurrent() const;
 
     void acquireSkill(const QString &skill_name, bool head = true);
@@ -233,7 +244,7 @@ public:
 
     void addMark(const QString &mark, int add_num = 1);
     void removeMark(const QString &mark, int remove_num = 1);
-    virtual void setMark(const QString &mark, int value);
+    void setMark(const QString &mark, int value);
     int getMark(const QString &mark) const;
     QMap<QString, int> getMarkMap() const;
 
@@ -280,11 +291,11 @@ public:
     bool canSlashWithoutCrossbow(const Card *slash = nullptr) const;
     virtual bool isLastHandCard(const Card *card, bool contain = false) const = 0;
 
-    inline bool isJilei(const Card *card) const
+    inline Q_DECL_DEPRECATED bool isJilei(const Card *card) const
     {
         return isCardLimited(card, QSanguosha::MethodDiscard);
     }
-    inline bool isLocked(const Card *card) const
+    inline Q_DECL_DEPRECATED bool isLocked(const Card *card) const
     {
         return isCardLimited(card, QSanguosha::MethodUse);
     }
@@ -298,9 +309,6 @@ public:
     // just for convenience
     void addQinggangTag(const Card *card);
     void removeQinggangTag(const Card *card);
-
-    QList<const Player *> getSiblings() const;
-    QList<const Player *> getAliveSiblings() const;
 
     bool hasShownSkill(const Skill *skill) const; //hegemony
     bool hasShownSkill(const QString &skill_name) const; //hegemony
@@ -329,10 +337,14 @@ public:
 
     const Player *getLord(bool include_death = false) const;
 
-    virtual RoomObject *roomObject() const = 0;
+    RoomObject *roomObject() const;
 
     QVariantMap tag;
 
+private:
+    PlayerPrivate *d;
+
+#if 0
 protected:
     QMap<QString, int> marks;
     QMap<QString, IDSet> piles;
@@ -388,7 +400,6 @@ private:
     QMap<QSanguosha::HandlingMethod, QMap<QString, QStringList>> card_limitation; //method, reason , pattern
     QStringList disable_show;
 
-#if 0
 
 signals:
     void general_changed();

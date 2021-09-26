@@ -3,6 +3,7 @@
 #include "client.h"
 #include "clientplayer.h"
 #include "engine.h"
+#include "general.h"
 #include "roomscene.h"
 #include "util.h"
 
@@ -399,17 +400,19 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
         QString HegSkillname = engskillname + QStringLiteral("_hegemony");
         QString generalName;
 
-        foreach (const Player *p, Self->getSiblings()) {
-            const General *general = p->getGeneral();
-            if (general->hasSkill(engskillname) || general->hasSkill(HegSkillname)) {
-                generalName = general->name();
-                break;
-            }
-            if (ServerInfo.Enable2ndGeneral) {
-                const General *general2 = p->getGeneral2();
-                if (general2->hasSkill(engskillname) || general2->hasSkill(HegSkillname)) {
-                    generalName = general2->name();
+        foreach (const Player *p, ClientInstance->players()) {
+            if (p != Self) {
+                const General *general = p->getGeneral();
+                if (general->hasSkill(engskillname) || general->hasSkill(HegSkillname)) {
+                    generalName = general->name();
                     break;
+                }
+                if (ServerInfo.Enable2ndGeneral) {
+                    const General *general2 = p->getGeneral2();
+                    if (general2->hasSkill(engskillname) || general2->hasSkill(HegSkillname)) {
+                        generalName = general2->name();
+                        break;
+                    }
                 }
             }
         }

@@ -168,11 +168,14 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, const QString 
                         }
                     } else if (p.startsWith(QStringLiteral("%"))) {
                         p = p.mid(1);
-                        foreach (const Player *pl, player->getAliveSiblings())
+                        foreach (const Player *pl, player->roomObject()->players(false)) {
+                            if (pl == player)
+                                continue;
                             if (!pl->getPile(p).isEmpty() && pl->getPile(p).contains(id)) {
                                 checkpoint = true;
                                 break;
                             }
+                        }
                     } else if ((p == QStringLiteral("sqchuangshi")) && card->effectiveID() >= 0 && !player->hasEquip(card)) {
                         checkpoint = true;
                     } else if (p == QStringLiteral("shehuo") && card->effectiveID() >= 0 && !player->hasEquip(card)) {

@@ -1,6 +1,7 @@
 #include "GenericCardContainerUI.h"
 #include "clientplayer.h"
 #include "engine.h"
+#include "general.h"
 #include "graphicspixmaphoveritem.h"
 #include "roomscene.h"
 #include "util.h"
@@ -392,12 +393,12 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
     if (pile_name == QStringLiteral("shown_card"))
         pile = player->getShownHandcards();
     else if (pile_name == QStringLiteral("huashencard")) {
-        int n = player->getHiddenGenerals().length();
-        if (n == 0)
-            return;
-        for (int i = 0; i < n; i++) {
-            pile << (i + 1);
-        }
+        //        int n = player->getHiddenGenerals().length();
+        //        if (n == 0)
+        //            return;
+        //        for (int i = 0; i < n; i++) {
+        //            pile << (i + 1);
+        //        }
     } else
         pile = player->getPile(pile_name);
 
@@ -623,11 +624,11 @@ void PlayerCardContainer::repaintAll()
     }
 
     if (_m_seatItem != nullptr) {
-        _paintPixmap(_m_seatItem, _m_layout->m_seatIconRegion, _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER), QString::number(m_player->getInitialSeat())),
+        _paintPixmap(_m_seatItem, _m_layout->m_seatIconRegion, _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER), QString::number(m_player->getSeat())),
                      _getAvatarParent());
         if (ServerInfo.Enable2ndGeneral && getPlayer() == Self)
-            _paintPixmap(_m_seatItem, _m_layout->m_seatIconRegionDouble,
-                         _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER), QString::number(m_player->getInitialSeat())), _getAvatarParent());
+            _paintPixmap(_m_seatItem, _m_layout->m_seatIconRegionDouble, _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER), QString::number(m_player->getSeat())),
+                         _getAvatarParent());
     }
 
     if (!isHegemonyGameMode(ServerInfo.GameMode) && _m_roleComboBox != nullptr)
@@ -680,9 +681,9 @@ void PlayerCardContainer::setPlayer(ClientPlayer *player)
         // connect(player, &Player::kingdom_changed, this, &PlayerCardContainer::updateAvatar);
         // connect(player, &ClientPlayer::state_changed, this, &PlayerCardContainer::refresh);
         // connect(player, &ClientPlayer::phase_changed, this, &PlayerCardContainer::updatePhase);
-        connect(player, &ClientPlayer::drank_changed, this, &PlayerCardContainer::updateDrankState);
-        connect(player, &ClientPlayer::action_taken, this, &PlayerCardContainer::refresh);
-        connect(player, &ClientPlayer::pile_changed, this, &PlayerCardContainer::updatePile);
+        //        connect(player, &ClientPlayer::drank_changed, this, &PlayerCardContainer::updateDrankState);
+        //        connect(player, &ClientPlayer::action_taken, this, &PlayerCardContainer::refresh);
+        //        connect(player, &ClientPlayer::pile_changed, this, &PlayerCardContainer::updatePile);
         // if (isHegemonyGameMode(ServerInfo.GameMode))
         //  connect(player, &ClientPlayer::kingdom_changed, _m_hegemonyroleComboBox, &HegemonyRoleComboBox::fix);
         // else
@@ -1227,10 +1228,10 @@ void PlayerCardContainer::_updateDeathIcon()
 void PlayerCardContainer::killPlayer()
 {
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
-        _m_hegemonyroleComboBox->fix(m_player->getRole() == QStringLiteral("careerist") ? QStringLiteral("careerist") : m_player->getRole());
+        _m_hegemonyroleComboBox->fix(m_player->getRoleString() == QStringLiteral("careerist") ? QStringLiteral("careerist") : m_player->getRoleString());
         _m_hegemonyroleComboBox->setEnabled(false);
     } else {
-        _m_roleComboBox->fix(m_player->getRole());
+        _m_roleComboBox->fix(m_player->getRoleString());
         _m_roleComboBox->setEnabled(false);
     }
 

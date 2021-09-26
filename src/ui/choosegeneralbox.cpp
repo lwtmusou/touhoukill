@@ -26,6 +26,7 @@
 #include "client.h"
 #include "clientplayer.h"
 #include "engine.h"
+#include "general.h"
 #include "roomscene.h"
 
 #include <QApplication>

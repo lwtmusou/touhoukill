@@ -249,7 +249,7 @@ void Client::setShownHandCards(const QVariant &card_var)
 
     ClientPlayer *player = RefactorProposal::fixme_cast<ClientPlayer *>(findPlayer(who));
     player->setShownHandcards(IDSet(card_ids.begin(), card_ids.end()));
-    player->changePile(QStringLiteral("shown_card"), true, card_ids);
+    //  player->changePile(QStringLiteral("shown_card"), true, card_ids);
 }
 
 void Client::setBrokenEquips(const QVariant &card_var)
@@ -286,8 +286,8 @@ void Client::setHiddenGenerals(const QVariant &arg)
             names << QStringLiteral("sujiangf");
     }
     ClientPlayer *player = RefactorProposal::fixme_cast<ClientPlayer *>(findPlayer(who));
-    player->setHiddenGenerals(names);
-    player->changePile(QStringLiteral("huashencard"), false, QList<int>());
+    // player->setHiddenGenerals(names);
+    // player->changePile(QStringLiteral("huashencard"), false, QList<int>());
 }
 
 void Client::setShownHiddenGeneral(const QVariant &arg)
@@ -300,7 +300,6 @@ void Client::setShownHiddenGeneral(const QVariant &arg)
     QString general = str[1].toString();
 
     Player *player = findPlayer(who);
-    player->setShownHiddenGeneral(general);
 }
 
 void Client::signup()
@@ -558,9 +557,9 @@ void Client::getCards(const QVariant &arg)
         move.to = findPlayer(move.to_player_name);
         QSanguosha::Place dstPlace = move.to_place;
 
-        if (dstPlace == QSanguosha::PlaceSpecial)
-            ((ClientPlayer *)move.to)->changePile(move.to_pile_name, true, move.card_ids);
-        else {
+        if (dstPlace == QSanguosha::PlaceSpecial) {
+            //((ClientPlayer *)move.to)->changePile(move.to_pile_name, true, move.card_ids);
+        } else {
             foreach (int card_id, move.card_ids)
                 _getSingleCard(card_id, move); // DDHEJ->DDHEJ, DDH/EJ->EJ
         }
@@ -583,9 +582,9 @@ void Client::loseCards(const QVariant &arg)
         move.from = findPlayer(move.from_player_name);
         move.to = findPlayer(move.to_player_name);
         QSanguosha::Place srcPlace = move.from_place;
-        if (srcPlace == QSanguosha::PlaceSpecial)
-            ((ClientPlayer *)move.from)->changePile(move.from_pile_name, false, move.card_ids);
-        else {
+        if (srcPlace == QSanguosha::PlaceSpecial) {
+            // ((ClientPlayer *)move.from)->changePile(move.from_pile_name, false, move.card_ids);
+        } else {
             foreach (int card_id, move.card_ids)
                 _loseSingleCard(card_id, move); // DDHEJ->DDHEJ, DDH/EJ->EJ
         }
@@ -1005,10 +1004,10 @@ QString Client::getPlayerName(const QString &str)
         if (isHegemonyGameMode(ServerInfo.GameMode)) {
             if (ServerInfo.Enable2ndGeneral) {
                 if (player->getGeneralName() == QStringLiteral("anjiang") && player->getGeneral2() != nullptr && player->getGeneral2Name() == QStringLiteral("anjiang")) {
-                    general_name = Sanguosha->translate(QStringLiteral("SEAT(%1)").arg(QString::number(player->getInitialSeat())));
+                    general_name = Sanguosha->translate(QStringLiteral("SEAT(%1)").arg(QString::number(player->getSeat())));
                 }
             } else if (player->getGeneralName() == QStringLiteral("anjiang")) {
-                general_name = Sanguosha->translate(QStringLiteral("SEAT(%1)").arg(QString::number(player->getInitialSeat())));
+                general_name = Sanguosha->translate(QStringLiteral("SEAT(%1)").arg(QString::number(player->getSeat())));
             }
         }
 
@@ -1515,7 +1514,7 @@ void Client::gameOver(const QVariant &arg)
 
     QSet<QString> winners = QSet<QString>(winnersList.begin(), winnersList.end());
     foreach (Player *player, players()) {
-        QString role = player->getRole();
+        QString role = player->getRoleString();
         bool win = winners.contains(player->objectName()) || winners.contains(role);
         player->setProperty("win", win);
     }

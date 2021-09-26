@@ -13,23 +13,6 @@ ClientPlayer::ClientPlayer(Client *client)
     mark_doc = new QTextDocument(this);
 }
 
-int ClientPlayer::aliveCount(bool includeRemoved) const
-{
-    const Client *client = qobject_cast<Client *>(parent());
-    if (client == nullptr)
-        return -1;
-
-    int n = client->alivePlayerCount();
-    if (!includeRemoved) {
-        if (isRemoved())
-            n--;
-        foreach (const Player *p, getAliveSiblings())
-            if (p->isRemoved())
-                n--;
-    }
-    return n;
-}
-
 int ClientPlayer::getHandcardNum() const
 {
     return handcard_num;
@@ -128,42 +111,16 @@ QTextDocument *ClientPlayer::getMarkDoc() const
     return mark_doc;
 }
 
-void ClientPlayer::changePile(const QString &name, bool add, QList<int> card_ids)
-{
-    if (name == QStringLiteral("shown_card") || name == QStringLiteral("huashencard"))
-        emit pile_changed(name);
-    else {
-        if (add) {
-            foreach (int id, card_ids)
-                piles[name] << id;
-        } else {
-            foreach (int card_id, card_ids) {
-                if (piles[name].isEmpty())
-                    break;
-                if (piles[name].contains(Card::S_UNKNOWN_CARD_ID) && !piles[name].contains(card_id))
-                    piles[name].remove(Card::S_UNKNOWN_CARD_ID);
-                else if (piles[name].contains(card_id))
-                    piles[name].remove(card_id);
-                else
-                    piles[name].remove(*piles[name].cbegin());
-            }
-        }
-
-        if (!name.startsWith(QStringLiteral("#")))
-            emit pile_changed(name);
-    }
-}
-
 QString ClientPlayer::getDeathPixmapPath() const
 {
     QString basename;
     if (ServerInfo.GameMode == QStringLiteral("06_3v3") || ServerInfo.GameMode == QStringLiteral("06_XMode")) {
-        if (getRole() == QStringLiteral("lord") || getRole() == QStringLiteral("renegade"))
+        if (getRoleString() == QStringLiteral("lord") || getRoleString() == QStringLiteral("renegade"))
             basename = QStringLiteral("marshal");
         else
             basename = QStringLiteral("guard");
     } else
-        basename = getRole();
+        basename = getRoleString();
 
     if (basename.isEmpty())
         basename = QStringLiteral("unknown");
@@ -174,62 +131,6 @@ QString ClientPlayer::getDeathPixmapPath() const
 void ClientPlayer::setHandcardNum(int n)
 {
     handcard_num = n;
-}
-
-void ClientPlayer::setFlags(const QString &flag)
-{
-    Player::setFlags(flag);
-
-    if (flag.endsWith(QStringLiteral("actioned")))
-        emit action_taken();
-
-    emit skill_state_changed(flag);
-}
-
-void ClientPlayer::setMark(const QString &mark, int value)
-{
-    if (marks[mark] == value)
-        return;
-    marks[mark] = value;
-
-    if (mark == QStringLiteral("drank") || mark == QStringLiteral("magic_drank"))
-        emit drank_changed();
-
-    if (!mark.startsWith(QStringLiteral("@")))
-        return;
-
-        // @todo: consider move all the codes below to PlayerCardContainerUI.cpp
-#if 0
-    // set mark doc
-    QString text = "";
-    QMapIterator<QString, int> itor(marks);
-    while (itor.hasNext()) {
-        itor.next();
-
-        if (itor.key().startsWith("@") && itor.value() > 0) {
-            if (this == Self && (itor.key() == "@HalfLife" || itor.key() == "@CompanionEffect" || itor.key() == "@Pioneer"))
-                continue;
-
-            QString itorKey = itor.key();
-            if (itorKey == "@dimai_displaying")
-                itorKey.append(QString::number(itor.value()));
-
-            QString mark_text = QString("<img src='image/mark/%1.png' />").arg(itorKey);
-            if ((itor.key() != "@dimai_displaying") && (itor.value() != 1))
-                mark_text.append(QString("<font size='4'>%1</font>").arg(itor.value()));
-            if (this != Self)
-                mark_text.append("<br>");
-            text.append(mark_text);
-        }
-    }
-
-    mark_doc->setHtml(text);
-#endif
-}
-
-RoomObject *ClientPlayer::roomObject() const
-{
-    return getClient();
 }
 
 Client *ClientPlayer::getClient() const

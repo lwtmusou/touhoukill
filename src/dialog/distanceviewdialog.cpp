@@ -115,7 +115,7 @@ void DistanceViewDialog::showDistance()
         int right_distance = from->originalRightDistanceTo(to);
         ui->right->setText(QString::number(right_distance));
 
-        int left_distance = from->aliveCount(false) - right_distance;
+        int left_distance = ClientInstance->players(false, false).length() - right_distance;
         ui->left->setText(QString::number(left_distance));
 
         int min = qMin(left_distance, right_distance);

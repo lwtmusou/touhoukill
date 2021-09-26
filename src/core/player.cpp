@@ -2,87 +2,180 @@
 #include "client.h"
 #include "engine.h"
 #include "exppattern.h"
+#include "general.h"
 #include "settings.h"
 #include "util.h"
 
 using namespace QSanguosha;
 
-Player::Player(QObject *parent)
-    : QObject(parent)
-    , owner(false)
-    , general(nullptr)
-    , general2(nullptr)
-    , m_gender(Sexless)
-    , hp(-1)
-    , max_hp(-1)
-    , renhp(-1)
-    , linghp(-1)
-    , dyingFactor(0)
-    , chaoren(-1)
-    , role_shown(false)
-    , state(QStringLiteral("online"))
-    , seat(0)
-    , initialSeat(0)
-    , alive(true)
-    , general_showed(false)
-    , general2_showed(false) //hegemony
-    , phase(PhaseNotActive)
-    , weapon(nullptr)
-    , armor(nullptr)
-    , defensive_horse(nullptr)
-    , offensive_horse(nullptr)
-    , treasure(nullptr)
-    , face_up(true)
-    , chained(false)
-    , removed(false)
+class PlayerPrivate
 {
+public:
+    // Player is class shared from Server and Client.
+    // for Server, all information is preserved.
+    // but for Client, only part of them are exposed in order not to leak message from protocol.
+    // We call data which should be exposed to Client as Public Data, and ones which shouldn't as Secret Data.
+
+    // For Sanguosha, the secret data is only Handcard ids and Role.
+    // Other things such as general, number of Handcard, Equip id, kingdom, gender, hp/maxhp, etc., are all public data.
+
+    // Game essentials:
+    RoomObject *room;
+    QString screenName; // a better name may be UserName?
+    QString state; // A limited set of "online", "offline", "trust", "robot", which indicates how the player's actual network and/or playing state, considering to refactor to enum
+
+    // Public Data:
+    QList<const General *> generals;
+    QList<bool> generalShowed; // for Hegemony
+    Gender gender;
+    int hp;
+    int linghp; // for skill 'banling', which devides the HP to 2 parts
+    int renhp;
+    int maxHp;
+    int dyingFactor; // maybe renamed to minHP
+    bool alive;
+    QString kingdom; // Also used as Role for Hegemony mode. Careerist should also be dealt in this property
+    Role role; // only for Role mode, not for Hegemony mode anymore. Secret data but will be public at some time
+    bool roleShown;
+    int seat;
+    Phase phase;
+    bool turnSkipping; // Turned over in Role mode and Put stacked in Hegemony mode. Original !face_up
+    bool chained;
+    bool removed;
+
+    // use int here. Card can be obtained from RoomObject
+    int weapon;
+    int armor;
+    int defensiveHorse;
+    int offensiveHorse;
+    int treasure;
+    QList<int> judgingArea; // DO NOT USE IDSet SINCE THIS SHOULD KEEP ORIGINAL ORDER
+    int handCardNum;
+
+    QHash<const Player *, int> fixedDistance;
+    QMap<HandlingMethod, QMap<QString, QStringList>> cardLimitation; // method, reason, pattern
+    QStringList disableShow;
+
+    // original mark is only visible if it starts with '@'. The refactor proposal is to make mark always visible
+    QMap<QString, int> marks;
+    QSet<QString> flags;
+    QHash<QString, int> history;
+    QMap<QString, IDSet> piles;
+    QSet<QString> acquiredSkills; // Acquired skills isn't split into parts by game rule
+    QList<QMap<QString, bool>> skills; // General card skill
+    QStringList skillInvalid;
+    IDSet shownHandcards;
+    IDSet brokenEquips;
+
+    QList<const Card *> handcards; // a.k.a. knownHandCards in client side
+
+    PlayerPrivate(RoomObject *room)
+        : room(room)
+        , gender(Sexless)
+        , hp(-1)
+        , linghp(-1)
+        , renhp(-1)
+        , maxHp(-1)
+        , dyingFactor(-1)
+        , alive(true)
+        , role(RoleLord)
+        , roleShown(false)
+        , seat(0)
+        , phase(PhaseNone)
+        , turnSkipping(false)
+        , chained(false)
+        , removed(false)
+        , weapon(-1)
+        , armor(-1)
+        , defensiveHorse(-1)
+        , offensiveHorse(-1)
+        , treasure(-1)
+        , handCardNum(0)
+
+    {
+    }
+
+    // other data which belonged to original protected and private part of Player and got removed during refactor
+#if 0
+    // ------ Player ------
+    // They are properties which is related to a specific skill.
+    // unlike 'banling' which changed the core property and must be coupled into Player
+    QStringList hidden_generals; //for anyun
+    QString shown_hidden_general; // Fs: I remembered that Huashen isn't implemented using these variable. Tempoaray put it away until I found another solution
+    int chaoren;
+
+    QMap<QString, QStringList> pile_open; // Fs: only used to classify move in server side. Not that important since secret pile should remain its security.
+    QStringList skills_originalOrder, skills2_originalOrder; //equals  skills.keys().  unlike QMap, QStringList will keep originalOrder // Fs: removed due to meanless
+    bool owner; // Fs: for request & response
+    int initialSeat; //for record
+    QString next;
+
+    // ------ ServerPlayer ------
+    QSemaphore **semas;
+    static const int S_NUM_SEMAPHORES;
+    ClientSocket *socket;
+    Room *room;
+    Recorder *recorder;
+    QList<QSanguosha::Phase> phases;
+    int _m_phases_index;
+    QList<PhaseStruct> _m_phases_state;
+    QStringList selected; // 3v3 mode use only
+    QDateTime test_time;
+    QString m_clientResponseString;
+    QVariant _m_clientResponse;
+    bool ready;
+
+    // ------ ClientPlayer ------
+    QTextDocument *mark_doc; // originally this one is todo in ClientPlayer
+
+#endif
+};
+
+Player::Player(RoomObject *parent)
+    : QObject(parent)
+    , d(new PlayerPrivate(parent))
+{
+}
+
+Player::~Player()
+{
+    delete d;
 }
 
 void Player::setScreenName(const QString &screen_name)
 {
-    this->screen_name = screen_name;
+    d->screenName = screen_name;
 }
 
 QString Player::screenName() const
 {
-    return screen_name;
-}
-
-bool Player::isOwner() const
-{
-    return owner;
-}
-
-void Player::setOwner(bool owner)
-{
-    if (this->owner != owner)
-        this->owner = owner;
+    return d->screenName;
 }
 
 bool Player::hasShownRole() const
 {
-    return role_shown;
+    return d->roleShown;
 }
 
 void Player::setShownRole(bool shown)
 {
-    this->role_shown = shown;
+    d->roleShown = shown;
 }
 
 void Player::setHp(int hp)
 {
     bool changed = false;
-    if (this->hp != hp) {
-        this->hp = hp;
+    if (d->hp != hp) {
+        d->hp = hp;
         changed = true;
     }
     if (hasSkill(QStringLiteral("banling"))) {
-        if (this->renhp != hp) {
-            this->renhp = hp;
+        if (d->renhp != hp) {
+            d->renhp = hp;
             changed = true;
         }
-        if (this->linghp != hp) {
-            this->linghp = hp;
+        if (d->linghp != hp) {
+            d->linghp = hp;
             changed = true;
         }
     }
@@ -92,13 +185,16 @@ int Player::getHp() const
 {
     if (hasSkill(QStringLiteral("huanmeng")))
         return 0;
-    return hp;
+    return d->hp;
 }
 
 int Player::dyingThreshold() const
 {
-    int value = 1 + dyingFactor;
-    foreach (const Player *p, getAliveSiblings()) {
+    int value = 1 + d->dyingFactor;
+    foreach (const Player *p, d->room->players()) {
+        if (p == this)
+            continue;
+
         if (p->isCurrent() && p->hasSkill(QStringLiteral("yousi")))
             value = qMax(0, p->getHp());
     }
@@ -107,238 +203,171 @@ int Player::dyingThreshold() const
 
 void Player::setRenHp(int renhp)
 {
-    if (this->renhp != renhp) {
-        this->renhp = renhp;
-        if (qMin(this->linghp, this->renhp) != this->hp)
-            this->hp = qMin(this->linghp, this->renhp);
+    if (d->renhp != renhp) {
+        d->renhp = renhp;
+        if (qMin(d->linghp, d->renhp) != d->hp)
+            d->hp = qMin(d->linghp, d->renhp);
     }
 }
 
 void Player::setLingHp(int linghp)
 {
-    if (this->linghp != linghp) {
-        this->linghp = linghp;
-        if (qMin(this->linghp, this->renhp) != this->hp)
-            this->hp = qMin(this->linghp, this->renhp);
+    if (d->linghp != linghp) {
+        d->linghp = linghp;
+        if (qMin(d->linghp, d->renhp) != d->hp)
+            d->hp = qMin(d->linghp, d->renhp);
     }
 }
 
 void Player::setDyingFactor(int dyingFactor)
 {
-    if (this->dyingFactor != dyingFactor)
-        this->dyingFactor = dyingFactor;
+    if (d->dyingFactor != dyingFactor)
+        d->dyingFactor = dyingFactor;
 }
 
 int Player::getRenHp() const
 {
-    return renhp;
+    return d->renhp;
 }
 
 int Player::getLingHp() const
 {
-    return linghp;
+    return d->linghp;
 }
 
 int Player::getDyingFactor() const
 {
-    return dyingFactor;
-}
-
-int Player::getChaoren() const
-{
-    return chaoren;
-}
-
-void Player::setChaoren(int chaoren)
-{
-    if (this->chaoren != chaoren)
-        this->chaoren = chaoren;
+    return d->dyingFactor;
 }
 
 const IDSet &Player::getShownHandcards() const
 {
-    return shown_handcards;
+    return d->shownHandcards;
 }
 
 void Player::setShownHandcards(const IDSet &ids)
 {
-    this->shown_handcards = ids;
+    d->shownHandcards = ids;
 }
 
 bool Player::isShownHandcard(int id) const
 {
-    if (shown_handcards.isEmpty() || id < 0)
+    if (d->shownHandcards.isEmpty() || id < 0)
         return false;
-    return shown_handcards.contains(id);
+    return d->shownHandcards.contains(id);
 }
 
 const IDSet &Player::getBrokenEquips() const
 {
-    return broken_equips;
+    return d->brokenEquips;
 }
 
 void Player::setBrokenEquips(const IDSet &ids)
 {
-    this->broken_equips = ids;
+    d->brokenEquips = ids;
 }
 
 bool Player::isBrokenEquip(int id, bool consider_shenbao) const
 {
-    if (broken_equips.isEmpty() || id < 0)
+    if (d->brokenEquips.isEmpty() || id < 0)
         return false;
 
     if (consider_shenbao)
-        return broken_equips.contains(id) && !hasSkill(QStringLiteral("shenbao"), false, false);
-    return broken_equips.contains(id);
-}
-
-QStringList Player::getHiddenGenerals() const
-{
-    return hidden_generals;
-}
-
-void Player::setHiddenGenerals(const QStringList &generals)
-{
-    this->hidden_generals = generals;
-}
-
-bool Player::canShowHiddenSkill() const
-{
-    if (!shown_hidden_general.isNull()) {
-        const General *hidden = Sanguosha->getGeneral(shown_hidden_general);
-        if (hidden != nullptr)
-            return false;
-    }
-    return !hidden_generals.isEmpty();
-}
-
-bool Player::isHiddenSkill(const QString &skill_name) const
-{
-    if (hasSkill(skill_name, false, false))
-        return false;
-    QString name = getShownHiddenGeneral();
-    if (!name.isNull()) {
-        const General *hidden = Sanguosha->getGeneral(name);
-        if ((hidden != nullptr) && hidden->hasSkill(skill_name))
-            return false;
-    }
-    return hasSkill(skill_name);
-}
-
-QString Player::getShownHiddenGeneral() const
-{
-    return shown_hidden_general;
-}
-
-void Player::setShownHiddenGeneral(const QString &general)
-{
-    this->shown_hidden_general = general;
+        return d->brokenEquips.contains(id) && !hasSkill(QStringLiteral("shenbao"), false, false);
+    return d->brokenEquips.contains(id);
 }
 
 int Player::getMaxHp() const
 {
-    if (hasSkill(QStringLiteral("huanmeng"))) {
+    if (hasSkill(QStringLiteral("huanmeng")))
         return 0;
-    }
-    return max_hp;
+
+    return d->maxHp;
 }
 
 void Player::setMaxHp(int max_hp)
 {
-    if (this->max_hp == max_hp)
+    if (d->maxHp == max_hp)
         return;
-    this->max_hp = max_hp;
-    if (hp > max_hp)
-        hp = max_hp;
+    d->maxHp = max_hp;
+    if (d->hp > max_hp)
+        d->hp = max_hp;
 }
 
 int Player::getLostHp() const
 {
-    return max_hp - qMax(getHp(), 0);
+    return d->maxHp - qMax(getHp(), 0);
 }
 
 bool Player::isWounded() const
 {
-    if (hp < 0)
+    if (d->hp < 0)
         return true;
     else
-        return getHp() < max_hp;
+        return getHp() < d->maxHp;
 }
 
 Gender Player::getGender() const
 {
-    return m_gender;
+    return d->gender;
 }
 
 void Player::setGender(Gender gender)
 {
-    m_gender = gender;
+    d->gender = gender;
 }
 
 bool Player::isMale() const
 {
-    return m_gender == Male;
+    return d->gender == Male;
 }
 
 bool Player::isFemale() const
 {
-    return m_gender == Female;
+    return d->gender == Female;
 }
 
 bool Player::isNeuter() const
 {
-    return m_gender == Neuter;
+    return d->gender == Neuter;
 }
 
 int Player::getSeat() const
 {
-    return seat;
+    return d->seat;
 }
 
 void Player::setSeat(int seat)
 {
-    this->seat = seat;
-}
-
-int Player::getInitialSeat() const
-{
-    return initialSeat;
-}
-
-void Player::setInitialSeat(int seat)
-{
-    this->initialSeat = seat;
+    d->seat = seat;
 }
 
 bool Player::isAdjacentTo(const Player *another) const
 {
-    int alive_length = 1 + getAliveSiblings().length();
-    return qAbs(seat - another->seat) == 1 || (seat == 1 && another->seat == alive_length) || (seat == alive_length && another->seat == 1);
+    int alive_length = d->room->players(false).count();
+    return qAbs(d->seat - another->getSeat()) == 1 || (d->seat == 1 && another->getSeat() == alive_length) || (d->seat == alive_length && another->getSeat() == 1);
 }
 
 bool Player::isAlive() const
 {
-    return alive;
-}
-
-bool Player::isDead() const
-{
-    return !alive;
+    return d->alive;
 }
 
 void Player::setAlive(bool alive)
 {
-    this->alive = alive;
+    d->alive = alive;
 }
 
 QString Player::getFlags() const
 {
-    return QStringList(flags.values()).join(QStringLiteral("|"));
+    // QStringList constructor is needed for Qt 5 compatibility
+    // Since Qt 6 QStringList is exactly equal to QList<QString>
+    return QStringList(d->flags.values()).join(QStringLiteral("|"));
 }
 
 QStringList Player::getFlagList() const
 {
-    return QStringList(flags.values());
+    return d->flags.values();
 }
 
 void Player::setFlags(const QString &flag)
@@ -351,20 +380,20 @@ void Player::setFlags(const QString &flag)
     if (flag.startsWith(unset_symbol)) {
         QString copy = flag;
         copy.remove(unset_symbol);
-        flags.remove(copy);
+        d->flags.remove(copy);
     } else {
-        flags.insert(flag);
+        d->flags.insert(flag);
     }
 }
 
 bool Player::hasFlag(const QString &flag) const
 {
-    return flags.contains(flag);
+    return d->flags.contains(flag);
 }
 
 void Player::clearFlags()
 {
-    flags.clear();
+    d->flags.clear();
 }
 
 int Player::getAttackRange(bool include_weapon) const
@@ -372,7 +401,7 @@ int Player::getAttackRange(bool include_weapon) const
     if (hasFlag(QStringLiteral("InfinityAttackRange")) || getMark(QStringLiteral("InfinityAttackRange")) > 0)
         return 1000;
 
-    include_weapon = include_weapon && weapon != nullptr;
+    include_weapon = include_weapon && d->weapon != -1;
 
     int fixeddis = Sanguosha->correctAttackRange(this, include_weapon, true);
     if (fixeddis > 0)
@@ -382,9 +411,9 @@ int Player::getAttackRange(bool include_weapon) const
     int weapon_range = 0;
 
     if (include_weapon) {
-        const Weapon *face = qobject_cast<const Weapon *>(weapon->face());
+        const Weapon *face = qobject_cast<const Weapon *>(d->room->getCard(d->weapon)->face());
         Q_ASSERT(face);
-        if (!isBrokenEquip(weapon->effectiveID(), true))
+        if (!isBrokenEquip(d->weapon, true))
             weapon_range = face->range();
     }
 
@@ -410,9 +439,9 @@ bool Player::inMyAttackRange(const Player *other) const
 void Player::setFixedDistance(const Player *player, int distance)
 {
     if (distance == -1)
-        fixed_distance.remove(player);
+        d->fixedDistance.remove(player);
     else
-        fixed_distance.insert(player, distance);
+        d->fixedDistance.insert(player, distance);
 }
 
 int Player::originalRightDistanceTo(const Player *other) const
@@ -437,15 +466,15 @@ int Player::distanceTo(const Player *other, int distance_fix) const
     int distance_limit = 0;
     if (hasSkill(QStringLiteral("chuanwu")))
         distance_limit = qMax(other->getHp(), 1);
-    if (fixed_distance.contains(other)) {
-        if (distance_limit > 0 && fixed_distance.value(other) > distance_limit)
+    if (d->fixedDistance.contains(other)) {
+        if (distance_limit > 0 && d->fixedDistance.value(other) > distance_limit)
             return distance_limit;
         else
-            return fixed_distance.value(other);
+            return d->fixedDistance.value(other);
     }
 
     int right = originalRightDistanceTo(other);
-    int left = aliveCount(false) - right;
+    int left = d->room->players(false, false).length() - right;
     int distance = qMin(left, right);
 
     distance += Sanguosha->correctDistance(this, other);
@@ -459,139 +488,128 @@ int Player::distanceTo(const Player *other, int distance_fix) const
     return distance;
 }
 
-void Player::setNext(Player *next)
+Player *Player::getNext(bool ignoreRemoved)
 {
-    this->next = next->objectName();
+    return d->room->findAdjecentPlayer(this, true, true, !ignoreRemoved);
 }
 
-void Player::setNext(const QString &next)
+Player *Player::getLast(bool ignoreRemoved)
 {
-    this->next = next;
+    return d->room->findAdjecentPlayer(this, false, true, !ignoreRemoved);
 }
 
-Player *Player::getNext(bool ignoreRemoved) const
+Player *Player::getNextAlive(int n, bool ignoreRemoved)
 {
-    Player *next_p = parent()->findChild<Player *>(next);
-    if (ignoreRemoved && next_p->isRemoved())
-        return next_p->getNext(ignoreRemoved);
-    return next_p;
-}
-
-QString Player::getNextName() const
-{
-    return next;
-}
-
-Player *Player::getLast(bool ignoreRemoved) const
-{
-    foreach (Player *p, parent()->findChildren<Player *>()) {
-        if (p->getNext(ignoreRemoved) == this)
+    Player *p = getNext(ignoreRemoved);
+    if (p->isAlive()) {
+        n = n - 1;
+        if (n == 0)
             return p;
     }
+
+    return p->getNextAlive(n, ignoreRemoved);
+}
+
+Player *Player::getLastAlive(int n, bool ignoreRemoved)
+{
+    Player *p = getLast(ignoreRemoved);
+    if (p->isAlive()) {
+        n = n - 1;
+        if (n == 0)
+            return p;
+    }
+
+    return p->getLastAlive(n, ignoreRemoved);
+}
+
+const Player *Player::getNext(bool ignoreRemoved) const
+{
+    return d->room->findAdjecentPlayer(this, true, true, !ignoreRemoved);
+}
+
+const Player *Player::getLast(bool ignoreRemoved) const
+{
+    return d->room->findAdjecentPlayer(this, false, true, !ignoreRemoved);
+}
+
+const Player *Player::getNextAlive(int n, bool ignoreRemoved) const
+{
+    const Player *p = getNext(ignoreRemoved);
+    if (p->isAlive()) {
+        n = n - 1;
+        if (n == 0)
+            return p;
+    }
+
+    return p->getNextAlive(n, ignoreRemoved);
+}
+
+const Player *Player::getLastAlive(int n, bool ignoreRemoved) const
+{
+    const Player *p = getLast(ignoreRemoved);
+    if (p->isAlive()) {
+        n = n - 1;
+        if (n == 0)
+            return p;
+    }
+
+    return p->getLastAlive(n, ignoreRemoved);
+}
+
+void Player::setGeneral(const General *new_general, int pos)
+{
+    if (new_general == nullptr)
+        return;
+
+    if (d->generals.length() > pos)
+        d->generals[pos] = new_general;
+    else if (d->generals.length() == pos)
+        d->generals << new_general;
+
+    if (d->kingdom.isEmpty() && pos == 0)
+        setKingdom(new_general->getKingdom());
+}
+
+const General *Player::getGeneral(int pos) const
+{
+    if (d->generals.length() > pos)
+        return d->generals.at(pos);
     return nullptr;
 }
 
-Player *Player::getNextAlive(int n, bool ignoreRemoved) const
+QString Player::getGeneralName(int pos) const
 {
-    bool hasAlive = (aliveCount(!ignoreRemoved) > 0);
-    Player *next = parent()->findChild<Player *>(objectName());
-    if (!hasAlive)
-        return next;
-    for (int i = 0; i < n; ++i) {
-        do
-            next = next->getNext(ignoreRemoved);
-        while (next->isDead());
-    }
-    return next;
+    const General *general = getGeneral(pos);
+    return (general == nullptr) ? QString() : general->name();
 }
 
-Player *Player::getLastAlive(int n, bool ignoreRemoved) const
+void Player::setGeneralName(const QString &name, int pos)
 {
-    return getNextAlive(aliveCount(!ignoreRemoved) - n, ignoreRemoved);
-}
-
-void Player::setGeneral(const General *new_general)
-{
-    if (general != new_general) {
-        general = new_general;
-
-        if ((new_general != nullptr) && kingdom.isEmpty())
-            setKingdom(new_general->getKingdom());
-    }
-}
-
-void Player::setGeneralName(const QString &general_name)
-{
-    const General *new_general = Sanguosha->getGeneral(general_name);
-    Q_ASSERT(general_name.isNull() || general_name.isEmpty() || new_general != nullptr);
-    setGeneral(new_general);
-}
-
-QString Player::getGeneralName() const
-{
-    if (general != nullptr)
-        return general->name();
-    else
-        return QString();
-}
-
-void Player::setGeneral2Name(const QString &general_name)
-{
-    const General *new_general = Sanguosha->getGeneral(general_name);
-    if (general2 != new_general) {
-        general2 = new_general;
-    }
-}
-
-QString Player::getGeneral2Name() const
-{
-    if (general2 != nullptr)
-        return general2->name();
-    else
-        return QString();
-}
-
-const General *Player::getGeneral2() const
-{
-    return general2;
+    setGeneral(Sanguosha->getGeneral(name), pos);
 }
 
 QString Player::getFootnoteName() const
 {
-    if ((general != nullptr) && general->name() != QStringLiteral("anjiang"))
-        return getGeneralName();
-    else if ((general2 != nullptr) && general2->name() != QStringLiteral("anjiang"))
-        return general2->name();
-    else {
-        return Sanguosha->translate(QStringLiteral("SEAT(%1)").arg(QString::number(getInitialSeat())));
+    foreach (const General *general, d->generals) {
+        if (general->name() != QStringLiteral("anjiang"))
+            return general->name();
     }
 
-    return getGeneralName();
+    return Sanguosha->translate(QStringLiteral("SEAT(%1)").arg(QString::number(getSeat())));
 }
 
 QString Player::getState() const
 {
-    return state;
+    return d->state;
 }
 
 void Player::setState(const QString &state)
 {
-    if (this->state != state)
-        this->state = state;
+    if (d->state != state)
+        d->state = state;
 }
 
 void Player::setRole(const QString &role)
-{
-    if (this->role != role)
-        this->role = role;
-}
-
-QString Player::getRole() const
-{
-    return role;
-}
-
-Role Player::getRoleEnum() const
 {
     static QMap<QString, Role> role_map;
     if (role_map.isEmpty()) {
@@ -601,7 +619,30 @@ Role Player::getRoleEnum() const
         role_map.insert(QStringLiteral("renegade"), RoleRenegade);
     }
 
-    return role_map.value(role);
+    setRole(role_map.value(role));
+}
+
+void Player::setRole(Role role)
+{
+    d->role = role;
+}
+
+QString Player::getRoleString() const
+{
+    static QHash<Role, QString> role_map;
+    if (role_map.isEmpty()) {
+        role_map.insert(RoleLord, QStringLiteral("lord"));
+        role_map.insert(RoleLoyalist, QStringLiteral("loyalist"));
+        role_map.insert(RoleRebel, QStringLiteral("rebel"));
+        role_map.insert(RoleRenegade, QStringLiteral("renegade"));
+    }
+
+    return role_map.value(d->role);
+}
+
+Role Player::getRole() const
+{
+    return d->role;
 }
 
 const General *Player::getAvatarGeneral() const
@@ -615,19 +656,9 @@ const General *Player::getAvatarGeneral() const
     return Sanguosha->getGeneral(general_name);
 }
 
-const General *Player::getGeneral() const
-{
-    return general;
-}
-
-bool Player::isLord() const
-{
-    return getRole() == QStringLiteral("lord");
-}
-
 bool Player::isCurrent() const
 {
-    return phase != PhaseNotActive;
+    return d->phase != PhaseNotActive;
 }
 
 bool Player::hasSkill(const QString &skill_name, bool include_lose, bool include_hidden) const
@@ -1687,26 +1718,6 @@ void Player::removeQinggangTag(const Card *card)
     }
 }
 
-QList<const Player *> Player::getSiblings() const
-{
-    QList<const Player *> siblings;
-    if (parent() != nullptr) {
-        siblings = parent()->findChildren<const Player *>();
-        siblings.removeOne(this);
-    }
-    return siblings;
-}
-
-QList<const Player *> Player::getAliveSiblings() const
-{
-    QList<const Player *> siblings = getSiblings();
-    foreach (const Player *p, siblings) {
-        if (!p->isAlive())
-            siblings.removeOne(p);
-    }
-    return siblings;
-}
-
 bool Player::hasShownSkill(const Skill *skill) const
 {
     if (skill == nullptr)
@@ -1893,17 +1904,17 @@ bool Player::willBeFriendWith(const Player *player) const
         return false;
 
     if (!hasShownGeneral()) {
-        QString role = getRole();
+        QString role = getRoleString();
         int i = 1;
         foreach (const Player *p, getSiblings()) {
-            if (p->getRole() == role) {
-                if (p->hasShownGeneral() && p->getRole() != QStringLiteral("careerist"))
+            if (p->getRoleString() == role) {
+                if (p->hasShownGeneral() && p->getRoleString() != QStringLiteral("careerist"))
                     ++i;
             }
         }
         if (i > (parent()->findChildren<const Player *>().length() / 2))
             return false;
-        else if (role == player->getRole())
+        else if (role == player->getRoleString())
             return true;
     }
     return false;
@@ -1921,6 +1932,11 @@ const Player *Player::getLord(bool include_death) const
     }
 
     return nullptr;
+}
+
+RoomObject *Player::roomObject() const
+{
+    return d->room;
 }
 
 QList<const Skill *> Player::getHeadSkillList(bool visible_only, bool include_acquired, bool include_equip) const

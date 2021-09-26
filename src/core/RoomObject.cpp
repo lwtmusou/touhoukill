@@ -68,7 +68,7 @@ RoomObject::~RoomObject()
     delete d;
 }
 
-QList<Player *> RoomObject::players(bool include_dead)
+QList<Player *> RoomObject::players(bool include_dead, bool include_removed)
 {
     QList<Player *> ps = d->players;
     if (!include_dead) {
@@ -81,16 +81,36 @@ QList<Player *> RoomObject::players(bool include_dead)
                 ++it;
         }
     }
+    if (!include_removed) {
+        for (auto it = ps.begin(); it != ps.end();) {
+            if ((*it)->isRemoved()) {
+                auto x = it + 1;
+                ps.erase(it);
+                it = x;
+            } else
+                ++it;
+        }
+    }
 
     return ps;
 }
 
-QList<const Player *> RoomObject::players(bool include_dead) const
+QList<const Player *> RoomObject::players(bool include_dead, bool include_removed) const
 {
     QList<Player *> ps = d->players;
     if (!include_dead) {
         for (auto it = ps.begin(); it != ps.end();) {
             if ((*it)->isDead()) {
+                auto x = it + 1;
+                ps.erase(it);
+                it = x;
+            } else
+                ++it;
+        }
+    }
+    if (!include_removed) {
+        for (auto it = ps.begin(); it != ps.end();) {
+            if ((*it)->isRemoved()) {
                 auto x = it + 1;
                 ps.erase(it);
                 it = x;
@@ -168,6 +188,42 @@ void RoomObject::setCurrent(Player *player)
     }
 }
 
+Player *RoomObject::findAdjecentPlayer(Player *player, bool next, bool include_dead, bool include_removed)
+{
+    QList<Player *> currentPlayers = players(include_dead, include_removed);
+
+    int index = currentPlayers.indexOf(player);
+    if (next) {
+        index++;
+        if (index == currentPlayers.length())
+            index = 0;
+    } else {
+        index--;
+        if (index < 0)
+            index = currentPlayers.length() - 1;
+    }
+
+    return currentPlayers.at(index);
+}
+
+const Player *RoomObject::findAdjecentPlayer(const Player *player, bool next, bool include_dead, bool include_removed) const
+{
+    QList<const Player *> currentPlayers = players(include_dead, include_removed);
+
+    int index = currentPlayers.indexOf(player);
+    if (next) {
+        index++;
+        if (index == currentPlayers.length())
+            index = 0;
+    } else {
+        index--;
+        if (index < 0)
+            index = currentPlayers.length() - 1;
+    }
+
+    return currentPlayers.at(index);
+}
+
 void RoomObject::arrangeSeat(const QStringList &_seatInfo)
 {
     QList<Player *> ps = d->players;
@@ -183,13 +239,6 @@ void RoomObject::arrangeSeat(const QStringList &_seatInfo)
                 break;
             }
         }
-    }
-
-    for (auto it = d->players.begin(); it != d->players.end(); ++it) {
-        auto nextIt = it + 1;
-        if (nextIt == d->players.end())
-            nextIt = d->players.begin();
-        (*it)->setNext(*nextIt);
     }
 
     if (d->current != nullptr) {

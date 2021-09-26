@@ -139,7 +139,8 @@ enum Role
     RoleLord,
     RoleLoyalist,
     RoleRebel,
-    RoleRenegade
+    RoleRenegade,
+
 };
 Q_ENUM_NS(Role)
 

@@ -12,6 +12,7 @@
 #include "choosetriggerorderbox.h"
 #include "distanceviewdialog.h"
 #include "engine.h"
+#include "general.h"
 #include "generaloverview.h"
 #include "indicatoritem.h"
 #include "lightboxanimation.h"
@@ -105,7 +106,7 @@ RoomScene::RoomScene(QMainWindow *main_window, Client *client)
     connect(Self, SIGNAL(general2_changed()), dashboard, SLOT(updateSmallAvatar()));
     connect(dashboard, &Dashboard::card_selected, this, &RoomScene::enableTargets);
     connect(dashboard, &Dashboard::card_to_use, this, &RoomScene::doOkButton);
-    connect(Self, &ClientPlayer::pile_changed, dashboard, &PlayerCardContainer::updatePile);
+    // connect(Self, &ClientPlayer::pile_changed, dashboard, &PlayerCardContainer::updatePile);
 
     // add role ComboBox
     // if (isHegemonyGameMode(ServerInfo.GameMode))
@@ -1498,7 +1499,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
         break;
     }
     case Qt::Key_F6: {
-        if (!Self || !Self->isOwner() || ClientInstance->players().length() < Sanguosha->getPlayerCount(ServerInfo.GameMode))
+        if (!Self || /*!Self->isOwner() || */ ClientInstance->players().length() < Sanguosha->getPlayerCount(ServerInfo.GameMode))
             break;
         foreach (const Player *p, ClientInstance->players()) {
             if (p != Self && p->isAlive() && p->getState() != QStringLiteral("robot"))
@@ -2362,7 +2363,7 @@ void RoomScene::updateSkillButtons()
     //check duanchang?
     foreach (const Skill *skill, Self->getHeadSkillList()) {
         if (skill->isLordSkill()
-            && (Self->getRole() != QStringLiteral("lord") || ServerInfo.GameMode == QStringLiteral("06_3v3") || ServerInfo.GameMode == QStringLiteral("06_XMode")
+            && (Self->getRoleString() != QStringLiteral("lord") || ServerInfo.GameMode == QStringLiteral("06_3v3") || ServerInfo.GameMode == QStringLiteral("06_XMode")
                 || ServerInfo.GameMode == QStringLiteral("02_1v1") || Config.value(QStringLiteral("WithoutLordskill"), false).toBool()))
             continue;
 
@@ -2370,7 +2371,7 @@ void RoomScene::updateSkillButtons()
     }
     foreach (const Skill *skill, Self->getDeputySkillList()) {
         if (skill->isLordSkill()
-            && (Self->getRole() != QStringLiteral("lord") || ServerInfo.GameMode == QStringLiteral("06_3v3") || ServerInfo.GameMode == QStringLiteral("06_XMode")
+            && (Self->getRoleString() != QStringLiteral("lord") || ServerInfo.GameMode == QStringLiteral("06_3v3") || ServerInfo.GameMode == QStringLiteral("06_XMode")
                 || ServerInfo.GameMode == QStringLiteral("02_1v1") || Config.value(QStringLiteral("WithoutLordskill"), false).toBool()))
             continue;
 
@@ -3361,7 +3362,7 @@ void RoomScene::saveReplayRecord(const bool auto_save, const bool network_only)
             QString general_name = Sanguosha->translate(Self->getGeneralName());
             if (ServerInfo.Enable2ndGeneral)
                 general_name.append(QStringLiteral("_") + Sanguosha->translate(Self->getGeneral2Name()));
-            location.append(QStringLiteral("%1 %2(%3)-").arg(Sanguosha->getVersionName()).arg(general_name).arg(Sanguosha->translate(Self->getRole())));
+            location.append(QStringLiteral("%1 %2(%3)-").arg(Sanguosha->getVersionName()).arg(general_name).arg(Sanguosha->translate(Self->getRoleString())));
             location.append(QDateTime::currentDateTime().toString(QStringLiteral("yyyyMMddhhmmss")));
             location.append(QStringLiteral(".txt"));
             ClientInstance->save(location);
@@ -3632,9 +3633,9 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const Player *> &play
 
         item = new QTableWidgetItem;
 
-        QIcon icon(QStringLiteral("image/system/roles/%1.png").arg(player->getRole()));
+        QIcon icon(QStringLiteral("image/system/roles/%1.png").arg(player->getRoleString()));
         item->setIcon(icon);
-        QString role = player->getRole();
+        QString role = player->getRoleString();
         if (ServerInfo.GameMode.startsWith(QStringLiteral("06_"))) {
             if (role == QStringLiteral("lord") || role == QStringLiteral("renegade"))
                 role = QStringLiteral("leader");
@@ -3954,15 +3955,15 @@ void RoomScene::showPile(const QList<int> &card_ids, const QString &name, const 
     bringToFront(pileContainer);
     pileContainer->setObjectName(name);
     if (name == QStringLiteral("huashencard") && target->ownSkill(QStringLiteral("anyun"))) { //target->hasSkill("anyun", true)
-        QStringList huashens = target->getHiddenGenerals();
-        QList<CardItem *> generals;
-        foreach (QString arg, huashens) {
-            CardItem *item = new CardItem(arg);
-            addItem(item);
-            item->setParentItem(pileContainer);
-            generals.append(item);
-        }
-        pileContainer->fillGeneralCards(generals);
+        //        QStringList huashens = target->getHiddenGenerals();
+        //        QList<CardItem *> generals;
+        //        foreach (QString arg, huashens) {
+        //            CardItem *item = new CardItem(arg);
+        //            addItem(item);
+        //            item->setParentItem(pileContainer);
+        //            generals.append(item);
+        //        }
+        //        pileContainer->fillGeneralCards(generals);
     } else {
         if (name == QStringLiteral("zhenli")) {
             QList<Card *> zhenlis;
@@ -4071,7 +4072,7 @@ void RoomScene::onGameStart()
     if (!Self->hasFlag(QStringLiteral("marshalling")))
         log_box->append(QString(tr("<font color='%1'>---------- Game Start ----------</font>").arg(Config.TextEditColor.name())));
 
-    connect(Self, &ClientPlayer::skill_state_changed, this, &RoomScene::skillStateChange);
+    // connect(Self, &ClientPlayer::skill_state_changed, this, &RoomScene::skillStateChange);
     trust_button->setEnabled(true);
 
     setLordBGM();
@@ -4528,7 +4529,7 @@ void RoomScene::fillGenerals1v1(const QStringList &names)
 void RoomScene::fillGenerals3v3(const QStringList &names)
 {
     QString temperature;
-    if (Self->getRole().startsWith(QStringLiteral("l")))
+    if (Self->getRoleString().startsWith(QStringLiteral("l")))
         temperature = QStringLiteral("warm");
     else
         temperature = QStringLiteral("cool");
@@ -4597,9 +4598,9 @@ void RoomScene::bringToFront(QGraphicsItem *front_item)
 
 void RoomScene::takeGeneral(const QString &who, const QString &name, const QString &rule)
 {
-    bool self_taken = Self->getRole().startsWith(QStringLiteral("r"));
+    bool self_taken = Self->getRoleString().startsWith(QStringLiteral("r"));
     if (who == QStringLiteral("warm"))
-        self_taken = Self->getRole().startsWith(QStringLiteral("l"));
+        self_taken = Self->getRoleString().startsWith(QStringLiteral("l"));
 
     QList<CardItem *> *to_add = self_taken ? &down_generals : &up_generals;
 
@@ -4631,7 +4632,7 @@ void RoomScene::takeGeneral(const QString &who, const QString &name, const QStri
     general_item->setHomePos(QPointF(x, y));
     general_item->goBack(true);
 
-    if (((ServerInfo.GameMode == QStringLiteral("06_3v3") && Self->getRole() != QStringLiteral("lord") && Self->getRole() != QStringLiteral("renegade"))
+    if (((ServerInfo.GameMode == QStringLiteral("06_3v3") && Self->getRoleString() != QStringLiteral("lord") && Self->getRoleString() != QStringLiteral("renegade"))
          || (ServerInfo.GameMode == QStringLiteral("02_1v1") && rule == QStringLiteral("OL")))
         && general_items.isEmpty()) {
         if (selector_box != nullptr) {

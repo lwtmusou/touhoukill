@@ -18,20 +18,15 @@ public:
     QList<const Card *> getHandcards() const override;
     void setCards(const QList<int> &card_ids);
     QTextDocument *getMarkDoc() const;
-    void changePile(const QString &name, bool add, QList<int> card_ids);
     QString getDeathPixmapPath() const;
     void setHandcardNum(int n);
 
-    void setFlags(const QString &flag) override;
-    int aliveCount(bool includeRemoved = true) const override;
     int getHandcardNum() const override;
     void removeCard(const Card *card, QSanguosha::Place place) override;
     void addCard(const Card *card, QSanguosha::Place place) override;
     void addKnownHandCard(const Card *card);
     bool isLastHandCard(const Card *card, bool contain = false) const override;
-    void setMark(const QString &mark, int value) override;
 
-    RoomObject *roomObject() const override;
     Client *getClient() const;
 
 private:
@@ -39,11 +34,12 @@ private:
     QList<const Card *> known_cards;
     QTextDocument *mark_doc;
 
+#if 0
 signals:
-    void pile_changed(const QString &name);
     void drank_changed();
     void action_taken();
     void skill_state_changed(const QString &skill_name);
+#endif
 };
 
 #endif

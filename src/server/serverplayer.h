@@ -79,9 +79,7 @@ public:
 
     QSGS_LOGIC void addSkill(const QString &skill_name, bool head_skill = true) override;
     QSGS_LOGIC void loseSkill(const QString &skill_name, bool head_skill = true) override;
-    QSGS_LOGIC void setGender(QSanguosha::Gender gender) override;
 
-    QSGS_STATE_GAME int aliveCount(bool includeRemoved = true) const override; // TODO_Fs: this function should belong to room?
     QSGS_STATE_GAME int getHandcardNum() const override;
     QSGS_LOGIC void removeCard(const Card *card, QSanguosha::Place place) override;
     QSGS_LOGIC void addCard(const Card *card, QSanguosha::Place place) override;
@@ -194,8 +192,6 @@ public:
     QSGS_STATE_GAME bool inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const;
     QSGS_STATE_GAME bool inFormationRalation(ServerPlayer *teammate) const;
     QSGS_LOGIC void summonFriends(const QString &type);
-
-    QSGS_STATE_ROOM RoomObject *roomObject() const override;
 
     bool isReady() const;
     void setReady(bool ready);

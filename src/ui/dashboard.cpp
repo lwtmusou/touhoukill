@@ -328,10 +328,10 @@ void Dashboard::killPlayer()
     trusting_item->hide();
     trusting_text->hide();
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
-        _m_hegemonyroleComboBox->fix(m_player->getRole() == QStringLiteral("careerist") ? QStringLiteral("careerist") : m_player->getRole());
+        _m_hegemonyroleComboBox->fix(m_player->getRoleString() == QStringLiteral("careerist") ? QStringLiteral("careerist") : m_player->getRoleString());
         _m_hegemonyroleComboBox->setEnabled(false);
     } else {
-        _m_roleComboBox->fix(m_player->getRole());
+        _m_roleComboBox->fix(m_player->getRoleString());
         _m_roleComboBox->setEnabled(false);
     }
 
@@ -1271,8 +1271,10 @@ void Dashboard::expandPileCards(const QString &pile_name)
     IDSet pile;
     if (new_name.startsWith(QStringLiteral("%"))) {
         new_name = new_name.mid(1);
-        foreach (const Player *p, Self->getAliveSiblings())
-            pile.unite(p->getPile(new_name));
+        foreach (const Player *p, ClientInstance->players(false)) {
+            if (p != Self)
+                pile.unite(p->getPile(new_name));
+        }
     } else if (pile_name == QStringLiteral("#xiuye_temp")) {
         foreach (int id, ClientInstance->discardPile()) {
             const CardDescriptor &c = Sanguosha->getEngineCard(id);
@@ -1297,19 +1299,23 @@ void Dashboard::expandPileCards(const QString &pile_name)
     foreach (CardItem *card_item, card_items) {
         QString pile_string = pile_name;
         if (pile_name == QStringLiteral("%shown_card")) {
-            foreach (const Player *p, Self->getAliveSiblings()) {
-                if (p->getPile(QStringLiteral("shown_card")).contains(card_item->getId())) {
-                    pile_string = ClientInstance->getPlayerName(p->objectName());
-                    break;
+            foreach (const Player *p, ClientInstance->players(false)) {
+                if (p != Self) {
+                    if (p->getPile(QStringLiteral("shown_card")).contains(card_item->getId())) {
+                        pile_string = ClientInstance->getPlayerName(p->objectName());
+                        break;
+                    }
                 }
             }
         }
         if (pile_name == QStringLiteral("#mengxiang_temp")) {
             QString target_name;
-            foreach (const Player *p, Self->getAliveSiblings()) {
-                if (p->hasFlag(QStringLiteral("mengxiangtarget"))) {
-                    target_name = p->objectName();
-                    break;
+            foreach (const Player *p, ClientInstance->players(false)) {
+                if (p != Self) {
+                    if (p->hasFlag(QStringLiteral("mengxiangtarget"))) {
+                        target_name = p->objectName();
+                        break;
+                    }
                 }
             }
             if (target_name.isNull())
