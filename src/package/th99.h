@@ -85,18 +85,6 @@ public:
     void onEffect(const CardEffectStruct &effect) const override;
 };
 
-/*class JijingCard : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE JijingCard();
-
-    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
-    void onUse(Room *r, const CardUseStruct &u) const;
-};*/
-
 class YushouCard : public SkillCard
 {
     Q_OBJECT
@@ -127,17 +115,8 @@ class ZhuozhiCard : public SkillCard
 public:
     Q_INVOKABLE ZhuozhiCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
-};
-
-class WanshenCard : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE WanshenCard();
-
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class XieliCard : public SkillCard
