@@ -2326,7 +2326,7 @@ public:
         if (triggerEvent == CardFinished) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("AwaitExhausted") && use.card->getSkillName() == objectName() && use.from != nullptr && use.from->hasFlag("zhuozhiused")
-                && use.from->tag.contains("zhuozhi")) {
+                && use.from->tag.contains("zhuozhi") && use.from->isAlive()) {
                 if (use.from->isNude()) {
                     // in fact this tag should not be touched in triggerable, since it affects the procedure
                     use.from->tag.remove("zhuozhi");
@@ -2355,7 +2355,7 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        const Card *c = room->askForExchange(invoke->invoker, objectName(), 1, 1, false, "@@zhuozhi-discard", false);
+        const Card *c = room->askForExchange(invoke->invoker, objectName(), 1, 1, false, "@zhuozhi-discard", false);
 
         if (c != nullptr) {
             DELETE_OVER_SCOPE(const Card, c)
@@ -2412,7 +2412,7 @@ public:
     {
         ServerPlayer *p = data.value<ServerPlayer *>();
         QList<SkillInvokeDetail> r;
-        if (p->getPhase() == Player::Finish && p->getEquips().length() > 2)
+        if (p->getPhase() == Player::Finish && p->getEquips().length() > 2 && p->isAlive() && p->hasSkill(this) && p->getMark("wanshen") == 0)
             r << SkillInvokeDetail(this, p, p, nullptr, true);
 
         return r;
@@ -2430,6 +2430,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         invoke->invoker->gainAnExtraTurn();
+        room->setPlayerMark(invoke->invoker, "wanshen", 1);
         room->handleAcquireDetachSkills(invoke->invoker, "xieli");
 
         return false;

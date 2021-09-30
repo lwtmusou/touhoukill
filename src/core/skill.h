@@ -88,7 +88,7 @@ public:
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const;
     virtual QStringList getDialogCardOptions() const;
     static const ViewAsSkill *parseViewAsSkill(const Skill *skill);
-    inline bool isResponseOrUse() const
+    inline virtual bool isResponseOrUse() const
     {
         return response_or_use;
     }
