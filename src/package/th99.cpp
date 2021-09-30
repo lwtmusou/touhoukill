@@ -2554,7 +2554,7 @@ TH99Package::TH99Package()
     reisen2->addSkill(new Daoyao);
 
     General *kasensp = new General(this, "kasen_sp", "wai", 5);
-    kasensp->addSkill(new Zhuozhi);
+    kasensp->addSkill(new ZhuozhiT);
     kasensp->addSkill(new Wanshen);
     kasensp->addRelateSkill("xieli");
 
