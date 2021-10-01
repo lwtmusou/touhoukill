@@ -19,6 +19,8 @@ config = {
 		"hzc",
 		"gzz",
 		"tkz",
+		"gxs",
+		-- "hld",
 		"wai",
 		"touhougod"
 	},
@@ -40,6 +42,7 @@ config = {
 		gzz = "#005AD7" ,
 		tkz = "#48D1CC",
 		gxs = "#ff8080",
+		hld = "#ff0000",
 		wai = "#cc7014",
 		touhougod = "#96943D",
 		
@@ -71,7 +74,9 @@ config = {
 		"TH13",
 		"TH14",
 		"TH15",
-		"TH16", 
+		"TH16",
+		"TH17", 
+		"TH18", 
 		"TH99",
 		"THNDJ",
 		"TouhouGod",
