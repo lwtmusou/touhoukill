@@ -2254,7 +2254,7 @@ public:
 
     bool isEnabledAtPlay(const Player *player) const override
     {
-        if (!player->hasUsed("ZhuozhiCard"))
+        if (player->hasUsed("ZhuozhiCard"))
             return false;
 
         AwaitExhausted *c = new AwaitExhausted(Card::SuitToBeDecided, -1);
