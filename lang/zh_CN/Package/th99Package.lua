@@ -371,10 +371,10 @@ return{
 	["origin:kasen_sp"] = "p号：29151823；个人ID：75376",
 	
 	["zhuozhi"] = "酌志",
-	[":zhuozhi"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张手牌，亮出牌堆顶四张牌并获得其中一张牌。若其中有装备牌或【杀】，你额外获得一张牌。",
+	[":zhuozhi"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将一张【杀】当【以逸待劳】使用（选择目标含你）。此牌结算结束时，你展示一张手牌，然后获得一张与之类别相同的于此牌结算过程中因弃置而置入弃牌堆的牌。",
+	["@zhuozhi-discard"] = "你发动酌志需要展示一张手牌",
 	["wanshen"] = "完身",
 	[":wanshen"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，若你装备区里的牌数大于2，你可以减1点体力上限，获得一个额外的回合和“邪力”。",
-	["@kasenwanshen"] = "完",
 	["$WanshenAnimate"] = "skill=kasen_sp:wanshen",
 	["xieli"] = "邪力",
 	[":xieli"] = "出牌阶段，你可以横置装备区里的一张牌并视为使用【酒】。",

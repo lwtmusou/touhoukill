@@ -2216,6 +2216,9 @@ ZhuozhiCard::ZhuozhiCard()
 
 bool ZhuozhiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
+    if (to_select == Self)
+        return false;
+
     AwaitExhausted *c = new AwaitExhausted(Card::SuitToBeDecided, -1);
     DELETE_OVER_SCOPE(AwaitExhausted, c)
     c->setSkillName("zhuozhi");
@@ -2357,14 +2360,13 @@ public:
     {
         const Card *c = room->askForExchange(invoke->invoker, objectName(), 1, 1, false, "@zhuozhi-discard", false);
 
-        if (c != nullptr) {
-            DELETE_OVER_SCOPE(const Card, c)
-            invoke->tag["zhuozhi"] = c->getEffectiveId();
-            room->showCard(invoke->invoker, c->getEffectiveId());
-            return true;
-        }
+        if (c == nullptr)
+            c = new DummyCard({invoke->invoker->getRandomHandCardId()});
 
-        return false;
+        DELETE_OVER_SCOPE(const Card, c)
+        invoke->tag["zhuozhi"] = c->getEffectiveId();
+        room->showCard(invoke->invoker, c->getEffectiveId());
+        return true;
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
