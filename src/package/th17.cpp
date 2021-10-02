@@ -186,7 +186,8 @@ public:
         } else if (triggerEvent == DamageCaused) {
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.card != nullptr && damage.card->isKindOf("Slash") && damage.card->getSkillName() == "bengluo" && damage.by_user && !damage.chain && !damage.transfer
-                && damage.from != nullptr && damage.from->isAlive() && damage.from->hasSkill(this) && damage.to->getHandcardNum() < damage.from->getHandcardNum())
+                && damage.from != nullptr && damage.from->isAlive() && damage.from->hasSkill(this) && damage.to->getHandcardNum() < damage.from->getHandcardNum()
+                && damage.from->getHandcardNum() != damage.from->getMaxCards())
                 return {SkillInvokeDetail(this, damage.from, damage.from)};
         }
 
@@ -204,8 +205,7 @@ public:
                 return room->askForCard(invoke->invoker, "@@bengluo-card2", "@bengluo-discard:::" + QString::number(n), data, "bengluo");
             } else {
                 if (room->askForSkillInvoke(invoke->invoker, this, data, "@bengluo-draw:::" + QString::number(-n))) {
-                    if (n != 0)
-                        room->drawCards(invoke->invoker, -n, "bengluo");
+                    room->drawCards(invoke->invoker, -n, "bengluo");
                     return true;
                 }
             }
@@ -214,10 +214,19 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent triggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &data) const override
+    bool effect(TriggerEvent triggerEvent, Room *r, QSharedPointer<SkillInvokeDetail>, QVariant &data) const override
     {
         if (triggerEvent == DamageCaused) {
             DamageStruct damage = data.value<DamageStruct>();
+
+            LogMessage l;
+            l.type = "#mofa_damage";
+            l.from = damage.from;
+            l.to << damage.to;
+            l.arg = QString::number(damage.damage + 1);
+            l.arg2 = QString::number(damage.damage);
+            r->sendLog(l);
+
             damage.damage += 1;
             data = QVariant::fromValue<DamageStruct>(damage);
         }
