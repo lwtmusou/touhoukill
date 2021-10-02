@@ -2407,6 +2407,10 @@ public:
     bool cost(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &d) const override
     {
         if (TriggerSkill::cost(e, room, invoke, d)) {
+            LogMessage l;
+            l.type = "#TriggerSkill";
+            l.arg = objectName();
+            room->sendLog(l);
             room->doLightbox("$WanshenAnimate", 4000);
             return room->changeMaxHpForAwakenSkill(invoke->invoker);
         }
