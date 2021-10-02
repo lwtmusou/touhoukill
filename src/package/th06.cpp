@@ -629,10 +629,10 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (!use.card->isKindOf("TrickCard"))
             return d;
-        foreach(ServerPlayer *p, use.to) {
+        foreach (ServerPlayer *p, use.to) {
             if (p->hasSkill(this) && p != use.from)
                 d << SkillInvokeDetail(this, p, p);
-        }   
+        }
         return d;
     }
 
@@ -820,7 +820,6 @@ public:
             return false;
 
         return !checkedPatterns.isEmpty();
-
     }
 
     bool isEnabledAtPlay(const Player *player) const override
@@ -851,8 +850,7 @@ public:
             HezhouCard *card = new HezhouCard;
             card->setUserString(name);
             return card;
-        }
-        else
+        } else
             return nullptr;
     }
 

@@ -415,6 +415,7 @@ public:
                         if (use.to.contains(t))
                             continue;
 
+                        // TODO: add 3rd para to this isProhibited
                         if (!use.from->isProhibited(t, use.card) && use.card->targetFilter(QList<const Player *>(), t, use.from)) {
                             invoke = true;
                         }
@@ -456,6 +457,7 @@ public:
                 if (use.to.contains(t))
                     continue;
 
+                // TODO: add 3rd para to this isProhibited
                 if (!use.from->isProhibited(t, use.card) && use.card->targetFilter(QList<const Player *>(), t, use.from)) {
                     d << SkillInvokeDetail(this, p, p);
                     break;
@@ -481,6 +483,8 @@ public:
         foreach (ServerPlayer *t, room->getAlivePlayers()) {
             if (use.to.contains(t))
                 continue;
+
+            // TODO: add 3rd para to this isProhibited
             if (!use.from->isProhibited(t, use.card) && use.card->targetFilter(QList<const Player *>(), t, use.from))
                 targets << t;
         }

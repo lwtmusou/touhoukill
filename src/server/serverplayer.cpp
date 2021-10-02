@@ -1855,9 +1855,14 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     }
     use.card->setFlags("-IgnoreFailed");
 
+    QList<const Player *> ps;
+    foreach (ServerPlayer *p, use.to)
+        ps << p;
     //check prohibit
     foreach (ServerPlayer *p, use.to) {
-        if (use.from->isProhibited(p, use.card) && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+        auto useToExceptp = ps;
+        useToExceptp.removeAll(p);
+        if (use.from->isProhibited(p, use.card, useToExceptp) && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
             showTargetProhibit << "tianqu";
             break;
         } else if (use.card->isKindOf("Peach")) {

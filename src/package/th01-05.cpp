@@ -2213,11 +2213,13 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.from && use.from->hasSkill(this)) {
             if (use.card->isKindOf("Slash") || (use.card->isBlack() && use.card->isNDTrick() && !use.card->isKindOf("Nullification"))) {
-                //use.from->getRoom()->setCardFlag(use.card, "baosi");
                 use.card->setFlags("baosi");
+                QList<const Player *> plist;
+                foreach (ServerPlayer *p, use.to)
+                    plist << p;
                 foreach (ServerPlayer *p, room->getOtherPlayers(use.from)) {
                     if (!use.to.contains(p) && p->getHp() <= p->dyingThreshold() && use.card->targetFilter(QList<const Player *>(), p, use.from)
-                        && !use.from->isProhibited(p, use.card)) {
+                        && !use.from->isProhibited(p, use.card, plist)) {
                         use.card->setFlags("-baosi");
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
                     }
@@ -2232,8 +2234,12 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         use.card->setFlags("baosi");
+        QList<const Player *> plist;
+        foreach (ServerPlayer *p, use.to)
+            plist << p;
         foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
-            if (!use.to.contains(p) && p->getHp() <= p->dyingThreshold() && use.card->targetFilter(QList<const Player *>(), p, use.from) && !use.from->isProhibited(p, use.card))
+            if (!use.to.contains(p) && p->getHp() <= p->dyingThreshold() && use.card->targetFilter(QList<const Player *>(), p, use.from)
+                && !use.from->isProhibited(p, use.card, plist))
                 room->setPlayerFlag(p, "Global_baosiFailed");
         }
         use.card->setFlags("-baosi");
@@ -2247,20 +2253,8 @@ public:
         invoke->invoker->tag.remove("baosi");
         foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
             bool add = baosi_list.value(p->objectName(), false).toBool();
-            if (add) {
+            if (add)
                 use.to << p;
-                /*if (use.card->isKindOf("Collateral")) {
-                    QList<const Player *> targets;
-                    targets << p;
-                    QList<ServerPlayer *> victims;
-                    foreach (ServerPlayer *t, room->getOtherPlayers(p)) {
-                        if (use.card->targetFilter(targets, t, use.from))
-                            victims << t;
-                    }
-                    ServerPlayer *victim = room->askForPlayerChosen(use.from, victims, "baosi_col", "@baosi_col:" + p->objectName());
-                    p->tag["collateralVictim"] = QVariant::fromValue((ServerPlayer *)victim);
-                }*/
-            }
         }
 
         room->sortByActionOrder(use.to);
@@ -2681,7 +2675,9 @@ bool QirenCard::isAvailable(const Player *player) const
                 players << Self;
             int count = 0;
             foreach (const Player *p, players) {
-                if (!player->isProhibited(p, oc))
+                auto useTosExceptp = players;
+                useTosExceptp.removeAll(p);
+                if (!player->isProhibited(p, oc, useTosExceptp))
                     count++;
             }
             if (count == 0)
@@ -2724,8 +2720,13 @@ void QirenCard::onUse(Room *room, const CardUseStruct &card_use) const
         if (oc->isKindOf("AOE") || oc->isKindOf("GlobalEffect")) {
             ServerPlayer *source = card_use.from;
             QList<ServerPlayer *> players = (oc->isKindOf("GlobalEffect")) ? room->getAllPlayers() : room->getOtherPlayers(source);
+            QList<const Player *> useTos;
+            foreach (ServerPlayer *p, players)
+                useTos << p;
             foreach (ServerPlayer *player, players) {
-                const ProhibitSkill *skill = room->isProhibited(source, player, oc);
+                auto useTosExceptp = useTos;
+                useTosExceptp.removeAll(player);
+                const ProhibitSkill *skill = room->isProhibited(source, player, oc, useTosExceptp);
                 if (skill) {
                     LogMessage log;
                     log.type = "#SkillAvoid";

@@ -799,7 +799,7 @@ public:
                 AwaitExhausted *card = new AwaitExhausted(Card::NoSuit, 0);
                 card->setSkillName(objectName());
                 card->deleteLater();
-                if (p->isCardLimited(card, Card::MethodUse) || p->isProhibited(p, card) || p->isProhibited(current, card))
+                if (p->isCardLimited(card, Card::MethodUse) || p->isProhibited(p, card, {current}) || p->isProhibited(current, card, {p}))
                     continue;
                 d << SkillInvokeDetail(this, p, p);
             }
@@ -1084,9 +1084,9 @@ public:
             if (pindian->reason == objectName() && pindian->from->isAlive()) {
                 if (pindian->success) {
                     AwaitExhausted *card = new AwaitExhausted(Card::SuitToBeDecided, -1);
+                    DELETE_OVER_SCOPE(AwaitExhausted, card);
                     card->setSkillName(objectName());
-                    card->deleteLater();
-                    if (pindian->from->isCardLimited(card, Card::MethodUse) || pindian->from->isProhibited(pindian->from, card))
+                    if (pindian->from->isCardLimited(card, Card::MethodUse))
                         return QList<SkillInvokeDetail>();
                 }
 

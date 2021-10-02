@@ -1722,48 +1722,6 @@ public:
     }
 };
 
-//for Collateral, but no need now!
-ExtraCollateralCard::ExtraCollateralCard()
-{
-}
-
-bool ExtraCollateralCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
-{
-    const Card *coll = Card::Parse(Self->property("extra_collateral").toString());
-    if (!coll)
-        return false;
-    QStringList tos = Self->property("extra_collateral_current_targets").toString().split("+");
-
-    if (targets.isEmpty())
-        return !tos.contains(to_select->objectName()) && !Self->isProhibited(to_select, coll) && coll->targetFilter(targets, to_select, Self);
-    else
-        return coll->targetFilter(targets, to_select, Self);
-}
-
-void ExtraCollateralCard::onUse(Room *, const CardUseStruct &card_use) const
-{
-    Q_ASSERT(card_use.to.length() == 2);
-    ServerPlayer *killer = card_use.to.first();
-    ServerPlayer *victim = card_use.to.last();
-    killer->setFlags("ExtraCollateralTarget");
-    killer->tag["collateralVictim"] = QVariant::fromValue((ServerPlayer *)victim);
-}
-
-class QishuVS : public ZeroCardViewAsSkill
-{
-public:
-    QishuVS()
-        : ZeroCardViewAsSkill("qishu")
-    {
-        response_pattern = "@@qishu";
-    }
-
-    const Card *viewAs() const override
-    {
-        return new ExtraCollateralCard;
-    }
-};
-
 class QishuTargetMod : public TargetModSkill
 {
 public:
@@ -1816,7 +1774,6 @@ public:
         : TriggerSkill("qishu")
     {
         events << PreCardUsed;
-        view_as_skill = new QishuVS;
     }
 
     static bool isQishu(QList<ServerPlayer *> players, const Card *card)
@@ -2570,7 +2527,6 @@ ProtagonistPackage::ProtagonistPackage()
     addMetaObject<BllmShiyuCard>();
     addMetaObject<BllmWuyuCard>();
     addMetaObject<DfgzmSiyuCard>();
-    addMetaObject<ExtraCollateralCard>();
     addMetaObject<YinyangCard>();
     addMetaObject<BodongCard>();
 

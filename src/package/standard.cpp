@@ -171,8 +171,14 @@ void GlobalEffect::onUse(Room *room, const CardUseStruct &card_use) const
 
     ServerPlayer *source = card_use.from;
     QList<ServerPlayer *> targets, all_players = room->getAllPlayers();
+    QList<const Player *> useTos;
+    foreach (ServerPlayer *p, room->getAllPlayers())
+        useTos << p;
+
     foreach (ServerPlayer *player, all_players) {
-        const ProhibitSkill *skill = room->isProhibited(source, player, this);
+        auto useTosExceptp = useTos;
+        useTosExceptp.removeAll(player);
+        const ProhibitSkill *skill = room->isProhibited(source, player, this, useTosExceptp);
         if (skill) {
             LogMessage log;
             log.type = "#SkillAvoid";
@@ -197,11 +203,12 @@ bool GlobalEffect::isAvailable(const Player *player) const
     QList<const Player *> players = player->getAliveSiblings();
     players << player;
     foreach (const Player *p, players) {
-        if (player->isProhibited(p, this))
-            continue;
-
-        canUse = true;
-        break;
+        auto useTosExceptp = players;
+        useTosExceptp.removeAll(p);
+        if (!player->isProhibited(p, this, useTosExceptp)) {
+            canUse = true;
+            break;
+        }
     }
 
     return canUse && TrickCard::isAvailable(player);
@@ -217,11 +224,12 @@ bool AOE::isAvailable(const Player *player) const
     bool canUse = false;
     QList<const Player *> players = player->getAliveSiblings();
     foreach (const Player *p, players) {
-        if (player->isProhibited(p, this))
-            continue;
-
-        canUse = true;
-        break;
+        auto useTosExceptp = players;
+        useTosExceptp.removeAll(p);
+        if (!player->isProhibited(p, this, useTosExceptp)) {
+            canUse = true;
+            break;
+        }
     }
 
     return canUse && TrickCard::isAvailable(player);
@@ -229,15 +237,16 @@ bool AOE::isAvailable(const Player *player) const
 
 void AOE::onUse(Room *room, const CardUseStruct &card_use) const
 {
-    if (!card_use.to.isEmpty()) {
-        TrickCard::onUse(room, card_use);
-        return;
-    }
-
     ServerPlayer *source = card_use.from;
-    QList<ServerPlayer *> targets, other_players = room->getOtherPlayers(source);
-    foreach (ServerPlayer *player, other_players) {
-        const ProhibitSkill *skill = room->isProhibited(source, player, this);
+    QList<ServerPlayer *> targets, all_players = room->getOtherPlayers(source);
+    QList<const Player *> useTos;
+    foreach (ServerPlayer *p, room->getOtherPlayers(source))
+        useTos << p;
+
+    foreach (ServerPlayer *player, all_players) {
+        auto useTosExceptp = useTos;
+        useTosExceptp.removeAll(player);
+        const ProhibitSkill *skill = room->isProhibited(source, player, this, useTosExceptp);
         if (skill) {
             LogMessage log;
             log.type = "#SkillAvoid";
@@ -246,8 +255,6 @@ void AOE::onUse(Room *room, const CardUseStruct &card_use) const
             log.arg2 = objectName();
             room->sendLog(log);
 
-            if (player->hasSkill(skill))
-                room->notifySkillInvoked(player, skill->objectName());
             room->broadcastSkillInvoke(skill->objectName());
         } else
             targets << player;

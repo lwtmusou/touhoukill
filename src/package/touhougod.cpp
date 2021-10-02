@@ -2707,6 +2707,7 @@ public:
             foreach (int id, player->handCards()) {
                 const Card *card = Sanguosha->getCard(id);
                 // TODO: CHECK isAvailable FUNCTION OF ALL CARDS!!!!!!
+                // TODO: add 3rd parameter to isProhibited
                 if (Sanguosha->matchExpPattern(pattern, player, card) && !player->isCardLimited(card, Card::MethodUse)) {
                     foreach (ServerPlayer *t, room->getAlivePlayers()) {
                         if (card->targetFilter(QList<const Player *>(), t, player) && !player->isProhibited(t, card)) {
@@ -2731,6 +2732,7 @@ public:
                     foreach (int id, player->handCards()) {
                         const Card *card = Sanguosha->getCard(id);
                         // TODO: CHECK isAvailable FUNCTION OF ALL CARDS!!!!!!
+                        // TODO: add 3rd parameter to isProhibited
                         if (Sanguosha->matchExpPattern(pattern, player, card) && !player->isCardLimited(card, Card::MethodUse)) {
                             foreach (ServerPlayer *t, room->getAlivePlayers()) {
                                 if (card->targetFilter(QList<const Player *>(), t, player) && !player->isProhibited(t, card)) {
@@ -4256,7 +4258,6 @@ bool XinhuaCard::targetFilter(const QList<const Player *> &targets, const Player
 {
     const Card *oc = Sanguosha->getCard(subcards.first());
     return oc->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, oc, targets);
-    ;
 }
 
 bool XinhuaCard::targetFixed(const Player *Self) const
@@ -5614,11 +5615,13 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        //QStringList ban_list;
-        //ban_list << "Jink"
-        //         << "Nullification";
-        //if (ban_list.contains(use.card->getClassName()))
-        //    return QList<SkillInvokeDetail>();
+#if 0
+        QStringList ban_list;
+        ban_list << "Jink"
+                 << "Nullification";
+        if (ban_list.contains(use.card->getClassName()))
+            return QList<SkillInvokeDetail>();
+#endif
         if (use.card->isKindOf("Jink") || use.card->isKindOf("Nullification"))
             return QList<SkillInvokeDetail>();
         if (use.from && use.from->isAlive() && use.from->hasSkill(this) && use.from->getMark("@star") > 0 && use.to.length() == 1 && !use.from->hasFlag("Global_ProcessBroken")) {
