@@ -1047,7 +1047,7 @@ public:
     TianxingVS()
         : OneCardViewAsSkill("tianxing")
     {
-        response_pattern == "@@tianxing";
+        response_pattern = "@@tianxing";
     }
 
     bool viewFilter(const Card *to_select) const override
