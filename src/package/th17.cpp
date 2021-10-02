@@ -21,7 +21,6 @@ public:
         if (e == TurnStart) {
             ServerPlayer *p = d.value<ServerPlayer *>();
             p->setMark("zaoxingBackup", p->getMark("@zaoxing"));
-            // r->setPlayerProperty(p, "zaoxingbackup", p->getMark("@zaoxing"));
             if (p->getMark("@zaoxing") > 0)
                 r->setPlayerMark(p, "@zaoxing", 0);
         }
@@ -83,9 +82,14 @@ public:
                 invoke->tag["zaoxing"] = index;
                 return true;
             }
-        } else
+        } else {
+            LogMessage l;
+            l.type = "#TouhouBuff";
+            l.from = invoke->invoker;
+            l.arg = objectName();
+            room->sendLog(l);
             return true;
-
+        }
         return false;
     }
 
@@ -106,6 +110,12 @@ public:
                     Card::MethodNone);
 
             if (c2 == nullptr) {
+                LogMessage l;
+                l.type = "#shenwei";
+                l.from = invoke->targets.first();
+                l.arg = objectName();
+                l.arg2 = c->objectName();
+
                 if (triggerEvent == CardUsed) {
                     CardUseStruct use = data.value<CardUseStruct>();
                     use.nullified_list << "_ALL_TARGETS";
@@ -551,6 +561,11 @@ public:
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.player->hasFlag("lunni")) {
+                LogMessage l;
+                l.type = "#lunni-eff" + QString::number(static_cast<int>(change.from));
+                l.from = change.player;
+                room->sendLog(l);
+
                 if (change.from == Player::Play) {
                     DummyCard d;
                     d.addSubcards(change.player->getCards("e"));
@@ -850,6 +865,8 @@ public:
     {
         const Card *l = room->askForCard(invoke->invoker, "@@lingdu", "@lingdu-discard", invoke->tag.value("lingdu"), Card::MethodNone, nullptr, false, "lingdu");
         if (l != nullptr) {
+            // need #InvokeSkill log? waiting for test result
+
             room->getCurrent()->setFlags("lingdu");
             QList<int> card_ids = VariantList2IntList(invoke->tag.value("lingdu").toList());
             int id = -1;
@@ -982,15 +999,24 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
+        LogMessage l;
+
         foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
-            p->setMark("duozhi", 1);
-            room->setPlayerCardLimitation(p, "use,response", ".", "duozhi", true);
+            if (p->getMark("duozhi") == 0) {
+                p->setMark("duozhi", 1);
+                room->setPlayerCardLimitation(p, "use,response", ".", "duozhi", true);
+                l.to << p;
+            }
+        }
+
+        if (!l.to.isEmpty()) {
+            l.type = "#duozhi";
+            room->sendLog(l);
         }
 
         return false;
     }
 };
-
 
 class Jinji : public DistanceSkill
 {
@@ -1117,10 +1143,18 @@ public:
 
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        if (triggerEvent == EventPhaseStart)
-            room->useCard(CardUseStruct(new Slash(Card::NoSuit, 0), invoke->invoker, {invoke->targets.first()}));
-        else {
+        if (triggerEvent == EventPhaseStart) {
+            Slash *s = new Slash(Card::NoSuit, 0);
+            s->setSkillName("_tianxing");
+            room->useCard(CardUseStruct(s, invoke->invoker, {invoke->targets.first()}));
+        } else {
             invoke->targets.first()->setMark("tianxing", 1);
+
+            LogMessage l;
+            l.type = "#tianxing";
+            l.from = invoke->targets.first();
+            l.to << invoke->invoker;
+            room->sendLog(l);
 
             QSet<QString> prohibited = invoke->targets.first()->property("tianxing").toString().split("+").toSet();
             prohibited << invoke->invoker->objectName();
