@@ -1904,7 +1904,7 @@ public:
         pattern = "Slash,TrickCard+^DelayedTrick";
     }
 
-    int getResidueNum(const Player *, const Card *card) const
+    int getExtraTargetNum(const Player *, const Card *card) const override
     {
         if (card->hasFlag("xunshi"))
             return 1000;
