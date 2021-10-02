@@ -931,7 +931,7 @@ public:
         : TriggerSkill("duozhi")
     {
         events << CardFinished << EventPhaseStart;
-        frequency == Compulsory;
+        frequency = Compulsory;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
@@ -965,7 +965,7 @@ public:
 
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
-        if (TriggerSkill::cost(triggerEvent, room, invoke, deata)) {
+        if (TriggerSkill::cost(triggerEvent, room, invoke, data)) {
             if (invoke->invoker->hasShownSkill(this)) {
                 LogMessage l;
                 l.type = "#TriggerSkill";
@@ -988,6 +988,160 @@ public:
         }
 
         return false;
+    }
+};
+
+
+class Jinji : public DistanceSkill
+{
+public:
+    Jinji()
+        : DistanceSkill("jinji")
+    {
+    }
+
+    int getCorrect(const Player *from, const Player *to) const override
+    {
+        if (from == to)
+            return 0;
+        int i = 0;
+        if (from->hasSkill(this))
+            i -= from->getEquips().length();
+        if (to->hasSkill(this))
+            i += to->getBrokenEquips().length();
+
+        return i;
+    }
+};
+
+class TianxingVS : public OneCardViewAsSkill
+{
+public:
+    TianxingVS()
+        : OneCardViewAsSkill("tianxing")
+    {
+        response_pattern == "@@tianxing";
+    }
+
+    bool viewFilter(const Card *to_select) const override
+    {
+        return Self->hasEquip(to_select) && !Self->isBrokenEquip(to_select->getEffectiveId());
+    }
+
+    const Card *viewAs(const Card *originalCard) const override
+    {
+        return new DummyCard({originalCard->getEffectiveId()});
+    }
+};
+
+class Tianxing : public TriggerSkill
+{
+public:
+    Tianxing()
+        : TriggerSkill("tianxing")
+    {
+        events << Damage << EventPhaseStart;
+        view_as_skill = new TianxingVS;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
+    {
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *c = data.value<ServerPlayer *>();
+            if (c->getPhase() == Player::NotActive) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->getMark("tianxing") > 0) {
+                        p->setMark("tianxing", 0);
+                        room->setPlayerProperty(p, "tianxing", QString());
+                    }
+                }
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
+    {
+        QList<SkillInvokeDetail> r;
+
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *c = data.value<ServerPlayer *>();
+            if (c->getPhase() == Player::RoundStart) {
+                foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                    if (p->isAlive() && p->canSlash(c, false)) {
+                        bool flag = false;
+                        foreach (const Card *c, p->getEquips()) {
+                            if (!p->getBrokenEquips().contains(c->getEffectiveId())) {
+                                flag = true;
+                                break;
+                            }
+                        }
+                        if (flag)
+                            r << SkillInvokeDetail(this, p, p, c);
+                    }
+                }
+            }
+        } else {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.from != nullptr && damage.from->isAlive() && damage.from->hasSkill(this) && damage.card != nullptr && damage.card->isKindOf("Slash")
+                && !damage.to->property("tianxing").toString().split("+").contains(damage.from->objectName()))
+                r << SkillInvokeDetail(this, damage.from, damage.from, damage.to, true);
+        }
+
+        return r;
+    }
+
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        if (triggerEvent == EventPhaseStart) {
+            const Card *c = room->askForCard(invoke->invoker, "@@tianxing", "@tianxing-discard", data, Card::MethodNone, nullptr, false, "tianxing");
+            if (c != nullptr) {
+                invoke->invoker->addBrokenEquips({c->getEffectiveId()});
+                return true;
+            }
+        } else {
+            if (TriggerSkill::cost(triggerEvent, room, invoke, data)) {
+                if (invoke->invoker->hasShownSkill(this)) {
+                    LogMessage l;
+                    l.type = "#TriggerSkill";
+                    l.from = invoke->invoker;
+                    l.arg = objectName();
+                    room->sendLog(l);
+                }
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        if (triggerEvent == EventPhaseStart)
+            room->useCard(CardUseStruct(new Slash(Card::NoSuit, 0), invoke->invoker, {invoke->targets.first()}));
+        else {
+            invoke->targets.first()->setMark("tianxing", 1);
+
+            QSet<QString> prohibited = invoke->targets.first()->property("tianxing").toString().split("+").toSet();
+            prohibited << invoke->invoker->objectName();
+            room->setPlayerProperty(invoke->targets.first(), "tianxing", QStringList(prohibited.toList()).join("+"));
+        }
+
+        return false;
+    }
+};
+
+class TianxingP : public ProhibitSkill
+{
+public:
+    TianxingP()
+        : ProhibitSkill("#tianxing-prohibit")
+    {
+    }
+
+    bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others, bool) const override
+    {
+        return from->property("tianxing").toString().split("+").contains(to->objectName()) && card->getTypeId() != Card::TypeSkill && others.isEmpty();
     }
 };
 
@@ -1016,7 +1170,10 @@ TH17Package::TH17Package()
     Q_UNUSED(mayumi);
 
     General *saki = new General(this, "saki", "gxs");
-    Q_UNUSED(saki);
+    saki->addSkill(new Jinji);
+    saki->addSkill(new Tianxing);
+    saki->addSkill(new TianxingP);
+    related_skills.insertMulti("tianxing", "#tianxing-probibit");
 
     addMetaObject<LunniCard>();
 }

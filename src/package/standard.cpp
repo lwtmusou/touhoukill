@@ -629,6 +629,7 @@ StandardPackage::StandardPackage()
     patterns[".Horse"] = new ExpPattern("Horse");
     patterns[".OffHorse"] = new ExpPattern("OffensiveHorse");
     patterns[".DefHorse"] = new ExpPattern("DefensiveHorse");
+    patterns[".Treasure"] = new ExpPattern("Treasure");
 
     patterns["slash"] = new ExpPattern("Slash");
     patterns["jink"] = new ExpPattern("Jink");
