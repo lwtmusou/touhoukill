@@ -102,7 +102,14 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         room->notifySkillInvoked(invoke->invoker, objectName());
-        room->touhouLogmessage("#fuchou", invoke->invoker, objectName());
+        LogMessage l;
+        l.type = "#fuchou";
+        l.from = invoke->invoker;
+        l.arg = objectName();
+        l.arg2 = "Slash";
+
+        room->sendLog(l);
+
         if (use.m_addHistory) {
             room->addPlayerHistory(use.from, use.card->getClassName(), -1);
             use.m_addHistory = false;

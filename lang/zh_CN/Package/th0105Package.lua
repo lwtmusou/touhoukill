@@ -19,7 +19,7 @@ return {
 	["meiling:distance"]= "你可以发动“魅灵”，获得【%arg】。 你与 受伤者<font color=\"#00FF00\"><b>%src </b></font> 的距离为 <font color=\"#FF8000\"><b>%dest </b></font>。",
 	["fuchou"] = "复仇",
 	[":fuchou"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"blue\"><b>锁定技，</b></font>当你使用【杀】指定其他旧势力角色的攻击范围内且体力值大于其的目标后，此【杀】不计入限制的使用次数。",
-	["#fuchou"] = "%from 的 主公技 %arg 被触发， %from 使用的【杀】不计入次数限制。",
+	["#fuchou"] = "%from 的 %arg 被触发， %from 使用的【%arg2】不计入次数限制。",
 
 
 --************************************************

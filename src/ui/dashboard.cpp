@@ -1317,6 +1317,8 @@ void Dashboard::expandPileCards(const QString &pile_name)
             if (c->getSuit() == Card::Club && (c->isNDTrick() || c->getTypeId() == Card::TypeBasic))
                 pile << c->getEffectiveId();
         }
+    } else if (pile_name == "#judging_area") {
+        pile = Self->getJudgingAreaID();
     } else {
         pile = Self->getPile(new_name);
     }
