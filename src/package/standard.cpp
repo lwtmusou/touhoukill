@@ -214,6 +214,11 @@ bool GlobalEffect::isAvailable(const Player *player) const
     return canUse && TrickCard::isAvailable(player);
 }
 
+bool GlobalEffect::targetFilter(const QList<const Player *> &, const Player *, const Player *) const
+{
+    return true;
+}
+
 QString AOE::getSubtype() const
 {
     return "aoe";
@@ -263,6 +268,11 @@ void AOE::onUse(Room *room, const CardUseStruct &card_use) const
     CardUseStruct use = card_use;
     use.to = targets;
     TrickCard::onUse(room, use);
+}
+
+bool AOE::targetFilter(const QList<const Player *> &, const Player *to_select, const Player *Self) const
+{
+    return to_select != Self;
 }
 
 QString SingleTargetTrick::getSubtype() const

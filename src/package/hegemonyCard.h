@@ -29,6 +29,7 @@ public:
 
     QString getSubtype() const override;
     bool isAvailable(const Player *player) const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
 
     void onUse(Room *room, const CardUseStruct &card_use) const override;
     void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;

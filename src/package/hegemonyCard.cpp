@@ -311,6 +311,11 @@ bool AwaitExhaustedHegemony::isAvailable(const Player *player) const
     return canUse && TrickCard::isAvailable(player);
 }
 
+bool AwaitExhaustedHegemony::targetFilter(const QList<const Player *> &, const Player *to_select, const Player *Self) const
+{
+    return Self->willBeFriendWith(to_select);
+}
+
 void AwaitExhaustedHegemony::onUse(Room *room, const CardUseStruct &card_use) const
 {
     CardUseStruct new_use = card_use;
