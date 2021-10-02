@@ -4,6 +4,135 @@
 #include "general.h"
 #include "skill.h"
 
+class Zaoxing : public TriggerSkill
+{
+public:
+    Zaoxing()
+        : TriggerSkill("zaoxing")
+    {
+        events << TurnStart << EventPhaseStart << CardUsed << CardResponded;
+    }
+
+    // NOTE: Numbers of @zaoxing and options should match Card::Suit
+    static const QStringList options;
+
+    void record(TriggerEvent e, Room *r, QVariant &d) const override
+    {
+        if (e == TurnStart) {
+            ServerPlayer *p = d.value<ServerPlayer *>();
+            p->setMark("zaoxingBackup", p->getMark("@zaoxing"));
+            // r->setPlayerProperty(p, "zaoxingbackup", p->getMark("@zaoxing"));
+            if (p->getMark("@zaoxing") > 0)
+                r->setPlayerMark(p, "@zaoxing", 0);
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
+    {
+        QList<SkillInvokeDetail> r;
+
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *p = data.value<ServerPlayer *>();
+            if (p->getPhase() == Player::RoundStart && p->isAlive() && p->hasSkill(this))
+                r << SkillInvokeDetail(this, p, p);
+        } else if ((triggerEvent == CardUsed) || (triggerEvent == CardResponded)) {
+            const Card *c = nullptr;
+            ServerPlayer *from = nullptr;
+            if (triggerEvent == CardUsed) {
+                CardUseStruct use = data.value<CardUseStruct>();
+                from = use.from;
+                c = use.card;
+            } else {
+                CardResponseStruct resp = data.value<CardResponseStruct>();
+                if (resp.m_isUse) {
+                    from = resp.m_from;
+                    c = resp.m_card;
+                }
+            }
+
+            if ((c != nullptr) && (c->getTypeId() != Card::TypeSkill) && (from != nullptr)) {
+                foreach (ServerPlayer *zaoxing, room->getAlivePlayers()) {
+                    if (zaoxing->getMark("@zaoxing") == 0)
+                        continue;
+                    if (zaoxing == from)
+                        continue;
+                    if (zaoxing->getMark("@zaoxing") - 1 == static_cast<int>(c->getSuit())) {
+                        SkillInvokeDetail invoke(this, zaoxing, zaoxing, from, true, nullptr, false);
+                        invoke.tag["zaoxing"] = QVariant::fromValue<const Card *>(c);
+                        r << invoke;
+                    }
+                }
+            }
+        }
+
+        return r;
+    }
+
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        if (triggerEvent == EventPhaseStart) {
+            if (TriggerSkill::cost(triggerEvent, room, invoke, data)) {
+                QStringList optionsThistime = options;
+                if (invoke->invoker->getMark("zaoxingBackup") > 0)
+                    optionsThistime.removeAt(invoke->invoker->getMark("zaoxingBackup") - 1);
+                QString choice = room->askForChoice(invoke->invoker, "zaoxing", optionsThistime.join("+"));
+                int index = optionsThistime.indexOf(choice);
+                if (index == -1)
+                    choice = optionsThistime.first();
+                index = options.indexOf(choice);
+                invoke->tag["zaoxing"] = index;
+                return true;
+            }
+        } else
+            return true;
+
+        return false;
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        if (triggerEvent == EventPhaseStart)
+            room->setPlayerMark(invoke->invoker, "@zaoxing", invoke->tag.value("zaoxing").toInt() + 1);
+        else {
+            static const QStringList patterns {"..S", "..C", "..H", "..D"};
+            const Card *c = invoke->tag.value("zaoxing").value<const Card *>();
+            if (c == nullptr)
+                return false;
+            const Card *c2 = nullptr;
+            if (!invoke->targets.first()->isNude())
+                c2 = room->askForCard(
+                    invoke->targets.first(), patterns.at(static_cast<int>(c->getSuit())),
+                    QString(QStringLiteral("@zaoxing-discard:%1::%2:%3")).arg(invoke->invoker->objectName(), c->objectName(), options.at(static_cast<int>(c->getSuit()))), data,
+                    Card::MethodNone);
+
+            if (c2 == nullptr) {
+                if (triggerEvent == CardUsed) {
+                    CardUseStruct use = data.value<CardUseStruct>();
+                    use.nullified_list << "_ALL_TARGETS";
+                    data = QVariant::fromValue<CardUseStruct>(use);
+                } else {
+                    CardResponseStruct resp = data.value<CardResponseStruct>();
+                    resp.m_isNullified = true;
+                    data = QVariant::fromValue<CardResponseStruct>(resp);
+                }
+                if (room->getCardPlace(c->getEffectiveId()) == Player::PlaceTable)
+                    room->obtainCard(invoke->invoker, c);
+            } else
+                room->obtainCard(invoke->invoker, c2);
+        }
+
+        return false;
+    }
+};
+
+const QStringList Zaoxing::options {
+    "Spade",
+    "Club",
+    "Heart",
+    "Diamond",
+};
+
+// TODO: SIMPLIFY Lingshou
 
 class Shanlei : public TriggerSkill
 {
@@ -391,7 +520,7 @@ public:
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         if (triggerEvent == EventPhaseStart)
-            return room->askForUseCard(invoke->invoker, "@@lunni", "@lunni-discard", -1, Card::MethodNone);
+            return room->askForUseCard(invoke->invoker, "@@lunni", "@lunni-discard:" + invoke->targets.first()->objectName(), -1, Card::MethodNone);
         else {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.player->hasFlag("lunni")) {
@@ -513,7 +642,7 @@ TH17Package::TH17Package()
     : Package("th17")
 {
     General *keiki = new General(this, "keiki$", "gxs");
-    Q_UNUSED(keiki);
+    keiki->addSkill(new Zaoxing);
 
     General *eika = new General(this, "eika", "gxs", 3);
     eika->addSkill(new Shanlei);
