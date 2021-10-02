@@ -464,7 +464,7 @@ public:
     {
         if (e == CardsMoveOneTime) {
             CardsMoveOneTimeStruct s = d.value<CardsMoveOneTimeStruct>();
-            if (s.from->getPhase() == Player::Discard && ((s.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)
+            if (s.from != nullptr && s.from->getPhase() == Player::Discard && ((s.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)
                 && s.from->hasFlag("lunni")) {
                 QList<int> l;
                 if (s.from->tag.contains("lunni"))
