@@ -2266,7 +2266,7 @@ public:
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("AwaitExhausted") && use.card->getSkillName() == objectName() && use.from != nullptr)
-                use.from->addHistory("ZhuozhiCard");
+                room->addPlayerHistory(use.from, "ZhuozhiCard");
         } else if (triggerEvent == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("AwaitExhausted") && use.card->getSkillName() == objectName() && use.from != nullptr && !use.from->hasFlag("zhuozhiused")) {
@@ -2410,6 +2410,7 @@ public:
             LogMessage l;
             l.type = "#TriggerSkill";
             l.arg = objectName();
+            l.from = invoke->invoker;
             room->sendLog(l);
             room->doLightbox("$WanshenAnimate", 4000);
             return room->changeMaxHpForAwakenSkill(invoke->invoker);
