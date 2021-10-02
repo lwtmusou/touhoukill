@@ -698,7 +698,8 @@ public:
                 }
             }
 
-            if (card != nullptr && card->getNumber() > 0 && card->getTypeId() != Card::TypeSkill && from != nullptr && !from->hasFlag("yvshouFirst")) {
+            if (card != nullptr && card->getNumber() > 0 && (!card->isVirtualCard() || card->getSubcards().length() == 1) && card->getTypeId() != Card::TypeSkill && from != nullptr
+                && !from->hasFlag("yvshouFirst")) {
                 SkillInvokeDetail d(this, nullptr, nullptr, from, true);
                 d.tag["yvshou"] = QVariant::fromValue<const Card *>(card);
                 foreach (ServerPlayer *p, room->getOtherPlayers(from)) {
