@@ -45,6 +45,20 @@ public:
         return r;
     }
 
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        if (TriggerSkill::cost(triggerEvent, room, invoke, data) && invoke->invoker->hasShownSkill(this)) {
+            LogMessage l;
+            l.type = "#TriggerSkill";
+            l.from = invoke->invoker;
+            l.arg = objectName();
+            room->sendLog(l);
+            return true;
+        }
+
+        return false;
+    }
+
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         if (triggerEvent == EventPhaseStart) {
@@ -131,7 +145,7 @@ public:
     Bengluo()
         : TriggerSkill("bengluo")
     {
-        events << CardsMoveOneTime << EventPhaseChanging << EventPhaseStart << Damage;
+        events << CardsMoveOneTime << EventPhaseChanging << EventPhaseStart << DamageCaused;
         view_as_skill = new BengluoVS;
         global = true;
     }
@@ -140,7 +154,8 @@ public:
     {
         if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (move.from_places.contains(Player::PlaceHand) && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_USE)) {
+            if ((move.from_places.contains(Player::PlaceHand) || move.from_places.contains(Player::PlaceEquip))
+                && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_USE)) {
                 ServerPlayer *current = room->getCurrent();
                 if (current != nullptr && current->isInMainPhase() && current->isAlive()) {
                     if (move.from->getHandcardNum() > move.from->getMaxCards())
@@ -166,10 +181,10 @@ public:
                 }
                 return r;
             }
-        } else if (triggerEvent == Damage) {
+        } else if (triggerEvent == DamageCaused) {
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.card != nullptr && damage.card->isKindOf("Slash") && damage.card->getSkillName() == "bengluo" && damage.by_user && !damage.chain && !damage.transfer
-                && damage.from != nullptr && damage.from->isAlive() && damage.from->hasSkill(this))
+                && damage.from != nullptr && damage.from->isAlive() && damage.from->hasSkill(this) && damage.to->getHandcardNum() < damage.from->getHandcardNum())
                 return {SkillInvokeDetail(this, damage.from, damage.from)};
         }
 
@@ -184,7 +199,7 @@ public:
             int n = invoke->invoker->getHandcardNum() - invoke->invoker->getMaxCards();
             if (n > 0) {
                 room->setPlayerProperty(invoke->invoker, "bengluoDiscardnum", QString::number(n));
-                return room->askForCard(invoke->invoker, "@@bengluo-card2", "@bengluo-discard:::" + QString::number(n), data);
+                return room->askForCard(invoke->invoker, "@@bengluo-card2", "@bengluo-discard:::" + QString::number(n), data, "bengluo");
             } else {
                 if (room->askForSkillInvoke(invoke->invoker, this, data, "@bengluo-draw:::" + QString::number(-n))) {
                     if (n != 0)
@@ -199,7 +214,7 @@ public:
 
     bool effect(TriggerEvent triggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &data) const override
     {
-        if (triggerEvent == Damage) {
+        if (triggerEvent == DamageCaused) {
             DamageStruct damage = data.value<DamageStruct>();
             damage.damage += 1;
             data = QVariant::fromValue<DamageStruct>(damage);
