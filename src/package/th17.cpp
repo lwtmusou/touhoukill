@@ -666,8 +666,10 @@ public:
     void record(TriggerEvent triggerEvent, Room *room, QVariant &) const override
     {
         if (triggerEvent == TurnStart) {
-            foreach (ServerPlayer *p, room->getAllPlayers())
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
                 p->setMark("yvshou", 0);
+                p->setFlags("-yvshouFirst");
+            }
         }
     }
 
@@ -699,7 +701,7 @@ public:
             }
 
             if (card != nullptr && card->getNumber() > 0 && (!card->isVirtualCard() || card->getSubcards().length() == 1) && card->getTypeId() != Card::TypeSkill && from != nullptr
-                && !from->hasFlag("yvshouFirst")) {
+                && from->isInMainPhase() && !from->hasFlag("yvshouFirst")) {
                 SkillInvokeDetail d(this, nullptr, nullptr, from, true);
                 d.tag["yvshou"] = QVariant::fromValue<const Card *>(card);
                 foreach (ServerPlayer *p, room->getOtherPlayers(from)) {
@@ -1085,7 +1087,7 @@ public:
                     use.from->setFlags("lingjun_firstslash");
                 }
 
-                if (use.card->getSkillName() == "lingjun" && !Sanguosha->getCard(use.card->getSubcards().first())->isKindOf("Slash")) {
+                if (use.card->getSkillName() == "lingjun" && !use.card->getSubcards().isEmpty() && !Sanguosha->getCard(use.card->getSubcards().first())->isKindOf("Slash")) {
                     QStringList flags = use.card->getFlags();
                     foreach (const QString &flag, flags) {
                         if (flag.startsWith("Lingjun_")) {
@@ -1190,9 +1192,9 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         if (triggerEvent == DamageInflicted && (damage.to->isAlive() && damage.to->hasSkill(this)))
-            return {SkillInvokeDetail(this, damage.to, damage.to)};
+            return {SkillInvokeDetail(this, damage.to, damage.to, nullptr, true)};
         else if (triggerEvent == DamageComplete && damage.trigger_info.contains("ciou_destructing") && damage.to->isAlive())
-            return {SkillInvokeDetail(this, damage.to, damage.to)};
+            return {SkillInvokeDetail(this, damage.to, damage.to, nullptr, true)};
 
         return {};
     }
@@ -1216,7 +1218,7 @@ public:
             room->sendLog(l);
             room->notifySkillInvoked(invoke->invoker, "ciou");
             data = QVariant::fromValue<DamageStruct>(damage);
-            return damage.damage > 0;
+            return damage.damage == 0;
         } else if (triggerEvent == DamageComplete) {
             l.type = "#ciou";
             room->loseHp(invoke->invoker);
