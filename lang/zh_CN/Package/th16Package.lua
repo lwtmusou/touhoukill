@@ -76,7 +76,7 @@ return {
 	["origin:narumi"] = "p号：62808139；个人ID：3442252",
 	
 	["xunfo"] = "寻佛",
-	[":xunfo"] = "<font color=\"blue\"><b>锁定技，</b></font>当主公摸牌（因此技能而摸牌的除外）或回复体力时，若你的手牌数小于五，你摸一张牌。",
+	[":xunfo"] = "<font color=\"blue\"><b>锁定技，</b></font>当主公摸牌（因此技能而摸牌的除外）或回复体力时，若你的手牌数小于5，你摸一张牌。",
 	
 	["zhenshe"] = "镇社",
 	[":zhenshe"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将一张<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌当【养精蓄锐】使用。",
