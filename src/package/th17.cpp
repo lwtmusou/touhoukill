@@ -642,7 +642,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         bool ok = false;
-        Card::CardType id = static_cast<Card::CardType>(invoke->tag.value("quangui").toInt());
+        Card::CardType id = static_cast<Card::CardType>(invoke->tag.value("quangui").toInt(&ok));
         if (ok && id == Card::TypeEquip) {
             RecoverStruct recover;
             recover.recover = invoke->targets.first()->dyingThreshold() - invoke->targets.first()->getHp() + 1;
