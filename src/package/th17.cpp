@@ -1019,6 +1019,213 @@ public:
     }
 };
 
+class LingjunOtherVS : public OneCardViewAsSkill
+{
+public:
+    LingjunOtherVS()
+        : OneCardViewAsSkill("LingjunOtherVS")
+    {
+        response_or_use = true;
+        response_pattern = "@@LingjunOtherVS";
+        filter_pattern = "BasicCard";
+    }
+
+    const Card *viewAs(const Card *originalCard) const override
+    {
+        Slash *s = new Slash(Card::SuitToBeDecided, -1);
+        s->addSubcard(originalCard);
+        s->setSkillName("_lingjun");
+        return s;
+    }
+};
+
+class Lingjun : public TriggerSkill
+{
+private:
+    static const Card *askForUseLingjunTo(Room *room, ServerPlayer *invoker, ServerPlayer *slasher, ServerPlayer *victim)
+    {
+        // copy from Room::askForUseSlashTo
+        room->setPlayerFlag(slasher, "slashTargetFix");
+        room->setPlayerFlag(slasher, "slashNoDistanceLimit");
+        room->setPlayerFlag(slasher, "slashDisableExtraTarget");
+        room->setPlayerFlag(slasher, "slashTargetFixToOne");
+        room->setPlayerFlag(victim, "SlashAssignee");
+        room->setPlayerFlag(slasher, "SlashRecorder_Lingjun_" + invoker->objectName());
+
+        const Card *slash = room->askForUseCard(slasher, "@@LingjunOtherVS", "@lingjun-fire:" + invoker->objectName() + ":" + victim->objectName(), -1, Card::MethodUse, false);
+        if (slash == nullptr) {
+            room->setPlayerFlag(slasher, "-slashTargetFix");
+            room->setPlayerFlag(slasher, "-slashTargetFixToOne");
+            room->setPlayerFlag(victim, "-SlashAssignee");
+            if (slasher->hasFlag("slashNoDistanceLimit"))
+                room->setPlayerFlag(slasher, "-slashNoDistanceLimit");
+            if (slasher->hasFlag("slashDisableExtraTarget"))
+                room->setPlayerFlag(slasher, "-slashDisableExtraTarget");
+            room->setPlayerFlag(slasher, "-SlashRecorder_Lingjun_" + invoker->objectName());
+        }
+
+        return slash;
+    }
+
+public:
+    Lingjun()
+        : TriggerSkill("lingjun")
+    {
+        events << PreCardUsed << CardFinished << TurnStart;
+        global = true;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
+    {
+        if (triggerEvent == PreCardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->isKindOf("Slash")) {
+                if (use.from != nullptr && !use.from->hasFlag("lingjun_firstslash")) {
+                    use.card->setFlags("lingjun_firstslash");
+                    use.from->setFlags("lingjun_firstslash");
+                }
+
+                if (use.card->getSkillName() == "lingjun" && !Sanguosha->getCard(use.card->getSubcards().first())->isKindOf("Slash")) {
+                    QStringList flags = use.card->getFlags();
+                    foreach (const QString &flag, flags) {
+                        if (flag.startsWith("Lingjun_")) {
+                            QString s = flag.mid(8);
+                            ServerPlayer *lingjunInvoker = room->findPlayerByObjectName(s);
+                            if (lingjunInvoker != nullptr)
+                                lingjunInvoker->setFlags("lingjunNotSlash");
+                        }
+                    }
+                }
+            }
+        } else if (triggerEvent == TurnStart) {
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
+                p->setFlags("-lingjun_firstslash");
+                p->setFlags("-lingjunNotSlash");
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
+    {
+        if (triggerEvent == CardFinished) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.from != nullptr && use.from->isAlive() && use.from->hasSkill(this) && use.card->hasFlag("lingjun_firstslash") && !use.to.isEmpty()) {
+                QList<ServerPlayer *> ps;
+                foreach (ServerPlayer *to, use.to) {
+                    foreach (ServerPlayer *p, room->getOtherPlayers(use.from)) {
+                        if (p->inMyAttackRange(to)) {
+                            ps << to;
+                            break;
+                        }
+                    }
+                }
+
+                if (ps.isEmpty())
+                    return {};
+
+                return {SkillInvokeDetail(this, use.from, use.from)};
+            }
+        }
+        return {};
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        QList<ServerPlayer *> ps;
+        foreach (ServerPlayer *to, use.to) {
+            foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
+                if (p->inMyAttackRange(to)) {
+                    ps << to;
+                    break;
+                }
+            }
+        }
+
+        if (ps.isEmpty())
+            return false;
+
+        ServerPlayer *victim = room->askForPlayerChosen(invoke->invoker, ps, "lingjun", "@lingjun-concentratefire", true, true);
+
+        if (victim != nullptr) {
+            invoke->targets << victim;
+            return true;
+        }
+
+        return false;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        bool flag = false;
+
+        foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
+            if (p->inMyAttackRange(invoke->targets.first())) {
+                if (askForUseLingjunTo(room, invoke->invoker, p, invoke->targets.first()))
+                    flag = true;
+            }
+        }
+
+        if (flag && !invoke->invoker->hasFlag("lingjunNotSlash")) {
+            Slash *s = new Slash(Card::NoSuit, 0);
+            s->setSkillName("_lingjun");
+            room->useCard(CardUseStruct(s, invoke->invoker, invoke->targets.first()));
+        }
+
+        return false;
+    }
+};
+
+class Ciou : public TriggerSkill
+{
+public:
+    Ciou()
+        : TriggerSkill("ciou")
+    {
+        events << DamageInflicted << DamageComplete;
+        frequency = Compulsory;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (triggerEvent == DamageInflicted && (damage.to->isAlive() && damage.to->hasSkill(this)))
+            return {SkillInvokeDetail(this, damage.to, damage.to)};
+        else if (triggerEvent == DamageComplete && damage.trigger_info.contains("ciou_destructing") && damage.to->isAlive())
+            return {SkillInvokeDetail(this, damage.to, damage.to)};
+
+        return {};
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        LogMessage l;
+        l.from = invoke->invoker;
+        l.arg = objectName();
+
+        if (triggerEvent == DamageInflicted) {
+            if (damage.nature == DamageStruct::Normal && damage.card != nullptr && damage.card->isKindOf("Slash")) {
+                l.type = "#TriggerSkill";
+                damage.trigger_info.append("ciou_destructing");
+            } else {
+                l.type = "#micai01";
+                l.arg2 = QString::number(1);
+                damage.damage -= 1;
+            }
+            room->sendLog(l);
+            room->notifySkillInvoked(invoke->invoker, "ciou");
+            data = QVariant::fromValue<DamageStruct>(damage);
+            return damage.damage > 0;
+        } else if (triggerEvent == DamageComplete) {
+            l.type = "#ciou";
+            room->loseHp(invoke->invoker);
+        }
+
+        return false;
+    }
+};
+
 class Jinji : public DistanceSkill
 {
 public:
@@ -1202,7 +1409,8 @@ TH17Package::TH17Package()
     yachie->addSkill(new Duozhi);
 
     General *mayumi = new General(this, "mayumi", "gxs");
-    Q_UNUSED(mayumi);
+    mayumi->addSkill(new Lingjun);
+    mayumi->addSkill(new Ciou);
 
     General *saki = new General(this, "saki", "gxs");
     saki->addSkill(new Jinji);
@@ -1211,6 +1419,8 @@ TH17Package::TH17Package()
     related_skills.insertMulti("tianxing", "#tianxing-probibit");
 
     addMetaObject<LunniCard>();
+
+    skills << new LingjunOtherVS;
 }
 
 ADD_PACKAGE(TH17)
