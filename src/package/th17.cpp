@@ -920,6 +920,13 @@ public:
         int card2 = invoke->tag.value("card2").toInt(&ok2);
 
         if (ok1 && ok2) {
+            LogMessage l;
+            l.type = "$lingdulost";
+            l.from = invoke->invoker;
+            l.card_str = QString::number(card1);
+            l.arg = objectName();
+            room->sendLog(l);
+
             CardsMoveStruct move1;
             move1.card_ids << card1;
             move1.to = nullptr;
@@ -1171,7 +1178,10 @@ public:
         if (flag && !invoke->invoker->hasFlag("lingjunNotSlash")) {
             Slash *s = new Slash(Card::NoSuit, 0);
             s->setSkillName("_lingjun");
-            room->useCard(CardUseStruct(s, invoke->invoker, invoke->targets.first()));
+            if (!invoke->invoker->isLocked(s))
+                room->useCard(CardUseStruct(s, invoke->invoker, invoke->targets.first()));
+            else
+                delete s;
         }
 
         return false;
@@ -1356,7 +1366,10 @@ public:
         if (triggerEvent == EventPhaseStart) {
             Slash *s = new Slash(Card::NoSuit, 0);
             s->setSkillName("_tianxing");
-            room->useCard(CardUseStruct(s, invoke->invoker, {invoke->targets.first()}));
+            if (!invoke->invoker->isLocked(s))
+                room->useCard(CardUseStruct(s, invoke->invoker, {invoke->targets.first()}));
+            else
+                delete s;
         } else {
             invoke->targets.first()->setMark("tianxing", 1);
 
