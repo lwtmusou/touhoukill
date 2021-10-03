@@ -59,7 +59,7 @@ return {
 	["lingjun"] = "领军",
 	[":lingjun"] = "当你于一个回合内使用的第一张【杀】结算完毕后，你可以选择此牌的一个目标，令攻击范围内有其的其他角色各选择是否将一张基本牌当【杀】对其使用（除其外的角色不是合法目标），然后若此次有【杀】被以此法转化，你视为对其使用【杀】。",
 	["@lingjun-concentratefire"] = "领军：选择一个目标来让别人选择是否集火他",
-	["@lingjun-fire"] = "领军： %src 要集火 %dest，你可以将一张基本喵当【杀】对 %dest 使用",
+	["@lingjun-fire"] = "领军： %src 要集火 %dest，你可以将一张基本牌当【杀】对 %dest 使用",
 	["ciou"] = "瓷偶",
 	[":ciou"] = "<font color=\"blue\"><b>锁定技，</b></font>当你受到伤害时，若受到的是【杀】造成的无属性伤害，此伤害结算结束后你失去1点体力，否则此伤害值-1。",
 	["#ciou"] = "%from 的 %arg 碎了一地。",
@@ -71,5 +71,5 @@ return {
 	["tianxing"] = "天行",
 	[":tianxing"] = "一名其他角色的准备阶段开始时，你可以横置装备区里的一张牌，视为对其使用【杀】。当此牌对一名角色造成伤害后，其于此回合内不能使用以你为唯一目标的牌。",
 	["@tianxing-discard"] = "天行：wq skny sam lfhf ggxt uftl aq r thgf, pyyl wq cf adw wget b ggxt [qsu]",
-	["#tianxing"] = "%from 此回合内不能使用喵选择 %to 为唯一目标",
+	["#tianxing"] = "%from 此回合内不能使用牌选择 %to 为唯一目标",
 }
