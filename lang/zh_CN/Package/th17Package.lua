@@ -24,6 +24,7 @@ return {
 	["@zhuying-multilord"] = "主营场上有多个拥有主公技主营的角色，请选择你要贿赂的主公。",
 	["zhuying-effect:effect"] = "主营你可以接受贿赂，令其他角色与 %src 的距离 -1",
 	["#zhuying-bribe"] = "%from 接受了贿赂，其他角色与 %to 的距离于本回合内 -1。",
+	["#zhuying-distance"] = "祷应",
 	
 	["eika"] = "戎璎花" ,
 	["#eika"] = "河原的偶像水子" ,
