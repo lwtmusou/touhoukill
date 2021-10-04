@@ -2953,6 +2953,8 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                 dashboard->startPending(skill);
                 if (skill->inherits("OneCardViewAsSkill") && Config.EnableIntellectualSelection)
                     dashboard->selectOnlyCard();
+                else if (skill->objectName() == "LingshouOtherVS")
+                    dashboard->selectLingshou();
             }
         } else {
             if (pattern.endsWith("!"))

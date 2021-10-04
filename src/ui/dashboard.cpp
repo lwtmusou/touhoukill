@@ -1457,6 +1457,28 @@ void Dashboard::updateHandPile()
     }
 }
 
+void Dashboard::selectLingshou()
+{
+    foreach (const QString &pile, Self->getPileNames()) {
+        if (pile.startsWith("&") || pile == "wooden_ox")
+            retractPileCards(pile);
+    }
+    retractSpecialCard();
+
+    if (view_as_skill) {
+        unselectAll();
+        QList<int> selectedIds = StringList2IntList(Self->property("lingshouSelected").toString().split("+"));
+        foreach (CardItem *card_item, m_handCards) {
+            if (selectedIds.contains(card_item->getId())) {
+                selectCard(card_item, true);
+                pendings << card_item;
+            }
+        }
+        updatePending();
+    }
+    adjustCards(true);
+}
+
 void Dashboard::updateShown()
 {
     updatePending();
