@@ -76,7 +76,7 @@ config = {
 		"TH15",
 		"TH16",
 		"TH17", 
-		"TH18", 
+		-- "TH18", 
 		"TH99",
 		"THNDJ",
 		"TouhouGod",

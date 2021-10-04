@@ -223,6 +223,9 @@ void PlayerCardContainer::updateAvatar()
     if (general != nullptr) {
         _m_avatarArea->setToolTip(m_player->getSkillDescription(true, "head"));
         QString name = general->objectName();
+        if (m_player != nullptr && m_player->getMark("duozhi") > 0)
+            name = "yingyingguai";
+
         QPixmap avatarIcon = _getAvatarIcon(name);
         QGraphicsPixmapItem *avatarIconTmp = _m_avatarIcon;
         QRect avatarArea = _m_layout->m_avatarArea; //(ServerInfo.Enable2ndGeneral && this->getPlayer() == Self) ? _m_layout->m_avatarAreaDouble : _m_layout->m_avatarArea;
@@ -309,7 +312,10 @@ void PlayerCardContainer::updateSmallAvatar()
     }
 
     if (general != nullptr) {
-        QPixmap smallAvatarIcon = G_ROOM_SKIN.getGeneralPixmap(general->objectName(), QSanRoomSkin::GeneralIconSize(_m_layout->m_smallAvatarSize));
+        QString name = general->objectName();
+        if (m_player != nullptr && m_player->getMark("duozhi") > 0)
+            name = "yingyingguai";
+        QPixmap smallAvatarIcon = G_ROOM_SKIN.getGeneralPixmap(name, QSanRoomSkin::GeneralIconSize(_m_layout->m_smallAvatarSize));
         smallAvatarIcon = paintByMask(smallAvatarIcon);
         QGraphicsPixmapItem *smallAvatarIconTmp = _m_smallAvatarIcon;
         _paintPixmap(smallAvatarIconTmp, _m_layout->m_smallAvatarArea, smallAvatarIcon, _getAvatarParent());
@@ -325,10 +331,11 @@ void PlayerCardContainer::updateSmallAvatar()
                          G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_DASHBOARD_KINGDOM_COLOR_MASK, kingdom), _getAvatarParent());
             //}
         }
-
-        QString name = Sanguosha->translate("&" + general->objectName());
-        if (name.startsWith("&"))
-            name = Sanguosha->translate(general->objectName());
+        {
+            QString name = Sanguosha->translate("&" + general->objectName());
+            if (name.startsWith("&"))
+                name = Sanguosha->translate(general->objectName());
+        }
         if (!fake_general)
             _m_layout->m_smallAvatarNameFont.paintText(_m_smallAvatarNameItem, _m_layout->m_smallAvatarNameArea, Qt::AlignLeft | Qt::AlignJustify, name);
         _m_smallAvatarIcon->show();
@@ -706,6 +713,7 @@ void PlayerCardContainer::setPlayer(ClientPlayer *player)
         connect(player, &ClientPlayer::state_changed, this, &PlayerCardContainer::refresh);
         connect(player, &ClientPlayer::phase_changed, this, &PlayerCardContainer::updatePhase);
         connect(player, &ClientPlayer::drank_changed, this, &PlayerCardContainer::updateDrankState);
+        connect(player, &ClientPlayer::duozhi_changed, this, &PlayerCardContainer::updateAvatar);
         connect(player, &ClientPlayer::action_taken, this, &PlayerCardContainer::refresh);
         connect(player, &ClientPlayer::pile_changed, this, &PlayerCardContainer::updatePile);
         if (isHegemonyGameMode(ServerInfo.GameMode))

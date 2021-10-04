@@ -1091,10 +1091,7 @@ void Client::askForCardOrUseCard(const QVariant &cardUsage)
     else
         setPromptList(texts);
 
-    if (card_pattern.endsWith("!"))
-        m_isDiscardActionRefusable = false;
-    else
-        m_isDiscardActionRefusable = true;
+    m_isDiscardActionRefusable = !card_pattern.endsWith("!");
 
     QString temp_pattern = _processCardPattern(card_pattern);
     QRegExp rx("^@@?(\\w+)(-card)?$");

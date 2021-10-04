@@ -338,12 +338,12 @@ public:
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         if (triggerEvent == EventPhaseEnd)
-            return room->askForUseCard(invoke->invoker, "@@bengluo-card1", "@bengluo-kill");
+            return room->askForUseCard(invoke->invoker, "@@bengluo-card1", "@bengluo-kill", 1);
         else {
             int n = invoke->invoker->getHandcardNum() - invoke->invoker->getMaxCards();
             if (n > 0) {
                 room->setPlayerProperty(invoke->invoker, "bengluoDiscardnum", QString::number(n));
-                return room->askForCard(invoke->invoker, "@@bengluo-card2", "@bengluo-discard:::" + QString::number(n), data, "bengluo");
+                return room->askForCard(invoke->invoker, "@@bengluo-card2", "@bengluo-discard:::" + QString::number(n), data, "bengluo", 2);
             } else {
                 if (room->askForSkillInvoke(invoke->invoker, this, data, "@bengluo-draw:::" + QString::number(-n))) {
                     room->drawCards(invoke->invoker, -n, "bengluo");
@@ -963,7 +963,7 @@ public:
             if (c->getPhase() == Player::NotActive) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->getMark("duozhi") > 0) {
-                        p->setMark("duozhi", 0);
+                        room->setPlayerMark(p, "duozhi", 0);
                         room->removePlayerCardLimitation(p, "use,response", ".$1", "duozhi", true);
                     }
                 }
@@ -977,8 +977,12 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.from != nullptr && use.from->isAlive() && use.from->hasSkill(this)) {
                 ServerPlayer *current = room->getCurrent();
-                if (current != nullptr && current->getPhase() != Player::NotActive && current->isAlive())
-                    return {SkillInvokeDetail(this, use.from, use.from, nullptr, true)};
+                if (current != nullptr && current->getPhase() != Player::NotActive && current->isAlive()) {
+                    foreach (ServerPlayer *p, room->getOtherPlayers(use.from)) {
+                        if (p->getMark("duozhi") == 0)
+                            return {SkillInvokeDetail(this, use.from, use.from, nullptr, true)};
+                    }
+                }
             }
         }
 
@@ -1008,7 +1012,7 @@ public:
 
         foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
             if (p->getMark("duozhi") == 0) {
-                p->setMark("duozhi", 1);
+                room->setPlayerMark(p, "duozhi", 1);
                 room->setPlayerCardLimitation(p, "use,response", ".", "duozhi", true);
                 l.to << p;
             }
