@@ -77,8 +77,10 @@ public:
     QSGS_LOGIC void loseMark(const QString &mark, int n = 1);
     QSGS_LOGIC void loseAllMarks(const QString &mark_name);
 
+#if 0
     QSGS_LOGIC void addSkill(const QString &skill_name, bool head_skill = true) override;
     QSGS_LOGIC void loseSkill(const QString &skill_name, bool head_skill = true) override;
+#endif
 
     QSGS_STATE_GAME int getHandcardNum() const override;
     QSGS_LOGIC void removeCard(const Card *card, QSanguosha::Place place) override;

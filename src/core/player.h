@@ -183,11 +183,20 @@ public:
     }
     bool isCurrent() const;
 
-    void acquireSkill(const QString &skill_name, bool head = true);
-    void detachSkill(const QString &skill_name, bool head = true);
+    void acquireSkill(const QString &skill_name);
+    void detachSkill(const QString &skill_name);
     void detachAllSkills();
-    virtual void addSkill(const QString &skill_name, bool head_skill = true);
-    virtual void loseSkill(const QString &skill_name, bool head = true);
+    Q_DECL_DEPRECATED inline void addSkill(const QString &skill_name, bool head_skill)
+    {
+        addSkill(skill_name, head_skill ? 0 : 1);
+    }
+    Q_DECL_DEPRECATED void loseSkill(const QString &skill_name, bool head)
+    {
+        loseSkill(skill_name, head ? 0 : 1);
+    }
+    void addSkill(const QString &skill_name, int place = 0);
+    void loseSkill(const QString &skill_name, int place = 0);
+
     bool hasSkill(const QString &skill_name, bool include_lose = false, bool include_hidden = true) const;
     bool hasSkill(const Skill *skill, bool include_lose = false, bool include_hidden = true) const;
     bool hasSkills(const QString &skill_name, bool include_lose = false) const;

@@ -969,6 +969,7 @@ void ServerPlayer::loseAllMarks(const QString &mark_name)
     loseMark(mark_name, getMark(mark_name));
 }
 
+#if 0
 void ServerPlayer::addSkill(const QString &skill_name, bool head_skill)
 {
     Player::addSkill(skill_name, head_skill);
@@ -994,6 +995,7 @@ void ServerPlayer::loseSkill(const QString &skill_name, bool head_skill)
     args << head_skill;
     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 }
+#endif
 
 int ServerPlayer::getGeneralMaxHp() const
 {

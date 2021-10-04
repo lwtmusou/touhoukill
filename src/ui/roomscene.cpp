@@ -484,7 +484,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         bool head = arg[3].toBool();
 
         Player *player = ClientInstance->findPlayer(player_name);
-        player->detachSkill(skill_name, head);
+        player->detachSkill(skill_name);
         if (player == Self)
             detachSkill(skill_name, head);
 
@@ -498,7 +498,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         QString skill_name = arg[2].toString();
         bool head_skill = arg[3].toBool();
         Player *player = ClientInstance->findPlayer(player_name);
-        player->acquireSkill(skill_name, head_skill);
+        player->acquireSkill(skill_name);
         acquireSkill(player, skill_name, head_skill);
 
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(QSanguosha::PlaceHand, player);

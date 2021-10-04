@@ -577,7 +577,7 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
     if ((Sanguosha->getSkill(skill_name) != nullptr) && Sanguosha->getSkill(skill_name)->isEternal())
         return;
     if (player->getAcquiredSkills().contains(skill_name))
-        player->detachSkill(skill_name, head);
+        player->detachSkill(skill_name);
     else if (!acquire_only)
         player->loseSkill(skill_name, head);
     else
@@ -641,7 +641,7 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
                 continue;
 
             if (player->getAcquiredSkills().contains(actual_skill))
-                player->detachSkill(actual_skill, head);
+                player->detachSkill(actual_skill);
             else if (!acquire_only)
                 player->loseSkill(actual_skill, head);
             else
@@ -678,7 +678,7 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
                 continue;
             if (player->getAcquiredSkills().contains(actual_skill))
                 continue;
-            player->acquireSkill(actual_skill, head);
+            player->acquireSkill(actual_skill);
             if (skill->inherits("TriggerSkill")) {
                 const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
                 thread->addTriggerSkill(trigger_skill);
