@@ -40,9 +40,12 @@ public:
 
     const Card *viewAs(const QList<const Card *> &cards) const override
     {
-        DummyCard *d = new DummyCard;
-        d->addSubcards(cards);
-        return d;
+        if (!cards.isEmpty()) {
+            DummyCard *d = new DummyCard;
+            d->addSubcards(cards);
+            return d;
+        }
+        return nullptr;
     }
 
     bool isEnabledAtPlay(const Player *) const override
@@ -258,7 +261,7 @@ public:
             LogMessage log;
             log.type = "#Card_Recast";
             log.from = invoke->targets.first();
-            log.card_str = d.toString();
+            log.card_str = IntList2StringList(selectedIds).join("+");
             room->sendLog(log);
 
             CardMoveReason reason(CardMoveReason::S_REASON_RECAST, invoke->targets.first()->objectName());
@@ -1261,7 +1264,7 @@ public:
     {
         if (triggerEvent == CardFinished) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from != nullptr && use.from->isAlive() && use.from->hasSkill(this)) {
+            if (use.from != nullptr && use.from->isAlive() && use.from->hasSkill(this) && use.card->getTypeId() != Card::TypeSkill) {
                 ServerPlayer *current = room->getCurrent();
                 if (current != nullptr && current->getPhase() != Player::NotActive && current->isAlive()) {
                     foreach (ServerPlayer *p, room->getOtherPlayers(use.from)) {
