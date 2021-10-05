@@ -101,12 +101,19 @@ public:
     {
         const Card *c = nullptr;
 
-        if (triggerEvent == EventPhaseStart)
+        if (triggerEvent == EventPhaseStart) {
             c = room->askForCard(invoke->invoker, "@@zaoxing-card1", "@zaoxing-show", data, Card::MethodNone, nullptr, false, "zaoxing", false, 1);
-        else {
+            if (c != nullptr) {
+                LogMessage log;
+                log.type = "#InvokeSkill";
+                log.from = invoke->invoker;
+                log.arg = "zaoxing";
+                room->sendLog(log);
+            }
+        } else {
             CardUseStruct use = data.value<CardUseStruct>();
             room->setPlayerProperty(invoke->invoker, "zaoxing2", QString(use.card->isBlack() ? "black" : (use.card->isRed() ? "red" : "colorless")));
-            c = room->askForCard(invoke->invoker, "@@zaoxing-card2", "@zaoxing-recast", data, Card::MethodRecast, nullptr, false, "zaoxing", false, 2);
+            c = room->askForCard(invoke->invoker, "@@zaoxing-card2", "@zaoxing-recast", data, Card::MethodNone, nullptr, false, "zaoxing", false, 2);
         }
 
         if (c != nullptr) {
