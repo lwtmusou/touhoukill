@@ -158,8 +158,17 @@ public:
     bool hasFlag(const QString &flag) const;
     void clearFlags();
 
-    bool faceUp() const;
-    void setFaceUp(bool face_up);
+    bool turnSkipping() const;
+    void setTurnSkipping(bool turnSkipping);
+
+    Q_DECL_DEPRECATED inline bool faceUp() const
+    {
+        return !turnSkipping();
+    }
+    Q_DECL_DEPRECATED inline void setFaceUp(bool face_up)
+    {
+        setTurnSkipping(!face_up);
+    }
 
     void setFixedDistance(const Player *player, int distance);
     int originalRightDistanceTo(const Player *other) const;
@@ -272,8 +281,8 @@ public:
     QStringList getPileNames() const;
     QString getPileName(int card_id) const;
 
-    bool pileOpen(const QString &pile_name, const QString &player) const;
-    void setPileOpen(const QString &pile_name, const QString &player);
+    Q_DECL_DEPRECATED bool pileOpen(const QString &pile_name, const QString &player) const;
+    Q_DECL_DEPRECATED void setPileOpen(const QString &pile_name, const QString &player);
     IDSet getHandPile() const;
     QStringList getHandPileList(bool view_as_skill = true) const;
 
