@@ -111,11 +111,11 @@ public:
     const General *getGeneral(int pos = 0) const;
     QString getGeneralName(int pos = 0) const;
 
-    inline Q_DECL_DEPRECATED const General *getGeneral2() const
+    Q_DECL_DEPRECATED inline const General *getGeneral2() const
     {
         return getGeneral(1);
     }
-    inline Q_DECL_DEPRECATED QString getGeneral2Name() const
+    Q_DECL_DEPRECATED inline QString getGeneral2Name() const
     {
         return getGeneralName(1);
     }
@@ -309,11 +309,11 @@ public:
     bool canSlashWithoutCrossbow(const Card *slash = nullptr) const;
     virtual bool isLastHandCard(const Card *card, bool contain = false) const = 0;
 
-    inline Q_DECL_DEPRECATED bool isJilei(const Card *card) const
+    Q_DECL_DEPRECATED inline bool isJilei(const Card *card) const
     {
         return isCardLimited(card, QSanguosha::MethodDiscard);
     }
-    inline Q_DECL_DEPRECATED bool isLocked(const Card *card) const
+    Q_DECL_DEPRECATED inline bool isLocked(const Card *card) const
     {
         return isCardLimited(card, QSanguosha::MethodUse);
     }
