@@ -61,6 +61,8 @@ return {
 	["~benmao"] = "喵",
 
 	["otaku"] = "肥宅",
+	["#otaku"] = "死肥宅",
+	["designer:otaku"] = "F宅·s胖子",
 	["origin:otaku"] = "精通二次元",
 	
 	["fsu0413fei2zhai"] = "肥宅",
