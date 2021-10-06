@@ -677,6 +677,11 @@ public:
             }
 
             if (ids.isEmpty() || invoke->targets.first()->askForSkillInvoke("#shengyu-select", QString("mow:%1::%2").arg(invoke->invoker->objectName()).arg(colorstring))) {
+                LogMessage l;
+                l.type = "#shengyu";
+                l.from = invoke->targets.first();
+                l.arg = "no_suit_" + colorstring;
+                room->sendLog(l);
                 room->setPlayerCardLimitation(invoke->targets.first(), "use,response", ".|" + colorstring + "|.|.", "shengyu", false);
                 invoke->targets.first()->setFlags("shengyu_" + use.card->toString());
             } else
@@ -898,11 +903,15 @@ public:
                 CardsMoveStruct move2(id, player, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_GOTBACK, player->objectName()));
                 room->moveCardsAtomic(move2, true);
 
-                if (!room->askForDiscard(player, "puti", 1, 1, true, false, "@puti-discard1"))
+                if (!room->askForDiscard(player, "puti", 1, 1, true, false, "@puti-discard1")) {
+                    LogMessage l;
+                    l.type = "#puti";
+                    l.from = player;
+                    room->sendLog(l);
                     room->setPlayerCardLimitation(player, "use", "Slash", "puti", true);
-
+                }
                 if (!throwIds.isEmpty()) {
-                    CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), "sishu", QString());
+                    CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), "puti", QString());
                     DummyCard dummy(throwIds);
                     room->throwCard(&dummy, reason, nullptr);
                     throwIds.clear();
@@ -1325,6 +1334,10 @@ public:
 
     void afEffect(Room *room, ServerPlayer *target) const override
     {
+        LogMessage l;
+        l.type = "#minghe";
+        l.from = target;
+        room->sendLog(l);
         room->setPlayerCardLimitation(target, "use", ".", objectName(), true);
     }
 };

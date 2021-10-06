@@ -1857,6 +1857,10 @@ public:
         const Card *card = room->askForCard(player, "Slash|.|.|hand", "@quanjie-discard");
         if (card == nullptr) {
             player->drawCards(1);
+            LogMessage l;
+            l.type = "#quanjie";
+            l.from = player;
+            room->sendLog(l);
             room->setPlayerCardLimitation(player, "use", "Slash", objectName(), true);
         }
         return false;

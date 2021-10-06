@@ -695,7 +695,10 @@ void YuanfeiCard::onEffect(const CardEffectStruct &effect) const
     Room *room = effect.to->getRoom();
     ServerPlayer *target = effect.to;
     room->setPlayerCardLimitation(target, "use,response", ".|.|.|.", "yuanfei", true);
-    room->touhouLogmessage("#yuanfei", target, "yuanfei");
+    LogMessage l;
+    l.type = "#yuanfei";
+    l.from = target;
+    room->sendLog(l);
 }
 
 class Yuanfei : public ViewAsSkill

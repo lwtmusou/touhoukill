@@ -17,17 +17,17 @@ public:
         if (Self->hasEquip(to_select))
             return false;
 
-        if (!selected.isEmpty()) {
-            if (to_select->getSuit() != selected.first()->getSuit())
-                return false;
-        }
-
         // ??
         // if (to_select->getSuit() == Card::NoSuit)
         //     return false;
 
-        if (Sanguosha->getCurrentCardUsePattern() == "@@zaoxing-card1")
+        if (Sanguosha->getCurrentCardUsePattern() == "@@zaoxing-card1") {
+            if (!selected.isEmpty()) {
+                if (to_select->getSuit() != selected.first()->getSuit())
+                    return false;
+            }
             return !Self->getShownHandcards().contains(to_select->getEffectiveId());
+        }
 
         if (Self->getShownHandcards().contains(to_select->getEffectiveId())) {
             if ((to_select->isRed() && Self->property("zaoxing2").toString() == "red") || (to_select->isBlack() && Self->property("zaoxing2").toString() == "black")
