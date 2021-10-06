@@ -2,7 +2,7 @@
 sgs.ai_skill_cardask["@zaoxing-show"] = function(self)
 	local suits = {0,0,0,0}
 	for _, c in sgs.qlist(self.player:getHandcards()) do
-		if c:getSuit() <= 3 then
+		if (c:getSuit() <= 3) and (not self.player:isShownHandcard(c:getId())) then
 			suits[c:getSuit() + 1] = suits[c:getSuit() + 1] + 1
 		end
 	end
@@ -16,7 +16,7 @@ sgs.ai_skill_cardask["@zaoxing-show"] = function(self)
 	
 	local maxc = {}
 	for _, c in sgs.qlist(self.player:getHandcards()) do
-		if c:getSuit() == maxs - 1 then
+		if (c:getSuit() == maxs - 1) and (not self.player:isShownHandcard(c:getId())) then
 			table.insert(maxc, tostring(c:getEffectiveId()))
 		end
 	end
@@ -30,18 +30,17 @@ sgs.ai_skill_cardask["@zaoxing-recast"] = function(self, data)
 	local cards = {}
 	for _, id in sgs.qlist(self.player:getShownHandcards()) do
 		local c = sgs.Sanguosha:getCard(id)
-		if c:getColor() == zxsuit then table.insert(cards, c) end
+		if (c:getColor() == zxsuit) and (not c:isKindOf("Peach")) then table.insert(cards, c) end
 	end
 	
 	if #cards == 0 then return "." end
 	
 	self:sortByKeepValue(cards)
-	if cards[1]:isKindOf("Peach") then return "." end
 	local r = "$" .. tostring(cards[1]:getId())
 	
 	local use = data:toCardUse()
-	if self:isFriend(use.to:first()) then
-		if not cards[2]:isKindOf("Peach") then r = r .. "+" .. tostring(cards[2]:getId()) end
+	if self:isFriend(use.to:first()) and (#cards >= 2) then
+		r = r .. "+" .. tostring(cards[2]:getId())
 	end
 	
 	return r
