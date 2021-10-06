@@ -197,17 +197,10 @@ config = {
 		"lunasa|merlin|lyrica->prismriver",
 	},
 	latest_generals = {
-		"satori_god","marisa_god",
-		"nue_god",
-		
-		"chen",
-		"sumireko_sp", "yorigamis",
-		"parsee",
-		"futo",
-		"okina", "okina_sp","eternity", "nemuno", "aun", "narumi", "satono", "mai", "lilywhite_sp",
-		"eirin_ndj", "tenshi_ndj",
-		"yuka_god", "patchouli_god", "tenshi_god","kokoro_sp",
-		"koakuma", "suika", "seiran", "patchouli", "reimu_god", "reimu",
+		-- 0.10.2
+		"kasen_sp",
+		--0.10.3
+		"keiki","eika","urumi","kutaka","yachie","mayumi","saki",
 	}
 }
 

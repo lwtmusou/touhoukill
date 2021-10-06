@@ -18,7 +18,7 @@ lessThan(QT_MINOR_VERSION, 6) {
 CONFIG += c++11
 CONFIG += lua
 
-VERSION = 0.10.2
+VERSION = 0.10.3
 
 CONFIG += precompiled_header
 PRECOMPILED_HEADER = src/pch.h
