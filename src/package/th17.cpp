@@ -551,11 +551,13 @@ public:
     const Card *viewAs(const QList<const Card *> &cards) const override
     {
         if (Sanguosha->getCurrentCardUsePattern() == "@@bengluo-card1") {
-            Slash *slash = new Slash(Card::SuitToBeDecided, -1);
-            slash->addSubcards(cards);
-            slash->setShowSkill("bengluo");
-            slash->setSkillName("bengluo");
-            return slash;
+            if (!cards.isEmpty()) {
+                Slash *slash = new Slash(Card::SuitToBeDecided, -1);
+                slash->addSubcards(cards);
+                slash->setShowSkill("bengluo");
+                slash->setSkillName("bengluo");
+                return slash;
+            }
         } else {
             bool ok = false;
             if ((cards.length() == Self->property("bengluoDiscardnum").toString().toInt(&ok)) && ok) {
