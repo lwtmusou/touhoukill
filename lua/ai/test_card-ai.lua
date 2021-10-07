@@ -100,7 +100,7 @@ function SmartAI:useCardSuperPeach(card, use)
 		if self.player:hasArmorEffect("SilverLion") then
 			for _, card in sgs.qlist(self.player:getHandcards()) do
 				if card:isKindOf("Armor") and self:evaluateArmor(card) > 0 then
-					use.to:append(self.player)
+					if use.to then use.to:append(self.player) end
 					use.card = card
 					return
 				end

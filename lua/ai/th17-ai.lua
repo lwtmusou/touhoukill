@@ -165,3 +165,54 @@ sgs.ai_skill_invoke.zhuying_effect = function(self, data)
 	if p then return self:isFriend(p) end
 	return false
 end
+
+sgs.ai_skill_use["@@bengluo-card1"] = function(self)
+	local cards = self.player:getHandcards()
+	local cl = {}
+	for _, c in sgs.qlist(cards) do
+		if not (c:isKindOf("Peach")) then
+			table.insert(cl,c)
+		end
+	end
+	if #cl == 0 then return nil end
+	self:sortByKeepValue(cl)
+	
+	for _, c in ipairs(cl) do
+		local u = {isDummy=true, to = sgs.SPlayerList()}
+		local slash = sgs.Sanguosha:cloneCard("Slash", sgs.Card_SuitToBeDecided, -1)
+		slash:addSubcard(c)
+		slash:setSkillName("bengluo")
+		slash:deleteLater()
+		self:useCardSlash(slash, u)
+		if u.card and (not u.to:isEmpty()) then
+			local slist = {}
+			for _, s in sgs.qlist(u.to) do
+				table.insert(slist, s:objectName())
+			end
+			return slash:toString() .. "->" .. table.concat(slist, "+")
+		end
+	end
+end
+
+local bengluoNeedAddDamage=function(self, player)
+	return self:isEnemy(player)
+end
+
+sgs.ai_skill_cardask["@bengluo-discard"] = function(self, data)
+	local damage = data:toDamage()
+	if bengluoNeedAddDamage(self, damage.to) then
+		local n = self.player:getHandcardNum() - self.player:getMaxCards()
+		local cards = sgs.ai_skill_discard.gamerule(self, n, n)
+		local cardss = {}
+		for _, i in ipairs(cards) do
+			table.insert(cardss, tostring(i))
+		end
+		
+		return "$" .. table.concat(cardss, "+")
+	end
+end
+
+sgs.ai_skill_invoke.bengluo = function(self, data)
+	local damage = data:toDamage()
+	return bengluoNeedAddDamage(self, damage.to)
+end

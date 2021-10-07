@@ -121,7 +121,7 @@ sgs.fake_rebel_players = {}
 --           【真夜】【暗域】【契约】【魔血】
 --lose_equip_skill【魔开】【遗忘】
 --need_kongcheng【迷彩】
---masochism_skill延时卖血不算？【浴血】【】
+--masochism_skill延时卖血不算？【浴血】【善垒】
 --wizard_skill wizard_harm_skill【命运】【绯想】【风水】【博丽】
 --priority_skill【借走】【强欲】【锁定】
 --save_skill【合咒】
@@ -5870,6 +5870,9 @@ function getBestHp(player)
 	end
 	if player:hasSkill("jiushu") then
 		return player:getMaxHp()-2
+	end
+	if player:hasSkills("shanlei+bengluo") then
+		return 2
 	end
 
 	for skill,dec in pairs(arr) do
