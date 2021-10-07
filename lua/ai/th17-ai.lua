@@ -227,3 +227,287 @@ sgs.ai_skill_invoke.bengluo = function(self, data)
 	local damage = data:toDamage()
 	return bengluoNeedAddDamage(self, damage.to)
 end
+
+-- 【沦溺】其他角色回合开始时，你可以将一张装备牌置入其装备区（若已有同类型的牌则替换之），若如此做，此回合的：出牌段结束时，其获得其装备区里所有的牌；弃牌阶段结束时，你可以获得一张其于此阶段内弃置于弃牌堆里的装备牌。
+
+sgs.ai_skill_use["@@lunni"] = function(self)
+	local w, a, oh, dh, t = {},{},{},{},{}
+	for _, p in sgs.qlist(self.player:getCards("hes")) do
+		    if p:isKindOf("Weapon") then table.insert(w, p:getId())
+		elseif p:isKindOf("Armor") then table.insert(a, p:getId())
+		elseif p:isKindOf("OffensiveHorse") then table.insert(oh, p:getId())
+		elseif p:isKindOf("DefensiveHorse") then table.insert(dh, p:getId())
+		elseif p:isKindOf("Treasure") then table.insert(t, p:getId())
+		end
+	end
+
+	local uselessCamouflage = function(room, player)
+		for _, p in sgs.qlist(room:getOtherPlayers()) do
+			if p:getArmor() then return true end
+		end
+		return false
+	end
+
+	local id
+
+	local __first = true
+	while __first do -- do {} while (0);
+		__first = false
+		local current = self.room:getCurrent()
+		if self:isFriend(current) then
+			-- 送狮子回血
+			if (not current:getArmor()) or ((current:getArmor():getClassName() == "Camouflage") and uselessCamouflage(self.room,current)) then
+				local silverlion
+				for _, p in ipairs(a) do
+					if sgs.Sanguosha:getCard(p):getClassName() == "SilverLion" then silverlion = p break end
+				end
+				if silverlion then
+					if self:isWeak() and self.player:getArmor() and self.player:getArmor():getId() == silverlion and current:getCards("hes"):length() <= current:getMaxCards() then
+						id = silverlion
+						break
+					end
+					if self:isWeak(current) then
+						id = silverlion
+						break
+					end
+				end
+			end
+			-- 送连弩
+			if getKnownCard(current, self.player, "Slash", true) > 2 then
+				if not current:getWeapon() and #w > 0 then
+					local crossbow
+					for _, p in ipairs(w) do
+						if sgs.Sanguosha:getCard(p):getClassName() == "Crossbow" then silverlion = p break end
+					end
+					if crossbow then
+						id = crossbow
+						break
+					end
+				end
+			end
+			-- 不要让队友弃牌太多
+			if current:getCards("hes"):length() <= current:getMaxCards() then
+				-- 送距离
+				if getKnownCard(current, self.player, "Slash", true) > 0 then
+					if not current:getWeapon() and #w > 0 then
+						local maxDist = 1
+						for _, id in ipairs(w) do
+							local weapon = sgs.Sanguosha:getCard(id):getRealCard():toWeapon()
+							if sgs.Sanguosha:getCard(w[maxDist]):getRealCard():toWeapon():getRange() < weapon:getRange() then maxDist = _ end
+						end
+						id = w[maxDist]
+						break
+					elseif not current:getOffensiveHorse() and #of > 0 then
+						id = of[1]
+						break
+					end
+				end
+				-- 送玉玺
+				if not current:getTreasure() and #t > 0 then
+					local jadeseal
+					for _, p in ipairs(t) do
+						if sgs.Sanguosha:getCard(p):getClassName() == "JadeSeal" then jadeseal = p break end
+					end
+					if jadeseal then
+						id = jadeseal
+						break
+					end
+				end
+			end
+		elseif self:isEnemy(current) then
+			-- 优先拆母牛
+			if current:getTreasure() and (current:getTreasure():getClassName() == "WoodenOx") and #t > 0 then
+				-- 给个宝塔镇一镇（
+				local pagoda
+				for _, p in ipairs(t) do
+					if sgs.Sanguosha:getCard(p):getClassName() == "Pagoda" then pagoda = p break end
+				end
+				if pagoda then
+					id = pagoda
+					break
+				end
+			end
+			-- 弄掉对面的防御装备，限制对面的母牛
+			if (not ((not current:getArmor()) or ((current:getArmor():getClassName() == "Camouflage") and uselessCamouflage(self.room,current)))) or current:getDefensiveHorse() or (current:getTreasure() and (current:getTreasure():getClassName() == "WoodenOx")) then
+				if #a > 0 then
+					-- 可以给的防具，除了白银狮子都能给？
+					local theArmor
+					for _, p in ipairs(a) do
+						-- 给手牌
+						if sgs.Sanguosha:getCard(p):getClassName() ~= "SilverLion" and (not self.player:getArmor() or (self.player:getArmor():getId() ~= p)) then theArmor = p break end
+					end
+					if theArmor then
+						id = theArmor
+						break
+					end
+				end
+				if #dh > 0 then
+					-- +1马
+					local theDh
+					for _, p in ipairs(dh) do
+						-- 给手牌
+						if not self.player:getDefensiveHorse() or (self.player:getDefensiveHorse():getId() ~= p) then theDh = p break end
+					end
+					if theDh then
+						id = theDh
+						break
+					end
+				end
+			end
+			-- 给个连弩限制距离，但是前提是他得没有杀和母牛
+			if current:getWeapon() --[[ or (current:getTreasure() and (current:getTreasure():getClassName() == "WoodenOx")) ]] then
+				if getKnownCard(current, self.player, "Slash", true) == 0 and (not (current:getTreasure() and (current:getTreasure():getClassName() == "WoodenOx"))) then
+					local crossbow
+					for _, p in ipairs(w) do
+						if sgs.Sanguosha:getCard(p):getClassName() == "Crossbow" then crossbow = p break end
+					end
+					if crossbow then
+						id = crossbow
+						break
+					end
+				end
+			end
+			
+			if current:getCards("hes"):length() > current:getMaxCards() then
+				-- 拆迁，送-1
+				if #oh > 0 then
+					local theOh
+					for _, p in ipairs(oh) do
+						-- 优先给手牌
+						if not self.player:getOffensiveHorse() or (self.player:getOffensiveHorse():getId() ~= p) then theOh = p break end
+					end
+					if theOh then
+						id = theOh
+						break
+					end
+					-- 装备也给
+					id = oh[1]
+					break
+				end
+				-- 送宝塔
+				if #t > 0 then
+					local pagoda
+					for _, p in ipairs(t) do
+						if sgs.Sanguosha:getCard(p):getClassName() == "Pagoda" then pagoda = p break end
+					end
+					if pagoda then
+						id = pagoda
+						break
+					end
+				end
+			end
+		end
+	end
+	
+	if id then
+		local c = sgs.Sanguosha:cloneSkillCard("LunniCard")
+		c:addSubcard(id)
+		c:deleteLater()
+		return c:toString() .. "->."
+	end
+	
+	return "."
+end
+
+sgs.ai_skill_askforag.lunni = function(self, ids)
+	local cards = {}
+	for _, id in ipairs(ids) do
+		table.insert(cards, sgs.Sanguosha:getCard(id))
+	end
+	
+	-- 狮子
+	for _, c in ipairs(cards) do
+		if c:getClassName() == "SliverLion" then return c:getId() end
+	end
+	
+	-- 母牛
+	for _, c in ipairs(cards) do
+		if c:getClassName() == "WoodenOx" then return c:getId() end
+	end
+	
+	-- 连弩
+	for _, c in ipairs(cards) do
+		if c:getClassName() == "Crossbow" then return c:getId() end
+	end
+	
+	self:sortByUseValue(cards, true)
+	
+	-- 其他装备：优先度：宝物，防具，武器，+1，-1
+	for _, c in ipairs(cards) do
+		if c:isKindOf("Treasure") then return c:getId() end
+	end
+	for _, c in ipairs(cards) do
+		if c:isKindOf("Armor") then return c:getId() end
+	end
+	for _, c in ipairs(cards) do
+		if c:isKindOf("Weapon") then return c:getId() end
+	end
+	for _, c in ipairs(cards) do
+		if c:isKindOf("DefensiveHorse") then return c:getId() end
+	end
+	for _, c in ipairs(cards) do
+		if c:isKindOf("OffensiveHorse") then return c:getId() end
+	end
+	
+	-- 理论上不会走到这里的
+	return ids[1]
+end
+
+-- 【劝归】当其他角色因牌的效果受到大于1点的伤害而进入濒死状态时，你可以展示并获得其区域里的一张牌，若获得的是装备牌，其将体力回复至其体力下限。
+
+sgs.ai_skill_invoke.quangui = function(self, data)
+	local dying = data:toDying()
+	if self:isFriend(dying.who) then
+		if not dying.who:getEquips():isEmpty() then
+			if dying.who:getOffensiveHorse() then sgs.ai_skill_cardchosen.quangui = dying.who:getOffensiveHorse():getId() return true end
+			if dying.who:getWeapon() then sgs.ai_skill_cardchosen.quangui = dying.who:getWeapon():getId() return true end
+			if dying.who:getDefensiveHorse() then sgs.ai_skill_cardchosen.quangui = dying.who:getDefensiveHorse():getId() return true end
+			if dying.who:getTreasure() then sgs.ai_skill_cardchosen.quangui = dying.who:getTreasure():getId() return true end
+			if dying.who:getArmor() then sgs.ai_skill_cardchosen.quangui = dying.who:getArmor():getId() return true end
+		end
+		if not dying.who:getJudgingArea():isEmpty() then
+			local ids = {}
+			for _, p in sgs.qlist(dying.who:getJudgingArea()) do
+				ids[p:getClassName()] = p:getEffectiveId()
+			end
+			if ids.Indulgence then sgs.ai_skill_cardchosen.quangui = ids.Indulgence return true end
+			if ids.SupplyShortage then sgs.ai_skill_cardchosen.quangui = ids.SupplyShortage return true end
+			if ids.Lightning then sgs.ai_skill_cardchosen.quangui = ids.Lightning return true end
+			-- if ids.SavingEnergy then sgs.ai_skill_cardchosen.quangui = ids.SavingEnergy return true end
+			-- if ids.SpringBreath then sgs.ai_skill_cardchosen.quangui = ids.SpringBreath return true end
+		end
+	elseif self:isEnemy(dying.who) then
+		if dying.who:getHandcardNum() > 0 then sgs.ai_skill_cardchosen.quangui = -1 return true end
+		if not dying.who:getJudgingArea():isEmpty() then
+			local ids = {}
+			for _, p in sgs.qlist(dying.who:getJudgingArea()) do
+				ids[p:getClassName()] = p:getEffectiveId()
+			end
+			-- if ids.Indulgence then sgs.ai_skill_cardchosen.quangui = ids.Indulgence return true end
+			-- if ids.SupplyShortage then sgs.ai_skill_cardchosen.quangui = ids.SupplyShortage return true end
+			-- if ids.Lightning then sgs.ai_skill_cardchosen.quangui = ids.Lightning return true end
+			if ids.SpringBreath then sgs.ai_skill_cardchosen.quangui = ids.SpringBreath return true end
+			if ids.SavingEnergy then sgs.ai_skill_cardchosen.quangui = ids.SavingEnergy return true end
+		end
+	end
+	
+	return false
+end
+
+
+--[[
+kutaka 4血
+【狱守】 其他角色的准备阶段开始时，你可以弃置一张手牌，若如此做，当其于此回合内使用第一张有点数的牌时，若点数不大于之，此牌无效，反之此牌不计入限制的使用次数。
+【灵渡】 当你区域里的牌于回合外置入弃牌堆后（包括牌使用或打出结算完毕后），你可以用你区域里另一张牌替换之，若以此法失去了一个区域里最后的一张牌，你摸一张牌。每回合限一次。
+
+yachie 4血
+【夺志】锁定技 当你使用牌结算完毕后，你令所有其他角色于当前回合内不能使用或打出牌。
+
+mayumi 4血
+【领军】当你于一个回合内使用的第一张【杀】结算完毕后，你可以选择此牌的一个目标，令攻击范围内有其的其他角色各选择是否将一张基本牌当【杀】对其使用（除其外的角色不是合法目标），然后若此次被以此法转化的牌均是【杀】，你视为对其使用【杀】。
+【瓷偶】锁定技 当你受到伤害时，若受到的是【杀】造成的无属性伤害，此伤害结算结束后你失去1点体力，否则此伤害值-1。
+
+saki 4血
+【劲疾】锁定技 你与其他角色的距离-X（X为你装备区里的牌数），其他角色与你的距离+Y（Y为你装备区里横置的牌数）。
+【天行】一名其他角色的准备阶段开始时，你可以横置装备区里的一张牌，视为对其使用【杀】；当你使用【杀】对一名角色造成伤害后，其于此回合内不能使用以你为唯一目标的牌。
+]]
