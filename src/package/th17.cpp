@@ -597,7 +597,8 @@ public:
         if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if ((move.from_places.contains(Player::PlaceHand) || move.from_places.contains(Player::PlaceEquip))
-                && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_USE)) {
+                && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_USE)
+                && ((move.to != move.from) && ((move.to_place == Player::PlaceHand) || (move.to_place == Player::PlaceEquip)))) {
                 ServerPlayer *current = room->getCurrent();
                 if (current != nullptr && current->isInMainPhase() && current->isAlive()) {
                     if (move.from->getHandcardNum() > move.from->getMaxCards())
@@ -714,12 +715,6 @@ void LunniCard::onEffect(const CardEffectStruct &effect) const
         CardsMoveStruct move2(equipped_id, nullptr, Player::DiscardPile, CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, target->objectName()));
         exchangeMove.push_back(move2);
     }
-    LogMessage log;
-    log.from = target;
-    log.type = "$Install";
-    log.card_str = QString::number(subcards.first());
-    room->sendLog(log);
-
     room->moveCardsAtomic(exchangeMove, true);
 
     effect.to->setFlags("lunni");
