@@ -33,6 +33,8 @@ sgs.dynamic_value.damage_card.PowerSlash = true
 
 function SmartAI:shouldUseMagicAnaleptic(trick)
 	if sgs.turncount <= 1 and self.role == "renegade" and sgs.isLordHealthy() and self:getOverflow() < 2 then return false end
+	
+	if self.player:hasSkill("duozhi") then return true end
 
 	local nul_f, nul_e = 0, 0
 	for _, f in ipairs(self.friends)do

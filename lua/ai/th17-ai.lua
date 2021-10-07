@@ -226,6 +226,8 @@ sgs.ai_skill_cardask["@bengluo-discard"] = function(self, data)
 		
 		return "$" .. table.concat(cardss, "+")
 	end
+	
+	return "."
 end
 
 sgs.ai_skill_invoke.bengluo = function(self, data)
@@ -249,7 +251,7 @@ sgs.ai_skill_use["@@lunni"] = function(self)
 	end
 
 	local uselessCamouflage = function(room, player)
-		for _, p in sgs.qlist(room:getOtherPlayers()) do
+		for _, p in sgs.qlist(room:getOtherPlayers(player)) do
 			if p:getArmor() then return true end
 		end
 		return false
@@ -508,10 +510,109 @@ end
 
 -- 【狱守】 其他角色的准备阶段开始时，你可以弃置一张手牌，若如此做，当其于此回合内使用第一张有点数的牌时，若点数不大于之，此牌无效，反之此牌不计入限制的使用次数。
 -- 需要大量调整出牌顺序（比如对手用无效的的五谷桃园，队友先用果酒、酒和杀之类的，不过因为果酒和酒的出牌阶段选牌是耦合的，不好做。。。。。。），出牌顺序调整搁置，这里只做本体
--- 本体思路：只留桃子其余全扔，如果有未发动的零度且其他区域有牌，桃子也扔（反正可以捡回来），对对手的话，扔小于等于7的牌，对队友扔大于等于7的牌
+-- 本体思路：只留桃子其余全扔，如果有未发动的零度且其他区域有牌，桃子也扔（反正可以捡回来），对队友的话，扔小于等于7的牌，对对手扔大于等于7的牌
+
+sgs.ai_skill_cardask["@yvshou-discard"] = function(self, data)
+	local current = data:toPlayer()
+
+	local sortfunc = function(a,b)
+		return a:getNumber() < b:getNumber()
+	end
+	
+	local cards = {}
+	for _, p in sgs.qlist(self.player:getHandcards()) do
+		local isNotPeach = --[[ (self.player:hasSkill("lingdu") and (not current:hasFlag("lingdu")) and (not (self.player:getJudgingArea():isEmpty() and self.player:getEquips():isEmpty()))) and ]] (not p:isKindOf("Peach"))
+		if isNotPeach then table.insert(cards, p) end
+	end
+	
+	if #cards == 0 then return "." end
+	table.sort(cards, sortfunc)
+	if self:isEnemy(current) then
+		if cards[#cards]:getNumber() < 7 then return "." end
+		return tostring(cards[#cards]:getId())
+	elseif self:isFriend(current) then
+		if cards[1]:getNumber() > 7 then return "." end
+		return tostring(cards[1]:getId())
+	end
+	
+	return "."
+end
 
 -- 【灵渡】 当你区域里的牌于回合外置入弃牌堆后（包括牌使用或打出结算完毕后），你可以用你区域里另一张牌替换之，若以此法失去了一个区域里最后的一张牌，你摸一张牌。每回合限一次。
 -- 思路：捡桃子，扔兵乐电和装备（除母牛）和手牌（除桃）
+
+local lingdu_pick = nil
+
+sgs.ai_skill_cardask["@lingdu-discard"] = function(self,data)
+	local ids = data:toIntList()
+	local cards = {}
+	for _, id in sgs.qlist(ids) do
+		table.insert(cards, sgs.Sanguosha:getCard(id))
+	end
+	
+	lingdu_pick = nil
+	
+	-- 桃子
+	for _, c in ipairs(cards) do
+		if c:isKindOf("Peach") then lingdu_pick = c:getId() break end
+	end
+	
+	-- 其余牌，按需保留
+	if not lingdu_pick then
+		self:sortByCardNeed(cards)
+		lingdu_pick = cards[#cards]:getId()
+	end
+	
+	-- 要扔的牌，优先判定区
+	local j = self.player:getJudgingArea()
+	-- 优先度：乐兵电
+	for _, c in sgs.qlist(j) do
+		if c:isKindOf("Indulgence") then return "$" .. c:getId() end
+	end
+	for _, c in sgs.qlist(j) do
+		if c:isKindOf("SupplyShortage") then return "$" .. c:getId() end
+	end
+	for _, c in sgs.qlist(j) do
+		if c:isKindOf("Lightning") then return "$" .. c:getId() end
+	end
+	-- 然后若只有一张养精蓄锐也扔。春息不扔
+	if j:length() == 1 and j:first():isKindOf("SavingEnergy") then
+		return "$" .. j:first():getId()
+	end
+	
+	-- 然后是装备，除母牛不扔之外，其他全部扔，优先扔没用的Camouflage
+	local uselessCamouflage = function(room, player)
+		for _, p in sgs.qlist(room:getOtherPlayers(player)) do
+			if p:getArmor() then return true end
+		end
+		return false
+	end
+	if self.player:getArmor() and self.player:getArmor():getClassName() == "Camouflage" and uselessCamouflage(self.room, self.player) then
+		return "$" .. self.player:getArmor():getId()
+	end
+	-- 然后是优先度：-1，武器，+1，宝物（除母牛），防具
+	if self.player:getOffensiveHorse() then return "$" .. self.player:getOffensiveHorse():getId() end
+	if self.player:getWeapon() then return "$" .. self.player:getWeapon():getId() end
+	if self.player:getDefensiveHorse() then return "$" .. self.player:getDefensiveHorse():getId() end
+	if self.player:getTreasure() and (self.player:getTreasure():getClassName() ~= "WoodenOx") then return "$" .. self.player:getTreasure():getId() end
+	if self.player:getArmor() then return "$" .. self.player:getArmor():getId() end
+	
+	-- 手牌（除桃）
+	local hc = self.player:getHandcards()
+	local hcs = {}
+	for _, c in sgs.qlist(hc) do
+		if not c:isKindOf("Peach") then table.insert(hcs, c) end
+	end
+	
+	if #hcs == 0 then return "." end
+	
+	self:sortByKeepValue(hcs)
+	return "$" .. hcs[1]:getId()
+end
+
+sgs.ai_skill_askforag.lingdu = function()
+	return lingdu_pick
+end
 
 -- 【夺志】锁定技 当你使用牌结算完毕后，你令所有其他角色于当前回合内不能使用或打出牌。
 -- 本体无需AI，出牌顺序可能需要微调，比如先挂装备等，防御上调（防二刀，防锦囊，太强了）
@@ -519,11 +620,140 @@ end
 -- 【领军】当你于一个回合内使用的第一张【杀】结算完毕后，你可以选择此牌的一个目标，令攻击范围内有其的其他角色各选择是否将一张基本牌当【杀】对其使用（除其外的角色不是合法目标），然后若此次被以此法转化的牌均是【杀】，你视为对其使用【杀】。
 -- 只要不是杀队友无脑发动，目标的对手手牌中有杀的话用杀当杀，没杀的话看剩余目标数和目标血量手牌数决定是否用其他牌（除桃外）当杀，目标的队友不响应
 
+sgs.ai_skill_playerchosen.lingjun = function(self, targets)
+	local ts = {}
+	for _, t in sgs.qlist(targets) do
+		if self:isEnemy(t) then table.insert(ts, t) end
+	end
+	
+	if #ts == 0 then return nil end
+	self:sortEnemies(ts)
+	return ts[1]
+end
+
+sgs.ai_skill_use["@@LingjunOtherVS"] = function(self)
+	local target = nil
+	local from = nil
+	for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if p:hasFlag("SlashAssignee") then target = p end
+		if self.player:hasFlag("SlashRecorder_Lingjun_" .. p:objectName()) then from = p end
+		if target and from then break end
+	end
+	
+	if not target then return "." end
+	if self:isFriend(target) then return "." end
+	
+	-- 是否已经有人用杀以外的牌当杀了？需要判断lingjun的发动者
+	local useSlashAsSlash = from and (not from:hasFlag("lingjunNotSlash"))
+	if useSlashAsSlash then
+		-- 没有人用过杀以外的牌当杀
+		local slashes = {}
+		for _, c in sgs.qlist(self.player:getHandcards()) do
+			if c:isKindOf("Slash") then table.insert(slashes, c) end
+		end
+		if #slashes > 0 then
+			-- 有杀
+			self:sortByKeepValue(slashes)
+			local viewAsSlash = sgs.Sanguosha:cloneCard("Slash", sgs.Card_SuitToBeDecided, -1)
+			viewAsSlash:setSkillName("_lingjun")
+			local use = {isDummy = true, to = sgs.SPlayerList()}
+			use.to:append(target)
+			for _, sl in ipairs(slashes) do
+				viewAsSlash:clearSubcards()
+				viewAsSlash:addSubcard(sl)
+				-- 判断一下要不要用
+				self:useCardSlash(viewAsSlash, use)
+				viewAsSlash:deleteLater()
+				if use.card then
+					-- 杀！
+					return viewAsSlash:toString() .. "->" .. target:objectName()
+				end
+			end
+			
+			-- 这么怂
+			return "."
+		end
+
+		-- 判断还剩余多少队友没响应，是否值得用非杀转换杀他
+		local op = self.room:getOtherPlayers(from)
+		local flag = false
+		local n = 0
+		for _, p in sgs.qlist(op) do
+			if p:objectName() == self.player:objectName() then
+				flag = true
+			elseif flag then
+				if p:inMyAttackRange(target) and self:isFriend(p) then n = n + 1 end
+			end
+		end
+		
+		-- 先不搞他，反正他还有点血
+		if sgs.getDefense(target) > n then return "." end
+	end
+	
+	-- 用所有的基本牌（除桃）转化
+	local basics = {}
+	for _, c in sgs.qlist(self.player:getHandcards()) do
+		if c:isKindOf("BasicCard") and (not c:isKindOf("Peach")) then table.insert(basics, c) end
+	end
+	if #basics > 0 then
+		-- 有基本牌
+		self:sortByKeepValue(basics)
+		local viewAsSlash = sgs.Sanguosha:cloneCard("Slash", sgs.Card_SuitToBeDecided, -1)
+		viewAsSlash:setSkillName("_lingjun")
+		local use = {isDummy = true, to = sgs.SPlayerList()}
+		use.to:append(target)
+		for _, sl in ipairs(basics) do
+			viewAsSlash:clearSubcards()
+			viewAsSlash:addSubcard(sl)
+			-- 判断一下要不要用
+			self:useCardSlash(viewAsSlash, use)
+			viewAsSlash:deleteLater()
+			if use.card then
+				-- 杀！
+				return viewAsSlash:toString() .. "->" .. target:objectName()
+			end
+		end
+	end
+	
+	-- 怂
+	return "."
+end
+
 -- 【瓷偶】锁定技 当你受到伤害时，若受到的是【杀】造成的无属性伤害，此伤害结算结束后你失去1点体力，否则此伤害值-1。
 -- 本体无需AI，防御要调整
 
 -- 【劲疾】锁定技 你与其他角色的距离-X（X为你装备区里的牌数），其他角色与你的距离+Y（Y为你装备区里横置的牌数）。
 -- None needed
 
--- 【天行】一名其他角色的准备阶段开始时，你可以横置装备区里的一张牌，视为对其使用【杀】；当你使用【杀】对一名角色造成伤害后，其于此回合内不能使用以你为唯一目标的牌。
+-- 【天行】一名其他角色的准备阶段开始时，你可以横置装备区里的一张牌，视为对其使用【杀】；当你使用【杀】对一名角色造成伤害后，其于此回合内不能使用以你为唯一目标的牌。 
 -- 用默认杀的策略，只是杀换成了视为的
+
+sgs.ai_skill_cardask["@tianxing-discard"] = function(self, data)
+	local current = data:toPlayer()
+	if self:isFriend(current) then return "." end
+	
+	local viewAsSlash = sgs.Sanguosha:cloneCard("Slash", sgs.Card_SuitToBeDecided, -1)
+	viewAsSlash:setSkillName("_tianxing")
+	local use = {isDummy = true, to = sgs.SPlayerList()}
+	use.to:append(current)
+	self:useCardSlash(viewAsSlash, use)
+	viewAsSlash:deleteLater()
+	if not use.card then return "." end
+	
+	
+	-- 横置优先级： -1，武器，+1，宝物，防具
+	local __first = true
+	local id
+	while __first do
+		__first = false
+		if self.player:getOffensiveHorse() and not self.player:isBrokenEquip(self.player:getOffensiveHorse():getId()) then id = self.player:getOffensiveHorse():getId() break end
+		if self.player:getWeapon() and not self.player:isBrokenEquip(self.player:getWeapon():getId()) then id = self.player:getWeapon():getId() break end
+		if self.player:getDefensiveHorse() and not self.player:isBrokenEquip(self.player:getDefensiveHorse():getId()) then id = self.player:getDefensiveHorse():getId() break end
+		if self.player:getTreasure() and not self.player:isBrokenEquip(self.player:getTreasure():getId()) then id = self.player:getTreasure():getId() break end
+		if self.player:getArmor() and not self.player:isBrokenEquip(self.player:getArmor():getId()) then id = self.player:getArmor():getId() break end
+	end
+	
+	if not id then return "." end
+	
+	return "$" .. tostring(id)
+end
