@@ -1,5 +1,6 @@
 
 -- 【造形】出牌阶段开始时，你可以明置至少一张花色相同的手牌；当其他角色成为牌的唯一目标时，你可以重铸至少一张与之颜色相同的明置手牌，然后重铸牌数大于1，其摸一张牌。
+-- 思路：亮牌的时候选牌最多的花色全亮算了，重铸的时候，队友重铸两张，非队友重铸一张，桃子不重铸
 
 sgs.ai_skill_cardask["@zaoxing-show"] = function(self)
 	local suits = {0,0,0,0}
@@ -49,6 +50,7 @@ sgs.ai_skill_cardask["@zaoxing-recast"] = function(self, data)
 end
 
 -- 【灵守】结束阶段开始时，你可以观看一名角色的手牌并展示其中至多两张花色相同的牌，其须选择将这些牌重铸或当【杀】使用。
+-- 思路：找个牌最多的拆个桃子啥的
 
 sgs.ai_skill_playerchosen.lingshou = function(self, targets)
 	local n = {}
@@ -76,6 +78,7 @@ sgs.ai_skill_askforag.lingshou = function(self, ids)
 	return cards[#cards]:getId()
 end
 
+-- 用默认的使用杀算法选择目标杀
 sgs.ai_skill_use["@@LingshouOtherVS"] = function(self)
 	local idstrings = string.split(self.player:property("lingshouSelected"):toString(), "+")
 	local slash = sgs.Sanguosha:cloneCard("Slash", sgs.Card_SuitToBeDecided, -1)
@@ -99,6 +102,7 @@ sgs.ai_skill_use["@@LingshouOtherVS"] = function(self)
 end
 
 -- 【祷应】主公技，其他鬼势力角色的出牌阶段限一次，其可以选择一名角色为目标并将一张手牌交给你，你可以令所有其他角色于此回合内与目标距离-1。
+-- 目前不好用，搁置
 -- zhuying目前没人发动？啥鬼？
 local zhuying_s={}
 zhuying_s.name="zhuying_attach"
@@ -174,6 +178,7 @@ end
 -- None needed
 
 -- 【崩落】一名角色的一个阶段结束时，若你于此阶段内有过不因使用而失去牌后使你的手牌数大于你的手牌上限的情况，你可以将一张手牌当【杀】使用。当此牌对目标造成伤害时，若其手牌数小于你，你可以将手牌调整至你的手牌上限，令此伤害值+1。
+-- 用最坏的牌和默认的杀算法选择目标来杀就行，用弃牌阶段弃牌的算法选择弃牌调整所需的牌
 
 sgs.ai_skill_use["@@bengluo-card1"] = function(self)
 	local cards = self.player:getHandcards()
@@ -229,7 +234,9 @@ sgs.ai_skill_invoke.bengluo = function(self, data)
 end
 
 -- 【沦溺】其他角色回合开始时，你可以将一张装备牌置入其装备区（若已有同类型的牌则替换之），若如此做，此回合的：出牌段结束时，其获得其装备区里所有的牌；弃牌阶段结束时，你可以获得一张其于此阶段内弃置于弃牌堆里的装备牌。
+-- 看注释吧
 
+-- 回合开始的询问
 sgs.ai_skill_use["@@lunni"] = function(self)
 	local w, a, oh, dh, t = {},{},{},{},{}
 	for _, p in sgs.qlist(self.player:getCards("hes")) do
@@ -255,6 +262,7 @@ sgs.ai_skill_use["@@lunni"] = function(self)
 		__first = false
 		local current = self.room:getCurrent()
 		if self:isFriend(current) then
+			-- 队友的话
 			-- 送狮子回血
 			if (not current:getArmor()) or ((current:getArmor():getClassName() == "Camouflage") and uselessCamouflage(self.room,current)) then
 				local silverlion
@@ -409,6 +417,7 @@ sgs.ai_skill_use["@@lunni"] = function(self)
 	return "."
 end
 
+-- 弃牌阶段捡垃圾
 sgs.ai_skill_askforag.lunni = function(self, ids)
 	local cards = {}
 	for _, id in ipairs(ids) do
@@ -454,6 +463,7 @@ sgs.ai_skill_askforag.lunni = function(self, ids)
 end
 
 -- 【劝归】当其他角色因牌的效果受到大于1点的伤害而进入濒死状态时，你可以展示并获得其区域里的一张牌，若获得的是装备牌，其将体力回复至其体力下限。
+-- 思路：拿队友装备（优先级：-1，武器，+1，宝物，防具）和兵乐电，拿对手手牌和春息养精蓄锐
 
 sgs.ai_skill_invoke.quangui = function(self, data)
 	local dying = data:toDying()
