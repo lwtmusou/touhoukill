@@ -1,4 +1,6 @@
 
+-- 【造形】出牌阶段开始时，你可以明置至少一张花色相同的手牌；当其他角色成为牌的唯一目标时，你可以重铸至少一张与之颜色相同的明置手牌，然后重铸牌数大于1，其摸一张牌。
+
 sgs.ai_skill_cardask["@zaoxing-show"] = function(self)
 	local suits = {0,0,0,0}
 	for _, c in sgs.qlist(self.player:getHandcards()) do
@@ -45,6 +47,8 @@ sgs.ai_skill_cardask["@zaoxing-recast"] = function(self, data)
 	
 	return r
 end
+
+-- 【灵守】结束阶段开始时，你可以观看一名角色的手牌并展示其中至多两张花色相同的牌，其须选择将这些牌重铸或当【杀】使用。
 
 sgs.ai_skill_playerchosen.lingshou = function(self, targets)
 	local n = {}
@@ -94,7 +98,7 @@ sgs.ai_skill_use["@@LingshouOtherVS"] = function(self)
 	return "."
 end
 
-
+-- 【祷应】主公技，其他鬼势力角色的出牌阶段限一次，其可以选择一名角色为目标并将一张手牌交给你，你可以令所有其他角色于此回合内与目标距离-1。
 -- zhuying目前没人发动？啥鬼？
 local zhuying_s={}
 zhuying_s.name="zhuying_attach"
@@ -166,6 +170,11 @@ sgs.ai_skill_invoke.zhuying_effect = function(self, data)
 	return false
 end
 
+-- 【善垒】锁定技，回合开始时，若你的手牌数大于你的手牌上限，你将手牌弃置至上限；回合结束时，若你的手牌数不大于所有其他角色，你摸至X张（X为手牌最多的角色的手牌数+1）。
+-- None needed
+
+-- 【崩落】一名角色的一个阶段结束时，若你于此阶段内有过不因使用而失去牌后使你的手牌数大于你的手牌上限的情况，你可以将一张手牌当【杀】使用。当此牌对目标造成伤害时，若其手牌数小于你，你可以将手牌调整至你的手牌上限，令此伤害值+1。
+
 sgs.ai_skill_use["@@bengluo-card1"] = function(self)
 	local cards = self.player:getHandcards()
 	local cl = {}
@@ -192,6 +201,8 @@ sgs.ai_skill_use["@@bengluo-card1"] = function(self)
 			return slash:toString() .. "->" .. table.concat(slist, "+")
 		end
 	end
+	
+	return "."
 end
 
 local bengluoNeedAddDamage=function(self, player)
