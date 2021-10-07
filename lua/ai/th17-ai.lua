@@ -323,7 +323,7 @@ sgs.ai_skill_use["@@lunni"] = function(self)
 				end
 			end
 		elseif self:isEnemy(current) then
-			-- 优先拆母牛
+			-- 如果是对手，优先拆母牛
 			if current:getTreasure() and (current:getTreasure():getClassName() == "WoodenOx") and #t > 0 then
 				-- 给个宝塔镇一镇（
 				local pagoda
@@ -463,12 +463,14 @@ sgs.ai_skill_askforag.lunni = function(self, ids)
 end
 
 -- 【劝归】当其他角色因牌的效果受到大于1点的伤害而进入濒死状态时，你可以展示并获得其区域里的一张牌，若获得的是装备牌，其将体力回复至其体力下限。
--- 思路：拿队友装备（优先级：-1，武器，+1，宝物，防具）和兵乐电，拿对手手牌和春息养精蓄锐
+-- 思路：拿队友装备（优先级：连弩，距离2武器，-1，其他武器，+1，宝物，防具）和兵乐电，拿对手手牌和春息养精蓄锐
 
 sgs.ai_skill_invoke.quangui = function(self, data)
 	local dying = data:toDying()
 	if self:isFriend(dying.who) then
 		if not dying.who:getEquips():isEmpty() then
+			if dying.who:getWeapon() and dying.who:getWeapon():getClassName() == "Crossbow" then sgs.ai_skill_cardchosen.quangui = dying.who:getWeapon():getId() return true end
+			if dying.who:getWeapon() and dying.who:getWeapon():getRealCard():toWeapon():getRange() == 2 then sgs.ai_skill_cardchosen.quangui = dying.who:getWeapon():getId() return true end
 			if dying.who:getOffensiveHorse() then sgs.ai_skill_cardchosen.quangui = dying.who:getOffensiveHorse():getId() return true end
 			if dying.who:getWeapon() then sgs.ai_skill_cardchosen.quangui = dying.who:getWeapon():getId() return true end
 			if dying.who:getDefensiveHorse() then sgs.ai_skill_cardchosen.quangui = dying.who:getDefensiveHorse():getId() return true end
