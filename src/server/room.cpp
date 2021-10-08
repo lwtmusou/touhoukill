@@ -6872,9 +6872,10 @@ void Room::countDescription()
 
 void Room::transformGeneral(ServerPlayer *player, const QString &general_name, int head)
 {
+#if 0
     if (!player->canTransform(head != 0))
         return; //check sujiang
-
+#endif
     QStringList names;
     QStringList generals = getTag(player->objectName()).toStringList();
     names << generals.first() << generals.last();

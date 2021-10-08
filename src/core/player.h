@@ -298,12 +298,18 @@ public:
 
     bool hasEquipSkill(const QString &skill_name) const;
     QSet<const TriggerSkill *> getTriggerSkills() const;
-    QSet<const Skill *> getSkills(bool include_equip = false, bool visible_only = true) const;
-    QList<const Skill *> getSkillList(bool include_equip = false, bool visible_only = true) const;
+    QSet<const Skill *> getSkills(bool include_equip = false, bool visible_only = true, bool include_acquired = false, const QList<int> &positions = {}) const;
+    QList<const Skill *> getSkillList(bool include_equip = false, bool visible_only = true, bool include_acquired = false, const QList<int> &positions = {}) const;
     QSet<const Skill *> getVisibleSkills(bool include_equip = false) const;
     QList<const Skill *> getVisibleSkillList(bool include_equip = false) const;
-    QList<const Skill *> getHeadSkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const;
-    QList<const Skill *> getDeputySkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const;
+    Q_DECL_DEPRECATED QList<const Skill *> getHeadSkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const
+    {
+        return getSkillList(include_equip, visible_only, include_acquired, {0});
+    }
+    Q_DECL_DEPRECATED QList<const Skill *> getDeputySkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const
+    {
+        return getSkillList(include_equip, visible_only, include_acquired, {1});
+    }
 
     QSet<QString> getAcquiredSkills() const;
     QString getSkillDescription(bool yellow = true, const QString &flag = QString()) const;
@@ -334,29 +340,58 @@ public:
     bool hasShownSkill(const Skill *skill) const; //hegemony
     bool hasShownSkill(const QString &skill_name) const; //hegemony
     bool hasShownSkills(const QString &skill_names) const;
-    bool inHeadSkills(const QString &skill_name) const;
-    bool inDeputySkills(const QString &skill_name) const;
+    int findPositionOfGeneralOwningSkill(const QString &skill_name) const;
+    Q_DECL_DEPRECATED bool inHeadSkills(const QString &skill_name) const
+    {
+        return findPositionOfGeneralOwningSkill(skill_name) == 0;
+    }
+    Q_DECL_DEPRECATED bool inDeputySkills(const QString &skill_name) const
+    {
+        return findPositionOfGeneralOwningSkill(skill_name) == 1;
+    }
     void setSkillPreshowed(const QString &skill, bool preshowed = true); //hegemony
-    void setSkillsPreshowed(const QString &flag = QStringLiteral("hd"), bool preshowed = true);
+    Q_DECL_DEPRECATED inline void setSkillsPreshowed(const QString &flag = QStringLiteral("hd"), bool preshowed = true)
+    {
+        QList<int> p;
+        if (flag.contains(QStringLiteral("h")))
+            p << 0;
+        if (flag.contains(QStringLiteral("d")))
+            p << 1;
+        setSkillsPreshowed(p, preshowed);
+    }
+    void setSkillsPreshowed(const QList<int> &positions, bool preshowed = true);
+
     bool hasPreshowedSkill(const QString &name) const;
     bool hasPreshowedSkill(const Skill *skill) const;
-    bool isHidden(bool head_general) const;
+    Q_DECL_DEPRECATED inline bool isHidden(bool head_general) const
+    {
+        return isHidden(head_general ? 0 : 1);
+    }
+    bool isHidden(int pos) const;
 
-    bool hasShownGeneral() const;
-    void setGeneralShowed(bool showed);
-    bool hasShownGeneral2() const;
-    void setGeneral2Showed(bool showed);
+    bool hasShownGeneral(int pos = 0) const;
+    void setShownGeneral(int pos, bool show);
+
+    Q_DECL_DEPRECATED inline void setGeneralShowed(bool showed, int pos = 0)
+    {
+        setShownGeneral(pos, showed);
+    }
+    Q_DECL_DEPRECATED inline bool hasShownGeneral2() const
+    {
+        return hasShownGeneral(1);
+    }
+    Q_DECL_DEPRECATED inline void setGeneral2Showed(bool showed)
+    {
+        return setShownGeneral(1, showed);
+    }
     bool hasShownOneGeneral() const;
     bool hasShownAllGenerals() const;
     bool ownSkill(const QString &skill_name) const;
     bool ownSkill(const Skill *skill) const;
     bool isFriendWith(const Player *player, bool considerAnjiang = false) const;
     bool willBeFriendWith(const Player *player) const;
-    bool canTransform(bool head) const;
 
     QList<const Player *> getFormation() const;
-
-    const Player *getLord(bool include_death = false) const;
 
     RoomObject *roomObject() const;
 
