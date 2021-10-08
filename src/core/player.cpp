@@ -832,6 +832,11 @@ bool Player::isSkillInvalid(const QString &skill_name) const
     return d->invalidSkills.contains(skill_name);
 }
 
+QStringList Player::invalidedSkills() const
+{
+    return d->invalidSkills;
+}
+
 void Player::acquireSkill(const QString &skill_name)
 {
     d->acquiredSkills.insert(skill_name);
@@ -1485,6 +1490,11 @@ int Player::getSlashCount() const
 int Player::getAnalepticCount() const
 {
     return d->history.value(QStringLiteral("Analeptic"), 0) + d->history.value(QStringLiteral("MagicAnaleptic"), 0);
+}
+
+QHash<QString, int> Player::getHistories() const
+{
+    return d->history;
 }
 
 void Player::clearHistory()

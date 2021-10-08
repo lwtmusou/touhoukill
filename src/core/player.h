@@ -225,6 +225,8 @@ public:
     bool isSkillInvalid(const Skill *skill) const;
     bool isSkillInvalid(const QString &skill_name) const;
 
+    QStringList invalidedSkills() const;
+
     void setEquip(const Card *equip);
     void removeEquip(const Card *equip);
     bool hasEquip(const Card *card) const;
@@ -292,6 +294,7 @@ public:
     int usedTimes(const QString &card_class) const;
     int getSlashCount() const;
     int getAnalepticCount() const;
+    QHash<QString, int> getHistories() const;
 
     bool hasEquipSkill(const QString &skill_name) const;
     QSet<const TriggerSkill *> getTriggerSkills() const;
