@@ -1065,6 +1065,7 @@ void ServerPlayer::introduceTo(ServerPlayer *player)
         room->doBroadcastNotify(players, S_COMMAND_ADD_PLAYER, introduce_str);
     }
 
+#if 0
     // TODO: It seems like the following code should goto marshal()
     if (!isHegemonyGameMode(room->getMode()))
         return;
@@ -1114,6 +1115,7 @@ void ServerPlayer::introduceTo(ServerPlayer *player)
             }
         }
     }
+#endif
 }
 
 void ServerPlayer::marshal(ServerPlayer *player) const
@@ -1168,11 +1170,9 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         foreach (const Card *card, handcards) {
             move.card_ids << card->id();
             if (player == this) {
-#if 0
-                WrappedCard *wrapped = qobject_cast<WrappedCard *>(room->getCard(card->getId()));
-                if (wrapped->isModified())
-                    room->notifyUpdateCard(player, card->getId(), wrapped);
-#endif
+                Card *c = room->getCard(card->id());
+                if (c->isModified())
+                    room->notifyUpdateCard(player, card->id(), c);
             }
         }
         move.from_place = QSanguosha::PlaceDrawPile;
@@ -1189,11 +1189,9 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         CardsMoveStruct move;
         foreach (const Card *card, getEquips()) {
             move.card_ids << card->id();
-#if 0
-            WrappedCard *wrapped = qobject_cast<WrappedCard *>(room->getCard(card->getId()));
-            if (wrapped->isModified())
-                room->notifyUpdateCard(player, card->getId(), wrapped);
-#endif
+            Card *c = room->getCard(card->id());
+            if (c->isModified())
+                room->notifyUpdateCard(player, card->id(), c);
         }
         move.from_place = QSanguosha::PlaceDrawPile;
         move.to_player_name = objectName();
@@ -1206,11 +1204,9 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         CardsMoveStruct move;
         foreach (int card_id, getJudgingAreaID()) {
             move.card_ids << card_id;
-#if 0
-            WrappedCard *wrapped = qobject_cast<WrappedCard *>(room->getCard(card_id));
-            if (wrapped->isModified())
-                room->notifyUpdateCard(player, card_id, wrapped);
-#endif
+            Card *c = room->getCard(card_id);
+            if (c->isModified())
+                room->notifyUpdateCard(player, card_id, c);
         }
         move.from_place = QSanguosha::PlaceDrawPile;
         move.to_player_name = objectName();
@@ -1231,7 +1227,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         move.to_place = QSanguosha::PlaceSpecial;
         foreach (QString pile, getPileNames()) {
             move.card_ids.clear();
-            move.card_ids.append(piles[pile].values());
+            move.card_ids.append(getPile(pile).values());
             move.to_pile_name = pile;
 
             QList<CardsMoveStruct> moves2;
@@ -1290,7 +1286,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         }
     }
 
-    foreach (const QString &invalid_name, skill_invalid) {
+    foreach (const QString &invalid_name, invalidedSkills()) {
         JsonArray arg_invalid;
         arg_invalid << objectName() << invalid_name << true;
         room->doNotify(player, S_COMMAND_SET_SKILL_INVALIDITY, arg_invalid);
@@ -1336,11 +1332,11 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         room->doNotify(player, S_COMMAND_DISABLE_SHOW, arg);
     }
 
-    foreach (QString flag, flags)
+    foreach (QString flag, getFlagList())
         room->notifyProperty(player, this, "flags", flag);
 
-    foreach (QString item, history.keys()) {
-        int value = history.value(item);
+    foreach (QString item, getHistories().keys()) {
+        int value = getHistories().value(item);
         if (value > 0) {
             JsonArray arg;
             arg << item;
