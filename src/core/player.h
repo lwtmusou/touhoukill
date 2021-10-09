@@ -205,10 +205,11 @@ public:
     void removeDelayedTrick(const Card *trick);
     bool containsTrick(const QString &trick_name) const;
 
-    virtual int getHandcardNum() const = 0;
-    virtual void removeCard(const Card *card, QSanguosha::Place place) = 0;
-    virtual void addCard(const Card *card, QSanguosha::Place place) = 0;
-    virtual QList<const Card *> getHandcards() const = 0;
+    int getHandcardNum() const;
+    void removeCard(const Card *card, QSanguosha::Place place, const QString &pile_name = QString());
+    void addCard(const Card *card, QSanguosha::Place place, const QString &pile_name = QString());
+    IDSet handCards() const;
+    QList<const Card *> getHandcards() const;
 
     const Card *getWeapon() const;
     const Card *getArmor() const;
@@ -271,9 +272,9 @@ public:
     QSet<QString> getAcquiredSkills() const;
     QString getSkillDescription(bool yellow = true, const QString &flag = QString()) const;
 
-    virtual bool isProhibited(const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
+    bool isProhibited(const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
     bool canSlashWithoutCrossbow(const Card *slash = nullptr) const;
-    virtual bool isLastHandCard(const Card *card, bool contain = false) const = 0;
+    bool isLastHandCard(const Card *card, bool contain = false) const;
 
     void setCardLimitation(const QString &limit_list, const QString &pattern, const QString &reason, bool single_turn = false);
     void removeCardLimitation(const QString &limit_list, const QString &pattern, const QString &reason, bool clearReason = false);

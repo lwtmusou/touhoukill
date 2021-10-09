@@ -56,7 +56,6 @@ public:
     QSGS_LOGIC bool askForSkillInvoke(const Skill *skill, const QVariant &data = QVariant(), const QString &prompt = QString());
     QSGS_LOGIC QList<int> forceToDiscard(int discard_num, bool include_equip, bool is_discard = true);
     QSGS_STATE_GAME QList<int> handCards() const;
-    QSGS_STATE_GAME QList<const Card *> getHandcards() const override;
     QSGS_STATE_GAME QList<const Card *> getCards(const QString &flags) const;
     QSGS_STATE_GAME Card *wholeHandCards() const; // FIXME: Memory Leakage!!!
     QSGS_STATE_GAME bool hasNullification() const;
@@ -81,11 +80,6 @@ public:
     QSGS_LOGIC void addSkill(const QString &skill_name, bool head_skill = true) override;
     QSGS_LOGIC void loseSkill(const QString &skill_name, bool head_skill = true) override;
 #endif
-
-    QSGS_STATE_GAME int getHandcardNum() const override;
-    QSGS_LOGIC void removeCard(const Card *card, QSanguosha::Place place) override;
-    QSGS_LOGIC void addCard(const Card *card, QSanguosha::Place place) override;
-    QSGS_STATE_GAME bool isLastHandCard(const Card *card, bool contain = false) const override;
 
     // utilities?
     void startRecord();

@@ -63,13 +63,14 @@ public:
     QSet<QString> flags;
     QHash<QString, int> history;
     QMap<QString, IDSet> piles;
+    QMap<QString, int> pilesLength;
     QSet<QString> acquiredSkills; // Acquired skills isn't split into parts by game rule
     QList<QMap<QString, bool>> skills; // General card skill
     QStringList invalidSkills;
     IDSet shownHandcards;
     IDSet brokenEquips;
 
-    QList<const Card *> handcards; // a.k.a. knownHandCards in client side
+    IDSet handcards; // a.k.a. knownHandCards in client side
 
     PlayerPrivate(RoomObject *room)
         : room(room)
@@ -1304,6 +1305,108 @@ bool Player::containsTrick(const QString &trick_name) const
     return false;
 }
 
+int Player::getHandcardNum() const
+{
+    return d->handCardNum;
+}
+
+void Player::removeCard(const Card *card, QSanguosha::Place place, const QString &pile_name)
+{
+    switch (place) {
+    case QSanguosha::PlaceHand: {
+        if (d->handcards.contains(card->id()))
+            d->handcards.remove(card->id());
+        d->handCardNum--;
+        break;
+    }
+    case QSanguosha::PlaceEquip: {
+        const EquipCard *equip = qobject_cast<const EquipCard *>(card->face());
+        if (equip == nullptr)
+            equip = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card->effectiveID()).face());
+        Q_ASSERT(equip != nullptr);
+        equip->onUninstall(this);
+        removeEquip(card);
+        break;
+    }
+    case QSanguosha::PlaceDelayedTrick: {
+        removeDelayedTrick(card);
+        break;
+    }
+    case QSanguosha::PlaceSpecial: {
+        int card_id = ((card == nullptr) ? -1 : card->effectiveID());
+        if (card_id != -1) {
+            QString pileName = getPileName(card_id);
+            if (!pile_name.isEmpty()) {
+                if (pile_name != pileName) {
+                    // ???
+                }
+            }
+        }
+
+        if (!pile_name.isEmpty()) {
+            if (card_id != -1)
+                d->piles[pile_name].remove(card_id);
+            d->pilesLength[pile_name]--;
+            if (d->pilesLength[pile_name] == 0) {
+                d->piles.remove(pile_name);
+                d->pilesLength.remove(pile_name);
+            }
+        }
+
+        break;
+    }
+    default:
+        break;
+    }
+}
+
+void Player::addCard(const Card *card, QSanguosha::Place place, const QString &pile_name)
+{
+    switch (place) {
+    case QSanguosha::PlaceHand: {
+        if (card != nullptr)
+            d->handcards << card->id();
+        d->handCardNum++;
+        break;
+    }
+    case QSanguosha::PlaceEquip: {
+        const EquipCard *equip = qobject_cast<const EquipCard *>(card->face());
+        if (equip == nullptr)
+            equip = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card->effectiveID()).face());
+        setEquip(card);
+        equip->onInstall(this);
+        break;
+    }
+    case QSanguosha::PlaceDelayedTrick: {
+        addDelayedTrick(card);
+        break;
+    }
+    case QSanguosha::PlaceSpecial: {
+        if (card == nullptr)
+            d->piles[pile_name] << card->id();
+
+        d->pilesLength[pile_name]++;
+        break;
+    }
+    default:
+        break;
+    }
+}
+
+IDSet Player::handCards() const
+{
+    return d->handcards;
+}
+
+QList<const Card *> Player::getHandcards() const
+{
+    QList<const Card *> r;
+    foreach (int id, d->handcards)
+        r << d->room->getCard(id);
+
+    return r;
+}
+
 bool Player::isChained() const
 {
     return d->chained;
@@ -1641,6 +1744,23 @@ bool Player::canSlashWithoutCrossbow(const Card *slash) const
     roomObject()->cardDeleting(newslash);
     return slash_count < valid_slash_count;
 #undef THIS_SLASH
+}
+
+bool Player::isLastHandCard(const Card *card, bool contain) const
+{
+    if (d->handCardNum == d->handcards.count()) {
+        // all cards is known (on either client or server side)
+        IDSet ids;
+        if (!card->isVirtualCard())
+            ids << card->id();
+        else
+            ids.unite(card->subcards());
+
+        return contain ? ((ids + d->handcards) == ids) : (ids == d->handcards);
+    }
+
+    // else: assume not last hand card
+    return false;
 }
 
 void Player::setCardLimitation(const QString &limit_list, const QString &pattern, const QString &reason, bool single_turn)

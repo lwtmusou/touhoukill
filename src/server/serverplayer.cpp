@@ -436,28 +436,6 @@ void ServerPlayer::addCard(const Card *card, QSanguosha::Place place)
     }
 }
 
-bool ServerPlayer::isLastHandCard(const Card *card, bool contain) const
-{
-    if (!card->isVirtualCard()) {
-        return handcards.length() == 1 && handcards.first()->effectiveID() == card->effectiveID();
-    } else if (!card->subcards().empty()) {
-        if (!contain) {
-            foreach (int card_id, card->subcards()) {
-                if (!handcards.contains(room->getCard(card_id)))
-                    return false;
-            }
-            return handcards.length() == card->subcards().size();
-        } else {
-            foreach (const Card *ncard, handcards) {
-                if (!card->subcards().contains(ncard->effectiveID()))
-                    return false;
-            }
-            return true;
-        }
-    }
-    return false;
-}
-
 QList<int> ServerPlayer::handCards() const
 {
     QList<int> cardIds;
