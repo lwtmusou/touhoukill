@@ -533,7 +533,7 @@ bool Client::_getSingleCard(int card_id, const CardsMoveStruct &move)
 {
     const Card *card = getCard(card_id);
     if (move.to != nullptr)
-        move.to->addCard(card, move.to_place);
+        move.to->addCard(card, move.to_place, move.to_pile_name);
     else {
         if (move.to_place == QSanguosha::PlaceDrawPile)
             pile_num++;
@@ -555,14 +555,9 @@ void Client::getCards(const QVariant &arg)
             return;
         move.from = findPlayer(move.from_player_name);
         move.to = findPlayer(move.to_player_name);
-        QSanguosha::Place dstPlace = move.to_place;
+        foreach (int card_id, move.card_ids)
+            _getSingleCard(card_id, move);
 
-        if (dstPlace == QSanguosha::PlaceSpecial) {
-            //((Player *)move.to)->changePile(move.to_pile_name, true, move.card_ids);
-        } else {
-            foreach (int card_id, move.card_ids)
-                _getSingleCard(card_id, move); // DDHEJ->DDHEJ, DDH/EJ->EJ
-        }
         moves.append(move);
     }
     updatePileNum();
@@ -581,13 +576,10 @@ void Client::loseCards(const QVariant &arg)
             return;
         move.from = findPlayer(move.from_player_name);
         move.to = findPlayer(move.to_player_name);
-        QSanguosha::Place srcPlace = move.from_place;
-        if (srcPlace == QSanguosha::PlaceSpecial) {
-            // ((Player *)move.from)->changePile(move.from_pile_name, false, move.card_ids);
-        } else {
-            foreach (int card_id, move.card_ids)
-                _loseSingleCard(card_id, move); // DDHEJ->DDHEJ, DDH/EJ->EJ
-        }
+
+        foreach (int card_id, move.card_ids)
+            _loseSingleCard(card_id, move);
+
         moves.append(move);
     }
     updatePileNum();
