@@ -1,3 +1,5 @@
+#define QSGS_PLAYER_NODEPRECATED
+
 #include "player.h"
 #include "client.h"
 #include "engine.h"
@@ -54,7 +56,7 @@ public:
 
     QHash<const Player *, int> fixedDistance;
     QMap<HandlingMethod, QMap<QString, QStringList>> cardLimitation; // method, reason, pattern
-    QMap<QString, int> disableShow;
+    QMultiMap<QString, int> disableShow;
 
     // original mark is only visible if it starts with '@'. The refactor proposal is to make mark always visible
     QMap<QString, int> marks;
@@ -579,11 +581,6 @@ QString Player::getGeneralName(int pos) const
     return (general == nullptr) ? QString() : general->name();
 }
 
-void Player::setGeneralName(const QString &name, int pos)
-{
-    setGeneral(Sanguosha->getGeneral(name), pos);
-}
-
 QString Player::getFootnoteName() const
 {
     foreach (const General *general, d->generals) {
@@ -672,7 +669,7 @@ bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden
     //@todo: need check
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
         if (!include_lose && !hasEquipSkill(skill_name) && !getAcquiredSkills().contains(skill_name) && ownSkill(skill_name)
-            && !canShowGeneral(inHeadSkills(skill_name) ? QStringLiteral("h") : QStringLiteral("d")))
+            && !canShowGeneral({findPositionOfGeneralOwningSkill(skill_name)}))
             return false;
         if (!include_lose && !hasEquipSkill(skill_name) && !skill->isEternal()) {
             if (isSkillInvalid(skill_name))
@@ -686,8 +683,6 @@ bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden
         }
 
         return d->acquiredSkills.contains(skill_name);
-
-        // return skills.value(skill_name, false) || skills2.value(skill_name, false) || acquired_skills.contains(skill_name) || acquired_skills2.contains(skill_name);
     }
 
     //Other modes
@@ -1441,15 +1436,6 @@ QString Player::getPileName(int card_id) const
     return QString();
 }
 
-bool Player::pileOpen(const QString &, const QString &) const
-{
-    return false;
-}
-
-void Player::setPileOpen(const QString &, const QString &)
-{
-}
-
 IDSet Player::getHandPile() const
 {
     IDSet result;
@@ -1615,9 +1601,9 @@ QString Player::getSkillDescription(bool yellow, const QString &flag) const
     QString color = yellow ? QStringLiteral("#FFFF33") : QStringLiteral("#FF0080");
     QList<const Skill *> skillList = getVisibleSkillList();
     if (flag == QStringLiteral("head"))
-        skillList = getHeadSkillList(true, true);
+        skillList = getSkillList(false, true, true, {0});
     else if (flag == QStringLiteral("deputy"))
-        skillList = getDeputySkillList(true, true);
+        skillList = getSkillList(false, true, true, {1});
 
     foreach (const Skill *skill, skillList) {
         if (skill->isAttachedSkill())
@@ -1746,22 +1732,6 @@ bool Player::isCardLimited(const QString &limit_list, const QString &reason) con
             return true;
     }
     return false;
-}
-
-void Player::addQinggangTag(const Card *card)
-{
-    QStringList qinggang = tag[QStringLiteral("Qinggang")].toStringList();
-    qinggang.append(card->toString());
-    tag[QStringLiteral("Qinggang")] = QVariant::fromValue(qinggang);
-}
-
-void Player::removeQinggangTag(const Card *card)
-{
-    QStringList qinggang = tag[QStringLiteral("Qinggang")].toStringList();
-    if (!qinggang.isEmpty()) {
-        qinggang.removeOne(card->toString());
-        tag[QStringLiteral("Qinggang")] = qinggang;
-    }
 }
 
 bool Player::hasShownSkill(const Skill *skill) const
@@ -1994,72 +1964,39 @@ int Player::findPositionOfGeneralOwningSkill(const QString &skill_name) const
     return -1;
 }
 
-void Player::setDisableShow(const QString &flags, const QString &reason)
-{
-    if (flags.contains(QLatin1Char('h'))) {
-        if (disableShow(true).contains(reason))
-            return;
-    }
-    if (flags.contains(QLatin1Char('d'))) {
-        if (disableShow(false).contains(reason))
-            return;
-    }
-
-    QString dis_str = flags + QLatin1Char(',') + reason;
-    disable_show << dis_str;
-}
-
 void Player::removeDisableShow(const QString &reason)
 {
-    QStringList remove_list;
-    foreach (const QString &dis_str, disable_show) {
-        QString dis_reason = dis_str.split(QLatin1Char(',')).at(1);
-        if (dis_reason == reason)
-            remove_list << dis_str;
-    }
-
-    if (remove_list.isEmpty())
-        return;
-
-    foreach (const QString &to_remove, remove_list)
-        disable_show.removeOne(to_remove);
+    while (d->disableShow.contains(reason))
+        d->disableShow.remove(reason);
 }
 
-QStringList Player::disableShow(bool head) const
+void Player::setDisableShow(const QList<int> &positions, const QString &reason)
 {
-    QLatin1Char head_flag('h');
-    if (!head)
-        head_flag = QLatin1Char('d');
-
-    QStringList r;
-    foreach (const QString &dis_str, disable_show) {
-        QStringList dis_list = dis_str.split(QLatin1Char(','));
-        if (dis_list.at(0).contains(head_flag))
-            r << dis_list.at(1);
+    if (!positions.isEmpty()) {
+        foreach (int position, positions)
+            d->disableShow.insert(reason, position);
+    } else {
+        for (int i = 0; i < d->generals.length(); ++i)
+            d->disableShow.insert(reason, i);
     }
-
-    return r;
 }
 
-bool Player::canShowGeneral(const QString &flags) const
+QStringList Player::disableShow(int pos) const
 {
-    bool head = true;
-    bool deputy = true;
-    foreach (const QString &dis_str, disable_show) {
-        QStringList dis_list = dis_str.split(QLatin1Char(','));
-        if (dis_list.at(0).contains(QStringLiteral("h")))
-            head = false;
-        if (dis_list.at(0).contains(QStringLiteral("d")))
-            deputy = false;
+    return d->disableShow.keys(pos);
+}
+
+bool Player::canShowGeneral(const QList<int> &positions) const
+{
+    for (int i = 0; i < d->generals.length(); ++i) {
+        if (hasShownGeneral(i))
+            continue;
+        if (positions.isEmpty() || positions.contains(i)) {
+            if (!disableShow(i).isEmpty())
+                return true;
+        }
     }
-    if (flags.isEmpty())
-        return head || deputy || hasShownOneGeneral();
-    if (flags == QStringLiteral("h"))
-        return head || hasShownGeneral();
-    if (flags == QStringLiteral("d"))
-        return deputy || hasShownGeneral2();
-    if (flags == QStringLiteral("hd"))
-        return (deputy || hasShownGeneral2()) && (head || hasShownGeneral());
+
     return false;
 }
 
@@ -2067,10 +2004,10 @@ QList<const Player *> Player::getFormation() const
 {
     QList<const Player *> teammates;
     teammates << this;
-    int n = aliveCount(false);
+    int n = d->room->players(false, false).length();
     int num = n;
     for (int i = 1; i < n; ++i) {
-        Player *target = getNextAlive(i);
+        const Player *target = getNextAlive(i);
         if (isFriendWith(target))
             teammates << target;
         else {
@@ -2081,7 +2018,7 @@ QList<const Player *> Player::getFormation() const
 
     n -= num;
     for (int i = 1; i < n; ++i) {
-        Player *target = getLastAlive(i);
+        const Player *target = getLastAlive(i);
         if (isFriendWith(target))
             teammates << target;
         else

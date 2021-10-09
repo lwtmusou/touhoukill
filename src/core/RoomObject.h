@@ -93,4 +93,10 @@ private:
     RoomObjectPrivate *const d;
 };
 
+// TODO_Fs: find a suitable way for this
+namespace QinggangSword {
+void addQinggangTag(Player *p, const Card *card);
+void removeQinggangTag(Player *p, const Card *card);
+} // namespace QinggangSword
+
 #endif

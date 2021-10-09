@@ -111,23 +111,6 @@ public:
     const General *getGeneral(int pos = 0) const;
     QString getGeneralName(int pos = 0) const;
 
-    Q_DECL_DEPRECATED inline const General *getGeneral2() const
-    {
-        return getGeneral(1);
-    }
-    Q_DECL_DEPRECATED inline QString getGeneral2Name() const
-    {
-        return getGeneralName(1);
-    }
-    Q_DECL_DEPRECATED void setGeneralName(const QString &name, int pos = 0);
-    Q_DECL_DEPRECATED inline void setGeneral2Name(const QString &name)
-    {
-        QT_WARNING_PUSH
-        QT_WARNING_DISABLE_DEPRECATED
-        setGeneralName(name, 1);
-        QT_WARNING_POP
-    }
-
     QString getFootnoteName() const;
 
     void setState(const QString &state);
@@ -161,15 +144,6 @@ public:
     bool turnSkipping() const;
     void setTurnSkipping(bool turnSkipping);
 
-    Q_DECL_DEPRECATED inline bool faceUp() const
-    {
-        return !turnSkipping();
-    }
-    Q_DECL_DEPRECATED inline void setFaceUp(bool face_up)
-    {
-        setTurnSkipping(!face_up);
-    }
-
     void setFixedDistance(const Player *player, int distance);
     int originalRightDistanceTo(const Player *other) const;
     int distanceTo(const Player *other, int distance_fix = 0) const;
@@ -195,14 +169,6 @@ public:
     void acquireSkill(const QString &skill_name);
     void detachSkill(const QString &skill_name);
     void detachAllSkills();
-    Q_DECL_DEPRECATED inline void addSkill(const QString &skill_name, bool head_skill)
-    {
-        addSkill(skill_name, head_skill ? 0 : 1);
-    }
-    Q_DECL_DEPRECATED void loseSkill(const QString &skill_name, bool head)
-    {
-        loseSkill(skill_name, head ? 0 : 1);
-    }
     void addSkill(const QString &skill_name, int place = 0);
     void loseSkill(const QString &skill_name, int place = 0);
 
@@ -214,10 +180,11 @@ public:
     bool hasLordSkill(const QString &skill_name, bool include_lose = false) const;
     bool hasLordSkill(const Skill *skill, bool include_lose = false) const;
 
-    void setDisableShow(const QString &flags, const QString &reason);
     void removeDisableShow(const QString &reason);
-    QStringList disableShow(bool head) const;
-    bool canShowGeneral(const QString &flags = QString()) const;
+
+    void setDisableShow(const QList<int> &positions, const QString &reason);
+    QStringList disableShow(int pos) const;
+    bool canShowGeneral(const QList<int> &positions = {}) const;
 
     void setSkillInvalidity(const Skill *skill, bool invalidity);
     void setSkillInvalidity(const QString &skill_name, bool invalidity);
@@ -283,8 +250,6 @@ public:
     QStringList getPileNames() const;
     QString getPileName(int card_id) const;
 
-    Q_DECL_DEPRECATED bool pileOpen(const QString &pile_name, const QString &player) const;
-    Q_DECL_DEPRECATED void setPileOpen(const QString &pile_name, const QString &player);
     IDSet getHandPile() const;
     QStringList getHandPileList(bool view_as_skill = true) const;
 
@@ -302,14 +267,6 @@ public:
     QList<const Skill *> getSkillList(bool include_equip = false, bool visible_only = true, bool include_acquired = false, const QList<int> &positions = {}) const;
     QSet<const Skill *> getVisibleSkills(bool include_equip = false) const;
     QList<const Skill *> getVisibleSkillList(bool include_equip = false) const;
-    Q_DECL_DEPRECATED QList<const Skill *> getHeadSkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const
-    {
-        return getSkillList(include_equip, visible_only, include_acquired, {0});
-    }
-    Q_DECL_DEPRECATED QList<const Skill *> getDeputySkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const
-    {
-        return getSkillList(include_equip, visible_only, include_acquired, {1});
-    }
 
     QSet<QString> getAcquiredSkills() const;
     QString getSkillDescription(bool yellow = true, const QString &flag = QString()) const;
@@ -318,72 +275,26 @@ public:
     bool canSlashWithoutCrossbow(const Card *slash = nullptr) const;
     virtual bool isLastHandCard(const Card *card, bool contain = false) const = 0;
 
-    Q_DECL_DEPRECATED inline bool isJilei(const Card *card) const
-    {
-        return isCardLimited(card, QSanguosha::MethodDiscard);
-    }
-    Q_DECL_DEPRECATED inline bool isLocked(const Card *card) const
-    {
-        return isCardLimited(card, QSanguosha::MethodUse);
-    }
-
     void setCardLimitation(const QString &limit_list, const QString &pattern, const QString &reason, bool single_turn = false);
     void removeCardLimitation(const QString &limit_list, const QString &pattern, const QString &reason, bool clearReason = false);
     void clearCardLimitation(bool single_turn = false);
     bool isCardLimited(const Card *card, QSanguosha::HandlingMethod method, bool isHandcard = false) const;
     bool isCardLimited(const QString &limit_list, const QString &reason) const;
 
-    // just for convenience
-    void addQinggangTag(const Card *card);
-    void removeQinggangTag(const Card *card);
-
     bool hasShownSkill(const Skill *skill) const; //hegemony
     bool hasShownSkill(const QString &skill_name) const; //hegemony
     bool hasShownSkills(const QString &skill_names) const;
     int findPositionOfGeneralOwningSkill(const QString &skill_name) const;
-    Q_DECL_DEPRECATED bool inHeadSkills(const QString &skill_name) const
-    {
-        return findPositionOfGeneralOwningSkill(skill_name) == 0;
-    }
-    Q_DECL_DEPRECATED bool inDeputySkills(const QString &skill_name) const
-    {
-        return findPositionOfGeneralOwningSkill(skill_name) == 1;
-    }
     void setSkillPreshowed(const QString &skill, bool preshowed = true); //hegemony
-    Q_DECL_DEPRECATED inline void setSkillsPreshowed(const QString &flag = QStringLiteral("hd"), bool preshowed = true)
-    {
-        QList<int> p;
-        if (flag.contains(QStringLiteral("h")))
-            p << 0;
-        if (flag.contains(QStringLiteral("d")))
-            p << 1;
-        setSkillsPreshowed(p, preshowed);
-    }
     void setSkillsPreshowed(const QList<int> &positions, bool preshowed = true);
 
     bool hasPreshowedSkill(const QString &name) const;
     bool hasPreshowedSkill(const Skill *skill) const;
-    Q_DECL_DEPRECATED inline bool isHidden(bool head_general) const
-    {
-        return isHidden(head_general ? 0 : 1);
-    }
     bool isHidden(int pos) const;
 
     bool hasShownGeneral(int pos = 0) const;
     void setShownGeneral(int pos, bool show);
 
-    Q_DECL_DEPRECATED inline void setGeneralShowed(bool showed, int pos = 0)
-    {
-        setShownGeneral(pos, showed);
-    }
-    Q_DECL_DEPRECATED inline bool hasShownGeneral2() const
-    {
-        return hasShownGeneral(1);
-    }
-    Q_DECL_DEPRECATED inline void setGeneral2Showed(bool showed)
-    {
-        return setShownGeneral(1, showed);
-    }
     bool hasShownOneGeneral() const;
     bool hasShownAllGenerals() const;
     bool ownSkill(const QString &skill_name) const;
@@ -396,6 +307,114 @@ public:
     RoomObject *roomObject() const;
 
     QVariantMap tag;
+
+#ifndef QSGS_PLAYER_NODEPRECATED
+
+    Q_DECL_DEPRECATED inline bool isHidden(bool head_general) const
+    {
+        return isHidden(head_general ? 0 : 1);
+    }
+    Q_DECL_DEPRECATED inline void setGeneralShowed(bool showed, int pos = 0)
+    {
+        setShownGeneral(pos, showed);
+    }
+    Q_DECL_DEPRECATED inline bool hasShownGeneral2() const
+    {
+        return hasShownGeneral(1);
+    }
+    Q_DECL_DEPRECATED inline void setGeneral2Showed(bool showed)
+    {
+        return setShownGeneral(1, showed);
+    }
+    Q_DECL_DEPRECATED bool inHeadSkills(const QString &skill_name) const
+    {
+        return findPositionOfGeneralOwningSkill(skill_name) == 0;
+    }
+    Q_DECL_DEPRECATED bool inDeputySkills(const QString &skill_name) const
+    {
+        return findPositionOfGeneralOwningSkill(skill_name) == 1;
+    }
+    Q_DECL_DEPRECATED inline void setSkillsPreshowed(const QString &flag = QStringLiteral("hd"), bool preshowed = true)
+    {
+        QList<int> p;
+        if (flag.contains(QStringLiteral("h")))
+            p << 0;
+        if (flag.contains(QStringLiteral("d")))
+            p << 1;
+        setSkillsPreshowed(p, preshowed);
+    }
+    Q_DECL_DEPRECATED inline bool isJilei(const Card *card) const
+    {
+        return isCardLimited(card, QSanguosha::MethodDiscard);
+    }
+    Q_DECL_DEPRECATED inline bool isLocked(const Card *card) const
+    {
+        return isCardLimited(card, QSanguosha::MethodUse);
+    }
+    Q_DECL_DEPRECATED QList<const Skill *> getHeadSkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const
+    {
+        return getSkillList(include_equip, visible_only, include_acquired, {0});
+    }
+    Q_DECL_DEPRECATED QList<const Skill *> getDeputySkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const
+    {
+        return getSkillList(include_equip, visible_only, include_acquired, {1});
+    }
+    Q_DECL_DEPRECATED void setDisableShow(const QString &flags, const QString &reason)
+    {
+        QList<int> pos;
+        if (flags.contains(QLatin1Char('h')))
+            pos << 0;
+        if (flags.contains(QLatin1Char('d')))
+            pos << 1;
+
+        setDisableShow(pos, reason);
+    }
+    Q_DECL_DEPRECATED QStringList disableShow(bool head) const
+    {
+        return disableShow(head ? 0 : 1);
+    }
+    Q_DECL_DEPRECATED bool canShowGeneral(const QString &flags = QString()) const
+    {
+        QList<int> pos;
+        if (flags.contains(QLatin1Char('h')))
+            pos << 0;
+        if (flags.contains(QLatin1Char('d')))
+            pos << 1;
+
+        return canShowGeneral(pos);
+    }
+    Q_DECL_DEPRECATED inline void addSkill(const QString &skill_name, bool head_skill)
+    {
+        addSkill(skill_name, head_skill ? 0 : 1);
+    }
+    Q_DECL_DEPRECATED void loseSkill(const QString &skill_name, bool head)
+    {
+        loseSkill(skill_name, head ? 0 : 1);
+    }
+    Q_DECL_DEPRECATED inline bool faceUp() const
+    {
+        return !turnSkipping();
+    }
+    Q_DECL_DEPRECATED inline void setFaceUp(bool face_up)
+    {
+        setTurnSkipping(!face_up);
+    }
+    Q_DECL_DEPRECATED inline const General *getGeneral2() const
+    {
+        return getGeneral(1);
+    }
+    Q_DECL_DEPRECATED inline QString getGeneral2Name() const
+    {
+        return getGeneralName(1);
+    }
+    Q_DECL_DEPRECATED bool pileOpen(const QString &pile_name, const QString &player) const
+    {
+        return false;
+    }
+    Q_DECL_DEPRECATED void setPileOpen(const QString &pile_name, const QString &player)
+    {
+    }
+#endif
 
 private:
     PlayerPrivate *d;

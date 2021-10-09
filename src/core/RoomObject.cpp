@@ -402,3 +402,19 @@ Card *RoomObject::cloneDummyCard(const IDSet &idSet)
 
     return c;
 }
+
+void QinggangSword::addQinggangTag(Player *p, const Card *card)
+{
+    QStringList qinggang = p->tag[QStringLiteral("Qinggang")].toStringList();
+    qinggang.append(card->toString());
+    p->tag[QStringLiteral("Qinggang")] = QVariant::fromValue(qinggang);
+}
+
+void QinggangSword::removeQinggangTag(Player *p, const Card *card)
+{
+    QStringList qinggang = p->tag[QStringLiteral("Qinggang")].toStringList();
+    if (!qinggang.isEmpty()) {
+        qinggang.removeOne(card->toString());
+        p->tag[QStringLiteral("Qinggang")] = qinggang;
+    }
+}

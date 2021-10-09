@@ -533,7 +533,7 @@ void Room::slashEffect(const SlashEffectStruct &effect)
         } else
             effect.to->setFlags(QStringLiteral("-Global_NonSkillNullify"));
         if (effect.slash != nullptr)
-            effect.to->removeQinggangTag(effect.slash);
+            QinggangSword::removeQinggangTag(effect.to, effect.slash);
     }
 }
 
@@ -552,7 +552,7 @@ void Room::slashResult(const SlashEffectStruct &effect, const Card *jink)
                 setEmotion(qobject_cast<ServerPlayer *>(effect.to), QStringLiteral("jink"));
         }
         if (effect.slash != nullptr)
-            effect.to->removeQinggangTag(effect.slash);
+            QinggangSword::removeQinggangTag(effect.to, effect.slash);
         thread->trigger(SlashMissed, data);
     }
 }
@@ -3101,13 +3101,13 @@ void Room::chooseGenerals()
         lord_list = Sanguosha->getRandomLords();
     }
     QString general = askForGeneral(the_lord, lord_list);
-    the_lord->setGeneralName(general);
+    the_lord->setGeneral(Sanguosha->getGeneral(general));
     broadcastProperty(the_lord, "general", general);
 
     if (Config.EnableSame) {
         foreach (ServerPlayer *p, m_players) {
             if (!p->isLord())
-                p->setGeneralName(general);
+                p->setGeneral(Sanguosha->getGeneral(general));
         }
 
         Config.Enable2ndGeneral = false;
@@ -3198,7 +3198,7 @@ void Room::chooseHegemonyGenerals()
                 role = QStringLiteral("careerist");
             names.append(name);
             player->setRole(role);
-            player->setGeneralName(QStringLiteral("anjiang"));
+            player->setGeneral(Sanguosha->getGeneral(QStringLiteral("anjiang")));
             foreach (ServerPlayer *p, getOtherPlayers(player))
                 notifyProperty(p, player, "general");
             notifyProperty(player, player, "general", name);
@@ -3207,7 +3207,7 @@ void Room::chooseHegemonyGenerals()
         if (player->getGeneral2() != nullptr) {
             QString name = player->getGeneral2Name();
             names.append(name);
-            player->setGeneral2Name(QStringLiteral("anjiang"));
+            player->setGeneral(Sanguosha->getGeneral(QStringLiteral("anjiang")), 1);
             foreach (ServerPlayer *p, getOtherPlayers(player))
                 notifyProperty(p, player, "general2");
             notifyProperty(player, player, "general2", name);
@@ -3385,10 +3385,10 @@ bool Room::_setPlayerGeneral(ServerPlayer *player, const QString &generalName, b
         return false;
 
     if (isFirst) {
-        player->setGeneralName(general->name());
+        player->setGeneral(general);
         notifyProperty(player, player, "general");
     } else {
-        player->setGeneral2Name(general->name());
+        player->setGeneral(general, 1);
         notifyProperty(player, player, "general2");
     }
     return true;
@@ -3928,7 +3928,7 @@ void Room::damage(const DamageStruct &data)
         sendLog(log2);
         notifySkillInvoked(qobject_cast<ServerPlayer *>(damage_data.to), QStringLiteral("huanmeng"));
         if ((damage_data.card != nullptr) && damage_data.card->face()->isKindOf("Slash"))
-            damage_data.to->removeQinggangTag(damage_data.card);
+            QinggangSword::removeQinggangTag(damage_data.to, damage_data.card);
 
         return;
     }
@@ -3944,7 +3944,7 @@ void Room::damage(const DamageStruct &data)
 
     if (thread->trigger(Predamage, qdata)) {
         if ((damage_data.card != nullptr) && damage_data.card->face()->isKindOf("Slash"))
-            damage_data.to->removeQinggangTag(damage_data.card);
+            QinggangSword::removeQinggangTag(damage_data.to, damage_data.card);
         return;
     }
 
@@ -3954,14 +3954,14 @@ void Room::damage(const DamageStruct &data)
             bool prevent = thread->trigger(DamageForseen, qdata);
             if (prevent) {
                 if ((damage_data.card != nullptr) && damage_data.card->face()->isKindOf("Slash"))
-                    damage_data.to->removeQinggangTag(damage_data.card);
+                    QinggangSword::removeQinggangTag(damage_data.to, damage_data.card);
 
                 break;
             }
             if (damage_data.from != nullptr) {
                 if (thread->trigger(DamageCaused, qdata)) {
                     if ((damage_data.card != nullptr) && damage_data.card->face()->isKindOf("Slash"))
-                        damage_data.to->removeQinggangTag(damage_data.card);
+                        QinggangSword::removeQinggangTag(damage_data.to, damage_data.card);
 
                     break;
                 }
@@ -3972,7 +3972,7 @@ void Room::damage(const DamageStruct &data)
             bool broken = thread->trigger(DamageInflicted, qdata);
             if (broken) {
                 if ((damage_data.card != nullptr) && damage_data.card->face()->isKindOf("Slash"))
-                    damage_data.to->removeQinggangTag(damage_data.card);
+                    QinggangSword::removeQinggangTag(damage_data.to, damage_data.card);
 
                 break;
             }
@@ -3983,7 +3983,7 @@ void Room::damage(const DamageStruct &data)
             thread->trigger(PreDamageDone, qdata);
 
             if ((damage_data.card != nullptr) && damage_data.card->face()->isKindOf("Slash"))
-                damage_data.to->removeQinggangTag(damage_data.card);
+                QinggangSword::removeQinggangTag(damage_data.to, damage_data.card);
             thread->trigger(DamageDone, qdata);
 
             if ((damage_data.from != nullptr) && !damage_data.from->hasFlag(QStringLiteral("Global_DebutFlag")))
