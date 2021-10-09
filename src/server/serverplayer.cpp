@@ -229,11 +229,6 @@ QList<int> ServerPlayer::forceToDiscard(int discard_num, bool include_equip, boo
     return to_discard;
 }
 
-int ServerPlayer::getHandcardNum() const
-{
-    return handcards.length();
-}
-
 void ServerPlayer::setSocket(ClientSocket *socket)
 {
     if (this->socket != nullptr) {
@@ -357,96 +352,6 @@ QString ServerPlayer::reportHeader() const
 {
     QString name = objectName();
     return QStringLiteral("%1 ").arg(name.isEmpty() ? tr("Anonymous") : name);
-}
-
-void ServerPlayer::removeCard(const Card *card, QSanguosha::Place place)
-{
-    switch (place) {
-    case QSanguosha::PlaceHand: {
-        handcards.removeOne(card);
-        break;
-    }
-    case QSanguosha::PlaceEquip: {
-        const EquipCard *equip = qobject_cast<const EquipCard *>(card->face());
-        if (equip == nullptr)
-            equip = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card->effectiveID()).face());
-        Q_ASSERT(equip != nullptr);
-        equip->onUninstall(this);
-
-        // WrappedCard *wrapped = room->getWrappedCard(card->getEffectiveId());
-
-        removeEquip(card);
-
-        bool show_log = true;
-        foreach (QString flag, getFlagList()) {
-            if (flag.endsWith(QStringLiteral("_InTempMoving"))) {
-                show_log = false;
-                break;
-            }
-        }
-        if (show_log) {
-            LogMessage log;
-            log.type = QStringLiteral("$Uninstall");
-            log.card_str = room->getCard(card->effectiveID())->toString();
-            log.from = this;
-            room->sendLog(log);
-        }
-        break;
-    }
-    case QSanguosha::PlaceDelayedTrick: {
-        removeDelayedTrick(card);
-        break;
-    }
-    case QSanguosha::PlaceSpecial: {
-        int card_id = card->effectiveID();
-        QString pile_name = getPileName(card_id);
-
-        //@todo: sanity check required
-        //        if (!pile_name.isEmpty())
-        //            piles[pile_name].remove(card_id);
-
-        break;
-    }
-    default:
-        break;
-    }
-}
-
-void ServerPlayer::addCard(const Card *card, QSanguosha::Place place)
-{
-    switch (place) {
-    case QSanguosha::PlaceHand: {
-        handcards << card;
-        break;
-    }
-    case QSanguosha::PlaceEquip: {
-        // WrappedCard *wrapped = room->getWrappedCard(card->getEffectiveId());
-
-        const EquipCard *equip = qobject_cast<const EquipCard *>(card->face());
-        setEquip(card);
-        equip->onInstall(this);
-        break;
-    }
-    case QSanguosha::PlaceDelayedTrick: {
-        addDelayedTrick(card);
-        break;
-    }
-    default:
-        break;
-    }
-}
-
-QList<int> ServerPlayer::handCards() const
-{
-    QList<int> cardIds;
-    foreach (const Card *card, handcards)
-        cardIds << card->id();
-    return cardIds;
-}
-
-QList<const Card *> ServerPlayer::getHandcards() const
-{
-    return handcards;
 }
 
 QList<const Card *> ServerPlayer::getCards(const QString &flags) const

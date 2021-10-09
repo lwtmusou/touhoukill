@@ -1447,7 +1447,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     }
 
     const IDSet &shownHandcards = who->getShownHandcards();
-    QList<int> unknownHandcards = who->handCards();
+    QList<int> unknownHandcards = who->handCards().values();
     foreach (int id, shownHandcards)
         unknownHandcards.removeOne(id);
 
@@ -1479,7 +1479,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     Q_ASSERT(!cards.isEmpty());
 
     if (handcard_visible && !who->isKongcheng()) {
-        QList<int> handcards = who->handCards();
+        QList<int> handcards = who->handCards().values();
         JsonArray arg;
         arg << who->objectName();
         arg << JsonUtils::toJsonArray(handcards);
@@ -4526,7 +4526,7 @@ QList<CardsMoveStruct> Room::_separateMoves(QList<CardsMoveOneTimeStruct> moveOn
         ServerPlayer *from = (ServerPlayer *)cls.m_from;
         card_move.from = cls.m_from;
         if ((from != nullptr) && !from_handcards.keys().contains(from))
-            from_handcards[from] = from->handCards();
+            from_handcards[from] = from->handCards().values();
         card_move.to = cls.m_to;
         if (card_move.from != nullptr)
             card_move.from_player_name = card_move.from->objectName();
@@ -5333,7 +5333,7 @@ void Room::askForLuckCard()
             move.from_place = QSanguosha::PlaceHand;
             move.to = nullptr;
             move.to_place = QSanguosha::PlaceDrawPile;
-            move.card_ids = player->handCards();
+            move.card_ids = player->handCards().values();
             move.reason = reason;
             moves.append(move);
             moves = _breakDownCardMoves(moves);
@@ -5784,7 +5784,7 @@ int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, const QList<
     log.type = QStringLiteral("$ViewAllCards");
     log.from = shenlvmeng;
     log.to << target;
-    log.card_str = IntList2StringList(target->handCards()).join(QStringLiteral("+"));
+    log.card_str = IntList2StringList(target->handCards().values()).join(QStringLiteral("+"));
     doNotify(shenlvmeng, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
 
     ChoiceMadeStruct s;
@@ -5808,7 +5808,7 @@ int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, const QList<
     JsonArray gongxinArgs;
     gongxinArgs << target->objectName();
     gongxinArgs << true;
-    gongxinArgs << JsonUtils::toJsonArray(target->handCards());
+    gongxinArgs << JsonUtils::toJsonArray(target->handCards().values());
     gongxinArgs << JsonUtils::toJsonArray(enabled_ids);
     gongxinArgs << skill_name;
     bool success = doRequest(shenlvmeng, S_COMMAND_SKILL_GONGXIN, gongxinArgs, true);
@@ -6331,7 +6331,7 @@ void Room::showAllCards(ServerPlayer *player, ServerPlayer *to)
     JsonArray gongxinArgs;
     gongxinArgs << player->objectName();
     gongxinArgs << false;
-    gongxinArgs << JsonUtils::toJsonArray(player->handCards());
+    gongxinArgs << JsonUtils::toJsonArray(player->handCards().values());
 
     bool isUnicast = (to != nullptr);
 
@@ -6355,7 +6355,7 @@ void Room::showAllCards(ServerPlayer *player, ServerPlayer *to)
         log.type = QStringLiteral("$ViewAllCards");
         log.from = to;
         log.to << player;
-        log.card_str = IntList2StringList(player->handCards()).join(QStringLiteral("+"));
+        log.card_str = IntList2StringList(player->handCards().values()).join(QStringLiteral("+"));
         doNotify(to, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
 
         ChoiceMadeStruct s;
@@ -6372,7 +6372,7 @@ void Room::showAllCards(ServerPlayer *player, ServerPlayer *to)
         log.from = player;
         foreach (int card_id, player->handCards())
             getCard(card_id)->addFlag(QStringLiteral("visible"));
-        log.card_str = IntList2StringList(player->handCards()).join(QStringLiteral("+"));
+        log.card_str = IntList2StringList(player->handCards().values()).join(QStringLiteral("+"));
         sendLog(log);
 
         doBroadcastNotify(S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);

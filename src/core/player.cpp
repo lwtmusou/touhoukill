@@ -1398,6 +1398,17 @@ IDSet Player::handCards() const
     return d->handcards;
 }
 
+void Player::setHandCards(const IDSet &hc)
+{
+    // all cards are known before means all cards are known afterwards?
+    // need to determine whether the design is appropriate
+    bool allCardsAreKnown = (d->handcards.count() == d->handCardNum);
+
+    d->handcards = hc;
+    if (allCardsAreKnown)
+        d->handCardNum = hc.count();
+}
+
 QList<const Card *> Player::getHandcards() const
 {
     QList<const Card *> r;

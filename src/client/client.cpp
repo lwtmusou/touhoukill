@@ -949,14 +949,14 @@ void Client::exchangeKnownCards(const QVariant &players)
         return;
     ClientPlayer *a = RefactorProposal::fixme_cast<ClientPlayer *>(findPlayer(args[0].toString()));
     ClientPlayer *b = RefactorProposal::fixme_cast<ClientPlayer *>(findPlayer(args[1].toString()));
-    QList<int> a_known;
-    QList<int> b_known;
+    IDSet a_known;
+    IDSet b_known;
     foreach (const Card *card, a->getHandcards())
         a_known << card->id();
     foreach (const Card *card, b->getHandcards())
         b_known << card->id();
-    a->setCards(b_known);
-    b->setCards(a_known);
+    a->setHandCards(b_known);
+    b->setHandCards(a_known);
 }
 
 void Client::setKnownCards(const QVariant &set_str)
@@ -970,7 +970,7 @@ void Client::setKnownCards(const QVariant &set_str)
         return;
     QList<int> ids;
     JsonUtils::tryParse(set[1], ids);
-    player->setCards(ids);
+    player->setHandCards(List2Set(ids));
 }
 
 void Client::viewGenerals(const QVariant &arg)
@@ -1915,8 +1915,11 @@ void Client::showCard(const QVariant &show_str)
     int card_id = show[1].toInt();
 
     ClientPlayer *player = RefactorProposal::fixme_cast<ClientPlayer *>(findPlayer(player_name));
-    if (player != Self)
-        player->addKnownHandCard(getCard(card_id));
+    if (player != Self) {
+        IDSet s = player->handCards();
+        s << card_id;
+        player->setHandCards(s);
+    }
 
     emit card_shown(player_name, card_id);
 }
@@ -1974,7 +1977,7 @@ void Client::showAllCards(const QVariant &arg)
         return;
 
     if (who != nullptr)
-        who->setCards(card_ids);
+        who->setHandCards(List2Set(card_ids));
 
     emit gongxin(card_ids, false, IDSet(), who != nullptr ? who->getShownHandcards() : IDSet());
 }
@@ -1996,7 +1999,7 @@ void Client::askForGongxin(const QVariant &args)
         return;
     highlight_skill_name = arg[4].toString();
 
-    who->setCards(card_ids);
+    who->setHandCards(List2Set(card_ids));
 
     emit gongxin(card_ids, enable_heart, IDSet(enabled_ids.begin(), enabled_ids.end()), who->getShownHandcards());
     setStatus(AskForGongxin);
@@ -2133,11 +2136,6 @@ void Client::log(const QVariant &log_str)
     else {
         if (log.first().contains(QStringLiteral("#HegemonyReveal")))
             Audio::playSystemAudioEffect(QStringLiteral("choose-item"));
-        else if (log.first() == QStringLiteral("#UseLuckCard")) {
-            ClientPlayer *from = RefactorProposal::fixme_cast<ClientPlayer *>(findPlayer(log.at(1)));
-            if ((from != nullptr) && from != Self)
-                from->setHandcardNum(0);
-        }
 
         emit log_received(log);
     }

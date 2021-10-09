@@ -209,6 +209,7 @@ public:
     void removeCard(const Card *card, QSanguosha::Place place, const QString &pile_name = QString());
     void addCard(const Card *card, QSanguosha::Place place, const QString &pile_name = QString());
     IDSet handCards() const;
+    void setHandCards(const IDSet &hc);
     QList<const Card *> getHandcards() const;
 
     const Card *getWeapon() const;
