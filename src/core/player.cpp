@@ -1076,21 +1076,6 @@ bool Player::hasWeapon(const QString &weapon_name, bool, bool ignore_preshow) co
     if (getMark("Equips_Nullified_to_Yourself") > 0)
         return false;
 
-    /*if (hasSkill("shenbao") && !selfOnly) {
-        foreach (const Player *p, getAliveSiblings()) {
-            if (p->weapon) {
-                if (weapon_name == "shenbao")
-                    return true;
-                WrappedCard *wp = p->weapon;
-                if (wp->objectName() == weapon_name || wp->isKindOf(weapon_name.toStdString().c_str()))
-                    return true;
-                const Card *real_related_weapon = Sanguosha->getEngineCard(wp->getEffectiveId());
-                if (real_related_weapon->objectName() == weapon_name || real_related_weapon->isKindOf(weapon_name.toStdString().c_str()))
-                    return true;
-            }
-        }
-    }*/
-
     if (Sanguosha->ViewHas(this, weapon_name, "weapon", ignore_preshow) != nullptr)
         return true;
 
@@ -1107,20 +1092,11 @@ bool Player::hasArmorEffect(const QString &armor_name, bool) const
     if (!tag["Qinggang"].toStringList().isEmpty() || getMark("Armor_Nullified") > 0 || getMark("Equips_Nullified_to_Yourself") > 0)
         return false;
 
-    /*if (hasSkill("shenbao") && !selfOnly) {
-        foreach (const Player *p, getAliveSiblings()) {
-            if (p->armor) {
-                if (armor_name == "shenbao")
-                    return true;
-                WrappedCard *ar = p->armor;
-                if (ar->objectName() == armor_name || ar->isKindOf(armor_name.toStdString().c_str()))
-                    return true;
-                const Card *real_related_armor = Sanguosha->getEngineCard(ar->getEffectiveId());
-                if (real_related_armor->objectName() == armor_name || real_related_armor->isKindOf(armor_name.toStdString().c_str()))
-                    return true;
-            }
-        }
-    }*/
+    if (!hasFlag("zhanche")) {
+        foreach (const Player *p, getAliveSiblings())
+            if (p->hasFlag("zhanche"))
+                return false;
+    }
 
     if (Sanguosha->ViewHas(this, armor_name, "armor"))
         return true;
@@ -1138,20 +1114,11 @@ bool Player::hasTreasure(const QString &treasure_name, bool) const
     if (getMark("Equips_Nullified_to_Yourself") > 0)
         return false;
 
-    /*if (hasSkill("shenbao") && !selfOnly && treasure_name != "wooden_ox") {
-        foreach (const Player *p, getAliveSiblings()) {
-            if (p->treasure) {
-                if (treasure_name == "shenbao")
-                    return true;
-                WrappedCard *ar = p->treasure;
-                if (ar->objectName() == treasure_name || ar->isKindOf(treasure_name.toStdString().c_str()))
-                    return true;
-                const Card *real_related_treasure = Sanguosha->getEngineCard(ar->getEffectiveId());
-                if (real_related_treasure->objectName() == treasure_name || real_related_treasure->isKindOf(treasure_name.toStdString().c_str()))
-                    return true;
-            }
-        }
-    }*/
+    if (!hasFlag("zhanche")) {
+        foreach (const Player *p, getAliveSiblings())
+            if (p->hasFlag("zhanche"))
+                return false;
+    }
 
     if (Sanguosha->ViewHas(this, treasure_name, "treasure"))
         return true;
