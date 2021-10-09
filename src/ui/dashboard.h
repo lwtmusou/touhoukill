@@ -54,7 +54,7 @@ public:
     void hideControlButtons();
     void showControlButtons();
 
-    void setPlayer(ClientPlayer *player) override; //hegemony
+    void setPlayer(Player *player) override; //hegemony
     void showSeat() override; //hegemony
 
     void showProgressBar(const QSanProtocol::Countdown &countdown) override;

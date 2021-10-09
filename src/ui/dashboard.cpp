@@ -1693,11 +1693,11 @@ void Dashboard::updateRightHiddenMark()
         rightHiddenMark->setVisible(false);
 }
 
-void Dashboard::setPlayer(ClientPlayer *player)
+void Dashboard::setPlayer(Player *player)
 {
     PlayerCardContainer::setPlayer(player);
-    // connect(player, &ClientPlayer::head_state_changed, this, &Dashboard::onHeadStateChanged);
-    // connect(player, &ClientPlayer::deputy_state_changed, this, &Dashboard::onDeputyStateChanged);
+    // connect(player, &Player::head_state_changed, this, &Dashboard::onHeadStateChanged);
+    // connect(player, &Player::deputy_state_changed, this, &Dashboard::onDeputyStateChanged);
 }
 
 void Dashboard::onHeadStateChanged()

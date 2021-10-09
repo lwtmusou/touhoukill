@@ -1,7 +1,6 @@
 #include "aux-skills.h"
 #include "CardFace.h"
 #include "client.h"
-#include "clientplayer.h"
 #include "engine.h"
 #include "package.h"
 #include "util.h"

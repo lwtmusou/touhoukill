@@ -106,11 +106,11 @@ RoomScene::RoomScene(QMainWindow *main_window, Client *client)
     connect(Self, SIGNAL(general2_changed()), dashboard, SLOT(updateSmallAvatar()));
     connect(dashboard, &Dashboard::card_selected, this, &RoomScene::enableTargets);
     connect(dashboard, &Dashboard::card_to_use, this, &RoomScene::doOkButton);
-    // connect(Self, &ClientPlayer::pile_changed, dashboard, &PlayerCardContainer::updatePile);
+    // connect(Self, &Player::pile_changed, dashboard, &PlayerCardContainer::updatePile);
 
     // add role ComboBox
     // if (isHegemonyGameMode(ServerInfo.GameMode))
-    // connect(Self, &ClientPlayer::kingdom_changed, dashboard, &Dashboard::updateKingdom);
+    // connect(Self, &Player::kingdom_changed, dashboard, &Dashboard::updateKingdom);
     // else
     // connect(Self, &Player::role_changed, dashboard, &PlayerCardContainer::updateRole);
 
@@ -1211,7 +1211,7 @@ void RoomScene::updateTable()
     }
 }
 
-void RoomScene::addPlayer(ClientPlayer *player)
+void RoomScene::addPlayer(Player *player)
 {
     for (int i = 0; i < photos.length(); i++) {
         Photo *photo = photos[i];
@@ -1412,12 +1412,12 @@ void RoomScene::enableTargets(const Card *card)
 
 void RoomScene::updateTargetsEnablity(const Card *card)
 {
-    QMapIterator<PlayerCardContainer *, const ClientPlayer *> itor(item2player);
+    QMapIterator<PlayerCardContainer *, const Player *> itor(item2player);
     while (itor.hasNext()) {
         itor.next();
 
         PlayerCardContainer *item = itor.key();
-        const ClientPlayer *player = itor.value();
+        const Player *player = itor.value();
         int maxVotes = 0;
 
         if (card != nullptr) {
@@ -1449,7 +1449,7 @@ void RoomScene::updateSelectedTargets()
 
     const Card *card = dashboard->getSelected();
     if (card != nullptr) {
-        const ClientPlayer *player = item2player.value(item, NULL);
+        const Player *player = item2player.value(item, NULL);
         if (item->isSelected())
             selected_targets.append(player);
         else {
@@ -1650,7 +1650,7 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
         bool enabled = false;
         foreach (PlayerCardContainer *container, item2player.keys()) {
-            const ClientPlayer *player = item2player.value(container, NULL);
+            const Player *player = item2player.value(container, NULL);
             QStringList piles = player->getPileNames();
             if (!piles.isEmpty()) {
                 foreach (QString pile_name, piles) {
@@ -1678,7 +1678,7 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
             QMenu *known_cards = menu->addMenu(tr("Known cards"));
 
             foreach (PlayerCardContainer *container, item2player.keys()) {
-                const ClientPlayer *player = item2player.value(container, NULL);
+                const Player *player = item2player.value(container, NULL);
                 if (player == Self)
                     continue;
                 QList<const Card *> known = player->getHandcards();
@@ -2002,7 +2002,7 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
             continue;
         if (_shouldIgnoreDisplayMove(movement))
             continue;
-        card_container->m_currentPlayer = (ClientPlayer *)movement.to;
+        card_container->m_currentPlayer = (Player *)movement.to;
         GenericCardContainer *to_container = _getGenericCardContainer(movement.to_place, movement.to);
         QList<CardItem *> cards = _m_cardsMoveStash[moveId][count];
         count++;
@@ -2047,7 +2047,7 @@ void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
             continue;
         if (_shouldIgnoreDisplayMove(movement))
             continue;
-        card_container->m_currentPlayer = (ClientPlayer *)movement.to;
+        card_container->m_currentPlayer = (Player *)movement.to;
         GenericCardContainer *from_container = _getGenericCardContainer(movement.from_place, movement.from);
         QList<CardItem *> cards = from_container->removeCardItems(movement.card_ids, movement.from_place);
         foreach (CardItem *card, cards)
@@ -4072,7 +4072,7 @@ void RoomScene::onGameStart()
     if (!Self->hasFlag(QStringLiteral("marshalling")))
         log_box->append(QString(tr("<font color='%1'>---------- Game Start ----------</font>").arg(Config.TextEditColor.name())));
 
-    // connect(Self, &ClientPlayer::skill_state_changed, this, &RoomScene::skillStateChange);
+    // connect(Self, &Player::skill_state_changed, this, &RoomScene::skillStateChange);
     trust_button->setEnabled(true);
 
     setLordBGM();
@@ -4165,7 +4165,7 @@ void RoomScene::setEmotion(const QString &who, const QString &emotion, bool perm
 
 void RoomScene::showSkillInvocation(const QString &who, const QString &skill_name)
 {
-    const ClientPlayer *player = ClientInstance->findChild<const ClientPlayer *>(who);
+    const Player *player = ClientInstance->findChild<const Player *>(who);
     //for hegemony gamemode: invoke hidden skill before showskill
     QStringList skills = Sanguosha->getSkillNames();
     if (skill_name == QStringLiteral("GameRule_AskForGeneralShowHead") || skill_name == QStringLiteral("GameRule_AskForGeneralShowDeputy"))
@@ -4416,7 +4416,7 @@ void RoomScene::doBattleArray(const QString & /*unused*/, const QStringList &arg
     if (names.contains(Self->objectName()))
         dashboard->playBattleArrayAnimations();
     foreach (Photo *p, photos) {
-        const ClientPlayer *target = p->getPlayer();
+        const Player *target = p->getPlayer();
         if (names.contains(target->objectName()))
             p->playBattleArrayAnimations();
     }
@@ -5003,7 +5003,7 @@ HeroSkinContainer *RoomScene::findHeroSkinContainer(const QString &generalName) 
     return nullptr;
 }
 
-void RoomScene::addHeroSkinContainer(ClientPlayer *player, HeroSkinContainer *heroSkinContainer)
+void RoomScene::addHeroSkinContainer(Player *player, HeroSkinContainer *heroSkinContainer)
 {
     m_heroSkinContainers.insert(heroSkinContainer);
 
@@ -5019,7 +5019,7 @@ void RoomScene::addHeroSkinContainer(ClientPlayer *player, HeroSkinContainer *he
     }
 
     foreach (PlayerCardContainer *playerCardContainer, playerCardContainers) {
-        const ClientPlayer *player = playerCardContainer->getPlayer();
+        const Player *player = playerCardContainer->getPlayer();
         const QString &heroSkinGeneralName = heroSkinContainer->getGeneralName();
 
         if (heroSkinGeneralName == player->getGeneralName()) {

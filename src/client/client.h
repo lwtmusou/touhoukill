@@ -3,7 +3,6 @@
 
 #include "RoomObject.h"
 #include "card.h"
-#include "clientplayer.h"
 #include "protocol.h"
 #include "serverinfostruct.h"
 #include "skill.h"
@@ -86,7 +85,7 @@ public:
     QTextDocument *getLinesDoc() const;
     QTextDocument *getPromptDoc() const;
 
-    ClientPlayer *getSelf() const;
+    Player *getSelf() const;
 
     typedef void (Client::*Callback)(const QVariant &);
 
@@ -260,7 +259,7 @@ private:
 
     unsigned int _m_lastServerSerial;
     bool m_isObjectNameRecorded;
-    ClientPlayer *Self;
+    Player *Self;
 
     void updatePileNum();
     QString setPromptList(const QStringList &text);
@@ -285,7 +284,7 @@ signals:
     void version_checked(const QString &version_number, const QString &mod_name);
     void server_connected();
     void error_message(const QString &msg);
-    void player_added(ClientPlayer *new_player);
+    void player_added(Player *new_player);
     void player_removed(const QString &player_name);
     // choice signal
     void generals_got(const QStringList &generals, const bool single_result, const bool can_convert);
@@ -315,7 +314,7 @@ signals:
     void focus_moved(const QStringList &focus, QSanProtocol::Countdown countdown);
     void emotion_set(const QString &target, const QString &emotion);
     void skill_invoked(const QString &who, const QString &skill_name);
-    void skill_acquired(const ClientPlayer *player, const QString &skill_name, const bool &head);
+    void skill_acquired(const Player *player, const QString &skill_name, const bool &head);
     void animated(int name, const QStringList &args);
     void text_spoken(const QString &text);
     void line_spoken(const QString &line);

@@ -1,7 +1,6 @@
 #include "cardcontainer.h"
 #include "carditem.h"
 #include "client.h"
-#include "clientplayer.h"
 #include "engine.h"
 #include "roomscene.h"
 

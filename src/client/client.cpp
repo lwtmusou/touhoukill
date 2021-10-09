@@ -142,7 +142,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_noNullificationThisTime = false;
     m_noNullificationTrickName = QStringLiteral(".");
 
-    Self = new ClientPlayer(this);
+    Self = new Player(this);
     Self->setScreenName(Config.UserName);
     Self->setProperty("avatar", Config.UserAvatar);
     // connect(Self, &Player::phase_changed, this, &Client::alertFocus);
@@ -247,7 +247,7 @@ void Client::setShownHandCards(const QVariant &card_var)
     QList<int> card_ids;
     JsonUtils::tryParse(card_str[1], card_ids);
 
-    ClientPlayer *player = RefactorProposal::fixme_cast<ClientPlayer *>(findPlayer(who));
+    Player *player = findPlayer(who);
     player->setShownHandcards(IDSet(card_ids.begin(), card_ids.end()));
     //  player->changePile(QStringLiteral("shown_card"), true, card_ids);
 }
@@ -285,7 +285,7 @@ void Client::setHiddenGenerals(const QVariant &arg)
         while (n-- > 0)
             names << QStringLiteral("sujiangf");
     }
-    ClientPlayer *player = RefactorProposal::fixme_cast<ClientPlayer *>(findPlayer(who));
+    Player *player = findPlayer(who);
     // player->setHiddenGenerals(names);
     // player->changePile(QStringLiteral("huashencard"), false, QList<int>());
 }
@@ -480,7 +480,7 @@ void Client::addPlayer(const QVariant &player_info)
     QString screen_name = QString::fromUtf8(QByteArray::fromBase64(info[1].toString().toLatin1()));
     QString avatar = info[2].toString();
 
-    ClientPlayer *player = new ClientPlayer(this);
+    Player *player = new Player(this);
     player->setObjectName(name);
     player->setScreenName(screen_name);
     player->setProperty("avatar", avatar);
@@ -505,7 +505,7 @@ void Client::updateProperty(const QVariant &arg)
 void Client::removePlayer(const QVariant &player_name)
 {
     QString name = player_name.toString();
-    ClientPlayer *player = findChild<ClientPlayer *>(name);
+    Player *player = findChild<Player *>(name);
     if (player != nullptr) {
         player->setParent(nullptr);
         alive_count--;
@@ -558,7 +558,7 @@ void Client::getCards(const QVariant &arg)
         QSanguosha::Place dstPlace = move.to_place;
 
         if (dstPlace == QSanguosha::PlaceSpecial) {
-            //((ClientPlayer *)move.to)->changePile(move.to_pile_name, true, move.card_ids);
+            //((Player *)move.to)->changePile(move.to_pile_name, true, move.card_ids);
         } else {
             foreach (int card_id, move.card_ids)
                 _getSingleCard(card_id, move); // DDHEJ->DDHEJ, DDH/EJ->EJ
@@ -583,7 +583,7 @@ void Client::loseCards(const QVariant &arg)
         move.to = findPlayer(move.to_player_name);
         QSanguosha::Place srcPlace = move.from_place;
         if (srcPlace == QSanguosha::PlaceSpecial) {
-            // ((ClientPlayer *)move.from)->changePile(move.from_pile_name, false, move.card_ids);
+            // ((Player *)move.from)->changePile(move.from_pile_name, false, move.card_ids);
         } else {
             foreach (int card_id, move.card_ids)
                 _loseSingleCard(card_id, move); // DDHEJ->DDHEJ, DDH/EJ->EJ
@@ -947,8 +947,8 @@ void Client::exchangeKnownCards(const QVariant &players)
     JsonArray args = players.value<JsonArray>();
     if (args.size() != 2 || !JsonUtils::isString(args[0]) || !JsonUtils::isString(args[1]))
         return;
-    ClientPlayer *a = RefactorProposal::fixme_cast<ClientPlayer *>(findPlayer(args[0].toString()));
-    ClientPlayer *b = RefactorProposal::fixme_cast<ClientPlayer *>(findPlayer(args[1].toString()));
+    Player *a = findPlayer(args[0].toString());
+    Player *b = findPlayer(args[1].toString());
     IDSet a_known;
     IDSet b_known;
     foreach (const Card *card, a->getHandcards())
@@ -965,7 +965,7 @@ void Client::setKnownCards(const QVariant &set_str)
     if (set.size() != 2)
         return;
     QString name = set[0].toString();
-    ClientPlayer *player = RefactorProposal::fixme_cast<ClientPlayer *>(findPlayer(name));
+    Player *player = findPlayer(name);
     if (player == nullptr)
         return;
     QList<int> ids;
@@ -1356,7 +1356,7 @@ QTextDocument *Client::getPromptDoc() const
     return prompt_doc;
 }
 
-ClientPlayer *Client::getSelf() const
+Player *Client::getSelf() const
 {
     return Self;
 }
@@ -1914,7 +1914,7 @@ void Client::showCard(const QVariant &show_str)
     QString player_name = show[0].toString();
     int card_id = show[1].toInt();
 
-    ClientPlayer *player = RefactorProposal::fixme_cast<ClientPlayer *>(findPlayer(player_name));
+    Player *player = findPlayer(player_name);
     if (player != Self) {
         IDSet s = player->handCards();
         s << card_id;
@@ -1971,7 +1971,7 @@ void Client::showAllCards(const QVariant &arg)
     if (args.size() != 3 || !JsonUtils::isString(args[0]) || !JsonUtils::isBool(args[1]))
         return;
 
-    ClientPlayer *who = RefactorProposal::fixme_cast<ClientPlayer *>(findPlayer(args[0].toString()));
+    Player *who = findPlayer(args[0].toString());
     QList<int> card_ids;
     if (!JsonUtils::tryParse(args[2], card_ids))
         return;
@@ -1988,7 +1988,7 @@ void Client::askForGongxin(const QVariant &args)
     if (arg.size() != 5 || !JsonUtils::isString(arg[0]) || !JsonUtils::isBool(arg[1]))
         return;
 
-    ClientPlayer *who = RefactorProposal::fixme_cast<ClientPlayer *>(findPlayer(arg[0].toString()));
+    Player *who = findPlayer(arg[0].toString());
 
     bool enable_heart = arg[1].toBool();
     QList<int> card_ids;

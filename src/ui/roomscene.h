@@ -208,7 +208,7 @@ public:
         return dashboard;
     }
 
-    void addHeroSkinContainer(ClientPlayer *player, HeroSkinContainer *heroSkinContainer);
+    void addHeroSkinContainer(Player *player, HeroSkinContainer *heroSkinContainer);
     HeroSkinContainer *findHeroSkinContainer(const QString &generalName) const;
     QSet<HeroSkinContainer *> getHeroSkinContainers();
 
@@ -220,7 +220,7 @@ public:
     QStringList currentViewAsSkillSelectionChain() const;
 
 public slots:
-    void addPlayer(ClientPlayer *player);
+    void addPlayer(Player *player);
     void removePlayer(const QString &player_name);
     void loseCards(int moveId, QList<CardsMoveStruct> moves);
     void getCards(int moveId, QList<CardsMoveStruct> moves);
@@ -321,7 +321,7 @@ private:
     CardItem *pindian_from_card;
     CardItem *pindian_to_card;
     QGraphicsItem *control_panel;
-    QMap<PlayerCardContainer *, const ClientPlayer *> item2player;
+    QMap<PlayerCardContainer *, const Player *> item2player;
     QDialog *m_choiceDialog; // Dialog for choosing generals, suits, card/equip, or kingdoms
 
     QGraphicsRectItem *pausing_item;
@@ -549,7 +549,7 @@ Q_ALWAYS_INLINE Client *clientInstanceFunc()
     return nullptr;
 }
 
-Q_ALWAYS_INLINE ClientPlayer *selfFunc()
+Q_ALWAYS_INLINE Player *selfFunc()
 {
     Client *client = clientInstanceFunc();
     if (client != nullptr)

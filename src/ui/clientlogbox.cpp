@@ -1,6 +1,5 @@
 #include "clientlogbox.h"
 #include "client.h"
-#include "clientplayer.h"
 #include "engine.h"
 #include "roomscene.h"
 #include "settings.h"
