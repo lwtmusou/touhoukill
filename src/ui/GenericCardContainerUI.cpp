@@ -217,6 +217,9 @@ void PlayerCardContainer::updateAvatar()
     if (general != nullptr) {
         _m_avatarArea->setToolTip(m_player->getSkillDescription(true, QStringLiteral("head")));
         QString name = general->name();
+        if (m_player != nullptr && m_player->getMark(QStringLiteral("duozhi")) > 0)
+            name = QStringLiteral("yingyingguai");
+
         QPixmap avatarIcon = _getAvatarIcon(name);
         QGraphicsPixmapItem *avatarIconTmp = _m_avatarIcon;
         QRect avatarArea = _m_layout->m_avatarArea;
@@ -302,7 +305,10 @@ void PlayerCardContainer::updateSmallAvatar()
     }
 
     if (general != nullptr) {
-        QPixmap smallAvatarIcon = G_ROOM_SKIN.getGeneralPixmap(general->name(), QSanRoomSkin::GeneralIconSize(_m_layout->m_smallAvatarSize));
+        QString name = general->name();
+        if (m_player != nullptr && m_player->getMark(QStringLiteral("duozhi")) > 0)
+            name = QStringLiteral("yingyingguai");
+        QPixmap smallAvatarIcon = G_ROOM_SKIN.getGeneralPixmap(name, QSanRoomSkin::GeneralIconSize(_m_layout->m_smallAvatarSize));
         smallAvatarIcon = paintByMask(smallAvatarIcon);
         QGraphicsPixmapItem *smallAvatarIconTmp = _m_smallAvatarIcon;
         _paintPixmap(smallAvatarIconTmp, _m_layout->m_smallAvatarArea, smallAvatarIcon, _getAvatarParent());
@@ -317,10 +323,11 @@ void PlayerCardContainer::updateSmallAvatar()
             _paintPixmap(_m_dashboardSecondaryKingdomColorMaskIcon, _m_layout->m_dashboardSecondaryKingdomMaskArea,
                          G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_DASHBOARD_KINGDOM_COLOR_MASK), kingdom), _getAvatarParent());
         }
-
-        QString name = Sanguosha->translate(QStringLiteral("&") + general->name());
-        if (name.startsWith(QStringLiteral("&")))
-            name = Sanguosha->translate(general->name());
+        {
+            QString name = Sanguosha->translate(QStringLiteral("&") + general->name());
+            if (name.startsWith(QStringLiteral("&")))
+                name = Sanguosha->translate(general->name());
+        }
         if (!fake_general)
             _m_layout->m_smallAvatarNameFont.paintText(_m_smallAvatarNameItem, _m_layout->m_smallAvatarNameArea, Qt::AlignLeft | Qt::AlignJustify, name);
         _m_smallAvatarIcon->show();

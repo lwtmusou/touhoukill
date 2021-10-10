@@ -14,7 +14,7 @@ bool MishenCard::targetFilter(const QList<const Player *> &targets, const Player
 {
     LureTiger *lt = new LureTiger(Card::NoSuit, 0);
     DELETE_OVER_SCOPE(LureTiger, lt)
-    return lt->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, lt);
+    return lt->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, lt, targets);
 }
 
 void MishenCard::onUse(Room *room, const CardUseStruct &card_use) const
@@ -60,6 +60,7 @@ public:
     }
 };
 
+// TODO: support multi-target?
 class Liji : public ZeroCardViewAsSkill
 {
 public:
@@ -77,17 +78,6 @@ public:
             c->setFlags("-IgnoreFailed");
             return r;
         }
-#if 0
-        // todo? or won't do?
-        else if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
-            if (i == 2) {
-                if (Sanguosha->getCurrentCardUsePattern().contains("peach")) {
-                }
-            } else if (i == 3) {
-                // deal with AskForUseSlashTo
-            }
-        }
-#endif
         return false;
     }
 
@@ -323,12 +313,16 @@ public:
                     }
                 }
                 if (target) {
+                    QList<const Player *> ps;
+                    foreach (ServerPlayer *p, use.to)
+                        ps << p;
+
                     if (use.to.contains(target)) {
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, nullptr, false, target);
-                    } else if (!player->isProhibited(target, use.card)) {
+                    } else if (!player->isProhibited(target, use.card, ps)) {
                         use.card->setFlags("IgnoreFailed");
                         use.card->setFlags("houhu");
-                        bool can = use.card->targetFilter(QList<const Player *>(), target, player);
+                        bool can = use.card->targetFilter(ps, target, player);
                         if (use.card->isKindOf("Peach") && target->isWounded())
                             can = true;
                         use.card->setFlags("-houhu");
@@ -681,6 +675,11 @@ public:
             }
 
             if (ids.isEmpty() || invoke->targets.first()->askForSkillInvoke("#shengyu-select", QString("mow:%1::%2").arg(invoke->invoker->objectName()).arg(colorstring))) {
+                LogMessage l;
+                l.type = "#shengyu";
+                l.from = invoke->targets.first();
+                l.arg = "no_suit_" + colorstring;
+                room->sendLog(l);
                 room->setPlayerCardLimitation(invoke->targets.first(), "use,response", ".|" + colorstring + "|.|.", "shengyu", false);
                 invoke->targets.first()->setFlags("shengyu_" + use.card->toString());
             } else
@@ -902,11 +901,15 @@ public:
                 CardsMoveStruct move2(id, player, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_GOTBACK, player->objectName()));
                 room->moveCardsAtomic(move2, true);
 
-                if (!room->askForDiscard(player, "puti", 1, 1, true, false, "@puti-discard1"))
+                if (!room->askForDiscard(player, "puti", 1, 1, true, false, "@puti-discard1")) {
+                    LogMessage l;
+                    l.type = "#puti";
+                    l.from = player;
+                    room->sendLog(l);
                     room->setPlayerCardLimitation(player, "use", "Slash", "puti", true);
-
+                }
                 if (!throwIds.isEmpty()) {
-                    CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), "sishu", QString());
+                    CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName(), "puti", QString());
                     DummyCard dummy(throwIds);
                     room->throwCard(&dummy, reason, nullptr);
                     throwIds.clear();
@@ -934,11 +937,15 @@ public:
         if (!use.card->isNDTrick() || use.card->isKindOf("Nullification"))
             return QList<SkillInvokeDetail>();
 
+        QList<const Player *> ps;
+        foreach (ServerPlayer *p, use.to)
+            ps << p;
+
         bool invoke = false;
         use.card->setFlags("IgnoreFailed");
         use.card->setFlags("zangfa");
         foreach (ServerPlayer *q, room->getAlivePlayers()) {
-            if (!use.to.contains(q) && !use.from->isProhibited(q, use.card) && use.card->targetFilter(QList<const Player *>(), q, use.from)) {
+            if (!use.to.contains(q) && !use.from->isProhibited(q, use.card, ps) && use.card->targetFilter(ps, q, use.from)) {
                 invoke = true;
                 break;
             }
@@ -961,10 +968,13 @@ public:
     {
         QList<ServerPlayer *> listt;
         CardUseStruct use = data.value<CardUseStruct>();
+        QList<const Player *> ps;
+        foreach (ServerPlayer *p, use.to)
+            ps << p;
         use.card->setFlags("IgnoreFailed");
         use.card->setFlags("zangfa");
         foreach (ServerPlayer *q, room->getAlivePlayers()) {
-            if (!use.to.contains(q) && !use.from->isProhibited(q, use.card) && use.card->targetFilter(QList<const Player *>(), q, use.from))
+            if (!use.to.contains(q) && !use.from->isProhibited(q, use.card, ps) && use.card->targetFilter(ps, q, use.from))
                 listt << q;
         }
         use.card->setFlags("-zangfa");
@@ -1084,14 +1094,17 @@ public:
     bool canAddTarget(const CardUseStruct &use) const
     {
         bool flag = false;
+        QList<const Player *> ps;
+        foreach (ServerPlayer *p, use.to)
+            ps << p;
         use.card->setFlags("IgnoreFailed");
         use.card->setFlags("xunshi");
         foreach (ServerPlayer *p, use.from->getRoom()->getAllPlayers()) {
-            if (!use.to.contains(p) && use.card->isKindOf("Peach") && p->isWounded() && !use.from->isProhibited(p, use.card)) {
+            if (!use.to.contains(p) && use.card->isKindOf("Peach") && p->isWounded() && !use.from->isProhibited(p, use.card, ps)) {
                 flag = true;
                 break;
             }
-            if (!use.to.contains(p) && use.card->targetFilter(QList<const Player *>(), p, use.from) && !use.from->isProhibited(p, use.card)) {
+            if (!use.to.contains(p) && use.card->targetFilter(ps, p, use.from) && !use.from->isProhibited(p, use.card, ps)) {
                 flag = true;
                 break;
             }
@@ -1119,13 +1132,16 @@ public:
     QStringList extraTargetNames(const CardUseStruct &use) const
     {
         QStringList r;
+        QList<const Player *> ps;
+        foreach (ServerPlayer *p, use.to)
+            ps << p;
 
         use.card->setFlags("IgnoreFailed");
         use.card->setFlags("xunshi");
         foreach (ServerPlayer *p, use.from->getRoom()->getAllPlayers()) {
-            if (!use.to.contains(p) && use.card->targetFilter(QList<const Player *>(), p, use.from) && !use.from->isProhibited(p, use.card))
+            if (!use.to.contains(p) && use.card->targetFilter(ps, p, use.from) && !use.from->isProhibited(p, use.card, ps))
                 r << p->objectName();
-            else if (!use.to.contains(p) && use.card->isKindOf("Peach") && p->isWounded() && !use.from->isProhibited(p, use.card)) {
+            else if (!use.to.contains(p) && use.card->isKindOf("Peach") && p->isWounded() && !use.from->isProhibited(p, use.card, ps)) {
                 r << p->objectName();
             }
         }
@@ -1213,12 +1229,12 @@ MiZhiungHteiCard::MiZhiungHteiCard()
 {
 }
 
-bool MiZhiungHteiCard::targetFilter(const QList<const Player *> &, const Player *to_select, const Player *Self) const
+bool MiZhiungHteiCard::targetFilter(const QList<const Player *> &p, const Player *to_select, const Player *Self) const
 {
     AllianceFeast *af = new AllianceFeast(Card::NoSuit, 0);
     DELETE_OVER_SCOPE(AllianceFeast, af)
     af->setSkillName(m_skillName);
-    return !Self->isProhibited(to_select, af);
+    return !Self->isProhibited(to_select, af, p);
 }
 
 void MiZhiungHteiCard::onUse(Room *, const CardUseStruct &card_use) const
@@ -1316,6 +1332,10 @@ public:
 
     void afEffect(Room *room, ServerPlayer *target) const override
     {
+        LogMessage l;
+        l.type = "#minghe";
+        l.from = target;
+        room->sendLog(l);
         room->setPlayerCardLimitation(target, "use", ".", objectName(), true);
     }
 };

@@ -225,31 +225,49 @@ QString AwaitExhaustedHegemony::getSubtype() const
 bool AwaitExhaustedHegemony::isAvailable(const Player *player) const
 {
     bool canUse = false;
-    if (!player->isProhibited(player, this))
-        canUse = true;
-    if (!canUse) {
-        QList<const Player *> players = player->getAliveSiblings();
-        foreach (const Player *p, players) {
-            if (player->isProhibited(p, this))
-                continue;
-            if (player->isFriendWith(p)) {
-                canUse = true;
-                break;
-            }
+
+    QList<const Player *> players = player->getAliveSiblings();
+    players << player;
+
+    QList<const Player *> useTos;
+
+    foreach (const Player *p, players) {
+        if (p->isFriendWith(player))
+            useTos << p;
+    }
+
+    foreach (const Player *p, players) {
+        auto useTosExceptp = players;
+        useTosExceptp.removeAll(p);
+        if (!player->isProhibited(p, this, useTosExceptp)) {
+            canUse = true;
+            break;
         }
     }
 
     return canUse && TrickCard::isAvailable(player);
 }
 
+bool AwaitExhaustedHegemony::targetFilter(const QList<const Player *> &, const Player *to_select, const Player *Self) const
+{
+    return Self->willBeFriendWith(to_select);
+}
+
 void AwaitExhaustedHegemony::onUse(Room *room, const CardUseStruct &card_use) const
 {
     CardUseStruct new_use = card_use;
-    if (!card_use.from->isProhibited(card_use.from, this))
-        new_use.to << new_use.from;
-    foreach (ServerPlayer *p, room->getOtherPlayers(new_use.from)) {
+    QList<const Player *> useTos;
+
+    foreach (ServerPlayer *p, room->getAllPlayers()) {
+        if (p->isFriendWith(new_use.from))
+            useTos << p;
+    }
+
+    foreach (ServerPlayer *p, room->getAllPlayers()) {
+        auto useTosExceptp = useTos;
+        useTosExceptp.removeAll(p);
         if (p->isFriendWith(new_use.from)) {
-            const ProhibitSkill *skill = room->isProhibited(card_use.from, p, this);
+            const ProhibitSkill *skill = room->isProhibited(card_use.from, p, this, useTosExceptp);
             if (skill) {
                 LogMessage log;
                 log.type = "#SkillAvoid";

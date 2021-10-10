@@ -33,6 +33,8 @@ sgs.dynamic_value.damage_card.PowerSlash = true
 
 function SmartAI:shouldUseMagicAnaleptic(trick)
 	if sgs.turncount <= 1 and self.role == "renegade" and sgs.isLordHealthy() and self:getOverflow() < 2 then return false end
+	
+	if self.player:hasSkill("duozhi") then return true end
 
 	local nul_f, nul_e = 0, 0
 	for _, f in ipairs(self.friends)do
@@ -100,7 +102,7 @@ function SmartAI:useCardSuperPeach(card, use)
 		if self.player:hasArmorEffect("SilverLion") then
 			for _, card in sgs.qlist(self.player:getHandcards()) do
 				if card:isKindOf("Armor") and self:evaluateArmor(card) > 0 then
-					use.to:append(self.player)
+					if use.to then use.to:append(self.player) end
 					use.card = card
 					return
 				end

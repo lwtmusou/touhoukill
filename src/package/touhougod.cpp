@@ -12,7 +12,6 @@
 #include "th09.h"
 #include "th10.h"
 #include "th15.h"
-
 #include <QCommandLinkButton>
 #include <QCoreApplication>
 #include <QMetaObject>
@@ -48,11 +47,16 @@ public:
         room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
 
         //get ganerals
-        QStringList allList = Sanguosha->getLimitedGeneralNames();
-        QSet<QString> all = QSet<QString>(allList.begin(), allList.end());
-        if (isNormalGameMode(room->getMode())) {
-            QStringList rolesbanlist = Config.value("Banlist/Roles", "").toStringList();
-            all.subtract(QSet<QString>(rolesbanlist.begin(), rolesbanlist.end()));
+        QSet<QString> all = Sanguosha->getLimitedGeneralNames().toSet();
+        if (isNormalGameMode(room->getMode()))
+            all.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());
+        else if (room->getMode() == "06_XMode") {
+            foreach (ServerPlayer *p, room->getAlivePlayers())
+                all.subtract(p->tag["XModeBackup"].toStringList().toSet());
+        } else if (room->getMode() == "02_1v1") {
+            all.subtract(Config.value("Banlist/1v1", "").toStringList().toSet());
+            foreach (ServerPlayer *p, room->getAlivePlayers())
+                all.subtract(p->tag["1v1Arrange"].toStringList().toSet());
         }
 
         QSet<QString> room_set;
@@ -1854,6 +1858,10 @@ public:
         const Card *card = room->askForCard(player, "Slash|.|.|hand", "@quanjie-discard");
         if (card == nullptr) {
             player->drawCards(1);
+            LogMessage l;
+            l.type = "#quanjie";
+            l.from = player;
+            room->sendLog(l);
             room->setPlayerCardLimitation(player, "use", "Slash", objectName(), true);
         }
         return false;
@@ -2043,7 +2051,6 @@ public:
         const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
 
         Card::HandlingMethod method = Card::MethodUse;
-        ;
         if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
             method = Card::MethodResponse;
 
@@ -2703,6 +2710,7 @@ public:
             foreach (int id, player->handCards()) {
                 const Card *card = room->getCard(id);
                 // TODO: CHECK isAvailable FUNCTION OF ALL CARDS!!!!!!
+                // TODO: add 3rd parameter to isProhibited
                 if (Sanguosha->matchExpPattern(pattern, player, card) && !player->isCardLimited(card, Card::MethodUse)) {
                     foreach (ServerPlayer *t, room->getAlivePlayers()) {
                         if (card->targetFilter(QList<const Player *>(), t, player) && !player->isProhibited(t, card)) {
@@ -2727,6 +2735,7 @@ public:
                     foreach (int id, player->handCards()) {
                         const Card *card = room->getCard(id);
                         // TODO: CHECK isAvailable FUNCTION OF ALL CARDS!!!!!!
+                        // TODO: add 3rd parameter to isProhibited
                         if (Sanguosha->matchExpPattern(pattern, player, card) && !player->isCardLimited(card, Card::MethodUse)) {
                             foreach (ServerPlayer *t, room->getAlivePlayers()) {
                                 if (card->targetFilter(QList<const Player *>(), t, player) && !player->isProhibited(t, card)) {
@@ -3515,7 +3524,7 @@ QStringList ShenbaoDialog::getAvailableNullificationChoices(const ServerPlayer *
 {
     QStringList choices;
     foreach (const QString &skillName, equipViewAsSkills) {
-        EquipCard *equipCard = qobject_cast<EquipCard *>(player->getRoomObject()->cloneCard(skillName));
+        EquipCard *equipCard = qobject_cast<EquipCard *>(Sanguosha->cloneCard(skillName));
         bool available = false;
         if (equipCard != nullptr) {
             EquipCard::Location location = equipCard->location();
@@ -5207,11 +5216,16 @@ public:
     {
         QSet<QString> all = QSet<QString>(Sanguosha->getLimitedGeneralNames().begin(), Sanguosha->getLimitedGeneralNames().end());
         Room *room = zuoci->getRoom();
-        if (isNormalGameMode(room->getMode())) {
-            QStringList rolebanlist = Config.value("Banlist/Roles", "").toStringList();
-            all.subtract(QSet<QString>(rolebanlist.begin(), rolebanlist.end()));
+        if (isNormalGameMode(room->getMode()))
+            all.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());
+        else if (room->getMode() == "06_XMode") {
+            foreach (ServerPlayer *p, room->getAlivePlayers())
+                all.subtract(p->tag["XModeBackup"].toStringList().toSet());
+        } else if (room->getMode() == "02_1v1") {
+            all.subtract(Config.value("Banlist/1v1", "").toStringList().toSet());
+            foreach (ServerPlayer *p, room->getAlivePlayers())
+                all.subtract(p->tag["1v1Arrange"].toStringList().toSet());
         }
-
         QSet<QString> huashen_set, room_set;
         huashen_set = QSet<QString>(zuoci->getHiddenGenerals().begin(), zuoci->getHiddenGenerals().end());
 
@@ -5894,33 +5908,32 @@ public:
         response_or_use = true;
     }
 
-    bool viewFilter(const Card *c, const Player *Self) const override
+    bool viewFilter(const Card *c) const override
     {
-        if (c->getTypeId() == Card::TypeEquip)
-            return false;
-        QString selected_effect = Self->tag.value("xianshi", QString()).toString();
-        bool play = (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
-        if (play) {
-            if (!c->isAvailable(Self))
-                return false;
+        if (c->isNDTrick() || c->getTypeId() == Card::TypeBasic) {
+            QString selected_effect = Self->tag.value("xianshi", QString()).toString();
+            bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+            if (play) {
+                if (!c->isAvailable(Self))
+                    return false;
 
-        } else {
-            QString pattern = Self->getRoomObject()->getCurrentCardUsePattern();
-            const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
-            if (!(cardPattern != nullptr && cardPattern->match(Self, c)))
-                return false;
+            } else {
+                QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+                const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+                if (!(cardPattern != nullptr && cardPattern->match(Self, c)))
+                    return false;
+            }
+            if (selected_effect.contains("slash"))
+                return !c->isKindOf("Slash");
+            else if (selected_effect.contains("jink"))
+                return !c->isKindOf("Jink");
+            else if (selected_effect.contains("analeptic"))
+                return !c->isKindOf("Analeptic");
+            else if (selected_effect.contains("peach"))
+                return !c->isKindOf("Peach");
+            else
+                return c->objectName() != selected_effect;
         }
-        if (selected_effect.contains("slash"))
-            return !c->isKindOf("Slash");
-        else if (selected_effect.contains("jink"))
-            return !c->isKindOf("Jink");
-        else if (selected_effect.contains("analeptic"))
-            return !c->isKindOf("Analeptic");
-        else if (selected_effect.contains("peach"))
-            return !c->isKindOf("Peach");
-        else
-            return c->objectName() != selected_effect;
-
         return false;
     }
 
@@ -6073,7 +6086,6 @@ public:
         if (card->isRed()) {
             if (card->canDamage())
                 return 1000;
-
         } else if (card->isBlack()) {
             if (card->canRecover())
                 return 1000;

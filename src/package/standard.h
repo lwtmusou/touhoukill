@@ -33,6 +33,7 @@ public:
     QString subTypeName() const override;
     void onUse(Room *room, const CardUseStruct &card_use) const override;
     bool isAvailable(const Player *player, const Card *card) const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
 };
 
 class GodSalvation : public GlobalEffect
@@ -73,6 +74,7 @@ public:
     QString subTypeName() const override;
     bool isAvailable(const Player *player, const Card *card) const override;
     void onUse(Room *room, const CardUseStruct &card_use) const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
 };
 
 class SavageAssault : public AOE

@@ -1281,6 +1281,8 @@ void Dashboard::expandPileCards(const QString &pile_name)
             if (c.suit == QSanguosha::Club && (c.face()->isNDTrick() || c.face()->type() == QSanguosha::TypeBasic))
                 pile << id;
         }
+    } else if (pile_name == QStringLiteral("#judging_area")) {
+        pile = List2Set(Self->getJudgingAreaID());
     } else {
         pile = Self->getPile(new_name);
     }
@@ -1420,6 +1422,28 @@ void Dashboard::updateHandPile()
         if (Self->isBrokenEquip(t->effectiveID(), true))
             retractPileCards(QStringLiteral("wooden_ox"));
     }
+}
+
+void Dashboard::selectLingshou()
+{
+    foreach (const QString &pile, Self->getPileNames()) {
+        if (pile.startsWith(QStringLiteral("&")) || pile == QStringLiteral("wooden_ox"))
+            retractPileCards(pile);
+    }
+    retractSpecialCard();
+
+    if (view_as_skill) {
+        unselectAll();
+        QList<int> selectedIds = StringList2IntList(Self->property("lingshouSelected").toString().split(QStringLiteral("+")));
+        foreach (CardItem *card_item, m_handCards) {
+            if (selectedIds.contains(card_item->getId())) {
+                selectCard(card_item, true);
+                pendings << card_item;
+            }
+        }
+        updatePending();
+    }
+    adjustCards(true);
 }
 
 void Dashboard::updateShown()

@@ -358,7 +358,8 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 
 	local nature = natures[slash:getClassName()]
 	self.equipsToDec = sgs.getCardNumAtCertainPlace(slash, from, sgs.Player_PlaceEquip)
-	local eff = self:damageIsEffective(to, nature, from)
+	local eff = self:damageIsEffective(to, nature, from) 
+	if to:hasSkill("ciou") and nature == sgs.DamageStruct_Normal then eff = true end
 	self.equipsToDec = 0
 	if not eff then return false end
 

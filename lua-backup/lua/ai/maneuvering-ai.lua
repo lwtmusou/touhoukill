@@ -131,6 +131,10 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 	if not self:touhouNeedAvoidAttack(fakeDamage,self.player,target) or fakeDamage.damage<2 then
 		return false
 	end
+	
+	-- 夺志 用酒为了无效对面的牌，一定可以打输出，就算有zhancao、shishi、luanying之类的技能无效了酒，也值得用
+	-- 暂且加在这里算了，之后看看需不需要调
+	if self.player:hasSkill("duozhi") then return true end
 
 	if target:hasArmorEffect("SilverLion") and not self.player:hasWeapon("QinggangSword") then
 		return
@@ -183,7 +187,6 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 
 	if self.player:hasWeapon("Axe") and self.player:getCards("hes"):length() > 4 then return true end
 
-
 	if getKnownCard(target, self.player, "Jink", true, "hes") >= 1 and not (self:getOverflow() > 0 and self:getCardsNum("Analeptic", nil, nil, "MagicAnaleptic") > 1) then return false end
 	return self:getCardsNum("Analeptic", nil, nil, "MagicAnaleptic") > 1 or getCardsNum("Jink", target) < 1 or sgs.card_lack[target:objectName()]["Jink"] == 1
 end
@@ -192,6 +195,7 @@ function SmartAI:useCardAnaleptic(card, use)
 	if self:cautionDoujiu(self.player,card) then
 		return
 	end
+	
 	if not self.player:hasEquip(card) and not self:hasLoseHandcardEffective() and not self:isWeak()
 		and sgs.Analeptic_IsAvailable(self.player, card) then
 		use.card = card

@@ -151,6 +151,8 @@ public slots:
     void controlNullificationButton(bool show);
     void updateHandPile();
 
+    void selectLingshou();
+
 #ifdef QT_WINEXTRAS_LIB
     void updateTimedProgressBar(time_t val, time_t max);
 #endif

@@ -121,7 +121,7 @@ sgs.fake_rebel_players = {}
 --           【真夜】【暗域】【契约】【魔血】
 --lose_equip_skill【魔开】【遗忘】
 --need_kongcheng【迷彩】
---masochism_skill延时卖血不算？【浴血】【】
+--masochism_skill延时卖血不算？【浴血】【善垒】
 --wizard_skill wizard_harm_skill【命运】【绯想】【风水】【博丽】
 --priority_skill【借走】【强欲】【锁定】
 --save_skill【合咒】
@@ -3131,6 +3131,7 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 		if card then return card:getEffectiveId() end
 	elseif type(cardchosen) == "number" then
 		sgs.ai_skill_cardchosen[string.gsub(reason, "%-", "_")] = nil
+		if cardchosen == -1 then return -1 end
 		for _, acard in sgs.qlist(who:getCards(flags)) do
 			if acard:getEffectiveId() == cardchosen then return cardchosen end
 		end
@@ -3460,6 +3461,8 @@ function SmartAI:hasHeavySlashDamage(from, slash, to, getValue)
 		dmg = dmg + from:getMark("drank")
 	end
 
+	-- 瓷偶 不一定合适，先加在这
+	if to:hasSkill("ciou") and (slash and ((slash:getClassName() == "Slash") or (slash:isKindOf("DebuffSlash")))) then dmg = dmg + 1 end
 	if to:hasArmorEffect("Vine") and not IgnoreArmor(from, to) and fireSlash then dmg = dmg + 1 end
 	if from:hasWeapon("GudingBlade") and slash and to:isKongcheng() then dmg = dmg + 1 end
     if from:hasSkill("hanbo_hegemony") and slash and not slash:isKindOf("NatureSlash") and to:isKongcheng() then dmg = dmg + 1 end
@@ -4441,6 +4444,7 @@ function SmartAI:damageIsEffective(to, nature, from)
 	from = from or self.room:getCurrent()
 	nature = nature or sgs.DamageStruct_Normal
 
+	if to:hasSkill("ciou") then return false end
 	if from:hasSkill("lizhi") and self:isFriend(from,to) then return false end
 	return true
 end
@@ -5870,6 +5874,9 @@ function getBestHp(player)
 	end
 	if player:hasSkill("jiushu") then
 		return player:getMaxHp()-2
+	end
+	if player:hasSkills("shanlei+bengluo") then
+		return 2
 	end
 
 	for skill,dec in pairs(arr) do

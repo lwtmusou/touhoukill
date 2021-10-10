@@ -35,6 +35,7 @@
 #include <QFormLayout>
 #include <QGraphicsLinearLayout>
 #include <QGraphicsSceneMouseEvent>
+#include <QGridLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QInputDialog>
@@ -1762,10 +1763,22 @@ void RoomScene::chooseSuit(const QStringList &suits)
     m_choiceDialog = dialog;
 }
 
+namespace {
+int preferredColumnCount(int x)
+{
+    int x2 = sqrt(x);
+    return sqrt(x + x2);
+}
+} // namespace
+
 void RoomScene::chooseKingdom(const QStringList &kingdoms)
 {
     QDialog *dialog = new QDialog;
-    QVBoxLayout *layout = new QVBoxLayout;
+    // QVBoxLayout *layout = new QVBoxLayout;
+    QGridLayout *layout = new QGridLayout;
+    int columnCount = preferredColumnCount(kingdoms.length());
+    int currentColumn = 0;
+    int currentRow = 0;
 
     foreach (QString kingdom, kingdoms) {
         CommandLinkDoubleClickButton *button = new CommandLinkDoubleClickButton;
@@ -1777,13 +1790,16 @@ void RoomScene::chooseKingdom(const QStringList &kingdoms)
         button->setText(Sanguosha->translate(kingdom));
         button->setObjectName(kingdom);
 
-        layout->addWidget(button);
+        layout->addWidget(button, currentRow, currentColumn++);
+        if (currentColumn >= columnCount) {
+            currentColumn = 0;
+            currentRow += 1;
+        }
 
         connect(button, SIGNAL(double_clicked()), ClientInstance, SLOT(onPlayerChooseKingdom()));
         connect(button, &CommandLinkDoubleClickButton::double_clicked, dialog, &QDialog::accept);
     }
 
-    dialog->setObjectName(QStringLiteral("."));
     connect(dialog, SIGNAL(rejected()), ClientInstance, SLOT(onPlayerChooseKingdom()));
 
     dialog->setObjectName(QStringLiteral("."));
@@ -2771,6 +2787,8 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                 dashboard->startPending(skill);
                 if (skill->inherits("OneCardViewAsSkill") && Config.EnableIntellectualSelection)
                     dashboard->selectOnlyCard();
+                else if (skill->objectName() == QStringLiteral("LingshouOtherVS"))
+                    dashboard->selectLingshou();
             }
         } else {
             if (pattern.endsWith(QStringLiteral("!")))

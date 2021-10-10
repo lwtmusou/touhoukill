@@ -191,10 +191,6 @@ public:
     {
         return cancel_button != nullptr && cancel_button->isEnabled();
     }
-    inline void setGuhuoLog(const QString &log)
-    {
-        guhuo_log = log;
-    }
 
     bool m_skillButtonSank;
 
@@ -326,8 +322,6 @@ private:
 
     QGraphicsRectItem *pausing_item;
     QGraphicsSimpleTextItem *pausing_text;
-
-    QString guhuo_log;
 
     QList<QGraphicsPixmapItem *> role_items;
     CardContainer *card_container;
