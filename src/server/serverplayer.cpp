@@ -1283,195 +1283,14 @@ void ServerPlayer::addToPile(const QString &pile_name, const IDSet &card_ids, bo
 
 void ServerPlayer::addToPile(const QString &pile_name, const IDSet &card_ids, bool open, const CardMoveReason &reason, QList<ServerPlayer *> open_players)
 {
-    if (open)
-        open_players = room->getAllPlayers();
-    else if (open_players.isEmpty())
-        open_players << this;
-    foreach (ServerPlayer *p, open_players)
-        setPileOpen(pile_name, p->objectName());
-    foreach (int id, card_ids)
-        piles[pile_name] << id;
-
     CardsMoveStruct move;
     move.card_ids = card_ids.values(); // FIXME: Replace here with IDSet
     move.to = this;
     move.to_place = QSanguosha::PlaceSpecial;
+    move.to_pile_name = pile_name;
     move.reason = reason;
+
     room->moveCardsAtomic(move, open);
-}
-
-void ServerPlayer::addToShownHandCards(const IDSet &card_ids)
-{
-    IDSet add_ids;
-    foreach (int id, card_ids)
-        if (!shown_handcards.contains(id) && room->getCardOwner(id) == this)
-            add_ids << id;
-    if (add_ids.isEmpty())
-        return;
-
-    shown_handcards.unite(add_ids);
-
-    JsonArray arg;
-    arg << objectName();
-    arg << JsonUtils::toJsonArray(shown_handcards.values());
-
-    foreach (ServerPlayer *player, room->getAllPlayers(true))
-        room->doNotify(player, S_COMMAND_SET_SHOWN_HANDCARD, arg);
-
-    LogMessage log;
-    log.type = QStringLiteral("$AddShownHand");
-    log.from = this;
-    log.card_str = IntList2StringList(add_ids.values()).join(QStringLiteral("+"));
-    room->sendLog(log);
-    room->getThread()->delay();
-
-    ShownCardChangedStruct s;
-    s.ids = add_ids.values();
-    s.player = this;
-    s.shown = true;
-    QVariant v = QVariant::fromValue(s);
-    room->getThread()->trigger(ShownCardChanged, v);
-
-    room->filterCards(this, this->getCards(QStringLiteral("hs")), true);
-}
-
-void ServerPlayer::removeShownHandCards(const IDSet &card_ids, bool sendLog, bool moveFromHand)
-{
-    if (card_ids.isEmpty())
-        return;
-
-    foreach (int id, card_ids)
-        if (shown_handcards.contains(id))
-            shown_handcards.remove(id);
-
-    JsonArray arg;
-    arg << objectName();
-    arg << JsonUtils::toJsonArray(shown_handcards.values());
-
-    foreach (ServerPlayer *player, room->getAllPlayers(true))
-        room->doNotify(player, S_COMMAND_SET_SHOWN_HANDCARD, arg);
-
-    if (sendLog) {
-        LogMessage log;
-        log.type = QStringLiteral("$RemoveShownHand");
-        log.from = this;
-        log.card_str = IntList2StringList(card_ids.values()).join(QStringLiteral("+")); // FIXME: Replace with IDSet
-        room->sendLog(log);
-        room->getThread()->delay();
-    }
-
-    ShownCardChangedStruct s;
-    s.ids = card_ids.values(); // FIXME: Replace with IDSet
-    s.player = this;
-    s.shown = false;
-    s.moveFromHand = moveFromHand;
-    QVariant v = QVariant::fromValue(s);
-    room->getThread()->trigger(ShownCardChanged, v);
-}
-
-void ServerPlayer::addBrokenEquips(const IDSet &card_ids)
-{
-    foreach (int id, card_ids)
-        broken_equips << id;
-
-    JsonArray arg;
-    arg << objectName();
-    arg << JsonUtils::toJsonArray(broken_equips.values());
-
-    foreach (ServerPlayer *player, room->getAllPlayers(true))
-        room->doNotify(player, S_COMMAND_SET_BROKEN_EQUIP, arg);
-
-    if (isCurrent())
-        setFlags(QStringLiteral("GameRule_brokenEquips"));
-
-    LogMessage log;
-    log.type = QStringLiteral("$AddBrokenEquip");
-    log.from = this;
-    log.card_str = IntList2StringList(card_ids.values()).join(QStringLiteral("+")); // FIXME: Replace with IDSet
-    room->sendLog(log);
-    room->getThread()->delay();
-
-    BrokenEquipChangedStruct b;
-    b.player = this;
-    b.ids = card_ids.values(); // FIXME: Replace with IDSet
-    b.broken = true;
-    QVariant bv = QVariant::fromValue(b);
-    room->getThread()->trigger(BrokenEquipChanged, bv);
-}
-
-void ServerPlayer::removeBrokenEquips(const IDSet &card_ids, bool sendLog, bool moveFromEquip)
-{
-    if (card_ids.isEmpty())
-        return;
-
-    foreach (int id, card_ids)
-        broken_equips.remove(id);
-
-    JsonArray arg;
-    arg << objectName();
-    arg << JsonUtils::toJsonArray(broken_equips.values());
-
-    foreach (ServerPlayer *player, room->getAllPlayers(true))
-        room->doNotify(player, S_COMMAND_SET_BROKEN_EQUIP, arg);
-
-    if (sendLog) {
-        LogMessage log;
-        log.type = QStringLiteral("$RemoveBrokenEquip");
-        log.from = this;
-        log.card_str = IntList2StringList(card_ids.values()).join(QStringLiteral("+")); // FIXME: Replace with IDSet
-        room->sendLog(log);
-        room->getThread()->delay();
-    }
-    BrokenEquipChangedStruct b;
-    b.player = this;
-    b.ids = card_ids.values(); // FIXME: Replace with IDSet
-    b.broken = false;
-    b.moveFromEquip = moveFromEquip;
-    QVariant bv = QVariant::fromValue(b);
-    room->getThread()->trigger(BrokenEquipChanged, bv);
-}
-
-void ServerPlayer::addHiddenGenerals(const QStringList &generals)
-{
-    hidden_generals << generals;
-
-    QString g = hidden_generals.join(QStringLiteral("|"));
-    JsonArray arg;
-    arg << objectName();
-    arg << g;
-
-    room->doNotify(this, S_COMMAND_SET_HIDDEN_GENERAL, arg);
-    arg[1] = (int)hidden_generals.length();
-    room->doBroadcastNotify(room->getOtherPlayers(this, true), S_COMMAND_SET_HIDDEN_GENERAL, arg);
-}
-
-void ServerPlayer::removeHiddenGenerals(const QStringList &generals)
-{
-    foreach (QString name, generals)
-        hidden_generals.removeOne(name);
-
-    QString g = hidden_generals.join(QStringLiteral("|"));
-    JsonArray arg;
-    arg << objectName();
-    arg << g;
-
-    room->doNotify(this, S_COMMAND_SET_HIDDEN_GENERAL, arg);
-    arg[1] = (int)hidden_generals.length();
-    room->doBroadcastNotify(room->getOtherPlayers(this, true), S_COMMAND_SET_HIDDEN_GENERAL, arg);
-
-    shown_hidden_general = QString();
-    JsonArray arg1;
-    arg1 << objectName();
-    arg1 << QString();
-    room->doBroadcastNotify(S_COMMAND_SET_SHOWN_HIDDEN_GENERAL, arg1);
-
-    foreach (QString name, generals) {
-        room->touhouLogmessage(QStringLiteral("#RemoveHiddenGeneral"), this, name);
-        foreach (const Skill *skill, Sanguosha->getGeneral(name)->getVisibleSkillList()) {
-            room->handleAcquireDetachSkills(this, QStringLiteral("-") + skill->objectName(), true);
-        }
-    }
-    room->filterCards(this, this->getCards(QStringLiteral("hes")), true);
 }
 
 void ServerPlayer::gainAnExtraTurn()
@@ -1504,17 +1323,8 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
             room->setPlayerProperty(this, "general2_showed", true);
         }
 
-        // for anyun
-        //        if (!canShowHiddenSkill() || !isHiddenSkill(skill_name))
-        //            return;
         if (hasSkill(skill_name)) {
             QStringList generals;
-            //            foreach (QString name, hidden_generals) {
-            //                const General *hidden = Sanguosha->getGeneral(name);
-            //                if (hidden->hasSkill(skill_name)) {
-            //                    generals << name;
-            //                }
-            //            }
             QString generalName;
             if (generals.isEmpty())
                 return;
@@ -1541,7 +1351,7 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
                 }
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
 
-                shown_hidden_general = generalName;
+                // shown_hidden_general = generalName;
                 JsonArray arg1;
                 arg1 << objectName();
                 arg1 << generalName;
@@ -1566,11 +1376,6 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     if (use.card == nullptr || use.card->face()->type() == QSanguosha::TypeSkill)
         return QStringList();
     if (!isHegemonyGameMode(room->getMode())) {
-        //        if (!canShowHiddenSkill())
-        //            return QStringList();
-        //        QString cardskill = use.card->skillName(); //check double hidden skill
-        //        if (!cardskill.isNull() && use.from->isHiddenSkill(cardskill))
-        //            return QStringList();
     }
 
     QList<const TargetModSkill *> tarmods;
@@ -1581,16 +1386,6 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
                 tarmods << tarmod;
             }
         }
-    } else {
-        //        foreach (QString hidden, getHiddenGenerals()) {
-        //            const General *g = Sanguosha->getGeneral(hidden);
-        //            foreach (const Skill *skill, g->getSkillList()) {
-        //                if (skill->inherits("TargetModSkill")) {
-        //                    const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);
-        //                    tarmods << tarmod;
-        //                }
-        //            }
-        //        }
     }
 
     if (tarmods.isEmpty())
@@ -1697,22 +1492,6 @@ bool ServerPlayer::CompareByActionOrder(ServerPlayer *a, ServerPlayer *b)
     return room->getFront(a, b) == a;
 }
 
-void ServerPlayer::notifyPreshow()
-{
-    JsonArray args;
-    args << (int)S_GAME_EVENT_UPDATE_PRESHOW;
-    JsonObject args1;
-    foreach (const QString skill, skills.keys() + skills2.keys()) {
-        args1.insert(skill, skills.value(skill, false) || skills2.value(skill, false));
-    }
-    args << args1;
-    room->doNotify(this, S_COMMAND_LOG_EVENT, args);
-
-    JsonArray args2;
-    args2 << (int)QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
-    room->doNotify(this, QSanProtocol::S_COMMAND_LOG_EVENT, args2);
-}
-
 void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendLog, bool /*unused*/)
 {
     QStringList names = room->getTag(objectName()).toStringList();
@@ -1733,7 +1512,6 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
             return;
 
         setSkillsPreshowed(QStringLiteral("h"));
-        notifyPreshow();
         room->setPlayerProperty(this, "general_showed", true);
 
         general_name = names.first();
@@ -1776,7 +1554,6 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
             return;
 
         setSkillsPreshowed(QStringLiteral("d"));
-        notifyPreshow();
         room->setPlayerProperty(this, "general2_showed", true);
 
         general_name = names.last();
@@ -1892,7 +1669,6 @@ void ServerPlayer::hideGeneral(bool head_general)
         setSkillsPreshowed(QStringLiteral("h"), false);
         // dirty hack for temporary convenience.
         room->setPlayerProperty(this, "flags", QStringLiteral("hiding"));
-        notifyPreshow();
         room->setPlayerProperty(this, "general_showed", false);
         room->setPlayerProperty(this, "flags", QStringLiteral("-hiding"));
 
@@ -1905,7 +1681,7 @@ void ServerPlayer::hideGeneral(bool head_general)
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral(this, QStringLiteral("anjiang"));
 
-        disconnectSkillsFromOthers();
+        // disconnectSkillsFromOthers();
 
         foreach (const Skill *skill, getVisibleSkillList()) {
             if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && !hasShownSkill(skill)
@@ -1926,7 +1702,6 @@ void ServerPlayer::hideGeneral(bool head_general)
         setSkillsPreshowed(QStringLiteral("d"), false);
         // dirty hack for temporary convenience
         room->setPlayerProperty(this, "flags", QStringLiteral("hiding"));
-        notifyPreshow();
         room->setPlayerProperty(this, "general2_showed", false);
         room->setPlayerProperty(this, "flags", QStringLiteral("-hiding"));
 
@@ -1939,7 +1714,7 @@ void ServerPlayer::hideGeneral(bool head_general)
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral2(this, QStringLiteral("anjiang"));
 
-        disconnectSkillsFromOthers(false);
+        // disconnectSkillsFromOthers(false);
 
         foreach (const Skill *skill, getVisibleSkillList()) {
             if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && !hasShownSkill(skill)
@@ -1972,7 +1747,6 @@ void ServerPlayer::hideGeneral(bool head_general)
 
     room->filterCards(this, getCards(QStringLiteral("he")), true);
     setSkillsPreshowed(head_general ? QStringLiteral("h") : QStringLiteral("d"));
-    notifyPreshow();
 }
 
 void ServerPlayer::removeGeneral(bool head_general)
@@ -2009,7 +1783,7 @@ void ServerPlayer::removeGeneral(bool head_general)
         room->changePlayerGeneral(this, general_name);
 
         setSkillsPreshowed(QStringLiteral("h"), false);
-        disconnectSkillsFromOthers();
+        // disconnectSkillsFromOthers();
 
         foreach (const Skill *skill, getHeadSkillList()) {
             if (skill != nullptr)
@@ -2039,7 +1813,7 @@ void ServerPlayer::removeGeneral(bool head_general)
         room->changePlayerGeneral2(this, general_name);
 
         setSkillsPreshowed(QStringLiteral("d"), false);
-        disconnectSkillsFromOthers(false);
+        // disconnectSkillsFromOthers(false);
 
         foreach (const Skill *skill, getDeputySkillList()) {
             if (skill != nullptr)
@@ -2079,28 +1853,6 @@ void ServerPlayer::sendSkillsToOthers(bool head_skill)
         args << objectName();
         args << skill->objectName();
         args << head_skill;
-        foreach (ServerPlayer *p, room->getOtherPlayers(this, true))
-            room->doNotify(p, QSanProtocol::S_COMMAND_LOG_EVENT, args);
-    }
-}
-
-void ServerPlayer::disconnectSkillsFromOthers(bool head_skill /* = true */)
-{
-    foreach (const QString &skill, head_skill ? skills.keys() : skills2.keys()) {
-        SkillAcquireDetachStruct s;
-        s.player = this;
-        s.skill = Sanguosha->getSkill(skill);
-        s.isAcquire = false;
-        QVariant data = QVariant::fromValue(s);
-        //for filter cards??
-        room->getThread()->trigger(EventLoseSkill, data);
-
-        JsonArray args;
-        args << (int)QSanProtocol::S_GAME_EVENT_DETACH_SKILL;
-        args << objectName();
-        args << skill;
-        args << head_skill;
-
         foreach (ServerPlayer *p, room->getOtherPlayers(this, true))
             room->doNotify(p, QSanProtocol::S_COMMAND_LOG_EVENT, args);
     }

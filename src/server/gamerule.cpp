@@ -1158,7 +1158,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
                     shownIds << id;
             }
             if (!shownIds.isEmpty()) {
-                player->removeShownHandCards(shownIds, false, true);
+                player->removeShownHandCards(shownIds);
                 move.shown_ids = shownIds.values();
                 data = QVariant::fromValue(move);
             }
@@ -1169,7 +1169,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
                     brokenIds << id;
             }
             if (!brokenIds.isEmpty()) {
-                player->removeBrokenEquips(brokenIds, false, true);
+                player->removeBrokenEquips(brokenIds);
                 move.broken_ids = brokenIds.values();
                 data = QVariant::fromValue(move);
             }

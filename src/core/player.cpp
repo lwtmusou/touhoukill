@@ -105,28 +105,30 @@ public:
     // unlike 'banling' which changed the core property and must be coupled into Player
     QStringList hidden_generals; //for anyun
     QString shown_hidden_general; // Fs: I remembered that Huashen isn't implemented using these variable. Tempoaray put it away until I found another solution
-    int chaoren;
+    int chaoren; // for skill "chaoren"
 
     QMap<QString, QStringList> pile_open; // Fs: only used to classify move in server side. Not that important since secret pile should remain its security.
     QStringList skills_originalOrder, skills2_originalOrder; //equals  skills.keys().  unlike QMap, QStringList will keep originalOrder // Fs: removed due to meanless
     bool owner; // Fs: for request & response
-    int initialSeat; //for record
-    QString next;
+    int initialSeat; // for record
+    QString next; // the seat information is only maintained by room now. Player only remain a property called 'seat' which is used for record / log.
 
     // ------ ServerPlayer ------
+    // following 6 are for communication
     QSemaphore **semas;
     static const int S_NUM_SEMAPHORES;
     ClientSocket *socket;
-    Room *room;
-    Recorder *recorder;
+    QString m_clientResponseString;
+    QVariant _m_clientResponse;
+    bool ready;
+    Room *room; // replaced by RoomObject / later GameState
+    Recorder *recorder; // ??
+    // following 3 are for turn processing, maybe added later
     QList<QSanguosha::Phase> phases;
     int _m_phases_index;
     QList<PhaseStruct> _m_phases_state;
     QStringList selected; // 3v3 mode use only
-    QDateTime test_time;
-    QString m_clientResponseString;
-    QVariant _m_clientResponse;
-    bool ready;
+    QDateTime test_time; // unknown
 
     // ------ ClientPlayer ------
     QTextDocument *mark_doc; // originally this one is todo in ClientPlayer
@@ -866,26 +868,6 @@ void Player::loseSkill(const QString &skill_name, int place)
 
     d->skills[place].remove(skill_name);
 }
-#if 0
-void Player::addSkill(const QString &skill_name, bool head_skill)
-{
-    const Skill *skill = Sanguosha->getSkill(skill_name);
-    Q_ASSERT(skill);
-
-    if (head_skill)
-        skills[skill_name] = !skill->canPreshow() || general_showed;
-    else
-        skills2[skill_name] = !skill->canPreshow() || general2_showed;
-}
-
-void Player::loseSkill(const QString &skill_name, bool head)
-{
-    if (head)
-        skills.remove(skill_name);
-    else
-        skills2.remove(skill_name);
-}
-#endif
 
 QString Player::getPhaseString() const
 {
@@ -971,6 +953,8 @@ void Player::removeEquip(const Card *equip)
         d->treasure = -1;
         break;
     }
+    if (d->brokenEquips.contains(equip->id()))
+        d->brokenEquips.remove(equip->id());
 }
 
 bool Player::hasEquip(const Card *card) const
@@ -1316,6 +1300,8 @@ void Player::removeCard(const Card *card, QSanguosha::Place place, const QString
     case QSanguosha::PlaceHand: {
         if (d->handcards.contains(card->id()))
             d->handcards.remove(card->id());
+        if (d->shownHandcards.contains(card->id()))
+            d->shownHandcards.remove(card->id());
         d->handCardNum--;
         break;
     }
@@ -2157,4 +2143,45 @@ QList<const Player *> Player::getFormation() const
     }
 
     return teammates;
+}
+
+void Player::addBrokenEquips(const IDSet &card_ids)
+{
+    foreach (int id, card_ids)
+        d->brokenEquips << id;
+}
+
+void Player::removeBrokenEquips(const IDSet &card_ids)
+{
+    foreach (int id, card_ids)
+        d->brokenEquips.remove(id);
+}
+
+void Player::addToShownHandCards(const IDSet &card_ids)
+{
+    IDSet add_ids;
+    int newKnown = 0;
+    foreach (int id, card_ids) {
+        if (!d->shownHandcards.contains(id))
+            add_ids << id;
+        if (!d->handcards.contains(id))
+            ++newKnown;
+    }
+    if (add_ids.isEmpty())
+        return;
+
+    if (newKnown + d->handcards.count() > d->handCardNum) {
+        // warning?
+    }
+
+    d->shownHandcards.unite(add_ids);
+    d->handcards.unite(add_ids);
+}
+
+void Player::removeShownHandCards(const IDSet &card_ids)
+{
+    foreach (int id, card_ids) {
+        if (d->shownHandcards.contains(id))
+            d->shownHandcards.remove(id);
+    }
 }

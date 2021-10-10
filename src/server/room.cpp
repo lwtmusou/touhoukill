@@ -4123,8 +4123,6 @@ void Room::marshal(ServerPlayer *player)
 
             doNotify(player, S_COMMAND_LOG_EVENT, args1);
         }
-
-        player->notifyPreshow();
     }
 
     if (game_started) {
@@ -4610,7 +4608,16 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
         i++;
     }
     cards_moves = _separateMoves(moveOneTimes);
+
+    // TODO: check this logic
+    foreach (CardsMoveStruct move, cards_moves) {
+        if (move.from != nullptr) {
+            for (int i = 0; i < move.card_ids.length(); ++i)
+                move.from->removeCard(getCard(move.card_ids.at(i)), move.from_place, move.from_pile_name);
+        }
+    }
     notifyMoveCards(true, cards_moves, forceMoveVisible);
+
     // First, process remove card
     for (int i = 0; i < cards_moves.size(); i++) {
         CardsMoveStruct &cards_move = cards_moves[i];
@@ -4650,6 +4657,14 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
     }
     foreach (CardsMoveStruct move, cards_moves)
         updateCardsOnGet(move);
+
+    // TODO: check this logic
+    foreach (CardsMoveStruct move, cards_moves) {
+        if (move.to != nullptr) {
+            for (int i = 0; i < move.card_ids.length(); ++i)
+                move.to->addCard(getCard(move.card_ids.at(i)), move.to_place, move.to_pile_name);
+        }
+    }
     notifyMoveCards(false, cards_moves, forceMoveVisible);
 
     // Now, process add cards
@@ -5005,10 +5020,6 @@ void Room::preparePlayers()
             JsonArray args;
             args << (int)QSanProtocol::S_GAME_EVENT_PREPARE_SKILL;
             doNotify(player, QSanProtocol::S_COMMAND_LOG_EVENT, args);
-
-            notifyProperty(player, player, "flags", QStringLiteral("AutoPreshowAvailable"));
-            player->notifyPreshow();
-            notifyProperty(player, player, "flags", QStringLiteral("-AutoPreshowAvailable"));
         }
 
     } else {

@@ -102,12 +102,6 @@ public:
     QSGS_LOGIC void addToPile(const QString &pile_name, const IDSet &card_ids, bool open = true, const QList<ServerPlayer *> &open_players = QList<ServerPlayer *>());
     QSGS_LOGIC void addToPile(const QString &pile_name, const IDSet &card_ids, bool open, const CardMoveReason &reason,
                               QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
-    QSGS_LOGIC void addToShownHandCards(const IDSet &card_ids);
-    QSGS_LOGIC void removeShownHandCards(const IDSet &card_ids, bool sendLog = false, bool moveFromHand = false);
-    QSGS_LOGIC void addBrokenEquips(const IDSet &card_ids);
-    QSGS_LOGIC void removeBrokenEquips(const IDSet &card_ids, bool sendLog = true, bool moveFromEquip = false);
-    QSGS_LOGIC void addHiddenGenerals(const QStringList &generals);
-    QSGS_LOGIC void removeHiddenGenerals(const QStringList &generals);
     QSGS_LOGIC void gainAnExtraTurn();
 
     QSGS_LOGIC void showHiddenSkill(const QString &skill_name);
@@ -175,12 +169,10 @@ public:
     // static function
     static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b);
 
-    QSGS_LOGIC void notifyPreshow(); //hegemony
     QSGS_LOGIC void showGeneral(bool head_general = true, bool trigger_event = true, bool sendLog = true, bool ignore_rule = true);
     QSGS_LOGIC void hideGeneral(bool head_general = true);
     QSGS_LOGIC void removeGeneral(bool head_general = true);
     QSGS_LOGIC void sendSkillsToOthers(bool head_skill = true);
-    QSGS_LOGIC void disconnectSkillsFromOthers(bool head_skill = true);
     QSGS_STATE_GAME int getPlayerNumWithSameKingdom(const QString &reason, const QString &_to_calculate = QString()) const;
     QSGS_LOGIC bool askForGeneralShow(bool one = true, bool refusable = false);
 

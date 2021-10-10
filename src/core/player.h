@@ -306,6 +306,11 @@ public:
 
     QList<const Player *> getFormation() const;
 
+    void addBrokenEquips(const IDSet &card_ids);
+    void removeBrokenEquips(const IDSet &card_ids);
+    void addToShownHandCards(const IDSet &card_ids);
+    void removeShownHandCards(const IDSet &card_ids);
+
     RoomObject *roomObject() const;
 
     QVariantMap tag;
