@@ -34,9 +34,9 @@ public:
     ~RoomObject() override;
 
     // -------------------- Player Related --------------------
-    // Sorted by action order if any
-    QList<Player *> players(bool include_dead = true);
-    QList<const Player *> players(bool include_dead = true) const;
+    // Sorted by action order if action order is decided
+    QList<Player *> players(bool include_dead = true, bool include_removed = true);
+    QList<const Player *> players(bool include_dead = true, bool include_removed = true) const;
     // Register a player. DO NOT CALL THIS FUNCTION AFTER A GAME HAS BEEN STARTED!!!!
     void registerPlayer(Player *player);
     void unregisterPlayer(Player *player);
@@ -48,6 +48,9 @@ public:
     Player *current();
     const Player *current() const;
     void setCurrent(Player *player);
+
+    Player *findAdjecentPlayer(Player *player, bool next = true, bool include_dead = true, bool include_removed = true);
+    const Player *findAdjecentPlayer(const Player *player, bool next = true, bool include_dead = true, bool include_removed = true) const;
 
     void arrangeSeat(const QStringList &seatInfo);
 
@@ -89,5 +92,11 @@ public:
 private:
     RoomObjectPrivate *const d;
 };
+
+// TODO_Fs: find a suitable way for this
+namespace QinggangSword {
+void addQinggangTag(Player *p, const Card *card);
+void removeQinggangTag(Player *p, const Card *card);
+} // namespace QinggangSword
 
 #endif

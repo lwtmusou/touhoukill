@@ -1,6 +1,7 @@
 #include "gamerule.h"
 #include "card.h"
 #include "engine.h"
+#include "general.h"
 #include "room.h"
 #include "serverplayer.h"
 #include "settings.h"
@@ -1157,7 +1158,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
                     shownIds << id;
             }
             if (!shownIds.isEmpty()) {
-                player->removeShownHandCards(shownIds, false, true);
+                player->removeShownHandCards(shownIds);
                 move.shown_ids = shownIds.values();
                 data = QVariant::fromValue(move);
             }
@@ -1168,7 +1169,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
                     brokenIds << id;
             }
             if (!brokenIds.isEmpty()) {
-                player->removeBrokenEquips(brokenIds, false, true);
+                player->removeBrokenEquips(brokenIds);
                 move.broken_ids = brokenIds.values();
                 data = QVariant::fromValue(move);
             }
@@ -1329,7 +1330,7 @@ void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const
     } else if (isHegemonyGameMode(room->getMode())) {
         if (!killer->isFriendWith(victim)) {
             int n = 1;
-            if (Config.HegemonyCareeristKillReward == QStringLiteral("AlwaysDraw3") && killer->getRole() == QStringLiteral("careerist")) {
+            if (Config.HegemonyCareeristKillReward == QStringLiteral("AlwaysDraw3") && killer->getRoleString() == QStringLiteral("careerist")) {
                 n = 3;
             } else {
                 foreach (ServerPlayer *p, room->getOtherPlayers(victim)) {
@@ -1341,9 +1342,9 @@ void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const
         } else
             killer->throwAllHandCardsAndEquips();
     } else {
-        if (victim->getRole() == QStringLiteral("rebel") && killer != victim)
+        if (victim->getRoleString() == QStringLiteral("rebel") && killer != victim)
             killer->drawCards(3);
-        else if (victim->getRole() == QStringLiteral("loyalist") && killer->getRole() == QStringLiteral("lord"))
+        else if (victim->getRoleString() == QStringLiteral("loyalist") && killer->getRoleString() == QStringLiteral("lord"))
             killer->throwAllHandCardsAndEquips();
     }
 }
@@ -1354,7 +1355,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const
     QString winner;
 
     if (room->getMode() == QStringLiteral("06_3v3")) {
-        switch (victim->getRoleEnum()) {
+        switch (victim->getRole()) {
         case QSanguosha::RoleLord:
             winner = QStringLiteral("renegade+rebel");
             break;
@@ -1365,7 +1366,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const
             break;
         }
     } else if (room->getMode() == QStringLiteral("06_XMode")) {
-        QString role = victim->getRole();
+        QString role = victim->getRoleString();
         ServerPlayer *leader = victim->tag[QStringLiteral("XModeLeader")].value<ServerPlayer *>();
         if (leader->tag[QStringLiteral("XModeBackup")].toStringList().isEmpty()) {
             if (role.startsWith(QLatin1Char('r')))
@@ -1394,7 +1395,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const
             QMap<QString, QList<ServerPlayer *>> role_count;
             QMap<QString, QList<ServerPlayer *>> dead_role_count;
             foreach (ServerPlayer *p, room->getAllPlayers(true)) {
-                QString role = p->getRole();
+                QString role = p->getRoleString();
                 if (role_count.contains(role)) {
                     QList<ServerPlayer *> players = role_count[role];
                     players.append(p);
@@ -1461,7 +1462,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const
 
     } else {
         QStringList alive_roles = room->aliveRoles(victim);
-        switch (victim->getRoleEnum()) {
+        switch (victim->getRole()) {
         case QSanguosha::RoleLord: {
             if (alive_roles.length() == 1 && alive_roles.first() == QStringLiteral("renegade"))
                 winner = room->getAlivePlayers().first()->objectName();
@@ -1473,7 +1474,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const
         case QSanguosha::RoleRenegade: {
             if (!alive_roles.contains(QStringLiteral("rebel")) && !alive_roles.contains(QStringLiteral("renegade"))) {
                 winner = QStringLiteral("lord+loyalist");
-                if (victim->getRole() == QStringLiteral("renegade") && !alive_roles.contains(QStringLiteral("loyalist")))
+                if (victim->getRoleString() == QStringLiteral("renegade") && !alive_roles.contains(QStringLiteral("loyalist")))
                     room->setTag(QStringLiteral("RenegadeInFinalPK"), true);
             }
             break;

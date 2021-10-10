@@ -79,7 +79,6 @@ set (QSanguosha_SRCS
     src/audio/audio.cpp
     src/client/aux-skills.cpp
     src/client/client.cpp
-    src/client/clientplayer.cpp
     src/dialog/serverinfowidget.cpp
     src/core/card.cpp
     src/core/CardFace.cpp
@@ -166,7 +165,6 @@ set (QSanguosha_MOCS
     src/audio/audio.h
     src/client/aux-skills.h
     src/client/client.h
-    src/client/clientplayer.h
     src/dialog/serverinfowidget.h
     src/core/card.h
     src/core/CardFace.h

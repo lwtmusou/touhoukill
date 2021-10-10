@@ -2,7 +2,7 @@
 #define _CARD_CONTAINER_H
 
 class CardItem;
-class ClientPlayer;
+class Player;
 
 #include "GenericCardContainerUI.h"
 #include "QSanSelectableItem.h"

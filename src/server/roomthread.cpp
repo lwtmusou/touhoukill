@@ -1,6 +1,7 @@
 #include "roomthread.h"
 #include "engine.h"
 #include "gamerule.h"
+#include "general.h"
 #include "package.h"
 #include "protocol.h"
 #include "room.h"
@@ -401,7 +402,7 @@ void RoomThread::run()
         QList<ServerPlayer *> second;
         if (room->getMode() == QStringLiteral("06_3v3")) {
             foreach (ServerPlayer *player, room->m_players) {
-                switch (player->getRoleEnum()) {
+                switch (player->getRole()) {
                 case QSanguosha::RoleLord:
                     warm.prepend(player);
                     break;
@@ -440,7 +441,7 @@ void RoomThread::run()
         } else {
             if (room->getMode() == QStringLiteral("02_1v1")) {
                 ServerPlayer *first = room->getPlayers().first();
-                if (first->getRole() != QStringLiteral("renegade"))
+                if (first->getRoleString() != QStringLiteral("renegade"))
                     first = room->getPlayers().at(1);
                 ServerPlayer *second = room->getOtherPlayers(first).first();
                 QVariant v1 = QVariant::fromValue(first);

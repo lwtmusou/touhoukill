@@ -1061,19 +1061,19 @@ int Engine::correctMaxCards(const Player *target, bool fixed, const QString &exc
 int Engine::correctCardTarget(const TargetModType type, const Player *from, const Card *card) const
 {
     int x = 0;
-    QString cardskill = card->skillName();
-    bool checkDoubleHidden = false;
-    if (!cardskill.isNull())
-        checkDoubleHidden = from->isHiddenSkill(cardskill);
+    //    QString cardskill = card->skillName();
+    //    bool checkDoubleHidden = false;
+    //    if (!cardskill.isNull())
+    //        checkDoubleHidden = from->isHiddenSkill(cardskill);
 
     if (type == ModResidue) {
         foreach (const TargetModSkill *skill, targetmod_skills) {
             ExpPattern p(skill->getPattern());
             if (p.match(from, card)) {
                 int residue = skill->getResidueNum(from, card);
-                if (checkDoubleHidden && from->isHiddenSkill(skill->objectName()) && cardskill != skill->objectName()
-                    && !skill->objectName().startsWith(QStringLiteral("#") + cardskill))
-                    continue;
+                //                if (checkDoubleHidden && from->isHiddenSkill(skill->objectName()) && cardskill != skill->objectName()
+                //                    && !skill->objectName().startsWith(QStringLiteral("#") + cardskill))
+                //                    continue;
                 if (residue >= 998)
                     return residue;
                 x += residue;
@@ -1084,9 +1084,9 @@ int Engine::correctCardTarget(const TargetModType type, const Player *from, cons
             ExpPattern p(skill->getPattern());
             if (p.match(from, card)) {
                 int distance_limit = skill->getDistanceLimit(from, card);
-                if (checkDoubleHidden && from->isHiddenSkill(skill->objectName()) && cardskill != skill->objectName()
-                    && !skill->objectName().startsWith(QStringLiteral("#") + cardskill))
-                    continue;
+                //                if (checkDoubleHidden && from->isHiddenSkill(skill->objectName()) && cardskill != skill->objectName()
+                //                    && !skill->objectName().startsWith(QStringLiteral("#") + cardskill))
+                //                    continue;
 
                 if (distance_limit >= 998)
                     return distance_limit;
@@ -1097,9 +1097,9 @@ int Engine::correctCardTarget(const TargetModType type, const Player *from, cons
         foreach (const TargetModSkill *skill, targetmod_skills) {
             ExpPattern p(skill->getPattern());
             if (p.match(from, card) && from->getMark(QStringLiteral("chuangshi_user")) == 0) {
-                if (checkDoubleHidden && from->isHiddenSkill(skill->objectName()) && cardskill != skill->objectName()
-                    && !skill->objectName().startsWith(QStringLiteral("#") + cardskill))
-                    continue;
+                //                if (checkDoubleHidden && from->isHiddenSkill(skill->objectName()) && cardskill != skill->objectName()
+                //                    && !skill->objectName().startsWith(QStringLiteral("#") + cardskill))
+                //                    continue;
                 x += skill->getExtraTargetNum(from, card);
             }
         }

@@ -13,7 +13,7 @@
 #include <QGraphicsObject>
 #include <QPixmap>
 
-class ClientPlayer;
+class Player;
 class RoleComboBox;
 class HegemonyRoleComboBox;
 class QPushButton;
@@ -26,7 +26,7 @@ class Photo : public PlayerCardContainer
 
 public:
     explicit Photo();
-    const ClientPlayer *getPlayer() const;
+    const Player *getPlayer() const;
     void speak(const QString &content);
     void repaintAll() override;
     QList<CardItem *> removeCardItems(const QList<int> &card_id, QSanguosha::Place place) override;

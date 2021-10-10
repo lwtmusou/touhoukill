@@ -21,7 +21,7 @@
 #include <QParallelAnimationGroup>
 #include <QVariant>
 
-class ClientPlayer;
+class Player;
 
 class GenericCardContainer : public QGraphicsObject
 {
@@ -72,13 +72,13 @@ public:
     virtual void showProgressBar(const QSanProtocol::Countdown &countdown);
     virtual void hideProgressBar();
     void hideAvatars();
-    //const ClientPlayer *getPlayer() const;
-    const ClientPlayer *getPlayer() const
+    //const Player *getPlayer() const;
+    const Player *getPlayer() const
     {
         return m_player;
     }
 
-    virtual void setPlayer(ClientPlayer *player);
+    virtual void setPlayer(Player *player);
     inline int getVotes()
     {
         return _m_votesGot;
@@ -287,7 +287,7 @@ protected:
     QGraphicsPixmapItem *_m_groupDeath;
 
     // now, logic
-    ClientPlayer *m_player;
+    Player *m_player;
 
     // The following stuffs for mulitple votes required for yeyan
     int _m_votesGot, _m_maxVotes;
@@ -343,6 +343,7 @@ private:
     bool _allZAdjusted;
 
     void showHeroSkinListHelper(const General *general, GraphicsPixmapHoverItem *avatarIcon);
+    QString getDeathPixmapPath(const Player *p) const;
 
 signals:
     void selected_changed();

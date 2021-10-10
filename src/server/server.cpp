@@ -2,6 +2,7 @@
 #include "SkinBank.h"
 #include "choosegeneraldialog.h"
 #include "engine.h"
+#include "general.h"
 #include "nativesocket.h"
 #include "package.h"
 #include "protocol.h"

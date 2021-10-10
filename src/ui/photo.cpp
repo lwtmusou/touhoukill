@@ -2,7 +2,6 @@
 #include "SkinBank.h"
 #include "carditem.h"
 #include "client.h"
-#include "clientplayer.h"
 #include "engine.h"
 #include "hegemonyrolecombobox.h"
 #include "pixmapanimation.h"
@@ -179,7 +178,7 @@ void Photo::updateDuanchang()
     _m_duanchangMask->setVisible(m_player->getMark(QStringLiteral("@duanchang")) > 0);
 }
 
-const ClientPlayer *Photo::getPlayer() const
+const Player *Photo::getPlayer() const
 {
     return m_player;
 }

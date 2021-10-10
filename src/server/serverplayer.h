@@ -55,8 +55,6 @@ public:
     QSGS_LOGIC bool askForSkillInvoke(const QString &skill_name, const QVariant &data = QVariant(), const QString &prompt = QString());
     QSGS_LOGIC bool askForSkillInvoke(const Skill *skill, const QVariant &data = QVariant(), const QString &prompt = QString());
     QSGS_LOGIC QList<int> forceToDiscard(int discard_num, bool include_equip, bool is_discard = true);
-    QSGS_STATE_GAME QList<int> handCards() const;
-    QSGS_STATE_GAME QList<const Card *> getHandcards() const override;
     QSGS_STATE_GAME QList<const Card *> getCards(const QString &flags) const;
     QSGS_STATE_GAME Card *wholeHandCards() const; // FIXME: Memory Leakage!!!
     QSGS_STATE_GAME bool hasNullification() const;
@@ -77,15 +75,10 @@ public:
     QSGS_LOGIC void loseMark(const QString &mark, int n = 1);
     QSGS_LOGIC void loseAllMarks(const QString &mark_name);
 
+#if 0
     QSGS_LOGIC void addSkill(const QString &skill_name, bool head_skill = true) override;
     QSGS_LOGIC void loseSkill(const QString &skill_name, bool head_skill = true) override;
-    QSGS_LOGIC void setGender(QSanguosha::Gender gender) override;
-
-    QSGS_STATE_GAME int aliveCount(bool includeRemoved = true) const override; // TODO_Fs: this function should belong to room?
-    QSGS_STATE_GAME int getHandcardNum() const override;
-    QSGS_LOGIC void removeCard(const Card *card, QSanguosha::Place place) override;
-    QSGS_LOGIC void addCard(const Card *card, QSanguosha::Place place) override;
-    QSGS_STATE_GAME bool isLastHandCard(const Card *card, bool contain = false) const override;
+#endif
 
     // utilities?
     void startRecord();
@@ -109,12 +102,6 @@ public:
     QSGS_LOGIC void addToPile(const QString &pile_name, const IDSet &card_ids, bool open = true, const QList<ServerPlayer *> &open_players = QList<ServerPlayer *>());
     QSGS_LOGIC void addToPile(const QString &pile_name, const IDSet &card_ids, bool open, const CardMoveReason &reason,
                               QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
-    QSGS_LOGIC void addToShownHandCards(const IDSet &card_ids);
-    QSGS_LOGIC void removeShownHandCards(const IDSet &card_ids, bool sendLog = false, bool moveFromHand = false);
-    QSGS_LOGIC void addBrokenEquips(const IDSet &card_ids);
-    QSGS_LOGIC void removeBrokenEquips(const IDSet &card_ids, bool sendLog = true, bool moveFromEquip = false);
-    QSGS_LOGIC void addHiddenGenerals(const QStringList &generals);
-    QSGS_LOGIC void removeHiddenGenerals(const QStringList &generals);
     QSGS_LOGIC void gainAnExtraTurn();
 
     QSGS_LOGIC void showHiddenSkill(const QString &skill_name);
@@ -182,20 +169,16 @@ public:
     // static function
     static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b);
 
-    QSGS_LOGIC void notifyPreshow(); //hegemony
     QSGS_LOGIC void showGeneral(bool head_general = true, bool trigger_event = true, bool sendLog = true, bool ignore_rule = true);
     QSGS_LOGIC void hideGeneral(bool head_general = true);
     QSGS_LOGIC void removeGeneral(bool head_general = true);
     QSGS_LOGIC void sendSkillsToOthers(bool head_skill = true);
-    QSGS_LOGIC void disconnectSkillsFromOthers(bool head_skill = true);
     QSGS_STATE_GAME int getPlayerNumWithSameKingdom(const QString &reason, const QString &_to_calculate = QString()) const;
     QSGS_LOGIC bool askForGeneralShow(bool one = true, bool refusable = false);
 
     QSGS_STATE_GAME bool inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const;
     QSGS_STATE_GAME bool inFormationRalation(ServerPlayer *teammate) const;
     QSGS_LOGIC void summonFriends(const QString &type);
-
-    QSGS_STATE_ROOM RoomObject *roomObject() const override;
 
     bool isReady() const;
     void setReady(bool ready);

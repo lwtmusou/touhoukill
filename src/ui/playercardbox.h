@@ -25,7 +25,7 @@ Mogara
 #include "graphicsbox.h"
 #include "player.h"
 
-class ClientPlayer;
+class Player;
 class QGraphicsProxyWidget;
 class QSanCommandProgressBar;
 class CardItem;
