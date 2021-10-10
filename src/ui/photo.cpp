@@ -175,7 +175,7 @@ void Photo::updateDuanchang()
 {
     if (m_player == nullptr)
         return;
-    _m_duanchangMask->setVisible(m_player->getMark(QStringLiteral("@duanchang")) > 0);
+    _m_duanchangMask->setVisible(m_player->mark(QStringLiteral("@duanchang")) > 0);
 }
 
 const Player *Photo::getPlayer() const
@@ -238,7 +238,7 @@ void Photo::setFrame(FrameType type)
         if (_m_focusFrame != nullptr) {
             if ((_m_saveMeIcon != nullptr) && _m_saveMeIcon->isVisible())
                 setFrame(S_FRAME_SOS);
-            else if (m_player->getPhase() != QSanguosha::PhaseNotActive)
+            else if (m_player->phase() != QSanguosha::PhaseNotActive)
                 setFrame(S_FRAME_PLAYING);
             else
                 _m_focusFrame->hide();
@@ -254,7 +254,7 @@ void Photo::setFrame(FrameType type)
 void Photo::updatePhase()
 {
     PlayerCardContainer::updatePhase();
-    if (m_player->getPhase() != QSanguosha::PhaseNotActive)
+    if (m_player->phase() != QSanguosha::PhaseNotActive)
         setFrame(S_FRAME_PLAYING);
     else
         setFrame(S_FRAME_NO_FRAME);
@@ -382,7 +382,7 @@ void Photo::_createBattleArrayAnimations()
 
 void Photo::playBattleArrayAnimations()
 {
-    QString kingdom = getPlayer()->getKingdom();
+    QString kingdom = getPlayer()->kingdom();
     _m_frameBorders[kingdom]->show();
     _m_frameBorders[kingdom]->start(true, 30);
     _m_roleBorders[kingdom]->preStart();

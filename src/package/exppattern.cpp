@@ -153,15 +153,15 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, const QString 
                     if (p == QStringLiteral("equipped") && player->hasEquip(card)) {
                         checkpoint = true;
                     } else if (p == QStringLiteral("hand") && card->effectiveID() >= 0) {
-                        foreach (const Card *c, player->getHandcards()) {
+                        foreach (const Card *c, player->handCards()) {
                             if (c->effectiveID() == id) {
                                 checkpoint = true;
                                 break;
                             }
                         }
                     } else if (p == QStringLiteral("handOnly") && card->effectiveID() >= 0) { // exclude shownHandCard
-                        foreach (const Card *c, player->getHandcards()) {
-                            if (c->effectiveID() == id && !player->getShownHandcards().contains(id)) {
+                        foreach (const Card *c, player->handCards()) {
+                            if (c->effectiveID() == id && !player->shownHandcards().contains(id)) {
                                 checkpoint = true;
                                 break;
                             }
@@ -171,7 +171,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, const QString 
                         foreach (const Player *pl, player->roomObject()->players(false)) {
                             if (pl == player)
                                 continue;
-                            if (!pl->getPile(p).isEmpty() && pl->getPile(p).contains(id)) {
+                            if (!pl->pile(p).isEmpty() && pl->pile(p).contains(id)) {
                                 checkpoint = true;
                                 break;
                             }
@@ -180,13 +180,13 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, const QString 
                         checkpoint = true;
                     } else if (p == QStringLiteral("shehuo") && card->effectiveID() >= 0 && !player->hasEquip(card)) {
                         checkpoint = true;
-                    } else if (p == QStringLiteral("benwo") && (card->isVirtualCard() || !player->getHandcards().contains(player->roomObject()->getCard(card->id())))) {
+                    } else if (p == QStringLiteral("benwo") && (card->isVirtualCard() || !player->handCards().contains(player->roomObject()->getCard(card->id())))) {
                         return false;
-                    } else if (!player->getPile(p).isEmpty() && player->getPile(p).contains(id)) {
+                    } else if (!player->pile(p).isEmpty() && player->pile(p).contains(id)) {
                         checkpoint = true;
                     }
                     if (p == QStringLiteral("show")) {
-                        if (player->getShownHandcards().contains(id)) {
+                        if (player->shownHandcards().contains(id)) {
                             checkpoint = true;
                             findOneShow = true;
                         }

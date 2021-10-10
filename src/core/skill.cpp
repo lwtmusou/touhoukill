@@ -805,14 +805,14 @@ bool EquipSkill::equipAvailable(const Player *p, EquipLocation location, const Q
     if (p == nullptr)
         return false;
 
-    if (p->getMark(QStringLiteral("Equips_Nullified_to_Yourself")) > 0)
+    if (p->mark(QStringLiteral("Equips_Nullified_to_Yourself")) > 0)
         return false;
 
     // for StarSP Pangtong? It needs investigation for real 'Armor ignored by someone' effect
     // But 'Armor ignored by someone' is too complicated while its effect has just few differences compared to 'Armor invalid'
     // So we just use 'Armor invalid' everywhere
     // I prefer removing 'to' from this function and use regular QinggangSword method or a simular one for StarSP Pangtong
-    if (to != nullptr && to->getMark(QStringLiteral("Equips_of_Others_Nullified_to_You")) > 0)
+    if (to != nullptr && to->mark(QStringLiteral("Equips_of_Others_Nullified_to_You")) > 0)
         return false;
 
     switch (location) {

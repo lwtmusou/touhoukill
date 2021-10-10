@@ -141,6 +141,9 @@ public:
     void showSkillName(const QString &skill_name, bool isSelf);
     QString getHuashenSkillName(bool head);
 
+protected:
+    QString getPlayerSkillDescription(Player *p, bool yellow = true, const QString &flag = QString());
+
 public slots:
     void updateAvatar();
     void updateSmallAvatar();

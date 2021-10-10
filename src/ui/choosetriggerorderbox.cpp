@@ -169,16 +169,16 @@ void TriggerOptionButton::paint(QPainter *painter, const QStyleOptionGraphicsIte
     painter->setRenderHint(QPainter::Antialiasing);
     painter->save();
     painter->setBrush(Qt::black);
-    painter->setPen(Sanguosha->getKingdomColor(Self->getGeneral()->getKingdom()));
+    painter->setPen(Sanguosha->getKingdomColor(Self->general()->getKingdom()));
     QRectF rect = boundingRect();
     painter->drawRoundedRect(rect, 5, 5);
     painter->restore();
 
     QString generalName;
     if (detail.preferredTarget != nullptr)
-        generalName = detail.preferredTarget->getGeneralName();
+        generalName = detail.preferredTarget->generalName();
     else
-        generalName = detail.owner->getGeneralName();
+        generalName = detail.owner->generalName();
 
     QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY, false);
 

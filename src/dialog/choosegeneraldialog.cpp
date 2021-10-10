@@ -172,7 +172,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         if (isHegemonyGameMode(ServerInfo.GameMode)) {
             //need a seat prompt
             QLabel *seat_label = new QLabel(tr("Your seat is %1. role is %2")
-                                                .arg(Sanguosha->translate(QStringLiteral("CAPITAL(") + QString::number(Self->getSeat()) + QStringLiteral(")")))
+                                                .arg(Sanguosha->translate(QStringLiteral("CAPITAL(") + QString::number(Self->seat()) + QStringLiteral(")")))
                                                 .arg(Sanguosha->translate(Self->getRoleString())));
             dialog_layout->addWidget(seat_label);
         } else {
@@ -181,7 +181,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
             if (lord_name.size() != 0)
                 role_label->setText(tr("The lord has chosen %1. Your seat is %2. %3")
                                         .arg(Sanguosha->translate(lord_name))
-                                        .arg(Sanguosha->translate(QStringLiteral("CAPITAL(") + QString::number(Self->getSeat()) + QStringLiteral(")")))
+                                        .arg(Sanguosha->translate(QStringLiteral("CAPITAL(") + QString::number(Self->seat()) + QStringLiteral(")")))
                                         .arg(role_label->text()));
             dialog_layout->addWidget(role_label);
         }

@@ -206,7 +206,7 @@ void PlayerCardContainer::updateAvatar()
 
     const General *general = nullptr;
     if (m_player != nullptr) {
-        general = m_player->getAvatarGeneral();
+        general = m_player->avatarGeneral();
         _m_layout->m_screenNameFont.paintText(_m_screenNameItem, _m_layout->m_screenNameArea, Qt::AlignCenter, m_player->screenName());
         if (ServerInfo.Enable2ndGeneral && getPlayer() == Self)
             _m_layout->m_screenNameFont.paintText(_m_screenNameItem, _m_layout->m_screenNameAreaDouble, Qt::AlignCenter, m_player->screenName());
@@ -215,9 +215,9 @@ void PlayerCardContainer::updateAvatar()
     }
 
     if (general != nullptr) {
-        _m_avatarArea->setToolTip(m_player->getSkillDescription(true, QStringLiteral("head")));
+        _m_avatarArea->setToolTip(getPlayerSkillDescription(m_player, true, QStringLiteral("head")));
         QString name = general->name();
-        if (m_player != nullptr && m_player->getMark(QStringLiteral("duozhi")) > 0)
+        if (m_player != nullptr && m_player->mark(QStringLiteral("duozhi")) > 0)
             name = QStringLiteral("yingyingguai");
 
         QPixmap avatarIcon = _getAvatarIcon(name);
@@ -226,8 +226,8 @@ void PlayerCardContainer::updateAvatar()
         _paintPixmap(avatarIconTmp, avatarArea, avatarIcon, _getAvatarParent());
         // this is just avatar general, perhaps game has not started yet.
 
-        if (m_player->getGeneral() != nullptr) {
-            QString kingdom = m_player->getKingdom();
+        if (m_player->general() != nullptr) {
+            QString kingdom = m_player->kingdom();
             if (!isHegemonyGameMode(ServerInfo.GameMode)) {
                 _paintPixmap(_m_kingdomIcon, _m_layout->m_kingdomIconArea, G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON), kingdom),
                              _getAvatarParent());
@@ -306,7 +306,7 @@ void PlayerCardContainer::updateSmallAvatar()
 
     if (general != nullptr) {
         QString name = general->name();
-        if (m_player != nullptr && m_player->getMark(QStringLiteral("duozhi")) > 0)
+        if (m_player != nullptr && m_player->mark(QStringLiteral("duozhi")) > 0)
             name = QStringLiteral("yingyingguai");
         QPixmap smallAvatarIcon = G_ROOM_SKIN.getGeneralPixmap(name, QSanRoomSkin::GeneralIconSize(_m_layout->m_smallAvatarSize));
         smallAvatarIcon = paintByMask(smallAvatarIcon);
@@ -315,8 +315,8 @@ void PlayerCardContainer::updateSmallAvatar()
         _paintPixmap(_m_circleItem, _m_layout->m_circleArea, QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_IMAGE).arg(_m_layout->m_circleImageSize),
                      _getAvatarParent());
         if (!fake_general) {
-            _m_smallAvatarArea->setToolTip(m_player->getSkillDescription(true, QStringLiteral("deputy")));
-            QString kingdom = m_player->getKingdom();
+            _m_smallAvatarArea->setToolTip(getPlayerSkillDescription(m_player, true, QStringLiteral("deputy")));
+            QString kingdom = m_player->kingdom();
             if (isHegemonyGameMode(ServerInfo.GameMode))
                 kingdom = general->getKingdom();
 
@@ -345,10 +345,10 @@ void PlayerCardContainer::updatePhase()
 {
     if ((m_player == nullptr) || !m_player->isAlive())
         _clearPixmap(_m_phaseIcon);
-    else if (m_player->getPhase() != QSanguosha::PhaseNotActive) {
-        if (m_player->getPhase() == QSanguosha::PhaseNone)
+    else if (m_player->phase() != QSanguosha::PhaseNotActive) {
+        if (m_player->phase() == QSanguosha::PhaseNone)
             return;
-        int index = static_cast<int>(m_player->getPhase());
+        int index = static_cast<int>(m_player->phase());
         QRect phaseArea = _m_layout->m_phaseArea.getTranslatedRect(_getPhaseParent()->boundingRect().toRect());
         _paintPixmap(_m_phaseIcon, phaseArea, _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_PHASE), QString::number(index), true), _getPhaseParent());
         _m_phaseIcon->show();
@@ -364,22 +364,22 @@ void PlayerCardContainer::updateHp()
 {
     Q_ASSERT(_m_hpBox && _m_saveMeIcon && m_player);
     if (!m_player->hasSkill(QStringLiteral("banling"))) {
-        _m_hpBox->setHp(m_player->getHp(), m_player->dyingThreshold());
-        _m_hpBox->setMaxHp(m_player->getMaxHp());
+        _m_hpBox->setHp(m_player->hp(), m_player->dyingFactor());
+        _m_hpBox->setMaxHp(m_player->maxHp());
         _m_hpBox->update();
         _m_sub_hpBox->setHp(0);
         _m_sub_hpBox->setMaxHp(0);
         _m_sub_hpBox->update();
     } else {
-        _m_hpBox->setHp(m_player->getRenHp(), m_player->dyingThreshold());
-        _m_hpBox->setMaxHp(m_player->getMaxHp());
+        _m_hpBox->setHp(m_player->renHp(), m_player->dyingFactor());
+        _m_hpBox->setMaxHp(m_player->maxHp());
         _m_hpBox->update();
-        _m_sub_hpBox->setHp(m_player->getLingHp(), m_player->dyingThreshold());
-        _m_sub_hpBox->setMaxHp(m_player->getMaxHp());
+        _m_sub_hpBox->setHp(m_player->lingHp(), m_player->dyingFactor());
+        _m_sub_hpBox->setMaxHp(m_player->maxHp());
         _m_sub_hpBox->update();
     }
 
-    if (m_player->getHp() >= m_player->dyingThreshold() || m_player->getMaxHp() < m_player->dyingThreshold())
+    if (m_player->hp() >= m_player->dyingFactor() || m_player->maxHp() < m_player->dyingFactor())
         _m_saveMeIcon->setVisible(false);
 }
 
@@ -392,12 +392,12 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
         return;
 
     QString treasure_name;
-    if (player->getTreasure() != nullptr)
-        treasure_name = player->getTreasure()->faceName();
+    if (player->treasure() != nullptr)
+        treasure_name = player->treasure()->faceName();
 
     IDSet pile;
     if (pile_name == QStringLiteral("shown_card"))
-        pile = player->getShownHandcards();
+        pile = player->shownHandcards();
     else if (pile_name == QStringLiteral("huashencard")) {
         //        int n = player->getHiddenGenerals().length();
         //        if (n == 0)
@@ -406,7 +406,7 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
         //            pile << (i + 1);
         //        }
     } else
-        pile = player->getPile(pile_name);
+        pile = player->pile(pile_name);
 
     QString shownpilename = RoomSceneInstance->getCurrentShownPileName();
     if (!shownpilename.isEmpty() && shownpilename == pile_name)
@@ -481,7 +481,7 @@ void PlayerCardContainer::showPile()
         const Player *player = getPlayer();
         if (player == nullptr)
             return;
-        IDSet card_ids = player->getPile(button->objectName());
+        IDSet card_ids = player->pile(button->objectName());
         if (button->objectName() == QStringLiteral("huashencard")) {
             if (player == Self)
                 RoomSceneInstance->showPile(card_ids.values(), button->objectName(), player); // FIXME: Replace with IDSet
@@ -501,7 +501,7 @@ void PlayerCardContainer::hidePile()
 
 void PlayerCardContainer::updateDrankState()
 {
-    if (m_player->getMark(QStringLiteral("drank")) > 0 || m_player->getMark(QStringLiteral("magic_drank")) > 0)
+    if (m_player->mark(QStringLiteral("drank")) > 0 || m_player->mark(QStringLiteral("magic_drank")) > 0)
         _m_avatarArea->setBrush(G_PHOTO_LAYOUT.m_drankMaskColor);
     else
         _m_avatarArea->setBrush(Qt::NoBrush);
@@ -514,8 +514,8 @@ void PlayerCardContainer::updateDuanchang()
 void PlayerCardContainer::updateHandcardNum()
 {
     int num = 0;
-    if ((m_player != nullptr) && (m_player->getGeneral() != nullptr))
-        num = m_player->getHandcardNum();
+    if ((m_player != nullptr) && (m_player->general() != nullptr))
+        num = m_player->handcardNum();
     Q_ASSERT(num >= 0);
     _m_layout->m_handCardFont.paintText(_m_handCardNumText, _m_layout->m_handCardArea, Qt::AlignCenter, QString::number(num));
     _m_handCardNumText->setVisible(true);
@@ -562,7 +562,7 @@ void PlayerCardContainer::_updateEquips()
 
 void PlayerCardContainer::refresh()
 {
-    if ((m_player == nullptr) || (m_player->getGeneral() == nullptr) || !m_player->isAlive()) {
+    if ((m_player == nullptr) || (m_player->general() == nullptr) || !m_player->isAlive()) {
         _m_faceTurnedIcon->setVisible(false);
         if (_m_faceTurnedIcon2 != nullptr)
             _m_faceTurnedIcon2->setVisible(false);
@@ -581,7 +581,7 @@ void PlayerCardContainer::refresh()
             _m_chainIcon->setVisible(m_player->isChained());
         if (_m_actionIcon != nullptr)
             _m_actionIcon->setVisible(m_player->hasFlag(QStringLiteral("actioned")));
-        if ((_m_deathIcon != nullptr) && !(ServerInfo.GameMode == QStringLiteral("04_1v3") && m_player->getGeneralName() != QStringLiteral("yuyuko_1v32")))
+        if ((_m_deathIcon != nullptr) && !(ServerInfo.GameMode == QStringLiteral("04_1v3") && m_player->generalName() != QStringLiteral("yuyuko_1v32")))
             _m_deathIcon->setVisible(m_player->isDead());
         if (leftDisableShowLock != nullptr)
             leftDisableShowLock->setVisible(!m_player->hasShownGeneral() && !m_player->disableShow(true).isEmpty());
@@ -630,10 +630,10 @@ void PlayerCardContainer::repaintAll()
     }
 
     if (_m_seatItem != nullptr) {
-        _paintPixmap(_m_seatItem, _m_layout->m_seatIconRegion, _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER), QString::number(m_player->getSeat())),
+        _paintPixmap(_m_seatItem, _m_layout->m_seatIconRegion, _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER), QString::number(m_player->seat())),
                      _getAvatarParent());
         if (ServerInfo.Enable2ndGeneral && getPlayer() == Self)
-            _paintPixmap(_m_seatItem, _m_layout->m_seatIconRegionDouble, _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER), QString::number(m_player->getSeat())),
+            _paintPixmap(_m_seatItem, _m_layout->m_seatIconRegionDouble, _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER), QString::number(m_player->seat())),
                          _getAvatarParent());
     }
 
@@ -1004,10 +1004,10 @@ void PlayerCardContainer::stopHuaShen()
 void PlayerCardContainer::updateAvatarTooltip()
 {
     if (m_player != nullptr) {
-        QString description = m_player->getSkillDescription(true, QStringLiteral("head"));
+        QString description = getPlayerSkillDescription(m_player, true, QStringLiteral("head"));
         _m_avatarArea->setToolTip(description);
         if (m_player->getGeneral2() != nullptr) {
-            description = m_player->getSkillDescription(true, QStringLiteral("deputy"));
+            description = getPlayerSkillDescription(m_player, true, QStringLiteral("deputy"));
             _m_smallAvatarArea->setToolTip(description);
         }
     }
@@ -1422,7 +1422,7 @@ void PlayerCardContainer::showHeroSkinList()
     }
     if (nullptr != m_player) {
         if (sender() == m_changePrimaryHeroSKinBtn) {
-            showHeroSkinListHelper(m_player->getGeneral(), _m_avatarIcon);
+            showHeroSkinListHelper(m_player->general(), _m_avatarIcon);
         } else {
             showHeroSkinListHelper(m_player->getGeneral2(), _m_smallAvatarIcon);
         }
@@ -1493,7 +1493,7 @@ void PlayerCardContainer::onAvatarHoverEnter()
         QSanButton *heroSKinBtn = nullptr;
 
         if (senderObj == _m_avatarIcon) {
-            general = m_player->getGeneral();
+            general = m_player->general();
             avatarItem = _m_avatarIcon;
             heroSKinBtn = m_changePrimaryHeroSKinBtn;
 
@@ -1537,7 +1537,7 @@ void PlayerCardContainer::onSkinChangingStart()
 
     if (sender() == _m_avatarIcon) {
         heroSKinBtn = m_changePrimaryHeroSKinBtn;
-        generalName = m_player->getGeneralName();
+        generalName = m_player->generalName();
     } else {
         heroSKinBtn = m_changeSecondaryHeroSkinBtn;
         generalName = m_player->getGeneral2Name();
@@ -1559,7 +1559,7 @@ void PlayerCardContainer::onSkinChangingFinished()
     if (sender() == _m_avatarIcon) {
         avatarItem = _m_avatarIcon;
         heroSKinBtn = m_changePrimaryHeroSKinBtn;
-        generalName = m_player->getGeneralName();
+        generalName = m_player->generalName();
     } else {
         avatarItem = _m_smallAvatarIcon;
         heroSKinBtn = m_changeSecondaryHeroSkinBtn;
@@ -1629,9 +1629,40 @@ QString PlayerCardContainer::getHuashenSkillName(bool head)
         return _m_huashenGeneral2Name;
 }
 
+QString PlayerCardContainer::getPlayerSkillDescription(Player *p, bool yellow, const QString &flag)
+{
+    QString description = QString();
+    QString color = yellow ? QStringLiteral("#FFFF33") : QStringLiteral("#FF0080");
+    QSet<const Skill *> skillList = p->skills(false, true);
+    if (flag == QStringLiteral("head"))
+        skillList = p->skills(false, true, true, {0});
+    else if (flag == QStringLiteral("deputy"))
+        skillList = p->skills(false, true, true, {1});
+
+    foreach (const Skill *skill, skillList) {
+        if (skill->isAttachedSkill())
+            continue;
+        if (!isHegemonyGameMode(ServerInfo.GameMode) && !p->hasSkill(skill->objectName()))
+            continue;
+
+        //remove lord skill Description
+        if (skill->isLordSkill() && !p->hasLordSkill(skill->objectName()))
+            continue;
+
+        QString skill_name = Sanguosha->translate(skill->objectName());
+        QString desc = skill->getDescription();
+        desc.replace(QStringLiteral("\n"), QStringLiteral("<br/>"));
+        description.append(QStringLiteral("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(color).arg(skill_name).arg(desc));
+    }
+
+    if (description.isEmpty())
+        description = tr("<font color=%1>No skills</font>").arg(color);
+    return description;
+}
+
 void PlayerCardContainer::showSeat()
 {
-    _paintPixmap(_m_seatItem, _m_layout->m_seatIconRegion, _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER), QString::number(m_player->getSeat())),
+    _paintPixmap(_m_seatItem, _m_layout->m_seatIconRegion, _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER), QString::number(m_player->seat())),
                  _getAvatarParent());
     _m_seatItem->setZValue(1.1);
 }

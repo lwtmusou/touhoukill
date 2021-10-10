@@ -624,7 +624,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
 
     button_layout->addStretch();
     ui->skillTextEdit->append(general->getSkillDescription(true, false));
-    ui->changeGeneralButton->setEnabled(Self && Self->getGeneralName() != general->name());
+    ui->changeGeneralButton->setEnabled(Self && Self->generalName() != general->name());
 }
 
 void GeneralOverview::playAudioEffect()

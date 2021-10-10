@@ -226,7 +226,7 @@ QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, QSa
         copy->setAcceptedMouseButtons(Qt::MouseButtons());
 
         if (m_currentPlayer != nullptr)
-            to_take->showAvatar(m_currentPlayer->getGeneral());
+            to_take->showAvatar(m_currentPlayer->general());
     }
     return result;
 }
@@ -315,7 +315,7 @@ void SanCloseButton::mouseReleaseEvent(QGraphicsSceneMouseEvent * /*event*/)
 void CardContainer::view(const Player *player)
 {
     QList<int> card_ids;
-    QList<const Card *> cards = player->getHandcards();
+    QList<const Card *> cards = player->handCards();
     foreach (const Card *card, cards)
         card_ids << card->effectiveID();
 

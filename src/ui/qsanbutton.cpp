@@ -401,7 +401,7 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
 
         foreach (const Player *p, ClientInstance->players()) {
             if (p != Self) {
-                const General *general = p->getGeneral();
+                const General *general = p->general();
                 if (general->hasSkill(engskillname) || general->hasSkill(HegSkillname)) {
                     generalName = general->name();
                     break;
@@ -416,7 +416,7 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
             }
         }
         if (generalName.isNull()) {
-            const General *general = Self->getGeneral();
+            const General *general = Self->general();
             if ((general != nullptr) && (general->hasSkill(engskillname) || general->hasSkill(HegSkillname)))
                 generalName = general->name();
             if (ServerInfo.Enable2ndGeneral) {

@@ -710,7 +710,7 @@ void Client::fillRobots()
 void Client::onPlayerResponseCard(const Card *card, const QList<const Player *> &targets)
 {
     if (Self->hasFlag(QStringLiteral("Client_PreventPeach"))) {
-        Self->setFlags(QStringLiteral("-Client_PreventPeach"));
+        Self->setFlag(QStringLiteral("-Client_PreventPeach"));
         Self->removeCardLimitation(QStringLiteral("use"), QStringLiteral("Peach$0"), QStringLiteral("Global_PreventPeach"));
     }
     if ((status & ClientStatusBasicMask) == Responding)
@@ -943,9 +943,9 @@ void Client::exchangeKnownCards(const QVariant &players)
     Player *b = findPlayer(args[1].toString());
     IDSet a_known;
     IDSet b_known;
-    foreach (const Card *card, a->getHandcards())
+    foreach (const Card *card, a->handCards())
         a_known << card->id();
-    foreach (const Card *card, b->getHandcards())
+    foreach (const Card *card, b->handCards())
         b_known << card->id();
     a->setHandCards(b_known);
     b->setHandCards(a_known);
@@ -988,18 +988,18 @@ QString Client::getPlayerName(const QString &str)
     QString general_name;
     if (rx.match(str).hasMatch()) {
         Player *player = findPlayer(str);
-        general_name = player->getGeneralName();
+        general_name = player->generalName();
         general_name = Sanguosha->translate(general_name);
         if (player->getGeneral2() != nullptr)
             general_name.append(QStringLiteral("/") + Sanguosha->translate(player->getGeneral2Name()));
 
         if (isHegemonyGameMode(ServerInfo.GameMode)) {
             if (ServerInfo.Enable2ndGeneral) {
-                if (player->getGeneralName() == QStringLiteral("anjiang") && player->getGeneral2() != nullptr && player->getGeneral2Name() == QStringLiteral("anjiang")) {
-                    general_name = Sanguosha->translate(QStringLiteral("SEAT(%1)").arg(QString::number(player->getSeat())));
+                if (player->generalName() == QStringLiteral("anjiang") && player->getGeneral2() != nullptr && player->getGeneral2Name() == QStringLiteral("anjiang")) {
+                    general_name = Sanguosha->translate(QStringLiteral("SEAT(%1)").arg(QString::number(player->seat())));
                 }
-            } else if (player->getGeneralName() == QStringLiteral("anjiang")) {
-                general_name = Sanguosha->translate(QStringLiteral("SEAT(%1)").arg(QString::number(player->getSeat())));
+            } else if (player->generalName() == QStringLiteral("anjiang")) {
+                general_name = Sanguosha->translate(QStringLiteral("SEAT(%1)").arg(QString::number(player->seat())));
             }
         }
 
@@ -1180,7 +1180,7 @@ void Client::askForNullification(const QVariant &arg)
     const QVariant &source_name = args[1];
     Player *target_player = findPlayer(args[2].toString());
 
-    if ((target_player == nullptr) || (target_player->getGeneral() == nullptr))
+    if ((target_player == nullptr) || (target_player->general() == nullptr))
         return;
 
     Player *source = nullptr;
@@ -1529,14 +1529,14 @@ void Client::killPlayer(const QVariant &player_name)
             foreach (const Skill *skill, Self->getDeputySkillList(true, true))
                 emit skill_detached(skill->objectName(), false);
         } else {
-            foreach (const Skill *skill, Self->getVisibleSkills())
+            foreach (const Skill *skill, Self->skills(false, true))
                 emit skill_detached(skill->objectName());
         }
     }
     player->detachAllSkills();
 
     if (!Self->hasFlag(QStringLiteral("marshalling"))) {
-        QString general_name = player->getGeneralName();
+        QString general_name = player->generalName();
         QString last_word = Sanguosha->translate(QStringLiteral("~%1").arg(general_name));
         if (last_word.startsWith(QStringLiteral("~"))) {
             QStringList origin_generals = general_name.split(QStringLiteral("_"));
@@ -1835,9 +1835,9 @@ void Client::askForSinglePeach(const QVariant &arg)
     }
 
     Card *temp_peach = cloneCard(QStringLiteral("Peach"));
-    if (Self->getMark(QStringLiteral("Global_PreventPeach")) > 0 || Self->isProhibited(dying, temp_peach)) {
+    if (Self->mark(QStringLiteral("Global_PreventPeach")) > 0 || Self->isProhibited(dying, temp_peach)) {
         bool has_skill = false;
-        foreach (const Skill *skill, Self->getVisibleSkillList(true)) {
+        foreach (const Skill *skill, Self->skills(true, true)) {
             const ViewAsSkill *view_as_skill = qobject_cast<const ViewAsSkill *>(skill);
             if ((view_as_skill != nullptr) && view_as_skill->isAvailable(Self, CardUseStruct::CARD_USE_REASON_RESPONSE_USE, pattern.join(QStringLiteral("+")))) {
                 has_skill = true;
@@ -1851,7 +1851,7 @@ void Client::askForSinglePeach(const QVariant &arg)
                 return;
             }
         } else {
-            Self->setFlags(QStringLiteral("Client_PreventPeach"));
+            Self->setFlag(QStringLiteral("Client_PreventPeach"));
             Self->setCardLimitation(QStringLiteral("use"), QStringLiteral("Peach"), QStringLiteral("Global_PreventPeach"));
         }
     }
@@ -1893,7 +1893,7 @@ void Client::onPlayerChooseAG(int card_id)
 
 void Client::alertFocus()
 {
-    if (Self->getPhase() == QSanguosha::PhasePlay)
+    if (Self->phase() == QSanguosha::PhasePlay)
         QApplication::alert(QApplication::focusWidget());
 }
 
@@ -1908,7 +1908,7 @@ void Client::showCard(const QVariant &show_str)
 
     Player *player = findPlayer(player_name);
     if (player != Self) {
-        IDSet s = player->handCards();
+        IDSet s = player->handcards();
         s << card_id;
         player->setHandCards(s);
     }
@@ -1971,7 +1971,7 @@ void Client::showAllCards(const QVariant &arg)
     if (who != nullptr)
         who->setHandCards(List2Set(card_ids));
 
-    emit gongxin(card_ids, false, IDSet(), who != nullptr ? who->getShownHandcards() : IDSet());
+    emit gongxin(card_ids, false, IDSet(), who != nullptr ? who->shownHandcards() : IDSet());
 }
 
 void Client::askForGongxin(const QVariant &args)
@@ -1993,7 +1993,7 @@ void Client::askForGongxin(const QVariant &args)
 
     who->setHandCards(List2Set(card_ids));
 
-    emit gongxin(card_ids, enable_heart, IDSet(enabled_ids.begin(), enabled_ids.end()), who->getShownHandcards());
+    emit gongxin(card_ids, enable_heart, IDSet(enabled_ids.begin(), enabled_ids.end()), who->shownHandcards());
     setStatus(AskForGongxin);
 }
 
@@ -2157,7 +2157,7 @@ void Client::speak(const QVariant &speak)
 
     QString title;
     if (from != nullptr) {
-        title = from->getGeneralName();
+        title = from->generalName();
         title = Sanguosha->translate(title);
         title.append(QStringLiteral("(%1)").arg(from->screenName()));
     }

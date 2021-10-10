@@ -54,7 +54,7 @@ void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start)
 {
     bool invoke_verify = false;
 
-    foreach (const TriggerSkill *skill, player->getTriggerSkills()) {
+    foreach (const TriggerSkill *skill, player->triggerSkills()) {
         addTriggerSkill(skill);
 
         if (invoke_game_start && skill->triggerEvents().contains(GameStart))
@@ -148,10 +148,10 @@ void RoomThread::_handleTurnBroken3v3(QList<ServerPlayer *> &first, QList<Server
         ServerPlayer *player = room->getCurrent();
         QVariant v = QVariant::fromValue(player);
         trigger(TurnBroken, v);
-        if (player->getPhase() != QSanguosha::PhaseNotActive) {
+        if (player->phase() != QSanguosha::PhaseNotActive) {
             QVariant data = QVariant::fromValue(player);
             game_rule->trigger(EventPhaseEnd, room, TriggerDetail(room), data);
-            player->changePhase(player->getPhase(), QSanguosha::PhaseNotActive);
+            player->changePhase(player->phase(), QSanguosha::PhaseNotActive);
         }
         if (!player->hasFlag(QStringLiteral("actioned")))
             room->setPlayerFlag(player, QStringLiteral("actioned"));
@@ -208,10 +208,10 @@ void RoomThread::_handleTurnBrokenHulaoPass(ServerPlayer *uuz, const QList<Serve
         QVariant v = QVariant::fromValue(player);
         trigger(TurnBroken, v);
         ServerPlayer *next = findHulaoPassNext(uuz, league);
-        if (player->getPhase() != QSanguosha::PhaseNotActive) {
+        if (player->phase() != QSanguosha::PhaseNotActive) {
             QVariant data = QVariant::fromValue(player);
             game_rule->trigger(EventPhaseEnd, room, TriggerDetail(room), data);
-            player->changePhase(player->getPhase(), QSanguosha::PhaseNotActive);
+            player->changePhase(player->phase(), QSanguosha::PhaseNotActive);
         }
 
         room->setCurrent(next);
@@ -271,9 +271,9 @@ void RoomThread::_handleTurnBrokenNormal(GameRule *game_rule)
         QVariant data = QVariant::fromValue(player);
         trigger(TurnBroken, data);
 
-        if (player->getPhase() != QSanguosha::PhaseNotActive) {
+        if (player->phase() != QSanguosha::PhaseNotActive) {
             game_rule->trigger(EventPhaseEnd, room, TriggerDetail(room), data);
-            player->changePhase(player->getPhase(), QSanguosha::PhaseNotActive);
+            player->changePhase(player->phase(), QSanguosha::PhaseNotActive);
         }
 
         if (room->getTag(QStringLiteral("touhou-extra")).toBool()) {
@@ -402,7 +402,7 @@ void RoomThread::run()
         QList<ServerPlayer *> second;
         if (room->getMode() == QStringLiteral("06_3v3")) {
             foreach (ServerPlayer *player, room->m_players) {
-                switch (player->getRole()) {
+                switch (player->role()) {
                 case QSanguosha::RoleLord:
                     warm.prepend(player);
                     break;

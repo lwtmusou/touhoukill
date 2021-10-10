@@ -602,7 +602,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
 
         if (player != Self)
             break;
-        const General *oldHero = isSecondaryHero ? player->getGeneral2() : player->getGeneral();
+        const General *oldHero = isSecondaryHero ? player->getGeneral2() : player->general();
         const General *newHero = Sanguosha->getGeneral(newHeroName);
         if (oldHero != nullptr) {
             foreach (const Skill *skill, oldHero->getVisibleSkills(true, !isSecondaryHero))
@@ -716,9 +716,9 @@ void RoomScene::handleGameEvent(const QVariant &args)
         foreach (PlayerCardContainer *playerCardContainer, playerCardContainers) {
             if (noSkin)
                 break;
-            if (general_name == playerCardContainer->getPlayer()->getGeneralName()
+            if (general_name == playerCardContainer->getPlayer()->generalName()
                 || general_name == playerCardContainer->getPlayer()->getGeneral2Name()) { // check container which changed skin
-                if ((player->getGeneralName() == general_name || player->getGeneral2Name() == general_name)
+                if ((player->generalName() == general_name || player->getGeneral2Name() == general_name)
                     && Self != player) { // check this roomscene instance of the players who need notify
                     QString generalIconPath;
                     QRect clipRegion;
@@ -757,7 +757,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         }
         playerCardContainers.append(dashboard);
         foreach (PlayerCardContainer *playerCardContainer, playerCardContainers) {
-            if (player->getGeneralName() == playerCardContainer->getPlayer()->getGeneralName()) {
+            if (player->generalName() == playerCardContainer->getPlayer()->generalName()) {
                 playerCardContainer->setRoleShown(shown);
                 break;
             }
@@ -1172,10 +1172,10 @@ void RoomScene::updateTable()
     int *seatToRegion = regularSeatIndex[photos.length() - 1];
     bool pkMode = false;
     if (ServerInfo.GameMode == QStringLiteral("04_1v3") && game_started) {
-        seatToRegion = hulaoSeatIndex[Self->getSeat() - 1];
+        seatToRegion = hulaoSeatIndex[Self->seat() - 1];
         pkMode = true;
     } else if (ServerInfo.GameMode == QStringLiteral("06_3v3") && game_started) {
-        seatToRegion = kof3v3SeatIndex[(Self->getSeat() - 1) % 3];
+        seatToRegion = kof3v3SeatIndex[(Self->seat() - 1) % 3];
         pkMode = true;
     }
     QList<Photo *> photosInRegion[C_NUM_REGIONS];
@@ -1652,11 +1652,11 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         bool enabled = false;
         foreach (PlayerCardContainer *container, item2player.keys()) {
             const Player *player = item2player.value(container, NULL);
-            QStringList piles = player->getPileNames();
+            QStringList piles = player->pileNames();
             if (!piles.isEmpty()) {
                 foreach (QString pile_name, piles) {
                     bool add = false;
-                    foreach (int id, player->getPile(pile_name)) {
+                    foreach (int id, player->pile(pile_name)) {
                         if (id != Card::S_UNKNOWN_CARD_ID) {
                             add = true;
                             break;
@@ -1682,7 +1682,7 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
                 const Player *player = item2player.value(container, NULL);
                 if (player == Self)
                     continue;
-                QList<const Card *> known = player->getHandcards();
+                QList<const Card *> known = player->handCards();
                 if (known.isEmpty()) {
                     known_cards->addAction(ClientInstance->getPlayerName(player->objectName()))->setEnabled(false);
                 } else {
@@ -2033,7 +2033,7 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
                     target = ClientInstance->findPlayer(reason.m_playerId);
 
                 if ((target != nullptr) && target->hasShownSkill(reason.m_skillName))
-                    card->showAvatar(target->getGeneral());
+                    card->showAvatar(target->general());
             }
 
             int card_id = card->getId();
@@ -2175,7 +2175,7 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
         return;
     if ((move.to != nullptr) && (move.to_place == QSanguosha::PlaceHand || move.to_place == QSanguosha::PlaceEquip || move.to_place == QSanguosha::PlaceSpecial)
         && move.from_place != QSanguosha::PlaceDrawPile) {
-        foreach (QString flag, move.to->getFlagList())
+        foreach (QString flag, move.to->flagList())
             if (flag.endsWith(QStringLiteral("_InTempMoving")))
                 return;
     }
@@ -2502,7 +2502,7 @@ void RoomScene::useSelectedCard()
     else {
         dashboard->retractPileCards(QStringLiteral("wooden_ox"));
         dashboard->retractPileCards(QStringLiteral("chaoren"));
-        foreach (const QString &pile, Self->getPileNames()) {
+        foreach (const QString &pile, Self->pileNames()) {
             if (pile.startsWith(QStringLiteral("&")))
                 dashboard->retractPileCards(pile);
         }
@@ -2697,7 +2697,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         } else {
             const Skill *skill = button->getSkill();
             if (skill->isLimited() && skill->isCompulsory()) {
-                button->setEnabled(Self->getMark(skill->objectName()) > 0);
+                button->setEnabled(Self->mark(skill->objectName()) > 0);
             } else
                 button->setEnabled(false);
         }
@@ -2767,9 +2767,9 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                 if (newStatus == Client::RespondingUse)
                     reason = CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
                 if (!Self->hasFlag(skill_name))
-                    Self->setFlags(skill_name);
+                    Self->setFlag(skill_name);
                 bool available = skill->isAvailable(Self, reason, pattern);
-                Self->setFlags(QStringLiteral("-") + skill_name);
+                Self->setFlag(QStringLiteral("-") + skill_name);
                 if (!available) {
                     ClientInstance->onPlayerResponseCard(nullptr);
                     return;
@@ -2986,10 +2986,10 @@ void RoomScene::onSkillActivated()
             bool instance_use = skill->inherits("ZeroCardViewAsSkill");
             if (!instance_use) {
                 QList<const Card *> cards;
-                cards << Self->getHandcards() << Self->getEquips();
+                cards << Self->handCards() << Self->equipCards();
 
                 foreach (const QString &name, dashboard->getPileExpanded()) {
-                    IDSet pile = Self->getPile(name);
+                    IDSet pile = Self->pile(name);
                     foreach (int id, pile)
                         cards << ClientInstance->getCard(id);
                 }
@@ -3189,15 +3189,15 @@ void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nat
         if (losthp) {
             Audio::playSystemAudioEffect(QStringLiteral("hplost"));
             QString from_general = ClientInstance->findPlayer(who)->objectName();
-            log_box->appendLog(QStringLiteral("#GetHp"), from_general, QStringList(), QString(), QString::number(ClientInstance->findPlayer(who)->getHp()),
-                               QString::number(ClientInstance->findPlayer(who)->getMaxHp()));
+            log_box->appendLog(QStringLiteral("#GetHp"), from_general, QStringList(), QString(), QString::number(ClientInstance->findPlayer(who)->hp()),
+                               QString::number(ClientInstance->findPlayer(who)->maxHp()));
             return;
         }
 
         QString damage_effect;
         QString from_general = ClientInstance->findPlayer(who)->objectName();
-        log_box->appendLog(QStringLiteral("#GetHp"), from_general, QStringList(), QString(), QString::number(ClientInstance->findPlayer(who)->getHp()),
-                           QString::number(ClientInstance->findPlayer(who)->getMaxHp()));
+        log_box->appendLog(QStringLiteral("#GetHp"), from_general, QStringList(), QString(), QString::number(ClientInstance->findPlayer(who)->hp()),
+                           QString::number(ClientInstance->findPlayer(who)->maxHp()));
         switch (delta) {
         case -1:
             damage_effect = QStringLiteral("injure1");
@@ -3228,8 +3228,8 @@ void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nat
         QString n = QString::number(delta);
 
         log_box->appendLog(type, from_general, QStringList(), QString(), n);
-        log_box->appendLog(QStringLiteral("#GetHp"), from_general, QStringList(), QString(), QString::number(ClientInstance->findPlayer(who)->getHp()),
-                           QString::number(ClientInstance->findPlayer(who)->getMaxHp()));
+        log_box->appendLog(QStringLiteral("#GetHp"), from_general, QStringList(), QString(), QString::number(ClientInstance->findPlayer(who)->hp()),
+                           QString::number(ClientInstance->findPlayer(who)->maxHp()));
     }
 }
 
@@ -3377,7 +3377,7 @@ void RoomScene::saveReplayRecord(const bool auto_save, const bool network_only)
                 location.append(QStringLiteral("/"));
             if (!QDir(location).exists())
                 QDir().mkdir(location);
-            QString general_name = Sanguosha->translate(Self->getGeneralName());
+            QString general_name = Sanguosha->translate(Self->generalName());
             if (ServerInfo.Enable2ndGeneral)
                 general_name.append(QStringLiteral("_") + Sanguosha->translate(Self->getGeneral2Name()));
             location.append(QStringLiteral("%1 %2(%3)-").arg(Sanguosha->getVersionName()).arg(general_name).arg(Sanguosha->translate(Self->getRoleString())));
@@ -3529,10 +3529,10 @@ void RoomScene::FillPlayerNames(QComboBox *ComboBox, bool add_none)
         ComboBox->addItem(tr("None"), QStringLiteral("."));
     ComboBox->setIconSize(G_COMMON_LAYOUT.m_tinyAvatarSize);
     foreach (const Player *player, ClientInstance->players()) {
-        QString general_name = Sanguosha->translate(player->getGeneralName());
-        if (player->getGeneral() == nullptr)
+        QString general_name = Sanguosha->translate(player->generalName());
+        if (player->general() == nullptr)
             continue;
-        QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(player->getGeneralName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY, false);
+        QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(player->generalName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY, false);
         ComboBox->addItem(QIcon(pixmap), QStringLiteral("%1 [%2]").arg(general_name).arg(player->screenName()), player->objectName());
     }
 }
@@ -3578,7 +3578,7 @@ void RoomScene::makeReviving()
     QList<const Player *> victims;
     foreach (const Player *player, ClientInstance->players()) {
         if (player->isDead()) {
-            QString general_name = Sanguosha->translate(player->getGeneralName());
+            QString general_name = Sanguosha->translate(player->generalName());
             items << QStringLiteral("%1 [%2]").arg(player->screenName()).arg(general_name);
             victims << player;
         }
@@ -3660,7 +3660,7 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const Player *> &play
             else
                 role = QStringLiteral("guard");
         } else if (ServerInfo.GameMode == QStringLiteral("04_1v3")) {
-            int seat = player->getSeat();
+            int seat = player->seat();
             switch (seat) {
             case 1:
                 role = QStringLiteral("lvbu");
@@ -3715,7 +3715,7 @@ void RoomScene::killPlayer(const QString &who)
     if (who == Self->objectName()) {
         dashboard->killPlayer();
         dashboard->update();
-        general = Self->getGeneral();
+        general = Self->general();
         item2player.remove(dashboard);
         if (ServerInfo.GameMode == QStringLiteral("02_1v1"))
             self_box->killPlayer(general->name());
@@ -3725,7 +3725,7 @@ void RoomScene::killPlayer(const QString &who)
         photo->setFrame(Photo::S_FRAME_NO_FRAME);
         photo->update();
         item2player.remove(photo);
-        general = photo->getPlayer()->getGeneral();
+        general = photo->getPlayer()->general();
         if (ServerInfo.GameMode == QStringLiteral("02_1v1"))
             enemy_box->killPlayer(general->name());
     }
@@ -3903,7 +3903,7 @@ void RoomScene::speak()
     } else {
         QString title;
         if (Self) {
-            title = Self->getGeneralName();
+            title = Self->generalName();
             title = Sanguosha->translate(title);
             title.append(QStringLiteral("(%1)").arg(Self->screenName()));
             title = QStringLiteral("<b>%1</b>").arg(title);
@@ -3950,11 +3950,11 @@ void RoomScene::showPlayerCards()
 
             CardOverview *overview = new CardOverview;
             overview->setWindowTitle(QStringLiteral("%1 %2").arg(ClientInstance->getPlayerName(player_name)).arg(Sanguosha->translate(pile_name)));
-            overview->loadFromList(player->getPile(pile_name));
+            overview->loadFromList(player->pile(pile_name));
             overview->show();
         } else {
             IDSet cards;
-            foreach (const Card *card, player->getHandcards()) {
+            foreach (const Card *card, player->handCards()) {
                 if (card->id() >= 0)
                     cards << card->id();
             }
@@ -4129,7 +4129,7 @@ void RoomScene::_cancelAllFocus()
 {
     foreach (Photo *photo, photos) {
         photo->hideProgressBar();
-        if (photo->getPlayer()->getPhase() == QSanguosha::PhaseNotActive)
+        if (photo->getPlayer()->phase() == QSanguosha::PhaseNotActive)
             photo->setFrame(Photo::S_FRAME_NO_FRAME);
     }
 }
@@ -4146,7 +4146,7 @@ void RoomScene::moveFocus(const QStringList &players, const Countdown &countdown
 
         if (ServerInfo.OperationTimeout > 0)
             photo->showProgressBar(countdown);
-        else if (photo->getPlayer()->getPhase() == QSanguosha::PhaseNotActive)
+        else if (photo->getPlayer()->phase() == QSanguosha::PhaseNotActive)
             photo->setFrame(Photo::S_FRAME_RESPONDING);
     }
 }
@@ -5040,7 +5040,7 @@ void RoomScene::addHeroSkinContainer(Player *player, HeroSkinContainer *heroSkin
         const Player *player = playerCardContainer->getPlayer();
         const QString &heroSkinGeneralName = heroSkinContainer->getGeneralName();
 
-        if (heroSkinGeneralName == player->getGeneralName()) {
+        if (heroSkinGeneralName == player->generalName()) {
             connect(heroSkinContainer, &HeroSkinContainer::local_skin_changed, playerCardContainer->getAvartarItem(), &GraphicsPixmapHoverItem::startChangeHeroSkinAnimation);
 
             connect(heroSkinContainer, &HeroSkinContainer::skin_changed, this, &RoomScene::doSkinChange);
@@ -5180,7 +5180,7 @@ void RoomScene::setLordBGM(const QString &lord)
     bgm_path = Config.value(QStringLiteral("BackgroundMusic"), QStringLiteral("audio/title/main.ogg")).toString();
     QString lord_name = (lord.isNull()) ? ClientInstance->lord_name : lord;
     if (lord_name.isNull())
-        lord_name = Self->getGeneralName();
+        lord_name = Self->generalName();
     lord_name = lord_name.split(QStringLiteral("_")).at(0);
     if (changeBGM) { //change BGMpath to lordName
         bgm_path = QStringLiteral("audio/bgm/") + lord_name + QStringLiteral("_1.ogg");
@@ -5217,7 +5217,7 @@ void RoomScene::setLordBackdrop(const QString &lord)
     image_path = Config.TableBgImage;
     QString lord_name = (lord.isNull()) ? ClientInstance->lord_name : lord;
     if (lord_name.isNull())
-        lord_name = Self->getGeneralName();
+        lord_name = Self->generalName();
     if (lord_name.endsWith(QStringLiteral("_hegemony")))
         lord_name = lord_name.replace(QStringLiteral("_hegemony"), QString());
     if (changeBackdrop) {

@@ -190,7 +190,7 @@ protected:
 
 private:
     ClientSocket *socket;
-    QList<const Card *> handcards;
+    QList<const Card *> m_handcards;
     Room *room;
     Recorder *recorder;
     QList<QSanguosha::Phase> phases;

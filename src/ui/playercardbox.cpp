@@ -66,17 +66,17 @@ void PlayerCardBox::chooseCard(const QString &reason, const Player *player, cons
     bool judging = false;
 
     if ((flags.contains(QStringLiteral("h")) || flags.contains(QStringLiteral("s"))) && !player->isKongcheng()) {
-        updateNumbers(player->getHandcardNum());
+        updateNumbers(player->handcardNum());
         handcard = true;
     }
 
     if (flags.contains(QStringLiteral("e")) && player->hasEquip()) {
-        updateNumbers(player->getEquips().length());
+        updateNumbers(player->equipCards().length());
         equip = true;
     }
 
-    if (flags.contains(QStringLiteral("j")) && !player->getJudgingArea().isEmpty()) {
-        updateNumbers(player->getJudgingArea().length());
+    if (flags.contains(QStringLiteral("j")) && !player->judgingAreaCards().isEmpty()) {
+        updateNumbers(player->judgingAreaCards().length());
         judging = true;
     }
 
@@ -99,33 +99,33 @@ void PlayerCardBox::chooseCard(const QString &reason, const Player *player, cons
     if (handcard) {
         QList<const Card *> handcards;
         QList<const Card *> shownHandcards;
-        foreach (int id, player->getShownHandcards()) {
+        foreach (int id, player->shownHandcards()) {
             const Card *c = ClientInstance->getCard(id);
             shownHandcards << c;
         }
 
         if (!handcardVisible && Self != player) {
-            foreach (int id, player->getShownHandcards()) {
+            foreach (int id, player->shownHandcards()) {
                 const Card *c = ClientInstance->getCard(id);
                 handcards << c;
             }
-            int hidden = player->getHandcardNum() - handcards.length();
+            int hidden = player->handcardNum() - handcards.length();
             for (int i = 0; i < hidden; ++i)
                 handcards << NULL;
         } else
-            handcards = player->getHandcards();
+            handcards = player->handCards();
 
         arrangeCards(handcards, QPoint(startX, nameRects.at(index).y()), enableEmptyCard, shownHandcards);
         ++index;
     }
 
     if (equip) {
-        arrangeCards(player->getEquips(), QPoint(startX, nameRects.at(index).y()));
+        arrangeCards(player->equipCards(), QPoint(startX, nameRects.at(index).y()));
         ++index;
     }
 
     if (judging)
-        arrangeCards(player->getJudgingArea(), QPoint(startX, nameRects.at(index).y()));
+        arrangeCards(player->judgingAreaCards(), QPoint(startX, nameRects.at(index).y()));
 
     if (ServerInfo.OperationTimeout != 0) {
         if (progressBar == nullptr) {
@@ -198,7 +198,7 @@ void PlayerCardBox::paintLayout(QPainter *painter)
         font.paintText(painter, nameRects.at(index), Qt::AlignCenter, tr("Equip area"));
         ++index;
     }
-    if (flags.contains(QStringLiteral("j")) && !player->getJudgingArea().isEmpty()) {
+    if (flags.contains(QStringLiteral("j")) && !player->judgingAreaCards().isEmpty()) {
         font.paintText(painter, nameRects.at(index), Qt::AlignCenter, tr("Judging area"));
         ++index;
     }
@@ -259,7 +259,7 @@ void PlayerCardBox::arrangeCards(const QList<const Card *> &cards, QPoint topLef
                 item->setFootnote(Sanguosha->translate(QStringLiteral("shown_card")));
                 item->showFootnote();
             }
-            if (this->player->getJudgingArea().contains(card)) {
+            if (this->player->judgingAreaCards().contains(card)) {
                 item->setFootnote(Sanguosha->translate(card->faceName()));
                 item->showFootnote();
             }

@@ -260,8 +260,8 @@ void CardFace::use(RoomObject *room, const CardUseStruct &use) const
     QStringList nullified_list = use.nullified_list; // room->getTag(QStringLiteral("CardUseNullifiedList")).toStringList();
     bool all_nullified = nullified_list.contains(QStringLiteral("_ALL_TARGETS"));
     int magic_drank = 0;
-    if (isNDTrick() && (source != nullptr) && source->getMark(QStringLiteral("magic_drank")) > 0)
-        magic_drank = source->getMark(QStringLiteral("magic_drank"));
+    if (isNDTrick() && (source != nullptr) && source->mark(QStringLiteral("magic_drank")) > 0)
+        magic_drank = source->mark(QStringLiteral("magic_drank"));
 
     foreach (Player *target, use.to) {
         CardEffectStruct effect;
@@ -274,9 +274,9 @@ void CardFace::use(RoomObject *room, const CardUseStruct &use) const
             effect.effectValue.first() = effect.effectValue.first() + 1;
         if (use.card->hasFlag(QStringLiteral("mopao2")))
             effect.effectValue.last() = effect.effectValue.last() + 1;
-        if (source != nullptr && source->getMark(QStringLiteral("kuangji_value")) > 0) {
-            effect.effectValue.first() = effect.effectValue.first() + source->getMark(QStringLiteral("kuangji_value"));
-            effect.effectValue.last() = effect.effectValue.last() + source->getMark(QStringLiteral("kuangji_value"));
+        if (source != nullptr && source->mark(QStringLiteral("kuangji_value")) > 0) {
+            effect.effectValue.first() = effect.effectValue.first() + source->mark(QStringLiteral("kuangji_value"));
+            effect.effectValue.last() = effect.effectValue.last() + source->mark(QStringLiteral("kuangji_value"));
             source->setMark(QStringLiteral("kuangji_value"), 0);
         }
 

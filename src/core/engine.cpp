@@ -1096,7 +1096,7 @@ int Engine::correctCardTarget(const TargetModType type, const Player *from, cons
     } else if (type == ModTarget) {
         foreach (const TargetModSkill *skill, targetmod_skills) {
             ExpPattern p(skill->getPattern());
-            if (p.match(from, card) && from->getMark(QStringLiteral("chuangshi_user")) == 0) {
+            if (p.match(from, card) && from->mark(QStringLiteral("chuangshi_user")) == 0) {
                 //                if (checkDoubleHidden && from->isHiddenSkill(skill->objectName()) && cardskill != skill->objectName()
                 //                    && !skill->objectName().startsWith(QStringLiteral("#") + cardskill))
                 //                    continue;

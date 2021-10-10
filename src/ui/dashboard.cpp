@@ -725,7 +725,7 @@ void Dashboard::skillButtonDeactivated()
 
 void Dashboard::selectAll()
 {
-    foreach (const QString &pile, Self->getPileNames()) {
+    foreach (const QString &pile, Self->pileNames()) {
         if (pile.startsWith(QStringLiteral("&")) || pile == QStringLiteral("wooden_ox"))
             retractPileCards(pile);
     }
@@ -1199,7 +1199,7 @@ void Dashboard::startPending(const ViewAsSkill *skill)
         if (!((skill != nullptr) && skill->isResponseOrUse()))
             expandSpecialCard();
     } else {
-        foreach (const QString &pile, Self->getPileNames()) {
+        foreach (const QString &pile, Self->pileNames()) {
             if (pile.startsWith(QStringLiteral("&")) || pile == QStringLiteral("wooden_ox"))
                 retractPileCards(pile);
         }
@@ -1235,7 +1235,7 @@ void Dashboard::stopPending()
     view_as_skill = nullptr;
     RoomSceneInstance->setCurrentViewAsSkillSelectionChain(QStringList());
     pending_card = nullptr;
-    foreach (const QString &pile, Self->getPileNames()) {
+    foreach (const QString &pile, Self->pileNames()) {
         if (pile.startsWith(QStringLiteral("&")) || pile == QStringLiteral("wooden_ox"))
             retractPileCards(pile);
     }
@@ -1273,7 +1273,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
         new_name = new_name.mid(1);
         foreach (const Player *p, ClientInstance->players(false)) {
             if (p != Self)
-                pile.unite(p->getPile(new_name));
+                pile.unite(p->pile(new_name));
         }
     } else if (pile_name == QStringLiteral("#xiuye_temp")) {
         foreach (int id, ClientInstance->discardPile()) {
@@ -1282,9 +1282,9 @@ void Dashboard::expandPileCards(const QString &pile_name)
                 pile << id;
         }
     } else if (pile_name == QStringLiteral("#judging_area")) {
-        pile = List2Set(Self->getJudgingAreaID());
+        pile = List2Set(Self->judgingArea());
     } else {
-        pile = Self->getPile(new_name);
+        pile = Self->pile(new_name);
     }
 
     if (pile.isEmpty())
@@ -1303,7 +1303,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
         if (pile_name == QStringLiteral("%shown_card")) {
             foreach (const Player *p, ClientInstance->players(false)) {
                 if (p != Self) {
-                    if (p->getPile(QStringLiteral("shown_card")).contains(card_item->getId())) {
+                    if (p->pile(QStringLiteral("shown_card")).contains(card_item->getId())) {
                         pile_string = ClientInstance->getPlayerName(p->objectName());
                         break;
                     }
@@ -1417,7 +1417,7 @@ void Dashboard::updateChaoren()
 }
 void Dashboard::updateHandPile()
 {
-    const Card *t = Self->getTreasure();
+    const Card *t = Self->treasure();
     if (t != nullptr) {
         if (Self->isBrokenEquip(t->effectiveID(), true))
             retractPileCards(QStringLiteral("wooden_ox"));
@@ -1426,7 +1426,7 @@ void Dashboard::updateHandPile()
 
 void Dashboard::selectLingshou()
 {
-    foreach (const QString &pile, Self->getPileNames()) {
+    foreach (const QString &pile, Self->pileNames()) {
         if (pile.startsWith(QStringLiteral("&")) || pile == QStringLiteral("wooden_ox"))
             retractPileCards(pile);
     }
@@ -1688,7 +1688,7 @@ void Dashboard::showSeat()
         pma->setTransform(QTransform::fromTranslate(-pma->boundingRect().width() / 2, -pma->boundingRect().height() / 2));
         pma->setPos(region.x() + region.width() / 2, region.y() + region.height() / 2);
     }
-    _paintPixmap(_m_seatItem, region, _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER), QString::number(m_player->getSeat())), _m_rightFrame);
+    _paintPixmap(_m_seatItem, region, _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER), QString::number(m_player->seat())), _m_rightFrame);
     //save the seat number for later use
     _m_seatItem->setZValue(1.1);
 }
@@ -1751,7 +1751,7 @@ void Dashboard::refresh()
     PlayerCardContainer::refresh();
     if (!isHegemonyGameMode(ServerInfo.GameMode))
         return;
-    if ((m_player == nullptr) || (m_player->getGeneral() == nullptr) || !m_player->isAlive()) {
+    if ((m_player == nullptr) || (m_player->general() == nullptr) || !m_player->isAlive()) {
         _m_shadow_layer1->setBrush(Qt::NoBrush);
 
         leftHiddenMark->setVisible(false);
@@ -1811,7 +1811,7 @@ void Dashboard::_createBattleArrayAnimations()
 
 void Dashboard::playBattleArrayAnimations()
 {
-    QString kingdom = getPlayer()->getKingdom();
+    QString kingdom = getPlayer()->kingdom();
     _m_frameBorders[kingdom]->show();
     _m_frameBorders[kingdom]->start(true, 30);
     _m_roleBorders[kingdom]->preStart();

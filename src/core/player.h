@@ -68,27 +68,26 @@ public:
     QString screenName() const;
 
     // property setters/getters
-    const IDSet &getShownHandcards() const;
+    const IDSet &shownHandcards() const;
     void setShownHandcards(const IDSet &ids);
     bool isShownHandcard(int id) const;
-    const IDSet &getBrokenEquips() const;
+    const IDSet &brokenEquips() const;
     void setBrokenEquips(const IDSet &ids);
     bool isBrokenEquip(int id, bool consider_shenbao = false) const;
 
-    int getHp() const;
-    int getRenHp() const; //for banling
-    int getLingHp() const;
+    int hp() const;
+    int renHp() const; //for banling
+    int lingHp() const;
     void setHp(int hp);
     void setRenHp(int renhp);
     void setLingHp(int linghp);
-    int getDyingFactor() const;
+    int dyingFactor() const;
     void setDyingFactor(int dyingFactor);
-    int getMaxHp() const;
+    int maxHp() const;
     void setMaxHp(int max_hp);
     int getLostHp() const;
     bool isWounded() const;
-    int dyingThreshold() const;
-    QSanguosha::Gender getGender() const;
+    QSanguosha::Gender gender() const;
     void setGender(QSanguosha::Gender gender);
     bool isMale() const;
     bool isFemale() const;
@@ -97,31 +96,31 @@ public:
     bool hasShownRole() const;
     void setShownRole(bool shown);
 
-    int getMaxCards(const QString &except = QString()) const;
+    int maxCards(const QString &except = QString()) const;
 
-    QString getKingdom() const;
+    QString kingdom() const;
     void setKingdom(const QString &kingdom);
 
     void setRole(const QString &role);
     void setRole(QSanguosha::Role role);
     QString getRoleString() const;
-    QSanguosha::Role getRole() const;
+    QSanguosha::Role role() const;
 
     void setGeneral(const General *general, int pos = 0);
-    const General *getGeneral(int pos = 0) const;
-    QString getGeneralName(int pos = 0) const;
+    const General *general(int pos = 0) const;
+    QString generalName(int pos = 0) const;
 
     QString getFootnoteName() const;
 
     void setState(const QString &state);
     QString getState() const;
 
-    int getSeat() const;
+    int seat() const;
     void setSeat(int seat);
     bool isAdjacentTo(const Player *another) const;
     QString getPhaseString() const;
     void setPhaseString(const QString &phase_str);
-    QSanguosha::Phase getPhase() const;
+    QSanguosha::Phase phase() const;
     void setPhase(QSanguosha::Phase phase);
     bool isInMainPhase() const;
 
@@ -135,9 +134,8 @@ public:
     }
     void setAlive(bool alive);
 
-    QString getFlags() const;
-    QStringList getFlagList() const;
-    void setFlags(const QString &flag);
+    QStringList flagList() const;
+    void setFlag(const QString &flag);
     bool hasFlag(const QString &flag) const;
     void clearFlags();
 
@@ -158,11 +156,11 @@ public:
     const Player *getNextAlive(int n = 1, bool ignoreRemoved = true) const;
     const Player *getLastAlive(int n = 1, bool ignoreRemoved = true) const;
 
-    const General *getAvatarGeneral() const;
+    const General *avatarGeneral() const;
 
     inline bool isLord() const
     {
-        return getRole() == QSanguosha::RoleLord;
+        return role() == QSanguosha::RoleLord;
     }
     bool isCurrent() const;
 
@@ -199,26 +197,27 @@ public:
     bool hasEquip(const Card *card) const;
     bool hasEquip() const;
 
-    QList<const Card *> getJudgingArea() const;
-    QList<int> getJudgingAreaID() const; //for marshal
+    QList<const Card *> judgingAreaCards() const;
+    QList<int> judgingArea() const; // DO NOT USE IDSet SINCE THE ORDER MATTERS
     void addDelayedTrick(const Card *trick);
     void removeDelayedTrick(const Card *trick);
     bool containsTrick(const QString &trick_name) const;
 
-    int getHandcardNum() const;
+    int handcardNum() const;
     void removeCard(const Card *card, QSanguosha::Place place, const QString &pile_name = QString());
     void addCard(const Card *card, QSanguosha::Place place, const QString &pile_name = QString());
-    IDSet handCards() const;
+    IDSet handcards() const;
     void setHandCards(const IDSet &hc);
-    QList<const Card *> getHandcards() const;
+    QList<const Card *> handCards() const;
 
-    const Card *getWeapon() const;
-    const Card *getArmor() const;
-    const Card *getDefensiveHorse() const;
-    const Card *getOffensiveHorse() const;
-    const Card *getTreasure() const;
-    QList<const Card *> getEquips() const;
-    const Card *getEquip(int index) const;
+    const Card *weapon() const;
+    const Card *armor() const;
+    const Card *defensiveHorse() const;
+    const Card *offensiveHorse() const;
+    const Card *treasure() const;
+    QList<const Card *> equipCards() const;
+    IDSet equips() const;
+    const Card *equipCard(int index) const;
 
     bool hasWeapon(const QString &weapon_name, bool selfOnly = false, bool ignore_preshow = false) const;
     bool hasArmor(const QString &armor_name, bool selfOnly = false) const;
@@ -234,8 +233,8 @@ public:
     void addMark(const QString &mark, int add_num = 1);
     void removeMark(const QString &mark, int remove_num = 1);
     void setMark(const QString &mark, int value);
-    int getMark(const QString &mark) const;
-    QMap<QString, int> getMarkMap() const;
+    int mark(const QString &mark) const;
+    QMap<QString, int> marks() const;
 
     void setChained(bool chained);
     bool isChained() const;
@@ -248,9 +247,9 @@ public:
     bool canSlash(const Player *other, bool distance_limit = true, int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
     int getCardCount(bool include_equip = true, bool = false) const;
 
-    IDSet getPile(const QString &pile_name) const;
-    QStringList getPileNames() const;
-    QString getPileName(int card_id) const;
+    IDSet pile(const QString &pile_name) const;
+    QStringList pileNames() const;
+    QString pileName(int card_id) const;
 
     IDSet getHandPile() const;
     QStringList getHandPileList(bool view_as_skill = true) const;
@@ -259,19 +258,15 @@ public:
     void clearHistory();
     bool hasUsed(const QString &card_class) const;
     int usedTimes(const QString &card_class) const;
-    int getSlashCount() const;
-    int getAnalepticCount() const;
-    QHash<QString, int> getHistories() const;
+    int slashCount() const;
+    int analapticCount() const;
+    QHash<QString, int> histories() const;
 
     bool hasEquipSkill(const QString &skill_name) const;
-    QSet<const TriggerSkill *> getTriggerSkills() const;
-    QSet<const Skill *> getSkills(bool include_equip = false, bool visible_only = true, bool include_acquired = false, const QList<int> &positions = {}) const;
-    QList<const Skill *> getSkillList(bool include_equip = false, bool visible_only = true, bool include_acquired = false, const QList<int> &positions = {}) const;
-    QSet<const Skill *> getVisibleSkills(bool include_equip = false) const;
-    QList<const Skill *> getVisibleSkillList(bool include_equip = false) const;
+    QSet<const TriggerSkill *> triggerSkills() const;
+    QSet<const Skill *> skills(bool include_equip = false, bool visible_only = true, bool include_acquired = false, const QList<int> &positions = {}) const;
 
     QSet<QString> getAcquiredSkills() const;
-    QString getSkillDescription(bool yellow = true, const QString &flag = QString()) const;
 
     bool isProhibited(const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
     bool canSlashWithoutCrossbow(const Card *slash = nullptr) const;
@@ -313,6 +308,7 @@ public:
 
     RoomObject *roomObject() const;
 
+    // TODO: d->tag?
     QVariantMap tag;
 
 #ifndef QSGS_PLAYER_NODEPRECATED
@@ -358,13 +354,13 @@ public:
     {
         return isCardLimited(card, QSanguosha::MethodUse);
     }
-    Q_DECL_DEPRECATED QList<const Skill *> getHeadSkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const
+    Q_DECL_DEPRECATED QSet<const Skill *> getHeadSkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const
     {
-        return getSkillList(include_equip, visible_only, include_acquired, {0});
+        return skills(include_equip, visible_only, include_acquired, {0});
     }
-    Q_DECL_DEPRECATED QList<const Skill *> getDeputySkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const
+    Q_DECL_DEPRECATED QSet<const Skill *> getDeputySkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const
     {
-        return getSkillList(include_equip, visible_only, include_acquired, {1});
+        return skills(include_equip, visible_only, include_acquired, {1});
     }
     Q_DECL_DEPRECATED void setDisableShow(const QString &flags, const QString &reason)
     {
@@ -408,11 +404,11 @@ public:
     }
     Q_DECL_DEPRECATED inline const General *getGeneral2() const
     {
-        return getGeneral(1);
+        return general(1);
     }
     Q_DECL_DEPRECATED inline QString getGeneral2Name() const
     {
-        return getGeneralName(1);
+        return generalName(1);
     }
     Q_DECL_DEPRECATED bool pileOpen(const QString &pile_name, const QString &player) const
     {
@@ -425,82 +421,6 @@ public:
 
 private:
     PlayerPrivate *d;
-
-#if 0
-protected:
-    QMap<QString, int> marks;
-    QMap<QString, IDSet> piles;
-    QMap<QString, QStringList> pile_open;
-    QSet<QString> acquired_skills;
-    QSet<QString> acquired_skills2;
-    QMap<QString, bool> skills;
-    QMap<QString, bool> skills2;
-    QStringList skills_originalOrder, skills2_originalOrder; //equals  skills.keys().  unlike QMap, QStringList will keep originalOrder
-    QSet<QString> flags;
-    QHash<QString, int> history;
-    QStringList skill_invalid;
-    IDSet shown_handcards;
-    IDSet broken_equips;
-    QStringList hidden_generals; //for anyun
-    QString shown_hidden_general;
-
-private:
-    QString screen_name;
-    bool owner;
-    const General *general;
-    const General *general2;
-    QSanguosha::Gender m_gender;
-    int hp, max_hp;
-    int renhp, linghp; //for banling
-    int dyingFactor;
-    int chaoren;
-    QString kingdom;
-    QString role;
-    bool role_shown;
-    QString state;
-    int seat;
-    int initialSeat; //for record
-    bool alive;
-
-    bool general_showed;
-    bool general2_showed; //hegemony
-
-    QSanguosha::Phase phase;
-    const Card *weapon;
-    const Card *armor;
-    const Card *defensive_horse;
-    const Card *offensive_horse;
-    const Card *treasure;
-    bool face_up;
-    bool chained;
-    bool removed;
-    QList<int> judging_area;
-    QHash<const Player *, int> fixed_distance;
-
-    QString next;
-
-    QMap<QSanguosha::HandlingMethod, QMap<QString, QStringList>> card_limitation; //method, reason , pattern
-    QStringList disable_show;
-
-
-signals:
-    void general_changed();
-    void general2_changed();
-    void role_changed(const QString &new_role);
-    void state_changed();
-    void hp_changed();
-    void kingdom_changed(const QString &new_kingdom);
-    void phase_changed();
-    void owner_changed(bool owner);
-    void chaoren_changed();
-    void showncards_changed();
-    void removedChanged();
-    void brokenEquips_changed();
-
-    void head_state_changed();
-    void deputy_state_changed(); //hegemony
-    void disable_show_changed();
-#endif
 };
 
 #endif

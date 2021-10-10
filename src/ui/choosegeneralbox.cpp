@@ -303,8 +303,8 @@ void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_onl
     general_number = generals.length();
     if (!view_only) {
         title = single_result ? tr("Please select one general") : tr("Please select the same nationality generals");
-        if (!single_result && Self->getSeat() > 0)
-            title.prepend(Sanguosha->translate(QStringLiteral("SEAT(%1)").arg(Self->getSeat())) + QStringLiteral(" "));
+        if (!single_result && Self->seat() > 0)
+            title.prepend(Sanguosha->translate(QStringLiteral("SEAT(%1)").arg(Self->seat())) + QStringLiteral(" "));
     }
 
     prepareGeometryChange();
