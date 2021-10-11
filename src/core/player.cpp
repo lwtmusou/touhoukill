@@ -1355,7 +1355,7 @@ void Player::addCard(const Card *card, QSanguosha::Place place, const QString &p
         break;
     }
     case QSanguosha::PlaceSpecial: {
-        if (card == nullptr)
+        if (card != nullptr)
             d->piles[pile_name] << card->id();
 
         d->pilesLength[pile_name]++;

@@ -288,7 +288,6 @@ bool PindianStruct::isSuccess() const
 
 JudgeStruct::JudgeStruct()
     : who(nullptr)
-    , m_card(nullptr)
     , pattern(QStringLiteral("."))
     , good(true)
     , time_consuming(false)
@@ -298,6 +297,7 @@ JudgeStruct::JudgeStruct()
     , relative_player(nullptr)
     , ignore_judge(false)
     , _m_result(TRIAL_RESULT_UNKNOWN)
+    , m_card(nullptr)
 {
 }
 
