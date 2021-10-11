@@ -29,7 +29,7 @@ enum Color
 {
     ColorRed,
     ColorBlack,
-    Colorless
+    Colorless = -1
 };
 Q_ENUM_NS(Color)
 
@@ -87,11 +87,11 @@ Q_ENUM_NS(Number)
 
 enum CardType
 {
-    TypeUnknown,
     TypeSkill,
     TypeBasic,
     TypeTrick,
-    TypeEquip
+    TypeEquip,
+    TypeUnknown = -1
 };
 Q_ENUM_NS(CardType)
 
@@ -101,7 +101,8 @@ enum EquipLocation
     ArmorLocation,
     DefensiveHorseLocation,
     OffensiveHorseLocation,
-    TreasureLocation
+    TreasureLocation,
+    UnknownLocation = -1
 };
 Q_ENUM_NS(EquipLocation)
 
@@ -115,7 +116,7 @@ enum Phase
     PhaseDiscard,
     PhaseFinish,
     PhaseNotActive,
-    PhaseNone
+    PhaseNone = -1
 };
 Q_ENUM_NS(Phase)
 
@@ -129,8 +130,7 @@ enum Place
     PlaceDiscardPile,
     PlaceDrawPile,
     PlaceTable,
-    PlaceUnknown,
-    PlaceWuGu
+    PlaceUnknown = -1
 };
 Q_ENUM_NS(Place)
 
@@ -140,7 +140,6 @@ enum Role
     RoleLoyalist,
     RoleRebel,
     RoleRenegade,
-
 };
 Q_ENUM_NS(Role)
 

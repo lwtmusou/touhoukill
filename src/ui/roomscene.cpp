@@ -2329,7 +2329,7 @@ void RoomScene::addSkillButton(const Skill *skill, bool head)
 
         const ViewAsSkillSelection *selection = btn->getViewAsSkill()->selections(Self);
         if (selection != nullptr && !selection->next.isEmpty() && !m_replayControl) {
-            connect(btn, (void (QSanSkillButton ::*)())(&QSanSkillButton::skill_activated), btn, [this, btn, selection]() -> void {
+            connect(btn, (void(QSanSkillButton ::*)())(&QSanSkillButton::skill_activated), btn, [this, btn, selection]() -> void {
                 // QMenu *menu = new QMenu(this);
                 setCurrentViewAsSkillSelectionChain(QStringList());
                 QMenu *menu = mainWindow()->findChild<QMenu *>(btn->getViewAsSkill()->objectName());
@@ -3779,7 +3779,7 @@ void RoomScene::takeAmazingGrace(Player *taker, int card_id, bool move_cards)
             log_box->appendLog(type, from_general, QStringList(), card_str);
             CardsMoveStruct move;
             move.card_ids.append(card_id);
-            move.from_place = QSanguosha::PlaceWuGu;
+            move.from_place = QSanguosha::PlaceTable;
             move.to_place = QSanguosha::PlaceHand;
             move.to = taker;
             container->addCardItems(items, move);
