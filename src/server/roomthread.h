@@ -34,10 +34,11 @@ public:
     void constructTriggerTable();
 
 private:
-    void getTriggerAndSort(TriggerEvent e, QList<QSharedPointer<TriggerDetail>> &detailsList, const QList<QSharedPointer<TriggerDetail>> &triggered, const QVariant &data);
+    void getTriggerAndSort(QSanguosha::TriggerEvent e, QList<QSharedPointer<TriggerDetail>> &detailsList, const QList<QSharedPointer<TriggerDetail>> &triggered,
+                           const QVariant &data);
 
 public:
-    bool trigger(TriggerEvent e, QVariant &data);
+    bool trigger(QSanguosha::TriggerEvent e, QVariant &data);
 
     void addPlayerSkills(ServerPlayer *player, bool invoke_game_start = false);
 
@@ -89,7 +90,7 @@ private:
 
     Room *room;
 
-    QList<const Trigger *> skill_table[NumOfEvents];
+    QList<const Trigger *> skill_table[QSanguosha::NumOfEvents];
     QSet<QString> skillSet;
 
     GameRule *game_rule;

@@ -1,16 +1,19 @@
 #ifndef _SKILL_H
 #define _SKILL_H
 
-class Player;
-class Card;
-class RoomObject;
+#include "global.h"
 
+// TODO: kill these
 #include "CardFace.h"
 #include "structs.h"
 
 #include <QDialog>
 #include <QObject>
 #include <QSet>
+
+class Player;
+class Card;
+class RoomObject;
 
 class SkillPrivate;
 
@@ -257,8 +260,6 @@ private:
     FilterSkillPrivate *const d;
 };
 
-typedef QSet<TriggerEvent> TriggerEvents;
-
 class TriggerPrivate;
 
 class Trigger // DO NOT INHERIT QObject since it is used in QObject-derived class
@@ -268,10 +269,10 @@ public:
     virtual ~Trigger();
     QString name() const; // ... so we have to use a QString name() here
 
-    TriggerEvents triggerEvents() const;
-    bool canTrigger(TriggerEvent e) const;
-    void addTriggerEvent(TriggerEvent e);
-    void addTriggerEvents(const TriggerEvents &e);
+    QSanguosha::TriggerEvents triggerEvents() const;
+    bool canTrigger(QSanguosha::TriggerEvent e) const;
+    void addTriggerEvent(QSanguosha::TriggerEvent e);
+    void addTriggerEvents(const QSanguosha::TriggerEvents &e);
     bool isGlobal() const;
     void setGlobal(bool global);
 
@@ -298,16 +299,16 @@ public:
     virtual int priority() const = 0;
 
     // Should not trigger other events and affect other things in principle
-    virtual void record(TriggerEvent event, RoomObject *room, QVariant &data) const;
+    virtual void record(QSanguosha::TriggerEvent event, RoomObject *room, QVariant &data) const;
 
     // TODO: make RoomObject const:
     // Current implementation is: To create a TriggerDetail in this function. All data saved in TriggerDetail is non-const
     // This makes the RoomObject not able to be const even if it should be.
     // EXACTLY STRICTLY NOTHING should be even TOUCHED in this function
-    virtual QList<TriggerDetail> triggerable(TriggerEvent event, RoomObject *room, const QVariant &data) const = 0;
+    virtual QList<TriggerDetail> triggerable(QSanguosha::TriggerEvent event, RoomObject *room, const QVariant &data) const = 0;
 
     // TODO: make TriggerDetail implicitly shared
-    virtual bool trigger(TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const;
+    virtual bool trigger(QSanguosha::TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const;
 
 private:
     Q_DISABLE_COPY_MOVE(Trigger)
@@ -322,7 +323,7 @@ public:
 
     // fixed 0
     int priority() const final override;
-    QList<TriggerDetail> triggerable(TriggerEvent, RoomObject *room, const QVariant &) const final override;
+    QList<TriggerDetail> triggerable(QSanguosha::TriggerEvent, RoomObject *room, const QVariant &) const final override;
 };
 
 class TriggerSkill
@@ -343,12 +344,12 @@ public:
     // force subclass override this function
     // virtual QList<TriggerDetail> triggerable(TriggerEvent event, RoomObject *room, const QVariant &data) const = 0;
 
-    bool trigger(TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const final override;
+    bool trigger(QSanguosha::TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const final override;
 
     // Limited modification to TriggerDetail, notably tag and target
-    virtual bool cost(TriggerEvent event, RoomObject *room, TriggerDetail &detail, QVariant &data) const;
+    virtual bool cost(QSanguosha::TriggerEvent event, RoomObject *room, TriggerDetail &detail, QVariant &data) const;
     // No modification to TriggerDetail since the cost is done
-    virtual bool effect(TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const = 0;
+    virtual bool effect(QSanguosha::TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const = 0;
 };
 
 class EquipSkill : public TriggerSkill
@@ -380,7 +381,7 @@ public:
 
     // Since it may use only Record, override this function here
     // Optional override in subclass
-    QList<TriggerDetail> triggerable(TriggerEvent event, RoomObject *room, const QVariant &data) const override;
+    QList<TriggerDetail> triggerable(QSanguosha::TriggerEvent event, RoomObject *room, const QVariant &data) const override;
 };
 
 // a nasty way for 'fake moves', usually used in the process of multi-card chosen
@@ -391,8 +392,8 @@ public:
     FakeMoveRecord(const QString &skillName);
     ~FakeMoveRecord() final override;
 
-    QList<TriggerDetail> triggerable(TriggerEvent event, RoomObject *room, const QVariant &data) const final override;
-    bool trigger(TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const final override;
+    QList<TriggerDetail> triggerable(QSanguosha::TriggerEvent event, RoomObject *room, const QVariant &data) const final override;
+    bool trigger(QSanguosha::TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const final override;
 
 private:
     FakeMoveRecordPrivate *const d;

@@ -57,14 +57,14 @@ void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start)
     foreach (const TriggerSkill *skill, player->triggerSkills()) {
         addTriggerSkill(skill);
 
-        if (invoke_game_start && skill->triggerEvents().contains(GameStart))
+        if (invoke_game_start && skill->triggerEvents().contains(QSanguosha::GameStart))
             invoke_verify = true;
     }
 
     //We should make someone trigger a whole GameStart event instead of trigger a skill only.
     if (invoke_verify) {
         QVariant v = QVariant::fromValue(player);
-        trigger(GameStart, v);
+        trigger(QSanguosha::GameStart, v);
     }
 }
 
@@ -88,7 +88,7 @@ ServerPlayer *RoomThread::find3v3Next(QList<ServerPlayer *> &first, QList<Server
         foreach (ServerPlayer *player, room->m_alivePlayers) {
             room->setPlayerFlag(player, QStringLiteral("-actioned"));
             QVariant v = QVariant::fromValue(player);
-            trigger(ActionedReset, v);
+            trigger(QSanguosha::ActionedReset, v);
         }
 
         qSwap(first, second);
@@ -130,12 +130,12 @@ void RoomThread::run3v3(QList<ServerPlayer *> &first, QList<ServerPlayer *> &sec
         forever {
             room->setCurrent(current);
             QVariant v = QVariant::fromValue(current);
-            trigger(TurnStart, v);
+            trigger(QSanguosha::TurnStart, v);
             room->setPlayerFlag(current, QStringLiteral("actioned"));
             current = find3v3Next(first, second);
         }
-    } catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == TurnBroken)
+    } catch (QSanguosha::TriggerEvent triggerEvent) {
+        if (triggerEvent == QSanguosha::TurnBroken)
             _handleTurnBroken3v3(first, second, game_rule);
         else
             throw triggerEvent;
@@ -147,10 +147,10 @@ void RoomThread::_handleTurnBroken3v3(QList<ServerPlayer *> &first, QList<Server
     try {
         ServerPlayer *player = room->getCurrent();
         QVariant v = QVariant::fromValue(player);
-        trigger(TurnBroken, v);
+        trigger(QSanguosha::TurnBroken, v);
         if (player->phase() != QSanguosha::PhaseNotActive) {
             QVariant data = QVariant::fromValue(player);
-            game_rule->trigger(EventPhaseEnd, room, TriggerDetail(room), data);
+            game_rule->trigger(QSanguosha::EventPhaseEnd, room, TriggerDetail(room), data);
             player->changePhase(player->phase(), QSanguosha::PhaseNotActive);
         }
         if (!player->hasFlag(QStringLiteral("actioned")))
@@ -158,8 +158,8 @@ void RoomThread::_handleTurnBroken3v3(QList<ServerPlayer *> &first, QList<Server
 
         ServerPlayer *next = find3v3Next(first, second);
         run3v3(first, second, game_rule, next);
-    } catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == TurnBroken) {
+    } catch (QSanguosha::TriggerEvent triggerEvent) {
+        if (triggerEvent == QSanguosha::TurnBroken) {
             _handleTurnBroken3v3(first, second, game_rule);
         } else {
             throw triggerEvent;
@@ -179,7 +179,7 @@ void RoomThread::actionHulaoPass(ServerPlayer *uuz, QList<ServerPlayer *> league
         forever {
             ServerPlayer *current = room->getCurrent();
             QVariant v = QVariant::fromValue(current);
-            trigger(TurnStart, v);
+            trigger(QSanguosha::TurnStart, v);
 
             ServerPlayer *next = findHulaoPassNext(uuz, league);
 
@@ -187,14 +187,14 @@ void RoomThread::actionHulaoPass(ServerPlayer *uuz, QList<ServerPlayer *> league
                 foreach (ServerPlayer *player, league) {
                     if (player->isDead()) {
                         QVariant v = QVariant::fromValue(player);
-                        trigger(TurnStart, v);
+                        trigger(QSanguosha::TurnStart, v);
                     }
                 }
             }
             room->setCurrent(next);
         }
-    } catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == TurnBroken)
+    } catch (QSanguosha::TriggerEvent triggerEvent) {
+        if (triggerEvent == QSanguosha::TurnBroken)
             _handleTurnBrokenHulaoPass(uuz, league, game_rule);
         else
             throw triggerEvent;
@@ -206,18 +206,18 @@ void RoomThread::_handleTurnBrokenHulaoPass(ServerPlayer *uuz, const QList<Serve
     try {
         ServerPlayer *player = room->getCurrent();
         QVariant v = QVariant::fromValue(player);
-        trigger(TurnBroken, v);
+        trigger(QSanguosha::TurnBroken, v);
         ServerPlayer *next = findHulaoPassNext(uuz, league);
         if (player->phase() != QSanguosha::PhaseNotActive) {
             QVariant data = QVariant::fromValue(player);
-            game_rule->trigger(EventPhaseEnd, room, TriggerDetail(room), data);
+            game_rule->trigger(QSanguosha::EventPhaseEnd, room, TriggerDetail(room), data);
             player->changePhase(player->phase(), QSanguosha::PhaseNotActive);
         }
 
         room->setCurrent(next);
         actionHulaoPass(uuz, league, game_rule);
-    } catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == TurnBroken)
+    } catch (QSanguosha::TriggerEvent triggerEvent) {
+        if (triggerEvent == QSanguosha::TurnBroken)
             _handleTurnBrokenHulaoPass(uuz, league, game_rule);
         else
             throw triggerEvent;
@@ -230,7 +230,7 @@ void RoomThread::actionNormal(GameRule *game_rule)
         forever {
             ServerPlayer *current = room->getCurrent();
             QVariant data = QVariant::fromValue(current);
-            trigger(TurnStart, data);
+            trigger(QSanguosha::TurnStart, data);
             if (room->isFinished())
                 break;
 
@@ -242,7 +242,7 @@ void RoomThread::actionNormal(GameRule *game_rule)
                 nextExtraTurn = nullptr;
                 room->setTag(QStringLiteral("touhou-extra"), true);
                 nextExtraTurnCopy->tag[QStringLiteral("touhou-extra")] = true;
-                trigger(TurnStart, data);
+                trigger(QSanguosha::TurnStart, data);
 
                 if (room->isFinished())
                     return;
@@ -256,8 +256,8 @@ void RoomThread::actionNormal(GameRule *game_rule)
 
             room->setCurrent(qobject_cast<ServerPlayer *>(current->getNextAlive(1, false)));
         }
-    } catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == TurnBroken)
+    } catch (QSanguosha::TriggerEvent triggerEvent) {
+        if (triggerEvent == QSanguosha::TurnBroken)
             _handleTurnBrokenNormal(game_rule);
         else
             throw triggerEvent;
@@ -269,10 +269,10 @@ void RoomThread::_handleTurnBrokenNormal(GameRule *game_rule)
     try {
         ServerPlayer *player = room->getCurrent();
         QVariant data = QVariant::fromValue(player);
-        trigger(TurnBroken, data);
+        trigger(QSanguosha::TurnBroken, data);
 
         if (player->phase() != QSanguosha::PhaseNotActive) {
-            game_rule->trigger(EventPhaseEnd, room, TriggerDetail(room), data);
+            game_rule->trigger(QSanguosha::EventPhaseEnd, room, TriggerDetail(room), data);
             player->changePhase(player->phase(), QSanguosha::PhaseNotActive);
         }
 
@@ -292,7 +292,7 @@ void RoomThread::_handleTurnBrokenNormal(GameRule *game_rule)
             nextExtraTurn = nullptr;
             room->setTag(QStringLiteral("touhou-extra"), true);
             nextExtraTurnCopy->tag[QStringLiteral("touhou-extra")] = true;
-            trigger(TurnStart, data);
+            trigger(QSanguosha::TurnStart, data);
 
             if (room->isFinished())
                 return;
@@ -306,8 +306,8 @@ void RoomThread::_handleTurnBrokenNormal(GameRule *game_rule)
         ServerPlayer *next = qobject_cast<ServerPlayer *>(player->getNextAlive(1, false));
         room->setCurrent(next);
         actionNormal(game_rule);
-    } catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == TurnBroken)
+    } catch (QSanguosha::TriggerEvent triggerEvent) {
+        if (triggerEvent == QSanguosha::TurnBroken)
             _handleTurnBrokenNormal(game_rule);
         else
             throw triggerEvent;
@@ -428,7 +428,7 @@ void RoomThread::run()
         }
         constructTriggerTable();
         QVariant v;
-        trigger(GameStart, v);
+        trigger(QSanguosha::GameStart, v);
         if (room->getMode() == QStringLiteral("06_3v3")) {
             run3v3(first, second, game_rule, first.first());
         } else if (room->getMode() == QStringLiteral("04_1v3")) {
@@ -445,16 +445,16 @@ void RoomThread::run()
                     first = room->getPlayers().at(1);
                 ServerPlayer *second = room->getOtherPlayers(first).first();
                 QVariant v1 = QVariant::fromValue(first);
-                trigger(Debut, v1);
+                trigger(QSanguosha::Debut, v1);
                 QVariant v2 = QVariant::fromValue(second);
-                trigger(Debut, v2);
+                trigger(QSanguosha::Debut, v2);
                 room->setCurrent(first);
             }
 
             actionNormal(game_rule);
         }
-    } catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == GameFinished) {
+    } catch (QSanguosha::TriggerEvent triggerEvent) {
+        if (triggerEvent == QSanguosha::GameFinished) {
             delete game_rule;
             return;
         } else
@@ -462,7 +462,8 @@ void RoomThread::run()
     }
 }
 
-void RoomThread::getTriggerAndSort(TriggerEvent e, QList<QSharedPointer<TriggerDetail>> &detailsList, const QList<QSharedPointer<TriggerDetail>> &triggered, const QVariant &data)
+void RoomThread::getTriggerAndSort(QSanguosha::TriggerEvent e, QList<QSharedPointer<TriggerDetail>> &detailsList, const QList<QSharedPointer<TriggerDetail>> &triggered,
+                                   const QVariant &data)
 {
     // used to get all the skills which can be triggered now, and sort them.
     // everytime this function is called, it will get all the skiils and judge the triggerable one by one
@@ -553,7 +554,7 @@ void RoomThread::getTriggerAndSort(TriggerEvent e, QList<QSharedPointer<TriggerD
     detailsList = details;
 }
 
-bool RoomThread::trigger(TriggerEvent e, QVariant &data)
+bool RoomThread::trigger(QSanguosha::TriggerEvent e, QVariant &data)
 {
     // find all the skills, do the record first. it do the things only for record. it should not and must not interfere the procedure of other skills.
     QList<const Trigger *> triggerList = skill_table[e];
@@ -655,12 +656,12 @@ void RoomThread::addTriggerSkill(const Trigger *skill)
 
     skillSet << skill->name();
 
-    TriggerEvents events = skill->triggerEvents();
-    if (events.contains(NumOfEvents)) {
-        for (int i = NonTrigger + 1; i < NumOfEvents; ++i)
-            skill_table[static_cast<TriggerEvent>(i)] << skill;
+    QSanguosha::TriggerEvents events = skill->triggerEvents();
+    if (events.contains(QSanguosha::NumOfEvents)) {
+        for (int i = QSanguosha::NonTrigger + 1; i < QSanguosha::NumOfEvents; ++i)
+            skill_table[static_cast<QSanguosha::TriggerEvent>(i)] << skill;
     } else {
-        foreach (TriggerEvent triggerEvent, events) {
+        foreach (QSanguosha::TriggerEvent triggerEvent, events) {
             QList<const Trigger *> &table = skill_table[triggerEvent];
             table << skill;
         }

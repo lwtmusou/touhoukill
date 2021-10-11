@@ -169,6 +169,129 @@ enum Gender
 };
 Q_ENUM_NS(Gender)
 
+enum TriggerEvent
+{
+    NonTrigger,
+
+    GameStart,
+    TurnStart,
+    EventPhaseStart,
+    EventPhaseProceeding,
+    EventPhaseEnd,
+    EventPhaseChanging,
+    EventPhaseSkipping,
+
+    DrawNCards,
+    AfterDrawNCards,
+    DrawInitialCards,
+    AfterDrawInitialCards,
+
+    PreHpRecover,
+    HpRecover,
+    PreHpLost,
+    PostHpLost,
+    HpChanged,
+    MaxHpChanged,
+    PostHpReduced,
+
+    EventLoseSkill,
+    EventAcquireSkill,
+    EventSkillInvalidityChange,
+
+    StartJudge,
+    AskForRetrial,
+    FinishRetrial,
+    FinishJudge,
+
+    PindianAsked,
+    PindianVerifying,
+    Pindian,
+
+    TurnedOver,
+    ChainStateChanged,
+    RemoveStateChanged,
+    BrokenEquipChanged,
+    ShownCardChanged,
+    RoleShownChanged,
+
+    ConfirmDamage, // confirm the damage's count and damage's nature
+    Predamage, // trigger the certain skill -- jueqing
+    DamageForseen, // the first event in a damage -- kuangfeng dawu
+    DamageCaused, // the moment for -- qianxi..
+    DamageInflicted, // the moment for -- tianxiang..
+    PreDamageDone, // before reducing Hp
+    DamageDone, // it's time to do the damage
+    Damage, // the moment for -- lieren..
+    Damaged, // the moment for -- yiji..
+    DamageComplete, // the moment for trigger iron chain
+
+    EnterDying,
+    Dying,
+    QuitDying,
+    AskForPeaches,
+    AskForPeachesDone,
+    Death,
+    BuryVictim,
+    BeforeGameOverJudge,
+    GameOverJudge,
+    GameFinished,
+    Revive,
+
+    SlashEffected,
+    SlashProceed,
+    SlashHit,
+    SlashMissed,
+    Cancel,
+
+    JinkEffect,
+
+    CardAsked,
+    CardResponded,
+    BeforeCardsMove, // sometimes we need to record cards before the move
+    CardsMoveOneTime,
+
+    PreCardUsed, // for AI to filter events only.
+    CardUsed,
+    TargetSpecifying,
+    TargetConfirming,
+    TargetSpecified,
+    TargetConfirmed,
+    CardEffect, // for AI to filter events only
+    CardEffected,
+    PostCardEffected,
+    CardFinished,
+    TrickCardCanceling,
+    TrickEffect,
+
+    PreMarkChange,
+    MarkChanged,
+
+    ChoiceMade,
+
+    // StageChange, // For hulao pass only
+    FetchDrawPileCard, // For miniscenarios only
+    ActionedReset, // For 3v3 only
+    Debut, // For 1v1 only
+
+    TurnBroken, // For the skill 'DanShou'. Do not use it to trigger events
+
+    //new events for touhoukill,
+    DrawPileSwaped, //for qiannian
+    AfterGuanXing,
+    KingdomChanged,
+
+    GeneralShown, // For Official Hegemony mode
+    GeneralHidden,
+    GeneralRemoved,
+
+    // This is the Num Of Events and also All events when used in Trigger::addTriggerEvent[s].
+    // Add this event to Trigger makes it trigger for all events
+    NumOfEvents
+};
+Q_ENUM_NS(TriggerEvent)
+
+typedef QSet<TriggerEvent> TriggerEvents;
+
 } // namespace QSanguosha
 
 #endif // GLOBAL_H

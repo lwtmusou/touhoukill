@@ -520,7 +520,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     PindianStruct *pindian_star = &pindian_struct;
     QVariant data = QVariant::fromValue(pindian_star);
     Q_ASSERT(thread != nullptr);
-    thread->trigger(PindianVerifying, data);
+    thread->trigger(QSanguosha::PindianVerifying, data);
 
     PindianStruct *new_star = data.value<PindianStruct *>();
     pindian_struct.from_number = new_star->from_number;
@@ -546,7 +546,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
 
     pindian_star = &pindian_struct;
     data = QVariant::fromValue(pindian_star);
-    thread->trigger(Pindian, data);
+    thread->trigger(QSanguosha::Pindian, data);
 
     if (room->getCardPlace(pindian_struct.from_card->effectiveID()) == QSanguosha::PlaceTable) {
         CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, pindian_struct.from->objectName(), pindian_struct.to->objectName(), pindian_struct.reason, QString());
@@ -563,7 +563,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     s.type = ChoiceMadeStruct::Pindian;
     s.args << reason << objectName() << QString::number(pindian_struct.from_card->effectiveID()) << target->objectName() << QString::number(pindian_struct.to_card->effectiveID());
     QVariant decisionData = QVariant::fromValue(s);
-    thread->trigger(ChoiceMade, decisionData);
+    thread->trigger(QSanguosha::ChoiceMade, decisionData);
 
     return pindian_struct.success;
 }
@@ -581,7 +581,7 @@ void ServerPlayer::turnOver()
 
     Q_ASSERT(room->getThread() != nullptr);
     QVariant v = QVariant::fromValue(this);
-    room->getThread()->trigger(TurnedOver, v);
+    room->getThread()->trigger(QSanguosha::TurnedOver, v);
 }
 
 bool ServerPlayer::changePhase(QSanguosha::Phase from, QSanguosha::Phase to)
@@ -597,7 +597,7 @@ bool ServerPlayer::changePhase(QSanguosha::Phase from, QSanguosha::Phase to)
     phase_change.to = to;
     QVariant data = QVariant::fromValue(phase_change);
 
-    bool skip = thread->trigger(EventPhaseChanging, data);
+    bool skip = thread->trigger(QSanguosha::EventPhaseChanging, data);
     if (skip && to != QSanguosha::PhaseNotActive) {
         setPhase(from);
         return true;
@@ -611,12 +611,12 @@ bool ServerPlayer::changePhase(QSanguosha::Phase from, QSanguosha::Phase to)
 
     QVariant thisVariant = QVariant::fromValue(this);
 
-    if (!thread->trigger(EventPhaseStart, thisVariant)) {
+    if (!thread->trigger(QSanguosha::EventPhaseStart, thisVariant)) {
         if (phase() != QSanguosha::PhaseNotActive)
-            thread->trigger(EventPhaseProceeding, thisVariant);
+            thread->trigger(QSanguosha::EventPhaseProceeding, thisVariant);
     }
     if (phase() != QSanguosha::PhaseNotActive)
-        thread->trigger(EventPhaseEnd, thisVariant);
+        thread->trigger(QSanguosha::EventPhaseEnd, thisVariant);
 
     return false;
 }
@@ -655,7 +655,7 @@ void ServerPlayer::play(QList<QSanguosha::Phase> set_phases)
         setPhase(QSanguosha::PhaseNone);
         QVariant data = QVariant::fromValue(phase_change);
 
-        bool skip = thread->trigger(EventPhaseChanging, data);
+        bool skip = thread->trigger(QSanguosha::EventPhaseChanging, data);
         phase_change = data.value<PhaseChangeStruct>();
         _m_phases_state[i].phase = phases[i] = phase_change.to;
 
@@ -668,19 +668,19 @@ void ServerPlayer::play(QList<QSanguosha::Phase> set_phases)
             s.phase = phases[i];
             s.player = this;
             QVariant d = QVariant::fromValue(s);
-            bool cancel_skip = thread->trigger(EventPhaseSkipping, d);
+            bool cancel_skip = thread->trigger(QSanguosha::EventPhaseSkipping, d);
             if (!cancel_skip)
                 continue;
         }
 
         QVariant thisVariant = QVariant::fromValue(this);
 
-        if (!thread->trigger(EventPhaseStart, thisVariant)) {
+        if (!thread->trigger(QSanguosha::EventPhaseStart, thisVariant)) {
             if (phase() != QSanguosha::PhaseNotActive)
-                thread->trigger(EventPhaseProceeding, thisVariant);
+                thread->trigger(QSanguosha::EventPhaseProceeding, thisVariant);
         }
         if (phase() != QSanguosha::PhaseNotActive)
-            thread->trigger(EventPhaseEnd, thisVariant);
+            thread->trigger(QSanguosha::EventPhaseEnd, thisVariant);
         else
             break;
     }
@@ -778,7 +778,7 @@ void ServerPlayer::gainMark(const QString &m, int n)
     change.player = this;
     QVariant n_data = QVariant::fromValue(change);
     if (m.startsWith(QStringLiteral("@"))) {
-        if (room->getThread()->trigger(PreMarkChange, n_data))
+        if (room->getThread()->trigger(QSanguosha::PreMarkChange, n_data))
             return;
         n = n_data.value<MarkChangeStruct>().num;
     }
@@ -801,7 +801,7 @@ void ServerPlayer::gainMark(const QString &m, int n)
     room->setPlayerMark(this, m, value);
 
     if (m.startsWith(QStringLiteral("@")))
-        room->getThread()->trigger(MarkChanged, n_data);
+        room->getThread()->trigger(QSanguosha::MarkChanged, n_data);
 }
 
 void ServerPlayer::loseMark(const QString &m, int n)
@@ -816,7 +816,7 @@ void ServerPlayer::loseMark(const QString &m, int n)
     QVariant n_data = QVariant::fromValue(change);
 
     if (m.startsWith(QStringLiteral("@"))) {
-        if (room->getThread()->trigger(PreMarkChange, n_data))
+        if (room->getThread()->trigger(QSanguosha::PreMarkChange, n_data))
             return;
         n = -(n_data.value<MarkChangeStruct>().num);
     }
@@ -844,7 +844,7 @@ void ServerPlayer::loseMark(const QString &m, int n)
     room->setPlayerMark(this, m, value);
 
     if (m.startsWith(QStringLiteral("@")))
-        room->getThread()->trigger(MarkChanged, n_data);
+        room->getThread()->trigger(QSanguosha::MarkChanged, n_data);
 }
 
 void ServerPlayer::loseAllMarks(const QString &mark_name)
@@ -1660,7 +1660,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         s.isHead = head_general;
         s.isShow = true;
         QVariant _head = QVariant::fromValue(s);
-        room->getThread()->trigger(GeneralShown, _head);
+        room->getThread()->trigger(QSanguosha::GeneralShown, _head);
     }
 
     room->filterCards(this, getCards(QStringLiteral("hes")), true);
@@ -1751,7 +1751,7 @@ void ServerPlayer::hideGeneral(bool head_general)
     s.isHead = head_general;
     s.isShow = false;
     QVariant _head = QVariant::fromValue(s);
-    room->getThread()->trigger(GeneralHidden, _head);
+    room->getThread()->trigger(QSanguosha::GeneralHidden, _head);
 
     room->filterCards(this, getCards(QStringLiteral("he")), true);
     setSkillsPreshowed(head_general ? QStringLiteral("h") : QStringLiteral("d"));
@@ -1843,7 +1843,7 @@ void ServerPlayer::removeGeneral(bool head_general)
     s.isShow = false;
     QVariant _from = QVariant::fromValue(s);
 
-    room->getThread()->trigger(GeneralRemoved, _from);
+    room->getThread()->trigger(QSanguosha::GeneralRemoved, _from);
 
     room->filterCards(this, getCards(QStringLiteral("hes")), true);
 }

@@ -12,10 +12,37 @@
 GameRule::GameRule()
     : Rule(QStringLiteral("game_rule"))
 {
-    addTriggerEvents(TriggerEvents() << GameStart << TurnStart << EventPhaseProceeding << EventPhaseEnd << EventPhaseChanging << PreCardUsed << CardUsed << CardFinished
-                                     << CardEffected << PostHpReduced << EventLoseSkill << EventAcquireSkill << AskForPeaches << AskForPeachesDone << BuryVictim
-                                     << BeforeGameOverJudge << GameOverJudge << SlashHit << SlashEffected << SlashProceed << ConfirmDamage << DamageDone << DamageComplete
-                                     << StartJudge << FinishRetrial << FinishJudge << ChoiceMade << BeforeCardsMove << EventPhaseStart << JinkEffect << GeneralShown);
+    addTriggerEvents({QSanguosha::GameStart,
+                      QSanguosha::TurnStart,
+                      QSanguosha::EventPhaseProceeding,
+                      QSanguosha::EventPhaseEnd,
+                      QSanguosha::EventPhaseChanging,
+                      QSanguosha::PreCardUsed,
+                      QSanguosha::CardUsed,
+                      QSanguosha::CardFinished,
+                      QSanguosha::CardEffected,
+                      QSanguosha::PostHpReduced,
+                      QSanguosha::EventLoseSkill,
+                      QSanguosha::EventAcquireSkill,
+                      QSanguosha::AskForPeaches,
+                      QSanguosha::AskForPeachesDone,
+                      QSanguosha::BuryVictim,
+                      QSanguosha::BeforeGameOverJudge,
+                      QSanguosha::GameOverJudge,
+                      QSanguosha::SlashHit,
+                      QSanguosha::SlashEffected,
+                      QSanguosha::SlashProceed,
+                      QSanguosha::ConfirmDamage,
+                      QSanguosha::DamageDone,
+                      QSanguosha::DamageComplete,
+                      QSanguosha::StartJudge,
+                      QSanguosha::FinishRetrial,
+                      QSanguosha::FinishJudge,
+                      QSanguosha::ChoiceMade,
+                      QSanguosha::BeforeCardsMove,
+                      QSanguosha::EventPhaseStart,
+                      QSanguosha::JinkEffect,
+                      QSanguosha::GeneralShown});
 }
 
 void GameRule::onPhaseProceed(ServerPlayer *player) const
@@ -66,14 +93,14 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const
         s.n = num;
         QVariant qnum = QVariant::fromValue(s);
         Q_ASSERT(room->getThread() != nullptr);
-        room->getThread()->trigger(DrawNCards, qnum);
+        room->getThread()->trigger(QSanguosha::DrawNCards, qnum);
         s = qnum.value<DrawNCardsStruct>();
         num = s.n;
         if (num > 0)
             player->drawCards(num);
         s.n = num;
         qnum = QVariant::fromValue(s);
-        room->getThread()->trigger(AfterDrawNCards, qnum);
+        room->getThread()->trigger(QSanguosha::AfterDrawNCards, qnum);
         break;
     }
     case QSanguosha::PhasePlay: {
@@ -103,7 +130,7 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const
     }
 }
 
-bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const TriggerDetail & /*detail*/, QVariant &data) const
+bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room, const TriggerDetail & /*detail*/, QVariant &data) const
 {
     Room *room = qobject_cast<Room *>(_room);
 
@@ -113,7 +140,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
     }
 
     switch (triggerEvent) {
-    case GameStart: {
+    case QSanguosha::GameStart: {
         if (data.isNull()) {
             foreach (ServerPlayer *player, room->getPlayers()) {
                 Q_ASSERT(player->general() != nullptr);
@@ -158,7 +185,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
                 s.isInitial = true;
                 s.n = n;
                 QVariant data = QVariant::fromValue(s);
-                room->getThread()->trigger(DrawInitialCards, data);
+                room->getThread()->trigger(QSanguosha::DrawInitialCards, data);
                 s_list << data.value<DrawNCardsStruct>();
             }
             QList<int> n_list;
@@ -169,12 +196,12 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
                 room->askForLuckCard();
             foreach (DrawNCardsStruct s, s_list) {
                 QVariant _slistati = QVariant::fromValue(s);
-                room->getThread()->trigger(AfterDrawInitialCards, _slistati);
+                room->getThread()->trigger(QSanguosha::AfterDrawInitialCards, _slistati);
             }
         }
         break;
     }
-    case TurnStart: {
+    case QSanguosha::TurnStart: {
         ServerPlayer *player = room->getCurrent();
         if (player == nullptr)
             return false;
@@ -215,18 +242,18 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
         // room->autoCleanupClonedCards();
         break;
     }
-    case EventPhaseProceeding: {
+    case QSanguosha::EventPhaseProceeding: {
         ServerPlayer *player = data.value<ServerPlayer *>();
         onPhaseProceed(player);
         break;
     }
-    case EventPhaseStart: {
+    case QSanguosha::EventPhaseStart: {
         ServerPlayer *current = data.value<ServerPlayer *>();
         if ((current != nullptr) && current->phase() == QSanguosha::PhaseFinish && !current->brokenEquips().isEmpty() && !current->hasFlag(QStringLiteral("GameRule_brokenEquips")))
             current->removeBrokenEquips(current->brokenEquips());
         break;
     }
-    case EventPhaseEnd: {
+    case QSanguosha::EventPhaseEnd: {
         ServerPlayer *player = data.value<ServerPlayer *>();
         if (player->phase() == QSanguosha::PhasePlay)
             room->addPlayerHistory(player, QStringLiteral("."));
@@ -238,7 +265,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
         }
         break;
     }
-    case EventPhaseChanging: {
+    case QSanguosha::EventPhaseChanging: {
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         ServerPlayer *player = qobject_cast<ServerPlayer *>(change.player);
         if (change.to == QSanguosha::PhaseNotActive) {
@@ -284,7 +311,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
 
         break;
     }
-    case PreCardUsed: {
+    case QSanguosha::PreCardUsed: {
         if (data.canConvert<CardUseStruct>()) {
             CardUseStruct card_use = data.value<CardUseStruct>();
             if (card_use.from->hasFlag(QStringLiteral("Global_ForbidSurrender"))) {
@@ -299,7 +326,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
         }
         break;
     }
-    case CardUsed: {
+    case QSanguosha::CardUsed: {
         if (data.canConvert<CardUseStruct>()) {
             CardUseStruct card_use = data.value<CardUseStruct>();
             RoomThread *thread = room->getThread();
@@ -308,12 +335,12 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
                 card_use.card->face()->doPreAction(room, card_use);
 
             if (card_use.from != nullptr) {
-                thread->trigger(TargetSpecifying, data);
+                thread->trigger(QSanguosha::TargetSpecifying, data);
                 card_use = data.value<CardUseStruct>();
             }
 
             if (!card_use.to.isEmpty()) {
-                thread->trigger(TargetConfirming, data);
+                thread->trigger(QSanguosha::TargetConfirming, data);
                 card_use = data.value<CardUseStruct>();
             }
 
@@ -348,8 +375,8 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
                     card_use.from->tag[QStringLiteral("Jink_") + card_use.card->toString()] = QVariant::fromValue(jink_list);
                 }
                 if ((card_use.from != nullptr) && !card_use.to.isEmpty()) {
-                    thread->trigger(TargetSpecified, data);
-                    thread->trigger(TargetConfirmed, data);
+                    thread->trigger(QSanguosha::TargetSpecified, data);
+                    thread->trigger(QSanguosha::TargetConfirmed, data);
                 }
                 card_use = data.value<CardUseStruct>();
                 room->setTag(QStringLiteral("CardUseNullifiedList"), QVariant::fromValue(card_use.nullified_list));
@@ -359,12 +386,12 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
                 card_use.card->face()->use(room, card_use);
                 if (!jink_list_backup.isEmpty())
                     card_use.from->tag[QStringLiteral("Jink_") + card_use.card->toString()] = QVariant::fromValue(jink_list_backup);
-            } catch (TriggerEvent triggerEvent) {
-                if (triggerEvent == TurnBroken)
+            } catch (QSanguosha::TriggerEvent triggerEvent) {
+                if (triggerEvent == QSanguosha::TurnBroken)
                     card_use.from->tag.remove(QStringLiteral("Jink_") + card_use.card->toString());
 
                 //copy from Room::useCard()
-                if (triggerEvent == TurnBroken) {
+                if (triggerEvent == QSanguosha::TurnBroken) {
                     if (room->getCardPlace(card_use.card->effectiveID()) == QSanguosha::PlaceTable) {
                         CardMoveReason reason(CardMoveReason::S_REASON_UNKNOWN, card_use.from->objectName(), QString(), card_use.card->skillName(), QString());
                         if (card_use.to.size() == 1)
@@ -373,7 +400,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
                     }
                     QVariant data = QVariant::fromValue(card_use);
                     card_use.from->setFlag(QStringLiteral("Global_ProcessBroken"));
-                    thread->trigger(CardFinished, data);
+                    thread->trigger(QSanguosha::CardFinished, data);
                     card_use.from->setFlag(QStringLiteral("-Global_ProcessBroken"));
 
                     foreach (ServerPlayer *p, room->getAlivePlayers()) {
@@ -401,7 +428,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
 
         break;
     }
-    case CardFinished: {
+    case QSanguosha::CardFinished: {
         CardUseStruct use = data.value<CardUseStruct>();
         room->clearCardFlag(use.card);
 
@@ -418,18 +445,19 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
 
         break;
     }
-    case EventAcquireSkill:
-    case EventLoseSkill: {
+    case QSanguosha::EventAcquireSkill:
+    case QSanguosha::EventLoseSkill: {
         SkillAcquireDetachStruct s = data.value<SkillAcquireDetachStruct>();
 
         const Skill *skill = s.skill;
         bool refilter = skill->inherits("FilterSkill");
         if (refilter)
-            room->filterCards(qobject_cast<ServerPlayer *>(s.player), qobject_cast<ServerPlayer *>(s.player)->getCards(QStringLiteral("hes")), triggerEvent == EventLoseSkill);
+            room->filterCards(qobject_cast<ServerPlayer *>(s.player), qobject_cast<ServerPlayer *>(s.player)->getCards(QStringLiteral("hes")),
+                              triggerEvent == QSanguosha::EventLoseSkill);
 
         break;
     }
-    case PostHpReduced: {
+    case QSanguosha::PostHpReduced: {
         ServerPlayer *player = nullptr;
         if (data.canConvert<DamageStruct>())
             player = qobject_cast<ServerPlayer *>(data.value<DamageStruct>().to);
@@ -449,7 +477,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
 
         break;
     }
-    case AskForPeaches: {
+    case QSanguosha::AskForPeaches: {
         DyingStruct dying = data.value<DyingStruct>();
         const Card *peach = nullptr;
         int threshold = dying.who->dyingFactor();
@@ -467,7 +495,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
         }
         break;
     }
-    case AskForPeachesDone: {
+    case QSanguosha::AskForPeachesDone: {
         DyingStruct dying = data.value<DyingStruct>();
         int threshold = dying.who->dyingFactor();
         if (dying.who->hp() < threshold && dying.who->isAlive())
@@ -475,7 +503,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
 
         break;
     }
-    case ConfirmDamage: {
+    case QSanguosha::ConfirmDamage: {
         DamageStruct damage = data.value<DamageStruct>();
         if ((damage.card != nullptr) && damage.to->mark(QStringLiteral("SlashIsDrank")) > 0) {
             LogMessage log;
@@ -496,7 +524,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
 
         break;
     }
-    case DamageDone: {
+    case QSanguosha::DamageDone: {
         DamageStruct damage = data.value<DamageStruct>();
         if ((damage.from != nullptr) && !damage.from->isAlive())
             damage.from = nullptr;
@@ -508,11 +536,11 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
             damage.trigger_chain = true;
             data = QVariant::fromValue(damage);
         }
-        room->getThread()->trigger(PostHpReduced, data);
+        room->getThread()->trigger(QSanguosha::PostHpReduced, data);
 
         break;
     }
-    case DamageComplete: {
+    case QSanguosha::DamageComplete: {
         DamageStruct damage = data.value<DamageStruct>();
 
         if ((damage.nature != DamageStruct::Normal) && damage.to->isChained())
@@ -549,14 +577,14 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
                     p->setFlag(QStringLiteral("-Global_DebutFlag"));
                     if (room->getMode() == QStringLiteral("02_1v1")) {
                         QVariant v = QVariant::fromValue(p);
-                        room->getThread()->trigger(Debut, v);
+                        room->getThread()->trigger(QSanguosha::Debut, v);
                     }
                 }
             }
         }
         break;
     }
-    case CardEffected: {
+    case QSanguosha::CardEffected: {
         if (data.canConvert<CardEffectStruct>()) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if (!effect.card->face()->isKindOf("Slash") && effect.nullified) {
@@ -572,7 +600,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
                     effect.to->setFlag(QStringLiteral("Global_NonSkillNullify"));
                     return true;
                 } else {
-                    room->getThread()->trigger(TrickEffect, data);
+                    room->getThread()->trigger(QSanguosha::TrickEffect, data);
                 }
             }
             if (effect.to->isAlive() || effect.card->face()->isKindOf("Slash")) {
@@ -687,7 +715,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
 
         break;
     }
-    case SlashEffected: {
+    case QSanguosha::SlashEffected: {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if (effect.nullified) {
             LogMessage log;
@@ -700,17 +728,17 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
         }
 
         QVariant data = QVariant::fromValue(effect);
-        room->getThread()->trigger(SlashProceed, data);
+        room->getThread()->trigger(QSanguosha::SlashProceed, data);
         break;
     }
-    case SlashProceed: {
+    case QSanguosha::SlashProceed: {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         QString slasher = effect.from->objectName();
         if (!effect.to->isAlive())
             break;
 
         // process skill cancel, like (obsolete) kuangluan and (current) bmmaoji.
-        if (room->getThread()->trigger(Cancel, data)) {
+        if (room->getThread()->trigger(QSanguosha::Cancel, data)) {
             effect = data.value<SlashEffectStruct>();
             room->slashResult(effect, nullptr);
             break;
@@ -748,7 +776,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
 
         break;
     }
-    case JinkEffect: {
+    case QSanguosha::JinkEffect: {
         JinkEffectStruct j = data.value<JinkEffectStruct>();
         if (j.jink != nullptr && j.jink->skillName() == QStringLiteral("xianshi")) {
             SlashEffectStruct effect = j.slashEffect;
@@ -829,7 +857,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
 
         break;
     }
-    case SlashHit: {
+    case QSanguosha::SlashHit: {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         //do chunhua effect
         if (effect.slash->hasFlag(QStringLiteral("chunhua"))) {
@@ -921,7 +949,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
 
         break;
     }
-    case BeforeGameOverJudge: {
+    case QSanguosha::BeforeGameOverJudge: {
         DeathStruct death = data.value<DeathStruct>();
         ServerPlayer *player = qobject_cast<ServerPlayer *>(death.who);
         if (isHegemonyGameMode(room->getMode())) {
@@ -933,7 +961,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
 
         break;
     }
-    case GameOverJudge: {
+    case QSanguosha::GameOverJudge: {
         DeathStruct death = data.value<DeathStruct>();
         ServerPlayer *player = qobject_cast<ServerPlayer *>(death.who);
         if (room->getMode() == QStringLiteral("02_1v1")) {
@@ -950,7 +978,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
         }
         break;
     }
-    case BuryVictim: {
+    case QSanguosha::BuryVictim: {
         DeathStruct death = data.value<DeathStruct>();
         bool skipRewardAndPunish = death.who->hasFlag(QStringLiteral("skipRewardAndPunish"));
         qobject_cast<ServerPlayer *>(death.who)->bury();
@@ -992,7 +1020,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
             changeGeneral1v1(qobject_cast<ServerPlayer *>(death.who));
             if (death.damage == nullptr) {
                 QVariant v = QVariant::fromValue(death.who);
-                room->getThread()->trigger(Debut, v);
+                room->getThread()->trigger(QSanguosha::Debut, v);
             } else
                 death.who->setFlag(QStringLiteral("Global_DebutFlag"));
             return false;
@@ -1004,7 +1032,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
         }
         break;
     }
-    case StartJudge: {
+    case QSanguosha::StartJudge: {
         int card_id = room->drawCard();
 
         JudgeStruct *judge = data.value<JudgeStruct *>();
@@ -1021,7 +1049,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
         judge->setCard(room->getCard(card_id));
         break;
     }
-    case FinishRetrial: {
+    case QSanguosha::FinishRetrial: {
         JudgeStruct *judge = data.value<JudgeStruct *>();
 
         LogMessage log;
@@ -1042,7 +1070,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
 
         break;
     }
-    case FinishJudge: {
+    case QSanguosha::FinishJudge: {
         JudgeStruct *judge = data.value<JudgeStruct *>();
 
         if (room->getCardPlace(judge->card()->effectiveID()) == QSanguosha::PlaceJudge) {
@@ -1056,7 +1084,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
 
         break;
     }
-    case ChoiceMade: {
+    case QSanguosha::ChoiceMade: {
         foreach (ServerPlayer *p, room->getAlivePlayers()) {
             foreach (QString flag, p->flagList()) {
                 if (flag.startsWith(QStringLiteral("Global_")) && flag.endsWith(QStringLiteral("Failed")))
@@ -1065,7 +1093,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
         }
         break;
     }
-    case GeneralShown: {
+    case QSanguosha::GeneralShown: {
         //Only for Hegemony (Enable2ndGeneral is default setting)
         if (!isHegemonyGameMode(room->getMode()))
             break;
@@ -1147,7 +1175,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, RoomObject *_room, const Trigg
         }
     }
 
-    case BeforeCardsMove: { //to be record? not effect
+    case QSanguosha::BeforeCardsMove: { //to be record? not effect
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
         if (player != nullptr) {
@@ -1238,19 +1266,19 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const
     s.n = draw_num;
 
     QVariant data = QVariant::fromValue(s);
-    room->getThread()->trigger(DrawInitialCards, data);
+    room->getThread()->trigger(QSanguosha::DrawInitialCards, data);
     s = data.value<DrawNCardsStruct>();
     draw_num = s.n;
 
     try {
         player->drawCards(draw_num, QStringLiteral("initialDraw"));
         room->setTag(QStringLiteral("FirstRound"), false);
-    } catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == TurnBroken)
+    } catch (QSanguosha::TriggerEvent triggerEvent) {
+        if (triggerEvent == QSanguosha::TurnBroken)
             room->setTag(QStringLiteral("FirstRound"), false);
         throw triggerEvent;
     }
-    room->getThread()->trigger(AfterDrawInitialCards, data);
+    room->getThread()->trigger(QSanguosha::AfterDrawInitialCards, data);
 }
 
 void GameRule::changeGeneralXMode(ServerPlayer *player) const
@@ -1297,18 +1325,18 @@ void GameRule::changeGeneralXMode(ServerPlayer *player) const
     s.isInitial = true;
     s.n = 4;
     QVariant data = QVariant::fromValue(s);
-    room->getThread()->trigger(DrawInitialCards, data);
+    room->getThread()->trigger(QSanguosha::DrawInitialCards, data);
     s = data.value<DrawNCardsStruct>();
     int num = s.n;
     try {
         player->drawCards(num, QStringLiteral("initialDraw"));
         room->setTag(QStringLiteral("FirstRound"), false);
-    } catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == TurnBroken)
+    } catch (QSanguosha::TriggerEvent triggerEvent) {
+        if (triggerEvent == QSanguosha::TurnBroken)
             room->setTag(QStringLiteral("FirstRound"), false);
         throw triggerEvent;
     }
-    room->getThread()->trigger(AfterDrawInitialCards, data);
+    room->getThread()->trigger(QSanguosha::AfterDrawInitialCards, data);
 }
 
 void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const
