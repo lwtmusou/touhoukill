@@ -122,33 +122,32 @@ jobs:
           cmd /c cmake -GNinja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt5\Qt5.15.2-Windows-x86_64-MinGW8.1.0;${{ github.workspace }}\Qt6\Qt6.1.3-Windows-x86_64-MinGW8.1.0" "${{ github.workspace }}/touhoukill-refactor"
           ninja -k0
 
-#  build-mingwmsys:
-#    runs-on: windows-latest
-#    strategy:
-#      matrix:
-#        msys: [
-#          { sys: mingw64, env: x86_64 },
-#          { sys: ucrt64,  env: ucrt-x86_64 },
-#          { sys: clang64, env: clang-x86_64 },
-#        ]
-#    name: build-msys-${{ matrix.msys.sys }}
-#    steps:
-#      - uses: actions/checkout@v2
-#        with:
-#          path: touhoukill-refactor
-#
-#      - uses: msys2/setup-msys2@v2
-#        with:
-#          msystem: ${{ matrix.msys.sys }}
-#          install: mingw-w64-${{ matrix.msys.env }}-cmake mingw-w64-${{ matrix.msys.env }}-qt5 mingw-w64-${{ matrix.msys.env }}-qt6 mingw-w64-${{ matrix.msys.env }}-swig mingw-w64-${{ matrix.msys.env }}-toolchain mingw-w64-${{ matrix.msys.env }}-ninja
-#          update: true
-#
-#      - name: run cmake+ninja
-#        shell: msys2 {0}
-#        run : |
-#          mkdir -p "${{ github.workspace }}/build"
-#          cd "${{ github.workspace }}/build"
-#          rm -rf `ls -A`
-#          cmake -GNinja "${{ github.workspace }}/touhoukill-refactor"
-#          ninja -k0
-#
+  build-mingwmsys:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        msys: [
+          { sys: mingw64, env: x86_64 },
+          { sys: ucrt64,  env: ucrt-x86_64 },
+          { sys: clang64, env: clang-x86_64 },
+        ]
+    name: build-msys-${{ matrix.msys.sys }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: touhoukill-refactor
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{ matrix.msys.sys }}
+          install: mingw-w64-${{ matrix.msys.env }}-cmake mingw-w64-${{ matrix.msys.env }}-qt5 mingw-w64-${{ matrix.msys.env }}-qt6 mingw-w64-${{ matrix.msys.env }}-swig mingw-w64-${{ matrix.msys.env }}-toolchain mingw-w64-${{ matrix.msys.env }}-ninja
+          update: true
+
+      - name: run cmake+ninja
+        shell: msys2 {0}
+        run : |
+          mkdir -p "${{ github.workspace }}/build"
+          cd "${{ github.workspace }}/build"
+          rm -rf `ls -A`
+          cmake -GNinja "${{ github.workspace }}/touhoukill-refactor"
+          ninja -k0

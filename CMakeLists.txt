@@ -28,8 +28,8 @@ if (WIN32)
 endif()
 set(QSANGUOSHA_QT6_COMPONENTS Core Widgets Network LinguistTools)
 
-find_package(Qt5 COMPONENTS ${QSANGUOSHA_QT5_COMPONENTS} OPTIONAL_COMPONENTS Multimedia) # Locate the position of Qt5.
 find_package(Qt6 COMPONENTS ${QSANGUOSHA_QT6_COMPONENTS} OPTIONAL_COMPONENTS Multimedia) # Locate the position of Qt6.
+find_package(Qt5 COMPONENTS ${QSANGUOSHA_QT5_COMPONENTS} OPTIONAL_COMPONENTS Multimedia) # Locate the position of Qt5.
 
 if (NOT (Qt5_FOUND OR Qt6_FOUND))
     message(FATAL_ERROR "at least one of Qt 5 and Qt 6 is needed")
