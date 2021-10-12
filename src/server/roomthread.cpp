@@ -6,6 +6,7 @@
 #include "protocol.h"
 #include "room.h"
 #include "settings.h"
+#include "skill.h"
 #include "util.h"
 
 #include <QTime>
@@ -50,21 +51,11 @@ RoomThread::RoomThread(Room *room)
 {
 }
 
-void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start)
+void RoomThread::addPlayerSkills(ServerPlayer *player, bool)
 {
-    bool invoke_verify = false;
-
-    foreach (const TriggerSkill *skill, player->triggerSkills()) {
-        addTriggerSkill(skill);
-
-        if (invoke_game_start && skill->triggerEvents().contains(QSanguosha::GameStart))
-            invoke_verify = true;
-    }
-
-    //We should make someone trigger a whole GameStart event instead of trigger a skill only.
-    if (invoke_verify) {
-        QVariant v = QVariant::fromValue(player);
-        trigger(QSanguosha::GameStart, v);
+    foreach (const Skill *skill, player->skills(true, false, true)) {
+        foreach (const Trigger *trigger, skill->triggers())
+            addTrigger(trigger);
     }
 }
 
@@ -389,9 +380,9 @@ void RoomThread::run()
 
     game_rule = new GameRule;
 
-    addTriggerSkill(game_rule);
-    foreach (const TriggerSkill *triggerSkill, Sanguosha->getGlobalTriggerSkills())
-        addTriggerSkill(triggerSkill);
+    addTrigger(game_rule);
+    //    foreach (const TriggerSkill *triggerSkill, Sanguosha->getGlobalTriggerSkills())
+    //        addTriggerSkill(triggerSkill);
 
     // start game
     try {
@@ -467,7 +458,7 @@ void RoomThread::getTriggerAndSort(QSanguosha::TriggerEvent e, QList<QSharedPoin
 {
     // used to get all the skills which can be triggered now, and sort them.
     // everytime this function is called, it will get all the skiils and judge the triggerable one by one
-    QList<const Trigger *> triggerList = skill_table[e];
+    QList<const Trigger *> triggerList = m_triggerList[e];
     QList<QSharedPointer<TriggerDetail>> details; // We create a new list everytime this function is called
     foreach (const Trigger *skill, triggerList) {
         // judge every skill
@@ -557,7 +548,7 @@ void RoomThread::getTriggerAndSort(QSanguosha::TriggerEvent e, QList<QSharedPoin
 bool RoomThread::trigger(QSanguosha::TriggerEvent e, QVariant &data)
 {
     // find all the skills, do the record first. it do the things only for record. it should not and must not interfere the procedure of other skills.
-    QList<const Trigger *> triggerList = skill_table[e];
+    QList<const Trigger *> triggerList = m_triggerList[e];
     foreach (const Trigger *trigger, triggerList)
         trigger->record(e, room, data);
 
@@ -616,7 +607,7 @@ bool RoomThread::trigger(QSanguosha::TriggerEvent e, QVariant &data)
                     if (detail->owner() == nullptr) {
                         has_compulsory = true;
                         break;
-                    } else if (detail->owner()->hasShownSkill(detail->trigger()->name())) {
+                    } else if (detail->owner()->hasShownSkill(detail->name())) {
                         has_compulsory = true;
                         break;
                     }
@@ -649,33 +640,21 @@ bool RoomThread::trigger(QSanguosha::TriggerEvent e, QVariant &data)
     return interrupt;
 }
 
-void RoomThread::addTriggerSkill(const Trigger *skill)
+void RoomThread::addTrigger(const Trigger *skill)
 {
-    if (skill == nullptr || skillSet.contains(skill->name()))
+    if (skill == nullptr)
         return;
-
-    skillSet << skill->name();
 
     QSanguosha::TriggerEvents events = skill->triggerEvents();
     if (events.contains(QSanguosha::NumOfEvents)) {
         for (int i = QSanguosha::NonTrigger + 1; i < QSanguosha::NumOfEvents; ++i)
-            skill_table[static_cast<QSanguosha::TriggerEvent>(i)] << skill;
+            m_triggerList[static_cast<QSanguosha::TriggerEvent>(i)] << skill;
     } else {
         foreach (QSanguosha::TriggerEvent triggerEvent, events) {
-            QList<const Trigger *> &table = skill_table[triggerEvent];
+            QList<const Trigger *> &table = m_triggerList[triggerEvent];
             table << skill;
         }
     }
-    // TODO: move it to another proper place
-#if 0
-    if (skill->isVisible()) {
-        foreach (const Skill *skill, Sanguosha->getRelatedSkills(skill->objectName())) {
-            const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
-            if (trigger_skill)
-                addTriggerSkill(trigger_skill);
-        }
-    }
-#endif
 }
 
 void RoomThread::delay(long secs)

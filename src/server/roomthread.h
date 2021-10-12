@@ -42,7 +42,7 @@ public:
 
     void addPlayerSkills(ServerPlayer *player, bool invoke_game_start = false);
 
-    void addTriggerSkill(const Trigger *skill);
+    void addTrigger(const Trigger *skill);
     void delay(long msecs = -1);
     ServerPlayer *find3v3Next(QList<ServerPlayer *> &first, QList<ServerPlayer *> &second);
     void run3v3(QList<ServerPlayer *> &first, QList<ServerPlayer *> &second, GameRule *game_rule, ServerPlayer *current);
@@ -90,8 +90,7 @@ private:
 
     Room *room;
 
-    QList<const Trigger *> skill_table[QSanguosha::NumOfEvents];
-    QSet<QString> skillSet;
+    QList<const Trigger *> m_triggerList[QSanguosha::NumOfEvents];
 
     GameRule *game_rule;
 

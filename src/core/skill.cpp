@@ -23,6 +23,7 @@ public:
     QString limit_mark;
     QString related_mark;
     QString related_pile;
+    QSet<const Trigger *> triggers;
 
     SkillPrivate(Skill::Categories categories, Skill::ShowType showType)
         : categories(categories)
@@ -122,6 +123,16 @@ bool Skill::isFrequent() const
 void Skill::setFrequent(bool c)
 {
     d->frequent = c;
+}
+
+void Skill::addTrigger(const Trigger *trigger)
+{
+    d->triggers << trigger;
+}
+
+const QSet<const Trigger *> &Skill::triggers() const
+{
+    return d->triggers;
 }
 
 int Skill::getAudioEffectIndex(const Player * /*unused*/, const Card * /*unused*/) const
@@ -663,249 +674,3 @@ bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const
     return false;
 }
 #endif
-
-class TriggerPrivate
-{
-public:
-    TriggerEvents e;
-    bool global;
-    QString name;
-
-    TriggerPrivate()
-        : global(false)
-    {
-    }
-};
-
-Trigger::Trigger(const QString &name)
-    : d(new TriggerPrivate)
-{
-    d->name = name;
-}
-
-Trigger::~Trigger()
-{
-    delete d;
-}
-
-QString Trigger::name() const
-{
-    return d->name;
-}
-
-TriggerEvents Trigger::triggerEvents() const
-{
-    if (d->e.contains(NumOfEvents))
-        return TriggerEvents() << NumOfEvents;
-
-    return d->e;
-}
-
-bool Trigger::canTrigger(TriggerEvent e) const
-{
-    Q_ASSERT(e != NumOfEvents);
-
-    return d->e.contains(NumOfEvents) || d->e.contains(e);
-}
-
-void Trigger::addTriggerEvent(TriggerEvent e)
-{
-    d->e.insert(e);
-}
-
-void Trigger::addTriggerEvents(const TriggerEvents &e)
-{
-    d->e.unite(e);
-}
-
-bool Trigger::isGlobal() const
-{
-    return d->global;
-}
-
-void Trigger::setGlobal(bool global)
-{
-    d->global = global;
-}
-
-void Trigger::record(TriggerEvent /*unused*/, RoomObject * /*unused*/, QVariant & /*unused*/) const
-{
-    // Intentionally empty
-}
-
-bool Trigger::trigger(TriggerEvent /*unused*/, RoomObject * /*unused*/, const TriggerDetail & /*unused*/, QVariant & /*unused*/) const
-{
-    return false;
-}
-
-Rule::Rule(const QString &name)
-    : Trigger(name)
-{
-}
-
-int Rule::priority() const
-{
-    // for rule
-    return 0;
-}
-
-QList<TriggerDetail> Rule::triggerable(TriggerEvent /*event*/, RoomObject *room, const QVariant & /*data*/) const
-{
-    TriggerDetail d(room, this);
-    return QList<TriggerDetail>() << d;
-}
-
-TriggerSkill::TriggerSkill(const QString &name)
-    : Skill(name)
-    , Trigger(name)
-{
-}
-
-int TriggerSkill::priority() const
-{
-    // for regular skill
-    return 2;
-}
-
-bool TriggerSkill::trigger(TriggerEvent event, RoomObject *room, const TriggerDetail &_detail, QVariant &data) const
-{
-    TriggerDetail detail = _detail;
-    if (!detail.effectOnly()) {
-        if (!cost(event, room, detail, data))
-            return false;
-
-        if (detail.owner()->hasSkill(this) && !detail.owner()->hasShownSkill(this))
-            RefactorProposal::fixme_cast<ServerPlayer *>(detail.owner())->showHiddenSkill(name());
-    }
-
-    return effect(event, room, detail, data);
-}
-
-bool TriggerSkill::cost(TriggerEvent /*unused*/, RoomObject * /*unused*/, TriggerDetail &detail, QVariant & /*unused*/) const
-{
-    if ((detail.owner() == nullptr) || (detail.owner() != detail.invoker()) || isEternal() || (detail.invoker() == nullptr))
-        return true;
-
-    // detail.owner == detail.invoker
-    bool isCompulsory = detail.isCompulsory() && (detail.invoker()->hasSkill(this) && !detail.invoker()->hasShownSkill(this));
-    bool invoke = true;
-    if (!isCompulsory)
-        invoke = RefactorProposal::fixme_cast<ServerPlayer *>(detail.invoker())->askForSkillInvoke(this);
-
-    return invoke;
-}
-
-EquipSkill::EquipSkill(const QString &name)
-    : TriggerSkill(name)
-{
-}
-
-bool EquipSkill::equipAvailable(const Player *p, EquipLocation location, const QString &equipName, const Player *to)
-{
-    if (p == nullptr)
-        return false;
-
-    if (p->mark(QStringLiteral("Equips_Nullified_to_Yourself")) > 0)
-        return false;
-
-    // for StarSP Pangtong? It needs investigation for real 'Armor ignored by someone' effect
-    // But 'Armor ignored by someone' is too complicated while its effect has just few differences compared to 'Armor invalid'
-    // So we just use 'Armor invalid' everywhere
-    // I prefer removing 'to' from this function and use regular QinggangSword method or a simular one for StarSP Pangtong
-    if (to != nullptr && to->mark(QStringLiteral("Equips_of_Others_Nullified_to_You")) > 0)
-        return false;
-
-    switch (location) {
-    case WeaponLocation:
-        if (!p->hasWeapon(equipName))
-            return false;
-        break;
-    case ArmorLocation:
-        if (!p->hasArmor(equipName))
-            return false;
-        break;
-    case TreasureLocation:
-        if (!p->hasTreasure(equipName))
-            return false;
-        break;
-    default:
-        break; // shenmegui?
-    }
-
-    return true;
-}
-
-bool EquipSkill::equipAvailable(const Player *p, const Card *equip, const Player *to /*= NULL*/)
-{
-    if (equip == nullptr)
-        return false;
-
-    const EquipCard *face = qobject_cast<const EquipCard *>(equip->face());
-    Q_ASSERT(face != nullptr);
-
-    return equipAvailable(p, face->location(), equip->faceName(), to);
-}
-
-int EquipSkill::priority() const
-{
-    // for EquipSkill
-    return 2;
-}
-
-GlobalRecord::GlobalRecord(const QString &name)
-    : Trigger(name)
-{
-}
-
-int GlobalRecord::priority() const
-{
-    return 10;
-}
-
-QList<TriggerDetail> GlobalRecord::triggerable(TriggerEvent /*event*/, RoomObject * /*room*/, const QVariant & /*data*/) const
-{
-    return QList<TriggerDetail>();
-}
-
-class FakeMoveRecordPrivate
-{
-public:
-    QString skillName;
-};
-
-FakeMoveRecord::FakeMoveRecord(const QString &skillName)
-    : GlobalRecord(skillName + QStringLiteral("-fakeMove"))
-    , d(new FakeMoveRecordPrivate)
-{
-    addTriggerEvents({BeforeCardsMove, CardsMoveOneTime});
-    d->skillName = skillName;
-}
-
-FakeMoveRecord::~FakeMoveRecord()
-{
-    delete d;
-}
-
-QList<TriggerDetail> FakeMoveRecord::triggerable(TriggerEvent /*event*/, RoomObject *room, const QVariant & /*data*/) const
-{
-    Player *owner = nullptr;
-    foreach (Player *p, room->players(false)) {
-        if (p->hasSkill(d->skillName)) {
-            owner = p;
-            break;
-        }
-    }
-
-    QString flag = QString(QStringLiteral("%1_InTempMoving")).arg(d->skillName);
-    foreach (Player *p, room->players(false)) {
-        if (p->hasFlag(flag))
-            return {TriggerDetail(room, this, owner, p, nullptr)};
-    }
-
-    return {};
-}
-
-bool FakeMoveRecord::trigger(TriggerEvent /*event*/, RoomObject * /*room*/, const TriggerDetail & /*detail*/, QVariant & /*data*/) const
-{
-    return true;
-}

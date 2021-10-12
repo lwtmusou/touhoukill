@@ -140,17 +140,6 @@ QSet<const Skill *> General::getVisibleSkills(bool relate_to_place, bool head_on
     return QSet<const Skill *>(list.begin(), list.end());
 }
 
-QSet<const TriggerSkill *> General::getTriggerSkills() const
-{
-    QSet<const TriggerSkill *> skills;
-    foreach (QString skill_name, d->skills) {
-        const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
-        if (skill != nullptr)
-            skills << skill;
-    }
-    return skills;
-}
-
 void General::addRelateSkill(const QString &skill_name)
 {
     d->relatedSkills << skill_name;

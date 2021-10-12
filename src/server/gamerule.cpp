@@ -5,12 +5,13 @@
 #include "room.h"
 #include "serverplayer.h"
 #include "settings.h"
+#include "skill.h"
 #include "util.h"
 
 #include <QTime>
 
 GameRule::GameRule()
-    : Rule(QStringLiteral("game_rule"))
+    : Rule()
 {
     addTriggerEvents({QSanguosha::GameStart,
                       QSanguosha::TurnStart,

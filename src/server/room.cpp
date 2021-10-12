@@ -6,6 +6,7 @@
 #include "general.h"
 #include "server.h"
 #include "settings.h"
+#include "skill.h"
 #include "structs.h"
 #include "util.h"
 
@@ -679,10 +680,8 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
             if (player->getAcquiredSkills().contains(actual_skill))
                 continue;
             player->acquireSkill(actual_skill);
-            if (skill->inherits("TriggerSkill")) {
-                const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
-                thread->addTriggerSkill(trigger_skill);
-            }
+            foreach (const Trigger *trigger, skill->triggers())
+                thread->addTrigger(trigger);
             if (skill->isLimited() && !skill->limitMark().isEmpty())
                 setPlayerMark(player, skill->limitMark(), 1);
             if (skill->isVisible()) {
@@ -2026,7 +2025,7 @@ QSharedPointer<TriggerDetail> Room::askForTriggerOrder(ServerPlayer *player, con
         if (reply != QStringLiteral("cancel")) {
             QStringList replyList = reply.split(QStringLiteral(":"));
             foreach (const QSharedPointer<TriggerDetail> &ptr, sameTiming) {
-                if (ptr->trigger()->name() == replyList.first() && (ptr->owner() == nullptr || ptr->owner()->objectName() == replyList.value(1))
+                if (ptr->name() == replyList.first() && (ptr->owner() == nullptr || ptr->owner()->objectName() == replyList.value(1))
                     && ptr->invoker()->objectName() == replyList.value(2)) {
                     answer = ptr;
                     break;
@@ -2434,7 +2433,7 @@ ServerPlayer *Room::findPlayerByObjectName(const QString &name, bool /*unused*/)
     return nullptr;
 }
 
-void Room::changeHero(ServerPlayer *player, const QString &new_general, bool full_state, bool invokeStart, bool isSecondaryHero, bool sendLog)
+void Room::changeHero(ServerPlayer *player, const QString &new_general, bool full_state, bool, bool isSecondaryHero, bool sendLog)
 {
     JsonArray arg;
     arg << (int)S_GAME_EVENT_CHANGE_HERO;
@@ -2457,16 +2456,15 @@ void Room::changeHero(ServerPlayer *player, const QString &new_general, bool ful
     broadcastProperty(player, "hp");
     broadcastProperty(player, "maxhp");
 
-    bool game_start = false;
     const General *gen = isSecondaryHero ? player->getGeneral2() : player->general();
     if (gen != nullptr) {
         foreach (const Skill *skill, gen->getSkillList()) {
-            if (skill->inherits("TriggerSkill")) {
-                const TriggerSkill *trigger = qobject_cast<const TriggerSkill *>(skill);
-                thread->addTriggerSkill(trigger);
-                if (invokeStart && trigger->triggerEvents().contains(QSanguosha::GameStart))
-                    game_start = true;
-            }
+            foreach (const Trigger *trigger, skill->triggers())
+                thread->addTrigger(trigger);
+            // I'd like to remove following logic....
+            //                if (invokeStart && trigger->triggerEvents().contains(QSanguosha::GameStart))
+            //                    game_start = true;
+
             if (skill->isLimited() && !skill->limitMark().isEmpty())
                 setPlayerMark(player, skill->limitMark(), 1);
             SkillAcquireDetachStruct s;
@@ -2476,10 +2474,6 @@ void Room::changeHero(ServerPlayer *player, const QString &new_general, bool ful
             QVariant _skillobjectName = QVariant::fromValue(s);
             thread->trigger(QSanguosha::EventAcquireSkill, _skillobjectName);
         }
-    }
-    if (invokeStart && game_start) {
-        QVariant v = QVariant::fromValue(player);
-        thread->trigger(QSanguosha::GameStart, v);
     }
 }
 
@@ -5178,10 +5172,9 @@ void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open, boo
         return;
     player->acquireSkill(skill_name);
 
-    if (skill->inherits("TriggerSkill")) {
-        const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
-        thread->addTriggerSkill(trigger_skill);
-    }
+    foreach (const Trigger *trigger, skill->triggers())
+        thread->addTrigger(trigger);
+
     if (skill->isLimited() && !skill->limitMark().isEmpty())
         setPlayerMark(player, skill->limitMark(), 1);
 
@@ -6892,17 +6885,10 @@ void Room::transformGeneral(ServerPlayer *player, const QString &general_name, i
     names << generals.first() << generals.last();
 
     player->removeGeneral(head != 0);
-    QList<const TriggerSkill *> game_start;
 
     foreach (const Skill *skill, Sanguosha->getGeneral(general_name)->getVisibleSkillList(true, head)) {
-        if (skill->inherits("TriggerSkill")) {
-            const TriggerSkill *tr = qobject_cast<const TriggerSkill *>(skill);
-            if (tr != nullptr) {
-                getThread()->addTriggerSkill(tr);
-                if (tr->triggerEvents().contains(QSanguosha::GameStart))
-                    game_start << tr;
-            }
-        }
+        foreach (const Trigger *trigger, skill->triggers())
+            thread->addTrigger(trigger);
         player->addSkill(skill->objectName(), head != 0);
     }
 
@@ -6932,9 +6918,5 @@ void Room::transformGeneral(ServerPlayer *player, const QString &general_name, i
         }
     }
 
-    if (!game_start.isEmpty()) {
-        QVariant v = QVariant::fromValue(player);
-        thread->trigger(QSanguosha::GameStart, v);
-    }
     player->showGeneral(head != 0);
 }

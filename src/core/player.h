@@ -12,7 +12,6 @@ class Armor;
 class Horse;
 class DelayedTrick;
 class DistanceSkill;
-class TriggerSkill;
 class RoomObject;
 class Skill;
 class Card;
@@ -263,7 +262,6 @@ public:
     QHash<QString, int> histories() const;
 
     bool hasEquipSkill(const QString &skill_name) const;
-    QSet<const TriggerSkill *> triggerSkills() const;
     QSet<const Skill *> skills(bool include_equip = false, bool visible_only = true, bool include_acquired = false, const QList<int> &positions = {}) const;
 
     QSet<QString> getAcquiredSkills() const;

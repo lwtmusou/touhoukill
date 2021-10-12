@@ -11,7 +11,6 @@
 #include "roomthread.h"
 #include "serverplayer.h"
 
-class TriggerSkill;
 class ProhibitSkill;
 class TrickCard;
 

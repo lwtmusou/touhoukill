@@ -4,7 +4,6 @@
 #include "global.h"
 
 class Skill;
-class TriggerSkill;
 class RoomObject;
 class Card;
 class Player;
@@ -454,9 +453,10 @@ class TriggerDetailPrivate;
 class TriggerDetail
 {
 public:
-    explicit TriggerDetail(RoomObject *room, const Trigger *trigger = nullptr, Player *owner = nullptr, Player *invoker = nullptr,
-                           const QList<Player *> &targets = QList<Player *>(), bool isCompulsory = false, bool showHidden = true);
-    TriggerDetail(RoomObject *room, const Trigger *trigger, Player *owner, Player *invoker, Player *target, bool isCompulsory = false, bool showHidden = true);
+    explicit TriggerDetail(RoomObject *room, const Trigger *trigger = nullptr, const QString &name = QString(), Player *owner = nullptr, Player *invoker = nullptr,
+                           const QList<Player *> &targets = QList<Player *>(), bool isCompulsory = false, bool effectOnly = false);
+    TriggerDetail(RoomObject *room, const Trigger *trigger, const QString &name, Player *owner, Player *invoker, Player *target, bool isCompulsory = false,
+                  bool effectOnly = false);
 
     TriggerDetail(const TriggerDetail &other);
     TriggerDetail &operator=(const TriggerDetail &other);
@@ -464,12 +464,12 @@ public:
 
     RoomObject *room() const;
     const Trigger *trigger() const;
+    const QString &name() const;
     Player *owner() const;
     Player *invoker() const;
     QList<Player *> targets() const;
     bool isCompulsory() const;
     bool triggered() const;
-    bool showhidden() const;
     bool effectOnly() const;
     const QVariantMap &tag() const;
 

@@ -94,6 +94,7 @@ set (QSanguosha_SRCS
     src/core/RoomObject.cpp
     src/core/settings.cpp
     src/core/skill.cpp
+    src/core/trigger.cpp
     src/core/structs.cpp
     src/core/serverinfostruct.cpp
     src/core/util.cpp
@@ -180,6 +181,7 @@ set (QSanguosha_MOCS
     src/core/RoomObject.h
     src/core/settings.h
     src/core/skill.h
+    src/core/trigger.h
     src/core/structs.h
     src/core/serverinfostruct.h
     src/core/util.h

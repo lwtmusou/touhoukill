@@ -7,6 +7,7 @@
 #include "player.h"
 #include "protocol.h"
 #include "skill.h"
+#include "trigger.h"
 #include "util.h"
 
 #include <functional>
@@ -430,12 +431,12 @@ class TriggerDetailSharedData : public QSharedData
 public:
     RoomObject *room;
     const Trigger *trigger; // the trigger
+    QString name; // the name of trigger, either "Rule-XXX" or skill name
     Player *owner; // skill owner. 2 structs with the same skill and skill owner are treated as of a same skill.
     Player *invoker; // skill invoker. When invoking skill, we sort firstly according to the priority, then the seat of invoker, at last weather it is a skill of an equip.
     QList<Player *> targets; // skill targets.
     bool isCompulsory; // judge the skill is compulsory or not. It is set in the skill's triggerable
     bool triggered; // judge whether the skill is triggere
-    bool showhidden;
     bool effectOnly;
     QVariantMap tag; // used to add a tag to the struct. useful for skills like Tieqi and Liegong to save a QVariantList for assisting to assign targets
 
@@ -446,7 +447,6 @@ public:
         , invoker(nullptr)
         , isCompulsory(false)
         , triggered(false)
-        , showhidden(false)
         , effectOnly(false)
     {
     }
@@ -494,33 +494,35 @@ bool TriggerDetail::sameTimingWith(const TriggerDetail &arg2) const
     return trigger()->priority() == arg2.trigger()->priority() && invoker() == arg2.invoker() && trigger()->isEquipSkill() == arg2.trigger()->isEquipSkill();
 }
 
-TriggerDetail::TriggerDetail(RoomObject *room, const Trigger *trigger /*= NULL*/, Player *owner /*= NULL*/, Player *invoker /*= NULL*/,
-                             const QList<Player *> &targets /*= QList<Player *>()*/, bool isCompulsory /*= false*/, bool showHidden)
+TriggerDetail::TriggerDetail(RoomObject *room, const Trigger *trigger /*= NULL*/, const QString &name, Player *owner /*= NULL*/, Player *invoker /*= NULL*/,
+                             const QList<Player *> &targets /*= QList<Player *>()*/, bool isCompulsory /*= false*/, bool effectOnly /*=false*/)
     : d(new TriggerDetailPrivate)
 {
-    d->d->room = (room);
-    d->d->trigger = (trigger);
-    d->d->owner = (owner);
-    d->d->invoker = (invoker);
-    d->d->targets = (targets);
-    d->d->isCompulsory = (isCompulsory);
-    d->d->triggered = (false);
-    d->d->showhidden = (showHidden);
+    d->d->room = room;
+    d->d->trigger = trigger;
+    d->d->name = name;
+    d->d->owner = owner;
+    d->d->invoker = invoker;
+    d->d->targets = targets;
+    d->d->isCompulsory = isCompulsory;
+    d->d->triggered = false;
+    d->d->effectOnly = effectOnly;
 }
 
-TriggerDetail::TriggerDetail(RoomObject *room, const Trigger *trigger, Player *owner, Player *invoker, Player *target, bool isCompulsory /*= false*/, bool showHidden)
+TriggerDetail::TriggerDetail(RoomObject *room, const Trigger *trigger, const QString &name, Player *owner, Player *invoker, Player *target, bool isCompulsory /*= false*/,
+                             bool effectOnly /*=false*/)
     : d(new TriggerDetailPrivate)
 {
-    d->d->room = (room);
-    d->d->trigger = (trigger);
-    d->d->owner = (owner);
-    d->d->invoker = (invoker);
-    d->d->isCompulsory = (isCompulsory);
-    d->d->triggered = (false);
-    d->d->showhidden = (showHidden);
-
+    d->d->room = room;
+    d->d->trigger = trigger;
+    d->d->name = name;
+    d->d->owner = owner;
+    d->d->invoker = invoker;
     if (target != nullptr)
         d->d->targets << target;
+    d->d->isCompulsory = isCompulsory;
+    d->d->triggered = false;
+    d->d->effectOnly = effectOnly;
 }
 
 TriggerDetail::TriggerDetail(const TriggerDetail &other)
@@ -553,6 +555,11 @@ const Trigger *TriggerDetail::trigger() const
     return d->d->trigger;
 }
 
+const QString &TriggerDetail::name() const
+{
+    return d->d->name;
+}
+
 Player *TriggerDetail::owner() const
 {
     return d->d->owner;
@@ -576,11 +583,6 @@ bool TriggerDetail::isCompulsory() const
 bool TriggerDetail::triggered() const
 {
     return d->d->triggered;
-}
-
-bool TriggerDetail::showhidden() const
-{
-    return d->d->showhidden;
 }
 
 bool TriggerDetail::effectOnly() const
@@ -620,7 +622,7 @@ QVariant TriggerDetail::toVariant() const
 
     JsonObject ob;
     if (trigger() != nullptr)
-        ob[QStringLiteral("skill")] = trigger()->name();
+        ob[QStringLiteral("skill")] = d->d->name;
     if (owner() != nullptr)
         ob[QStringLiteral("owner")] = owner()->objectName();
     if (invoker() != nullptr)
@@ -643,7 +645,7 @@ QStringList TriggerDetail::toList() const
         };
 
         if (trigger() != nullptr)
-            l << trigger()->name();
+            l << d->d->name;
         else
             l << QString();
         insert(owner());

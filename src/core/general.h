@@ -9,7 +9,6 @@
 #include <QStringList>
 
 class Skill;
-class TriggerSkill;
 class Package;
 
 class GeneralPrivate;
@@ -43,7 +42,6 @@ public:
     QList<const Skill *> getSkillList(bool relate_to_place = false, bool head_only = true) const;
     QList<const Skill *> getVisibleSkillList(bool relate_to_place = false, bool head_only = true) const;
     QSet<const Skill *> getVisibleSkills(bool relate_to_place = false, bool head_only = true) const;
-    QSet<const TriggerSkill *> getTriggerSkills() const;
 
     // only for general overview?
     void addRelateSkill(const QString &skill_name);

@@ -20,7 +20,6 @@ class LuaStatePointer;
 class CardPattern;
 class General;
 class ViewAsSkill;
-class TriggerSkill;
 class ProhibitSkill;
 class TreatAsEquippingSkill;
 class EquipCard;
@@ -84,13 +83,11 @@ public:
     const Skill *getSkill(const QString &skill_name) const;
     const Skill *getSkill(const EquipCard *card) const;
     QStringList getSkillNames() const;
-    const TriggerSkill *getTriggerSkill(const QString &skill_name) const;
     const ViewAsSkill *getViewAsSkill(const QString &skill_name) const;
     QList<const DistanceSkill *> getDistanceSkills() const;
     QList<const MaxCardsSkill *> getMaxCardsSkills() const;
     QList<const TargetModSkill *> getTargetModSkills() const;
     QList<const AttackRangeSkill *> getAttackRangeSkills() const;
-    QList<const TriggerSkill *> getGlobalTriggerSkills() const;
     QList<const ViewAsSkill *> getViewAsSkills() const;
     void addSkills(const QList<const Skill *> &skills);
 
@@ -99,7 +96,6 @@ public:
 
     QStringList getLords(bool contain_banned = false) const;
     QStringList getRandomLords() const;
-    void banRandomGods() const;
     QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
     QStringList getLatestGenerals(const QSet<QString> &ban_set = QSet<QString>()) const;
     QList<int> getRandomCards() const;
@@ -143,7 +139,6 @@ private:
     QList<const MaxCardsSkill *> maxcards_skills;
     QList<const TargetModSkill *> targetmod_skills;
     QList<const AttackRangeSkill *> attackrange_skills;
-    QList<const TriggerSkill *> global_trigger_skills;
     QList<const ViewAsSkill *> viewas_skills;
 
     QList<CardDescriptor> cards;

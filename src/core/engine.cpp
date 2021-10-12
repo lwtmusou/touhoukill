@@ -138,11 +138,7 @@ void Engine::addSkills(const QList<const Skill *> &all_skills)
             targetmod_skills << qobject_cast<const TargetModSkill *>(skill);
         else if (skill->inherits("AttackRangeSkill"))
             attackrange_skills << qobject_cast<const AttackRangeSkill *>(skill);
-        else if (skill->inherits("TriggerSkill")) {
-            const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
-            if ((trigger_skill != nullptr) && trigger_skill->isGlobal())
-                global_trigger_skills << trigger_skill;
-        } else if (skill->inherits("ViewAsSkill"))
+        else if (skill->inherits("ViewAsSkill"))
             viewas_skills << qobject_cast<const ViewAsSkill *>(skill);
     }
 }
@@ -165,11 +161,6 @@ QList<const TargetModSkill *> Engine::getTargetModSkills() const
 QList<const AttackRangeSkill *> Engine::getAttackRangeSkills() const
 {
     return attackrange_skills;
-}
-
-QList<const TriggerSkill *> Engine::getGlobalTriggerSkills() const
-{
-    return global_trigger_skills;
 }
 
 QList<const ViewAsSkill *> Engine::getViewAsSkills() const
@@ -787,38 +778,6 @@ QStringList Engine::getLimitedGeneralNames() const
     return general_names;
 }
 
-void Engine::banRandomGods() const
-{
-    QStringList all_generals = getLimitedGeneralNames();
-
-    qShuffle(all_generals);
-
-    int count = 0;
-    int max = Config.value(QStringLiteral("GodLimit"), 1).toInt();
-
-    if (max == -1)
-        return;
-
-    QStringList gods;
-
-    foreach (const QString &general, all_generals) {
-        if (getGeneral(general)->getKingdom() == QStringLiteral("touhougod")) {
-            gods << general;
-            count++;
-        }
-    };
-    int bancount = count - max;
-    if (bancount <= 0)
-        return;
-    QStringList ban_gods = gods.mid(0, bancount);
-    Q_ASSERT(ban_gods.count() == bancount);
-
-    QStringList ban_list = Config.value(QStringLiteral("Banlist/Roles")).toStringList();
-
-    ban_list.append(ban_gods);
-    Config.setValue(QStringLiteral("Banlist/Roles"), ban_list);
-}
-
 QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) const
 {
     QStringList all_generals = getLimitedGeneralNames();
@@ -978,15 +937,6 @@ const Skill *Engine::getSkill(const EquipCard *equip) const
 QStringList Engine::getSkillNames() const
 {
     return skills.keys();
-}
-
-const TriggerSkill *Engine::getTriggerSkill(const QString &skill_name) const
-{
-    const Skill *skill = getSkill(skill_name);
-    if (skill != nullptr)
-        return qobject_cast<const TriggerSkill *>(skill);
-    else
-        return nullptr;
 }
 
 const ViewAsSkill *Engine::getViewAsSkill(const QString &skill_name) const
