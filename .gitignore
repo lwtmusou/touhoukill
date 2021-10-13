@@ -104,3 +104,4 @@ CMakeLists.txt.user
 .cache
 compile_commands.json
 Q6Sanguosha
+CMakeLists.txt.user.*

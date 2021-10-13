@@ -34,6 +34,18 @@ struct CardDescriptor;
 class Card;
 class RoomObject;
 
+namespace CardFactory {
+// static methods for Engine. Used to add metaobjects
+// this staticMetaObject is used to call "newInstance" function to create a new card
+
+void registerCardFace(const CardFace *face);
+const CardFace *cardFace(const QString &name);
+void unregisterCardFace(const QString &name);
+
+} // namespace CardFactory
+
+class EnginePrivate;
+
 class Engine final : public QObject
 {
     Q_OBJECT
@@ -44,7 +56,7 @@ public:
 
     void loadTranslations(const QString &locale);
     void addTranslationEntry(const QString &key, const QString &value);
-    QString translate(const QString &to_translate, bool addHegemony = false) const;
+    QString translate(const QString &to_translate) const;
 
     void addPackage(const Package *package);
     void addBanPackage(const QString &package_name);
@@ -120,6 +132,17 @@ public:
 
     QVariant getConfigFromConfigFile(const QString &key) const;
 
+public:
+    Q_DECL_DEPRECATED QString translate(const QString &to_translate, bool) const
+    {
+        return translate(to_translate);
+    }
+
+private:
+    Q_DISABLE_COPY_MOVE(Engine)
+    EnginePrivate *const d;
+
+#if 0
 private:
     QHash<QString, QString> translations;
     QHash<QString, const General *> generals;
@@ -148,6 +171,8 @@ private:
     JsonObject configFile;
 
     LuaStatePointer l;
+
+#endif
 };
 
 extern Engine *Sanguosha;

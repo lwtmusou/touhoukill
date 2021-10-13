@@ -9,19 +9,7 @@
 
 class CardFace;
 struct CardDescriptor;
-
-namespace CardFactory {
-// static methods for Engine. Used to add metaobjects
-// this staticMetaObject is used to call "newInstance" function to create a new card
-
-void registerCardFace(const CardFace *face);
-const CardFace *cardFace(const QString &name);
-void unregisterCardFace(const QString &name);
-
-} // namespace CardFactory
-
 class Card;
-class CardFace;
 
 class RoomObjectPrivate;
 

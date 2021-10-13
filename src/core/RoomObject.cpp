@@ -7,30 +7,6 @@
 
 using namespace QSanguosha;
 
-namespace CardFactory {
-QHash<QString, const CardFace *> faces;
-
-void registerCardFace(const CardFace *cardFace)
-{
-    faces.insert(cardFace->name(), cardFace);
-}
-
-const CardFace *cardFace(const QString &name)
-{
-    return faces.value(name, nullptr);
-}
-
-void unregisterCardFace(const QString &name)
-{
-    auto face = faces.find(name);
-    if (face != faces.end()) {
-        const auto *handle = *face;
-        faces.erase(face);
-        delete handle;
-    }
-}
-} // namespace CardFactory
-
 class RoomObjectPrivate
 {
 public:
