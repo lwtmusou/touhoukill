@@ -1430,7 +1430,7 @@ void RoomScene::updateTargetsEnablity(const Card *card)
         if (item->isSelected())
             continue;
 
-        bool enabled = (card == nullptr) || ((Sanguosha->isProhibited(Self, player, card, selected_targets) == nullptr) && maxVotes > 0);
+        bool enabled = (card == nullptr) || ((ClientInstance->isProhibited(Self, player, card, selected_targets) == nullptr) && maxVotes > 0);
 
         QGraphicsItem *animationTarget = item->getMouseClickReceiver();
         if (enabled)
@@ -1459,7 +1459,7 @@ void RoomScene::updateSelectedTargets()
             foreach (const Player *cp, selected_targets) {
                 QList<const Player *> tempPlayers = QList<const Player *>(selected_targets);
                 tempPlayers.removeAll(cp);
-                if (card->face()->targetFilter(tempPlayers, cp, Self, card) == 0 || (Sanguosha->isProhibited(Self, cp, card, selected_targets) != nullptr)) {
+                if (card->face()->targetFilter(tempPlayers, cp, Self, card) == 0 || (ClientInstance->isProhibited(Self, cp, card, selected_targets) != nullptr)) {
                     selected_targets.clear();
                     unselectAllTargets();
                     return;
@@ -2762,7 +2762,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         QRegularExpressionMatch match;
         if ((match = rx.match(pattern)).hasMatch()) {
             QString skill_name = match.capturedTexts().at(1);
-            const ViewAsSkill *skill = Sanguosha->getViewAsSkill(skill_name);
+            const ViewAsSkill *skill = ClientInstance->getViewAsSkill(skill_name);
             if (skill != nullptr) {
                 CardUseStruct::CardUseReason reason = CardUseStruct::CARD_USE_REASON_RESPONSE;
                 if (newStatus == Client::RespondingUse)
@@ -2970,11 +2970,11 @@ void RoomScene::onSkillActivated()
         QAction *action = qobject_cast<QAction *>(sender());
 
         if (action != nullptr)
-            skill = Sanguosha->getViewAsSkill(action->property("skillname").toString());
+            skill = ClientInstance->getViewAsSkill(action->property("skillname").toString());
         else {
             QDialog *dialog = qobject_cast<QDialog *>(sender());
             if (dialog != nullptr)
-                skill = Sanguosha->getViewAsSkill(dialog->objectName());
+                skill = ClientInstance->getViewAsSkill(dialog->objectName());
         }
     }
 

@@ -22,22 +22,11 @@ public:
         min = new QLineEdit;
         in_attack = new QLineEdit;
 
-        QList<const DistanceSkill *> skills = Sanguosha->getDistanceSkills();
+        QList<const DistanceSkill *> skills = ClientInstance->getDistanceSkills();
         foreach (const DistanceSkill *skill, skills) {
-            bool show_skill = false;
-            foreach (const Player *p, ClientInstance->players()) {
-                if (p->hasSkill(skill->objectName())) {
-                    show_skill = true;
-                    break;
-                }
-            }
-            if (!show_skill)
-                continue;
-
             QLineEdit *distance_edit = new QLineEdit;
             distance_edit->setObjectName(skill->objectName());
             distance_edit->setReadOnly(true);
-
             distance_edits << distance_edit;
         }
 

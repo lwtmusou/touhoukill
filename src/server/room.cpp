@@ -1689,7 +1689,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         player->showHiddenSkill(showskill);
         const Skill *equipSkill = Sanguosha->getSkill(skill_name);
         if ((equipSkill != nullptr) && equipSkill->inherits("WeaponSkill")) {
-            const TreatAsEquippingSkill *v = Sanguosha->treatAsEquipping(player, skill_name, QSanguosha::WeaponLocation);
+            const TreatAsEquippingSkill *v = treatAsEquipping(player, skill_name, QSanguosha::WeaponLocation);
             if (v != nullptr)
                 player->showHiddenSkill(v->objectName());
         }
@@ -2534,11 +2534,6 @@ void Room::reverseFor3v3(const Card *card, ServerPlayer *player, QList<ServerPla
 
         list = new_list;
     }
-}
-
-const ProhibitSkill *Room::isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others) const
-{
-    return Sanguosha->isProhibited(from, to, card, others);
 }
 
 int Room::drawCard(bool bottom)

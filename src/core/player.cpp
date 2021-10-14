@@ -384,7 +384,7 @@ int Player::getAttackRange(bool include_weapon) const
 
     include_weapon = include_weapon && d->weapon != -1;
 
-    int fixeddis = Sanguosha->correctAttackRange(this, include_weapon, true);
+    int fixeddis = d->room->correctAttackRange(this, include_weapon, true);
     if (fixeddis > 0)
         return fixeddis;
 
@@ -398,7 +398,7 @@ int Player::getAttackRange(bool include_weapon) const
             weapon_range = face->range();
     }
 
-    int real_range = qMax(original_range, weapon_range) + Sanguosha->correctAttackRange(this, include_weapon, false);
+    int real_range = qMax(original_range, weapon_range) + d->room->correctAttackRange(this, include_weapon, false);
 
     if (real_range < 0)
         real_range = 0;
@@ -458,7 +458,7 @@ int Player::distanceTo(const Player *other, int distance_fix) const
     int left = d->room->players(false, false).length() - right;
     int distance = qMin(left, right);
 
-    distance += Sanguosha->correctDistance(this, other);
+    distance += d->room->correctDistance(this, other);
     distance += distance_fix;
     if (distance_limit > 0)
         distance = qMin(distance_limit, distance);
@@ -1040,7 +1040,7 @@ bool Player::hasWeapon(const QString &weapon_name, bool /*unused*/, bool ignore_
     if (mark(QStringLiteral("Equips_Nullified_to_Yourself")) > 0)
         return false;
 
-    if (Sanguosha->treatAsEquipping(this, weapon_name, WeaponLocation) != nullptr)
+    if (d->room->treatAsEquipping(this, weapon_name, WeaponLocation) != nullptr)
         return true;
 
     if ((d->weapon == -1) || isBrokenEquip(d->weapon, true))
@@ -1059,7 +1059,7 @@ bool Player::hasArmor(const QString &armor_name, bool /*unused*/) const
     if (!tag[QStringLiteral("Qinggang")].toStringList().isEmpty() || mark(QStringLiteral("Armor_Nullified")) > 0 || mark(QStringLiteral("Equips_Nullified_to_Yourself")) > 0)
         return false;
 
-    if (Sanguosha->treatAsEquipping(this, armor_name, ArmorLocation) != nullptr)
+    if (d->room->treatAsEquipping(this, armor_name, ArmorLocation) != nullptr)
         return true;
 
     if ((d->armor == -1) || isBrokenEquip(d->armor, true))
@@ -1078,7 +1078,7 @@ bool Player::hasTreasure(const QString &treasure_name, bool /*unused*/) const
     if (mark(QStringLiteral("Equips_Nullified_to_Yourself")) > 0)
         return false;
 
-    if (Sanguosha->treatAsEquipping(this, treasure_name, TreasureLocation) != nullptr)
+    if (d->room->treatAsEquipping(this, treasure_name, TreasureLocation) != nullptr)
         return true;
 
     if ((d->treasure == -1) || isBrokenEquip(d->treasure, true))
@@ -1133,7 +1133,7 @@ void Player::setTurnSkipping(bool turnSkipping)
 
 int Player::maxCards(const QString &except) const
 {
-    int origin = Sanguosha->correctMaxCards(this, true, except);
+    int origin = d->room->correctMaxCards(this, true, except);
     if (origin == 0)
         origin = qMax(hp(), 0);
     int rule = 0;
@@ -1147,7 +1147,7 @@ int Player::maxCards(const QString &except) const
             rule = 1;
     }
 #endif
-    extra += Sanguosha->correctMaxCards(this, false, except);
+    extra += d->room->correctMaxCards(this, false, except);
 
     return qMax(origin + rule + extra, 0);
 }
@@ -1462,7 +1462,7 @@ bool Player::canSlash(const Player *other, const Card *slash, bool distance_limi
     }
 
     if (distance_limit) {
-        bool res = distanceTo(other, rangefix) <= getAttackRange() + Sanguosha->correctCardTarget(ModDistance, this, THIS_SLASH);
+        bool res = distanceTo(other, rangefix) <= getAttackRange() + d->room->correctCardTarget(ModDistance, this, THIS_SLASH);
         roomObject()->cardDeleting(new_shash);
         return res;
     } else {
@@ -1649,7 +1649,7 @@ QSet<QString> Player::getAcquiredSkills() const
 
 bool Player::isProhibited(const Player *to, const Card *card, const QList<const Player *> &others) const
 {
-    return Sanguosha->isProhibited(this, to, card, others) != nullptr;
+    return d->room->isProhibited(this, to, card, others) != nullptr;
 }
 
 bool Player::canSlashWithoutCrossbow(const Card *slash) const
@@ -1658,7 +1658,7 @@ bool Player::canSlashWithoutCrossbow(const Card *slash) const
 #define THIS_SLASH (slash == NULL ? newslash : slash)
     int slash_count = slashCount();
     int valid_slash_count = 1;
-    valid_slash_count += Sanguosha->correctCardTarget(ModResidue, this, THIS_SLASH);
+    valid_slash_count += d->room->correctCardTarget(ModResidue, this, THIS_SLASH);
     roomObject()->cardDeleting(newslash);
     return slash_count < valid_slash_count;
 #undef THIS_SLASH

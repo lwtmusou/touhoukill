@@ -68,7 +68,6 @@ public:
     QSGS_STATE_GAME bool hasWelfare(const ServerPlayer *player) const;
     QSGS_STATE_GAME ServerPlayer *getFront(ServerPlayer *a, ServerPlayer *b) const;
     QSGS_STATE_GAME void sortByActionOrder(QList<ServerPlayer *> &players);
-    QSGS_STATE_GAME const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
     QSGS_STATE_GAME void setTag(const QString &key, const QVariant &value);
     QSGS_STATE_GAME QVariant getTag(const QString &key) const;
     QSGS_STATE_GAME void removeTag(const QString &key);

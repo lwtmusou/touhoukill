@@ -9,6 +9,10 @@
 
 class CardFace;
 struct CardDescriptor;
+class ProhibitSkill;
+class TreatAsEquippingSkill;
+class DistanceSkill;
+class ViewAsSkill;
 class Card;
 
 class RoomObjectPrivate;
@@ -76,6 +80,18 @@ public:
     Card *cloneCard(const CardDescriptor &descriptor);
 
     void cardDeleting(const Card *card);
+
+    const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
+    const TreatAsEquippingSkill *treatAsEquipping(const Player *player, const QString &equipName, QSanguosha::EquipLocation location) const;
+    int correctDistance(const Player *from, const Player *to) const;
+    int correctMaxCards(const Player *target, bool fixed = false, const QString &except = QString()) const;
+    int correctCardTarget(const QSanguosha::TargetModType type, const Player *from, const Card *card) const;
+    int correctAttackRange(const Player *target, bool include_weapon = true, bool fixed = false) const;
+
+    QList<const DistanceSkill *> getDistanceSkills() const;
+    const ViewAsSkill *getViewAsSkill(const QString &skill_name) const;
+
+    void loadSkill(const Skill *skill);
 
 private:
     RoomObjectPrivate *const d;
