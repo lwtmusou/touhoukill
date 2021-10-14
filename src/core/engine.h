@@ -34,16 +34,6 @@ struct CardDescriptor;
 class Card;
 class RoomObject;
 
-namespace CardFactory {
-// static methods for Engine. Used to add metaobjects
-// this staticMetaObject is used to call "newInstance" function to create a new card
-
-void registerCardFace(const CardFace *face);
-const CardFace *cardFace(const QString &name);
-void unregisterCardFace(const QString &name);
-
-} // namespace CardFactory
-
 class EnginePrivate;
 
 class Engine final : public QObject
@@ -131,6 +121,10 @@ public:
     QString GetMappedKingdom(const QString &role); //hegemony
 
     QVariant getConfigFromConfigFile(const QString &key) const;
+
+    void registerCardFace(const CardFace *face);
+    const CardFace *cardFace(const QString &name);
+    void unregisterCardFace(const QString &name);
 
 public:
     Q_DECL_DEPRECATED QString translate(const QString &to_translate, bool) const

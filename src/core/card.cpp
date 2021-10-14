@@ -612,7 +612,7 @@ Card *Card::Parse(const QString &str, RoomObject *room)
         if (subcard_str != QStringLiteral("."))
             subcard_ids = subcard_str.split(QStringLiteral("+"));
 
-        const CardFace *skillCardFace = CardFactory::cardFace(card_name);
+        const CardFace *skillCardFace = Sanguosha->cardFace(card_name);
         if (skillCardFace == nullptr)
             return nullptr;
 
@@ -759,5 +759,5 @@ bool CardDescriptor::isRed() const
 
 const CardFace *CardDescriptor::face() const
 {
-    return CardFactory::cardFace(faceName);
+    return Sanguosha->cardFace(faceName);
 }

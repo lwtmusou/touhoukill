@@ -204,7 +204,7 @@ void Client::updateCard(const QVariant &val)
         QStringList flags;
         JsonUtils::tryParse(args[6], flags);
 
-        const CardFace *face = CardFactory::cardFace(cardName);
+        const CardFace *face = Sanguosha->cardFace(cardName);
         // since we are modifying actual card, the Face must not be nullptr
         if (face != nullptr) {
             Card *c = getCard(cardId);
@@ -1187,7 +1187,7 @@ void Client::askForNullification(const QVariant &arg)
     if (!source_name.isNull())
         source = findPlayer(source_name.toString());
 
-    const CardFace *trick_card = CardFactory::cardFace(trick_name);
+    const CardFace *trick_card = Sanguosha->cardFace(trick_name);
     if (Config.NeverNullifyMyTrick && source == Self) {
         if (trick_card->isKindOf("SingleTargetTrick") || trick_card->isKindOf("IronChain")) {
             onPlayerResponseCard(nullptr);

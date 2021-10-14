@@ -322,7 +322,7 @@ Card *RoomObject::cloneCard(const QString &name, Suit suit, Number number)
     const CardFace *face = nullptr;
 
     if (!name.isEmpty()) {
-        face = CardFactory::cardFace(name);
+        face = Sanguosha->cardFace(name);
         if (face == nullptr && name != QStringLiteral("DummyCard"))
             return nullptr;
     }

@@ -28,30 +28,6 @@
 
 using namespace QSanguosha;
 
-namespace CardFactory {
-QHash<QString, const CardFace *> faces;
-
-void registerCardFace(const CardFace *cardFace)
-{
-    faces.insert(cardFace->name(), cardFace);
-}
-
-const CardFace *cardFace(const QString &name)
-{
-    return faces.value(name, nullptr);
-}
-
-void unregisterCardFace(const QString &name)
-{
-    auto face = faces.find(name);
-    if (face != faces.end()) {
-        const auto *handle = *face;
-        faces.erase(face);
-        delete handle;
-    }
-}
-} // namespace CardFactory
-
 class EnginePrivate
 {
 public:
@@ -61,6 +37,7 @@ public:
     QMap<QString, QString> modes;
     QMultiMap<QString, QString> related_skills;
     QMap<QString, const CardPattern *> patterns;
+    QHash<QString, const CardFace *> faces;
 
     // Package
     QList<const Package *> packages;
@@ -101,7 +78,7 @@ Engine::Engine()
         d->configFile = doc.object();
 
     foreach (const CardFace *cardFace, LuaMultiThreadEnvironment::cardFaces())
-        CardFactory::registerCardFace(cardFace);
+        registerCardFace(cardFace);
 
     addSkills(LuaMultiThreadEnvironment::skills());
 
@@ -1162,4 +1139,24 @@ QVariant Engine::getConfigFromConfigFile(const QString &key) const
 {
     // TODO: special case of "withHeroSkin" and "withBGM"
     return d->configFile.value(key);
+}
+
+void Engine::registerCardFace(const CardFace *cardFace)
+{
+    d->faces.insert(cardFace->name(), cardFace);
+}
+
+const CardFace *Engine::cardFace(const QString &name)
+{
+    return d->faces.value(name, nullptr);
+}
+
+void Engine::unregisterCardFace(const QString &name)
+{
+    auto face = d->faces.find(name);
+    if (face != d->faces.end()) {
+        const auto *handle = *face;
+        d->faces.erase(face);
+        delete handle;
+    }
 }
