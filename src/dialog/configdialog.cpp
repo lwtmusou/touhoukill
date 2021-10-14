@@ -89,7 +89,7 @@ ConfigDialog::ConfigDialog(QWidget *parent)
 void ConfigDialog::showFont(QLineEdit *lineedit, const QFont &font)
 {
     lineedit->setFont(font);
-    lineedit->setText(QStringLiteral("%1 %2").arg(font.family()).arg(font.pointSize()));
+    lineedit->setText(QStringLiteral("%1 %2").arg(font.family(), font.pointSize()));
 }
 
 ConfigDialog::~ConfigDialog()
@@ -117,7 +117,7 @@ void ConfigDialog::on_resetBgButton_clicked()
 
     int length = 8;
     int index = QRandomGenerator::global()->generate() % length + 1;
-    QString filename = QStringLiteral("%1%2%3").arg(QStringLiteral("backdrop/new-version")).arg(index).arg(QStringLiteral(".jpg"));
+    QString filename = QStringLiteral("%1%2%3").arg(QStringLiteral("backdrop/new-version"), QString::number(index), QStringLiteral(".jpg"));
 
     Config.BackgroundImage = filename;
     Config.setValue(QStringLiteral("BackgroundImage"), filename);

@@ -118,7 +118,7 @@ void DistanceViewDialog::showDistance()
         ui->left->setText(QString::number(left_distance));
 
         int min = qMin(left_distance, right_distance);
-        ui->min->setText(QStringLiteral("min(%1, %2)=%3").arg(left_distance).arg(right_distance).arg(min));
+        ui->min->setText(QStringLiteral("min(%1, %2)=%3").arg(left_distance, right_distance, min));
     }
 
     foreach (QLineEdit *edit, ui->distance_edits) {

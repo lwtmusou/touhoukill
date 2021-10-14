@@ -857,6 +857,7 @@ QString ReplayerControlBar::FormatTime(int secs)
 {
     int minutes = secs / 60;
     int remainder = secs % 60;
+
     return QStringLiteral("%1:%2").arg(minutes, 2, 10, QLatin1Char('0')).arg(remainder, 2, 10, QLatin1Char('0'));
 }
 
@@ -867,7 +868,7 @@ void ReplayerControlBar::setSpeed(qreal speed)
 
 void ReplayerControlBar::setTime(int secs)
 {
-    time_label->setText(QStringLiteral("<b>x%1 </b> [%2/%3]").arg(speed).arg(FormatTime(secs)).arg(duration_str));
+    time_label->setText(QStringLiteral("<b>x%1 </b> [%2/%3]").arg(QString::number(speed), FormatTime(secs), duration_str));
 }
 
 TimeLabel::TimeLabel()
@@ -1665,8 +1666,8 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
                     if (add) {
                         enabled = true;
                         QAction *action
-                            = private_pile->addAction(QStringLiteral("%1 %2").arg(ClientInstance->getPlayerName(player->objectName())).arg(Sanguosha->translate(pile_name)));
-                        action->setData(QStringLiteral("%1.%2").arg(player->objectName()).arg(pile_name));
+                            = private_pile->addAction(QStringLiteral("%1 %2").arg(ClientInstance->getPlayerName(player->objectName()), Sanguosha->translate(pile_name)));
+                        action->setData(QStringLiteral("%1.%2").arg(player->objectName(), pile_name));
                         connect(action, &QAction::triggered, this, &RoomScene::showPlayerCards);
                     }
                 }
@@ -2087,7 +2088,7 @@ QString RoomScene::_translateMovement(const CardsMoveStruct &move)
     if (srcPhoto != nullptr)
         playerName = Sanguosha->translate(srcPhoto->getPlayer()->getFootnoteName());
     else if (reason.m_playerId == Self->objectName())
-        playerName = QStringLiteral("%1(%2)").arg(Sanguosha->translate(Self->getFootnoteName())).arg(Sanguosha->translate(QStringLiteral("yourself")));
+        playerName = QStringLiteral("%1(%2)").arg(Sanguosha->translate(Self->getFootnoteName()), Sanguosha->translate(QStringLiteral("yourself")));
 
     if (dstPhoto != nullptr)
         targetName = Sanguosha->translate(QStringLiteral("use upon")).append(Sanguosha->translate(dstPhoto->getPlayer()->getFootnoteName()));
@@ -2329,7 +2330,7 @@ void RoomScene::addSkillButton(const Skill *skill, bool head)
 
         const ViewAsSkillSelection *selection = btn->getViewAsSkill()->selections(Self);
         if (selection != nullptr && !selection->next.isEmpty() && !m_replayControl) {
-            connect(btn, (void(QSanSkillButton ::*)())(&QSanSkillButton::skill_activated), btn, [this, btn, selection]() -> void {
+            connect(btn, (void (QSanSkillButton ::*)())(&QSanSkillButton::skill_activated), btn, [this, btn, selection]() -> void {
                 // QMenu *menu = new QMenu(this);
                 setCurrentViewAsSkillSelectionChain(QStringList());
                 QMenu *menu = mainWindow()->findChild<QMenu *>(btn->getViewAsSkill()->objectName());
@@ -3380,7 +3381,7 @@ void RoomScene::saveReplayRecord(const bool auto_save, const bool network_only)
             QString general_name = Sanguosha->translate(Self->generalName());
             if (ServerInfo.Enable2ndGeneral)
                 general_name.append(QStringLiteral("_") + Sanguosha->translate(Self->getGeneral2Name()));
-            location.append(QStringLiteral("%1 %2(%3)-").arg(Sanguosha->getVersionName()).arg(general_name).arg(Sanguosha->translate(Self->getRoleString())));
+            location.append(QStringLiteral("%1 %2(%3)-").arg(Sanguosha->getVersionName(), general_name, Sanguosha->translate(Self->getRoleString())));
             location.append(QDateTime::currentDateTime().toString(QStringLiteral("yyyyMMddhhmmss")));
             location.append(QStringLiteral(".txt"));
             ClientInstance->save(location);
@@ -3533,7 +3534,7 @@ void RoomScene::FillPlayerNames(QComboBox *ComboBox, bool add_none)
         if (player->general() == nullptr)
             continue;
         QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(player->generalName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY, false);
-        ComboBox->addItem(QIcon(pixmap), QStringLiteral("%1 [%2]").arg(general_name).arg(player->screenName()), player->objectName());
+        ComboBox->addItem(QIcon(pixmap), QStringLiteral("%1 [%2]").arg(general_name, player->screenName()), player->objectName());
     }
 }
 
@@ -3579,7 +3580,7 @@ void RoomScene::makeReviving()
     foreach (const Player *player, ClientInstance->players()) {
         if (player->isDead()) {
             QString general_name = Sanguosha->translate(player->generalName());
-            items << QStringLiteral("%1 [%2]").arg(player->screenName()).arg(general_name);
+            items << QStringLiteral("%1 [%2]").arg(player->screenName(), general_name);
             victims << player;
         }
     }
@@ -3908,7 +3909,7 @@ void RoomScene::speak()
             title.append(QStringLiteral("(%1)").arg(Self->screenName()));
             title = QStringLiteral("<b>%1</b>").arg(title);
         }
-        QString line = tr("<font color='%1'>[%2] said: %3 </font>").arg(Config.TextEditColor.name()).arg(title).arg(text);
+        QString line = tr("<font color='%1'>[%2] said: %3 </font>").arg(Config.TextEditColor.name(), title, text);
         appendChatBox(QStringLiteral("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
     }
     chat_edit->clear();
@@ -3949,7 +3950,7 @@ void RoomScene::showPlayerCards()
             QString pile_name = names.last();
 
             CardOverview *overview = new CardOverview;
-            overview->setWindowTitle(QStringLiteral("%1 %2").arg(ClientInstance->getPlayerName(player_name)).arg(Sanguosha->translate(pile_name)));
+            overview->setWindowTitle(QStringLiteral("%1 %2").arg(ClientInstance->getPlayerName(player_name), Sanguosha->translate(pile_name)));
             overview->loadFromList(player->pile(pile_name));
             overview->show();
         } else {
@@ -3960,7 +3961,7 @@ void RoomScene::showPlayerCards()
             }
 
             CardOverview *overview = new CardOverview;
-            overview->setWindowTitle(QStringLiteral("%1 %2").arg(ClientInstance->getPlayerName(player_name)).arg(tr("Known cards")));
+            overview->setWindowTitle(QStringLiteral("%1 %2").arg(ClientInstance->getPlayerName(player_name), tr("Known cards")));
             overview->loadFromList(cards);
             overview->show();
         }
@@ -4765,7 +4766,7 @@ void RoomScene::startArrange(const QString &to_arrange)
         selector_box->setZValue(10000);
     } else {
         QString suffix = (mode == QStringLiteral("1v1") && down_generals.length() == 6) ? QStringLiteral("2") : QString();
-        QString path = QStringLiteral("image/system/%1/arrange%2.png").arg(mode).arg(suffix);
+        QString path = QStringLiteral("image/system/%1/arrange%2.png").arg(mode, suffix);
         selector_box->load(path);
         selector_box->setPos(m_tableCenterPos);
     }

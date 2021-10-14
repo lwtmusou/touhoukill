@@ -27,7 +27,7 @@ QString LogMessage::toString() const
         if (player != nullptr)
             tos << player->objectName();
 
-    return QStringLiteral("%1:%2->%3:%4:%5:%6").arg(type).arg(from != nullptr ? from->objectName() : QString()).arg(tos.join(QStringLiteral("+"))).arg(card_str).arg(arg).arg(arg2);
+    return QStringLiteral("%1:%2->%3:%4:%5:%6").arg(type, from != nullptr ? from->objectName() : QString(), tos.join(QStringLiteral("+")), card_str, arg, arg2);
 }
 
 QVariant LogMessage::toJsonValue() const

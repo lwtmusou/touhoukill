@@ -22,7 +22,7 @@ void RoleComboBoxItem::setRole(const QString &role)
 {
     m_role = role;
     if (m_number != 0 && role != QStringLiteral("unknown"))
-        load(QStringLiteral("image/system/roles/%1-%2.png").arg(m_role).arg(m_number), m_size, false);
+        load(QStringLiteral("image/system/roles/%1-%2.png").arg( m_role , m_number), m_size, false);
     else
         load(QStringLiteral("image/system/roles/%1.png").arg(m_role), m_size, false);
 }

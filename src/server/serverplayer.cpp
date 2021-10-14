@@ -345,7 +345,7 @@ void ServerPlayer::invoke(const AbstractPacket *packet)
 
 void ServerPlayer::invoke(const char *method, const QString &arg)
 {
-    unicast(QStringLiteral("%1 %2").arg(QString::fromUtf8(method)).arg(arg));
+    unicast(QStringLiteral("%1 %2").arg(QString::fromUtf8(method), arg));
 }
 
 QString ServerPlayer::reportHeader() const

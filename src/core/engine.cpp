@@ -441,7 +441,7 @@ QString Engine::getVersionNumber() const
 
 QString Engine::getVersion() const
 {
-    return QStringLiteral("%1:%2").arg(getVersionNumber()).arg(getMODName());
+    return QStringLiteral("%1:%2").arg(getVersionNumber(), getMODName());
 }
 
 QString Engine::getVersionName() const

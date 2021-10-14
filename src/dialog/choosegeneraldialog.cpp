@@ -352,7 +352,7 @@ QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals)
     for (int i = 0; i < generals.length(); i++) {
         const General *general = generals.at(i);
         QString general_name = general->name();
-        QString text = QStringLiteral("%1[%2]").arg(Sanguosha->translate(general_name)).arg(Sanguosha->translate(general->getPackage()));
+        QString text = QStringLiteral("%1[%2]").arg(Sanguosha->translate(general_name), Sanguosha->translate(general->getPackage()));
 
         QAbstractButton *button = nullptr;
         if (pair_choose)

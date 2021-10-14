@@ -1126,13 +1126,13 @@ void Client::askForSkillInvoke(const QVariant &arg)
         prompt_doc->setHtml(text);
     } else if (data.startsWith(QStringLiteral("playerdata:"))) {
         QString name = getPlayerName(data.split(QStringLiteral(":")).last());
-        text = tr("Do you want to invoke skill [%1] to %2 ?").arg(Sanguosha->translate(skill_name)).arg(name);
+        text = tr("Do you want to invoke skill [%1] to %2 ?").arg(Sanguosha->translate(skill_name), name);
         prompt_doc->setHtml(text);
     } else if (skill_name.startsWith(QStringLiteral("cv_"))) {
         setPromptList(QStringList() << QStringLiteral("@sp_convert") << QString() << QString() << data);
     } else {
         QStringList texts = data.split(QStringLiteral(":"));
-        text = QStringLiteral("%1:%2").arg(skill_name).arg(texts.first());
+        text = QStringLiteral("%1:%2").arg(skill_name, texts.first());
         texts.replace(0, text);
         setPromptList(texts);
     }
@@ -1203,7 +1203,7 @@ void Client::askForNullification(const QVariant &arg)
 
     if (source == nullptr) {
         prompt_doc->setHtml(
-            tr("Do you want to use nullification to trick card %1 from %2?").arg(Sanguosha->translate(trick_card->name())).arg(getPlayerName(target_player->objectName())));
+            tr("Do you want to use nullification to trick card %1 from %2?").arg(Sanguosha->translate(trick_card->name()), getPlayerName(target_player->objectName())));
     } else {
         prompt_doc->setHtml(tr("%1 used trick card %2 to %3 <br>Do you want to use nullification?")
                                 .arg(getPlayerName(source->objectName()))
@@ -1402,7 +1402,7 @@ void Client::setCardFlag(const QVariant &pattern_str)
 
 void Client::updatePileNum()
 {
-    QString pile_str = tr("Draw pile: <b>%1</b>, discard pile: <b>%2</b>, swap times: <b>%3</b>").arg(pile_num).arg(discardPile().length()).arg(swap_pile);
+    QString pile_str = tr("Draw pile: <b>%1</b>, discard pile: <b>%2</b>, swap times: <b>%3</b>").arg(pile_num, discardPile().length(), swap_pile);
     lines_doc->setHtml((QStringLiteral("<font color='%1'><p align = \"center\">") + pile_str + QStringLiteral("</p></font>")).arg(Config.TextEditColor.name()));
 }
 
@@ -1426,7 +1426,7 @@ void Client::askForDiscard(const QVariant &reqvar)
             prompt = tr("Please discard %1 card(s), only hand cards is allowed").arg(discard_num);
         if (min_num < discard_num) {
             prompt.append(QStringLiteral("<br/>"));
-            prompt.append(tr("%1 %2 cards(s) are required at least").arg(min_num).arg(m_canDiscardEquip ? QString() : tr("hand")));
+            prompt.append(tr("%1 %2 cards(s) are required at least").arg(QString::number(min_num), m_canDiscardEquip ? QString() : tr("hand")));
         }
         prompt_doc->setHtml(prompt);
     } else {
@@ -1461,7 +1461,7 @@ void Client::askForExchange(const QVariant &exchange)
         if (discard_num == min_num)
             prompt = tr("Please give %1 cards to exchange").arg(discard_num);
         else
-            prompt = tr("Please give at most %1 cards to exchange.<br />You can give %2 cards at least").arg(discard_num).arg(min_num);
+            prompt = tr("Please give at most %1 cards to exchange.<br />You can give %2 cards at least").arg(discard_num, min_num);
         prompt_doc->setHtml(prompt);
     } else {
         QStringList texts = prompt.split(QStringLiteral(":"));
@@ -1831,7 +1831,7 @@ void Client::askForSinglePeach(const QVariant &arg)
     } else {
         QString dying_general = getPlayerName(dying->objectName());
 
-        prompt_doc->setHtml(tr("%1 is dying, please provide %2 peach(es) to save him").arg(dying_general).arg(peaches));
+        prompt_doc->setHtml(tr("%1 is dying, please provide %2 peach(es) to save him").arg(dying_general, peaches));
     }
 
     Card *temp_peach = cloneCard(QStringLiteral("Peach"));
@@ -2042,7 +2042,7 @@ void Client::askForYiji(const QVariant &ask_str)
         }
         setPromptList(texts);
     } else {
-        prompt_doc->setHtml(tr("Please distribute %1 cards %2 as you wish").arg(count).arg(m_isDiscardActionRefusable ? QString() : tr("to another player")));
+        prompt_doc->setHtml(tr("Please distribute %1 cards %2 as you wish").arg(QString::number(count), m_isDiscardActionRefusable ? QString() : tr("to another player")));
     }
 
     //@todo: use cards directly rather than the QString
@@ -2054,7 +2054,7 @@ void Client::askForYiji(const QVariant &ask_str)
     QStringList names;
     JsonUtils::tryParse(players, names);
 
-    setCurrentCardUsePattern(QStringLiteral("%1=%2=%3").arg(count).arg(card_str.join(QStringLiteral("+"))).arg(names.join(QStringLiteral("+"))));
+    setCurrentCardUsePattern(QStringLiteral("%1=%2=%3").arg(QString::number(count), card_str.join(QStringLiteral("+")), names.join(QStringLiteral("+"))));
     setStatus(AskForYiji);
 }
 
@@ -2164,7 +2164,7 @@ void Client::speak(const QVariant &speak)
 
     title = QStringLiteral("<b>%1</b>").arg(title);
 
-    QString line = tr("<font color='%1'>[%2] said: %3 </font>").arg(Config.TextEditColor.name()).arg(title).arg(text);
+    QString line = tr("<font color='%1'>[%2] said: %3 </font>").arg(Config.TextEditColor.name(), title, text);
 
     emit line_spoken(QStringLiteral("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
 }

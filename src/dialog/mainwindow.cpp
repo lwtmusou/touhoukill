@@ -263,7 +263,7 @@ void MainWindow::checkVersion(const QString &server_version, const QString &serv
 
     client->disconnectFromHost();
 
-    QString text = tr("Server version is %1, client version is %2 <br/>").arg(server_version).arg(client_version);
+    QString text = tr("Server version is %1, client version is %2 <br/>").arg(server_version, client_version);
     if (server_version > client_version)
         text.append(tr("Your client version is older than the server's, please update it <br/>"));
     else
@@ -326,7 +326,7 @@ void BackLoader::preload()
     foreach (QString emotion, emotions) {
         int n = PixmapAnimation::GetFrameCount(emotion);
         for (int i = 0; i < n; i++) {
-            QString filename = QStringLiteral("image/system/emotion/%1/%2.png").arg(emotion).arg(QString::number(i));
+            QString filename = QStringLiteral("image/system/emotion/%1/%2.png").arg(emotion, QString::number(i));
             G_ROOM_SKIN.getPixmapFromFileName(filename);
         }
     }
@@ -492,11 +492,11 @@ void MainWindow::on_actionAbout_triggered()
     config = QStringLiteral("debug");
 #endif
 
-    content.append(tr("Current version: %1 %2 (%3)<br/>").arg(Sanguosha->getVersion()).arg(config).arg(Sanguosha->getVersionName()));
+    content.append(tr("Current version: %1 %2 (%3)<br/>").arg(Sanguosha->getVersion(), config, Sanguosha->getVersionName()));
 
     QString date = QStringLiteral(__DATE__);
     QString time = QStringLiteral(__TIME__);
-    content.append(tr("Compilation time: %1 %2 <br/>").arg(date).arg(time));
+    content.append(tr("Compilation time: %1 %2 <br/>").arg(date, time));
 
     QString project_url = QStringLiteral("https://github.com/lwtmusou/touhoukill");
     content.append(tr("Source code: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(project_url));

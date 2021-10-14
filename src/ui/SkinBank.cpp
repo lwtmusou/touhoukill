@@ -1,7 +1,7 @@
 #include "SkinBank.h"
-#include "serverinfostruct.h"
 #include "engine.h"
 #include "protocol.h"
+#include "serverinfostruct.h"
 #include "settings.h"
 #include "uiUtils.h"
 #include "util.h"
@@ -400,7 +400,7 @@ QPixmap QSanRoomSkin::getGeneralPixmap(const QString &generalName, GeneralIconSi
         if (name.endsWith(QStringLiteral("_hegemony")))
             name = name.replace(QStringLiteral("_hegemony"), QString());
 
-        QString key = QString::fromUtf8(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(size).arg(name);
+        QString key = QString::fromUtf8(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(QString::number(static_cast<int>(size)), name);
 
         if (isImageKeyDefined(key))
             return getPixmap(key, QString(), false, heroSkin);
@@ -414,7 +414,7 @@ QPixmap QSanRoomSkin::getGeneralPixmap(const QString &generalName, GeneralIconSi
 QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, const QString &category, int index) const
 {
     QString fileName;
-    QString key = QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_PLAYER_AUDIO_EFFECT).arg(category).arg(eventName);
+    QString key = QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_PLAYER_AUDIO_EFFECT).arg(category, eventName);
 
     if (index < 0)
         fileName = getRandomAudioFileName(key);
@@ -452,7 +452,7 @@ QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, const Q
     }
 
     if (fileName.isEmpty()) {
-        fileName = _m_audioConfig[QString::fromUtf8(S_SKIN_KEY_PLAYER_AUDIO_EFFECT).arg(category).arg(QStringLiteral("default"))].toString().arg(eventName);
+        fileName = _m_audioConfig[QString::fromUtf8(S_SKIN_KEY_PLAYER_AUDIO_EFFECT).arg(category, QStringLiteral("default"))].toString().arg(eventName);
     }
     return fileName;
 }
@@ -559,7 +559,7 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
     if (!layoutConfigName.isNull()) {
         JsonDocument layoutDoc = JsonDocument::fromFilePath(layoutConfigName);
         if (!layoutDoc.isValid() || !layoutDoc.isObject()) {
-            errorMsg = QStringLiteral("Error when reading layout config file \"%1\": \n%2").arg(layoutConfigName).arg(layoutDoc.errorString());
+            errorMsg = QStringLiteral("Error when reading layout config file \"%1\": \n%2").arg(layoutConfigName, layoutDoc.errorString());
             QMessageBox::warning(nullptr, QStringLiteral("Config Error"), errorMsg);
             success = false;
         } else
@@ -569,7 +569,7 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
     if (!imageConfigName.isNull()) {
         JsonDocument imageDoc = JsonDocument::fromFilePath(imageConfigName);
         if (!imageDoc.isValid() || !imageDoc.isObject()) {
-            errorMsg = QStringLiteral("Error when reading image config file \"%1\": \n%2").arg(imageConfigName).arg(imageDoc.errorString());
+            errorMsg = QStringLiteral("Error when reading image config file \"%1\": \n%2").arg(imageConfigName, imageDoc.errorString());
             QMessageBox::warning(nullptr, QStringLiteral("Config Error"), errorMsg);
             success = false;
         } else
@@ -579,7 +579,7 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
     if (!audioConfigName.isNull()) {
         JsonDocument audioDoc = JsonDocument::fromFilePath(audioConfigName);
         if (!audioDoc.isValid() || !audioDoc.isObject()) {
-            errorMsg = QStringLiteral("Error when reading audio config file \"%1\": \n%2").arg(audioConfigName).arg(audioDoc.errorString());
+            errorMsg = QStringLiteral("Error when reading audio config file \"%1\": \n%2").arg(audioConfigName, audioDoc.errorString());
             QMessageBox::warning(nullptr, QStringLiteral("Config Error"), errorMsg);
             success = false;
         } else
@@ -589,7 +589,7 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
     if (!animationConfigName.isNull()) {
         JsonDocument animDoc = JsonDocument::fromFilePath(animationConfigName);
         if (!animDoc.isValid() || !animDoc.isObject()) {
-            errorMsg = QStringLiteral("Error when reading animation config file \"%1\": \n%2").arg(animationConfigName).arg(animDoc.errorString());
+            errorMsg = QStringLiteral("Error when reading animation config file \"%1\": \n%2").arg(animationConfigName, animDoc.errorString());
             QMessageBox::warning(nullptr, QStringLiteral("Config Error"), errorMsg);
             success = false;
         } else
@@ -711,7 +711,7 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, bo
         int skin_index = Config.value(QStringLiteral("HeroSkin/%1").arg(general_name), 0).toInt();
         if (skin_index > 0) {
             fileName.replace(QStringLiteral("image/"), QStringLiteral("image/heroskin/"));
-            fileName.replace(general_name, QStringLiteral("%1_%2").arg(general_name).arg(skin_index));
+            fileName.replace(general_name, QStringLiteral("%1_%2").arg(general_name, skin_index));
         } else if (isHegemonyGameMode(ServerInfo.GameMode) && fileName.contains(QStringLiteral("image/fullskin/generals/full"))) { //ignore avatar
             QString tmpFileName = fileName;
             tmpFileName.replace(general_name, QStringLiteral("%1").arg(general_name + QStringLiteral("_hegemony")));
@@ -727,7 +727,7 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, bo
         int skin_index = Config.value(QString("HeroSkin/%1").arg(unique_general), 0).toInt();
         if (skin_index > 0) {
             fileName.replace("image/", "image/heroskin/");
-            fileName.replace(general_name, QString("%1_%2").arg(unique_general).arg(skin_index));
+            fileName.replace(general_name, QString("%1_%2").arg( unique_general , skin_index));
         }
         else if (isHegemonyGameMode(ServerInfo.GameMode) 
             && (fileName.contains("image/fullskin/generals/full") || fileName.contains("image/generals/avatar"))) {
@@ -1235,10 +1235,10 @@ void QSanRoomSkin::getHeroSkinContainerGeneralIconPathAndClipRegion(const QStrin
     }
 
     QString customSkinBaseKey = QString::fromUtf8(S_HERO_SKIN_KEY_GENERAL_ICON).arg(unique_general);
-    QString customSkinKey = QStringLiteral("%1-%2").arg(customSkinBaseKey).arg(skinIndex);
+    QString customSkinKey = QStringLiteral("%1-%2").arg(customSkinBaseKey, skinIndex);
 
     QString defaultSkinBaseKey = QString::fromUtf8(S_HERO_SKIN_KEY_GENERAL_ICON).arg(QStringLiteral("default"));
-    QString defaultSkinKey = QStringLiteral("%1-%2").arg(defaultSkinBaseKey).arg(skinIndex);
+    QString defaultSkinKey = QStringLiteral("%1-%2").arg(defaultSkinBaseKey, skinIndex);
 
     QStringList keys;
     keys << customSkinKey << customSkinBaseKey << defaultSkinKey << defaultSkinBaseKey;

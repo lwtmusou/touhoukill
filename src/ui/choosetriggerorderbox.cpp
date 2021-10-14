@@ -231,10 +231,10 @@ QString TriggerOptionButton::displayedTextOf(const SkillInvokeDetailForClient &d
     QString text = Sanguosha->translate(skillName);
     if (detail.preferredTarget != nullptr) {
         QString targetName = detail.preferredTarget->getFootnoteName();
-        text = tr("%1 (use upon %2)").arg(text).arg(Sanguosha->translate(targetName));
+        text = tr("%1 (use upon %2)").arg(text, Sanguosha->translate(targetName));
     }
     if (detail.owner != detail.invoker)
-        text = tr("%1 (of %2's)").arg(text).arg(Sanguosha->translate(detail.owner->getFootnoteName()));
+        text = tr("%1 (of %2's)").arg(text, Sanguosha->translate(detail.owner->getFootnoteName()));
 
     if (times > 1)
         text += QStringLiteral(" * %1").arg(times);

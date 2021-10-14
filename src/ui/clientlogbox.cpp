@@ -77,7 +77,7 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
             log.replace(QStringLiteral("%arg"), arg);
         }
 
-        log = QStringLiteral("<font color='%2'>%1</font>").arg(log).arg(Config.TextEditColor.name());
+        log = QStringLiteral("<font color='%2'>%1</font>").arg(log, Config.TextEditColor.name());
         append(log);
 
         return;
@@ -118,14 +118,14 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
             QString subcard_str = subcard_list.join(QStringLiteral(", "));
             if (card->face()->type() == QSanguosha::TypeSkill) {
                 if (subcard_list.isEmpty() || !card->throwWhenUsing())
-                    log = tr("%from %2 [%1] %3").arg(skill_name).arg(meth).arg(suffix);
+                    log = tr("%from %2 [%1] %3").arg(skill_name, meth, suffix);
                 else
-                    log = tr("%from %3 [%1] %4, and the cost is %2").arg(skill_name).arg(subcard_str).arg(meth).arg(suffix);
+                    log = tr("%from %3 [%1] %4, and the cost is %2").arg(skill_name, subcard_str, meth, suffix);
             } else {
                 if (subcard_list.isEmpty())
-                    log = tr("%from %4 [%1] %5, %3 [%2]").arg(skill_name).arg(card_name).arg(reason).arg(meth).arg(suffix);
+                    log = tr("%from %4 [%1] %5, %3 [%2]").arg(skill_name, card_name, reason, meth, suffix);
                 else
-                    log = tr("%from %5 [%1] %6 %4 %2 as %3").arg(skill_name).arg(subcard_str).arg(card_name).arg(reason).arg(meth).arg(suffix);
+                    log = tr("%from %5 [%1] %6 %4 %2 as %3").arg(skill_name, subcard_str, card_name, reason, meth, suffix);
             }
 
             ClientInstance->cardDeleting(card);
@@ -136,11 +136,11 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
 
             QString subcard_str = bold(real.logName(), Qt::yellow);
             if (card->face()->isKindOf("DelayedTrick"))
-                log = tr("%from %5 [%1] %6 %4 %2 as %3").arg(skill_name).arg(subcard_str).arg(card_name).arg(reason).arg(tr("use skill")).arg(QString());
+                log = tr("%from %5 [%1] %6 %4 %2 as %3").arg(skill_name, subcard_str, card_name, reason, tr("use skill"), QString());
             else
-                log = tr("Due to the effect of [%1], %from %4 %2 as %3").arg(skill_name).arg(subcard_str).arg(card_name).arg(reason);
+                log = tr("Due to the effect of [%1], %from %4 %2 as %3").arg(skill_name, subcard_str, card_name, reason);
         } else
-            log = tr("%from %2 %1").arg(card_name).arg(reason);
+            log = tr("%from %2 %1").arg(card_name, reason);
 
         if (!to.isEmpty())
             log.append(tr(", target is %to"));
@@ -160,13 +160,13 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
         log.replace(QStringLiteral("%arg"), arg);
     }
 
-    log = QStringLiteral("<font color='%2'>%1</font>").arg(log).arg(Config.TextEditColor.name());
+    log = QStringLiteral("<font color='%2'>%1</font>").arg(log, Config.TextEditColor.name());
     append(log);
 }
 
 QString ClientLogBox::bold(const QString &str, QColor color) const
 {
-    return QStringLiteral("<font color='%1'><b>%2</b></font>").arg(color.name()).arg(str);
+    return QStringLiteral("<font color='%1'><b>%2</b></font>").arg(color.name(), str);
 }
 
 void ClientLogBox::appendLog(const QStringList &log_str)
@@ -174,7 +174,7 @@ void ClientLogBox::appendLog(const QStringList &log_str)
     QString err_string = QString();
     if (log_str.length() != 6 || (!log_str.first().startsWith(QStringLiteral("$")) && !log_str.first().startsWith(QStringLiteral("#")))) {
         err_string = tr("Log string is not well formatted: %1").arg(log_str.join(QStringLiteral(",")));
-        append(QStringLiteral("<font color='%2'>%1</font>").arg(err_string).arg(Config.TextEditColor.name()));
+        append(QStringLiteral("<font color='%2'>%1</font>").arg(err_string, Config.TextEditColor.name()));
         return;
     }
     appendLog(log_str[0], log_str[1], log_str[2].isEmpty() ? QStringList() : log_str[2].split(QStringLiteral("+")), log_str[3], log_str[4], log_str[5]);

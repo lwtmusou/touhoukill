@@ -166,7 +166,7 @@ void Window::setTitle(const QString &title)
     style.append(QStringLiteral("font-family: %1").arg(Config.SmallFont.family()));
 
     QString content;
-    content.append(QStringLiteral("<h style=\"%1\">%2</h>").arg(style).arg(title));
+    content.append(QStringLiteral("<h style=\"%1\">%2</h>").arg( style , title));
 
     titleItem->setHtml(content);
     titleItem->setPos(size.width() / 2 - titleItem->boundingRect().width() / 2, 10);

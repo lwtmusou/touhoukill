@@ -17,9 +17,9 @@ Mogara
 #include "TimedProgressBar.h"
 #include "button.h"
 #include "client.h"
-#include "serverinfostruct.h"
 #include "engine.h"
 #include "roomscene.h"
+#include "serverinfostruct.h"
 
 #include <QGraphicsProxyWidget>
 
@@ -176,7 +176,7 @@ int ChooseOptionsBox::getButtonWidth() const
 
 QString ChooseOptionsBox::translate(const QString &option) const
 {
-    QString title = QStringLiteral("%1:%2").arg(skillName).arg(option);
+    QString title = QStringLiteral("%1:%2").arg(skillName, option);
     QString translated = Sanguosha->translate(title);
     if (translated == title)
         translated = Sanguosha->translate(option);

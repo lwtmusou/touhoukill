@@ -58,10 +58,10 @@ void PixmapAnimation::setPath(const QString &path, bool playback)
     current = 0;
 
     int i = 0;
-    QString pic_path = QStringLiteral("%1%2%3").arg(path).arg(i++).arg(QStringLiteral(".png"));
+    QString pic_path = QStringLiteral("%1%2%3").arg(path, QString::number(i++), QStringLiteral(".png"));
     do {
         frames << G_ROOM_SKIN.getPixmapFromFileName(pic_path);
-        pic_path = QStringLiteral("%1%2%3").arg(path).arg(i++).arg(QStringLiteral(".png"));
+        pic_path = QStringLiteral("%1%2%3").arg(path, QString::number(i++), QStringLiteral(".png"));
     } while (QFile::exists(pic_path));
 
     if (playback) {

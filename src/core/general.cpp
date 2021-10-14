@@ -163,8 +163,7 @@ QString General::getSkillDescription(bool include_name, bool yellow) const
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription();
         desc.replace(QStringLiteral("\n"), QStringLiteral("<br/>"));
-        description.append(
-            QStringLiteral("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(yellow ? QStringLiteral("#FFFF33") : QStringLiteral("#FF0080")).arg(skill_name).arg(desc));
+        description.append(QStringLiteral("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(yellow ? QStringLiteral("#FFFF33") : QStringLiteral("#FF0080"), skill_name, desc));
     }
 
     if (include_name) {
@@ -172,7 +171,7 @@ QString General::getSkillDescription(bool include_name, bool yellow) const
         QString g_name = Sanguosha->translate(QStringLiteral("!") + name());
         if (g_name.startsWith(QStringLiteral("!")))
             g_name = Sanguosha->translate(name());
-        QString name = QStringLiteral("<font color=%1><b>%2</b></font>     ").arg(color_str).arg(g_name);
+        QString name = QStringLiteral("<font color=%1><b>%2</b></font>     ").arg(color_str, g_name);
         name.prepend(QStringLiteral("<img src='image/kingdom/icon/%1.png'/>    ").arg(d->kingdom));
         for (int i = 0; i < d->maxHp; i++)
             name.append(QStringLiteral("<img src='image/system/magatamas/5.png' height = 12/>"));

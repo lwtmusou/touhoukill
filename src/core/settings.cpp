@@ -185,7 +185,7 @@ void Settings::init()
 
     int length = 8;
     int index = QRandomGenerator::global()->generate() % length + 1;
-    QString bgFilename = QStringLiteral("%1%2%3").arg(QStringLiteral("backdrop/hall/gensoukyou_")).arg(index).arg(QStringLiteral(".jpg"));
+    QString bgFilename = QStringLiteral("%1%2%3").arg(QStringLiteral("backdrop/hall/gensoukyou_"), QString::number(index), QStringLiteral(".jpg"));
 
     BackgroundImage = bgFilename;
     TableBgImage = value(QStringLiteral("TableBgImage"), QStringLiteral("backdrop/default.jpg")).toString();

@@ -464,7 +464,7 @@ QString GeneralOverview::getIllustratorInfo(const QString &general_name)
     int skin_index = Config.value(QStringLiteral("HeroSkin/%1").arg(unique_general), 0).toInt();
     QString suffix = (skin_index > 0) ? QStringLiteral("_%1").arg(skin_index) : QString();
     QString key = (general_name.endsWith(QStringLiteral("_hegemony")) && skin_index == 0) ? general_name : unique_general;
-    QString illustrator_text = Sanguosha->translate(QStringLiteral("illustrator:%1%2").arg(key).arg(suffix));
+    QString illustrator_text = Sanguosha->translate(QStringLiteral("illustrator:%1%2").arg(key, suffix));
     if (!illustrator_text.startsWith(QStringLiteral("illustrator:")))
         return illustrator_text;
     else {
@@ -484,7 +484,7 @@ QString GeneralOverview::getOriginInfo(const QString &general_name)
     int skin_index = Config.value(QStringLiteral("HeroSkin/%1").arg(unique_general), 0).toInt();
     QString suffix = (skin_index > 0) ? QStringLiteral("_%1").arg(skin_index) : QString();
     QString key = (general_name.endsWith(QStringLiteral("_hegemony")) && skin_index == 0) ? general_name : unique_general;
-    QString illustrator_text = Sanguosha->translate(QStringLiteral("origin:%1%2").arg(key).arg(suffix));
+    QString illustrator_text = Sanguosha->translate(QStringLiteral("origin:%1%2").arg(key, suffix));
     if (!illustrator_text.startsWith(QStringLiteral("origin:")))
         return illustrator_text;
     else {

@@ -217,10 +217,10 @@ QString Card::fullName(bool include_suit) const
     QString name = this->faceName();
     if (include_suit) {
         QString suit_name = Sanguosha->translate(suitString());
-        return QStringLiteral("%1%2 %3").arg(suit_name).arg(numberString()).arg(name);
+        return QStringLiteral("%1%2 %3").arg(suit_name, numberString(), name);
     }
 
-    return QStringLiteral("%1 %2").arg(numberString()).arg(name);
+    return QStringLiteral("%1 %2").arg(numberString(), name);
 }
 
 QString Card::logName() const
@@ -258,7 +258,7 @@ QString Card::logName() const
     if (number() > NumberA && number() <= NumberK)
         number_string = numberString();
 
-    return QStringLiteral("%1[%2%3]").arg(faceName()).arg(suit_char).arg(number_string);
+    return QStringLiteral("%1[%2%3]").arg(faceName(), suit_char, number_string);
 }
 
 bool Card::isModified() const
@@ -498,7 +498,7 @@ QString Card::toString(bool hidden) const
     if (d->face->isKindOf("SkillCard")) {
         QString str;
         if (!hidden)
-            str = QStringLiteral("@%1[%2:%3]=%4").arg(d->face->name()).arg(suitString()).arg(numberString()).arg(subcardString());
+            str = QStringLiteral("@%1[%2:%3]=%4").arg(d->face->name(), suitString(), numberString(), subcardString());
         else
             str = QStringLiteral("@%1[no_suit:-]=.").arg(d->face->name());
 
@@ -509,7 +509,7 @@ QString Card::toString(bool hidden) const
     }
 
     if (isVirtualCard())
-        return QStringLiteral("%1:%2[%3:%4]=%5").arg(d->face->name()).arg(skillName()).arg(suitString()).arg(numberString()).arg(subcardString());
+        return QStringLiteral("%1:%2[%3:%4]=%5").arg(d->face->name(), skillName(), suitString(), numberString(), subcardString());
 
     return QString::number(d->id);
 }
@@ -705,10 +705,10 @@ QString CardDescriptor::fullName(bool include_suit) const
     QString name = face()->name();
     if (include_suit) {
         QString suit_name = Sanguosha->translate(Card::SuitToString(suit));
-        return QStringLiteral("%1%2 %3").arg(suit_name).arg(Card::NumberToString(number)).arg(name);
+        return QStringLiteral("%1%2 %3").arg(suit_name, Card::NumberToString(number), name);
     }
 
-    return QStringLiteral("%1 %2").arg(Card::NumberToString(number)).arg(name);
+    return QStringLiteral("%1 %2").arg(Card::NumberToString(number), name);
 }
 
 QString CardDescriptor::logName() const
@@ -744,7 +744,7 @@ QString CardDescriptor::logName() const
     if (number > NumberA && number <= NumberK)
         number_string = Card::NumberToString(number);
 
-    return QStringLiteral("%1[%2%3]").arg(face()->name()).arg(suit_char).arg(number_string);
+    return QStringLiteral("%1[%2%3]").arg(face()->name(), suit_char, number_string);
 }
 
 bool CardDescriptor::isBlack() const

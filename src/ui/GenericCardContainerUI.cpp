@@ -1652,7 +1652,7 @@ QString PlayerCardContainer::getPlayerSkillDescription(Player *p, bool yellow, c
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription();
         desc.replace(QStringLiteral("\n"), QStringLiteral("<br/>"));
-        description.append(QStringLiteral("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(color).arg(skill_name).arg(desc));
+        description.append(QStringLiteral("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(color, skill_name, desc));
     }
 
     if (description.isEmpty())

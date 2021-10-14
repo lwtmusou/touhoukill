@@ -77,13 +77,13 @@ bool Skill::isAttachedSkill() const
 QString Skill::getDescription() const
 {
     bool normal_game = ServerInfo.DuringGame && isRoleGameMode(ServerInfo.GameMode);
-    QString name = QStringLiteral("%1%2").arg(objectName()).arg(normal_game ? QStringLiteral("_p") : QString());
+    QString name = QStringLiteral("%1%2").arg(objectName(), normal_game ? QStringLiteral("_p") : QString());
     QString des_src = Sanguosha->translate(QStringLiteral(":") + name);
     if (normal_game && des_src.startsWith(QStringLiteral(":")))
         des_src = Sanguosha->translate(QStringLiteral(":") + objectName());
     if (des_src.startsWith(QStringLiteral(":")))
         return QString();
-    QString desc = QStringLiteral("<font color=%1>%2</font>").arg(QStringLiteral("#FF0080")).arg(des_src);
+    QString desc = QStringLiteral("<font color=%1>%2</font>").arg(QStringLiteral("#FF0080"), des_src);
     return desc;
 }
 
@@ -92,7 +92,7 @@ QString Skill::getNotice(int index) const
     if (index == -1)
         return Sanguosha->translate(QStringLiteral("~") + objectName());
 
-    return Sanguosha->translate(QStringLiteral("~%1%2").arg(objectName()).arg(index));
+    return Sanguosha->translate(QStringLiteral("~%1%2").arg(objectName(), index));
 }
 
 bool Skill::isHidden() const

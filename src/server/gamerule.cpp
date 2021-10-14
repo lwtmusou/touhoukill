@@ -760,7 +760,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
             // jink->deleteLater();
             const Card *asked_jink = nullptr;
             for (int i = effect.jink_num; i > 0; i--) {
-                QString prompt = QStringLiteral("@multi-jink%1:%2::%3").arg(i == effect.jink_num ? QStringLiteral("-start") : QString()).arg(slasher).arg(i);
+                QString prompt = QStringLiteral("@multi-jink%1:%2::%3").arg(i == effect.jink_num ? QStringLiteral("-start") : QString(), slasher, QString::number(i));
                 asked_jink = room->askForCard(qobject_cast<ServerPlayer *>(effect.to), QStringLiteral("jink"), prompt, data, QSanguosha::MethodUse,
                                               qobject_cast<ServerPlayer *>(effect.from));
                 if (!room->isJinkEffected(effect, asked_jink)) {

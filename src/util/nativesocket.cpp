@@ -124,7 +124,7 @@ QString NativeClientSocket::peerName() const
 {
     QString peer_name = socket->peerName();
     if (peer_name.isEmpty())
-        peer_name = QStringLiteral("%1:%2").arg(socket->peerAddress().toString()).arg(socket->peerPort());
+        peer_name = QStringLiteral("%1:%2").arg(socket->peerAddress().toString(), socket->peerPort());
 
     return peer_name;
 }
@@ -163,5 +163,5 @@ void NativeClientSocket::raiseError(QAbstractSocket::SocketError socket_error)
         break;
     }
 
-    emit error_message(tr("Connection failed, error code = %1\n reason:\n %2").arg(socket_error).arg(reason));
+    emit error_message(tr("Connection failed, error code = %1\n reason:\n %2").arg(QString::number(static_cast<int>(socket_error)), reason));
 }

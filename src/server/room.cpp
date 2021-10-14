@@ -895,7 +895,7 @@ bool Room::doBroadcastNotify(int command, const char *arg)
 
 void Room::broadcastInvoke(const char *method, const QString &arg, ServerPlayer *except)
 {
-    broadcast(QStringLiteral("%1 %2").arg(QString::fromUtf8(method)).arg(arg), except);
+    broadcast(QStringLiteral("%1 %2").arg(QString::fromUtf8(method), arg), except);
 }
 
 void Room::broadcastInvoke(const QSanProtocol::AbstractPacket *packet, ServerPlayer *except)
@@ -3521,9 +3521,9 @@ void Room::processResponse(ServerPlayer *player, const Packet *packet)
     else if (!player->m_isWaitingReply || player->m_isClientResponseReady)
         emit room_message(tr("Server is not waiting for reply from %1").arg(player->objectName()));
     else if (packet->getCommandType() != player->m_expectedReplyCommand)
-        emit room_message(tr("Reply command should be %1 instead of %2").arg(player->m_expectedReplyCommand).arg(packet->getCommandType()));
+        emit room_message(tr("Reply command should be %1 instead of %2").arg(player->m_expectedReplyCommand, packet->getCommandType()));
     else if (packet->localSerial != player->m_expectedReplySerial)
-        emit room_message(tr("Reply serial should be %1 instead of %2").arg(player->m_expectedReplySerial).arg(packet->localSerial));
+        emit room_message(tr("Reply serial should be %1 instead of %2").arg(player->m_expectedReplySerial, packet->localSerial));
     else
         success = true;
 
@@ -3817,7 +3817,7 @@ void Room::applyDamage(ServerPlayer *victim, const DamageStruct &damage)
 
     if (!victim->hasSkill(QStringLiteral("banling")))
         setPlayerProperty(victim, "hp", new_hp);
-    QString change_str = QStringLiteral("%1:%2").arg(victim->objectName()).arg(-damage.damage);
+    QString change_str = QStringLiteral("%1:%2").arg(victim->objectName(), -damage.damage);
     switch (damage.nature) {
     case DamageStruct::Fire:
         change_str.append(QStringLiteral("F"));
@@ -4994,7 +4994,7 @@ void Room::doBattleArrayAnimate(ServerPlayer *player, ServerPlayer *target)
     } else {
         foreach (ServerPlayer *p, getOtherPlayers(player))
             if (p->inSiegeRelation(player, target))
-                doAnimate(QSanProtocol::S_ANIMATE_BATTLEARRAY, player->objectName(), QStringLiteral("%1+%2").arg(p->objectName()).arg(player->objectName()));
+                doAnimate(QSanProtocol::S_ANIMATE_BATTLEARRAY, player->objectName(), QStringLiteral("%1+%2").arg(p->objectName(), player->objectName()));
     }
 }
 
@@ -6687,7 +6687,7 @@ QString Room::askForRole(ServerPlayer *player, const QStringList &roles, const Q
 void Room::networkDelayTestCommand(ServerPlayer *player, const QVariant & /*unused*/)
 {
     qint64 delay = player->endNetworkDelayTest();
-    QString reportStr = tr("<font color=#EEB422>The network delay of player <b>%1</b> is %2 milliseconds.</font>").arg(player->screenName()).arg(QString::number(delay));
+    QString reportStr = tr("<font color=#EEB422>The network delay of player <b>%1</b> is %2 milliseconds.</font>").arg(player->screenName(), QString::number(delay));
     speakCommand(player, reportStr.toUtf8().toBase64());
 }
 
@@ -6855,7 +6855,7 @@ void Room::countDescription()
             QString desc = Sanguosha->translate(QStringLiteral(":") + skill->objectName());
             QRegularExpression rx(QStringLiteral("<[^>]*>"));
             desc.remove(rx);
-            QString skill_line = QStringLiteral("%1:%2").arg(skill_name).arg(desc);
+            QString skill_line = QStringLiteral("%1:%2").arg(skill_name, desc);
             line = line + skill_line;
         }
         map.insert(line.length(), name);
@@ -6864,7 +6864,7 @@ void Room::countDescription()
     int num = 0;
     for (it = map.begin(); it != map.end(); ++it) {
         QString countString;
-        countString.append(QStringLiteral("%1: %2 ").arg(Sanguosha->translate(it.value())).arg(QString::number(it.key())));
+        countString.append(QStringLiteral("%1: %2 ").arg(Sanguosha->translate(it.value()), QString::number(it.key())));
         countString.append(QStringLiteral("\n"));
         stream << countString;
         num += it.key();
