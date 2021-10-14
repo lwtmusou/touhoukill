@@ -607,9 +607,9 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
             thread->trigger(QSanguosha::EventLoseSkill, data);
         }
 
-        foreach (const Skill *skill, Sanguosha->getRelatedSkills(skill_name)) {
-            if (skill->isVisible())
-                detachSkillFromPlayer(player, skill->objectName(), is_equip, acquire_only, sendlog, head);
+        foreach (const Skill *rskill, skill->affiliatedSkills()) {
+            if (rskill->isVisible())
+                detachSkillFromPlayer(player, rskill->objectName(), is_equip, acquire_only, sendlog, head);
         }
     }
 }
@@ -662,9 +662,9 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
                 triggerList << skill;
                 isAcquire << false;
 
-                foreach (const Skill *skill, Sanguosha->getRelatedSkills(actual_skill)) {
-                    if (!skill->isVisible())
-                        detachSkillFromPlayer(player, skill->objectName());
+                foreach (const Skill *rskill, skill->affiliatedSkills()) {
+                    if (!rskill->isVisible())
+                        detachSkillFromPlayer(player, rskill->objectName());
                 }
             }
         } else {
@@ -689,7 +689,7 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
                 args << QSanProtocol::S_GAME_EVENT_ACQUIRE_SKILL << player->objectName() << actual_skill << head;
                 doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
-                foreach (const Skill *related_skill, Sanguosha->getRelatedSkills(actual_skill)) {
+                foreach (const Skill *related_skill, skill->affiliatedSkills()) {
                     if (!related_skill->isVisible())
                         acquireSkill(player, related_skill);
                 }
@@ -5188,7 +5188,7 @@ void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open, boo
             doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
         }
 
-        foreach (const Skill *related_skill, Sanguosha->getRelatedSkills(skill_name)) {
+        foreach (const Skill *related_skill, skill->affiliatedSkills()) {
             if (!related_skill->isVisible())
                 acquireSkill(player, related_skill);
         }

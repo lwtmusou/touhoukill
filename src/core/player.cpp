@@ -1799,7 +1799,7 @@ bool Player::hasShownSkill(const Skill *skill) const
     //    }
 
     if (!skill->isVisible()) {
-        const Skill *main_skill = Sanguosha->getMainSkill(skill->objectName());
+        const Skill *main_skill = skill->mainSkill();
         if (main_skill != nullptr)
             return hasShownSkill(main_skill);
         else
@@ -1986,10 +1986,10 @@ int Player::findPositionOfGeneralOwningSkill(const QString &skill_name) const
 {
     const Skill *skill = Sanguosha->getSkill(skill_name);
     if (skill == nullptr)
-        return false;
+        return -1;
 
     if (!skill->isVisible()) { //really confused about invisible skills! by weidouncle
-        const Skill *main_skill = Sanguosha->getMainSkill(skill_name);
+        const Skill *main_skill = skill->mainSkill();
         if (main_skill != nullptr)
             return findPositionOfGeneralOwningSkill(main_skill->objectName());
     }

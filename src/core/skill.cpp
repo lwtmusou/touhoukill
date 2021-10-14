@@ -24,12 +24,15 @@ public:
     QString related_mark;
     QString related_pile;
     QSet<const Trigger *> triggers;
+    QSet<const Skill *> affiliatedSkills;
+    const Skill *mainSkill;
 
     SkillPrivate(Skill::Categories categories, Skill::ShowType showType)
         : categories(categories)
         , showType(showType)
         , preshow(false)
         , frequent(false)
+        , mainSkill(nullptr)
     {
         if ((categories & Skill::SkillArrayMask) != 0)
             setupForBattleArray();
@@ -138,6 +141,36 @@ const QSet<const Trigger *> &Skill::triggers() const
 int Skill::getAudioEffectIndex(const Player * /*unused*/, const Card * /*unused*/) const
 {
     return -1;
+}
+
+void Skill::addToAffiliatedSkill(Skill *skill)
+{
+    if (!skill->d->affiliatedSkills.isEmpty()) {
+        // infinite recursion
+        d->affiliatedSkills.unite(skill->d->affiliatedSkills);
+        skill->d->affiliatedSkills.clear();
+    }
+
+    skill->d->mainSkill = this;
+    d->affiliatedSkills.insert(skill);
+}
+
+const QSet<const Skill *> &Skill::affiliatedSkills() const
+{
+    return d->affiliatedSkills;
+}
+
+bool Skill::isAffiliatedSkill() const
+{
+    return d->mainSkill != nullptr;
+}
+
+const Skill *Skill::mainSkill() const
+{
+    if (d->mainSkill == nullptr)
+        return this;
+
+    return d->mainSkill;
 }
 
 Skill::ShowType Skill::getShowType() const

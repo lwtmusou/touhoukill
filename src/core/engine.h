@@ -73,8 +73,6 @@ public:
     const CardPattern *getPattern(const QString &name) const;
     bool matchExpPattern(const QString &pattern, const Player *player, const Card *card) const;
     QSanguosha::HandlingMethod getCardHandlingMethod(const QString &method_name) const;
-    QList<const Skill *> getRelatedSkills(const QString &skill_name) const;
-    const Skill *getMainSkill(const QString &skill_name) const;
 
     QList<const Package *> getPackages() const;
     const Package *findPackage(const QString &name) const;

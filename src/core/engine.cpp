@@ -35,7 +35,6 @@ public:
     QHash<QString, const General *> generals;
     QHash<QString, const Skill *> skills;
     QMap<QString, QString> modes;
-    QMultiMap<QString, QString> related_skills;
     QMap<QString, const CardPattern *> patterns;
     QHash<QString, const CardFace *> faces;
 
@@ -215,9 +214,6 @@ void Engine::addPackage(const Package *package)
 #if 0
     // TODO: make pattern a globally available design instead of belongs to package
     patterns.insert(package->patterns());
-
-    // TODO: make related skills a property of skill
-    related_skills.unite(package->relatedSkills());
 #endif
     d->cards << package->cards();
 
@@ -329,28 +325,6 @@ HandlingMethod Engine::getCardHandlingMethod(const QString &method_name) const
         Q_ASSERT(false);
         return MethodNone;
     }
-}
-
-QList<const Skill *> Engine::getRelatedSkills(const QString &skill_name) const
-{
-    QList<const Skill *> skills;
-    foreach (QString name, d->related_skills.values(skill_name))
-        skills << getSkill(name);
-
-    return skills;
-}
-
-const Skill *Engine::getMainSkill(const QString &skill_name) const
-{
-    const Skill *skill = getSkill(skill_name);
-    if ((skill == nullptr) || skill->isVisible() || d->related_skills.keys().contains(skill_name))
-        return skill;
-    foreach (QString key, d->related_skills.keys()) {
-        foreach (QString name, d->related_skills.values(key))
-            if (name == skill_name)
-                return getSkill(key);
-    }
-    return skill;
 }
 
 const General *Engine::getGeneral(const QString &name) const

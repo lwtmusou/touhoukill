@@ -113,6 +113,13 @@ public:
     // Currently it is judged by server side
     virtual int getAudioEffectIndex(const Player *player, const Card *card) const;
 
+    // Hidden skills related
+    // Attention! since the affiliated skill should be modified for setting its main skill, this parameter is not const.
+    void addToAffiliatedSkill(Skill *skill);
+    const QSet<const Skill *> &affiliatedSkills() const;
+    bool isAffiliatedSkill() const;
+    const Skill *mainSkill() const;
+
     // current UI related, temporary left it alone
     // All these functions should belong to UI.
     // Maybe something like "Description provider" in UI will be ideal?
