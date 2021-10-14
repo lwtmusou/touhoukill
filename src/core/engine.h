@@ -83,12 +83,6 @@ public:
     const Skill *getSkill(const QString &skill_name) const;
     const Skill *getSkill(const EquipCard *card) const;
     QStringList getSkillNames() const;
-    const ViewAsSkill *getViewAsSkill(const QString &skill_name) const;
-    QList<const DistanceSkill *> getDistanceSkills() const;
-    QList<const MaxCardsSkill *> getMaxCardsSkills() const;
-    QList<const TargetModSkill *> getTargetModSkills() const;
-    QList<const AttackRangeSkill *> getAttackRangeSkills() const;
-    QList<const ViewAsSkill *> getViewAsSkills() const;
     void addSkills(const QList<const Skill *> &skills);
 
     int getCardCount() const;
