@@ -103,8 +103,6 @@ public:
     QStringList LatestGeneralList;
     int operationTimeRate(QSanProtocol::CommandType command, const QVariant &msg) const;
 
-    QString GetMappedKingdom(const QString &role); //hegemony
-
     QVariant getConfigFromConfigFile(const QString &key) const;
 
     void registerCardFace(const CardFace *face);

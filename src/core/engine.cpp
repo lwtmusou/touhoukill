@@ -421,6 +421,7 @@ QStringList Engine::getChattingEasyTexts() const
     return easy_texts;
 }
 
+// ServerInfo::Parse
 QString Engine::getSetupString() const
 {
     int timeout = Config.OperationNoLimit ? 0 : Config.OperationTimeout;
@@ -704,6 +705,7 @@ QStringList Engine::getRandomLords() const
 
 QStringList Engine::getLimitedGeneralNames() const
 {
+    // TODO: reimplement this function in separated class Mode
     QStringList general_names;
     QHashIterator<QString, const General *> itor(d->generals);
     if (ServerInfo.GameMode == QStringLiteral("04_1v3")) {
@@ -734,6 +736,7 @@ QStringList Engine::getLimitedGeneralNames() const
 
 QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) const
 {
+    // TODO: reimplement this function in separated class Mode
     QStringList all_generals = getLimitedGeneralNames();
     QSet<QString> general_set = QSet<QString>(all_generals.begin(), all_generals.end());
 
@@ -875,7 +878,7 @@ QString Engine::getRandomGeneralName() const
 
 const Skill *Engine::getSkill(const QString &skill_name) const
 {
-    return d->skills.value(skill_name, NULL);
+    return d->skills.value(skill_name, nullptr);
 }
 
 const Skill *Engine::getSkill(const EquipCard *equip) const
@@ -908,20 +911,6 @@ int Engine::operationTimeRate(QSanProtocol::CommandType command, const QVariant 
             rate = 3;
     }
     return rate;
-}
-
-QString Engine::GetMappedKingdom(const QString &role)
-{
-    static QMap<QString, QString> kingdoms;
-    if (kingdoms.isEmpty()) {
-        kingdoms[QStringLiteral("lord")] = QStringLiteral("wei");
-        kingdoms[QStringLiteral("loyalist")] = QStringLiteral("shu");
-        kingdoms[QStringLiteral("rebel")] = QStringLiteral("wu");
-        kingdoms[QStringLiteral("renegade")] = QStringLiteral("qun");
-    }
-    if (kingdoms[role].isEmpty())
-        return role;
-    return kingdoms[role];
 }
 
 QVariant Engine::getConfigFromConfigFile(const QString &key) const

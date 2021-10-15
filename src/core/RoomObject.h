@@ -81,6 +81,7 @@ public:
 
     void cardDeleting(const Card *card);
 
+    // --------------------- Skill Related ---------------------
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
     const TreatAsEquippingSkill *treatAsEquipping(const Player *player, const QString &equipName, QSanguosha::EquipLocation location) const;
     int correctDistance(const Player *from, const Player *to) const;
