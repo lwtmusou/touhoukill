@@ -2,7 +2,9 @@
 #include "CardFace.h"
 #include "card.h"
 #include "engine.h"
+#include "exppattern.h"
 #include "player.h"
+#include "skill.h"
 #include "util.h"
 
 using namespace QSanguosha;
@@ -20,6 +22,15 @@ public:
     QList<Player *> players;
     Player *current;
     QStringList seatInfo;
+
+    // special skills
+    QSet<const ProhibitSkill *> prohibit_skills;
+    QSet<const DistanceSkill *> distance_skills;
+    QSet<const TreatAsEquippingSkill *> viewhas_skills;
+    QSet<const MaxCardsSkill *> maxcards_skills;
+    QSet<const TargetModSkill *> targetmod_skills;
+    QSet<const AttackRangeSkill *> attackrange_skills;
+    QSet<const ViewAsSkill *> viewas_skills;
 
     RoomObjectPrivate()
         : current(nullptr)
@@ -358,9 +369,14 @@ void RoomObject::cardDeleting(const Card *card)
     delete card;
 }
 
+QSet<const DistanceSkill *> RoomObject::getDistanceSkills() const
+{
+    return d->distance_skills;
+}
+
 const ViewAsSkill *RoomObject::getViewAsSkill(const QString &skill_name) const
 {
-    const Skill *skill = getSkill(skill_name);
+    const Skill *skill = Sanguosha->getSkill(skill_name);
     if (skill == nullptr)
         return nullptr;
 
@@ -426,19 +442,11 @@ int RoomObject::correctMaxCards(const Player *target, bool fixed, const QString 
 int RoomObject::correctCardTarget(const TargetModType type, const Player *from, const Card *card) const
 {
     int x = 0;
-    //    QString cardskill = card->skillName();
-    //    bool checkDoubleHidden = false;
-    //    if (!cardskill.isNull())
-    //        checkDoubleHidden = from->isHiddenSkill(cardskill);
-
     if (type == ModResidue) {
         foreach (const TargetModSkill *skill, d->targetmod_skills) {
             ExpPattern p(skill->getPattern());
             if (p.match(from, card)) {
                 int residue = skill->getResidueNum(from, card);
-                //                if (checkDoubleHidden && from->isHiddenSkill(skill->objectName()) && cardskill != skill->objectName()
-                //                    && !skill->objectName().startsWith(QStringLiteral("#") + cardskill))
-                //                    continue;
                 if (residue >= 998)
                     return residue;
                 x += residue;
@@ -449,10 +457,6 @@ int RoomObject::correctCardTarget(const TargetModType type, const Player *from, 
             ExpPattern p(skill->getPattern());
             if (p.match(from, card)) {
                 int distance_limit = skill->getDistanceLimit(from, card);
-                //                if (checkDoubleHidden && from->isHiddenSkill(skill->objectName()) && cardskill != skill->objectName()
-                //                    && !skill->objectName().startsWith(QStringLiteral("#") + cardskill))
-                //                    continue;
-
                 if (distance_limit >= 998)
                     return distance_limit;
                 x += distance_limit;
@@ -461,12 +465,8 @@ int RoomObject::correctCardTarget(const TargetModType type, const Player *from, 
     } else if (type == ModTarget) {
         foreach (const TargetModSkill *skill, d->targetmod_skills) {
             ExpPattern p(skill->getPattern());
-            if (p.match(from, card) && from->mark(QStringLiteral("chuangshi_user")) == 0) {
-                //                if (checkDoubleHidden && from->isHiddenSkill(skill->objectName()) && cardskill != skill->objectName()
-                //                    && !skill->objectName().startsWith(QStringLiteral("#") + cardskill))
-                //                    continue;
+            if (p.match(from, card) && from->mark(QStringLiteral("chuangshi_user")) == 0)
                 x += skill->getExtraTargetNum(from, card);
-            }
         }
     }
 
@@ -490,8 +490,29 @@ int RoomObject::correctAttackRange(const Player *target, bool include_weapon /* 
     return extra;
 }
 
+/**
+ * @brief RoomObject::loadSkill
+ * @param skill
+ *
+ * This is a temporary method for load a skill for this room.
+ * Maybe refactored again during this refactor work.
+ */
 void RoomObject::loadSkill(const Skill *skill)
 {
+    if (skill->inherits("ProhibitSkill"))
+        d->prohibit_skills << qobject_cast<const ProhibitSkill *>(skill);
+    else if (skill->inherits("TreatAsEquippingSkill"))
+        d->viewhas_skills << qobject_cast<const TreatAsEquippingSkill *>(skill);
+    else if (skill->inherits("DistanceSkill"))
+        d->distance_skills << qobject_cast<const DistanceSkill *>(skill);
+    else if (skill->inherits("MaxCardsSkill"))
+        d->maxcards_skills << qobject_cast<const MaxCardsSkill *>(skill);
+    else if (skill->inherits("TargetModSkill"))
+        d->targetmod_skills << qobject_cast<const TargetModSkill *>(skill);
+    else if (skill->inherits("AttackRangeSkill"))
+        d->attackrange_skills << qobject_cast<const AttackRangeSkill *>(skill);
+    else if (skill->inherits("ViewAsSkill"))
+        d->viewas_skills << qobject_cast<const ViewAsSkill *>(skill);
 }
 
 Card *RoomObject::cloneSkillCard(const QString &name)

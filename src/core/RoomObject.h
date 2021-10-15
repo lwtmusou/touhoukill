@@ -88,7 +88,7 @@ public:
     int correctCardTarget(const QSanguosha::TargetModType type, const Player *from, const Card *card) const;
     int correctAttackRange(const Player *target, bool include_weapon = true, bool fixed = false) const;
 
-    QList<const DistanceSkill *> getDistanceSkills() const;
+    QSet<const DistanceSkill *> getDistanceSkills() const;
     const ViewAsSkill *getViewAsSkill(const QString &skill_name) const;
 
     void loadSkill(const Skill *skill);

@@ -498,6 +498,8 @@ void RoomScene::handleGameEvent(const QVariant &args)
         QString player_name = arg[1].toString();
         QString skill_name = arg[2].toString();
         bool head_skill = arg[3].toBool();
+        const Skill *s = Sanguosha->getSkill(skill_name);
+        ClientInstance->loadSkill(s);
         Player *player = ClientInstance->findPlayer(player_name);
         player->acquireSkill(skill_name);
         acquireSkill(player, skill_name, head_skill);
@@ -514,6 +516,8 @@ void RoomScene::handleGameEvent(const QVariant &args)
         QString skill_name = arg[2].toString();
         bool head_skill = arg[3].toBool();
 
+        const Skill *s = Sanguosha->getSkill(skill_name);
+        ClientInstance->loadSkill(s);
         Player *player = ClientInstance->findPlayer(player_name);
         player->addSkill(skill_name, head_skill);
 
