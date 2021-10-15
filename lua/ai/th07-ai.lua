@@ -755,7 +755,7 @@ sgs.ai_skill_use["@@qimen"] = function(self, prompt)
 	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 	local cardname=self.player:property("qimen_card"):toString()
 	local card=sgs.cloneCard(cardname, sgs.Card_NoSuit, 0)
-	card:setSkillName("AIqimen")
+	card:setSkillName("qimen")
 	card:deleteLater()
 
 	maxNum = 0
@@ -767,8 +767,7 @@ sgs.ai_skill_use["@@qimen"] = function(self, prompt)
 
 	local f, e = {}, {}
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if p:getEquips():length() >= maxNum and not self.player:isProhibited(p, card)
-		 then --card:targetFilter(sgs.SPlayerList(), p, self.player)
+		if p:getEquips():length() >= maxNum and not self.player:isProhibited(p, card) then --card:targetFilter(sgs.SPlayerList(), p, self.player)
 			if (self:isFriend(p)) then
 				table.insert(f, p)
 			end

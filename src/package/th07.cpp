@@ -1397,7 +1397,7 @@ bool QimenCard::targetFilter(const QList<const Player *> &targets, const Player 
     DELETE_OVER_SCOPE(Card, new_card)
     new_card->setSkillName("qimen");
     if (targets.isEmpty() && new_card && to_select->getEquips().length() >= maxnum && !Self->isProhibited(to_select, new_card, targets))
-        return (new_card->isKindOf("GlobalEffect") || new_card->targetFilter(targets, to_select, Self) || (new_card->isKindOf("Peach") && to_select->isWounded()));
+        return (new_card->targetFilter(targets, to_select, Self) || (new_card->isKindOf("Peach") && to_select->isWounded()));
 
     return false;
 }
@@ -1414,13 +1414,18 @@ bool QimenCard::targetsFeasible(const QList<const Player *> &targets, const Play
     return new_card && new_card->targetsFeasible(targets, Self);
 }
 
-const Card *QimenCard::validate(CardUseStruct &card_use) const
+void QimenCard::onUse(Room *room, const CardUseStruct &card_use) const
 {
-    card_use.from->showHiddenSkill("qimen");
+    CardUseStruct new_use = card_use;
+
     QString cardname = card_use.from->property("qimen_card").toString();
     Card *card = Sanguosha->cloneCard(cardname);
     card->setSkillName("qimen");
-    return card;
+    card->setShowSkill("qimen");
+
+    new_use.card = card;
+
+    room->useCard(new_use);
 }
 
 class QimenVS : public ZeroCardViewAsSkill
@@ -1503,19 +1508,18 @@ public:
     }
 };
 
-//Only for AI dummy use
-class QimenProhibitAI : public ProhibitSkill
+class QimenProhibit : public ProhibitSkill
 {
 public:
-    QimenProhibitAI()
+    QimenProhibit()
         : ProhibitSkill("#qimen-prohibit")
     {
     }
 
-    bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &, bool) const override
+    bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &others, bool) const override
     {
         int maxNum = qimenMax(to);
-        return card->getSkillName() == "AIqimen" && to->getEquips().length() < maxNum;
+        return card->getSkillName() == "qimen" && !others.isEmpty() && to->getEquips().length() < maxNum;
     }
 };
 
@@ -2493,7 +2497,7 @@ TH07Package::TH07Package()
     chen->addSkill(new Qimen);
     chen->addSkill(new Dunjia);
     chen->addSkill(new QimenDistance);
-    chen->addSkill(new QimenProhibitAI);
+    chen->addSkill(new QimenProhibit);
     related_skills.insertMulti("qimen", "#qimen-dist");
     related_skills.insertMulti("qimen", "#qimen-prohibit");
 
