@@ -560,6 +560,7 @@ void Room::slashResult(const SlashEffectStruct &effect, const Card *jink)
 
 void Room::attachSkillToPlayer(ServerPlayer *player, const QString &skill_name, bool is_other_attach)
 {
+    loadSkill(Sanguosha->getSkill(skill_name));
     player->acquireSkill(skill_name);
     if (is_other_attach) {
         QStringList attach_skills = getTag(QStringLiteral("OtherAttachSkills")).toStringList();
@@ -679,6 +680,7 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
                 continue;
             if (player->getAcquiredSkills().contains(actual_skill))
                 continue;
+            loadSkill(skill);
             player->acquireSkill(actual_skill);
             foreach (const Trigger *trigger, skill->triggers())
                 thread->addTrigger(trigger);
@@ -1689,7 +1691,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         player->showHiddenSkill(showskill);
         const Skill *equipSkill = Sanguosha->getSkill(skill_name);
         if ((equipSkill != nullptr) && equipSkill->inherits("WeaponSkill")) {
-            const TreatAsEquippingSkill *v = Sanguosha->treatAsEquipping(player, skill_name, QSanguosha::WeaponLocation);
+            const TreatAsEquippingSkill *v = treatAsEquipping(player, skill_name, QSanguosha::WeaponLocation);
             if (v != nullptr)
                 player->showHiddenSkill(v->objectName());
         }
@@ -2459,6 +2461,7 @@ void Room::changeHero(ServerPlayer *player, const QString &new_general, bool ful
     const General *gen = isSecondaryHero ? player->getGeneral2() : player->general();
     if (gen != nullptr) {
         foreach (const Skill *skill, gen->getSkillList()) {
+            loadSkill(skill);
             foreach (const Trigger *trigger, skill->triggers())
                 thread->addTrigger(trigger);
             // I'd like to remove following logic....
@@ -2534,11 +2537,6 @@ void Room::reverseFor3v3(const Card *card, ServerPlayer *player, QList<ServerPla
 
         list = new_list;
     }
-}
-
-const ProhibitSkill *Room::isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others) const
-{
-    return Sanguosha->isProhibited(from, to, card, others);
 }
 
 int Room::drawCard(bool bottom)
@@ -5170,6 +5168,7 @@ void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open, boo
     QString skill_name = skill->objectName();
     if (player->getAcquiredSkills().contains(skill_name))
         return;
+    loadSkill(skill);
     player->acquireSkill(skill_name);
 
     foreach (const Trigger *trigger, skill->triggers())

@@ -1922,6 +1922,8 @@ void Client::attachSkill(const QVariant &skill)
         return;
 
     QString skill_name = skill.toString();
+    const Skill *s = Sanguosha->getSkill(skill_name);
+    loadSkill(s);
     Self->acquireSkill(skill_name);
     emit skill_attached(skill_name, true);
 }

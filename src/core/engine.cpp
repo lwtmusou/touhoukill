@@ -41,15 +41,6 @@ public:
     // Package
     QList<const Package *> packages;
 
-    // special skills
-    QList<const ProhibitSkill *> prohibit_skills;
-    QList<const DistanceSkill *> distance_skills;
-    QList<const TreatAsEquippingSkill *> viewhas_skills;
-    QList<const MaxCardsSkill *> maxcards_skills;
-    QList<const TargetModSkill *> targetmod_skills;
-    QList<const AttackRangeSkill *> attackrange_skills;
-    QList<const ViewAsSkill *> viewas_skills;
-
     QList<CardDescriptor> cards;
     QStringList lord_list;
     QSet<QString> ban_package;
@@ -161,47 +152,7 @@ void Engine::addSkills(const QList<const Skill *> &all_skills)
             qDebug() << tr("Duplicated skill : %1").arg(skill->objectName());
 
         d->skills.insert(skill->objectName(), skill);
-
-        if (skill->inherits("ProhibitSkill"))
-            d->prohibit_skills << qobject_cast<const ProhibitSkill *>(skill);
-        else if (skill->inherits("TreatAsEquippingSkill"))
-            d->viewhas_skills << qobject_cast<const TreatAsEquippingSkill *>(skill);
-        else if (skill->inherits("DistanceSkill"))
-            d->distance_skills << qobject_cast<const DistanceSkill *>(skill);
-        else if (skill->inherits("MaxCardsSkill"))
-            d->maxcards_skills << qobject_cast<const MaxCardsSkill *>(skill);
-        else if (skill->inherits("TargetModSkill"))
-            d->targetmod_skills << qobject_cast<const TargetModSkill *>(skill);
-        else if (skill->inherits("AttackRangeSkill"))
-            d->attackrange_skills << qobject_cast<const AttackRangeSkill *>(skill);
-        else if (skill->inherits("ViewAsSkill"))
-            d->viewas_skills << qobject_cast<const ViewAsSkill *>(skill);
     }
-}
-
-QList<const DistanceSkill *> Engine::getDistanceSkills() const
-{
-    return d->distance_skills;
-}
-
-QList<const MaxCardsSkill *> Engine::getMaxCardsSkills() const
-{
-    return d->maxcards_skills;
-}
-
-QList<const TargetModSkill *> Engine::getTargetModSkills() const
-{
-    return d->targetmod_skills;
-}
-
-QList<const AttackRangeSkill *> Engine::getAttackRangeSkills() const
-{
-    return d->attackrange_skills;
-}
-
-QList<const ViewAsSkill *> Engine::getViewAsSkills() const
-{
-    return d->viewas_skills;
 }
 
 void Engine::addPackage(const Package *package)
@@ -940,142 +891,6 @@ const Skill *Engine::getSkill(const EquipCard *equip) const
 QStringList Engine::getSkillNames() const
 {
     return d->skills.keys();
-}
-
-const ViewAsSkill *Engine::getViewAsSkill(const QString &skill_name) const
-{
-    const Skill *skill = getSkill(skill_name);
-    if (skill == nullptr)
-        return nullptr;
-
-    if (skill->inherits("ViewAsSkill"))
-        return qobject_cast<const ViewAsSkill *>(skill);
-    else
-        return nullptr;
-}
-
-const ProhibitSkill *Engine::isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others) const
-{
-    bool ignore = (from->hasSkill(QStringLiteral("tianqu")) && from->roomObject()->currentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to != from
-                   && !card->hasFlag(QStringLiteral("IgnoreFailed")));
-    if (ignore && !card->face()->isKindOf("SkillCard"))
-        return nullptr;
-    foreach (const ProhibitSkill *skill, d->prohibit_skills) {
-        if (skill->isProhibited(from, to, card, others))
-            return skill;
-    }
-
-    return nullptr;
-}
-
-const TreatAsEquippingSkill *Engine::treatAsEquipping(const Player *player, const QString &equipName, EquipLocation location) const
-{
-    foreach (const TreatAsEquippingSkill *skill, d->viewhas_skills) {
-        if (skill->treatAs(player, equipName, location))
-            return skill;
-    }
-
-    return nullptr;
-}
-
-int Engine::correctDistance(const Player *from, const Player *to) const
-{
-    int correct = 0;
-
-    foreach (const DistanceSkill *skill, d->distance_skills) {
-        correct += skill->getCorrect(from, to);
-    }
-
-    return correct;
-}
-
-int Engine::correctMaxCards(const Player *target, bool fixed, const QString &except) const
-{
-    int extra = 0;
-
-    QStringList exceptlist = except.split(QStringLiteral("|"));
-
-    foreach (const MaxCardsSkill *skill, d->maxcards_skills) {
-        if (exceptlist.contains(skill->objectName()))
-            continue;
-
-        if (fixed) {
-            int f = skill->getFixed(target);
-            if (f >= 0)
-                return f;
-        } else {
-            extra += skill->getExtra(target);
-        }
-    }
-
-    return extra;
-}
-
-int Engine::correctCardTarget(const TargetModType type, const Player *from, const Card *card) const
-{
-    int x = 0;
-    //    QString cardskill = card->skillName();
-    //    bool checkDoubleHidden = false;
-    //    if (!cardskill.isNull())
-    //        checkDoubleHidden = from->isHiddenSkill(cardskill);
-
-    if (type == ModResidue) {
-        foreach (const TargetModSkill *skill, d->targetmod_skills) {
-            ExpPattern p(skill->getPattern());
-            if (p.match(from, card)) {
-                int residue = skill->getResidueNum(from, card);
-                //                if (checkDoubleHidden && from->isHiddenSkill(skill->objectName()) && cardskill != skill->objectName()
-                //                    && !skill->objectName().startsWith(QStringLiteral("#") + cardskill))
-                //                    continue;
-                if (residue >= 998)
-                    return residue;
-                x += residue;
-            }
-        }
-    } else if (type == ModDistance) {
-        foreach (const TargetModSkill *skill, d->targetmod_skills) {
-            ExpPattern p(skill->getPattern());
-            if (p.match(from, card)) {
-                int distance_limit = skill->getDistanceLimit(from, card);
-                //                if (checkDoubleHidden && from->isHiddenSkill(skill->objectName()) && cardskill != skill->objectName()
-                //                    && !skill->objectName().startsWith(QStringLiteral("#") + cardskill))
-                //                    continue;
-
-                if (distance_limit >= 998)
-                    return distance_limit;
-                x += distance_limit;
-            }
-        }
-    } else if (type == ModTarget) {
-        foreach (const TargetModSkill *skill, d->targetmod_skills) {
-            ExpPattern p(skill->getPattern());
-            if (p.match(from, card) && from->mark(QStringLiteral("chuangshi_user")) == 0) {
-                //                if (checkDoubleHidden && from->isHiddenSkill(skill->objectName()) && cardskill != skill->objectName()
-                //                    && !skill->objectName().startsWith(QStringLiteral("#") + cardskill))
-                //                    continue;
-                x += skill->getExtraTargetNum(from, card);
-            }
-        }
-    }
-
-    return x;
-}
-
-int Engine::correctAttackRange(const Player *target, bool include_weapon /* = true */, bool fixed /* = false */) const
-{
-    int extra = 0;
-
-    foreach (const AttackRangeSkill *skill, d->attackrange_skills) {
-        if (fixed) {
-            int f = skill->getFixed(target, include_weapon);
-            if (f >= 0)
-                return f;
-        } else {
-            extra += skill->getExtra(target, include_weapon);
-        }
-    }
-
-    return extra;
 }
 
 int Engine::operationTimeRate(QSanProtocol::CommandType command, const QVariant &msg) const

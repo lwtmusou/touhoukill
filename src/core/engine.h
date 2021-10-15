@@ -83,12 +83,6 @@ public:
     const Skill *getSkill(const QString &skill_name) const;
     const Skill *getSkill(const EquipCard *card) const;
     QStringList getSkillNames() const;
-    const ViewAsSkill *getViewAsSkill(const QString &skill_name) const;
-    QList<const DistanceSkill *> getDistanceSkills() const;
-    QList<const MaxCardsSkill *> getMaxCardsSkills() const;
-    QList<const TargetModSkill *> getTargetModSkills() const;
-    QList<const AttackRangeSkill *> getAttackRangeSkills() const;
-    QList<const ViewAsSkill *> getViewAsSkills() const;
     void addSkills(const QList<const Skill *> &skills);
 
     int getCardCount() const;
@@ -101,13 +95,6 @@ public:
     QList<int> getRandomCards() const;
     QString getRandomGeneralName() const;
     QStringList getLimitedGeneralNames() const;
-
-    const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
-    const TreatAsEquippingSkill *treatAsEquipping(const Player *player, const QString &equipName, QSanguosha::EquipLocation location) const;
-    int correctDistance(const Player *from, const Player *to) const;
-    int correctMaxCards(const Player *target, bool fixed = false, const QString &except = QString()) const;
-    int correctCardTarget(const QSanguosha::TargetModType type, const Player *from, const Card *card) const;
-    int correctAttackRange(const Player *target, bool include_weapon = true, bool fixed = false) const;
 
     bool isGeneralHidden(const QString &general_name) const;
 
