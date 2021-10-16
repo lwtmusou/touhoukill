@@ -9,6 +9,7 @@
 class Rule;
 class Package;
 class RoomObject;
+class General;
 
 class ModePrivate;
 
@@ -24,9 +25,9 @@ public:
     virtual int playersCount() const = 0;
     virtual Rule *rule() const = 0;
     virtual IDSet availableCards() const = 0;
-    virtual QSet<const Package *> availablePackages() const = 0;
+    virtual QSet<const General *> availableGenerals() const = 0;
 
-    virtual void gameProcess(RoomObject *room) const = 0;
+    virtual void startGame(RoomObject *room) const = 0;
 
 private:
     ModePrivate *const d;
@@ -47,9 +48,9 @@ public:
     int playersCount() const override;
     Rule *rule() const override;
     IDSet availableCards() const override;
-    QSet<const Package *> availablePackages() const override;
+    QSet<const General *> availableGenerals() const override;
 
-    void gameProcess(RoomObject *room) const override;
+    void startGame(RoomObject *room) const override;
 
 private:
     GenericRoleModePrivate *const d;
@@ -66,9 +67,9 @@ public:
     int playersCount() const override;
     Rule *rule() const override;
     IDSet availableCards() const override;
-    QSet<const Package *> availablePackages() const override;
+    QSet<const General *> availableGenerals() const override;
 
-    void gameProcess(RoomObject *room) const override;
+    void startGame(RoomObject *room) const override;
 
 private:
     GenericHegemonyModePrivate *const d;

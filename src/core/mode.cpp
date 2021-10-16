@@ -75,13 +75,13 @@ IDSet GenericRoleMode::availableCards() const
     return {};
 }
 
-QSet<const Package *> GenericRoleMode::availablePackages() const
+QSet<const General *> GenericRoleMode::availableGenerals() const
 {
     // TODO
     return {};
 }
 
-void GenericRoleMode::gameProcess(RoomObject *room) const
+void GenericRoleMode::startGame(RoomObject *room) const
 {
     // TODO
 }
@@ -120,13 +120,13 @@ IDSet GenericHegemonyMode::availableCards() const
     return {};
 }
 
-QSet<const Package *> GenericHegemonyMode::availablePackages() const
+QSet<const General *> GenericHegemonyMode::availableGenerals() const
 {
     // TODO
     return {};
 }
 
-void GenericHegemonyMode::gameProcess(RoomObject *room) const
+void GenericHegemonyMode::startGame(RoomObject *room) const
 {
     // TODO
 }
