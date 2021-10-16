@@ -145,8 +145,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
         if (data.isNull()) {
             foreach (ServerPlayer *player, room->getPlayers()) {
                 Q_ASSERT(player->general() != nullptr);
-                if (!isHegemonyGameMode(room->getMode())
-                    && (player->general()->getKingdom() == QStringLiteral("zhu") || player->general()->getKingdom() == QStringLiteral("touhougod"))
+                if (!isHegemonyGameMode(room->getMode()) && (player->general()->kingdom() == QStringLiteral("zhu") || player->general()->kingdom() == QStringLiteral("touhougod"))
                     && player->generalName() != QStringLiteral("anjiang")) {
                     QString new_kingdom = room->askForKingdom(player);
                     room->setPlayerProperty(player, "kingdom", new_kingdom);
@@ -158,7 +157,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                     room->sendLog(log);
                 }
                 if (isHegemonyGameMode(room->getMode())) {
-                    foreach (const Skill *skill, player->skills(false, true)) {
+                    foreach (const Skill *skill, player->skills(false)) {
                         if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName()))) {
                             JsonArray arg;
                             arg << player->objectName();
@@ -169,7 +168,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                         }
                     }
                 } else {
-                    foreach (const Skill *skill, player->skills(false, true)) {
+                    foreach (const Skill *skill, player->skills(false)) {
                         if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
                             room->setPlayerMark(player, skill->limitMark(), 1);
                     }
@@ -1234,7 +1233,7 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const
     room->revivePlayer(player, false);
     room->changeHero(player, new_general, true, true);
     Q_ASSERT(player->general() != nullptr);
-    if (player->general()->getKingdom() == QStringLiteral("zhu") || player->general()->getKingdom() == QStringLiteral("touhougod")) {
+    if (player->general()->kingdom() == QStringLiteral("zhu") || player->general()->kingdom() == QStringLiteral("touhougod")) {
         QString new_kingdom = room->askForKingdom(player);
         room->setPlayerProperty(player, "kingdom", new_kingdom);
 
@@ -1246,8 +1245,8 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const
     }
     room->addPlayerHistory(player, QStringLiteral("."));
 
-    if (player->kingdom() != player->general()->getKingdom())
-        room->setPlayerProperty(player, "kingdom", player->general()->getKingdom());
+    if (player->kingdom() != player->general()->kingdom())
+        room->setPlayerProperty(player, "kingdom", player->general()->kingdom());
 
     QList<ServerPlayer *> notified = classical ? room->getOtherPlayers(player, true) : room->getPlayers();
     room->doBroadcastNotify(notified, QSanProtocol::S_COMMAND_REVEAL_GENERAL, JsonArray() << player->objectName() << new_general);
@@ -1299,7 +1298,7 @@ void GameRule::changeGeneralXMode(ServerPlayer *player) const
     room->revivePlayer(player);
     room->changeHero(player, general, true, true);
     Q_ASSERT(player->general() != nullptr);
-    if (player->general()->getKingdom() == QStringLiteral("zhu") || player->general()->getKingdom() == QStringLiteral("touhougod")) {
+    if (player->general()->kingdom() == QStringLiteral("zhu") || player->general()->kingdom() == QStringLiteral("touhougod")) {
         QString new_kingdom = room->askForKingdom(player);
         room->setPlayerProperty(player, "kingdom", new_kingdom);
 
@@ -1311,8 +1310,8 @@ void GameRule::changeGeneralXMode(ServerPlayer *player) const
     }
     room->addPlayerHistory(player, QStringLiteral("."));
 
-    if (player->kingdom() != player->general()->getKingdom())
-        room->setPlayerProperty(player, "kingdom", player->general()->getKingdom());
+    if (player->kingdom() != player->general()->kingdom())
+        room->setPlayerProperty(player, "kingdom", player->general()->kingdom());
 
     if (!player->faceUp())
         player->turnOver();

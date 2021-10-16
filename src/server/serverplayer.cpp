@@ -412,7 +412,7 @@ bool ServerPlayer::hasNullification() const
             return true;
     }
 
-    foreach (const Skill *skill, skills(true, true)) {
+    foreach (const Skill *skill, skills(true)) {
         if (hasSkill(skill->objectName())) {
             if (skill->inherits("ViewAsSkill")) {
                 const ViewAsSkill *vsskill = qobject_cast<const ViewAsSkill *>(skill);
@@ -885,10 +885,10 @@ int ServerPlayer::getGeneralMaxHp() const
     int max_hp = 0;
 
     if (getGeneral2() == nullptr)
-        max_hp = general()->getMaxHp();
+        max_hp = general()->maxHp();
     else {
-        int first = general()->getMaxHp();
-        int second = getGeneral2()->getMaxHp();
+        int first = general()->maxHp();
+        int second = getGeneral2()->maxHp();
 
         int plan = Config.MaxHpScheme;
 
@@ -1020,7 +1020,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
             room->notifyProperty(player, this, "kingdom", QStringLiteral("god"));
         }
     } else {
-        if (kingdom() != general()->getKingdom())
+        if (kingdom() != general()->kingdom())
             room->notifyProperty(player, this, "kingdom");
     }
 
@@ -1136,7 +1136,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     //need remove mark of hidden limit skill
     QStringList hegemony_limitmarks;
     if (isHegemonyGameMode(room->getMode())) {
-        foreach (const Skill *skill, skills(false, false))
+        foreach (const Skill *skill, skills(false))
             if (skill->isLimited() && mark(skill->limitMark()) > 0 && (this != player && !hasShownSkill(skill)))
                 hegemony_limitmarks.append(skill->limitMark());
     }
@@ -1155,7 +1155,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     }
 
     if (!isHegemonyGameMode(room->getMode())) {
-        foreach (const Skill *skill, skills(true, true)) {
+        foreach (const Skill *skill, skills(true)) {
             //should not nofity the lord skill
             if (skill->isLordSkill() && !hasLordSkill(skill->objectName()))
                 continue;
@@ -1357,7 +1357,7 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
                 arg1 << generalName;
                 room->doBroadcastNotify(S_COMMAND_SET_SHOWN_HIDDEN_GENERAL, arg1);
 
-                foreach (const Skill *skill, Sanguosha->getGeneral(generalName)->getVisibleSkillList()) {
+                foreach (const Skill *skill, Sanguosha->getGeneral(generalName)->skills()) {
                     if (!skill->isLordSkill() && !skill->isAttachedSkill() && !skill->isLimited() && !skill->isEternal())
                         room->handleAcquireDetachSkills(this, skill->objectName(), true);
                 }
@@ -1380,7 +1380,7 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
 
     QList<const TargetModSkill *> tarmods;
     if (isHegemonyGameMode(room->getMode())) {
-        foreach (const Skill *skill, use.from->skills(false, false)) {
+        foreach (const Skill *skill, use.from->skills(false)) {
             if (skill->inherits("TargetModSkill") && use.from->hasSkill(skill) && !use.from->hasShownSkill(skill)) { //main_skill??
                 const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);
                 tarmods << tarmod;
@@ -1691,7 +1691,7 @@ void ServerPlayer::hideGeneral(bool head_general)
 
         // disconnectSkillsFromOthers();
 
-        foreach (const Skill *skill, skills(false, true)) {
+        foreach (const Skill *skill, skills(false)) {
             if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && !hasShownSkill(skill)
                 && mark(skill->limitMark()) > 0) {
                 JsonArray arg;
@@ -1724,7 +1724,7 @@ void ServerPlayer::hideGeneral(bool head_general)
 
         // disconnectSkillsFromOthers(false);
 
-        foreach (const Skill *skill, skills(false, true)) {
+        foreach (const Skill *skill, skills(false)) {
             if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && !hasShownSkill(skill)
                 && mark(skill->limitMark()) > 0) {
                 JsonArray arg;
@@ -1776,7 +1776,7 @@ void ServerPlayer::removeGeneral(bool head_general)
             return;
 
         from_general = names.first();
-        QSanguosha::Gender gender = Sanguosha->getGeneral(from_general)->getGender();
+        QSanguosha::Gender gender = Sanguosha->getGeneral(from_general)->gender();
         general_name = gender == QSanguosha::Male ? QStringLiteral("sujiang") : QStringLiteral("sujiangf"); //need image
 
         room->setPlayerProperty(this, "general_showed", true);
@@ -1805,7 +1805,7 @@ void ServerPlayer::removeGeneral(bool head_general)
         if (from_general.contains(QStringLiteral("sujiang")))
             return;
         from_general = names.last();
-        QSanguosha::Gender gender = Sanguosha->getGeneral(from_general)->getGender();
+        QSanguosha::Gender gender = Sanguosha->getGeneral(from_general)->gender();
 
         general_name = gender == QSanguosha::Male ? QStringLiteral("sujiang") : QStringLiteral("sujiangf");
 

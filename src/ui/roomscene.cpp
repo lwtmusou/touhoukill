@@ -609,14 +609,14 @@ void RoomScene::handleGameEvent(const QVariant &args)
         const General *oldHero = isSecondaryHero ? player->getGeneral2() : player->general();
         const General *newHero = Sanguosha->getGeneral(newHeroName);
         if (oldHero != nullptr) {
-            foreach (const Skill *skill, oldHero->getVisibleSkills(true, !isSecondaryHero))
+            foreach (const Skill *skill, oldHero->skills(true, !isSecondaryHero))
                 detachSkill(skill->objectName(), !isSecondaryHero);
             if (oldHero->hasSkill(QStringLiteral("pingyi")) && (container != nullptr))
                 container->stopHuaShen();
         }
 
         if (newHero != nullptr) {
-            foreach (const Skill *skill, newHero->getVisibleSkills(true, !isSecondaryHero)) {
+            foreach (const Skill *skill, newHero->skills(true, !isSecondaryHero)) {
                 if (skill->isLordSkill() && !player->isLord())
                     continue;
                 attachSkill(skill->objectName(), !isSecondaryHero);

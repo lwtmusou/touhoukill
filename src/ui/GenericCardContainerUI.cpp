@@ -318,7 +318,7 @@ void PlayerCardContainer::updateSmallAvatar()
             _m_smallAvatarArea->setToolTip(getPlayerSkillDescription(m_player, true, QStringLiteral("deputy")));
             QString kingdom = m_player->kingdom();
             if (isHegemonyGameMode(ServerInfo.GameMode))
-                kingdom = general->getKingdom();
+                kingdom = general->kingdom();
 
             _paintPixmap(_m_dashboardSecondaryKingdomColorMaskIcon, _m_layout->m_dashboardSecondaryKingdomMaskArea,
                          G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_DASHBOARD_KINGDOM_COLOR_MASK), kingdom), _getAvatarParent());
@@ -1438,7 +1438,7 @@ void PlayerCardContainer::showHeroSkinListHelper(const General *general, Graphic
     QString generalName = general->name();
     HeroSkinContainer *heroSkinContainer = RoomSceneInstance->findHeroSkinContainer(generalName);
     if (nullptr == heroSkinContainer) {
-        heroSkinContainer = new HeroSkinContainer(generalName, general->getKingdom());
+        heroSkinContainer = new HeroSkinContainer(generalName, general->kingdom());
 
         connect(heroSkinContainer, &HeroSkinContainer::local_skin_changed, avatarIcon, &GraphicsPixmapHoverItem::startChangeHeroSkinAnimation);
 
@@ -1633,11 +1633,11 @@ QString PlayerCardContainer::getPlayerSkillDescription(Player *p, bool yellow, c
 {
     QString description = QString();
     QString color = yellow ? QStringLiteral("#FFFF33") : QStringLiteral("#FF0080");
-    QSet<const Skill *> skillList = p->skills(false, true);
+    QSet<const Skill *> skillList = p->skills(false);
     if (flag == QStringLiteral("head"))
-        skillList = p->skills(false, true, true, {0});
+        skillList = p->skills(false, true, {0});
     else if (flag == QStringLiteral("deputy"))
-        skillList = p->skills(false, true, true, {1});
+        skillList = p->skills(false, true, {1});
 
     foreach (const Skill *skill, skillList) {
         if (skill->isAttachedSkill())

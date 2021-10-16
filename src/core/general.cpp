@@ -49,12 +49,12 @@ QString General::name() const
     return d->name;
 }
 
-int General::getMaxHp() const
+int General::maxHp() const
 {
     return d->maxHp;
 }
 
-QString General::getKingdom() const
+QString General::kingdom() const
 {
     return d->kingdom;
 }
@@ -79,7 +79,7 @@ void General::setGender(Gender gender)
     d->gender = gender;
 }
 
-Gender General::getGender() const
+Gender General::gender() const
 {
     return d->gender;
 }
@@ -109,9 +109,9 @@ bool General::hasSkill(const QString &skill_name) const
     return d->skills.contains(skill_name);
 }
 
-QList<const Skill *> General::getSkillList(bool relate_to_place, bool head_only) const
+QSet<const Skill *> General::skills(bool relate_to_place, bool head_only) const
 {
-    QList<const Skill *> skills;
+    QSet<const Skill *> skills;
     foreach (const QString &skill_name, d->skills) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
         Q_ASSERT(skill != nullptr);
@@ -123,29 +123,12 @@ QList<const Skill *> General::getSkillList(bool relate_to_place, bool head_only)
     return skills;
 }
 
-QList<const Skill *> General::getVisibleSkillList(bool relate_to_place, bool head_only) const
-{
-    QList<const Skill *> skills;
-    foreach (const Skill *skill, getSkillList(relate_to_place, head_only)) {
-        if (skill->isVisible())
-            skills << skill;
-    }
-
-    return skills;
-}
-
-QSet<const Skill *> General::getVisibleSkills(bool relate_to_place, bool head_only) const
-{
-    QList<const Skill *> list = getVisibleSkillList(relate_to_place, head_only);
-    return QSet<const Skill *>(list.begin(), list.end());
-}
-
 void General::addRelateSkill(const QString &skill_name)
 {
     d->relatedSkills << skill_name;
 }
 
-QStringList General::getRelatedSkillNames() const
+QStringList General::relatedSkillNames() const
 {
     return d->relatedSkills;
 }
@@ -167,7 +150,7 @@ bool General::isCompanionWith(const QString &name) const
     return d->companions.contains(name) || other->d->companions.contains(d->name);
 }
 
-QString General::getCompanions() const
+QString General::companions() const
 {
     QStringList name;
     foreach (const QString &general, d->companions)
@@ -193,12 +176,12 @@ void General::setDeputyMaxHpAdjustedValue(int adjusted_value /* = -1 */)
     d->deputyMaxHpAdjustedValue = adjusted_value;
 }
 
-int General::getMaxHpHead() const
+int General::maxHpHead() const
 {
     return d->maxHp + d->headMaxHpAdjustedValue;
 }
 
-int General::getMaxHpDeputy() const
+int General::maxHpDeputy() const
 {
     return d->maxHp + d->deputyMaxHpAdjustedValue;
 }

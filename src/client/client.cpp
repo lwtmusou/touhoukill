@@ -1527,7 +1527,7 @@ void Client::killPlayer(const QVariant &player_name)
             foreach (const Skill *skill, Self->getDeputySkillList(true, true))
                 emit skill_detached(skill->objectName(), false);
         } else {
-            foreach (const Skill *skill, Self->skills(false, true))
+            foreach (const Skill *skill, Self->skills(false))
                 emit skill_detached(skill->objectName());
         }
     }
@@ -1835,7 +1835,7 @@ void Client::askForSinglePeach(const QVariant &arg)
     Card *temp_peach = cloneCard(QStringLiteral("Peach"));
     if (Self->mark(QStringLiteral("Global_PreventPeach")) > 0 || Self->isProhibited(dying, temp_peach)) {
         bool has_skill = false;
-        foreach (const Skill *skill, Self->skills(true, true)) {
+        foreach (const Skill *skill, Self->skills(true)) {
             const ViewAsSkill *view_as_skill = qobject_cast<const ViewAsSkill *>(skill);
             if ((view_as_skill != nullptr) && view_as_skill->isAvailable(Self, CardUseStruct::CARD_USE_REASON_RESPONSE_USE, pattern.join(QStringLiteral("+")))) {
                 has_skill = true;
@@ -2385,7 +2385,7 @@ QString Client::getGeneralSkillDescription(QString generalname, bool include_nam
         return QString();
 
     QString description;
-    foreach (const Skill *skill, g->getVisibleSkillList()) {
+    foreach (const Skill *skill, g->skills()) {
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = getSkillDescription(skill->objectName());
         desc.replace(QStringLiteral("\n"), QStringLiteral("<br/>"));
@@ -2393,16 +2393,16 @@ QString Client::getGeneralSkillDescription(QString generalname, bool include_nam
     }
 
     if (include_name) {
-        QString color_str = Sanguosha->getKingdomColor(g->getKingdom()).name();
+        QString color_str = Sanguosha->getKingdomColor(g->kingdom()).name();
         QString g_name = Sanguosha->translate(QStringLiteral("!") + generalname);
         if (g_name.startsWith(QStringLiteral("!")))
             g_name = Sanguosha->translate(generalname);
         QString name = QStringLiteral("<font color=%1><b>%2</b></font>     ").arg(color_str, g_name);
-        name.prepend(QStringLiteral("<img src='image/kingdom/icon/%1.png'/>    ").arg(g->getKingdom()));
-        for (int i = 0; i < g->getMaxHp(); i++)
+        name.prepend(QStringLiteral("<img src='image/kingdom/icon/%1.png'/>    ").arg(g->kingdom()));
+        for (int i = 0; i < g->maxHp(); i++)
             name.append(QStringLiteral("<img src='image/system/magatamas/5.png' height = 12/>"));
         if (g->hasSkill(QStringLiteral("banling"))) {
-            for (int i = 0; i < g->getMaxHp(); i++)
+            for (int i = 0; i < g->maxHp(); i++)
                 name.append(QStringLiteral("<img src='image/system/magatamas/1.png' height = 12/>"));
         }
         name.append(QStringLiteral("<br/> <br/>"));

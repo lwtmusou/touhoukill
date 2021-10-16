@@ -211,7 +211,7 @@ void Settings::init()
     hegemony_ban = Sanguosha->getConfigFromConfigFile(QStringLiteral("hegemony_ban")).toStringList();
     hegemony_ban.append(basara_ban);
     foreach (QString general, Sanguosha->getLimitedGeneralNames()) {
-        if (Sanguosha->getGeneral(general)->getKingdom() == QStringLiteral("god") && !hegemony_ban.contains(general))
+        if (Sanguosha->getGeneral(general)->kingdom() == QStringLiteral("god") && !hegemony_ban.contains(general))
             hegemony_ban << general;
     }
     pairs_ban = Sanguosha->getConfigFromConfigFile(QStringLiteral("pairs_ban")).toStringList();

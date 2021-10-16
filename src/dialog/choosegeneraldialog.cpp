@@ -258,7 +258,7 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
         if (general == nullptr || general->isTotallyHidden())
             continue;
 
-        map[general->getKingdom()] << general;
+        map[general->kingdom()] << general;
     }
 
     QStringList kingdoms;

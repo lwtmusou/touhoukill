@@ -546,7 +546,7 @@ void Player::setGeneral(const General *new_general, int pos)
         d->generals << new_general;
 
     if (d->kingdom.isEmpty() && pos == 0)
-        setKingdom(new_general->getKingdom());
+        setKingdom(new_general->kingdom());
 }
 
 const General *Player::general(int pos) const
@@ -1153,7 +1153,7 @@ int Player::maxCards(const QString &except) const
 QString Player::kingdom() const
 {
     if (d->kingdom.isEmpty() && (!d->generals.isEmpty()))
-        return d->generals.first()->getKingdom();
+        return d->generals.first()->kingdom();
     else
         return d->kingdom;
 }
@@ -1615,7 +1615,7 @@ bool Player::hasEquipSkill(const QString &skill_name) const
     return false;
 }
 
-QSet<const Skill *> Player::skills(bool include_equip, bool visible_only, bool include_acquired, const QList<int> &positions) const
+QSet<const Skill *> Player::skills(bool include_equip, bool include_acquired, const QList<int> &positions) const
 {
     QSet<const Skill *> skillList;
     QSet<QString> skills;
@@ -1633,7 +1633,7 @@ QSet<const Skill *> Player::skills(bool include_equip, bool visible_only, bool i
 
     foreach (const QString &skill_name, skills) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
-        if ((skill != nullptr) && (include_equip || !hasEquipSkill(skill->objectName())) && (!visible_only || skill->isVisible()))
+        if ((skill != nullptr) && (include_equip || !hasEquipSkill(skill->objectName())))
             skillList << skill;
     }
 
@@ -1796,7 +1796,7 @@ bool Player::hasShownSkill(const Skill *skill) const
     //        }
     //    }
 
-    if (!skill->isVisible()) {
+    if (skill->isAffiliatedSkill()) {
         const Skill *main_skill = skill->mainSkill();
         if (main_skill != nullptr)
             return hasShownSkill(main_skill);
@@ -1986,7 +1986,7 @@ int Player::findPositionOfGeneralOwningSkill(const QString &skill_name) const
     if (skill == nullptr)
         return -1;
 
-    if (!skill->isVisible()) { //really confused about invisible skills! by weidouncle
+    if (skill->isAffiliatedSkill()) { //really confused about invisible skills! by weidouncle
         const Skill *main_skill = skill->mainSkill();
         if (main_skill != nullptr)
             return findPositionOfGeneralOwningSkill(main_skill->objectName());

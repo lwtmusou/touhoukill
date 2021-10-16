@@ -22,8 +22,8 @@ public:
     QString name() const;
 
     // property getters/setters
-    int getMaxHp() const;
-    QString getKingdom() const;
+    int maxHp() const;
+    QString kingdom() const;
     bool isMale() const;
     bool isFemale() const;
     bool isNeuter() const;
@@ -31,26 +31,24 @@ public:
     bool isHidden() const;
     bool isTotallyHidden() const;
 
-    int getMaxHpHead() const;
-    int getMaxHpDeputy() const;
+    int maxHpHead() const;
+    int maxHpDeputy() const;
 
-    QSanguosha::Gender getGender() const;
+    QSanguosha::Gender gender() const;
     void setGender(QSanguosha::Gender gender);
 
     void addSkill(const QString &skill_name);
     bool hasSkill(const QString &skill_name) const;
-    QList<const Skill *> getSkillList(bool relate_to_place = false, bool head_only = true) const;
-    QList<const Skill *> getVisibleSkillList(bool relate_to_place = false, bool head_only = true) const;
-    QSet<const Skill *> getVisibleSkills(bool relate_to_place = false, bool head_only = true) const;
+    QSet<const Skill *> skills(bool relate_to_place = false, bool head_only = true) const;
 
     // only for general overview?
     void addRelateSkill(const QString &skill_name);
-    QStringList getRelatedSkillNames() const;
+    QStringList relatedSkillNames() const;
 
     QString getPackage() const;
     void addCompanion(const QString &name);
     bool isCompanionWith(const QString &name) const;
-    QString getCompanions() const;
+    QString companions() const;
 
     void setHeadMaxHpAdjustedValue(int adjusted_value = -1);
     void setDeputyMaxHpAdjustedValue(int adjusted_value = -1);

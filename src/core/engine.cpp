@@ -687,7 +687,7 @@ QStringList Engine::getRandomLords() const
     }
 
     for (int i = 0; addcount < extra; i++) {
-        if (getGeneral(nonlord_list.at(i))->getKingdom() != QStringLiteral("touhougod")) {
+        if (getGeneral(nonlord_list.at(i))->kingdom() != QStringLiteral("touhougod")) {
             lords << nonlord_list.at(i);
             addcount++;
         } else if (godmax > 0 && godCount < godmax) {
@@ -768,7 +768,7 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
     int godmax = Config.value(QStringLiteral("GodLimit"), 1).toInt();
     int godCount = 0;
     for (int i = 0; addcount < count; i++) {
-        if (getGeneral(all_generals.at(i))->getKingdom() != QStringLiteral("touhougod")) {
+        if (getGeneral(all_generals.at(i))->kingdom() != QStringLiteral("touhougod")) {
             general_list << all_generals.at(i);
             addcount++;
         } else if (godmax > 0 && godCount < godmax) {

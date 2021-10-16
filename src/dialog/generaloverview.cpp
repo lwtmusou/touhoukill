@@ -342,12 +342,12 @@ void GeneralOverview::fillGenerals(const QStringList &generals, bool init)
         name = Sanguosha->translate(QStringLiteral("!") + general->name());
         if (name.startsWith(QStringLiteral("!")))
             name = Sanguosha->translate(general->name());
-        kingdom = Sanguosha->translate(general->getKingdom());
+        kingdom = Sanguosha->translate(general->kingdom());
         //gender = general->isMale() ? tr("Male") : (general->isFemale() ? tr("Female") : tr("NoGender"));
 
-        max_hp = QString::number(general->getMaxHp());
+        max_hp = QString::number(general->maxHp());
         if (general->name().endsWith(QStringLiteral("hegemony")))
-            max_hp = QString::number(double(general->getMaxHp()) / 2);
+            max_hp = QString::number(double(general->maxHp()) / 2);
 
         package = Sanguosha->translate(general->getPackage());
 
@@ -393,7 +393,7 @@ void GeneralOverview::fillGenerals(const QStringList &generals, bool init)
             package_item->setToolTip(tr("<font color=#FFFF33>This is an Lua extension</font>"));
 
         //add color for touhou kingdoms and packages.
-        QColor kingdomColor = Sanguosha->getKingdomColor(general->getKingdom());
+        QColor kingdomColor = Sanguosha->getKingdomColor(general->kingdom());
         package_item->setBackground(QBrush(kingdomColor));
         kingdom_item->setBackground(QBrush(kingdomColor));
         if ((11 * kingdomColor.blue() + 30 * kingdomColor.red() + 59 * kingdomColor.green()) / 100 <= 0x7f) {
@@ -561,8 +561,8 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     ui->generalPhoto->setPixmap(G_ROOM_SKIN.getCardMainPixmap(general->name()));
     ui->changeHeroSkinButton->setVisible(hasSkin(general_name));
 
-    QList<const Skill *> skills = general->getVisibleSkillList();
-    foreach (QString skill_name, general->getRelatedSkillNames()) {
+    QSet<const Skill *> skills = general->skills();
+    foreach (QString skill_name, general->relatedSkillNames()) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if ((skill != nullptr) && skill->isVisible())
             skills << skill;
@@ -610,7 +610,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
         ui->companionLineEdit->hide();
         ui->companionLabel->hide();
     } else {
-        QString companions_text = general->getCompanions();
+        QString companions_text = general->companions();
         if (companions_text.isEmpty())
             ui->companionLineEdit->clear();
         else

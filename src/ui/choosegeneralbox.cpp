@@ -45,7 +45,7 @@ GeneralCardItem::GeneralCardItem(const QString &generalName)
     Q_ASSERT(general);
 
     setOuterGlowEffectEnabled(true);
-    setOuterGlowColor(Sanguosha->getKingdomColor(general->getKingdom()));
+    setOuterGlowColor(Sanguosha->getKingdomColor(general->kingdom()));
 #ifdef Q_OS_ANDROID
     moveRange = 1.0;
 #endif
@@ -57,7 +57,7 @@ void GeneralCardItem::changeGeneral(const QString &generalName)
 
     const General *general = Sanguosha->getGeneral(generalName);
     Q_ASSERT(general);
-    setOuterGlowColor(Sanguosha->getKingdomColor(general->getKingdom()));
+    setOuterGlowColor(Sanguosha->getKingdomColor(general->kingdom()));
 }
 
 void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
@@ -78,7 +78,7 @@ void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * 
     if (!hasCompanion)
         return;
 
-    QString kingdom = Sanguosha->getGeneral(objectName())->getKingdom();
+    QString kingdom = Sanguosha->getGeneral(objectName())->kingdom();
     QPixmap icon = G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_ICON), kingdom);
     painter->drawPixmap(boundingRect().center().x() - icon.width() / 2 + 3, boundingRect().bottom() - icon.height(), icon);
 
@@ -280,7 +280,7 @@ static bool sortByKingdom(const QString &gen1, const QString &gen2)
     const General *g2 = Sanguosha->getGeneral(gen2);
 
     if (g1 != nullptr && g2 != nullptr)
-        return kingdom_priority_map[g1->getKingdom()] < kingdom_priority_map[g2->getKingdom()];
+        return kingdom_priority_map[g1->kingdom()] < kingdom_priority_map[g2->kingdom()];
     else
         return false;
 }
@@ -469,7 +469,7 @@ void ChooseGeneralBox::adjustItems()
             card->setFrozen(true);
         const General *gen1 = Sanguosha->getGeneral(selected.first()->objectName());
         const General *gen2 = Sanguosha->getGeneral(selected.last()->objectName());
-        bool can = (gen1->getKingdom() == gen2->getKingdom() || gen1->getKingdom() == QStringLiteral("zhu") || gen2->getKingdom() == QStringLiteral("zhu"));
+        bool can = (gen1->kingdom() == gen2->kingdom() || gen1->kingdom() == QStringLiteral("zhu") || gen2->kingdom() == QStringLiteral("zhu"));
         confirm->setEnabled(can);
     } else if (selected.length() == 1) {
         selected.first()->hideCompanion();
@@ -477,8 +477,8 @@ void ChooseGeneralBox::adjustItems()
         foreach (GeneralCardItem *card, items) {
             const General *general = Sanguosha->getGeneral(card->objectName());
 
-            if (general->getKingdom() != seleted_general->getKingdom() && general->getKingdom() != QStringLiteral("zhu")
-                && seleted_general->getKingdom() != QStringLiteral("zhu")) {
+            if (general->kingdom() != seleted_general->kingdom() && general->kingdom() != QStringLiteral("zhu")
+                && seleted_general->kingdom() != QStringLiteral("zhu")) {
                 if (!card->isFrozen())
                     card->setFrozen(true);
                 card->hideCompanion();
@@ -528,7 +528,7 @@ void ChooseGeneralBox::_initializeItems()
     foreach (const General *general, generals) {
         int party = 0;
         foreach (const General *other, generals) {
-            if (other->getKingdom() == general->getKingdom()) {
+            if (other->kingdom() == general->kingdom()) {
                 party++;
             }
         }

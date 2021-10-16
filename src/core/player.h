@@ -262,7 +262,7 @@ public:
     QHash<QString, int> histories() const;
 
     bool hasEquipSkill(const QString &skill_name) const;
-    QSet<const Skill *> skills(bool include_equip = false, bool visible_only = true, bool include_acquired = false, const QList<int> &positions = {}) const;
+    QSet<const Skill *> skills(bool include_equip = false, bool include_acquired = false, const QList<int> &positions = {}) const;
 
     QSet<QString> getAcquiredSkills() const;
 
@@ -360,11 +360,11 @@ private:
     }
     Q_DECL_DEPRECATED QSet<const Skill *> getHeadSkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const
     {
-        return skills(include_equip, visible_only, include_acquired, {0});
+        return skills(include_equip, include_acquired, {0});
     }
     Q_DECL_DEPRECATED QSet<const Skill *> getDeputySkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const
     {
-        return skills(include_equip, visible_only, include_acquired, {1});
+        return skills(include_equip, include_acquired, {1});
     }
     Q_DECL_DEPRECATED void setDisableShow(const QString &flags, const QString &reason)
     {

@@ -77,11 +77,6 @@ bool Skill::isAttachedSkill() const
     return (d->categories & SkillAttached) != 0;
 }
 
-bool Skill::isHidden() const
-{
-    return (d->categories & SkillHidden) != 0;
-}
-
 bool Skill::isCompulsory() const
 {
     return (d->categories & SkillCompulsory) != 0;

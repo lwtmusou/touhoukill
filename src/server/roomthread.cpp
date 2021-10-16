@@ -53,7 +53,7 @@ RoomThread::RoomThread(Room *room)
 
 void RoomThread::addPlayerSkills(ServerPlayer *player, bool)
 {
-    foreach (const Skill *skill, player->skills(true, false, true)) {
+    foreach (const Skill *skill, player->skills(true, true)) {
         foreach (const Trigger *trigger, skill->triggers())
             addTrigger(trigger);
     }

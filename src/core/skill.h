@@ -60,7 +60,6 @@ public:
         SkillArrayMask = SkillArrayFormation | SkillArraySiege,
 
         SkillAttached = 0x100,
-        SkillHidden = 0x200,
     };
     Q_DECLARE_FLAGS(Categories, Category)
 
@@ -78,11 +77,6 @@ public:
     inline bool isWake() const
     {
         return isLimited() && isCompulsory();
-    }
-    bool isHidden() const;
-    inline bool isVisible() const
-    {
-        return !isHidden();
     }
     bool relateToPlace(bool head = true) const;
     ArrayType arrayType() const;
@@ -119,6 +113,16 @@ public:
     const QSet<const Skill *> &affiliatedSkills() const;
     bool isAffiliatedSkill() const;
     const Skill *mainSkill() const;
+
+    // deprecated
+    Q_DECL_DEPRECATED inline bool isHidden() const
+    {
+        return isAffiliatedSkill();
+    }
+    Q_DECL_DEPRECATED inline bool isVisible() const
+    {
+        return !isAffiliatedSkill();
+    }
 
 private:
     SkillPrivate *const d;
