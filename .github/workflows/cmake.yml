@@ -27,6 +27,7 @@ jobs:
         with:
           version: '6.2.0'
           dir: '${{ github.workspace }}/Qt6/'
+          modules: 'qtmultimedia'
 
       - name: Install Qt5
         uses: jurplel/install-qt-action@v2
