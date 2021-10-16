@@ -235,7 +235,7 @@ ViewAsSkill::~ViewAsSkill()
 
 bool ViewAsSkill::isAvailable(const Player *invoker, CardUseStruct::CardUseReason reason, const QString &pattern) const
 {
-    if (!invoker->hasSkill(objectName()) && !invoker->hasLordSkill(objectName()) && !invoker->hasFlag(objectName())) // For Shuangxiong
+    if (!invoker->hasValidSkill(objectName()) && !invoker->hasValidLordSkill(objectName()) && !invoker->hasFlag(objectName())) // For Shuangxiong
         return false;
     switch (reason) {
     case CardUseStruct::CARD_USE_REASON_PLAY:
@@ -559,7 +559,7 @@ SlashNoDistanceLimitSkill::SlashNoDistanceLimitSkill(const QString &skill_name)
 
 int SlashNoDistanceLimitSkill::getDistanceLimit(const Player *from, const Card *card) const
 {
-    if (from->hasSkill(name) && card->skillName() == name)
+    if (from->hasValidSkill(name) && card->skillName() == name)
         return 1000;
     else
         return 0;

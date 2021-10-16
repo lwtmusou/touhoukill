@@ -6,7 +6,6 @@
 #include "protocol.h"
 
 // TODO: kill this
-#include "lua-wrapper.h"
 
 #include <QHash>
 #include <QList>
@@ -33,16 +32,15 @@ class Player;
 struct CardDescriptor;
 class Card;
 class RoomObject;
+class CardFace;
 
 class EnginePrivate;
 
-class Engine final : public QObject
+class Engine final
 {
-    Q_OBJECT
-
 public:
     Engine();
-    ~Engine() override;
+    ~Engine();
 
     void loadTranslations(const QString &locale);
     void addTranslationEntry(const QString &key, const QString &value);
@@ -112,38 +110,6 @@ public:
 private:
     Q_DISABLE_COPY_MOVE(Engine)
     EnginePrivate *const d;
-
-#if 0
-private:
-    QHash<QString, QString> translations;
-    QHash<QString, const General *> generals;
-    QHash<QString, const Skill *> skills;
-    QHash<QThread *, RoomObject *> m_rooms;
-    QMap<QString, QString> modes;
-    QMultiMap<QString, QString> related_skills;
-    mutable QMap<QString, const CardPattern *> patterns;
-
-    // Package
-    QList<const Package *> packages;
-
-    // special skills
-    QList<const ProhibitSkill *> prohibit_skills;
-    QList<const DistanceSkill *> distance_skills;
-    QList<const TreatAsEquippingSkill *> viewhas_skills;
-    QList<const MaxCardsSkill *> maxcards_skills;
-    QList<const TargetModSkill *> targetmod_skills;
-    QList<const AttackRangeSkill *> attackrange_skills;
-    QList<const ViewAsSkill *> viewas_skills;
-
-    QList<CardDescriptor> cards;
-    QStringList lord_list;
-    QSet<QString> ban_package;
-
-    JsonObject configFile;
-
-    LuaStatePointer l;
-
-#endif
 };
 
 extern Engine *Sanguosha;

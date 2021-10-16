@@ -86,32 +86,29 @@ Engine::Engine()
     loadTranslations(locale);
 
     // available game modes
-    d->modes[QStringLiteral("02p")] = tr("2 players");
-    d->modes[QStringLiteral("03p")] = tr("3 players");
-    d->modes[QStringLiteral("04p")] = tr("4 players");
-    d->modes[QStringLiteral("05p")] = tr("5 players");
-    d->modes[QStringLiteral("06p")] = tr("6 players");
-    d->modes[QStringLiteral("06pd")] = tr("6 players (2 renegades)");
-    d->modes[QStringLiteral("07p")] = tr("7 players");
-    d->modes[QStringLiteral("08p")] = tr("8 players");
-    d->modes[QStringLiteral("08pd")] = tr("8 players (2 renegades)");
-    d->modes[QStringLiteral("08pz")] = tr("8 players (0 renegade)");
-    d->modes[QStringLiteral("09p")] = tr("9 players");
-    d->modes[QStringLiteral("10pd")] = tr("10 players");
-    d->modes[QStringLiteral("10p")] = tr("10 players (1 renegade)");
-    d->modes[QStringLiteral("10pz")] = tr("10 players (0 renegade)");
-    d->modes[QStringLiteral("hegemony_02")] = tr("hegemony 2 players");
-    d->modes[QStringLiteral("hegemony_03")] = tr("hegemony 3 players");
-    d->modes[QStringLiteral("hegemony_04")] = tr("hegemony 4 players");
-    d->modes[QStringLiteral("hegemony_05")] = tr("hegemony 5 players");
-    d->modes[QStringLiteral("hegemony_06")] = tr("hegemony 6 players");
-    d->modes[QStringLiteral("hegemony_07")] = tr("hegemony 7 players");
-    d->modes[QStringLiteral("hegemony_08")] = tr("hegemony 8 players");
-    d->modes[QStringLiteral("hegemony_09")] = tr("hegemony 9 players");
-    d->modes[QStringLiteral("hegemony_10")] = tr("hegemony 10 players");
-
-    // Engine can't be a child of qApp, so we can only fall back to use...
-    connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, this, &QObject::deleteLater);
+    d->modes[QStringLiteral("02p")] = QObject::tr("2 players");
+    d->modes[QStringLiteral("03p")] = QObject::tr("3 players");
+    d->modes[QStringLiteral("04p")] = QObject::tr("4 players");
+    d->modes[QStringLiteral("05p")] = QObject::tr("5 players");
+    d->modes[QStringLiteral("06p")] = QObject::tr("6 players");
+    d->modes[QStringLiteral("06pd")] = QObject::tr("6 players (2 renegades)");
+    d->modes[QStringLiteral("07p")] = QObject::tr("7 players");
+    d->modes[QStringLiteral("08p")] = QObject::tr("8 players");
+    d->modes[QStringLiteral("08pd")] = QObject::tr("8 players (2 renegades)");
+    d->modes[QStringLiteral("08pz")] = QObject::tr("8 players (0 renegade)");
+    d->modes[QStringLiteral("09p")] = QObject::tr("9 players");
+    d->modes[QStringLiteral("10pd")] = QObject::tr("10 players");
+    d->modes[QStringLiteral("10p")] = QObject::tr("10 players (1 renegade)");
+    d->modes[QStringLiteral("10pz")] = QObject::tr("10 players (0 renegade)");
+    d->modes[QStringLiteral("hegemony_02")] = QObject::tr("hegemony 2 players");
+    d->modes[QStringLiteral("hegemony_03")] = QObject::tr("hegemony 3 players");
+    d->modes[QStringLiteral("hegemony_04")] = QObject::tr("hegemony 4 players");
+    d->modes[QStringLiteral("hegemony_05")] = QObject::tr("hegemony 5 players");
+    d->modes[QStringLiteral("hegemony_06")] = QObject::tr("hegemony 6 players");
+    d->modes[QStringLiteral("hegemony_07")] = QObject::tr("hegemony 7 players");
+    d->modes[QStringLiteral("hegemony_08")] = QObject::tr("hegemony 8 players");
+    d->modes[QStringLiteral("hegemony_09")] = QObject::tr("hegemony 9 players");
+    d->modes[QStringLiteral("hegemony_10")] = QObject::tr("hegemony 10 players");
 }
 
 void Engine::addTranslationEntry(const QString &key, const QString &value)
@@ -149,7 +146,7 @@ void Engine::addSkills(const QList<const Skill *> &all_skills)
 {
     foreach (const Skill *skill, all_skills) {
         if (d->skills.contains(skill->objectName()))
-            qDebug() << tr("Duplicated skill : %1").arg(skill->objectName());
+            qDebug() << QObject::tr("Duplicated skill : %1").arg(skill->objectName());
 
         d->skills.insert(skill->objectName(), skill);
     }

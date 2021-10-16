@@ -158,7 +158,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                 }
                 if (isHegemonyGameMode(room->getMode())) {
                     foreach (const Skill *skill, player->skills(false)) {
-                        if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName()))) {
+                        if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || player->hasValidLordSkill(skill->objectName()))) {
                             JsonArray arg;
                             arg << player->objectName();
                             arg << skill->limitMark();
@@ -169,7 +169,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                     }
                 } else {
                     foreach (const Skill *skill, player->skills(false)) {
-                        if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
+                        if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || player->hasValidLordSkill(skill->objectName())))
                             room->setPlayerMark(player, skill->limitMark(), 1);
                     }
                 }
@@ -321,7 +321,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
 
             qobject_cast<ServerPlayer *>(card_use.from)->broadcastSkillInvoke(card_use.card);
             if (!card_use.card->skillName().isNull() && card_use.card->skillName(true) == card_use.card->skillName(false) && card_use.m_isOwnerUse
-                && card_use.from->hasSkill(card_use.card->skillName()))
+                && card_use.from->hasValidSkill(card_use.card->skillName()))
                 room->notifySkillInvoked(qobject_cast<ServerPlayer *>(card_use.from), card_use.card->skillName());
         }
         break;
@@ -622,7 +622,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                     }
                 } else if (effect.card->skillName() == QStringLiteral("xianshi")) { // deal xianshi extra effect and original effect
                     QString xianshi_name;
-                    QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+                    QSet<Card *> cards = room->getCards();
                     foreach (const Card *card, cards) {
                         if (card->face()->isNDTrick() || card->face()->isKindOf("BasicCard")) {
                             if (effect.card->hasFlag(QStringLiteral("xianshi_") + card->faceName())) {
@@ -873,7 +873,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
             }
         } else if (effect.slash->skillName() == QStringLiteral("xianshi")) {
             QString xianshi_name;
-            QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+            QSet<Card *> cards = room->getCards();
             foreach (const Card *card, cards) {
                 if (effect.slash->hasFlag(QStringLiteral("xianshi_") + card->faceName())) {
                     xianshi_name = card->faceName();
@@ -1110,7 +1110,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
             if (Config.HegemonyFirstShowReward == QStringLiteral("Postponed")) {
                 player->gainMark(QStringLiteral("@Pioneer"));
                 QString attachName = QStringLiteral("pioneer_attach");
-                if ((player != nullptr) && !player->hasSkill(attachName))
+                if ((player != nullptr) && !player->hasValidSkill(attachName))
                     room->attachSkillToPlayer(player, attachName);
             } else if (Config.HegemonyFirstShowReward == QStringLiteral("Instant")) {
                 if (player->askForSkillInvoke(QStringLiteral("FirstShowReward"))) {
@@ -1132,7 +1132,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                 if (Config.HegemonyCompanionReward == QStringLiteral("Postponed")) {
                     player->gainMark(QStringLiteral("@CompanionEffect"));
                     QString attachName = QStringLiteral("companion_attach");
-                    if ((player != nullptr) && !player->hasSkill(attachName))
+                    if ((player != nullptr) && !player->hasValidSkill(attachName))
                         room->attachSkillToPlayer(player, attachName);
                 } else {
                     QStringList choices;
@@ -1161,7 +1161,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                     //bonus Postpone
                     player->gainMark(QStringLiteral("@HalfLife"));
                     QString attachName = QStringLiteral("halflife_attach");
-                    if ((player != nullptr) && !player->hasSkill(attachName))
+                    if ((player != nullptr) && !player->hasValidSkill(attachName))
                         room->attachSkillToPlayer(player, attachName);
                 } else {
                     LogMessage log;

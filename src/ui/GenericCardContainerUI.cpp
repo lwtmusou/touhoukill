@@ -363,7 +363,7 @@ void PlayerCardContainer::updatePhase()
 void PlayerCardContainer::updateHp()
 {
     Q_ASSERT(_m_hpBox && _m_saveMeIcon && m_player);
-    if (!m_player->hasSkill(QStringLiteral("banling"))) {
+    if (!m_player->hasValidSkill(QStringLiteral("banling"))) {
         _m_hpBox->setHp(m_player->hp(), m_player->dyingFactor());
         _m_hpBox->setMaxHp(m_player->maxHp());
         _m_hpBox->update();
@@ -1642,11 +1642,11 @@ QString PlayerCardContainer::getPlayerSkillDescription(Player *p, bool yellow, c
     foreach (const Skill *skill, skillList) {
         if (skill->isAttachedSkill())
             continue;
-        if (!isHegemonyGameMode(ServerInfo.GameMode) && !p->hasSkill(skill->objectName()))
+        if (!isHegemonyGameMode(ServerInfo.GameMode) && !p->hasValidSkill(skill->objectName()))
             continue;
 
         //remove lord skill Description
-        if (skill->isLordSkill() && !p->hasLordSkill(skill->objectName()))
+        if (skill->isLordSkill() && !p->hasValidLordSkill(skill->objectName()))
             continue;
 
         QString skill_name = Sanguosha->translate(skill->objectName());

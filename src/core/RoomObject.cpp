@@ -272,6 +272,16 @@ const Card *RoomObject::getCard(int cardId) const
     return d->cards[cardId];
 }
 
+QSet<Card *> RoomObject::getCards()
+{
+    return List2Set(d->cards.values());
+}
+
+QSet<const Card *> RoomObject::getCards() const
+{
+    return List2Set(NonConstList2ConstList(d->cards.values()));
+}
+
 QString RoomObject::currentCardUsePattern() const
 {
     return d->currentCardUsePattern;

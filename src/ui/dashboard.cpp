@@ -1339,7 +1339,7 @@ void Dashboard::expandSpecialCard()
 {
     retractSpecialCard();
 
-    if (!m_player->hasSkill(QStringLiteral("chaoren")))
+    if (!m_player->hasValidSkill(QStringLiteral("chaoren")))
         return;
     // then expand
     bool ok = false;

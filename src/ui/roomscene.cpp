@@ -642,7 +642,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         if (player == nullptr)
             return;
 
-        bool display = player->hasSkill(skill_name);
+        bool display = player->hasValidSkill(skill_name);
         if (!display) {
             // for wuyu
             static QStringList bllmwuyu;
@@ -655,7 +655,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
 
         if (!display) {
             // for shenbao
-            if (player->hasSkill(QStringLiteral("shenbao")) && (player->hasWeapon(skill_name) || player->hasArmor(skill_name) || player->hasTreasure(skill_name)))
+            if (player->hasValidSkill(QStringLiteral("shenbao")) && (player->hasValidWeapon(skill_name) || player->hasValidArmor(skill_name) || player->hasValidTreasure(skill_name)))
                 display = true;
         }
 
@@ -2403,7 +2403,7 @@ void RoomScene::updateSkillButtons()
         foreach (QSanSkillButton *button, m_skillButtons) {
             const Skill *skill = button->getSkill();
             button->setEnabled(skill->canPreshow() && !Self->haveShownSkill(skill));
-            if (skill->canPreshow() && Self->ownGeneralCardSkill(skill) && !Self->haveShownGeneral()) {
+            if (skill->canPreshow() && Self->hasGeneralCardSkill(skill) && !Self->haveShownGeneral()) {
                 if (Self->havePreshownSkill(skill->objectName()))
                     button->setState(QSanButton::S_STATE_DISABLED);
                 else
@@ -2779,7 +2779,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                     ClientInstance->onPlayerResponseCard(nullptr);
                     return;
                 }
-                if (Self->hasSkill(skill_name, true)) {
+                if (Self->hasValidSkill(skill_name, true)) {
                     foreach (QSanSkillButton *button, m_skillButtons) {
                         Q_ASSERT(button != nullptr);
                         const ViewAsSkill *vsSkill = button->getViewAsSkill();
@@ -3977,7 +3977,7 @@ void RoomScene::showPile(const QList<int> &card_ids, const QString &name, const 
     pileContainer->clear();
     bringToFront(pileContainer);
     pileContainer->setObjectName(name);
-    if (name == QStringLiteral("huashencard") && target->ownGeneralCardSkill(QStringLiteral("anyun"))) { //target->hasSkill("anyun", true)
+    if (name == QStringLiteral("huashencard") && target->hasGeneralCardSkill(QStringLiteral("anyun"))) { //target->hasSkill("anyun", true)
         //        QStringList huashens = target->getHiddenGenerals();
         //        QList<CardItem *> generals;
         //        foreach (QString arg, huashens) {
@@ -4193,7 +4193,7 @@ void RoomScene::showSkillInvocation(const QString &who, const QString &skill_nam
     QStringList skills = Sanguosha->getSkillNames();
     if (skill_name == QStringLiteral("GameRule_AskForGeneralShowHead") || skill_name == QStringLiteral("GameRule_AskForGeneralShowDeputy"))
         return;
-    if (!isHegemonyGameMode(ServerInfo.GameMode) && !player->hasSkill(skill_name) && !player->hasEquipSkill(skill_name))
+    if (!isHegemonyGameMode(ServerInfo.GameMode) && !player->hasValidSkill(skill_name) && !player->hasEquipSkill(skill_name))
         return;
     else if (isHegemonyGameMode(ServerInfo.GameMode) && !skills.contains(skill_name) && !player->hasEquipSkill(skill_name))
         return;

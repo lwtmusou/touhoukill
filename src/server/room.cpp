@@ -285,7 +285,7 @@ void Room::revivePlayer(ServerPlayer *player, bool initialize)
         touhouLogmessage(QStringLiteral("#Revive"), player);
 
         foreach (const Skill *skill, player->skills(false)) {
-            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
+            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || player->hasValidLordSkill(skill->objectName())))
                 setPlayerMark(player, skill->limitMark(), 1);
         }
 
@@ -574,7 +574,7 @@ void Room::attachSkillToPlayer(ServerPlayer *player, const QString &skill_name, 
 
 void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name, bool is_equip, bool acquire_only, bool sendlog, bool head)
 {
-    if (!isHegemonyGameMode(mode) && !player->hasSkill(skill_name, true))
+    if (!isHegemonyGameMode(mode) && !player->hasValidSkill(skill_name, true))
         return;
     if ((Sanguosha->getSkill(skill_name) != nullptr) && Sanguosha->getSkill(skill_name)->isEternal())
         return;
@@ -632,10 +632,10 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
             }
 
             if (isHegemonyGameMode(mode)) {
-                if (!player->ownGeneralCardSkill(actual_skill) && !player->hasSkill(actual_skill, true))
+                if (!player->hasGeneralCardSkill(actual_skill) && !player->hasValidSkill(actual_skill, true))
                     continue;
             } else {
-                if (!player->hasSkill(actual_skill, true))
+                if (!player->hasValidSkill(actual_skill, true))
                     continue;
             }
 
@@ -1409,7 +1409,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     if (player != who && player->kingdom() == QStringLiteral("dld")) {
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *p, getOtherPlayers(player)) {
-            if (p->hasLordSkill(QStringLiteral("youtong"))) {
+            if (p->hasValidLordSkill(QStringLiteral("youtong"))) {
                 targets << p;
             }
         }
@@ -1430,14 +1430,14 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
         }
     }
 
-    if (player->hasSkill(QStringLiteral("duxin"))) {
+    if (player->hasValidSkill(QStringLiteral("duxin"))) {
         handcard_visible = true;
         if (flags.contains(QStringLiteral("h")))
             notifySkillInvoked(player, QStringLiteral("duxin"));
         doAnimate(S_ANIMATE_INDICATE, player->objectName(), who->objectName());
     }
 
-    if (player->hasSkill(QStringLiteral("duxin_hegemony")) && flags.contains(QStringLiteral("h"))) {
+    if (player->hasValidSkill(QStringLiteral("duxin_hegemony")) && flags.contains(QStringLiteral("h"))) {
         if (player->haveShownSkill(QStringLiteral("duxin_hegemony")) || player->askForSkillInvoke(QStringLiteral("duxin_hegemony"), QVariant::fromValue(who))) {
             if (!player->haveShownSkill(QStringLiteral("duxin_hegemony")))
                 player->showHiddenSkill(QStringLiteral("duxin_hegemony"));
@@ -1724,7 +1724,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         }
         //move2
         if ((method == QSanguosha::MethodUse || method == QSanguosha::MethodResponse) && !isRetrial) {
-            if (!card->skillName().isNull() && card->skillName(true) == card->skillName(false) && player->hasSkill(card->skillName()))
+            if (!card->skillName().isNull() && card->skillName(true) == card->skillName(false) && player->hasValidSkill(card->skillName()))
                 notifySkillInvoked(player, card->skillName());
             CardResponseStruct resp(card, to, method == QSanguosha::MethodUse, isRetrial, isProvision, player);
             resp.m_isHandcard = isHandcard;
@@ -1953,7 +1953,7 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying)
     int threshold = dying->dyingFactor();
 
     int peaches = threshold - dying->hp();
-    if (dying->hasSkill(QStringLiteral("banling"))) {
+    if (dying->hasValidSkill(QStringLiteral("banling"))) {
         peaches = 0;
         if (dying->renHp() <= 0)
             peaches = peaches + threshold - dying->renHp();
@@ -2411,7 +2411,7 @@ QList<ServerPlayer *> Room::findPlayersBySkillName(const QString &skill_name, bo
 {
     QList<ServerPlayer *> list;
     foreach (ServerPlayer *player, getAllPlayers()) {
-        if (player->hasSkill(skill_name, false, include_hidden))
+        if (player->hasValidSkill(skill_name, false, include_hidden))
             list << player;
     }
     return list;
@@ -2420,7 +2420,7 @@ QList<ServerPlayer *> Room::findPlayersBySkillName(const QString &skill_name, bo
 ServerPlayer *Room::findPlayerBySkillName(const QString &skill_name) const
 {
     foreach (ServerPlayer *player, getAllPlayers()) {
-        if (player->hasSkill(skill_name))
+        if (player->hasValidSkill(skill_name))
             return player;
     }
     return nullptr;
@@ -3611,7 +3611,7 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
                 showTMskill = true;
         }
     }
-    bool slash_not_record = key.contains(QStringLiteral("Slash")) && slash_count > 0 && (card_use.from->hasWeapon(QStringLiteral("Crossbow")) || showTMskill);
+    bool slash_not_record = key.contains(QStringLiteral("Slash")) && slash_count > 0 && (card_use.from->hasValidWeapon(QStringLiteral("Crossbow")) || showTMskill);
 
     card = card_use.card->face()->validate(card_use);
     if (card == nullptr)
@@ -3813,7 +3813,7 @@ void Room::applyDamage(ServerPlayer *victim, const DamageStruct &damage)
 {
     int new_hp = victim->hp() - damage.damage;
 
-    if (!victim->hasSkill(QStringLiteral("banling")))
+    if (!victim->hasValidSkill(QStringLiteral("banling")))
         setPlayerProperty(victim, "hp", new_hp);
     QString change_str = QStringLiteral("%1:%2").arg(victim->objectName(), -damage.damage);
     switch (damage.nature) {
@@ -3846,7 +3846,7 @@ void Room::recover(ServerPlayer *player, const RecoverStruct &recover, bool set_
     recover_struct = data.value<RecoverStruct>();
     int recover_num = recover_struct.recover;
 
-    if (!player->hasSkill(QStringLiteral("banling"))) {
+    if (!player->hasValidSkill(QStringLiteral("banling"))) {
         int new_hp = qMin(player->hp() + recover_num, player->maxHp());
         setPlayerProperty(player, "hp", new_hp);
     }
@@ -3912,7 +3912,7 @@ void Room::damage(const DamageStruct &data)
     DamageStruct damage_data = data;
     if (damage_data.to == nullptr || damage_data.to->isDead())
         return;
-    if (damage_data.to->hasSkill(QStringLiteral("huanmeng"))) {
+    if (damage_data.to->hasValidSkill(QStringLiteral("huanmeng"))) {
         LogMessage log2;
         log2.type = QStringLiteral("#TriggerSkill");
         log2.from = damage_data.to;
@@ -5109,7 +5109,7 @@ void Room::filterCards(ServerPlayer *player, QList<const Card *> cards, bool ref
     QList<const FilterSkill *> filterSkills;
 
     foreach (const Skill *skill, skills) {
-        if (player->hasSkill(skill->objectName()) && skill->inherits("FilterSkill")) {
+        if (player->hasValidSkill(skill->objectName()) && skill->inherits("FilterSkill")) {
             const FilterSkill *filter = qobject_cast<const FilterSkill *>(skill);
             Q_ASSERT(filter);
             filterSkills.append(filter);

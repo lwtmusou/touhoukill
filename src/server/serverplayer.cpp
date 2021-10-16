@@ -398,14 +398,14 @@ bool ServerPlayer::hasNullification() const
             return true;
     }
 
-    if (hasTreasure(QStringLiteral("wooden_ox"))) {
+    if (hasValidTreasure(QStringLiteral("wooden_ox"))) {
         foreach (int id, pile(QStringLiteral("wooden_ox"))) {
             if (room->getCard(id)->face()->isKindOf("Nullification"))
                 return true;
         }
     }
 
-    if (hasSkill(QStringLiteral("chaoren"))) {
+    if (hasValidSkill(QStringLiteral("chaoren"))) {
         bool ok = false;
         int id = property("chaoren").toInt(&ok);
         if (ok && id > -1 && room->getCard(id)->face()->isKindOf("Nullification"))
@@ -413,7 +413,7 @@ bool ServerPlayer::hasNullification() const
     }
 
     foreach (const Skill *skill, skills(true)) {
-        if (hasSkill(skill->objectName())) {
+        if (hasValidSkill(skill->objectName())) {
             if (skill->inherits("ViewAsSkill")) {
                 const ViewAsSkill *vsskill = qobject_cast<const ViewAsSkill *>(skill);
                 if (vsskill->isEnabledAtResponse(this, CardUseStruct::CARD_USE_REASON_RESPONSE_USE, QStringLiteral("nullification")))
@@ -1157,7 +1157,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     if (!isHegemonyGameMode(room->getMode())) {
         foreach (const Skill *skill, skills(true)) {
             //should not nofity the lord skill
-            if (skill->isLordSkill() && !hasLordSkill(skill->objectName()))
+            if (skill->isLordSkill() && !hasValidLordSkill(skill->objectName()))
                 continue;
             QString skill_name = skill->objectName();
             JsonArray arg_acquire;
@@ -1181,7 +1181,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     room->doNotify(player, QSanProtocol::S_COMMAND_LOG_EVENT, arg_tooltip);
 
     //since "banling", we should notify hp after notifying skill
-    if (this->hasSkill(QStringLiteral("banling"))) {
+    if (this->hasValidSkill(QStringLiteral("banling"))) {
         room->notifyProperty(player, this, "renhp");
         room->notifyProperty(player, this, "linghp");
     }
@@ -1255,7 +1255,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     }
 
     // for chaoren
-    if (player == this && hasSkill(QStringLiteral("chaoren")))
+    if (player == this && hasValidSkill(QStringLiteral("chaoren")))
         room->notifyProperty(player, this, "chaoren");
 }
 
@@ -1304,9 +1304,9 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
         return;
 
     if (isHegemonyGameMode(room->getMode())) {
-        if (!haveShownGeneral() && ownGeneralCardSkill(skill_name) && inHeadSkills(skill_name))
+        if (!haveShownGeneral() && hasGeneralCardSkill(skill_name) && inHeadSkills(skill_name))
             showGeneral();
-        else if (!hasShownGeneral2() && ownGeneralCardSkill(skill_name) && inDeputySkills(skill_name))
+        else if (!hasShownGeneral2() && hasGeneralCardSkill(skill_name) && inDeputySkills(skill_name))
             showGeneral(false);
     } else {
         //for yibian
@@ -1323,7 +1323,7 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
             room->setPlayerProperty(this, "general2_showed", true);
         }
 
-        if (hasSkill(skill_name)) {
+        if (hasValidSkill(skill_name)) {
             QStringList generals;
             QString generalName;
             if (generals.isEmpty())
@@ -1381,7 +1381,7 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     QList<const TargetModSkill *> tarmods;
     if (isHegemonyGameMode(room->getMode())) {
         foreach (const Skill *skill, use.from->skills(false)) {
-            if (skill->inherits("TargetModSkill") && use.from->hasSkill(skill) && !use.from->haveShownSkill(skill)) { //main_skill??
+            if (skill->inherits("TargetModSkill") && use.from->hasValidSkill(skill) && !use.from->haveShownSkill(skill)) { //main_skill??
                 const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);
                 tarmods << tarmod;
             }
@@ -1476,7 +1476,7 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
                     showTargetProhibit << QStringLiteral("tianqu");
                     break;
                 }
-                if (p != use.from && (!p->hasLordSkill(QStringLiteral("yanhui")) || p->kingdom() != QStringLiteral("zhan"))
+                if (p != use.from && (!p->hasValidLordSkill(QStringLiteral("yanhui")) || p->kingdom() != QStringLiteral("zhan"))
                     && room->currentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
                     showTargetProhibit << QStringLiteral("tianqu");
                     break;
@@ -1546,7 +1546,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         if (!property("Duanchang").toString().split(QStringLiteral(",")).contains(QStringLiteral("head"))) {
             sendSkillsToOthers();
             foreach (const Skill *skill, getHeadSkillList()) {
-                if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && haveShownSkill(skill)) {
+                if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasValidLordSkill(skill->objectName())) && haveShownSkill(skill)) {
                     JsonArray arg;
                     arg << objectName();
                     arg << skill->limitMark();
@@ -1588,7 +1588,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         if (!property("Duanchang").toString().split(QStringLiteral(",")).contains(QStringLiteral("deputy"))) {
             sendSkillsToOthers(false);
             foreach (const Skill *skill, getDeputySkillList()) {
-                if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && haveShownSkill(skill)) {
+                if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasValidLordSkill(skill->objectName())) && haveShownSkill(skill)) {
                     JsonArray arg;
                     arg << objectName();
                     arg << skill->limitMark();
@@ -1692,7 +1692,7 @@ void ServerPlayer::hideGeneral(bool head_general)
         // disconnectSkillsFromOthers();
 
         foreach (const Skill *skill, skills(false)) {
-            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && !haveShownSkill(skill)
+            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasValidLordSkill(skill->objectName())) && !haveShownSkill(skill)
                 && mark(skill->limitMark()) > 0) {
                 JsonArray arg;
                 arg << objectName();
@@ -1725,7 +1725,7 @@ void ServerPlayer::hideGeneral(bool head_general)
         // disconnectSkillsFromOthers(false);
 
         foreach (const Skill *skill, skills(false)) {
-            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && !haveShownSkill(skill)
+            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasValidLordSkill(skill->objectName())) && !haveShownSkill(skill)
                 && mark(skill->limitMark()) > 0) {
                 JsonArray arg;
                 arg << objectName();

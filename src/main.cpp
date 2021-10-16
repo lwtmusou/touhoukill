@@ -47,7 +47,8 @@ int main(int argc, char *argv[])
     else
         qDebug() << "Unable to load sanguosha.qm";
 
-    Sanguosha = new Engine;
+    // Sanguosha = new Engine;
+    Engine e;
     Config.init();
 
     // refactor proposal: using QCommandLineParser
@@ -75,7 +76,6 @@ int main(int argc, char *argv[])
 
     MainWindow *main_window = new MainWindow;
 
-    Sanguosha->setParent(main_window);
     main_window->show();
 
     // refactor proposal: using QCommandLineParser

@@ -170,7 +170,7 @@ void Player::setHp(int hp)
     if (d->hp != hp) {
         d->hp = hp;
     }
-    if (hasSkill(QStringLiteral("banling"))) {
+    if (hasValidSkill(QStringLiteral("banling"))) {
         if (d->renhp != hp) {
             d->renhp = hp;
         }
@@ -182,7 +182,7 @@ void Player::setHp(int hp)
 
 int Player::hp() const
 {
-    if (hasSkill(QStringLiteral("huanmeng")))
+    if (hasValidSkill(QStringLiteral("huanmeng")))
         return 0;
     return d->hp;
 }
@@ -259,13 +259,13 @@ bool Player::isBrokenEquip(int id, bool consider_shenbao) const
         return false;
 
     if (consider_shenbao)
-        return d->brokenEquips.contains(id) && !hasSkill(QStringLiteral("shenbao"), false, false);
+        return d->brokenEquips.contains(id) && !hasValidSkill(QStringLiteral("shenbao"), false, false);
     return d->brokenEquips.contains(id);
 }
 
 int Player::maxHp() const
 {
-    if (hasSkill(QStringLiteral("huanmeng")))
+    if (hasValidSkill(QStringLiteral("huanmeng")))
         return 0;
 
     return d->maxHp;
@@ -443,7 +443,7 @@ int Player::distanceTo(const Player *other, int distance_fix) const
         return -1;
     //point1: chuanwu is a fixed distance;
     int distance_limit = 0;
-    if (hasSkill(QStringLiteral("chuanwu")))
+    if (hasValidSkill(QStringLiteral("chuanwu")))
         distance_limit = qMax(other->hp(), 1);
     if (d->fixedDistance.contains(other)) {
         if (distance_limit > 0 && d->fixedDistance.value(other) > distance_limit)
@@ -635,13 +635,13 @@ bool Player::isCurrent() const
     return d->phase != PhaseNotActive;
 }
 
-bool Player::hasSkill(const QString &skill_name, bool include_lose, bool include_hidden) const
+bool Player::hasValidSkill(const QString &skill_name, bool include_lose, bool include_hidden) const
 {
-    return hasSkill(Sanguosha->getSkill(skill_name), include_lose, include_hidden);
+    return hasValidSkill(Sanguosha->getSkill(skill_name), include_lose, include_hidden);
 }
 
 // TODO: split logic of 'player have a certain skill' and 'a certian skill is valid'
-bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden) const
+bool Player::hasValidSkill(const Skill *skill, bool include_lose, bool include_hidden) const
 {
     if (skill == nullptr)
         return false;
@@ -650,7 +650,7 @@ bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden
 
     //@todo: need check
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
-        if (!include_lose && !hasEquipSkill(skill_name) && !acquiredSkills().contains(skill_name) && ownGeneralCardSkill(skill_name)
+        if (!include_lose && !hasEquipSkill(skill_name) && !acquiredSkills().contains(skill_name) && hasGeneralCardSkill(skill_name)
             && !canShowGeneral(QList<int> {findPositionOfGeneralOwningSkill(skill_name)}))
             return false;
         if (!include_lose && !hasEquipSkill(skill_name) && !skill->isEternal()) {
@@ -704,25 +704,9 @@ bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden
     return d->acquiredSkills.contains(skill_name);
 }
 
-bool Player::hasSkills(const QString &skill_name, bool include_lose) const
+bool Player::hasValidLordSkill(const QString &skill_name, bool include_lose) const
 {
-    foreach (QString skill, skill_name.split(QStringLiteral("|"))) {
-        bool checkpoint = true;
-        foreach (QString sk, skill.split(QStringLiteral("+"))) {
-            if (!hasSkill(sk, include_lose)) {
-                checkpoint = false;
-                break;
-            }
-        }
-        if (checkpoint)
-            return true;
-    }
-    return false;
-}
-
-bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const
-{
-    if (!hasSkill(skill_name, include_lose))
+    if (!hasValidSkill(skill_name, include_lose))
         return false;
 
     if (d->acquiredSkills.contains(skill_name))
@@ -743,12 +727,12 @@ bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const
     return false;
 }
 
-bool Player::hasLordSkill(const Skill *skill, bool include_lose /* = false */) const
+bool Player::hasValidLordSkill(const Skill *skill, bool include_lose /* = false */) const
 {
     if (skill == nullptr)
         return false;
 
-    return hasLordSkill(skill->objectName(), include_lose);
+    return hasValidLordSkill(skill->objectName(), include_lose);
 }
 
 void Player::setSkillInvalidity(const Skill *skill, bool invalidity)
@@ -1017,7 +1001,7 @@ const Card *Player::equipCard(int index) const
     return equip;
 }
 
-bool Player::hasWeapon(const QString &weapon_name, bool /*unused*/, bool ignore_preshow) const
+bool Player::hasValidWeapon(const QString &weapon_name) const
 {
     if (mark(QStringLiteral("Equips_Nullified_to_Yourself")) > 0)
         return false;
@@ -1036,7 +1020,7 @@ bool Player::hasWeapon(const QString &weapon_name, bool /*unused*/, bool ignore_
     return real_weapon.face()->name() == weapon_name || real_weapon.face()->isKindOf(weapon_name.toStdString().c_str());
 }
 
-bool Player::hasArmor(const QString &armor_name, bool /*unused*/) const
+bool Player::hasValidArmor(const QString &armor_name) const
 {
     if (!tag[QStringLiteral("Qinggang")].toStringList().isEmpty() || mark(QStringLiteral("Armor_Nullified")) > 0 || mark(QStringLiteral("Equips_Nullified_to_Yourself")) > 0)
         return false;
@@ -1055,7 +1039,7 @@ bool Player::hasArmor(const QString &armor_name, bool /*unused*/) const
     return real_weapon.face()->name() == armor_name || real_weapon.face()->isKindOf(armor_name.toStdString().c_str());
 }
 
-bool Player::hasTreasure(const QString &treasure_name, bool /*unused*/) const
+bool Player::hasValidTreasure(const QString &treasure_name) const
 {
     if (mark(QStringLiteral("Equips_Nullified_to_Yourself")) > 0)
         return false;
@@ -1509,7 +1493,7 @@ IDSet Player::getHandPile() const
 {
     IDSet result;
     foreach (const QString &p, pileNames()) {
-        if (p.startsWith(QStringLiteral("&")) || (p == QStringLiteral("wooden_ox") && hasTreasure(QStringLiteral("wooden_ox")))) {
+        if (p.startsWith(QStringLiteral("&")) || (p == QStringLiteral("wooden_ox") && hasValidTreasure(QStringLiteral("wooden_ox")))) {
             foreach (int id, pile(p))
                 result << id;
         }
@@ -1525,7 +1509,7 @@ QStringList Player::getHandPileList(bool view_as_skill) const
     foreach (const QString &pile, this->pileNames()) {
         if (pile.startsWith(QStringLiteral("&")) || pile.startsWith(QStringLiteral("^")))
             handlist.append(pile);
-        else if (pile == QStringLiteral("wooden_ox") && hasTreasure(QStringLiteral("wooden_ox")))
+        else if (pile == QStringLiteral("wooden_ox") && hasValidTreasure(QStringLiteral("wooden_ox")))
             handlist.append(pile);
     }
     return handlist;
@@ -1572,7 +1556,7 @@ bool Player::hasEquipSkill(const QString &skill_name) const
     if (skill_name == QStringLiteral("shenbao")) // prevent infinite recursion for skill "shenbao"
         return false;
 
-    if (hasSkill(QStringLiteral("shenbao"))) {
+    if (hasValidSkill(QStringLiteral("shenbao"))) {
         foreach (const Player *p, d->room->players(false, true)) {
             if (p == this)
                 continue;
@@ -1624,7 +1608,7 @@ QSet<const Skill *> Player::skills(bool include_equip, bool include_acquired, co
     return skillList;
 }
 
-QSet<QString> Player::acquiredSkills() const
+const QSet<QString> &Player::acquiredSkills() const
 {
     return d->acquiredSkills;
 }
@@ -1875,7 +1859,7 @@ bool Player::haveShownAllGenerals() const
     return d->generalShown.count(false) == 0;
 }
 
-bool Player::ownGeneralCardSkill(const QString &skill_name) const
+bool Player::hasGeneralCardSkill(const QString &skill_name) const
 {
     foreach (const auto &x, d->generalCardSkills) {
         if (x.contains(skill_name))
@@ -1885,9 +1869,9 @@ bool Player::ownGeneralCardSkill(const QString &skill_name) const
     return false;
 }
 
-bool Player::ownGeneralCardSkill(const Skill *skill) const
+bool Player::hasGeneralCardSkill(const Skill *skill) const
 {
-    return ownGeneralCardSkill(skill->objectName());
+    return hasGeneralCardSkill(skill->objectName());
 }
 
 bool Player::isFriendWith(const Player *player, bool considerAnjiang) const

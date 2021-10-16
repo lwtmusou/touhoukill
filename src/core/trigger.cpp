@@ -129,7 +129,7 @@ bool SkillTrigger::trigger(TriggerEvent event, RoomObject *room, const TriggerDe
         if (!cost(event, room, detail, data))
             return false;
 
-        if (detail.owner()->hasSkill(d->name) && !detail.owner()->haveShownSkill(d->name))
+        if (detail.owner()->hasValidSkill(d->name) && !detail.owner()->haveShownSkill(d->name))
             RefactorProposal::fixme_cast<ServerPlayer *>(detail.owner())->showHiddenSkill(d->name);
     }
 
@@ -142,7 +142,7 @@ bool SkillTrigger::cost(TriggerEvent /*unused*/, RoomObject * /*unused*/, Trigge
         return true;
 
     // detail.owner == detail.invoker
-    bool isCompulsory = detail.isCompulsory() && (detail.invoker()->hasSkill(d->name) && !detail.invoker()->haveShownSkill(d->name));
+    bool isCompulsory = detail.isCompulsory() && (detail.invoker()->hasValidSkill(d->name) && !detail.invoker()->haveShownSkill(d->name));
     bool invoke = true;
     if (!isCompulsory)
         invoke = RefactorProposal::fixme_cast<ServerPlayer *>(detail.invoker())->askForSkillInvoke(d->name);
@@ -172,15 +172,15 @@ bool EquipSkillTrigger::equipAvailable(const Player *p, EquipLocation location, 
 
     switch (location) {
     case WeaponLocation:
-        if (!p->hasWeapon(equipName))
+        if (!p->hasValidWeapon(equipName))
             return false;
         break;
     case ArmorLocation:
-        if (!p->hasArmor(equipName))
+        if (!p->hasValidArmor(equipName))
             return false;
         break;
     case TreasureLocation:
-        if (!p->hasTreasure(equipName))
+        if (!p->hasValidTreasure(equipName))
             return false;
         break;
     default:
@@ -245,7 +245,7 @@ QList<TriggerDetail> FakeMoveRecord::triggerable(TriggerEvent /*event*/, RoomObj
 {
     Player *owner = nullptr;
     foreach (Player *p, room->players(false)) {
-        if (p->hasSkill(d->skillName)) {
+        if (p->hasValidSkill(d->skillName)) {
             owner = p;
             break;
         }

@@ -53,6 +53,8 @@ public:
     // --------------------- Card Related ---------------------
     Card *getCard(int cardId);
     const Card *getCard(int cardId) const;
+    QSet<Card *> getCards();
+    QSet<const Card *> getCards() const;
 
     QString currentCardUsePattern() const;
     void setCurrentCardUsePattern(const QString &newPattern);

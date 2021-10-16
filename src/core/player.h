@@ -169,11 +169,10 @@ public:
     void addSkill(const QString &skill_name, int place = 0);
     void loseSkill(const QString &skill_name, int place = 0);
 
-    bool hasSkill(const QString &skill_name, bool include_lose = false, bool include_hidden = true) const;
-    bool hasSkill(const Skill *skill, bool include_lose = false, bool include_hidden = true) const;
-    bool hasSkills(const QString &skill_name, bool include_lose = false) const;
-    bool hasLordSkill(const QString &skill_name, bool include_lose = false) const;
-    bool hasLordSkill(const Skill *skill, bool include_lose = false) const;
+    bool hasValidSkill(const QString &skill_name, bool include_lose = false, bool include_hidden = true) const;
+    bool hasValidSkill(const Skill *skill, bool include_lose = false, bool include_hidden = true) const;
+    bool hasValidLordSkill(const QString &skill_name, bool include_lose = false) const;
+    bool hasValidLordSkill(const Skill *skill, bool include_lose = false) const;
 
     void removeDisableShow(const QString &reason);
 
@@ -216,9 +215,9 @@ public:
     IDSet equips() const;
     const Card *equipCard(int index) const;
 
-    bool hasWeapon(const QString &weapon_name, bool selfOnly = false, bool ignore_preshow = false) const;
-    bool hasArmor(const QString &armor_name, bool selfOnly = false) const;
-    bool hasTreasure(const QString &treasure_name, bool selfOnly = false) const;
+    bool hasValidWeapon(const QString &weapon_name) const;
+    bool hasValidArmor(const QString &armor_name) const;
+    bool hasValidTreasure(const QString &treasure_name) const;
 
     bool isKongcheng() const;
     bool isNude() const;
@@ -262,7 +261,7 @@ public:
     bool hasEquipSkill(const QString &skill_name) const;
     QSet<const Skill *> skills(bool include_equip = false, bool include_acquired = false, const QList<int> &positions = {}) const;
 
-    QSet<QString> acquiredSkills() const;
+    const QSet<QString> &acquiredSkills() const;
 
     bool isProhibited(const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
     bool canSlashWithoutCrossbow(const Card *slash = nullptr) const;
@@ -290,8 +289,8 @@ public:
 
     bool haveShownOneGeneral() const;
     bool haveShownAllGenerals() const;
-    bool ownGeneralCardSkill(const QString &skill_name) const;
-    bool ownGeneralCardSkill(const Skill *skill) const;
+    bool hasGeneralCardSkill(const QString &skill_name) const;
+    bool hasGeneralCardSkill(const Skill *skill) const;
     bool isFriendWith(const Player *player, bool considerAnjiang = false) const;
     bool willBeFriendWith(const Player *player) const;
 
