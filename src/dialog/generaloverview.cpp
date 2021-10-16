@@ -623,7 +623,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
     ui->originLineEdit->setText(getOriginInfo(general->name()));
 
     button_layout->addStretch();
-    ui->skillTextEdit->append(general->getSkillDescription(true, false));
+    ui->skillTextEdit->append(ClientInstance->getGeneralSkillDescription(general->name(), true, false));
     ui->changeGeneralButton->setEnabled(Self && Self->generalName() != general->name());
 }
 

@@ -48,7 +48,6 @@ public:
     QStringList getRelatedSkillNames() const;
 
     QString getPackage() const;
-    QString getSkillDescription(bool include_name = false, bool yellow = true) const;
     void addCompanion(const QString &name);
     bool isCompanionWith(const QString &name) const;
     QString getCompanions() const;

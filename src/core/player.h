@@ -309,7 +309,13 @@ public:
     // TODO: d->tag?
     QVariantMap tag;
 
-#ifndef QSGS_PLAYER_NODEPRECATED
+#ifndef QSGS_CORE_NODEPRECATED
+
+public:
+#else
+
+private:
+#endif
 
     Q_DECL_DEPRECATED inline bool isHidden(bool head_general) const
     {
@@ -415,7 +421,6 @@ public:
     Q_DECL_DEPRECATED void setPileOpen(const QString &pile_name, const QString &player)
     {
     }
-#endif
 
 private:
     PlayerPrivate *d;

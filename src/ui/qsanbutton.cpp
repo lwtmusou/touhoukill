@@ -332,7 +332,7 @@ void QSanSkillButton::setSkill(const Skill *skill)
     } else
         Q_ASSERT(false);
 #endif
-    setToolTip(skill->getDescription());
+    setToolTip(ClientInstance->getSkillDescription(skill->objectName()));
 
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
         if (!Self->hasShownSkill(skill) && skill->canPreshow())

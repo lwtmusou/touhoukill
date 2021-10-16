@@ -217,6 +217,10 @@ public:
 
     QStringList players_to_choose;
 
+    QString getSkillDescription(QString skillname) const;
+    QString getSkillNotice(QString skillname, int index) const;
+    QString getGeneralSkillDescription(QString generalname, bool include_name = false, bool yellow = true) const;
+
 public slots:
     void signup();
     void onPlayerChooseGeneral(const QString &_name);

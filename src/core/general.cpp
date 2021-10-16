@@ -155,37 +155,6 @@ QString General::getPackage() const
     return d->package->name();
 }
 
-QString General::getSkillDescription(bool include_name, bool yellow) const
-{
-    QString description;
-
-    foreach (const Skill *skill, getVisibleSkillList()) {
-        QString skill_name = Sanguosha->translate(skill->objectName());
-        QString desc = skill->getDescription();
-        desc.replace(QStringLiteral("\n"), QStringLiteral("<br/>"));
-        description.append(QStringLiteral("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(yellow ? QStringLiteral("#FFFF33") : QStringLiteral("#FF0080"), skill_name, desc));
-    }
-
-    if (include_name) {
-        QString color_str = Sanguosha->getKingdomColor(d->kingdom).name();
-        QString g_name = Sanguosha->translate(QStringLiteral("!") + name());
-        if (g_name.startsWith(QStringLiteral("!")))
-            g_name = Sanguosha->translate(name());
-        QString name = QStringLiteral("<font color=%1><b>%2</b></font>     ").arg(color_str, g_name);
-        name.prepend(QStringLiteral("<img src='image/kingdom/icon/%1.png'/>    ").arg(d->kingdom));
-        for (int i = 0; i < d->maxHp; i++)
-            name.append(QStringLiteral("<img src='image/system/magatamas/5.png' height = 12/>"));
-        if (hasSkill(QStringLiteral("banling"))) {
-            for (int i = 0; i < d->maxHp; i++)
-                name.append(QStringLiteral("<img src='image/system/magatamas/1.png' height = 12/>"));
-        }
-        name.append(QStringLiteral("<br/> <br/>"));
-        description.prepend(name);
-    }
-
-    return description;
-}
-
 void General::addCompanion(const QString &name)
 {
     d->companions << name;

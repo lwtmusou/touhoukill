@@ -150,7 +150,7 @@ TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const SkillInv
 
 void TriggerOptionButton::construct()
 {
-    setToolTip(detail.skill->getDescription());
+    setToolTip(ClientInstance->getSkillDescription(detail.skill->objectName()));
 
     setAcceptedMouseButtons(Qt::LeftButton);
     setAcceptHoverEvents(true);

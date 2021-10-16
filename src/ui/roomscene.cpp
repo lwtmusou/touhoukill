@@ -4045,7 +4045,7 @@ void KOFOrderBox::revealGeneral(const QString &name)
         avatars[revealed]->setObjectName(name);
         const General *general = Sanguosha->getGeneral(name);
         if (general != nullptr)
-            avatars[revealed]->setToolTip(general->getSkillDescription(true));
+            avatars[revealed]->setToolTip(ClientInstance->getGeneralSkillDescription(general->name(), true));
         revealed++;
     }
 }

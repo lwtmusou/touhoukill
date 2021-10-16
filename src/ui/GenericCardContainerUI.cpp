@@ -977,7 +977,7 @@ void PlayerCardContainer::startHuaShen(const QString &generalName, const QString
     _m_layout->m_extraSkillFont.paintText(_m_extraSkillText, _m_layout->m_extraSkillTextArea, Qt::AlignCenter, Sanguosha->translate(skill_name).left(2));
     if (!skill_name.isEmpty()) {
         _m_extraSkillText->show();
-        _m_extraSkillBg->setToolTip(Sanguosha->getSkill(skill_name)->getDescription());
+        _m_extraSkillBg->setToolTip(ClientInstance->getSkillDescription(skill_name));
     }
     _adjustComponentZValues();
 }
@@ -1650,7 +1650,7 @@ QString PlayerCardContainer::getPlayerSkillDescription(Player *p, bool yellow, c
             continue;
 
         QString skill_name = Sanguosha->translate(skill->objectName());
-        QString desc = skill->getDescription();
+        QString desc = ClientInstance->getSkillDescription(skill->objectName());
         desc.replace(QStringLiteral("\n"), QStringLiteral("<br/>"));
         description.append(QStringLiteral("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(color, skill_name, desc));
     }

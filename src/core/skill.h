@@ -120,12 +120,6 @@ public:
     bool isAffiliatedSkill() const;
     const Skill *mainSkill() const;
 
-    // current UI related, temporary left it alone
-    // All these functions should belong to UI.
-    // Maybe something like "Description provider" in UI will be ideal?
-    Q_DECL_DEPRECATED QString getDescription() const;
-    Q_DECL_DEPRECATED QString getNotice(int index) const;
-
 private:
     SkillPrivate *const d;
 };

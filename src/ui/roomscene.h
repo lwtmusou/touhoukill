@@ -208,6 +208,8 @@ public:
     HeroSkinContainer *findHeroSkinContainer(const QString &generalName) const;
     QSet<HeroSkinContainer *> getHeroSkinContainers();
 
+    // refactor proposal
+
     Client *getClient() const;
 
     bool game_started; // from private to public

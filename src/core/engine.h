@@ -109,7 +109,13 @@ public:
     const CardFace *cardFace(const QString &name);
     void unregisterCardFace(const QString &name);
 
+#ifndef QSGS_CORE_NODEPRECATED
+
 public:
+#else
+
+private:
+#endif
     Q_DECL_DEPRECATED QString translate(const QString &to_translate, bool) const
     {
         return translate(to_translate);

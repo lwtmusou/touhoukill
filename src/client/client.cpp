@@ -3,6 +3,7 @@
 #include "audio.h"
 #include "choosegeneraldialog.h"
 #include "engine.h"
+#include "general.h"
 #include "nativesocket.h"
 #include "recorder.h"
 #include "settings.h"
@@ -1079,12 +1080,9 @@ void Client::askForCardOrUseCard(const QVariant &cardUsage)
     QRegularExpressionMatch match;
     if ((match = rx.match(temp_pattern)).hasMatch()) {
         QString skill_name = match.capturedTexts().at(1);
-        const Skill *skill = Sanguosha->getSkill(skill_name);
-        if (skill != nullptr) {
-            QString text = prompt_doc->toHtml();
-            text.append(tr("<br/> <b>Notice</b>: %1<br/>").arg(skill->getNotice(index)));
-            prompt_doc->setHtml(text);
-        }
+        QString text = prompt_doc->toHtml();
+        text.append(tr("<br/> <b>Notice</b>: %1<br/>").arg(getSkillNotice(skill_name, index)));
+        prompt_doc->setHtml(text);
     }
 
     Status status = Responding;
@@ -2357,6 +2355,61 @@ void Client::setAvailableCards(const QVariant &pile)
 void Client::clearHighlightSkillName()
 {
     highlight_skill_name = QString();
+}
+
+QString Client::getSkillDescription(QString skillname) const
+{
+    bool normal_game = ServerInfo.DuringGame && isRoleGameMode(ServerInfo.GameMode);
+    QString name = QStringLiteral("%1%2").arg(skillname, normal_game ? QStringLiteral("_p") : QString());
+    QString des_src = Sanguosha->translate(QStringLiteral(":") + name);
+    if (normal_game && des_src.startsWith(QStringLiteral(":")))
+        des_src = Sanguosha->translate(QStringLiteral(":") + skillname);
+    if (des_src.startsWith(QStringLiteral(":")))
+        return QString();
+    QString desc = QStringLiteral("<font color=%1>%2</font>").arg(QStringLiteral("#FF0080"), des_src);
+    return desc;
+}
+
+QString Client::getSkillNotice(QString skillname, int index) const
+{
+    if (index == -1)
+        return Sanguosha->translate(QStringLiteral("~") + skillname);
+
+    return Sanguosha->translate(QStringLiteral("~%1%2").arg(skillname, index));
+}
+
+QString Client::getGeneralSkillDescription(QString generalname, bool include_name, bool yellow) const
+{
+    const General *g = Sanguosha->getGeneral(generalname);
+    if (g == nullptr)
+        return QString();
+
+    QString description;
+    foreach (const Skill *skill, g->getVisibleSkillList()) {
+        QString skill_name = Sanguosha->translate(skill->objectName());
+        QString desc = getSkillDescription(skill->objectName());
+        desc.replace(QStringLiteral("\n"), QStringLiteral("<br/>"));
+        description.append(QStringLiteral("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(yellow ? QStringLiteral("#FFFF33") : QStringLiteral("#FF0080"), skill_name, desc));
+    }
+
+    if (include_name) {
+        QString color_str = Sanguosha->getKingdomColor(g->getKingdom()).name();
+        QString g_name = Sanguosha->translate(QStringLiteral("!") + generalname);
+        if (g_name.startsWith(QStringLiteral("!")))
+            g_name = Sanguosha->translate(generalname);
+        QString name = QStringLiteral("<font color=%1><b>%2</b></font>     ").arg(color_str, g_name);
+        name.prepend(QStringLiteral("<img src='image/kingdom/icon/%1.png'/>    ").arg(g->getKingdom()));
+        for (int i = 0; i < g->getMaxHp(); i++)
+            name.append(QStringLiteral("<img src='image/system/magatamas/5.png' height = 12/>"));
+        if (g->hasSkill(QStringLiteral("banling"))) {
+            for (int i = 0; i < g->getMaxHp(); i++)
+                name.append(QStringLiteral("<img src='image/system/magatamas/1.png' height = 12/>"));
+        }
+        name.append(QStringLiteral("<br/> <br/>"));
+        description.prepend(name);
+    }
+
+    return description;
 }
 
 void Client::changeSkin(const QString &name, int index)

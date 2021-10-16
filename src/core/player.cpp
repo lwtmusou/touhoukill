@@ -1,5 +1,3 @@
-#define QSGS_PLAYER_NODEPRECATED
-
 #include "player.h"
 #include "client.h"
 #include "engine.h"
