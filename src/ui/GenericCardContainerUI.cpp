@@ -584,7 +584,7 @@ void PlayerCardContainer::refresh()
         if ((_m_deathIcon != nullptr) && !(ServerInfo.GameMode == QStringLiteral("04_1v3") && m_player->generalName() != QStringLiteral("yuyuko_1v32")))
             _m_deathIcon->setVisible(m_player->isDead());
         if (leftDisableShowLock != nullptr)
-            leftDisableShowLock->setVisible(!m_player->hasShownGeneral() && !m_player->disableShow(true).isEmpty());
+            leftDisableShowLock->setVisible(!m_player->haveShownGeneral() && !m_player->disableShow(true).isEmpty());
         if (rightDisableShowLock != nullptr)
             rightDisableShowLock->setVisible((m_player->getGeneral2() != nullptr) && !m_player->hasShownGeneral2() && !m_player->disableShow(false).isEmpty());
     }

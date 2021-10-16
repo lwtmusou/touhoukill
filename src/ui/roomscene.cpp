@@ -2037,7 +2037,7 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
                 if (!reason.m_playerId.isEmpty() && reason.m_playerId != movement.from->objectName())
                     target = ClientInstance->findPlayer(reason.m_playerId);
 
-                if ((target != nullptr) && target->hasShownSkill(reason.m_skillName))
+                if ((target != nullptr) && target->haveShownSkill(reason.m_skillName))
                     card->showAvatar(target->general());
             }
 
@@ -2402,9 +2402,9 @@ void RoomScene::updateSkillButtons()
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
         foreach (QSanSkillButton *button, m_skillButtons) {
             const Skill *skill = button->getSkill();
-            button->setEnabled(skill->canPreshow() && !Self->hasShownSkill(skill));
-            if (skill->canPreshow() && Self->ownSkill(skill) && !Self->hasShownGeneral()) {
-                if (Self->hasPreshowedSkill(skill->objectName()))
+            button->setEnabled(skill->canPreshow() && !Self->haveShownSkill(skill));
+            if (skill->canPreshow() && Self->ownGeneralCardSkill(skill) && !Self->haveShownGeneral()) {
+                if (Self->havePreshownSkill(skill->objectName()))
                     button->setState(QSanButton::S_STATE_DISABLED);
                 else
                     button->setState(QSanButton::S_STATE_CANPRESHOW);
@@ -3977,7 +3977,7 @@ void RoomScene::showPile(const QList<int> &card_ids, const QString &name, const 
     pileContainer->clear();
     bringToFront(pileContainer);
     pileContainer->setObjectName(name);
-    if (name == QStringLiteral("huashencard") && target->ownSkill(QStringLiteral("anyun"))) { //target->hasSkill("anyun", true)
+    if (name == QStringLiteral("huashencard") && target->ownGeneralCardSkill(QStringLiteral("anyun"))) { //target->hasSkill("anyun", true)
         //        QStringList huashens = target->getHiddenGenerals();
         //        QList<CardItem *> generals;
         //        foreach (QString arg, huashens) {

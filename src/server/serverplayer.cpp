@@ -1013,7 +1013,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     if (isHegemonyGameMode(room->getMode())) {
         QVariant RoleConfirmedTag = room->getTag(this->objectName() + QStringLiteral("_RoleConfirmed"));
         bool roleConfirmed = RoleConfirmedTag.canConvert<bool>() && RoleConfirmedTag.toBool();
-        if (player == this || hasShownOneGeneral() || roleConfirmed) {
+        if (player == this || haveShownOneGeneral() || roleConfirmed) {
             room->notifyProperty(player, this, "kingdom");
             room->notifyProperty(player, this, "role");
         } else {
@@ -1137,7 +1137,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     QStringList hegemony_limitmarks;
     if (isHegemonyGameMode(room->getMode())) {
         foreach (const Skill *skill, skills(false))
-            if (skill->isLimited() && mark(skill->limitMark()) > 0 && (this != player && !hasShownSkill(skill)))
+            if (skill->isLimited() && mark(skill->limitMark()) > 0 && (this != player && !haveShownSkill(skill)))
                 hegemony_limitmarks.append(skill->limitMark());
     }
 
@@ -1304,9 +1304,9 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
         return;
 
     if (isHegemonyGameMode(room->getMode())) {
-        if (!hasShownGeneral() && ownSkill(skill_name) && inHeadSkills(skill_name))
+        if (!haveShownGeneral() && ownGeneralCardSkill(skill_name) && inHeadSkills(skill_name))
             showGeneral();
-        else if (!hasShownGeneral2() && ownSkill(skill_name) && inDeputySkills(skill_name))
+        else if (!hasShownGeneral2() && ownGeneralCardSkill(skill_name) && inDeputySkills(skill_name))
             showGeneral(false);
     } else {
         //for yibian
@@ -1381,7 +1381,7 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     QList<const TargetModSkill *> tarmods;
     if (isHegemonyGameMode(room->getMode())) {
         foreach (const Skill *skill, use.from->skills(false)) {
-            if (skill->inherits("TargetModSkill") && use.from->hasSkill(skill) && !use.from->hasShownSkill(skill)) { //main_skill??
+            if (skill->inherits("TargetModSkill") && use.from->hasSkill(skill) && !use.from->haveShownSkill(skill)) { //main_skill??
                 const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);
                 tarmods << tarmod;
             }
@@ -1546,7 +1546,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         if (!property("Duanchang").toString().split(QStringLiteral(",")).contains(QStringLiteral("head"))) {
             sendSkillsToOthers();
             foreach (const Skill *skill, getHeadSkillList()) {
-                if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && hasShownSkill(skill)) {
+                if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && haveShownSkill(skill)) {
                     JsonArray arg;
                     arg << objectName();
                     arg << skill->limitMark();
@@ -1588,7 +1588,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         if (!property("Duanchang").toString().split(QStringLiteral(",")).contains(QStringLiteral("deputy"))) {
             sendSkillsToOthers(false);
             foreach (const Skill *skill, getDeputySkillList()) {
-                if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && hasShownSkill(skill)) {
+                if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && haveShownSkill(skill)) {
                     JsonArray arg;
                     arg << objectName();
                     arg << skill->limitMark();
@@ -1692,7 +1692,7 @@ void ServerPlayer::hideGeneral(bool head_general)
         // disconnectSkillsFromOthers();
 
         foreach (const Skill *skill, skills(false)) {
-            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && !hasShownSkill(skill)
+            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && !haveShownSkill(skill)
                 && mark(skill->limitMark()) > 0) {
                 JsonArray arg;
                 arg << objectName();
@@ -1725,7 +1725,7 @@ void ServerPlayer::hideGeneral(bool head_general)
         // disconnectSkillsFromOthers(false);
 
         foreach (const Skill *skill, skills(false)) {
-            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && !hasShownSkill(skill)
+            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName())) && !haveShownSkill(skill)
                 && mark(skill->limitMark()) > 0) {
                 JsonArray arg;
                 arg << objectName();
@@ -1768,7 +1768,7 @@ void ServerPlayer::removeGeneral(bool head_general)
     QStringList names = room->getTag(objectName()).toStringList();
 
     if (head_general) {
-        if (!hasShownGeneral())
+        if (!haveShownGeneral())
             showGeneral(); //zoushi?
 
         from_general = generalName();
@@ -1881,7 +1881,7 @@ int ServerPlayer::getPlayerNumWithSameKingdom(const QString & /*unused*/, const 
 
     int num = 0;
     foreach (ServerPlayer *p, players) {
-        if (!p->hasShownOneGeneral())
+        if (!p->haveShownOneGeneral())
             continue;
         if (p->getRoleString() == QStringLiteral("careerist")) { // if player is careerist, DO NOT COUNT AS SOME KINGDOM!!!!!
             if (to_calculate == QStringLiteral("careerist"))
@@ -1897,12 +1897,12 @@ int ServerPlayer::getPlayerNumWithSameKingdom(const QString & /*unused*/, const 
 
 bool ServerPlayer::askForGeneralShow(bool one, bool refusable)
 {
-    if (hasShownAllGenerals())
+    if (haveShownAllGenerals())
         return false;
 
     QStringList choices;
 
-    if (!hasShownGeneral() && disableShow(true).isEmpty())
+    if (!haveShownGeneral() && disableShow(true).isEmpty())
         choices << QStringLiteral("show_head_general");
     if (!hasShownGeneral2() && disableShow(false).isEmpty())
         choices << QStringLiteral("show_deputy_general");
@@ -1925,7 +1925,7 @@ bool ServerPlayer::askForGeneralShow(bool one, bool refusable)
 
 bool ServerPlayer::inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const
 {
-    if (isFriendWith(victim) || !isFriendWith(skill_owner) || !victim->hasShownOneGeneral())
+    if (isFriendWith(victim) || !isFriendWith(skill_owner) || !victim->haveShownOneGeneral())
         return false;
     if (this == skill_owner)
         return (getNextAlive() == victim && getNextAlive(2)->isFriendWith(this)) || (getLastAlive() == victim && getLastAlive(2)->isFriendWith(this));
@@ -1959,9 +1959,9 @@ void ServerPlayer::summonFriends(const QString &type)
         if (isFriendWith(getNextAlive()) && isFriendWith(getLastAlive()))
             return;
         bool failed = true;
-        if (!isFriendWith(getNextAlive()) && getNextAlive()->hasShownOneGeneral()) {
+        if (!isFriendWith(getNextAlive()) && getNextAlive()->haveShownOneGeneral()) {
             ServerPlayer *target = qobject_cast<ServerPlayer *>(getNextAlive(2));
-            if (!target->hasShownOneGeneral()) {
+            if (!target->haveShownOneGeneral()) {
                 QString prompt = target->willBeFriendWith(this) ? QStringLiteral("SiegeSummon") : QStringLiteral("SiegeSummon!");
                 bool success = room->askForSkillInvoke(target, prompt);
                 LogMessage log;
@@ -1975,9 +1975,9 @@ void ServerPlayer::summonFriends(const QString &type)
                 }
             }
         }
-        if (!isFriendWith(getLastAlive()) && getLastAlive()->hasShownOneGeneral()) {
+        if (!isFriendWith(getLastAlive()) && getLastAlive()->haveShownOneGeneral()) {
             ServerPlayer *target = qobject_cast<ServerPlayer *>(getLastAlive(2));
-            if (!target->hasShownOneGeneral()) {
+            if (!target->haveShownOneGeneral()) {
                 QString prompt = target->willBeFriendWith(this) ? QStringLiteral("SiegeSummon") : QStringLiteral("SiegeSummon!");
                 bool success = room->askForSkillInvoke(target, prompt);
                 LogMessage log;
@@ -2002,7 +2002,7 @@ void ServerPlayer::summonFriends(const QString &type)
             ServerPlayer *target = qobject_cast<ServerPlayer *>(getNextAlive(i));
             if (isFriendWith(target))
                 continue;
-            else if (!target->hasShownOneGeneral()) {
+            else if (!target->haveShownOneGeneral()) {
                 QString prompt = target->willBeFriendWith(this) ? QStringLiteral("FormationSummon") : QStringLiteral("FormationSummon!");
                 bool success = room->askForSkillInvoke(target, prompt);
                 LogMessage log;
@@ -2031,7 +2031,7 @@ void ServerPlayer::summonFriends(const QString &type)
             if (isFriendWith(target))
                 continue;
             else {
-                if (!target->hasShownOneGeneral()) {
+                if (!target->haveShownOneGeneral()) {
                     QString prompt = target->willBeFriendWith(this) ? QStringLiteral("FormationSummon") : QStringLiteral("FormationSummon!");
                     bool success = room->askForSkillInvoke(target, prompt);
                     LogMessage log;

@@ -129,7 +129,7 @@ bool SkillTrigger::trigger(TriggerEvent event, RoomObject *room, const TriggerDe
         if (!cost(event, room, detail, data))
             return false;
 
-        if (detail.owner()->hasSkill(d->name) && !detail.owner()->hasShownSkill(d->name))
+        if (detail.owner()->hasSkill(d->name) && !detail.owner()->haveShownSkill(d->name))
             RefactorProposal::fixme_cast<ServerPlayer *>(detail.owner())->showHiddenSkill(d->name);
     }
 
@@ -142,7 +142,7 @@ bool SkillTrigger::cost(TriggerEvent /*unused*/, RoomObject * /*unused*/, Trigge
         return true;
 
     // detail.owner == detail.invoker
-    bool isCompulsory = detail.isCompulsory() && (detail.invoker()->hasSkill(d->name) && !detail.invoker()->hasShownSkill(d->name));
+    bool isCompulsory = detail.isCompulsory() && (detail.invoker()->hasSkill(d->name) && !detail.invoker()->haveShownSkill(d->name));
     bool invoke = true;
     if (!isCompulsory)
         invoke = RefactorProposal::fixme_cast<ServerPlayer *>(detail.invoker())->askForSkillInvoke(d->name);

@@ -63,7 +63,7 @@ public:
     QMap<QString, IDSet> piles;
     QMap<QString, int> pilesLength;
     QSet<QString> acquiredSkills; // Acquired skills isn't split into parts by game rule
-    QList<QMap<QString, bool>> skills; // General card skill
+    QList<QMap<QString, bool>> generalCardSkills; // General card skill
     QStringList invalidSkills;
     IDSet shownHandcards;
     IDSet brokenEquips;
@@ -640,6 +640,7 @@ bool Player::hasSkill(const QString &skill_name, bool include_lose, bool include
     return hasSkill(Sanguosha->getSkill(skill_name), include_lose, include_hidden);
 }
 
+// TODO: split logic of 'player have a certain skill' and 'a certian skill is valid'
 bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden) const
 {
     if (skill == nullptr)
@@ -649,7 +650,7 @@ bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden
 
     //@todo: need check
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
-        if (!include_lose && !hasEquipSkill(skill_name) && !getAcquiredSkills().contains(skill_name) && ownSkill(skill_name)
+        if (!include_lose && !hasEquipSkill(skill_name) && !acquiredSkills().contains(skill_name) && ownGeneralCardSkill(skill_name)
             && !canShowGeneral(QList<int> {findPositionOfGeneralOwningSkill(skill_name)}))
             return false;
         if (!include_lose && !hasEquipSkill(skill_name) && !skill->isEternal()) {
@@ -658,7 +659,7 @@ bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden
         }
 
         // can't use "foreach (const QMap<QString, bool> &skillMap, d->skills)" here since the type contains comma
-        foreach (const auto &skillMap, d->skills) {
+        foreach (const auto &skillMap, d->generalCardSkills) {
             if (skillMap.contains(skill_name))
                 return skillMap.value(skill_name);
         }
@@ -695,7 +696,7 @@ bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden
             return false;
     }
 
-    foreach (const auto &skillMap, d->skills) {
+    foreach (const auto &skillMap, d->generalCardSkills) {
         if (skillMap.contains(skill_name))
             return true;
     }
@@ -719,23 +720,6 @@ bool Player::hasSkills(const QString &skill_name, bool include_lose) const
     return false;
 }
 
-bool Player::hasInnateSkill(const QString &skill_name) const
-{
-    foreach (const General *g, d->generals) {
-        if (g->hasSkill(skill_name))
-            return true;
-    }
-    return false;
-}
-
-bool Player::hasInnateSkill(const Skill *skill) const
-{
-    if (skill == nullptr)
-        return false;
-
-    return hasInnateSkill(skill->objectName());
-}
-
 bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const
 {
     if (!hasSkill(skill_name, include_lose))
@@ -750,7 +734,7 @@ bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const
         return false;
 
     if (isLord()) {
-        foreach (const auto skillMap, d->skills) {
+        foreach (const auto skillMap, d->generalCardSkills) {
             if (skillMap.contains(skill_name))
                 return true;
         }
@@ -830,21 +814,21 @@ void Player::detachAllSkills()
 
 void Player::addSkill(const QString &skill_name, int place)
 {
-    if (place >= d->skills.length())
+    if (place >= d->generalCardSkills.length())
         return;
 
     const Skill *skill = Sanguosha->getSkill(skill_name);
     Q_ASSERT(skill);
 
-    d->skills[place][skill_name] = !skill->canPreshow() || d->generalShown[place];
+    d->generalCardSkills[place][skill_name] = !skill->canPreshow() || d->generalShown[place];
 }
 
 void Player::loseSkill(const QString &skill_name, int place)
 {
-    if (place >= d->skills.length())
+    if (place >= d->generalCardSkills.length())
         return;
 
-    d->skills[place].remove(skill_name);
+    d->generalCardSkills[place].remove(skill_name);
 }
 
 QString Player::getPhaseString() const
@@ -1620,12 +1604,12 @@ QSet<const Skill *> Player::skills(bool include_equip, bool include_acquired, co
     QSet<const Skill *> skillList;
     QSet<QString> skills;
 
-    for (int i = 0; i < d->skills.length(); ++i) {
+    for (int i = 0; i < d->generalCardSkills.length(); ++i) {
         if (positions.isEmpty() || positions.contains(i))
-            skills.unite(List2Set(d->skills.value(i).keys()));
+            skills.unite(List2Set(d->generalCardSkills.value(i).keys()));
     }
 
-    foreach (const auto &x, d->skills)
+    foreach (const auto &x, d->generalCardSkills)
         skills.unite(List2Set(x.keys()));
 
     if (include_acquired)
@@ -1640,7 +1624,7 @@ QSet<const Skill *> Player::skills(bool include_equip, bool include_acquired, co
     return skillList;
 }
 
-QSet<QString> Player::getAcquiredSkills() const
+QSet<QString> Player::acquiredSkills() const
 {
     return d->acquiredSkills;
 }
@@ -1770,7 +1754,7 @@ bool Player::isCardLimited(const QString &limit_list, const QString &reason) con
     return false;
 }
 
-bool Player::hasShownSkill(const Skill *skill) const
+bool Player::haveShownSkill(const Skill *skill) const
 {
     if (skill == nullptr)
         return false;
@@ -1781,52 +1765,37 @@ bool Player::hasShownSkill(const Skill *skill) const
     if (skill->inherits("ArmorSkill") || skill->inherits("WeaponSkill") || skill->inherits("TreasureSkill"))
         return true;
 
-    //    if (skill->inherits("TriggerSkill")) {
-    //        const TriggerSkill *tr_skill = qobject_cast<const TriggerSkill *>(skill);
-    //        if ((tr_skill != nullptr) && tr_skill->isGlobal()) {
-    //            bool flag = false;
-    //            foreach (auto x, d->skills) {
-    //                if (x.contains(tr_skill->objectName())) {
-    //                    flag = true;
-    //                    break;
-    //                }
-    //            }
-    //            if (!flag)
-    //                return true;
-    //        }
-    //    }
-
     if (skill->isAffiliatedSkill()) {
         const Skill *main_skill = skill->mainSkill();
         if (main_skill != nullptr)
-            return hasShownSkill(main_skill);
+            return haveShownSkill(main_skill);
         else
             return false;
     }
 
-    for (int i = 0; i < d->skills.length(); ++i) {
-        if (d->generalShown.value(i, false) && d->skills.value(i, {}).contains(skill->objectName()))
+    for (int i = 0; i < d->generalCardSkills.length(); ++i) {
+        if (d->generalShown.value(i, false) && d->generalCardSkills.value(i, {}).contains(skill->objectName()))
             return true;
     }
 
     return false;
 }
 
-bool Player::hasShownSkill(const QString &skill_name) const
+bool Player::haveShownSkill(const QString &skill_name) const
 {
     const Skill *skill = Sanguosha->getSkill(skill_name);
     if (skill == nullptr)
         return false;
 
-    return hasShownSkill(skill);
+    return haveShownSkill(skill);
 }
 
-bool Player::hasShownSkills(const QString &skill_name) const
+bool Player::haveShownSkills(const QString &skill_name) const
 {
     foreach (const QString &skill, skill_name.split(QStringLiteral("|"))) {
         bool checkpoint = true;
         foreach (const QString &sk, skill.split(QStringLiteral("+"))) {
-            if (!hasShownSkill(sk)) {
+            if (!haveShownSkill(sk)) {
                 checkpoint = false;
                 break;
             }
@@ -1839,7 +1808,7 @@ bool Player::hasShownSkills(const QString &skill_name) const
 
 void Player::setSkillPreshowed(const QString &skill, bool preshowed)
 {
-    for (auto it = d->skills.begin(); it != d->skills.end(); ++it) {
+    for (auto it = d->generalCardSkills.begin(); it != d->generalCardSkills.end(); ++it) {
         if (it->contains(skill))
             (*it)[skill] = preshowed;
     }
@@ -1848,7 +1817,7 @@ void Player::setSkillPreshowed(const QString &skill, bool preshowed)
 void Player::setSkillsPreshowed(const QList<int> &positions, bool preshowed)
 {
     foreach (int pos, positions) {
-        auto &skills = d->skills[pos];
+        auto &skills = d->generalCardSkills[pos];
         foreach (const QString &skill, skills.keys()) {
             if (!Sanguosha->getSkill(skill)->canPreshow())
                 continue;
@@ -1857,9 +1826,9 @@ void Player::setSkillsPreshowed(const QList<int> &positions, bool preshowed)
     }
 }
 
-bool Player::hasPreshowedSkill(const QString &name) const
+bool Player::havePreshownSkill(const QString &name) const
 {
-    foreach (const auto &x, d->skills) {
+    foreach (const auto &x, d->generalCardSkills) {
         if (x.value(name, false))
             return true;
     }
@@ -1867,18 +1836,18 @@ bool Player::hasPreshowedSkill(const QString &name) const
     return false;
 }
 
-bool Player::hasPreshowedSkill(const Skill *skill) const
+bool Player::havePreshownSkill(const Skill *skill) const
 {
-    return hasPreshowedSkill(skill->objectName());
+    return havePreshownSkill(skill->objectName());
 }
 
 bool Player::isHidden(int pos) const
 {
-    const auto &skills = d->skills[pos];
+    const auto &skills = d->generalCardSkills[pos];
     int count = 0;
     foreach (const QString &skillName, skills.keys()) {
         const Skill *skill = Sanguosha->getSkill(skillName);
-        if (skill->canPreshow() && hasPreshowedSkill(skill->objectName()))
+        if (skill->canPreshow() && havePreshownSkill(skill->objectName()))
             return false;
         else if (!skill->canPreshow())
             ++count;
@@ -1886,7 +1855,7 @@ bool Player::isHidden(int pos) const
     return count != skills.keys().length();
 }
 
-bool Player::hasShownGeneral(int pos) const
+bool Player::haveShownGeneral(int pos) const
 {
     return d->generalShown.value(pos);
 }
@@ -1896,19 +1865,19 @@ void Player::setShownGeneral(int pos, bool show)
     d->generalShown[pos] = show;
 }
 
-bool Player::hasShownOneGeneral() const
+bool Player::haveShownOneGeneral() const
 {
     return d->generalShown.count(true) == 1;
 }
 
-bool Player::hasShownAllGenerals() const
+bool Player::haveShownAllGenerals() const
 {
     return d->generalShown.count(false) == 0;
 }
 
-bool Player::ownSkill(const QString &skill_name) const
+bool Player::ownGeneralCardSkill(const QString &skill_name) const
 {
-    foreach (const auto &x, d->skills) {
+    foreach (const auto &x, d->generalCardSkills) {
         if (x.contains(skill_name))
             return true;
     }
@@ -1916,9 +1885,9 @@ bool Player::ownSkill(const QString &skill_name) const
     return false;
 }
 
-bool Player::ownSkill(const Skill *skill) const
+bool Player::ownGeneralCardSkill(const Skill *skill) const
 {
-    return ownSkill(skill->objectName());
+    return ownGeneralCardSkill(skill->objectName());
 }
 
 bool Player::isFriendWith(const Player *player, bool considerAnjiang) const
@@ -1931,10 +1900,10 @@ bool Player::isFriendWith(const Player *player, bool considerAnjiang) const
         return false;
 
     if (considerAnjiang) {
-        if (!player->hasShownOneGeneral() && this != player)
+        if (!player->haveShownOneGeneral() && this != player)
             return false;
     } else {
-        if (!hasShownOneGeneral() || !player->hasShownOneGeneral())
+        if (!haveShownOneGeneral() || !player->haveShownOneGeneral())
             return false;
     }
 
@@ -1953,17 +1922,17 @@ bool Player::willBeFriendWith(const Player *player) const
         return true;
     if (player == nullptr)
         return false;
-    if (!player->hasShownOneGeneral())
+    if (!player->haveShownOneGeneral())
         return false;
 
-    if (!hasShownGeneral()) {
+    if (!haveShownGeneral()) {
         QString role = getRoleString();
         int i = 1;
         foreach (const Player *p, d->room->players()) {
             if (p == this)
                 continue;
             if (p->getRoleString() == role) {
-                if (p->hasShownGeneral() && p->kingdom() != QStringLiteral("careerist"))
+                if (p->haveShownGeneral() && p->kingdom() != QStringLiteral("careerist"))
                     ++i;
             }
         }
@@ -1992,8 +1961,8 @@ int Player::findPositionOfGeneralOwningSkill(const QString &skill_name) const
             return findPositionOfGeneralOwningSkill(main_skill->objectName());
     }
 
-    for (int i = 0; i < d->skills.length(); ++i) {
-        if (d->skills.value(i).contains(skill_name))
+    for (int i = 0; i < d->generalCardSkills.length(); ++i) {
+        if (d->generalCardSkills.value(i).contains(skill_name))
             return i;
     }
 
@@ -2025,7 +1994,7 @@ QStringList Player::disableShow(int pos) const
 bool Player::canShowGeneral(const QList<int> &positions) const
 {
     for (int i = 0; i < d->generals.length(); ++i) {
-        if (hasShownGeneral(i))
+        if (haveShownGeneral(i))
             continue;
         if (positions.isEmpty() || positions.contains(i)) {
             if (!disableShow(i).isEmpty())

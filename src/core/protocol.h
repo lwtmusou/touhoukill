@@ -225,13 +225,6 @@ public:
     }
     bool tryParse(const QVariant &val);
     QVariant toVariant() const;
-    inline bool hasTimedOut() const
-    {
-        if (type == S_COUNTDOWN_NO_LIMIT)
-            return false;
-        else
-            return current >= max;
-    }
 };
 
 class AbstractPacket

@@ -578,7 +578,7 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
         return;
     if ((Sanguosha->getSkill(skill_name) != nullptr) && Sanguosha->getSkill(skill_name)->isEternal())
         return;
-    if (player->getAcquiredSkills().contains(skill_name))
+    if (player->acquiredSkills().contains(skill_name))
         player->detachSkill(skill_name);
     else if (!acquire_only)
         player->loseSkill(skill_name, head);
@@ -632,7 +632,7 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
             }
 
             if (isHegemonyGameMode(mode)) {
-                if (!player->ownSkill(actual_skill) && !player->hasSkill(actual_skill, true))
+                if (!player->ownGeneralCardSkill(actual_skill) && !player->hasSkill(actual_skill, true))
                     continue;
             } else {
                 if (!player->hasSkill(actual_skill, true))
@@ -642,7 +642,7 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
             if ((Sanguosha->getSkill(actual_skill) != nullptr) && Sanguosha->getSkill(actual_skill)->isEternal())
                 continue;
 
-            if (player->getAcquiredSkills().contains(actual_skill))
+            if (player->acquiredSkills().contains(actual_skill))
                 player->detachSkill(actual_skill);
             else if (!acquire_only)
                 player->loseSkill(actual_skill, head);
@@ -678,7 +678,7 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
             const Skill *skill = Sanguosha->getSkill(actual_skill);
             if (skill == nullptr)
                 continue;
-            if (player->getAcquiredSkills().contains(actual_skill))
+            if (player->acquiredSkills().contains(actual_skill))
                 continue;
             loadSkill(skill);
             player->acquireSkill(actual_skill);
@@ -1280,7 +1280,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     QString heg_nullification_selection;
 
     if (!repliedPlayer->hasFlag(QStringLiteral("nullifiationNul")) && card->face()->isKindOf("HegNullification") && !trick->face()->isKindOf("Nullification")
-        && trick->face()->isNDTrick() && to->getRoleString() != QStringLiteral("careerist") && to->hasShownOneGeneral()) {
+        && trick->face()->isNDTrick() && to->getRoleString() != QStringLiteral("careerist") && to->haveShownOneGeneral()) {
         QVariantList qtargets = tag[QStringLiteral("targets") + trick->toString()].toList();
         QList<ServerPlayer *> targets;
         for (int i = 0; i < qtargets.size(); i++) {
@@ -1295,7 +1295,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
         }
         if (!targets.isEmpty()) {
             foreach (ServerPlayer *p, targets) {
-                if (p->getRoleString() != QStringLiteral("careerist") && p->hasShownOneGeneral() && p->getRoleString() == to->getRoleString()) {
+                if (p->getRoleString() != QStringLiteral("careerist") && p->haveShownOneGeneral() && p->getRoleString() == to->getRoleString()) {
                     isHegNullification = true;
                     break;
                 }
@@ -1438,8 +1438,8 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     }
 
     if (player->hasSkill(QStringLiteral("duxin_hegemony")) && flags.contains(QStringLiteral("h"))) {
-        if (player->hasShownSkill(QStringLiteral("duxin_hegemony")) || player->askForSkillInvoke(QStringLiteral("duxin_hegemony"), QVariant::fromValue(who))) {
-            if (!player->hasShownSkill(QStringLiteral("duxin_hegemony")))
+        if (player->haveShownSkill(QStringLiteral("duxin_hegemony")) || player->askForSkillInvoke(QStringLiteral("duxin_hegemony"), QVariant::fromValue(who))) {
+            if (!player->haveShownSkill(QStringLiteral("duxin_hegemony")))
                 player->showHiddenSkill(QStringLiteral("duxin_hegemony"));
             handcard_visible = true;
             notifySkillInvoked(player, QStringLiteral("duxin_hegemony"));
@@ -2832,7 +2832,7 @@ bool Room::makeSurrender(ServerPlayer *initiator)
     if (isHegemonyGameMode(mode)) {
         if (hegemony_give_up > (playersAlive.length() + 1) / 2) {
             foreach (ServerPlayer *p, getAlivePlayers()) {
-                if (!p->hasShownGeneral())
+                if (!p->haveShownGeneral())
                     p->showGeneral(true, false, false);
                 if ((p->getGeneral2() != nullptr) && !p->hasShownGeneral2())
                     p->showGeneral(false, false, false);
@@ -4089,7 +4089,7 @@ void Room::marshal(ServerPlayer *player)
     doNotify(player, S_COMMAND_START_IN_X_SECONDS, QVariant(0));
 
     foreach (ServerPlayer *p, m_players) {
-        if (isHegemonyGameMode(mode) && p == player && !p->hasShownGeneral()) {
+        if (isHegemonyGameMode(mode) && p == player && !p->haveShownGeneral()) {
             QString general1_name = tag[player->objectName()].toStringList().at(0);
             notifyProperty(player, p, "general", general1_name);
         } else
@@ -5166,7 +5166,7 @@ void Room::filterCards(ServerPlayer *player, QList<const Card *> cards, bool ref
 void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open, bool head)
 {
     QString skill_name = skill->objectName();
-    if (player->getAcquiredSkills().contains(skill_name))
+    if (player->acquiredSkills().contains(skill_name))
         return;
     loadSkill(skill);
     player->acquireSkill(skill_name);

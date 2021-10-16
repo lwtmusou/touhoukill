@@ -953,7 +953,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
         DeathStruct death = data.value<DeathStruct>();
         ServerPlayer *player = qobject_cast<ServerPlayer *>(death.who);
         if (isHegemonyGameMode(room->getMode())) {
-            if (!player->hasShownGeneral())
+            if (!player->haveShownGeneral())
                 player->showGeneral(true, false, false);
             if ((player->getGeneral2() != nullptr) && !player->hasShownGeneral2())
                 player->showGeneral(false, false, false);
@@ -1124,7 +1124,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
         }
 
         //CompanionEffect  and  HalfMaxHpLeft
-        if (player->isAlive() && player->hasShownAllGenerals()) {
+        if (player->isAlive() && player->haveShownAllGenerals()) {
             if (player->mark(QStringLiteral("CompanionEffect")) > 0) {
                 player->setMark(QStringLiteral("CompanionEffect"), 0);
 
@@ -1346,7 +1346,7 @@ void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const
     if (killer->isDead() || room->getMode() == QStringLiteral("06_XMode"))
         return;
 
-    if (isHegemonyGameMode(room->getMode()) && !killer->hasShownOneGeneral())
+    if (isHegemonyGameMode(room->getMode()) && !killer->haveShownOneGeneral())
         return;
 
     if (killer->getRoom()->getMode() == QStringLiteral("06_3v3")) {
@@ -1406,7 +1406,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const
         ServerPlayer *win_player = players.first();
         if (players.length() == 1) {
             QStringList winners;
-            if (!win_player->hasShownGeneral())
+            if (!win_player->haveShownGeneral())
                 win_player->showGeneral(true, false, false);
             if ((win_player->getGeneral2() != nullptr) && !win_player->hasShownGeneral2())
                 win_player->showGeneral(false, false, false);
@@ -1479,7 +1479,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const
             QStringList winner_names;
             foreach (ServerPlayer *p, winners) {
                 winner_names << p->objectName();
-                if (!p->hasShownGeneral())
+                if (!p->haveShownGeneral())
                     p->showGeneral(true, false, false);
                 if ((p->getGeneral2() != nullptr) && !p->hasShownGeneral2())
                     p->showGeneral(false, false, false);

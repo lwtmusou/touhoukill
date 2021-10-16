@@ -1697,7 +1697,7 @@ void Dashboard::updateHiddenMark()
 {
     if (!isHegemonyGameMode(ServerInfo.GameMode))
         return;
-    if ((m_player != nullptr) && RoomSceneInstance->game_started && !m_player->hasShownGeneral()) {
+    if ((m_player != nullptr) && RoomSceneInstance->game_started && !m_player->haveShownGeneral()) {
         leftHiddenMark->setVisible(m_player->isHidden(true));
     }
 
@@ -1728,7 +1728,7 @@ void Dashboard::onHeadStateChanged()
 {
     if (!isHegemonyGameMode(ServerInfo.GameMode))
         return;
-    if ((m_player != nullptr) && RoomSceneInstance->game_started && !m_player->hasShownGeneral())
+    if ((m_player != nullptr) && RoomSceneInstance->game_started && !m_player->haveShownGeneral())
         _m_shadow_layer1->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
     else
         _m_shadow_layer1->setBrush(Qt::NoBrush);
@@ -1761,7 +1761,7 @@ void Dashboard::refresh()
         }
 
     } else if (m_player != nullptr) {
-        _m_shadow_layer1->setBrush(m_player->hasShownGeneral() ? Qt::transparent : G_DASHBOARD_LAYOUT.m_generalShadowColor);
+        _m_shadow_layer1->setBrush(m_player->haveShownGeneral() ? Qt::transparent : G_DASHBOARD_LAYOUT.m_generalShadowColor);
 
         leftHiddenMark->setVisible(m_player->isHidden(true));
         if (ServerInfo.Enable2ndGeneral) {

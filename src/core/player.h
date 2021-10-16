@@ -172,8 +172,6 @@ public:
     bool hasSkill(const QString &skill_name, bool include_lose = false, bool include_hidden = true) const;
     bool hasSkill(const Skill *skill, bool include_lose = false, bool include_hidden = true) const;
     bool hasSkills(const QString &skill_name, bool include_lose = false) const;
-    bool hasInnateSkill(const QString &skill_name) const;
-    bool hasInnateSkill(const Skill *skill) const;
     bool hasLordSkill(const QString &skill_name, bool include_lose = false) const;
     bool hasLordSkill(const Skill *skill, bool include_lose = false) const;
 
@@ -264,7 +262,7 @@ public:
     bool hasEquipSkill(const QString &skill_name) const;
     QSet<const Skill *> skills(bool include_equip = false, bool include_acquired = false, const QList<int> &positions = {}) const;
 
-    QSet<QString> getAcquiredSkills() const;
+    QSet<QString> acquiredSkills() const;
 
     bool isProhibited(const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
     bool canSlashWithoutCrossbow(const Card *slash = nullptr) const;
@@ -276,24 +274,24 @@ public:
     bool isCardLimited(const Card *card, QSanguosha::HandlingMethod method, bool isHandcard = false) const;
     bool isCardLimited(const QString &limit_list, const QString &reason) const;
 
-    bool hasShownSkill(const Skill *skill) const; //hegemony
-    bool hasShownSkill(const QString &skill_name) const; //hegemony
-    bool hasShownSkills(const QString &skill_names) const;
+    bool haveShownSkill(const Skill *skill) const; //hegemony
+    bool haveShownSkill(const QString &skill_name) const; //hegemony
+    bool haveShownSkills(const QString &skill_names) const;
     int findPositionOfGeneralOwningSkill(const QString &skill_name) const;
     void setSkillPreshowed(const QString &skill, bool preshowed = true); //hegemony
     void setSkillsPreshowed(const QList<int> &positions, bool preshowed = true);
 
-    bool hasPreshowedSkill(const QString &name) const;
-    bool hasPreshowedSkill(const Skill *skill) const;
+    bool havePreshownSkill(const QString &name) const;
+    bool havePreshownSkill(const Skill *skill) const;
     bool isHidden(int pos) const;
 
-    bool hasShownGeneral(int pos = 0) const;
+    bool haveShownGeneral(int pos = 0) const;
     void setShownGeneral(int pos, bool show);
 
-    bool hasShownOneGeneral() const;
-    bool hasShownAllGenerals() const;
-    bool ownSkill(const QString &skill_name) const;
-    bool ownSkill(const Skill *skill) const;
+    bool haveShownOneGeneral() const;
+    bool haveShownAllGenerals() const;
+    bool ownGeneralCardSkill(const QString &skill_name) const;
+    bool ownGeneralCardSkill(const Skill *skill) const;
     bool isFriendWith(const Player *player, bool considerAnjiang = false) const;
     bool willBeFriendWith(const Player *player) const;
 
@@ -308,6 +306,8 @@ public:
 
     // TODO: d->tag?
     QVariantMap tag;
+
+    // bool hasValidSkill()
 
 #ifndef QSGS_CORE_NODEPRECATED
 
@@ -327,7 +327,7 @@ private:
     }
     Q_DECL_DEPRECATED inline bool hasShownGeneral2() const
     {
-        return hasShownGeneral(1);
+        return haveShownGeneral(1);
     }
     Q_DECL_DEPRECATED inline void setGeneral2Showed(bool showed)
     {

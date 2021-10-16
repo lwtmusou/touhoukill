@@ -81,6 +81,7 @@ class SkillTriggerPrivate;
 class SkillTrigger : public Trigger
 {
 public:
+    // TODO: overload (const Skill *)?
     SkillTrigger(const QString &name);
     ~SkillTrigger() override;
 

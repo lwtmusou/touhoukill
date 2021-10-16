@@ -607,7 +607,7 @@ bool RoomThread::trigger(QSanguosha::TriggerEvent e, QVariant &data)
                     if (detail->owner() == nullptr) {
                         has_compulsory = true;
                         break;
-                    } else if (detail->owner()->hasShownSkill(detail->name())) {
+                    } else if (detail->owner()->haveShownSkill(detail->name())) {
                         has_compulsory = true;
                         break;
                     }
