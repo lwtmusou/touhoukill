@@ -650,7 +650,7 @@ bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden
     //@todo: need check
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
         if (!include_lose && !hasEquipSkill(skill_name) && !getAcquiredSkills().contains(skill_name) && ownSkill(skill_name)
-            && !canShowGeneral({findPositionOfGeneralOwningSkill(skill_name)}))
+            && !canShowGeneral(QList<int> {findPositionOfGeneralOwningSkill(skill_name)}))
             return false;
         if (!include_lose && !hasEquipSkill(skill_name) && !skill->isEternal()) {
             if (isSkillInvalid(skill_name))
