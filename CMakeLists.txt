@@ -151,6 +151,7 @@ set (QSanguosha_SRCS
     src/util/detector.cpp
     src/util/nativesocket.cpp
     src/util/recorder.cpp
+    src/core/mode.cpp
 )
 
 set (QSanguosha_UIS
@@ -240,6 +241,7 @@ set (QSanguosha_MOCS
     src/util/recorder.h
     src/util/socket.h
     src/core/global.h
+    src/core/mode.h
 )
 
 if (WIN32)

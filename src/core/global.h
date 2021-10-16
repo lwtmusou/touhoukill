@@ -292,6 +292,13 @@ Q_ENUM_NS(TriggerEvent)
 
 typedef QSet<TriggerEvent> TriggerEvents;
 
+enum ModeCategory
+{
+    ModeRole = 1,
+    ModeHegemony = 2,
+    ModeScenario = 16,
+};
+
 } // namespace QSanguosha
 
 #endif // GLOBAL_H
