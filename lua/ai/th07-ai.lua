@@ -1014,12 +1014,11 @@ sgs.ai_skill_use["@@chunhen_hegemony"] = function(self, prompt)
 	
 	local card, friend = self:getCardNeedPlayer(cards, self.friends_noself)--麻痹 死人不马上更新self.friends_noself
 	if card and friend and friend:isAlive() then return "@ChunhenHegemonyCard=" .. card:getEffectiveId() .. "->" .. friend:objectName() end
-	if #self.friends_noself > 0 then
-		self:sort(self.friends_noself, "handcard")
-		for _, afriend in ipairs(self.friends_noself) do
-			if not self:needKongcheng(afriend, true) then
-				return "@ChunhenHegemonyCard=" .. cards[1]:getEffectiveId() .. "->" .. afriend:objectName()
-			end
+	if #self.friends_noself == 0 then return "." end
+	self:sort(self.friends_noself, "handcard")
+	for _, afriend in ipairs(self.friends_noself) do
+		if friend:isAlive() and not self:needKongcheng(afriend, true) then
+			return "@ChunhenHegemonyCard=" .. cards[1]:getEffectiveId() .. "->" .. afriend:objectName()
 		end
 	end
 	return "."
