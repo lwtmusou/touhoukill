@@ -1394,8 +1394,6 @@ public:
 
             if (use.card->isKindOf("Nullification") || use.card->isKindOf("Jink"))
                 return QList<SkillInvokeDetail>();
-            if (player->hasFlag("Global_ProcessBroken")) //for turnbroken
-                return QList<SkillInvokeDetail>();
 
             if (use.card->isNDTrick() || use.card->getTypeId() == Card::TypeBasic) {
                 int maxnum = qimenMax(player);

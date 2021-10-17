@@ -1532,7 +1532,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->isKindOf("Jink") || use.from->hasFlag("Global_ProcessBroken") || !use.from->isAlive())
+        if (use.card->isKindOf("Jink") || !use.from->isAlive())
             return QList<SkillInvokeDetail>();
         if (use.from && use.to.length() == 1 && (use.card->isKindOf("BasicCard") || use.card->isNDTrick())) {
             ServerPlayer *source = use.to.first();
