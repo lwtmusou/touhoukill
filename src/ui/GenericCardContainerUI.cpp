@@ -312,10 +312,10 @@ void PlayerCardContainer::updateSmallAvatar()
     }
 
     if (general != nullptr) {
-        QString name = general->objectName();
+        QString g_name = general->objectName();
         if (m_player != nullptr && m_player->getMark("duozhi") > 0)
-            name = "yingyingguai";
-        QPixmap smallAvatarIcon = G_ROOM_SKIN.getGeneralPixmap(name, QSanRoomSkin::GeneralIconSize(_m_layout->m_smallAvatarSize));
+            g_name = "yingyingguai";
+        QPixmap smallAvatarIcon = G_ROOM_SKIN.getGeneralPixmap(g_name, QSanRoomSkin::GeneralIconSize(_m_layout->m_smallAvatarSize));
         smallAvatarIcon = paintByMask(smallAvatarIcon);
         QGraphicsPixmapItem *smallAvatarIconTmp = _m_smallAvatarIcon;
         _paintPixmap(smallAvatarIconTmp, _m_layout->m_smallAvatarArea, smallAvatarIcon, _getAvatarParent());
@@ -331,11 +331,11 @@ void PlayerCardContainer::updateSmallAvatar()
                          G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_DASHBOARD_KINGDOM_COLOR_MASK, kingdom), _getAvatarParent());
             //}
         }
-        {
-            QString name = Sanguosha->translate("&" + general->objectName());
-            if (name.startsWith("&"))
-                name = Sanguosha->translate(general->objectName());
-        }
+
+        QString name = Sanguosha->translate("&" + general->objectName());
+        if (name.startsWith("&"))
+            name = Sanguosha->translate(general->objectName());
+        
         if (!fake_general)
             _m_layout->m_smallAvatarNameFont.paintText(_m_smallAvatarNameItem, _m_layout->m_smallAvatarNameArea, Qt::AlignLeft | Qt::AlignJustify, name);
         _m_smallAvatarIcon->show();
