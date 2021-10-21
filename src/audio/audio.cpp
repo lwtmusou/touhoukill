@@ -120,6 +120,7 @@ public:
         soundBuffer.close();
         soundBuffer.open(QIODevice::ReadOnly);
 
+        // TODO: program crashes if no audio output when using Qt 6
         output = new QAudioOutput(format);
 
         connect(output, &QAudioOutput::stateChanged, [this](QAudio::State s) {
