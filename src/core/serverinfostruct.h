@@ -1,12 +1,17 @@
 #ifndef QSANGUOSHA_SERVERINFOSTRUCT_H
 #define QSANGUOSHA_SERVERINFOSTRUCT_H
 
+#include "json.h"
 #include "player.h"
 #include "protocol.h"
 
 struct ServerInfoStruct
 {
-    bool parse(const QString &str);
+    bool parseLegacy(const QString &str);
+
+    bool parse(const QVariant &object);
+    QVariant serialize() const;
+
     //Get the timeout allowance for a command. Server countdown is more lenient than the client.
     //@param command: type of command
     //@return countdown for command in milliseconds.

@@ -165,6 +165,15 @@ bool JsonUtils::tryParse(const QVariant &var, QList<int> &list)
     return true;
 }
 
+bool JsonUtils::tryParse(const QVariant &var, QVariantMap &map)
+{
+    if (!var.canConvert<JsonObject>())
+        return false;
+
+    map = var.toMap();
+    return true;
+}
+
 bool JsonUtils::tryParse(const QVariant &arg, Qt::Alignment &align)
 {
     if (!JsonUtils::isString(arg))

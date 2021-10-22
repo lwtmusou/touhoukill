@@ -43,6 +43,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_isGameOver = false;
 
     m_callbacks[S_COMMAND_CHECK_VERSION] = &Client::checkVersion;
+    m_callbacks[S_COMMAND_SETUP_LEGACY] = &Client::legacySetup;
     m_callbacks[S_COMMAND_SETUP] = &Client::setup;
     m_callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Client::networkDelayTest;
     m_callbacks[S_COMMAND_ADD_PLAYER] = &Client::addPlayer;
@@ -371,12 +372,34 @@ void Client::checkVersion(const QVariant &server_version)
     emit version_checked(version_number, mod_name);
 }
 
-void Client::setup(const QVariant &setup_json)
+void Client::legacySetup(const QVariant &setup_json)
 {
     if ((socket != nullptr) && !socket->isConnected())
         return;
 
     QString setup_str = setup_json.toString();
+
+    if (ServerInfo.parseLegacy(setup_str)) {
+        emit server_connected();
+
+        heartbeatTimer = new QTimer(this);
+        connect(heartbeatTimer, &QTimer::timeout, [this]() -> void {
+            notifyServer(S_COMMAND_HEARTBEAT);
+        });
+        heartbeatTimer->setSingleShot(false);
+        heartbeatTimer->setInterval(1min);
+        heartbeatTimer->start();
+
+        notifyServer(S_COMMAND_TOGGLE_READY);
+    } else {
+        QMessageBox::warning(nullptr, tr("Warning"), tr("Setup string can not be parsed: %1").arg(setup_str));
+    }
+}
+
+void Client::setup(const QVariant &setup_str)
+{
+    if ((socket != nullptr) && !socket->isConnected())
+        return;
 
     if (ServerInfo.parse(setup_str)) {
         emit server_connected();
@@ -391,7 +414,7 @@ void Client::setup(const QVariant &setup_json)
 
         notifyServer(S_COMMAND_TOGGLE_READY);
     } else {
-        QMessageBox::warning(nullptr, tr("Warning"), tr("Setup string can not be parsed: %1").arg(setup_str));
+        QMessageBox::warning(nullptr, tr("Warning"), tr("Setup string can not be parsed"));
     }
 }
 

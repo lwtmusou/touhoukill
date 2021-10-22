@@ -90,6 +90,7 @@ public:
     typedef void (Client::*Callback)(const QVariant &);
 
     void checkVersion(const QVariant &server_version);
+    void legacySetup(const QVariant &setup_str);
     void setup(const QVariant &setup_str);
     void networkDelayTest(const QVariant &);
     void addPlayer(const QVariant &player_info);

@@ -109,6 +109,7 @@ bool tryParse(const QVariant &, bool &);
 
 bool tryParse(const QVariant &var, QStringList &list);
 bool tryParse(const QVariant &var, QList<int> &list);
+bool tryParse(const QVariant &var, QVariantMap &map);
 bool tryParse(const QVariant &arg, QRect &result);
 bool tryParse(const QVariant &arg, QSize &result);
 bool tryParse(const QVariant &arg, QPoint &result);

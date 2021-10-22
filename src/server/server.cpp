@@ -957,7 +957,7 @@ Server::Server(QObject *parent)
     server->setParent(this);
 
     //synchronize ServerInfo on the server side to avoid ambiguous usage of Config and ServerInfo
-    ServerInfo.parse(Sanguosha->getSetupString());
+    ServerInfo.parseLegacy(Sanguosha->getSetupString());
 
     current = nullptr;
     createNewRoom();
@@ -1094,7 +1094,7 @@ void Server::processRequest(const char *request)
         }
     }
 
-    Packet packet2(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SETUP);
+    Packet packet2(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SETUP_LEGACY);
     QString s = Sanguosha->getSetupString();
     packet2.setMessageBody(s);
     socket->send((packet2.toString()));
