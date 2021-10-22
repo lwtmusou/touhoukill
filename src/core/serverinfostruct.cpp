@@ -166,6 +166,8 @@ QVariant ServerInfoStruct::serialize() const
 
     m[QStringLiteral("ServerName")] = QString::fromLatin1(Name.toUtf8().toBase64());
     m[QStringLiteral("GameMode")] = GameMode;
+    if (GameMode.startsWith(QStringLiteral("02_1v1")) || GameMode.startsWith(QStringLiteral("06_3v3")))
+        m[QStringLiteral("GameMode")] = GameMode + GameRuleMode;
     m[QStringLiteral("OperationTimeout")] = OperationTimeout;
     m[QStringLiteral("NullificationCountDown")] = NullificationCountDown;
     QVariantList l;

@@ -418,50 +418,6 @@ QStringList Engine::getChattingEasyTexts() const
     return easy_texts;
 }
 
-// ServerInfo::Parse
-QString Engine::getSetupString() const
-{
-    int timeout = Config.OperationNoLimit ? 0 : Config.OperationTimeout;
-    QString flags;
-    if (Config.RandomSeat)
-        flags.append(QStringLiteral("R"));
-    if (Config.EnableCheat)
-        flags.append(QStringLiteral("C"));
-    if (Config.EnableCheat && Config.FreeChoose)
-        flags.append(QStringLiteral("F"));
-    if (Config.Enable2ndGeneral || isHegemonyGameMode(Config.GameMode))
-        flags.append(QStringLiteral("S"));
-    if (Config.EnableSame)
-        flags.append(QStringLiteral("T"));
-    if (Config.EnableAI)
-        flags.append(QStringLiteral("A"));
-    if (Config.DisableChat)
-        flags.append(QStringLiteral("M"));
-
-    if (Config.MaxHpScheme == 1)
-        flags.append(QStringLiteral("1"));
-    else if (Config.MaxHpScheme == 2)
-        flags.append(QStringLiteral("2"));
-    else if (Config.MaxHpScheme == 3)
-        flags.append(QStringLiteral("3"));
-    else if (Config.MaxHpScheme == 0) {
-        char c = Config.Scheme0Subtraction + 5 + 'a'; // from -5 to 12
-        flags.append(QLatin1Char(c));
-    }
-
-    QString server_name = QString::fromUtf8(Config.ServerName.toUtf8().toBase64());
-    QStringList setup_items;
-    QString mode = Config.GameMode;
-    if (mode == QStringLiteral("02_1v1"))
-        mode = mode + Config.value(QStringLiteral("1v1/Rule"), QStringLiteral("2013")).toString();
-    else if (mode == QStringLiteral("06_3v3"))
-        mode = mode + Config.value(QStringLiteral("3v3/OfficialRule"), QStringLiteral("2013")).toString();
-    setup_items << server_name << Config.GameMode << QString::number(timeout) << QString::number(Config.NullificationCountDown) << getBanPackages().join(QStringLiteral("+"))
-                << flags;
-
-    return setup_items.join(QStringLiteral(":"));
-}
-
 QMap<QString, QString> Engine::getAvailableModes() const
 {
     return d->modes;

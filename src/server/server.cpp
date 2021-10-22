@@ -956,8 +956,35 @@ Server::Server(QObject *parent)
     server = new NativeServerSocket;
     server->setParent(this);
 
-    //synchronize ServerInfo on the server side to avoid ambiguous usage of Config and ServerInfo
-    ServerInfo.parseLegacy(Sanguosha->getSetupString());
+    // Synchonize ServerInfo and Config
+    ServerInfo.DuringGame = true;
+    ServerInfo.Name = Config.ServerName;
+    ServerInfo.GameMode = Config.GameMode;
+    if (Config.GameMode == QStringLiteral("02_1v1"))
+        ServerInfo.GameRuleMode = Config.value(QStringLiteral("1v1/Rule"), QStringLiteral("2013")).toString();
+    else if (Config.GameMode == QStringLiteral("06_3v3"))
+        ServerInfo.GameRuleMode = Config.value(QStringLiteral("3v3/OfficialRule"), QStringLiteral("2013")).toString();
+    ServerInfo.OperationTimeout = Config.OperationNoLimit ? 0 : Config.OperationTimeout;
+    ServerInfo.NullificationCountDown = Config.NullificationCountDown;
+
+    const QList<const Package *> &packages = Sanguosha->getPackages();
+    foreach (const Package *package, packages) {
+        QString package_name = package->name();
+        // Why Sanguosha->getBanPackages() ????????
+        if (Sanguosha->getBanPackages().contains(package_name))
+            package_name = QStringLiteral("!") + package_name;
+
+        ServerInfo.Extensions << package_name;
+    }
+
+    ServerInfo.RandomSeat = Config.RandomSeat;
+    ServerInfo.EnableCheat = Config.EnableCheat;
+    ServerInfo.FreeChoose = Config.FreeChoose;
+    ServerInfo.Enable2ndGeneral = Config.Enable2ndGeneral;
+    ServerInfo.EnableSame = Config.EnableSame;
+    ServerInfo.DisableChat = Config.DisableChat;
+    ServerInfo.MaxHpScheme = Config.MaxHpScheme;
+    ServerInfo.Scheme0Subtraction = Config.Scheme0Subtraction;
 
     current = nullptr;
     createNewRoom();
@@ -1094,8 +1121,8 @@ void Server::processRequest(const char *request)
         }
     }
 
-    Packet packet2(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SETUP_LEGACY);
-    QString s = Sanguosha->getSetupString();
+    Packet packet2(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SETUP);
+    QVariant s = ServerInfo.serialize();
     packet2.setMessageBody(s);
     socket->send((packet2.toString()));
 
