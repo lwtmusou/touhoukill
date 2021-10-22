@@ -2879,7 +2879,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->isKindOf("SkillCard") || use.from == nullptr || use.to.length() != 1 || use.from == use.to.first() || use.from->hasFlag("Global_ProcessBroken"))
+        if (use.card->isKindOf("SkillCard") || use.from == nullptr || use.to.length() != 1 || use.from == use.to.first())
             return QList<SkillInvokeDetail>();
 
         ServerPlayer *satori = use.to.first();

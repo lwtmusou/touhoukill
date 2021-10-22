@@ -995,8 +995,8 @@ public:
                 }
             }
 
-            if (card != nullptr && card->getNumber() > 0 && (!card->isVirtualCard() || card->getSubcards().length() == 1) && card->getTypeId() != Card::TypeSkill && from != nullptr
-                && from->isInMainPhase() && !from->hasFlag("yvshouFirst")) {
+            if (card != nullptr && card->getNumber() > 0 && (!card->isVirtualCard() || card->getSubcards().length() == 1)
+                && ((card->getTypeId() == Card::TypeBasic) || card->isNDTrick()) && from != nullptr && from->isInMainPhase() && !from->hasFlag("yvshouFirst")) {
                 SkillInvokeDetail d(this, nullptr, nullptr, from, true);
                 d.tag["yvshou"] = QVariant::fromValue<const Card *>(card);
                 foreach (ServerPlayer *p, room->getOtherPlayers(from)) {
@@ -1043,21 +1043,18 @@ public:
             l.arg2 = c->objectName();
 
             if (number <= mark) {
+                l.type = "#shenwei";
                 if (triggerEvent == CardUsed) {
                     CardUseStruct use = data.value<CardUseStruct>();
-                    if (use.card->isKindOf("EquipCard")) {
-                        l.type = "#XushiHegemonySkillAvoid";
-                        use.to.clear();
-                    } else {
-                        l.type = "#shenwei";
+                    if (use.card->isKindOf("Nullification"))
+                        room->setPlayerFlag(use.from, "nullifiationNul");
+                    else
                         use.nullified_list << "_ALL_TARGETS";
-                    }
                     data = QVariant::fromValue<CardUseStruct>(use);
                 } else {
                     CardResponseStruct resp = data.value<CardResponseStruct>();
                     resp.m_isNullified = true;
                     data = QVariant::fromValue<CardResponseStruct>(resp);
-                    l.type = "#shenwei";
                 }
             } else {
                 l.type = "#fuchou";
@@ -1496,7 +1493,7 @@ public:
         if (triggerEvent == DamageInflicted && (damage.to->isAlive() && damage.to->hasSkill(this)))
             return {SkillInvokeDetail(this, damage.to, damage.to, nullptr, true)};
         else if (triggerEvent == DamageComplete && damage.trigger_info.contains("ciou_destructing") && damage.to->isAlive())
-            return {SkillInvokeDetail(this, damage.to, damage.to, nullptr, true)};
+            return {SkillInvokeDetail(this, damage.to, damage.to, nullptr, true, nullptr, false)};
 
         return {};
     }

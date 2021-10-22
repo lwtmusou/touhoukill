@@ -599,8 +599,7 @@ public:
     {
         if (triggerEvent == CardFinished) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->hasFlag("jubian_card") && use.card->hasFlag("jubian_used") && use.from->hasSkill(this) && !use.from->hasFlag("Global_ProcessBroken")
-                && use.from->isWounded())
+            if (use.card->hasFlag("jubian_card") && use.card->hasFlag("jubian_used") && use.from->hasSkill(this) && use.from->isWounded())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, nullptr, true);
         }
         return QList<SkillInvokeDetail>();
@@ -4194,8 +4193,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->isKindOf("SkillCard") || use.card->isKindOf("Jink") || use.from == nullptr || use.to.length() != 1 || use.from == use.to.first()
-            || use.from->hasFlag("Global_ProcessBroken"))
+        if (use.card->isKindOf("SkillCard") || use.card->isKindOf("Jink") || use.from == nullptr || use.to.length() != 1 || use.from == use.to.first())
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
@@ -5604,7 +5602,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->isKindOf("Jink") || use.card->isKindOf("Nullification"))
             return QList<SkillInvokeDetail>();
-        if (use.from && use.from->isAlive() && use.from->hasSkill(this) && use.from->getMark("@star") > 0 && use.to.length() == 1 && !use.from->hasFlag("Global_ProcessBroken")) {
+        if (use.from && use.from->isAlive() && use.from->hasSkill(this) && use.from->getMark("@star") > 0 && use.to.length() == 1) {
             if ((use.card->isKindOf("BasicCard") || use.card->isNDTrick())) {
                 ServerPlayer *target = use.to.first();
                 if (target->isAlive() && !target->isRemoved()) {

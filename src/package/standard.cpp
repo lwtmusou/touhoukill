@@ -243,6 +243,11 @@ bool AOE::isAvailable(const Player *player) const
 
 void AOE::onUse(Room *room, const CardUseStruct &card_use) const
 {
+    if (!card_use.to.isEmpty()) {
+        TrickCard::onUse(room, card_use);
+        return;
+    }
+
     ServerPlayer *source = card_use.from;
     QList<ServerPlayer *> targets, all_players = room->getOtherPlayers(source);
     QList<const Player *> useTos;
