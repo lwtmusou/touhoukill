@@ -1,7 +1,9 @@
 #ifndef TOUHOUKILL_GAME_LOGIC_H_
 #define TOUHOUKILL_GAME_LOGIC_H_
 
-#include "qsgscore.h"
+#include <QString>
+
+#include "global.h"
 #include "structs.h"
 
 #include <QString>
@@ -18,9 +20,9 @@ namespace RefactorProposal {
 class GameState;
 
 /**
- * @brief The game logic interface.
- * 
- * All game events should be triggered by functions in this interface. 
+ * @class The game logic interface.
+ *
+ * All game events should be triggered by functions in this interface.
  * The game state is modified by functions in this interface.
  */
 class QSGS_CORE_EXPORT GameLogic
@@ -62,7 +64,7 @@ public:
     virtual void setPlayerRemoved(Player *player, bool is_removed) = 0;
     virtual void setPlayerRoleShown(Player *player, bool is_role_shown) = 0;
     virtual void setPlayerKingdom(Player *player, const QString &kingdom) = 0;
-    virtual void setPlayerGender(Player *player, General::Gender gender) = 0;
+    virtual void setPlayerGender(Player *player, QSanguosha::Gender gender) = 0;
 
     virtual void playerGainMark(Player *player, const QString &mark_name, int count = 1) = 0;
     virtual void playerLoseMark(Player *player, const QString &mark_name, int count = 1) = 0; // count == -1 means all mark
@@ -109,14 +111,14 @@ public:
     // virtual QList<int> getNCards(int n, bool update_pile_number = true, bool bottom = false) = 0;
     // virtual void returnToTopDrawPile(const QList<int> &cards) = 0;
 
-    virtual void askForGuanxing(Player *player, const QList<int> &cards, GuanxingType guanxing_type = GuanxingBothSides, QString skillName = "") = 0;
+    virtual void askForGuanxing(Player *player, const QList<int> &cards, GuanxingType guanxing_type = GuanxingBothSides, QString skillName = QString()) = 0;
 
     // Create the Frame for selecting cards
     virtual void fillAG(const QList<int> &card_ids, Player *who = nullptr, const QList<int> &disabled_ids = QList<int>(), const QList<int> &shownHandcard_ids = QList<int>()) = 0;
     // Let player select from the frame.
     virtual int askForAG(Player *player, const QList<int> &card_ids, bool refusable, const QString &reason) = 0;
     // Trigger Moving Card
-    virtual void takeAG(Player *player, int card_id, bool move_cards = true, QList<Player *> to_notify = QList<Player *>(), QSanguosha::Place fromPlace = Player::DrawPile) = 0;
+    virtual void takeAG(Player *player, int card_id, bool move_cards = true, QList<Player *> to_notify = QList<Player *>(), QSanguosha::Place fromPlace = QSanguosha::PlaceDrawPile) = 0;
     virtual void clearAG(Player *player = nullptr) = 0; // disappear the selecting frame.
 
     // Only available for CardAsked
@@ -159,7 +161,7 @@ public:
     virtual void doBattleArrayAnimation(Player *player, Player *target = nullptr) = 0;
     virtual void setEmotion(Player *target, const QString &emotion) = 0;
 
-    virtual void doAnimation(QSanProtocol::AnimateType type, const QString &arg1 = QString(), const QString &arg2 = QString(), QList<Player *> players = QList<Player *>()) = 0;
+    // virtual void doAnimation(QSanProtocol::AnimateType type, const QString &arg1 = QString(), const QString &arg2 = QString(), QList<Player *> players = QList<Player *>()) = 0;
 
     // TODO: Move this function to Mode
     // virtual void preparePlayers() = 0;
