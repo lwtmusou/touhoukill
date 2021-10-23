@@ -781,10 +781,13 @@ QList<int> Engine::getRandomCards() const
     Q_UNUSED(exclude_disaters);
 
     QList<int> list;
+    for (int i = 0; i < d->cards.length(); ++i)
+        list << i;
+
+#if 0
     foreach (const CardDescriptor &card, d->cards) {
         // TODO: deal with this in separated class Mode
         Q_UNUSED(card);
-#if 0
 
         if (exclude_disaters && card.face()->isKindOf("Disaster"))
             continue;
@@ -809,7 +812,6 @@ QList<int> Engine::getRandomCards() const
             } else
                 list << card->id();
         }
-#endif
     }
     // remove two crossbows and one nullification?
     if (using_2012_3v3 || using_2013_3v3)
@@ -818,6 +820,7 @@ QList<int> Engine::getRandomCards() const
         list.removeOne(53);
         list.removeOne(54);
     }
+#endif
 
     qShuffle(list);
 
@@ -847,23 +850,6 @@ const Skill *Engine::getSkill(const EquipCard *equip) const
 QStringList Engine::getSkillNames() const
 {
     return d->skills.keys();
-}
-
-int Engine::operationTimeRate(QSanProtocol::CommandType command, const QVariant &msg) const
-{
-    int rate = 2; //default
-    JsonArray arg = msg.value<JsonArray>();
-    if (command == QSanProtocol::S_COMMAND_RESPONSE_CARD) {
-        QString pattern = arg[0].toString();
-        if (pattern == QStringLiteral("@@qiusuo"))
-            rate = 4;
-    }
-    if (command == QSanProtocol::S_COMMAND_EXCHANGE_CARD) {
-        QString reason = arg[5].toString();
-        if (reason == QStringLiteral("qingting"))
-            rate = 3;
-    }
-    return rate;
 }
 
 QVariant Engine::getConfigFromConfigFile(const QString &key) const

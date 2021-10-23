@@ -13,7 +13,7 @@ namespace {
 // IMPORTANT! This should be updated when Lua updates.
 // Currently we are cutting 'coroutine' lib out of standard Lua simply because it uses sjlj across calling stack, where it is not C++-exception-aware.
 // Also we need to add our own 'sgs' lib to our preload modules to provide our functionality.
-// Codes are copied from linit.c. MAKE SURE to update when Lua updates
+// Codes are copied from linit.c. MAKE SURE to update these code when Lua updates.
 
 constexpr const char *sgs_libname = "sgs";
 

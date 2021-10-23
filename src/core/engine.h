@@ -98,7 +98,6 @@ public:
     QStringList LordBGMConvertList;
     QStringList LordBackdropConvertList;
     QStringList LatestGeneralList;
-    int operationTimeRate(QSanProtocol::CommandType command, const QVariant &msg) const;
 
     QVariant getConfigFromConfigFile(const QString &key) const;
 
