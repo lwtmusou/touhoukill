@@ -59,6 +59,7 @@ end
 -- To make a trusted runtime environment, only the above initialization seems not enough
 -- e.g. dofile or require are not safe if it loads maliciously crafted bytecode.
 -- we can't control how lua bytecode works since we are using Lua from distribution package managers if possible
+-- TODO: handle dofile and require to disable LUAC loading
 
 -- dofile with qrc support
 local originalDofile = dofile
@@ -185,7 +186,7 @@ local extensionDefinition = function(jsonFile)
         error("JSON decode of extension definition file " .. jsonFile .. " failed, reason: " .. d)
     end
 
-    -- the builtin extension file may be a folder of Luac files or a single Luac file
+    -- the extension file may be a folder of Lua files or a single Lua file
     -- How to calculate checksum of multiple files? Maybe one checksum per file?
     return d
 end
@@ -199,10 +200,8 @@ local verifyExtensionChecksum = function(name, checksums, isBuiltin)
 
     for key, value in pairs(checksums) do
         -- ".lua"
-        -- ".luac"
         -- ".tl"
         -- "/init.lua"
-        -- "/init.luac"
         -- "/init.tl"
         -- "/xxxxx.tl"
         -- etc.
@@ -263,7 +262,7 @@ local loadInstalledExtensions = function()
     for _, name in ipairs(def) do
         local subdef = extensionDefinition("lua/extension/" .. name .. ".json")
         if subdef.test then
-            warn("Testing extension " .. name .. ", bypassing checksum check.")
+            warn("Extension " .. name .. "is during testing, checksum check bypassed.")
         elseif not verifyExtensionChecksum(name, subdef, false) then
             warn("Checksum of " .. name .. " mismatches thus not loaded.")
         else

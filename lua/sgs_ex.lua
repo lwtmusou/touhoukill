@@ -2,43 +2,45 @@ local sgs_ex = {}
 
 sgs_ex.TableType = {
     -- masks
-    FirstTypeMask = 3840, -- 0xf00
-    SecondTypeMask = 15, -- 0x00f
-    ThirdTypeMask = 240, -- 0x0f0
+    FirstTypeMask = 0xf00,
+    SecondTypeMask = 0x0f0,
+    ThirdTypeMask = 0x00f,
 
-    Package = 0,     -- 0x000
-    CardPackage = 1,
-    GeneralPackage = 2,
+    Package = 0x000,
+    CardPackage = 0x001,
+    GeneralPackage = 0x002,
 
-    CardFace = 256,  -- 0x100
+    CardFace = 0x100,
 
-    BasicCard = 257, -- 0x101
+    BasicCard = 0x110,
 
-    TrickCard = 258, -- 0x102
-    NonDelayedTrick = 274, -- 0x112
-    DelayedTrick = 290, -- 0x122
+    TrickCard = 0x120,
+    NonDelayedTrick = 0x121,
+    DelayedTrick = 0x122,
 
-    EquipCard = 259, -- 0x103
-    Weapon = 275,
-    Armor = 291,
-    DefensiveHorse = 307,
-    OffensiveHorse = 323,
-    Treasure = 339,
+    EquipCard = 0x130, -- 0x103
+    Weapon = 0x131,
+    Armor = 0x132,
+    DefensiveHorse = 0x133,
+    OffensiveHorse = 0x134,
+    Treasure = 0x135,
 
-    SkillCard = 260,
+    SkillCard = 0x140,
 
-    Skill = 512,      -- 0x200
-    ViewAsSkill = 513,
-    FilterSkill = 514,
-    ProhibitSkill = 515,
-    DistanceSkill = 516,
-    MaxCardsSkill = 517,
-    AttackRangeSkill = 518,
-    TreatAsEquippingSkill = 519,
+    Skill = 0x200,      -- 0x200
+    ViewAsSkill = 0x210,
+    FilterSkill = 0x220,
+    ProhibitSkill = 0x230,
+    DistanceSkill = 0x240,
+    MaxCardsSkill = 0x250,
+    AttackRangeSkill = 0x260,
+    TreatAsEquippingSkill = 0x270,
 
-    Trigger = 768,
-    CardDescriptor = 1024,
-    GeneralDescriptor = 1280,
+    Trigger = 0x300,
+
+    CardDescriptor = 0x400,
+
+    GeneralDescriptor = 0x500,
 }
 
 -- if string "ignoreErrorCheck" is given as last parameter of all functions, ignores any error check
@@ -88,6 +90,7 @@ sgs_ex.CardFace = function(desc, ...)
     local funcName = "sgs_ex.CardFace"
     if args[1] and type(args[1]) == "string" then
         funcName = args[1]
+        table.remove(args, 1)
     end
 
     if type(desc) ~= "table" then
@@ -101,7 +104,7 @@ sgs_ex.CardFace = function(desc, ...)
         return fail, funcName .. ": desc does not contain a valid Card Type"
     end
 
-    if maybeIgnoreErrorCheck(funcName, desc, ...) then
+    if maybeIgnoreErrorCheck(funcName, desc, table.unpack(args)) then
         return desc
     end
 
@@ -111,13 +114,13 @@ sgs_ex.CardFace = function(desc, ...)
     -- type (which is specified by desc.type using SecondTypeMask / ThirdTypeMask)
     -- subTypeName -> string
     -- (if different than default) properties, including
-    --  - target_fixed = function(player, card) -> boolean
-    --  - throw_when_using = function() -> boolean
-    --  - has_preact = function() -> boolean
-    --  - can_damage = function() -> boolean
-    --  - can_recover = function() -> boolean
-    --  - has_effectvalue = function() -> boolean
-    --  - default_method = function() -> Card_HandlingMethod
+    --  - targetFixed = function(player, card) -> boolean
+    --  - throwWhenUsing = function() -> boolean
+    --  - hasPreAction = function() -> boolean
+    --  - canDamage = function() -> boolean
+    --  - canRecover = function() -> boolean
+    --  - hasEffectValue = function() -> boolean
+    --  - defaultHandlingMethod = function() -> QSanguosha_HandlingMethod
     -- these may be a fixed value or Lua Function, depanding on its usage. Function prototype is provided in case a function should be used.
     -- methods, including
     --  - targetsFeasible - function(playerList, player, card) -> boolean
@@ -133,7 +136,194 @@ sgs_ex.CardFace = function(desc, ...)
     --  - onNullified(player, card)
     -- All of them are optional but this card does nothing if none is provided.
 
-    -- TODO: implementations
+    -- the re-crafted return value
+    local r = {}
+
+    -- name -> string
+    if not desc.name then
+        return fail, funcName .. ": desc does not contain name"
+    elseif type(desc.name) ~= "string" then
+        return fail, funcName .. ": desc.name is not string"
+    else
+        r.name = desc.name
+    end
+
+    -- type (which is specified by desc.type using SecondTypeMask / ThirdTypeMask)
+    -- pre-checked before maybeIgnoreErrorCheck
+    r.type = desc.type
+
+    -- subTypeName -> string
+    if not desc.subTypeName then
+        return fail, funcName .. ": desc does not contain subTypeName"
+    elseif type(desc.subTypeName) ~= "string" then
+        return fail, funcName .. ": desc.subTypeName is not string"
+    else
+        r.subTypeName = desc.subTypeName
+    end
+
+    --  - targetFixed = function(player, card) -> boolean
+    if desc.targetFixed then
+        if (type(desc.targetFixed) ~= "boolean") and (type(desc.targetFixed) ~= "function") then
+            warn(funcName .. ": desc.targetFixed is not boolean or function and is ignored")
+        else
+            r.targetFixed = desc.targetFixed
+        end
+    end
+
+    --  - throwWhenUsing = function() -> boolean
+    if desc.throwWhenUsing then
+        if (type(desc.throwWhenUsing) ~= "boolean") and (type(desc.throwWhenUsing) ~= "function") then
+            warn(funcName .. ": desc.throwWhenUsing is not boolean or function and is ignored")
+        else
+            r.throwWhenUsing = desc.throwWhenUsing
+        end
+    end
+
+    --  - hasPreAction = function() -> boolean
+    if desc.hasPreAction then
+        if (type(desc.hasPreAction) ~= "boolean") and (type(desc.hasPreAction) ~= "function") then
+            warn(funcName .. ": desc.hasPreAction is not boolean or function and is ignored")
+        else
+            r.hasPreAction = desc.hasPreAction
+        end
+    end
+
+    --  - canDamage = function() -> boolean
+    if desc.canDamage then
+        if (type(desc.canDamage) ~= "boolean") and (type(desc.canDamage) ~= "function") then
+            warn(funcName .. ": desc.canDamage is not boolean or function and is ignored")
+        else
+            r.canDamage = desc.canDamage
+        end
+    end
+
+    --  - canRecover = function() -> boolean
+    if desc.canRecover then
+        if (type(desc.canRecover) ~= "boolean") and (type(desc.canRecover) ~= "function") then
+            warn(funcName .. ": desc.canRecover is not boolean or function and is ignored")
+        else
+            r.canRecover = desc.canRecover
+        end
+    end
+
+    --  - hasEffectValue = function() -> boolean
+    if desc.hasEffectValue then
+        if (type(desc.hasEffectValue) ~= "boolean") and (type(desc.hasEffectValue) ~= "function") then
+            warn(funcName .. ": desc.hasEffectValue is not boolean or function and is ignored")
+        else
+            r.hasEffectValue = desc.hasEffectValue
+        end
+    end
+
+    --  - defaultHandlingMethod = function() -> QSanguosha_HandlingMethod
+    if desc.defaultHandlingMethod then
+        if (type(desc.defaultHandlingMethod) ~= "number") and (type(desc.defaultHandlingMethod) ~= "function") then -- todo: distinguishing number and integer
+            warn(funcName .. ": desc.defaultHandlingMethod is not number or function and is ignored")
+        else
+            r.defaultHandlingMethod = desc.defaultHandlingMethod
+        end
+    end
+
+    --  - targetsFeasible - function(playerList, player, card) -> boolean
+    if desc.targetsFeasible then
+        if type(desc.targetsFeasible) ~= "function" then
+            warn(funcName .. ": desc.targetsFeasible is not function and is ignored")
+        else
+            r.targetsFeasible = desc.targetsFeasible
+        end
+    end
+
+    --  - targetFilter - function(playerList, player, player, card) -> integer
+    if desc.targetFilter then
+        if type(desc.targetFilter) ~= "function" then
+            warn(funcName .. ": desc.targetFilter is not function and is ignored")
+        else
+            r.targetFilter = desc.targetFilter
+        end
+    end
+
+    --  - isAvailable - function(player, card) -> boolean
+    if desc.isAvailable then
+        if type(desc.isAvailable) ~= "function" then
+            warn(funcName .. ": desc.isAvailable is not function and is ignored")
+        else
+            r.isAvailable = desc.isAvailable
+        end
+    end
+
+    --  - validate - function(cardUse) -> card
+    if desc.validate then
+        if type(desc.validate) ~= "function" then
+            warn(funcName .. ": desc.validate is not function and is ignored")
+        else
+            r.validate = desc.validate
+        end
+    end
+
+    --  - validateInResponse - function(player, card) -> card
+    if desc.validateInResponse then
+        if type(desc.validateInResponse) ~= "function" then
+            warn(funcName .. ": desc.validateInResponse is not function and is ignored")
+        else
+            r.validateInResponse = desc.validateInResponse
+        end
+    end
+
+    --  - doPreAction - function(room, cardUse)
+    if desc.doPreAction then
+        if type(desc.doPreAction) ~= "function" then
+            warn(funcName .. ": desc.doPreAction is not function and is ignored")
+        else
+            r.doPreAction = desc.doPreAction
+        end
+    end
+
+    --  - onUse - function(room, cardUse)
+    if desc.onUse then
+        if type(desc.onUse) ~= "function" then
+            warn(funcName .. ": desc.onUse is not function and is ignored")
+        else
+            r.onUse = desc.onUse
+        end
+    end
+
+    --  - use - function(room, cardUse)
+    if desc.use then
+        if type(desc.use) ~= "function" then
+            warn(funcName .. ": desc.use is not function and is ignored")
+        else
+            r.use = desc.use
+        end
+    end
+
+    --  - onEffect(cardEffect)
+    if desc.onEffect then
+        if type(desc.onEffect) ~= "function" then
+            warn(funcName .. ": desc.onEffect is not function and is ignored")
+        else
+            r.onEffect = desc.onEffect
+        end
+    end
+
+    --  - isCancelable(cardEffect) -> boolean
+    if desc.isCancelable then
+        if type(desc.isCancelable) ~= "function" then
+            warn(funcName .. ": desc.isCancelable is not function and is ignored")
+        else
+            r.isCancelable = desc.isCancelable
+        end
+    end
+
+    --  - onNullified(player, card)
+    if desc.onNullified then
+        if type(desc.onNullified) ~= "function" then
+            warn(funcName .. ": desc.onNullified is not function and is ignored")
+        else
+            r.onNullified = desc.onNullified
+        end
+    end
+
+    return r
 end
 
 sgs_ex.BasicCard = function(desc, ...)
@@ -146,32 +336,87 @@ sgs_ex.BasicCard = function(desc, ...)
         desc.type = sgs_ex.TableType.BasicCard
     end
 
+    if maybeIgnoreErrorCheck(funcName, desc, ...) then
+        return desc
+    end
+
     return sgs_ex.CardFace(desc, "sgs_ex.BasicCard", ...)
 end
 
 sgs_ex.TrickCard = function(desc, ...)
-    local args = {...}
-    local funcName = "sgs_ex.TrickCard"
-    if args[1] and type(args[1]) == "string" then
-        funcName = args[1]
-    end
     -- TrickCard has 2 subtypes: NonDelayedTrick and DelayedTrick
     -- For NonDelayedTrick, it is almost same as BasicCard
     -- For DelayedTrick, there should be a JudgeStruct attached to it
     -- Implement NonDelayedTrick and DelayedTrick separately and use this function as a backend
+    local args = {...}
+    local funcName = "sgs_ex.TrickCard"
+    if args[1] and type(args[1]) == "string" then
+        funcName = args[1]
+        table.remove(args, 1)
+    end
 
-    -- TODO: implementations
-    return sgs_ex.CardFace(desc, funcName, ...)
+    if type(desc) ~= "table" then
+        return fail, funcName .. ": desc is not table"
+    end
+
+    if not desc.type then
+        return fail, funcName .. ": desc does not contain a valid Type"
+    end
+
+    if maybeIgnoreErrorCheck(funcName, desc, table.unpack(args)) then
+        return desc
+    end
+
+    return sgs_ex.CardFace(desc, funcName, table.unpack(args))
 end
 
 sgs_ex.NonDelayedTrick = function(desc, ...)
-    -- TODO: designation and implementations
+    -- NonDelayedTrick is no more than TrickCard, except for its card type
+    if type(desc) ~= "table" then
+        return fail, "sgs_ex.NonDelayedTrick: desc is not table"
+    end
+
+    if not desc.type then
+        desc.type = sgs_ex.TableType.NonDelayedTrick
+    end
+
+    if maybeIgnoreErrorCheck(funcName, desc, ...) then
+        return desc
+    end
+
     return sgs_ex.TrickCard(desc, "sgs_ex.NonDelayedTrick", ...)
 end
 
 sgs_ex.DelayedTrick = function(desc, ...)
-    -- TODO: designation and implementations
-    return sgs_ex.TrickCard(desc, "sgs_ex.DelayedTrick", ...)
+    -- DelayedTrick has an extra member called judge
+    -- it can be null and the delayed trick will do nothing
+    if type(desc) ~= "table" then
+        return fail, "sgs_ex.NonDelayedTrick: desc is not table"
+    end
+
+    if not desc.type then
+        desc.type = sgs_ex.TableType.NonDelayedTrick
+    end
+
+    if maybeIgnoreErrorCheck(funcName, desc, ...) then
+        return desc
+    end
+
+    local r2 = {}
+
+    if desc.judge then
+        r2.judge = desc.judge
+    end
+
+    local r, e = sgs_ex.TrickCard(desc, "sgs_ex.DelayedTrick", ...)
+
+    if not r then
+        return r, e
+    end
+
+    r.judge = r2.judge
+
+    return r
 end
 
 sgs_ex.EquipCard = function(desc, ...)
@@ -179,39 +424,180 @@ sgs_ex.EquipCard = function(desc, ...)
     local funcName = "sgs_ex.EquipCard"
     if args[1] and type(args[1]) == "string" then
         funcName = args[1]
+        table.remove(args, 1)
     end
+
+    if type(desc) ~= "table" then
+        return fail, funcName .. ": desc is not table"
+    end
+
+    if not desc.type then
+        return fail, funcName .. ": desc does not contain a valid Type"
+    end
+
+    if maybeIgnoreErrorCheck(funcName, desc, table.unpack(args)) then
+        return desc
+    end
+
     -- EquipCard has 5 subtypes which are corresponding to the 5 types of Equip card in Sanguosha.
-    -- The process of using EquipCard is totally different than using BasicCard and TrickCard. (Deal with it in C++?)
+    -- The process of using EquipCard is totally different than using BasicCard and TrickCard. (Deal with it in C++)
     -- Implement 5 subtypes separately and use this function as a backend
     -- EquipCard has 2 optional function:
     --  - onInstall
     --  - onUninstall (for silverlion record, although this event seems able to record in a Trigger)
 
-    -- TODO: implementations
+    local r2 = {}
+
+    --  - onInstall(player)
+    if desc.onInstall then
+        if type(desc.onInstall) ~= "function" then
+            warn(funcName .. ": desc.onInstall is not function and is ignored")
+        else
+            r2.onInstall = desc.onInstall
+        end
+    end
+
+    --  - onUninstall(player)
+    if desc.onUninstall then
+        if type(desc.onUninstall) ~= "function" then
+            warn(funcName .. ": desc.onUninstall is not function and is ignored")
+        else
+            r2.onUninstall = desc.onUninstall
+        end
+    end
+
+    local r, e = sgs_ex.CardFace(desc, funcName, table.unpack(args))
+
+    if not r then
+        return r, e
+    end
+
+    r.onInstall = r2.onInstall
+    r.onUninstall = r2.onUninstall
+
+    return r
 end
 
 sgs_ex.Weapon = function(desc, ...)
     -- In addition to EquipCard, Weapons have an additional property which is 'range'
     -- 'range' is mandatory in definations of Weapon so check it in this function
+    if type(desc) ~= "table" then
+        return fail, "sgs_ex.Weapon: desc is not table"
+    end
 
-    -- TODO: implementations
-    return sgs_ex.EquipCard(desc, "sgs_ex.Weapon", ...)
+    if not desc.type then
+        desc.type = sgs_ex.TableType.Weapon
+    end
+
+    if maybeIgnoreErrorCheck(funcName, desc, ...) then
+        return desc
+    end
+
+    local r2 = {}
+
+    if not desc.range then
+        return fail, funcName .. ": desc does not contain range"
+    elseif type(desc.range) ~= "number" then
+        return fail, funcName .. ": desc.range is not number"
+    else
+        r2.range = desc.range
+    end
+
+    local r, e = sgs_ex.EquipCard(desc, "sgs_ex.Weapon", ...)
+
+    if not r then
+        return r, e
+    end
+
+    r.range = r2.range
+
+    return r
 end
 
 sgs_ex.Armor = function(desc, ...)
+    -- Armor is no more than EquipCard, except for its card type
+    if type(desc) ~= "table" then
+        return fail, "sgs_ex.Armor: desc is not table"
+    end
+
+    if not desc.type then
+        desc.type = sgs_ex.TableType.Armor
+    end
+
+    if maybeIgnoreErrorCheck(funcName, desc, ...) then
+        return desc
+    end
+
     return sgs_ex.EquipCard(desc, "sgs_ex.Armor", ...)
 end
 
 sgs_ex.DefensiveHorse = function(desc, ...)
+    -- DefensiveHorse is no more than EquipCard, except for its card type
+    if type(desc) ~= "table" then
+        return fail, "sgs_ex.DefensiveHorse: desc is not table"
+    end
+
+    if not desc.type then
+        desc.type = sgs_ex.TableType.DefensiveHorse
+    end
+
+    if maybeIgnoreErrorCheck(funcName, desc, ...) then
+        return desc
+    end
+
     return sgs_ex.EquipCard(desc, "sgs_ex.DefensiveHorse", ...)
 end
 
 sgs_ex.OffensiveHorse = function(desc, ...)
+    -- OffensiveHorse is no more than EquipCard, except for its card type
+    if type(desc) ~= "table" then
+        return fail, "sgs_ex.OffensiveHorse: desc is not table"
+    end
+
+    if not desc.type then
+        desc.type = sgs_ex.TableType.OffensiveHorse
+    end
+
+    if maybeIgnoreErrorCheck(funcName, desc, ...) then
+        return desc
+    end
+
     return sgs_ex.EquipCard(desc, "sgs_ex.OffensiveHorse", ...)
 end
 
 sgs_ex.Treasure = function(desc, ...)
+    -- Treasure is no more than EquipCard, except for its card type
+    if type(desc) ~= "table" then
+        return fail, "sgs_ex.Treasure: desc is not table"
+    end
+
+    if not desc.type then
+        desc.type = sgs_ex.TableType.Treasure
+    end
+
+    if maybeIgnoreErrorCheck(funcName, desc, ...) then
+        return desc
+    end
+
     return sgs_ex.EquipCard(desc, "sgs_ex.Treasure", ...)
+end
+
+
+sgs_ex.SkillCard = function(desc, ...)
+    -- SkillCard is no more than Card, except for its card type
+    if type(desc) ~= "table" then
+        return fail, "sgs_ex.SkillCard: desc is not table"
+    end
+
+    if not desc.type then
+        desc.type = sgs_ex.TableType.SkillCard
+    end
+
+    if maybeIgnoreErrorCheck(funcName, desc, ...) then
+        return desc
+    end
+
+    return sgs_ex.CardFace(desc, "sgs_ex.SkillCard", ...)
 end
 
 -- Enough error check is necessary

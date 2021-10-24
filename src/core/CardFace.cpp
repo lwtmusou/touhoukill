@@ -350,6 +350,59 @@ QString EquipCard::typeName() const
     return QStringLiteral("equip");
 }
 
+void EquipCard::onInstall(Player *) const
+{
+#if 0
+    // Shouldn't these logic be in GameLogic?
+
+    Room *room = player->getRoom();
+
+    const Skill *skill = Sanguosha->getSkill(this);
+    if (skill) {
+        if (skill->inherits("ViewAsSkill")) {
+            room->attachSkillToPlayer(player, objectName());
+        } else if (skill->inherits("TriggerSkill")) {
+            const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
+            room->getThread()->addTriggerSkill(trigger_skill);
+
+            if (trigger_skill->getViewAsSkill())
+                room->attachSkillToPlayer(player, skill->objectName());
+        }
+    }
+#endif
+}
+
+void EquipCard::onUninstall(Player *) const
+{
+#if 0
+    Room *room = player->getRoom();
+    const Skill *skill = Sanguosha->getSkill(this);
+
+    if (skill && (skill->inherits("ViewAsSkill") || (skill->inherits("TriggerSkill") && qobject_cast<const TriggerSkill *>(skill)->getViewAsSkill())))
+        room->detachSkillFromPlayer(player, objectName(), true);
+#endif
+}
+
+class WeaponPrivate
+{
+public:
+    int range;
+    WeaponPrivate()
+        : range(1)
+    {
+    }
+};
+
+Weapon::Weapon()
+    : d(new WeaponPrivate)
+{
+}
+
+Weapon::~Weapon()
+{
+    delete d;
+}
+
 QString Weapon::subTypeName() const
 {
     return QStringLiteral("weapon");
@@ -358,6 +411,16 @@ QString Weapon::subTypeName() const
 EquipLocation Weapon::location() const
 {
     return WeaponLocation;
+}
+
+int Weapon::range() const
+{
+    return d->range;
+}
+
+void Weapon::setRange(int r)
+{
+    d->range = r;
 }
 
 QString Armor::subTypeName() const

@@ -141,22 +141,28 @@ public:
 
     virtual QSanguosha::EquipLocation location() const = 0;
 
-    virtual void onInstall(Player *player) const = 0;
-    virtual void onUninstall(Player *player) const = 0;
+    virtual void onInstall(Player *player) const;
+    virtual void onUninstall(Player *player) const;
 };
+
+class WeaponPrivate;
 
 class Weapon : public EquipCard
 {
     Q_OBJECT
 
 public:
-    Weapon() = default;
-    ~Weapon() override = default;
+    Weapon();
+    ~Weapon() override;
 
     QString subTypeName() const override;
     QSanguosha::EquipLocation location() const override;
 
-    virtual int range() const = 0;
+    int range() const;
+    void setRange(int r);
+
+private:
+    WeaponPrivate *const d;
 };
 
 class Armor : public EquipCard
