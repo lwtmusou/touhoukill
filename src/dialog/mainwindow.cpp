@@ -172,13 +172,23 @@ void MainWindow::restoreFromConfig()
     ui->actionNever_nullify_my_trick->setEnabled(false);
 }
 
-void MainWindow::closeEvent(QCloseEvent * /*event*/)
+void MainWindow::closeEvent(QCloseEvent *e)
 {
-    Config.setValue(QStringLiteral("WindowWidth"), width());
-    Config.setValue(QStringLiteral("WindowHeight"), height());
-    Config.setValue(QStringLiteral("WindowX"), x());
-    Config.setValue(QStringLiteral("WindowY"), y());
-    Config.setValue(QStringLiteral("WindowMaximized"), bool(windowState() & Qt::WindowMaximized));
+    QMessageBox::StandardButton result = QMessageBox::question(this, tr("TouhouSatsu"), tr("Are you sure to exit?"), QMessageBox::Ok | QMessageBox::Cancel);
+    if (result == QMessageBox::Ok || result == QMessageBox::Yes) {
+        delete systray;
+        systray = nullptr;
+
+        Config.setValue(QStringLiteral("WindowWidth"), width());
+        Config.setValue(QStringLiteral("WindowHeight"), height());
+        Config.setValue(QStringLiteral("WindowX"), x());
+        Config.setValue(QStringLiteral("WindowY"), y());
+        Config.setValue(QStringLiteral("WindowMaximized"), bool(windowState() & Qt::WindowMaximized));
+
+        QMainWindow::closeEvent(e);
+    } else {
+        e->ignore();
+    }
 }
 
 MainWindow::~MainWindow()
@@ -210,12 +220,7 @@ void MainWindow::gotoScene(QGraphicsScene *scene)
 
 void MainWindow::on_actionExit_triggered()
 {
-    QMessageBox::StandardButton result = QMessageBox::question(this, tr("TouhouSatsu"), tr("Are you sure to exit?"), QMessageBox::Ok | QMessageBox::Cancel);
-    if (result == QMessageBox::Ok) {
-        delete systray;
-        systray = nullptr;
-        close();
-    }
+    close();
 }
 
 void MainWindow::on_actionStart_Server_triggered()
