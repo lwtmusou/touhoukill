@@ -152,6 +152,7 @@ set (QSanguosha_SRCS
     src/util/nativesocket.cpp
     src/util/recorder.cpp
     src/core/mode.cpp
+    src/core/luacardface.cpp
 )
 
 set (QSanguosha_UIS

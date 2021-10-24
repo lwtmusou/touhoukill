@@ -141,7 +141,9 @@ void CardOverview::on_tableWidget_itemSelectionChanged()
     QString pixmap_path = QStringLiteral("image/big-card/%1.png").arg(card.face()->name());
     ui->cardLabel->setPixmap(pixmap_path);
 
+#if 0
     ui->cardDescriptionBox->setText(card.face()->description());
+#endif
 
     if (card.face()->type() == QSanguosha::TypeEquip) {
         ui->playAudioEffectButton->show();
@@ -203,6 +205,7 @@ void CardOverview::on_playAudioEffectButton_clicked()
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
         const CardDescriptor &card = Sanguosha->getEngineCard(card_id);
         if (card.face()->type() == QSanguosha::TypeEquip) {
+#if 0
             QString effectName = card.face()->effectName();
             if (effectName == QStringLiteral("vscrossbow"))
                 effectName = QStringLiteral("crossbow");
@@ -210,6 +213,7 @@ void CardOverview::on_playAudioEffectButton_clicked()
             if (!QFile::exists(fileName))
                 fileName = G_ROOM_SKIN.getPlayerAudioEffectPath(card.face()->commonEffectName(), QStringLiteral("common"), -1);
             Audio::playAudioEffect(fileName);
+#endif
         }
     }
 }

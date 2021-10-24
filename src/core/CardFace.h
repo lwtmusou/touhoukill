@@ -28,9 +28,6 @@ public:
 
     // text property
     virtual QString name() const; // For Lua skill card. Lua skill card would provide dynamic name.
-    virtual QString description() const;
-    virtual QString commonEffectName() const;
-    virtual QString effectName() const;
 
     // type property
     virtual QSanguosha::CardType type() const = 0;

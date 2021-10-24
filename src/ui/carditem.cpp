@@ -67,7 +67,9 @@ void CardItem::setCard(const Card *card)
             setObjectName(card->faceName());
             for (int i = 0; i <= Sanguosha->getCardCount() - 1; i++) {
                 if (Sanguosha->getEngineCard(i).face()->name() == card->faceName()) {
+#if 0
                     setToolTip(Sanguosha->getEngineCard(i).face()->description());
+#endif
                     break;
                 }
             }
@@ -75,7 +77,9 @@ void CardItem::setCard(const Card *card)
             m_cardId = card->id();
             const CardDescriptor &engineCard = Sanguosha->getEngineCard(m_cardId);
             setObjectName(engineCard.face()->name());
+#if 0
             setToolTip(engineCard.face()->description());
+#endif
         }
     } else {
         m_cardId = Card::S_UNKNOWN_CARD_ID;

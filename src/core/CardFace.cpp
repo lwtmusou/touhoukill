@@ -52,21 +52,6 @@ QString CardFace::name() const
     return QString::fromUtf8(metaObject()->className());
 }
 
-QString CardFace::description() const
-{
-    return QString();
-}
-
-QString CardFace::commonEffectName() const
-{
-    return QString();
-}
-
-QString CardFace::effectName() const
-{
-    return QString();
-}
-
 bool CardFace::isKindOf(const char *cardType) const
 {
     return inherits(cardType);

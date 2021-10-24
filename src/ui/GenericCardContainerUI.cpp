@@ -883,7 +883,9 @@ void PlayerCardContainer::addEquips(QList<CardItem *> &equips)
         connect(equip, &QSanSelectableItem::mark_changed, this, &PlayerCardContainer::_onEquipSelectChanged);
         equip->setHomeOpacity(0.0);
         equip->setHomePos(_m_layout->m_equipAreas[index].center());
+#if 0
         _m_equipRegions[index]->setToolTip(equip_card->description());
+#endif
         QPixmap pixmap = _getEquipPixmap(equip->getCard());
 
         _m_equipLabel[index]->setPixmap(pixmap);

@@ -1,4 +1,5 @@
 #include "lua-wrapper.h"
+#include "engine.h"
 
 #include <QDebug>
 #include <QFile>
@@ -159,58 +160,85 @@ const QString &LuaMultiThreadEnvironment::luaCopyright()
     return v;
 }
 
+namespace SgsEx {
+CardFace *createNewLuaCardFace(const QString &name);
+
+}
+
 LuaMultiThreadEnvironment::LuaMultiThreadEnvironment()
     : d(new LuaMultiThreadEnvironmentPrivate)
 {
     LuaState *firstLuaState = new LuaState;
     d->stateStorage.setLocalData(firstLuaState);
 
-    LuaStatePointer firstLuaStatePtr = firstLuaState;
+    LuaStatePointer l = firstLuaState;
 
     // TODO: first LuaState is created, we should collect data from LuaState
     // notably Package, CardFace and Skill
     // Package maintains CardDescriptorList and GeneralList
 
-    int type = lua_getglobal(firstLuaStatePtr, "sgs");
+    int type = lua_getglobal(l, "sgs_ex");
     do {
         if (type != LUA_TTABLE) {
-            qDebug() << "sgs is not a table";
+            qDebug() << "sgs_ex is not a table";
             break;
         }
 
         // CardFaces
-        type = lua_getfield(firstLuaStatePtr, -1, "CardFaces");
+        type = lua_getfield(l, -1, "CardFaces");
         if (type != LUA_TTABLE) {
             qDebug() << "sgs.CardFaces is not a table";
         } else {
-            // deal with CardFaces
-            Q_UNIMPLEMENTED();
+            QStringList names;
+            for (lua_pushnil(l); lua_next(l, -2); lua_pop(l, 1)) {
+                // do not use lua_tolstring (which lua_tostring uses it) on keys as Lua recommands
+                // so we use value["name"] instead
+                type = lua_getfield(l, -1, "name");
+                if (type != LUA_TSTRING) {
+                    qDebug() << "sgs.CardFaces contain an item which does not have a string \"name\", ignoring.";
+                    lua_pop(l, 1);
+                    continue;
+                }
+
+                QString name = QString::fromUtf8(lua_tostring(l, -1));
+                names << name;
+                lua_pop(l, 1);
+            }
+            qDebug() << "CardFaces: " << names;
+
+            foreach (const QString &name, names) {
+                CardFace *f = SgsEx::createNewLuaCardFace(name);
+                if (f != nullptr)
+                    Sanguosha->registerCardFace(f);
+                else
+                    qDebug() << "creation of cardFace " << name << "failed";
+            }
         }
-        lua_pop(firstLuaStatePtr, 1);
+        lua_pop(l, 1);
 
         // Skills
-        type = lua_getfield(firstLuaStatePtr, -1, "Skills");
+        type = lua_getfield(l, -1, "Skills");
         if (type != LUA_TTABLE) {
             qDebug() << "sgs.Skills is not a table";
         } else {
             // deal with Skills
             Q_UNIMPLEMENTED();
         }
-        lua_pop(firstLuaStatePtr, 1);
+        lua_pop(l, 1);
 
         // Packages
-        type = lua_getfield(firstLuaStatePtr, -1, "Packages");
+        type = lua_getfield(l, -1, "Packages");
         if (type != LUA_TTABLE) {
             qDebug() << "sgs.Packages is not a table";
         } else {
             // deal with Packages
             Q_UNIMPLEMENTED();
         }
-        lua_pop(firstLuaStatePtr, 1);
+        lua_pop(l, 1);
 
     } while (false);
 
-    lua_pop(firstLuaStatePtr, 1);
+    lua_pop(l, 1);
 }
 
 LuaMultiThreadEnvironment *LuaMultiThreadEnvironment::self()

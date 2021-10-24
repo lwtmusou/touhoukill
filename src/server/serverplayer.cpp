@@ -53,23 +53,27 @@ void ServerPlayer::broadcastSkillInvoke(const Card *card) const
     QString skill_name = card->skillName();
     const Skill *skill = Sanguosha->getSkill(skill_name);
     if (skill == nullptr) {
+#if 0
         if (card->face()->commonEffectName().isNull())
             broadcastSkillInvoke(card->faceName());
         else
             room->broadcastSkillInvoke(card->face()->commonEffectName(), QStringLiteral("common"));
+#endif
         return;
     } else {
         int index = skill->getAudioEffectIndex(this, card);
         if (index == 0)
             return;
 
+#if 0
         if (index == -1 || index == -2) {
             if (card->face()->commonEffectName().isNull())
                 broadcastSkillInvoke(card->faceName());
             else
                 room->broadcastSkillInvoke(card->face()->commonEffectName(), QStringLiteral("common"));
         } else
-            room->broadcastSkillInvoke(skill_name, index);
+#endif
+        room->broadcastSkillInvoke(skill_name, index);
     }
 }
 

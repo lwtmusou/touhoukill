@@ -136,10 +136,10 @@ JSON = require("JSON")
 
 -- Descriptors here
 -- Should it be k-v pair or sequence?
-
-sgs.Packages = {}
-sgs.CardFaces = {}
-sgs.Skills = {}
+-- Add it to sgs_ex table
+sgs_ex.Packages = {}
+sgs_ex.CardFaces = {}
+sgs_ex.Skills = {}
 
 -- TODO: load extensions
 
@@ -155,18 +155,17 @@ local loadExtension = function(name, isBuiltin)
     local extension = require(extensionPrefix .. name)
     if extension then
         if (type(extension) == "table") and ((extension.type & sgs_ex.TableType.FirstTypeMask) == sgs_ex.TableType.Package) then
-            table.insert(sgs.Packages, extension)
             if extension.cardFaces then
                 for _, c in iparis(extension.cardFaces) do
-                    table.insert(sgs.CardFaces, c)
+                    sgs_ex.CardFaces[c.name] = c
                 end
             end
             if extension.skills then
                 for _, s in ipairs(extension.skills) do
-                    table.insert(sgs.Skills, s)
+                    sgs_ex.Skills[s.name] = s
                 end
             end
-            table.insert(sgs.Packages, extension)
+            sgs_ex.Packages[extension.name] = extension
             return true
         end
     end

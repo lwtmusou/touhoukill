@@ -50,7 +50,7 @@ public:
     LuaStatePointer l;
 
     EnginePrivate()
-        : l(LuaMultiThreadEnvironment::luaStateForCurrentThread())
+        : l(nullptr)
     {
     }
 };
@@ -66,6 +66,8 @@ Engine::Engine()
     JsonDocument doc = JsonDocument::fromFilePath(QStringLiteral("config/gameconfig.json"));
     if (doc.isValid())
         d->configFile = doc.object();
+
+    d->l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
 
     foreach (const CardFace *cardFace, LuaMultiThreadEnvironment::cardFaces())
         registerCardFace(cardFace);
