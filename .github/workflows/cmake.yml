@@ -142,11 +142,11 @@ jobs:
           choco install cmake
           choco install ninja
           
-      - name: install mingw clang toolchain
+      - name: install llvm mingw toolchain
         run: |
-          New-Item -Path "." -Name "llvm-clang" -ItemType "directory";
-          (New-Object System.Net.WebClient).DownloadFile("https://github.com/mstorsjo/llvm-mingw/releases/download/20211002/llvm-mingw-20211002-${{ matrix.clang }}-x86_64.zip","llvm-clang/llvm-mingw-20211002-${{ matrix.clang }}-x86_64.zip");
-          cmd /c cd Qt6 "&&" 7z x llvm-mingw-20211002-${{ matrix.clang }}-x86_64.zip
+          New-Item -Path "." -Name "llvm-mingw" -ItemType "directory";
+          (New-Object System.Net.WebClient).DownloadFile("https://github.com/mstorsjo/llvm-mingw/releases/download/20211002/llvm-mingw-20211002-${{ matrix.clang }}-x86_64.zip","llvm-mingw/llvm-mingw-20211002-${{ matrix.clang }}-x86_64.zip");
+          cmd /c cd llvm-mingw "&&" 7z x llvm-mingw-20211002-${{ matrix.clang }}-x86_64.zip
           
 
       - name: install Qt6
@@ -159,7 +159,7 @@ jobs:
         shell: cmd
         run : |
           del /s /q C:\Strawberry\perl\bin\pkg-config.bat
-          set path=${{ github.workspace }}\llvm-clang\llvm-mingw-20211002-${{ matrix.clang }}-x86_64\x86_64-w64-mingw32\bin;${{ github.workspace }}\llvm-clang\llvm-mingw-20211002-${{ matrix.clang }}-x86_64\bin;%path%
+          set path=${{ github.workspace }}\llvm-mingw\llvm-mingw-20211002-${{ matrix.clang }}-x86_64\x86_64-w64-mingw32\bin;${{ github.workspace }}\llvm-mingw\llvm-mingw-20211002-${{ matrix.clang }}-x86_64\bin;%path%
           mkdir "build"
           cd "build"
           rmdir /s /q *
