@@ -123,6 +123,49 @@ jobs:
           cmd /c cmake -GNinja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt5\Qt5.15.2-Windows-x86_64-MinGW8.1.0;${{ github.workspace }}\Qt6\Qt6.1.3-Windows-x86_64-MinGW8.1.0" "${{ github.workspace }}/touhoukill-refactor"
           ninja -k0
 
+  build-mingwclang:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        clang: [
+          msvcrt, ucrt
+        ]
+    name: build-mingwclang-${{ matrix.clang }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: touhoukill-refactor
+
+      - name: install swig, cmake and ninja
+        run: |
+          choco install swig
+          choco install cmake
+          choco install ninja
+          
+      - name: install mingw clang toolchain
+        run: |
+          New-Item -Path "." -Name "llvm-clang" -ItemType "directory";
+          (New-Object System.Net.WebClient).DownloadFile("https://github.com/mstorsjo/llvm-mingw/releases/download/20211002/llvm-mingw-20211002-${{ matrix.clang }}-x86_64.zip","llvm-clang/llvm-mingw-20211002-${{ matrix.clang }}-x86_64.zip");
+          cmd /c cd Qt6 "&&" 7z x llvm-mingw-20211002-${{ matrix.clang }}-x86_64.zip
+          
+
+      - name: install Qt6
+        run : |
+          New-Item -Path "." -Name "Qt6" -ItemType "directory";
+          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20211019/Qt6.2.0-Windows-x86_64-MinGWLLVM-${{ matrix.clang }}13-20211017.7z","Qt6/Qt6.2.0-Windows-x86_64-MinGWLLVM-${{ matrix.clang }}13-20211017.7z");
+          cmd /c cd Qt6 "&&" 7z x Qt6.2.0-Windows-x86_64-MinGWLLVM-${{ matrix.clang }}13-20211017.7z
+
+      - name: run cmake+ninja
+        shell: cmd
+        run : |
+          del /s /q C:\Strawberry\perl\bin\pkg-config.bat
+          set path=${{ github.workspace }}\llvm-clang\llvm-mingw-20211002-${{ matrix.clang }}-x86_64\x86_64-w64-mingw32\bin;${{ github.workspace }}\llvm-clang\llvm-mingw-20211002-${{ matrix.clang }}-x86_64\bin;%path%
+          mkdir "build"
+          cd "build"
+          rmdir /s /q *
+          cmd /c cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="x86_64-w64-mingw32-clang++" -DCMAKE_C_COMPILER="x86_64-w64-mingw32-clang" -DCMAKE_ASM_COMPILER="x86_64-w64-mingw32-clang" "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt6\Qt6.2.0-Windows-x86_64-MinGWLLVM-${{ matrix.clang }}13" "${{ github.workspace }}/touhoukill-refactor"
+          ninja -k0
+
   build-mingwmsys:
     runs-on: windows-latest
     strategy:
