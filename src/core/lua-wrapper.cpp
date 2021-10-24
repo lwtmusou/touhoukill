@@ -162,7 +162,6 @@ const QString &LuaMultiThreadEnvironment::luaCopyright()
 
 namespace SgsEx {
 CardFace *createNewLuaCardFace(const QString &name);
-
 }
 
 LuaMultiThreadEnvironment::LuaMultiThreadEnvironment()
@@ -187,7 +186,7 @@ LuaMultiThreadEnvironment::LuaMultiThreadEnvironment()
         // CardFaces
         type = lua_getfield(l, -1, "CardFaces");
         if (type != LUA_TTABLE) {
-            qDebug() << "sgs.CardFaces is not a table";
+            qDebug() << "sgs_ex.CardFaces is not a table";
         } else {
             QStringList names;
             for (lua_pushnil(l); lua_next(l, -2); lua_pop(l, 1)) {
@@ -219,7 +218,7 @@ LuaMultiThreadEnvironment::LuaMultiThreadEnvironment()
         // Skills
         type = lua_getfield(l, -1, "Skills");
         if (type != LUA_TTABLE) {
-            qDebug() << "sgs.Skills is not a table";
+            qDebug() << "sgs_ex.Skills is not a table";
         } else {
             // deal with Skills
             Q_UNIMPLEMENTED();
@@ -229,7 +228,7 @@ LuaMultiThreadEnvironment::LuaMultiThreadEnvironment()
         // Packages
         type = lua_getfield(l, -1, "Packages");
         if (type != LUA_TTABLE) {
-            qDebug() << "sgs.Packages is not a table";
+            qDebug() << "sgs_ex.Packages is not a table";
         } else {
             // deal with Packages
             Q_UNIMPLEMENTED();
