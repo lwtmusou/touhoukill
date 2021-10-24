@@ -70,6 +70,7 @@ public:
 
     QString subTypeName() const override
     {
+        // todo: implementation
         return QString();
     }
 
