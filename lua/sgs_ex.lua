@@ -115,7 +115,6 @@ sgs_ex.CardFace = function(desc, ...)
     -- subTypeName -> string
     -- (if different than default) properties, including
     --  - targetFixed = function(player, card) -> boolean
-    --  - throwWhenUsing = function() -> boolean
     --  - hasPreAction = function() -> boolean
     --  - canDamage = function() -> boolean
     --  - canRecover = function() -> boolean
@@ -167,15 +166,6 @@ sgs_ex.CardFace = function(desc, ...)
             warn(funcName .. ": desc.targetFixed is not boolean or function and is ignored")
         else
             r.targetFixed = desc.targetFixed
-        end
-    end
-
-    --  - throwWhenUsing = function() -> boolean
-    if desc.throwWhenUsing then
-        if (type(desc.throwWhenUsing) ~= "boolean") and (type(desc.throwWhenUsing) ~= "function") then
-            warn(funcName .. ": desc.throwWhenUsing is not boolean or function and is ignored")
-        else
-            r.throwWhenUsing = desc.throwWhenUsing
         end
     end
 
@@ -596,7 +586,7 @@ end
 
 
 sgs_ex.SkillCard = function(desc, ...)
-    -- SkillCard is no more than Card, except for its card type
+    -- SkillCard adds a property names throwWhenUsing
     if type(desc) ~= "table" then
         return fail, "sgs_ex.SkillCard: desc is not table"
     end
@@ -609,7 +599,26 @@ sgs_ex.SkillCard = function(desc, ...)
         return desc
     end
 
-    return sgs_ex.CardFace(desc, "sgs_ex.SkillCard", ...)
+    local r2 = {}
+
+    --  - throwWhenUsing = function() -> boolean
+    if desc.throwWhenUsing then
+        if (type(desc.throwWhenUsing) ~= "boolean") and (type(desc.throwWhenUsing) ~= "function") then
+            warn(funcName .. "sgs_ex.SkillCard: desc.throwWhenUsing is not boolean or function and is ignored")
+        else
+            r2.throwWhenUsing = desc.throwWhenUsing
+        end
+    end
+
+    local r, e = sgs_ex.CardFace(desc, "sgs_ex.SkillCard", ...)
+
+    if not r then
+        return r, e
+    end
+
+    r.throwWhenUsing = r2.throwWhenUsing
+
+    return r
 end
 
 -- Enough error check is necessary
