@@ -1907,7 +1907,7 @@ public:
     int getExtraTargetNum(const Player *, const Card *card) const override
     {
         if (card->hasFlag("xunshi"))
-            return 1;
+            return 1000;
 
         return 0;
     }
