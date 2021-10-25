@@ -76,8 +76,6 @@ public:
     void setCanRecast(bool can);
     bool hasEffectValue() const;
     void setHasEffectValue(bool has);
-    bool throwWhenUsing() const;
-    void setThrowWhenUsing(bool thrown);
 
     // Face (functional model)
     const CardFace *face() const;

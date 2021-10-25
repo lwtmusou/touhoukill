@@ -36,7 +36,6 @@ public:
     bool can_recover;
     bool can_recast;
     bool has_effect_value;
-    bool throw_when_using;
 
     // flags
     QSet<QString> flags;
@@ -60,7 +59,6 @@ public:
         , can_recover(false)
         , can_recast(false)
         , has_effect_value(false)
-        , throw_when_using(false)
         , mute(false)
         , room(room)
     {
@@ -68,7 +66,6 @@ public:
             can_damage = face->canDamage();
             can_recover = face->canRecover();
             has_effect_value = face->hasEffectValue();
-            throw_when_using = face->throwWhenUsing();
             handling_method = face->defaultHandlingMethod();
         }
     }
@@ -346,16 +343,6 @@ void Card::setHasEffectValue(bool has_effect_value)
     d->has_effect_value = has_effect_value;
 }
 
-bool Card::throwWhenUsing() const
-{
-    return d->throw_when_using;
-}
-
-void Card::setThrowWhenUsing(bool throw_when_using)
-{
-    d->throw_when_using = throw_when_using;
-}
-
 const CardFace *Card::face() const
 {
     return d->face;
@@ -369,7 +356,6 @@ void Card::setFace(const CardFace *face)
         d->can_damage = face->canDamage();
         d->can_recover = face->canRecover();
         d->has_effect_value = face->hasEffectValue();
-        d->throw_when_using = face->throwWhenUsing();
         d->handling_method = face->defaultHandlingMethod();
     }
 }

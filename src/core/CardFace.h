@@ -60,8 +60,6 @@ public:
     // virtual bool canRecast() const;
     virtual bool hasEffectValue() const;
     void setHasEffectValue(bool can);
-    virtual bool throwWhenUsing() const;
-    void setThrowWhenUsing(bool can);
     virtual bool hasPreAction() const;
     void setHasPreAction(bool can);
 
@@ -268,17 +266,28 @@ protected:
     const JudgeStruct *j;
 };
 
+class SkillCardPrivate;
+
 class SkillCard : public CardFace
 {
     Q_OBJECT
 
 public:
-    SkillCard() = default;
-    ~SkillCard() override = default;
+    SkillCard();
+    ~SkillCard() override;
 
     QSanguosha::CardType type() const override;
     QString typeName() const override;
     QString subTypeName() const override;
+
+    void onUse(RoomObject *room, const CardUseStruct &card_use) const override;
+    void use(RoomObject *room, const CardUseStruct &use) const override;
+
+    virtual bool throwWhenUsing() const;
+    void setThrowWhenUsing(bool can);
+
+private:
+    SkillCardPrivate *const d;
 };
 
 #endif

@@ -18,7 +18,6 @@ class CardFacePrivate
 public:
     CardFacePrivate()
         : target_fixed(false)
-        , throw_when_using(true)
         , has_preact(false)
         , can_damage(false)
         , can_recover(false)
@@ -28,7 +27,6 @@ public:
     }
 
     bool target_fixed;
-    bool throw_when_using;
     bool has_preact;
     bool can_damage;
     bool can_recover;
@@ -99,16 +97,6 @@ bool CardFace::hasEffectValue() const
 void CardFace::setHasEffectValue(bool can)
 {
     d->has_effectvalue = can;
-}
-
-bool CardFace::throwWhenUsing() const
-{
-    return d->throw_when_using;
-}
-
-void CardFace::setThrowWhenUsing(bool can)
-{
-    d->throw_when_using = can;
 }
 
 bool CardFace::hasPreAction() const
@@ -191,13 +179,12 @@ void CardFace::onUse(RoomObject *room, const CardUseStruct &use) const
     //     room->reverseFor3v3(card_use.card, player, targets);
     card_use.to = targets;
 
-    bool hidden = (type() == TypeSkill && !card_use.card->throwWhenUsing());
     LogMessage log;
     log.from = player;
     if (!targetFixed(card_use.from, card_use.card) || card_use.to.length() > 1 || !card_use.to.contains(card_use.from))
         log.to = card_use.to;
     log.type = QStringLiteral("#UseCard");
-    log.card_str = card_use.card->toString(hidden);
+    log.card_str = card_use.card->toString(false);
     RefactorProposal::fixme_cast<Room *>(room)->sendLog(log);
 
     IDSet used_cards;
@@ -213,24 +200,17 @@ void CardFace::onUse(RoomObject *room, const CardUseStruct &use) const
     thread->trigger(PreCardUsed, data);
     card_use = data.value<CardUseStruct>();
 
-    if (type() != TypeSkill) {
-        CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), card_use.card->skillName(), QString());
-        if (card_use.to.size() == 1)
-            reason.m_targetId = card_use.to.first()->objectName();
+    CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), card_use.card->skillName(), QString());
+    if (card_use.to.size() == 1)
+        reason.m_targetId = card_use.to.first()->objectName();
 
-        reason.m_extraData = QVariant::fromValue(card_use.card);
+    reason.m_extraData = QVariant::fromValue(card_use.card);
 
-        foreach (int id, used_cards) {
-            CardsMoveStruct move(id, nullptr, PlaceTable, reason);
-            moves.append(move);
-        }
-        RefactorProposal::fixme_cast<Room *>(room)->moveCardsAtomic(moves, true);
-    } else {
-        if (card_use.card->throwWhenUsing()) {
-            CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName(), QString(), card_use.card->skillName(), QString());
-            RefactorProposal::fixme_cast<Room *>(room)->moveCardTo(card_use.card, RefactorProposal::fixme_cast<ServerPlayer *>(player), nullptr, PlaceDiscardPile, reason, true);
-        }
+    foreach (int id, used_cards) {
+        CardsMoveStruct move(id, nullptr, PlaceTable, reason);
+        moves.append(move);
     }
+    RefactorProposal::fixme_cast<Room *>(room)->moveCardsAtomic(moves, true);
 
     RefactorProposal::fixme_cast<ServerPlayer *>(player)->showHiddenSkill(card_use.card->showSkillName());
 
@@ -486,6 +466,26 @@ JudgeStruct DelayedTrick::judge() const
     return *j;
 }
 
+class SkillCardPrivate
+{
+public:
+    bool throw_when_using;
+    SkillCardPrivate()
+        : throw_when_using(true)
+    {
+    }
+};
+
+SkillCard::SkillCard()
+    : d(new SkillCardPrivate)
+{
+}
+
+SkillCard::~SkillCard()
+{
+    delete d;
+}
+
 CardType SkillCard::type() const
 {
     return TypeSkill;
@@ -499,6 +499,56 @@ QString SkillCard::typeName() const
 QString SkillCard::subTypeName() const
 {
     return QStringLiteral("skill");
+}
+
+void SkillCard::onUse(RoomObject *room, const CardUseStruct &_use) const
+{
+    CardUseStruct card_use = _use;
+    Player *player = card_use.from;
+
+    room->sortPlayersByActionOrder(card_use.to);
+
+    QList<Player *> targets = card_use.to;
+    card_use.to = targets;
+
+    LogMessage log;
+    log.from = player;
+    if (!targetFixed(card_use.from, card_use.card) || card_use.to.length() > 1 || !card_use.to.contains(card_use.from))
+        log.to = card_use.to;
+    log.type = QStringLiteral("#UseCard");
+    log.card_str = card_use.card->toString(!throwWhenUsing());
+    RefactorProposal::fixme_cast<Room *>(room)->sendLog(log);
+
+    if (throwWhenUsing()) {
+        CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName(), QString(), card_use.card->skillName(), QString());
+        RefactorProposal::fixme_cast<Room *>(room)->moveCardTo(card_use.card, RefactorProposal::fixme_cast<ServerPlayer *>(player), nullptr, PlaceDiscardPile, reason, true);
+    }
+
+    RefactorProposal::fixme_cast<ServerPlayer *>(player)->showHiddenSkill(card_use.card->showSkillName());
+
+    use(room, card_use);
+}
+
+void SkillCard::use(RoomObject *, const CardUseStruct &use) const
+{
+    Player *source = use.from;
+    foreach (Player *target, use.to) {
+        CardEffectStruct effect;
+        effect.card = use.card;
+        effect.from = source;
+        effect.to = target;
+        effect.card->face()->onEffect(effect);
+    }
+}
+
+bool SkillCard::throwWhenUsing() const
+{
+    return d->throw_when_using;
+}
+
+void SkillCard::setThrowWhenUsing(bool can)
+{
+    d->throw_when_using = can;
 }
 
 // TODO: find a suitable place for them
