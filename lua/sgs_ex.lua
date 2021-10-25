@@ -388,8 +388,9 @@ sgs_ex.NonDelayedTrick = function(desc, ...)
 end
 
 sgs_ex.DelayedTrick = function(desc, ...)
-    -- DelayedTrick has an extra member called judge
-    -- it can be null and the delayed trick will do nothing
+    -- DelayedTrick has an extra member called judge and extra member function called takeEffect
+    -- they can't be null
+
     if type(desc) ~= "table" then
         return fail, "sgs_ex.NonDelayedTrick: desc is not table"
     end
@@ -406,6 +407,16 @@ sgs_ex.DelayedTrick = function(desc, ...)
 
     if desc.judge then
         r2.judge = desc.judge
+    else
+        return fail, "sgs_ex.DelayedTrick: desc.judge is null"
+    end
+
+    if not desc.takeEffect then
+        return fail, "sgs_ex.DelayedTrick: desc.takeEffect is null"
+    elseif type(desc.takeEffect) ~= "function" then
+        return fail, "sgs_ex.DelayedTrick: desc.takeEffect is not function"
+    else
+        r2.takeEffect = desc.takeEffect
     end
 
     local r, e = sgs_ex.TrickCard(desc, "sgs_ex.DelayedTrick", ...)
@@ -415,6 +426,7 @@ sgs_ex.DelayedTrick = function(desc, ...)
     end
 
     r.judge = r2.judge
+    r.takeEffect = r2.takeEffect
 
     return r
 end
