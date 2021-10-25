@@ -72,9 +72,9 @@ public:
         if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
             bool r = false;
             c->setFlags("IgnoreFailed");
-            c->setFlags("houhu");
+            c->setFlags("xunshi");
             r = c->isAvailable(from) && !from->isProhibited(to, c) && c->targetFilter(QList<const Player *>(), to, from);
-            c->setFlags("-houhu");
+            c->setFlags("-xunshi");
             c->setFlags("-IgnoreFailed");
             return r;
         }
@@ -323,11 +323,11 @@ public:
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, nullptr, false, target);
                     } else if (!player->isProhibited(target, use.card, ps)) {
                         use.card->setFlags("IgnoreFailed");
-                        use.card->setFlags("houhu");
+                        use.card->setFlags("xunshi");
                         bool can = use.card->targetFilter(ps, target, player);
                         if (use.card->isKindOf("Peach") && target->isWounded())
                             can = true;
-                        use.card->setFlags("-houhu");
+                        use.card->setFlags("-xunshi");
                         use.card->setFlags("-IgnoreFailed");
                         if (can)
                             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, nullptr, false, target);
@@ -354,24 +354,6 @@ public:
             data = QVariant::fromValue(use);
         }
         return false;
-    }
-};
-
-class HouhuDistance : public TargetModSkill
-{
-public:
-    HouhuDistance()
-        : TargetModSkill("houhu-dist")
-    {
-        pattern = "BasicCard,TrickCard";
-    }
-
-    int getDistanceLimit(const Player *, const Card *card) const override
-    {
-        if (card->hasFlag("houhu"))
-            return 1000;
-
-        return 0;
     }
 };
 
@@ -945,14 +927,14 @@ public:
 
         bool invoke = false;
         use.card->setFlags("IgnoreFailed");
-        use.card->setFlags("zangfa");
+        use.card->setFlags("xunshi");
         foreach (ServerPlayer *q, room->getAlivePlayers()) {
             if (!use.to.contains(q) && !use.from->isProhibited(q, use.card, ps) && use.card->targetFilter(ps, q, use.from)) {
                 invoke = true;
                 break;
             }
         }
-        use.card->setFlags("-zangfa");
+        use.card->setFlags("-xunshi");
         use.card->setFlags("-IgnoreFailed");
         if (!invoke)
             return QList<SkillInvokeDetail>();
@@ -974,12 +956,12 @@ public:
         foreach (ServerPlayer *p, use.to)
             ps << p;
         use.card->setFlags("IgnoreFailed");
-        use.card->setFlags("zangfa");
+        use.card->setFlags("xunshi");
         foreach (ServerPlayer *q, room->getAlivePlayers()) {
             if (!use.to.contains(q) && !use.from->isProhibited(q, use.card, ps) && use.card->targetFilter(ps, q, use.from))
                 listt << q;
         }
-        use.card->setFlags("-zangfa");
+        use.card->setFlags("-xunshi");
         use.card->setFlags("-IgnoreFailed");
         invoke->invoker->tag["zangfa_use"] = data;
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, listt, objectName(), "@zangfa:" + use.card->objectName(), true, true);
@@ -998,24 +980,6 @@ public:
         room->sortByActionOrder(use.to);
         data = QVariant::fromValue(use);
         return false;
-    }
-};
-
-class ZangfaDistance : public TargetModSkill
-{
-public:
-    ZangfaDistance()
-        : TargetModSkill("zangfa-dist")
-    {
-        pattern = "TrickCard";
-    }
-
-    int getDistanceLimit(const Player *, const Card *card) const override
-    {
-        if (card->hasFlag("zangfa"))
-            return 1000;
-
-        return 0;
     }
 };
 
@@ -1674,8 +1638,6 @@ TH16Package::TH16Package()
     addMetaObject<MingheCard>();
     addMetaObject<KuangwuCard>();
     addMetaObject<ZhutiCard>();
-
-    skills << new HouhuDistance << new ZangfaDistance;
 }
 
 ADD_PACKAGE(TH16)

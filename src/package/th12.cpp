@@ -86,7 +86,7 @@ public:
         if (use.to.first() == use.from || !use.to.first()->hasLordSkill(this))
             return QList<SkillInvokeDetail>();
 
-        use.card->setFlags("fahua");
+        use.card->setFlags("xunshi");
         use.card->setFlags("IgnoreFailed");
         bool invoke = false;
         foreach (ServerPlayer *q, room->getLieges("xlc", use.to.first())) {
@@ -97,7 +97,7 @@ public:
             invoke = true;
             break;
         }
-        use.card->setFlags("-fahua");
+        use.card->setFlags("-xunshi");
         use.card->setFlags("-IgnoreFailed");
         if (invoke)
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.to.first(), use.to.first());
@@ -107,8 +107,8 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        use.card->setFlags("fahua"); // for distance limit
-        use.card->setFlags("IgnoreFailed"); //for factor which named "ignore" and related with Function "isProhibited" and  "targetFilter"
+        use.card->setFlags("xunshi");
+        use.card->setFlags("IgnoreFailed");
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *p, room->getLieges("xlc", invoke->invoker)) {
             if (use.to.contains(p) || use.from->isProhibited(p, use.card))
@@ -118,7 +118,7 @@ public:
                 continue;
             targets << p;
         }
-        use.card->setFlags("-fahua");
+        use.card->setFlags("-xunshi");
         use.card->setFlags("-IgnoreFailed");
 
         room->setTag("fahua_use", data);
@@ -140,24 +140,6 @@ public:
             }
         }
         return false;
-    }
-};
-
-class FahuaDistance : public TargetModSkill
-{
-public:
-    FahuaDistance()
-        : TargetModSkill("fahua-dist")
-    {
-        pattern = "TrickCard";
-    }
-
-    int getDistanceLimit(const Player *, const Card *card) const override
-    {
-        if (card->hasFlag("fahua"))
-            return 1000;
-
-        return 0;
     }
 };
 
@@ -1686,7 +1668,7 @@ TH12Package::TH12Package()
     addMetaObject<NuhuoCard>();
     addMetaObject<ShuxinCard>();
     addMetaObject<HuishengCard>();
-    skills << new FahuaDistance << new ShuxinVS;
+    skills << new ShuxinVS;
 }
 
 ADD_PACKAGE(TH12)

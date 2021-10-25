@@ -1730,6 +1730,7 @@ public:
     {
         pattern = "Slash,TrickCard+^DelayedTrick";
     }
+
     static bool isLastHandCard(const Player *player, const Card *card)
     {
         QList<int> subcards = card->getSubcards();
