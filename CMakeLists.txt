@@ -77,7 +77,7 @@ set (QSanguosha_Core_SRCS
     src/core/package.cpp
     src/core/player.cpp
     src/core/protocol.cpp
-    src/core/RequestAPI.cpp
+    src/core/RpcApi.cpp
     src/core/RoomObject.cpp
     src/core/skill.cpp
     src/core/trigger.cpp
@@ -188,7 +188,7 @@ set (QSanguosha_MOCS
     src/client/aux-skills.h
     src/client/client.h
     src/dialog/serverinfowidget.h
-    src/core/RequestAPI.h
+    src/core/RpcApi.h
     src/dialog/AboutUs.h
     src/dialog/cardoverview.h
     src/dialog/choosegeneraldialog.h
