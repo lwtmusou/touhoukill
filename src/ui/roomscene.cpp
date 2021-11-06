@@ -1528,7 +1528,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
         setChatBoxVisible(!chat_box_widget->isVisible());
         break;
     }
-
+#if 0
     case Qt::Key_S:
         dashboard->selectCard(QStringLiteral("slash"));
         break;
@@ -1589,7 +1589,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
     case Qt::Key_Right:
         dashboard->selectCard(QStringLiteral("."), true, control_is_down);
         break; // iterate all cards
-
+#endif
     case Qt::Key_Return: {
         if (ok_button->isEnabled())
             doOkButton();

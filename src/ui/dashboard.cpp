@@ -430,6 +430,7 @@ void Dashboard::_addHandCard(CardItem *card_item, bool prepend, const QString &f
     connect(card_item, &CardItem::leave_hover, this, &Dashboard::onCardItemLeaveHover);
 }
 
+#if 0
 void Dashboard::selectCard(const QString &pattern, bool forward, bool multiple)
 {
     if (!multiple && (selected != nullptr) && selected->isSelected())
@@ -462,6 +463,7 @@ void Dashboard::selectCard(const QString &pattern, bool forward, bool multiple)
 
     adjustCards();
 }
+#endif
 
 void Dashboard::selectEquip(int position)
 {

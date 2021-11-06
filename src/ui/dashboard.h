@@ -74,7 +74,9 @@ public:
     void killPlayer() override;
     void revivePlayer() override;
     virtual void setDeathColor();
+#if 0
     void selectCard(const QString &pattern, bool forward = true, bool multiple = false);
+#endif
     void selectEquip(int position);
     void selectOnlyCard(bool need_only = false);
     void useSelected();

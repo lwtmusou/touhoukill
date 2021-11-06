@@ -95,15 +95,6 @@ bool CardFace::isKindOf(const QString &cardType) const
     return false;
 }
 
-bool CardFace::matchType(const QString &pattern) const
-{
-    foreach (const QString &ptn, pattern.split(QStringLiteral("+"))) {
-        if (typeName() == ptn || subTypeName() == ptn)
-            return true;
-    }
-    return false;
-}
-
 bool CardFace::canDamage() const
 {
     return d->can_damage;

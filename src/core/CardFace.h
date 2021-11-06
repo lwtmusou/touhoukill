@@ -32,7 +32,6 @@ public:
     virtual QString typeName() const = 0;
     QString subTypeName() const;
     QSGS_LUA_API bool isKindOf(const QString &cardType) const;
-    virtual bool matchType(const QString &pattern) const;
 
     // Can we have a better way to replace this function? Maybe using `match`
     // Fs: This is just a convenience function....
