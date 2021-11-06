@@ -1200,13 +1200,13 @@ void Client::askForNullification(const QVariant &arg)
 
     const CardFace *trick_card = Sanguosha->cardFace(trick_name);
     if (Config.NeverNullifyMyTrick && source == Self) {
-        if (trick_card->isKindOf("SingleTargetTrick") || trick_card->isKindOf("IronChain")) {
+        if (trick_card->isKindOf(QStringLiteral("SingleTargetTrick")) || trick_card->isKindOf(QStringLiteral("IronChain"))) {
             onPlayerResponseCard(nullptr);
             return;
         }
     }
     if (m_noNullificationThisTime && m_noNullificationTrickName == trick_name) {
-        if (trick_card->isKindOf("AOE") || trick_card->isKindOf("GlobalEffect")) {
+        if (trick_card->isKindOf(QStringLiteral("AOE")) || trick_card->isKindOf(QStringLiteral("GlobalEffect"))) {
             onPlayerResponseCard(nullptr);
             return;
         }

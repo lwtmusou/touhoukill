@@ -31,12 +31,15 @@ public:
     virtual QSanguosha::CardType type() const = 0;
     virtual QString typeName() const = 0;
     QSGS_LUA_API virtual QString subTypeName() const = 0;
-    QSGS_LUA_API bool isKindOf(const char *cardType) const;
+    QSGS_LUA_API bool isKindOf(const QString &cardType) const;
     virtual bool matchType(const QString &pattern) const;
 
     // Can we have a better way to replace this function? Maybe using `match`
     // Fs: This is just a convenience function....
-    virtual bool isNDTrick() const;
+    inline bool isNDTrick() const
+    {
+        return isKindOf(QStringLiteral("NonDelayedTrick"));
+    }
 
     // property identifier.
     // CardFace provides the default value of these property
@@ -216,7 +219,6 @@ public:
     ~NonDelayedTrick() override = default;
 
     QString subTypeName() const override;
-    bool isNDTrick() const override;
 };
 
 class DelayedTrick : public TrickCard

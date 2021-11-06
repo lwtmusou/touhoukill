@@ -398,13 +398,13 @@ Card *ServerPlayer::wholeHandCards() const
 bool ServerPlayer::hasNullification() const
 {
     foreach (const Card *card, m_handcards) {
-        if (card->face()->isKindOf("Nullification"))
+        if (card->face()->isKindOf(QStringLiteral("Nullification")))
             return true;
     }
 
     if (hasValidTreasure(QStringLiteral("wooden_ox"))) {
         foreach (int id, pile(QStringLiteral("wooden_ox"))) {
-            if (room->getCard(id)->face()->isKindOf("Nullification"))
+            if (room->getCard(id)->face()->isKindOf(QStringLiteral("Nullification")))
                 return true;
         }
     }
@@ -412,7 +412,7 @@ bool ServerPlayer::hasNullification() const
     if (hasValidSkill(QStringLiteral("chaoren"))) {
         bool ok = false;
         int id = property("chaoren").toInt(&ok);
-        if (ok && id > -1 && room->getCard(id)->face()->isKindOf("Nullification"))
+        if (ok && id > -1 && room->getCard(id)->face()->isKindOf(QStringLiteral("Nullification")))
             return true;
     }
 
@@ -1415,11 +1415,11 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
 
     //check ResidueNum
     //only consider the folloing cards
-    if (use.card->face()->isKindOf("Slash") || use.card->face()->isKindOf("Analeptic")) {
+    if (use.card->face()->isKindOf(QStringLiteral("Slash")) || use.card->face()->isKindOf(QStringLiteral("Analeptic"))) {
         num = 0;
-        if (use.card->face()->isKindOf("Slash"))
+        if (use.card->face()->isKindOf(QStringLiteral("Slash")))
             num = use.from->slashCount() - 1;
-        else if (use.card->face()->isKindOf("Analeptic"))
+        else if (use.card->face()->isKindOf(QStringLiteral("Analeptic")))
             num = use.from->analapticCount() - 1;
 
         if (num >= 1) {
@@ -1434,7 +1434,8 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
 
     //check DistanceLimit
     //only consider the folloing cards
-    if (use.card->face()->isKindOf("Slash") || use.card->face()->isKindOf("SupplyShortage") || use.card->face()->isKindOf("Snatch")) {
+    if (use.card->face()->isKindOf(QStringLiteral("Slash")) || use.card->face()->isKindOf(QStringLiteral("SupplyShortage"))
+        || use.card->face()->isKindOf(QStringLiteral("Snatch"))) {
         int distance = 1;
         foreach (Player *p, use.to) {
             if (use.from->distanceTo(p) > distance)
@@ -1457,7 +1458,8 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     //Peach , EquipCard , ExNihilo, Analeptic, Lightning
 
     use.card->addFlag(QStringLiteral("IgnoreFailed"));
-    if (use.card->face()->targetFixed(use.from, use.card) && !use.to.contains(use.from) && !use.card->face()->isKindOf("AOE") && !use.card->face()->isKindOf("GlobalEffect")) {
+    if (use.card->face()->targetFixed(use.from, use.card) && !use.to.contains(use.from) && !use.card->face()->isKindOf(QStringLiteral("AOE"))
+        && !use.card->face()->isKindOf(QStringLiteral("GlobalEffect"))) {
         //        if (isHiddenSkill(QStringLiteral("tianqu")) && room->currentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
         //            showTargetFix << QStringLiteral("tianqu");
     }
@@ -1475,7 +1477,7 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
             showTargetProhibit << QStringLiteral("tianqu");
             if (use.from->isProhibited(p, use.card, useToExceptp) && room->currentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
                 break;
-            } else if (use.card->face()->isKindOf("Peach")) {
+            } else if (use.card->face()->isKindOf(QStringLiteral("Peach"))) {
                 if (!p->isWounded() && room->currentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
                     showTargetProhibit << QStringLiteral("tianqu");
                     break;
@@ -1485,7 +1487,7 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
                     showTargetProhibit << QStringLiteral("tianqu");
                     break;
                 }
-            } else if (use.card->face()->isKindOf("DelayedTrick") && p->containsTrick(use.card->faceName())
+            } else if (use.card->face()->isKindOf(QStringLiteral("DelayedTrick")) && p->containsTrick(use.card->faceName())
                        && room->currentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
                 showTargetProhibit << QStringLiteral("tianqu");
                 break;

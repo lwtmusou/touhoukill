@@ -655,7 +655,8 @@ void RoomScene::handleGameEvent(const QVariant &args)
 
         if (!display) {
             // for shenbao
-            if (player->hasValidSkill(QStringLiteral("shenbao")) && (player->hasValidWeapon(skill_name) || player->hasValidArmor(skill_name) || player->hasValidTreasure(skill_name)))
+            if (player->hasValidSkill(QStringLiteral("shenbao"))
+                && (player->hasValidWeapon(skill_name) || player->hasValidArmor(skill_name) || player->hasValidTreasure(skill_name)))
                 display = true;
         }
 
@@ -1375,11 +1376,11 @@ void RoomScene::enableTargets(const Card *card)
             animations->effectOut(animationTarget);
             item->setFlag(QGraphicsItem::ItemIsSelectable, false);
         }
-        if (card->face()->isKindOf("AOE") && status == Client::RespondingUse)
+        if (card->face()->isKindOf(QStringLiteral("AOE")) && status == Client::RespondingUse)
             ok_button->setEnabled(card->face()->isAvailable(Self, card));
-        else if (card->face()->isKindOf("Peach") && status == Client::RespondingUse)
+        else if (card->face()->isKindOf(QStringLiteral("Peach")) && status == Client::RespondingUse)
             ok_button->setEnabled(card->face()->isAvailable(Self, card));
-        else if (card->face()->isKindOf("QirenCard") && status == Client::RespondingUse)
+        else if (card->face()->isKindOf(QStringLiteral("QirenCard")) && status == Client::RespondingUse)
             ok_button->setEnabled(card->face()->isAvailable(Self, card));
         else
             ok_button->setEnabled(true);
@@ -1389,7 +1390,7 @@ void RoomScene::enableTargets(const Card *card)
     updateTargetsEnablity(card);
 
     if (selected_targets.isEmpty()) {
-        if (card->face()->isKindOf("Slash") && Self->hasFlag(QStringLiteral("slashTargetFixToOne"))) {
+        if (card->face()->isKindOf(QStringLiteral("Slash")) && Self->hasFlag(QStringLiteral("slashTargetFixToOne"))) {
             unselectAllTargets();
             foreach (Photo *photo, photos) {
                 if ((photo->flags() & QGraphicsItem::ItemIsSelectable) != 0)

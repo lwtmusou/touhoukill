@@ -1135,15 +1135,15 @@ bool Room::isCanceled(const CardEffectStruct &effect)
                 QString xianshi_name = p->property("xianshi_card").toString();
                 if (!xianshi_name.isNull() && p->isAlive() && target->isAlive()) {
                     Card *extraCard = cloneCard(xianshi_name);
-                    if (extraCard->face()->isKindOf("Slash")) {
+                    if (extraCard->face()->isKindOf(QStringLiteral("Slash"))) {
                         DamageStruct::Nature nature = DamageStruct::Normal;
-                        if (extraCard->face()->isKindOf("FireSlash"))
+                        if (extraCard->face()->isKindOf(QStringLiteral("FireSlash")))
                             nature = DamageStruct::Fire;
-                        else if (extraCard->face()->isKindOf("ThunderSlash"))
+                        else if (extraCard->face()->isKindOf(QStringLiteral("ThunderSlash")))
                             nature = DamageStruct::Thunder;
                         int damageValue = 1;
 
-                        if (extraCard->face()->isKindOf("DebuffSlash")) {
+                        if (extraCard->face()->isKindOf(QStringLiteral("DebuffSlash"))) {
                             SlashEffectStruct extraEffect;
                             extraEffect.from = p;
                             extraEffect.slash = extraCard;
@@ -1158,14 +1158,14 @@ bool Room::isCanceled(const CardEffectStruct &effect)
 #endif
                         }
 
-                        if (!extraCard->face()->isKindOf("LightSlash") && !extraCard->face()->isKindOf("PowerSlash")) {
+                        if (!extraCard->face()->isKindOf(QStringLiteral("LightSlash")) && !extraCard->face()->isKindOf(QStringLiteral("PowerSlash"))) {
                             damageValue = damageValue + effect.effectValue.first();
                         }
 
                         DamageStruct d = DamageStruct(xianshi_nullification, p, target, damageValue, nature);
                         damage(d);
 
-                    } else if (extraCard->face()->isKindOf("Peach")) {
+                    } else if (extraCard->face()->isKindOf(QStringLiteral("Peach"))) {
                         CardEffectStruct extraEffect;
 
                         extraEffect.card = xianshi_nullification;
@@ -1173,12 +1173,12 @@ bool Room::isCanceled(const CardEffectStruct &effect)
                         extraEffect.to = target;
                         extraEffect.multiple = effect.multiple;
                         extraCard->face()->onEffect(extraEffect);
-                    } else if (extraCard->face()->isKindOf("Analeptic")) {
+                    } else if (extraCard->face()->isKindOf(QStringLiteral("Analeptic"))) {
                         RecoverStruct re;
                         re.card = xianshi_nullification;
                         re.who = p;
                         recover(target, re);
-                    } else if (extraCard->face()->isKindOf("AmazingGrace")) {
+                    } else if (extraCard->face()->isKindOf(QStringLiteral("AmazingGrace"))) {
                         doExtraAmazingGrace(p, target, 1);
                     } else { //Trick card
                         CardEffectStruct extraEffect;
@@ -1251,7 +1251,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     ServerPlayer *repliedPlayer = nullptr;
     time_t timeOut = ServerInfo.getCommandTimeout(S_COMMAND_NULLIFICATION, S_SERVER_INSTANCE);
     if (!validHumanPlayers.isEmpty()) {
-        if (trick->face()->isKindOf("AOE") || trick->face()->isKindOf("GlobalEffect")) {
+        if (trick->face()->isKindOf(QStringLiteral("AOE")) || trick->face()->isKindOf(QStringLiteral("GlobalEffect"))) {
             foreach (ServerPlayer *p, validHumanPlayers)
                 doNotify(p, S_COMMAND_NULLIFICATION_ASKED, QVariant(trick->faceName()));
         }
@@ -1279,8 +1279,9 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     bool isHegNullification = false;
     QString heg_nullification_selection;
 
-    if (!repliedPlayer->hasFlag(QStringLiteral("nullifiationNul")) && card->face()->isKindOf("HegNullification") && !trick->face()->isKindOf("Nullification")
-        && trick->face()->isNDTrick() && to->getRoleString() != QStringLiteral("careerist") && to->haveShownOneGeneral()) {
+    if (!repliedPlayer->hasFlag(QStringLiteral("nullifiationNul")) && card->face()->isKindOf(QStringLiteral("HegNullification"))
+        && !trick->face()->isKindOf(QStringLiteral("Nullification")) && trick->face()->isNDTrick() && to->getRoleString() != QStringLiteral("careerist")
+        && to->haveShownOneGeneral()) {
         QVariantList qtargets = tag[QStringLiteral("targets") + trick->toString()].toList();
         QList<ServerPlayer *> targets;
         for (int i = 0; i < qtargets.size(); i++) {
@@ -2530,7 +2531,7 @@ void Room::reverseFor3v3(const Card *card, ServerPlayer *player, QList<ServerPla
         while (!list.isEmpty())
             new_list << list.takeLast();
 
-        if (card->face()->isKindOf("GlobalEffect")) {
+        if (card->face()->isKindOf(QStringLiteral("GlobalEffect"))) {
             new_list.removeLast();
             new_list.prepend(player);
         }
@@ -3633,14 +3634,14 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
                 }
             }
 
-            if (card->face()->isKindOf("DelayedTrick") && card->isVirtualCard() && card->subcards().size() == 1) {
+            if (card->face()->isKindOf(QStringLiteral("DelayedTrick")) && card->isVirtualCard() && card->subcards().size() == 1) {
                 Card *wrapped = getCard(card_use.card->effectiveID());
                 broadcastUpdateCard(getPlayers(), wrapped->id(), wrapped);
                 card_use.card = wrapped;
                 wrapped->face()->onUse(this, card_use);
                 return true;
             }
-            if (card_use.card->face()->isKindOf("Slash") && add_history && slash_count > 0)
+            if (card_use.card->face()->isKindOf(QStringLiteral("Slash")) && add_history && slash_count > 0)
                 card_use.from->setFlag(QStringLiteral("Global_MoreSlashInOneTurn"));
             if (!card_use.card->isVirtualCard()) {
                 Card *wrapped = getCard(card_use.card->effectiveID());
@@ -3874,7 +3875,7 @@ bool Room::cardEffect(const CardEffectStruct &effect)
     QVariant data = QVariant::fromValue(effect);
     bool cancel = false;
 
-    if (effect.to->isAlive() || effect.card->face()->isKindOf("Slash")) { // Be care!!!
+    if (effect.to->isAlive() || effect.card->face()->isKindOf(QStringLiteral("Slash"))) { // Be care!!!
         // No skills should be triggered here!
         thread->trigger(QSanguosha::CardEffect, data);
         // Make sure that effectiveness of Slash isn't judged here!
@@ -3895,7 +3896,7 @@ bool Room::isJinkEffected(const SlashEffectStruct &effect, const Card *jink)
 {
     if (jink == nullptr)
         return false;
-    Q_ASSERT(jink->face()->isKindOf("Jink"));
+    Q_ASSERT(jink->face()->isKindOf(QStringLiteral("Jink")));
     JinkEffectStruct j;
     j.jink = jink;
     j.slashEffect = effect;
@@ -3915,7 +3916,7 @@ void Room::damage(const DamageStruct &data)
         log2.arg = QStringLiteral("huanmeng");
         sendLog(log2);
         notifySkillInvoked(qobject_cast<ServerPlayer *>(damage_data.to), QStringLiteral("huanmeng"));
-        if ((damage_data.card != nullptr) && damage_data.card->face()->isKindOf("Slash"))
+        if ((damage_data.card != nullptr) && damage_data.card->face()->isKindOf(QStringLiteral("Slash")))
             QinggangSword::removeQinggangTag(damage_data.to, damage_data.card);
 
         return;
@@ -3931,7 +3932,7 @@ void Room::damage(const DamageStruct &data)
     }
 
     if (thread->trigger(QSanguosha::Predamage, qdata)) {
-        if ((damage_data.card != nullptr) && damage_data.card->face()->isKindOf("Slash"))
+        if ((damage_data.card != nullptr) && damage_data.card->face()->isKindOf(QStringLiteral("Slash")))
             QinggangSword::removeQinggangTag(damage_data.to, damage_data.card);
         return;
     }
@@ -3941,14 +3942,14 @@ void Room::damage(const DamageStruct &data)
         do {
             bool prevent = thread->trigger(QSanguosha::DamageForseen, qdata);
             if (prevent) {
-                if ((damage_data.card != nullptr) && damage_data.card->face()->isKindOf("Slash"))
+                if ((damage_data.card != nullptr) && damage_data.card->face()->isKindOf(QStringLiteral("Slash")))
                     QinggangSword::removeQinggangTag(damage_data.to, damage_data.card);
 
                 break;
             }
             if (damage_data.from != nullptr) {
                 if (thread->trigger(QSanguosha::DamageCaused, qdata)) {
-                    if ((damage_data.card != nullptr) && damage_data.card->face()->isKindOf("Slash"))
+                    if ((damage_data.card != nullptr) && damage_data.card->face()->isKindOf(QStringLiteral("Slash")))
                         QinggangSword::removeQinggangTag(damage_data.to, damage_data.card);
 
                     break;
@@ -3959,7 +3960,7 @@ void Room::damage(const DamageStruct &data)
 
             bool broken = thread->trigger(QSanguosha::DamageInflicted, qdata);
             if (broken) {
-                if ((damage_data.card != nullptr) && damage_data.card->face()->isKindOf("Slash"))
+                if ((damage_data.card != nullptr) && damage_data.card->face()->isKindOf(QStringLiteral("Slash")))
                     QinggangSword::removeQinggangTag(damage_data.to, damage_data.card);
 
                 break;
@@ -3970,7 +3971,7 @@ void Room::damage(const DamageStruct &data)
 
             thread->trigger(QSanguosha::PreDamageDone, qdata);
 
-            if ((damage_data.card != nullptr) && damage_data.card->face()->isKindOf("Slash"))
+            if ((damage_data.card != nullptr) && damage_data.card->face()->isKindOf(QStringLiteral("Slash")))
                 QinggangSword::removeQinggangTag(damage_data.to, damage_data.card);
             thread->trigger(QSanguosha::DamageDone, qdata);
 

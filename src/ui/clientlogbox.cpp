@@ -137,7 +137,7 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
             skill_name = bold(skill_name, Qt::yellow);
 
             QString subcard_str = bold(real.logName(), Qt::yellow);
-            if (card->face()->isKindOf("DelayedTrick"))
+            if (card->face()->isKindOf(QStringLiteral("DelayedTrick")))
                 log = tr("%from %5 [%1] %6 %4 %2 as %3").arg(skill_name, subcard_str, card_name, reason, tr("use skill"), QString());
             else
                 log = tr("Due to the effect of [%1], %from %4 %2 as %3").arg(skill_name, subcard_str, card_name, reason);

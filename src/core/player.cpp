@@ -1012,12 +1012,12 @@ bool Player::hasValidWeapon(const QString &weapon_name) const
     if ((d->weapon == -1) || isBrokenEquip(d->weapon, true))
         return false;
 
-    if (d->room->getCard(d->weapon)->faceName() == weapon_name || d->room->getCard(d->weapon)->face()->isKindOf(weapon_name.toStdString().c_str()))
+    if (d->room->getCard(d->weapon)->faceName() == weapon_name || d->room->getCard(d->weapon)->face()->isKindOf(weapon_name))
         return true;
 
     // TODO_Fs: Consider view-as equip later
     const CardDescriptor &real_weapon = Sanguosha->getEngineCard(d->weapon);
-    return real_weapon.face()->name() == weapon_name || real_weapon.face()->isKindOf(weapon_name.toStdString().c_str());
+    return real_weapon.face()->name() == weapon_name || real_weapon.face()->isKindOf(weapon_name);
 }
 
 bool Player::hasValidArmor(const QString &armor_name) const
@@ -1031,12 +1031,12 @@ bool Player::hasValidArmor(const QString &armor_name) const
     if ((d->armor == -1) || isBrokenEquip(d->armor, true))
         return false;
 
-    if (d->room->getCard(d->armor)->faceName() == armor_name || d->room->getCard(d->armor)->face()->isKindOf(armor_name.toStdString().c_str()))
+    if (d->room->getCard(d->armor)->faceName() == armor_name || d->room->getCard(d->armor)->face()->isKindOf(armor_name))
         return true;
 
     // TODO_Fs: Consider view-as equip later
     const CardDescriptor &real_weapon = Sanguosha->getEngineCard(d->armor);
-    return real_weapon.face()->name() == armor_name || real_weapon.face()->isKindOf(armor_name.toStdString().c_str());
+    return real_weapon.face()->name() == armor_name || real_weapon.face()->isKindOf(armor_name);
 }
 
 bool Player::hasValidTreasure(const QString &treasure_name) const
@@ -1050,12 +1050,12 @@ bool Player::hasValidTreasure(const QString &treasure_name) const
     if ((d->treasure == -1) || isBrokenEquip(d->treasure, true))
         return false;
 
-    if (d->room->getCard(d->treasure)->faceName() == treasure_name || d->room->getCard(d->treasure)->face()->isKindOf(treasure_name.toStdString().c_str()))
+    if (d->room->getCard(d->treasure)->faceName() == treasure_name || d->room->getCard(d->treasure)->face()->isKindOf(treasure_name))
         return true;
 
     // TODO_Fs: Consider view-as equip later
     const CardDescriptor &real_weapon = Sanguosha->getEngineCard(d->treasure);
-    return real_weapon.face()->name() == treasure_name || real_weapon.face()->isKindOf(treasure_name.toStdString().c_str());
+    return real_weapon.face()->name() == treasure_name || real_weapon.face()->isKindOf(treasure_name);
 }
 
 QList<const Card *> Player::judgingAreaCards() const

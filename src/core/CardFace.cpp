@@ -53,7 +53,7 @@ QString CardFace::name() const
     return d->name;
 }
 
-bool CardFace::isKindOf(const char *cardType) const
+bool CardFace::isKindOf(const QString &cardType) const
 {
     // todo
     return false;
@@ -65,11 +65,6 @@ bool CardFace::matchType(const QString &pattern) const
         if (typeName() == ptn || subTypeName() == ptn)
             return true;
     }
-    return false;
-}
-
-bool CardFace::isNDTrick() const
-{
     return false;
 }
 
@@ -488,11 +483,6 @@ QString NonDelayedTrick::subTypeName() const
     return QStringLiteral("non_delayed_trick");
 }
 
-bool NonDelayedTrick::isNDTrick() const
-{
-    return true;
-}
-
 DelayedTrick::DelayedTrick(const QString &name)
     : TrickCard(name)
     , j(nullptr)
@@ -577,7 +567,7 @@ void SkillCard::onUse(RoomObject *room, const CardUseStruct &_use) const
     use(room, card_use);
 }
 
-void SkillCard::use(RoomObject *, const CardUseStruct &use) const
+void SkillCard::use(RoomObject * /*room*/, const CardUseStruct &use) const
 {
     Player *source = use.from;
     foreach (Player *target, use.to) {
@@ -585,7 +575,7 @@ void SkillCard::use(RoomObject *, const CardUseStruct &use) const
         effect.card = use.card;
         effect.from = source;
         effect.to = target;
-        effect.card->face()->onEffect(effect);
+        onEffect(effect);
     }
 }
 

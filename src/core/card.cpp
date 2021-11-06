@@ -481,7 +481,7 @@ QString Card::toString(bool hidden) const
     if (d->face == nullptr)
         return QStringLiteral("$") + subcardString();
 
-    if (d->face->isKindOf("SkillCard")) {
+    if (d->face->isKindOf(QStringLiteral("SkillCard"))) {
         QString str;
         if (!hidden)
             str = QStringLiteral("@%1[%2:%3]=%4").arg(d->face->name(), suitString(), numberString(), subcardString());
