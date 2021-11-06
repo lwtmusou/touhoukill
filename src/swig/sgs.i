@@ -13,18 +13,6 @@
 #include <QCoreApplication>
 #include <QThread>
 
-#ifdef QT_WIDGETS_LIB
-#include <QMessageBox>
-#else
-class QWidget;
-class QMessageBox
-{
-public:
-    static inline void warning(QWidget *parent, const QString &title, const QString &text) {}
-    static inline void critical(QWidget *parent, const QString &title, const QString &text) {}
-};
-#endif
-
 %}
 
 %include "cryptographic.i"
@@ -73,27 +61,6 @@ public:
     QVariant property(const char *name) const;
     void setParent(QObject *parent);
     void deleteLater();
+
 };
 
-class QWidget;
-
-class QMessageBox {
-public:
-    static void warning(QWidget *parent, const QString &title, const QString &text);
-    static void critical(QWidget *parent, const QString &title, const QString &text);
-};
-
-extern bool isGui();
-
-%{
-extern bool isGui();
-
-bool isGui()
-{
-#ifdef QT_WIDGETS_LIB
-    return QThread::currentThread() == qApp->thread();
-#else
-    return false;
-#endif
-}
-%}

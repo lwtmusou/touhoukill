@@ -7,20 +7,6 @@ if _VERSION == "Lua 5.3" then
     fail = nil
 end
 
--- if QSanguosha is built with QtWidgets and current thread is GUI thread, enable these functions
-if sgs.isGui() then
-    local originalWarn = warn
-    warn = function(f)
-        sgs.QMessageBox_warning(nil, "QSanguosha", f)
-        return originalWarn(f)
-    end
-    local originalError = error
-    error = function(f)
-        sgs.QMessageBox_critical(nil, "QSanguosha", f)
-        return originalError(f)
-    end
-end
-
 -- first, kill some function that shouldn't be used
 -- mainly process and IO related functions
 -- note that I is acceptable while O isn't, with exception of writing tempoaray files.
