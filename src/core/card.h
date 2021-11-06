@@ -63,6 +63,12 @@ public:
     const QString &showSkillName() const;
     void setShowSkillName(const QString &show_skill_name);
 
+    // Property of card itself
+    bool canRecast() const;
+    void setCanRecast(bool can);
+    bool transferable() const;
+    void setTransferable(bool can);
+
     // handling method
     QSanguosha::HandlingMethod handleMethod() const;
     void setHandleMethod(QSanguosha::HandlingMethod method);
@@ -72,8 +78,6 @@ public:
     void setCanDamage(bool can);
     bool canRecover() const;
     void setCanRecover(bool can);
-    bool canRecast() const;
-    void setCanRecast(bool can);
     bool hasEffectValue() const;
     void setHasEffectValue(bool has);
 

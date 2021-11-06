@@ -30,7 +30,7 @@ public:
     // type property
     virtual QSanguosha::CardType type() const = 0;
     virtual QString typeName() const = 0;
-    QSGS_LUA_API virtual QString subTypeName() const = 0;
+    QString subTypeName() const;
     QSGS_LUA_API bool isKindOf(const QString &cardType) const;
     virtual bool matchType(const QString &pattern) const;
 
@@ -147,7 +147,6 @@ public:
     Weapon(const QString &name);
     ~Weapon() override;
 
-    QString subTypeName() const override;
     QSanguosha::EquipLocation location() const override;
 
     int range() const;
@@ -163,7 +162,6 @@ public:
     Armor(const QString &name);
     ~Armor() override = default;
 
-    QString subTypeName() const override;
     QSanguosha::EquipLocation location() const override;
 };
 
@@ -173,7 +171,6 @@ public:
     DefensiveHorse(const QString &name);
     ~DefensiveHorse() override = default;
 
-    QString subTypeName() const override;
     QSanguosha::EquipLocation location() const override;
 
     // TODO_Fs: this should be implemented using DistanceSkill
@@ -186,7 +183,6 @@ public:
     OffensiveHorse(const QString &name);
     ~OffensiveHorse() override = default;
 
-    QString subTypeName() const override;
     QSanguosha::EquipLocation location() const override;
 
     // virtual int correction() const;
@@ -198,7 +194,6 @@ public:
     Treasure(const QString &name);
     ~Treasure() override = default;
 
-    QString subTypeName() const override;
     QSanguosha::EquipLocation location() const override;
 };
 
@@ -217,8 +212,6 @@ class NonDelayedTrick : public TrickCard
 public:
     NonDelayedTrick(const QString &name);
     ~NonDelayedTrick() override = default;
-
-    QString subTypeName() const override;
 };
 
 class DelayedTrick : public TrickCard
@@ -227,8 +220,7 @@ public:
     DelayedTrick(const QString &name);
     ~DelayedTrick() override = default;
 
-    QString subTypeName() const override;
-    virtual void takeEffect(Player *target) const = 0;
+    void takeEffect(Player *target) const;
 
     // returns a copy of j if j is not nullptr.
     JudgeStruct judge() const;
@@ -258,7 +250,6 @@ public:
 
     QSanguosha::CardType type() const override;
     QString typeName() const override;
-    QString subTypeName() const override;
 
     void onUse(RoomObject *room, const CardUseStruct &card_use) const override;
     void use(RoomObject *room, const CardUseStruct &use) const override;

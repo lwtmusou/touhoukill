@@ -28,13 +28,16 @@ public:
     QString skill_name;
     QString show_skill_name;
 
+    // Property of card itself
+    bool can_recast;
+    bool transferable;
+
     // handling method
     HandlingMethod handling_method;
 
     // property - Fs: use tristate?
     bool can_damage;
     bool can_recover;
-    bool can_recast;
     bool has_effect_value;
 
     // flags
@@ -54,10 +57,11 @@ public:
         , suit(suit)
         , number(number)
         , id(id)
+        , can_recast(false)
+        , transferable(false)
         , handling_method(MethodNone)
         , can_damage(false)
         , can_recover(false)
-        , can_recast(false)
         , has_effect_value(false)
         , mute(false)
         , room(room)
@@ -331,6 +335,16 @@ bool Card::canRecast() const
 void Card::setCanRecast(bool can_recast)
 {
     d->can_recast = can_recast;
+}
+
+bool Card::transferable() const
+{
+    return d->transferable;
+}
+
+void Card::setTransferable(bool can)
+{
+    d->transferable = can;
 }
 
 bool Card::hasEffectValue() const

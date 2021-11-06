@@ -113,6 +113,7 @@ sgs_ex.CardFace = function(desc, ...)
     -- name -> string
     -- type (which is specified by desc.type using SecondTypeMask / ThirdTypeMask)
     -- subTypeName -> string
+    -- kind -> table (sequence) of strings
     -- (if different than default) properties, including
     --  - targetFixed = function(player, card) -> boolean
     --  - hasPreAction = function() -> boolean
@@ -158,6 +159,14 @@ sgs_ex.CardFace = function(desc, ...)
         return fail, funcName .. ": desc.subTypeName is not string"
     else
         r.subTypeName = desc.subTypeName
+    end
+
+    -- kind -> table (sequence) of strings
+    if not desc.kind then
+        return fail, funcName .. ": desc does not contain a vaild kind"
+    else
+        r.kind = desc.kind
+        table.insert(r.kind, "CardFace")
     end
 
     --  - targetFixed = function(player, card) -> boolean
@@ -326,6 +335,12 @@ sgs_ex.BasicCard = function(desc, ...)
         desc.type = sgs_ex.TableType.BasicCard
     end
 
+    if not desc.kind then
+        desc.kind = {"BasicCard"}
+    else
+        table.insert(desc.kind, "BasicCard")
+    end
+
     if maybeIgnoreErrorCheck(funcName, desc, ...) then
         return desc
     end
@@ -353,6 +368,12 @@ sgs_ex.TrickCard = function(desc, ...)
         return fail, funcName .. ": desc does not contain a valid Type"
     end
 
+    if not desc.kind then
+        return fail, funcName .. ": desc does not contain a valid kind"
+    else
+        table.insert(desc.kind, "TrickCard")
+    end
+
     if maybeIgnoreErrorCheck(funcName, desc, table.unpack(args)) then
         return desc
     end
@@ -368,6 +389,12 @@ sgs_ex.NonDelayedTrick = function(desc, ...)
 
     if not desc.type then
         desc.type = sgs_ex.TableType.NonDelayedTrick
+    end
+
+    if not desc.kind then
+        desc.kind = {"NonDelayedTrick"}
+    else
+        table.insert(desc.kind, "NonDelayedTrick")
     end
 
     if maybeIgnoreErrorCheck(funcName, desc, ...) then
@@ -387,6 +414,12 @@ sgs_ex.DelayedTrick = function(desc, ...)
 
     if not desc.type then
         desc.type = sgs_ex.TableType.NonDelayedTrick
+    end
+
+    if not desc.kind then
+        desc.kind = {"DelayedTrick"}
+    else
+        table.insert(desc.kind, "DelayedTrick")
     end
 
     if maybeIgnoreErrorCheck(funcName, desc, ...) then
@@ -435,6 +468,12 @@ sgs_ex.EquipCard = function(desc, ...)
 
     if not desc.type then
         return fail, funcName .. ": desc does not contain a valid Type"
+    end
+
+    if not desc.kind then
+        return fail, funcName .. ": desc does not contain a valid kind"
+    else
+        table.insert(desc.kind, "EquipCard")
     end
 
     if maybeIgnoreErrorCheck(funcName, desc, table.unpack(args)) then
@@ -491,6 +530,12 @@ sgs_ex.Weapon = function(desc, ...)
         desc.type = sgs_ex.TableType.Weapon
     end
 
+    if not desc.kind then
+        desc.kind = {"Weapon"}
+    else
+        table.insert(desc.kind, "Weapon")
+    end
+
     if maybeIgnoreErrorCheck(funcName, desc, ...) then
         return desc
     end
@@ -526,6 +571,12 @@ sgs_ex.Armor = function(desc, ...)
         desc.type = sgs_ex.TableType.Armor
     end
 
+    if not desc.kind then
+        desc.kind = {"Armor"}
+    else
+        table.insert(desc.kind, "Armor")
+    end
+
     if maybeIgnoreErrorCheck(funcName, desc, ...) then
         return desc
     end
@@ -541,6 +592,12 @@ sgs_ex.DefensiveHorse = function(desc, ...)
 
     if not desc.type then
         desc.type = sgs_ex.TableType.DefensiveHorse
+    end
+
+    if not desc.kind then
+        desc.kind = {"DefensiveHorse"}
+    else
+        table.insert(desc.kind, "DefensiveHorse")
     end
 
     if maybeIgnoreErrorCheck(funcName, desc, ...) then
@@ -560,6 +617,12 @@ sgs_ex.OffensiveHorse = function(desc, ...)
         desc.type = sgs_ex.TableType.OffensiveHorse
     end
 
+    if not desc.kind then
+        desc.kind = {"OffensiveHorse"}
+    else
+        table.insert(desc.kind, "OffensiveHorse")
+    end
+
     if maybeIgnoreErrorCheck(funcName, desc, ...) then
         return desc
     end
@@ -575,6 +638,12 @@ sgs_ex.Treasure = function(desc, ...)
 
     if not desc.type then
         desc.type = sgs_ex.TableType.Treasure
+    end
+
+    if not desc.kind then
+        desc.kind = {"Treasure"}
+    else
+        table.insert(desc.kind, "Treasure")
     end
 
     if maybeIgnoreErrorCheck(funcName, desc, ...) then
@@ -593,6 +662,12 @@ sgs_ex.SkillCard = function(desc, ...)
 
     if not desc.type then
         desc.type = sgs_ex.TableType.SkillCard
+    end
+
+    if not desc.kind then
+        desc.kind = {"SkillCard"}
+    else
+        table.insert(desc.kind, "SkillCard")
     end
 
     if maybeIgnoreErrorCheck(funcName, desc, ...) then

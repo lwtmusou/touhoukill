@@ -49,34 +49,41 @@ enum TableType
 
 ::CardFace *newCardFaceByType(TableType t, const QString &name)
 {
-    // TODO
+#define NEWCARDFACEBYTYPE(T) \
+    if (t == T)              \
+        return new ::T(name);
+
+    NEWCARDFACEBYTYPE(BasicCard)
+    NEWCARDFACEBYTYPE(NonDelayedTrick)
+    NEWCARDFACEBYTYPE(DelayedTrick)
+    NEWCARDFACEBYTYPE(Weapon)
+    NEWCARDFACEBYTYPE(Armor)
+    NEWCARDFACEBYTYPE(DefensiveHorse)
+    NEWCARDFACEBYTYPE(OffensiveHorse)
+    NEWCARDFACEBYTYPE(Treasure)
+    NEWCARDFACEBYTYPE(SkillCard)
+
+#undef NEWCARDFACEBYTYPE
+
     return nullptr;
 } // namespace
 
 // [-0, +0, e]
-// assuming sgs_ex.CardFaces is at top of stack
 ::CardFace *createNewLuaCardFace(const QString &name)
 {
     LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
     ::CardFace *r = nullptr;
     QString errorMessage;
 
-    // it should contain an item calls name
-    // [sgs_ex.CardFaces[name], sgs_ex.CardFaces]
-    // may call metamethods thus may raise error. Need a method to deal with error since longjmp breaks call stack
-    // or we can use rawget
-    int type = lua_getfield(l, -1, name.toUtf8().constData());
-    do {
-        // sgs_ex.CardFaces[name] should be a table
-        if (type != LUA_TTABLE) {
-            if (type == LUA_TNIL)
-                errorMessage = QString(QStringLiteral("sgs_ex.CardFaces[\"%1\"] does not exist")).arg(name);
-            else
-                errorMessage = QString(QStringLiteral("sgs_ex.CardFaces[\"%1\"] is not table")).arg(name);
-            break;
-        }
+    bool pushed = l->pushCardFace(name); // { CardFaces[name](if successful) }
+    if (!pushed) {
+        errorMessage = QString(QStringLiteral("Could not find register for card face %1")).arg(name);
+    } else {
+        // it should contain an item calls name
+        // may call metamethods thus may raise error. Need a method to deal with error since longjmp breaks call stack
+        // or we can use rawget
 
-        type = lua_getfield(l, -1, "type");
+        int type = lua_getfield(l, -1, "type"); // { CardFaces[name].type, CardFaces[name] }
         do {
             if (type != LUA_TNUMBER) {
                 errorMessage = QString(QStringLiteral("sgs_ex.CardFaces[\"%1\"].type is not number")).arg(name);
@@ -97,9 +104,9 @@ enum TableType
                 break;
             }
         } while (false);
-        lua_pop(l, 1);
-    } while (false);
-    lua_pop(l, 1);
+        lua_pop(l, 1); // { CardFaces[name] }
+        lua_pop(l, 1); // { }
+    }
 
     if (r == nullptr) {
         lua_pushstring(l, errorMessage.toUtf8().constData());

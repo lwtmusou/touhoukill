@@ -37,6 +37,36 @@ public:
     HandlingMethod default_method;
 };
 
+#if 0
+-- Card Face common
+-- As a Card Face, the following are mandatory
+-- name -> string
+-- type (which is specified by desc.type using SecondTypeMask / ThirdTypeMask)
+-- subTypeName -> string
+-- kind -> table (sequence) of strings
+-- (if different than default) properties, including
+--  - targetFixed = function(player, card) -> boolean
+--  - hasPreAction = function() -> boolean
+--  - canDamage = function() -> boolean
+--  - canRecover = function() -> boolean
+--  - hasEffectValue = function() -> boolean
+--  - defaultHandlingMethod = function() -> QSanguosha_HandlingMethod
+-- these may be a fixed value or Lua Function, depanding on its usage. Function prototype is provided in case a function should be used.
+-- methods, including
+--  - targetsFeasible - function(playerList, player, card) -> boolean
+--  - targetFilter - function(playerList, player, player, card) -> integer
+--  - isAvailable - function(player, card) -> boolean
+--  - validate - function(cardUse) -> card
+--  - validateInResponse - function(player, card) -> card
+--  - doPreAction - function(room, cardUse)
+--  - onUse - function(room, cardUse)
+--  - use - function(room, cardUse)
+--  - onEffect(cardEffect)
+--  - isCancelable(cardEffect) -> boolean
+--  - onNullified(player, card)
+-- All of them are optional but this card does nothing if none is provided.
+#endif
+
 CardFace::CardFace(const QString &name)
     : d(new CardFacePrivate)
 {
@@ -51,6 +81,12 @@ CardFace::~CardFace()
 QString CardFace::name() const
 {
     return d->name;
+}
+
+QString CardFace::subTypeName() const
+{
+    // todo
+    return QString();
 }
 
 bool CardFace::isKindOf(const QString &cardType) const
@@ -378,11 +414,6 @@ Weapon::~Weapon()
     delete d;
 }
 
-QString Weapon::subTypeName() const
-{
-    return QStringLiteral("weapon");
-}
-
 EquipLocation Weapon::location() const
 {
     return WeaponLocation;
@@ -403,11 +434,6 @@ Armor::Armor(const QString &name)
 {
 }
 
-QString Armor::subTypeName() const
-{
-    return QStringLiteral("armor");
-}
-
 EquipLocation Armor::location() const
 {
     return ArmorLocation;
@@ -416,11 +442,6 @@ EquipLocation Armor::location() const
 DefensiveHorse::DefensiveHorse(const QString &name)
     : EquipCard(name)
 {
-}
-
-QString DefensiveHorse::subTypeName() const
-{
-    return QStringLiteral("defensive_horse");
 }
 
 EquipLocation DefensiveHorse::location() const
@@ -433,11 +454,6 @@ OffensiveHorse::OffensiveHorse(const QString &name)
 {
 }
 
-QString OffensiveHorse::subTypeName() const
-{
-    return QStringLiteral("offensive_horse");
-}
-
 EquipLocation OffensiveHorse::location() const
 {
     return OffensiveHorseLocation;
@@ -446,11 +462,6 @@ EquipLocation OffensiveHorse::location() const
 Treasure::Treasure(const QString &name)
     : EquipCard(name)
 {
-}
-
-QString Treasure::subTypeName() const
-{
-    return QStringLiteral("treasure");
 }
 
 EquipLocation Treasure::location() const
@@ -478,20 +489,14 @@ NonDelayedTrick::NonDelayedTrick(const QString &name)
 {
 }
 
-QString NonDelayedTrick::subTypeName() const
-{
-    return QStringLiteral("non_delayed_trick");
-}
-
 DelayedTrick::DelayedTrick(const QString &name)
     : TrickCard(name)
     , j(nullptr)
 {
 }
 
-QString DelayedTrick::subTypeName() const
+void DelayedTrick::takeEffect(Player *target) const
 {
-    return QStringLiteral("delayed_trick");
 }
 
 JudgeStruct DelayedTrick::judge() const
@@ -530,11 +535,6 @@ CardType SkillCard::type() const
 }
 
 QString SkillCard::typeName() const
-{
-    return QStringLiteral("skill");
-}
-
-QString SkillCard::subTypeName() const
 {
     return QStringLiteral("skill");
 }
