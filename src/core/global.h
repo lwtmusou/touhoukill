@@ -301,4 +301,8 @@ enum ModeCategory
 
 } // namespace QSanguosha
 
+typedef int LuaFunction;
+
+#define QSGS_LUA_API
+
 #endif // GLOBAL_H

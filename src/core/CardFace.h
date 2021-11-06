@@ -18,22 +18,20 @@ struct JudgeStruct;
 /**
  * @interface The functional model of a given card.
  */
-class CardFace : public QObject
+class CardFace
 {
-    Q_OBJECT
-
 public:
-    CardFace();
+    explicit CardFace(const QString &name);
     virtual ~CardFace();
 
     // text property
-    virtual QString name() const; // For Lua skill card. Lua skill card would provide dynamic name.
+    QSGS_LUA_API QString name() const;
 
     // type property
     virtual QSanguosha::CardType type() const = 0;
     virtual QString typeName() const = 0;
-    virtual QString subTypeName() const = 0;
-    virtual bool isKindOf(const char *cardType) const;
+    QSGS_LUA_API virtual QString subTypeName() const = 0;
+    QSGS_LUA_API bool isKindOf(const char *cardType) const;
     virtual bool matchType(const QString &pattern) const;
 
     // Can we have a better way to replace this function? Maybe using `match`
@@ -47,9 +45,9 @@ public:
     // Fs: There is a skill which has a skill named "Xianshi" for God Patchouli in TouhouKill. It needs an extremely hacked Card/CardFace which changes all the effect of a certain Card.
     // Return value of "canDamage" and "canRecover" is affected by "Xianshi" in this case.
     // TODO_Fs: ***non-virtual*** property setters for simplifying logic, only reimplement these functions when complex logic is needed
-    virtual bool canDamage() const;
+    QSGS_LUA_API virtual bool canDamage() const;
     void setCanDamage(bool can);
-    virtual bool canRecover() const;
+    QSGS_LUA_API virtual bool canRecover() const;
     void setCanRecover(bool can);
     // Fs: canRecast should be property of Card.
     // Seems like it should be dealt in UI and GameRule instead of the logic in Card/CardFace itself.
@@ -58,21 +56,21 @@ public:
     // so that there will be no logic in CardFace for implementing recasting
     // Note: In HulaoPass mode, all weapon can be recast according to the game rule.
     // virtual bool canRecast() const;
-    virtual bool hasEffectValue() const;
+    QSGS_LUA_API virtual bool hasEffectValue() const;
     void setHasEffectValue(bool can);
-    virtual bool hasPreAction() const;
+    QSGS_LUA_API virtual bool hasPreAction() const;
     void setHasPreAction(bool can);
 
     // This method provides a default handling method suggested by the card face.
     // Almost every actual card has its handlingMethod to be QSanguosha::MethodUse.
-    virtual QSanguosha::HandlingMethod defaultHandlingMethod() const;
+    QSGS_LUA_API virtual QSanguosha::HandlingMethod defaultHandlingMethod() const;
     void setDefaultHandlingMethod(QSanguosha::HandlingMethod can);
 
     // Functions
-    virtual bool targetFixed(const Player *Self, const Card *card) const;
+    QSGS_LUA_API virtual bool targetFixed(const Player *Self, const Card *card) const;
     void setTargetFixed(bool fixed);
 
-    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self, const Card *card) const;
+    QSGS_LUA_API virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self, const Card *card) const;
 
     // This is the merged targetFilter implementation.
     /**
@@ -87,36 +85,36 @@ public:
      * 
      * @note to_select will be selectable until its appearance in targets >= its maximum vote. 
      */
-    virtual int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card) const;
+    QSGS_LUA_API virtual int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card) const;
 
-    virtual bool isAvailable(const Player *player, const Card *card) const;
+    QSGS_LUA_API virtual bool isAvailable(const Player *player, const Card *card) const;
 
     // TODO_Fs: Actually I don't know the use case of this function.
     // Is it only for skill "tianqu"?
-    virtual bool ignoreCardValidity(const Player *player) const;
-    virtual const Card *validate(const CardUseStruct &cardUse) const;
-    virtual const Card *validateInResponse(Player *user, const Card *original_card) const;
+    QSGS_LUA_API virtual bool ignoreCardValidity(const Player *player) const;
+    QSGS_LUA_API virtual const Card *validate(const CardUseStruct &cardUse) const;
+    QSGS_LUA_API virtual const Card *validateInResponse(Player *user, const Card *original_card) const;
 
-    virtual void doPreAction(RoomObject *room, const CardUseStruct &card_use) const;
+    QSGS_LUA_API virtual void doPreAction(RoomObject *room, const CardUseStruct &card_use) const;
 
     // TODO_Fs: Aren't the names of these 2 functions easy to be misunderstood?
-    virtual void onUse(RoomObject *room, const CardUseStruct &card_use) const; // Shouldn't this be "processOfUsing" / "usingProcess" or something like this?
-    virtual void use(RoomObject *room, const CardUseStruct &use) const; // Shouldn't this be "onUse"?
+    QSGS_LUA_API virtual void onUse(RoomObject *room, const CardUseStruct &card_use) const; // Shouldn't this be "processOfUsing" / "usingProcess" or something like this?
+    QSGS_LUA_API virtual void use(RoomObject *room, const CardUseStruct &use) const; // Shouldn't this be "onUse"?
 
-    virtual void onEffect(const CardEffectStruct &effect) const;
-    virtual bool isCancelable(const CardEffectStruct &effect) const;
-    virtual void onNullified(Player *target, const Card *card) const;
+    QSGS_LUA_API virtual void onEffect(const CardEffectStruct &effect) const;
+    QSGS_LUA_API virtual bool isCancelable(const CardEffectStruct &effect) const;
+    QSGS_LUA_API virtual void onNullified(Player *target, const Card *card) const;
 
-protected:
+private:
+    CardFace() = delete;
     CardFacePrivate *const d;
+    Q_DISABLE_COPY_MOVE(CardFace)
 };
 
 class BasicCard : public CardFace
 {
-    Q_OBJECT
-
 public:
-    BasicCard() = default;
+    BasicCard(const QString &name);
     ~BasicCard() override = default;
 
     QSanguosha::CardType type() const override;
@@ -125,10 +123,8 @@ public:
 
 class EquipCard : public CardFace
 {
-    Q_OBJECT
-
 public:
-    EquipCard() = default;
+    EquipCard(const QString &name);
     ~EquipCard() override = default;
 
     QSanguosha::CardType type() const override;
@@ -144,10 +140,8 @@ class WeaponPrivate;
 
 class Weapon : public EquipCard
 {
-    Q_OBJECT
-
 public:
-    Weapon();
+    Weapon(const QString &name);
     ~Weapon() override;
 
     QString subTypeName() const override;
@@ -162,10 +156,8 @@ private:
 
 class Armor : public EquipCard
 {
-    Q_OBJECT
-
 public:
-    Armor() = default;
+    Armor(const QString &name);
     ~Armor() override = default;
 
     QString subTypeName() const override;
@@ -174,10 +166,8 @@ public:
 
 class DefensiveHorse : public EquipCard
 {
-    Q_OBJECT
-
 public:
-    DefensiveHorse() = default;
+    DefensiveHorse(const QString &name);
     ~DefensiveHorse() override = default;
 
     QString subTypeName() const override;
@@ -189,10 +179,8 @@ public:
 
 class OffensiveHorse : public EquipCard
 {
-    Q_OBJECT
-
 public:
-    OffensiveHorse() = default;
+    OffensiveHorse(const QString &name);
     ~OffensiveHorse() override = default;
 
     QString subTypeName() const override;
@@ -203,10 +191,8 @@ public:
 
 class Treasure : public EquipCard
 {
-    Q_OBJECT
-
 public:
-    Treasure() = default;
+    Treasure(const QString &name);
     ~Treasure() override = default;
 
     QString subTypeName() const override;
@@ -215,10 +201,8 @@ public:
 
 class TrickCard : public CardFace
 {
-    Q_OBJECT
-
 public:
-    TrickCard() = default;
+    TrickCard(const QString &name);
     ~TrickCard() override = default;
 
     QSanguosha::CardType type() const override;
@@ -227,10 +211,8 @@ public:
 
 class NonDelayedTrick : public TrickCard
 {
-    Q_OBJECT
-
 public:
-    NonDelayedTrick() = default;
+    NonDelayedTrick(const QString &name);
     ~NonDelayedTrick() override = default;
 
     QString subTypeName() const override;
@@ -239,10 +221,8 @@ public:
 
 class DelayedTrick : public TrickCard
 {
-    Q_OBJECT
-
 public:
-    DelayedTrick();
+    DelayedTrick(const QString &name);
     ~DelayedTrick() override = default;
 
     QString subTypeName() const override;
@@ -270,10 +250,8 @@ class SkillCardPrivate;
 
 class SkillCard : public CardFace
 {
-    Q_OBJECT
-
 public:
-    SkillCard();
+    SkillCard(const QString &name);
     ~SkillCard() override;
 
     QSanguosha::CardType type() const override;

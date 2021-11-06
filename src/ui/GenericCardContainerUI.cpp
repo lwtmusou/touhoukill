@@ -831,23 +831,23 @@ QPixmap PlayerCardContainer::_getEquipPixmap(const Card *equip)
         _m_layout->m_equipPointFontBlack.paintText(&painter, _m_layout->m_equipPointArea, Qt::AlignLeft | Qt::AlignVCenter, Card::NumberToString(realCard.number));
     }
 
-    const auto *face = qobject_cast<const EquipCard *>(equip->face());
+    const auto *face = dynamic_cast<const EquipCard *>(equip->face());
 
     // distance
     int index = (int)(face->location());
     QString distance;
     if (index == 0) {
-        const Weapon *weapon = qobject_cast<const Weapon *>(face);
+        const Weapon *weapon = dynamic_cast<const Weapon *>(face);
         Q_ASSERT(weapon);
         if (weapon != nullptr)
             distance = Sanguosha->translate(QStringLiteral("CAPITAL(%1)").arg(QString::number(weapon->range())));
     } else if (index == 2) {
-        const DefensiveHorse *horse = qobject_cast<const DefensiveHorse *>(face);
+        const DefensiveHorse *horse = dynamic_cast<const DefensiveHorse *>(face);
         Q_ASSERT(horse);
         if (horse != nullptr)
             distance = QStringLiteral("+1");
     } else if (index == 3) {
-        const OffensiveHorse *horse = qobject_cast<const OffensiveHorse *>(face);
+        const OffensiveHorse *horse = dynamic_cast<const OffensiveHorse *>(face);
         Q_ASSERT(horse);
         if (horse != nullptr)
             distance = QStringLiteral("-1");
@@ -876,7 +876,7 @@ void PlayerCardContainer::setFloatingArea(QRect rect)
 void PlayerCardContainer::addEquips(QList<CardItem *> &equips)
 {
     foreach (CardItem *equip, equips) {
-        const EquipCard *equip_card = qobject_cast<const EquipCard *>(equip->getCard()->face());
+        const EquipCard *equip_card = dynamic_cast<const EquipCard *>(equip->getCard()->face());
         int index = (int)(equip_card->location());
         Q_ASSERT(_m_equipCards[index] == nullptr);
         _m_equipCards[index] = equip;
@@ -907,7 +907,7 @@ void PlayerCardContainer::addEquips(QList<CardItem *> &equips)
         _m_equipAnim[index]->start();
         _mutexEquipAnim.unlock();
 
-        const Skill *skill = Sanguosha->getSkill(equip_card->objectName());
+        const Skill *skill = Sanguosha->getSkill(equip_card->name());
         if (skill == nullptr)
             continue;
         emit add_equip_skill(skill, true);
@@ -918,7 +918,7 @@ QList<CardItem *> PlayerCardContainer::removeEquips(const QList<int> &cardIds)
 {
     QList<CardItem *> result;
     foreach (int card_id, cardIds) {
-        const EquipCard *equip_card = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card_id).face());
+        const EquipCard *equip_card = dynamic_cast<const EquipCard *>(Sanguosha->getEngineCard(card_id).face());
         int index = (int)(equip_card->location());
         Q_ASSERT(_m_equipCards[index] != nullptr);
         CardItem *equip = _m_equipCards[index];
@@ -940,7 +940,7 @@ QList<CardItem *> PlayerCardContainer::removeEquips(const QList<int> &cardIds)
         _m_equipAnim[index]->start();
         _mutexEquipAnim.unlock();
 
-        const Skill *skill = Sanguosha->getSkill(equip_card->objectName());
+        const Skill *skill = Sanguosha->getSkill(equip_card->name());
         if (skill != nullptr)
             emit remove_equip_skill(skill->objectName());
     }

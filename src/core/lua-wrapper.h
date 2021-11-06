@@ -18,10 +18,20 @@ class LuaState final : public QObject
     Q_OBJECT
 
 public:
-    typedef int LuaFunction;
     ~LuaState() override;
 
     lua_State *data();
+
+    // Helper functions
+    bool pushCardFace(const QString &name);
+    bool pushCardFaces();
+    QStringList cardFaceNames() const;
+    bool pushSkill(const QString &name);
+    bool pushSkills();
+    QStringList skillNames() const;
+    bool pushPackage(const QString &name);
+    bool pushPackages();
+    QStringList packageNames() const;
 
 private:
     LuaStatePrivate *d;
@@ -54,6 +64,7 @@ public:
 
     inline LuaState &operator*() const
     {
+        Q_ASSERT(!d.isNull());
         return *(d.data());
     }
 

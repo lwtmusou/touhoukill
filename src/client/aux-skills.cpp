@@ -113,6 +113,7 @@ bool ShowOrPindianSkill::matchPattern(const Player *player, const Card *card) co
 // -------------------------------------------
 
 YijiCard::YijiCard()
+    : SkillCard(QStringLiteral("yiji"))
 {
     setTargetFixed(false);
     // mute = true;
@@ -181,6 +182,7 @@ const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards, const Play
 // ------------------------------------------------
 
 ChoosePlayerCard::ChoosePlayerCard()
+    : SkillCard(QStringLiteral("choose_player"))
 {
     setTargetFixed(false);
 }

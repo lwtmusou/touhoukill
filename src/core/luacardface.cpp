@@ -47,225 +47,10 @@ enum TableType
     GeneralDescriptor = 0x500,
 };
 
-class LuaCardPrivate
-{
-public:
-    QString name;
-};
-
-class LuaBasicCard : public BasicCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE explicit LuaBasicCard(const QString &name)
-        : d(new LuaCardPrivate)
-    {
-        d->name = name;
-    }
-    ~LuaBasicCard() override
-    {
-        delete d;
-    }
-
-    QString subTypeName() const override
-    {
-        // todo: implementation
-        return QString();
-    }
-
-private:
-    LuaCardPrivate *const d;
-};
-
-class LuaWeapon : public Weapon
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE explicit LuaWeapon(const QString &name)
-        : d(new LuaCardPrivate)
-    {
-        d->name = name;
-    }
-    ~LuaWeapon() override
-    {
-        delete d;
-    }
-
-private:
-    LuaCardPrivate *const d;
-};
-
-class LuaArmor : public Armor
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE explicit LuaArmor(const QString &name)
-        : d(new LuaCardPrivate)
-    {
-        d->name = name;
-    }
-    ~LuaArmor() override
-    {
-        delete d;
-    }
-
-private:
-    LuaCardPrivate *const d;
-};
-
-class LuaDefensiveHorse : public DefensiveHorse
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE explicit LuaDefensiveHorse(const QString &name)
-        : d(new LuaCardPrivate)
-    {
-        d->name = name;
-    }
-    ~LuaDefensiveHorse() override
-    {
-        delete d;
-    }
-
-private:
-    LuaCardPrivate *const d;
-};
-
-class LuaOffensiveHorse : public OffensiveHorse
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE explicit LuaOffensiveHorse(const QString &name)
-        : d(new LuaCardPrivate)
-    {
-        d->name = name;
-    }
-    ~LuaOffensiveHorse() override
-    {
-        delete d;
-    }
-
-private:
-    LuaCardPrivate *const d;
-};
-
-class LuaTreasure : public Treasure
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE explicit LuaTreasure(const QString &name)
-        : d(new LuaCardPrivate)
-    {
-        d->name = name;
-    }
-    ~LuaTreasure() override
-    {
-        delete d;
-    }
-
-private:
-    LuaCardPrivate *const d;
-};
-
-class LuaNonDelayedTrick : public NonDelayedTrick
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE explicit LuaNonDelayedTrick(const QString &name)
-        : d(new LuaCardPrivate)
-    {
-        d->name = name;
-    }
-    ~LuaNonDelayedTrick() override
-    {
-        delete d;
-    }
-
-private:
-    LuaCardPrivate *const d;
-};
-
-class LuaDelayedTrick : public DelayedTrick
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE explicit LuaDelayedTrick(const QString &name)
-        : d(new LuaCardPrivate)
-    {
-        d->name = name;
-    }
-    ~LuaDelayedTrick() override
-    {
-        delete d;
-    }
-
-    void takeEffect(Player *target) const override
-    {
-        // todo: implementation
-    }
-
-private:
-    LuaCardPrivate *const d;
-};
-
-class LuaSkillCard : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE explicit LuaSkillCard(const QString &name)
-        : d(new LuaCardPrivate)
-    {
-        d->name = name;
-    }
-    ~LuaSkillCard() override
-    {
-        delete d;
-    }
-
-private:
-    LuaCardPrivate *const d;
-};
-
-namespace {
-#define TYPEPAIR(t) std::make_pair((t), &Lua##t ::staticMetaObject)
-static const QHash<TableType, const QMetaObject *> typeTable({
-    TYPEPAIR(BasicCard),
-    TYPEPAIR(Weapon),
-    TYPEPAIR(Armor),
-    TYPEPAIR(DefensiveHorse),
-    TYPEPAIR(OffensiveHorse),
-    TYPEPAIR(Treasure),
-    TYPEPAIR(NonDelayedTrick),
-    TYPEPAIR(DelayedTrick),
-    TYPEPAIR(SkillCard),
-});
-#undef TYPEPAIR
-
 ::CardFace *newCardFaceByType(TableType t, const QString &name)
 {
-    const QMetaObject *o = typeTable.value(t, nullptr);
-    if (o == nullptr)
-        return nullptr;
-
-    QObject *r = o->newInstance(Q_ARG(const QString &, name));
-    if (r == nullptr)
-        return nullptr;
-
-    ::CardFace *f = qobject_cast<::CardFace *>(r);
-    if (f == nullptr)
-        delete r;
-
-    return f;
-}
+    // TODO
+    return nullptr;
 } // namespace
 
 // [-0, +0, e]
@@ -301,7 +86,7 @@ static const QHash<TableType, const QMetaObject *> typeTable({
             // create cardface by its type
             int ok = 0;
             TableType t = static_cast<TableType>(lua_tonumberx(l, 1, &ok));
-            if (!ok) {
+            if (!(bool)(ok)) {
                 errorMessage = QString(QStringLiteral("sgs_ex.CardFaces[\"%1\"].type is not number")).arg(name);
                 break;
             }
@@ -311,9 +96,9 @@ static const QHash<TableType, const QMetaObject *> typeTable({
                 errorMessage = QString(QStringLiteral("No corressponding CardFace which sgs_ex.CardFaces[\"%1\"].type is %2")).arg(name, QString::number(static_cast<int>(t)));
                 break;
             }
-        } while (0);
+        } while (false);
         lua_pop(l, 1);
-    } while (0);
+    } while (false);
     lua_pop(l, 1);
 
     if (r == nullptr) {
@@ -325,5 +110,3 @@ static const QHash<TableType, const QMetaObject *> typeTable({
 }
 
 } // namespace SgsEx
-
-#include "luacardface.moc"

@@ -1,6 +1,8 @@
 %module sgs
 
 %{
+#include "global.h"
+#include "lua-wrapper.h"
 
 #include <QObject>
 #include <QVariant>
@@ -22,8 +24,6 @@ public:
     static inline void critical(QWidget *parent, const QString &title, const QString &text) {}
 };
 #endif
-
-#include "lua-wrapper.h"
 
 %}
 

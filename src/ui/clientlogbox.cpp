@@ -117,7 +117,7 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
 
             QString subcard_str = subcard_list.join(QStringLiteral(", "));
             if (card->face()->type() == QSanguosha::TypeSkill) {
-                const SkillCard *face = qobject_cast<const SkillCard *>(card->face());
+                const SkillCard *face = dynamic_cast<const SkillCard *>(card->face());
                 assert(face != nullptr);
                 if (subcard_list.isEmpty() || !face->throwWhenUsing())
                     log = tr("%from %2 [%1] %3").arg(skill_name, meth, suffix);

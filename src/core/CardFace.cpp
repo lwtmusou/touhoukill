@@ -26,6 +26,8 @@ public:
     {
     }
 
+    QString name;
+
     bool target_fixed;
     bool has_preact;
     bool can_damage;
@@ -35,9 +37,10 @@ public:
     HandlingMethod default_method;
 };
 
-CardFace::CardFace()
+CardFace::CardFace(const QString &name)
     : d(new CardFacePrivate)
 {
+    d->name = name;
 }
 
 CardFace::~CardFace()
@@ -47,12 +50,13 @@ CardFace::~CardFace()
 
 QString CardFace::name() const
 {
-    return QString::fromUtf8(metaObject()->className());
+    return d->name;
 }
 
 bool CardFace::isKindOf(const char *cardType) const
 {
-    return inherits(cardType);
+    // todo
+    return false;
 }
 
 bool CardFace::matchType(const QString &pattern) const
@@ -295,6 +299,11 @@ void CardFace::onNullified(Player * /*unused*/, const Card * /*unused*/) const
 {
 }
 
+BasicCard::BasicCard(const QString &name)
+    : CardFace(name)
+{
+}
+
 CardType BasicCard::type() const
 {
     return TypeBasic;
@@ -303,6 +312,11 @@ CardType BasicCard::type() const
 QString BasicCard::typeName() const
 {
     return QStringLiteral("basic");
+}
+
+EquipCard::EquipCard(const QString &name)
+    : CardFace(name)
+{
 }
 
 CardType EquipCard::type() const
@@ -358,8 +372,9 @@ public:
     }
 };
 
-Weapon::Weapon()
-    : d(new WeaponPrivate)
+Weapon::Weapon(const QString &name)
+    : EquipCard(name)
+    , d(new WeaponPrivate)
 {
 }
 
@@ -388,6 +403,11 @@ void Weapon::setRange(int r)
     d->range = r;
 }
 
+Armor::Armor(const QString &name)
+    : EquipCard(name)
+{
+}
+
 QString Armor::subTypeName() const
 {
     return QStringLiteral("armor");
@@ -396,6 +416,11 @@ QString Armor::subTypeName() const
 EquipLocation Armor::location() const
 {
     return ArmorLocation;
+}
+
+DefensiveHorse::DefensiveHorse(const QString &name)
+    : EquipCard(name)
+{
 }
 
 QString DefensiveHorse::subTypeName() const
@@ -408,6 +433,11 @@ EquipLocation DefensiveHorse::location() const
     return DefensiveHorseLocation;
 }
 
+OffensiveHorse::OffensiveHorse(const QString &name)
+    : EquipCard(name)
+{
+}
+
 QString OffensiveHorse::subTypeName() const
 {
     return QStringLiteral("offensive_horse");
@@ -416,6 +446,11 @@ QString OffensiveHorse::subTypeName() const
 EquipLocation OffensiveHorse::location() const
 {
     return OffensiveHorseLocation;
+}
+
+Treasure::Treasure(const QString &name)
+    : EquipCard(name)
+{
 }
 
 QString Treasure::subTypeName() const
@@ -428,6 +463,11 @@ EquipLocation Treasure::location() const
     return TreasureLocation;
 }
 
+TrickCard::TrickCard(const QString &name)
+    : CardFace(name)
+{
+}
+
 CardType TrickCard::type() const
 {
     return TypeTrick;
@@ -436,6 +476,11 @@ CardType TrickCard::type() const
 QString TrickCard::typeName() const
 {
     return QStringLiteral("trick");
+}
+
+NonDelayedTrick::NonDelayedTrick(const QString &name)
+    : TrickCard(name)
+{
 }
 
 QString NonDelayedTrick::subTypeName() const
@@ -448,8 +493,9 @@ bool NonDelayedTrick::isNDTrick() const
     return true;
 }
 
-DelayedTrick::DelayedTrick()
-    : j(nullptr)
+DelayedTrick::DelayedTrick(const QString &name)
+    : TrickCard(name)
+    , j(nullptr)
 {
 }
 
@@ -476,8 +522,10 @@ public:
     }
 };
 
-SkillCard::SkillCard()
-    : d(new SkillCardPrivate)
+SkillCard::SkillCard(const QString &name)
+    : CardFace(name)
+    , d(new SkillCardPrivate)
+
 {
 }
 
@@ -554,25 +602,22 @@ void SkillCard::setThrowWhenUsing(bool can)
 // TODO: find a suitable place for them
 class SurrenderCard : public SkillCard
 {
-    Q_OBJECT
-
 public:
-    Q_INVOKABLE SurrenderCard();
+    SurrenderCard();
 
     void onUse(RoomObject *room, const CardUseStruct &use) const override;
 };
 
 class CheatCard : public SkillCard
 {
-    Q_OBJECT
-
 public:
-    Q_INVOKABLE CheatCard();
+    CheatCard();
 
     void onUse(RoomObject *room, const CardUseStruct &use) const override;
 };
 
 SurrenderCard::SurrenderCard()
+    : SkillCard(QStringLiteral("surrender"))
 {
     setTargetFixed(true);
     setDefaultHandlingMethod(MethodNone);
@@ -584,6 +629,7 @@ void SurrenderCard::onUse(RoomObject *room, const CardUseStruct &use) const
 }
 
 CheatCard::CheatCard()
+    : SkillCard(QStringLiteral("cheat"))
 {
     setTargetFixed(true);
     setDefaultHandlingMethod(MethodNone);
@@ -596,5 +642,3 @@ void CheatCard::onUse(RoomObject *room, const CardUseStruct &use) const
     if (doc.isValid())
         RefactorProposal::fixme_cast<Room *>(room)->cheat(RefactorProposal::fixme_cast<ServerPlayer *>(use.from), doc.toVariant());
 }
-
-#include "CardFace.moc"

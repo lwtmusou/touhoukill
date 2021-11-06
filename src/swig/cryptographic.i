@@ -41,10 +41,10 @@ public:
 
 class BuiltinExtension {
 private:
-    LuaQrcWrapper() = delete;
-    ~LuaQrcWrapper() = delete;
-    LuaQrcWrapper(const LuaQrcWrapper &) = delete;
-    LuaQrcWrapper &operator=(const LuaQrcWrapper&) = delete;
+    BuiltinExtension() = delete;
+    ~BuiltinExtension() = delete;
+    BuiltinExtension(const BuiltinExtension &) = delete;
+    BuiltinExtension &operator=(const BuiltinExtension&) = delete;
 public:
     static bool VerifyChecksum(const QString &path, const QString &hash, QCryptographicHash::Algorithm algorithm);
 };

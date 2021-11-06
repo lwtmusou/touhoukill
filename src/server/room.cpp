@@ -3597,11 +3597,7 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
     if (card_use.from->isCardLimited(card, card->handleMethod()) && (!card->canRecast() || card_use.from->isCardLimited(card, QSanguosha::MethodRecast)))
         return true;
 
-    QString key;
-    if (card->face()->inherits("LuaSkillCard"))
-        key = QStringLiteral("#") + card->faceName();
-    else
-        key = card->faceName();
+    QString key = card->faceName();
     int slash_count = card_use.from->slashCount();
     bool showTMskill = false;
     foreach (const Skill *skill, card_use.from->skills(false)) {

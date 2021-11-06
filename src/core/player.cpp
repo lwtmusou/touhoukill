@@ -390,7 +390,7 @@ int Player::getAttackRange(bool include_weapon) const
     int weapon_range = 0;
 
     if (include_weapon) {
-        const Weapon *face = qobject_cast<const Weapon *>(d->room->getCard(d->weapon)->face());
+        const Weapon *face = dynamic_cast<const Weapon *>(d->room->getCard(d->weapon)->face());
         Q_ASSERT(face);
         if (!isBrokenEquip(d->weapon, true))
             weapon_range = face->range();
@@ -857,7 +857,7 @@ void Player::setPhaseString(const QString &phase_str)
 
 void Player::setEquip(const Card *equip)
 {
-    const EquipCard *face = qobject_cast<const EquipCard *>(equip->face());
+    const EquipCard *face = dynamic_cast<const EquipCard *>(equip->face());
     Q_ASSERT(face != nullptr);
     switch (face->location()) {
     case WeaponLocation:
@@ -880,7 +880,7 @@ void Player::setEquip(const Card *equip)
 
 void Player::removeEquip(const Card *equip)
 {
-    const EquipCard *face = qobject_cast<const EquipCard *>(equip->face());
+    const EquipCard *face = dynamic_cast<const EquipCard *>(equip->face());
     Q_ASSERT(face != nullptr);
     switch (face->location()) {
     case WeaponLocation:
@@ -1259,9 +1259,9 @@ void Player::removeCard(const Card *card, QSanguosha::Place place, const QString
         break;
     }
     case QSanguosha::PlaceEquip: {
-        const EquipCard *equip = qobject_cast<const EquipCard *>(card->face());
+        const EquipCard *equip = dynamic_cast<const EquipCard *>(card->face());
         if (equip == nullptr)
-            equip = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card->effectiveID()).face());
+            equip = dynamic_cast<const EquipCard *>(Sanguosha->getEngineCard(card->effectiveID()).face());
         Q_ASSERT(equip != nullptr);
         equip->onUninstall(this);
         removeEquip(card);
@@ -1309,9 +1309,9 @@ void Player::addCard(const Card *card, QSanguosha::Place place, const QString &p
         break;
     }
     case QSanguosha::PlaceEquip: {
-        const EquipCard *equip = qobject_cast<const EquipCard *>(card->face());
+        const EquipCard *equip = dynamic_cast<const EquipCard *>(card->face());
         if (equip == nullptr)
-            equip = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card->effectiveID()).face());
+            equip = dynamic_cast<const EquipCard *>(Sanguosha->getEngineCard(card->effectiveID()).face());
         setEquip(card);
         equip->onInstall(this);
         break;
@@ -1566,17 +1566,17 @@ bool Player::hasEquipSkill(const QString &skill_name) const
     }
 
     if (d->weapon != -1) {
-        const Weapon *weaponc = qobject_cast<const Weapon *>(d->room->getCard(d->weapon)->face());
+        const Weapon *weaponc = dynamic_cast<const Weapon *>(d->room->getCard(d->weapon)->face());
         if ((Sanguosha->getSkill(weaponc) != nullptr) && Sanguosha->getSkill(weaponc)->objectName() == skill_name)
             return true;
     }
     if (d->armor != -1) {
-        const Armor *armorc = qobject_cast<const Armor *>(d->room->getCard(d->armor)->face());
+        const Armor *armorc = dynamic_cast<const Armor *>(d->room->getCard(d->armor)->face());
         if ((Sanguosha->getSkill(armorc) != nullptr) && Sanguosha->getSkill(armorc)->objectName() == skill_name)
             return true;
     }
     if (d->treasure != -1) {
-        const Treasure *treasurec = qobject_cast<const Treasure *>(d->room->getCard(d->treasure)->face());
+        const Treasure *treasurec = dynamic_cast<const Treasure *>(d->room->getCard(d->treasure)->face());
         if ((Sanguosha->getSkill(treasurec) != nullptr) && Sanguosha->getSkill(treasurec)->objectName() == skill_name)
             return true;
     }

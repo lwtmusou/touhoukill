@@ -195,7 +195,7 @@ bool EquipSkillTrigger::equipAvailable(const Player *p, const Card *equip, const
     if (equip == nullptr)
         return false;
 
-    const EquipCard *face = qobject_cast<const EquipCard *>(equip->face());
+    const EquipCard *face = dynamic_cast<const EquipCard *>(equip->face());
     Q_ASSERT(face != nullptr);
 
     return equipAvailable(p, face->location(), equip->faceName(), to);
