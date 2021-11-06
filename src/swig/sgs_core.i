@@ -1,67 +1,285 @@
-#ifndef _PLAYER_H
-#define _PLAYER_H
+%include "global.h"
 
-#include "global.h"
+class CardFace
+{
+public:
+    // text property
+    QString name() const;
 
-#include <QObject>
+    // type property
+    virtual QSanguosha::CardType type() const = 0;
+    virtual QString typeName() const = 0;
+    QString subTypeName() const;
+    bool isKindOf(const QString &cardType) const;
 
-class EquipCard;
-class Weapon;
-class Armor;
-class Horse;
-class DelayedTrick;
-class DistanceSkill;
-class RoomObject;
-class Skill;
-class Card;
-class General;
+    // Can we have a better way to replace this function? Maybe using `match`
+    // Fs: This is just a convenience function....
+    bool isNDTrick() const;
 
-class PlayerPrivate;
+    // property identifier.
+    // CardFace provides the default value of these property
+    // But they could be dynamic and explained by Card itself.
+    // For example, some skill may let Slash not be regarded as damage card?
+    // Fs: There is a skill which has a skill named "Xianshi" for God Patchouli in TouhouKill. It needs an extremely hacked Card/CardFace which changes all the effect of a certain Card.
+    // Return value of "canDamage" and "canRecover" is affected by "Xianshi" in this case.
+    // TODO_Fs: ***non-virtual*** property setters for simplifying logic, only reimplement these functions when complex logic is needed
+    bool canDamage() const;
+    void setCanDamage(bool can);
+    bool canRecover() const;
+    void setCanRecover(bool can);
+    // Fs: canRecast should be property of Card.
+    // Seems like it should be dealt in UI and GameRule instead of the logic in Card/CardFace itself.
+    // Currently CardFace::onUse and CardFace::targetFixed/targetFeasible are hacked to support recast
+    // TODO_Fs: This may be changed to using skillcard/recastcard when UI/client detects a recast operation
+    // so that there will be no logic in CardFace for implementing recasting
+    // Note: In HulaoPass mode, all weapon can be recast according to the game rule.
+    // virtual bool canRecast() const;
+    bool hasEffectValue() const;
+    void setHasEffectValue(bool can);
+    virtual bool hasPreAction() const;
+    void setHasPreAction(bool can);
+
+    // This method provides a default handling method suggested by the card face.
+    // Almost every actual card has its handlingMethod to be QSanguosha::MethodUse.
+    virtual QSanguosha::HandlingMethod defaultHandlingMethod() const;
+    void setDefaultHandlingMethod(QSanguosha::HandlingMethod can);
+
+    // Functions
+    virtual bool targetFixed(const Player *player, const Card *card) const;
+    void setTargetFixed(bool fixed);
+
+    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self, const Card *card) const;
+
+    // This is the merged targetFilter implementation.
+    /**
+     * Calculate the maximum vote for specific target.
+     *
+     * @param targets The lists where all selected targets are.
+     * @param to_select The player to be judged.
+     * @param Self The user of the card.
+     * @param card the card itself
+     *
+     * @return the maximum vote for to_select.
+     *
+     * @note to_select will be selectable until its appearance in targets >= its maximum vote.
+     */
+    virtual int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card) const;
+
+    virtual bool isAvailable(const Player *player, const Card *card) const;
+
+    // TODO_Fs: Actually I don't know the use case of this function.
+    // Is it only for skill "tianqu"?
+    virtual bool ignoreCardValidity(const Player *player) const;
+    virtual const Card *validate(const CardUseStruct &cardUse) const;
+    virtual const Card *validateInResponse(Player *user, const Card *original_card) const;
+
+    virtual void doPreAction(RoomObject *room, const CardUseStruct &card_use) const;
+
+    // TODO_Fs: Aren't the names of these 2 functions easy to be misunderstood?
+    virtual void onUse(RoomObject *room, const CardUseStruct &card_use) const; // Shouldn't this be "processOfUsing" / "usingProcess" or something like this?
+    virtual void use(RoomObject *room, const CardUseStruct &use) const; // Shouldn't this be "onUse"?
+
+    virtual void onEffect(const CardEffectStruct &effect) const;
+    virtual bool isCancelable(const CardEffectStruct &effect) const;
+    virtual void onNullified(Player *target, const Card *card) const;
+
+private:
+    QSGS_DISABLE_COPY_MOVE_CONSTRUCT(CardFace)
+};
+
+class BasicCard : public CardFace
+{
+};
+
+class EquipCard : public CardFace
+{
+public:
+    virtual QSanguosha::EquipLocation location() const = 0;
+
+    virtual void onInstall(Player *player) const;
+    virtual void onUninstall(Player *player) const;
+};
+
+class Weapon : public EquipCard
+{
+public:
+    int range() const;
+    void setRange(int r);
+};
+
+class Armor : public EquipCard
+{
+};
+
+class DefensiveHorse : public EquipCard
+{
+};
+
+class OffensiveHorse : public EquipCard
+{
+};
+
+class Treasure : public EquipCard
+{
+};
+
+class TrickCard : public CardFace
+{
+};
+
+class NonDelayedTrick : public TrickCard
+{
+};
+
+class DelayedTrick : public TrickCard
+{
+public:
+    void takeEffect(Player *target) const;
+    JudgeStruct judge() const;
+
+protected:
+    const JudgeStruct *j;
+};
+
+class SkillCard : public CardFace
+{
+public:
+    virtual bool throwWhenUsing() const;
+    void setThrowWhenUsing(bool can);
+};
+
+class Card
+{
+public:
+    static const int S_UNKNOWN_CARD_ID;
+
+    // Suit method
+    QSanguosha::Suit suit() const;
+    void setSuit(QSanguosha::Suit suit);
+    QString suitString() const;
+    bool isRed() const;
+    bool isBlack() const;
+    QSanguosha::Color color() const;
+
+    // Number method
+    QSanguosha::Number number() const;
+    void setNumber(QSanguosha::Number number);
+    QString numberString() const;
+
+    // id
+    int id() const;
+    void setID(int id);
+    int effectiveID() const;
+
+    // name
+    QString faceName() const;
+    QString fullName(bool include_suit = false) const;
+    QString logName() const;
+
+    // ??
+    bool isModified() const;
+
+    // skill name
+    QString skillName(bool removePrefix = true) const;
+    void setSkillName(const QString &skill_name);
+    const QString &showSkillName() const;
+    void setShowSkillName(const QString &show_skill_name);
+
+    // Property of card itself
+    bool canRecast() const;
+    void setCanRecast(bool can);
+    bool transferable() const;
+    void setTransferable(bool can);
+
+    // handling method
+    QSanguosha::HandlingMethod handleMethod() const;
+    void setHandleMethod(QSanguosha::HandlingMethod method);
+
+    // property (override the CardFace)
+    bool canDamage() const;
+    void setCanDamage(bool can);
+    bool canRecover() const;
+    void setCanRecover(bool can);
+    bool hasEffectValue() const;
+    void setHasEffectValue(bool has);
+
+    // Face (functional model)
+    const CardFace *face() const;
+    // For compulsory view as skill. (Doesn't this kind of skill should return a new card and make that card as subcard?)
+    void setFace(const CardFace *face);
+
+    // Flags
+    const QSet<QString> &flags() const;
+    void addFlag(const QString &flag) const /* mutable */;
+    void addFlags(const QSet<QString> &flags) const /* mutable */;
+    void removeFlag(const QString &flag) const /* mutable */;
+    void removeFlag(const QSet<QString> &flag) const /* mutable */;
+    void clearFlags() const /* mutable */;
+    bool hasFlag(const QString &flag) const;
+
+    // Virtual Card
+    bool isVirtualCard() const;
+
+    // Subcard
+    const IDSet &subcards() const;
+    void addSubcard(int card_id);
+    void addSubcard(const Card *card);
+    void addSubcards(const IDSet &subcards);
+    void clearSubcards();
+    QString subcardString() const; // Used for converting card to string
+
+    // UI property
+    bool mute() const;
+    void setMute(bool mute);
+
+    const QString &userString() const;
+    void setUserString(const QString &str);
+
+    // room Object
+    RoomObject *room();
+    const RoomObject *room() const;
+    void setRoomObject(RoomObject *room);
+
+    // toString
+    // What's the meaning of this hidden card?
+    // Fs: SkillCard with subcard which does not always need to show to others
+    QString toString(bool hidden = false) const;
+
+    // helpers
+    // static Card *Clone(const Card *other);
+    static QString SuitToString(QSanguosha::Suit suit);
+    static QString NumberToString(QSanguosha::Number number);
+    static Card *Parse(const QString &str, RoomObject *room);
+
+private:
+    QSGS_DISABLE_COPY_MOVE_CONSTRUCT(Card)
+};
+
+struct CardDescriptor
+{
+    // const CardFace *face;
+    // or following? or both?
+    QString faceName;
+    QSanguosha::Suit suit;
+    QSanguosha::Number number;
+    QString package;
+
+    // property of card?
+
+    // share some interfaces of Card?
+    QString fullName(bool include_suit = false) const;
+    QString logName() const;
+    bool isBlack() const;
+    bool isRed() const;
+    const CardFace *face() const;
+
+private:
+    QSGS_DISABLE_COPY_MOVE_CONSTRUCT(CardDescriptor)
+};
 
 class Player : public QObject
 {
-    Q_OBJECT
-#if 0
-    Q_PROPERTY(QString screenname READ screenName WRITE setScreenName)
-    Q_PROPERTY(int hp READ getHp WRITE setHp)
-    Q_PROPERTY(int renhp READ getRenHp WRITE setRenHp)
-    Q_PROPERTY(int linghp READ getLingHp WRITE setLingHp)
-    Q_PROPERTY(int dyingFactor READ getDyingFactor WRITE setDyingFactor)
-    Q_PROPERTY(int maxhp READ getMaxHp WRITE setMaxHp)
-    Q_PROPERTY(int chaoren READ getChaoren WRITE setChaoren)
-
-    Q_PROPERTY(QString kingdom READ getKingdom WRITE setKingdom)
-    Q_PROPERTY(bool wounded READ isWounded STORED false)
-    Q_PROPERTY(QString role READ getRole WRITE setRole)
-    Q_PROPERTY(QString general READ getGeneralName WRITE setGeneralName)
-    Q_PROPERTY(QString general2 READ getGeneral2Name WRITE setGeneral2Name)
-    Q_PROPERTY(QString state READ getState WRITE setState)
-    Q_PROPERTY(int handcard_num READ getHandcardNum)
-    Q_PROPERTY(int seat READ getSeat WRITE setSeat)
-    Q_PROPERTY(int inital_seat READ getInitialSeat WRITE setInitialSeat)
-    Q_PROPERTY(QString phase READ getPhaseString WRITE setPhaseString)
-    Q_PROPERTY(bool faceup READ faceUp WRITE setFaceUp)
-    Q_PROPERTY(bool alive READ isAlive WRITE setAlive)
-    Q_PROPERTY(QString flags READ getFlags WRITE setFlags)
-    Q_PROPERTY(bool chained READ isChained WRITE setChained)
-    Q_PROPERTY(bool removed READ isRemoved WRITE setRemoved)
-    Q_PROPERTY(bool owner READ isOwner WRITE setOwner)
-    Q_PROPERTY(bool role_shown READ hasShownRole WRITE setShownRole)
-
-    Q_PROPERTY(bool general_showed READ hasShownGeneral WRITE setGeneralShowed)
-    Q_PROPERTY(bool general2_showed READ hasShownGeneral2 WRITE setGeneral2Showed)
-
-    Q_PROPERTY(QString next READ getNextName WRITE setNext)
-
-    Q_PROPERTY(bool kongcheng READ isKongcheng)
-    Q_PROPERTY(bool nude READ isNude)
-    Q_PROPERTY(bool all_nude READ isAllNude)
-#endif
-
 public:
-    explicit Player(RoomObject *parent);
-    ~Player() override;
-
     void setScreenName(const QString &screen_name);
     QString screenName() const;
 
@@ -126,10 +344,7 @@ public:
     bool inMyAttackRange(const Player *other) const;
 
     bool isAlive() const;
-    inline bool isDead() const
-    {
-        return !isAlive();
-    }
+    bool isDead() const;
     void setAlive(bool alive);
 
     QStringList flagList() const;
@@ -156,10 +371,7 @@ public:
 
     const General *avatarGeneral() const;
 
-    inline bool isLord() const
-    {
-        return role() == QSanguosha::RoleLord;
-    }
+    bool isLord() const;
     bool isCurrent() const;
 
     void acquireSkill(const QString &skill_name);
@@ -306,122 +518,6 @@ public:
     QVariantMap tag;
 
     // bool hasValidSkill()
-
-#ifndef QSGS_CORE_NODEPRECATED
-
-public:
-#else
-
 private:
-#endif
-
-    Q_DECL_DEPRECATED inline bool isHidden(bool head_general) const
-    {
-        return isHidden(head_general ? 0 : 1);
-    }
-    Q_DECL_DEPRECATED inline void setGeneralShowed(bool showed, int pos = 0)
-    {
-        setShownGeneral(pos, showed);
-    }
-    Q_DECL_DEPRECATED inline bool hasShownGeneral2() const
-    {
-        return haveShownGeneral(1);
-    }
-    Q_DECL_DEPRECATED inline void setGeneral2Showed(bool showed)
-    {
-        return setShownGeneral(1, showed);
-    }
-    Q_DECL_DEPRECATED bool inHeadSkills(const QString &skill_name) const
-    {
-        return findPositionOfGeneralOwningSkill(skill_name) == 0;
-    }
-    Q_DECL_DEPRECATED bool inDeputySkills(const QString &skill_name) const
-    {
-        return findPositionOfGeneralOwningSkill(skill_name) == 1;
-    }
-    Q_DECL_DEPRECATED inline void setSkillsPreshowed(const QString &flag = QStringLiteral("hd"), bool preshowed = true)
-    {
-        QList<int> p;
-        if (flag.contains(QStringLiteral("h")))
-            p << 0;
-        if (flag.contains(QStringLiteral("d")))
-            p << 1;
-        setSkillsPreshowed(p, preshowed);
-    }
-    Q_DECL_DEPRECATED inline bool isJilei(const Card *card) const
-    {
-        return isCardLimited(card, QSanguosha::MethodDiscard);
-    }
-    Q_DECL_DEPRECATED inline bool isLocked(const Card *card) const
-    {
-        return isCardLimited(card, QSanguosha::MethodUse);
-    }
-    Q_DECL_DEPRECATED QSet<const Skill *> getHeadSkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const
-    {
-        return skills(include_equip, include_acquired, {0});
-    }
-    Q_DECL_DEPRECATED QSet<const Skill *> getDeputySkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const
-    {
-        return skills(include_equip, include_acquired, {1});
-    }
-    Q_DECL_DEPRECATED void setDisableShow(const QString &flags, const QString &reason)
-    {
-        QList<int> pos;
-        if (flags.contains(QLatin1Char('h')))
-            pos << 0;
-        if (flags.contains(QLatin1Char('d')))
-            pos << 1;
-
-        setDisableShow(pos, reason);
-    }
-    Q_DECL_DEPRECATED QStringList disableShow(bool head) const
-    {
-        return disableShow(head ? 0 : 1);
-    }
-    Q_DECL_DEPRECATED bool canShowGeneral(const QString &flags) const
-    {
-        QList<int> pos;
-        if (flags.contains(QLatin1Char('h')))
-            pos << 0;
-        if (flags.contains(QLatin1Char('d')))
-            pos << 1;
-
-        return canShowGeneral(pos);
-    }
-    Q_DECL_DEPRECATED inline void addSkill(const QString &skill_name, bool head_skill)
-    {
-        addSkill(skill_name, head_skill ? 0 : 1);
-    }
-    Q_DECL_DEPRECATED void loseSkill(const QString &skill_name, bool head)
-    {
-        loseSkill(skill_name, head ? 0 : 1);
-    }
-    Q_DECL_DEPRECATED inline bool faceUp() const
-    {
-        return !turnSkipping();
-    }
-    Q_DECL_DEPRECATED inline void setFaceUp(bool face_up)
-    {
-        setTurnSkipping(!face_up);
-    }
-    Q_DECL_DEPRECATED inline const General *getGeneral2() const
-    {
-        return general(1);
-    }
-    Q_DECL_DEPRECATED inline QString getGeneral2Name() const
-    {
-        return generalName(1);
-    }
-    Q_DECL_DEPRECATED bool pileOpen(const QString &pile_name, const QString &player) const
-    {
-        return false;
-    }
-    Q_DECL_DEPRECATED void setPileOpen(const QString &pile_name, const QString &player)
-    {
-    }
-
-private:
-    PlayerPrivate *d;
+    QSGS_DISABLE_COPY_MOVE_CONSTRUCT(Player)
 };
-
-#endif

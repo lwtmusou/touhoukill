@@ -15,11 +15,6 @@ bool VerifyChecksum(const QString &path, const QString &hash, QCryptographicHash
 %}
 
 class QCryptographicHash {
-    QCryptographicHash() = delete;
-    ~QCryptographicHash() = delete;
-    QCryptographicHash(const QCryptographicHash &) = delete;
-    QCryptographicHash &operator=(const QCryptographicHash&) = delete;
-public:
     enum Algorithm {
         Md4,
         Md5,
@@ -37,14 +32,15 @@ public:
         Sha3_384,
         Sha3_512,
     };
+
+private:
+    QSGS_DISABLE_COPY_MOVE_CONSTRUCT(QCryptographicHash)
 };
 
 class BuiltinExtension {
-private:
-    BuiltinExtension() = delete;
-    ~BuiltinExtension() = delete;
-    BuiltinExtension(const BuiltinExtension &) = delete;
-    BuiltinExtension &operator=(const BuiltinExtension&) = delete;
 public:
     static bool VerifyChecksum(const QString &path, const QString &hash, QCryptographicHash::Algorithm algorithm);
+
+private:
+    QSGS_DISABLE_COPY_MOVE_CONSTRUCT(BuiltinExtension)
 };

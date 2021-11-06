@@ -2,14 +2,19 @@
 #include "RoomObject.h"
 #include "card.h"
 #include "engine.h"
+#include "lua-wrapper.h"
 #include "player.h"
 #include "util.h"
 
 // TODO: kill this
 #include "room.h"
 
+#include "lua.hpp"
+
 #include <QObject>
 #include <QString>
+
+#include <optional>
 
 using namespace QSanguosha;
 
@@ -17,43 +22,368 @@ class CardFacePrivate
 {
 public:
     CardFacePrivate()
-        : target_fixed(false)
-        , has_preact(false)
-        , can_damage(false)
-        , can_recover(false)
-        , has_effectvalue(true)
-        , default_method(MethodUse)
     {
     }
 
     QString name;
+    QString subTypeName;
 
-    bool target_fixed;
-    bool has_preact;
-    bool can_damage;
-    bool can_recover;
-    bool has_effectvalue;
+    QStringList kind;
 
-    HandlingMethod default_method;
+    std::optional<bool> target_fixed;
+    std::optional<bool> has_preact;
+    std::optional<bool> can_damage;
+    std::optional<bool> can_recover;
+    std::optional<bool> has_effectvalue;
+
+    std::optional<HandlingMethod> default_method;
 };
+
+// somewhat not-even-be-a-method method for Lua calls which need to be done on SWIG side
+// SWIG don't provide a binary-compatible way to export its constant variables
+namespace CardFaceLuaCall {
+bool targetFixed(lua_State *l, const Player *player, const Card *card);
+bool targetsFeasible(lua_State *l, const QList<const Player *> &targets, const Player *Self, const Card *card);
+} // namespace CardFaceLuaCall
+
+// -- type (which is specified by desc.type using SecondTypeMask / ThirdTypeMask)
+CardFace::CardFace(const QString &name)
+    : d(new CardFacePrivate)
+{
+    d->name = name;
+}
+
+CardFace::~CardFace()
+{
+    delete d;
+}
+
+// -- name -> string
+QString CardFace::name() const
+{
+    return d->name;
+}
+
+// -- subTypeName -> string
+QString CardFace::subTypeName() const
+{
+    if (d->subTypeName.isEmpty()) {
+        LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+        bool pushed = l->pushCardFace(d->name); // { CardFace(if successful) }
+        if (!pushed)
+            return QString();
+
+        do {
+            int type = lua_getfield(l, -1, "subTypeName"); // { CardFace.subTypeName, CardFace }
+            do {
+                if (type != LUA_TSTRING)
+                    break;
+                d->subTypeName = QString::fromUtf8(lua_tostring(l, -1));
+            } while (false);
+            lua_pop(l, 1); // { CardFace }
+        } while (false);
+        lua_pop(l, 1); // { }
+    }
+
+    return d->subTypeName;
+}
+
+// -- kind -> table (sequence) of strings
+bool CardFace::isKindOf(const QString &cardType) const
+{
+    if (d->kind.isEmpty()) {
+        LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+        bool pushed = l->pushCardFace(d->name); // { CardFace(if successful) }
+        if (!pushed)
+            return cardType == QStringLiteral("CardFace");
+
+        do {
+            int type = lua_getfield(l, -1, "kind"); // { CardFace.kind, CardFace }
+            do {
+                if (type != LUA_TTABLE)
+                    break;
+
+                for (lua_pushnil(l); (bool)(lua_next(l, -2)); lua_pop(l, 1)) { // { v, k, CardFace.kind, CardFace }
+                    type = lua_type(l, -1);
+                    if (type != LUA_TSTRING)
+                        continue;
+
+                    d->kind << QString::fromUtf8(lua_tostring(l, -1));
+                } // { CardFace.kind, CardFace }
+            } while (false);
+            lua_pop(l, 1); // { CardFace }
+        } while (false);
+        lua_pop(l, 1); // { }
+    }
+
+    if (d->kind.isEmpty())
+        return cardType == QStringLiteral("CardFace");
+
+    return d->kind.contains(cardType);
+}
+
+// --  - canDamage = function() -> boolean
+bool CardFace::canDamage() const
+{
+    bool r = false;
+
+    if (!d->can_damage.has_value()) {
+        LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+        bool pushed = l->pushCardFace(d->name); // { CardFace(if successful) }
+        if (!pushed)
+            return false;
+
+        do {
+            int type = lua_getfield(l, -1, "canDamage"); // { CardFace.canDamage, CardFace }
+            do {
+                if (type == LUA_TBOOLEAN) {
+                    r = lua_toboolean(l, -1);
+                    d->can_damage = r;
+                } else if (type == LUA_TFUNCTION) {
+                    // we should do the function call and return
+                    // error should be catched here
+                    int call = lua_pcall(l, 0, 1, 0); // { cardFace.canDamage() / error, CardFace }
+                    if (call == LUA_OK)
+                        r = lua_toboolean(l, -1);
+
+                    // DO NOT STORE d->can_damage
+                } else {
+                    // neither boolean nor function, ignored
+                }
+            } while (false);
+            lua_pop(l, 1); // { CardFace }
+        } while (false);
+        lua_pop(l, 1); // { }
+    }
+
+    return d->can_damage.value_or(r);
+}
+
+void CardFace::setCanDamage(bool can)
+{
+    d->can_damage = can;
+}
+
+// --  - canRecover = function() -> boolean
+bool CardFace::canRecover() const
+{
+    bool r = false;
+
+    if (!d->can_recover.has_value()) {
+        LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+        bool pushed = l->pushCardFace(d->name); // { CardFace(if successful) }
+        if (!pushed)
+            return false;
+
+        do {
+            int type = lua_getfield(l, -1, "canRecover"); // { CardFace.canRecover, CardFace }
+            do {
+                if (type == LUA_TBOOLEAN) {
+                    r = lua_toboolean(l, -1);
+                    d->can_recover = r;
+                } else if (type == LUA_TFUNCTION) {
+                    // we should do the function call and return
+                    // error should be catched here
+                    int call = lua_pcall(l, 0, 1, 0); // { cardFace.canRecover() / error, CardFace }
+                    if (call == LUA_OK)
+                        r = lua_toboolean(l, -1);
+
+                    // DO NOT STORE d->can_recover
+                } else {
+                    // neither boolean nor function, ignored
+                }
+            } while (false);
+            lua_pop(l, 1); // { CardFace }
+        } while (false);
+        lua_pop(l, 1); // { }
+    }
+
+    return d->can_recover.value_or(r);
+}
+
+void CardFace::setCanRecover(bool can)
+{
+    d->can_recover = can;
+}
+
+// --  - hasEffectValue = function() -> boolean
+bool CardFace::hasEffectValue() const
+{
+    bool r = false;
+
+    if (!d->has_effectvalue.has_value()) {
+        LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+        bool pushed = l->pushCardFace(d->name); // { CardFace(if successful) }
+        if (!pushed)
+            return false;
+
+        do {
+            int type = lua_getfield(l, -1, "hasEffectValue"); // { CardFace.hasEffectValue, CardFace }
+            do {
+                if (type == LUA_TBOOLEAN) {
+                    r = lua_toboolean(l, -1);
+                    d->has_effectvalue = r;
+                } else if (type == LUA_TFUNCTION) {
+                    // we should do the function call and return
+                    // error should be catched here
+                    int call = lua_pcall(l, 0, 1, 0); // { cardFace.hasEffectValue() / error, CardFace }
+                    if (call == LUA_OK)
+                        r = lua_toboolean(l, -1);
+
+                    // DO NOT STORE d->has_effectvalue
+                } else {
+                    // neither boolean nor function, ignored
+                }
+            } while (false);
+            lua_pop(l, 1); // { CardFace }
+        } while (false);
+        lua_pop(l, 1); // { }
+    }
+
+    return d->has_effectvalue.value_or(r);
+}
+
+void CardFace::setHasEffectValue(bool can)
+{
+    d->has_effectvalue = can;
+}
+
+// --  - hasPreAction = function() -> boolean
+bool CardFace::hasPreAction() const
+{
+    bool r = false;
+
+    if (!d->has_preact.has_value()) {
+        LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+        bool pushed = l->pushCardFace(d->name); // { CardFace(if successful) }
+        if (!pushed)
+            return false;
+
+        do {
+            int type = lua_getfield(l, -1, "hasPreAction"); // { CardFace.hasPreAction, CardFace }
+            do {
+                if (type == LUA_TBOOLEAN) {
+                    r = lua_toboolean(l, -1);
+                    d->has_preact = r;
+                } else if (type == LUA_TFUNCTION) {
+                    // we should do the function call and return
+                    // error should be catched here
+                    int call = lua_pcall(l, 0, 1, 0); // { cardFace.hasPreAction() / error, CardFace }
+                    if (call == LUA_OK)
+                        r = lua_toboolean(l, -1);
+
+                    // DO NOT STORE d->has_preact
+                } else {
+                    // neither boolean nor function, ignored
+                }
+            } while (false);
+            lua_pop(l, 1); // { CardFace }
+        } while (false);
+        lua_pop(l, 1); // { }
+    }
+
+    return d->has_preact.value_or(r);
+}
+
+void CardFace::setHasPreAction(bool can)
+{
+    d->has_preact = can;
+}
+
+// --  - defaultHandlingMethod = function() -> QSanguosha_HandlingMethod
+HandlingMethod CardFace::defaultHandlingMethod() const
+{
+    int r = static_cast<int>(MethodNone);
+
+    if (!d->default_method.has_value()) {
+        LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+        bool pushed = l->pushCardFace(d->name); // { CardFace(if successful) }
+        if (!pushed)
+            return MethodNone;
+
+        do {
+            int type = lua_getfield(l, -1, "defaultHandlingMethod"); // { CardFace.defaultHandlingMethod, CardFace }
+            do {
+                if (type == LUA_TNUMBER) {
+                    r = lua_tointeger(l, -1);
+                    d->default_method = static_cast<HandlingMethod>(r);
+                } else if (type == LUA_TFUNCTION) {
+                    // we should do the function call and return
+                    // error should be catched here
+                    int call = lua_pcall(l, 0, 1, 0); // { cardFace.defaultHandlingMethod() / error, CardFace }
+                    if (call == LUA_OK)
+                        r = lua_tointeger(l, -1);
+
+                    // DO NOT STORE d->default_method
+                } else {
+                    // neither integer nor function, ignored
+                }
+            } while (false);
+            lua_pop(l, 1); // { CardFace }
+        } while (false);
+        lua_pop(l, 1); // { }
+    }
+
+    return d->default_method.value_or(static_cast<HandlingMethod>(r));
+}
+
+void CardFace::setDefaultHandlingMethod(HandlingMethod can)
+{
+    d->default_method = can;
+}
+
+// --  - targetFixed = function(player, card) -> boolean
+bool CardFace::targetFixed(const Player *player, const Card *card) const
+{
+    bool r = false;
+
+    if (!d->target_fixed.has_value()) {
+        LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+        bool pushed = l->pushCardFace(d->name); // { CardFace(if successful) }
+        if (!pushed)
+            return false;
+
+        do {
+            int type = lua_getfield(l, -1, "targetFixed"); // { CardFace.targetFixed, CardFace }
+            do {
+                if (type == LUA_TBOOLEAN) {
+                    r = lua_toboolean(l, -1);
+                    d->target_fixed = r;
+                } else if (type == LUA_TFUNCTION) {
+                    // we should do the function call and return
+                    // error should be catched here
+                    bool call = CardFaceLuaCall::targetFixed(l, player, card); // { returnValue / error, CardFace }
+                    if (call)
+                        r = lua_toboolean(l, -1);
+                    else {
+                        // error
+                        // since the stack top is the error object, we temporarily ignore it
+                    }
+
+                    // DO NOT STORE d->target_fixed
+                } else {
+                    // neither boolean nor function, ignored
+                }
+            } while (false);
+            lua_pop(l, 1); // { CardFace }
+        } while (false);
+        lua_pop(l, 1); // { }
+    }
+
+    return d->target_fixed.value_or(r);
+}
+
+void CardFace::setTargetFixed(bool can)
+{
+    d->target_fixed = can;
+}
 
 #if 0
 -- Card Face common
 -- As a Card Face, the following are mandatory
--- name -> string
--- type (which is specified by desc.type using SecondTypeMask / ThirdTypeMask)
--- subTypeName -> string
--- kind -> table (sequence) of strings
 -- (if different than default) properties, including
---  - targetFixed = function(player, card) -> boolean
---  - hasPreAction = function() -> boolean
---  - canDamage = function() -> boolean
---  - canRecover = function() -> boolean
---  - hasEffectValue = function() -> boolean
---  - defaultHandlingMethod = function() -> QSanguosha_HandlingMethod
 -- these may be a fixed value or Lua Function, depanding on its usage. Function prototype is provided in case a function should be used.
 -- methods, including
---  - targetsFeasible - function(playerList, player, card) -> boolean
 --  - targetFilter - function(playerList, player, player, card) -> integer
 --  - isAvailable - function(player, card) -> boolean
 --  - validate - function(cardUse) -> card
@@ -67,96 +397,41 @@ public:
 -- All of them are optional but this card does nothing if none is provided.
 #endif
 
-CardFace::CardFace(const QString &name)
-    : d(new CardFacePrivate)
-{
-    d->name = name;
-}
-
-CardFace::~CardFace()
-{
-    delete d;
-}
-
-QString CardFace::name() const
-{
-    return d->name;
-}
-
-QString CardFace::subTypeName() const
-{
-    // todo
-    return QString();
-}
-
-bool CardFace::isKindOf(const QString &cardType) const
-{
-    // todo
-    return false;
-}
-
-bool CardFace::canDamage() const
-{
-    return d->can_damage;
-}
-
-void CardFace::setCanDamage(bool can)
-{
-    d->can_damage = can;
-}
-
-bool CardFace::canRecover() const
-{
-    return d->can_recover;
-}
-
-void CardFace::setCanRecover(bool can)
-{
-    d->can_recover = can;
-}
-
-bool CardFace::hasEffectValue() const
-{
-    return d->has_effectvalue;
-}
-
-void CardFace::setHasEffectValue(bool can)
-{
-    d->has_effectvalue = can;
-}
-
-bool CardFace::hasPreAction() const
-{
-    return d->has_preact;
-}
-
-void CardFace::setHasPreAction(bool can)
-{
-    d->has_preact = can;
-}
-
-HandlingMethod CardFace::defaultHandlingMethod() const
-{
-    return d->default_method;
-}
-
-void CardFace::setDefaultHandlingMethod(HandlingMethod can)
-{
-    d->default_method = can;
-}
-
-bool CardFace::targetFixed(const Player * /*unused*/, const Card * /*unused*/) const
-{
-    return d->target_fixed;
-}
-
-void CardFace::setTargetFixed(bool can)
-{
-    d->target_fixed = can;
-}
-
+// --  - targetsFeasible - function(playerList, player, card) -> boolean
 bool CardFace::targetsFeasible(const QList<const Player *> &targets, const Player *Self, const Card *card) const
 {
+    std::optional<bool> r;
+
+    LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+    bool pushed = l->pushCardFace(d->name); // { CardFace(if successful) }
+    if (pushed) {
+        do {
+            int type = lua_getfield(l, -1, "targetsFeasible"); // { CardFace.targetsFeasible, CardFace }
+            do {
+                if (type == LUA_TFUNCTION) {
+                    // we should do the function call and return
+                    // error should be catched here
+                    // TODO: store real parameters after SWIG is ready
+                    bool call = CardFaceLuaCall::targetsFeasible(l, targets, Self, card); // { returnValue / error, CardFace }
+                    if (call)
+                        r = lua_toboolean(l, -1);
+                    else {
+                        // error
+                        // since the stack top is the error object, we temporarily ignore it
+                    }
+                } else {
+                    // not function, ignored
+                }
+            } while (false);
+            lua_pop(l, 1); // { CardFace }
+        } while (false);
+        lua_pop(l, 1); // { }
+    }
+
+    if (r.has_value())
+        return r.value();
+
+    // default
     if (targetFixed(Self, card))
         return true;
     else

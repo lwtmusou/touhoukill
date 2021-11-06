@@ -1,16 +1,32 @@
 #ifndef QSANGUOSHA_GLOBAL_H
 #define QSANGUOSHA_GLOBAL_H
 
+// BE WARE! THIS FILE IS USED IN BOTH SWIG AND C++.
+// MAKE SURE THE GRAMMAR IS COMPATIBLE BETWEEN 2 LANGUAGES.
+
+#ifndef SWIG
 #include <QMetaObject>
 #include <QSet>
+#endif
 
 // Fs: I prefer following:
 // typedef QSet<int> IDSet;
 // Are there any advantages using 'using' instead of 'typedef'?
 using IDSet = QSet<int>;
 
+#ifndef SWIG
 namespace QSanguosha {
 Q_NAMESPACE
+#else
+class QSanguosha
+{
+private:
+    QSanguosha() = delete;
+    ~QSanguosha() = delete;
+    Q_DISABLE_COPY_MOVE(QSanguosha)
+
+public:
+#endif
 
 enum Suit
 {
@@ -23,7 +39,9 @@ enum Suit
     NoSuit,
     SuitToBeDecided = -1
 };
+#ifndef SWIG
 Q_ENUM_NS(Suit)
+#endif
 
 enum Color
 {
@@ -31,7 +49,9 @@ enum Color
     ColorBlack,
     Colorless = -1
 };
+#ifndef SWIG
 Q_ENUM_NS(Color)
+#endif
 
 enum HandlingMethod
 {
@@ -42,7 +62,9 @@ enum HandlingMethod
     MethodRecast,
     MethodPindian
 };
+#ifndef SWIG
 Q_ENUM_NS(HandlingMethod)
+#endif
 
 enum Number
 {
@@ -83,7 +105,9 @@ enum Number
 
     // TODO: Add -2
 };
+#ifndef SWIG
 Q_ENUM_NS(Number)
+#endif
 
 enum CardType
 {
@@ -93,7 +117,9 @@ enum CardType
     TypeEquip,
     TypeUnknown = -1
 };
+#ifndef SWIG
 Q_ENUM_NS(CardType)
+#endif
 
 enum EquipLocation
 {
@@ -104,7 +130,9 @@ enum EquipLocation
     TreasureLocation,
     UnknownLocation = -1
 };
+#ifndef SWIG
 Q_ENUM_NS(EquipLocation)
+#endif
 
 enum Phase
 {
@@ -118,7 +146,9 @@ enum Phase
     PhaseNotActive,
     PhaseNone = -1
 };
+#ifndef SWIG
 Q_ENUM_NS(Phase)
+#endif
 
 enum Place
 {
@@ -132,7 +162,9 @@ enum Place
     PlaceTable,
     PlaceUnknown = -1
 };
+#ifndef SWIG
 Q_ENUM_NS(Place)
+#endif
 
 enum Role
 {
@@ -141,7 +173,9 @@ enum Role
     RoleRebel,
     RoleRenegade,
 };
+#ifndef SWIG
 Q_ENUM_NS(Role)
+#endif
 
 enum TargetModType
 {
@@ -149,7 +183,9 @@ enum TargetModType
     ModDistance,
     ModTarget
 };
+#ifndef SWIG
 Q_ENUM_NS(TargetModType)
+#endif
 
 enum PackageType
 {
@@ -158,7 +194,9 @@ enum PackageType
     MixedPack,
     SpecialPack
 };
+#ifndef SWIG
 Q_ENUM_NS(PackageType)
+#endif
 
 enum Gender
 {
@@ -167,7 +205,9 @@ enum Gender
     Female,
     Neuter
 };
+#ifndef SWIG
 Q_ENUM_NS(Gender)
+#endif
 
 enum TriggerEvent
 {
@@ -288,8 +328,9 @@ enum TriggerEvent
     // Add this event to Trigger makes it trigger for all events
     NumOfEvents
 };
+#ifndef SWIG
 Q_ENUM_NS(TriggerEvent)
-
+#endif
 typedef QSet<TriggerEvent> TriggerEvents;
 
 enum ModeCategory
@@ -300,9 +341,14 @@ enum ModeCategory
 };
 
 } // namespace QSanguosha
+#ifdef SWIG
+;
+#endif
 
 typedef int LuaFunction;
 
+#ifndef SWIG
 #define QSGS_LUA_API
+#endif
 
 #endif // GLOBAL_H

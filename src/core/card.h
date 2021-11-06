@@ -149,6 +149,8 @@ struct CardDescriptor
     QSanguosha::Number number;
     QString package;
 
+    // property of card?
+
     // share some interfaces of Card?
     QString fullName(bool include_suit = false) const;
     QString logName() const;

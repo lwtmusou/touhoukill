@@ -3,6 +3,10 @@
 %{
 #include "global.h"
 #include "lua-wrapper.h"
+#include "card.h"
+#include "CardFace.h"
+#include "structs.h"
+#include "player.h"
 
 #include <QObject>
 #include <QVariant>
@@ -15,15 +19,27 @@
 
 %}
 
+#define Q_DISABLE_COPY(Class) \
+    Class(const Class &) = delete;\
+    Class &operator=(const Class &) = delete;
+
+#define Q_DISABLE_COPY_MOVE(Class) \
+    Q_DISABLE_COPY(Class) \
+    Class(Class &&) = delete; \
+    Class &operator=(Class &&) = delete;
+
+#define QSGS_DISABLE_COPY_MOVE_CONSTRUCT(Class) \
+    Q_DISABLE_COPY_MOVE(Class) \
+    Class() = delete; \
+    ~Class() = delete;
+
 %include "cryptographic.i"
+%include "list.i"
 %include "naturalvar.i"
 
 class qrc {
 private:
-    qrc() = delete;
-    ~qrc() = delete;
-    qrc(const LuaQrcWrapper &) = delete;
-    qrc &operator=(const LuaQrcWrapper&) = delete;
+    QSGS_DISABLE_COPY_MOVE_CONSTRUCT(qrc)
 };
 
 %extend qrc {
@@ -62,5 +78,10 @@ public:
     void setParent(QObject *parent);
     void deleteLater();
 
+private:
+    QSGS_DISABLE_COPY_MOVE_CONSTRUCT(QObject)
 };
 
+%include "sgs_core.i"
+
+%include "wrap_cardface.i"

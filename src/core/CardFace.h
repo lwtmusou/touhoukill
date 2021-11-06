@@ -47,9 +47,9 @@ public:
     // Fs: There is a skill which has a skill named "Xianshi" for God Patchouli in TouhouKill. It needs an extremely hacked Card/CardFace which changes all the effect of a certain Card.
     // Return value of "canDamage" and "canRecover" is affected by "Xianshi" in this case.
     // TODO_Fs: ***non-virtual*** property setters for simplifying logic, only reimplement these functions when complex logic is needed
-    QSGS_LUA_API virtual bool canDamage() const;
+    QSGS_LUA_API bool canDamage() const;
     void setCanDamage(bool can);
-    QSGS_LUA_API virtual bool canRecover() const;
+    QSGS_LUA_API bool canRecover() const;
     void setCanRecover(bool can);
     // Fs: canRecast should be property of Card.
     // Seems like it should be dealt in UI and GameRule instead of the logic in Card/CardFace itself.
@@ -58,7 +58,7 @@ public:
     // so that there will be no logic in CardFace for implementing recasting
     // Note: In HulaoPass mode, all weapon can be recast according to the game rule.
     // virtual bool canRecast() const;
-    QSGS_LUA_API virtual bool hasEffectValue() const;
+    QSGS_LUA_API bool hasEffectValue() const;
     void setHasEffectValue(bool can);
     QSGS_LUA_API virtual bool hasPreAction() const;
     void setHasPreAction(bool can);
@@ -69,7 +69,7 @@ public:
     void setDefaultHandlingMethod(QSanguosha::HandlingMethod can);
 
     // Functions
-    QSGS_LUA_API virtual bool targetFixed(const Player *Self, const Card *card) const;
+    QSGS_LUA_API virtual bool targetFixed(const Player *player, const Card *card) const;
     void setTargetFixed(bool fixed);
 
     QSGS_LUA_API virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self, const Card *card) const;
