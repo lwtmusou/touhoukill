@@ -5774,6 +5774,7 @@ const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, in
         return nullptr;
 
     Card *card = cloneCard();
+    card->addSubcards(IDSet(to_exchange.begin(), to_exchange.end()));
     ChoiceMadeStruct s;
     s.player = player;
     s.type = ChoiceMadeStruct::CardExchange;
