@@ -410,7 +410,14 @@ private:
     TriggerDetailPrivate *d;
 };
 
+<<<<<<< HEAD
 struct QSGS_CORE_EXPORT HpLostStruct
+=======
+// For convenience.
+using TriggerDetailPtr = QSharedPointer<TriggerDetail>;
+
+struct HpLostStruct
+>>>>>>> dda7f99a (RpcApi: Request)
 {
     explicit HpLostStruct(Player *player = nullptr, int num = 1);
 
