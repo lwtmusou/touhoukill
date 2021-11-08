@@ -2621,8 +2621,6 @@ void Room::changeHero(ServerPlayer *player, const QString &new_general, bool ful
     arg << sendLog;
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
 
-    player->tag["init_general"] = player->getGeneralName();
-
     if (isSecondaryHero)
         changePlayerGeneral2(player, new_general);
     else
@@ -5294,6 +5292,10 @@ void Room::preparePlayers()
 
 void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general)
 {
+    QString originalName = player->tag.value("init_general", QString()).toString();
+    if (originalName != nullptr)
+        player->tag["init_general"] = player->getGeneralName();
+
     if (!isHegemonyGameMode(mode) && player->getGeneral() != nullptr) {
         foreach (const Skill *skill, player->getGeneral()->getSkillList(true, true))
             player->loseSkill(skill->objectName());
@@ -5322,6 +5324,10 @@ void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general)
 
 void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general)
 {
+    QString originalName2 = player->tag.value("init_general2", QString()).toString();
+    if (originalName2 != nullptr)
+        player->tag["init_general2"] = player->getGeneral2Name();
+
     if (!isHegemonyGameMode(mode) && player->getGeneral2() != nullptr) {
         foreach (const Skill *skill, player->getGeneral2()->getSkillList(true, false))
             player->loseSkill(skill->objectName());
@@ -7136,6 +7142,8 @@ void Room::saveWinnerTable(const QString &winner, bool isSurrender)
     if (!QDir(location).exists())
         QDir().mkdir(location);
     QDateTime time = QDateTime::currentDateTime();
+    if (isHegemonyGameMode(mode)) 
+        location.append("Heg");
     location.append(time.toString("yyyyMM"));
     location.append(".txt");
     QFile file(location);
@@ -7151,11 +7159,20 @@ void Room::saveWinnerTable(const QString &winner, bool isSurrender)
     line.append("\n");
     QStringList winners = winner.split("+");
     foreach (ServerPlayer *p, getAllPlayers(true)) {
+        QString gname;
         QString originalName = p->tag.value("init_general", QString()).toString();
         if (originalName != nullptr && Sanguosha->getGeneral(originalName))
-            line.append(Sanguosha->getGeneral(originalName)->objectName());
+            gname = Sanguosha->getGeneral(originalName)->objectName();
         else
-            line.append(p->getGeneralName());
+            gname = p->getGeneralName();
+        if (isHegemonyGameMode(mode)) {
+            QString originalName2 = p->tag.value("init_general2", QString()).toString();
+            if (originalName2 != nullptr && Sanguosha->getGeneral(originalName2))
+                gname = gname + "|" + Sanguosha->getGeneral(originalName2)->objectName();
+            else
+                gname = gname + "|" + p->getGeneral2Name();
+        }
+        line.append(gname);
         line.append(" ");
         line.append(p->getRole());
         line.append(" ");
