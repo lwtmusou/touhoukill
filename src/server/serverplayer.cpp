@@ -1966,6 +1966,18 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         val << true; //head
         room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val);
 
+        sendSkillsToOthers();
+        foreach (const Skill *skill, getHeadSkillList()) { //getSkillList()
+            if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
+                && hasShownSkill(skill)) {
+                JsonArray arg;
+                arg << objectName();
+                arg << skill->getLimitMark();
+                arg << getMark(skill->getLimitMark());
+                room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
+            }
+        }
+
     } else {
         //if (!ignore_rule && !canShowGeneral("h")) return;
         //ignore anjiang
@@ -1996,6 +2008,18 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         val << skin_id;
         val << false; // deputy?
         room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val);
+
+        sendSkillsToOthers(false);
+        foreach (const Skill *skill, getDeputySkillList()) { //getSkillList()
+            if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
+                && hasShownSkill(skill)) {
+                JsonArray arg;
+                arg << objectName();
+                arg << skill->getLimitMark();
+                arg << getMark(skill->getLimitMark());
+                room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
+            }
+        }
     }
 
     if (notify_role) {
