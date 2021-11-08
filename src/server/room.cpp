@@ -5240,35 +5240,22 @@ void Room::preparePlayers()
     if (isHegemonyGameMode(mode)) {
         foreach (ServerPlayer *player, m_players) {
             QString general1_name = tag[player->objectName()].toStringList().at(0);
-            //if (!player->property("Duanchang").toString().split(",").contains("head")) {
-            //foreach(const Skill *skill, Sanguosha->getGeneral(general1_name)->getVisibleSkillList(true, true))
             QList<const Skill *> skills = Sanguosha->getGeneral(general1_name)->getSkillList(true, true);
             foreach (const Skill *skill, skills)
                 player->addSkill(skill->objectName());
-            //}
 
-            //if (Config.Enable2ndGeneral) {
             QString general2_name = tag[player->objectName()].toStringList().at(1);
-            //if (!player->property("Duanchang").toString().split(",").contains("deputy")) {
-            //foreach(const Skill *skill, Sanguosha->getGeneral(general2_name)->getVisibleSkillList(true, false))
             QList<const Skill *> skills2 = Sanguosha->getGeneral(general2_name)->getSkillList(true, false);
             foreach (const Skill *skill, skills2)
                 player->addSkill(skill->objectName(), false);
-            //}
-
-            //}
 
             JsonArray args;
             args << (int)QSanProtocol::S_GAME_EVENT_PREPARE_SKILL; //(int)QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
             doNotify(player, QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
             notifyProperty(player, player, "flags", "AutoPreshowAvailable");
-            //setPlayerFlag(player, "AutoPreshowAvailable");
             player->notifyPreshow();
-            //setPlayerFlag(player, "-AutoPreshowAvailable");
             notifyProperty(player, player, "flags", "-AutoPreshowAvailable");
-
-            //player->setGender(General::Sexless);
         }
 
     } else {

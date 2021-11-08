@@ -999,7 +999,6 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
         tryParse(playerConfig["seatIconRegion"], layout->m_seatIconRegion);
         tryParse(playerConfig["seatIconRegionDouble"], layout->m_seatIconRegionDouble);
         tryParse(playerConfig["drankMaskColor"], layout->m_drankMaskColor);
-        tryParse(playerConfig["duanchangMaskColor"], layout->m_duanchangMaskColor);
         tryParse(playerConfig["deathEffectColor"], layout->m_deathEffectColor);
         tryParse(playerConfig["generalShadowColor"], layout->m_generalShadowColor);
         tryParse(playerConfig["extraSkillArea"], layout->m_extraSkillArea);

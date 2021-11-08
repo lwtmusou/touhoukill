@@ -2235,7 +2235,7 @@ QList<const Player *> Player::getFormation() const
 bool Player::canTransform(bool head) const
 {
     if (head)
-        return !getGeneralName().contains("sujiang"); // && !isDuanchang(head)
+        return !getGeneralName().contains("sujiang");
     else
-        return getGeneral2() && !getGeneral2Name().contains("sujiang"); //&& !isDuanchang(head)
+        return getGeneral2() && !getGeneral2Name().contains("sujiang");
 }

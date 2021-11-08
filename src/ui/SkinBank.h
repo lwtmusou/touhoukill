@@ -207,7 +207,6 @@ public:
         QRect m_seatIconRegion;
         QRect m_seatIconRegionDouble; //hegemony
         QColor m_drankMaskColor;
-        QColor m_duanchangMaskColor;
         QColor m_deathEffectColor;
         QColor m_generalShadowColor; //hegemony
 

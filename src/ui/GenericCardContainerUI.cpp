@@ -335,7 +335,7 @@ void PlayerCardContainer::updateSmallAvatar()
         QString name = Sanguosha->translate("&" + general->objectName());
         if (name.startsWith("&"))
             name = Sanguosha->translate(general->objectName());
-        
+
         if (!fake_general)
             _m_layout->m_smallAvatarNameFont.paintText(_m_smallAvatarNameItem, _m_layout->m_smallAvatarNameArea, Qt::AlignLeft | Qt::AlignJustify, name);
         _m_smallAvatarIcon->show();
@@ -515,11 +515,6 @@ void PlayerCardContainer::updateDrankState()
         _m_avatarArea->setBrush(G_PHOTO_LAYOUT.m_drankMaskColor);
     else
         _m_avatarArea->setBrush(Qt::NoBrush);
-}
-
-void PlayerCardContainer::updateDuanchang()
-{
-    return;
 }
 
 void PlayerCardContainer::updateHandcardNum()

@@ -1966,23 +1966,6 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         val << true; //head
         room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val);
 
-        if (!property("Duanchang").toString().split(",").contains("head")) {
-            sendSkillsToOthers();
-            foreach (const Skill *skill, getHeadSkillList()) { //getSkillList()
-                if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
-                    && hasShownSkill(skill)) {
-                    JsonArray arg;
-                    arg << objectName();
-                    arg << skill->getLimitMark();
-                    arg << getMark(skill->getLimitMark());
-                    room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
-                }
-            }
-        }
-
-        //foreach(ServerPlayer *p, room->getOtherPlayers(this, true))
-        //    room->notifyProperty(p, this, "head_skin_id");
-
     } else {
         //if (!ignore_rule && !canShowGeneral("h")) return;
         //ignore anjiang
@@ -2013,20 +1996,6 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         val << skin_id;
         val << false; // deputy?
         room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val);
-
-        if (!property("Duanchang").toString().split(",").contains("deputy")) {
-            sendSkillsToOthers(false);
-            foreach (const Skill *skill, getDeputySkillList()) { //getSkillList()
-                if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
-                    && hasShownSkill(skill)) {
-                    JsonArray arg;
-                    arg << objectName();
-                    arg << skill->getLimitMark();
-                    arg << getMark(skill->getLimitMark());
-                    room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
-                }
-            }
-        }
     }
 
     if (notify_role) {

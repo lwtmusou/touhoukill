@@ -1264,10 +1264,7 @@ void Dashboard::stopPending()
 {
     m_mutexEnableCards.lock();
     if (view_as_skill) {
-        if (view_as_skill->objectName().contains("guhuo")) {
-            foreach (CardItem *item, m_handCards)
-                item->hideFootnote();
-        } else if (!view_as_skill->getExpandPile().isEmpty()) {
+        if (!view_as_skill->getExpandPile().isEmpty()) {
             retractPileCards(view_as_skill->getExpandPile());
         }
     }
@@ -1563,16 +1560,6 @@ void Dashboard::updatePending()
         if (pending_card && !pending_card->parent() && pending_card->isVirtualCard()) {
             delete pending_card;
             pending_card = nullptr;
-        }
-        if (view_as_skill->objectName().contains("guhuo") && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
-            foreach (CardItem *item, m_handCards) {
-                item->hideFootnote();
-                if (new_pending_card && item->getCard() == cards.first()) {
-                    const SkillCard *guhuo = qobject_cast<const SkillCard *>(new_pending_card);
-                    item->setFootnote(Sanguosha->translate(guhuo->getUserString()));
-                    item->showFootnote();
-                }
-            }
         }
         pending_card = new_pending_card;
         emit card_selected(pending_card);
