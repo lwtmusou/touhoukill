@@ -173,7 +173,8 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 	end
 
 	if self.player:hasWeapon("Blade") and self:invokeTouhouJudge() then return true end
-	if self.player:hasFlag("zuiyue") and not self.player:hasFlag("zuiyue_used") then return true end
+	if self.player:hasSkill("zuiyue") and self.player:hasFlag("zuiyue") and not self.player:hasFlag("zuiyue_used") then return true end
+	if self.player:hasSkill("xieli") then return true end
 	--勇仪主动吃酒
 	if  self:canGuaili(slash) then
 		return true
@@ -208,11 +209,30 @@ function SmartAI:searchForAnaleptic(use, enemy, slash)
 	if not use.to then return nil end
 
 	--使用酒不过getTurnUseCard。。。 而是过getCardId getCardId无法处理0牌转化。 只好暂时耦合
+	local viewAsAnalaptic = sgs.cloneCard("analeptic", sgs.Card_NoSuit, 0)
 	if use.from:hasFlag("zuiyue") and not use.from:hasFlag("zuiyue_used") and use.from:hasSkill("zuiyue") then
-		local ana = sgs.cloneCard("analeptic", sgs.Card_NoSuit, 0)
-		ana:setSkillName("zuiyue")
-		if sgs.Analeptic_IsAvailable(self.player, ana) then
-			return ana
+		viewAsAnalaptic:setSkillName("zuiyue")
+		if sgs.Analeptic_IsAvailable(self.player, viewAsAnalaptic) then
+			return viewAsAnalaptic
+		end
+	end
+	
+	if use.from:hasSkill("xieli") then
+		-- 对于xieli，千万不能横置武器和-1，否则。。。。。。。。。。
+		-- 优先度：+1 防具 宝物
+		viewAsAnalaptic:setSkillName("_xieli")
+		if sgs.Analeptic_IsAvailable(self.player, viewAsAnalaptic) then
+			local prio = { "DefensiveHorse", "Armor", "Treasure" }
+			
+			local xieli
+			for _, p in ipairs(prio) do
+				if self.player["get" .. p](self.player) and not self.player:isBrokenEquip(self.player["get" .. p](self.player):getId()) then
+					xieli = self.player["get" .. p](self.player):getId()
+				end
+			end
+			if xieli then
+				return sgs.Card_Parse("@XieliCard=" .. tostring(xieli))
+			end
 		end
 	end
 
