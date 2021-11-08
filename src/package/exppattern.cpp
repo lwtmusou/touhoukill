@@ -142,40 +142,47 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
         else
             ids << card->getEffectiveId();
 
+        if (ids.isEmpty()) {
+            if (place == "sqchuangshi" || place == "shehuo")
+                checkpoint = true;
+        }
         if (!ids.isEmpty()) {
             foreach (int id, ids) {
                 if (findOneShow)
                     break;
                 checkpoint = false;
                 const Card *card = Sanguosha->getCard(id);
-                foreach (QString p, place.split(",")) {
+                foreach(QString p, place.split(",")) {
                     if (p == "equipped" && player->hasEquip(card)) {
                         checkpoint = true;
-                    } else if (p == "hand" && card->getEffectiveId() >= 0) {
-                        foreach (const Card *c, player->getHandcards()) {
+                    }
+                    else if (p == "hand" && card->getEffectiveId() >= 0) {
+                        foreach(const Card *c, player->getHandcards()) {
                             if (c->getEffectiveId() == id) {
                                 checkpoint = true;
                                 break;
                             }
                         }
-                    } else if (p == "handOnly" && card->getEffectiveId() >= 0) { // exclude shownHandCard
-                        foreach (const Card *c, player->getHandcards()) {
+                    }
+                    else if (p == "handOnly" && card->getEffectiveId() >= 0) { // exclude shownHandCard
+                        foreach(const Card *c, player->getHandcards()) {
                             if (c->getEffectiveId() == id && !player->getShownHandcards().contains(id)) {
                                 checkpoint = true;
                                 break;
                             }
                         }
-                    } else if (p.startsWith("%")) {
+                    }
+                    else if (p.startsWith("%")) {
                         p = p.mid(1);
-                        foreach (const Player *pl, player->getAliveSiblings())
+                        foreach(const Player *pl, player->getAliveSiblings())
                             if (!pl->getPile(p).isEmpty() && pl->getPile(p).contains(id)) {
                                 checkpoint = true;
                                 break;
                             }
-                    } else if ((p == "sqchuangshi") && card->getEffectiveId() >= 0 && !player->hasEquip(card)) {
-                        checkpoint = true;
-                    } else if (p == "shehuo" && card->getEffectiveId() >= 0 && !player->hasEquip(card)) {
-                        checkpoint = true;
+                    }
+                    else if (p == "sqchuangshi" || p == "shehuo") {
+                        if ((card->getEffectiveId() >= 0 && !player->hasEquip(card)))
+                            checkpoint = true;
                     } else if (p == "benwo" && (card->isVirtualCard() || !player->getHandcards().contains(Sanguosha->getCard(card->getId())))) {
                         return false;
                     } else if (!player->getPile(p).isEmpty() && player->getPile(p).contains(id)) {
