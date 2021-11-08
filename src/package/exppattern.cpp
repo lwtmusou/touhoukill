@@ -134,7 +134,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
         checkpoint = true;
     if (!checkpoint) {
         bool findOneShow = false; //only for check palce "show"
-        bool needCheckShow = place.split(",").contains("show"); //only for check palce "show"
+        bool needCheckShow = place.split(",").contains("show"); //only for check place "show"
 
         QList<int> ids;
         if (card->isVirtualCard())
@@ -143,44 +143,40 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
             ids << card->getEffectiveId();
 
         if (ids.isEmpty()) {
+            // TODO: Consider decoupling ExpPattern since "sqchuangshi" or "shehuo" is rather a tag than place
             if (place == "sqchuangshi" || place == "shehuo")
                 checkpoint = true;
-        }
-        if (!ids.isEmpty()) {
+        } else {
             foreach (int id, ids) {
                 if (findOneShow)
                     break;
                 checkpoint = false;
                 const Card *card = Sanguosha->getCard(id);
-                foreach(QString p, place.split(",")) {
+                foreach (QString p, place.split(",")) {
                     if (p == "equipped" && player->hasEquip(card)) {
                         checkpoint = true;
-                    }
-                    else if (p == "hand" && card->getEffectiveId() >= 0) {
-                        foreach(const Card *c, player->getHandcards()) {
+                    } else if (p == "hand" && card->getEffectiveId() >= 0) {
+                        foreach (const Card *c, player->getHandcards()) {
                             if (c->getEffectiveId() == id) {
                                 checkpoint = true;
                                 break;
                             }
                         }
-                    }
-                    else if (p == "handOnly" && card->getEffectiveId() >= 0) { // exclude shownHandCard
-                        foreach(const Card *c, player->getHandcards()) {
+                    } else if (p == "handOnly" && card->getEffectiveId() >= 0) { // exclude shownHandCard
+                        foreach (const Card *c, player->getHandcards()) {
                             if (c->getEffectiveId() == id && !player->getShownHandcards().contains(id)) {
                                 checkpoint = true;
                                 break;
                             }
                         }
-                    }
-                    else if (p.startsWith("%")) {
+                    } else if (p.startsWith("%")) {
                         p = p.mid(1);
-                        foreach(const Player *pl, player->getAliveSiblings())
+                        foreach (const Player *pl, player->getAliveSiblings())
                             if (!pl->getPile(p).isEmpty() && pl->getPile(p).contains(id)) {
                                 checkpoint = true;
                                 break;
                             }
-                    }
-                    else if (p == "sqchuangshi" || p == "shehuo") {
+                    } else if (p == "sqchuangshi" || p == "shehuo") {
                         if ((card->getEffectiveId() >= 0 && !player->hasEquip(card)))
                             checkpoint = true;
                     } else if (p == "benwo" && (card->isVirtualCard() || !player->getHandcards().contains(Sanguosha->getCard(card->getId())))) {
@@ -206,17 +202,6 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
     if (!checkpoint)
         return false;
     if (factors.size() < 5)
-        return true;
-
-    // @@Compatibility
-    QString color = factors.at(4);
-    if (color == ".")
-        return true;
-    else if (color == "red" && card->isRed())
-        return true;
-    else if (color == "black" && card->isBlack())
-        return true;
-    else if (color == "colorless" && card->getSuit() == Card::NoSuit)
         return true;
 
     return false;
