@@ -3,6 +3,10 @@
 
 #include "skill.h"
 
+// Maybe these UI-related "skills" can be disappered sometime?
+// Are these skills only used in Dashboard? or RoomScene?
+// TBD until UI got reimplemented using QML
+
 class DiscardSkill : public ViewAsSkill
 {
     Q_OBJECT
@@ -68,8 +72,6 @@ public:
     void setPlayerNames(const QStringList &names);
 
     int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *, const Card *card) const override;
-
-    void use(RoomObject *, const CardUseStruct &) const override;
 
 private:
     QSet<QString> set;

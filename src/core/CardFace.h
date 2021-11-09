@@ -60,19 +60,19 @@ public:
     // virtual bool canRecast() const;
     QSGS_LUA_API bool hasEffectValue() const;
     void setHasEffectValue(bool can);
-    QSGS_LUA_API virtual bool hasPreAction() const;
+    QSGS_LUA_API bool hasPreAction() const;
     void setHasPreAction(bool can);
 
     // This method provides a default handling method suggested by the card face.
     // Almost every actual card has its handlingMethod to be QSanguosha::MethodUse.
-    QSGS_LUA_API virtual QSanguosha::HandlingMethod defaultHandlingMethod() const;
+    QSGS_LUA_API QSanguosha::HandlingMethod defaultHandlingMethod() const;
     void setDefaultHandlingMethod(QSanguosha::HandlingMethod can);
 
     // Functions
-    QSGS_LUA_API virtual bool targetFixed(const Player *player, const Card *card) const;
+    QSGS_LUA_API bool targetFixed(const Player *player, const Card *card) const;
     void setTargetFixed(bool fixed);
 
-    QSGS_LUA_API virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self, const Card *card) const;
+    QSGS_LUA_API bool targetsFeasible(const QList<const Player *> &targets, const Player *Self, const Card *card) const;
 
     // This is the merged targetFilter implementation.
     /**
@@ -87,25 +87,31 @@ public:
      * 
      * @note to_select will be selectable until its appearance in targets >= its maximum vote. 
      */
+    // virtual for current aux-skills
     QSGS_LUA_API virtual int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card) const;
 
-    QSGS_LUA_API virtual bool isAvailable(const Player *player, const Card *card) const;
+    QSGS_LUA_API bool isAvailable(const Player *player, const Card *card) const;
 
     // TODO_Fs: Actually I don't know the use case of this function.
     // Is it only for skill "tianqu"?
     QSGS_LUA_API virtual bool ignoreCardValidity(const Player *player) const;
-    QSGS_LUA_API virtual const Card *validate(const CardUseStruct &cardUse) const;
-    QSGS_LUA_API virtual const Card *validateInResponse(Player *user, const Card *original_card) const;
+    QSGS_LUA_API const Card *validate(const CardUseStruct &cardUse) const;
+    QSGS_LUA_API const Card *validateInResponse(Player *player, const Card *original_card) const;
 
-    QSGS_LUA_API virtual void doPreAction(RoomObject *room, const CardUseStruct &card_use) const;
+    QSGS_LUA_API void doPreAction(RoomObject *room, const CardUseStruct &use) const;
 
     // TODO_Fs: Aren't the names of these 2 functions easy to be misunderstood?
-    QSGS_LUA_API virtual void onUse(RoomObject *room, const CardUseStruct &card_use) const; // Shouldn't this be "processOfUsing" / "usingProcess" or something like this?
-    QSGS_LUA_API virtual void use(RoomObject *room, const CardUseStruct &use) const; // Shouldn't this be "onUse"?
+    // virtual for cut-down SkillCard
+    QSGS_LUA_API void onUse(RoomObject *room, const CardUseStruct &use) const; // Shouldn't this be "processOfUsing" / "usingProcess" or something like this?
+    QSGS_LUA_API void use(RoomObject *room, const CardUseStruct &use) const; // Shouldn't this be "onUse"?
 
-    QSGS_LUA_API virtual void onEffect(const CardEffectStruct &effect) const;
-    QSGS_LUA_API virtual bool isCancelable(const CardEffectStruct &effect) const;
-    QSGS_LUA_API virtual void onNullified(Player *target, const Card *card) const;
+    QSGS_LUA_API void onEffect(const CardEffectStruct &effect) const;
+    QSGS_LUA_API bool isCancelable(const CardEffectStruct &effect) const;
+    QSGS_LUA_API void onNullified(Player *target, const Card *card) const;
+
+protected:
+    virtual void defaultOnUse(RoomObject *room, const CardUseStruct &use) const;
+    virtual void defaultUse(RoomObject *room, const CardUseStruct &use) const;
 
 private:
     CardFace() = delete;
@@ -250,11 +256,12 @@ public:
     QSanguosha::CardType type() const override;
     QString typeName() const override;
 
-    void onUse(RoomObject *room, const CardUseStruct &card_use) const override;
-    void use(RoomObject *room, const CardUseStruct &use) const override;
-
     virtual bool throwWhenUsing() const;
     void setThrowWhenUsing(bool can);
+
+protected:
+    void defaultOnUse(RoomObject *room, const CardUseStruct &use) const override;
+    void defaultUse(RoomObject *room, const CardUseStruct &use) const override;
 
 private:
     SkillCardPrivate *const d;
