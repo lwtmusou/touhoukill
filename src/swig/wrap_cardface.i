@@ -8,6 +8,8 @@ namespace CardFaceLuaCall {
 // All these functions have [-1, 0, -]
 // All of them assume the corresponding function is push on the top of stack, and all of them pop it
 
+// CardFace
+
 // also used by: isAvailable
 std::optional<bool> targetFixed(lua_State *l, const Player *player, const Card *card)
 {
@@ -130,7 +132,7 @@ bool onEffect(lua_State *l, const CardEffectStruct &effect)
 {
     SWIG_NewPointerObj(l, &effect, SWIGTYPE_p_CardEffectStruct, 0); // { player, CardFace.onEffect }
 
-    int call = lua_pcall(l, 1, 0, 0); // { cardFace.onEffect() / error }
+    int call = lua_pcall(l, 1, 0, 0); // { error (if any) } / { }
 
     if (call != LUA_OK) {
         lua_pop(l, 1); // { }
@@ -161,7 +163,24 @@ bool onNullified(lua_State *l, Player *player, const Card *card)
     SWIG_NewPointerObj(l, player, SWIGTYPE_p_Player, 0); // { player, CardFace.onNullified }
     SWIG_NewPointerObj(l, card, SWIGTYPE_p_Card, 0); // { card, player, CardFace.onNullified }
 
-    int call = lua_pcall(l, 2, 0, 0); // { cardFace.onNullified() / error }
+    int call = lua_pcall(l, 2, 0, 0); // { error (if any) } / { }
+
+    if (call != LUA_OK) {
+        lua_pop(l, 1); // { }
+        return false;
+    }
+
+    return true;
+}
+
+// EquipCard
+
+// also used by: onUninstall
+bool onInstall(lua_State *l, Player *player)
+{
+    SWIG_NewPointerObj(l, player, SWIGTYPE_p_Player, 0); // { player, CardFace.onInstall }
+
+    int call = lua_pcall(l, 1, 0, 0); // { error (if any) } / { }
 
     if (call != LUA_OK) {
         lua_pop(l, 1); // { }

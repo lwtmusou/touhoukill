@@ -43,6 +43,7 @@ public:
 // SWIG don't provide a binary-compatible way to export its constant variables
 // These functions are implemented in wrap_cardface.i and generated in sgsLUA_wrap.cxx
 namespace CardFaceLuaCall {
+// CardFace
 std::optional<bool> targetFixed(lua_State *l, const Player *player, const Card *card); // also used by: isAvailable
 std::optional<bool> targetsFeasible(lua_State *l, const QList<const Player *> &targets, const Player *Self, const Card *card);
 std::optional<int> targetFilter(lua_State *l, const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card);
@@ -52,6 +53,9 @@ bool use(lua_State *l, RoomObject *room, const CardUseStruct &use); // also used
 bool onEffect(lua_State *l, const CardEffectStruct &effect);
 std::optional<bool> isCancelable(lua_State *l, const CardEffectStruct &effect);
 bool onNullified(lua_State *l, Player *player, const Card *card);
+
+// EquipCard
+bool onInstall(lua_State *l, Player *player); // also used by: onUninstall
 } // namespace CardFaceLuaCall
 
 // -- type (which is specified by desc.type using SecondTypeMask / ThirdTypeMask)
@@ -882,10 +886,78 @@ QString EquipCard::typeName() const
     return QStringLiteral("equip");
 }
 
-void EquipCard::onInstall(Player *) const
+#if 0
+-- EquipCard has 5 subtypes which are corresponding to the 5 types of Equip card in Sanguosha.
+-- The process of using EquipCard is totally different than using BasicCard and TrickCard. (Deal with it in C++)
+-- Implement 5 subtypes separately and use this function as a backend
+-- EquipCard has 2 optional function:
+--  - onInstall
+--  - onUninstall (for silverlion record, although this event seems able to record in a Trigger)
+#endif
+void EquipCard::onInstall(Player *player) const
+{
+    bool called = false;
+
+    LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+    bool pushed = l->pushCardFace(name()); // { CardFace(if successful) }
+    if (pushed) {
+        do {
+            int type = lua_getfield(l, -1, "onInstall"); // { EquipCard.onInstall, CardFace }
+            do {
+                if (type == LUA_TFUNCTION) {
+                    // we should do the function call and return
+                    // error should be catched in CardFaceLuaCall
+                    called = CardFaceLuaCall::onInstall(l, player); // { CardFace }
+                } else {
+                    // not function, ignored
+                }
+            } while (false);
+            lua_pop(l, 1); // { CardFace }
+        } while (false);
+        lua_pop(l, 1); // { }
+    }
+
+    if (called)
+        return;
+
+    // default
+    defaultOnInstall(player);
+}
+
+void EquipCard::onUninstall(Player *player) const
+{
+    bool called = false;
+
+    LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+    bool pushed = l->pushCardFace(name()); // { CardFace(if successful) }
+    if (pushed) {
+        do {
+            int type = lua_getfield(l, -1, "onUninstall"); // { EquipCard.onInstall, CardFace }
+            do {
+                if (type == LUA_TFUNCTION) {
+                    // we should do the function call and return
+                    // error should be catched in CardFaceLuaCall
+                    called = CardFaceLuaCall::onInstall(l, player); // { CardFace }
+                } else {
+                    // not function, ignored
+                }
+            } while (false);
+            lua_pop(l, 1); // { CardFace }
+        } while (false);
+        lua_pop(l, 1); // { }
+    }
+
+    if (called)
+        return;
+
+    // default
+    defaultOnUninstall(player);
+}
+
+void EquipCard::defaultOnInstall(Player *) const
 {
 #if 0
-    // Shouldn't these logic be in GameLogic?
+    // Shouldn't the attach skill logic be in GameLogic?
 
     Room *room = player->getRoom();
 
@@ -904,9 +976,11 @@ void EquipCard::onInstall(Player *) const
 #endif
 }
 
-void EquipCard::onUninstall(Player *) const
+void EquipCard::defaultOnUninstall(Player *) const
 {
 #if 0
+    // Shouldn't the detech skill logic be in GameLogic?
+
     Room *room = player->getRoom();
     const Skill *skill = Sanguosha->getSkill(this);
 
@@ -918,11 +992,7 @@ void EquipCard::onUninstall(Player *) const
 class WeaponPrivate
 {
 public:
-    int range;
-    WeaponPrivate()
-        : range(1)
-    {
-    }
+    std::optional<int> range;
 };
 
 Weapon::Weapon(const QString &name)
@@ -943,7 +1013,25 @@ EquipLocation Weapon::location() const
 
 int Weapon::range() const
 {
-    return d->range;
+    if (!d->range.has_value()) {
+        LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+        bool pushed = l->pushCardFace(name()); // { CardFace(if successful) }
+        if (!pushed)
+            return 1;
+
+        do {
+            int type = lua_getfield(l, -1, "range"); // { Weapon.range, CardFace }
+            do {
+                if (type != LUA_TNUMBER)
+                    break;
+                d->range = lua_tointeger(l, -1);
+            } while (false);
+            lua_pop(l, 1); // { CardFace }
+        } while (false);
+        lua_pop(l, 1); // { }
+    }
+
+    return d->range.value_or(1);
 }
 
 void Weapon::setRange(int r)

@@ -140,8 +140,13 @@ public:
 
     virtual QSanguosha::EquipLocation location() const = 0;
 
-    virtual void onInstall(Player *player) const;
-    virtual void onUninstall(Player *player) const;
+    // TODO: should these function have a 2nd parameter which is Card?
+    void onInstall(Player *player) const;
+    void onUninstall(Player *player) const;
+
+protected:
+    virtual void defaultOnInstall(Player *player) const;
+    virtual void defaultOnUninstall(Player *player) const;
 };
 
 class WeaponPrivate;
