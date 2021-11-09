@@ -5031,7 +5031,7 @@ void Room::preparePlayers()
 void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general)
 {
     QString originalName = player->tag.value(QStringLiteral("init_general"), QString()).toString();
-    if (originalName != nullptr)
+    if (!originalName.isEmpty())
         player->tag[QStringLiteral("init_general")] = player->generalName();
 
     if (!isHegemonyGameMode(mode) && player->general() != nullptr) {
@@ -5062,7 +5062,7 @@ void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general)
 void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general)
 {
     QString originalName2 = player->tag.value(QStringLiteral("init_general2"), QString()).toString();
-    if (originalName2 != nullptr)
+    if (!originalName2.isEmpty())
         player->tag[QStringLiteral("init_general2")] = player->getGeneral2Name();
 
     if (!isHegemonyGameMode(mode) && player->getGeneral2() != nullptr) {
