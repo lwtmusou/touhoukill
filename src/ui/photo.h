@@ -50,7 +50,6 @@ public:
 public slots:
     void updatePhase();
     void hideEmotion();
-    void updateDuanchang() override;
     void refresh() override;
 
 protected:
@@ -117,7 +116,6 @@ protected:
     Sprite *emotion_item;
     QGraphicsPixmapItem *_m_focusFrame;
     QGraphicsPixmapItem *_m_onlineStatusItem;
-    QGraphicsRectItem *_m_duanchangMask;
     QParallelAnimationGroup *_blurEffect;
 
     QHash<QString, PixmapAnimation *> _m_frameBorders;

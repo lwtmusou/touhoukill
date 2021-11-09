@@ -507,10 +507,6 @@ void PlayerCardContainer::updateDrankState()
         _m_avatarArea->setBrush(Qt::NoBrush);
 }
 
-void PlayerCardContainer::updateDuanchang()
-{
-}
-
 void PlayerCardContainer::updateHandcardNum()
 {
     int num = 0;

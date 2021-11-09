@@ -2774,8 +2774,8 @@ function SmartAI:askForDiscard(reason, discard_num, min_num, optional, include_e
 	if type(callback) == "function" then
 		local cb = callback(self, discard_num, min_num, optional, include_equip)
 		if cb then
-			if type(cb) == "number" and not self.player:isJilei(self.room:getCard(cb)) then return { cb }
-			elseif type(cb) == "table" then
+			if type(cb) == "number" then cb = { cb } end
+			if type(cb) == "table" then
 				for _, card_id in ipairs(cb) do
 					if not exchange and self.player:isJilei(self.room:getCard(card_id)) then
 						return {}

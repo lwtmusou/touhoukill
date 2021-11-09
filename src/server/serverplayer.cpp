@@ -1549,19 +1549,16 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         val << true;
         room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val);
 
-        if (!property("Duanchang").toString().split(QStringLiteral(",")).contains(QStringLiteral("head"))) {
-            sendSkillsToOthers();
-            foreach (const Skill *skill, getHeadSkillList()) {
-                if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasValidLordSkill(skill->objectName())) && haveShownSkill(skill)) {
-                    JsonArray arg;
-                    arg << objectName();
-                    arg << skill->limitMark();
-                    arg << mark(skill->limitMark());
-                    room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
-                }
+        sendSkillsToOthers();
+        foreach (const Skill *skill, getHeadSkillList()) {
+            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasValidLordSkill(skill->objectName())) && haveShownSkill(skill)) {
+                JsonArray arg;
+                arg << objectName();
+                arg << skill->limitMark();
+                arg << mark(skill->limitMark());
+                room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
             }
         }
-
     } else {
         //ignore anjiang
         if (getGeneral2Name() != QStringLiteral("anjiang"))
@@ -1591,16 +1588,14 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         val << false;
         room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val);
 
-        if (!property("Duanchang").toString().split(QStringLiteral(",")).contains(QStringLiteral("deputy"))) {
-            sendSkillsToOthers(false);
-            foreach (const Skill *skill, getDeputySkillList()) {
-                if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasValidLordSkill(skill->objectName())) && haveShownSkill(skill)) {
-                    JsonArray arg;
-                    arg << objectName();
-                    arg << skill->limitMark();
-                    arg << mark(skill->limitMark());
-                    room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
-                }
+        sendSkillsToOthers(false);
+        foreach (const Skill *skill, getDeputySkillList()) {
+            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasValidLordSkill(skill->objectName())) && haveShownSkill(skill)) {
+                JsonArray arg;
+                arg << objectName();
+                arg << skill->limitMark();
+                arg << mark(skill->limitMark());
+                room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
             }
         }
     }

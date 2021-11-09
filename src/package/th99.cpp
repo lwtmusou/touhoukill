@@ -1816,14 +1816,14 @@ public:
     }
 };
 
-// Fs: when modifiying this skill, check skill "GakungWu" (Guwu & Kuangwu) in th16
+// Fs: when modifiying this skill, check everything which is using "xunshi" flag
 class XunshiDistance : public TargetModSkill
 {
 public:
     XunshiDistance()
         : TargetModSkill("xunshi-dist")
     {
-        pattern = "Slash,TrickCard+^DelayedTrick";
+        pattern = ".";
     }
 
     int getExtraTargetNum(const Player *, const Card *card) const override

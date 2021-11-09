@@ -525,7 +525,6 @@ private slots:
     void changeGeneral(const QString &general);
     void revealGeneral(bool self, const QString &general);
 
-    void skillStateChange(const QString &skill_name);
     void trust();
     void skillInvalidityChange(Player *player);
 

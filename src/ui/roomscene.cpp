@@ -2085,6 +2085,7 @@ QString RoomScene::_translateMovement(const CardsMoveStruct &move)
     CardMoveReason reason = move.reason;
     if (reason.m_reason == CardMoveReason::S_REASON_UNKNOWN)
         return QString();
+
     Photo *srcPhoto = name2photo[reason.m_playerId];
     Photo *dstPhoto = name2photo[reason.m_targetId];
     QString playerName;
@@ -2328,8 +2329,6 @@ void RoomScene::addSkillButton(const Skill *skill, bool head)
         connect(btn, SIGNAL(skill_activated()), this, SLOT(onSkillActivated()));
         connect(btn, SIGNAL(skill_deactivated()), dashboard, SLOT(skillButtonDeactivated()));
         connect(btn, SIGNAL(skill_deactivated()), this, SLOT(onSkillDeactivated()));
-        if (btn->getViewAsSkill()->objectName() == QStringLiteral("mizhao"))
-            connect(btn, SIGNAL(skill_activated()), dashboard, SLOT(selectAll()));
         if (btn->getViewAsSkill()->objectName() == QStringLiteral("fsu0413fei2zhai"))
             connect(btn, SIGNAL(skill_activated()), dashboard, SLOT(selectAll()));
 
@@ -2699,7 +2698,6 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             } else if (newStatus == Client::Playing)
                 reason = CardUseStruct::CARD_USE_REASON_PLAY;
             button->setEnabled(vsSkill->isAvailable(Self, reason, pattern) && !pattern.endsWith(QStringLiteral("!")));
-
         } else {
             const Skill *skill = button->getSkill();
             if (skill->isLimited() && skill->isCompulsory()) {
@@ -4096,7 +4094,6 @@ void RoomScene::onGameStart()
     if (!Self->hasFlag(QStringLiteral("marshalling")))
         log_box->append(QString(tr("<font color='%1'>---------- Game Start ----------</font>").arg(Config.TextEditColor.name())));
 
-    // connect(Self, &Player::skill_state_changed, this, &RoomScene::skillStateChange);
     trust_button->setEnabled(true);
 
     setLordBGM();
@@ -4713,19 +4710,6 @@ void RoomScene::revealGeneral(bool self, const QString &general)
         enemy_box->revealGeneral(general);
 }
 
-void RoomScene::skillStateChange(const QString &skill_name)
-{
-    static QStringList button_remain;
-    if (button_remain.isEmpty())
-        button_remain << QStringLiteral("shuangxiong");
-    if (button_remain.contains(skill_name)) {
-        const Skill *skill = Sanguosha->getSkill(skill_name);
-        addSkillButton(skill);
-    } else if (skill_name.startsWith(QLatin1Char('-')) && button_remain.contains(skill_name.mid(1))) {
-        detachSkill(skill_name.mid(1), true);
-    }
-}
-
 void RoomScene::trust()
 {
     if (Self->getState() != QStringLiteral("trust"))
@@ -5272,7 +5256,7 @@ void CommandLinkDoubleClickButton::mouseDoubleClickEvent(QMouseEvent *event)
 
 void RoomScene::anyunSelectSkill()
 {
-    static QStringList selectAllList {QStringLiteral("mizhao"), QStringLiteral("qiji")};
+    static QStringList selectAllList {QStringLiteral("qiji")};
     QString skillName = Self->tag[QStringLiteral("anyun")].toString();
     if (selectAllList.contains(skillName))
         dashboard->selectAll();

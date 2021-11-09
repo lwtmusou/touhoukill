@@ -1501,3 +1501,68 @@ sgs.ai_damage_prohibit.sixiang = function(self, from, to, damage)
 	--暂不考虑连弩
 end
 
+
+-- 【酌志】 出牌阶段限一次，你可以将一张【杀】当【以逸待劳】使用（选择目标含你）。此牌结算结束时，你展示一张手牌，然后获得一张与之类别相同的于此牌结算时因弃置而置入弃牌堆的牌。
+local zhuozhi_skill = {}
+zhuozhi_skill.name = "zhuozhi"
+table.insert(sgs.ai_skills, zhuozhi_skill)
+zhuozhi_skill.getTurnUseCard = function(self)
+	if self.player:hasUsed("ZhuozhiCard") then return nil end
+	local ae = sgs.Sanguosha:cloneCard("await_exhausted", sgs.Card_SuitToBeDecided, 0)
+	ae:setSkillName("zhuozhi")
+	-- ae:setShowSkill("zhuozhi")
+	local slash = {}
+	for _, c in sgs.qlist(self.player:getHandcards()) do
+		if c:isKindOf("Slash") then table.insert(slash, c) end
+	end
+	if #slash == 0 then return nil end
+	self:sortByCardNeed(slash)
+	ae:addSubcard(slash[1])
+	return ae
+end
+
+local zhuozhiacquire = nil
+sgs.ai_skill_discard.zhuozhi = function(self)
+	zhuozhiacquire = nil
+	local handcard = {}
+	local handcards = {}
+	for _, hc in sgs.qlist(self.player:getHandcards()) do
+		if not handcard[hc:getType()] then handcard[hc:getType()] = {} end
+		handcard[hc:getType()]:insert(hc)
+		handcards:insert(hc)
+	end
+
+	local zhuozhilist = self.player:getTag("zhuozhi"):toIntList()
+	local zc = {}
+	for _, id in sgs.qlist(zhuozhilist) do
+		local card = sgs.Sanguosha:getCard(id)
+		if self.room:getCardPlace(id) == sgs.Player_DiscardPile then
+			zc:insert(card)
+		end
+	end
+	if #zc == 0 then
+		self:sortByKeepValue(handcards)
+		return handcards[1]
+	end
+	self:sortByUseValue(zc, true)
+	for _, zo in ipairs(zc) do
+		if handcard[zo:getType()] then
+			zhuozhiacquire = zo:getId()
+			self:sortByKeepValue(handcard[zo:getType()])
+			return handcard[zo:getType()][1]
+		end
+	end
+
+	self:sortByKeepValue(handcards)
+	return handcards[1]
+end
+
+sgs.ai_skill_askforag.zhuozhi = function()
+	return zhuozhiacquire
+end
+
+-- 【完身】 觉醒技，结束阶段开始时，若你装备区里的牌数大于2，你可以减1点体力上限，获得一个额外的回合和“邪力”。
+-- none needed
+
+-- 【邪力】 出牌阶段，你可以横置装备区里的一张牌并视为使用【酒】。
+-- 耦合酒

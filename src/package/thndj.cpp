@@ -697,6 +697,8 @@ public:
         return s;
     }
 };
+
+// TODO_Fs: need an extra target mod skill to determine target validity
 class Liexi : public TriggerSkill
 {
 public:

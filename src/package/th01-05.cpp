@@ -2166,14 +2166,14 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.from && use.from->hasSkill(this)) {
             if (use.card->isKindOf("Slash") || (use.card->isBlack() && use.card->isNDTrick() && !use.card->isKindOf("Nullification"))) {
-                use.card->setFlags("baosi");
+                use.card->setFlags("xunshi");
                 QList<const Player *> plist;
                 foreach (ServerPlayer *p, use.to)
                     plist << p;
                 foreach (ServerPlayer *p, room->getOtherPlayers(use.from)) {
                     if (!use.to.contains(p) && p->getHp() <= p->dyingThreshold() && use.card->targetFilter(QList<const Player *>(), p, use.from)
                         && !use.from->isProhibited(p, use.card, plist)) {
-                        use.card->setFlags("-baosi");
+                        use.card->setFlags("-xunshi");
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
                     }
                 }
@@ -2186,7 +2186,7 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        use.card->setFlags("baosi");
+        use.card->setFlags("xunshi");
         QList<const Player *> plist;
         foreach (ServerPlayer *p, use.to)
             plist << p;
@@ -2195,7 +2195,7 @@ public:
                 && !use.from->isProhibited(p, use.card, plist))
                 room->setPlayerFlag(p, "Global_baosiFailed");
         }
-        use.card->setFlags("-baosi");
+        use.card->setFlags("-xunshi");
         return room->askForUseCard(invoke->invoker, "@@baosi", "@baosi:" + use.card->objectName());
     }
 
@@ -2213,23 +2213,6 @@ public:
         room->sortByActionOrder(use.to);
         data = QVariant::fromValue(use);
         return false;
-    }
-};
-
-class BaosiDistance : public TargetModSkill
-{
-public:
-    BaosiDistance()
-        : TargetModSkill("#baosi-dist")
-    {
-        pattern = "Slash,TrickCard+^DelayedTrick";
-    }
-
-    int getDistanceLimit(const Player *, const Card *card) const override
-    {
-        if (card->hasFlag("baosi"))
-            return 1000;
-        return 0;
     }
 };
 
@@ -3785,9 +3768,7 @@ TH0105Package::TH0105Package()
 
     General *sariel = new General(this, "sariel", "pc98", 4);
     sariel->addSkill(new Baosi);
-    sariel->addSkill(new BaosiDistance);
     sariel->addSkill(new Moyan);
-    related_skills.insert("baosi", "#baosi-dist");
 
     General *konngara = new General(this, "konngara", "pc98", 4);
     konngara->addSkill(new Zongjiu);
