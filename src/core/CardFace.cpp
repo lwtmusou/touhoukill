@@ -486,12 +486,6 @@ bool CardFace::isAvailable(const Player *player, const Card *card) const
     return !player->isCardLimited(card, card->handleMethod());
 }
 
-// temporary put it away since I don't know what it means and what it do
-bool CardFace::ignoreCardValidity(const Player * /*unused*/) const
-{
-    return false;
-}
-
 // --  - validate - function(cardUse) -> card
 const Card *CardFace::validate(const CardUseStruct &use) const
 {

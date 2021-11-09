@@ -41,14 +41,14 @@ public:
 
     // This method provides a default handling method suggested by the card face.
     // Almost every actual card has its handlingMethod to be QSanguosha::MethodUse.
-    virtual QSanguosha::HandlingMethod defaultHandlingMethod() const;
+    QSanguosha::HandlingMethod defaultHandlingMethod() const;
     void setDefaultHandlingMethod(QSanguosha::HandlingMethod can);
 
     // Functions
-    virtual bool targetFixed(const Player *player, const Card *card) const;
+    bool targetFixed(const Player *player, const Card *card) const;
     void setTargetFixed(bool fixed);
 
-    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self, const Card *card) const;
+    bool targetsFeasible(const QList<const Player *> &targets, const Player *Self, const Card *card) const;
 
     // This is the merged targetFilter implementation.
     /**
@@ -63,25 +63,22 @@ public:
      *
      * @note to_select will be selectable until its appearance in targets >= its maximum vote.
      */
-    virtual int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card) const;
+    int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card) const;
 
-    virtual bool isAvailable(const Player *player, const Card *card) const;
+    bool isAvailable(const Player *player, const Card *card) const;
 
-    // TODO_Fs: Actually I don't know the use case of this function.
-    // Is it only for skill "tianqu"?
-    virtual bool ignoreCardValidity(const Player *player) const;
-    virtual const Card *validate(const CardUseStruct &cardUse) const;
-    virtual const Card *validateInResponse(Player *user, const Card *original_card) const;
+    const Card *validate(const CardUseStruct &cardUse) const;
+    const Card *validateInResponse(Player *user, const Card *original_card) const;
 
-    virtual void doPreAction(RoomObject *room, const CardUseStruct &card_use) const;
+    void doPreAction(RoomObject *room, const CardUseStruct &card_use) const;
 
     // TODO_Fs: Aren't the names of these 2 functions easy to be misunderstood?
-    virtual void onUse(RoomObject *room, const CardUseStruct &card_use) const; // Shouldn't this be "processOfUsing" / "usingProcess" or something like this?
-    virtual void use(RoomObject *room, const CardUseStruct &use) const; // Shouldn't this be "onUse"?
+    void onUse(RoomObject *room, const CardUseStruct &card_use) const; // Shouldn't this be "processOfUsing" / "usingProcess" or something like this?
+    void use(RoomObject *room, const CardUseStruct &use) const; // Shouldn't this be "onUse"?
 
-    virtual void onEffect(const CardEffectStruct &effect) const;
-    virtual bool isCancelable(const CardEffectStruct &effect) const;
-    virtual void onNullified(Player *target, const Card *card) const;
+    void onEffect(const CardEffectStruct &effect) const;
+    bool isCancelable(const CardEffectStruct &effect) const;
+    void onNullified(Player *target, const Card *card) const;
 
 private:
     QSGS_DISABLE_COPY_MOVE_CONSTRUCT(CardFace)
@@ -96,8 +93,8 @@ class EquipCard : public CardFace
 public:
     virtual QSanguosha::EquipLocation location() const = 0;
 
-    virtual void onInstall(Player *player) const;
-    virtual void onUninstall(Player *player) const;
+    void onInstall(Player *player) const;
+    void onUninstall(Player *player) const;
 };
 
 class Weapon : public EquipCard

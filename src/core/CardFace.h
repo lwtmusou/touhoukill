@@ -92,16 +92,12 @@ public:
 
     QSGS_LUA_API bool isAvailable(const Player *player, const Card *card) const;
 
-    // TODO_Fs: Actually I don't know the use case of this function.
-    // Is it only for skill "tianqu"?
-    QSGS_LUA_API virtual bool ignoreCardValidity(const Player *player) const;
     QSGS_LUA_API const Card *validate(const CardUseStruct &cardUse) const;
     QSGS_LUA_API const Card *validateInResponse(Player *player, const Card *original_card) const;
 
     QSGS_LUA_API void doPreAction(RoomObject *room, const CardUseStruct &use) const;
 
     // TODO_Fs: Aren't the names of these 2 functions easy to be misunderstood?
-    // virtual for cut-down SkillCard
     QSGS_LUA_API void onUse(RoomObject *room, const CardUseStruct &use) const; // Shouldn't this be "processOfUsing" / "usingProcess" or something like this?
     QSGS_LUA_API void use(RoomObject *room, const CardUseStruct &use) const; // Shouldn't this be "onUse"?
 

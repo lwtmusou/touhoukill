@@ -178,7 +178,7 @@ bool onNullified(lua_State *l, Player *player, const Card *card)
 // also used by: onUninstall
 bool onInstall(lua_State *l, Player *player)
 {
-    SWIG_NewPointerObj(l, player, SWIGTYPE_p_Player, 0); // { player, CardFace.onInstall }
+    SWIG_NewPointerObj(l, player, SWIGTYPE_p_Player, 0); // { player, EquipCard.onInstall }
 
     int call = lua_pcall(l, 1, 0, 0); // { error (if any) } / { }
 
