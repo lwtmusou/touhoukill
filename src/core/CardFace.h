@@ -107,7 +107,7 @@ public:
 
     QSGS_LUA_API void onEffect(const CardEffectStruct &effect) const;
     QSGS_LUA_API bool isCancelable(const CardEffectStruct &effect) const;
-    QSGS_LUA_API void onNullified(Player *target, const Card *card) const;
+    QSGS_LUA_API void onNullified(Player *player, const Card *card) const;
 
 protected:
     virtual void defaultOnUse(RoomObject *room, const CardUseStruct &use) const;

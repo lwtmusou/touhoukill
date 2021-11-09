@@ -41,21 +41,17 @@ public:
 
 // somewhat not-even-be-a-method method for Lua calls which need to be done on SWIG side
 // SWIG don't provide a binary-compatible way to export its constant variables
+// These functions are implemented in wrap_cardface.i and generated in sgsLUA_wrap.cxx
 namespace CardFaceLuaCall {
 std::optional<bool> targetFixed(lua_State *l, const Player *player, const Card *card); // also used by: isAvailable
 std::optional<bool> targetsFeasible(lua_State *l, const QList<const Player *> &targets, const Player *Self, const Card *card);
 std::optional<int> targetFilter(lua_State *l, const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card);
 std::optional<const Card *> validate(lua_State *l, const CardUseStruct &use);
 std::optional<const Card *> validateInResponse(lua_State *l, Player *player, const Card *card);
-
-#if 0
---  - doPreAction - function(room, cardUse)
---  - onUse - function(room, cardUse)
---  - use - function(room, cardUse)
---  - onEffect(cardEffect)
---  - isCancelable(cardEffect) -> boolean
---  - onNullified(player, card)
-#endif
+bool use(lua_State *l, RoomObject *room, const CardUseStruct &use); // also used by: doPreAction, onUse
+bool onEffect(lua_State *l, const CardEffectStruct &effect);
+std::optional<bool> isCancelable(lua_State *l, const CardEffectStruct &effect);
+bool onNullified(lua_State *l, Player *player, const Card *card);
 } // namespace CardFaceLuaCall
 
 // -- type (which is specified by desc.type using SecondTypeMask / ThirdTypeMask)
@@ -506,13 +502,7 @@ const Card *CardFace::validate(const CardUseStruct &use) const
                 if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
-                    std::optional<const Card *> call = CardFaceLuaCall::validate(l, use); // { returnValue / error, CardFace }
-                    if (call.has_value())
-                        r = call.value();
-                    else {
-                        // error
-                        // since the stack top is the error object, we temporarily ignore it
-                    }
+                    r = CardFaceLuaCall::validate(l, use); // { returnValue / error, CardFace }
                 } else {
                     // not function, ignored
                 }
@@ -543,13 +533,7 @@ const Card *CardFace::validateInResponse(Player *player, const Card *original_ca
                 if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
-                    std::optional<const Card *> call = CardFaceLuaCall::validateInResponse(l, player, original_card); // { returnValue / error, CardFace }
-                    if (call.has_value())
-                        r = call.value();
-                    else {
-                        // error
-                        // since the stack top is the error object, we temporarily ignore it
-                    }
+                    r = CardFaceLuaCall::validateInResponse(l, player, original_card); // { returnValue / error, CardFace }
                 } else {
                     // not function, ignored
                 }
@@ -566,32 +550,96 @@ const Card *CardFace::validateInResponse(Player *player, const Card *original_ca
     return original_card;
 }
 
-#if 0
--- Card Face common
--- As a Card Face, the following are mandatory
--- (if different than default) properties, including
--- these may be a fixed value or Lua Function, depanding on its usage. Function prototype is provided in case a function should be used.
--- methods, including
---  - doPreAction - function(room, cardUse)
---  - onUse - function(room, cardUse)
---  - use - function(room, cardUse)
---  - onEffect(cardEffect)
---  - isCancelable(cardEffect) -> boolean
---  - onNullified(player, card)
--- All of them are optional but this card does nothing if none is provided.
-#endif
-
+// --  - doPreAction - function(room, cardUse)
 void CardFace::doPreAction(RoomObject *room, const CardUseStruct &use) const
 {
+    bool called = false;
+
+    LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+    bool pushed = l->pushCardFace(d->name); // { CardFace(if successful) }
+    if (pushed) {
+        do {
+            int type = lua_getfield(l, -1, "doPreAction"); // { CardFace.doPreAction, CardFace }
+            do {
+                if (type == LUA_TFUNCTION) {
+                    // we should do the function call and return
+                    // error should be catched in CardFaceLuaCall
+                    called = CardFaceLuaCall::use(l, room, use); // { CardFace }
+                } else {
+                    // not function, ignored
+                }
+            } while (false);
+            lua_pop(l, 1); // { CardFace }
+        } while (false);
+        lua_pop(l, 1); // { }
+    }
+
+    if (called)
+        return;
+
+    // default
+    // do nothing
 }
 
+// --  - onUse - function(room, cardUse)
 void CardFace::onUse(RoomObject *room, const CardUseStruct &use) const
 {
+    bool called = false;
+
+    LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+    bool pushed = l->pushCardFace(d->name); // { CardFace(if successful) }
+    if (pushed) {
+        do {
+            int type = lua_getfield(l, -1, "onUse"); // { CardFace.onUse, CardFace }
+            do {
+                if (type == LUA_TFUNCTION) {
+                    // we should do the function call and return
+                    // error should be catched in CardFaceLuaCall
+                    called = CardFaceLuaCall::use(l, room, use); // { CardFace }
+                } else {
+                    // not function, ignored
+                }
+            } while (false);
+            lua_pop(l, 1); // { CardFace }
+        } while (false);
+        lua_pop(l, 1); // { }
+    }
+
+    if (called)
+        return;
+
+    // default
     defaultOnUse(room, use);
 }
 
+// --  - use - function(room, cardUse)
 void CardFace::use(RoomObject *room, const CardUseStruct &use) const
 {
+    bool called = false;
+
+    LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+    bool pushed = l->pushCardFace(d->name); // { CardFace(if successful) }
+    if (pushed) {
+        do {
+            int type = lua_getfield(l, -1, "use"); // { CardFace.use, CardFace }
+            do {
+                if (type == LUA_TFUNCTION) {
+                    // we should do the function call and return
+                    // error should be catched in CardFaceLuaCall
+                    called = CardFaceLuaCall::use(l, room, use); // { CardFace }
+                } else {
+                    // not function, ignored
+                }
+            } while (false);
+            lua_pop(l, 1); // { CardFace }
+        } while (false);
+        lua_pop(l, 1); // { }
+    }
+
+    if (called)
+        return;
+
+    // default
     defaultUse(room, use);
 }
 
@@ -711,17 +759,97 @@ void CardFace::defaultUse(RoomObject *room, const CardUseStruct &use) const
     }
 }
 
-void CardFace::onEffect(const CardEffectStruct & /*unused*/) const
+// --  - onEffect(cardEffect)
+void CardFace::onEffect(const CardEffectStruct &effect) const
 {
+    bool called = false;
+
+    LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+    bool pushed = l->pushCardFace(d->name); // { CardFace(if successful) }
+    if (pushed) {
+        do {
+            int type = lua_getfield(l, -1, "onEffect"); // { CardFace.onEffect, CardFace }
+            do {
+                if (type == LUA_TFUNCTION) {
+                    // we should do the function call and return
+                    // error should be catched in CardFaceLuaCall
+                    called = CardFaceLuaCall::onEffect(l, effect); // { CardFace }
+                } else {
+                    // not function, ignored
+                }
+            } while (false);
+            lua_pop(l, 1); // { CardFace }
+        } while (false);
+        lua_pop(l, 1); // { }
+    }
+
+    if (called)
+        return;
+
+    // default
+    // do nothing
 }
 
-bool CardFace::isCancelable(const CardEffectStruct & /*unused*/) const
+// --  - isCancelable(cardEffect) -> boolean
+bool CardFace::isCancelable(const CardEffectStruct &effect) const
 {
+    std::optional<bool> r;
+
+    LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+    bool pushed = l->pushCardFace(d->name); // { CardFace(if successful) }
+    if (pushed) {
+        do {
+            int type = lua_getfield(l, -1, "isCancelable"); // { CardFace.isCancelable, CardFace }
+            do {
+                if (type == LUA_TFUNCTION) {
+                    // we should do the function call and return
+                    // error should be catched in CardFaceLuaCall
+                    r = CardFaceLuaCall::isCancelable(l, effect); // { CardFace }
+                } else {
+                    // not function, ignored
+                }
+            } while (false);
+            lua_pop(l, 1); // { CardFace }
+        } while (false);
+        lua_pop(l, 1); // { }
+    }
+
+    if (r.has_value())
+        return r.value();
+
+    // default
     return false;
 }
 
-void CardFace::onNullified(Player * /*unused*/, const Card * /*unused*/) const
+// --  - onNullified(player, card)
+void CardFace::onNullified(Player *player, const Card *card) const
 {
+    bool called = false;
+
+    LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+    bool pushed = l->pushCardFace(d->name); // { CardFace(if successful) }
+    if (pushed) {
+        do {
+            int type = lua_getfield(l, -1, "onNullified"); // { CardFace.onNullified, CardFace }
+            do {
+                if (type == LUA_TFUNCTION) {
+                    // we should do the function call and return
+                    // error should be catched in CardFaceLuaCall
+                    called = CardFaceLuaCall::onNullified(l, player, card); // { CardFace }
+                } else {
+                    // not function, ignored
+                }
+            } while (false);
+            lua_pop(l, 1); // { CardFace }
+        } while (false);
+        lua_pop(l, 1); // { }
+    }
+
+    if (called)
+        return;
+
+    // default
+    // do nothing
 }
 
 BasicCard::BasicCard(const QString &name)

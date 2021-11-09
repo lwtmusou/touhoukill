@@ -8,7 +8,7 @@ namespace CardFaceLuaCall {
 // All these functions have [-1, 0, -]
 // All of them assume the corresponding function is push on the top of stack, and all of them pop it
 
-// also used in isAvailable
+// also used by: isAvailable
 std::optional<bool> targetFixed(lua_State *l, const Player *player, const Card *card)
 {
     SWIG_NewPointerObj(l, player, SWIGTYPE_p_Player, 0); // { player, CardFace.targetFixed }
@@ -108,6 +108,67 @@ std::optional<const Card *> validateInResponse(lua_State *l, Player *player, con
 
     lua_pop(l, 1); // { }
     return c;
+}
+
+// also used by: doPreAction, onUse
+bool use(lua_State *l, RoomObject *room, const CardUseStruct &use)
+{
+    SWIG_NewPointerObj(l, room, SWIGTYPE_p_RoomObject, 0); // { room, CardFace.use }
+    SWIG_NewPointerObj(l, &use, SWIGTYPE_p_CardUseStruct, 0); // { use, room, CardFace.use }
+
+    int call = lua_pcall(l, 2, 0, 0); // { error (if any) } / { }
+
+    if (call != LUA_OK) {
+        lua_pop(l, 1); // { }
+        return false;
+    }
+
+    return true;
+}
+
+bool onEffect(lua_State *l, const CardEffectStruct &effect)
+{
+    SWIG_NewPointerObj(l, &effect, SWIGTYPE_p_CardEffectStruct, 0); // { player, CardFace.onEffect }
+
+    int call = lua_pcall(l, 1, 0, 0); // { cardFace.onEffect() / error }
+
+    if (call != LUA_OK) {
+        lua_pop(l, 1); // { }
+        return false;
+    }
+
+    return true;
+}
+
+std::optional<bool> isCancelable(lua_State *l, const CardEffectStruct &effect)
+{
+    SWIG_NewPointerObj(l, &effect, SWIGTYPE_p_CardEffectStruct, 0); // { player, CardFace.isCancelable }
+
+    int call = lua_pcall(l, 1, 1, 0); // { cardFace.isCancelable() / error }
+
+    if (call != LUA_OK) {
+        lua_pop(l, 1); // { } // need to pop the error object
+        return std::nullopt;
+    }
+
+    bool r = lua_toboolean(l, -1);
+    lua_pop(l, 1); // { }
+    return r;
+}
+
+bool onNullified(lua_State *l, Player *player, const Card *card)
+{
+    SWIG_NewPointerObj(l, player, SWIGTYPE_p_Player, 0); // { player, CardFace.onNullified }
+    SWIG_NewPointerObj(l, card, SWIGTYPE_p_Card, 0); // { card, player, CardFace.onNullified }
+
+    int call = lua_pcall(l, 2, 0, 0); // { cardFace.onNullified() / error }
+
+    if (call != LUA_OK) {
+        lua_pop(l, 1); // { }
+        return false;
+    }
+
+    return true;
 }
 
 }
