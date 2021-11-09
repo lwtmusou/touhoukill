@@ -1508,14 +1508,16 @@ zhuozhi_skill.name = "zhuozhi"
 table.insert(sgs.ai_skills, zhuozhi_skill)
 zhuozhi_skill.getTurnUseCard = function(self)
 	if self.player:hasUsed("ZhuozhiCard") then return nil end
-	local ae = sgs.Sanguosha:cloneCard("await_exhausted", sgs.Card_ToBeDecided, 0)
+	local ae = sgs.Sanguosha:cloneCard("await_exhausted", sgs.Card_SuitToBeDecided, 0)
+	ae:setSkillName("zhuozhi")
+	-- ae:setShowSkill("zhuozhi")
 	local slash = {}
 	for _, c in sgs.qlist(self.player:getHandcards()) do
 		if c:isKindOf("Slash") then table.insert(slash, c) end
 	end
 	if #slash == 0 then return nil end
 	self:sortByCardNeed(slash)
-	ae:addSubCard(slash[1])
+	ae:addSubcard(slash[1])
 	return ae
 end
 
@@ -1523,7 +1525,7 @@ local zhuozhiacquire = nil
 sgs.ai_skill_discard.zhuozhi = function(self)
 	zhuozhiacquire = nil
 	local handcard = {}
-	local handcards
+	local handcards = {}
 	for _, hc in sgs.qlist(self.player:getHandcards()) do
 		if not handcard[hc:getType()] then handcard[hc:getType()] = {} end
 		handcard[hc:getType()]:insert(hc)
