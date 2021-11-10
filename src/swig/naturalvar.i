@@ -34,9 +34,16 @@ SWIG_arg ++;
     $1 = &temp;
 %}
 
+%typemap(typecheck, precedence = SWIG_TYPECHECK_STRING) QString {
+    $1 = SWIG_lua_isnilstring(L, $input);
+}
+
+%typemap(typecheck, precedence = SWIG_TYPECHECK_STRING) const QString & {
+    $1 = SWIG_lua_isnilstring(L, $input);
+}
+
 %typemap(out) QString
 %{ lua_pushstring(L, $1.toUtf8().constData()); SWIG_arg++; %}
-
 
 %naturalvar QByteArray;
 

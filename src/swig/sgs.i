@@ -33,9 +33,11 @@
     Class() = delete; \
     ~Class() = delete;
 
+// need to include this first!!
+%include "naturalvar.i"
+
 %include "cryptographic.i"
 %include "list.i"
-%include "naturalvar.i"
 
 class qrc {
 private:
