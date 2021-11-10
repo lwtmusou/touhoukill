@@ -109,7 +109,7 @@ set (QSanguosha_SRCS
     src/dialog/roleassigndialog.cpp
     src/dialog/updatedialog.cpp
     src/main.cpp
-    src/package/exppattern.cpp
+    src/core/exppattern.cpp
     src/server/gamerule.cpp
     src/server/room.cpp
     src/server/roomthread.cpp
@@ -197,7 +197,7 @@ set (QSanguosha_MOCS
     src/dialog/mainwindow.h
     src/dialog/roleassigndialog.h
     src/dialog/updatedialog.h
-    src/package/exppattern.h
+    src/core/exppattern.h
     src/pch.h
     src/server/gamerule.h
     src/server/room.h

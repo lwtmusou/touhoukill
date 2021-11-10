@@ -58,8 +58,8 @@ public:
 
     QString currentCardUsePattern() const;
     void setCurrentCardUsePattern(const QString &newPattern);
-    CardUseStruct::CardUseReason currentCardUseReason() const;
-    void setCurrentCardUseReason(CardUseStruct::CardUseReason reason);
+    QSanguosha::CardUseReason currentCardUseReason() const;
+    void setCurrentCardUseReason(QSanguosha::CardUseReason reason);
 
     // Update a card in the room.
     // @param cardId

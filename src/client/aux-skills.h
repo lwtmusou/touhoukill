@@ -1,6 +1,7 @@
 #ifndef _AUX_SKILLS_H
 #define _AUX_SKILLS_H
 
+#include "CardFace.h"
 #include "skill.h"
 
 // Maybe these UI-related "skills" can be disappered sometime?

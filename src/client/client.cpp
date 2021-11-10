@@ -1,4 +1,5 @@
 #include "client.h"
+#include "CardFace.h"
 #include "SkinBank.h"
 #include "audio.h"
 #include "choosegeneraldialog.h"
@@ -858,13 +859,13 @@ void Client::setStatus(Status status)
     Status old_status = this->status;
     this->status = status;
     if (status == Client::Playing)
-        setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_PLAY);
+        setCurrentCardUseReason(QSanguosha::CardUseReasonPlay);
     else if (status == Responding)
-        setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE);
+        setCurrentCardUseReason(QSanguosha::CardUseReasonResponse);
     else if (status == RespondingUse)
-        setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
+        setCurrentCardUseReason(QSanguosha::CardUseReasonResponseUse);
     else
-        setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_UNKNOWN);
+        setCurrentCardUseReason(QSanguosha::CardUseReasonUnknown);
 
     emit status_changed(old_status, status);
 }
@@ -1850,7 +1851,7 @@ void Client::askForSinglePeach(const QVariant &arg)
         bool has_skill = false;
         foreach (const Skill *skill, Self->skills(true)) {
             const ViewAsSkill *view_as_skill = qobject_cast<const ViewAsSkill *>(skill);
-            if ((view_as_skill != nullptr) && view_as_skill->isAvailable(Self, CardUseStruct::CARD_USE_REASON_RESPONSE_USE, pattern.join(QStringLiteral("+")))) {
+            if ((view_as_skill != nullptr) && view_as_skill->isAvailable(Self, QSanguosha::CardUseReasonResponseUse, pattern.join(QStringLiteral("+")))) {
                 has_skill = true;
                 break;
             }

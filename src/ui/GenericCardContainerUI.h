@@ -11,6 +11,7 @@
 #include "magatamasItem.h"
 #include "player.h"
 #include "rolecombobox.h"
+#include "structs.h"
 
 #include <QGraphicsEffect>
 #include <QGraphicsItem>

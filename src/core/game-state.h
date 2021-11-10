@@ -131,8 +131,8 @@ public:
 
     QString getCurrentCardUsePattern() const;
     void setCurrentCardUsePattern(const QString &newPattern);
-    CardUseStruct::CardUseReason getCurrentCardUseReason() const;
-    void setCurrentCardUseReason(CardUseStruct::CardUseReason reason);
+    QSanguosha::CardUseReason getCurrentCardUseReason() const;
+    void setCurrentCardUseReason(QSanguosha::CardUseReason reason);
 
 private:
     // TODO: Determine this part.

@@ -3,9 +3,11 @@
 
 #include "global.h"
 
+#if 0
 // TODO: kill these
 #include "CardFace.h"
 #include "structs.h"
+#endif
 
 #include <QDialog>
 #include <QObject>
@@ -14,6 +16,7 @@
 class Player;
 class Card;
 class RoomObject;
+class Trigger;
 
 class SkillPrivate;
 
@@ -150,7 +153,7 @@ public:
     ~ViewAsSkill() override;
 
     // helper function
-    bool isAvailable(const Player *invoker, CardUseStruct::CardUseReason reason, const QString &pattern) const;
+    bool isAvailable(const Player *invoker, QSanguosha::CardUseReason reason, const QString &pattern) const;
 
     // property setters / getters
     QSanguosha::HandlingMethod handlingMethod() const;
@@ -208,7 +211,7 @@ public:
     virtual const Card *viewAs(const QList<const Card *> &cards, const Player *Self, const QStringList &CurrentViewAsSkillChain) const = 0;
 
     virtual bool isEnabledAtPlay(const Player *player) const;
-    virtual bool isEnabledAtResponse(const Player *player, CardUseStruct::CardUseReason reason, const QString &pattern) const;
+    virtual bool isEnabledAtResponse(const Player *player, QSanguosha::CardUseReason reason, const QString &pattern) const;
 
     virtual const ViewAsSkillSelection *selections(const Player *Self) const;
     virtual bool isSelectionEnabled(const QStringList &name, const Player *Self) const;

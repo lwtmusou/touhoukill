@@ -3,10 +3,8 @@
 #include "RoomObject.h"
 #include "card.h"
 #include "player.h"
+#include "structs.h"
 #include "util.h"
-
-// TODO: KILL THIS
-#include "serverplayer.h"
 
 using namespace QSanguosha;
 
@@ -128,9 +126,10 @@ bool SkillTrigger::trigger(TriggerEvent event, RoomObject *room, const TriggerDe
     if (!detail.effectOnly()) {
         if (!cost(event, room, detail, data))
             return false;
-
+#if 0
         if (detail.owner()->hasValidSkill(d->name) && !detail.owner()->haveShownSkill(d->name))
             RefactorProposal::fixme_cast<ServerPlayer *>(detail.owner())->showHiddenSkill(d->name);
+#endif
     }
 
     return effect(event, room, detail, data);
@@ -144,9 +143,10 @@ bool SkillTrigger::cost(TriggerEvent /*unused*/, RoomObject * /*unused*/, Trigge
     // detail.owner == detail.invoker
     bool isCompulsory = detail.isCompulsory() && (detail.invoker()->hasValidSkill(d->name) && !detail.invoker()->haveShownSkill(d->name));
     bool invoke = true;
+#if 0
     if (!isCompulsory)
         invoke = RefactorProposal::fixme_cast<ServerPlayer *>(detail.invoker())->askForSkillInvoke(d->name);
-
+#endif
     return invoke;
 }
 

@@ -1,4 +1,5 @@
 #include "player.h"
+#include "CardFace.h"
 #include "client.h"
 #include "engine.h"
 #include "exppattern.h"

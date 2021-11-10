@@ -1,4 +1,5 @@
 #include "serverplayer.h"
+#include "CardFace.h"
 #include "card.h"
 #include "engine.h"
 #include "gamerule.h"
@@ -420,7 +421,7 @@ bool ServerPlayer::hasNullification() const
         if (hasValidSkill(skill->objectName())) {
             if (skill->inherits("ViewAsSkill")) {
                 const ViewAsSkill *vsskill = qobject_cast<const ViewAsSkill *>(skill);
-                if (vsskill->isEnabledAtResponse(this, CardUseStruct::CARD_USE_REASON_RESPONSE_USE, QStringLiteral("nullification")))
+                if (vsskill->isEnabledAtResponse(this, QSanguosha::CardUseReasonResponseUse, QStringLiteral("nullification")))
                     return true;
             }
         }
@@ -1460,7 +1461,7 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     use.card->addFlag(QStringLiteral("IgnoreFailed"));
     if (use.card->face()->targetFixed(use.from, use.card) && !use.to.contains(use.from) && !use.card->face()->isKindOf(QStringLiteral("AOE"))
         && !use.card->face()->isKindOf(QStringLiteral("GlobalEffect"))) {
-        //        if (isHiddenSkill(QStringLiteral("tianqu")) && room->currentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY)
+        //        if (isHiddenSkill(QStringLiteral("tianqu")) && room->currentCardUseReason() == QSanguosha::CARD_USE_REASON_PLAY)
         //            showTargetFix << QStringLiteral("tianqu");
     }
     use.card->addFlag(QStringLiteral("-IgnoreFailed"));
@@ -1473,22 +1474,22 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     foreach (Player *p, use.to) {
         auto useToExceptp = ps;
         useToExceptp.removeAll(p);
-        if (use.from->isProhibited(p, use.card) && room->currentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+        if (use.from->isProhibited(p, use.card) && room->currentCardUseReason() == QSanguosha::CardUseReasonPlay) {
             showTargetProhibit << QStringLiteral("tianqu");
-            if (use.from->isProhibited(p, use.card, useToExceptp) && room->currentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+            if (use.from->isProhibited(p, use.card, useToExceptp) && room->currentCardUseReason() == QSanguosha::CardUseReasonPlay) {
                 break;
             } else if (use.card->face()->isKindOf(QStringLiteral("Peach"))) {
-                if (!p->isWounded() && room->currentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+                if (!p->isWounded() && room->currentCardUseReason() == QSanguosha::CardUseReasonPlay) {
                     showTargetProhibit << QStringLiteral("tianqu");
                     break;
                 }
                 if (p != use.from && (!p->hasValidLordSkill(QStringLiteral("yanhui")) || p->kingdom() != QStringLiteral("zhan"))
-                    && room->currentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+                    && room->currentCardUseReason() == QSanguosha::CardUseReasonPlay) {
                     showTargetProhibit << QStringLiteral("tianqu");
                     break;
                 }
             } else if (use.card->face()->isKindOf(QStringLiteral("DelayedTrick")) && p->containsTrick(use.card->faceName())
-                       && room->currentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+                       && room->currentCardUseReason() == QSanguosha::CardUseReasonPlay) {
                 showTargetProhibit << QStringLiteral("tianqu");
                 break;
             }

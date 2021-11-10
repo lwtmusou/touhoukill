@@ -6,9 +6,6 @@
 #include "settings.h"
 #include "util.h"
 
-// TODO: kill this
-#include "room.h"
-
 #include <random>
 
 using namespace QSanguosha;
@@ -233,15 +230,15 @@ ViewAsSkill::~ViewAsSkill()
     delete d;
 }
 
-bool ViewAsSkill::isAvailable(const Player *invoker, CardUseStruct::CardUseReason reason, const QString &pattern) const
+bool ViewAsSkill::isAvailable(const Player *invoker, QSanguosha::CardUseReason reason, const QString &pattern) const
 {
     if (!invoker->hasValidSkill(objectName()) && !invoker->hasValidLordSkill(objectName()) && !invoker->hasFlag(objectName())) // For Shuangxiong
         return false;
     switch (reason) {
-    case CardUseStruct::CARD_USE_REASON_PLAY:
+    case QSanguosha::CardUseReasonPlay:
         return isEnabledAtPlay(invoker);
-    case CardUseStruct::CARD_USE_REASON_RESPONSE:
-    case CardUseStruct::CARD_USE_REASON_RESPONSE_USE:
+    case QSanguosha::CardUseReasonResponse:
+    case QSanguosha::CardUseReasonResponseUse:
         return isEnabledAtResponse(invoker, reason, pattern);
     default:
         return false;
@@ -253,7 +250,7 @@ bool ViewAsSkill::isEnabledAtPlay(const Player * /*unused*/) const
     return d->response_pattern.isEmpty();
 }
 
-bool ViewAsSkill::isEnabledAtResponse(const Player * /*unused*/, CardUseStruct::CardUseReason /*reason*/, const QString &pattern) const
+bool ViewAsSkill::isEnabledAtResponse(const Player * /*unused*/, QSanguosha::CardUseReason /*reason*/, const QString &pattern) const
 {
     if (!d->response_pattern.isEmpty())
         return pattern == d->response_pattern;
@@ -572,8 +569,6 @@ TreatAsEquippingSkill::TreatAsEquippingSkill(const QString &name)
 
 #if 0
 // In case the code are used in future when Skill::setupForBattleArray implementation
-
-
 class BattleArraySkill : public ::TriggerSkill
 {
     // Q_OBJECT

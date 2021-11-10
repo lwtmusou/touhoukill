@@ -1,4 +1,5 @@
 #include "room.h"
+#include "CardFace.h"
 #include "audio.h"
 #include "card.h"
 #include "engine.h"
@@ -1222,7 +1223,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
 {
     tryPause();
 
-    setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
+    setCurrentCardUseReason(QSanguosha::CardUseReasonResponseUse);
     QString trick_name = trick->faceName();
     QList<ServerPlayer *> validHumanPlayers;
 
@@ -1564,11 +1565,11 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         provider = nullptr;
         return nullptr;
     }
-    CardUseStruct::CardUseReason reason = CardUseStruct::CARD_USE_REASON_UNKNOWN;
+    QSanguosha::CardUseReason reason = QSanguosha::CardUseReasonUnknown;
     if (method == QSanguosha::MethodResponse)
-        reason = CardUseStruct::CARD_USE_REASON_RESPONSE;
+        reason = QSanguosha::CardUseReasonResponse;
     else if (method == QSanguosha::MethodUse)
-        reason = CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
+        reason = QSanguosha::CardUseReasonResponseUse;
     setCurrentCardUseReason(reason);
 
     if (player->hasFlag(QStringLiteral("continuing")))
@@ -1770,7 +1771,7 @@ const Card *Room::askForUseCard(ServerPlayer *player, const QString &pattern, co
     notifyMoveFocus(player, S_COMMAND_RESPONSE_CARD);
 
     setCurrentCardUsePattern(pattern);
-    setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
+    setCurrentCardUseReason(QSanguosha::CardUseReasonResponseUse);
     CardUseStruct card_use;
 
     bool isCardUsed = false;
@@ -1789,7 +1790,7 @@ const Card *Room::askForUseCard(ServerPlayer *player, const QString &pattern, co
             card_use.from = player;
     }
 
-    card_use.m_reason = CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
+    card_use.m_reason = QSanguosha::CardUseReasonResponseUse;
 
     ChoiceMadeStruct s;
     s.player = player;
@@ -1948,7 +1949,7 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying)
 {
     tryPause();
     notifyMoveFocus(player, S_COMMAND_ASK_PEACH);
-    setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
+    setCurrentCardUseReason(QSanguosha::CardUseReasonResponseUse);
 
     const Card *card = nullptr;
     int threshold = dying->dyingFactor();
@@ -3612,8 +3613,7 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
     if (card == nullptr)
         return false;
 
-    if (card_use.from->phase() == QSanguosha::PhasePlay && add_history
-        && (card_use.m_reason == CardUseStruct::CARD_USE_REASON_PLAY || card->hasFlag(QStringLiteral("Add_History")))) {
+    if (card_use.from->phase() == QSanguosha::PhasePlay && add_history && (card_use.m_reason == QSanguosha::CardUseReasonPlay || card->hasFlag(QStringLiteral("Add_History")))) {
         if (!slash_not_record) {
             card_use.m_addHistory = true;
             addPlayerHistory(qobject_cast<ServerPlayer *>(card_use.from), key);
@@ -5255,7 +5255,7 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use)
     notifyMoveFocus(player, S_COMMAND_PLAY_CARD);
 
     setCurrentCardUsePattern(QString());
-    setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_PLAY);
+    setCurrentCardUseReason(QSanguosha::CardUseReasonPlay);
 
     if (player->phase() != QSanguosha::PhasePlay) {
         return;
@@ -5273,7 +5273,7 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use)
             return;
         }
     }
-    card_use.m_reason = CardUseStruct::CARD_USE_REASON_PLAY;
+    card_use.m_reason = QSanguosha::CardUseReasonPlay;
     if (!card_use.isValid(QString()))
         return;
 

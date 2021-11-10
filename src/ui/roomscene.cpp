@@ -1,4 +1,5 @@
 #include "roomscene.h"
+#include "CardFace.h"
 #include "SkinBank.h"
 #include "audio.h"
 #include "bubblechatbox.h"
@@ -2334,7 +2335,7 @@ void RoomScene::addSkillButton(const Skill *skill, bool head)
 
         const ViewAsSkillSelection *selection = btn->getViewAsSkill()->selections(Self);
         if (selection != nullptr && !selection->next.isEmpty() && !m_replayControl) {
-            connect(btn, (void (QSanSkillButton ::*)())(&QSanSkillButton::skill_activated), btn, [this, btn, selection]() -> void {
+            connect(btn, (void(QSanSkillButton ::*)())(&QSanSkillButton::skill_activated), btn, [this, btn, selection]() -> void {
                 // QMenu *menu = new QMenu(this);
                 setCurrentViewAsSkillSelectionChain(QStringList());
                 QMenu *menu = mainWindow()->findChild<QMenu *>(btn->getViewAsSkill()->objectName());
@@ -2689,14 +2690,14 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         if (vsSkill != nullptr) {
             QString pattern = ClientInstance->currentCardUsePattern();
             QRegularExpression rx(QRegularExpression::anchoredPattern(QStringLiteral("@@?([_A-Za-z]+)(\\d+)?!?")));
-            CardUseStruct::CardUseReason reason = CardUseStruct::CARD_USE_REASON_UNKNOWN;
+            QSanguosha::CardUseReason reason = QSanguosha::CardUseReasonUnknown;
             if ((newStatus & Client::ClientStatusBasicMask) == Client::Responding) {
                 if (newStatus == Client::RespondingUse)
-                    reason = CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
+                    reason = QSanguosha::CardUseReasonResponseUse;
                 else if (newStatus == Client::Responding || rx.match(pattern).hasMatch())
-                    reason = CardUseStruct::CARD_USE_REASON_RESPONSE;
+                    reason = QSanguosha::CardUseReasonResponse;
             } else if (newStatus == Client::Playing)
-                reason = CardUseStruct::CARD_USE_REASON_PLAY;
+                reason = QSanguosha::CardUseReasonPlay;
             button->setEnabled(vsSkill->isAvailable(Self, reason, pattern) && !pattern.endsWith(QStringLiteral("!")));
         } else {
             const Skill *skill = button->getSkill();
@@ -2767,9 +2768,9 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             QString skill_name = match.capturedTexts().at(1);
             const ViewAsSkill *skill = ClientInstance->getViewAsSkill(skill_name);
             if (skill != nullptr) {
-                CardUseStruct::CardUseReason reason = CardUseStruct::CARD_USE_REASON_RESPONSE;
+                QSanguosha::CardUseReason reason = QSanguosha::CardUseReasonResponse;
                 if (newStatus == Client::RespondingUse)
-                    reason = CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
+                    reason = QSanguosha::CardUseReasonResponseUse;
                 if (!Self->hasFlag(skill_name))
                     Self->setFlag(skill_name);
                 bool available = skill->isAvailable(Self, reason, pattern);

@@ -1,4 +1,5 @@
 #include "gamerule.h"
+#include "CardFace.h"
 #include "card.h"
 #include "engine.h"
 #include "general.h"

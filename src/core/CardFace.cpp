@@ -6,9 +6,6 @@
 #include "player.h"
 #include "util.h"
 
-// TODO: kill this
-#include "room.h"
-
 #include "lua.hpp"
 
 #include <QObject>
@@ -643,6 +640,7 @@ void CardFace::use(RoomObject *room, const CardUseStruct &use) const
 
 void CardFace::defaultOnUse(RoomObject *room, const CardUseStruct &use) const
 {
+#if 0
     CardUseStruct card_use = use;
     Player *player = card_use.from;
 
@@ -691,10 +689,12 @@ void CardFace::defaultOnUse(RoomObject *room, const CardUseStruct &use) const
 
     thread->trigger(CardUsed, data);
     thread->trigger(CardFinished, data);
+#endif
 }
 
 void CardFace::defaultUse(RoomObject *room, const CardUseStruct &use) const
 {
+#if 0
     Player *source = use.from;
 
     QStringList nullified_list = use.nullified_list; // room->getTag(QStringLiteral("CardUseNullifiedList")).toStringList();
@@ -755,6 +755,7 @@ void CardFace::defaultUse(RoomObject *room, const CardUseStruct &use) const
             from = provider;
         RefactorProposal::fixme_cast<Room *>(room)->moveCardTo(use.card, RefactorProposal::fixme_cast<ServerPlayer *>(from), nullptr, PlaceDiscardPile, reason, true);
     }
+#endif
 }
 
 // --  - onEffect(cardEffect)
@@ -1145,6 +1146,7 @@ QString SkillCard::typeName() const
 
 void SkillCard::defaultOnUse(RoomObject *room, const CardUseStruct &_use) const
 {
+#if 0
     CardUseStruct card_use = _use;
     Player *player = card_use.from;
 
@@ -1169,6 +1171,7 @@ void SkillCard::defaultOnUse(RoomObject *room, const CardUseStruct &_use) const
     RefactorProposal::fixme_cast<ServerPlayer *>(player)->showHiddenSkill(card_use.card->showSkillName());
 
     use(room, card_use);
+#endif
 }
 
 void SkillCard::defaultUse(RoomObject * /*room*/, const CardUseStruct &use) const
@@ -1221,7 +1224,9 @@ SurrenderCard::SurrenderCard()
 
 void SurrenderCard::defaultOnUse(RoomObject *room, const CardUseStruct &use) const
 {
+#if 0
     RefactorProposal::fixme_cast<Room *>(room)->makeSurrender(RefactorProposal::fixme_cast<ServerPlayer *>(use.from));
+#endif
 }
 
 CheatCard::CheatCard()
@@ -1233,8 +1238,10 @@ CheatCard::CheatCard()
 
 void CheatCard::defaultOnUse(RoomObject *room, const CardUseStruct &use) const
 {
+#if 0
     QString cheatString = use.card->userString();
     JsonDocument doc = JsonDocument::fromJson(cheatString.toUtf8().constData());
     if (doc.isValid())
         RefactorProposal::fixme_cast<Room *>(room)->cheat(RefactorProposal::fixme_cast<ServerPlayer *>(use.from), doc.toVariant());
+#endif
 }

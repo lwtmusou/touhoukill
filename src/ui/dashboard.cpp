@@ -1128,7 +1128,7 @@ void Dashboard::reverseSelection()
 void Dashboard::cancelNullification()
 {
     ClientInstance->m_noNullificationThisTime = !ClientInstance->m_noNullificationThisTime;
-    if (ClientInstance->currentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE && ClientInstance->currentCardUsePattern() == QStringLiteral("nullification")
+    if (ClientInstance->currentCardUseReason() == QSanguosha::CardUseReasonResponseUse && ClientInstance->currentCardUsePattern() == QStringLiteral("nullification")
         && RoomSceneInstance->isCancelButtonEnabled()) {
         RoomSceneInstance->doCancelButton();
     }

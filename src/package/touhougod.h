@@ -95,7 +95,7 @@ class ShenbaoDialog : public QDialog
 
 public:
     static ShenbaoDialog *getInstance(const QString &object);
-    static QStringList getAvailableChoices(const Player *player, CardUseStruct::CardUseReason cardUseReason, const QString &cardUsePattern);
+    static QStringList getAvailableChoices(const Player *player, QSanguosha::CardUseReason cardUseReason, const QString &cardUsePattern);
     static QStringList getAvailableNullificationChoices(const ServerPlayer *player);
 
 public slots:

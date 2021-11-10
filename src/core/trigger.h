@@ -2,14 +2,17 @@
 #define TOUHOUKILL_TRIGGER_H
 
 #include "global.h"
-// TODO: kill this
-#include "structs.h"
+
+// #include "structs.h"
 
 #include <QList>
 #include <QString>
 #include <QVariant>
 
+class Card;
+class Player;
 class RoomObject;
+class TriggerDetail;
 
 class TriggerPrivate;
 

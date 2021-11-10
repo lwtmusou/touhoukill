@@ -26,6 +26,8 @@ private:
     Q_DISABLE_COPY_MOVE(QSanguosha)
 
 public:
+
+#define Q_ENUM_NS(...)
 #endif
 
 enum Suit
@@ -39,9 +41,7 @@ enum Suit
     NoSuit,
     SuitToBeDecided = -1
 };
-#ifndef SWIG
 Q_ENUM_NS(Suit)
-#endif
 
 enum Color
 {
@@ -49,9 +49,7 @@ enum Color
     ColorBlack,
     Colorless = -1
 };
-#ifndef SWIG
 Q_ENUM_NS(Color)
-#endif
 
 enum HandlingMethod
 {
@@ -62,9 +60,7 @@ enum HandlingMethod
     MethodRecast,
     MethodPindian
 };
-#ifndef SWIG
 Q_ENUM_NS(HandlingMethod)
-#endif
 
 enum Number
 {
@@ -105,9 +101,7 @@ enum Number
 
     // TODO: Add -2
 };
-#ifndef SWIG
 Q_ENUM_NS(Number)
-#endif
 
 enum CardType
 {
@@ -117,9 +111,7 @@ enum CardType
     TypeEquip,
     TypeUnknown = -1
 };
-#ifndef SWIG
 Q_ENUM_NS(CardType)
-#endif
 
 enum EquipLocation
 {
@@ -130,9 +122,7 @@ enum EquipLocation
     TreasureLocation,
     UnknownLocation = -1
 };
-#ifndef SWIG
 Q_ENUM_NS(EquipLocation)
-#endif
 
 enum Phase
 {
@@ -146,9 +136,7 @@ enum Phase
     PhaseNotActive,
     PhaseNone = -1
 };
-#ifndef SWIG
 Q_ENUM_NS(Phase)
-#endif
 
 enum Place
 {
@@ -162,9 +150,7 @@ enum Place
     PlaceTable,
     PlaceUnknown = -1
 };
-#ifndef SWIG
 Q_ENUM_NS(Place)
-#endif
 
 enum Role
 {
@@ -173,9 +159,7 @@ enum Role
     RoleRebel,
     RoleRenegade,
 };
-#ifndef SWIG
 Q_ENUM_NS(Role)
-#endif
 
 enum TargetModType
 {
@@ -183,9 +167,7 @@ enum TargetModType
     ModDistance,
     ModTarget
 };
-#ifndef SWIG
 Q_ENUM_NS(TargetModType)
-#endif
 
 enum PackageType
 {
@@ -194,9 +176,7 @@ enum PackageType
     MixedPack,
     SpecialPack
 };
-#ifndef SWIG
 Q_ENUM_NS(PackageType)
-#endif
 
 enum Gender
 {
@@ -205,9 +185,7 @@ enum Gender
     Female,
     Neuter
 };
-#ifndef SWIG
 Q_ENUM_NS(Gender)
-#endif
 
 enum TriggerEvent
 {
@@ -328,9 +306,8 @@ enum TriggerEvent
     // Add this event to Trigger makes it trigger for all events
     NumOfEvents
 };
-#ifndef SWIG
 Q_ENUM_NS(TriggerEvent)
-#endif
+
 typedef QSet<TriggerEvent> TriggerEvents;
 
 enum ModeCategory
@@ -339,6 +316,16 @@ enum ModeCategory
     ModeHegemony = 2,
     ModeScenario = 16,
 };
+Q_ENUM_NS(ModeCategory)
+
+enum CardUseReason
+{
+    CardUseReasonUnknown = 0x00,
+    CardUseReasonPlay = 0x01,
+    CardUseReasonResponse = 0x02,
+    CardUseReasonResponseUse = 0x12
+};
+Q_ENUM_NS(CardUseReason)
 
 } // namespace QSanguosha
 #ifdef SWIG
