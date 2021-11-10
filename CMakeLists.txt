@@ -75,11 +75,7 @@ set_property(SOURCE src/swig/sgs.i
     CPLUSPLUS ON
     )
 
-set (QSanguosha_SRCS
-    src/audio/audio.cpp
-    src/client/aux-skills.cpp
-    src/client/client.cpp
-    src/dialog/serverinfowidget.cpp
+set (QSanguosha_Core_SRCS
     src/core/card.cpp
     src/core/CardFace.cpp
     src/core/engine.cpp
@@ -98,6 +94,38 @@ set (QSanguosha_SRCS
     src/core/structs.cpp
     src/core/serverinfostruct.cpp
     src/core/util.cpp
+    src/core/mode.cpp
+    src/core/luacardface.cpp
+    )
+
+set (QSanguosha_Core_MOCS
+    src/core/card.h
+    src/core/CardFace.h
+    src/core/engine.h
+    src/core/game-logic.h
+    src/core/game-state.h
+    src/core/general.h
+    src/core/json.h
+    src/core/lua-wrapper.h
+    src/core/package.h
+    src/core/player.h
+    src/core/protocol.h
+    src/core/RoomObject.h
+    src/core/settings.h
+    src/core/skill.h
+    src/core/trigger.h
+    src/core/structs.h
+    src/core/serverinfostruct.h
+    src/core/util.h
+    src/core/global.h
+    src/core/mode.h
+    )
+
+set (QSanguosha_SRCS
+    src/audio/audio.cpp
+    src/client/aux-skills.cpp
+    src/client/client.cpp
+    src/dialog/serverinfowidget.cpp
     src/dialog/AboutUs.cpp
     src/dialog/cardoverview.cpp
     src/dialog/choosegeneraldialog.cpp
@@ -151,8 +179,6 @@ set (QSanguosha_SRCS
     src/util/detector.cpp
     src/util/nativesocket.cpp
     src/util/recorder.cpp
-    src/core/mode.cpp
-    src/core/luacardface.cpp
 )
 
 set (QSanguosha_UIS
@@ -169,24 +195,6 @@ set (QSanguosha_MOCS
     src/client/aux-skills.h
     src/client/client.h
     src/dialog/serverinfowidget.h
-    src/core/card.h
-    src/core/CardFace.h
-    src/core/engine.h
-    src/core/game-logic.h
-    src/core/game-state.h
-    src/core/general.h
-    src/core/json.h
-    src/core/lua-wrapper.h
-    src/core/package.h
-    src/core/player.h
-    src/core/protocol.h
-    src/core/RoomObject.h
-    src/core/settings.h
-    src/core/skill.h
-    src/core/trigger.h
-    src/core/structs.h
-    src/core/serverinfostruct.h
-    src/core/util.h
     src/dialog/AboutUs.h
     src/dialog/cardoverview.h
     src/dialog/choosegeneraldialog.h
@@ -241,8 +249,6 @@ set (QSanguosha_MOCS
     src/util/nativesocket.h
     src/util/recorder.h
     src/util/socket.h
-    src/core/global.h
-    src/core/mode.h
 )
 
 if (WIN32)
@@ -397,9 +403,9 @@ endif()
 
 if (Qt5_FOUND)
     if (NOT ANDROID)
-        add_executable(QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc )
+        add_executable(QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_Core_SRCS} ${QSanguosha_Core_MOCS} ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc )
     else()
-        add_library(QSanguosha MODULE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc )
+        add_library(QSanguosha MODULE ${QSanguosha_Core_SRCS} ${QSanguosha_Core_MOCS} ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc )
     endif()
 
     set_property(TARGET QSanguosha PROPERTY AUTOMOC ON)
@@ -441,7 +447,7 @@ endif()
 
 if (Qt6_FOUND)
     qt6_add_translation(QM_FILES6 ${TS_FILES})
-    add_executable (Q6Sanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc ${QM_FILES6} )
+    add_executable (Q6Sanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_Core_SRCS} ${QSanguosha_Core_MOCS} ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc ${QM_FILES6} )
 
     set_property(TARGET Q6Sanguosha PROPERTY AUTOMOC ON)
     set_property(TARGET Q6Sanguosha PROPERTY AUTOUIC ON)
