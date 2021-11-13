@@ -9,6 +9,7 @@
 
 using namespace QSanguosha;
 
+#ifndef Q_DOC
 class PlayerPrivate
 {
 public:
@@ -134,6 +135,7 @@ public:
 
 #endif
 };
+#endif
 
 Player::Player(RoomObject *parent)
     : QObject(parent)

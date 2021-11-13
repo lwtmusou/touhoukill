@@ -9,6 +9,7 @@
 
 using namespace QSanguosha;
 
+#ifndef Q_DOC
 class RoomObjectPrivate
 {
 public:
@@ -37,6 +38,7 @@ public:
     {
     }
 };
+#endif
 
 RoomObject::RoomObject(QObject *parent)
     : QObject(parent)

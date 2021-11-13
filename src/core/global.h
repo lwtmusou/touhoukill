@@ -18,6 +18,7 @@ using IDSet = QSet<int>;
 namespace QSanguosha {
 Q_NAMESPACE
 #else
+#ifndef Q_DOC
 class QSanguosha
 {
 private:
@@ -28,6 +29,7 @@ private:
 public:
 
 #define Q_ENUM_NS(...)
+#endif
 #endif
 
 enum Suit

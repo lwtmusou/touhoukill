@@ -7,6 +7,7 @@
 
 using namespace QSanguosha;
 
+#ifndef Q_DOC
 class GeneralPrivate
 {
 public:
@@ -38,6 +39,7 @@ public:
     {
     }
 };
+#endif
 
 General::General(Package *package, const QString &name, const QString &kingdom, int maxHp, bool isLord, bool male, bool hidden, bool neverShown)
     : d(new GeneralPrivate(package, name, kingdom, maxHp, isLord, male, hidden, neverShown))

@@ -15,6 +15,7 @@
 
 using namespace QSanguosha;
 
+#ifndef Q_DOC
 class CardFacePrivate
 {
 public:
@@ -57,6 +58,7 @@ bool onInstall(lua_State *l, Player *player); // also used by: onUninstall, take
 // DelayedTrick
 std::optional<JudgeStruct> judge(lua_State *l);
 } // namespace CardFaceLuaCall
+#endif
 
 // -- type (which is specified by desc.type using SecondTypeMask / ThirdTypeMask)
 CardFace::CardFace(const QString &name)
@@ -987,11 +989,13 @@ void EquipCard::defaultOnUninstall(Player * /*unused*/) const
 #endif
 }
 
+#ifndef Q_DOC
 class WeaponPrivate
 {
 public:
     std::optional<int> range;
 };
+#endif
 
 Weapon::Weapon(const QString &name)
     : EquipCard(name)
@@ -1097,6 +1101,7 @@ NonDelayedTrick::NonDelayedTrick(const QString &name)
 {
 }
 
+#ifndef Q_DOC
 class DelayedTrickPrivate
 {
 public:
@@ -1106,6 +1111,7 @@ public:
     {
     }
 };
+#endif
 
 DelayedTrick::DelayedTrick(const QString &name)
     : TrickCard(name)
@@ -1175,11 +1181,13 @@ JudgeStruct DelayedTrick::judge() const
     return d->j == nullptr ? JudgeStruct() : JudgeStruct(*(d->j));
 }
 
+#ifndef Q_DOC
 class SkillCardPrivate
 {
 public:
     std::optional<bool> throw_when_using;
 };
+#endif
 
 SkillCard::SkillCard(const QString &name)
     : CardFace(name)
@@ -1286,6 +1294,7 @@ void SkillCard::setThrowWhenUsing(bool can)
     d->throw_when_using = can;
 }
 
+#ifndef Q_DOC
 // TODO: find a suitable place for them
 class SurrenderCard : public SkillCard
 {
@@ -1335,3 +1344,4 @@ void CheatCard::defaultOnUse(RoomObject *room, const CardUseStruct &use) const
         RefactorProposal::fixme_cast<Room *>(room)->cheat(RefactorProposal::fixme_cast<ServerPlayer *>(use.from), doc.toVariant());
 #endif
 }
+#endif

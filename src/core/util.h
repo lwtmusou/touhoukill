@@ -42,19 +42,12 @@ template<typename T> inline QList<const T *> NonConstList2ConstList(const QList<
 bool isRoleGameMode(const QString &mode);
 bool isHegemonyGameMode(const QString &mode);
 
-#if 0
-// compatibility
-QT_DEPRECATED_X("use isRoleGameMode instead") Q_ALWAYS_INLINE bool isNormalGameMode(const QString &mode)
-{
-    return isRoleGameMode(mode);
-}
-#endif
-
 // cannot use do...while false here......
 #define DELETE_OVER_SCOPE(type, var)            \
     QScopedPointer<type> __##var##_scoped(var); \
     Q_UNUSED(__##var##_scoped);
 
+#ifndef Q_DOC
 namespace RefactorProposal {
 
 template<typename T1, typename T2> QT_DEPRECATED_X("FIXME: THIS SHOULD BE REMOVED AFTER REFACTORING") inline T1 fixme_cast(T2 t2)
@@ -64,5 +57,6 @@ template<typename T1, typename T2> QT_DEPRECATED_X("FIXME: THIS SHOULD BE REMOVE
 }
 
 } // namespace RefactorProposal
+#endif
 
 #endif

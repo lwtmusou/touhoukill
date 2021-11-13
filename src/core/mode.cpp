@@ -3,6 +3,7 @@
 
 using namespace QSanguosha;
 
+#ifndef Q_DOC
 class ModePrivate
 {
 public:
@@ -15,6 +16,7 @@ public:
     {
     }
 };
+#endif
 
 Mode::Mode(const QString &name, QSanguosha::ModeCategory category)
     : d(new ModePrivate(name, category))
@@ -36,6 +38,7 @@ ModeCategory Mode::category() const
     return d->category;
 }
 
+#ifndef Q_DOC
 class GenericRoleModePrivate
 {
 public:
@@ -43,6 +46,7 @@ public:
     int rebelCount;
     int renegadeCount;
 };
+#endif
 
 GenericRoleMode::GenericRoleMode(int loyalistCount, int rebelCount, int renegadeCount)
     : Mode(QString(QStringLiteral("role_%1,%2,%3")).arg(QString::number(loyalistCount), QString::number(rebelCount), QString::number(renegadeCount)), ModeRole)
@@ -86,11 +90,13 @@ void GenericRoleMode::startGame(RoomObject *room) const
     // TODO
 }
 
+#ifndef Q_DOC
 class GenericHegemonyModePrivate
 {
 public:
     int players;
 };
+#endif
 
 GenericHegemonyMode::GenericHegemonyMode(int players)
     : Mode(QString(QStringLiteral("hegemony_%1")).arg(players), ModeHegemony)

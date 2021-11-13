@@ -9,7 +9,7 @@ class Player;
 namespace RefactorProposal {
 
 /**
- * @class Game state keeps all the current information needed by the game.
+ * @brief Game state keeps all the current information needed by the game.
  * 
  * It also provides a low-level API to manually modify Player's/Card's property. 
  * And these modification will not trigger game events. However, notification from server to clients will performed. 

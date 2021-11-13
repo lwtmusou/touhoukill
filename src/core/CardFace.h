@@ -16,7 +16,7 @@ struct CardEffectStruct;
 struct JudgeStruct;
 
 /**
- * @interface The functional model of a given card.
+ * @brief The functional model of a given card.
  */
 class CardFace
 {

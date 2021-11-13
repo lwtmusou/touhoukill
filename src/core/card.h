@@ -138,7 +138,7 @@ private:
 Q_DECLARE_METATYPE(const Card *)
 
 /**
- * @struct For creating new cards.
+ * @brief For creating new cards.
  */
 struct CardDescriptor
 {

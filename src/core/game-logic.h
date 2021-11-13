@@ -15,7 +15,7 @@ namespace RefactorProposal {
 class GameState;
 
 /**
- * @interface The game logic interface.
+ * @brief The game logic interface.
  * 
  * All game events should be triggered by functions in this interface. 
  * The game state is modified by functions in this interface.

@@ -105,3 +105,5 @@ CMakeLists.txt.user
 compile_commands.json
 Q6Sanguosha
 CMakeLists.txt.user.*
+
+/documentation/doxygen/

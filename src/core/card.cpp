@@ -15,6 +15,7 @@ const int Card::S_UNKNOWN_CARD_ID = -1;
 
 using namespace QSanguosha;
 
+#ifndef Q_DOC
 class CardPrivate
 {
 public:
@@ -64,16 +65,49 @@ public:
     {
     }
 };
+#endif
+
+/**
+ * @class Card
+ * @brief The class which indicates a card no matter if it is virtual or not.
+ *
+ * This is the class which represents the game card in the Sanguosha game.
+ * It only represents game card. It doesn't represent general card, role card nor HP card, etc.
+ *
+ * A game card is either a basic card, an equip card or a trick card.
+ * In QSanguosha, we introcude a new type of card which is called skill card, to indicate a skill invokation.
+ * What the card actually do is described in class @c CardFace .
+ */
+
+/**
+ * @brief Constructor.
+ * @param room the room the card belongs to.
+ * @param face the card face it represents.
+ * @param suit the suit of the card.
+ * @param number the number of the card.
+ * @param id (for real card) the id of the card.
+ *
+ * @note This constructor is private. One can only use @c RoomObject::cloneCard or @c RoomObject::getCard to get an instance of a card.
+ */
 
 Card::Card(RoomObject *room, const CardFace *face, Suit suit, Number number, int id)
     : d(new CardPrivate(room, face, suit, number, id))
 {
 }
 
+/**
+ * @brief Destructor.
+ */
+
 Card::~Card()
 {
     delete d;
 }
+
+/**
+ * @brief get the suit of the card.
+ * @return the suit of the card.
+ */
 
 Suit Card::suit() const
 {
@@ -105,25 +139,50 @@ Suit Card::suit() const
     return d->suit;
 }
 
+/**
+ * @brief set the suit of the card.
+ * @param suit the suit of the card.
+ */
+
 void Card::setSuit(Suit suit)
 {
     d->suit = suit;
 }
+
+/**
+ * @brief get the suit of the card, and convert it to String.
+ * @return the suit of the card, converted to String.
+ */
 
 QString Card::suitString() const
 {
     return SuitToString(d->suit);
 }
 
+/**
+ * @brief judges if the card is red.
+ * @return if the card is red.
+ */
+
 bool Card::isRed() const
 {
     return suit() == Heart || suit() == Diamond || suit() == NoSuitRed;
 }
 
+/**
+ * @brief judges if the card is black.
+ * @return if the card is black.
+ */
+
 bool Card::isBlack() const
 {
     return suit() == Spade || suit() == Club || suit() == NoSuitBlack;
 }
+
+/**
+ * @brief get the color of the card.
+ * @return the color of the card.
+ */
 
 Color Card::color() const
 {

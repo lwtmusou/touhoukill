@@ -50,6 +50,7 @@ void sgs_openlibs(lua_State *L)
 
 } // namespace
 
+#ifndef Q_DOC
 class LuaStatePrivate final
 {
 public:
@@ -198,6 +199,7 @@ public:
         lua_close(l);
     }
 };
+#endif
 
 LuaState::LuaState()
     : d(new LuaStatePrivate)
@@ -283,6 +285,7 @@ QStringList LuaState::packageNames() const
     return QStringList();
 }
 
+#ifndef Q_DOC
 class LuaMultiThreadEnvironmentPrivate
 {
 public:
@@ -291,6 +294,7 @@ public:
     QList<const CardFace *> cardFaces;
     QList<const Skill *> skills;
 };
+#endif
 
 LuaStatePointer LuaMultiThreadEnvironment::luaStateForCurrentThread()
 {
@@ -329,9 +333,11 @@ const QString &LuaMultiThreadEnvironment::luaCopyright()
     return v;
 }
 
+#ifndef Q_DOC
 namespace SgsEx {
 CardFace *createNewLuaCardFace(const QString &name);
 }
+#endif
 
 LuaMultiThreadEnvironment::LuaMultiThreadEnvironment()
     : d(new LuaMultiThreadEnvironmentPrivate)
