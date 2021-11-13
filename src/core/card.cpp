@@ -9,6 +9,8 @@
 #include <QRegularExpressionMatch>
 #include <QRegularExpressionMatchIterator>
 
+#include <optional>
+
 const int Card::S_UNKNOWN_CARD_ID = -1;
 
 using namespace QSanguosha;
@@ -32,13 +34,11 @@ public:
     bool can_recast;
     bool transferable;
 
-    // handling method
-    HandlingMethod handling_method;
-
-    // property - Fs: use tristate?
-    bool can_damage;
-    bool can_recover;
-    bool has_effect_value;
+    // property - use tristate
+    std::optional<HandlingMethod> handling_method;
+    std::optional<bool> can_damage;
+    std::optional<bool> can_recover;
+    std::optional<bool> has_effect_value;
 
     // flags
     QSet<QString> flags;
@@ -59,19 +59,9 @@ public:
         , id(id)
         , can_recast(false)
         , transferable(false)
-        , handling_method(MethodNone)
-        , can_damage(false)
-        , can_recover(false)
-        , has_effect_value(false)
         , mute(false)
         , room(room)
     {
-        if (face != nullptr) {
-            can_damage = face->canDamage();
-            can_recover = face->canRecover();
-            has_effect_value = face->hasEffectValue();
-            handling_method = face->defaultHandlingMethod();
-        }
     }
 };
 
@@ -299,7 +289,7 @@ void Card::setShowSkillName(const QString &show_skill_name)
 
 HandlingMethod Card::handleMethod() const
 {
-    return d->handling_method;
+    return d->handling_method.value_or((d->face != nullptr) ? d->face->defaultHandlingMethod() : MethodNone);
 }
 
 void Card::setHandleMethod(HandlingMethod method)
@@ -309,7 +299,7 @@ void Card::setHandleMethod(HandlingMethod method)
 
 bool Card::canDamage() const
 {
-    return d->can_damage;
+    return d->can_damage.value_or((d->face != nullptr) ? d->face->canDamage() : false);
 }
 
 void Card::setCanDamage(bool can_damage)
@@ -319,7 +309,7 @@ void Card::setCanDamage(bool can_damage)
 
 bool Card::canRecover() const
 {
-    return d->can_recover;
+    return d->can_recover.value_or((d->face != nullptr) ? d->face->canRecover() : false);
 }
 
 void Card::setCanRecover(bool can_recover)
@@ -349,7 +339,7 @@ void Card::setTransferable(bool can)
 
 bool Card::hasEffectValue() const
 {
-    return d->has_effect_value;
+    return d->has_effect_value.value_or((d->face != nullptr) ? d->face->hasEffectValue() : false);
 }
 
 void Card::setHasEffectValue(bool has_effect_value)
