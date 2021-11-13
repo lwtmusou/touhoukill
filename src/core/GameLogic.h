@@ -17,6 +17,78 @@ struct LogMessage;
 
 namespace RefactorProposal {
 
+struct SlashEffectStruct
+{
+    SlashEffectStruct();
+
+    int jink_num;
+
+    const Card *slash;
+    const Card *jink;
+
+    Player *from;
+    Player *to;
+
+    int drank;
+
+    QSanguosha::DamageNature nature;
+    bool multiple;
+    bool nullified;
+    bool canceled;
+    QList<int> effectValue;
+};
+
+struct JinkEffectStruct
+{
+    JinkEffectStruct();
+
+    SlashEffectStruct slashEffect;
+    const Card *jink;
+};
+
+struct ChoiceMadeStruct
+{
+    inline ChoiceMadeStruct()
+        : player(nullptr)
+        , type(NoChoice)
+    {
+    }
+
+    enum ChoiceType
+    {
+        NoChoice,
+
+        SkillInvoke,
+        SkillChoice,
+        Nullification,
+        CardChosen,
+        CardResponded,
+        CardUsed,
+        AGChosen,
+        CardShow,
+        Peach,
+        TriggerOrder,
+        ReverseFor3v3,
+        Activate,
+        Suit,
+        Kingdom,
+        CardDiscard,
+        CardExchange,
+        ViewCards,
+        PlayerChosen,
+        Rende,
+        Yiji,
+        Pindian,
+
+        NumOfChoices
+    };
+
+    Player *player;
+    ChoiceType type;
+    QStringList args;
+    QVariant m_extraData;
+};
+
 class GameState;
 
 /**

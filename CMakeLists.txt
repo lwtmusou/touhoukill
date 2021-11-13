@@ -110,6 +110,7 @@ set (QSanguosha_Core_MOCS
     src/core/global.h
     src/core/mode.h
     src/core/exppattern.h
+    src/core/RpcApi.h
     src/core/qsgscore.h
     )
 
@@ -188,7 +189,6 @@ set (QSanguosha_MOCS
     src/client/aux-skills.h
     src/client/client.h
     src/dialog/serverinfowidget.h
-    src/core/RpcApi.h
     src/dialog/AboutUs.h
     src/dialog/cardoverview.h
     src/dialog/choosegeneraldialog.h
