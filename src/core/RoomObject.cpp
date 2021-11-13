@@ -15,7 +15,7 @@ class RoomObjectPrivate
 public:
     QHash<int, Card *> cards;
     QString currentCardUsePattern;
-    QSanguosha::CardUseReason currentCardUseReason;
+    CardUseReason currentCardUseReason;
     QList<Card *> clonedCards;
 
     QList<int> discardPile;
@@ -294,12 +294,12 @@ void RoomObject::setCurrentCardUsePattern(const QString &newPattern)
     d->currentCardUsePattern = newPattern;
 }
 
-QSanguosha::CardUseReason RoomObject::currentCardUseReason() const
+CardUseReason RoomObject::currentCardUseReason() const
 {
     return d->currentCardUseReason;
 }
 
-void RoomObject::setCurrentCardUseReason(QSanguosha::CardUseReason reason)
+void RoomObject::setCurrentCardUseReason(CardUseReason reason)
 {
     d->currentCardUseReason = reason;
 }

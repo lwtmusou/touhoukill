@@ -2085,7 +2085,7 @@ void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
 QString RoomScene::_translateMovement(const CardsMoveStruct &move)
 {
     CardMoveReason reason = move.reason;
-    if (reason.m_reason == CardMoveReason::S_REASON_UNKNOWN)
+    if (reason.m_reason == QSanguosha::MoveReasonUnknown)
         return QString();
 
     Photo *srcPhoto = name2photo[reason.m_playerId];
@@ -2109,51 +2109,51 @@ QString RoomScene::_translateMovement(const CardsMoveStruct &move)
     QString result(playerName + targetName);
     result.append(Sanguosha->translate(reason.m_eventName));
     result.append(Sanguosha->translate(reason.m_skillName));
-    if ((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE && reason.m_skillName.isEmpty()) {
+    if ((reason.m_reason & QSanguosha::MoveReasonBasicMask) == QSanguosha::MoveReasonUse && reason.m_skillName.isEmpty()) {
         result.append(Sanguosha->translate(QStringLiteral("use")));
-    } else if ((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE) {
-        if (reason.m_reason == CardMoveReason::S_REASON_RETRIAL)
+    } else if ((reason.m_reason & QSanguosha::MoveReasonBasicMask) == QSanguosha::MoveReasonResponse) {
+        if (reason.m_reason == QSanguosha::MoveReasonRetrial)
             result.append(Sanguosha->translate(QStringLiteral("retrial")));
         else if (reason.m_skillName.isEmpty())
             result.append(Sanguosha->translate(QStringLiteral("response")));
-    } else if ((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
-        if (reason.m_reason == CardMoveReason::S_REASON_RULEDISCARD)
+    } else if ((reason.m_reason & QSanguosha::MoveReasonBasicMask) == QSanguosha::MoveReasonDiscard) {
+        if (reason.m_reason == QSanguosha::MoveReasonRuleDiscard)
             result.append(Sanguosha->translate(QStringLiteral("discard")));
-        else if (reason.m_reason == CardMoveReason::S_REASON_THROW)
+        else if (reason.m_reason == QSanguosha::MoveReasonThrow)
             result.append(Sanguosha->translate(QStringLiteral("throw")));
-        else if (reason.m_reason == CardMoveReason::S_REASON_CHANGE_EQUIP)
+        else if (reason.m_reason == QSanguosha::MoveReasonChangeEquip)
             result.append(Sanguosha->translate(QStringLiteral("change equip")));
-        else if (reason.m_reason == CardMoveReason::S_REASON_DISMANTLE)
+        else if (reason.m_reason == QSanguosha::MoveReasonDismantle)
             result.append(Sanguosha->translate(QStringLiteral("throw")));
-    } else if (reason.m_reason == CardMoveReason::S_REASON_RECAST) {
+    } else if (reason.m_reason == QSanguosha::MoveReasonRecast) {
         result.append(Sanguosha->translate(QStringLiteral("recast")));
-    } else if (reason.m_reason == CardMoveReason::S_REASON_PINDIAN) {
+    } else if (reason.m_reason == QSanguosha::MoveReasonPindian) {
         result.append(Sanguosha->translate(QStringLiteral("pindian")));
-    } else if ((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_SHOW) {
-        if (reason.m_reason == CardMoveReason::S_REASON_JUDGE)
+    } else if ((reason.m_reason & QSanguosha::MoveReasonBasicMask) == QSanguosha::MoveReasonShow) {
+        if (reason.m_reason == QSanguosha::MoveReasonJudge)
             result.append(Sanguosha->translate(QStringLiteral("judge")));
-        else if (reason.m_reason == CardMoveReason::S_REASON_TURNOVER) //ignore turnover from bottom...
+        else if (reason.m_reason == QSanguosha::MoveReasonTurnover) //ignore turnover from bottom...
             result.append(Sanguosha->translate(QStringLiteral("turnover")));
-        else if (reason.m_reason == CardMoveReason::S_REASON_DEMONSTRATE)
+        else if (reason.m_reason == QSanguosha::MoveReasonDemonstrate)
             result.append(Sanguosha->translate(QStringLiteral("show")));
-        else if (reason.m_reason == CardMoveReason::S_REASON_PREVIEW)
+        else if (reason.m_reason == QSanguosha::MoveReasonPreview)
             result.append(Sanguosha->translate(QStringLiteral("preview")));
-    } else if ((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_PUT) {
-        if (reason.m_reason == CardMoveReason::S_REASON_PUT) {
+    } else if ((reason.m_reason & QSanguosha::MoveReasonBasicMask) == QSanguosha::MoveReasonPut) {
+        if (reason.m_reason == QSanguosha::MoveReasonPut) {
             result.append(Sanguosha->translate(QStringLiteral("put")));
             if (move.to_place == QSanguosha::PlaceDiscardPile)
                 result.append(Sanguosha->translate(QStringLiteral("discardPile")));
             else if (move.to_place == QSanguosha::PlaceDrawPile)
                 result.append(Sanguosha->translate(QStringLiteral("drawPileTop")));
-        } else if (reason.m_reason == CardMoveReason::S_REASON_NATURAL_ENTER) {
+        } else if (reason.m_reason == QSanguosha::MoveReasonNaturalEnter) {
             result.append(Sanguosha->translate(QStringLiteral("enter")));
             if (move.to_place == QSanguosha::PlaceDiscardPile)
                 result.append(Sanguosha->translate(QStringLiteral("discardPile")));
             else if (move.to_place == QSanguosha::PlaceDrawPile)
                 result.append(Sanguosha->translate(QStringLiteral("drawPileTop")));
-        } else if (reason.m_reason == CardMoveReason::S_REASON_JUDGEDONE) {
+        } else if (reason.m_reason == QSanguosha::MoveReasonJudgeDone) {
             result.append(Sanguosha->translate(QStringLiteral("judgedone")));
-        } else if (reason.m_reason == CardMoveReason::S_REASON_REMOVE_FROM_PILE) {
+        } else if (reason.m_reason == QSanguosha::MoveReasonRemoveFromPile) {
             result.append(Sanguosha->translate(QStringLiteral("backinto")));
         }
     }
@@ -2163,7 +2163,7 @@ QString RoomScene::_translateMovement(const CardsMoveStruct &move)
 void RoomScene::keepLoseCardLog(const CardsMoveStruct &move)
 {
     if ((move.from != nullptr) && move.to_place == QSanguosha::PlaceDrawPile) {
-        if (move.reason.m_reason == CardMoveReason::S_REASON_PUT && move.reason.m_skillName == QStringLiteral("luck_card"))
+        if (move.reason.m_reason == QSanguosha::MoveReasonPut && move.reason.m_skillName == QStringLiteral("luck_card"))
             return;
         QString from_general = move.from->objectName();
         QList<int> open_ids = move.card_ids;
@@ -2202,7 +2202,7 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
             log_box->appendLog(QStringLiteral("$RemoveNCardsFromGame"), QString(), QStringList(), IntList2StringList(open_ids).join(QStringLiteral("+")), move.to_pile_name,
                                QString::number(hidden_num));
     }
-    if (move.from_place == QSanguosha::PlaceSpecial && (move.to != nullptr) && move.reason.m_reason == CardMoveReason::S_REASON_EXCHANGE_FROM_PILE) {
+    if (move.from_place == QSanguosha::PlaceSpecial && (move.to != nullptr) && move.reason.m_reason == QSanguosha::MoveReasonExchangeFromPile) {
         bool hidden = (move.card_ids.contains(Card::S_UNKNOWN_CARD_ID));
         if (!hidden)
             log_box->appendLog(QStringLiteral("$GotCardFromPile"), move.to->objectName(), QStringList(), IntList2StringList(move.card_ids).join(QStringLiteral("+")),
@@ -2221,7 +2221,7 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
             log_box->appendLog(QStringLiteral("#DrawNCards"), to_general, QStringList(), QString(), QString::number(move.card_ids.length()));
     }
     if ((move.from_place == QSanguosha::PlaceTable || move.from_place == QSanguosha::PlaceJudge) && move.to_place == QSanguosha::PlaceHand
-        && move.reason.m_reason != CardMoveReason::S_REASON_PREVIEW) {
+        && move.reason.m_reason != QSanguosha::MoveReasonPreview) {
         QString to_general = move.to->objectName();
         QList<int> ids = move.card_ids;
         ids.removeAll(Card::S_UNKNOWN_CARD_ID);
@@ -2287,7 +2287,7 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
         foreach (int card_id, move.card_ids)
             log_box->appendLog(type, to_general, QStringList(), QString::number(card_id));
     }
-    if (move.reason.m_reason == CardMoveReason::S_REASON_TURNOVER) {
+    if (move.reason.m_reason == QSanguosha::MoveReasonTurnover) {
         QString type = (move.reason.m_skillName == QStringLiteral("xunbao")) ? QStringLiteral("$TurnOverBottom") : QStringLiteral("$TurnOver");
         log_box->appendLog(type, move.reason.m_playerId, QStringList(), IntList2StringList(move.card_ids).join(QStringLiteral("+")));
     }
@@ -3182,7 +3182,7 @@ void RoomScene::changeTableBg(const QString &tableBgImage_path)
     updateTable();
 }
 
-void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nature, bool losthp)
+void RoomScene::changeHp(const QString &who, int delta, QSanguosha::DamageNature nature, bool losthp)
 {
     // update
     Photo *photo = name2photo.value(who, NULL);
@@ -3224,9 +3224,9 @@ void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nat
             photo->tremble();
         }
 
-        if (nature == DamageStruct::Fire)
+        if (nature == QSanguosha::DamageFire)
             doAnimation(S_ANIMATE_FIRE, QStringList() << who);
-        else if (nature == DamageStruct::Thunder)
+        else if (nature == QSanguosha::DamageThunder)
             doAnimation(S_ANIMATE_LIGHTNING, QStringList() << who);
     } else {
         QString type = QStringLiteral("#Recover");
@@ -3548,7 +3548,7 @@ void DamageMakerDialog::accept()
     QDialog::accept();
 
     ClientInstance->requestCheatDamage(damage_source->itemData(damage_source->currentIndex()).toString(), damage_target->itemData(damage_target->currentIndex()).toString(),
-                                       (DamageStruct::Nature)damage_nature->itemData(damage_nature->currentIndex()).toInt(), damage_point->value());
+                                       (QSanguosha::DamageNature)damage_nature->itemData(damage_nature->currentIndex()).toInt(), damage_point->value());
 }
 
 void RoomScene::makeDamage()
@@ -3804,7 +3804,7 @@ void RoomScene::showCard(const QString &player_name, int card_id)
 
     GenericCardContainer *container = _getGenericCardContainer(QSanguosha::PlaceHand, player);
     QList<CardItem *> card_items = container->cloneCardItems(card_ids);
-    CardMoveReason reason(CardMoveReason::S_REASON_DEMONSTRATE, player->objectName());
+    CardMoveReason reason(QSanguosha::MoveReasonDemonstrate, player->objectName());
     bringToFront(m_tablePile);
     CardsMoveStruct move;
     move.from_place = QSanguosha::PlaceHand;

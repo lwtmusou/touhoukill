@@ -56,7 +56,7 @@ public:
     void requestCheatGetOneCard(int card_id);
     void requestCheatChangeGeneral(const QString &name, bool isSecondaryHero = false);
     void requestCheatKill(const QString &killer, const QString &victim);
-    void requestCheatDamage(const QString &source, const QString &target, DamageStruct::Nature nature, int points);
+    void requestCheatDamage(const QString &source, const QString &target, QSanguosha::DamageNature nature, int points);
     void requestCheatRevive(const QString &name);
     void requestCheatRunScript(const QString &script);
 
@@ -306,7 +306,7 @@ signals:
     void triggers_got(const QVariantList &options, bool optional);
 
     void seats_arranged(const QList<const Player *> &seats);
-    void hp_changed(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);
+    void hp_changed(const QString &who, int delta, QSanguosha::DamageNature nature, bool losthp);
     void maxhp_changed(const QString &who, int delta);
     void status_changed(Client::Status oldStatus, Client::Status newStatus);
     void avatars_hiden();

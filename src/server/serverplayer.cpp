@@ -91,7 +91,7 @@ const Card *ServerPlayer::getRandomHandCard() const
 
 void ServerPlayer::obtainCard(const Card *card, bool unhide)
 {
-    CardMoveReason reason(CardMoveReason::S_REASON_GOTCARD, objectName());
+    CardMoveReason reason(QSanguosha::MoveReasonGotCard, objectName());
     room->obtainCard(this, card, reason, unhide);
 }
 
@@ -145,7 +145,7 @@ void ServerPlayer::clearOnePrivatePile(const QString &pile_name)
         return;
 
     Card *dummy = room->cloneCard(QStringLiteral("DummyCard"));
-    CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, objectName());
+    CardMoveReason reason(QSanguosha::MoveReasonRemoveFromPile, objectName());
     bool notifyLog = true;
     QString new_name = pile_name;
     if (new_name.startsWith(QStringLiteral("#"))) {
@@ -193,7 +193,7 @@ void ServerPlayer::throwAllCards()
 
     QList<const Card *> tricks = judgingAreaCards();
     foreach (const Card *trick, tricks) {
-        CardMoveReason reason(CardMoveReason::S_REASON_THROW, objectName());
+        CardMoveReason reason(QSanguosha::MoveReasonThrow, objectName());
         room->throwCard(trick, reason, nullptr);
     }
 }
@@ -462,7 +462,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
             card1_result_logged = true;
         }
 
-        CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, objectName(), target->objectName(), pindian_struct.reason, QString());
+        CardMoveReason reason1(QSanguosha::MoveReasonPindian, objectName(), target->objectName(), pindian_struct.reason, QString());
         room->moveCardTo(card1, this, nullptr, QSanguosha::PlaceTable, reason1, false);
 
         card2 = room->askForPindian(target, this, target, reason, pindian);
@@ -480,24 +480,24 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
             card1_result_logged = true;
         }
 
-        CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, objectName(), target->objectName(), pindian_struct.reason, QString());
+        CardMoveReason reason1(QSanguosha::MoveReasonPindian, objectName(), target->objectName(), pindian_struct.reason, QString());
         room->moveCardTo(card1, this, nullptr, QSanguosha::PlaceTable, reason1, false);
 
         card2 = room->askForPindian(target, this, target, reason, pindian);
     }
     if (card2 != nullptr) {
-        CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, target->objectName());
+        CardMoveReason reason2(QSanguosha::MoveReasonPindian, target->objectName());
         room->moveCardTo(card2, target, nullptr, QSanguosha::PlaceTable, reason2, false);
     }
 
     //check whether card is empty
     if (card1 == nullptr || card2 == nullptr) {
         if (card1 != nullptr) {
-            CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, this->objectName(), target->objectName(), pindian_struct.reason, QString());
+            CardMoveReason reason1(QSanguosha::MoveReasonPindian, this->objectName(), target->objectName(), pindian_struct.reason, QString());
             room->moveCardTo(card1, qobject_cast<ServerPlayer *>(pindian_struct.from), nullptr, QSanguosha::PlaceDiscardPile, reason1, true);
         }
         if (card2 != nullptr) {
-            CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, pindian_struct.to->objectName());
+            CardMoveReason reason2(QSanguosha::MoveReasonPindian, pindian_struct.to->objectName());
             room->moveCardTo(card2, qobject_cast<ServerPlayer *>(pindian_struct.to), nullptr, QSanguosha::PlaceDiscardPile, reason2, true);
         }
         //need trigger choice made?
@@ -554,12 +554,12 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     thread->trigger(QSanguosha::Pindian, data);
 
     if (room->getCardPlace(pindian_struct.from_card->effectiveID()) == QSanguosha::PlaceTable) {
-        CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, pindian_struct.from->objectName(), pindian_struct.to->objectName(), pindian_struct.reason, QString());
+        CardMoveReason reason1(QSanguosha::MoveReasonPindian, pindian_struct.from->objectName(), pindian_struct.to->objectName(), pindian_struct.reason, QString());
         room->moveCardTo(pindian_struct.from_card, qobject_cast<ServerPlayer *>(pindian_struct.from), nullptr, QSanguosha::PlaceDiscardPile, reason1, true);
     }
 
     if (room->getCardPlace(pindian_struct.to_card->effectiveID()) == QSanguosha::PlaceTable) {
-        CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, pindian_struct.to->objectName());
+        CardMoveReason reason2(QSanguosha::MoveReasonPindian, pindian_struct.to->objectName());
         room->moveCardTo(pindian_struct.to_card, qobject_cast<ServerPlayer *>(pindian_struct.to), nullptr, QSanguosha::PlaceDiscardPile, reason2, true);
     }
 

@@ -642,7 +642,7 @@ void Client::requestCheatRevive(const QString &name)
     onPlayerResponseCard(card);
 }
 
-void Client::requestCheatDamage(const QString &source, const QString &target, DamageStruct::Nature nature, int points)
+void Client::requestCheatDamage(const QString &source, const QString &target, QSanguosha::DamageNature nature, int points)
 {
     if (getStatus() != Playing)
         return;
@@ -835,9 +835,9 @@ void Client::hpChange(const QVariant &change_str)
     int delta = change[1].toInt();
 
     int nature_index = change[2].toInt();
-    DamageStruct::Nature nature = DamageStruct::Normal;
+    QSanguosha::DamageNature nature = QSanguosha::DamageNormal;
     if (nature_index > 0)
-        nature = (DamageStruct::Nature)nature_index;
+        nature = (QSanguosha::DamageNature)nature_index;
 
     emit hp_changed(who, delta, nature, nature_index == -1);
 }

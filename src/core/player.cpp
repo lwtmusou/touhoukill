@@ -124,7 +124,7 @@ public:
     Room *room; // replaced by RoomObject / later GameState
     Recorder *recorder; // ??
     // following 3 are for turn processing, maybe added later
-    QList<QSanguosha::Phase> phases;
+    QList<Phase> phases;
     int _m_phases_index;
     QList<PhaseStruct> _m_phases_state;
     QStringList selected; // 3v3 mode use only
@@ -1250,10 +1250,10 @@ int Player::handcardNum() const
     return d->handCardNum;
 }
 
-void Player::removeCard(const Card *card, QSanguosha::Place place, const QString &pile_name)
+void Player::removeCard(const Card *card, Place place, const QString &pile_name)
 {
     switch (place) {
-    case QSanguosha::PlaceHand: {
+    case PlaceHand: {
         if (d->handcards.contains(card->id()))
             d->handcards.remove(card->id());
         if (d->shownHandcards.contains(card->id()))
@@ -1261,7 +1261,7 @@ void Player::removeCard(const Card *card, QSanguosha::Place place, const QString
         d->handCardNum--;
         break;
     }
-    case QSanguosha::PlaceEquip: {
+    case PlaceEquip: {
         const EquipCard *equip = dynamic_cast<const EquipCard *>(card->face());
         if (equip == nullptr)
             equip = dynamic_cast<const EquipCard *>(Sanguosha->getEngineCard(card->effectiveID()).face());
@@ -1270,11 +1270,11 @@ void Player::removeCard(const Card *card, QSanguosha::Place place, const QString
         removeEquip(card);
         break;
     }
-    case QSanguosha::PlaceDelayedTrick: {
+    case PlaceDelayedTrick: {
         removeDelayedTrick(card);
         break;
     }
-    case QSanguosha::PlaceSpecial: {
+    case PlaceSpecial: {
         int card_id = ((card == nullptr) ? -1 : card->effectiveID());
         if (card_id != -1) {
             QString n = pileName(card_id);
@@ -1302,16 +1302,16 @@ void Player::removeCard(const Card *card, QSanguosha::Place place, const QString
     }
 }
 
-void Player::addCard(const Card *card, QSanguosha::Place place, const QString &pile_name)
+void Player::addCard(const Card *card, Place place, const QString &pile_name)
 {
     switch (place) {
-    case QSanguosha::PlaceHand: {
+    case PlaceHand: {
         if (card != nullptr)
             d->handcards << card->id();
         d->handCardNum++;
         break;
     }
-    case QSanguosha::PlaceEquip: {
+    case PlaceEquip: {
         const EquipCard *equip = dynamic_cast<const EquipCard *>(card->face());
         if (equip == nullptr)
             equip = dynamic_cast<const EquipCard *>(Sanguosha->getEngineCard(card->effectiveID()).face());
@@ -1319,11 +1319,11 @@ void Player::addCard(const Card *card, QSanguosha::Place place, const QString &p
         equip->onInstall(this);
         break;
     }
-    case QSanguosha::PlaceDelayedTrick: {
+    case PlaceDelayedTrick: {
         addDelayedTrick(card);
         break;
     }
-    case QSanguosha::PlaceSpecial: {
+    case PlaceSpecial: {
         if (card != nullptr)
             d->piles[pile_name] << card->id();
 

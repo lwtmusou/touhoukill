@@ -234,15 +234,15 @@ ViewAsSkill::~ViewAsSkill()
     delete d;
 }
 
-bool ViewAsSkill::isAvailable(const Player *invoker, QSanguosha::CardUseReason reason, const QString &pattern) const
+bool ViewAsSkill::isAvailable(const Player *invoker, CardUseReason reason, const QString &pattern) const
 {
     if (!invoker->hasValidSkill(objectName()) && !invoker->hasValidLordSkill(objectName()) && !invoker->hasFlag(objectName())) // For Shuangxiong
         return false;
     switch (reason) {
-    case QSanguosha::CardUseReasonPlay:
+    case CardUseReasonPlay:
         return isEnabledAtPlay(invoker);
-    case QSanguosha::CardUseReasonResponse:
-    case QSanguosha::CardUseReasonResponseUse:
+    case CardUseReasonResponse:
+    case CardUseReasonResponseUse:
         return isEnabledAtResponse(invoker, reason, pattern);
     default:
         return false;
@@ -254,7 +254,7 @@ bool ViewAsSkill::isEnabledAtPlay(const Player * /*unused*/) const
     return d->response_pattern.isEmpty();
 }
 
-bool ViewAsSkill::isEnabledAtResponse(const Player * /*unused*/, QSanguosha::CardUseReason /*reason*/, const QString &pattern) const
+bool ViewAsSkill::isEnabledAtResponse(const Player * /*unused*/, CardUseReason /*reason*/, const QString &pattern) const
 {
     if (!d->response_pattern.isEmpty())
         return pattern == d->response_pattern;
@@ -311,12 +311,12 @@ public:
                 const CardFace *face = descriptor.face();
                 if (!added.contains(face->name())) {
                     ViewAsSkillSelection *selection = new ViewAsSkillSelection {face->name()};
-                    if (face->type() == QSanguosha::TypeBasic) {
+                    if (face->type() == TypeBasic) {
                         // deal with Slash
                         if (face->name() == QStringLiteral("Slash"))
                             selection->name = QStringLiteral("NormalSlash");
                         basicCard->next << selection;
-                    } else if (face->type() == QSanguosha::TypeTrick) {
+                    } else if (face->type() == TypeTrick) {
                         if (face->isNDTrick())
                             ndTrick->next << selection;
                         else
@@ -339,7 +339,7 @@ public:
         if (selectedName == QStringLiteral("NormalSlash"))
             selectedName = QStringLiteral("Slash");
 
-        Card *viewAsCard = Self->roomObject()->cloneCard(selectedName, QSanguosha::NoSuit, QSanguosha::NumberNA);
+        Card *viewAsCard = Self->roomObject()->cloneCard(selectedName, NoSuit, NumberNA);
         bool available = viewAsCard->face()->isAvailable(Self, viewAsCard);
         Self->roomObject()->cardDeleting(viewAsCard);
         return available;

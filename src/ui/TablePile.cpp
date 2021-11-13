@@ -128,7 +128,7 @@ bool TablePile::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStru
 {
     if (card_items.isEmpty())
         return false;
-    else if (moveInfo.from_place == QSanguosha::PlaceDelayedTrick && moveInfo.reason.m_reason == CardMoveReason::S_REASON_NATURAL_ENTER) {
+    else if (moveInfo.from_place == QSanguosha::PlaceDelayedTrick && moveInfo.reason.m_reason == QSanguosha::MoveReasonNaturalEnter) {
         foreach (CardItem *item, card_items) {
             item->deleteLater();
             card_items.clear();

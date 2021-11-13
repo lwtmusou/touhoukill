@@ -678,7 +678,7 @@ void CardFace::defaultOnUse(RoomObject *room, const CardUseStruct &use) const
     thread->trigger(PreCardUsed, data);
     card_use = data.value<CardUseStruct>();
 
-    CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), card_use.card->skillName(), QString());
+    CardMoveReason reason(MoveReasonUse, player->objectName(), QString(), card_use.card->skillName(), QString());
     if (card_use.to.size() == 1)
         reason.m_targetId = card_use.to.first()->objectName();
 
@@ -742,7 +742,7 @@ void CardFace::defaultUse(RoomObject *room, const CardUseStruct &use) const
         source->setMark(QStringLiteral("magic_drank"), 0);
 
     if (RefactorProposal::fixme_cast<Room *>(room)->getCardPlace(use.card->effectiveID()) == PlaceTable) {
-        CardMoveReason reason(CardMoveReason::S_REASON_USE, source != nullptr ? source->objectName() : QString(), QString(), use.card->skillName(), QString());
+        CardMoveReason reason(MoveReasonUse, source != nullptr ? source->objectName() : QString(), QString(), use.card->skillName(), QString());
         if (use.to.size() == 1)
             reason.m_targetId = use.to.first()->objectName();
         reason.m_extraData = QVariant::fromValue(use.card);
@@ -1231,7 +1231,7 @@ void SkillCard::defaultOnUse(RoomObject *room, const CardUseStruct &_use) const
     RefactorProposal::fixme_cast<Room *>(room)->sendLog(log);
 
     if (throwWhenUsing()) {
-        CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName(), QString(), card_use.card->skillName(), QString());
+        CardMoveReason reason(MoveReasonThrow, player->objectName(), QString(), card_use.card->skillName(), QString());
         RefactorProposal::fixme_cast<Room *>(room)->moveCardTo(card_use.card, RefactorProposal::fixme_cast<ServerPlayer *>(player), nullptr, PlaceDiscardPile, reason, true);
     }
 

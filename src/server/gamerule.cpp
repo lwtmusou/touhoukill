@@ -349,7 +349,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
             if ((card_use.card != nullptr) && card_use.card->face()->type() != QSanguosha::TypeSkill && !(card_use.card->isVirtualCard() && card_use.card->subcards().isEmpty())
                 && card_use.to.isEmpty()) {
                 if (room->getCardPlace(card_use.card->effectiveID()) == QSanguosha::PlaceTable) {
-                    CardMoveReason reason(CardMoveReason::S_REASON_USE, card_use.from->objectName(), QString(), card_use.card->skillName(), QString());
+                    CardMoveReason reason(QSanguosha::MoveReasonUse, card_use.from->objectName(), QString(), card_use.card->skillName(), QString());
                     reason.m_extraData = QVariant::fromValue(card_use.card);
                     room->moveCardTo(card_use.card, qobject_cast<ServerPlayer *>(card_use.from), nullptr, QSanguosha::PlaceDiscardPile, reason, true);
                 }
@@ -394,7 +394,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                 //copy from Room::useCard()
                 if (triggerEvent == QSanguosha::TurnBroken) {
                     if (room->getCardPlace(card_use.card->effectiveID()) == QSanguosha::PlaceTable) {
-                        CardMoveReason reason(CardMoveReason::S_REASON_UNKNOWN, card_use.from->objectName(), QString(), card_use.card->skillName(), QString());
+                        CardMoveReason reason(QSanguosha::MoveReasonUnknown, card_use.from->objectName(), QString(), card_use.card->skillName(), QString());
                         if (card_use.to.size() == 1)
                             reason.m_targetId = card_use.to.first()->objectName();
                         room->moveCardTo(card_use.card, qobject_cast<ServerPlayer *>(card_use.from), nullptr, QSanguosha::PlaceDiscardPile, reason, true);
@@ -533,7 +533,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
         room->sendDamageLog(damage);
 
         room->applyDamage(qobject_cast<ServerPlayer *>(damage.to), damage);
-        if ((damage.nature != DamageStruct::Normal) && damage.to->isChained() && !damage.chain) {
+        if ((damage.nature != QSanguosha::DamageNormal) && damage.to->isChained() && !damage.chain) {
             damage.trigger_chain = true;
             data = QVariant::fromValue(damage);
         }
@@ -544,11 +544,11 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
     case QSanguosha::DamageComplete: {
         DamageStruct damage = data.value<DamageStruct>();
 
-        if ((damage.nature != DamageStruct::Normal) && damage.to->isChained())
+        if ((damage.nature != QSanguosha::DamageNormal) && damage.to->isChained())
             room->setPlayerProperty(qobject_cast<ServerPlayer *>(damage.to), "chained", false);
 
         if (damage.trigger_chain) {
-            if ((damage.nature != DamageStruct::Normal) && !damage.chain) {
+            if ((damage.nature != QSanguosha::DamageNormal) && !damage.chain) {
                 QList<ServerPlayer *> chained_players;
                 if (room->getCurrent()->isDead())
                     chained_players = room->getOtherPlayers(room->getCurrent());
@@ -612,7 +612,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                 if (effect.card->hasFlag(QStringLiteral("chunhua")) && !effect.card->face()->isKindOf(QStringLiteral("Slash"))) {
                     room->touhouLogmessage(QStringLiteral("#Chunhua"), qobject_cast<ServerPlayer *>(effect.to), effect.card->faceName());
                     if (effect.card->hasFlag(QStringLiteral("chunhua_black"))) {
-                        DamageStruct d = DamageStruct(effect.card, effect.from, effect.to, 1 + effect.effectValue.first(), DamageStruct::Normal);
+                        DamageStruct d = DamageStruct(effect.card, effect.from, effect.to, 1 + effect.effectValue.first(), QSanguosha::DamageNormal);
                         room->damage(d);
                     } else if (effect.card->hasFlag(QStringLiteral("chunhua_red"))) {
                         RecoverStruct recover;
@@ -635,11 +635,11 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
 
                     Card *extraCard = room->cloneCard(xianshi_name);
                     if (extraCard->face()->isKindOf(QStringLiteral("Slash"))) {
-                        DamageStruct::Nature nature = DamageStruct::Normal;
+                        QSanguosha::DamageNature nature = QSanguosha::DamageNormal;
                         if (extraCard->face()->isKindOf(QStringLiteral("FireSlash")))
-                            nature = DamageStruct::Fire;
+                            nature = QSanguosha::DamageFire;
                         else if (extraCard->face()->isKindOf(QStringLiteral("ThunderSlash")))
-                            nature = DamageStruct::Thunder;
+                            nature = QSanguosha::DamageThunder;
                         int damageValue = 1;
 
                         if (extraCard->face()->isKindOf(QStringLiteral("DebuffSlash"))) {
@@ -786,11 +786,11 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
             if (!xianshi_name.isNull() && (effect.from != nullptr) && (effect.to != nullptr) && effect.from->isAlive() && effect.to->isAlive()) {
                 Card *extraCard = room->cloneCard(xianshi_name);
                 if (extraCard->face()->isKindOf(QStringLiteral("Slash"))) {
-                    DamageStruct::Nature nature = DamageStruct::Normal;
+                    QSanguosha::DamageNature nature = QSanguosha::DamageNormal;
                     if (extraCard->face()->isKindOf(QStringLiteral("FireSlash")))
-                        nature = DamageStruct::Fire;
+                        nature = QSanguosha::DamageFire;
                     else if (extraCard->face()->isKindOf(QStringLiteral("ThunderSlash")))
-                        nature = DamageStruct::Thunder;
+                        nature = QSanguosha::DamageThunder;
                     int damageValue = 1;
 
                     if (extraCard->face()->isKindOf(QStringLiteral("DebuffSlash"))) {
@@ -863,7 +863,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
         //do chunhua effect
         if (effect.slash->hasFlag(QStringLiteral("chunhua"))) {
             room->touhouLogmessage(QStringLiteral("#Chunhua"), qobject_cast<ServerPlayer *>(effect.to), effect.slash->faceName());
-            effect.nature = DamageStruct::Normal;
+            effect.nature = QSanguosha::DamageNormal;
             if (effect.slash->hasFlag(QStringLiteral("chunhua_red"))) {
                 RecoverStruct recover;
                 recover.card = effect.slash;
@@ -1045,7 +1045,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
         room->sendLog(log);
 
         room->moveCardTo(room->getCard(card_id), nullptr, qobject_cast<ServerPlayer *>(judge->who), QSanguosha::PlaceJudge,
-                         CardMoveReason(CardMoveReason::S_REASON_JUDGE, judge->who->objectName(), QString(), QString(), judge->reason), true);
+                         CardMoveReason(QSanguosha::MoveReasonJudge, judge->who->objectName(), QString(), QString(), judge->reason), true);
 
         judge->setCard(room->getCard(card_id));
         break;
@@ -1075,7 +1075,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
         JudgeStruct *judge = data.value<JudgeStruct *>();
 
         if (room->getCardPlace(judge->card()->effectiveID()) == QSanguosha::PlaceJudge) {
-            CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, judge->who->objectName(), QString(), judge->reason);
+            CardMoveReason reason(QSanguosha::MoveReasonJudgeDone, judge->who->objectName(), QString(), judge->reason);
             if (judge->retrial_by_response != nullptr) {
                 reason.m_extraData = QVariant::fromValue(judge->retrial_by_response);
             }

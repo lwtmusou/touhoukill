@@ -1066,7 +1066,7 @@ void Room::obtainCard(ServerPlayer *target, const Card *card, bool unhide)
 {
     if (card == nullptr)
         return;
-    CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, target->objectName());
+    CardMoveReason reason(QSanguosha::MoveReasonGotBack, target->objectName());
     obtainCard(target, card, reason, unhide);
 }
 
@@ -1137,11 +1137,11 @@ bool Room::isCanceled(const CardEffectStruct &effect)
                 if (!xianshi_name.isNull() && p->isAlive() && target->isAlive()) {
                     Card *extraCard = cloneCard(xianshi_name);
                     if (extraCard->face()->isKindOf(QStringLiteral("Slash"))) {
-                        DamageStruct::Nature nature = DamageStruct::Normal;
+                        QSanguosha::DamageNature nature = QSanguosha::DamageNormal;
                         if (extraCard->face()->isKindOf(QStringLiteral("FireSlash")))
-                            nature = DamageStruct::Fire;
+                            nature = QSanguosha::DamageFire;
                         else if (extraCard->face()->isKindOf(QStringLiteral("ThunderSlash")))
-                            nature = DamageStruct::Thunder;
+                            nature = QSanguosha::DamageThunder;
                         int damageValue = 1;
 
                         if (extraCard->face()->isKindOf(QStringLiteral("DebuffSlash"))) {
@@ -1700,7 +1700,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
         //move1
         if (method == QSanguosha::MethodUse) {
-            CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, player->objectName(), QString(), card->skillName(), QString());
+            CardMoveReason reason(QSanguosha::MoveReasonLetUse, player->objectName(), QString(), card->skillName(), QString());
 
             reason.m_extraData = QVariant::fromValue(card);
             if (theProvider != nullptr)
@@ -1710,10 +1710,10 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             else
                 moveCardTo(card, player, nullptr, QSanguosha::PlaceTable, reason, true);
         } else if (method == QSanguosha::MethodDiscard) {
-            CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName());
+            CardMoveReason reason(QSanguosha::MoveReasonThrow, player->objectName());
             moveCardTo(card, player, nullptr, QSanguosha::PlaceDiscardPile, reason, pattern != QStringLiteral(".") && pattern != QStringLiteral(".."));
         } else if (method != QSanguosha::MethodNone && !isRetrial) {
-            CardMoveReason reason(CardMoveReason::S_REASON_RESPONSE, player->objectName());
+            CardMoveReason reason(QSanguosha::MoveReasonResponse, player->objectName());
             reason.m_skillName = card->skillName();
             reason.m_extraData = QVariant::fromValue(card);
             if (theProvider != nullptr)
@@ -1736,7 +1736,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             resp = data.value<CardResponseStruct>();
             if (method == QSanguosha::MethodUse) {
                 if (getCardPlace(card->effectiveID()) == QSanguosha::PlaceTable) {
-                    CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, player->objectName(), QString(), card->skillName(), QString());
+                    CardMoveReason reason(QSanguosha::MoveReasonLetUse, player->objectName(), QString(), card->skillName(), QString());
                     reason.m_extraData = QVariant::fromValue(card);
                     if (theProvider != nullptr)
                         moveCardTo(card, theProvider, nullptr, QSanguosha::PlaceDiscardPile, reason, true);
@@ -1892,7 +1892,7 @@ void Room::doExtraAmazingGrace(ServerPlayer *from, ServerPlayer *target, int tim
     target->gainMark(QStringLiteral("@MMP"));
     int count = getAllPlayers().length();
     QList<int> card_ids = getNCards(count);
-    CardsMoveStruct move(card_ids, nullptr, QSanguosha::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, from->objectName(), QStringLiteral("xianshi"), QString()));
+    CardsMoveStruct move(card_ids, nullptr, QSanguosha::PlaceTable, CardMoveReason(QSanguosha::MoveReasonTurnover, from->objectName(), QStringLiteral("xianshi"), QString()));
     moveCardsAtomic(move, true);
     fillAG(card_ids);
 
@@ -1908,7 +1908,7 @@ void Room::doExtraAmazingGrace(ServerPlayer *from, ServerPlayer *target, int tim
     //throw other cards
 
     if (!card_ids.isEmpty()) {
-        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, from->objectName(), QStringLiteral("xianshi"), QString());
+        CardMoveReason reason(QSanguosha::MoveReasonNaturalEnter, from->objectName(), QStringLiteral("xianshi"), QString());
         Card *dummy = cloneCard(QStringLiteral("DummyCard"));
         foreach (int id, card_ids)
             dummy->addSubcard(id);
@@ -3658,7 +3658,7 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
     } catch (QSanguosha::TriggerEvent triggerEvent) {
         if (triggerEvent == QSanguosha::TurnBroken) {
             if (getCardPlace(card_use.card->effectiveID()) == QSanguosha::PlaceTable) {
-                CardMoveReason reason(CardMoveReason::S_REASON_UNKNOWN, card_use.from->objectName(), QString(), card_use.card->skillName(), QString());
+                CardMoveReason reason(QSanguosha::MoveReasonUnknown, card_use.from->objectName(), QString(), card_use.card->skillName(), QString());
                 if (card_use.to.size() == 1)
                     reason.m_targetId = card_use.to.first()->objectName();
                 moveCardTo(card_use.card, qobject_cast<ServerPlayer *>(card_use.from), nullptr, QSanguosha::PlaceDiscardPile, reason, true);
@@ -3812,10 +3812,10 @@ void Room::applyDamage(ServerPlayer *victim, const DamageStruct &damage)
         setPlayerProperty(victim, "hp", new_hp);
     QString change_str = QStringLiteral("%1:%2").arg(victim->objectName(), -damage.damage);
     switch (damage.nature) {
-    case DamageStruct::Fire:
+    case QSanguosha::DamageFire:
         change_str.append(QStringLiteral("F"));
         break;
-    case DamageStruct::Thunder:
+    case QSanguosha::DamageThunder:
         change_str.append(QStringLiteral("T"));
         break;
     default:
@@ -4017,17 +4017,14 @@ void Room::sendDamageLog(const DamageStruct &data)
     log.arg = QString::number(data.damage);
 
     switch (data.nature) {
-    case DamageStruct::Normal:
+    case QSanguosha::DamageNormal:
         log.arg2 = QStringLiteral("normal_nature");
         break;
-    case DamageStruct::Fire:
+    case QSanguosha::DamageFire:
         log.arg2 = QStringLiteral("fire_nature");
         break;
-    case DamageStruct::Thunder:
+    case QSanguosha::DamageThunder:
         log.arg2 = QStringLiteral("thunder_nature");
-        break;
-    case DamageStruct::Ice:
-        log.arg2 = QStringLiteral("ice_nature");
         break;
     }
 
@@ -4289,7 +4286,7 @@ void Room::drawCards(QList<ServerPlayer *> players, const QList<int> &n_list, co
         move.from = nullptr;
         move.to = player;
         move.to_place = QSanguosha::PlaceHand;
-        move.reason = CardMoveReason(CardMoveReason::S_REASON_DRAW, player->objectName());
+        move.reason = CardMoveReason(QSanguosha::MoveReasonDraw, player->objectName());
         move.reason.m_extraData = reason;
 
         moves.append(move);
@@ -4301,10 +4298,10 @@ void Room::throwCard(const Card *card, ServerPlayer *who, ServerPlayer *thrower,
 {
     CardMoveReason reason;
     if (thrower == nullptr) {
-        reason.m_reason = CardMoveReason::S_REASON_THROW;
+        reason.m_reason = QSanguosha::MoveReasonThrow;
         reason.m_playerId = who != nullptr ? who->objectName() : QString();
     } else {
-        reason.m_reason = CardMoveReason::S_REASON_DISMANTLE;
+        reason.m_reason = QSanguosha::MoveReasonDismantle;
         reason.m_targetId = who != nullptr ? who->objectName() : QString();
         reason.m_playerId = thrower->objectName();
     }
@@ -4367,7 +4364,7 @@ RoomThread *Room::getThread() const
 
 void Room::moveCardTo(const Card *card, ServerPlayer *dstPlayer, QSanguosha::Place dstPlace, bool forceMoveVisible)
 {
-    moveCardTo(card, dstPlayer, dstPlace, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()), forceMoveVisible);
+    moveCardTo(card, dstPlayer, dstPlace, CardMoveReason(QSanguosha::MoveReasonUnknown, QString()), forceMoveVisible);
 }
 
 void Room::moveCardTo(const Card *card, ServerPlayer *dstPlayer, QSanguosha::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible)
@@ -4696,7 +4693,7 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
 void Room::moveCardsToEndOfDrawpile(const QList<int> &card_ids, bool forceVisible)
 {
     QList<CardsMoveStruct> moves;
-    CardsMoveStruct move(card_ids, nullptr, QSanguosha::PlaceDrawPile, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()));
+    CardsMoveStruct move(card_ids, nullptr, QSanguosha::PlaceDrawPile, CardMoveReason(QSanguosha::MoveReasonUnknown, QString()));
     moves << move;
 
     QList<CardsMoveStruct> cards_moves = _breakDownCardMoves(moves);
@@ -5332,7 +5329,7 @@ void Room::askForLuckCard()
         foreach (ServerPlayer *player, used) {
             draw_list << player->handcardNum();
 
-            CardMoveReason reason(CardMoveReason::S_REASON_PUT, player->objectName(), QStringLiteral("luck_card"), QString());
+            CardMoveReason reason(QSanguosha::MoveReasonPut, player->objectName(), QStringLiteral("luck_card"), QString());
             QList<CardsMoveStruct> moves;
             CardsMoveStruct move;
             move.from = player;
@@ -5499,9 +5496,9 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
                 movereason.m_playerId = player->objectName();
                 movereason.m_skillName = dummy->skillName();
                 if (reason == QStringLiteral("gamerule"))
-                    movereason.m_reason = CardMoveReason::S_REASON_RULEDISCARD;
+                    movereason.m_reason = QSanguosha::MoveReasonRuleDiscard;
                 else
-                    movereason.m_reason = CardMoveReason::S_REASON_THROW;
+                    movereason.m_reason = QSanguosha::MoveReasonThrow;
 
                 throwCard(dummy, movereason, player);
 
@@ -5546,10 +5543,10 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
 
     Card *dummy_card = cloneCard(QStringLiteral("DummyCard"));
     if (reason == QStringLiteral("gamerule")) {
-        CardMoveReason reason(CardMoveReason::S_REASON_RULEDISCARD, player->objectName(), QString(), dummy_card->skillName(), QString());
+        CardMoveReason reason(QSanguosha::MoveReasonRuleDiscard, player->objectName(), QString(), dummy_card->skillName(), QString());
         throwCard(dummy_card, reason, player);
     } else {
-        CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName(), QString(), dummy_card->skillName(), QString());
+        CardMoveReason reason(QSanguosha::MoveReasonThrow, player->objectName(), QString(), dummy_card->skillName(), QString());
         throwCard(dummy_card, reason, player);
     }
 
@@ -6133,11 +6130,11 @@ void Room::makeDamage(const QString &source, const QString &target, QSanProtocol
         return;
     }
 
-    static QMap<QSanProtocol::CheatCategory, DamageStruct::Nature> nature_map;
+    static QMap<QSanProtocol::CheatCategory, QSanguosha::DamageNature> nature_map;
     if (nature_map.isEmpty()) {
-        nature_map[S_CHEAT_NORMAL_DAMAGE] = DamageStruct::Normal;
-        nature_map[S_CHEAT_THUNDER_DAMAGE] = DamageStruct::Thunder;
-        nature_map[S_CHEAT_FIRE_DAMAGE] = DamageStruct::Fire;
+        nature_map[S_CHEAT_NORMAL_DAMAGE] = QSanguosha::DamageNormal;
+        nature_map[S_CHEAT_THUNDER_DAMAGE] = QSanguosha::DamageThunder;
+        nature_map[S_CHEAT_FIRE_DAMAGE] = QSanguosha::DamageFire;
     }
 
     if (targetPlayer == nullptr)
@@ -6397,11 +6394,11 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStruct *judge, c
     Player *rebyre = judge->retrial_by_response; //old judge provider
     judge->retrial_by_response = player;
 
-    CardsMoveStruct move1(QList<int>(), judge->who, QSanguosha::PlaceJudge, CardMoveReason(CardMoveReason::S_REASON_RETRIAL, player->objectName(), skill_name, QString()));
+    CardsMoveStruct move1(QList<int>(), judge->who, QSanguosha::PlaceJudge, CardMoveReason(QSanguosha::MoveReasonRetrial, player->objectName(), skill_name, QString()));
 
     move1.card_ids.append(card->effectiveID());
 
-    CardMoveReason::MoveReasonCategory reasonType = exchange ? CardMoveReason::S_REASON_OVERRIDE : CardMoveReason::S_REASON_JUDGEDONE;
+    QSanguosha::MoveReasonCategory reasonType = exchange ? QSanguosha::MoveReasonOverride : QSanguosha::MoveReasonJudgeDone;
 
     CardMoveReason reason(reasonType, player->objectName(), exchange ? skill_name : QString(), QString());
     if (rebyre != nullptr)
@@ -6442,9 +6439,9 @@ int Room::askForRende(ServerPlayer *liubei, QList<int> &cards, const QString &sk
         players = getOtherPlayers(liubei);
     if (cards.isEmpty() || max_num == 0)
         return 0;
-    if (reason.m_reason == CardMoveReason::S_REASON_UNKNOWN) {
+    if (reason.m_reason == QSanguosha::MoveReasonUnknown) {
         reason.m_playerId = liubei->objectName();
-        reason.m_reason = CardMoveReason::S_REASON_GIVE;
+        reason.m_reason = QSanguosha::MoveReasonGive;
     }
     tryPause();
     notifyMoveFocus(liubei, S_COMMAND_SKILL_YIJI);
@@ -6569,13 +6566,13 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &sk
         players = getOtherPlayers(guojia);
     if (cards.isEmpty() || max_num == 0)
         return false;
-    if (reason.m_reason == CardMoveReason::S_REASON_UNKNOWN) {
+    if (reason.m_reason == QSanguosha::MoveReasonUnknown) {
         reason.m_playerId = guojia->objectName();
         // when we use ? : here, compiling error occurs under debug mode...
         if (is_preview)
-            reason.m_reason = CardMoveReason::S_REASON_PREVIEWGIVE;
+            reason.m_reason = QSanguosha::MoveReasonPreviewGive;
         else
-            reason.m_reason = CardMoveReason::S_REASON_GIVE;
+            reason.m_reason = QSanguosha::MoveReasonGive;
     }
     tryPause();
     notifyMoveFocus(guojia, S_COMMAND_SKILL_YIJI);

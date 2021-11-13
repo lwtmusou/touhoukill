@@ -175,7 +175,7 @@ DamageStruct::DamageStruct()
     , to(nullptr)
     , card(nullptr)
     , damage(1)
-    , nature(Normal)
+    , nature(DamageNormal)
     , chain(false)
     , transfer(false)
     , by_user(true)
@@ -185,7 +185,7 @@ DamageStruct::DamageStruct()
 {
 }
 
-DamageStruct::DamageStruct(const Card *card, Player *from, Player *to, int damage, DamageStruct::Nature nature)
+DamageStruct::DamageStruct(const Card *card, Player *from, Player *to, int damage, DamageNature nature)
     : chain(false)
     , transfer(false)
     , by_user(true)
@@ -200,7 +200,7 @@ DamageStruct::DamageStruct(const Card *card, Player *from, Player *to, int damag
     this->nature = nature;
 }
 
-DamageStruct::DamageStruct(const QString &reason, Player *from, Player *to, int damage, DamageStruct::Nature nature)
+DamageStruct::DamageStruct(const QString &reason, Player *from, Player *to, int damage, DamageNature nature)
     : card(nullptr)
     , chain(false)
     , transfer(false)
@@ -242,7 +242,7 @@ SlashEffectStruct::SlashEffectStruct()
     , from(nullptr)
     , to(nullptr)
     , drank(0)
-    , nature(DamageStruct::Normal)
+    , nature(DamageNormal)
     , multiple(false)
     , nullified(false)
     , canceled(false)

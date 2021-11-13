@@ -18,7 +18,7 @@ public:
 };
 #endif
 
-Mode::Mode(const QString &name, QSanguosha::ModeCategory category)
+Mode::Mode(const QString &name, ModeCategory category)
     : d(new ModePrivate(name, category))
 {
 }

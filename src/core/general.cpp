@@ -16,7 +16,7 @@ public:
     QString kingdom;
     int maxHp;
     bool lord;
-    QSanguosha::Gender gender;
+    Gender gender;
     QSet<QString> skills;
     QStringList relatedSkills;
     bool hidden;

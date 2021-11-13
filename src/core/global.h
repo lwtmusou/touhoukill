@@ -329,6 +329,68 @@ enum CardUseReason
 };
 Q_ENUM_NS(CardUseReason)
 
+enum MoveReasonCategory
+{
+    MoveReasonUnknown = 0x00,
+    MoveReasonUse = 0x01,
+    MoveReasonResponse = 0x02,
+    MoveReasonDiscard = 0x03,
+    MoveReasonRecast = 0x04, // ironchain etc.
+    MoveReasonPindian = 0x05,
+    MoveReasonDraw = 0x06,
+    MoveReasonGotCard = 0x07,
+    MoveReasonShow = 0x08,
+    MoveReasonTransfer = 0x09,
+    MoveReasonPut = 0x0A,
+
+    //subcategory of use
+    MoveReasonLetUse = 0x11, // use a card when self is not current
+
+    //subcategory of response
+    MoveReasonRetrial = 0x12,
+
+    //subcategory of discard
+    MoveReasonRuleDiscard = 0x13, //  discard at one's Player::Discard for gamerule
+    MoveReasonThrow = 0x23, //  gamerule(dying or punish) as the cost of some skills
+    MoveReasonDismantle = 0x33, //  one throw card of another
+
+    //subcategory of gotcard
+    MoveReasonGive = 0x17, // from one hand to another hand
+    MoveReasonExtraction = 0x27, // from another's place to one's hand
+    MoveReasonGotBack = 0x37, // from placetable to hand
+    MoveReasonRecycle = 0x47, // from discardpile to hand
+    MoveReasonRob = 0x57, // got a definite card from other's hand
+    MoveReasonPreviewGive = 0x67, // give cards after previewing, i.e. Yiji & Miji
+
+    //subcategory of show
+    MoveReasonTurnover = 0x18, // show n cards from drawpile
+    MoveReasonJudge = 0x28, // show a card from drawpile for judge
+    MoveReasonPreview = 0x38, // Not done yet, plan for view some cards for self only(guanxing yiji miji)
+    MoveReasonDemonstrate = 0x48, // show a card which copy one to move to table
+
+    //subcategory of transfer
+    MoveReasonSwap = 0x19, // exchange card for two players
+    MoveReasonOverride = 0x29, // exchange cards from cards in game
+    MoveReasonExchangeFromPile = 0x39, // exchange cards from cards moved out of game (for qixing only)
+
+    //subcategory of put
+    MoveReasonNaturalEnter = 0x1A, //  a card with no-owner move into discardpile e.g. delayed trick enters discardpile
+    MoveReasonRemoveFromPile = 0x2A, //  cards moved out of game go back into discardpile
+    MoveReasonJudgeDone = 0x3A, //  judge card move into discardpile
+    MoveReasonChangeEquip = 0x4A, //  replace existed equip
+
+    MoveReasonBasicMask = 0x0F,
+};
+Q_ENUM_NS(MoveReasonCategory)
+
+enum DamageNature
+{
+    DamageNormal, // normal slash, duel and most damage caused by skill
+    DamageFire, // fire slash, fire attack and few damage skill (Yeyan, etc)
+    DamageThunder // lightning, thunder slash, and few damage skill (Leiji, etc)
+};
+Q_ENUM_NS(DamageNature)
+
 } // namespace QSanguosha
 #ifdef SWIG
 ;
