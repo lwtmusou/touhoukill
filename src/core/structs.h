@@ -1,6 +1,9 @@
 #ifndef _STRUCTS_H
 #define _STRUCTS_H
 
+// BE WARE! THIS FILE IS USED IN BOTH SWIG AND C++.
+// MAKE SURE THE GRAMMAR IS COMPATIBLE BETWEEN 2 LANGUAGES.
+
 #include "global.h"
 
 #ifndef SWIG

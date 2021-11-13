@@ -9,7 +9,7 @@
 
 using namespace QSanguosha;
 
-#ifndef Q_DOC
+#ifndef Q_QDOC
 class RoomObjectPrivate
 {
 public:

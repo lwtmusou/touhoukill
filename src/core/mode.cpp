@@ -3,7 +3,7 @@
 
 using namespace QSanguosha;
 
-#ifndef Q_DOC
+#ifndef Q_QDOC
 class ModePrivate
 {
 public:
@@ -38,7 +38,7 @@ ModeCategory Mode::category() const
     return d->category;
 }
 
-#ifndef Q_DOC
+#ifndef Q_QDOC
 class GenericRoleModePrivate
 {
 public:
@@ -90,7 +90,7 @@ void GenericRoleMode::startGame(RoomObject *room) const
     // TODO
 }
 
-#ifndef Q_DOC
+#ifndef Q_QDOC
 class GenericHegemonyModePrivate
 {
 public:

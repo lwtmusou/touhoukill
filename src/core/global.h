@@ -18,7 +18,7 @@ using IDSet = QSet<int>;
 namespace QSanguosha {
 Q_NAMESPACE
 #else
-#ifndef Q_DOC
+#ifndef Q_QDOC
 class QSanguosha
 {
 private:

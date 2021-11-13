@@ -50,7 +50,7 @@ void sgs_openlibs(lua_State *L)
 
 } // namespace
 
-#ifndef Q_DOC
+#ifndef Q_QDOC
 class LuaStatePrivate final
 {
 public:
@@ -285,7 +285,7 @@ QStringList LuaState::packageNames() const
     return QStringList();
 }
 
-#ifndef Q_DOC
+#ifndef Q_QDOC
 class LuaMultiThreadEnvironmentPrivate
 {
 public:
@@ -333,7 +333,7 @@ const QString &LuaMultiThreadEnvironment::luaCopyright()
     return v;
 }
 
-#ifndef Q_DOC
+#ifndef Q_QDOC
 namespace SgsEx {
 CardFace *createNewLuaCardFace(const QString &name);
 }

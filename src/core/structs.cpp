@@ -362,7 +362,7 @@ QString CardUseStruct::toString() const
     return l.join(QStringLiteral("->"));
 }
 
-#ifndef Q_DOC
+#ifndef Q_QDOC
 class TriggerDetailSharedData : public QSharedData
 {
 public:

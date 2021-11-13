@@ -15,7 +15,7 @@
 
 using namespace QSanguosha;
 
-#ifndef Q_DOC
+#ifndef Q_QDOC
 class CardFacePrivate
 {
 public:
@@ -989,7 +989,7 @@ void EquipCard::defaultOnUninstall(Player * /*unused*/) const
 #endif
 }
 
-#ifndef Q_DOC
+#ifndef Q_QDOC
 class WeaponPrivate
 {
 public:
@@ -1101,7 +1101,7 @@ NonDelayedTrick::NonDelayedTrick(const QString &name)
 {
 }
 
-#ifndef Q_DOC
+#ifndef Q_QDOC
 class DelayedTrickPrivate
 {
 public:
@@ -1181,7 +1181,7 @@ JudgeStruct DelayedTrick::judge() const
     return d->j == nullptr ? JudgeStruct() : JudgeStruct(*(d->j));
 }
 
-#ifndef Q_DOC
+#ifndef Q_QDOC
 class SkillCardPrivate
 {
 public:
@@ -1294,7 +1294,7 @@ void SkillCard::setThrowWhenUsing(bool can)
     d->throw_when_using = can;
 }
 
-#ifndef Q_DOC
+#ifndef Q_QDOC
 // TODO: find a suitable place for them
 class SurrenderCard : public SkillCard
 {

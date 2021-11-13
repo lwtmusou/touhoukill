@@ -2,7 +2,7 @@
 #include "lua-wrapper.h"
 #include "lua.hpp"
 
-#ifndef Q_DOC
+#ifndef Q_QDOC
 namespace SgsEx {
 // Make sure to keep this same with sgs_ex.lua
 enum TableType

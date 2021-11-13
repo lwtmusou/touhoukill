@@ -7,7 +7,7 @@
 
 using namespace QSanguosha;
 
-#ifndef Q_DOC
+#ifndef Q_QDOC
 class GeneralPrivate
 {
 public:

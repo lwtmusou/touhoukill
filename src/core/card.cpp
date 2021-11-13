@@ -15,7 +15,7 @@ const int Card::S_UNKNOWN_CARD_ID = -1;
 
 using namespace QSanguosha;
 
-#ifndef Q_DOC
+#ifndef Q_QDOC
 class CardPrivate
 {
 public:
