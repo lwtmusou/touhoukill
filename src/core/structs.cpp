@@ -221,7 +221,7 @@ CardEffectStruct::CardEffectStruct(const Card *card, Player *from, Player *to)
     , multiple(false)
     , nullified(false)
     , canceled(false)
-    , effectValue(2, 0)
+    , effectValue({0, 0})
 {
 }
 
