@@ -5,11 +5,9 @@ etc/customScenes/custom_scenario.txt
 QSanguosha.exe
 QSanguosha
 /tools/
-/platforms/
 /audio/bgm/*
 *thumbs.db
 *.orig
-/imageformats
 /config.json
 *.qmlc
 /ths.cppcheck
