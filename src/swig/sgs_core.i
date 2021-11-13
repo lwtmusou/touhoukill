@@ -1,4 +1,5 @@
 %include "global.h"
+%include "structs.h"
 
 class CardFace
 {

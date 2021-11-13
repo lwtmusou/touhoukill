@@ -31,10 +31,12 @@ public:
 %template(CardList) QList<const Card *>;
 %template(IntList) QList<int>;
 %template(SkillList) QList<const Skill *>;
-%template(CardsMoveList) QList<CardsMoveStruct>;
+%template(CardsMoveList) QList<LegacyCardsMoveStruct>;
 %template(PlaceList) QList<QSanguosha::Place>;
 %template(PhaseList) QList<QSanguosha::Phase>;
 %template(VariantList) QList<QVariant>;
+
+%template(SingleCardMoveList) QList<SingleCardMoveStruct>;
 
 typedef QList<QVariant> QVariantList;
 typedef QList<QString> QStringList;

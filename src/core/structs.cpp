@@ -14,7 +14,7 @@
 
 using namespace QSanguosha;
 
-CardsMoveStruct::CardsMoveStruct()
+LegacyCardsMoveStruct::LegacyCardsMoveStruct()
 {
     from_place = PlaceUnknown;
     to_place = PlaceUnknown;
@@ -23,7 +23,7 @@ CardsMoveStruct::CardsMoveStruct()
     is_last_handcard = false;
 }
 
-CardsMoveStruct::CardsMoveStruct(const QList<int> &ids, Player *from, Player *to, Place from_place, Place to_place, const CardMoveReason &reason)
+LegacyCardsMoveStruct::LegacyCardsMoveStruct(const QList<int> &ids, Player *from, Player *to, Place from_place, Place to_place, const CardMoveReason &reason)
 {
     this->card_ids = ids;
     this->from_place = from_place;
@@ -38,7 +38,7 @@ CardsMoveStruct::CardsMoveStruct(const QList<int> &ids, Player *from, Player *to
         to_player_name = to->objectName();
 }
 
-CardsMoveStruct::CardsMoveStruct(const QList<int> &ids, Player *to, Place to_place, const CardMoveReason &reason)
+LegacyCardsMoveStruct::LegacyCardsMoveStruct(const QList<int> &ids, Player *to, Place to_place, const CardMoveReason &reason)
 {
     this->card_ids = ids;
     this->from_place = PlaceUnknown;
@@ -51,7 +51,7 @@ CardsMoveStruct::CardsMoveStruct(const QList<int> &ids, Player *to, Place to_pla
         to_player_name = to->objectName();
 }
 
-CardsMoveStruct::CardsMoveStruct(int id, Player *from, Player *to, Place from_place, Place to_place, const CardMoveReason &reason)
+LegacyCardsMoveStruct::LegacyCardsMoveStruct(int id, Player *from, Player *to, Place from_place, Place to_place, const CardMoveReason &reason)
 {
     this->card_ids << id;
     this->from_place = from_place;
@@ -66,7 +66,7 @@ CardsMoveStruct::CardsMoveStruct(int id, Player *from, Player *to, Place from_pl
         to_player_name = to->objectName();
 }
 
-CardsMoveStruct::CardsMoveStruct(int id, Player *to, Place to_place, const CardMoveReason &reason)
+LegacyCardsMoveStruct::LegacyCardsMoveStruct(int id, Player *to, Place to_place, const CardMoveReason &reason)
 {
     this->card_ids << id;
     this->from_place = PlaceUnknown;
@@ -79,17 +79,17 @@ CardsMoveStruct::CardsMoveStruct(int id, Player *to, Place to_place, const CardM
         to_player_name = to->objectName();
 }
 
-bool CardsMoveStruct::operator==(const CardsMoveStruct &other) const
+bool LegacyCardsMoveStruct::operator==(const LegacyCardsMoveStruct &other) const
 {
     return from == other.from && from_place == other.from_place && from_pile_name == other.from_pile_name && from_player_name == other.from_player_name;
 }
 
-bool CardsMoveStruct::operator<(const CardsMoveStruct &other) const
+bool LegacyCardsMoveStruct::operator<(const LegacyCardsMoveStruct &other) const
 {
     return from < other.from || from_place < other.from_place || from_pile_name < other.from_pile_name || from_player_name < other.from_player_name;
 }
 
-bool CardsMoveStruct::tryParse(const QVariant &arg)
+bool LegacyCardsMoveStruct::tryParse(const QVariant &arg)
 {
     JsonArray args = arg.value<JsonArray>();
     if (args.size() != 8)
@@ -111,7 +111,7 @@ bool CardsMoveStruct::tryParse(const QVariant &arg)
     return true;
 }
 
-QVariant CardsMoveStruct::toVariant() const
+QVariant LegacyCardsMoveStruct::toVariant() const
 {
     //notify Client
     JsonArray arg;
@@ -139,9 +139,26 @@ QVariant CardsMoveStruct::toVariant() const
     return arg;
 }
 
-bool CardsMoveStruct::isRelevant(const Player *player) const
+bool LegacyCardsMoveStruct::isRelevant(const Player *player) const
 {
     return player != nullptr && (from == player || (to == player && to_place != PlaceSpecial));
+}
+
+CardMoveReason::CardMoveReason(QSanguosha::MoveReasonCategory moveReason, const QString &playerId, const QString &skillName, const QString &eventName)
+    : m_reason(moveReason)
+    , m_playerId(playerId)
+    , m_skillName(skillName)
+    , m_eventName(eventName)
+{
+}
+
+CardMoveReason::CardMoveReason(QSanguosha::MoveReasonCategory moveReason, const QString &playerId, const QString &targetId, const QString &skillName, const QString &eventName)
+    : m_reason(moveReason)
+    , m_playerId(playerId)
+    , m_targetId(targetId)
+    , m_skillName(skillName)
+    , m_eventName(eventName)
+{
 }
 
 bool CardMoveReason::tryParse(const QVariant &arg)
@@ -170,191 +187,107 @@ QVariant CardMoveReason::toVariant() const
     return result;
 }
 
-DamageStruct::DamageStruct()
-    : from(nullptr)
-    , to(nullptr)
-    , card(nullptr)
-    , damage(1)
-    , nature(DamageNormal)
+DamageStruct::DamageStruct(const Card *card, Player *from, Player *to, int damage, DamageNature nature)
+    : from(from)
+    , to(to)
+    , card(card)
+    , damage(damage)
+    , nature(nature)
     , chain(false)
     , transfer(false)
     , by_user(true)
-    , reason(QString())
     , trigger_chain(false)
-    , trigger_info(QString())
 {
-}
-
-DamageStruct::DamageStruct(const Card *card, Player *from, Player *to, int damage, DamageNature nature)
-    : chain(false)
-    , transfer(false)
-    , by_user(true)
-    , reason(QString())
-    , trigger_chain(false)
-    , trigger_info(QString())
-{
-    this->card = card;
-    this->from = from;
-    this->to = to;
-    this->damage = damage;
-    this->nature = nature;
 }
 
 DamageStruct::DamageStruct(const QString &reason, Player *from, Player *to, int damage, DamageNature nature)
-    : card(nullptr)
+    : from(from)
+    , to(to)
+    , card(nullptr)
+    , damage(damage)
+    , nature(nature)
     , chain(false)
     , transfer(false)
     , by_user(true)
+    , reason(reason)
     , trigger_chain(false)
-    , trigger_info(QString())
 {
-    this->from = from;
-    this->to = to;
-    this->damage = damage;
-    this->nature = nature;
-    this->reason = reason;
 }
 
-QString DamageStruct::getReason() const
-{
-    if (reason != QString())
-        return reason;
-    else if (card != nullptr)
-        return card->faceName();
-    return QString();
-}
-
-CardEffectStruct::CardEffectStruct()
-    : card(nullptr)
-    , from(nullptr)
-    , to(nullptr)
+CardEffectStruct::CardEffectStruct(const Card *card, Player *from, Player *to)
+    : card(card)
+    , from(from)
+    , to(to)
     , multiple(false)
     , nullified(false)
     , canceled(false)
-    , effectValue(QList<int>() << 0 << 0)
+    , effectValue(2, 0)
 {
 }
 
-SlashEffectStruct::SlashEffectStruct()
-    : jink_num(1)
-    , slash(nullptr)
-    , jink(nullptr)
-    , from(nullptr)
-    , to(nullptr)
-    , drank(0)
-    , nature(DamageNormal)
-    , multiple(false)
-    , nullified(false)
-    , canceled(false)
-    , effectValue(QList<int>() << 0 << 0)
-{
-}
-
-DyingStruct::DyingStruct()
-    : who(nullptr)
-    , damage(nullptr)
-    , nowAskingForPeaches(nullptr)
-{
-}
-
-DeathStruct::DeathStruct()
-    : who(nullptr)
-    , damage(nullptr)
-    , viewAsKiller(nullptr)
-    , useViewAsKiller(false)
-{
-}
-
-RecoverStruct::RecoverStruct()
-    : recover(1)
-    , who(nullptr)
-    , card(nullptr)
-{
-}
-
-PindianStruct::PindianStruct()
-    : from(nullptr)
-    , to(nullptr)
-    , askedPlayer(nullptr)
-    , from_card(nullptr)
-    , to_card(nullptr)
-    , success(false)
-{
-}
-
-bool PindianStruct::isSuccess() const
-{
-    return success;
-}
-
-JudgeStruct::JudgeStruct()
-    : who(nullptr)
-    , pattern(QStringLiteral("."))
-    , good(true)
+JudgeStruct::JudgeStruct(Player *who, const QString &pattern, const QString &reason)
+    : who(who)
+    , pattern(pattern)
+    , reason(reason)
+    , m_card(nullptr)
     , time_consuming(false)
     , negative(false)
     , play_animation(true)
+    , ignore_judge(false)
     , retrial_by_response(nullptr)
     , relative_player(nullptr)
-    , ignore_judge(false)
-    , _m_result(TRIAL_RESULT_UNKNOWN)
-    , m_card(nullptr)
 {
 }
 
-void JudgeStruct::setCard(const Card *card)
+bool JudgeStruct::isPatternMatch() const
 {
-    m_card = card;
-
-    bool effected = (good == ExpPattern(pattern).match(who, m_card));
-    if (effected)
-        _m_result = TRIAL_RESULT_GOOD;
-    else
-        _m_result = TRIAL_RESULT_BAD;
+    return ExpPattern(pattern).match(who, m_card);
 }
 
-bool JudgeStruct::isGood() const
-{
-    Q_ASSERT(_m_result != TRIAL_RESULT_UNKNOWN);
-    return _m_result == TRIAL_RESULT_GOOD;
-}
-
-PhaseChangeStruct::PhaseChangeStruct()
-    : from(PhaseNotActive)
-    , to(PhaseNotActive)
-    , player(nullptr)
-{
-}
-
-CardUseStruct::CardUseStruct()
-    : card(nullptr)
-    , from(nullptr)
-    , m_isOwnerUse(true)
-    , m_addHistory(true)
+PhaseChangeStruct::PhaseChangeStruct(Player *player, Phase from, Phase to)
+    : player(player)
+    , from(from)
+    , to(to)
 {
 }
 
 CardUseStruct::CardUseStruct(const Card *card, Player *from, const QList<Player *> &to, bool isOwnerUse)
+    : card(card)
+    , from(from)
+    , to(to)
+    , toCard(nullptr)
+    , m_isOwnerUse(isOwnerUse)
+    , m_addHistory(true)
+    , m_isHandcard(false)
+    , m_isLastHandcard(false)
+    , m_reason(CardUseReasonUnknown)
 {
-    this->card = card;
-    this->from = from;
-    this->to = to;
-    this->m_isOwnerUse = isOwnerUse;
-    this->m_addHistory = true;
-    this->m_isHandcard = false;
-    this->m_isLastHandcard = false;
 }
 
 CardUseStruct::CardUseStruct(const Card *card, Player *from, Player *target, bool isOwnerUse)
+    : card(card)
+    , from(from)
+    , toCard(nullptr)
+    , m_isOwnerUse(isOwnerUse)
+    , m_addHistory(true)
+    , m_isHandcard(false)
+    , m_isLastHandcard(false)
+    , m_reason(CardUseReasonUnknown)
 {
-    this->card = card;
-    this->from = from;
     if (target != nullptr)
         to << target;
-    this->m_isOwnerUse = isOwnerUse;
-    this->m_addHistory = true;
-    this->m_isHandcard = false;
-    this->m_isLastHandcard = false;
+}
+
+CardUseStruct::CardUseStruct(const Card *card, Player *from, const Card *toCard, bool isOwnerUse)
+    : card(card)
+    , from(from)
+    , toCard(toCard)
+    , m_isOwnerUse(isOwnerUse)
+    , m_addHistory(true)
+    , m_isHandcard(false)
+    , m_isLastHandcard(false)
+    , m_reason(CardUseReasonUnknown)
+{
 }
 
 bool CardUseStruct::isValid(const QString &pattern) const
@@ -366,16 +299,20 @@ bool CardUseStruct::isValid(const QString &pattern) const
 bool CardUseStruct::tryParse(const QVariant &usage, RoomObject *room)
 {
     JsonArray arr = usage.value<JsonArray>();
-    if (arr.length() < 2 || !JsonUtils::isString(arr.first()) || !arr.value(1).canConvert<JsonArray>())
+    if (arr.length() < 2 || !JsonUtils::isString(arr.first()) || (!arr.value(1).canConvert<JsonArray>()) && !JsonUtils::isString(arr.value(1)))
         return false;
 
     card = Card::Parse(arr.first().toString(), room);
-    JsonArray targets = arr.value(1).value<JsonArray>();
+    if (arr.value(1).canConvert<JsonArray>()) {
+        JsonArray targets = arr.value(1).value<JsonArray>();
 
-    for (int i = 0; i < targets.size(); i++) {
-        if (!JsonUtils::isString(targets.value(i)))
-            return false;
-        to << room->findChild<Player *>(targets.value(i).toString());
+        for (int i = 0; i < targets.size(); i++) {
+            if (!JsonUtils::isString(targets.value(i)))
+                return false;
+            to << room->findChild<Player *>(targets.value(i).toString());
+        }
+    } else if (JsonUtils::isString(arr.value(1))) {
+        // parse card
     }
     return true;
 }
@@ -394,6 +331,7 @@ void CardUseStruct::parse(const QString &str, RoomObject *room)
     card = Card::Parse(card_str, room);
 
     if (target_str != QStringLiteral(".")) {
+        // todo: parse card
         QStringList target_names = target_str.split(QStringLiteral("+"));
         foreach (QString target_name, target_names)
             to << room->findChild<Player *>(target_name);
@@ -408,22 +346,20 @@ QString CardUseStruct::toString() const
     QStringList l;
     l << card->toString();
 
-    if (to.isEmpty())
-        l << QStringLiteral(".");
-    else {
-        QStringList tos;
-        foreach (Player *p, to)
-            tos << p->objectName();
+    if (toCard != nullptr) {
+        l << toCard->toString();
+    } else {
+        if (to.isEmpty())
+            l << QStringLiteral(".");
+        else {
+            QStringList tos;
+            foreach (Player *p, to)
+                tos << p->objectName();
 
-        l << tos.join(QStringLiteral("+"));
+            l << tos.join(QStringLiteral("+"));
+        }
     }
     return l.join(QStringLiteral("->"));
-}
-
-MarkChangeStruct::MarkChangeStruct()
-    : num(1)
-    , player(nullptr)
-{
 }
 
 #ifndef Q_DOC
@@ -657,74 +593,152 @@ QStringList TriggerDetail::toList() const
     return l;
 }
 
-SkillAcquireDetachStruct::SkillAcquireDetachStruct()
-    : skill(nullptr)
-    , player(nullptr)
-    , isAcquire(false)
+SingleCardMoveStruct::SingleCardMoveStruct(int id, Player *to, QSanguosha::Place toPlace)
+    : card_id(id)
+    , broken(false)
+    , shown(false)
+    , open(false)
+    , from(nullptr)
+    , fromPlace(QSanguosha::PlaceUnknown)
+    , to(to)
+    , toPlace(toPlace)
 {
 }
 
-CardAskedStruct::CardAskedStruct()
-    : player(nullptr)
-    , method(MethodNone)
+SingleCardMoveStruct::SingleCardMoveStruct(int id, Player *from, Player *to, QSanguosha::Place fromPlace, QSanguosha::Place toPlace)
+    : card_id(id)
+    , broken(false)
+    , shown(false)
+    , open(false)
+    , from(from)
+    , fromPlace(fromPlace)
+    , to(to)
+    , toPlace(toPlace)
 {
 }
 
-HpLostStruct::HpLostStruct()
-    : player(nullptr)
-    , num(0)
+DeathStruct::DeathStruct(Player *who, DamageStruct *damage)
+    : who(who)
+    , damage(damage)
+    , nowAskingForPeaches(nullptr)
+    , viewAsKiller(nullptr)
+    , useViewAsKiller(false)
 {
 }
 
-JinkEffectStruct::JinkEffectStruct()
-    : jink(nullptr)
+RecoverStruct::RecoverStruct(const Card *card, Player *from, Player *to, int recover)
+    : recover(recover)
+    , from(from)
+    , to(to)
+    , card(card)
 {
 }
 
-PhaseSkippingStruct::PhaseSkippingStruct()
-    : phase(PhaseNotActive)
-    , player(nullptr)
+RecoverStruct::RecoverStruct(const QString &reason, Player *from, Player *to, int recover)
+    : recover(recover)
+    , from(from)
+    , to(to)
+    , card(nullptr)
+    , reason(reason)
+{
+}
+
+PindianStruct::PindianStruct(Player *from, Player *to)
+    : from(from)
+    , to(to)
+    , from_card(nullptr)
+    , to_card(nullptr)
+    , from_number(QSanguosha::NumberNA)
+    , to_number(QSanguosha::NumberNA)
+    , success(false)
+{
+}
+
+PhaseSkippingStruct::PhaseSkippingStruct(Player *player, QSanguosha::Phase phase, bool isCost)
+    : player(player)
+    , phase(phase)
     , isCost(false)
 {
 }
 
-DrawNCardsStruct::DrawNCardsStruct()
-    : player(nullptr)
-    , n(0)
-    , isInitial(false)
+CardResponseStruct::CardResponseStruct(const Card *card, Player *from, bool isRetrial, bool isProvision, Player *to)
+    : m_card(card)
+    , from(from)
+    , m_isRetrial(isRetrial)
+    , m_isProvision(isProvision)
+    , to(to)
+    , m_isHandcard(false)
+    , m_isNullified(false)
+    , m_isShowncard(false)
 {
 }
 
-SkillInvalidStruct::SkillInvalidStruct()
-    : player(nullptr)
-    , skill(nullptr)
-    , invalid(false)
+MarkChangeStruct::MarkChangeStruct(Player *player, const QString &name, int num)
+    : player(player)
+    , name(name)
+    , num(num)
 {
 }
 
-ExtraTurnStruct::ExtraTurnStruct()
-    : player(nullptr)
-    , extraTarget(nullptr)
+SkillAcquireDetachStruct::SkillAcquireDetachStruct(Player *player, const Skill *skill, bool isAcquire)
+    : player(player)
+    , skill(skill)
+    , isAcquire(isAcquire)
 {
 }
 
-BrokenEquipChangedStruct::BrokenEquipChangedStruct()
-    : player(nullptr)
-    , broken(false)
-    , moveFromEquip(false)
+CardAskedStruct::CardAskedStruct(Player *player, const QString &pattern, const QString &prompt, QSanguosha::HandlingMethod method)
+    : player(player)
+    , pattern(pattern)
+    , prompt(prompt)
+    , method(method)
 {
 }
 
-ShownCardChangedStruct::ShownCardChangedStruct()
-    : player(nullptr)
-    , shown(false)
-    , moveFromHand(false)
+HpLostStruct::HpLostStruct(Player *player, int num)
+    : player(player)
+    , num(num)
 {
 }
 
-ShowGeneralStruct::ShowGeneralStruct()
-    : player(nullptr)
-    , isHead(true)
-    , isShow(true)
+DrawNCardsStruct::DrawNCardsStruct(Player *player, int n, bool isInitial)
+    : player(player)
+    , n(n)
+    , isInitial(isInitial)
+{
+}
+
+SkillInvalidStruct::SkillInvalidStruct(Player *player, const Skill *skill, bool invalid)
+    : player(player)
+    , skill(skill)
+    , invalid(invalid)
+{
+}
+
+BrokenEquipChangedStruct::BrokenEquipChangedStruct(Player *player, QList<int> ids, bool broken, bool moveFromEquip)
+    : player(player)
+    , ids(ids)
+    , broken(broken)
+    , moveFromEquip(moveFromEquip)
+{
+}
+
+ShownCardChangedStruct::ShownCardChangedStruct(Player *player, QList<int> ids, bool shown, bool moveFromHand)
+    : player(player)
+    , ids(ids)
+    , shown(shown)
+    , moveFromHand(moveFromHand)
+{
+}
+
+ShowGeneralStruct::ShowGeneralStruct(Player *player, int pos, bool isShow)
+    : player(player)
+    , pos(pos)
+    , isShow(isShow)
+{
+}
+
+ExtraTurnStruct::ExtraTurnStruct(Player *player)
+    : player(player)
 {
 }

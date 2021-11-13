@@ -6,7 +6,6 @@ class Recorder;
 class DummyCard;
 
 class CardMoveReason;
-struct PhaseStruct;
 struct CardUseStruct;
 
 #include "player.h"
@@ -15,6 +14,19 @@ struct CardUseStruct;
 
 #include <QDateTime>
 #include <QSemaphore>
+
+// only used in ServerPlayer
+struct PhaseStruct
+{
+    inline PhaseStruct()
+        : phase(QSanguosha::PhaseNone)
+        , skipped(0)
+    {
+    }
+
+    QSanguosha::Phase phase;
+    int skipped; // 0 - not skipped; 1 - skipped by effect; -1 - skipped by cost
+};
 
 #define QSGS_STATE_ROOM
 #define QSGS_STATE_GAME

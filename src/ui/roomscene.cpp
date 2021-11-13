@@ -1979,7 +1979,7 @@ GenericCardContainer *RoomScene::_getGenericCardContainer(QSanguosha::Place plac
     return nullptr;
 }
 
-bool RoomScene::_shouldIgnoreDisplayMove(CardsMoveStruct &movement)
+bool RoomScene::_shouldIgnoreDisplayMove(LegacyCardsMoveStruct &movement)
 {
     QSanguosha::Place from = movement.from_place;
     QSanguosha::Place to = movement.to_place;
@@ -1996,7 +1996,7 @@ bool RoomScene::_shouldIgnoreDisplayMove(CardsMoveStruct &movement)
     }
 }
 
-bool RoomScene::_processCardsMove(CardsMoveStruct &move, bool isLost)
+bool RoomScene::_processCardsMove(LegacyCardsMoveStruct &move, bool isLost)
 {
     _MoveCardsClassifier cls(move);
     // delayed trick processed;
@@ -2005,7 +2005,7 @@ bool RoomScene::_processCardsMove(CardsMoveStruct &move, bool isLost)
             m_move_cache[cls] = move;
         return true;
     }
-    CardsMoveStruct tmpMove = m_move_cache.value(cls, CardsMoveStruct());
+    LegacyCardsMoveStruct tmpMove = m_move_cache.value(cls, LegacyCardsMoveStruct());
     if (tmpMove.from_place != QSanguosha::PlaceUnknown) {
         move.from = tmpMove.from;
         move.from_place = tmpMove.from_place;
@@ -2016,11 +2016,11 @@ bool RoomScene::_processCardsMove(CardsMoveStruct &move, bool isLost)
     return false;
 }
 
-void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
+void RoomScene::getCards(int moveId, QList<LegacyCardsMoveStruct> card_moves)
 {
     int count = 0;
     for (int i = 0; i < card_moves.size(); i++) {
-        CardsMoveStruct &movement = card_moves[i];
+        LegacyCardsMoveStruct &movement = card_moves[i];
         bool skipMove = _processCardsMove(movement, false);
         if (skipMove)
             continue;
@@ -2062,10 +2062,10 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves)
     _m_cardsMoveStash[moveId].clear();
 }
 
-void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
+void RoomScene::loseCards(int moveId, QList<LegacyCardsMoveStruct> card_moves)
 {
     for (int i = 0; i < card_moves.size(); i++) {
-        CardsMoveStruct &movement = card_moves[i];
+        LegacyCardsMoveStruct &movement = card_moves[i];
         bool skipMove = _processCardsMove(movement, true);
         if (skipMove)
             continue;
@@ -2082,7 +2082,7 @@ void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves)
     }
 }
 
-QString RoomScene::_translateMovement(const CardsMoveStruct &move)
+QString RoomScene::_translateMovement(const LegacyCardsMoveStruct &move)
 {
     CardMoveReason reason = move.reason;
     if (reason.m_reason == QSanguosha::MoveReasonUnknown)
@@ -2160,7 +2160,7 @@ QString RoomScene::_translateMovement(const CardsMoveStruct &move)
     return result;
 }
 
-void RoomScene::keepLoseCardLog(const CardsMoveStruct &move)
+void RoomScene::keepLoseCardLog(const LegacyCardsMoveStruct &move)
 {
     if ((move.from != nullptr) && move.to_place == QSanguosha::PlaceDrawPile) {
         if (move.reason.m_reason == QSanguosha::MoveReasonPut && move.reason.m_skillName == QStringLiteral("luck_card"))
@@ -2178,7 +2178,7 @@ void RoomScene::keepLoseCardLog(const CardsMoveStruct &move)
     }
 }
 
-void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
+void RoomScene::keepGetCardLog(const LegacyCardsMoveStruct &move)
 {
     if (move.card_ids.isEmpty())
         return;
@@ -3783,7 +3783,7 @@ void RoomScene::takeAmazingGrace(Player *taker, int card_id, bool move_cards)
             QString from_general = taker->objectName();
             QString card_str = QString::number(card_id);
             log_box->appendLog(type, from_general, QStringList(), card_str);
-            CardsMoveStruct move;
+            LegacyCardsMoveStruct move;
             move.card_ids.append(card_id);
             move.from_place = QSanguosha::PlaceTable;
             move.to_place = QSanguosha::PlaceHand;
@@ -3806,7 +3806,7 @@ void RoomScene::showCard(const QString &player_name, int card_id)
     QList<CardItem *> card_items = container->cloneCardItems(card_ids);
     CardMoveReason reason(QSanguosha::MoveReasonDemonstrate, player->objectName());
     bringToFront(m_tablePile);
-    CardsMoveStruct move;
+    LegacyCardsMoveStruct move;
     move.from_place = QSanguosha::PlaceHand;
     move.to_place = QSanguosha::PlaceTable;
     move.reason = reason;
@@ -4390,7 +4390,7 @@ void RoomScene::doHuashen(const QString & /*unused*/, const QStringList &args)
         addItem(item);
         generals.append(item);
     }
-    CardsMoveStruct move;
+    LegacyCardsMoveStruct move;
     move.to = player;
     move.from_place = QSanguosha::PlaceDrawPile;
     move.to_place = QSanguosha::PlaceSpecial;

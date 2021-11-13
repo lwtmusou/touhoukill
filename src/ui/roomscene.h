@@ -220,10 +220,10 @@ public:
 public slots:
     void addPlayer(Player *player);
     void removePlayer(const QString &player_name);
-    void loseCards(int moveId, QList<CardsMoveStruct> moves);
-    void getCards(int moveId, QList<CardsMoveStruct> moves);
-    void keepLoseCardLog(const CardsMoveStruct &move);
-    void keepGetCardLog(const CardsMoveStruct &move);
+    void loseCards(int moveId, QList<LegacyCardsMoveStruct> moves);
+    void getCards(int moveId, QList<LegacyCardsMoveStruct> moves);
+    void keepLoseCardLog(const LegacyCardsMoveStruct &move);
+    void keepGetCardLog(const LegacyCardsMoveStruct &move);
     // choice dialog
     void chooseGeneral(const QStringList &generals, const bool single_result, const bool can_convert);
     void chooseSuit(const QStringList &suits);
@@ -288,8 +288,8 @@ protected:
 
 private:
     void _getSceneSizes(QSize &minSize, QSize &maxSize);
-    bool _shouldIgnoreDisplayMove(CardsMoveStruct &movement);
-    bool _processCardsMove(CardsMoveStruct &move, bool isLost);
+    bool _shouldIgnoreDisplayMove(LegacyCardsMoveStruct &movement);
+    bool _processCardsMove(LegacyCardsMoveStruct &move, bool isLost);
     bool _m_isMouseButtonDown;
     bool _m_isInDragAndUseMode;
     const QSanRoomSkin::RoomLayout *_m_roomLayout;
@@ -385,7 +385,7 @@ private:
 
     struct _MoveCardsClassifier
     {
-        inline explicit _MoveCardsClassifier(const CardsMoveStruct &move)
+        inline explicit _MoveCardsClassifier(const LegacyCardsMoveStruct &move)
         {
             m_card_ids = move.card_ids;
         }
@@ -400,11 +400,11 @@ private:
         QList<int> m_card_ids;
     };
 
-    QMap<_MoveCardsClassifier, CardsMoveStruct> m_move_cache;
+    QMap<_MoveCardsClassifier, LegacyCardsMoveStruct> m_move_cache;
 
     // @todo: this function shouldn't be here. But it's here anyway, before someone find a better
     // home for it.
-    QString _translateMovement(const CardsMoveStruct &move);
+    QString _translateMovement(const LegacyCardsMoveStruct &move);
 
     void useCard(const Card *card);
     void fillTable(QTableWidget *table, const QList<const Player *> &players);

@@ -617,7 +617,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                     } else if (effect.card->hasFlag(QStringLiteral("chunhua_red"))) {
                         RecoverStruct recover;
                         recover.card = effect.card;
-                        recover.who = effect.from;
+                        recover.from = effect.from;
                         recover.recover = 1 + effect.effectValue.first();
                         room->recover(qobject_cast<ServerPlayer *>(effect.to), recover);
                     }
@@ -681,7 +681,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                         } else if (extraCard->face()->isKindOf(QStringLiteral("Analeptic"))) {
                             RecoverStruct recover;
                             recover.card = effect.card;
-                            recover.who = effect.from;
+                            recover.from = effect.from;
                             if (effect.card->face()->isNDTrick())
                                 recover.recover = 1 + effect.effectValue.first();
                             room->recover(qobject_cast<ServerPlayer *>(effect.to), recover);
@@ -825,7 +825,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                     RecoverStruct recover;
                     recover.card = j.jink;
                     recover.to = effect.from;
-                    recover.who = effect.to;
+                    recover.from = effect.to;
                     room->recover(qobject_cast<ServerPlayer *>(effect.from), recover);
                 } else if (extraCard->face()->isKindOf(QStringLiteral("AmazingGrace"))) {
                     room->doExtraAmazingGrace(qobject_cast<ServerPlayer *>(effect.from), qobject_cast<ServerPlayer *>(effect.from), 1);
@@ -867,7 +867,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
             if (effect.slash->hasFlag(QStringLiteral("chunhua_red"))) {
                 RecoverStruct recover;
                 recover.card = effect.slash;
-                recover.who = effect.from;
+                recover.from = effect.from;
                 recover.recover = 1 + effect.effectValue.first();
                 room->recover(qobject_cast<ServerPlayer *>(effect.to), recover);
                 break;
@@ -896,7 +896,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
             } else if (extraCard->face()->isKindOf(QStringLiteral("Analeptic"))) {
                 RecoverStruct recover;
                 recover.card = effect.slash;
-                recover.who = effect.from;
+                recover.from = effect.from;
                 recover.recover = 1;
                 room->recover(qobject_cast<ServerPlayer *>(effect.to), recover);
             } else if (extraCard->face()->isKindOf(QStringLiteral("AmazingGrace"))) {
@@ -1147,7 +1147,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                     QString choice = room->askForChoice(player, QStringLiteral("CompanionEffect"), choices.join(QStringLiteral("+")));
                     if (choice == QStringLiteral("recover")) {
                         RecoverStruct recover;
-                        recover.who = player;
+                        recover.from = player;
                         recover.recover = 1;
                         room->recover(player, recover);
                     } else if (choice == QStringLiteral("draw"))
@@ -1177,7 +1177,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
     }
 
     case QSanguosha::BeforeCardsMove: { //to be record? not effect
-        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        LegacyCardsMoveOneTimeStruct move = data.value<LegacyCardsMoveOneTimeStruct>();
         ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
         if (player != nullptr) {
             IDSet shownIds;

@@ -367,7 +367,7 @@ void Dashboard::setDeathColor()
     refresh();
 }
 
-bool Dashboard::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo)
+bool Dashboard::_addCardItems(QList<CardItem *> &card_items, const LegacyCardsMoveStruct &moveInfo)
 {
     QSanguosha::Place place = moveInfo.to_place;
     if (place == QSanguosha::PlaceSpecial) {

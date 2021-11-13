@@ -51,7 +51,7 @@ protected:
     static const int S_CLEARANCE_UPDATE_INTERVAL_MSEC = 1000;
     static const int S_CLEARANCE_DELAY_BUCKETS = 3;
     void timerEvent(QTimerEvent *) override;
-    bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo) override;
+    bool _addCardItems(QList<CardItem *> &card_items, const LegacyCardsMoveStruct &moveInfo) override;
     void _markClearance(CardItem *item);
     QList<CardItem *> m_visibleCards;
     QMutex _m_mutex_pileCards;

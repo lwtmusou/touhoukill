@@ -124,7 +124,7 @@ void TablePile::showJudgeResult(int cardId, bool takeEffect)
     adjustCards();
 }
 
-bool TablePile::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo)
+bool TablePile::_addCardItems(QList<CardItem *> &card_items, const LegacyCardsMoveStruct &moveInfo)
 {
     if (card_items.isEmpty())
         return false;

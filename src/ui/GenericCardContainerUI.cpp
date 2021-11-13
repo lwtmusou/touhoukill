@@ -114,7 +114,7 @@ void GenericCardContainer::_playMoveCardsAnimation(QList<CardItem *> &cards, boo
     animation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void GenericCardContainer::addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo)
+void GenericCardContainer::addCardItems(QList<CardItem *> &card_items, const LegacyCardsMoveStruct &moveInfo)
 {
     foreach (CardItem *card_item, card_items) {
         card_item->setPos(mapFromScene(card_item->scenePos()));

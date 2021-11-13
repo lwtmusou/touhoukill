@@ -34,12 +34,12 @@ public:
         _m_highestZ = 10000;
     }
     virtual QList<CardItem *> removeCardItems(const QList<int> &card_ids, QSanguosha::Place place) = 0;
-    virtual void addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo);
+    virtual void addCardItems(QList<CardItem *> &card_items, const LegacyCardsMoveStruct &moveInfo);
     virtual QList<CardItem *> cloneCardItems(const QList<int> &card_ids);
 
 protected:
     // @return Whether the card items should be destroyed after animation
-    virtual bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo) = 0;
+    virtual bool _addCardItems(QList<CardItem *> &card_items, const LegacyCardsMoveStruct &moveInfo) = 0;
     QList<CardItem *> _createCards(QList<int> card_ids);
     CardItem *_createCard(int card_id);
     void _disperseCards(QList<CardItem *> &cards, const QRectF &fillRegion, Qt::Alignment align, bool useHomePos, bool keepOrder);

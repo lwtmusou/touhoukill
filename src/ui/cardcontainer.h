@@ -50,7 +50,7 @@ public slots:
 
 protected:
     QRectF _m_boundingRect;
-    bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo) override;
+    bool _addCardItems(QList<CardItem *> &card_items, const LegacyCardsMoveStruct &moveInfo) override;
     int scene_width;
     int itemCount;
     static const int cardInterval = 3;

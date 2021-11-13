@@ -105,7 +105,7 @@ protected:
     QPointF getHeroSkinContainerPosition() const override;
 
     void _adjustComponentZValues(bool killed = false) override;
-    bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo) override;
+    bool _addCardItems(QList<CardItem *> &card_items, const LegacyCardsMoveStruct &moveInfo) override;
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     QPropertyAnimation *initializeBlurEffect(GraphicsPixmapHoverItem *icon);

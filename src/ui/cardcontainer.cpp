@@ -165,7 +165,7 @@ void CardContainer::fillGeneralCards(const QList<CardItem *> &card_item, const Q
     close_button->show();
 }
 
-bool CardContainer::_addCardItems(QList<CardItem *> & /*card_items*/, const CardsMoveStruct & /*moveInfo*/)
+bool CardContainer::_addCardItems(QList<CardItem *> & /*card_items*/, const LegacyCardsMoveStruct & /*moveInfo*/)
 {
     return true;
 }

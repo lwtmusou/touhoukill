@@ -218,7 +218,7 @@ protected:
     }
     QPointF getHeroSkinContainerPosition() const override;
 
-    bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo) override;
+    bool _addCardItems(QList<CardItem *> &card_items, const LegacyCardsMoveStruct &moveInfo) override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void _addHandCard(CardItem *card_item, bool prepend = false, const QString &footnote = QString());

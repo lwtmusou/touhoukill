@@ -17,6 +17,83 @@ class TrickCard;
 struct lua_State;
 struct LogMessage;
 
+// move the deprecated structs here temporarily
+struct SlashEffectStruct
+{
+    SlashEffectStruct();
+
+    int jink_num;
+
+    const Card *slash;
+    const Card *jink;
+
+    Player *from;
+    Player *to;
+
+    int drank;
+
+    QSanguosha::DamageNature nature;
+    bool multiple;
+    bool nullified;
+    bool canceled;
+    QList<int> effectValue;
+};
+
+struct JinkEffectStruct
+{
+    JinkEffectStruct();
+
+    SlashEffectStruct slashEffect;
+    const Card *jink;
+};
+
+struct ChoiceMadeStruct
+{
+    inline ChoiceMadeStruct()
+        : player(nullptr)
+        , type(NoChoice)
+    {
+    }
+
+    enum ChoiceType
+    {
+        NoChoice,
+
+        SkillInvoke,
+        SkillChoice,
+        Nullification,
+        CardChosen,
+        CardResponded,
+        CardUsed,
+        AGChosen,
+        CardShow,
+        Peach,
+        TriggerOrder,
+        ReverseFor3v3,
+        Activate,
+        Suit,
+        Kingdom,
+        CardDiscard,
+        CardExchange,
+        ViewCards,
+        PlayerChosen,
+        Rende,
+        Yiji,
+        Pindian,
+
+        NumOfChoices
+    };
+
+    Player *player;
+    ChoiceType type;
+    QStringList args;
+    QVariant m_extraData;
+};
+
+Q_DECLARE_METATYPE(SlashEffectStruct)
+Q_DECLARE_METATYPE(JinkEffectStruct)
+Q_DECLARE_METATYPE(ChoiceMadeStruct)
+
 #define QSGS_STATE_ROOM
 #define QSGS_STATE_GAME
 #define QSGS_LOGIC
@@ -252,7 +329,7 @@ public:
     // @param forceVisible
     //        If true, all players will be able to see the face of card regardless of whether the movement is
     //        relevant or not.
-    bool notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> move, bool forceVisible, QList<ServerPlayer *> players = QList<ServerPlayer *>());
+    bool notifyMoveCards(bool isLostPhase, QList<LegacyCardsMoveStruct> move, bool forceVisible, QList<ServerPlayer *> players = QList<ServerPlayer *>());
     bool notifyProperty(ServerPlayer *playerToNotify, const ServerPlayer *propertyOwner, const char *propertyName, const QString &value = QString());
     QSGS_LOGIC bool notifyUpdateCard(ServerPlayer *player, int cardId, const Card *newCard);
     QSGS_LOGIC bool broadcastUpdateCard(const QList<ServerPlayer *> &players, int cardId, const Card *newCard);
@@ -323,10 +400,10 @@ public:
                                bool forceMoveVisible = false);
     QSGS_LOGIC void moveCardTo(const Card *card, ServerPlayer *srcPlayer, ServerPlayer *dstPlayer, QSanguosha::Place dstPlace, const QString &pileName,
                                const CardMoveReason &reason, bool forceMoveVisible = false);
-    QSGS_LOGIC void moveCardsAtomic(QList<CardsMoveStruct> cards_move, bool forceMoveVisible);
-    QSGS_LOGIC void moveCardsAtomic(const CardsMoveStruct &cards_move, bool forceMoveVisible);
+    QSGS_LOGIC void moveCardsAtomic(QList<LegacyCardsMoveStruct> cards_move, bool forceMoveVisible);
+    QSGS_LOGIC void moveCardsAtomic(const LegacyCardsMoveStruct &cards_move, bool forceMoveVisible);
     QSGS_LOGIC void moveCardsToEndOfDrawpile(const QList<int> &card_ids, bool forceVisible = false);
-    QSGS_LOGIC QList<CardsMoveStruct> _breakDownCardMoves(QList<CardsMoveStruct> &cards_moves);
+    QSGS_LOGIC QList<LegacyCardsMoveStruct> _breakDownCardMoves(QList<LegacyCardsMoveStruct> &cards_moves);
 
     // interactive methods
     QSGS_LOGIC void activate(ServerPlayer *player, CardUseStruct &card_use);
@@ -393,8 +470,8 @@ public:
     QSGS_SOCKET void networkDelayTestCommand(ServerPlayer *player, const QVariant &);
     QSGS_LOGIC bool roleStatusCommand(ServerPlayer *player);
 
-    QSGS_LOGIC void updateCardsOnLose(const CardsMoveStruct &move);
-    QSGS_LOGIC void updateCardsOnGet(const CardsMoveStruct &move);
+    QSGS_LOGIC void updateCardsOnLose(const LegacyCardsMoveStruct &move);
+    QSGS_LOGIC void updateCardsOnGet(const LegacyCardsMoveStruct &move);
 
     QSGS_LOGIC void cheat(ServerPlayer *player, const QVariant &args);
     QSGS_LOGIC bool makeSurrender(ServerPlayer *player);
@@ -405,14 +482,14 @@ protected:
 private:
     struct _MoveSourceClassifier
     {
-        explicit inline _MoveSourceClassifier(const CardsMoveStruct &move)
+        explicit inline _MoveSourceClassifier(const LegacyCardsMoveStruct &move)
         {
             m_from = move.from;
             m_from_place = move.from_place;
             m_from_pile_name = move.from_pile_name;
             m_from_player_name = move.from_player_name;
         }
-        inline void copyTo(CardsMoveStruct &move) const
+        inline void copyTo(LegacyCardsMoveStruct &move) const
         {
             move.from = m_from;
             move.from_place = m_from_place;
@@ -435,7 +512,7 @@ private:
 
     struct _MoveMergeClassifier
     {
-        explicit inline _MoveMergeClassifier(const CardsMoveStruct &move)
+        explicit inline _MoveMergeClassifier(const LegacyCardsMoveStruct &move)
         {
             m_from = move.from;
             m_to = move.to;
@@ -468,7 +545,7 @@ private:
 
     struct _MoveSeparateClassifier
     {
-        inline _MoveSeparateClassifier(const CardsMoveOneTimeStruct &moveOneTime, int index)
+        inline _MoveSeparateClassifier(const LegacyCardsMoveOneTimeStruct &moveOneTime, int index)
         {
             m_from = moveOneTime.from;
             m_to = moveOneTime.to;
@@ -502,9 +579,9 @@ private:
     };
 
     int _m_lastMovementId;
-    void _fillMoveInfo(CardsMoveStruct &moves, int card_index) const;
-    QList<CardsMoveOneTimeStruct> _mergeMoves(QList<CardsMoveStruct> cards_moves);
-    QList<CardsMoveStruct> _separateMoves(QList<CardsMoveOneTimeStruct> moveOneTimes);
+    void _fillMoveInfo(LegacyCardsMoveStruct &moves, int card_index) const;
+    QList<LegacyCardsMoveOneTimeStruct> _mergeMoves(QList<LegacyCardsMoveStruct> cards_moves);
+    QList<LegacyCardsMoveStruct> _separateMoves(QList<LegacyCardsMoveOneTimeStruct> moveOneTimes);
     QString _chooseDefaultGeneral(ServerPlayer *player) const;
     QStringList _chooseDefaultGenerals(ServerPlayer *player) const;
     bool _setPlayerGeneral(ServerPlayer *player, const QString &generalName, bool isFirst);

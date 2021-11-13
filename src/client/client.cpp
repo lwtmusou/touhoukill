@@ -531,7 +531,7 @@ void Client::removePlayer(const QVariant &player_name)
     }
 }
 
-bool Client::_loseSingleCard(int card_id, const CardsMoveStruct &move)
+bool Client::_loseSingleCard(int card_id, const LegacyCardsMoveStruct &move)
 {
     const Card *card = getCard(card_id);
     if (move.from != nullptr)
@@ -545,7 +545,7 @@ bool Client::_loseSingleCard(int card_id, const CardsMoveStruct &move)
     return true;
 }
 
-bool Client::_getSingleCard(int card_id, const CardsMoveStruct &move)
+bool Client::_getSingleCard(int card_id, const LegacyCardsMoveStruct &move)
 {
     const Card *card = getCard(card_id);
     if (move.to != nullptr)
@@ -564,9 +564,9 @@ void Client::getCards(const QVariant &arg)
     JsonArray args = arg.value<JsonArray>();
     Q_ASSERT(!args.empty());
     int moveId = args[0].toInt();
-    QList<CardsMoveStruct> moves;
+    QList<LegacyCardsMoveStruct> moves;
     for (int i = 1; i < args.length(); i++) {
-        CardsMoveStruct move;
+        LegacyCardsMoveStruct move;
         if (!move.tryParse(args[i]))
             return;
         move.from = findPlayer(move.from_player_name);
@@ -585,9 +585,9 @@ void Client::loseCards(const QVariant &arg)
     JsonArray args = arg.value<JsonArray>();
     Q_ASSERT(!args.empty());
     int moveId = args[0].toInt();
-    QList<CardsMoveStruct> moves;
+    QList<LegacyCardsMoveStruct> moves;
     for (int i = 1; i < args.length(); i++) {
-        CardsMoveStruct move;
+        LegacyCardsMoveStruct move;
         if (!move.tryParse(args[i]))
             return;
         move.from = findPlayer(move.from_player_name);

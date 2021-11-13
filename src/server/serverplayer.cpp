@@ -506,8 +506,8 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
 
     pindian_struct.from_card = card1;
     pindian_struct.to_card = card2;
-    pindian_struct.from_number = static_cast<int>(card1->number());
-    pindian_struct.to_number = static_cast<int>(card2->number());
+    pindian_struct.from_number = (card1->number());
+    pindian_struct.to_number = (card2->number());
 
     if (!card1_result_logged) {
         log2.type = QStringLiteral("$PindianResult");
@@ -1051,10 +1051,10 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     QList<ServerPlayer *> players;
     players << player;
 
-    QList<CardsMoveStruct> moves;
+    QList<LegacyCardsMoveStruct> moves;
 
     if (!isKongcheng()) {
-        CardsMoveStruct move;
+        LegacyCardsMoveStruct move;
         foreach (const Card *card, m_handcards) {
             move.card_ids << card->id();
             if (player == this) {
@@ -1074,7 +1074,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     }
 
     if (hasEquip()) {
-        CardsMoveStruct move;
+        LegacyCardsMoveStruct move;
         foreach (const Card *card, equipCards()) {
             move.card_ids << card->id();
             Card *c = room->getCard(card->id());
@@ -1089,7 +1089,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     }
 
     if (!judgingArea().isEmpty()) {
-        CardsMoveStruct move;
+        LegacyCardsMoveStruct move;
         foreach (int card_id, judgingArea()) {
             move.card_ids << card_id;
             Card *c = room->getCard(card_id);
@@ -1109,7 +1109,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     }
 
     if (!pileNames().isEmpty()) {
-        CardsMoveStruct move;
+        LegacyCardsMoveStruct move;
         move.from_place = QSanguosha::PlaceDrawPile;
         move.to_player_name = objectName();
         move.to_place = QSanguosha::PlaceSpecial;
@@ -1118,7 +1118,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
             move.card_ids.append(pile(p).values());
             move.to_pile_name = p;
 
-            QList<CardsMoveStruct> moves2;
+            QList<LegacyCardsMoveStruct> moves2;
             moves2 << move;
 
             bool open = pileOpen(p, player->objectName());
@@ -1288,7 +1288,7 @@ void ServerPlayer::addToPile(const QString &pile_name, const IDSet &card_ids, bo
 
 void ServerPlayer::addToPile(const QString &pile_name, const IDSet &card_ids, bool open, const CardMoveReason &reason, QList<ServerPlayer *> open_players)
 {
-    CardsMoveStruct move;
+    LegacyCardsMoveStruct move;
     move.card_ids = card_ids.values(); // FIXME: Replace here with IDSet
     move.to = this;
     move.to_place = QSanguosha::PlaceSpecial;
@@ -1659,7 +1659,8 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
 
         ShowGeneralStruct s;
         s.player = this;
-        s.isHead = head_general;
+        // s.isHead = head_general;
+        s.pos = head_general ? 0 : 1;
         s.isShow = true;
         QVariant _head = QVariant::fromValue(s);
         room->getThread()->trigger(QSanguosha::GeneralShown, _head);
@@ -1750,7 +1751,7 @@ void ServerPlayer::hideGeneral(bool head_general)
 
     ShowGeneralStruct s;
     s.player = this;
-    s.isHead = head_general;
+    s.pos = head_general ? 0 : 1;
     s.isShow = false;
     QVariant _head = QVariant::fromValue(s);
     room->getThread()->trigger(QSanguosha::GeneralHidden, _head);
@@ -1841,7 +1842,7 @@ void ServerPlayer::removeGeneral(bool head_general)
     Q_ASSERT(room->getThread() != nullptr);
     ShowGeneralStruct s;
     s.player = this;
-    s.isHead = head_general;
+    s.pos = head_general ? 0 : 1;
     s.isShow = false;
     QVariant _from = QVariant::fromValue(s);
 

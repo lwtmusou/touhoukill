@@ -194,7 +194,7 @@ QList<CardItem *> Photo::removeCardItems(const QList<int> &card_ids, QSanguosha:
     return result;
 }
 
-bool Photo::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo)
+bool Photo::_addCardItems(QList<CardItem *> &card_items, const LegacyCardsMoveStruct &moveInfo)
 {
     _disperseCards(card_items, G_PHOTO_LAYOUT.m_cardMoveRegion, Qt::AlignCenter, true, false);
     double homeOpacity = 0.0;

@@ -272,8 +272,8 @@ private:
     QString setPromptList(const QStringList &text);
     QString _processCardPattern(const QString &pattern);
 
-    bool _loseSingleCard(int card_id, const CardsMoveStruct &move);
-    bool _getSingleCard(int card_id, const CardsMoveStruct &move);
+    bool _loseSingleCard(int card_id, const LegacyCardsMoveStruct &move);
+    bool _getSingleCard(int card_id, const LegacyCardsMoveStruct &move);
 
 private slots:
     void processServerPacket(const QString &cmd);
@@ -335,8 +335,8 @@ signals:
     void standoff();
     void event_received(const QVariant &);
 
-    void move_cards_lost(int moveId, QList<CardsMoveStruct> moves);
-    void move_cards_got(int moveId, QList<CardsMoveStruct> moves);
+    void move_cards_lost(int moveId, QList<LegacyCardsMoveStruct> moves);
+    void move_cards_got(int moveId, QList<LegacyCardsMoveStruct> moves);
 
     void skill_attached(const QString &skill_name, bool from_left);
     void skill_detached(const QString &skill_name, bool head = true);
