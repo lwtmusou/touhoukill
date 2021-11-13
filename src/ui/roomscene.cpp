@@ -51,6 +51,7 @@
 #include <QRadioButton>
 #include <QRandomGenerator>
 #include <QSequentialAnimationGroup>
+#include <QStandardPaths>
 #include <QTimer>
 #include <QTransform>
 #include <QtMath>
@@ -2335,7 +2336,7 @@ void RoomScene::addSkillButton(const Skill *skill, bool head)
 
         const ViewAsSkillSelection *selection = btn->getViewAsSkill()->selections(Self);
         if (selection != nullptr && !selection->next.isEmpty() && !m_replayControl) {
-            connect(btn, (void(QSanSkillButton ::*)())(&QSanSkillButton::skill_activated), btn, [this, btn, selection]() -> void {
+            connect(btn, (void (QSanSkillButton ::*)())(&QSanSkillButton::skill_activated), btn, [this, btn, selection]() -> void {
                 // QMenu *menu = new QMenu(this);
                 setCurrentViewAsSkillSelectionChain(QStringList());
                 QMenu *menu = mainWindow()->findChild<QMenu *>(btn->getViewAsSkill()->objectName());

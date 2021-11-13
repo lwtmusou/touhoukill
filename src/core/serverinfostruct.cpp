@@ -3,6 +3,8 @@
 #include "package.h"
 #include "settings.h"
 
+#include <QRegularExpression>
+
 ServerInfoStruct ServerInfo;
 
 time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance, int operationRate)

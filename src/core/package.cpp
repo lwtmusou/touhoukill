@@ -1,6 +1,8 @@
 #include "package.h"
 #include "card.h"
 
+#include <QFile>
+
 using namespace QSanguosha;
 
 class PackagePrivate

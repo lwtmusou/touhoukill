@@ -16,6 +16,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QMessageBox>
+#include <QMutex>
 #include <QRandomGenerator>
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>

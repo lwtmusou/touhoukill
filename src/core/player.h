@@ -3,6 +3,7 @@
 
 #include "global.h"
 
+#include <QMap>
 #include <QObject>
 
 class EquipCard;

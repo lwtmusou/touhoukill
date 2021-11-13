@@ -19,6 +19,7 @@
 #include <cmath>
 #include <ctime>
 #include <functional>
+#include <optional>
 #include <random>
 #include <sstream>
 #include <type_traits>

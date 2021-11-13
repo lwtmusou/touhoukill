@@ -12,6 +12,7 @@
 #include <QJsonObject>
 #include <QMessageBox>
 #include <QNetworkInterface>
+#include <QRandomGenerator>
 #include <QStringList>
 
 #include <random>

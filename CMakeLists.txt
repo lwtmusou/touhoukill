@@ -5,6 +5,8 @@ if ( NOT ( ( CMAKE_GENERATOR MATCHES "Makefiles" ) OR ( CMAKE_GENERATOR MATCHES 
     message(FATAL_ERROR "We only support makefile and ninja generator.")
 endif()
 
+set (PCH true)
+
 project(QSanguosha
     VERSION 0.12.0
     )
@@ -206,7 +208,6 @@ set (QSanguosha_MOCS
     src/dialog/roleassigndialog.h
     src/dialog/updatedialog.h
     src/core/exppattern.h
-    src/pch.h
     src/server/gamerule.h
     src/server/room.h
     src/server/roomthread.h
@@ -250,6 +251,13 @@ set (QSanguosha_MOCS
     src/util/recorder.h
     src/util/socket.h
 )
+
+if (PCH)
+    set (QSanguosha_MOCS
+        ${QSanguosha_MOCS}
+        src/pch.h
+        )
+endif()
 
 if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
@@ -442,7 +450,9 @@ if (Qt5_FOUND)
     endif()
 
     target_compile_definitions(QSanguosha PUBLIC -DOV_EXCLUDE_STATIC_CALLBACKS PUBLIC -DQT_NO_CAST_FROM_ASCII)
-    target_precompile_headers(QSanguosha PUBLIC src/pch.h)
+    if (PCH)
+        target_precompile_headers(QSanguosha PUBLIC src/pch.h)
+    endif()
 endif()
 
 if (Qt6_FOUND)
@@ -478,5 +488,7 @@ if (Qt6_FOUND)
     endif()
 
     target_compile_definitions(Q6Sanguosha PUBLIC -DOV_EXCLUDE_STATIC_CALLBACKS PUBLIC -DQT_NO_CAST_FROM_ASCII)
-    target_precompile_headers(Q6Sanguosha PUBLIC src/pch.h)
+    if (PCH)
+        target_precompile_headers(Q6Sanguosha PUBLIC src/pch.h)
+    endif()
 endif()

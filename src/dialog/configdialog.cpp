@@ -8,6 +8,7 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QFontDialog>
+#include <QRandomGenerator>
 
 #include <random>
 

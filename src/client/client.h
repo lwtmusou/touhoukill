@@ -8,6 +8,8 @@
 #include "skill.h"
 #include "socket.h"
 
+#include <QMutex>
+
 class Recorder;
 class Replayer;
 class QTextDocument;
