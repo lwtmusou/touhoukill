@@ -7,27 +7,12 @@ QSanguosha
 /tools/
 /platforms/
 /audio/bgm/*
-/Qt*.dll
 *thumbs.db
-icu*.dll
-libEGL.dll
-libGLESv2.dll
-msvc[pr]1[0124]0.dll
-opengl32sw.dll
-vccorlib1[24]0.dll
-concrt140.dll
-vcruntime140.dll
 *.orig
 /imageformats
-d3dcompiler_47.dll
 /config.json
 *.qmlc
-/libeay32.dll
-/ssleay32.dll
 /ths.cppcheck
-/libgcc*.dll
-/libstdc++-6.dll
-/libwinpthread-1.dll
 
 *.autosave
 
@@ -43,3 +28,4 @@ Q6Sanguosha.exe
 CMakeLists.txt.user.*
 
 /documentation/doxygen/
+*.dll
