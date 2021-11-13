@@ -16,10 +16,14 @@ namespace {
 // Also we need to add our own 'sgs' lib to our preload modules to provide our functionality.
 // Codes are copied from linit.c. MAKE SURE to update these code when Lua updates.
 // These codes are for Lua 5.3 and Lua 5.4 and only 5.4 will be tested.
-// Lua 5.1 (probably the most popular version?) will be out of support.
+// Lua 5.1 (probably the most popular version?) and Lua 5.2 (which is used in legacy QSanguosha v2) are out of support.
 
 #if LUA_VERSION_NUM != 503 && LUA_VERSION_NUM != 504
-#error incompatible Lua version. QSanguosha requires Lua 5.3 or 5.4.
+#error Incompatible Lua version. QSanguosha requires Lua 5.3 or 5.4.
+#endif
+
+#if LUA_VERSION_NUM == 503
+#warning You are using Lua 5.3 which is not fully supported. Consider install Lua 5.4 from your package manager, or use the builtin Lua 5.4.
 #endif
 
 constexpr const char *sgs_libname = "sgs";

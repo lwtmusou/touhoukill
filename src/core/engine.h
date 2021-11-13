@@ -5,8 +5,6 @@
 #include "json.h"
 #include "protocol.h"
 
-// TODO: kill this
-
 #include <QHash>
 #include <QList>
 #include <QMetaObject>

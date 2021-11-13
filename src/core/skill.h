@@ -3,12 +3,6 @@
 
 #include "global.h"
 
-#if 0
-// TODO: kill these
-#include "CardFace.h"
-#include "structs.h"
-#endif
-
 #include <QDialog>
 #include <QObject>
 #include <QSet>

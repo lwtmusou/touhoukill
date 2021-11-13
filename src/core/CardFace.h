@@ -88,6 +88,7 @@ public:
      * @note to_select will be selectable until its appearance in targets >= its maximum vote. 
      */
     // virtual for current aux-skills
+    // TODO: remove this virtual
     QSGS_LUA_API virtual int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card) const;
 
     QSGS_LUA_API bool isAvailable(const Player *player, const Card *card) const;
@@ -220,30 +221,21 @@ public:
     ~NonDelayedTrick() override = default;
 };
 
+class DelayedTrickPrivate;
+
 class DelayedTrick : public TrickCard
 {
 public:
     DelayedTrick(const QString &name);
-    ~DelayedTrick() override = default;
+    ~DelayedTrick() override;
 
     void takeEffect(Player *target) const;
 
-    // returns a copy of j if j is not nullptr.
+    void setJudge(const JudgeStruct &j);
     JudgeStruct judge() const;
 
-protected:
-    // j is initialized to be nullptr when constructing.
-    // DelayedTrick don't own this struct. DO REMEMBER TO CLEANUP d WHEN DelayedTrick IS DESTRUCTING.
-    // A suggested way for initializing j is as follows (Let's take Indulgence as an example of inherited DelayedTrick):
-#if 0
-    Indulgence::Indulgence()
-    {
-        static JudgeStruct js;
-        // do some tweaks about js for Indulgence
-        j = &js;
-    }
-#endif
-    const JudgeStruct *j;
+private:
+    DelayedTrickPrivate *d;
 };
 
 class SkillCardPrivate;
@@ -257,7 +249,7 @@ public:
     QSanguosha::CardType type() const override;
     QString typeName() const override;
 
-    virtual bool throwWhenUsing() const;
+    bool throwWhenUsing() const;
     void setThrowWhenUsing(bool can);
 
 protected:

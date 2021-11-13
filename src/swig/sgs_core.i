@@ -91,7 +91,7 @@ class BasicCard : public CardFace
 class EquipCard : public CardFace
 {
 public:
-    virtual QSanguosha::EquipLocation location() const = 0;
+    QSanguosha::EquipLocation location() const;
 
     void onInstall(Player *player) const;
     void onUninstall(Player *player) const;
@@ -132,16 +132,15 @@ class DelayedTrick : public TrickCard
 {
 public:
     void takeEffect(Player *target) const;
-    JudgeStruct judge() const;
 
-protected:
-    const JudgeStruct *j;
+    void setJudge(const JudgeStruct &j);
+    JudgeStruct judge() const;
 };
 
 class SkillCard : public CardFace
 {
 public:
-    virtual bool throwWhenUsing() const;
+    bool throwWhenUsing() const;
     void setThrowWhenUsing(bool can);
 };
 

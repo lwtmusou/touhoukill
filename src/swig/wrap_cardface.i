@@ -5,6 +5,16 @@
 
 namespace CardFaceLuaCall {
 
+namespace {
+    class LuaDelayedPop1 final {
+    public:
+        LuaDelayedPop1(lua_State *l) : l(l) {}
+        ~LuaDelayedPop1() { lua_pop(l, 1); }
+    private:
+        lua_State *const l;
+    };
+}
+
 // All these functions have [-1, 0, -]
 // All of them assume the corresponding function is push on the top of stack, and all of them pop it
 
@@ -18,13 +28,12 @@ std::optional<bool> targetFixed(lua_State *l, const Player *player, const Card *
 
     int call = lua_pcall(l, 2, 1, 0); // { cardFace.targetFixed() / error }
 
-    if (call != LUA_OK) {
-        lua_pop(l, 1); // { } // need to pop the error object
+    LuaDelayedPop1 p1(l);  // { [cardFace.targetFixed() / error] } // need to pop the error object
+
+    if (call != LUA_OK)
         return std::nullopt;
-    }
 
     bool r = lua_toboolean(l, -1);
-    lua_pop(l, 1); // { }
     return r;
 }
 
@@ -36,13 +45,12 @@ std::optional<bool> targetsFeasible(lua_State *l, const QList<const Player *> &t
 
     int call = lua_pcall(l, 3, 1, 0); // { cardFace.targetsFeasible() / error }
 
-    if (call != LUA_OK) {
-        lua_pop(l, 1); // { } // need to pop the error object
+    LuaDelayedPop1 p1(l);  // { [cardFace.targetsFeasible() / error] } // need to pop the error object
+
+    if (call != LUA_OK)
         return std::nullopt;
-    }
 
     bool r = lua_toboolean(l, -1);
-    lua_pop(l, 1); // { }
     return r;
 }
 
@@ -55,13 +63,12 @@ std::optional<int> targetFilter(lua_State *l, const QList<const Player *> &targe
 
     int call = lua_pcall(l, 4, 1, 0); // { cardFace.targetsFeasible() / error }
 
-    if (call != LUA_OK) {
-        lua_pop(l, 1); // { } // need to pop the error object
+    LuaDelayedPop1 p1(l);  // { [cardFace.targetsFeasible() / error] } // need to pop the error object
+
+    if (call != LUA_OK)
         return std::nullopt;
-    }
 
     int r = lua_tointeger(l, -1);
-    lua_pop(l, 1); // { }
     return r;
 }
 
@@ -71,20 +78,17 @@ std::optional<const Card *> validate(lua_State *l, const CardUseStruct &use)
 
     int call = lua_pcall(l, 1, 1, 0); // { CardFace.validate() / error }
 
-    if (call != LUA_OK) {
-        lua_pop(l, 1); // { } // need to pop the error object
+    LuaDelayedPop1 p1(l);  // { [CardFace.validate() / error] } // need to pop the error object
+
+    if (call != LUA_OK)
         return std::nullopt;
-    }
 
     const Card *c = nullptr;
 
     int result = SWIG_ConvertPtr(l, -1, (void **)(&c), SWIGTYPE_p_Card, 0);
-    if (!(SWIG_IsOK(result))) {
-        lua_pop(l, 1); // { }
+    if (!(SWIG_IsOK(result)))
         return std::nullopt;
-    }
 
-    lua_pop(l, 1); // { }
     return c;
 }
 
@@ -95,20 +99,17 @@ std::optional<const Card *> validateInResponse(lua_State *l, Player *player, con
 
     int call = lua_pcall(l, 2, 1, 0); // { cardFace.validateInResponse() / error }
 
-    if (call != LUA_OK) {
-        lua_pop(l, 1); // { } // need to pop the error object
+    LuaDelayedPop1 p1(l);  // { [cardFace.validateInResponse() / error] } // need to pop the error object
+
+    if (call != LUA_OK)
         return std::nullopt;
-    }
 
     const Card *c = nullptr;
 
     int result = SWIG_ConvertPtr(l, -1, (void **)(&c), SWIGTYPE_p_Card, 0);
-    if (!(SWIG_IsOK(result))) {
-        lua_pop(l, 1); // { }
+    if (!(SWIG_IsOK(result)))
         return std::nullopt;
-    }
 
-    lua_pop(l, 1); // { }
     return c;
 }
 
@@ -148,13 +149,12 @@ std::optional<bool> isCancelable(lua_State *l, const CardEffectStruct &effect)
 
     int call = lua_pcall(l, 1, 1, 0); // { cardFace.isCancelable() / error }
 
-    if (call != LUA_OK) {
-        lua_pop(l, 1); // { } // need to pop the error object
+    LuaDelayedPop1 p1(l);  // { [cardFace.isCancelable() / error] } // need to pop the error object
+
+    if (call != LUA_OK)
         return std::nullopt;
-    }
 
     bool r = lua_toboolean(l, -1);
-    lua_pop(l, 1); // { }
     return r;
 }
 
@@ -175,7 +175,7 @@ bool onNullified(lua_State *l, Player *player, const Card *card)
 
 // EquipCard
 
-// also used by: onUninstall
+// also used by: onUninstall, takeEffect
 bool onInstall(lua_State *l, Player *player)
 {
     SWIG_NewPointerObj(l, player, SWIGTYPE_p_Player, 0); // { player, EquipCard.onInstall }
@@ -188,6 +188,21 @@ bool onInstall(lua_State *l, Player *player)
     }
 
     return true;
+}
+
+// DelayedTrick
+std::optional<JudgeStruct> judge(lua_State *l)
+{
+    JudgeStruct *arg2 = nullptr;
+    LuaDelayedPop1 p1(l);  // { [DelayedTrick.judge] }
+
+    if (!lua_isuserdata(l, 1))
+        return std::nullopt;
+
+    if (!SWIG_IsOK(SWIG_ConvertPtr(l, 1, (void **)&arg2, SWIGTYPE_p_JudgeStruct, 0)))
+        return std::nullopt;
+
+    return *arg2;
 }
 
 }

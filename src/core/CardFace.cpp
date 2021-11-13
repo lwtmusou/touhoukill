@@ -37,7 +37,7 @@ public:
 };
 
 // somewhat not-even-be-a-method method for Lua calls which need to be done on SWIG side
-// SWIG don't provide a binary-compatible way to export its constant variables
+// SWIG doesn't provide a binary-compatible way to export its constants
 // These functions are implemented in wrap_cardface.i and generated in sgsLUA_wrap.cxx
 namespace CardFaceLuaCall {
 // CardFace
@@ -52,7 +52,10 @@ std::optional<bool> isCancelable(lua_State *l, const CardEffectStruct &effect);
 bool onNullified(lua_State *l, Player *player, const Card *card);
 
 // EquipCard
-bool onInstall(lua_State *l, Player *player); // also used by: onUninstall
+bool onInstall(lua_State *l, Player *player); // also used by: onUninstall, takeEffect
+
+// DelayedTrick
+std::optional<JudgeStruct> judge(lua_State *l);
 } // namespace CardFaceLuaCall
 
 // -- type (which is specified by desc.type using SecondTypeMask / ThirdTypeMask)
@@ -949,7 +952,7 @@ void EquipCard::onUninstall(Player *player) const
     defaultOnUninstall(player);
 }
 
-void EquipCard::defaultOnInstall(Player *) const
+void EquipCard::defaultOnInstall(Player * /*unused*/) const
 {
 #if 0
     // Shouldn't the attach skill logic be in GameLogic?
@@ -971,7 +974,7 @@ void EquipCard::defaultOnInstall(Player *) const
 #endif
 }
 
-void EquipCard::defaultOnUninstall(Player *) const
+void EquipCard::defaultOnUninstall(Player * /*unused*/) const
 {
 #if 0
     // Shouldn't the detech skill logic be in GameLogic?
@@ -1094,32 +1097,88 @@ NonDelayedTrick::NonDelayedTrick(const QString &name)
 {
 }
 
+class DelayedTrickPrivate
+{
+public:
+    JudgeStruct *j;
+    DelayedTrickPrivate()
+        : j(nullptr)
+    {
+    }
+};
+
 DelayedTrick::DelayedTrick(const QString &name)
     : TrickCard(name)
-    , j(nullptr)
+    , d(new DelayedTrickPrivate)
 {
+}
+
+DelayedTrick::~DelayedTrick()
+{
+    delete d->j;
+    delete d;
 }
 
 void DelayedTrick::takeEffect(Player *target) const
 {
+    bool called = false;
+
+    LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+    bool pushed = l->pushCardFace(name()); // { CardFace(if successful) }
+    if (pushed) {
+        do {
+            int type = lua_getfield(l, -1, "takeEffect"); // { DelayedTrick.takeEffect, CardFace }
+            do {
+                if (type == LUA_TFUNCTION) {
+                    // we should do the function call and return
+                    // error should be catched in CardFaceLuaCall
+                    called = CardFaceLuaCall::onInstall(l, target); // { CardFace }
+                } else {
+                    // not function, ignored
+                }
+            } while (false);
+            lua_pop(l, 1); // { CardFace }
+        } while (false);
+        lua_pop(l, 1); // { }
+    }
+
+    if (called)
+        return;
+
+    // default
+    // do nothing
+}
+
+void DelayedTrick::setJudge(const JudgeStruct &j)
+{
+    delete d->j;
+    d->j = new JudgeStruct(j);
 }
 
 JudgeStruct DelayedTrick::judge() const
 {
-    if (j == nullptr)
-        return JudgeStruct();
+    if (d->j == nullptr) {
+        LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+        bool pushed = l->pushCardFace(name()); // { CardFace(if successful) }
+        if (!pushed)
+            return JudgeStruct();
 
-    return *j;
+        do {
+            lua_getfield(l, -1, "judge"); // { DelayedTrick.judge, CardFace }
+            std::optional<JudgeStruct> j = CardFaceLuaCall::judge(l); // { CardFace }
+            if (j.has_value())
+                d->j = new JudgeStruct(j.value());
+        } while (false);
+        lua_pop(l, 1); // { }
+    }
+
+    return d->j == nullptr ? JudgeStruct() : JudgeStruct(*(d->j));
 }
 
 class SkillCardPrivate
 {
 public:
-    bool throw_when_using;
-    SkillCardPrivate()
-        : throw_when_using(true)
-    {
-    }
+    std::optional<bool> throw_when_using;
 };
 
 SkillCard::SkillCard(const QString &name)
@@ -1188,7 +1247,38 @@ void SkillCard::defaultUse(RoomObject * /*room*/, const CardUseStruct &use) cons
 
 bool SkillCard::throwWhenUsing() const
 {
-    return d->throw_when_using;
+    bool r = true;
+
+    if (!d->throw_when_using.has_value()) {
+        LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+        bool pushed = l->pushCardFace(name()); // { CardFace(if successful) }
+        if (!pushed)
+            return false;
+
+        do {
+            int type = lua_getfield(l, -1, "throwWhenUsing"); // { SkillCard.throwWhenUsing, CardFace }
+            do {
+                if (type == LUA_TBOOLEAN) {
+                    r = lua_toboolean(l, -1);
+                    d->throw_when_using = r;
+                } else if (type == LUA_TFUNCTION) {
+                    // we should do the function call and return
+                    // error should be catched here
+                    int call = lua_pcall(l, 0, 1, 0); // { SkillCard.throwWhenUsing() / error, CardFace }
+                    if (call == LUA_OK)
+                        r = lua_toboolean(l, -1);
+
+                    // DO NOT STORE d->throw_when_using
+                } else {
+                    // neither boolean nor function, ignored
+                }
+            } while (false);
+            lua_pop(l, 1); // { CardFace }
+        } while (false);
+        lua_pop(l, 1); // { }
+    }
+
+    return d->throw_when_using.value_or(r);
 }
 
 void SkillCard::setThrowWhenUsing(bool can)

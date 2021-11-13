@@ -3,8 +3,6 @@
 
 #include "global.h"
 
-// #include "structs.h"
-
 #include <QList>
 #include <QString>
 #include <QVariant>
