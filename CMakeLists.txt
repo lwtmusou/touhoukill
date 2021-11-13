@@ -98,6 +98,7 @@ set (QSanguosha_Core_SRCS
     src/core/util.cpp
     src/core/mode.cpp
     src/core/luacardface.cpp
+    src/core/exppattern.cpp
     )
 
 set (QSanguosha_Core_MOCS
@@ -121,6 +122,7 @@ set (QSanguosha_Core_MOCS
     src/core/util.h
     src/core/global.h
     src/core/mode.h
+    src/core/exppattern.h
     )
 
 set (QSanguosha_SRCS
@@ -139,7 +141,6 @@ set (QSanguosha_SRCS
     src/dialog/roleassigndialog.cpp
     src/dialog/updatedialog.cpp
     src/main.cpp
-    src/core/exppattern.cpp
     src/server/gamerule.cpp
     src/server/room.cpp
     src/server/roomthread.cpp
@@ -207,7 +208,6 @@ set (QSanguosha_MOCS
     src/dialog/mainwindow.h
     src/dialog/roleassigndialog.h
     src/dialog/updatedialog.h
-    src/core/exppattern.h
     src/server/gamerule.h
     src/server/room.h
     src/server/roomthread.h
