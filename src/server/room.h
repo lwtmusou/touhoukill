@@ -388,7 +388,7 @@ public:
     QSGS_SOCKET void processResponse(ServerPlayer *player, const QSanProtocol::Packet *arg);
     QSGS_SOCKET void addRobotCommand(ServerPlayer *player, const QVariant &arg);
     QSGS_SOCKET void fillRobotsCommand(ServerPlayer *player, const QVariant &arg);
-    QSGS_SOCKET void broadcastInvoke(const QSanProtocol::AbstractPacket *packet, ServerPlayer *except = nullptr);
+    QSGS_SOCKET void broadcastInvoke(const QSanProtocol::Packet *packet, ServerPlayer *except = nullptr);
     QSGS_SOCKET void broadcastInvoke(const char *method, const QString &arg = QStringLiteral("."), ServerPlayer *except = nullptr);
     QSGS_SOCKET void networkDelayTestCommand(ServerPlayer *player, const QVariant &);
     QSGS_LOGIC bool roleStatusCommand(ServerPlayer *player);

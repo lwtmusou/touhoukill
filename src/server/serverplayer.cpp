@@ -343,7 +343,7 @@ void ServerPlayer::sendMessage(const QString &message)
     }
 }
 
-void ServerPlayer::invoke(const AbstractPacket *packet)
+void ServerPlayer::invoke(const Packet *packet)
 {
     unicast(packet->toString());
 }

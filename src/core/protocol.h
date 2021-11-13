@@ -229,21 +229,7 @@ public:
     QVariant toVariant() const;
 };
 
-class AbstractPacket
-{
-public:
-    virtual ~AbstractPacket() = default;
-    virtual bool parse(const QByteArray &) = 0;
-    virtual QByteArray toJson() const = 0;
-    virtual QString toString() const = 0;
-    virtual PacketDescription getPacketDestination() const = 0;
-    virtual PacketDescription getPacketSource() const = 0;
-    virtual PacketDescription getPacketType() const = 0;
-    virtual PacketDescription getPacketDescription() const = 0;
-    virtual CommandType getCommandType() const = 0;
-};
-
-class Packet : public AbstractPacket
+class Packet final
 {
 public:
     //format: [global_serial, local_serial, packet_type, command_name, command_body]
@@ -260,26 +246,26 @@ public:
     {
         return messageBody;
     }
-    bool parse(const QByteArray &raw) override;
-    QByteArray toJson() const override;
-    QString toString() const override;
-    PacketDescription getPacketDestination() const override
+    bool parse(const QByteArray &raw);
+    QByteArray toJson() const;
+    QString toString() const;
+    PacketDescription getPacketDestination() const
     {
         return static_cast<PacketDescription>(packetDescription & S_DEST_MASK);
     }
-    PacketDescription getPacketSource() const override
+    PacketDescription getPacketSource() const
     {
         return static_cast<PacketDescription>(packetDescription & S_SRC_MASK);
     }
-    PacketDescription getPacketType() const override
+    PacketDescription getPacketType() const
     {
         return static_cast<PacketDescription>(packetDescription & S_TYPE_MASK);
     }
-    PacketDescription getPacketDescription() const override
+    PacketDescription getPacketDescription() const
     {
         return packetDescription;
     }
-    CommandType getCommandType() const override
+    CommandType getCommandType() const
     {
         return command;
     }

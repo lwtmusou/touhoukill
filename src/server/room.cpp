@@ -901,7 +901,7 @@ void Room::broadcastInvoke(const char *method, const QString &arg, ServerPlayer 
     broadcast(QStringLiteral("%1 %2").arg(QString::fromUtf8(method), arg), except);
 }
 
-void Room::broadcastInvoke(const QSanProtocol::AbstractPacket *packet, ServerPlayer *except)
+void Room::broadcastInvoke(const QSanProtocol::Packet *packet, ServerPlayer *except)
 {
     broadcast(packet->toString(), except);
 }

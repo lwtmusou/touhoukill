@@ -31,7 +31,7 @@ public:
 
     QSGS_SOCKET void setSocket(ClientSocket *socket);
 
-    QSGS_SOCKET void invoke(const QSanProtocol::AbstractPacket *packet);
+    QSGS_SOCKET void invoke(const QSanProtocol::Packet *packet);
     QSGS_SOCKET void invoke(const char *method, const QString &arg = QStringLiteral("."));
     QSGS_SOCKET QString reportHeader() const;
     QSGS_SOCKET void unicast(const QString &message);
