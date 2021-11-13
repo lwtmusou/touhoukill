@@ -426,6 +426,7 @@ MarkChangeStruct::MarkChangeStruct()
 {
 }
 
+#ifndef Q_DOC
 class TriggerDetailSharedData : public QSharedData
 {
 public:
@@ -461,6 +462,7 @@ public:
     TriggerDetailPrivate(const TriggerDetailPrivate &) = default;
     TriggerDetailPrivate &operator=(const TriggerDetailPrivate &) = default;
 };
+#endif
 
 bool TriggerDetail::operator<(const TriggerDetail &arg2) const // the operator < for sorting the invoke order.
 {
