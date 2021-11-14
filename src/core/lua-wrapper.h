@@ -41,7 +41,6 @@ private:
     Q_DISABLE_COPY_MOVE(LuaState)
 };
 
-// A wrapper for "LuaState *const" which supports implicit type conversion to lua_State *
 class LuaStatePointer final
 {
 public:

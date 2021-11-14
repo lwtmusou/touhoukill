@@ -201,20 +201,45 @@ public:
 };
 #endif
 
+/**
+ * @class LuaState
+ * @brief A wrapper for struct lua_State.
+ *
+ * This class the wrapper of struct lua_State which comes from Lua.
+ * Usually the class which is directly used is @c LuaStatePointer which supports implicit conversion to lua_State * .
+ *
+ * This class provides extra functionality for directly pushing QSanguosha-specific data to the Lua stack.
+ */
+
 LuaState::LuaState()
     : d(new LuaStatePrivate)
 {
 }
+
+/**
+ * @brief Destructor.
+ */
 
 LuaState::~LuaState()
 {
     delete d;
 }
 
+/**
+ * @brief returns internal lua_State * structure.
+ * @return the lua_State * structure
+ */
+
 lua_State *LuaState::data()
 {
     return d->l;
 }
+
+/**
+ * @brief [0|1, 0, -] push the specific CardFace to Lua stack
+ * @param name the name of CardFace
+ * @return true if success, else false
+ */
 
 bool LuaState::pushCardFace(const QString &name)
 {
@@ -232,6 +257,11 @@ bool LuaState::pushCardFace(const QString &name)
     return true;
 }
 
+/**
+ * @brief [0|1, 0, -] push the card faces to Lua stack
+ * @return true if success, else false
+ */
+
 bool LuaState::pushCardFaces()
 {
     if (d->reg.cardFacesTable == LUA_NOREF)
@@ -243,6 +273,11 @@ bool LuaState::pushCardFaces()
     lua_remove(d->l, -2); // { v }
     return true;
 }
+
+/**
+ * @brief return names of all registered card faces
+ * @return all names
+ */
 
 QStringList LuaState::cardFaceNames() const
 {
@@ -285,6 +320,65 @@ QStringList LuaState::packageNames() const
     return QStringList();
 }
 
+/**
+ * @class LuaStatePointer
+ * @brief wrapper for pointer of LuaState which supports implicit conversion to lua_State *.
+ *
+ * This is the wrapper which is usually used for @c LuaState.
+ * It acts as a pointer wrapper, so that operator -> can also be overloaded.
+ */
+
+/**
+ * @fn LuaStatePointer::LuaStatePointer(const LuaStatePointer &)
+ * @brief Default copy constructor
+ */
+
+/**
+ * @fn LuaStatePointer::LuaStatePointer(LuaState *p)
+ * @brief Constructor from raw LuaState pointer.
+ */
+
+/**
+ * @fn LuaStatePointer &LuaStatePointer::operator=(const LuaStatePointer &)
+ * @brief Default copy assignment operator.
+ */
+
+/**
+ * @fn LuaState *LuaStatePointer::data() const
+ * @brief get the raw pointer. Usually you don't need the function.
+ * @return the internal raw LuaState pointer.
+ */
+
+/**
+ * @fn LuaState *LuaStatePointer::operator->() const
+ * @brief get the raw pointer for operator -> use
+ * @return the internal raw LuaState pointer (for operator -> use)
+ */
+
+/**
+ * @fn LuaState *LuaStatePointer::operator*() const
+ * @brief get the reference for the internal LuaState
+ * @return the internal raw LuaState reference
+ */
+
+/**
+ * @fn LuaStatePointer::operator LuaState *() const
+ * @brief implicit conversion to internal LuaState pointer
+ * @return the internal raw LuaState pointer
+ */
+
+/**
+ * @fn bool LuaStatePointer::isNull() const
+ * @brief judge if the LuaState is null or not
+ * @return if the LuaState is null or not
+ */
+
+/**
+ * @fn LuaStatePointer::operator lua_State *() const
+ * @brief implicit conversion to struct lua_State pointer, for raw Lua calls
+ * @return the struct lua_State pointer
+ */
+
 #ifndef Q_QDOC
 class LuaMultiThreadEnvironmentPrivate
 {
@@ -296,6 +390,18 @@ public:
 };
 #endif
 
+/**
+ * @class LuaMultiThreadEnvironment
+ * @brief Dedicated helper class for Lua use in multi thread environment
+ *
+ * LuaMultiThreadEnvironment is a class for creating a Lua state on every available thread.
+ * By doing so ensures thread safety since Lua itself is not thread-safe.
+ */
+
+/**
+ * @brief Returns a LuaStatePointer for current thread (create one if not exist)
+ * @return LuaStatePointer for current thread.
+ */
 LuaStatePointer LuaMultiThreadEnvironment::luaStateForCurrentThread()
 {
     auto *storage = &(self()->d->stateStorage);
@@ -306,26 +412,51 @@ LuaStatePointer LuaMultiThreadEnvironment::luaStateForCurrentThread()
     return storage->localData();
 }
 
+/**
+ * @brief Helper function
+ * @return Package lists
+ */
+
 const QList<const Package *> &LuaMultiThreadEnvironment::packages()
 {
     return self()->d->packages;
 }
+
+/**
+ * @brief Helper function
+ * @return CardFace lists
+ */
 
 const QList<const CardFace *> &LuaMultiThreadEnvironment::cardFaces()
 {
     return self()->d->cardFaces;
 }
 
+/**
+ * @brief Helper function
+ * @return Skill lists
+ */
+
 const QList<const Skill *> &LuaMultiThreadEnvironment::skills()
 {
     return self()->d->skills;
 }
+
+/**
+ * @brief Lua Version
+ * @return Lua Version
+ */
 
 const QString &LuaMultiThreadEnvironment::luaVersion()
 {
     static QString v = QStringLiteral(LUA_RELEASE);
     return v;
 }
+
+/**
+ * @brief Lua Copyright
+ * @return Lua Copyright
+ */
 
 const QString &LuaMultiThreadEnvironment::luaCopyright()
 {
