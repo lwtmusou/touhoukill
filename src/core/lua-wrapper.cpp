@@ -478,7 +478,7 @@ LuaMultiThreadEnvironment::LuaMultiThreadEnvironment()
     foreach (const QString &name, firstLuaState->cardFaceNames()) {
         CardFace *f = SgsEx::createNewLuaCardFace(name);
         if (f != nullptr)
-            Sanguosha->registerCardFace(f);
+            d->cardFaces << f;
         else
             qDebug() << "creation of cardFace " << name << "failed";
     }
