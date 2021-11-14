@@ -29,7 +29,6 @@
 
 using namespace QSanguosha;
 
-#ifndef Q_QDOC
 class EnginePrivate
 {
 public:
@@ -56,7 +55,6 @@ public:
     {
     }
 };
-#endif
 
 Engine *Sanguosha = nullptr;
 

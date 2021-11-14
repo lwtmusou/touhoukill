@@ -10,7 +10,6 @@
 
 using namespace QSanguosha;
 
-#ifndef Q_QDOC
 class SkillPrivate final
 {
 public:
@@ -53,7 +52,6 @@ private:
         Q_UNIMPLEMENTED();
     }
 };
-#endif
 
 Skill::Skill(const QString &name, Categories skillCategories, ShowType showType)
     : d(new SkillPrivate(skillCategories, showType))
@@ -208,7 +206,6 @@ Skill::ArrayType Skill::arrayType() const
     return ArrayNone;
 }
 
-#ifndef Q_QDOC
 class ViewAsSkillPrivate
 {
 public:
@@ -221,7 +218,6 @@ public:
     {
     }
 };
-#endif
 
 ViewAsSkill::ViewAsSkill(const QString &name)
     : Skill(name, SkillNoFlag, ShowViewAs)
@@ -411,7 +407,6 @@ bool ZeroCardViewAsSkill::viewFilter(const QList<const Card *> & /*selected*/, c
     return false;
 }
 
-#ifndef Q_QDOC
 class OneCardViewAsSkillPrivate
 {
 public:
@@ -419,7 +414,6 @@ public:
 
     virtual ~OneCardViewAsSkillPrivate() = default;
 };
-#endif
 
 OneCardViewAsSkill::OneCardViewAsSkill(const QString &name)
     : ViewAsSkill(name)
@@ -458,13 +452,11 @@ const Card *OneCardViewAsSkill::viewAs(const QList<const Card *> &cards, const P
         return viewAs(cards.first(), Self, CurrentViewAsSkillChain);
 }
 
-#ifndef Q_QDOC
 class FilterSkillPrivate : public OneCardViewAsSkillPrivate
 {
 public:
     ~FilterSkillPrivate() override = default;
 };
-#endif
 
 FilterSkill::FilterSkill(const QString &name)
     : Skill(name, SkillCompulsory, ShowStatic)

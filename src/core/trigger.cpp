@@ -8,7 +8,6 @@
 
 using namespace QSanguosha;
 
-#ifndef Q_QDOC
 class TriggerPrivate
 {
 public:
@@ -20,7 +19,6 @@ public:
     {
     }
 };
-#endif
 
 Trigger::Trigger()
     : d(new TriggerPrivate)
@@ -94,13 +92,11 @@ QList<TriggerDetail> Rule::triggerable(TriggerEvent /*event*/, RoomObject *room,
     return QList<TriggerDetail>() << d;
 }
 
-#ifndef Q_QDOC
 class SkillTriggerPrivate
 {
 public:
     QString name;
 };
-#endif
 
 SkillTrigger::SkillTrigger(const QString &name)
     : d(new SkillTriggerPrivate)
@@ -226,13 +222,11 @@ QList<TriggerDetail> GlobalRecord::triggerable(TriggerEvent /*event*/, RoomObjec
     return QList<TriggerDetail>();
 }
 
-#ifndef Q_QDOC
 class FakeMoveRecordPrivate
 {
 public:
     QString skillName;
 };
-#endif
 
 FakeMoveRecord::FakeMoveRecord(const QString &skillName)
     : GlobalRecord()

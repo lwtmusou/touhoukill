@@ -362,7 +362,6 @@ QString CardUseStruct::toString() const
     return l.join(QStringLiteral("->"));
 }
 
-#ifndef Q_QDOC
 class TriggerDetailSharedData : public QSharedData
 {
 public:
@@ -398,7 +397,6 @@ public:
     TriggerDetailPrivate(const TriggerDetailPrivate &) = default;
     TriggerDetailPrivate &operator=(const TriggerDetailPrivate &) = default;
 };
-#endif
 
 bool TriggerDetail::operator<(const TriggerDetail &arg2) const // the operator < for sorting the invoke order.
 {

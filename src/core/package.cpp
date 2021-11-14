@@ -5,7 +5,6 @@
 
 using namespace QSanguosha;
 
-#ifndef Q_QDOC
 class PackagePrivate
 {
 public:
@@ -15,7 +14,6 @@ public:
     QList<const General *> generals;
     QList<CardDescriptor> all_cards;
 };
-#endif
 
 Package::Package(const QString &name, PackageType pack_type)
     : d(new PackagePrivate)
