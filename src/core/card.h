@@ -3,7 +3,6 @@
 
 #include "global.h"
 
-#include <QIcon>
 #include <QMap>
 #include <QObject>
 #include <QSet>

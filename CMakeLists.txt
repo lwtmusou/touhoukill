@@ -37,12 +37,6 @@ if (NOT (Qt5_FOUND OR Qt6_FOUND))
     message(FATAL_ERROR "at least one of Qt 5 and Qt 6 is needed")
 endif()
 
-if(APPLE)
-    add_compile_definitions(LUA_USE_MACOSX)
-elseif(NOT WIN32)
-    add_compile_definitions(LUA_USE_LINUX)
-endif()
-
 find_program(SWIG_EXECUTABLE swig)
 if (CMAKE_HOST_WIN32)
     find_program(SWIG_EXECUTABLE swig.exe ${CMAKE_CURRENT_LIST_DIR}/tools/swig)
@@ -335,6 +329,12 @@ else()
 
     include_directories("include/lua")
     add_library(lua54 STATIC ${LUA_FILE})
+    if(APPLE)
+        target_compile_definitions(lua54 PRIVATE LUA_USE_MACOSX)
+    elseif(NOT WIN32)
+        target_compile_definitions(lua54 PRIVATE LUA_USE_LINUX)
+    endif()
+
     add_library(QSanguoshaLibs::lua54 ALIAS lua54)
 endif()
 
@@ -403,7 +403,7 @@ if (Qt5Multimedia_FOUND OR Qt6Multimedia_FOUND)
         add_library(oggvorbisfile STATIC ${OGG_FILE})
 
         if (MSVC)
-            target_compile_options(oggvorbisfile BEFORE PUBLIC "-wd4244" PUBLIC "-wd4305" PUBLIC "-wd4267")
+            target_compile_options(oggvorbisfile BEFORE PRIVATE "-wd4244" PRIVATE "-wd4305" PRIVATE "-wd4267")
         endif()
         add_library(QSanguoshaLibs::oggvorbisfile ALIAS oggvorbisfile)
     endif()
@@ -429,7 +429,7 @@ if (Qt5_FOUND)
     target_compile_definitions(qsanguosha_wrap PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
     # ONLY FOR THEIR INCLUDE DIRECTORIES! Compile fails if we don't add the link libraries.
     # Seems weird since we don't even link the libraries here
-    target_link_libraries(qsanguosha_wrap QSanguoshaLibs::lua54 Qt5::Core Qt5::Gui Qt5::Widgets)
+    target_link_libraries(qsanguosha_wrap QSanguoshaLibs::lua54 Qt5::Core)
 
     target_compile_definitions(QSanguosha PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
     target_link_libraries(QSanguosha qsanguosha_wrap QSanguoshaLibs::lua54)
@@ -472,7 +472,7 @@ if (Qt6_FOUND)
     target_compile_definitions(q6sanguosha_wrap PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x70000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
     # ONLY FOR THEIR INCLUDE DIRECTORIES! Compile fails if we don't add the link libraries.
     # Seems weird since we don't even link the libraries here
-    target_link_libraries(q6sanguosha_wrap QSanguoshaLibs::lua54 Qt6::Core Qt6::Gui Qt6::Widgets)
+    target_link_libraries(q6sanguosha_wrap QSanguoshaLibs::lua54 Qt6::Core)
 
     target_compile_definitions(Q6Sanguosha PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x70000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
     target_link_libraries(Q6Sanguosha q6sanguosha_wrap QSanguoshaLibs::lua54)
