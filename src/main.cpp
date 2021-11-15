@@ -1,11 +1,13 @@
 #include <QDateTime>
 #include <QDir>
+#include <QGlobalStatic>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QTranslator>
 
 #include "engine.h"
+#include "qsanstyle.h"
 #include "settings.h"
 
 int main(int argc, char *argv[])
@@ -43,10 +45,13 @@ int main(int argc, char *argv[])
 
     a.setFont(Config.font());
 
-    QQmlApplicationEngine appEngine;
-    appEngine.rootContext()->setContextProperty("Sanguosha", Sanguosha);
-    appEngine.rootContext()->setContextProperty("Config", &Config);
-    appEngine.load("qml/MainWindow.qml");
+    QQmlApplicationEngine *appEngine = new QQmlApplicationEngine(&a);
+    QSanStyleFactory *sanStyleFactory = new QSanStyleFactory(appEngine);
+
+    appEngine->rootContext()->setContextProperty("Sanguosha", Sanguosha);
+    appEngine->rootContext()->setContextProperty("Config", &Config);
+    appEngine->rootContext()->setContextProperty("StyleFactory", sanStyleFactory);
+    appEngine->load("qml/MainWindow.qml");
 
     return a.exec();
 }

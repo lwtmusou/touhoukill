@@ -78,11 +78,7 @@ Image {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: parent.text
-        font: {
-            var ret = parent.font
-            ret.pixelSize = Math.min(height * 0.7, (width / 5) * 0.7)
-            return ret
-        }
+        font: parent.font
     }
 
     MouseArea {

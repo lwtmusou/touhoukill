@@ -288,5 +288,7 @@ ApplicationWindow {
             y = Config.jsValue("WindowY", -8)
             show();
         }
+
+        console.log(StyleFactory.styleInstance("default").name);
     }
 }

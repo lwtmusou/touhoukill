@@ -33,6 +33,8 @@ const int Settings::S_JUDGE_LONG_DELAY = 800;
 
 QJSValue Settings::jsValue(const QString &key, const QJSValue &defaultValue) const
 {
+    // TODO: use of obsolete member QJSValue::engine(), need refactoring
+
     if (contains(key))
         return defaultValue.engine()->toScriptValue(value(key));
     else
