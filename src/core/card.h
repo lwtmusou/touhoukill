@@ -3,9 +3,8 @@
 
 #include "global.h"
 
-#include <QMap>
-#include <QObject>
-#include <QSet>
+#include <QString>
+#include <QVariant>
 
 class RoomObject;
 class Player;

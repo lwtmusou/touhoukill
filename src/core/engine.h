@@ -5,12 +5,11 @@
 #include "json.h"
 #include "protocol.h"
 
-#include <QHash>
 #include <QList>
-#include <QMetaObject>
-#include <QMutex>
+#include <QSet>
+#include <QString>
 #include <QStringList>
-#include <QThread>
+#include <QVariant>
 
 class QVersionNumber;
 class LuaStatePointer;

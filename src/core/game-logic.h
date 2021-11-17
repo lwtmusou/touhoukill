@@ -1,9 +1,11 @@
 #ifndef _GAME_LOGIC_H_
 #define _GAME_LOGIC_H_
 
-#include <QString>
-
 #include "structs.h"
+
+#include <QString>
+#include <QStringList>
+#include <QVariant>
 
 class Player;
 class RoomObject;

@@ -3,7 +3,6 @@
 
 #include "global.h"
 
-#include <QObject>
 #include <QString>
 
 class Player;

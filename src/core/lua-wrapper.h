@@ -1,7 +1,6 @@
 #ifndef _LUA_WRAPPER_H
 #define _LUA_WRAPPER_H
 
-#include <QMetaObject>
 #include <QObject>
 #include <QPointer>
 

@@ -3,13 +3,9 @@
 
 #include "global.h"
 
-#include <QCoreApplication>
 #include <QCryptographicHash>
-#include <QHash>
-#include <QMap>
-#include <QObject>
-#include <QPair>
-#include <QStringList>
+#include <QList>
+#include <QString>
 
 class Skill;
 class Player;

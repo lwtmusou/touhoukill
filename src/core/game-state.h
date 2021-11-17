@@ -1,9 +1,10 @@
 #ifndef _GAME_STATE_H_
 #define _GAME_STATE_H_
 
-#include <QObject>
-
 #include "structs.h"
+
+#include <QString>
+
 class Player;
 
 namespace RefactorProposal {

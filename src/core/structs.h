@@ -7,12 +7,14 @@
 #include "global.h"
 
 #ifndef SWIG
+#include <QString>
+#include <QStringList>
+#include <QVariant>
+
 class Skill;
 class RoomObject;
 class Card;
 class Player;
-
-#include <QVariant>
 #else
 #define Q_DECLARE_METATYPE(...)
 #endif

@@ -3,8 +3,11 @@
 
 #include "global.h"
 
+#include <QList>
 #include <QMap>
 #include <QObject>
+#include <QString>
+#include <QStringList>
 
 class EquipCard;
 class Weapon;
