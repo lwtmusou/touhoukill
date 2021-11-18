@@ -10,6 +10,10 @@ set (PCH true)
 # temporary for testing
 set (BUILD_SHARED_LIBS true)
 
+if (BUILD_SHARED_LIBS)
+    set(CMAKE_POSITION_INDEPENDENT_CODE true)
+endif()
+
 project(QSanguosha
     VERSION 0.12.0
     )
@@ -444,6 +448,8 @@ if (Qt5_FOUND)
     else()
         target_compile_definitions(qsanguosha_wrap PRIVATE -DBUILD_QSGSCORE)
         target_compile_definitions(QSgsCore PRIVATE -DBUILD_QSGSCORE)
+
+        set_target_properties(QSgsCore PROPERTIES VERSION ${QSanguosha_VERSION} SOVERSION 0.12)
     endif()
 
     if (NOT ANDROID)
@@ -504,6 +510,8 @@ if (Qt6_FOUND)
     else()
         target_compile_definitions(q6sanguosha_wrap PRIVATE -DBUILD_QSGSCORE)
         target_compile_definitions(Q6SgsCore PRIVATE -DBUILD_QSGSCORE)
+
+        set_target_properties(Q6SgsCore PROPERTIES VERSION ${QSanguosha_VERSION} SOVERSION 0.12)
     endif()
 
     qt6_add_translation(QM_FILES6 ${TS_FILES})
