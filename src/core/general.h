@@ -2,6 +2,7 @@
 #define _GENERAL_H
 
 #include "global.h"
+#include "qsgscore.h"
 
 #include <QSet>
 #include <QString>
@@ -12,7 +13,7 @@ class Package;
 
 class GeneralPrivate;
 
-class General final
+class QSGS_CORE_EXPORT General final
 {
 public:
     explicit General(Package *package, const QString &name, const QString &kingdom, int maxHp = 4, bool isLord = false, bool male = false, bool hidden = false,

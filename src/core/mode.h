@@ -2,6 +2,7 @@
 #define QSANGUOSHA_MODE_H
 
 #include "global.h"
+#include "qsgscore.h"
 
 #include <QSet>
 #include <QString>
@@ -13,7 +14,7 @@ class General;
 
 class ModePrivate;
 
-class Mode
+class QSGS_CORE_EXPORT Mode
 {
 public:
     Mode(const QString &name, QSanguosha::ModeCategory category);
@@ -39,7 +40,7 @@ private:
 
 class GenericRoleModePrivate;
 
-class GenericRoleMode : public Mode
+class QSGS_CORE_EXPORT GenericRoleMode : public Mode
 {
     GenericRoleMode(int loyalistCount, int rebelCount, int renegadeCount);
     ~GenericRoleMode() override;
@@ -58,7 +59,7 @@ private:
 
 class GenericHegemonyModePrivate;
 
-class GenericHegemonyMode : public Mode
+class QSGS_CORE_EXPORT GenericHegemonyMode : public Mode
 {
     GenericHegemonyMode(int players);
     ~GenericHegemonyMode() override;

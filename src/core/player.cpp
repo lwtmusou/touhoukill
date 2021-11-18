@@ -1,10 +1,12 @@
 #include "player.h"
 #include "CardFace.h"
-#include "client.h"
+#include "RoomObject.h"
+#include "card.h"
 #include "engine.h"
 #include "exppattern.h"
 #include "general.h"
-#include "settings.h"
+#include "serverinfostruct.h"
+#include "skill.h"
 #include "util.h"
 
 using namespace QSanguosha;
@@ -715,7 +717,11 @@ bool Player::hasValidLordSkill(const QString &skill_name, bool include_lose) con
 
     QString mode = ServerInfo.GameMode;
     if (mode == QStringLiteral("06_3v3") || mode == QStringLiteral("06_XMode") || mode == QStringLiteral("02_1v1")
-        || Config.value(QStringLiteral("WithoutLordskill"), false).toBool())
+#if 0
+            // todo: make this in serverinfo
+        || Config.value(QStringLiteral("WithoutLordskill"), false).toBool()
+#endif
+    )
         return false;
 
     if (isLord()) {

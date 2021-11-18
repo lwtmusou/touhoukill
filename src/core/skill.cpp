@@ -1,9 +1,8 @@
 #include "skill.h"
-#include "client.h"
+#include "card.h"
 #include "engine.h"
 #include "exppattern.h"
 #include "player.h"
-#include "settings.h"
 #include "util.h"
 
 #include <random>

@@ -21,6 +21,8 @@
 #ifndef JSON_H
 #define JSON_H
 
+#include "qsgscore.h"
+
 #include <QVariantList>
 #include <QVariantMap>
 
@@ -28,7 +30,7 @@
 typedef QVariantList JsonArray;
 typedef QVariantMap JsonObject;
 
-class JsonDocument
+class QSGS_CORE_EXPORT JsonDocument
 {
 public:
     JsonDocument();
@@ -97,24 +99,24 @@ inline bool isBool(const QVariant &var)
     return var.userType() == QMetaType::Bool;
 }
 
-bool isStringArray(const QVariant &var, unsigned from, unsigned to);
-bool isNumberArray(const QVariant &var, unsigned from, unsigned to);
+QSGS_CORE_EXPORT bool isStringArray(const QVariant &var, unsigned from, unsigned to);
+QSGS_CORE_EXPORT bool isNumberArray(const QVariant &var, unsigned from, unsigned to);
 
-QVariant toJsonArray(const QList<int> &intArray);
-QVariant toJsonArray(const QStringList &stringArray);
+QSGS_CORE_EXPORT QVariant toJsonArray(const QList<int> &intArray);
+QSGS_CORE_EXPORT QVariant toJsonArray(const QStringList &stringArray);
 
-bool tryParse(const QVariant &, int &);
-bool tryParse(const QVariant &, double &);
-bool tryParse(const QVariant &, bool &);
+QSGS_CORE_EXPORT bool tryParse(const QVariant &, int &);
+QSGS_CORE_EXPORT bool tryParse(const QVariant &, double &);
+QSGS_CORE_EXPORT bool tryParse(const QVariant &, bool &);
 
-bool tryParse(const QVariant &var, QStringList &list);
-bool tryParse(const QVariant &var, QList<int> &list);
-bool tryParse(const QVariant &var, QVariantMap &map);
-bool tryParse(const QVariant &arg, QRect &result);
-bool tryParse(const QVariant &arg, QSize &result);
-bool tryParse(const QVariant &arg, QPoint &result);
-bool tryParse(const QVariant &arg, QColor &result);
-bool tryParse(const QVariant &arg, Qt::Alignment &align);
+QSGS_CORE_EXPORT bool tryParse(const QVariant &var, QStringList &list);
+QSGS_CORE_EXPORT bool tryParse(const QVariant &var, QList<int> &list);
+QSGS_CORE_EXPORT bool tryParse(const QVariant &var, QVariantMap &map);
+QSGS_CORE_EXPORT bool tryParse(const QVariant &arg, QRect &result);
+QSGS_CORE_EXPORT bool tryParse(const QVariant &arg, QSize &result);
+QSGS_CORE_EXPORT bool tryParse(const QVariant &arg, QPoint &result);
+QSGS_CORE_EXPORT bool tryParse(const QVariant &arg, QColor &result);
+QSGS_CORE_EXPORT bool tryParse(const QVariant &arg, Qt::Alignment &align);
 } // namespace JsonUtils
 
 #endif // JSON_H

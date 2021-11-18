@@ -1,6 +1,8 @@
 #ifndef _PROTOCOL_H
 #define _PROTOCOL_H
 
+#include "qsgscore.h"
+
 #include <QVariant>
 
 namespace QSanProtocol {
@@ -207,7 +209,7 @@ enum Game3v3Camp
 //static consts
 extern const int S_ALL_ALIVE_PLAYERS;
 
-class Countdown
+class QSGS_CORE_EXPORT Countdown
 {
 public:
     enum CountdownType
@@ -229,7 +231,7 @@ public:
     QVariant toVariant() const;
 };
 
-class Packet final
+class QSGS_CORE_EXPORT Packet final
 {
 public:
     //format: [global_serial, local_serial, packet_type, command_name, command_body]

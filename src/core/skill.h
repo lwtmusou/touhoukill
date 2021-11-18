@@ -2,6 +2,7 @@
 #define _SKILL_H
 
 #include "global.h"
+#include "qsgscore.h"
 
 #include <QList>
 #include <QObject>
@@ -15,7 +16,7 @@ class Trigger;
 
 class SkillPrivate;
 
-class Skill : public QObject
+class QSGS_CORE_EXPORT Skill : public QObject
 {
     Q_OBJECT
 
@@ -127,7 +128,7 @@ private:
 };
 
 // Selection
-struct ViewAsSkillSelection
+struct QSGS_CORE_EXPORT ViewAsSkillSelection
 {
     // Selectable when next is empty
     // Expandable when next is not empty, with a list of "next"
@@ -139,7 +140,7 @@ struct ViewAsSkillSelection
 
 class ViewAsSkillPrivate;
 
-class ViewAsSkill : public Skill
+class QSGS_CORE_EXPORT ViewAsSkill : public Skill
 {
     Q_OBJECT
 
@@ -215,7 +216,7 @@ private:
     ViewAsSkillPrivate *const d;
 };
 
-class ZeroCardViewAsSkill : public ViewAsSkill
+class QSGS_CORE_EXPORT ZeroCardViewAsSkill : public ViewAsSkill
 {
     Q_OBJECT
 
@@ -230,7 +231,7 @@ public:
 
 class OneCardViewAsSkillPrivate;
 
-class OneCardViewAsSkill : public ViewAsSkill
+class QSGS_CORE_EXPORT OneCardViewAsSkill : public ViewAsSkill
 {
     Q_OBJECT
 
@@ -252,7 +253,7 @@ private:
 
 class FilterSkillPrivate;
 
-class FilterSkill : public Skill
+class QSGS_CORE_EXPORT FilterSkill : public Skill
 {
     Q_OBJECT
 
@@ -269,7 +270,7 @@ private:
     FilterSkillPrivate *const d;
 };
 
-class ProhibitSkill : public Skill
+class QSGS_CORE_EXPORT ProhibitSkill : public Skill
 {
     Q_OBJECT
 
@@ -280,7 +281,7 @@ public:
                               bool include_hidden = false) const = 0;
 };
 
-class DistanceSkill : public Skill
+class QSGS_CORE_EXPORT DistanceSkill : public Skill
 {
     Q_OBJECT
 
@@ -290,7 +291,7 @@ public:
     virtual int getCorrect(const Player *from, const Player *to) const = 0;
 };
 
-class MaxCardsSkill : public Skill
+class QSGS_CORE_EXPORT MaxCardsSkill : public Skill
 {
     Q_OBJECT
 
@@ -301,7 +302,7 @@ public:
     virtual int getFixed(const Player *target) const;
 };
 
-class TargetModSkill : public Skill
+class QSGS_CORE_EXPORT TargetModSkill : public Skill
 {
     Q_OBJECT
 
@@ -317,7 +318,7 @@ protected:
     QString pattern;
 };
 
-class AttackRangeSkill : public Skill
+class QSGS_CORE_EXPORT AttackRangeSkill : public Skill
 {
     Q_OBJECT
 
@@ -328,7 +329,7 @@ public:
     virtual int getFixed(const Player *target, bool include_weapon) const;
 };
 
-class SlashNoDistanceLimitSkill : public TargetModSkill
+class QSGS_CORE_EXPORT SlashNoDistanceLimitSkill : public TargetModSkill
 {
     Q_OBJECT
 
@@ -341,7 +342,7 @@ protected:
     QString name;
 };
 
-class TreatAsEquippingSkill : public Skill
+class QSGS_CORE_EXPORT TreatAsEquippingSkill : public Skill
 {
     Q_OBJECT
 

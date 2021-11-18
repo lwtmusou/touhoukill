@@ -169,7 +169,7 @@ void TriggerOptionButton::paint(QPainter *painter, const QStyleOptionGraphicsIte
     painter->setRenderHint(QPainter::Antialiasing);
     painter->save();
     painter->setBrush(Qt::black);
-    painter->setPen(Sanguosha->getKingdomColor(Self->general()->kingdom()));
+    // painter->setPen(Sanguosha->getKingdomColor(Self->general()->kingdom()));
     QRectF rect = boundingRect();
     painter->drawRoundedRect(rect, 5, 5);
     painter->restore();

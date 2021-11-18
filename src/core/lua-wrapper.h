@@ -1,6 +1,7 @@
 #ifndef _LUA_WRAPPER_H
 #define _LUA_WRAPPER_H
 
+#include "qsgscore.h"
 #include <QObject>
 #include <QPointer>
 
@@ -12,7 +13,7 @@ class CardFace;
 class Skill;
 struct lua_State;
 
-class LuaState final : public QObject
+class QSGS_CORE_EXPORT LuaState final : public QObject
 {
     Q_OBJECT
 
@@ -40,7 +41,7 @@ private:
     Q_DISABLE_COPY_MOVE(LuaState)
 };
 
-class LuaStatePointer final
+class QSGS_CORE_EXPORT LuaStatePointer final
 {
 public:
     LuaStatePointer(const LuaStatePointer &) = default;
@@ -89,7 +90,7 @@ private:
     QPointer<LuaState> d;
 };
 
-class LuaMultiThreadEnvironment final
+class QSGS_CORE_EXPORT LuaMultiThreadEnvironment final
 {
 public:
     static LuaStatePointer luaStateForCurrentThread();
@@ -114,7 +115,7 @@ namespace BuiltinExtension {
 // Should this be here? Maybe Engine should be responsible for this instead
 // Exit program when a pure-server program runs, and disable connecting to any server (except for localhost) on main window
 // Does nothing when debug is on
-void disableConnectToServer();
+QSGS_CORE_EXPORT void disableConnectToServer();
 
 } // namespace BuiltinExtension
 #endif

@@ -5,6 +5,7 @@
 // MAKE SURE THE GRAMMAR IS COMPATIBLE BETWEEN 2 LANGUAGES.
 
 #include "global.h"
+#include "qsgscore.h"
 
 #ifndef SWIG
 #include <QString>
@@ -17,9 +18,10 @@ class Card;
 class Player;
 #else
 #define Q_DECLARE_METATYPE(...)
+#define QSGS_CORE_EXPORT
 #endif
 
-struct DamageStruct
+struct QSGS_CORE_EXPORT DamageStruct
 {
     explicit DamageStruct(const Card *card = nullptr, Player *from = nullptr, Player *to = nullptr, int damage = 1, QSanguosha::DamageNature nature = QSanguosha::DamageNormal);
     explicit DamageStruct(const QString &reason, Player *from = nullptr, Player *to = nullptr, int damage = 1, QSanguosha::DamageNature nature = QSanguosha::DamageNormal);
@@ -37,7 +39,7 @@ struct DamageStruct
     QString trigger_info; //keep addtion info while record. since this damage event may be triggered lately by insertion of new damage event.
 };
 
-struct RecoverStruct
+struct QSGS_CORE_EXPORT RecoverStruct
 {
     // keep same argument sequence of DamageStruct
     explicit RecoverStruct(const Card *card = nullptr, Player *from = nullptr, Player *to = nullptr, int recover = 1);
@@ -50,7 +52,7 @@ struct RecoverStruct
     QString reason;
 };
 
-struct CardUseStruct
+struct QSGS_CORE_EXPORT CardUseStruct
 {
     explicit CardUseStruct(const Card *card = nullptr, Player *from = nullptr, const QList<Player *> &to = QList<Player *>(), bool isOwnerUse = true);
     CardUseStruct(const Card *card, Player *from, Player *target, bool isOwnerUse = true);
@@ -76,7 +78,7 @@ struct CardUseStruct
     QSanguosha::CardUseReason m_reason;
 };
 
-struct CardEffectStruct
+struct QSGS_CORE_EXPORT CardEffectStruct
 {
     explicit CardEffectStruct(const Card *card = nullptr, Player *from = nullptr, Player *to = nullptr);
 
@@ -89,7 +91,7 @@ struct CardEffectStruct
     QList<int> effectValue;
 };
 
-class CardMoveReason
+class QSGS_CORE_EXPORT CardMoveReason
 {
 public:
     QSanguosha::MoveReasonCategory m_reason;
@@ -122,7 +124,7 @@ public:
 #endif
 };
 
-struct SingleCardMoveStruct
+struct QSGS_CORE_EXPORT SingleCardMoveStruct
 {
     /* implicit */ SingleCardMoveStruct(int id = -1, Player *to = nullptr, QSanguosha::Place toPlace = QSanguosha::PlaceHand);
     SingleCardMoveStruct(int id, Player *from, Player *to, QSanguosha::Place fromPlace = QSanguosha::PlaceUnknown, QSanguosha::Place toPlace = QSanguosha::PlaceHand);
@@ -156,14 +158,14 @@ public:
 };
 
 // Can't specialize QListSpecialMethods<SingleCardMoveStruct> because it modifies size of QList and may cause binary incompatibility
-struct CardsMoveStruct : public QList<SingleCardMoveStruct>
+struct QSGS_CORE_EXPORT CardsMoveStruct : public QList<SingleCardMoveStruct>
 {
     bool isLastHandCard;
     CardMoveReason reason;
 };
 
 #ifndef SWIG
-struct LegacyCardsMoveStruct
+struct QSGS_CORE_EXPORT LegacyCardsMoveStruct
 {
     LegacyCardsMoveStruct();
     LegacyCardsMoveStruct(const QList<int> &ids, Player *from, Player *to, QSanguosha::Place from_place, QSanguosha::Place to_place, const CardMoveReason &reason);
@@ -193,7 +195,7 @@ struct LegacyCardsMoveStruct
     bool isRelevant(const Player *player) const;
 };
 
-struct LegacyCardsMoveOneTimeStruct
+struct QSGS_CORE_EXPORT LegacyCardsMoveOneTimeStruct
 {
     QList<int> card_ids;
     QList<QSanguosha::Place> from_places;
@@ -229,7 +231,7 @@ struct LegacyCardsMoveOneTimeStruct
 };
 #endif
 
-struct DeathStruct
+struct QSGS_CORE_EXPORT DeathStruct
 {
     explicit DeathStruct(Player *who = nullptr, DamageStruct *damage = nullptr);
 
@@ -243,7 +245,7 @@ struct DeathStruct
 
 using DyingStruct = DeathStruct;
 
-struct PindianStruct
+struct QSGS_CORE_EXPORT PindianStruct
 {
     explicit PindianStruct(Player *from = nullptr, Player *to = nullptr);
 
@@ -257,7 +259,7 @@ struct PindianStruct
     bool success;
 };
 
-struct JudgeStruct
+struct QSGS_CORE_EXPORT JudgeStruct
 {
     explicit JudgeStruct(Player *who = nullptr, const QString &pattern = QStringLiteral("."), const QString &reason = QString());
 
@@ -295,7 +297,7 @@ struct JudgeStruct
 #endif
 };
 
-struct PhaseChangeStruct
+struct QSGS_CORE_EXPORT PhaseChangeStruct
 {
     explicit PhaseChangeStruct(Player *player = nullptr, QSanguosha::Phase from = QSanguosha::PhaseNotActive, QSanguosha::Phase to = QSanguosha::PhaseNotActive);
 
@@ -304,7 +306,7 @@ struct PhaseChangeStruct
     QSanguosha::Phase to;
 };
 
-struct PhaseSkippingStruct
+struct QSGS_CORE_EXPORT PhaseSkippingStruct
 {
     PhaseSkippingStruct(Player *player = nullptr, QSanguosha::Phase phase = QSanguosha::PhaseNotActive, bool isCost = false);
 
@@ -313,7 +315,7 @@ struct PhaseSkippingStruct
     bool isCost;
 };
 
-struct CardResponseStruct
+struct QSGS_CORE_EXPORT CardResponseStruct
 {
     explicit CardResponseStruct(const Card *card = nullptr, Player *from = nullptr, bool isRetrial = false, bool isProvision = false, Player *to = nullptr);
 
@@ -327,7 +329,7 @@ struct CardResponseStruct
     bool m_isShowncard;
 };
 
-struct MarkChangeStruct
+struct QSGS_CORE_EXPORT MarkChangeStruct
 {
     explicit MarkChangeStruct(Player *player = nullptr, const QString &name = QString(), int num = 1);
 
@@ -336,7 +338,7 @@ struct MarkChangeStruct
     int num;
 };
 
-struct SkillAcquireDetachStruct
+struct QSGS_CORE_EXPORT SkillAcquireDetachStruct
 {
     explicit SkillAcquireDetachStruct(Player *player = nullptr, const Skill *skill = nullptr, bool isAcquire = false);
 
@@ -345,7 +347,7 @@ struct SkillAcquireDetachStruct
     bool isAcquire;
 };
 
-struct CardAskedStruct
+struct QSGS_CORE_EXPORT CardAskedStruct
 {
     explicit CardAskedStruct(Player *player = nullptr, const QString &pattern = QStringLiteral("."), const QString &prompt = QString(),
                              QSanguosha::HandlingMethod method = QSanguosha::MethodNone);
@@ -361,7 +363,7 @@ class Trigger;
 class TriggerDetailPrivate;
 #endif
 
-class TriggerDetail
+class QSGS_CORE_EXPORT TriggerDetail
 {
 public:
     explicit TriggerDetail(RoomObject *room, const Trigger *trigger = nullptr, const QString &name = QString(), Player *owner = nullptr, Player *invoker = nullptr,
@@ -406,7 +408,7 @@ private:
 #endif
 };
 
-struct HpLostStruct
+struct QSGS_CORE_EXPORT HpLostStruct
 {
     explicit HpLostStruct(Player *player = nullptr, int num = 1);
 
@@ -414,7 +416,7 @@ struct HpLostStruct
     int num;
 };
 
-struct DrawNCardsStruct
+struct QSGS_CORE_EXPORT DrawNCardsStruct
 {
     explicit DrawNCardsStruct(Player *player = nullptr, int n = 2, bool isInitial = false);
 
@@ -423,7 +425,7 @@ struct DrawNCardsStruct
     bool isInitial;
 };
 
-struct SkillInvalidStruct
+struct QSGS_CORE_EXPORT SkillInvalidStruct
 {
     explicit SkillInvalidStruct(Player *player = nullptr, const Skill *skill = nullptr, bool invalid = false);
 
@@ -432,7 +434,7 @@ struct SkillInvalidStruct
     bool invalid;
 };
 
-struct BrokenEquipChangedStruct
+struct QSGS_CORE_EXPORT BrokenEquipChangedStruct
 {
     explicit BrokenEquipChangedStruct(Player *player = nullptr, QList<int> ids = {}, bool broken = false, bool moveFromEquip = false);
 
@@ -442,7 +444,7 @@ struct BrokenEquipChangedStruct
     bool moveFromEquip;
 };
 
-struct ShownCardChangedStruct
+struct QSGS_CORE_EXPORT ShownCardChangedStruct
 {
     explicit ShownCardChangedStruct(Player *player = nullptr, QList<int> ids = {}, bool shown = false, bool moveFromHand = false);
 
@@ -452,7 +454,7 @@ struct ShownCardChangedStruct
     bool moveFromHand;
 };
 
-struct ShowGeneralStruct
+struct QSGS_CORE_EXPORT ShowGeneralStruct
 {
     explicit ShowGeneralStruct(Player *player = nullptr, int pos = 0, bool isShow = true);
 
@@ -461,7 +463,7 @@ struct ShowGeneralStruct
     bool isShow;
 };
 
-struct ExtraTurnStruct
+struct QSGS_CORE_EXPORT ExtraTurnStruct
 {
     explicit ExtraTurnStruct(Player *player = nullptr);
 

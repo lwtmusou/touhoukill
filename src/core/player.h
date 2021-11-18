@@ -2,6 +2,7 @@
 #define _PLAYER_H
 
 #include "global.h"
+#include "qsgscore.h"
 
 #include <QList>
 #include <QMap>
@@ -22,7 +23,7 @@ class General;
 
 class PlayerPrivate;
 
-class Player : public QObject
+class QSGS_CORE_EXPORT Player : public QObject
 {
     Q_OBJECT
 #if 0

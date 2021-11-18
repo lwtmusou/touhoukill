@@ -2,6 +2,7 @@
 #define _PACKAGE_H
 
 #include "global.h"
+#include "qsgscore.h"
 
 #include <QCryptographicHash>
 #include <QList>
@@ -14,7 +15,7 @@ class CardFace;
 struct CardDescriptor;
 class General;
 
-class CardPattern
+class QSGS_CORE_EXPORT CardPattern
 {
 public:
     virtual bool match(const Player *player, const Card *card) const = 0;
@@ -22,7 +23,7 @@ public:
 
 class PackagePrivate;
 
-class Package final
+class QSGS_CORE_EXPORT Package final
 {
 public:
     explicit Package(const QString &name, QSanguosha::PackageType pack_type = QSanguosha::GeneralPack);
@@ -44,7 +45,7 @@ private:
 };
 
 namespace BuiltinExtension {
-bool VerifyChecksum(const QString &path, const QString &hash, QCryptographicHash::Algorithm algorithm);
+QSGS_CORE_EXPORT bool VerifyChecksum(const QString &path, const QString &hash, QCryptographicHash::Algorithm algorithm);
 } // namespace BuiltinExtension
 
 #endif

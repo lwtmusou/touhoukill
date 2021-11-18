@@ -1,8 +1,6 @@
 #include "general.h"
-#include "client.h"
 #include "engine.h"
 #include "package.h"
-#include "settings.h"
 #include "skill.h"
 
 using namespace QSanguosha;

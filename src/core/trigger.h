@@ -2,6 +2,7 @@
 #define TOUHOUKILL_TRIGGER_H
 
 #include "global.h"
+#include "qsgscore.h"
 
 #include <QList>
 #include <QString>
@@ -14,7 +15,7 @@ class TriggerDetail;
 
 class TriggerPrivate;
 
-class Trigger // DO NOT INHERIT QObject since it is used in QObject-derived class
+class QSGS_CORE_EXPORT Trigger // DO NOT INHERIT QObject since it is used in QObject-derived class
 {
 public:
     Trigger();
@@ -66,7 +67,7 @@ private:
     TriggerPrivate *const d;
 };
 
-class Rule : public Trigger
+class QSGS_CORE_EXPORT Rule : public Trigger
 {
 public:
     Rule();
@@ -79,7 +80,7 @@ public:
 
 class SkillTriggerPrivate;
 
-class SkillTrigger : public Trigger
+class QSGS_CORE_EXPORT SkillTrigger : public Trigger
 {
 public:
     // TODO: overload (const Skill *)?
@@ -105,7 +106,7 @@ private:
     SkillTriggerPrivate *const d;
 };
 
-class EquipSkillTrigger : public SkillTrigger
+class QSGS_CORE_EXPORT EquipSkillTrigger : public SkillTrigger
 {
 public:
     EquipSkillTrigger(const QString &name);
@@ -123,7 +124,7 @@ public:
     int priority() const final override;
 };
 
-class GlobalRecord : public Trigger
+class QSGS_CORE_EXPORT GlobalRecord : public Trigger
 {
 public:
     GlobalRecord();
@@ -139,7 +140,7 @@ public:
 
 // a nasty way for 'fake moves', usually used in the process of multi-card chosen
 class FakeMoveRecordPrivate;
-class FakeMoveRecord final : public GlobalRecord
+class QSGS_CORE_EXPORT FakeMoveRecord final : public GlobalRecord
 {
 public:
     FakeMoveRecord(const QString &skillName);

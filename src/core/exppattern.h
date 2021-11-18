@@ -2,11 +2,12 @@
 #define _EXPPATTERN_H
 
 #include "package.h"
+#include "qsgscore.h"
 
 class Player;
 class Card;
 
-class ExpPattern : public CardPattern
+class QSGS_CORE_EXPORT ExpPattern : public CardPattern
 {
 public:
     explicit ExpPattern(const QString &exp);

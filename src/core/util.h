@@ -1,6 +1,8 @@
 #ifndef _UTIL_H
 #define _UTIL_H
 
+#include "qsgscore.h"
+
 #include <QList>
 #include <QRandomGenerator>
 #include <QSharedPointer>
@@ -19,10 +21,10 @@ template<typename T> void qShuffle(QList<T> &list)
     }
 }
 
-QStringList IntList2StringList(const QList<int> &intlist);
-QList<int> StringList2IntList(const QStringList &stringlist);
-QVariantList IntList2VariantList(const QList<int> &intlist);
-QList<int> VariantList2IntList(const QVariantList &variantlist);
+QSGS_CORE_EXPORT QStringList IntList2StringList(const QList<int> &intlist);
+QSGS_CORE_EXPORT QList<int> StringList2IntList(const QStringList &stringlist);
+QSGS_CORE_EXPORT QVariantList IntList2VariantList(const QList<int> &intlist);
+QSGS_CORE_EXPORT QList<int> VariantList2IntList(const QVariantList &variantlist);
 
 // QList::toSet is got deleted by Qt since Qt 5.14
 // Can this be inlined?
@@ -39,8 +41,8 @@ template<typename T> inline QList<const T *> NonConstList2ConstList(const QList<
     return cl;
 }
 
-bool isRoleGameMode(const QString &mode);
-bool isHegemonyGameMode(const QString &mode);
+QSGS_CORE_EXPORT bool isRoleGameMode(const QString &mode);
+QSGS_CORE_EXPORT bool isHegemonyGameMode(const QString &mode);
 
 // cannot use do...while false here......
 #define DELETE_OVER_SCOPE(type, var)            \

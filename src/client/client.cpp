@@ -2408,7 +2408,7 @@ QString Client::getGeneralSkillDescription(QString generalname, bool include_nam
     }
 
     if (include_name) {
-        QString color_str = Sanguosha->getKingdomColor(g->kingdom()).name();
+        QString color_str = QColor(Qt::red).name(); // Sanguosha->getKingdomColor(g->kingdom()).name();
         QString g_name = Sanguosha->translate(QStringLiteral("!") + generalname);
         if (g_name.startsWith(QStringLiteral("!")))
             g_name = Sanguosha->translate(generalname);

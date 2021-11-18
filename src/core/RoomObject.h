@@ -1,6 +1,7 @@
 #ifndef QSANGUOSHA_ROOMOBJECT_H
 #define QSANGUOSHA_ROOMOBJECT_H
 
+#include "qsgscore.h"
 #include "structs.h"
 
 #include <QList>
@@ -17,7 +18,7 @@ class Card;
 
 class RoomObjectPrivate;
 
-class RoomObject : public QObject
+class QSGS_CORE_EXPORT RoomObject : public QObject
 {
     Q_OBJECT
 
@@ -102,8 +103,8 @@ private:
 
 // TODO_Fs: find a suitable way for this
 namespace QinggangSword {
-void addQinggangTag(Player *p, const Card *card);
-void removeQinggangTag(Player *p, const Card *card);
+QSGS_CORE_EXPORT void addQinggangTag(Player *p, const Card *card);
+QSGS_CORE_EXPORT void removeQinggangTag(Player *p, const Card *card);
 } // namespace QinggangSword
 
 #endif

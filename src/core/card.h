@@ -2,6 +2,7 @@
 #define _CARD_H
 
 #include "global.h"
+#include "qsgscore.h"
 
 #include <QString>
 #include <QVariant>
@@ -14,7 +15,7 @@ struct CardUseStruct;
 class CardPrivate;
 class CardFace;
 
-class Card final
+class QSGS_CORE_EXPORT Card final
 {
     Q_GADGET
 
@@ -138,7 +139,7 @@ Q_DECLARE_METATYPE(const Card *)
 /**
  * @brief For creating new cards.
  */
-struct CardDescriptor
+struct QSGS_CORE_EXPORT CardDescriptor
 {
     // const CardFace *face;
     // or following? or both?

@@ -10,12 +10,11 @@
 #include "player.h"
 #include "protocol.h"
 #include "serverinfostruct.h"
-#include "settings.h"
 #include "skill.h"
 #include "structs.h"
 #include "util.h"
 
-#include <QApplication>
+#include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
 #include <QFile>
@@ -55,6 +54,8 @@ public:
     {
     }
 };
+
+const int Engine::S_SERVER_TIMEOUT_GRACIOUS_PERIOD = 1000;
 
 Engine *Sanguosha = nullptr;
 
@@ -184,9 +185,12 @@ void Engine::addBanPackage(const QString &package_name)
 
 QStringList Engine::getBanPackages() const
 {
+#if 0
     if (QCoreApplication::arguments().contains(QStringLiteral("-server")))
         return Config.BanPackages;
-    else {
+    else
+#endif
+    {
         if (isHegemonyGameMode(ServerInfo.GameMode)) {
             QStringList ban;
             const QList<const Package *> &packs = getPackages();
@@ -302,10 +306,12 @@ int Engine::getGeneralCount(bool include_banned) const
             total--;
         else if (isGeneralHidden(general->name()))
             total--;
+#if 0
         else if (isRoleGameMode(ServerInfo.GameMode) && Config.value(QStringLiteral("Banlist/Roles")).toStringList().contains(general->name()))
             total--;
         else if (ServerInfo.GameMode == QStringLiteral("04_1v3") && Config.value(QStringLiteral("Banlist/HulaoPass")).toStringList().contains(general->name()))
             total--;
+#endif
     }
 
     return total;
@@ -316,10 +322,14 @@ bool Engine::isGeneralHidden(const QString &general_name) const
     const General *general = getGeneral(general_name);
     if (general == nullptr)
         return false;
+
+    return general->isHidden();
+#if 0
     if (!general->isHidden())
         return Config.ExtraHiddenGenerals.contains(general_name);
     else
         return !Config.RemovedHiddenGenerals.contains(general_name);
+#endif
 }
 
 const CardDescriptor &Engine::getEngineCard(int cardId) const
@@ -390,6 +400,7 @@ QStringList Engine::getHegemonyKingdoms() const
     return hegemony_kingdoms;
 }
 
+#if 0
 QColor Engine::getKingdomColor(const QString &kingdom) const
 {
     static QMap<QString, QColor> color_map;
@@ -411,6 +422,7 @@ QColor Engine::getKingdomColor(const QString &kingdom) const
 
     return color_map.value(kingdom);
 }
+#endif
 
 QStringList Engine::getChattingEasyTexts() const
 {
@@ -565,9 +577,12 @@ QStringList Engine::getLords(bool contain_banned) const
         if (getBanPackages().contains(general->getPackage()))
             continue;
         if (!contain_banned) {
-            if (ServerInfo.GameMode.endsWith(QStringLiteral("p")) || ServerInfo.GameMode.endsWith(QStringLiteral("pd")) || ServerInfo.GameMode.endsWith(QStringLiteral("pz")))
+            if (ServerInfo.GameMode.endsWith(QStringLiteral("p")) || ServerInfo.GameMode.endsWith(QStringLiteral("pd")) || ServerInfo.GameMode.endsWith(QStringLiteral("pz"))) {
+            }
+#if 0
                 if (Config.value(QStringLiteral("Banlist/Roles"), QString()).toStringList().contains(lord))
                     continue;
+#endif
         }
         lords << lord;
     }
@@ -578,12 +593,12 @@ QStringList Engine::getLords(bool contain_banned) const
 QStringList Engine::getRandomLords() const
 {
     QStringList banlist_ban;
-
+#if 0
     if (Config.GameMode == QStringLiteral("zombie_mode"))
         banlist_ban.append(Config.value(QStringLiteral("Banlist/Zombie")).toStringList());
     else if (isRoleGameMode(Config.GameMode))
         banlist_ban.append(Config.value(QStringLiteral("Banlist/Roles")).toStringList());
-
+#endif
     QStringList lords;
     QStringList splords_package; //lords  in sp package will be not count as a lord.
     splords_package << QStringLiteral("thndj");
@@ -597,7 +612,8 @@ QStringList Engine::getRandomLords() const
         lords << alord;
     }
 
-    int lord_num = Config.value(QStringLiteral("LordMaxChoice"), 6).toInt();
+    // todo: make this variable in serverinfo
+    int lord_num = 6; // Config.value(QStringLiteral("LordMaxChoice"), 6).toInt();
     if (lord_num != -1 && lord_num < lords.length()) {
         int to_remove = lords.length() - lord_num;
         for (int i = 0; i < to_remove; i++) {
@@ -625,15 +641,15 @@ QStringList Engine::getRandomLords() const
     qShuffle(nonlord_list);
 
     int addcount = 0;
-    int extra = Config.value(QStringLiteral("NonLordMaxChoice"), 6).toInt();
+    int extra = 6; // Config.value(QStringLiteral("NonLordMaxChoice"), 6).toInt();
 
-    int godmax = Config.value(QStringLiteral("GodLimit"), 1).toInt();
+    int godmax = 1; // Config.value(QStringLiteral("GodLimit"), 1).toInt();
     int godCount = 0;
 
     if (lord_num == 0 && extra == 0)
         extra = 1;
 
-    bool assign_latest_general = Config.value(QStringLiteral("AssignLatestGeneral"), true).toBool();
+    bool assign_latest_general = false; // Config.value(QStringLiteral("AssignLatestGeneral"), true).toBool();
     QStringList latest = getLatestGenerals(QSet<QString>(lords.begin(), lords.end()));
     if (assign_latest_general && !latest.isEmpty()) {
         lords << latest.first();
@@ -700,6 +716,7 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 
     QStringList subtractList;
     bool needsubtract = true;
+#if 0
     if (isRoleGameMode(ServerInfo.GameMode))
         subtractList = (Config.value(QStringLiteral("Banlist/Roles"), QStringList()).toStringList());
     else if (ServerInfo.GameMode == QStringLiteral("04_1v3"))
@@ -709,7 +726,8 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
     else if (isHegemonyGameMode(ServerInfo.GameMode))
         subtractList = (Config.value(QStringLiteral("Banlist/Hegemony"), QStringList()).toStringList());
     else
-        needsubtract = false;
+#endif
+    needsubtract = false;
 
     if (needsubtract)
         general_set.subtract(QSet<QString>(subtractList.begin(), subtractList.end()));
@@ -721,7 +739,7 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 
     int addcount = 0;
     QStringList general_list;
-    int godmax = Config.value(QStringLiteral("GodLimit"), 1).toInt();
+    int godmax = 1; // Config.value(QStringLiteral("GodLimit"), 1).toInt();
     int godCount = 0;
     for (int i = 0; addcount < count; i++) {
         if (getGeneral(all_generals.at(i))->kingdom() != QStringLiteral("touhougod")) {
@@ -745,6 +763,7 @@ QStringList Engine::getLatestGenerals(const QSet<QString> &ban_set) const
 
     QStringList subtractList;
     bool needsubtract = true;
+#if 0
     if (isRoleGameMode(ServerInfo.GameMode))
         subtractList = (Config.value(QStringLiteral("Banlist/Roles"), QStringList()).toStringList());
     else if (ServerInfo.GameMode == QStringLiteral("04_1v3"))
@@ -754,7 +773,8 @@ QStringList Engine::getLatestGenerals(const QSet<QString> &ban_set) const
     else if (isHegemonyGameMode(ServerInfo.GameMode))
         subtractList = (Config.value(QStringLiteral("Banlist/Hegemony"), QStringList()).toStringList());
     else
-        needsubtract = false;
+#endif
+    needsubtract = false;
 
     if (needsubtract)
         general_set.subtract(QSet<QString>(subtractList.begin(), subtractList.end()));
@@ -771,7 +791,7 @@ QList<int> Engine::getRandomCards() const
     bool exclude_disaters = false;
     bool using_2012_3v3 = false;
     bool using_2013_3v3 = false;
-
+#if 0
     if (Config.GameMode == QStringLiteral("06_3v3")) {
         using_2012_3v3 = (Config.value(QStringLiteral("3v3/OfficialRule"), QStringLiteral("2013")).toString() == QStringLiteral("2012"));
         using_2013_3v3 = (Config.value(QStringLiteral("3v3/OfficialRule"), QStringLiteral("2013")).toString() == QStringLiteral("2013"));
@@ -780,7 +800,7 @@ QList<int> Engine::getRandomCards() const
 
     if (Config.GameMode == QStringLiteral("04_1v3"))
         exclude_disaters = true;
-
+#endif
     Q_UNUSED(exclude_disaters);
 
     QList<int> list;

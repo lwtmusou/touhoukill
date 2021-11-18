@@ -4,8 +4,9 @@
 #include "json.h"
 #include "player.h"
 #include "protocol.h"
+#include "qsgscore.h"
 
-struct ServerInfoStruct
+struct QSGS_CORE_EXPORT ServerInfoStruct
 {
     bool parseLegacy(const QString &str);
 
@@ -36,6 +37,6 @@ struct ServerInfoStruct
     bool DuringGame;
 };
 
-extern ServerInfoStruct ServerInfo;
+extern QSGS_CORE_EXPORT ServerInfoStruct ServerInfo;
 
 #endif

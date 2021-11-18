@@ -5,6 +5,7 @@
 // MAKE SURE THE GRAMMAR IS COMPATIBLE BETWEEN 2 LANGUAGES.
 
 #ifndef SWIG
+#include "qsgscore.h"
 #include <QMetaObject>
 #include <QSet>
 #endif
@@ -16,7 +17,7 @@ using IDSet = QSet<int>;
 
 #ifndef SWIG
 namespace QSanguosha {
-Q_NAMESPACE
+Q_NAMESPACE_EXPORT(QSGS_CORE_EXPORT)
 #else
 #ifndef Q_QDOC
 class QSanguosha

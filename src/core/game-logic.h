@@ -1,6 +1,7 @@
 #ifndef _GAME_LOGIC_H_
 #define _GAME_LOGIC_H_
 
+#include "qsgscore.h"
 #include "structs.h"
 
 #include <QString>
@@ -22,7 +23,7 @@ class GameState;
  * All game events should be triggered by functions in this interface. 
  * The game state is modified by functions in this interface.
  */
-class GameLogic
+class QSGS_CORE_EXPORT GameLogic
 {
 public:
     virtual ~GameLogic() = 0;

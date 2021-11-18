@@ -1,7 +1,6 @@
 #include "serverinfostruct.h"
 #include "engine.h"
 #include "package.h"
-#include "settings.h"
 
 #include <QRegularExpression>
 
@@ -21,7 +20,7 @@ time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QS
         timeOut = NullificationCountDown * 1000;
 
     if (instance == QSanProtocol::S_SERVER_INSTANCE)
-        timeOut += Config.S_SERVER_TIMEOUT_GRACIOUS_PERIOD;
+        timeOut += Engine::S_SERVER_TIMEOUT_GRACIOUS_PERIOD;
     return timeOut;
 }
 

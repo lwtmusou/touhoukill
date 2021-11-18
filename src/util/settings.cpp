@@ -25,7 +25,6 @@ static const qreal ViewHeight = 800 * 0.8;
 //consts
 const int Settings::S_SURRENDER_REQUEST_MIN_INTERVAL = 5000;
 const int Settings::S_PROGRESS_BAR_UPDATE_INTERVAL = 200;
-const int Settings::S_SERVER_TIMEOUT_GRACIOUS_PERIOD = 1000;
 const int Settings::S_MOVE_CARD_ANIMATION_DURATION = 600;
 const int Settings::S_JUDGE_ANIMATION_DURATION = 1200;
 const int Settings::S_JUDGE_LONG_DELAY = 800;

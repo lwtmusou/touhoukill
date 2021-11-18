@@ -4,6 +4,7 @@
 #include "global.h"
 #include "json.h"
 #include "protocol.h"
+#include "qsgscore.h"
 
 #include <QList>
 #include <QSet>
@@ -33,7 +34,7 @@ class CardFace;
 
 class EnginePrivate;
 
-class Engine final
+class QSGS_CORE_EXPORT Engine final
 {
 public:
     Engine();
@@ -54,7 +55,9 @@ public:
     QStringList getExtensions() const;
     QStringList getKingdoms() const;
     QStringList getHegemonyKingdoms() const;
+#if 0
     QColor getKingdomColor(const QString &kingdom) const;
+#endif
     QStringList getChattingEasyTexts() const;
 
     QMap<QString, QString> getAvailableModes() const;
@@ -102,11 +105,14 @@ public:
     const CardFace *cardFace(const QString &name);
     void unregisterCardFace(const QString &name);
 
+public:
+    static const int S_SERVER_TIMEOUT_GRACIOUS_PERIOD;
+
 private:
     Q_DISABLE_COPY_MOVE(Engine)
     EnginePrivate *const d;
 };
 
-extern Engine *Sanguosha;
+extern QSGS_CORE_EXPORT Engine *Sanguosha;
 
 #endif

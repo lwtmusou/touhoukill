@@ -1,6 +1,7 @@
 #ifndef _GAME_STATE_H_
 #define _GAME_STATE_H_
 
+#include "qsgscore.h"
 #include "structs.h"
 
 #include <QString>
@@ -20,7 +21,7 @@ namespace RefactorProposal {
  * In the client, it needs to notify the UI when the game state is changed.
  * 
  */
-class GameState
+class QSGS_CORE_EXPORT GameState
 {
 public:
     GameState();

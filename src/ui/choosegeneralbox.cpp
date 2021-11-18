@@ -45,7 +45,7 @@ GeneralCardItem::GeneralCardItem(const QString &generalName)
     Q_ASSERT(general);
 
     setOuterGlowEffectEnabled(true);
-    setOuterGlowColor(Sanguosha->getKingdomColor(general->kingdom()));
+    // setOuterGlowColor(Sanguosha->getKingdomColor(general->kingdom()));
 #ifdef Q_OS_ANDROID
     moveRange = 1.0;
 #endif
@@ -57,7 +57,7 @@ void GeneralCardItem::changeGeneral(const QString &generalName)
 
     const General *general = Sanguosha->getGeneral(generalName);
     Q_ASSERT(general);
-    setOuterGlowColor(Sanguosha->getKingdomColor(general->kingdom()));
+    // setOuterGlowColor(Sanguosha->getKingdomColor(general->kingdom()));
 }
 
 void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)
@@ -477,8 +477,7 @@ void ChooseGeneralBox::adjustItems()
         foreach (GeneralCardItem *card, items) {
             const General *general = Sanguosha->getGeneral(card->objectName());
 
-            if (general->kingdom() != seleted_general->kingdom() && general->kingdom() != QStringLiteral("zhu")
-                && seleted_general->kingdom() != QStringLiteral("zhu")) {
+            if (general->kingdom() != seleted_general->kingdom() && general->kingdom() != QStringLiteral("zhu") && seleted_general->kingdom() != QStringLiteral("zhu")) {
                 if (!card->isFrozen())
                     card->setFrozen(true);
                 card->hideCompanion();

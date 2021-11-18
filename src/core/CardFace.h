@@ -2,6 +2,7 @@
 #define TOUHOUKILL_CARDFACE_H_
 
 #include "global.h"
+#include "qsgscore.h"
 
 #include <QString>
 
@@ -17,7 +18,7 @@ struct JudgeStruct;
 /**
  * @brief The functional model of a given card.
  */
-class CardFace
+class QSGS_CORE_EXPORT CardFace
 {
 public:
     explicit CardFace(const QString &name);
@@ -115,7 +116,7 @@ private:
     Q_DISABLE_COPY_MOVE(CardFace)
 };
 
-class BasicCard : public CardFace
+class QSGS_CORE_EXPORT BasicCard : public CardFace
 {
 public:
     BasicCard(const QString &name);
@@ -125,7 +126,7 @@ public:
     QString typeName() const override;
 };
 
-class EquipCard : public CardFace
+class QSGS_CORE_EXPORT EquipCard : public CardFace
 {
 public:
     EquipCard(const QString &name);
@@ -147,7 +148,7 @@ protected:
 
 class WeaponPrivate;
 
-class Weapon : public EquipCard
+class QSGS_CORE_EXPORT Weapon : public EquipCard
 {
 public:
     Weapon(const QString &name);
@@ -162,7 +163,7 @@ private:
     WeaponPrivate *const d;
 };
 
-class Armor : public EquipCard
+class QSGS_CORE_EXPORT Armor : public EquipCard
 {
 public:
     Armor(const QString &name);
@@ -171,7 +172,7 @@ public:
     QSanguosha::EquipLocation location() const override;
 };
 
-class DefensiveHorse : public EquipCard
+class QSGS_CORE_EXPORT DefensiveHorse : public EquipCard
 {
 public:
     DefensiveHorse(const QString &name);
@@ -183,7 +184,7 @@ public:
     // virtual int correction() const;
 };
 
-class OffensiveHorse : public EquipCard
+class QSGS_CORE_EXPORT OffensiveHorse : public EquipCard
 {
 public:
     OffensiveHorse(const QString &name);
@@ -194,7 +195,7 @@ public:
     // virtual int correction() const;
 };
 
-class Treasure : public EquipCard
+class QSGS_CORE_EXPORT Treasure : public EquipCard
 {
 public:
     Treasure(const QString &name);
@@ -203,7 +204,7 @@ public:
     QSanguosha::EquipLocation location() const override;
 };
 
-class TrickCard : public CardFace
+class QSGS_CORE_EXPORT TrickCard : public CardFace
 {
 public:
     TrickCard(const QString &name);
@@ -213,7 +214,7 @@ public:
     QString typeName() const override;
 };
 
-class NonDelayedTrick : public TrickCard
+class QSGS_CORE_EXPORT NonDelayedTrick : public TrickCard
 {
 public:
     NonDelayedTrick(const QString &name);
@@ -222,7 +223,7 @@ public:
 
 class DelayedTrickPrivate;
 
-class DelayedTrick : public TrickCard
+class QSGS_CORE_EXPORT DelayedTrick : public TrickCard
 {
 public:
     DelayedTrick(const QString &name);
@@ -239,7 +240,7 @@ private:
 
 class SkillCardPrivate;
 
-class SkillCard : public CardFace
+class QSGS_CORE_EXPORT SkillCard : public CardFace
 {
 public:
     SkillCard(const QString &name);

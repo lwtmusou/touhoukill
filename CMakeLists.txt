@@ -7,6 +7,9 @@ endif()
 
 set (PCH true)
 
+# temporary for testing
+set (BUILD_SHARED_LIBS true)
+
 project(QSanguosha
     VERSION 0.12.0
     )
@@ -84,7 +87,6 @@ set (QSanguosha_Core_SRCS
     src/core/player.cpp
     src/core/protocol.cpp
     src/core/RoomObject.cpp
-    src/core/settings.cpp
     src/core/skill.cpp
     src/core/trigger.cpp
     src/core/structs.cpp
@@ -108,7 +110,6 @@ set (QSanguosha_Core_MOCS
     src/core/player.h
     src/core/protocol.h
     src/core/RoomObject.h
-    src/core/settings.h
     src/core/skill.h
     src/core/trigger.h
     src/core/structs.h
@@ -117,9 +118,11 @@ set (QSanguosha_Core_MOCS
     src/core/global.h
     src/core/mode.h
     src/core/exppattern.h
+    src/core/qsgscore.h
     )
 
 set (QSanguosha_SRCS
+    src/util/settings.cpp
     src/audio/audio.cpp
     src/client/aux-skills.cpp
     src/client/client.cpp
@@ -188,6 +191,7 @@ set (QSanguosha_UIS
 set(TS_FILES builds/sanguosha.ts)
 
 set (QSanguosha_MOCS
+    src/util/settings.h
     src/audio/audio.h
     src/client/aux-skills.h
     src/client/client.h
@@ -410,16 +414,6 @@ if (Qt5Multimedia_FOUND OR Qt6Multimedia_FOUND)
 endif()
 
 if (Qt5_FOUND)
-    if (NOT ANDROID)
-        add_executable(QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_Core_SRCS} ${QSanguosha_Core_MOCS} ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc )
-    else()
-        add_library(QSanguosha MODULE ${QSanguosha_Core_SRCS} ${QSanguosha_Core_MOCS} ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc )
-    endif()
-
-    set_property(TARGET QSanguosha PROPERTY AUTOMOC ON)
-    set_property(TARGET QSanguosha PROPERTY AUTOUIC ON)
-    set_property(TARGET QSanguosha PROPERTY AUTORCC ON)
-
     swig_add_library(qsanguosha_wrap
         TYPE STATIC
         LANGUAGE lua
@@ -431,8 +425,36 @@ if (Qt5_FOUND)
     # Seems weird since we don't even link the libraries here
     target_link_libraries(qsanguosha_wrap QSanguoshaLibs::lua54 Qt5::Core)
 
-    target_compile_definitions(QSanguosha PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
-    target_link_libraries(QSanguosha qsanguosha_wrap QSanguoshaLibs::lua54)
+    add_library(QSgsCore ${QSanguosha_Core_SRCS} ${QSanguosha_Core_MOCS} lua/lua.qrc )
+
+    set_property(TARGET QSgsCore PROPERTY AUTOMOC ON)
+    set_property(TARGET QSgsCore PROPERTY AUTOUIC ON)
+    set_property(TARGET QSgsCore PROPERTY AUTORCC ON)
+
+    target_compile_definitions(QSgsCore PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
+    target_link_libraries(QSgsCore Qt5::Core qsanguosha_wrap QSanguoshaLibs::lua54)
+
+    if (NOT WIN32)
+        target_link_libraries(QSgsCore dl)
+    endif()
+
+    if (NOT BUILD_SHARED_LIBS)
+        target_compile_definitions(qsanguosha_wrap PUBLIC -DQSGS_STATIC)
+        target_compile_definitions(QSgsCore PUBLIC -DQSGS_STATIC)
+    else()
+        target_compile_definitions(qsanguosha_wrap PRIVATE -DBUILD_QSGSCORE)
+        target_compile_definitions(QSgsCore PRIVATE -DBUILD_QSGSCORE)
+    endif()
+
+    if (NOT ANDROID)
+        add_executable(QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} )
+    else()
+        add_library(QSanguosha MODULE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} )
+    endif()
+
+    set_property(TARGET QSanguosha PROPERTY AUTOMOC ON)
+    set_property(TARGET QSanguosha PROPERTY AUTOUIC ON)
+    set_property(TARGET QSanguosha PROPERTY AUTORCC ON)
 
     if (WIN32)
         target_link_libraries(QSanguosha Qt5::WinExtras)
@@ -443,11 +465,7 @@ if (Qt5_FOUND)
         target_link_libraries (QSanguosha QSanguoshaLibs::oggvorbisfile Qt5::Multimedia)
     endif()
 
-    target_link_libraries (QSanguosha Qt5::Widgets Qt5::Gui Qt5::Network Qt5::Core)
-
-    if (NOT WIN32)
-        target_link_libraries(QSanguosha dl)
-    endif()
+    target_link_libraries (QSanguosha Qt5::Widgets Qt5::Gui Qt5::Network QSgsCore)
 
     target_compile_definitions(QSanguosha PUBLIC -DOV_EXCLUDE_STATIC_CALLBACKS PUBLIC -DQT_NO_CAST_FROM_ASCII)
     if (PCH)
@@ -456,13 +474,6 @@ if (Qt5_FOUND)
 endif()
 
 if (Qt6_FOUND)
-    qt6_add_translation(QM_FILES6 ${TS_FILES})
-    add_executable (Q6Sanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_Core_SRCS} ${QSanguosha_Core_MOCS} ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} lua/lua.qrc ${QM_FILES6} )
-
-    set_property(TARGET Q6Sanguosha PROPERTY AUTOMOC ON)
-    set_property(TARGET Q6Sanguosha PROPERTY AUTOUIC ON)
-    set_property(TARGET Q6Sanguosha PROPERTY AUTORCC ON)
-
     swig_add_library(q6sanguosha_wrap
         TYPE STATIC
         LANGUAGE lua
@@ -474,18 +485,40 @@ if (Qt6_FOUND)
     # Seems weird since we don't even link the libraries here
     target_link_libraries(q6sanguosha_wrap QSanguoshaLibs::lua54 Qt6::Core)
 
-    target_compile_definitions(Q6Sanguosha PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x70000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
-    target_link_libraries(Q6Sanguosha q6sanguosha_wrap QSanguoshaLibs::lua54)
+    add_library(Q6SgsCore ${QSanguosha_Core_SRCS} ${QSanguosha_Core_MOCS} lua/lua.qrc )
+
+    set_property(TARGET Q6SgsCore PROPERTY AUTOMOC ON)
+    set_property(TARGET Q6SgsCore PROPERTY AUTOUIC ON)
+    set_property(TARGET Q6SgsCore PROPERTY AUTORCC ON)
+
+    target_compile_definitions(Q6SgsCore PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x70000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
+    target_link_libraries(Q6SgsCore Qt6::Core q6sanguosha_wrap QSanguoshaLibs::lua54)
+
+    if (NOT WIN32)
+        target_link_libraries(Q6SgsCore dl)
+    endif()
+
+    if (NOT BUILD_SHARED_LIBS)
+        target_compile_definitions(q6sanguosha_wrap PUBLIC -DQSGS_STATIC)
+        target_compile_definitions(Q6SgsCore PUBLIC -DQSGS_STATIC)
+    else()
+        target_compile_definitions(q6sanguosha_wrap PRIVATE -DBUILD_QSGSCORE)
+        target_compile_definitions(Q6SgsCore PRIVATE -DBUILD_QSGSCORE)
+    endif()
+
+    qt6_add_translation(QM_FILES6 ${TS_FILES})
+    add_executable(Q6Sanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} ${QM_FILES6} )
+
+    set_property(TARGET Q6Sanguosha PROPERTY AUTOMOC ON)
+    set_property(TARGET Q6Sanguosha PROPERTY AUTOUIC ON)
+    set_property(TARGET Q6Sanguosha PROPERTY AUTORCC ON)
 
     if (Qt6Multimedia_FOUND)
         target_compile_definitions(Q6Sanguosha PUBLIC AUDIO_SUPPORT)
         target_link_libraries (Q6Sanguosha QSanguoshaLibs::oggvorbisfile Qt6::Multimedia)
     endif()
 
-    target_link_libraries(Q6Sanguosha Qt6::Widgets Qt6::Gui Qt6::Network Qt6::Core)
-    if (NOT WIN32)
-        target_link_libraries(Q6Sanguosha dl)
-    endif()
+    target_link_libraries (Q6Sanguosha Qt6::Widgets Qt6::Gui Qt6::Network Q6SgsCore)
 
     target_compile_definitions(Q6Sanguosha PUBLIC -DOV_EXCLUDE_STATIC_CALLBACKS PUBLIC -DQT_NO_CAST_FROM_ASCII)
     if (PCH)
