@@ -159,7 +159,7 @@ public:
                     if (name.isEmpty())
                         lua_pop(l, 1); // { k, CardFaces, sgs_ex, sgs_registry }
                     else {
-                        int index = luaL_ref(l, -5); // {  k, CardFaces, sgs_ex, sgs_registry }
+                        int index = luaL_ref(l, -1); // {  k, CardFaces, sgs_ex, sgs_registry }
                         Q_ASSERT(index != LUA_NOREF);
                         reg.cardFaces.insert(name, index);
                     }
