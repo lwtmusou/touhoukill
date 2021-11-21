@@ -99,7 +99,7 @@ set (QSanguosha_Core_SRCS
     src/core/serverinfostruct.cpp
     src/core/util.cpp
     src/core/mode.cpp
-    src/core/luacardface.cpp
+    src/core/sgs_ex.cpp
     src/core/exppattern.cpp
     )
 

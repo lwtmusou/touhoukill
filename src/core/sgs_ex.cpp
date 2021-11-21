@@ -1,5 +1,7 @@
 #include "CardFace.h"
 #include "lua-wrapper.h"
+#include "trigger.h"
+
 #include "lua.hpp"
 
 namespace SgsEx {
@@ -41,12 +43,18 @@ enum TableType
     TreatAsEquippingSkill = 0x270,
 
     Trigger = 0x300,
+    Rule = 0x310,
+    SkillTrigger = 0x320,
+    EquipSkillTrigger = 0x321,
+    GlobalRecord = 0x330,
+    FakeMoveRecord = 0x331,
 
     CardDescriptor = 0x400,
 
     GeneralDescriptor = 0x500,
 };
 
+namespace {
 ::CardFace *newCardFaceByType(TableType t, const QString &name)
 {
 #define NEWCARDFACEBYTYPE(T) \
@@ -66,6 +74,13 @@ enum TableType
 #undef NEWCARDFACEBYTYPE
 
     return nullptr;
+}
+
+::Trigger *newTriggerByType(TableType t, const QString &name)
+{
+    // TODO
+    return nullptr;
+}
 } // namespace
 
 // [-0, +0, e]

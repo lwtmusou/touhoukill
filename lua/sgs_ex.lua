@@ -18,7 +18,7 @@ sgs_ex.TableType = {
     NonDelayedTrick = 0x121,
     DelayedTrick = 0x122,
 
-    EquipCard = 0x130, -- 0x103
+    EquipCard = 0x130,
     Weapon = 0x131,
     Armor = 0x132,
     DefensiveHorse = 0x133,
@@ -27,7 +27,7 @@ sgs_ex.TableType = {
 
     SkillCard = 0x140,
 
-    Skill = 0x200,      -- 0x200
+    Skill = 0x200,
     ViewAsSkill = 0x210,
     FilterSkill = 0x220,
     ProhibitSkill = 0x230,
@@ -37,6 +37,11 @@ sgs_ex.TableType = {
     TreatAsEquippingSkill = 0x270,
 
     Trigger = 0x300,
+    Rule = 0x310, -- ??
+    SkillTrigger = 0x320,
+    EquipSkillTrigger = 0x321,
+    GlobalRecord = 0x330,
+    FakeMoveRecord = 0x331,
 
     CardDescriptor = 0x400,
 

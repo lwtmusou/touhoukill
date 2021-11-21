@@ -127,7 +127,7 @@ sgs_ex.Packages = {}
 sgs_ex.CardFaces = {}
 sgs_ex.Skills = {}
 
--- TODO: load extensions
+-- load extensions
 
 local loadExtension = function(name, isBuiltin)
     -- checksum check is done before this function is called

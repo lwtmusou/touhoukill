@@ -12,10 +12,12 @@ class Card;
 class Player;
 class RoomObject;
 class TriggerDetail;
+class Skill;
+class EquipCard;
 
 class TriggerPrivate;
 
-class QSGS_CORE_EXPORT Trigger // DO NOT INHERIT QObject since it is used in QObject-derived class
+class QSGS_CORE_EXPORT Trigger
 {
 public:
     Trigger();
@@ -83,8 +85,8 @@ class SkillTriggerPrivate;
 class QSGS_CORE_EXPORT SkillTrigger : public Trigger
 {
 public:
-    // TODO: overload (const Skill *)?
-    SkillTrigger(const QString &name);
+    explicit SkillTrigger(Skill *skill);
+    explicit SkillTrigger(const QString &name);
     ~SkillTrigger() override;
 
     const QString &skillName() const;
@@ -109,7 +111,7 @@ private:
 class QSGS_CORE_EXPORT EquipSkillTrigger : public SkillTrigger
 {
 public:
-    EquipSkillTrigger(const QString &name);
+    explicit EquipSkillTrigger(const EquipCard *card);
     ~EquipSkillTrigger() override = default;
 
     Q_ALWAYS_INLINE bool isEquipSkill() const final override
@@ -143,7 +145,7 @@ class FakeMoveRecordPrivate;
 class QSGS_CORE_EXPORT FakeMoveRecord final : public GlobalRecord
 {
 public:
-    FakeMoveRecord(const QString &skillName);
+    explicit FakeMoveRecord(const QString &skillName);
     ~FakeMoveRecord() final override;
 
     QList<TriggerDetail> triggerable(QSanguosha::TriggerEvent event, RoomObject *room, const QVariant &data) const final override;

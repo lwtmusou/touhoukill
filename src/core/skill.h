@@ -101,11 +101,6 @@ public:
     void addTrigger(const Trigger *trigger);
     const QSet<const Trigger *> &triggers() const;
 
-    // For audio effect
-    // Certain skill requires a logic for its audio effect
-    // Currently it is judged by server side
-    virtual int getAudioEffectIndex(const Player *player, const Card *card) const;
-
     // Hidden skills related
     // Attention! since the affiliated skill should be modified for setting its main skill, this parameter is not const.
     void addToAffiliatedSkill(Skill *skill);
@@ -113,11 +108,12 @@ public:
     bool isAffiliatedSkill() const;
     const Skill *mainSkill() const;
 
+    // For audio effect
+    // Certain skill requires a logic for its audio effect
+    // Currently it is judged by server side
+    virtual int getAudioEffectIndex(const Player *player, const Card *card) const;
+
     // deprecated
-    Q_DECL_DEPRECATED inline bool isHidden() const
-    {
-        return isAffiliatedSkill();
-    }
     Q_DECL_DEPRECATED inline bool isVisible() const
     {
         return !isAffiliatedSkill();
