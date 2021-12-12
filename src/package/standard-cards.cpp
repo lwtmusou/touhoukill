@@ -1681,7 +1681,8 @@ bool Disaster::targetFilter(const QList<const Player *> &targets, const Player *
     bool ignore = (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
     if (ignore)
         return targets.isEmpty();
-    return targets.isEmpty() && to_select == Self;
+
+    return targets.isEmpty() && to_select == Self && !to_select->containsTrick(objectName());
 }
 
 void Disaster::onUse(Room *room, const CardUseStruct &card_use) const
