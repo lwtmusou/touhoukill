@@ -950,7 +950,7 @@ public:
 
     int getDistanceLimit(const Player *from, const Card *) const override
     {
-        if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && from->hasSkill(objectName()) && from->isChained())
+        if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && from->hasSkill(objectName()) && from->isChained() && from->getPhase() == Player::Play)
             return 1000;
         else
             return 0;
@@ -958,7 +958,8 @@ public:
 
     int getExtraTargetNum(const Player *player, const Card *) const override
     {
-        if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && player->hasSkill(objectName()) && player->isChained())
+        if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && player->hasSkill(objectName()) && player->isChained()
+            && player->getPhase() == Player::Play)
             return 1000;
         else
             return 0;
