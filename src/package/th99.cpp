@@ -2246,7 +2246,7 @@ public:
 
     bool viewFilter(const Card *to_select) const override
     {
-        return to_select->isKindOf("Slash");
+        return to_select->isKindOf("BasicCard");
     }
 
     const Card *viewAs(const Card *originalCard) const override

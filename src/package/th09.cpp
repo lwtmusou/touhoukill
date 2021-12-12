@@ -1809,6 +1809,38 @@ public:
     }
 };
 
+class JiansheVS : public ViewAsSkill
+{
+public:
+    JiansheVS()
+        : ViewAsSkill("jianshe")
+    {
+        response_pattern = "@@jianshe";
+    }
+
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
+    {
+        if (!Self->isJilei(to_select))
+            return false;
+
+        if (Self->hasEquip(to_select))
+            return false;
+
+        return selected.length() + 1 < Self->getHandcardNum();
+    }
+
+    const Card *viewAs(const QList<const Card *> &cards) const override
+    {
+        if (cards.length() == Self->getHandcardNum() - 1) {
+            DummyCard *dc = new DummyCard;
+            dc->addSubcards(cards);
+            return dc;
+        }
+
+        return nullptr;
+    }
+};
+
 class Jianshe : public TriggerSkill
 {
 public:
@@ -1816,6 +1848,7 @@ public:
         : TriggerSkill("jianshe")
     {
         events << EventPhaseStart << CardsMoveOneTime << EventPhaseChanging;
+        view_as_skill = new JiansheVS;
         global = true;
     }
 
@@ -1824,7 +1857,8 @@ public:
         if (e == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-            if (player && player->isAlive() && move.from_places.contains(Player::PlaceHand))
+            if (player && player->isAlive() && (move.from_places.contains(Player::PlaceHand) || move.from_places.contains(Player::PlaceEquip)) && move.to_place != Player::PlaceHand
+                && move.to_place != Player::PlaceEquip)
                 room->setPlayerFlag(player, "jianshe_losed");
         }
         if (e == EventPhaseChanging) {
@@ -1877,15 +1911,17 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         ServerPlayer *target = invoke->targets.first();
-        bool discarded = false;
+        // bool discarded = false;
+        const Card *discardedCard = nullptr;
 
         int hands = target->getHandcardNum();
         if (hands > 1)
-            discarded = room->askForDiscard(target, objectName(), hands - 1, hands - 1, true, false, "@jianshe-hint");
+            discardedCard = room->askForCard(target, "@@jianshe", "@jianshe-hint");
 
-        if (discarded)
-            room->recover(target, RecoverStruct());
-        else {
+        if (discardedCard != nullptr) {
+            if (discardedCard->subcardsLength() >= 2)
+                room->recover(target, RecoverStruct());
+        } else {
             room->drawCards(target, 1, objectName());
             room->loseHp(target);
         }
