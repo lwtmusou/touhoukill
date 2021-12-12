@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include <QCoreApplication>
+#include <QDir>
 #include <QFile>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsProxyWidget>
