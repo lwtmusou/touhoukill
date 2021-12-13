@@ -61,7 +61,7 @@ return
 	--yyc003  势力：永 4血
 	["mokou"] = "藤原妹红",
 	["#mokou"] = "蓬莱人之形",
-	["designer:mokou"] = "星野梦美☆",
+	["designer:mokou"] = "三国有单",
 
 	["illustrator:mokou"] = "時雨",
 	["origin:mokou"] = "p号：16853756，个人ID：4271",
