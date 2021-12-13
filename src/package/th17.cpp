@@ -1251,7 +1251,7 @@ public:
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *c = data.value<ServerPlayer *>();
             if (c->getPhase() == Player::NotActive) {
-                foreach (ServerPlayer *p, room->getAllPlayers()) {
+                foreach (ServerPlayer *p, room->getAllPlayers(true)) {
                     if (p->getMark("duozhi") > 0) {
                         room->setPlayerMark(p, "duozhi", 0);
                         room->removePlayerCardLimitation(p, "use,response", ".$1", "duozhi", true);
