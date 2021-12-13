@@ -107,9 +107,7 @@ return
 	["lunar_hegemony"] = "露娜",
 	["!star_hegemony"] = "斯塔·萨菲雅",
 	["star_hegemony"] = "斯塔",
-	["ganying_hegemony"] = "感应",
-	[":ganying_hegemony"] = "当其他角色回复体力后或受到伤害后，若其体力值与你相等，你可以摸一张牌，或弃置其一张手牌。",
-	["@ganying_hegemony"]= "“感应”:选择自己摸一张牌； 选择<font color=\"#00FF00\"><b>%src</b></font>则弃置其一张手牌",
+	
 --***********************
 --夏（月）
 

@@ -979,7 +979,7 @@ sgs.ai_skill_invoke.ganying = true
 	end
 end]]
 
-sgs.ai_skill_playerchosen.ganying_hegemony = function(self, targets)
+sgs.ai_skill_playerchosen.ganying = function(self, targets)
 	for _,p in sgs.qlist(targets) do
 		if self:isEnemy(p) and self:isWeak(p) then
 			return p
