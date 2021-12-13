@@ -4569,7 +4569,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     suwako_hegemony->addSkill(new ChuanchengHegemony);
     suwako_hegemony->addCompanion("sanae_hegemony");
 
-    General *sanae_hegemony = new General(this, "sanae_hegemony", "qun", 3);
+    General *sanae_hegemony = new General(this, "sanae_hegemony", "qun", 4);
     sanae_hegemony->addSkill("dfgzmjiyi");
     sanae_hegemony->addSkill("qiji");
 
