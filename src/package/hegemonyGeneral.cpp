@@ -1329,71 +1329,7 @@ public:
     }
 };
 
-class GanyingHegemony : public TriggerSkill
-{
-public:
-    GanyingHegemony()
-        : TriggerSkill("ganying_hegemony")
-    {
-        events << Damaged << HpRecover;
-    }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const override
-    {
-        QList<SkillInvokeDetail> d;
-        if (e == Damaged) {
-            DamageStruct damage = data.value<DamageStruct>();
-            if (damage.to->isDead())
-                return QList<SkillInvokeDetail>();
-            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                if (p != damage.to && damage.to->getHp() == p->getHp())
-                    d << SkillInvokeDetail(this, p, p, nullptr, false, damage.to);
-            }
-        }
-
-        if (e == HpRecover) {
-            RecoverStruct recover = data.value<RecoverStruct>();
-            //recover.to
-            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                if (p != recover.to && recover.to->getHp() == p->getHp())
-                    d << SkillInvokeDetail(this, p, p, nullptr, false, recover.to);
-            }
-        }
-
-        return d;
-    }
-
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
-    {
-        QList<ServerPlayer *> listt;
-        if (invoke->invoker->canDiscard(invoke->preferredTarget, "hs"))
-            listt << invoke->preferredTarget;
-        listt << invoke->invoker;
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, listt, objectName(), "@ganying_hegemony:" + invoke->preferredTarget->objectName(), true, true);
-        if (target != nullptr) {
-            invoke->targets << target;
-            return true;
-        }
-
-        return false;
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
-    {
-        ServerPlayer *target = invoke->targets.first();
-        if (target == invoke->invoker)
-            invoke->invoker->drawCards(1, objectName());
-        else {
-            if (invoke->invoker->canDiscard(invoke->targets.first(), "hs")) {
-                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
-                int id = room->askForCardChosen(invoke->invoker, target, "hs", objectName(), false, Card::MethodDiscard);
-                room->throwCard(id, target, invoke->invoker == target ? nullptr : invoke->invoker);
-            }
-        }
-
-        return false;
-    }
-};
 
 //********  SUMMER   **********
 class BolanHgemony : public TriggerSkill
@@ -4452,7 +4388,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     lunar_hegemony->addCompanion("star_hegemony");
 
     General *star_hegemony = new General(this, "star_hegemony", "wu", 3);
-    star_hegemony->addSkill(new GanyingHegemony);
+    star_hegemony->addSkill("ganying");
     star_hegemony->addSkill("dubi");
 
     //Summer
@@ -4569,7 +4505,7 @@ HegemonyGeneralPackage::HegemonyGeneralPackage()
     suwako_hegemony->addSkill(new ChuanchengHegemony);
     suwako_hegemony->addCompanion("sanae_hegemony");
 
-    General *sanae_hegemony = new General(this, "sanae_hegemony", "qun", 3);
+    General *sanae_hegemony = new General(this, "sanae_hegemony", "qun", 4);
     sanae_hegemony->addSkill("dfgzmjiyi");
     sanae_hegemony->addSkill("qiji");
 

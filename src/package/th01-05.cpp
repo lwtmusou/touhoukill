@@ -1209,11 +1209,6 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        /*CardsMoveStruct move;
-        move.card_ids = invoke->invoker->getPile("dream");
-        move.to_place = Player::PlaceHand;
-        move.to = invoke->invoker;
-        room->moveCardsAtomic(move, false);*/
 
         room->notifySkillInvoked(invoke->invoker, objectName());
         room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
@@ -1223,8 +1218,6 @@ public:
 
         invoke->invoker->drawCards(2);
 
-        RecoverStruct recover;
-        room->recover(invoke->invoker, recover);
         return false;
     }
 };
