@@ -2041,19 +2041,22 @@ const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, 
     return card;
 }
 
-const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying)
+void Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, CardUseStruct &use)
 {
     tryPause();
     notifyMoveFocus(player, S_COMMAND_ASK_PEACH);
     _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
 
-    const Card *card = nullptr;
+    use = CardUseStruct();
+    use.from = player;
     int threshold = dying->dyingThreshold();
 
     AI *ai = player->getAI();
-    if (ai)
-        card = ai->askForSinglePeach(dying);
-    else {
+    if (ai) {
+        use.card = ai->askForSinglePeach(dying);
+        if (use.card != nullptr)
+            use.to << dying;
+    } else {
         int peaches = threshold - dying->getHp();
         if (dying->hasSkill("banling")) {
             peaches = 0;
@@ -2068,37 +2071,38 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying)
         bool success = doRequest(player, S_COMMAND_ASK_PEACH, arg, true);
         JsonArray clientReply = player->getClientReply().value<JsonArray>();
         if (!success || clientReply.isEmpty() || !JsonUtils::isString(clientReply[0]))
-            return nullptr;
-
-        card = Card::Parse(clientReply[0].toString());
-    }
-
-    if (card && player->isCardLimited(card, card->getHandlingMethod()))
-        card = nullptr;
-    if (card != nullptr) {
-        card = card->validateInResponse(player);
-        Card::HandlingMethod method = Card::MethodUse;
-        if (card && card->getTypeId() == Card::TypeSkill) { //keep TypeSkill after validateInResponse
-            method = card->getHandlingMethod();
+            return;
+        if (!use.tryParse(clientReply, this)) {
+            use.card = nullptr;
+            return;
         }
 
-        if (card && player->isCardLimited(card, method))
-            card = nullptr;
-    } else
-        return nullptr;
+        if (use.card != nullptr && use.to.isEmpty())
+            use.to << dying;
+    }
 
-    const Card *result = nullptr;
-    if (card) {
+    if (use.card != nullptr && player->isCardLimited(use.card, use.card->getHandlingMethod()))
+        use.card = nullptr;
+    if (use.card != nullptr) {
+        use.card = use.card->validateInResponse(player);
+        Card::HandlingMethod method = Card::MethodUse;
+        if (use.card != nullptr && use.card->getTypeId() == Card::TypeSkill) //keep TypeSkill after validateInResponse
+            method = use.card->getHandlingMethod();
+
+        if (use.card != nullptr && player->isCardLimited(use.card, method))
+            use.card = nullptr;
+    } else
+        return;
+
+    if (use.card != nullptr) {
         ChoiceMadeStruct s;
         s.player = player;
         s.type = ChoiceMadeStruct::Peach;
-        s.args << dying->objectName() << QString::number(threshold - dying->getHp()) << card->toString();
+        s.args << dying->objectName() << QString::number(threshold - dying->getHp()) << use.card->toString();
         QVariant decisionData = QVariant::fromValue(s);
         thread->trigger(ChoiceMade, this, decisionData);
-        result = card;
     } else
-        result = askForSinglePeach(player, dying);
-    return result;
+        askForSinglePeach(player, dying, use);
 }
 
 QSharedPointer<SkillInvokeDetail> Room::askForTriggerOrder(ServerPlayer *player, const QList<QSharedPointer<SkillInvokeDetail>> &sameTiming, bool cancelable, const QVariant &data)

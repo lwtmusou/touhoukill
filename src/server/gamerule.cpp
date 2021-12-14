@@ -460,18 +460,17 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
     }
     case AskForPeaches: {
         DyingStruct dying = data.value<DyingStruct>();
-        const Card *peach = nullptr;
         int threshold = dying.who->dyingThreshold();
 
         while (dying.who->getHp() < threshold) {
-            peach = nullptr;
+            CardUseStruct use;
 
             if (dying.who->isAlive())
-                peach = room->askForSinglePeach(dying.nowAskingForPeaches, dying.who);
+                room->askForSinglePeach(dying.nowAskingForPeaches, dying.who, use);
 
-            if (peach == nullptr)
+            if (use.card == nullptr)
                 break;
-            room->useCard(CardUseStruct(peach, dying.nowAskingForPeaches, dying.who), false);
+            room->useCard(use, false);
             threshold = dying.who->dyingThreshold();
         }
         break;
