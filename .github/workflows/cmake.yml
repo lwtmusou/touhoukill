@@ -25,7 +25,7 @@ jobs:
       - name: Install Qt6
         uses: jurplel/install-qt-action@v2
         with:
-          version: '6.2.0'
+          version: '6.2.2'
           dir: '${{ github.workspace }}/Qt6/'
           modules: 'qtmultimedia'
 
@@ -64,16 +64,16 @@ jobs:
       - name: install Qt5
         run : |
           New-Item -Path "." -Name "Qt5" -ItemType "directory";
-          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20210911/Qt5.15.2-Windows-x86_64-VS2019-16.11.2-20210911.7z","Qt5/Qt5.15.2-Windows-x86_64-VS2019-16.11.2-20210911.7z");
-          cmd /c cd Qt5 "&&" 7z x Qt5.15.2-Windows-x86_64-VS2019-16.11.2-20210911.7z
-          .\Qt5\Qt5.15.2-Windows-x86_64-VS2019-16.11.2\bin\qmake -query
+          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20211205/Qt5.15.2-Windows-x86_64-VS2019-16.11.7-20211204.7z","Qt5/Qt5.15.2-Windows-x86_64-VS2019-16.11.7-20211204.7z");
+          cmd /c cd Qt5 "&&" 7z x Qt5.15.2-Windows-x86_64-VS2019-16.11.7-20211204.7z
+          .\Qt5\Qt5.15.2-Windows-x86_64-VS2019-16.11.7\bin\qmake -query
 
       - name: install Qt6
         run : |
           New-Item -Path "." -Name "Qt6" -ItemType "directory";
-          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20211003/Qt6.2.0-Windows-x86_64-VS2019-16.11.3-20211001.7z","Qt6/Qt6.2.0-Windows-x86_64-VS2019-16.11.3-20211001.7z");
-          cmd /c cd Qt6 "&&" 7z x Qt6.2.0-Windows-x86_64-VS2019-16.11.3-20211001.7z
-          .\Qt6\Qt6.2.0-Windows-x86_64-VS2019-16.11.3\bin\qmake -query
+          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20211207/Qt6.2.2-Windows-x86_64-VS2019-16.11.7-20211207.7z","Qt6/Qt6.2.2-Windows-x86_64-VS2019-16.11.7-20211207.7z");
+          cmd /c cd Qt6 "&&" 7z x Qt6.2.2-Windows-x86_64-VS2019-16.11.7-20211207.7z
+          .\Qt6\Qt6.2.2-Windows-x86_64-VS2019-16.11.7\bin\qmake -query
 
       - name: run cmake+ninja
         shell: cmd
@@ -83,7 +83,7 @@ jobs:
           mkdir "build"
           cd "build"
           rmdir /s /q *
-          cmd /c cmake -GNinja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt5\Qt5.15.2-Windows-x86_64-VS2019-16.11.2;${{ github.workspace }}\Qt6\Qt6.2.0-Windows-x86_64-VS2019-16.11.3" "${{ github.workspace }}/touhoukill-refactor"
+          cmd /c cmake -GNinja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt5\Qt5.15.2-Windows-x86_64-VS2019-16.11.7;${{ github.workspace }}\Qt6\Qt6.2.2-Windows-x86_64-VS2019-16.11.7" "${{ github.workspace }}/touhoukill-refactor"
           ninja -k0
 
   build-mingw81:
@@ -106,12 +106,13 @@ jobs:
           cmd /c cd Qt5 "&&" 7z x Qt5.15.2-Windows-x86_64-MinGW8.1.0-20201214.7z
           .\Qt5\Qt5.15.2-Windows-x86_64-MinGW8.1.0\bin\qmake -query
 
-      - name: install Qt6
-        run : |
-          New-Item -Path "." -Name "Qt6" -ItemType "directory";
-          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20210904/Qt6.1.3-Windows-x86_64-MinGW8.1.0-20210904.7z","Qt6/Qt6.1.3-Windows-x86_64-MinGW8.1.0-20210904.7z");
-          cmd /c cd Qt6 "&&" 7z x Qt6.1.3-Windows-x86_64-MinGW8.1.0-20210904.7z
-          .\Qt6\Qt6.1.3-Windows-x86_64-MinGW8.1.0\bin\qmake -query
+      # Qt 6 switched to MinGW-w64 v9 based GCC 11.2
+      # - name: install Qt6
+        # run : |
+          # New-Item -Path "." -Name "Qt6" -ItemType "directory";
+          # (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20210904/Qt6.1.3-Windows-x86_64-MinGW8.1.0-20210904.7z","Qt6/Qt6.1.3-Windows-x86_64-MinGW8.1.0-20210904.7z");
+          # cmd /c cd Qt6 "&&" 7z x Qt6.1.3-Windows-x86_64-MinGW8.1.0-20210904.7z
+          # .\Qt6\Qt6.1.3-Windows-x86_64-MinGW8.1.0\bin\qmake -query
 
       - name: run cmake+ninja
         shell: cmd
@@ -120,7 +121,7 @@ jobs:
           mkdir "build"
           cd "build"
           rmdir /s /q *
-          cmd /c cmake -GNinja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt5\Qt5.15.2-Windows-x86_64-MinGW8.1.0;${{ github.workspace }}\Qt6\Qt6.1.3-Windows-x86_64-MinGW8.1.0" "${{ github.workspace }}/touhoukill-refactor"
+          cmd /c cmake -GNinja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt5\Qt5.15.2-Windows-x86_64-MinGW8.1.0" "${{ github.workspace }}/touhoukill-refactor"
           ninja -k0
 
   build-mingwclang:
@@ -128,7 +129,8 @@ jobs:
     strategy:
       matrix:
         clang: [
-          msvcrt, ucrt
+          { sys: msvcrt, date: 20211205 },
+          { sys: ucrt,   date: 20211205 },
         ]
     name: build-mingwclang-${{ matrix.clang }}
     steps:
@@ -145,25 +147,25 @@ jobs:
       - name: install llvm mingw toolchain
         run: |
           New-Item -Path "." -Name "llvm-mingw" -ItemType "directory";
-          (New-Object System.Net.WebClient).DownloadFile("https://github.com/mstorsjo/llvm-mingw/releases/download/20211002/llvm-mingw-20211002-${{ matrix.clang }}-x86_64.zip","llvm-mingw/llvm-mingw-20211002-${{ matrix.clang }}-x86_64.zip");
-          cmd /c cd llvm-mingw "&&" 7z x llvm-mingw-20211002-${{ matrix.clang }}-x86_64.zip
-          
+          (New-Object System.Net.WebClient).DownloadFile("https://github.com/mstorsjo/llvm-mingw/releases/download/20211002/llvm-mingw-20211002-${{ matrix.clang.sys }}-x86_64.zip","llvm-mingw/llvm-mingw-20211002-${{ matrix.clang.sys }}-x86_64.zip");
+          cmd /c cd llvm-mingw "&&" 7z x llvm-mingw-20211002-${{ matrix.clang.sys }}-x86_64.zip
 
       - name: install Qt6
         run : |
           New-Item -Path "." -Name "Qt6" -ItemType "directory";
-          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20211019/Qt6.2.0-Windows-x86_64-MinGWLLVM-${{ matrix.clang }}13-20211017.7z","Qt6/Qt6.2.0-Windows-x86_64-MinGWLLVM-${{ matrix.clang }}13-20211017.7z");
-          cmd /c cd Qt6 "&&" 7z x Qt6.2.0-Windows-x86_64-MinGWLLVM-${{ matrix.clang }}13-20211017.7z
+          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20211205/Qt6.2.2-Windows-x86_64-MinGWLLVM-${{ matrix.clang.sys }}13-${{ matrix.clang.date }}.7z","Qt6/Qt6.2.2-Windows-x86_64-MinGWLLVM-${{ matrix.clang.sys }}13-${{ matrix.clang.date }}.7z");
+          cmd /c cd Qt6 "&&" 7z x Qt6.2.2-Windows-x86_64-MinGWLLVM-${{ matrix.clang.sys }}13-${{ matrix.clang.date }}.7z
+          .\Qt6\Qt6.2.2-Windows-x86_64-MinGWLLVM-${{ matrix.clang.sys }}13\bin\qmake -query
 
       - name: run cmake+ninja
         shell: cmd
         run : |
           del /s /q C:\Strawberry\perl\bin\pkg-config.bat
-          set path=${{ github.workspace }}\llvm-mingw\llvm-mingw-20211002-${{ matrix.clang }}-x86_64\x86_64-w64-mingw32\bin;${{ github.workspace }}\llvm-mingw\llvm-mingw-20211002-${{ matrix.clang }}-x86_64\bin;%path%
+          set path=${{ github.workspace }}\llvm-mingw\llvm-mingw-20211002-${{ matrix.clang.sys }}-x86_64\x86_64-w64-mingw32\bin;${{ github.workspace }}\llvm-mingw\llvm-mingw-20211002-${{ matrix.clang.sys }}-x86_64\bin;%path%
           mkdir "build"
           cd "build"
           rmdir /s /q *
-          cmd /c cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="x86_64-w64-mingw32-clang++" -DCMAKE_C_COMPILER="x86_64-w64-mingw32-clang" -DCMAKE_ASM_COMPILER="x86_64-w64-mingw32-clang" "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt6\Qt6.2.0-Windows-x86_64-MinGWLLVM-${{ matrix.clang }}13" "${{ github.workspace }}/touhoukill-refactor"
+          cmd /c cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="x86_64-w64-mingw32-clang++" -DCMAKE_C_COMPILER="x86_64-w64-mingw32-clang" -DCMAKE_ASM_COMPILER="x86_64-w64-mingw32-clang" "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt6\Qt6.2.2-Windows-x86_64-MinGWLLVM-${{ matrix.clang.sys }}13" "${{ github.workspace }}/touhoukill-refactor"
           ninja -k0
 
   build-mingwmsys:
