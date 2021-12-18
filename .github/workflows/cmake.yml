@@ -155,8 +155,10 @@ jobs:
           New-Item -Path "." -Name "Qt6" -ItemType "directory";
           (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20211205/Qt6.2.2-Windows-x86_64-MinGWLLVM-${{ matrix.clang.sys }}13-${{ matrix.clang.date }}.7z","Qt6/Qt6.2.2-Windows-x86_64-MinGWLLVM-${{ matrix.clang.sys }}13-${{ matrix.clang.date }}.7z");
           cmd /c cd Qt6 "&&" 7z x Qt6.2.2-Windows-x86_64-MinGWLLVM-${{ matrix.clang.sys }}13-${{ matrix.clang.date }}.7z
-          set path=${{ github.workspace }}\llvm-mingw\llvm-mingw-20211002-${{ matrix.clang.sys }}-x86_64\x86_64-w64-mingw32\bin;${{ github.workspace }}\llvm-mingw\llvm-mingw-20211002-${{ matrix.clang.sys }}-x86_64\bin;%path%
-          .\Qt6\Qt6.2.2-Windows-x86_64-MinGWLLVM-${{ matrix.clang.sys }}13\bin\qmake -query
+
+          # This doesn't work!
+          # set path=${{ github.workspace }}\llvm-mingw\llvm-mingw-20211002-${{ matrix.clang.sys }}-x86_64\x86_64-w64-mingw32\bin;${{ github.workspace }}\llvm-mingw\llvm-mingw-20211002-${{ matrix.clang.sys }}-x86_64\bin;%path%
+          # .\Qt6\Qt6.2.2-Windows-x86_64-MinGWLLVM-${{ matrix.clang.sys }}13\bin\qmake -query
 
       - name: run cmake+ninja
         shell: cmd
