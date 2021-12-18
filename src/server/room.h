@@ -452,7 +452,7 @@ public:
                                                 bool optional = false, bool notify_skill = false);
     QSGS_LOGIC QString askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice = QString());
     QSGS_LOGIC QString askForGeneral(ServerPlayer *player, const QString &generals, const QString &default_choice = QString());
-    QSGS_LOGIC const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
+    QSGS_LOGIC void askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, CardUseStruct &use);
     QSGS_LOGIC QSharedPointer<TriggerDetail> askForTriggerOrder(ServerPlayer *player, const QList<QSharedPointer<TriggerDetail>> &sameTiming, bool cancelable,
                                                                 const QVariant &data);
     QSGS_LOGIC void addPlayerHistory(ServerPlayer *player, const QString &key, int times = 1);

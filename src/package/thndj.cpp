@@ -1370,6 +1370,7 @@ public:
     }
 };
 
+
 class Youle : public TriggerSkill
 {
 public:
@@ -1426,8 +1427,16 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         QList<ServerPlayer *> targets;
-        foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (!p->isAllNude())
+        foreach(ServerPlayer *p, room->getAllPlayers()) {
+            int num = 0;
+            if (invoke->invoker->canDiscard(p, "hs"))
+                num++;
+            if (invoke->invoker->canDiscard(p, "j"))
+                num++;
+            if (invoke->invoker->canDiscard(p, "e"))
+                num++;
+
+            if (num > 1)
                 targets << p;
         }
         if (targets.isEmpty())
@@ -1435,47 +1444,36 @@ public:
 
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, "youle", "@youle", true, true);
         if (target) {
-            QStringList flags;
-            if (!target->getCards("j").isEmpty())
-                flags.append("j");
-            if (!target->getCards("e").isEmpty())
-                flags.append("e");
-            if (!target->getCards("hs").isEmpty())
-                flags.append("h");
+            DummyCard *dummy = new DummyCard;
+            QString flag = "hsej";
+            for (int i = 0; i < 2; i += 1) {
 
-            invoke->invoker->tag[objectName()] = QVariant::fromValue(target);
-            QString choice = room->askForChoice(invoke->invoker, objectName(), flags.join("+"), data);
-            room->notifySkillInvoked(invoke->invoker, objectName());
+                int card_id = room->askForCardChosen(invoke->invoker, target, flag, objectName(), false, Card::MethodDiscard);
+                if (room->getCardPlace(card_id) == Player::PlaceHand)
+                    flag.remove("hs");
+                if (room->getCardPlace(card_id) == Player::PlaceEquip)
+                    flag.remove("e");
+                if (room->getCardPlace(card_id) == Player::PlaceDelayedTrick)
+                    flag.remove("j");
+
+                dummy->addSubcard(card_id);
+
+                if (target->getCards(flag).length()  <= 0)
+                    break;
+            }
+            room->throwCard(dummy, target, invoke->invoker);
+            delete dummy;
+
             invoke->targets << target;
-            invoke->tag["youle"] = choice;
             return true;
         }
         return false;
+
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         ServerPlayer *target = invoke->targets.first();
-
-        QString flag = invoke->tag.value("youle").toString();
-
-        QList<const Card *> cards;
-        //throw card
-        if (flag == "e" || flag == "j") {
-            foreach (const Card *c, target->getCards(flag)) {
-                if (target->canDiscard(target, c->getId()))
-                    cards << c;
-            }
-
-            if (!cards.isEmpty()) {
-                DummyCard dummy;
-                dummy.addSubcards(cards);
-                room->throwCard(&dummy, target, target);
-            }
-        } else {
-            int x = qMin(5, target->getHandcardNum()); // has not considered "jilei" yet.
-            room->askForDiscard(target, objectName(), x, x, false, false, "@youle-discard");
-        }
 
         //gain Extra Turn
         if (!room->getThread()->hasExtraTurn())
@@ -1935,6 +1933,7 @@ THNDJPackage::THNDJPackage()
     youmu_ndj->addSkill(new Hunpo);
     youmu_ndj->addSkill(new Fanji);
 
+
     General *merry_ndj = new General(this, "merry_ndj", "wai", 3);
     merry_ndj->addSkill(new Liexi);
     merry_ndj->addSkill(new LiexiTargetMod);
@@ -1960,10 +1959,12 @@ THNDJPackage::THNDJPackage()
 
     General *tenshi_ndj = new General(this, "tenshi_ndj", "zhan", 4);
     tenshi_ndj->addSkill(new Youle);
-    addMetaObject<HunpoCard>();
+    
 
     General *eirin = new General(this, "eirin_ndj", "yyc");
     eirin->addSkill(new Yaoli);
+
+    addMetaObject<HunpoCard>();
     addMetaObject<YaoliCard>();
 
     skills << new YaoliVS("yaoliattach", true) << new YaoliBasic << new YaoliEquip << new YaoliTrick;

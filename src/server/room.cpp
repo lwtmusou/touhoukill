@@ -1942,13 +1942,14 @@ const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, 
     return card;
 }
 
-const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying)
+void Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying, CardUseStruct &use)
 {
     tryPause();
     notifyMoveFocus(player, S_COMMAND_ASK_PEACH);
     setCurrentCardUseReason(QSanguosha::CardUseReasonResponseUse);
 
-    const Card *card = nullptr;
+    use = CardUseStruct();
+    use.from = player;
     int threshold = dying->dyingFactor();
 
     int peaches = threshold - dying->hp();
@@ -1965,36 +1966,37 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying)
     bool success = doRequest(player, S_COMMAND_ASK_PEACH, arg, true);
     JsonArray clientReply = player->getClientReply().value<JsonArray>();
     if (!success || clientReply.isEmpty() || !JsonUtils::isString(clientReply[0]))
-        return nullptr;
+        return;
+    if (!use.tryParse(clientReply, this)) {
+        use.card = nullptr;
+        return;
+    }
 
-    card = Card::Parse(clientReply[0].toString(), this);
+    if (use.card != nullptr && use.to.isEmpty())
+        use.to << dying;
 
-    if ((card != nullptr) && player->isCardLimited(card, card->handleMethod()))
-        card = nullptr;
-    if (card != nullptr) {
-        card = card->face()->validateInResponse(player, card);
+    if (use.card != nullptr && player->isCardLimited(use.card, use.card->handleMethod()))
+        use.card = nullptr;
+    if (use.card != nullptr) {
+        use.card = use.card->face()->validateInResponse(player, use.card);
         QSanguosha::HandlingMethod method = QSanguosha::MethodUse;
-        if ((card != nullptr) && card->face()->type() == QSanguosha::TypeSkill) { //keep TypeSkill after face()->validateInResponse
-            method = card->handleMethod();
-        }
+        if (use.card != nullptr && use.card->face()->type() == QSanguosha::TypeSkill) //keep TypeSkill after validateInResponse
+            method = use.card->handleMethod();
 
-        if ((card != nullptr) && player->isCardLimited(card, method))
-            card = nullptr;
+        if (use.card != nullptr && player->isCardLimited(use.card, method))
+            use.card = nullptr;
     } else
-        return nullptr;
+        return;
 
-    const Card *result = nullptr;
-    if (card != nullptr) {
+    if (use.card != nullptr) {
         ChoiceMadeStruct s;
         s.player = player;
         s.type = ChoiceMadeStruct::Peach;
-        s.args << dying->objectName() << QString::number(threshold - dying->hp()) << card->toString();
+        s.args << dying->objectName() << QString::number(threshold - dying->hp()) << use.card->toString();
         QVariant decisionData = QVariant::fromValue(s);
         thread->trigger(QSanguosha::ChoiceMade, decisionData);
-        result = card;
     } else
-        result = askForSinglePeach(player, dying);
-    return result;
+        askForSinglePeach(player, dying, use);
 }
 
 QSharedPointer<TriggerDetail> Room::askForTriggerOrder(ServerPlayer *player, const QList<QSharedPointer<TriggerDetail>> &sameTiming, bool cancelable, const QVariant & /*unused*/)

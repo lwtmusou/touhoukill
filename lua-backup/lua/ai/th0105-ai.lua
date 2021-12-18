@@ -495,10 +495,10 @@ local function  huantongValue(cards, self, damage, huantongDamage)
 			end
 		end
 	end
-	if tmp.damage >= 2 and self.player:hasSkill("mengyan") and self.player:isWounded() then
+	--if tmp.damage >= 2 and self.player:hasSkill("mengyan") and self.player:isWounded() then
 		-- recover count as 2 value
-		value = value + self.player:getPile("dream"):length()
-	end
+		--value = value + self.player:getPile("dream"):length()
+	--end
 	return value
 end
 sgs.ai_skill_cardask["@huantong"] = function(self, data)

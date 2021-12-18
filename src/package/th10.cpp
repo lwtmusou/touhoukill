@@ -1645,7 +1645,7 @@ TH10Package::TH10Package()
     suwako->addSkill("qiankun");
     suwako->addSkill(new Chuancheng);
 
-    General *sanae = new General(this, "sanae", "fsl", 3);
+    General *sanae = new General(this, "sanae", "fsl");
     sanae->addSkill(new DfgzmJiyi);
     sanae->addSkill(new Qiji);
 

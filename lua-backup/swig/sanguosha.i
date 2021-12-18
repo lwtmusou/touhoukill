@@ -1644,7 +1644,6 @@ public:
     ServerPlayer *askForPlayerChosen(ServerPlayer *player, const QList<ServerPlayer *> &targets, const char *reason, const char *prompt = NULL, bool optional = false,
                                      bool notify_skill = false);
     QString askForGeneral(ServerPlayer *player, const char *generals, char *default_choice = NULL);
-    const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
     void addPlayerHistory(ServerPlayer *player, const char *key, int times = 1);
 
     void speakCommand(ServerPlayer *player, const char *arg);

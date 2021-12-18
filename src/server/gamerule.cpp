@@ -480,18 +480,17 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
     }
     case QSanguosha::AskForPeaches: {
         DyingStruct dying = data.value<DyingStruct>();
-        const Card *peach = nullptr;
         int threshold = dying.who->dyingFactor();
 
         while (dying.who->hp() < threshold) {
-            peach = nullptr;
+            CardUseStruct use;
 
             if (dying.who->isAlive())
-                peach = room->askForSinglePeach(qobject_cast<ServerPlayer *>(dying.nowAskingForPeaches), qobject_cast<ServerPlayer *>(dying.who));
+                room->askForSinglePeach(qobject_cast<ServerPlayer *>(dying.nowAskingForPeaches), qobject_cast<ServerPlayer *>(dying.who), use);
 
-            if (peach == nullptr)
+            if (use.card == nullptr)
                 break;
-            room->useCard(CardUseStruct(peach, dying.nowAskingForPeaches, dying.who), false);
+            room->useCard(use, false);
             threshold = dying.who->dyingFactor();
         }
         break;

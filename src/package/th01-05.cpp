@@ -1173,8 +1173,6 @@ public:
 
         invoke->invoker->drawCards(2);
 
-        RecoverStruct recover;
-        room->recover(invoke->invoker, recover);
         return false;
     }
 };
