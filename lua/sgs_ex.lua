@@ -75,7 +75,7 @@ local typeValidate = function(functionName, toBeValidated, nameOfToBeValidated, 
         return fail, 1, (functionName .. ": " .. nameOfToBeValidated .. " is not table.")
     end
 
-    for _, i in iparis(toBeValidated) do
+    for _, i in ipairs(toBeValidated) do
         if not validateFunc(i) then
             return fail, 2, (functionName .. ": No. " .. tostring(_) .. " of " .. nameOfToBeValidated .. " is " .. invalidOutput)
         end

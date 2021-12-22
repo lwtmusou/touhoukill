@@ -142,7 +142,7 @@ local loadExtension = function(name, isBuiltin)
     if extension then
         if (type(extension) == "table") and ((extension.type & sgs_ex.TableType.FirstTypeMask) == sgs_ex.TableType.Package) then
             if extension.cardFaces then
-                for _, c in iparis(extension.cardFaces) do
+                for _, c in ipairs(extension.cardFaces) do
                     sgs_ex.CardFaces[c.name] = c
                 end
             end
