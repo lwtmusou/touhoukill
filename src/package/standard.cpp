@@ -419,7 +419,7 @@ void DelayedTrick::onNullified(ServerPlayer *target) const
             if (player->containsTrick(objectName()))
                 continue;
 
-            const ProhibitSkill *skill = room->isProhibited(target, player, this);
+            const ProhibitSkill *skill = room->isProhibited(nullptr, player, this);
             if (skill) {
                 LogMessage log;
                 log.type = "#SkillAvoid";

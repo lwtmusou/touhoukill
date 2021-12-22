@@ -2105,7 +2105,7 @@ public:
 
     bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &, bool) const override
     {
-        return to->isRemoved() && card->getTypeId() != Card::TypeSkill;
+        return card->getTypeId() != Card::TypeSkill && to->isRemoved();
     }
 };
 

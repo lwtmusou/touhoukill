@@ -1688,7 +1688,7 @@ public:
 
     bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others, bool) const override
     {
-        return from->property("tianxing").toString().split("+").contains(to->objectName()) && card->getTypeId() != Card::TypeSkill && others.isEmpty();
+        return from != nullptr && from->property("tianxing").toString().split("+").contains(to->objectName()) && card->getTypeId() != Card::TypeSkill && others.isEmpty();
     }
 };
 

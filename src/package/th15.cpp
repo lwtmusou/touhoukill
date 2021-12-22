@@ -725,7 +725,7 @@ public:
 
     bool isProhibited(const Player *from, const Player *to, const Card *, const QList<const Player *> &targets, bool) const override
     {
-        if (from->hasFlag("Global_shehuoInvokerFailed")) {
+        if (from != nullptr && from->hasFlag("Global_shehuoInvokerFailed")) {
             bool check = false;
             foreach (const Player *p, targets) {
                 if (p->hasFlag("Global_shehuoFailed")) {
