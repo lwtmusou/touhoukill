@@ -18,7 +18,7 @@ project(QSanguosha
     VERSION 0.12.0
     )
 
-set(VERSION_NUMBER_QSanguosha 20211015)
+set(VERSION_NUMBER_QSanguosha 20211222)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -36,6 +36,8 @@ if (WIN32)
     set(QSANGUOSHA_QT5_COMPONENTS ${QSANGUOSHA_QT5_COMPONENTS} WinExtras)
 endif()
 set(QSANGUOSHA_QT6_COMPONENTS Core Widgets Network LinguistTools)
+
+
 
 find_package(Qt6 COMPONENTS ${QSANGUOSHA_QT6_COMPONENTS} OPTIONAL_COMPONENTS Multimedia) # Locate the position of Qt6.
 find_package(Qt5 COMPONENTS ${QSANGUOSHA_QT5_COMPONENTS} OPTIONAL_COMPONENTS Multimedia) # Locate the position of Qt5.
@@ -418,25 +420,93 @@ if (Qt5Multimedia_FOUND OR Qt6Multimedia_FOUND)
 endif()
 
 if (Qt5_FOUND)
+    swig_add_library(q5sanguosha_wrap
+        TYPE STATIC
+        LANGUAGE lua
+        SOURCES src/swig/sgs.i
+        )
+
+    target_compile_definitions(q5sanguosha_wrap PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
+    # ONLY FOR THEIR INCLUDE DIRECTORIES! Compile fails if we don't add the link libraries.
+    # Seems weird since we don't even link the libraries here
+    target_link_libraries(q5sanguosha_wrap QSanguoshaLibs::lua54 Qt5::Core)
+
+    add_library(Q5SgsCore ${QSanguosha_Core_SRCS} ${QSanguosha_Core_MOCS} lua/lua.qrc )
+
+    set_property(TARGET Q5SgsCore PROPERTY AUTOMOC ON)
+    set_property(TARGET Q5SgsCore PROPERTY AUTOUIC ON)
+    set_property(TARGET Q5SgsCore PROPERTY AUTORCC ON)
+
+    target_compile_definitions(Q5SgsCore PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
+    target_link_libraries(Q5SgsCore Qt5::Core q5sanguosha_wrap QSanguoshaLibs::lua54)
+
+    if (NOT WIN32)
+        target_link_libraries(Q5SgsCore dl)
+    endif()
+
+    if (NOT BUILD_SHARED_LIBS)
+        target_compile_definitions(q5sanguosha_wrap PUBLIC -DQSGS_STATIC)
+        target_compile_definitions(Q5SgsCore PUBLIC -DQSGS_STATIC)
+    else()
+        target_compile_definitions(q5sanguosha_wrap PRIVATE -DBUILD_QSGSCORE)
+        target_compile_definitions(Q5SgsCore PRIVATE -DBUILD_QSGSCORE)
+
+        set_target_properties(Q5SgsCore PROPERTIES VERSION ${QSanguosha_VERSION} SOVERSION 0.12)
+    endif()
+
+    if (NOT ANDROID)
+        add_executable(Q5Sanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} )
+    else()
+        add_library(Q5Sanguosha MODULE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} )
+    endif()
+
+    if (NOT BUILD_SHARED_LIBS)
+        target_compile_definitions(Q5Sanguosha PUBLIC -DQSGS_STATIC)
+    endif()
+
+    set_property(TARGET Q5Sanguosha PROPERTY AUTOMOC ON)
+    set_property(TARGET Q5Sanguosha PROPERTY AUTOUIC ON)
+    set_property(TARGET Q5Sanguosha PROPERTY AUTORCC ON)
+
+    if (WIN32)
+        target_link_libraries(Q5Sanguosha Qt5::WinExtras)
+    endif()
+
+    if (Qt5Multimedia_FOUND)
+        target_compile_definitions(Q5Sanguosha PUBLIC AUDIO_SUPPORT)
+        target_link_libraries (Q5Sanguosha QSanguoshaLibs::oggvorbisfile Qt5::Multimedia)
+    endif()
+
+    target_link_libraries (Q5Sanguosha Qt5::Widgets Qt5::Gui Qt5::Network Q5SgsCore)
+
+    target_compile_definitions(Q5Sanguosha PUBLIC -DOV_EXCLUDE_STATIC_CALLBACKS PUBLIC -DQT_NO_CAST_FROM_ASCII)
+    if (PCH)
+        target_precompile_headers(q5sanguosha_wrap PUBLIC src/core/qsgscore.h)
+        target_precompile_headers(Q5SgsCore PUBLIC src/core/qsgscore.h)
+        target_precompile_headers(Q5Sanguosha PUBLIC src/pch.h)
+    endif()
+endif()
+
+if (Qt6_FOUND)
     swig_add_library(qsanguosha_wrap
         TYPE STATIC
         LANGUAGE lua
         SOURCES src/swig/sgs.i
         )
 
-    target_compile_definitions(qsanguosha_wrap PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
+    target_compile_definitions(qsanguosha_wrap PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x70000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
     # ONLY FOR THEIR INCLUDE DIRECTORIES! Compile fails if we don't add the link libraries.
     # Seems weird since we don't even link the libraries here
-    target_link_libraries(qsanguosha_wrap QSanguoshaLibs::lua54 Qt5::Core)
+    target_link_libraries(qsanguosha_wrap QSanguoshaLibs::lua54 Qt6::Core)
 
-    add_library(QSgsCore ${QSanguosha_Core_SRCS} ${QSanguosha_Core_MOCS} lua/lua.qrc )
+    qt6_add_library(QSgsCore ${QSanguosha_Core_SRCS} ${QSanguosha_Core_MOCS} lua/lua.qrc )
 
     set_property(TARGET QSgsCore PROPERTY AUTOMOC ON)
     set_property(TARGET QSgsCore PROPERTY AUTOUIC ON)
     set_property(TARGET QSgsCore PROPERTY AUTORCC ON)
 
-    target_compile_definitions(QSgsCore PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
-    target_link_libraries(QSgsCore Qt5::Core qsanguosha_wrap QSanguoshaLibs::lua54)
+    target_compile_definitions(QSgsCore PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x70000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
+    target_link_libraries(QSgsCore Qt6::Core qsanguosha_wrap QSanguoshaLibs::lua54)
 
     if (NOT WIN32)
         target_link_libraries(QSgsCore dl)
@@ -452,11 +522,8 @@ if (Qt5_FOUND)
         set_target_properties(QSgsCore PROPERTIES VERSION ${QSanguosha_VERSION} SOVERSION 0.12)
     endif()
 
-    if (NOT ANDROID)
-        add_executable(QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} )
-    else()
-        add_library(QSanguosha MODULE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} )
-    endif()
+    qt6_add_translation(QM_FILES6 ${TS_FILES})
+    qt6_add_executable(QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} ${QM_FILES6} )
 
     if (NOT BUILD_SHARED_LIBS)
         target_compile_definitions(QSanguosha PUBLIC -DQSGS_STATIC)
@@ -466,82 +533,17 @@ if (Qt5_FOUND)
     set_property(TARGET QSanguosha PROPERTY AUTOUIC ON)
     set_property(TARGET QSanguosha PROPERTY AUTORCC ON)
 
-    if (WIN32)
-        target_link_libraries(QSanguosha Qt5::WinExtras)
-    endif()
-
-    if (Qt5Multimedia_FOUND)
+    if (Qt6Multimedia_FOUND)
         target_compile_definitions(QSanguosha PUBLIC AUDIO_SUPPORT)
-        target_link_libraries (QSanguosha QSanguoshaLibs::oggvorbisfile Qt5::Multimedia)
+        target_link_libraries (QSanguosha PUBLIC QSanguoshaLibs::oggvorbisfile Qt6::Multimedia)
     endif()
 
-    target_link_libraries (QSanguosha Qt5::Widgets Qt5::Gui Qt5::Network QSgsCore)
+    target_link_libraries (QSanguosha PUBLIC Qt6::Widgets Qt6::Gui Qt6::Network QSgsCore)
 
     target_compile_definitions(QSanguosha PUBLIC -DOV_EXCLUDE_STATIC_CALLBACKS PUBLIC -DQT_NO_CAST_FROM_ASCII)
     if (PCH)
         target_precompile_headers(qsanguosha_wrap PUBLIC src/core/qsgscore.h)
         target_precompile_headers(QSgsCore PUBLIC src/core/qsgscore.h)
         target_precompile_headers(QSanguosha PUBLIC src/pch.h)
-    endif()
-endif()
-
-if (Qt6_FOUND)
-    swig_add_library(q6sanguosha_wrap
-        TYPE STATIC
-        LANGUAGE lua
-        SOURCES src/swig/sgs.i
-        )
-
-    target_compile_definitions(q6sanguosha_wrap PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x70000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
-    # ONLY FOR THEIR INCLUDE DIRECTORIES! Compile fails if we don't add the link libraries.
-    # Seems weird since we don't even link the libraries here
-    target_link_libraries(q6sanguosha_wrap QSanguoshaLibs::lua54 Qt6::Core)
-
-    add_library(Q6SgsCore ${QSanguosha_Core_SRCS} ${QSanguosha_Core_MOCS} lua/lua.qrc )
-
-    set_property(TARGET Q6SgsCore PROPERTY AUTOMOC ON)
-    set_property(TARGET Q6SgsCore PROPERTY AUTOUIC ON)
-    set_property(TARGET Q6SgsCore PROPERTY AUTORCC ON)
-
-    target_compile_definitions(Q6SgsCore PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x70000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
-    target_link_libraries(Q6SgsCore Qt6::Core q6sanguosha_wrap QSanguoshaLibs::lua54)
-
-    if (NOT WIN32)
-        target_link_libraries(Q6SgsCore dl)
-    endif()
-
-    if (NOT BUILD_SHARED_LIBS)
-        target_compile_definitions(q6sanguosha_wrap PUBLIC -DQSGS_STATIC)
-        target_compile_definitions(Q6SgsCore PUBLIC -DQSGS_STATIC)
-    else()
-        target_compile_definitions(q6sanguosha_wrap PRIVATE -DBUILD_QSGSCORE)
-        target_compile_definitions(Q6SgsCore PRIVATE -DBUILD_QSGSCORE)
-
-        set_target_properties(Q6SgsCore PROPERTIES VERSION ${QSanguosha_VERSION} SOVERSION 0.12)
-    endif()
-
-    qt6_add_translation(QM_FILES6 ${TS_FILES})
-    add_executable(Q6Sanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} ${QM_FILES6} )
-
-    if (NOT BUILD_SHARED_LIBS)
-        target_compile_definitions(Q6Sanguosha PUBLIC -DQSGS_STATIC)
-    endif()
-
-    set_property(TARGET Q6Sanguosha PROPERTY AUTOMOC ON)
-    set_property(TARGET Q6Sanguosha PROPERTY AUTOUIC ON)
-    set_property(TARGET Q6Sanguosha PROPERTY AUTORCC ON)
-
-    if (Qt6Multimedia_FOUND)
-        target_compile_definitions(Q6Sanguosha PUBLIC AUDIO_SUPPORT)
-        target_link_libraries (Q6Sanguosha QSanguoshaLibs::oggvorbisfile Qt6::Multimedia)
-    endif()
-
-    target_link_libraries (Q6Sanguosha Qt6::Widgets Qt6::Gui Qt6::Network Q6SgsCore)
-
-    target_compile_definitions(Q6Sanguosha PUBLIC -DOV_EXCLUDE_STATIC_CALLBACKS PUBLIC -DQT_NO_CAST_FROM_ASCII)
-    if (PCH)
-        target_precompile_headers(q6sanguosha_wrap PUBLIC src/core/qsgscore.h)
-        target_precompile_headers(Q6SgsCore PUBLIC src/core/qsgscore.h)
-        target_precompile_headers(Q6Sanguosha PUBLIC src/pch.h)
     endif()
 endif()
