@@ -124,6 +124,8 @@ public:
 #endif
 };
 
+// Attention!!! DO NOT FORWARD DECLARE SingleCardMoveStruct
+// Always using #include <structs.h>
 struct QSGS_CORE_EXPORT SingleCardMoveStruct
 {
     /* implicit */ SingleCardMoveStruct(int id = -1, Player *to = nullptr, QSanguosha::Place toPlace = QSanguosha::PlaceHand);
@@ -157,8 +159,17 @@ public:
 #endif
 };
 
-// Can't specialize QListSpecialMethods<SingleCardMoveStruct> because it modifies size of QList and may cause binary incompatibility
+// Can we specialize QListSpecialMethods<SingleCardMoveStruct>?
+// It modifies size of QList and may cause binary incompatibility
+#ifdef SWIG
 struct QSGS_CORE_EXPORT CardsMoveStruct : public QList<SingleCardMoveStruct>
+#else
+using CardsMoveStruct = QList<SingleCardMoveStruct>;
+template<> struct QSGS_CORE_EXPORT QListSpecialMethods<SingleCardMoveStruct>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    : public QListSpecialMethodsBase<SingleCardMoveStruct>
+#endif
+#endif
 {
     bool isLastHandCard;
     CardMoveReason reason;
