@@ -966,7 +966,7 @@ public:
             foreach (const Card *card, target->getHandcards())
                 ids << card->getEffectiveId();
 
-            int card_id = room->doGongxin(invoke->invoker, target, ids);
+            int card_id = room->doGongxin(invoke->invoker, target, ids, "dizhen", false);
             if (card_id == -1)
                 return false;
             QStringList select;
@@ -982,7 +982,7 @@ public:
                 room->moveCardTo(Sanguosha->getCard(card_id), target, nullptr, Player::DrawPile, reason, target->getShownHandcards().contains(card_id));
                 invoke->invoker->setFlags("-Global_GongxinOperator");
             }
-            invoke->invoker->tag.remove("gongxin");
+            invoke->invoker->tag.remove("dizhen");
         }
         return false;
     }

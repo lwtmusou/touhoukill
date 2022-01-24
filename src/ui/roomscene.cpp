@@ -3082,7 +3082,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
     }
     case Client::AskForGongxin: {
         ok_button->setEnabled(false);
-        cancel_button->setEnabled(true);
+        cancel_button->setEnabled(ClientInstance->m_isDiscardActionRefusable);
         discard_button->setEnabled(false);
 
         break;

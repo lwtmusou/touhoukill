@@ -2044,6 +2044,7 @@ void Client::askForGongxin(const QVariant &args)
     if (!JsonUtils::tryParse(arg[3], enabled_ids))
         return;
     highlight_skill_name = arg[4].toString();
+    m_isDiscardActionRefusable = arg[5].toBool();
 
     who->setCards(card_ids);
 

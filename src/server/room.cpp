@@ -6072,7 +6072,7 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
     thread->trigger(AfterGuanXing, this, v);
 }
 
-int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids, QString skill_name)
+int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids, QString skill_name, bool cancellable)
 {
     Q_ASSERT(!target->isKongcheng());
     tryPause();
@@ -6097,13 +6097,13 @@ int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> e
     AI *ai = shenlvmeng->getAI();
     if (ai) {
         if (enabled_ids.isEmpty()) {
-            shenlvmeng->tag.remove(skill_name);
-            return -1;
-        }
-        card_id = ai->askForAG(enabled_ids, true, objectName());
-        if (card_id == -1) {
-            shenlvmeng->tag.remove(skill_name);
-            return -1;
+            if (cancellable)
+                shenlvmeng->tag.remove(skill_name);
+            card_id - 1;
+        } else {
+            card_id = ai->askForAG(enabled_ids, true, objectName());
+            if (card_id == -1 && cancellable)
+                shenlvmeng->tag.remove(skill_name);
         }
     } else {
         foreach (int cardId, target->handCards()) {
@@ -6120,15 +6120,21 @@ int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> e
         gongxinArgs << JsonUtils::toJsonArray(target->handCards());
         gongxinArgs << JsonUtils::toJsonArray(enabled_ids);
         gongxinArgs << skill_name;
+        gongxinArgs << cancellable;
         bool success = doRequest(shenlvmeng, S_COMMAND_SKILL_GONGXIN, gongxinArgs, true);
         const QVariant &clientReply = shenlvmeng->getClientReply();
         if (!success || !JsonUtils::isNumber(clientReply) || !target->handCards().contains(clientReply.toInt())) {
-            shenlvmeng->tag.remove(skill_name);
-            return -1;
+            if (cancellable)
+                shenlvmeng->tag.remove(skill_name);
+            card_id = -1;
         }
 
         card_id = clientReply.toInt();
     }
+
+    if (card_id == -1 && !cancellable && !enabled_ids.isEmpty())
+        card_id = enabled_ids.value(qrand() % enabled_ids.length(), enabled_ids.first());
+
     return card_id; // Do remember to remove the tag later!
 }
 

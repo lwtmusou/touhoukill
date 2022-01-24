@@ -111,7 +111,7 @@ public:
     void returnToTopDrawPile(const QList<int> &cards);
     ServerPlayer *getLord(const QString &kingdom = "wei", bool include_death = false) const;
     void askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, GuanxingType guanxing_type = GuanxingBothSides, QString skillName = "");
-    int doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids = QList<int>(), QString skill_name = "gongxin");
+    int doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids = QList<int>(), QString skill_name = "gongxin", bool cancellable = true);
     int drawCard(bool bottom = false);
     void fillAG(const QList<int> &card_ids, ServerPlayer *who = nullptr, const QList<int> &disabled_ids = QList<int>(), const QList<int> &shownHandcard_ids = QList<int>());
     void takeAG(ServerPlayer *player, int card_id, bool move_cards = true, QList<ServerPlayer *> to_notify = QList<ServerPlayer *>(), Player::Place fromPlace = Player::DrawPile);
