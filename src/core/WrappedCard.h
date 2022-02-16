@@ -104,6 +104,18 @@ public:
         return m_card->canRecast();
     }
 
+    inline bool canDamage() const override
+    {
+        Q_ASSERT(m_card != nullptr);
+        return m_card->canDamage();
+    }
+
+    inline bool canRecover() const override
+    {
+        Q_ASSERT(m_card != nullptr);
+        return m_card->canRecover();
+    }
+
     inline Card::HandlingMethod getHandlingMethod() const override
     {
         Q_ASSERT(m_card != nullptr);
@@ -114,6 +126,12 @@ public:
     {
         Q_ASSERT(m_card != nullptr);
         return m_card->hasPreAction();
+    }
+
+    inline bool hasEffectValue() const override
+    {
+        Q_ASSERT(m_card != nullptr);
+        return m_card->hasEffectValue();
     }
 
     inline QString getPackage() const override
