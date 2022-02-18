@@ -4176,10 +4176,19 @@ function SmartAI:useCardKnownBoth(KnownBoth, use)
 			end
 		end
 	end
+	
+	local needTarget = (KnownBoth:getSkillName() == "xihua" or KnownBoth:getSkillName() == "qiji" or sgs.Sanguosha:getCurrentCardUsePattern() == "@@mengxiang-card2"
+	       or KnownBoth:getSkillName() == "chaoren" or KnownBoth:getSkillName() == "xiuye")
+	if not needTarget then
+		needTarget = self.player:getPile("wooden_ox"):contains(KnownBoth:getEffectiveId())
+	end
+	
+	if not needTarget then
 	--if (self.room:getTag("KnownBothUsed"):toBool()) then
-	if KnownBoth:canRecast() then
-		use.card = KnownBoth
-		return
+		if KnownBoth:canRecast() then
+			use.card = KnownBoth
+			return
+		end
 	end
 	--end
 	--[[if self.player:objectName() == self.room:getCurrent():objectName() then
