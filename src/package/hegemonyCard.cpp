@@ -410,7 +410,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from != nullptr && !equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
+        if (use.from == nullptr || !equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
             return QList<SkillInvokeDetail>();
 
         if (!isHegemonyGameMode(room->getMode()))
