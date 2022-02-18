@@ -1304,7 +1304,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from->hasSkill(this) && use.from->getPhase() == Player::Play && use.to.length() == 1 && !use.to.contains(use.from)) {
+        if (use.from != nullptr && use.from->hasSkill(this) && use.from->getPhase() == Player::Play && use.to.length() == 1 && !use.to.contains(use.from)) {
             if (use.card->isKindOf("Slash") || use.card->isKindOf("TrickCard"))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, nullptr, true);
         }
@@ -1602,7 +1602,7 @@ public:
             }
         } else if (event == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from && use.card->getSuit() == Card::Heart && use.card->getTypeId() != Card::TypeSkill) {
+            if (use.from != nullptr && use.card->getSuit() == Card::Heart && use.card->getTypeId() != Card::TypeSkill) {
                 QList<SkillInvokeDetail> d;
                 foreach (ServerPlayer *p, use.to) {
                     if (p->hasSkill(this) && p != use.from) {
@@ -3141,7 +3141,7 @@ public:
     {
         QList<SkillInvokeDetail> d;
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from && use.from->isAlive() && (use.card->isKindOf("Slash") || use.card->isNDTrick()) && !use.card->isVirtualCard()) {
+        if (use.from != nullptr && use.from->isAlive() && (use.card->isKindOf("Slash") || use.card->isNDTrick()) && !use.card->isVirtualCard()) {
             foreach (ServerPlayer *p, use.to) {
                 if (p->hasSkill(this) && p != use.from)
                     d << SkillInvokeDetail(this, p, p, nullptr, false, use.from);
@@ -3265,7 +3265,7 @@ public:
     {
         QList<SkillInvokeDetail> d;
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->isKindOf("Slash") && use.from->isAlive()) {
+        if (use.card->isKindOf("Slash") && use.from != nullptr && use.from->isAlive()) {
             foreach (ServerPlayer *p, use.to) {
                 if (use.from != p && p->hasSkill(this) && use.from->getKingdom() != p->getKingdom())
                     d << SkillInvokeDetail(this, p, p, nullptr, true, use.from);
@@ -4672,7 +4672,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
-        if (use.from && use.from->isAlive() && use.from->hasSkill(this) && use.card->isKindOf("Slash")) {
+        if (use.from != nullptr && use.from->isAlive() && use.from->hasSkill(this) && use.card->isKindOf("Slash")) {
             foreach (ServerPlayer *p, use.to) {
                 if (p != use.from && p->canDiscard(p, "hejs"))
                     d << SkillInvokeDetail(this, use.from, use.from, nullptr, false, p);
@@ -5525,7 +5525,7 @@ public:
         if (ban_list.contains(use.card->getClassName()))
             return QList<SkillInvokeDetail>();
 
-        if (use.from && use.from->isAlive() && use.from->hasSkill(this)) {
+        if (use.from != nullptr && use.from->isAlive() && use.from->hasSkill(this)) {
             if (use.m_isHandcard && use.card->getTypeId() != Card::TypeSkill && !use.to.isEmpty())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
         }

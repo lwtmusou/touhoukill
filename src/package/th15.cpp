@@ -164,7 +164,7 @@ public:
 
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
-        if (use.from && use.from->isAlive() && !use.to.isEmpty() && use.card->hasFlag("showncards") && (use.card->isKindOf("BasicCard") || use.card->isNDTrick())
+        if (use.from != nullptr && use.from->isAlive() && !use.to.isEmpty() && use.card->hasFlag("showncards") && (use.card->isKindOf("BasicCard") || use.card->isNDTrick())
             && ((use.card->isRed() || use.card->isBlack()) || !use.from->getShownHandcards().isEmpty())) {
             foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (!p->hasFlag("chunhua"))
@@ -1000,7 +1000,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
-        if (use.card->hasFlag("showncards") && use.from->hasSkill(this) && use.to.length() == 1) {
+        if (use.card->hasFlag("showncards") && use.from != nullptr && use.from->hasSkill(this) && use.to.length() == 1) {
             foreach (ServerPlayer *p, use.to) {
                 if (!p->getShownHandcards().isEmpty())
                     d << SkillInvokeDetail(this, use.from, use.from, nullptr, true, p);
@@ -1256,7 +1256,7 @@ public:
     {
         if (triggerEvent == TargetSpecified) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from && use.from->hasSkill(this) && use.card != nullptr && use.card->isKindOf("Slash") && !use.to.isEmpty())
+            if (use.from != nullptr && use.from->hasSkill(this) && use.card != nullptr && use.card->isKindOf("Slash") && !use.to.isEmpty())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, nullptr, true);
 
         } else if (triggerEvent == Damage) {

@@ -1420,7 +1420,7 @@ public:
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.to->isDead())
                 return QList<SkillInvokeDetail>();
-            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (p != damage.to && damage.to->getHp() == p->getHp())
                     d << SkillInvokeDetail(this, p, p, nullptr, false, damage.to);
             }
@@ -1429,7 +1429,7 @@ public:
         if (e == HpRecover) {
             RecoverStruct recover = data.value<RecoverStruct>();
             //recover.to
-            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (p != recover.to && recover.to->getHp() == p->getHp())
                     d << SkillInvokeDetail(this, p, p, nullptr, false, recover.to);
             }
@@ -1731,7 +1731,7 @@ public:
 
             bool flag = false;
             foreach (ServerPlayer *q, room->getOtherPlayers(p)) {
-                if (!(use.from == q || use.to.contains(q)) && use.from->canSlash(q, use.card, false)) {
+                if (!(use.from == q || use.to.contains(q)) && use.from != nullptr && use.from->canSlash(q, use.card, false)) {
                     flag = true;
                     break;
                 }
@@ -1874,7 +1874,7 @@ public:
             use.card->setFlags("xunshi");
             use.card->setFlags("IgnoreFailed");
             foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                if (use.from->isAlive() && p != use.from && !use.to.contains(p) && !use.to.isEmpty()
+                if (use.from != nullptr && use.from->isAlive() && p != use.from && !use.to.contains(p) && !use.to.isEmpty()
                     && (p->getHandcardNum() < use.from->getHandcardNum() || p->getHp() < use.from->getHp()) && !use.from->isProhibited(p, use.card, ps)) {
                     if (use.card->isKindOf("Peach")) {
                         if (p->isWounded())
@@ -1953,7 +1953,7 @@ public:
         QList<SkillInvokeDetail> d;
         if (use.card->isKindOf("Slash") || use.card->isKindOf("Duel")) {
             foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                if (use.from->isAlive() && p != use.from && use.to.contains(p) && p->canDiscard(p, "hs"))
+                if (use.from != nullptr && use.from->isAlive() && p != use.from && use.to.contains(p) && p->canDiscard(p, "hs"))
                     d << SkillInvokeDetail(this, p, p, nullptr);
             }
         }

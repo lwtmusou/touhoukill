@@ -80,7 +80,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (!use.card->isKindOf("Slash") || !use.from->isAlive() || !use.from->hasLordSkill(this))
+        if (!use.card->isKindOf("Slash") || use.from == nullptr || !use.from->isAlive() || !use.from->hasLordSkill(this))
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
@@ -947,7 +947,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from && use.from->hasSkill(this) && use.from->isAlive() && (use.card->isNDTrick() || use.card->isKindOf("Slash"))) {
+        if (use.from != nullptr && use.from->hasSkill(this) && use.from->isAlive() && (use.card->isNDTrick() || use.card->isKindOf("Slash"))) {
             QList<ServerPlayer *> targets;
             foreach (ServerPlayer *to, use.to) {
                 if (to->isAlive() && to->canDiscard(to, "hs") && use.from != to)
@@ -1209,7 +1209,6 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-
         room->notifySkillInvoked(invoke->invoker, objectName());
         room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
         CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, invoke->invoker->objectName(), nullptr, objectName(), "");
@@ -2211,7 +2210,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from && use.from->hasSkill(this)) {
+        if (use.from != nullptr && use.from->hasSkill(this)) {
             if (use.card->isKindOf("Slash") || (use.card->isBlack() && use.card->isNDTrick() && !use.card->isKindOf("Nullification"))) {
                 use.card->setFlags("xunshi");
                 QList<const Player *> plist;
@@ -2980,7 +2979,7 @@ public:
     {
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from && use.from->isCurrent() && use.card && use.card->getTypeId() != Card::TypeSkill)
+            if (use.from != nullptr && use.from->isCurrent() && use.card && use.card->getTypeId() != Card::TypeSkill)
                 room->setPlayerMark(use.from, "luli", use.from->getMark("luli") + 1);
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -3521,7 +3520,7 @@ public:
             }
         } else if (triggerEvent == TargetSpecified) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->getSkillName() == "huochong") {
+            if (use.from != nullptr && use.card->getSkillName() == "huochong") {
                 foreach (ServerPlayer *p, use.to)
                     r << SkillInvokeDetail(this, use.from, use.from, nullptr, true, p, false);
             }

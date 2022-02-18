@@ -597,7 +597,7 @@ public:
         if (use.card != nullptr && use.card->isKindOf("Slash")) {
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *p, use.to) {
-                if (p->isAlive() && diff(use.from, p)) {
+                if (p->isAlive() && use.from != nullptr && diff(use.from, p)) {
                     if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName(), p))
                         continue;
                     d << SkillInvokeDetail(this, use.from, use.from, nullptr, false, p);
@@ -661,7 +661,7 @@ public:
         if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
             return QList<SkillInvokeDetail>();
 
-        if (use.card != nullptr && use.card->isKindOf("Slash")) {
+        if (use.from != nullptr && use.card != nullptr && use.card->isKindOf("Slash")) {
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *p, use.to) {
                 if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName(), p))
@@ -722,7 +722,7 @@ public:
         if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
             return QList<SkillInvokeDetail>();
 
-        if (use.from->isAlive())
+        if (use.from != nullptr && use.from->isAlive())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
         return QList<SkillInvokeDetail>();
     }
@@ -2462,7 +2462,7 @@ public:
         if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
             return QList<SkillInvokeDetail>();
 
-        if (use.card != nullptr && use.card->isKindOf("Slash")) {
+        if (use.from != nullptr && use.card != nullptr && use.card->isKindOf("Slash")) {
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *p, use.to) {
                 if (p->isAlive() && p->dyingThreshold() == 1) {

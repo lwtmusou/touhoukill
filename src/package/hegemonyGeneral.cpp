@@ -137,7 +137,7 @@ public:
             if (skill_owner->hasShownSkill(this)) { //!BattleArraySkill::triggerable(event, room, data).isEmpty() &&
                 QList<ServerPlayer *> targets;
                 foreach (ServerPlayer *to, use.to) {
-                    if (use.from->inSiegeRelation(skill_owner, to))
+                    if (use.from != nullptr && use.from->inSiegeRelation(skill_owner, to))
                         targets << to; //->objectName();
                 }
 
@@ -1328,8 +1328,6 @@ public:
         return false;
     }
 };
-
-
 
 //********  SUMMER   **********
 class BolanHgemony : public TriggerSkill
@@ -3028,7 +3026,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (!use.card->isKindOf("Slash") || !use.from || use.from->isDead())
+        if (!use.card->isKindOf("Slash") || use.from == nullptr || use.from->isDead())
             return QList<SkillInvokeDetail>();
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *kisume, room->findPlayersBySkillName(objectName())) {

@@ -69,7 +69,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
-        if (use.card->isKindOf("Slash") && use.from->isAlive()) {
+        if (use.card->isKindOf("Slash") && use.from != nullptr && use.from->isAlive()) {
             foreach (ServerPlayer *p, use.to) {
                 if (p->hasSkill(this) && use.from->getHandcardNum() > p->getHandcardNum())
                     d << SkillInvokeDetail(this, p, p, nullptr, true);

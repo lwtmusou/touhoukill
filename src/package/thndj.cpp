@@ -727,7 +727,7 @@ public:
             }
         } else if (e == TargetSpecifying) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isKindOf("Slash") && use.card->getSkillName() == objectName()) {
+            if (use.from != nullptr && use.card->isKindOf("Slash") && use.card->getSkillName() == objectName()) {
                 foreach (ServerPlayer *t, room->getOtherPlayers(use.from)) {
                     if (!use.to.contains(t) && use.from->canSlash(t, use.card, false))
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, nullptr, true);
@@ -827,7 +827,7 @@ public:
                 foreach (ServerPlayer *p, use.to) {
                     if (p->hasSkill(this)) {
                         foreach (ServerPlayer *t, room->getOtherPlayers(p)) {
-                            if (!use.to.contains(t) && use.from->canSlash(t, use.card, false)) {
+                            if (!use.to.contains(t) && use.from != nullptr && use.from->canSlash(t, use.card, false)) {
                                 d << SkillInvokeDetail(this, p, p);
                                 break;
                             }
@@ -1370,7 +1370,6 @@ public:
     }
 };
 
-
 class Youle : public TriggerSkill
 {
 public:
@@ -1427,7 +1426,7 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         QList<ServerPlayer *> targets;
-        foreach(ServerPlayer *p, room->getAllPlayers()) {
+        foreach (ServerPlayer *p, room->getAllPlayers()) {
             int num = 0;
             if (invoke->invoker->canDiscard(p, "hs"))
                 num++;
@@ -1447,7 +1446,6 @@ public:
             DummyCard *dummy = new DummyCard;
             QString flag = "hsej";
             for (int i = 0; i < 2; i += 1) {
-
                 int card_id = room->askForCardChosen(invoke->invoker, target, flag, objectName(), false, Card::MethodDiscard);
                 if (room->getCardPlace(card_id) == Player::PlaceHand)
                     flag.remove("hs");
@@ -1458,7 +1456,7 @@ public:
 
                 dummy->addSubcard(card_id);
 
-                if (target->getCards(flag).length()  <= 0)
+                if (target->getCards(flag).length() <= 0)
                     break;
             }
             room->throwCard(dummy, target, invoke->invoker);
@@ -1468,7 +1466,6 @@ public:
             return true;
         }
         return false;
-
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
@@ -1934,7 +1931,6 @@ THNDJPackage::THNDJPackage()
     youmu_ndj->addSkill(new Hunpo);
     youmu_ndj->addSkill(new Fanji);
 
-
     General *merry_ndj = new General(this, "merry_ndj", "wai", 3);
     merry_ndj->addSkill(new Liexi);
     merry_ndj->addSkill(new LiexiTargetMod);
@@ -1960,7 +1956,6 @@ THNDJPackage::THNDJPackage()
 
     General *tenshi_ndj = new General(this, "tenshi_ndj", "zhan", 4);
     tenshi_ndj->addSkill(new Youle);
-    
 
     General *eirin = new General(this, "eirin_ndj", "yyc");
     eirin->addSkill(new Yaoli);

@@ -940,7 +940,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card != nullptr && use.card->isKindOf("Slash") && use.from->hasSkill(this)) {
+        if (use.from != nullptr && use.card != nullptr && use.card->isKindOf("Slash") && use.from->hasSkill(this)) {
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *p, use.to)
                 d << SkillInvokeDetail(this, use.from, use.from, nullptr, false, p);
@@ -1699,7 +1699,7 @@ public:
         if (triggerEvent != TargetSpecified)
             return QList<SkillInvokeDetail>();
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->getSkillName() == objectName() && use.from && use.from->isAlive())
+        if (use.card->getSkillName() == objectName() && use.from != nullptr && use.from->isAlive())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, nullptr, true);
         return QList<SkillInvokeDetail>();
     }

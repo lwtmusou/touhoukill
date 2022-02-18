@@ -87,7 +87,7 @@ public:
 
         use.card->setFlags("IgnoreFailed");
         foreach (ServerPlayer *liege, room->getLieges("dld", use.to.first())) {
-            if (use.from->canSlash(liege, use.card, false)) {
+            if (use.from != nullptr && use.from->canSlash(liege, use.card, false)) {
                 use.card->setFlags("-IgnoreFailed");
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.to.first(), use.to.first());
             }
@@ -210,7 +210,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->getTypeId() == Card::TypeTrick) {
                 foreach (ServerPlayer *p, use.to) {
-                    if (p->hasSkill(this) && p->isWounded() && use.from && use.from != p)
+                    if (p->hasSkill(this) && p->isWounded() && use.from != nullptr && use.from != p)
                         d << SkillInvokeDetail(this, p, p, nullptr, true);
                 }
             }
@@ -334,7 +334,7 @@ public:
         if (use.card->isKindOf("Slash") && !use.card->isKindOf("FireSlash")) {
             QList<SkillInvokeDetail> d;
             if (triggerEvent == TargetSpecifying) {
-                if (use.from->hasSkill(this))
+                if (use.from != nullptr && use.from->hasSkill(this))
                     d << SkillInvokeDetail(this, use.from, use.from, nullptr, true);
             } else {
                 foreach (ServerPlayer *p, use.to) {
@@ -593,7 +593,7 @@ public:
         if (e == TargetSpecified) {
             CardUseStruct use = data.value<CardUseStruct>();
             QList<SkillInvokeDetail> d;
-            if (use.card->isKindOf("Slash") && use.from && use.from->isAlive()) {
+            if (use.card->isKindOf("Slash") && use.from != nullptr && use.from->isAlive()) {
                 bool can = false;
                 foreach (ServerPlayer *p, use.to) {
                     if (p->getHp() >= use.from->getHp()) {
@@ -814,7 +814,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (!use.card->isKindOf("Slash") || !use.from || use.from->isDead())
+        if (!use.card->isKindOf("Slash") || use.from == nullptr || use.from->isDead())
             return QList<SkillInvokeDetail>();
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *kisume, room->findPlayersBySkillName(objectName())) {

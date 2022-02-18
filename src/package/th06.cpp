@@ -916,7 +916,7 @@ public:
                 if (room->getCardPlace(id) != Player::PlaceTable)
                     return QList<SkillInvokeDetail>();
             }
-            if (e == TargetSpecified && use.from->isAlive() && use.from->hasSkill(this) && use.to.first()->isAlive())
+            if (e == TargetSpecified && use.from != nullptr && use.from->isAlive() && use.from->hasSkill(this) && use.to.first()->isAlive())
                 d << SkillInvokeDetail(this, use.from, use.from, nullptr, false, use.to.first());
             else if (e == TargetConfirmed && use.to.first()->isAlive() && use.to.first()->hasSkill(this))
                 d << SkillInvokeDetail(this, use.to.first(), use.to.first(), nullptr, false, use.from);
@@ -1757,7 +1757,7 @@ public:
 
         QList<SkillInvokeDetail> d;
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from && use.from->hasSkill(this) && use.card->isKindOf("Slash") && use.card->isBlack()) {
+        if (use.from != nullptr && use.from->hasSkill(this) && use.card->isKindOf("Slash") && use.card->isBlack()) {
             foreach (ServerPlayer *p, use.to)
                 d << SkillInvokeDetail(this, use.from, use.from, nullptr, false, p);
         }

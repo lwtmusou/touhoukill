@@ -306,7 +306,7 @@ public:
             if (use.card->isKindOf("Jink") || use.card->isKindOf("Nullification"))
                 return QList<SkillInvokeDetail>();
             ServerPlayer *player = use.from;
-            if (player && player->isAlive() && player->hasSkill(this)) {
+            if (use.from != nullptr && player->isAlive() && player->hasSkill(this)) {
                 ServerPlayer *target = nullptr;
                 foreach (ServerPlayer *p, room->getAlivePlayers()) {
                     if (p->getMark("@door") > 0) {
@@ -314,7 +314,7 @@ public:
                         break;
                     }
                 }
-                if (target) {
+                if (target != nullptr) {
                     QList<const Player *> ps;
                     foreach (ServerPlayer *p, use.to)
                         ps << p;
@@ -929,7 +929,7 @@ public:
         use.card->setFlags("IgnoreFailed");
         use.card->setFlags("xunshi");
         foreach (ServerPlayer *q, room->getAlivePlayers()) {
-            if (!use.to.contains(q) && !use.from->isProhibited(q, use.card, ps) && use.card->targetFilter(ps, q, use.from)) {
+            if (!use.to.contains(q) && use.from != nullptr && !use.from->isProhibited(q, use.card, ps) && use.card->targetFilter(ps, q, use.from)) {
                 invoke = true;
                 break;
             }

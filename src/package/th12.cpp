@@ -90,7 +90,7 @@ public:
         use.card->setFlags("IgnoreFailed");
         bool invoke = false;
         foreach (ServerPlayer *q, room->getLieges("xlc", use.to.first())) {
-            if (use.from->isProhibited(q, use.card))
+            if (use.from != nullptr && use.from->isProhibited(q, use.card))
                 continue;
             if (!use.card->targetFilter(QList<const Player *>(), q, use.from))
                 continue;

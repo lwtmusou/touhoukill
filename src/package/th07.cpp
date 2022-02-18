@@ -821,125 +821,6 @@ public:
     }
 };
 
-class ZhaoliaoVS : public OneCardViewAsSkill
-{
-public:
-    ZhaoliaoVS()
-        : OneCardViewAsSkill("zhaoliaoVS")
-    {
-        response_pattern = "@@zhaoliaoVS";
-        response_or_use = true;
-    }
-
-    bool viewFilter(const Card *c) const override
-    {
-        return !c->isEquipped();
-    }
-
-    const Card *viewAs(const Card *c) const override
-    {
-        ExNihilo *exnihilo = new ExNihilo(Card::SuitToBeDecided, 0);
-        exnihilo->addSubcard(c);
-        exnihilo->setSkillName("_zhaoliao");
-        return exnihilo;
-    }
-};
-
-class Zhaoliao : public TriggerSkill
-{
-public:
-    Zhaoliao()
-        : TriggerSkill("zhaoliao")
-    {
-        events << Damaged;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
-    {
-        QList<SkillInvokeDetail> d;
-        ServerPlayer *a = data.value<DamageStruct>().to;
-        QList<ServerPlayer *> rans = room->findPlayersBySkillName(objectName());
-        foreach (ServerPlayer *ran, rans) {
-            if (a->isAlive() && a != ran && !ran->isNude())
-                d << SkillInvokeDetail(this, ran, ran);
-        }
-        return d;
-    }
-
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
-    {
-        ServerPlayer *a = data.value<DamageStruct>().to;
-        ServerPlayer *ran = invoke->invoker;
-        ran->tag["zhaoliao_target"] = QVariant::fromValue(a);
-        const Card *cards = room->askForExchange(ran, "zhaoliao", ran->getCards("hes").length(), 1, true, "@zhaoliao:" + a->objectName(), true);
-        ran->tag.remove("zhaoliao_target");
-        if (cards) {
-            ran->showHiddenSkill("zhaoliao");
-            room->notifySkillInvoked(ran, objectName());
-            QList<ServerPlayer *> logto;
-            logto << a;
-            room->touhouLogmessage("#ChoosePlayerWithSkill", ran, "zhaoliao", logto);
-
-            room->obtainCard(a, cards, false);
-            delete cards;
-            cards = nullptr;
-            return true;
-        }
-        return false;
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
-    {
-        ServerPlayer *player = data.value<DamageStruct>().to;
-        ServerPlayer *ran = invoke->invoker;
-        QString choice = room->askForChoice(ran, objectName(), "zhaoliao1+zhaoliao2");
-        if (choice == "zhaoliao1")
-            ran->drawCards(1);
-        else
-            room->askForUseCard(player, "@@zhaoliaoVS", "zhaoliaouse");
-        return false;
-    }
-};
-
-class Jiaoxia : public TriggerSkill
-{
-public:
-    Jiaoxia()
-        : TriggerSkill("jiaoxia")
-    {
-        events << Dying;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
-    {
-        ServerPlayer *who = data.value<DyingStruct>().who;
-        if (who->hasSkill(this) && who->getEquips().length() == 0 && who->getHp() < who->dyingThreshold())
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, who, who);
-        return QList<SkillInvokeDetail>();
-    }
-
-    //default cost
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
-    {
-        ServerPlayer *player = invoke->invoker;
-        JudgeStruct judge;
-        judge.reason = objectName();
-        judge.who = player;
-        judge.good = false;
-        judge.pattern = ".|heart";
-
-        room->judge(judge);
-        if (judge.isGood()) {
-            RecoverStruct recover;
-            recover.recover = 1;
-            recover.who = player;
-            room->recover(player, recover);
-        }
-        return false;
-    }
-};
-
 class Shuangren : public TargetModSkill
 {
 public:
@@ -1816,7 +1697,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
         if (use.card && (use.card->isKindOf("Slash") || use.card->isNDTrick()) && (use.card->isRed() || use.card->isBlack())) {
-            if (use.from && use.from->isAlive()) {
+            if (use.from != nullptr && use.from->isAlive()) {
                 foreach (ServerPlayer *p, use.to) {
                     if (p != use.from && p->hasSkill(this) && !p->getPile("siling").isEmpty()) {
                         foreach (int id, p->getPile("siling")) {
@@ -2471,7 +2352,7 @@ TH07Package::TH07Package()
     addMetaObject<YujianCard>();
     addMetaObject<HuayinCard>();
 
-    skills << new ZhaoliaoVS << new ShihuiVS;
+    skills << new ShihuiVS;
 }
 
 ADD_PACKAGE(TH07)

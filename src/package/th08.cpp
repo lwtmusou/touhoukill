@@ -341,7 +341,7 @@ public:
         foreach (ServerPlayer *to, use.to) {
             if (to->hasSkill(this)) {
                 foreach (ServerPlayer *p, room->getOtherPlayers(to)) {
-                    if (use.from->canSlash(p, use.card, true) && !use.to.contains(p) && use.from->inMyAttackRange(p)) {
+                    if (use.from != nullptr && use.from->canSlash(p, use.card, true) && !use.to.contains(p) && use.from->inMyAttackRange(p)) {
                         d << SkillInvokeDetail(this, to, to);
                         break;
                     }
