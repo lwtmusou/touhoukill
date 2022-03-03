@@ -9,9 +9,19 @@ return {
 	["designer:junko"] = "三国有单",
 	
 	["illustrator:junko"] = "ルリア",
-	["origin:junko"] = "p号：58277323， 个人ID：997454",
+	["origin:junko"] = "p号：58277323， 个人id：997454",
 	["illustrator:junko_1"] = "久賀フーナ",
-	["origin:junko_1"] = "p号：54259284， 个人ID：2636363",
+	["origin:junko_1"] = "p号：54259284， 个人id：2636363",
+	["illustrator:junko_2"] = "モルチ/MORUCHI+",
+	["origin:junko_2"] = "p号：56432110；个人id：6468301",
+	["illustrator:junko_3"] = "Z.O.B",
+	["origin:junko_3"] = "p号：84990207；个人id：798436",
+	["illustrator:junko_4"] = "こぞめつき",
+	["origin:junko_4"] = "p号：82769070；个人id：30706842",
+	["illustrator:junko_5"] = "绫缪",
+	["origin:junko_5"] = "p号：79065589；个人id：15886186",
+	["illustrator:junko_6"] = "thkani",
+	["origin:junko_6"] = "p号：63323756；个人id：13134696",
 	
 	
 	["xiahui"] = "瑕秽",
@@ -44,9 +54,18 @@ return {
 	["designer:hecatia"] = "辰焰天明",
 	
 	["illustrator:hecatia"] = "もりもり",
-	["origin:hecatia"] = "p号：56930159，　个人ID：3099070",
+	["origin:hecatia"] = "p号：56930159，　个人id：3099070",
 	["illustrator:hecatia_1"] = "ひよすけ",
 	["origin:hecatia_1"] = "p号：52369022",
+	["illustrator:hecatia_2"] = "鮪丼",
+	["origin:hecatia_2"] = "p号：90830392；个人id：13486861",
+	["illustrator:hecatia_3"] = "ファルケン",
+	["origin:hecatia_3"] = "p号：80121028；个人id：6415776",
+	["illustrator:hecatia_4"] = "ふぁみ",
+	["origin:hecatia_4"] = "p号：58161293；个人id：5860132",
+	["illustrator:hecatia_5"] = "60枚",
+	["origin:hecatia_5"] = "p号：59328858；个人id：3322006",
+	
 	
 	["santi"] = "三体",
 	[":santi"] = "<font color=\"blue\"><b>锁定技，</b></font>非额外回合开始时，你令此回合执行阶段为“准备-判定-（摸牌-出牌-弃牌） x3 -结束”；当你于此回合的出牌阶段内使用牌时，你令此阶段内/余下的出牌阶段内不能使用与之类型不同/相同的牌。",
@@ -60,9 +79,17 @@ return {
 	["designer:clownpiece"] = "三国有单",
 	
 	["illustrator:clownpiece"] = "ルリア",
-	["origin:clownpiece"] = "个人ID：997454",
+	["origin:clownpiece"] = "p号：997454",
 	["illustrator:clownpiece_1"] = "さな",
-	["origin:clownpiece_1"] = "个人ID：58171953",	
+	["origin:clownpiece_1"] = "p号：58171953",	
+	["illustrator:clownpiece_2"] = "米室",
+	["origin:clownpiece_2"] = "p号：80177060；个人id：10199606",	
+	["illustrator:clownpiece_3"] = "京田スズカ",
+	["origin:clownpiece_3"] = "p号：75524262；个人id：3718340",	
+	["illustrator:clownpiece_4"] = "葉担",
+	["origin:clownpiece_4"] = "p号：73290285；个人id：27497372",	
+	["illustrator:clownpiece_5"] = "皆村春樹",
+	["origin:clownpiece_5"] = "p号：66269160；个人id：6098",	
 	
 	["kuangluan"] = "狂乱",
 	["#kuangluan1"] = "狂乱",
@@ -84,9 +111,15 @@ return {
 	["designer:sagume"] = "三国有单",
 	
 	["illustrator:sagume"] = "菊月",
-	["origin:sagume"] = "p号：58197052，个人ID：429883",
+	["origin:sagume"] = "p号：58197052，个人id：429883",
 	["illustrator:sagume_1"] = " りひと",
 	["origin:sagume_1"] = "p号：58254093",
+	["illustrator:sagume_2"] = "米室",
+	["origin:sagume_2"] = "p号：84896104；个人id：10199606",
+	["illustrator:sagume_3"] = "Ny速",
+	["origin:sagume_3"] = "p号：59446347；个人id：218591",
+	["illustrator:sagume_4"] = "りひと",
+	["origin:sagume_4"] = "p号：63054617；个人id：1463626",
 	
 	
 	["shehuo"] = "舌祸",
@@ -107,18 +140,18 @@ return {
 	["designer:doremy"] = "三国有单",
 	
 	["illustrator:doremy"] = "あぶそる",
-	["origin:doremy"] = "p号：52317687，个人ID：3202270",
+	["origin:doremy"] = "p号：52317687，个人id：3202270",
 	 
 	["illustrator:doremy_1"] = "CUBY",
 	["origin:doremy_1"] = "p号：50318152",
 	["illustrator:doremy_2"] = "HeikoKuru1224",
-	["origin:doremy_2"] = "p号：77932528；个人ID：35452386",
+	["origin:doremy_2"] = "p号：77932528；个人id：35452386",
 	["illustrator:doremy_3"] = "あいに*",
-	["origin:doremy_3"] = "p号：76225193；个人ID：1513922",
+	["origin:doremy_3"] = "p号：76225193；个人id：1513922",
 	["illustrator:doremy_4"] = "カタケイ",
-	["origin:doremy_4"] = "p号：74406452；个人ID：90042",
+	["origin:doremy_4"] = "p号：74406452；个人id：90042",
 	["illustrator:doremy_5"] = "here /ヘレ@お仕事募集中",
-	["origin:doremy_5"] = "p号：84307074；个人ID：5061948",
+	["origin:doremy_5"] = "p号：84307074；个人id：5061948",
 	
 	["bumeng"] = "捕梦",
 	[":bumeng"] = "当其他角色的牌因其弃置而进入弃牌堆后，你可以令其获得其中的一张牌，明置之，然后你可以获得剩余的一张牌，明置之。<font color=\"green\"><b>每回合限一次。</b></font>",
@@ -134,9 +167,13 @@ return {
 	["designer:ringo"] = "三国有单",
 	
 	["illustrator:ringo"] = "りひと",
-	["origin:ringo"] = "p号：56703160，个人ID：1463626",
+	["origin:ringo"] = "p号：56703160，个人id：1463626",
 	["illustrator:ringo_1"] = "CUBY",
 	["origin:ringo_1"] = "p号：50411353",
+	["illustrator:ringo_2"] = "ちくわさび",
+	["origin:ringo_2"] = "p号：61470689；个人id：4447218",
+	["illustrator:ringo_3"] = "ちくわさび",
+	["origin:ringo_3"] = "p号：74756233；个人id：4447218",
 	
 	["yuejian"] = "月见";
 	[":yuejian"] = "<font color=\"green\"><b>出牌段限一次，</b></font>你可以与一名角色拼点：当你赢后，你视为使用【以逸待劳】；当你没赢后，你将你的拼点牌置于人物牌上，称为“团子”。";
@@ -158,10 +195,12 @@ return {
 	["designer:seiran"] = "辰焰天明",
 	
 	["illustrator:seiran"] = "minusT",
-	["origin:seiran"] = "p号：56472774，个人ID：15772166",
+	["origin:seiran"] = "p号：56472774，个人id：15772166",
 	
 	["illustrator:seiran_1"] = "りひと",
 	["origin:seiran_1"] = "p号：57754046",
+	["illustrator:seiran_2"] = "ちくわさび",
+	["origin:seiran_2"] = "p号：63297982；个人id：4447218",
 	
 	
 	["yidan"] = "异弹",
