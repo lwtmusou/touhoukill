@@ -2926,7 +2926,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->getTypeId() == Card::TypeTrick) {
                 foreach (ServerPlayer *p, use.to) {
-                    if (p->hasSkill(this) && p->isWounded() && use.from && use.from != p)
+                    if (p->hasSkill(this) && p->isWounded() && use.from != nullptr && use.from != p)
                         d << SkillInvokeDetail(this, p, p, nullptr, true);
                 }
             }
@@ -2939,10 +2939,8 @@ public:
     bool cost(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         //for AI
-        if (e == TargetConfirming) {
-            CardUseStruct use = data.value<CardUseStruct>();
+        if (e == TargetConfirming)
             room->setTag("wunian_hegemony_use", data);
-        }
 
         return (invoke->invoker->hasShownSkill(this) || invoke->invoker->askForSkillInvoke(this, data));
     }
@@ -2956,10 +2954,7 @@ public:
                 = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->invoker), objectName(), "@wunian_transfer:" + damage.to->objectName(), false, true);
             damage.from = target;
             damage.transfer = true;
-            //damage.by_user = false;
 
-            //room->touhouLogmessage("#TriggerSkill", invoke->invoker, "wunian");
-            //room->notifySkillInvoked(invoke->invoker, objectName());
             data = QVariant::fromValue(damage);
         } else if (e == TargetConfirming) {
             CardUseStruct use = data.value<CardUseStruct>();

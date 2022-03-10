@@ -4203,7 +4203,7 @@ public:
     Kuixin()
         : TriggerSkill("kuixin")
     {
-        events << CardFinished; // << TargetConfirmed << TargetSpecified;
+        events << CardFinished;
         frequency = Compulsory;
     }
 

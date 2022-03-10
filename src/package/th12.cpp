@@ -80,27 +80,26 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (!(use.card->isKindOf("TrickCard") && use.from != nullptr) || use.to.length() != 1)
-            return QList<SkillInvokeDetail>();
+        if (use.card->isKindOf("TrickCard") && use.from != nullptr && use.to.length() == 1) {
+            if (use.to.first() == use.from || !use.to.first()->hasLordSkill(this))
+                return QList<SkillInvokeDetail>();
 
-        if (use.to.first() == use.from || !use.to.first()->hasLordSkill(this))
-            return QList<SkillInvokeDetail>();
-
-        use.card->setFlags("xunshi");
-        use.card->setFlags("IgnoreFailed");
-        bool invoke = false;
-        foreach (ServerPlayer *q, room->getLieges("xlc", use.to.first())) {
-            if (use.from != nullptr && use.from->isProhibited(q, use.card))
-                continue;
-            if (!use.card->targetFilter(QList<const Player *>(), q, use.from))
-                continue;
-            invoke = true;
-            break;
+            use.card->setFlags("xunshi");
+            use.card->setFlags("IgnoreFailed");
+            bool invoke = false;
+            foreach (ServerPlayer *q, room->getLieges("xlc", use.to.first())) {
+                if (use.from != nullptr && use.from->isProhibited(q, use.card))
+                    continue;
+                if (!use.card->targetFilter(QList<const Player *>(), q, use.from))
+                    continue;
+                invoke = true;
+                break;
+            }
+            use.card->setFlags("-xunshi");
+            use.card->setFlags("-IgnoreFailed");
+            if (invoke)
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.to.first(), use.to.first());
         }
-        use.card->setFlags("-xunshi");
-        use.card->setFlags("-IgnoreFailed");
-        if (invoke)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.to.first(), use.to.first());
         return QList<SkillInvokeDetail>();
     }
 
@@ -520,13 +519,13 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (!(use.from != nullptr && use.card->getTypeId() == Card::TypeTrick))
-            return QList<SkillInvokeDetail>();
-
         QList<SkillInvokeDetail> d;
-        foreach (ServerPlayer *p, use.to) {
-            if (p->hasSkill(this) && use.from != p && p->canDiscard(use.from, "hs"))
-                d << SkillInvokeDetail(this, p, p, nullptr, false, use.from);
+
+        if (use.from != nullptr && use.card->getTypeId() == Card::TypeTrick) {
+            foreach (ServerPlayer *p, use.to) {
+                if (p->hasSkill(this) && use.from != p && p->canDiscard(use.from, "hs"))
+                    d << SkillInvokeDetail(this, p, p, nullptr, false, use.from);
+            }
         }
 
         return d;
@@ -625,14 +624,15 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (!(use.from != nullptr && use.card->isNDTrick()))
-            return QList<SkillInvokeDetail>();
-
         QList<SkillInvokeDetail> d;
-        foreach (ServerPlayer *p, use.to) {
-            if (p->hasSkill(this) && !use.from->inMyAttackRange(p) && use.from != p)
-                d << SkillInvokeDetail(this, p, p, nullptr, true);
+
+        if (use.from != nullptr && use.card->isNDTrick()) {
+            foreach (ServerPlayer *p, use.to) {
+                if (p->hasSkill(this) && !use.from->inMyAttackRange(p) && use.from != p)
+                    d << SkillInvokeDetail(this, p, p, nullptr, true);
+            }
         }
+
         return d;
     }
 
