@@ -2327,7 +2327,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("AwaitExhausted") && use.card->getSkillName() == objectName() && use.from != nullptr && use.from->hasFlag("zhuozhiused")
                 && use.from->tag.contains("zhuozhi") && use.from->isAlive()) {
-                if (use.from->isNude())
+                if (use.from->isKongcheng())
                     return r;
 
                 bool flag = false;
