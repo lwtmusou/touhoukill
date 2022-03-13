@@ -6099,7 +6099,7 @@ int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> e
         if (enabled_ids.isEmpty()) {
             if (cancellable)
                 shenlvmeng->tag.remove(skill_name);
-            card_id - 1;
+            card_id = -1;
         } else {
             card_id = ai->askForAG(enabled_ids, true, objectName());
             if (card_id == -1 && cancellable)
