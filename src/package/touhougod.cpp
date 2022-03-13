@@ -2058,7 +2058,11 @@ public:
         foreach (const Card *card, cards) {
             if ((card->isKindOf("BasicCard") || card->isKindOf("Nullification")) && !ban_list.contains(card->getPackage())) {
                 QString name = card->objectName();
-                if (!checkedPatterns.contains(name) && (cardPattern != nullptr && cardPattern->match(Self, card)) && !Self->isCardLimited(card, method)) {
+                Card *new_card = Sanguosha->cloneCard(name, Card::NoSuit, 0);
+                if (new_card == nullptr)
+                    continue;
+                DELETE_OVER_SCOPE(Card, new_card)
+                if (!checkedPatterns.contains(name) && (cardPattern != nullptr && cardPattern->match(Self, new_card)) && !Self->isCardLimited(new_card, method)) {
                     if (name.contains("jink") && Self->getMaxHp() > 3)
                         continue;
                     else if (name.contains("peach") && Self->getMaxHp() > 2)
