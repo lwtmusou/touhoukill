@@ -1528,8 +1528,8 @@ sgs.ai_skill_discard.zhuozhi = function(self)
 	local handcards = {}
 	for _, hc in sgs.qlist(self.player:getHandcards()) do
 		if not handcard[hc:getType()] then handcard[hc:getType()] = {} end
-		handcard[hc:getType()]:insert(hc)
-		handcards:insert(hc)
+		table.insert(handcard[hc:getType()], hc)
+		table.insert(handcards, hc)
 	end
 
 	local zhuozhilist = self.player:getTag("zhuozhi"):toIntList()
@@ -1537,7 +1537,7 @@ sgs.ai_skill_discard.zhuozhi = function(self)
 	for _, id in sgs.qlist(zhuozhilist) do
 		local card = sgs.Sanguosha:getCard(id)
 		if self.room:getCardPlace(id) == sgs.Player_DiscardPile then
-			zc:insert(card)
+			table.insert(zc, card)
 		end
 	end
 	if #zc == 0 then
