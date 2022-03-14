@@ -3465,11 +3465,11 @@ public:
     }
 };
 
-class Huochong : public TriggerSkill
+class Huosui : public TriggerSkill
 {
 public:
-    Huochong()
-        : TriggerSkill("huochong")
+    Huosui()
+        : TriggerSkill("huosui")
     {
         events << EventPhaseChanging << CardsMoveOneTime << TurnStart << TargetSpecified;
         global = true;
@@ -3489,10 +3489,10 @@ public:
                 }
             }
             if (flag)
-                move.from->setFlags("huochong");
+                move.from->setFlags("huosui");
         } else if (triggerEvent == TurnStart) {
             foreach (ServerPlayer *p, room->getAlivePlayers())
-                p->setFlags("-huochong");
+                p->setFlags("-huosui");
         }
     }
 
@@ -3504,7 +3504,7 @@ public:
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
                 foreach (ServerPlayer *p, room->getAlivePlayers()) {
-                    if (p->isAlive() && p->hasSkill(this) && p->hasFlag("huochong")) {
+                    if (p->isAlive() && p->hasSkill(this) && p->hasFlag("huosui")) {
                         bool flag = false;
                         foreach (ServerPlayer *v, room->getOtherPlayers(p)) {
                             if (p->canSlash(v, false)) {
@@ -3520,7 +3520,7 @@ public:
             }
         } else if (triggerEvent == TargetSpecified) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from != nullptr && use.card->getSkillName() == "huochong") {
+            if (use.from != nullptr && use.card->getSkillName() == "huosui") {
                 foreach (ServerPlayer *p, use.to)
                     r << SkillInvokeDetail(this, use.from, use.from, nullptr, true, p, false);
             }
@@ -3538,7 +3538,7 @@ public:
                     ps << v;
             }
 
-            ServerPlayer *victim = room->askForPlayerChosen(invoke->invoker, ps, "huochong", "@huochong-victim", true, true);
+            ServerPlayer *victim = room->askForPlayerChosen(invoke->invoker, ps, "huosui", "@huosui-victim", true, true);
             if (victim != nullptr) {
                 invoke->targets << victim;
                 return true;
@@ -3553,7 +3553,7 @@ public:
     {
         if (triggerEvent == EventPhaseChanging) {
             Slash *s = new Slash(Card::NoSuit, 0);
-            s->setSkillName("_huochong");
+            s->setSkillName("_huosui");
             room->useCard(CardUseStruct(s, invoke->invoker, invoke->targets.first()));
         } else {
             CardUseStruct use = data.value<CardUseStruct>();
@@ -3835,7 +3835,7 @@ TH0105Package::TH0105Package()
     General *rika = new General(this, "rika", "pc98");
     rika->addSkill(new Zhanche);
     rika->addSkill(new ZhancheD);
-    rika->addSkill(new Huochong);
+    rika->addSkill(new Huosui);
     related_skills.insertMulti("zhanche", "#zhanche-distance");
 
     General *elis = new General(this, "elis", "pc98", 3);

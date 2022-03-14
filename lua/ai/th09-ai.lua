@@ -976,7 +976,7 @@ end
 sgs.ai_use_priority.NianliCard = 9
 
 --[深秘] 暂无想法
-
+-- guanxing-ai.lua 里面有默认的代码，暂时先用着吧
 
 --密封梦魇堇子
 

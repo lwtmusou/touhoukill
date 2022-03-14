@@ -1132,13 +1132,13 @@ sgs.ai_skill_cardask["@zhanche-robbed"] = function(self)
 	return t[1]:getEffectiveId()
 end
 
-sgs.ai_skill_playerchosen.huochong = function(self, targets)
+sgs.ai_skill_playerchosen.huosui = function(self, targets)
 	local _targets = sgs.QList2Table(targets)
 	self:sort(_targets)
 	for _, current in ipairs(_targets) do
 		if not self:isFriend(current) then
 			local viewAsSlash = sgs.Sanguosha:cloneCard("Slash", sgs.Card_SuitToBeDecided, -1)
-			viewAsSlash:setSkillName("_huochong")
+			viewAsSlash:setSkillName("_huosui")
 			local use = {isDummy = true, to = sgs.SPlayerList()}
 			use.to:append(current)
 			self:useCardSlash(viewAsSlash, use)
