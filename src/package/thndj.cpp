@@ -1843,6 +1843,7 @@ public:
         }
 
         room->sortByActionOrder(use.to);
+        data = QVariant::fromValue(use);
 
         return false;
     }
