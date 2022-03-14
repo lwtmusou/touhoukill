@@ -136,6 +136,8 @@ public:
     }
 };
 
+// Todo_Fs: decouple Chunhua from GameRule
+// using "room->setTag("SkipGameRule", true);"
 class Chunhua : public TriggerSkill
 {
 public:
@@ -143,14 +145,6 @@ public:
         : TriggerSkill("chunhua")
     {
         events << TargetSpecified << EventPhaseChanging;
-    }
-
-    void record(TriggerEvent e, Room *room, QVariant &) const override
-    {
-        if (e == EventPhaseChanging) {
-            foreach (ServerPlayer *p, room->getAllPlayers())
-                room->setPlayerFlag(p, "-chunhua");
-        }
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const override
@@ -166,10 +160,8 @@ public:
         QList<SkillInvokeDetail> d;
         if (use.from != nullptr && use.from->isAlive() && !use.to.isEmpty() && use.card->hasFlag("showncards") && (use.card->isKindOf("BasicCard") || use.card->isNDTrick())
             && ((use.card->isRed() || use.card->isBlack()) || !use.from->getShownHandcards().isEmpty())) {
-            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                if (!p->hasFlag("chunhua"))
-                    d << SkillInvokeDetail(this, p, p);
-            }
+            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName()))
+                d << SkillInvokeDetail(this, p, p);
         }
         return d;
     }
@@ -210,7 +202,6 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         room->notifySkillInvoked(invoke->invoker, objectName());
-        room->setPlayerFlag(invoke->invoker, "chunhua");
         CardUseStruct use = data.value<CardUseStruct>();
         foreach (ServerPlayer *p, use.to)
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), p->objectName());
@@ -219,9 +210,9 @@ public:
         room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
         if (!use.to.isEmpty()) {
             if (choice == "red")
-                room->touhouLogmessage("$ChunhuaRed", use.from, use.card->objectName(), use.to);
+                room->touhouLogmessage("#ChunhuaRed", use.from, use.card->objectName(), use.to);
             else
-                room->touhouLogmessage("$ChunhuaBlack", use.from, use.card->objectName(), use.to);
+                room->touhouLogmessage("#ChunhuaBlack", use.from, use.card->objectName(), use.to);
         }
 
         room->setCardFlag(use.card, "chunhua");
@@ -260,6 +251,7 @@ public:
         }
         return d;
     }
+
     bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const override
     {
         if (e == SlashEffected) {
