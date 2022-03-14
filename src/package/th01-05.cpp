@@ -3761,6 +3761,168 @@ public:
     }
 };
 
+class Yuejie : public TriggerSkill
+{
+public:
+    Yuejie()
+        : TriggerSkill("yuejie")
+    {
+        events << CardsMoveOneTime << EventPhaseStart;
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const override
+    {
+        if (e == EventPhaseStart) {
+            ServerPlayer *current = data.value<ServerPlayer *>();
+            if (current->getPhase() == Player::NotActive) {
+                foreach (ServerPlayer *p, room->getAlivePlayers())
+                    p->setFlags("-yuejie");
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const override
+    {
+        if (e != CardsMoveOneTime)
+            return {};
+
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        if (move.card_ids.length() == 1 && move.to != nullptr && move.to->hasSkill(this) && move.to->isAlive() && !move.to->hasFlag("yuejie")
+            && (move.to_place == Player::PlaceHand || move.to_place == Player::PlaceDelayedTrick || move.to_place == Player::PlaceEquip)) {
+            ServerPlayer *invoker = qobject_cast<ServerPlayer *>(move.to);
+            if (invoker != nullptr) {
+                bool flag = false;
+                int x = invoker->getLostHp() + 1;
+                int fromCardNum = 0;
+                switch (move.to_place) {
+                case Player::PlaceHand:
+                    fromCardNum = invoker->getHandcardNum();
+                    break;
+                case Player::PlaceDelayedTrick:
+                    fromCardNum = invoker->getJudgingAreaID().length();
+                    break;
+                case Player::PlaceEquip:
+                    fromCardNum = invoker->getEquips().length();
+                    break;
+                }
+
+                foreach (ServerPlayer *p, room->getOtherPlayers(invoker)) {
+                    int toCardNum = 0;
+                    switch (move.to_place) {
+                    case Player::PlaceHand:
+                        toCardNum = p->getHandcardNum();
+                        break;
+                    case Player::PlaceDelayedTrick:
+                        toCardNum = p->getJudgingAreaID().length();
+                        break;
+                    case Player::PlaceEquip:
+                        toCardNum = p->getEquips().length();
+                        break;
+                    }
+
+                    if (abs(fromCardNum - toCardNum) <= x) {
+                        flag = true;
+                        break;
+                    }
+                }
+
+                if (flag)
+                    return {SkillInvokeDetail(this, invoker, invoker)};
+            }
+        }
+
+        return {};
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        QList<ServerPlayer *> targets;
+        int x = invoke->invoker->getLostHp() + 1;
+        int fromCardNum = 0;
+        switch (move.to_place) {
+        case Player::PlaceHand:
+            fromCardNum = invoke->invoker->getHandcardNum();
+            break;
+        case Player::PlaceDelayedTrick:
+            fromCardNum = invoke->invoker->getJudgingAreaID().length();
+            break;
+        case Player::PlaceEquip:
+            fromCardNum = invoke->invoker->getEquips().length();
+            break;
+        }
+
+        foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
+            int toCardNum = 0;
+            switch (move.to_place) {
+            case Player::PlaceHand:
+                fromCardNum = invoke->invoker->getHandcardNum();
+                toCardNum = p->getHandcardNum();
+                break;
+            case Player::PlaceDelayedTrick:
+                fromCardNum = invoke->invoker->getJudgingAreaID().length();
+                toCardNum = p->getJudgingAreaID().length();
+                break;
+            case Player::PlaceEquip:
+                fromCardNum = invoke->invoker->getEquips().length();
+                toCardNum = p->getEquips().length();
+                break;
+            }
+
+            if (abs(fromCardNum - toCardNum) <= x)
+                targets << p;
+        }
+
+        static const QMap<Player::Place, QString> promptMap {
+            std::make_pair(Player::PlaceHand, "PlaceHand"),
+            std::make_pair(Player::PlaceDelayedTrick, "PlaceDelayedTrick"),
+            std::make_pair(Player::PlaceEquip, "PlaceEquip"),
+        };
+
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@yuejie-select:::" + promptMap.value(move.to_place), true, true);
+        if (target != nullptr)
+            invoke->targets << target;
+
+        return target != nullptr;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        ServerPlayer *from = invoke->invoker;
+        ServerPlayer *to = invoke->targets.first();
+        from->setFlags("yuejie");
+
+        CardsMoveStruct move1;
+        CardsMoveStruct move2;
+
+        switch (move.to_place) {
+        case Player::PlaceHand:
+            move1.card_ids = from->handCards();
+            move2.card_ids = to->handCards();
+            break;
+        case Player::PlaceDelayedTrick:
+            move1.card_ids = from->getJudgingAreaID();
+            move2.card_ids = to->getJudgingAreaID();
+            break;
+        case Player::PlaceEquip:
+            foreach (const Card *equip, from->getEquips())
+                move1.card_ids << equip->getId();
+            foreach (const Card *equip, to->getEquips())
+                move2.card_ids << equip->getId();
+            break;
+        }
+
+        move1.to = to;
+        move2.to = from;
+        move1.to_place = move2.to_place = move.to_place;
+        move1.reason = CardMoveReason(CardMoveReason::S_REASON_SWAP, from->objectName(), to->objectName(), objectName(), QString());
+        move2.reason = CardMoveReason(CardMoveReason::S_REASON_SWAP, from->objectName(), from->objectName(), objectName(), QString());
+        room->moveCardsAtomic({move1, move2}, false);
+        return false;
+    }
+};
+
 TH0105Package::TH0105Package()
     : Package("th0105")
 {
@@ -3841,6 +4003,9 @@ TH0105Package::TH0105Package()
     General *elis = new General(this, "elis", "pc98", 3);
     elis->addSkill(new Yihuan);
     elis->addSkill(new Wuzui);
+
+    General *luize = new General(this, "luize", "pc98");
+    luize->addSkill(new Yuejie);
 
     addMetaObject<ShiquCard>();
     addMetaObject<LianmuCard>();

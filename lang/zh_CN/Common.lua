@@ -73,6 +73,10 @@ CommonTranslationTable = {
 	["female"] = "女性",
 	["discardPile"] = "弃牌堆",
 	["drawPileTop"] = "牌堆顶",
+	
+	["PlaceDelayedTrick"] = "判定区" ,
+	["PlaceEquip"] = "装备区" ,
+	["PlaceHand"] = "手牌区" ,
 
 	["use upon"] = "对",
 	["yourself"] = "你",
