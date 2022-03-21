@@ -2225,7 +2225,8 @@ void Room::setPlayerFlag(ServerPlayer *player, const QString &flag)
 
 void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value)
 {
-#ifdef QT_DEBUG
+#if 0 // def QT_DEBUG
+    // following code was OK when Room inherits QThread but is currently not
     if (currentThread() != player->thread()) {
         playerPropertySet = false;
         emit signalSetProperty(player, property_name, value);
@@ -2236,8 +2237,7 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
     }
 #else
     player->setProperty(property_name, value);
-#endif // QT_DEBUG
-    //player->setProperty(property_name, value);
+#endif
 
     broadcastProperty(player, property_name);
 
