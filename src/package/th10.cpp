@@ -434,18 +434,16 @@ void QijiDialog::popup()
                 }
             }
         }
-    }
-    else if (object_name == "hezhou") {
+    } else if (object_name == "hezhou") {
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
-        foreach(const Card *card, cards) {
+        foreach (const Card *card, cards) {
             if (card->isNDTrick() && !ban_list.contains(card->getPackage())) { //&& !ServerInfo.Extensions.contains("!" + card->getPackage())
                 QString name = card->objectName();
                 if (!validPatterns.contains(name))
                     validPatterns << card->objectName();
             }
         }
-    }
-    else {
+    } else {
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         foreach (const Card *card, cards) {
             if ((card->isNDTrick() || card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) { //&& !ServerInfo.Extensions.contains("!" + card->getPackage())
@@ -469,7 +467,6 @@ void QijiDialog::popup()
         emit onButtonClick();
         return;
     }
-
 
     foreach (QAbstractButton *button, group->buttons()) {
         const Card *card = map[button->objectName()];
@@ -657,7 +654,6 @@ public:
         if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1 && player->getMark("Global_PreventPeach") > 0)
             return false;
         return !checkedPatterns.isEmpty();
-        return true;
     }
 
     bool isEnabledAtPlay(const Player *player) const override

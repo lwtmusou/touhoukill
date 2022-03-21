@@ -5933,6 +5933,26 @@ public:
         response_or_use = true;
     }
 
+    static QStringList responsePatterns()
+    {
+        const CardPattern *pattern = Sanguosha->getPattern(Sanguosha->currentRoomState()->getCurrentCardUsePattern());
+
+        Card::HandlingMethod method = Card::MethodUse;
+        QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
+
+        QStringList checkedPatterns;
+        QStringList ban_list = Sanguosha->getBanPackages();
+        foreach (const Card *card, cards) {
+            if (!ban_list.contains(card->getPackage())) {
+                QString name = card->objectName();
+                if (!checkedPatterns.contains(name) && (pattern != nullptr && pattern->match(Self, card)) && !Self->isCardLimited(card, method))
+                    checkedPatterns << name;
+            }
+        }
+
+        return checkedPatterns;
+    }
+
     bool viewFilter(const Card *c) const override
     {
         if (c->isNDTrick() || c->getTypeId() == Card::TypeBasic) {
@@ -5971,7 +5991,11 @@ public:
         QString xianshi_record = player->property("xianshi_record").toString();
         if (xianshi_record == nullptr)
             return false;
-        return true;
+
+        QStringList checkedPatterns = responsePatterns();
+        if (checkedPatterns.contains("peach") && checkedPatterns.length() == 1 && player->getMark("Global_PreventPeach") > 0)
+            return false;
+        return !checkedPatterns.isEmpty();
     }
 
     bool isEnabledAtPlay(const Player *player) const override
