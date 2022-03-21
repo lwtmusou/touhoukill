@@ -864,6 +864,74 @@ public:
     }
 };
 
+class FtmZuiqiang : public FilterSkill
+{
+public:
+    FtmZuiqiang()
+        : FilterSkill("ftmzuiqiang")
+    {
+    }
+
+    bool viewFilter(const Card *to_select) const
+    {
+        const Room *room = Sanguosha->currentRoom();
+        Q_ASSERT(room != nullptr);
+        ServerPlayer *p = room->getCardOwner(to_select->getId());
+        Q_ASSERT(p != nullptr);
+        return room->getCardPlace(to_select->getId()) == Player::PlaceHand && p->getHandcardNum() == 9;
+    }
+
+    const Card *viewAs(const Card *originalCard) const override
+    {
+        ExNihilo *exNihilo = new ExNihilo(originalCard->getSuit(), originalCard->getNumber());
+        exNihilo->setSkillName("ftmzuiqiang");
+        WrappedCard *wrap = Sanguosha->getWrappedCard(originalCard->getId());
+        wrap->takeOver(exNihilo);
+        return wrap;
+    }
+};
+
+class FtmZuiqiangTrigger : public TriggerSkill
+{
+public:
+    FtmZuiqiangTrigger()
+        : TriggerSkill("#ftmzuiqiang")
+    {
+        events = {EventSkillInvalidityChange, EventAcquireSkill, EventLoseSkill, GameStart, CardsMoveOneTime};
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
+    {
+        if (triggerEvent == GameStart) {
+            ServerPlayer *player = data.value<ServerPlayer *>();
+            if (player && player->hasSkill("ftmzuiqiang"))
+                room->filterCards(player, player->getCards("hes"), true);
+        }
+        if (triggerEvent == EventLoseSkill || triggerEvent == EventAcquireSkill) {
+            SkillAcquireDetachStruct a = data.value<SkillAcquireDetachStruct>();
+            if (a.skill->objectName() == "ftmzuiqiang")
+                room->filterCards(a.player, a.player->getCards("hes"), true);
+        }
+        if (triggerEvent == EventSkillInvalidityChange) {
+            QList<SkillInvalidStruct> invalids = data.value<QList<SkillInvalidStruct>>();
+            foreach (SkillInvalidStruct v, invalids) {
+                if (!v.skill || v.skill->objectName() == "ftmzuiqiang")
+                    room->filterCards(v.player, v.player->getCards("hes"), true);
+            }
+        }
+        if (triggerEvent == CardsMoveOneTime) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            ServerPlayer *p = nullptr;
+            if (move.from != nullptr && move.from->hasSkill("ftmzuiqiang"))
+                p = qobject_cast<ServerPlayer *>(move.from);
+            else if (move.to != nullptr && move.to->hasSkill("ftmzuiqiang"))
+                p = qobject_cast<ServerPlayer *>(move.to);
+            if (p != nullptr && p->hasSkill("ftmzuiqiang"))
+                room->filterCards(p, p->getCards("hes"), true);
+        }
+    }
+};
+
 PlaygroundPackage::PlaygroundPackage()
     : Package("playground")
 {
@@ -889,6 +957,11 @@ PlaygroundPackage::PlaygroundPackage()
     benmao->addSkill(new BmMaoji);
     benmao->addSkill(new BmMaojiTrigger);
     related_skills.insertMulti("bmmaoji", "#bmmaoji");
+
+    General *god9 = new General(this, "god9", "touhougod", 9);
+    god9->addSkill(new FtmZuiqiang);
+    god9->addSkill(new FtmZuiqiangTrigger);
+    related_skills.insertMulti("ftmzuiqiang", "#ftmzuiqiang");
 }
 
 ADD_PACKAGE(Playground)

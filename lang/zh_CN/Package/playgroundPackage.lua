@@ -69,4 +69,13 @@ return {
 	[":fsu0413fei2zhai"] = "<font color=\"#808080\"><b>永久技，</b></font>当一张【桃】或仙【桃】不因使用而置入弃牌堆后，你获得之；你跳过弃牌阶段。",
 	["fsu0413fei4zhai"] = "废宅",
 	[":fsu0413fei4zhai"] = "<font color=\"#808080\"><b>永久技，</b></font>当你造成伤害时，若此伤害值大于1或你于此回合造成过伤害，你防止此伤害。",
+	
+	["god9"] = "⑨",
+	["#god9"] = "最强",
+	["designer:god9"] = "飞天明",
+	["illustrator:god9"] = "牛木義隆",
+	["origin:god9"] = "个人id：4544" ,
+	
+	["ftmzuiqiang"] = "最强",
+	[":ftmzuiqiang"] = "<font color=blue><b>锁定技，</b></font>若你的手牌数为⑨，你所有的手牌视为【无中生有】。",
 }
