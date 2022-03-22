@@ -1546,7 +1546,7 @@ public:
                 sklts << p;
         }
 
-        if (sklts.length() >= 0) {
+        if (sklts.length() > 0) {
             foreach (ServerPlayer *p, room->getAllPlayers()) {
                 if (p->hasSkill(this)) {
                     if (p->hasSkill(attachName))
