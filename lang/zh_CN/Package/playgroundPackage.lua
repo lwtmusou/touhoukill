@@ -76,6 +76,6 @@ return {
 	["illustrator:god9"] = "DomotoLain",
 	["origin:god9"] = "p号：6160883；个人id：38674" ,
 	
-	["ftmzuiqiang"] = "算数",
-	[":ftmzuiqiang"] = "<font color=blue><b>锁定技，</b></font>若你的手牌数为⑨，你所有的手牌视为【无中生有】。",
+	["ftmsuanshu"] = "算数",
+	[":ftmsuanshu"] = "<font color=blue><b>锁定技，</b></font>若你的手牌数为⑨，你所有的手牌视为【无中生有】。",
 }
