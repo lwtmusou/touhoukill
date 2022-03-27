@@ -48,8 +48,8 @@ bool Slash::IsAvailable(const Player *player, const Card *slash, bool considerSp
                 ids << slash->getEffectiveId();
             }
         }
-        bool has_weapon
-            = (player->hasWeapon("Crossbow", true) || player->hasWeapon("VSCrossbow", true)) && (player->getWeapon() != nullptr) && ids.contains(player->getWeapon()->getEffectiveId());
+        bool has_weapon = (player->hasWeapon("Crossbow", true) || player->hasWeapon("VSCrossbow", true)) && (player->getWeapon() != nullptr)
+            && ids.contains(player->getWeapon()->getEffectiveId());
         if ((!has_weapon && player->hasWeapon("Crossbow")) || player->canSlashWithoutCrossbow(THIS_SLASH))
             return true;
         int used = player->getSlashCount();
@@ -532,7 +532,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if ((damage.from == nullptr) || damage.from->isDead() || !equipAvailable(damage.from, EquipCard::WeaponLocation, objectName()) || !damage.from->canDiscard(damage.from, "hs"))
+        if (!equipAvailable(damage.from, EquipCard::WeaponLocation, objectName()) || damage.from->isDead() || !damage.from->canDiscard(damage.from, "hs"))
             return QList<SkillInvokeDetail>();
 
         if ((damage.to != nullptr) && damage.to->isAlive() && (damage.card != nullptr) && damage.card->isKindOf("Slash") && damage.by_user && !damage.chain && !damage.transfer) {
@@ -1653,8 +1653,8 @@ QString Indulgence::getSubtype() const
 
 bool Indulgence::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    bool ignore
-        = ((Self != nullptr) && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
+    bool ignore = ((Self != nullptr) && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self
+                   && !hasFlag("IgnoreFailed"));
     return targets.isEmpty() && (!to_select->containsTrick(objectName()) || ignore) && to_select != Self;
 }
 
@@ -2387,8 +2387,8 @@ QString SavingEnergy::getSubtype() const
 
 bool SavingEnergy::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    bool ignore
-        = ((Self != nullptr) && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
+    bool ignore = ((Self != nullptr) && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self
+                   && !hasFlag("IgnoreFailed"));
     return targets.isEmpty() && (!to_select->containsTrick(objectName()) || ignore);
 }
 

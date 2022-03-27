@@ -399,8 +399,8 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             ServerPlayer *player = use.from;
 
-            if ((player != nullptr) && player->getPhase() == Player::Play && !player->hasFlag("xushi_first") && (use.card != nullptr) && use.card->getHandlingMethod() == Card::MethodUse
-                && !use.card->isKindOf("SkillCard")) {
+            if ((player != nullptr) && player->getPhase() == Player::Play && !player->hasFlag("xushi_first") && (use.card != nullptr)
+                && use.card->getHandlingMethod() == Card::MethodUse && !use.card->isKindOf("SkillCard")) {
                 bool ignore = ((use.from != nullptr) && use.from->hasSkill("tianqu", false, false) && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
                                && !use.from->hasFlag("IgnoreFailed"));
 
@@ -927,7 +927,7 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         if (e == DamageCaused) {
-            if ((damage.from != nullptr) && (damage.to != nullptr) && damage.from->hasSkill(this) && damage.from->isAlive()) {
+            if ((damage.from != nullptr) && damage.from->hasSkill(this) && damage.from->isAlive()) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     foreach (const Card *c, p->getCards("j")) {
                         if (c->isBlack() && damage.from->canDiscard(p, c->getEffectiveId()))
@@ -937,7 +937,7 @@ public:
             }
         }
         if (e == DamageInflicted) {
-            if ((damage.to != nullptr) && damage.to->hasSkill(this) && damage.to->isAlive()) {
+            if (damage.to->hasSkill(this) && damage.to->isAlive()) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     foreach (const Card *c, p->getCards("j")) {
                         if (c->isRed() && damage.to->canDiscard(p, c->getEffectiveId()))
@@ -1411,7 +1411,8 @@ bool ChuangshiCard::targetFilter(const QList<const Player *> &targets, const Pla
     if (new_card->targetFixed(Self))
         return false;
     if (new_card->isKindOf("FireAttack"))
-        return (new_card != nullptr) && (new_card->targetFilter(targets, to_select, user) || (to_select == user && !user->isKongcheng())) && !user->isProhibited(to_select, new_card, targets);
+        return (new_card != nullptr) && (new_card->targetFilter(targets, to_select, user) || (to_select == user && !user->isKongcheng()))
+            && !user->isProhibited(to_select, new_card, targets);
     else
         return (new_card != nullptr) && new_card->targetFilter(targets, to_select, user) && !user->isProhibited(to_select, new_card, targets);
 }

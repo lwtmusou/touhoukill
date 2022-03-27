@@ -421,13 +421,12 @@ public:
         if (triggerEvent == AfterDrawNCards) {
             DrawNCardsStruct dc = data.value<DrawNCardsStruct>();
             yukari = dc.player;
-        } else if (triggerEvent == Damaged) {
+        } else {
             num = data.value<DamageStruct>().damage;
             yukari = data.value<DamageStruct>().to;
         }
 
-        QStringList trigger_list;
-        if ((yukari != nullptr) && yukari->isAlive() && yukari->hasSkill(this)) {
+        if (yukari->isAlive() && yukari->hasSkill(this)) {
             for (int i = 1; i <= num; i++)
                 d << SkillInvokeDetail(this, yukari, yukari);
         }
@@ -1352,9 +1351,9 @@ public:
             return QList<SkillInvokeDetail>();
         int diff = qAbs(num1 - num2);
 
-        if (e == Damage && (damage.from != nullptr) && damage.from->hasSkill(this) && diff <= damage.from->getLostHp())
+        if (e == Damage && damage.from->hasSkill(this) && diff <= damage.from->getLostHp())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, nullptr, false, damage.to);
-        else if (e == Damaged && (damage.to != nullptr) && damage.to->hasSkill(this) && diff <= damage.to->getLostHp())
+        else if (e == Damaged && damage.to->hasSkill(this) && diff <= damage.to->getLostHp())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, nullptr, false, damage.from);
         return QList<SkillInvokeDetail>();
     }

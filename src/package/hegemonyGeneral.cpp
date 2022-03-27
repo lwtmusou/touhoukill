@@ -2001,9 +2001,8 @@ public:
     {
         if (e == Damaged) {
             DamageStruct damage = data.value<DamageStruct>();
-            if ((damage.from != nullptr) && damage.from->isAlive() && damage.to->isAlive() && damage.to->hasSkill(this)) { // && damage.from->getHandcardNum() > damage.to->getHp()
+            if ((damage.from != nullptr) && damage.from->isAlive() && damage.to->isAlive() && damage.to->hasSkill(this))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, nullptr, false, damage.from);
-            }
         } else if (e == EventPhaseChanging) {
             QList<SkillInvokeDetail> d;
             //ServerPlayer *player = data.value<ServerPlayer *>();
@@ -2067,10 +2066,8 @@ public:
     {
         if (e == Damaged) {
             DamageStruct damage = data.value<DamageStruct>();
-            if ((damage.from != nullptr) && damage.from->isAlive() && damage.to->isAlive() && damage.to->hasSkill(this)) {
-                // && damage.from->getHandcardNum() > damage.to->getHandcardNum() && damage.to->getHandcardNum() < 5
+            if ((damage.from != nullptr) && damage.from->isAlive() && damage.to->isAlive() && damage.to->hasSkill(this))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, nullptr, false, damage.from);
-            }
         } else if (e == EventPhaseChanging) {
             QList<SkillInvokeDetail> d;
             //ServerPlayer *player = data.value<ServerPlayer *>();
@@ -3270,7 +3267,7 @@ public:
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from);
         } else if (e == Damaged) {
             DamageStruct damage = data.value<DamageStruct>();
-            if ((damage.to == nullptr) || damage.to->isDead() || damage.card == nullptr || !damage.card->isKindOf("Slash"))
+            if (damage.to->isDead() || damage.card == nullptr || !damage.card->isKindOf("Slash"))
                 return QList<SkillInvokeDetail>();
 
             AwaitExhaustedHegemony *card = new AwaitExhaustedHegemony(Card::SuitToBeDecided, -1);

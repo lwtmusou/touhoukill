@@ -547,7 +547,8 @@ public:
         if (damage.chain || damage.transfer || !damage.by_user)
             return QList<SkillInvokeDetail>();
 
-        if ((damage.from != nullptr) && damage.from != damage.to && damage.from->hasSkill(this) && (damage.card != nullptr) && damage.card->isKindOf("Slash") && damage.from->canDiscard(damage.to, "e"))
+        if ((damage.from != nullptr) && damage.from != damage.to && damage.from->hasSkill(this) && (damage.card != nullptr) && damage.card->isKindOf("Slash")
+            && damage.from->canDiscard(damage.to, "e"))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, nullptr, true);
         return QList<SkillInvokeDetail>();
     }
@@ -1093,6 +1094,8 @@ public:
     }
 };
 
+// TODO_Fs: refactor, do not trigger event here, trigger event in original GameRule and / or room
+// use PreHpLost / PreDamageDone / PreHpRecover event + SkipGameRule tag
 class Banling : public TriggerSkill
 {
 public:
@@ -6111,7 +6114,8 @@ public:
             }
         } else if (e == CardResponded) { //only for jink with extra effect
             CardResponseStruct response = data.value<CardResponseStruct>();
-            if ((response.m_from != nullptr) && response.m_isUse && (response.m_card != nullptr) && response.m_card->isKindOf("Jink") && response.m_card->getSkillName() == objectName()) {
+            if ((response.m_from != nullptr) && response.m_isUse && (response.m_card != nullptr) && response.m_card->isKindOf("Jink")
+                && response.m_card->getSkillName() == objectName()) {
                 room->setPlayerFlag(response.m_from, "xianshi_used");
             }
         }

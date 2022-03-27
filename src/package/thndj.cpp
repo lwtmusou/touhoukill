@@ -235,7 +235,7 @@ public:
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from);
         }
         if (e == Damaged) {
-            if ((damage.card == nullptr) || (damage.to == nullptr) || !damage.to->isAlive() || !damage.to->hasSkill(this))
+            if ((damage.card == nullptr) || !damage.to->isAlive() || !damage.to->hasSkill(this))
                 return QList<SkillInvokeDetail>();
             QList<int> ids;
             if (damage.card->isVirtualCard())
@@ -1391,7 +1391,7 @@ public:
 
         else if (triggerEvent == Damaged) {
             DamageStruct damage = data.value<DamageStruct>();
-            if ((damage.to != nullptr) && damage.to->isAlive()) {
+            if (damage.to->isAlive()) {
                 if (!damage.to->hasFlag("youle"))
                     damage.to->setFlags("youle");
             }

@@ -942,7 +942,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if ((damage.to != nullptr) && damage.to->hasSkill(this) && damage.damage > damage.to->getHandcardNum())
+        if (damage.to->hasSkill(this) && damage.damage > damage.to->getHandcardNum())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, nullptr, true);
         return QList<SkillInvokeDetail>();
     }

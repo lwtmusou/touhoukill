@@ -661,12 +661,12 @@ public:
     Henyi()
         : TriggerSkill("henyi")
     {
-        events << EventPhaseEnd << DamageCaused << Damaged << EventPhaseChanging;
+        events << EventPhaseEnd << DamageCaused << DamageDone << EventPhaseChanging;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
     {
-        if (triggerEvent == Damaged) { //DamageDone?
+        if (triggerEvent == DamageDone) {
             DamageStruct damage = data.value<DamageStruct>();
             if (!damage.to->hasFlag("henyi"))
                 damage.to->setFlags("henyi");
@@ -697,11 +697,10 @@ public:
                 }
                 return d;
             }
-        } else if (triggerEvent == DamageCaused) { //need not check weather damage.from has this skill
+        } else if (triggerEvent == DamageCaused) {
             DamageStruct damage = data.value<DamageStruct>();
-            if ((damage.card != nullptr) && damage.card->getSkillName() == "henyi" && damage.to->isCurrent() && (damage.from != nullptr) && damage.from->hasSkill(this)) {
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, nullptr, true);
-            }
+            if ((damage.card != nullptr) && damage.card->getSkillName() == "henyi" && damage.to->isCurrent() && (damage.from != nullptr))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, nullptr, true, nullptr, false);
         }
         return QList<SkillInvokeDetail>();
     }
@@ -722,7 +721,6 @@ public:
             carduse.card = card;
             carduse.from = invoke->invoker;
             room->useCard(carduse);
-
         } else if (triggerEvent == DamageCaused) { //need not check weather damage.from has this skill
             DamageStruct damage = data.value<DamageStruct>();
             room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
@@ -848,7 +846,8 @@ public:
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         } else if (triggerEvent == CardResponded) {
             CardResponseStruct response = data.value<CardResponseStruct>();
-            if ((response.m_from != nullptr) && player != response.m_from && response.m_isUse && (response.m_card != nullptr) && response.m_card->getTypeId() != Card::TypeSkill && response.m_card->isRed())
+            if ((response.m_from != nullptr) && player != response.m_from && response.m_isUse && (response.m_card != nullptr) && response.m_card->getTypeId() != Card::TypeSkill
+                && response.m_card->isRed())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         } else if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
@@ -1857,8 +1856,8 @@ public:
         if (e == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-            if ((player != nullptr) && player->isAlive() && (move.from_places.contains(Player::PlaceHand) || move.from_places.contains(Player::PlaceEquip)) && move.to_place != Player::PlaceHand
-                && move.to_place != Player::PlaceEquip)
+            if ((player != nullptr) && player->isAlive() && (move.from_places.contains(Player::PlaceHand) || move.from_places.contains(Player::PlaceEquip))
+                && move.to_place != Player::PlaceHand && move.to_place != Player::PlaceEquip)
                 room->setPlayerFlag(player, "jianshe_losed");
         }
         if (e == EventPhaseChanging) {
@@ -1896,7 +1895,8 @@ public:
 
         if (!invoke->invoker->hasFlag("jianshe_losed"))
             r = (room->askForCard(invoke->invoker, ".|.|.|hand", "@jianshe-discard:" + current->objectName(), QVariant::fromValue(current), Card::MethodDiscard, nullptr, false,
-                                 objectName()) != nullptr);
+                                  objectName())
+                 != nullptr);
         else
             r = invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(current));
 

@@ -34,8 +34,7 @@ public:
                 foreach (ServerPlayer *t, targets)
                     d << SkillInvokeDetail(this, damage.from, damage.from, nullptr, false, t);
             }
-        }
-        if (e == Damaged && (damage.to != nullptr) && damage.to->isAlive() && damage.to->hasSkill(this)) {
+        } else if (e == Damaged && damage.to->isAlive() && damage.to->hasSkill(this)) {
             QList<ServerPlayer *> targets;
             if (!damage.to->getCards("h").isEmpty())
                 targets << damage.to;
@@ -402,7 +401,8 @@ public:
                 if (response.m_isUse)
                     card = response.m_card;
             }
-            if ((player != nullptr) && player->hasSkill(this) && player->getPhase() == Player::Play && (card != nullptr) && !card->isKindOf("SkillCard") && card->getHandlingMethod() == Card::MethodUse) {
+            if ((player != nullptr) && player->hasSkill(this) && player->getPhase() == Player::Play && (card != nullptr) && !card->isKindOf("SkillCard")
+                && card->getHandlingMethod() == Card::MethodUse) {
                 if (card->isKindOf("EquipCard") && player->getMark("santi_equip") == 0)
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, nullptr, true);
 

@@ -2249,7 +2249,7 @@ public:
             DamageStruct damage = data.value<DamageStruct>();
             if ((damage.from != nullptr) && damage.from->isAlive())
                 room->setPlayerMark(damage.from, objectName(), damage.from->getMark(objectName()) + damage.damage);
-            if ((damage.to != nullptr) && damage.to->isAlive())
+            if (damage.to->isAlive())
                 room->setPlayerMark(damage.to, objectName(), damage.to->getMark(objectName()) + damage.damage);
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -2412,11 +2412,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
-        ServerPlayer *player = nullptr;
-        if (triggerEvent == Damage)
-            player = damage.from;
-        else
-            player = damage.to;
+        ServerPlayer *player = (triggerEvent == Damage) ? damage.from : damage.to;
 
         if (player == nullptr || player->isDead() || player->getBrokenEquips().isEmpty())
             return QList<SkillInvokeDetail>();

@@ -3255,7 +3255,7 @@ public:
         if ((damage.card == nullptr) || !damage.card->isKindOf("Slash") || damage.to->isDead())
             return QList<SkillInvokeDetail>();
 
-        if ((e == Damage && damage.from->hasSkill(this) && !damage.from->hasFlag("anliu_used"))
+        if ((e == Damage && damage.from != nullptr && damage.from->hasSkill(this) && !damage.from->hasFlag("anliu_used"))
             || (e == Damaged && damage.to->hasSkill(this) && !damage.to->hasFlag("anliu_used"))) {
             QList<int> ids;
             if (damage.card->isVirtualCard())
