@@ -253,7 +253,8 @@ public:
     {
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *current = data.value<ServerPlayer *>();
-            if ((current != nullptr) && current->isAlive() && current->getPhase() == Player::Discard && current->getMark("@HalfLife") > 0 && current->getHandcardNum() > current->getMaxCards())
+            if ((current != nullptr) && current->isAlive() && current->getPhase() == Player::Discard && current->getMark("@HalfLife") > 0
+                && current->getHandcardNum() > current->getMaxCards())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current);
         }
         return QList<SkillInvokeDetail>();
@@ -1892,7 +1893,7 @@ XushiHegemonyCard::XushiHegemonyCard()
 
 bool XushiHegemonyCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
 {
-    return (static_cast<int>(targets.isEmpty()) & static_cast<int>(to_select->hasFlag("Global_xushiFailed")) != 0);
+    return targets.isEmpty() && to_select->hasFlag("Global_xushiFailed");
 }
 
 void XushiHegemonyCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const
@@ -2986,8 +2987,8 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         QList<ServerPlayer *> yamames = room->findPlayersBySkillName(objectName());
-        if (yamames.isEmpty() || damage.nature != DamageStruct::Normal || (damage.from == nullptr) || damage.from->isDead() || (damage.card == nullptr) || !damage.card->isKindOf("Slash")
-            || damage.to->isChained() || damage.to->isDead())
+        if (yamames.isEmpty() || damage.nature != DamageStruct::Normal || (damage.from == nullptr) || damage.from->isDead() || (damage.card == nullptr)
+            || !damage.card->isKindOf("Slash") || damage.to->isChained() || damage.to->isDead())
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
@@ -3741,7 +3742,8 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if ((damage.from != nullptr) && damage.from->hasSkill(this) && damage.nature == DamageStruct::Normal && damage.from != damage.to && damage.to->isAlive() && damage.to->isKongcheng())
+        if ((damage.from != nullptr) && damage.from->hasSkill(this) && damage.nature == DamageStruct::Normal && damage.from != damage.to && damage.to->isAlive()
+            && damage.to->isKongcheng())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, nullptr, true, damage.to);
 
         return QList<SkillInvokeDetail>();
@@ -4215,7 +4217,8 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         QList<SkillInvokeDetail> d;
-        if ((damage.card != nullptr) && damage.by_user && damage.card->isKindOf("Slash") && !damage.chain && !damage.transfer && damage.from != damage.to && damage.from->isAlive()) {
+        if ((damage.card != nullptr) && damage.by_user && damage.card->isKindOf("Slash") && !damage.chain && !damage.transfer && damage.from != damage.to
+            && damage.from->isAlive()) {
             QList<ServerPlayer *> sources = room->findPlayersBySkillName(objectName());
             foreach (ServerPlayer *s, sources) {
                 if (!s->getPile("jingjie").isEmpty() && s->isFriendWith(damage.from, true))
