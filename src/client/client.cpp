@@ -2032,7 +2032,7 @@ void Client::showAllCards(const QVariant &arg)
 void Client::askForGongxin(const QVariant &args)
 {
     JsonArray arg = args.value<JsonArray>();
-    if (arg.size() != 5 || !JsonUtils::isString(arg[0]) || !JsonUtils::isBool(arg[1]))
+    if (arg.size() != 6 || !JsonUtils::isString(arg[0]) || !JsonUtils::isBool(arg[1]))
         return;
 
     ClientPlayer *who = getPlayer(arg[0].toString());

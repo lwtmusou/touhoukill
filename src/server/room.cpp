@@ -4041,7 +4041,8 @@ bool Room::changeMaxHpForAwakenSkill(ServerPlayer *player, int magnitude)
     player->gainMark("@waked");
     int n = player->getMark("@waked");
     if (magnitude < 0) {
-        if (Config.Enable2ndGeneral && (player->getGeneral() != nullptr) && (player->getGeneral2() != nullptr) && Config.MaxHpScheme > 0 && Config.PreventAwakenBelow3 && player->getMaxHp() <= 3) {
+        if (Config.Enable2ndGeneral && (player->getGeneral() != nullptr) && (player->getGeneral2() != nullptr) && Config.MaxHpScheme > 0 && Config.PreventAwakenBelow3
+            && player->getMaxHp() <= 3) {
             setPlayerMark(player, "AwakenLostMaxHp", 1);
         } else {
             loseMaxHp(player, -magnitude);
@@ -6127,13 +6128,12 @@ int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> e
             if (cancellable)
                 shenlvmeng->tag.remove(skill_name);
             card_id = -1;
-        }
-
-        card_id = clientReply.toInt();
+        } else
+            card_id = clientReply.toInt();
     }
 
     if (card_id == -1 && !cancellable && !enabled_ids.isEmpty())
-        card_id = enabled_ids.value(qrand() % enabled_ids.length(), enabled_ids.first());
+        card_id = enabled_ids.first();
 
     return card_id; // Do remember to remove the tag later!
 }
