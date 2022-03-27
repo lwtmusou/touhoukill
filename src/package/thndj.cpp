@@ -184,7 +184,6 @@ public:
     HuanyueVS()
         : OneCardViewAsSkill("huanyue")
     {
-        response_pattern = "@@huanyue";
         expand_pile = "huanyue_pile";
     }
 
@@ -193,13 +192,27 @@ public:
         if (!Self->getPile("huanyue_pile").contains(to_select->getId()))
             return false;
 
-        QString name = Self->property("huanyue").toString();
-        return to_select->getType() != name;
+        if (Sanguosha->getCurrentCardUsePattern() == "@@huanyue-card2")
+            return Self->property("huanyue").toString() != to_select->getType();
+
+        return true;
     }
 
     const Card *viewAs(const Card *originalCard) const override
     {
-        return originalCard;
+        DummyCard *dc = new DummyCard;
+        dc->addSubcard(originalCard);
+        return dc;
+    }
+
+    bool isEnabledAtPlay(const Player *) const override
+    {
+        return false;
+    }
+
+    bool isEnabledAtResponse(const Player *, const QString &pattern) const override
+    {
+        return pattern.startsWith("@@huanyue-card");
     }
 };
 
@@ -281,8 +294,8 @@ public:
             return invoke->invoker->askForSkillInvoke(this, prompt);
         } else {
             QString prompt = QString("@huanyue:%1:%2").arg(damage.to->objectName()).arg(damage.card->objectName());
-            invoke->invoker->setProperty("huanyue", damage.card->getType());
-            const Card *c = room->askForCard(invoke->invoker, "@@huanyue", prompt, data, Card::MethodNone, nullptr, false, "huanyue");
+            room->setPlayerProperty(invoke->invoker, "huanyue", damage.card->getType());
+            const Card *c = room->askForCard(invoke->invoker, "@@huanyue-card2", prompt, data, Card::MethodNone, nullptr, false, "huanyue", false, 2);
             if (c != nullptr) {
                 room->notifySkillInvoked(invoke->invoker, objectName());
                 room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
@@ -302,15 +315,18 @@ public:
             invoke->invoker->addToPile("huanyue_pile", damage.card);
             QList<int> ids = invoke->invoker->getPile("huanyue_pile");
             if (ids.length() > 1) {
-                room->fillAG(ids, invoke->invoker);
-                int keep = room->askForAG(invoke->invoker, ids, true, objectName());
+                const Card *c = room->askForCard(invoke->invoker, "@@huanyue-card1!", "@huanyue-keep", QVariant(), Card::MethodNone, nullptr, false, "huanyue", false, 1);
+                int keep = -1;
+                if (c == nullptr)
+                    keep = ids.at(qrand() % ids.length());
+                else
+                    keep = c->getEffectiveId();
+
                 ids.removeOne(keep);
                 CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), nullptr, objectName(), QString());
-                DummyCard *dc = new DummyCard;
-                dc->deleteLater();
-                dc->addSubcards(ids);
-                room->throwCard(dc, reason, nullptr);
-                room->clearAG(invoke->invoker);
+                DummyCard dc;
+                dc.addSubcards(ids);
+                room->throwCard(&dc, reason, nullptr);
             }
         } else {
             QList<ServerPlayer *> logto;

@@ -95,39 +95,10 @@ end
 
 --年代记SP辉夜
 --[幻月]
---[[sgs.ai_skill_invoke.huanyue = function(self,data)
-	local damage = self.player:getTag("huanyue_damage"):toDamage()
-	if not self:isEnemy(damage.to) then return false end
-	local tempDamage = damage.damage
-	damage.damage = damage.damage+1
-	local realDamage = self:touhouDamage(damage,damage.from,damage.to)
-	if realDamage.damage <= tempDamage then return false end
-
-	local canDamage = self:touhouNeedAvoidAttack(damage,damage.from,damage.to)
-	if canDamage then
-		local blacknum = getKnownCard(self.player, self.player, "black", false, "hs")
-		if (blacknum >= self.player:getHandcardNum()) then return true end
-		if damage.to:hasSkill("duxin") then return false end
-		local rate= blacknum / self.player:getHandcardNum()
-		return rate > 1/2
-	end
-	return false
-end
-sgs.ai_cardneed.huanyue = function(to, card, self)
-	return  card:isBlack()
-end
-sgs.ai_choicemade_filter.skillInvoke.huanyue = function(self, player, args)
-	local damage = player:getTag("huanyue_damage"):toDamage()
-	if damage.to and args[#args] == "yes" then
-		sgs.updateIntention(player, damage.to, 50)
-	end
-end
-
-sgs.ai_skill_invoke.sizhai = true
-]]
-
 sgs.ai_skill_invoke.huanyue = true
-
+sgs.ai_skill_cardask["@huanyue-keep"] = function(self, data)
+	return "$" .. self.player:getPile("huanyue_pile"):first()
+end
 sgs.ai_skill_cardask["@huanyue"] = function(self, data)
 	local damage = data:toDamage()
 	if self:isEnemy(damage.to) then

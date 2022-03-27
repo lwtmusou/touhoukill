@@ -29,10 +29,12 @@ return{
 	["huanyue"]= "幻月",
 	[":huanyue"]= "当你使用牌造成或受到牌造成的伤害后，你可以将此牌置于人物牌上，称为“符”，然后选择一张“符”，将除此“符”外的“符”置入弃牌堆；当其他角色受到牌造成的伤害时，你可以将一张与此牌类别不同的“符”置入弃牌堆，令伤害值+1。",
 	["#huanyue_log"]= "%from 对 %to 的伤害由 %arg 点增加到 %arg2 点。",
-	["huanyue:target"]= "<font color=\"#00FF00\"><b>%src </b></font> 受到 <font color=\"#00FF00\"><b>【%dest】 </b></font>的造成的伤害， 你是否发动“幻月”。",
+	["huanyue:target"]= "<font color=\"#00FF00\"><b>%src </b></font> 受到 <font color=\"#00FF00\"><b>【%dest】 </b></font>造成的伤害， 你是否发动“幻月”。",
 	["huanyue_pile"]="符",
-	["@huanyue"]= "<font color=\"#00FF00\"><b>%src </b></font> 将受到 <font color=\"#00FF00\"><b>【%dest】 </b></font>的伤害， 你是否发动“幻月”。";
-	["~huanyue"]= "选择一张符 -> 确定",
+	["@huanyue-keep"] = "你因“幻月”的效果，仅可以保留一张“符”。请选择要保留的“符”。",
+	["@huanyue"]= "<font color=\"#00FF00\"><b>%src </b></font> 将受到 <font color=\"#00FF00\"><b>【%dest】 </b></font>的伤害， 你是否发动“幻月”。",
+	["~huanyue1"] = "选择要保留的“符” -> 确定",
+	["~huanyue2"]= "选择要使用的“符” -> 确定",
 
 	["wanggou"] = "网购",
 	[":wanggou"] = "出牌阶段开始时，你可以检索一张具有伤害效果的牌并获得之，然后你可以弃置以此法获得的普【杀】，重复此流程。",
