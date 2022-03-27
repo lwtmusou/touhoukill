@@ -25,7 +25,7 @@
 #include "client.h"
 #include "clientplayer.h"
 #include "engine.h"
-#include "skinbank.h"
+#include "SkinBank.h"
 
 #include <QApplication>
 #include <QGraphicsProxyWidget>
@@ -151,7 +151,7 @@ ChooseGeneralBox::ChooseGeneralBox()
     , confirm(new Button(tr("fight"), 0.6))
     , progress_bar(nullptr)
 {
-    confirm->setEnabled(ClientInstance->getReplayer());
+    confirm->setEnabled(ClientInstance->getReplayer() != nullptr);
     confirm->setParentItem(this);
     connect(confirm, &Button::clicked, this, &ChooseGeneralBox::reply);
 }
@@ -253,7 +253,7 @@ QRectF ChooseGeneralBox::boundingRect() const
 
     int height = top_blank_width + G_COMMON_LAYOUT.m_cardNormalHeight + bottom_blank_width;
 
-    if (second_row)
+    if (second_row != 0)
         height += (card_to_center_line + G_COMMON_LAYOUT.m_cardNormalHeight);
 
     //No need to reserve space for button
@@ -411,7 +411,7 @@ void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_onl
         _initializeItems();
 
     if (view_only || ServerInfo.OperationTimeout != 0) {
-        if (!progress_bar) {
+        if (progress_bar == nullptr) {
             progress_bar = new QSanCommandProgressBar();
             progress_bar->setMaximumWidth(boundingRect().width() - 10);
             progress_bar->setMaximumHeight(12);

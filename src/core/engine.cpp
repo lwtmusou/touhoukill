@@ -23,7 +23,7 @@ Engine *Sanguosha = nullptr;
 void Engine::addPackage(const QString &name)
 {
     Package *pack = PackageAdder::packages()[name];
-    if (pack)
+    if (pack != nullptr)
         addPackage(pack);
     else
         qWarning("Package %s cannot be loaded!", qPrintable(name));
@@ -122,7 +122,7 @@ void Engine::addSkills(const QList<const Skill *> &all_skills)
             attackrange_skills << qobject_cast<const AttackRangeSkill *>(skill);
         else if (skill->inherits("TriggerSkill")) {
             const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
-            if (trigger_skill && trigger_skill->isGlobal())
+            if ((trigger_skill != nullptr) && trigger_skill->isGlobal())
                 global_trigger_skills << trigger_skill;
         } else if (skill->inherits("ViewAsSkill"))
             viewas_skills << qobject_cast<const ViewAsSkill *>(skill);
@@ -161,7 +161,7 @@ QList<const ViewAsSkill *> Engine::getViewAsSkills() const
 
 void Engine::addPackage(Package *package)
 {
-    if (findChild<const Package *>(package->objectName()))
+    if (findChild<const Package *>(package->objectName()) != nullptr)
         return;
 
     package->setParent(this);
@@ -302,7 +302,7 @@ int Engine::getRoleIndex() const
 const CardPattern *Engine::getPattern(const QString &name) const
 {
     const CardPattern *ptn = patterns.value(name, NULL);
-    if (ptn)
+    if (ptn != nullptr)
         return ptn;
 
     ExpPattern *expptn = new ExpPattern(name);
@@ -346,7 +346,7 @@ QList<const Skill *> Engine::getRelatedSkills(const QString &skill_name) const
 const Skill *Engine::getMainSkill(const QString &skill_name) const
 {
     const Skill *skill = getSkill(skill_name);
-    if (!skill || skill->isVisible() || related_skills.keys().contains(skill_name))
+    if ((skill == nullptr) || skill->isVisible() || related_skills.keys().contains(skill_name))
         return skill;
     foreach (QString key, related_skills.keys()) {
         foreach (QString name, related_skills.values(key))
@@ -446,7 +446,7 @@ CardUseStruct::CardUseReason Engine::getCurrentCardUseReason()
 bool Engine::isGeneralHidden(const QString &general_name) const
 {
     const General *general = getGeneral(general_name);
-    if (!general)
+    if (general == nullptr)
         return false;
     if (!general->isVisible())
         return false;
@@ -515,70 +515,70 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const 
     Card *card = nullptr;
     if (luaBasicCard_className2objectName.keys().contains(name)) {
         const LuaBasicCard *lcard = luaBasicCards.value(name, NULL);
-        if (!lcard)
+        if (lcard == nullptr)
             return nullptr;
         card = lcard->clone(suit, number);
     } else if (luaBasicCard_className2objectName.values().contains(name)) {
         QString class_name = luaBasicCard_className2objectName.key(name, name);
         const LuaBasicCard *lcard = luaBasicCards.value(class_name, NULL);
-        if (!lcard)
+        if (lcard == nullptr)
             return nullptr;
         card = lcard->clone(suit, number);
     } else if (luaTrickCard_className2objectName.keys().contains(name)) {
         const LuaTrickCard *lcard = luaTrickCards.value(name, NULL);
-        if (!lcard)
+        if (lcard == nullptr)
             return nullptr;
         card = lcard->clone(suit, number);
     } else if (luaTrickCard_className2objectName.values().contains(name)) {
         QString class_name = luaTrickCard_className2objectName.key(name, name);
         const LuaTrickCard *lcard = luaTrickCards.value(class_name, NULL);
-        if (!lcard)
+        if (lcard == nullptr)
             return nullptr;
         card = lcard->clone(suit, number);
     } else if (luaWeapon_className2objectName.keys().contains(name)) {
         const LuaWeapon *lcard = luaWeapons.value(name, NULL);
-        if (!lcard)
+        if (lcard == nullptr)
             return nullptr;
         card = lcard->clone(suit, number);
     } else if (luaWeapon_className2objectName.values().contains(name)) {
         QString class_name = luaWeapon_className2objectName.key(name, name);
         const LuaWeapon *lcard = luaWeapons.value(class_name, NULL);
-        if (!lcard)
+        if (lcard == nullptr)
             return nullptr;
         card = lcard->clone(suit, number);
     } else if (luaArmor_className2objectName.keys().contains(name)) {
         const LuaArmor *lcard = luaArmors.value(name, NULL);
-        if (!lcard)
+        if (lcard == nullptr)
             return nullptr;
         card = lcard->clone(suit, number);
     } else if (luaArmor_className2objectName.values().contains(name)) {
         QString class_name = luaArmor_className2objectName.key(name, name);
         const LuaArmor *lcard = luaArmors.value(class_name, NULL);
-        if (!lcard)
+        if (lcard == nullptr)
             return nullptr;
         card = lcard->clone(suit, number);
     } else if (luaTreasure_className2objectName.keys().contains(name)) {
         const LuaTreasure *lcard = luaTreasures.value(name, NULL);
-        if (!lcard)
+        if (lcard == nullptr)
             return nullptr;
         card = lcard->clone(suit, number);
     } else if (luaTreasure_className2objectName.values().contains(name)) {
         QString class_name = luaTreasure_className2objectName.key(name, name);
         const LuaTreasure *lcard = luaTreasures.value(class_name, NULL);
-        if (!lcard)
+        if (lcard == nullptr)
             return nullptr;
         card = lcard->clone(suit, number);
     } else {
         const QMetaObject *meta = metaobjects.value(name, NULL);
         if (meta == nullptr)
             meta = metaobjects.value(className2objectName.key(name, QString()), NULL);
-        if (meta) {
+        if (meta != nullptr) {
             QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
             card_obj->setObjectName(className2objectName.value(name, name));
             card = qobject_cast<Card *>(card_obj);
         }
     }
-    if (!card)
+    if (card == nullptr)
         return nullptr;
     card->clearFlags();
     if (!flags.isEmpty()) {
@@ -591,7 +591,7 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const 
 SkillCard *Engine::cloneSkillCard(const QString &name) const
 {
     const QMetaObject *meta = metaobjects.value(name, NULL);
-    if (meta) {
+    if (meta != nullptr) {
         QObject *card_obj = meta->newInstance();
         SkillCard *card = qobject_cast<SkillCard *>(card_obj);
         if (card == nullptr)
@@ -983,7 +983,7 @@ QStringList Engine::getLimitedGeneralNames() const
         QList<const General *> hulao_generals = QList<const General *>();
         foreach (QString pack_name, GetConfigFromLuaState(lua, "hulao_packages").toStringList()) {
             const Package *pack = Sanguosha->findChild<const Package *>(pack_name);
-            if (pack)
+            if (pack != nullptr)
                 hulao_generals << pack->findChildren<const General *>();
         }
 
@@ -1186,7 +1186,7 @@ void Engine::playAudioEffect(const QString &filename) const
 void Engine::playSkillAudioEffect(const QString &skill_name, int index) const
 {
     const Skill *skill = skills.value(skill_name, NULL);
-    if (skill)
+    if (skill != nullptr)
         skill->playAudioEffect(index);
 }
 
@@ -1214,7 +1214,7 @@ QStringList Engine::getSkillNames() const
 const TriggerSkill *Engine::getTriggerSkill(const QString &skill_name) const
 {
     const Skill *skill = getSkill(skill_name);
-    if (skill)
+    if (skill != nullptr)
         return qobject_cast<const TriggerSkill *>(skill);
     else
         return nullptr;

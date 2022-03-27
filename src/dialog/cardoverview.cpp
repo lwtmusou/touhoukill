@@ -163,7 +163,7 @@ void CardOverview::askCard()
 
 void CardOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem *)
 {
-    if (Self)
+    if (Self != nullptr)
         askCard();
 }
 

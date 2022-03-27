@@ -301,7 +301,7 @@ void Client::setShownHiddenGeneral(const QVariant &arg)
 
 void Client::signup()
 {
-    if (replayer)
+    if (replayer != nullptr)
         replayer->start();
     else {
         JsonArray arg;
@@ -319,7 +319,7 @@ void Client::networkDelayTest(const QVariant &)
 
 void Client::replyToServer(CommandType command, const QVariant &arg)
 {
-    if (socket) {
+    if (socket != nullptr) {
         Packet packet(S_SRC_CLIENT | S_TYPE_REPLY | S_DEST_ROOM, command);
         packet.localSerial = _m_lastServerSerial;
         packet.setMessageBody(arg);
@@ -334,7 +334,7 @@ void Client::handleGameEvent(const QVariant &arg)
 
 void Client::notifyServer(CommandType command, const QVariant &arg)
 {
-    if (socket) {
+    if (socket != nullptr) {
         Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_ROOM, command);
         packet.setMessageBody(arg);
         socket->send(packet.toJson());
@@ -343,7 +343,7 @@ void Client::notifyServer(CommandType command, const QVariant &arg)
 
 void Client::requestServer(CommandType command, const QVariant &arg)
 {
-    if (socket) {
+    if (socket != nullptr) {
         Packet packet(S_SRC_CLIENT | S_TYPE_REQUEST | S_DEST_ROOM, command);
         packet.setMessageBody(arg);
         socket->send(packet.toJson());
@@ -368,7 +368,7 @@ void Client::checkVersion(const QVariant &server_version)
 
 void Client::setup(const QVariant &setup_json)
 {
-    if (socket && !socket->isConnected())
+    if ((socket != nullptr) && !socket->isConnected())
         return;
 
     QString setup_str = setup_json.toString();
@@ -392,7 +392,7 @@ void Client::setup(const QVariant &setup_json)
 
 void Client::disconnectFromHost()
 {
-    if (socket) {
+    if (socket != nullptr) {
         socket->disconnectFromHost();
         socket = nullptr;
     }
@@ -411,16 +411,16 @@ void Client::processServerPacket(const char *cmd)
     if (packet.parse(cmd)) {
         if (packet.getPacketType() == S_TYPE_NOTIFICATION) {
             Callback callback = m_callbacks[packet.getCommandType()];
-            if (callback) {
+            if (callback != nullptr) {
                 (this->*callback)(packet.getMessageBody());
             }
         } else if (packet.getPacketType() == S_TYPE_REQUEST) {
-            if (!replayer)
+            if (replayer == nullptr)
                 processServerRequest(packet);
             else if (packet.getCommandType() == QSanProtocol::S_COMMAND_CHOOSE_GENERAL) {
                 if (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral) {
                     Callback callback = m_interactions[S_COMMAND_CHOOSE_GENERAL];
-                    if (callback)
+                    if (callback != nullptr)
                         (this->*callback)(packet.getMessageBody());
                 } else
                     processShowGeneral(packet);
@@ -436,7 +436,7 @@ bool Client::processServerRequest(const Packet &packet)
     CommandType command = packet.getCommandType();
     QVariant msg = packet.getMessageBody();
 
-    if (!replayer) {
+    if (replayer == nullptr) {
         //process count max
         int rate = Sanguosha->operationTimeRate(command, msg);
         Countdown countdown;
@@ -447,7 +447,7 @@ bool Client::processServerRequest(const Packet &packet)
     }
 
     Callback callback = m_interactions[command];
-    if (!callback)
+    if (callback == nullptr)
         return false;
     (this->*callback)(msg);
     return true;
@@ -493,7 +493,7 @@ void Client::updateProperty(const QVariant &arg)
         return;
     QString object_name = args[0].toString();
     ClientPlayer *player = getPlayer(object_name);
-    if (!player)
+    if (player == nullptr)
         return;
     player->setProperty(args[1].toString().toLatin1().constData(), args[2].toString());
 }
@@ -502,7 +502,7 @@ void Client::removePlayer(const QVariant &player_name)
 {
     QString name = player_name.toString();
     ClientPlayer *player = findChild<ClientPlayer *>(name);
-    if (player) {
+    if (player != nullptr) {
         player->setParent(nullptr);
         alive_count--;
         emit player_removed(name);
@@ -514,7 +514,7 @@ void Client::removePlayer(const QVariant &player_name)
 bool Client::_loseSingleCard(int card_id, CardsMoveStruct move)
 {
     const Card *card = Sanguosha->getCard(card_id);
-    if (move.from)
+    if (move.from != nullptr)
         move.from->removeCard(card, move.from_place);
     else {
         if (move.from_place == Player::DiscardPile)
@@ -528,7 +528,7 @@ bool Client::_loseSingleCard(int card_id, CardsMoveStruct move)
 bool Client::_getSingleCard(int card_id, CardsMoveStruct move)
 {
     const Card *card = Sanguosha->getCard(card_id);
-    if (move.to)
+    if (move.to != nullptr)
         move.to->addCard(card, move.to_place);
     else {
         if (move.to_place == Player::DrawPile)
@@ -724,7 +724,7 @@ void Client::onPlayerResponseCard(const Card *card, const QList<const Player *> 
 
         replyToServer(S_COMMAND_RESPONSE_CARD, JsonArray() << card->toString() << QVariant::fromValue(targetNames));
 
-        if (card->isVirtualCard() && !card->parent())
+        if (card->isVirtualCard() && (card->parent() == nullptr))
             delete card;
     }
 
@@ -881,7 +881,7 @@ void Client::cardLimitation(const QVariant &limit)
 
     QString object_name = args[4].toString();
     ClientPlayer *player = getPlayer(object_name);
-    if (!player)
+    if (player == nullptr)
         return;
 
     bool set = args[0].toBool();
@@ -1001,7 +1001,7 @@ QString Client::getPlayerName(const QString &str)
         ClientPlayer *player = getPlayer(str);
         general_name = player->getGeneralName();
         general_name = Sanguosha->translate(general_name);
-        if (player->getGeneral2())
+        if (player->getGeneral2() != nullptr)
             general_name.append("/" + Sanguosha->translate(player->getGeneral2Name()));
         //if (ServerInfo.EnableSame || player->getGeneralName() == "anjiang")
         //    general_name = QString("%1[%2]").arg(general_name).arg(player->getSeat());
@@ -1098,7 +1098,7 @@ void Client::askForCardOrUseCard(const QVariant &cardUsage)
     if (rx.exactMatch(temp_pattern)) {
         QString skill_name = rx.capturedTexts().at(1);
         const Skill *skill = Sanguosha->getSkill(skill_name);
-        if (skill) {
+        if (skill != nullptr) {
             QString text = prompt_doc->toHtml();
             text.append(tr("<br/> <b>Notice</b>: %1<br/>").arg(skill->getNotice(index)));
             prompt_doc->setHtml(text);
@@ -1198,7 +1198,7 @@ void Client::askForNullification(const QVariant &arg)
     const QVariant &source_name = args[1];
     ClientPlayer *target_player = getPlayer(args[2].toString());
 
-    if (!target_player || !target_player->getGeneral())
+    if ((target_player == nullptr) || (target_player->getGeneral() == nullptr))
         return;
 
     ClientPlayer *source = nullptr;
@@ -1345,7 +1345,7 @@ ClientPlayer *Client::getPlayer(const QString &name)
 
 bool Client::save(const QString &filename) const
 {
-    if (recorder)
+    if (recorder != nullptr)
         return recorder->save(filename);
     else
         return false;
@@ -1353,7 +1353,7 @@ bool Client::save(const QString &filename) const
 
 QList<QByteArray> Client::getRecords() const
 {
-    if (recorder)
+    if (recorder != nullptr)
         return recorder->getRecords();
     else
         return QList<QByteArray>();
@@ -1361,7 +1361,7 @@ QList<QByteArray> Client::getRecords() const
 
 QString Client::getReplayPath() const
 {
-    if (replayer)
+    if (replayer != nullptr)
         return replayer->getPath();
     else
         return QString();
@@ -1586,7 +1586,7 @@ void Client::killPlayer(const QVariant &player_name)
         if (last_word.startsWith("~") && general_name.endsWith("f")) {
             QString origin_general = general_name;
             origin_general.chop(1);
-            if (Sanguosha->getGeneral(origin_general))
+            if (Sanguosha->getGeneral(origin_general) != nullptr)
                 last_word = Sanguosha->translate(("~") + origin_general);
         }
         updatePileNum();
@@ -1803,11 +1803,11 @@ void Client::onPlayerChooseKingdom()
 
 void Client::onPlayerDiscardCards(const Card *cards)
 {
-    if (cards) {
+    if (cards != nullptr) {
         JsonArray arr;
         foreach (int card_id, cards->getSubcards())
             arr << card_id;
-        if (cards->isVirtualCard() && !cards->parent())
+        if (cards->isVirtualCard() && (cards->parent() == nullptr))
             delete cards;
         replyToServer(S_COMMAND_DISCARD_CARD, arr);
     } else {
@@ -1891,7 +1891,7 @@ void Client::askForSinglePeach(const QVariant &arg)
         bool has_skill = false;
         foreach (const Skill *skill, Self->getVisibleSkillList(true)) {
             const ViewAsSkill *view_as_skill = ViewAsSkill::parseViewAsSkill(skill);
-            if (view_as_skill && view_as_skill->isAvailable(Self, CardUseStruct::CARD_USE_REASON_RESPONSE_USE, pattern.join("+"))) {
+            if ((view_as_skill != nullptr) && view_as_skill->isAvailable(Self, CardUseStruct::CARD_USE_REASON_RESPONSE_USE, pattern.join("+"))) {
                 has_skill = true;
                 break;
             }
@@ -2023,7 +2023,7 @@ void Client::showAllCards(const QVariant &arg)
     if (!JsonUtils::tryParse(args[2], card_ids))
         return;
 
-    if (who)
+    if (who != nullptr)
         who->setCards(card_ids);
 
     emit gongxin(card_ids, false, QList<int>(), who->getShownHandcards());
@@ -2151,7 +2151,7 @@ void Client::askForPlayerChosen(const QVariant &players)
 
 void Client::onPlayerReplyYiji(const Card *card, const Player *to)
 {
-    if (!card)
+    if (card == nullptr)
         replyToServer(S_COMMAND_SKILL_YIJI);
     else {
         JsonArray req;
@@ -2185,7 +2185,7 @@ void Client::log(const QVariant &log_str)
             Sanguosha->playSystemAudioEffect("choose-item");
         else if (log.first() == "#UseLuckCard") {
             ClientPlayer *from = getPlayer(log.at(1));
-            if (from && from != Self)
+            if ((from != nullptr) && from != Self)
                 from->setHandcardNum(0);
         }
         emit log_received(log);
@@ -2215,7 +2215,7 @@ void Client::speak(const QVariant &speak)
     const ClientPlayer *from = getPlayer(who);
 
     QString title;
-    if (from) {
+    if (from != nullptr) {
         title = from->getGeneralName();
         title = Sanguosha->translate(title);
         title.append(QString("(%1)").arg(from->screenName()));
@@ -2304,7 +2304,7 @@ void Client::setFixedDistance(const QVariant &set_str)
     ClientPlayer *to = getPlayer(set[1].toString());
     int distance = set[2].toInt();
 
-    if (from && to)
+    if ((from != nullptr) && (to != nullptr))
         from->setFixedDistance(to, distance);
 }
 
@@ -2382,7 +2382,7 @@ void Client::onPlayerChooseOrder()
 {
     OptionButton *button = qobject_cast<OptionButton *>(sender());
     QString order;
-    if (button) {
+    if (button != nullptr) {
         order = button->objectName();
     } else {
         if (qrand() % 2 == 0)

@@ -111,7 +111,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
     if (generals.length() <= columns) {
         layout = new QHBoxLayout;
 
-        if (lord_name.size() && !no_icon) {
+        if ((lord_name.size() != 0) && !no_icon) {
             const General *lord = Sanguosha->getGeneral(lord_name);
 
             QLabel *label = new QLabel;
@@ -127,7 +127,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         QHBoxLayout *hlayout = new QHBoxLayout;
         QVBoxLayout *lord_layout = new QVBoxLayout;
 
-        if (lord_name.size() && !no_icon) {
+        if ((lord_name.size() != 0) && !no_icon) {
             const General *lord = Sanguosha->getGeneral(lord_name);
 
             QLabel *label = new QLabel;
@@ -175,7 +175,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         } else {
             // role prompt
             QLabel *role_label = new QLabel(tr("Your role is %1").arg(Sanguosha->translate(Self->getRole())));
-            if (lord_name.size())
+            if (lord_name.size() != 0)
                 role_label->setText(tr("The lord has chosen %1. Your seat is %2. %3")
                                         .arg(Sanguosha->translate(lord_name))
                                         .arg(Sanguosha->translate("CAPITAL(" + QString::number(Self->getSeat()) + ")"))
@@ -326,7 +326,7 @@ void FreeChooseDialog::chooseGeneral()
             emit general_chosen(first);
     } else {
         QAbstractButton *button = group->checkedButton();
-        if (button)
+        if (button != nullptr)
             emit general_chosen(button->objectName());
     }
 

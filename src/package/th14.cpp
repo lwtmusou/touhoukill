@@ -35,7 +35,7 @@ public:
         ServerPlayer *player = data.value<ServerPlayer *>();
         if (player->getPhase() == Player::Start) {
             return room->askForCard(invoke->invoker, ".|.|.|hand,equipped", "@baochui:" + player->objectName(), QVariant::fromValue(player), Card::MethodDiscard, nullptr, false,
-                                    objectName());
+                                    objectName()) != nullptr;
         }
         return true;
     }
@@ -102,7 +102,7 @@ public:
     {
         if (triggerEvent == CardsMoveOneTime) {
             ServerPlayer *current = room->getCurrent();
-            if (!current || current->getKingdom() != "hzc" || current->getPhase() != Player::Discard)
+            if ((current == nullptr) || current->getKingdom() != "hzc" || current->getPhase() != Player::Discard)
                 return;
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (move.to_place == Player::DiscardPile) {
@@ -126,7 +126,7 @@ public:
         if (triggerEvent == EventPhaseEnd) {
             ServerPlayer *current = data.value<ServerPlayer *>();
             ;
-            if (!current || current->getKingdom() != "hzc" || current->getPhase() != Player::Discard || !current->isAlive())
+            if ((current == nullptr) || current->getKingdom() != "hzc" || current->getPhase() != Player::Discard || !current->isAlive())
                 return d;
 
             bool invoke = false;
@@ -470,7 +470,7 @@ public:
                 listt << p;
         }
         ServerPlayer *target = room->askForPlayerChosen(player, listt, objectName(), "@" + objectName(), true, true);
-        if (target) {
+        if (target != nullptr) {
             invoke->targets << target;
             return true;
         }
@@ -512,7 +512,7 @@ public:
         QList<SkillInvokeDetail> d;
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *current = data.value<ServerPlayer *>();
-            if (!current || current->getPhase() != Player::Discard || current->getCards("h").isEmpty())
+            if ((current == nullptr) || current->getPhase() != Player::Discard || current->getCards("h").isEmpty())
                 return d;
 
             foreach (ServerPlayer *src, room->findPlayersBySkillName(objectName())) {
@@ -556,7 +556,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.from && damage.from->isAlive() && damage.from->hasSkill(this)) {
+        if ((damage.from != nullptr) && damage.from->isAlive() && damage.from->hasSkill(this)) {
             foreach (ServerPlayer *p, room->getOtherPlayers(damage.from)) {
                 if (p->getHp() >= damage.from->getHp() && !p->isNude())
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from);
@@ -574,7 +574,7 @@ public:
                 listt << p;
         }
         ServerPlayer *target = room->askForPlayerChosen(player, listt, objectName(), "@" + objectName(), true, true);
-        if (target) {
+        if (target != nullptr) {
             invoke->targets << target;
             return true;
         }
@@ -602,7 +602,7 @@ public:
     {
         ServerPlayer *current = room->getCurrent();
         CardAskedStruct s = data.value<CardAskedStruct>();
-        if (!current || !current->isAlive() || current == s.player || !s.player->hasSkill(this))
+        if ((current == nullptr) || !current->isAlive() || current == s.player || !s.player->hasSkill(this))
             return QList<SkillInvokeDetail>();
 
         Jink jink(Card::NoSuit, 0);
@@ -1023,7 +1023,7 @@ public:
             return QList<SkillInvokeDetail>();
         if (effect.to->hasSkill(this) && effect.to->isAlive()) {
             if (effect.card->hasFlag("tianxieEffected_" + effect.to->objectName())) {
-                if (effect.card->isKindOf("DelayedTrick") || !effect.from || !effect.from->isAlive() || !effect.from->canDiscard(effect.from, "hes"))
+                if (effect.card->isKindOf("DelayedTrick") || (effect.from == nullptr) || !effect.from->isAlive() || !effect.from->canDiscard(effect.from, "hes"))
                     return QList<SkillInvokeDetail>();
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to);
             } else
@@ -1069,7 +1069,7 @@ public:
         QList<int> cards;
         foreach (const Card *e, target->getEquips()) {
             const EquipCard *equip = qobject_cast<const EquipCard *>(e->getRealCard());
-            if (src->getEquip(equip->location()))
+            if (src->getEquip(equip->location()) != nullptr)
                 cards << e->getId();
         }
         return cards;
@@ -1106,7 +1106,7 @@ public:
         }
         if (triggerEvent == Damage) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.card && damage.card->isKindOf("Slash") && damage.from && damage.from->isAlive() && damage.from->isCurrent() && damage.to->isAlive()
+            if ((damage.card != nullptr) && damage.card->isKindOf("Slash") && (damage.from != nullptr) && damage.from->isAlive() && damage.from->isCurrent() && damage.to->isAlive()
                 && damage.to->hasFlag("huobao") && !damage.to->getEquips().isEmpty())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.from, nullptr, true);
         }
@@ -1152,7 +1152,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.card && damage.from && damage.from->isAlive() && damage.by_user && damage.to->isAlive() && damage.from != damage.to && !damage.to->getEquips().isEmpty()
+        if ((damage.card != nullptr) && (damage.from != nullptr) && damage.from->isAlive() && damage.by_user && damage.to->isAlive() && damage.from != damage.to && !damage.to->getEquips().isEmpty()
             && (damage.from->hasSkill(this) || damage.to->hasSkill(this))) {
             if (triggerEvent == Damage && damage.from->hasSkill(this))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, nullptr, true);

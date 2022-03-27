@@ -323,7 +323,7 @@ bool SanFreeTypeFont::paintString(QPainter *const painter, const QString &text, 
 bool SanFreeTypeFont::paintStringMultiLine(QPainter *const painter, const QString &text, const int *const font, const QColor &color, QSize &fontSize, int spacing, int weight,
                                            QRect &boundingBox, const Qt::Alignment &align)
 {
-    if (!m_ftLib || font == nullptr || painter == nullptr || text.isEmpty()) {
+    if ((m_ftLib == nullptr) || font == nullptr || painter == nullptr || text.isEmpty()) {
         return false;
     }
 

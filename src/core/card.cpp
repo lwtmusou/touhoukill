@@ -290,7 +290,7 @@ bool Card::isNDTrick() const
 
 QString Card::getPackage() const
 {
-    if (parent())
+    if (parent() != nullptr)
         return parent()->objectName();
     else
         return QString();
@@ -565,7 +565,7 @@ const Card *Card::Parse(const QString &str)
         card->deleteLater();
         return card;
     } else {
-        bool ok = 0;
+        bool ok = false;
         int card_id = str.toInt(&ok);
         if (ok)
             return Sanguosha->getCard(card_id)->getRealCard();
@@ -600,7 +600,7 @@ Card *Card::Clone(const Card *card)
         const QMetaObject *meta = card->metaObject();
         card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
     }
-    if (card_obj) {
+    if (card_obj != nullptr) {
         Card *new_card = qobject_cast<Card *>(card_obj);
         if (new_card == nullptr) {
             delete card_obj;
@@ -616,14 +616,14 @@ Card *Card::Clone(const Card *card)
 
 bool Card::targetFixed(const Player *Self) const
 {
-    bool ignore = (Self && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
+    bool ignore = ((Self != nullptr) && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
     if (ignore && !(isKindOf("SkillCard") || isKindOf("AOE") || isKindOf("GlobalEffect")))
         return false;
-    bool riyue_ignore = (Self && Self->hasSkill("riyue") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
+    bool riyue_ignore = ((Self != nullptr) && Self->hasSkill("riyue") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed"));
     if (riyue_ignore && !(isKindOf("SkillCard") || isKindOf("AOE") || isKindOf("GlobalEffect")) && ((canDamage() && isRed()) || (canRecover() && isBlack())))
         return false;
 
-    if (Self && Self->hasFlag("Global_shehuoInvokerFailed"))
+    if ((Self != nullptr) && Self->hasFlag("Global_shehuoInvokerFailed"))
         return false;
     return target_fixed;
 }
@@ -731,7 +731,7 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
     QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
     bool all_nullified = nullified_list.contains("_ALL_TARGETS");
     int magic_drank = 0;
-    if (isNDTrick() && source && source->getMark("magic_drank") > 0)
+    if (isNDTrick() && (source != nullptr) && source->getMark("magic_drank") > 0)
         magic_drank = source->getMark("magic_drank");
 
     foreach (ServerPlayer *target, targets) {
@@ -856,7 +856,7 @@ bool Card::isMute() const
 
 bool Card::canDamage() const
 {
-    if (getSkillName() == "xianshi" && Self) {
+    if (getSkillName() == "xianshi" && (Self != nullptr)) {
         QString selected_effect = Self->tag.value("xianshi", QString()).toString();
         if (selected_effect != nullptr) {
             Card *extracard = Sanguosha->cloneCard(selected_effect);
@@ -870,7 +870,7 @@ bool Card::canDamage() const
 
 bool Card::canRecover() const
 {
-    if (getSkillName() == "xianshi" && Self) {
+    if (getSkillName() == "xianshi" && (Self != nullptr)) {
         QString selected_effect = Self->tag.value("xianshi", QString()).toString();
         if (selected_effect != nullptr) {
             if (selected_effect.contains("analeptic"))
@@ -1034,7 +1034,7 @@ const Card *ShowDistanceCard::validate(CardUseStruct &card_use) const
     QString c = toString().split(":").last(); //damn it again!
     //const DistanceSkill *skill = qobject_cast<const DistanceSkill *>(Sanguosha->getSkill(c));
     const Skill *skill = Sanguosha->getSkill(c);
-    if (skill) {
+    if (skill != nullptr) {
         bool head = card_use.from->inHeadSkills(skill->objectName());
         card_use.from->showGeneral(head);
     }
@@ -1054,7 +1054,7 @@ ArraySummonCard::ArraySummonCard(const QString &name)
 const Card *ArraySummonCard::validate(CardUseStruct &card_use) const
 {
     const BattleArraySkill *skill = qobject_cast<const BattleArraySkill *>(Sanguosha->getTriggerSkill(objectName()));
-    if (skill) {
+    if (skill != nullptr) {
         //card_use.from->showSkill(skill->objectName(), card_use.card->getSkillPosition());                           //new function by weidouncle
         card_use.from->showHiddenSkill(skill->objectName());
         skill->summonFriends(card_use.from);

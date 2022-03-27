@@ -23,7 +23,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         QList<SkillInvokeDetail> d;
         QList<ServerPlayer *> targets;
-        if (e == Damage && damage.from && damage.from->isAlive() && damage.from->hasSkill(this)) {
+        if (e == Damage && (damage.from != nullptr) && damage.from->isAlive() && damage.from->hasSkill(this)) {
             if (!damage.from->getCards("h").isEmpty())
                 targets << damage.from;
 
@@ -35,11 +35,11 @@ public:
                     d << SkillInvokeDetail(this, damage.from, damage.from, nullptr, false, t);
             }
         }
-        if (e == Damaged && damage.to && damage.to->isAlive() && damage.to->hasSkill(this)) {
+        if (e == Damaged && (damage.to != nullptr) && damage.to->isAlive() && damage.to->hasSkill(this)) {
             QList<ServerPlayer *> targets;
             if (!damage.to->getCards("h").isEmpty())
                 targets << damage.to;
-            if (damage.from && damage.to != damage.from && damage.from->isAlive() && !damage.from->getCards("h").isEmpty())
+            if ((damage.from != nullptr) && damage.to != damage.from && damage.from->isAlive() && !damage.from->getCards("h").isEmpty())
                 targets << damage.from;
             if (!targets.isEmpty()) {
                 damage.to->getRoom()->sortByActionOrder(targets);
@@ -90,7 +90,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card == nullptr || !canShayiDamage(use) || !use.from || use.from->isDead() || use.from->getKingdom() != "gzz")
+        if (use.card == nullptr || !canShayiDamage(use) || (use.from == nullptr) || use.from->isDead() || use.from->getKingdom() != "gzz")
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
@@ -402,7 +402,7 @@ public:
                 if (response.m_isUse)
                     card = response.m_card;
             }
-            if (player && player->hasSkill(this) && player->getPhase() == Player::Play && card && !card->isKindOf("SkillCard") && card->getHandlingMethod() == Card::MethodUse) {
+            if ((player != nullptr) && player->hasSkill(this) && player->getPhase() == Player::Play && (card != nullptr) && !card->isKindOf("SkillCard") && card->getHandlingMethod() == Card::MethodUse) {
                 if (card->isKindOf("EquipCard") && player->getMark("santi_equip") == 0)
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, nullptr, true);
 
@@ -580,7 +580,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.card && damage.card->isKindOf("Slash") && damage.to->isAlive() && damage.to->hasSkill(this) && damage.to->canDiscard(damage.to, "hs"))
+        if ((damage.card != nullptr) && damage.card->isKindOf("Slash") && damage.to->isAlive() && damage.to->hasSkill(this) && damage.to->canDiscard(damage.to, "hs"))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
 
         return QList<SkillInvokeDetail>();
@@ -596,7 +596,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (!damage.from || damage.from->isDead() || !invoke->invoker->canDiscard(damage.from, "hs"))
+        if ((damage.from == nullptr) || damage.from->isDead() || !invoke->invoker->canDiscard(damage.from, "hs"))
             return false;
 
         int id = room->askForCardChosen(invoke->invoker, damage.from, "hs", objectName());
@@ -696,7 +696,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         CardEffectStruct effect = data.value<CardEffectStruct>();
-        if (effect.to && effect.card && effect.card->hasFlag("shehuoTrick"))
+        if ((effect.to != nullptr) && (effect.card != nullptr) && effect.card->hasFlag("shehuoTrick"))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, nullptr, true);
         return QList<SkillInvokeDetail>();
     }
@@ -764,7 +764,7 @@ public:
     {
         if (e == DamageDone) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.from && damage.from->isCurrent())
+            if ((damage.from != nullptr) && damage.from->isCurrent())
                 room->setPlayerFlag(damage.from, "shenyan_used");
         }
 
@@ -917,12 +917,12 @@ public:
         //prevent insert (like moveEvent)
         if (e == CardsMoveOneTime) {
             ServerPlayer *current = room->getCurrent();
-            if (!current || !current->isAlive() || current->getPhase() != Player::Play)
+            if ((current == nullptr) || !current->isAlive() || current->getPhase() != Player::Play)
                 return;
 
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *from = qobject_cast<ServerPlayer *>(move.from);
-            if (from && move.from_places.contains(Player::PlaceHand)
+            if ((from != nullptr) && move.from_places.contains(Player::PlaceHand)
                 && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE
                     || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE)) {
                 if (!move.shown_ids.isEmpty() && from->getShownHandcards().isEmpty())
@@ -944,12 +944,12 @@ public:
         if (e != CardsMoveOneTime)
             return d;
         ServerPlayer *current = room->getCurrent();
-        if (!current || !current->isAlive() || current->getPhase() != Player::Play)
+        if ((current == nullptr) || !current->isAlive() || current->getPhase() != Player::Play)
             return d;
 
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *from = qobject_cast<ServerPlayer *>(move.from);
-        if (from && move.from_places.contains(Player::PlaceHand)
+        if ((from != nullptr) && move.from_places.contains(Player::PlaceHand)
             && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE
                 || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE)) {
             if (!move.shown_ids.isEmpty() && from->hasFlag("rumeng")) {
@@ -1146,7 +1146,7 @@ bool YidanCard::targetFilter(const QList<const Player *> &targets, const Player 
     DELETE_OVER_SCOPE(Card, card)
     card->addSubcards(subcards);
     card->setSkillName("yidan");
-    return card && !to_select->isKongcheng() && to_select->getShownHandcards().isEmpty() && card->targetFilter(targets, to_select, Self)
+    return (card != nullptr) && !to_select->isKongcheng() && to_select->getShownHandcards().isEmpty() && card->targetFilter(targets, to_select, Self)
         && !Self->isProhibited(to_select, card, targets);
 }
 
@@ -1253,7 +1253,7 @@ public:
 
         } else if (triggerEvent == Damage) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.from && damage.from->isAlive() && damage.from->hasSkill(this) && damage.to->isAlive() && damage.to != damage.from)
+            if ((damage.from != nullptr) && damage.from->isAlive() && damage.from->hasSkill(this) && damage.to->isAlive() && damage.to != damage.from)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, nullptr, true);
         }
 

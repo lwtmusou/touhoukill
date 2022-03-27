@@ -87,7 +87,7 @@ public:
             if (newSceneRect != start_scene->sceneRect())
                 fitInView(start_scene->sceneRect(), Qt::KeepAspectRatio);
         }
-        if (main_window)
+        if (main_window != nullptr)
             main_window->setBackgroundBrush(true);
     }
 };
@@ -188,7 +188,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::gotoScene(QGraphicsScene *scene)
 {
-    if (this->scene)
+    if (this->scene != nullptr)
         this->scene->deleteLater();
     this->scene = scene;
     view->setScene(scene);
@@ -235,7 +235,7 @@ void MainWindow::on_actionStart_Server_triggered()
     connect(ui->actionStart_Game, SIGNAL(triggered()), this, SLOT(startGameInAnotherInstance()));
 
     StartScene *start_scene = qobject_cast<StartScene *>(scene);
-    if (start_scene) {
+    if (start_scene != nullptr) {
         start_scene->switchToServer(server);
         if (Config.value("EnableMinimizeDialog", false).toBool())
             on_actionMinimize_to_system_tray_triggered();
@@ -420,8 +420,8 @@ void MainWindow::gotoStartScene()
 
     delete systray;
     systray = nullptr;
-    if (ClientInstance) {
-        if (Self) {
+    if (ClientInstance != nullptr) {
+        if (Self != nullptr) {
             delete Self;
             Self = nullptr;
         }
@@ -451,7 +451,7 @@ void MainWindow::on_actionCard_Overview_triggered()
 
 void MainWindow::on_actionEnable_Hotkey_toggled(bool checked)
 {
-    if (Config.EnableHotKey != checked) {
+    if (Config.EnableHotKey != static_cast<int>(checked)) {
         Config.EnableHotKey = checked;
         Config.setValue("EnableHotKey", checked);
     }
@@ -459,7 +459,7 @@ void MainWindow::on_actionEnable_Hotkey_toggled(bool checked)
 
 void MainWindow::on_actionNever_nullify_my_trick_toggled(bool checked)
 {
-    if (Config.NeverNullifyMyTrick != checked) {
+    if (Config.NeverNullifyMyTrick != static_cast<int>(checked)) {
         Config.NeverNullifyMyTrick = checked;
         Config.setValue("NeverNullifyMyTrick", checked);
     }
@@ -526,7 +526,7 @@ void MainWindow::on_actionAbout_Us_triggered()
 
 void MainWindow::setBackgroundBrush(bool centerAsOrigin)
 {
-    if (scene) {
+    if (scene != nullptr) {
         QPixmap pixmap(Config.BackgroundImage);
         QBrush brush(pixmap);
         qreal sx = (qreal)width() / qreal(pixmap.width());
@@ -657,7 +657,7 @@ void MainWindow::on_actionRole_assign_table_triggered()
 
     window->addContent(content);
     window->addCloseButton(tr("OK"));
-    window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0, scene && scene->inherits("RoomScene") ? scene->height() : 0);
+    window->shift((scene != nullptr) && scene->inherits("RoomScene") ? scene->width() : 0, (scene != nullptr) && scene->inherits("RoomScene") ? scene->height() : 0);
     window->setZValue(32766);
 
     window->appear();
@@ -713,7 +713,7 @@ void MainWindow::on_actionAcknowledgement_triggered()
     Button *button = window->addCloseButton(tr("OK"));
     button->moveBy(-85, -35);
     window->setZValue(32766);
-    window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0, scene && scene->inherits("RoomScene") ? scene->height() : 0);
+    window->shift((scene != nullptr) && scene->inherits("RoomScene") ? scene->width() : 0, (scene != nullptr) && scene->inherits("RoomScene") ? scene->height() : 0);
 
     window->appear();
 }
@@ -859,7 +859,7 @@ void MainWindow::on_actionRecord_analysis_triggered()
     label_options->setText(tr("ServerOptions:") + record->getRecordServerOptions().join(","));
 
     QTextEdit *chat_info = new QTextEdit;
-    chat_info->setReadOnly(chat_info);
+    chat_info->setReadOnly(chat_info != nullptr);
     chat_info->setText(record->getRecordChat());
 
     QLabel *table_chat_title = new QLabel;
@@ -902,7 +902,7 @@ void MainWindow::on_actionAbout_fmod_triggered()
     window->addContent(content);
     window->addCloseButton(tr("OK"));
     window->setZValue(32766);
-    window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0, scene && scene->inherits("RoomScene") ? scene->height() : 0);
+    window->shift((scene != nullptr) && scene->inherits("RoomScene") ? scene->width() : 0, (scene != nullptr) && scene->inherits("RoomScene") ? scene->height() : 0);
 
     window->appear();
 }
@@ -924,7 +924,7 @@ void MainWindow::on_actionAbout_Lua_triggered()
     window->addContent(content);
     window->addCloseButton(tr("OK"));
     window->setZValue(32766);
-    window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0, scene && scene->inherits("RoomScene") ? scene->height() : 0);
+    window->shift((scene != nullptr) && scene->inherits("RoomScene") ? scene->width() : 0, (scene != nullptr) && scene->inherits("RoomScene") ? scene->height() : 0);
 
     window->appear();
 }
@@ -944,7 +944,7 @@ void MainWindow::on_actionAbout_GPLv3_triggered()
     window->addContent(content);
     window->addCloseButton(tr("OK"));
     window->setZValue(32766);
-    window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0, scene && scene->inherits("RoomScene") ? scene->height() : 0);
+    window->shift((scene != nullptr) && scene->inherits("RoomScene") ? scene->width() : 0, (scene != nullptr) && scene->inherits("RoomScene") ? scene->height() : 0);
 
     window->appear();
 }

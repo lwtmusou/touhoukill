@@ -40,7 +40,7 @@ PixmapAnimation::PixmapAnimation()
 
 void PixmapAnimation::advance(int phase)
 {
-    if (phase)
+    if (phase != 0)
         current++;
 
     if (current >= frames.size())

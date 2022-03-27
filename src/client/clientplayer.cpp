@@ -39,7 +39,7 @@ void ClientPlayer::addCard(const Card *card, Place place)
 {
     switch (place) {
     case PlaceHand: {
-        if (card)
+        if (card != nullptr)
             known_cards << card;
         handcard_num++;
         break;
@@ -93,7 +93,7 @@ void ClientPlayer::removeCard(const Card *card, Place place)
     switch (place) {
     case PlaceHand: {
         handcard_num--;
-        if (card)
+        if (card != nullptr)
             known_cards.removeOne(card);
         break;
     }

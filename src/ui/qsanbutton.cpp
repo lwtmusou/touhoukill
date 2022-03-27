@@ -446,7 +446,7 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
         }
         if (generalName == "") {
             const General *general = Self->getGeneral();
-            if (general && (general->hasSkill(engskillname) || general->hasSkill(HegSkillname)))
+            if ((general != nullptr) && (general->hasSkill(engskillname) || general->hasSkill(HegSkillname)))
                 generalName = general->objectName();
             if (ServerInfo.Enable2ndGeneral) {
                 const General *general2 = Self->getGeneral2();

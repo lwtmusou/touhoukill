@@ -24,7 +24,7 @@
 #include "carditem.h"
 #include "graphicsbox.h"
 #include "protocol.h"
-#include "timedprogressbar.h"
+#include "TimedProgressBar.h"
 #include <QTimer>
 
 class Button;

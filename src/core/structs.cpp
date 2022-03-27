@@ -144,7 +144,7 @@ QString DamageStruct::getReason() const
 {
     if (reason != QString())
         return reason;
-    else if (card)
+    else if (card != nullptr)
         return card->objectName();
     return QString();
 }
@@ -509,13 +509,13 @@ QVariant SkillInvokeDetail::toVariant() const
         return QVariant();
 
     JsonObject ob;
-    if (skill)
+    if (skill != nullptr)
         ob["skill"] = skill->objectName();
-    if (owner)
+    if (owner != nullptr)
         ob["owner"] = owner->objectName();
-    if (invoker)
+    if (invoker != nullptr)
         ob["invoker"] = invoker->objectName();
-    if (preferredTarget) {
+    if (preferredTarget != nullptr) {
         ob["preferredtarget"] = preferredTarget->objectName();
         Room *room = preferredTarget->getRoom();
         ServerPlayer *current = room->getCurrent();
@@ -541,7 +541,7 @@ QStringList SkillInvokeDetail::toList() const
         l << QString() << QString() << QString() << QString();
     else {
         std::function<void(const QObject *)> insert = [&l](const QObject *item) {
-            if (item)
+            if (item != nullptr)
                 l << item->objectName();
             else
                 l << QString();

@@ -122,7 +122,7 @@ public:
 
     bool shouldBeVisible(const Player *Self) const override
     {
-        return Self && Self->getKingdom() == "wai";
+        return (Self != nullptr) && Self->getKingdom() == "wai";
     }
 
     const Card *viewAs() const override
@@ -252,7 +252,7 @@ void XiufuCard::onUse(Room *room, const CardUseStruct &card_use) const
             return;
         }
 
-        bool used = room->askForUseCard(mori, "@@xiufumove", "@xiufu-move", -1, Card::MethodNone, true, "xiufu");
+        bool used = room->askForUseCard(mori, "@@xiufumove", "@xiufu-move", -1, Card::MethodNone, true, "xiufu") != nullptr;
 
         cleanUp(room, mori);
         if (!used) {
@@ -561,7 +561,7 @@ public:
         switch (triggerEvent) {
         case DamageDone: {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.from && damage.from->isCurrent())
+            if ((damage.from != nullptr) && damage.from->isCurrent())
                 room->setTag("shituDamageOrDeath", true);
             break;
         }
@@ -1154,7 +1154,7 @@ public:
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         if (triggerEvent == DamageInflicted) {
-            if (room->askForUseCard(invoke->invoker, "@@zheshe", "@zheshe", -1, Card::MethodDiscard) && invoke->invoker->tag.contains("zheshe_target")) {
+            if ((room->askForUseCard(invoke->invoker, "@@zheshe", "@zheshe", -1, Card::MethodDiscard) != nullptr) && invoke->invoker->tag.contains("zheshe_target")) {
                 ServerPlayer *target = invoke->invoker->tag.value("zheshe_target", QVariant::fromValue((ServerPlayer *)nullptr)).value<ServerPlayer *>();
                 if (target != nullptr) {
                     invoke->targets << target;
@@ -1558,7 +1558,7 @@ public:
     {
         invoke->owner->tag["zhujiu_target"] = QVariant::fromValue(invoke->invoker);
         const Card *c = room->askForCard(invoke->owner, "..", "@zhujiu:" + invoke->invoker->objectName(), data, Card::MethodNone);
-        if (c) {
+        if (c != nullptr) {
             invoke->owner->showHiddenSkill(objectName());
             CardMoveReason r(CardMoveReason::S_REASON_GIVE, invoke->owner->objectName(), objectName(), QString());
             room->obtainCard(invoke->invoker, c, r, false); //room->getCardPlace(c->getEffectiveId()) != Player::PlaceHand
@@ -1591,7 +1591,7 @@ bool YushouCard::targetFilter(const QList<const Player *> &targets, const Player
     } else if (targets.length() == 1) {
         foreach (const Card *e, targets.first()->getEquips()) {
             const EquipCard *equip = qobject_cast<const EquipCard *>(e->getRealCard());
-            if (!to_select->getEquip(equip->location()))
+            if (to_select->getEquip(equip->location()) == nullptr)
                 return true;
         }
     }
@@ -1616,7 +1616,7 @@ void YushouCard::onUse(Room *room, const CardUseStruct &card_use) const
 
     foreach (const Card *e, to1->getEquips()) {
         const EquipCard *equip = qobject_cast<const EquipCard *>(e->getRealCard());
-        if (to2->getEquip(equip->location())) {
+        if (to2->getEquip(equip->location()) != nullptr) {
             disable << e->getEffectiveId();
         }
     }
@@ -1757,7 +1757,7 @@ public:
 
         QString prompt = "@bihuo-playerchosen:" + use.from->objectName();
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), prompt, true, true);
-        if (target) {
+        if (target != nullptr) {
             invoke->invoker->showHiddenSkill(objectName());
 
             QVariantMap bihuo_list = target->tag.value("bihuo", QVariantMap()).toMap();
@@ -1968,7 +1968,7 @@ public:
         QString prompt = prompt_list.join(":");
 
         const Card *card = room->askForCard(invoke->invoker, ".Basic", prompt, data, Card::MethodDiscard, nullptr, false, objectName());
-        if (card)
+        if (card != nullptr)
             invoke->invoker->tag["jidong_card"] = QVariant::fromValue(card);
         return card != nullptr;
     }
@@ -1986,7 +1986,7 @@ public:
             QString prompt = prompt_list.join(":");
             use.from->tag["jidong_target"] = QVariant::fromValue(invoke->invoker);
             const Card *card = room->askForCard(use.from, pattern, prompt, data);
-            if (!card)
+            if (card == nullptr)
                 can = true;
         }
 
@@ -2191,7 +2191,7 @@ public:
         QList<SkillInvokeDetail> d;
         ServerPlayer *current = room->getCurrent();
         foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-            if (current && current->canDiscard(current, "hes"))
+            if ((current != nullptr) && current->canDiscard(current, "hes"))
                 d << SkillInvokeDetail(this, p, p);
             else {
                 foreach (ServerPlayer *t, room->getOtherPlayers(p)) {
@@ -2213,7 +2213,7 @@ public:
                 targets << t;
         }
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@daoyao", true, true);
-        if (target)
+        if (target != nullptr)
             invoke->targets << target;
         return target != nullptr;
     }

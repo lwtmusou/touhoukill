@@ -144,7 +144,7 @@ public:
     {
         if (invoke->invoker->askForSkillInvoke(this, data)) {
             const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon", true);
-            if (v)
+            if (v != nullptr)
                 invoke->invoker->showHiddenSkill(v->objectName());
             return true;
         }
@@ -205,7 +205,7 @@ public:
         if (!equipAvailable(damage.from, EquipCard::WeaponLocation, objectName(), damage.to))
             return QList<SkillInvokeDetail>();
 
-        if (damage.card && damage.card->isKindOf("Slash") && damage.to->isKongcheng() && damage.by_user && !damage.chain && !damage.transfer)
+        if ((damage.card != nullptr) && damage.card->isKindOf("Slash") && damage.to->isKongcheng() && damage.by_user && !damage.chain && !damage.transfer)
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, nullptr, true, damage.to);
 
         return QList<SkillInvokeDetail>();
@@ -323,7 +323,7 @@ public:
     bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "armor", true);
-        if (v) {
+        if (v != nullptr) {
             if (!invoke->invoker->hasShownSkill(v) && !invoke->invoker->askForSkillInvoke(this))
                 return false;
             invoke->invoker->showHiddenSkill(v->objectName());
@@ -429,7 +429,7 @@ public:
     {
         if (triggerEvent == DamageInflicted) {
             const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "armor", true);
-            if (v) {
+            if (v != nullptr) {
                 if (!invoke->invoker->hasShownSkill(v) && !invoke->invoker->askForSkillInvoke(this))
                     return false;
                 invoke->invoker->showHiddenSkill(v->objectName());
@@ -547,7 +547,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
         bool damage = false;
         if (effect.from->hasSkill("fengxiang")) {
             const Card *card_to_throw = room->askForCard(effect.from, pattern, prompt, QVariant::fromValue(effect), Card::MethodNone);
-            if (card_to_throw) {
+            if (card_to_throw != nullptr) {
                 if (!effect.from->isShownHandcard(card_to_throw->getId()) && effect.from->askForSkillInvoke("fengxiang_show", "show"))
                     effect.from->addToShownHandCards(QList<int>() << card_to_throw->getEffectiveId());
                 else
@@ -556,7 +556,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
             }
         } else if (getSkillName() == "fengxiang_hegemony") {
             const Card *card_to_throw = room->askForCard(effect.from, pattern, prompt, QVariant::fromValue(effect), Card::MethodNone);
-            if (card_to_throw) {
+            if (card_to_throw != nullptr) {
                 LogMessage log;
                 log.type = "#Card_Recast";
                 log.from = effect.from;
@@ -573,7 +573,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
             }
         } else {
             const Card *card_to_throw = room->askForCard(effect.from, pattern, prompt, QVariant::fromValue(effect));
-            if (card_to_throw)
+            if (card_to_throw != nullptr)
                 damage = true;
         }
         if (damage)
@@ -695,12 +695,12 @@ bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Pl
     if (!targets.isEmpty() || to_select == Self)
         return false;
     bool ignore
-        = (Self && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
+        = ((Self != nullptr) && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
     if (to_select->containsTrick(objectName()) && !ignore)
         return false;
     int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);
     int rangefix = 0;
-    if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
+    if ((Self->getOffensiveHorse() != nullptr) && subcards.contains(Self->getOffensiveHorse()->getId()))
         rangefix += 1;
 
     if (Self->distanceTo(to_select, rangefix) > distance_limit)

@@ -29,7 +29,7 @@ QString LogMessage::toString() const
         if (player != nullptr)
             tos << player->objectName();
 
-    return QString("%1:%2->%3:%4:%5:%6").arg(type).arg(from ? from->objectName() : "").arg(tos.join("+")).arg(card_str).arg(arg).arg(arg2);
+    return QString("%1:%2->%3:%4:%5:%6").arg(type).arg(from != nullptr ? from->objectName() : "").arg(tos.join("+")).arg(card_str).arg(arg).arg(arg2);
 }
 
 QVariant LogMessage::toJsonValue() const
@@ -40,7 +40,7 @@ QVariant LogMessage::toJsonValue() const
             tos << player->objectName();
 
     QStringList log;
-    log << type << (from ? from->objectName() : "") << tos.join("+") << card_str << arg << arg2;
+    log << type << (from != nullptr ? from->objectName() : "") << tos.join("+") << card_str << arg << arg2;
     QVariant json_log = JsonUtils::toJsonArray(log);
     return json_log;
 }
@@ -358,7 +358,7 @@ void RoomThread::run()
         QList<const General *> generals = QList<const General *>();
         foreach (QString pack_name, GetConfigFromLuaState(Sanguosha->getLuaState(), "hulao_packages").toStringList()) {
             const Package *pack = Sanguosha->findChild<const Package *>(pack_name);
-            if (pack)
+            if (pack != nullptr)
                 generals << pack->findChildren<const General *>();
         }
 
@@ -753,7 +753,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data)
                         if (invoke->owner == nullptr) {
                             has_compulsory = true;
                             break;
-                        } else if (invoke->owner && invoke->owner->hasShownSkill(detail->skill->objectName())) {
+                        } else if ((invoke->owner != nullptr) && invoke->owner->hasShownSkill(detail->skill->objectName())) {
                             has_compulsory = true;
                             break;
                         }
@@ -796,7 +796,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, QVariant &data)
             if (do_cost && invoke->skill->cost(triggerEvent, room, invoke, data)) {
                 //show hidden skill firstly
                 //if (!invoke->isCompulsory && invoke->invoker)
-                if (invoke->owner) {
+                if (invoke->owner != nullptr) {
                     invoke->owner->showHiddenSkill(invoke->skill->objectName());
                 }
 
@@ -846,7 +846,7 @@ void RoomThread::addTriggerSkill(const TriggerSkill *skill)
     if (skill->isVisible()) {
         foreach (const Skill *skill, Sanguosha->getRelatedSkills(skill->objectName())) {
             const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
-            if (trigger_skill)
+            if (trigger_skill != nullptr)
                 addTriggerSkill(trigger_skill);
         }
     }

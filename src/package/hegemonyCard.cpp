@@ -31,7 +31,7 @@ bool KnownBothHegemony::targetFilter(const QList<const Player *> &targets, const
     if (targets.length() >= total_num || to_select == Self)
         return false;
 
-    return (!to_select->hasShownGeneral() || (to_select->getGeneral2() && !to_select->hasShownGeneral2()) || !to_select->isKongcheng());
+    return (!to_select->hasShownGeneral() || ((to_select->getGeneral2() != nullptr) && !to_select->hasShownGeneral2()) || !to_select->isKongcheng());
 }
 
 bool KnownBothHegemony::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
@@ -129,7 +129,7 @@ void KnownBothHegemony::onEffect(const CardEffectStruct &effect) const
     QStringList select;
     if (!effect.to->hasShownGeneral())
         select << "showhead";
-    if (effect.to->getGeneral2() && !effect.to->hasShownGeneral2())
+    if ((effect.to->getGeneral2() != nullptr) && !effect.to->hasShownGeneral2())
         select << "showdeputy";
     if (!effect.to->isKongcheng() && (effect.to->getShownHandcards().length() < effect.to->getHandcardNum()))
         select << "showcard";
@@ -331,7 +331,7 @@ void AwaitExhaustedHegemony::onUse(Room *room, const CardUseStruct &card_use) co
         useTosExceptp.removeAll(p);
         if (p->isFriendWith(new_use.from)) {
             const ProhibitSkill *skill = room->isProhibited(card_use.from, p, this, useTosExceptp);
-            if (skill) {
+            if (skill != nullptr) {
                 LogMessage log;
                 log.type = "#SkillAvoid";
                 log.from = p;
@@ -436,7 +436,7 @@ public:
     {
         if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
             const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon", true);
-            if (v)
+            if (v != nullptr)
                 invoke->invoker->showHiddenSkill(v->objectName());
 
             room->setEmotion(invoke->invoker, "weapon/double_sword");
@@ -454,7 +454,7 @@ public:
             select << "discard";
         if (!target->hasShownGeneral() && target->canShowGeneral("h"))
             select << "showhead";
-        if (target->getGeneral2() && !target->hasShownGeneral2() && target->canShowGeneral("d"))
+        if ((target->getGeneral2() != nullptr) && !target->hasShownGeneral2() && target->canShowGeneral("d"))
             select << "showdeputy";
 
         if (select.isEmpty())

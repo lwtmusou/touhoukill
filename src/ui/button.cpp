@@ -133,7 +133,7 @@ void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *)
     setFocus(Qt::MouseFocusReason);
     if (!mute)
         Sanguosha->playSystemAudioEffect("button-hover");
-    if (!timer_id)
+    if (timer_id == 0)
         timer_id = QObject::startTimer(40);
 }
 
@@ -171,7 +171,7 @@ void Button::timerEvent(QTimerEvent *)
     } else {
         if (glow > 0)
             glow--;
-        else if (timer_id) {
+        else if (timer_id != 0) {
             QObject::killTimer(timer_id);
             timer_id = 0;
         }

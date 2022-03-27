@@ -194,7 +194,7 @@ void CardContainer::clear()
         items = items_stack.pop();
         bool retained = retained_stack.pop();
         fillCards();
-        if (retained && close_button)
+        if (retained && (close_button != nullptr))
             close_button->show();
     } else {
         close_button->hide();
@@ -231,7 +231,7 @@ QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, Pla
 
         copy->setAcceptedMouseButtons(nullptr);
 
-        if (m_currentPlayer)
+        if (m_currentPlayer != nullptr)
             to_take->showAvatar(m_currentPlayer->getGeneral());
     }
     return result;
@@ -262,7 +262,7 @@ void CardContainer::startGongxin(const QList<int> &enabled_ids)
 
     foreach (CardItem *item, items) {
         const Card *card = item->getCard();
-        if (card && enabled_ids.contains(card->getEffectiveId())) {
+        if ((card != nullptr) && enabled_ids.contains(card->getEffectiveId())) {
             connect(item, SIGNAL(double_clicked()), this, SLOT(gongxinItem()));
         } else
             item->setEnabled(false);
@@ -277,7 +277,7 @@ void CardContainer::addCloseButton()
 void CardContainer::grabItem()
 {
     CardItem *card_item = qobject_cast<CardItem *>(sender());
-    if (card_item && !collidesWithItem(card_item)) {
+    if ((card_item != nullptr) && !collidesWithItem(card_item)) {
         card_item->disconnect(this);
         emit item_chosen(card_item->getCard()->getId());
     }
@@ -286,7 +286,7 @@ void CardContainer::grabItem()
 void CardContainer::chooseItem()
 {
     CardItem *card_item = qobject_cast<CardItem *>(sender());
-    if (card_item) {
+    if (card_item != nullptr) {
         card_item->disconnect(this);
         emit item_chosen(card_item->getCard()->getId());
     }
@@ -295,7 +295,7 @@ void CardContainer::chooseItem()
 void CardContainer::gongxinItem()
 {
     CardItem *card_item = qobject_cast<CardItem *>(sender());
-    if (card_item) {
+    if (card_item != nullptr) {
         emit item_gongxined(card_item->getCard()->getId());
         clear();
     }

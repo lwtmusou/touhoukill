@@ -48,7 +48,7 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
                 card = Sanguosha->getCard(one_card.toInt());
             else
                 card = Sanguosha->getEngineCard(one_card.toInt());
-            if (card) {
+            if (card != nullptr) {
                 if (log_name.isEmpty())
                     log_name = card->getLogName();
                 else

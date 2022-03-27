@@ -51,7 +51,7 @@ bool SanSimpleTextFont::tryParse(const QVariant &argvar)
     m_vertical = false;
     _initFontFace(arg[0].toString());
 
-    if (arg[1].toInt()) {
+    if (arg[1].toInt() != 0) {
         m_fontSize.setWidth(arg[1].toInt());
         m_fontSize.setHeight(arg[1].toInt());
         m_spacing = 0;

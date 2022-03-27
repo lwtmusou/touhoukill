@@ -99,11 +99,11 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
         if (number.contains('~')) {
             QStringList params = number.split('~');
             int from = 0, to = 0;
-            if (!params.at(0).size())
+            if (params.at(0).size() == 0)
                 from = 1;
             else
                 from = params.at(0).toInt();
-            if (!params.at(1).size())
+            if (params.at(1).size() == 0)
                 to = 13;
             else
                 to = params.at(1).toInt();
@@ -130,7 +130,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
     else if (place == "hand" && card->getEffectiveId() >= 0 && !player->hasEquip(card)) checkpoint = true;*/
     checkpoint = false;
     QString place = factors.at(3);
-    if (!player || place == ".")
+    if ((player == nullptr) || place == ".")
         checkpoint = true;
     if (!checkpoint) {
         bool findOneShow = false; //only for check palce "show"

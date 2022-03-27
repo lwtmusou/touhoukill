@@ -262,9 +262,9 @@ struct CardsMoveStruct
         this->to = to;
         this->reason = reason;
         is_last_handcard = false;
-        if (from)
+        if (from != nullptr)
             from_player_name = from->objectName();
-        if (to)
+        if (to != nullptr)
             to_player_name = to->objectName();
     }
 
@@ -277,7 +277,7 @@ struct CardsMoveStruct
         this->to = to;
         this->reason = reason;
         is_last_handcard = false;
-        if (to)
+        if (to != nullptr)
             to_player_name = to->objectName();
     }
 
@@ -290,9 +290,9 @@ struct CardsMoveStruct
         this->to = to;
         this->reason = reason;
         is_last_handcard = false;
-        if (from)
+        if (from != nullptr)
             from_player_name = from->objectName();
-        if (to)
+        if (to != nullptr)
             to_player_name = to->objectName();
     }
 
@@ -305,7 +305,7 @@ struct CardsMoveStruct
         this->to = to;
         this->reason = reason;
         is_last_handcard = false;
-        if (to)
+        if (to != nullptr)
             to_player_name = to->objectName();
     }
 

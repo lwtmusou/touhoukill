@@ -294,7 +294,7 @@ public:
             return QList<SkillInvokeDetail>();
 
         CardEffectStruct effect = data.value<CardEffectStruct>();
-        if (effect.from && effect.from != effect.to && effect.to->hasSkill(this) && effect.to->isAlive() && effect.to->hasFlag("jinghua") && effect.card->isNDTrick()) {
+        if ((effect.from != nullptr) && effect.from != effect.to && effect.to->hasSkill(this) && effect.to->isAlive() && effect.to->hasFlag("jinghua") && effect.card->isNDTrick()) {
             QList<int> ids;
             if (effect.card->isVirtualCard())
                 ids = effect.card->getSubcards();
@@ -410,7 +410,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QString prompt = "@zhengyi:" + use.card->objectName();
-        return room->askForCard(invoke->invoker, ".|red", prompt, data, Card::MethodDiscard, nullptr, false, objectName());
+        return room->askForCard(invoke->invoker, ".|red", prompt, data, Card::MethodDiscard, nullptr, false, objectName()) != nullptr;
     }
 
     bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
@@ -470,7 +470,7 @@ public:
             return card_id > -1;
         } else if (triggerEvent == EventPhaseStart) {
             ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "@baota", true, true);
-            if (target) {
+            if (target != nullptr) {
                 invoke->targets << target;
                 return true;
             }
@@ -725,7 +725,7 @@ public:
                         break;
                     case Player::PlaceJudge: { //case of retrial, need check rebyre
                         ServerPlayer *rebyre = move.reason.m_extraData.value<ServerPlayer *>();
-                        if (rebyre && rebyre != nazurin) {
+                        if ((rebyre != nullptr) && rebyre != nazurin) {
                             QVariantList record_ids = nazurin->tag["soujiExcept"].toList();
                             if (!record_ids.contains(id))
                                 obtain_ids << id;
@@ -759,7 +759,7 @@ public:
     {
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         ServerPlayer *nazurin = room->getCurrent();
-        if (nazurin && nazurin->isAlive() && nazurin->hasSkill(objectName()) && move.to_place == Player::DiscardPile) {
+        if ((nazurin != nullptr) && nazurin->isAlive() && nazurin->hasSkill(objectName()) && move.to_place == Player::DiscardPile) {
             QVariantList obtain_ids = nazurin->tag["souji"].toList();
             if (obtain_ids.length() > 0)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, nazurin, nazurin);
@@ -860,7 +860,7 @@ public:
         }
         if (e == CardResponded) {
             CardResponseStruct response = data.value<CardResponseStruct>();
-            if (response.m_from && response.m_from->isAlive() && response.m_from->hasSkill(this))
+            if ((response.m_from != nullptr) && response.m_from->isAlive() && response.m_from->hasSkill(this))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, response.m_from, response.m_from);
         }
         return QList<SkillInvokeDetail>();
@@ -1050,7 +1050,7 @@ public:
                 targets << p;
         }
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@yiwang-recover", true, true);
-        if (target) {
+        if (target != nullptr) {
             invoke->targets << target;
             return true;
         }
@@ -1382,7 +1382,7 @@ void ShuxinCard::onEffect(const CardEffectStruct &effect) const
         }
     }
 
-    if (card) {
+    if (card != nullptr) {
         if (card->subcardsLength() >= effect.to->getHp())
             room->recover(effect.to, RecoverStruct());
     } else if (!effect.to->isKongcheng()) {
@@ -1458,7 +1458,7 @@ bool HuishengCard::targetFilter(const QList<const Player *> &targets, const Play
         return false;
     if (targets.isEmpty() && to_select->objectName() != str)
         return false;
-    return new_card && new_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, new_card, targets);
+    return (new_card != nullptr) && new_card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, new_card, targets);
 }
 
 bool HuishengCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
@@ -1470,7 +1470,7 @@ bool HuishengCard::targetsFeasible(const QList<const Player *> &targets, const P
 
     if (targets.length() < 1)
         return false;
-    return new_card && new_card->targetsFeasible(targets, Self);
+    return (new_card != nullptr) && new_card->targetsFeasible(targets, Self);
 }
 
 const Card *HuishengCard::validate(CardUseStruct &card_use) const
@@ -1516,7 +1516,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->isKindOf("Jink") || !use.from->isAlive())
             return QList<SkillInvokeDetail>();
-        if (use.from && use.to.length() == 1 && (use.card->isKindOf("BasicCard") || use.card->isNDTrick())) {
+        if ((use.from != nullptr) && use.to.length() == 1 && (use.card->isKindOf("BasicCard") || use.card->isNDTrick())) {
             ServerPlayer *source = use.to.first();
             if (use.from != source && source->hasSkill(this) && source->isAlive() && use.from->isAlive()) {
                 Card *card = Sanguosha->cloneCard(use.card->objectName());

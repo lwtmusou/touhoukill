@@ -81,7 +81,7 @@ bool ResponseSkill::matchPattern(const Player *player, const Card *card) const
     if (request != Card::MethodNone && player->isCardLimited(card, request))
         return false;
 
-    return pattern && pattern->match(player, card);
+    return (pattern != nullptr) && pattern->match(player, card);
 }
 
 bool ResponseSkill::viewFilter(const Card *card) const
@@ -103,7 +103,7 @@ ShowOrPindianSkill::ShowOrPindianSkill()
 
 bool ShowOrPindianSkill::matchPattern(const Player *player, const Card *card) const
 {
-    return pattern && pattern->match(player, card);
+    return (pattern != nullptr) && pattern->match(player, card);
 }
 
 // -------------------------------------------

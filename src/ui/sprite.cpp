@@ -17,10 +17,10 @@ EffectAnimation::EffectAnimation(QObject *parent)
 void EffectAnimation::fade(QGraphicsItem *map)
 {
     QAnimatedEffect *effect = qobject_cast<QAnimatedEffect *>(map->graphicsEffect());
-    if (effect) {
+    if (effect != nullptr) {
         effectOut(map);
         effect = registered.value(map);
-        if (effect)
+        if (effect != nullptr)
             effect->deleteLater();
         registered.insert(map, new FadeEffect(true));
         return;
@@ -35,10 +35,10 @@ void EffectAnimation::fade(QGraphicsItem *map)
 void EffectAnimation::emphasize(QGraphicsItem *map, bool stay)
 {
     QAnimatedEffect *effect = qobject_cast<QAnimatedEffect *>(map->graphicsEffect());
-    if (effect) {
+    if (effect != nullptr) {
         effectOut(map);
         effect = registered.value(map);
-        if (effect)
+        if (effect != nullptr)
             effect->deleteLater();
         registered.insert(map, new EmphasizeEffect(stay));
         return;
@@ -52,10 +52,10 @@ void EffectAnimation::emphasize(QGraphicsItem *map, bool stay)
 void EffectAnimation::sendBack(QGraphicsItem *map)
 {
     QAnimatedEffect *effect = qobject_cast<QAnimatedEffect *>(map->graphicsEffect());
-    if (effect) {
+    if (effect != nullptr) {
         effectOut(map);
         effect = registered.value(map);
-        if (effect)
+        if (effect != nullptr)
             effect->deleteLater();
         registered.insert(map, new SentbackEffect(true));
         return;
@@ -69,13 +69,13 @@ void EffectAnimation::sendBack(QGraphicsItem *map)
 void EffectAnimation::effectOut(QGraphicsItem *map)
 {
     QAnimatedEffect *effect = qobject_cast<QAnimatedEffect *>(map->graphicsEffect());
-    if (effect) {
+    if (effect != nullptr) {
         effect->setStay(false);
         connect(effect, SIGNAL(loop_finished()), this, SLOT(deleteEffect()));
     }
 
     effect = registered.value(map);
-    if (effect)
+    if (effect != nullptr)
         effect->deleteLater();
     registered.insert(map, NULL);
 }
@@ -88,13 +88,13 @@ void EffectAnimation::deleteEffect()
 
 void EffectAnimation::deleteEffect(QAnimatedEffect *effect)
 {
-    if (!effect)
+    if (effect == nullptr)
         return;
     effect->deleteLater();
     QGraphicsItem *pix = effects.key(effect);
-    if (pix) {
+    if (pix != nullptr) {
         QAnimatedEffect *effect = registered.value(pix);
-        if (effect)
+        if (effect != nullptr)
             effect->reset();
         pix->setGraphicsEffect(registered.value(pix));
         effects.insert(pix, registered.value(pix));
@@ -178,7 +178,7 @@ void SentbackEffect::draw(QPainter *painter)
     QPoint offset;
     QPixmap pixmap = sourcePixmap(Qt::LogicalCoordinates, &offset);
 
-    if (!grayed) {
+    if (grayed == nullptr) {
         grayed = new QImage(pixmap.size(), QImage::Format_ARGB32);
 
         QImage image = pixmap.toImage();

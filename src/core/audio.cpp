@@ -45,7 +45,7 @@ public:
             FMOD_Sound_SetMode(m_sound, FMOD_LOOP_NORMAL);
         }
 
-        FMOD_System_PlaySound(System, FMOD_CHANNEL_FREE, m_sound, false, &m_channel);
+        FMOD_System_PlaySound(System, FMOD_CHANNEL_FREE, m_sound, 0, &m_channel);
         FMOD_System_Update(System);
     }
 
@@ -61,11 +61,11 @@ public:
 
     bool isPlaying() const
     {
-        FMOD_BOOL playing = false;
+        FMOD_BOOL playing = 0;
         if (nullptr != m_channel) {
             FMOD_Channel_IsPlaying(m_channel, &playing);
         }
-        return playing;
+        return playing != 0;
     }
 
 private:

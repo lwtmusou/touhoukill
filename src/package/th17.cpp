@@ -262,7 +262,7 @@ public:
     {
         QList<int> selectedIds = VariantList2IntList(invoke->tag.value("lingshou").toList());
         room->setPlayerProperty(invoke->targets.first(), "lingshouSelected", IntList2StringList(selectedIds).join("+"));
-        if (!room->askForUseCard(invoke->targets.first(), "@@LingshouOtherVS", "@lingshou-slash", -1, Card::MethodUse, true, "_lingshou")) {
+        if (room->askForUseCard(invoke->targets.first(), "@@LingshouOtherVS", "@lingshou-slash", -1, Card::MethodUse, true, "_lingshou") == nullptr) {
             DummyCard d(selectedIds);
 
             LogMessage log;
@@ -637,12 +637,12 @@ public:
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         if (triggerEvent == EventPhaseEnd)
-            return room->askForUseCard(invoke->invoker, "@@bengluo-card1", "@bengluo-kill", 1);
+            return room->askForUseCard(invoke->invoker, "@@bengluo-card1", "@bengluo-kill", 1) != nullptr;
         else {
             int n = invoke->invoker->getHandcardNum() - invoke->invoker->getMaxCards();
             if (n > 0) {
                 room->setPlayerProperty(invoke->invoker, "bengluoDiscardnum", QString::number(n));
-                return room->askForCard(invoke->invoker, "@@bengluo-card2", "@bengluo-discard:::" + QString::number(n), data, "bengluo", 2);
+                return room->askForCard(invoke->invoker, "@@bengluo-card2", "@bengluo-discard:::" + QString::number(n), data, "bengluo", 2) != nullptr;
             } else {
                 if (room->askForSkillInvoke(invoke->invoker, this, data, "@bengluo-draw:::" + QString::number(-n))) {
                     room->drawCards(invoke->invoker, -n, "bengluo");
@@ -705,7 +705,7 @@ void LunniCard::onEffect(const CardEffectStruct &effect) const
     int equipped_id = Card::S_UNKNOWN_CARD_ID;
     ServerPlayer *target = effect.to;
     Room *room = target->getRoom();
-    if (target->getEquip(location))
+    if (target->getEquip(location) != nullptr)
         equipped_id = target->getEquip(location)->getEffectiveId();
 
     QList<CardsMoveStruct> exchangeMove;
@@ -825,7 +825,7 @@ public:
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         if (triggerEvent == EventPhaseStart)
-            return room->askForUseCard(invoke->invoker, "@@lunni", "@lunni-discard:" + invoke->targets.first()->objectName(), -1, Card::MethodNone);
+            return room->askForUseCard(invoke->invoker, "@@lunni", "@lunni-discard:" + invoke->targets.first()->objectName(), -1, Card::MethodNone) != nullptr;
         else {
             ServerPlayer *change = data.value<ServerPlayer *>();
             if (change->hasFlag("lunni")) {
@@ -1459,7 +1459,7 @@ public:
 
         foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
             if (p->inMyAttackRange(invoke->targets.first())) {
-                if (askForUseLingjunTo(room, invoke->invoker, p, invoke->targets.first()))
+                if (askForUseLingjunTo(room, invoke->invoker, p, invoke->targets.first()) != nullptr)
                     flag = true;
             }
         }
@@ -1657,7 +1657,7 @@ public:
             Slash *s = new Slash(Card::NoSuit, 0);
             s->setSkillName("_tianxing");
             if (!invoke->invoker->isLocked(s))
-                room->useCard(CardUseStruct(s, invoke->invoker, {invoke->targets.first()}));
+                room->useCard(CardUseStruct(s, invoke->invoker, invoke->targets.first()));
             else
                 delete s;
         } else {

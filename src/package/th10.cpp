@@ -164,7 +164,7 @@ public:
 
     bool shouldBeVisible(const Player *Self) const override
     {
-        return Self && Self->getKingdom() == "fsl";
+        return (Self != nullptr) && Self->getKingdom() == "fsl";
     }
 
     const Card *viewAs(const Card *originalCard) const override
@@ -240,14 +240,14 @@ public:
             if (pindian->reason != "bushu")
                 return QList<SkillInvokeDetail>();
             ServerPlayer *target = pindian->from->tag["suwako_bushu"].value<ServerPlayer *>();
-            if (pindian->success && target && target->isAlive())
+            if (pindian->success && (target != nullptr) && target->isAlive())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, nullptr, pindian->from, nullptr, true, target);
             else if (!pindian->success && pindian->from->isAlive())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, nullptr, pindian->from, nullptr, true);
 
         } else if (triggerEvent == Damaged) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (!damage.from || damage.to->isDead() || !damage.from->isAlive())
+            if ((damage.from == nullptr) || damage.to->isDead() || !damage.from->isAlive())
                 return QList<SkillInvokeDetail>();
 
             QList<SkillInvokeDetail> d;
@@ -312,7 +312,7 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->invoker), objectName(), "@chuancheng", true, true);
-        if (target) {
+        if (target != nullptr) {
             invoke->targets << target;
             return true;
         }
@@ -488,7 +488,7 @@ void QijiDialog::popup()
             avaliable = card->isAvailable(user);
         if (object_name == "chuangshi" && (card->isKindOf("Jink") || card->isKindOf("Nullification")))
             avaliable = false;
-        if (object_name == "qiji" && user->getMark("xiubu"))
+        if (object_name == "qiji" && (user->getMark("xiubu") != 0))
             avaliable = true;
 
         bool checked = checkedPatterns.contains(card->objectName());
@@ -742,7 +742,7 @@ public:
         }
         if (e == CardResponded) {
             CardResponseStruct response = data.value<CardResponseStruct>();
-            if (response.m_from && response.m_card && response.m_card->getSkillName() == objectName())
+            if ((response.m_from != nullptr) && (response.m_card != nullptr) && response.m_card->getSkillName() == objectName())
                 room->setPlayerMark(response.m_from, "qiji", 1);
         }
     }
@@ -846,14 +846,14 @@ public:
     void record(TriggerEvent, Room *room, QVariant &data) const override
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player && player->hasSkill("fengsu") && player->hasShownSkill("fengsu"))
+        if ((player != nullptr) && player->hasSkill("fengsu") && player->hasShownSkill("fengsu"))
             room->notifySkillInvoked(player, "fengsu");
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
-        if (isHegemonyGameMode(ServerInfo.GameMode) && player && player->hasSkill(objectName()) && !player->hasShownSkill(objectName())) {
+        if (isHegemonyGameMode(ServerInfo.GameMode) && (player != nullptr) && player->hasSkill(objectName()) && !player->hasShownSkill(objectName())) {
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         }
 
@@ -942,7 +942,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.to && damage.to->hasSkill(this) && damage.damage > damage.to->getHandcardNum())
+        if ((damage.to != nullptr) && damage.to->hasSkill(this) && damage.damage > damage.to->getHandcardNum())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, nullptr, true);
         return QList<SkillInvokeDetail>();
     }
@@ -976,7 +976,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         QList<SkillInvokeDetail> d;
         foreach (ServerPlayer *hina, room->findPlayersBySkillName(objectName())) {
-            if (hina && damage.to != hina)
+            if ((hina != nullptr) && damage.to != hina)
                 d << SkillInvokeDetail(this, hina, hina);
         }
         return d;
@@ -1001,7 +1001,7 @@ public:
             nature = "ice_nature";
             break;
         }
-        if (damage.from)
+        if (damage.from != nullptr)
             prompt = "transfer1:" + damage.to->objectName() + ":" + damage.from->objectName() + ":" + QString::number(damage.damage) + ":" + nature;
         else
             prompt = "transfer2:" + damage.to->objectName() + "::" + QString::number(damage.damage) + ":" + nature;
@@ -1047,7 +1047,7 @@ public:
         ServerPlayer *hina = invoke->invoker;
         ServerPlayer *player = invoke->preferredTarget;
         const Card *card = room->askForCard(hina, ".|black|.|hand", "@liuxing:" + player->objectName(), data, Card::MethodNone, player, false, objectName());
-        if (card) {
+        if (card != nullptr) {
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, hina->objectName(), player->objectName());
             room->notifySkillInvoked(hina, objectName());
             room->touhouLogmessage("#InvokeSkill", hina, objectName());
@@ -1085,7 +1085,7 @@ public:
     {
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player && player->getPhase() == Player::NotActive)
+            if ((player != nullptr) && player->getPhase() == Player::NotActive)
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->getMark("changshiInvoked") > 0) {
                         room->setPlayerMark(p, "changshiInvoked", 0);
@@ -1099,7 +1099,7 @@ public:
     {
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player && player->getPhase() == Player::RoundStart && player->hasSkill(this))
+            if ((player != nullptr) && player->getPhase() == Player::RoundStart && player->hasSkill(this))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, nullptr);
         }
         return QList<SkillInvokeDetail>();
@@ -1359,7 +1359,7 @@ public:
                 targets << p;
         }
         ServerPlayer *t = room->askForPlayerChosen(invoke->invoker, targets, objectName(), "@shouhu", true, true);
-        if (t) {
+        if (t != nullptr) {
             invoke->targets << t;
             return true;
         }
@@ -1399,7 +1399,7 @@ public:
             return d;
         } else {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.to->hasSkill(this) && damage.from && damage.from != damage.to && damage.card) {
+            if (damage.to->hasSkill(this) && (damage.from != nullptr) && damage.from != damage.to && (damage.card != nullptr)) {
                 if (damage.card->hasFlag("showncards"))
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
                 foreach (int id, damage.from->getShownHandcards()) {
@@ -1487,7 +1487,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         CardEffectStruct effect = data.value<CardEffectStruct>();
-        if (effect.to && effect.to->hasSkill(objectName()) && effect.card && effect.card->isKindOf("AmazingGrace"))
+        if ((effect.to != nullptr) && effect.to->hasSkill(objectName()) && (effect.card != nullptr) && effect.card->isKindOf("AmazingGrace"))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, nullptr, true);
         return QList<SkillInvokeDetail>();
     }

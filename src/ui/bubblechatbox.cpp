@@ -164,7 +164,7 @@ void BubbleChatBox::setArea(const QRect &newArea)
 
 QVariant BubbleChatBox::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-    if (change == ItemSceneHasChanged && scene()) {
+    if (change == ItemSceneHasChanged && (scene() != nullptr)) {
         scene()->addItem(m_chatLabel);
     }
 

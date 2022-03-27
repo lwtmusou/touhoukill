@@ -230,7 +230,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
     }
     case EventPhaseStart: {
         ServerPlayer *current = data.value<ServerPlayer *>();
-        if (current && current->getPhase() == Player::Finish && !current->getBrokenEquips().isEmpty() && !current->hasFlag("GameRule_brokenEquips"))
+        if ((current != nullptr) && current->getPhase() == Player::Finish && !current->getBrokenEquips().isEmpty() && !current->hasFlag("GameRule_brokenEquips"))
             current->removeBrokenEquips(current->getBrokenEquips());
         break;
     }
@@ -315,7 +315,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             if (card_use.card->hasPreAction())
                 card_use.card->doPreAction(room, card_use);
 
-            if (card_use.from) {
+            if (card_use.from != nullptr) {
                 thread->trigger(TargetSpecifying, room, data);
                 card_use = data.value<CardUseStruct>();
             }
@@ -326,7 +326,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             }
 
             //1) exclude SkillCard 2)changed move reason (USE) 3)keep extraData
-            if (card_use.card && card_use.card->getTypeId() != Card::TypeSkill && !(card_use.card->isVirtualCard() && card_use.card->getSubcards().isEmpty())
+            if ((card_use.card != nullptr) && card_use.card->getTypeId() != Card::TypeSkill && !(card_use.card->isVirtualCard() && card_use.card->getSubcards().isEmpty())
                 && card_use.to.isEmpty()) {
                 if (room->getCardPlace(card_use.card->getEffectiveId()) == Player::PlaceTable) {
                     CardMoveReason reason(CardMoveReason::S_REASON_USE, card_use.from->objectName(), QString(), card_use.card->getSkillName(), QString());
@@ -336,7 +336,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 }
             }
             //since use.to is empty, break the whole process
-            if (card_use.card && card_use.card->getTypeId() != Card::TypeSkill && card_use.to.isEmpty()) {
+            if ((card_use.card != nullptr) && card_use.card->getTypeId() != Card::TypeSkill && card_use.to.isEmpty()) {
                 if (card_use.card->isKindOf("Slash") && card_use.from->isAlive())
                     room->setPlayerMark(card_use.from, "drank", 0);
                 if (card_use.card->isNDTrick() && card_use.from->isAlive()) //clear magic_drank while using Nullification
@@ -356,7 +356,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                         jink_list.append(QVariant(jink_num));
                     card_use.from->tag["Jink_" + card_use.card->toString()] = QVariant::fromValue(jink_list);
                 }
-                if (card_use.from && !card_use.to.isEmpty()) {
+                if ((card_use.from != nullptr) && !card_use.to.isEmpty()) {
                     thread->trigger(TargetSpecified, room, data);
                     thread->trigger(TargetConfirmed, room, data);
                 }
@@ -485,7 +485,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
     }
     case ConfirmDamage: {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.card && damage.to->getMark("SlashIsDrank") > 0) {
+        if ((damage.card != nullptr) && damage.to->getMark("SlashIsDrank") > 0) {
             LogMessage log;
             log.type = "#AnalepticBuff";
             log.from = damage.from;
@@ -506,7 +506,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
     }
     case DamageDone: {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.from && !damage.from->isAlive())
+        if ((damage.from != nullptr) && !damage.from->isAlive())
             damage.from = nullptr;
         data = QVariant::fromValue(damage);
         room->sendDamageLog(damage);
@@ -830,7 +830,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             SlashEffectStruct effect = j.slashEffect;
 
             QString xianshi_name = effect.to->property("xianshi_card").toString();
-            if (xianshi_name != nullptr && effect.from && effect.to && effect.from->isAlive() && effect.to->isAlive()) {
+            if (xianshi_name != nullptr && (effect.from != nullptr) && (effect.to != nullptr) && effect.from->isAlive() && effect.to->isAlive()) {
                 Card *extraCard = Sanguosha->cloneCard(xianshi_name);
                 if (extraCard->isKindOf("Slash")) {
                     DamageStruct::Nature nature = DamageStruct::Normal;
@@ -893,7 +893,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         if (j.jink != nullptr && j.jink->isKindOf("NatureJink")) {
             SlashEffectStruct effect = j.slashEffect;
             //process advanced_jink
-            if (effect.from && effect.to && effect.from->isAlive() && effect.to->isAlive()) {
+            if ((effect.from != nullptr) && (effect.to != nullptr) && effect.from->isAlive() && effect.to->isAlive()) {
                 CardEffectStruct new_effect;
                 new_effect.card = j.jink;
                 new_effect.from = effect.to;
@@ -1000,7 +1000,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         if (isHegemonyGameMode(room->getMode())) {
             if (!player->hasShownGeneral())
                 player->showGeneral(true, false, false);
-            if (player->getGeneral2() && !player->hasShownGeneral2())
+            if ((player->getGeneral2() != nullptr) && !player->hasShownGeneral2())
                 player->showGeneral(false, false, false);
         }
 
@@ -1031,10 +1031,10 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         ServerPlayer *killer = nullptr;
         if (death.useViewAsKiller)
             killer = death.viewAsKiller;
-        else if (death.damage)
+        else if (death.damage != nullptr)
             killer = death.damage->from;
 
-        if (killer) {
+        if (killer != nullptr) {
             room->setPlayerMark(killer, "multi_kill_count", killer->getMark("multi_kill_count") + 1);
             int kill_count = killer->getMark("multi_kill_count");
             if (kill_count > 1 && kill_count < 8)
@@ -1044,7 +1044,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         if (room->getTag("SkipNormalDeathProcess").toBool())
             return false;
 
-        if (killer && !skipRewardAndPunish)
+        if ((killer != nullptr) && !skipRewardAndPunish)
             rewardAndPunish(killer, death.who);
 
         //if lord dead in hegemony mode?
@@ -1120,7 +1120,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
 
         if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge) {
             CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, judge->who->objectName(), QString(), judge->reason);
-            if (judge->retrial_by_response) {
+            if (judge->retrial_by_response != nullptr) {
                 reason.m_extraData = QVariant::fromValue(judge->retrial_by_response);
             }
 
@@ -1155,7 +1155,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             if (Config.HegemonyFirstShowReward == "Postponed") {
                 player->gainMark("@Pioneer");
                 QString attachName = "pioneer_attach";
-                if (player && !player->hasSkill(attachName))
+                if ((player != nullptr) && !player->hasSkill(attachName))
                     room->attachSkillToPlayer(player, attachName);
             } else if (Config.HegemonyFirstShowReward == "Instant") {
                 if (player->askForSkillInvoke("FirstShowReward")) {
@@ -1177,7 +1177,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 if (Config.HegemonyCompanionReward == "Postponed") {
                     player->gainMark("@CompanionEffect");
                     QString attachName = "companion_attach";
-                    if (player && !player->hasSkill(attachName))
+                    if ((player != nullptr) && !player->hasSkill(attachName))
                         room->attachSkillToPlayer(player, attachName);
                 } else {
                     QStringList choices;
@@ -1207,7 +1207,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     //bonus Postpone
                     player->gainMark("@HalfLife");
                     QString attachName = "halflife_attach";
-                    if (player && !player->hasSkill(attachName))
+                    if ((player != nullptr) && !player->hasSkill(attachName))
                         room->attachSkillToPlayer(player, attachName);
                 } else {
                     LogMessage log;
@@ -1267,7 +1267,7 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const
         player->tag.remove("1v1ChangeGeneral");
     } else {
         QStringList list = player->tag["1v1Arrange"].toStringList();
-        if (player->getAI())
+        if (player->getAI() != nullptr)
             new_general = list.first();
         else
             new_general = room->askForGeneral(player, list);
@@ -1457,7 +1457,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const
             QStringList winners;
             if (!win_player->hasShownGeneral())
                 win_player->showGeneral(true, false, false);
-            if (win_player->getGeneral2() && !win_player->hasShownGeneral2())
+            if ((win_player->getGeneral2() != nullptr) && !win_player->hasShownGeneral2())
                 win_player->showGeneral(false, false, false);
 
             foreach (ServerPlayer *p, room->getPlayers()) {
@@ -1533,7 +1533,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const
                 winner_names << p->objectName();
                 if (!p->hasShownGeneral())
                     p->showGeneral(true, false, false);
-                if (p->getGeneral2() && !p->hasShownGeneral2())
+                if ((p->getGeneral2() != nullptr) && !p->hasShownGeneral2())
                     p->showGeneral(false, false, false);
             }
             winner = winner_names.join("+");

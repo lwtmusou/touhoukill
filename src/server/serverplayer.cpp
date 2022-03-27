@@ -253,7 +253,7 @@ int ServerPlayer::getHandcardNum() const
 
 void ServerPlayer::setSocket(ClientSocket *socket)
 {
-    if (this->socket) {
+    if (this->socket != nullptr) {
         disconnect(this->socket);
         this->socket->disconnect(this);
         this->socket->disconnectFromHost();
@@ -262,7 +262,7 @@ void ServerPlayer::setSocket(ClientSocket *socket)
 
     disconnect(this, SLOT(sendMessage(QString)));
 
-    if (socket) {
+    if (socket != nullptr) {
         connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
         connect(socket, SIGNAL(message_got(const char *)), this, SLOT(getMessage(const char *)));
         connect(this, SIGNAL(message_ready(QString)), this, SLOT(sendMessage(QString)));
@@ -284,7 +284,7 @@ void ServerPlayer::unicast(const QString &message)
 {
     emit message_ready(message);
 
-    if (recorder)
+    if (recorder != nullptr)
         recorder->recordLine(message);
 }
 
@@ -308,7 +308,7 @@ void ServerPlayer::startRecord()
 
 void ServerPlayer::saveRecord(const QString &filename)
 {
-    if (recorder)
+    if (recorder != nullptr)
         recorder->save(filename);
 }
 
@@ -352,7 +352,7 @@ void ServerPlayer::clearSelected()
 
 void ServerPlayer::sendMessage(const QString &message)
 {
-    if (socket) {
+    if (socket != nullptr) {
 #ifndef QT_NO_DEBUG
         printf("%s", qPrintable(objectName()));
 #endif
@@ -552,9 +552,9 @@ bool ServerPlayer::hasNullification() const
                     return true;
             } else if (skill->inherits("TriggerSkill")) {
                 const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
-                if (trigger_skill && trigger_skill->getViewAsSkill()) {
+                if ((trigger_skill != nullptr) && (trigger_skill->getViewAsSkill() != nullptr)) {
                     const ViewAsSkill *vsskill = qobject_cast<const ViewAsSkill *>(trigger_skill->getViewAsSkill());
-                    if (vsskill && vsskill->isEnabledAtNullification(this))
+                    if ((vsskill != nullptr) && vsskill->isEnabledAtNullification(this))
                         return true;
                 }
             }
@@ -588,7 +588,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     PindianStruct *pindian = &pindian_struct; //for tmp record.
     if (card1 == nullptr) {
         card1 = room->askForPindian(this, this, target, reason, pindian);
-        if (card1 && isShownHandcard(card1->getEffectiveId())) {
+        if ((card1 != nullptr) && isShownHandcard(card1->getEffectiveId())) {
             log2.type = "$PindianResult";
             log2.from = pindian_struct.from;
             log2.card_str = QString::number(card1->getEffectiveId());
@@ -606,7 +606,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
             int card_id = card1->getEffectiveId();
             card1 = Sanguosha->getCard(card_id);
         }
-        if (card1 && isShownHandcard(card1->getEffectiveId())) {
+        if ((card1 != nullptr) && isShownHandcard(card1->getEffectiveId())) {
             log2.type = "$PindianResult";
             log2.from = pindian_struct.from;
             log2.card_str = QString::number(card1->getEffectiveId());
@@ -1113,7 +1113,7 @@ QString ServerPlayer::getGameMode() const
 
 QString ServerPlayer::getIp() const
 {
-    if (socket)
+    if (socket != nullptr)
         return socket->peerAddress();
     else
         return QString();
@@ -1121,7 +1121,7 @@ QString ServerPlayer::getIp() const
 
 quint32 ServerPlayer::ipv4Address() const
 {
-    if (socket)
+    if (socket != nullptr)
         return socket->ipv4Address();
     else
         return 0u;
@@ -1135,7 +1135,7 @@ void ServerPlayer::introduceTo(ServerPlayer *player)
     JsonArray introduce_str;
     introduce_str << objectName() << screen_name.toUtf8().toBase64() << avatar;
 
-    if (player)
+    if (player != nullptr)
         room->doNotify(player, S_COMMAND_ADD_PLAYER, introduce_str);
     else {
         QList<ServerPlayer *> players = room->getPlayers();
@@ -1683,7 +1683,7 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
         //for yibian
         ServerPlayer *reimu = room->findPlayerBySkillName("yibian");
         const Skill *skill = Sanguosha->getSkill(skill_name);
-        if (reimu && !hasShownRole() && skill->getFrequency() != Skill::Eternal && !skill->isAttachedLordSkill() && !hasEquipSkill(skill_name)) {
+        if ((reimu != nullptr) && !hasShownRole() && skill->getFrequency() != Skill::Eternal && !skill->isAttachedLordSkill() && !hasEquipSkill(skill_name)) {
             //&& ownSkill(skill_name)
             QString role = getRole();
             room->touhouLogmessage("#YibianShow", this, role, room->getAllPlayers());
@@ -2251,7 +2251,7 @@ void ServerPlayer::removeGeneral(bool head_general)
         disconnectSkillsFromOthers();
 
         foreach (const Skill *skill, getHeadSkillList()) {
-            if (skill)
+            if (skill != nullptr)
                 room->detachSkillFromPlayer(this, skill->objectName(), false, false, false, true); //sendlog  head deputy
         }
     } else {
@@ -2283,7 +2283,7 @@ void ServerPlayer::removeGeneral(bool head_general)
         disconnectSkillsFromOthers(false);
 
         foreach (const Skill *skill, getDeputySkillList()) {
-            if (skill)
+            if (skill != nullptr)
                 room->detachSkillFromPlayer(this, skill->objectName(), false, false, false, false);
         }
     }

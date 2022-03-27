@@ -414,7 +414,7 @@ public:
         bool flag = false;
         foreach (int id, const_cast<Room *>(room)->getDiscardPile()) {
             const Card *c = Sanguosha->getCard(id);
-            if (c && c->isKindOf("DelayedTrick")) {
+            if ((c != nullptr) && c->isKindOf("DelayedTrick")) {
                 flag = true;
                 break;
             }
@@ -459,7 +459,7 @@ public:
 
         foreach (int id, room->getDiscardPile()) {
             const Card *c = Sanguosha->getCard(id);
-            if (c && c->isKindOf("DelayedTrick"))
+            if ((c != nullptr) && c->isKindOf("DelayedTrick"))
                 delayedtricks << id;
         }
 
@@ -904,7 +904,7 @@ public:
     {
         if (triggerEvent == GameStart) {
             ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player && player->hasSkill("ftmzuiqiang"))
+            if ((player != nullptr) && player->hasSkill("ftmzuiqiang"))
                 room->filterCards(player, player->getCards("hes"), true);
         }
         if (triggerEvent == EventLoseSkill || triggerEvent == EventAcquireSkill) {
@@ -915,7 +915,7 @@ public:
         if (triggerEvent == EventSkillInvalidityChange) {
             QList<SkillInvalidStruct> invalids = data.value<QList<SkillInvalidStruct>>();
             foreach (SkillInvalidStruct v, invalids) {
-                if (!v.skill || v.skill->objectName() == "ftmzuiqiang")
+                if ((v.skill == nullptr) || v.skill->objectName() == "ftmzuiqiang")
                     room->filterCards(v.player, v.player->getCards("hes"), true);
             }
         }

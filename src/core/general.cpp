@@ -142,7 +142,7 @@ QSet<const TriggerSkill *> General::getTriggerSkills() const
     QSet<const TriggerSkill *> skills;
     foreach (QString skill_name, skillname_list) {
         const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
-        if (skill)
+        if (skill != nullptr)
             skills << skill;
     }
     return skills;
@@ -161,7 +161,7 @@ QStringList General::getRelatedSkillNames() const
 QString General::getPackage() const
 {
     QObject *p = parent();
-    if (p)
+    if (p != nullptr)
         return p->objectName();
     else
         return QString(); // avoid null pointer exception;
@@ -236,7 +236,7 @@ QString General::getCompanions() const
     QList<QString> generals = Sanguosha->getGenerals();
     foreach (QString gname, generals) {
         const General *gnr = Sanguosha->getGeneral(gname);
-        if (!gnr)
+        if (gnr == nullptr)
             continue;
         if (gnr->companions.contains(objectName()))
             name << QString("%1").arg(Sanguosha->translate(gnr->objectName()));

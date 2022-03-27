@@ -133,7 +133,7 @@ void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player
         arrangeCards(player->getJudgingArea(), QPoint(startX, nameRects.at(index).y()));
 
     if (ServerInfo.OperationTimeout != 0) {
-        if (!progressBar) {
+        if (progressBar == nullptr) {
             progressBar = new QSanCommandProgressBar();
             progressBar->setMaximumWidth(qMin(boundingRect().width() - 16, (qreal)150));
             progressBar->setMaximumHeight(12);
@@ -258,7 +258,7 @@ void PlayerCardBox::arrangeCards(const QList<const Card *> &cards, const QPoint 
         item->resetTransform();
         item->setParentItem(this);
         item->setFlag(ItemIsMovable, false);
-        if (card) {
+        if (card != nullptr) {
             item->setEnabled(!disabledIds.contains(card->getEffectiveId()) && (method != Card::MethodDiscard || Self->canDiscard(player, card->getEffectiveId())));
             if (shownCards.contains(card)) {
                 item->setFootnote(Sanguosha->translate("shown_card"));
@@ -349,7 +349,7 @@ void PlayerCardBox::reply()
     CardItem *item = qobject_cast<CardItem *>(sender());
 
     int id = -2;
-    if (item)
+    if (item != nullptr)
         id = item->getId();
 
     ClientInstance->onPlayerChooseCard(id);

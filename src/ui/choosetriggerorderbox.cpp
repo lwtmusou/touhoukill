@@ -122,7 +122,7 @@ QString SkillInvokeDetailForClient::toString() const
     l << skill->objectName();
     l << owner->objectName();
     l << invoker->objectName();
-    if (preferredTarget) {
+    if (preferredTarget != nullptr) {
         l << preferredTarget->objectName();
         l << QString::number(preferredTargetSeat);
     }
@@ -228,7 +228,7 @@ QString TriggerOptionButton::displayedTextOf(const SkillInvokeDetailForClient &d
 {
     QString skillName = detail.skill->objectName();
     QString text = Sanguosha->translate(skillName);
-    if (detail.preferredTarget) {
+    if (detail.preferredTarget != nullptr) {
         QString targetName = detail.preferredTarget->getFootnoteName();
         text = tr("%1 (use upon %2)").arg(text).arg(Sanguosha->translate(targetName));
     }
@@ -358,7 +358,7 @@ void ChooseTriggerOrderBox::chooseOption(const QVariantList &options, bool optio
     }
 
     if (ServerInfo.OperationTimeout != 0) {
-        if (!progressBar) {
+        if (progressBar == nullptr) {
             progressBar = new QSanCommandProgressBar;
             progressBar->setMaximumWidth(boundingRect().width() - 16);
             progressBar->setMaximumHeight(12);
@@ -394,7 +394,7 @@ void ChooseTriggerOrderBox::clear()
 void ChooseTriggerOrderBox::reply()
 {
     QString choice;
-    if (sender())
+    if (sender() != nullptr)
         choice = sender()->objectName();
 
     if (choice.isEmpty()) {

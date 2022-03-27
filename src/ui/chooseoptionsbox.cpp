@@ -144,7 +144,7 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
     }
 
     if (ServerInfo.OperationTimeout != 0) {
-        if (!progressBar) {
+        if (progressBar == nullptr) {
             progressBar = new QSanCommandProgressBar();
             progressBar->setMaximumWidth(boundingRect().width() - 16);
             progressBar->setMaximumHeight(12);

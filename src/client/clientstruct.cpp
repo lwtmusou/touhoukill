@@ -200,7 +200,7 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
 
 void ServerInfoWidget::updateLack(int count)
 {
-    if (lack_label) {
+    if (lack_label != nullptr) {
         QString path = QString("image/system/number/%1.png").arg(count);
         lack_label->setPixmap(QPixmap(path));
     }

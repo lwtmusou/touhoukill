@@ -111,7 +111,7 @@ void EquipCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
     }
     int equipped_id = Card::S_UNKNOWN_CARD_ID;
     ServerPlayer *target = targets.first();
-    if (target->getEquip(location()))
+    if (target->getEquip(location()) != nullptr)
         equipped_id = target->getEquip(location())->getEffectiveId();
 
     QList<CardsMoveStruct> exchangeMove;
@@ -135,14 +135,14 @@ void EquipCard::onInstall(ServerPlayer *player) const
     Room *room = player->getRoom();
 
     const Skill *skill = Sanguosha->getSkill(this);
-    if (skill) {
+    if (skill != nullptr) {
         if (skill->inherits("ViewAsSkill")) {
             room->attachSkillToPlayer(player, objectName());
         } else if (skill->inherits("TriggerSkill")) {
             const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
             room->getThread()->addTriggerSkill(trigger_skill);
 
-            if (trigger_skill->getViewAsSkill())
+            if (trigger_skill->getViewAsSkill() != nullptr)
                 room->attachSkillToPlayer(player, skill->objectName());
         }
     }
@@ -153,7 +153,7 @@ void EquipCard::onUninstall(ServerPlayer *player) const
     Room *room = player->getRoom();
     const Skill *skill = Sanguosha->getSkill(this);
 
-    if (skill && (skill->inherits("ViewAsSkill") || (skill->inherits("TriggerSkill") && qobject_cast<const TriggerSkill *>(skill)->getViewAsSkill())))
+    if ((skill != nullptr) && (skill->inherits("ViewAsSkill") || (skill->inherits("TriggerSkill") && (qobject_cast<const TriggerSkill *>(skill)->getViewAsSkill() != nullptr))))
         room->detachSkillFromPlayer(player, objectName(), true);
 }
 
@@ -179,7 +179,7 @@ void GlobalEffect::onUse(Room *room, const CardUseStruct &card_use) const
         auto useTosExceptp = useTos;
         useTosExceptp.removeAll(player);
         const ProhibitSkill *skill = room->isProhibited(source, player, this, useTosExceptp);
-        if (skill) {
+        if (skill != nullptr) {
             LogMessage log;
             log.type = "#SkillAvoid";
             log.from = player;
@@ -257,7 +257,7 @@ void AOE::onUse(Room *room, const CardUseStruct &card_use) const
         auto useTosExceptp = useTos;
         useTosExceptp.removeAll(player);
         const ProhibitSkill *skill = room->isProhibited(source, player, this, useTosExceptp);
-        if (skill) {
+        if (skill != nullptr) {
             LogMessage log;
             log.type = "#SkillAvoid";
             log.from = player;
@@ -420,7 +420,7 @@ void DelayedTrick::onNullified(ServerPlayer *target) const
                 continue;
 
             const ProhibitSkill *skill = room->isProhibited(nullptr, player, this);
-            if (skill) {
+            if (skill != nullptr) {
                 LogMessage log;
                 log.type = "#SkillAvoid";
                 log.from = player;
@@ -454,12 +454,12 @@ void DelayedTrick::onNullified(ServerPlayer *target) const
             break;
         }
         //case:stop.
-        if (!next) {
+        if (next == nullptr) {
             CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, target->objectName(), QString(), getSkillName(), QString());
             room->moveCardTo(this, target, target, Player::PlaceDelayedTrick, reason, true);
         }
         //case: next2next
-        if (next && next2next)
+        if ((next != nullptr) && next2next)
             onNullified(next);
     } else {
         CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, target->objectName());

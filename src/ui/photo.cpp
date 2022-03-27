@@ -57,7 +57,7 @@ Photo::Photo()
 void Photo::refresh()
 {
     PlayerCardContainer::refresh();
-    if (!m_player)
+    if (m_player == nullptr)
         return;
     QString state_str = m_player->getState();
     if (!state_str.isEmpty() && state_str != "online") {
@@ -222,8 +222,8 @@ void Photo::setFrame(FrameType type)
 {
     _m_frameType = type;
     if (type == S_FRAME_NO_FRAME) {
-        if (_m_focusFrame) {
-            if (_m_saveMeIcon && _m_saveMeIcon->isVisible())
+        if (_m_focusFrame != nullptr) {
+            if ((_m_saveMeIcon != nullptr) && _m_saveMeIcon->isVisible())
                 setFrame(S_FRAME_SOS);
             else if (m_player->getPhase() != Player::NotActive)
                 setFrame(S_FRAME_PLAYING);

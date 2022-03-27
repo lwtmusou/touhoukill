@@ -312,7 +312,7 @@ QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName, bool cache, boo
         name = name.mid(4);
     else if (name.endsWith("_hegemony")) {
         const General *general = Sanguosha->getGeneral(name);
-        if (!general)
+        if (general == nullptr)
             name = name.replace("_hegemony", "");
     }
 
@@ -406,7 +406,7 @@ QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, const Q
     if (fileName.isEmpty()) {
         const Skill *skill = Sanguosha->getSkill(eventName);
         QStringList fileNames;
-        if (skill)
+        if (skill != nullptr)
             fileNames = skill->getSources();
         if (!fileNames.isEmpty()) {
             if (index < 0)
@@ -678,7 +678,7 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, bo
 
     //process general image and Hero skin
     QString general_name = fileName.split("/").last().split(".").first();
-    bool isGeneral = Sanguosha->getGeneral(general_name) || Sanguosha->getGeneral(general_name + "_hegemony");
+    bool isGeneral = (Sanguosha->getGeneral(general_name) != nullptr) || (Sanguosha->getGeneral(general_name + "_hegemony") != nullptr);
     if (isGeneral && heroSkin) {
         int skin_index = Config.value(QString("HeroSkin/%1").arg(general_name), 0).toInt();
         if (skin_index > 0) {
@@ -1147,7 +1147,7 @@ QSanSkinFactory &QSanSkinFactory::getInstance()
 
 void QSanSkinFactory::destroyInstance()
 {
-    if (_sm_singleton) {
+    if (_sm_singleton != nullptr) {
         delete _sm_singleton;
         _sm_singleton = nullptr;
     }

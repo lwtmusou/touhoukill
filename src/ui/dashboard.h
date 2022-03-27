@@ -126,9 +126,9 @@ public:
 
     inline void updateSkillButton()
     {
-        if (_m_skillDock)
+        if (_m_skillDock != nullptr)
             _m_skillDock->update();
-        if (_m_rightSkillDock)
+        if (_m_rightSkillDock != nullptr)
             _m_rightSkillDock->update();
     }
 

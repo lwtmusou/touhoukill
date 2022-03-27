@@ -201,13 +201,13 @@ bool TrustAI::useCard(const Card *card)
             return new_weapon->getRange() > ole_weapon->getRange();
         }
         case EquipCard::ArmorLocation:
-            return !self->getArmor();
+            return self->getArmor() == nullptr;
         case EquipCard::OffensiveHorseLocation:
-            return !self->getOffensiveHorse();
+            return self->getOffensiveHorse() == nullptr;
         case EquipCard::DefensiveHorseLocation:
-            return !self->getDefensiveHorse();
+            return self->getDefensiveHorse() == nullptr;
         case EquipCard::TreasureLocation:
-            return !self->getTreasure();
+            return self->getTreasure() == nullptr;
         default:
             return true;
         }
@@ -228,7 +228,7 @@ QString TrustAI::askForKingdom()
     kingdoms.removeOne("zhu");
     kingdoms.removeOne("touhougod");
     QString selfKingdom = self->getGeneral()->getKingdom();
-    if (!lord)
+    if (lord == nullptr)
         return kingdoms.at(qrand() % kingdoms.length());
 
     switch (self->getRoleEnum()) {
@@ -238,7 +238,7 @@ QString TrustAI::askForKingdom()
     case Player::Renegade: {
         if (lord->getGeneral()->isLord() || self->hasSkill("hongfo"))
             role = lord->getKingdom();
-        else if (lord->getGeneral2() && lord->getGeneral2()->isLord())
+        else if ((lord->getGeneral2() != nullptr) && lord->getGeneral2()->isLord())
             role = lord->getGeneral2()->getKingdom();
         else
             role = kingdoms.at(qrand() % kingdoms.length());
@@ -257,7 +257,7 @@ QString TrustAI::askForKingdom()
     case Player::Loyalist: {
         if (lord->getGeneral()->isLord() || self->hasSkill("hongfo"))
             role = lord->getKingdom();
-        else if (lord->getGeneral2() && lord->getGeneral2()->isLord())
+        else if ((lord->getGeneral2() != nullptr) && lord->getGeneral2()->isLord())
             role = lord->getGeneral2()->getKingdom();
         else {
             role = kingdoms.at(qrand() % kingdoms.length());

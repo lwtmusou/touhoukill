@@ -153,7 +153,7 @@ void RecAnalysis::initialize(const QString &dir)
             int num = args.at(2).toInt();
             if (mark == "Global_TurnCount") {
                 PlayerRecordStruct *rec = getPlayer(who);
-                if (rec) {
+                if (rec != nullptr) {
                     rec->m_turnCount = num;
                     m_currentPlayer = rec;
                 }

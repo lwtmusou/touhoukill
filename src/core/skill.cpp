@@ -115,7 +115,7 @@ void Skill::playAudioEffect(int index) const
             filename = sources.first();
 
         Sanguosha->playAudioEffect(filename);
-        if (ClientInstance)
+        if (ClientInstance != nullptr)
             ClientInstance->setLines(filename);
     }
 }
@@ -501,7 +501,7 @@ bool ShowDistanceSkill::isEnabledAtPlay(const Player *player) const
         return false;
     //const DistanceSkill *skill = qobject_cast<const DistanceSkill *>(Sanguosha->getSkill(objectName()));
     const Skill *skill = Sanguosha->getSkill(objectName());
-    if (skill) {
+    if (skill != nullptr) {
         if (!player->hasShownSkill(skill->objectName()))
             return true;
     }
@@ -730,7 +730,7 @@ bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const
     if (!player->canShowGeneral(player->inHeadSkills(objectName()) ? "h" : "d"))
         return false;
     const BattleArraySkill *skill = qobject_cast<const BattleArraySkill *>(Sanguosha->getTriggerSkill(objectName()));
-    if (skill) {
+    if (skill != nullptr) {
         QString type = skill->getArrayType();
 
         if (type == "Siege") {

@@ -251,7 +251,7 @@ public:
 
         ServerPlayer *player = use.from;
 
-        if (player && player->isAlive() && player->hasSkill(this)) {
+        if ((player != nullptr) && player->isAlive() && player->hasSkill(this)) {
             ServerPlayer *target = nullptr;
             foreach (ServerPlayer *p, room->getAlivePlayers()) {
                 if (p->getMark("@door") > 0) {
@@ -259,9 +259,9 @@ public:
                     break;
                 }
             }
-            if (target) {
+            if (target != nullptr) {
                 ServerPlayer *next = qobject_cast<ServerPlayer *>(target->getNextAlive(1));
-                if (next && next != target) {
+                if ((next != nullptr) && next != target) {
                     SkillInvokeDetail r(this, player, player, nullptr, true);
                     r.tag["door"] = QVariant::fromValue(next);
                     return QList<SkillInvokeDetail>() << r;
@@ -284,7 +284,7 @@ public:
         room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
         room->notifySkillInvoked(invoke->invoker, objectName());
         ServerPlayer *next = invoke->tag["door"].value<ServerPlayer *>();
-        if (next)
+        if (next != nullptr)
             next->gainMark("@door");
         return false;
     }
@@ -540,7 +540,7 @@ public:
             p = use.from;
         } else if (triggerEvent == CardResponded) {
             CardResponseStruct resp = data.value<CardResponseStruct>();
-            if (resp.m_card && resp.m_card->getTypeId() == Card::TypeSkill)
+            if ((resp.m_card != nullptr) && resp.m_card->getTypeId() == Card::TypeSkill)
                 return QList<SkillInvokeDetail>();
             if (resp.m_isUse) {
                 use.from = resp.m_from;
@@ -966,7 +966,7 @@ public:
         invoke->invoker->tag["zangfa_use"] = data;
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, listt, objectName(), "@zangfa:" + use.card->objectName(), true, true);
         //player->tag.remove("huanshi_source");
-        if (target) {
+        if (target != nullptr) {
             invoke->targets << target;
             return true;
         }
@@ -1142,7 +1142,7 @@ public:
         QStringList l = extraTargetNames(use);
         room->setPlayerProperty(invoke->invoker, (objectName() + "availability").toLatin1().constData(), l.join('+'));
         invoke->invoker->tag[objectName()] = data; //for ai
-        if (room->askForUseCard(invoke->invoker, "@@" + objectName(), "@" + objectName() + "-invoke", -1, Card::MethodNone, true, objectName())) {
+        if (room->askForUseCard(invoke->invoker, "@@" + objectName(), "@" + objectName() + "-invoke", -1, Card::MethodNone, true, objectName()) != nullptr) {
             invoke->targets << invoke->invoker->tag[objectName()].value<ServerPlayer *>();
             invoke->invoker->tag.remove(objectName());
             return true;
@@ -1271,7 +1271,7 @@ public:
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         if (triggerEvent == Damaged)
-            return room->askForUseCard(invoke->invoker, "@@" + objectName(), "@" + objectName() + "-invoke", -1, Card::MethodUse, true, objectName());
+            return room->askForUseCard(invoke->invoker, "@@" + objectName(), "@" + objectName() + "-invoke", -1, Card::MethodUse, true, objectName()) != nullptr;
         else
             return true;
     }
@@ -1412,7 +1412,7 @@ public:
             if (invoke->invoker->askForSkillInvoke(this))
                 return true;
         } else {
-            if (room->askForUseCard(invoke->invoker, "@@huazhao", "@huazhao", -1, Card::MethodNone, true, objectName()))
+            if (room->askForUseCard(invoke->invoker, "@@huazhao", "@huazhao", -1, Card::MethodNone, true, objectName()) != nullptr)
                 return true;
         }
 
@@ -1564,13 +1564,13 @@ public:
     {
         CardUseStruct u = invoke->tag["u"].value<CardUseStruct>();
         room->setPlayerProperty(u.from, "chunteng1", QString::number(static_cast<int>(u.card->getSuit())));
-        return room->askForUseCard(u.from, "@@chunteng-card1", "@chunteng1:::" + u.card->getSuitString(), -1, Card::MethodNone, true, objectName());
+        return room->askForUseCard(u.from, "@@chunteng-card1", "@chunteng1:::" + u.card->getSuitString(), -1, Card::MethodNone, true, objectName()) != nullptr;
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         CardUseStruct u = invoke->tag["u"].value<CardUseStruct>();
-        if (!room->askForUseCard(u.from, "@@chunteng-card2!", "@chunteng2", -1, Card::MethodNone, true, "_chunteng")) {
+        if (room->askForUseCard(u.from, "@@chunteng-card2!", "@chunteng2", -1, Card::MethodNone, true, "_chunteng") == nullptr) {
             QList<ServerPlayer *> p = room->getAllPlayers();
             p.removeAll(u.from);
             ServerPlayer *target = p[qrand() % p.length()];

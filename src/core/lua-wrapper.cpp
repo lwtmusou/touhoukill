@@ -39,8 +39,8 @@ QDialog *LuaViewAsSkill::getDialog() const
     if (dialog_type == 0)
         return nullptr;
 
-    bool has_left = (dialog_type & 1);
-    bool has_right = (dialog_type & 2);
+    bool has_left = (dialog_type & 1) != 0;
+    bool has_right = (dialog_type & 2) != 0;
 
     return QijiDialog::getInstance(objectName(), has_left, has_right);
 }
@@ -94,9 +94,9 @@ LuaSkillCard::LuaSkillCard(const char *name, const char *skillName)
     , on_validate(0)
     , on_validate_in_response(0)
 {
-    if (name) {
+    if (name != nullptr) {
         LuaSkillCards.insert(name, this);
-        if (skillName) {
+        if (skillName != nullptr) {
             m_skillName = skillName;
             LuaSkillCardsSkillName.insert(name, skillName);
         }
