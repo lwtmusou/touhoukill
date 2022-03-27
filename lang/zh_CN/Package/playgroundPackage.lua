@@ -72,7 +72,7 @@ return {
 	
 	["god9"] = "⑨",
 	["#god9"] = "算数天才",
-	["designer:god9"] = "辰焰天明",
+	["designer:god9"] = "飞天明",
 	["illustrator:god9"] = "DomotoLain",
 	["origin:god9"] = "p号：6160883；个人id：38674" ,
 	
