@@ -558,7 +558,7 @@ public:
     {
         if (e == DamageCaused) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.from->hasSkill(this) && (damage.damage > 1 || damage.from->hasFlag("fsu0413fei4zhaidamaged")))
+            if (damage.from != nullptr && (damage.from->hasSkill(this) && (damage.damage > 1 || damage.from->hasFlag("fsu0413fei4zhaidamaged"))))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, nullptr, true);
         }
 
