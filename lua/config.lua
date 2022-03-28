@@ -199,8 +199,12 @@ config = {
 	latest_generals = {
 		-- 0.10.2
 		"kasen_sp",
-		--0.10.3
+		-- 0.10.3
 		"keiki","eika","urumi","kutaka","yachie","mayumi","saki",
+		-- 0.10.5
+		"rika", "elis", "luize",
+		-- 0.10.6
+		"eirin_ndj",
 	}
 }
 
