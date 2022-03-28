@@ -1847,10 +1847,11 @@ public:
             l.to << target;
             l.arg = "yaolitrick";
             l.card_str = use.card->toString();
+            room->sendLog(l);
             use.to.append(target);
         } else if (use.to.contains(target)) {
             LogMessage l;
-            l.type = "XushiHegemonySkillAvoid";
+            l.type = "#XushiHegemonySkillAvoid";
             l.arg = "yaolitrick";
             l.arg2 = use.card->objectName();
             l.from = target;
