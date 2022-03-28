@@ -565,7 +565,10 @@ public:
 
         if (triggerEvent == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            use.nullified_list << "_ALL_TARGETS";
+            if (use.card->isKindOf("Nullification"))
+                room->setPlayerFlag(use.from, "nullifiationNul");
+            else
+                use.nullified_list << "_ALL_TARGETS";
             data = QVariant::fromValue<CardUseStruct>(use);
             nullifiedCard = use.card;
         } else if (triggerEvent == CardResponded) {
