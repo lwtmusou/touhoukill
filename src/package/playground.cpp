@@ -55,7 +55,7 @@ public:
             return r;
 
         foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (p == player || !p->hasSkill(this) || !player->canDiscard(p, "he"))
+            if (p == player || !p->hasSkill(this) || !player->canDiscard(p, "hes"))
                 continue;
 
             r << SkillInvokeDetail(this, p, p, player, false, player);
@@ -67,7 +67,7 @@ public:
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         if (TriggerSkill::cost(triggerEvent, room, invoke, data)) {
-            int id = room->askForCardChosen(invoke->targets.first(), invoke->invoker, "he", objectName(), false, Card::MethodDiscard);
+            int id = room->askForCardChosen(invoke->targets.first(), invoke->invoker, "hes", objectName(), false, Card::MethodDiscard);
             room->throwCard(id, invoke->invoker, invoke->invoker == invoke->targets.first() ? NULL : invoke->targets.first());
             return true;
         }
