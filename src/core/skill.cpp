@@ -12,7 +12,6 @@ Skill::Skill(const QString &name, Frequency frequency, const QString &showType)
     : frequency(frequency)
     , attached_lord_skill(false)
     , show_type(showType)
-    , relate_to_place(QString())
 {
     static QChar lord_symbol('$');
 
@@ -176,9 +175,7 @@ bool Skill::relateToPlace(bool head) const
 
 ViewAsSkill::ViewAsSkill(const QString &name)
     : Skill(name, Skill::NotFrequent, "viewas")
-    , response_pattern(QString())
     , response_or_use(false)
-    , expand_pile(QString())
 {
 }
 
@@ -283,7 +280,6 @@ bool ZeroCardViewAsSkill::viewFilter(const QList<const Card *> &, const Card *) 
 
 OneCardViewAsSkill::OneCardViewAsSkill(const QString &name)
     : ViewAsSkill(name)
-    , filter_pattern(QString())
 {
 }
 
@@ -364,11 +360,7 @@ bool TriggerSkill::cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> 
         if (invoke->invoker != nullptr) {
             if (!invoke->invoker->hasSkill(this))
                 return true;
-            if (invoke->invoker->hasShownSkill(this) || invoke->invoker->askForSkillInvoke(this, data))
-                //invoke->invoker->showHiddenSkill(objectName());
-                return true;
-            else
-                return false;
+            return invoke->invoker->hasShownSkill(this) || invoke->invoker->askForSkillInvoke(this, data);
         }
         return true;
     } else {

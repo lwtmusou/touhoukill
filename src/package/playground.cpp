@@ -55,7 +55,7 @@ public:
             return r;
 
         foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (p == player || !p->hasSkill(this) || !player->canDiscard(p, "hes"))
+            if (!p->hasSkill(this) || !player->canDiscard(p, "hes"))
                 continue;
 
             r << SkillInvokeDetail(this, p, p, player, false, player);
@@ -66,10 +66,15 @@ public:
 
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
-        if (TriggerSkill::cost(triggerEvent, room, invoke, data)) {
-            int id = room->askForCardChosen(invoke->targets.first(), invoke->invoker, "hes", objectName(), false, Card::MethodDiscard);
-            room->throwCard(id, invoke->invoker, invoke->invoker == invoke->targets.first() ? NULL : invoke->targets.first());
-            return true;
+        if (invoke->targets.first() == invoke->invoker) {
+            if (room->askForDiscard(invoke->targets.first(), "fsu0413gepi", 1, 1, true, true, "@fsu0413gepi-discard"))
+                return true;
+        } else {
+            if (TriggerSkill::cost(triggerEvent, room, invoke, data)) {
+                int id = room->askForCardChosen(invoke->targets.first(), invoke->invoker, "hes", objectName(), false, Card::MethodDiscard);
+                room->throwCard(id, invoke->invoker, invoke->invoker == invoke->targets.first() ? NULL : invoke->targets.first());
+                return true;
+            }
         }
 
         return false;
@@ -406,7 +411,7 @@ public:
         : TriggerSkill("fsu0413lese")
     {
         events << DrawNCards;
-        frequency = Eternal;
+        frequency = Compulsory;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
@@ -829,7 +834,7 @@ public:
             }
 
             QStringList skills = {"bmmaoji"};
-            QStringList conflictingSkills = {"huanwei"};
+            QStringList conflictingSkills = {"huanwei", "ftmsuanshu"};
             foreach (const QString &conflict, conflictingSkills) {
                 if (invoke->targets.first()->hasSkill(conflict, true, true)) {
                     room->touhouLogmessage("#bmmaoji-conflictingskill", invoke->targets.first(), conflict);
@@ -872,7 +877,7 @@ public:
     {
     }
 
-    bool viewFilter(const Card *to_select) const
+    bool viewFilter(const Card *to_select) const override
     {
         const Room *room = Sanguosha->currentRoom();
         Q_ASSERT(room != nullptr);
@@ -935,11 +940,14 @@ public:
 PlaygroundPackage::PlaygroundPackage()
     : Package("playground")
 {
-    General *Fsu0413 = new General(this, "Fsu0413", "touhougod", 5, true);
-    Fsu0413->addSkill(new Fsu0413Gepi);
-    Fsu0413->addSkill(new Fsu0413Gainian);
-    Fsu0413->addSkill(new Fsu0413GainianDis);
-    Fsu0413->addSkill(new Fsu0413Lese);
+    General *dyingfs = new General(this, "dyingfsu0413", "touhougod", 4, true);
+    dyingfs->addSkill(new Fsu0413Gepi);
+    dyingfs->addSkill(new Skill("fsu0413sile", Skill::NotCompulsory));
+
+    General *dovefs = new General(this, "dovefsu0413", "touhougod", 4, true);
+    dovefs->addSkill(new Fsu0413Gainian);
+    dovefs->addSkill(new Fsu0413GainianDis);
+    dovefs->addSkill(new Fsu0413Lese);
     related_skills.insertMulti("fsu0413gainian", "#fsu0413gainian-dis");
 
     //    General *jmshtry = new General(this, "jmshtry", "touhougod", 5, true);
