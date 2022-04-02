@@ -881,6 +881,15 @@ public:
             }
 
             room->handleAcquireDetachSkills(invoke->targets.first(), skills);
+
+            JsonArray arg;
+            arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
+            arg << invoke->targets.first()->objectName();
+            arg << "benmao";
+            arg << "bmmaoji";
+            arg << QString();
+            arg << QString();
+            room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
         } else if (e == SlashProceed) {
             SlashEffectStruct eff = data.value<SlashEffectStruct>();
             eff.slash->setFlags("bmmaoji"); // for triggering the effect afterwards...
@@ -904,6 +913,30 @@ public:
             return true;
         }
         return false;
+    }
+};
+
+class BmBenti : public AttackRangeSkill
+{
+public:
+    BmBenti()
+        : AttackRangeSkill("bmbenti")
+    {
+    }
+
+    int getFixed(const Player *target, bool) const override
+    {
+        int n = 0;
+        if (target->hasSkill(this)) {
+            QList<const Player *> ps = target->getAliveSiblings();
+            ps << target;
+            foreach (const Player *p, ps) {
+                if (p->hasSkill("bmmaoji", true))
+                    ++n;
+            }
+        }
+
+        return n;
     }
 };
 
@@ -1002,6 +1035,7 @@ PlaygroundPackage::PlaygroundPackage()
     General *benmao = new General(this, "benmao", "touhougod", 5, true);
     benmao->addSkill(new BmMaoji);
     benmao->addSkill(new BmMaojiTrigger);
+    benmao->addSkill(new BmBenti);
     related_skills.insertMulti("bmmaoji", "#bmmaoji");
 
     General *god9 = new General(this, "god9", "touhougod", 9);

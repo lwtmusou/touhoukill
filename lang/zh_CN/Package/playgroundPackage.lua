@@ -11,7 +11,7 @@ return {
 	[":fsu0413gepi"] = "一名角色的准备阶段开始时，你可以令其弃置你的一张牌，若如此做，你令其一个技能（主公技、觉醒技和永久技除外）于此回合内无效，若以此法无效描述中不带“出牌阶段”的技能或不能无效技能时，其摸三张牌。" ,
 	["$Fsu0413GepiNullify"] = "%from 发动 <font color=\"yellow\"><b>嗝屁</b></font> 令 %to 的技能 %arg 于本回合无效",
 	["$Fsu0413GepiReset"] = "%from 的回合结束，<font color=\"yellow\"><b>嗝屁</b></font> 的效果消失，%arg 恢复有效",
-	["@fsu0413gepi-discard"] = "你可以弃置 1 涨牌发动 “嗝屁”。"
+	["@fsu0413gepi-discard"] = "你可以弃置 1 涨牌发动 “嗝屁”。",
 	["fsu0413gepiPlay"] = "出牌阶段",
 	
 	["fsu0413sile"] = "死了",
@@ -64,6 +64,9 @@ return {
 	["@bmmaoji-slash-start"] = "%src 对你使用了【杀】并触发了“猫击”，你需依次打出 %arg 张【杀】来抵消。",
 	["@bmmaoji-slash"] = "%src 触发了“猫击”，你还需要依次打出 %arg 张【杀】。",
 	["#bmmaoji-conflictingskill"] = "%from 拥有的技能 <font color=\"yellow\"><b>%arg</b></font> 与 <font color=\"yellow\"><b>猫击</b></font> 冲突，因此将失去技能<font color=\"yellow\"><b>%arg</b></font>。",
+	
+	["bmbenti"] = "本体",
+	[":bmbenti"] = "<font color=blue><b>锁定技，</b></font>你的攻击范围为X（X为拥有技能“猫击”的角色个数）",
 	
 	["$bmmaoji1"] = "喵",
 	["$bmmaoji2"] = "喵",
