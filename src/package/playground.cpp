@@ -536,6 +536,8 @@ public:
     }
 };
 
+// negative skill version 1
+#if 0
 class Fsu0413Fei4Zhai : public TriggerSkill
 {
 public:
@@ -576,6 +578,42 @@ public:
 
         LogMessage l;
         l.type = "#micai01";
+        l.from = invoke->invoker;
+        l.arg = objectName();
+        l.arg2 = QString::number(damage.damage);
+        r->sendLog(l);
+        r->notifySkillInvoked(invoke->invoker, objectName());
+
+        return true;
+    }
+};
+#endif
+
+class Fsu0413Fei4Zhai : public TriggerSkill
+{
+public:
+    Fsu0413Fei4Zhai()
+        : TriggerSkill("fsu0413fei4zhai")
+    {
+        events << PreHpRecover;
+        frequency = Eternal;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *r, const QVariant &data) const override
+    {
+        RecoverStruct recover = data.value<RecoverStruct>();
+        if (recover.to->hasSkill(this) && r->getCurrentDyingPlayer() != recover.to && recover.card != nullptr && recover.card->isKindOf("Peach"))
+            return {SkillInvokeDetail(this, recover.to, recover.to, nullptr, true)};
+
+        return {};
+    }
+
+    bool effect(TriggerEvent, Room *r, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+
+        LogMessage l;
+        l.type = "#jiexianrecover";
         l.from = invoke->invoker;
         l.arg = objectName();
         l.arg2 = QString::number(damage.damage);
