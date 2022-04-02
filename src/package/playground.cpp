@@ -599,7 +599,7 @@ public:
         frequency = Eternal;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *r, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *r, const QVariant &data) const override
     {
         RecoverStruct recover = data.value<RecoverStruct>();
         if (recover.to->hasSkill(this) && r->getCurrentDyingPlayer() != recover.to && recover.card != nullptr && recover.card->isKindOf("Peach"))
@@ -824,7 +824,7 @@ public:
 
     int getEffectIndex(const ServerPlayer *player, const Card *) const override
     {
-        return (player->getGeneralName() == "benmao" || player->getGeneral2Name() == "benmao") ? 1 : 3;
+        return player->hasSkill("bmbenti", true) ? 1 : 3;
     }
 };
 
@@ -842,7 +842,7 @@ public:
         QList<SkillInvokeDetail> r;
         if (e == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from != nullptr && !use.from->hasSkill("bmmaoji") && use.from->isAlive() && use.card != nullptr && use.card->isKindOf("Slash")) {
+            if (use.from != nullptr && !use.from->hasSkill("bmmaoji", true) && use.from->isAlive() && use.card != nullptr && use.card->isKindOf("Slash")) {
                 foreach (ServerPlayer *p, use.to) {
                     if (p->hasSkill("bmmaoji"))
                         r << SkillInvokeDetail(this, p, p, use.from, true);
