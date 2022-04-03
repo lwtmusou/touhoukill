@@ -23,17 +23,20 @@ jobs:
           path: touhoukill-refactor
 
       - name: Install Qt6
-        uses: jurplel/install-qt-action@v2
+        uses: WillBrennan/yaqti@1
         with:
-          version: '6.2.2'
-          dir: '${{ github.workspace }}/Qt6/'
+          version: '6.2.4'
+          os: 'linux'
+          platform: 'desktop'
           modules: 'qtmultimedia'
 
       - name: Install Qt5
-        uses: jurplel/install-qt-action@v2
+        uses: WillBrennan/yaqti@1
         with:
-          version: '5.15.2'
-          dir: '${{ github.workspace }}/Qt5/'
+          version: '5.15.3'
+          os: 'linux'
+          platform: 'desktop'
+          modules: 'qtmultimedia'
 
       - uses: lukka/get-cmake@latest
 
@@ -51,7 +54,26 @@ jobs:
   # build-macos:
 
   build-msvc:
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        VC:
+          - ver: 2019
+            runson: windows-2019
+            call: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat
+            qt5url: https://github.com/Fsu0413/QtCompile/releases/download/release-20220310/Qt5.15.3-Windows-x86_64-VS2019-16.11.11-20220309.7z
+            qt5name: Qt5.15.3-Windows-x86_64-VS2019-16.11.11
+            qt6url: https://github.com/Fsu0413/QtCompile/releases/download/release-20220323/Qt6.2.4-Windows-x86_64-VS2019-16.11.11-20220323.7z
+            qt6name: Qt6.2.4-Windows-x86_64-VS2019-16.11.11
+          - ver: 2022
+            runson: windows-2022
+            call: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat
+            qt5url: https://github.com/Fsu0413/QtCompile/releases/download/release-20220310/Qt5.15.3-Windows-x86_64-VS2022-17.1.1-20220309.7z
+            qt5name: Qt5.15.3-Windows-x86_64-VS2022-17.1.1
+            qt6url: https://github.com/Fsu0413/QtCompile/releases/download/release-20220323/Qt6.2.4-Windows-x86_64-VS2022-17.1.2-20220323.7z
+            qt6name: Qt6.2.4-Windows-x86_64-VS2022-17.1.2
+
+    name: build-MSVC-${{ matrix.VC.ver }}
+    runs-on: ${{ matrix.VC.runson }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -64,26 +86,26 @@ jobs:
       - name: install Qt5
         run : |
           New-Item -Path "." -Name "Qt5" -ItemType "directory";
-          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20211205/Qt5.15.2-Windows-x86_64-VS2019-16.11.7-20211204.7z","Qt5/Qt5.15.2-Windows-x86_64-VS2019-16.11.7-20211204.7z");
-          cmd /c cd Qt5 "&&" 7z x Qt5.15.2-Windows-x86_64-VS2019-16.11.7-20211204.7z
-          .\Qt5\Qt5.15.2-Windows-x86_64-VS2019-16.11.7\bin\qmake -query
+          (New-Object System.Net.WebClient).DownloadFile("${{ matrix.vc.qt5url }}","Qt5/Qt5.7z");
+          cmd /c cd Qt5 "&&" 7z x Qt5.7z
+          .\Qt5\${{ matrix.vc.qt5name }}\bin\qmake -query
 
       - name: install Qt6
         run : |
           New-Item -Path "." -Name "Qt6" -ItemType "directory";
-          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20211207/Qt6.2.2-Windows-x86_64-VS2019-16.11.7-20211207.7z","Qt6/Qt6.2.2-Windows-x86_64-VS2019-16.11.7-20211207.7z");
-          cmd /c cd Qt6 "&&" 7z x Qt6.2.2-Windows-x86_64-VS2019-16.11.7-20211207.7z
-          .\Qt6\Qt6.2.2-Windows-x86_64-VS2019-16.11.7\bin\qmake -query
+          (New-Object System.Net.WebClient).DownloadFile("${{ matrix.vc.qt6url }}","Qt6/Qt6.7z");
+          cmd /c cd Qt6 "&&" 7z x Qt6.7z
+          .\Qt6\${{ matrix.vc.qt6name }}\bin\qmake -query
 
       - name: run cmake+ninja
         shell: cmd
         run : |
           del /s /q C:\Strawberry\perl\bin\pkg-config.bat
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          call "${{ matrix.VC.call }}"
           mkdir "build"
           cd "build"
           rmdir /s /q *
-          cmd /c cmake -GNinja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt5\Qt5.15.2-Windows-x86_64-VS2019-16.11.7;${{ github.workspace }}\Qt6\Qt6.2.2-Windows-x86_64-VS2019-16.11.7" "${{ github.workspace }}/touhoukill-refactor"
+          cmd /c cmake -GNinja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt5\${{ matrix.vc.qt5name }};${{ github.workspace }}\Qt6\${{ matrix.vc.qt6name }}" "${{ github.workspace }}/touhoukill-refactor"
           ninja -k0
 
   build-mingw81:
@@ -102,9 +124,9 @@ jobs:
       - name: install Qt5
         run : |
           New-Item -Path "." -Name "Qt5" -ItemType "directory";
-          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20201217/Qt5.15.2-Windows-x86_64-MinGW8.1.0-20201214.7z","Qt5/Qt5.15.2-Windows-x86_64-MinGW8.1.0-20201214.7z");
-          cmd /c cd Qt5 "&&" 7z x Qt5.15.2-Windows-x86_64-MinGW8.1.0-20201214.7z
-          .\Qt5\Qt5.15.2-Windows-x86_64-MinGW8.1.0\bin\qmake -query
+          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20220309/Qt5.15.3-Windows-x86_64-MinGW8.1.0-20220307.7z","Qt5/Qt5.7z");
+          cmd /c cd Qt5 "&&" 7z x Qt5.7z
+          .\Qt5\Qt5.15.3-Windows-x86_64-MinGW8.1.0\bin\qmake -query
 
       # Qt 6 switched to MinGW-w64 v9 based GCC 11.2
       # - name: install Qt6
@@ -121,18 +143,26 @@ jobs:
           mkdir "build"
           cd "build"
           rmdir /s /q *
-          cmd /c cmake -GNinja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt5\Qt5.15.2-Windows-x86_64-MinGW8.1.0" "${{ github.workspace }}/touhoukill-refactor"
+          cmd /c cmake -GNinja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt5\Qt5.15.3-Windows-x86_64-MinGW8.1.0" "${{ github.workspace }}/touhoukill-refactor"
           ninja -k0
 
   build-mingwclang:
     runs-on: windows-latest
     strategy:
       matrix:
-        clang: [
-          { sys: msvcrt, date: 20211205 },
-          { sys: ucrt,   date: 20211205 },
-        ]
-    name: build-mingwclang-${{ matrix.clang.sys }}
+        clang:
+          - ver: msvcrt
+            toolchainurl: https://github.com/mstorsjo/llvm-mingw/releases/download/20220323/llvm-mingw-20220323-msvcrt-x86_64.zip
+            toolchainname: llvm-mingw-20220323-msvcrt-x86_64
+            qt6url: https://github.com/Fsu0413/QtCompile/releases/download/release-20220323/Qt6.2.4-Windows-x86_64-llvm-mingw-14.0.0-msvcrt-20220324.7z
+            qt6name: Qt6.2.4-Windows-x86_64-llvm-mingw-14.0.0-msvcrt
+          - ver: ucrt
+            toolchainurl: https://github.com/mstorsjo/llvm-mingw/releases/download/20220323/llvm-mingw-20220323-ucrt-x86_64.zip
+            toolchainname: llvm-mingw-20220323-ucrt-x86_64
+            qt6url: https://github.com/Fsu0413/QtCompile/releases/download/release-20220323/Qt6.2.4-Windows-x86_64-llvm-mingw-14.0.0-ucrt-20220324.7z
+            qt6name: Qt6.2.4-Windows-x86_64-llvm-mingw-14.0.0-ucrt
+
+    name: build-mingwclang-${{ matrix.clang.ver }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -143,32 +173,32 @@ jobs:
           choco install swig
           choco install cmake
           choco install ninja
-          
+
       - name: install llvm mingw toolchain
         run: |
           New-Item -Path "." -Name "llvm-mingw" -ItemType "directory";
-          (New-Object System.Net.WebClient).DownloadFile("https://github.com/mstorsjo/llvm-mingw/releases/download/20211002/llvm-mingw-20211002-${{ matrix.clang.sys }}-x86_64.zip","llvm-mingw/llvm-mingw-20211002-${{ matrix.clang.sys }}-x86_64.zip");
-          cmd /c cd llvm-mingw "&&" 7z x llvm-mingw-20211002-${{ matrix.clang.sys }}-x86_64.zip
+          (New-Object System.Net.WebClient).DownloadFile("${{ matrix.clang.toolchainurl }}","llvm-mingw/llvm-mingw.zip");
+          cmd /c cd llvm-mingw "&&" 7z x llvm-mingw.zip
 
       - name: install Qt6
         run : |
           New-Item -Path "." -Name "Qt6" -ItemType "directory";
-          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20211205/Qt6.2.2-Windows-x86_64-MinGWLLVM-${{ matrix.clang.sys }}13-${{ matrix.clang.date }}.7z","Qt6/Qt6.2.2-Windows-x86_64-MinGWLLVM-${{ matrix.clang.sys }}13-${{ matrix.clang.date }}.7z");
-          cmd /c cd Qt6 "&&" 7z x Qt6.2.2-Windows-x86_64-MinGWLLVM-${{ matrix.clang.sys }}13-${{ matrix.clang.date }}.7z
+          (New-Object System.Net.WebClient).DownloadFile("${{ matrix.clang.qt6url }}","Qt6/Qt6.7z");
+          cmd /c cd Qt6 "&&" 7z x Qt6.7z
 
           # This doesn't work!
           # set path=${{ github.workspace }}\llvm-mingw\llvm-mingw-20211002-${{ matrix.clang.sys }}-x86_64\x86_64-w64-mingw32\bin;${{ github.workspace }}\llvm-mingw\llvm-mingw-20211002-${{ matrix.clang.sys }}-x86_64\bin;%path%
-          # .\Qt6\Qt6.2.2-Windows-x86_64-MinGWLLVM-${{ matrix.clang.sys }}13\bin\qmake -query
+          # .\Qt6\${{ matrix.clang.qt6name }}\bin\qmake -query
 
       - name: run cmake+ninja
         shell: cmd
         run : |
           del /s /q C:\Strawberry\perl\bin\pkg-config.bat
-          set path=${{ github.workspace }}\llvm-mingw\llvm-mingw-20211002-${{ matrix.clang.sys }}-x86_64\x86_64-w64-mingw32\bin;${{ github.workspace }}\llvm-mingw\llvm-mingw-20211002-${{ matrix.clang.sys }}-x86_64\bin;%path%
+          set path=${{ github.workspace }}\llvm-mingw\${{ matrix.clang.toolchainname }}\x86_64-w64-mingw32\bin;${{ github.workspace }}\llvm-mingw\${{ matrix.clang.toolchainname }}\bin;%path%
           mkdir "build"
           cd "build"
           rmdir /s /q *
-          cmd /c cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="x86_64-w64-mingw32-clang++" -DCMAKE_C_COMPILER="x86_64-w64-mingw32-clang" -DCMAKE_ASM_COMPILER="x86_64-w64-mingw32-clang" "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt6\Qt6.2.2-Windows-x86_64-MinGWLLVM-${{ matrix.clang.sys }}13" "${{ github.workspace }}/touhoukill-refactor"
+          cmd /c cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="x86_64-w64-mingw32-clang++" -DCMAKE_C_COMPILER="x86_64-w64-mingw32-clang" -DCMAKE_ASM_COMPILER="x86_64-w64-mingw32-clang" "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt6\${{ matrix.clang.qt6name }}" "${{ github.workspace }}/touhoukill-refactor"
           ninja -k0
 
   build-mingwmsys:
