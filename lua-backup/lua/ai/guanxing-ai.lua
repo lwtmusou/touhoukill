@@ -11,7 +11,7 @@ sgs.ai_judgestring =
 local function getIdToCard(self, cards)
 	local tocard = {}
 	for _, card_id in ipairs(cards) do
-		local card = self.room:getCard(card_id)
+		local card = sgs.Sanguosha:getCard(card_id)
 		table.insert(tocard, card)
 	end
 	return tocard
@@ -378,7 +378,7 @@ local function XinZhan(self, cards)
 				table.insert(tmpup, fakeJudge.card:getEffectiveId())
 				table.remove(bottom, 1)
 			else
-				local newCard = self.room:getCard(judge_id)
+				local newCard = sgs.Sanguosha:getCard(judge_id)
 				table.insert(tmpup, judge_id)
 				table.removeOne(bottom, newCard)
 			end

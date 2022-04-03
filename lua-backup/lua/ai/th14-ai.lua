@@ -450,7 +450,7 @@ table.insert(sgs.ai_skills, feitou_skill)
 feitou_skill.getTurnUseCard = function(self, inclusive)
 	if self.player:getPile("feitou"):isEmpty() then return false end
 	local ids=self.player:getPile("feitou")
-	local card= self.room:getCard(ids:first())
+	local card= sgs.Sanguosha:getCard(ids:first())
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
@@ -464,7 +464,7 @@ function sgs.ai_cardsview_valuable.feitou(self, class_name, player)
 	if self:touhouClassMatch(class_name, "Slash") then
 		if self.player:getPile("feitou"):isEmpty() then return nil end
 		local ids=self.player:getPile("feitou")
-		local card= self.room:getCard(ids:first())
+		local card= sgs.Sanguosha:getCard(ids:first())
 		local suit = card:getSuitString()
 		local number = card:getNumberString()
 		local card_id = card:getEffectiveId()

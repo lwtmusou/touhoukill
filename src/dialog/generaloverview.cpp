@@ -641,7 +641,7 @@ void GeneralOverview::askTransfiguration()
 {
     QPushButton *button = qobject_cast<QPushButton *>(sender());
     bool isSecondaryHero = ((button != nullptr) && button->objectName() == ui->changeGeneral2Button->objectName());
-    if (ServerInfo.EnableCheat && Self) {
+    if (ServerInfo.EnableCheat && (Self != nullptr)) {
         if (isSecondaryHero)
             ui->changeGeneral2Button->setEnabled(false);
         else

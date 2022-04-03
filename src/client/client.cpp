@@ -1992,7 +1992,7 @@ void Client::showAllCards(const QVariant &arg)
 void Client::askForGongxin(const QVariant &args)
 {
     JsonArray arg = args.value<JsonArray>();
-    if (arg.size() != 5 || !JsonUtils::isString(arg[0]) || !JsonUtils::isBool(arg[1]))
+    if (arg.size() != 6 || !JsonUtils::isString(arg[0]) || !JsonUtils::isBool(arg[1]))
         return;
 
     Player *who = findPlayer(arg[0].toString());
@@ -2005,6 +2005,7 @@ void Client::askForGongxin(const QVariant &args)
     if (!JsonUtils::tryParse(arg[3], enabled_ids))
         return;
     highlight_skill_name = arg[4].toString();
+    m_isDiscardActionRefusable = arg[5].toBool();
 
     who->setHandCards(List2Set(card_ids));
 

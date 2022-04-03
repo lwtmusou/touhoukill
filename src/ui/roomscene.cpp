@@ -118,7 +118,7 @@ RoomScene::RoomScene(QMainWindow *main_window, Client *client)
     // connect(Self, &Player::role_changed, dashboard, &PlayerCardContainer::updateRole);
 
     m_replayControl = nullptr;
-    if (ClientInstance->getReplayer()) {
+    if (ClientInstance->getReplayer() != nullptr) {
         dashboard->hideControlButtons();
         createReplayControlBar();
     }
@@ -2926,7 +2926,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
     }
     case Client::AskForGongxin: {
         ok_button->setEnabled(false);
-        cancel_button->setEnabled(true);
+        cancel_button->setEnabled(ClientInstance->m_isDiscardActionRefusable);
         discard_button->setEnabled(false);
 
         break;
@@ -3015,7 +3015,7 @@ void RoomScene::onSkillActivated()
 
 void RoomScene::updateTrustButton()
 {
-    if (!ClientInstance->getReplayer()) {
+    if (ClientInstance->getReplayer() == nullptr) {
         bool trusting = Self->getState() == QStringLiteral("trust");
         trust_button->update();
         dashboard->setTrust(trusting);
@@ -3908,7 +3908,7 @@ void RoomScene::speak()
             ClientInstance->speakToServer(text);
     } else {
         QString title;
-        if (Self) {
+        if (Self != nullptr) {
             title = Self->generalName();
             title = Sanguosha->translate(title);
             title.append(QStringLiteral("(%1)").arg(Self->screenName()));

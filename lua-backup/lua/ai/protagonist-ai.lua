@@ -1,130 +1,5 @@
 --博丽灵梦
 --SmartAI:needRetrial(judge)
-function SmartAI:lingqiParse(self,target, data)
-	use = data:toCardUse()
-	--if not use or not use.card  or not use.from then return 3 end
-	if not use or not use.card   then return 3 end
-	local card=use.card
-	local from=use.from
-
-	if self.player:objectName() == target:objectName() then
-		--simulate standard-ai with a fakeEffect
-		local pattern = nil
-		if card:isKindOf("Slash") then
-			local _data=sgs.QVariant()
-			local fakeEffect =sgs.SlashEffectStruct()
-			fakeEffect.slash = card
-			fakeEffect.from = from
-			fakeEffect.to = target
-			_data:setValue(fakeEffect)
-			if sgs.ai_skill_cardask["slash-jink"] (self, _data, pattern, from) == "." then
-				return 1
-			end
-		elseif card:isKindOf("AOE") then
-			local _data=sgs.QVariant()
-
-			local fakeEffect =sgs.CardEffectStruct()
-			fakeEffect.card = card
-			fakeEffect.from = from
-			fakeEffect.to = target
-			_data:setValue(fakeEffect)
-			if card:isKindOf("SavageAssault") then
-				pattern = "slash"
-				if sgs.ai_skill_cardask.aoe(self, _data, pattern, from, "savage_assault") == "." and not self:hasWeiya() then
-					--should fix weiya
-					return 1
-				end
-			end
-			if card:isKindOf("ArcheryAttack") then
-				pattern = "jink"
-				if sgs.ai_skill_cardask.aoe(self, _data, pattern, from, "archery_attack") == "." and not self:hasWeiya()  then
-					--should fix weiya
-					return 1
-				end
-			end
-		end
-	end
-	if sgs.dynamic_value.damage_card[card:getClassName()] then
-		return 2
-	end
-	if card:isKindOf("ExNihilo") then
-		return 1
-	end
-	if card:isKindOf("GodSalvation") and target:isWounded() then
-		return 1
-	end
-	if card:isKindOf("IronChain")  then
-		if target:isChained() then
-			return 1
-		else
-			return 2
-		end
-	end
-
-	if card:isKindOf("Snatch") or card:isKindOf("Dismantlement") then
-		local cards=target:getCards("j")
-		local throw_delay=false
-		for _,card in sgs.qlist(cards) do
-			if card:isKindOf("Indulgence") or card:isKindOf("SupplyShortage") then
-				throw_delay=true
-			end
-		end
-		if  throw_delay and not self:isEnemy(from,target) then
-			return 1
-		else
-			return 2
-		end
-	end
-	return 3
-end
-
-
-sgs.ai_skill_invoke.lingqi =function(self,data)
-	if not self:invokeTouhouJudge() then return false end
-
-	local parse=self:lingqiParse(self,self.player, data)
-	if parse==2 then
-		return true
-	end
-	return false
-end
-sgs.ai_skillProperty.lingqi = function(self)
-	return "cause_judge"
-end
-
-sgs.ai_slash_prohibit.lingqi = function(self, from, to, card)
-	if self:isFriend(from,to) then
-		return false
-	end
-	local wizard_type ,wizard = self:getFinalRetrial()
-	return  (wizard  and self:invokeTouhouJudge(to))
-end
-
-
---[[sgs.ai_skill_invoke.qixiang =function(self,data)
-	local target= data:toJudge().who
-	if target and self:isFriend(target) then
-		return true
-	end
-	return false
-end
-sgs.ai_choicemade_filter.skillInvoke.qixiang = function(self, player, args, data)
-	local target=data:toJudge().who
-	if target then
-		if args[#args] == "yes" then
-			sgs.updateIntention(player, target, -50)
-		elseif args[#args] == "no" and sgs.ai_role[target:objectName()] ~= "netural" then
-			if target:isLord() then
-				sgs.updateIntention(player, target, 10)
-			elseif sgs.ai_role[target:objectName()] == "loyalist" and not self:cautionRenegade(player,target) then
-				sgs.updateIntention(player, target, 10)
-			elseif sgs.ai_role[target:objectName()] == "rebel" then
-				sgs.updateIntention(player, target, 10)
-			end
-		end
-	end
-end
-]]
 
 --[绮想]
 sgs.ai_skill_playerchosen.qixiang = function(self,targets)
@@ -615,7 +490,7 @@ sgs.ai_skill_cardchosen.jiezou = function(self, who, flags)
 			end
 		end
 		local id = self:askForCardChosen(who, "hes", "snatch", sgs.Card_MethodNone)
-		return self.room:getCard(id)
+		return sgs.Sanguosha:getCard(id)
 	end
 end
 sgs.ai_skill_cardask["@jiezou_spadecard"] = function(self, data)
@@ -933,7 +808,7 @@ sgs.ai_skill_use["@@chunxi"] = function(self, prompt)
 	local move = self.player:getTag("chunxi_move"):toMoveOneTime()
 	local ids = {}
 	for _, id in sgs.qlist(move.card_ids) do
-		if self.room:getCard(id):getSuit() == sgs.Card_Heart
+		if sgs.Sanguosha:getCard(id):getSuit() == sgs.Card_Heart
 		  and self.room:getCardPlace(id) == sgs.Player_PlaceHand then
 			table.insert(ids, id)
 		end
@@ -1106,7 +981,7 @@ function sgs.ai_cardsview_valuable.bllmwuyu(self, class_name, player)
 				end
 			end
 			for _,id in sgs.qlist(player:getHandPile()) do
-				local c = self.room:getCard(id)
+				local c = sgs.Sanguosha:getCard(id)
 				if not c:hasFlag("AIGlobal_SearchForAnaleptic") then
 					table.insert(others,c)
 				end
@@ -1299,7 +1174,7 @@ sgs.ai_skill_use_func.DfgzmSiyuCard = function(card, use, self)
 	self:sort(self.enemies,"handcard")
 	for var=#self.enemies, 1, -1 do
 		if self.enemies[var]:hasSkills("chunxi|xingyun") then
-			local heart=self.room:getCard(card:getSubcards():first())
+			local heart=sgs.Sanguosha:getCard(card:getSubcards():first())
 			if heart:getSuit()~=sgs.Card_Heart then
 				target=self.enemies[var]
 				break

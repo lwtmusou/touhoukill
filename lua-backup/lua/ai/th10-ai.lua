@@ -698,7 +698,7 @@ sgs.ai_damageInflicted.shaojie =function(self, damage)
 		local can = damage.card:hasFlag("showncards")
 		if damage.from then
 			for _, id in sgs.qlist(damage.from:getShownHandcards()) do
-				local c = self.room:getCard(id)
+				local c = sgs.Sanguosha:getCard(id)
 				if damage.card:getColor() == c:getColor() then
 					can =true
 					break

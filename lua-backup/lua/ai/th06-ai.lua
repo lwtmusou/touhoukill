@@ -106,12 +106,12 @@ sgs.ai_skill_askforag.mingyun = function(self, card_ids)
 	local mingyun1={}
 	local mingyun2={}
 
-	judge.card = self.room:getCard(card_ids[1])
+	judge.card = sgs.Sanguosha:getCard(card_ids[1])
 	table.insert(mingyun1,judge.card)
 	table.insert(mingyun,judge.card)
 	local ex_id1=self:getRetrialCardId(mingyun1, judge)
 
-	judge.card = self.room:getCard(card_ids[2])
+	judge.card = sgs.Sanguosha:getCard(card_ids[2])
 	table.insert(mingyun2,judge.card)
 	table.insert(mingyun,judge.card)
 	local ex_id2=self:getRetrialCardId(mingyun2, judge)
@@ -955,11 +955,11 @@ sgs.ai_skill_suit.juxian = function(self)
 		local cards = self.player:getTag("juxian_cards"):toIntList()
 		local suits = {}
 		for _, c in sgs.qlist(cards) do
-				local suit = self.room:getCard(c):getSuitString()
+				local suit = sgs.Sanguosha:getCard(c):getSuitString()
 				if not suits[suit] then suits[suit] = 0 end
 				suits[suit] = suits[suit] + 1
 		end
-		local maxsuit = self.room:getCard(cards:at(0)):getSuitString()
+		local maxsuit = sgs.Sanguosha:getCard(cards:at(0)):getSuitString()
 		for s, n in pairs(suits) do
 				if n > suits[maxsuit] then maxsuit = s end
 		end

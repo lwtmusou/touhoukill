@@ -10,13 +10,13 @@ NatureSlash::NatureSlash(Suit suit, int number, DamageStruct::Nature nature)
     this->nature = nature;
 }
 
-bool NatureSlash::matchType(const QString &pattern) const
+bool NatureSlash::matchTypeOrName(const QString &pattern) const
 {
     QStringList patterns = pattern.split("+");
     if (patterns.contains("slash"))
         return true;
     else
-        return Slash::matchType(pattern);
+        return Slash::matchTypeOrName(pattern);
 }
 
 ThunderSlash::ThunderSlash(Suit suit, int number)
@@ -53,9 +53,7 @@ QString Analeptic::getSubtype() const
 
 bool Analeptic::canRecover() const
 {
-    // TODO_Fs: add RoomObject variable to Card
-    // Now implemented in new Card
-    return Sanguosha->currentRoomObject()->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY || Card::canRecover();
+    return Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY || Card::canRecover();
 }
 
 bool Analeptic::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
@@ -63,10 +61,10 @@ bool Analeptic::targetFilter(const QList<const Player *> &targets, const Player 
     if (targets.isEmpty()) {
         if (to_select == Self)
             return true;
-        if (Self->hasSkill("tianqu") && Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"))
+        if (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"))
             return true;
     }
-    if (Self->hasSkill("riyue") && Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed")) {
+    if (Self->hasSkill("riyue") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed")) {
         if ((canDamage() && isRed()) || (canRecover() && isBlack()))
             return true;
     }
@@ -84,6 +82,7 @@ bool Analeptic::IsAvailable(const Player *player, const Card *analeptic)
     if (player->isCardLimited(THIS_ANALEPTIC, Card::MethodUse) || player->isProhibited(player, THIS_ANALEPTIC))
         return false;
 
+    //return player->usedTimes("Analeptic") <= Sanguosha->correctCardTarget(TargetModSkill::Residue, player, THIS_ANALEPTIC);
     return player->getAnalepticCount() <= Sanguosha->correctCardTarget(TargetModSkill::Residue, player, THIS_ANALEPTIC);
 #undef THIS_ANALEPTIC
 }
@@ -108,7 +107,7 @@ void Analeptic::onEffect(const CardEffectStruct &effect) const
     Room *room = effect.to->getRoom();
     room->setEmotion(effect.to, "analeptic");
 
-    if (effect.to->hasFlag("Global_Dying") && room->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY) {
+    if (effect.to->hasFlag("Global_Dying") && Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY) {
         // recover hp
         RecoverStruct recover;
         recover.card = this;
@@ -129,7 +128,7 @@ public:
         events << TargetSpecifying;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
@@ -141,7 +140,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         if (invoke->invoker->askForSkillInvoke(this, data)) {
             const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon", true);
@@ -152,7 +151,7 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->isKindOf("FireSlash"))
@@ -200,19 +199,19 @@ public:
         frequency = Compulsory;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
         if (!equipAvailable(damage.from, EquipCard::WeaponLocation, objectName(), damage.to))
             return QList<SkillInvokeDetail>();
 
         if (damage.card && damage.card->isKindOf("Slash") && damage.to->isKongcheng() && damage.by_user && !damage.chain && !damage.transfer)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, nullptr, true, damage.to);
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, NULL, true, damage.to);
 
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         DamageStruct damage = data.value<DamageStruct>();
         room->setEmotion(invoke->invoker, "weapon/guding_blade");
@@ -246,25 +245,25 @@ public:
         frequency = Compulsory;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
         if (triggerEvent == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if (!equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()))
                 return QList<SkillInvokeDetail>();
             if (effect.slash->isKindOf("NatureSlash"))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, nullptr, true);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
         } else if (triggerEvent == CardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.card != nullptr
+            if (equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.card != NULL
                 && (effect.card->isKindOf("IronChain") || effect.card->isKindOf("FireAttack")))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, nullptr, true);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
         }
 
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         LogMessage log;
         log.type = "#ArmorNullify";
@@ -301,27 +300,27 @@ public:
         frequency = Compulsory;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
         if (triggerEvent == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if (equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.nature == DamageStruct::Normal)
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, nullptr, true);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
         } else if (triggerEvent == CardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.card != nullptr
+            if (equipAvailable(effect.to, EquipCard::ArmorLocation, objectName()) && effect.card != NULL
                 && (effect.card->isKindOf("SavageAssault") || effect.card->isKindOf("ArcheryAttack")))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, nullptr, true);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, NULL, true);
         } else if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
             if (equipAvailable(damage.to, EquipCard::ArmorLocation, objectName()) && damage.nature == DamageStruct::Fire)
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, nullptr, true);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
         }
 
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "armor", true);
         if (v) {
@@ -332,7 +331,7 @@ public:
         return true;
     }
 
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         if (triggerEvent == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
@@ -392,12 +391,12 @@ public:
         frequency = Compulsory;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const
     {
         if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
             if (equipAvailable(damage.to, EquipCard::ArmorLocation, objectName()) && damage.damage > 1)
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, nullptr, true);
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, NULL, true);
         } else {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
 
@@ -417,16 +416,16 @@ public:
                         return QList<SkillInvokeDetail>();
                     }
                     ServerPlayer *invoker = qobject_cast<ServerPlayer *>(move.from);
-                    if (invoker == nullptr || invoker->isDead())
+                    if (invoker == NULL || invoker->isDead())
                         return QList<SkillInvokeDetail>();
-                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, nullptr, invoker, nullptr, true);
+                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, NULL, invoker, NULL, true);
                 }
             }
         }
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent triggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool cost(TriggerEvent triggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         if (triggerEvent == DamageInflicted) {
             const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "armor", true);
@@ -439,7 +438,7 @@ public:
         return true;
     }
 
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
@@ -511,8 +510,7 @@ bool FireAttack::targetFilter(const QList<const Player *> &targets, const Player
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
     if (targets.length() >= total_num)
         return false;
-    bool ignore
-        = (Self->hasSkill("tianqu") && Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
+    bool ignore = (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
     if (to_select->isKongcheng() && !ignore)
         return false;
     return true;
@@ -531,9 +529,10 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
     foreach (int id, cards->getSubcards())
         room->showCard(effect.to, id);
 
+    QString suit_str = Sanguosha->getCard(cards->getSubcards().first())->getSuitString();
     QStringList suits;
     foreach (int id, cards->getSubcards()) {
-        QString suit = room->getWrappedCard(id)->getSuitString();
+        QString suit = Sanguosha->getWrappedCard(id)->getSuitString();
         if (!suits.contains(suit))
             suits << suit;
         if (suits.length() >= 4)
@@ -566,7 +565,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
 
                 CardMoveReason reason(CardMoveReason::S_REASON_RECAST, effect.from->objectName());
                 reason.m_skillName = getSkillName();
-                room->moveCardTo(card_to_throw, effect.from, nullptr, Player::DiscardPile, reason);
+                room->moveCardTo(card_to_throw, effect.from, NULL, Player::DiscardPile, reason);
                 effect.from->broadcastSkillInvoke("@recast");
 
                 effect.from->drawCards(1);
@@ -578,6 +577,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
                 damage = true;
         }
         if (damage)
+            //room->damage(DamageStruct(this, effect.from, effect.to, 1 + effect.effectValue.last(), DamageStruct::Fire));
             room->damage(DamageStruct(effect.card, effect.from, effect.to, 1 + effect.effectValue.last(), DamageStruct::Fire));
         else
             effect.from->setFlags("FireAttackFailed_" + effect.to->objectName()); // For AI
@@ -605,7 +605,7 @@ bool IronChain::targetFilter(const QList<const Player *> &targets, const Player 
 
 bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
-    bool rec = (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) && can_recast;
+    bool rec = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) && can_recast;
     if (rec) {
         QList<int> sub;
         if (isVirtualCard())
@@ -629,7 +629,7 @@ bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Play
     if (rec && Self->isCardLimited(this, Card::MethodUse))
         return targets.length() == 0;
 
-    if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
         return targets.length() != 0;
 
     int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
@@ -650,7 +650,7 @@ void IronChain::onUse(Room *room, const CardUseStruct &card_use) const
 
         CardMoveReason reason(CardMoveReason::S_REASON_RECAST, card_use.from->objectName());
         reason.m_skillName = getSkillName();
-        room->moveCardTo(this, card_use.from, nullptr, Player::DiscardPile, reason);
+        room->moveCardTo(this, card_use.from, NULL, Player::DiscardPile, reason);
         card_use.from->broadcastSkillInvoke("@recast");
 
         card_use.from->drawCards(1);
@@ -694,8 +694,8 @@ bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Pl
 {
     if (!targets.isEmpty() || to_select == Self)
         return false;
-    bool ignore = (Self && Self->hasSkill("tianqu") && Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self
-                   && !hasFlag("IgnoreFailed"));
+    bool ignore
+        = (Self && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
     if (to_select->containsTrick(objectName()) && !ignore)
         return false;
     int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);

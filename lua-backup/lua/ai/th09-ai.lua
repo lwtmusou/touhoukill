@@ -361,33 +361,6 @@ end
 
 --文花帖SP文
 --[偷拍]
---[[function SmartAI:toupaiValue(player)
-	if self:touhouHandCardsFix(player) or player:hasSkill("heibai") then
-		return 0
-	end
-
-	local value=0
-	if player:hasSkills("xisan|yongheng|kongpiao") then
-		value= - 20
-	end
-	for _, card in sgs.qlist(player:getHandcards()) do
-		local flag = string.format("%s_%s_%s", "visible", global_room:getCurrent():objectName(), player:objectName())
-		if  card:hasFlag("visible") or card:hasFlag(flag) then
-			if card:isRed() then
-					value=value+10
-				if card:isKindOf("BasicCard") then
-					value=value+20
-				end
-				if card:isKindOf("Peach") then
-					value=value+10
-				end
-			end
-		else
-			value=value+5
-		end
-	end
-	return value
-end]]
 function SmartAI:toupaiValue(player)
 	if self:touhouHandCardsFix(player) then
 		return 0
@@ -446,156 +419,11 @@ sgs.ai_skill_use["@@toupai"] = function(self, prompt)
 	return "."
 end
 sgs.ai_card_intention.ToupaiCard = 50
---[[sgs.ai_skill_playerchosen.toupai = function(self, targets)
-	self:sort(self.enemies,"handcard")
-	self.enemies = sgs.reverse(self.enemies)
-	local enemies = self.enemies
-	for _,p in pairs(self.enemies) do
-		if self:touhouHandCardsFix(p) or p:hasSkill("heibai") then
-			table.removeOne(enemies, p)
-		end
-	end
-	if #enemies==0 then return nil end
-
-	--考虑计算量 应该采用的算法
-	--因为遍历table（玩家数不多）本身的时间比较少，而计算value的时间比较多
-	--不过前提是value取值算法固定..不会因为比较的玩家发生变化而改变
-
-	enemy_table={}
-	for _,e in pairs (enemies) do
-		local array={player=e, value=self:toupaiValue(e)}
-		table.insert(enemy_table,array)
-	end
-	local compare_func = function(a, b)
-		return a.value > b.value
-	end
-	table.sort(enemy_table, compare_func)
-	if enemy_table[1].value >=15 then
-		return enemy_table[1].player
-	end
-	return nil
-end]]
---sgs.ai_playerchosen_intention.toupai = 60
---sgs.ai_skill_askforag.toupai = function(self, card_ids)
 --[取材]
 sgs.ai_skill_invoke.qucai = true
 
 --比那名居天子
 --[绯想]
---[[
-sgs.ai_skill_playerchosen.feixiang = function(self, targets)
-	local judge=self.player:getTag("feixiang_judge"):toJudge()
-	local cards={}
-	table.insert(cards,judge.card)
-	local ex_id = self:getRetrialCardId(cards, judge)
-	--ex_id 不为-1 则代表 当前判定对天子而言是个好结果
-	local retrial_targets={}
-	for _,target in sgs.qlist(targets) do
-		local e_value = 0
-		local cards1 = sgs.QList2Table(target:getCards("e"))
-		local self_card =  target:objectName()== self.player:objectName()
-		local new_id = self:getRetrialCardId(cards1, judge,self_card)
-		--new_id 不为-1 代表 装备区的id去改判，可以得到好结果
-
-		--装备判断
-		if ex_id == -1 and new_id ~= -1 then
-			if self:isEnemy(target) then
-				e_value = e_value + 100
-			elseif self:isFriend(target) then
-				e_value = e_value + 20
-			else
-				e_value = e_value + 50
-			end
-		elseif ex_id == -1 and new_id == -1 then
-			if self:isEnemy(target) and #cards1 > 0 then
-				e_value = e_value + 10
-			end
-		--elseif ex_id ~= -1 and new_id == -1 then
-		elseif ex_id ~= -1 and new_id ~= -1 then
-			if self:isEnemy(target) then
-				e_value = e_value + 50
-			end
-		end
-
-
-		local array={player= target, value= e_value}
-		table.insert(retrial_targets,array)
-
-		if not (e_value > 0  or self:touhouHandCardsFix(target) or target:isKongcheng()) then
-			--手牌判断
-			if ex_id == -1 then
-				if self:isEnemy(target) then
-					local array={player= target, value = 5 - target:getHandcards():length()}
-					table.insert(retrial_targets,array)
-				elseif (self.player:objectName() == target:objectName()) then
-					local cards1 = sgs.QList2Table(target:getHandcards())
-					local new_id=self:getRetrialCardId(cards1, judge, true)
-					if new_id ~= -1 then
-						local array={player= target, value = 30}
-						table.insert(retrial_targets,array)
-					end
-				end
-			elseif self:isEnemy(target) then --敌人的已知手牌
-				local count=0
-				for _, card in sgs.qlist(target:getHandcards()) do
-					local flag = string.format("%s_%s_%s", "visible", global_room:getCurrent():objectName(), target:objectName())
-					if  card:hasFlag("visible") or card:hasFlag(flag) then
-						local cards1={}
-						table.insert(cards1,card)
-						local new_id=self:getRetrialCardId(cards1, judge, false)
-						if new_id ~=-1 then
-							count= count + 1
-						end
-					end
-				end
-				local array={player= target, value = 5 - target:getHandcards():length() + count}
-				table.insert(retrial_targets,array)
-			end
-		end
-	end
-	local compare_func = function(a, b)
-		return a.value > b.value
-	end
-	table.sort(retrial_targets, compare_func)
-	if #retrial_targets>0 then
-		return retrial_targets[1]
-	end
-	return nil
-end
-sgs.ai_skill_cardchosen.feixiang = function(self, who, flags)
-	local flag = "e"
-	local judge=self.player:getTag("feixiang_judge"):toJudge()
-	local cards={}
-	table.insert(cards,judge.card)
-	local ex_id = self:getRetrialCardId(cards, judge)
-	if ex_id == -1 then
-		if who:objectName() == self.player:objectName() or self.player:hasSkill("duxin") then
-			flag  = "hes"
-		end
-		local cards1 = sgs.QList2Table(who:getCards(flag))
-		local self_card =  who:objectName()== self.player:objectName()
-		local new_id=self:getRetrialCardId(cards1, judge, self_card)
-		if new_id ~= -1 then
-			return self.room:getCard(new_id)
-		end
-		if #cards1 > 0 then
-			return cards1[math.random(1, #cards1)]
-		end
-	else
-		local cards1 = sgs.QList2Table(who:getCards("e"))
-		local self_card =  who:objectName()== self.player:objectName()
-		local new_id=self:getRetrialCardId(cards1, judge, self_card)
-		if new_id ~= -1 then
-			return self.room:getCard(new_id)
-		else
-			flag = "hs"
-		end
-	end
-	local cards2 = sgs.QList2Table(who:getCards("hes"))
-	return cards2[math.random(1, #cards2)]
-end
-]]
---sgs.ai_playerchosen_intention.feixiang = 50
 sgs.ai_skill_playerchosen.feixiang = function(self, targets)
 	local judge=self.player:getTag("feixiang_judge"):toJudge()
 	local cards={}
@@ -614,7 +442,7 @@ sgs.ai_skill_playerchosen.feixiang = function(self, targets)
 		--new_id 不为-1 代表 装备区的id去改判，可以得到好结果
         	if new_id == -1 then continue end
 		--牌的基础使用价值
-        	local new_value = self:getUseValue(self.room:getCard(new_id))
+        	local new_value = self:getUseValue(sgs.Sanguosha:getCard(new_id))
         	local diff = judgecard_value - new_value
         	if not self:isEnemy(target) then
 			diff = 0 - diff
@@ -664,7 +492,7 @@ sgs.ai_skill_cardchosen.feixiang = function(self, who, flags)
 	local self_card =  who:objectName()== self.player:objectName()
 	local new_id=self:getRetrialCardId(cards1, judge, self_card)
 	if new_id ~= -1 then
-		return self.room:getCard(new_id)
+		return sgs.Sanguosha:getCard(new_id)
 	end
 
 	return cards1[math.random(1, #cards1)]
@@ -1148,11 +976,85 @@ end
 sgs.ai_use_priority.NianliCard = 9
 
 --[深秘] 暂无想法
-
+-- guanxing-ai.lua 里面有默认的代码，暂时先用着吧
 
 --密封梦魇堇子
---无ai
 
+local mengxiangJudge = function(self, player)
+	return self:isEnemy(player) and (not player:isKongcheng())
+end
+
+sgs.ai_skill_invoke.mengxiang = function(self)
+	if self.player:getHandcardNum() <= self.player:getMaxCards() then return false end
+	
+	local others, enemies, enemy = self.room:getOtherPlayers(self.player), {}
+	for _, enemy in sgs.qlist(others) do
+		if mengxiangJudge(self, enemy) then table.insert(enemies, enemy) end
+	end
+	
+	if self.player:getHandcardNum() > self.player:getMaxCards() + #enemies then return false end
+	
+	-- tentative
+	return true
+end
+
+sgs.ai_skill_use["@@mengxiang-card1"] = function(self)
+	local others, enemies, enemy = self.room:getOtherPlayers(self.player), {}
+	for _, enemy in sgs.qlist(others) do
+		if mengxiangJudge(self, enemy) then table.insert(enemies, enemy) end
+	end
+	
+	self:sort(enemies, "threat")
+	
+	local enemyNames = {}
+	for _ = 1, self.player:getMark("mengxiang") do
+		table.insert(enemyNames, enemies[_]:objectName())
+	end
+	
+	return "@MengxiangTargetCard=.->" .. table.concat(enemyNames, "+")
+end
+
+sgs.ai_skill_use["@@mengxiang-card2"] = function(self)
+	local targetPlayer, t
+	for _, t in sgs.qlist(self.room:getAllPlayers()) do
+		if t:hasFlag("mengxiangtarget") then targetPlayer = t break end
+	end
+	
+	if not targetPlayer then return "." end
+	local cards = sgs.QList2Table(targetPlayer:getHandcards())
+	self:sortByUseValue(cards)
+	local c
+	for _, c in ipairs(cards) do
+		local use = {isDummy = true, to = sgs.SPlayerList()}
+		self:useCardByClassName(c, use)
+		if use.card then
+			local targets = {}
+			for _, t in sgs.qlist(use.to) do
+				table.insert(targets, t:objectName())
+			end
+			-- we don't use MengxiangCard since it cause trouble.
+			local mes = sgs.LogMessage()
+			mes.type = "$mengxiang"
+			mes.from = self.player
+			mes.to:append(targetPlayer)
+			mes.arg = "mengxiang"
+			mes.card_str = use.card:toString()
+			self.room:sendLog(mes)
+			return tostring(use.card:getId()) .. "->" .. table.concat(targets, "+")
+		end
+	end
+	
+	-- 亏炸！
+	return "."
+end
+
+sgs.ai_skill_invoke.jishi = true
+
+sgs.ai_skill_use["@@jishi"] = function(self)
+	local list = sgs.QList2Table(self.player:getTag("jishi_tempcards"):toIntList())
+	-- 相当无脑了
+	return "@JishiCard:" .. table.concat(list, "+") .. "->."
+end
 
 --依神女苑&依神紫苑
 --[俭奢]
@@ -1212,4 +1114,51 @@ end
 
 
 --SP丧面秦心
+sgs.ai_skill_invoke.mianling = true
+sgs.ai_skill_cardask["@mianling-exchange"] = function(self, data, pattern, target, target2, arg, arg2)
+	local n = tonumber(arg)
+	local cardIds, cards, card = self.player:getPile("qsmian"), {}
+	for _, card in sgs.qlist(cardIds) do
+		table.insert(cards, sgs.Sanguosha:getCard(card))
+	end
+	
+	self:sortByUseValue(cards, true)
+	local toThrow, i = {}
+	for i = 1, n do
+		table.insert(toThrow, cards[i]:getEffectiveId())
+	end
+	return "$" .. table.concat(toThrow, "+")
+end
 
+-- In fact I don't know if this can be used here
+-- analaptic and peach will be dealt with later
+local mlskill = {}
+mlskill.name = "mianling"
+table.insert(sgs.ai_skills, mlskill)
+mlskill.getTurnUseCard = function(self)
+	return sgs.Card_Parse("@MianlingCard=.")
+end
+
+sgs.ai_skill_use_func.MianlingCard=function(card,_use,self)
+	local cardIds, cards, card = self.player:getPile("qsmian"), {}
+	for _, card in sgs.qlist(cardIds) do
+		cards:insert(sgs.Sanguosha:getCard(card))
+	end
+	self:sortByUseValue(cards)
+	local c
+	for _, c in ipairs(cards) do
+		local use = {isDummy = true, to = sgs.SPlayerList()}
+		self:useCardByClassName(c, use)
+		if use.card then
+			_use.card = sgs.Card_Parse("@MianlingCard=" .. use.card:getEffectiveId())
+			if _use.to then
+				for _, t in sgs.qlist(use.to) do
+					_use.to:append(t)
+				end
+			end
+			return
+		end
+	end
+end
+
+sgs.ai_skill_playerchosen.ximshang = sgs.ai_skill_playerchosen.damage

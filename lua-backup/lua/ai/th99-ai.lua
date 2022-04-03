@@ -87,7 +87,7 @@ function sgs.ai_skill_pindian.dangjia(minusecard, self, requestor, maxcard)
 end
 
 sgs.ai_choicemade_filter.pindian.dangjia = function(self, from, args)
-	local number = self.room:getCard(tonumber(args[3])):getNumber()
+	local number = sgs.Sanguosha:getCard(tonumber(args[3])):getNumber()
 	local lord = findPlayerByObjectName(self.room, args[4])
 	if not lord then return end
 
@@ -139,7 +139,7 @@ function choose_xiufuId(self, card_ids)
 	local target
 
 	for _,card_id in pairs(card_ids) do
-		local card=self.room:getCard(card_id)
+		local card=sgs.Sanguosha:getCard(card_id)
 		if card:getSuit()==sgs.Card_Spade  then
 			table.insert(spades,card_id)
 		end
@@ -174,7 +174,7 @@ function choose_xiufuId(self, card_ids)
 		end
 		if p:hasSkills("baoyi|jiezou") then
 			for _,id in  pairs(spades) do
-				local card=self.room:getCard(id):getRealCard():toEquipCard()
+				local card=sgs.Sanguosha:getCard(id):getRealCard():toEquipCard()
 				local n=card:location()
 				if not p:getEquip(n) then
 					baoyi_id=id
@@ -237,7 +237,7 @@ function equip_in_discardpile(self)
 	local card_ids ={}
 	local discardpile = self.room:getDiscardPile()
 	for _, id in sgs.qlist(discardpile) do
-		local tmp_card = self.room:getCard(id)
+		local tmp_card = sgs.Sanguosha:getCard(id)
 		if (tmp_card:isKindOf("EquipCard")) then
 			table.insert(card_ids, id)
 		end
@@ -402,7 +402,7 @@ function SmartAI:canLuanying(player, card )
 	end
 	if not card:isBlack() and not card:isRed() then return false end
 	for _,id in sgs.qlist(player:getPile("jingjie")) do
-		if self.room:getCard(id):sameColorWith(card) then
+		if sgs.Sanguosha:getCard(id):sameColorWith(card) then
 			return true
 		end
 	end
@@ -427,7 +427,7 @@ sgs.ai_skill_cardask["@luanying-invoke"] = function(self, data)
 		local getReturn = function()
 			local cards = {}
 			for _, id in sgs.qlist(self.player:getPile("jingjie")) do
-				local silingcard = self.room:getCard(id)
+				local silingcard = sgs.Sanguosha:getCard(id)
 				if (silingcard:sameColorWith(card)) then
 					table.insert(cards, silingcard)
 				end
@@ -1528,8 +1528,8 @@ sgs.ai_skill_discard.zhuozhi = function(self)
 	local handcards = {}
 	for _, hc in sgs.qlist(self.player:getHandcards()) do
 		if not handcard[hc:getType()] then handcard[hc:getType()] = {} end
-		handcard[hc:getType()]:insert(hc)
-		handcards:insert(hc)
+		table.insert(handcard[hc:getType()], hc)
+		table.insert(handcards, hc)
 	end
 
 	local zhuozhilist = self.player:getTag("zhuozhi"):toIntList()
@@ -1537,7 +1537,7 @@ sgs.ai_skill_discard.zhuozhi = function(self)
 	for _, id in sgs.qlist(zhuozhilist) do
 		local card = sgs.Sanguosha:getCard(id)
 		if self.room:getCardPlace(id) == sgs.Player_DiscardPile then
-			zc:insert(card)
+			table.insert(zc, card)
 		end
 	end
 	if #zc == 0 then

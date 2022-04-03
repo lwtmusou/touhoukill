@@ -214,7 +214,8 @@ public:
     QSGS_LOGIC QList<int> getNCards(int n, bool update_pile_number = true, bool bottom = false);
     QSGS_LOGIC void returnToTopDrawPile(const QList<int> &cards);
     QSGS_LOGIC void askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, GuanxingType guanxing_type = GuanxingBothSides, const QString &skillName = QString());
-    QSGS_LOGIC int doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, const QList<int> &enabled_ids = QList<int>(), const QString &skill_name = QStringLiteral("gongxin"));
+    QSGS_LOGIC int doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, const QList<int> &enabled_ids = QList<int>(), const QString &skill_name = QStringLiteral("gongxin"),
+                             bool cancellable = true);
     QSGS_LOGIC int drawCard(bool bottom = false);
     QSGS_LOGIC void fillAG(const QList<int> &card_ids, ServerPlayer *who = nullptr, const QList<int> &disabled_ids = QList<int>(),
                            const QList<int> &shownHandcard_ids = QList<int>());

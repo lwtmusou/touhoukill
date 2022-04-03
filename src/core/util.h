@@ -45,9 +45,9 @@ QSGS_CORE_EXPORT bool isRoleGameMode(const QString &mode);
 QSGS_CORE_EXPORT bool isHegemonyGameMode(const QString &mode);
 
 // cannot use do...while false here......
-#define DELETE_OVER_SCOPE(type, var)            \
-    QScopedPointer<type> __##var##_scoped(var); \
-    Q_UNUSED(__##var##_scoped);
+#define DELETE_OVER_SCOPE(type, var)                \
+    QScopedPointer<type> _qsgs_##var##_scoped(var); \
+    Q_UNUSED(_qsgs_##var##_scoped);
 
 #ifndef Q_QDOC
 namespace RefactorProposal {

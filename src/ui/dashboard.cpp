@@ -1136,7 +1136,7 @@ void Dashboard::cancelNullification()
 
 void Dashboard::controlNullificationButton(bool show)
 {
-    if (ClientInstance->getReplayer())
+    if (ClientInstance->getReplayer() != nullptr)
         return;
     m_btnNoNullification->setState(QSanButton::S_STATE_UP);
     m_btnNoNullification->setVisible(show);
@@ -1431,7 +1431,7 @@ void Dashboard::selectLingshou()
     }
     retractSpecialCard();
 
-    if (view_as_skill) {
+    if (view_as_skill != nullptr) {
         unselectAll();
         QList<int> selectedIds = StringList2IntList(Self->property("lingshouSelected").toString().split(QStringLiteral("+")));
         foreach (CardItem *card_item, m_handCards) {

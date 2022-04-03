@@ -36,7 +36,7 @@ bool KnownBothHegemony::targetFilter(const QList<const Player *> &targets, const
 
 bool KnownBothHegemony::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
 {
-    bool rec = (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) && can_recast;
+    bool rec = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) && can_recast;
     if (rec) {
         QList<int> sub;
         if (isVirtualCard())
@@ -60,7 +60,7 @@ bool KnownBothHegemony::targetsFeasible(const QList<const Player *> &targets, co
     if (rec && Self->isCardLimited(this, Card::MethodUse))
         return targets.length() == 0;
 
-    if (Self->getRoomObject()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
         return targets.length() != 0;
 
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
@@ -81,7 +81,7 @@ void KnownBothHegemony::onUse(Room *room, const CardUseStruct &card_use) const
 
         CardMoveReason reason(CardMoveReason::S_REASON_RECAST, card_use.from->objectName());
         reason.m_skillName = getSkillName();
-        room->moveCardTo(this, card_use.from, nullptr, Player::DiscardPile, reason);
+        room->moveCardTo(this, card_use.from, NULL, Player::DiscardPile, reason);
         card_use.from->broadcastSkillInvoke("@recast");
 
         card_use.from->drawCards(1);
@@ -156,6 +156,18 @@ void KnownBothHegemony::onEffect(const CardEffectStruct &effect) const
         if (select.isEmpty())
             return;
     }
+
+    /*if (effect.from->hasSkill("kuaizhao_hegemony")) {
+        while (!select.isEmpty()) {
+            effect.to->setFlags("KnownBothTarget"); //for AI
+            QString choice = room->askForChoice(effect.from, objectName(), select.join("+") + "+dismiss", QVariant::fromValue(effect.to));
+            effect.to->setFlags("-KnownBothTarget");
+            if (choice == "dismiss")
+                return;
+            select.removeAll(choice);
+            doKnownBoth(choice, effect);
+        }
+    }*/
 }
 
 bool KnownBothHegemony::isAvailable(const Player *player) const
@@ -210,6 +222,57 @@ bool BefriendAttacking::isAvailable(const Player *player) const
     return player->hasShownOneGeneral() && TrickCard::isAvailable(player);
 }
 
+/*QStringList BefriendAttacking::checkTargetModSkillShow(const CardUseStruct &use) const
+{
+    if (use.card == NULL)
+        return QStringList();
+
+    if (use.to.length() >= 2) {
+        const ServerPlayer *from = use.from;
+        QList<const Skill *> skills = from->getSkillList(false, false);
+        QList<const TargetModSkill *> tarmods;
+
+        foreach(const Skill *skill, skills) {
+            if (from->hasSkill(skill) && skill->inherits("TargetModSkill")) {
+                const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);
+                tarmods << tarmod;
+            }
+        }
+
+        if (tarmods.isEmpty())
+            return QStringList();
+
+        int n = use.to.length() - 1;
+        QList<const TargetModSkill *> tarmods_copy = tarmods;
+
+        foreach(const TargetModSkill *tarmod, tarmods_copy) {
+            if (tarmod->getExtraTargetNum(from, use.card) == 0) {
+                tarmods.removeOne(tarmod);
+                continue;
+            }
+
+            const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
+            if (from->hasShownSkill(main_skill)) {
+                tarmods.removeOne(tarmod);
+                n -= tarmod->getExtraTargetNum(from, use.card);
+            }
+        }
+
+        if (tarmods.isEmpty() || n <= 0)
+            return QStringList();
+
+        tarmods_copy = tarmods;
+
+        QStringList shows;
+        foreach(const TargetModSkill *tarmod, tarmods_copy) {
+            const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
+            shows << main_skill->objectName();
+        }
+        return shows;
+    }
+    return QStringList();
+}*/
+
 AwaitExhaustedHegemony::AwaitExhaustedHegemony(Card::Suit suit, int number)
     : TrickCard(suit, number)
 {
@@ -225,49 +288,31 @@ QString AwaitExhaustedHegemony::getSubtype() const
 bool AwaitExhaustedHegemony::isAvailable(const Player *player) const
 {
     bool canUse = false;
-
-    QList<const Player *> players = player->getAliveSiblings();
-    players << player;
-
-    QList<const Player *> useTos;
-
-    foreach (const Player *p, players) {
-        if (p->isFriendWith(player))
-            useTos << p;
-    }
-
-    foreach (const Player *p, players) {
-        auto useTosExceptp = players;
-        useTosExceptp.removeAll(p);
-        if (!player->isProhibited(p, this, useTosExceptp)) {
-            canUse = true;
-            break;
+    if (!player->isProhibited(player, this))
+        canUse = true;
+    if (!canUse) {
+        QList<const Player *> players = player->getAliveSiblings();
+        foreach (const Player *p, players) {
+            if (player->isProhibited(p, this))
+                continue;
+            if (player->isFriendWith(p)) {
+                canUse = true;
+                break;
+            }
         }
     }
 
     return canUse && TrickCard::isAvailable(player);
 }
 
-bool AwaitExhaustedHegemony::targetFilter(const QList<const Player *> &, const Player *to_select, const Player *Self) const
-{
-    return Self->willBeFriendWith(to_select);
-}
-
 void AwaitExhaustedHegemony::onUse(Room *room, const CardUseStruct &card_use) const
 {
     CardUseStruct new_use = card_use;
-    QList<const Player *> useTos;
-
-    foreach (ServerPlayer *p, room->getAllPlayers()) {
-        if (p->isFriendWith(new_use.from))
-            useTos << p;
-    }
-
-    foreach (ServerPlayer *p, room->getAllPlayers()) {
-        auto useTosExceptp = useTos;
-        useTosExceptp.removeAll(p);
+    if (!card_use.from->isProhibited(card_use.from, this))
+        new_use.to << new_use.from;
+    foreach (ServerPlayer *p, room->getOtherPlayers(new_use.from)) {
         if (p->isFriendWith(new_use.from)) {
-            const ProhibitSkill *skill = room->isProhibited(card_use.from, p, this, useTosExceptp);
+            const ProhibitSkill *skill = room->isProhibited(card_use.from, p, this);
             if (skill) {
                 LogMessage log;
                 log.type = "#SkillAvoid";
@@ -276,6 +321,7 @@ void AwaitExhaustedHegemony::onUse(Room *room, const CardUseStruct &card_use) co
                 log.arg2 = objectName();
                 room->sendLog(log);
 
+                //room->broadcastSkillInvoke(skill->objectName(), p);
             } else {
                 new_use.to << p;
             }
@@ -323,7 +369,7 @@ void AwaitExhaustedHegemony::use(Room *room, ServerPlayer *source, QList<ServerP
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
         if (targets.size() == 1)
             reason.m_targetId = targets.first()->objectName();
-        room->moveCardTo(&dummy, source, nullptr, Player::DiscardPile, reason, true);
+        room->moveCardTo(&dummy, source, NULL, Player::DiscardPile, reason, true);
     }
 }
 
@@ -343,7 +389,7 @@ public:
         global = true;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
     {
         CardUseStruct use = data.value<CardUseStruct>();
         if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName()))
@@ -352,13 +398,13 @@ public:
         if (!isHegemonyGameMode(room->getMode()))
             return QList<SkillInvokeDetail>();
 
-        if (use.card != nullptr && use.card->isKindOf("Slash")) {
+        if (use.card != NULL && use.card->isKindOf("Slash")) {
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *p, use.to) {
                 if (p->isAlive() && !p->hasShownAllGenerals()) {
                     if (!equipAvailable(use.from, EquipCard::WeaponLocation, objectName(), p))
                         continue;
-                    d << SkillInvokeDetail(this, use.from, use.from, nullptr, false, p);
+                    d << SkillInvokeDetail(this, use.from, use.from, NULL, false, p);
                 }
             }
 
@@ -368,7 +414,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const
     {
         if (invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget))) {
             const ViewHasSkill *v = Sanguosha->ViewHas(invoke->invoker, objectName(), "weapon", true);
@@ -381,7 +427,7 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
     {
         //canshow?
         QStringList select;
@@ -402,6 +448,7 @@ public:
         } else {
             bool ishead = (choice == "showhead");
             target->showGeneral(ishead, true);
+            //target->drawCards(1);
         }
         return false;
     }
@@ -427,7 +474,7 @@ public:
     {
     }
 
-    int getExtra(const Player *target, bool) const override
+    virtual int getExtra(const Player *target, bool) const
     {
         foreach (const Player *p, target->getAliveSiblings()) {
             if (p->hasWeapon("SixSwords") && p->isFriendWith(target) && p->getMark("Equips_Nullified_to_Yourself") == 0)

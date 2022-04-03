@@ -9,8 +9,8 @@ class DebuffSlash : public Slash
     Q_OBJECT
 
 public:
-    DebuffSlash();
-    bool matchType(const QString &pattern) const override;
+    DebuffSlash(Suit suit, int number);
+    virtual bool matchTypeOrName(const QString &pattern) const;
 };
 
 class IronSlash : public DebuffSlash
@@ -18,7 +18,7 @@ class IronSlash : public DebuffSlash
     Q_OBJECT
 
 public:
-    Q_INVOKABLE IronSlash();
+    Q_INVOKABLE IronSlash(Card::Suit suit, int number);
 
     static void debuffEffect(const SlashEffectStruct &effect);
 };
@@ -28,7 +28,7 @@ class LightSlash : public DebuffSlash
     Q_OBJECT
 
 public:
-    Q_INVOKABLE LightSlash();
+    Q_INVOKABLE LightSlash(Card::Suit suit, int number);
 
     static void debuffEffect(const SlashEffectStruct &effect);
 };
@@ -38,7 +38,7 @@ class PowerSlash : public DebuffSlash
     Q_OBJECT
 
 public:
-    Q_INVOKABLE PowerSlash();
+    Q_INVOKABLE PowerSlash(Card::Suit suit, int number);
 
     static void debuffEffect(const SlashEffectStruct &effect);
 };
@@ -48,8 +48,8 @@ class NatureJink : public Jink
     Q_OBJECT
 
 public:
-    NatureJink();
-    bool matchType(const QString &pattern) const override;
+    NatureJink(Suit suit, int number);
+    virtual bool matchTypeOrName(const QString &pattern) const;
 };
 
 class ChainJink : public NatureJink
@@ -57,9 +57,9 @@ class ChainJink : public NatureJink
     Q_OBJECT
 
 public:
-    Q_INVOKABLE ChainJink();
+    Q_INVOKABLE ChainJink(Card::Suit suit, int number);
 
-    void onEffect(const CardEffectStruct &effect) const override;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 class LightJink : public NatureJink
@@ -67,9 +67,9 @@ class LightJink : public NatureJink
     Q_OBJECT
 
 public:
-    Q_INVOKABLE LightJink();
+    Q_INVOKABLE LightJink(Card::Suit suit, int number);
 
-    void onEffect(const CardEffectStruct &effect) const override;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 class MagicAnaleptic : public Analeptic
@@ -77,9 +77,9 @@ class MagicAnaleptic : public Analeptic
     Q_OBJECT
 
 public:
-    Q_INVOKABLE MagicAnaleptic();
-    bool matchType(const QString &pattern) const override;
-    void onEffect(const CardEffectStruct &effect) const override;
+    Q_INVOKABLE MagicAnaleptic(Card::Suit suit, int number);
+    virtual bool matchTypeOrName(const QString &pattern) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 class SuperPeach : public Peach
@@ -87,13 +87,13 @@ class SuperPeach : public Peach
     Q_OBJECT
 
 public:
-    Q_INVOKABLE SuperPeach();
-    bool matchType(const QString &pattern) const override;
+    Q_INVOKABLE SuperPeach(Card::Suit suit, int number);
+    virtual bool matchTypeOrName(const QString &pattern) const;
 
-    void onEffect(const CardEffectStruct &effect) const override;
-    bool targetFixed(const Player *Self, const Card *card) const override;
-    int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card) const override;
-    bool isAvailable(const Player *player, const Card *card) const override;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+    virtual bool targetFixed(const Player *Self) const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual bool isAvailable(const Player *player) const;
 };
 
 class Gun : public Weapon
@@ -101,7 +101,7 @@ class Gun : public Weapon
     Q_OBJECT
 
 public:
-    Q_INVOKABLE Gun();
+    Q_INVOKABLE Gun(Card::Suit suit, int number);
 };
 
 class Pillar : public Weapon
@@ -109,7 +109,7 @@ class Pillar : public Weapon
     Q_OBJECT
 
 public:
-    Q_INVOKABLE Pillar();
+    Q_INVOKABLE Pillar(Card::Suit suit, int number);
 };
 
 class Hakkero : public Weapon
@@ -117,7 +117,7 @@ class Hakkero : public Weapon
     Q_OBJECT
 
 public:
-    Q_INVOKABLE Hakkero();
+    Q_INVOKABLE Hakkero(Card::Suit suit, int number);
 };
 
 class JadeSeal : public Treasure
@@ -125,9 +125,9 @@ class JadeSeal : public Treasure
     Q_OBJECT
 
 public:
-    Q_INVOKABLE JadeSeal();
+    Q_INVOKABLE JadeSeal(Card::Suit suit, int number);
 
-    void onUninstall(ServerPlayer *player) const override;
+    virtual void onUninstall(ServerPlayer *player) const;
 };
 
 class Pagoda : public Treasure
@@ -135,9 +135,9 @@ class Pagoda : public Treasure
     Q_OBJECT
 
 public:
-    Q_INVOKABLE Pagoda();
+    Q_INVOKABLE Pagoda(Card::Suit suit, int number);
 
-    void onUninstall(ServerPlayer *player) const override;
+    virtual void onUninstall(ServerPlayer *player) const;
 };
 
 class Camouflage : public Armor
@@ -145,7 +145,7 @@ class Camouflage : public Armor
     Q_OBJECT
 
 public:
-    Q_INVOKABLE Camouflage();
+    Q_INVOKABLE Camouflage(Card::Suit suit, int number);
 };
 
 class Hagoromo : public Armor
@@ -153,7 +153,7 @@ class Hagoromo : public Armor
     Q_OBJECT
 
 public:
-    Q_INVOKABLE Hagoromo();
+    Q_INVOKABLE Hagoromo(Card::Suit suit, int number);
 };
 
 class AwaitExhausted : public SingleTargetTrick
@@ -161,10 +161,10 @@ class AwaitExhausted : public SingleTargetTrick
     Q_OBJECT
 
 public:
-    Q_INVOKABLE AwaitExhausted();
+    Q_INVOKABLE AwaitExhausted(Card::Suit suit, int number);
 
-    int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card) const override;
-    void onEffect(const CardEffectStruct &effect) const override;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 class AllianceFeast : public GlobalEffect
@@ -172,9 +172,9 @@ class AllianceFeast : public GlobalEffect
     Q_OBJECT
 
 public:
-    Q_INVOKABLE AllianceFeast();
-    bool isCancelable(const CardEffectStruct &effect) const override;
-    void onEffect(const CardEffectStruct &effect) const override;
+    Q_INVOKABLE AllianceFeast(Card::Suit suit, int number);
+    virtual bool isCancelable(const CardEffectStruct &effect) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 class BoneHealing : public SingleTargetTrick
@@ -182,12 +182,12 @@ class BoneHealing : public SingleTargetTrick
     Q_OBJECT
 
 public:
-    Q_INVOKABLE BoneHealing();
+    Q_INVOKABLE BoneHealing(Card::Suit suit, int number);
 
-    bool isAvailable(const Player *player, const Card *card) const override;
+    virtual bool isAvailable(const Player *player) const;
 
-    int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card) const override;
-    void onEffect(const CardEffectStruct &effect) const override;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 class SpringBreath : public DelayedTrick
@@ -195,11 +195,13 @@ class SpringBreath : public DelayedTrick
     Q_OBJECT
 
 public:
-    Q_INVOKABLE SpringBreath();
+    Q_INVOKABLE SpringBreath(Card::Suit suit, int number);
 
-    QString subTypeName() const override;
-    int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card) const override;
-    void takeEffect(ServerPlayer *target) const override;
+    //virtual bool isAvailable(const Player *player) const;
+
+    virtual QString getSubtype() const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void takeEffect(ServerPlayer *target) const;
 };
 
 class TestCardPackage : public Package

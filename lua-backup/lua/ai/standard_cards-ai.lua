@@ -313,7 +313,7 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 	end]]
 	if to:hasSkill("fenghua") then
 		for _, id in sgs.qlist(to:getPile("fenghua")) do
-			if self.room:getCard(id):getSuit() == slash:getSuit() then
+			if sgs.Sanguosha:getCard(id):getSuit() == slash:getSuit() then
 				return false
 			end
 		end
@@ -716,7 +716,7 @@ function SmartAI:useCardSlash(card, use)
 			if not use.isDummy then
 				--almostly for Skill "bllmwuyu"
 				for _, id in sgs.qlist(use.card:getSubcards()) do
-					self.room:getCard(id):setFlags("AIGlobal_SearchForAnaleptic")
+					sgs.Sanguosha:getCard(id):setFlags("AIGlobal_SearchForAnaleptic")
 				end
 
 
@@ -727,7 +727,7 @@ function SmartAI:useCardSlash(card, use)
 					return
 				end
 				for _, id in sgs.qlist(use.card:getSubcards()) do
-					self.room:setCardFlag(self.room:getCard(id), "-AIGlobal_SearchForAnaleptic")
+					self.room:setCardFlag(sgs.Sanguosha:getCard(id), "-AIGlobal_SearchForAnaleptic")
 				end
 
 			end
@@ -1557,7 +1557,7 @@ sgs.ai_skill_cardask["@Axe"] = function(self, data, pattern, target)
 		if #cards == 2 then
 			local num = 0
 			for _, id in ipairs(cards) do
-				if self.player:hasEquip(self.room:getCard(id)) then num = num + 1 end
+				if self.player:hasEquip(sgs.Sanguosha:getCard(id)) then num = num + 1 end
 			end
 			self.equipsToDec = num
 			local eff = self:damageIsEffective(effect.to, effect.nature, self.player)
@@ -2477,7 +2477,7 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 			if usecard and use.to and use.to:length() < targets_num then
 				use.to:append(player)
 				if not use.isDummy then
-					self.room:getCard(cardid):setFlags("AIGlobal_SDCardChosen_" .. name)
+					sgs.Sanguosha:getCard(cardid):setFlags("AIGlobal_SDCardChosen_" .. name)
 					if use.to:length() == 1 then self:speak("hostile", self.player:isFemale()) end
 				end
 			end
@@ -2772,7 +2772,7 @@ sgs.ai_choicemade_filter.cardChosen.snatch = function(self, player, args)
 	if from and to then
 		local id = tonumber(args[2])
 		local place = self.room:getCardPlace(id)
-		local card = self.room:getCard(id)
+		local card = sgs.Sanguosha:getCard(id)
 		local intention = 70
 		if place == sgs.Player_PlaceDelayedTrick then
 			--装备区还需要更加细化...
@@ -3354,7 +3354,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 	local cards = {}
 	local trickcard = {}
 	for _, card_id in ipairs(card_ids) do
-		local acard = self.room:getCard(card_id)
+		local acard = sgs.Sanguosha:getCard(card_id)
 		table.insert(cards, acard)
 		if acard:isKindOf("TrickCard") then
 			table.insert(trickcard , acard)
@@ -4176,10 +4176,19 @@ function SmartAI:useCardKnownBoth(KnownBoth, use)
 			end
 		end
 	end
+	
+	local needTarget = (KnownBoth:getSkillName() == "xihua" or KnownBoth:getSkillName() == "qiji" or sgs.Sanguosha:getCurrentCardUsePattern() == "@@mengxiang-card2"
+	       or KnownBoth:getSkillName() == "chaoren" or KnownBoth:getSkillName() == "xiuye")
+	if not needTarget then
+		needTarget = self.player:getPile("wooden_ox"):contains(KnownBoth:getEffectiveId())
+	end
+	
+	if not needTarget then
 	--if (self.room:getTag("KnownBothUsed"):toBool()) then
-	if KnownBoth:canRecast() then
-		use.card = KnownBoth
-		return
+		if KnownBoth:canRecast() then
+			use.card = KnownBoth
+			return
+		end
 	end
 	--end
 	--[[if self.player:objectName() == self.room:getCurrent():objectName() then

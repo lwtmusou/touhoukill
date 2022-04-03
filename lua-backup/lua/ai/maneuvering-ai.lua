@@ -514,7 +514,7 @@ end
 --铁索能不能有其他目标时，不要锁卖血流啊
 --静电对策需要详细写 --ai usecard都不check targetsFeasible的。。。。
 function SmartAI:useCardIronChain(card, use)
-	local needTarget = (card:getSkillName() == "xihua" or card:getSkillName() == "qiji" 
+	local needTarget = (card:getSkillName() == "xihua" or card:getSkillName() == "qiji" or sgs.Sanguosha:getCurrentCardUsePattern() == "@@mengxiang-card2"
 	       or card:getSkillName() == "chaoren" or card:getSkillName() == "xiuye")
 	if not needTarget then
 		needTarget = self.player:getPile("wooden_ox"):contains(card:getEffectiveId())
@@ -708,7 +708,7 @@ function SmartAI:useCardFireAttack(fire_attack, use) --尼玛 吃酒+火攻+丢�
 			if (fire_attack:isVirtualCard()) then
 				local num = 0
 				for _, id in sgs.qlist(fire_attack:getSubcards()) do
-					local card = self.room:getCard(id)
+					local card = sgs.sanguosha:getCard(id)
 					if unShowns:contains(card) then
 						num = num+1
 					end

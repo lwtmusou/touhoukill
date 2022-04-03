@@ -1377,7 +1377,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
             if (flag.startsWith("LastTrickTarget_")) {
                 QStringList f = flag.split("_");
                 ServerPlayer *last = findPlayerByObjectName(f.at(1));
-                if (last) {
+                if (last != nullptr) {
                     if (last != to)
                         isLastTarget = false;
                     break;
@@ -2081,7 +2081,7 @@ void Room::setPlayerFlag(ServerPlayer *player, const QString &flag)
 
 void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value)
 {
-#ifdef QT_DEBUG
+#if 0 // def QT_DEBUG
     if (getThread() != player->thread()) {
         playerPropertySet = false;
         emit signalSetProperty(player, property_name, value);
@@ -2092,7 +2092,7 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
     }
 #else
     player->setProperty(property_name, value);
-#endif // QT_DEBUG
+#endif
 
     broadcastProperty(player, property_name);
 
@@ -5776,7 +5776,7 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
     thread->trigger(QSanguosha::AfterGuanXing, v);
 }
 
-int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, const QList<int> &enabled_ids, const QString &skill_name)
+int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, const QList<int> &enabled_ids, const QString &skill_name, bool cancellable)
 {
     Q_ASSERT(!target->isKongcheng());
     tryPause();
@@ -5813,14 +5813,18 @@ int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, const QList<
     gongxinArgs << JsonUtils::toJsonArray(target->handcards().values());
     gongxinArgs << JsonUtils::toJsonArray(enabled_ids);
     gongxinArgs << skill_name;
+    gongxinArgs << cancellable;
     bool success = doRequest(shenlvmeng, S_COMMAND_SKILL_GONGXIN, gongxinArgs, true);
     const QVariant &clientReply = shenlvmeng->getClientReply();
     if (!success || !JsonUtils::isNumber(clientReply) || !target->handcards().contains(clientReply.toInt())) {
-        shenlvmeng->tag.remove(skill_name);
+        if (cancellable)
+            shenlvmeng->tag.remove(skill_name);
         return -1;
     }
-
     card_id = clientReply.toInt();
+
+    if (card_id == -1 && !cancellable && !enabled_ids.isEmpty())
+        card_id = enabled_ids.first();
 
     return card_id; // Do remember to remove the tag later!
 }

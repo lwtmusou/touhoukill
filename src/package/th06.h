@@ -17,7 +17,7 @@ class SkltKexueCard : public SkillCard
 public:
     Q_INVOKABLE SkltKexueCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
 class SuodingCard : public SkillCard
@@ -27,10 +27,10 @@ class SuodingCard : public SkillCard
 public:
     Q_INVOKABLE SuodingCard();
 
-    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, int &maxVotes) const override;
-    bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, int &maxVotes) const;
+    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
 class BeishuiDialog : public QDialog
@@ -41,39 +41,22 @@ public:
     static BeishuiDialog *getInstance(const QString &object, bool left = true, bool right = true);
 
 public slots:
-    void popup(Player *Self);
+    void popup();
     void selectCard(QAbstractButton *button);
 
 private:
     explicit BeishuiDialog(const QString &object, bool left = true, bool right = true);
 
     QGroupBox *createLeft();
+    //QGroupBox *createRight();
     QAbstractButton *createButton(const Card *card);
     QButtonGroup *group;
     QHash<QString, const Card *> map;
 
     QString object_name;
 
-    Player *Self;
-
 signals:
     void onButtonClick();
-};
-
-class HezhouCard : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE HezhouCard();
-
-    bool do_hezhou(ServerPlayer *player) const;
-    bool targetFixed(const Player *Self) const override;
-    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
-
-    const Card *validate(CardUseStruct &card_use) const override;
-    const Card *validateInResponse(ServerPlayer *user) const override;
 };
 
 class SishuCard : public SkillCard
@@ -83,8 +66,8 @@ class SishuCard : public SkillCard
 public:
     Q_INVOKABLE SishuCard();
 
-    void onUse(Room *room, const CardUseStruct &card_use) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
 class BanyueCard : public SkillCard
@@ -94,8 +77,8 @@ class BanyueCard : public SkillCard
 public:
     Q_INVOKABLE BanyueCard();
 
-    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
 class TH06Package : public Package

@@ -635,7 +635,7 @@ bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const
     if (!player->canShowGeneral(player->inHeadSkills(objectName()) ? "h" : "d"))
         return false;
     const BattleArraySkill *skill = qobject_cast<const BattleArraySkill *>(Sanguosha->getTriggerSkill(objectName()));
-    if (skill) {
+    if (skill != nullptr) {
         QString type = skill->getArrayType();
 
         if (type == "Siege") {

@@ -18,7 +18,7 @@ public:
     bool isResponseOk(const Player *player, const QString &pattern) const;
 
 public slots:
-    void popup(Player *Self);
+    void popup();
     void selectCard(QAbstractButton *button);
 
 private:
@@ -32,10 +32,19 @@ private:
 
     QString object_name;
 
-    Player *Self;
-
 signals:
     void onButtonClick();
+};
+
+class Fsu0413Fei2ZhaiCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Fsu0413Fei2ZhaiCard();
+
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
 class Fsu0413JbdNashaCard : public SkillCard
@@ -45,8 +54,8 @@ class Fsu0413JbdNashaCard : public SkillCard
 public:
     Q_INVOKABLE Fsu0413JbdNashaCard();
 
-    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    void onEffect(const CardEffectStruct &effect) const override;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 class PlaygroundPackage : public Package

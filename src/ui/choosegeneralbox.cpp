@@ -151,7 +151,7 @@ ChooseGeneralBox::ChooseGeneralBox()
     , confirm(new Button(tr("fight"), 0.6))
     , progress_bar(nullptr)
 {
-    confirm->setEnabled(ClientInstance->getReplayer());
+    confirm->setEnabled(ClientInstance->getReplayer() != nullptr);
     confirm->setParentItem(this);
     connect(confirm, &Button::clicked, this, &ChooseGeneralBox::reply);
 }

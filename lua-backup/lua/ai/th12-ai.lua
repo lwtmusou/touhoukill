@@ -237,7 +237,7 @@ sgs.ai_skill_use_func.WeizhiCard = function(card, use, self)
 
 	local use_cards = {}
 	for index = #unpreferedCards, 1, -1 do
-		if not self.player:isJilei(self.room:getCard(unpreferedCards[index])) then table.insert(use_cards, unpreferedCards[index]) end
+		if not self.player:isJilei(sgs.Sanguosha:getCard(unpreferedCards[index])) then table.insert(use_cards, unpreferedCards[index]) end
 	end
 
 	if #use_cards > 0 then
@@ -751,7 +751,7 @@ sgs.ai_skill_cardchosen.jingxia = function(self, who, flags)
 		if #cards>0 then
 			return cards[1]
 		end
-		return self.room:getCard(self:getCardRandomly(who, flags))
+		return sgs.Sanguosha:getCard(self:getCardRandomly(who, flags))
 	end
 end
 --sgs.ai_playerchosen_intention.jingxia = 50

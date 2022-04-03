@@ -11,7 +11,7 @@ class LeitingCard : public SkillCard
 public:
     Q_INVOKABLE LeitingCard();
 
-    void onEffect(const CardEffectStruct &effect) const override;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 class YuanfeiCard : public SkillCard
@@ -21,8 +21,8 @@ class YuanfeiCard : public SkillCard
 public:
     Q_INVOKABLE YuanfeiCard();
 
-    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    void onEffect(const CardEffectStruct &effect) const override;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 class LiangeCard : public SkillCard
@@ -32,7 +32,7 @@ class LiangeCard : public SkillCard
 public:
     Q_INVOKABLE LiangeCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
 class TH14Package : public Package

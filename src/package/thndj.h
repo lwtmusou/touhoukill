@@ -11,7 +11,7 @@ class HunpoCard : public SkillCard
 public:
     Q_INVOKABLE HunpoCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
 class YaoliCard : public SkillCard
@@ -21,11 +21,11 @@ class YaoliCard : public SkillCard
 public:
     Q_INVOKABLE YaoliCard();
 
-    bool targetFixed(const Player *Self) const override;
-    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    virtual bool targetFixed(const Player *Self) const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
 
-    void onUse(Room *room, const CardUseStruct &use) const override;
-    void onEffect(const CardEffectStruct &effect) const override;
+    virtual void onUse(Room *room, const CardUseStruct &use) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 class THNDJPackage : public Package
