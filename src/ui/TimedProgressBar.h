@@ -19,7 +19,6 @@ public:
         , m_step(0)
         , m_max(0)
         , m_val(0)
-        , m_mutex()
     {
         setTextVisible(false);
     }
@@ -57,7 +56,7 @@ signals:
     void timerStep(time_t val, time_t max);
 
 protected:
-    void timerEvent(QTimerEvent *) override;
+    void timerEvent(QTimerEvent * /*event*/) override;
     bool m_hasTimer;
     bool m_autoHide;
     int m_timer;
@@ -82,7 +81,7 @@ public:
     void setCountdown(const QSanProtocol::Countdown &countdown);
 
 protected:
-    void paintEvent(QPaintEvent *) override;
+    void paintEvent(QPaintEvent * /*unused*/) override;
     QSanProtocol::ProcessInstanceType m_instanceType;
 };
 

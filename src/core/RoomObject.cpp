@@ -449,7 +449,7 @@ int RoomObject::correctMaxCards(const Player *target, bool fixed, const QString 
     return extra;
 }
 
-int RoomObject::correctCardTarget(const TargetModType type, const Player *from, const Card *card) const
+int RoomObject::correctCardTarget(TargetModType type, const Player *from, const Card *card) const
 {
     int x = 0;
     if (type == ModResidue) {

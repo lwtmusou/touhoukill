@@ -75,7 +75,7 @@ public:
 
     // fixed 0
     int priority() const final override;
-    QList<TriggerDetail> triggerable(QSanguosha::TriggerEvent, RoomObject *room, const QVariant &) const final override;
+    QList<TriggerDetail> triggerable(QSanguosha::TriggerEvent /*event*/, RoomObject *room, const QVariant & /*data*/) const final override;
 };
 
 class SkillTriggerPrivate;

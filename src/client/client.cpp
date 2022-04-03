@@ -475,7 +475,7 @@ bool Client::processServerRequest(const Packet &packet)
 
 void Client::processShowGeneral(const Packet &packet)
 {
-    QVariant arg = packet.getMessageBody();
+    const QVariant &arg = packet.getMessageBody();
     QStringList names;
     if (!JsonUtils::tryParse(arg, names))
         return;
@@ -1272,7 +1272,7 @@ void Client::trust()
     setStatus(NotActive);
 }
 
-void Client::preshow(const QString &skill_name, const bool isPreshowed)
+void Client::preshow(const QString &skill_name, bool isPreshowed)
 {
     JsonArray arg;
     arg << skill_name;

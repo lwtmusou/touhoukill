@@ -35,7 +35,7 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
     } else {
         QList<const Player *> players = ConstClientInstance->players();
         for (int i = 0; i < players.length(); i++) {
-            QString role = role_list.at(i);
+            const QString& role = role_list.at(i);
             const Player *player = players.at(i);
             QString text = QStringLiteral("%1[%2]").arg(player->screenName(), Sanguosha->translate(role));
 

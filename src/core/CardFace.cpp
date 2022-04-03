@@ -18,9 +18,7 @@ using namespace QSanguosha;
 class CardFacePrivate
 {
 public:
-    CardFacePrivate()
-    {
-    }
+    CardFacePrivate() = default;
 
     QString name;
     QString subTypeName;
@@ -149,14 +147,14 @@ bool CardFace::canDamage() const
             int type = lua_getfield(l, -1, "canDamage"); // { CardFace.canDamage, CardFace }
             do {
                 if (type == LUA_TBOOLEAN) {
-                    r = lua_toboolean(l, -1);
+                    r = lua_toboolean(l, -1); // NOLINT
                     d->can_damage = r;
                 } else if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched here
                     int call = lua_pcall(l, 0, 1, 0); // { cardFace.canDamage() / error, CardFace }
                     if (call == LUA_OK)
-                        r = lua_toboolean(l, -1);
+                        r = lua_toboolean(l, -1); // NOLINT
 
                     // DO NOT STORE d->can_damage
                 } else {
@@ -191,14 +189,14 @@ bool CardFace::canRecover() const
             int type = lua_getfield(l, -1, "canRecover"); // { CardFace.canRecover, CardFace }
             do {
                 if (type == LUA_TBOOLEAN) {
-                    r = lua_toboolean(l, -1);
+                    r = lua_toboolean(l, -1); // NOLINT
                     d->can_recover = r;
                 } else if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched here
                     int call = lua_pcall(l, 0, 1, 0); // { cardFace.canRecover() / error, CardFace }
                     if (call == LUA_OK)
-                        r = lua_toboolean(l, -1);
+                        r = lua_toboolean(l, -1); // NOLINT
 
                     // DO NOT STORE d->can_recover
                 } else {
@@ -233,14 +231,14 @@ bool CardFace::hasEffectValue() const
             int type = lua_getfield(l, -1, "hasEffectValue"); // { CardFace.hasEffectValue, CardFace }
             do {
                 if (type == LUA_TBOOLEAN) {
-                    r = lua_toboolean(l, -1);
+                    r = lua_toboolean(l, -1); // NOLINT
                     d->has_effectvalue = r;
                 } else if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched here
                     int call = lua_pcall(l, 0, 1, 0); // { cardFace.hasEffectValue() / error, CardFace }
                     if (call == LUA_OK)
-                        r = lua_toboolean(l, -1);
+                        r = lua_toboolean(l, -1); // NOLINT
 
                     // DO NOT STORE d->has_effectvalue
                 } else {
@@ -275,14 +273,14 @@ bool CardFace::hasPreAction() const
             int type = lua_getfield(l, -1, "hasPreAction"); // { CardFace.hasPreAction, CardFace }
             do {
                 if (type == LUA_TBOOLEAN) {
-                    r = lua_toboolean(l, -1);
+                    r = lua_toboolean(l, -1); // NOLINT
                     d->has_preact = r;
                 } else if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched here
                     int call = lua_pcall(l, 0, 1, 0); // { cardFace.hasPreAction() / error, CardFace }
                     if (call == LUA_OK)
-                        r = lua_toboolean(l, -1);
+                        r = lua_toboolean(l, -1); // NOLINT
 
                     // DO NOT STORE d->has_preact
                 } else {
@@ -359,7 +357,7 @@ bool CardFace::targetFixed(const Player *player, const Card *card) const
             int type = lua_getfield(l, -1, "targetFixed"); // { CardFace.targetFixed, CardFace }
             do {
                 if (type == LUA_TBOOLEAN) {
-                    r = lua_toboolean(l, -1);
+                    r = lua_toboolean(l, -1); // NOLINT
                     d->target_fixed = r;
                 } else if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
@@ -1259,14 +1257,14 @@ bool SkillCard::throwWhenUsing() const
             int type = lua_getfield(l, -1, "throwWhenUsing"); // { SkillCard.throwWhenUsing, CardFace }
             do {
                 if (type == LUA_TBOOLEAN) {
-                    r = lua_toboolean(l, -1);
+                    r = lua_toboolean(l, -1); // NOLINT
                     d->throw_when_using = r;
                 } else if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched here
                     int call = lua_pcall(l, 0, 1, 0); // { SkillCard.throwWhenUsing() / error, CardFace }
                     if (call == LUA_OK)
-                        r = lua_toboolean(l, -1);
+                        r = lua_toboolean(l, -1); // NOLINT
 
                     // DO NOT STORE d->throw_when_using
                 } else {

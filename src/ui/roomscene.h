@@ -225,7 +225,7 @@ public slots:
     void keepLoseCardLog(const LegacyCardsMoveStruct &move);
     void keepGetCardLog(const LegacyCardsMoveStruct &move);
     // choice dialog
-    void chooseGeneral(const QStringList &generals, const bool single_result, const bool can_convert);
+    void chooseGeneral(const QStringList &generals, bool single_result, bool can_convert);
     void chooseSuit(const QStringList &suits);
     void chooseCard(const Player *playerName, const QString &flags, const QString &reason, bool handcard_visible, QSanguosha::HandlingMethod method, const QList<int> &disabled_ids,
                     bool enableEmptyCard);
@@ -248,7 +248,7 @@ public slots:
     void showServerInformation();
     void surrender();
     void saveReplayRecord();
-    void saveReplayRecord(const bool auto_save, const bool network_only = false);
+    void saveReplayRecord(bool auto_save, bool network_only = false);
     void makeDamage();
     void makeKilling();
     void makeReviving();

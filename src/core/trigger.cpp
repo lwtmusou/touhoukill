@@ -76,7 +76,6 @@ bool Trigger::trigger(TriggerEvent /*unused*/, RoomObject * /*unused*/, const Tr
 }
 
 Rule::Rule()
-    : Trigger()
 {
 }
 
@@ -208,7 +207,6 @@ int EquipSkillTrigger::priority() const
 }
 
 GlobalRecord::GlobalRecord()
-    : Trigger()
 {
 }
 
@@ -229,8 +227,7 @@ public:
 };
 
 FakeMoveRecord::FakeMoveRecord(const QString &skillName)
-    : GlobalRecord()
-    , d(new FakeMoveRecordPrivate)
+    : d(new FakeMoveRecordPrivate)
 {
     addTriggerEvents({BeforeCardsMove, CardsMoveOneTime});
     d->skillName = skillName;

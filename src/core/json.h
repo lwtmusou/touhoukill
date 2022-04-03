@@ -68,7 +68,7 @@ public:
     {
         return value;
     }
-    inline const QString errorString() const
+    inline QString errorString() const
     {
         return error;
     }

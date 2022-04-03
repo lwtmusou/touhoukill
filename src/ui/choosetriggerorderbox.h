@@ -67,7 +67,7 @@ public slots:
     void needDisabled(bool disabled);
 
 protected:
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/) override;
     QRectF boundingRect() const override;
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;

@@ -39,7 +39,7 @@ public:
     void view(const Player *player);
     QRectF boundingRect() const override;
     Player *m_currentPlayer;
-    void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) override;
+    void paint(QPainter * /*painter*/, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/) override;
     bool retained();
 
 public slots:

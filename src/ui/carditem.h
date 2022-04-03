@@ -124,8 +124,8 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
-    void hoverEnterEvent(QGraphicsSceneHoverEvent *) override;
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent *) override;
+    void hoverEnterEvent(QGraphicsSceneHoverEvent * /*event*/) override;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent * /*event*/) override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     bool auto_back, frozen;
 

@@ -18,7 +18,7 @@ public:
     explicit OptionButton(const QString &icon_path, const QString &caption = QString(), QWidget *parent = nullptr);
 
 protected:
-    void mouseDoubleClickEvent(QMouseEvent *) override;
+    void mouseDoubleClickEvent(QMouseEvent * /*event*/) override;
 
 signals:
     void double_clicked();
@@ -32,7 +32,7 @@ public:
     explicit ChooseGeneralDialog(const QStringList &general_names, QWidget *parent, bool view_only = false, const QString &title = QString());
 
 public slots:
-    void done(int) override;
+    void done(int /*unused*/) override;
 
 protected:
     QDialog *m_freeChooseDialog;

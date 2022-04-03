@@ -77,7 +77,7 @@ public:
 
 public slots:
     void chooseGeneral(const QStringList &generals, bool m_viewOnly = false, bool single_result = false, const QString &reason = QString(), const Player *player = nullptr,
-                       const bool can_convert = false);
+                       bool can_convert = false);
     void reply();
     void adjustItems();
 

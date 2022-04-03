@@ -147,7 +147,7 @@ void ServerPlayer::clearOnePrivatePile(const QString &pile_name)
     Card *dummy = room->cloneCard(QStringLiteral("DummyCard"));
     CardMoveReason reason(QSanguosha::MoveReasonRemoveFromPile, objectName());
     bool notifyLog = true;
-    QString new_name = pile_name;
+    const QString &new_name = pile_name;
     if (new_name.startsWith(QStringLiteral("#"))) {
         foreach (QString flag, flagList()) {
             if (flag == new_name.mid(1) + QStringLiteral("_InTempMoving")) {

@@ -239,7 +239,7 @@ public slots:
 
     void onPlayerReplyGongxin(int card_id = -1);
     void changeSkin(const QString &name, int index);
-    void preshow(const QString &skill_name, const bool isPreshowed);
+    void preshow(const QString &skill_name, bool isPreshowed);
 
 protected:
     // operation countdown
@@ -294,7 +294,7 @@ signals:
     void player_added(Player *new_player);
     void player_removed(const QString &player_name);
     // choice signal
-    void generals_got(const QStringList &generals, const bool single_result, const bool can_convert);
+    void generals_got(const QStringList &generals, bool single_result, bool can_convert);
     void kingdoms_got(const QStringList &kingdoms);
     void suits_got(const QStringList &suits);
     void options_got(const QString &skillName, const QStringList &options);

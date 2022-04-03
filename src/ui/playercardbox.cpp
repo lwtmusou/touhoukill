@@ -111,7 +111,7 @@ void PlayerCardBox::chooseCard(const QString &reason, const Player *player, cons
             }
             int hidden = player->handcardNum() - handcards.length();
             for (int i = 0; i < hidden; ++i)
-                handcards << NULL;
+                handcards << nullptr;
         } else
             handcards = player->handCards();
 

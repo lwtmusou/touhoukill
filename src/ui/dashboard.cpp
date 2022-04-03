@@ -1366,7 +1366,7 @@ void Dashboard::retractPileCards(const QString &pile_name)
     if (!_m_pile_expanded.contains(pile_name))
         return;
 
-    QString new_name = pile_name;
+    const QString &new_name = pile_name;
     QList<int> pile = _m_pile_expanded.value(new_name);
     _m_pile_expanded.remove(pile_name);
 

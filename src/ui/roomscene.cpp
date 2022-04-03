@@ -1724,7 +1724,7 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     }
 }
 
-void RoomScene::chooseGeneral(const QStringList &generals, const bool single_result, const bool can_convert)
+void RoomScene::chooseGeneral(const QStringList &generals, bool single_result, bool can_convert)
 {
     QApplication::alert(main_window);
     if (!main_window->isActiveWindow())
@@ -2335,8 +2335,8 @@ void RoomScene::addSkillButton(const Skill *skill, bool head)
             connect(btn, SIGNAL(skill_activated()), dashboard, SLOT(selectAll()));
 
         const ViewAsSkillSelection *selection = btn->getViewAsSkill()->selections(Self);
-        if (selection != nullptr && !selection->next.isEmpty() && !m_replayControl) {
-            connect(btn, (void (QSanSkillButton ::*)())(&QSanSkillButton::skill_activated), btn, [this, btn, selection]() -> void {
+        if (selection != nullptr && !selection->next.isEmpty() && (m_replayControl == nullptr)) {
+            connect(btn, (void(QSanSkillButton ::*)())(&QSanSkillButton::skill_activated), btn, [this, btn, selection]() -> void {
                 // QMenu *menu = new QMenu(this);
                 setCurrentViewAsSkillSelectionChain(QStringList());
                 QMenu *menu = mainWindow()->findChild<QMenu *>(btn->getViewAsSkill()->objectName());
@@ -2374,7 +2374,7 @@ void RoomScene::acquireSkill(const Player *player, const QString &skill_name, bo
 {
     QString type = QStringLiteral("#AcquireSkill");
     QString from_general = player->objectName();
-    QString arg = skill_name;
+    const QString &arg = skill_name;
     log_box->appendLog(type, from_general, QStringList(), QString(), arg);
 
     if (player == Self)
@@ -3361,7 +3361,7 @@ void RoomScene::saveReplayRecord()
     saveReplayRecord(false);
 }
 
-void RoomScene::saveReplayRecord(const bool auto_save, const bool network_only)
+void RoomScene::saveReplayRecord(bool auto_save, bool network_only)
 {
     if (auto_save) {
         int human = 0;
@@ -4200,7 +4200,7 @@ void RoomScene::showSkillInvocation(const QString &who, const QString &skill_nam
 
     QString type = QStringLiteral("#InvokeSkill");
     QString from_general = player->objectName();
-    QString arg = skill_name;
+    const QString &arg = skill_name;
     log_box->appendLog(type, from_general, QStringList(), QString(), arg);
 }
 

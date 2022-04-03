@@ -18,16 +18,16 @@ public:
     }
 
     QRectF boundingRect() const override;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/) override;
 
 protected:
-    void hoverEnterEvent(QGraphicsSceneHoverEvent *) override;
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent *) override;
+    void hoverEnterEvent(QGraphicsSceneHoverEvent * /*event*/) override;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent * /*event*/) override;
 
-    void mousePressEvent(QGraphicsSceneMouseEvent *) override
+    void mousePressEvent(QGraphicsSceneMouseEvent * /*event*/) override
     {
     }
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent * /*event*/) override;
 
 private:
     static const QPixmap &getUsedIcon();

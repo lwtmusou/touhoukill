@@ -19,7 +19,7 @@ public:
 
 protected:
     QRectF boundingRect() const override;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/) override;
 
 private:
     QRectF m_boundingRect;
@@ -41,7 +41,7 @@ protected:
     QRectF boundingRect() const override;
 
 private:
-    void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) override
+    void paint(QPainter * /*painter*/, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/) override
     {
     }
 

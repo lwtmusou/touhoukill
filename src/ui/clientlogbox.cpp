@@ -12,8 +12,11 @@ ClientLogBox::ClientLogBox(QWidget *parent)
     setReadOnly(true);
 }
 
-void ClientLogBox::appendLog(const QString &type, const QString &from_general, const QStringList &tos, const QString &card_str, QString arg, QString arg2)
+void ClientLogBox::appendLog(const QString &type, const QString &from_general, const QStringList &tos, const QString &card_str, const QString &_arg, const QString &_arg2)
 {
+    QString arg = _arg;
+    QString arg2 = _arg2;
+
     if (Self->hasFlag(QStringLiteral("marshalling")))
         return;
 

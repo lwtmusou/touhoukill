@@ -12,7 +12,6 @@
 #include <QTime>
 
 GameRule::GameRule()
-    : Rule()
 {
     addTriggerEvents({QSanguosha::GameStart,
                       QSanguosha::TurnStart,

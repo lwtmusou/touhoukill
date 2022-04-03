@@ -697,11 +697,11 @@ Card *Card::Parse(const QString &str, RoomObject *room)
             return nullptr;
 
         QStringList texts = match.capturedTexts();
-        QString card_name = texts.at(1);
-        QString m_skillName = texts.at(2);
-        QString suit_string = texts.at(3);
-        QString number_string = texts.at(4);
-        QString subcard_str = texts.at(5);
+        const QString &card_name = texts.at(1);
+        const QString &m_skillName = texts.at(2);
+        const QString &suit_string = texts.at(3);
+        const QString &number_string = texts.at(4);
+        const QString &subcard_str = texts.at(5);
         QStringList subcard_ids;
         if (subcard_str != QStringLiteral("."))
             subcard_ids = subcard_str.split(QStringLiteral("+"));

@@ -348,7 +348,7 @@ class QSGS_CORE_EXPORT TreatAsEquippingSkill : public Skill
 
 public:
     explicit TreatAsEquippingSkill(const QString &name);
-    virtual bool treatAs(const Player *player, const QString equipName, QSanguosha::EquipLocation location) const = 0;
+    virtual bool treatAs(const Player *player, QString equipName, QSanguosha::EquipLocation location) const = 0;
 };
 
 #endif

@@ -130,7 +130,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, const QString 
         return true;
 
     checkpoint = false;
-    QString place = factors.at(3);
+    const QString &place = factors.at(3);
     if ((player == nullptr) || place == QStringLiteral("."))
         checkpoint = true;
     if (!checkpoint) {
@@ -205,8 +205,5 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, const QString 
 
     if (!checkpoint)
         return false;
-    if (factors.size() < 5)
-        return true;
-
-    return false;
+    return factors.size() < 5;
 }

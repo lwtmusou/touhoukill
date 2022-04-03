@@ -30,14 +30,14 @@ public:
     void bringToTopMost();
 
     QRectF boundingRect() const override;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/) override;
 
     static bool hasSkin(const QString &generalName);
     static int getNextSkinIndex(const QString &generalName, int skinIndex);
     void swapWithSkinItemUsed(int skinIndex);
 
 protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent *) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent * /*event*/) override;
     void wheelEvent(QGraphicsSceneWheelEvent *event) override;
 
 private:

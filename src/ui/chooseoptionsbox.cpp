@@ -88,7 +88,7 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
                 } else if (element.startsWith(QStringLiteral("log:"))) {
                     QStringList logs = element.split(QStringLiteral(":"));
                     if (!logs.at(1).isEmpty()) {
-                        QString log = logs.at(1);
+                        const QString &log = logs.at(1);
                         text.replace(QStringLiteral("%log"), log);
                     }
                 }

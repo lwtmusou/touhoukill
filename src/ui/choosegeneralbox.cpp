@@ -285,7 +285,7 @@ static bool sortByKingdom(const QString &gen1, const QString &gen2)
         return false;
 }
 
-void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_only, bool single_result, const QString &reason, const Player * /*unused*/, const bool /*unused*/)
+void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_only, bool single_result, const QString &reason, const Player * /*unused*/, bool /*unused*/)
 {
     //repaint background
     QStringList generals = _generals;

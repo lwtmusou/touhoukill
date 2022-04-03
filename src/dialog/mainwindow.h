@@ -56,7 +56,7 @@ public:
     void setBackgroundBrush(bool center_as_origin);
 
 protected:
-    void closeEvent(QCloseEvent *) override;
+    void closeEvent(QCloseEvent * /*event*/) override;
 
 private:
     FitView *view;

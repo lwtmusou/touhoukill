@@ -1025,7 +1025,7 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
         validChoices.append(choice.split(QStringLiteral("+")));
     Q_ASSERT(!validChoices.isEmpty());
     QStringList titles = skill_name.split(QStringLiteral("%"));
-    QString skillname = titles.at(0);
+    const QString &skillname = titles.at(0);
 
     QString answer;
     if (validChoices.size() == 1)
@@ -1282,7 +1282,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
         QVariantList qtargets = tag[QStringLiteral("targets") + trick->toString()].toList();
         QList<ServerPlayer *> targets;
         for (int i = 0; i < qtargets.size(); i++) {
-            QVariant n = qtargets.at(i);
+            const QVariant &n = qtargets.at(i);
             targets.append(n.value<ServerPlayer *>());
         }
         QList<ServerPlayer *> targets_copy = targets;
@@ -2436,7 +2436,7 @@ ServerPlayer *Room::findPlayerByObjectName(const QString &name, bool /*unused*/)
     return nullptr;
 }
 
-void Room::changeHero(ServerPlayer *player, const QString &new_general, bool full_state, bool, bool isSecondaryHero, bool sendLog)
+void Room::changeHero(ServerPlayer *player, const QString &new_general, bool full_state, bool /*unused*/, bool isSecondaryHero, bool sendLog)
 {
     JsonArray arg;
     arg << (int)S_GAME_EVENT_CHANGE_HERO;
@@ -2588,7 +2588,7 @@ void Room::prepareForStart()
 
                 for (int i = 0; i < n; i++) {
                     ServerPlayer *player = all_players[i];
-                    QString role = roles.at(i);
+                    const QString &role = roles.at(i);
 
                     player->setRole(role);
                     if (role == QStringLiteral("lord")) {
@@ -3226,7 +3226,7 @@ void Room::assignRoles()
 
     for (int i = 0; i < n; i++) {
         ServerPlayer *player = m_players[i];
-        QString role = roles.at(i);
+        const QString &role = roles.at(i);
 
         player->setRole(role);
         if (role == QStringLiteral("lord")) {
@@ -5870,7 +5870,7 @@ const Card *Room::askForPindian(ServerPlayer *player, ServerPlayer *from, Server
 QList<const Card *> Room::askForPindianRace(ServerPlayer *from, ServerPlayer *to, const QString &reason)
 {
     if (!from->isAlive() || !to->isAlive())
-        return QList<const Card *>() << NULL << NULL;
+        return QList<const Card *>() << nullptr << nullptr;
     Q_ASSERT(!from->isKongcheng() && !to->isKongcheng());
     tryPause();
     Countdown countdown;

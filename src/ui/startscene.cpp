@@ -97,7 +97,7 @@ void StartScene::printServerInfo()
     QList<QHostAddress> addresses = QNetworkInterface::allAddresses();
     foreach (QHostAddress address, addresses) {
         quint32 ipv4 = address.toIPv4Address();
-        if (ipv4 != 0u)
+        if (ipv4 != 0U)
             items << address.toString();
     }
 

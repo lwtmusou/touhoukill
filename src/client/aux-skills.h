@@ -42,7 +42,7 @@ public:
     virtual bool matchPattern(const Player *player, const Card *card) const;
 
     void setPattern(const QString &pattern);
-    void setRequest(const QSanguosha::HandlingMethod request);
+    void setRequest(QSanguosha::HandlingMethod request);
     bool viewFilter(const Card *to_select, const Player *Self, const QStringList &CurrentViewAsSkillChain) const override;
     const Card *viewAs(const Card *originalCard, const Player *Self, const QStringList &CurrentViewAsSkillChain) const override;
 
@@ -72,7 +72,7 @@ public:
 
     void setPlayerNames(const QStringList &names);
 
-    int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *, const Card *card) const override;
+    int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player * /*Self*/, const Card *card) const override;
 
 private:
     QSet<QString> set;
@@ -104,7 +104,7 @@ public:
 
     void setPlayerNames(const QStringList &names);
 
-    int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *, const Card *) const override;
+    int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player * /*Self*/, const Card * /*card*/) const override;
 
 private:
     QSet<QString> set;
