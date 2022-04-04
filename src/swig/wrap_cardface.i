@@ -5,16 +5,6 @@
 
 namespace CardFaceLuaCall {
 
-namespace {
-    class LuaDelayedPop1 final {
-    public:
-        LuaDelayedPop1(lua_State *l) : l(l) {}
-        ~LuaDelayedPop1() { lua_pop(l, 1); }
-    private:
-        lua_State *const l;
-    };
-}
-
 // All these functions have [-1, 0, -]
 // All of them assume the corresponding function is push on the top of stack, and all of them pop it
 
@@ -28,7 +18,7 @@ std::optional<bool> targetFixed(lua_State *l, const Player *player, const Card *
 
     int call = lua_pcall(l, 2, 1, 0); // { cardFace.targetFixed() / error }
 
-    LuaDelayedPop1 p1(l);  // { [cardFace.targetFixed() / error] } // need to pop the error object
+    LuaDelayedPop p1(l);  // { [cardFace.targetFixed() / error] } // need to pop the error object
 
     if (call != LUA_OK)
         return std::nullopt;
@@ -45,7 +35,7 @@ std::optional<bool> targetsFeasible(lua_State *l, const QList<const Player *> &t
 
     int call = lua_pcall(l, 3, 1, 0); // { cardFace.targetsFeasible() / error }
 
-    LuaDelayedPop1 p1(l);  // { [cardFace.targetsFeasible() / error] } // need to pop the error object
+    LuaDelayedPop p1(l);  // { [cardFace.targetsFeasible() / error] } // need to pop the error object
 
     if (call != LUA_OK)
         return std::nullopt;
@@ -63,7 +53,7 @@ std::optional<int> targetFilter(lua_State *l, const QList<const Player *> &targe
 
     int call = lua_pcall(l, 4, 1, 0); // { cardFace.targetsFeasible() / error }
 
-    LuaDelayedPop1 p1(l);  // { [cardFace.targetsFeasible() / error] } // need to pop the error object
+    LuaDelayedPop p1(l);  // { [cardFace.targetsFeasible() / error] } // need to pop the error object
 
     if (call != LUA_OK)
         return std::nullopt;
@@ -78,7 +68,7 @@ std::optional<const Card *> validate(lua_State *l, const CardUseStruct &use)
 
     int call = lua_pcall(l, 1, 1, 0); // { CardFace.validate() / error }
 
-    LuaDelayedPop1 p1(l);  // { [CardFace.validate() / error] } // need to pop the error object
+    LuaDelayedPop p1(l);  // { [CardFace.validate() / error] } // need to pop the error object
 
     if (call != LUA_OK)
         return std::nullopt;
@@ -99,7 +89,7 @@ std::optional<const Card *> validateInResponse(lua_State *l, Player *player, con
 
     int call = lua_pcall(l, 2, 1, 0); // { cardFace.validateInResponse() / error }
 
-    LuaDelayedPop1 p1(l);  // { [cardFace.validateInResponse() / error] } // need to pop the error object
+    LuaDelayedPop p1(l);  // { [cardFace.validateInResponse() / error] } // need to pop the error object
 
     if (call != LUA_OK)
         return std::nullopt;
@@ -149,7 +139,7 @@ std::optional<bool> isCancelable(lua_State *l, const CardEffectStruct &effect)
 
     int call = lua_pcall(l, 1, 1, 0); // { cardFace.isCancelable() / error }
 
-    LuaDelayedPop1 p1(l);  // { [cardFace.isCancelable() / error] } // need to pop the error object
+    LuaDelayedPop p1(l);  // { [cardFace.isCancelable() / error] } // need to pop the error object
 
     if (call != LUA_OK)
         return std::nullopt;
@@ -194,7 +184,7 @@ bool onInstall(lua_State *l, Player *player)
 std::optional<JudgeStruct> judge(lua_State *l)
 {
     JudgeStruct *arg2 = nullptr;
-    LuaDelayedPop1 p1(l);  // { [DelayedTrick.judge] }
+    LuaDelayedPop p1(l);  // { [DelayedTrick.judge] }
 
     if (!lua_isuserdata(l, 1))
         return std::nullopt;
