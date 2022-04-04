@@ -45,8 +45,8 @@ public:
 
     // id
     int id() const;
-    void setID(int id);
-    int effectiveID() const;
+    void setId(int id);
+    int effectiveId() const;
 
     // name
     QString faceName() const;
@@ -98,10 +98,10 @@ public:
     bool isVirtualCard() const;
 
     // Subcard
-    const IDSet &subcards() const;
+    const IdSet &subcards() const;
     void addSubcard(int card_id);
     void addSubcard(const Card *card);
-    void addSubcards(const IDSet &subcards);
+    void addSubcards(const IdSet &subcards);
     void clearSubcards();
     QString subcardString() const; // Used for converting card to string
 

@@ -111,8 +111,8 @@ public:
 
     QSGS_LOGIC void addToPile(const QString &pile_name, const Card *card, bool open = true, const QList<ServerPlayer *> &open_players = QList<ServerPlayer *>());
     QSGS_LOGIC void addToPile(const QString &pile_name, int card_id, bool open = true, const QList<ServerPlayer *> &open_players = QList<ServerPlayer *>());
-    QSGS_LOGIC void addToPile(const QString &pile_name, const IDSet &card_ids, bool open = true, const QList<ServerPlayer *> &open_players = QList<ServerPlayer *>());
-    QSGS_LOGIC void addToPile(const QString &pile_name, const IDSet &card_ids, bool open, const CardMoveReason &reason,
+    QSGS_LOGIC void addToPile(const QString &pile_name, const IdSet &card_ids, bool open = true, const QList<ServerPlayer *> &open_players = QList<ServerPlayer *>());
+    QSGS_LOGIC void addToPile(const QString &pile_name, const IdSet &card_ids, bool open, const CardMoveReason &reason,
                               QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
     QSGS_LOGIC void gainAnExtraTurn();
 

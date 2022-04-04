@@ -50,7 +50,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, const QString 
                 //sometimes, the first character need to Upper
                 QString kindOfName = name.left(1).toUpper() + name.right(name.length() - 1);
                 if (card->face()->isKindOf(kindOfName) || (card->face()->name() == name) || (QStringLiteral("%") + card->faceName() == name)
-                    || (card->effectiveID() == name.toInt(&isInt) && isInt))
+                    || (card->effectiveId() == name.toInt(&isInt) && isInt))
                     checkpoint = positive;
                 else
                     checkpoint = !positive;
@@ -137,11 +137,11 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, const QString 
         bool findOneShow = false; //only for check palce "show"
         bool needCheckShow = place.split(QStringLiteral(",")).contains(QStringLiteral("show")); //only for check place "show"
 
-        IDSet ids;
+        IdSet ids;
         if (card->isVirtualCard())
             ids = card->subcards();
         else
-            ids.insert(card->effectiveID());
+            ids.insert(card->effectiveId());
 
         if (ids.isEmpty()) {
             // TODO: Consider decoupling ExpPattern since "sqchuangshi" or "shehuo" is rather a tag than place
@@ -156,16 +156,16 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, const QString 
                 foreach (QString p, place.split(QStringLiteral(","))) {
                     if (p == QStringLiteral("equipped") && player->hasEquip(card)) {
                         checkpoint = true;
-                    } else if (p == QStringLiteral("hand") && card->effectiveID() >= 0) {
+                    } else if (p == QStringLiteral("hand") && card->effectiveId() >= 0) {
                         foreach (const Card *c, player->handCards()) {
-                            if (c->effectiveID() == id) {
+                            if (c->effectiveId() == id) {
                                 checkpoint = true;
                                 break;
                             }
                         }
-                    } else if (p == QStringLiteral("handOnly") && card->effectiveID() >= 0) { // exclude shownHandCard
+                    } else if (p == QStringLiteral("handOnly") && card->effectiveId() >= 0) { // exclude shownHandCard
                         foreach (const Card *c, player->handCards()) {
-                            if (c->effectiveID() == id && !player->shownHandcards().contains(id)) {
+                            if (c->effectiveId() == id && !player->shownHandcards().contains(id)) {
                                 checkpoint = true;
                                 break;
                             }
@@ -181,7 +181,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, const QString 
                             }
                         }
                     } else if (p == QStringLiteral("sqchuangshi") || p == QStringLiteral("shehuo")) {
-                        if ((card->effectiveID() >= 0 && !player->hasEquip(card)))
+                        if ((card->effectiveId() >= 0 && !player->hasEquip(card)))
                             checkpoint = true;
                     } else if (p == QStringLiteral("benwo") && (card->isVirtualCard() || !player->handCards().contains(player->roomObject()->getCard(card->id())))) {
                         return false;

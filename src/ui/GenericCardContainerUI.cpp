@@ -395,7 +395,7 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
     if (player->treasure() != nullptr)
         treasure_name = player->treasure()->faceName();
 
-    IDSet pile;
+    IdSet pile;
     if (pile_name == QStringLiteral("shown_card"))
         pile = player->shownHandcards();
     else if (pile_name == QStringLiteral("huashencard")) {
@@ -481,7 +481,7 @@ void PlayerCardContainer::showPile()
         const Player *player = getPlayer();
         if (player == nullptr)
             return;
-        IDSet card_ids = player->pile(button->objectName());
+        IdSet card_ids = player->pile(button->objectName());
         if (button->objectName() == QStringLiteral("huashencard")) {
             if (player == Self)
                 RoomSceneInstance->showPile(card_ids.values(), button->objectName(), player); // FIXME: Replace with IDSet
@@ -793,7 +793,7 @@ void PlayerCardContainer::addDelayedTricks(QList<CardItem *> &tricks)
         _paintPixmap(item, start, G_ROOM_SKIN.getCardJudgeIconPixmap(trick->getCard()->faceName()));
         trick->setHomeOpacity(0.0);
         trick->setHomePos(start.center());
-        const CardDescriptor &card = Sanguosha->getEngineCard(trick->getCard()->effectiveID());
+        const CardDescriptor &card = Sanguosha->getEngineCard(trick->getCard()->effectiveId());
         QString toolTip = QStringLiteral("<font color=#FFFF33><b>%1 [</b><img src='image/system/log/%2.png' height = 12/><b>%3]</b></font>")
                               .arg(Sanguosha->translate(card.face()->name()))
                               .arg(Card::SuitToString(card.suit))
@@ -806,12 +806,12 @@ void PlayerCardContainer::addDelayedTricks(QList<CardItem *> &tricks)
 
 QPixmap PlayerCardContainer::_getEquipPixmap(const Card *equip)
 {
-    const CardDescriptor &realCard = Sanguosha->getEngineCard(equip->effectiveID());
+    const CardDescriptor &realCard = Sanguosha->getEngineCard(equip->effectiveId());
     QPixmap equipIcon(_m_layout->m_equipAreas[0].size());
     equipIcon.fill(Qt::transparent);
     QPainter painter(&equipIcon);
     // icon / background
-    if (!m_player->isBrokenEquip(equip->effectiveID()))
+    if (!m_player->isBrokenEquip(equip->effectiveId()))
         painter.drawPixmap(_m_layout->m_equipImageArea, _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_EQUIP_ICON), equip->faceName()));
     else
         painter.drawPixmap(_m_layout->m_equipImageArea, _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_EQUIP_BROKEN_ICON), equip->faceName()));

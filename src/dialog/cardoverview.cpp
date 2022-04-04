@@ -95,7 +95,7 @@ void CardOverview::loadFromList(const QList<int> &list)
     }
 }
 
-void CardOverview::loadFromList(const IDSet &list)
+void CardOverview::loadFromList(const IdSet &list)
 {
     loadFromList(list.values());
 }

@@ -254,7 +254,7 @@ void PlayerCardBox::arrangeCards(const QList<const Card *> &cards, QPoint topLef
         item->setParentItem(this);
         item->setFlag(ItemIsMovable, false);
         if (card != nullptr) {
-            item->setEnabled(!disabledIds.contains(card->effectiveID()) && (method != QSanguosha::MethodDiscard || Self->canDiscard(player, card->effectiveID())));
+            item->setEnabled(!disabledIds.contains(card->effectiveId()) && (method != QSanguosha::MethodDiscard || Self->canDiscard(player, card->effectiveId())));
             if (shownCards.contains(card)) {
                 item->setFootnote(Sanguosha->translate(QStringLiteral("shown_card")));
                 item->showFootnote();

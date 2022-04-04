@@ -252,7 +252,7 @@ void Client::setShownHandCards(const QVariant &card_var)
     JsonUtils::tryParse(card_str[1], card_ids);
 
     Player *player = findPlayer(who);
-    player->setShownHandcards(IDSet(card_ids.begin(), card_ids.end()));
+    player->setShownHandcards(IdSet(card_ids.begin(), card_ids.end()));
     //  player->changePile(QStringLiteral("shown_card"), true, card_ids);
 }
 
@@ -270,7 +270,7 @@ void Client::setBrokenEquips(const QVariant &card_var)
 
     Player *player = findPlayer(who);
 
-    player->setBrokenEquips(IDSet(card_ids.begin(), card_ids.end()));
+    player->setBrokenEquips(IdSet(card_ids.begin(), card_ids.end()));
 }
 
 void Client::setHiddenGenerals(const QVariant &arg)
@@ -957,8 +957,8 @@ void Client::exchangeKnownCards(const QVariant &players)
         return;
     Player *a = findPlayer(args[0].toString());
     Player *b = findPlayer(args[1].toString());
-    IDSet a_known;
-    IDSet b_known;
+    IdSet a_known;
+    IdSet b_known;
     foreach (const Card *card, a->handCards())
         a_known << card->id();
     foreach (const Card *card, b->handCards())
@@ -1921,7 +1921,7 @@ void Client::showCard(const QVariant &show_str)
 
     Player *player = findPlayer(player_name);
     if (player != Self) {
-        IDSet s = player->handcards();
+        IdSet s = player->handcards();
         s << card_id;
         player->setHandCards(s);
     }
@@ -1986,7 +1986,7 @@ void Client::showAllCards(const QVariant &arg)
     if (who != nullptr)
         who->setHandCards(List2Set(card_ids));
 
-    emit gongxin(card_ids, false, IDSet(), who != nullptr ? who->shownHandcards() : IDSet());
+    emit gongxin(card_ids, false, IdSet(), who != nullptr ? who->shownHandcards() : IdSet());
 }
 
 void Client::askForGongxin(const QVariant &args)
@@ -2009,7 +2009,7 @@ void Client::askForGongxin(const QVariant &args)
 
     who->setHandCards(List2Set(card_ids));
 
-    emit gongxin(card_ids, enable_heart, IDSet(enabled_ids.begin(), enabled_ids.end()), who->shownHandcards());
+    emit gongxin(card_ids, enable_heart, IdSet(enabled_ids.begin(), enabled_ids.end()), who->shownHandcards());
     setStatus(AskForGongxin);
 }
 

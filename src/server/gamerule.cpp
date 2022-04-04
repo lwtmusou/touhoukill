@@ -347,7 +347,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
             //1) exclude SkillCard 2)changed move reason (USE) 3)keep extraData
             if ((card_use.card != nullptr) && card_use.card->face()->type() != QSanguosha::TypeSkill && !(card_use.card->isVirtualCard() && card_use.card->subcards().isEmpty())
                 && card_use.to.isEmpty()) {
-                if (room->getCardPlace(card_use.card->effectiveID()) == QSanguosha::PlaceTable) {
+                if (room->getCardPlace(card_use.card->effectiveId()) == QSanguosha::PlaceTable) {
                     CardMoveReason reason(QSanguosha::MoveReasonUse, card_use.from->objectName(), QString(), card_use.card->skillName(), QString());
                     reason.m_extraData = QVariant::fromValue(card_use.card);
                     room->moveCardTo(card_use.card, qobject_cast<ServerPlayer *>(card_use.from), nullptr, QSanguosha::PlaceDiscardPile, reason, true);
@@ -357,7 +357,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
             if ((card_use.card != nullptr) && card_use.card->face()->type() != QSanguosha::TypeSkill && card_use.to.isEmpty()) {
                 if (card_use.card->face()->isKindOf(QStringLiteral("Slash")) && card_use.from->isAlive())
                     room->setPlayerMark(qobject_cast<ServerPlayer *>(card_use.from), QStringLiteral("drank"), 0);
-                if (card_use.card->face()->isNDTrick() && card_use.from->isAlive()) //clear magic_drank while using Nullification
+                if (card_use.card->face()->isNdTrick() && card_use.from->isAlive()) //clear magic_drank while using Nullification
                     room->setPlayerMark(qobject_cast<ServerPlayer *>(card_use.from), QStringLiteral("magic_drank"), 0);
                 break;
             }
@@ -380,7 +380,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                 }
                 card_use = data.value<CardUseStruct>();
                 room->setTag(QStringLiteral("CardUseNullifiedList"), QVariant::fromValue(card_use.nullified_list));
-                if (card_use.card->face()->isNDTrick() && !card_use.card->face()->isKindOf(QStringLiteral("Nullification")))
+                if (card_use.card->face()->isNdTrick() && !card_use.card->face()->isKindOf(QStringLiteral("Nullification")))
                     room->setCardFlag(card_use.card, QStringLiteral("LastTrickTarget_") + card_use.to.last()->objectName());
 
                 card_use.card->face()->use(room, card_use);
@@ -392,7 +392,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
 
                 //copy from Room::useCard()
                 if (triggerEvent == QSanguosha::TurnBroken) {
-                    if (room->getCardPlace(card_use.card->effectiveID()) == QSanguosha::PlaceTable) {
+                    if (room->getCardPlace(card_use.card->effectiveId()) == QSanguosha::PlaceTable) {
                         CardMoveReason reason(QSanguosha::MoveReasonUnknown, card_use.from->objectName(), QString(), card_use.card->skillName(), QString());
                         if (card_use.to.size() == 1)
                             reason.m_targetId = card_use.to.first()->objectName();
@@ -432,7 +432,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
         CardUseStruct use = data.value<CardUseStruct>();
         room->clearCardFlag(use.card);
 
-        if (use.card->face()->isNDTrick())
+        if (use.card->face()->isNdTrick())
             room->removeTag(use.card->toString() + QStringLiteral("HegNullificationTargets"));
 
         if (use.card->face()->isKindOf(QStringLiteral("AOE")) || use.card->face()->isKindOf(QStringLiteral("GlobalEffect"))) {
@@ -623,7 +623,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                     QString xianshi_name;
                     QSet<Card *> cards = room->getCards();
                     foreach (const Card *card, cards) {
-                        if (card->face()->isNDTrick() || card->face()->isKindOf(QStringLiteral("BasicCard"))) {
+                        if (card->face()->isNdTrick() || card->face()->isKindOf(QStringLiteral("BasicCard"))) {
                             if (effect.card->hasFlag(QStringLiteral("xianshi_") + card->faceName())) {
                                 xianshi_name = card->faceName();
                                 break;
@@ -673,14 +673,14 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                             extraEffect.from = effect.from;
                             extraEffect.to = effect.to;
                             extraEffect.multiple = effect.multiple;
-                            if (effect.card->face()->isNDTrick())
+                            if (effect.card->face()->isNdTrick())
                                 extraEffect.effectValue.first() = effect.effectValue.first();
                             extraCard->face()->onEffect(extraEffect);
                         } else if (extraCard->face()->isKindOf(QStringLiteral("Analeptic"))) {
                             RecoverStruct recover;
                             recover.card = effect.card;
                             recover.from = effect.from;
-                            if (effect.card->face()->isNDTrick())
+                            if (effect.card->face()->isNdTrick())
                                 recover.recover = 1 + effect.effectValue.first();
                             room->recover(qobject_cast<ServerPlayer *>(effect.to), recover);
                         } else if (extraCard->face()->isKindOf(QStringLiteral("AmazingGrace"))) {
@@ -693,13 +693,13 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                             extraEffect.from = effect.from;
                             extraEffect.to = effect.to;
                             extraEffect.multiple = effect.multiple;
-                            if (effect.card->face()->isNDTrick())
+                            if (effect.card->face()->isNdTrick())
                                 extraEffect.effectValue.first() = effect.effectValue.first();
                             extraCard->face()->onEffect(extraEffect);
                         }
                     }
                     //xianshi_extra effect will use magic_drank whilefirst effect, then clean it.  //need check
-                    if (effect.effectValue.first() > 0 && effect.card->face()->isNDTrick() && extraCard->hasEffectValue())
+                    if (effect.effectValue.first() > 0 && effect.card->face()->isNdTrick() && extraCard->hasEffectValue())
                         effect.effectValue.first() = 0;
 
                     room->cardDeleting(extraCard);
@@ -766,7 +766,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                     room->slashResult(effect, nullptr);
                     return false;
                 } else {
-                    jink->addSubcard(asked_jink->effectiveID());
+                    jink->addSubcard(asked_jink->effectiveId());
                 }
             }
             room->slashResult(effect, jink);
@@ -1054,7 +1054,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
         LogMessage log;
         log.type = QStringLiteral("$JudgeResult");
         log.from = judge->who;
-        log.card_str = QString::number(judge->card()->effectiveID());
+        log.card_str = QString::number(judge->card()->effectiveId());
         room->sendLog(log);
 
         int delay = Config.AIDelay;
@@ -1072,7 +1072,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
     case QSanguosha::FinishJudge: {
         JudgeStruct *judge = data.value<JudgeStruct *>();
 
-        if (room->getCardPlace(judge->card()->effectiveID()) == QSanguosha::PlaceJudge) {
+        if (room->getCardPlace(judge->card()->effectiveId()) == QSanguosha::PlaceJudge) {
             CardMoveReason reason(QSanguosha::MoveReasonJudgeDone, judge->who->objectName(), QString(), judge->reason);
             if (judge->retrial_by_response != nullptr) {
                 reason.m_extraData = QVariant::fromValue(judge->retrial_by_response);
@@ -1178,7 +1178,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
         LegacyCardsMoveOneTimeStruct move = data.value<LegacyCardsMoveOneTimeStruct>();
         ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
         if (player != nullptr) {
-            IDSet shownIds;
+            IdSet shownIds;
             foreach (int id, move.card_ids) {
                 if (player->isShownHandcard(id))
                     shownIds << id;
@@ -1189,7 +1189,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                 data = QVariant::fromValue(move);
             }
 
-            IDSet brokenIds;
+            IdSet brokenIds;
             foreach (int id, move.card_ids) {
                 if (player->isBrokenEquip(id))
                     brokenIds << id;

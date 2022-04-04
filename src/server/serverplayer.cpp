@@ -80,7 +80,7 @@ void ServerPlayer::broadcastSkillInvoke(const Card *card) const
 
 int ServerPlayer::getRandomHandCardId() const
 {
-    return getRandomHandCard()->effectiveID();
+    return getRandomHandCard()->effectiveId();
 }
 
 const Card *ServerPlayer::getRandomHandCard() const
@@ -366,12 +366,12 @@ QList<const Card *> ServerPlayer::getCards(const QString &flags) const
         cards << m_handcards;
     else if (flags.contains(QStringLiteral("h"))) {
         foreach (const Card *c, m_handcards) {
-            if (!shownHandcards().contains(c->effectiveID()))
+            if (!shownHandcards().contains(c->effectiveId()))
                 cards << c;
         }
     } else if (flags.contains(QStringLiteral("s"))) {
         foreach (const Card *c, m_handcards) {
-            if (shownHandcards().contains(c->effectiveID()))
+            if (shownHandcards().contains(c->effectiveId()))
                 cards << c;
         }
     }
@@ -454,10 +454,10 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     PindianStruct *pindian = &pindian_struct; //for tmp record.
     if (card1 == nullptr) {
         card1 = room->askForPindian(this, this, target, reason, pindian);
-        if ((card1 != nullptr) && isShownHandcard(card1->effectiveID())) {
+        if ((card1 != nullptr) && isShownHandcard(card1->effectiveId())) {
             log2.type = QStringLiteral("$PindianResult");
             log2.from = pindian_struct.from;
-            log2.card_str = QString::number(card1->effectiveID());
+            log2.card_str = QString::number(card1->effectiveId());
             room->sendLog(log2);
             card1_result_logged = true;
         }
@@ -469,13 +469,13 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
 
     } else {
         if (card1->isVirtualCard()) {
-            int card_id = card1->effectiveID();
+            int card_id = card1->effectiveId();
             card1 = room->getCard(card_id);
         }
-        if ((card1 != nullptr) && isShownHandcard(card1->effectiveID())) {
+        if ((card1 != nullptr) && isShownHandcard(card1->effectiveId())) {
             log2.type = QStringLiteral("$PindianResult");
             log2.from = pindian_struct.from;
-            log2.card_str = QString::number(card1->effectiveID());
+            log2.card_str = QString::number(card1->effectiveId());
             room->sendLog(log2);
             card1_result_logged = true;
         }
@@ -512,13 +512,13 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     if (!card1_result_logged) {
         log2.type = QStringLiteral("$PindianResult");
         log2.from = pindian_struct.from;
-        log2.card_str = QString::number(pindian_struct.from_card->effectiveID());
+        log2.card_str = QString::number(pindian_struct.from_card->effectiveId());
         room->sendLog(log2);
     }
 
     log2.type = QStringLiteral("$PindianResult");
     log2.from = pindian_struct.to;
-    log2.card_str = QString::number(pindian_struct.to_card->effectiveID());
+    log2.card_str = QString::number(pindian_struct.to_card->effectiveId());
     room->sendLog(log2);
 
     RoomThread *thread = room->getThread();
@@ -542,9 +542,9 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     JsonArray arg;
     arg << (int)S_GAME_EVENT_REVEAL_PINDIAN;
     arg << objectName();
-    arg << pindian_struct.from_card->effectiveID();
+    arg << pindian_struct.from_card->effectiveId();
     arg << target->objectName();
-    arg << pindian_struct.to_card->effectiveID();
+    arg << pindian_struct.to_card->effectiveId();
     arg << pindian_struct.success;
     arg << reason;
     room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
@@ -553,12 +553,12 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     data = QVariant::fromValue(pindian_star);
     thread->trigger(QSanguosha::Pindian, data);
 
-    if (room->getCardPlace(pindian_struct.from_card->effectiveID()) == QSanguosha::PlaceTable) {
+    if (room->getCardPlace(pindian_struct.from_card->effectiveId()) == QSanguosha::PlaceTable) {
         CardMoveReason reason1(QSanguosha::MoveReasonPindian, pindian_struct.from->objectName(), pindian_struct.to->objectName(), pindian_struct.reason, QString());
         room->moveCardTo(pindian_struct.from_card, qobject_cast<ServerPlayer *>(pindian_struct.from), nullptr, QSanguosha::PlaceDiscardPile, reason1, true);
     }
 
-    if (room->getCardPlace(pindian_struct.to_card->effectiveID()) == QSanguosha::PlaceTable) {
+    if (room->getCardPlace(pindian_struct.to_card->effectiveId()) == QSanguosha::PlaceTable) {
         CardMoveReason reason2(QSanguosha::MoveReasonPindian, pindian_struct.to->objectName());
         room->moveCardTo(pindian_struct.to_card, qobject_cast<ServerPlayer *>(pindian_struct.to), nullptr, QSanguosha::PlaceDiscardPile, reason2, true);
     }
@@ -566,7 +566,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     ChoiceMadeStruct s;
     s.player = this;
     s.type = ChoiceMadeStruct::Pindian;
-    s.args << reason << objectName() << QString::number(pindian_struct.from_card->effectiveID()) << target->objectName() << QString::number(pindian_struct.to_card->effectiveID());
+    s.args << reason << objectName() << QString::number(pindian_struct.from_card->effectiveId()) << target->objectName() << QString::number(pindian_struct.to_card->effectiveId());
     QVariant decisionData = QVariant::fromValue(s);
     thread->trigger(QSanguosha::ChoiceMade, decisionData);
 
@@ -1266,27 +1266,27 @@ void ServerPlayer::marshal(ServerPlayer *player) const
 
 void ServerPlayer::addToPile(const QString &pile_name, const Card *card, bool open, const QList<ServerPlayer *> &open_players)
 {
-    IDSet card_ids;
+    IdSet card_ids;
     if (card->isVirtualCard())
         card_ids = card->subcards();
     else
-        card_ids << card->effectiveID();
+        card_ids << card->effectiveId();
     return addToPile(pile_name, card_ids, open, open_players);
 }
 
 void ServerPlayer::addToPile(const QString &pile_name, int card_id, bool open, const QList<ServerPlayer *> &open_players)
 {
-    IDSet card_ids;
+    IdSet card_ids;
     card_ids << card_id;
     return addToPile(pile_name, card_ids, open, open_players);
 }
 
-void ServerPlayer::addToPile(const QString &pile_name, const IDSet &card_ids, bool open, const QList<ServerPlayer *> &open_players)
+void ServerPlayer::addToPile(const QString &pile_name, const IdSet &card_ids, bool open, const QList<ServerPlayer *> &open_players)
 {
     return addToPile(pile_name, card_ids, open, CardMoveReason(), open_players);
 }
 
-void ServerPlayer::addToPile(const QString &pile_name, const IDSet &card_ids, bool open, const CardMoveReason &reason, QList<ServerPlayer *> open_players)
+void ServerPlayer::addToPile(const QString &pile_name, const IdSet &card_ids, bool open, const CardMoveReason &reason, QList<ServerPlayer *> open_players)
 {
     LegacyCardsMoveStruct move;
     move.card_ids = card_ids.values(); // FIXME: Replace here with IDSet

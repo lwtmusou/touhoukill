@@ -91,7 +91,7 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
         item->setFlag(QGraphicsItem::ItemIsFocusable);
 
         item->setAcceptedMouseButtons(Qt::LeftButton);
-        if (disabled_ids.contains(item->getCard()->effectiveID()))
+        if (disabled_ids.contains(item->getCard()->effectiveId()))
             item->setEnabled(false);
 
         if (shownHandcard_ids.contains(item->getId())) {
@@ -256,7 +256,7 @@ void CardContainer::startGongxin(const QList<int> &enabled_ids)
 
     foreach (CardItem *item, items) {
         const Card *card = item->getCard();
-        if ((card != nullptr) && enabled_ids.contains(card->effectiveID())) {
+        if ((card != nullptr) && enabled_ids.contains(card->effectiveId())) {
             connect(item, &CardItem::double_clicked, this, &CardContainer::gongxinItem);
         } else
             item->setEnabled(false);
@@ -317,7 +317,7 @@ void CardContainer::view(const Player *player)
     QList<int> card_ids;
     QList<const Card *> cards = player->handCards();
     foreach (const Card *card, cards)
-        card_ids << card->effectiveID();
+        card_ids << card->effectiveId();
 
     fillCards(card_ids);
 }

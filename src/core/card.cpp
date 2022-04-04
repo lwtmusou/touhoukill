@@ -24,7 +24,7 @@ public:
     Number number;
     int id; // real card has id.
 
-    IDSet sub_cards; // for real card this should be empty.
+    IdSet sub_cards; // for real card this should be empty.
 
     // Skill name related
     QString skill_name;
@@ -235,12 +235,12 @@ int Card::id() const
     return d->id;
 }
 
-void Card::setID(int id)
+void Card::setId(int id)
 {
     d->id = id;
 }
 
-int Card::effectiveID() const
+int Card::effectiveId() const
 {
     if (isVirtualCard()) {
         if (d->sub_cards.isEmpty())
@@ -456,7 +456,7 @@ bool Card::isVirtualCard() const
     return id() < 0;
 }
 
-const IDSet &Card::subcards() const
+const IdSet &Card::subcards() const
 {
     return d->sub_cards;
 }
@@ -469,10 +469,10 @@ void Card::addSubcard(int card_id)
 
 void Card::addSubcard(const Card *card)
 {
-    d->sub_cards.insert(card->effectiveID());
+    d->sub_cards.insert(card->effectiveId());
 }
 
-void Card::addSubcards(const IDSet &subcards)
+void Card::addSubcards(const IdSet &subcards)
 {
     foreach (int id, subcards)
         d->sub_cards.insert(id);

@@ -535,7 +535,7 @@ Card *RoomObject::cloneDummyCard()
     return cloneCard();
 }
 
-Card *RoomObject::cloneDummyCard(const IDSet &idSet)
+Card *RoomObject::cloneDummyCard(const IdSet &idSet)
 {
     Card *c = cloneCard();
     if (c == nullptr)

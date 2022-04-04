@@ -25,7 +25,7 @@ public:
 
     virtual int playersCount() const = 0;
     virtual Rule *rule() const = 0;
-    virtual IDSet availableCards() const = 0;
+    virtual IdSet availableCards() const = 0;
     virtual QSet<const General *> availableGenerals() const = 0;
 
     virtual void startGame(RoomObject *room) const = 0;
@@ -48,7 +48,7 @@ class QSGS_CORE_EXPORT GenericRoleMode : public Mode
 public:
     int playersCount() const override;
     Rule *rule() const override;
-    IDSet availableCards() const override;
+    IdSet availableCards() const override;
     QSet<const General *> availableGenerals() const override;
 
     void startGame(RoomObject *room) const override;
@@ -67,7 +67,7 @@ class QSGS_CORE_EXPORT GenericHegemonyMode : public Mode
 public:
     int playersCount() const override;
     Rule *rule() const override;
-    IDSet availableCards() const override;
+    IdSet availableCards() const override;
     QSet<const General *> availableGenerals() const override;
 
     void startGame(RoomObject *room) const override;

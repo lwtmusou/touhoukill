@@ -1267,7 +1267,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
         return;
 
     QString new_name = pile_name;
-    IDSet pile;
+    IdSet pile;
     if (new_name.startsWith(QStringLiteral("%"))) {
         new_name = new_name.mid(1);
         foreach (const Player *p, ClientInstance->players(false)) {
@@ -1277,7 +1277,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
     } else if (pile_name == QStringLiteral("#xiuye_temp")) {
         foreach (int id, ClientInstance->discardPile()) {
             const CardDescriptor &c = Sanguosha->getEngineCard(id);
-            if (c.suit == QSanguosha::Club && (c.face()->isNDTrick() || c.face()->type() == QSanguosha::TypeBasic))
+            if (c.suit == QSanguosha::Club && (c.face()->isNdTrick() || c.face()->type() == QSanguosha::TypeBasic))
                 pile << id;
         }
     } else if (pile_name == QStringLiteral("#judging_area")) {
@@ -1418,7 +1418,7 @@ void Dashboard::updateHandPile()
 {
     const Card *t = Self->treasure();
     if (t != nullptr) {
-        if (Self->isBrokenEquip(t->effectiveID(), true))
+        if (Self->isBrokenEquip(t->effectiveId(), true))
             retractPileCards(QStringLiteral("wooden_ox"));
     }
 }
@@ -1489,7 +1489,7 @@ void Dashboard::updatePending()
     foreach (CardItem *item, m_handCards) {
         if (item->getFootnote() == Sanguosha->translate(QStringLiteral("shown_card")))
             item->hideFootnote();
-        if (Self->isShownHandcard(item->getCard()->effectiveID())) {
+        if (Self->isShownHandcard(item->getCard()->effectiveId())) {
             item->setFootnote(Sanguosha->translate(QStringLiteral("shown_card")));
             item->showFootnote();
         }

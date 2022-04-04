@@ -13,7 +13,7 @@
 // Fs: I prefer following:
 // typedef QSet<int> IDSet;
 // Are there any advantages using 'using' instead of 'typedef'?
-using IDSet = QSet<int>;
+using IdSet = QSet<int>;
 
 #ifndef SWIG
 namespace QSanguosha {

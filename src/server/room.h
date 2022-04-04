@@ -154,7 +154,7 @@ public:
     QSGS_STATE_GAME void setCardMapping(int card_id, ServerPlayer *owner, QSanguosha::Place place);
     // FIXME: Replace their return value to IDSet.
     QSGS_STATE_GAME QList<int> getCardIdsOnTable(const Card *) const;
-    QSGS_STATE_GAME QList<int> getCardIdsOnTable(const IDSet &card_ids) const;
+    QSGS_STATE_GAME QList<int> getCardIdsOnTable(const IdSet &card_ids) const;
 
     QSGS_LOGIC enum GuanxingType { GuanxingUpOnly = 1, GuanxingBothSides = 0, GuanxingDownOnly = -1 };
     Q_ENUM(GuanxingType)

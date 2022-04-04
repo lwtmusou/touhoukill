@@ -193,15 +193,15 @@ public:
 
     virtual void addToPlayerPile(Player *owner, const QString &pile_name, const Card *card, bool open = true, QList<Player *> open_target = QList<Player *>()) = 0;
     virtual void addToPlayerPile(Player *owner, const QString &pile_name, int card_id, bool open = true, QList<Player *> open_target = QList<Player *>()) = 0;
-    virtual void addToPlayerPile(Player *owner, const QString &pile_name, const IDSet &card_id, bool open = true, QList<Player *> open_target = QList<Player *>()) = 0;
-    virtual void addToPlayerPile(Player *owner, const QString &pile_name, const IDSet &card_id, bool open, CardMoveReason reason, QList<Player *> open_target = QList<Player *>())
+    virtual void addToPlayerPile(Player *owner, const QString &pile_name, const IdSet &card_id, bool open = true, QList<Player *> open_target = QList<Player *>()) = 0;
+    virtual void addToPlayerPile(Player *owner, const QString &pile_name, const IdSet &card_id, bool open, CardMoveReason reason, QList<Player *> open_target = QList<Player *>())
         = 0;
 
-    virtual void addToPlayerShowHandCards(Player *target, const IDSet &card_ids) = 0;
-    virtual void addToPlayerShowHandCards(Player *target, const IDSet &card_ids, bool send_log = false, bool move_from_hand = false) = 0;
+    virtual void addToPlayerShowHandCards(Player *target, const IdSet &card_ids) = 0;
+    virtual void addToPlayerShowHandCards(Player *target, const IdSet &card_ids, bool send_log = false, bool move_from_hand = false) = 0;
 
-    virtual void addPlayerBrokenEquip(Player *target, const IDSet &ids) = 0;
-    virtual void removePlayerBrokenEquip(Player *target, const IDSet &ids) = 0;
+    virtual void addPlayerBrokenEquip(Player *target, const IdSet &ids) = 0;
+    virtual void removePlayerBrokenEquip(Player *target, const IdSet &ids) = 0;
 
     virtual void addPlayerHiddenGeneral(Player *target, const QStringList &generals) = 0;
     virtual void removePlayerHiddenGeneral(Player *target, const QStringList) = 0;
@@ -250,7 +250,7 @@ public:
     virtual bool askForDiscard(Player *target, const QString &reason, int discard_num, int min_num, bool optional = false, bool include_equip = false,
                                const QString &prompt = QString())
         = 0;
-    virtual void doJileiShow(Player *player, const IDSet &jilei_ids) = 0;
+    virtual void doJileiShow(Player *player, const IdSet &jilei_ids) = 0;
     virtual void forcePlayerDiscard(const Player *target, int discard_num, int include_equip, bool is_discard = true) = 0;
 
     // TODO: Add pattern to askForExchange (QSanguosha::MethodNone)

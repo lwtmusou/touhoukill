@@ -63,15 +63,15 @@ public:
     QMap<QString, int> marks;
     QSet<QString> flags;
     QHash<QString, int> history;
-    QMap<QString, IDSet> piles;
+    QMap<QString, IdSet> piles;
     QMap<QString, int> pilesLength;
     QSet<QString> acquiredSkills; // Acquired skills isn't split into parts by game rule
     QList<QMap<QString, bool>> generalCardSkills; // General card skill
     QStringList invalidSkills;
-    IDSet shownHandcards;
-    IDSet brokenEquips;
+    IdSet shownHandcards;
+    IdSet brokenEquips;
 
-    IDSet handcards; // a.k.a. knownHandCards in client side
+    IdSet handcards; // a.k.a. knownHandCards in client side
 
     PlayerPrivate(RoomObject *room)
         : room(room)
@@ -229,12 +229,12 @@ int Player::dyingFactor() const
     return d->dyingFactor;
 }
 
-const IDSet &Player::shownHandcards() const
+const IdSet &Player::shownHandcards() const
 {
     return d->shownHandcards;
 }
 
-void Player::setShownHandcards(const IDSet &ids)
+void Player::setShownHandcards(const IdSet &ids)
 {
     d->shownHandcards = ids;
 }
@@ -246,12 +246,12 @@ bool Player::isShownHandcard(int id) const
     return d->shownHandcards.contains(id);
 }
 
-const IDSet &Player::brokenEquips() const
+const IdSet &Player::brokenEquips() const
 {
     return d->brokenEquips;
 }
 
-void Player::setBrokenEquips(const IDSet &ids)
+void Player::setBrokenEquips(const IdSet &ids)
 {
     d->brokenEquips = ids;
 }
@@ -915,7 +915,7 @@ bool Player::hasEquip(const Card *card) const
     Q_ASSERT(card != nullptr);
     QList<int> ids;
     if (card->isVirtualCard())
-        ids << card->effectiveID();
+        ids << card->effectiveId();
     else
         ids << card->id();
 
@@ -975,7 +975,7 @@ QList<const Card *> Player::equipCards() const
     return equips;
 }
 
-IDSet Player::equips() const
+IdSet Player::equips() const
 {
     QList<int> equips {d->weapon, d->armor, d->defensiveHorse, d->offensiveHorse, d->treasure};
     equips.removeAll(-1);
@@ -1214,7 +1214,7 @@ bool Player::canDiscard(const Player *to, const QString &flags, const QString &r
 bool Player::canDiscard(const Player *to, int card_id, const QString &reason) const
 {
     if (reason == QStringLiteral("sidou")) {
-        if ((to->weapon() != nullptr) && card_id == to->weapon()->effectiveID())
+        if ((to->weapon() != nullptr) && card_id == to->weapon()->effectiveId())
             return false;
     }
 
@@ -1268,7 +1268,7 @@ void Player::removeCard(const Card *card, Place place, const QString &pile_name)
     case PlaceEquip: {
         const EquipCard *equip = dynamic_cast<const EquipCard *>(card->face());
         if (equip == nullptr)
-            equip = dynamic_cast<const EquipCard *>(Sanguosha->getEngineCard(card->effectiveID()).face());
+            equip = dynamic_cast<const EquipCard *>(Sanguosha->getEngineCard(card->effectiveId()).face());
         Q_ASSERT(equip != nullptr);
         equip->onUninstall(this);
         removeEquip(card);
@@ -1279,7 +1279,7 @@ void Player::removeCard(const Card *card, Place place, const QString &pile_name)
         break;
     }
     case PlaceSpecial: {
-        int card_id = ((card == nullptr) ? -1 : card->effectiveID());
+        int card_id = ((card == nullptr) ? -1 : card->effectiveId());
         if (card_id != -1) {
             QString n = pileName(card_id);
             if (!pile_name.isEmpty()) {
@@ -1318,7 +1318,7 @@ void Player::addCard(const Card *card, Place place, const QString &pile_name)
     case PlaceEquip: {
         const EquipCard *equip = dynamic_cast<const EquipCard *>(card->face());
         if (equip == nullptr)
-            equip = dynamic_cast<const EquipCard *>(Sanguosha->getEngineCard(card->effectiveID()).face());
+            equip = dynamic_cast<const EquipCard *>(Sanguosha->getEngineCard(card->effectiveId()).face());
         setEquip(card);
         equip->onInstall(this);
         break;
@@ -1339,12 +1339,12 @@ void Player::addCard(const Card *card, Place place, const QString &pile_name)
     }
 }
 
-IDSet Player::handcards() const
+IdSet Player::handcards() const
 {
     return d->handcards;
 }
 
-void Player::setHandCards(const IDSet &hc)
+void Player::setHandCards(const IdSet &hc)
 {
     // all cards are known before means all cards are known afterwards?
     // need to determine whether the design is appropriate
@@ -1470,7 +1470,7 @@ int Player::getCardCount(bool include_equip, bool include_judging) const
     return count;
 }
 
-IDSet Player::pile(const QString &pile_name) const
+IdSet Player::pile(const QString &pile_name) const
 {
     if (pile_name == QStringLiteral("shown_card"))
         return shownHandcards();
@@ -1488,7 +1488,7 @@ QStringList Player::pileNames() const
 QString Player::pileName(int card_id) const
 {
     foreach (QString pile_name, d->piles.keys()) {
-        const IDSet pile = d->piles[pile_name];
+        const IdSet pile = d->piles[pile_name];
         if (pile.contains(card_id))
             return pile_name;
     }
@@ -1496,9 +1496,9 @@ QString Player::pileName(int card_id) const
     return QString();
 }
 
-IDSet Player::getHandPile() const
+IdSet Player::getHandPile() const
 {
-    IDSet result;
+    IdSet result;
     foreach (const QString &p, pileNames()) {
         if (p.startsWith(QStringLiteral("&")) || (p == QStringLiteral("wooden_ox") && hasValidTreasure(QStringLiteral("wooden_ox")))) {
             foreach (int id, pile(p))
@@ -1641,7 +1641,7 @@ bool Player::isLastHandCard(const Card *card, bool contain) const
 {
     if (d->handCardNum == d->handcards.count()) {
         // all cards is known (on either client or server side)
-        IDSet ids;
+        IdSet ids;
         if (!card->isVirtualCard())
             ids << card->id();
         else
@@ -2024,21 +2024,21 @@ QList<const Player *> Player::getFormation() const
     return teammates;
 }
 
-void Player::addBrokenEquips(const IDSet &card_ids)
+void Player::addBrokenEquips(const IdSet &card_ids)
 {
     foreach (int id, card_ids)
         d->brokenEquips << id;
 }
 
-void Player::removeBrokenEquips(const IDSet &card_ids)
+void Player::removeBrokenEquips(const IdSet &card_ids)
 {
     foreach (int id, card_ids)
         d->brokenEquips.remove(id);
 }
 
-void Player::addToShownHandCards(const IDSet &card_ids)
+void Player::addToShownHandCards(const IdSet &card_ids)
 {
-    IDSet add_ids;
+    IdSet add_ids;
     int newKnown = 0;
     foreach (int id, card_ids) {
         if (!d->shownHandcards.contains(id))
@@ -2057,7 +2057,7 @@ void Player::addToShownHandCards(const IDSet &card_ids)
     d->handcards.unite(add_ids);
 }
 
-void Player::removeShownHandCards(const IDSet &card_ids)
+void Player::removeShownHandCards(const IdSet &card_ids)
 {
     foreach (int id, card_ids) {
         if (d->shownHandcards.contains(id))

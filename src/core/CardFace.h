@@ -35,7 +35,7 @@ public:
 
     // Can we have a better way to replace this function? Maybe using `match`
     // Fs: This is just a convenience function....
-    inline bool isNDTrick() const
+    inline bool isNdTrick() const
     {
         return isKindOf(QStringLiteral("NonDelayedTrick"));
     }

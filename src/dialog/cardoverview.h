@@ -21,7 +21,7 @@ public:
     explicit CardOverview(QWidget *parent = nullptr);
     void loadFromAll();
     void loadFromList(const QList<int> &list);
-    void loadFromList(const IDSet &list);
+    void loadFromList(const IdSet &list);
 
     ~CardOverview() override;
 

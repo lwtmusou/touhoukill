@@ -71,11 +71,11 @@ public:
     QString screenName() const;
 
     // property setters/getters
-    const IDSet &shownHandcards() const;
-    void setShownHandcards(const IDSet &ids);
+    const IdSet &shownHandcards() const;
+    void setShownHandcards(const IdSet &ids);
     bool isShownHandcard(int id) const;
-    const IDSet &brokenEquips() const;
-    void setBrokenEquips(const IDSet &ids);
+    const IdSet &brokenEquips() const;
+    void setBrokenEquips(const IdSet &ids);
     bool isBrokenEquip(int id, bool consider_shenbao = false) const;
 
     int hp() const;
@@ -206,8 +206,8 @@ public:
     int handcardNum() const;
     void removeCard(const Card *card, QSanguosha::Place place, const QString &pile_name = QString());
     void addCard(const Card *card, QSanguosha::Place place, const QString &pile_name = QString());
-    IDSet handcards() const;
-    void setHandCards(const IDSet &hc);
+    IdSet handcards() const;
+    void setHandCards(const IdSet &hc);
     QList<const Card *> handCards() const;
 
     const Card *weapon() const;
@@ -216,7 +216,7 @@ public:
     const Card *offensiveHorse() const;
     const Card *treasure() const;
     QList<const Card *> equipCards() const;
-    IDSet equips() const;
+    IdSet equips() const;
     const Card *equipCard(int index) const;
 
     bool hasValidWeapon(const QString &weapon_name) const;
@@ -247,11 +247,11 @@ public:
     bool canSlash(const Player *other, bool distance_limit = true, int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
     int getCardCount(bool include_equip = true, bool = false) const;
 
-    IDSet pile(const QString &pile_name) const;
+    IdSet pile(const QString &pile_name) const;
     QStringList pileNames() const;
     QString pileName(int card_id) const;
 
-    IDSet getHandPile() const;
+    IdSet getHandPile() const;
     QStringList getHandPileList(bool view_as_skill = true) const;
 
     void addHistory(const QString &name, int times = 1);
@@ -300,10 +300,10 @@ public:
 
     QList<const Player *> getFormation() const;
 
-    void addBrokenEquips(const IDSet &card_ids);
-    void removeBrokenEquips(const IDSet &card_ids);
-    void addToShownHandCards(const IDSet &card_ids);
-    void removeShownHandCards(const IDSet &card_ids);
+    void addBrokenEquips(const IdSet &card_ids);
+    void removeBrokenEquips(const IdSet &card_ids);
+    void addToShownHandCards(const IdSet &card_ids);
+    void removeShownHandCards(const IdSet &card_ids);
 
     RoomObject *roomObject() const;
 

@@ -69,7 +69,7 @@ Rule *GenericRoleMode::rule() const
     return nullptr;
 }
 
-IDSet GenericRoleMode::availableCards() const
+IdSet GenericRoleMode::availableCards() const
 {
     // TODO
     return {};
@@ -114,7 +114,7 @@ Rule *GenericHegemonyMode::rule() const
     return nullptr;
 }
 
-IDSet GenericHegemonyMode::availableCards() const
+IdSet GenericHegemonyMode::availableCards() const
 {
     // TODO
     return {};

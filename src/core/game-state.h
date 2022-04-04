@@ -105,7 +105,7 @@ public:
 
     virtual Card *cloneSkillCard(const QString &name);
     virtual Card *cloneDummyCard();
-    virtual Card *cloneDummyCard(const IDSet &idSet);
+    virtual Card *cloneDummyCard(const IdSet &idSet);
     virtual Card *cloneCard(const Card *card);
     virtual Card *cloneCard(const QString &name, QSanguosha::Suit suit = QSanguosha::SuitToBeDecided, QSanguosha::Number number = QSanguosha::NumberToBeDecided);
     virtual Card *cloneCard(const CardFace *cardFace = nullptr, QSanguosha::Suit suit = QSanguosha::SuitToBeDecided, QSanguosha::Number number = QSanguosha::NumberToBeDecided);

@@ -76,7 +76,7 @@ public:
 
     Card *cloneSkillCard(const QString &name);
     Card *cloneDummyCard();
-    Card *cloneDummyCard(const IDSet &idSet);
+    Card *cloneDummyCard(const IdSet &idSet);
     Card *cloneCard(const Card *card);
     Card *cloneCard(const QString &name, QSanguosha::Suit suit = QSanguosha::SuitToBeDecided, QSanguosha::Number number = QSanguosha::NumberToBeDecided);
     Card *cloneCard(const CardFace *cardFace = nullptr, QSanguosha::Suit suit = QSanguosha::SuitToBeDecided, QSanguosha::Number number = QSanguosha::NumberToBeDecided);

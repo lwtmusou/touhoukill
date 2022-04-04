@@ -111,7 +111,7 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
             QString meth = eff ? tr("carry out") : tr("use skill");
             QString suffix = eff ? tr("effect") : QString();
 
-            IDSet card_ids = card->subcards();
+            IdSet card_ids = card->subcards();
             QStringList subcard_list;
             foreach (int card_id, card_ids) {
                 const CardDescriptor &subcard = Sanguosha->getEngineCard(card_id);
@@ -135,7 +135,7 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
 
             ClientInstance->cardDeleting(card);
         } else if (!card->skillName().isEmpty()) {
-            const CardDescriptor &real = Sanguosha->getEngineCard(card->effectiveID());
+            const CardDescriptor &real = Sanguosha->getEngineCard(card->effectiveId());
             QString skill_name = Sanguosha->translate(card->skillName());
             skill_name = bold(skill_name, Qt::yellow);
 

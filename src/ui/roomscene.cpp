@@ -2995,7 +2995,7 @@ void RoomScene::onSkillActivated()
                 cards << Self->handCards() << Self->equipCards();
 
                 foreach (const QString &name, dashboard->getPileExpanded()) {
-                    IDSet pile = Self->pile(name);
+                    IdSet pile = Self->pile(name);
                     foreach (int id, pile)
                         cards << ClientInstance->getCard(id);
                 }
@@ -3959,7 +3959,7 @@ void RoomScene::showPlayerCards()
             overview->loadFromList(player->pile(pile_name));
             overview->show();
         } else {
-            IDSet cards;
+            IdSet cards;
             foreach (const Card *card, player->handCards()) {
                 if (card->id() >= 0)
                     cards << card->id();
