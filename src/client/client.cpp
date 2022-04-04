@@ -2428,6 +2428,23 @@ QString Client::getGeneralSkillDescription(QString generalname, bool include_nam
     return description;
 }
 
+QString Client::getPlayerFootNoteName(const Player *player) const
+{
+    QStringList generalNames = player->generalNames();
+    generalNames.removeAll(QString());
+    generalNames.removeAll(QStringLiteral("anjiang"));
+
+    if (generalNames.isEmpty()) {
+        return Sanguosha->translate(QStringLiteral("SEAT(%1)").arg(QString::number(player->seat())));
+    } else {
+        QStringList translatedGeneralNames;
+        foreach (const QString &name, generalNames)
+            translatedGeneralNames << Sanguosha->translate(name);
+
+        return translatedGeneralNames.join(QStringLiteral("/"));
+    }
+}
+
 void Client::changeSkin(const QString &name, int index)
 {
     JsonArray skinInfo;

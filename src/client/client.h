@@ -223,6 +223,7 @@ public:
     QString getSkillDescription(QString skillname) const;
     QString getSkillNotice(QString skillname, int index) const;
     QString getGeneralSkillDescription(QString generalname, bool include_name = false, bool yellow = true) const;
+    QString getPlayerFootNoteName(const Player *player) const;
 
 public slots:
     void signup();

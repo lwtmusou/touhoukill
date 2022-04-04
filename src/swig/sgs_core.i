@@ -322,8 +322,7 @@ public:
     void setGeneral(const General *general, int pos = 0);
     const General *general(int pos = 0) const;
     QString generalName(int pos = 0) const;
-
-    QString getFootnoteName() const;
+    QStringList generalNames() const;
 
     void setState(const QString &state);
     QString getState() const;

@@ -559,20 +559,24 @@ const General *Player::general(int pos) const
     return nullptr;
 }
 
+QList<const General *> Player::generals() const
+{
+    return d->generals;
+}
+
 QString Player::generalName(int pos) const
 {
     const General *generalp = general(pos);
     return (generalp == nullptr) ? QString() : generalp->name();
 }
 
-QString Player::getFootnoteName() const
+QStringList Player::generalNames() const
 {
-    foreach (const General *general, d->generals) {
-        if (general->name() != QStringLiteral("anjiang"))
-            return general->name();
-    }
+    QStringList r;
+    for (int i = 0; i < d->generals.length(); ++i)
+        r << generalName(i);
 
-    return Sanguosha->translate(QStringLiteral("SEAT(%1)").arg(QString::number(seat())));
+    return r;
 }
 
 QString Player::getState() const

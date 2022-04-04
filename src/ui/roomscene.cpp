@@ -2094,16 +2094,16 @@ QString RoomScene::_translateMovement(const LegacyCardsMoveStruct &move)
     QString targetName;
 
     if (srcPhoto != nullptr)
-        playerName = Sanguosha->translate(srcPhoto->getPlayer()->getFootnoteName());
+        playerName = ClientInstance->getPlayerFootNoteName(srcPhoto->getPlayer());
     else if (reason.m_playerId == Self->objectName())
-        playerName = QStringLiteral("%1(%2)").arg(Sanguosha->translate(Self->getFootnoteName()), Sanguosha->translate(QStringLiteral("yourself")));
+        playerName = QStringLiteral("%1(%2)").arg(ClientInstance->getPlayerFootNoteName(Self), Sanguosha->translate(QStringLiteral("yourself")));
 
     if (dstPhoto != nullptr)
-        targetName = Sanguosha->translate(QStringLiteral("use upon")).append(Sanguosha->translate(dstPhoto->getPlayer()->getFootnoteName()));
+        targetName = Sanguosha->translate(QStringLiteral("use upon")).append(ClientInstance->getPlayerFootNoteName(dstPhoto->getPlayer()));
     else if (reason.m_targetId == Self->objectName())
         targetName = QStringLiteral("%1%2(%3)")
                          .arg(Sanguosha->translate(QStringLiteral("use upon")))
-                         .arg(Sanguosha->translate(Self->getFootnoteName()))
+                         .arg(ClientInstance->getPlayerFootNoteName(Self))
                          .arg(Sanguosha->translate(QStringLiteral("yourself")));
 
     QString result(playerName + targetName);
