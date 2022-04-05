@@ -126,6 +126,7 @@ JSON = require("JSON")
 sgs_ex.Packages = {}
 sgs_ex.CardFaces = {}
 sgs_ex.Skills = {}
+sgs_ex.Triggers = {}
 
 -- load extensions
 
@@ -149,6 +150,11 @@ local loadExtension = function(name, isBuiltin)
             if extension.skills then
                 for _, s in ipairs(extension.skills) do
                     sgs_ex.Skills[s.name] = s
+                end
+            end
+            if extension.triggers then
+                for _, s in ipairs(extension.triggers) do
+                    sgs_ex.Triggers[s.name] = s
                 end
             end
             sgs_ex.Packages[extension.name] = extension

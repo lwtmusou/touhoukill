@@ -658,7 +658,6 @@ sgs_ex.Treasure = function(desc, ...)
     return sgs_ex.EquipCard(desc, "sgs_ex.Treasure", ...)
 end
 
-
 sgs_ex.SkillCard = function(desc, ...)
     -- SkillCard adds a property names throwWhenUsing
     if type(desc) ~= "table" then
@@ -773,6 +772,22 @@ sgs_ex.Package = function(desc, ...)
         end
     else
         r.skills = desc.skills
+    end
+
+    isValid, num, msg = typeValidate("sgs_ex.Package", desc.triggers, "desc.triggers", function(c)
+        return (type(c) == "table") and ((c.type & sgs_ex.TableType.FirstTypeMask) == sgs_ex.TableType.Trigger)
+    end, "not Trigger")
+
+    if not isValid then
+        if num == 0 then
+            -- do nothing
+        elseif num == 1 then
+            warn(msg)
+        else
+            return fail, msg
+        end
+    else
+        r.triggers = desc.triggers
     end
 
     isValid, num, msg = typeValidate("sgs_ex.Package", desc.cardFaces, "desc.cardFaces", function(c)

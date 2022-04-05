@@ -146,7 +146,7 @@ public:
                     type = lua_getfield(l, -1, "name"); // { name, v, k, CardFaces, sgs_ex, sgs_registry }
                     do {
                         if (type != LUA_TSTRING) {
-                            qDebug() << "sgs.CardFaces contain an item which does not have a string \"name\", ignoring.";
+                            qDebug() << "sgs_ex.CardFaces contain an item which does not have a string \"name\", ignoring.";
                             break;
                         }
 
@@ -156,9 +156,12 @@ public:
                     lua_pop(l, 1); // { v, k, CardFaces, sgs_ex, sgs_registry }
 
                     // register CardFace in registry
-                    if (name.isEmpty())
+                    if (name.isEmpty()) {
                         lua_pop(l, 1); // { k, CardFaces, sgs_ex, sgs_registry }
-                    else {
+                    } else if (reg.cardFaces.contains(name)) {
+                        qDebug() << "duplicated name in sgs_ex.CardFaces:" << name;
+                        lua_pop(l, 1); // { k, CardFaces, sgs_ex, sgs_registry }
+                    } else {
                         int index = luaL_ref(l, -1); // {  k, CardFaces, sgs_ex, sgs_registry }
                         Q_ASSERT(index != LUA_NOREF);
                         reg.cardFaces.insert(name, index);
@@ -172,6 +175,16 @@ public:
             type = lua_getfield(l, -1, "Skills");
             if (type != LUA_TTABLE) {
                 qDebug() << "sgs_ex.Skills is not a table";
+            } else {
+                // deal with Skills
+                Q_UNIMPLEMENTED();
+            }
+            lua_pop(l, 1);
+
+            // Skills
+            type = lua_getfield(l, -1, "Triggers");
+            if (type != LUA_TTABLE) {
+                qDebug() << "sgs_ex.Triggers is not a table";
             } else {
                 // deal with Skills
                 Q_UNIMPLEMENTED();
@@ -295,6 +308,24 @@ bool LuaState::pushSkills()
 }
 
 QStringList LuaState::skillNames() const
+{
+    // TODO
+    return QStringList();
+}
+
+bool LuaState::pushTrigger(const QString &name)
+{
+    // TODO
+    return false;
+}
+
+bool LuaState::pushTriggers()
+{
+    // TODO
+    return false;
+}
+
+QStringList LuaState::triggerNames() const
 {
     // TODO
     return QStringList();
@@ -488,6 +519,19 @@ LuaMultiThreadEnvironment::LuaMultiThreadEnvironment()
         // todo
         Q_UNUSED(name);
 #if 0
+        CardFace *f = SgsEx::createNewSkill(name);
+        if (f != nullptr)
+            Sanguosha->registerSkill(f);
+        else
+            qDebug() << "creation of skill " << name << "failed";
+#endif
+    }
+
+    qDebug() << "Triggers: " << firstLuaState->triggerNames();
+    foreach (const QString &name, firstLuaState->triggerNames()) {
+        // todo
+        Q_UNUSED(name);
+#if 0
         CardFace *f = SgsEx::createNewLuaCardFace(name);
         if (f != nullptr)
             Sanguosha->registerCardFace(f);
@@ -519,6 +563,7 @@ LuaMultiThreadEnvironment *LuaMultiThreadEnvironment::self()
 namespace BuiltinExtension {
 
 // Should this be here? Maybe Engine should be responsible for this instead
+// Engine may be virtual for implementing this method
 // Exit program when a pure-server program runs, and disable connecting to any server (except for localhost) on main window
 // Does nothing when debug is on
 void disableConnectToServer()

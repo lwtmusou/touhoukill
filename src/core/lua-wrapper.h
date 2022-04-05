@@ -29,6 +29,9 @@ public:
     bool pushSkill(const QString &name);
     bool pushSkills();
     QStringList skillNames() const;
+    bool pushTrigger(const QString &name);
+    bool pushTriggers();
+    QStringList triggerNames() const;
     bool pushPackage(const QString &name);
     bool pushPackages();
     QStringList packageNames() const;
