@@ -115,6 +115,10 @@ int Skill::getAudioEffectIndex(const Player * /*unused*/, const Card * /*unused*
 
 void Skill::addToAffiliatedSkill(Skill *skill)
 {
+    // ViewAsSkill can't be affiliated because it requires interactive usage
+    // Note that FilterSkill no longer inherits ViewAsSkill
+    Q_ASSERT(!skill->inherits("ViewAsSkill"));
+
     if (!skill->d->affiliatedSkills.isEmpty()) {
         // infinite recursion
         d->affiliatedSkills.unite(skill->d->affiliatedSkills);
@@ -312,7 +316,7 @@ public:
                             selection->name = QStringLiteral("NormalSlash");
                         basicCard->next << selection;
                     } else if (face->type() == TypeTrick) {
-                        if (face->isNDTrick())
+                        if (face->isNdTrick())
                             ndTrick->next << selection;
                         else
                             dTrick->next << selection;

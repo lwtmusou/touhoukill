@@ -73,7 +73,7 @@ public:
     bool isCompulsory() const;
     bool isEternal() const;
     bool isLimited() const;
-    inline bool isWake() const
+    Q_ALWAYS_INLINE bool isWake() const
     {
         return isLimited() && isCompulsory();
     }
@@ -114,7 +114,11 @@ public:
     virtual int getAudioEffectIndex(const Player *player, const Card *card) const;
 
     // deprecated
-    Q_DECL_DEPRECATED inline bool isVisible() const
+    Q_DECL_DEPRECATED Q_ALWAYS_INLINE bool isHidden() const
+    {
+        return isAffiliatedSkill();
+    }
+    Q_DECL_DEPRECATED Q_ALWAYS_INLINE bool isVisible() const
     {
         return !isAffiliatedSkill();
     }
@@ -126,12 +130,16 @@ private:
 // Selection
 struct QSGS_CORE_EXPORT ViewAsSkillSelection
 {
+public:
     // Selectable when next is empty
     // Expandable when next is not empty, with a list of "next"
     QString name;
     QList<ViewAsSkillSelection *> next;
 
     ~ViewAsSkillSelection();
+
+private:
+    Q_DISABLE_COPY_MOVE(ViewAsSkillSelection)
 };
 
 class ViewAsSkillPrivate;
