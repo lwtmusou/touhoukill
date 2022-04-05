@@ -2816,6 +2816,9 @@ TH09Package::TH09Package()
     kokorosp->addSkill(new Mianling);
     kokorosp->addSkill(new Ximshang);
 
+    General *yuma = new General(this, "yuma", "zhan", 4, false, true, true);
+    Q_UNUSED(yuma);
+
     addMetaObject<YanhuiCard>();
     addMetaObject<ToupaiCard>();
     addMetaObject<TianrenCard>();

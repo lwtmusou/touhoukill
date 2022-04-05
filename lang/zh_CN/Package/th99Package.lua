@@ -381,5 +381,22 @@ return{
 	["$WanshenAnimate"] = "skill=kasen_sp:wanshen",
 	["xieli"] = "邪力",
 	[":xieli"] = "出牌阶段，你可以横置装备区里的一张牌并视为使用【酒】。",
+	
+--****************************
 
+	["miyoi"] = "奥野田美宵",
+	["#miyoi"] = "梦幻酒家鲵吞亭的店花",
+	["designer:miyoi"] = "？",
+
+	["illustrator:miyoi"] = "谁",
+	["origin:miyoi"] = "多少",
+
+--****************************
+
+	["mizuchi"] = "宫出口瑞灵",
+	["#mizuchi"] = "反狱王",
+	["designer:mizuchi"] = "？",
+
+	["illustrator:mizuchi"] = "谁",
+	["origin:mizuchi"] = "多少",
 }
