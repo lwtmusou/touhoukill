@@ -75,10 +75,6 @@ bool Trigger::trigger(TriggerEvent /*unused*/, RoomObject * /*unused*/, const Tr
     return false;
 }
 
-Rule::Rule()
-{
-}
-
 int Rule::priority() const
 {
     // for rule
@@ -157,6 +153,11 @@ bool SkillTrigger::cost(TriggerEvent /*unused*/, RoomObject * /*unused*/, Trigge
 
 EquipSkillTrigger::EquipSkillTrigger(const EquipCard *card)
     : SkillTrigger(card->name())
+{
+}
+
+EquipSkillTrigger::EquipSkillTrigger(const QString &name)
+    : SkillTrigger(name)
 {
 }
 

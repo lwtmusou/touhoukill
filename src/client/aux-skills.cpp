@@ -128,10 +128,10 @@ void YijiCard::setPlayerNames(const QStringList &names)
     set = QSet<QString>(names.begin(), names.end());
 }
 
-int YijiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player * /*Self*/, const Card *card) const
-{
-    return targets.isEmpty() && set.contains(to_select->objectName()) ? 1 : 0;
-}
+//int YijiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player * /*Self*/, const Card *card) const
+//{
+//    return targets.isEmpty() && set.contains(to_select->objectName()) ? 1 : 0;
+//}
 
 // -------------------------------------------
 
@@ -188,10 +188,10 @@ void ChoosePlayerCard::setPlayerNames(const QStringList &names)
     set = QSet<QString>(names.begin(), names.end());
 }
 
-int ChoosePlayerCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player * /*Self*/, const Card * /*card*/) const
-{
-    return targets.isEmpty() && set.contains(to_select->objectName()) ? 1 : 0;
-}
+//int ChoosePlayerCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player * /*Self*/, const Card * /*card*/) const
+//{
+//    return targets.isEmpty() && set.contains(to_select->objectName()) ? 1 : 0;
+//}
 
 // ------------------------------------------------
 

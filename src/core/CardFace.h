@@ -89,7 +89,7 @@ public:
      */
     // virtual for current aux-skills
     // TODO: remove this virtual
-    QSGS_LUA_API virtual int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card) const;
+    QSGS_LUA_API int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card) const;
 
     QSGS_LUA_API bool isAvailable(const Player *player, const Card *card) const;
 

@@ -72,7 +72,7 @@ private:
 class QSGS_CORE_EXPORT Rule : public Trigger
 {
 public:
-    Rule();
+    Rule() = default;
     ~Rule() override = default;
 
     // fixed 0
@@ -112,6 +112,7 @@ class QSGS_CORE_EXPORT EquipSkillTrigger : public SkillTrigger
 {
 public:
     explicit EquipSkillTrigger(const EquipCard *card);
+    explicit EquipSkillTrigger(const QString &name);
     ~EquipSkillTrigger() override = default;
 
     Q_ALWAYS_INLINE bool isEquipSkill() const final override

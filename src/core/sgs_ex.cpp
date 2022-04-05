@@ -55,32 +55,36 @@ enum TableType
 };
 
 namespace {
-::CardFace *newCardFaceByType(TableType t, const QString &name)
-{
-#define NEWCARDFACEBYTYPE(T) \
-    if (t == T)              \
+#define NEW_NATIVE_TYPE(T) \
+    if (t == T)            \
         return new ::T(name);
 
-    NEWCARDFACEBYTYPE(BasicCard)
-    NEWCARDFACEBYTYPE(NonDelayedTrick)
-    NEWCARDFACEBYTYPE(DelayedTrick)
-    NEWCARDFACEBYTYPE(Weapon)
-    NEWCARDFACEBYTYPE(Armor)
-    NEWCARDFACEBYTYPE(DefensiveHorse)
-    NEWCARDFACEBYTYPE(OffensiveHorse)
-    NEWCARDFACEBYTYPE(Treasure)
-    NEWCARDFACEBYTYPE(SkillCard)
-
-#undef NEWCARDFACEBYTYPE
+::CardFace *newCardFaceByType(TableType t, const QString &name)
+{
+    NEW_NATIVE_TYPE(BasicCard)
+    NEW_NATIVE_TYPE(NonDelayedTrick)
+    NEW_NATIVE_TYPE(DelayedTrick)
+    NEW_NATIVE_TYPE(Weapon)
+    NEW_NATIVE_TYPE(Armor)
+    NEW_NATIVE_TYPE(DefensiveHorse)
+    NEW_NATIVE_TYPE(OffensiveHorse)
+    NEW_NATIVE_TYPE(Treasure)
+    NEW_NATIVE_TYPE(SkillCard)
 
     return nullptr;
 }
 
 ::Trigger *newTriggerByType(TableType t, const QString &name)
 {
-    // TODO
+    //    NEW_NATIVE_TYPE(SkillTrigger)
+    //    NEW_NATIVE_TYPE(EquipSkillTrigger)
+    //    NEW_NATIVE_TYPE(GlobalRecord)
+    //    NEW_NATIVE_TYPE(FakeMoveRecord)
+
     return nullptr;
 }
+
+#undef NEW_NATIVE_TYPE
 } // namespace
 
 // [-0, +0, e]
@@ -108,7 +112,7 @@ namespace {
             // create cardface by its type
             int ok = 0;
             TableType t = static_cast<TableType>(lua_tonumberx(l, 1, &ok));
-            if (!(bool)(ok)) {
+            if (!ok) { // NOLINT
                 errorMessage = QString(QStringLiteral("sgs_ex.CardFaces[\"%1\"].type is not number")).arg(name);
                 break;
             }

@@ -72,7 +72,8 @@ public:
 
     void setPlayerNames(const QStringList &names);
 
-    int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player * /*Self*/, const Card *card) const override;
+    // Removed temporily due to CardFace::targetFilter is no longer virtual
+    // int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player * /*Self*/, const Card *card) const override;
 
 private:
     QSet<QString> set;
@@ -104,7 +105,8 @@ public:
 
     void setPlayerNames(const QStringList &names);
 
-    int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player * /*Self*/, const Card * /*card*/) const override;
+    // Removed temporily due to CardFace::targetFilter is no longer virtual
+    // int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player * /*Self*/, const Card * /*card*/) const override;
 
 private:
     QSet<QString> set;
