@@ -54,6 +54,14 @@ jobs:
 
   build-macos:
     # GitHub actions don't provide a macOS on ARM runner. We can only use macOS on Intel
+    strategy:
+      matrix:
+        macOS:
+          - qt5url: https://github.com/Fsu0413/QtCompile/releases/download/release-20220411/Qt5.15.3-macOS-x86_64-AppleClang12.0.5-20220409.tar.xz
+            qt5name: Qt5.15.3-macOS-x86_64-AppleClang12.0.5
+            qt6url: https://github.com/Fsu0413/QtCompile/releases/download/release-20220411/Qt6.3.0-macOS-x86_64-AppleClang13.1.6-20220410.tar.xz
+            qt6name: Qt6.3.0-macOS-x86_64-AppleClang13.1.6
+
     name: build-macos
     runs-on: macos-latest
     steps:
@@ -68,23 +76,23 @@ jobs:
       - name: install Qt5
         run: |
           mkdir Qt5
-          curl -L -o Qt5/Qt5.tar.xz https://github.com/Fsu0413/QtCompile/releases/download/release-20220309/Qt5.15.3-macOS-x86_64-AppleClang12.0.5-20220307.tar.xz
+          curl -L -o Qt5/Qt5.tar.xz ${{ matrix.macOS.qt5url }}
           (cd Qt5 && tar -xf Qt5.tar.xz)
-          ./Qt5/Qt5.15.3-macOS-x86_64-AppleClang12.0.5/bin/qmake -query
+          ./Qt5/${{ matrix.macOS.qt5name }}/bin/qmake -query
       
       - name: install Qt6
         run: |
           mkdir Qt6
-          curl -L -o Qt6/Qt6.tar.xz https://github.com/Fsu0413/QtCompile/releases/download/release-20220323/Qt6.2.4-macOS-x86_64-AppleClang13.1.6-20220323.tar.xz
+          curl -L -o Qt6/Qt6.tar.xz ${{ matrix.macOS.qt6url }}
           (cd Qt6 && tar -xf Qt6.tar.xz)
-          ./Qt6/Qt6.2.4-macOS-x86_64-AppleClang13.1.6/bin/qmake -query
+          ./Qt6/${{ matrix.macOS.qt6name }}/bin/qmake -query
       
       - name: run cmake+ninja
         run : |
           mkdir -p "build"
           cd "build"
           rm -rf *
-          cmake -GNinja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}/Qt5/Qt5.15.3-macOS-x86_64-AppleClang12.0.5;${{ github.workspace }}/Qt6/Qt6.2.4-macOS-x86_64-AppleClang13.1.6" "${{ github.workspace }}/touhoukill-refactor"
+          cmake -GNinja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}/Qt5/${{ matrix.macOS.qt5name }};${{ github.workspace }}/Qt6/${{ matrix.macOS.qt6name }}" "${{ github.workspace }}/touhoukill-refactor"
           ninja -k0
 
   build-msvc:
@@ -94,17 +102,17 @@ jobs:
           - ver: 2019
             runson: windows-2019
             call: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat
-            qt5url: https://github.com/Fsu0413/QtCompile/releases/download/release-20220310/Qt5.15.3-Windows-x86_64-VS2019-16.11.11-20220309.7z
+            qt5url: https://github.com/Fsu0413/QtCompile/releases/download/release-20220411/Qt5.15.3-Windows-x86_64-VS2019-16.11.11-20220410.7z
             qt5name: Qt5.15.3-Windows-x86_64-VS2019-16.11.11
-            qt6url: https://github.com/Fsu0413/QtCompile/releases/download/release-20220323/Qt6.2.4-Windows-x86_64-VS2019-16.11.11-20220323.7z
-            qt6name: Qt6.2.4-Windows-x86_64-VS2019-16.11.11
+            qt6url: https://github.com/Fsu0413/QtCompile/releases/download/release-20220411/Qt6.3.0-Windows-x86_64-VS2019-16.11.11-20220409.7z
+            qt6name: Qt6.3.0-Windows-x86_64-VS2019-16.11.11
           - ver: 2022
             runson: windows-2022
             call: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat
-            qt5url: https://github.com/Fsu0413/QtCompile/releases/download/release-20220310/Qt5.15.3-Windows-x86_64-VS2022-17.1.1-20220309.7z
-            qt5name: Qt5.15.3-Windows-x86_64-VS2022-17.1.1
-            qt6url: https://github.com/Fsu0413/QtCompile/releases/download/release-20220323/Qt6.2.4-Windows-x86_64-VS2022-17.1.2-20220323.7z
-            qt6name: Qt6.2.4-Windows-x86_64-VS2022-17.1.2
+            qt5url: https://github.com/Fsu0413/QtCompile/releases/download/release-20220411/Qt5.15.3-Windows-x86_64-VS2022-17.1.3-20220411.7z
+            qt5name: Qt5.15.3-Windows-x86_64-VS2022-17.1.3
+            qt6url: https://github.com/Fsu0413/QtCompile/releases/download/release-20220411/Qt6.3.0-Windows-x86_64-VS2022-17.1.3-20220411.7z
+            qt6name: Qt6.3.0-Windows-x86_64-VS2022-17.1.3
 
     name: build-MSVC-${{ matrix.VC.ver }}
     runs-on: ${{ matrix.VC.runson }}
@@ -122,16 +130,16 @@ jobs:
       - name: install Qt5
         run : |
           New-Item -Path "." -Name "Qt5" -ItemType "directory";
-          (New-Object System.Net.WebClient).DownloadFile("${{ matrix.vc.qt5url }}","Qt5/Qt5.7z");
+          (New-Object System.Net.WebClient).DownloadFile("${{ matrix.VC.qt5url }}","Qt5/Qt5.7z");
           cmd /c cd Qt5 "&&" 7z x Qt5.7z
-          .\Qt5\${{ matrix.vc.qt5name }}\bin\qmake -query
+          .\Qt5\${{ matrix.VC.qt5name }}\bin\qmake -query
 
       - name: install Qt6
         run : |
           New-Item -Path "." -Name "Qt6" -ItemType "directory";
-          (New-Object System.Net.WebClient).DownloadFile("${{ matrix.vc.qt6url }}","Qt6/Qt6.7z");
+          (New-Object System.Net.WebClient).DownloadFile("${{ matrix.VC.qt6url }}","Qt6/Qt6.7z");
           cmd /c cd Qt6 "&&" 7z x Qt6.7z
-          .\Qt6\${{ matrix.vc.qt6name }}\bin\qmake -query
+          .\Qt6\${{ matrix.VC.qt6name }}\bin\qmake -query
 
       - name: run cmake+ninja
         shell: cmd
@@ -141,10 +149,24 @@ jobs:
           mkdir "build"
           cd "build"
           rmdir /s /q *
-          cmd /c cmake -GNinja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt5\${{ matrix.vc.qt5name }};${{ github.workspace }}\Qt6\${{ matrix.vc.qt6name }}" "${{ github.workspace }}/touhoukill-refactor"
+          cmd /c cmake -GNinja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt5\${{ matrix.VC.qt5name }};${{ github.workspace }}\Qt6\${{ matrix.VC.qt6name }}" "${{ github.workspace }}/touhoukill-refactor"
           ninja -k0
 
-  build-mingw81:
+  build-mingw:
+    strategy:
+      matrix:
+        mingw:
+          - qtver: 5
+            qturl: https://github.com/Fsu0413/QtCompile/releases/download/release-20220411/Qt5.15.3-Windows-x86_64-MinGW8.1.0-20220410.7z
+            qtname: Qt5.15.3-Windows-x86_64-MinGW8.1.0
+            mingwurl: https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/8.1.0/threads-posix/seh/x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z
+            mingwname: mingw64
+          - qtver: 6
+            qturl: https://github.com/Fsu0413/QtCompile/releases/download/release-20220411/Qt6.3.0-Windows-x86_64-MinGW11.2.0-20220409.7z
+            qtname: Qt6.3.0-Windows-x86_64-MinGW11.2.0
+            mingwurl: https://github.com/cristianadam/mingw-builds/releases/download/v11.2.0-rev1/x86_64-11.2.0-release-posix-seh-rt_v9-rev1.7z
+            mingwname: mingw64
+
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
@@ -157,29 +179,27 @@ jobs:
           choco install cmake
           choco install ninja
 
-      - name: install Qt5
-        run : |
-          New-Item -Path "." -Name "Qt5" -ItemType "directory";
-          (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20220309/Qt5.15.3-Windows-x86_64-MinGW8.1.0-20220307.7z","Qt5/Qt5.7z");
-          cmd /c cd Qt5 "&&" 7z x Qt5.7z
-          .\Qt5\Qt5.15.3-Windows-x86_64-MinGW8.1.0\bin\qmake -query
+      - name: install mingw toolchain
+        run: |
+          New-Item -Path "." -Name "mingw" -ItemType "directory";
+          (New-Object System.Net.WebClient).DownloadFile("${{ matrix.mingw.mingwurl }}","mingw/mingw.7z");
+          cmd /c cd mingw "&&" 7z x mingw.7z
 
-      # Qt 6 switched to MinGW-w64 v9 based GCC 11.2
-      # - name: install Qt6
-        # run : |
-          # New-Item -Path "." -Name "Qt6" -ItemType "directory";
-          # (New-Object System.Net.WebClient).DownloadFile("https://github.com/Fsu0413/QtCompile/releases/download/release-20210904/Qt6.1.3-Windows-x86_64-MinGW8.1.0-20210904.7z","Qt6/Qt6.1.3-Windows-x86_64-MinGW8.1.0-20210904.7z");
-          # cmd /c cd Qt6 "&&" 7z x Qt6.1.3-Windows-x86_64-MinGW8.1.0-20210904.7z
-          # .\Qt6\Qt6.1.3-Windows-x86_64-MinGW8.1.0\bin\qmake -query
+      - name: install Qt${{ matrix.mingw.qtver }}
+        run : |
+          New-Item -Path "." -Name "Qt${{ matrix.mingw.qtver }}" -ItemType "directory";
+          (New-Object System.Net.WebClient).DownloadFile("${{ matrix.mingw.qturl }}","Qt${{ matrix.mingw.qtver }}/Qt${{ matrix.mingw.qtver }}.7z");
+          cmd /c cd Qt${{ matrix.mingw.qtver }} "&&" 7z x Qt${{ matrix.mingw.qtver }}.7z
 
       - name: run cmake+ninja
         shell: cmd
         run : |
           del /s /q C:\Strawberry\perl\bin\pkg-config.bat
+          set path=${{ github.workspace }}\mingw\${{ matrix.mingw.mingwname }}\\bin;%path%
           mkdir "build"
           cd "build"
           rmdir /s /q *
-          cmd /c cmake -GNinja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt5\Qt5.15.3-Windows-x86_64-MinGW8.1.0" "${{ github.workspace }}/touhoukill-refactor"
+          cmd /c cmake -GNinja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}\Qt${{ matrix.mingw.qtver }}\${{ matrix.mingw.qtname }}" "${{ github.workspace }}/touhoukill-refactor"
           ninja -k0
 
   build-mingwclang:
@@ -190,13 +210,13 @@ jobs:
           - ver: msvcrt
             toolchainurl: https://github.com/mstorsjo/llvm-mingw/releases/download/20220323/llvm-mingw-20220323-msvcrt-x86_64.zip
             toolchainname: llvm-mingw-20220323-msvcrt-x86_64
-            qt6url: https://github.com/Fsu0413/QtCompile/releases/download/release-20220323/Qt6.2.4-Windows-x86_64-llvm-mingw-14.0.0-msvcrt-20220324.7z
-            qt6name: Qt6.2.4-Windows-x86_64-llvm-mingw-14.0.0-msvcrt
+            qt6url: https://github.com/Fsu0413/QtCompile/releases/download/release-20220411/Qt6.3.0-Windows-x86_64-llvm-mingw-14.0.0-msvcrt-20220409.7z
+            qt6name: Qt6.3.0-Windows-x86_64-llvm-mingw-14.0.0-msvcrt
           - ver: ucrt
             toolchainurl: https://github.com/mstorsjo/llvm-mingw/releases/download/20220323/llvm-mingw-20220323-ucrt-x86_64.zip
             toolchainname: llvm-mingw-20220323-ucrt-x86_64
-            qt6url: https://github.com/Fsu0413/QtCompile/releases/download/release-20220323/Qt6.2.4-Windows-x86_64-llvm-mingw-14.0.0-ucrt-20220324.7z
-            qt6name: Qt6.2.4-Windows-x86_64-llvm-mingw-14.0.0-ucrt
+            qt6url: https://github.com/Fsu0413/QtCompile/releases/download/release-20220411/Qt6.3.0-Windows-x86_64-llvm-mingw-14.0.0-ucrt-20220409.7z
+            qt6name: Qt6.3.0-Windows-x86_64-llvm-mingw-14.0.0-ucrt
 
     name: build-mingwclang-${{ matrix.clang.ver }}
     steps:
