@@ -829,6 +829,115 @@ public:
     }
 };
 
+class FtmFeitian : public TriggerSkill
+{
+public:
+    FtmFeitian()
+        : TriggerSkill("ftmfeitian")
+    {
+        frequency = Compulsory;
+        events = {CardUsed, CardResponded, EventPhaseStart};
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room * /*room*/, const QVariant &data) const override
+    {
+        switch (e) {
+        case EventPhaseStart: {
+            ServerPlayer *from = data.value<ServerPlayer *>();
+            if (from != nullptr && from->isAlive() && from->hasSkill(this)
+                && (from->getPhase() == Player::Finish || (from->getPhase() == Player::NotActive && from->getMark("@flying") > 0)))
+                return {SkillInvokeDetail(this, from, from, nullptr, true)};
+
+            break;
+        }
+        default: {
+            ServerPlayer *from = nullptr;
+            const Card *c = nullptr;
+            if (e == CardUsed) {
+                CardUseStruct use = data.value<CardUseStruct>();
+                from = use.from;
+                c = use.card;
+            } else {
+                CardResponseStruct resp = data.value<CardResponseStruct>();
+                if (resp.m_isUse) {
+                    from = resp.m_from;
+                    c = resp.m_card;
+                }
+            }
+
+            if (from != nullptr && from->isAlive() && from->hasSkill(this) && c != nullptr && !c->isKindOf("SkillCard")
+                && (c->isBlack() || (c->isRed() && from->getMark("@flying") > 0))) {
+                SkillInvokeDetail d(this, from, from, nullptr, true);
+                d.tag["card"] = QVariant::fromValue(c);
+                return {d};
+            }
+            break;
+        }
+        }
+
+        return {};
+    }
+
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        if (TriggerSkill::cost(triggerEvent, room, invoke, data)) {
+            if (invoke->invoker->hasShownSkill(this)) {
+                LogMessage l;
+                l.type = "#TriggerSkill";
+                l.from = invoke->invoker;
+                l.arg = objectName();
+                room->sendLog(l);
+
+                room->notifySkillInvoked(invoke->invoker, objectName());
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant & /*data*/) const override
+    {
+        int x = invoke->invoker->getMark("@flying");
+
+        if (triggerEvent == EventPhaseStart) {
+            if (invoke->invoker->getPhase() == Player::Finish) {
+                if (x == 0) {
+                    invoke->invoker->drawCards(2, "ftmfeitian");
+                } else {
+                    ServerPlayer *feitian = nullptr;
+                    foreach (ServerPlayer *p, room->getAlivePlayers()) {
+                        if (p->getSeat() == x) {
+                            feitian = p;
+                            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), p->objectName());
+                            if (invoke->invoker->askForSkillInvoke("ftmfeitian_x", QVariant::fromValue(p), "recover-or-losehp:" + p->objectName()))
+                                room->loseHp(p);
+                            else
+                                room->recover(p, RecoverStruct());
+
+                            break;
+                        }
+                    }
+                    if (feitian == nullptr && x == room->getDrawPile().length())
+                        invoke->invoker->drawCards(room->getDrawPile().length(), "ftmfeitian");
+                }
+            } else if (invoke->invoker->getPhase() == Player::NotActive) {
+                invoke->invoker->loseAllMarks("@flying");
+            }
+        } else {
+            const Card *c = invoke->tag.value("card").value<const Card *>();
+            int getNum = x;
+            if (c->isBlack())
+                getNum += 1;
+
+            invoke->invoker->gainMark("@flying", getNum);
+        }
+
+        return false;
+    }
+};
+
 PlaygroundPackage::PlaygroundPackage()
     : Package("playground")
 {
@@ -850,6 +959,9 @@ PlaygroundPackage::PlaygroundPackage()
     benmao->addSkill(new BmMaoji);
     benmao->addSkill(new BmMaojiTrigger);
     related_skills.insertMulti("bmmaoji", "#bmmaoji");
+
+    General *fsb = new General(this, "flyingskybright", "touhougod", 4, true);
+    fsb->addSkill(new FtmFeitian);
 }
 
 ADD_PACKAGE(Playground)

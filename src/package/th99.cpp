@@ -2276,6 +2276,9 @@ TH99Package::TH99Package()
     General *miyoi = new General(this, "miyoi", "wai", 4, false, true, true);
     Q_UNUSED(miyoi);
 
+    General *mizuchi = new General(this, "mizuchi", "wai", 4, false, true, true);
+    Q_UNUSED(mizuchi);
+
     addMetaObject<QiuwenCard>();
     addMetaObject<DangjiaCard>();
     addMetaObject<XiufuCard>();

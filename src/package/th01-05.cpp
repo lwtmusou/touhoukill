@@ -272,50 +272,6 @@ public:
     }
 };
 
-/*class Chongdong : public TriggerSkill
-{
-public:
-    Chongdong()
-        : TriggerSkill("chongdong$")
-    {
-        events << Damaged;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const
-    {
-        DamageStruct damage = data.value<DamageStruct>();
-        ServerPlayer *current = room->getCurrent();
-        if (damage.to->isAlive() && damage.to->hasLordSkill(this) && current && current->isAlive()) {
-            foreach (ServerPlayer *liege, room->getLieges("pc98", damage.to)) {
-                if (liege->canDiscard(liege, "hs"))
-                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
-            }
-        }
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        return invoke->invoker->askForSkillInvoke(this, data);
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const
-    {
-        ServerPlayer *current = room->getCurrent();
-        foreach (ServerPlayer *liege, room->getLieges("pc98", invoke->invoker)) {
-            if (liege->canDiscard(liege, "hs")) {
-                const Card *card = room->askForCard(liege, ".|red|.|hand", "@chongdong", data, Card::MethodDiscard);
-                if (card != NULL) {
-                    room->touhouLogmessage("#chongdong", current, objectName());
-                    room->setPlayerFlag(current, "Global_TurnTerminated");
-                    break;
-                }
-            }
-        }
-        return false;
-    }
-};*/
-
 class Chongdong : public TriggerSkill
 {
 public:
