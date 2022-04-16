@@ -711,7 +711,7 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
         }
         room->moveCardsAtomic(moves, true);
         // show general
-        player->showHiddenSkill(card_use.card->getSkillName());
+        player->showHiddenSkill(card_use.card->getSkillName(false));
     } else {
         const SkillCard *skill_card = qobject_cast<const SkillCard *>(card_use.card);
         // show general

@@ -1683,8 +1683,7 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
         //for yibian
         ServerPlayer *reimu = room->findPlayerBySkillName("yibian");
         const Skill *skill = Sanguosha->getSkill(skill_name);
-        if ((reimu != nullptr) && !hasShownRole() && skill->getFrequency() != Skill::Eternal && !skill->isAttachedLordSkill() && !hasEquipSkill(skill_name)) {
-            //&& ownSkill(skill_name)
+        if ((reimu != nullptr) && !hasShownRole() && skill != nullptr && skill->getFrequency() != Skill::Eternal && !skill->isAttachedLordSkill() && !hasEquipSkill(skill_name)) {
             QString role = getRole();
             room->touhouLogmessage("#YibianShow", this, role, room->getAllPlayers());
             room->broadcastProperty(this, "role");
