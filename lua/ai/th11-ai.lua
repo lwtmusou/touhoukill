@@ -429,6 +429,9 @@ sgs.ai_skill_invoke.yuanling = function(self,data)
 end
 
 --[送葬]
+
+local songzang_getCardsNum = false
+
 function Cansave(self,dying,need_peachs)
 	local all =self.room:getAlivePlayers()
 	local peach_asked=true
@@ -440,7 +443,13 @@ function Cansave(self,dying,need_peachs)
 		end
 		if not peach_asked then
 			if self:isFriend(p,dying) then
-				peachs=peachs+ getCardsNum("Peach", p, self.player)
+				-- we should guarantee that songzang_getCardsNum is cleared even if getCardsNum errored out
+				-- so we use pcall here
+				songzang_getCardsNum = true
+				local ok, n = pcall(getCardsNum, "Peach", p, self.player)
+				songzang_getCardsNum = false
+				if not ok then n = 0 end
+				peachs=peachs+ n
 				if p:objectName() ==dying:objectName() then
 					peachs=peachs+ getCardsNum("Analeptic", p, self.player)
 				end
@@ -450,95 +459,7 @@ function Cansave(self,dying,need_peachs)
 
 	return peachs +1 >= need_peachs
 end
---[[sgs.ai_skill_cardask["@songzang"] = function(self,data)
-	local dying = data:toDying()
-	local source = self:findRealKiller(dying.who, dying.damage)
-	local executor = self:executorRewardOrPunish(dying.who, dying.damage)
-	local target=self.room:getCurrentDyingPlayer()
-	local need_kill=false
-	
-	if self.player:getRoom():getMode():find("hegemony") then
-		need_kill = self:isEnemy(target)
-	else
-		local self_role = self.player:getRole()
-		
-		local target_role=sgs.ai_role[target:objectName()]
-	
-		local need_peachs = math.abs(1-target:getHp())
-		if self_role== "loyalist" or self_role =="lord" then
-			if self:isEnemy(target)  then
-				if self:getOverflow()>0 then
-					need_kill=true
-				else
-					local can_save= Cansave(self,target,need_peachs)
-					if can_save then
-						need_kill=true
-					elseif target_role=="rebel"  then
-						if source and  self:isFriend(source) then
-						else
-							need_kill=true
-						end
-					end
-				end
-			end
-		end
-		if self_role== "renegade" then
-			local can_save=Cansave(self,target,need_peachs)
-			if self:isEnemy(target) then
-				if self:getOverflow()>0 and not (target:isLord() and self.room:alivePlayerCount()>2) then
-					need_kill=true
-				end
-				if can_save then
-					need_kill=true
-				elseif target_role=="rebel" then
-					if source and source:hasLordSkill("tymhwuyu") then
-					else
-						need_kill=true
-					end
-				end
-			else
-				if can_save then
-				elseif target_role=="rebel" then
-					if source and source:hasLordSkill("tymhwuyu") then
-					else
-						need_kill=true
-					end
-				end
-			end
-		end
-		if self_role== "rebel" then
-			if self:isFriend(target)
-			and source and not self:isFriend(source)
-			and not source:hasLordSkill("tymhwuyu") then
-				local card_str = self:willUsePeachTo(target)
-				if card_str =="." then
-					need_kill=true
-				end
-			end
-			if self:isEnemy(target) then
-				if self:getOverflow()>0 then
-					need_kill=true
-				elseif target:isLord() then
-					need_kill=true
-				else
-					need_kill = Cansave(self,target,need_peachs)
-				end
-			end
-		end
 
-	end
-	
-	if not need_kill  then return "." end
-	local cards ={}
-	for _,card in sgs.qlist(self.player:getCards("hes")) do
-		if card:getSuit()==sgs.Card_Spade then
-			table.insert(cards,card)
-		end
-	end
-	if #cards==0 then return "." end
-	self:sortByKeepValue(cards)
-	return "$" .. cards[1]:getId()
-end]]
 sgs.songzang_suit_value = {
 	spade = 4.9
 }
@@ -547,11 +468,22 @@ sgs.ai_cardneed.songzang = function(to, card, self)
 end
 
 function sgs.ai_cardsview_valuable.songzang(self, class_name, player)
+	if songzang_getCardsNum then return nil end
 	if class_name ~= "Peach" then return nil end
 	local dying =self.player:getTag("songzang_dying"):toDying()
 	local source = self:findRealKiller(dying.who, dying.damage)
 	local executor = self:executorRewardOrPunish(dying.who, dying.damage)
 	local target=self.room:getCurrentDyingPlayer()
+	if not target then return nil end
+	local cards ={}
+	for _,card in sgs.qlist(self.player:getCards("hes")) do
+		if card:getSuit()==sgs.Card_Spade then
+			table.insert(cards,card)
+		end
+	end
+	if #cards==0 then return nil end
+	self:sortByKeepValue(cards)
+	
 	local need_kill=false
 	
 	if self.player:getRoom():getMode():find("hegemony") then
@@ -561,7 +493,7 @@ function sgs.ai_cardsview_valuable.songzang(self, class_name, player)
 		
 		local target_role=sgs.ai_role[target:objectName()]
 	
-		local need_peachs = math.abs(1-target:getHp())
+		local need_peachs = math.abs(target:dyingThreshold()-target:getHp())
 		if self_role== "loyalist" or self_role =="lord" then
 			if self:isEnemy(target)  then
 				if self:getOverflow()>0 then
@@ -626,21 +558,7 @@ function sgs.ai_cardsview_valuable.songzang(self, class_name, player)
 	end
 	
 	if not need_kill  then return nil end
-	local cards ={}
-	for _,card in sgs.qlist(self.player:getCards("hes")) do
-		if card:getSuit()==sgs.Card_Spade then
-			table.insert(cards,card)
-		end
-	end
-	if #cards==0 then return nil end
-	self:sortByKeepValue(cards)
-	return "@SongzangCard="..cards[1]:getId()  --"$" .. cards[1]:getId()
-		
-		
-		
-		
-		
-	--return "@ShijieCard="..cards[1]:getId()
+	return "@SongzangCard="..cards[1]:getId()
 end
 
 --星熊勇仪
