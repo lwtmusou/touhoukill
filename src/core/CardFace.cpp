@@ -132,7 +132,7 @@ bool CardFace::isKindOf(const QString &cardType) const
     return d->kind.contains(cardType);
 }
 
-// --  - canDamage = function() -> boolean
+// --  - canDamage = function(self) -> boolean
 bool CardFace::canDamage() const
 {
     bool r = false;
@@ -152,7 +152,8 @@ bool CardFace::canDamage() const
                 } else if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched here
-                    int call = lua_pcall(l, 0, 1, 0); // { cardFace.canDamage() / error, CardFace }
+                    lua_pushvalue(l, -2); // { CardFace, CardFace.canDamage, CardFace }
+                    int call = lua_pcall(l, 1, 1, 0); // { cardFace.canDamage() / error, CardFace }
                     if (call == LUA_OK)
                         r = lua_toboolean(l, -1); // NOLINT
 
@@ -174,7 +175,7 @@ void CardFace::setCanDamage(bool can)
     d->can_damage = can;
 }
 
-// --  - canRecover = function() -> boolean
+// --  - canRecover = function(self) -> boolean
 bool CardFace::canRecover() const
 {
     bool r = false;
@@ -194,7 +195,8 @@ bool CardFace::canRecover() const
                 } else if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched here
-                    int call = lua_pcall(l, 0, 1, 0); // { cardFace.canRecover() / error, CardFace }
+                    lua_pushvalue(l, -2); // { CardFace, CardFace.canRecover, CardFace }
+                    int call = lua_pcall(l, 1, 1, 0); // { cardFace.canRecover() / error, CardFace }
                     if (call == LUA_OK)
                         r = lua_toboolean(l, -1); // NOLINT
 
@@ -216,7 +218,7 @@ void CardFace::setCanRecover(bool can)
     d->can_recover = can;
 }
 
-// --  - hasEffectValue = function() -> boolean
+// --  - hasEffectValue = function(self) -> boolean
 bool CardFace::hasEffectValue() const
 {
     bool r = false;
@@ -236,7 +238,8 @@ bool CardFace::hasEffectValue() const
                 } else if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched here
-                    int call = lua_pcall(l, 0, 1, 0); // { cardFace.hasEffectValue() / error, CardFace }
+                    lua_pushvalue(l, -2); // { CardFace, CardFace.hasEffectValue, CardFace }
+                    int call = lua_pcall(l, 1, 1, 0); // { cardFace.hasEffectValue() / error, CardFace }
                     if (call == LUA_OK)
                         r = lua_toboolean(l, -1); // NOLINT
 
@@ -258,7 +261,7 @@ void CardFace::setHasEffectValue(bool can)
     d->has_effectvalue = can;
 }
 
-// --  - hasPreAction = function() -> boolean
+// --  - hasPreAction = function(self) -> boolean
 bool CardFace::hasPreAction() const
 {
     bool r = false;
@@ -278,7 +281,8 @@ bool CardFace::hasPreAction() const
                 } else if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched here
-                    int call = lua_pcall(l, 0, 1, 0); // { cardFace.hasPreAction() / error, CardFace }
+                    lua_pushvalue(l, -2); // { CardFace, CardFace.hasPreAction, CardFace }
+                    int call = lua_pcall(l, 1, 1, 0); // { cardFace.hasPreAction() / error, CardFace }
                     if (call == LUA_OK)
                         r = lua_toboolean(l, -1); // NOLINT
 
@@ -300,7 +304,7 @@ void CardFace::setHasPreAction(bool can)
     d->has_preact = can;
 }
 
-// --  - defaultHandlingMethod = function() -> QSanguosha_HandlingMethod
+// --  - defaultHandlingMethod = function(self) -> QSanguosha_HandlingMethod
 HandlingMethod CardFace::defaultHandlingMethod() const
 {
     int r = static_cast<int>(MethodNone);
@@ -320,7 +324,8 @@ HandlingMethod CardFace::defaultHandlingMethod() const
                 } else if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched here
-                    int call = lua_pcall(l, 0, 1, 0); // { cardFace.defaultHandlingMethod() / error, CardFace }
+                    lua_pushvalue(l, -2); // { CardFace, CardFace.defaultHandlingMethod, CardFace }
+                    int call = lua_pcall(l, 1, 1, 0); // { cardFace.defaultHandlingMethod() / error, CardFace }
                     if (call == LUA_OK)
                         r = lua_tointeger(l, -1);
 
@@ -362,7 +367,8 @@ bool CardFace::targetFixed(const Player *player, const Card *card) const
                 } else if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
-                    std::optional<bool> call = CardFaceLuaCall::targetFixed(l, player, card); // { CardFace }
+                    lua_pushvalue(l, -2); // { CardFace, CardFace.targetFixed, CardFace }
+                    std::optional<bool> call = CardFaceLuaCall::targetFixed(l, player, card); // { CardFace.targetFixed(), CardFace }
                     if (call.has_value())
                         r = call.value();
                     else {
@@ -402,7 +408,8 @@ bool CardFace::targetsFeasible(const QList<const Player *> &targets, const Playe
                 if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
-                    r = CardFaceLuaCall::targetsFeasible(l, targets, Self, card); // { CardFace }
+                    lua_pushvalue(l, -2); // { CardFace, CardFace.targetsFeasible, CardFace }
+                    r = CardFaceLuaCall::targetsFeasible(l, targets, Self, card); // { CardFace.targetsFeasible(), CardFace }
                 } else {
                     // not function, ignored
                 }
@@ -436,7 +443,8 @@ int CardFace::targetFilter(const QList<const Player *> &targets, const Player *t
                 if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
-                    r = CardFaceLuaCall::targetFilter(l, targets, to_select, Self, card); // { CardFace }
+                    lua_pushvalue(l, -2); // { CardFace, CardFace.targetFilter, CardFace }
+                    r = CardFaceLuaCall::targetFilter(l, targets, to_select, Self, card); // { CardFace.targetFilter(), CardFace }
                 } else {
                     // not function, ignored
                 }
@@ -467,7 +475,8 @@ bool CardFace::isAvailable(const Player *player, const Card *card) const
                 if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
-                    r = CardFaceLuaCall::targetFixed(l, player, card); // { CardFace }
+                    lua_pushvalue(l, -2); // { CardFace, CardFace.isAvailable, CardFace }
+                    r = CardFaceLuaCall::targetFixed(l, player, card); // { CardFace.isAvailable(), CardFace }
                 } else {
                     // not function, ignored
                 }
@@ -498,7 +507,8 @@ const Card *CardFace::validate(const CardUseStruct &use) const
                 if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
-                    r = CardFaceLuaCall::validate(l, use); // { returnValue / error, CardFace }
+                    lua_pushvalue(l, -2); // { CardFace, CardFace.validate, CardFace }
+                    r = CardFaceLuaCall::validate(l, use); // { CardFace.validate(), CardFace }
                 } else {
                     // not function, ignored
                 }
@@ -529,7 +539,8 @@ const Card *CardFace::validateInResponse(Player *player, const Card *original_ca
                 if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
-                    r = CardFaceLuaCall::validateInResponse(l, player, original_card); // { returnValue / error, CardFace }
+                    lua_pushvalue(l, -2); // { CardFace, CardFace.validateInResponse, CardFace }
+                    r = CardFaceLuaCall::validateInResponse(l, player, original_card); // { CardFace.validateInResponse(), CardFace }
                 } else {
                     // not function, ignored
                 }
@@ -560,7 +571,10 @@ void CardFace::doPreAction(RoomObject *room, const CardUseStruct &use) const
                 if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
-                    called = CardFaceLuaCall::use(l, room, use); // { CardFace }
+                    lua_pushvalue(l, -2); // { CardFace, CardFace.doPreAction, CardFace }
+                    called = CardFaceLuaCall::use(l, room, use); // { error (if any), CardFace }
+                    if (called)
+                        lua_pushnil(l); // for following lua_pop
                 } else {
                     // not function, ignored
                 }
@@ -591,7 +605,10 @@ void CardFace::onUse(RoomObject *room, const CardUseStruct &use) const
                 if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
-                    called = CardFaceLuaCall::use(l, room, use); // { CardFace }
+                    lua_pushvalue(l, -2); // { CardFace, CardFace.onUse, CardFace }
+                    called = CardFaceLuaCall::use(l, room, use); // { error (if any), CardFace }
+                    if (called)
+                        lua_pushnil(l); // for following lua_pop
                 } else {
                     // not function, ignored
                 }
@@ -622,7 +639,10 @@ void CardFace::use(RoomObject *room, const CardUseStruct &use) const
                 if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
-                    called = CardFaceLuaCall::use(l, room, use); // { CardFace }
+                    lua_pushvalue(l, -2); // { CardFace, CardFace.use, CardFace }
+                    called = CardFaceLuaCall::use(l, room, use); // { error (if any), CardFace }
+                    if (called)
+                        lua_pushnil(l); // for following lua_pop
                 } else {
                     // not function, ignored
                 }
@@ -773,7 +793,10 @@ void CardFace::onEffect(const CardEffectStruct &effect) const
                 if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
-                    called = CardFaceLuaCall::onEffect(l, effect); // { CardFace }
+                    lua_pushvalue(l, -2); // { CardFace, CardFace.onEffect, CardFace }
+                    called = CardFaceLuaCall::onEffect(l, effect); // { error (if any), CardFace }
+                    if (called)
+                        lua_pushnil(l); // for following lua_pop
                 } else {
                     // not function, ignored
                 }
@@ -804,7 +827,8 @@ bool CardFace::isCancelable(const CardEffectStruct &effect) const
                 if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
-                    r = CardFaceLuaCall::isCancelable(l, effect); // { CardFace }
+                    lua_pushvalue(l, -2); // { CardFace, CardFace.isCancelable, CardFace }
+                    r = CardFaceLuaCall::isCancelable(l, effect); // { CardFace.isCancelable(), CardFace }
                 } else {
                     // not function, ignored
                 }
@@ -835,7 +859,10 @@ void CardFace::onNullified(Player *player, const Card *card) const
                 if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
-                    called = CardFaceLuaCall::onNullified(l, player, card); // { CardFace }
+                    lua_pushvalue(l, -2); // { CardFace, CardFace.onNullified, CardFace }
+                    called = CardFaceLuaCall::onNullified(l, player, card); // { error (if any), CardFace }
+                    if (called)
+                        lua_pushnil(l);
                 } else {
                     // not function, ignored
                 }
@@ -903,7 +930,10 @@ void EquipCard::onInstall(Player *player) const
                 if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
-                    called = CardFaceLuaCall::onInstall(l, player); // { CardFace }
+                    lua_pushvalue(l, -2); // { CardFace, EquipCard.onInstall, CardFace }
+                    called = CardFaceLuaCall::onInstall(l, player); // { error (if any), CardFace }
+                    if (called)
+                        lua_pushnil(l);
                 } else {
                     // not function, ignored
                 }
@@ -933,7 +963,10 @@ void EquipCard::onUninstall(Player *player) const
                 if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
-                    called = CardFaceLuaCall::onInstall(l, player); // { CardFace }
+                    lua_pushvalue(l, -2); // { CardFace, EquipCard.onInstall, CardFace }
+                    called = CardFaceLuaCall::onInstall(l, player); // { error (if any), CardFace }
+                    if (called)
+                        lua_pushnil(l);
                 } else {
                     // not function, ignored
                 }
@@ -1130,7 +1163,10 @@ void DelayedTrick::takeEffect(Player *target) const
                 if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
-                    called = CardFaceLuaCall::onInstall(l, target); // { CardFace }
+                    lua_pushvalue(l, -2); // { CardFace, EquipCard.onInstall, CardFace }
+                    called = CardFaceLuaCall::onInstall(l, target); // { error (if any), CardFace }
+                    if (called)
+                        lua_pushnil(l);
                 } else {
                     // not function, ignored
                 }
@@ -1164,6 +1200,7 @@ JudgeStruct DelayedTrick::judge() const
         do {
             lua_getfield(l, -1, "judge"); // { DelayedTrick.judge, CardFace }
             std::optional<JudgeStruct> j = CardFaceLuaCall::judge(l); // { CardFace }
+            lua_pop(l, 1);
             if (j.has_value())
                 d->j = new JudgeStruct(j.value());
         } while (false);
@@ -1262,7 +1299,8 @@ bool SkillCard::throwWhenUsing() const
                 } else if (type == LUA_TFUNCTION) {
                     // we should do the function call and return
                     // error should be catched here
-                    int call = lua_pcall(l, 0, 1, 0); // { SkillCard.throwWhenUsing() / error, CardFace }
+                    lua_pushvalue(l, -2);
+                    int call = lua_pcall(l, 2, 1, 0); // { SkillCard.throwWhenUsing() / error, CardFace }
                     if (call == LUA_OK)
                         r = lua_toboolean(l, -1); // NOLINT
 

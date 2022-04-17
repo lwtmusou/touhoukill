@@ -119,25 +119,25 @@ sgs_ex.CardFace = function(desc, ...)
     -- subTypeName -> string
     -- kind -> table (sequence) of strings
     -- (if different than default) properties, including
-    --  - targetFixed = function(player, card) -> boolean
-    --  - hasPreAction = function() -> boolean
-    --  - canDamage = function() -> boolean
-    --  - canRecover = function() -> boolean
-    --  - hasEffectValue = function() -> boolean
-    --  - defaultHandlingMethod = function() -> QSanguosha_HandlingMethod
+    --  - targetFixed = function(self, player, card) -> boolean
+    --  - hasPreAction = function(self) -> boolean
+    --  - canDamage = function(self) -> boolean
+    --  - canRecover = function(self) -> boolean
+    --  - hasEffectValue = function(self) -> boolean
+    --  - defaultHandlingMethod = function(self) -> QSanguosha_HandlingMethod
     -- these may be a fixed value or Lua Function, depanding on its usage. Function prototype is provided in case a function should be used.
     -- methods, including
-    --  - targetsFeasible - function(playerList, player, card) -> boolean
-    --  - targetFilter - function(playerList, player, player, card) -> integer
-    --  - isAvailable - function(player, card) -> boolean
-    --  - validate - function(cardUse) -> card
-    --  - validateInResponse - function(player, card) -> card
-    --  - doPreAction - function(room, cardUse)
-    --  - onUse - function(room, cardUse)
-    --  - use - function(room, cardUse)
-    --  - onEffect(cardEffect)
-    --  - isCancelable(cardEffect) -> boolean
-    --  - onNullified(player, card)
+    --  - targetsFeasible - function(self, playerList, player, card) -> boolean
+    --  - targetFilter - function(self, playerList, player, player, card) -> integer
+    --  - isAvailable - function(self, player, card) -> boolean
+    --  - validate - function(self, cardUse) -> card
+    --  - validateInResponse - function(self, player, card) -> card
+    --  - doPreAction - function(self, room, cardUse)
+    --  - onUse - function(self, room, cardUse)
+    --  - use - function(self, room, cardUse)
+    --  - onEffect(self, cardEffect)
+    --  - isCancelable(self, cardEffect) -> boolean
+    --  - onNullified(self, player, card)
     -- All of them are optional but this card does nothing if none is provided.
 
     -- the re-crafted return value
@@ -173,7 +173,7 @@ sgs_ex.CardFace = function(desc, ...)
         table.insert(r.kind, "CardFace")
     end
 
-    --  - targetFixed = function(player, card) -> boolean
+    --  - targetFixed = function(self, player, card) -> boolean
     if desc.targetFixed ~= null then
         if (type(desc.targetFixed) ~= "boolean") and (type(desc.targetFixed) ~= "function") then
             warn(funcName .. ": desc.targetFixed is not boolean or function and is ignored")
@@ -182,7 +182,7 @@ sgs_ex.CardFace = function(desc, ...)
         end
     end
 
-    --  - hasPreAction = function() -> boolean
+    --  - hasPreAction = function(self) -> boolean
     if desc.hasPreAction ~= null then
         if (type(desc.hasPreAction) ~= "boolean") and (type(desc.hasPreAction) ~= "function") then
             warn(funcName .. ": desc.hasPreAction is not boolean or function and is ignored")
@@ -191,7 +191,7 @@ sgs_ex.CardFace = function(desc, ...)
         end
     end
 
-    --  - canDamage = function() -> boolean
+    --  - canDamage = function(self) -> boolean
     if desc.canDamage ~= null then
         if (type(desc.canDamage) ~= "boolean") and (type(desc.canDamage) ~= "function") then
             warn(funcName .. ": desc.canDamage is not boolean or function and is ignored")
@@ -200,7 +200,7 @@ sgs_ex.CardFace = function(desc, ...)
         end
     end
 
-    --  - canRecover = function() -> boolean
+    --  - canRecover = function(self) -> boolean
     if desc.canRecover ~= null then
         if (type(desc.canRecover) ~= "boolean") and (type(desc.canRecover) ~= "function") then
             warn(funcName .. ": desc.canRecover is not boolean or function and is ignored")
@@ -209,7 +209,7 @@ sgs_ex.CardFace = function(desc, ...)
         end
     end
 
-    --  - hasEffectValue = function() -> boolean
+    --  - hasEffectValue = function(self) -> boolean
     if desc.hasEffectValue ~= null then
         if (type(desc.hasEffectValue) ~= "boolean") and (type(desc.hasEffectValue) ~= "function") then
             warn(funcName .. ": desc.hasEffectValue is not boolean or function and is ignored")
@@ -218,7 +218,7 @@ sgs_ex.CardFace = function(desc, ...)
         end
     end
 
-    --  - defaultHandlingMethod = function() -> QSanguosha_HandlingMethod
+    --  - defaultHandlingMethod = function(self) -> QSanguosha_HandlingMethod
     if desc.defaultHandlingMethod ~= null then
         if (type(desc.defaultHandlingMethod) ~= "number") and (type(desc.defaultHandlingMethod) ~= "function") then -- todo: distinguishing number and integer
             warn(funcName .. ": desc.defaultHandlingMethod is not number or function and is ignored")
@@ -227,7 +227,7 @@ sgs_ex.CardFace = function(desc, ...)
         end
     end
 
-    --  - targetsFeasible - function(playerList, player, card) -> boolean
+    --  - targetsFeasible - function(self, playerList, player, card) -> boolean
     if desc.targetsFeasible ~= null then
         if type(desc.targetsFeasible) ~= "function" then
             warn(funcName .. ": desc.targetsFeasible is not function and is ignored")
@@ -236,7 +236,7 @@ sgs_ex.CardFace = function(desc, ...)
         end
     end
 
-    --  - targetFilter - function(playerList, player, player, card) -> integer
+    --  - targetFilter - function(self, playerList, player, player, card) -> integer
     if desc.targetFilter ~= null then
         if type(desc.targetFilter) ~= "function" then
             warn(funcName .. ": desc.targetFilter is not function and is ignored")
@@ -245,7 +245,7 @@ sgs_ex.CardFace = function(desc, ...)
         end
     end
 
-    --  - isAvailable - function(player, card) -> boolean
+    --  - isAvailable - function(self, player, card) -> boolean
     if desc.isAvailable ~= null then
         if type(desc.isAvailable) ~= "function" then
             warn(funcName .. ": desc.isAvailable is not function and is ignored")
@@ -254,7 +254,7 @@ sgs_ex.CardFace = function(desc, ...)
         end
     end
 
-    --  - validate - function(cardUse) -> card
+    --  - validate - function(self, cardUse) -> card
     if desc.validate ~= null then
         if type(desc.validate) ~= "function" then
             warn(funcName .. ": desc.validate is not function and is ignored")
@@ -263,7 +263,7 @@ sgs_ex.CardFace = function(desc, ...)
         end
     end
 
-    --  - validateInResponse - function(player, card) -> card
+    --  - validateInResponse - function(self, player, card) -> card
     if desc.validateInResponse ~= null then
         if type(desc.validateInResponse) ~= "function" then
             warn(funcName .. ": desc.validateInResponse is not function and is ignored")
@@ -272,7 +272,7 @@ sgs_ex.CardFace = function(desc, ...)
         end
     end
 
-    --  - doPreAction - function(room, cardUse)
+    --  - doPreAction - function(self, room, cardUse)
     if desc.doPreAction ~= null then
         if type(desc.doPreAction) ~= "function" then
             warn(funcName .. ": desc.doPreAction is not function and is ignored")
@@ -281,7 +281,7 @@ sgs_ex.CardFace = function(desc, ...)
         end
     end
 
-    --  - onUse - function(room, cardUse)
+    --  - onUse - function(self, room, cardUse)
     if desc.onUse ~= null then
         if type(desc.onUse) ~= "function" then
             warn(funcName .. ": desc.onUse is not function and is ignored")
@@ -290,7 +290,7 @@ sgs_ex.CardFace = function(desc, ...)
         end
     end
 
-    --  - use - function(room, cardUse)
+    --  - use - function(self, room, cardUse)
     if desc.use ~= null then
         if type(desc.use) ~= "function" then
             warn(funcName .. ": desc.use is not function and is ignored")
@@ -299,7 +299,7 @@ sgs_ex.CardFace = function(desc, ...)
         end
     end
 
-    --  - onEffect(cardEffect)
+    --  - onEffect(self, cardEffect)
     if desc.onEffect ~= null then
         if type(desc.onEffect) ~= "function" then
             warn(funcName .. ": desc.onEffect is not function and is ignored")
@@ -308,7 +308,7 @@ sgs_ex.CardFace = function(desc, ...)
         end
     end
 
-    --  - isCancelable(cardEffect) -> boolean
+    --  - isCancelable(self, cardEffect) -> boolean
     if desc.isCancelable ~= null then
         if type(desc.isCancelable) ~= "function" then
             warn(funcName .. ": desc.isCancelable is not function and is ignored")
@@ -317,7 +317,7 @@ sgs_ex.CardFace = function(desc, ...)
         end
     end
 
-    --  - onNullified(player, card)
+    --  - onNullified(self, player, card)
     if desc.onNullified ~= null then
         if type(desc.onNullified) ~= "function" then
             warn(funcName .. ": desc.onNullified is not function and is ignored")
@@ -493,7 +493,7 @@ sgs_ex.EquipCard = function(desc, ...)
 
     local r2 = {}
 
-    --  - onInstall(player)
+    --  - onInstall(self, player)
     if desc.onInstall ~= null then
         if type(desc.onInstall) ~= "function" then
             warn(funcName .. ": desc.onInstall is not function and is ignored")
@@ -502,7 +502,7 @@ sgs_ex.EquipCard = function(desc, ...)
         end
     end
 
-    --  - onUninstall(player)
+    --  - onUninstall(self, player)
     if desc.onUninstall ~= null then
         if type(desc.onUninstall) ~= "function" then
             warn(funcName .. ": desc.onUninstall is not function and is ignored")
@@ -679,7 +679,7 @@ sgs_ex.SkillCard = function(desc, ...)
 
     local r2 = {}
 
-    --  - throwWhenUsing = function() -> boolean
+    --  - throwWhenUsing = function(self) -> boolean
     if desc.throwWhenUsing ~= null then
         if (type(desc.throwWhenUsing) ~= "boolean") and (type(desc.throwWhenUsing) ~= "function") then
             warn(funcName .. "sgs_ex.SkillCard: desc.throwWhenUsing is not boolean or function and is ignored")
@@ -731,9 +731,9 @@ sgs_ex.Trigger = function(desc, ...)
     --  - global = boolean
     -- this should be a fixed value.
     -- methods, including
-    --  - record - function(event, room, data) -> void (optional)
-    --  - triggerable - function(event, room, data) -> table of TriggerDetail (mandatory but optional in GlobalRecord. TriggerDetail may be a naturalvar)
-    --  - trigger - function(event, room, detail, data) -> bool (optional but not available in SkillTrigger. Does nothing if not provided, we will deal with it in subclasses)
+    --  - record - function(self, event, room, data) -> void (optional)
+    --  - triggerable - function(self, event, room, data) -> table of TriggerDetail (mandatory but optional in GlobalRecord. TriggerDetail may be a naturalvar)
+    --  - trigger - function(self, event, room, detail, data) -> bool (optional but not available in SkillTrigger. Does nothing if not provided, we will deal with it in subclasses)
 
     -- the re-crafted return value
     local r = {}
