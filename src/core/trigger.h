@@ -20,7 +20,7 @@ class TriggerPrivate;
 class QSGS_CORE_EXPORT Trigger
 {
 public:
-    Trigger();
+    Trigger(const QString &name);
     virtual ~Trigger();
 
     QSanguosha::TriggerEvents triggerEvents() const;
@@ -72,7 +72,7 @@ private:
 class QSGS_CORE_EXPORT Rule : public Trigger
 {
 public:
-    Rule() = default;
+    Rule(const QString &name);
     ~Rule() override = default;
 
     // fixed 0
@@ -130,7 +130,7 @@ public:
 class QSGS_CORE_EXPORT GlobalRecord : public Trigger
 {
 public:
-    GlobalRecord();
+    GlobalRecord(const QString &name);
     ~GlobalRecord() override = default;
 
     // fixed 10
@@ -146,7 +146,7 @@ class FakeMoveRecordPrivate;
 class QSGS_CORE_EXPORT FakeMoveRecord final : public GlobalRecord
 {
 public:
-    explicit FakeMoveRecord(const QString &skillName);
+    explicit FakeMoveRecord(const QString &name, const QString &skillName);
     ~FakeMoveRecord() final override;
 
     QList<TriggerDetail> triggerable(QSanguosha::TriggerEvent event, RoomObject *room, const QVariant &data) const final override;

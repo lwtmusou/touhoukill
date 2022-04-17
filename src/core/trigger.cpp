@@ -12,17 +12,18 @@ using namespace QSanguosha;
 class TriggerPrivate
 {
 public:
+    QString name;
     TriggerEvents e;
     bool global;
 
-    TriggerPrivate()
+    TriggerPrivate(const QString &name)
         : global(false)
     {
     }
 };
 
-Trigger::Trigger()
-    : d(new TriggerPrivate)
+Trigger::Trigger(const QString &name)
+    : d(new TriggerPrivate(name))
 {
 }
 
@@ -75,6 +76,11 @@ bool Trigger::trigger(TriggerEvent /*unused*/, RoomObject * /*unused*/, const Tr
     return false;
 }
 
+Rule::Rule(const QString &name)
+    : Trigger(name)
+{
+}
+
 int Rule::priority() const
 {
     // for rule
@@ -93,14 +99,16 @@ public:
 };
 
 SkillTrigger::SkillTrigger(Skill *skill)
-    : d(new SkillTriggerPrivate)
+    : Trigger(skill->objectName())
+    , d(new SkillTriggerPrivate)
 {
     skill->addTrigger(this);
     d->name = skill->objectName();
 }
 
 SkillTrigger::SkillTrigger(const QString &name)
-    : d(new SkillTriggerPrivate)
+    : Trigger(name)
+    , d(new SkillTriggerPrivate)
 {
     d->name = name;
 }
@@ -213,7 +221,8 @@ int EquipSkillTrigger::priority() const
     return 2;
 }
 
-GlobalRecord::GlobalRecord()
+GlobalRecord::GlobalRecord(const QString &name)
+    : Trigger(name)
 {
 }
 
@@ -233,8 +242,9 @@ public:
     QString skillName;
 };
 
-FakeMoveRecord::FakeMoveRecord(const QString &skillName)
-    : d(new FakeMoveRecordPrivate)
+FakeMoveRecord::FakeMoveRecord(const QString &name, const QString &skillName)
+    : GlobalRecord(name)
+    , d(new FakeMoveRecordPrivate)
 {
     addTriggerEvents({BeforeCardsMove, CardsMoveOneTime});
     d->skillName = skillName;

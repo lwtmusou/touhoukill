@@ -12,6 +12,7 @@
 #include <QTime>
 
 GameRule::GameRule()
+    : Rule(QStringLiteral("Obsoleted"))
 {
     addTriggerEvents({QSanguosha::GameStart,
                       QSanguosha::TurnStart,

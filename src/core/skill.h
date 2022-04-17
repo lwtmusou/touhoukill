@@ -111,6 +111,11 @@ public:
     // For audio effect
     // Certain skill requires a logic for its audio effect
     // Currently it is judged by server side
+    // return value:
+    // -2 and less are for other use, maybe some special condition need this
+    // -1 for random audio effect
+    // 0 for no audio effect
+    // > 0 for specific audio effect number
     virtual int getAudioEffectIndex(const Player *player, const Card *card) const;
 
     // deprecated
@@ -200,7 +205,8 @@ public:
         // do anything you like
     }
 #endif
-    // Current implementation needs overrides to call Self::currentViewAsSkillSelectionChain in viewFilter and viewAs. See example of Guhuo in skill.cpp
+
+    // This implementation needs overrides to call Self::currentViewAsSkillSelectionChain in viewFilter and viewAs. See example of Guhuo in skill.cpp
 #if 0
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self) const = 0;
     virtual const Card *viewAs(const QList<const Card *> &cards, const Player *Self) const = 0;
@@ -317,6 +323,9 @@ public:
     virtual int getResidueNum(const Player *from, const Card *card) const;
     virtual int getDistanceLimit(const Player *from, const Card *card) const;
     virtual int getExtraTargetNum(const Player *from, const Card *card) const;
+
+    // TODO: consider rated (or limited?) targets or extra targets, see GitHub issue #13
+    // I prefer solution 1, i.e., do not distinguish rated and extra targets, but with targetFilter / targetsFeasible function added to this skill, but easy to cause trouble which is hard to resolve
 
 protected:
     QString pattern;
