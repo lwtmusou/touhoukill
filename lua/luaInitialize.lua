@@ -9,21 +9,21 @@ end
 
 -- first, kill some function that shouldn't be used
 -- mainly process and IO related functions
--- note that I is acceptable while O isn't, with exception of writing tempoaray files.
+-- note that I is acceptable while O isn't, with exception of writing temporary files.
 os.exit = function()
     error("QSanguosha shouldn't exit due to call to os.exit for preventing malicious use.")
 end
-os.execute = function(n, ...)
+os.execute = function(n)
     warn("QSanguosha won't support running an exectuable for preventing malicious use.")
     if not n then return fail end
     return fail, "signal", 9
 end
-os.remove = function(...)
+os.remove = function()
     local failMsg = "QSanguosha won't support removing files for preventing malicious use."
     warn(failMsg)
     return fail, failMsg
 end
-os.rename = function(...)
+os.rename = function()
     local failMsg = "QSanguosha won't support renaming files for preventing malicious use."
     warn(failMsg)
     return fail, failMsg
