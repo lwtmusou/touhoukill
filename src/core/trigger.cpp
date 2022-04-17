@@ -218,7 +218,8 @@ bool EquipSkillTrigger::equipAvailable(const Player *p, const Card *equip, const
 int EquipSkillTrigger::priority() const
 {
     // for EquipSkill
-    return 2;
+    // IMPORTANT! This must match priority of SkillTrigger, we call that directly so we would always get same return value than regular Skill
+    return SkillTrigger::priority();
 }
 
 GlobalRecord::GlobalRecord(const QString &name)

@@ -699,6 +699,114 @@ sgs_ex.SkillCard = function(desc, ...)
     return r
 end
 
+sgs_ex.Trigger = function(desc, ...)
+    local args = {...}
+    local funcName = "sgs_ex.Trigger"
+    if args[1] and type(args[1]) == "string" then
+        funcName = args[1]
+        table.remove(args, 1)
+    end
+
+    if type(desc) ~= "table" then
+        return fail, funcName .. ": desc is not table"
+    end
+
+    -- Never ignore error check on desc.type since it contains the most important information of the trigger - The Trigger type
+    if desc.type == null then
+        return fail, funcName .. ": desc does not contain a valid Type"
+    elseif desc.type & sgs_ex.TableType.FirstTypeMask ~= sgs_ex.TableType.Trigger then
+        return fail, funcName .. ": desc does not contain a valid Trigger Type"
+    end
+
+    if maybeIgnoreErrorCheck(funcName, desc, table.unpack(args)) then
+        return desc
+    end
+
+    -- Trigger common
+    -- As a Trigger, the following are mandatory
+    -- name -> string
+    -- type (which is specified by desc.type using SecondTypeMask / ThirdTypeMask)
+    -- triggerEvents -> table (sequence) of integers, or one integer if it needs only one
+    -- (if different than default) properties, including
+    --  - global = boolean
+    -- this should be a fixed value.
+    -- methods, including
+    --  - record - function(event, room, data) -> void (optional)
+    --  - triggerable - function(event, room, data) -> table of TriggerDetail (mandatory but optional in GlobalRecord. TriggerDetail may be a naturalvar)
+    --  - trigger - function(event, room, detail, data) -> bool (optional but not available in SkillTrigger. Does nothing if not provided, we will deal with it in subclasses)
+
+    -- the re-crafted return value
+    local r = {}
+
+    -- name -> string
+    if not desc.name then
+        return fail, funcName .. ": desc does not contain name"
+    elseif type(desc.name) ~= "string" then
+        return fail, funcName .. ": desc.name is not string"
+    else
+        r.name = desc.name
+    end
+
+    -- type (which is specified by desc.type using SecondTypeMask / ThirdTypeMask)
+    -- pre-checked before maybeIgnoreErrorCheck
+    r.type = desc.type
+
+    -- use "events" for ailas of triggerEvents
+    if desc.triggerEvents == null then
+        if desc.events ~= null then
+            desc.triggerEvents = desc.events
+        end
+    end
+
+    if desc.triggerEvents == null then
+        return fail, funcName .. ": desc does not contain triggerEvents"
+    end
+
+    if type(desc.triggerEvents) == "number" then
+        desc.triggerEvents = {desc.triggerEvents}
+    end
+
+    if type(desc.triggerEvents) == "table" then
+        r.triggerEvents = desc.triggerEvents
+    else
+        return fail, funcName .. ": desc.triggerEvents is not table of number indicating triggerEvent"
+    end
+
+    if desc.global ~= null then
+        if (type(desc.global) ~= "boolean") and (type(desc.global) ~= "function") then
+            warn(funcName .. ": desc.global is not boolean or function and is ignored")
+        else
+            r.global = desc.global
+        end
+    end
+
+    if desc.record ~= null then
+        if (type(desc.record) ~= "function") then
+            warn(funcName .. ": desc.record is not function and is ignored")
+        else
+            r.record = desc.record
+        end
+    end
+
+    if desc.triggerable == null then
+        if (r.type & sgs_ex.TableType.SecondTypeMask) ~= 0x30 then
+            return fail, funcName .. ": desc does not contain triggerable"
+        end
+    else
+        if type(desc.triggerable) ~= "function" then
+            if (r.type & sgs_ex.TableType.SecondTypeMask) == 0x30 then
+                warn(funcName .. ": desc.triggerable is not function and is ignored")
+            else
+                return fail, funcName .. ": desc.triggerable is not function"
+            end
+        else
+            r.triggerable = desc.triggerable
+        end
+    end
+
+    return r
+end
+
 -- Enough error check is necessary
 -- Lua is a weak-type scripting language after all, but we should make it more robust
 -- return fail plus an error message for error

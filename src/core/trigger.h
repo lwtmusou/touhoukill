@@ -123,7 +123,7 @@ public:
     static bool equipAvailable(const Player *p, QSanguosha::EquipLocation location, const QString &equip_name, const Player *to = nullptr);
     static bool equipAvailable(const Player *p, const Card *equip, const Player *to = nullptr);
 
-    // fixed 2
+    // fixed same as regular Skill trigger
     int priority() const final override;
 };
 
