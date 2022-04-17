@@ -89,7 +89,6 @@ local typeValidate = function(functionName, toBeValidated, nameOfToBeValidated, 
     return true
 end
 
--- Should this be the public interface?
 sgs_ex.CardFace = function(desc, ...)
     local args = {...}
     local funcName = "sgs_ex.CardFace"
@@ -103,7 +102,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     -- Never ignore error check on desc.type since it contains the most important information of the card - The Card type
-    if not desc.type then
+    if desc.type == null then
         return fail, funcName .. ": desc does not contain a valid Type"
     elseif desc.type & sgs_ex.TableType.FirstTypeMask ~= sgs_ex.TableType.CardFace then
         return fail, funcName .. ": desc does not contain a valid Card Type"
@@ -145,7 +144,7 @@ sgs_ex.CardFace = function(desc, ...)
     local r = {}
 
     -- name -> string
-    if not desc.name then
+    if desc.name == null then
         return fail, funcName .. ": desc does not contain name"
     elseif type(desc.name) ~= "string" then
         return fail, funcName .. ": desc.name is not string"
@@ -158,7 +157,7 @@ sgs_ex.CardFace = function(desc, ...)
     r.type = desc.type
 
     -- subTypeName -> string
-    if not desc.subTypeName then
+    if desc.subTypeName == null then
         return fail, funcName .. ": desc does not contain subTypeName"
     elseif type(desc.subTypeName) ~= "string" then
         return fail, funcName .. ": desc.subTypeName is not string"
@@ -167,7 +166,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     -- kind -> table (sequence) of strings
-    if not desc.kind then
+    if desc.kind == null then
         return fail, funcName .. ": desc does not contain a vaild kind"
     else
         r.kind = desc.kind
@@ -175,7 +174,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - targetFixed = function(player, card) -> boolean
-    if desc.targetFixed then
+    if desc.targetFixed ~= null then
         if (type(desc.targetFixed) ~= "boolean") and (type(desc.targetFixed) ~= "function") then
             warn(funcName .. ": desc.targetFixed is not boolean or function and is ignored")
         else
@@ -184,7 +183,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - hasPreAction = function() -> boolean
-    if desc.hasPreAction then
+    if desc.hasPreAction ~= null then
         if (type(desc.hasPreAction) ~= "boolean") and (type(desc.hasPreAction) ~= "function") then
             warn(funcName .. ": desc.hasPreAction is not boolean or function and is ignored")
         else
@@ -193,7 +192,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - canDamage = function() -> boolean
-    if desc.canDamage then
+    if desc.canDamage ~= null then
         if (type(desc.canDamage) ~= "boolean") and (type(desc.canDamage) ~= "function") then
             warn(funcName .. ": desc.canDamage is not boolean or function and is ignored")
         else
@@ -202,7 +201,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - canRecover = function() -> boolean
-    if desc.canRecover then
+    if desc.canRecover ~= null then
         if (type(desc.canRecover) ~= "boolean") and (type(desc.canRecover) ~= "function") then
             warn(funcName .. ": desc.canRecover is not boolean or function and is ignored")
         else
@@ -211,7 +210,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - hasEffectValue = function() -> boolean
-    if desc.hasEffectValue then
+    if desc.hasEffectValue ~= null then
         if (type(desc.hasEffectValue) ~= "boolean") and (type(desc.hasEffectValue) ~= "function") then
             warn(funcName .. ": desc.hasEffectValue is not boolean or function and is ignored")
         else
@@ -220,7 +219,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - defaultHandlingMethod = function() -> QSanguosha_HandlingMethod
-    if desc.defaultHandlingMethod then
+    if desc.defaultHandlingMethod ~= null then
         if (type(desc.defaultHandlingMethod) ~= "number") and (type(desc.defaultHandlingMethod) ~= "function") then -- todo: distinguishing number and integer
             warn(funcName .. ": desc.defaultHandlingMethod is not number or function and is ignored")
         else
@@ -229,7 +228,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - targetsFeasible - function(playerList, player, card) -> boolean
-    if desc.targetsFeasible then
+    if desc.targetsFeasible ~= null then
         if type(desc.targetsFeasible) ~= "function" then
             warn(funcName .. ": desc.targetsFeasible is not function and is ignored")
         else
@@ -238,7 +237,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - targetFilter - function(playerList, player, player, card) -> integer
-    if desc.targetFilter then
+    if desc.targetFilter ~= null then
         if type(desc.targetFilter) ~= "function" then
             warn(funcName .. ": desc.targetFilter is not function and is ignored")
         else
@@ -247,7 +246,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - isAvailable - function(player, card) -> boolean
-    if desc.isAvailable then
+    if desc.isAvailable ~= null then
         if type(desc.isAvailable) ~= "function" then
             warn(funcName .. ": desc.isAvailable is not function and is ignored")
         else
@@ -256,7 +255,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - validate - function(cardUse) -> card
-    if desc.validate then
+    if desc.validate ~= null then
         if type(desc.validate) ~= "function" then
             warn(funcName .. ": desc.validate is not function and is ignored")
         else
@@ -265,7 +264,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - validateInResponse - function(player, card) -> card
-    if desc.validateInResponse then
+    if desc.validateInResponse ~= null then
         if type(desc.validateInResponse) ~= "function" then
             warn(funcName .. ": desc.validateInResponse is not function and is ignored")
         else
@@ -274,7 +273,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - doPreAction - function(room, cardUse)
-    if desc.doPreAction then
+    if desc.doPreAction ~= null then
         if type(desc.doPreAction) ~= "function" then
             warn(funcName .. ": desc.doPreAction is not function and is ignored")
         else
@@ -283,7 +282,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - onUse - function(room, cardUse)
-    if desc.onUse then
+    if desc.onUse ~= null then
         if type(desc.onUse) ~= "function" then
             warn(funcName .. ": desc.onUse is not function and is ignored")
         else
@@ -292,7 +291,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - use - function(room, cardUse)
-    if desc.use then
+    if desc.use ~= null then
         if type(desc.use) ~= "function" then
             warn(funcName .. ": desc.use is not function and is ignored")
         else
@@ -301,7 +300,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - onEffect(cardEffect)
-    if desc.onEffect then
+    if desc.onEffect ~= null then
         if type(desc.onEffect) ~= "function" then
             warn(funcName .. ": desc.onEffect is not function and is ignored")
         else
@@ -310,7 +309,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - isCancelable(cardEffect) -> boolean
-    if desc.isCancelable then
+    if desc.isCancelable ~= null then
         if type(desc.isCancelable) ~= "function" then
             warn(funcName .. ": desc.isCancelable is not function and is ignored")
         else
@@ -319,7 +318,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - onNullified(player, card)
-    if desc.onNullified then
+    if desc.onNullified ~= null then
         if type(desc.onNullified) ~= "function" then
             warn(funcName .. ": desc.onNullified is not function and is ignored")
         else
@@ -336,11 +335,11 @@ sgs_ex.BasicCard = function(desc, ...)
         return fail, "sgs_ex.BasicCard: desc is not table"
     end
 
-    if not desc.type then
+    if desc.type == null then
         desc.type = sgs_ex.TableType.BasicCard
     end
 
-    if not desc.kind then
+    if desc.kind == null then
         desc.kind = {"BasicCard"}
     else
         table.insert(desc.kind, "BasicCard")
@@ -369,11 +368,11 @@ sgs_ex.TrickCard = function(desc, ...)
         return fail, funcName .. ": desc is not table"
     end
 
-    if not desc.type then
+    if desc.type == null then
         return fail, funcName .. ": desc does not contain a valid Type"
     end
 
-    if not desc.kind then
+    if desc.kind == null then
         return fail, funcName .. ": desc does not contain a valid kind"
     else
         table.insert(desc.kind, "TrickCard")
@@ -392,11 +391,11 @@ sgs_ex.NonDelayedTrick = function(desc, ...)
         return fail, "sgs_ex.NonDelayedTrick: desc is not table"
     end
 
-    if not desc.type then
+    if desc.type == null then
         desc.type = sgs_ex.TableType.NonDelayedTrick
     end
 
-    if not desc.kind then
+    if desc.kind == null then
         desc.kind = {"NonDelayedTrick"}
     else
         table.insert(desc.kind, "NonDelayedTrick")
@@ -417,11 +416,11 @@ sgs_ex.DelayedTrick = function(desc, ...)
         return fail, "sgs_ex.NonDelayedTrick: desc is not table"
     end
 
-    if not desc.type then
+    if desc.type == null then
         desc.type = sgs_ex.TableType.NonDelayedTrick
     end
 
-    if not desc.kind then
+    if desc.kind == null then
         desc.kind = {"DelayedTrick"}
     else
         table.insert(desc.kind, "DelayedTrick")
@@ -433,13 +432,13 @@ sgs_ex.DelayedTrick = function(desc, ...)
 
     local r2 = {}
 
-    if desc.judge then
+    if desc.judge ~= null then
         r2.judge = desc.judge
     else
         return fail, "sgs_ex.DelayedTrick: desc.judge is null"
     end
 
-    if not desc.takeEffect then
+    if desc.takeEffect == null then
         return fail, "sgs_ex.DelayedTrick: desc.takeEffect is null"
     elseif type(desc.takeEffect) ~= "function" then
         return fail, "sgs_ex.DelayedTrick: desc.takeEffect is not function"
@@ -471,11 +470,11 @@ sgs_ex.EquipCard = function(desc, ...)
         return fail, funcName .. ": desc is not table"
     end
 
-    if not desc.type then
+    if desc.type == null then
         return fail, funcName .. ": desc does not contain a valid Type"
     end
 
-    if not desc.kind then
+    if desc.kind == null then
         return fail, funcName .. ": desc does not contain a valid kind"
     else
         table.insert(desc.kind, "EquipCard")
@@ -495,7 +494,7 @@ sgs_ex.EquipCard = function(desc, ...)
     local r2 = {}
 
     --  - onInstall(player)
-    if desc.onInstall then
+    if desc.onInstall ~= null then
         if type(desc.onInstall) ~= "function" then
             warn(funcName .. ": desc.onInstall is not function and is ignored")
         else
@@ -504,7 +503,7 @@ sgs_ex.EquipCard = function(desc, ...)
     end
 
     --  - onUninstall(player)
-    if desc.onUninstall then
+    if desc.onUninstall ~= null then
         if type(desc.onUninstall) ~= "function" then
             warn(funcName .. ": desc.onUninstall is not function and is ignored")
         else
@@ -531,11 +530,11 @@ sgs_ex.Weapon = function(desc, ...)
         return fail, "sgs_ex.Weapon: desc is not table"
     end
 
-    if not desc.type then
+    if desc.type == null then
         desc.type = sgs_ex.TableType.Weapon
     end
 
-    if not desc.kind then
+    if desc.kind == null then
         desc.kind = {"Weapon"}
     else
         table.insert(desc.kind, "Weapon")
@@ -547,7 +546,7 @@ sgs_ex.Weapon = function(desc, ...)
 
     local r2 = {}
 
-    if not desc.range then
+    if desc.range == null then
         return fail, funcName .. ": desc does not contain range"
     elseif type(desc.range) ~= "number" then
         return fail, funcName .. ": desc.range is not number"
@@ -572,11 +571,11 @@ sgs_ex.Armor = function(desc, ...)
         return fail, "sgs_ex.Armor: desc is not table"
     end
 
-    if not desc.type then
+    if desc.type == null then
         desc.type = sgs_ex.TableType.Armor
     end
 
-    if not desc.kind then
+    if desc.kind == null then
         desc.kind = {"Armor"}
     else
         table.insert(desc.kind, "Armor")
@@ -595,11 +594,11 @@ sgs_ex.DefensiveHorse = function(desc, ...)
         return fail, "sgs_ex.DefensiveHorse: desc is not table"
     end
 
-    if not desc.type then
+    if desc.type == null then
         desc.type = sgs_ex.TableType.DefensiveHorse
     end
 
-    if not desc.kind then
+    if desc.kind == null then
         desc.kind = {"DefensiveHorse"}
     else
         table.insert(desc.kind, "DefensiveHorse")
@@ -618,11 +617,11 @@ sgs_ex.OffensiveHorse = function(desc, ...)
         return fail, "sgs_ex.OffensiveHorse: desc is not table"
     end
 
-    if not desc.type then
+    if desc.type == null then
         desc.type = sgs_ex.TableType.OffensiveHorse
     end
 
-    if not desc.kind then
+    if desc.kind == null then
         desc.kind = {"OffensiveHorse"}
     else
         table.insert(desc.kind, "OffensiveHorse")
@@ -641,11 +640,11 @@ sgs_ex.Treasure = function(desc, ...)
         return fail, "sgs_ex.Treasure: desc is not table"
     end
 
-    if not desc.type then
+    if desc.type == null then
         desc.type = sgs_ex.TableType.Treasure
     end
 
-    if not desc.kind then
+    if desc.kind == null then
         desc.kind = {"Treasure"}
     else
         table.insert(desc.kind, "Treasure")
@@ -664,11 +663,11 @@ sgs_ex.SkillCard = function(desc, ...)
         return fail, "sgs_ex.SkillCard: desc is not table"
     end
 
-    if not desc.type then
+    if desc.type == null then
         desc.type = sgs_ex.TableType.SkillCard
     end
 
-    if not desc.kind then
+    if desc.kind == null then
         desc.kind = {"SkillCard"}
     else
         table.insert(desc.kind, "SkillCard")
@@ -681,7 +680,7 @@ sgs_ex.SkillCard = function(desc, ...)
     local r2 = {}
 
     --  - throwWhenUsing = function() -> boolean
-    if desc.throwWhenUsing then
+    if desc.throwWhenUsing ~= null then
         if (type(desc.throwWhenUsing) ~= "boolean") and (type(desc.throwWhenUsing) ~= "function") then
             warn(funcName .. "sgs_ex.SkillCard: desc.throwWhenUsing is not boolean or function and is ignored")
         else
@@ -709,7 +708,7 @@ sgs_ex.Package = function(desc, ...)
     end
 
     if maybeIgnoreErrorCheck("sgs_ex.Package", desc, ...) then
-        if not desc.type then
+        if desc.type == null then
             if desc.cards then
                 desc.type = sgs_ex.TableType.CardPackage
             else
@@ -728,7 +727,7 @@ sgs_ex.Package = function(desc, ...)
 
     r.type = sgs_ex.TableType.Package
     r.name = desc.name
-    if desc.cards then
+    if desc.cards ~= null then
         isValid, num, msg = typeValidate("sgs_ex.Package", desc.cards, "desc.cards", function(c)
             return (type(c) == "table") and ((c.type & sgs_ex.TableType.FirstTypeMask) == sgs_ex.TableType.CardDescriptor)
         end, "not CardDescriptor")
@@ -743,7 +742,7 @@ sgs_ex.Package = function(desc, ...)
 
         r.type = sgs_ex.TableType.CardPackage
         r.cards = desc.cards
-    elseif desc.generals then
+    elseif desc.generals ~= null then
         isValid, num, msg = typeValidate("sgs_ex.Package", desc.generals, "desc.generals", function(c)
             return (type(c) == "table") and ((c.type & sgs_ex.TableType.FirstTypeMask) == sgs_ex.TableType.GeneralDescriptor)
         end, "not GeneralDescriptor")
