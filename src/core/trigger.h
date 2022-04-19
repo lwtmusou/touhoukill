@@ -59,7 +59,7 @@ public:
     // Current implementation is: To create a TriggerDetail in this function. All data saved in TriggerDetail is non-const
     // This makes the RoomObject not able to be const even if it should be.
     // EXACTLY STRICTLY NOTHING should be even TOUCHED in this function
-    virtual QList<TriggerDetail> triggerable(QSanguosha::TriggerEvent event, RoomObject *room, const QVariant &data) const = 0;
+    virtual QList<TriggerDetail> triggerable(QSanguosha::TriggerEvent event, RoomObject *room, const QVariant &data) const;
 
     // TODO: make TriggerDetail implicitly shared
     virtual bool trigger(QSanguosha::TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const;
@@ -102,7 +102,7 @@ public:
     // Limited modification to TriggerDetail, notably tag and target
     virtual bool cost(QSanguosha::TriggerEvent event, RoomObject *room, TriggerDetail &detail, QVariant &data) const;
     // No modification to TriggerDetail since the cost is done
-    virtual bool effect(QSanguosha::TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const = 0;
+    virtual bool effect(QSanguosha::TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const;
 
 private:
     SkillTriggerPrivate *const d;
@@ -146,7 +146,7 @@ class FakeMoveRecordPrivate;
 class QSGS_CORE_EXPORT FakeMoveRecord final : public GlobalRecord
 {
 public:
-    explicit FakeMoveRecord(const QString &name, const QString &skillName);
+    explicit FakeMoveRecord(const QString &name, const QString &skillName = QString());
     ~FakeMoveRecord() final override;
 
     QList<TriggerDetail> triggerable(QSanguosha::TriggerEvent event, RoomObject *room, const QVariant &data) const final override;

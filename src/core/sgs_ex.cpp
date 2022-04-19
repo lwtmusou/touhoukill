@@ -76,10 +76,10 @@ namespace {
 
 ::Trigger *newTriggerByType(TableType t, const QString &name)
 {
-    //    NEW_NATIVE_TYPE(SkillTrigger)
-    //    NEW_NATIVE_TYPE(EquipSkillTrigger)
-    //    NEW_NATIVE_TYPE(GlobalRecord)
-    //    NEW_NATIVE_TYPE(FakeMoveRecord)
+    NEW_NATIVE_TYPE(SkillTrigger)
+    NEW_NATIVE_TYPE(EquipSkillTrigger)
+    NEW_NATIVE_TYPE(GlobalRecord)
+    NEW_NATIVE_TYPE(FakeMoveRecord)
 
     return nullptr;
 }

@@ -102,7 +102,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     -- Never ignore error check on desc.type since it contains the most important information of the card - The Card type
-    if desc.type == null then
+    if desc.type == nil then
         return fail, funcName .. ": desc does not contain a valid Type"
     elseif desc.type & sgs_ex.TableType.FirstTypeMask ~= sgs_ex.TableType.CardFace then
         return fail, funcName .. ": desc does not contain a valid Card Type"
@@ -144,7 +144,7 @@ sgs_ex.CardFace = function(desc, ...)
     local r = {}
 
     -- name -> string
-    if desc.name == null then
+    if desc.name == nil then
         return fail, funcName .. ": desc does not contain name"
     elseif type(desc.name) ~= "string" then
         return fail, funcName .. ": desc.name is not string"
@@ -157,7 +157,7 @@ sgs_ex.CardFace = function(desc, ...)
     r.type = desc.type
 
     -- subTypeName -> string
-    if desc.subTypeName == null then
+    if desc.subTypeName == nil then
         return fail, funcName .. ": desc does not contain subTypeName"
     elseif type(desc.subTypeName) ~= "string" then
         return fail, funcName .. ": desc.subTypeName is not string"
@@ -166,7 +166,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     -- kind -> table (sequence) of strings
-    if desc.kind == null then
+    if desc.kind == nil then
         return fail, funcName .. ": desc does not contain a vaild kind"
     else
         r.kind = desc.kind
@@ -174,7 +174,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - targetFixed = function(self, player, card) -> boolean
-    if desc.targetFixed ~= null then
+    if desc.targetFixed ~= nil then
         if (type(desc.targetFixed) ~= "boolean") and (type(desc.targetFixed) ~= "function") then
             warn(funcName .. ": desc.targetFixed is not boolean or function and is ignored")
         else
@@ -183,7 +183,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - hasPreAction = function(self) -> boolean
-    if desc.hasPreAction ~= null then
+    if desc.hasPreAction ~= nil then
         if (type(desc.hasPreAction) ~= "boolean") and (type(desc.hasPreAction) ~= "function") then
             warn(funcName .. ": desc.hasPreAction is not boolean or function and is ignored")
         else
@@ -192,7 +192,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - canDamage = function(self) -> boolean
-    if desc.canDamage ~= null then
+    if desc.canDamage ~= nil then
         if (type(desc.canDamage) ~= "boolean") and (type(desc.canDamage) ~= "function") then
             warn(funcName .. ": desc.canDamage is not boolean or function and is ignored")
         else
@@ -201,7 +201,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - canRecover = function(self) -> boolean
-    if desc.canRecover ~= null then
+    if desc.canRecover ~= nil then
         if (type(desc.canRecover) ~= "boolean") and (type(desc.canRecover) ~= "function") then
             warn(funcName .. ": desc.canRecover is not boolean or function and is ignored")
         else
@@ -210,7 +210,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - hasEffectValue = function(self) -> boolean
-    if desc.hasEffectValue ~= null then
+    if desc.hasEffectValue ~= nil then
         if (type(desc.hasEffectValue) ~= "boolean") and (type(desc.hasEffectValue) ~= "function") then
             warn(funcName .. ": desc.hasEffectValue is not boolean or function and is ignored")
         else
@@ -219,7 +219,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - defaultHandlingMethod = function(self) -> QSanguosha_HandlingMethod
-    if desc.defaultHandlingMethod ~= null then
+    if desc.defaultHandlingMethod ~= nil then
         if (type(desc.defaultHandlingMethod) ~= "number") and (type(desc.defaultHandlingMethod) ~= "function") then -- todo: distinguishing number and integer
             warn(funcName .. ": desc.defaultHandlingMethod is not number or function and is ignored")
         else
@@ -228,7 +228,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - targetsFeasible - function(self, playerList, player, card) -> boolean
-    if desc.targetsFeasible ~= null then
+    if desc.targetsFeasible ~= nil then
         if type(desc.targetsFeasible) ~= "function" then
             warn(funcName .. ": desc.targetsFeasible is not function and is ignored")
         else
@@ -237,7 +237,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - targetFilter - function(self, playerList, player, player, card) -> integer
-    if desc.targetFilter ~= null then
+    if desc.targetFilter ~= nil then
         if type(desc.targetFilter) ~= "function" then
             warn(funcName .. ": desc.targetFilter is not function and is ignored")
         else
@@ -246,7 +246,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - isAvailable - function(self, player, card) -> boolean
-    if desc.isAvailable ~= null then
+    if desc.isAvailable ~= nil then
         if type(desc.isAvailable) ~= "function" then
             warn(funcName .. ": desc.isAvailable is not function and is ignored")
         else
@@ -255,7 +255,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - validate - function(self, cardUse) -> card
-    if desc.validate ~= null then
+    if desc.validate ~= nil then
         if type(desc.validate) ~= "function" then
             warn(funcName .. ": desc.validate is not function and is ignored")
         else
@@ -264,7 +264,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - validateInResponse - function(self, player, card) -> card
-    if desc.validateInResponse ~= null then
+    if desc.validateInResponse ~= nil then
         if type(desc.validateInResponse) ~= "function" then
             warn(funcName .. ": desc.validateInResponse is not function and is ignored")
         else
@@ -273,7 +273,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - doPreAction - function(self, room, cardUse)
-    if desc.doPreAction ~= null then
+    if desc.doPreAction ~= nil then
         if type(desc.doPreAction) ~= "function" then
             warn(funcName .. ": desc.doPreAction is not function and is ignored")
         else
@@ -282,7 +282,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - onUse - function(self, room, cardUse)
-    if desc.onUse ~= null then
+    if desc.onUse ~= nil then
         if type(desc.onUse) ~= "function" then
             warn(funcName .. ": desc.onUse is not function and is ignored")
         else
@@ -291,7 +291,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - use - function(self, room, cardUse)
-    if desc.use ~= null then
+    if desc.use ~= nil then
         if type(desc.use) ~= "function" then
             warn(funcName .. ": desc.use is not function and is ignored")
         else
@@ -300,7 +300,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - onEffect(self, cardEffect)
-    if desc.onEffect ~= null then
+    if desc.onEffect ~= nil then
         if type(desc.onEffect) ~= "function" then
             warn(funcName .. ": desc.onEffect is not function and is ignored")
         else
@@ -309,7 +309,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - isCancelable(self, cardEffect) -> boolean
-    if desc.isCancelable ~= null then
+    if desc.isCancelable ~= nil then
         if type(desc.isCancelable) ~= "function" then
             warn(funcName .. ": desc.isCancelable is not function and is ignored")
         else
@@ -318,7 +318,7 @@ sgs_ex.CardFace = function(desc, ...)
     end
 
     --  - onNullified(self, player, card)
-    if desc.onNullified ~= null then
+    if desc.onNullified ~= nil then
         if type(desc.onNullified) ~= "function" then
             warn(funcName .. ": desc.onNullified is not function and is ignored")
         else
@@ -335,17 +335,17 @@ sgs_ex.BasicCard = function(desc, ...)
         return fail, "sgs_ex.BasicCard: desc is not table"
     end
 
-    if desc.type == null then
+    if desc.type == nil then
         desc.type = sgs_ex.TableType.BasicCard
     end
 
-    if desc.kind == null then
+    if desc.kind == nil then
         desc.kind = {"BasicCard"}
     else
         table.insert(desc.kind, "BasicCard")
     end
 
-    if maybeIgnoreErrorCheck(funcName, desc, ...) then
+    if maybeIgnoreErrorCheck("sgs_ex.BasicCard", desc, ...) then
         return desc
     end
 
@@ -368,11 +368,11 @@ sgs_ex.TrickCard = function(desc, ...)
         return fail, funcName .. ": desc is not table"
     end
 
-    if desc.type == null then
+    if desc.type == nil then
         return fail, funcName .. ": desc does not contain a valid Type"
     end
 
-    if desc.kind == null then
+    if desc.kind == nil then
         return fail, funcName .. ": desc does not contain a valid kind"
     else
         table.insert(desc.kind, "TrickCard")
@@ -391,11 +391,11 @@ sgs_ex.NonDelayedTrick = function(desc, ...)
         return fail, "sgs_ex.NonDelayedTrick: desc is not table"
     end
 
-    if desc.type == null then
+    if desc.type == nil then
         desc.type = sgs_ex.TableType.NonDelayedTrick
     end
 
-    if desc.kind == null then
+    if desc.kind == nil then
         desc.kind = {"NonDelayedTrick"}
     else
         table.insert(desc.kind, "NonDelayedTrick")
@@ -410,36 +410,36 @@ end
 
 sgs_ex.DelayedTrick = function(desc, ...)
     -- DelayedTrick has an extra member called judge and extra member function called takeEffect
-    -- they can't be null
+    -- they can't be nil
 
     if type(desc) ~= "table" then
         return fail, "sgs_ex.NonDelayedTrick: desc is not table"
     end
 
-    if desc.type == null then
+    if desc.type == nil then
         desc.type = sgs_ex.TableType.NonDelayedTrick
     end
 
-    if desc.kind == null then
+    if desc.kind == nil then
         desc.kind = {"DelayedTrick"}
     else
         table.insert(desc.kind, "DelayedTrick")
     end
 
-    if maybeIgnoreErrorCheck(funcName, desc, ...) then
+    if maybeIgnoreErrorCheck("sgs_ex.DelayedTrick", desc, ...) then
         return desc
     end
 
     local r2 = {}
 
-    if desc.judge ~= null then
+    if desc.judge ~= nil then
         r2.judge = desc.judge
     else
-        return fail, "sgs_ex.DelayedTrick: desc.judge is null"
+        return fail, "sgs_ex.DelayedTrick: desc.judge is nil"
     end
 
-    if desc.takeEffect == null then
-        return fail, "sgs_ex.DelayedTrick: desc.takeEffect is null"
+    if desc.takeEffect == nil then
+        return fail, "sgs_ex.DelayedTrick: desc.takeEffect is nil"
     elseif type(desc.takeEffect) ~= "function" then
         return fail, "sgs_ex.DelayedTrick: desc.takeEffect is not function"
     else
@@ -470,11 +470,11 @@ sgs_ex.EquipCard = function(desc, ...)
         return fail, funcName .. ": desc is not table"
     end
 
-    if desc.type == null then
+    if desc.type == nil then
         return fail, funcName .. ": desc does not contain a valid Type"
     end
 
-    if desc.kind == null then
+    if desc.kind == nil then
         return fail, funcName .. ": desc does not contain a valid kind"
     else
         table.insert(desc.kind, "EquipCard")
@@ -494,7 +494,7 @@ sgs_ex.EquipCard = function(desc, ...)
     local r2 = {}
 
     --  - onInstall(self, player)
-    if desc.onInstall ~= null then
+    if desc.onInstall ~= nil then
         if type(desc.onInstall) ~= "function" then
             warn(funcName .. ": desc.onInstall is not function and is ignored")
         else
@@ -503,7 +503,7 @@ sgs_ex.EquipCard = function(desc, ...)
     end
 
     --  - onUninstall(self, player)
-    if desc.onUninstall ~= null then
+    if desc.onUninstall ~= nil then
         if type(desc.onUninstall) ~= "function" then
             warn(funcName .. ": desc.onUninstall is not function and is ignored")
         else
@@ -530,26 +530,26 @@ sgs_ex.Weapon = function(desc, ...)
         return fail, "sgs_ex.Weapon: desc is not table"
     end
 
-    if desc.type == null then
+    if desc.type == nil then
         desc.type = sgs_ex.TableType.Weapon
     end
 
-    if desc.kind == null then
+    if desc.kind == nil then
         desc.kind = {"Weapon"}
     else
         table.insert(desc.kind, "Weapon")
     end
 
-    if maybeIgnoreErrorCheck(funcName, desc, ...) then
+    if maybeIgnoreErrorCheck("sgs_ex.Weapon", desc, ...) then
         return desc
     end
 
     local r2 = {}
 
-    if desc.range == null then
-        return fail, funcName .. ": desc does not contain range"
+    if desc.range == nil then
+        return fail, "sgs_ex.Weapon: desc does not contain range"
     elseif type(desc.range) ~= "number" then
-        return fail, funcName .. ": desc.range is not number"
+        return fail, "sgs_ex.Weapon: desc.range is not number"
     else
         r2.range = desc.range
     end
@@ -571,11 +571,11 @@ sgs_ex.Armor = function(desc, ...)
         return fail, "sgs_ex.Armor: desc is not table"
     end
 
-    if desc.type == null then
+    if desc.type == nil then
         desc.type = sgs_ex.TableType.Armor
     end
 
-    if desc.kind == null then
+    if desc.kind == nil then
         desc.kind = {"Armor"}
     else
         table.insert(desc.kind, "Armor")
@@ -594,11 +594,11 @@ sgs_ex.DefensiveHorse = function(desc, ...)
         return fail, "sgs_ex.DefensiveHorse: desc is not table"
     end
 
-    if desc.type == null then
+    if desc.type == nil then
         desc.type = sgs_ex.TableType.DefensiveHorse
     end
 
-    if desc.kind == null then
+    if desc.kind == nil then
         desc.kind = {"DefensiveHorse"}
     else
         table.insert(desc.kind, "DefensiveHorse")
@@ -617,11 +617,11 @@ sgs_ex.OffensiveHorse = function(desc, ...)
         return fail, "sgs_ex.OffensiveHorse: desc is not table"
     end
 
-    if desc.type == null then
+    if desc.type == nil then
         desc.type = sgs_ex.TableType.OffensiveHorse
     end
 
-    if desc.kind == null then
+    if desc.kind == nil then
         desc.kind = {"OffensiveHorse"}
     else
         table.insert(desc.kind, "OffensiveHorse")
@@ -640,11 +640,11 @@ sgs_ex.Treasure = function(desc, ...)
         return fail, "sgs_ex.Treasure: desc is not table"
     end
 
-    if desc.type == null then
+    if desc.type == nil then
         desc.type = sgs_ex.TableType.Treasure
     end
 
-    if desc.kind == null then
+    if desc.kind == nil then
         desc.kind = {"Treasure"}
     else
         table.insert(desc.kind, "Treasure")
@@ -663,11 +663,11 @@ sgs_ex.SkillCard = function(desc, ...)
         return fail, "sgs_ex.SkillCard: desc is not table"
     end
 
-    if desc.type == null then
+    if desc.type == nil then
         desc.type = sgs_ex.TableType.SkillCard
     end
 
-    if desc.kind == null then
+    if desc.kind == nil then
         desc.kind = {"SkillCard"}
     else
         table.insert(desc.kind, "SkillCard")
@@ -680,9 +680,9 @@ sgs_ex.SkillCard = function(desc, ...)
     local r2 = {}
 
     --  - throwWhenUsing = function(self) -> boolean
-    if desc.throwWhenUsing ~= null then
+    if desc.throwWhenUsing ~= nil then
         if (type(desc.throwWhenUsing) ~= "boolean") and (type(desc.throwWhenUsing) ~= "function") then
-            warn(funcName .. "sgs_ex.SkillCard: desc.throwWhenUsing is not boolean or function and is ignored")
+            warn("sgs_ex.SkillCard: desc.throwWhenUsing is not boolean or function and is ignored")
         else
             r2.throwWhenUsing = desc.throwWhenUsing
         end
@@ -712,7 +712,7 @@ sgs_ex.Trigger = function(desc, ...)
     end
 
     -- Never ignore error check on desc.type since it contains the most important information of the trigger - The Trigger type
-    if desc.type == null then
+    if desc.type == nil then
         return fail, funcName .. ": desc does not contain a valid Type"
     elseif desc.type & sgs_ex.TableType.FirstTypeMask ~= sgs_ex.TableType.Trigger then
         return fail, funcName .. ": desc does not contain a valid Trigger Type"
@@ -752,13 +752,13 @@ sgs_ex.Trigger = function(desc, ...)
     r.type = desc.type
 
     -- use "events" for ailas of triggerEvents
-    if desc.triggerEvents == null then
-        if desc.events ~= null then
+    if desc.triggerEvents == nil then
+        if desc.events ~= nil then
             desc.triggerEvents = desc.events
         end
     end
 
-    if desc.triggerEvents == null then
+    if desc.triggerEvents == nil then
         return fail, funcName .. ": desc does not contain triggerEvents"
     end
 
@@ -772,7 +772,7 @@ sgs_ex.Trigger = function(desc, ...)
         return fail, funcName .. ": desc.triggerEvents is not table of number indicating triggerEvent"
     end
 
-    if desc.global ~= null then
+    if desc.global ~= nil then
         if (type(desc.global) ~= "boolean") and (type(desc.global) ~= "function") then
             warn(funcName .. ": desc.global is not boolean or function and is ignored")
         else
@@ -780,7 +780,7 @@ sgs_ex.Trigger = function(desc, ...)
         end
     end
 
-    if desc.record ~= null then
+    if desc.record ~= nil then
         if (type(desc.record) ~= "function") then
             warn(funcName .. ": desc.record is not function and is ignored")
         else
@@ -788,7 +788,7 @@ sgs_ex.Trigger = function(desc, ...)
         end
     end
 
-    if desc.triggerable == null then
+    if desc.triggerable == nil then
         if (r.type & sgs_ex.TableType.SecondTypeMask) ~= 0x30 then
             return fail, funcName .. ": desc does not contain triggerable"
         end
@@ -807,6 +807,96 @@ sgs_ex.Trigger = function(desc, ...)
     return r
 end
 
+sgs_ex.SkillTrigger = function(desc, ...)
+    local args = {...}
+    local funcName = "sgs_ex.Trigger"
+    if args[1] and type(args[1]) == "string" then
+        funcName = args[1]
+        table.remove(args, 1)
+    end
+
+    if type(desc) ~= "table" then
+        return fail, funcName .. ": desc is not table"
+    end
+
+    if desc.type == nil then
+        desc.type = sgs_ex.TableType.SkillTrigger
+    end
+
+    if maybeIgnoreErrorCheck(funcName, desc, ...) then
+        return desc
+    end
+
+    local r2 = {}
+
+    -- - priority = function(self) -> integer or only integer
+    if desc.priority ~= nil then
+        if (type(desc.priority) ~= "number") and (type(desc.priority) ~= "function") then
+            warn(funcName .. ": desc.priority is not integer or function and is ignored")
+        else
+            r2.priority = desc.priority
+        end
+    end
+
+    --  - trigger = function(self, event, room, detail, data) -> boolean
+    -- Not available, ignored
+    if desc.trigger ~= nil then
+        warn(funcName .. ": desc.trigger is not nil and is ignored")
+    end
+
+    --  - cost = function(self, event, room, detail, data) -> boolean
+    if desc.cost ~= nil then
+        if type(desc.cost) ~= "function" then
+            warn(funcName .. ": desc.cost is not function and is ignored")
+        else
+            r2.cost = desc.cost
+        end
+    end
+
+    --  - effect = function(self, event, room, detail, data) -> boolean
+    if desc.effect ~= nil then
+        if type(desc.effect) ~= "function" then
+            warn(funcName .. ": desc.effect is not function and is ignored")
+        else
+            r2.effect = desc.effect
+        end
+    end
+
+    local r, e = sgs_ex.Trigger(desc, funcName, ...)
+
+    if not r then
+        return r, e
+    end
+
+    r.priority = r2.priority
+    r.cost = r2.cost
+    r.effect = r2.effect
+
+    return r
+end
+
+sgs_ex.EquipSkillTrigger = function(desc, ...)
+    if type(desc) ~= "table" then
+        return fail, "sgs_ex.EquipSkillTrigger: desc is not table"
+    end
+
+    if desc.type == nil then
+        desc.type = sgs_ex.TableType.EquipSkillTrigger
+    end
+
+    if maybeIgnoreErrorCheck("sgs_ex.EquipSkillTrigger", desc, ...) then
+        return desc
+    end
+
+    -- - priority - ignored
+    if desc.priority ~= nil then
+        warn("sgs_ex.EquipSkillTrigger: desc.priority is not nil and is ignored")
+        desc.priority = nil
+    end
+
+    return sgs_ex.SkillTrigger(desc, "sgs_ex.EquipSkillTrigger", ...)
+end
+
 -- Enough error check is necessary
 -- Lua is a weak-type scripting language after all, but we should make it more robust
 -- return fail plus an error message for error
@@ -816,7 +906,7 @@ sgs_ex.Package = function(desc, ...)
     end
 
     if maybeIgnoreErrorCheck("sgs_ex.Package", desc, ...) then
-        if desc.type == null then
+        if desc.type == nil then
             if desc.cards then
                 desc.type = sgs_ex.TableType.CardPackage
             else
@@ -835,7 +925,7 @@ sgs_ex.Package = function(desc, ...)
 
     r.type = sgs_ex.TableType.Package
     r.name = desc.name
-    if desc.cards ~= null then
+    if desc.cards ~= nil then
         isValid, num, msg = typeValidate("sgs_ex.Package", desc.cards, "desc.cards", function(c)
             return (type(c) == "table") and ((c.type & sgs_ex.TableType.FirstTypeMask) == sgs_ex.TableType.CardDescriptor)
         end, "not CardDescriptor")
@@ -850,7 +940,7 @@ sgs_ex.Package = function(desc, ...)
 
         r.type = sgs_ex.TableType.CardPackage
         r.cards = desc.cards
-    elseif desc.generals ~= null then
+    elseif desc.generals ~= nil then
         isValid, num, msg = typeValidate("sgs_ex.Package", desc.generals, "desc.generals", function(c)
             return (type(c) == "table") and ((c.type & sgs_ex.TableType.FirstTypeMask) == sgs_ex.TableType.GeneralDescriptor)
         end, "not GeneralDescriptor")

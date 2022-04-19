@@ -6,7 +6,8 @@
 #include <QThreadStorage>
 #include <lua.hpp>
 
-extern "C" {
+extern "C"
+{
     int luaopen_sgs(lua_State *l);
 }
 
@@ -120,7 +121,7 @@ public:
 
         // cache registry index for pushXxx use
         lua_newtable(l); // { (new table) }
-        // since all setters pops the value from stack, we should push that again
+        // since the setter pops the value from stack, we should push that again
         lua_setglobal(l, "sgs_registry"); // { }
         lua_getglobal(l, "sgs_registry"); // { sgs_registry }
 

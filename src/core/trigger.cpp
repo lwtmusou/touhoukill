@@ -71,6 +71,11 @@ void Trigger::record(TriggerEvent /*unused*/, RoomObject * /*unused*/, QVariant 
     // Intentionally empty
 }
 
+QList<TriggerDetail> Trigger::triggerable(QSanguosha::TriggerEvent event, RoomObject *room, const QVariant &data) const
+{
+    return {};
+}
+
 bool Trigger::trigger(TriggerEvent /*unused*/, RoomObject * /*unused*/, const TriggerDetail & /*unused*/, QVariant & /*unused*/) const
 {
     return false;
@@ -157,6 +162,11 @@ bool SkillTrigger::cost(TriggerEvent /*unused*/, RoomObject * /*unused*/, Trigge
         invoke = RefactorProposal::fixme_cast<ServerPlayer *>(detail.invoker())->askForSkillInvoke(d->name);
 #endif
     return invoke;
+}
+
+bool SkillTrigger::effect(QSanguosha::TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const
+{
+    return false;
 }
 
 EquipSkillTrigger::EquipSkillTrigger(const EquipCard *card)
