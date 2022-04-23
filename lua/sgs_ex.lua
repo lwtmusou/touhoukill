@@ -739,7 +739,7 @@ sgs_ex.Trigger = function(desc, ...)
     local r = {}
 
     -- name -> string
-    if not desc.name then
+    if desc.name == nil then
         return fail, funcName .. ": desc does not contain name"
     elseif type(desc.name) ~= "string" then
         return fail, funcName .. ": desc.name is not string"
@@ -789,12 +789,12 @@ sgs_ex.Trigger = function(desc, ...)
     end
 
     if desc.triggerable == nil then
-        if (r.type & sgs_ex.TableType.SecondTypeMask) ~= 0x30 then
+        if (r.type & sgs_ex.TableType.SecondTypeMask) ~= (sgs_ex.TableType.GlobalRecord & sgs_ex.TableType.SecondTypeMask) then
             return fail, funcName .. ": desc does not contain triggerable"
         end
     else
         if type(desc.triggerable) ~= "function" then
-            if (r.type & sgs_ex.TableType.SecondTypeMask) == 0x30 then
+            if (r.type & sgs_ex.TableType.SecondTypeMask) == (sgs_ex.TableType.GlobalRecord & sgs_ex.TableType.SecondTypeMask) then
                 warn(funcName .. ": desc.triggerable is not function and is ignored")
             else
                 return fail, funcName .. ": desc.triggerable is not function"
@@ -809,7 +809,7 @@ end
 
 sgs_ex.SkillTrigger = function(desc, ...)
     local args = {...}
-    local funcName = "sgs_ex.Trigger"
+    local funcName = "sgs_ex.SkillTrigger"
     if args[1] and type(args[1]) == "string" then
         funcName = args[1]
         table.remove(args, 1)
@@ -895,6 +895,79 @@ sgs_ex.EquipSkillTrigger = function(desc, ...)
     end
 
     return sgs_ex.SkillTrigger(desc, "sgs_ex.EquipSkillTrigger", ...)
+end
+
+sgs_ex.GlobalRecord = function(desc, ...)
+    local args = {...}
+    local funcName = "sgs_ex.GlobalRecord"
+    if args[1] and type(args[1]) == "string" then
+        funcName = args[1]
+        table.remove(args, 1)
+    end
+
+    if type(desc) ~= "table" then
+        return fail, funcName .. ": desc is not table"
+    end
+
+    if desc.type == nil then
+        desc.type = sgs_ex.TableType.GlobalRecord
+    end
+
+    if maybeIgnoreErrorCheck(funcName, desc, ...) then
+        return desc
+    end
+
+    return sgs_ex.Trigger(desc, funcName, ...)
+end
+
+sgs_ex.FakeMoveRecord = function(desc, ...)
+    if type(desc) ~= "table" then
+        return fail, "sgs_ex.FakeMoveRecord: desc is not table"
+    end
+
+    if desc.type == nil then
+        desc.type = sgs_ex.TableType.FakeMoveRecord
+    end
+
+    -- do not apply maybeIgnoreErrorCheck for FakeMoveRecord since other parameters are built from desc.skillName
+
+    -- skillName -> string
+    if desc.skillName == nil then
+        return fail, "sgs_ex.FakeMoveRecord: desc does not contain skillName"
+    elseif type(desc.skillName) ~= "string" then
+        return fail, "sgs_ex.FakeMoveRecord: desc.skillName is not string"
+    end
+
+    desc.name = desc.skillName .. "-fake-move"
+
+    desc.triggerEvents = {sgs.BeforeCardsMove, sgs.CardsMoveOneTime}
+
+    -- temporary implementation. Need adjusting according to code change, since current parameter "self" is not the real skill but the skill table in Lua
+    -- but the real skill is needed for constructing TriggerDetail
+    desc.triggerable = function(self, event, room)
+        local owner
+        for _, p in ipairs(room:players(false)) do
+            if p:hasValidSkill(self.skillName) then
+                owner = p
+                break
+            end
+        end
+
+        local flag = self.skillName .. "_InTempMoving"
+        for _, p in ipairs(room:players(false)) do
+            if p:hasFlag(flag) then
+                return {sgs.TriggerDetail(room, self, owner, p, nil)}
+            end
+        end
+
+        return {}
+    end
+
+    desc.trigger = function()
+        return true
+    end
+
+    return sgs_ex.GlobalRecord(desc, "sgs_ex.FakeMoveRecord", ...)
 end
 
 -- Enough error check is necessary
