@@ -1,6 +1,11 @@
 #ifndef _CARD_H
 #define _CARD_H
 
+// BE WARE! THIS FILE IS USED IN BOTH SWIG AND C++.
+// MAKE SURE THE GRAMMAR IS COMPATIBLE BETWEEN 2 LANGUAGES.
+
+#ifndef SWIG
+
 #include "global.h"
 #include "qsgscore.h"
 
@@ -14,12 +19,18 @@ struct CardUseStruct;
 
 class CardPrivate;
 class CardFace;
+#endif
 
+#ifndef SWIG
 class QSGS_CORE_EXPORT Card final
 {
     Q_GADGET
 
     friend class RoomObject;
+#else
+class Card
+{
+#endif
 
 public:
     static const int S_UNKNOWN_CARD_ID;
@@ -134,7 +145,9 @@ private:
     CardPrivate *const d;
 };
 
+#ifndef SWIG
 Q_DECLARE_METATYPE(const Card *)
+#endif
 
 /**
  * @brief For creating new cards.
@@ -156,6 +169,13 @@ struct QSGS_CORE_EXPORT CardDescriptor
     bool isBlack() const;
     bool isRed() const;
     const CardFace *face() const;
+
+private:
+#ifdef SWIG
+    Q_DISABLE_COPY(CardDescriptor)
+    CardDescriptor() = delete;
+    ~CardDescriptor() = delete;
+#endif
 };
 
 #endif

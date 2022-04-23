@@ -1,6 +1,11 @@
 #ifndef TOUHOUKILL_CARDFACE_H_
 #define TOUHOUKILL_CARDFACE_H_
 
+// BE WARE! THIS FILE IS USED IN BOTH SWIG AND C++.
+// MAKE SURE THE GRAMMAR IS COMPATIBLE BETWEEN 2 LANGUAGES.
+
+#ifndef SWIG
+
 #include "global.h"
 #include "qsgscore.h"
 
@@ -14,6 +19,7 @@ class CardFacePrivate;
 struct CardUseStruct;
 struct CardEffectStruct;
 struct JudgeStruct;
+#endif
 
 /**
  * @brief The functional model of a given card.
@@ -21,17 +27,19 @@ struct JudgeStruct;
 class QSGS_CORE_EXPORT CardFace
 {
 public:
+#ifndef SWIG
     explicit CardFace(const QString &name);
     virtual ~CardFace();
+#endif
 
     // text property
-    QSGS_LUA_API QString name() const;
+    QString name() const;
 
     // type property
     virtual QSanguosha::CardType type() const = 0;
     virtual QString typeName() const = 0;
     QString subTypeName() const;
-    QSGS_LUA_API bool isKindOf(const QString &cardType) const;
+    bool isKindOf(const QString &cardType) const;
 
     // Can we have a better way to replace this function? Maybe using `match`
     // Fs: This is just a convenience function....
@@ -47,9 +55,9 @@ public:
     // Fs: There is a skill which has a skill named "Xianshi" for God Patchouli in TouhouKill. It needs an extremely hacked Card/CardFace which changes all the effect of a certain Card.
     // Return value of "canDamage" and "canRecover" is affected by "Xianshi" in this case.
     // TODO_Fs: ***non-virtual*** property setters for simplifying logic, only reimplement these functions when complex logic is needed
-    QSGS_LUA_API bool canDamage() const;
+    bool canDamage() const;
     void setCanDamage(bool can);
-    QSGS_LUA_API bool canRecover() const;
+    bool canRecover() const;
     void setCanRecover(bool can);
     // Fs: canRecast should be property of Card.
     // Seems like it should be dealt in UI and GameRule instead of the logic in Card/CardFace itself.
@@ -58,21 +66,21 @@ public:
     // so that there will be no logic in CardFace for implementing recasting
     // Note: In HulaoPass mode, all weapon can be recast according to the game rule.
     // virtual bool canRecast() const;
-    QSGS_LUA_API bool hasEffectValue() const;
+    bool hasEffectValue() const;
     void setHasEffectValue(bool can);
-    QSGS_LUA_API bool hasPreAction() const;
+    bool hasPreAction() const;
     void setHasPreAction(bool can);
 
     // This method provides a default handling method suggested by the card face.
     // Almost every actual card has its handlingMethod to be QSanguosha::MethodUse.
-    QSGS_LUA_API QSanguosha::HandlingMethod defaultHandlingMethod() const;
+    QSanguosha::HandlingMethod defaultHandlingMethod() const;
     void setDefaultHandlingMethod(QSanguosha::HandlingMethod can);
 
     // Functions
-    QSGS_LUA_API bool targetFixed(const Player *player, const Card *card) const;
+    bool targetFixed(const Player *player, const Card *card) const;
     void setTargetFixed(bool fixed);
 
-    QSGS_LUA_API bool targetsFeasible(const QList<const Player *> &targets, const Player *Self, const Card *card) const;
+    bool targetsFeasible(const QList<const Player *> &targets, const Player *Self, const Card *card) const;
 
     // This is the merged targetFilter implementation.
     /**
@@ -89,22 +97,22 @@ public:
      */
     // virtual for current aux-skills
     // TODO: remove this virtual
-    QSGS_LUA_API int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card) const;
+    int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card) const;
 
-    QSGS_LUA_API bool isAvailable(const Player *player, const Card *card) const;
+    bool isAvailable(const Player *player, const Card *card) const;
 
-    QSGS_LUA_API const Card *validate(const CardUseStruct &cardUse) const;
-    QSGS_LUA_API const Card *validateInResponse(Player *player, const Card *original_card) const;
+    const Card *validate(const CardUseStruct &cardUse) const;
+    const Card *validateInResponse(Player *player, const Card *original_card) const;
 
-    QSGS_LUA_API void doPreAction(RoomObject *room, const CardUseStruct &use) const;
+    void doPreAction(RoomObject *room, const CardUseStruct &use) const;
 
     // TODO_Fs: Aren't the names of these 2 functions easy to be misunderstood?
-    QSGS_LUA_API void onUse(RoomObject *room, const CardUseStruct &use) const; // Shouldn't this be "processOfUsing" / "usingProcess" or something like this?
-    QSGS_LUA_API void use(RoomObject *room, const CardUseStruct &use) const; // Shouldn't this be "onUse"?
+    void onUse(RoomObject *room, const CardUseStruct &use) const; // Shouldn't this be "processOfUsing" / "usingProcess" or something like this?
+    void use(RoomObject *room, const CardUseStruct &use) const; // Shouldn't this be "onUse"?
 
-    QSGS_LUA_API void onEffect(const CardEffectStruct &effect) const;
-    QSGS_LUA_API bool isCancelable(const CardEffectStruct &effect) const;
-    QSGS_LUA_API void onNullified(Player *player, const Card *card) const;
+    void onEffect(const CardEffectStruct &effect) const;
+    bool isCancelable(const CardEffectStruct &effect) const;
+    void onNullified(Player *player, const Card *card) const;
 
 protected:
     virtual void defaultOnUse(RoomObject *room, const CardUseStruct &use) const;
@@ -119,21 +127,25 @@ private:
 class QSGS_CORE_EXPORT BasicCard : public CardFace
 {
 public:
+#ifndef SWIG
     BasicCard(const QString &name);
     ~BasicCard() override = default;
 
     QSanguosha::CardType type() const override;
     QString typeName() const override;
+#endif
 };
 
 class QSGS_CORE_EXPORT EquipCard : public CardFace
 {
 public:
+#ifndef SWIG
     EquipCard(const QString &name);
     ~EquipCard() override = default;
 
     QSanguosha::CardType type() const override;
     QString typeName() const override;
+#endif
 
     virtual QSanguosha::EquipLocation location() const = 0;
 
@@ -151,10 +163,12 @@ class WeaponPrivate;
 class QSGS_CORE_EXPORT Weapon : public EquipCard
 {
 public:
+#ifndef SWIG
     Weapon(const QString &name);
     ~Weapon() override;
 
     QSanguosha::EquipLocation location() const override;
+#endif
 
     int range() const;
     void setRange(int r);
@@ -166,19 +180,23 @@ private:
 class QSGS_CORE_EXPORT Armor : public EquipCard
 {
 public:
+#ifndef SWIG
     Armor(const QString &name);
     ~Armor() override = default;
 
     QSanguosha::EquipLocation location() const override;
+#endif
 };
 
 class QSGS_CORE_EXPORT DefensiveHorse : public EquipCard
 {
 public:
+#ifndef SWIG
     DefensiveHorse(const QString &name);
     ~DefensiveHorse() override = default;
 
     QSanguosha::EquipLocation location() const override;
+#endif
 
     // TODO_Fs: this should be implemented using DistanceSkill
     // virtual int correction() const;
@@ -187,10 +205,12 @@ public:
 class QSGS_CORE_EXPORT OffensiveHorse : public EquipCard
 {
 public:
+#ifndef SWIG
     OffensiveHorse(const QString &name);
     ~OffensiveHorse() override = default;
 
     QSanguosha::EquipLocation location() const override;
+#endif
 
     // virtual int correction() const;
 };
@@ -198,27 +218,33 @@ public:
 class QSGS_CORE_EXPORT Treasure : public EquipCard
 {
 public:
+#ifndef SWIG
     Treasure(const QString &name);
     ~Treasure() override = default;
 
     QSanguosha::EquipLocation location() const override;
+#endif
 };
 
 class QSGS_CORE_EXPORT TrickCard : public CardFace
 {
 public:
+#ifndef SWIG
     TrickCard(const QString &name);
     ~TrickCard() override = default;
 
     QSanguosha::CardType type() const override;
     QString typeName() const override;
+#endif
 };
 
 class QSGS_CORE_EXPORT NonDelayedTrick : public TrickCard
 {
 public:
+#ifndef SWIG
     NonDelayedTrick(const QString &name);
     ~NonDelayedTrick() override = default;
+#endif
 };
 
 class DelayedTrickPrivate;
@@ -226,8 +252,10 @@ class DelayedTrickPrivate;
 class QSGS_CORE_EXPORT DelayedTrick : public TrickCard
 {
 public:
+#ifndef SWIG
     DelayedTrick(const QString &name);
     ~DelayedTrick() override;
+#endif
 
     void takeEffect(Player *target) const;
 
@@ -243,11 +271,13 @@ class SkillCardPrivate;
 class QSGS_CORE_EXPORT SkillCard : public CardFace
 {
 public:
+#ifndef SWIG
     SkillCard(const QString &name);
     ~SkillCard() override;
 
     QSanguosha::CardType type() const override;
     QString typeName() const override;
+#endif
 
     bool throwWhenUsing() const;
     void setThrowWhenUsing(bool can);
