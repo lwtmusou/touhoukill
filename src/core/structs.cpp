@@ -367,7 +367,6 @@ class TriggerDetailSharedData : public QSharedData
 public:
     RoomObject *room;
     const Trigger *trigger; // the trigger
-    QString name; // the name of trigger, either "Rule-XXX" or skill name
     Player *owner; // skill owner. 2 structs with the same skill and skill owner are treated as of a same skill.
     Player *invoker; // skill invoker. When invoking skill, we sort firstly according to the priority, then the seat of invoker, at last weather it is a skill of an equip.
     QList<Player *> targets; // skill targets.
@@ -430,13 +429,12 @@ bool TriggerDetail::sameTimingWith(const TriggerDetail &arg2) const
     return trigger()->priority() == arg2.trigger()->priority() && invoker() == arg2.invoker() && trigger()->isEquipSkill() == arg2.trigger()->isEquipSkill();
 }
 
-TriggerDetail::TriggerDetail(RoomObject *room, const Trigger *trigger /*= NULL*/, const QString &name, Player *owner /*= NULL*/, Player *invoker /*= NULL*/,
+TriggerDetail::TriggerDetail(RoomObject *room, const Trigger *trigger /*= NULL*/, Player *owner /*= NULL*/, Player *invoker /*= NULL*/,
                              const QList<Player *> &targets /*= QList<Player *>()*/, bool isCompulsory /*= false*/, bool effectOnly /*=false*/)
     : d(new TriggerDetailPrivate)
 {
     d->d->room = room;
     d->d->trigger = trigger;
-    d->d->name = name;
     d->d->owner = owner;
     d->d->invoker = invoker;
     d->d->targets = targets;
@@ -445,13 +443,11 @@ TriggerDetail::TriggerDetail(RoomObject *room, const Trigger *trigger /*= NULL*/
     d->d->effectOnly = effectOnly;
 }
 
-TriggerDetail::TriggerDetail(RoomObject *room, const Trigger *trigger, const QString &name, Player *owner, Player *invoker, Player *target, bool isCompulsory /*= false*/,
-                             bool effectOnly /*=false*/)
+TriggerDetail::TriggerDetail(RoomObject *room, const Trigger *trigger, Player *owner, Player *invoker, Player *target, bool isCompulsory /*= false*/, bool effectOnly /*=false*/)
     : d(new TriggerDetailPrivate)
 {
     d->d->room = room;
     d->d->trigger = trigger;
-    d->d->name = name;
     d->d->owner = owner;
     d->d->invoker = invoker;
     if (target != nullptr)
@@ -491,9 +487,12 @@ const Trigger *TriggerDetail::trigger() const
     return d->d->trigger;
 }
 
-const QString &TriggerDetail::name() const
+QString TriggerDetail::name() const
 {
-    return d->d->name;
+    if (d->d->trigger != nullptr)
+        return d->d->trigger->name();
+
+    return QString();
 }
 
 Player *TriggerDetail::owner() const
@@ -558,7 +557,7 @@ QVariant TriggerDetail::toVariant() const
 
     JsonObject ob;
     if (trigger() != nullptr)
-        ob[QStringLiteral("skill")] = d->d->name;
+        ob[QStringLiteral("skill")] = trigger()->name();
     if (owner() != nullptr)
         ob[QStringLiteral("owner")] = owner()->objectName();
     if (invoker() != nullptr)
@@ -581,7 +580,7 @@ QStringList TriggerDetail::toList() const
         };
 
         if (trigger() != nullptr)
-            l << d->d->name;
+            l << trigger()->name();
         else
             l << QString();
         insert(owner());

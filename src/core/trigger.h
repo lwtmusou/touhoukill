@@ -23,6 +23,8 @@ public:
     Trigger(const QString &name);
     virtual ~Trigger();
 
+    QString name() const;
+
     QSanguosha::TriggerEvents triggerEvents() const;
     bool canTrigger(QSanguosha::TriggerEvent e) const;
     void addTriggerEvent(QSanguosha::TriggerEvent e);

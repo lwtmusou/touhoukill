@@ -32,6 +32,11 @@ Trigger::~Trigger()
     delete d;
 }
 
+QString Trigger::name() const
+{
+    return d->name;
+}
+
 TriggerEvents Trigger::triggerEvents() const
 {
     if (d->e.contains(NumOfEvents))
@@ -279,7 +284,7 @@ QList<TriggerDetail> FakeMoveRecord::triggerable(TriggerEvent /*event*/, RoomObj
     QString flag = QString(QStringLiteral("%1_InTempMoving")).arg(d->skillName);
     foreach (Player *p, room->players(false)) {
         if (p->hasFlag(flag))
-            return {TriggerDetail(room, this, d->skillName, owner, p, nullptr)};
+            return {TriggerDetail(room, this, owner, p, nullptr)};
     }
 
     return {};
