@@ -1034,7 +1034,7 @@ sgs.ai_use_priority.BllmWuyuCard =sgs.ai_use_priority.Slash +0.2
 --神灵庙SP魔理沙
 --[强欲]
 sgs.ai_skill_invoke.qiangyu = true
-sgs.ai_skill_cardask["qiangyu-discard"] = function(self, data)
+sgs.ai_skill_cardask["@qiangyu-discard"] = function(self, data)
 	local blacks = {}
 	for _,c in sgs.qlist(self.player:getHandcards()) do
 		if c:getSuit() == sgs.Card_Spade then
@@ -1051,7 +1051,7 @@ sgs.ai_skill_cardask["qiangyu-discard"] = function(self, data)
 	local ids = {}
 	for _, c in ipairs (cards) do
 		table.insert(ids, c:getId())
-		if #ids >= 2 then break end
+		if #ids >= self.player:getMark("qiangyu") + 1 then break end
 	end
 	return "$" .. table.concat(ids, "+")
 end
@@ -1090,37 +1090,6 @@ sgs.ai_cardneed.mokai = function(to, card, self)
 		return card:isKindOf("TrickCard") or card:isKindOf("EquipCard")
 	end
 end
-
-sgs.ai_skill_cardask["@mokai-dis"] = function(self)
-	local pile = self.player:getPile("tianyi")
-	return "$" .. pile:at(math.random(0, pile:length() - 1))
-end
-
---旧版技能
-sgs.ai_skill_cardask["@guangji-invoke"] =function(self,data)
-   local use = data:toCardUse()
-   if self:touhouCardUseEffectNullify(use,self.player) then return "." end --此杀已经无效
-   --check whether player need providing jink
-
-	local pattern = nil
-	local _data=sgs.QVariant()
-
-	local fakeEffect =sgs.SlashEffectStruct()
-	fakeEffect.slash = use.card
-	fakeEffect.from = use.from
-	fakeEffect.to = self.player
-	_data:setValue(fakeEffect)
-	if sgs.ai_skill_cardask["slash-jink"] (self, _data, pattern, use.from) ~= "." then
-		local pile = self.player:getPile("tianyi")
-		return "$" .. pile:at(math.random(0, pile:length() - 1))
-	end
-	return "."
-end
-sgs.ai_skill_invoke.xinghui = true
-
-
-
-
 
 --神灵庙SP早苗
 --[私欲]
