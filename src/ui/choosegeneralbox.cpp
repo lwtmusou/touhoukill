@@ -27,6 +27,7 @@
 #include "engine.h"
 #include "general.h"
 #include "roomscene.h"
+#include "uiUtils.h"
 
 #include <QApplication>
 #include <QGraphicsProxyWidget>
@@ -45,7 +46,7 @@ GeneralCardItem::GeneralCardItem(const QString &generalName)
     Q_ASSERT(general);
 
     setOuterGlowEffectEnabled(true);
-    // setOuterGlowColor(Sanguosha->getKingdomColor(general->kingdom()));
+    setOuterGlowColor(QSanUiUtils::getKingdomColor(general->kingdom()));
 #ifdef Q_OS_ANDROID
     moveRange = 1.0;
 #endif
@@ -57,7 +58,7 @@ void GeneralCardItem::changeGeneral(const QString &generalName)
 
     const General *general = Sanguosha->getGeneral(generalName);
     Q_ASSERT(general);
-    // setOuterGlowColor(Sanguosha->getKingdomColor(general->kingdom()));
+    setOuterGlowColor(QSanUiUtils::getKingdomColor(general->kingdom()));
 }
 
 void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget * /*widget*/)

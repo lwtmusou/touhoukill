@@ -11,6 +11,9 @@ namespace QSanUiUtils {
 // produces a shadow image for a pixmap whose foreground mask is binaryImage
 QImage produceShadow(const QImage &image, QColor shadowColor, int radius, double decade);
 void makeGray(QPixmap &pixmap);
-}; // namespace QSanUiUtils
+
+// original Engine::getKingdomColor, Since QSgsCore no longer links to QtGui so this function is not available there
+QColor getKingdomColor(const QString &kingdom);
+} // namespace QSanUiUtils
 
 #endif

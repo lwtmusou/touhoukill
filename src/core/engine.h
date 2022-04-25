@@ -54,9 +54,6 @@ public:
     QStringList getExtensions() const;
     QStringList getKingdoms() const;
     QStringList getHegemonyKingdoms() const;
-#if 0
-    QColor getKingdomColor(const QString &kingdom) const;
-#endif
     QStringList getChattingEasyTexts() const;
 
     QMap<QString, QString> getAvailableModes() const;

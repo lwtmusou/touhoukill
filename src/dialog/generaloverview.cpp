@@ -8,6 +8,7 @@
 #include "roomscene.h"
 #include "serverinfostruct.h"
 #include "settings.h"
+#include "uiUtils.h"
 #include "ui_generaloverview.h"
 #include "util.h"
 
@@ -393,7 +394,7 @@ void GeneralOverview::fillGenerals(const QStringList &generals, bool init)
             package_item->setToolTip(tr("<font color=#FFFF33>This is an Lua extension</font>"));
 
         //add color for touhou kingdoms and packages.
-        QColor kingdomColor = Qt::red; // Sanguosha->getKingdomColor(general->kingdom());
+        QColor kingdomColor = QSanUiUtils::getKingdomColor(general->kingdom());
         package_item->setBackground(QBrush(kingdomColor));
         kingdom_item->setBackground(QBrush(kingdomColor));
         if ((11 * kingdomColor.blue() + 30 * kingdomColor.red() + 59 * kingdomColor.green()) / 100 <= 0x7f) {

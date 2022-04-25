@@ -1,5 +1,6 @@
 #include "indicatoritem.h"
 #include "engine.h"
+#include "uiUtils.h"
 
 #include <QGraphicsBlurEffect>
 #include <QPainter>
@@ -12,7 +13,7 @@ IndicatorItem::IndicatorItem(QPointF start, QPointF real_finish, Player *player)
     , finish(start)
     , real_finish(real_finish)
 {
-    // color = Sanguosha->getKingdomColor(player->kingdom());
+    color = QSanUiUtils::getKingdomColor(player->kingdom());
     width = player->isLord() ? 4 : 3;
 }
 

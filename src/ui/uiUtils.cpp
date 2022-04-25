@@ -1,5 +1,7 @@
 #include "uiUtils.h"
 
+#include "engine.h"
+
 #include <QDesktopServices>
 #include <QDir>
 #include <QFile>
@@ -65,4 +67,26 @@ void QSanUiUtils::makeGray(QPixmap &pixmap)
         }
     }
     pixmap = QPixmap::fromImage(img);
+}
+
+QColor QSanUiUtils::getKingdomColor(const QString &kingdom)
+{
+    static QMap<QString, QColor> color_map;
+    if (color_map.isEmpty()) {
+        QVariantMap map = Sanguosha->getConfigFromConfigFile(QStringLiteral("kingdom_colors")).toMap();
+        QMapIterator<QString, QVariant> itor(map);
+        while (itor.hasNext()) {
+            itor.next();
+            QColor color(itor.value().toString());
+            if (!color.isValid()) {
+                qWarning("Invalid color for kingdom %s", qPrintable(itor.key()));
+                color = QColor(128, 128, 128);
+            }
+            color_map[itor.key()] = color;
+        }
+
+        Q_ASSERT(!color_map.isEmpty());
+    }
+
+    return color_map.value(kingdom);
 }
