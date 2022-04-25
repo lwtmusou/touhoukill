@@ -346,24 +346,20 @@ const CardDescriptor &Engine::getEngineCard(int cardId) const
     }
 }
 
-QString Engine::getVersionNumber() const
+QString Engine::getVersionDate() const
 {
     return QStringLiteral(QT_STRINGIFY(VERSIONNUMBER));
 }
 
 QString Engine::getVersion() const
 {
-    return QStringLiteral("%1:%2").arg(getVersionNumber(), getMODName());
+    return QStringLiteral("%1:%2").arg(getVersionDate(), getMODName());
 }
 
-QString Engine::getVersionName() const
+const QVersionNumber &Engine::getQVersionNumber() const
 {
-    return QStringLiteral("V" QT_STRINGIFY(VERSION));
-}
-
-QVersionNumber Engine::getQVersionNumber() const
-{
-    return QVersionNumber::fromString(QStringLiteral(QT_STRINGIFY(VERSION)));
+    static QVersionNumber ver = QVersionNumber::fromString(QStringLiteral(QT_STRINGIFY(VERSION)));
+    return ver;
 }
 
 QString Engine::getMODName() const
