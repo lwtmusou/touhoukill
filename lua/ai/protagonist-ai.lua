@@ -1033,7 +1033,23 @@ sgs.ai_use_priority.BllmWuyuCard =sgs.ai_use_priority.Slash +0.2
 
 --神灵庙SP魔理沙
 --[强欲]
-sgs.ai_skill_invoke.qiangyu = true
+sgs.ai_skill_invoke.qiangyu = function(self, data)
+	local qiangyutime = self.player:getMark("qiangyu")
+	local willdiscardNum = qiangyutime + 2
+	
+	local move = data:toMoveOneTime()
+	if willdiscardNum <= move.card_ids.length() + 3 then return true end
+	
+	local blacks = {}
+	for _,c in sgs.qlist(self.player:getHandcards()) do
+		if c:getSuit() == sgs.Card_Spade then
+			return true
+		end
+	end
+	
+	return false
+end
+
 sgs.ai_skill_cardask["@qiangyu-discard"] = function(self, data)
 	local blacks = {}
 	for _,c in sgs.qlist(self.player:getHandcards()) do
