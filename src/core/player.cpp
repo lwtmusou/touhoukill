@@ -886,6 +886,8 @@ void Player::setEquip(const Card *equip)
     case TreasureLocation:
         d->treasure = equip->id();
         break;
+    default:
+        break;
     }
 }
 
@@ -908,6 +910,8 @@ void Player::removeEquip(const Card *equip)
         break;
     case TreasureLocation:
         d->treasure = -1;
+        break;
+    default:
         break;
     }
     if (d->brokenEquips.contains(equip->id()))

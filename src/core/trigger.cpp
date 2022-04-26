@@ -165,6 +165,9 @@ bool SkillTrigger::cost(TriggerEvent /*unused*/, RoomObject * /*unused*/, Trigge
 #if 0
     if (!isCompulsory)
         invoke = RefactorProposal::fixme_cast<ServerPlayer *>(detail.invoker())->askForSkillInvoke(d->name);
+#else
+    Q_UNUSED(isCompulsory);
+    Q_UNIMPLEMENTED();
 #endif
     return invoke;
 }

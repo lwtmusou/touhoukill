@@ -40,13 +40,22 @@ public:
     Engine();
     ~Engine();
 
+    // move to ServerInfo
+    void addBanPackage(const QString &package_name);
+    QStringList getBanPackages() const;
+
+    // move to UI
+    QStringList getChattingEasyTexts() const;
+    QStringList LordBGMConvertList;
+    QStringList LordBackdropConvertList;
+
+    // move to namespace QSanguosha?
+    QSanguosha::HandlingMethod getCardHandlingMethod(const QString &method_name) const;
+
     void loadTranslations(const QString &locale);
     void addTranslationEntry(const QString &key, const QString &value);
     QString translate(const QString &to_translate) const;
 
-    void addPackage(const Package *package);
-    void addBanPackage(const QString &package_name);
-    QStringList getBanPackages() const;
     QString getVersionDate() const;
     QString getVersion() const;
     const QVersionNumber &getQVersionNumber() const;
@@ -54,8 +63,8 @@ public:
     QStringList getExtensions() const;
     QStringList getKingdoms() const;
     QStringList getHegemonyKingdoms() const;
-    QStringList getChattingEasyTexts() const;
 
+    // move to Mode?
     QMap<QString, QString> getAvailableModes() const;
     QString getModeName(const QString &mode) const;
     int getPlayerCount(const QString &mode) const;
@@ -65,14 +74,23 @@ public:
 
     const CardPattern *getPattern(const QString &name) const;
     bool matchExpPattern(const QString &pattern, const Player *player, const Card *card) const;
-    QSanguosha::HandlingMethod getCardHandlingMethod(const QString &method_name) const;
 
+    void addPackage(const Package *package);
     QList<const Package *> getPackages() const;
     const Package *findPackage(const QString &name) const;
 
     const General *getGeneral(const QString &name) const;
     QStringList getGenerals() const;
     int getGeneralCount(bool include_banned = false) const;
+    QStringList getLords(bool contain_banned = false) const;
+    QStringList getRandomLords() const;
+    QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
+    QStringList getLatestGenerals(const QSet<QString> &ban_set = QSet<QString>()) const;
+    QString getRandomGeneralName() const;
+    QStringList getLimitedGeneralNames() const;
+    QStringList LatestGeneralList;
+    bool isGeneralHidden(const QString &general_name) const;
+
     const Skill *getSkill(const QString &skill_name) const;
     const Skill *getSkill(const EquipCard *card) const;
     QStringList getSkillNames() const;
@@ -80,26 +98,12 @@ public:
 
     int getCardCount() const;
     const CardDescriptor &getEngineCard(int cardId) const;
-
-    QStringList getLords(bool contain_banned = false) const;
-    QStringList getRandomLords() const;
-    QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
-    QStringList getLatestGenerals(const QSet<QString> &ban_set = QSet<QString>()) const;
-    QList<int> getRandomCards() const;
-    QString getRandomGeneralName() const;
-    QStringList getLimitedGeneralNames() const;
-
-    bool isGeneralHidden(const QString &general_name) const;
-
-    QStringList LordBGMConvertList;
-    QStringList LordBackdropConvertList;
-    QStringList LatestGeneralList;
-
-    QVariant getConfigFromConfigFile(const QString &key) const;
-
     void registerCardFace(const CardFace *face);
     const CardFace *cardFace(const QString &name);
     void unregisterCardFace(const QString &name);
+    QList<int> getRandomCards() const;
+
+    QVariant getConfigFromConfigFile(const QString &key) const;
 
 public:
     static const int S_SERVER_TIMEOUT_GRACIOUS_PERIOD;

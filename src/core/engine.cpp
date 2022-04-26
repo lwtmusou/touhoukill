@@ -760,10 +760,10 @@ QStringList Engine::getLatestGenerals(const QSet<QString> &ban_set) const
 QList<int> Engine::getRandomCards() const
 {
     // TODO: reimplement this function in separated class Mode
+#if 0
     bool exclude_disaters = false;
     bool using_2012_3v3 = false;
     bool using_2013_3v3 = false;
-#if 0
     if (Config.GameMode == QStringLiteral("06_3v3")) {
         using_2012_3v3 = (Config.value(QStringLiteral("3v3/OfficialRule"), QStringLiteral("2013")).toString() == QStringLiteral("2012"));
         using_2013_3v3 = (Config.value(QStringLiteral("3v3/OfficialRule"), QStringLiteral("2013")).toString() == QStringLiteral("2013"));
@@ -772,8 +772,8 @@ QList<int> Engine::getRandomCards() const
 
     if (Config.GameMode == QStringLiteral("04_1v3"))
         exclude_disaters = true;
-#endif
     Q_UNUSED(exclude_disaters);
+#endif
 
     QList<int> list;
     for (int i = 0; i < d->cards.length(); ++i)
