@@ -1,5 +1,6 @@
 %include "global.h"
 %include "structs.h"
+%include "engine.h"
 %include "CardFace.h"
 %include "card.h"
 

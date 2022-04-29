@@ -56,18 +56,9 @@ public:
     }
 };
 
-Engine *Sanguosha = nullptr;
-
 Engine::Engine()
     : d(new EnginePrivate)
 {
-    if (Sanguosha != nullptr) {
-        qDebug() << QStringLiteral("Aborting due to multiple Engine instance exists.");
-        abort();
-    }
-
-    Sanguosha = this;
-
     // This file should be in qrc
     JsonDocument doc = JsonDocument::fromFilePath(QStringLiteral("config/gameconfig.json"));
     if (doc.isValid())
@@ -126,7 +117,12 @@ Engine::~Engine()
 {
     qDeleteAll(d->expPatterns);
     delete d;
-    Sanguosha = nullptr;
+}
+
+Engine *Engine::instance()
+{
+    static Engine e;
+    return &e;
 }
 
 void Engine::loadTranslations(const QString &locale)

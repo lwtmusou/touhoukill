@@ -2,6 +2,7 @@
 
 %{
 #include "global.h"
+#include "engine.h"
 #include "lua-wrapper.h"
 #include "card.h"
 #include "CardFace.h"

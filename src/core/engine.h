@@ -1,5 +1,7 @@
-#ifndef _ENGINE_H
-#define _ENGINE_H
+#ifndef TOUHOUKILL_ENGINE_H
+#define TOUHOUKILL_ENGINE_H
+
+#ifndef SWIG
 
 #include "global.h"
 #include "json.h"
@@ -33,12 +35,21 @@ class RoomObject;
 class CardFace;
 
 class EnginePrivate;
+#endif
 
+#ifndef SWIG
 class QSGS_CORE_EXPORT Engine final
+#else
+class Engine
+#endif
 {
 public:
-    Engine();
     ~Engine();
+
+    static Engine *instance();
+
+#ifndef SWIG
+    // Don't expose functions which are to be removed to SWIG
 
     // move to ServerInfo
     void addBanPackage(const QString &package_name);
@@ -61,6 +72,7 @@ public:
     QStringList LatestGeneralList;
     bool isGeneralHidden(const QString &general_name) const;
     QList<int> getRandomCards() const;
+#endif
 
     void loadTranslations(const QString &locale);
     void addTranslationEntry(const QString &key, const QString &value);
@@ -100,10 +112,15 @@ public:
     QVariant config(const QString &key) const;
 
 private:
+    Engine();
     Q_DISABLE_COPY_MOVE(Engine)
     EnginePrivate *const d;
 };
 
-extern QSGS_CORE_EXPORT Engine *Sanguosha;
+#ifdef SWIG
+extern Engine *const Sanguosha;
+#else
+#define Sanguosha (Engine::instance())
+#endif
 
 #endif
