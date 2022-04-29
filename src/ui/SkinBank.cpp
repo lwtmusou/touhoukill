@@ -341,7 +341,7 @@ QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName, bool cache, boo
     else if (ServerInfo.GameMode == QStringLiteral("02_1v1") && name.startsWith(QStringLiteral("kof_")))
         name = name.mid(4);
     else if (name.endsWith(QStringLiteral("_hegemony"))) {
-        const General *general = Sanguosha->getGeneral(name);
+        const General *general = Sanguosha->general(name);
         if (general == nullptr)
             name = name.replace(QStringLiteral("_hegemony"), QString());
     }
@@ -706,7 +706,7 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, bo
 
     //process general image and Hero skin
     QString general_name = fileName.split(QStringLiteral("/")).last().split(QStringLiteral(".")).first();
-    bool isGeneral = (Sanguosha->getGeneral(general_name) != nullptr) || (Sanguosha->getGeneral(general_name + QStringLiteral("_hegemony")) != nullptr);
+    bool isGeneral = (Sanguosha->general(general_name) != nullptr) || (Sanguosha->general(general_name + QStringLiteral("_hegemony")) != nullptr);
     if (isGeneral && heroSkin) {
         int skin_index = Config.value(QStringLiteral("HeroSkin/%1").arg(general_name), 0).toInt();
         if (skin_index > 0) {

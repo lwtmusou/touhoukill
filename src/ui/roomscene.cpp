@@ -589,7 +589,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(QSanguosha::PlaceHand, player);
         if (container != nullptr)
             container->refresh();
-        if ((Sanguosha->getGeneral(newHeroName) != nullptr) && sendLog) {
+        if ((Sanguosha->general(newHeroName) != nullptr) && sendLog) {
             QString type = QStringLiteral("#Transfigure");
             QString arg2 = QString();
             if ((player->getGeneral2() != nullptr) && !isSecondaryHero) {
@@ -612,7 +612,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         if (player != Self)
             break;
         const General *oldHero = isSecondaryHero ? player->getGeneral2() : player->general();
-        const General *newHero = Sanguosha->getGeneral(newHeroName);
+        const General *newHero = Sanguosha->general(newHeroName);
         if (oldHero != nullptr) {
             foreach (const Skill *skill, oldHero->skills(true, !isSecondaryHero))
                 detachSkill(skill->objectName(), !isSecondaryHero);
@@ -1720,7 +1720,7 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         menu->popup(event->screenPos());
     } else if (ServerInfo.FreeChoose && (arrange_button != nullptr)) {
         QGraphicsObject *obj = item->toGraphicsObject();
-        if ((obj != nullptr) && (Sanguosha->getGeneral(obj->objectName()) != nullptr)) {
+        if ((obj != nullptr) && (Sanguosha->general(obj->objectName()) != nullptr)) {
             to_change = qobject_cast<CardItem *>(obj);
             change_general_menu->popup(event->screenPos());
         }
@@ -4047,7 +4047,7 @@ void KOFOrderBox::revealGeneral(const QString &name)
     if (revealed < 3) {
         avatars[revealed]->setPixmap(G_ROOM_SKIN.getGeneralPixmap(name, QSanRoomSkin::S_GENERAL_ICON_SIZE_KOF, false));
         avatars[revealed]->setObjectName(name);
-        const General *general = Sanguosha->getGeneral(name);
+        const General *general = Sanguosha->general(name);
         if (general != nullptr)
             avatars[revealed]->setToolTip(ClientInstance->getGeneralSkillDescription(general->name(), true));
         revealed++;

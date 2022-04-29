@@ -3036,7 +3036,7 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign)
     }
 
     const int max_choice = Config.value(QStringLiteral("MaxChoice"), 6).toInt();
-    const int total = Sanguosha->getGeneralCount();
+    const int total = Sanguosha->availableGeneralCount();
     const int max_available = (total - existed.size()) / to_assign.length();
     const int choice_count = qMin(max_choice, max_available);
 
@@ -3084,21 +3084,21 @@ void Room::chooseGenerals()
         lord_list = Sanguosha->getRandomGenerals(Config.value(QStringLiteral("MaxChoice"), 6).toInt());
     else if (the_lord->getState() == QStringLiteral("robot")) {
         int ramdom_value = QRandomGenerator::global()->generate() % 100;
-        if (((ramdom_value < nonlord_prob || lord_num == 0) && nonlord_num > 0) || Sanguosha->getLords().length() == 0)
+        if (((ramdom_value < nonlord_prob || lord_num == 0) && nonlord_num > 0) || Sanguosha->availableLords().length() == 0)
             lord_list = Sanguosha->getRandomGenerals(1);
         else
-            lord_list = Sanguosha->getLords();
+            lord_list = Sanguosha->availableLords();
     } else {
         lord_list = Sanguosha->getRandomLords();
     }
     QString general = askForGeneral(the_lord, lord_list);
-    the_lord->setGeneral(Sanguosha->getGeneral(general));
+    the_lord->setGeneral(Sanguosha->general(general));
     broadcastProperty(the_lord, "general", general);
 
     if (Config.EnableSame) {
         foreach (ServerPlayer *p, m_players) {
             if (!p->isLord())
-                p->setGeneral(Sanguosha->getGeneral(general));
+                p->setGeneral(Sanguosha->general(general));
         }
 
         Config.Enable2ndGeneral = false;
@@ -3184,12 +3184,12 @@ void Room::chooseHegemonyGenerals()
         QStringList names;
         if (player->general() != nullptr) {
             QString name = player->generalName();
-            QString role = Sanguosha->getGeneral(name)->kingdom();
+            QString role = Sanguosha->general(name)->kingdom();
             if (role == QStringLiteral("zhu"))
                 role = QStringLiteral("careerist");
             names.append(name);
             player->setRole(role);
-            player->setGeneral(Sanguosha->getGeneral(QStringLiteral("anjiang")));
+            player->setGeneral(Sanguosha->general(QStringLiteral("anjiang")));
             foreach (ServerPlayer *p, getOtherPlayers(player))
                 notifyProperty(p, player, "general");
             notifyProperty(player, player, "general", name);
@@ -3198,12 +3198,12 @@ void Room::chooseHegemonyGenerals()
         if (player->getGeneral2() != nullptr) {
             QString name = player->getGeneral2Name();
             names.append(name);
-            player->setGeneral(Sanguosha->getGeneral(QStringLiteral("anjiang")), 1);
+            player->setGeneral(Sanguosha->general(QStringLiteral("anjiang")), 1);
             foreach (ServerPlayer *p, getOtherPlayers(player))
                 notifyProperty(p, player, "general2");
             notifyProperty(player, player, "general2", name);
 
-            QString role = Sanguosha->getGeneral(name)->kingdom();
+            QString role = Sanguosha->general(name)->kingdom();
             if (role == QStringLiteral("zhu")) {
                 role = QStringLiteral("careerist");
                 player->setRole(role);
@@ -3356,8 +3356,8 @@ QStringList Room::_chooseDefaultGenerals(ServerPlayer *player) const
         foreach (QString b, candidates) {
             if (a == b)
                 continue;
-            const General *general1 = Sanguosha->getGeneral(a);
-            const General *general2 = Sanguosha->getGeneral(b);
+            const General *general1 = Sanguosha->general(a);
+            const General *general2 = Sanguosha->general(b);
             if ((general1->kingdom() == general2->kingdom()) || (general1->kingdom() == QStringLiteral("zhu")) || (general2->kingdom() == QStringLiteral("zhu")))
                 general_pairs << (a + QStringLiteral("+") + b);
         }
@@ -3369,7 +3369,7 @@ QStringList Room::_chooseDefaultGenerals(ServerPlayer *player) const
 
 bool Room::_setPlayerGeneral(ServerPlayer *player, const QString &generalName, bool isFirst)
 {
-    const General *general = Sanguosha->getGeneral(generalName);
+    const General *general = Sanguosha->general(generalName);
     if (general == nullptr)
         return false;
     else if (!Config.FreeChoose && !player->getSelected().contains(generalName))
@@ -4147,9 +4147,9 @@ void Room::startGame()
         Q_ASSERT(player->general());
         if (isHegemonyGameMode(mode)) {
             QStringList generals = getTag(player->objectName()).toStringList();
-            const General *general1 = Sanguosha->getGeneral(generals.first());
+            const General *general1 = Sanguosha->general(generals.first());
             Q_ASSERT(general1);
-            const General *general2 = Sanguosha->getGeneral(generals.last());
+            const General *general2 = Sanguosha->general(generals.last());
             int max_hp = (general1->maxHpHead() + general2->maxHpDeputy());
             if (general1->isCompanionWith(generals.last()))
                 player->setMark(QStringLiteral("CompanionEffect"), 1);
@@ -4992,11 +4992,11 @@ void Room::preparePlayers()
     if (isHegemonyGameMode(mode)) {
         foreach (ServerPlayer *player, m_players) {
             QString general1_name = tag[player->objectName()].toStringList().at(0);
-            QSet<const Skill *> skills = Sanguosha->getGeneral(general1_name)->skills(true, true);
+            QSet<const Skill *> skills = Sanguosha->general(general1_name)->skills(true, true);
             foreach (const Skill *skill, skills)
                 player->addSkill(skill->objectName());
             QString general2_name = tag[player->objectName()].toStringList().at(1);
-            QSet<const Skill *> skills2 = Sanguosha->getGeneral(general2_name)->skills(true, false);
+            QSet<const Skill *> skills2 = Sanguosha->general(general2_name)->skills(true, false);
             foreach (const Skill *skill, skills2)
                 player->addSkill(skill->objectName(), false);
 
@@ -6812,8 +6812,8 @@ void Room::saveWinnerTable(const QString &winner, bool isSurrender)
     QStringList winners = winner.split(QStringLiteral("+"));
     foreach (ServerPlayer *p, getAllPlayers(true)) {
         QString originalName = p->tag.value(QStringLiteral("init_general"), QString()).toString();
-        if (!originalName.isNull() && (Sanguosha->getGeneral(originalName) != nullptr))
-            line.append(Sanguosha->getGeneral(originalName)->name());
+        if (!originalName.isNull() && (Sanguosha->general(originalName) != nullptr))
+            line.append(Sanguosha->general(originalName)->name());
         else
             line.append(p->generalName());
         line.append(QStringLiteral(" "));
@@ -6851,7 +6851,7 @@ void Room::countDescription()
 
     QMultiMap<int, QString> map;
     foreach (QString name, all) {
-        const General *gen = Sanguosha->getGeneral(name);
+        const General *gen = Sanguosha->general(name);
         QString line;
         foreach (const Skill *skill, gen->skills()) {
             QString skill_name = Sanguosha->translate(skill->objectName());
@@ -6890,7 +6890,7 @@ void Room::transformGeneral(ServerPlayer *player, const QString &general_name, i
 
     player->removeGeneral(head != 0);
 
-    foreach (const Skill *skill, Sanguosha->getGeneral(general_name)->skills(true, head)) {
+    foreach (const Skill *skill, Sanguosha->general(general_name)->skills(true, head)) {
         foreach (const Trigger *trigger, skill->triggers())
             thread->addTrigger(trigger);
         player->addSkill(skill->objectName(), head != 0);
@@ -6911,7 +6911,7 @@ void Room::transformGeneral(ServerPlayer *player, const QString &general_name, i
 
     setTag(player->objectName(), names);
 
-    foreach (const Skill *skill, Sanguosha->getGeneral(general_name)->skills(true, head)) {
+    foreach (const Skill *skill, Sanguosha->general(general_name)->skills(true, head)) {
         if (skill->isLimited() && !skill->limitMark().isEmpty()) {
             player->setMark(skill->limitMark(), 1);
             JsonArray arg;

@@ -44,6 +44,14 @@ public:
     void addBanPackage(const QString &package_name);
     QStringList getBanPackages() const;
 
+    // move to Mode?
+    QMap<QString, QString> getAvailableModes() const;
+    QString getModeName(const QString &mode) const;
+    int getPlayerCount(const QString &mode) const;
+    QString getRoles(const QString &mode) const;
+    QStringList getRoleList(const QString &mode) const;
+    int getRoleIndex() const;
+
     void loadTranslations(const QString &locale);
     void addTranslationEntry(const QString &key, const QString &value);
     QString translate(const QString &to_translate) const;
@@ -56,14 +64,6 @@ public:
     QStringList kingdoms() const;
     QStringList hegemonyKingdoms() const;
 
-    // move to Mode?
-    QMap<QString, QString> getAvailableModes() const;
-    QString getModeName(const QString &mode) const;
-    int getPlayerCount(const QString &mode) const;
-    QString getRoles(const QString &mode) const;
-    QStringList getRoleList(const QString &mode) const;
-    int getRoleIndex() const;
-
     const CardPattern *responsePattern(const QString &name) const;
     const CardPattern *expPattern(const QString &name) const;
     bool matchExpPattern(const QString &pattern, const Player *player, const Card *card) const;
@@ -73,10 +73,10 @@ public:
     const Package *findPackage(const QString &name) const;
     QStringList packangeNames() const;
 
-    const General *getGeneral(const QString &name) const;
-    QStringList getGenerals() const;
-    int getGeneralCount(bool include_banned = false) const;
-    QStringList getLords(bool contain_banned = false) const;
+    const General *general(const QString &name) const;
+    QStringList generalNames() const;
+    int availableGeneralCount() const;
+    QStringList availableLords() const;
     QStringList getRandomLords() const;
     QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
     QStringList getLatestGenerals(const QSet<QString> &ban_set = QSet<QString>()) const;

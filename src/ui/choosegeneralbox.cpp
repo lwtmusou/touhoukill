@@ -42,7 +42,7 @@ GeneralCardItem::GeneralCardItem(const QString &generalName)
 {
     setAcceptHoverEvents(true);
 
-    const General *general = Sanguosha->getGeneral(generalName);
+    const General *general = Sanguosha->general(generalName);
     Q_ASSERT(general);
 
     setOuterGlowEffectEnabled(true);
@@ -56,7 +56,7 @@ void GeneralCardItem::changeGeneral(const QString &generalName)
 {
     CardItem::changeGeneral(generalName);
 
-    const General *general = Sanguosha->getGeneral(generalName);
+    const General *general = Sanguosha->general(generalName);
     Q_ASSERT(general);
     setOuterGlowColor(QSanUiUtils::getKingdomColor(general->kingdom()));
 }
@@ -79,7 +79,7 @@ void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * 
     if (!hasCompanion)
         return;
 
-    QString kingdom = Sanguosha->getGeneral(objectName())->kingdom();
+    QString kingdom = Sanguosha->general(objectName())->kingdom();
     QPixmap icon = G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_ICON), kingdom);
     painter->drawPixmap(boundingRect().center().x() - icon.width() / 2 + 3, boundingRect().bottom() - icon.height(), icon);
 
@@ -277,8 +277,8 @@ static bool sortByKingdom(const QString &gen1, const QString &gen2)
         foreach (const QString &kingdom, kingdoms)
             kingdom_priority_map[kingdom] = i++;
     }
-    const General *g1 = Sanguosha->getGeneral(gen1);
-    const General *g2 = Sanguosha->getGeneral(gen2);
+    const General *g1 = Sanguosha->general(gen1);
+    const General *g2 = Sanguosha->general(gen2);
 
     if (g1 != nullptr && g2 != nullptr)
         return kingdom_priority_map[g1->kingdom()] < kingdom_priority_map[g2->kingdom()];
@@ -343,7 +343,7 @@ void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_onl
         }
 
         if (!single_result && !view_only) {
-            const General *hero = Sanguosha->getGeneral(general);
+            const General *hero = Sanguosha->general(general);
             foreach (const QString &other, generals) {
                 if (general != other && hero->isCompanionWith(other)) {
                     general_item->showCompanion();
@@ -435,7 +435,7 @@ void ChooseGeneralBox::_adjust()
         item->goBack(true);
         //the item is on the way
     } else if (selected.length() == 2
-               && ((!Sanguosha->getGeneral(selected.first()->objectName())->isLord() && selected.first() == item && item->x() > boundingRect().center().x())
+               && ((!Sanguosha->general(selected.first()->objectName())->isLord() && selected.first() == item && item->x() > boundingRect().center().x())
                    || (selected.last() == item && item->x() < boundingRect().center().x())))
         qSwap(selected[0], selected[1]);
     else if (items.contains(item) && item->y() > middle_y) {
@@ -468,15 +468,15 @@ void ChooseGeneralBox::adjustItems()
     if (selected.length() == 2) {
         foreach (GeneralCardItem *card, items)
             card->setFrozen(true);
-        const General *gen1 = Sanguosha->getGeneral(selected.first()->objectName());
-        const General *gen2 = Sanguosha->getGeneral(selected.last()->objectName());
+        const General *gen1 = Sanguosha->general(selected.first()->objectName());
+        const General *gen2 = Sanguosha->general(selected.last()->objectName());
         bool can = (gen1->kingdom() == gen2->kingdom() || gen1->kingdom() == QStringLiteral("zhu") || gen2->kingdom() == QStringLiteral("zhu"));
         confirm->setEnabled(can);
     } else if (selected.length() == 1) {
         selected.first()->hideCompanion();
-        const General *seleted_general = Sanguosha->getGeneral(selected.first()->objectName());
+        const General *seleted_general = Sanguosha->general(selected.first()->objectName());
         foreach (GeneralCardItem *card, items) {
-            const General *general = Sanguosha->getGeneral(card->objectName());
+            const General *general = Sanguosha->general(card->objectName());
 
             if (general->kingdom() != seleted_general->kingdom() && general->kingdom() != QStringLiteral("zhu") && seleted_general->kingdom() != QStringLiteral("zhu")) {
                 if (!card->isFrozen())
@@ -502,7 +502,7 @@ void ChooseGeneralBox::adjustItems()
             foreach (GeneralCardItem *other, items) {
                 if (other->objectName().endsWith(QStringLiteral("(lord)")))
                     continue;
-                const General *hero = Sanguosha->getGeneral(card->objectName());
+                const General *hero = Sanguosha->general(card->objectName());
                 if (card != other && hero->isCompanionWith(other->objectName())) {
                     card->showCompanion();
                     break;
@@ -519,7 +519,7 @@ void ChooseGeneralBox::_initializeItems()
 {
     QList<const General *> generals;
     foreach (GeneralCardItem *item, items)
-        generals << Sanguosha->getGeneral(item->objectName());
+        generals << Sanguosha->general(item->objectName());
 
     foreach (GeneralCardItem *item, items)
         item->setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);

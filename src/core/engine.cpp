@@ -155,8 +155,8 @@ void Engine::addSkills(const QList<const Skill *> &all_skills)
     foreach (const Skill *skill, all_skills) {
         if (d->skills.contains(skill->objectName()))
             qDebug() << QObject::tr("Duplicated skill : %1").arg(skill->objectName());
-
-        d->skills.insert(skill->objectName(), skill);
+        else
+            d->skills.insert(skill->objectName(), skill);
     }
 }
 
@@ -166,11 +166,6 @@ void Engine::addPackage(const Package *package)
         return;
 
     d->packages << package;
-
-#if 0
-    // TODO: make pattern a globally available design instead of belongs to package
-    patterns.insert(package->patterns());
-#endif
     d->cards << package->cards();
 
     foreach (const General *general, package->generals()) {
@@ -265,21 +260,18 @@ bool Engine::matchExpPattern(const QString &pattern, const Player *player, const
     return p->match(player, card);
 }
 
-const General *Engine::getGeneral(const QString &name) const
+const General *Engine::general(const QString &name) const
 {
     return d->generals.value(name, nullptr);
 }
 
-QStringList Engine::getGenerals() const
+QStringList Engine::generalNames() const
 {
     return d->generals.keys();
 }
 
-int Engine::getGeneralCount(bool include_banned) const
+int Engine::availableGeneralCount() const
 {
-    if (include_banned)
-        return d->generals.size();
-
     int total = d->generals.size();
     QHashIterator<QString, const General *> itor(d->generals);
     while (itor.hasNext()) {
@@ -302,11 +294,11 @@ int Engine::getGeneralCount(bool include_banned) const
 
 bool Engine::isGeneralHidden(const QString &general_name) const
 {
-    const General *general = getGeneral(general_name);
-    if (general == nullptr)
+    const General *theGeneral = general(general_name);
+    if (theGeneral == nullptr)
         return false;
 
-    return general->isHidden();
+    return theGeneral->isHidden();
 #if 0
     if (!general->isHidden())
         return Config.ExtraHiddenGenerals.contains(general_name);
@@ -513,7 +505,7 @@ int Engine::getCardCount() const
     return d->cards.length();
 }
 
-QStringList Engine::getLords(bool contain_banned) const
+QStringList Engine::availableLords() const
 {
     QStringList lords;
 
@@ -522,14 +514,12 @@ QStringList Engine::getLords(bool contain_banned) const
         const General *general = d->generals.value(lord);
         if (getBanPackages().contains(general->getPackage()))
             continue;
-        if (!contain_banned) {
-            if (ServerInfo.GameMode.endsWith(QStringLiteral("p")) || ServerInfo.GameMode.endsWith(QStringLiteral("pd")) || ServerInfo.GameMode.endsWith(QStringLiteral("pz"))) {
-            }
+        if (ServerInfo.GameMode.endsWith(QStringLiteral("p")) || ServerInfo.GameMode.endsWith(QStringLiteral("pd")) || ServerInfo.GameMode.endsWith(QStringLiteral("pz"))) {
+        }
 #if 0
                 if (Config.value(QStringLiteral("Banlist/Roles"), QString()).toStringList().contains(lord))
                     continue;
 #endif
-        }
         lords << lord;
     }
 
@@ -549,11 +539,11 @@ QStringList Engine::getRandomLords() const
     QStringList splords_package; //lords  in sp package will be not count as a lord.
     splords_package << QStringLiteral("thndj");
 
-    foreach (QString alord, getLords()) {
+    foreach (QString alord, availableLords()) {
         if (banlist_ban.contains(alord))
             continue;
-        const General *general = getGeneral(alord);
-        if (splords_package.contains(general->getPackage()))
+        const General *theGeneral = general(alord);
+        if (splords_package.contains(theGeneral->getPackage()))
             continue;
         lords << alord;
     }
@@ -605,7 +595,7 @@ QStringList Engine::getRandomLords() const
     }
 
     for (int i = 0; addcount < extra; i++) {
-        if (getGeneral(nonlord_list.at(i))->kingdom() != QStringLiteral("touhougod")) {
+        if (general(nonlord_list.at(i))->kingdom() != QStringLiteral("touhougod")) {
             lords << nonlord_list.at(i);
             addcount++;
         } else if (godmax > 0 && godCount < godmax) {
@@ -688,7 +678,7 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
     int godmax = 1; // Config.value(QStringLiteral("GodLimit"), 1).toInt();
     int godCount = 0;
     for (int i = 0; addcount < count; i++) {
-        if (getGeneral(all_generals.at(i))->kingdom() != QStringLiteral("touhougod")) {
+        if (general(all_generals.at(i))->kingdom() != QStringLiteral("touhougod")) {
             general_list << all_generals.at(i);
             addcount++;
         } else if (godmax > 0 && godCount < godmax) {

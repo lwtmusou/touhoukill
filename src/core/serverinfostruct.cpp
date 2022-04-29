@@ -103,10 +103,9 @@ bool ServerInfoStruct::parse(const QVariant &object)
 
     DuringGame = false;
     if (!ob.isEmpty()) {
-        QString server_name = ob.value(QStringLiteral("ServerName")).toString();
-        if (server_name.isEmpty())
+        Name = ob.value(QStringLiteral("ServerName")).toString();
+        if (Name.isEmpty())
             return false;
-        Name = QString::fromUtf8(QByteArray::fromBase64(server_name.toLatin1()));
 
         GameMode = ob.value(QStringLiteral("GameMode")).toString();
         if (GameMode.isEmpty())
@@ -128,16 +127,7 @@ bool ServerInfoStruct::parse(const QVariant &object)
 
         DuringGame = true;
 
-        QVariantList ban_packages = ob.value(QStringLiteral("BanPackages")).toList();
-        const QList<const Package *> &packages = Sanguosha->packanges();
-        foreach (const Package *package, packages) {
-            QString package_name = package->name();
-            if (ban_packages.contains(package_name))
-                package_name = QStringLiteral("!") + package_name;
-
-            Extensions << package_name;
-        }
-
+        JsonUtils::tryParse(ob.value(QStringLiteral("Extensions")), Extensions);
         RandomSeat = ob.value(QStringLiteral("RandomSeat"), false).toBool();
         EnableCheat = ob.value(QStringLiteral("EnableCheat"), false).toBool();
         FreeChoose = ob.value(QStringLiteral("FreeChoose"), false).toBool();
@@ -167,18 +157,13 @@ QVariant ServerInfoStruct::serialize() const
     if (!DuringGame)
         return m;
 
-    m[QStringLiteral("ServerName")] = QString::fromLatin1(Name.toUtf8().toBase64());
+    m[QStringLiteral("ServerName")] = Name;
     m[QStringLiteral("GameMode")] = GameMode;
     if (GameMode.startsWith(QStringLiteral("02_1v1")) || GameMode.startsWith(QStringLiteral("06_3v3")))
         m[QStringLiteral("GameMode")] = GameMode + GameRuleMode;
     m[QStringLiteral("OperationTimeout")] = OperationTimeout;
     m[QStringLiteral("NullificationCountDown")] = NullificationCountDown;
-    QVariantList l;
-    foreach (const QString &package, Extensions) {
-        if (package.startsWith(QStringLiteral("!")))
-            l << package.chopped(1);
-    }
-    m[QStringLiteral("BanPackages")] = l;
+    m[QStringLiteral("Extensions")] = JsonUtils::toJsonArray(Extensions);
     m[QStringLiteral("RandomSeat")] = RandomSeat;
     m[QStringLiteral("EnableCheat")] = EnableCheat;
     m[QStringLiteral("FreeChoose")] = FreeChoose;

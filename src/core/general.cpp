@@ -143,7 +143,7 @@ void General::addCompanion(const QString &name)
 
 bool General::isCompanionWith(const QString &name) const
 {
-    const General *other = Sanguosha->getGeneral(name);
+    const General *other = Sanguosha->general(name);
     Q_ASSERT(other);
     return d->companions.contains(name) || other->d->companions.contains(d->name);
 }
@@ -153,9 +153,9 @@ QString General::companions() const
     QStringList name;
     foreach (const QString &general, d->companions)
         name << QStringLiteral("%1").arg(Sanguosha->translate(general));
-    QStringList generals = Sanguosha->getGenerals();
+    QStringList generals = Sanguosha->generalNames();
     foreach (QString gname, generals) {
-        const General *gnr = Sanguosha->getGeneral(gname);
+        const General *gnr = Sanguosha->general(gname);
         if (gnr == nullptr)
             continue;
         if (gnr->d->companions.contains(d->name))

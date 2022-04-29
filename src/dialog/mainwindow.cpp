@@ -440,7 +440,7 @@ void MainWindow::startGameInAnotherInstance()
 void MainWindow::on_actionGeneral_Overview_triggered()
 {
     GeneralOverview *overview = GeneralOverview::getInstance(this);
-    overview->fillGenerals(Sanguosha->getGenerals());
+    overview->fillGenerals(Sanguosha->generalNames());
     overview->show();
 }
 

@@ -634,7 +634,7 @@ const General *Player::avatarGeneral() const
     QString general_name = property("avatar").toString();
     if (general_name.isEmpty())
         return nullptr;
-    return Sanguosha->getGeneral(general_name);
+    return Sanguosha->general(general_name);
 }
 
 bool Player::isCurrent() const

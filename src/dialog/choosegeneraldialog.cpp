@@ -63,7 +63,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
             lord_name = general_name;
             continue;
         }
-        const General *general = Sanguosha->getGeneral(general_name);
+        const General *general = Sanguosha->general(general_name);
         generals << general;
     }
 
@@ -114,7 +114,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         layout = new QHBoxLayout;
 
         if ((lord_name.size() != 0) && !no_icon) {
-            const General *lord = Sanguosha->getGeneral(lord_name);
+            const General *lord = Sanguosha->general(lord_name);
 
             QLabel *label = new QLabel;
             label->setPixmap(G_ROOM_SKIN.getGeneralPixmap(lord->name(), icon_type, false));
@@ -130,7 +130,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         QVBoxLayout *lord_layout = new QVBoxLayout;
 
         if ((lord_name.size() != 0) && !no_icon) {
-            const General *lord = Sanguosha->getGeneral(lord_name);
+            const General *lord = Sanguosha->general(lord_name);
 
             QLabel *label = new QLabel;
             label->setPixmap(G_ROOM_SKIN.getCardMainPixmap(lord->name(), false, false));
@@ -250,10 +250,10 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
     group = new QButtonGroup(this);
     group->setExclusive(!pair_choose);
 
-    QStringList all_generals = Sanguosha->getGenerals();
+    QStringList all_generals = Sanguosha->generalNames();
     QMap<QString, QList<const General *>> map;
     foreach (const QString &name, all_generals) {
-        const General *general = Sanguosha->getGeneral(name);
+        const General *general = Sanguosha->general(name);
 
         if (general == nullptr || general->isTotallyHidden())
             continue;

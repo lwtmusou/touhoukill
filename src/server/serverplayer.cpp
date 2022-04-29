@@ -1361,7 +1361,7 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
                 arg1 << generalName;
                 room->doBroadcastNotify(S_COMMAND_SET_SHOWN_HIDDEN_GENERAL, arg1);
 
-                foreach (const Skill *skill, Sanguosha->getGeneral(generalName)->skills()) {
+                foreach (const Skill *skill, Sanguosha->general(generalName)->skills()) {
                     if (!skill->isLordSkill() && !skill->isAttachedSkill() && !skill->isLimited() && !skill->isEternal())
                         room->handleAcquireDetachSkills(this, skill->objectName(), true);
                 }
@@ -1778,7 +1778,7 @@ void ServerPlayer::removeGeneral(bool head_general)
             return;
 
         from_general = names.first();
-        QSanguosha::Gender gender = Sanguosha->getGeneral(from_general)->gender();
+        QSanguosha::Gender gender = Sanguosha->general(from_general)->gender();
         general_name = gender == QSanguosha::Male ? QStringLiteral("sujiang") : QStringLiteral("sujiangf"); //need image
 
         room->setPlayerProperty(this, "general_showed", true);
@@ -1807,7 +1807,7 @@ void ServerPlayer::removeGeneral(bool head_general)
         if (from_general.contains(QStringLiteral("sujiang")))
             return;
         from_general = names.last();
-        QSanguosha::Gender gender = Sanguosha->getGeneral(from_general)->gender();
+        QSanguosha::Gender gender = Sanguosha->general(from_general)->gender();
 
         general_name = gender == QSanguosha::Male ? QStringLiteral("sujiang") : QStringLiteral("sujiangf");
 

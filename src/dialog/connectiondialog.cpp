@@ -76,11 +76,11 @@ void ConnectionDialog::showAvatarList()
     setFixedSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
 
     if (avatarList->model() == nullptr) {
-        QStringList generals = Sanguosha->getGenerals();
+        QStringList generals = Sanguosha->generalNames();
         QMutableListIterator<QString> itor = generals;
         while (itor.hasNext()) {
             QString next = itor.next();
-            const General *general = Sanguosha->getGeneral(next);
+            const General *general = Sanguosha->general(next);
             if ((general == nullptr) || general->isTotallyHidden())
                 itor.remove();
         }

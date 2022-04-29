@@ -1561,7 +1561,7 @@ void Client::killPlayer(const QVariant &player_name)
         if (last_word.startsWith(QStringLiteral("~")) && general_name.endsWith(QStringLiteral("f"))) {
             QString origin_general = general_name;
             origin_general.chop(1);
-            if (Sanguosha->getGeneral(origin_general) != nullptr)
+            if (Sanguosha->general(origin_general) != nullptr)
                 last_word = Sanguosha->translate(QStringLiteral("~") + origin_general);
         }
         updatePileNum();
@@ -2397,7 +2397,7 @@ QString Client::getSkillNotice(QString skillname, int index) const
 
 QString Client::getGeneralSkillDescription(QString generalname, bool include_name, bool yellow) const
 {
-    const General *g = Sanguosha->getGeneral(generalname);
+    const General *g = Sanguosha->general(generalname);
     if (g == nullptr)
         return QString();
 

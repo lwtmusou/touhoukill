@@ -300,7 +300,7 @@ void PlayerCardContainer::updateSmallAvatar()
     if (m_player != nullptr)
         general = m_player->getGeneral2();
     if (general == nullptr && ServerInfo.Enable2ndGeneral && this->getPlayer() == Self) {
-        general = Sanguosha->getGeneral(QStringLiteral("reimu"));
+        general = Sanguosha->general(QStringLiteral("reimu"));
         fake_general = true;
     }
 

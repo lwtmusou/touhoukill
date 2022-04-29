@@ -105,7 +105,7 @@ CardItem::~CardItem()
 void CardItem::changeGeneral(const QString &general_name)
 {
     setObjectName(general_name);
-    const General *general = Sanguosha->getGeneral(general_name);
+    const General *general = Sanguosha->general(general_name);
     if (general != nullptr) {
         _m_isUnknownGeneral = false;
         setToolTip(ClientInstance->getGeneralSkillDescription(general->name(), true));
