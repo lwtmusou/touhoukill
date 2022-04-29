@@ -264,24 +264,6 @@ bool Engine::matchExpPattern(const QString &pattern, const Player *player, const
     return p.match(player, card);
 }
 
-HandlingMethod Engine::getCardHandlingMethod(const QString &method_name) const
-{
-    if (method_name == QStringLiteral("use"))
-        return MethodUse;
-    else if (method_name == QStringLiteral("response"))
-        return MethodResponse;
-    else if (method_name == QStringLiteral("discard"))
-        return MethodDiscard;
-    else if (method_name == QStringLiteral("recast"))
-        return MethodRecast;
-    else if (method_name == QStringLiteral("pindian"))
-        return MethodPindian;
-    else {
-        Q_ASSERT(false);
-        return MethodNone;
-    }
-}
-
 const General *Engine::getGeneral(const QString &name) const
 {
     return d->generals.value(name, nullptr);
@@ -872,3 +854,25 @@ void Engine::unregisterCardFace(const QString &name)
         delete handle;
     }
 }
+
+// defined in global.h
+
+namespace QSanguosha {
+HandlingMethod string2HandlingMethod(const QString &str)
+{
+    if (str == QStringLiteral("use"))
+        return MethodUse;
+    else if (str == QStringLiteral("response"))
+        return MethodResponse;
+    else if (str == QStringLiteral("discard"))
+        return MethodDiscard;
+    else if (str == QStringLiteral("recast"))
+        return MethodRecast;
+    else if (str == QStringLiteral("pindian"))
+        return MethodPindian;
+    else {
+        Q_ASSERT(false);
+        return MethodNone;
+    }
+}
+} // namespace QSanguosha

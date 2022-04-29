@@ -49,9 +49,6 @@ public:
     QStringList LordBGMConvertList;
     QStringList LordBackdropConvertList;
 
-    // move to namespace QSanguosha?
-    QSanguosha::HandlingMethod getCardHandlingMethod(const QString &method_name) const;
-
     void loadTranslations(const QString &locale);
     void addTranslationEntry(const QString &key, const QString &value);
     QString translate(const QString &to_translate) const;

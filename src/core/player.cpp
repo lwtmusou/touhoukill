@@ -1671,7 +1671,7 @@ void Player::setCardLimitation(const QString &limit_list, const QString &pattern
         _pattern = _pattern + symb;
     }
     foreach (QString limit, limit_type) {
-        HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
+        HandlingMethod method = string2HandlingMethod(limit);
         d->cardLimitation[method][reason] << _pattern;
     }
 }
@@ -1683,7 +1683,7 @@ void Player::removeCardLimitation(const QString &limit_list, const QString &patt
     if (!_pattern.endsWith(QStringLiteral("$1")) && !_pattern.endsWith(QStringLiteral("$0")))
         _pattern = _pattern + QStringLiteral("$0");
     foreach (QString limit, limit_type) {
-        HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
+        HandlingMethod method = string2HandlingMethod(limit);
         d->cardLimitation[method][reason].removeOne(_pattern);
         if (d->cardLimitation[method][reason].isEmpty() || _pattern.endsWith(QStringLiteral("$1")) || clearReason)
             d->cardLimitation[method].remove(reason);
@@ -1746,7 +1746,7 @@ bool Player::isCardLimited(const QString &limit_list, const QString &reason) con
 {
     QStringList limit_type = limit_list.split(QStringLiteral(","));
     foreach (QString limit, limit_type) {
-        HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
+        HandlingMethod method = string2HandlingMethod(limit);
         if (d->cardLimitation[method].contains(reason))
             return true;
     }

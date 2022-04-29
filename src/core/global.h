@@ -65,6 +65,12 @@ enum HandlingMethod
 };
 Q_ENUM_NS(HandlingMethod)
 
+// implementation in engine.cpp
+#ifdef SWIG
+static
+#endif
+HandlingMethod string2HandlingMethod(const QString &str);
+
 enum Number
 {
     // Regular numbers
