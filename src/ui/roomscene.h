@@ -458,6 +458,10 @@ private:
     QStringList vschain;
 
     void addSelection(const ViewAsSkill *skill, QMenu *menu, const ViewAsSkillSelection *selection, const QStringList &currentChain);
+
+    QStringList LordBGMConvertList;
+    QStringList LordBackdropConvertList;
+
 private slots:
     void fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids = QList<int>(), const QList<int> &shownHandcard_ids = QList<int>());
     void updateSkillButtons();

@@ -44,11 +44,6 @@ public:
     void addBanPackage(const QString &package_name);
     QStringList getBanPackages() const;
 
-    // move to UI
-    QStringList getChattingEasyTexts() const;
-    QStringList LordBGMConvertList;
-    QStringList LordBackdropConvertList;
-
     void loadTranslations(const QString &locale);
     void addTranslationEntry(const QString &key, const QString &value);
     QString translate(const QString &to_translate) const;

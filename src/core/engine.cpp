@@ -79,8 +79,6 @@ Engine::Engine()
     foreach (const Package *package, LuaMultiThreadEnvironment::packages())
         addPackage(package);
 
-    LordBGMConvertList = getConfigFromConfigFile(QStringLiteral("bgm_convert_pairs")).toStringList();
-    LordBackdropConvertList = getConfigFromConfigFile(QStringLiteral("backdrop_convert_pairs")).toStringList();
     LatestGeneralList = getConfigFromConfigFile(QStringLiteral("latest_generals")).toStringList();
 
     // I'd like it to refactor to use Qt-builtin way for it
@@ -376,15 +374,6 @@ QStringList Engine::getHegemonyKingdoms() const
         hegemony_kingdoms = getConfigFromConfigFile(QStringLiteral("hegemony_kingdoms")).toStringList();
 
     return hegemony_kingdoms;
-}
-
-QStringList Engine::getChattingEasyTexts() const
-{
-    static QStringList easy_texts;
-    if (easy_texts.isEmpty())
-        easy_texts = getConfigFromConfigFile(QStringLiteral("easy_text")).toStringList();
-
-    return easy_texts;
 }
 
 QMap<QString, QString> Engine::getAvailableModes() const

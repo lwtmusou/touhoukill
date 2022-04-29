@@ -75,6 +75,9 @@ RoomScene::RoomScene(QMainWindow *main_window, Client *client)
     , main_window(main_window)
     , client(client)
 {
+    LordBGMConvertList = Sanguosha->getConfigFromConfigFile(QStringLiteral("bgm_convert_pairs")).toStringList();
+    LordBackdropConvertList = Sanguosha->getConfigFromConfigFile(QStringLiteral("backdrop_convert_pairs")).toStringList();
+
     m_choiceDialog = nullptr;
     RoomSceneInstance = this;
     _m_last_front_item = nullptr;
@@ -5177,7 +5180,7 @@ void RoomScene::setLordBGM(const QString &lord)
     if (changeBGM) { //change BGMpath to lordName
         bgm_path = QStringLiteral("audio/bgm/") + lord_name + QStringLiteral("_1.ogg");
         if (!(bgm_path.isNull()) || !QFile::exists(bgm_path)) {
-            foreach (QString cv_pair, Sanguosha->LordBGMConvertList) {
+            foreach (QString cv_pair, LordBGMConvertList) {
                 bool shouldBreak = false;
                 QStringList pairs = cv_pair.split(QStringLiteral("->"));
                 QStringList cv_from = pairs.at(0).split(QStringLiteral("|"));
@@ -5215,7 +5218,7 @@ void RoomScene::setLordBackdrop(const QString &lord)
     if (changeBackdrop) {
         image_path = QStringLiteral("backdrop/") + lord_name + QStringLiteral(".jpg");
         if ((image_path.isNull()) || !QFile::exists(image_path)) {
-            foreach (QString cv_pair, Sanguosha->LordBackdropConvertList) {
+            foreach (QString cv_pair, LordBackdropConvertList) {
                 bool shouldBreak = false;
                 QStringList pairs = cv_pair.split(QStringLiteral("->"));
                 QStringList cv_from = pairs.at(0).split(QStringLiteral("|"));
