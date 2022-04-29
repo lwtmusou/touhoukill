@@ -1,6 +1,10 @@
-#ifndef _GENERAL_H
-#define _GENERAL_H
+#ifndef TOUHOUKILL_GENERAL_H
+#define TOUHOUKILL_GENERAL_H
 
+// BE WARE! THIS FILE IS USED IN BOTH SWIG AND C++.
+// MAKE SURE THE GRAMMAR IS COMPATIBLE BETWEEN 2 LANGUAGES.
+
+#ifndef SWIG
 #include "global.h"
 #include "qsgscore.h"
 
@@ -12,12 +16,15 @@ class Skill;
 class Package;
 
 class GeneralPrivate;
+#endif
 
 class QSGS_CORE_EXPORT General final
 {
 public:
+#ifndef SWIG
     explicit General(Package *package, const QString &name, const QString &kingdom, int maxHp = 4, bool isLord = false, bool male = false, bool hidden = false,
                      bool neverShown = false);
+#endif
 
     QString name() const;
 
@@ -54,6 +61,9 @@ public:
     void setDeputyMaxHpAdjustedValue(int adjusted_value = -1);
 
 private:
+#ifdef SWIG
+    General() = delete;
+#endif
     Q_DISABLE_COPY_MOVE(General)
     GeneralPrivate *const d;
 };

@@ -1,6 +1,9 @@
 #ifndef TOUHOUKILL_ENGINE_H
 #define TOUHOUKILL_ENGINE_H
 
+// BE WARE! THIS FILE IS USED IN BOTH SWIG AND C++.
+// MAKE SURE THE GRAMMAR IS COMPATIBLE BETWEEN 2 LANGUAGES.
+
 #ifndef SWIG
 
 #include "global.h"
@@ -37,11 +40,7 @@ class CardFace;
 class EnginePrivate;
 #endif
 
-#ifndef SWIG
 class QSGS_CORE_EXPORT Engine final
-#else
-class Engine
-#endif
 {
 public:
     ~Engine();

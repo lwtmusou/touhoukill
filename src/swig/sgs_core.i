@@ -1,8 +1,18 @@
+#define QSGS_CORE_EXPORT
+#define Q_DECLARE_METATYPE(...)
+#define Q_GADGET
+#define Q_OBJECT
+
+#define final
+
 %include "global.h"
 %include "structs.h"
 %include "engine.h"
 %include "CardFace.h"
 %include "card.h"
+%include "general.h"
+
+#undef final
 
 class Player : public QObject
 {

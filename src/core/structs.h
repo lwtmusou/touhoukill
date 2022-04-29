@@ -4,10 +4,10 @@
 // BE WARE! THIS FILE IS USED IN BOTH SWIG AND C++.
 // MAKE SURE THE GRAMMAR IS COMPATIBLE BETWEEN 2 LANGUAGES.
 
+#ifndef SWIG
 #include "global.h"
 #include "qsgscore.h"
 
-#ifndef SWIG
 #include <QString>
 #include <QStringList>
 #include <QVariant>
@@ -16,9 +16,6 @@ class Skill;
 class RoomObject;
 class Card;
 class Player;
-#else
-#define Q_DECLARE_METATYPE(...)
-#define QSGS_CORE_EXPORT
 #endif
 
 struct QSGS_CORE_EXPORT DamageStruct
@@ -162,7 +159,7 @@ public:
 // Can we specialize QListSpecialMethods<SingleCardMoveStruct>?
 // It modifies size of QList and may cause binary incompatibility
 #ifdef SWIG
-struct QSGS_CORE_EXPORT CardsMoveStruct : public QList<SingleCardMoveStruct>
+struct CardsMoveStruct : public QList<SingleCardMoveStruct>
 #else
 using CardsMoveStruct = QList<SingleCardMoveStruct>;
 template<> struct QSGS_CORE_EXPORT QListSpecialMethods<SingleCardMoveStruct>

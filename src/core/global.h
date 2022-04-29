@@ -6,6 +6,7 @@
 
 #ifndef SWIG
 #include "qsgscore.h"
+
 #include <QMetaObject>
 #include <QSet>
 #endif

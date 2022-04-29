@@ -8,6 +8,7 @@
 #include "CardFace.h"
 #include "structs.h"
 #include "player.h"
+#include "general.h"
 
 #include <QObject>
 #include <QVariant>

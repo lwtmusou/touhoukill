@@ -21,16 +21,11 @@ class CardPrivate;
 class CardFace;
 #endif
 
-#ifndef SWIG
 class QSGS_CORE_EXPORT Card final
 {
     Q_GADGET
 
     friend class RoomObject;
-#else
-class Card
-{
-#endif
 
 public:
     static const int S_UNKNOWN_CARD_ID;
