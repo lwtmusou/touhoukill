@@ -75,8 +75,8 @@ RoomScene::RoomScene(QMainWindow *main_window, Client *client)
     , main_window(main_window)
     , client(client)
 {
-    LordBGMConvertList = Sanguosha->getConfigFromConfigFile(QStringLiteral("bgm_convert_pairs")).toStringList();
-    LordBackdropConvertList = Sanguosha->getConfigFromConfigFile(QStringLiteral("backdrop_convert_pairs")).toStringList();
+    LordBGMConvertList = Sanguosha->config(QStringLiteral("bgm_convert_pairs")).toStringList();
+    LordBackdropConvertList = Sanguosha->config(QStringLiteral("backdrop_convert_pairs")).toStringList();
 
     m_choiceDialog = nullptr;
     RoomSceneInstance = this;
@@ -503,7 +503,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         QString player_name = arg[1].toString();
         QString skill_name = arg[2].toString();
         bool head_skill = arg[3].toBool();
-        const Skill *s = Sanguosha->getSkill(skill_name);
+        const Skill *s = Sanguosha->skill(skill_name);
         ClientInstance->loadSkill(s);
         Player *player = ClientInstance->findPlayer(player_name);
         player->acquireSkill(skill_name);
@@ -521,7 +521,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         QString skill_name = arg[2].toString();
         bool head_skill = arg[3].toBool();
 
-        const Skill *s = Sanguosha->getSkill(skill_name);
+        const Skill *s = Sanguosha->skill(skill_name);
         ClientInstance->loadSkill(s);
         Player *player = ClientInstance->findPlayer(player_name);
         player->addSkill(skill_name, head_skill);
@@ -639,7 +639,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
     case S_GAME_EVENT_SKILL_INVOKED: {
         QString player_name = arg[1].toString();
         QString skill_name = arg[2].toString();
-        const Skill *skill = Sanguosha->getSkill(skill_name);
+        const Skill *skill = Sanguosha->skill(skill_name);
         if ((skill != nullptr) && skill->isAttachedSkill())
             return;
 
@@ -1704,7 +1704,7 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
                     submenu->addSeparator();
                     foreach (const Card *card, known) {
-                        const CardDescriptor &engine_card = Sanguosha->getEngineCard(card->id());
+                        const CardDescriptor &engine_card = Sanguosha->cardDescriptor(card->id());
                         submenu->addAction(G_ROOM_SKIN.getCardSuitPixmap(engine_card.suit), engine_card.fullName());
                     }
                 }
@@ -2381,7 +2381,7 @@ void RoomScene::acquireSkill(const Player *player, const QString &skill_name, bo
     log_box->appendLog(type, from_general, QStringList(), QString(), arg);
 
     if (player == Self)
-        addSkillButton(Sanguosha->getSkill(skill_name), head);
+        addSkillButton(Sanguosha->skill(skill_name), head);
 }
 
 void RoomScene::updateSkillButtons()
@@ -3850,7 +3850,7 @@ void RoomScene::chooseSkillButton()
 
 void RoomScene::attachSkill(const QString &skill_name, bool from_left)
 {
-    const Skill *skill = Sanguosha->getSkill(skill_name);
+    const Skill *skill = Sanguosha->skill(skill_name);
     if (skill != nullptr)
         addSkillButton(skill, from_left);
 }
@@ -4193,7 +4193,7 @@ void RoomScene::showSkillInvocation(const QString &who, const QString &skill_nam
 {
     const Player *player = ClientInstance->findChild<const Player *>(who);
     //for hegemony gamemode: invoke hidden skill before showskill
-    QStringList skills = Sanguosha->getSkillNames();
+    QStringList skills = Sanguosha->skillNames();
     if (skill_name == QStringLiteral("GameRule_AskForGeneralShowHead") || skill_name == QStringLiteral("GameRule_AskForGeneralShowDeputy"))
         return;
     if (!isHegemonyGameMode(ServerInfo.GameMode) && !player->hasValidSkill(skill_name) && !player->hasEquipSkill(skill_name))

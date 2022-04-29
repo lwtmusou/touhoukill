@@ -644,7 +644,7 @@ bool Player::isCurrent() const
 
 bool Player::hasValidSkill(const QString &skill_name, bool include_lose, bool include_hidden) const
 {
-    return hasValidSkill(Sanguosha->getSkill(skill_name), include_lose, include_hidden);
+    return hasValidSkill(Sanguosha->skill(skill_name), include_lose, include_hidden);
 }
 
 // TODO: split logic of 'player have a certain skill' and 'a certian skill is valid'
@@ -776,7 +776,7 @@ bool Player::isSkillInvalid(const Skill *skill) const
 bool Player::isSkillInvalid(const QString &skill_name) const
 {
     if (skill_name != QStringLiteral("_ALL_SKILLS")) {
-        const Skill *skill = Sanguosha->getSkill(skill_name);
+        const Skill *skill = Sanguosha->skill(skill_name);
         if ((skill != nullptr) && (skill->isEternal() || skill->isAttachedSkill()))
             return false;
     }
@@ -812,7 +812,7 @@ void Player::addSkill(const QString &skill_name, int place)
     if (place >= d->generalCardSkills.length())
         return;
 
-    const Skill *skill = Sanguosha->getSkill(skill_name);
+    const Skill *skill = Sanguosha->skill(skill_name);
     Q_ASSERT(skill);
 
     d->generalCardSkills[place][skill_name] = !skill->canPreshow() || d->generalShown[place];
@@ -1031,7 +1031,7 @@ bool Player::hasValidWeapon(const QString &weapon_name) const
         return true;
 
     // TODO_Fs: Consider view-as equip later
-    const CardDescriptor &real_weapon = Sanguosha->getEngineCard(d->weapon);
+    const CardDescriptor &real_weapon = Sanguosha->cardDescriptor(d->weapon);
     return real_weapon.face()->name() == weapon_name || real_weapon.face()->isKindOf(weapon_name);
 }
 
@@ -1050,7 +1050,7 @@ bool Player::hasValidArmor(const QString &armor_name) const
         return true;
 
     // TODO_Fs: Consider view-as equip later
-    const CardDescriptor &real_weapon = Sanguosha->getEngineCard(d->armor);
+    const CardDescriptor &real_weapon = Sanguosha->cardDescriptor(d->armor);
     return real_weapon.face()->name() == armor_name || real_weapon.face()->isKindOf(armor_name);
 }
 
@@ -1069,7 +1069,7 @@ bool Player::hasValidTreasure(const QString &treasure_name) const
         return true;
 
     // TODO_Fs: Consider view-as equip later
-    const CardDescriptor &real_weapon = Sanguosha->getEngineCard(d->treasure);
+    const CardDescriptor &real_weapon = Sanguosha->cardDescriptor(d->treasure);
     return real_weapon.face()->name() == treasure_name || real_weapon.face()->isKindOf(treasure_name);
 }
 
@@ -1276,7 +1276,7 @@ void Player::removeCard(const Card *card, Place place, const QString &pile_name)
     case PlaceEquip: {
         const EquipCard *equip = dynamic_cast<const EquipCard *>(card->face());
         if (equip == nullptr)
-            equip = dynamic_cast<const EquipCard *>(Sanguosha->getEngineCard(card->effectiveId()).face());
+            equip = dynamic_cast<const EquipCard *>(Sanguosha->cardDescriptor(card->effectiveId()).face());
         Q_ASSERT(equip != nullptr);
         equip->onUninstall(this);
         removeEquip(card);
@@ -1326,7 +1326,7 @@ void Player::addCard(const Card *card, Place place, const QString &pile_name)
     case PlaceEquip: {
         const EquipCard *equip = dynamic_cast<const EquipCard *>(card->face());
         if (equip == nullptr)
-            equip = dynamic_cast<const EquipCard *>(Sanguosha->getEngineCard(card->effectiveId()).face());
+            equip = dynamic_cast<const EquipCard *>(Sanguosha->cardDescriptor(card->effectiveId()).face());
         setEquip(card);
         equip->onInstall(this);
         break;
@@ -1582,17 +1582,17 @@ bool Player::hasEquipSkill(const QString &skill_name) const
 
     if (d->weapon != -1) {
         const Weapon *weaponc = dynamic_cast<const Weapon *>(d->room->getCard(d->weapon)->face());
-        if ((Sanguosha->getSkill(weaponc) != nullptr) && Sanguosha->getSkill(weaponc)->objectName() == skill_name)
+        if ((Sanguosha->skill(weaponc) != nullptr) && Sanguosha->skill(weaponc)->objectName() == skill_name)
             return true;
     }
     if (d->armor != -1) {
         const Armor *armorc = dynamic_cast<const Armor *>(d->room->getCard(d->armor)->face());
-        if ((Sanguosha->getSkill(armorc) != nullptr) && Sanguosha->getSkill(armorc)->objectName() == skill_name)
+        if ((Sanguosha->skill(armorc) != nullptr) && Sanguosha->skill(armorc)->objectName() == skill_name)
             return true;
     }
     if (d->treasure != -1) {
         const Treasure *treasurec = dynamic_cast<const Treasure *>(d->room->getCard(d->treasure)->face());
-        if ((Sanguosha->getSkill(treasurec) != nullptr) && Sanguosha->getSkill(treasurec)->objectName() == skill_name)
+        if ((Sanguosha->skill(treasurec) != nullptr) && Sanguosha->skill(treasurec)->objectName() == skill_name)
             return true;
     }
     return false;
@@ -1615,7 +1615,7 @@ QSet<const Skill *> Player::skills(bool include_equip, bool include_acquired, co
         skills.unite(d->acquiredSkills);
 
     foreach (const QString &skill_name, skills) {
-        const Skill *skill = Sanguosha->getSkill(skill_name);
+        const Skill *skill = Sanguosha->skill(skill_name);
         if ((skill != nullptr) && (include_equip || !hasEquipSkill(skill->objectName())))
             skillList << skill;
     }
@@ -1782,7 +1782,7 @@ bool Player::haveShownSkill(const Skill *skill) const
 
 bool Player::haveShownSkill(const QString &skill_name) const
 {
-    const Skill *skill = Sanguosha->getSkill(skill_name);
+    const Skill *skill = Sanguosha->skill(skill_name);
     if (skill == nullptr)
         return false;
 
@@ -1818,7 +1818,7 @@ void Player::setSkillsPreshowed(const QList<int> &positions, bool preshowed)
     foreach (int pos, positions) {
         auto &skills = d->generalCardSkills[pos];
         foreach (const QString &skill, skills.keys()) {
-            if (!Sanguosha->getSkill(skill)->canPreshow())
+            if (!Sanguosha->skill(skill)->canPreshow())
                 continue;
             skills[skill] = preshowed;
         }
@@ -1845,7 +1845,7 @@ bool Player::isHidden(int pos) const
     const auto &skills = d->generalCardSkills[pos];
     int count = 0;
     foreach (const QString &skillName, skills.keys()) {
-        const Skill *skill = Sanguosha->getSkill(skillName);
+        const Skill *skill = Sanguosha->skill(skillName);
         if (skill->canPreshow() && havePreshownSkill(skill->objectName()))
             return false;
         else if (!skill->canPreshow())
@@ -1950,7 +1950,7 @@ RoomObject *Player::roomObject() const
 
 int Player::findPositionOfGeneralOwningSkill(const QString &skill_name) const
 {
-    const Skill *skill = Sanguosha->getSkill(skill_name);
+    const Skill *skill = Sanguosha->skill(skill_name);
     if (skill == nullptr)
         return -1;
 

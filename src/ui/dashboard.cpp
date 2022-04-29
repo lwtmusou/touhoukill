@@ -589,7 +589,7 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName, bool head)
         Q_ASSERT(equip);
         // @todo: we must fix this in the server side - add a skill to the card itself instead
         // of getting it from the engine.
-        const Skill *skill = Sanguosha->getSkill(equip);
+        const Skill *skill = Sanguosha->skill(equip);
 
         if (skill == nullptr)
             continue;
@@ -609,7 +609,7 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName, bool head)
     }
     _mutexEquipAnim.unlock();
 #ifndef QT_NO_DEBUG
-    const Skill *skill = Sanguosha->getSkill(skillName);
+    const Skill *skill = Sanguosha->skill(skillName);
     Q_ASSERT(skill && !skill->inherits("WeaponSkill") && !skill->inherits("ArmorSkill") && !skill->inherits("TreasureSkill"));
 #endif
     if (_m_skillDock->getSkillButtonByName(skillName) != nullptr && head)
@@ -1276,7 +1276,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
         }
     } else if (pile_name == QStringLiteral("#xiuye_temp")) {
         foreach (int id, ClientInstance->discardPile()) {
-            const CardDescriptor &c = Sanguosha->getEngineCard(id);
+            const CardDescriptor &c = Sanguosha->cardDescriptor(id);
             if (c.suit == QSanguosha::Club && (c.face()->isNdTrick() || c.face()->type() == QSanguosha::TypeBasic))
                 pile << id;
         }

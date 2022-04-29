@@ -83,10 +83,10 @@ Engine::Engine()
     foreach (const Package *package, LuaMultiThreadEnvironment::packages())
         addPackage(package);
 
-    LatestGeneralList = getConfigFromConfigFile(QStringLiteral("latest_generals")).toStringList();
+    LatestGeneralList = config(QStringLiteral("latest_generals")).toStringList();
 
     // I'd like it to refactor to use Qt-builtin way for it
-    QString locale = getConfigFromConfigFile(QStringLiteral("locale")).toString();
+    QString locale = config(QStringLiteral("locale")).toString();
     if (locale.length() == 0)
         locale = QStringLiteral("zh_CN");
     loadTranslations(locale);
@@ -307,7 +307,7 @@ bool Engine::isGeneralHidden(const QString &general_name) const
 #endif
 }
 
-const CardDescriptor &Engine::getEngineCard(int cardId) const
+const CardDescriptor &Engine::cardDescriptor(int cardId) const
 {
     static CardDescriptor nullDescriptor = {QString(), NoSuit, NumberNA, QString()};
 
@@ -357,7 +357,7 @@ QStringList Engine::kingdoms() const
     static QStringList kingdoms;
 
     if (kingdoms.isEmpty())
-        kingdoms = getConfigFromConfigFile(QStringLiteral("kingdoms")).toStringList();
+        kingdoms = config(QStringLiteral("kingdoms")).toStringList();
 
     return kingdoms;
 }
@@ -366,7 +366,7 @@ QStringList Engine::hegemonyKingdoms() const
 {
     static QStringList hegemony_kingdoms;
     if (hegemony_kingdoms.isEmpty())
-        hegemony_kingdoms = getConfigFromConfigFile(QStringLiteral("hegemony_kingdoms")).toStringList();
+        hegemony_kingdoms = config(QStringLiteral("hegemony_kingdoms")).toStringList();
 
     return hegemony_kingdoms;
 }
@@ -500,7 +500,7 @@ QStringList Engine::getRoleList(const QString &mode) const
     return role_list;
 }
 
-int Engine::getCardCount() const
+int Engine::cardCount() const
 {
     return d->cards.length();
 }
@@ -618,7 +618,7 @@ QStringList Engine::getLimitedGeneralNames() const
     QHashIterator<QString, const General *> itor(d->generals);
     if (ServerInfo.GameMode == QStringLiteral("04_1v3")) {
         QList<const General *> hulao_generals = QList<const General *>();
-        foreach (QString pack_name, getConfigFromConfigFile(QStringLiteral("hulao_packages")).toStringList()) {
+        foreach (QString pack_name, config(QStringLiteral("hulao_packages")).toStringList()) {
             const Package *pack = findPackage(pack_name);
             if (pack != nullptr) {
                 foreach (const General *general, pack->generals())
@@ -791,27 +791,27 @@ QString Engine::getRandomGeneralName() const
     return d->generals.keys().at(QRandomGenerator::global()->generate() % d->generals.size());
 }
 
-const Skill *Engine::getSkill(const QString &skill_name) const
+const Skill *Engine::skill(const QString &skill_name) const
 {
     return d->skills.value(skill_name, nullptr);
 }
 
-const Skill *Engine::getSkill(const EquipCard *equip) const
+const Skill *Engine::skill(const EquipCard *equip) const
 {
-    const Skill *skill = nullptr;
+    const Skill *theSkill = nullptr;
 
     if (equip != nullptr)
-        skill = getSkill(equip->name());
+        theSkill = skill(equip->name());
 
-    return skill;
+    return theSkill;
 }
 
-QStringList Engine::getSkillNames() const
+QStringList Engine::skillNames() const
 {
     return d->skills.keys();
 }
 
-QVariant Engine::getConfigFromConfigFile(const QString &key) const
+QVariant Engine::config(const QString &key) const
 {
     // TODO: special case of "withHeroSkin" and "withBGM"
     return d->configFile.value(key);
@@ -838,7 +838,6 @@ void Engine::unregisterCardFace(const QString &name)
 }
 
 // defined in global.h
-
 namespace QSanguosha {
 HandlingMethod string2HandlingMethod(const QString &str)
 {

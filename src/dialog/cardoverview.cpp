@@ -48,15 +48,15 @@ CardOverview::CardOverview(QWidget *parent)
 
 void CardOverview::loadFromAll()
 {
-    int n = Sanguosha->getCardCount();
+    int n = Sanguosha->cardCount();
     ui->tableWidget->setRowCount(n);
     for (int i = 0; i < n; i++)
-        addCard(i, Sanguosha->getEngineCard(i), i);
+        addCard(i, Sanguosha->cardDescriptor(i), i);
 
     if (n > 0) {
         ui->tableWidget->setCurrentItem(ui->tableWidget->item(0, 0));
 
-        const CardDescriptor &card = Sanguosha->getEngineCard(0);
+        const CardDescriptor &card = Sanguosha->cardDescriptor(0);
         if (card.face()->type() == QSanguosha::TypeEquip) {
             ui->playAudioEffectButton->show();
             ui->malePlayButton->hide();
@@ -76,13 +76,13 @@ void CardOverview::loadFromList(const QList<int> &list)
 
     for (int i = 0; i < list.length(); ++i) {
         int id = list.value(i);
-        addCard(i, Sanguosha->getEngineCard(id), id);
+        addCard(i, Sanguosha->cardDescriptor(id), id);
     }
 
     if (n > 0) {
         ui->tableWidget->setCurrentItem(ui->tableWidget->item(0, 0));
 
-        const CardDescriptor &card = Sanguosha->getEngineCard(list.first());
+        const CardDescriptor &card = Sanguosha->cardDescriptor(list.first());
         if (card.face()->type() == QSanguosha::TypeEquip) {
             ui->playAudioEffectButton->show();
             ui->malePlayButton->hide();
@@ -137,7 +137,7 @@ void CardOverview::on_tableWidget_itemSelectionChanged()
 {
     int row = ui->tableWidget->currentRow();
     int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
-    const CardDescriptor &card = Sanguosha->getEngineCard(card_id);
+    const CardDescriptor &card = Sanguosha->cardDescriptor(card_id);
     QString pixmap_path = QStringLiteral("image/big-card/%1.png").arg(card.face()->name());
     ui->cardLabel->setPixmap(pixmap_path);
 
@@ -183,7 +183,7 @@ void CardOverview::on_malePlayButton_clicked()
     int row = ui->tableWidget->currentRow();
     if (row >= 0) {
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
-        const CardDescriptor &card = Sanguosha->getEngineCard(card_id);
+        const CardDescriptor &card = Sanguosha->cardDescriptor(card_id);
         Audio::playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(card.face()->name(), true));
     }
 }
@@ -193,7 +193,7 @@ void CardOverview::on_femalePlayButton_clicked()
     int row = ui->tableWidget->currentRow();
     if (row >= 0) {
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
-        const CardDescriptor &card = Sanguosha->getEngineCard(card_id);
+        const CardDescriptor &card = Sanguosha->cardDescriptor(card_id);
         Audio::playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(card.face()->name(), false));
     }
 }
@@ -203,7 +203,7 @@ void CardOverview::on_playAudioEffectButton_clicked()
     int row = ui->tableWidget->currentRow();
     if (row >= 0) {
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
-        const CardDescriptor &card = Sanguosha->getEngineCard(card_id);
+        const CardDescriptor &card = Sanguosha->cardDescriptor(card_id);
         if (card.face()->type() == QSanguosha::TypeEquip) {
 #if 0
             QString effectName = card.face()->effectName();

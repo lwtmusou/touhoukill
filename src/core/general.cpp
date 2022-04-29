@@ -111,7 +111,7 @@ QSet<const Skill *> General::skills(bool relate_to_place, bool head_only) const
 {
     QSet<const Skill *> skills;
     foreach (const QString &skill_name, d->skills) {
-        const Skill *skill = Sanguosha->getSkill(skill_name);
+        const Skill *skill = Sanguosha->skill(skill_name);
         Q_ASSERT(skill != nullptr);
         if (relate_to_place && !skill->relateToPlace(!head_only))
             skills << skill;

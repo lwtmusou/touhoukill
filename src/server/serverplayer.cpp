@@ -52,7 +52,7 @@ void ServerPlayer::broadcastSkillInvoke(const Card *card) const
         return;
 
     QString skill_name = card->skillName();
-    const Skill *skill = Sanguosha->getSkill(skill_name);
+    const Skill *skill = Sanguosha->skill(skill_name);
     if (skill == nullptr) {
 #if 0
         if (card->face()->commonEffectName().isNull())
@@ -1316,7 +1316,7 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
     } else {
         //for yibian
         ServerPlayer *reimu = room->findPlayerBySkillName(QStringLiteral("yibian"));
-        const Skill *skill = Sanguosha->getSkill(skill_name);
+        const Skill *skill = Sanguosha->skill(skill_name);
         if ((reimu != nullptr) && !hasShownRole() && skill != nullptr && !skill->isEternal() && !skill->isAttachedSkill() && !hasEquipSkill(skill_name)) {
             QString role = getRoleString();
             room->touhouLogmessage(QStringLiteral("#YibianShow"), this, role, room->getAllPlayers());

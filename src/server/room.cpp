@@ -491,7 +491,7 @@ void Room::gameOver(const QString &winner, bool isSurrender)
         if (player->handcardNum() > 0) {
             QStringList handcards;
             foreach (const Card *card, player->handCards())
-                handcards << Sanguosha->getEngineCard(card->id()).logName();
+                handcards << Sanguosha->cardDescriptor(card->id()).logName();
             QString handcard = QString::fromUtf8(handcards.join(QStringLiteral(", ")).toUtf8().toBase64());
             setPlayerProperty(player, "last_handcards", handcard);
         }
@@ -557,7 +557,7 @@ void Room::slashResult(const SlashEffectStruct &effect, const Card *jink)
 
 void Room::attachSkillToPlayer(ServerPlayer *player, const QString &skill_name, bool is_other_attach)
 {
-    loadSkill(Sanguosha->getSkill(skill_name));
+    loadSkill(Sanguosha->skill(skill_name));
     player->acquireSkill(skill_name);
     if (is_other_attach) {
         QStringList attach_skills = getTag(QStringLiteral("OtherAttachSkills")).toStringList();
@@ -573,7 +573,7 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
 {
     if (!isHegemonyGameMode(mode) && !player->hasValidSkill(skill_name, true))
         return;
-    if ((Sanguosha->getSkill(skill_name) != nullptr) && Sanguosha->getSkill(skill_name)->isEternal())
+    if ((Sanguosha->skill(skill_name) != nullptr) && Sanguosha->skill(skill_name)->isEternal())
         return;
     if (player->acquiredSkills().contains(skill_name))
         player->detachSkill(skill_name);
@@ -582,7 +582,7 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
     else
         return;
 
-    const Skill *skill = Sanguosha->getSkill(skill_name);
+    const Skill *skill = Sanguosha->skill(skill_name);
     if ((skill != nullptr) && skill->isVisible()) {
         JsonArray args;
         args << QSanProtocol::S_GAME_EVENT_DETACH_SKILL << player->objectName() << skill_name << head; //default head?
@@ -636,7 +636,7 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
                     continue;
             }
 
-            if ((Sanguosha->getSkill(actual_skill) != nullptr) && Sanguosha->getSkill(actual_skill)->isEternal())
+            if ((Sanguosha->skill(actual_skill) != nullptr) && Sanguosha->skill(actual_skill)->isEternal())
                 continue;
 
             if (player->acquiredSkills().contains(actual_skill))
@@ -645,7 +645,7 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
                 player->loseSkill(actual_skill, head);
             else
                 continue;
-            const Skill *skill = Sanguosha->getSkill(actual_skill);
+            const Skill *skill = Sanguosha->skill(actual_skill);
             if ((skill != nullptr) && skill->isVisible()) {
                 JsonArray args;
                 args << QSanProtocol::S_GAME_EVENT_DETACH_SKILL << player->objectName() << actual_skill << head;
@@ -672,7 +672,7 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
                 actual_skill.chop(1);
                 head = false;
             }
-            const Skill *skill = Sanguosha->getSkill(actual_skill);
+            const Skill *skill = Sanguosha->skill(actual_skill);
             if (skill == nullptr)
                 continue;
             if (player->acquiredSkills().contains(actual_skill))
@@ -1688,7 +1688,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         //show hidden general
         QString showskill = card->skillName();
         player->showHiddenSkill(showskill);
-        const Skill *equipSkill = Sanguosha->getSkill(skill_name);
+        const Skill *equipSkill = Sanguosha->skill(skill_name);
         if ((equipSkill != nullptr) && equipSkill->inherits("WeaponSkill")) {
             const TreatAsEquippingSkill *v = treatAsEquipping(player, skill_name, QSanguosha::WeaponLocation);
             if (v != nullptr)
@@ -2919,7 +2919,7 @@ void Room::addRobotCommand(ServerPlayer *player, const QVariant & /*unused*/)
         return;
     }
 
-    QStringList names = Sanguosha->getConfigFromConfigFile(QStringLiteral("robot_names")).toStringList();
+    QStringList names = Sanguosha->config(QStringLiteral("robot_names")).toStringList();
     qShuffle(names);
 
     int n = 0;
@@ -3295,7 +3295,7 @@ void Room::setPlayerSkillInvalidity(ServerPlayer *player, const QString &skill_n
         SkillInvalidStruct invalid;
         invalid.invalid = invalidity;
         invalid.player = player;
-        invalid.skill = Sanguosha->getSkill(skill_name);
+        invalid.skill = Sanguosha->skill(skill_name);
         invalid_list << invalid;
 
         QVariant v = QVariant::fromValue(invalid_list);
@@ -3425,7 +3425,7 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
                 if (!p->isKongcheng()) {
                     QStringList handcards;
                     foreach (const Card *card, p->handCards())
-                        handcards << QStringLiteral("<b>%1</b>").arg(Sanguosha->getEngineCard(card->id()).logName());
+                        handcards << QStringLiteral("<b>%1</b>").arg(Sanguosha->cardDescriptor(card->id()).logName());
                     QString hand = handcards.join(QStringLiteral(", "));
                     hand = QString::fromUtf8(hand.toUtf8().toBase64());
                     JsonArray body;
@@ -3442,7 +3442,7 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
                     if (!p->isKongcheng()) {
                         QStringList handcards;
                         foreach (const Card *card, p->handCards())
-                            handcards << QStringLiteral("<b>%1</b>").arg(Sanguosha->getEngineCard(card->id()).logName());
+                            handcards << QStringLiteral("<b>%1</b>").arg(Sanguosha->cardDescriptor(card->id()).logName());
                         QString hand = handcards.join(QStringLiteral(", "));
                         hand = QString::fromUtf8(hand.toUtf8().toBase64());
                         JsonArray body;
@@ -3463,7 +3463,7 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
                         if (!p->pile(pile_name).isEmpty()) {
                             QStringList pile_cards;
                             foreach (int id, p->pile(pile_name))
-                                pile_cards << QStringLiteral("<b>%1</b>").arg(Sanguosha->getEngineCard(id).logName());
+                                pile_cards << QStringLiteral("<b>%1</b>").arg(Sanguosha->cardDescriptor(id).logName());
                             QString pile = pile_cards.join(QStringLiteral(", "));
                             pile = QString::fromUtf8(pile.toUtf8().toBase64());
                             JsonArray body;
@@ -5202,7 +5202,7 @@ void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open, boo
 
 void Room::acquireSkill(ServerPlayer *player, const QString &skill_name, bool open, bool head)
 {
-    const Skill *skill = Sanguosha->getSkill(skill_name);
+    const Skill *skill = Sanguosha->skill(skill_name);
     if (skill != nullptr)
         acquireSkill(player, skill, open, head);
 }
@@ -6540,7 +6540,7 @@ int Room::askForRende(ServerPlayer *liubei, QList<int> &cards, const QString &sk
         log.arg = skill_name;
         sendLog(log);
 
-        const Skill *skill = Sanguosha->getSkill(skill_name);
+        const Skill *skill = Sanguosha->skill(skill_name);
         if (skill != nullptr)
             broadcastSkillInvoke(skill_name);
         notifySkillInvoked(liubei, skill_name);
@@ -6633,7 +6633,7 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &sk
         log.arg = skill_name;
         sendLog(log);
 
-        const Skill *skill = Sanguosha->getSkill(skill_name);
+        const Skill *skill = Sanguosha->skill(skill_name);
         if (skill != nullptr)
             broadcastSkillInvoke(skill_name);
         notifySkillInvoked(guojia, skill_name);

@@ -316,7 +316,7 @@ bool Card::isModified() const
     if (isVirtualCard())
         return false;
 
-    const CardDescriptor &c = Sanguosha->getEngineCard(id());
+    const CardDescriptor &c = Sanguosha->cardDescriptor(id());
     return (c.face() != face()) || (c.suit != suit()) || (c.number != number()) || (!skillName(false).isEmpty());
 }
 

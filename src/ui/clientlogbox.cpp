@@ -54,7 +54,7 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
                         log_name += QStringLiteral(", ") + card->logName();
                 }
             } else {
-                const CardDescriptor &card = Sanguosha->getEngineCard(one_card.toInt());
+                const CardDescriptor &card = Sanguosha->cardDescriptor(one_card.toInt());
                 if (card.face() != nullptr) {
                     if (log_name.isEmpty())
                         log_name = card.logName();
@@ -114,7 +114,7 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
             IdSet card_ids = card->subcards();
             QStringList subcard_list;
             foreach (int card_id, card_ids) {
-                const CardDescriptor &subcard = Sanguosha->getEngineCard(card_id);
+                const CardDescriptor &subcard = Sanguosha->cardDescriptor(card_id);
                 subcard_list << bold(subcard.logName(), Qt::yellow);
             }
 
@@ -135,7 +135,7 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
 
             ClientInstance->cardDeleting(card);
         } else if (!card->skillName().isEmpty()) {
-            const CardDescriptor &real = Sanguosha->getEngineCard(card->effectiveId());
+            const CardDescriptor &real = Sanguosha->cardDescriptor(card->effectiveId());
             QString skill_name = Sanguosha->translate(card->skillName());
             skill_name = bold(skill_name, Qt::yellow);
 

@@ -564,7 +564,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
 
     QSet<const Skill *> skills = general->skills();
     foreach (QString skill_name, general->relatedSkillNames()) {
-        const Skill *skill = Sanguosha->getSkill(skill_name);
+        const Skill *skill = Sanguosha->skill(skill_name);
         if ((skill != nullptr) && skill->isVisible())
             skills << skill;
     }

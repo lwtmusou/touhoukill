@@ -51,6 +51,16 @@ public:
     QString getRoles(const QString &mode) const;
     QStringList getRoleList(const QString &mode) const;
     int getRoleIndex() const;
+    int availableGeneralCount() const;
+    QStringList availableLords() const;
+    QStringList getRandomLords() const;
+    QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
+    QStringList getLatestGenerals(const QSet<QString> &ban_set = QSet<QString>()) const;
+    QString getRandomGeneralName() const;
+    QStringList getLimitedGeneralNames() const;
+    QStringList LatestGeneralList;
+    bool isGeneralHidden(const QString &general_name) const;
+    QList<int> getRandomCards() const;
 
     void loadTranslations(const QString &locale);
     void addTranslationEntry(const QString &key, const QString &value);
@@ -75,29 +85,19 @@ public:
 
     const General *general(const QString &name) const;
     QStringList generalNames() const;
-    int availableGeneralCount() const;
-    QStringList availableLords() const;
-    QStringList getRandomLords() const;
-    QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
-    QStringList getLatestGenerals(const QSet<QString> &ban_set = QSet<QString>()) const;
-    QString getRandomGeneralName() const;
-    QStringList getLimitedGeneralNames() const;
-    QStringList LatestGeneralList;
-    bool isGeneralHidden(const QString &general_name) const;
 
-    const Skill *getSkill(const QString &skill_name) const;
-    const Skill *getSkill(const EquipCard *card) const;
-    QStringList getSkillNames() const;
+    const Skill *skill(const QString &skill_name) const;
+    const Skill *skill(const EquipCard *card) const;
+    QStringList skillNames() const;
     void addSkills(const QList<const Skill *> &skills);
 
-    int getCardCount() const;
-    const CardDescriptor &getEngineCard(int cardId) const;
+    int cardCount() const;
+    const CardDescriptor &cardDescriptor(int cardId) const;
     void registerCardFace(const CardFace *face);
     const CardFace *cardFace(const QString &name);
     void unregisterCardFace(const QString &name);
-    QList<int> getRandomCards() const;
 
-    QVariant getConfigFromConfigFile(const QString &key) const;
+    QVariant config(const QString &key) const;
 
 private:
     Q_DISABLE_COPY_MOVE(Engine)

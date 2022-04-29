@@ -203,18 +203,18 @@ void Settings::init()
     QStringList hegemony_ban;
     QStringList pairs_ban;
 
-    roles_ban = Sanguosha->getConfigFromConfigFile(QStringLiteral("roles_ban")).toStringList();
-    kof_ban = Sanguosha->getConfigFromConfigFile(QStringLiteral("kof_ban")).toStringList();
-    hulao_ban = Sanguosha->getConfigFromConfigFile(QStringLiteral("hulao_ban")).toStringList();
-    xmode_ban = Sanguosha->getConfigFromConfigFile(QStringLiteral("xmode_ban")).toStringList();
-    basara_ban = Sanguosha->getConfigFromConfigFile(QStringLiteral("basara_ban")).toStringList();
-    hegemony_ban = Sanguosha->getConfigFromConfigFile(QStringLiteral("hegemony_ban")).toStringList();
+    roles_ban = Sanguosha->config(QStringLiteral("roles_ban")).toStringList();
+    kof_ban = Sanguosha->config(QStringLiteral("kof_ban")).toStringList();
+    hulao_ban = Sanguosha->config(QStringLiteral("hulao_ban")).toStringList();
+    xmode_ban = Sanguosha->config(QStringLiteral("xmode_ban")).toStringList();
+    basara_ban = Sanguosha->config(QStringLiteral("basara_ban")).toStringList();
+    hegemony_ban = Sanguosha->config(QStringLiteral("hegemony_ban")).toStringList();
     hegemony_ban.append(basara_ban);
     foreach (QString general, Sanguosha->getLimitedGeneralNames()) {
         if (Sanguosha->general(general)->kingdom() == QStringLiteral("god") && !hegemony_ban.contains(general))
             hegemony_ban << general;
     }
-    pairs_ban = Sanguosha->getConfigFromConfigFile(QStringLiteral("pairs_ban")).toStringList();
+    pairs_ban = Sanguosha->config(QStringLiteral("pairs_ban")).toStringList();
 
     QStringList banlist = value(QStringLiteral("Banlist/Roles")).toStringList();
     if (banlist.isEmpty()) {
@@ -278,8 +278,8 @@ void Settings::init()
         setValue(QStringLiteral("ForbidPackages"), forbid_packages);
     }
 
-    ExtraHiddenGenerals = Sanguosha->getConfigFromConfigFile(QStringLiteral("extra_hidden_generals")).toStringList();
-    RemovedHiddenGenerals = Sanguosha->getConfigFromConfigFile(QStringLiteral("removed_hidden_generals")).toStringList();
+    ExtraHiddenGenerals = Sanguosha->config(QStringLiteral("extra_hidden_generals")).toStringList();
+    RemovedHiddenGenerals = Sanguosha->config(QStringLiteral("removed_hidden_generals")).toStringList();
 
     AutoUpdateNeedsRestart = !EnableAutoUpdate;
     AutoUpdateDataRececived = false;

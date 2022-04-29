@@ -306,7 +306,7 @@ void RoomObject::resetCard(int cardId)
 {
     // TODO_Fs: error check and sanity check
     delete d->cards[cardId];
-    d->cards[cardId] = cloneCard(Sanguosha->getEngineCard(cardId));
+    d->cards[cardId] = cloneCard(Sanguosha->cardDescriptor(cardId));
 
     // It does not depend on how we achieve the filter skill.
 }
@@ -318,9 +318,9 @@ void RoomObject::resetAllCards()
         delete card;
     d->cards.clear();
 
-    int n = Sanguosha->getCardCount();
+    int n = Sanguosha->cardCount();
     for (int i = 0; i < n; i++)
-        d->cards[i] = cloneCard(Sanguosha->getEngineCard(i));
+        d->cards[i] = cloneCard(Sanguosha->cardDescriptor(i));
 }
 
 QList<int> &RoomObject::discardPile()
@@ -386,7 +386,7 @@ QSet<const DistanceSkill *> RoomObject::getDistanceSkills() const
 
 const ViewAsSkill *RoomObject::getViewAsSkill(const QString &skill_name) const
 {
-    const Skill *skill = Sanguosha->getSkill(skill_name);
+    const Skill *skill = Sanguosha->skill(skill_name);
     if (skill == nullptr)
         return nullptr;
 

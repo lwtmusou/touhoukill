@@ -111,7 +111,7 @@ void DistanceViewDialog::showDistance()
     }
 
     foreach (QLineEdit *edit, ui->distance_edits) {
-        const Skill *skill = Sanguosha->getSkill(edit->objectName());
+        const Skill *skill = Sanguosha->skill(edit->objectName());
         const DistanceSkill *distance_skill = qobject_cast<const DistanceSkill *>(skill);
         int correct = distance_skill->getCorrect(from, to);
 

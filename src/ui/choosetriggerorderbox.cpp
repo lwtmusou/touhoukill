@@ -74,7 +74,7 @@ bool SkillInvokeDetailForClient::tryParse(const QVariantMap &map)
     *this = SkillInvokeDetailForClient();
 
     if (map.contains(QStringLiteral("skill")))
-        skill = Sanguosha->getSkill(map.value(QStringLiteral("skill")).toString());
+        skill = Sanguosha->skill(map.value(QStringLiteral("skill")).toString());
     if (skill == nullptr)
         return false;
 
@@ -100,7 +100,7 @@ bool SkillInvokeDetailForClient::tryParse(const QVariantMap &map)
 bool SkillInvokeDetailForClient::tryParse(const QString &str)
 {
     QStringList l = str.split(QStringLiteral(":"));
-    skill = Sanguosha->getSkill(l.first());
+    skill = Sanguosha->skill(l.first());
     if (skill == nullptr)
         return false;
     invoker = ClientInstance->findPlayer(l.value(2));
