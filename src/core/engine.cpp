@@ -62,6 +62,11 @@ Engine *Sanguosha = nullptr;
 Engine::Engine()
     : d(new EnginePrivate)
 {
+    if (Sanguosha != nullptr) {
+        qDebug() << QStringLiteral("Aborting due to multiple Engine instance exists.");
+        abort();
+    }
+
     Sanguosha = this;
 
     // This file should be in qrc
@@ -121,6 +126,7 @@ void Engine::addTranslationEntry(const QString &key, const QString &value)
 Engine::~Engine()
 {
     delete d;
+    Sanguosha = nullptr;
 }
 
 void Engine::loadTranslations(const QString &locale)
