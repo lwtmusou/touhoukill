@@ -35,7 +35,8 @@ public:
     QHash<QString, const General *> generals;
     QHash<QString, const Skill *> skills;
     QMap<QString, QString> modes;
-    QMap<QString, const CardPattern *> patterns;
+    QMap<QString, const CardPattern *> responsePatterns;
+    QMap<QString, const CardPattern *> expPatterns;
     QHash<QString, const CardFace *> faces;
 
     // Package
@@ -54,8 +55,6 @@ public:
     {
     }
 };
-
-const int Engine::S_SERVER_TIMEOUT_GRACIOUS_PERIOD = 1000;
 
 Engine *Sanguosha = nullptr;
 
@@ -125,6 +124,7 @@ void Engine::addTranslationEntry(const QString &key, const QString &value)
 
 Engine::~Engine()
 {
+    qDeleteAll(d->expPatterns);
     delete d;
     Sanguosha = nullptr;
 }
@@ -189,41 +189,34 @@ void Engine::addBanPackage(const QString &package_name)
 
 QStringList Engine::getBanPackages() const
 {
-#if 0
-    if (QCoreApplication::arguments().contains(QStringLiteral("-server")))
-        return Config.BanPackages;
-    else
-#endif
-    {
-        if (isHegemonyGameMode(ServerInfo.GameMode)) {
-            QStringList ban;
-            const QList<const Package *> &packs = getPackages();
-            QStringList needPacks;
-            needPacks << QStringLiteral("hegemonyGeneral") << QStringLiteral("hegemony_card");
-            foreach (const Package *pa, packs) {
-                if (!needPacks.contains(pa->name()))
-                    ban << pa->name();
-            }
-            return ban;
-        } else {
-            QStringList ban = d->ban_package.values();
-            if (!ban.contains(QStringLiteral("hegemonyGeneral")))
-                ban << QStringLiteral("hegemonyGeneral");
-            if (!ban.contains(QStringLiteral("hegemony_card")))
-                ban << QStringLiteral("hegemony_card");
-            return ban;
+    if (isHegemonyGameMode(ServerInfo.GameMode)) {
+        QStringList ban;
+        const QList<const Package *> &packs = packanges();
+        QStringList needPacks;
+        needPacks << QStringLiteral("hegemonyGeneral") << QStringLiteral("hegemony_card");
+        foreach (const Package *pa, packs) {
+            if (!needPacks.contains(pa->name()))
+                ban << pa->name();
         }
+        return ban;
+    } else {
+        QStringList ban = d->ban_package.values();
+        if (!ban.contains(QStringLiteral("hegemonyGeneral")))
+            ban << QStringLiteral("hegemonyGeneral");
+        if (!ban.contains(QStringLiteral("hegemony_card")))
+            ban << QStringLiteral("hegemony_card");
+        return ban;
     }
 }
 
-QList<const Package *> Engine::getPackages() const
+QList<const Package *> Engine::packanges() const
 {
     return d->packages;
 }
 
 const Package *Engine::findPackage(const QString &name) const
 {
-    foreach (const auto *pkg, d->packages) {
+    foreach (const Package *pkg, d->packages) {
         if (pkg->name() == name)
             return pkg;
     }
@@ -251,21 +244,25 @@ int Engine::getRoleIndex() const
         return 1;
 }
 
-const CardPattern *Engine::getPattern(const QString &name) const
+const CardPattern *Engine::responsePattern(const QString &name) const
 {
-    const CardPattern *ptn = d->patterns.value(name, NULL);
-    if (ptn != nullptr)
-        return ptn;
+    return d->responsePatterns.value(name, nullptr);
+}
+
+const CardPattern *Engine::expPattern(const QString &name) const
+{
+    if (d->expPatterns.contains(name))
+        return d->expPatterns.value(name);
 
     ExpPattern *expptn = new ExpPattern(name);
-    d->patterns.insert(name, expptn);
+    d->expPatterns.insert(name, expptn);
     return expptn;
 }
 
 bool Engine::matchExpPattern(const QString &pattern, const Player *player, const Card *card) const
 {
-    ExpPattern p(pattern);
-    return p.match(player, card);
+    const CardPattern *p = expPattern(pattern);
+    return p->match(player, card);
 }
 
 const General *Engine::getGeneral(const QString &name) const
@@ -332,38 +329,38 @@ const CardDescriptor &Engine::getEngineCard(int cardId) const
     }
 }
 
-QString Engine::getVersionDate() const
+QString Engine::versionDate() const
 {
-    return QStringLiteral(QT_STRINGIFY(VERSIONNUMBER));
+    return QStringLiteral(QT_STRINGIFY(VERSIONDATE));
 }
 
 QString Engine::getVersion() const
 {
-    return QStringLiteral("%1:%2").arg(getVersionDate(), getMODName());
+    return QStringLiteral("%1:%2").arg(versionDate(), modName());
 }
 
-const QVersionNumber &Engine::getQVersionNumber() const
+const QVersionNumber &Engine::versionNumber() const
 {
     static QVersionNumber ver = QVersionNumber::fromString(QStringLiteral(QT_STRINGIFY(VERSION)));
     return ver;
 }
 
-QString Engine::getMODName() const
+QString Engine::modName() const
 {
     return QStringLiteral("TouhouSatsu");
 }
 
-QStringList Engine::getExtensions() const
+QStringList Engine::packangeNames() const
 {
     QStringList extensions;
-    const QList<const Package *> &packages = getPackages();
+    const QList<const Package *> &packages = packanges();
     foreach (const Package *package, packages)
         extensions << package->name();
 
     return extensions;
 }
 
-QStringList Engine::getKingdoms() const
+QStringList Engine::kingdoms() const
 {
     static QStringList kingdoms;
 
@@ -373,7 +370,7 @@ QStringList Engine::getKingdoms() const
     return kingdoms;
 }
 
-QStringList Engine::getHegemonyKingdoms() const
+QStringList Engine::hegemonyKingdoms() const
 {
     static QStringList hegemony_kingdoms;
     if (hegemony_kingdoms.isEmpty())

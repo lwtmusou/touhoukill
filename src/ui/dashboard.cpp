@@ -1762,7 +1762,7 @@ void Dashboard::refresh()
 
 void Dashboard::_createBattleArrayAnimations()
 {
-    QStringList kingdoms = Sanguosha->getHegemonyKingdoms();
+    QStringList kingdoms = Sanguosha->hegemonyKingdoms();
     kingdoms.removeAll(QStringLiteral("god"));
     foreach (const QString &kingdom, kingdoms) {
         _m_frameBorders[kingdom] = new PixmapAnimation();

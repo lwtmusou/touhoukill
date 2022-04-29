@@ -6,6 +6,8 @@
 
 ServerInfoStruct ServerInfo;
 
+const int ServerInfoStruct::S_SERVER_TIMEOUT_GRACIOUS_PERIOD = 1000;
+
 time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance, int operationRate)
 {
     time_t timeOut = OperationTimeout * 500 * operationRate;
@@ -20,7 +22,7 @@ time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QS
         timeOut = NullificationCountDown * 1000;
 
     if (instance == QSanProtocol::S_SERVER_INSTANCE)
-        timeOut += Engine::S_SERVER_TIMEOUT_GRACIOUS_PERIOD;
+        timeOut += S_SERVER_TIMEOUT_GRACIOUS_PERIOD;
     return timeOut;
 }
 
@@ -51,7 +53,7 @@ bool ServerInfoStruct::parseLegacy(const QString &str)
         NullificationCountDown = texts.at(4).toInt();
 
         QStringList ban_packages = texts.at(5).split(QStringLiteral("+"));
-        const QList<const Package *> &packages = Sanguosha->getPackages();
+        const QList<const Package *> &packages = Sanguosha->packanges();
         foreach (const Package *package, packages) {
             QString package_name = package->name();
             if (ban_packages.contains(package_name))
@@ -127,7 +129,7 @@ bool ServerInfoStruct::parse(const QVariant &object)
         DuringGame = true;
 
         QVariantList ban_packages = ob.value(QStringLiteral("BanPackages")).toList();
-        const QList<const Package *> &packages = Sanguosha->getPackages();
+        const QList<const Package *> &packages = Sanguosha->packanges();
         foreach (const Package *package, packages) {
             QString package_name = package->name();
             if (ban_packages.contains(package_name))

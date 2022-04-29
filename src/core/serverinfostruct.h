@@ -35,6 +35,8 @@ struct QSGS_CORE_EXPORT ServerInfoStruct
     int Scheme0Subtraction;
 
     bool DuringGame;
+
+    static const int S_SERVER_TIMEOUT_GRACIOUS_PERIOD;
 };
 
 extern QSGS_CORE_EXPORT ServerInfoStruct ServerInfo;

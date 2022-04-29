@@ -48,13 +48,13 @@ public:
     void addTranslationEntry(const QString &key, const QString &value);
     QString translate(const QString &to_translate) const;
 
-    QString getVersionDate() const;
+    QString versionDate() const;
     QString getVersion() const;
-    const QVersionNumber &getQVersionNumber() const;
-    QString getMODName() const;
-    QStringList getExtensions() const;
-    QStringList getKingdoms() const;
-    QStringList getHegemonyKingdoms() const;
+    const QVersionNumber &versionNumber() const;
+    QString modName() const;
+
+    QStringList kingdoms() const;
+    QStringList hegemonyKingdoms() const;
 
     // move to Mode?
     QMap<QString, QString> getAvailableModes() const;
@@ -64,12 +64,14 @@ public:
     QStringList getRoleList(const QString &mode) const;
     int getRoleIndex() const;
 
-    const CardPattern *getPattern(const QString &name) const;
+    const CardPattern *responsePattern(const QString &name) const;
+    const CardPattern *expPattern(const QString &name) const;
     bool matchExpPattern(const QString &pattern, const Player *player, const Card *card) const;
 
     void addPackage(const Package *package);
-    QList<const Package *> getPackages() const;
+    QList<const Package *> packanges() const;
     const Package *findPackage(const QString &name) const;
+    QStringList packangeNames() const;
 
     const General *getGeneral(const QString &name) const;
     QStringList getGenerals() const;
@@ -96,9 +98,6 @@ public:
     QList<int> getRandomCards() const;
 
     QVariant getConfigFromConfigFile(const QString &key) const;
-
-public:
-    static const int S_SERVER_TIMEOUT_GRACIOUS_PERIOD;
 
 private:
     Q_DISABLE_COPY_MOVE(Engine)

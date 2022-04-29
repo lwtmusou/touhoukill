@@ -1652,7 +1652,7 @@ void Client::askForSuit(const QVariant &arg)
 
 void Client::askForKingdom(const QVariant & /*unused*/)
 {
-    QStringList kingdoms = Sanguosha->getKingdoms();
+    QStringList kingdoms = Sanguosha->kingdoms();
 
     if (kingdoms.contains(QStringLiteral("zhu")))
         kingdoms.removeOne(QStringLiteral("zhu"));

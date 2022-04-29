@@ -18,7 +18,7 @@ project(QSanguosha
     VERSION 0.12.0
     )
 
-set(VERSION_NUMBER_QSanguosha 20211222)
+set(VERSION_DATE_QSanguosha 20211222)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -426,7 +426,7 @@ if (Qt5_FOUND)
         SOURCES src/swig/sgs.i
         )
 
-    target_compile_definitions(q5sanguosha_wrap PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
+    target_compile_definitions(q5sanguosha_wrap PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONDATE=${VERSION_DATE_QSanguosha})
     # ONLY FOR THEIR INCLUDE DIRECTORIES! Compile fails if we don't add the link libraries.
     # Seems weird since we don't even link the libraries here
     target_link_libraries(q5sanguosha_wrap QSanguoshaLibs::lua54 Qt5::Core)
@@ -437,7 +437,7 @@ if (Qt5_FOUND)
     set_property(TARGET Q5SgsCore PROPERTY AUTOUIC ON)
     set_property(TARGET Q5SgsCore PROPERTY AUTORCC ON)
 
-    target_compile_definitions(Q5SgsCore PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
+    target_compile_definitions(Q5SgsCore PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONDATE=${VERSION_DATE_QSanguosha})
     target_link_libraries(Q5SgsCore Qt5::Core q5sanguosha_wrap QSanguoshaLibs::lua54)
 
     if (NOT WIN32)
@@ -494,7 +494,7 @@ if (Qt6_FOUND)
         SOURCES src/swig/sgs.i
         )
 
-    target_compile_definitions(qsanguosha_wrap PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x70000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
+    target_compile_definitions(qsanguosha_wrap PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x70000 VERSION=${QSanguosha_VERSION} VERSIONDATE=${VERSION_DATE_QSanguosha})
     # ONLY FOR THEIR INCLUDE DIRECTORIES! Compile fails if we don't add the link libraries.
     # Seems weird since we don't even link the libraries here
     target_link_libraries(qsanguosha_wrap QSanguoshaLibs::lua54 Qt6::Core)
@@ -505,7 +505,7 @@ if (Qt6_FOUND)
     set_property(TARGET QSgsCore PROPERTY AUTOUIC ON)
     set_property(TARGET QSgsCore PROPERTY AUTORCC ON)
 
-    target_compile_definitions(QSgsCore PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x70000 VERSION=${QSanguosha_VERSION} VERSIONNUMBER=${VERSION_NUMBER_QSanguosha})
+    target_compile_definitions(QSgsCore PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x70000 VERSION=${QSanguosha_VERSION} VERSIONDATE=${VERSION_DATE_QSanguosha})
     target_link_libraries(QSgsCore Qt6::Core qsanguosha_wrap QSanguoshaLibs::lua54)
 
     if (NOT WIN32)

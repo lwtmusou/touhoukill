@@ -329,7 +329,7 @@ void Photo::_initializeRemovedEffect()
 
 void Photo::_createBattleArrayAnimations()
 {
-    QStringList kingdoms = Sanguosha->getKingdoms();
+    QStringList kingdoms = Sanguosha->kingdoms();
     kingdoms.removeAll(QStringLiteral("god"));
     foreach (const QString &kingdom, kingdoms) {
         _m_frameBorders[kingdom] = new PixmapAnimation();

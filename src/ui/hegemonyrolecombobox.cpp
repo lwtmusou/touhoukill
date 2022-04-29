@@ -38,7 +38,7 @@ void HegemonyRoleComboBox::mousePressEvent(QGraphicsSceneMouseEvent *event)
         update();
         return;
     }
-    QStringList kingdoms = Sanguosha->getHegemonyKingdoms();
+    QStringList kingdoms = Sanguosha->hegemonyKingdoms();
     kingdoms.removeAll(QStringLiteral("god"));
     foreach (const QString &kingdom, kingdoms) {
         if (G_COMMON_LAYOUT.m_rolesRect.value(kingdom, QRect()).contains(point)) {
@@ -72,7 +72,7 @@ void HegemonyRoleComboBox::paint(QPainter *painter, const QStyleOptionGraphicsIt
         painter->drawPixmap(0, 0, (int)(pix.width() * scale), (int)(pix.height() * scale), pix);
         return;
     }
-    QStringList kingdoms = Sanguosha->getHegemonyKingdoms();
+    QStringList kingdoms = Sanguosha->hegemonyKingdoms();
     kingdoms.removeAll(QStringLiteral("god"));
 
     if (!expanding) {
@@ -116,7 +116,7 @@ HegemonyRoleComboBox::HegemonyRoleComboBox(QGraphicsItem *photo, bool circle)
     , circle(circle)
     , expanding(false)
 {
-    QStringList kingdoms = Sanguosha->getHegemonyKingdoms();
+    QStringList kingdoms = Sanguosha->hegemonyKingdoms();
     kingdoms.removeAll(QStringLiteral("god"));
     foreach (const QString &kingdom, kingdoms)
         kingdoms_excluded[kingdom] = false;

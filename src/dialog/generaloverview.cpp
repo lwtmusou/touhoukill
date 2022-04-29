@@ -121,7 +121,7 @@ QWidget *GeneralSearch::createInfoTab()
     kingdom_box->setLayout(kingdom_layout);
 
     int i = 0;
-    foreach (QString kingdom, Sanguosha->getKingdoms()) {
+    foreach (QString kingdom, Sanguosha->kingdoms()) {
         QCheckBox *checkbox = new QCheckBox;
         checkbox->setObjectName(kingdom);
         checkbox->setIcon(QIcon(QStringLiteral("image/kingdom/icon/%1.png").arg(kingdom)));
@@ -139,7 +139,7 @@ QWidget *GeneralSearch::createInfoTab()
     package_buttons = new QButtonGroup;
     package_buttons->setExclusive(false);
 
-    QStringList extensions = Sanguosha->getExtensions();
+    QStringList extensions = Sanguosha->packangeNames();
 
     QGroupBox *package_box = new QGroupBox(tr("Packages"));
     package_box->setToolTip(tr("<font color=#FFFF33>Select packages. Every package meets the condition if none is selected.</font>"));

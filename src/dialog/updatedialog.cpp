@@ -226,7 +226,7 @@ void UpdateDialog::parseVersionInfo(UpdateDialog::UpdateItem item, const QJsonOb
         if (ob.contains(from))
             parsePackageInfo(item, ob.value(from).toObject());
         else {
-            QVersionNumber pref = QVersionNumber::commonPrefix(Sanguosha->getQVersionNumber(), ver);
+            QVersionNumber pref = QVersionNumber::commonPrefix(Sanguosha->versionNumber(), ver);
             from = QStringLiteral("From") + pref.toString();
             if (ob.contains(from))
                 parsePackageInfo(item, ob.value(from).toObject());
@@ -240,7 +240,7 @@ QVersionNumber UpdateDialog::getVersionNumberForItem(UpdateDialog::UpdateItem it
 {
     switch (item) {
     case UiBase:
-        return Sanguosha->getQVersionNumber();
+        return Sanguosha->versionNumber();
     case UiSkin: {
         QVariant v = Sanguosha->getConfigFromConfigFile(QStringLiteral("withHeroSkin"));
 

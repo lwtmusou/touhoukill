@@ -263,10 +263,10 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
 
     QStringList kingdoms;
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
-        kingdoms << Sanguosha->getHegemonyKingdoms();
+        kingdoms << Sanguosha->hegemonyKingdoms();
         kingdoms << QStringLiteral("zhu");
     } else
-        kingdoms << Sanguosha->getKingdoms();
+        kingdoms << Sanguosha->kingdoms();
 
     foreach (QString kingdom, kingdoms) {
         QList<const General *> generals = map[kingdom];

@@ -3389,7 +3389,7 @@ void RoomScene::saveReplayRecord(bool auto_save, bool network_only)
             QString general_name = Sanguosha->translate(Self->generalName());
             if (ServerInfo.Enable2ndGeneral)
                 general_name.append(QStringLiteral("_") + Sanguosha->translate(Self->getGeneral2Name()));
-            location.append(QStringLiteral("%1 %2(%3)-").arg(Sanguosha->getQVersionNumber().toString(), general_name, Sanguosha->translate(Self->getRoleString())));
+            location.append(QStringLiteral("%1 %2(%3)-").arg(Sanguosha->versionNumber().toString(), general_name, Sanguosha->translate(Self->getRoleString())));
             location.append(QDateTime::currentDateTime().toString(QStringLiteral("yyyyMMddhhmmss")));
             location.append(QStringLiteral(".txt"));
             ClientInstance->save(location);

@@ -5445,7 +5445,7 @@ QString Room::askForKingdom(ServerPlayer *player)
     QVariant clientReply = player->getClientReply();
     if (success && JsonUtils::isString(clientReply)) {
         QString kingdom = clientReply.toString();
-        if (Sanguosha->getKingdoms().contains(kingdom))
+        if (Sanguosha->kingdoms().contains(kingdom))
             kingdomChoice = kingdom;
     }
 

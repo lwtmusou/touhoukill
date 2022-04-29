@@ -72,7 +72,9 @@ ResponseSkill::ResponseSkill()
 
 void ResponseSkill::setPattern(const QString &pattern)
 {
-    this->pattern = Sanguosha->getPattern(pattern);
+    this->pattern = Sanguosha->responsePattern(pattern);
+    if (this->pattern == nullptr)
+        this->pattern = Sanguosha->expPattern(pattern);
 }
 
 void ResponseSkill::setRequest(const QSanguosha::HandlingMethod request)

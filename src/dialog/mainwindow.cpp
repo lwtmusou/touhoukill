@@ -100,7 +100,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     scene = nullptr;
 
-    setWindowTitle(tr("TouhouSatsu") + QStringLiteral("    V") + Sanguosha->getQVersionNumber().toString() + QStringLiteral("    ") + Sanguosha->getVersionDate());
+    setWindowTitle(tr("TouhouSatsu") + QStringLiteral("    V") + Sanguosha->versionNumber().toString() + QStringLiteral("    ") + Sanguosha->versionDate());
 
     connection_dialog = new ConnectionDialog(this);
     connect(ui->actionStart_Game, &QAction::triggered, connection_dialog, &QDialog::exec);
@@ -252,13 +252,13 @@ void MainWindow::checkVersion(const QString &server_version, const QString &serv
 {
     Client *client = qobject_cast<Client *>(sender());
 
-    QString client_mod = Sanguosha->getMODName();
+    QString client_mod = Sanguosha->modName();
     if (client_mod != server_mod) {
         client->disconnectFromHost();
         QMessageBox::warning(this, tr("Warning"), tr("Client MOD name is not same as the server!"));
         return;
     }
-    QString client_version = Sanguosha->getVersionDate();
+    QString client_version = Sanguosha->versionDate();
 
     if (server_version == client_version) {
         client->signup();
@@ -497,7 +497,7 @@ void MainWindow::on_actionAbout_triggered()
     config = QStringLiteral("debug");
 #endif
 
-    content.append(tr("Current version: %1 %2 (%3)<br/>").arg(Sanguosha->getVersion(), config, Sanguosha->getQVersionNumber().toString()));
+    content.append(tr("Current version: %1 %2 (%3)<br/>").arg(Sanguosha->getVersion(), config, Sanguosha->versionNumber().toString()));
 
     QString date = QStringLiteral(__DATE__);
     QString time = QStringLiteral(__TIME__);
