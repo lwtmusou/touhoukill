@@ -22,13 +22,13 @@ public:
     int headMaxHpAdjustedValue;
     int deputyMaxHpAdjustedValue;
 
-    GeneralPrivate(Package *package, const QString &name, const QString &kingdom, int maxHp, bool isLord, bool male, bool hidden, bool neverShown)
+    GeneralPrivate(Package *package, const QString &name, const QString &kingdom, int maxHp, bool isLord, Gender gender, bool hidden, bool neverShown)
         : package(package)
         , name(name)
         , kingdom(kingdom)
         , maxHp(maxHp)
         , lord(isLord)
-        , gender(male ? Male : Female)
+        , gender(gender)
         , hidden(hidden)
         , neverShown(neverShown)
         , headMaxHpAdjustedValue(0)
@@ -37,8 +37,8 @@ public:
     }
 };
 
-General::General(Package *package, const QString &name, const QString &kingdom, int maxHp, bool isLord, bool male, bool hidden, bool neverShown)
-    : d(new GeneralPrivate(package, name, kingdom, maxHp, isLord, male, hidden, neverShown))
+General::General(Package *package, const QString &name, const QString &kingdom, int maxHp, bool isLord, Gender gender, bool hidden, bool neverShown)
+    : d(new GeneralPrivate(package, name, kingdom, maxHp, isLord, gender, hidden, neverShown))
 {
 }
 

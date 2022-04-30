@@ -22,8 +22,8 @@ class QSGS_CORE_EXPORT General final
 {
 public:
 #ifndef SWIG
-    explicit General(Package *package, const QString &name, const QString &kingdom, int maxHp = 4, bool isLord = false, bool male = false, bool hidden = false,
-                     bool neverShown = false);
+    explicit General(Package *package, const QString &name, const QString &kingdom, int maxHp = 4, bool isLord = false, QSanguosha::Gender gender = QSanguosha::Female,
+                     bool hidden = false, bool neverShown = false);
 #endif
 
     QString name() const;
