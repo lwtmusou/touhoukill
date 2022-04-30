@@ -1,5 +1,5 @@
-#ifndef _PROTOCOL_H
-#define _PROTOCOL_H
+#ifndef TOUHOUKILL_PROTOCOL_H
+#define TOUHOUKILL_PROTOCOL_H
 
 #include "qsgscore.h"
 

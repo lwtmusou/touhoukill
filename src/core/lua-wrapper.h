@@ -1,5 +1,5 @@
-#ifndef _LUA_WRAPPER_H
-#define _LUA_WRAPPER_H
+#ifndef TOUHOUKILL_LUA_WRAPPER_H
+#define TOUHOUKILL_LUA_WRAPPER_H
 
 #include "qsgscore.h"
 #include <QObject>

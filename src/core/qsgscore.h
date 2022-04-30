@@ -1,5 +1,5 @@
-#ifndef QSANGUOSHA_QSGSCORE_H
-#define QSANGUOSHA_QSGSCORE_H
+#ifndef TOUHOUKILL_QSGSCORE_H
+#define TOUHOUKILL_QSGSCORE_H
 
 #ifndef SWIG
 #include <QCoreApplication>

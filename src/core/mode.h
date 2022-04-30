@@ -1,5 +1,5 @@
-#ifndef QSANGUOSHA_MODE_H
-#define QSANGUOSHA_MODE_H
+#ifndef TOUHOUKILL_MODE_H
+#define TOUHOUKILL_MODE_H
 
 #include "global.h"
 #include "qsgscore.h"

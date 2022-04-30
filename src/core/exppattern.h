@@ -1,5 +1,5 @@
-#ifndef _EXPPATTERN_H
-#define _EXPPATTERN_H
+#ifndef TOUHOUKILL_EXPPATTERN_H
+#define TOUHOUKILL_EXPPATTERN_H
 
 #include "package.h"
 #include "qsgscore.h"

@@ -1,5 +1,5 @@
-#ifndef _GAME_STATE_H_
-#define _GAME_STATE_H_
+#ifndef TOUHOUKILL_GAME_STATE_H_
+#define TOUHOUKILL_GAME_STATE_H_
 
 #include "qsgscore.h"
 #include "structs.h"

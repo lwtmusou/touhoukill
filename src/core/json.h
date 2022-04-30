@@ -18,8 +18,8 @@
     Mogara
     *********************************************************************/
 
-#ifndef JSON_H
-#define JSON_H
+#ifndef TOUHOUKILL_JSON_H
+#define TOUHOUKILL_JSON_H
 
 #include "qsgscore.h"
 

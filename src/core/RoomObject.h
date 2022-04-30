@@ -1,5 +1,5 @@
-#ifndef QSANGUOSHA_ROOMOBJECT_H
-#define QSANGUOSHA_ROOMOBJECT_H
+#ifndef TOUHOUKILL_ROOMOBJECT_H
+#define TOUHOUKILL_ROOMOBJECT_H
 
 // BE WARE! THIS FILE IS USED IN BOTH SWIG AND C++.
 // MAKE SURE THE GRAMMAR IS COMPATIBLE BETWEEN 2 LANGUAGES.
@@ -50,7 +50,9 @@ public:
     void setCurrent(Player *player);
 
     Player *findAdjecentPlayer(Player *player, bool next = true, bool include_dead = true, bool include_removed = true);
+#ifndef SWIG
     const Player *findAdjecentPlayer(const Player *player, bool next = true, bool include_dead = true, bool include_removed = true) const;
+#endif
 
     void arrangeSeat(const QStringList &seatInfo);
 

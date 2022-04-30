@@ -1,5 +1,5 @@
-#ifndef _UTIL_H
-#define _UTIL_H
+#ifndef TOUHOUKILL_UTIL_H
+#define TOUHOUKILL_UTIL_H
 
 #include "qsgscore.h"
 
