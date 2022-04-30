@@ -410,9 +410,7 @@ public:
     QStringList toList() const;
 
 private:
-#ifndef SWIG
     TriggerDetailPrivate *d;
-#endif
 };
 
 struct QSGS_CORE_EXPORT HpLostStruct

@@ -26,8 +26,35 @@ public:
     }
 }
 
+template<class T>
+class QListIterator
+{
+public:
+    QListIterator(const QList<T> &container);
+    QListIterator &operator=(const QList<T> &container);
+    void toFront();
+    void toBack();
+    bool hasNext() const;
+    T next();
+    T peekNext() const;
+    bool hasPrevious() const;
+    T previous();
+    T peekPrevious() const;
+};
+
+%newobject ::create_qlist_iterator;
+%{
+template<class T> QListIterator<T> *create_qlist_iterator(QList<T> *list)
+{
+    return new QListIterator<T>(*list);
+}
+%}
+
+template<class T>
+QListIterator<T> *create_qlist_iterator(QList<T> *list);
+
 %template(SPlayerList) QList<Player *>;
-%template(PlayerList)  QList<const Player *>;
+%template(PlayerList) QList<const Player *>;
 %template(CardList) QList<const Card *>;
 %template(IntList) QList<int>;
 %template(SkillList) QList<const Skill *>;
@@ -35,8 +62,29 @@ public:
 %template(PlaceList) QList<QSanguosha::Place>;
 %template(PhaseList) QList<QSanguosha::Phase>;
 %template(VariantList) QList<QVariant>;
-
 %template(SingleCardMoveList) QList<SingleCardMoveStruct>;
+
+%template(SPlayerListIt) QListIterator<Player *>;
+%template(PlayerListIt) QListIterator<const Player *>;
+%template(CardListIt) QListIterator<const Card *>;
+%template(IntListIt) QListIterator<int>;
+%template(SkillListIt) QListIterator<const Skill *>;
+%template(CardsMoveListIt) QListIterator<LegacyCardsMoveStruct>;
+%template(PlaceListIt) QListIterator<QSanguosha::Place>;
+%template(PhaseListIt) QListIterator<QSanguosha::Phase>;
+%template(VariantListIt) QListIterator<QVariant>;
+%template(SingleCardMoveListIt) QListIterator<SingleCardMoveStruct>;
+
+%template(create_qlist_iterator) create_qlist_iterator<Player *>;
+%template(create_qlist_iterator) create_qlist_iterator<const Player *>;
+%template(create_qlist_iterator) create_qlist_iterator<const Card *>;
+%template(create_qlist_iterator) create_qlist_iterator<int>;
+%template(create_qlist_iterator) create_qlist_iterator<const Skill *>;
+%template(create_qlist_iterator) create_qlist_iterator<LegacyCardsMoveStruct>;
+%template(create_qlist_iterator) create_qlist_iterator<QSanguosha::Place>;
+%template(create_qlist_iterator) create_qlist_iterator<QSanguosha::Phase>;
+%template(create_qlist_iterator) create_qlist_iterator<QVariant>;
+%template(create_qlist_iterator) create_qlist_iterator<SingleCardMoveStruct>;
 
 typedef QList<QVariant> QVariantList;
 typedef QList<QString> QStringList;

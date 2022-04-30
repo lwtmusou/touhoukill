@@ -10,13 +10,14 @@ end
 
 -- the iterator of QList object
 local qlist_iterator = function(list, n)
-	if n < list:length() - 1 then
-		return n + 1, list:at(n + 1) -- the next element of list
+	if n:hasNext() then
+		local next = n:next()
+		return n, next
 	end
 end
 
 function sgs.qlist(list)
-	return qlist_iterator, list, -1
+	return qlist_iterator, list, sgs.create_qlist_iterator(list)
 end
 
 -- more general iterator
