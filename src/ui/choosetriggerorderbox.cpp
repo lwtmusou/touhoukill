@@ -121,7 +121,7 @@ bool SkillInvokeDetailForClient::tryParse(const QString &str)
 QString SkillInvokeDetailForClient::toString() const
 {
     QStringList l;
-    l << skill->objectName();
+    l << skill->name();
     l << owner->objectName();
     l << invoker->objectName();
     if (preferredTarget != nullptr) {
@@ -151,7 +151,7 @@ TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const SkillInv
 
 void TriggerOptionButton::construct()
 {
-    setToolTip(ClientInstance->getSkillDescription(detail.skill->objectName()));
+    setToolTip(ClientInstance->getSkillDescription(detail.skill->name()));
 
     setAcceptedMouseButtons(Qt::LeftButton);
     setAcceptHoverEvents(true);
@@ -228,7 +228,7 @@ void TriggerOptionButton::hoverLeaveEvent(QGraphicsSceneHoverEvent * /*event*/)
 
 QString TriggerOptionButton::displayedTextOf(const SkillInvokeDetailForClient &detail, int times)
 {
-    QString skillName = detail.skill->objectName();
+    QString skillName = detail.skill->name();
     QString text = Sanguosha->translate(skillName);
     if (detail.preferredTarget != nullptr) {
         QString targetName = ClientInstance->getPlayerFootNoteName(detail.preferredTarget);

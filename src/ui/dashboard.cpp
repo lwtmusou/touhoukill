@@ -593,7 +593,7 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName, bool head)
 
         if (skill == nullptr)
             continue;
-        if (skill->objectName() == skillName) {
+        if (skill->name() == skillName) {
             // If there is already a button there, then we haven't removed the last skill before attaching
             // a new one. The server must have sent the requests out of order. So crash.
             Q_ASSERT(_m_equipSkillBtns[i] == nullptr);
@@ -638,7 +638,7 @@ QSanSkillButton *Dashboard::removeSkillButton(const QString &skillName, bool hea
             continue;
         const Skill *skill = _m_equipSkillBtns[i]->getSkill();
         Q_ASSERT(skill != nullptr);
-        if (skill->objectName() == skillName) {
+        if (skill->name() == skillName) {
             btn = _m_equipSkillBtns[i];
             _m_equipSkillBtns[i] = nullptr;
             continue;
@@ -1180,8 +1180,8 @@ void Dashboard::startPending(const ViewAsSkill *skill)
     unselectAll();
 
     bool expand = ((skill != nullptr) && skill->isResponseOrUse());
-    if (!expand && (skill != nullptr) && skill->inherits("ResponseSkill")) {
-        const ResponseSkill *resp_skill = qobject_cast<const ResponseSkill *>(skill);
+    if (!expand && (skill != nullptr)) {
+        const ResponseSkill *resp_skill = dynamic_cast<const ResponseSkill *>(skill);
         if ((resp_skill != nullptr) && (resp_skill->getRequest() == QSanguosha::MethodResponse || resp_skill->getRequest() == QSanguosha::MethodUse))
             expand = true;
     }
@@ -1463,7 +1463,7 @@ void Dashboard::onCardItemClicked()
             selectCard(card_item, false);
             pendings.removeOne(card_item);
         } else {
-            if (view_as_skill->inherits("OneCardViewAsSkill"))
+            if (dynamic_cast<const OneCardViewAsSkill *>(view_as_skill) != nullptr)
                 unselectAll();
             selectCard(card_item, true);
             pendings << card_item;
@@ -1502,7 +1502,7 @@ void Dashboard::updatePending()
         cards.append(item->getCard());
 
     QList<const Card *> pended;
-    if (!view_as_skill->inherits("OneCardViewAsSkill"))
+    if (dynamic_cast<const OneCardViewAsSkill *>(view_as_skill) == nullptr)
         pended = cards;
     foreach (CardItem *item, m_handCards) {
         if (!item->isSelected() || pendings.isEmpty())
@@ -1602,7 +1602,7 @@ void Dashboard::onMarkChanged()
     if (card_item != nullptr) {
         if (card_item->isMarked()) {
             if (!pendings.contains(card_item)) {
-                if ((view_as_skill != nullptr) && view_as_skill->inherits("OneCardViewAsSkill"))
+                if (dynamic_cast<const OneCardViewAsSkill *>(view_as_skill) != nullptr)
                     unselectAll(card_item);
                 pendings.append(card_item);
             }

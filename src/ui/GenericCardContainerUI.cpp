@@ -938,7 +938,7 @@ QList<CardItem *> PlayerCardContainer::removeEquips(const QList<int> &cardIds)
 
         const Skill *skill = Sanguosha->skill(equip_card->name());
         if (skill != nullptr)
-            emit remove_equip_skill(skill->objectName());
+            emit remove_equip_skill(skill->name());
     }
     return result;
 }
@@ -1640,15 +1640,15 @@ QString PlayerCardContainer::getPlayerSkillDescription(Player *p, bool yellow, c
     foreach (const Skill *skill, skillList) {
         if (skill->isAttachedSkill())
             continue;
-        if (!isHegemonyGameMode(ServerInfo.GameMode) && !p->hasValidSkill(skill->objectName()))
+        if (!isHegemonyGameMode(ServerInfo.GameMode) && !p->hasValidSkill(skill->name()))
             continue;
 
         //remove lord skill Description
-        if (skill->isLordSkill() && !p->hasValidLordSkill(skill->objectName()))
+        if (skill->isLordSkill() && !p->hasValidLordSkill(skill->name()))
             continue;
 
-        QString skill_name = Sanguosha->translate(skill->objectName());
-        QString desc = ClientInstance->getSkillDescription(skill->objectName());
+        QString skill_name = Sanguosha->translate(skill->name());
+        QString desc = ClientInstance->getSkillDescription(skill->name());
         desc.replace(QStringLiteral("\n"), QStringLiteral("<br/>"));
         description.append(QStringLiteral("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(color, skill_name, desc));
     }

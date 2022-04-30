@@ -1539,12 +1539,12 @@ void Client::killPlayer(const QVariant &player_name)
     if (player == Self) {
         if (isHegemonyGameMode(ServerInfo.GameMode)) {
             foreach (const Skill *skill, Self->getHeadSkillList(true, true))
-                emit skill_detached(skill->objectName(), true);
+                emit skill_detached(skill->name(), true);
             foreach (const Skill *skill, Self->getDeputySkillList(true, true))
-                emit skill_detached(skill->objectName(), false);
+                emit skill_detached(skill->name(), false);
         } else {
             foreach (const Skill *skill, Self->skills(false))
-                emit skill_detached(skill->objectName());
+                emit skill_detached(skill->name());
         }
     }
     player->detachAllSkills();
@@ -1852,7 +1852,7 @@ void Client::askForSinglePeach(const QVariant &arg)
     if (Self->mark(QStringLiteral("Global_PreventPeach")) > 0 || Self->isProhibited(dying, temp_peach)) {
         bool has_skill = false;
         foreach (const Skill *skill, Self->skills(true)) {
-            const ViewAsSkill *view_as_skill = qobject_cast<const ViewAsSkill *>(skill);
+            const ViewAsSkill *view_as_skill = dynamic_cast<const ViewAsSkill *>(skill);
             if ((view_as_skill != nullptr) && view_as_skill->isAvailable(Self, QSanguosha::CardUseReasonResponseUse, pattern.join(QStringLiteral("+")))) {
                 has_skill = true;
                 break;
@@ -2403,8 +2403,8 @@ QString Client::getGeneralSkillDescription(QString generalname, bool include_nam
 
     QString description;
     foreach (const Skill *skill, g->skills()) {
-        QString skill_name = Sanguosha->translate(skill->objectName());
-        QString desc = getSkillDescription(skill->objectName());
+        QString skill_name = Sanguosha->translate(skill->name());
+        QString desc = getSkillDescription(skill->name());
         desc.replace(QStringLiteral("\n"), QStringLiteral("<br/>"));
         description.append(QStringLiteral("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(yellow ? QStringLiteral("#FFFF33") : QStringLiteral("#FF0080"), skill_name, desc));
     }

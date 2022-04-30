@@ -653,7 +653,7 @@ bool Player::hasValidSkill(const Skill *skill, bool include_lose, bool include_h
     if (skill == nullptr)
         return false;
 
-    QString skill_name = skill->objectName();
+    QString skill_name = skill->name();
 
     //@todo: need check
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
@@ -743,7 +743,7 @@ bool Player::hasValidLordSkill(const Skill *skill, bool include_lose /* = false 
     if (skill == nullptr)
         return false;
 
-    return hasValidLordSkill(skill->objectName(), include_lose);
+    return hasValidLordSkill(skill->name(), include_lose);
 }
 
 void Player::setSkillInvalidity(const Skill *skill, bool invalidity)
@@ -751,7 +751,7 @@ void Player::setSkillInvalidity(const Skill *skill, bool invalidity)
     if (skill == nullptr)
         setSkillInvalidity(QStringLiteral("_ALL_SKILLS"), invalidity);
     else
-        setSkillInvalidity(skill->objectName(), invalidity);
+        setSkillInvalidity(skill->name(), invalidity);
 }
 
 void Player::setSkillInvalidity(const QString &skill_name, bool invalidity)
@@ -770,7 +770,7 @@ bool Player::isSkillInvalid(const Skill *skill) const
     if (skill->isEternal() || skill->isAttachedSkill())
         return false;
 
-    return isSkillInvalid(skill->objectName());
+    return isSkillInvalid(skill->name());
 }
 
 bool Player::isSkillInvalid(const QString &skill_name) const
@@ -1582,17 +1582,17 @@ bool Player::hasEquipSkill(const QString &skill_name) const
 
     if (d->weapon != -1) {
         const Weapon *weaponc = dynamic_cast<const Weapon *>(d->room->getCard(d->weapon)->face());
-        if ((Sanguosha->skill(weaponc) != nullptr) && Sanguosha->skill(weaponc)->objectName() == skill_name)
+        if ((Sanguosha->skill(weaponc) != nullptr) && Sanguosha->skill(weaponc)->name() == skill_name)
             return true;
     }
     if (d->armor != -1) {
         const Armor *armorc = dynamic_cast<const Armor *>(d->room->getCard(d->armor)->face());
-        if ((Sanguosha->skill(armorc) != nullptr) && Sanguosha->skill(armorc)->objectName() == skill_name)
+        if ((Sanguosha->skill(armorc) != nullptr) && Sanguosha->skill(armorc)->name() == skill_name)
             return true;
     }
     if (d->treasure != -1) {
         const Treasure *treasurec = dynamic_cast<const Treasure *>(d->room->getCard(d->treasure)->face());
-        if ((Sanguosha->skill(treasurec) != nullptr) && Sanguosha->skill(treasurec)->objectName() == skill_name)
+        if ((Sanguosha->skill(treasurec) != nullptr) && Sanguosha->skill(treasurec)->name() == skill_name)
             return true;
     }
     return false;
@@ -1616,7 +1616,7 @@ QSet<const Skill *> Player::skills(bool include_equip, bool include_acquired, co
 
     foreach (const QString &skill_name, skills) {
         const Skill *skill = Sanguosha->skill(skill_name);
-        if ((skill != nullptr) && (include_equip || !hasEquipSkill(skill->objectName())))
+        if ((skill != nullptr) && (include_equip || !hasEquipSkill(skill->name())))
             skillList << skill;
     }
 
@@ -1758,10 +1758,10 @@ bool Player::haveShownSkill(const Skill *skill) const
     if (skill == nullptr)
         return false;
 
-    if (d->acquiredSkills.contains(skill->objectName())) // deputy
+    if (d->acquiredSkills.contains(skill->name())) // deputy
         return true;
 
-    if (skill->inherits("ArmorSkill") || skill->inherits("WeaponSkill") || skill->inherits("TreasureSkill"))
+    if (skill->isEquipSkill())
         return true;
 
     if (skill->isAffiliatedSkill()) {
@@ -1773,7 +1773,7 @@ bool Player::haveShownSkill(const Skill *skill) const
     }
 
     for (int i = 0; i < d->generalCardSkills.length(); ++i) {
-        if (d->generalShown.value(i, false) && d->generalCardSkills.value(i, {}).contains(skill->objectName()))
+        if (d->generalShown.value(i, false) && d->generalCardSkills.value(i, {}).contains(skill->name()))
             return true;
     }
 
@@ -1837,7 +1837,7 @@ bool Player::havePreshownSkill(const QString &name) const
 
 bool Player::havePreshownSkill(const Skill *skill) const
 {
-    return havePreshownSkill(skill->objectName());
+    return havePreshownSkill(skill->name());
 }
 
 bool Player::isHidden(int pos) const
@@ -1846,7 +1846,7 @@ bool Player::isHidden(int pos) const
     int count = 0;
     foreach (const QString &skillName, skills.keys()) {
         const Skill *skill = Sanguosha->skill(skillName);
-        if (skill->canPreshow() && havePreshownSkill(skill->objectName()))
+        if (skill->canPreshow() && havePreshownSkill(skill->name()))
             return false;
         else if (!skill->canPreshow())
             ++count;
@@ -1886,7 +1886,7 @@ bool Player::hasGeneralCardSkill(const QString &skill_name) const
 
 bool Player::hasGeneralCardSkill(const Skill *skill) const
 {
-    return hasGeneralCardSkill(skill->objectName());
+    return hasGeneralCardSkill(skill->name());
 }
 
 bool Player::isFriendWith(const Player *player, bool considerAnjiang) const
@@ -1957,7 +1957,7 @@ int Player::findPositionOfGeneralOwningSkill(const QString &skill_name) const
     if (skill->isAffiliatedSkill()) { //really confused about invisible skills! by weidouncle
         const Skill *main_skill = skill->mainSkill();
         if (main_skill != nullptr)
-            return findPositionOfGeneralOwningSkill(main_skill->objectName());
+            return findPositionOfGeneralOwningSkill(main_skill->name());
     }
 
     for (int i = 0; i < d->generalCardSkills.length(); ++i) {

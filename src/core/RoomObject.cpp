@@ -387,13 +387,7 @@ QSet<const DistanceSkill *> RoomObject::getDistanceSkills() const
 const ViewAsSkill *RoomObject::getViewAsSkill(const QString &skill_name) const
 {
     const Skill *skill = Sanguosha->skill(skill_name);
-    if (skill == nullptr)
-        return nullptr;
-
-    if (skill->inherits("ViewAsSkill"))
-        return qobject_cast<const ViewAsSkill *>(skill);
-    else
-        return nullptr;
+    return dynamic_cast<const ViewAsSkill *>(skill);
 }
 
 const ProhibitSkill *RoomObject::isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others) const
@@ -434,7 +428,7 @@ int RoomObject::correctMaxCards(const Player *target, bool fixed, const QString 
     QStringList exceptlist = except.split(QStringLiteral("|"));
 
     foreach (const MaxCardsSkill *skill, d->maxcards_skills) {
-        if (exceptlist.contains(skill->objectName()))
+        if (exceptlist.contains(skill->name()))
             continue;
 
         if (fixed) {
@@ -509,20 +503,24 @@ int RoomObject::correctAttackRange(const Player *target, bool include_weapon /* 
  */
 void RoomObject::loadSkill(const Skill *skill)
 {
-    if (skill->inherits("ProhibitSkill"))
-        d->prohibit_skills << qobject_cast<const ProhibitSkill *>(skill);
-    else if (skill->inherits("TreatAsEquippingSkill"))
-        d->viewhas_skills << qobject_cast<const TreatAsEquippingSkill *>(skill);
-    else if (skill->inherits("DistanceSkill"))
-        d->distance_skills << qobject_cast<const DistanceSkill *>(skill);
-    else if (skill->inherits("MaxCardsSkill"))
-        d->maxcards_skills << qobject_cast<const MaxCardsSkill *>(skill);
-    else if (skill->inherits("TargetModSkill"))
-        d->targetmod_skills << qobject_cast<const TargetModSkill *>(skill);
-    else if (skill->inherits("AttackRangeSkill"))
-        d->attackrange_skills << qobject_cast<const AttackRangeSkill *>(skill);
-    else if (skill->inherits("ViewAsSkill"))
-        d->viewas_skills << qobject_cast<const ViewAsSkill *>(skill);
+#define LOADSKILLBYTYPE(type, dvar)                               \
+    do {                                                          \
+        const type *theSkill = dynamic_cast<const type *>(skill); \
+        if (theSkill != nullptr) {                                \
+            d->dvar << theSkill;                                  \
+            return;                                               \
+        }                                                         \
+    } while (false)
+
+    LOADSKILLBYTYPE(ProhibitSkill, prohibit_skills);
+    LOADSKILLBYTYPE(TreatAsEquippingSkill, viewhas_skills);
+    LOADSKILLBYTYPE(DistanceSkill, distance_skills);
+    LOADSKILLBYTYPE(MaxCardsSkill, maxcards_skills);
+    LOADSKILLBYTYPE(TargetModSkill, targetmod_skills);
+    LOADSKILLBYTYPE(AttackRangeSkill, attackrange_skills);
+    LOADSKILLBYTYPE(ViewAsSkill, viewas_skills);
+
+#undef LOADSKILLBYTYPE
 }
 
 Card *RoomObject::cloneSkillCard(const QString &name)

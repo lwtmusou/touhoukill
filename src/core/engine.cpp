@@ -149,10 +149,10 @@ void Engine::loadTranslations(const QString &locale)
 void Engine::addSkills(const QList<const Skill *> &all_skills)
 {
     foreach (const Skill *skill, all_skills) {
-        if (d->skills.contains(skill->objectName()))
-            qDebug() << QObject::tr("Duplicated skill : %1").arg(skill->objectName());
+        if (d->skills.contains(skill->name()))
+            qDebug() << QObject::tr("Duplicated skill : %1").arg(skill->name());
         else
-            d->skills.insert(skill->objectName(), skill);
+            d->skills.insert(skill->name(), skill);
     }
 }
 

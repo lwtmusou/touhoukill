@@ -159,7 +159,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                 }
                 if (isHegemonyGameMode(room->getMode())) {
                     foreach (const Skill *skill, player->skills(false)) {
-                        if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || player->hasValidLordSkill(skill->objectName()))) {
+                        if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || player->hasValidLordSkill(skill->name()))) {
                             JsonArray arg;
                             arg << player->objectName();
                             arg << skill->limitMark();
@@ -170,7 +170,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                     }
                 } else {
                     foreach (const Skill *skill, player->skills(false)) {
-                        if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || player->hasValidLordSkill(skill->objectName())))
+                        if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || player->hasValidLordSkill(skill->name())))
                             room->setPlayerMark(player, skill->limitMark(), 1);
                     }
                 }
@@ -451,7 +451,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
         SkillAcquireDetachStruct s = data.value<SkillAcquireDetachStruct>();
 
         const Skill *skill = s.skill;
-        bool refilter = skill->inherits("FilterSkill");
+        bool refilter = dynamic_cast<const FilterSkill *>(skill) != nullptr;
         if (refilter)
             room->filterCards(qobject_cast<ServerPlayer *>(s.player), qobject_cast<ServerPlayer *>(s.player)->getCards(QStringLiteral("hes")),
                               triggerEvent == QSanguosha::EventLoseSkill);

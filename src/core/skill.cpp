@@ -12,6 +12,7 @@ using namespace QSanguosha;
 class SkillPrivate final
 {
 public:
+    QString name;
     Skill::Categories categories;
     Skill::ShowType showType;
     bool preshow;
@@ -23,7 +24,7 @@ public:
     QSet<const Skill *> affiliatedSkills;
     const Skill *mainSkill;
 
-    SkillPrivate(Skill::Categories categories, Skill::ShowType showType)
+    SkillPrivate(const QString &name, Skill::Categories categories, Skill::ShowType showType)
         : categories(categories)
         , showType(showType)
         , preshow(false)
@@ -53,14 +54,18 @@ private:
 };
 
 Skill::Skill(const QString &name, Categories skillCategories, ShowType showType)
-    : d(new SkillPrivate(skillCategories, showType))
+    : d(new SkillPrivate(name, skillCategories, showType))
 {
-    setObjectName(name);
 }
 
 Skill::~Skill()
 {
     delete d;
+}
+
+const QString &Skill::name() const
+{
+    return d->name;
 }
 
 bool Skill::isLordSkill() const
@@ -86,6 +91,11 @@ bool Skill::isEternal() const
 bool Skill::isLimited() const
 {
     return (d->categories & SkillLimited) != 0;
+}
+
+bool Skill::isEquipSkill() const
+{
+    return (d->categories & SkillEquipment) != 0;
 }
 
 bool Skill::isFrequent() const
@@ -117,7 +127,7 @@ void Skill::addToAffiliatedSkill(Skill *skill)
 {
     // ViewAsSkill can't be affiliated because it requires interactive usage
     // Note that FilterSkill no longer inherits ViewAsSkill
-    Q_ASSERT(!skill->inherits("ViewAsSkill"));
+    Q_ASSERT(dynamic_cast<ViewAsSkill *>(skill) == nullptr);
 
     if (!skill->d->affiliatedSkills.isEmpty()) {
         // infinite recursion
@@ -235,7 +245,7 @@ ViewAsSkill::~ViewAsSkill()
 
 bool ViewAsSkill::isAvailable(const Player *invoker, CardUseReason reason, const QString &pattern) const
 {
-    if (!invoker->hasValidSkill(objectName()) && !invoker->hasValidLordSkill(objectName()) && !invoker->hasFlag(objectName())) // For Shuangxiong
+    if (!invoker->hasValidSkill(name()) && !invoker->hasValidLordSkill(name()) && !invoker->hasFlag(name())) // For Shuangxiong
         return false;
     switch (reason) {
     case CardUseReasonPlay:

@@ -104,7 +104,6 @@ const Card *ResponseSkill::viewAs(const Card *originalCard, const Player * /*Sel
 
 ShowOrPindianSkill::ShowOrPindianSkill()
 {
-    setObjectName(QStringLiteral("showorpindian-skill"));
 }
 
 bool ShowOrPindianSkill::matchPattern(const Player *player, const Card *card) const

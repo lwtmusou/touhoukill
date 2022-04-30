@@ -284,7 +284,7 @@ void Room::revivePlayer(ServerPlayer *player, bool initialize)
         touhouLogmessage(QStringLiteral("#Revive"), player);
 
         foreach (const Skill *skill, player->skills(false)) {
-            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || player->hasValidLordSkill(skill->objectName())))
+            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || player->hasValidLordSkill(skill->name())))
                 setPlayerMark(player, skill->limitMark(), 1);
         }
 
@@ -607,7 +607,7 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
 
         foreach (const Skill *rskill, skill->affiliatedSkills()) {
             if (rskill->isVisible())
-                detachSkillFromPlayer(player, rskill->objectName(), is_equip, acquire_only, sendlog, head);
+                detachSkillFromPlayer(player, rskill->name(), is_equip, acquire_only, sendlog, head);
         }
     }
 }
@@ -662,7 +662,7 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
 
                 foreach (const Skill *rskill, skill->affiliatedSkills()) {
                     if (!rskill->isVisible())
-                        detachSkillFromPlayer(player, rskill->objectName());
+                        detachSkillFromPlayer(player, rskill->name());
                 }
             }
         } else {
@@ -1012,7 +1012,7 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const Skill *skill, const QVa
     if (skill == nullptr)
         return false;
 
-    return askForSkillInvoke(player, skill->objectName(), data, prompt);
+    return askForSkillInvoke(player, skill->name(), data, prompt);
 }
 
 QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices, const QVariant &data)
@@ -1689,10 +1689,10 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         QString showskill = card->skillName();
         player->showHiddenSkill(showskill);
         const Skill *equipSkill = Sanguosha->skill(skill_name);
-        if ((equipSkill != nullptr) && equipSkill->inherits("WeaponSkill")) {
+        if ((equipSkill != nullptr) && equipSkill->isEquipSkill()) {
             const TreatAsEquippingSkill *v = treatAsEquipping(player, skill_name, QSanguosha::WeaponLocation);
             if (v != nullptr)
-                player->showHiddenSkill(v->objectName());
+                player->showHiddenSkill(v->name());
         }
 
         //move1
@@ -3269,7 +3269,7 @@ void Room::setPlayerSkillInvalidity(ServerPlayer *player, const Skill *skill, bo
 {
     QString skill_name = QStringLiteral("_ALL_SKILLS");
     if (skill != nullptr)
-        skill_name = skill->objectName();
+        skill_name = skill->name();
 
     setPlayerSkillInvalidity(player, skill_name, invalidity, trigger_event);
 }
@@ -3600,11 +3600,9 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
     int slash_count = card_use.from->slashCount();
     bool showTMskill = false;
     foreach (const Skill *skill, card_use.from->skills(false)) {
-        if (skill->inherits("TargetModSkill")) {
-            const TargetModSkill *tm = qobject_cast<const TargetModSkill *>(skill);
-            if (tm->getResidueNum(card_use.from, card) > 500)
-                showTMskill = true;
-        }
+        const TargetModSkill *tm = dynamic_cast<const TargetModSkill *>(skill);
+        if (tm != nullptr && tm->getResidueNum(card_use.from, card) > 500)
+            showTMskill = true;
     }
     bool slash_not_record = key.contains(QStringLiteral("Slash")) && slash_count > 0 && (card_use.from->hasValidWeapon(QStringLiteral("Crossbow")) || showTMskill);
 
@@ -4101,8 +4099,8 @@ void Room::marshal(ServerPlayer *player)
             JsonArray args1;
             args1 << (int)S_GAME_EVENT_ADD_SKILL;
             args1 << player->objectName();
-            args1 << skill->objectName();
-            args1 << player->inHeadSkills(skill->objectName());
+            args1 << skill->name();
+            args1 << player->inHeadSkills(skill->name());
 
             doNotify(player, S_COMMAND_LOG_EVENT, args1);
         }
@@ -4994,11 +4992,11 @@ void Room::preparePlayers()
             QString general1_name = tag[player->objectName()].toStringList().at(0);
             QSet<const Skill *> skills = Sanguosha->general(general1_name)->skills(true, true);
             foreach (const Skill *skill, skills)
-                player->addSkill(skill->objectName());
+                player->addSkill(skill->name());
             QString general2_name = tag[player->objectName()].toStringList().at(1);
             QSet<const Skill *> skills2 = Sanguosha->general(general2_name)->skills(true, false);
             foreach (const Skill *skill, skills2)
-                player->addSkill(skill->objectName(), false);
+                player->addSkill(skill->name(), false);
 
             JsonArray args;
             args << (int)QSanProtocol::S_GAME_EVENT_PREPARE_SKILL;
@@ -5009,11 +5007,11 @@ void Room::preparePlayers()
         foreach (ServerPlayer *player, m_players) {
             QSet<const Skill *> skills = player->general()->skills();
             foreach (const Skill *skill, skills)
-                player->addSkill(skill->objectName());
+                player->addSkill(skill->name());
             if (player->getGeneral2() != nullptr) {
                 skills = player->getGeneral2()->skills();
                 foreach (const Skill *skill, skills)
-                    player->addSkill(skill->objectName(), false);
+                    player->addSkill(skill->name(), false);
             }
             player->setGender(player->general()->gender());
         }
@@ -5032,7 +5030,7 @@ void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general)
 
     if (!isHegemonyGameMode(mode) && player->general() != nullptr) {
         foreach (const Skill *skill, player->general()->skills(true, true))
-            player->loseSkill(skill->objectName());
+            player->loseSkill(skill->name());
     }
     player->setProperty("general", new_general);
     QList<ServerPlayer *> players = m_players;
@@ -5048,7 +5046,7 @@ void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general)
             if (skill->isLordSkill() && !player->isLord()) {
                 continue;
             }
-            player->addSkill(skill->objectName());
+            player->addSkill(skill->name());
         }
     }
 
@@ -5063,7 +5061,7 @@ void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general
 
     if (!isHegemonyGameMode(mode) && player->getGeneral2() != nullptr) {
         foreach (const Skill *skill, player->getGeneral2()->skills(true, false))
-            player->loseSkill(skill->objectName());
+            player->loseSkill(skill->name());
     }
     player->setProperty("general2", new_general);
     QList<ServerPlayer *> players = m_players;
@@ -5076,7 +5074,7 @@ void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general
         foreach (const Skill *skill, player->getGeneral2()->skills(true, false)) {
             if (skill->isLordSkill() && !player->isLord())
                 continue;
-            player->addSkill(skill->objectName(), false);
+            player->addSkill(skill->name(), false);
         }
     }
     filterCards(player, player->getCards(QStringLiteral("hes")), true);
@@ -5108,10 +5106,10 @@ void Room::filterCards(ServerPlayer *player, QList<const Card *> cards, bool ref
     QList<const FilterSkill *> filterSkills;
 
     foreach (const Skill *skill, skills) {
-        if (player->hasValidSkill(skill->objectName()) && skill->inherits("FilterSkill")) {
-            const FilterSkill *filter = qobject_cast<const FilterSkill *>(skill);
-            Q_ASSERT(filter);
-            filterSkills.append(filter);
+        if (player->hasValidSkill(skill->name())) {
+            const FilterSkill *filter = dynamic_cast<const FilterSkill *>(skill);
+            if (filter != nullptr)
+                filterSkills.append(filter);
         }
     }
     if (filterSkills.empty()) {
@@ -5164,7 +5162,7 @@ void Room::filterCards(ServerPlayer *player, QList<const Card *> cards, bool ref
 
 void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open, bool head)
 {
-    QString skill_name = skill->objectName();
+    QString skill_name = skill->name();
     if (player->acquiredSkills().contains(skill_name))
         return;
     loadSkill(skill);
@@ -6854,9 +6852,9 @@ void Room::countDescription()
         const General *gen = Sanguosha->general(name);
         QString line;
         foreach (const Skill *skill, gen->skills()) {
-            QString skill_name = Sanguosha->translate(skill->objectName());
+            QString skill_name = Sanguosha->translate(skill->name());
 
-            QString desc = Sanguosha->translate(QStringLiteral(":") + skill->objectName());
+            QString desc = Sanguosha->translate(QStringLiteral(":") + skill->name());
             QRegularExpression rx(QStringLiteral("<[^>]*>"));
             desc.remove(rx);
             QString skill_line = QStringLiteral("%1:%2").arg(skill_name, desc);
@@ -6893,7 +6891,7 @@ void Room::transformGeneral(ServerPlayer *player, const QString &general_name, i
     foreach (const Skill *skill, Sanguosha->general(general_name)->skills(true, head)) {
         foreach (const Trigger *trigger, skill->triggers())
             thread->addTrigger(trigger);
-        player->addSkill(skill->objectName(), head != 0);
+        player->addSkill(skill->name(), head != 0);
     }
 
     if (head != 0) {

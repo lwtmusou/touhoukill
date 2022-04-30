@@ -109,11 +109,11 @@ public:
 };
 
 SkillTrigger::SkillTrigger(Skill *skill)
-    : Trigger(skill->objectName())
+    : Trigger(skill->name())
     , d(new SkillTriggerPrivate)
 {
     skill->addTrigger(this);
-    d->name = skill->objectName();
+    d->name = skill->name();
 }
 
 SkillTrigger::SkillTrigger(const QString &name)

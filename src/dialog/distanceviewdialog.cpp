@@ -25,7 +25,7 @@ public:
         QSet<const DistanceSkill *> skills = ClientInstance->getDistanceSkills();
         foreach (const DistanceSkill *skill, skills) {
             QLineEdit *distance_edit = new QLineEdit;
-            distance_edit->setObjectName(skill->objectName());
+            distance_edit->setObjectName(skill->name());
             distance_edit->setReadOnly(true);
             distance_edits << distance_edit;
         }
@@ -112,15 +112,19 @@ void DistanceViewDialog::showDistance()
 
     foreach (QLineEdit *edit, ui->distance_edits) {
         const Skill *skill = Sanguosha->skill(edit->objectName());
-        const DistanceSkill *distance_skill = qobject_cast<const DistanceSkill *>(skill);
-        int correct = distance_skill->getCorrect(from, to);
+        const DistanceSkill *distance_skill = dynamic_cast<const DistanceSkill *>(skill);
+        if (distance_skill != nullptr) {
+            int correct = distance_skill->getCorrect(from, to);
 
-        if (correct > 0)
-            edit->setText(QStringLiteral("+%1").arg(correct));
-        else if (correct < 0)
-            edit->setText(QString::number(correct));
-        else
+            if (correct > 0)
+                edit->setText(QStringLiteral("+%1").arg(correct));
+            else if (correct < 0)
+                edit->setText(QString::number(correct));
+            else
+                edit->setText(QString());
+        } else {
             edit->setText(QString());
+        }
     }
 
     ui->in_attack->setText(from->inMyAttackRange(to) ? tr("Yes") : tr("No"));

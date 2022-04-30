@@ -615,7 +615,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         const General *newHero = Sanguosha->general(newHeroName);
         if (oldHero != nullptr) {
             foreach (const Skill *skill, oldHero->skills(true, !isSecondaryHero))
-                detachSkill(skill->objectName(), !isSecondaryHero);
+                detachSkill(skill->name(), !isSecondaryHero);
             if (oldHero->hasSkill(QStringLiteral("pingyi")) && (container != nullptr))
                 container->stopHuaShen();
         }
@@ -624,7 +624,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
             foreach (const Skill *skill, newHero->skills(true, !isSecondaryHero)) {
                 if (skill->isLordSkill() && !player->isLord())
                     continue;
-                attachSkill(skill->objectName(), !isSecondaryHero);
+                attachSkill(skill->name(), !isSecondaryHero);
             }
         }
 
@@ -2304,7 +2304,7 @@ void RoomScene::addSelection(const ViewAsSkill *skill, QMenu *menu, const ViewAs
         if (nexts->next.isEmpty()) {
             QAction *action = menu->addAction(Sanguosha->translate(nexts->name));
             action->setObjectName(appendedChain.join(QStringLiteral(".")));
-            action->setProperty("skillname", skill->objectName());
+            action->setProperty("skillname", skill->name());
             action->setEnabled(enabled);
 
             connect(action, &QAction::triggered, action, [this, action]() -> void {
@@ -2324,7 +2324,7 @@ void RoomScene::addSelection(const ViewAsSkill *skill, QMenu *menu, const ViewAs
 void RoomScene::addSkillButton(const Skill *skill, bool head)
 {
     // check duplication
-    QSanSkillButton *btn = dashboard->addSkillButton(skill->objectName(), head);
+    QSanSkillButton *btn = dashboard->addSkillButton(skill->name(), head);
 
     if (btn == nullptr)
         return;
@@ -2334,7 +2334,7 @@ void RoomScene::addSkillButton(const Skill *skill, bool head)
         connect(btn, SIGNAL(skill_activated()), this, SLOT(onSkillActivated()));
         connect(btn, SIGNAL(skill_deactivated()), dashboard, SLOT(skillButtonDeactivated()));
         connect(btn, SIGNAL(skill_deactivated()), this, SLOT(onSkillDeactivated()));
-        if (btn->getViewAsSkill()->objectName() == QStringLiteral("fsu0413fei2zhai"))
+        if (btn->getViewAsSkill()->name() == QStringLiteral("fsu0413fei2zhai"))
             connect(btn, SIGNAL(skill_activated()), dashboard, SLOT(selectAll()));
 
         const ViewAsSkillSelection *selection = btn->getViewAsSkill()->selections(Self);
@@ -2342,10 +2342,10 @@ void RoomScene::addSkillButton(const Skill *skill, bool head)
             connect(btn, (void(QSanSkillButton ::*)())(&QSanSkillButton::skill_activated), btn, [this, btn, selection]() -> void {
                 // QMenu *menu = new QMenu(this);
                 setCurrentViewAsSkillSelectionChain(QStringList());
-                QMenu *menu = mainWindow()->findChild<QMenu *>(btn->getViewAsSkill()->objectName());
+                QMenu *menu = mainWindow()->findChild<QMenu *>(btn->getViewAsSkill()->name());
                 if (menu == nullptr) {
                     menu = new QMenu;
-                    menu->setObjectName(btn->getViewAsSkill()->objectName());
+                    menu->setObjectName(btn->getViewAsSkill()->name());
                     menu->setParent(mainWindow());
                 } else {
                     menu->clear();
@@ -2359,9 +2359,9 @@ void RoomScene::addSkillButton(const Skill *skill, bool head)
                         return;
                     }
 
-                    if (btn->getViewAsSkill()->objectName() == QStringLiteral("qiji"))
+                    if (btn->getViewAsSkill()->name() == QStringLiteral("qiji"))
                         dashboard->selectAll();
-                    if (btn->getViewAsSkill()->objectName() == QStringLiteral("anyun"))
+                    if (btn->getViewAsSkill()->name() == QStringLiteral("anyun"))
                         anyunSelectSkill();
                 });
                 menu->exec();
@@ -2409,7 +2409,7 @@ void RoomScene::updateSkillButtons()
             const Skill *skill = button->getSkill();
             button->setEnabled(skill->canPreshow() && !Self->haveShownSkill(skill));
             if (skill->canPreshow() && Self->hasGeneralCardSkill(skill) && !Self->haveShownGeneral()) {
-                if (Self->havePreshownSkill(skill->objectName()))
+                if (Self->havePreshownSkill(skill->name()))
                     button->setState(QSanButton::S_STATE_DISABLED);
                 else
                     button->setState(QSanButton::S_STATE_CANPRESHOW);
@@ -2706,7 +2706,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         } else {
             const Skill *skill = button->getSkill();
             if (skill->isLimited() && skill->isCompulsory()) {
-                button->setEnabled(Self->mark(skill->objectName()) > 0);
+                button->setEnabled(Self->mark(skill->name()) > 0);
             } else
                 button->setEnabled(false);
         }
@@ -2787,16 +2787,16 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                     foreach (QSanSkillButton *button, m_skillButtons) {
                         Q_ASSERT(button != nullptr);
                         const ViewAsSkill *vsSkill = button->getViewAsSkill();
-                        if (vsSkill != nullptr && vsSkill->objectName() == skill_name && vsSkill->isAvailable(Self, reason, pattern)) {
+                        if (vsSkill != nullptr && vsSkill->name() == skill_name && vsSkill->isAvailable(Self, reason, pattern)) {
                             button->click();
                             break;
                         }
                     }
                 }
                 dashboard->startPending(skill);
-                if (skill->inherits("OneCardViewAsSkill") && Config.EnableIntellectualSelection)
+                if ((dynamic_cast<const OneCardViewAsSkill *>(skill) != nullptr) && Config.EnableIntellectualSelection)
                     dashboard->selectOnlyCard();
-                else if (skill->objectName() == QStringLiteral("LingshouOtherVS"))
+                else if (skill->name() == QStringLiteral("LingshouOtherVS"))
                     dashboard->selectLingshou();
             }
         } else {
@@ -2867,7 +2867,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         QString skill_name = ClientInstance->getSkillNameToInvoke();
         dashboard->highlightEquip(skill_name, true);
         foreach (QSanSkillButton *button, m_skillButtons) {
-            if (button->getSkill()->objectName() == skill_name) {
+            if (button->getSkill()->name() == skill_name) {
                 if (button->getStyle() == QSanSkillButton::S_STYLE_TOGGLE && button->isEnabled()) {
                     if (button->isDown()) {
                         ClientInstance->onPlayerInvokeSkill(true);
@@ -2992,7 +2992,7 @@ void RoomScene::onSkillActivated()
 
         const Card *card = dashboard->pendingCard();
         if ((card != nullptr) && card->face()->targetFixed(Self, card) && card->face()->isAvailable(Self, card) && !Self->hasFlag(QStringLiteral("Global_InstanceUse_Failed"))) {
-            bool instance_use = skill->inherits("ZeroCardViewAsSkill");
+            bool instance_use = (dynamic_cast<const ZeroCardViewAsSkill *>(skill) != nullptr);
             if (!instance_use) {
                 QList<const Card *> cards;
                 cards << Self->handCards() << Self->equipCards();
@@ -3011,7 +3011,7 @@ void RoomScene::onSkillActivated()
             }
             if (instance_use)
                 useSelectedCard();
-        } else if (skill->inherits("OneCardViewAsSkill") && Config.EnableIntellectualSelection)
+        } else if ((dynamic_cast<const OneCardViewAsSkill *>(skill) != nullptr) && Config.EnableIntellectualSelection)
             dashboard->selectOnlyCard(ClientInstance->getStatus() == Client::Playing);
     }
 }
@@ -3075,7 +3075,7 @@ void RoomScene::doCancelButton()
 
         if (!pattern.startsWith(QStringLiteral("@"))) {
             const ViewAsSkill *skill = dashboard->currentSkill();
-            if (!skill->inherits("ResponseSkill")) {
+            if (dynamic_cast<const ResponseSkill *>(skill) == nullptr) {
                 cancelViewAsSkill();
                 break;
             }
@@ -3838,7 +3838,7 @@ void RoomScene::chooseSkillButton()
 
     foreach (QSanSkillButton *btn, enabled_buttons) {
         Q_ASSERT(btn->getSkill());
-        CommandLinkDoubleClickButton *button = new CommandLinkDoubleClickButton(Sanguosha->translate(btn->getSkill()->objectName()));
+        CommandLinkDoubleClickButton *button = new CommandLinkDoubleClickButton(Sanguosha->translate(btn->getSkill()->name()));
         connect(button, &CommandLinkDoubleClickButton::double_clicked, btn, &QSanButton::click);
         connect(button, &CommandLinkDoubleClickButton::double_clicked, dialog, &QDialog::accept);
         layout->addWidget(button);
@@ -5106,7 +5106,7 @@ void RoomScene::highlightSkillButton(const QString &skill_name, bool highlight)
     if (skill_name.isNull() || skill_name.isEmpty())
         return;
     foreach (QSanSkillButton *button, m_skillButtons) {
-        QString button_name = button->getSkill()->objectName();
+        QString button_name = button->getSkill()->name();
         if (button_name == skill_name || skill_name.startsWith(button_name)) {
             if (button->getSkill()->isCompulsory() && button->getSkill()->isLimited()) {
                 if (!button->isDown()) {

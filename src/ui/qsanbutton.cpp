@@ -250,10 +250,10 @@ void QSanSkillButton::onMouseClick()
 
     if (!Self->havePreshownSkill(_m_skill) && _m_state == QSanButton::S_STATE_CANPRESHOW) {
         setState(S_STATE_DISABLED);
-        ClientInstance->preshow(_m_skill->objectName(), true);
+        ClientInstance->preshow(_m_skill->name(), true);
     } else if (Self->havePreshownSkill(_m_skill) && _m_state == QSanButton::S_STATE_DISABLED && _m_skill->canPreshow() && !Self->haveShownSkill(_m_skill)) {
         setState(QSanButton::S_STATE_CANPRESHOW);
-        ClientInstance->preshow(_m_skill->objectName(), false);
+        ClientInstance->preshow(_m_skill->name(), false);
     } else {
         if ((_m_style == S_STYLE_TOGGLE && isDown() && _m_emitActivateSignal) || _m_style == S_STYLE_PUSH) {
             emit skill_activated();
@@ -277,7 +277,7 @@ void QSanSkillButton::setSkill(const Skill *skill)
     // Since the trigger skill is not relevant, we flatten it before we create the button.
     // Fs: kill the nasty trick here, we won't use view_as_skill anymore
     // _m_viewAsSkill = ViewAsSkill::parseViewAsSkill(_m_skill);
-    _m_viewAsSkill = qobject_cast<const ViewAsSkill *>(_m_skill);
+    _m_viewAsSkill = dynamic_cast<const ViewAsSkill *>(_m_skill);
 
     // TODO: refactor this
 #if 0
@@ -332,7 +332,7 @@ void QSanSkillButton::setSkill(const Skill *skill)
     } else
         Q_ASSERT(false);
 #endif
-    setToolTip(ClientInstance->getSkillDescription(skill->objectName()));
+    setToolTip(ClientInstance->getSkillDescription(skill->name()));
 
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
         if (!Self->haveShownSkill(skill) && skill->canPreshow())
@@ -395,7 +395,7 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
 {
     painter->drawPixmap(0, 0, _m_bgPixmap[(int)_m_state]);
     if (_m_skillType == S_SKILL_ATTACHEDLORD) {
-        QString engskillname = _m_skill->objectName().split(QStringLiteral("_")).first();
+        QString engskillname = _m_skill->name().split(QStringLiteral("_")).first();
         QString HegSkillname = engskillname + QStringLiteral("_hegemony");
         QString generalName;
 
@@ -441,14 +441,14 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
     }
 
     const IQSanComponentSkin::QSanShadowTextFont &font = G_DASHBOARD_LAYOUT.getSkillTextFont((ButtonState)_m_state, _m_skillType, _m_enumWidth);
-    QString skillName = Sanguosha->translate(_m_skill->objectName());
+    QString skillName = Sanguosha->translate(_m_skill->name());
     if (_m_enumWidth != S_WIDTH_WIDE)
         skillName = skillName.left(2);
     // need adjust rect?
     font.paintText(painter, (ButtonState)_m_state != 0 ? G_DASHBOARD_LAYOUT.m_skillTextAreaDown[_m_enumWidth] : G_DASHBOARD_LAYOUT.m_skillTextArea[_m_enumWidth], Qt::AlignCenter,
                    skillName);
 
-    if (Self->isSkillInvalid(_m_skill->objectName())) { //for SkillInvalid
+    if (Self->isSkillInvalid(_m_skill->name())) { //for SkillInvalid
         painter->setRenderHints(QPainter::Antialiasing);
         QPen pen(Qt::red);
         pen.setWidth(3);
@@ -599,7 +599,7 @@ void QSanInvokeSkillDock::update()
 QSanInvokeSkillButton *QSanInvokeSkillDock::getSkillButtonByName(const QString &skillName) const
 {
     foreach (QSanInvokeSkillButton *button, _m_buttons) {
-        if (button->getSkill()->objectName() == skillName)
+        if (button->getSkill()->name() == skillName)
             return button;
     }
     return nullptr;

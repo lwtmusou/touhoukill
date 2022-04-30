@@ -4,6 +4,7 @@
 #define Q_OBJECT
 #define Q_DECLARE_FLAGS(Flags, Enum) \
     typedef QFlags<Enum> Flags;
+#define Q_DECLARE_OPERATORS_FOR_FLAGS
 #define Q_ENUM
 #define Q_ALWAYS_INLINE
 #define final

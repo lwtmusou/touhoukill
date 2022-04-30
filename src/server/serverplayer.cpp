@@ -418,12 +418,10 @@ bool ServerPlayer::hasNullification() const
     }
 
     foreach (const Skill *skill, skills(true)) {
-        if (hasValidSkill(skill->objectName())) {
-            if (skill->inherits("ViewAsSkill")) {
-                const ViewAsSkill *vsskill = qobject_cast<const ViewAsSkill *>(skill);
-                if (vsskill->isEnabledAtResponse(this, QSanguosha::CardUseReasonResponseUse, QStringLiteral("nullification")))
-                    return true;
-            }
+        if (hasValidSkill(skill->name())) {
+            const ViewAsSkill *vsskill = dynamic_cast<const ViewAsSkill *>(skill);
+            if (vsskill != nullptr && vsskill->isEnabledAtResponse(this, QSanguosha::CardUseReasonResponseUse, QStringLiteral("nullification")))
+                return true;
         }
     }
 
@@ -1162,9 +1160,9 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     if (!isHegemonyGameMode(room->getMode())) {
         foreach (const Skill *skill, skills(true)) {
             //should not nofity the lord skill
-            if (skill->isLordSkill() && !hasValidLordSkill(skill->objectName()))
+            if (skill->isLordSkill() && !hasValidLordSkill(skill->name()))
                 continue;
-            QString skill_name = skill->objectName();
+            QString skill_name = skill->name();
             JsonArray arg_acquire;
             arg_acquire << S_GAME_EVENT_ACQUIRE_SKILL;
             arg_acquire << objectName();
@@ -1363,7 +1361,7 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
 
                 foreach (const Skill *skill, Sanguosha->general(generalName)->skills()) {
                     if (!skill->isLordSkill() && !skill->isAttachedSkill() && !skill->isLimited() && !skill->isEternal())
-                        room->handleAcquireDetachSkills(this, skill->objectName(), true);
+                        room->handleAcquireDetachSkills(this, skill->name(), true);
                 }
                 room->filterCards(this, this->getCards(QStringLiteral("hes")), true);
 
@@ -1385,9 +1383,10 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     QList<const TargetModSkill *> tarmods;
     if (isHegemonyGameMode(room->getMode())) {
         foreach (const Skill *skill, use.from->skills(false)) {
-            if (skill->inherits("TargetModSkill") && use.from->hasValidSkill(skill) && !use.from->haveShownSkill(skill)) { //main_skill??
-                const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);
-                tarmods << tarmod;
+            if (use.from->hasValidSkill(skill) && !use.from->haveShownSkill(skill)) { //main_skill??
+                const TargetModSkill *tarmod = dynamic_cast<const TargetModSkill *>(skill);
+                if (tarmod != nullptr)
+                    tarmods << tarmod;
             }
         }
     }
@@ -1407,9 +1406,9 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     if (num >= 1) {
         foreach (const TargetModSkill *tarmod, tarmods) {
             if (tarmod->getExtraTargetNum(use.from, use.card) >= num)
-                showExtraTarget << tarmod->objectName();
+                showExtraTarget << tarmod->name();
             else
-                disShowExtraTarget << tarmod->objectName();
+                disShowExtraTarget << tarmod->name();
         }
     }
 
@@ -1425,9 +1424,9 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
         if (num >= 1) {
             foreach (const TargetModSkill *tarmod, tarmods) {
                 if (tarmod->getResidueNum(use.from, use.card) >= num)
-                    showResidueNum << tarmod->objectName();
+                    showResidueNum << tarmod->name();
                 else
-                    disShowResidueNum << tarmod->objectName();
+                    disShowResidueNum << tarmod->name();
             }
         }
     }
@@ -1445,7 +1444,7 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
             if (distance >= 1) {
                 foreach (const TargetModSkill *tarmod, tarmods) {
                     if (tarmod->getDistanceLimit(use.from, use.card) >= distance)
-                        showDistanceLimit << tarmod->objectName();
+                        showDistanceLimit << tarmod->name();
                     //else
                     //    disShowDistanceLimit << tarmod->objectName();
                 }
@@ -1551,7 +1550,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
 
         sendSkillsToOthers();
         foreach (const Skill *skill, getHeadSkillList()) {
-            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasValidLordSkill(skill->objectName())) && haveShownSkill(skill)) {
+            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasValidLordSkill(skill->name())) && haveShownSkill(skill)) {
                 JsonArray arg;
                 arg << objectName();
                 arg << skill->limitMark();
@@ -1590,7 +1589,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
 
         sendSkillsToOthers(false);
         foreach (const Skill *skill, getDeputySkillList()) {
-            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasValidLordSkill(skill->objectName())) && haveShownSkill(skill)) {
+            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasValidLordSkill(skill->name())) && haveShownSkill(skill)) {
                 JsonArray arg;
                 arg << objectName();
                 arg << skill->limitMark();
@@ -1694,7 +1693,7 @@ void ServerPlayer::hideGeneral(bool head_general)
         // disconnectSkillsFromOthers();
 
         foreach (const Skill *skill, skills(false)) {
-            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasValidLordSkill(skill->objectName())) && !haveShownSkill(skill)
+            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasValidLordSkill(skill->name())) && !haveShownSkill(skill)
                 && mark(skill->limitMark()) > 0) {
                 JsonArray arg;
                 arg << objectName();
@@ -1727,7 +1726,7 @@ void ServerPlayer::hideGeneral(bool head_general)
         // disconnectSkillsFromOthers(false);
 
         foreach (const Skill *skill, skills(false)) {
-            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasValidLordSkill(skill->objectName())) && !haveShownSkill(skill)
+            if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasValidLordSkill(skill->name())) && !haveShownSkill(skill)
                 && mark(skill->limitMark()) > 0) {
                 JsonArray arg;
                 arg << objectName();
@@ -1797,7 +1796,7 @@ void ServerPlayer::removeGeneral(bool head_general)
 
         foreach (const Skill *skill, getHeadSkillList()) {
             if (skill != nullptr)
-                room->detachSkillFromPlayer(this, skill->objectName(), false, false, false, true); //sendlog  head deputy
+                room->detachSkillFromPlayer(this, skill->name(), false, false, false, true); //sendlog  head deputy
         }
     } else {
         if (!hasShownGeneral2())
@@ -1827,7 +1826,7 @@ void ServerPlayer::removeGeneral(bool head_general)
 
         foreach (const Skill *skill, getDeputySkillList()) {
             if (skill != nullptr)
-                room->detachSkillFromPlayer(this, skill->objectName(), false, false, false, false);
+                room->detachSkillFromPlayer(this, skill->name(), false, false, false, false);
         }
     }
 
@@ -1861,7 +1860,7 @@ void ServerPlayer::sendSkillsToOthers(bool head_skill)
         JsonArray args;
         args << QSanProtocol::S_GAME_EVENT_ADD_SKILL;
         args << objectName();
-        args << skill->objectName();
+        args << skill->name();
         args << head_skill;
         foreach (ServerPlayer *p, room->getOtherPlayers(this, true))
             room->doNotify(p, QSanProtocol::S_COMMAND_LOG_EVENT, args);

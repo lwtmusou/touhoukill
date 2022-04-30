@@ -10,8 +10,6 @@
 
 class DiscardSkill : public ViewAsSkill
 {
-    Q_OBJECT
-
 public:
     explicit DiscardSkill();
     ~DiscardSkill() override = default;
@@ -35,8 +33,6 @@ class CardPattern;
 
 class ResponseSkill : public OneCardViewAsSkill
 {
-    Q_OBJECT
-
 public:
     ResponseSkill();
     virtual bool matchPattern(const Player *player, const Card *card) const;
@@ -58,8 +54,6 @@ protected:
 
 class ShowOrPindianSkill : public ResponseSkill
 {
-    Q_OBJECT
-
 public:
     ShowOrPindianSkill();
     bool matchPattern(const Player *player, const Card *card) const override;
@@ -81,8 +75,6 @@ private:
 
 class YijiViewAsSkill : public ViewAsSkill
 {
-    Q_OBJECT
-
 public:
     explicit YijiViewAsSkill();
     ~YijiViewAsSkill() override = default;
@@ -114,8 +106,6 @@ private:
 
 class ChoosePlayerSkill : public ZeroCardViewAsSkill
 {
-    Q_OBJECT
-
 public:
     explicit ChoosePlayerSkill();
     ~ChoosePlayerSkill() override = default;

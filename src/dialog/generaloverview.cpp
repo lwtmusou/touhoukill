@@ -499,7 +499,7 @@ QString GeneralOverview::getOriginInfo(const QString &general_name)
 
 void GeneralOverview::addLines(const Skill *skill)
 {
-    QString skill_name = Sanguosha->translate(skill->objectName());
+    QString skill_name = Sanguosha->translate(skill->name());
     QStringList sources; //= skill->getSources();
 
     if (sources.isEmpty()) {

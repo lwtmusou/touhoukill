@@ -16,9 +16,9 @@ class Trigger;
 
 class SkillPrivate;
 
-class QSGS_CORE_EXPORT Skill : public QObject
+class QSGS_CORE_EXPORT Skill
 {
-    Q_OBJECT
+    Q_GADGET
 
 public:
     enum ArrayType
@@ -59,13 +59,17 @@ public:
         SkillArrayMask = SkillArrayFormation | SkillArraySiege,
 
         SkillAttached = 0x100,
+
+        SkillEquipment = 0x200,
     };
     Q_DECLARE_FLAGS(Categories, Category)
 
     // do not use even ANY symbols in skill name anymore!
     // use Flag-based ones
     explicit Skill(const QString &name, Categories skillCategories = SkillNoFlag, ShowType showType = ShowTrigger);
-    ~Skill() override;
+    virtual ~Skill();
+
+    const QString &name() const;
 
     // Category getters
     bool isLordSkill() const;
@@ -73,6 +77,7 @@ public:
     bool isCompulsory() const;
     bool isEternal() const;
     bool isLimited() const;
+    bool isEquipSkill() const;
     Q_ALWAYS_INLINE bool isWake() const
     {
         return isLimited() && isCompulsory();
@@ -131,6 +136,7 @@ public:
 private:
     Skill() = delete;
     SkillPrivate *const d;
+    Q_DISABLE_COPY_MOVE(Skill)
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Skill::Categories)
@@ -154,7 +160,7 @@ class ViewAsSkillPrivate;
 
 class QSGS_CORE_EXPORT ViewAsSkill : public Skill
 {
-    Q_OBJECT
+    Q_GADGET
 
 public:
     explicit ViewAsSkill(const QString &name);
@@ -231,7 +237,7 @@ private:
 
 class QSGS_CORE_EXPORT ZeroCardViewAsSkill : public ViewAsSkill
 {
-    Q_OBJECT
+    Q_GADGET
 
 public:
     explicit ZeroCardViewAsSkill(const QString &name);
@@ -246,7 +252,7 @@ class OneCardViewAsSkillPrivate;
 
 class QSGS_CORE_EXPORT OneCardViewAsSkill : public ViewAsSkill
 {
-    Q_OBJECT
+    Q_GADGET
 
 public:
     explicit OneCardViewAsSkill(const QString &name);
@@ -268,7 +274,7 @@ class FilterSkillPrivate;
 
 class QSGS_CORE_EXPORT FilterSkill : public Skill
 {
-    Q_OBJECT
+    Q_GADGET
 
 public:
     explicit FilterSkill(const QString &name);
@@ -285,7 +291,7 @@ private:
 
 class QSGS_CORE_EXPORT ProhibitSkill : public Skill
 {
-    Q_OBJECT
+    Q_GADGET
 
 public:
     explicit ProhibitSkill(const QString &name);
@@ -296,7 +302,7 @@ public:
 
 class QSGS_CORE_EXPORT DistanceSkill : public Skill
 {
-    Q_OBJECT
+    Q_GADGET
 
 public:
     explicit DistanceSkill(const QString &name);
@@ -306,7 +312,7 @@ public:
 
 class QSGS_CORE_EXPORT MaxCardsSkill : public Skill
 {
-    Q_OBJECT
+    Q_GADGET
 
 public:
     explicit MaxCardsSkill(const QString &name);
@@ -317,7 +323,7 @@ public:
 
 class QSGS_CORE_EXPORT TargetModSkill : public Skill
 {
-    Q_OBJECT
+    Q_GADGET
 
 public:
     explicit TargetModSkill(const QString &name);
@@ -336,7 +342,7 @@ protected:
 
 class QSGS_CORE_EXPORT AttackRangeSkill : public Skill
 {
-    Q_OBJECT
+    Q_GADGET
 
 public:
     explicit AttackRangeSkill(const QString &name);
@@ -347,7 +353,7 @@ public:
 
 class QSGS_CORE_EXPORT SlashNoDistanceLimitSkill : public TargetModSkill
 {
-    Q_OBJECT
+    Q_GADGET
 
 public:
     explicit SlashNoDistanceLimitSkill(const QString &skill_name);
@@ -360,7 +366,7 @@ protected:
 
 class QSGS_CORE_EXPORT TreatAsEquippingSkill : public Skill
 {
-    Q_OBJECT
+    Q_GADGET
 
 public:
     explicit TreatAsEquippingSkill(const QString &name);
