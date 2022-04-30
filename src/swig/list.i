@@ -1,6 +1,7 @@
 
 // TODO: make this a std::vector-like implementation
 
+%rename(at) QList::operator [](int);
 template <class T>
 class QList {
 public:
@@ -18,13 +19,9 @@ public:
     bool removeOne(const T &value);
     QList<T> mid(int pos, int length = -1) const;
     int indexOf(const T &value, int from = 0);
+    T value(int i);
+    T operator [](int i);
 };
-
-%extend QList {
-    T at(int i) const{
-        return $self->value(i);
-    }
-}
 
 template<class T>
 class QListIterator
