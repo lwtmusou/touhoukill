@@ -2,7 +2,10 @@
 #define Q_DECLARE_METATYPE(...)
 #define Q_GADGET
 #define Q_OBJECT
-
+#define Q_DECLARE_FLAGS(Flags, Enum) \
+    typedef QFlags<Enum> Flags;
+#define Q_ENUM
+#define Q_ALWAYS_INLINE
 #define final
 
 %include "global.h"
@@ -11,6 +14,10 @@
 %include "CardFace.h"
 %include "card.h"
 %include "general.h"
+
+%rename(insertGeneral) Package::operator <<(const General *);
+%rename(insertCard) Package::operator <<(const CardDescriptor &);
+%include "package.h"
 
 #undef final
 

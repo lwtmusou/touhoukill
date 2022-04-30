@@ -1,5 +1,5 @@
-#ifndef _SKILL_H
-#define _SKILL_H
+#ifndef TOUHOUKILL_SKILL_H
+#define TOUHOUKILL_SKILL_H
 
 #include "global.h"
 #include "qsgscore.h"
@@ -129,8 +129,11 @@ public:
     }
 
 private:
+    Skill() = delete;
     SkillPrivate *const d;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(Skill::Categories)
 
 // Selection
 struct QSGS_CORE_EXPORT ViewAsSkillSelection

@@ -61,9 +61,7 @@ public:
     void setDeputyMaxHpAdjustedValue(int adjusted_value = -1);
 
 private:
-#ifdef SWIG
     General() = delete;
-#endif
     Q_DISABLE_COPY_MOVE(General)
     GeneralPrivate *const d;
 };

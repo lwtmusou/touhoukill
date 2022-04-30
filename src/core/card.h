@@ -140,9 +140,7 @@ private:
     CardPrivate *const d;
 };
 
-#ifndef SWIG
 Q_DECLARE_METATYPE(const Card *)
-#endif
 
 /**
  * @brief For creating new cards.

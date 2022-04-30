@@ -9,6 +9,7 @@
 #include "structs.h"
 #include "player.h"
 #include "general.h"
+#include "package.h"
 
 #include <QObject>
 #include <QVariant>
