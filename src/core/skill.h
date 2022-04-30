@@ -1,6 +1,9 @@
 #ifndef TOUHOUKILL_SKILL_H
 #define TOUHOUKILL_SKILL_H
 
+// BE WARE! THIS FILE IS USED IN BOTH SWIG AND C++.
+// MAKE SURE THE GRAMMAR IS COMPATIBLE BETWEEN 2 LANGUAGES.
+#ifndef SWIG
 #include "global.h"
 #include "qsgscore.h"
 
@@ -15,6 +18,7 @@ class RoomObject;
 class Trigger;
 
 class SkillPrivate;
+#endif
 
 class QSGS_CORE_EXPORT Skill
 {
@@ -66,7 +70,9 @@ public:
 
     // do not use even ANY symbols in skill name anymore!
     // use Flag-based ones
+#ifndef SWIG
     explicit Skill(const QString &name, Categories skillCategories = SkillNoFlag, ShowType showType = ShowTrigger);
+#endif
     virtual ~Skill();
 
     const QString &name() const;
@@ -123,6 +129,13 @@ public:
     // > 0 for specific audio effect number
     virtual int getAudioEffectIndex(const Player *player, const Card *card) const;
 
+#ifndef QSGS_CORE_NODEPRECATED
+
+public:
+#else
+
+private:
+#endif
     // deprecated
     Q_DECL_DEPRECATED Q_ALWAYS_INLINE bool isHidden() const
     {
@@ -163,7 +176,9 @@ class QSGS_CORE_EXPORT ViewAsSkill : public Skill
     Q_GADGET
 
 public:
+#ifndef SWIG
     explicit ViewAsSkill(const QString &name);
+#endif
     ~ViewAsSkill() override;
 
     // helper function
@@ -242,8 +257,10 @@ class QSGS_CORE_EXPORT ZeroCardViewAsSkill : public ViewAsSkill
 public:
     explicit ZeroCardViewAsSkill(const QString &name);
 
+#ifndef SWIG
     bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self, const QStringList &CurrentViewAsSkillChain) const final override;
     const Card *viewAs(const QList<const Card *> &cards, const Player *Self, const QStringList &CurrentViewAsSkillChain) const final override;
+#endif
 
     virtual const Card *viewAs(const Player *Self, const QStringList &CurrentViewAsSkillChain) const = 0;
 };
@@ -255,11 +272,15 @@ class QSGS_CORE_EXPORT OneCardViewAsSkill : public ViewAsSkill
     Q_GADGET
 
 public:
+#ifndef SWIG
     explicit OneCardViewAsSkill(const QString &name);
+#endif
     ~OneCardViewAsSkill() override;
 
+#ifndef SWIG
     bool viewFilter(const QList<const Card *> &selected, const Card *to_select, const Player *Self, const QStringList &CurrentViewAsSkillChain) const final override;
     const Card *viewAs(const QList<const Card *> &cards, const Player *Self, const QStringList &CurrentViewAsSkillChain) const final override;
+#endif
 
     virtual bool viewFilter(const Card *to_select, const Player *Self, const QStringList &CurrentViewAsSkillChain) const;
     virtual const Card *viewAs(const Card *originalCard, const Player *Self, const QStringList &CurrentViewAsSkillChain) const = 0;
@@ -277,7 +298,9 @@ class QSGS_CORE_EXPORT FilterSkill : public Skill
     Q_GADGET
 
 public:
+#ifndef SWIG
     explicit FilterSkill(const QString &name);
+#endif
     ~FilterSkill() override;
 
     virtual bool viewFilter(const Card *to_select, const Player *Self) const;
@@ -294,7 +317,9 @@ class QSGS_CORE_EXPORT ProhibitSkill : public Skill
     Q_GADGET
 
 public:
+#ifndef SWIG
     explicit ProhibitSkill(const QString &name);
+#endif
 
     virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>(),
                               bool include_hidden = false) const = 0;
@@ -305,7 +330,9 @@ class QSGS_CORE_EXPORT DistanceSkill : public Skill
     Q_GADGET
 
 public:
+#ifndef SWIG
     explicit DistanceSkill(const QString &name);
+#endif
 
     virtual int getCorrect(const Player *from, const Player *to) const = 0;
 };
@@ -315,7 +342,9 @@ class QSGS_CORE_EXPORT MaxCardsSkill : public Skill
     Q_GADGET
 
 public:
+#ifndef SWIG
     explicit MaxCardsSkill(const QString &name);
+#endif
 
     virtual int getExtra(const Player *target) const;
     virtual int getFixed(const Player *target) const;
@@ -326,7 +355,10 @@ class QSGS_CORE_EXPORT TargetModSkill : public Skill
     Q_GADGET
 
 public:
+#ifndef SWIG
     explicit TargetModSkill(const QString &name);
+#endif
+
     virtual QString getPattern() const;
 
     virtual int getResidueNum(const Player *from, const Card *card) const;
@@ -345,7 +377,9 @@ class QSGS_CORE_EXPORT AttackRangeSkill : public Skill
     Q_GADGET
 
 public:
+#ifndef SWIG
     explicit AttackRangeSkill(const QString &name);
+#endif
 
     virtual int getExtra(const Player *target, bool include_weapon) const;
     virtual int getFixed(const Player *target, bool include_weapon) const;
@@ -356,9 +390,13 @@ class QSGS_CORE_EXPORT SlashNoDistanceLimitSkill : public TargetModSkill
     Q_GADGET
 
 public:
+#ifndef SWIG
     explicit SlashNoDistanceLimitSkill(const QString &skill_name);
+#endif
 
+#ifndef SWIG
     int getDistanceLimit(const Player *from, const Card *card) const override;
+#endif
 
 protected:
     QString name;
@@ -369,7 +407,10 @@ class QSGS_CORE_EXPORT TreatAsEquippingSkill : public Skill
     Q_GADGET
 
 public:
+#ifndef SWIG
     explicit TreatAsEquippingSkill(const QString &name);
+#endif
+
     virtual bool treatAs(const Player *player, QString equipName, QSanguosha::EquipLocation location) const = 0;
 };
 

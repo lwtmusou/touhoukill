@@ -1,5 +1,10 @@
-#ifndef _PLAYER_H
-#define _PLAYER_H
+#ifndef TOUHOUKILL_PLAYER_H
+#define TOUHOUKILL_PLAYER_H
+
+// BE WARE! THIS FILE IS USED IN BOTH SWIG AND C++.
+// MAKE SURE THE GRAMMAR IS COMPATIBLE BETWEEN 2 LANGUAGES.
+
+#ifndef SWIG
 
 #include "global.h"
 #include "qsgscore.h"
@@ -22,6 +27,8 @@ class Card;
 class General;
 
 class PlayerPrivate;
+
+#endif
 
 class QSGS_CORE_EXPORT Player : public QObject
 {
@@ -64,7 +71,9 @@ class QSGS_CORE_EXPORT Player : public QObject
 #endif
 
 public:
+#ifndef SWIG
     explicit Player(RoomObject *parent);
+#endif
     ~Player() override;
 
     void setScreenName(const QString &screen_name);
@@ -426,6 +435,7 @@ private:
     }
 
 private:
+    Player() = delete;
     PlayerPrivate *d;
 };
 

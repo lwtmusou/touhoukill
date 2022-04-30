@@ -35,8 +35,8 @@ class QSGS_CORE_EXPORT Package final
 public:
 #ifndef SWIG
     explicit Package(const QString &name, QSanguosha::PackageType pack_type = QSanguosha::GeneralPack);
-    ~Package();
 #endif
+    ~Package();
 
     const QString &name() const;
 

@@ -9,9 +9,6 @@
 
 #include <QCryptographicHash>
 
-namespace BuiltinExtension {
-bool VerifyChecksum(const QString &path, const QString &hash, QCryptographicHash::Algorithm algorithm);
-} // namespace BuiltinExtension
 %}
 
 class QCryptographicHash {

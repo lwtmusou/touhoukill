@@ -10,6 +10,9 @@
 #include "player.h"
 #include "general.h"
 #include "package.h"
+#include "skill.h"
+#include "trigger.h"
+#include "RoomObject.h"
 
 #include <QObject>
 #include <QVariant>

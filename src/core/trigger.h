@@ -1,6 +1,10 @@
 #ifndef TOUHOUKILL_TRIGGER_H
 #define TOUHOUKILL_TRIGGER_H
 
+// BE WARE! THIS FILE IS USED IN BOTH SWIG AND C++.
+// MAKE SURE THE GRAMMAR IS COMPATIBLE BETWEEN 2 LANGUAGES.
+
+#ifndef SWIG
 #include "global.h"
 #include "qsgscore.h"
 
@@ -16,11 +20,14 @@ class Skill;
 class EquipCard;
 
 class TriggerPrivate;
+#endif
 
 class QSGS_CORE_EXPORT Trigger
 {
 public:
+#ifndef SWIG
     Trigger(const QString &name);
+#endif
     virtual ~Trigger();
 
     QString name() const;
@@ -67,6 +74,7 @@ public:
     virtual bool trigger(QSanguosha::TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const;
 
 private:
+    Trigger() = delete;
     Q_DISABLE_COPY_MOVE(Trigger)
     TriggerPrivate *const d;
 };
@@ -74,12 +82,16 @@ private:
 class QSGS_CORE_EXPORT Rule : public Trigger
 {
 public:
+#ifndef SWIG
     Rule(const QString &name);
+#endif
     ~Rule() override = default;
 
     // fixed 0
+#ifndef SWIG
     int priority() const final override;
     QList<TriggerDetail> triggerable(QSanguosha::TriggerEvent /*event*/, RoomObject *room, const QVariant & /*data*/) const final override;
+#endif
 };
 
 class SkillTriggerPrivate;
@@ -87,12 +99,15 @@ class SkillTriggerPrivate;
 class QSGS_CORE_EXPORT SkillTrigger : public Trigger
 {
 public:
+#ifndef SWIG
     explicit SkillTrigger(Skill *skill);
     explicit SkillTrigger(const QString &name);
+#endif
     ~SkillTrigger() override;
 
     const QString &skillName() const;
 
+#ifndef SWIG
     // 2 by default, optional override
     int priority() const override;
 
@@ -100,7 +115,7 @@ public:
     // virtual QList<TriggerDetail> triggerable(TriggerEvent event, RoomObject *room, const QVariant &data) const = 0;
 
     bool trigger(QSanguosha::TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const final override;
-
+#endif
     // Limited modification to TriggerDetail, notably tag and target
     virtual bool cost(QSanguosha::TriggerEvent event, RoomObject *room, TriggerDetail &detail, QVariant &data) const;
     // No modification to TriggerDetail since the cost is done
@@ -113,34 +128,44 @@ private:
 class QSGS_CORE_EXPORT EquipSkillTrigger : public SkillTrigger
 {
 public:
+#ifndef SWIG
     explicit EquipSkillTrigger(const EquipCard *card);
     explicit EquipSkillTrigger(const QString &name);
+#endif
     ~EquipSkillTrigger() override = default;
 
+#ifndef SWIG
     Q_ALWAYS_INLINE bool isEquipSkill() const final override
     {
         return true;
     }
+#endif
 
     static bool equipAvailable(const Player *p, QSanguosha::EquipLocation location, const QString &equip_name, const Player *to = nullptr);
     static bool equipAvailable(const Player *p, const Card *equip, const Player *to = nullptr);
 
+#ifndef SWIG
     // fixed same as regular Skill trigger
     int priority() const final override;
+#endif
 };
 
 class QSGS_CORE_EXPORT GlobalRecord : public Trigger
 {
 public:
+#ifndef SWIG
     GlobalRecord(const QString &name);
+#endif
     ~GlobalRecord() override = default;
 
+#ifndef SWIG
     // fixed 10
     int priority() const final override;
 
     // Since it may use only Record, override this function here
     // Optional override in subclass
     QList<TriggerDetail> triggerable(QSanguosha::TriggerEvent event, RoomObject *room, const QVariant &data) const override;
+#endif
 };
 
 // a nasty way for 'fake moves', usually used in the process of multi-card chosen
@@ -148,11 +173,15 @@ class FakeMoveRecordPrivate;
 class QSGS_CORE_EXPORT FakeMoveRecord final : public GlobalRecord
 {
 public:
+#ifndef SWIG
     explicit FakeMoveRecord(const QString &name, const QString &skillName = QString());
+#endif
     ~FakeMoveRecord() final override;
 
+#ifndef SWIG
     QList<TriggerDetail> triggerable(QSanguosha::TriggerEvent event, RoomObject *room, const QVariant &data) const final override;
     bool trigger(QSanguosha::TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const final override;
+#endif
 
 private:
     FakeMoveRecordPrivate *const d;

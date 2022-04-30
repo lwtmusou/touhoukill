@@ -1,6 +1,10 @@
 #ifndef QSANGUOSHA_ROOMOBJECT_H
 #define QSANGUOSHA_ROOMOBJECT_H
 
+// BE WARE! THIS FILE IS USED IN BOTH SWIG AND C++.
+// MAKE SURE THE GRAMMAR IS COMPATIBLE BETWEEN 2 LANGUAGES.
+
+#ifndef SWIG
 #include "qsgscore.h"
 #include "structs.h"
 
@@ -17,13 +21,16 @@ class ViewAsSkill;
 class Card;
 
 class RoomObjectPrivate;
+#endif
 
 class QSGS_CORE_EXPORT RoomObject : public QObject
 {
     Q_OBJECT
 
 public:
+#ifndef SWIG
     explicit RoomObject(QObject *parent = nullptr);
+#endif
     ~RoomObject() override;
 
     // -------------------- Player Related --------------------
@@ -102,9 +109,21 @@ private:
 };
 
 // TODO_Fs: find a suitable way for this
+#ifndef SWIG
 namespace QinggangSword {
 QSGS_CORE_EXPORT void addQinggangTag(Player *p, const Card *card);
 QSGS_CORE_EXPORT void removeQinggangTag(Player *p, const Card *card);
 } // namespace QinggangSword
+#else
+class QinggangSword
+{
+public:
+    static void addQinggangTag(Player *p, const Card *card);
+    static void removeQinggangTag(Player *p, const Card *card);
+
+private:
+    QSGS_DISABLE_COPY_MOVE_CONSTRUCT(QinggangSword)
+};
+#endif
 
 #endif
