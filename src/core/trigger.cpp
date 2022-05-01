@@ -2,6 +2,7 @@
 #include "CardFace.h"
 #include "RoomObject.h"
 #include "card.h"
+#include "lua-wrapper.h"
 #include "player.h"
 #include "skill.h"
 #include "structs.h"
@@ -21,6 +22,17 @@ public:
     {
     }
 };
+
+// somewhat not-even-be-a-method method for Lua calls which need to be done on SWIG side
+// SWIG doesn't provide a binary-compatible way to export its constants
+// These functions are implemented in wrap_trigger.i and generated in sgsLUA_wrap.cxx
+namespace TriggerLuaCall {
+bool record(lua_State *l, TriggerEvent event, RoomObject *room, QVariant &data);
+bool triggerable(lua_State *l, TriggerEvent event, RoomObject *room, const QVariant &data, QList<TriggerDetail> &ret);
+std::optional<bool> trigger(lua_State *l, TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data);
+
+std::optional<bool> skillTriggerCost(lua_State *l, TriggerEvent event, RoomObject *room, TriggerDetail &detail, QVariant &data);
+} // namespace TriggerLuaCall
 
 Trigger::Trigger(const QString &name)
     : d(new TriggerPrivate(name))
@@ -71,13 +83,71 @@ void Trigger::setGlobal(bool global)
     d->global = global;
 }
 
-void Trigger::record(TriggerEvent /*unused*/, RoomObject * /*unused*/, QVariant & /*unused*/) const
+void Trigger::record(TriggerEvent event, RoomObject *room, QVariant &data) const
 {
-    // Intentionally empty
+    bool called = false;
+
+    LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+    bool pushed = l->pushTrigger(d->name); // { Trigger(if successful) }
+    if (pushed) {
+        do {
+            int type = lua_getfield(l, -1, "record"); // { Trigger.record, Trigger }
+            do {
+                if (type == LUA_TFUNCTION) {
+                    // we should do the function call and return
+                    // error should be catched in TriggerLuaCall
+                    lua_pushvalue(l, -2); // { Trigger, Trigger.record, Trigger }
+                    called = TriggerLuaCall::record(l, event, room, data); // { error (if any), Trigger }
+                    if (called)
+                        lua_pushnil(l); // for following lua_pop
+                } else {
+                    // not function, ignored
+                }
+            } while (false);
+            lua_pop(l, 1); // { Trigger }
+        } while (false);
+        lua_pop(l, 1); // { }
+    }
+
+    if (called)
+        return;
+
+    // default
+    // do nothing
 }
 
 QList<TriggerDetail> Trigger::triggerable(QSanguosha::TriggerEvent event, RoomObject *room, const QVariant &data) const
 {
+    bool called = false;
+    QList<TriggerDetail> ret = {};
+
+    LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+    bool pushed = l->pushTrigger(d->name); // { Trigger(if successful) }
+    if (pushed) {
+        do {
+            int type = lua_getfield(l, -1, "triggerable"); // { Trigger.triggerable, Trigger }
+            do {
+                if (type == LUA_TFUNCTION) {
+                    // we should do the function call and return
+                    // error should be catched in TriggerLuaCall
+                    lua_pushvalue(l, -2); // { Trigger, Trigger.triggerable, Trigger }
+                    called = TriggerLuaCall::triggerable(l, event, room, data, ret); // { error (if any), Trigger }, return value are saved to ret
+                    if (called)
+                        lua_pushnil(l); // for following lua_pop
+                } else {
+                    // not function, ignored
+                }
+            } while (false);
+            lua_pop(l, 1); // { Trigger }
+        } while (false);
+        lua_pop(l, 1); // { }
+    }
+
+    if (called)
+        return ret;
+
+    // default
+    // do nothing
     return {};
 }
 

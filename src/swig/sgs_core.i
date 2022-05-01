@@ -13,6 +13,8 @@
 #define final
 
 %include "global.h"
+%rename(sameTrigger) TriggerDetail::operator ==(const TriggerDetail &arg2) const;
+%rename(lessThan) TriggerDetail::operator <(const TriggerDetail &arg2) const;
 %include "structs.h"
 %include "engine.h"
 %include "CardFace.h"

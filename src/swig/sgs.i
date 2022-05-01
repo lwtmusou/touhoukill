@@ -105,3 +105,4 @@ private:
 %include "sgs_core.i"
 
 %include "wrap_cardface.i"
+%include "wrap_trigger.i"

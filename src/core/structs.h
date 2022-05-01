@@ -397,11 +397,9 @@ public:
     void setTriggered(bool t);
     QVariantMap &tag();
 
-#ifndef SWIG
     bool operator<(const TriggerDetail &arg2) const; // the operator < for sorting the invoke order.
-#endif
     // the operator ==. it only judge the skill name, the skill invoker, and the skill owner. it don't judge the skill target because it is chosen by the skill invoker
-    bool sameTrigger(const TriggerDetail &arg2) const;
+    bool operator==(const TriggerDetail &arg2) const;
     // used to judge 2 skills has the same timing. only 2 structs with the same priority and the same invoker and the same "whether or not it is a skill of equip"
     bool sameTimingWith(const TriggerDetail &arg2) const;
     bool isValid() const; // validity check

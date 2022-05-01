@@ -69,8 +69,6 @@ public:
     // This makes the RoomObject not able to be const even if it should be.
     // EXACTLY STRICTLY NOTHING should be even TOUCHED in this function
     virtual QList<TriggerDetail> triggerable(QSanguosha::TriggerEvent event, RoomObject *room, const QVariant &data) const;
-
-    // TODO: make TriggerDetail implicitly shared
     virtual bool trigger(QSanguosha::TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const;
 
 private:

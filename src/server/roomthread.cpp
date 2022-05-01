@@ -490,7 +490,7 @@ void RoomThread::getTriggerAndSort(QSanguosha::TriggerEvent e, QList<QSharedPoin
                 // if the skill has only one instance of the invokedetail, we copy the tag to the old instance(overwrite the old ones), and use the old instance, delete the new one
                 auto triggeredPlusDetails = detailsList + triggered;
                 foreach (const QSharedPointer<TriggerDetail> &detail, QSet<QSharedPointer<TriggerDetail>>(triggeredPlusDetails.begin(), triggeredPlusDetails.end())) {
-                    if (detail->sameTrigger(*r.first())) {
+                    if ((*detail) == (*r.first())) {
                         foreach (const QString &key, r.first()->tag().keys())
                             detail->tag()[key] = r.first()->tag().value(key);
                         r.clear();

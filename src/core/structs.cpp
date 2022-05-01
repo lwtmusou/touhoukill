@@ -414,7 +414,7 @@ bool TriggerDetail::operator<(const TriggerDetail &arg2) const // the operator <
     return !trigger()->isEquipSkill() && arg2.trigger()->isEquipSkill();
 }
 
-bool TriggerDetail::sameTrigger(const TriggerDetail &arg2) const
+bool TriggerDetail::operator ==(const TriggerDetail &arg2) const
 {
     // it only judge the skill name, the skill invoker and the skill owner. It don't judge the skill target because it is chosen by the skill invoker
     return trigger() == arg2.trigger() && owner() == arg2.owner() && invoker() == arg2.invoker();
