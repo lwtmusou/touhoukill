@@ -194,6 +194,6 @@ std::optional<JudgeStruct> judge(lua_State *l)
     return *arg2;
 }
 
-}
+} // namespace CardFaceLuaCall
 
 %}

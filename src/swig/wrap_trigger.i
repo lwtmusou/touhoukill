@@ -4,10 +4,11 @@
 #include <optional>
 
 namespace TriggerLuaCall {
-    
+
 // [-2, 0, e]
 // Assumes the corresponding function then the table itself are pushed on the top of stack, pops them and pushes the result (if any) or error object
-bool record(lua_State *l, QSanguosha::TriggerEvent event, RoomObject *room, QVariant &data) {
+bool record(lua_State *l, QSanguosha::TriggerEvent event, RoomObject *room, QVariant &data)
+{
     lua_pushnumber(l, static_cast<int>(event)); // { event, Trigger, Trigger.record }
     SWIG_NewPointerObj(l, room, SWIGTYPE_p_RoomObject, 0); // { room, event, Trigger, Trigger.record }
     SWIG_NewPointerObj(l, &data, SWIGTYPE_p_QVariant, 0); // { data, room, event, Trigger, Trigger.record }
@@ -40,9 +41,9 @@ bool triggerable(lua_State *l, QSanguosha::TriggerEvent event, RoomObject *room,
     for (int i = 1; i <= length; ++i) {
         lua_geti(l, -1, i);
         TriggerDetail *arg1 = nullptr;
-        if (SWIG_isptrtype(l, -1) && SWIG_IsOK(SWIG_ConvertPtr(l,-1,(void**)&arg1,SWIGTYPE_p_TriggerDetail,0))) {
+        if (SWIG_isptrtype(l, -1) && SWIG_IsOK(SWIG_ConvertPtr(l, -1, (void **)&arg1, SWIGTYPE_p_TriggerDetail, 0))) {
             ret << *arg1;
-        } else{ 
+        } else {
             warned = true;
             lua_warning(l, QString(QStringLiteral("No. %1 of triggerable is not TriggerDetail, ignored.")).arg(i).toLocal8Bit().constData(), 1);
         }
@@ -57,6 +58,6 @@ std::optional<bool> trigger(lua_State *l, QSanguosha::TriggerEvent event, RoomOb
 
 std::optional<bool> skillTriggerCost(lua_State *l, QSanguosha::TriggerEvent event, RoomObject *room, TriggerDetail &detail, QVariant &data);
 
-}
-    
+} // namespace TriggerLuaCall
+
 %}

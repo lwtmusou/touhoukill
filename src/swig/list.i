@@ -39,16 +39,50 @@ public:
     T peekPrevious() const;
 };
 
+template <class T>
+class QSet {
+public:
+    QSet();
+    ~QSet();
+    int count() const;
+    void insert(const T &elem);
+    bool isEmpty() const;
+    bool contains(const T &elem) const;
+    bool remove(const T &elem);
+};
+
+template <class T>
+class QSetIterator
+{
+public:
+    QSetIterator(const QSet<T> &container);
+    QSetIterator &operator=(const QSet<T> &container);
+    void toFront();
+    void toBack();
+    bool hasNext() const;
+    T next();
+    T peekNext() const;
+    bool hasPrevious() const;
+};
+
 %newobject ::create_qlist_iterator;
+%newobject ::create_qset_iterator;
 %{
 template<class T> QListIterator<T> *create_qlist_iterator(QList<T> *list)
 {
     return new QListIterator<T>(*list);
 }
+template<class T> QSetIterator<T> *create_qset_iterator(QSet<T> *set)
+{
+    return new QSetIterator<T>(*set);
+}
 %}
 
 template<class T>
 QListIterator<T> *create_qlist_iterator(QList<T> *list);
+
+template<class T>
+QSetIterator<T> *create_qset_iterator(QSet<T> *list);
 
 %template(SPlayerList) QList<Player *>;
 %template(PlayerList) QList<const Player *>;
@@ -80,5 +114,12 @@ QListIterator<T> *create_qlist_iterator(QList<T> *list);
 %template(create_qlist_iterator) create_qlist_iterator<QVariant>;
 %template(create_qlist_iterator) create_qlist_iterator<SingleCardMoveStruct>;
 
+%template(CardIdSet) QSet<int>;
+
+%template(CardIdSetIt) QSetIterator<int>;
+
+%template(create_qlist_iterator) create_qset_iterator<int>;
+
 typedef QList<QVariant> QVariantList;
 typedef QList<QString> QStringList;
+typedef QSet<int> IdSet;
