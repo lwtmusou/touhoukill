@@ -11,6 +11,7 @@ class LuaMultiThreadEnvironmentPrivate;
 class Package;
 class CardFace;
 class Skill;
+class Trigger;
 struct lua_State;
 
 class QSGS_CORE_EXPORT LuaState final : public QObject
@@ -101,6 +102,7 @@ public:
     static const QList<const Package *> &packages();
     static const QList<const CardFace *> &cardFaces();
     static const QList<const Skill *> &skills();
+    static const QList<const Trigger *> &triggers();
 
     static const QString &luaVersion();
     static const QString &luaCopyright();

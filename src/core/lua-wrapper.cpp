@@ -1,5 +1,7 @@
 #include "lua-wrapper.h"
+#include "CardFace.h"
 #include "engine.h"
+#include "trigger.h"
 
 #include <QDebug>
 #include <QFile>
@@ -416,6 +418,7 @@ public:
     QList<const Package *> packages;
     QList<const CardFace *> cardFaces;
     QList<const Skill *> skills;
+    QList<const Trigger *> triggers;
 };
 
 /**
@@ -471,6 +474,16 @@ const QList<const Skill *> &LuaMultiThreadEnvironment::skills()
 }
 
 /**
+ * @brief Helper function
+ * @return Trigger lists
+ */
+
+const QList<const Trigger *> &LuaMultiThreadEnvironment::triggers()
+{
+    return self()->d->triggers;
+}
+
+/**
  * @brief Lua Version
  * @return Lua Version
  */
@@ -494,7 +507,8 @@ const QString &LuaMultiThreadEnvironment::luaCopyright()
 
 namespace SgsEx {
 CardFace *createNewLuaCardFace(const QString &name);
-}
+Trigger *createNewLuaTrigger(const QString &name);
+} // namespace SgsEx
 
 LuaMultiThreadEnvironment::LuaMultiThreadEnvironment()
     : d(new LuaMultiThreadEnvironmentPrivate)
@@ -530,15 +544,11 @@ LuaMultiThreadEnvironment::LuaMultiThreadEnvironment()
 
     qDebug() << "Triggers: " << firstLuaState->triggerNames();
     foreach (const QString &name, firstLuaState->triggerNames()) {
-        // todo
-        Q_UNUSED(name);
-#if 0
-        CardFace *f = SgsEx::createNewLuaCardFace(name);
+        Trigger *f = SgsEx::createNewLuaTrigger(name);
         if (f != nullptr)
-            Sanguosha->registerCardFace(f);
+            d->triggers << f;
         else
             qDebug() << "creation of cardFace " << name << "failed";
-#endif
     }
 
     qDebug() << "Packages: " << firstLuaState->packageNames();

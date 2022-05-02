@@ -12,6 +12,7 @@
 #include "serverinfostruct.h"
 #include "skill.h"
 #include "structs.h"
+#include "trigger.h"
 #include "util.h"
 
 #include <QCoreApplication>
@@ -38,6 +39,7 @@ public:
     QMap<QString, const CardPattern *> responsePatterns;
     QMap<QString, const CardPattern *> expPatterns;
     QHash<QString, const CardFace *> faces;
+    QHash<QString, const Trigger *> triggers;
 
     // Package
     QList<const Package *> packages;
@@ -65,6 +67,9 @@ Engine::Engine()
         d->configFile = doc.object();
 
     d->l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+
+    foreach (const Trigger *trigger, LuaMultiThreadEnvironment::triggers())
+        registerTrigger(trigger);
 
     foreach (const CardFace *cardFace, LuaMultiThreadEnvironment::cardFaces())
         registerCardFace(cardFace);
@@ -815,10 +820,11 @@ QVariant Engine::config(const QString &key) const
 
 void Engine::registerCardFace(const CardFace *cardFace)
 {
-    d->faces.insert(cardFace->name(), cardFace);
+    if (cardFace != nullptr)
+        d->faces.insert(cardFace->name(), cardFace);
 }
 
-const CardFace *Engine::cardFace(const QString &name)
+const CardFace *Engine::cardFace(const QString &name) const
 {
     return d->faces.value(name, nullptr);
 }
@@ -829,6 +835,27 @@ void Engine::unregisterCardFace(const QString &name)
     if (face != d->faces.end()) {
         const auto *handle = *face;
         d->faces.erase(face);
+        delete handle;
+    }
+}
+
+void Engine::registerTrigger(const Trigger *trigger)
+{
+    if (trigger != nullptr)
+        d->triggers.insert(trigger->name(), trigger);
+}
+
+const Trigger *Engine::trigger(const QString &name) const
+{
+    return d->triggers.value(name, nullptr);
+}
+
+void Engine::unregisterTrigger(const QString &name)
+{
+    auto face = d->triggers.find(name);
+    if (face != d->triggers.end()) {
+        const auto *handle = *face;
+        d->triggers.erase(face);
         delete handle;
     }
 }

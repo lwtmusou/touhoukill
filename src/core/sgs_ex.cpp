@@ -135,4 +135,51 @@ namespace {
     return r;
 }
 
+::Trigger *createNewLuaTrigger(const QString &name)
+{
+    LuaStatePointer l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
+    ::Trigger *r = nullptr;
+    QString errorMessage;
+
+    bool pushed = l->pushTrigger(name); // { Trigger[name](if successful) }
+    if (!pushed) {
+        errorMessage = QString(QStringLiteral("Could not find register for trigger %1")).arg(name);
+    } else {
+        // it should contain an item calls name
+        // may call metamethods thus may raise error. Need a method to deal with error since longjmp breaks call stack
+        // or we can use rawget
+
+        int type = lua_getfield(l, -1, "type"); // { Trigger[name].type, Trigger[name] }
+        do {
+            if (type != LUA_TNUMBER) {
+                errorMessage = QString(QStringLiteral("sgs_ex.Trigger[\"%1\"].type is not number")).arg(name);
+                break;
+            }
+
+            // create Trigger by its type
+            int ok = 0;
+            TableType t = static_cast<TableType>(lua_tonumberx(l, 1, &ok));
+            if (!ok) { // NOLINT
+                errorMessage = QString(QStringLiteral("sgs_ex.Trigger[\"%1\"].type is not number")).arg(name);
+                break;
+            }
+
+            r = newTriggerByType(t, name);
+            if (r == nullptr) {
+                errorMessage = QString(QStringLiteral("No corressponding Trigger which sgs_ex.Trigger[\"%1\"].type is %2")).arg(name, QString::number(static_cast<int>(t)));
+                break;
+            }
+        } while (false);
+        lua_pop(l, 1); // { Trigger[name] }
+        lua_pop(l, 1); // { }
+    }
+
+    if (r == nullptr) {
+        lua_pushstring(l, errorMessage.toUtf8().constData());
+        lua_error(l);
+    }
+
+    return r;
+}
+
 } // namespace SgsEx

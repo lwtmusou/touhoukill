@@ -1,15 +1,4 @@
 
-#define QSGS_CORE_NODEPRECATED
-#define Q_DECL_DEPRECATED
-#define QSGS_CORE_EXPORT
-#define Q_DECLARE_METATYPE(...)
-#define Q_GADGET
-#define Q_OBJECT
-#define Q_DECLARE_FLAGS(Flags, Enum) \
-    typedef QFlags<Enum> Flags;
-#define Q_DECLARE_OPERATORS_FOR_FLAGS(...)
-#define Q_ENUM(...)
-#define Q_ALWAYS_INLINE
 #define final
 
 %include "global.h"

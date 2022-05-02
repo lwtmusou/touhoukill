@@ -36,6 +36,7 @@ struct CardDescriptor;
 class Card;
 class RoomObject;
 class CardFace;
+class Trigger;
 
 class EnginePrivate;
 #endif
@@ -105,8 +106,12 @@ public:
     int cardCount() const;
     const CardDescriptor &cardDescriptor(int cardId) const;
     void registerCardFace(const CardFace *face);
-    const CardFace *cardFace(const QString &name);
+    const CardFace *cardFace(const QString &name) const;
     void unregisterCardFace(const QString &name);
+
+    void registerTrigger(const Trigger *trigger);
+    const Trigger *trigger(const QString &name) const;
+    void unregisterTrigger(const QString &name);
 
     QVariant config(const QString &key) const;
 
