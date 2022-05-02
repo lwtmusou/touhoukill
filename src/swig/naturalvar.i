@@ -49,30 +49,3 @@ SWIG_arg ++;
 
 %typemap(out) QByteArray
 %{ lua_pushlstring(L, $1.constData(), $1.length()); SWIG_arg++; %}
-
-// -------------------------------------------
-
-%naturalvar QStringList;
-
-%typemap(in, checkfn = "lua_istable") QStringList
-%{
-for (int i = 0; i < lua_rawlen(L, $input); i++) {
-    lua_rawgeti(L, $input, i + 1);
-    const char *elem = luaL_checkstring(L, -1);
-    $1 << elem;
-    lua_pop(L, 1);
-}
-%}
-
-%typemap(out) QStringList
-%{
-lua_createtable(L, $1.length(), 0);
-
-for (int i = 0; i < $1.length(); i++) {
-    QString str = $1.at(i);
-    lua_pushstring(L, str.toUtf8());
-    lua_rawseti(L, -2, i + 1);
-}
-
-SWIG_arg++;
-%}

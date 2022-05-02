@@ -49,6 +49,7 @@ public:
     bool isEmpty() const;
     bool contains(const T &elem) const;
     bool remove(const T &elem);
+    QList<T> values() const;
 };
 
 template <class T>
@@ -88,6 +89,7 @@ QSetIterator<T> *create_qset_iterator(QSet<T> *list);
 %template(PlayerList) QList<const Player *>;
 %template(CardList) QList<const Card *>;
 %template(IntList) QList<int>;
+%template(StringList) QList<QString>;
 %template(SkillList) QList<const Skill *>;
 %template(PlaceList) QList<QSanguosha::Place>;
 %template(PhaseList) QList<QSanguosha::Phase>;
@@ -98,6 +100,7 @@ QSetIterator<T> *create_qset_iterator(QSet<T> *list);
 %template(PlayerListIt) QListIterator<const Player *>;
 %template(CardListIt) QListIterator<const Card *>;
 %template(IntListIt) QListIterator<int>;
+%template(StringListIt) QListIterator<QString>;
 %template(SkillListIt) QListIterator<const Skill *>;
 %template(PlaceListIt) QListIterator<QSanguosha::Place>;
 %template(PhaseListIt) QListIterator<QSanguosha::Phase>;
@@ -108,6 +111,7 @@ QSetIterator<T> *create_qset_iterator(QSet<T> *list);
 %template(create_qlist_iterator) create_qlist_iterator<const Player *>;
 %template(create_qlist_iterator) create_qlist_iterator<const Card *>;
 %template(create_qlist_iterator) create_qlist_iterator<int>;
+%template(create_qlist_iterator) create_qlist_iterator<QString>;
 %template(create_qlist_iterator) create_qlist_iterator<const Skill *>;
 %template(create_qlist_iterator) create_qlist_iterator<QSanguosha::Place>;
 %template(create_qlist_iterator) create_qlist_iterator<QSanguosha::Phase>;
@@ -115,11 +119,19 @@ QSetIterator<T> *create_qset_iterator(QSet<T> *list);
 %template(create_qlist_iterator) create_qlist_iterator<SingleCardMoveStruct>;
 
 %template(CardIdSet) QSet<int>;
+%template(StringSet) QSet<QString>;
 
 %template(CardIdSetIt) QSetIterator<int>;
+%template(StringSetIt) QSetIterator<int>;
 
 %template(create_qlist_iterator) create_qset_iterator<int>;
+%template(create_qlist_iterator) create_qset_iterator<QString>;
 
 typedef QList<QVariant> QVariantList;
-typedef QList<QString> QStringList;
 typedef QSet<int> IdSet;
+
+class QStringList: public QList<QString>
+{
+public:
+    QString join(const QString &sep) const;
+};
