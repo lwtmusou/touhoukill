@@ -130,3 +130,9 @@ void GenericHegemonyMode::startGame(RoomObject *room) const
 {
     // TODO
 }
+
+Mode *ModeFactory::createMode(const QString &name)
+{
+    // TODO
+    return nullptr;
+}

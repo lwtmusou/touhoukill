@@ -35,6 +35,10 @@ private:
     Q_DISABLE_COPY_MOVE(Mode)
 };
 
+namespace ModeFactory {
+QSGS_CORE_EXPORT Mode *createMode(const QString &name);
+}
+
 // I don't think that implementing these modes here is a good idea.
 // But there seems to be no other place for them
 

@@ -3040,8 +3040,8 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign)
     const int max_available = (total - existed.size()) / to_assign.length();
     const int choice_count = qMin(max_choice, max_available);
 
-    QStringList choices = Sanguosha->getRandomGenerals(total - existed.size(), existed);
-    QStringList latest = Sanguosha->getLatestGenerals(existed);
+    QStringList choices = Sanguosha->getRandomGenerals(total - existed.size(), existed).values();
+    QStringList latest = Sanguosha->latestGenerals().values();
     bool assign_latest_general = Config.value(QStringLiteral("AssignLatestGeneral"), true).toBool() && !isHegemonyGameMode(mode);
     foreach (ServerPlayer *player, to_assign) {
         player->clearSelected();
@@ -3078,20 +3078,20 @@ void Room::chooseGenerals()
     if (lord_num == 0 && nonlord_num == 0)
         nonlord_num = 1;
     int nonlord_prob = (lord_num == -1) ? 5 : 55 - qMin(lord_num, 10);
-    QStringList lord_list;
+    QSet<QString> lord_list;
     ServerPlayer *the_lord = getLord();
     if (Config.EnableSame)
         lord_list = Sanguosha->getRandomGenerals(Config.value(QStringLiteral("MaxChoice"), 6).toInt());
     else if (the_lord->getState() == QStringLiteral("robot")) {
         int ramdom_value = QRandomGenerator::global()->generate() % 100;
-        if (((ramdom_value < nonlord_prob || lord_num == 0) && nonlord_num > 0) || Sanguosha->availableLords().length() == 0)
+        if (((ramdom_value < nonlord_prob || lord_num == 0) && nonlord_num > 0) || Sanguosha->availableLords().count() == 0)
             lord_list = Sanguosha->getRandomGenerals(1);
         else
             lord_list = Sanguosha->availableLords();
     } else {
         lord_list = Sanguosha->getRandomLords();
     }
-    QString general = askForGeneral(the_lord, lord_list);
+    QString general = askForGeneral(the_lord, lord_list.values());
     the_lord->setGeneral(Sanguosha->general(general));
     broadcastProperty(the_lord, "general", general);
 

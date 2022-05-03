@@ -165,9 +165,7 @@ struct QSGS_CORE_EXPORT CardDescriptor
 
 private:
 #ifdef SWIG
-    Q_DISABLE_COPY(CardDescriptor)
-    CardDescriptor() = delete;
-    ~CardDescriptor() = delete;
+    QSGS_DISABLE_COPY_MOVE_CONSTRUCT(CardDescriptor)
 #endif
 };
 

@@ -24,9 +24,7 @@ Q_NAMESPACE_EXPORT(QSGS_CORE_EXPORT)
 class QSanguosha
 {
 private:
-    QSanguosha() = delete;
-    ~QSanguosha() = delete;
-    Q_DISABLE_COPY_MOVE(QSanguosha)
+    QSGS_DISABLE_COPY_MOVE_CONSTRUCT(QSanguosha)
 
 public:
 
@@ -70,7 +68,7 @@ Q_ENUM_NS(HandlingMethod)
 #ifdef SWIG
 static
 #endif
-HandlingMethod string2HandlingMethod(const QString &str);
+QSGS_CORE_EXPORT HandlingMethod string2HandlingMethod(const QString &str);
 
 enum Number
 {
@@ -404,7 +402,7 @@ Q_ENUM_NS(DamageNature)
 ;
 #endif
 
-typedef int LuaFunction;
+using LuaFunction = int;
 
 #ifndef SWIG
 #define QSGS_LUA_API

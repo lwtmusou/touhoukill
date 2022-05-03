@@ -63,13 +63,10 @@ public:
     QStringList getRoleList(const QString &mode) const;
     int getRoleIndex() const;
     int availableGeneralCount() const;
-    QStringList availableLords() const;
-    QStringList getRandomLords() const;
-    QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
-    QStringList getLatestGenerals(const QSet<QString> &ban_set = QSet<QString>()) const;
+    QSet<QString> getRandomLords() const;
+    QSet<QString> getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
     QString getRandomGeneralName() const;
     QStringList getLimitedGeneralNames() const;
-    QStringList LatestGeneralList;
     bool isGeneralHidden(const QString &general_name) const;
     QList<int> getRandomCards() const;
 #endif
@@ -97,6 +94,8 @@ public:
 
     const General *general(const QString &name) const;
     QStringList generalNames() const;
+    QSet<QString> availableLords() const;
+    QSet<QString> latestGenerals() const;
 
     const Skill *skill(const QString &skill_name) const;
     const Skill *skill(const EquipCard *card) const;

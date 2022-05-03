@@ -45,12 +45,14 @@ public:
     QList<const Package *> packages;
 
     QList<CardDescriptor> cards;
-    QStringList lord_list;
+    QSet<QString> lord_list;
     QSet<QString> ban_package;
 
     JsonObject configFile;
 
     LuaStatePointer l;
+
+    QSet<QString> LatestGeneralList;
 
     EnginePrivate()
         : l(nullptr)
@@ -79,7 +81,7 @@ Engine::Engine()
     foreach (const Package *package, LuaMultiThreadEnvironment::packages())
         addPackage(package);
 
-    LatestGeneralList = config(QStringLiteral("latest_generals")).toStringList();
+    d->LatestGeneralList = List2Set(config(QStringLiteral("latest_generals")).toStringList());
 
     // I'd like it to refactor to use Qt-builtin way for it
     QString locale = config(QStringLiteral("locale")).toString();
@@ -506,36 +508,21 @@ int Engine::cardCount() const
     return d->cards.length();
 }
 
-QStringList Engine::availableLords() const
+QSet<QString> Engine::availableLords() const
 {
-    QStringList lords;
-
-    // add intrinsic lord
-    foreach (QString lord, d->lord_list) {
-        const General *general = d->generals.value(lord);
-        if (getBanPackages().contains(general->getPackage()))
-            continue;
-        if (ServerInfo.GameMode.endsWith(QStringLiteral("p")) || ServerInfo.GameMode.endsWith(QStringLiteral("pd")) || ServerInfo.GameMode.endsWith(QStringLiteral("pz"))) {
-        }
-#if 0
-                if (Config.value(QStringLiteral("Banlist/Roles"), QString()).toStringList().contains(lord))
-                    continue;
-#endif
-        lords << lord;
-    }
-
-    return lords;
+    return d->lord_list;
 }
 
-QStringList Engine::getRandomLords() const
+QSet<QString> Engine::getRandomLords() const
 {
-    QStringList banlist_ban;
+    QStringList l = d->lord_list.values();
+    qShuffle(l);
+
+    int lord_num = 6; // Config.value(QStringLiteral("LordMaxChoice"), 6).toInt();
+    return List2Set(l.mid(0, lord_num));
+
 #if 0
-    if (Config.GameMode == QStringLiteral("zombie_mode"))
-        banlist_ban.append(Config.value(QStringLiteral("Banlist/Zombie")).toStringList());
-    else if (isRoleGameMode(Config.GameMode))
-        banlist_ban.append(Config.value(QStringLiteral("Banlist/Roles")).toStringList());
-#endif
+    QStringList banlist_ban;
     QStringList lords;
     QStringList splords_package; //lords  in sp package will be not count as a lord.
     splords_package << QStringLiteral("thndj");
@@ -585,16 +572,14 @@ QStringList Engine::getRandomLords() const
 
     if (lord_num == 0 && extra == 0)
         extra = 1;
-
     bool assign_latest_general = false; // Config.value(QStringLiteral("AssignLatestGeneral"), true).toBool();
-    QStringList latest = getLatestGenerals(QSet<QString>(lords.begin(), lords.end()));
+    QStringList latest = latestGenerals(QSet<QString>(lords.begin(), lords.end()));
     if (assign_latest_general && !latest.isEmpty()) {
         lords << latest.first();
         if (nonlord_list.contains(latest.first()))
             nonlord_list.removeOne(latest.first());
         extra--;
     }
-
     for (int i = 0; addcount < extra; i++) {
         if (general(nonlord_list.at(i))->kingdom() != QStringLiteral("touhougod")) {
             lords << nonlord_list.at(i);
@@ -610,6 +595,7 @@ QStringList Engine::getRandomLords() const
     }
 
     return lords;
+#endif
 }
 
 QStringList Engine::getLimitedGeneralNames() const
@@ -643,7 +629,7 @@ QStringList Engine::getLimitedGeneralNames() const
     return general_names;
 }
 
-QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) const
+QSet<QString> Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) const
 {
     // TODO: reimplement this function in separated class Mode
     QStringList all_generals = getLimitedGeneralNames();
@@ -675,7 +661,7 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
     qShuffle(all_generals);
 
     int addcount = 0;
-    QStringList general_list;
+    QSet<QString> general_list;
     int godmax = 1; // Config.value(QStringLiteral("GodLimit"), 1).toInt();
     int godCount = 0;
     for (int i = 0; addcount < count; i++) {
@@ -694,32 +680,9 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
     return general_list;
 }
 
-QStringList Engine::getLatestGenerals(const QSet<QString> &ban_set) const
+QSet<QString> Engine::latestGenerals() const
 {
-    QSet<QString> general_set = QSet<QString>(LatestGeneralList.begin(), LatestGeneralList.end());
-
-    QStringList subtractList;
-    bool needsubtract = true;
-#if 0
-    if (isRoleGameMode(ServerInfo.GameMode))
-        subtractList = (Config.value(QStringLiteral("Banlist/Roles"), QStringList()).toStringList());
-    else if (ServerInfo.GameMode == QStringLiteral("04_1v3"))
-        subtractList = (Config.value(QStringLiteral("Banlist/HulaoPass"), QStringList()).toStringList());
-    else if (ServerInfo.GameMode == QStringLiteral("06_XMode"))
-        subtractList = (Config.value(QStringLiteral("Banlist/XMode"), QStringList()).toStringList());
-    else if (isHegemonyGameMode(ServerInfo.GameMode))
-        subtractList = (Config.value(QStringLiteral("Banlist/Hegemony"), QStringList()).toStringList());
-    else
-#endif
-    needsubtract = false;
-
-    if (needsubtract)
-        general_set.subtract(QSet<QString>(subtractList.begin(), subtractList.end()));
-
-    QStringList latest_generals = general_set.subtract(ban_set).values();
-    if (!latest_generals.isEmpty())
-        qShuffle(latest_generals);
-    return latest_generals;
+    return d->LatestGeneralList;
 }
 
 QList<int> Engine::getRandomCards() const
