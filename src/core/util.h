@@ -5,7 +5,7 @@
 
 #include <QList>
 #include <QRandomGenerator>
-#include <QSharedPointer>
+#include <QScopedPointer>
 #include <QStringList>
 #include <QVariant>
 
@@ -35,10 +35,7 @@ template<typename T> Q_ALWAYS_INLINE QSet<T> List2Set(const QList<T> &list)
 
 template<typename T> inline QList<const T *> NonConstList2ConstList(const QList<T *> &list)
 {
-    QList<const T *> cl;
-    foreach (T *i, list)
-        cl << i;
-    return cl;
+    return QList<const T *>(list.cbegin(), list.cend());
 }
 
 QSGS_CORE_EXPORT bool isRoleGameMode(const QString &mode);
