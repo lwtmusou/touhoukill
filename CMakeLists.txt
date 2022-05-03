@@ -418,6 +418,7 @@ if (Qt5_FOUND)
     target_link_libraries(q5sanguosha_wrap QSanguoshaLibs::lua54 Qt5::Core)
     target_include_directories(q5sanguosha_wrap PRIVATE "src/core")
     set_property(TARGET q5sanguosha_wrap PROPERTY SWIG_USE_TARGET_INCLUDE_DIRECTORIES TRUE)
+    set_property(TARGET q5sanguosha_wrap PROPERTY SWIG_COMPILE_DEFINITIONS QT_MAJOR_VERSION=5)
 
     add_library(Q5SgsCore ${QSanguosha_Core_SRCS} ${QSanguosha_Core_MOCS} lua/lua.qrc )
 
@@ -502,6 +503,7 @@ if (Qt6_FOUND)
     target_link_libraries(qsanguosha_wrap QSanguoshaLibs::lua54 Qt6::Core)
     target_include_directories(qsanguosha_wrap PRIVATE "src/core")
     set_property(TARGET qsanguosha_wrap PROPERTY SWIG_USE_TARGET_INCLUDE_DIRECTORIES TRUE)
+    set_property(TARGET qsanguosha_wrap PROPERTY SWIG_COMPILE_DEFINITIONS QT_MAJOR_VERSION=6)
 
     qt6_add_library(QSgsCore ${QSanguosha_Core_SRCS} ${QSanguosha_Core_MOCS} lua/lua.qrc )
 

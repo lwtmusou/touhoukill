@@ -6,6 +6,8 @@ template <class T>
 class QList {
 public:
     QList();
+    QList(const QList &);
+    QList &operator=(const QList &);
     ~QList();
     int length() const;
     void append(const T &elem);
@@ -22,6 +24,33 @@ public:
     T value(int i);
     T operator [](int i);
 };
+
+#if QT_MAJOR_VERSION==6
+template<>
+class QList<QString>
+{
+public:
+    QList();
+    QList(const QList &);
+    QList &operator=(const QList &);
+    ~QList();
+    int length() const;
+    void append(const QString &elem);
+    void prepend(const QString &elem);
+    bool isEmpty() const;
+    bool contains(const QString &value) const;
+    QString first() const;
+    QString last() const;
+    void removeAt(int i);
+    int removeAll(const QString &value);
+    bool removeOne(const QString &value);
+    QList<QString> mid(int pos, int length = -1) const;
+    int indexOf(const QString &value, int from = 0);
+    QString value(int i);
+    QString operator [](int i);
+    QString join(const QString &sep) const;
+};
+#endif
 
 template<class T>
 class QListIterator
@@ -130,8 +159,18 @@ QSetIterator<T> *create_qset_iterator(QSet<T> *list);
 typedef QList<QVariant> QVariantList;
 typedef QSet<int> IdSet;
 
+#if QT_MAJOR_VERSION==6
+typedef QList<QString> QStringList;
+#else
 class QStringList: public QList<QString>
 {
 public:
+    QStringList(const QList<QString> &);
+    QStringList(const QStringList &);
+
+    QStringList &operator=(const QList<QString> &);
+    QStringList &operator=(const QStringList &);
+
     QString join(const QString &sep) const;
 };
+#endif
