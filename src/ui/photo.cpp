@@ -95,7 +95,7 @@ void Photo::_adjustComponentZValues(bool killed)
 {
     PlayerCardContainer::_adjustComponentZValues(killed);
     _layBetween(_m_mainFrame, _m_faceTurnedIcon, _m_equipRegions[3]);
-    if (isHegemonyGameMode(ServerInfo.GameMode)) {
+    if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
         _layBetween(emotion_item, _m_chainIcon, _m_hegemonyroleComboBox);
         _layBetween(_m_skillNameItem, _m_chainIcon, _m_hegemonyroleComboBox);
     } else {
@@ -119,7 +119,7 @@ void Photo::setEmotion(const QString &emotion, bool permanent)
         emotion_item->setPixmap(pixmap);
         emotion_item->setPos((G_PHOTO_LAYOUT.m_normalWidth - pixmap.width()) / 2, (G_PHOTO_LAYOUT.m_normalHeight - pixmap.height()) / 2);
 
-        if (isHegemonyGameMode(ServerInfo.GameMode))
+        if (isHegemonyGameMode(ServerInfo.GameModeStr))
             _layBetween(emotion_item, _m_chainIcon, _m_hegemonyroleComboBox);
         else
             _layBetween(emotion_item, _m_chainIcon, _m_roleComboBox);

@@ -6,8 +6,12 @@
 #include "protocol.h"
 #include "qsgscore.h"
 
+class Mode;
+
 struct QSGS_CORE_EXPORT ServerInfoStruct
 {
+    ServerInfoStruct();
+
     bool parseLegacy(const QString &str);
 
     bool parse(const QVariant &object);
@@ -19,11 +23,12 @@ struct QSGS_CORE_EXPORT ServerInfoStruct
     time_t getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance, int operationRate = 2);
 
     QString Name;
-    QString GameMode;
+    const Mode *GameMode;
+    QString GameModeStr;
     QString GameRuleMode;
     int OperationTimeout;
     int NullificationCountDown;
-    QStringList Extensions;
+    QStringList EnabledPackages;
     bool RandomSeat;
     bool EnableCheat;
     bool FreeChoose;

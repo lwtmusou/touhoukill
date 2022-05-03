@@ -449,7 +449,7 @@ void Client::processServerPacket(const char *cmd)
             if (replayer == nullptr)
                 processServerRequest(packet);
             else if (packet.getCommandType() == QSanProtocol::S_COMMAND_CHOOSE_GENERAL) {
-                if (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral) {
+                if (isHegemonyGameMode(ServerInfo.GameModeStr) && ServerInfo.Enable2ndGeneral) {
                     Callback callback = m_interactions[S_COMMAND_CHOOSE_GENERAL];
                     if (callback != nullptr)
                         (this->*callback)(packet.getMessageBody());
@@ -799,7 +799,7 @@ void Client::arrangeSeats(const QVariant &seats_arr)
 
 void Client::notifyRoleChange(const QString &new_role)
 {
-    if (isRoleGameMode(ServerInfo.GameMode) && !new_role.isEmpty()) {
+    if (isRoleGameMode(ServerInfo.GameModeStr) && !new_role.isEmpty()) {
         QString prompt_str = tr("Your role is %1").arg(Sanguosha->translate(new_role));
         if (new_role != QStringLiteral("lord"))
             prompt_str += tr("\n wait for the lord player choosing general, please");
@@ -1010,7 +1010,7 @@ QString Client::getPlayerName(const QString &str)
         if (player->getGeneral2() != nullptr)
             general_name.append(QStringLiteral("/") + Sanguosha->translate(player->getGeneral2Name()));
 
-        if (isHegemonyGameMode(ServerInfo.GameMode)) {
+        if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
             if (ServerInfo.Enable2ndGeneral) {
                 if (player->generalName() == QStringLiteral("anjiang") && player->getGeneral2() != nullptr && player->getGeneral2Name() == QStringLiteral("anjiang")) {
                     general_name = Sanguosha->translate(QStringLiteral("SEAT(%1)").arg(QString::number(player->seat())));
@@ -1537,7 +1537,7 @@ void Client::killPlayer(const QVariant &player_name)
     alive_count--;
     Player *player = findPlayer(name);
     if (player == Self) {
-        if (isHegemonyGameMode(ServerInfo.GameMode)) {
+        if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
             foreach (const Skill *skill, Self->getHeadSkillList(true, true))
                 emit skill_detached(skill->name(), true);
             foreach (const Skill *skill, Self->getDeputySkillList(true, true))
@@ -1619,7 +1619,7 @@ void Client::askForGeneral(const QVariant &arg)
     bool single_result = false;
     bool can_convert = false;
 
-    if (!isHegemonyGameMode(ServerInfo.GameMode) || Self->hasFlag(QStringLiteral("Pingyi_Choose"))) {
+    if (!isHegemonyGameMode(ServerInfo.GameModeStr) || Self->hasFlag(QStringLiteral("Pingyi_Choose"))) {
         if (!tryParse(arg, generals))
             return;
     } else {
@@ -1629,7 +1629,7 @@ void Client::askForGeneral(const QVariant &arg)
         can_convert = args[2].toBool();
     }
 
-    if (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral && !Self->hasFlag(QStringLiteral("Pingyi_Choose"))) {
+    if (isHegemonyGameMode(ServerInfo.GameModeStr) && ServerInfo.Enable2ndGeneral && !Self->hasFlag(QStringLiteral("Pingyi_Choose"))) {
         emit generals_got(generals, single_result, can_convert);
         setStatus(AskForGeneralTaken);
     } else {
@@ -2376,7 +2376,7 @@ void Client::clearHighlightSkillName()
 
 QString Client::getSkillDescription(QString skillname) const
 {
-    bool normal_game = ServerInfo.DuringGame && isRoleGameMode(ServerInfo.GameMode);
+    bool normal_game = ServerInfo.DuringGame && isRoleGameMode(ServerInfo.GameModeStr);
     QString name = QStringLiteral("%1%2").arg(skillname, normal_game ? QStringLiteral("_p") : QString());
     QString des_src = Sanguosha->translate(QStringLiteral(":") + name);
     if (normal_game && des_src.startsWith(QStringLiteral(":")))

@@ -59,8 +59,8 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
 {
     name_label->setText(info.Name);
     address_label->setText(address);
-    game_mode_label->setText(Sanguosha->getModeName(info.GameMode));
-    int player_count = Sanguosha->getPlayerCount(info.GameMode);
+    game_mode_label->setText(Sanguosha->getModeName(info.GameModeStr));
+    int player_count = Sanguosha->getPlayerCount(info.GameModeStr);
     player_count_label->setText(QString::number(player_count));
     port_label->setText(QString::number(Config.ServerPort));
     two_general_label->setText(info.Enable2ndGeneral ? tr("Enabled") : tr("Disabled"));
@@ -101,7 +101,7 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
     static QIcon enabled_icon(QStringLiteral("image/system/enabled.png"));
     static QIcon disabled_icon(QStringLiteral("image/system/disabled.png"));
 
-    foreach (QString extension, info.Extensions) {
+    foreach (QString extension, info.EnabledPackages) {
         bool checked = !extension.startsWith(QStringLiteral("!"));
         if (!checked)
             extension.remove(QStringLiteral("!"));

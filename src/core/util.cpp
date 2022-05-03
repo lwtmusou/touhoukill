@@ -1,4 +1,6 @@
 #include "util.h"
+#include "global.h"
+#include "mode.h"
 
 #include <QStringList>
 #include <QVariant>
@@ -45,12 +47,14 @@ QList<int> VariantList2IntList(const QVariantList &variantlist)
     return intlist;
 }
 
-bool isRoleGameMode(const QString &mode)
+bool isRoleGameMode(const QString &name)
 {
-    return mode.endsWith(QStringLiteral("p")) || mode.endsWith(QStringLiteral("pd")) || mode.endsWith(QStringLiteral("pz"));
+    const Mode *mode = Mode::findMode(name);
+    return mode->category() == QSanguosha::ModeRole;
 }
 
-bool isHegemonyGameMode(const QString &mode)
+bool isHegemonyGameMode(const QString &name)
 {
-    return mode.startsWith(QStringLiteral("hegemony"));
+    const Mode *mode = Mode::findMode(name);
+    return mode->category() == QSanguosha::ModeHegemony;
 }

@@ -204,7 +204,7 @@ void Dashboard::_adjustComponentZValues(bool killed)
     _layUnder(_m_leftFrame);
     _layUnder(_m_middleFrame);
 
-    if (isHegemonyGameMode(ServerInfo.GameMode)) {
+    if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
         if ((button_widget != nullptr) && (_m_middleFrame != nullptr) && (_m_hegemonyroleComboBox != nullptr))
             _layBetween(button_widget, _m_middleFrame, _m_hegemonyroleComboBox);
     } else {
@@ -222,9 +222,9 @@ void Dashboard::_adjustComponentZValues(bool killed)
         _layUnder(_m_smallAvatarArea);
     if (_m_avatarArea != nullptr)
         _layUnder(_m_avatarArea);
-    if (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral && (_m_shadow_layer2 != nullptr))
+    if (isHegemonyGameMode(ServerInfo.GameModeStr) && ServerInfo.Enable2ndGeneral && (_m_shadow_layer2 != nullptr))
         _layUnder(_m_shadow_layer2);
-    if (isHegemonyGameMode(ServerInfo.GameMode) && (_m_shadow_layer1 != nullptr))
+    if (isHegemonyGameMode(ServerInfo.GameModeStr) && (_m_shadow_layer1 != nullptr))
         _layUnder(_m_shadow_layer1);
     if (_m_faceTurnedIcon2 != nullptr)
         _layUnder(_m_faceTurnedIcon2);
@@ -279,7 +279,7 @@ void Dashboard::_createRight()
     _m_rightSkillDock->setObjectName(QStringLiteral("right"));
 
     //hegemony
-    if (isHegemonyGameMode(ServerInfo.GameMode)) {
+    if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
         _m_shadow_layer1 = new QGraphicsRectItem(_m_rightFrame);
 
         _m_shadow_layer1->setRect(G_DASHBOARD_LAYOUT.m_avatarArea);
@@ -327,7 +327,7 @@ void Dashboard::killPlayer()
 {
     trusting_item->hide();
     trusting_text->hide();
-    if (isHegemonyGameMode(ServerInfo.GameMode)) {
+    if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
         _m_hegemonyroleComboBox->fix(m_player->getRoleString() == QStringLiteral("careerist") ? QStringLiteral("careerist") : m_player->getRoleString());
         _m_hegemonyroleComboBox->setEnabled(false);
     } else {
@@ -343,7 +343,7 @@ void Dashboard::killPlayer()
         _m_distanceItem->hide();
 
     _m_deathIcon->show();
-    if (ServerInfo.GameMode == QStringLiteral("04_1v3") && !Self->isLord()) {
+    if (ServerInfo.GameModeStr == QStringLiteral("04_1v3") && !Self->isLord()) {
         _m_votesGot = 6;
         updateVotes(false);
     }
@@ -1684,7 +1684,7 @@ void Dashboard::showSeat()
 
 void Dashboard::updateHiddenMark()
 {
-    if (!isHegemonyGameMode(ServerInfo.GameMode))
+    if (!isHegemonyGameMode(ServerInfo.GameModeStr))
         return;
     if ((m_player != nullptr) && RoomSceneInstance->game_started && !m_player->haveShownGeneral()) {
         leftHiddenMark->setVisible(m_player->isHidden(true));
@@ -1696,7 +1696,7 @@ void Dashboard::updateHiddenMark()
 
 void Dashboard::updateRightHiddenMark()
 {
-    if (!isHegemonyGameMode(ServerInfo.GameMode))
+    if (!isHegemonyGameMode(ServerInfo.GameModeStr))
         return;
     if (rightHiddenMark == nullptr)
         return;
@@ -1715,7 +1715,7 @@ void Dashboard::setPlayer(Player *player)
 
 void Dashboard::onHeadStateChanged()
 {
-    if (!isHegemonyGameMode(ServerInfo.GameMode))
+    if (!isHegemonyGameMode(ServerInfo.GameModeStr))
         return;
     if ((m_player != nullptr) && RoomSceneInstance->game_started && !m_player->haveShownGeneral())
         _m_shadow_layer1->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
@@ -1726,7 +1726,7 @@ void Dashboard::onHeadStateChanged()
 
 void Dashboard::onDeputyStateChanged()
 {
-    if (!isHegemonyGameMode(ServerInfo.GameMode))
+    if (!isHegemonyGameMode(ServerInfo.GameModeStr))
         return;
     if ((m_player != nullptr) && RoomSceneInstance->game_started && !m_player->hasShownGeneral2())
         _m_shadow_layer2->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
@@ -1738,7 +1738,7 @@ void Dashboard::onDeputyStateChanged()
 void Dashboard::refresh()
 {
     PlayerCardContainer::refresh();
-    if (!isHegemonyGameMode(ServerInfo.GameMode))
+    if (!isHegemonyGameMode(ServerInfo.GameModeStr))
         return;
     if ((m_player == nullptr) || (m_player->general() == nullptr) || !m_player->isAlive()) {
         _m_shadow_layer1->setBrush(Qt::NoBrush);

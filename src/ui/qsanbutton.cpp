@@ -165,7 +165,7 @@ void QSanButton::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void QSanButton::_onMouseClick(bool inside)
 {
-    if (isHegemonyGameMode(ServerInfo.GameMode)) {
+    if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
         bool changeState = true;
         if (inherits("QSanSkillButton")) {
             const Skill *skill = qobject_cast<const QSanSkillButton *>(this)->getSkill();
@@ -334,7 +334,7 @@ void QSanSkillButton::setSkill(const Skill *skill)
 #endif
     setToolTip(ClientInstance->getSkillDescription(skill->name()));
 
-    if (isHegemonyGameMode(ServerInfo.GameMode)) {
+    if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
         if (!Self->haveShownSkill(skill) && skill->canPreshow())
             setState(QSanButton::S_STATE_CANPRESHOW);
     }
@@ -354,7 +354,7 @@ void QSanSkillButton::setState(ButtonState state, bool ignore_change)
 
 void QSanSkillButton::setEnabled(bool enabled)
 {
-    if (isHegemonyGameMode(ServerInfo.GameMode)) {
+    if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
         if (!enabled && _m_skill->canPreshow() && (!Self->haveShownSkill(_m_skill) || Self->hasFlag(QStringLiteral("hiding")))) {
             setState(Self->havePreshownSkill(_m_skill) ? S_STATE_DISABLED : S_STATE_CANPRESHOW);
         } else {

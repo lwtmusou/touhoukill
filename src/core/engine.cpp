@@ -6,6 +6,7 @@
 #include "general.h"
 #include "global.h"
 #include "lua-wrapper.h"
+#include "mode.h"
 #include "package.h"
 #include "player.h"
 #include "protocol.h"
@@ -35,7 +36,6 @@ public:
     QHash<QString, QString> translations;
     QHash<QString, const General *> generals;
     QHash<QString, const Skill *> skills;
-    QMap<QString, QString> modes;
     QMap<QString, const CardPattern *> responsePatterns;
     QMap<QString, const CardPattern *> expPatterns;
     QHash<QString, const CardFace *> faces;
@@ -88,31 +88,6 @@ Engine::Engine()
     if (locale.length() == 0)
         locale = QStringLiteral("zh_CN");
     loadTranslations(locale);
-
-    // available game modes
-    d->modes[QStringLiteral("02p")] = QObject::tr("2 players");
-    d->modes[QStringLiteral("03p")] = QObject::tr("3 players");
-    d->modes[QStringLiteral("04p")] = QObject::tr("4 players");
-    d->modes[QStringLiteral("05p")] = QObject::tr("5 players");
-    d->modes[QStringLiteral("06p")] = QObject::tr("6 players");
-    d->modes[QStringLiteral("06pd")] = QObject::tr("6 players (2 renegades)");
-    d->modes[QStringLiteral("07p")] = QObject::tr("7 players");
-    d->modes[QStringLiteral("08p")] = QObject::tr("8 players");
-    d->modes[QStringLiteral("08pd")] = QObject::tr("8 players (2 renegades)");
-    d->modes[QStringLiteral("08pz")] = QObject::tr("8 players (0 renegade)");
-    d->modes[QStringLiteral("09p")] = QObject::tr("9 players");
-    d->modes[QStringLiteral("10pd")] = QObject::tr("10 players");
-    d->modes[QStringLiteral("10p")] = QObject::tr("10 players (1 renegade)");
-    d->modes[QStringLiteral("10pz")] = QObject::tr("10 players (0 renegade)");
-    d->modes[QStringLiteral("hegemony_02")] = QObject::tr("hegemony 2 players");
-    d->modes[QStringLiteral("hegemony_03")] = QObject::tr("hegemony 3 players");
-    d->modes[QStringLiteral("hegemony_04")] = QObject::tr("hegemony 4 players");
-    d->modes[QStringLiteral("hegemony_05")] = QObject::tr("hegemony 5 players");
-    d->modes[QStringLiteral("hegemony_06")] = QObject::tr("hegemony 6 players");
-    d->modes[QStringLiteral("hegemony_07")] = QObject::tr("hegemony 7 players");
-    d->modes[QStringLiteral("hegemony_08")] = QObject::tr("hegemony 8 players");
-    d->modes[QStringLiteral("hegemony_09")] = QObject::tr("hegemony 9 players");
-    d->modes[QStringLiteral("hegemony_10")] = QObject::tr("hegemony 10 players");
 }
 
 void Engine::addTranslationEntry(const QString &key, const QString &value)
@@ -187,7 +162,7 @@ void Engine::addBanPackage(const QString &package_name)
 
 QStringList Engine::getBanPackages() const
 {
-    if (isHegemonyGameMode(ServerInfo.GameMode)) {
+    if (ServerInfo.GameMode->category() == ModeHegemony) {
         QStringList ban;
         const QList<const Package *> &packs = packages();
         QStringList needPacks;
@@ -230,16 +205,6 @@ QString Engine::translate(const QString &to_translate) const
         res.append(d->translations.value(str, str));
 
     return res;
-}
-
-int Engine::getRoleIndex() const
-{
-    if (ServerInfo.GameMode == QStringLiteral("06_3v3") || ServerInfo.GameMode == QStringLiteral("06_XMode"))
-        return 4;
-    else if (isHegemonyGameMode(ServerInfo.GameMode))
-        return 5;
-    else
-        return 1;
 }
 
 const CardPattern *Engine::responsePattern(const QString &name) const
@@ -374,102 +339,31 @@ QStringList Engine::hegemonyKingdoms() const
     return hegemony_kingdoms;
 }
 
-QMap<QString, QString> Engine::getAvailableModes() const
+QString Engine::getModeName(const QString &name) const
 {
-    return d->modes;
+    return translate(name);
 }
 
-QString Engine::getModeName(const QString &mode) const
+int Engine::getPlayerCount(const QString &name) const
 {
-    if (d->modes.contains(mode))
-        return d->modes.value(mode);
+    const Mode *mode = Mode::findMode(name);
+    if (mode == nullptr)
+        return -1;
 
-    return QString();
-}
-
-int Engine::getPlayerCount(const QString &mode) const
-{
-    QRegularExpression rx(QStringLiteral("\\d+"));
-    QRegularExpressionMatchIterator it = rx.globalMatch(mode);
-    if (it.hasNext()) {
-        QRegularExpressionMatch match = it.next();
-        return match.captured().toInt(nullptr, 10);
-    }
-
-    return -1;
+    return mode->playersCount();
 }
 
 QString Engine::getRoles(const QString &mode) const
 {
-    int n = getPlayerCount(mode);
-
-    if (mode == QStringLiteral("02_1v1")) {
-        return QStringLiteral("ZN");
-    } else if (mode == QStringLiteral("04_1v3")) {
-        return QStringLiteral("ZFFF");
-    }
-    if (isHegemonyGameMode(mode)) {
-        QString role;
-        int num = getPlayerCount(mode);
-        QStringList roles;
-        roles << QStringLiteral("W") << QStringLiteral("S") << QStringLiteral("G") << QStringLiteral("Q"); //wei shu wu qun
-        for (int i = 0; i < num; ++i) {
-            int role_idx = QRandomGenerator::global()->generate() % roles.length();
-            role = role + roles[role_idx];
-        }
-        return role;
-    }
-
-    if (d->modes.contains(mode)) {
-        static const char *table1[] = {
-            "",          "",
-
-            "ZF", // 2
-            "ZFN", // 3
-            "ZNFF", // 4
-            "ZCFFN", // 5
-            "ZCFFFN", // 6
-            "ZCCFFFN", // 7
-            "ZCCFFFFN", // 8
-            "ZCCCFFFFN", // 9
-            "ZCCCFFFFFN" // 10
-        };
-
-        static const char *table2[] = {
-            "",          "",
-
-            "ZF", // 2
-            "ZFN", // 3
-            "ZNFF", // 4
-            "ZCFFN", // 5
-            "ZCFFNN", // 6
-            "ZCCFFFN", // 7
-            "ZCCFFFNN", // 8
-            "ZCCCFFFFN", // 9
-            "ZCCCFFFFNN" // 10
-        };
-
-        const char **table = mode.endsWith(QStringLiteral("d")) ? table2 : table1;
-        QString rolechar = QString::fromUtf8(table[n]);
-        if (mode.endsWith(QStringLiteral("z")))
-            rolechar.replace(QStringLiteral("N"), QStringLiteral("C"));
-
-        return rolechar;
-    } else if (mode.startsWith(QStringLiteral("@"))) {
-        if (n == 8)
-            return QStringLiteral("ZCCCNFFF");
-        else if (n == 6)
-            return QStringLiteral("ZCCNFF");
-    }
-    return QString();
+    return Mode::findMode(mode)->roles();
 }
 
 QStringList Engine::getRoleList(const QString &mode) const
 {
-    QString roles = getRoles(mode);
+    QString roles = Mode::findMode(mode)->roles();
 
     QStringList role_list;
-    for (int i = 0; roles[i] != nullptr; i++) {
+    for (int i = 0; roles[i] != QChar::Null; i++) {
         QString role;
         switch (roles[i].toLatin1()) {
         case 'Z':
@@ -603,7 +497,7 @@ QStringList Engine::getLimitedGeneralNames() const
     // TODO: reimplement this function in separated class Mode
     QStringList general_names;
     QHashIterator<QString, const General *> itor(d->generals);
-    if (ServerInfo.GameMode == QStringLiteral("04_1v3")) {
+    if (ServerInfo.GameModeStr == QStringLiteral("04_1v3")) {
         QList<const General *> hulao_generals = QList<const General *>();
         foreach (QString pack_name, config(QStringLiteral("hulao_packages")).toStringList()) {
             const Package *pack = findPackage(pack_name);

@@ -16,14 +16,20 @@ class ModePrivate;
 
 class QSGS_CORE_EXPORT Mode
 {
-public:
+protected:
     Mode(const QString &name, QSanguosha::ModeCategory category);
+
+public:
+    static QSet<QString> availableModes();
+    static const Mode *findMode(const QString &name);
+
     virtual ~Mode();
 
     const QString &name() const;
     QSanguosha::ModeCategory category() const;
 
     virtual int playersCount() const = 0;
+    virtual QString roles() const = 0;
     virtual Rule *rule() const = 0;
     virtual IdSet availableCards() const = 0;
     virtual QSet<const General *> availableGenerals() const = 0;
@@ -35,10 +41,6 @@ private:
     Q_DISABLE_COPY_MOVE(Mode)
 };
 
-namespace ModeFactory {
-QSGS_CORE_EXPORT Mode *createMode(const QString &name);
-}
-
 // I don't think that implementing these modes here is a good idea.
 // But there seems to be no other place for them
 
@@ -46,11 +48,13 @@ class GenericRoleModePrivate;
 
 class QSGS_CORE_EXPORT GenericRoleMode : public Mode
 {
-    GenericRoleMode(int loyalistCount, int rebelCount, int renegadeCount);
-    ~GenericRoleMode() override;
+    explicit GenericRoleMode(const QString &name);
 
 public:
+    ~GenericRoleMode() override;
+
     int playersCount() const override;
+    QString roles() const override;
     Rule *rule() const override;
     IdSet availableCards() const override;
     QSet<const General *> availableGenerals() const override;
@@ -58,6 +62,7 @@ public:
     void startGame(RoomObject *room) const override;
 
 private:
+    friend class Mode;
     GenericRoleModePrivate *const d;
 };
 
@@ -65,11 +70,13 @@ class GenericHegemonyModePrivate;
 
 class QSGS_CORE_EXPORT GenericHegemonyMode : public Mode
 {
-    GenericHegemonyMode(int players);
-    ~GenericHegemonyMode() override;
+    explicit GenericHegemonyMode(const QString &name);
 
 public:
+    ~GenericHegemonyMode() override;
+
     int playersCount() const override;
+    QString roles() const override;
     Rule *rule() const override;
     IdSet availableCards() const override;
     QSet<const General *> availableGenerals() const override;
@@ -77,6 +84,7 @@ public:
     void startGame(RoomObject *room) const override;
 
 private:
+    friend class Mode;
     GenericHegemonyModePrivate *const d;
 };
 

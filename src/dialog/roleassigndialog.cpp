@@ -23,7 +23,7 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
     list->setFlow(QListView::TopToBottom);
     list->setMovement(QListView::Static);
 
-    QStringList role_list = Sanguosha->getRoleList(ServerInfo.GameMode);
+    QStringList role_list = Sanguosha->getRoleList(ServerInfo.GameModeStr);
 
     if (Config.FreeAssignSelf) {
         QString text = QStringLiteral("%1[%2]").arg(Self->screenName(), Sanguosha->translate(QStringLiteral("lord")));
@@ -88,7 +88,7 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
 
 void RoleAssignDialog::accept()
 {
-    QStringList role_list = Sanguosha->getRoleList(ServerInfo.GameMode);
+    QStringList role_list = Sanguosha->getRoleList(ServerInfo.GameModeStr);
     QStringList real_list;
 
     QStringList names;

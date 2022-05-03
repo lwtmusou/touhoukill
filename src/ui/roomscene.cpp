@@ -82,7 +82,7 @@ RoomScene::RoomScene(QMainWindow *main_window, Client *client)
     RoomSceneInstance = this;
     _m_last_front_item = nullptr;
     _m_last_front_ZValue = 0;
-    int player_count = Sanguosha->getPlayerCount(ServerInfo.GameMode);
+    int player_count = Sanguosha->getPlayerCount(ServerInfo.GameModeStr);
     _m_roomSkin = &(QSanSkinFactory::getInstance().getCurrentSkinScheme().getRoomSkin());
     _m_roomLayout = &(G_ROOM_SKIN.getRoomLayout());
     _m_photoLayout = &(G_ROOM_SKIN.getPhotoLayout());
@@ -250,8 +250,8 @@ RoomScene::RoomScene(QMainWindow *main_window, Client *client)
     enemy_box = nullptr;
     self_box = nullptr;
 
-    if (ServerInfo.GameMode == QStringLiteral("06_3v3") || ServerInfo.GameMode == QStringLiteral("02_1v1") || ServerInfo.GameMode == QStringLiteral("06_XMode")) {
-        if (ServerInfo.GameMode != QStringLiteral("06_XMode")) {
+    if (ServerInfo.GameModeStr == QStringLiteral("06_3v3") || ServerInfo.GameModeStr == QStringLiteral("02_1v1") || ServerInfo.GameModeStr == QStringLiteral("06_XMode")) {
+        if (ServerInfo.GameModeStr != QStringLiteral("06_XMode")) {
             connect(ClientInstance, &Client::generals_filled, this, &RoomScene::fillGenerals);
             connect(ClientInstance, &Client::general_asked, this, &RoomScene::startGeneralSelection);
             connect(ClientInstance, &Client::general_taken, this, &RoomScene::takeGeneral);
@@ -261,7 +261,7 @@ RoomScene::RoomScene(QMainWindow *main_window, Client *client)
 
         arrange_button = nullptr;
 
-        if (ServerInfo.GameMode == QStringLiteral("02_1v1")) {
+        if (ServerInfo.GameModeStr == QStringLiteral("02_1v1")) {
             enemy_box = new KOFOrderBox(false, this);
             self_box = new KOFOrderBox(true, this);
 
@@ -349,7 +349,7 @@ RoomScene::RoomScene(QMainWindow *main_window, Client *client)
     m_rolesBoxBackground.load(QStringLiteral("image/system/state.png"));
     m_rolesBox = new QGraphicsPixmapItem;
     addItem(m_rolesBox);
-    QString roles = Sanguosha->getRoles(ServerInfo.GameMode);
+    QString roles = Sanguosha->getRoles(ServerInfo.GameModeStr);
     m_pileCardNumInfoTextBox = addText(QString());
     m_pileCardNumInfoTextBox->setParentItem(m_rolesBox);
     m_pileCardNumInfoTextBox->setDocument(ClientInstance->getLinesDoc());
@@ -603,7 +603,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         }
 
         //change bgm and backgroud
-        if (!isHegemonyGameMode(ServerInfo.GameMode) && player->isLord()) {
+        if (!isHegemonyGameMode(ServerInfo.GameModeStr) && player->isLord()) {
             ClientInstance->lord_name = newHeroName;
             setLordBGM(newHeroName);
             setLordBackdrop(newHeroName);
@@ -1105,7 +1105,7 @@ void RoomScene::updateTable()
     int pad = _m_roomLayout->m_scenePadding + _m_roomLayout->m_photoRoomPadding;
     int tablew = log_box_widget->x() - pad * 2;
     int tableh = sceneRect().height() - pad * 2 - dashboard->boundingRect().height();
-    if ((ServerInfo.GameMode == QStringLiteral("04_1v3") || ServerInfo.GameMode == QStringLiteral("06_3v3")) && game_started)
+    if ((ServerInfo.GameModeStr == QStringLiteral("04_1v3") || ServerInfo.GameModeStr == QStringLiteral("06_3v3")) && game_started)
         tableh -= _m_roomLayout->m_photoVDistance;
     int photow = _m_photoLayout->m_normalWidth;
     int photoh = _m_photoLayout->m_normalHeight;
@@ -1182,10 +1182,10 @@ void RoomScene::updateTable()
 
     int *seatToRegion = regularSeatIndex[photos.length() - 1];
     bool pkMode = false;
-    if (ServerInfo.GameMode == QStringLiteral("04_1v3") && game_started) {
+    if (ServerInfo.GameModeStr == QStringLiteral("04_1v3") && game_started) {
         seatToRegion = hulaoSeatIndex[Self->seat() - 1];
         pkMode = true;
-    } else if (ServerInfo.GameMode == QStringLiteral("06_3v3") && game_started) {
+    } else if (ServerInfo.GameModeStr == QStringLiteral("06_3v3") && game_started) {
         seatToRegion = kof3v3SeatIndex[(Self->seat() - 1) % 3];
         pkMode = true;
     }
@@ -1304,7 +1304,7 @@ void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsScene::mousePressEvent(event);
 
-    if (isHegemonyGameMode(ServerInfo.GameMode)) {
+    if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
         bool changed = false;
         QPoint point(event->pos().x(), event->pos().y());
         foreach (Photo *photo, photos) {
@@ -1511,7 +1511,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
         break;
     }
     case Qt::Key_F6: {
-        if (!Self || /*!Self->isOwner() || */ ClientInstance->players().length() < Sanguosha->getPlayerCount(ServerInfo.GameMode))
+        if (!Self || /*!Self->isOwner() || */ ClientInstance->players().length() < Sanguosha->getPlayerCount(ServerInfo.GameModeStr))
             break;
         foreach (const Player *p, ClientInstance->players()) {
             if (p != Self && p->isAlive() && p->getState() != QStringLiteral("robot"))
@@ -1733,7 +1733,7 @@ void RoomScene::chooseGeneral(const QStringList &generals, bool single_result, b
     if (!main_window->isActiveWindow())
         Audio::playSystemAudioEffect(QStringLiteral("prelude"));
 
-    if (isHegemonyGameMode(ServerInfo.GameMode) && ServerInfo.Enable2ndGeneral && !Self->hasFlag(QStringLiteral("Pingyi_Choose")) && !generals.isEmpty()) {
+    if (isHegemonyGameMode(ServerInfo.GameModeStr) && ServerInfo.Enable2ndGeneral && !Self->hasFlag(QStringLiteral("Pingyi_Choose")) && !generals.isEmpty()) {
         m_chooseGeneralBox->chooseGeneral(generals, false, single_result, QString(), nullptr, can_convert);
     } else {
         QDialog *dialog = nullptr;
@@ -2389,22 +2389,22 @@ void RoomScene::updateSkillButtons()
     //check duanchang?
     foreach (const Skill *skill, Self->getHeadSkillList()) {
         if (skill->isLordSkill()
-            && (Self->getRoleString() != QStringLiteral("lord") || ServerInfo.GameMode == QStringLiteral("06_3v3") || ServerInfo.GameMode == QStringLiteral("06_XMode")
-                || ServerInfo.GameMode == QStringLiteral("02_1v1") || Config.value(QStringLiteral("WithoutLordskill"), false).toBool()))
+            && (Self->getRoleString() != QStringLiteral("lord") || ServerInfo.GameModeStr == QStringLiteral("06_3v3") || ServerInfo.GameModeStr == QStringLiteral("06_XMode")
+                || ServerInfo.GameModeStr == QStringLiteral("02_1v1") || Config.value(QStringLiteral("WithoutLordskill"), false).toBool()))
             continue;
 
         addSkillButton(skill, true);
     }
     foreach (const Skill *skill, Self->getDeputySkillList()) {
         if (skill->isLordSkill()
-            && (Self->getRoleString() != QStringLiteral("lord") || ServerInfo.GameMode == QStringLiteral("06_3v3") || ServerInfo.GameMode == QStringLiteral("06_XMode")
-                || ServerInfo.GameMode == QStringLiteral("02_1v1") || Config.value(QStringLiteral("WithoutLordskill"), false).toBool()))
+            && (Self->getRoleString() != QStringLiteral("lord") || ServerInfo.GameModeStr == QStringLiteral("06_3v3") || ServerInfo.GameModeStr == QStringLiteral("06_XMode")
+                || ServerInfo.GameModeStr == QStringLiteral("02_1v1") || Config.value(QStringLiteral("WithoutLordskill"), false).toBool()))
             continue;
 
         addSkillButton(skill, false);
     }
 
-    if (isHegemonyGameMode(ServerInfo.GameMode)) {
+    if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
         foreach (QSanSkillButton *button, m_skillButtons) {
             const Skill *skill = button->getSkill();
             button->setEnabled(skill->canPreshow() && !Self->haveShownSkill(skill));
@@ -3663,12 +3663,12 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const Player *> &play
         QIcon icon(QStringLiteral("image/system/roles/%1.png").arg(player->getRoleString()));
         item->setIcon(icon);
         QString role = player->getRoleString();
-        if (ServerInfo.GameMode.startsWith(QStringLiteral("06_"))) {
+        if (ServerInfo.GameModeStr.startsWith(QStringLiteral("06_"))) {
             if (role == QStringLiteral("lord") || role == QStringLiteral("renegade"))
                 role = QStringLiteral("leader");
             else
                 role = QStringLiteral("guard");
-        } else if (ServerInfo.GameMode == QStringLiteral("04_1v3")) {
+        } else if (ServerInfo.GameModeStr == QStringLiteral("04_1v3")) {
             int seat = player->seat();
             switch (seat) {
             case 1:
@@ -3684,7 +3684,7 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const Player *> &play
                 role = QStringLiteral("general");
                 break;
             }
-        } else if (ServerInfo.GameMode == QStringLiteral("02_1v1")) {
+        } else if (ServerInfo.GameModeStr == QStringLiteral("02_1v1")) {
             if (role == QStringLiteral("lord"))
                 role = QStringLiteral("defensive");
             else
@@ -3726,7 +3726,7 @@ void RoomScene::killPlayer(const QString &who)
         dashboard->update();
         general = Self->general();
         item2player.remove(dashboard);
-        if (ServerInfo.GameMode == QStringLiteral("02_1v1"))
+        if (ServerInfo.GameModeStr == QStringLiteral("02_1v1"))
             self_box->killPlayer(general->name());
     } else {
         Photo *photo = name2photo[who];
@@ -3735,7 +3735,7 @@ void RoomScene::killPlayer(const QString &who)
         photo->update();
         item2player.remove(photo);
         general = photo->getPlayer()->general();
-        if (ServerInfo.GameMode == QStringLiteral("02_1v1"))
+        if (ServerInfo.GameModeStr == QStringLiteral("02_1v1"))
             enemy_box->killPlayer(general->name());
     }
 
@@ -4083,7 +4083,7 @@ void RoomScene::onGameStart()
         QString id = Config.GameMode;
         id.replace(QStringLiteral("_mini_"), QString());
         _m_currentStage = id.toInt();
-    } else if (ServerInfo.GameMode == QStringLiteral("06_3v3") || ServerInfo.GameMode == QStringLiteral("06_XMode") || ServerInfo.GameMode == QStringLiteral("02_1v1")) {
+    } else if (ServerInfo.GameModeStr == QStringLiteral("06_3v3") || ServerInfo.GameModeStr == QStringLiteral("06_XMode") || ServerInfo.GameModeStr == QStringLiteral("02_1v1")) {
         chat_widget->show();
         log_box->show();
 
@@ -4107,7 +4107,7 @@ void RoomScene::onGameStart()
 
     game_started = true;
 
-    if (isHegemonyGameMode(ServerInfo.GameMode)) {
+    if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
         dashboard->refresh();
         dashboard->showSeat();
         foreach (Photo *photo, photos)
@@ -4196,9 +4196,9 @@ void RoomScene::showSkillInvocation(const QString &who, const QString &skill_nam
     QStringList skills = Sanguosha->skillNames();
     if (skill_name == QStringLiteral("GameRule_AskForGeneralShowHead") || skill_name == QStringLiteral("GameRule_AskForGeneralShowDeputy"))
         return;
-    if (!isHegemonyGameMode(ServerInfo.GameMode) && !player->hasValidSkill(skill_name) && !player->hasEquipSkill(skill_name))
+    if (!isHegemonyGameMode(ServerInfo.GameModeStr) && !player->hasValidSkill(skill_name) && !player->hasEquipSkill(skill_name))
         return;
-    else if (isHegemonyGameMode(ServerInfo.GameMode) && !skills.contains(skill_name) && !player->hasEquipSkill(skill_name))
+    else if (isHegemonyGameMode(ServerInfo.GameModeStr) && !skills.contains(skill_name) && !player->hasEquipSkill(skill_name))
         return;
 
     QString type = QStringLiteral("#InvokeSkill");
@@ -4598,9 +4598,9 @@ void RoomScene::fillGenerals3v3(const QStringList &names)
 
 void RoomScene::fillGenerals(const QStringList &names)
 {
-    if (ServerInfo.GameMode == QStringLiteral("06_3v3"))
+    if (ServerInfo.GameModeStr == QStringLiteral("06_3v3"))
         fillGenerals3v3(names);
-    else if (ServerInfo.GameMode == QStringLiteral("02_1v1"))
+    else if (ServerInfo.GameModeStr == QStringLiteral("02_1v1"))
         fillGenerals1v1(names);
 }
 
@@ -4646,7 +4646,7 @@ void RoomScene::takeGeneral(const QString &who, const QString &name, const QStri
 
     int x = 0;
     int y = 0;
-    if (ServerInfo.GameMode == QStringLiteral("06_3v3")) {
+    if (ServerInfo.GameModeStr == QStringLiteral("06_3v3")) {
         x = 63 + (to_add->length() - 1) * (148 - 62);
         y = self_taken ? 452 : 85;
     } else {
@@ -4658,8 +4658,8 @@ void RoomScene::takeGeneral(const QString &who, const QString &name, const QStri
     general_item->setHomePos(QPointF(x, y));
     general_item->goBack(true);
 
-    if (((ServerInfo.GameMode == QStringLiteral("06_3v3") && Self->getRoleString() != QStringLiteral("lord") && Self->getRoleString() != QStringLiteral("renegade"))
-         || (ServerInfo.GameMode == QStringLiteral("02_1v1") && rule == QStringLiteral("OL")))
+    if (((ServerInfo.GameModeStr == QStringLiteral("06_3v3") && Self->getRoleString() != QStringLiteral("lord") && Self->getRoleString() != QStringLiteral("renegade"))
+         || (ServerInfo.GameModeStr == QStringLiteral("02_1v1") && rule == QStringLiteral("OL")))
         && general_items.isEmpty()) {
         if (selector_box != nullptr) {
             selector_box->hide();
@@ -4735,10 +4735,10 @@ void RoomScene::startArrange(const QString &to_arrange)
     arrange_items.clear();
     QString mode;
     QList<QPointF> positions;
-    if (ServerInfo.GameMode == QStringLiteral("06_3v3")) {
+    if (ServerInfo.GameModeStr == QStringLiteral("06_3v3")) {
         mode = QStringLiteral("3v3");
         positions << QPointF(279, 356) << QPointF(407, 356) << QPointF(535, 356);
-    } else if (ServerInfo.GameMode == QStringLiteral("02_1v1")) {
+    } else if (ServerInfo.GameModeStr == QStringLiteral("02_1v1")) {
         mode = QStringLiteral("1v1");
         if (down_generals.length() == 5)
             positions << QPointF(130, 335) << QPointF(260, 335) << QPointF(390, 335);
@@ -4746,7 +4746,7 @@ void RoomScene::startArrange(const QString &to_arrange)
             positions << QPointF(173, 335) << QPointF(303, 335) << QPointF(433, 335);
     }
 
-    if (ServerInfo.GameMode == QStringLiteral("06_XMode")) {
+    if (ServerInfo.GameModeStr == QStringLiteral("06_XMode")) {
         QStringList arrangeList = to_arrange.split(QStringLiteral("+"));
         if (arrangeList.length() == 5)
             positions << QPointF(130, 335) << QPointF(260, 335) << QPointF(390, 335);
@@ -4765,7 +4765,7 @@ void RoomScene::startArrange(const QString &to_arrange)
         selector_box->setPos(m_tableCenterPos);
     }
 
-    if (ServerInfo.GameMode == QStringLiteral("06_XMode")) {
+    if (ServerInfo.GameModeStr == QStringLiteral("06_XMode")) {
         Q_ASSERT(!to_arrange.isNull());
         down_generals.clear();
         foreach (QString name, to_arrange.split(QStringLiteral("+"))) {
@@ -4845,7 +4845,7 @@ void RoomScene::toggleArrange()
 
     for (int i = 0; i < down_generals.length(); i++) {
         QPointF pos;
-        if (ServerInfo.GameMode == QStringLiteral("06_3v3"))
+        if (ServerInfo.GameModeStr == QStringLiteral("06_3v3"))
             pos = QPointF(65 + G_COMMON_LAYOUT.m_cardNormalWidth / 2 + i * 86, 452 + G_COMMON_LAYOUT.m_cardNormalHeight / 2);
         else
             pos = QPointF(43 + G_COMMON_LAYOUT.m_cardNormalWidth / 2 + i * 86, 60 + G_COMMON_LAYOUT.m_cardNormalHeight / 2 + 3 * 120);
@@ -5101,7 +5101,7 @@ QRect RoomScene::getBubbleChatBoxShowArea(const QString &who) const
 
 void RoomScene::highlightSkillButton(const QString &skill_name, bool highlight)
 {
-    if (isHegemonyGameMode(ServerInfo.GameMode))
+    if (isHegemonyGameMode(ServerInfo.GameModeStr))
         return;
     if (skill_name.isNull() || skill_name.isEmpty())
         return;

@@ -48,29 +48,6 @@ public:
 
     static Engine *instance();
 
-#ifndef SWIG
-    // Don't expose functions which are to be removed to SWIG
-
-    // move to ServerInfo
-    void addBanPackage(const QString &package_name);
-    QStringList getBanPackages() const;
-
-    // move to Mode?
-    QMap<QString, QString> getAvailableModes() const;
-    QString getModeName(const QString &mode) const;
-    int getPlayerCount(const QString &mode) const;
-    QString getRoles(const QString &mode) const;
-    QStringList getRoleList(const QString &mode) const;
-    int getRoleIndex() const;
-    int availableGeneralCount() const;
-    QSet<QString> getRandomLords() const;
-    QSet<QString> getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
-    QString getRandomGeneralName() const;
-    QStringList getLimitedGeneralNames() const;
-    bool isGeneralHidden(const QString &general_name) const;
-    QList<int> getRandomCards() const;
-#endif
-
     void loadTranslations(const QString &locale);
     void addTranslationEntry(const QString &key, const QString &value);
     QString translate(const QString &to_translate) const;
@@ -113,6 +90,35 @@ public:
     void unregisterTrigger(const QString &name);
 
     QVariant config(const QString &key) const;
+
+#ifndef SWIG
+    // Don't expose functions which are to be removed to SWIG
+
+    // move to ServerInfo
+    void addBanPackage(const QString &package_name);
+    QStringList getBanPackages() const;
+
+    // move to Mode?
+    int availableGeneralCount() const;
+    QSet<QString> getRandomLords() const;
+    QSet<QString> getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
+    QString getRandomGeneralName() const;
+    QStringList getLimitedGeneralNames() const;
+    bool isGeneralHidden(const QString &general_name) const;
+    QList<int> getRandomCards() const;
+
+#ifndef QSGS_CORE_NODEPRECATED
+
+public:
+#else
+
+private:
+#endif
+    Q_DECL_DEPRECATED QString getModeName(const QString &name) const;
+    Q_DECL_DEPRECATED int getPlayerCount(const QString &name) const;
+    Q_DECL_DEPRECATED QString getRoles(const QString &mode) const;
+    Q_DECL_DEPRECATED QStringList getRoleList(const QString &mode) const;
+#endif
 
 private:
     Engine();

@@ -228,7 +228,7 @@ void PlayerCardContainer::updateAvatar()
 
         if (m_player->general() != nullptr) {
             QString kingdom = m_player->kingdom();
-            if (!isHegemonyGameMode(ServerInfo.GameMode)) {
+            if (!isHegemonyGameMode(ServerInfo.GameModeStr)) {
                 _paintPixmap(_m_kingdomIcon, _m_layout->m_kingdomIconArea, G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON), kingdom),
                              _getAvatarParent());
                 if (ServerInfo.Enable2ndGeneral && getPlayer() == Self)
@@ -317,7 +317,7 @@ void PlayerCardContainer::updateSmallAvatar()
         if (!fake_general) {
             _m_smallAvatarArea->setToolTip(getPlayerSkillDescription(m_player, true, QStringLiteral("deputy")));
             QString kingdom = m_player->kingdom();
-            if (isHegemonyGameMode(ServerInfo.GameMode))
+            if (isHegemonyGameMode(ServerInfo.GameModeStr))
                 kingdom = general->kingdom();
 
             _paintPixmap(_m_dashboardSecondaryKingdomColorMaskIcon, _m_layout->m_dashboardSecondaryKingdomMaskArea,
@@ -577,7 +577,7 @@ void PlayerCardContainer::refresh()
             _m_chainIcon->setVisible(m_player->isChained());
         if (_m_actionIcon != nullptr)
             _m_actionIcon->setVisible(m_player->hasFlag(QStringLiteral("actioned")));
-        if ((_m_deathIcon != nullptr) && !(ServerInfo.GameMode == QStringLiteral("04_1v3") && m_player->generalName() != QStringLiteral("yuyuko_1v32")))
+        if ((_m_deathIcon != nullptr) && !(ServerInfo.GameModeStr == QStringLiteral("04_1v3") && m_player->generalName() != QStringLiteral("yuyuko_1v32")))
             _m_deathIcon->setVisible(m_player->isDead());
         if (leftDisableShowLock != nullptr)
             leftDisableShowLock->setVisible(!m_player->haveShownGeneral() && !m_player->disableShow(true).isEmpty());
@@ -606,7 +606,7 @@ void PlayerCardContainer::repaintAll()
         startHuaShen(_m_huashenGeneralName, _m_huashenSkillName, _m_huashenGeneral2Name, _m_huashenSkill2Name);
     }
 
-    const char *face_turned_mask = isHegemonyGameMode(ServerInfo.GameMode) ? QSanRoomSkin::S_SKIN_KEY_FACETURNEDMASK_HEGEMONY : QSanRoomSkin::S_SKIN_KEY_FACETURNEDMASK;
+    const char *face_turned_mask = isHegemonyGameMode(ServerInfo.GameModeStr) ? QSanRoomSkin::S_SKIN_KEY_FACETURNEDMASK_HEGEMONY : QSanRoomSkin::S_SKIN_KEY_FACETURNEDMASK;
     if (this->getPlayer() == Self) {
         _paintPixmap(_m_faceTurnedIcon, _m_layout->m_avatarArea, QString::fromUtf8(face_turned_mask), _getAvatarParent());
         if (ServerInfo.Enable2ndGeneral)
@@ -633,10 +633,10 @@ void PlayerCardContainer::repaintAll()
                          _getAvatarParent());
     }
 
-    if (!isHegemonyGameMode(ServerInfo.GameMode) && _m_roleComboBox != nullptr)
+    if (!isHegemonyGameMode(ServerInfo.GameModeStr) && _m_roleComboBox != nullptr)
         _m_roleComboBox->setPos(_m_layout->m_roleComboBoxPos);
 
-    if (isHegemonyGameMode(ServerInfo.GameMode) && _m_hegemonyroleComboBox != nullptr)
+    if (isHegemonyGameMode(ServerInfo.GameModeStr) && _m_hegemonyroleComboBox != nullptr)
         _m_hegemonyroleComboBox->setPos(_m_layout->m_roleComboBoxPos);
 
     _m_hpBox->setIconSize(_m_layout->m_magatamaSize);
@@ -667,7 +667,7 @@ void PlayerCardContainer::repaintAll()
 
 void PlayerCardContainer::_createRoleComboBox()
 {
-    if (isHegemonyGameMode(ServerInfo.GameMode))
+    if (isHegemonyGameMode(ServerInfo.GameModeStr))
         _m_hegemonyroleComboBox = new HegemonyRoleComboBox(_getRoleComboBoxParent());
     else
         _m_roleComboBox = new RoleComboBox(_getRoleComboBoxParent());
@@ -1129,7 +1129,7 @@ void PlayerCardContainer::_adjustComponentZValues(bool killed)
     _layUnder(_m_markItem);
     _layUnder(_m_progressBarItem);
     _layUnder(_m_roleShownIcon);
-    if (isHegemonyGameMode(ServerInfo.GameMode))
+    if (isHegemonyGameMode(ServerInfo.GameModeStr))
         _layUnder(_m_hegemonyroleComboBox);
     else
         _layUnder(_m_roleComboBox);
@@ -1277,7 +1277,7 @@ void PlayerCardContainer::_updateDeathIcon()
 
 void PlayerCardContainer::killPlayer()
 {
-    if (isHegemonyGameMode(ServerInfo.GameMode)) {
+    if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
         _m_hegemonyroleComboBox->fix(m_player->getRoleString() == QStringLiteral("careerist") ? QStringLiteral("careerist") : m_player->getRoleString());
         _m_hegemonyroleComboBox->setEnabled(false);
     } else {
@@ -1296,7 +1296,7 @@ void PlayerCardContainer::killPlayer()
     effect->setStrength(1.0);
     _m_groupMain->setGraphicsEffect(effect);
     refresh();
-    if (ServerInfo.GameMode == QStringLiteral("04_1v3") && !m_player->isLord()) {
+    if (ServerInfo.GameModeStr == QStringLiteral("04_1v3") && !m_player->isLord()) {
         _m_deathIcon->hide();
         _m_votesGot = 6;
         updateVotes(false, true);
@@ -1640,7 +1640,7 @@ QString PlayerCardContainer::getPlayerSkillDescription(Player *p, bool yellow, c
     foreach (const Skill *skill, skillList) {
         if (skill->isAttachedSkill())
             continue;
-        if (!isHegemonyGameMode(ServerInfo.GameMode) && !p->hasValidSkill(skill->name()))
+        if (!isHegemonyGameMode(ServerInfo.GameModeStr) && !p->hasValidSkill(skill->name()))
             continue;
 
         //remove lord skill Description
@@ -1668,7 +1668,7 @@ void PlayerCardContainer::showSeat()
 QString PlayerCardContainer::getDeathPixmapPath(const Player *p) const
 {
     QString basename;
-    if (ServerInfo.GameMode == QStringLiteral("06_3v3") || ServerInfo.GameMode == QStringLiteral("06_XMode")) {
+    if (ServerInfo.GameModeStr == QStringLiteral("06_3v3") || ServerInfo.GameModeStr == QStringLiteral("06_XMode")) {
         if (p->getRoleString() == QStringLiteral("lord") || p->getRoleString() == QStringLiteral("renegade"))
             basename = QStringLiteral("marshal");
         else

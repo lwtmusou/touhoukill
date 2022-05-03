@@ -3,6 +3,7 @@
 #include "choosegeneraldialog.h"
 #include "engine.h"
 #include "general.h"
+#include "mode.h"
 #include "nativesocket.h"
 #include "package.h"
 #include "protocol.h"
@@ -468,7 +469,7 @@ void ServerDialog::edit1v1Banlist()
 QGroupBox *ServerDialog::create1v1Box()
 {
     QGroupBox *box = new QGroupBox(tr("1v1 options"));
-    box->setEnabled(Config.GameMode == QStringLiteral("02_1v1"));
+    box->setEnabled(Config.GameMode == QStringLiteral("1v1"));
     box->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     QVBoxLayout *vlayout = new QVBoxLayout;
@@ -496,7 +497,7 @@ QGroupBox *ServerDialog::create1v1Box()
 QGroupBox *ServerDialog::create3v3Box()
 {
     QGroupBox *box = new QGroupBox(tr("3v3 options"));
-    box->setEnabled(Config.GameMode == QStringLiteral("06_3v3"));
+    box->setEnabled(Config.GameMode == QStringLiteral("3v3"));
     box->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     QVBoxLayout *vlayout = new QVBoxLayout;
@@ -536,7 +537,7 @@ QGroupBox *ServerDialog::create3v3Box()
 QGroupBox *ServerDialog::createXModeBox()
 {
     QGroupBox *box = new QGroupBox(tr("XMode options"));
-    box->setEnabled(Config.GameMode == QStringLiteral("06_XMode"));
+    box->setEnabled(Config.GameMode == QStringLiteral("xMode"));
     box->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     QComboBox *roleChooseComboBox = new QComboBox;
@@ -611,36 +612,36 @@ QGroupBox *ServerDialog::createGameModeBox()
     QObjectList item_list;
 
     // normal modes
-    QMap<QString, QString> modes = Sanguosha->getAvailableModes();
-    QMapIterator<QString, QString> itor(modes);
+    QSet<QString> modes = Mode::availableModes();
+    QSetIterator<QString> itor(modes);
     while (itor.hasNext()) {
-        itor.next();
+        QString mode = itor.next();
 
-        QRadioButton *button = new QRadioButton(itor.value());
-        button->setObjectName(itor.key());
+        QRadioButton *button = new QRadioButton(Sanguosha->translate(mode));
+        button->setObjectName(mode);
         mode_group->addButton(button);
 
-        if (itor.key() == Config.GameMode)
+        if (mode == Config.GameMode)
             button->setChecked(true);
 
         connect(button, &QAbstractButton::toggled, this, &ServerDialog::checkCurrentBtnIsHegemonyMode);
 
-        if (itor.key() == QStringLiteral("02_1v1")) {
+        if (mode == QStringLiteral("1v1")) {
             QGroupBox *box = create1v1Box();
             connect(button, &QAbstractButton::toggled, box, &QWidget::setEnabled);
 
             item_list << button << box;
-        } else if (itor.key() == QStringLiteral("06_3v3")) {
+        } else if (mode == QStringLiteral("3v3")) {
             QGroupBox *box = create3v3Box();
             connect(button, &QAbstractButton::toggled, box, &QWidget::setEnabled);
 
             item_list << button << box;
-        } else if (itor.key() == QStringLiteral("06_XMode")) {
+        } else if (mode == QStringLiteral("xMode")) {
             QGroupBox *box = createXModeBox();
             connect(button, &QAbstractButton::toggled, box, &QWidget::setEnabled);
 
             item_list << button << box;
-        } else if (itor.key() == QStringLiteral("hegemony_10")) {
+        } else if (mode == QStringLiteral("hegemony_10")) {
             hegemonyBox = createHegemonyBox();
 
             item_list << button << hegemonyBox;
@@ -959,7 +960,7 @@ Server::Server(QObject *parent)
     // Synchonize ServerInfo and Config
     ServerInfo.DuringGame = true;
     ServerInfo.Name = Config.ServerName;
-    ServerInfo.GameMode = Config.GameMode;
+    ServerInfo.GameModeStr = Config.GameMode;
     if (Config.GameMode == QStringLiteral("02_1v1"))
         ServerInfo.GameRuleMode = Config.value(QStringLiteral("1v1/Rule"), QStringLiteral("2013")).toString();
     else if (Config.GameMode == QStringLiteral("06_3v3"))
@@ -974,7 +975,7 @@ Server::Server(QObject *parent)
         if (Sanguosha->getBanPackages().contains(package_name))
             package_name = QStringLiteral("!") + package_name;
 
-        ServerInfo.Extensions << package_name;
+        ServerInfo.EnabledPackages << package_name;
     }
 
     ServerInfo.RandomSeat = Config.RandomSeat;

@@ -1,5 +1,6 @@
 #include "serverinfostruct.h"
 #include "engine.h"
+#include "mode.h"
 #include "package.h"
 
 #include <QRegularExpression>
@@ -26,6 +27,23 @@ time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QS
     return timeOut;
 }
 
+ServerInfoStruct::ServerInfoStruct()
+    : GameMode(nullptr)
+    , OperationTimeout(0)
+    , NullificationCountDown(0)
+    , RandomSeat(false)
+    , EnableCheat(false)
+    , FreeChoose(false)
+    , Enable2ndGeneral(false)
+    , EnableSame(false)
+    , EnableAI(false)
+    , DisableChat(false)
+    , MaxHpScheme(0)
+    , Scheme0Subtraction(0)
+    , DuringGame(false)
+{
+}
+
 bool ServerInfoStruct::parseLegacy(const QString &str)
 {
     QRegularExpression rx(QRegularExpression::anchoredPattern(QStringLiteral("(.*):(@?\\w+):(\\d+):(\\d+):([+\\w]*):([RCFSTBHAMN123a-r]*)")));
@@ -44,11 +62,17 @@ bool ServerInfoStruct::parseLegacy(const QString &str)
         const QString &server_name = texts.at(1);
         Name = QString::fromUtf8(QByteArray::fromBase64(server_name.toLatin1()));
 
-        GameMode = texts.at(2);
-        if (GameMode.startsWith(QStringLiteral("02_1v1")) || GameMode.startsWith(QStringLiteral("06_3v3"))) {
-            GameMode = GameMode.mid(0, 6);
-            GameRuleMode = GameMode.mid(6);
+        GameModeStr = texts.at(2);
+
+        GameMode = Mode::findMode(GameModeStr);
+        if (GameMode == nullptr)
+            return false;
+
+        if (GameModeStr.startsWith(QStringLiteral("1v1")) || GameModeStr.startsWith(QStringLiteral("3v3"))) {
+            GameModeStr = GameModeStr.mid(0, 4);
+            GameRuleMode = GameModeStr.mid(6);
         }
+
         OperationTimeout = texts.at(3).toInt();
         NullificationCountDown = texts.at(4).toInt();
 
@@ -56,10 +80,8 @@ bool ServerInfoStruct::parseLegacy(const QString &str)
         const QList<const Package *> &packages = Sanguosha->packages();
         foreach (const Package *package, packages) {
             QString package_name = package->name();
-            if (ban_packages.contains(package_name))
-                package_name = QStringLiteral("!") + package_name;
-
-            Extensions << package_name;
+            if (!ban_packages.contains(package_name))
+                EnabledPackages << package_name;
         }
 
         const QString &flags = texts.at(6);
@@ -107,13 +129,15 @@ bool ServerInfoStruct::parse(const QVariant &object)
         if (Name.isEmpty())
             return false;
 
-        GameMode = ob.value(QStringLiteral("GameMode")).toString();
-        if (GameMode.isEmpty())
+        GameModeStr = ob.value(QStringLiteral("GameMode")).toString();
+        if (GameModeStr.isEmpty())
             return false;
-        if (GameMode.startsWith(QStringLiteral("02_1v1")) || GameMode.startsWith(QStringLiteral("06_3v3"))) {
-            GameMode = GameMode.mid(0, 6);
-            GameRuleMode = GameMode.mid(6);
-        }
+
+        GameMode = Mode::findMode(GameModeStr);
+        if (GameMode == nullptr)
+            return false;
+
+        GameRuleMode = ob.value(QStringLiteral("GameRuleMode")).toString();
 
         bool ok = false;
         OperationTimeout = ob.value(QStringLiteral("OperationTimeout")).toInt(&ok);
@@ -127,7 +151,7 @@ bool ServerInfoStruct::parse(const QVariant &object)
 
         DuringGame = true;
 
-        JsonUtils::tryParse(ob.value(QStringLiteral("Extensions")), Extensions);
+        JsonUtils::tryParse(ob.value(QStringLiteral("EnabledPackages")), EnabledPackages);
         RandomSeat = ob.value(QStringLiteral("RandomSeat"), false).toBool();
         EnableCheat = ob.value(QStringLiteral("EnableCheat"), false).toBool();
         FreeChoose = ob.value(QStringLiteral("FreeChoose"), false).toBool();
@@ -158,12 +182,11 @@ QVariant ServerInfoStruct::serialize() const
         return m;
 
     m[QStringLiteral("ServerName")] = Name;
-    m[QStringLiteral("GameMode")] = GameMode;
-    if (GameMode.startsWith(QStringLiteral("02_1v1")) || GameMode.startsWith(QStringLiteral("06_3v3")))
-        m[QStringLiteral("GameMode")] = GameMode + GameRuleMode;
+    m[QStringLiteral("GameMode")] = GameModeStr;
+    m[QStringLiteral("GameRuleMode")] = GameRuleMode;
     m[QStringLiteral("OperationTimeout")] = OperationTimeout;
     m[QStringLiteral("NullificationCountDown")] = NullificationCountDown;
-    m[QStringLiteral("Extensions")] = JsonUtils::toJsonArray(Extensions);
+    m[QStringLiteral("EnabledPackages")] = JsonUtils::toJsonArray(EnabledPackages);
     m[QStringLiteral("RandomSeat")] = RandomSeat;
     m[QStringLiteral("EnableCheat")] = EnableCheat;
     m[QStringLiteral("FreeChoose")] = FreeChoose;

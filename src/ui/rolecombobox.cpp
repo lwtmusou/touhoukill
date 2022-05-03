@@ -1,6 +1,7 @@
 #include "rolecombobox.h"
 #include "engine.h"
 #include "photo.h"
+#include "util.h"
 
 #include <QGraphicsScene>
 
@@ -22,7 +23,7 @@ void RoleComboBoxItem::setRole(const QString &role)
 {
     m_role = role;
     if (m_number != 0 && role != QStringLiteral("unknown"))
-        load(QStringLiteral("image/system/roles/%1-%2.png").arg( m_role , m_number), m_size, false);
+        load(QStringLiteral("image/system/roles/%1-%2.png").arg(m_role, m_number), m_size, false);
     else
         load(QStringLiteral("image/system/roles/%1.png").arg(m_role), m_size, false);
 }
@@ -35,7 +36,7 @@ void RoleComboBoxItem::mousePressEvent(QGraphicsSceneMouseEvent * /*event*/)
 RoleComboBox::RoleComboBox(QGraphicsItem *parent)
     : QGraphicsObject(parent)
 {
-    int index = Sanguosha->getRoleIndex();
+    int index = getRoleIndex();
     QSize size(S_ROLE_COMBO_BOX_WIDTH, S_ROLE_COMBO_BOX_HEIGHT);
     m_currentRole = new RoleComboBoxItem(QStringLiteral("unknown"), index, size);
     m_currentRole->setParentItem(this);
@@ -112,4 +113,14 @@ void RoleComboBox::fix(const QString &role)
     foreach (RoleComboBoxItem *item, items)
         delete item;
     items.clear();
+}
+
+int RoleComboBox::getRoleIndex()
+{
+    if (ServerInfo.GameModeStr == QStringLiteral("3v3") || ServerInfo.GameModeStr == QStringLiteral("XMode"))
+        return 4;
+    else if (isHegemonyGameMode(ServerInfo.GameModeStr))
+        return 5;
+    else
+        return 1;
 }

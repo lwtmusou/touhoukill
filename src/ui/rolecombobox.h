@@ -4,8 +4,8 @@
 #include <QObject>
 
 #include "QSanSelectableItem.h"
-#include "serverinfostruct.h"
 #include "player.h"
+#include "serverinfostruct.h"
 
 class Photo;
 
@@ -52,6 +52,8 @@ protected:
 private:
     QList<RoleComboBoxItem *> items;
     RoleComboBoxItem *m_currentRole;
+
+    static int getRoleIndex();
 
 private slots:
     void collapse();
