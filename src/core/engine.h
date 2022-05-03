@@ -88,9 +88,9 @@ public:
     bool matchExpPattern(const QString &pattern, const Player *player, const Card *card) const;
 
     void addPackage(const Package *package);
-    QList<const Package *> packanges() const;
+    QList<const Package *> packages() const;
     const Package *findPackage(const QString &name) const;
-    QStringList packangeNames() const;
+    QStringList packageNames() const;
 
     const General *general(const QString &name) const;
     QStringList generalNames() const;

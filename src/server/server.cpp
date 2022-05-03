@@ -89,7 +89,7 @@ QWidget *ServerDialog::createPackageTab()
     extension_group = new QButtonGroup;
     extension_group->setExclusive(false);
 
-    QStringList extensions = Sanguosha->packangeNames();
+    QStringList extensions = Sanguosha->packageNames();
     QSet<QString> ban_packages(Config.BanPackages.begin(), Config.BanPackages.end());
 
     QGroupBox *box1 = new QGroupBox(tr("General package"));
@@ -737,7 +737,7 @@ Select3v3GeneralDialog::Select3v3GeneralDialog(QDialog *parent)
 
 void Select3v3GeneralDialog::fillTabWidget()
 {
-    const QList<const Package *> &packages = Sanguosha->packanges();
+    const QList<const Package *> &packages = Sanguosha->packages();
     foreach (const Package *package, packages) {
         switch (package->type()) {
         case QSanguosha::GeneralPack:
@@ -967,7 +967,7 @@ Server::Server(QObject *parent)
     ServerInfo.OperationTimeout = Config.OperationNoLimit ? 0 : Config.OperationTimeout;
     ServerInfo.NullificationCountDown = Config.NullificationCountDown;
 
-    const QList<const Package *> &packages = Sanguosha->packanges();
+    const QList<const Package *> &packages = Sanguosha->packages();
     foreach (const Package *package, packages) {
         QString package_name = package->name();
         // Why Sanguosha->getBanPackages() ????????

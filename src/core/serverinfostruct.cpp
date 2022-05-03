@@ -53,7 +53,7 @@ bool ServerInfoStruct::parseLegacy(const QString &str)
         NullificationCountDown = texts.at(4).toInt();
 
         QStringList ban_packages = texts.at(5).split(QStringLiteral("+"));
-        const QList<const Package *> &packages = Sanguosha->packanges();
+        const QList<const Package *> &packages = Sanguosha->packages();
         foreach (const Package *package, packages) {
             QString package_name = package->name();
             if (ban_packages.contains(package_name))

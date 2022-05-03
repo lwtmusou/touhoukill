@@ -189,7 +189,7 @@ QStringList Engine::getBanPackages() const
 {
     if (isHegemonyGameMode(ServerInfo.GameMode)) {
         QStringList ban;
-        const QList<const Package *> &packs = packanges();
+        const QList<const Package *> &packs = packages();
         QStringList needPacks;
         needPacks << QStringLiteral("hegemonyGeneral") << QStringLiteral("hegemony_card");
         foreach (const Package *pa, packs) {
@@ -207,7 +207,7 @@ QStringList Engine::getBanPackages() const
     }
 }
 
-QList<const Package *> Engine::packanges() const
+QList<const Package *> Engine::packages() const
 {
     return d->packages;
 }
@@ -345,11 +345,11 @@ QString Engine::modName() const
     return QStringLiteral("TouhouSatsu");
 }
 
-QStringList Engine::packangeNames() const
+QStringList Engine::packageNames() const
 {
     QStringList extensions;
-    const QList<const Package *> &packages = packanges();
-    foreach (const Package *package, packages)
+    const QList<const Package *> &ps = packages();
+    foreach (const Package *package, ps)
         extensions << package->name();
 
     return extensions;
