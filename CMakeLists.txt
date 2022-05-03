@@ -37,8 +37,6 @@ if (WIN32)
 endif()
 set(QSANGUOSHA_QT6_COMPONENTS Core Widgets Network LinguistTools)
 
-
-
 find_package(Qt6 COMPONENTS ${QSANGUOSHA_QT6_COMPONENTS} OPTIONAL_COMPONENTS Multimedia) # Locate the position of Qt6.
 find_package(Qt5 COMPONENTS ${QSANGUOSHA_QT5_COMPONENTS} OPTIONAL_COMPONENTS Multimedia) # Locate the position of Qt5.
 
@@ -56,18 +54,6 @@ set(CMAKE_SWIG_FLAGS "-nodefaultctor" "-nodefaultdtor")
 
 find_package(SWIG COMPONENTS lua REQUIRED)
 include(UseSWIG)
-
-include_directories(
-    "src/audio"
-    "src/client"
-    "src/core"
-    "src/dialog"
-    "src/package"
-    "src/server"
-    "src/ui"
-    "src/util"
-    "src"
-)
 
 find_package(PkgConfig)
 if (PKG_CONFIG_FOUND)
@@ -337,8 +323,8 @@ else()
         include/lua/lua.h
     )
 
-    include_directories("include/lua")
     add_library(lua54 STATIC ${LUA_FILE})
+    target_include_directories(lua54 PUBLIC "include/lua")
     if(APPLE)
         target_compile_definitions(lua54 PRIVATE LUA_USE_MACOSX)
     elseif(NOT WIN32)
@@ -409,8 +395,8 @@ if (Qt5Multimedia_FOUND OR Qt6Multimedia_FOUND)
             include/oggvorbisfile/vorbis/vorbisfile.h
         )
 
-        include_directories("include/oggvorbisfile")
         add_library(oggvorbisfile STATIC ${OGG_FILE})
+        target_include_directories(oggvorbisfile PUBLIC "include/oggvorbisfile")
 
         if (MSVC)
             target_compile_options(oggvorbisfile BEFORE PRIVATE "-wd4244" PRIVATE "-wd4305" PRIVATE "-wd4267")
@@ -430,6 +416,8 @@ if (Qt5_FOUND)
     # ONLY FOR THEIR INCLUDE DIRECTORIES! Compile fails if we don't add the link libraries.
     # Seems weird since we don't even link the libraries here
     target_link_libraries(q5sanguosha_wrap QSanguoshaLibs::lua54 Qt5::Core)
+    target_include_directories(q5sanguosha_wrap PRIVATE "src/core")
+    set_property(TARGET q5sanguosha_wrap PROPERTY SWIG_USE_TARGET_INCLUDE_DIRECTORIES TRUE)
 
     add_library(Q5SgsCore ${QSanguosha_Core_SRCS} ${QSanguosha_Core_MOCS} lua/lua.qrc )
 
@@ -439,10 +427,13 @@ if (Qt5_FOUND)
 
     target_compile_definitions(Q5SgsCore PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONDATE=${VERSION_DATE_QSanguosha})
     target_link_libraries(Q5SgsCore Qt5::Core q5sanguosha_wrap QSanguoshaLibs::lua54)
+    target_include_directories(Q5SgsCore PUBLIC "src/core")
 
     if (NOT WIN32)
         target_link_libraries(Q5SgsCore dl)
     endif()
+
+    set_target_properties(Q5SgsCore PROPERTIES VERSION ${QSanguosha_VERSION})
 
     if (NOT BUILD_SHARED_LIBS)
         target_compile_definitions(q5sanguosha_wrap PUBLIC -DQSGS_STATIC)
@@ -451,7 +442,7 @@ if (Qt5_FOUND)
         target_compile_definitions(q5sanguosha_wrap PRIVATE -DBUILD_QSGSCORE)
         target_compile_definitions(Q5SgsCore PRIVATE -DBUILD_QSGSCORE)
 
-        set_target_properties(Q5SgsCore PROPERTIES VERSION ${QSanguosha_VERSION} SOVERSION 0.12)
+        set_target_properties(Q5SgsCore PROPERTIES SOVERSION 0.12)
     endif()
 
     if (NOT ANDROID)
@@ -468,16 +459,27 @@ if (Qt5_FOUND)
     set_property(TARGET Q5Sanguosha PROPERTY AUTOUIC ON)
     set_property(TARGET Q5Sanguosha PROPERTY AUTORCC ON)
 
+    target_include_directories(Q5Sanguosha
+        PUBLIC "src/audio"
+        PUBLIC "src/client"
+        PUBLIC "src/dialog"
+        PUBLIC "src/package"
+        PUBLIC "src/server"
+        PUBLIC "src/ui"
+        PUBLIC "src/util"
+        PUBLIC "src"
+    )
+
     if (WIN32)
         target_link_libraries(Q5Sanguosha Qt5::WinExtras)
     endif()
 
     if (Qt5Multimedia_FOUND)
         target_compile_definitions(Q5Sanguosha PUBLIC AUDIO_SUPPORT)
-        target_link_libraries (Q5Sanguosha QSanguoshaLibs::oggvorbisfile Qt5::Multimedia)
+        target_link_libraries(Q5Sanguosha QSanguoshaLibs::oggvorbisfile Qt5::Multimedia)
     endif()
 
-    target_link_libraries (Q5Sanguosha Qt5::Widgets Qt5::Gui Qt5::Network Q5SgsCore)
+    target_link_libraries(Q5Sanguosha Qt5::Widgets Qt5::Gui Qt5::Network Q5SgsCore)
 
     target_compile_definitions(Q5Sanguosha PUBLIC -DOV_EXCLUDE_STATIC_CALLBACKS PUBLIC -DQT_NO_CAST_FROM_ASCII)
     if (PCH)
@@ -498,6 +500,8 @@ if (Qt6_FOUND)
     # ONLY FOR THEIR INCLUDE DIRECTORIES! Compile fails if we don't add the link libraries.
     # Seems weird since we don't even link the libraries here
     target_link_libraries(qsanguosha_wrap QSanguoshaLibs::lua54 Qt6::Core)
+    target_include_directories(qsanguosha_wrap PRIVATE "src/core")
+    set_property(TARGET qsanguosha_wrap PROPERTY SWIG_USE_TARGET_INCLUDE_DIRECTORIES TRUE)
 
     qt6_add_library(QSgsCore ${QSanguosha_Core_SRCS} ${QSanguosha_Core_MOCS} lua/lua.qrc )
 
@@ -507,10 +511,13 @@ if (Qt6_FOUND)
 
     target_compile_definitions(QSgsCore PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x70000 VERSION=${QSanguosha_VERSION} VERSIONDATE=${VERSION_DATE_QSanguosha})
     target_link_libraries(QSgsCore Qt6::Core qsanguosha_wrap QSanguoshaLibs::lua54)
+    target_include_directories(QSgsCore PUBLIC "src/core")
 
     if (NOT WIN32)
         target_link_libraries(QSgsCore dl)
     endif()
+
+    set_target_properties(QSgsCore PROPERTIES VERSION ${QSanguosha_VERSION})
 
     if (NOT BUILD_SHARED_LIBS)
         target_compile_definitions(qsanguosha_wrap PUBLIC -DQSGS_STATIC)
@@ -519,7 +526,7 @@ if (Qt6_FOUND)
         target_compile_definitions(qsanguosha_wrap PRIVATE -DBUILD_QSGSCORE)
         target_compile_definitions(QSgsCore PRIVATE -DBUILD_QSGSCORE)
 
-        set_target_properties(QSgsCore PROPERTIES VERSION ${QSanguosha_VERSION} SOVERSION 0.12)
+        set_target_properties(QSgsCore PROPERTIES SOVERSION 0.12)
     endif()
 
     qt6_add_translation(QM_FILES6 ${TS_FILES})
@@ -533,12 +540,23 @@ if (Qt6_FOUND)
     set_property(TARGET QSanguosha PROPERTY AUTOUIC ON)
     set_property(TARGET QSanguosha PROPERTY AUTORCC ON)
 
+    target_include_directories(QSanguosha
+        PUBLIC "src/audio"
+        PUBLIC "src/client"
+        PUBLIC "src/dialog"
+        PUBLIC "src/package"
+        PUBLIC "src/server"
+        PUBLIC "src/ui"
+        PUBLIC "src/util"
+        PUBLIC "src"
+    )
+
     if (Qt6Multimedia_FOUND)
         target_compile_definitions(QSanguosha PUBLIC AUDIO_SUPPORT)
-        target_link_libraries (QSanguosha PUBLIC QSanguoshaLibs::oggvorbisfile Qt6::Multimedia)
+        target_link_libraries(QSanguosha PUBLIC QSanguoshaLibs::oggvorbisfile Qt6::Multimedia)
     endif()
 
-    target_link_libraries (QSanguosha PUBLIC Qt6::Widgets Qt6::Gui Qt6::Network QSgsCore)
+    target_link_libraries(QSanguosha PUBLIC Qt6::Widgets Qt6::Gui Qt6::Network QSgsCore)
 
     target_compile_definitions(QSanguosha PUBLIC -DOV_EXCLUDE_STATIC_CALLBACKS PUBLIC -DQT_NO_CAST_FROM_ASCII)
     if (PCH)
