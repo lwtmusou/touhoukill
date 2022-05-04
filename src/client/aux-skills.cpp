@@ -3,6 +3,7 @@
 #include "client.h"
 #include "engine.h"
 #include "package.h"
+#include "player.h"
 #include "util.h"
 
 DiscardSkill::DiscardSkill()

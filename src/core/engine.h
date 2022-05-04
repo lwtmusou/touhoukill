@@ -104,7 +104,6 @@ public:
     QSet<QString> getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
     QString getRandomGeneralName() const;
     QStringList getLimitedGeneralNames() const;
-    bool isGeneralHidden(const QString &general_name) const;
     QList<int> getRandomCards() const;
 
 #ifndef QSGS_CORE_NODEPRECATED
@@ -118,6 +117,7 @@ private:
     Q_DECL_DEPRECATED int getPlayerCount(const QString &name) const;
     Q_DECL_DEPRECATED QString getRoles(const QString &mode) const;
     Q_DECL_DEPRECATED QStringList getRoleList(const QString &mode) const;
+    Q_DECL_DEPRECATED bool isGeneralHidden(const QString &general_name) const;
 #endif
 
 private:

@@ -148,7 +148,7 @@ void Engine::addPackage(const Package *package)
 
     foreach (const General *general, package->generals()) {
         d->generals.insert(general->name(), general);
-        if (isGeneralHidden(general->name()))
+        if (general->isHidden())
             continue;
         if (general->isLord())
             d->lord_list << general->name();
@@ -247,7 +247,7 @@ int Engine::availableGeneralCount() const
         const General *general = itor.value();
         if (getBanPackages().contains(general->getPackage()))
             total--;
-        else if (isGeneralHidden(general->name()))
+        else if (general->isHidden())
             total--;
 #if 0
         else if (isRoleGameMode(ServerInfo.GameMode) && Config.value(QStringLiteral("Banlist/Roles")).toStringList().contains(general->name()))
@@ -508,14 +508,14 @@ QStringList Engine::getLimitedGeneralNames() const
         }
 
         foreach (const General *general, hulao_generals) {
-            if (isGeneralHidden(general->name()) || general->isTotallyHidden() || general->name() == QStringLiteral("yuyuko_1v3"))
+            if (general->isHidden() || general->isTotallyHidden() || general->name() == QStringLiteral("yuyuko_1v3"))
                 continue;
             general_names << general->name();
         }
     } else {
         while (itor.hasNext()) {
             itor.next();
-            if (!isGeneralHidden(itor.value()->name()) && !getBanPackages().contains(itor.value()->getPackage()))
+            if (!itor.value()->isHidden() && !getBanPackages().contains(itor.value()->getPackage()))
                 general_names << itor.key();
         }
     }

@@ -2,7 +2,6 @@
 #define TOUHOUKILL_SERVERINFOSTRUCT_H
 
 #include "json.h"
-#include "player.h"
 #include "protocol.h"
 #include "qsgscore.h"
 
