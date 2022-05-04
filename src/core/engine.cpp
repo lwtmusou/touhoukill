@@ -387,57 +387,6 @@ QStringList Engine::getLimitedGeneralNames() const
     return general_names;
 }
 
-QSet<QString> Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) const
-{
-    // TODO: reimplement this function in separated class Mode
-    QStringList all_generals = getLimitedGeneralNames();
-    QSet<QString> general_set = QSet<QString>(all_generals.begin(), all_generals.end());
-
-    Q_ASSERT(all_generals.count() >= count);
-
-    QStringList subtractList;
-    bool needsubtract = true;
-#if 0
-    if (isRoleGameMode(ServerInfo.GameMode))
-        subtractList = (Config.value(QStringLiteral("Banlist/Roles"), QStringList()).toStringList());
-    else if (ServerInfo.GameMode == QStringLiteral("04_1v3"))
-        subtractList = (Config.value(QStringLiteral("Banlist/HulaoPass"), QStringList()).toStringList());
-    else if (ServerInfo.GameMode == QStringLiteral("06_XMode"))
-        subtractList = (Config.value(QStringLiteral("Banlist/XMode"), QStringList()).toStringList());
-    else if (isHegemonyGameMode(ServerInfo.GameMode))
-        subtractList = (Config.value(QStringLiteral("Banlist/Hegemony"), QStringList()).toStringList());
-    else
-#endif
-    needsubtract = false;
-
-    if (needsubtract)
-        general_set.subtract(QSet<QString>(subtractList.begin(), subtractList.end()));
-
-    all_generals = general_set.subtract(ban_set).values();
-
-    // shuffle them
-    qShuffle(all_generals);
-
-    int addcount = 0;
-    QSet<QString> general_list;
-    int godmax = 1; // Config.value(QStringLiteral("GodLimit"), 1).toInt();
-    int godCount = 0;
-    for (int i = 0; addcount < count; i++) {
-        if (general(all_generals.at(i))->kingdom() != QStringLiteral("touhougod")) {
-            general_list << all_generals.at(i);
-            addcount++;
-        } else if (godmax > 0 && godCount < godmax) {
-            general_list << all_generals.at(i);
-            godCount++;
-            addcount++;
-        }
-        if (i == all_generals.count() - 1)
-            break;
-    }
-
-    return general_list;
-}
-
 QSet<QString> Engine::latestGeneralNames() const
 {
     return d->LatestGeneralList;
@@ -506,11 +455,6 @@ QList<int> Engine::getRandomCards() const
     qShuffle(list);
 
     return list;
-}
-
-QString Engine::getRandomGeneralName() const
-{
-    return d->generals.keys().at(QRandomGenerator::global()->generate() % d->generals.size());
 }
 
 const Skill *Engine::skill(const QString &skill_name) const

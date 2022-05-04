@@ -12,11 +12,13 @@
 #include <algorithm>
 #include <type_traits>
 
-template<typename T> void qShuffle(QList<T> &list)
+template<typename T> void qShuffle(QList<T> &list, int length = -1)
 {
-    int n = list.length();
-    for (int i = 0; i < n; i++) {
-        int r = QRandomGenerator::global()->generate() % (n - i) + i;
+    if (length == -1)
+        length = list.length();
+
+    for (int i = 0; i < length; i++) {
+        int r = QRandomGenerator::global()->generate() % (list.length() - i) + i;
         list.swapItemsAt(i, r);
     }
 }
