@@ -347,6 +347,7 @@ private:
 
     void showHeroSkinListHelper(const General *general, GraphicsPixmapHoverItem *avatarIcon);
     QString getDeathPixmapPath(const Player *p) const;
+    const General *getAvatarGeneral();
 
 signals:
     void selected_changed();

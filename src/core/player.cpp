@@ -627,17 +627,6 @@ Role Player::role() const
     return d->role;
 }
 
-const General *Player::avatarGeneral() const
-{
-    if (!d->generals.isEmpty())
-        return d->generals.first();
-
-    QString general_name = property("avatar").toString();
-    if (general_name.isEmpty())
-        return nullptr;
-    return Sanguosha->general(general_name);
-}
-
 bool Player::isCurrent() const
 {
     return d->phase != PhaseNotActive;

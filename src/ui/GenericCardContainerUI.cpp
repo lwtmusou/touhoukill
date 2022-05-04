@@ -206,7 +206,7 @@ void PlayerCardContainer::updateAvatar()
 
     const General *general = nullptr;
     if (m_player != nullptr) {
-        general = m_player->avatarGeneral();
+        general = getAvatarGeneral();
         _m_layout->m_screenNameFont.paintText(_m_screenNameItem, _m_layout->m_screenNameArea, Qt::AlignCenter, m_player->screenName());
         if (ServerInfo.Enable2ndGeneral && getPlayer() == Self)
             _m_layout->m_screenNameFont.paintText(_m_screenNameItem, _m_layout->m_screenNameAreaDouble, Qt::AlignCenter, m_player->screenName());
@@ -1680,4 +1680,16 @@ QString PlayerCardContainer::getDeathPixmapPath(const Player *p) const
         basename = QStringLiteral("unknown");
 
     return QStringLiteral("image/system/death/%1.png").arg(basename);
+}
+
+const General *PlayerCardContainer::getAvatarGeneral()
+{
+    const General *general = m_player->general();
+    if (general != nullptr)
+        return general;
+
+    QString general_name = m_player->property("avatar").toString();
+    if (general_name.isEmpty())
+        return nullptr;
+    return Sanguosha->general(general_name);
 }

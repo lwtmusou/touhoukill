@@ -168,8 +168,6 @@ public:
     const Player *getNextAlive(int n = 1, bool ignoreRemoved = true) const;
     const Player *getLastAlive(int n = 1, bool ignoreRemoved = true) const;
 
-    const General *avatarGeneral() const;
-
     inline bool isLord() const
     {
         return role() == QSanguosha::RoleLord;
