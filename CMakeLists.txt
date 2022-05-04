@@ -50,7 +50,7 @@ if (CMAKE_HOST_WIN32)
 endif()
 
 set(SWIG_USE_SWIG_DEPENDENCIES true)
-set(CMAKE_SWIG_FLAGS "-nodefaultctor" "-nodefaultdtor")
+set(CMAKE_SWIG_FLAGS "-nodefaultctor")
 
 find_package(SWIG COMPONENTS lua REQUIRED)
 include(UseSWIG)

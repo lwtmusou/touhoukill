@@ -77,7 +77,7 @@ public:
     const Skill *skill(const QString &skill_name) const;
     const Skill *skill(const EquipCard *card) const;
     QStringList skillNames() const;
-    void addSkills(const QList<const Skill *> &skills);
+    void addSkill(const Skill *skill);
 
     int cardCount() const;
     const CardDescriptor &cardDescriptor(int cardId) const;

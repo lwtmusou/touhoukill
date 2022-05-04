@@ -75,7 +75,8 @@ Engine::Engine()
     foreach (const CardFace *cardFace, LuaMultiThreadEnvironment::cardFaces())
         registerCardFace(cardFace);
 
-    addSkills(LuaMultiThreadEnvironment::skills());
+    foreach (const Skill *skill, LuaMultiThreadEnvironment::skills())
+        addSkill(skill);
 
     foreach (const Package *package, LuaMultiThreadEnvironment::packages())
         addPackage(package);
@@ -127,14 +128,12 @@ void Engine::loadTranslations(const QString &locale)
     }
 }
 
-void Engine::addSkills(const QList<const Skill *> &all_skills)
+void Engine::addSkill(const Skill *skill)
 {
-    foreach (const Skill *skill, all_skills) {
-        if (d->skills.contains(skill->name()))
-            qDebug() << QObject::tr("Duplicated skill : %1").arg(skill->name());
-        else
-            d->skills.insert(skill->name(), skill);
-    }
+    if (d->skills.contains(skill->name()))
+        qDebug() << QObject::tr("Duplicated skill : %1").arg(skill->name());
+    else
+        d->skills.insert(skill->name(), skill);
 }
 
 void Engine::addPackage(const Package *package)

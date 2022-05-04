@@ -102,6 +102,23 @@ private:
     }
 };
 
+// for Engine::version
+class QVersionNumber {
+public:
+    QVersionNumber();
+    QVersionNumber(const QList<int> &);
+    QVersionNumber(int maj);
+    QVersionNumber(int maj, int min);
+    QVersionNumber(int maj, int min, int mic);
+
+    int majorVersion() const;
+    int minorVersion() const;
+    int microVersion() const;
+    QString toString() const;
+
+    static QVersionNumber fromString(const QString &);
+};
+
 class QObject {
 public:
     QString objectName();
