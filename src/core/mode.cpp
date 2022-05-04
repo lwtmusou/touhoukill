@@ -157,6 +157,75 @@ Rule *GenericRoleMode::rule() const
 
 IdSet GenericRoleMode::availableCards() const
 {
+#if 0
+
+    QList<int> Engine::getRandomCards() const
+    {
+        // TODO: reimplement this function in separated class Mode
+#if 0
+        bool exclude_disaters = false;
+        bool using_2012_3v3 = false;
+        bool using_2013_3v3 = false;
+        if (Config.GameMode == QStringLiteral("06_3v3")) {
+            using_2012_3v3 = (Config.value(QStringLiteral("3v3/OfficialRule"), QStringLiteral("2013")).toString() == QStringLiteral("2012"));
+            using_2013_3v3 = (Config.value(QStringLiteral("3v3/OfficialRule"), QStringLiteral("2013")).toString() == QStringLiteral("2013"));
+            exclude_disaters = Config.value(QStringLiteral("3v3/ExcludeDisasters"), true).toBool();
+        }
+
+        if (Config.GameMode == QStringLiteral("04_1v3"))
+            exclude_disaters = true;
+        Q_UNUSED(exclude_disaters);
+#endif
+
+        QList<int> list;
+        for (int i = 0; i < d->cards.length(); ++i)
+            list << i;
+
+#if 0
+        foreach (const CardDescriptor &card, d->cards) {
+            // TODO: deal with this in separated class Mode
+            Q_UNUSED(card);
+
+            if (exclude_disaters && card.face()->isKindOf("Disaster"))
+                continue;
+
+            if (getPackageNameByCard(card) == "New3v3Card" && (using_2012_3v3 || using_2013_3v3))
+                list << card->id();
+            else if (getPackageNameByCard(card) == "New3v3_2013Card" && using_2013_3v3)
+                list << card->id();
+
+            if (!getBanPackages().contains(getPackageNameByCard(card))) {
+                if (card->faceName().startsWith("known_both")) {
+                    if (isHegemonyGameMode(Config.GameMode) && card->faceName() == "known_both_hegemony")
+                        list << card->id();
+                    else if (!isHegemonyGameMode(Config.GameMode) && card->faceName() == "known_both")
+                        list << card->id();
+
+                } else if (card->faceName().startsWith("DoubleSword")) {
+                    if (isHegemonyGameMode(Config.GameMode) && card->faceName() == "DoubleSwordHegemony")
+                        list << card->id();
+                    else if (!isHegemonyGameMode(Config.GameMode) && card->faceName() == "DoubleSword")
+                        list << card->id();
+                } else
+                    list << card->id();
+            }
+        }
+        // remove two crossbows and one nullification?
+        if (using_2012_3v3 || using_2013_3v3)
+            list.removeOne(98);
+        if (using_2013_3v3) {
+            list.removeOne(53);
+            list.removeOne(54);
+        }
+#endif
+
+        qShuffle(list);
+
+        return list;
+    }
+
+#endif
+
     // TODO
     return {};
 }

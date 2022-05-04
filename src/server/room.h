@@ -378,8 +378,6 @@ public:
     QSGS_SOCKET void reconnect(ServerPlayer *player, ClientSocket *socket);
     QSGS_LOGIC void marshal(ServerPlayer *player);
 
-    void defaultHeroSkin();
-
     // TODO: use sendLog() instead
     QSGS_LOGIC void touhouLogmessage(const QString &logtype, ServerPlayer *logfrom, const QString &logarg = QString(), const QList<ServerPlayer *> &logto = QList<ServerPlayer *>(),
                                      const QString &logarg2 = QString());

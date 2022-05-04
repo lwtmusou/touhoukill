@@ -32,7 +32,6 @@ Room::Room(QObject *parent, const QString &mode)
     , _m_lastMovementId(0)
     , mode(mode)
     , current(nullptr)
-    , pile1(Sanguosha->getRandomCards())
     , m_drawPile(&pile1)
     , game_started(false)
     , game_started2(false)
@@ -52,6 +51,8 @@ Room::Room(QObject *parent, const QString &mode)
     static int s_global_room_id = 0;
     _m_Id = s_global_room_id++;
     player_count = Sanguosha->getPlayerCount(mode);
+    pile1 = Mode::findMode(mode)->availableCards().values();
+    qShuffle(pile1);
 
     initCallbacks();
 
@@ -3833,11 +3834,11 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
                 }
             }
 
-            foreach (int id, Sanguosha->getRandomCards()) {
-                if (getCardPlace(id) == QSanguosha::PlaceTable || getCardPlace(id) == QSanguosha::PlaceJudge)
-                    moveCardTo(getCard(id), nullptr, QSanguosha::PlaceDiscardPile, true);
-                if (getCard(id)->hasFlag(QStringLiteral("using")))
-                    setCardFlag(id, QStringLiteral("-using"));
+            foreach (const Card *c, getCards()) {
+                if (getCardPlace(c->id()) == QSanguosha::PlaceTable || getCardPlace(c->id()) == QSanguosha::PlaceJudge)
+                    moveCardTo(c, nullptr, QSanguosha::PlaceDiscardPile, true);
+                if (c->hasFlag(QStringLiteral("using")))
+                    setCardFlag(c->id(), QStringLiteral("-using"));
             }
         }
         throw triggerEvent;
@@ -4270,7 +4271,7 @@ void Room::marshal(ServerPlayer *player)
         lord_info << (lord != nullptr ? lord->generalName() : QVariant());
         doNotify(player, S_COMMAND_GAME_START, lord_info);
 
-        QList<int> drawPile = Sanguosha->getRandomCards();
+        QList<int> drawPile = ServerInfo.GameMode->availableCards().values();
         doNotify(player, S_COMMAND_AVAILABLE_CARDS, JsonUtils::toJsonArray(drawPile));
     }
 
@@ -6854,18 +6855,6 @@ void Room::sortByActionOrder(QList<ServerPlayer *> &players)
         std::sort(players.begin(), players.end(), ServerPlayer::CompareByActionOrder);
 }
 
-void Room::defaultHeroSkin()
-{
-    if (Config.DefaultHeroSkin) {
-        QStringList all = Sanguosha->getLimitedGeneralNames();
-        Config.beginGroup(QStringLiteral("HeroSkin"));
-        foreach (QString general_name, all)
-            Config.remove(general_name);
-
-        Config.endGroup();
-    }
-}
-
 void Room::touhouLogmessage(const QString &logtype, ServerPlayer *logfrom, const QString &logarg, const QList<ServerPlayer *> &logto, const QString &logarg2)
 {
     LogMessage alog;
@@ -7002,7 +6991,7 @@ void Room::countDescription()
         return;
 
     QTextStream stream(&file);
-    QStringList all = Sanguosha->getLimitedGeneralNames();
+    QSet<QString> all = Sanguosha->generalNames();
 
     QMultiMap<int, QString> map;
     foreach (QString name, all) {

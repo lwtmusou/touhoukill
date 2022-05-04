@@ -91,13 +91,6 @@ public:
 
     QVariant config(const QString &key) const;
 
-#ifndef SWIG
-    // Don't expose functions which are to be removed to SWIG
-
-    // move to Mode?
-    QStringList getLimitedGeneralNames() const;
-    QList<int> getRandomCards() const;
-
 #ifndef QSGS_CORE_NODEPRECATED
 
 public:
@@ -110,7 +103,6 @@ private:
     Q_DECL_DEPRECATED QString getRoles(const QString &mode) const;
     Q_DECL_DEPRECATED QStringList getRoleList(const QString &mode) const;
     Q_DECL_DEPRECATED bool isGeneralHidden(const QString &general_name) const;
-#endif
 
 private:
     Engine();

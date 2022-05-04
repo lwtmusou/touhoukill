@@ -415,11 +415,11 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                         }
                     }
 
-                    foreach (int id, Sanguosha->getRandomCards()) {
-                        if (room->getCardPlace(id) == QSanguosha::PlaceTable || room->getCardPlace(id) == QSanguosha::PlaceJudge)
-                            room->moveCardTo(room->getCard(id), nullptr, QSanguosha::PlaceDiscardPile, true);
-                        if (room->getCard(id)->hasFlag(QStringLiteral("using")))
-                            room->setCardFlag(id, QStringLiteral("-using"));
+                    foreach (const Card *c, room->getCards()) {
+                        if (room->getCardPlace(c->id()) == QSanguosha::PlaceTable || room->getCardPlace(c->id()) == QSanguosha::PlaceJudge)
+                            room->moveCardTo(c, nullptr, QSanguosha::PlaceDiscardPile, true);
+                        if (c->hasFlag(QStringLiteral("using")))
+                            room->setCardFlag(c->id(), QStringLiteral("-using"));
                     }
                 }
 
