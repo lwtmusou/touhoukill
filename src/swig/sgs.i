@@ -106,7 +106,11 @@ private:
 class QVersionNumber {
 public:
     QVersionNumber();
+#if QT_MAJOR_VERSION==5
+    QVersionNumber(const QVector<int> &);
+#else
     QVersionNumber(const QList<int> &);
+#endif
     QVersionNumber(int maj);
     QVersionNumber(int maj, int min);
     QVersionNumber(int maj, int min, int mic);
