@@ -210,28 +210,6 @@ QStringList Engine::generalNames() const
     return d->generals.keys();
 }
 
-int Engine::availableGeneralCount() const
-{
-    int total = d->generals.size();
-    QHashIterator<QString, const General *> itor(d->generals);
-    while (itor.hasNext()) {
-        itor.next();
-        const General *general = itor.value();
-        if (!ServerInfo.EnabledPackages.contains(general->getPackage()))
-            total--;
-        else if (general->isHidden())
-            total--;
-#if 0
-        else if (isRoleGameMode(ServerInfo.GameMode) && Config.value(QStringLiteral("Banlist/Roles")).toStringList().contains(general->name()))
-            total--;
-        else if (ServerInfo.GameMode == QStringLiteral("04_1v3") && Config.value(QStringLiteral("Banlist/HulaoPass")).toStringList().contains(general->name()))
-            total--;
-#endif
-    }
-
-    return total;
-}
-
 bool Engine::isGeneralHidden(const QString &general_name) const
 {
     const General *theGeneral = general(general_name);
@@ -377,91 +355,6 @@ int Engine::cardCount() const
 QSet<QString> Engine::availableLords() const
 {
     return d->lord_list;
-}
-
-QSet<QString> Engine::getRandomLords() const
-{
-    QStringList l = d->lord_list.values();
-    qShuffle(l);
-
-    int lord_num = 6; // Config.value(QStringLiteral("LordMaxChoice"), 6).toInt();
-    return List2Set(l.mid(0, lord_num));
-
-#if 0
-    QStringList banlist_ban;
-    QStringList lords;
-    QStringList splords_package; //lords  in sp package will be not count as a lord.
-    splords_package << QStringLiteral("thndj");
-
-    foreach (QString alord, availableLords()) {
-        if (banlist_ban.contains(alord))
-            continue;
-        const General *theGeneral = general(alord);
-        if (splords_package.contains(theGeneral->getPackage()))
-            continue;
-        lords << alord;
-    }
-
-    // todo: make this variable in serverinfo
-    int lord_num = 6; // Config.value(QStringLiteral("LordMaxChoice"), 6).toInt();
-    if (lord_num != -1 && lord_num < lords.length()) {
-        int to_remove = lords.length() - lord_num;
-        for (int i = 0; i < to_remove; i++) {
-            lords.removeAt(QRandomGenerator::global()->generate() % lords.length());
-        }
-    }
-
-    QStringList nonlord_list;
-    foreach (QString nonlord, d->generals.keys()) {
-        if (isGeneralHidden(nonlord))
-            continue;
-        const General *general = d->generals.value(nonlord);
-        if (d->lord_list.contains(nonlord)) {
-            if (!splords_package.contains(general->getPackage()))
-                continue;
-        }
-        if (getBanPackages().contains(general->getPackage()))
-            continue;
-        if (banlist_ban.contains(general->name()))
-            continue;
-
-        nonlord_list << nonlord;
-    }
-
-    qShuffle(nonlord_list);
-
-    int addcount = 0;
-    int extra = 6; // Config.value(QStringLiteral("NonLordMaxChoice"), 6).toInt();
-
-    int godmax = 1; // Config.value(QStringLiteral("GodLimit"), 1).toInt();
-    int godCount = 0;
-
-    if (lord_num == 0 && extra == 0)
-        extra = 1;
-    bool assign_latest_general = false; // Config.value(QStringLiteral("AssignLatestGeneral"), true).toBool();
-    QStringList latest = latestGenerals(QSet<QString>(lords.begin(), lords.end()));
-    if (assign_latest_general && !latest.isEmpty()) {
-        lords << latest.first();
-        if (nonlord_list.contains(latest.first()))
-            nonlord_list.removeOne(latest.first());
-        extra--;
-    }
-    for (int i = 0; addcount < extra; i++) {
-        if (general(nonlord_list.at(i))->kingdom() != QStringLiteral("touhougod")) {
-            lords << nonlord_list.at(i);
-            addcount++;
-        } else if (godmax > 0 && godCount < godmax) {
-            lords << nonlord_list.at(i);
-            godCount++;
-            addcount++;
-        }
-
-        if (i == nonlord_list.length() - 1)
-            break;
-    }
-
-    return lords;
-#endif
 }
 
 QStringList Engine::getLimitedGeneralNames() const

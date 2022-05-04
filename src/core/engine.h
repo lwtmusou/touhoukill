@@ -95,8 +95,6 @@ public:
     // Don't expose functions which are to be removed to SWIG
 
     // move to Mode?
-    int availableGeneralCount() const;
-    QSet<QString> getRandomLords() const;
     QSet<QString> getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
     QString getRandomGeneralName() const;
     QStringList getLimitedGeneralNames() const;

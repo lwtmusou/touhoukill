@@ -163,6 +163,30 @@ IdSet GenericRoleMode::availableCards() const
 
 QSet<const General *> GenericRoleMode::availableGenerals() const
 {
+#if 0
+    int Engine::availableGeneralCount() const
+    {
+        int total = d->generals.size();
+        QHashIterator<QString, const General *> itor(d->generals);
+        while (itor.hasNext()) {
+            itor.next();
+            const General *general = itor.value();
+            if (!ServerInfo.EnabledPackages.contains(general->getPackage()))
+                total--;
+            else if (general->isHidden())
+                total--;
+#if 0
+            else if (isRoleGameMode(ServerInfo.GameMode) && Config.value(QStringLiteral("Banlist/Roles")).toStringList().contains(general->name()))
+                total--;
+            else if (ServerInfo.GameMode == QStringLiteral("04_1v3") && Config.value(QStringLiteral("Banlist/HulaoPass")).toStringList().contains(general->name()))
+                total--;
+#endif
+        }
+
+        return total;
+    }
+#endif
+
     // TODO
     return {};
 }
