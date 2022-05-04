@@ -70,9 +70,9 @@ public:
     QStringList packageNames() const;
 
     const General *general(const QString &name) const;
-    QStringList generalNames() const;
-    QSet<QString> availableLords() const;
-    QSet<QString> latestGenerals() const;
+    QSet<QString> generalNames() const;
+    QSet<QString> availableLordNames() const;
+    QSet<QString> latestGeneralNames() const;
 
     const Skill *skill(const QString &skill_name) const;
     const Skill *skill(const EquipCard *card) const;

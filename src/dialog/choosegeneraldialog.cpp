@@ -250,7 +250,7 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
     group = new QButtonGroup(this);
     group->setExclusive(!pair_choose);
 
-    QStringList all_generals = Sanguosha->generalNames();
+    QSet<QString> all_generals = Sanguosha->generalNames();
     QMap<QString, QList<const General *>> map;
     foreach (const QString &name, all_generals) {
         const General *general = Sanguosha->general(name);

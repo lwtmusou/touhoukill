@@ -205,9 +205,9 @@ const General *Engine::general(const QString &name) const
     return d->generals.value(name, nullptr);
 }
 
-QStringList Engine::generalNames() const
+QSet<QString> Engine::generalNames() const
 {
-    return d->generals.keys();
+    return List2Set(d->generals.keys());
 }
 
 bool Engine::isGeneralHidden(const QString &general_name) const
@@ -352,7 +352,7 @@ int Engine::cardCount() const
     return d->cards.length();
 }
 
-QSet<QString> Engine::availableLords() const
+QSet<QString> Engine::availableLordNames() const
 {
     return d->lord_list;
 }
@@ -439,7 +439,7 @@ QSet<QString> Engine::getRandomGenerals(int count, const QSet<QString> &ban_set)
     return general_list;
 }
 
-QSet<QString> Engine::latestGenerals() const
+QSet<QString> Engine::latestGeneralNames() const
 {
     return d->LatestGeneralList;
 }

@@ -611,11 +611,16 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged()
         ui->companionLineEdit->hide();
         ui->companionLabel->hide();
     } else {
-        QString companions_text = general->companions();
-        if (companions_text.isEmpty())
-            ui->companionLineEdit->clear();
-        else
-            ui->companionLineEdit->setText(companions_text);
+        QStringList companionsShowList;
+
+        QSet<QString> companions = general->companions();
+
+        foreach (const QString &companion, companions)
+            companionsShowList << Sanguosha->translate(companion);
+
+        QString companions_text = companionsShowList.join(QStringLiteral(" "));
+
+        ui->companionLineEdit->setText(companions_text);
         ui->companionLineEdit->show();
         ui->companionLabel->show();
     }

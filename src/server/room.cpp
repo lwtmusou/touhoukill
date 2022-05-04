@@ -3028,44 +3028,53 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
 
 void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign)
 {
-    QSet<QString> existed;
-    foreach (ServerPlayer *player, m_players) {
-        if (player->general() != nullptr)
-            existed << player->generalName();
-        if (player->getGeneral2() != nullptr)
-            existed << player->getGeneral2Name();
-    }
+    QSet<const General *> existed;
+    foreach (ServerPlayer *player, m_players)
+        existed.unite(List2Set(player->generals()));
 
-    const int max_choice = Config.value(QStringLiteral("MaxChoice"), 6).toInt();
-    int total = ServerInfo.GameMode->availableGenerals().count();
-    const int max_available = (total - existed.size()) / to_assign.length();
-    const int choice_count = qMin(max_choice, max_available);
+    QSet<const General *> generals = ServerInfo.GameMode->availableGenerals();
 
-    QStringList choices = Sanguosha->getRandomGenerals(total - existed.size(), existed).values();
-    QStringList latest = Sanguosha->latestGenerals().values();
+    int max_choice = Config.value(QStringLiteral("MaxChoice"), 6).toInt();
+    int total = generals.count();
+    int max_available = (total - existed.size()) / to_assign.length();
+    int choice_count = qMin(max_choice, max_available);
+
+    QSet<const General *> choices = generals;
+    choices.subtract(existed);
+
+    // QStringList choices = Sanguosha->getRandomGenerals(total - existed.count(), existed).values();
+    // QStringList latest = Sanguosha->latestGenerals().values();
+
+    QSet<QString> latestNames = Sanguosha->latestGeneralNames();
+    QSet<const General *> latest;
+    foreach (const QString &name, latestNames)
+        latest << Sanguosha->general(name);
+
+    latest.subtract(existed);
+
     bool assign_latest_general = Config.value(QStringLiteral("AssignLatestGeneral"), true).toBool() && !isHegemonyGameMode(mode);
     foreach (ServerPlayer *player, to_assign) {
         player->clearSelected();
         int i = 0;
-        if (assign_latest_general && !latest.isEmpty()) {
-            QString choice = player->findReasonable(latest, true);
-            if (!choice.isEmpty()) {
-                player->addToSelected(choice);
-                latest.removeOne(choice);
+        if (assign_latest_general && !latest.empty()) {
+            const General *choice = player->findReasonable(latest, true);
+            if (choice != nullptr) {
+                player->addToSelected(choice->name());
+                latest.remove(choice);
                 i++;
                 if (choices.contains(choice))
-                    choices.removeOne(choice);
+                    choices.remove(choice);
             }
         }
 
         for (; i < choice_count; i++) {
-            QString choice = player->findReasonable(choices, true);
-            if (choice.isEmpty())
+            const General *choice = player->findReasonable(choices, true);
+            if (choice == nullptr)
                 break;
-            player->addToSelected(choice);
-            choices.removeOne(choice);
+            player->addToSelected(choice->name());
+            choices.remove(choice);
             if (latest.contains(choice))
-                latest.removeOne(choice);
+                latest.remove(choice);
         }
     }
 }
@@ -3167,13 +3176,13 @@ void Room::chooseGenerals()
         lord_list = Sanguosha->getRandomGenerals(Config.value(QStringLiteral("MaxChoice"), 6).toInt());
     else if (the_lord->getState() == QStringLiteral("robot")) {
         int ramdom_value = QRandomGenerator::global()->generate() % 100;
-        if (((ramdom_value < nonlord_prob || lord_num == 0) && nonlord_num > 0) || Sanguosha->availableLords().count() == 0)
+        if (((ramdom_value < nonlord_prob || lord_num == 0) && nonlord_num > 0) || Sanguosha->availableLordNames().count() == 0)
             lord_list = Sanguosha->getRandomGenerals(1);
         else
-            lord_list = Sanguosha->availableLords();
+            lord_list = Sanguosha->availableLordNames();
     } else {
         // lord_list = Sanguosha->getRandomLords();
-        QStringList values = Sanguosha->availableLords().values();
+        QStringList values = Sanguosha->availableLordNames().values();
         qShuffle(values);
         lord_list = List2Set(values.mid(0, Config.value(QStringLiteral("LordMaxChoice"), 6).toInt()));
     }

@@ -55,7 +55,7 @@ public:
     QString getPackage() const;
     void addCompanion(const QString &name);
     bool isCompanionWith(const QString &name) const;
-    QString companions() const;
+    QSet<QString> companions() const;
 
     void setHeadMaxHpAdjustedValue(int adjusted_value = -1);
     void setDeputyMaxHpAdjustedValue(int adjusted_value = -1);

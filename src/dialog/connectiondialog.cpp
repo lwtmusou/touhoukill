@@ -28,8 +28,8 @@
 
 using namespace std::chrono_literals;
 
-AvatarModel::AvatarModel(const QStringList &list)
-    : list(list)
+AvatarModel::AvatarModel(const QSet<QString> &list)
+    : list(list.values())
 {
 }
 
@@ -76,13 +76,15 @@ void ConnectionDialog::showAvatarList()
     setFixedSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
 
     if (avatarList->model() == nullptr) {
-        QStringList generals = Sanguosha->generalNames();
-        QMutableListIterator<QString> itor = generals;
+        QSet<QString> generals = Sanguosha->generalNames();
+        QMutableSetIterator<QString> itor = generals;
         while (itor.hasNext()) {
             QString next = itor.next();
             const General *general = Sanguosha->general(next);
-            if ((general == nullptr) || general->isTotallyHidden())
+            if ((general == nullptr) || general->isTotallyHidden()) {
                 itor.remove();
+                itor = generals;
+            }
         }
         AvatarModel *model = new AvatarModel(generals);
         model->setParent(this);

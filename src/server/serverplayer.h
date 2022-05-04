@@ -100,6 +100,7 @@ public:
     QSGS_LOGIC void addToSelected(const QString &general);
     QSGS_STATE_GAME QStringList getSelected() const;
     QString findReasonable(const QStringList &generals, bool no_unreasonable = false); // ???
+    const General *findReasonable(const QSet<const General *> &generals, bool no_unreasonable = false); // ???
     QSGS_LOGIC void clearSelected();
 
     QSGS_STATE_GAME int getGeneralMaxHp() const;

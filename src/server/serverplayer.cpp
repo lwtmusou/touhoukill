@@ -305,15 +305,19 @@ QStringList ServerPlayer::getSelected() const
     return selected;
 }
 
+const General *ServerPlayer::findReasonable(const QSet<const General *> &generals, bool no_unreasonable)
+{
+    QStringList ls;
+    foreach (const General *general, generals)
+        ls << general->name();
+
+    return Sanguosha->general(findReasonable(ls, no_unreasonable));
+}
+
 QString ServerPlayer::findReasonable(const QStringList &generals, bool no_unreasonable)
 {
     foreach (QString name, generals) {
-        if (Config.GameMode == QStringLiteral("zombie_mode")) {
-            QStringList ban_list = Config.value(QStringLiteral("Banlist/Zombie")).toStringList();
-            if (ban_list.contains(name))
-                continue;
-        }
-        if (Config.GameMode.endsWith(QStringLiteral("p")) || Config.GameMode.endsWith(QStringLiteral("pd")) || Config.GameMode.endsWith(QStringLiteral("pz"))) {
+        if (Config.GameMode.startsWith(QStringLiteral("role_"))) {
             QStringList ban_list = Config.value(QStringLiteral("Banlist/Roles")).toStringList();
             if (ban_list.contains(name))
                 continue;

@@ -18,7 +18,7 @@ public:
     QStringList relatedSkills;
     bool hidden;
     bool neverShown;
-    QStringList companions;
+    QSet<QString> companions;
     int headMaxHpAdjustedValue;
     int deputyMaxHpAdjustedValue;
 
@@ -148,20 +148,19 @@ bool General::isCompanionWith(const QString &name) const
     return d->companions.contains(name) || other->d->companions.contains(d->name);
 }
 
-QString General::companions() const
+QSet<QString> General::companions() const
 {
-    QStringList name;
-    foreach (const QString &general, d->companions)
-        name << QStringLiteral("%1").arg(Sanguosha->translate(general));
-    QStringList generals = Sanguosha->generalNames();
-    foreach (QString gname, generals) {
+    QSet<QString> ret = d->companions;
+
+    QSet<QString> generals = Sanguosha->generalNames();
+    foreach (const QString &gname, generals) {
         const General *gnr = Sanguosha->general(gname);
         if (gnr == nullptr)
             continue;
         if (gnr->d->companions.contains(d->name))
-            name << QStringLiteral("%1").arg(Sanguosha->translate(gnr->name()));
+            ret << gname;
     }
-    return name.join(QStringLiteral(" "));
+    return ret;
 }
 
 void General::setHeadMaxHpAdjustedValue(int adjusted_value /* = -1 */)
