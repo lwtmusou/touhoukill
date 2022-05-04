@@ -46,7 +46,6 @@ public:
 
     QList<CardDescriptor> cards;
     QSet<QString> lord_list;
-    QSet<QString> ban_package;
 
     JsonObject configFile;
 
@@ -155,33 +154,6 @@ void Engine::addPackage(const Package *package)
     }
 }
 
-void Engine::addBanPackage(const QString &package_name)
-{
-    d->ban_package.insert(package_name);
-}
-
-QStringList Engine::getBanPackages() const
-{
-    if (ServerInfo.GameMode->category() == ModeHegemony) {
-        QStringList ban;
-        const QList<const Package *> &packs = packages();
-        QStringList needPacks;
-        needPacks << QStringLiteral("hegemonyGeneral") << QStringLiteral("hegemony_card");
-        foreach (const Package *pa, packs) {
-            if (!needPacks.contains(pa->name()))
-                ban << pa->name();
-        }
-        return ban;
-    } else {
-        QStringList ban = d->ban_package.values();
-        if (!ban.contains(QStringLiteral("hegemonyGeneral")))
-            ban << QStringLiteral("hegemonyGeneral");
-        if (!ban.contains(QStringLiteral("hegemony_card")))
-            ban << QStringLiteral("hegemony_card");
-        return ban;
-    }
-}
-
 QList<const Package *> Engine::packages() const
 {
     return d->packages;
@@ -245,7 +217,7 @@ int Engine::availableGeneralCount() const
     while (itor.hasNext()) {
         itor.next();
         const General *general = itor.value();
-        if (getBanPackages().contains(general->getPackage()))
+        if (!ServerInfo.EnabledPackages.contains(general->getPackage()))
             total--;
         else if (general->isHidden())
             total--;
@@ -515,7 +487,7 @@ QStringList Engine::getLimitedGeneralNames() const
     } else {
         while (itor.hasNext()) {
             itor.next();
-            if (!itor.value()->isHidden() && !getBanPackages().contains(itor.value()->getPackage()))
+            if (!itor.value()->isHidden() && ServerInfo.EnabledPackages.contains(itor.value()->getPackage()))
                 general_names << itor.key();
         }
     }

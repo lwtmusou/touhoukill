@@ -6,8 +6,8 @@ class QGroupBox;
 class QLabel;
 class QRadioButton;
 
-#include "serverinfostruct.h"
 #include "detector.h"
+#include "serverinfostruct.h"
 #include "socket.h"
 
 #include <QButtonGroup>
@@ -191,6 +191,8 @@ private:
     QHash<QString, ServerPlayer *> players;
     QSet<QString> addresses;
     QMultiHash<QString, QString> name2objname;
+
+    QStringList getNeededPackages() const;
 
 private slots:
     void processNewConnection(ClientSocket *socket);

@@ -940,7 +940,6 @@ bool ServerDialog::config()
     foreach (QAbstractButton *checkbox, checkboxes) {
         if (!checkbox->isChecked()) {
             QString package_name = checkbox->objectName();
-            Sanguosha->addBanPackage(package_name);
             ban_packages.insert(package_name);
         }
     }
@@ -961,6 +960,7 @@ Server::Server(QObject *parent)
     ServerInfo.DuringGame = true;
     ServerInfo.Name = Config.ServerName;
     ServerInfo.GameModeStr = Config.GameMode;
+    ServerInfo.GameMode = Mode::findMode(Config.GameMode);
     if (Config.GameMode == QStringLiteral("02_1v1"))
         ServerInfo.GameRuleMode = Config.value(QStringLiteral("1v1/Rule"), QStringLiteral("2013")).toString();
     else if (Config.GameMode == QStringLiteral("06_3v3"))
@@ -968,16 +968,7 @@ Server::Server(QObject *parent)
     ServerInfo.OperationTimeout = Config.OperationNoLimit ? 0 : Config.OperationTimeout;
     ServerInfo.NullificationCountDown = Config.NullificationCountDown;
 
-    const QList<const Package *> &packages = Sanguosha->packages();
-    foreach (const Package *package, packages) {
-        QString package_name = package->name();
-        // Why Sanguosha->getBanPackages() ????????
-        if (Sanguosha->getBanPackages().contains(package_name))
-            package_name = QStringLiteral("!") + package_name;
-
-        ServerInfo.EnabledPackages << package_name;
-    }
-
+    ServerInfo.EnabledPackages = getNeededPackages();
     ServerInfo.RandomSeat = Config.RandomSeat;
     ServerInfo.EnableCheat = Config.EnableCheat;
     ServerInfo.FreeChoose = Config.FreeChoose;
@@ -1174,4 +1165,25 @@ void Server::gameOver()
         name2objname.remove(player->screenName(), player->objectName());
         players.remove(player->objectName());
     }
+}
+
+QStringList Server::getNeededPackages() const
+{
+    QStringList ret;
+    if (ServerInfo.GameMode->category() == QSanguosha::ModeHegemony) {
+        ret << QStringLiteral("hegemonyGeneral") << QStringLiteral("hegemony_card");
+    } else {
+        QStringList ban = Config.BanPackages;
+        QStringList packages = Sanguosha->packageNames();
+        foreach (const QString &package, packages) {
+            if (package == QStringLiteral("hegemonyGeneral"))
+                continue;
+            if (package == QStringLiteral("hegemony_card"))
+                continue;
+            if (ban.contains(package))
+                continue;
+            ret << package;
+        }
+    }
+    return ret;
 }

@@ -94,10 +94,6 @@ public:
 #ifndef SWIG
     // Don't expose functions which are to be removed to SWIG
 
-    // move to ServerInfo
-    void addBanPackage(const QString &package_name);
-    QStringList getBanPackages() const;
-
     // move to Mode?
     int availableGeneralCount() const;
     QSet<QString> getRandomLords() const;
