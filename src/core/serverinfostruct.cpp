@@ -7,8 +7,6 @@
 
 ServerInfoStruct ServerInfo;
 
-const int ServerInfoStruct::S_SERVER_TIMEOUT_GRACIOUS_PERIOD = 1000;
-
 time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance, int operationRate)
 {
     time_t timeOut = OperationTimeout * 500 * operationRate;
@@ -22,8 +20,9 @@ time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QS
     else if (command == QSanProtocol::S_COMMAND_NULLIFICATION)
         timeOut = NullificationCountDown * 1000;
 
+    // Server may allow twice or even three times of period, and disconnect if reply hasn't come
     if (instance == QSanProtocol::S_SERVER_INSTANCE)
-        timeOut += S_SERVER_TIMEOUT_GRACIOUS_PERIOD;
+        timeOut = timeOut * 2.5;
     return timeOut;
 }
 

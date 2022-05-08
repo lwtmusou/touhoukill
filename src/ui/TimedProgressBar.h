@@ -73,16 +73,11 @@ class QSanCommandProgressBar : public TimedProgressBar
 
 public:
     QSanCommandProgressBar();
-    inline void setInstanceType(QSanProtocol::ProcessInstanceType type)
-    {
-        m_instanceType = type;
-    }
     void setCountdown(QSanProtocol::CommandType command);
     void setCountdown(const QSanProtocol::Countdown &countdown);
 
 protected:
     void paintEvent(QPaintEvent * /*unused*/) override;
-    QSanProtocol::ProcessInstanceType m_instanceType;
 };
 
 #endif

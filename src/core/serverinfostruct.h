@@ -16,11 +16,6 @@ struct QSGS_CORE_EXPORT ServerInfoStruct
     bool parse(const QVariant &object);
     QVariant serialize() const;
 
-    //Get the timeout allowance for a command. Server countdown is more lenient than the client.
-    //@param command: type of command
-    //@return countdown for command in milliseconds.
-    time_t getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance, int operationRate = 2);
-
     QString Name;
     const Mode *GameMode;
     QString GameModeStr;
@@ -40,7 +35,10 @@ struct QSGS_CORE_EXPORT ServerInfoStruct
 
     bool DuringGame;
 
-    static const int S_SERVER_TIMEOUT_GRACIOUS_PERIOD;
+    //Get the timeout allowance for a command. Server countdown is more lenient than the client.
+    //@param command: type of command
+    //@return countdown for command in milliseconds.
+    time_t getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance, int operationRate = 2);
 };
 
 extern QSGS_CORE_EXPORT ServerInfoStruct ServerInfo;

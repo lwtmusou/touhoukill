@@ -66,13 +66,12 @@ QSanCommandProgressBar::QSanCommandProgressBar()
 {
     m_step = Config.S_PROGRESS_BAR_UPDATE_INTERVAL;
     m_hasTimer = (ServerInfo.OperationTimeout != 0);
-    m_instanceType = S_CLIENT_INSTANCE;
 }
 
 void QSanCommandProgressBar::setCountdown(CommandType command)
 {
     m_mutex.lock();
-    m_max = ServerInfo.getCommandTimeout(command, m_instanceType);
+    m_max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
     m_mutex.unlock();
 }
 

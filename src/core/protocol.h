@@ -206,6 +206,8 @@ enum Game3v3Camp
     S_CAMP_COOL
 };
 
+// TODO: make following structs lightweight or pimpl them
+
 //static consts
 extern const int S_ALL_ALIVE_PLAYERS;
 
