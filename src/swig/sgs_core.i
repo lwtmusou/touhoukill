@@ -9,8 +9,6 @@
 %include "CardFace.h"
 %include "card.h"
 %include "general.h"
-%rename(insertGeneral) Package::operator <<(const General *);
-%rename(insertCard) Package::operator <<(const CardDescriptor &);
 %include "package.h"
 %include "player.h"
 %include "skill.h"

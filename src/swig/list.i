@@ -1,7 +1,6 @@
 
 // TODO: make this a std::vector-like implementation
 
-%rename(at) QList::operator [](int);
 template <class T>
 class QList {
 public:
@@ -23,7 +22,7 @@ public:
     QList<T> mid(int pos, int length = -1) const;
     int indexOf(const T &value, int from = 0);
     T value(int i);
-    T operator [](int i);
+    T at(int i);
 };
 
 #if QT_MAJOR_VERSION==6
@@ -49,7 +48,7 @@ public:
     QList<QString> mid(int pos, int length = -1) const;
     int indexOf(const QString &value, int from = 0);
     QString value(int i);
-    QString operator [](int i);
+    QString at(int i);
     QString join(const QString &sep) const;
 };
 #endif
@@ -69,6 +68,50 @@ public:
     T previous();
     T peekPrevious() const;
 };
+
+
+#if QT_MAJOR_VERSION==5
+template <class T>
+class QVector {
+public:
+    QVector();
+    QVector(const QVector &);
+    QVector &operator=(const QVector &);
+    virtual ~QVector();
+
+    int length() const;
+    void append(const T &elem);
+    void prepend(const T &elem);
+    bool isEmpty() const;
+    bool contains(const T &value) const;
+    T first() const;
+    T last() const;
+    void removeAt(int i);
+    int removeAll(const T &value);
+    bool removeOne(const T &value);
+    QVector<T> mid(int pos, int length = -1) const;
+    int indexOf(const T &value, int from = 0);
+    T value(int i);
+    T at(int i);
+};
+
+template<class T>
+class QVectorIterator
+{
+public:
+    QVectorIterator(const QVector<T> &container);
+    QVectorIterator &operator=(const QVector<T> &container);
+    void toFront();
+    void toBack();
+    bool hasNext() const;
+    T next();
+    T peekNext() const;
+    bool hasPrevious() const;
+    T previous();
+    T peekPrevious() const;
+};
+
+#endif
 
 template <class T>
 class QSet {
@@ -114,6 +157,18 @@ QListIterator<T> *create_qlist_iterator(QList<T> *list);
 
 template<class T>
 QSetIterator<T> *create_qset_iterator(QSet<T> *list);
+
+#if QT_MAJOR_VERSION==5
+%newobject ::create_qvector_iterator;
+%{
+template<class T> QVectorIterator<T> *create_qvector_iterator(QVector<T> *list)
+{
+    return new QVectorIterator<T>(*list);
+}
+%}
+template<class T>
+QVectorIterator<T> *create_qvector_iterator(QVector<T> *list);
+#endif
 
 %template(SPlayerList) QList<Player *>;
 %template(PlayerList) QList<const Player *>;
@@ -168,6 +223,12 @@ QSetIterator<T> *create_qset_iterator(QSet<T> *list);
 %template(create_qlist_iterator) create_qset_iterator<Card *>;
 %template(create_qlist_iterator) create_qset_iterator<const Card *>;
 %template(create_qlist_iterator) create_qset_iterator<const Trigger *>;
+
+#if QT_MAJOR_VERSION==5
+%template(IntVector) QVector<int>;
+%template(IntVectorIt) QSetIterator<int>;
+%template(create_qlist_iterator) create_qvector_iterator<int>;
+#endif
 
 typedef QList<QVariant> QVariantList;
 typedef QSet<int> IdSet;
