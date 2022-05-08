@@ -47,14 +47,15 @@ const QList<const General *> &Package::generals() const
     return d->generals;
 }
 
-Package &Package::operator<<(const General *general)
+Package &Package::operator<<(General *general)
 {
     d->generals << general;
     return *this;
 }
 
-Package &Package::operator<<(const CardDescriptor &card)
+Package &Package::operator<<(CardDescriptor &card)
 {
+    card.package = this;
     d->all_cards << card;
     return *this;
 }

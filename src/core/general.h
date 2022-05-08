@@ -51,7 +51,9 @@ public:
     void addRelateSkill(const QString &skill_name);
     QStringList relatedSkillNames() const;
 
-    QString getPackage() const;
+    const Package *package() const;
+    QString packageName() const;
+
     void addCompanion(const QString &name);
     bool isCompanionWith(const QString &name) const;
     QSet<QString> companions() const;

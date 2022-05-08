@@ -1,5 +1,10 @@
 #include "mode.h"
 #include "RoomObject.h"
+#include "card.h"
+#include "engine.h"
+#include "general.h"
+#include "package.h"
+#include "serverinfostruct.h"
 
 using namespace QSanguosha;
 
@@ -79,6 +84,53 @@ ModeCategory Mode::category() const
     return d->category;
 }
 
+IdSet Mode::availableCards() const
+{
+    IdSet ret;
+    int count = Sanguosha->cardCount();
+    for (int i = 0; i <= count; ++i) {
+        const CardDescriptor &desc = Sanguosha->cardDescriptor(i);
+        if (desc.package == nullptr)
+            continue;
+        if (ServerInfo.GameMode != nullptr) {
+            // enabled packages are parsed
+            if (!ServerInfo.EnabledPackages.contains(desc.package->name()))
+                continue;
+        }
+        ret << i;
+    }
+
+    // for hegemony: knownboth and doublesword are substituted in their own card package and no need to substitute them here
+    return ret;
+}
+
+QSet<const General *> Mode::availableGenerals() const
+{
+    QSet<QString> names = Sanguosha->generalNames();
+    QSet<const General *> ret;
+    foreach (const QString &name, names) {
+        const General *general = Sanguosha->general(name);
+        if (general == nullptr)
+            continue;
+        if (general->package() == nullptr)
+            continue;
+        if (general->isHidden())
+            continue;
+        if (ServerInfo.GameMode != nullptr) {
+            // enabled packages are parsed
+            if (!ServerInfo.EnabledPackages.contains(general->package()->name()))
+                continue;
+        }
+
+        ret << general;
+    }
+
+    // why consider ban in original Engine::availableGeneralCount?
+    // ban should be considered only when selecting generals
+
+    return ret;
+}
+
 class GenericRoleModePrivate
 {
 public:
@@ -156,111 +208,6 @@ Rule *GenericRoleMode::rule() const
     return nullptr;
 }
 
-IdSet GenericRoleMode::availableCards() const
-{
-#if 0
-
-    QList<int> Engine::getRandomCards() const
-    {
-        // TODO: reimplement this function in separated class Mode
-#if 0
-        bool exclude_disaters = false;
-        bool using_2012_3v3 = false;
-        bool using_2013_3v3 = false;
-        if (Config.GameMode == QStringLiteral("06_3v3")) {
-            using_2012_3v3 = (Config.value(QStringLiteral("3v3/OfficialRule"), QStringLiteral("2013")).toString() == QStringLiteral("2012"));
-            using_2013_3v3 = (Config.value(QStringLiteral("3v3/OfficialRule"), QStringLiteral("2013")).toString() == QStringLiteral("2013"));
-            exclude_disaters = Config.value(QStringLiteral("3v3/ExcludeDisasters"), true).toBool();
-        }
-
-        if (Config.GameMode == QStringLiteral("04_1v3"))
-            exclude_disaters = true;
-        Q_UNUSED(exclude_disaters);
-#endif
-
-        QList<int> list;
-        for (int i = 0; i < d->cards.length(); ++i)
-            list << i;
-
-#if 0
-        foreach (const CardDescriptor &card, d->cards) {
-            // TODO: deal with this in separated class Mode
-            Q_UNUSED(card);
-
-            if (exclude_disaters && card.face()->isKindOf("Disaster"))
-                continue;
-
-            if (getPackageNameByCard(card) == "New3v3Card" && (using_2012_3v3 || using_2013_3v3))
-                list << card->id();
-            else if (getPackageNameByCard(card) == "New3v3_2013Card" && using_2013_3v3)
-                list << card->id();
-
-            if (!getBanPackages().contains(getPackageNameByCard(card))) {
-                if (card->faceName().startsWith("known_both")) {
-                    if (isHegemonyGameMode(Config.GameMode) && card->faceName() == "known_both_hegemony")
-                        list << card->id();
-                    else if (!isHegemonyGameMode(Config.GameMode) && card->faceName() == "known_both")
-                        list << card->id();
-
-                } else if (card->faceName().startsWith("DoubleSword")) {
-                    if (isHegemonyGameMode(Config.GameMode) && card->faceName() == "DoubleSwordHegemony")
-                        list << card->id();
-                    else if (!isHegemonyGameMode(Config.GameMode) && card->faceName() == "DoubleSword")
-                        list << card->id();
-                } else
-                    list << card->id();
-            }
-        }
-        // remove two crossbows and one nullification?
-        if (using_2012_3v3 || using_2013_3v3)
-            list.removeOne(98);
-        if (using_2013_3v3) {
-            list.removeOne(53);
-            list.removeOne(54);
-        }
-#endif
-
-        qShuffle(list);
-
-        return list;
-    }
-
-#endif
-
-    // TODO
-    return {};
-}
-
-QSet<const General *> GenericRoleMode::availableGenerals() const
-{
-#if 0
-    int Engine::availableGeneralCount() const
-    {
-        int total = d->generals.size();
-        QHashIterator<QString, const General *> itor(d->generals);
-        while (itor.hasNext()) {
-            itor.next();
-            const General *general = itor.value();
-            if (!ServerInfo.EnabledPackages.contains(general->getPackage()))
-                total--;
-            else if (general->isHidden())
-                total--;
-#if 0
-            else if (isRoleGameMode(ServerInfo.GameMode) && Config.value(QStringLiteral("Banlist/Roles")).toStringList().contains(general->name()))
-                total--;
-            else if (ServerInfo.GameMode == QStringLiteral("04_1v3") && Config.value(QStringLiteral("Banlist/HulaoPass")).toStringList().contains(general->name()))
-                total--;
-#endif
-        }
-
-        return total;
-    }
-#endif
-
-    // TODO
-    return {};
-}
-
 void GenericRoleMode::startGame(RoomObject *room) const
 {
     // TODO
@@ -326,18 +273,6 @@ Rule *GenericHegemonyMode::rule() const
 {
     // TODO
     return nullptr;
-}
-
-IdSet GenericHegemonyMode::availableCards() const
-{
-    // TODO
-    return {};
-}
-
-QSet<const General *> GenericHegemonyMode::availableGenerals() const
-{
-    // TODO
-    return {};
 }
 
 void GenericHegemonyMode::startGame(RoomObject *room) const

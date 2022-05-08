@@ -30,8 +30,8 @@ public:
     virtual int playersCount() const = 0;
     virtual QString roles() const = 0;
     virtual Rule *rule() const = 0;
-    virtual IdSet availableCards() const = 0;
-    virtual QSet<const General *> availableGenerals() const = 0;
+    virtual IdSet availableCards() const;
+    virtual QSet<const General *> availableGenerals() const;
 
     virtual void startGame(RoomObject *room) const = 0;
 
@@ -55,8 +55,6 @@ public:
     int playersCount() const override;
     QString roles() const override;
     Rule *rule() const override;
-    IdSet availableCards() const override;
-    QSet<const General *> availableGenerals() const override;
 
     void startGame(RoomObject *room) const override;
 
@@ -77,8 +75,6 @@ public:
     int playersCount() const override;
     QString roles() const override;
     Rule *rule() const override;
-    IdSet availableCards() const override;
-    QSet<const General *> availableGenerals() const override;
 
     void startGame(RoomObject *room) const override;
 

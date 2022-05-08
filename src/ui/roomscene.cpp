@@ -17,6 +17,7 @@
 #include "generaloverview.h"
 #include "indicatoritem.h"
 #include "lightboxanimation.h"
+#include "mode.h"
 #include "pixmapanimation.h"
 #include "playercardbox.h"
 #include "qsanbutton.h"
@@ -1733,7 +1734,8 @@ void RoomScene::chooseGeneral(const QStringList &generals, bool single_result, b
     if (!main_window->isActiveWindow())
         Audio::playSystemAudioEffect(QStringLiteral("prelude"));
 
-    if (isHegemonyGameMode(ServerInfo.GameModeStr) && ServerInfo.Enable2ndGeneral && !Self->hasFlag(QStringLiteral("Pingyi_Choose")) && !generals.isEmpty()) {
+    if (ServerInfo.GameMode->category() == QSanguosha::ModeHegemony && ServerInfo.GeneralsPerPlayer >= 2 && !Self->hasFlag(QStringLiteral("Pingyi_Choose"))
+        && !generals.isEmpty()) {
         m_chooseGeneralBox->chooseGeneral(generals, false, single_result, QString(), nullptr, can_convert);
     } else {
         QDialog *dialog = nullptr;
@@ -3387,7 +3389,7 @@ void RoomScene::saveReplayRecord(bool auto_save, bool network_only)
             if (!QDir(location).exists())
                 QDir().mkdir(location);
             QString general_name = Sanguosha->translate(Self->generalName());
-            if (ServerInfo.Enable2ndGeneral)
+            if (ServerInfo.isMultiGeneralEnabled())
                 general_name.append(QStringLiteral("_") + Sanguosha->translate(Self->getGeneral2Name()));
             location.append(QStringLiteral("%1 %2(%3)-").arg(Sanguosha->versionNumber().toString(), general_name, Sanguosha->translate(Self->getRoleString())));
             location.append(QDateTime::currentDateTime().toString(QStringLiteral("yyyyMMddhhmmss")));

@@ -18,6 +18,7 @@ struct CardUseStruct;
 
 class CardPrivate;
 class CardFace;
+class Package;
 #endif
 
 class QSGS_CORE_EXPORT Card final
@@ -151,7 +152,7 @@ struct QSGS_CORE_EXPORT CardDescriptor
     QString faceName;
     QSanguosha::Suit suit;
     QSanguosha::Number number;
-    QString package;
+    const Package *package;
 
     // property of card?
 

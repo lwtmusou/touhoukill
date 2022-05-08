@@ -284,7 +284,7 @@ GeneralOverview::GeneralOverview(QWidget *parent)
         else
             ui->changeGeneralButton->hide();
 
-        if (!isHegemonyGameMode(ServerInfo.GameModeStr) && ServerInfo.Enable2ndGeneral)
+        if (!isHegemonyGameMode(ServerInfo.GameModeStr) && ServerInfo.isMultiGeneralEnabled())
             ui->changeGeneral2Button->show();
         else
             ui->changeGeneral2Button->hide();
@@ -350,7 +350,7 @@ void GeneralOverview::fillGenerals(const QStringList &generals, bool init)
         if (general->name().endsWith(QStringLiteral("hegemony")))
             max_hp = QString::number(double(general->maxHp()) / 2);
 
-        package = Sanguosha->translate(general->getPackage());
+        package = Sanguosha->translate(general->packageName());
 
         QString nickname = Sanguosha->translate(QStringLiteral("#") + general_name);
         if (nickname.startsWith(QStringLiteral("#")) && general_name.contains(QStringLiteral("_")))
@@ -390,7 +390,7 @@ void GeneralOverview::fillGenerals(const QStringList &generals, bool init)
         QTableWidgetItem *package_item = new QTableWidgetItem(package);
         package_item->setTextAlignment(Qt::AlignCenter);
 
-        if (Config.value(QStringLiteral("LuaPackages"), QString()).toString().split(QStringLiteral("+")).contains(general->getPackage()))
+        if (Config.value(QStringLiteral("LuaPackages"), QString()).toString().split(QStringLiteral("+")).contains(general->packageName()))
             package_item->setToolTip(tr("<font color=#FFFF33>This is an Lua extension</font>"));
 
         //add color for touhou kingdoms and packages.

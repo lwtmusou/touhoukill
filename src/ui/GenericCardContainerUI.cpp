@@ -208,7 +208,7 @@ void PlayerCardContainer::updateAvatar()
     if (m_player != nullptr) {
         general = getAvatarGeneral();
         _m_layout->m_screenNameFont.paintText(_m_screenNameItem, _m_layout->m_screenNameArea, Qt::AlignCenter, m_player->screenName());
-        if (ServerInfo.Enable2ndGeneral && getPlayer() == Self)
+        if (ServerInfo.isMultiGeneralEnabled() && getPlayer() == Self)
             _m_layout->m_screenNameFont.paintText(_m_screenNameItem, _m_layout->m_screenNameAreaDouble, Qt::AlignCenter, m_player->screenName());
     } else {
         _m_layout->m_screenNameFont.paintText(_m_screenNameItem, _m_layout->m_screenNameArea, Qt::AlignCenter, QString());
@@ -231,18 +231,18 @@ void PlayerCardContainer::updateAvatar()
             if (!isHegemonyGameMode(ServerInfo.GameModeStr)) {
                 _paintPixmap(_m_kingdomIcon, _m_layout->m_kingdomIconArea, G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON), kingdom),
                              _getAvatarParent());
-                if (ServerInfo.Enable2ndGeneral && getPlayer() == Self)
+                if (ServerInfo.isMultiGeneralEnabled() && getPlayer() == Self)
                     _paintPixmap(_m_kingdomIcon, _m_layout->m_kingdomIconAreaDouble, G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_KINGDOM_ICON), kingdom),
                                  _getAvatarParent());
 
-                if (!ServerInfo.Enable2ndGeneral)
+                if (!ServerInfo.isMultiGeneralEnabled())
                     _paintPixmap(_m_kingdomColorMaskIcon, _m_layout->m_kingdomMaskArea,
                                  G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_KINGDOM_COLOR_MASK), kingdom), _getAvatarParent());
             }
             //@todo
             //we want this mask to start at zero piont of logbox width,
             //and keep the height to equal with the diff between middleFrame and rightFrame
-            if (ServerInfo.Enable2ndGeneral)
+            if (ServerInfo.isMultiGeneralEnabled())
                 _paintPixmap(_m_dashboardKingdomColorMaskIcon, _m_layout->m_dashboardPrimaryKingdomMaskArea,
                              G_ROOM_SKIN.getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_DASHBOARD_KINGDOM_COLOR_MASK), kingdom), _getAvatarParent());
             else
@@ -253,7 +253,7 @@ void PlayerCardContainer::updateAvatar()
             QString name = Sanguosha->translate(QStringLiteral("&") + general->name());
             if (name.startsWith(QStringLiteral("&")))
                 name = Sanguosha->translate(general->name());
-            if (ServerInfo.Enable2ndGeneral && getPlayer() == Self)
+            if (ServerInfo.isMultiGeneralEnabled() && getPlayer() == Self)
                 _m_layout->m_avatarNameFont.paintText(_m_avatarNameItem, _m_layout->m_headAvatarNameArea, Qt::AlignLeft | Qt::AlignJustify, name);
             else
                 _m_layout->m_avatarNameFont.paintText(_m_avatarNameItem, _m_layout->m_avatarNameArea, Qt::AlignLeft | Qt::AlignJustify, name);
@@ -299,7 +299,7 @@ void PlayerCardContainer::updateSmallAvatar()
     bool fake_general = false;
     if (m_player != nullptr)
         general = m_player->getGeneral2();
-    if (general == nullptr && ServerInfo.Enable2ndGeneral && this->getPlayer() == Self) {
+    if (general == nullptr && ServerInfo.isMultiGeneralEnabled() && this->getPlayer() == Self) {
         general = Sanguosha->general(QStringLiteral("reimu"));
         fake_general = true;
     }
@@ -454,7 +454,7 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
         }
     }
     //set treasure pile at first
-    QPoint start = (ServerInfo.Enable2ndGeneral && getPlayer() == Self) ? _m_layout->m_privatePileStartPosDouble : _m_layout->m_privatePileStartPos;
+    QPoint start = (ServerInfo.isMultiGeneralEnabled() && getPlayer() == Self) ? _m_layout->m_privatePileStartPosDouble : _m_layout->m_privatePileStartPos;
     QPoint step = _m_layout->m_privatePileStep;
     QSize size = _m_layout->m_privatePileButtonSize;
     QList<QGraphicsProxyWidget *> widgets_t;
@@ -530,7 +530,7 @@ void PlayerCardContainer::updateMarks()
         else
             _m_markItem->setPos(newRect.topLeft());
     } else {
-        if (ServerInfo.Enable2ndGeneral)
+        if (ServerInfo.isMultiGeneralEnabled())
             _m_markItem->setPos(newRect.left() - 150, newRect.top() + newRect.height() / 2);
         else
             _m_markItem->setPos(newRect.left(), newRect.top() + newRect.height() / 2);
@@ -609,7 +609,7 @@ void PlayerCardContainer::repaintAll()
     const char *face_turned_mask = isHegemonyGameMode(ServerInfo.GameModeStr) ? QSanRoomSkin::S_SKIN_KEY_FACETURNEDMASK_HEGEMONY : QSanRoomSkin::S_SKIN_KEY_FACETURNEDMASK;
     if (this->getPlayer() == Self) {
         _paintPixmap(_m_faceTurnedIcon, _m_layout->m_avatarArea, QString::fromUtf8(face_turned_mask), _getAvatarParent());
-        if (ServerInfo.Enable2ndGeneral)
+        if (ServerInfo.isMultiGeneralEnabled())
             _paintPixmap(_m_faceTurnedIcon2, _m_layout->m_smallAvatarArea, QString::fromUtf8(face_turned_mask), _getAvatarParent());
     } else
         _paintPixmap(_m_faceTurnedIcon, _m_layout->m_avatarArea, QString::fromUtf8(face_turned_mask), _getAvatarParent());
@@ -628,7 +628,7 @@ void PlayerCardContainer::repaintAll()
     if (_m_seatItem != nullptr) {
         _paintPixmap(_m_seatItem, _m_layout->m_seatIconRegion, _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER), QString::number(m_player->seat())),
                      _getAvatarParent());
-        if (ServerInfo.Enable2ndGeneral && getPlayer() == Self)
+        if (ServerInfo.isMultiGeneralEnabled() && getPlayer() == Self)
             _paintPixmap(_m_seatItem, _m_layout->m_seatIconRegionDouble, _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER), QString::number(m_player->seat())),
                          _getAvatarParent());
     }
@@ -643,7 +643,7 @@ void PlayerCardContainer::repaintAll()
     _m_hpBox->setOrientation(_m_layout->m_magatamasHorizontal ? Qt::Horizontal : Qt::Vertical);
     _m_hpBox->setBackgroundVisible(_m_layout->m_magatamasBgVisible);
     _m_hpBox->setAnchorEnable(true);
-    QPoint magatamas_anchor = (ServerInfo.Enable2ndGeneral && getPlayer() == Self) ? _m_layout->m_magatamasAnchorDouble : _m_layout->m_magatamasAnchor;
+    QPoint magatamas_anchor = (ServerInfo.isMultiGeneralEnabled() && getPlayer() == Self) ? _m_layout->m_magatamasAnchorDouble : _m_layout->m_magatamasAnchor;
     _m_hpBox->setAnchor(magatamas_anchor, _m_layout->m_magatamasAlign);
     _m_hpBox->setImageArea(_m_layout->m_magatamaImageArea);
     _m_hpBox->update();
@@ -1200,7 +1200,7 @@ void PlayerCardContainer::_createControls()
     _m_floatingArea = new QGraphicsPixmapItem(_m_groupMain);
 
     _m_screenNameItem = new QGraphicsPixmapItem(_getAvatarParent());
-    if (ServerInfo.Enable2ndGeneral && this->getPlayer() == Self)
+    if (ServerInfo.isMultiGeneralEnabled() && this->getPlayer() == Self)
         _m_avatarArea = new QGraphicsRectItem(_m_layout->m_avatarAreaDouble, _getAvatarParent());
     else
         _m_avatarArea = new QGraphicsRectItem(_m_layout->m_avatarArea, _getAvatarParent());
@@ -1393,7 +1393,7 @@ QVariant PlayerCardContainer::itemChange(GraphicsItemChange change, const QVaria
             _clearPixmap(_m_selectedFrame);
             _m_selectedFrame->hide();
         } else {
-            QRect focusFrameArea = (this->getPlayer() == Self && ServerInfo.Enable2ndGeneral) ? _m_layout->m_focusFrameAreaDouble : _m_layout->m_focusFrameArea;
+            QRect focusFrameArea = (this->getPlayer() == Self && ServerInfo.isMultiGeneralEnabled()) ? _m_layout->m_focusFrameAreaDouble : _m_layout->m_focusFrameArea;
             _paintPixmap(_m_selectedFrame, focusFrameArea, _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_SELECTED_FRAME), true), _getFocusFrameParent());
             _m_selectedFrame->show();
         }
@@ -1582,7 +1582,7 @@ void PlayerCardContainer::stopHeroSkinChangingAnimation()
 QPixmap PlayerCardContainer::_getAvatarIcon(const QString &heroName)
 {
     int avatarSize
-        = ((m_player->getGeneral2() != nullptr) || (ServerInfo.Enable2ndGeneral && this->getPlayer() == Self)) ? _m_layout->m_primaryAvatarSize : _m_layout->m_avatarSize;
+        = ((m_player->getGeneral2() != nullptr) || (ServerInfo.isMultiGeneralEnabled() && this->getPlayer() == Self)) ? _m_layout->m_primaryAvatarSize : _m_layout->m_avatarSize;
     return G_ROOM_SKIN.getGeneralPixmap(heroName, (QSanRoomSkin::GeneralIconSize)avatarSize);
 }
 
@@ -1599,7 +1599,7 @@ void PlayerCardContainer::showSkillName(const QString &skill_name, bool isSelf)
     if (!isSelf) {
         G_PHOTO_LAYOUT.m_skillNameFont.paintText(_m_skillNameItem, G_PHOTO_LAYOUT.m_skillNameArea, Qt::AlignLeft, Sanguosha->translate(skill_name));
     } else {
-        if (ServerInfo.Enable2ndGeneral && Self->inDeputySkills(skill_name))
+        if (ServerInfo.isMultiGeneralEnabled() && Self->inDeputySkills(skill_name))
             G_DASHBOARD_LAYOUT.m_skillNameFont.paintText(_m_skillNameItem, G_DASHBOARD_LAYOUT.m_secondarySkillNameArea, Qt::AlignLeft, Sanguosha->translate(skill_name));
         else
             G_DASHBOARD_LAYOUT.m_skillNameFont.paintText(_m_skillNameItem, G_DASHBOARD_LAYOUT.m_skillNameArea, Qt::AlignLeft, Sanguosha->translate(skill_name));

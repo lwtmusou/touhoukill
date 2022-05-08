@@ -274,9 +274,9 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
         if (kingdom == QStringLiteral("zhu")) {
             QList<const General *> addGgenerals;
             foreach (const General *g, generals) {
-                if (g->name().endsWith(QStringLiteral("hegemony")) && isHegemonyGameMode(ServerInfo.GameModeStr) && ServerInfo.Enable2ndGeneral)
+                if (g->name().endsWith(QStringLiteral("hegemony")) && isHegemonyGameMode(ServerInfo.GameModeStr) && ServerInfo.isMultiGeneralEnabled())
                     addGgenerals << g;
-                else if (!g->name().endsWith(QStringLiteral("hegemony")) && (!isHegemonyGameMode(ServerInfo.GameModeStr) || !ServerInfo.Enable2ndGeneral))
+                else if (!g->name().endsWith(QStringLiteral("hegemony")) && (!isHegemonyGameMode(ServerInfo.GameModeStr) || !ServerInfo.isMultiGeneralEnabled()))
                     addGgenerals << g;
             }
             if (!addGgenerals.isEmpty())
@@ -352,7 +352,7 @@ QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals)
     for (int i = 0; i < generals.length(); i++) {
         const General *general = generals.at(i);
         QString general_name = general->name();
-        QString text = QStringLiteral("%1[%2]").arg(Sanguosha->translate(general_name), Sanguosha->translate(general->getPackage()));
+        QString text = QStringLiteral("%1[%2]").arg(Sanguosha->translate(general_name), Sanguosha->translate(general->packageName()));
 
         QAbstractButton *button = nullptr;
         if (pair_choose)

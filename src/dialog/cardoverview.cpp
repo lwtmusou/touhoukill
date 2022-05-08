@@ -3,6 +3,7 @@
 #include "audio.h"
 #include "client.h"
 #include "engine.h"
+#include "package.h"
 #include "roomscene.h"
 #include "serverinfostruct.h"
 #include "settings.h"
@@ -108,7 +109,7 @@ void CardOverview::addCard(int i, const CardDescriptor &card, int id)
     QString point = Card::NumberToString(card.number);
     QString type = Sanguosha->translate(card.face()->name());
     QString subtype = Sanguosha->translate(card.face()->subTypeName());
-    QString package = Sanguosha->translate(card.package);
+    QString package = Sanguosha->translate(card.package->name());
 
     QTableWidgetItem *name_item = new QTableWidgetItem(name);
     name_item->setData(Qt::UserRole, id);
@@ -120,7 +121,7 @@ void CardOverview::addCard(int i, const CardDescriptor &card, int id)
     ui->tableWidget->setItem(i, 4, new QTableWidgetItem(subtype));
 
     QTableWidgetItem *package_item = new QTableWidgetItem(package);
-    if (Config.value(QStringLiteral("LuaPackages"), QString()).toString().split(QStringLiteral("+")).contains(card.package)) {
+    if (Config.value(QStringLiteral("LuaPackages"), QString()).toString().split(QStringLiteral("+")).contains(card.package->name())) {
         package_item->setBackground(QBrush(qRgb(0x66, 0xCC, 0xFF)));
         package_item->setToolTip(tr("<font color=#FFFF33>This is an Lua extension</font>"));
     }

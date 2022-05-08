@@ -40,6 +40,7 @@ public:
 General::General(Package *package, const QString &name, const QString &kingdom, int maxHp, bool isLord, Gender gender, bool hidden, bool neverShown)
     : d(new GeneralPrivate(package, name, kingdom, maxHp, isLord, gender, hidden, neverShown))
 {
+    (*package) << this;
 }
 
 QString General::name() const
@@ -131,7 +132,12 @@ QStringList General::relatedSkillNames() const
     return d->relatedSkills;
 }
 
-QString General::getPackage() const
+const Package *General::package() const
+{
+    return d->package;
+}
+
+QString General::packageName() const
 {
     return d->package->name();
 }

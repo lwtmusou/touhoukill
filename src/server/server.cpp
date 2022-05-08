@@ -971,7 +971,7 @@ Server::Server(QObject *parent)
     ServerInfo.RandomSeat = Config.RandomSeat;
     ServerInfo.EnableCheat = Config.EnableCheat;
     ServerInfo.FreeChoose = Config.FreeChoose;
-    ServerInfo.Enable2ndGeneral = Config.Enable2ndGeneral;
+    ServerInfo.GeneralsPerPlayer = (Config.Enable2ndGeneral ? 2 : 1);
     ServerInfo.EnableSame = Config.EnableSame;
     ServerInfo.DisableChat = Config.DisableChat;
     ServerInfo.MaxHpScheme = Config.MaxHpScheme;

@@ -34,7 +34,7 @@ ServerInfoStruct::ServerInfoStruct()
     , RandomSeat(false)
     , EnableCheat(false)
     , FreeChoose(false)
-    , Enable2ndGeneral(false)
+    , GeneralsPerPlayer(1)
     , EnableSame(false)
     , EnableAI(false)
     , DisableChat(false)
@@ -86,7 +86,7 @@ bool ServerInfoStruct::parseLegacy(const QString &str)
         RandomSeat = flags.contains(QStringLiteral("R"));
         EnableCheat = flags.contains(QStringLiteral("C"));
         FreeChoose = EnableCheat && flags.contains(QStringLiteral("F"));
-        Enable2ndGeneral = flags.contains(QStringLiteral("S"));
+        GeneralsPerPlayer = (flags.contains(QStringLiteral("S")) ? 2 : 1);
         EnableSame = flags.contains(QStringLiteral("T"));
         EnableAI = flags.contains(QStringLiteral("A"));
         DisableChat = flags.contains(QStringLiteral("M"));
@@ -149,7 +149,7 @@ bool ServerInfoStruct::parse(const QVariant &object)
         RandomSeat = ob.value(QStringLiteral("RandomSeat"), false).toBool();
         EnableCheat = ob.value(QStringLiteral("EnableCheat"), false).toBool();
         FreeChoose = ob.value(QStringLiteral("FreeChoose"), false).toBool();
-        Enable2ndGeneral = ob.value(QStringLiteral("Enable2ndGeneral"), false).toBool();
+        GeneralsPerPlayer = ob.value(QStringLiteral("GeneralsPerPlayer"), 1).toInt();
         EnableSame = ob.value(QStringLiteral("EnableSame"), false).toBool();
         EnableAI = ob.value(QStringLiteral("EnableAI"), false).toBool();
         DisableChat = ob.value(QStringLiteral("DisableChat"), false).toBool();
@@ -184,7 +184,7 @@ QVariant ServerInfoStruct::serialize() const
     m[QStringLiteral("RandomSeat")] = RandomSeat;
     m[QStringLiteral("EnableCheat")] = EnableCheat;
     m[QStringLiteral("FreeChoose")] = FreeChoose;
-    m[QStringLiteral("Enable2ndGeneral")] = Enable2ndGeneral;
+    m[QStringLiteral("GeneralsPerPlayer")] = GeneralsPerPlayer;
     m[QStringLiteral("EnableSame")] = EnableSame;
     m[QStringLiteral("DisableChat")] = DisableChat;
     m[QStringLiteral("MaxHpScheme")] = MaxHpScheme;
@@ -193,7 +193,12 @@ QVariant ServerInfoStruct::serialize() const
     return m;
 }
 
-bool ServerInfoStruct::parsed()
+bool ServerInfoStruct::parsed() const
 {
     return GameMode != nullptr;
+}
+
+bool ServerInfoStruct::isMultiGeneralEnabled() const
+{
+    return GeneralsPerPlayer > 1;
 }

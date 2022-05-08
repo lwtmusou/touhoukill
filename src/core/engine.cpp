@@ -227,7 +227,7 @@ bool Engine::isGeneralHidden(const QString &general_name) const
 
 const CardDescriptor &Engine::cardDescriptor(int cardId) const
 {
-    static CardDescriptor nullDescriptor = {QString(), NoSuit, NumberNA, QString()};
+    static CardDescriptor nullDescriptor = {QString(), NoSuit, NumberNA, nullptr};
 
     if (cardId == Card::S_UNKNOWN_CARD_ID)
         return nullDescriptor;

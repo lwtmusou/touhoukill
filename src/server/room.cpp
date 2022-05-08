@@ -2561,7 +2561,7 @@ void Room::prepareForStart()
     if (mode == QStringLiteral("06_3v3") || mode == QStringLiteral("06_XMode") || mode == QStringLiteral("02_1v1")) {
         return;
     } else if (isHegemonyGameMode(mode)) {
-        if (!ServerInfo.Enable2ndGeneral)
+        if (!ServerInfo.isMultiGeneralEnabled())
             assignRoles();
         if (Config.RandomSeat)
             qShuffle(m_players);
@@ -3310,7 +3310,7 @@ void Room::chooseHegemonyGenerals()
 
     doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
 
-    if (!ServerInfo.Enable2ndGeneral) {
+    if (!ServerInfo.isMultiGeneralEnabled()) {
         foreach (ServerPlayer *player, to_assign) {
             if (player->general() != nullptr)
                 continue;

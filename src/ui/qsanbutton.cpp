@@ -406,7 +406,7 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
                     generalName = general->name();
                     break;
                 }
-                if (ServerInfo.Enable2ndGeneral) {
+                if (ServerInfo.isMultiGeneralEnabled()) {
                     const General *general2 = p->getGeneral2();
                     if (general2->hasSkill(engskillname) || general2->hasSkill(HegSkillname)) {
                         generalName = general2->name();
@@ -419,7 +419,7 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
             const General *general = Self->general();
             if ((general != nullptr) && (general->hasSkill(engskillname) || general->hasSkill(HegSkillname)))
                 generalName = general->name();
-            if (ServerInfo.Enable2ndGeneral) {
+            if (ServerInfo.isMultiGeneralEnabled()) {
                 const General *general2 = Self->getGeneral2();
                 if (general2->hasSkill(engskillname) || general2->hasSkill(HegSkillname)) {
                     generalName = general2->name();
@@ -555,13 +555,13 @@ void QSanInvokeSkillDock::update()
         for (int i = 0; i < rows; i++) {
             int rowTop = (RoomSceneInstance->m_skillButtonSank) ? (-rowH - 2 * (rows - i - 1)) : ((-rows + i) * rowH);
             int btnWidth = (_m_width - 20) / btnNum[i];
-            if (ServerInfo.Enable2ndGeneral)
+            if (ServerInfo.isMultiGeneralEnabled())
                 btnWidth = (this->objectName() == QStringLiteral("left")) ? (_m_width + 30) / btnNum[i] : (_m_width - 20) / btnNum[i];
             for (int j = 0; j < btnNum[i]; j++) {
                 QSanInvokeSkillButton *button = regular_buttons[m++];
                 button->setButtonWidth((QSanInvokeSkillButton::SkillButtonWidth)(btnNum[i] - 1));
                 button->setPos(btnWidth * j, rowTop);
-                if (ServerInfo.Enable2ndGeneral)
+                if (ServerInfo.isMultiGeneralEnabled())
                     button->setPos(btnWidth * j + 30, rowTop);
             }
         }
@@ -578,7 +578,7 @@ void QSanInvokeSkillDock::update()
             int btnWidth = _m_width / lordBtnNum[i];
             if (lordBtnNum[i] == 1)
                 btnWidth = _m_width / 2;
-            if (ServerInfo.Enable2ndGeneral)
+            if (ServerInfo.isMultiGeneralEnabled())
                 btnWidth = btnWidth + 20;
             for (int j = 0; j < lordBtnNum[i]; j++) {
                 QSanInvokeSkillButton *button = lordskill_buttons[w++];

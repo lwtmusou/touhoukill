@@ -38,8 +38,10 @@ public:
     const QList<CardDescriptor> &cards() const;
     const QList<const General *> &generals() const;
 
-    Package &operator<<(const General *general);
-    Package &operator<<(const CardDescriptor &card);
+#ifndef SWIG
+    Package &operator<<(General *general);
+    Package &operator<<(CardDescriptor &card);
+#endif
 
 private:
     Package() = delete;

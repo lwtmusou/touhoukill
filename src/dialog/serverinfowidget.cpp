@@ -63,10 +63,10 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
     int player_count = Sanguosha->getPlayerCount(info.GameModeStr);
     player_count_label->setText(QString::number(player_count));
     port_label->setText(QString::number(Config.ServerPort));
-    two_general_label->setText(info.Enable2ndGeneral ? tr("Enabled") : tr("Disabled"));
+    two_general_label->setText(info.isMultiGeneralEnabled() ? tr("Enabled") : tr("Disabled"));
     same_label->setText(info.EnableSame ? tr("Enabled") : tr("Disabled"));
 
-    if (info.Enable2ndGeneral) {
+    if (info.isMultiGeneralEnabled()) {
         switch (info.MaxHpScheme) {
         case 0:
             max_hp_label->setText(QString(tr("Sum - %1")).arg(info.Scheme0Subtraction));

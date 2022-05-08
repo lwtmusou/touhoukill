@@ -449,7 +449,7 @@ void Client::processServerPacket(const char *cmd)
             if (replayer == nullptr)
                 processServerRequest(packet);
             else if (packet.getCommandType() == QSanProtocol::S_COMMAND_CHOOSE_GENERAL) {
-                if (isHegemonyGameMode(ServerInfo.GameModeStr) && ServerInfo.Enable2ndGeneral) {
+                if (isHegemonyGameMode(ServerInfo.GameModeStr) && ServerInfo.isMultiGeneralEnabled()) {
                     Callback callback = m_interactions[S_COMMAND_CHOOSE_GENERAL];
                     if (callback != nullptr)
                         (this->*callback)(packet.getMessageBody());
@@ -1011,7 +1011,7 @@ QString Client::getPlayerName(const QString &str)
             general_name.append(QStringLiteral("/") + Sanguosha->translate(player->getGeneral2Name()));
 
         if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
-            if (ServerInfo.Enable2ndGeneral) {
+            if (ServerInfo.isMultiGeneralEnabled()) {
                 if (player->generalName() == QStringLiteral("anjiang") && player->getGeneral2() != nullptr && player->getGeneral2Name() == QStringLiteral("anjiang")) {
                     general_name = Sanguosha->translate(QStringLiteral("SEAT(%1)").arg(QString::number(player->seat())));
                 }
@@ -1629,7 +1629,7 @@ void Client::askForGeneral(const QVariant &arg)
         can_convert = args[2].toBool();
     }
 
-    if (isHegemonyGameMode(ServerInfo.GameModeStr) && ServerInfo.Enable2ndGeneral && !Self->hasFlag(QStringLiteral("Pingyi_Choose"))) {
+    if (isHegemonyGameMode(ServerInfo.GameModeStr) && ServerInfo.isMultiGeneralEnabled() && !Self->hasFlag(QStringLiteral("Pingyi_Choose"))) {
         emit generals_got(generals, single_result, can_convert);
         setStatus(AskForGeneralTaken);
     } else {

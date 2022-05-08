@@ -44,7 +44,7 @@ public:
     inline QRectF getAvatarArea()
     {
         QRectF rect;
-        QRect avatarArea = (ServerInfo.Enable2ndGeneral) ? _dlayout->m_avatarAreaDouble : _dlayout->m_avatarArea;
+        QRect avatarArea = (ServerInfo.isMultiGeneralEnabled()) ? _dlayout->m_avatarAreaDouble : _dlayout->m_avatarArea;
         rect.setSize(avatarArea.size());
         QPointF topLeft = mapFromItem(_getAvatarParent(), avatarArea.topLeft());
         rect.moveTopLeft(topLeft);
