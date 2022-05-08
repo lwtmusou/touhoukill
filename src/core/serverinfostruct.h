@@ -48,7 +48,7 @@ struct QSGS_CORE_EXPORT ServerInfoStruct
         // Player A selected Mamizou as its General index 0 (and Gender is female according to Mamizou). She can't select Reimu, Marisa, Mouko or Unzan as her remained general since Mamizou is in both Ban Team -4 and -5.
         // Player B selected Unzan as its General inex 0 (and Gender is male according to Unzan), he can't select Mouko or Mamizou who are in Ban Team -5 w/ Unzan, but can select at most one of Reimu and Marisa as his remained general since they are not in Ban Team -5.
 
-        BanHead, // = 0 since Head general should always in index 0. Banned if multi-general is enabled and this general is head general (index 0)
+        BanHead = 0, // since Head general should always in index 0. Banned if multi-general is enabled and this general is head general (index 0)
         // any value >= BanHead means a specific General index for ban type 3. Note that ban type 3 for head is same as ban type 3 for index 0
 
         BanSimple = -1, // Ban type 1, banned for whatever condition
