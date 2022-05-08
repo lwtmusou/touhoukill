@@ -6,7 +6,6 @@
 
 #ifndef SWIG
 #include "global.h"
-#include "qsgscore.h"
 
 #include <QString>
 #include <QStringList>

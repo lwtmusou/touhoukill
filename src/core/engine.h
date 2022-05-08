@@ -7,9 +7,6 @@
 #ifndef SWIG
 
 #include "global.h"
-#include "json.h"
-#include "protocol.h"
-#include "qsgscore.h"
 
 #include <QList>
 #include <QSet>

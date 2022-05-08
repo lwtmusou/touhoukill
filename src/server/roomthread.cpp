@@ -2,6 +2,7 @@
 #include "engine.h"
 #include "gamerule.h"
 #include "general.h"
+#include "json.h"
 #include "package.h"
 #include "protocol.h"
 #include "room.h"

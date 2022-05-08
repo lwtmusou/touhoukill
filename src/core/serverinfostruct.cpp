@@ -1,5 +1,6 @@
 #include "serverinfostruct.h"
 #include "engine.h"
+#include "json.h"
 #include "mode.h"
 #include "package.h"
 

@@ -5,6 +5,7 @@
 #include "engine.h"
 #include "gamerule.h"
 #include "general.h"
+#include "json.h"
 #include "mode.h"
 #include "server.h"
 #include "settings.h"

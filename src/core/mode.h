@@ -2,7 +2,6 @@
 #define TOUHOUKILL_MODE_H
 
 #include "global.h"
-#include "qsgscore.h"
 
 #include <QSet>
 #include <QString>

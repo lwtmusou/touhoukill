@@ -5,6 +5,7 @@
 #include "exppattern.h"
 #include "general.h"
 #include "global.h"
+#include "json.h"
 #include "lua-wrapper.h"
 #include "mode.h"
 #include "package.h"

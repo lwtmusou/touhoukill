@@ -6,7 +6,6 @@
 
 #ifndef SWIG
 #include "global.h"
-#include "qsgscore.h"
 
 #include <QCryptographicHash>
 #include <QList>
@@ -19,13 +18,6 @@ class CardFace;
 struct CardDescriptor;
 class General;
 #endif
-
-class QSGS_CORE_EXPORT CardPattern
-{
-public:
-    virtual ~CardPattern() = default;
-    virtual bool match(const Player *player, const Card *card) const = 0;
-};
 
 #ifndef SWIG
 class PackagePrivate;

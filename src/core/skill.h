@@ -5,7 +5,6 @@
 // MAKE SURE THE GRAMMAR IS COMPATIBLE BETWEEN 2 LANGUAGES.
 #ifndef SWIG
 #include "global.h"
-#include "qsgscore.h"
 
 #include <QList>
 #include <QObject>

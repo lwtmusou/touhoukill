@@ -2,7 +2,7 @@
 #include "CardFace.h"
 #include "client.h"
 #include "engine.h"
-#include "package.h"
+#include "exppattern.h"
 #include "player.h"
 #include "util.h"
 

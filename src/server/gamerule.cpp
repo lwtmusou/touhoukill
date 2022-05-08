@@ -3,6 +3,7 @@
 #include "card.h"
 #include "engine.h"
 #include "general.h"
+#include "json.h"
 #include "room.h"
 #include "serverplayer.h"
 #include "settings.h"

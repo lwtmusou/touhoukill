@@ -1,11 +1,17 @@
 #ifndef TOUHOUKILL_EXPPATTERN_H
 #define TOUHOUKILL_EXPPATTERN_H
 
-#include "package.h"
-#include "qsgscore.h"
+#include "global.h"
 
 class Player;
 class Card;
+
+class QSGS_CORE_EXPORT CardPattern
+{
+public:
+    virtual ~CardPattern() = default;
+    virtual bool match(const Player *player, const Card *card) const = 0;
+};
 
 class QSGS_CORE_EXPORT ExpPattern : public CardPattern
 {

@@ -7,7 +7,6 @@
 #ifndef SWIG
 
 #include "global.h"
-#include "qsgscore.h"
 
 #include <QList>
 #include <QMap>

@@ -4,6 +4,7 @@
 #include "engine.h"
 #include "gamerule.h"
 #include "general.h"
+#include "json.h"
 #include "recorder.h"
 #include "room.h"
 #include "settings.h"

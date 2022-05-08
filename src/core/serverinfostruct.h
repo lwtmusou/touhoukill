@@ -1,7 +1,6 @@
 #ifndef TOUHOUKILL_SERVERINFOSTRUCT_H
 #define TOUHOUKILL_SERVERINFOSTRUCT_H
 
-#include "json.h"
 #include "protocol.h"
 #include "qsgscore.h"
 
