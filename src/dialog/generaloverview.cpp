@@ -278,7 +278,7 @@ GeneralOverview::GeneralOverview(QWidget *parent)
     group_box->setLayout(button_layout);
     ui->scrollArea->setWidget(group_box);
     ui->skillTextEdit->setProperty("description", true);
-    if (ServerInfo.DuringGame && ServerInfo.EnableCheat) {
+    if (ServerInfo.parsed() && ServerInfo.EnableCheat) {
         if (!isHegemonyGameMode(ServerInfo.GameModeStr))
             ui->changeGeneralButton->show();
         else

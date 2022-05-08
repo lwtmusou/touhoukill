@@ -40,6 +40,7 @@ QSet<QString> Mode::availableModes()
         QStringLiteral("role_3,5,1"), //  10players, single renegade
         QStringLiteral("role_4,5,0"), //  10players, no renegades
         // TODO: Shall we support player number > 10 in Role mode?
+        // TODO: Shall we support customized Role mode?
 
         // Hegemony
         QStringLiteral("hegemony_2"), //  2 players

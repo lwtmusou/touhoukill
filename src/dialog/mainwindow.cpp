@@ -402,7 +402,6 @@ void MainWindow::gotoStartScene()
         Audio::setBGMVolume(Config.BGMVolume);
     }
 
-    ServerInfo.DuringGame = false;
     QList<Server *> servers = findChildren<Server *>();
     if (!servers.isEmpty())
         servers.first()->deleteLater();

@@ -40,7 +40,6 @@ ServerInfoStruct::ServerInfoStruct()
     , DisableChat(false)
     , MaxHpScheme(0)
     , Scheme0Subtraction(0)
-    , DuringGame(false)
 {
 }
 
@@ -55,10 +54,8 @@ bool ServerInfoStruct::parseLegacy(const QString &str)
 
     QStringList texts = match.capturedTexts();
     if (texts.isEmpty()) {
-        DuringGame = false;
+        GameMode = nullptr;
     } else {
-        DuringGame = true;
-
         const QString &server_name = texts.at(1);
         Name = QString::fromUtf8(QByteArray::fromBase64(server_name.toLatin1()));
 
@@ -123,7 +120,6 @@ bool ServerInfoStruct::parse(const QVariant &object)
         return false;
     }
 
-    DuringGame = false;
     if (!ob.isEmpty()) {
         Name = ob.value(QStringLiteral("ServerName")).toString();
         if (Name.isEmpty())
@@ -148,8 +144,6 @@ bool ServerInfoStruct::parse(const QVariant &object)
         NullificationCountDown = ob.value(QStringLiteral("NullificationCountDown")).toInt(&ok);
         if (!ok)
             return false;
-
-        DuringGame = true;
 
         JsonUtils::tryParse(ob.value(QStringLiteral("EnabledPackages")), EnabledPackages);
         RandomSeat = ob.value(QStringLiteral("RandomSeat"), false).toBool();
@@ -178,7 +172,7 @@ bool ServerInfoStruct::parse(const QVariant &object)
 QVariant ServerInfoStruct::serialize() const
 {
     QVariantMap m;
-    if (!DuringGame)
+    if (GameMode == nullptr)
         return m;
 
     m[QStringLiteral("ServerName")] = Name;
@@ -197,4 +191,9 @@ QVariant ServerInfoStruct::serialize() const
     m[QStringLiteral("Scheme0Subtraction")] = Scheme0Subtraction;
 
     return m;
+}
+
+bool ServerInfoStruct::parsed()
+{
+    return GameMode != nullptr;
 }

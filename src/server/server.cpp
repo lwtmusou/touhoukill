@@ -957,7 +957,6 @@ Server::Server(QObject *parent)
     server->setParent(this);
 
     // Synchonize ServerInfo and Config
-    ServerInfo.DuringGame = true;
     ServerInfo.Name = Config.ServerName;
     ServerInfo.GameModeStr = Config.GameMode;
     ServerInfo.GameMode = Mode::findMode(Config.GameMode);

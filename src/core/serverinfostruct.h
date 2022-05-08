@@ -32,7 +32,7 @@ struct QSGS_CORE_EXPORT ServerInfoStruct
     int MaxHpScheme;
     int Scheme0Subtraction;
 
-    bool DuringGame;
+    bool parsed();
 
     //Get the timeout allowance for a command. Server countdown is more lenient than the client.
     //@param command: type of command

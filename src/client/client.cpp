@@ -2376,7 +2376,7 @@ void Client::clearHighlightSkillName()
 
 QString Client::getSkillDescription(QString skillname) const
 {
-    bool normal_game = ServerInfo.DuringGame && isRoleGameMode(ServerInfo.GameModeStr);
+    bool normal_game = ServerInfo.parsed() && isRoleGameMode(ServerInfo.GameModeStr);
     QString name = QStringLiteral("%1%2").arg(skillname, normal_game ? QStringLiteral("_p") : QString());
     QString des_src = Sanguosha->translate(QStringLiteral(":") + name);
     if (normal_game && des_src.startsWith(QStringLiteral(":")))
