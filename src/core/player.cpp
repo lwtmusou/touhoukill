@@ -609,7 +609,7 @@ void Player::setRole(Role role)
     d->role = role;
 }
 
-QString Player::getRoleString() const
+QString Player::roleString() const
 {
     static QHash<Role, QString> role_map;
     if (role_map.isEmpty()) {
@@ -1918,19 +1918,19 @@ bool Player::willBeFriendWith(const Player *player) const
         return false;
 
     if (!haveShownGeneral()) {
-        QString role = getRoleString();
+        QString role = roleString();
         int i = 1;
         foreach (const Player *p, d->room->players()) {
             if (p == this)
                 continue;
-            if (p->getRoleString() == role) {
+            if (p->roleString() == role) {
                 if (p->haveShownGeneral() && p->kingdom() != QStringLiteral("careerist"))
                     ++i;
             }
         }
         if (i > (parent()->findChildren<const Player *>().length() / 2))
             return false;
-        else if (role == player->getRoleString())
+        else if (role == player->roleString())
             return true;
     }
     return false;

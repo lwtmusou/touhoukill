@@ -173,11 +173,11 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
             //need a seat prompt
             QLabel *seat_label = new QLabel(tr("Your seat is %1. role is %2")
                                                 .arg(Sanguosha->translate(QStringLiteral("CAPITAL(") + QString::number(Self->seat()) + QStringLiteral(")")))
-                                                .arg(Sanguosha->translate(Self->getRoleString())));
+                                                .arg(Sanguosha->translate(Self->roleString())));
             dialog_layout->addWidget(seat_label);
         } else {
             // role prompt
-            QLabel *role_label = new QLabel(tr("Your role is %1").arg(Sanguosha->translate(Self->getRoleString())));
+            QLabel *role_label = new QLabel(tr("Your role is %1").arg(Sanguosha->translate(Self->roleString())));
             if (lord_name.size() != 0)
                 role_label->setText(tr("The lord has chosen %1. Your seat is %2. %3")
                                         .arg(Sanguosha->translate(lord_name))

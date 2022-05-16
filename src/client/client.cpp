@@ -1520,7 +1520,7 @@ void Client::gameOver(const QVariant &arg)
 
     QSet<QString> winners = QSet<QString>(winnersList.begin(), winnersList.end());
     foreach (Player *player, players()) {
-        QString role = player->getRoleString();
+        QString role = player->roleString();
         bool win = winners.contains(player->objectName()) || winners.contains(role);
         player->setProperty("win", win);
     }

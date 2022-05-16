@@ -1025,7 +1025,7 @@ Room *Server::createNewRoom()
 void Server::processNewConnection(ClientSocket *socket)
 {
     Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_CHECK_VERSION);
-    packet.setMessageBody((Sanguosha->getVersion()));
+    packet.setMessageBody((Sanguosha->version()));
     socket->send((packet.toString()));
     emit server_message(tr("%1 connected").arg(socket->peerName()));
 

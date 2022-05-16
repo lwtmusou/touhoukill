@@ -118,7 +118,7 @@ const QSet<const Trigger *> &Skill::triggers() const
     return d->triggers;
 }
 
-int Skill::getAudioEffectIndex(const Player * /*unused*/, const Card * /*unused*/) const
+int Skill::audioEffectIndex(const Player * /*unused*/, const Card * /*unused*/) const
 {
     return -1;
 }
@@ -157,7 +157,7 @@ const Skill *Skill::mainSkill() const
     return d->mainSkill;
 }
 
-Skill::ShowType Skill::getShowType() const
+Skill::ShowType Skill::showType() const
 {
     return d->showType;
 }

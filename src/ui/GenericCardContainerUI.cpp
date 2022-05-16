@@ -1278,10 +1278,10 @@ void PlayerCardContainer::_updateDeathIcon()
 void PlayerCardContainer::killPlayer()
 {
     if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
-        _m_hegemonyroleComboBox->fix(m_player->getRoleString() == QStringLiteral("careerist") ? QStringLiteral("careerist") : m_player->getRoleString());
+        _m_hegemonyroleComboBox->fix(m_player->roleString() == QStringLiteral("careerist") ? QStringLiteral("careerist") : m_player->roleString());
         _m_hegemonyroleComboBox->setEnabled(false);
     } else {
-        _m_roleComboBox->fix(m_player->getRoleString());
+        _m_roleComboBox->fix(m_player->roleString());
         _m_roleComboBox->setEnabled(false);
     }
 
@@ -1669,12 +1669,12 @@ QString PlayerCardContainer::getDeathPixmapPath(const Player *p) const
 {
     QString basename;
     if (ServerInfo.GameModeStr == QStringLiteral("06_3v3") || ServerInfo.GameModeStr == QStringLiteral("06_XMode")) {
-        if (p->getRoleString() == QStringLiteral("lord") || p->getRoleString() == QStringLiteral("renegade"))
+        if (p->roleString() == QStringLiteral("lord") || p->roleString() == QStringLiteral("renegade"))
             basename = QStringLiteral("marshal");
         else
             basename = QStringLiteral("guard");
     } else
-        basename = p->getRoleString();
+        basename = p->roleString();
 
     if (basename.isEmpty())
         basename = QStringLiteral("unknown");

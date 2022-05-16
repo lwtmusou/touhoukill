@@ -2391,7 +2391,7 @@ void RoomScene::updateSkillButtons()
     //check duanchang?
     foreach (const Skill *skill, Self->getHeadSkillList()) {
         if (skill->isLordSkill()
-            && (Self->getRoleString() != QStringLiteral("lord") || ServerInfo.GameModeStr == QStringLiteral("06_3v3") || ServerInfo.GameModeStr == QStringLiteral("06_XMode")
+            && (Self->roleString() != QStringLiteral("lord") || ServerInfo.GameModeStr == QStringLiteral("06_3v3") || ServerInfo.GameModeStr == QStringLiteral("06_XMode")
                 || ServerInfo.GameModeStr == QStringLiteral("02_1v1") || Config.value(QStringLiteral("WithoutLordskill"), false).toBool()))
             continue;
 
@@ -2399,7 +2399,7 @@ void RoomScene::updateSkillButtons()
     }
     foreach (const Skill *skill, Self->getDeputySkillList()) {
         if (skill->isLordSkill()
-            && (Self->getRoleString() != QStringLiteral("lord") || ServerInfo.GameModeStr == QStringLiteral("06_3v3") || ServerInfo.GameModeStr == QStringLiteral("06_XMode")
+            && (Self->roleString() != QStringLiteral("lord") || ServerInfo.GameModeStr == QStringLiteral("06_3v3") || ServerInfo.GameModeStr == QStringLiteral("06_XMode")
                 || ServerInfo.GameModeStr == QStringLiteral("02_1v1") || Config.value(QStringLiteral("WithoutLordskill"), false).toBool()))
             continue;
 
@@ -3391,7 +3391,7 @@ void RoomScene::saveReplayRecord(bool auto_save, bool network_only)
             QString general_name = Sanguosha->translate(Self->generalName());
             if (ServerInfo.isMultiGeneralEnabled())
                 general_name.append(QStringLiteral("_") + Sanguosha->translate(Self->getGeneral2Name()));
-            location.append(QStringLiteral("%1 %2(%3)-").arg(Sanguosha->versionNumber().toString(), general_name, Sanguosha->translate(Self->getRoleString())));
+            location.append(QStringLiteral("%1 %2(%3)-").arg(Sanguosha->versionNumber().toString(), general_name, Sanguosha->translate(Self->roleString())));
             location.append(QDateTime::currentDateTime().toString(QStringLiteral("yyyyMMddhhmmss")));
             location.append(QStringLiteral(".txt"));
             ClientInstance->save(location);
@@ -3662,9 +3662,9 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const Player *> &play
 
         item = new QTableWidgetItem;
 
-        QIcon icon(QStringLiteral("image/system/roles/%1.png").arg(player->getRoleString()));
+        QIcon icon(QStringLiteral("image/system/roles/%1.png").arg(player->roleString()));
         item->setIcon(icon);
-        QString role = player->getRoleString();
+        QString role = player->roleString();
         if (ServerInfo.GameModeStr.startsWith(QStringLiteral("06_"))) {
             if (role == QStringLiteral("lord") || role == QStringLiteral("renegade"))
                 role = QStringLiteral("leader");
@@ -4557,7 +4557,7 @@ void RoomScene::fillGenerals1v1(const QStringList &names)
 void RoomScene::fillGenerals3v3(const QStringList &names)
 {
     QString temperature;
-    if (Self->getRoleString().startsWith(QStringLiteral("l")))
+    if (Self->roleString().startsWith(QStringLiteral("l")))
         temperature = QStringLiteral("warm");
     else
         temperature = QStringLiteral("cool");
@@ -4626,9 +4626,9 @@ void RoomScene::bringToFront(QGraphicsItem *front_item)
 
 void RoomScene::takeGeneral(const QString &who, const QString &name, const QString &rule)
 {
-    bool self_taken = Self->getRoleString().startsWith(QStringLiteral("r"));
+    bool self_taken = Self->roleString().startsWith(QStringLiteral("r"));
     if (who == QStringLiteral("warm"))
-        self_taken = Self->getRoleString().startsWith(QStringLiteral("l"));
+        self_taken = Self->roleString().startsWith(QStringLiteral("l"));
 
     QList<CardItem *> *to_add = self_taken ? &down_generals : &up_generals;
 
@@ -4660,7 +4660,7 @@ void RoomScene::takeGeneral(const QString &who, const QString &name, const QStri
     general_item->setHomePos(QPointF(x, y));
     general_item->goBack(true);
 
-    if (((ServerInfo.GameModeStr == QStringLiteral("06_3v3") && Self->getRoleString() != QStringLiteral("lord") && Self->getRoleString() != QStringLiteral("renegade"))
+    if (((ServerInfo.GameModeStr == QStringLiteral("06_3v3") && Self->roleString() != QStringLiteral("lord") && Self->roleString() != QStringLiteral("renegade"))
          || (ServerInfo.GameModeStr == QStringLiteral("02_1v1") && rule == QStringLiteral("OL")))
         && general_items.isEmpty()) {
         if (selector_box != nullptr) {

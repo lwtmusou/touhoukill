@@ -433,7 +433,7 @@ void RoomThread::run()
         } else {
             if (room->getMode() == QStringLiteral("02_1v1")) {
                 ServerPlayer *first = room->getPlayers().first();
-                if (first->getRoleString() != QStringLiteral("renegade"))
+                if (first->roleString() != QStringLiteral("renegade"))
                     first = room->getPlayers().at(1);
                 ServerPlayer *second = room->getOtherPlayers(first).first();
                 QVariant v1 = QVariant::fromValue(first);

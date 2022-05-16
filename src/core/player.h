@@ -114,7 +114,7 @@ public:
 
     void setRole(const QString &role);
     void setRole(QSanguosha::Role role);
-    QString getRoleString() const;
+    QString roleString() const;
     QSanguosha::Role role() const;
 
     void setGeneral(const General *general, int pos = 0);

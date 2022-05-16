@@ -496,7 +496,7 @@ void MainWindow::on_actionAbout_triggered()
     config = QStringLiteral("debug");
 #endif
 
-    content.append(tr("Current version: %1 %2 (%3)<br/>").arg(Sanguosha->getVersion(), config, Sanguosha->versionNumber().toString()));
+    content.append(tr("Current version: %1 %2 (%3)<br/>").arg(Sanguosha->version(), config, Sanguosha->versionNumber().toString()));
 
     QString date = QStringLiteral(__DATE__);
     QString time = QStringLiteral(__TIME__);

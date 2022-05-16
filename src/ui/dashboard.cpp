@@ -328,10 +328,10 @@ void Dashboard::killPlayer()
     trusting_item->hide();
     trusting_text->hide();
     if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
-        _m_hegemonyroleComboBox->fix(m_player->getRoleString() == QStringLiteral("careerist") ? QStringLiteral("careerist") : m_player->getRoleString());
+        _m_hegemonyroleComboBox->fix(m_player->roleString() == QStringLiteral("careerist") ? QStringLiteral("careerist") : m_player->roleString());
         _m_hegemonyroleComboBox->setEnabled(false);
     } else {
-        _m_roleComboBox->fix(m_player->getRoleString());
+        _m_roleComboBox->fix(m_player->roleString());
         _m_roleComboBox->setEnabled(false);
     }
 

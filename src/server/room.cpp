@@ -378,7 +378,7 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason)
     LogMessage log;
     log.type = killer != nullptr ? (killer == victim ? QStringLiteral("#Suicide") : QStringLiteral("#Murder")) : QStringLiteral("#Contingency");
     log.to << victim;
-    log.arg = victim->getRoleString();
+    log.arg = victim->roleString();
     log.from = killer;
     sendLog(log);
 
@@ -480,7 +480,7 @@ QStringList Room::aliveRoles(ServerPlayer *except) const
     QStringList roles;
     foreach (ServerPlayer *player, m_alivePlayers) {
         if (player != except)
-            roles << player->getRoleString();
+            roles << player->roleString();
     }
 
     return roles;
@@ -490,7 +490,7 @@ void Room::gameOver(const QString &winner, bool isSurrender)
 {
     QStringList all_roles;
     foreach (ServerPlayer *player, m_players) {
-        all_roles << player->getRoleString();
+        all_roles << player->roleString();
         if (player->handcardNum() > 0) {
             QStringList handcards;
             foreach (const Card *card, player->handCards())
@@ -1280,7 +1280,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     QString heg_nullification_selection;
 
     if (!repliedPlayer->hasFlag(QStringLiteral("nullifiationNul")) && card->face()->isKindOf(QStringLiteral("HegNullification"))
-        && !trick->face()->isKindOf(QStringLiteral("Nullification")) && trick->face()->isNdTrick() && to->getRoleString() != QStringLiteral("careerist")
+        && !trick->face()->isKindOf(QStringLiteral("Nullification")) && trick->face()->isNdTrick() && to->roleString() != QStringLiteral("careerist")
         && to->haveShownOneGeneral()) {
         QVariantList qtargets = tag[QStringLiteral("targets") + trick->toString()].toList();
         QList<ServerPlayer *> targets;
@@ -1296,7 +1296,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
         }
         if (!targets.isEmpty()) {
             foreach (ServerPlayer *p, targets) {
-                if (p->getRoleString() != QStringLiteral("careerist") && p->haveShownOneGeneral() && p->getRoleString() == to->getRoleString()) {
+                if (p->roleString() != QStringLiteral("careerist") && p->haveShownOneGeneral() && p->roleString() == to->roleString()) {
                     isHegNullification = true;
                     break;
                 }
@@ -2666,7 +2666,7 @@ void Room::reportDisconnection()
         // first case
         player->setParent(nullptr);
         m_players.removeOne(player);
-    } else if (player->getRoleString().isEmpty()) {
+    } else if (player->roleString().isEmpty()) {
         // second case
         if (m_players.length() < player_count) {
             player->setParent(nullptr);
@@ -2783,7 +2783,7 @@ bool Room::makeSurrender(ServerPlayer *initiator)
     // broadcast polling request
     QList<ServerPlayer *> playersAlive;
     foreach (ServerPlayer *player, m_players) {
-        QString playerRole = player->getRoleString();
+        QString playerRole = player->roleString();
         if (!isHegemonyGameMode(mode)) {
             if ((playerRole == QStringLiteral("loyalist") || playerRole == QStringLiteral("lord")) && player->isAlive())
                 loyalAlive++;
@@ -2813,7 +2813,7 @@ bool Room::makeSurrender(ServerPlayer *initiator)
             if (result)
                 hegemony_give_up++;
         } else {
-            QString playerRole = player->getRoleString();
+            QString playerRole = player->roleString();
             if (playerRole == QStringLiteral("loyalist") || playerRole == QStringLiteral("lord")) {
                 loyalGiveup &= result;
                 if (player->isAlive())
@@ -2851,7 +2851,7 @@ bool Room::makeSurrender(ServerPlayer *initiator)
             gameOver(QStringLiteral("lord+loyalist"), true);
         else if (loyalGiveup && renegadeGiveup && rebelGiveup) {
             // if everyone give up, then ensure that the initiator doesn't win.
-            QString playerRole = initiator->getRoleString();
+            QString playerRole = initiator->roleString();
             if (playerRole == QStringLiteral("lord") || playerRole == QStringLiteral("loyalist"))
                 gameOver(renegadeAlive >= rebelAlive ? QStringLiteral("renegade") : QStringLiteral("rebel"), true);
             else if (playerRole == QStringLiteral("renegade"))
@@ -3560,7 +3560,7 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
         if (sentence == QStringLiteral(".BroadcastRoles")) {
             noBroadcastSpeaking();
             foreach (ServerPlayer *p, m_alivePlayers) {
-                broadcastProperty(p, "role", p->getRoleString());
+                broadcastProperty(p, "role", p->roleString());
                 setPlayerProperty(p, "role_shown", true);
             }
         } else if (sentence.startsWith(QStringLiteral(".BroadcastRoles="))) {
@@ -3568,7 +3568,7 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
             QString name = sentence.mid(12);
             foreach (ServerPlayer *p, m_alivePlayers) {
                 if (p->objectName() == name || p->generalName() == name) {
-                    broadcastProperty(p, "role", p->getRoleString());
+                    broadcastProperty(p, "role", p->roleString());
                     setPlayerProperty(p, "role_shown", true);
                     break;
                 }
@@ -4190,7 +4190,7 @@ void Room::sendDamageLog(const DamageStruct &data)
 bool Room::hasWelfare(const ServerPlayer *player) const
 {
     if (mode == QStringLiteral("06_3v3"))
-        return player->isLord() || player->getRoleString() == QStringLiteral("renegade");
+        return player->isLord() || player->roleString() == QStringLiteral("renegade");
     else if (mode == QStringLiteral("06_XMode") || isHegemonyGameMode(mode))
         return false;
     else
@@ -5830,11 +5830,11 @@ ServerPlayer *Room::getLord(const QString & /*unused*/, bool /*unused*/) const
     if (isHegemonyGameMode(mode))
         return nullptr;
     ServerPlayer *the_lord = m_players.first();
-    if (the_lord->getRoleString() == QStringLiteral("lord"))
+    if (the_lord->roleString() == QStringLiteral("lord"))
         return the_lord;
 
     foreach (ServerPlayer *player, m_players) {
-        if (player->getRoleString() == QStringLiteral("lord"))
+        if (player->roleString() == QStringLiteral("lord"))
             return player;
     }
 
@@ -6962,7 +6962,7 @@ void Room::saveWinnerTable(const QString &winner, bool isSurrender)
         else
             line.append(p->generalName());
         line.append(QStringLiteral(" "));
-        line.append(p->getRoleString());
+        line.append(p->roleString());
         line.append(QStringLiteral(" "));
         line.append(QString::number(p->seat()));
         line.append(QStringLiteral(" "));
@@ -6973,7 +6973,7 @@ void Room::saveWinnerTable(const QString &winner, bool isSurrender)
         line.append(QStringLiteral(" "));
         if (winner == QStringLiteral("."))
             line.append(QStringLiteral("draw"));
-        else if (winners.contains(p->getRoleString()) || winner == p->objectName())
+        else if (winners.contains(p->roleString()) || winner == p->objectName())
             line.append(QStringLiteral("win"));
         else
             line.append(QStringLiteral("lose"));

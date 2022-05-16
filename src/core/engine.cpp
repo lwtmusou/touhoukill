@@ -244,7 +244,7 @@ QString Engine::versionDate() const
     return QStringLiteral(QT_STRINGIFY(VERSIONDATE));
 }
 
-QString Engine::getVersion() const
+QString Engine::version() const
 {
     return QStringLiteral("%1:%2").arg(versionDate(), modName());
 }

@@ -50,7 +50,7 @@ public:
     QString translate(const QString &to_translate) const;
 
     QString versionDate() const;
-    QString getVersion() const;
+    QString version() const;
     const QVersionNumber &versionNumber() const;
     QString modName() const;
 

@@ -91,7 +91,7 @@ public:
     ArrayType arrayType() const;
 
     // ShowType getter
-    ShowType getShowType() const;
+    ShowType showType() const;
 
     // Other variable getters / setters
     const QString &limitMark() const;
@@ -126,7 +126,7 @@ public:
     // -1 for random audio effect
     // 0 for no audio effect
     // > 0 for specific audio effect number
-    virtual int getAudioEffectIndex(const Player *player, const Card *card) const;
+    virtual int audioEffectIndex(const Player *player, const Card *card) const;
 
 #ifndef QSGS_CORE_NODEPRECATED
 

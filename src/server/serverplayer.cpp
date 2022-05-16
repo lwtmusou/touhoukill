@@ -63,7 +63,7 @@ void ServerPlayer::broadcastSkillInvoke(const Card *card) const
 #endif
         return;
     } else {
-        int index = skill->getAudioEffectIndex(this, card);
+        int index = skill->audioEffectIndex(this, card);
         if (index == 0)
             return;
 
@@ -1321,7 +1321,7 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
         ServerPlayer *reimu = room->findPlayerBySkillName(QStringLiteral("yibian"));
         const Skill *skill = Sanguosha->skill(skill_name);
         if ((reimu != nullptr) && !hasShownRole() && skill != nullptr && !skill->isEternal() && !skill->isAttachedSkill() && !hasEquipSkill(skill_name)) {
-            QString role = getRoleString();
+            QString role = roleString();
             room->touhouLogmessage(QStringLiteral("#YibianShow"), this, role, room->getAllPlayers());
             room->broadcastProperty(this, "role");
             room->setPlayerProperty(this, "role_shown", true); //important! to notify client
@@ -1609,13 +1609,13 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
 
         // need to refactor to getKingdom() == "careerist"
 
-        QString role = getRoleString();
+        QString role = roleString();
         int i = 1;
         foreach (ServerPlayer *p, room->getOtherPlayers(this, true)) {
-            if (p->getRoleString() == role) {
+            if (p->roleString() == role) {
                 QVariant RoleConfirmedTag1 = room->getTag(p->objectName() + QStringLiteral("_RoleConfirmed"));
                 bool roleConfirmed1 = RoleConfirmedTag1.canConvert<bool>() && RoleConfirmedTag1.toBool();
-                if (roleConfirmed1 && p->getRoleString() != QStringLiteral("careerist"))
+                if (roleConfirmed1 && p->roleString() != QStringLiteral("careerist"))
                     ++i;
             }
         }
@@ -1625,7 +1625,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
                 foreach (ServerPlayer *p, room->getOtherPlayers(this, true)) {
                     QVariant RoleConfirmedTag1 = room->getTag(p->objectName() + QStringLiteral("_RoleConfirmed"));
                     bool roleConfirmed1 = RoleConfirmedTag1.canConvert<bool>() && RoleConfirmedTag1.toBool();
-                    if (p->isAlive() && !roleConfirmed1 && role == p->getRoleString()) {
+                    if (p->isAlive() && !roleConfirmed1 && role == p->roleString()) {
                         p->setRole(QStringLiteral("careerist"));
                         room->notifyProperty(p, p, "role", QStringLiteral("careerist"));
                     }
@@ -1877,10 +1877,10 @@ int ServerPlayer::getPlayerNumWithSameKingdom(const QString & /*unused*/, const 
     QString to_calculate = _to_calculate;
 
     if (to_calculate.isEmpty()) {
-        if (getRoleString() == QStringLiteral("careerist"))
+        if (roleString() == QStringLiteral("careerist"))
             to_calculate = QStringLiteral("careerist");
         else
-            to_calculate = getRoleString();
+            to_calculate = roleString();
     }
 
     QList<ServerPlayer *> players = room->getAlivePlayers();
@@ -1889,12 +1889,12 @@ int ServerPlayer::getPlayerNumWithSameKingdom(const QString & /*unused*/, const 
     foreach (ServerPlayer *p, players) {
         if (!p->haveShownOneGeneral())
             continue;
-        if (p->getRoleString() == QStringLiteral("careerist")) { // if player is careerist, DO NOT COUNT AS SOME KINGDOM!!!!!
+        if (p->roleString() == QStringLiteral("careerist")) { // if player is careerist, DO NOT COUNT AS SOME KINGDOM!!!!!
             if (to_calculate == QStringLiteral("careerist"))
                 num = 1;
             continue;
         }
-        if (p->getRoleString() == to_calculate) //hegemony
+        if (p->roleString() == to_calculate) //hegemony
             ++num;
     }
 
