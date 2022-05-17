@@ -410,7 +410,7 @@ bool ServerPlayer::hasNullification() const
 
     if (hasValidTreasure(QStringLiteral("wooden_ox"))) {
         foreach (int id, pile(QStringLiteral("wooden_ox"))) {
-            if (room->getCard(id)->face()->isKindOf(QStringLiteral("Nullification")))
+            if (room->card(id)->face()->isKindOf(QStringLiteral("Nullification")))
                 return true;
         }
     }
@@ -418,7 +418,7 @@ bool ServerPlayer::hasNullification() const
     if (hasValidSkill(QStringLiteral("chaoren"))) {
         bool ok = false;
         int id = property("chaoren").toInt(&ok);
-        if (ok && id > -1 && room->getCard(id)->face()->isKindOf(QStringLiteral("Nullification")))
+        if (ok && id > -1 && room->card(id)->face()->isKindOf(QStringLiteral("Nullification")))
             return true;
     }
 
@@ -473,7 +473,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     } else {
         if (card1->isVirtualCard()) {
             int card_id = card1->effectiveId();
-            card1 = room->getCard(card_id);
+            card1 = room->card(card_id);
         }
         if ((card1 != nullptr) && isShownHandcard(card1->effectiveId())) {
             log2.type = QStringLiteral("$PindianResult");
@@ -1061,7 +1061,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         foreach (const Card *card, m_handcards) {
             move.card_ids << card->id();
             if (player == this) {
-                Card *c = room->getCard(card->id());
+                Card *c = room->card(card->id());
                 if (c->isModified())
                     room->notifyUpdateCard(player, card->id(), c);
             }
@@ -1080,7 +1080,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         LegacyCardsMoveStruct move;
         foreach (const Card *card, equipCards()) {
             move.card_ids << card->id();
-            Card *c = room->getCard(card->id());
+            Card *c = room->card(card->id());
             if (c->isModified())
                 room->notifyUpdateCard(player, card->id(), c);
         }
@@ -1095,7 +1095,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         LegacyCardsMoveStruct move;
         foreach (int card_id, judgingArea()) {
             move.card_ids << card_id;
-            Card *c = room->getCard(card_id);
+            Card *c = room->card(card_id);
             if (c->isModified())
                 room->notifyUpdateCard(player, card_id, c);
         }

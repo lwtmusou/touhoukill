@@ -11,7 +11,7 @@ MyPixmapItem::MyPixmapItem(const QPixmap &pixmap, QGraphicsItem *parentItem)
     setAcceptedMouseButtons(Qt::LeftButton);
     initFaceBoardPos();
     initEasyTextPos();
-    easytext = Sanguosha->config(QStringLiteral("easy_text")).toStringList();
+    easytext = Sanguosha->configuration(QStringLiteral("easy_text")).toStringList();
 }
 
 void MyPixmapItem::mousePressEvent(QGraphicsSceneMouseEvent *event)

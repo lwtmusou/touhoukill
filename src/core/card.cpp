@@ -119,10 +119,10 @@ Suit Card::suit() const
             return NoSuit;
 
         if (d->sub_cards.size() == 1)
-            return room()->getCard(*d->sub_cards.constBegin())->suit();
+            return room()->card(*d->sub_cards.constBegin())->suit();
         Color color = Colorless;
         foreach (int id, d->sub_cards) {
-            Color color2 = room()->getCard(id)->color();
+            Color color2 = room()->card(id)->color();
             if (color == Colorless)
                 color = color2;
             else if (color != color2)
@@ -202,7 +202,7 @@ Number Card::number() const
         if (d->sub_cards.empty())
             return NumberNA;
         if (d->sub_cards.size() == 1)
-            return room()->getCard(*d->sub_cards.constBegin())->number();
+            return room()->card(*d->sub_cards.constBegin())->number();
 
         return NumberNA;
     }
@@ -735,7 +735,7 @@ Card *Card::Parse(const QString &str, RoomObject *room)
         bool ok = false;
         int id = str.toInt(&ok);
         if (ok && id >= 0)
-            return room->getCard(id);
+            return room->card(id);
     }
     return nullptr;
 }

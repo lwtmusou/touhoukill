@@ -76,8 +76,8 @@ RoomScene::RoomScene(QMainWindow *main_window, Client *client)
     , main_window(main_window)
     , client(client)
 {
-    LordBGMConvertList = Sanguosha->config(QStringLiteral("bgm_convert_pairs")).toStringList();
-    LordBackdropConvertList = Sanguosha->config(QStringLiteral("backdrop_convert_pairs")).toStringList();
+    LordBGMConvertList = Sanguosha->configuration(QStringLiteral("bgm_convert_pairs")).toStringList();
+    LordBackdropConvertList = Sanguosha->configuration(QStringLiteral("backdrop_convert_pairs")).toStringList();
 
     m_choiceDialog = nullptr;
     RoomSceneInstance = this;
@@ -2772,7 +2772,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         QRegularExpressionMatch match;
         if ((match = rx.match(pattern)).hasMatch()) {
             QString skill_name = match.capturedTexts().at(1);
-            const ViewAsSkill *skill = ClientInstance->getViewAsSkill(skill_name);
+            const ViewAsSkill *skill = dynamic_cast<const ViewAsSkill *>(Sanguosha->skill(skill_name));
             if (skill != nullptr) {
                 QSanguosha::CardUseReason reason = QSanguosha::CardUseReasonResponse;
                 if (newStatus == Client::RespondingUse)
@@ -2980,11 +2980,11 @@ void RoomScene::onSkillActivated()
         QAction *action = qobject_cast<QAction *>(sender());
 
         if (action != nullptr)
-            skill = ClientInstance->getViewAsSkill(action->property("skillname").toString());
+            skill = dynamic_cast<const ViewAsSkill *>(Sanguosha->skill(action->property("skillname").toString()));
         else {
             QDialog *dialog = qobject_cast<QDialog *>(sender());
             if (dialog != nullptr)
-                skill = ClientInstance->getViewAsSkill(dialog->objectName());
+                skill = dynamic_cast<const ViewAsSkill *>(Sanguosha->skill(dialog->objectName()));
         }
     }
 
@@ -3002,7 +3002,7 @@ void RoomScene::onSkillActivated()
                 foreach (const QString &name, dashboard->getPileExpanded()) {
                     IdSet pile = Self->pile(name);
                     foreach (int id, pile)
-                        cards << ClientInstance->getCard(id);
+                        cards << ClientInstance->card(id);
                 }
 
                 foreach (const Card *c, cards) {
@@ -3997,7 +3997,7 @@ void RoomScene::showPile(const QList<int> &card_ids, const QString &name, const 
         if (name == QStringLiteral("zhenli")) {
             QList<Card *> zhenlis;
             foreach (int id, card_ids) {
-                zhenlis << ClientInstance->getCard(id);
+                zhenlis << ClientInstance->card(id);
             }
             std::sort(zhenlis.begin(), zhenlis.end(), [](const Card *a, const Card *b) {
                 return a->number() < b->number();
@@ -4897,14 +4897,14 @@ void RoomScene::showPindianBox(const QString &from_name, int from_id, const QStr
         pindian_to_card = nullptr;
     }
 
-    pindian_from_card = new CardItem(ClientInstance->getCard(from_id));
+    pindian_from_card = new CardItem(ClientInstance->card(from_id));
     pindian_from_card->setParentItem(pindian_box);
     pindian_from_card->setPos(QPointF(28 + pindian_from_card->boundingRect().width() / 2, 44 + pindian_from_card->boundingRect().height() / 2));
     pindian_from_card->setFlag(QGraphicsItem::ItemIsMovable, false);
     pindian_from_card->setHomePos(pindian_from_card->pos());
     pindian_from_card->setFootnote(ClientInstance->getPlayerName(from_name));
 
-    pindian_to_card = new CardItem(ClientInstance->getCard(to_id));
+    pindian_to_card = new CardItem(ClientInstance->card(to_id));
     pindian_to_card->setParentItem(pindian_box);
     pindian_to_card->setPos(QPointF(126 + pindian_to_card->boundingRect().width() / 2, 44 + pindian_to_card->boundingRect().height() / 2));
     pindian_to_card->setFlag(QGraphicsItem::ItemIsMovable, false);

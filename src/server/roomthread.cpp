@@ -339,7 +339,7 @@ void RoomThread::run()
         room->setPlayerProperty(lord, "general", QStringLiteral("yuyuko_1v3"));
 
         QList<const General *> generals = QList<const General *>();
-        foreach (QString pack_name, Sanguosha->config(QStringLiteral("hulao_packages")).toStringList()) {
+        foreach (QString pack_name, Sanguosha->configuration(QStringLiteral("hulao_packages")).toStringList()) {
             const Package *pack = Sanguosha->findPackage(pack_name);
             if (pack != nullptr) {
                 foreach (auto gn, pack->generals())

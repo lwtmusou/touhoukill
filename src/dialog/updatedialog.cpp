@@ -242,7 +242,7 @@ QVersionNumber UpdateDialog::getVersionNumberForItem(UpdateDialog::UpdateItem it
     case UiBase:
         return Sanguosha->versionNumber();
     case UiSkin: {
-        QVariant v = Sanguosha->config(QStringLiteral("withHeroSkin"));
+        QVariant v = Sanguosha->configuration(QStringLiteral("withHeroSkin"));
 
         QString s = v.toString();
         if (s == QStringLiteral("N/A"))
@@ -253,7 +253,7 @@ QVersionNumber UpdateDialog::getVersionNumberForItem(UpdateDialog::UpdateItem it
         break;
     }
     case UiBgm: {
-        QVariant v = Sanguosha->config(QStringLiteral("withBgm"));
+        QVariant v = Sanguosha->configuration(QStringLiteral("withBgm"));
 
         QString s = v.toString();
         if (s == QStringLiteral("N/A"))

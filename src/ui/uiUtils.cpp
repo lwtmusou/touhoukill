@@ -73,7 +73,7 @@ QColor QSanUiUtils::getKingdomColor(const QString &kingdom)
 {
     static QMap<QString, QColor> color_map;
     if (color_map.isEmpty()) {
-        QVariantMap map = Sanguosha->config(QStringLiteral("kingdom_colors")).toMap();
+        QVariantMap map = Sanguosha->configuration(QStringLiteral("kingdom_colors")).toMap();
         QMapIterator<QString, QVariant> itor(map);
         while (itor.hasNext()) {
             itor.next();

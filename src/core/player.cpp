@@ -394,7 +394,7 @@ int Player::getAttackRange(bool include_weapon) const
     int weapon_range = 0;
 
     if (include_weapon) {
-        const Weapon *face = dynamic_cast<const Weapon *>(d->room->getCard(d->weapon)->face());
+        const Weapon *face = dynamic_cast<const Weapon *>(d->room->card(d->weapon)->face());
         Q_ASSERT(face);
         if (!isBrokenEquip(d->weapon, true))
             weapon_range = face->range();
@@ -934,35 +934,35 @@ bool Player::hasEquip() const
 const Card *Player::weapon() const
 {
     if (d->weapon != -1)
-        return d->room->getCard(d->weapon);
+        return d->room->card(d->weapon);
     return nullptr;
 }
 
 const Card *Player::armor() const
 {
     if (d->armor != -1)
-        return d->room->getCard(d->armor);
+        return d->room->card(d->armor);
     return nullptr;
 }
 
 const Card *Player::defensiveHorse() const
 {
     if (d->defensiveHorse != -1)
-        return d->room->getCard(d->defensiveHorse);
+        return d->room->card(d->defensiveHorse);
     return nullptr;
 }
 
 const Card *Player::offensiveHorse() const
 {
     if (d->offensiveHorse != -1)
-        return d->room->getCard(d->offensiveHorse);
+        return d->room->card(d->offensiveHorse);
     return nullptr;
 }
 
 const Card *Player::treasure() const
 {
     if (d->treasure != -1)
-        return d->room->getCard(d->treasure);
+        return d->room->card(d->treasure);
     return nullptr;
 }
 
@@ -1017,7 +1017,7 @@ bool Player::hasValidWeapon(const QString &weapon_name) const
     if ((d->weapon == -1) || isBrokenEquip(d->weapon, true))
         return false;
 
-    if (d->room->getCard(d->weapon)->faceName() == weapon_name || d->room->getCard(d->weapon)->face()->isKindOf(weapon_name))
+    if (d->room->card(d->weapon)->faceName() == weapon_name || d->room->card(d->weapon)->face()->isKindOf(weapon_name))
         return true;
 
     // TODO_Fs: Consider view-as equip later
@@ -1036,7 +1036,7 @@ bool Player::hasValidArmor(const QString &armor_name) const
     if ((d->armor == -1) || isBrokenEquip(d->armor, true))
         return false;
 
-    if (d->room->getCard(d->armor)->faceName() == armor_name || d->room->getCard(d->armor)->face()->isKindOf(armor_name))
+    if (d->room->card(d->armor)->faceName() == armor_name || d->room->card(d->armor)->face()->isKindOf(armor_name))
         return true;
 
     // TODO_Fs: Consider view-as equip later
@@ -1055,7 +1055,7 @@ bool Player::hasValidTreasure(const QString &treasure_name) const
     if ((d->treasure == -1) || isBrokenEquip(d->treasure, true))
         return false;
 
-    if (d->room->getCard(d->treasure)->faceName() == treasure_name || d->room->getCard(d->treasure)->face()->isKindOf(treasure_name))
+    if (d->room->card(d->treasure)->faceName() == treasure_name || d->room->card(d->treasure)->face()->isKindOf(treasure_name))
         return true;
 
     // TODO_Fs: Consider view-as equip later
@@ -1068,7 +1068,7 @@ QList<const Card *> Player::judgingAreaCards() const
     QList<const Card *> cards;
 
     foreach (int card_id, d->judgingArea)
-        cards.append(roomObject()->getCard(card_id));
+        cards.append(roomObject()->card(card_id));
     return cards;
 }
 
@@ -1217,7 +1217,7 @@ bool Player::canDiscard(const Player *to, int card_id, const QString &reason) co
     }
 
     if (this == to) {
-        if (isCardLimited(roomObject()->getCard(card_id), MethodDiscard))
+        if (isCardLimited(roomObject()->card(card_id), MethodDiscard))
             return false;
     }
     return true;
@@ -1238,7 +1238,7 @@ void Player::removeDelayedTrick(const Card *trick)
 bool Player::containsTrick(const QString &trick_name) const
 {
     foreach (int trick_id, d->judgingArea) {
-        const Card *trick = roomObject()->getCard(trick_id);
+        const Card *trick = roomObject()->card(trick_id);
         // TODO: Wait! I don't know how to distinguish between card->name() and card->faceName()()
         // Fs: Just use a unified name! Don't you feel it's difficult to distinguish 2 names now?
         if (trick->faceName() == trick_name)
@@ -1357,7 +1357,7 @@ QList<const Card *> Player::handCards() const
 {
     QList<const Card *> r;
     foreach (int id, d->handcards)
-        r << d->room->getCard(id);
+        r << d->room->card(id);
 
     return r;
 }
@@ -1571,17 +1571,17 @@ bool Player::hasEquipSkill(const QString &skill_name) const
     }
 
     if (d->weapon != -1) {
-        const Weapon *weaponc = dynamic_cast<const Weapon *>(d->room->getCard(d->weapon)->face());
+        const Weapon *weaponc = dynamic_cast<const Weapon *>(d->room->card(d->weapon)->face());
         if ((Sanguosha->skill(weaponc) != nullptr) && Sanguosha->skill(weaponc)->name() == skill_name)
             return true;
     }
     if (d->armor != -1) {
-        const Armor *armorc = dynamic_cast<const Armor *>(d->room->getCard(d->armor)->face());
+        const Armor *armorc = dynamic_cast<const Armor *>(d->room->card(d->armor)->face());
         if ((Sanguosha->skill(armorc) != nullptr) && Sanguosha->skill(armorc)->name() == skill_name)
             return true;
     }
     if (d->treasure != -1) {
-        const Treasure *treasurec = dynamic_cast<const Treasure *>(d->room->getCard(d->treasure)->face());
+        const Treasure *treasurec = dynamic_cast<const Treasure *>(d->room->card(d->treasure)->face());
         if ((Sanguosha->skill(treasurec) != nullptr) && Sanguosha->skill(treasurec)->name() == skill_name)
             return true;
     }
@@ -1702,7 +1702,7 @@ bool Player::isCardLimited(const Card *card, HandlingMethod method, bool isHandc
         return false;
     if (card->face()->type() == TypeSkill && method == card->handleMethod()) {
         foreach (int card_id, card->subcards()) {
-            const Card *c = roomObject()->getCard(card_id);
+            const Card *c = roomObject()->card(card_id);
             QMap<QString, QStringList> map = d->cardLimitation[method];
             QMap<QString, QStringList>::iterator it;
             for (it = map.begin(); it != map.end(); ++it) {

@@ -258,26 +258,26 @@ bool RoomObject::comparePlayerByActionOrder(const Player *a, const Player *b) co
     return ps.indexOf(a) < ps.indexOf(b);
 }
 
-Card *RoomObject::getCard(int cardId)
+Card *RoomObject::card(int cardId)
 {
     if (!d->cards.contains(cardId))
         return nullptr;
     return d->cards[cardId];
 }
 
-const Card *RoomObject::getCard(int cardId) const
+const Card *RoomObject::card(int cardId) const
 {
     if (!d->cards.contains(cardId))
         return nullptr;
     return d->cards[cardId];
 }
 
-QSet<Card *> RoomObject::getCards()
+QSet<Card *> RoomObject::cards()
 {
     return List2Set(d->cards.values());
 }
 
-QSet<const Card *> RoomObject::getCards() const
+QSet<const Card *> RoomObject::cards() const
 {
     return List2Set(NonConstList2ConstList(d->cards.values()));
 }
@@ -379,15 +379,9 @@ void RoomObject::cardDeleting(const Card *card)
     delete card;
 }
 
-QSet<const DistanceSkill *> RoomObject::getDistanceSkills() const
+QSet<const DistanceSkill *> RoomObject::distanceSkills() const
 {
     return d->distance_skills;
-}
-
-const ViewAsSkill *RoomObject::getViewAsSkill(const QString &skill_name) const
-{
-    const Skill *skill = Sanguosha->skill(skill_name);
-    return dynamic_cast<const ViewAsSkill *>(skill);
 }
 
 const ProhibitSkill *RoomObject::isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others) const

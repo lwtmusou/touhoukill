@@ -416,7 +416,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                         }
                     }
 
-                    foreach (const Card *c, room->getCards()) {
+                    foreach (const Card *c, room->cards()) {
                         if (room->getCardPlace(c->id()) == QSanguosha::PlaceTable || room->getCardPlace(c->id()) == QSanguosha::PlaceJudge)
                             room->moveCardTo(c, nullptr, QSanguosha::PlaceDiscardPile, true);
                         if (c->hasFlag(QStringLiteral("using")))
@@ -623,7 +623,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
                     }
                 } else if (effect.card->skillName() == QStringLiteral("xianshi")) { // deal xianshi extra effect and original effect
                     QString xianshi_name;
-                    QSet<Card *> cards = room->getCards();
+                    QSet<Card *> cards = room->cards();
                     foreach (const Card *card, cards) {
                         if (card->face()->isNdTrick() || card->face()->isKindOf(QStringLiteral("BasicCard"))) {
                             if (effect.card->hasFlag(QStringLiteral("xianshi_") + card->faceName())) {
@@ -874,7 +874,7 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
             }
         } else if (effect.slash->skillName() == QStringLiteral("xianshi")) {
             QString xianshi_name;
-            QSet<Card *> cards = room->getCards();
+            QSet<Card *> cards = room->cards();
             foreach (const Card *card, cards) {
                 if (effect.slash->hasFlag(QStringLiteral("xianshi_") + card->faceName())) {
                     xianshi_name = card->faceName();
@@ -1044,10 +1044,10 @@ bool GameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room,
         log.card_str = QString::number(card_id);
         room->sendLog(log);
 
-        room->moveCardTo(room->getCard(card_id), nullptr, qobject_cast<ServerPlayer *>(judge->who), QSanguosha::PlaceJudge,
+        room->moveCardTo(room->card(card_id), nullptr, qobject_cast<ServerPlayer *>(judge->who), QSanguosha::PlaceJudge,
                          CardMoveReason(QSanguosha::MoveReasonJudge, judge->who->objectName(), QString(), QString(), judge->reason), true);
 
-        judge->setCard(room->getCard(card_id));
+        judge->setCard(room->card(card_id));
         break;
     }
     case QSanguosha::FinishRetrial: {

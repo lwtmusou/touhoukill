@@ -27,7 +27,7 @@ AboutUsDialog::AboutUsDialog(QWidget *parent)
 
     setLayout(layout);
 
-    QStringList developers = Sanguosha->config(QStringLiteral("developers")).toStringList();
+    QStringList developers = Sanguosha->configuration(QStringLiteral("developers")).toStringList();
     developers.prepend(QStringLiteral("hegemony"));
     developers.prepend(QStringLiteral("TouhouSatsu"));
 

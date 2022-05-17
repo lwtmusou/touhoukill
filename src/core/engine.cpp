@@ -82,10 +82,10 @@ Engine::Engine()
     foreach (const Package *package, LuaMultiThreadEnvironment::packages())
         addPackage(package);
 
-    d->LatestGeneralList = List2Set(config(QStringLiteral("latest_generals")).toStringList());
+    d->LatestGeneralList = List2Set(configuration(QStringLiteral("latest_generals")).toStringList());
 
     // I'd like it to refactor to use Qt-builtin way for it
-    QString locale = config(QStringLiteral("locale")).toString();
+    QString locale = configuration(QStringLiteral("locale")).toString();
     if (locale.length() == 0)
         locale = QStringLiteral("zh_CN");
     loadTranslations(locale);
@@ -205,6 +205,11 @@ const General *Engine::general(const QString &name) const
     return d->generals.value(name, nullptr);
 }
 
+QSet<const General *> Engine::generals() const
+{
+    return List2Set(d->generals.values());
+}
+
 QSet<QString> Engine::generalNames() const
 {
     return List2Set(d->generals.keys());
@@ -275,7 +280,7 @@ QStringList Engine::kingdoms() const
     static QStringList kingdoms;
 
     if (kingdoms.isEmpty())
-        kingdoms = config(QStringLiteral("kingdoms")).toStringList();
+        kingdoms = configuration(QStringLiteral("kingdoms")).toStringList();
 
     return kingdoms;
 }
@@ -284,7 +289,7 @@ QStringList Engine::hegemonyKingdoms() const
 {
     static QStringList hegemony_kingdoms;
     if (hegemony_kingdoms.isEmpty())
-        hegemony_kingdoms = config(QStringLiteral("hegemony_kingdoms")).toStringList();
+        hegemony_kingdoms = configuration(QStringLiteral("hegemony_kingdoms")).toStringList();
 
     return hegemony_kingdoms;
 }
@@ -382,7 +387,7 @@ QStringList Engine::skillNames() const
     return d->skills.keys();
 }
 
-QVariant Engine::config(const QString &key) const
+QVariant Engine::configuration(const QString &key) const
 {
     // TODO: special case of "withHeroSkin" and "withBGM"
     return d->configFile.value(key);

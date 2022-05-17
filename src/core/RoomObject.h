@@ -61,10 +61,10 @@ public:
     bool comparePlayerByActionOrder(const Player *a, const Player *b) const;
 
     // --------------------- Card Related ---------------------
-    Card *getCard(int cardId);
-    const Card *getCard(int cardId) const;
-    QSet<Card *> getCards();
-    QSet<const Card *> getCards() const;
+    Card *card(int cardId);
+    const Card *card(int cardId) const;
+    QSet<Card *> cards();
+    QSet<const Card *> cards() const;
 
     QString currentCardUsePattern() const;
     void setCurrentCardUsePattern(const QString &newPattern);
@@ -101,8 +101,7 @@ public:
     int correctCardTarget(QSanguosha::TargetModType type, const Player *from, const Card *card) const;
     int correctAttackRange(const Player *target, bool include_weapon = true, bool fixed = false) const;
 
-    QSet<const DistanceSkill *> getDistanceSkills() const;
-    const ViewAsSkill *getViewAsSkill(const QString &skill_name) const;
+    QSet<const DistanceSkill *> distanceSkills() const;
 
     void loadSkill(const Skill *skill);
 

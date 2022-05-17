@@ -22,7 +22,7 @@ public:
         min = new QLineEdit;
         in_attack = new QLineEdit;
 
-        QSet<const DistanceSkill *> skills = ClientInstance->getDistanceSkills();
+        QSet<const DistanceSkill *> skills = ClientInstance->distanceSkills();
         foreach (const DistanceSkill *skill, skills) {
             QLineEdit *distance_edit = new QLineEdit;
             distance_edit->setObjectName(skill->name());

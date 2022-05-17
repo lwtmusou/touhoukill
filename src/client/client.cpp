@@ -191,9 +191,9 @@ void Client::updateCard(const QVariant &val)
     if (JsonUtils::isNumber(val)) {
         // reset card
         int cardId = val.toInt();
-        Card *card = getCard(cardId);
+        Card *card_ = card(cardId);
         // TODO: How to handle the Filter skill?
-        if (!card->isModified())
+        if (!card_->isModified())
             return;
         resetCard(cardId);
     } else {
@@ -212,7 +212,7 @@ void Client::updateCard(const QVariant &val)
         const CardFace *face = Sanguosha->cardFace(cardName);
         // since we are modifying actual card, the Face must not be nullptr
         if (face != nullptr) {
-            Card *c = getCard(cardId);
+            Card *c = card(cardId);
             c->setSuit(suit);
             c->setNumber(number);
             c->setSkillName(skillName);
@@ -534,9 +534,9 @@ void Client::removePlayer(const QVariant &player_name)
 
 bool Client::_loseSingleCard(int card_id, const LegacyCardsMoveStruct &move)
 {
-    const Card *card = getCard(card_id);
+    const Card *card_ = card(card_id);
     if (move.from != nullptr)
-        move.from->removeCard(card, move.from_place);
+        move.from->removeCard(card_, move.from_place);
     else {
         if (move.from_place == QSanguosha::PlaceDiscardPile)
             discardPile().removeOne(card_id);
@@ -548,9 +548,9 @@ bool Client::_loseSingleCard(int card_id, const LegacyCardsMoveStruct &move)
 
 bool Client::_getSingleCard(int card_id, const LegacyCardsMoveStruct &move)
 {
-    const Card *card = getCard(card_id);
+    const Card *card_ = card(card_id);
     if (move.to != nullptr)
-        move.to->addCard(card, move.to_place, move.to_pile_name);
+        move.to->addCard(card_, move.to_place, move.to_pile_name);
     else {
         if (move.to_place == QSanguosha::PlaceDrawPile)
             pile_num++;
@@ -1409,9 +1409,9 @@ void Client::setCardFlag(const QVariant &pattern_str)
     int id = pattern[0].toInt();
     QString flag = pattern[1].toString();
 
-    Card *card = getCard(id);
-    if (card != nullptr)
-        card->addFlag(flag);
+    Card *card_ = card(id);
+    if (card_ != nullptr)
+        card_->addFlag(flag);
 }
 
 void Client::updatePileNum()
@@ -1805,7 +1805,7 @@ void Client::takeAG(const QVariant &take_var)
 
     int card_id = take[1].toInt();
     bool move_cards = take[2].toBool();
-    const Card *card = getCard(card_id);
+    const Card *card_ = card(card_id);
 
     if (take[0].isNull()) {
         if (move_cards) {
@@ -1816,7 +1816,7 @@ void Client::takeAG(const QVariant &take_var)
     } else {
         Player *taker = findPlayer(take[0].toString());
         if (move_cards)
-            taker->addCard(card, QSanguosha::PlaceHand);
+            taker->addCard(card_, QSanguosha::PlaceHand);
         emit ag_taken(taker, card_id, move_cards);
     }
 }

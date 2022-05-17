@@ -118,7 +118,7 @@ void CardItem::changeGeneral(const QString &general_name)
 
 const Card *CardItem::getCard() const
 {
-    return ClientInstance->getCard(m_cardId);
+    return ClientInstance->card(m_cardId);
 }
 
 void CardItem::setHomePos(QPointF home_pos)

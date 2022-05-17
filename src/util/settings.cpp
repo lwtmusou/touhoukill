@@ -203,14 +203,14 @@ void Settings::init()
     QStringList hegemony_ban;
     QStringList pairs_ban;
 
-    roles_ban = Sanguosha->config(QStringLiteral("roles_ban")).toStringList();
-    kof_ban = Sanguosha->config(QStringLiteral("kof_ban")).toStringList();
-    hulao_ban = Sanguosha->config(QStringLiteral("hulao_ban")).toStringList();
-    xmode_ban = Sanguosha->config(QStringLiteral("xmode_ban")).toStringList();
-    basara_ban = Sanguosha->config(QStringLiteral("basara_ban")).toStringList();
-    hegemony_ban = Sanguosha->config(QStringLiteral("hegemony_ban")).toStringList();
+    roles_ban = Sanguosha->configuration(QStringLiteral("roles_ban")).toStringList();
+    kof_ban = Sanguosha->configuration(QStringLiteral("kof_ban")).toStringList();
+    hulao_ban = Sanguosha->configuration(QStringLiteral("hulao_ban")).toStringList();
+    xmode_ban = Sanguosha->configuration(QStringLiteral("xmode_ban")).toStringList();
+    basara_ban = Sanguosha->configuration(QStringLiteral("basara_ban")).toStringList();
+    hegemony_ban = Sanguosha->configuration(QStringLiteral("hegemony_ban")).toStringList();
     hegemony_ban.append(basara_ban);
-    pairs_ban = Sanguosha->config(QStringLiteral("pairs_ban")).toStringList();
+    pairs_ban = Sanguosha->configuration(QStringLiteral("pairs_ban")).toStringList();
 
     QStringList banlist = value(QStringLiteral("Banlist/Roles")).toStringList();
     if (banlist.isEmpty()) {
@@ -274,8 +274,8 @@ void Settings::init()
         setValue(QStringLiteral("ForbidPackages"), forbid_packages);
     }
 
-    ExtraHiddenGenerals = Sanguosha->config(QStringLiteral("extra_hidden_generals")).toStringList();
-    RemovedHiddenGenerals = Sanguosha->config(QStringLiteral("removed_hidden_generals")).toStringList();
+    ExtraHiddenGenerals = Sanguosha->configuration(QStringLiteral("extra_hidden_generals")).toStringList();
+    RemovedHiddenGenerals = Sanguosha->configuration(QStringLiteral("removed_hidden_generals")).toStringList();
 
     AutoUpdateNeedsRestart = !EnableAutoUpdate;
     AutoUpdateDataRececived = false;
