@@ -284,7 +284,7 @@ void Player::setMaxHp(int max_hp)
         d->hp = max_hp;
 }
 
-int Player::getLostHp() const
+int Player::lostHp() const
 {
     return d->maxHp - qMax(hp(), 0);
 }
@@ -379,7 +379,7 @@ void Player::clearFlags()
     d->flags.clear();
 }
 
-int Player::getAttackRange(bool include_weapon) const
+int Player::attackRange(bool include_weapon) const
 {
     if (hasFlag(QStringLiteral("InfinityAttackRange")) || mark(QStringLiteral("InfinityAttackRange")) > 0)
         return 1000;
@@ -416,7 +416,7 @@ bool Player::inMyAttackRange(const Player *other) const
         return false;
     if (this == other)
         return false;
-    return distanceTo(other) <= getAttackRange();
+    return distanceTo(other) <= attackRange();
 }
 
 void Player::setFixedDistance(const Player *player, int distance)
@@ -814,46 +814,6 @@ void Player::loseSkill(const QString &skill_name, int place)
         return;
 
     d->generalCardSkills[place].remove(skill_name);
-}
-
-QString Player::getPhaseString() const
-{
-    switch (d->phase) {
-    case PhaseRoundStart:
-        return QStringLiteral("round_start");
-    case PhaseStart:
-        return QStringLiteral("start");
-    case PhaseJudge:
-        return QStringLiteral("judge");
-    case PhaseDraw:
-        return QStringLiteral("draw");
-    case PhasePlay:
-        return QStringLiteral("play");
-    case PhaseDiscard:
-        return QStringLiteral("discard");
-    case PhaseFinish:
-        return QStringLiteral("finish");
-    case PhaseNotActive:
-    default:
-        return QStringLiteral("not_active");
-    }
-}
-
-void Player::setPhaseString(const QString &phase_str)
-{
-    static QMap<QString, Phase> phase_map;
-    if (phase_map.isEmpty()) {
-        phase_map.insert(QStringLiteral("round_start"), PhaseRoundStart);
-        phase_map.insert(QStringLiteral("start"), PhaseStart);
-        phase_map.insert(QStringLiteral("judge"), PhaseJudge);
-        phase_map.insert(QStringLiteral("draw"), PhaseDraw);
-        phase_map.insert(QStringLiteral("play"), PhasePlay);
-        phase_map.insert(QStringLiteral("discard"), PhaseDiscard);
-        phase_map.insert(QStringLiteral("finish"), PhaseFinish);
-        phase_map.insert(QStringLiteral("not_active"), PhaseNotActive);
-    }
-
-    setPhase(phase_map.value(phase_str, PhaseNotActive));
 }
 
 void Player::setEquip(const Card *equip)
@@ -1433,7 +1393,7 @@ bool Player::canSlash(const Player *other, const Card *slash, bool distance_limi
     }
 
     if (distance_limit) {
-        bool res = distanceTo(other, rangefix) <= getAttackRange() + d->room->correctCardTarget(ModDistance, this, THIS_SLASH);
+        bool res = distanceTo(other, rangefix) <= attackRange() + d->room->correctCardTarget(ModDistance, this, THIS_SLASH);
         roomObject()->cardDeleting(new_shash);
         return res;
     } else {

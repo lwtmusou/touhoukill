@@ -3985,7 +3985,7 @@ void Room::applyDamage(ServerPlayer *victim, const DamageStruct &damage)
 
 void Room::recover(ServerPlayer *player, const RecoverStruct &recover, bool set_emotion)
 {
-    if (player->getLostHp() == 0 || player->isDead())
+    if (player->lostHp() == 0 || player->isDead())
         return;
     RecoverStruct recover_struct = recover;
     recover_struct.to = player;

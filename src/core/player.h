@@ -96,7 +96,7 @@ public:
     void setDyingFactor(int dyingFactor);
     int maxHp() const;
     void setMaxHp(int max_hp);
-    int getLostHp() const;
+    int lostHp() const;
     bool isWounded() const;
     QSanguosha::Gender gender() const;
     void setGender(QSanguosha::Gender gender);
@@ -129,13 +129,11 @@ public:
     int seat() const;
     void setSeat(int seat);
     bool isAdjacentTo(const Player *another) const;
-    QString getPhaseString() const;
-    void setPhaseString(const QString &phase_str);
     QSanguosha::Phase phase() const;
     void setPhase(QSanguosha::Phase phase);
     bool isInMainPhase() const;
 
-    int getAttackRange(bool include_weapon = true) const;
+    int attackRange(bool include_weapon = true) const;
     bool inMyAttackRange(const Player *other) const;
 
     bool isAlive() const;
