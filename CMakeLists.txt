@@ -257,72 +257,74 @@ endif()
 if (lua54_FOUND)
     add_library(QSanguoshaLibs::lua54 ALIAS PkgConfig::lua54)
 else()
-    set(LUA_FILE
-        src/lua/lfunc.c
-        src/lua/lgc.c
-        src/lua/linit.c
-        src/lua/liolib.c
-        src/lua/llex.c
-        src/lua/lmathlib.c
-        src/lua/lmem.c
-        src/lua/loadlib.c
-        src/lua/lobject.c
-        src/lua/lopcodes.c
-        src/lua/loslib.c
-        src/lua/lparser.c
-        src/lua/lstate.c
-        src/lua/lstring.c
-        src/lua/lstrlib.c
-        src/lua/ltable.c
-        src/lua/ltablib.c
-        src/lua/ltm.c
-        src/lua/lundump.c
-        src/lua/lutf8lib.c
-        src/lua/lvm.c
-        src/lua/lzio.c
-        src/lua/lapi.h
-        src/lua/lcode.h
-        src/lua/lctype.h
-        src/lua/ldebug.h
-        src/lua/ldo.h
-        src/lua/lfunc.h
-        src/lua/lgc.h
-        src/lua/ljumptab.h
-        src/lua/llex.h
-        src/lua/llimits.h
-        src/lua/lmem.h
-        src/lua/lobject.h
-        src/lua/lopcodes.h
-        src/lua/lopnames.h
-        src/lua/lparser.h
-        src/lua/lprefix.h
-        src/lua/lstate.h
-        src/lua/lstring.h
-        src/lua/ltable.h
-        src/lua/ltm.h
-        src/lua/lundump.h
-        src/lua/lvm.h
-        src/lua/lzio.h
-        src/lua/lapi.c
-        src/lua/lauxlib.c
-        src/lua/lbaselib.c
-        src/lua/lcode.c
-        src/lua/lcorolib.c
-        src/lua/lctype.c
-        src/lua/ldblib.c
-        src/lua/ldebug.c
-        src/lua/ldo.c
-        src/lua/ldump.c
+    set(QSGS_LUAVERSION 5.4.4)
 
-        include/lua/lua.hpp
-        include/lua/luaconf.h
-        include/lua/lualib.h
-        include/lua/lauxlib.h
-        include/lua/lua.h
+    set(QSGS_LUA_FILE
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lfunc.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lgc.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/linit.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/liolib.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/llex.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lmathlib.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lmem.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/loadlib.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lobject.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lopcodes.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/loslib.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lparser.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lstate.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lstring.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lstrlib.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/ltable.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/ltablib.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/ltm.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lundump.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lutf8lib.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lvm.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lzio.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lapi.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lcode.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lctype.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/ldebug.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/ldo.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lfunc.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lgc.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/ljumptab.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/llex.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/llimits.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lmem.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lobject.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lopcodes.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lopnames.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lparser.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lprefix.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lstate.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lstring.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/ltable.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/ltm.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lundump.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lvm.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lzio.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lapi.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lauxlib.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lbaselib.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lcode.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lcorolib.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lctype.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/ldblib.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/ldebug.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/ldo.c
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/ldump.c
+
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lua.hpp
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/luaconf.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lualib.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lauxlib.h
+        src/3rdparty/lua-${QSGS_LUAVERSION}/src/lua.h
     )
 
-    add_library(lua54 STATIC ${LUA_FILE})
-    target_include_directories(lua54 PUBLIC "include/lua")
+    add_library(lua54 STATIC ${QSGS_LUA_FILE})
+    target_include_directories(lua54 PUBLIC "src/3rdparty/lua-${QSGS_LUAVERSION}/src")
     if(APPLE)
         target_compile_definitions(lua54 PRIVATE LUA_USE_MACOSX)
     elseif(NOT WIN32)
@@ -340,61 +342,68 @@ if (Qt5Multimedia_FOUND OR Qt6Multimedia_FOUND)
     if (oggvorbisfile_FOUND)
         add_library(QSanguoshaLibs::oggvorbisfile ALIAS PkgConfig::oggvorbisfile)
     else()
-        set(OGG_FILE
-            src/ogg/backends.h
-            src/ogg/bitrate.h
-            src/ogg/codebook.h
-            src/ogg/codec_internal.h
-            src/ogg/crctable.h
-            src/ogg/envelope.h
-            src/ogg/highlevel.h
-            src/ogg/lookup.h
-            src/ogg/lookup_data.h
-            src/ogg/lpc.h
-            src/ogg/lsp.h
-            src/ogg/masking.h
-            src/ogg/mdct.h
-            src/ogg/misc.h
-            src/ogg/os.h
-            src/ogg/psy.h
-            src/ogg/registry.h
-            src/ogg/scales.h
-            src/ogg/smallft.h
-            src/ogg/window.h
+        set(QSGS_OGGVERSION 1.3.5)
+        set(QSGS_VORBISVERSION 1.3.7)
 
-            src/ogg/analysis.c
-            src/ogg/bitrate.c
-            src/ogg/bitwise.c
-            src/ogg/block.c
-            src/ogg/codebook.c
-            src/ogg/envelope.c
-            src/ogg/floor0.c
-            src/ogg/floor1.c
-            src/ogg/framing.c
-            src/ogg/info.c
-            src/ogg/lookup.c
-            src/ogg/lpc.c
-            src/ogg/lsp.c
-            src/ogg/mapping0.c
-            src/ogg/mdct.c
-            src/ogg/psy.c
-            src/ogg/registry.c
-            src/ogg/res0.c
-            src/ogg/sharedbook.c
-            src/ogg/smallft.c
-            src/ogg/synthesis.c
-            src/ogg/vorbisfile.c
-            src/ogg/window.c
+        set(QSGS_OGG_FILE
+            # OGG files
+            src/3rdparty/libogg-${QSGS_OGGVERSION}/src/bitwise.c
+            src/3rdparty/libogg-${QSGS_OGGVERSION}/src/crctable.h
+            src/3rdparty/libogg-${QSGS_OGGVERSION}/src/framing.c
+            src/3rdparty/libogg-${QSGS_OGGVERSION}/include/ogg/ogg.h
+            src/3rdparty/libogg-${QSGS_OGGVERSION}/include/ogg/os_types.h
 
-            include/oggvorbisfile/ogg/ogg.h
-            include/oggvorbisfile/ogg/os_types.h
-            include/oggvorbisfile/ogg/config_types.h
-            include/oggvorbisfile/vorbis/codec.h
-            include/oggvorbisfile/vorbis/vorbisfile.h
+            # Vorbis files
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/analysis.c
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/bitrate.c
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/block.c
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/codebook.c
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/envelope.c
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/floor0.c
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/floor1.c
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/info.c
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/lookup.c
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/lpc.c
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/lsp.c
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/mapping0.c
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/mdct.c
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/psy.c
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/registry.c
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/res0.c
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/sharedbook.c
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/smallft.c
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/synthesis.c
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/vorbisfile.c
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/window.c
+
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/backends.h
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/bitrate.h
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/codebook.h
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/codec_internal.h
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/envelope.h
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/highlevel.h
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/lookup.h
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/lookup_data.h
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/lpc.h
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/lsp.h
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/masking.h
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/mdct.h
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/misc.h
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/os.h
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/psy.h
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/registry.h
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/scales.h
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/smallft.h
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/lib/window.h
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/include/vorbis/codec.h
+            src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/include/vorbis/vorbisfile.h
+
         )
 
-        add_library(oggvorbisfile STATIC ${OGG_FILE})
+        add_library(oggvorbisfile STATIC ${QSGS_OGG_FILE})
         target_include_directories(oggvorbisfile PUBLIC "include/oggvorbisfile")
+        target_include_directories(oggvorbisfile PUBLIC "src/3rdparty/libogg-${QSGS_OGGVERSION}/include")
+        target_include_directories(oggvorbisfile PUBLIC "src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/include")
 
         if (MSVC)
             target_compile_options(oggvorbisfile BEFORE PRIVATE "-wd4244" PRIVATE "-wd4305" PRIVATE "-wd4267")
