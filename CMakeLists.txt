@@ -127,11 +127,11 @@ set (QSanguosha_SRCS
     src/dialog/updatedialog.cpp
     src/dialog/serverdialog.cpp
     src/main.cpp
-    src/server/gamerule.cpp
-    src/server/room.cpp
-    src/server/roomthread.cpp
-    src/server/server.cpp
-    src/server/serverplayer.cpp
+    src/legacyserver/legacygamerule.cpp
+    src/legacyserver/legacyroom.cpp
+    src/legacyserver/legacyroomthread.cpp
+    src/legacyserver/legacyserver.cpp
+    src/legacyserver/legacyserverplayer.cpp
     src/ui/bubblechatbox.cpp
     src/ui/button.cpp
     src/ui/cardcontainer.cpp
@@ -196,11 +196,11 @@ set (QSanguosha_MOCS
     src/dialog/roleassigndialog.h
     src/dialog/updatedialog.h
     src/dialog/serverdialog.h
-    src/server/gamerule.h
-    src/server/room.h
-    src/server/roomthread.h
-    src/server/server.h
-    src/server/serverplayer.h
+    src/legacyserver/legacygamerule.h
+    src/legacyserver/legacyroom.h
+    src/legacyserver/legacyroomthread.h
+    src/legacyserver/legacyserver.h
+    src/legacyserver/legacyserverplayer.h
     src/ui/bubblechatbox.h
     src/ui/button.h
     src/ui/cardcontainer.h
@@ -472,7 +472,7 @@ if (Qt5_FOUND)
         PUBLIC "src/client"
         PUBLIC "src/dialog"
         PUBLIC "src/package"
-        PUBLIC "src/server"
+        PUBLIC "src/legacyserver"
         PUBLIC "src/ui"
         PUBLIC "src/util"
         PUBLIC "src"
@@ -554,7 +554,7 @@ if (Qt6_FOUND)
         PUBLIC "src/client"
         PUBLIC "src/dialog"
         PUBLIC "src/package"
-        PUBLIC "src/server"
+        PUBLIC "src/legacyserver"
         PUBLIC "src/ui"
         PUBLIC "src/util"
         PUBLIC "src"

@@ -1,6 +1,6 @@
 #include "recorder.h"
 #include "client.h"
-#include "serverplayer.h"
+#include "legacyserverplayer.h"
 
 #include <QBuffer>
 #include <QFile>

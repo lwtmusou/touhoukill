@@ -7,9 +7,9 @@
 #include <QWaitCondition>
 
 #include "RoomObject.h"
+#include "legacyroomthread.h"
+#include "legacyserverplayer.h"
 #include "protocol.h"
-#include "roomthread.h"
-#include "serverplayer.h"
 
 class ProhibitSkill;
 class TrickCard;

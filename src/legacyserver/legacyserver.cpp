@@ -1,13 +1,13 @@
-#include "server.h"
+#include "legacyserver.h"
 
 #include "engine.h"
 #include "general.h"
 #include "json.h"
+#include "legacyroom.h"
 #include "mode.h"
 #include "nativesocket.h"
 #include "package.h"
 #include "protocol.h"
-#include "room.h"
 #include "settings.h"
 
 #include <QHostInfo>

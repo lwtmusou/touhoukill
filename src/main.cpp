@@ -1,6 +1,6 @@
 #include "audio.h"
+#include "legacyserver.h"
 #include "mainwindow.h"
-#include "server.h"
 #include "settings.h"
 
 #include <QApplication>

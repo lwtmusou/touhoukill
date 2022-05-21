@@ -3,7 +3,7 @@
 
 #include "QSanSelectableItem.h"
 #include "button.h"
-#include "server.h"
+#include "legacyserver.h"
 
 #include <QAction>
 #include <QGraphicsScene>

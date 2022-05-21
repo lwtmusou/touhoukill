@@ -1,11 +1,11 @@
-#include "roomthread.h"
+#include "legacyroomthread.h"
 #include "engine.h"
-#include "gamerule.h"
 #include "general.h"
 #include "json.h"
+#include "legacygamerule.h"
+#include "legacyroom.h"
 #include "package.h"
 #include "protocol.h"
-#include "room.h"
 #include "settings.h"
 #include "skill.h"
 #include "util.h"
@@ -616,7 +616,8 @@ bool RoomThread::trigger(QSanguosha::TriggerEvent e, QVariant &data)
             }
 
             // since the invoker of the sametiming list is the same, we can use sameTiming.first()->invoker to judge the invoker of this time
-            QSharedPointer<TriggerDetail> detailSelected = room->askForTriggerOrder(qobject_cast<LegacyServerPlayer *>(sameTiming.first()->invoker()), sameTiming, !has_compulsory, data);
+            QSharedPointer<TriggerDetail> detailSelected
+                = room->askForTriggerOrder(qobject_cast<LegacyServerPlayer *>(sameTiming.first()->invoker()), sameTiming, !has_compulsory, data);
 
             if (detailSelected.isNull() || !detailSelected->isValid()) {
                 // if cancel is pushed when it is cancelable, we set all the sametiming as triggered, and add all the skills to triggeredList, continue the next loop

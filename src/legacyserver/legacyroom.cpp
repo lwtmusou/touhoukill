@@ -1,13 +1,13 @@
-#include "room.h"
+#include "legacyroom.h"
 #include "CardFace.h"
 #include "audio.h"
 #include "card.h"
 #include "engine.h"
-#include "gamerule.h"
 #include "general.h"
 #include "json.h"
+#include "legacygamerule.h"
+#include "legacyserver.h"
 #include "mode.h"
-#include "server.h"
 #include "settings.h"
 #include "skill.h"
 #include "structs.h"
@@ -771,7 +771,8 @@ bool LegacyRoom::doBroadcastRequest(QList<LegacyServerPlayer *> &players, QSanPr
     return true;
 }
 
-LegacyServerPlayer *LegacyRoom::doBroadcastRaceRequest(QList<LegacyServerPlayer *> &players, QSanProtocol::CommandType command, time_t timeOut, ResponseVerifyFunction validateFunc, void *funcArg)
+LegacyServerPlayer *LegacyRoom::doBroadcastRaceRequest(QList<LegacyServerPlayer *> &players, QSanProtocol::CommandType command, time_t timeOut, ResponseVerifyFunction validateFunc,
+                                                       void *funcArg)
 {
     _m_semRoomMutex.acquire();
     _m_raceStarted = true;
@@ -793,7 +794,8 @@ LegacyServerPlayer *LegacyRoom::doBroadcastRaceRequest(QList<LegacyServerPlayer 
     return winner;
 }
 
-LegacyServerPlayer *LegacyRoom::getRaceResult(QList<LegacyServerPlayer *> &players, QSanProtocol::CommandType /*unused*/, time_t timeOut, ResponseVerifyFunction validateFunc, void *funcArg)
+LegacyServerPlayer *LegacyRoom::getRaceResult(QList<LegacyServerPlayer *> &players, QSanProtocol::CommandType /*unused*/, time_t timeOut, ResponseVerifyFunction validateFunc,
+                                              void *funcArg)
 {
     QElapsedTimer timer;
     timer.start();
@@ -1400,8 +1402,8 @@ bool LegacyRoom::_askForNullification(const Card *trick, LegacyServerPlayer *fro
     return result;
 }
 
-int LegacyRoom::askForCardChosen(LegacyServerPlayer *player, LegacyServerPlayer *who, const QString &flags, const QString &reason, bool handcard_visible, QSanguosha::HandlingMethod method,
-                           const QList<int> &disabled_ids)
+int LegacyRoom::askForCardChosen(LegacyServerPlayer *player, LegacyServerPlayer *who, const QString &flags, const QString &reason, bool handcard_visible,
+                                 QSanguosha::HandlingMethod method, const QList<int> &disabled_ids)
 {
     tryPause();
     notifyMoveFocus(player, S_COMMAND_CHOOSE_CARD);
@@ -1535,8 +1537,8 @@ const Card *LegacyRoom::askForCard(LegacyServerPlayer *player, const QString &pa
     return askForCard(player, pattern, prompt, data, QSanguosha::MethodDiscard, nullptr, false, skill_name, false, notice_index);
 }
 
-const Card *LegacyRoom::askForCard(LegacyServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data, QSanguosha::HandlingMethod method, LegacyServerPlayer *to,
-                             bool isRetrial, const QString &skill_name, bool isProvision, int notice_index)
+const Card *LegacyRoom::askForCard(LegacyServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data, QSanguosha::HandlingMethod method,
+                                   LegacyServerPlayer *to, bool isRetrial, const QString &skill_name, bool isProvision, int notice_index)
 {
     Q_ASSERT(pattern != QStringLiteral("slash") || method != QSanguosha::MethodUse); // use askForUseSlashTo instead
 
@@ -1762,8 +1764,8 @@ const Card *LegacyRoom::askForCard(LegacyServerPlayer *player, const QString &pa
     return result;
 }
 
-const Card *LegacyRoom::askForUseCard(LegacyServerPlayer *player, const QString &pattern, const QString &prompt, int notice_index, QSanguosha::HandlingMethod method, bool addHistory,
-                                const QString &skill_name)
+const Card *LegacyRoom::askForUseCard(LegacyServerPlayer *player, const QString &pattern, const QString &prompt, int notice_index, QSanguosha::HandlingMethod method,
+                                      bool addHistory, const QString &skill_name)
 {
     Q_ASSERT(method != QSanguosha::MethodResponse);
 
@@ -1816,7 +1818,8 @@ const Card *LegacyRoom::askForUseCard(LegacyServerPlayer *player, const QString 
     return nullptr;
 }
 
-const Card *LegacyRoom::askForUseSlashTo(LegacyServerPlayer *slasher, QList<LegacyServerPlayer *> victims, const QString &prompt, bool distance_limit, bool disable_extra, bool addHistory)
+const Card *LegacyRoom::askForUseSlashTo(LegacyServerPlayer *slasher, QList<LegacyServerPlayer *> victims, const QString &prompt, bool distance_limit, bool disable_extra,
+                                         bool addHistory)
 {
     Q_ASSERT(!victims.isEmpty());
 
@@ -2002,7 +2005,8 @@ void LegacyRoom::askForSinglePeach(LegacyServerPlayer *player, LegacyServerPlaye
         askForSinglePeach(player, dying, use);
 }
 
-QSharedPointer<TriggerDetail> LegacyRoom::askForTriggerOrder(LegacyServerPlayer *player, const QList<QSharedPointer<TriggerDetail>> &sameTiming, bool cancelable, const QVariant & /*unused*/)
+QSharedPointer<TriggerDetail> LegacyRoom::askForTriggerOrder(LegacyServerPlayer *player, const QList<QSharedPointer<TriggerDetail>> &sameTiming, bool cancelable,
+                                                             const QVariant & /*unused*/)
 {
     tryPause();
 
@@ -4528,13 +4532,14 @@ void LegacyRoom::moveCardTo(const Card *card, LegacyServerPlayer *dstPlayer, QSa
     moveCardTo(card, nullptr, dstPlayer, dstPlace, QString(), reason, forceMoveVisible);
 }
 
-void LegacyRoom::moveCardTo(const Card *card, LegacyServerPlayer *srcPlayer, LegacyServerPlayer *dstPlayer, QSanguosha::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible)
+void LegacyRoom::moveCardTo(const Card *card, LegacyServerPlayer *srcPlayer, LegacyServerPlayer *dstPlayer, QSanguosha::Place dstPlace, const CardMoveReason &reason,
+                            bool forceMoveVisible)
 {
     moveCardTo(card, srcPlayer, dstPlayer, dstPlace, QString(), reason, forceMoveVisible);
 }
 
-void LegacyRoom::moveCardTo(const Card *card, LegacyServerPlayer *srcPlayer, LegacyServerPlayer *dstPlayer, QSanguosha::Place dstPlace, const QString &pileName, const CardMoveReason &reason,
-                      bool forceMoveVisible)
+void LegacyRoom::moveCardTo(const Card *card, LegacyServerPlayer *srcPlayer, LegacyServerPlayer *dstPlayer, QSanguosha::Place dstPlace, const QString &pileName,
+                            const CardMoveReason &reason, bool forceMoveVisible)
 {
     LegacyCardsMoveStruct move;
     if (card->isVirtualCard()) {
@@ -6090,8 +6095,8 @@ QList<const Card *> LegacyRoom::askForPindianRace(LegacyServerPlayer *from, Lega
     return QList<const Card *>() << from_card << to_card;
 }
 
-LegacyServerPlayer *LegacyRoom::askForPlayerChosen(LegacyServerPlayer *player, const QList<LegacyServerPlayer *> &targets, const QString &skillName, const QString &prompt, bool optional,
-                                       bool notify_skill)
+LegacyServerPlayer *LegacyRoom::askForPlayerChosen(LegacyServerPlayer *player, const QList<LegacyServerPlayer *> &targets, const QString &skillName, const QString &prompt,
+                                                   bool optional, bool notify_skill)
 {
     if (targets.isEmpty()) {
         Q_ASSERT(optional);
@@ -6590,8 +6595,8 @@ void LegacyRoom::retrial(const Card *card_, LegacyServerPlayer *player, JudgeStr
     }
 }
 
-int LegacyRoom::askForRende(LegacyServerPlayer *liubei, QList<int> &cards, const QString &skill_name, bool /*unused*/, bool optional, int max_num, QList<LegacyServerPlayer *> players,
-                      CardMoveReason reason, const QString &prompt, bool notify_skill)
+int LegacyRoom::askForRende(LegacyServerPlayer *liubei, QList<int> &cards, const QString &skill_name, bool /*unused*/, bool optional, int max_num,
+                            QList<LegacyServerPlayer *> players, CardMoveReason reason, const QString &prompt, bool notify_skill)
 {
     if (max_num == -1)
         max_num = cards.length();
@@ -6717,8 +6722,8 @@ int LegacyRoom::askForRende(LegacyServerPlayer *liubei, QList<int> &cards, const
     return give_map.keys().length();
 }
 
-bool LegacyRoom::askForYiji(LegacyServerPlayer *guojia, QList<int> &cards, const QString &skill_name, bool is_preview, bool visible, bool optional, int max_num, QList<LegacyServerPlayer *> players,
-                      CardMoveReason reason, const QString &prompt, bool notify_skill)
+bool LegacyRoom::askForYiji(LegacyServerPlayer *guojia, QList<int> &cards, const QString &skill_name, bool is_preview, bool visible, bool optional, int max_num,
+                            QList<LegacyServerPlayer *> players, CardMoveReason reason, const QString &prompt, bool notify_skill)
 {
     if (max_num == -1)
         max_num = cards.length();

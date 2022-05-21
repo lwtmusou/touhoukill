@@ -1,11 +1,11 @@
-#include "gamerule.h"
+#include "legacygamerule.h"
 #include "CardFace.h"
 #include "card.h"
 #include "engine.h"
 #include "general.h"
 #include "json.h"
-#include "room.h"
-#include "serverplayer.h"
+#include "legacyroom.h"
+#include "legacyserverplayer.h"
 #include "settings.h"
 #include "skill.h"
 #include "util.h"
@@ -686,7 +686,8 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                                 recover.recover = 1 + effect.effectValue.first();
                             room->recover(qobject_cast<LegacyServerPlayer *>(effect.to), recover);
                         } else if (extraCard->face()->isKindOf(QStringLiteral("AmazingGrace"))) {
-                            room->doExtraAmazingGrace(qobject_cast<LegacyServerPlayer *>(effect.from), qobject_cast<LegacyServerPlayer *>(effect.to), 1 + effect.effectValue.first());
+                            room->doExtraAmazingGrace(qobject_cast<LegacyServerPlayer *>(effect.from), qobject_cast<LegacyServerPlayer *>(effect.to),
+                                                      1 + effect.effectValue.first());
                         } else {
                             CardEffectStruct extraEffect;
                             extraCard->addSubcards(effect.card->subcards());
