@@ -7,9 +7,9 @@
 
 #include "structs.h"
 
-class GameRule;
-class Room;
-class ServerPlayer;
+class LegacyGameRule;
+class LegacyRoom;
+class LegacyServerPlayer;
 
 struct LogMessage
 {
@@ -30,7 +30,7 @@ class RoomThread : public QThread
     Q_OBJECT
 
 public:
-    explicit RoomThread(Room *room);
+    explicit RoomThread(LegacyRoom *room);
     void constructTriggerTable();
 
 private:
@@ -40,22 +40,22 @@ private:
 public:
     bool trigger(QSanguosha::TriggerEvent e, QVariant &data);
 
-    void addPlayerSkills(ServerPlayer *player, bool invoke_game_start = false);
+    void addPlayerSkills(LegacyServerPlayer *player, bool invoke_game_start = false);
 
     void addTrigger(const Trigger *skill);
     void delay(long msecs = -1);
-    ServerPlayer *find3v3Next(QList<ServerPlayer *> &first, QList<ServerPlayer *> &second);
-    void run3v3(QList<ServerPlayer *> &first, QList<ServerPlayer *> &second, GameRule *game_rule, ServerPlayer *current);
-    void actionHulaoPass(ServerPlayer *uuz, QList<ServerPlayer *> league, GameRule *game_rule);
-    ServerPlayer *findHulaoPassNext(ServerPlayer *uuz, const QList<ServerPlayer *> &league);
-    void actionNormal(GameRule *game_rule);
+    LegacyServerPlayer *find3v3Next(QList<LegacyServerPlayer *> &first, QList<LegacyServerPlayer *> &second);
+    void run3v3(QList<LegacyServerPlayer *> &first, QList<LegacyServerPlayer *> &second, LegacyGameRule *game_rule, LegacyServerPlayer *current);
+    void actionHulaoPass(LegacyServerPlayer *uuz, QList<LegacyServerPlayer *> league, LegacyGameRule *game_rule);
+    LegacyServerPlayer *findHulaoPassNext(LegacyServerPlayer *uuz, const QList<LegacyServerPlayer *> &league);
+    void actionNormal(LegacyGameRule *game_rule);
 
-    inline GameRule *gameRule() const
+    inline LegacyGameRule *gameRule() const
     {
         return game_rule;
     }
 
-    void setNextExtraTurn(ServerPlayer *p)
+    void setNextExtraTurn(LegacyServerPlayer *p)
     {
         nextExtraTurn = p;
     }
@@ -65,17 +65,17 @@ public:
         return nextExtraTurn != nullptr;
     }
 
-    inline ServerPlayer *getNextExtraTurn() const
+    inline LegacyServerPlayer *getNextExtraTurn() const
     {
         return nextExtraTurn;
     }
 
-    inline ServerPlayer *getExtraTurnReturn() const
+    inline LegacyServerPlayer *getExtraTurnReturn() const
     {
         return extraTurnReturn;
     }
 
-    inline Room *getRoom() const
+    inline LegacyRoom *getRoom() const
     {
         return room;
     }
@@ -84,18 +84,18 @@ protected:
     void run() override;
 
 private:
-    void _handleTurnBroken3v3(QList<ServerPlayer *> &first, QList<ServerPlayer *> &second, GameRule *game_rule);
-    void _handleTurnBrokenHulaoPass(ServerPlayer *uuz, const QList<ServerPlayer *> &league, GameRule *game_rule);
-    void _handleTurnBrokenNormal(GameRule *game_rule);
+    void _handleTurnBroken3v3(QList<LegacyServerPlayer *> &first, QList<LegacyServerPlayer *> &second, LegacyGameRule *game_rule);
+    void _handleTurnBrokenHulaoPass(LegacyServerPlayer *uuz, const QList<LegacyServerPlayer *> &league, LegacyGameRule *game_rule);
+    void _handleTurnBrokenNormal(LegacyGameRule *game_rule);
 
-    Room *room;
+    LegacyRoom *room;
 
     QList<const Trigger *> m_triggerList[QSanguosha::NumOfEvents];
 
-    GameRule *game_rule;
+    LegacyGameRule *game_rule;
 
-    ServerPlayer *nextExtraTurn;
-    ServerPlayer *extraTurnReturn;
+    LegacyServerPlayer *nextExtraTurn;
+    LegacyServerPlayer *extraTurnReturn;
 };
 
 #endif

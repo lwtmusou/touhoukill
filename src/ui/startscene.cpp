@@ -52,7 +52,7 @@ void StartScene::setServerLogBackground()
     }
 }
 
-void StartScene::switchToServer(Server *server)
+void StartScene::switchToServer(LegacyServer *server)
 {
     Audio::quit();
 
@@ -87,7 +87,7 @@ void StartScene::switchToServer(Server *server)
     addWidget(server_log);
 
     printServerInfo();
-    connect(server, &Server::server_message, server_log, &QTextEdit::append);
+    connect(server, &LegacyServer::server_message, server_log, &QTextEdit::append);
     update();
 }
 

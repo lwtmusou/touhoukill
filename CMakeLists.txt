@@ -125,6 +125,7 @@ set (QSanguosha_SRCS
     src/dialog/mainwindow.cpp
     src/dialog/roleassigndialog.cpp
     src/dialog/updatedialog.cpp
+    src/dialog/serverdialog.cpp
     src/main.cpp
     src/server/gamerule.cpp
     src/server/room.cpp
@@ -194,6 +195,7 @@ set (QSanguosha_MOCS
     src/dialog/mainwindow.h
     src/dialog/roleassigndialog.h
     src/dialog/updatedialog.h
+    src/dialog/serverdialog.h
     src/server/gamerule.h
     src/server/room.h
     src/server/roomthread.h

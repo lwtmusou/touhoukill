@@ -13,7 +13,7 @@ class MainWindow;
 class FitView;
 class QGraphicsScene;
 class QSystemTrayIcon;
-class Server;
+class LegacyServer;
 class QTextEdit;
 class QToolButton;
 class QGroupBox;
@@ -30,13 +30,13 @@ class BroadcastBox : public QDialog
     Q_OBJECT
 
 public:
-    explicit BroadcastBox(Server *server, QWidget *parent = nullptr);
+    explicit BroadcastBox(LegacyServer *server, QWidget *parent = nullptr);
 
 protected:
     void accept() override;
 
 private:
-    Server *server;
+    LegacyServer *server;
     QTextEdit *text_edit;
 };
 

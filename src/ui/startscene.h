@@ -17,7 +17,7 @@ public:
     StartScene();
     void addButton(QAction *action);
     void setServerLogBackground();
-    void switchToServer(Server *server);
+    void switchToServer(LegacyServer *server);
 
 private:
     void printServerInfo();

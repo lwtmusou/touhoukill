@@ -11,7 +11,7 @@
 #include "pixmapanimation.h"
 #include "recorder.h"
 #include "roomscene.h"
-#include "server.h"
+#include "serverdialog.h"
 #include "sgswindow.h"
 #include "startscene.h"
 #include "ui_mainwindow.h"
@@ -229,7 +229,7 @@ void MainWindow::on_actionStart_Server_triggered()
     if (!dialog->config())
         return;
 
-    Server *server = new Server(this);
+    LegacyServer *server = new LegacyServer(this);
     if (!server->listen()) {
         QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
         return;
@@ -402,7 +402,7 @@ void MainWindow::gotoStartScene()
         Audio::setBGMVolume(Config.BGMVolume);
     }
 
-    QList<Server *> servers = findChildren<Server *>();
+    QList<LegacyServer *> servers = findChildren<LegacyServer *>();
     if (!servers.isEmpty())
         servers.first()->deleteLater();
 
@@ -653,7 +653,7 @@ void MainWindow::on_actionRole_assign_table_triggered()
     window->appear();
 }
 
-BroadcastBox::BroadcastBox(Server *server, QWidget *parent)
+BroadcastBox::BroadcastBox(LegacyServer *server, QWidget *parent)
     : QDialog(parent)
     , server(server)
 {
@@ -685,7 +685,7 @@ void BroadcastBox::accept()
 
 void MainWindow::on_actionBroadcast_triggered()
 {
-    Server *server = findChild<Server *>();
+    LegacyServer *server = findChild<LegacyServer *>();
     if (server == nullptr) {
         QMessageBox::warning(this, tr("Warning"), tr("Server is not started yet!"));
         return;
@@ -714,7 +714,7 @@ void MainWindow::on_actionPC_Console_Start_triggered()
     if (!dialog->config())
         return;
 
-    Server *server = new Server(this);
+    LegacyServer *server = new LegacyServer(this);
     if (!server->listen()) {
         QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
         return;

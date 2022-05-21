@@ -195,6 +195,24 @@ enum Gender
 };
 Q_ENUM_NS(Gender)
 
+// TODO: Should Robot / Trust be some kind of Online?
+// AIs are client in current design, but with different communication
+// Should virtual sockets be put in core?
+// Anyway an opened QIODevice is enough for communication:
+//   QBuffer for replayer
+//   QLocalSocket or QProcess for AI
+//   QTcpSocket for human players
+// and so on...
+enum PlayerState
+{
+    Initial,
+    Online,
+    Offline,
+    Robot,
+    Trust,
+};
+Q_ENUM_NS(PlayerState)
+
 enum TriggerEvent
 {
     NonTrigger,

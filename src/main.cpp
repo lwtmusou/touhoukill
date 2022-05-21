@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 
     // refactor proposal: using QCommandLineParser
     if (QCoreApplication::arguments().contains(QStringLiteral("-server"))) {
-        Server *server = new Server(QCoreApplication::instance());
+        LegacyServer *server = new LegacyServer(QCoreApplication::instance());
         printf("Server is starting on port %u\n", Config.ServerPort);
 
         if (server->listen())

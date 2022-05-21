@@ -1,7 +1,7 @@
 #ifndef _SERVER_PLAYER_H
 #define _SERVER_PLAYER_H
 
-class Room;
+class LegacyRoom;
 class Recorder;
 class DummyCard;
 
@@ -33,13 +33,13 @@ struct PhaseStruct
 #define QSGS_LOGIC
 #define QSGS_SOCKET
 
-class ServerPlayer : public Player
+class LegacyServerPlayer : public Player
 {
     Q_OBJECT
     Q_PROPERTY(QString ip READ getIp)
 
 public:
-    explicit ServerPlayer(Room *room);
+    explicit LegacyServerPlayer(LegacyRoom *room);
 
     QSGS_SOCKET void setSocket(ClientSocket *socket);
 
@@ -49,7 +49,7 @@ public:
     QSGS_SOCKET void unicast(const QString &message);
 
     QSGS_LOGIC void drawCard(const Card *card);
-    QSGS_STATE_ROOM Room *getRoom() const;
+    QSGS_STATE_ROOM LegacyRoom *getRoom() const;
     QSGS_LOGIC void broadcastSkillInvoke(const Card *card) const;
     QSGS_LOGIC void broadcastSkillInvoke(const QString &card_name) const;
     QSGS_STATE_GAME int getRandomHandCardId() const;
@@ -71,7 +71,7 @@ public:
     QSGS_STATE_GAME Card *wholeHandCards() const; // FIXME: Memory Leakage!!!
     QSGS_STATE_GAME bool hasNullification() const;
     // FIXME: Trying to move this function to the game-logic.h
-    QSGS_LOGIC bool pindian(ServerPlayer *target, const QString &reason, const Card *card1 = nullptr);
+    QSGS_LOGIC bool pindian(LegacyServerPlayer *target, const QString &reason, const Card *card1 = nullptr);
     QSGS_LOGIC void turnOver();
     QSGS_LOGIC void play(QList<QSanguosha::Phase> set_phases = QList<QSanguosha::Phase>());
     QSGS_LOGIC bool changePhase(QSanguosha::Phase from, QSanguosha::Phase to);
@@ -107,14 +107,14 @@ public:
 
     QSGS_SOCKET QString getIp() const;
     QSGS_SOCKET quint32 ipv4Address() const;
-    QSGS_SOCKET void introduceTo(ServerPlayer *player);
-    QSGS_LOGIC void marshal(ServerPlayer *player) const;
+    QSGS_SOCKET void introduceTo(LegacyServerPlayer *player);
+    QSGS_LOGIC void marshal(LegacyServerPlayer *player) const;
 
-    QSGS_LOGIC void addToPile(const QString &pile_name, const Card *card, bool open = true, const QList<ServerPlayer *> &open_players = QList<ServerPlayer *>());
-    QSGS_LOGIC void addToPile(const QString &pile_name, int card_id, bool open = true, const QList<ServerPlayer *> &open_players = QList<ServerPlayer *>());
-    QSGS_LOGIC void addToPile(const QString &pile_name, const IdSet &card_ids, bool open = true, const QList<ServerPlayer *> &open_players = QList<ServerPlayer *>());
+    QSGS_LOGIC void addToPile(const QString &pile_name, const Card *card, bool open = true, const QList<LegacyServerPlayer *> &open_players = QList<LegacyServerPlayer *>());
+    QSGS_LOGIC void addToPile(const QString &pile_name, int card_id, bool open = true, const QList<LegacyServerPlayer *> &open_players = QList<LegacyServerPlayer *>());
+    QSGS_LOGIC void addToPile(const QString &pile_name, const IdSet &card_ids, bool open = true, const QList<LegacyServerPlayer *> &open_players = QList<LegacyServerPlayer *>());
     QSGS_LOGIC void addToPile(const QString &pile_name, const IdSet &card_ids, bool open, const CardMoveReason &reason,
-                              QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
+                              QList<LegacyServerPlayer *> open_players = QList<LegacyServerPlayer *>());
     QSGS_LOGIC void gainAnExtraTurn();
 
     QSGS_LOGIC void showHiddenSkill(const QString &skill_name);
@@ -180,7 +180,7 @@ public:
     QVariant m_commandArgs; // Store the command args to be sent to the client.
 
     // static function
-    static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b);
+    static bool CompareByActionOrder(LegacyServerPlayer *a, LegacyServerPlayer *b);
 
     QSGS_LOGIC void showGeneral(bool head_general = true, bool trigger_event = true, bool sendLog = true, bool ignore_rule = true);
     QSGS_LOGIC void hideGeneral(bool head_general = true);
@@ -189,8 +189,8 @@ public:
     QSGS_STATE_GAME int getPlayerNumWithSameKingdom(const QString &reason, const QString &_to_calculate = QString()) const;
     QSGS_LOGIC bool askForGeneralShow(bool one = true, bool refusable = false);
 
-    QSGS_STATE_GAME bool inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const;
-    QSGS_STATE_GAME bool inFormationRalation(ServerPlayer *teammate) const;
+    QSGS_STATE_GAME bool inSiegeRelation(const LegacyServerPlayer *skill_owner, const LegacyServerPlayer *victim) const;
+    QSGS_STATE_GAME bool inFormationRalation(LegacyServerPlayer *teammate) const;
     QSGS_LOGIC void summonFriends(const QString &type);
 
     bool isReady() const;
@@ -204,7 +204,7 @@ protected:
 private:
     ClientSocket *socket;
     QList<const Card *> m_handcards;
-    Room *room;
+    LegacyRoom *room;
     Recorder *recorder;
     QList<QSanguosha::Phase> phases;
     int _m_phases_index;

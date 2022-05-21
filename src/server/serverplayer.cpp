@@ -14,9 +14,9 @@
 using namespace QSanProtocol;
 using namespace JsonUtils;
 
-const int ServerPlayer::S_NUM_SEMAPHORES = 6;
+const int LegacyServerPlayer::S_NUM_SEMAPHORES = 6;
 
-ServerPlayer::ServerPlayer(Room *room)
+LegacyServerPlayer::LegacyServerPlayer(LegacyRoom *room)
     : Player(room)
     , m_expectedReplySerial(0)
     , m_isClientResponseReady(false)
@@ -32,22 +32,22 @@ ServerPlayer::ServerPlayer(Room *room)
         semas[i] = new QSemaphore(0);
 }
 
-void ServerPlayer::drawCard(const Card *card)
+void LegacyServerPlayer::drawCard(const Card *card)
 {
     m_handcards << card;
 }
 
-Room *ServerPlayer::getRoom() const
+LegacyRoom *LegacyServerPlayer::getRoom() const
 {
     return room;
 }
 
-void ServerPlayer::broadcastSkillInvoke(const QString &card_name) const
+void LegacyServerPlayer::broadcastSkillInvoke(const QString &card_name) const
 {
     room->broadcastSkillInvoke(card_name, isMale(), -1);
 }
 
-void ServerPlayer::broadcastSkillInvoke(const Card *card) const
+void LegacyServerPlayer::broadcastSkillInvoke(const Card *card) const
 {
     if (card->mute())
         return;
@@ -79,24 +79,24 @@ void ServerPlayer::broadcastSkillInvoke(const Card *card) const
     }
 }
 
-int ServerPlayer::getRandomHandCardId() const
+int LegacyServerPlayer::getRandomHandCardId() const
 {
     return getRandomHandCard()->effectiveId();
 }
 
-const Card *ServerPlayer::getRandomHandCard() const
+const Card *LegacyServerPlayer::getRandomHandCard() const
 {
     int index = QRandomGenerator::global()->generate() % m_handcards.length();
     return m_handcards.at(index);
 }
 
-void ServerPlayer::obtainCard(const Card *card, bool unhide)
+void LegacyServerPlayer::obtainCard(const Card *card, bool unhide)
 {
     CardMoveReason reason(QSanguosha::MoveReasonGotCard, objectName());
     room->obtainCard(this, card, reason, unhide);
 }
 
-void ServerPlayer::throwAllEquips()
+void LegacyServerPlayer::throwAllEquips()
 {
     QList<const Card *> equips = equipCards();
 
@@ -113,19 +113,19 @@ void ServerPlayer::throwAllEquips()
     room->cardDeleting(card);
 }
 
-void ServerPlayer::throwAllHandCards()
+void LegacyServerPlayer::throwAllHandCards()
 {
     int card_length = handcardNum();
     room->askForDiscard(this, QString(), card_length, card_length);
 }
 
-void ServerPlayer::throwAllHandCardsAndEquips()
+void LegacyServerPlayer::throwAllHandCardsAndEquips()
 {
     int card_length = getCardCount(true);
     room->askForDiscard(this, QString(), card_length, card_length, false, true);
 }
 
-void ServerPlayer::throwAllMarks(bool visible_only)
+void LegacyServerPlayer::throwAllMarks(bool visible_only)
 {
     foreach (QString mark_name, marks().keys()) {
         if (!mark_name.startsWith(QStringLiteral("@")))
@@ -140,7 +140,7 @@ void ServerPlayer::throwAllMarks(bool visible_only)
     //        marks.clear();
 }
 
-void ServerPlayer::clearOnePrivatePile(const QString &pile_name)
+void LegacyServerPlayer::clearOnePrivatePile(const QString &pile_name)
 {
     if (!pileNames().contains(pile_name))
         return;
@@ -161,13 +161,13 @@ void ServerPlayer::clearOnePrivatePile(const QString &pile_name)
     room->cardDeleting(dummy);
 }
 
-void ServerPlayer::clearPrivatePiles()
+void LegacyServerPlayer::clearPrivatePiles()
 {
     foreach (QString pile_name, pileNames())
         clearOnePrivatePile(pile_name);
 }
 
-void ServerPlayer::bury()
+void LegacyServerPlayer::bury()
 {
     clearFlags();
     clearHistory();
@@ -183,7 +183,7 @@ void ServerPlayer::bury()
     this->tag.remove(QStringLiteral("Huashen_target"));
 }
 
-void ServerPlayer::throwAllCards()
+void LegacyServerPlayer::throwAllCards()
 {
     Card *card = isKongcheng() ? room->cloneCard(QStringLiteral("DummyCard")) : wholeHandCards();
     foreach (const Card *equip, equipCards())
@@ -199,22 +199,22 @@ void ServerPlayer::throwAllCards()
     }
 }
 
-void ServerPlayer::drawCards(int n, const QString &reason)
+void LegacyServerPlayer::drawCards(int n, const QString &reason)
 {
     room->drawCards(this, n, reason);
 }
 
-bool ServerPlayer::askForSkillInvoke(const QString &skill_name, const QVariant &data, const QString &prompt)
+bool LegacyServerPlayer::askForSkillInvoke(const QString &skill_name, const QVariant &data, const QString &prompt)
 {
     return room->askForSkillInvoke(this, skill_name, data, prompt);
 }
 
-bool ServerPlayer::askForSkillInvoke(const Skill *skill, const QVariant &data, const QString &prompt)
+bool LegacyServerPlayer::askForSkillInvoke(const Skill *skill, const QVariant &data, const QString &prompt)
 {
     return room->askForSkillInvoke(this, skill, data, prompt);
 }
 
-QList<int> ServerPlayer::forceToDiscard(int discard_num, bool include_equip, bool is_discard)
+QList<int> LegacyServerPlayer::forceToDiscard(int discard_num, bool include_equip, bool is_discard)
 {
     QList<int> to_discard;
 
@@ -235,7 +235,7 @@ QList<int> ServerPlayer::forceToDiscard(int discard_num, bool include_equip, boo
     return to_discard;
 }
 
-void ServerPlayer::setSocket(ClientSocket *socket)
+void LegacyServerPlayer::setSocket(ClientSocket *socket)
 {
     if (this->socket != nullptr) {
         disconnect(this->socket);
@@ -247,15 +247,15 @@ void ServerPlayer::setSocket(ClientSocket *socket)
     disconnect(this, SLOT(sendMessage(QString)));
 
     if (socket != nullptr) {
-        connect(socket, &ClientSocket::disconnected, this, &ServerPlayer::disconnected);
-        connect(socket, &ClientSocket::message_got, this, &ServerPlayer::getMessage);
-        connect(this, &ServerPlayer::message_ready, this, &ServerPlayer::sendMessage);
+        connect(socket, &ClientSocket::disconnected, this, &LegacyServerPlayer::disconnected);
+        connect(socket, &ClientSocket::message_got, this, &LegacyServerPlayer::getMessage);
+        connect(this, &LegacyServerPlayer::message_ready, this, &LegacyServerPlayer::sendMessage);
     }
 
     this->socket = socket;
 }
 
-void ServerPlayer::getMessage(const char *message)
+void LegacyServerPlayer::getMessage(const char *message)
 {
     QString request = QString::fromUtf8(message);
     if (request.endsWith(QStringLiteral("\n")))
@@ -264,7 +264,7 @@ void ServerPlayer::getMessage(const char *message)
     emit request_got(request);
 }
 
-void ServerPlayer::unicast(const QString &message)
+void LegacyServerPlayer::unicast(const QString &message)
 {
     emit message_ready(message);
 
@@ -272,41 +272,41 @@ void ServerPlayer::unicast(const QString &message)
         recorder->recordLine(message);
 }
 
-void ServerPlayer::startNetworkDelayTest()
+void LegacyServerPlayer::startNetworkDelayTest()
 {
     test_time = QDateTime::currentDateTime();
     Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_NETWORK_DELAY_TEST);
     invoke(&packet);
 }
 
-qint64 ServerPlayer::endNetworkDelayTest()
+qint64 LegacyServerPlayer::endNetworkDelayTest()
 {
     return test_time.msecsTo(QDateTime::currentDateTime());
 }
 
-void ServerPlayer::startRecord()
+void LegacyServerPlayer::startRecord()
 {
     delete recorder;
     recorder = new Recorder(this);
 }
 
-void ServerPlayer::saveRecord(const QString &filename)
+void LegacyServerPlayer::saveRecord(const QString &filename)
 {
     if (recorder != nullptr)
         recorder->save(filename);
 }
 
-void ServerPlayer::addToSelected(const QString &general)
+void LegacyServerPlayer::addToSelected(const QString &general)
 {
     selected.append(general);
 }
 
-QStringList ServerPlayer::getSelected() const
+QStringList LegacyServerPlayer::getSelected() const
 {
     return selected;
 }
 
-const General *ServerPlayer::findReasonable(const QSet<const General *> &generals, bool no_unreasonable)
+const General *LegacyServerPlayer::findReasonable(const QSet<const General *> &generals, bool no_unreasonable)
 {
     QStringList ls;
     foreach (const General *general, generals)
@@ -315,7 +315,7 @@ const General *ServerPlayer::findReasonable(const QSet<const General *> &general
     return Sanguosha->general(findReasonable(ls, no_unreasonable));
 }
 
-QString ServerPlayer::findReasonable(const QStringList &generals, bool no_unreasonable)
+QString LegacyServerPlayer::findReasonable(const QStringList &generals, bool no_unreasonable)
 {
     foreach (QString name, generals) {
         if (Config.GameMode.startsWith(QStringLiteral("role_"))) {
@@ -333,12 +333,12 @@ QString ServerPlayer::findReasonable(const QStringList &generals, bool no_unreas
     return generals.first();
 }
 
-void ServerPlayer::clearSelected()
+void LegacyServerPlayer::clearSelected()
 {
     selected.clear();
 }
 
-void ServerPlayer::sendMessage(const QString &message)
+void LegacyServerPlayer::sendMessage(const QString &message)
 {
     if (socket != nullptr) {
 #ifndef QT_NO_DEBUG
@@ -348,23 +348,23 @@ void ServerPlayer::sendMessage(const QString &message)
     }
 }
 
-void ServerPlayer::invoke(const Packet *packet)
+void LegacyServerPlayer::invoke(const Packet *packet)
 {
     unicast(packet->toString());
 }
 
-void ServerPlayer::invoke(const char *method, const QString &arg)
+void LegacyServerPlayer::invoke(const char *method, const QString &arg)
 {
     unicast(QStringLiteral("%1 %2").arg(QString::fromUtf8(method), arg));
 }
 
-QString ServerPlayer::reportHeader() const
+QString LegacyServerPlayer::reportHeader() const
 {
     QString name = objectName();
     return QStringLiteral("%1 ").arg(name.isEmpty() ? tr("Anonymous") : name);
 }
 
-QList<const Card *> ServerPlayer::getCards(const QString &flags) const
+QList<const Card *> LegacyServerPlayer::getCards(const QString &flags) const
 {
     QList<const Card *> cards;
     if (flags.contains(QStringLiteral("h")) && flags.contains(QStringLiteral("s")))
@@ -389,7 +389,7 @@ QList<const Card *> ServerPlayer::getCards(const QString &flags) const
     return cards;
 }
 
-Card *ServerPlayer::wholeHandCards() const
+Card *LegacyServerPlayer::wholeHandCards() const
 {
     if (isKongcheng())
         return nullptr;
@@ -401,7 +401,7 @@ Card *ServerPlayer::wholeHandCards() const
     return dummy_card;
 }
 
-bool ServerPlayer::hasNullification() const
+bool LegacyServerPlayer::hasNullification() const
 {
     foreach (const Card *card, m_handcards) {
         if (card->face()->isKindOf(QStringLiteral("Nullification")))
@@ -433,7 +433,7 @@ bool ServerPlayer::hasNullification() const
     return false;
 }
 
-bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Card *card1)
+bool LegacyServerPlayer::pindian(LegacyServerPlayer *target, const QString &reason, const Card *card1)
 {
     room->tryPause();
 
@@ -497,11 +497,11 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     if (card1 == nullptr || card2 == nullptr) {
         if (card1 != nullptr) {
             CardMoveReason reason1(QSanguosha::MoveReasonPindian, this->objectName(), target->objectName(), pindian_struct.reason, QString());
-            room->moveCardTo(card1, qobject_cast<ServerPlayer *>(pindian_struct.from), nullptr, QSanguosha::PlaceDiscardPile, reason1, true);
+            room->moveCardTo(card1, qobject_cast<LegacyServerPlayer *>(pindian_struct.from), nullptr, QSanguosha::PlaceDiscardPile, reason1, true);
         }
         if (card2 != nullptr) {
             CardMoveReason reason2(QSanguosha::MoveReasonPindian, pindian_struct.to->objectName());
-            room->moveCardTo(card2, qobject_cast<ServerPlayer *>(pindian_struct.to), nullptr, QSanguosha::PlaceDiscardPile, reason2, true);
+            room->moveCardTo(card2, qobject_cast<LegacyServerPlayer *>(pindian_struct.to), nullptr, QSanguosha::PlaceDiscardPile, reason2, true);
         }
         //need trigger choice made?
         return false;
@@ -558,12 +558,12 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
 
     if (room->getCardPlace(pindian_struct.from_card->effectiveId()) == QSanguosha::PlaceTable) {
         CardMoveReason reason1(QSanguosha::MoveReasonPindian, pindian_struct.from->objectName(), pindian_struct.to->objectName(), pindian_struct.reason, QString());
-        room->moveCardTo(pindian_struct.from_card, qobject_cast<ServerPlayer *>(pindian_struct.from), nullptr, QSanguosha::PlaceDiscardPile, reason1, true);
+        room->moveCardTo(pindian_struct.from_card, qobject_cast<LegacyServerPlayer *>(pindian_struct.from), nullptr, QSanguosha::PlaceDiscardPile, reason1, true);
     }
 
     if (room->getCardPlace(pindian_struct.to_card->effectiveId()) == QSanguosha::PlaceTable) {
         CardMoveReason reason2(QSanguosha::MoveReasonPindian, pindian_struct.to->objectName());
-        room->moveCardTo(pindian_struct.to_card, qobject_cast<ServerPlayer *>(pindian_struct.to), nullptr, QSanguosha::PlaceDiscardPile, reason2, true);
+        room->moveCardTo(pindian_struct.to_card, qobject_cast<LegacyServerPlayer *>(pindian_struct.to), nullptr, QSanguosha::PlaceDiscardPile, reason2, true);
     }
 
     ChoiceMadeStruct s;
@@ -576,7 +576,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     return pindian_struct.success;
 }
 
-void ServerPlayer::turnOver()
+void LegacyServerPlayer::turnOver()
 {
     setFaceUp(!faceUp());
     room->broadcastProperty(this, "faceup");
@@ -592,7 +592,7 @@ void ServerPlayer::turnOver()
     room->getThread()->trigger(QSanguosha::TurnedOver, v);
 }
 
-bool ServerPlayer::changePhase(QSanguosha::Phase from, QSanguosha::Phase to)
+bool LegacyServerPlayer::changePhase(QSanguosha::Phase from, QSanguosha::Phase to)
 {
     RoomThread *thread = room->getThread();
     Q_ASSERT(room->getThread() != nullptr);
@@ -629,7 +629,7 @@ bool ServerPlayer::changePhase(QSanguosha::Phase from, QSanguosha::Phase to)
     return false;
 }
 
-void ServerPlayer::play(QList<QSanguosha::Phase> set_phases)
+void LegacyServerPlayer::play(QList<QSanguosha::Phase> set_phases)
 {
     if (!set_phases.isEmpty()) {
         if (!set_phases.contains(QSanguosha::PhaseNotActive))
@@ -694,17 +694,17 @@ void ServerPlayer::play(QList<QSanguosha::Phase> set_phases)
     }
 }
 
-QList<QSanguosha::Phase> &ServerPlayer::getPhases()
+QList<QSanguosha::Phase> &LegacyServerPlayer::getPhases()
 {
     return phases;
 }
 
-int ServerPlayer::getPhasesIndex() const
+int LegacyServerPlayer::getPhasesIndex() const
 {
     return _m_phases_index;
 }
 
-void ServerPlayer::skip(QSanguosha::Phase phase, bool isCost, bool sendLog)
+void LegacyServerPlayer::skip(QSanguosha::Phase phase, bool isCost, bool sendLog)
 {
     for (int i = _m_phases_index; i < _m_phases_state.size(); i++) {
         if (_m_phases_state[i].phase == phase) {
@@ -733,7 +733,7 @@ void ServerPlayer::skip(QSanguosha::Phase phase, bool isCost, bool sendLog)
     }
 }
 
-void ServerPlayer::insertPhases(QList<QSanguosha::Phase> new_phases, int index)
+void LegacyServerPlayer::insertPhases(QList<QSanguosha::Phase> new_phases, int index)
 {
     if (index == -1)
         index = _m_phases_index;
@@ -745,7 +745,7 @@ void ServerPlayer::insertPhases(QList<QSanguosha::Phase> new_phases, int index)
     }
 }
 
-void ServerPlayer::exchangePhases(QSanguosha::Phase phase1, QSanguosha::Phase phase2)
+void LegacyServerPlayer::exchangePhases(QSanguosha::Phase phase1, QSanguosha::Phase phase2)
 {
     PhaseStruct _phase1;
     PhaseStruct _phase2;
@@ -769,7 +769,7 @@ void ServerPlayer::exchangePhases(QSanguosha::Phase phase1, QSanguosha::Phase ph
     }
 }
 
-bool ServerPlayer::isSkipped(QSanguosha::Phase phase)
+bool LegacyServerPlayer::isSkipped(QSanguosha::Phase phase)
 {
     for (int i = _m_phases_index; i < _m_phases_state.size(); i++) {
         if (_m_phases_state[i].phase == phase)
@@ -778,7 +778,7 @@ bool ServerPlayer::isSkipped(QSanguosha::Phase phase)
     return false;
 }
 
-void ServerPlayer::gainMark(const QString &m, int n)
+void LegacyServerPlayer::gainMark(const QString &m, int n)
 {
     MarkChangeStruct change;
     change.name = m;
@@ -812,7 +812,7 @@ void ServerPlayer::gainMark(const QString &m, int n)
         room->getThread()->trigger(QSanguosha::MarkChanged, n_data);
 }
 
-void ServerPlayer::loseMark(const QString &m, int n)
+void LegacyServerPlayer::loseMark(const QString &m, int n)
 {
     if (mark(m) == 0)
         return;
@@ -855,7 +855,7 @@ void ServerPlayer::loseMark(const QString &m, int n)
         room->getThread()->trigger(QSanguosha::MarkChanged, n_data);
 }
 
-void ServerPlayer::loseAllMarks(const QString &mark_name)
+void LegacyServerPlayer::loseAllMarks(const QString &mark_name)
 {
     loseMark(mark_name, mark(mark_name));
 }
@@ -888,7 +888,7 @@ void ServerPlayer::loseSkill(const QString &skill_name, bool head_skill)
 }
 #endif
 
-int ServerPlayer::getGeneralMaxHp() const
+int LegacyServerPlayer::getGeneralMaxHp() const
 {
     int max_hp = 0;
 
@@ -924,7 +924,7 @@ int ServerPlayer::getGeneralMaxHp() const
     return max_hp;
 }
 
-QString ServerPlayer::getIp() const
+QString LegacyServerPlayer::getIp() const
 {
     if (socket != nullptr)
         return socket->peerAddress();
@@ -932,7 +932,7 @@ QString ServerPlayer::getIp() const
         return QString();
 }
 
-quint32 ServerPlayer::ipv4Address() const
+quint32 LegacyServerPlayer::ipv4Address() const
 {
     if (socket != nullptr)
         return socket->ipv4Address();
@@ -940,7 +940,7 @@ quint32 ServerPlayer::ipv4Address() const
         return 0U;
 }
 
-void ServerPlayer::introduceTo(ServerPlayer *player)
+void LegacyServerPlayer::introduceTo(LegacyServerPlayer *player)
 {
     QString screen_name = screenName();
     QString avatar = property("avatar").toString();
@@ -951,7 +951,7 @@ void ServerPlayer::introduceTo(ServerPlayer *player)
     if (player != nullptr)
         room->doNotify(player, S_COMMAND_ADD_PLAYER, introduce_str);
     else {
-        QList<ServerPlayer *> players = room->getPlayers();
+        QList<LegacyServerPlayer *> players = room->getPlayers();
         players.removeOne(this);
         room->doBroadcastNotify(players, S_COMMAND_ADD_PLAYER, introduce_str);
     }
@@ -1009,7 +1009,7 @@ void ServerPlayer::introduceTo(ServerPlayer *player)
 #endif
 }
 
-void ServerPlayer::marshal(ServerPlayer *player) const
+void LegacyServerPlayer::marshal(LegacyServerPlayer *player) const
 {
     room->notifyProperty(player, this, "maxhp");
     room->notifyProperty(player, this, "hp");
@@ -1051,7 +1051,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     room->notifyProperty(player, this, "removed");
     room->notifyProperty(player, this, "gender");
 
-    QList<ServerPlayer *> players;
+    QList<LegacyServerPlayer *> players;
     players << player;
 
     QList<LegacyCardsMoveStruct> moves;
@@ -1267,7 +1267,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         room->notifyProperty(player, this, "chaoren");
 }
 
-void ServerPlayer::addToPile(const QString &pile_name, const Card *card, bool open, const QList<ServerPlayer *> &open_players)
+void LegacyServerPlayer::addToPile(const QString &pile_name, const Card *card, bool open, const QList<LegacyServerPlayer *> &open_players)
 {
     IdSet card_ids;
     if (card->isVirtualCard())
@@ -1277,19 +1277,19 @@ void ServerPlayer::addToPile(const QString &pile_name, const Card *card, bool op
     return addToPile(pile_name, card_ids, open, open_players);
 }
 
-void ServerPlayer::addToPile(const QString &pile_name, int card_id, bool open, const QList<ServerPlayer *> &open_players)
+void LegacyServerPlayer::addToPile(const QString &pile_name, int card_id, bool open, const QList<LegacyServerPlayer *> &open_players)
 {
     IdSet card_ids;
     card_ids << card_id;
     return addToPile(pile_name, card_ids, open, open_players);
 }
 
-void ServerPlayer::addToPile(const QString &pile_name, const IdSet &card_ids, bool open, const QList<ServerPlayer *> &open_players)
+void LegacyServerPlayer::addToPile(const QString &pile_name, const IdSet &card_ids, bool open, const QList<LegacyServerPlayer *> &open_players)
 {
     return addToPile(pile_name, card_ids, open, CardMoveReason(), open_players);
 }
 
-void ServerPlayer::addToPile(const QString &pile_name, const IdSet &card_ids, bool open, const CardMoveReason &reason, QList<ServerPlayer *> open_players)
+void LegacyServerPlayer::addToPile(const QString &pile_name, const IdSet &card_ids, bool open, const CardMoveReason &reason, QList<LegacyServerPlayer *> open_players)
 {
     LegacyCardsMoveStruct move;
     move.card_ids = card_ids.values(); // FIXME: Replace here with IDSet
@@ -1301,12 +1301,12 @@ void ServerPlayer::addToPile(const QString &pile_name, const IdSet &card_ids, bo
     room->moveCardsAtomic(move, open);
 }
 
-void ServerPlayer::gainAnExtraTurn()
+void LegacyServerPlayer::gainAnExtraTurn()
 {
     room->getThread()->setNextExtraTurn(this);
 }
 
-void ServerPlayer::showHiddenSkill(const QString &skill_name)
+void LegacyServerPlayer::showHiddenSkill(const QString &skill_name)
 {
     if (skill_name.isNull())
         return;
@@ -1318,7 +1318,7 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
             showGeneral(false);
     } else {
         //for yibian
-        ServerPlayer *reimu = room->findPlayerBySkillName(QStringLiteral("yibian"));
+        LegacyServerPlayer *reimu = room->findPlayerBySkillName(QStringLiteral("yibian"));
         const Skill *skill = Sanguosha->skill(skill_name);
         if ((reimu != nullptr) && !hasShownRole() && skill != nullptr && !skill->isEternal() && !skill->isAttachedSkill() && !hasEquipSkill(skill_name)) {
             QString role = roleString();
@@ -1378,7 +1378,7 @@ void ServerPlayer::showHiddenSkill(const QString &skill_name)
     }
 }
 
-QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
+QStringList LegacyServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
 {
     if (use.card == nullptr || use.card->face()->type() == QSanguosha::TypeSkill)
         return QStringList();
@@ -1504,13 +1504,13 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     return shows.values();
 }
 
-bool ServerPlayer::CompareByActionOrder(ServerPlayer *a, ServerPlayer *b)
+bool LegacyServerPlayer::CompareByActionOrder(LegacyServerPlayer *a, LegacyServerPlayer *b)
 {
-    Room *room = a->getRoom();
+    LegacyRoom *room = a->getRoom();
     return room->getFront(a, b) == a;
 }
 
-void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendLog, bool /*unused*/)
+void LegacyServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendLog, bool /*unused*/)
 {
     QStringList names = room->getTag(objectName()).toStringList();
     if (names.isEmpty())
@@ -1611,7 +1611,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
 
         QString role = roleString();
         int i = 1;
-        foreach (ServerPlayer *p, room->getOtherPlayers(this, true)) {
+        foreach (LegacyServerPlayer *p, room->getOtherPlayers(this, true)) {
             if (p->roleString() == role) {
                 QVariant RoleConfirmedTag1 = room->getTag(p->objectName() + QStringLiteral("_RoleConfirmed"));
                 bool roleConfirmed1 = RoleConfirmedTag1.canConvert<bool>() && RoleConfirmedTag1.toBool();
@@ -1622,7 +1622,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
 
         if (role != QStringLiteral("careerist")) {
             if ((i + 1) > (room->getPlayers().length() / 2)) { // set hidden careerist
-                foreach (ServerPlayer *p, room->getOtherPlayers(this, true)) {
+                foreach (LegacyServerPlayer *p, room->getOtherPlayers(this, true)) {
                     QVariant RoleConfirmedTag1 = room->getTag(p->objectName() + QStringLiteral("_RoleConfirmed"));
                     bool roleConfirmed1 = RoleConfirmedTag1.canConvert<bool>() && RoleConfirmedTag1.toBool();
                     if (p->isAlive() && !roleConfirmed1 && role == p->roleString()) {
@@ -1672,7 +1672,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
     room->filterCards(this, getCards(QStringLiteral("hes")), true);
 }
 
-void ServerPlayer::hideGeneral(bool head_general)
+void LegacyServerPlayer::hideGeneral(bool head_general)
 {
     room->tryPause();
 
@@ -1704,7 +1704,7 @@ void ServerPlayer::hideGeneral(bool head_general)
                 arg << objectName();
                 arg << skill->limitMark();
                 arg << 0;
-                foreach (ServerPlayer *p, room->getOtherPlayers(this, true))
+                foreach (LegacyServerPlayer *p, room->getOtherPlayers(this, true))
                     room->doNotify(p, QSanProtocol::S_COMMAND_SET_MARK, arg);
             }
         }
@@ -1737,7 +1737,7 @@ void ServerPlayer::hideGeneral(bool head_general)
                 arg << objectName();
                 arg << skill->limitMark();
                 arg << 0;
-                foreach (ServerPlayer *p, room->getOtherPlayers(this, true))
+                foreach (LegacyServerPlayer *p, room->getOtherPlayers(this, true))
                     room->doNotify(p, QSanProtocol::S_COMMAND_SET_MARK, arg);
             }
         }
@@ -1763,7 +1763,7 @@ void ServerPlayer::hideGeneral(bool head_general)
     setSkillsPreshowed(head_general ? QStringLiteral("h") : QStringLiteral("d"));
 }
 
-void ServerPlayer::removeGeneral(bool head_general)
+void LegacyServerPlayer::removeGeneral(bool head_general)
 
 {
     QString general_name;
@@ -1854,7 +1854,7 @@ void ServerPlayer::removeGeneral(bool head_general)
     room->filterCards(this, getCards(QStringLiteral("hes")), true);
 }
 
-void ServerPlayer::sendSkillsToOthers(bool head_skill)
+void LegacyServerPlayer::sendSkillsToOthers(bool head_skill)
 {
     QStringList names = room->getTag(objectName()).toStringList();
     if (names.isEmpty())
@@ -1867,12 +1867,12 @@ void ServerPlayer::sendSkillsToOthers(bool head_skill)
         args << objectName();
         args << skill->name();
         args << head_skill;
-        foreach (ServerPlayer *p, room->getOtherPlayers(this, true))
+        foreach (LegacyServerPlayer *p, room->getOtherPlayers(this, true))
             room->doNotify(p, QSanProtocol::S_COMMAND_LOG_EVENT, args);
     }
 }
 
-int ServerPlayer::getPlayerNumWithSameKingdom(const QString & /*unused*/, const QString &_to_calculate) const
+int LegacyServerPlayer::getPlayerNumWithSameKingdom(const QString & /*unused*/, const QString &_to_calculate) const
 {
     QString to_calculate = _to_calculate;
 
@@ -1883,10 +1883,10 @@ int ServerPlayer::getPlayerNumWithSameKingdom(const QString & /*unused*/, const 
             to_calculate = roleString();
     }
 
-    QList<ServerPlayer *> players = room->getAlivePlayers();
+    QList<LegacyServerPlayer *> players = room->getAlivePlayers();
 
     int num = 0;
-    foreach (ServerPlayer *p, players) {
+    foreach (LegacyServerPlayer *p, players) {
         if (!p->haveShownOneGeneral())
             continue;
         if (p->roleString() == QStringLiteral("careerist")) { // if player is careerist, DO NOT COUNT AS SOME KINGDOM!!!!!
@@ -1901,7 +1901,7 @@ int ServerPlayer::getPlayerNumWithSameKingdom(const QString & /*unused*/, const 
     return qMax(num, 0);
 }
 
-bool ServerPlayer::askForGeneralShow(bool one, bool refusable)
+bool LegacyServerPlayer::askForGeneralShow(bool one, bool refusable)
 {
     if (haveShownAllGenerals())
         return false;
@@ -1929,7 +1929,7 @@ bool ServerPlayer::askForGeneralShow(bool one, bool refusable)
     return choice.startsWith(QStringLiteral("s"));
 }
 
-bool ServerPlayer::inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const
+bool LegacyServerPlayer::inSiegeRelation(const LegacyServerPlayer *skill_owner, const LegacyServerPlayer *victim) const
 {
     if (isFriendWith(victim) || !isFriendWith(skill_owner) || !victim->haveShownOneGeneral())
         return false;
@@ -1939,13 +1939,13 @@ bool ServerPlayer::inSiegeRelation(const ServerPlayer *skill_owner, const Server
         return (getNextAlive() == victim && getNextAlive(2) == skill_owner) || (getLastAlive() == victim && getLastAlive(2) == skill_owner);
 }
 
-bool ServerPlayer::inFormationRalation(ServerPlayer *teammate) const
+bool LegacyServerPlayer::inFormationRalation(LegacyServerPlayer *teammate) const
 {
     QList<const Player *> teammates = getFormation();
     return teammates.length() > 1 && teammates.contains(teammate);
 }
 
-void ServerPlayer::summonFriends(const QString &type)
+void LegacyServerPlayer::summonFriends(const QString &type)
 {
     room->tryPause();
 
@@ -1966,7 +1966,7 @@ void ServerPlayer::summonFriends(const QString &type)
             return;
         bool failed = true;
         if (!isFriendWith(getNextAlive()) && getNextAlive()->haveShownOneGeneral()) {
-            ServerPlayer *target = qobject_cast<ServerPlayer *>(getNextAlive(2));
+            LegacyServerPlayer *target = qobject_cast<LegacyServerPlayer *>(getNextAlive(2));
             if (!target->haveShownOneGeneral()) {
                 QString prompt = target->willBeFriendWith(this) ? QStringLiteral("SiegeSummon") : QStringLiteral("SiegeSummon!");
                 bool success = room->askForSkillInvoke(target, prompt);
@@ -1982,7 +1982,7 @@ void ServerPlayer::summonFriends(const QString &type)
             }
         }
         if (!isFriendWith(getLastAlive()) && getLastAlive()->haveShownOneGeneral()) {
-            ServerPlayer *target = qobject_cast<ServerPlayer *>(getLastAlive(2));
+            LegacyServerPlayer *target = qobject_cast<LegacyServerPlayer *>(getLastAlive(2));
             if (!target->haveShownOneGeneral()) {
                 QString prompt = target->willBeFriendWith(this) ? QStringLiteral("SiegeSummon") : QStringLiteral("SiegeSummon!");
                 bool success = room->askForSkillInvoke(target, prompt);
@@ -2005,7 +2005,7 @@ void ServerPlayer::summonFriends(const QString &type)
         int asked = n;
         bool failed = true;
         for (int i = 1; i < n; ++i) {
-            ServerPlayer *target = qobject_cast<ServerPlayer *>(getNextAlive(i));
+            LegacyServerPlayer *target = qobject_cast<LegacyServerPlayer *>(getNextAlive(i));
             if (isFriendWith(target))
                 continue;
             else if (!target->haveShownOneGeneral()) {
@@ -2033,7 +2033,7 @@ void ServerPlayer::summonFriends(const QString &type)
 
         n -= asked;
         for (int i = 1; i < n; ++i) {
-            ServerPlayer *target = qobject_cast<ServerPlayer *>(getLastAlive(i));
+            LegacyServerPlayer *target = qobject_cast<LegacyServerPlayer *>(getLastAlive(i));
             if (isFriendWith(target))
                 continue;
             else {
@@ -2060,12 +2060,12 @@ void ServerPlayer::summonFriends(const QString &type)
     }
 }
 
-bool ServerPlayer::isReady() const
+bool LegacyServerPlayer::isReady() const
 {
     return ready;
 }
 
-void ServerPlayer::setReady(bool ready)
+void LegacyServerPlayer::setReady(bool ready)
 {
     this->ready = ready;
 }

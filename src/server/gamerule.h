@@ -3,20 +3,20 @@
 
 #include "trigger.h"
 
-class ServerPlayer;
+class LegacyServerPlayer;
 
-class GameRule : public Rule
+class LegacyGameRule : public Rule
 {
 public:
-    GameRule();
+    LegacyGameRule();
     bool trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *room, const TriggerDetail &invoke, QVariant &data) const override;
 
 private:
-    void onPhaseProceed(ServerPlayer *player) const;
-    void rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const;
-    void changeGeneral1v1(ServerPlayer *player) const;
-    void changeGeneralXMode(ServerPlayer *player) const;
-    QString getWinner(ServerPlayer *victim) const;
+    void onPhaseProceed(LegacyServerPlayer *player) const;
+    void rewardAndPunish(LegacyServerPlayer *killer, LegacyServerPlayer *victim) const;
+    void changeGeneral1v1(LegacyServerPlayer *player) const;
+    void changeGeneralXMode(LegacyServerPlayer *player) const;
+    QString getWinner(LegacyServerPlayer *victim) const;
 };
 
 #endif

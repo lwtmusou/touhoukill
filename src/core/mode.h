@@ -33,6 +33,8 @@ public:
     virtual IdSet availableCards() const;
     virtual QSet<const General *> availableGenerals() const;
 
+    // TODO: Should this be here?
+    // since only Server is running game logic, put this in server maybe a good idea?
     virtual void startGame(RoomObject *room) const = 0;
 
 private:
