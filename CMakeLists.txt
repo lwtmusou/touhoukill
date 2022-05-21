@@ -401,7 +401,6 @@ if (Qt5Multimedia_FOUND OR Qt6Multimedia_FOUND)
         )
 
         add_library(oggvorbisfile STATIC ${QSGS_OGG_FILE})
-        target_include_directories(oggvorbisfile PUBLIC "include/oggvorbisfile")
         target_include_directories(oggvorbisfile PUBLIC "src/3rdparty/libogg-${QSGS_OGGVERSION}/include")
         target_include_directories(oggvorbisfile PUBLIC "src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/include")
 
