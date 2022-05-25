@@ -1,5 +1,5 @@
-#ifndef _GAME_RULE_H
-#define _GAME_RULE_H
+#ifndef qsgslegacy__GAME_RULE_H
+#define qsgslegacy__GAME_RULE_H
 
 #include "trigger.h"
 

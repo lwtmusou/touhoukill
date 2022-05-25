@@ -1,5 +1,5 @@
-#ifndef _ROOM_H
-#define _ROOM_H
+#ifndef qsgslegacy__ROOM_H
+#define qsgslegacy__ROOM_H
 
 #include <QAtomicPointer>
 #include <QMutex>

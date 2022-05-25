@@ -1,5 +1,5 @@
-#ifndef _ROOM_THREAD_H
-#define _ROOM_THREAD_H
+#ifndef qsgslegacy__ROOM_THREAD_H
+#define qsgslegacy__ROOM_THREAD_H
 
 #include <QSemaphore>
 #include <QThread>

@@ -1,5 +1,5 @@
-#ifndef _SERVER_H
-#define _SERVER_H
+#ifndef qsgslegacy__SERVER_H
+#define qsgslegacy__SERVER_H
 
 class LegacyRoom;
 
