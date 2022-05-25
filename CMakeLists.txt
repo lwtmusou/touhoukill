@@ -111,6 +111,18 @@ set (QSanguosha_Core_MOCS
     src/core/jsonutils.h
     )
 
+set (QSanguosha_Server_SRCS
+    src/server/server.cpp
+    src/server/qsgsmultiserver.cpp
+    src/server/serverconfig.cpp
+)
+
+set (QSanguosha_Server_MOCS
+    src/server/server.h
+    src/server/qsgsmultiserver.h
+    src/server/serverconfig.h
+)
+
 set (QSanguosha_SRCS
     src/util/settings.cpp
     src/audio/audio.cpp
@@ -461,14 +473,19 @@ if (Qt5_FOUND)
         set_target_properties(Q5SgsCore PROPERTIES SOVERSION 0.12)
     endif()
 
+    add_executable(Q5SgsServer ${QSanguosha_Server_SRCS} ${QSanguosha_Server_MOCS} )
+
+    set_property(TARGET Q5SgsServer PROPERTY AUTOMOC ON)
+    set_property(TARGET Q5SgsServer PROPERTY AUTOUIC ON)
+    set_property(TARGET Q5SgsServer PROPERTY AUTORCC ON)
+
+    target_link_libraries(Q5SgsServer Qt5::Network Q5SgsCore)
+    target_compile_definitions(Q5SgsServer PUBLIC -DQT_NO_CAST_FROM_ASCII)
+
     if (NOT ANDROID)
         add_executable(Q5Sanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} )
     else()
         add_library(Q5Sanguosha MODULE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} )
-    endif()
-
-    if (NOT BUILD_SHARED_LIBS)
-        target_compile_definitions(Q5Sanguosha PUBLIC -DQSGS_STATIC)
     endif()
 
     set_property(TARGET Q5Sanguosha PROPERTY AUTOMOC ON)
@@ -547,12 +564,17 @@ if (Qt6_FOUND)
         set_target_properties(QSgsCore PROPERTIES SOVERSION 0.12)
     endif()
 
+    add_executable(QSgsServer ${QSanguosha_Server_SRCS} ${QSanguosha_Server_MOCS} )
+
+    set_property(TARGET QSgsServer PROPERTY AUTOMOC ON)
+    set_property(TARGET QSgsServer PROPERTY AUTOUIC ON)
+    set_property(TARGET QSgsServer PROPERTY AUTORCC ON)
+
+    target_link_libraries(QSgsServer Qt6::Network QSgsCore)
+    target_compile_definitions(QSgsServer PUBLIC -DQT_NO_CAST_FROM_ASCII)
+
     qt6_add_translation(QM_FILES6 ${TS_FILES})
     qt6_add_executable(QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} ${QM_FILES6} )
-
-    if (NOT BUILD_SHARED_LIBS)
-        target_compile_definitions(QSanguosha PUBLIC -DQSGS_STATIC)
-    endif()
 
     set_property(TARGET QSanguosha PROPERTY AUTOMOC ON)
     set_property(TARGET QSanguosha PROPERTY AUTOUIC ON)
