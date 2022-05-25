@@ -15,6 +15,7 @@ Server::Server()
 
 int startServer(int argc, char *argv[])
 {
+    return 0;
 }
 
 #if (defined(Q_OS_DARWIN) && !defined(Q_OS_MACOS)) || defined(Q_OS_ANDROID)
