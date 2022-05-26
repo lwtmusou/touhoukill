@@ -289,6 +289,9 @@ bool ServerConfigStruct::parse()
     QCommandLineParser parser;
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsCompactedShortOptions);
 
+    // Note: mentioning 'QStringList' in following constructor is mandatory since QCommandLineOption has an implicit constructor which accepts 2 QStrings
+    // I really don't know why C++ decides to accept constructor calls with "{}" without std::initializer_list. It sucks.
+
     // Common options
     parser.addVersionOption();
     // parser.addHelpOption(); // Since we use custom help text, help text for following commands are not needed, neither is this function call.
@@ -639,7 +642,7 @@ bool ServerConfigStruct::parse()
 
     if (!parserFailures.isEmpty()) {
         foreach (const QString &f, parserFailures)
-            std::cerr << f.toLocal8Bit().constData() << std::endl;
+            qWarning() << f;
 
         return false;
     }
