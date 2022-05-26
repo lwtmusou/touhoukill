@@ -17,6 +17,8 @@ struct ServerConfigStruct
 
     void defaultValues();
     bool parse();
+    bool readConfigFile();
+    bool saveConfigFile();
 
     bool parsed;
 

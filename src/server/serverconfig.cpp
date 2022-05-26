@@ -111,7 +111,7 @@ void showHelp()
     std::cout << (helpText.arg(configFilePath())).toLocal8Bit().constData() << std::endl;
 }
 
-bool commandLineValueToBool(const QString &value, bool *ok = nullptr)
+bool stringToBool(const QString &value, bool *ok = nullptr)
 {
     if (ok == nullptr) {
         static bool _ok;
@@ -164,7 +164,7 @@ bool commandLineValueToBool(const QString &value, bool *ok = nullptr)
     return false;
 }
 
-ServerConfigStruct::FreeAssignOptions commandLineValueToFreeAssign(const QString &value, bool *ok = nullptr)
+ServerConfigStruct::FreeAssignOptions stringToFreeAssign(const QString &value, bool *ok = nullptr)
 {
     if (ok == nullptr) {
         static bool _ok;
@@ -173,7 +173,7 @@ ServerConfigStruct::FreeAssignOptions commandLineValueToFreeAssign(const QString
 
     // we should support yes and no
     *ok = false;
-    bool boolValue = commandLineValueToBool(value, ok);
+    bool boolValue = stringToBool(value, ok);
     if (*ok)
         return boolValue ? ServerConfigStruct::FreeAssignAll : ServerConfigStruct::FreeAssignNo;
 
@@ -188,7 +188,7 @@ ServerConfigStruct::FreeAssignOptions commandLineValueToFreeAssign(const QString
     return ServerConfigStruct::FreeAssignNo;
 }
 
-ServerConfigStruct::HegemonyRewardOptions commandLineValueToHegemonyReward(const QString &value, bool *ok = nullptr)
+ServerConfigStruct::HegemonyRewardOptions stringToHegemonyReward(const QString &value, bool *ok = nullptr)
 {
     if (ok == nullptr) {
         static bool _ok;
@@ -197,7 +197,7 @@ ServerConfigStruct::HegemonyRewardOptions commandLineValueToHegemonyReward(const
 
     // support "yes" as instant
     *ok = false;
-    bool boolValue = commandLineValueToBool(value, ok);
+    bool boolValue = stringToBool(value, ok);
     if (*ok)
         return boolValue ? ServerConfigStruct::HegemonyRewardInstant : ServerConfigStruct::HegemonyRewardNone;
 
@@ -226,6 +226,34 @@ ServerConfigStruct::HegemonyRewardOptions commandLineValueToHegemonyReward(const
 
     // Return arbitary value, since caller should always judge output variable ok
     return ServerConfigStruct::HegemonyRewardNone;
+}
+
+QString freeAssignToString(ServerConfigStruct::FreeAssignOptions freeAssign)
+{
+    static const QStringList assignValues {
+        // clang-format off
+        QStringLiteral("no"),
+        QStringLiteral("yes"),
+        QStringLiteral("self"),
+        // clang-format on
+    };
+
+    int intValue = static_cast<int>(freeAssign);
+    return assignValues.value(intValue, QString());
+}
+
+QString hegemonyRewardToString(ServerConfigStruct::HegemonyRewardOptions hegemonyReward)
+{
+    static const QStringList rewardValues {
+        // clang-format off
+        QStringLiteral("none"),
+        QStringLiteral("instant"),
+        QStringLiteral("postponed"),
+        // clang-format on
+    };
+
+    int intValue = static_cast<int>(hegemonyReward);
+    return rewardValues.value(intValue, QString());
 }
 
 } // namespace
@@ -278,9 +306,8 @@ bool ServerConfigStruct::parse()
     if (parsed)
         return false;
 
-    if (QFile::exists(configFilePath())) {
-        // TODO: read it
-    }
+    if (readConfigFile())
+        qWarning() << QStringLiteral("Config file load failed. Default configuration will be used.");
 
 #if (defined(Q_OS_DARWIN) && !defined(Q_OS_MACOS)) || defined(Q_OS_ANDROID)
 // mobile platforms don't use processes, so get command line options from it is unable
@@ -403,14 +430,14 @@ bool ServerConfigStruct::parse()
     if (parser.isSet(QStringLiteral("mc"))) {
         QString mc = parser.value(QStringLiteral("mc"));
         bool ok = false;
-        network.simc = commandLineValueToBool(mc, &ok);
+        network.simc = stringToBool(mc, &ok);
         if (!ok)
             parserFailures << QString(QStringLiteral("Value for --same-ip-with-multiple-connection (%1) is incorrect. Check your input.")).arg(mc);
     }
     if (parser.isSet(QStringLiteral("c"))) {
         QString c = parser.value(QStringLiteral("c"));
         bool ok = false;
-        network.chat = commandLineValueToBool(c, &ok);
+        network.chat = stringToBool(c, &ok);
         if (!ok)
             parserFailures << QString(QStringLiteral("Value for --chat (%1) is incorrect. Check your input.")).arg(c);
     }
@@ -454,7 +481,7 @@ bool ServerConfigStruct::parse()
     if (parser.isSet(QStringLiteral("A"))) {
         QString A = parser.value(QStringLiteral("A"));
         bool ok = false;
-        game.enableAi = commandLineValueToBool(A, &ok);
+        game.enableAi = stringToBool(A, &ok);
         if (!ok)
             parserFailures << QString(QStringLiteral("Value for --ai (%1) is incorrect. Check your input.")).arg(A);
     }
@@ -472,7 +499,7 @@ bool ServerConfigStruct::parse()
     if (parser.isSet(QStringLiteral("Al"))) {
         QString Al = parser.value(QStringLiteral("Al"));
         bool ok = false;
-        network.chat = commandLineValueToBool(Al, &ok);
+        network.chat = stringToBool(Al, &ok);
         if (!ok)
             parserFailures << QString(QStringLiteral("Value for --ai-limit (%1) is incorrect. Check your input.")).arg(Al);
     }
@@ -516,7 +543,7 @@ bool ServerConfigStruct::parse()
     if (parser.isSet(QStringLiteral("Z"))) {
         QString Z = parser.value(QStringLiteral("Z"));
         bool ok = false;
-        cheat.enable = commandLineValueToBool(Z, &ok);
+        cheat.enable = stringToBool(Z, &ok);
         if (!ok)
             parserFailures << QString(QStringLiteral("Value for --cheat (%1) is incorrect. Check your input.")).arg(Z);
     }
@@ -526,7 +553,7 @@ bool ServerConfigStruct::parse()
         } else {
             QString Zc = parser.value(QStringLiteral("Zc"));
             bool ok = false;
-            cheat.freeChoose = commandLineValueToBool(Zc, &ok);
+            cheat.freeChoose = stringToBool(Zc, &ok);
             if (!ok)
                 parserFailures << QString(QStringLiteral("Value for --free-choose (%1) is incorrect. Check your input.")).arg(Zc);
         }
@@ -581,7 +608,7 @@ bool ServerConfigStruct::parse()
     if (parser.isSet(QStringLiteral("ls"))) {
         QString ls = parser.value(QStringLiteral("ls"));
         bool ok = false;
-        role.lordSkill = commandLineValueToBool(ls, &ok);
+        role.lordSkill = stringToBool(ls, &ok);
         if (!ok)
             parserFailures << QString(QStringLiteral("Value for --lord-skill (%1) is incorrect. Check your input.")).arg(ls);
     }
@@ -591,7 +618,7 @@ bool ServerConfigStruct::parse()
         } else {
             QString Zf = parser.value(QStringLiteral("Zf"));
             bool ok = false;
-            role.cheat.freeAssign = commandLineValueToFreeAssign(Zf, &ok);
+            role.cheat.freeAssign = stringToFreeAssign(Zf, &ok);
             if (!ok)
                 parserFailures << QString(QStringLiteral("Value for --free-assign (%1) is incorrect. Check your input.")).arg(Zf);
         }
@@ -610,21 +637,21 @@ bool ServerConfigStruct::parse()
     if (parser.isSet(QStringLiteral("rf"))) {
         QString rf = parser.value(QStringLiteral("rf"));
         bool ok = false;
-        hegemony.firstShow = commandLineValueToHegemonyReward(rf, &ok);
+        hegemony.firstShow = stringToHegemonyReward(rf, &ok);
         if (!ok)
             parserFailures << QString(QStringLiteral("Value for --first-show-reward (%1) is incorrect. Check your input.")).arg(rf);
     }
     if (parser.isSet(QStringLiteral("rc"))) {
         QString rc = parser.value(QStringLiteral("rc"));
         bool ok = false;
-        hegemony.companion = commandLineValueToHegemonyReward(rc, &ok);
+        hegemony.companion = stringToHegemonyReward(rc, &ok);
         if (!ok)
             parserFailures << QString(QStringLiteral("Value for --companion-reward (%1) is incorrect. Check your input.")).arg(rc);
     }
     if (parser.isSet(QStringLiteral("rh"))) {
         QString rh = parser.value(QStringLiteral("rh"));
         bool ok = false;
-        hegemony.halfHp = commandLineValueToHegemonyReward(rh, &ok);
+        hegemony.halfHp = stringToHegemonyReward(rh, &ok);
         if (!ok)
             parserFailures << QString(QStringLiteral("Value for --half-hp-reward (%1) is incorrect. Check your input.")).arg(rh);
     }
@@ -648,10 +675,55 @@ bool ServerConfigStruct::parse()
     }
 
     if (parser.isSet(QStringLiteral("sc"))) {
-        // TODO: save to config file
+        if (!saveConfigFile())
+            qWarning() << QStringLiteral("Save config file failed. Won't save it. Program will still run.");
     }
 
 #endif
+
+    return true;
+}
+
+bool ServerConfigStruct::readConfigFile()
+{
+    QFile f(configFilePath());
+    if (!f.exists()) {
+        // special case: if file don't exist, exit successfully.
+        return true;
+    }
+
+    if (!f.open(QIODevice::ReadOnly)) {
+        qWarning() << QStringLiteral("Open config file failed.");
+        return false;
+    }
+
+    QByteArray arr = f.readAll();
+    f.close();
+
+    QJsonParseError err;
+    QJsonDocument document = QJsonDocument::fromJson(arr, &err);
+    if (err.error != QJsonParseError::NoError) {
+        qWarning() << QString(QStringLiteral("Read json from config file failed. Reason: %1")).arg(err.errorString());
+        return false;
+    }
+
+    // TODO: parse document
+
+    return true;
+}
+
+bool ServerConfigStruct::saveConfigFile()
+{
+    QFile f(configFilePath());
+
+    if (!f.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        qWarning() << QStringLiteral("Open config file failed.");
+        return false;
+    }
+
+    // TODO: build up JSON document
+
+    f.close();
 
     return true;
 }
