@@ -30,6 +30,8 @@ jobs:
 
       - name: install softwares from repository
         run: |
+          sudo apt-get update
+          sudo apt-get dist-upgrade
           sudo apt-get install 'qt*5-dev' 'qt*5-tools' 'qt6-*-dev' 'qt6-*-tools' build-essential cmake git swig ninja-build ${{matrix.dependency.optionalDependency }}
 
       - name: run cmake+ninja
@@ -87,6 +89,7 @@ jobs:
 
   build-macOS-homebrewQt:
     # This matrix uses prebuilt Qt from Homebrew
+    # macOS runners have vorbis preinstalled by Homebrew, so no need to install it separately
     strategy:
       matrix:
         dependency:
@@ -94,10 +97,6 @@ jobs:
             optionalDependency:
           - dep: -Lua
             optionalDependency: lua@5.4
-          - dep: -vorbis
-            optionalDependency: libvorbis
-          - dep: -Lua-vorbis
-            optionalDependency: lua@5.4 libvorbis
         runner: [ "10.15", "11", "12" ]
 
     name: build-macOS${{ matrix.runner }}-Homebrew${{ matrix.dependency.dep }}
@@ -109,6 +108,8 @@ jobs:
       
       - name: install softwares from repository
         run: |
+          brew update
+          brew upgrade
           brew install 'qt@5' 'qt@6' swig cmake ninja ${{ matrix.dependency.optionalDependency }}
       
       - name: run cmake+ninja
