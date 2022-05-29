@@ -4,10 +4,11 @@
 
 #include <QDebug>
 #include <QDir>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
 #include <QString>
-#ifdef Q_OS_UNIX
-#include <unistd.h>
-#endif
 
 #include <iostream>
 
@@ -15,6 +16,9 @@
 // mobile platforms don't use processes, so command line option shouldn't be get
 // always use server config file for it
 #else
+#ifdef Q_OS_UNIX
+#include <unistd.h>
+#endif
 #include <QCommandLineOption>
 #include <QCommandLineParser>
 #endif
@@ -24,12 +28,20 @@ const QString &configFilePath()
 {
     static QString p;
     if (p.isEmpty()) {
+#if (defined(Q_OS_DARWIN) && !defined(Q_OS_MACOS)) || defined(Q_OS_ANDROID)
+#ifdef Q_OS_ANDROID
+        p = QStringLiteral("/sdcard/Android/data/rocks.touhousatsu.app/serverconfig.json");
+#else
+        // wait for anyone who's formaliar with iOS / watchOS / tvOS
+#endif
+#else
 #ifdef Q_OS_UNIX
         if (getuid() == (uid_t)0)
-            p = QStringLiteral("/etc/QSanguosha/server.config");
+            p = QStringLiteral("/etc/QSanguosha/serverconfig.json");
         else
 #endif
-            p = QDir::homePath() + QDir::separator() + QStringLiteral(".QSanguosha") + QDir::separator() + QStringLiteral("config.json");
+            p = QDir::homePath() + QDir::separator() + QStringLiteral(".QSanguosha") + QDir::separator() + QStringLiteral("serverconfig.json");
+#endif
     }
 
     return p;
@@ -46,7 +58,7 @@ Common options:
 -v, --version show version information
 
 Config file options:
---sc, --save-config save the option to config file. Make sure you have enough permission to operate it. Defaults no.
+--sc, --save-config save the option to config file after parsing it SUCCESSFULLY. Do nothing when parser erros out. Make sure you have enough permission to operate it. Defaults no.
 
 Game mode options:
 -m, --mode=<role_x,x,x, hegemony_x> the game mode which the server serves.
@@ -164,6 +176,41 @@ bool stringToBool(const QString &value, bool *ok = nullptr)
     return false;
 }
 
+QHostAddress stringToQHostAddress(const QString &value, bool *ok = nullptr)
+{
+    if (ok == nullptr) {
+        static bool _ok;
+        ok = &_ok;
+    }
+    *ok = false;
+
+    static const QStringList predefinedValues {
+        // clang-format off
+        QStringLiteral("null"),
+        QStringLiteral("broadcast"),
+        QStringLiteral("localhost"),
+        QStringLiteral("localhostipv6"),
+        QStringLiteral("any"),
+        QStringLiteral("anyipv6"),
+        QStringLiteral("anyipv4"),
+        // clang-format on
+    };
+
+    QString lowerValue = value.toLower();
+
+    for (int i = 0; i < predefinedValues.length(); ++i) {
+        if (lowerValue == predefinedValues.value(i)) {
+            *ok = true;
+            return static_cast<QHostAddress::SpecialAddress>(i);
+        }
+    }
+
+    QHostAddress ha;
+    *ok = ha.setAddress(value);
+
+    return ha;
+}
+
 ServerConfigStruct::FreeAssignOptions stringToFreeAssign(const QString &value, bool *ok = nullptr)
 {
     if (ok == nullptr) {
@@ -228,6 +275,13 @@ ServerConfigStruct::HegemonyRewardOptions stringToHegemonyReward(const QString &
     return ServerConfigStruct::HegemonyRewardNone;
 }
 
+QString qHostAddressToString(const QHostAddress &address)
+{
+    if (address.isEqual(QHostAddress::Any, QHostAddress::TolerantConversion))
+        return QStringLiteral("any");
+    return address.toString();
+}
+
 QString freeAssignToString(ServerConfigStruct::FreeAssignOptions freeAssign)
 {
     static const QStringList assignValues {
@@ -278,7 +332,7 @@ void ServerConfigStruct::defaultValues()
     game.aiDelay = 1000;
     game.aiLimit = false;
     game.modifiedAiDelay = -1;
-    game.enabledPackages = QStringList();
+    game.enabledPackages.clear();
     game.multiGenerals = 0;
 
     role.banLists.clear();
@@ -312,7 +366,6 @@ bool ServerConfigStruct::parse()
 #if (defined(Q_OS_DARWIN) && !defined(Q_OS_MACOS)) || defined(Q_OS_ANDROID)
 // mobile platforms don't use processes, so get command line options from it is unable
 #else
-
     QCommandLineParser parser;
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsCompactedShortOptions);
 
@@ -383,17 +436,15 @@ bool ServerConfigStruct::parse()
         return false;
     }
 
-    if (!parser.unknownOptionNames().isEmpty()) {
-        qWarning() << (QStringLiteral("Unknown options: ") + parser.unknownOptionNames().join(QStringLiteral(", ")));
-        qWarning() << (QStringLiteral("These options are ignored for now, but they may be of any use in the future. Better remove them before they take place."));
-    }
-
     if (!parser.positionalArguments().isEmpty()) {
         qWarning() << (QStringLiteral("Unknown arguments: ") + parser.positionalArguments().join(QStringLiteral(", ")));
         qWarning() << (QStringLiteral("These options are ignored."));
     }
 
     QStringList parserFailures;
+
+    if (!parser.unknownOptionNames().isEmpty())
+        parserFailures << (QStringLiteral("Unknown options: ") + parser.unknownOptionNames().join(QStringLiteral(", ")));
 
     // sc is processed last, after judging parserFailures!
     // since if anything fails to process, no configuration file should be generated
@@ -409,10 +460,9 @@ bool ServerConfigStruct::parse()
     // Network options
     if (parser.isSet(QStringLiteral("I"))) {
         QString I = parser.value(QStringLiteral("I"));
-        QHostAddress ha;
-        if (ha.setAddress(I))
-            network.bindIp = ha;
-        else
+        bool ok = false;
+        network.bindIp = stringToQHostAddress(I, &ok);
+        if (!ok)
             parserFailures << QString(QStringLiteral("Value for --bind-ip (%1) is incorrect. Check your input.")).arg(I);
     }
     if (parser.isSet(QStringLiteral("P"))) {
@@ -534,7 +584,21 @@ bool ServerConfigStruct::parse()
         if (!parser.isSet(QStringLiteral("ab")))
             role.banLists.clear();
 
-        // TODO
+        QStringList br = parser.values(QStringLiteral("br"));
+        foreach (const QString &brEach, br) {
+            QStringList brEachList = brEach.split(QStringLiteral(","));
+            if (brEachList.length() == 2) {
+                QString generalName = brEachList.first();
+                bool ok = false;
+                int banFor = brEachList.last().toInt(&ok);
+                if (!ok)
+                    parserFailures << QString(QStringLiteral("Value for --ban-role (%1) is incorrect. Check your input.")).arg(brEach);
+                else
+                    role.banLists << qMakePair(generalName.trimmed(), banFor);
+            } else {
+                parserFailures << QString(QStringLiteral("Value for --ban-role (%1) is incorrect. Check your input.")).arg(brEach);
+            }
+        }
     } else if (parser.isSet(QStringLiteral("ab"))) {
         parserFailures << QStringLiteral("--append-banlist-from-config-file can only be used when --ban-role has been specified.");
     }
@@ -678,7 +742,6 @@ bool ServerConfigStruct::parse()
         if (!saveConfigFile())
             qWarning() << QStringLiteral("Save config file failed. Won't save it. Program will still run.");
     }
-
 #endif
 
     return true;
@@ -707,7 +770,271 @@ bool ServerConfigStruct::readConfigFile()
         return false;
     }
 
-    // TODO: parse document
+    if (!document.isObject()) {
+        qWarning() << QString(QStringLiteral("Read json from config file failed. Config file is not json object"));
+        return false;
+    }
+
+    // use default value if not existant, ignore values which are not recognized or can't be converted
+    QJsonObject theOb = document.object();
+    if (theOb.contains(QStringLiteral("GameModeOptions"))) {
+        QJsonValue theValue = theOb.value(QStringLiteral("GameModeOptions"));
+        QJsonObject theOb = theValue.toObject();
+        if (theOb.contains(QStringLiteral("mode"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("mode"));
+            if (theValue.isString())
+                mode = theValue.toString();
+        }
+    }
+
+    if (theOb.contains(QStringLiteral("NetworkOptions"))) {
+        QJsonValue theValue = theOb.value(QStringLiteral("NetworkOptions"));
+        QJsonObject theOb = theValue.toObject();
+        if (theOb.contains(QStringLiteral("bind-ip"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("bind-ip"));
+            if (theValue.isString()) {
+                bool ok = false;
+                QHostAddress ha = stringToQHostAddress(theValue.toString(), &ok);
+                if (ok)
+                    network.bindIp = ha;
+            }
+        }
+        if (theOb.contains(QStringLiteral("bind-port"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("bind-port"));
+            if (theValue.isDouble())
+                network.bindPort = theValue.toInt();
+        }
+        if (theOb.contains(QStringLiteral("same-ip-with-multiple-connection"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("same-ip-with-multiple-connection"));
+            if (theValue.isBool())
+                network.simc = theValue.toBool();
+        }
+        if (theOb.contains(QStringLiteral("chat"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("chat"));
+            if (theValue.isBool())
+                network.chat = theValue.toBool();
+        }
+    }
+
+    if (theOb.contains(QStringLiteral("GameOptions"))) {
+        QJsonValue theValue = theOb.value(QStringLiteral("GameOptions"));
+        QJsonObject theOb = theValue.toObject();
+        if (theOb.contains(QStringLiteral("timeout"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("timeout"));
+            if (theValue.isDouble())
+                game.timeout = theValue.toInt();
+        }
+        if (theOb.contains(QStringLiteral("nullification-timeout"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("nullification-timeout"));
+            if (theValue.isDouble())
+                game.nullificationTimeout = theValue.toInt();
+        }
+        if (theOb.contains(QStringLiteral("server-name"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("server-name"));
+            if (theValue.isString())
+                game.serverName = theValue.toString();
+        }
+        if (theOb.contains(QStringLiteral("shuffle-seat"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("shuffle-seat"));
+            if (theValue.isBool())
+                game.shuffleSeat = theValue.toBool();
+        }
+        if (theOb.contains(QStringLiteral("latest-general"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("latest-general"));
+            if (theValue.isBool())
+                game.latestGeneral = theValue.toBool();
+        }
+        if (theOb.contains(QStringLiteral("pile-swap-limit"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("pile-swap-limit"));
+            if (theValue.isDouble())
+                game.pileSwap = theValue.toInt();
+        }
+        if (theOb.contains(QStringLiteral("ai"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("ai"));
+            if (theValue.isBool())
+                game.enableAi = theValue.toBool();
+        }
+        if (theOb.contains(QStringLiteral("ai-delay"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("ai-delay"));
+            if (theValue.isDouble())
+                game.aiDelay = theValue.toInt();
+        }
+        if (theOb.contains(QStringLiteral("ai-limit"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("ai-limit"));
+            if (theValue.isBool())
+                game.aiLimit = theValue.toBool();
+        }
+        if (theOb.contains(QStringLiteral("ai-delay-after-death"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("ai-delay-after-death"));
+            if (theValue.isDouble())
+                game.modifiedAiDelay = theValue.toInt();
+        }
+        if (theOb.contains(QStringLiteral("packages"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("packages"));
+            if (theValue.isArray()) {
+                QJsonArray theArr = theValue.toArray();
+                game.enabledPackages.clear();
+                // 'foreach' can't be used here! Since Qt 6 supports using 'foreach' only on implicit shared containers
+                // It uses a template to check it, and causes compile error if there is no 'detach' function in the container
+                for (const QJsonValue &theValue : theArr) {
+                    if (theValue.isString())
+                        game.enabledPackages << theValue.toString();
+                }
+            }
+        }
+        if (theOb.contains(QStringLiteral("multi-generals"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("multi-generals"));
+            if (theValue.isDouble())
+                game.multiGenerals = theValue.toInt();
+        }
+    }
+
+    if (theOb.contains(QStringLiteral("BanOptions"))) {
+        QJsonValue theValue = theOb.value(QStringLiteral("BanOptions"));
+        QJsonObject theOb = theValue.toObject();
+        if (theOb.contains(QStringLiteral("ban-role"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("ban-role"));
+            if (theValue.isArray()) {
+                QJsonArray theArr = theValue.toArray();
+                role.banLists.clear();
+                // 'foreach' can't be used here! Since Qt 6 supports using 'foreach' only on implicit shared containers
+                // It uses a template to check it, and causes compile error if there is no 'detach' function in the container
+                for (const QJsonValue &theValue : theArr) {
+                    if (theValue.isObject()) {
+                        QJsonObject theOb = theValue.toObject();
+                        QString name;
+                        int banFor = 0;
+                        bool flag = false;
+                        if (theOb.contains(QStringLiteral("name")) && theOb.contains(QStringLiteral("for"))) {
+                            bool flag1 = false;
+                            {
+                                QJsonValue theValue = theOb.value(QStringLiteral("name"));
+                                if (theValue.isString()) {
+                                    name = theValue.toString();
+                                    flag1 = true;
+                                }
+                            }
+                            {
+                                QJsonValue theValue = theOb.value(QStringLiteral("for"));
+                                if (theValue.isDouble()) {
+                                    banFor = theValue.toInt();
+                                    if (flag1)
+                                        flag = true;
+                                }
+                            }
+                        }
+                        if (flag)
+                            role.banLists << qMakePair(name, banFor);
+                    }
+                }
+            }
+        }
+    }
+
+    if (theOb.contains(QStringLiteral("CheatOptions"))) {
+        QJsonValue theValue = theOb.value(QStringLiteral("CheatOptions"));
+        QJsonObject theOb = theValue.toObject();
+        if (theOb.contains(QStringLiteral("chaat"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("cheat"));
+            if (theValue.isBool())
+                cheat.enable = theValue.toBool();
+        }
+        if (theOb.contains(QStringLiteral("free-choose"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("free-choose"));
+            if (theValue.isBool())
+                cheat.freeChoose = theValue.toBool();
+        }
+        if (theOb.contains(QStringLiteral("Role"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("Role"));
+            QJsonObject theOb = theValue.toObject();
+            if (theOb.contains(QStringLiteral("free-assign"))) {
+                QJsonValue theValue = theOb.value(QStringLiteral("free-assign"));
+                if (theValue.isString()) {
+                    bool ok = false;
+                    FreeAssignOptions assign = stringToFreeAssign(theValue.toString(), &ok);
+                    if (ok)
+                        role.cheat.freeAssign = assign;
+                }
+            }
+        }
+    }
+
+    if (theOb.contains(QStringLiteral("Role"))) {
+        QJsonValue theValue = theOb.value(QStringLiteral("Role"));
+        QJsonObject theOb = theValue.toObject();
+        if (theOb.contains(QStringLiteral("choice-lord"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("choice-lord"));
+            if (theValue.isDouble())
+                role.choiceLord = theValue.toInt();
+        }
+        if (theOb.contains(QStringLiteral("choice-nonlord"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("choice-nonlord"));
+            if (theValue.isDouble())
+                role.choiceNonLord = theValue.toInt();
+        }
+        if (theOb.contains(QStringLiteral("choice-others"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("choice-others"));
+            if (theValue.isDouble())
+                role.choiceOthers = theValue.toInt();
+        }
+        if (theOb.contains(QStringLiteral("choice-gods"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("choice-gods"));
+            if (theValue.isDouble())
+                role.choiceGods = theValue.toInt();
+        }
+        if (theOb.contains(QStringLiteral("lord-skill"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("lord-skill"));
+            if (theValue.isBool())
+                role.lordSkill = theValue.toBool();
+        }
+        if (theOb.contains(QStringLiteral("choice-multi"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("choice-muiti"));
+            if (theValue.isDouble())
+                role.choiceMulti = theValue.toInt();
+        }
+    }
+
+    if (theOb.contains(QStringLiteral("Hegemony"))) {
+        QJsonValue theValue = theOb.value(QStringLiteral("Hegemony"));
+        QJsonObject theOb = theValue.toObject();
+        if (theOb.contains(QStringLiteral("choice-hegemony"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("choice-hegemony"));
+            if (theValue.isDouble())
+                hegemony.choice = theValue.toInt();
+        }
+        if (theOb.contains(QStringLiteral("first-show-reward"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("first-show-reward"));
+            if (theValue.isString()) {
+                bool ok = false;
+                HegemonyRewardOptions firstShow = stringToHegemonyReward(theValue.toString(), &ok);
+                if (ok)
+                    hegemony.firstShow = firstShow;
+            }
+        }
+        if (theOb.contains(QStringLiteral("companion-reward"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("companion-reward"));
+            if (theValue.isString()) {
+                bool ok = false;
+                HegemonyRewardOptions companion = stringToHegemonyReward(theValue.toString(), &ok);
+                if (ok)
+                    hegemony.companion = companion;
+            }
+        }
+        if (theOb.contains(QStringLiteral("half-hp-reward"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("half-hp-reward"));
+            if (theValue.isString()) {
+                bool ok = false;
+                HegemonyRewardOptions halfHp = stringToHegemonyReward(theValue.toString(), &ok);
+                if (ok)
+                    hegemony.halfHp = halfHp;
+            }
+        }
+        if (theOb.contains(QStringLiteral("careerist-kill"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("careerist-kill"));
+            if (theValue.isDouble())
+                hegemony.careeristKillReward = theValue.toInt();
+        }
+    }
 
     return true;
 }
@@ -721,9 +1048,116 @@ bool ServerConfigStruct::saveConfigFile()
         return false;
     }
 
-    // TODO: build up JSON document
+    QJsonObject theOb;
+    {
+        QJsonObject GameModeOptions;
+        {
+            GameModeOptions[QStringLiteral("mode")] = mode;
+        }
+        theOb[QStringLiteral("GameModeOptions")] = GameModeOptions;
+    }
+    {
+        QJsonObject NetworkOptions;
+        {
+            NetworkOptions[QStringLiteral("bind-ip")] = qHostAddressToString(network.bindIp);
+            NetworkOptions[QStringLiteral("bind-port")] = (int)(network.bindPort);
+            NetworkOptions[QStringLiteral("same-ip-with-multiple-connection")] = network.simc;
+            NetworkOptions[QStringLiteral("chat")] = network.chat;
+        }
+        theOb[QStringLiteral("NetworkOptions")] = NetworkOptions;
+    }
+    {
+        QJsonObject GameOptions;
+        {
+            GameOptions[QStringLiteral("timeout")] = game.timeout;
+            GameOptions[QStringLiteral("nullification-timeout")] = game.nullificationTimeout;
+            GameOptions[QStringLiteral("server-name")] = game.serverName;
+            GameOptions[QStringLiteral("shuffle-seat")] = game.shuffleSeat;
+            GameOptions[QStringLiteral("latest-general")] = game.latestGeneral;
+            GameOptions[QStringLiteral("pile-swap-limit")] = game.pileSwap;
+            GameOptions[QStringLiteral("ai")] = game.enableAi;
+            GameOptions[QStringLiteral("ai-delay")] = game.aiDelay;
+            GameOptions[QStringLiteral("ai-limit")] = game.aiLimit;
+            GameOptions[QStringLiteral("ai-delay-after-death")] = game.modifiedAiDelay;
+            {
+                QJsonArray enabledPackages;
+                foreach (const QString &package, game.enabledPackages)
+                    enabledPackages.append(package);
+                GameOptions[QStringLiteral("packages")] = enabledPackages;
+            }
+            GameOptions[QStringLiteral("multi-generals")] = game.multiGenerals;
+        }
+        theOb[QStringLiteral("GameOptions")] = GameOptions;
+    }
+    {
+        QJsonObject BanOptions;
+        {
+            QJsonArray banRole;
+            // I am against using auto everywhere since major C++ coding standard don't suggest including type information in variable name.
+            // This makes investigating code much more difficult since sometimes type of a variable matters for checking its member functions, variables, and so on of the specific type.
+            // Even if deduction of auto is fully specified in C++ standard, I don't like using it since there is much code rely on implicit conversion of C++ (as you already seen here, where almost everything is implicitly converted to QJsonValue)
+            // where auto simply can't do implicit conversion. So I only use auto for where the type name doesn't fit.
+
+            // Typename of following "auto" is "QPair<QString, int>", which contains ',' and can't be used in MACRO foreach.
+            foreach (const auto &pair, role.banLists) {
+                QJsonObject ob;
+                ob[QStringLiteral("name")] = pair.first;
+                ob[QStringLiteral("for")] = pair.second;
+                banRole.append(ob);
+            }
+            BanOptions[QStringLiteral("ban-role")] = banRole;
+        }
+        theOb[QStringLiteral("BanOptions")] = BanOptions;
+    }
+    {
+        QJsonObject CheatOptions;
+        {
+            CheatOptions[QStringLiteral("cheat")] = cheat.enable;
+            CheatOptions[QStringLiteral("free-choose")] = cheat.freeChoose;
+            {
+                QJsonObject Role;
+                {
+                    Role[QStringLiteral("free-assign")] = freeAssignToString(role.cheat.freeAssign);
+                }
+                CheatOptions[QStringLiteral("Role")] = Role;
+            }
+        }
+        theOb[QStringLiteral("CheatOptions")] = CheatOptions;
+    }
+    {
+        QJsonObject Role;
+        {
+            Role[QStringLiteral("choice-lord")] = role.choiceLord;
+            Role[QStringLiteral("choice-nonlord")] = role.choiceNonLord;
+            Role[QStringLiteral("choice-others")] = role.choiceOthers;
+            Role[QStringLiteral("choice-gods")] = role.choiceGods;
+            Role[QStringLiteral("lord-skill")] = role.lordSkill;
+            Role[QStringLiteral("choice-multi")] = role.choiceMulti;
+        }
+
+        theOb[QStringLiteral("Role")] = Role;
+    }
+    {
+        QJsonObject Hegemony;
+        {
+            Hegemony[QStringLiteral("choice-hegemony")] = hegemony.choice;
+            Hegemony[QStringLiteral("first-show-reward")] = hegemonyRewardToString(hegemony.firstShow);
+            Hegemony[QStringLiteral("companion-reward")] = hegemonyRewardToString(hegemony.companion);
+            Hegemony[QStringLiteral("half-hp-reward")] = hegemonyRewardToString(hegemony.halfHp);
+            Hegemony[QStringLiteral("careerist-kill")] = hegemony.careeristKillReward;
+        }
+        theOb[QStringLiteral("Hegemony")] = Hegemony;
+    }
+
+    QJsonDocument document(theOb);
+
+    QByteArray arr = document.toJson(QJsonDocument::Indented);
+    if (f.write(arr) == arr.length()) {
+        f.close();
+        return true;
+    }
 
     f.close();
 
-    return true;
+    return false;
 }
