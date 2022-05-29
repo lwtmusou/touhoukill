@@ -30,6 +30,8 @@ const int Settings::S_JUDGE_ANIMATION_DURATION = 1200;
 const int Settings::S_JUDGE_LONG_DELAY = 800;
 
 namespace {
+QSettings::Format jsonFormat;
+
 bool JsonReadFunc(QIODevice &device, QSettings::SettingsMap &map)
 {
     QByteArray arr = device.readAll();
@@ -54,14 +56,14 @@ bool JsonWriteFunc(QIODevice &device, const QSettings::SettingsMap &map)
 
 void registerCustomFormat1()
 {
-    QSettings::registerFormat(QStringLiteral("json"), JsonReadFunc, JsonWriteFunc);
+    jsonFormat = QSettings::registerFormat(QStringLiteral("json"), JsonReadFunc, JsonWriteFunc);
 }
 } // namespace
 
 Q_COREAPP_STARTUP_FUNCTION(registerCustomFormat1)
 
 Settings::Settings()
-    : QSettings(QStringLiteral("config.json"), QSettings::CustomFormat1)
+    : QSettings(QStringLiteral("config.json"), jsonFormat)
     , Rect(-ViewWidth / 2, -ViewHeight / 2, ViewWidth, ViewHeight)
 {
 }
