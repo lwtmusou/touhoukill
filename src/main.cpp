@@ -52,6 +52,7 @@ int main(int argc, char *argv[])
 
     Config.init();
 
+#if 0
     // refactor proposal: using QCommandLineParser
     if (QCoreApplication::arguments().contains(QStringLiteral("-server"))) {
         LegacyServer *server = new LegacyServer(QCoreApplication::instance());
@@ -66,6 +67,7 @@ int main(int argc, char *argv[])
         delete QCoreApplication::instance();
         return r;
     }
+#endif
 
     QFile file(QStringLiteral("sanguosha.qss"));
     if (file.open(QIODevice::ReadOnly)) {
@@ -79,6 +81,7 @@ int main(int argc, char *argv[])
 
     main_window->show();
 
+#if 0
     // refactor proposal: using QCommandLineParser
     foreach (QString arg, QCoreApplication::instance()->arguments()) {
         if (arg.startsWith(QStringLiteral("-connect:"))) {
@@ -90,6 +93,7 @@ int main(int argc, char *argv[])
             break;
         }
     }
+#endif
 
     int execResult = QCoreApplication::exec();
     delete QCoreApplication::instance();
