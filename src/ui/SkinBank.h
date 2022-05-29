@@ -4,13 +4,16 @@
 #define QSAN_UI_LIBRARY_AVAILABLE
 
 #include "card.h"
-#include "json.h"
+#include "jsonutils.h"
 #include "qsanbutton.h"
 
 #include <QAbstractAnimation>
 #include <QFont>
 #include <QGraphicsPixmapItem>
 #include <QHash>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonValue>
 #include <QPainter>
 #include <QPen>
 #include <QPixmap>
@@ -29,7 +32,7 @@ public:
         QColor m_color;
         bool m_vertical;
         QSanSimpleTextFont();
-        bool tryParse(const QVariant &arg);
+        bool tryParse(const QJsonValue &arg);
         void paintText(QPainter *painter, QRect pos, Qt::Alignment align, const QString &text) const;
         // this function's prototype is confusing. It will CLEAR ALL contents on the
         // QGraphicsPixmapItem passed in and then start drawing.
@@ -46,7 +49,7 @@ public:
         double m_shadowDecadeFactor;
         QPoint m_shadowOffset;
         QColor m_shadowColor;
-        bool tryParse(const QVariant &arg);
+        bool tryParse(const QJsonValue &arg);
         void paintText(QPainter *painter, QRect pos, Qt::Alignment align, const QString &text) const;
         // this function's prototype is confusing. It will CLEAR ALL contents on the
         // QGraphicsPixmapItem passed in and then start drawing.
@@ -58,7 +61,7 @@ public:
     public:
         QRect getTranslatedRect(QRect parentRect) const;
         QRect getTranslatedRect(QRect parentRect, QSize childSize) const;
-        bool tryParse(const QVariant &value);
+        bool tryParse(const QJsonValue &value);
 
     protected:
         Qt::Alignment m_anchorChild;
@@ -80,15 +83,15 @@ public:
     QStringList getAnimationFileNames() const;
 
 protected:
-    virtual bool _loadLayoutConfig(const QVariant &config) = 0;
-    virtual bool _loadImageConfig(const QVariant &config);
-    virtual bool _loadAnimationConfig(const QVariant &config) = 0;
-    QString _readConfig(const QVariant &dictionary, const QString &key, const QString &defaultValue = QString()) const;
+    virtual bool _loadLayoutConfig(const QJsonValue &config) = 0;
+    virtual bool _loadImageConfig(const QJsonValue &config);
+    virtual bool _loadAnimationConfig(const QJsonValue &config) = 0;
+    QString _readConfig(const QJsonValue &dictionary, const QString &key, const QString &defaultValue = QString()) const;
     QString _readImageConfig(const QString &key, QRect &clipRegion, bool &clipping, QSize &newScale, bool &scaled, const QString &defaultValue = QString()) const;
 
-    JsonObject _m_imageConfig;
-    JsonObject _m_audioConfig;
-    JsonObject _m_animationConfig;
+    QJsonObject _m_imageConfig;
+    QJsonObject _m_audioConfig;
+    QJsonObject _m_animationConfig;
 };
 
 class QSanRoomSkin : public IQSanComponentSkin
@@ -440,8 +443,8 @@ protected:
     PhotoLayout _m_photoLayout;
     CommonLayout _m_commonLayout;
     DashboardLayout _m_dashboardLayout;
-    bool _loadLayoutConfig(const QVariant &layoutConfig) override;
-    bool _loadAnimationConfig(const QVariant &animationConfig) override;
+    bool _loadLayoutConfig(const QJsonValue &layoutConfig) override;
+    bool _loadAnimationConfig(const QJsonValue &animationConfig) override;
 };
 
 class QSanSkinScheme
@@ -450,7 +453,7 @@ class QSanSkinScheme
     // in the future; and we may need to assemble a set of different skins into a scheme.
 
 public:
-    bool load(const QVariant &configs);
+    bool load(const QJsonValue &configs);
     const QSanRoomSkin &getRoomSkin() const;
 
 protected:
@@ -473,7 +476,7 @@ protected:
     explicit QSanSkinFactory(const char *fileName);
     static QSanSkinFactory *_sm_singleton;
     QSanSkinScheme _sm_currentSkin;
-    JsonObject _m_skinList;
+    QJsonObject _m_skinList;
     QString _m_skinName;
 };
 

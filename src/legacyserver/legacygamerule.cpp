@@ -3,13 +3,16 @@
 #include "card.h"
 #include "engine.h"
 #include "general.h"
-#include "json.h"
+#include "jsonutils.h"
 #include "legacyroom.h"
 #include "legacyserverplayer.h"
 #include "settings.h"
 #include "skill.h"
 #include "util.h"
 
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonValue>
 #include <QTime>
 
 LegacyGameRule::LegacyGameRule()
@@ -161,7 +164,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                 if (isHegemonyGameMode(room->getMode())) {
                     foreach (const Skill *skill, player->skills(false)) {
                         if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || player->hasValidLordSkill(skill->name()))) {
-                            JsonArray arg;
+                            QJsonArray arg;
                             arg << player->objectName();
                             arg << skill->limitMark();
                             arg << 1;
@@ -318,7 +321,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
             CardUseStruct card_use = data.value<CardUseStruct>();
             if (card_use.from->hasFlag(QStringLiteral("Global_ForbidSurrender"))) {
                 card_use.from->setFlag(QStringLiteral("-Global_ForbidSurrender"));
-                room->doNotify(qobject_cast<LegacyServerPlayer *>(card_use.from), QSanProtocol::S_COMMAND_ENABLE_SURRENDER, QVariant(true));
+                room->doNotify(qobject_cast<LegacyServerPlayer *>(card_use.from), QSanProtocol::S_COMMAND_ENABLE_SURRENDER, true);
             }
 
             qobject_cast<LegacyServerPlayer *>(card_use.from)->broadcastSkillInvoke(card_use.card);
@@ -1251,7 +1254,7 @@ void LegacyGameRule::changeGeneral1v1(LegacyServerPlayer *player) const
         room->setPlayerProperty(player, "kingdom", player->general()->kingdom());
 
     QList<LegacyServerPlayer *> notified = classical ? room->getOtherPlayers(player, true) : room->getPlayers();
-    room->doBroadcastNotify(notified, QSanProtocol::S_COMMAND_REVEAL_GENERAL, JsonArray() << player->objectName() << new_general);
+    room->doBroadcastNotify(notified, QSanProtocol::S_COMMAND_REVEAL_GENERAL, QJsonArray() << player->objectName() << new_general);
 
     if (!player->faceUp())
         player->turnOver();

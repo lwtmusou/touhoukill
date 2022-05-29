@@ -428,7 +428,7 @@ RoomScene::~RoomScene()
 
 void RoomScene::handleGameEvent(const QVariant &args)
 {
-    JsonArray arg = args.value<JsonArray>();
+    QJsonArray arg = args.value<QJsonArray>();
     if (arg.isEmpty())
         return;
 
@@ -470,10 +470,10 @@ void RoomScene::handleGameEvent(const QVariant &args)
     case S_GAME_EVENT_PLAY_EFFECT: {
         QString skillName = arg[1].toString();
         QString category;
-        if (JsonUtils::isBool(arg[2])) {
+        if (QSgsJsonUtils::isBool(arg[2])) {
             bool isMale = arg[2].toBool();
             category = isMale ? QStringLiteral("male") : QStringLiteral("female");
-        } else if (JsonUtils::isString(arg[2]))
+        } else if (QSgsJsonUtils::isString(arg[2]))
             category = arg[2].toString();
         int type = arg[3].toInt();
         Audio::playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(skillName, category, type));
@@ -558,7 +558,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         break;
     }
     case S_GAME_EVENT_UPDATE_PRESHOW: {
-        JsonObject preshow_map = arg[1].value<JsonObject>();
+        QJsonObject preshow_map = arg[1].toObject();
         QStringList skill_names = preshow_map.keys();
         foreach (const QString &skill, skill_names) {
             bool showed = preshow_map[skill].toBool();
@@ -4875,7 +4875,7 @@ void RoomScene::finishArrange()
     }
     arrange_rects.clear();
 
-    ClientInstance->replyToServer(S_COMMAND_ARRANGE_GENERAL, JsonUtils::toJsonArray(names));
+    ClientInstance->replyToServer(S_COMMAND_ARRANGE_GENERAL, QSgsJsonUtils::toJsonArray(names));
     ClientInstance->setStatus(Client::NotActive);
 }
 

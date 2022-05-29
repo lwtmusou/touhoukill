@@ -3,7 +3,7 @@
 #include "card.h"
 #include "engine.h"
 #include "general.h"
-#include "json.h"
+#include "jsonutils.h"
 #include "legacygamerule.h"
 #include "legacyroom.h"
 #include "recorder.h"
@@ -11,8 +11,12 @@
 #include "skill.h"
 #include "util.h"
 
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonValue>
+
 using namespace QSanProtocol;
-using namespace JsonUtils;
+using namespace QSgsJsonUtils;
 
 const int LegacyServerPlayer::S_NUM_SEMAPHORES = 6;
 
@@ -541,7 +545,7 @@ bool LegacyServerPlayer::pindian(LegacyServerPlayer *target, const QString &reas
     log.card_str.clear();
     room->sendLog(log);
 
-    JsonArray arg;
+    QJsonArray arg;
     arg << (int)S_GAME_EVENT_REVEAL_PINDIAN;
     arg << objectName();
     arg << pindian_struct.from_card->effectiveId();
@@ -944,8 +948,8 @@ void LegacyServerPlayer::introduceTo(LegacyServerPlayer *player)
     QString screen_name = screenName();
     QString avatar = property("avatar").toString();
 
-    JsonArray introduce_str;
-    introduce_str << objectName() << screen_name.toUtf8().toBase64() << avatar;
+    QJsonArray introduce_str;
+    introduce_str << objectName() << QString::fromLatin1(screen_name.toUtf8().toBase64()) << avatar;
 
     if (player != nullptr)
         room->doNotify(player, S_COMMAND_ADD_PLAYER, introduce_str);
@@ -1038,7 +1042,7 @@ void LegacyServerPlayer::marshal(LegacyServerPlayer *player) const
     } else {
         room->notifyProperty(player, this, "alive");
         room->notifyProperty(player, this, "role");
-        room->doNotify(player, S_COMMAND_KILL_PLAYER, QVariant(objectName()));
+        room->doNotify(player, S_COMMAND_KILL_PLAYER, QJsonValue(objectName()));
     }
 
     if (!faceUp())
@@ -1130,14 +1134,14 @@ void LegacyServerPlayer::marshal(LegacyServerPlayer *player) const
         }
     }
 
-    JsonArray arg_shownhandcard;
+    QJsonArray arg_shownhandcard;
     arg_shownhandcard << objectName();
-    arg_shownhandcard << JsonUtils::toJsonArray(shownHandcards().values());
+    arg_shownhandcard << QSgsJsonUtils::toJsonArray(shownHandcards().values());
     room->doNotify(player, S_COMMAND_SET_SHOWN_HANDCARD, arg_shownhandcard);
 
-    JsonArray arg_brokenIds;
+    QJsonArray arg_brokenIds;
     arg_brokenIds << objectName();
-    arg_brokenIds << JsonUtils::toJsonArray(brokenEquips().values());
+    arg_brokenIds << QSgsJsonUtils::toJsonArray(brokenEquips().values());
     room->doNotify(player, S_COMMAND_SET_BROKEN_EQUIP, arg_brokenIds);
 
     //need remove mark of hidden limit skill
@@ -1152,7 +1156,7 @@ void LegacyServerPlayer::marshal(LegacyServerPlayer *player) const
         if (mark_name.startsWith(QStringLiteral("@")) && !hegemony_limitmarks.contains(mark_name)) {
             int value = mark(mark_name);
             if (value > 0) {
-                JsonArray arg_mark;
+                QJsonArray arg_mark;
                 arg_mark << objectName();
                 arg_mark << mark_name;
                 arg_mark << value;
@@ -1167,7 +1171,7 @@ void LegacyServerPlayer::marshal(LegacyServerPlayer *player) const
             if (skill->isLordSkill() && !hasValidLordSkill(skill->name()))
                 continue;
             QString skill_name = skill->name();
-            JsonArray arg_acquire;
+            QJsonArray arg_acquire;
             arg_acquire << S_GAME_EVENT_ACQUIRE_SKILL;
             arg_acquire << objectName();
             arg_acquire << skill_name;
@@ -1177,13 +1181,13 @@ void LegacyServerPlayer::marshal(LegacyServerPlayer *player) const
     }
 
     foreach (const QString &invalid_name, invalidedSkills()) {
-        JsonArray arg_invalid;
+        QJsonArray arg_invalid;
         arg_invalid << objectName() << invalid_name << true;
         room->doNotify(player, S_COMMAND_SET_SKILL_INVALIDITY, arg_invalid);
     }
 
     //for AvatarTooltip
-    JsonArray arg_tooltip;
+    QJsonArray arg_tooltip;
     arg_tooltip << QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
     room->doNotify(player, QSanProtocol::S_COMMAND_LOG_EVENT, arg_tooltip);
 
@@ -1206,7 +1210,7 @@ void LegacyServerPlayer::marshal(LegacyServerPlayer *player) const
     //    }
 
     foreach (QString reason, disableShow(true)) { //for disableshow
-        JsonArray arg;
+        QJsonArray arg;
         arg << objectName();
         arg << true;
         arg << QStringLiteral("h");
@@ -1214,7 +1218,7 @@ void LegacyServerPlayer::marshal(LegacyServerPlayer *player) const
         room->doNotify(player, S_COMMAND_DISABLE_SHOW, arg);
     }
     foreach (QString reason, disableShow(false)) {
-        JsonArray arg;
+        QJsonArray arg;
         arg << objectName();
         arg << true;
         arg << QStringLiteral("d");
@@ -1228,7 +1232,7 @@ void LegacyServerPlayer::marshal(LegacyServerPlayer *player) const
     foreach (QString item, histories().keys()) {
         int value = histories().value(item);
         if (value > 0) {
-            JsonArray arg;
+            QJsonArray arg;
             arg << item;
             arg << value;
 
@@ -1246,7 +1250,7 @@ void LegacyServerPlayer::marshal(LegacyServerPlayer *player) const
     QString huashen_target = this->tag.value(QStringLiteral("Huashen_target"), QString()).toString();
     QString huashen_place = this->tag.value(QStringLiteral("Huashen_place"), QString()).toString();
     if (!huashen_skill.isNull() && !huashen_target.isNull()) {
-        JsonArray huanshen_arg;
+        QJsonArray huanshen_arg;
         huanshen_arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
         huanshen_arg << objectName();
         if ((huashen_place != QStringLiteral("deputy"))) {
@@ -1343,7 +1347,7 @@ void LegacyServerPlayer::showHiddenSkill(const QString &skill_name)
             if (!generalName.isNull()) {
                 room->touhouLogmessage(QStringLiteral("#ShowHiddenGeneral"), this, generalName);
 
-                JsonArray arg;
+                QJsonArray arg;
                 arg << (int)QSanProtocol::S_GAME_EVENT_HUASHEN;
                 arg << objectName();
                 if (inHeadSkills(QStringLiteral("anyun"))) {
@@ -1358,7 +1362,7 @@ void LegacyServerPlayer::showHiddenSkill(const QString &skill_name)
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
 
                 // shown_hidden_general = generalName;
-                JsonArray arg1;
+                QJsonArray arg1;
                 arg1 << objectName();
                 arg1 << generalName;
                 room->doBroadcastNotify(S_COMMAND_SET_SHOWN_HIDDEN_GENERAL, arg1);
@@ -1533,7 +1537,7 @@ void LegacyServerPlayer::showGeneral(bool head_general, bool trigger_event, bool
 
         general_name = names.first();
 
-        JsonArray arg;
+        QJsonArray arg;
         arg << (int)S_GAME_EVENT_CHANGE_HERO;
         arg << objectName();
         arg << general_name;
@@ -1544,7 +1548,7 @@ void LegacyServerPlayer::showGeneral(bool head_general, bool trigger_event, bool
 
         //change skinhero
         int skin_id = room->getTag(general_name + QStringLiteral("_skin_id")).toInt();
-        JsonArray val;
+        QJsonArray val;
         val << (int)QSanProtocol::S_GAME_EVENT_SKIN_CHANGED;
         val << objectName();
         val << general_name;
@@ -1555,7 +1559,7 @@ void LegacyServerPlayer::showGeneral(bool head_general, bool trigger_event, bool
         sendSkillsToOthers();
         foreach (const Skill *skill, getHeadSkillList()) {
             if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasValidLordSkill(skill->name())) && haveShownSkill(skill)) {
-                JsonArray arg;
+                QJsonArray arg;
                 arg << objectName();
                 arg << skill->limitMark();
                 arg << mark(skill->limitMark());
@@ -1572,7 +1576,7 @@ void LegacyServerPlayer::showGeneral(bool head_general, bool trigger_event, bool
 
         general_name = names.last();
 
-        JsonArray arg;
+        QJsonArray arg;
         arg << (int)S_GAME_EVENT_CHANGE_HERO;
         arg << objectName();
         arg << general_name;
@@ -1583,7 +1587,7 @@ void LegacyServerPlayer::showGeneral(bool head_general, bool trigger_event, bool
 
         //change skinhero
         int skin_id = room->getTag(general_name + QStringLiteral("_skin_id")).toInt();
-        JsonArray val;
+        QJsonArray val;
         val << (int)QSanProtocol::S_GAME_EVENT_SKIN_CHANGED;
         val << objectName();
         val << general_name;
@@ -1594,7 +1598,7 @@ void LegacyServerPlayer::showGeneral(bool head_general, bool trigger_event, bool
         sendSkillsToOthers(false);
         foreach (const Skill *skill, getDeputySkillList()) {
             if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasValidLordSkill(skill->name())) && haveShownSkill(skill)) {
-                JsonArray arg;
+                QJsonArray arg;
                 arg << objectName();
                 arg << skill->limitMark();
                 arg << mark(skill->limitMark());
@@ -1685,7 +1689,7 @@ void LegacyServerPlayer::hideGeneral(bool head_general)
         room->setPlayerProperty(this, "general_showed", false);
         room->setPlayerProperty(this, "flags", QStringLiteral("-hiding"));
 
-        JsonArray arg;
+        QJsonArray arg;
         arg << (int)S_GAME_EVENT_CHANGE_HERO;
         arg << objectName();
         arg << QStringLiteral("anjiang");
@@ -1699,7 +1703,7 @@ void LegacyServerPlayer::hideGeneral(bool head_general)
         foreach (const Skill *skill, skills(false)) {
             if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasValidLordSkill(skill->name())) && !haveShownSkill(skill)
                 && mark(skill->limitMark()) > 0) {
-                JsonArray arg;
+                QJsonArray arg;
                 arg << objectName();
                 arg << skill->limitMark();
                 arg << 0;
@@ -1718,7 +1722,7 @@ void LegacyServerPlayer::hideGeneral(bool head_general)
         room->setPlayerProperty(this, "general2_showed", false);
         room->setPlayerProperty(this, "flags", QStringLiteral("-hiding"));
 
-        JsonArray arg;
+        QJsonArray arg;
         arg << (int)S_GAME_EVENT_CHANGE_HERO;
         arg << objectName();
         arg << QStringLiteral("anjiang");
@@ -1732,7 +1736,7 @@ void LegacyServerPlayer::hideGeneral(bool head_general)
         foreach (const Skill *skill, skills(false)) {
             if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || hasValidLordSkill(skill->name())) && !haveShownSkill(skill)
                 && mark(skill->limitMark()) > 0) {
-                JsonArray arg;
+                QJsonArray arg;
                 arg << objectName();
                 arg << skill->limitMark();
                 arg << 0;
@@ -1786,7 +1790,7 @@ void LegacyServerPlayer::removeGeneral(bool head_general)
 
         room->setPlayerProperty(this, "general_showed", true);
 
-        JsonArray arg;
+        QJsonArray arg;
         arg << (int)S_GAME_EVENT_CHANGE_HERO;
         arg << objectName();
         arg << general_name;
@@ -1816,7 +1820,7 @@ void LegacyServerPlayer::removeGeneral(bool head_general)
 
         room->setPlayerProperty(this, "general2_showed", true);
 
-        JsonArray arg;
+        QJsonArray arg;
         arg << (int)S_GAME_EVENT_CHANGE_HERO;
         arg << objectName();
         arg << general_name;
@@ -1861,7 +1865,7 @@ void LegacyServerPlayer::sendSkillsToOthers(bool head_skill)
     const QSet<const Skill *> skills = head_skill ? getHeadSkillList() : getDeputySkillList();
 
     foreach (const Skill *skill, skills) {
-        JsonArray args;
+        QJsonArray args;
         args << QSanProtocol::S_GAME_EVENT_ADD_SKILL;
         args << objectName();
         args << skill->name();

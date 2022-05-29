@@ -33,8 +33,8 @@ struct LegacyCardsMoveStruct
     QList<int> broken_ids; //record broken equip IDs from EquipPlace
     QList<int> shown_ids; //record broken shown IDs from HandPlace
 
-    bool tryParse(const QVariant &arg);
-    QVariant toVariant() const;
+    bool tryParse(const QJsonValue &arg);
+    QJsonValue toVariant() const;
     bool isRelevant(const Player *player) const;
 };
 
@@ -147,17 +147,17 @@ struct ChoiceMadeStruct
 
 namespace ExtendCardUseStruct {
 bool isValid(const CardUseStruct &use, const QString &pattern);
-bool tryParse(CardUseStruct &use, const QVariant &usage, RoomObject *room);
+bool tryParse(CardUseStruct &use, const QJsonValue &usage, RoomObject *room);
 QString toString(const CardUseStruct &use);
 } // namespace ExtendCardUseStruct
 
 namespace ExtendCardMoveReason {
-bool tryParse(CardMoveReason &reason, const QVariant &);
-QVariant toVariant(const CardMoveReason &);
+bool tryParse(CardMoveReason &reason, const QJsonValue &);
+QJsonValue toVariant(const CardMoveReason &);
 } // namespace ExtendCardMoveReason
 
 namespace ExtendTriggerDetail {
-QVariant toVariant(const TriggerDetail &detail);
+QJsonValue toVariant(const TriggerDetail &detail);
 QStringList toList(const TriggerDetail &detail);
 } // namespace ExtendTriggerDetail
 

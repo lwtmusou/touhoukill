@@ -1,12 +1,16 @@
 #include "serverinfowidget.h"
 #include "client.h"
 #include "engine.h"
+#include "jsonutils.h"
 #include "package.h"
 #include "settings.h"
 #include "structs.h"
 
 #include <QCheckBox>
 #include <QFormLayout>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonValue>
 #include <QLabel>
 #include <QListWidget>
 

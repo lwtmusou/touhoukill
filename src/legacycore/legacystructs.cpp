@@ -1,10 +1,14 @@
 #include "legacystructs.h"
 #include "RoomObject.h"
 #include "card.h"
-#include "json.h"
+#include "jsonutils.h"
 #include "player.h"
 #include "structs.h"
 #include "trigger.h"
+
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonValue>
 
 using namespace QSanguosha;
 
@@ -83,16 +87,16 @@ bool LegacyCardsMoveStruct::operator<(const LegacyCardsMoveStruct &other) const
     return from < other.from || from_place < other.from_place || from_pile_name < other.from_pile_name || from_player_name < other.from_player_name;
 }
 
-bool LegacyCardsMoveStruct::tryParse(const QVariant &arg)
+bool LegacyCardsMoveStruct::tryParse(const QJsonValue &arg)
 {
-    JsonArray args = arg.value<JsonArray>();
+    QJsonArray args = arg.toArray();
     if (args.size() != 8)
         return false;
 
-    if ((!JsonUtils::isNumber(args[0]) && !args[0].canConvert<JsonArray>()) || !JsonUtils::isNumberArray(args, 1, 2) || !JsonUtils::isStringArray(args, 3, 6))
+    if ((!QSgsJsonUtils::isNumber(args[0]) && !args[0].isArray()) || !QSgsJsonUtils::isNumberArray(args, 1, 2) || !QSgsJsonUtils::isStringArray(args, 3, 6))
         return false;
 
-    if (!JsonUtils::tryParse(args[0], card_ids))
+    if (!QSgsJsonUtils::tryParse(args[0], card_ids))
         return false;
 
     from_place = (Place)args[1].toInt();
@@ -105,12 +109,12 @@ bool LegacyCardsMoveStruct::tryParse(const QVariant &arg)
     return true;
 }
 
-QVariant LegacyCardsMoveStruct::toVariant() const
+QJsonValue LegacyCardsMoveStruct::toVariant() const
 {
     //notify Client
-    JsonArray arg;
+    QJsonArray arg;
     if (open) {
-        arg << JsonUtils::toJsonArray(card_ids);
+        arg << QSgsJsonUtils::toJsonArray(card_ids);
     } else {
         QList<int> notify_ids;
         //keep original order?
@@ -120,7 +124,7 @@ QVariant LegacyCardsMoveStruct::toVariant() const
             else
                 notify_ids.append(Card::S_UNKNOWN_CARD_ID);
         }
-        arg << JsonUtils::toJsonArray(notify_ids);
+        arg << QSgsJsonUtils::toJsonArray(notify_ids);
     }
 
     arg << (int)from_place;
@@ -144,22 +148,22 @@ bool ExtendCardUseStruct::isValid(const CardUseStruct &use, const QString &patte
     return use.card != nullptr;
 }
 
-bool ExtendCardUseStruct::tryParse(CardUseStruct &use, const QVariant &usage, RoomObject *room)
+bool ExtendCardUseStruct::tryParse(CardUseStruct &use, const QJsonValue &usage, RoomObject *room)
 {
-    JsonArray arr = usage.value<JsonArray>();
-    if (arr.length() < 2 || !JsonUtils::isString(arr.first()) || (!arr.value(1).canConvert<JsonArray>() && !JsonUtils::isString(arr.value(1))))
+    QJsonArray arr = usage.toArray();
+    if (arr.count() < 2 || !QSgsJsonUtils::isString(arr.first()) || (!arr.at(1).isArray() && !QSgsJsonUtils::isString(arr.at(1))))
         return false;
 
     use.card = Card::Parse(arr.first().toString(), room);
-    if (arr.value(1).canConvert<JsonArray>()) {
-        JsonArray targets = arr.value(1).value<JsonArray>();
+    if (arr.at(1).isArray()) {
+        QJsonArray targets = arr.at(1).toArray();
 
         for (int i = 0; i < targets.size(); i++) {
-            if (!JsonUtils::isString(targets.value(i)))
+            if (!QSgsJsonUtils::isString(targets.at(i)))
                 return false;
-            use.to << room->findChild<Player *>(targets.value(i).toString());
+            use.to << room->findChild<Player *>(targets.at(i).toString());
         }
-    } else if (JsonUtils::isString(arr.value(1))) {
+    } else if (QSgsJsonUtils::isString(arr.at(1))) {
         // todo: parse card
     }
     return true;
@@ -189,10 +193,10 @@ QString ExtendCardUseStruct::toString(const CardUseStruct &use)
     return l.join(QStringLiteral("->"));
 }
 
-bool ExtendCardMoveReason::tryParse(CardMoveReason &reason, const QVariant &arg)
+bool ExtendCardMoveReason::tryParse(CardMoveReason &reason, const QJsonValue &arg)
 {
-    JsonArray args = arg.value<JsonArray>();
-    if (args.size() != 5 || !args[0].canConvert<int>() || !JsonUtils::isStringArray(args, 1, 4))
+    QJsonArray args = arg.toArray();
+    if (args.size() != 5 || !args[0].isDouble() || !QSgsJsonUtils::isStringArray(args, 1, 4))
         return false;
 
     reason.m_reason = static_cast<MoveReasonCategory>(args[0].toInt());
@@ -204,9 +208,9 @@ bool ExtendCardMoveReason::tryParse(CardMoveReason &reason, const QVariant &arg)
     return true;
 }
 
-QVariant ExtendCardMoveReason::toVariant(const CardMoveReason &reason)
+QJsonValue ExtendCardMoveReason::toVariant(const CardMoveReason &reason)
 {
-    JsonArray result;
+    QJsonArray result;
     result << static_cast<int>(reason.m_reason);
     result << reason.m_playerId;
     result << reason.m_skillName;
@@ -215,12 +219,12 @@ QVariant ExtendCardMoveReason::toVariant(const CardMoveReason &reason)
     return result;
 }
 
-QVariant ExtendTriggerDetail::toVariant(const TriggerDetail &detail)
+QJsonValue ExtendTriggerDetail::toVariant(const TriggerDetail &detail)
 {
     if (!detail.isValid())
-        return QVariant();
+        return QJsonValue();
 
-    JsonObject ob;
+    QJsonObject ob;
     if (detail.trigger() != nullptr)
         ob[QStringLiteral("skill")] = detail.trigger()->name();
     if (detail.owner() != nullptr)

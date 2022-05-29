@@ -23,8 +23,8 @@ public:
         , max(max)
     {
     }
-    bool tryParse(const QVariant &val);
-    QVariant toVariant() const;
+    bool tryParse(const QJsonValue &val);
+    QJsonValue toVariant() const;
 };
 
 } // namespace QSanProtocol

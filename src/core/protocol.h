@@ -256,11 +256,6 @@ public:
         return command;
     }
 
-    Q_DECL_DEPRECATED inline void setMessageBody(const QVariant &value)
-    {
-        messageBody = QJsonValue::fromVariant(value);
-    }
-
 protected:
     CommandType command;
     PacketDescriptionFlag packetDescription;

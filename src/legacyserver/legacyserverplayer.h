@@ -156,27 +156,19 @@ public:
             drainLock((SemaphoreType)i);
         }
     }
-    QSGS_SOCKET inline QString getClientReplyString()
-    {
-        return m_clientResponseString;
-    }
-    QSGS_SOCKET inline void setClientReplyString(const QString &val)
-    {
-        m_clientResponseString = val;
-    }
-    QSGS_SOCKET inline const QVariant &getClientReply()
+    QSGS_SOCKET inline const QJsonValue &getClientReply()
     {
         return _m_clientResponse;
     }
-    QSGS_SOCKET inline void setClientReply(const QVariant &val)
+    QSGS_SOCKET inline void setClientReply(const QJsonValue &val)
     {
         _m_clientResponse = val;
     }
     bool m_isClientResponseReady; //Suggest whether a valid player's reponse has been received.
     bool m_isWaitingReply; // Suggest if the server player is waiting for client's response.
-    QVariant m_cheatArgs; // Store the cheat code received from client.
+    QJsonValue m_cheatArgs; // Store the cheat code received from client.
     QSanProtocol::CommandType m_expectedReplyCommand; // Store the command to be sent to the client.
-    QVariant m_commandArgs; // Store the command args to be sent to the client.
+    QJsonValue m_commandArgs; // Store the command args to be sent to the client.
 
     // static function
     static bool CompareByActionOrder(LegacyServerPlayer *a, LegacyServerPlayer *b);
@@ -210,8 +202,7 @@ private:
     QList<PhaseStruct> _m_phases_state;
     QStringList selected; // 3v3 mode use only
     QDateTime test_time;
-    QString m_clientResponseString;
-    QVariant _m_clientResponse;
+    QJsonValue _m_clientResponse;
 
     bool ready;
 

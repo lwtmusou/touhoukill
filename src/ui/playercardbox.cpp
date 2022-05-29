@@ -181,11 +181,11 @@ void PlayerCardBox::paintLayout(QPainter *painter)
 
     // font
     IQSanComponentSkin::QSanSimpleTextFont font;
-    JsonArray array;
+    QJsonArray array;
     array << QStringLiteral("@DroidSansFallback") << 16 << 2;
-    JsonArray array4;
+    QJsonArray array4;
     array4 << 228 << 213 << 160 << 255;
-    array << QVariant::fromValue(array4);
+    array << array4;
     font.tryParse(array);
 
     int index = 0;

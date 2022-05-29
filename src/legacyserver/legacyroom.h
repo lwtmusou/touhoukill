@@ -81,8 +81,8 @@ public:
     QSGS_LOGIC enum GuanxingType { GuanxingUpOnly = 1, GuanxingBothSides = 0, GuanxingDownOnly = -1 };
     Q_ENUM(GuanxingType)
 
-    QSGS_SOCKET typedef void (LegacyRoom::*Callback)(LegacyServerPlayer *, const QVariant &);
-    QSGS_SOCKET typedef bool (LegacyRoom::*ResponseVerifyFunction)(LegacyServerPlayer *, const QVariant &, void *);
+    QSGS_SOCKET typedef void (LegacyRoom::*Callback)(LegacyServerPlayer *, const QJsonValue &);
+    QSGS_SOCKET typedef bool (LegacyRoom::*ResponseVerifyFunction)(LegacyServerPlayer *, const QJsonValue &, void *);
 
     QSGS_SOCKET LegacyServerPlayer *addSocket(ClientSocket *socket);
 
@@ -171,8 +171,8 @@ public:
     //    command only once in all with broadcast = true if the poll is to everypody).
     // 2. Call getResult(player, timeout) on each player to retrieve the result. Read manual for getResults
     //    before you use.
-    QSGS_SOCKET bool doRequest(LegacyServerPlayer *player, QSanProtocol::CommandType command, const QVariant &arg, time_t timeOut, bool wait);
-    QSGS_SOCKET bool doRequest(LegacyServerPlayer *player, QSanProtocol::CommandType command, const QVariant &arg, bool wait);
+    QSGS_SOCKET bool doRequest(LegacyServerPlayer *player, QSanProtocol::CommandType command, const QJsonValue &arg, time_t timeOut, bool wait);
+    QSGS_SOCKET bool doRequest(LegacyServerPlayer *player, QSanProtocol::CommandType command, const QJsonValue &arg, bool wait);
 
     // Broadcast a request to a list of players and get the client responses. Call is blocking until all client
     // replies or server times out, whichever is earlier. Check each player's m_isClientResponseReady to see if a valid
@@ -202,13 +202,13 @@ public:
     // Notify a player of a event by sending S_SERVER_NOTIFICATION packets. No reply should be expected from
     // the client for S_SERVER_NOTIFICATION as it's a one way notice. Any message from the client in reply to this call
     // will be rejected.
-    QSGS_SOCKET bool doNotify(LegacyServerPlayer *player, QSanProtocol::CommandType command, const QVariant &arg);
+    QSGS_SOCKET bool doNotify(LegacyServerPlayer *player, QSanProtocol::CommandType command, const QJsonValue &arg);
 
     // Broadcast a event to a list of players by sending S_SERVER_NOTIFICATION packets. No replies should be expected from
     // the clients for S_SERVER_NOTIFICATION as it's a one way notice. Any message from the client in reply to this call
     // will be rejected.
-    QSGS_SOCKET bool doBroadcastNotify(QSanProtocol::CommandType command, const QVariant &arg);
-    QSGS_SOCKET bool doBroadcastNotify(const QList<LegacyServerPlayer *> &players, QSanProtocol::CommandType command, const QVariant &arg);
+    QSGS_SOCKET bool doBroadcastNotify(QSanProtocol::CommandType command, const QJsonValue &arg);
+    QSGS_SOCKET bool doBroadcastNotify(const QList<LegacyServerPlayer *> &players, QSanProtocol::CommandType command, const QJsonValue &arg);
 
     QSGS_SOCKET bool doNotify(LegacyServerPlayer *player, int command, const char *arg);
     QSGS_SOCKET bool doBroadcastNotify(int command, const char *arg);
@@ -234,7 +234,7 @@ public:
                                                   ResponseVerifyFunction validateFunc = nullptr, void *funcArg = nullptr);
 
     // Verification functions
-    bool verifyNullificationResponse(LegacyServerPlayer *, const QVariant &, void *);
+    bool verifyNullificationResponse(LegacyServerPlayer *, const QJsonValue &, void *);
 
     // Notification functions
     QSGS_LOGIC bool notifyMoveFocus(LegacyServerPlayer *player);
@@ -383,22 +383,22 @@ public:
     QSGS_LOGIC void addPlayerHistory(LegacyServerPlayer *player, const QString &key, int times = 1);
     QSGS_LOGIC void transformGeneral(LegacyServerPlayer *player, const QString &general_name, int head);
 
-    QSGS_SOCKET void toggleReadyCommand(LegacyServerPlayer *player, const QVariant &);
-    QSGS_SOCKET void speakCommand(LegacyServerPlayer *player, const QVariant &arg);
-    QSGS_SOCKET void trustCommand(LegacyServerPlayer *player, const QVariant &arg);
-    QSGS_SOCKET void pauseCommand(LegacyServerPlayer *player, const QVariant &arg);
+    QSGS_SOCKET void toggleReadyCommand(LegacyServerPlayer *player, const QJsonValue &);
+    QSGS_SOCKET void speakCommand(LegacyServerPlayer *player, const QJsonValue &arg);
+    QSGS_SOCKET void trustCommand(LegacyServerPlayer *player, const QJsonValue &arg);
+    QSGS_SOCKET void pauseCommand(LegacyServerPlayer *player, const QJsonValue &arg);
     QSGS_SOCKET void processResponse(LegacyServerPlayer *player, const QSanProtocol::Packet *arg);
-    QSGS_SOCKET void addRobotCommand(LegacyServerPlayer *player, const QVariant &arg);
-    QSGS_SOCKET void fillRobotsCommand(LegacyServerPlayer *player, const QVariant &arg);
+    QSGS_SOCKET void addRobotCommand(LegacyServerPlayer *player, const QJsonValue &arg);
+    QSGS_SOCKET void fillRobotsCommand(LegacyServerPlayer *player, const QJsonValue &arg);
     QSGS_SOCKET void broadcastInvoke(const QSanProtocol::Packet *packet, LegacyServerPlayer *except = nullptr);
     QSGS_SOCKET void broadcastInvoke(const char *method, const QString &arg = QStringLiteral("."), LegacyServerPlayer *except = nullptr);
-    QSGS_SOCKET void networkDelayTestCommand(LegacyServerPlayer *player, const QVariant &);
+    QSGS_SOCKET void networkDelayTestCommand(LegacyServerPlayer *player, const QJsonValue &);
     QSGS_LOGIC bool roleStatusCommand(LegacyServerPlayer *player);
 
     QSGS_LOGIC void updateCardsOnLose(const LegacyCardsMoveStruct &move);
     QSGS_LOGIC void updateCardsOnGet(const LegacyCardsMoveStruct &move);
 
-    QSGS_LOGIC void cheat(LegacyServerPlayer *player, const QVariant &args);
+    QSGS_LOGIC void cheat(LegacyServerPlayer *player, const QJsonValue &args);
     QSGS_LOGIC bool makeSurrender(LegacyServerPlayer *player);
 
 protected:
@@ -548,9 +548,9 @@ private:
 
     QVariantMap tag;
 
-    QVariant m_fillAGarg;
+    QJsonValue m_fillAGarg;
     LegacyServerPlayer *m_fillAGWho;
-    QVariant m_takeAGargs;
+    QJsonValue m_takeAGargs;
 
     QWaitCondition m_waitCond;
     mutable QMutex m_mutex;
@@ -575,9 +575,9 @@ private:
     void makeReviving(const QString &name);
     void doScript(const QString &script);
 
-    QSGS_SOCKET void skinChangeCommand(LegacyServerPlayer *player, const QVariant &packet);
-    QSGS_SOCKET void heartbeatCommand(LegacyServerPlayer *player, const QVariant &packet);
-    QSGS_SOCKET void processRequestPreshow(LegacyServerPlayer *player, const QVariant &arg); //hegemony
+    QSGS_SOCKET void skinChangeCommand(LegacyServerPlayer *player, const QJsonValue &packet);
+    QSGS_SOCKET void heartbeatCommand(LegacyServerPlayer *player, const QJsonValue &packet);
+    QSGS_SOCKET void processRequestPreshow(LegacyServerPlayer *player, const QJsonValue &arg); //hegemony
 
     //helper functions and structs
     struct _NullificationAiHelper

@@ -2,7 +2,7 @@
 
 #include "engine.h"
 #include "general.h"
-#include "json.h"
+#include "jsonutils.h"
 #include "legacyroom.h"
 #include "mode.h"
 #include "nativesocket.h"
@@ -12,6 +12,8 @@
 
 #include <QHostInfo>
 #include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonValue>
 
 using namespace QSanProtocol;
 
@@ -52,7 +54,7 @@ LegacyServer::LegacyServer(QObject *parent)
 void LegacyServer::broadcast(const QString &msg)
 {
     QString to_sent = QString::fromUtf8(msg.toUtf8().toBase64());
-    JsonArray arg;
+    QJsonArray arg;
     arg << QStringLiteral(".") << to_sent;
 
     Packet packet(PacketDescriptionFlag(S_SRC_ROOM) | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
@@ -178,7 +180,7 @@ void LegacyServer::processRequest(const char *request)
     }
 
     Packet packet2(PacketDescriptionFlag(S_SRC_ROOM) | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SETUP);
-    QVariant s = ServerInfo.serialize();
+    QJsonValue s = ServerInfo.serialize();
     packet2.setMessageBody(s);
     socket->send((packet2.toString()));
 

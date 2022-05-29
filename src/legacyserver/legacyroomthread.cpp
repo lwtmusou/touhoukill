@@ -1,7 +1,7 @@
 #include "legacyroomthread.h"
 #include "engine.h"
 #include "general.h"
-#include "json.h"
+#include "jsonutils.h"
 #include "legacygamerule.h"
 #include "legacyroom.h"
 #include "package.h"
@@ -10,10 +10,13 @@
 #include "skill.h"
 #include "util.h"
 
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonValue>
 #include <QTime>
 #include <functional>
 
-using namespace JsonUtils;
+using namespace QSgsJsonUtils;
 using namespace QSanProtocol;
 
 LogMessage::LogMessage()
@@ -31,7 +34,7 @@ QString LogMessage::toString() const
     return QStringLiteral("%1:%2->%3:%4:%5:%6").arg(type, from != nullptr ? from->objectName() : QString(), tos.join(QStringLiteral("+")), card_str, arg, arg2);
 }
 
-QVariant LogMessage::toJsonValue() const
+QJsonValue LogMessage::toJsonValue() const
 {
     QStringList tos;
     foreach (Player *player, to)
@@ -40,7 +43,7 @@ QVariant LogMessage::toJsonValue() const
 
     QStringList log;
     log << type << (from != nullptr ? from->objectName() : QString()) << tos.join(QStringLiteral("+")) << card_str << arg << arg2;
-    QVariant json_log = JsonUtils::toJsonArray(log);
+    QJsonValue json_log = QSgsJsonUtils::toJsonArray(log);
     return json_log;
 }
 
@@ -332,7 +335,7 @@ void RoomThread::run()
             sleep(1);
         }
     } else
-        room->doBroadcastNotify(S_COMMAND_START_IN_X_SECONDS, QVariant(0));
+        room->doBroadcastNotify(S_COMMAND_START_IN_X_SECONDS, QJsonValue(0));
 
     if (room->getMode() == QStringLiteral("04_1v3")) {
         LegacyServerPlayer *lord = room->getPlayers().first();
