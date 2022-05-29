@@ -35,6 +35,8 @@ public:
     Engine();
     ~Engine() override;
 
+    void init();
+
     void addTranslationEntry(const char *key, const char *value);
     QString translate(const QString &to_translate, bool addHegemony = false) const;
     lua_State *getLuaState() const;
@@ -196,6 +198,8 @@ static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key)
     return GetValueFromLuaState(L, "config", key);
 }
 
-extern Engine *Sanguosha;
+Engine *EngineInstanceFunc();
+
+#define Sanguosha (EngineInstanceFunc())
 
 #endif

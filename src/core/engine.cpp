@@ -13,12 +13,13 @@
 #include <QApplication>
 #include <QDir>
 #include <QFile>
+#include <QGlobalStatic>
 #include <QMessageBox>
 #include <QStringList>
 #include <QTextStream>
 #include <QVersionNumber>
 
-Engine *Sanguosha = nullptr;
+Q_GLOBAL_STATIC(Engine, EngineInstance)
 
 void Engine::addPackage(const QString &name)
 {
@@ -31,9 +32,11 @@ void Engine::addPackage(const QString &name)
 
 Engine::Engine()
 {
-    Sanguosha = this;
-
     lua = CreateLuaState();
+}
+
+void Engine::init()
+{
     DoLuaScript(lua, "lua/config.lua");
 
     QStringList package_names = GetConfigFromLuaState(lua, "package_names").toStringList();
@@ -73,8 +76,6 @@ Engine::Engine()
     modes["hegemony_08"] = tr("hegemony 8 players");
     modes["hegemony_09"] = tr("hegemony 9 players");
     modes["hegemony_10"] = tr("hegemony 10 players");
-
-    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 
     foreach (const Skill *skill, skills.values()) {
         Skill *mutable_skill = const_cast<Skill *>(skill);
@@ -1422,4 +1423,9 @@ QString Engine::GetMappedKingdom(const QString &role)
     if (kingdoms[role].isEmpty())
         return role;
     return kingdoms[role];
+}
+
+Engine *EngineInstanceFunc()
+{
+    return EngineInstance;
 }
