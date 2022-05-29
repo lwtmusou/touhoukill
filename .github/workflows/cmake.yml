@@ -8,7 +8,8 @@ env:
 
 jobs:
   build-ubuntu:
-    runs-on: ubuntu-22.04
+    # This matrix uses prebuilt Qt from Ubuntu package repository
+    runs-on: ubuntu-22.04 # Qt 6 is available since this version. Ubuntu-latest still use 20.04 as of 2022/5/29
     strategy:
       matrix:
         dependency:
@@ -39,19 +40,20 @@ jobs:
           cmake -GNinja -DCMAKE_BUILD_TYPE=Release "${{ github.workspace }}/touhoukill-refactor"
           ninja -k0
 
-  build-macos:
-    # GitHub actions don't provide a macOS on ARM runner. We can only use macOS on Intel
+  # GitHub actions don't provide a macOS on ARM runner. We can only use macOS on Intel
+  build-macos-selfBuiltQt:
+    # This matrix uses self-built Qt (by Fsu0413)
     strategy:
       matrix:
         macOS:
-          - name: macOS
-            qt5url: https://github.com/Fsu0413/QtCompile/releases/download/release-20220411/Qt5.15.3-macOS-x86_64-AppleClang12.0.5-20220409.tar.xz
+          - qt5url: https://github.com/Fsu0413/QtCompile/releases/download/release-20220411/Qt5.15.3-macOS-x86_64-AppleClang12.0.5-20220409.tar.xz
             qt5name: Qt5.15.3-macOS-x86_64-AppleClang12.0.5
             qt6url: https://github.com/Fsu0413/QtCompile/releases/download/release-20220411/Qt6.3.0-macOS-x86_64-AppleClang13.1.6-20220410.tar.xz
             qt6name: Qt6.3.0-macOS-x86_64-AppleClang13.1.6
+        runner: [ "11", "12" ]
 
-    name: build-${{ matrix.macOS.name }}
-    runs-on: macos-latest
+    name: build-macOS${{ matrix.runner }}-selfBuilt
+    runs-on: macos-${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -83,7 +85,42 @@ jobs:
           cmake -GNinja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=${{ github.workspace }}/Qt5/${{ matrix.macOS.qt5name }};${{ github.workspace }}/Qt6/${{ matrix.macOS.qt6name }}" "${{ github.workspace }}/touhoukill-refactor"
           ninja -k0
 
+  build-macOS-homebrewQt:
+    # This matrix uses prebuilt Qt from Homebrew
+    strategy:
+      matrix:
+        dependency:
+          - dep:
+            optionalDependency:
+          - dep: -Lua
+            optionalDependency: lua@5.4
+          - dep: -vorbis
+            optionalDependency: libvorbis
+          - dep: -Lua-vorbis
+            optionalDependency: lua@5.4 libvorbis
+        runner: [ "10.15", "11", "12" ]
+
+    name: build-macOS${{ matrix.runner }}-Homebrew${{ matrix.dependency.dep }}
+    runs-on: macos-${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: touhoukill-refactor
+      
+      - name: install softwares from repository
+        run: |
+          brew install 'qt@5' 'qt@6' swig cmake ninja ${{ matrix.dependency.optionalDependency }}
+      
+      - name: run cmake+ninja
+        run : |
+          mkdir -p "build"
+          cd "build"
+          rm -rf *
+          cmake -GNinja -DCMAKE_BUILD_TYPE=Release "-DCMAKE_PREFIX_PATH=/usr/local/opt/qt@5/;/usr/local/opt/qt@6/" "${{ github.workspace }}/touhoukill-refactor"
+          ninja -k0
+          
   build-msvc:
+    # This matrix uses self-built Qt (by Fsu0413)
     strategy:
       matrix:
         VC:
@@ -141,6 +178,7 @@ jobs:
           ninja -k0
 
   build-mingw:
+    # This matrix uses self-built Qt (by Fsu0413)
     strategy:
       matrix:
         mingw:
@@ -192,6 +230,7 @@ jobs:
           ninja -k0
 
   build-mingwclang:
+    # This matrix uses self-built Qt (by Fsu0413)
     runs-on: windows-latest
     strategy:
       matrix:
@@ -247,6 +286,7 @@ jobs:
           ninja -k0
 
   build-mingwmsys:
+    # This matrix uses prebuilt Qt from MSYS2
     runs-on: windows-latest
     strategy:
       matrix:
