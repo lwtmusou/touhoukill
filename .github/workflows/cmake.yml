@@ -32,7 +32,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get dist-upgrade
-          sudo apt-get install 'qt*5-dev' 'qt*5-tools' 'qt6-*-dev' 'qt6-*-tools' build-essential cmake git swig ninja-build ${{matrix.dependency.optionalDependency }}
+          sudo apt-get install qtbase5-dev qtmultimedia5-dev qttools5-dev qt6-base-dev qt6-multimedia-dev qt6-tools-dev qt6-l10n-tools qt6-tools-dev-tools build-essential cmake git swig ninja-build ${{matrix.dependency.optionalDependency }}
 
       - name: run cmake+ninja
         run : |
