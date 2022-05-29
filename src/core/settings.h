@@ -13,9 +13,6 @@ class Settings : public QSettings
 {
     Q_OBJECT
 
-private:
-    void loadSettingsFromConfigIni();
-
 public:
     explicit Settings();
     void init();
