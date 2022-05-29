@@ -3,6 +3,7 @@
 
 #include "RoomObject.h"
 #include "card.h"
+#include "legacyprotocol.h"
 #include "legacystructs.h"
 #include "player.h"
 #include "protocol.h"
@@ -267,7 +268,6 @@ private:
     QString skill_to_invoke;
     QList<int> available_cards;
 
-    unsigned int _m_lastServerSerial;
     bool m_isObjectNameRecorded;
     Player *Self;
 

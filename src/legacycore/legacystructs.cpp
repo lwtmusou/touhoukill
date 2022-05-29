@@ -4,6 +4,7 @@
 #include "json.h"
 #include "player.h"
 #include "structs.h"
+#include "trigger.h"
 
 using namespace QSanguosha;
 
@@ -212,4 +213,59 @@ QVariant ExtendCardMoveReason::toVariant(const CardMoveReason &reason)
     result << reason.m_eventName;
     result << reason.m_targetId;
     return result;
+}
+
+QVariant ExtendTriggerDetail::toVariant(const TriggerDetail &detail)
+{
+    if (!detail.isValid())
+        return QVariant();
+
+    JsonObject ob;
+    if (detail.trigger() != nullptr)
+        ob[QStringLiteral("skill")] = detail.trigger()->name();
+    if (detail.owner() != nullptr)
+        ob[QStringLiteral("owner")] = detail.owner()->objectName();
+    if (detail.invoker() != nullptr)
+        ob[QStringLiteral("invoker")] = detail.invoker()->objectName();
+    if (detail.targets().length() == 1) {
+        Player *preferredTarget = detail.targets().first();
+        ob[QStringLiteral("preferredtarget")] = preferredTarget->objectName();
+
+        Player *current = detail.room()->current();
+        if (current == nullptr)
+            current = preferredTarget;
+
+        // send the seat info to the client so that we can compare the trigger order of tieqi-like skill in the client side
+        int seat = preferredTarget->seat() - current->seat();
+        if (seat < 0)
+            seat += detail.room()->players().length();
+
+        ob[QStringLiteral("preferredtargetseat")] = seat;
+    }
+
+    return ob;
+}
+
+QStringList ExtendTriggerDetail::toList(const TriggerDetail &detail)
+{
+    QStringList l;
+    if (!detail.isValid())
+        l << QString() << QString() << QString();
+    else {
+        std::function<void(const QObject *)> insert = [&l](const QObject *item) {
+            if (item != nullptr)
+                l << item->objectName();
+            else
+                l << QString();
+        };
+
+        if (detail.trigger() != nullptr)
+            l << detail.trigger()->name();
+        else
+            l << QString();
+        insert(detail.owner());
+        insert(detail.invoker());
+    }
+
+    return l;
 }

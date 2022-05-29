@@ -5,7 +5,7 @@
 #include "exppattern.h"
 #include "general.h"
 #include "global.h"
-#include "json.h"
+#include "jsonutils.h"
 #include "lua-wrapper.h"
 #include "mode.h"
 #include "package.h"
@@ -22,6 +22,9 @@
 #include <QDir>
 #include <QFile>
 #include <QGlobalStatic>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonValue>
 #include <QRegularExpression>
 #include <QRegularExpressionMatchIterator>
 #include <QStringList>
@@ -49,7 +52,7 @@ public:
     QList<CardDescriptor> cards;
     QSet<QString> lord_list;
 
-    JsonObject configFile;
+    QJsonObject configFile;
 
     LuaStatePointer l;
 
@@ -67,8 +70,9 @@ Engine::Engine()
     : d(new EnginePrivate)
 {
     // This file should be in qrc
-    JsonDocument doc = JsonDocument::fromFilePath(QStringLiteral("config/gameconfig.json"));
-    if (doc.isValid())
+    QJsonParseError error;
+    QJsonDocument doc = JsonDocumentFromFilePath(QStringLiteral("config/gameconfig.json"), &error);
+    if (error.error == QJsonParseError::NoError)
         d->configFile = doc.object();
 }
 
@@ -110,21 +114,24 @@ Engine::~Engine()
 
 void Engine::loadTranslations(const QString &locale)
 {
-    JsonDocument doc = JsonDocument::fromFilePath(QStringLiteral("lang/") + locale + QStringLiteral(".json"));
-    if (!doc.isValid() || !doc.isArray())
+    QJsonParseError error;
+    QJsonDocument doc = JsonDocumentFromFilePath(QStringLiteral("lang/") + locale + QStringLiteral(".json"), &error);
+    if (error.error != QJsonParseError::NoError)
+        return;
+    if (!doc.isArray())
         return;
 
-    JsonArray jarr = doc.array();
+    QJsonArray jarr = doc.array();
 
-    foreach (const QVariant &fileNameV, jarr) {
+    for (const QJsonValue &fileNameV : jarr) {
         QString fileName = fileNameV.toString();
-        JsonDocument transDoc = JsonDocument::fromFilePath(fileName);
-        if (!transDoc.isValid() || !transDoc.isObject())
+        QJsonDocument transDoc = JsonDocumentFromFilePath(fileName, &error);
+        if ((error.error != QJsonParseError::NoError) || !transDoc.isObject())
             continue;
 
-        JsonObject ob = transDoc.object();
+        QJsonObject ob = transDoc.object();
 
-        for (auto it = ob.cbegin(); it != ob.cend(); ++it)
+        for (auto it = ob.constBegin(); it != ob.constEnd(); ++it)
             addTranslationEntry(it.key(), it.value().toString());
     }
 }

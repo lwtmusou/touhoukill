@@ -1,16 +1,17 @@
 #ifndef qsgslegacy__ROOM_H
 #define qsgslegacy__ROOM_H
 
-#include <QAtomicPointer>
-#include <QMutex>
-#include <QStack>
-#include <QWaitCondition>
-
 #include "RoomObject.h"
+#include "legacyprotocol.h"
 #include "legacyroomthread.h"
 #include "legacyserverplayer.h"
 #include "legacystructs.h"
 #include "protocol.h"
+
+#include <QAtomicPointer>
+#include <QMutex>
+#include <QStack>
+#include <QWaitCondition>
 
 class ProhibitSkill;
 class TrickCard;

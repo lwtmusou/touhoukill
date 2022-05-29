@@ -11,6 +11,7 @@
 #include "settings.h"
 
 #include <QHostInfo>
+#include <QJsonArray>
 
 using namespace QSanProtocol;
 
@@ -54,7 +55,7 @@ void LegacyServer::broadcast(const QString &msg)
     JsonArray arg;
     arg << QStringLiteral(".") << to_sent;
 
-    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
+    Packet packet(PacketDescriptionFlag(S_SRC_ROOM) | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
     packet.setMessageBody(arg);
     foreach (LegacyRoom *room, rooms)
         room->broadcastInvoke(&packet);
@@ -88,8 +89,8 @@ LegacyRoom *LegacyServer::createNewRoom()
 
 void LegacyServer::processNewConnection(ClientSocket *socket)
 {
-    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_CHECK_VERSION);
-    packet.setMessageBody((Sanguosha->version()));
+    Packet packet(PacketDescriptionFlag(S_SRC_ROOM) | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_CHECK_VERSION);
+    packet.setMessageBody(QJsonValue(Sanguosha->version()));
     socket->send((packet.toString()));
     emit server_message(tr("%1 connected").arg(socket->peerName()));
 
@@ -104,14 +105,14 @@ void LegacyServer::processRequest(const char *request)
     Packet signup;
     if (!signup.parse(request) || signup.getCommandType() != S_COMMAND_SIGNUP) {
         emit server_message(tr("Invalid signup string: %1").arg(QString::fromUtf8(request)));
-        QSanProtocol::Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_WARN);
-        packet.setMessageBody(QStringLiteral("INVALID_FORMAT"));
+        QSanProtocol::Packet packet(PacketDescriptionFlag(S_SRC_ROOM) | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_WARN);
+        packet.setMessageBody(QJsonValue(QStringLiteral("INVALID_FORMAT")));
         socket->send(packet.toString());
         socket->disconnectFromHost();
         return;
     }
 
-    const JsonArray &body = signup.getMessageBody().value<JsonArray>();
+    const QJsonArray &body = signup.getMessageBody().toArray();
     QString urlPath = body[0].toString();
     QString screen_name = QString::fromUtf8(QByteArray::fromBase64(body[1].toString().toLatin1()));
     QString avatar = body[2].toString();
@@ -157,8 +158,8 @@ void LegacyServer::processRequest(const char *request)
         }
 
         if (!messageBodyToSend.isEmpty()) {
-            QSanProtocol::Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_WARN);
-            packet.setMessageBody(messageBodyToSend);
+            QSanProtocol::Packet packet(PacketDescriptionFlag(S_SRC_ROOM) | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_WARN);
+            packet.setMessageBody(QJsonValue(messageBodyToSend));
             socket->send(packet.toString());
             socket->disconnectFromHost();
             return;
@@ -176,7 +177,7 @@ void LegacyServer::processRequest(const char *request)
         }
     }
 
-    Packet packet2(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SETUP);
+    Packet packet2(PacketDescriptionFlag(S_SRC_ROOM) | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SETUP);
     QVariant s = ServerInfo.serialize();
     packet2.setMessageBody(s);
     socket->send((packet2.toString()));
@@ -190,8 +191,8 @@ void LegacyServer::processRequest(const char *request)
 
         // player not found
         emit server_message(tr("reconnect username not found: %1").arg(ps.last()));
-        QSanProtocol::Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_WARN);
-        packet.setMessageBody(QStringLiteral("USERNAME_INCORRECT"));
+        QSanProtocol::Packet packet(PacketDescriptionFlag(S_SRC_ROOM) | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_WARN);
+        packet.setMessageBody(QJsonValue(QStringLiteral("USERNAME_INCORRECT")));
         socket->send(packet.toString());
         socket->disconnectFromHost();
 

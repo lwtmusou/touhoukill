@@ -71,7 +71,6 @@ set (QSanguosha_Core_SRCS
     src/core/CardFace.cpp
     src/core/engine.cpp
     src/core/general.cpp
-    src/core/json.cpp
     src/core/lua-wrapper.cpp
     src/core/package.cpp
     src/core/player.cpp
@@ -85,6 +84,7 @@ set (QSanguosha_Core_SRCS
     src/core/mode.cpp
     src/core/sgs_ex.cpp
     src/core/exppattern.cpp
+    src/core/jsonutils.cpp
     )
 
 set (QSanguosha_Core_MOCS
@@ -92,7 +92,6 @@ set (QSanguosha_Core_MOCS
     src/core/CardFace.h
     src/core/engine.h
     src/core/general.h
-    src/core/json.h
     src/core/lua-wrapper.h
     src/core/package.h
     src/core/player.h
@@ -107,6 +106,7 @@ set (QSanguosha_Core_MOCS
     src/core/mode.h
     src/core/exppattern.h
     src/core/qsgscore.h
+    src/core/jsonutils.h
     )
 
 set (QSanguosha_SRCS
@@ -114,7 +114,9 @@ set (QSanguosha_SRCS
     src/audio/audio.cpp
     src/client/aux-skills.cpp
     src/client/client.cpp
+    src/legacycore/json.cpp
     src/legacycore/legacystructs.cpp
+    src/legacycore/legacyprotocol.cpp
     src/dialog/serverinfowidget.cpp
     src/dialog/AboutUs.cpp
     src/dialog/cardoverview.cpp
@@ -186,6 +188,8 @@ set (QSanguosha_MOCS
     src/client/aux-skills.h
     src/client/client.h
     src/legacycore/legacystructs.h
+    src/legacycore/legacyprotocol.h
+    src/legacycore/json.h
     src/dialog/serverinfowidget.h
     src/dialog/AboutUs.h
     src/dialog/cardoverview.h

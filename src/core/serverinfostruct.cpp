@@ -1,9 +1,12 @@
 #include "serverinfostruct.h"
 #include "engine.h"
-#include "json.h"
+#include "jsonutils.h"
 #include "mode.h"
 #include "package.h"
 
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonValue>
 #include <QRegularExpression>
 
 ServerInfoStruct ServerInfo;
@@ -113,65 +116,145 @@ bool ServerInfoStruct::parseLegacy(const QString &str)
 
 bool ServerInfoStruct::parse(const QVariant &object)
 {
-    JsonObject ob;
-    bool ok = JsonUtils::tryParse(object, ob);
-    if (!ok) {
+    return parse(QJsonValue::fromVariant(object));
+}
+
+bool ServerInfoStruct::parse(const QJsonValue &value)
+{
+    QJsonObject theOb;
+    if (value.isObject()) {
+        theOb = value.toObject();
+    } else {
         qWarning("%s", qPrintable(QStringLiteral("Setup string error!")));
         return false;
     }
 
-    if (!ob.isEmpty()) {
-        Name = ob.value(QStringLiteral("ServerName")).toString();
-        if (Name.isEmpty())
+    if (!theOb.isEmpty()) {
+        if (theOb.contains(QStringLiteral("ServerName"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("ServerName"));
+            if (theValue.isString())
+                Name = theValue.toString();
+            else
+                return false;
+        } else {
             return false;
+        }
 
-        GameModeStr = ob.value(QStringLiteral("GameMode")).toString();
-        if (GameModeStr.isEmpty())
+        if (theOb.contains(QStringLiteral("GameMode"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("GameMode"));
+            if (theValue.isString())
+                GameModeStr = theValue.toString();
+            else
+                return false;
+        } else {
             return false;
-
+        }
         GameMode = Mode::findMode(GameModeStr);
         if (GameMode == nullptr)
             return false;
 
-        GameRuleMode = ob.value(QStringLiteral("GameRuleMode")).toString();
+        if (theOb.contains(QStringLiteral("GameRuleMode"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("GameRuleMode"));
+            if (theValue.isString())
+                GameRuleMode = theValue.toString();
+            else
+                return false;
+        } else {
+            return false;
+        }
+
+        if (theOb.contains(QStringLiteral("OperationTimeout"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("OperationTimeout"));
+            if (theValue.isDouble())
+                OperationTimeout = theValue.toInt();
+            else
+                return false;
+        } else {
+            return false;
+        }
+
+        if (theOb.contains(QStringLiteral("NullificationCountDown"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("NullificationCountDown"));
+            if (theValue.isDouble())
+                NullificationCountDown = theValue.toInt();
+            else
+                return false;
+        } else {
+            return false;
+        }
 
         bool ok = false;
-        OperationTimeout = ob.value(QStringLiteral("OperationTimeout")).toInt(&ok);
+        EnabledPackages = QSgsJsonUtils::toStringList(theOb.value(QStringLiteral("EnabledPackages")), &ok);
         if (!ok)
             return false;
 
-        ok = false;
-        NullificationCountDown = ob.value(QStringLiteral("NullificationCountDown")).toInt(&ok);
-        if (!ok)
-            return false;
-
-        JsonUtils::tryParse(ob.value(QStringLiteral("EnabledPackages")), EnabledPackages);
-        RandomSeat = ob.value(QStringLiteral("RandomSeat"), false).toBool();
-        EnableCheat = ob.value(QStringLiteral("EnableCheat"), false).toBool();
-        FreeChoose = ob.value(QStringLiteral("FreeChoose"), false).toBool();
-        GeneralsPerPlayer = ob.value(QStringLiteral("GeneralsPerPlayer"), 1).toInt();
-        EnableSame = ob.value(QStringLiteral("EnableSame"), false).toBool();
-        EnableAI = ob.value(QStringLiteral("EnableAI"), false).toBool();
-        DisableChat = ob.value(QStringLiteral("DisableChat"), false).toBool();
-
-        ok = false;
-        MaxHpScheme = ob.value(QStringLiteral("MaxHpScheme")).toInt(&ok);
-        if (!ok)
-            MaxHpScheme = 1;
-        else if (MaxHpScheme == 0) {
-            ok = false;
-            Scheme0Subtraction = ob.value(QStringLiteral("Scheme0Subtraction")).toInt(&ok);
-            if (!ok)
-                Scheme0Subtraction = 0;
+        RandomSeat = false;
+        if (theOb.contains(QStringLiteral("RandomSeat"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("RandomSeat"));
+            if (theValue.isBool())
+                RandomSeat = theValue.toBool();
         }
+        EnableCheat = false;
+        if (theOb.contains(QStringLiteral("EnableCheat"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("EnableCheat"));
+            if (theValue.isBool())
+                EnableCheat = theValue.toBool();
+        }
+        FreeChoose = false;
+        if (theOb.contains(QStringLiteral("FreeChoose"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("FreeChoose"));
+            if (theValue.isBool())
+                FreeChoose = theValue.toBool();
+        }
+        GeneralsPerPlayer = 0;
+        if (theOb.contains(QStringLiteral("GeneralsPerPlayer"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("GeneralsPerPlayer"));
+            if (theValue.isDouble())
+                GeneralsPerPlayer = theValue.toInt();
+        }
+        EnableSame = false;
+        if (theOb.contains(QStringLiteral("EnableSame"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("EnableSame"));
+            if (theValue.isBool())
+                EnableSame = theValue.toBool();
+        }
+        EnableAI = false;
+        if (theOb.contains(QStringLiteral("EnableAI"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("EnableAI"));
+            if (theValue.isBool())
+                EnableAI = theValue.toBool();
+        }
+        DisableChat = false;
+        if (theOb.contains(QStringLiteral("DisableChat"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("DisableChat"));
+            if (theValue.isBool())
+                DisableChat = theValue.toBool();
+        }
+        MaxHpScheme = 1;
+        if (theOb.contains(QStringLiteral("MaxHpScheme"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("MaxHpScheme"));
+            if (theValue.isDouble())
+                MaxHpScheme = theValue.toInt();
+        }
+
+        if (MaxHpScheme == 0) {
+            Scheme0Subtraction = 0;
+            if (theOb.contains(QStringLiteral("Scheme0Subtraction"))) {
+                QJsonValue theValue = theOb.value(QStringLiteral("Scheme0Subtraction"));
+                if (theValue.isDouble())
+                    Scheme0Subtraction = theValue.toInt();
+            }
+        }
+
+        return true;
     }
 
-    return true;
+    return false;
 }
 
-QVariant ServerInfoStruct::serialize() const
+QJsonValue ServerInfoStruct::serialize() const
 {
-    QVariantMap m;
+    QJsonObject m;
     if (GameMode == nullptr)
         return m;
 
@@ -180,7 +263,7 @@ QVariant ServerInfoStruct::serialize() const
     m[QStringLiteral("GameRuleMode")] = GameRuleMode;
     m[QStringLiteral("OperationTimeout")] = OperationTimeout;
     m[QStringLiteral("NullificationCountDown")] = NullificationCountDown;
-    m[QStringLiteral("EnabledPackages")] = JsonUtils::toJsonArray(EnabledPackages);
+    m[QStringLiteral("EnabledPackages")] = QSgsJsonUtils::toJsonArray(EnabledPackages);
     m[QStringLiteral("RandomSeat")] = RandomSeat;
     m[QStringLiteral("EnableCheat")] = EnableCheat;
     m[QStringLiteral("FreeChoose")] = FreeChoose;

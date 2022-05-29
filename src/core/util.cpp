@@ -58,3 +58,21 @@ bool isHegemonyGameMode(const QString &name)
     const Mode *mode = Mode::findMode(name);
     return mode->category() == QSanguosha::ModeHegemony;
 }
+
+QJsonDocument JsonDocumentFromFilePath(const QString &filePath, QJsonParseError *error)
+{
+    if (error == nullptr) {
+        static QJsonParseError _error;
+        error = &_error;
+    }
+
+    QFile f(filePath);
+    if (!f.open(QIODevice::ReadOnly)) {
+        error->offset = 0;
+        error->error = QJsonParseError::IllegalValue;
+        return QJsonDocument();
+
+    } else {
+        return QJsonDocument::fromJson(f.readAll(), error);
+    }
+}

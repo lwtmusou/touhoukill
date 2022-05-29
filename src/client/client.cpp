@@ -328,8 +328,7 @@ void Client::networkDelayTest(const QVariant & /*unused*/)
 void Client::replyToServer(CommandType command, const QVariant &arg)
 {
     if (socket != nullptr) {
-        Packet packet(S_SRC_CLIENT | S_TYPE_REPLY | S_DEST_ROOM, command);
-        packet.localSerial = _m_lastServerSerial;
+        Packet packet(PacketDescriptionFlag(S_SRC_CLIENT) | S_TYPE_REPLY | S_DEST_ROOM, command);
         packet.setMessageBody(arg);
         socket->send(QString::fromUtf8(packet.toJson()));
     }
@@ -343,7 +342,7 @@ void Client::handleGameEvent(const QVariant &arg)
 void Client::notifyServer(CommandType command, const QVariant &arg)
 {
     if (socket != nullptr) {
-        Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_ROOM, command);
+        Packet packet(PacketDescriptionFlag(S_SRC_CLIENT) | S_TYPE_NOTIFICATION | S_DEST_ROOM, command);
         packet.setMessageBody(arg);
         socket->send(QString::fromUtf8(packet.toJson()));
     }
@@ -352,7 +351,7 @@ void Client::notifyServer(CommandType command, const QVariant &arg)
 void Client::requestServer(CommandType command, const QVariant &arg)
 {
     if (socket != nullptr) {
-        Packet packet(S_SRC_CLIENT | S_TYPE_REQUEST | S_DEST_ROOM, command);
+        Packet packet(PacketDescriptionFlag(S_SRC_CLIENT) | S_TYPE_REQUEST | S_DEST_ROOM, command);
         packet.setMessageBody(arg);
         socket->send(QString::fromUtf8(packet.toJson()));
     }
@@ -463,7 +462,6 @@ void Client::processServerPacket(const char *cmd)
 bool Client::processServerRequest(const Packet &packet)
 {
     setStatus(NotActive);
-    _m_lastServerSerial = packet.globalSerial;
     CommandType command = packet.getCommandType();
     QVariant msg = packet.getMessageBody();
 

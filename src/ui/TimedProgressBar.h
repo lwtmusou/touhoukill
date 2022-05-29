@@ -1,6 +1,10 @@
 #ifndef _TIMED_PROGRESS_BAR_H
 #define _TIMED_PROGRESS_BAR_H
 
+#include "legacyprotocol.h"
+#include "protocol.h"
+#include "settings.h"
+
 #include <QMutex>
 #include <QPaintEvent>
 #include <QProgressBar>
@@ -63,9 +67,6 @@ protected:
     time_t m_step, m_max, m_val;
     QRecursiveMutex m_mutex;
 };
-
-#include "protocol.h"
-#include "settings.h"
 
 class QSanCommandProgressBar : public TimedProgressBar
 {

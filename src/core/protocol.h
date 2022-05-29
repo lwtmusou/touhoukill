@@ -3,9 +3,11 @@
 
 #include "qsgscore.h"
 
-#include <QVariant>
+#include <QJsonValue>
+#include <QtGlobal>
 
 namespace QSanProtocol {
+Q_NAMESPACE_EXPORT(QSGS_CORE_EXPORT)
 
 enum PacketDescription
 {
@@ -22,15 +24,16 @@ enum PacketDescription
     S_DEST_LOBBY = 0x200,
     S_DEST_CLIENT = 0x400,
     S_DEST_MASK = 0xf00,
-
-    S_DESC_DUMMY
 };
+Q_FLAG_NS(PacketDescription)
+Q_DECLARE_FLAGS(PacketDescriptionFlag, PacketDescription)
 
 enum ProcessInstanceType
 {
     S_SERVER_INSTANCE,
     S_CLIENT_INSTANCE
 };
+Q_ENUM_NS(ProcessInstanceType)
 
 enum CheatCode
 {
@@ -41,6 +44,7 @@ enum CheatCode
     S_CHEAT_MAKE_DAMAGE,
     S_CHEAT_RUN_SCRIPT
 };
+Q_ENUM_NS(CheatCode)
 
 enum CheatCategory
 {
@@ -52,6 +56,7 @@ enum CheatCategory
     S_CHEAT_MAX_HP_LOSE,
     S_CHEAT_MAX_HP_RESET
 };
+Q_ENUM_NS(CheatCategory)
 
 enum CommandType
 {
@@ -155,6 +160,7 @@ enum CommandType
 
     S_COMMAND_SETUP,
 };
+Q_ENUM_NS(CommandType)
 
 enum GameEventType
 {
@@ -180,6 +186,7 @@ enum GameEventType
     S_GAME_ROLE_STATUS_CHANGED,
     S_GAME_EVENT_UPDATE_PRESHOW
 };
+Q_ENUM_NS(GameEventType)
 
 enum AnimateType
 {
@@ -193,79 +200,54 @@ enum AnimateType
     S_ANIMATE_LIGHTNING,
     S_ANIMATE_BATTLEARRAY
 };
+Q_ENUM_NS(AnimateType)
 
 enum Game3v3ChooseOrderCommand
 {
     S_REASON_CHOOSE_ORDER_TURN,
     S_REASON_CHOOSE_ORDER_SELECT
 };
+Q_ENUM_NS(Game3v3ChooseOrderCommand)
 
 enum Game3v3Camp
 {
     S_CAMP_WARM,
     S_CAMP_COOL
 };
+Q_ENUM_NS(Game3v3Camp)
 
 // TODO: make following structs lightweight or pimpl them
-
-//static consts
-extern const int S_ALL_ALIVE_PLAYERS;
-
-class QSGS_CORE_EXPORT Countdown
-{
-public:
-    enum CountdownType
-    {
-        S_COUNTDOWN_NO_LIMIT,
-        S_COUNTDOWN_USE_SPECIFIED,
-        S_COUNTDOWN_USE_DEFAULT
-    } type;
-
-    time_t current;
-    time_t max;
-    inline explicit Countdown(CountdownType type = S_COUNTDOWN_NO_LIMIT, time_t current = 0, time_t max = 0)
-        : type(type)
-        , current(current)
-        , max(max)
-    {
-    }
-    bool tryParse(const QVariant &val);
-    QVariant toVariant() const;
-};
 
 class QSGS_CORE_EXPORT Packet final
 {
 public:
-    //format: [global_serial, local_serial, packet_type, command_name, command_body]
-    unsigned int globalSerial;
-    unsigned int localSerial;
+    //format: [reserved(0), reserved(0), packet_type, command_name, command_body]
 
-    explicit Packet(int packetDescription = S_DESC_UNKNOWN, CommandType command = S_COMMAND_UNKNOWN);
-    unsigned int createGlobalSerial();
-    inline void setMessageBody(const QVariant &value)
+    explicit Packet(PacketDescriptionFlag packetDescription = S_DESC_UNKNOWN, CommandType command = S_COMMAND_UNKNOWN);
+    inline void setMessageBody(const QJsonValue &value)
     {
         messageBody = value;
     }
-    inline const QVariant &getMessageBody() const
+    inline const QJsonValue &getMessageBody() const
     {
         return messageBody;
     }
     bool parse(const QByteArray &raw);
     QByteArray toJson() const;
     QString toString() const;
-    PacketDescription getPacketDestination() const
+    PacketDescriptionFlag getPacketDestination() const
     {
-        return static_cast<PacketDescription>(packetDescription & S_DEST_MASK);
+        return (packetDescription & S_DEST_MASK);
     }
-    PacketDescription getPacketSource() const
+    PacketDescriptionFlag getPacketSource() const
     {
-        return static_cast<PacketDescription>(packetDescription & S_SRC_MASK);
+        return (packetDescription & S_SRC_MASK);
     }
-    PacketDescription getPacketType() const
+    PacketDescriptionFlag getPacketType() const
     {
-        return static_cast<PacketDescription>(packetDescription & S_TYPE_MASK);
+        return (packetDescription & S_TYPE_MASK);
     }
-    PacketDescription getPacketDescription() const
+    PacketDescriptionFlag getPacketDescription() const
     {
         return packetDescription;
     }
@@ -274,11 +256,15 @@ public:
         return command;
     }
 
+    Q_DECL_DEPRECATED inline void setMessageBody(const QVariant &value)
+    {
+        messageBody = QJsonValue::fromVariant(value);
+    }
+
 protected:
-    static unsigned int globalSerialSequence;
     CommandType command;
-    PacketDescription packetDescription;
-    QVariant messageBody;
+    PacketDescriptionFlag packetDescription;
+    QJsonValue messageBody;
 
     //helper functions
     static const int S_MAX_PACKET_SIZE;

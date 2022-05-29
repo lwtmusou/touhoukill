@@ -60,4 +60,6 @@ template<typename T1, typename T2> QT_DEPRECATED_X("FIXME: THIS SHOULD BE REMOVE
 } // namespace RefactorProposal
 #endif
 
+QJsonDocument JsonDocumentFromFilePath(const QString &filePath, QJsonParseError *error = nullptr);
+
 #endif

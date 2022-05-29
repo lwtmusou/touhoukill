@@ -726,7 +726,7 @@ bool LegacyRoom::doRequest(LegacyServerPlayer *player, QSanProtocol::CommandType
 
 bool LegacyRoom::doRequest(LegacyServerPlayer *player, QSanProtocol::CommandType command, const QVariant &arg, time_t timeOut, bool wait)
 {
-    Packet packet(S_SRC_ROOM | S_TYPE_REQUEST | S_DEST_CLIENT, command);
+    Packet packet(PacketDescriptionFlag(S_SRC_ROOM) | S_TYPE_REQUEST | S_DEST_CLIENT, command);
     packet.setMessageBody(arg);
     player->acquireLock(LegacyServerPlayer::SEMA_MUTEX);
     player->m_isClientResponseReady = false;
@@ -734,7 +734,6 @@ bool LegacyRoom::doRequest(LegacyServerPlayer *player, QSanProtocol::CommandType
     player->setClientReply(QVariant());
     player->setClientReplyString(QString());
     player->m_isWaitingReply = true;
-    player->m_expectedReplySerial = packet.globalSerial;
     if (m_requestResponsePair.contains(command))
         player->m_expectedReplyCommand = m_requestResponsePair[command];
     else
@@ -843,7 +842,6 @@ LegacyServerPlayer *LegacyRoom::getRaceResult(QList<LegacyServerPlayer *> &playe
         player->acquireLock(LegacyServerPlayer::SEMA_MUTEX);
         player->m_expectedReplyCommand = S_COMMAND_UNKNOWN;
         player->m_isWaitingReply = false;
-        player->m_expectedReplySerial = -1;
         player->releaseLock(LegacyServerPlayer::SEMA_MUTEX);
     }
     _m_semRoomMutex.release();
@@ -852,7 +850,7 @@ LegacyServerPlayer *LegacyRoom::getRaceResult(QList<LegacyServerPlayer *> &playe
 
 bool LegacyRoom::doNotify(LegacyServerPlayer *player, QSanProtocol::CommandType command, const QVariant &arg)
 {
-    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, command);
+    Packet packet(PacketDescriptionFlag(S_SRC_ROOM) | S_TYPE_NOTIFICATION | S_DEST_CLIENT, command);
     packet.setMessageBody(arg);
     player->invoke(&packet);
     return true;
@@ -874,7 +872,7 @@ bool LegacyRoom::doBroadcastNotify(QSanProtocol::CommandType command, const QVar
 
 bool LegacyRoom::doNotify(LegacyServerPlayer *player, int command, const char *arg)
 {
-    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, (QSanProtocol::CommandType)command);
+    Packet packet(PacketDescriptionFlag(S_SRC_ROOM) | S_TYPE_NOTIFICATION | S_DEST_CLIENT, (QSanProtocol::CommandType)command);
     JsonDocument doc = JsonDocument::fromJson(arg);
     if (doc.isValid()) {
         packet.setMessageBody(doc.toVariant());
@@ -932,7 +930,6 @@ bool LegacyRoom::getResult(LegacyServerPlayer *player, time_t timeOut)
     }
     player->m_expectedReplyCommand = S_COMMAND_UNKNOWN;
     player->m_isWaitingReply = false;
-    player->m_expectedReplySerial = -1;
     player->releaseLock(LegacyServerPlayer::SEMA_MUTEX);
     return validResult;
 }
@@ -2023,7 +2020,7 @@ QSharedPointer<TriggerDetail> LegacyRoom::askForTriggerOrder(LegacyServerPlayer 
 
         JsonArray arr;
         foreach (const QSharedPointer<TriggerDetail> &ptr, sameTiming)
-            arr << ptr->toVariant();
+            arr << ExtendTriggerDetail::toVariant(*ptr);
         JsonArray arr2;
         arr2 << QVariant(arr) << cancelable;
 
@@ -2050,7 +2047,7 @@ QSharedPointer<TriggerDetail> LegacyRoom::askForTriggerOrder(LegacyServerPlayer 
     s.player = player;
     s.type = ChoiceMadeStruct::TriggerOrder;
     if (!answer.isNull())
-        s.args = answer->toList();
+        s.args = ExtendTriggerDetail::toList(*answer);
     QVariant d = QVariant::fromValue(s);
     thread->trigger(QSanguosha::ChoiceMade, d);
     return answer;
@@ -3682,8 +3679,6 @@ void LegacyRoom::processResponse(LegacyServerPlayer *player, const Packet *packe
         emit room_message(tr("Server is not waiting for reply from %1").arg(player->objectName()));
     else if (packet->getCommandType() != player->m_expectedReplyCommand)
         emit room_message(tr("Reply command should be %1 instead of %2").arg(player->m_expectedReplyCommand, packet->getCommandType()));
-    else if (packet->localSerial != player->m_expectedReplySerial)
-        emit room_message(tr("Reply serial should be %1 instead of %2").arg(player->m_expectedReplySerial, packet->localSerial));
     else
         success = true;
 

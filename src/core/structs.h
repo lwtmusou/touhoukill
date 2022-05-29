@@ -327,9 +327,6 @@ public:
     bool sameTimingWith(const TriggerDetail &arg2) const;
     bool isValid() const; // validity check
 
-    QVariant toVariant() const;
-    QStringList toList() const;
-
 private:
     TriggerDetailPrivate *d;
 };

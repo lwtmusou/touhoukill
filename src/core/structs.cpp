@@ -3,7 +3,6 @@
 #include "card.h"
 #include "exppattern.h"
 #include "global.h"
-#include "json.h"
 #include "player.h"
 #include "protocol.h"
 #include "skill.h"
@@ -320,46 +319,6 @@ QVariantMap &TriggerDetail::tag()
 bool TriggerDetail::isValid() const // validity check
 {
     return room() != nullptr && trigger() != nullptr;
-}
-
-QVariant TriggerDetail::toVariant() const
-{
-    if (!isValid())
-        return QVariant();
-
-    JsonObject ob;
-    if (trigger() != nullptr)
-        ob[QStringLiteral("skill")] = trigger()->name();
-    if (owner() != nullptr)
-        ob[QStringLiteral("owner")] = owner()->objectName();
-    if (invoker() != nullptr)
-        ob[QStringLiteral("invoker")] = invoker()->objectName();
-
-    return ob;
-}
-
-QStringList TriggerDetail::toList() const
-{
-    QStringList l;
-    if (!isValid())
-        l << QString() << QString() << QString();
-    else {
-        std::function<void(const QObject *)> insert = [&l](const QObject *item) {
-            if (item != nullptr)
-                l << item->objectName();
-            else
-                l << QString();
-        };
-
-        if (trigger() != nullptr)
-            l << trigger()->name();
-        else
-            l << QString();
-        insert(owner());
-        insert(invoker());
-    }
-
-    return l;
 }
 
 SingleCardMoveStruct::SingleCardMoveStruct(int id, Player *to, QSanguosha::Place toPlace)

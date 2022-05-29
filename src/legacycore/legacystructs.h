@@ -152,10 +152,14 @@ QString toString(const CardUseStruct &use);
 } // namespace ExtendCardUseStruct
 
 namespace ExtendCardMoveReason {
-
 bool tryParse(CardMoveReason &reason, const QVariant &);
 QVariant toVariant(const CardMoveReason &);
 } // namespace ExtendCardMoveReason
+
+namespace ExtendTriggerDetail {
+QVariant toVariant(const TriggerDetail &detail);
+QStringList toList(const TriggerDetail &detail);
+} // namespace ExtendTriggerDetail
 
 Q_DECLARE_METATYPE(LegacyCardsMoveStruct)
 Q_DECLARE_METATYPE(LegacyCardsMoveOneTimeStruct)

@@ -18,7 +18,6 @@ const int LegacyServerPlayer::S_NUM_SEMAPHORES = 6;
 
 LegacyServerPlayer::LegacyServerPlayer(LegacyRoom *room)
     : Player(room)
-    , m_expectedReplySerial(0)
     , m_isClientResponseReady(false)
     , m_isWaitingReply(false)
     , socket(nullptr)
@@ -275,7 +274,7 @@ void LegacyServerPlayer::unicast(const QString &message)
 void LegacyServerPlayer::startNetworkDelayTest()
 {
     test_time = QDateTime::currentDateTime();
-    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_NETWORK_DELAY_TEST);
+    Packet packet(PacketDescriptionFlag(S_SRC_ROOM) | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_NETWORK_DELAY_TEST);
     invoke(&packet);
 }
 
