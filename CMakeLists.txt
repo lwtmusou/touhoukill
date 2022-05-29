@@ -114,6 +114,7 @@ set (QSanguosha_SRCS
     src/audio/audio.cpp
     src/client/aux-skills.cpp
     src/client/client.cpp
+    src/legacycore/legacystructs.cpp
     src/dialog/serverinfowidget.cpp
     src/dialog/AboutUs.cpp
     src/dialog/cardoverview.cpp
@@ -184,6 +185,7 @@ set (QSanguosha_MOCS
     src/audio/audio.h
     src/client/aux-skills.h
     src/client/client.h
+    src/legacycore/legacystructs.h
     src/dialog/serverinfowidget.h
     src/dialog/AboutUs.h
     src/dialog/cardoverview.h
@@ -472,6 +474,7 @@ if (Qt5_FOUND)
         PUBLIC "src/dialog"
         PUBLIC "src/package"
         PUBLIC "src/legacyserver"
+        PUBLIC "src/legacycore"
         PUBLIC "src/ui"
         PUBLIC "src/util"
         PUBLIC "src"
@@ -554,6 +557,7 @@ if (Qt6_FOUND)
         PUBLIC "src/dialog"
         PUBLIC "src/package"
         PUBLIC "src/legacyserver"
+        PUBLIC "src/legacycore"
         PUBLIC "src/ui"
         PUBLIC "src/util"
         PUBLIC "src"

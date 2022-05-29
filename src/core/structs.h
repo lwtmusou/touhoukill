@@ -54,13 +54,6 @@ struct QSGS_CORE_EXPORT CardUseStruct
     CardUseStruct(const Card *card, Player *from, Player *target, bool isOwnerUse = true);
     CardUseStruct(const Card *card, Player *from, const Card *toCard, bool isOwnerUse = true);
 
-#ifndef SWIG
-    bool isValid(const QString &pattern) const;
-    void parse(const QString &str, RoomObject *room);
-    bool tryParse(const QVariant &usage, RoomObject *room);
-    QString toString() const;
-#endif
-
     const Card *card;
     Player *from;
     QList<Player *> to;
@@ -105,8 +98,6 @@ public:
     CardMoveReason(QSanguosha::MoveReasonCategory moveReason, const QString &playerId, const QString &targetId, const QString &skillName, const QString &eventName);
 
 #ifndef SWIG
-    bool tryParse(const QVariant &);
-    QVariant toVariant() const;
 
     inline bool operator==(const CardMoveReason &other) const
     {
@@ -170,73 +161,6 @@ template<> struct QSGS_CORE_EXPORT QListSpecialMethods<SingleCardMoveStruct>
     bool isLastHandCard;
     CardMoveReason reason;
 };
-
-#ifndef SWIG
-struct QSGS_CORE_EXPORT LegacyCardsMoveStruct
-{
-    LegacyCardsMoveStruct();
-    LegacyCardsMoveStruct(const QList<int> &ids, Player *from, Player *to, QSanguosha::Place from_place, QSanguosha::Place to_place, const CardMoveReason &reason);
-    LegacyCardsMoveStruct(const QList<int> &ids, Player *to, QSanguosha::Place to_place, const CardMoveReason &reason);
-    LegacyCardsMoveStruct(int id, Player *from, Player *to, QSanguosha::Place from_place, QSanguosha::Place to_place, const CardMoveReason &reason);
-    LegacyCardsMoveStruct(int id, Player *to, QSanguosha::Place to_place, const CardMoveReason &reason);
-    bool operator==(const LegacyCardsMoveStruct &other) const;
-    bool operator<(const LegacyCardsMoveStruct &other) const;
-
-    QList<int> card_ids; // TODO: Replace with IDSet
-    QSanguosha::Place from_place, to_place;
-    QString from_player_name, to_player_name;
-    QString from_pile_name, to_pile_name;
-    Player *from, *to;
-    CardMoveReason reason;
-    bool open; // helper to prevent sending card_id to unrelevant clients
-    bool is_last_handcard;
-
-    QSanguosha::Place origin_from_place, origin_to_place;
-    Player *origin_from, *origin_to;
-    QString origin_from_pile_name, origin_to_pile_name; //for case of the movement transitted
-    QList<int> broken_ids; //record broken equip IDs from EquipPlace
-    QList<int> shown_ids; //record broken shown IDs from HandPlace
-
-    bool tryParse(const QVariant &arg);
-    QVariant toVariant() const;
-    bool isRelevant(const Player *player) const;
-};
-
-struct QSGS_CORE_EXPORT LegacyCardsMoveOneTimeStruct
-{
-    QList<int> card_ids;
-    QList<QSanguosha::Place> from_places;
-    QSanguosha::Place to_place;
-    CardMoveReason reason;
-    Player *from, *to;
-    QStringList from_pile_names;
-    QString to_pile_name;
-
-    QList<QSanguosha::Place> origin_from_places;
-    QSanguosha::Place origin_to_place;
-    Player *origin_from, *origin_to;
-    QStringList origin_from_pile_names;
-    QString origin_to_pile_name; //for case of the movement transitted
-
-    QList<bool> open; // helper to prevent sending card_id to unrelevant clients
-    bool is_last_handcard;
-    QList<int> broken_ids; //record broken equip IDs from EquipPlace
-    QList<int> shown_ids; //record broken shown IDs from HandPlace
-
-    inline void removeCardIds(const QList<int> &to_remove)
-    {
-        foreach (int id, to_remove) {
-            int index = card_ids.indexOf(id);
-            if (index != -1) {
-                card_ids.removeAt(index);
-                from_places.removeAt(index);
-                from_pile_names.removeAt(index);
-                open.removeAt(index);
-            }
-        }
-    }
-};
-#endif
 
 struct QSGS_CORE_EXPORT DeathStruct
 {
@@ -495,8 +419,5 @@ Q_DECLARE_METATYPE(ExtraTurnStruct)
 Q_DECLARE_METATYPE(BrokenEquipChangedStruct)
 Q_DECLARE_METATYPE(ShownCardChangedStruct)
 Q_DECLARE_METATYPE(ShowGeneralStruct)
-
-Q_DECLARE_METATYPE(LegacyCardsMoveStruct)
-Q_DECLARE_METATYPE(LegacyCardsMoveOneTimeStruct)
 
 #endif

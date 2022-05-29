@@ -9,6 +9,7 @@
 #include "RoomObject.h"
 #include "legacyroomthread.h"
 #include "legacyserverplayer.h"
+#include "legacystructs.h"
 #include "protocol.h"
 
 class ProhibitSkill;
@@ -16,83 +17,6 @@ class TrickCard;
 
 struct lua_State;
 struct LogMessage;
-
-// move the deprecated structs here temporarily
-struct SlashEffectStruct
-{
-    SlashEffectStruct();
-
-    int jink_num;
-
-    const Card *slash;
-    const Card *jink;
-
-    Player *from;
-    Player *to;
-
-    int drank;
-
-    QSanguosha::DamageNature nature;
-    bool multiple;
-    bool nullified;
-    bool canceled;
-    QList<int> effectValue;
-};
-
-struct JinkEffectStruct
-{
-    JinkEffectStruct();
-
-    SlashEffectStruct slashEffect;
-    const Card *jink;
-};
-
-struct ChoiceMadeStruct
-{
-    inline ChoiceMadeStruct()
-        : player(nullptr)
-        , type(NoChoice)
-    {
-    }
-
-    enum ChoiceType
-    {
-        NoChoice,
-
-        SkillInvoke,
-        SkillChoice,
-        Nullification,
-        CardChosen,
-        CardResponded,
-        CardUsed,
-        AGChosen,
-        CardShow,
-        Peach,
-        TriggerOrder,
-        ReverseFor3v3,
-        Activate,
-        Suit,
-        Kingdom,
-        CardDiscard,
-        CardExchange,
-        ViewCards,
-        PlayerChosen,
-        Rende,
-        Yiji,
-        Pindian,
-
-        NumOfChoices
-    };
-
-    Player *player;
-    ChoiceType type;
-    QStringList args;
-    QVariant m_extraData;
-};
-
-Q_DECLARE_METATYPE(SlashEffectStruct)
-Q_DECLARE_METATYPE(JinkEffectStruct)
-Q_DECLARE_METATYPE(ChoiceMadeStruct)
 
 #define QSGS_STATE_ROOM
 #define QSGS_STATE_GAME

@@ -3,6 +3,7 @@
 
 #include "RoomObject.h"
 #include "card.h"
+#include "legacystructs.h"
 #include "player.h"
 #include "protocol.h"
 #include "serverinfostruct.h"

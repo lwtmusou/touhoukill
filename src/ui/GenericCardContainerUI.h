@@ -8,6 +8,7 @@
 #include "graphicspixmaphoveritem.h"
 #include "hegemonyrolecombobox.h"
 #include "heroskincontainer.h"
+#include "legacystructs.h"
 #include "magatamasItem.h"
 #include "player.h"
 #include "rolecombobox.h"

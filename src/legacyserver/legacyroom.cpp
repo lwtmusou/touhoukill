@@ -1788,7 +1788,7 @@ const Card *LegacyRoom::askForUseCard(LegacyServerPlayer *player, const QString 
     if (success) {
         const QVariant &clientReply = player->getClientReply();
         isCardUsed = !clientReply.isNull();
-        if (isCardUsed && card_use.tryParse(clientReply, this))
+        if (isCardUsed && ExtendCardUseStruct::tryParse(card_use, clientReply, this))
             card_use.from = player;
     }
 
@@ -1798,8 +1798,8 @@ const Card *LegacyRoom::askForUseCard(LegacyServerPlayer *player, const QString 
     s.player = player;
     s.type = ChoiceMadeStruct::CardUsed;
     s.args << pattern << prompt;
-    if (isCardUsed && card_use.isValid(pattern)) {
-        s.args << card_use.toString();
+    if (isCardUsed && ExtendCardUseStruct::isValid(card_use, pattern)) {
+        s.args << ExtendCardUseStruct::toString(card_use);
         QVariant decisionData = QVariant::fromValue(s);
         thread->trigger(QSanguosha::ChoiceMade, decisionData);
         //show hidden general
@@ -1973,7 +1973,7 @@ void LegacyRoom::askForSinglePeach(LegacyServerPlayer *player, LegacyServerPlaye
     JsonArray clientReply = player->getClientReply().value<JsonArray>();
     if (!success || clientReply.isEmpty() || !JsonUtils::isString(clientReply[0]))
         return;
-    if (!use.tryParse(clientReply, this)) {
+    if (!ExtendCardUseStruct::tryParse(use, clientReply, this)) {
         use.card = nullptr;
         return;
     }
@@ -5425,20 +5425,20 @@ void LegacyRoom::activate(LegacyServerPlayer *player, CardUseStruct &card_use)
             return;
 
         card_use.from = player;
-        if (!card_use.tryParse(clientReply, this)) {
+        if (!ExtendCardUseStruct::tryParse(card_use, clientReply, this)) {
             JsonArray use = clientReply.value<JsonArray>();
             emit room_message(tr("Card cannot be parsed:\n %1").arg(use[0].toString()));
             return;
         }
     }
     card_use.m_reason = QSanguosha::CardUseReasonPlay;
-    if (!card_use.isValid(QString()))
+    if (!ExtendCardUseStruct::isValid(card_use, QString()))
         return;
 
     ChoiceMadeStruct s;
     s.player = player;
     s.type = ChoiceMadeStruct::Activate;
-    s.args << card_use.toString();
+    s.args << ExtendCardUseStruct::toString(card_use);
     QVariant data = QVariant::fromValue(s);
     thread->trigger(QSanguosha::ChoiceMade, data);
 }

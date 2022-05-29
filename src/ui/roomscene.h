@@ -9,6 +9,7 @@
 #include "client.h"
 #include "clientlogbox.h"
 #include "dashboard.h"
+#include "legacystructs.h"
 #include "photo.h"
 #include "qsanbutton.h"
 #include "sprite.h"
@@ -34,6 +35,7 @@ class PlayerCardBox;
 #include <QGraphicsScene>
 #include <QGraphicsWidget>
 #include <QHBoxLayout>
+#include <QList>
 #include <QMainWindow>
 #include <QMutex>
 #include <QSpinBox>

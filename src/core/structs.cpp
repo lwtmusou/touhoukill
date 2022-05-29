@@ -14,136 +14,6 @@
 
 using namespace QSanguosha;
 
-LegacyCardsMoveStruct::LegacyCardsMoveStruct()
-{
-    from_place = PlaceUnknown;
-    to_place = PlaceUnknown;
-    from = nullptr;
-    to = nullptr;
-    is_last_handcard = false;
-}
-
-LegacyCardsMoveStruct::LegacyCardsMoveStruct(const QList<int> &ids, Player *from, Player *to, Place from_place, Place to_place, const CardMoveReason &reason)
-{
-    this->card_ids = ids;
-    this->from_place = from_place;
-    this->to_place = to_place;
-    this->from = from;
-    this->to = to;
-    this->reason = reason;
-    is_last_handcard = false;
-    if (from != nullptr)
-        from_player_name = from->objectName();
-    if (to != nullptr)
-        to_player_name = to->objectName();
-}
-
-LegacyCardsMoveStruct::LegacyCardsMoveStruct(const QList<int> &ids, Player *to, Place to_place, const CardMoveReason &reason)
-{
-    this->card_ids = ids;
-    this->from_place = PlaceUnknown;
-    this->to_place = to_place;
-    this->from = nullptr;
-    this->to = to;
-    this->reason = reason;
-    is_last_handcard = false;
-    if (to != nullptr)
-        to_player_name = to->objectName();
-}
-
-LegacyCardsMoveStruct::LegacyCardsMoveStruct(int id, Player *from, Player *to, Place from_place, Place to_place, const CardMoveReason &reason)
-{
-    this->card_ids << id;
-    this->from_place = from_place;
-    this->to_place = to_place;
-    this->from = from;
-    this->to = to;
-    this->reason = reason;
-    is_last_handcard = false;
-    if (from != nullptr)
-        from_player_name = from->objectName();
-    if (to != nullptr)
-        to_player_name = to->objectName();
-}
-
-LegacyCardsMoveStruct::LegacyCardsMoveStruct(int id, Player *to, Place to_place, const CardMoveReason &reason)
-{
-    this->card_ids << id;
-    this->from_place = PlaceUnknown;
-    this->to_place = to_place;
-    this->from = nullptr;
-    this->to = to;
-    this->reason = reason;
-    is_last_handcard = false;
-    if (to != nullptr)
-        to_player_name = to->objectName();
-}
-
-bool LegacyCardsMoveStruct::operator==(const LegacyCardsMoveStruct &other) const
-{
-    return from == other.from && from_place == other.from_place && from_pile_name == other.from_pile_name && from_player_name == other.from_player_name;
-}
-
-bool LegacyCardsMoveStruct::operator<(const LegacyCardsMoveStruct &other) const
-{
-    return from < other.from || from_place < other.from_place || from_pile_name < other.from_pile_name || from_player_name < other.from_player_name;
-}
-
-bool LegacyCardsMoveStruct::tryParse(const QVariant &arg)
-{
-    JsonArray args = arg.value<JsonArray>();
-    if (args.size() != 8)
-        return false;
-
-    if ((!JsonUtils::isNumber(args[0]) && !args[0].canConvert<JsonArray>()) || !JsonUtils::isNumberArray(args, 1, 2) || !JsonUtils::isStringArray(args, 3, 6))
-        return false;
-
-    if (!JsonUtils::tryParse(args[0], card_ids))
-        return false;
-
-    from_place = (Place)args[1].toInt();
-    to_place = (Place)args[2].toInt();
-    from_player_name = args[3].toString();
-    to_player_name = args[4].toString();
-    from_pile_name = args[5].toString();
-    to_pile_name = args[6].toString();
-    reason.tryParse(args[7]);
-    return true;
-}
-
-QVariant LegacyCardsMoveStruct::toVariant() const
-{
-    //notify Client
-    JsonArray arg;
-    if (open) {
-        arg << JsonUtils::toJsonArray(card_ids);
-    } else {
-        QList<int> notify_ids;
-        //keep original order?
-        foreach (int id, card_ids) {
-            if (shown_ids.contains(id))
-                notify_ids << id;
-            else
-                notify_ids.append(Card::S_UNKNOWN_CARD_ID);
-        }
-        arg << JsonUtils::toJsonArray(notify_ids);
-    }
-
-    arg << (int)from_place;
-    arg << (int)to_place;
-    arg << from_player_name;
-    arg << to_player_name;
-    arg << from_pile_name;
-    arg << to_pile_name;
-    arg << reason.toVariant();
-    return arg;
-}
-
-bool LegacyCardsMoveStruct::isRelevant(const Player *player) const
-{
-    return player != nullptr && (from == player || (to == player && to_place != PlaceSpecial));
-}
-
 CardMoveReason::CardMoveReason(QSanguosha::MoveReasonCategory moveReason, const QString &playerId, const QString &skillName, const QString &eventName)
     : m_reason(moveReason)
     , m_playerId(playerId)
@@ -159,32 +29,6 @@ CardMoveReason::CardMoveReason(QSanguosha::MoveReasonCategory moveReason, const 
     , m_skillName(skillName)
     , m_eventName(eventName)
 {
-}
-
-bool CardMoveReason::tryParse(const QVariant &arg)
-{
-    JsonArray args = arg.value<JsonArray>();
-    if (args.size() != 5 || !args[0].canConvert<int>() || !JsonUtils::isStringArray(args, 1, 4))
-        return false;
-
-    m_reason = static_cast<MoveReasonCategory>(args[0].toInt());
-    m_playerId = args[1].toString();
-    m_skillName = args[2].toString();
-    m_eventName = args[3].toString();
-    m_targetId = args[4].toString();
-
-    return true;
-}
-
-QVariant CardMoveReason::toVariant() const
-{
-    JsonArray result;
-    result << static_cast<int>(m_reason);
-    result << m_playerId;
-    result << m_skillName;
-    result << m_eventName;
-    result << m_targetId;
-    return result;
 }
 
 DamageStruct::DamageStruct(const Card *card, Player *from, Player *to, int damage, DamageNature nature)
@@ -290,78 +134,6 @@ CardUseStruct::CardUseStruct(const Card *card, Player *from, const Card *toCard,
 {
 }
 
-bool CardUseStruct::isValid(const QString &pattern) const
-{
-    Q_UNUSED(pattern)
-    return card != nullptr;
-}
-
-bool CardUseStruct::tryParse(const QVariant &usage, RoomObject *room)
-{
-    JsonArray arr = usage.value<JsonArray>();
-    if (arr.length() < 2 || !JsonUtils::isString(arr.first()) || (!arr.value(1).canConvert<JsonArray>() && !JsonUtils::isString(arr.value(1))))
-        return false;
-
-    card = Card::Parse(arr.first().toString(), room);
-    if (arr.value(1).canConvert<JsonArray>()) {
-        JsonArray targets = arr.value(1).value<JsonArray>();
-
-        for (int i = 0; i < targets.size(); i++) {
-            if (!JsonUtils::isString(targets.value(i)))
-                return false;
-            to << room->findChild<Player *>(targets.value(i).toString());
-        }
-    } else if (JsonUtils::isString(arr.value(1))) {
-        // parse card
-    }
-    return true;
-}
-
-void CardUseStruct::parse(const QString &str, RoomObject *room)
-{
-    QStringList words = str.split(QStringLiteral("->"), Qt::KeepEmptyParts);
-    Q_ASSERT(words.length() == 1 || words.length() == 2);
-
-    const QString &card_str = words.at(0);
-    QString target_str = QStringLiteral(".");
-
-    if (words.length() == 2 && !words.at(1).isEmpty())
-        target_str = words.at(1);
-
-    card = Card::Parse(card_str, room);
-
-    if (target_str != QStringLiteral(".")) {
-        // todo: parse card
-        QStringList target_names = target_str.split(QStringLiteral("+"));
-        foreach (QString target_name, target_names)
-            to << room->findChild<Player *>(target_name);
-    }
-}
-
-QString CardUseStruct::toString() const
-{
-    if (card == nullptr)
-        return QString();
-
-    QStringList l;
-    l << card->toString();
-
-    if (toCard != nullptr) {
-        l << toCard->toString();
-    } else {
-        if (to.isEmpty())
-            l << QStringLiteral(".");
-        else {
-            QStringList tos;
-            foreach (Player *p, to)
-                tos << p->objectName();
-
-            l << tos.join(QStringLiteral("+"));
-        }
-    }
-    return l.join(QStringLiteral("->"));
-}
-
 class TriggerDetailSharedData : public QSharedData
 {
 public:
@@ -414,7 +186,7 @@ bool TriggerDetail::operator<(const TriggerDetail &arg2) const // the operator <
     return !trigger()->isEquipSkill() && arg2.trigger()->isEquipSkill();
 }
 
-bool TriggerDetail::operator ==(const TriggerDetail &arg2) const
+bool TriggerDetail::operator==(const TriggerDetail &arg2) const
 {
     // it only judge the skill name, the skill invoker and the skill owner. It don't judge the skill target because it is chosen by the skill invoker
     return trigger() == arg2.trigger() && owner() == arg2.owner() && invoker() == arg2.invoker();
