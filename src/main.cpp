@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
         qDebug() << "Unable to load sanguosha.qm";
 
     // initialize Engine;
-    (void)Sanguosha;
+    Sanguosha->init();
 
     Config.init();
 

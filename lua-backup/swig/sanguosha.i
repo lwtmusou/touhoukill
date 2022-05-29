@@ -1357,7 +1357,7 @@ public:
     bool isGeneralHidden(const char *general_name) const;
 };
 
-extern Engine *Sanguosha;
+extern Engine *const Sanguosha;
 
 class Skill : public QObject
 {

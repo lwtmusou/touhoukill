@@ -41,9 +41,12 @@ class EnginePrivate;
 class QSGS_CORE_EXPORT Engine final
 {
 public:
+#ifndef SWIG
+    Engine();
     ~Engine();
 
-    static Engine *instance();
+    void init();
+#endif
 
     // translations
     void loadTranslations(const QString &locale);
@@ -113,15 +116,14 @@ private:
     Q_DECL_DEPRECATED bool isGeneralHidden(const QString &general_name) const;
 
 private:
-    Engine();
     Q_DISABLE_COPY_MOVE(Engine)
     EnginePrivate *const d;
 };
-
 #ifdef SWIG
 extern Engine *const Sanguosha;
 #else
-#define Sanguosha (Engine::instance())
+QSGS_CORE_EXPORT Engine *EngineInstanceFunc();
+#define Sanguosha (EngineInstanceFunc())
 #endif
 
 #endif

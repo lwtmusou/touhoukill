@@ -21,6 +21,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QFile>
+#include <QGlobalStatic>
 #include <QRegularExpression>
 #include <QRegularExpressionMatchIterator>
 #include <QStringList>
@@ -60,6 +61,8 @@ public:
     }
 };
 
+Q_GLOBAL_STATIC(Engine, EngineInstance)
+
 Engine::Engine()
     : d(new EnginePrivate)
 {
@@ -67,7 +70,10 @@ Engine::Engine()
     JsonDocument doc = JsonDocument::fromFilePath(QStringLiteral("config/gameconfig.json"));
     if (doc.isValid())
         d->configFile = doc.object();
+}
 
+void Engine::init()
+{
     d->l = LuaMultiThreadEnvironment::luaStateForCurrentThread();
 
     foreach (const Trigger *trigger, LuaMultiThreadEnvironment::triggers())
@@ -100,12 +106,6 @@ Engine::~Engine()
 {
     qDeleteAll(d->expPatterns);
     delete d;
-}
-
-Engine *Engine::instance()
-{
-    static Engine e;
-    return &e;
 }
 
 void Engine::loadTranslations(const QString &locale)
@@ -433,6 +433,11 @@ void Engine::unregisterTrigger(const QString &name)
         d->triggers.erase(face);
         delete handle;
     }
+}
+
+Engine *EngineInstanceFunc()
+{
+    return EngineInstance;
 }
 
 // defined in global.h
