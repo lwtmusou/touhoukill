@@ -84,7 +84,7 @@ QWidget *ServerDialog::createPackageTab()
     extension_group = new QButtonGroup;
     extension_group->setExclusive(false);
 
-    QStringList extensions = Sanguosha->packageNames();
+    QStringList extensions = Sanguosha->packageNames().values();
     QSet<QString> ban_packages(Config.BanPackages.begin(), Config.BanPackages.end());
 
     QGroupBox *box1 = new QGroupBox(tr("General package"));

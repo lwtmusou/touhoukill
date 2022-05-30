@@ -240,7 +240,7 @@ QStringList LegacyServer::getNeededPackages() const
         ret << QStringLiteral("hegemonyGeneral") << QStringLiteral("hegemony_card");
     } else {
         QStringList ban = Config.BanPackages;
-        QStringList packages = Sanguosha->packageNames();
+        QStringList packages = Sanguosha->packageNames().values();
         foreach (const QString &package, packages) {
             if (package == QStringLiteral("hegemonyGeneral"))
                 continue;

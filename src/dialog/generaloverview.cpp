@@ -139,7 +139,7 @@ QWidget *GeneralSearch::createInfoTab()
     package_buttons = new QButtonGroup;
     package_buttons->setExclusive(false);
 
-    QStringList extensions = Sanguosha->packageNames();
+    QStringList extensions = Sanguosha->packageNames().values();
 
     QGroupBox *package_box = new QGroupBox(tr("Packages"));
     package_box->setToolTip(tr("<font color=#FFFF33>Select packages. Every package meets the condition if none is selected.</font>"));

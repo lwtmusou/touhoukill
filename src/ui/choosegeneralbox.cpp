@@ -272,7 +272,7 @@ static bool sortByKingdom(const QString &gen1, const QString &gen2)
 {
     static QMap<QString, int> kingdom_priority_map;
     if (kingdom_priority_map.isEmpty()) {
-        QStringList kingdoms = Sanguosha->kingdoms();
+        QStringList kingdoms = Sanguosha->kingdoms().values();
         int i = 0;
         foreach (const QString &kingdom, kingdoms)
             kingdom_priority_map[kingdom] = i++;

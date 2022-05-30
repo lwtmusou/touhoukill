@@ -1650,7 +1650,7 @@ void Client::askForSuit(const QJsonValue &arg)
 
 void Client::askForKingdom(const QJsonValue & /*unused*/)
 {
-    QStringList kingdoms = Sanguosha->kingdoms();
+    QStringList kingdoms = Sanguosha->kingdoms().values();
 
     if (kingdoms.contains(QStringLiteral("zhu")))
         kingdoms.removeOne(QStringLiteral("zhu"));

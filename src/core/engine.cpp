@@ -272,31 +272,31 @@ QString Engine::modName() const
     return QStringLiteral("TouhouSatsu");
 }
 
-QStringList Engine::packageNames() const
+QSet<QString> Engine::packageNames() const
 {
-    QStringList extensions;
+    QSet<QString> extensions;
     const QList<const Package *> &ps = packages();
     foreach (const Package *package, ps)
-        extensions << package->name();
+        extensions.insert(package->name());
 
     return extensions;
 }
 
-QStringList Engine::kingdoms() const
+QSet<QString> Engine::kingdoms() const
 {
-    static QStringList kingdoms;
+    static QSet<QString> kingdoms;
 
     if (kingdoms.isEmpty())
-        kingdoms = configuration(QStringLiteral("kingdoms")).toStringList();
+        kingdoms = List2Set(configuration(QStringLiteral("kingdoms")).toStringList());
 
     return kingdoms;
 }
 
-QStringList Engine::hegemonyKingdoms() const
+QSet<QString> Engine::hegemonyKingdoms() const
 {
-    static QStringList hegemony_kingdoms;
+    static QSet<QString> hegemony_kingdoms;
     if (hegemony_kingdoms.isEmpty())
-        hegemony_kingdoms = configuration(QStringLiteral("hegemony_kingdoms")).toStringList();
+        hegemony_kingdoms = List2Set(configuration(QStringLiteral("hegemony_kingdoms")).toStringList());
 
     return hegemony_kingdoms;
 }

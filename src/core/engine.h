@@ -60,8 +60,8 @@ public:
     QString modName() const;
 
     // kingdoms (from configurations)
-    QStringList kingdoms() const;
-    QStringList hegemonyKingdoms() const;
+    QSet<QString> kingdoms() const;
+    QSet<QString> hegemonyKingdoms() const;
 
     // patterns (to be refactored since the 2 patterns confuses people)
     const CardPattern *responsePattern(const QString &name) const;
@@ -72,7 +72,7 @@ public:
     void addPackage(const Package *package);
     QList<const Package *> packages() const;
     const Package *findPackage(const QString &name) const;
-    QStringList packageNames() const;
+    QSet<QString> packageNames() const;
 
     // generals
     const General *general(const QString &name) const;

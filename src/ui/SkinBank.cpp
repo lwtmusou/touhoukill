@@ -902,7 +902,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const QJsonValue &layout)
     tryParse(config[QStringLiteral("generalButtonNameRegion")], _m_commonLayout.generalButtonNameRegion);
 
     tryParse(config[QStringLiteral("roleNormalBgSize")], _m_commonLayout.m_roleNormalBgSize);
-    QStringList kingdoms = Sanguosha->hegemonyKingdoms();
+    QStringList kingdoms = Sanguosha->hegemonyKingdoms().values();
     kingdoms.removeAll(QStringLiteral("god"));
     foreach (const QString &kingdom, kingdoms) {
         tryParse(config[QString::fromUtf8(S_SKIN_KEY_ROLE_BOX_RECT).arg(kingdom)], _m_commonLayout.m_rolesRect[kingdom]);
