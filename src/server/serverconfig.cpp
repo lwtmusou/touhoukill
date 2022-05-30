@@ -1,9 +1,12 @@
 
 #include "serverconfig.h"
+#include "engine.h"
 #include "mode.h"
+#include "util.h"
 
 #include <QDebug>
 #include <QDir>
+#include <QGlobalStatic>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -22,6 +25,8 @@
 #include <QCommandLineOption>
 #include <QCommandLineParser>
 #endif
+
+Q_GLOBAL_STATIC(ServerConfigStruct, ServerConfigInstance)
 
 namespace {
 const QString &configFilePath()
@@ -312,6 +317,12 @@ QString hegemonyRewardToString(ServerConfigStruct::HegemonyRewardOptions hegemon
 
 } // namespace
 
+ServerConfigStruct::ServerConfigStruct()
+    : parsed(false)
+{
+    defaultValues();
+}
+
 void ServerConfigStruct::defaultValues()
 {
     // fill initial default values
@@ -566,8 +577,46 @@ bool ServerConfigStruct::parse()
     }
     if (parser.isSet(QStringLiteral("p"))) {
         QString p = parser.value(QStringLiteral("p"));
-        // TODO
-        Q_UNUSED(p);
+
+        bool disabled = false;
+        static QStringList disabledValues {
+            QStringLiteral("disable:"),
+            QStringLiteral("disabled:"),
+            QStringLiteral("ban:"),
+            QStringLiteral("banned:"),
+        };
+
+        foreach (const QString &disabledValue, disabledValues) {
+            if (p.startsWith(disabledValue)) {
+                disabled = true;
+                p = p.mid(disabledValue.length());
+                break;
+            }
+        }
+
+        QStringList packages = p.split(QStringLiteral(","), Qt::SkipEmptyParts);
+        QStringList temp;
+        foreach (const QString &ps, packages)
+            temp << ps.trimmed();
+
+        packages = temp;
+
+        QSet<QString> totalNames = Sanguosha->packageNames();
+        temp.clear();
+
+        foreach (const QString &ps, packages) {
+            if (!totalNames.contains(ps))
+                parserFailures << QString(QStringLiteral("Value for --package (%1) is inexistant. Check your input.")).arg(ps);
+            else
+                temp << ps;
+        }
+
+        if (disabled) {
+            totalNames.subtract(List2Set(temp));
+            game.enabledPackages = totalNames.values();
+        } else {
+            game.enabledPackages = temp;
+        }
     }
     if (parser.isSet(QStringLiteral("mg"))) {
         QString mg = parser.value(QStringLiteral("mg"));
@@ -1160,4 +1209,9 @@ bool ServerConfigStruct::saveConfigFile()
     f.close();
 
     return false;
+}
+
+ServerConfigStruct *serverConfigInstanceFunc()
+{
+    return ServerConfigInstance;
 }

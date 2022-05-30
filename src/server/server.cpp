@@ -1,20 +1,13 @@
-#include "server.h"
+
+#include "engine.h"
+#include "serverconfig.h"
 #include "serverinfostruct.h"
 
 // Server is meant to be run in separate thread / process.
 
-Server::Server()
+int startServer()
 {
-    if (!ServerInfo.parsed()) {
-        // initialize ServerInfo from parsed arguments & settings
-    }
-
-    // start a listening server
-    // TODO
-}
-
-int startServer(int argc, char *argv[])
-{
+    ServerConfig.parse();
     return 0;
 }
 
@@ -28,7 +21,8 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    // TODO
+    Sanguosha->init();
+    startServer();
     return a.exec();
 }
 #endif

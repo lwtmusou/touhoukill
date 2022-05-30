@@ -9,11 +9,7 @@ struct ServerConfigStruct
 {
     // see https://github.com/lwtmusou/touhoukill/issues/22
 
-    ServerConfigStruct()
-        : parsed(false)
-    {
-        defaultValues();
-    }
+    ServerConfigStruct();
 
     void defaultValues();
     bool parse();
@@ -91,5 +87,8 @@ struct ServerConfigStruct
         int careeristKillReward; // 0 for as-usual, > 0 for always draw this number of card
     } hegemony;
 };
+
+extern ServerConfigStruct *serverConfigInstanceFunc();
+#define ServerConfig (*serverConfigInstanceFunc())
 
 #endif

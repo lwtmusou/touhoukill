@@ -118,7 +118,6 @@ set (QSanguosha_Server_SRCS
 )
 
 set (QSanguosha_Server_MOCS
-    src/server/server.h
     src/server/qsgsmultiserver.h
     src/server/serverconfig.h
 )
