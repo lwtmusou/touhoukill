@@ -35,7 +35,7 @@ template<typename T> Q_ALWAYS_INLINE QSet<T> List2Set(const QList<T> &list)
     return QSet<T>(list.begin(), list.end());
 }
 
-template<typename T> inline QList<const T *> NonConstList2ConstList(const QList<T *> &list)
+template<typename T> Q_ALWAYS_INLINE QList<const T *> NonConstList2ConstList(const QList<T *> &list)
 {
     return QList<const T *>(list.cbegin(), list.cend());
 }
