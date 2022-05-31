@@ -68,11 +68,10 @@ Config file options:
 Game mode options:
 -m, --mode=<role_x,x,x, hegemony_x> the game mode which the server serves.
 
-Network options:
+TCP Server options:
 -I, --bind-ip= bind ip address, default 0.0.0.0
 -P, --bind-port= bind port, default 41392
 --mc=, --same-ip-with-multiple-connection=<yes, no> same ip with multiple connection
--c, --chat=<yes, no> enables or disables chat
 
 Game options:
 -t, --timeout=<0,5~60> operation timeout, set 0 for no limit, default 15
@@ -81,6 +80,7 @@ Game options:
 -s, --shuffle-seat=<yes, no> arange seats randomly, default yes
 -l, --latest-general=<yes, no> assign latest general, default yes
 --ps=, --pile-swap-limit=<0~15> pile swapping limit, set 0 for no limit
+-c, --chat=<yes, no> enables or disables chat
 -A, --ai=<yes, no> AI switch (LuaAI)
 --Ad=, --ai-delay=<0~5000> AI delay, default 1000
 --Al=, --ai-limit=<yes, no> limit Lua AI in a game, default no
@@ -328,10 +328,9 @@ void ServerConfigStruct::defaultValues()
     // fill initial default values
     mode = QStringLiteral("role_2,4,1");
 
-    network.bindIp = QHostAddress::Any;
-    network.bindPort = 41392;
-    network.simc = true;
-    network.chat = true;
+    tcpServer.bindIp = QHostAddress::Any;
+    tcpServer.bindPort = 41392;
+    tcpServer.simc = true;
 
     game.timeout = 15;
     game.nullificationTimeout = 8;
@@ -339,6 +338,7 @@ void ServerConfigStruct::defaultValues()
     game.shuffleSeat = true;
     game.latestGeneral = true;
     game.pileSwap = 5;
+    game.chat = true;
     game.enableAi = true;
     game.aiDelay = 1000;
     game.aiLimit = false;
@@ -394,11 +394,10 @@ bool ServerConfigStruct::parse()
     // Game mode options
     parser.addOption(QCommandLineOption(QStringList {QStringLiteral("m"), QStringLiteral("mode")}, QString(), QStringLiteral("mode")));
 
-    // Network options
+    // TCP Server options
     parser.addOption(QCommandLineOption(QStringList {QStringLiteral("I"), QStringLiteral("bind-ip")}, QString(), QStringLiteral("ip")));
     parser.addOption(QCommandLineOption(QStringList {QStringLiteral("P"), QStringLiteral("bind-port")}, QString(), QStringLiteral("port")));
     parser.addOption(QCommandLineOption(QStringList {QStringLiteral("mc"), QStringLiteral("same-ip-with-multiple-connection")}, QString(), QStringLiteral("simc")));
-    parser.addOption(QCommandLineOption(QStringList {QStringLiteral("c"), QStringLiteral("chat")}, QString(), QStringLiteral("chat")));
 
     // Game options
     parser.addOption(QCommandLineOption(QStringList {QStringLiteral("t"), QStringLiteral("timeout")}, QString(), QStringLiteral("timeout")));
@@ -407,6 +406,7 @@ bool ServerConfigStruct::parse()
     parser.addOption(QCommandLineOption(QStringList {QStringLiteral("s"), QStringLiteral("shuffle-seat")}, QString(), QStringLiteral("shuffle")));
     parser.addOption(QCommandLineOption(QStringList {QStringLiteral("l"), QStringLiteral("latest-general")}, QString(), QStringLiteral("latest")));
     parser.addOption(QCommandLineOption(QStringList {QStringLiteral("ps"), QStringLiteral("pile-swap-limit")}, QString(), QStringLiteral("limit")));
+    parser.addOption(QCommandLineOption(QStringList {QStringLiteral("c"), QStringLiteral("chat")}, QString(), QStringLiteral("chat")));
     parser.addOption(QCommandLineOption(QStringList {QStringLiteral("A"), QStringLiteral("ai")}, QString(), QStringLiteral("ai")));
     parser.addOption(QCommandLineOption(QStringList {QStringLiteral("Ad"), QStringLiteral("ai-delay")}, QString(), QStringLiteral("delay")));
     parser.addOption(QCommandLineOption(QStringList {QStringLiteral("Al"), QStringLiteral("ai-limit")}, QString(), QStringLiteral("limit")));
@@ -468,11 +468,11 @@ bool ServerConfigStruct::parse()
             parserFailures << QString(QStringLiteral("Value for --mode (%1) is incorrect. Nonexistant mode %1 is specified. Check your input.")).arg(mode);
     }
 
-    // Network options
+    // TCP Server options
     if (parser.isSet(QStringLiteral("I"))) {
         QString I = parser.value(QStringLiteral("I"));
         bool ok = false;
-        network.bindIp = stringToQHostAddress(I, &ok);
+        tcpServer.bindIp = stringToQHostAddress(I, &ok);
         if (!ok)
             parserFailures << QString(QStringLiteral("Value for --bind-ip (%1) is incorrect. Check your input.")).arg(I);
     }
@@ -480,27 +480,20 @@ bool ServerConfigStruct::parse()
         // 1024 ~ 49151
         QString P = parser.value(QStringLiteral("P"));
         bool ok = false;
-        network.bindPort = P.toInt(&ok);
+        tcpServer.bindPort = P.toInt(&ok);
         if (!ok)
             parserFailures << QString(QStringLiteral("Value for --bind-port (%1) is incorrect. Check your input.")).arg(P);
-        else if (network.bindPort < 1024)
+        else if (tcpServer.bindPort < 1024)
             parserFailures << QString(QStringLiteral("Value for --bind-port (%1) is too small. Please use a number between 1024 and 49151.")).arg(P);
-        else if (network.bindPort > 49151)
+        else if (tcpServer.bindPort > 49151)
             parserFailures << QString(QStringLiteral("Value for --bind-port (%1) is too big. Please use a number between 1024 and 49151.")).arg(P);
     }
     if (parser.isSet(QStringLiteral("mc"))) {
         QString mc = parser.value(QStringLiteral("mc"));
         bool ok = false;
-        network.simc = stringToBool(mc, &ok);
+        tcpServer.simc = stringToBool(mc, &ok);
         if (!ok)
             parserFailures << QString(QStringLiteral("Value for --same-ip-with-multiple-connection (%1) is incorrect. Check your input.")).arg(mc);
-    }
-    if (parser.isSet(QStringLiteral("c"))) {
-        QString c = parser.value(QStringLiteral("c"));
-        bool ok = false;
-        network.chat = stringToBool(c, &ok);
-        if (!ok)
-            parserFailures << QString(QStringLiteral("Value for --chat (%1) is incorrect. Check your input.")).arg(c);
     }
 
     // Game options
@@ -539,6 +532,13 @@ bool ServerConfigStruct::parse()
         else if (game.pileSwap > 15)
             parserFailures << QString(QStringLiteral("Value for --pile-swap-limit (%1) is too big. Please use a number between 1 and 15 (or 0 for infinity).")).arg(ps);
     }
+    if (parser.isSet(QStringLiteral("c"))) {
+        QString c = parser.value(QStringLiteral("c"));
+        bool ok = false;
+        game.chat = stringToBool(c, &ok);
+        if (!ok)
+            parserFailures << QString(QStringLiteral("Value for --chat (%1) is incorrect. Check your input.")).arg(c);
+    }
     if (parser.isSet(QStringLiteral("A"))) {
         QString A = parser.value(QStringLiteral("A"));
         bool ok = false;
@@ -560,7 +560,7 @@ bool ServerConfigStruct::parse()
     if (parser.isSet(QStringLiteral("Al"))) {
         QString Al = parser.value(QStringLiteral("Al"));
         bool ok = false;
-        network.chat = stringToBool(Al, &ok);
+        game.chat = stringToBool(Al, &ok);
         if (!ok)
             parserFailures << QString(QStringLiteral("Value for --ai-limit (%1) is incorrect. Check your input.")).arg(Al);
     }
@@ -836,8 +836,8 @@ bool ServerConfigStruct::readConfigFile()
         }
     }
 
-    if (theOb.contains(QStringLiteral("NetworkOptions"))) {
-        QJsonValue theValue = theOb.value(QStringLiteral("NetworkOptions"));
+    if (theOb.contains(QStringLiteral("TcpServerOptions"))) {
+        QJsonValue theValue = theOb.value(QStringLiteral("TcpServerOptions"));
         QJsonObject theOb = theValue.toObject();
         if (theOb.contains(QStringLiteral("bind-ip"))) {
             QJsonValue theValue = theOb.value(QStringLiteral("bind-ip"));
@@ -845,23 +845,18 @@ bool ServerConfigStruct::readConfigFile()
                 bool ok = false;
                 QHostAddress ha = stringToQHostAddress(theValue.toString(), &ok);
                 if (ok)
-                    network.bindIp = ha;
+                    tcpServer.bindIp = ha;
             }
         }
         if (theOb.contains(QStringLiteral("bind-port"))) {
             QJsonValue theValue = theOb.value(QStringLiteral("bind-port"));
             if (theValue.isDouble())
-                network.bindPort = theValue.toInt();
+                tcpServer.bindPort = theValue.toInt();
         }
         if (theOb.contains(QStringLiteral("same-ip-with-multiple-connection"))) {
             QJsonValue theValue = theOb.value(QStringLiteral("same-ip-with-multiple-connection"));
             if (theValue.isBool())
-                network.simc = theValue.toBool();
-        }
-        if (theOb.contains(QStringLiteral("chat"))) {
-            QJsonValue theValue = theOb.value(QStringLiteral("chat"));
-            if (theValue.isBool())
-                network.chat = theValue.toBool();
+                tcpServer.simc = theValue.toBool();
         }
     }
 
@@ -897,6 +892,11 @@ bool ServerConfigStruct::readConfigFile()
             QJsonValue theValue = theOb.value(QStringLiteral("pile-swap-limit"));
             if (theValue.isDouble())
                 game.pileSwap = theValue.toInt();
+        }
+        if (theOb.contains(QStringLiteral("chat"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("chat"));
+            if (theValue.isBool())
+                game.chat = theValue.toBool();
         }
         if (theOb.contains(QStringLiteral("ai"))) {
             QJsonValue theValue = theOb.value(QStringLiteral("ai"));
@@ -1106,14 +1106,13 @@ bool ServerConfigStruct::saveConfigFile()
         theOb[QStringLiteral("GameModeOptions")] = GameModeOptions;
     }
     {
-        QJsonObject NetworkOptions;
+        QJsonObject TcpServerOptions;
         {
-            NetworkOptions[QStringLiteral("bind-ip")] = qHostAddressToString(network.bindIp);
-            NetworkOptions[QStringLiteral("bind-port")] = (int)(network.bindPort);
-            NetworkOptions[QStringLiteral("same-ip-with-multiple-connection")] = network.simc;
-            NetworkOptions[QStringLiteral("chat")] = network.chat;
+            TcpServerOptions[QStringLiteral("bind-ip")] = qHostAddressToString(tcpServer.bindIp);
+            TcpServerOptions[QStringLiteral("bind-port")] = (int)(tcpServer.bindPort);
+            TcpServerOptions[QStringLiteral("same-ip-with-multiple-connection")] = tcpServer.simc;
         }
-        theOb[QStringLiteral("NetworkOptions")] = NetworkOptions;
+        theOb[QStringLiteral("TcpServerOptions")] = TcpServerOptions;
     }
     {
         QJsonObject GameOptions;
@@ -1124,6 +1123,7 @@ bool ServerConfigStruct::saveConfigFile()
             GameOptions[QStringLiteral("shuffle-seat")] = game.shuffleSeat;
             GameOptions[QStringLiteral("latest-general")] = game.latestGeneral;
             GameOptions[QStringLiteral("pile-swap-limit")] = game.pileSwap;
+            GameOptions[QStringLiteral("chat")] = game.chat;
             GameOptions[QStringLiteral("ai")] = game.enableAi;
             GameOptions[QStringLiteral("ai-delay")] = game.aiDelay;
             GameOptions[QStringLiteral("ai-limit")] = game.aiLimit;

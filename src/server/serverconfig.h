@@ -39,8 +39,7 @@ struct ServerConfigStruct
         QHostAddress bindIp;
         uint16_t bindPort;
         bool simc;
-        bool chat;
-    } network;
+    } tcpServer;
 
     struct
     {
@@ -50,6 +49,7 @@ struct ServerConfigStruct
         bool shuffleSeat;
         bool latestGeneral;
         int pileSwap;
+        bool chat;
         bool enableAi;
         int aiDelay;
         bool aiLimit;
