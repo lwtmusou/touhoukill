@@ -2,69 +2,57 @@
 #define TOUHOUKILL_QSGSMULTISERVER_H_
 
 #include <QObject>
+// needed for QAbstractSocket::SocketError
+#include <QAbstractSocket>
 
-class QSgsMultiClientPrivate;
+// Mostly based on previous socket implementation.
 
-class QSgsMultiClient
+class QHostAddress;
+
+// The public interface of this class should be pure virtual.
+// any implementation should be inherited class in the cpp file.
+
+class QSgsMultiSocket : public QObject // TODO: shouldn't it be QIODevice?
 {
-public:
-    QSgsMultiClient();
+    Q_OBJECT
 
-    QIODevice *underlyingIoDevice() const;
-    void disconnectFromHost();
+public:
+    enum SocketType
+    {
+        TcpSocket,
+        LocalSocket,
+        SubProcess,
+        BluetoothSocket, // TBD
+    };
+
+    ~QSgsMultiSocket() override = default;
+
+    static QSgsMultiSocket *ConnectToHost(const QHostAddress &host, quint16 port, QObject *parent = nullptr);
+    static QSgsMultiSocket *ConnectToHost(const QString &localName, QObject *parent = nullptr);
+    static QSgsMultiSocket *WrapStdio(QObject *parent = nullptr);
+
+    virtual void disconnectFromHost() = 0;
+
+    virtual bool isSocketConnected() const = 0;
+    virtual QString peerAddress() const = 0;
+
+    virtual bool canReadLine() const = 0;
+    virtual QByteArray readLine() = 0;
+    virtual bool writeLine(const QByteArray &lineData) = 0;
+
+    virtual SocketType type() const = 0;
+
+signals:
+    void socketConnected();
+    void socketDisconnected();
+    void errorOccurred(QAbstractSocket::SocketError socketError);
+    void readyRead();
+
+protected:
+    QSgsMultiSocket(QObject *parent = nullptr);
 
 private:
-    Q_DISABLE_COPY_MOVE(QSgsMultiClient)
-    QSgsMultiClientPrivate *d;
-};
-
-class QSgsMultiClientPointer final
-{
-public:
-    QSgsMultiClientPointer(const QSgsMultiClientPointer &) = default;
-    QSgsMultiClientPointer &operator=(const QSgsMultiClientPointer &) = default;
-    inline QSgsMultiClientPointer(const QSgsMultiClient *p)
-        : d(p)
-    {
-    }
-
-    inline const QSgsMultiClient *data() const
-    {
-        return d;
-    }
-
-    inline const QSgsMultiClient *operator->() const
-    {
-        return d;
-    }
-
-    inline const QSgsMultiClient &operator*() const
-    {
-        Q_ASSERT(d != nullptr);
-        return *d;
-    }
-
-    inline operator const QSgsMultiClient *() const
-    {
-        return d;
-    }
-
-    inline bool isNull() const
-    {
-        return d == nullptr;
-    }
-
-    inline operator QIODevice *() const
-    {
-        if (d == nullptr)
-            return nullptr;
-
-        return d->underlyingIoDevice();
-    }
-
-private:
-    QSgsMultiClientPointer() = delete;
-    const QSgsMultiClient *d;
+    Q_DISABLE_COPY_MOVE(QSgsMultiSocket)
 };
 
 class QSgsMultiServerPrivate;
@@ -78,9 +66,10 @@ public:
     ~QSgsMultiServer() override = default;
 
     void listen();
+    QSgsMultiSocket *createSubProcess(const QString &program, const QStringList &arguments);
 
 signals:
-    void newConnection(QSgsMultiClientPointer client);
+    void newConnection(QSgsMultiSocket *client);
 
 private:
     QSgsMultiServerPrivate *d;

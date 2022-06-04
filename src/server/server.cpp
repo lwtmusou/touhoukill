@@ -1,5 +1,5 @@
-
 #include "engine.h"
+#include "qsgsserver.h"
 #include "serverconfig.h"
 #include "serverinfostruct.h"
 

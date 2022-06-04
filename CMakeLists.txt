@@ -120,6 +120,7 @@ set (QSanguosha_Server_SRCS
 set (QSanguosha_Server_MOCS
     src/server/qsgsmultiserver.h
     src/server/serverconfig.h
+    src/server/qsgsserver.h
 )
 
 set (QSanguosha_SRCS
@@ -472,13 +473,18 @@ if (Qt5_FOUND)
         set_target_properties(Q5SgsCore PROPERTIES SOVERSION 0.12)
     endif()
 
-    add_executable(Q5SgsServer ${QSanguosha_Server_SRCS} ${QSanguosha_Server_MOCS} )
+    if (NOT ( ANDROID OR IOS ) )
+        add_executable(Q5SgsServer ${QSanguosha_Server_SRCS} ${QSanguosha_Server_MOCS} )
+    else()
+        add_library(Q5SgsServer STATIC ${QSanguosha_Server_SRCS} ${QSanguosha_Server_MOCS} )
+    endif()
 
     set_property(TARGET Q5SgsServer PROPERTY AUTOMOC ON)
     set_property(TARGET Q5SgsServer PROPERTY AUTOUIC ON)
     set_property(TARGET Q5SgsServer PROPERTY AUTORCC ON)
 
     target_link_libraries(Q5SgsServer Qt5::Network Q5SgsCore)
+
     target_compile_definitions(Q5SgsServer PUBLIC -DQT_NO_CAST_FROM_ASCII)
 
     if (NOT ANDROID)
@@ -507,6 +513,10 @@ if (Qt5_FOUND)
         target_link_libraries(Q5Sanguosha Qt5::WinExtras)
     endif()
 
+    if ( ANDROID OR IOS )
+        target_link_libraries(Q5Sanguosha Q5SgsServer)
+    endif()
+
     if (Qt5Multimedia_FOUND)
         target_compile_definitions(Q5Sanguosha PUBLIC AUDIO_SUPPORT)
         target_link_libraries(Q5Sanguosha QSanguoshaLibs::oggvorbisfile Qt5::Multimedia)
@@ -518,6 +528,7 @@ if (Qt5_FOUND)
     if (PCH)
         target_precompile_headers(q5sanguosha_wrap PUBLIC src/core/qsgscore.h)
         target_precompile_headers(Q5SgsCore PUBLIC src/core/qsgscore.h)
+        target_precompile_headers(Q5SgsServer PUBLIC src/server/qsgsserver.h)
         target_precompile_headers(Q5Sanguosha PUBLIC src/pch.h)
     endif()
 endif()
@@ -563,13 +574,18 @@ if (Qt6_FOUND)
         set_target_properties(QSgsCore PROPERTIES SOVERSION 0.12)
     endif()
 
-    add_executable(QSgsServer ${QSanguosha_Server_SRCS} ${QSanguosha_Server_MOCS} )
+    if (NOT ( ANDROID OR IOS ) )
+        add_executable(QSgsServer ${QSanguosha_Server_SRCS} ${QSanguosha_Server_MOCS} )
+    else()
+        add_library(QSgsServer STATIC ${QSanguosha_Server_SRCS} ${QSanguosha_Server_MOCS} )
+    endif()
 
     set_property(TARGET QSgsServer PROPERTY AUTOMOC ON)
     set_property(TARGET QSgsServer PROPERTY AUTOUIC ON)
     set_property(TARGET QSgsServer PROPERTY AUTORCC ON)
 
     target_link_libraries(QSgsServer Qt6::Network QSgsCore)
+
     target_compile_definitions(QSgsServer PUBLIC -DQT_NO_CAST_FROM_ASCII)
 
     qt6_add_translation(QM_FILES6 ${TS_FILES})
@@ -591,6 +607,10 @@ if (Qt6_FOUND)
         PUBLIC "src"
     )
 
+    if ( ANDROID OR IOS )
+        target_link_libraries(QSanguosha QSgsServer)
+    endif()
+
     if (Qt6Multimedia_FOUND)
         target_compile_definitions(QSanguosha PUBLIC AUDIO_SUPPORT)
         target_link_libraries(QSanguosha PUBLIC QSanguoshaLibs::oggvorbisfile Qt6::Multimedia)
@@ -602,6 +622,7 @@ if (Qt6_FOUND)
     if (PCH)
         target_precompile_headers(qsanguosha_wrap PUBLIC src/core/qsgscore.h)
         target_precompile_headers(QSgsCore PUBLIC src/core/qsgscore.h)
+        target_precompile_headers(QSgsServer PUBLIC src/server/qsgsserver.h)
         target_precompile_headers(QSanguosha PUBLIC src/pch.h)
     endif()
 endif()
