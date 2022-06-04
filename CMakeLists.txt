@@ -111,14 +111,19 @@ set (QSanguosha_Core_MOCS
     src/core/jsonutils.h
     )
 
+set(QSanguosha_Socket_SRCS
+    src/server/qsgsmultiserver.cpp
+)
+set(QSanguosha_Socket_MOCS
+    src/server/qsgsmultiserver.h
+)
+
 set (QSanguosha_Server_SRCS
     src/server/server.cpp
-    src/server/qsgsmultiserver.cpp
     src/server/serverconfig.cpp
 )
 
 set (QSanguosha_Server_MOCS
-    src/server/qsgsmultiserver.h
     src/server/serverconfig.h
     src/server/qsgsserver.h
 )
@@ -463,15 +468,31 @@ if (Qt5_FOUND)
 
     set_target_properties(Q5SgsCore PROPERTIES VERSION ${QSanguosha_VERSION})
 
+    add_library(Q5SgsSocket ${QSanguosha_Socket_SRCS} ${QSanguosha_Socket_MOCS} )
+
+    set_property(TARGET Q5SgsSocket PROPERTY AUTOMOC ON)
+    set_property(TARGET Q5SgsSocket PROPERTY AUTOUIC ON)
+    set_property(TARGET Q5SgsSocket PROPERTY AUTORCC ON)
+
+    target_compile_definitions(Q5SgsSocket PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONDATE=${VERSION_DATE_QSanguosha})
+    target_link_libraries(Q5SgsSocket Qt5::Network Qt5::Core)
+    target_include_directories(Q5SgsSocket PUBLIC "src/server")
+
+    set_target_properties(Q5SgsSocket PROPERTIES VERSION ${QSanguosha_VERSION})
+
     if (NOT BUILD_SHARED_LIBS)
         target_compile_definitions(q5sanguosha_wrap PUBLIC -DQSGS_STATIC)
         target_compile_definitions(Q5SgsCore PUBLIC -DQSGS_STATIC)
+        target_compile_definitions(Q5SgsSocket PUBLIC -DQSGS_STATIC)
     else()
         target_compile_definitions(q5sanguosha_wrap PRIVATE -DBUILD_QSGSCORE)
         target_compile_definitions(Q5SgsCore PRIVATE -DBUILD_QSGSCORE)
+        target_compile_definitions(Q5SgsSocket PRIVATE -DBUILD_QSGSSOCKET)
 
         set_target_properties(Q5SgsCore PROPERTIES SOVERSION 0.12)
+        set_target_properties(Q5SgsSocket PROPERTIES SOVERSION 0.12)
     endif()
+
 
     if (NOT ( ANDROID OR IOS ) )
         add_executable(Q5SgsServer ${QSanguosha_Server_SRCS} ${QSanguosha_Server_MOCS} )
@@ -483,7 +504,7 @@ if (Qt5_FOUND)
     set_property(TARGET Q5SgsServer PROPERTY AUTOUIC ON)
     set_property(TARGET Q5SgsServer PROPERTY AUTORCC ON)
 
-    target_link_libraries(Q5SgsServer Qt5::Network Q5SgsCore)
+    target_link_libraries(Q5SgsServer Q5SgsSocket Q5SgsCore)
 
     target_compile_definitions(Q5SgsServer PUBLIC -DQT_NO_CAST_FROM_ASCII)
 
@@ -564,14 +585,31 @@ if (Qt6_FOUND)
 
     set_target_properties(QSgsCore PROPERTIES VERSION ${QSanguosha_VERSION})
 
+
+
+    add_library(QSgsSocket ${QSanguosha_Socket_SRCS} ${QSanguosha_Socket_MOCS} )
+
+    set_property(TARGET QSgsSocket PROPERTY AUTOMOC ON)
+    set_property(TARGET QSgsSocket PROPERTY AUTOUIC ON)
+    set_property(TARGET QSgsSocket PROPERTY AUTORCC ON)
+
+    target_compile_definitions(QSgsSocket PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x70000 VERSION=${QSanguosha_VERSION} VERSIONDATE=${VERSION_DATE_QSanguosha})
+    target_link_libraries(QSgsSocket Qt6::Network Qt6::Core)
+    target_include_directories(QSgsSocket PUBLIC "src/server")
+
+    set_target_properties(QSgsSocket PROPERTIES VERSION ${QSanguosha_VERSION})
+
     if (NOT BUILD_SHARED_LIBS)
         target_compile_definitions(qsanguosha_wrap PUBLIC -DQSGS_STATIC)
         target_compile_definitions(QSgsCore PUBLIC -DQSGS_STATIC)
+        target_compile_definitions(QSgsSocket PRIVATE -DBUILD_QSGSSOCKET)
     else()
         target_compile_definitions(qsanguosha_wrap PRIVATE -DBUILD_QSGSCORE)
         target_compile_definitions(QSgsCore PRIVATE -DBUILD_QSGSCORE)
+        target_compile_definitions(QSgsSocket PRIVATE -DBUILD_QSGSSOCKET)
 
         set_target_properties(QSgsCore PROPERTIES SOVERSION 0.12)
+        set_target_properties(QSgsSocket PROPERTIES SOVERSION 0.12)
     endif()
 
     if (NOT ( ANDROID OR IOS ) )
@@ -584,7 +622,7 @@ if (Qt6_FOUND)
     set_property(TARGET QSgsServer PROPERTY AUTOUIC ON)
     set_property(TARGET QSgsServer PROPERTY AUTORCC ON)
 
-    target_link_libraries(QSgsServer Qt6::Network QSgsCore)
+    target_link_libraries(QSgsServer QSgsSocket QSgsCore)
 
     target_compile_definitions(QSgsServer PUBLIC -DQT_NO_CAST_FROM_ASCII)
 

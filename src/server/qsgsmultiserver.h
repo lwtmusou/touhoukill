@@ -1,6 +1,16 @@
 #ifndef TOUHOUKILL_QSGSMULTISERVER_H_
 #define TOUHOUKILL_QSGSMULTISERVER_H_
 
+#ifndef QSGS_STATIC
+#ifdef BUILD_QSGSSOCKET
+#define QSGS_SOCKET_EXPORT Q_DECL_EXPORT
+#else
+#define QSGS_SOCKET_EXPORT Q_DECL_IMPORT
+#endif
+#else
+#define QSGS_SOCKET_EXPORT
+#endif
+
 #include <QObject>
 // needed for QAbstractSocket::SocketError
 #include <QAbstractSocket>
@@ -12,7 +22,7 @@ class QHostAddress;
 // The public interface of this class should be pure virtual.
 // any implementation should be inherited class in the cpp file.
 
-class QSgsMultiSocket : public QObject // TODO: shouldn't it be QIODevice?
+class QSGS_SOCKET_EXPORT QSgsMultiSocket : public QObject // TODO: shouldn't it be QIODevice?
 {
     Q_OBJECT
 
@@ -49,15 +59,16 @@ signals:
     void readyRead();
 
 protected:
-    QSgsMultiSocket(QObject *parent = nullptr);
+    QSgsMultiSocket(QObject *parent);
 
 private:
+    QSgsMultiSocket() = delete;
     Q_DISABLE_COPY_MOVE(QSgsMultiSocket)
 };
 
 class QSgsMultiServerPrivate;
 
-class QSgsMultiServer : public QObject
+class QSGS_SOCKET_EXPORT QSgsMultiServer : public QObject
 {
     Q_OBJECT
 
@@ -65,7 +76,9 @@ public:
     QSgsMultiServer(QObject *parent = nullptr);
     ~QSgsMultiServer() override = default;
 
-    void listen();
+    void listenTcp(const QHostAddress &bindIp, quint16 port);
+    void listenLocal(const QString &name);
+
     QSgsMultiSocket *createSubProcess(const QString &program, const QStringList &arguments);
 
 signals:

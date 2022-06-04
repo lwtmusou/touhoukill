@@ -464,10 +464,14 @@ QSgsMultiServer::QSgsMultiServer(QObject *parent)
     connect(d->localServer, &QLocalServer::newConnection, d, &QSgsMultiServerPrivate::localServerNewConnection);
 }
 
-void QSgsMultiServer::listen()
+void QSgsMultiServer::listenTcp(const QHostAddress &bindIp, quint16 port)
 {
-    d->tcpServer->listen(ServerConfig.tcpServer.bindIp, ServerConfig.tcpServer.bindPort);
-    d->localServer->listen(ServerConfig.game.serverName);
+    d->tcpServer->listen(bindIp, port);
+}
+
+void QSgsMultiServer::listenLocal(const QString &name)
+{
+    d->localServer->listen(name);
 }
 
 QSgsMultiSocket *QSgsMultiServer::createSubProcess(const QString &program, const QStringList &arguments)
