@@ -3,9 +3,9 @@
 
 class LegacyRoom;
 
-#include "detector.h"
+#include "legacydetector.h"
+#include "legacysocket.h"
 #include "serverinfostruct.h"
-#include "socket.h"
 
 class LegacyServerPlayer;
 
@@ -23,7 +23,7 @@ public:
     void signupPlayer(LegacyServerPlayer *player);
 
 private:
-    ServerSocket *server;
+    LegacyServerSocket *server;
     LegacyRoom *current;
     QSet<LegacyRoom *> rooms;
     QHash<QString, LegacyServerPlayer *> players;
@@ -33,7 +33,7 @@ private:
     QStringList getNeededPackages() const;
 
 private slots:
-    void processNewConnection(ClientSocket *socket);
+    void processNewConnection(LegacyClientSocket *socket);
     void processRequest(const char *request);
     void cleanupSimc();
     void gameOver();

@@ -1,13 +1,13 @@
-#include "detector.h"
+#include "legacydetector.h"
 #include "settings.h"
 
-UdpDetector::UdpDetector()
+LegacyDetector::LegacyDetector()
 {
     socket = new QUdpSocket(this);
-    connect(socket, &QIODevice::readyRead, this, &UdpDetector::onReadReady);
+    connect(socket, &QIODevice::readyRead, this, &LegacyDetector::onReadReady);
 }
 
-void UdpDetector::detect()
+void LegacyDetector::detect()
 {
     socket->bind(Config.DetectorPort, QUdpSocket::ShareAddress);
 
@@ -15,12 +15,12 @@ void UdpDetector::detect()
     socket->writeDatagram(ask_str, strlen(ask_str) + 1, QHostAddress::Broadcast, Config.ServerPort);
 }
 
-void UdpDetector::stop()
+void LegacyDetector::stop()
 {
     socket->close();
 }
 
-void UdpDetector::onReadReady()
+void LegacyDetector::onReadReady()
 {
     while (socket->hasPendingDatagrams()) {
         QHostAddress from;

@@ -8,9 +8,9 @@ class DummyCard;
 class CardMoveReason;
 struct CardUseStruct;
 
+#include "legacysocket.h"
 #include "player.h"
 #include "protocol.h"
-#include "socket.h"
 
 #include <QDateTime>
 #include <QSemaphore>
@@ -41,7 +41,7 @@ class LegacyServerPlayer : public Player
 public:
     explicit LegacyServerPlayer(LegacyRoom *room);
 
-    QSGS_SOCKET void setSocket(ClientSocket *socket);
+    QSGS_SOCKET void setSocket(LegacyClientSocket *socket);
 
     QSGS_SOCKET void invoke(const QSanProtocol::Packet *packet);
     QSGS_SOCKET void invoke(const char *method, const QString &arg = QStringLiteral("."));
@@ -193,7 +193,7 @@ protected:
     static const int S_NUM_SEMAPHORES;
 
 private:
-    ClientSocket *socket;
+    LegacyClientSocket *socket;
     QList<const Card *> m_handcards;
     LegacyRoom *room;
     Recorder *recorder;

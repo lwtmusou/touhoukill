@@ -84,7 +84,7 @@ public:
     QSGS_SOCKET typedef void (LegacyRoom::*Callback)(LegacyServerPlayer *, const QJsonValue &);
     QSGS_SOCKET typedef bool (LegacyRoom::*ResponseVerifyFunction)(LegacyServerPlayer *, const QJsonValue &, void *);
 
-    QSGS_SOCKET LegacyServerPlayer *addSocket(ClientSocket *socket);
+    QSGS_SOCKET LegacyServerPlayer *addSocket(LegacyClientSocket *socket);
 
     QSGS_SOCKET inline int getId() const
     {
@@ -300,7 +300,7 @@ public:
     QSGS_STATE_ROOM LegacyServerPlayer *getOwner() const;
     QSGS_LOGIC void updateStateItem();
 
-    QSGS_SOCKET void reconnect(LegacyServerPlayer *player, ClientSocket *socket);
+    QSGS_SOCKET void reconnect(LegacyServerPlayer *player, LegacyClientSocket *socket);
     QSGS_LOGIC void marshal(LegacyServerPlayer *player);
 
     // TODO: use sendLog() instead

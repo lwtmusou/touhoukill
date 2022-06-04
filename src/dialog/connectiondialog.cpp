@@ -1,7 +1,7 @@
 #include "connectiondialog.h"
 #include "SkinBank.h"
-#include "detector.h"
 #include "engine.h"
+#include "legacydetector.h"
 #include "settings.h"
 
 #include <QAction>
@@ -364,8 +364,8 @@ void UdpDetectorDialog::startDetection()
     list->clear();
     detect_button->setEnabled(false);
 
-    detector = new UdpDetector;
-    connect(detector, &Detector::detected, this, &UdpDetectorDialog::addServerAddress);
+    detector = new LegacyDetector;
+    connect(detector, &LegacyDetector::detected, this, &UdpDetectorDialog::addServerAddress);
     QTimer::singleShot(2s, this, &UdpDetectorDialog::stopDetection);
 
     detector->detect();

@@ -4,8 +4,8 @@
 #include "general.h"
 #include "jsonutils.h"
 #include "legacyroom.h"
+#include "legacysocket.h"
 #include "mode.h"
-#include "nativesocket.h"
 #include "package.h"
 #include "protocol.h"
 #include "settings.h"
@@ -20,7 +20,7 @@ using namespace QSanProtocol;
 LegacyServer::LegacyServer(QObject *parent)
     : QObject(parent)
 {
-    server = new NativeServerSocket;
+    server = new LegacyServerSocket;
     server->setParent(this);
 
     // Synchonize ServerInfo and Config
@@ -47,7 +47,7 @@ LegacyServer::LegacyServer(QObject *parent)
     current = nullptr;
     createNewRoom();
 
-    connect(server, &ServerSocket::new_connection, this, &LegacyServer::processNewConnection);
+    connect(server, &LegacyServerSocket::new_connection, this, &LegacyServer::processNewConnection);
     connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, this, &QObject::deleteLater);
 }
 
@@ -89,19 +89,19 @@ LegacyRoom *LegacyServer::createNewRoom()
     return current;
 }
 
-void LegacyServer::processNewConnection(ClientSocket *socket)
+void LegacyServer::processNewConnection(LegacyClientSocket *socket)
 {
     Packet packet(PacketDescriptionFlag(S_SRC_ROOM) | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_CHECK_VERSION);
     packet.setMessageBody(QJsonValue(Sanguosha->version()));
     socket->send((packet.toString()));
     emit server_message(tr("%1 connected").arg(socket->peerName()));
 
-    connect(socket, &ClientSocket::message_got, this, &LegacyServer::processRequest);
+    connect(socket, &LegacyClientSocket::message_got, this, &LegacyServer::processRequest);
 }
 
 void LegacyServer::processRequest(const char *request)
 {
-    ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
+    LegacyClientSocket *socket = qobject_cast<LegacyClientSocket *>(sender());
     socket->disconnect(this, SLOT(processRequest(const char *)));
 
     Packet signup;
@@ -175,7 +175,7 @@ void LegacyServer::processRequest(const char *request)
             return;
         } else {
             addresses.insert(addr);
-            connect(socket, &ClientSocket::disconnected, this, &LegacyServer::cleanupSimc);
+            connect(socket, &LegacyClientSocket::disconnected, this, &LegacyServer::cleanupSimc);
         }
     }
 
@@ -211,7 +211,7 @@ void LegacyServer::processRequest(const char *request)
 void LegacyServer::cleanupSimc()
 {
     if (Config.ForbidSIMC) {
-        const ClientSocket *socket = qobject_cast<const ClientSocket *>(sender());
+        const LegacyClientSocket *socket = qobject_cast<const LegacyClientSocket *>(sender());
         addresses.remove(socket->peerAddress());
     }
 }

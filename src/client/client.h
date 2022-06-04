@@ -4,12 +4,12 @@
 #include "RoomObject.h"
 #include "card.h"
 #include "legacyprotocol.h"
+#include "legacysocket.h"
 #include "legacystructs.h"
 #include "player.h"
 #include "protocol.h"
 #include "serverinfostruct.h"
 #include "skill.h"
-#include "socket.h"
 
 #include <QMutex>
 
@@ -255,7 +255,7 @@ protected:
     int swap_pile;
 
 private:
-    ClientSocket *socket;
+    LegacyClientSocket *socket;
     bool m_isGameOver;
     QHash<QSanProtocol::CommandType, Callback> m_interactions;
     QHash<QSanProtocol::CommandType, Callback> m_callbacks;

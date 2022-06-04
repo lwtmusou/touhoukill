@@ -134,6 +134,8 @@ set (QSanguosha_SRCS
     src/legacyserver/legacyroomthread.cpp
     src/legacyserver/legacyserver.cpp
     src/legacyserver/legacyserverplayer.cpp
+    src/legacyserver/legacysocket.cpp
+    src/legacyserver/legacydetector.cpp
     src/ui/bubblechatbox.cpp
     src/ui/button.cpp
     src/ui/cardcontainer.cpp
@@ -167,8 +169,6 @@ set (QSanguosha_SRCS
     src/ui/TablePile.cpp
     src/ui/TimedProgressBar.cpp
     src/ui/uiUtils.cpp
-    src/util/detector.cpp
-    src/util/nativesocket.cpp
     src/util/recorder.cpp
 )
 
@@ -205,6 +205,8 @@ set (QSanguosha_MOCS
     src/legacyserver/legacyroomthread.h
     src/legacyserver/legacyserver.h
     src/legacyserver/legacyserverplayer.h
+    src/legacyserver/legacysocket.h
+    src/legacyserver/legacydetector.h
     src/ui/bubblechatbox.h
     src/ui/button.h
     src/ui/cardcontainer.h
@@ -238,10 +240,7 @@ set (QSanguosha_MOCS
     src/ui/TablePile.h
     src/ui/TimedProgressBar.h
     src/ui/uiUtils.h
-    src/util/detector.h
-    src/util/nativesocket.h
     src/util/recorder.h
-    src/util/socket.h
 )
 
 if (PCH)

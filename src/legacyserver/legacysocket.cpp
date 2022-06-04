@@ -1,4 +1,4 @@
-#include "nativesocket.h"
+#include "legacysocket.h"
 #include "settings.h"
 
 #include <QStringList>
@@ -7,27 +7,27 @@
 #include <QUdpSocket>
 #include <QUrl>
 
-NativeServerSocket::NativeServerSocket()
+LegacyServerSocket::LegacyServerSocket()
 {
     server = new QTcpServer(this);
     daemon = nullptr;
-    connect(server, &QTcpServer::newConnection, this, &NativeServerSocket::processNewConnection);
+    connect(server, &QTcpServer::newConnection, this, &LegacyServerSocket::processNewConnection);
 }
 
-bool NativeServerSocket::listen()
+bool LegacyServerSocket::listen()
 {
     return server->listen(QHostAddress::Any, Config.ServerPort);
 }
 
-void NativeServerSocket::daemonize()
+void LegacyServerSocket::daemonize()
 {
     delete daemon;
     daemon = new QUdpSocket(this);
     daemon->bind(Config.ServerPort, QUdpSocket::ShareAddress);
-    connect(daemon, &QIODevice::readyRead, this, &NativeServerSocket::processNewDatagram);
+    connect(daemon, &QIODevice::readyRead, this, &LegacyServerSocket::processNewDatagram);
 }
 
-void NativeServerSocket::processNewDatagram()
+void LegacyServerSocket::processNewDatagram()
 {
     while (daemon->hasPendingDatagrams()) {
         QHostAddress from;
@@ -41,37 +41,37 @@ void NativeServerSocket::processNewDatagram()
     }
 }
 
-void NativeServerSocket::processNewConnection()
+void LegacyServerSocket::processNewConnection()
 {
     QTcpSocket *socket = server->nextPendingConnection();
-    NativeClientSocket *connection = new NativeClientSocket(socket);
+    LegacyClientSocket *connection = new LegacyClientSocket(socket);
     emit new_connection(connection);
 }
 
 // ---------------------------------
 
-NativeClientSocket::NativeClientSocket()
+LegacyClientSocket::LegacyClientSocket()
     : socket(new QTcpSocket(this))
 {
     init();
 }
 
-NativeClientSocket::NativeClientSocket(QTcpSocket *socket)
+LegacyClientSocket::LegacyClientSocket(QTcpSocket *socket)
     : socket(socket)
 {
     socket->setParent(this);
     init();
 }
 
-void NativeClientSocket::init()
+void LegacyClientSocket::init()
 {
-    connect(socket, &QAbstractSocket::disconnected, this, &ClientSocket::disconnected);
-    connect(socket, &QIODevice::readyRead, this, &NativeClientSocket::getMessage);
-    connect(socket, &QAbstractSocket::errorOccurred, this, &NativeClientSocket::raiseError);
-    connect(socket, &QAbstractSocket::connected, this, &ClientSocket::connected);
+    connect(socket, &QAbstractSocket::disconnected, this, &LegacyClientSocket::disconnected);
+    connect(socket, &QIODevice::readyRead, this, &LegacyClientSocket::getMessage);
+    connect(socket, &QAbstractSocket::errorOccurred, this, &LegacyClientSocket::raiseError);
+    connect(socket, &QAbstractSocket::connected, this, &LegacyClientSocket::connected);
 }
 
-void NativeClientSocket::connectToHost()
+void LegacyClientSocket::connectToHost()
 {
     QString address = QStringLiteral("127.0.0.1");
     ushort port = 9527U;
@@ -88,7 +88,7 @@ void NativeClientSocket::connectToHost()
     socket->connectToHost(address, port);
 }
 
-void NativeClientSocket::getMessage()
+void LegacyClientSocket::getMessage()
 {
     QList<QByteArray> bufferList;
     while (socket->canReadLine()) {
@@ -100,12 +100,12 @@ void NativeClientSocket::getMessage()
         emit message_got(arr.constData());
 }
 
-void NativeClientSocket::disconnectFromHost()
+void LegacyClientSocket::disconnectFromHost()
 {
     socket->disconnectFromHost();
 }
 
-void NativeClientSocket::send(const QString &message)
+void LegacyClientSocket::send(const QString &message)
 {
     socket->write(message.toLatin1());
     if (!message.endsWith(QStringLiteral("\n")))
@@ -116,12 +116,12 @@ void NativeClientSocket::send(const QString &message)
     socket->flush();
 }
 
-bool NativeClientSocket::isConnected() const
+bool LegacyClientSocket::isConnected() const
 {
     return socket->state() == QTcpSocket::ConnectedState;
 }
 
-QString NativeClientSocket::peerName() const
+QString LegacyClientSocket::peerName() const
 {
     QString peer_name = socket->peerName();
     if (peer_name.isEmpty())
@@ -130,17 +130,17 @@ QString NativeClientSocket::peerName() const
     return peer_name;
 }
 
-QString NativeClientSocket::peerAddress() const
+QString LegacyClientSocket::peerAddress() const
 {
     return socket->peerAddress().toString();
 }
 
-quint32 NativeClientSocket::ipv4Address() const
+quint32 LegacyClientSocket::ipv4Address() const
 {
     return socket->peerAddress().toIPv4Address();
 }
 
-void NativeClientSocket::raiseError(QAbstractSocket::SocketError socket_error)
+void LegacyClientSocket::raiseError(QAbstractSocket::SocketError socket_error)
 {
     // translate error message
     QString reason;

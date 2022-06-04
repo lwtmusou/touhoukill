@@ -11,7 +11,7 @@
 #include <QListWidget>
 
 class QLabel;
-class UdpDetector;
+class LegacyDetector;
 
 class AvatarModel : public QAbstractListModel
 {
@@ -69,7 +69,7 @@ public:
 
 private:
     QListWidget *list;
-    UdpDetector *detector;
+    LegacyDetector *detector;
     QPushButton *detect_button;
 
 private slots:

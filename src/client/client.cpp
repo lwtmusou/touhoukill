@@ -5,7 +5,7 @@
 #include "choosegeneraldialog.h"
 #include "engine.h"
 #include "general.h"
-#include "nativesocket.h"
+#include "legacysocket.h"
 #include "recorder.h"
 #include "settings.h"
 #include "uiUtils.h"
@@ -162,14 +162,14 @@ Client::Client(QObject *parent, const QString &filename)
         replayer = new Replayer(this, filename);
         connect(replayer, SIGNAL(command_parsed(QString)), this, SLOT(processServerPacket(QString)));
     } else {
-        socket = new NativeClientSocket;
+        socket = new LegacyClientSocket;
         socket->setParent(this);
 
         recorder = new Recorder(this);
 
-        connect(socket, &ClientSocket::message_got, recorder, &Recorder::record);
+        connect(socket, &LegacyClientSocket::message_got, recorder, &Recorder::record);
         connect(socket, SIGNAL(message_got(const char *)), this, SLOT(processServerPacket(const char *)));
-        connect(socket, &ClientSocket::error_message, this, &Client::error_message);
+        connect(socket, &LegacyClientSocket::error_message, this, &Client::error_message);
         socket->connectToHost();
 
         replayer = nullptr;

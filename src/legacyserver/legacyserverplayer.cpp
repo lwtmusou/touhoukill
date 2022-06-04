@@ -238,7 +238,7 @@ QList<int> LegacyServerPlayer::forceToDiscard(int discard_num, bool include_equi
     return to_discard;
 }
 
-void LegacyServerPlayer::setSocket(ClientSocket *socket)
+void LegacyServerPlayer::setSocket(LegacyClientSocket *socket)
 {
     if (this->socket != nullptr) {
         disconnect(this->socket);
@@ -250,8 +250,8 @@ void LegacyServerPlayer::setSocket(ClientSocket *socket)
     disconnect(this, SLOT(sendMessage(QString)));
 
     if (socket != nullptr) {
-        connect(socket, &ClientSocket::disconnected, this, &LegacyServerPlayer::disconnected);
-        connect(socket, &ClientSocket::message_got, this, &LegacyServerPlayer::getMessage);
+        connect(socket, &LegacyClientSocket::disconnected, this, &LegacyServerPlayer::disconnected);
+        connect(socket, &LegacyClientSocket::message_got, this, &LegacyServerPlayer::getMessage);
         connect(this, &LegacyServerPlayer::message_ready, this, &LegacyServerPlayer::sendMessage);
     }
 

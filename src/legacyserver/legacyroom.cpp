@@ -2306,7 +2306,7 @@ void LegacyRoom::clearCardFlag(int card_id, LegacyServerPlayer *who)
         doBroadcastNotify(S_COMMAND_CARD_FLAG, arg);
 }
 
-LegacyServerPlayer *LegacyRoom::addSocket(ClientSocket *socket)
+LegacyServerPlayer *LegacyRoom::addSocket(LegacyClientSocket *socket)
 {
     LegacyServerPlayer *player = new LegacyServerPlayer(this);
     player->setSocket(socket);
@@ -4216,7 +4216,7 @@ LegacyServerPlayer *LegacyRoom::getFront(LegacyServerPlayer *a, LegacyServerPlay
         return b;
 }
 
-void LegacyRoom::reconnect(LegacyServerPlayer *player, ClientSocket *socket)
+void LegacyRoom::reconnect(LegacyServerPlayer *player, LegacyClientSocket *socket)
 {
     player->setSocket(socket);
     player->setState(QStringLiteral("online"));
