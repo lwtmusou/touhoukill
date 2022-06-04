@@ -2,6 +2,7 @@
 #include "settings.h"
 
 #include <QStringList>
+#include <QTcpServer>
 #include <QTcpSocket>
 #include <QUdpSocket>
 #include <QUrl>

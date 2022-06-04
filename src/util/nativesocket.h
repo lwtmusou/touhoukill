@@ -3,7 +3,10 @@
 
 #include "socket.h"
 
+#include <QTcpSocket>
+
 class QUdpSocket;
+class QTcpServer;
 
 class NativeServerSocket : public ServerSocket
 {
