@@ -311,9 +311,9 @@ public:
             }
 
             buf.write(QByteArray(localBuffer));
-            emit readyRead();
+            emit q->readyRead();
         }
-        emit eof();
+        emit q->socketDisconnected();
         exit(0);
     }
 
@@ -323,8 +323,6 @@ public:
     QBuffer buf;
 
 signals:
-    void readyRead();
-    void eof();
     void readError();
     void readFail();
 };
@@ -336,10 +334,8 @@ QSgsStdInOutSocket::QSgsStdInOutSocket(QObject *parent)
     : QSgsMultiSocket(parent)
 {
     socket = new StdInMonitor(this);
-    connect(socket, &StdInMonitor::eof, this, &QSgsStdInOutSocket::socketDisconnected);
     connect(socket, &StdInMonitor::readError, this, &QSgsStdInOutSocket::stdinError);
     connect(socket, &StdInMonitor::readFail, this, &QSgsStdInOutSocket::stdinFail);
-    connect(socket, &StdInMonitor::readyRead, this, &QSgsStdInOutSocket::readyRead);
     socket->start();
 }
 
