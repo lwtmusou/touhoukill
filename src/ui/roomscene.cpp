@@ -16,6 +16,8 @@
 #include "general.h"
 #include "generaloverview.h"
 #include "indicatoritem.h"
+#include "legacyjson.h"
+#include "legacyutil.h"
 #include "lightboxanimation.h"
 #include "mode.h"
 #include "pixmapanimation.h"

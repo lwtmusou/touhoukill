@@ -2,6 +2,7 @@
 #include "RoomObject.h"
 #include "card.h"
 #include "jsonutils.h"
+#include "legacyjson.h"
 #include "player.h"
 #include "structs.h"
 #include "trigger.h"

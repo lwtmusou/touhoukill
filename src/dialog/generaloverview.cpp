@@ -4,6 +4,7 @@
 #include "client.h"
 #include "engine.h"
 #include "general.h"
+#include "legacyutil.h"
 #include "package.h"
 #include "roomscene.h"
 #include "serverinfostruct.h"

@@ -2,6 +2,7 @@
 #include "engine.h"
 #include "general.h"
 #include "graphicspixmaphoveritem.h"
+#include "legacyutil.h"
 #include "roomscene.h"
 #include "util.h"
 

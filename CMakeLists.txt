@@ -114,8 +114,10 @@ set (QSanguosha_SRCS
     src/audio/audio.cpp
     src/client/aux-skills.cpp
     src/client/client.cpp
-    src/legacycore/legacystructs.cpp
+    src/legacycore/legacyjson.cpp
     src/legacycore/legacyprotocol.cpp
+    src/legacycore/legacystructs.cpp
+    src/legacycore/legacyutil.cpp
     src/dialog/serverinfowidget.cpp
     src/dialog/AboutUs.cpp
     src/dialog/cardoverview.cpp
@@ -186,8 +188,10 @@ set (QSanguosha_MOCS
     src/audio/audio.h
     src/client/aux-skills.h
     src/client/client.h
-    src/legacycore/legacystructs.h
+    src/legacycore/legacyjson.h
     src/legacycore/legacyprotocol.h
+    src/legacycore/legacystructs.h
+    src/legacycore/legacyutil.h
     src/dialog/serverinfowidget.h
     src/dialog/AboutUs.h
     src/dialog/cardoverview.h

@@ -40,9 +40,6 @@ template<typename T> Q_ALWAYS_INLINE QList<const T *> NonConstList2ConstList(con
     return QList<const T *>(list.cbegin(), list.cend());
 }
 
-Q_DECL_DEPRECATED QSGS_CORE_EXPORT bool isRoleGameMode(const QString &name);
-Q_DECL_DEPRECATED QSGS_CORE_EXPORT bool isHegemonyGameMode(const QString &name);
-
 // cannot use do...while false here......
 #define DELETE_OVER_SCOPE(type, var)                \
     QScopedPointer<type> _qsgs_##var##_scoped(var); \

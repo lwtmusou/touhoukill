@@ -1,5 +1,7 @@
 #include "SkinBank.h"
 #include "engine.h"
+#include "legacyjson.h"
+#include "legacyutil.h"
 #include "protocol.h"
 #include "serverinfostruct.h"
 #include "settings.h"

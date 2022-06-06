@@ -6,6 +6,7 @@
 #include "jsonutils.h"
 #include "legacyroom.h"
 #include "legacyserverplayer.h"
+#include "legacyutil.h"
 #include "settings.h"
 #include "skill.h"
 #include "util.h"

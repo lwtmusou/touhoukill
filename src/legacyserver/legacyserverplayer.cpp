@@ -6,6 +6,7 @@
 #include "jsonutils.h"
 #include "legacygamerule.h"
 #include "legacyroom.h"
+#include "legacyutil.h"
 #include "recorder.h"
 #include "settings.h"
 #include "skill.h"

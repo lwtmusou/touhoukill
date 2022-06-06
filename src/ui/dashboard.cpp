@@ -4,6 +4,7 @@
 #include "engine.h"
 #include "graphicspixmaphoveritem.h"
 #include "heroskincontainer.h"
+#include "legacyutil.h"
 #include "roomscene.h"
 #include "settings.h"
 #include "util.h"

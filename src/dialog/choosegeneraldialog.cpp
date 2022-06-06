@@ -3,6 +3,7 @@
 #include "client.h"
 #include "engine.h"
 #include "general.h"
+#include "legacyutil.h"
 #include "protocol.h"
 #include "roomscene.h"
 #include "settings.h"

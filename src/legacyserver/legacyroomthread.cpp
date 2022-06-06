@@ -4,6 +4,7 @@
 #include "jsonutils.h"
 #include "legacygamerule.h"
 #include "legacyroom.h"
+#include "legacyutil.h"
 #include "package.h"
 #include "protocol.h"
 #include "settings.h"

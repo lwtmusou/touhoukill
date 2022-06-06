@@ -4,6 +4,7 @@
 #include "client.h"
 #include "engine.h"
 #include "hegemonyrolecombobox.h"
+#include "legacyutil.h"
 #include "pixmapanimation.h"
 #include "rolecombobox.h"
 #include "roomscene.h"

@@ -1,5 +1,6 @@
 #include "rolecombobox.h"
 #include "engine.h"
+#include "legacyutil.h"
 #include "photo.h"
 #include "util.h"
 
