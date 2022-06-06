@@ -32,7 +32,7 @@ struct ServerConfigStruct
         HegemonyRewardPostponed,
     };
 
-    QString mode; // or Mode *mode
+    QStringList modesServing;
 
     struct
     {

@@ -1,6 +1,7 @@
 
 #include "serverconfig.h"
 #include "engine.h"
+#include "jsonutils.h"
 #include "mode.h"
 #include "util.h"
 
@@ -66,7 +67,7 @@ Config file options:
 --sc, --save-config save the option to config file after parsing it SUCCESSFULLY. Do nothing when parser erros out. Make sure you have enough permission to operate it. Defaults no.
 
 Game mode options:
--m, --mode=<role_x,x,x, hegemony_x> the game mode which the server serves.
+-m, --mode=<role_x,x,x, hegemony_x> the game mode which the server serves. It can be specified multiple times for Lobby serving.
 
 TCP Server options:
 -I, --bind-ip= bind ip address, default 0.0.0.0
@@ -326,7 +327,8 @@ ServerConfigStruct::ServerConfigStruct()
 void ServerConfigStruct::defaultValues()
 {
     // fill initial default values
-    mode = QStringLiteral("role_2,4,1");
+    modesServing.clear();
+    modesServing << QStringLiteral("role_2,4,1");
 
     tcpServer.bindIp = QHostAddress::Any;
     tcpServer.bindPort = 41392;
@@ -462,10 +464,12 @@ bool ServerConfigStruct::parse()
 
     // Game mode options
     if (parser.isSet(QStringLiteral("m"))) {
-        mode = parser.value(QStringLiteral("m"));
-        const Mode *findMode = Mode::findMode(mode);
-        if (findMode == nullptr)
-            parserFailures << QString(QStringLiteral("Value for --mode (%1) is incorrect. Nonexistant mode %1 is specified. Check your input.")).arg(mode);
+        modesServing = parser.values(QStringLiteral("m"));
+        foreach (const QString &mode, modesServing) {
+            const Mode *findMode = Mode::findMode(mode);
+            if (findMode == nullptr)
+                parserFailures << QString(QStringLiteral("Value for --mode (%1) is incorrect. Nonexistant mode %1 is specified. Check your input.")).arg(mode);
+        }
     }
 
     // TCP Server options
@@ -829,10 +833,10 @@ bool ServerConfigStruct::readConfigFile()
     if (theOb.contains(QStringLiteral("GameModeOptions"))) {
         QJsonValue theValue = theOb.value(QStringLiteral("GameModeOptions"));
         QJsonObject theOb = theValue.toObject();
-        if (theOb.contains(QStringLiteral("mode"))) {
-            QJsonValue theValue = theOb.value(QStringLiteral("mode"));
-            if (theValue.isString())
-                mode = theValue.toString();
+        if (theOb.contains(QStringLiteral("modes"))) {
+            QJsonValue theValue = theOb.value(QStringLiteral("modes"));
+            if (QSgsJsonUtils::isStringArray(theValue))
+                modesServing = QSgsJsonUtils::toStringList(theValue);
         }
     }
 
@@ -1101,7 +1105,7 @@ bool ServerConfigStruct::saveConfigFile()
     {
         QJsonObject GameModeOptions;
         {
-            GameModeOptions[QStringLiteral("mode")] = mode;
+            GameModeOptions[QStringLiteral("modes")] = QSgsJsonUtils::toJsonArray(modesServing);
         }
         theOb[QStringLiteral("GameModeOptions")] = GameModeOptions;
     }
