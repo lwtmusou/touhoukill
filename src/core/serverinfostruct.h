@@ -29,11 +29,8 @@ struct QSGS_CORE_EXPORT ServerInfoStruct
     bool EnableCheat;
     bool FreeChoose;
     int GeneralsPerPlayer;
-    bool EnableSame;
     bool EnableAI;
     bool DisableChat;
-    int MaxHpScheme;
-    int Scheme0Subtraction;
 
     // Ban lists:
     // Role mode:

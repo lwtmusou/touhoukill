@@ -183,6 +183,11 @@ int GenericRoleMode::playersCount() const
     return 1 + d->loyalistCount + d->rebelCount + d->renegadeCount;
 }
 
+int GenericRoleMode::generalsPerPlayer() const
+{
+    return 1;
+}
+
 QString GenericRoleMode::roles() const
 {
     QString output = QStringLiteral("Z");
@@ -252,6 +257,11 @@ GenericHegemonyMode::~GenericHegemonyMode()
 int GenericHegemonyMode::playersCount() const
 {
     return d->players;
+}
+
+int GenericHegemonyMode::generalsPerPlayer() const
+{
+    return 2;
 }
 
 QString GenericHegemonyMode::roles() const

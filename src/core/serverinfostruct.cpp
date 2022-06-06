@@ -35,18 +35,15 @@ ServerInfoStruct::ServerInfoStruct()
     , RandomSeat(false)
     , EnableCheat(false)
     , FreeChoose(false)
-    , GeneralsPerPlayer(1)
-    , EnableSame(false)
+    , GeneralsPerPlayer(0)
     , EnableAI(false)
     , DisableChat(false)
-    , MaxHpScheme(0)
-    , Scheme0Subtraction(0)
 {
 }
 
 bool ServerInfoStruct::parseLegacy(const QString &str)
 {
-    QRegularExpression rx(QRegularExpression::anchoredPattern(QStringLiteral("(.*):(@?\\w+):(\\d+):(\\d+):([+\\w]*):([RCFSTBHAMN123a-r]*)")));
+    QRegularExpression rx(QRegularExpression::anchoredPattern(QStringLiteral("(.*):(@?\\w+):(\\d+):(\\d+):([+\\w]*):([RCFSAM]*)")));
     QRegularExpressionMatch match;
     if (!(match = rx.match(str)).hasMatch()) {
         qWarning("%s", qPrintable(QStringLiteral("Setup string error!")));
@@ -88,25 +85,8 @@ bool ServerInfoStruct::parseLegacy(const QString &str)
         EnableCheat = flags.contains(QStringLiteral("C"));
         FreeChoose = EnableCheat && flags.contains(QStringLiteral("F"));
         GeneralsPerPlayer = (flags.contains(QStringLiteral("S")) ? 2 : 1);
-        EnableSame = flags.contains(QStringLiteral("T"));
         EnableAI = flags.contains(QStringLiteral("A"));
         DisableChat = flags.contains(QStringLiteral("M"));
-
-        if (flags.contains(QStringLiteral("1")))
-            MaxHpScheme = 1;
-        else if (flags.contains(QStringLiteral("2")))
-            MaxHpScheme = 2;
-        else if (flags.contains(QStringLiteral("3")))
-            MaxHpScheme = 3;
-        else {
-            MaxHpScheme = 0;
-            for (char c = 'a'; c <= 'r'; c++) {
-                if (flags.contains(QLatin1Char(c))) {
-                    Scheme0Subtraction = int(c) - int('a') - 5;
-                    break;
-                }
-            }
-        }
     }
 
     return true;
@@ -210,12 +190,8 @@ bool ServerInfoStruct::parse(const QJsonValue &value)
             if (theValue.isDouble())
                 GeneralsPerPlayer = theValue.toInt();
         }
-        EnableSame = false;
-        if (theOb.contains(QStringLiteral("EnableSame"))) {
-            QJsonValue theValue = theOb.value(QStringLiteral("EnableSame"));
-            if (theValue.isBool())
-                EnableSame = theValue.toBool();
-        }
+        if (GeneralsPerPlayer < GameMode->generalsPerPlayer())
+            GeneralsPerPlayer = GameMode->generalsPerPlayer();
         EnableAI = false;
         if (theOb.contains(QStringLiteral("EnableAI"))) {
             QJsonValue theValue = theOb.value(QStringLiteral("EnableAI"));
@@ -228,22 +204,6 @@ bool ServerInfoStruct::parse(const QJsonValue &value)
             if (theValue.isBool())
                 DisableChat = theValue.toBool();
         }
-        MaxHpScheme = 1;
-        if (theOb.contains(QStringLiteral("MaxHpScheme"))) {
-            QJsonValue theValue = theOb.value(QStringLiteral("MaxHpScheme"));
-            if (theValue.isDouble())
-                MaxHpScheme = theValue.toInt();
-        }
-
-        if (MaxHpScheme == 0) {
-            Scheme0Subtraction = 0;
-            if (theOb.contains(QStringLiteral("Scheme0Subtraction"))) {
-                QJsonValue theValue = theOb.value(QStringLiteral("Scheme0Subtraction"));
-                if (theValue.isDouble())
-                    Scheme0Subtraction = theValue.toInt();
-            }
-        }
-
         return true;
     }
 
@@ -266,10 +226,7 @@ QJsonValue ServerInfoStruct::serialize() const
     m[QStringLiteral("EnableCheat")] = EnableCheat;
     m[QStringLiteral("FreeChoose")] = FreeChoose;
     m[QStringLiteral("GeneralsPerPlayer")] = GeneralsPerPlayer;
-    m[QStringLiteral("EnableSame")] = EnableSame;
     m[QStringLiteral("DisableChat")] = DisableChat;
-    m[QStringLiteral("MaxHpScheme")] = MaxHpScheme;
-    m[QStringLiteral("Scheme0Subtraction")] = Scheme0Subtraction;
 
     return m;
 }
@@ -281,5 +238,8 @@ bool ServerInfoStruct::parsed() const
 
 bool ServerInfoStruct::isMultiGeneralEnabled() const
 {
-    return GeneralsPerPlayer > 1;
+    if (!parsed())
+        return false;
+
+    return GeneralsPerPlayer > GameMode->generalsPerPlayer();
 }

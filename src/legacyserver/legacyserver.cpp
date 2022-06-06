@@ -39,10 +39,10 @@ LegacyServer::LegacyServer(QObject *parent)
     ServerInfo.EnableCheat = Config.EnableCheat;
     ServerInfo.FreeChoose = Config.FreeChoose;
     ServerInfo.GeneralsPerPlayer = (Config.Enable2ndGeneral ? 2 : 1);
-    ServerInfo.EnableSame = Config.EnableSame;
+    // ServerInfo.EnableSame = Config.EnableSame;
     ServerInfo.DisableChat = Config.DisableChat;
-    ServerInfo.MaxHpScheme = Config.MaxHpScheme;
-    ServerInfo.Scheme0Subtraction = Config.Scheme0Subtraction;
+    // ServerInfo.MaxHpScheme = Config.MaxHpScheme;
+    // ServerInfo.Scheme0Subtraction = Config.Scheme0Subtraction;
 
     current = nullptr;
     createNewRoom();

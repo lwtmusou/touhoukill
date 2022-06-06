@@ -28,6 +28,7 @@ public:
     QSanguosha::ModeCategory category() const;
 
     virtual int playersCount() const = 0;
+    virtual int generalsPerPlayer() const = 0;
     virtual QString roles() const = 0;
     virtual Rule *rule() const = 0;
     virtual IdSet availableCards() const;
@@ -55,6 +56,7 @@ public:
     ~GenericRoleMode() override;
 
     int playersCount() const override;
+    int generalsPerPlayer() const override;
     QString roles() const override;
     Rule *rule() const override;
 
@@ -75,6 +77,7 @@ public:
     ~GenericHegemonyMode() override;
 
     int playersCount() const override;
+    int generalsPerPlayer() const override;
     QString roles() const override;
     Rule *rule() const override;
 
