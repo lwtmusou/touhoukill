@@ -55,7 +55,7 @@ Dashboard::Dashboard(QGraphicsItem *widget)
     // called by its graphics parent.
     //
     _m_width = G_DASHBOARD_LAYOUT.m_leftWidth + G_DASHBOARD_LAYOUT.m_rightWidth + 20;
-    if (ServerInfo.isMultiGeneralEnabled())
+    if (ClientInstance->serverInfo()->isMultiGeneralEnabled())
         _m_width = G_DASHBOARD_LAYOUT.m_leftWidth + G_DASHBOARD_LAYOUT.m_rightWidthDouble + 20;
 
     leftDisableShowLock = nullptr;
@@ -205,7 +205,7 @@ void Dashboard::_adjustComponentZValues(bool killed)
     _layUnder(_m_leftFrame);
     _layUnder(_m_middleFrame);
 
-    if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
+    if (isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr)) {
         if ((button_widget != nullptr) && (_m_middleFrame != nullptr) && (_m_hegemonyroleComboBox != nullptr))
             _layBetween(button_widget, _m_middleFrame, _m_hegemonyroleComboBox);
     } else {
@@ -223,9 +223,9 @@ void Dashboard::_adjustComponentZValues(bool killed)
         _layUnder(_m_smallAvatarArea);
     if (_m_avatarArea != nullptr)
         _layUnder(_m_avatarArea);
-    if (isHegemonyGameMode(ServerInfo.GameModeStr) && ServerInfo.isMultiGeneralEnabled() && (_m_shadow_layer2 != nullptr))
+    if (isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr) && ClientInstance->serverInfo()->isMultiGeneralEnabled() && (_m_shadow_layer2 != nullptr))
         _layUnder(_m_shadow_layer2);
-    if (isHegemonyGameMode(ServerInfo.GameModeStr) && (_m_shadow_layer1 != nullptr))
+    if (isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr) && (_m_shadow_layer1 != nullptr))
         _layUnder(_m_shadow_layer1);
     if (_m_faceTurnedIcon2 != nullptr)
         _layUnder(_m_faceTurnedIcon2);
@@ -254,7 +254,7 @@ int Dashboard::width()
 void Dashboard::_createRight()
 {
     //40 equals diff bettween middlefarme and rightframe
-    int rwidth = (ServerInfo.isMultiGeneralEnabled()) ? G_DASHBOARD_LAYOUT.m_rightWidthDouble : G_DASHBOARD_LAYOUT.m_rightWidth;
+    int rwidth = (ClientInstance->serverInfo()->isMultiGeneralEnabled()) ? G_DASHBOARD_LAYOUT.m_rightWidthDouble : G_DASHBOARD_LAYOUT.m_rightWidth;
     QRect rect = QRect(_m_width - rwidth, -40, rwidth, G_DASHBOARD_LAYOUT.m_normalHeight + 40);
     _paintPixmap(_m_rightFrame, rect, QPixmap(1, 1), _m_groupMain);
     _paintPixmap(_m_rightFrameBg, QRect(0, 0, rect.width(), rect.height()), _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_RIGHTFRAME)), _m_rightFrame);
@@ -263,7 +263,7 @@ void Dashboard::_createRight()
     _m_skillDock = new QSanInvokeSkillDock(_m_rightFrame);
     QRect avatar = G_DASHBOARD_LAYOUT.m_avatarArea;
 
-    if (ServerInfo.isMultiGeneralEnabled()) {
+    if (ClientInstance->serverInfo()->isMultiGeneralEnabled()) {
         _m_skillDock->setPos(avatar.left() + 5, avatar.bottom() + G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height() - 25);
         _m_skillDock->setWidth(avatar.width() / 2);
     } else {
@@ -280,18 +280,18 @@ void Dashboard::_createRight()
     _m_rightSkillDock->setObjectName(QStringLiteral("right"));
 
     //hegemony
-    if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
+    if (isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr)) {
         _m_shadow_layer1 = new QGraphicsRectItem(_m_rightFrame);
 
         _m_shadow_layer1->setRect(G_DASHBOARD_LAYOUT.m_avatarArea);
-        if (ServerInfo.isMultiGeneralEnabled()) {
+        if (ClientInstance->serverInfo()->isMultiGeneralEnabled()) {
             _m_shadow_layer1->setRect(G_DASHBOARD_LAYOUT.m_headAvatarArea);
             _m_shadow_layer2 = new QGraphicsRectItem(_m_rightFrame);
             _m_shadow_layer2->setRect(G_DASHBOARD_LAYOUT.m_smallAvatarArea);
         }
 
         _paintPixmap(leftHiddenMark, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion3, _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK)), _m_rightFrame);
-        if (ServerInfo.isMultiGeneralEnabled()) {
+        if (ClientInstance->serverInfo()->isMultiGeneralEnabled()) {
             _paintPixmap(leftHiddenMark, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion1, _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK)), _m_rightFrame);
 
             _paintPixmap(rightHiddenMark, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion2, _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK)), _m_rightFrame);
@@ -305,7 +305,7 @@ void Dashboard::_createRight()
 void Dashboard::_updateFrames()
 {
     // Here is where we adjust all frames to actual width
-    int rwidth = (ServerInfo.isMultiGeneralEnabled()) ? G_DASHBOARD_LAYOUT.m_rightWidthDouble : G_DASHBOARD_LAYOUT.m_rightWidth;
+    int rwidth = (ClientInstance->serverInfo()->isMultiGeneralEnabled()) ? G_DASHBOARD_LAYOUT.m_rightWidthDouble : G_DASHBOARD_LAYOUT.m_rightWidth;
     QRect rect = QRect(G_DASHBOARD_LAYOUT.m_leftWidth, 0, width() - rwidth - G_DASHBOARD_LAYOUT.m_leftWidth, G_DASHBOARD_LAYOUT.m_normalHeight);
     _paintPixmap(_m_middleFrame, rect, _getPixmap(QString::fromUtf8(QSanRoomSkin::S_SKIN_KEY_MIDDLEFRAME)), this);
     QRect rect2 = QRect(0, 0, width(), G_DASHBOARD_LAYOUT.m_normalHeight);
@@ -328,7 +328,7 @@ void Dashboard::killPlayer()
 {
     trusting_item->hide();
     trusting_text->hide();
-    if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
+    if (isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr)) {
         _m_hegemonyroleComboBox->fix(m_player->roleString() == QStringLiteral("careerist") ? QStringLiteral("careerist") : m_player->roleString());
         _m_hegemonyroleComboBox->setEnabled(false);
     } else {
@@ -344,7 +344,7 @@ void Dashboard::killPlayer()
         _m_distanceItem->hide();
 
     _m_deathIcon->show();
-    if (ServerInfo.GameModeStr == QStringLiteral("04_1v3") && !Self->isLord()) {
+    if (ClientInstance->serverInfo()->GameModeStr == QStringLiteral("04_1v3") && !Self->isLord()) {
         _m_votesGot = 6;
         updateVotes(false);
     }
@@ -374,7 +374,7 @@ bool Dashboard::_addCardItems(QList<CardItem *> &card_items, const LegacyCardsMo
     if (place == QSanguosha::PlaceSpecial) {
         foreach (CardItem *card, card_items)
             card->setHomeOpacity(0.0);
-        QPoint avatarArea_center = (ServerInfo.isMultiGeneralEnabled()) ? _dlayout->m_avatarAreaDouble.center() : _dlayout->m_avatarArea.center();
+        QPoint avatarArea_center = (ClientInstance->serverInfo()->isMultiGeneralEnabled()) ? _dlayout->m_avatarAreaDouble.center() : _dlayout->m_avatarArea.center();
         QPointF center = mapFromItem(_getAvatarParent(), avatarArea_center);
         QRectF rect = QRectF(0, 0, _dlayout->m_disperseWidth, 0);
         rect.moveCenter(center);
@@ -881,7 +881,7 @@ void Dashboard::_adjustCards()
     QSanRoomSkin::DashboardLayout *layout = (QSanRoomSkin::DashboardLayout *)_m_layout;
     int leftWidth = layout->m_leftWidth;
     int cardHeight = G_COMMON_LAYOUT.m_cardNormalHeight;
-    int rwidth = (ServerInfo.isMultiGeneralEnabled()) ? layout->m_rightWidthDouble : layout->m_rightWidth;
+    int rwidth = (ClientInstance->serverInfo()->isMultiGeneralEnabled()) ? layout->m_rightWidthDouble : layout->m_rightWidth;
     int middleWidth = _m_width - layout->m_leftWidth - rwidth - getButtonWidgetWidth();
     QRect rowRect = QRect(leftWidth, layout->m_normalHeight - cardHeight - 3, middleWidth, cardHeight);
     for (int i = 0; i < maxCards; i++)
@@ -910,8 +910,18 @@ void Dashboard::_adjustCards()
 
 int Dashboard::getMiddleWidth()
 {
-    int rwidth = (ServerInfo.isMultiGeneralEnabled()) ? G_DASHBOARD_LAYOUT.m_rightWidthDouble : G_DASHBOARD_LAYOUT.m_rightWidth;
+    int rwidth = (ClientInstance->serverInfo()->isMultiGeneralEnabled()) ? G_DASHBOARD_LAYOUT.m_rightWidthDouble : G_DASHBOARD_LAYOUT.m_rightWidth;
     return _m_width - G_DASHBOARD_LAYOUT.m_leftWidth - rwidth;
+}
+
+QRectF Dashboard::getAvatarArea()
+{
+    QRectF rect;
+    QRect avatarArea = (ClientInstance->serverInfo()->isMultiGeneralEnabled()) ? _dlayout->m_avatarAreaDouble : _dlayout->m_avatarArea;
+    rect.setSize(avatarArea.size());
+    QPointF topLeft = mapFromItem(_getAvatarParent(), avatarArea.topLeft());
+    rect.moveTopLeft(topLeft);
+    return rect;
 }
 
 QList<CardItem *> Dashboard::cloneCardItems(const QList<int> &card_ids)
@@ -1010,7 +1020,7 @@ QList<CardItem *> Dashboard::removeCardItems(const QList<int> &card_ids, QSanguo
                 center += result[i]->pos();
             center = 1.0 / result.length() * center;
         } else if (place == QSanguosha::PlaceSpecial) {
-            QPoint avatarArea_center = (ServerInfo.isMultiGeneralEnabled()) ? _dlayout->m_avatarAreaDouble.center() : _dlayout->m_avatarArea.center();
+            QPoint avatarArea_center = (ClientInstance->serverInfo()->isMultiGeneralEnabled()) ? _dlayout->m_avatarAreaDouble.center() : _dlayout->m_avatarArea.center();
             center = mapFromItem(_getAvatarParent(), avatarArea_center);
         } else
             Q_ASSERT(false);
@@ -1672,7 +1682,7 @@ void Dashboard::_initializeRemovedEffect()
 
 void Dashboard::showSeat()
 {
-    const QRect region = (ServerInfo.isMultiGeneralEnabled()) ? G_DASHBOARD_LAYOUT.m_seatIconRegionDouble : G_DASHBOARD_LAYOUT.m_seatIconRegion;
+    const QRect region = (ClientInstance->serverInfo()->isMultiGeneralEnabled()) ? G_DASHBOARD_LAYOUT.m_seatIconRegionDouble : G_DASHBOARD_LAYOUT.m_seatIconRegion;
     PixmapAnimation *pma = PixmapAnimation::GetPixmapAnimation(_m_rightFrame, QStringLiteral("seat"));
     if (pma != nullptr) {
         pma->setTransform(QTransform::fromTranslate(-pma->boundingRect().width() / 2, -pma->boundingRect().height() / 2));
@@ -1685,7 +1695,7 @@ void Dashboard::showSeat()
 
 void Dashboard::updateHiddenMark()
 {
-    if (!isHegemonyGameMode(ServerInfo.GameModeStr))
+    if (!isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr))
         return;
     if ((m_player != nullptr) && RoomSceneInstance->game_started && !m_player->haveShownGeneral()) {
         leftHiddenMark->setVisible(m_player->isHidden(true));
@@ -1697,7 +1707,7 @@ void Dashboard::updateHiddenMark()
 
 void Dashboard::updateRightHiddenMark()
 {
-    if (!isHegemonyGameMode(ServerInfo.GameModeStr))
+    if (!isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr))
         return;
     if (rightHiddenMark == nullptr)
         return;
@@ -1716,7 +1726,7 @@ void Dashboard::setPlayer(Player *player)
 
 void Dashboard::onHeadStateChanged()
 {
-    if (!isHegemonyGameMode(ServerInfo.GameModeStr))
+    if (!isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr))
         return;
     if ((m_player != nullptr) && RoomSceneInstance->game_started && !m_player->haveShownGeneral())
         _m_shadow_layer1->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
@@ -1727,7 +1737,7 @@ void Dashboard::onHeadStateChanged()
 
 void Dashboard::onDeputyStateChanged()
 {
-    if (!isHegemonyGameMode(ServerInfo.GameModeStr))
+    if (!isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr))
         return;
     if ((m_player != nullptr) && RoomSceneInstance->game_started && !m_player->hasShownGeneral2())
         _m_shadow_layer2->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
@@ -1739,13 +1749,13 @@ void Dashboard::onDeputyStateChanged()
 void Dashboard::refresh()
 {
     PlayerCardContainer::refresh();
-    if (!isHegemonyGameMode(ServerInfo.GameModeStr))
+    if (!isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr))
         return;
     if ((m_player == nullptr) || (m_player->general() == nullptr) || !m_player->isAlive()) {
         _m_shadow_layer1->setBrush(Qt::NoBrush);
 
         leftHiddenMark->setVisible(false);
-        if (ServerInfo.isMultiGeneralEnabled()) {
+        if (ClientInstance->serverInfo()->isMultiGeneralEnabled()) {
             _m_shadow_layer2->setBrush(Qt::NoBrush);
             rightHiddenMark->setVisible(false);
         }
@@ -1754,7 +1764,7 @@ void Dashboard::refresh()
         _m_shadow_layer1->setBrush(m_player->haveShownGeneral() ? Qt::transparent : G_DASHBOARD_LAYOUT.m_generalShadowColor);
 
         leftHiddenMark->setVisible(m_player->isHidden(true));
-        if (ServerInfo.isMultiGeneralEnabled()) {
+        if (ClientInstance->serverInfo()->isMultiGeneralEnabled()) {
             _m_shadow_layer2->setBrush(m_player->hasShownGeneral2() ? Qt::transparent : G_DASHBOARD_LAYOUT.m_generalShadowColor);
             rightHiddenMark->setVisible(m_player->isHidden(false));
         }

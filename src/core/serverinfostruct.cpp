@@ -9,8 +9,6 @@
 #include <QJsonValue>
 #include <QRegularExpression>
 
-ServerInfoStruct ServerInfo;
-
 time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance, int operationRate)
 {
     time_t timeOut = OperationTimeout * 500 * operationRate;

@@ -34,6 +34,7 @@ public:
     const QString &name() const;
 
     QSanguosha::PackageType type() const;
+    QSanguosha::ModeCategory availableModeCategory() const;
 
     const QList<CardDescriptor> &cards() const;
     const QList<const General *> &generals() const;

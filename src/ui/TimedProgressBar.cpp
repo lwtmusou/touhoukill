@@ -1,5 +1,6 @@
 #include "TimedProgressBar.h"
 #include "SkinBank.h"
+#include "roomscene.h"
 #include "serverinfostruct.h"
 
 #include <QPainter>
@@ -65,13 +66,13 @@ using namespace QSanProtocol;
 QSanCommandProgressBar::QSanCommandProgressBar()
 {
     m_step = Config.S_PROGRESS_BAR_UPDATE_INTERVAL;
-    m_hasTimer = (ServerInfo.OperationTimeout != 0);
+    m_hasTimer = (ClientInstance->serverInfo()->OperationTimeout != 0);
 }
 
 void QSanCommandProgressBar::setCountdown(CommandType command)
 {
     m_mutex.lock();
-    m_max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
+    m_max = ClientInstance->serverInfo()->getCommandTimeout(command, S_CLIENT_INSTANCE);
     m_mutex.unlock();
 }
 

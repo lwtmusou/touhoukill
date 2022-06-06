@@ -19,6 +19,7 @@ class TreatAsEquippingSkill;
 class DistanceSkill;
 class ViewAsSkill;
 class Card;
+struct ServerInfoStruct;
 
 class RoomObjectPrivate;
 #endif
@@ -104,6 +105,8 @@ public:
     QSet<const DistanceSkill *> distanceSkills() const;
 
     void loadSkill(const Skill *skill);
+
+    ServerInfoStruct *serverInfo() const;
 
 private:
     RoomObjectPrivate *const d;

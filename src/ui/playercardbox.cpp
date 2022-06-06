@@ -127,7 +127,7 @@ void PlayerCardBox::chooseCard(const QString &reason, const Player *player, cons
     if (judging)
         arrangeCards(player->judgingAreaCards(), QPoint(startX, nameRects.at(index).y()));
 
-    if (ServerInfo.OperationTimeout != 0) {
+    if (ClientInstance->serverInfo()->OperationTimeout != 0) {
         if (progressBar == nullptr) {
             progressBar = new QSanCommandProgressBar();
             progressBar->setMaximumWidth(qMin(boundingRect().width() - 16, (qreal)150));
@@ -165,7 +165,7 @@ QRectF PlayerCardBox::boundingRect() const
     int areaInterval = intervalBetweenAreas;
     int height = topBlankWidth + bottomBlankWidth + cardHeight * rowCount + intervalsBetweenAreas * qMax(areaInterval, 0) + intervalsBetweenRows * intervalBetweenRows;
 
-    if (ServerInfo.OperationTimeout != 0)
+    if (ClientInstance->serverInfo()->OperationTimeout != 0)
         height += 12;
 
     return QRectF(0, 0, width, height);

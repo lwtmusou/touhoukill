@@ -383,7 +383,7 @@ void Client::legacySetup(const QJsonValue &setup_json)
 
     QString setup_str = setup_json.toString();
 
-    if (ServerInfo.parseLegacy(setup_str)) {
+    if (serverInfo()->parseLegacy(setup_str)) {
         emit server_connected();
 
         heartbeatTimer = new QTimer(this);
@@ -405,7 +405,7 @@ void Client::setup(const QJsonValue &setup_str)
     if ((socket != nullptr) && !socket->isConnected())
         return;
 
-    if (ServerInfo.parse(setup_str)) {
+    if (serverInfo()->parse(setup_str)) {
         emit server_connected();
 
         heartbeatTimer = new QTimer(this);
@@ -450,7 +450,7 @@ void Client::processServerPacket(const char *cmd)
             if (replayer == nullptr)
                 processServerRequest(packet);
             else if (packet.getCommandType() == QSanProtocol::S_COMMAND_CHOOSE_GENERAL) {
-                if (isHegemonyGameMode(ServerInfo.GameModeStr) && ServerInfo.isMultiGeneralEnabled()) {
+                if (isHegemonyGameMode(serverInfo()->GameModeStr) && serverInfo()->isMultiGeneralEnabled()) {
                     Callback callback = m_interactions[S_COMMAND_CHOOSE_GENERAL];
                     if (callback != nullptr)
                         (this->*callback)(packet.getMessageBody());
@@ -799,7 +799,7 @@ void Client::arrangeSeats(const QJsonValue &seats_arr)
 
 void Client::notifyRoleChange(const QString &new_role)
 {
-    if (isRoleGameMode(ServerInfo.GameModeStr) && !new_role.isEmpty()) {
+    if (isRoleGameMode(serverInfo()->GameModeStr) && !new_role.isEmpty()) {
         QString prompt_str = tr("Your role is %1").arg(Sanguosha->translate(new_role));
         if (new_role != QStringLiteral("lord"))
             prompt_str += tr("\n wait for the lord player choosing general, please");
@@ -1010,8 +1010,8 @@ QString Client::getPlayerName(const QString &str)
         if (player->getGeneral2() != nullptr)
             general_name.append(QStringLiteral("/") + Sanguosha->translate(player->getGeneral2Name()));
 
-        if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
-            if (ServerInfo.isMultiGeneralEnabled()) {
+        if (isHegemonyGameMode(serverInfo()->GameModeStr)) {
+            if (serverInfo()->isMultiGeneralEnabled()) {
                 if (player->generalName() == QStringLiteral("anjiang") && player->getGeneral2() != nullptr && player->getGeneral2Name() == QStringLiteral("anjiang")) {
                     general_name = Sanguosha->translate(QStringLiteral("SEAT(%1)").arg(QString::number(player->seat())));
                 }
@@ -1537,7 +1537,7 @@ void Client::killPlayer(const QJsonValue &player_name)
     alive_count--;
     Player *player = findPlayer(name);
     if (player == Self) {
-        if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
+        if (isHegemonyGameMode(serverInfo()->GameModeStr)) {
             foreach (const Skill *skill, Self->getHeadSkillList(true, true))
                 emit skill_detached(skill->name(), true);
             foreach (const Skill *skill, Self->getDeputySkillList(true, true))
@@ -1619,7 +1619,7 @@ void Client::askForGeneral(const QJsonValue &arg)
     bool single_result = false;
     bool can_convert = false;
 
-    if (!isHegemonyGameMode(ServerInfo.GameModeStr) || Self->hasFlag(QStringLiteral("Pingyi_Choose"))) {
+    if (!isHegemonyGameMode(serverInfo()->GameModeStr) || Self->hasFlag(QStringLiteral("Pingyi_Choose"))) {
         if (!tryParse(arg, generals))
             return;
     } else {
@@ -1629,7 +1629,7 @@ void Client::askForGeneral(const QJsonValue &arg)
         can_convert = args[2].toBool();
     }
 
-    if (isHegemonyGameMode(ServerInfo.GameModeStr) && ServerInfo.isMultiGeneralEnabled() && !Self->hasFlag(QStringLiteral("Pingyi_Choose"))) {
+    if (isHegemonyGameMode(serverInfo()->GameModeStr) && serverInfo()->isMultiGeneralEnabled() && !Self->hasFlag(QStringLiteral("Pingyi_Choose"))) {
         emit generals_got(generals, single_result, can_convert);
         setStatus(AskForGeneralTaken);
     } else {
@@ -2211,7 +2211,7 @@ void Client::moveFocus(const QJsonValue &focus)
     if (args.size() == 1) { //default countdown
         countdown.type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
         countdown.current = 0;
-        countdown.max = ServerInfo.getCommandTimeout(S_COMMAND_UNKNOWN, S_CLIENT_INSTANCE);
+        countdown.max = serverInfo()->getCommandTimeout(S_COMMAND_UNKNOWN, S_CLIENT_INSTANCE);
     } else // focus[1] is the moveFocus reason, which is unused for now.
         countdown.tryParse(args[2]);
     emit focus_moved(playersx, countdown);
@@ -2376,7 +2376,7 @@ void Client::clearHighlightSkillName()
 
 QString Client::getSkillDescription(QString skillname) const
 {
-    bool normal_game = ServerInfo.parsed() && isRoleGameMode(ServerInfo.GameModeStr);
+    bool normal_game = serverInfo()->parsed() && isRoleGameMode(serverInfo()->GameModeStr);
     QString name = QStringLiteral("%1%2").arg(skillname, normal_game ? QStringLiteral("_p") : QString());
     QString des_src = Sanguosha->translate(QStringLiteral(":") + name);
     if (normal_game && des_src.startsWith(QStringLiteral(":")))

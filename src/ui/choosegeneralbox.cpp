@@ -131,10 +131,10 @@ void GeneralCardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     qreal releaseX = event->pos().x(), releaseY = event->pos().y();
     qreal pressX = pressPos.x(), pressY = pressPos.y();
 
-    if (ServerInfo.FreeChoose && !outOfRange && !timerLongPress.isActive() && releaseX >= pressX - moveRange && releaseX <= pressX + moveRange && releaseY >= pressY - moveRange
-        && releaseY <= pressY + moveRange) {
+    if (ClientInstance->serverInfo()->FreeChoose && !outOfRange && !timerLongPress.isActive() && releaseX >= pressX - moveRange && releaseX <= pressX + moveRange
+        && releaseY >= pressY - moveRange && releaseY <= pressY + moveRange) {
 #else
-    if (ServerInfo.FreeChoose && Qt::RightButton == event->button()) {
+    if (ClientInstance->serverInfo()->FreeChoose && Qt::RightButton == event->button()) {
 #endif
         FreeChooseDialog *general_changer = new FreeChooseDialog(QApplication::focusWidget());
         connect(general_changer, &FreeChooseDialog::general_chosen, this, &GeneralCardItem::changeGeneral);
@@ -396,7 +396,7 @@ void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_onl
     if (!view_only && !single_result)
         _initializeItems();
 
-    if (view_only || ServerInfo.OperationTimeout != 0) {
+    if (view_only || ClientInstance->serverInfo()->OperationTimeout != 0) {
         if (progress_bar == nullptr) {
             progress_bar = new QSanCommandProgressBar();
             progress_bar->setMaximumWidth(boundingRect().width() - 10);

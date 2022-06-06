@@ -92,11 +92,9 @@ IdSet Mode::availableCards() const
         const CardDescriptor &desc = Sanguosha->cardDescriptor(i);
         if (desc.package == nullptr)
             continue;
-        if (ServerInfo.GameMode != nullptr) {
-            // enabled packages are parsed
-            if (!ServerInfo.EnabledPackages.contains(desc.package->name()))
-                continue;
-        }
+        if (desc.package->availableModeCategory() != d->category)
+            continue;
+
         ret << i;
     }
 
@@ -112,22 +110,18 @@ QSet<const General *> Mode::availableGenerals() const
         const General *general = Sanguosha->general(name);
         if (general == nullptr)
             continue;
-        if (general->package() == nullptr)
-            continue;
         if (general->isHidden())
             continue;
-        if (ServerInfo.GameMode != nullptr) {
-            // enabled packages are parsed
-            if (!ServerInfo.EnabledPackages.contains(general->package()->name()))
-                continue;
-        }
+        if (general->package() == nullptr)
+            continue;
+        if (general->package()->availableModeCategory() != d->category)
+            continue;
 
         ret << general;
     }
 
     // why consider ban in original Engine::availableGeneralCount?
     // ban should be considered only when selecting generals
-
     return ret;
 }
 

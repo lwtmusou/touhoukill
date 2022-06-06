@@ -15,6 +15,7 @@
 
 class ProhibitSkill;
 class TrickCard;
+struct ServerInfoStruct;
 
 struct lua_State;
 struct LogMessage;
@@ -29,7 +30,7 @@ class LegacyRoom : public RoomObject
     Q_OBJECT
 
 public:
-    explicit LegacyRoom(QObject *parent, const QString &mode);
+    explicit LegacyRoom(QObject *parent, const ServerInfoStruct *si);
     ~LegacyRoom() override = default;
     RoomThread *getThread() const;
     void output(const QString &message);
@@ -510,7 +511,6 @@ private:
     QString _chooseDefaultGeneral(LegacyServerPlayer *player) const;
     QStringList _chooseDefaultGenerals(LegacyServerPlayer *player) const;
     bool _setPlayerGeneral(LegacyServerPlayer *player, const QString &generalName, bool isFirst);
-    QString mode;
     QList<LegacyServerPlayer *> m_players;
     QList<LegacyServerPlayer *> m_alivePlayers;
     int player_count;

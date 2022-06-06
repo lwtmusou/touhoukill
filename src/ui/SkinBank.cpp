@@ -3,6 +3,7 @@
 #include "legacyjson.h"
 #include "legacyutil.h"
 #include "protocol.h"
+#include "roomscene.h"
 #include "serverinfostruct.h"
 #include "settings.h"
 #include "uiUtils.h"
@@ -347,9 +348,9 @@ QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName, bool cache, boo
     if (cardName == QStringLiteral("unknown"))
         return getPixmap(QStringLiteral("handCardBack"), QString(), true);
     QString name = cardName;
-    if (ServerInfo.GameModeStr == QStringLiteral("06_3v3") && name.startsWith(QStringLiteral("vs_")))
+    if (ClientInstance->serverInfo()->GameModeStr == QStringLiteral("06_3v3") && name.startsWith(QStringLiteral("vs_")))
         name = name.mid(3);
-    else if (ServerInfo.GameModeStr == QStringLiteral("02_1v1") && name.startsWith(QStringLiteral("kof_")))
+    else if (ClientInstance->serverInfo()->GameModeStr == QStringLiteral("02_1v1") && name.startsWith(QStringLiteral("kof_")))
         name = name.mid(4);
     else if (name.endsWith(QStringLiteral("_hegemony"))) {
         const General *general = Sanguosha->general(name);
@@ -389,9 +390,9 @@ QPixmap QSanRoomSkin::getCardJudgeIconPixmap(const QString &judgeName) const
 QPixmap QSanRoomSkin::getCardAvatarPixmap(const QString &generalName, bool heroSkin) const
 {
     QString name = generalName;
-    if (ServerInfo.GameModeStr == QStringLiteral("06_3v3") && name.startsWith(QStringLiteral("vs_")))
+    if (ClientInstance->serverInfo()->GameModeStr == QStringLiteral("06_3v3") && name.startsWith(QStringLiteral("vs_")))
         name = name.mid(3);
-    else if (ServerInfo.GameModeStr == QStringLiteral("02_1v1") && name.startsWith(QStringLiteral("kof_")))
+    else if (ClientInstance->serverInfo()->GameModeStr == QStringLiteral("02_1v1") && name.startsWith(QStringLiteral("kof_")))
         name = name.mid(4);
     //else if (name.endsWith("_hegemony"))
     //    name = name.replace("_hegemony", "");
@@ -401,9 +402,9 @@ QPixmap QSanRoomSkin::getCardAvatarPixmap(const QString &generalName, bool heroS
 QPixmap QSanRoomSkin::getGeneralPixmap(const QString &generalName, GeneralIconSize size, bool heroSkin) const
 {
     QString name = generalName;
-    if (ServerInfo.GameModeStr == QStringLiteral("06_3v3") && name.startsWith(QStringLiteral("vs_")))
+    if (ClientInstance->serverInfo()->GameModeStr == QStringLiteral("06_3v3") && name.startsWith(QStringLiteral("vs_")))
         name = name.mid(3);
-    else if (ServerInfo.GameModeStr == QStringLiteral("02_1v1") && name.startsWith(QStringLiteral("kof_")))
+    else if (ClientInstance->serverInfo()->GameModeStr == QStringLiteral("02_1v1") && name.startsWith(QStringLiteral("kof_")))
         name = name.mid(4);
     if (size == S_GENERAL_ICON_SIZE_CARD)
         return getCardMainPixmap(name, false, heroSkin);
@@ -724,7 +725,7 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, bo
         if (skin_index > 0) {
             fileName.replace(QStringLiteral("image/"), QStringLiteral("image/heroskin/"));
             fileName.replace(general_name, QStringLiteral("%1_%2").arg(general_name, skin_index));
-        } else if (isHegemonyGameMode(ServerInfo.GameModeStr) && fileName.contains(QStringLiteral("image/fullskin/generals/full"))) { //ignore avatar
+        } else if (isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr) && fileName.contains(QStringLiteral("image/fullskin/generals/full"))) { //ignore avatar
             QString tmpFileName = fileName;
             tmpFileName.replace(general_name, QStringLiteral("%1").arg(general_name + QStringLiteral("_hegemony")));
             if (QFile::exists(tmpFileName))
@@ -741,7 +742,7 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, bo
             fileName.replace("image/", "image/heroskin/");
             fileName.replace(general_name, QString("%1_%2").arg( unique_general , skin_index));
         }
-        else if (isHegemonyGameMode(ServerInfo.GameMode) 
+        else if (isHegemonyGameMode(ClientInstance->serverInfo()->GameMode)
             && (fileName.contains("image/fullskin/generals/full") || fileName.contains("image/generals/avatar"))) {
             if (!QFile::exists(fileName)) {
                 QString tmpFileName = fileName;
@@ -1237,7 +1238,7 @@ void QSanRoomSkin::getHeroSkinContainerGeneralIconPathAndClipRegion(const QStrin
     QString unique_general = generalName;
     if (unique_general.endsWith(QStringLiteral("_hegemony")))
         unique_general = unique_general.replace(QStringLiteral("_hegemony"), QString());
-    if (skinIndex == 0 && isHegemonyGameMode(ServerInfo.GameModeStr)) {
+    if (skinIndex == 0 && isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr)) {
         QDir dir(QStringLiteral("image/fullskin/generals/full"));
         dir.setNameFilters(QStringList(QStringLiteral("%1.png").arg(generalName)));
         QStringList tmpFiles = dir.entryList(QDir::Files | QDir::NoDotAndDotDot);

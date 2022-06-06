@@ -10,6 +10,7 @@ class PackagePrivate
 public:
     QString name;
     PackageType type;
+    ModeCategory mode;
 
     QList<const General *> generals;
     QList<CardDescriptor> all_cards;
@@ -35,6 +36,11 @@ const QString &Package::name() const
 PackageType Package::type() const
 {
     return d->type;
+}
+
+ModeCategory Package::availableModeCategory() const
+{
+    return d->mode;
 }
 
 const QList<CardDescriptor> &Package::cards() const

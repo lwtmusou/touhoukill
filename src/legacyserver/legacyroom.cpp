@@ -33,10 +33,9 @@
 
 using namespace QSanProtocol;
 
-LegacyRoom::LegacyRoom(QObject *parent, const QString &mode)
+LegacyRoom::LegacyRoom(QObject *parent, const ServerInfoStruct *si)
     : RoomObject(parent)
     , _m_lastMovementId(0)
-    , mode(mode)
     , current(nullptr)
     , m_drawPile(&pile1)
     , game_started(false)
@@ -54,10 +53,12 @@ LegacyRoom::LegacyRoom(QObject *parent, const QString &mode)
     , provider(nullptr)
     , m_fillAGWho(nullptr)
 {
+    *(serverInfo()) = *si;
+
     static int s_global_room_id = 0;
     _m_Id = s_global_room_id++;
-    player_count = Sanguosha->getPlayerCount(mode);
-    pile1 = Mode::findMode(mode)->availableCards().values();
+    player_count = si->GameMode->playersCount();
+    pile1 = si->GameMode->availableCards().values();
     qShuffle(pile1);
 
     initCallbacks();
@@ -389,7 +390,7 @@ void LegacyRoom::killPlayer(LegacyServerPlayer *victim, DamageStruct *reason)
 
     broadcastProperty(victim, "alive");
     broadcastProperty(victim, "role");
-    if (isRoleGameMode(mode))
+    if (serverInfo()->GameMode->category() == QSanguosha::ModeRole)
         setPlayerProperty(victim, "role_shown", true);
 
     doBroadcastNotify(S_COMMAND_KILL_PLAYER, victim->objectName());
@@ -579,7 +580,7 @@ void LegacyRoom::attachSkillToPlayer(LegacyServerPlayer *player, const QString &
 
 void LegacyRoom::detachSkillFromPlayer(LegacyServerPlayer *player, const QString &skill_name, bool is_equip, bool acquire_only, bool sendlog, bool head)
 {
-    if (!isHegemonyGameMode(mode) && !player->hasValidSkill(skill_name, true))
+    if (!isHegemonyGameMode(serverInfo()->GameMode->name()) && !player->hasValidSkill(skill_name, true))
         return;
     if ((Sanguosha->skill(skill_name) != nullptr) && Sanguosha->skill(skill_name)->isEternal())
         return;
@@ -636,7 +637,7 @@ void LegacyRoom::handleAcquireDetachSkills(LegacyServerPlayer *player, const QSt
                 head = false;
             }
 
-            if (isHegemonyGameMode(mode)) {
+            if (isHegemonyGameMode(serverInfo()->GameMode->name())) {
                 if (!player->hasGeneralCardSkill(actual_skill) && !player->hasValidSkill(actual_skill, true))
                     continue;
             } else {
@@ -725,7 +726,7 @@ void LegacyRoom::handleAcquireDetachSkills(LegacyServerPlayer *player, const QSt
 
 bool LegacyRoom::doRequest(LegacyServerPlayer *player, QSanProtocol::CommandType command, const QJsonValue &arg, bool wait)
 {
-    time_t timeOut = ServerInfo.getCommandTimeout(command, S_SERVER_INSTANCE);
+    time_t timeOut = serverInfo()->getCommandTimeout(command, S_SERVER_INSTANCE);
     return doRequest(player, command, arg, timeOut, wait);
 }
 
@@ -753,7 +754,7 @@ bool LegacyRoom::doRequest(LegacyServerPlayer *player, QSanProtocol::CommandType
 
 bool LegacyRoom::doBroadcastRequest(QList<LegacyServerPlayer *> &players, QSanProtocol::CommandType command)
 {
-    time_t timeOut = ServerInfo.getCommandTimeout(command, S_SERVER_INSTANCE);
+    time_t timeOut = serverInfo()->getCommandTimeout(command, S_SERVER_INSTANCE);
     return doBroadcastRequest(players, command, timeOut);
 }
 
@@ -960,7 +961,7 @@ bool LegacyRoom::notifyMoveFocus(LegacyServerPlayer *player, CommandType command
     QList<LegacyServerPlayer *> players;
     players.append(player);
     Countdown countdown;
-    countdown.max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
+    countdown.max = serverInfo()->getCommandTimeout(command, S_CLIENT_INSTANCE);
     countdown.type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
     return notifyMoveFocus(players, S_COMMAND_MOVE_FOCUS, countdown);
 }
@@ -1259,7 +1260,7 @@ bool LegacyRoom::_askForNullification(const Card *trick, LegacyServerPlayer *fro
     }
 
     LegacyServerPlayer *repliedPlayer = nullptr;
-    time_t timeOut = ServerInfo.getCommandTimeout(S_COMMAND_NULLIFICATION, S_SERVER_INSTANCE);
+    time_t timeOut = serverInfo()->getCommandTimeout(S_COMMAND_NULLIFICATION, S_SERVER_INSTANCE);
     if (!validHumanPlayers.isEmpty()) {
         if (trick->face()->isKindOf(QStringLiteral("AOE")) || trick->face()->isKindOf(QStringLiteral("GlobalEffect"))) {
             foreach (LegacyServerPlayer *p, validHumanPlayers)
@@ -2361,7 +2362,7 @@ int LegacyRoom::getLack() const
 
 QString LegacyRoom::getMode() const
 {
-    return mode;
+    return serverInfo()->GameMode->name();
 }
 
 void LegacyRoom::broadcast(const QString &message, LegacyServerPlayer *except)
@@ -2383,7 +2384,7 @@ void LegacyRoom::swapPile()
     tag.insert(QStringLiteral("SwapPile"), ++times);
 
     int limit = Config.value(QStringLiteral("PileSwappingLimitation"), 5).toInt() + 1;
-    if (mode == QStringLiteral("04_1v3"))
+    if (serverInfo()->GameMode->name() == QStringLiteral("04_1v3"))
         limit = qMin(limit, Config.BanPackages.contains(QStringLiteral("maneuvering")) ? 3 : 2);
     if (limit > 0 && times == limit)
         gameOver(QStringLiteral("."));
@@ -2570,10 +2571,10 @@ int LegacyRoom::drawCard(bool bottom)
 
 void LegacyRoom::prepareForStart()
 {
-    if (mode == QStringLiteral("06_3v3") || mode == QStringLiteral("06_XMode") || mode == QStringLiteral("02_1v1")) {
+    if (serverInfo()->GameMode->name() == QStringLiteral("06_3v3") || serverInfo()->GameMode->name() == QStringLiteral("06_XMode") || serverInfo()->GameMode->name() == QStringLiteral("02_1v1")) {
         return;
-    } else if (isHegemonyGameMode(mode)) {
-        if (!ServerInfo.isMultiGeneralEnabled())
+    } else if (isHegemonyGameMode(serverInfo()->GameMode->name())) {
+        if (!serverInfo()->isMultiGeneralEnabled())
             assignRoles();
         if (Config.RandomSeat)
             qShuffle(m_players);
@@ -2597,7 +2598,7 @@ void LegacyRoom::prepareForStart()
                 QList<LegacyServerPlayer *> all_players = m_players;
                 all_players.removeOne(player_self);
                 int n = all_players.count();
-                QStringList roles = Sanguosha->getRoleList(mode);
+                QStringList roles = Sanguosha->getRoleList(serverInfo()->GameMode->name());
                 roles.removeOne(role);
                 qShuffle(roles);
 
@@ -2610,7 +2611,7 @@ void LegacyRoom::prepareForStart()
                         broadcastProperty(player, "role", QStringLiteral("lord"));
                         setPlayerProperty(player, "role_shown", true);
                     } else {
-                        if (mode == QStringLiteral("04_1v3")) {
+                        if (serverInfo()->GameMode->name() == QStringLiteral("04_1v3")) {
                             broadcastProperty(player, "role", role);
                             setPlayerProperty(player, "role_shown", true);
                         } else
@@ -2629,7 +2630,7 @@ void LegacyRoom::prepareForStart()
                     m_players.swapItemsAt(i, m_players.indexOf(player));
                 }
             }
-        } else if (mode == QStringLiteral("04_1v3")) {
+        } else if (serverInfo()->GameMode->name() == QStringLiteral("04_1v3")) {
             if (Config.RandomSeat)
                 qShuffle(m_players);
             LegacyServerPlayer *lord = m_players.at(QRandomGenerator::global()->generate() % 4);
@@ -2796,7 +2797,7 @@ bool LegacyRoom::makeSurrender(LegacyServerPlayer *initiator)
     QList<LegacyServerPlayer *> playersAlive;
     foreach (LegacyServerPlayer *player, m_players) {
         QString playerRole = player->roleString();
-        if (!isHegemonyGameMode(mode)) {
+        if (!isHegemonyGameMode(serverInfo()->GameMode->name())) {
             if ((playerRole == QStringLiteral("loyalist") || playerRole == QStringLiteral("lord")) && player->isAlive())
                 loyalAlive++;
             else if (playerRole == QStringLiteral("rebel") && player->isAlive())
@@ -2821,7 +2822,7 @@ bool LegacyRoom::makeSurrender(LegacyServerPlayer *initiator)
         else
             result = player->getClientReply().toBool();
 
-        if (isHegemonyGameMode(mode)) {
+        if (isHegemonyGameMode(serverInfo()->GameMode->name())) {
             if (result)
                 hegemony_give_up++;
         } else {
@@ -2843,7 +2844,7 @@ bool LegacyRoom::makeSurrender(LegacyServerPlayer *initiator)
     }
 
     // vote counting
-    if (isHegemonyGameMode(mode)) {
+    if (isHegemonyGameMode(serverInfo()->GameMode->name())) {
         if (hegemony_give_up > (playersAlive.length() + 1) / 2) {
             foreach (LegacyServerPlayer *p, getAlivePlayers()) {
                 if (!p->haveShownGeneral())
@@ -3046,7 +3047,7 @@ void LegacyRoom::assignGeneralsForPlayers(const QList<LegacyServerPlayer *> &to_
     foreach (LegacyServerPlayer *player, m_players)
         existed.unite(List2Set(player->generals()));
 
-    QSet<const General *> generals = ServerInfo.GameMode->availableGenerals();
+    QSet<const General *> generals = serverInfo()->GameMode->availableGenerals();
 
     int max_choice = Config.value(QStringLiteral("MaxChoice"), 6).toInt();
     int total = generals.count();
@@ -3066,7 +3067,7 @@ void LegacyRoom::assignGeneralsForPlayers(const QList<LegacyServerPlayer *> &to_
 
     latest.subtract(existed);
 
-    bool assign_latest_general = Config.value(QStringLiteral("AssignLatestGeneral"), true).toBool() && !isHegemonyGameMode(mode);
+    bool assign_latest_general = Config.value(QStringLiteral("AssignLatestGeneral"), true).toBool() && !isHegemonyGameMode(serverInfo()->GameMode->name());
     foreach (LegacyServerPlayer *player, to_assign) {
         player->clearSelected();
         int i = 0;
@@ -3185,13 +3186,13 @@ QSet<QString> Engine::getRandomGenerals(int count, const QSet<QString> &ban_set)
     QStringList subtractList;
     bool needsubtract = true;
 #if 0
-    if (isRoleGameMode(ServerInfo.GameMode))
+    if (isRoleGameMode(serverInfo()->GameMode))
         subtractList = (Config.value(QStringLiteral("Banlist/Roles"), QStringList()).toStringList());
-    else if (ServerInfo.GameMode == QStringLiteral("04_1v3"))
+    else if (serverInfo()->GameMode == QStringLiteral("04_1v3"))
         subtractList = (Config.value(QStringLiteral("Banlist/HulaoPass"), QStringList()).toStringList());
-    else if (ServerInfo.GameMode == QStringLiteral("06_XMode"))
+    else if (serverInfo()->GameMode == QStringLiteral("06_XMode"))
         subtractList = (Config.value(QStringLiteral("Banlist/XMode"), QStringList()).toStringList());
-    else if (isHegemonyGameMode(ServerInfo.GameMode))
+    else if (isHegemonyGameMode(serverInfo()->GameMode))
         subtractList = (Config.value(QStringLiteral("Banlist/Hegemony"), QStringList()).toStringList());
     else
 #endif
@@ -3242,14 +3243,14 @@ void LegacyRoom::chooseGenerals()
     // Function used Engine::getRandomGenerals
     if (Config.EnableSame) {
         int choiceNum = Config.value(QStringLiteral("MaxChoice"), 6).toInt();
-        QList<const General *> generals = ServerInfo.GameMode->availableGenerals().values();
+        QList<const General *> generals = serverInfo()->GameMode->availableGenerals().values();
         qShuffle(generals, choiceNum);
         for (int i = 0; i < choiceNum; ++i)
             lord_list << generals.value(i)->name();
     } else if (the_lord->getState() == QStringLiteral("robot")) {
         int ramdom_value = QRandomGenerator::global()->generate() % 100;
         if (((ramdom_value < nonlord_prob || lord_num == 0) && nonlord_num > 0) || Sanguosha->availableLordNames().count() == 0) {
-            QList<const General *> generals = ServerInfo.GameMode->availableGenerals().values();
+            QList<const General *> generals = serverInfo()->GameMode->availableGenerals().values();
             qShuffle(generals, 1);
             lord_list << generals.first()->name();
         } else {
@@ -3322,7 +3323,7 @@ void LegacyRoom::chooseHegemonyGenerals()
 
     doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
 
-    if (!ServerInfo.isMultiGeneralEnabled()) {
+    if (!serverInfo()->isMultiGeneralEnabled()) {
         foreach (LegacyServerPlayer *player, to_assign) {
             if (player->general() != nullptr)
                 continue;
@@ -3392,7 +3393,7 @@ void LegacyRoom::assignRoles()
 {
     int n = m_players.count();
 
-    QStringList roles = Sanguosha->getRoleList(mode);
+    QStringList roles = Sanguosha->getRoleList(serverInfo()->GameMode->name());
     qShuffle(roles);
 
     for (int i = 0; i < n; i++) {
@@ -4199,9 +4200,9 @@ void LegacyRoom::sendDamageLog(const DamageStruct &data)
 
 bool LegacyRoom::hasWelfare(const LegacyServerPlayer *player) const
 {
-    if (mode == QStringLiteral("06_3v3"))
+    if (serverInfo()->GameMode->name() == QStringLiteral("06_3v3"))
         return player->isLord() || player->roleString() == QStringLiteral("renegade");
-    else if (mode == QStringLiteral("06_XMode") || isHegemonyGameMode(mode))
+    else if (serverInfo()->GameMode->name() == QStringLiteral("06_XMode") || isHegemonyGameMode(serverInfo()->GameMode->name()))
         return false;
     else
         return player->isLord() && player_count > 4;
@@ -4247,14 +4248,14 @@ void LegacyRoom::marshal(LegacyServerPlayer *player)
     doNotify(player, S_COMMAND_START_IN_X_SECONDS, QJsonValue(0));
 
     foreach (LegacyServerPlayer *p, m_players) {
-        if (isHegemonyGameMode(mode) && p == player && !p->haveShownGeneral()) {
+        if (isHegemonyGameMode(serverInfo()->GameMode->name()) && p == player && !p->haveShownGeneral()) {
             QString general1_name = tag[player->objectName()].toStringList().at(0);
             notifyProperty(player, p, "general", general1_name);
         } else
             notifyProperty(player, p, "general");
 
         if (p->getGeneral2() != nullptr) {
-            if (isHegemonyGameMode(mode) && p == player && !p->hasShownGeneral2()) {
+            if (isHegemonyGameMode(serverInfo()->GameMode->name()) && p == player && !p->hasShownGeneral2()) {
                 QString general2_name = tag[player->objectName()].toStringList().at(1);
                 notifyProperty(player, p, "general2", general2_name);
             } else {
@@ -4263,7 +4264,7 @@ void LegacyRoom::marshal(LegacyServerPlayer *player)
         }
     }
 
-    if (isHegemonyGameMode(mode)) {
+    if (isHegemonyGameMode(serverInfo()->GameMode->name())) {
         foreach (const Skill *skill, player->skills(false)) {
             QJsonArray args1;
             args1 << (int)S_GAME_EVENT_ADD_SKILL;
@@ -4282,7 +4283,7 @@ void LegacyRoom::marshal(LegacyServerPlayer *player)
         lord_info << (lord != nullptr ? lord->generalName() : QJsonValue());
         doNotify(player, S_COMMAND_GAME_START, lord_info);
 
-        QList<int> drawPile = ServerInfo.GameMode->availableCards().values();
+        QList<int> drawPile = serverInfo()->GameMode->availableCards().values();
         doNotify(player, S_COMMAND_AVAILABLE_CARDS, QSgsJsonUtils::toJsonArray(drawPile));
     }
 
@@ -4312,7 +4313,7 @@ void LegacyRoom::startGame()
     //step1 : player set  MaxHP and CompanionEffect
     foreach (LegacyServerPlayer *player, m_players) {
         Q_ASSERT(player->general());
-        if (isHegemonyGameMode(mode)) {
+        if (isHegemonyGameMode(serverInfo()->GameMode->name())) {
             QStringList generals = getTag(player->objectName()).toStringList();
             const General *general1 = Sanguosha->general(generals.first());
             Q_ASSERT(general1);
@@ -4331,26 +4332,26 @@ void LegacyRoom::startGame()
     }
 
     foreach (LegacyServerPlayer *player, m_players) {
-        if (mode == QStringLiteral("06_3v3") || mode == QStringLiteral("02_1v1") || mode == QStringLiteral("06_XMode")
-            || (!isHegemonyGameMode(mode) && !player->isLord())) // hegemony has already notified "general"
+        if (serverInfo()->GameMode->name() == QStringLiteral("06_3v3") || serverInfo()->GameMode->name() == QStringLiteral("02_1v1") || serverInfo()->GameMode->name() == QStringLiteral("06_XMode")
+            || (!isHegemonyGameMode(serverInfo()->GameMode->name()) && !player->isLord())) // hegemony has already notified "general"
             broadcastProperty(player, "general");
 
-        if (mode == QStringLiteral("02_1v1"))
+        if (serverInfo()->GameMode->name() == QStringLiteral("02_1v1"))
             doBroadcastNotify(getOtherPlayers(player, true), S_COMMAND_REVEAL_GENERAL, QJsonArray() << player->objectName() << player->generalName());
 
-        if (Config.Enable2ndGeneral && mode != QStringLiteral("02_1v1") && mode != QStringLiteral("06_3v3") && mode != QStringLiteral("06_XMode")
-            && mode != QStringLiteral("04_1v3") && !isHegemonyGameMode(mode))
+        if (Config.Enable2ndGeneral && serverInfo()->GameMode->name() != QStringLiteral("02_1v1") && serverInfo()->GameMode->name() != QStringLiteral("06_3v3") && serverInfo()->GameMode->name() != QStringLiteral("06_XMode")
+            && serverInfo()->GameMode->name() != QStringLiteral("04_1v3") && !isHegemonyGameMode(serverInfo()->GameMode->name()))
             broadcastProperty(player, "general2");
 
         broadcastProperty(player, "hp");
         broadcastProperty(player, "maxhp");
 
-        if (mode == QStringLiteral("06_3v3") || mode == QStringLiteral("06_XMode")) {
+        if (serverInfo()->GameMode->name() == QStringLiteral("06_3v3") || serverInfo()->GameMode->name() == QStringLiteral("06_XMode")) {
             broadcastProperty(player, "role");
             setPlayerProperty(player, "role_shown", true);
         }
 
-        if (!isHegemonyGameMode(mode)) {
+        if (!isHegemonyGameMode(serverInfo()->GameMode->name())) {
             setPlayerProperty(player, "general_showed", true);
             setPlayerProperty(player, "general2_showed", true);
             if (player->isLord())
@@ -4385,7 +4386,7 @@ void LegacyRoom::startGame()
         setCardMapping(card_id, nullptr, QSanguosha::PlaceDrawPile);
     doBroadcastNotify(S_COMMAND_UPDATE_PILE, QJsonValue(m_drawPile->length()));
 
-    if (mode != QStringLiteral("02_1v1") && mode != QStringLiteral("06_3v3") && mode != QStringLiteral("06_XMode"))
+    if (serverInfo()->GameMode->name() != QStringLiteral("02_1v1") && serverInfo()->GameMode->name() != QStringLiteral("06_3v3") && serverInfo()->GameMode->name() != QStringLiteral("06_XMode"))
         resetAllCards();
 }
 
@@ -5157,7 +5158,7 @@ void LegacyRoom::doBattleArrayAnimate(LegacyServerPlayer *player, LegacyServerPl
 
 void LegacyRoom::preparePlayers()
 {
-    if (isHegemonyGameMode(mode)) {
+    if (isHegemonyGameMode(serverInfo()->GameMode->name())) {
         foreach (LegacyServerPlayer *player, m_players) {
             QString general1_name = tag[player->objectName()].toStringList().at(0);
             QSet<const Skill *> skills = Sanguosha->general(general1_name)->skills(true, true);
@@ -5198,7 +5199,7 @@ void LegacyRoom::changePlayerGeneral(LegacyServerPlayer *player, const QString &
     if (!originalName.isEmpty())
         player->tag[QStringLiteral("init_general")] = player->generalName();
 
-    if (!isHegemonyGameMode(mode) && player->general() != nullptr) {
+    if (!isHegemonyGameMode(serverInfo()->GameMode->name()) && player->general() != nullptr) {
         foreach (const Skill *skill, player->general()->skills(true, true))
             player->loseSkill(skill->name());
     }
@@ -5211,7 +5212,7 @@ void LegacyRoom::changePlayerGeneral(LegacyServerPlayer *player, const QString &
     Q_ASSERT(player->general() != nullptr);
     if (new_general != QStringLiteral("anjiang"))
         player->setGender(player->general()->gender());
-    if (!isHegemonyGameMode(mode)) {
+    if (!isHegemonyGameMode(serverInfo()->GameMode->name())) {
         foreach (const Skill *skill, player->general()->skills(true, true)) {
             if (skill->isLordSkill() && !player->isLord()) {
                 continue;
@@ -5229,7 +5230,7 @@ void LegacyRoom::changePlayerGeneral2(LegacyServerPlayer *player, const QString 
     if (!originalName2.isEmpty())
         player->tag[QStringLiteral("init_general2")] = player->getGeneral2Name();
 
-    if (!isHegemonyGameMode(mode) && player->getGeneral2() != nullptr) {
+    if (!isHegemonyGameMode(serverInfo()->GameMode->name()) && player->getGeneral2() != nullptr) {
         foreach (const Skill *skill, player->getGeneral2()->skills(true, false))
             player->loseSkill(skill->name());
     }
@@ -5240,7 +5241,7 @@ void LegacyRoom::changePlayerGeneral2(LegacyServerPlayer *player, const QString 
     foreach (LegacyServerPlayer *p, players)
         notifyProperty(p, player, "general2");
     Q_ASSERT(player->getGeneral2() != nullptr);
-    if (!isHegemonyGameMode(mode) && (player->getGeneral2() != nullptr)) {
+    if (!isHegemonyGameMode(serverInfo()->GameMode->name()) && (player->getGeneral2() != nullptr)) {
         foreach (const Skill *skill, player->getGeneral2()->skills(true, false)) {
             if (skill->isLordSkill() && !player->isLord())
                 continue;
@@ -5469,7 +5470,7 @@ void LegacyRoom::askForLuckCard()
         n++;
 
         Countdown countdown;
-        countdown.max = ServerInfo.getCommandTimeout(S_COMMAND_LUCK_CARD, S_CLIENT_INSTANCE);
+        countdown.max = serverInfo()->getCommandTimeout(S_COMMAND_LUCK_CARD, S_CLIENT_INSTANCE);
         countdown.type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
         notifyMoveFocus(players, S_COMMAND_LUCK_CARD, countdown);
 
@@ -5838,7 +5839,7 @@ QList<int> LegacyRoom::getCardIdsOnTable(const IdSet &card_ids) const
 
 LegacyServerPlayer *LegacyRoom::getLord(const QString & /*unused*/, bool /*unused*/) const
 {
-    if (isHegemonyGameMode(mode))
+    if (isHegemonyGameMode(serverInfo()->GameMode->name()))
         return nullptr;
     LegacyServerPlayer *the_lord = m_players.first();
     if (the_lord->roleString() == QStringLiteral("lord"))
@@ -6042,7 +6043,7 @@ QList<const Card *> LegacyRoom::askForPindianRace(LegacyServerPlayer *from, Lega
     Q_ASSERT(!from->isKongcheng() && !to->isKongcheng());
     tryPause();
     Countdown countdown;
-    countdown.max = ServerInfo.getCommandTimeout(S_COMMAND_PINDIAN, S_CLIENT_INSTANCE);
+    countdown.max = serverInfo()->getCommandTimeout(S_COMMAND_PINDIAN, S_CLIENT_INSTANCE);
     countdown.type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
     notifyMoveFocus(QList<LegacyServerPlayer *>() << from << to, S_COMMAND_PINDIAN, countdown);
 
@@ -6178,7 +6179,7 @@ LegacyServerPlayer *LegacyRoom::askForPlayerChosen(LegacyServerPlayer *player, c
 void LegacyRoom::_setupChooseGeneralRequestArgs(LegacyServerPlayer *player)
 {
     QJsonArray options;
-    if (isHegemonyGameMode(mode)) {
+    if (isHegemonyGameMode(serverInfo()->GameMode->name())) {
         options << QSgsJsonUtils::toJsonArray(player->getSelected());
         options << false;
         options << false;

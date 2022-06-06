@@ -77,6 +77,4 @@ struct QSGS_CORE_EXPORT ServerInfoStruct
     time_t getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance, int operationRate = 2);
 };
 
-extern QSGS_CORE_EXPORT ServerInfoStruct ServerInfo;
-
 #endif

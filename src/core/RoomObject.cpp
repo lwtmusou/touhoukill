@@ -4,6 +4,7 @@
 #include "engine.h"
 #include "exppattern.h"
 #include "player.h"
+#include "serverinfostruct.h"
 #include "skill.h"
 #include "util.h"
 
@@ -31,6 +32,8 @@ public:
     QSet<const TargetModSkill *> targetmod_skills;
     QSet<const AttackRangeSkill *> attackrange_skills;
     QSet<const ViewAsSkill *> viewas_skills;
+
+    ServerInfoStruct serverInfo;
 
     RoomObjectPrivate()
         : current(nullptr)
@@ -515,6 +518,11 @@ void RoomObject::loadSkill(const Skill *skill)
     LOADSKILLBYTYPE(ViewAsSkill, viewas_skills);
 
 #undef LOADSKILLBYTYPE
+}
+
+ServerInfoStruct *RoomObject::serverInfo() const
+{
+    return &(d->serverInfo);
 }
 
 Card *RoomObject::cloneSkillCard(const QString &name)

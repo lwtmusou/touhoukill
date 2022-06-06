@@ -2,6 +2,7 @@
 #include "engine.h"
 #include "legacyutil.h"
 #include "photo.h"
+#include "roomscene.h"
 #include "util.h"
 
 #include <QGraphicsScene>
@@ -118,9 +119,9 @@ void RoleComboBox::fix(const QString &role)
 
 int RoleComboBox::getRoleIndex()
 {
-    if (ServerInfo.GameModeStr == QStringLiteral("3v3") || ServerInfo.GameModeStr == QStringLiteral("XMode"))
+    if (ClientInstance->serverInfo()->GameModeStr == QStringLiteral("3v3") || ClientInstance->serverInfo()->GameModeStr == QStringLiteral("XMode"))
         return 4;
-    else if (isHegemonyGameMode(ServerInfo.GameModeStr))
+    else if (isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr))
         return 5;
     else
         return 1;

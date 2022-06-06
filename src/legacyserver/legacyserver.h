@@ -32,6 +32,8 @@ private:
 
     QStringList getNeededPackages() const;
 
+    ServerInfoStruct ServerInfo;
+
 private slots:
     void processNewConnection(LegacyClientSocket *socket);
     void processRequest(const char *request);

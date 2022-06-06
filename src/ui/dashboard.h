@@ -41,15 +41,7 @@ public:
     void refresh() override;
     void setWidth(int width);
     int getMiddleWidth();
-    inline QRectF getAvatarArea()
-    {
-        QRectF rect;
-        QRect avatarArea = (ServerInfo.isMultiGeneralEnabled()) ? _dlayout->m_avatarAreaDouble : _dlayout->m_avatarArea;
-        rect.setSize(avatarArea.size());
-        QPointF topLeft = mapFromItem(_getAvatarParent(), avatarArea.topLeft());
-        rect.moveTopLeft(topLeft);
-        return rect;
-    }
+    QRectF getAvatarArea();
 
     void hideControlButtons();
     void showControlButtons();

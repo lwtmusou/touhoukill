@@ -371,7 +371,7 @@ void MainWindow::enterRoom()
     connect(ui->actionSurrender, &QAction::triggered, room_scene, &RoomScene::surrender);
     connect(ui->actionSaveRecord, SIGNAL(triggered()), room_scene, SLOT(saveReplayRecord()));
 
-    if (ServerInfo.EnableCheat) {
+    if (ClientInstance->serverInfo()->EnableCheat) {
         ui->menuCheat->setEnabled(true);
 
         connect(ui->actionDeath_note, &QAction::triggered, room_scene, &RoomScene::makeKilling);

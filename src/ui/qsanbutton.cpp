@@ -166,7 +166,7 @@ void QSanButton::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void QSanButton::_onMouseClick(bool inside)
 {
-    if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
+    if (isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr)) {
         bool changeState = true;
         if (inherits("QSanSkillButton")) {
             const Skill *skill = qobject_cast<const QSanSkillButton *>(this)->getSkill();
@@ -320,7 +320,7 @@ void QSanSkillButton::setSkill(const Skill *skill)
         _m_canEnable = true;
         _m_canDisable = true;
     } else if (freq == Skill::Compulsory || freq == Skill::Eternal || freq == Skill::NotCompulsory) { //  we have to set it in such way for WeiDi
-        if (isHegemonyGameMode(ServerInfo.GameMode))
+        if (isHegemonyGameMode(ClientInstance->serverInfo()->GameMode))
             setState(QSanButton::S_STATE_DISABLED);
         else
             setState(QSanButton::S_STATE_UP);
@@ -335,7 +335,7 @@ void QSanSkillButton::setSkill(const Skill *skill)
 #endif
     setToolTip(ClientInstance->getSkillDescription(skill->name()));
 
-    if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
+    if (isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr)) {
         if (!Self->haveShownSkill(skill) && skill->canPreshow())
             setState(QSanButton::S_STATE_CANPRESHOW);
     }
@@ -355,7 +355,7 @@ void QSanSkillButton::setState(ButtonState state, bool ignore_change)
 
 void QSanSkillButton::setEnabled(bool enabled)
 {
-    if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
+    if (isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr)) {
         if (!enabled && _m_skill->canPreshow() && (!Self->haveShownSkill(_m_skill) || Self->hasFlag(QStringLiteral("hiding")))) {
             setState(Self->havePreshownSkill(_m_skill) ? S_STATE_DISABLED : S_STATE_CANPRESHOW);
         } else {
@@ -407,7 +407,7 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
                     generalName = general->name();
                     break;
                 }
-                if (ServerInfo.isMultiGeneralEnabled()) {
+                if (ClientInstance->serverInfo()->isMultiGeneralEnabled()) {
                     const General *general2 = p->getGeneral2();
                     if (general2->hasSkill(engskillname) || general2->hasSkill(HegSkillname)) {
                         generalName = general2->name();
@@ -420,7 +420,7 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
             const General *general = Self->general();
             if ((general != nullptr) && (general->hasSkill(engskillname) || general->hasSkill(HegSkillname)))
                 generalName = general->name();
-            if (ServerInfo.isMultiGeneralEnabled()) {
+            if (ClientInstance->serverInfo()->isMultiGeneralEnabled()) {
                 const General *general2 = Self->getGeneral2();
                 if (general2->hasSkill(engskillname) || general2->hasSkill(HegSkillname)) {
                     generalName = general2->name();
@@ -556,13 +556,13 @@ void QSanInvokeSkillDock::update()
         for (int i = 0; i < rows; i++) {
             int rowTop = (RoomSceneInstance->m_skillButtonSank) ? (-rowH - 2 * (rows - i - 1)) : ((-rows + i) * rowH);
             int btnWidth = (_m_width - 20) / btnNum[i];
-            if (ServerInfo.isMultiGeneralEnabled())
+            if (ClientInstance->serverInfo()->isMultiGeneralEnabled())
                 btnWidth = (this->objectName() == QStringLiteral("left")) ? (_m_width + 30) / btnNum[i] : (_m_width - 20) / btnNum[i];
             for (int j = 0; j < btnNum[i]; j++) {
                 QSanInvokeSkillButton *button = regular_buttons[m++];
                 button->setButtonWidth((QSanInvokeSkillButton::SkillButtonWidth)(btnNum[i] - 1));
                 button->setPos(btnWidth * j, rowTop);
-                if (ServerInfo.isMultiGeneralEnabled())
+                if (ClientInstance->serverInfo()->isMultiGeneralEnabled())
                     button->setPos(btnWidth * j + 30, rowTop);
             }
         }
@@ -579,7 +579,7 @@ void QSanInvokeSkillDock::update()
             int btnWidth = _m_width / lordBtnNum[i];
             if (lordBtnNum[i] == 1)
                 btnWidth = _m_width / 2;
-            if (ServerInfo.isMultiGeneralEnabled())
+            if (ClientInstance->serverInfo()->isMultiGeneralEnabled())
                 btnWidth = btnWidth + 20;
             for (int j = 0; j < lordBtnNum[i]; j++) {
                 QSanInvokeSkillButton *button = lordskill_buttons[w++];

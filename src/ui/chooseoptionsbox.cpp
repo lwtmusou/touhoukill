@@ -46,7 +46,7 @@ QRectF ChooseOptionsBox::boundingRect() const
     const int width = getButtonWidth() + outerBlankWidth * 2;
     int height = topBlankWidth + options.size() * defaultButtonHeight + (options.size() - 1) * interval + bottomBlankWidth;
 
-    if (ServerInfo.OperationTimeout != 0)
+    if (ClientInstance->serverInfo()->OperationTimeout != 0)
         height += 12;
 
     return QRectF(0, 0, width, height);
@@ -128,7 +128,7 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
         y += button->boundingRect().height() + interval;
     }
 
-    if (ServerInfo.OperationTimeout != 0) {
+    if (ClientInstance->serverInfo()->OperationTimeout != 0) {
         if (progressBar == nullptr) {
             progressBar = new QSanCommandProgressBar();
             progressBar->setMaximumWidth(boundingRect().width() - 16);

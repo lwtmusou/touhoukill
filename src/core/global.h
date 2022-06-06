@@ -340,7 +340,7 @@ enum ModeCategory
 {
     ModeRole = 1,
     ModeHegemony = 2,
-    ModeScenario = 16,
+    // ModeScenario = 16, // TODO
 };
 Q_ENUM_NS(ModeCategory)
 

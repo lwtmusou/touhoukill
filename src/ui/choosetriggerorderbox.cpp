@@ -296,7 +296,7 @@ QRectF ChooseTriggerOrderBox::boundingRect() const
 
     int height = m_topBlankWidth + optionButtons.size() * optionButtonHeight + (optionButtons.size() - 1) * interval + bottom_blank_width;
 
-    if (ServerInfo.OperationTimeout != 0)
+    if (ClientInstance->serverInfo()->OperationTimeout != 0)
         height += 12;
 
     if (optional)
@@ -359,7 +359,7 @@ void ChooseTriggerOrderBox::chooseOption(const QVariantList &options, bool optio
         cancel->show();
     }
 
-    if (ServerInfo.OperationTimeout != 0) {
+    if (ClientInstance->serverInfo()->OperationTimeout != 0) {
         if (progressBar == nullptr) {
             progressBar = new QSanCommandProgressBar;
             progressBar->setMaximumWidth(boundingRect().width() - 16);

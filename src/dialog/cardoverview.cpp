@@ -36,7 +36,7 @@ CardOverview::CardOverview(QWidget *parent)
 
     ui->tableWidget->setSortingEnabled(false);
 
-    if (ServerInfo.EnableCheat)
+    if (ClientInstance->serverInfo()->EnableCheat)
         connect(ui->getCardButton, &QAbstractButton::clicked, this, &CardOverview::askCard);
     else
         ui->getCardButton->hide();
@@ -159,7 +159,7 @@ void CardOverview::on_tableWidget_itemSelectionChanged()
 
 void CardOverview::askCard()
 {
-    if (!ServerInfo.EnableCheat)
+    if (!ClientInstance->serverInfo()->EnableCheat)
         return;
 
     int row = ui->tableWidget->currentRow();

@@ -279,13 +279,13 @@ GeneralOverview::GeneralOverview(QWidget *parent)
     group_box->setLayout(button_layout);
     ui->scrollArea->setWidget(group_box);
     ui->skillTextEdit->setProperty("description", true);
-    if (ServerInfo.parsed() && ServerInfo.EnableCheat) {
-        if (!isHegemonyGameMode(ServerInfo.GameModeStr))
+    if (ClientInstance->serverInfo()->parsed() && ClientInstance->serverInfo()->EnableCheat) {
+        if (!isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr))
             ui->changeGeneralButton->show();
         else
             ui->changeGeneralButton->hide();
 
-        if (!isHegemonyGameMode(ServerInfo.GameModeStr) && ServerInfo.isMultiGeneralEnabled())
+        if (!isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr) && ClientInstance->serverInfo()->isMultiGeneralEnabled())
             ui->changeGeneral2Button->show();
         else
             ui->changeGeneral2Button->hide();
@@ -648,7 +648,7 @@ void GeneralOverview::askTransfiguration()
 {
     QPushButton *button = qobject_cast<QPushButton *>(sender());
     bool isSecondaryHero = ((button != nullptr) && button->objectName() == ui->changeGeneral2Button->objectName());
-    if (ServerInfo.EnableCheat && (Self != nullptr)) {
+    if (ClientInstance->serverInfo()->EnableCheat && (Self != nullptr)) {
         if (isSecondaryHero)
             ui->changeGeneral2Button->setEnabled(false);
         else
@@ -661,7 +661,7 @@ void GeneralOverview::askTransfiguration()
 
 void GeneralOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem * /*unused*/)
 {
-    if (ServerInfo.EnableCheat && Self) {
+    if (ClientInstance->serverInfo()->EnableCheat && Self) {
         askTransfiguration();
     }
 }

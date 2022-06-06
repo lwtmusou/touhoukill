@@ -75,7 +75,7 @@ void LegacyServer::daemonize()
 
 LegacyRoom *LegacyServer::createNewRoom()
 {
-    LegacyRoom *new_room = new LegacyRoom(this, Config.GameMode);
+    LegacyRoom *new_room = new LegacyRoom(this, &ServerInfo);
     if (new_room->getLuaState() == nullptr) {
         delete new_room;
         return nullptr;

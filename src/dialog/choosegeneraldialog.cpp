@@ -170,7 +170,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
     dialog_layout->addLayout(layout);
 
     if (!view_only) {
-        if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
+        if (isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr)) {
             //need a seat prompt
             QLabel *seat_label = new QLabel(tr("Your seat is %1. role is %2")
                                                 .arg(Sanguosha->translate(QStringLiteral("CAPITAL(") + QString::number(Self->seat()) + QStringLiteral(")")))
@@ -190,7 +190,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
 
     // progress bar & free choose button
     QHBoxLayout *last_layout = new QHBoxLayout;
-    if (view_only || ServerInfo.OperationTimeout == 0) {
+    if (view_only || ClientInstance->serverInfo()->OperationTimeout == 0) {
         progress_bar = nullptr;
     } else {
         progress_bar = new QSanCommandProgressBar();
@@ -201,7 +201,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         last_layout->addWidget(progress_bar);
     }
 
-    bool free_choose = ServerInfo.FreeChoose;
+    bool free_choose = ClientInstance->serverInfo()->FreeChoose;
 
     if (!view_only && free_choose) {
         QPushButton *free_choose_button = new QPushButton(tr("Free choose ..."));
@@ -263,7 +263,7 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
     }
 
     QStringList kingdoms;
-    if (isHegemonyGameMode(ServerInfo.GameModeStr)) {
+    if (isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr)) {
         kingdoms << Sanguosha->hegemonyKingdoms().values();
         kingdoms << QStringLiteral("zhu");
     } else
@@ -275,9 +275,11 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
         if (kingdom == QStringLiteral("zhu")) {
             QList<const General *> addGgenerals;
             foreach (const General *g, generals) {
-                if (g->name().endsWith(QStringLiteral("hegemony")) && isHegemonyGameMode(ServerInfo.GameModeStr) && ServerInfo.isMultiGeneralEnabled())
+                if (g->name().endsWith(QStringLiteral("hegemony")) && isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr)
+                    && ClientInstance->serverInfo()->isMultiGeneralEnabled())
                     addGgenerals << g;
-                else if (!g->name().endsWith(QStringLiteral("hegemony")) && (!isHegemonyGameMode(ServerInfo.GameModeStr) || !ServerInfo.isMultiGeneralEnabled()))
+                else if (!g->name().endsWith(QStringLiteral("hegemony"))
+                         && (!isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr) || !ClientInstance->serverInfo()->isMultiGeneralEnabled()))
                     addGgenerals << g;
             }
             if (!addGgenerals.isEmpty())
