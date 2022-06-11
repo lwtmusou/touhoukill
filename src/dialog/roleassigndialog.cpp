@@ -130,7 +130,7 @@ void RoleAssignDialog::accept()
 
 void RoleAssignDialog::reject()
 {
-    ClientInstance->replyToServer(S_COMMAND_CHOOSE_ROLE, QJsonValue());
+    ClientInstance->replyToRoom(S_COMMAND_CHOOSE_ROLE, QJsonValue());
     QDialog::reject();
 }
 

@@ -46,14 +46,21 @@ public:
     Player *findPlayer(const QString &objectName);
     const Player *findPlayer(const QString &objectName) const;
 
-    Player *current();
-    const Player *current() const;
-    void setCurrent(Player *player);
+    Player *currentRound();
+    const Player *currentRound() const;
+    void setCurrentRound(Player *player);
+
+    Player *currentDying();
+    const Player *currentDying() const;
+    void setCurrentDying(Player *player);
 
     Player *findAdjecentPlayer(Player *player, bool next = true, bool include_dead = true, bool include_removed = true);
 #ifndef SWIG
     const Player *findAdjecentPlayer(const Player *player, bool next = true, bool include_dead = true, bool include_removed = true) const;
 #endif
+
+    Player *findLord(const QString &kingdom = QStringLiteral("wei"));
+    const Player *findLord(const QString &kingdom = QStringLiteral("wei")) const;
 
     void arrangeSeat(const QStringList &seatInfo);
 
@@ -71,6 +78,18 @@ public:
     void setCurrentCardUsePattern(const QString &newPattern);
     QSanguosha::CardUseReason currentCardUseReason() const;
     void setCurrentCardUseReason(QSanguosha::CardUseReason reason);
+
+    Player *cardOwner(int cardId);
+    const Player *cardOwner(int cardId) const;
+    QSanguosha::Place cardPlace(int cardId) const;
+    void setCardMapping(int cardId, Player *owner, QSanguosha::Place place);
+
+    Player *cardOwner(Card *card);
+#ifndef SWIG
+    const Player *cardOwner(const Card *card) const;
+#endif
+    QSanguosha::Place cardPlace(const Card *card) const;
+    void setCardMapping(Card *card, Player *owner, QSanguosha::Place place);
 
     // Update a card in the room.
     // @param cardId

@@ -47,7 +47,7 @@ Client::Client(QObject *parent, const QString &filename)
 {
     m_isGameOver = false;
 
-    m_callbacks[S_COMMAND_CHECK_VERSION] = &Client::checkVersion;
+    m_callbacks[S_COMMAND_CHECK_VERSION_LEGACY] = &Client::checkVersion;
     m_callbacks[S_COMMAND_SETUP_LEGACY] = &Client::legacySetup;
     m_callbacks[S_COMMAND_SETUP] = &Client::setup;
     m_callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Client::networkDelayTest;
@@ -318,16 +318,16 @@ void Client::signup()
         arg << QUrl(Config.HostAddress).path();
         arg << QString::fromUtf8(Config.UserName.toUtf8().toBase64());
         arg << Config.UserAvatar;
-        notifyServer(S_COMMAND_SIGNUP, arg);
+        notifyRoom(S_COMMAND_SIGNUP_LEGACY, arg);
     }
 }
 
 void Client::networkDelayTest(const QJsonValue & /*unused*/)
 {
-    notifyServer(S_COMMAND_NETWORK_DELAY_TEST);
+    notifyRoom(S_COMMAND_NETWORK_DELAY_TEST);
 }
 
-void Client::replyToServer(CommandType command, const QJsonValue &arg)
+void Client::replyToRoom(CommandType command, const QJsonValue &arg)
 {
     if (socket != nullptr) {
         Packet packet(PacketDescriptionFlag(S_SRC_CLIENT) | S_TYPE_REPLY | S_DEST_ROOM, command);
@@ -341,7 +341,7 @@ void Client::handleGameEvent(const QJsonValue &arg)
     emit event_received(arg);
 }
 
-void Client::notifyServer(CommandType command, const QJsonValue &arg)
+void Client::notifyRoom(CommandType command, const QJsonValue &arg)
 {
     if (socket != nullptr) {
         Packet packet(PacketDescriptionFlag(S_SRC_CLIENT) | S_TYPE_NOTIFICATION | S_DEST_ROOM, command);
@@ -350,7 +350,34 @@ void Client::notifyServer(CommandType command, const QJsonValue &arg)
     }
 }
 
-void Client::requestServer(CommandType command, const QJsonValue &arg)
+void Client::replyToLobby(QSanProtocol::CommandType command, const QJsonValue &arg)
+{
+    if (socket != nullptr) {
+        Packet packet(PacketDescriptionFlag(S_SRC_CLIENT) | S_TYPE_REPLY | S_DEST_LOBBY, command);
+        packet.setMessageBody(arg);
+        socket->send(QString::fromUtf8(packet.toJson()));
+    }
+}
+
+void Client::requestLobby(QSanProtocol::CommandType command, const QJsonValue &arg)
+{
+    if (socket != nullptr) {
+        Packet packet(PacketDescriptionFlag(S_SRC_CLIENT) | S_TYPE_REQUEST | S_DEST_LOBBY, command);
+        packet.setMessageBody(arg);
+        socket->send(QString::fromUtf8(packet.toJson()));
+    }
+}
+
+void Client::notifyLobby(QSanProtocol::CommandType command, const QJsonValue &arg)
+{
+    if (socket != nullptr) {
+        Packet packet(PacketDescriptionFlag(S_SRC_CLIENT) | S_TYPE_NOTIFICATION | S_DEST_LOBBY, command);
+        packet.setMessageBody(arg);
+        socket->send(QString::fromUtf8(packet.toJson()));
+    }
+}
+
+void Client::requestRoom(CommandType command, const QJsonValue &arg)
 {
     if (socket != nullptr) {
         Packet packet(PacketDescriptionFlag(S_SRC_CLIENT) | S_TYPE_REQUEST | S_DEST_ROOM, command);
@@ -388,13 +415,13 @@ void Client::legacySetup(const QJsonValue &setup_json)
 
         heartbeatTimer = new QTimer(this);
         connect(heartbeatTimer, &QTimer::timeout, [this]() -> void {
-            notifyServer(S_COMMAND_HEARTBEAT);
+            notifyRoom(S_COMMAND_HEARTBEAT);
         });
         heartbeatTimer->setSingleShot(false);
         heartbeatTimer->setInterval(1min);
         heartbeatTimer->start();
 
-        notifyServer(S_COMMAND_TOGGLE_READY);
+        notifyRoom(S_COMMAND_TOGGLE_READY);
     } else {
         QMessageBox::warning(nullptr, tr("Warning"), tr("Setup string can not be parsed: %1").arg(setup_str));
     }
@@ -410,13 +437,13 @@ void Client::setup(const QJsonValue &setup_str)
 
         heartbeatTimer = new QTimer(this);
         connect(heartbeatTimer, &QTimer::timeout, [this]() -> void {
-            notifyServer(S_COMMAND_HEARTBEAT);
+            notifyRoom(S_COMMAND_HEARTBEAT);
         });
         heartbeatTimer->setSingleShot(false);
         heartbeatTimer->setInterval(1min);
         heartbeatTimer->start();
 
-        notifyServer(S_COMMAND_TOGGLE_READY);
+        notifyRoom(S_COMMAND_TOGGLE_READY);
     } else {
         QMessageBox::warning(nullptr, tr("Warning"), tr("Setup string can not be parsed"));
     }
@@ -441,19 +468,19 @@ void Client::processServerPacket(const char *cmd)
         return;
     Packet packet;
     if (packet.parse(cmd)) {
-        if (packet.getPacketType() == S_TYPE_NOTIFICATION) {
-            Callback callback = m_callbacks[packet.getCommandType()];
+        if (packet.type() == S_TYPE_NOTIFICATION) {
+            Callback callback = m_callbacks[packet.commandType()];
             if (callback != nullptr) {
-                (this->*callback)(packet.getMessageBody());
+                (this->*callback)(packet.messageBody());
             }
-        } else if (packet.getPacketType() == S_TYPE_REQUEST) {
+        } else if (packet.type() == S_TYPE_REQUEST) {
             if (replayer == nullptr)
                 processServerRequest(packet);
-            else if (packet.getCommandType() == QSanProtocol::S_COMMAND_CHOOSE_GENERAL) {
+            else if (packet.commandType() == QSanProtocol::S_COMMAND_CHOOSE_GENERAL) {
                 if (isHegemonyGameMode(serverInfo()->GameModeStr) && serverInfo()->isMultiGeneralEnabled()) {
                     Callback callback = m_interactions[S_COMMAND_CHOOSE_GENERAL];
                     if (callback != nullptr)
-                        (this->*callback)(packet.getMessageBody());
+                        (this->*callback)(packet.messageBody());
                 } else
                     processShowGeneral(packet);
             }
@@ -464,8 +491,8 @@ void Client::processServerPacket(const char *cmd)
 bool Client::processServerRequest(const Packet &packet)
 {
     setStatus(NotActive);
-    CommandType command = packet.getCommandType();
-    QJsonValue msg = packet.getMessageBody();
+    CommandType command = packet.commandType();
+    QJsonValue msg = packet.messageBody();
 
     Callback callback = m_interactions[command];
     if (callback == nullptr)
@@ -476,7 +503,7 @@ bool Client::processServerRequest(const Packet &packet)
 
 void Client::processShowGeneral(const Packet &packet)
 {
-    const QJsonValue &arg = packet.getMessageBody();
+    const QJsonValue &arg = packet.messageBody();
     QStringList names;
     if (!QSgsJsonUtils::tryParse(arg, names))
         return;
@@ -607,7 +634,7 @@ void Client::onPlayerChooseGeneral(const QString &item_name)
 {
     setStatus(NotActive);
     if (!item_name.isEmpty()) {
-        replyToServer(S_COMMAND_CHOOSE_GENERAL, item_name);
+        replyToRoom(S_COMMAND_CHOOSE_GENERAL, item_name);
         Audio::playSystemAudioEffect(QStringLiteral("choose-item"));
     }
 }
@@ -716,12 +743,12 @@ void Client::requestCheatChangeGeneral(const QString &name, bool isSecondaryHero
 
 void Client::addRobot()
 {
-    notifyServer(S_COMMAND_ADD_ROBOT);
+    notifyRoom(S_COMMAND_ADD_ROBOT);
 }
 
 void Client::fillRobots()
 {
-    notifyServer(S_COMMAND_FILL_ROBOTS);
+    notifyRoom(S_COMMAND_FILL_ROBOTS);
 }
 
 void Client::onPlayerResponseCard(const Card *card, const QList<const Player *> &targets)
@@ -733,7 +760,7 @@ void Client::onPlayerResponseCard(const Card *card, const QList<const Player *> 
     if ((status & ClientStatusBasicMask) == Responding)
         setCurrentCardUsePattern(QString());
     if (card == nullptr) {
-        replyToServer(S_COMMAND_RESPONSE_CARD);
+        replyToRoom(S_COMMAND_RESPONSE_CARD);
     } else {
         QJsonArray targetNames;
         if (!card->face()->targetFixed(Self, card)) {
@@ -741,7 +768,7 @@ void Client::onPlayerResponseCard(const Card *card, const QList<const Player *> 
                 targetNames << target->objectName();
         }
 
-        replyToServer(S_COMMAND_RESPONSE_CARD, QJsonArray() << card->toString() << targetNames);
+        replyToRoom(S_COMMAND_RESPONSE_CARD, QJsonArray() << card->toString() << targetNames);
 
         // FIXME: When to recycle the card?
         if (card->isVirtualCard())
@@ -1033,10 +1060,10 @@ QString Client::getSkillNameToInvoke() const
 void Client::onPlayerInvokeSkill(bool invoke)
 {
     if (skill_name == QStringLiteral("surrender")) {
-        replyToServer(S_COMMAND_SURRENDER, invoke);
+        replyToRoom(S_COMMAND_SURRENDER, invoke);
         skill_name.clear();
     } else
-        replyToServer(S_COMMAND_INVOKE_SKILL, invoke);
+        replyToRoom(S_COMMAND_INVOKE_SKILL, invoke);
     setStatus(NotActive);
 }
 
@@ -1157,7 +1184,7 @@ void Client::askForSkillInvoke(const QJsonValue &arg)
 void Client::onPlayerMakeChoice()
 {
     QString option = sender()->objectName();
-    replyToServer(S_COMMAND_MULTIPLE_CHOICE, option);
+    replyToRoom(S_COMMAND_MULTIPLE_CHOICE, option);
     setStatus(NotActive);
 }
 
@@ -1236,7 +1263,7 @@ void Client::onPlayerChooseCard(int card_id)
     QJsonValue reply;
     if (card_id != -2)
         reply = card_id;
-    replyToServer(S_COMMAND_CHOOSE_CARD, reply);
+    replyToRoom(S_COMMAND_CHOOSE_CARD, reply);
     setStatus(NotActive);
 }
 
@@ -1245,25 +1272,25 @@ void Client::onPlayerChoosePlayer(const Player *player)
     if (player == nullptr && !m_isDiscardActionRefusable)
         player = findPlayer(players_to_choose.first());
 
-    replyToServer(S_COMMAND_CHOOSE_PLAYER, (player == nullptr) ? QJsonValue() : player->objectName());
+    replyToRoom(S_COMMAND_CHOOSE_PLAYER, (player == nullptr) ? QJsonValue() : player->objectName());
     setStatus(NotActive);
 }
 
 void Client::onPlayerChooseOption(const QString &choice)
 {
-    replyToServer(S_COMMAND_MULTIPLE_CHOICE, choice);
+    replyToRoom(S_COMMAND_MULTIPLE_CHOICE, choice);
     setStatus(NotActive);
 }
 
 void Client::onPlayerChooseTriggerOrder(const QString &choice)
 {
-    replyToServer(S_COMMAND_TRIGGER_ORDER, choice);
+    replyToRoom(S_COMMAND_TRIGGER_ORDER, choice);
     setStatus(NotActive);
 }
 
 void Client::trust()
 {
-    notifyServer(S_COMMAND_TRUST);
+    notifyRoom(S_COMMAND_TRUST);
 
     if (Self->getState() == QStringLiteral("trust"))
         Audio::playSystemAudioEffect(QStringLiteral("untrust"));
@@ -1278,7 +1305,7 @@ void Client::preshow(const QString &skill_name, bool isPreshowed)
     QJsonArray arg;
     arg << skill_name;
     arg << isPreshowed;
-    requestServer(S_COMMAND_PRESHOW, arg);
+    requestRoom(S_COMMAND_PRESHOW, arg);
     Self->setSkillPreshowed(skill_name, isPreshowed);
 
     emit head_preshowed();
@@ -1301,7 +1328,7 @@ void Client::speakToServer(const QString &text)
         return;
 
     QByteArray data = text.toUtf8().toBase64();
-    notifyServer(S_COMMAND_SPEAK, QString::fromUtf8(data));
+    notifyRoom(S_COMMAND_SPEAK, QString::fromUtf8(data));
 }
 
 void Client::addHistory(const QJsonValue &history)
@@ -1755,13 +1782,13 @@ void Client::setMark(const QJsonValue &mark_var)
 
 void Client::onPlayerChooseSuit()
 {
-    replyToServer(S_COMMAND_CHOOSE_SUIT, sender()->objectName());
+    replyToRoom(S_COMMAND_CHOOSE_SUIT, sender()->objectName());
     setStatus(NotActive);
 }
 
 void Client::onPlayerChooseKingdom()
 {
-    replyToServer(S_COMMAND_CHOOSE_KINGDOM, sender()->objectName());
+    replyToRoom(S_COMMAND_CHOOSE_KINGDOM, sender()->objectName());
     setStatus(NotActive);
 }
 
@@ -1773,9 +1800,9 @@ void Client::onPlayerDiscardCards(const Card *cards)
             arr << card_id;
         if (cards->isVirtualCard()) // TODO: Delete card
             cardDeleting(cards);
-        replyToServer(S_COMMAND_DISCARD_CARD, arr);
+        replyToRoom(S_COMMAND_DISCARD_CARD, arr);
     } else {
-        replyToServer(S_COMMAND_DISCARD_CARD);
+        replyToRoom(S_COMMAND_DISCARD_CARD);
     }
 
     setStatus(NotActive);
@@ -1901,7 +1928,7 @@ void Client::askForAG(const QJsonValue &arg)
 
 void Client::onPlayerChooseAG(int card_id)
 {
-    replyToServer(S_COMMAND_AMAZING_GRACE, card_id);
+    replyToRoom(S_COMMAND_AMAZING_GRACE, card_id);
     setStatus(NotActive);
 }
 
@@ -1954,7 +1981,7 @@ void Client::onPlayerAssignRole(const QStringList &names, const QStringList &rol
     QJsonArray reply;
     reply << QSgsJsonUtils::toJsonArray(names) << QSgsJsonUtils::toJsonArray(roles);
 
-    replyToServer(S_COMMAND_CHOOSE_ROLE, reply);
+    replyToRoom(S_COMMAND_CHOOSE_ROLE, reply);
 }
 
 void Client::askForGuanxing(const QJsonValue &arg)
@@ -2019,7 +2046,7 @@ void Client::onPlayerReplyGongxin(int card_id)
     QJsonValue reply;
     if (card_id != -1)
         reply = card_id;
-    replyToServer(S_COMMAND_SKILL_GONGXIN, reply);
+    replyToRoom(S_COMMAND_SKILL_GONGXIN, reply);
     setStatus(NotActive);
 }
 
@@ -2114,12 +2141,12 @@ void Client::askForPlayerChosen(const QJsonValue &players)
 void Client::onPlayerReplyYiji(const Card *card, const Player *to)
 {
     if (card == nullptr)
-        replyToServer(S_COMMAND_SKILL_YIJI);
+        replyToRoom(S_COMMAND_SKILL_YIJI);
     else {
         QJsonArray req;
         req << QSgsJsonUtils::toJsonArray(card->subcards().values());
         req << to->objectName();
-        replyToServer(S_COMMAND_SKILL_YIJI, req);
+        replyToRoom(S_COMMAND_SKILL_YIJI, req);
     }
 
     setStatus(NotActive);
@@ -2131,7 +2158,7 @@ void Client::onPlayerReplyGuanxing(const QList<int> &up_cards, const QList<int> 
     decks << QSgsJsonUtils::toJsonArray(up_cards);
     decks << QSgsJsonUtils::toJsonArray(down_cards);
 
-    replyToServer(S_COMMAND_SKILL_GUANXING, decks);
+    replyToRoom(S_COMMAND_SKILL_GUANXING, decks);
 
     setStatus(NotActive);
 }
@@ -2309,7 +2336,7 @@ void Client::startArrange(const QJsonValue &to_arrange)
 
 void Client::onPlayerChooseRole3v3()
 {
-    replyToServer(S_COMMAND_CHOOSE_ROLE_3V3, sender()->objectName());
+    replyToRoom(S_COMMAND_CHOOSE_ROLE_3V3, sender()->objectName());
     setStatus(NotActive);
 }
 
@@ -2351,7 +2378,7 @@ void Client::onPlayerChooseOrder()
     if (order == QStringLiteral("warm"))
         req = (int)S_CAMP_WARM;
 
-    replyToServer(S_COMMAND_CHOOSE_ORDER, req);
+    replyToRoom(S_COMMAND_CHOOSE_ORDER, req);
     setStatus(NotActive);
 }
 
@@ -2451,5 +2478,5 @@ void Client::changeSkin(const QString &name, int index)
     QJsonArray skinInfo;
     skinInfo << name << index;
 
-    notifyServer(S_COMMAND_SKIN_CHANGE, skinInfo);
+    notifyRoom(S_COMMAND_SKIN_CHANGE, skinInfo);
 }

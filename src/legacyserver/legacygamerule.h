@@ -4,6 +4,7 @@
 #include "trigger.h"
 
 class LegacyServerPlayer;
+class LegacyRoom;
 
 class LegacyGameRule : public Rule
 {
@@ -12,11 +13,11 @@ public:
     bool trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *room, const TriggerDetail &invoke, QVariant &data) const override;
 
 private:
-    void onPhaseProceed(LegacyServerPlayer *player) const;
-    void rewardAndPunish(LegacyServerPlayer *killer, LegacyServerPlayer *victim) const;
-    void changeGeneral1v1(LegacyServerPlayer *player) const;
-    void changeGeneralXMode(LegacyServerPlayer *player) const;
-    QString getWinner(LegacyServerPlayer *victim) const;
+    void onPhaseProceed(LegacyRoom *room, LegacyServerPlayer *player) const;
+    void rewardAndPunish(LegacyRoom *room, LegacyServerPlayer *killer, LegacyServerPlayer *victim) const;
+    void changeGeneral1v1(LegacyRoom *room, LegacyServerPlayer *player) const;
+    void changeGeneralXMode(LegacyRoom *room, LegacyServerPlayer *player) const;
+    QString getWinner(LegacyRoom *room, LegacyServerPlayer *victim) const;
 };
 
 #endif

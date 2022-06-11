@@ -134,7 +134,7 @@ enum CommandType
     S_COMMAND_SET_DASHBOARD_SHADOW,
     S_COMMAND_SKIN_CHANGE,
     S_COMMAND_TRIGGER_ORDER,
-    S_COMMAND_CHECK_VERSION,
+    S_COMMAND_CHECK_VERSION_LEGACY,
     S_COMMAND_SETUP_LEGACY, // deprecated
     S_COMMAND_NETWORK_DELAY_TEST,
     S_COMMAND_ADD_PLAYER,
@@ -147,7 +147,7 @@ enum CommandType
     S_COMMAND_TOGGLE_READY,
     S_COMMAND_ADD_ROBOT,
     S_COMMAND_FILL_ROBOTS,
-    S_COMMAND_SIGNUP,
+    S_COMMAND_SIGNUP_LEGACY,
     S_COMMAND_UPDATE_SKILL,
     S_COMMAND_SET_SKILL_INVALIDITY,
     S_COMMAND_SET_SHOWN_HANDCARD,
@@ -159,6 +159,8 @@ enum CommandType
     S_COMMAND_DISABLE_SHOW,
 
     S_COMMAND_SETUP,
+    S_COMMAND_CHECK_VERSION,
+    S_COMMAND_ROOMS,
 };
 Q_ENUM_NS(CommandType)
 
@@ -224,42 +226,23 @@ public:
     //format: [reserved(0), reserved(0), packet_type, command_name, command_body]
 
     explicit Packet(PacketDescriptionFlag packetDescription = S_DESC_UNKNOWN, CommandType command = S_COMMAND_UNKNOWN);
-    inline void setMessageBody(const QJsonValue &value)
-    {
-        messageBody = value;
-    }
-    inline const QJsonValue &getMessageBody() const
-    {
-        return messageBody;
-    }
+
+    void setMessageBody(const QJsonValue &value);
+    const QJsonValue &messageBody() const;
     bool parse(const QByteArray &raw);
     QByteArray toJson() const;
-    QString toString() const;
-    PacketDescriptionFlag getPacketDestination() const
-    {
-        return (packetDescription & S_DEST_MASK);
-    }
-    PacketDescriptionFlag getPacketSource() const
-    {
-        return (packetDescription & S_SRC_MASK);
-    }
-    PacketDescriptionFlag getPacketType() const
-    {
-        return (packetDescription & S_TYPE_MASK);
-    }
-    PacketDescriptionFlag getPacketDescription() const
-    {
-        return packetDescription;
-    }
-    CommandType getCommandType() const
-    {
-        return command;
-    }
+    PacketDescriptionFlag destination() const;
+    PacketDescriptionFlag source() const;
+    PacketDescriptionFlag type() const;
+    PacketDescriptionFlag description() const;
+    CommandType commandType() const;
 
-protected:
-    CommandType command;
-    PacketDescriptionFlag packetDescription;
-    QJsonValue messageBody;
+    Q_DECL_DEPRECATED QString toString() const;
+
+private:
+    CommandType m_command;
+    PacketDescriptionFlag m_packetDescription;
+    QJsonValue m_messageBody;
 
     //helper functions
     static const int S_MAX_PACKET_SIZE;

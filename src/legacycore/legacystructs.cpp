@@ -236,7 +236,7 @@ QJsonValue ExtendTriggerDetail::toVariant(const TriggerDetail &detail)
         Player *preferredTarget = detail.targets().first();
         ob[QStringLiteral("preferredtarget")] = preferredTarget->objectName();
 
-        Player *current = detail.room()->current();
+        Player *current = detail.room()->currentRound();
         if (current == nullptr)
             current = preferredTarget;
 

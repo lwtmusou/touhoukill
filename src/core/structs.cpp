@@ -9,26 +9,12 @@
 #include "trigger.h"
 #include "util.h"
 
+#include <QJsonArray>
+#include <QJsonObject>
+
 #include <functional>
 
 using namespace QSanguosha;
-
-CardMoveReason::CardMoveReason(QSanguosha::MoveReasonCategory moveReason, const QString &playerId, const QString &skillName, const QString &eventName)
-    : m_reason(moveReason)
-    , m_playerId(playerId)
-    , m_skillName(skillName)
-    , m_eventName(eventName)
-{
-}
-
-CardMoveReason::CardMoveReason(QSanguosha::MoveReasonCategory moveReason, const QString &playerId, const QString &targetId, const QString &skillName, const QString &eventName)
-    : m_reason(moveReason)
-    , m_playerId(playerId)
-    , m_targetId(targetId)
-    , m_skillName(skillName)
-    , m_eventName(eventName)
-{
-}
 
 DamageStruct::DamageStruct(const Card *card, Player *from, Player *to, int damage, DamageNature nature)
     : from(from)
@@ -321,13 +307,26 @@ bool TriggerDetail::isValid() const // validity check
     return room() != nullptr && trigger() != nullptr;
 }
 
-SingleCardMoveStruct::SingleCardMoveStruct(int id, Player *to, QSanguosha::Place toPlace)
+SingleCardMoveStruct::SingleCardMoveStruct(int id)
     : card_id(id)
-    , broken(false)
-    , shown(false)
-    , open(false)
+    , brokenEquipBeforeMove(false)
+    , shownHandcardBeforeMove(false)
+    , visibleToAll(false)
     , from(nullptr)
     , fromPlace(QSanguosha::PlaceUnknown)
+    , isFromLastHandcard(false)
+    , to(nullptr)
+    , toPlace(QSanguosha::PlaceDiscardPile)
+{
+}
+SingleCardMoveStruct::SingleCardMoveStruct(int id, Player *to, QSanguosha::Place toPlace)
+    : card_id(id)
+    , brokenEquipBeforeMove(false)
+    , shownHandcardBeforeMove(false)
+    , visibleToAll(false)
+    , from(nullptr)
+    , fromPlace(QSanguosha::PlaceUnknown)
+    , isFromLastHandcard(false)
     , to(to)
     , toPlace(toPlace)
 {
@@ -335,14 +334,85 @@ SingleCardMoveStruct::SingleCardMoveStruct(int id, Player *to, QSanguosha::Place
 
 SingleCardMoveStruct::SingleCardMoveStruct(int id, Player *from, Player *to, QSanguosha::Place fromPlace, QSanguosha::Place toPlace)
     : card_id(id)
-    , broken(false)
-    , shown(false)
-    , open(false)
+    , brokenEquipBeforeMove(false)
+    , shownHandcardBeforeMove(false)
+    , visibleToAll(false)
     , from(from)
     , fromPlace(fromPlace)
+    , isFromLastHandcard(false)
     , to(to)
     , toPlace(toPlace)
 {
+}
+
+QJsonValue SingleCardMoveStruct::serializeLegacy(bool visible, QSanguosha::MoveReasonCategory reason, Player *causedBy, Player *aimFor, const QString &via) const
+{
+    QJsonArray arr;
+    QJsonArray cardArr;
+    cardArr.append((visible || visibleToAll) ? card_id : -1);
+    arr.append(cardArr);
+    arr.append((from == nullptr) ? QString() : from->objectName());
+    arr.append(static_cast<int>(fromPlace));
+    arr.append(fromPile);
+    arr.append((to == nullptr) ? QString() : to->objectName());
+    arr.append(static_cast<int>(toPlace));
+    arr.append(toPile);
+    QJsonArray reasonArr;
+    reasonArr.append(static_cast<int>(reason));
+    reasonArr.append((causedBy == nullptr) ? QString() : causedBy->objectName());
+    reasonArr.append(via);
+    reasonArr.append(via);
+    reasonArr.append((aimFor == nullptr) ? QString() : aimFor->objectName());
+    arr << reasonArr;
+    return arr;
+}
+
+QJsonValue SingleCardMoveStruct::serialize(bool visible) const
+{
+    QJsonArray arr;
+    arr.append((visible || visibleToAll) ? card_id : -1);
+    arr.append((from == nullptr) ? QString() : from->objectName());
+    arr.append(static_cast<int>(fromPlace));
+    arr.append(fromPile);
+    arr.append((to == nullptr) ? QString() : to->objectName());
+    arr.append(static_cast<int>(toPlace));
+    arr.append(toPile);
+    return arr;
+}
+
+QJsonValue _qsgs_CardsMoveStructSerializeLegacyImpl(const CardsMoveStruct &moves, QList<bool> visibles)
+{
+    QJsonArray arr;
+    arr.append(0);
+
+    for (int i = 0; i < moves.length(); ++i) {
+        const SingleCardMoveStruct &move = moves.value(i);
+        bool visible = visibles.value(i, false);
+        arr.append(move.serializeLegacy(visible, moves.reason, moves.causedBy, moves.aimFor, moves.via));
+    }
+
+    return arr;
+}
+
+QJsonValue _qsgs_CardsMoveStructSerializeImpl(const CardsMoveStruct &moves, QList<bool> visibles)
+{
+    QJsonObject ob;
+
+    QJsonArray arr;
+
+    for (int i = 0; i < moves.length(); ++i) {
+        const SingleCardMoveStruct &move = moves.value(i);
+        bool visible = visibles.value(i, false);
+        arr.append(move.serialize(visible));
+    }
+
+    ob[QStringLiteral("moves")] = arr;
+    ob[QStringLiteral("reason")] = static_cast<int>(moves.reason);
+    ob[QStringLiteral("causedBy")] = ((moves.causedBy == nullptr) ? QString() : moves.causedBy->objectName());
+    ob[QStringLiteral("aimFor")] = ((moves.aimFor == nullptr) ? QString() : moves.aimFor->objectName());
+    ob[QStringLiteral("via")] = moves.via;
+
+    return ob;
 }
 
 DeathStruct::DeathStruct(Player *who, DamageStruct *damage)

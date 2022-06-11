@@ -67,7 +67,6 @@ public:
     QSGS_STATE_GAME LegacyServerPlayer *findPlayerByObjectName(const QString &name, bool include_dead = false) const;
     QSGS_STATE_GAME bool hasWelfare(const LegacyServerPlayer *player) const;
     QSGS_STATE_GAME LegacyServerPlayer *getFront(LegacyServerPlayer *a, LegacyServerPlayer *b) const;
-    QSGS_STATE_GAME void sortByActionOrder(QList<LegacyServerPlayer *> &players);
     QSGS_STATE_GAME void setTag(const QString &key, const QVariant &value);
     QSGS_STATE_GAME QVariant getTag(const QString &key) const;
     QSGS_STATE_GAME void removeTag(const QString &key);

@@ -2571,7 +2571,8 @@ int LegacyRoom::drawCard(bool bottom)
 
 void LegacyRoom::prepareForStart()
 {
-    if (serverInfo()->GameMode->name() == QStringLiteral("06_3v3") || serverInfo()->GameMode->name() == QStringLiteral("06_XMode") || serverInfo()->GameMode->name() == QStringLiteral("02_1v1")) {
+    if (serverInfo()->GameMode->name() == QStringLiteral("06_3v3") || serverInfo()->GameMode->name() == QStringLiteral("06_XMode")
+        || serverInfo()->GameMode->name() == QStringLiteral("02_1v1")) {
         return;
     } else if (isHegemonyGameMode(serverInfo()->GameMode->name())) {
         if (!serverInfo()->isMultiGeneralEnabled())
@@ -2909,16 +2910,16 @@ void LegacyRoom::processClientPacket(const QString &request)
                 doNotify(player, S_COMMAND_WARN, QStringLiteral("GAME_OVER"));
             return;
         }
-        if (packet.getPacketType() == S_TYPE_REPLY) {
+        if (packet.type() == S_TYPE_REPLY) {
             if (player == nullptr)
                 return;
             player->setClientReply(request);
             processResponse(player, &packet);
-        } else if (packet.getPacketType() == S_TYPE_REQUEST || packet.getPacketType() == S_TYPE_NOTIFICATION) {
-            Callback callback = m_callbacks[packet.getCommandType()];
+        } else if (packet.type() == S_TYPE_REQUEST || packet.type() == S_TYPE_NOTIFICATION) {
+            Callback callback = m_callbacks[packet.commandType()];
             if (callback == nullptr)
                 return;
-            (this->*callback)(player, packet.getMessageBody());
+            (this->*callback)(player, packet.messageBody());
         }
     }
 }
@@ -3689,8 +3690,8 @@ void LegacyRoom::processResponse(LegacyServerPlayer *player, const Packet *packe
         emit room_message(tr("Unable to parse player"));
     else if (!player->m_isWaitingReply || player->m_isClientResponseReady)
         emit room_message(tr("Server is not waiting for reply from %1").arg(player->objectName()));
-    else if (packet->getCommandType() != player->m_expectedReplyCommand)
-        emit room_message(tr("Reply command should be %1 instead of %2").arg(player->m_expectedReplyCommand, packet->getCommandType()));
+    else if (packet->commandType() != player->m_expectedReplyCommand)
+        emit room_message(tr("Reply command should be %1 instead of %2").arg(player->m_expectedReplyCommand, packet->commandType()));
     else
         success = true;
 
@@ -3700,7 +3701,7 @@ void LegacyRoom::processResponse(LegacyServerPlayer *player, const Packet *packe
     } else {
         _m_semRoomMutex.acquire();
         if (_m_raceStarted) {
-            player->setClientReply(packet->getMessageBody());
+            player->setClientReply(packet->messageBody());
             player->m_isClientResponseReady = true;
             // Warning: the statement below must be the last one before releasing the lock!!!
             // Any statement after this statement will totally compromise the synchronization
@@ -3712,7 +3713,7 @@ void LegacyRoom::processResponse(LegacyServerPlayer *player, const Packet *packe
             _m_semRaceRequest.release();
         } else {
             _m_semRoomMutex.release();
-            player->setClientReply(packet->getMessageBody());
+            player->setClientReply(packet->messageBody());
             player->m_isClientResponseReady = true;
             player->releaseLock(LegacyServerPlayer::SEMA_COMMAND_INTERACTIVE);
         }
@@ -4332,15 +4333,17 @@ void LegacyRoom::startGame()
     }
 
     foreach (LegacyServerPlayer *player, m_players) {
-        if (serverInfo()->GameMode->name() == QStringLiteral("06_3v3") || serverInfo()->GameMode->name() == QStringLiteral("02_1v1") || serverInfo()->GameMode->name() == QStringLiteral("06_XMode")
+        if (serverInfo()->GameMode->name() == QStringLiteral("06_3v3") || serverInfo()->GameMode->name() == QStringLiteral("02_1v1")
+            || serverInfo()->GameMode->name() == QStringLiteral("06_XMode")
             || (!isHegemonyGameMode(serverInfo()->GameMode->name()) && !player->isLord())) // hegemony has already notified "general"
             broadcastProperty(player, "general");
 
         if (serverInfo()->GameMode->name() == QStringLiteral("02_1v1"))
             doBroadcastNotify(getOtherPlayers(player, true), S_COMMAND_REVEAL_GENERAL, QJsonArray() << player->objectName() << player->generalName());
 
-        if (Config.Enable2ndGeneral && serverInfo()->GameMode->name() != QStringLiteral("02_1v1") && serverInfo()->GameMode->name() != QStringLiteral("06_3v3") && serverInfo()->GameMode->name() != QStringLiteral("06_XMode")
-            && serverInfo()->GameMode->name() != QStringLiteral("04_1v3") && !isHegemonyGameMode(serverInfo()->GameMode->name()))
+        if (Config.Enable2ndGeneral && serverInfo()->GameMode->name() != QStringLiteral("02_1v1") && serverInfo()->GameMode->name() != QStringLiteral("06_3v3")
+            && serverInfo()->GameMode->name() != QStringLiteral("06_XMode") && serverInfo()->GameMode->name() != QStringLiteral("04_1v3")
+            && !isHegemonyGameMode(serverInfo()->GameMode->name()))
             broadcastProperty(player, "general2");
 
         broadcastProperty(player, "hp");
@@ -4386,7 +4389,8 @@ void LegacyRoom::startGame()
         setCardMapping(card_id, nullptr, QSanguosha::PlaceDrawPile);
     doBroadcastNotify(S_COMMAND_UPDATE_PILE, QJsonValue(m_drawPile->length()));
 
-    if (serverInfo()->GameMode->name() != QStringLiteral("02_1v1") && serverInfo()->GameMode->name() != QStringLiteral("06_3v3") && serverInfo()->GameMode->name() != QStringLiteral("06_XMode"))
+    if (serverInfo()->GameMode->name() != QStringLiteral("02_1v1") && serverInfo()->GameMode->name() != QStringLiteral("06_3v3")
+        && serverInfo()->GameMode->name() != QStringLiteral("06_XMode"))
         resetAllCards();
 }
 
@@ -4626,7 +4630,7 @@ QList<LegacyCardsMoveOneTimeStruct> LegacyRoom::_mergeMoves(QList<LegacyCardsMov
     }
 
     if (result.size() > 1) {
-        std::sort(result.begin(), result.end(), [](const LegacyCardsMoveOneTimeStruct &move1, const LegacyCardsMoveOneTimeStruct &move2) -> bool {
+        std::sort(result.begin(), result.end(), [this](const LegacyCardsMoveOneTimeStruct &move1, const LegacyCardsMoveOneTimeStruct &move2) -> bool {
             LegacyServerPlayer *a = (LegacyServerPlayer *)move1.from;
             if (a == nullptr)
                 a = (LegacyServerPlayer *)move1.to;
@@ -4637,8 +4641,7 @@ QList<LegacyCardsMoveOneTimeStruct> LegacyRoom::_mergeMoves(QList<LegacyCardsMov
             if (a == nullptr || b == nullptr)
                 return a != nullptr;
 
-            LegacyRoom *room = a->getRoom();
-            return room->getFront(a, b) == a;
+            return getFront(a, b) == a;
         });
     }
 
@@ -4716,7 +4719,7 @@ QList<LegacyCardsMoveStruct> LegacyRoom::_separateMoves(QList<LegacyCardsMoveOne
         i++;
     }
     if (card_moves.size() > 1) {
-        std::sort(card_moves.begin(), card_moves.end(), [](const LegacyCardsMoveStruct &move1, const LegacyCardsMoveStruct &move2) -> bool {
+        std::sort(card_moves.begin(), card_moves.end(), [this](const LegacyCardsMoveStruct &move1, const LegacyCardsMoveStruct &move2) -> bool {
             LegacyServerPlayer *a = (LegacyServerPlayer *)move1.from;
             if (a == nullptr)
                 a = (LegacyServerPlayer *)move1.to;
@@ -4727,8 +4730,7 @@ QList<LegacyCardsMoveStruct> LegacyRoom::_separateMoves(QList<LegacyCardsMoveOne
             if (a == nullptr || b == nullptr)
                 return a != nullptr;
 
-            LegacyRoom *room = a->getRoom();
-            return room->getFront(a, b) == a;
+            return getFront(a, b) == a;
         });
     }
     return card_moves;
@@ -6860,12 +6862,6 @@ void LegacyRoom::networkDelayTestCommand(LegacyServerPlayer *player, const QJson
     qint64 delay = player->endNetworkDelayTest();
     QString reportStr = tr("<font color=#EEB422>The network delay of player <b>%1</b> is %2 milliseconds.</font>").arg(player->screenName(), QString::number(delay));
     speakCommand(player, QString::fromLatin1(reportStr.toUtf8().toBase64()));
-}
-
-void LegacyRoom::sortByActionOrder(QList<LegacyServerPlayer *> &players)
-{
-    if (players.length() > 1)
-        std::sort(players.begin(), players.end(), LegacyServerPlayer::CompareByActionOrder);
 }
 
 void LegacyRoom::touhouLogmessage(const QString &logtype, LegacyServerPlayer *logfrom, const QString &logarg, const QList<LegacyServerPlayer *> &logto, const QString &logarg2)

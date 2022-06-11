@@ -92,11 +92,6 @@ bool ServerInfoStruct::parseLegacy(const QString &str)
     return true;
 }
 
-bool ServerInfoStruct::parse(const QVariant &object)
-{
-    return parse(QJsonValue::fromVariant(object));
-}
-
 bool ServerInfoStruct::parse(const QJsonValue &value)
 {
     QJsonObject theOb;

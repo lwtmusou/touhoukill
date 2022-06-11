@@ -41,11 +41,6 @@ void LegacyServerPlayer::drawCard(const Card *card)
     m_handcards << card;
 }
 
-LegacyRoom *LegacyServerPlayer::getRoom() const
-{
-    return room;
-}
-
 void LegacyServerPlayer::broadcastSkillInvoke(const QString &card_name) const
 {
     room->broadcastSkillInvoke(card_name, isMale(), -1);
@@ -1508,12 +1503,6 @@ QStringList LegacyServerPlayer::checkTargetModSkillShow(const CardUseStruct &use
     return shows.values();
 }
 
-bool LegacyServerPlayer::CompareByActionOrder(LegacyServerPlayer *a, LegacyServerPlayer *b)
-{
-    LegacyRoom *room = a->getRoom();
-    return room->getFront(a, b) == a;
-}
-
 void LegacyServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendLog, bool /*unused*/)
 {
     QStringList names = room->getTag(objectName()).toStringList();
@@ -2072,4 +2061,13 @@ bool LegacyServerPlayer::isReady() const
 void LegacyServerPlayer::setReady(bool ready)
 {
     this->ready = ready;
+}
+
+bool LegacyServerPlayer::reconnect(LegacyClientSocket *socket)
+{
+    if (!room->isFinished()) {
+        room->reconnect(this, socket);
+        return true;
+    }
+    return false;
 }

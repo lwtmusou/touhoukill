@@ -91,7 +91,7 @@ LegacyRoom *LegacyServer::createNewRoom()
 
 void LegacyServer::processNewConnection(LegacyClientSocket *socket)
 {
-    Packet packet(PacketDescriptionFlag(S_SRC_ROOM) | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_CHECK_VERSION);
+    Packet packet(PacketDescriptionFlag(S_SRC_ROOM) | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_CHECK_VERSION_LEGACY);
     packet.setMessageBody(QJsonValue(Sanguosha->version()));
     socket->send((packet.toString()));
     emit server_message(tr("%1 connected").arg(socket->peerName()));
@@ -105,7 +105,7 @@ void LegacyServer::processRequest(const char *request)
     socket->disconnect(this, SLOT(processRequest(const char *)));
 
     Packet signup;
-    if (!signup.parse(request) || signup.getCommandType() != S_COMMAND_SIGNUP) {
+    if (!signup.parse(request) || signup.commandType() != S_COMMAND_SIGNUP_LEGACY) {
         emit server_message(tr("Invalid signup string: %1").arg(QString::fromUtf8(request)));
         QSanProtocol::Packet packet(PacketDescriptionFlag(S_SRC_ROOM) | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_WARN);
         packet.setMessageBody(QJsonValue(QStringLiteral("INVALID_FORMAT")));
@@ -114,7 +114,7 @@ void LegacyServer::processRequest(const char *request)
         return;
     }
 
-    const QJsonArray &body = signup.getMessageBody().toArray();
+    const QJsonArray &body = signup.messageBody().toArray();
     QString urlPath = body[0].toString();
     QString screen_name = QString::fromUtf8(QByteArray::fromBase64(body[1].toString().toLatin1()));
     QString avatar = body[2].toString();
@@ -186,10 +186,8 @@ void LegacyServer::processRequest(const char *request)
 
     if (reconnection_enabled) {
         LegacyServerPlayer *player = players.value(ps.last());
-        if ((player != nullptr) && player->getState() == QStringLiteral("offline") && !player->getRoom()->isFinished()) {
-            player->getRoom()->reconnect(player, socket);
+        if ((player != nullptr) && player->getState() == QStringLiteral("offline") && player->reconnect(socket))
             return;
-        }
 
         // player not found
         emit server_message(tr("reconnect username not found: %1").arg(ps.last()));

@@ -7,6 +7,7 @@
 #ifndef SWIG
 #include "global.h"
 
+#include <QJsonValue>
 #include <QString>
 #include <QStringList>
 #include <QVariant>
@@ -80,64 +81,39 @@ struct QSGS_CORE_EXPORT CardEffectStruct
     QList<int> effectValue;
 };
 
-class QSGS_CORE_EXPORT CardMoveReason
-{
-public:
-    QSanguosha::MoveReasonCategory m_reason;
-    QString m_playerId; // the cause (not the source) of the movement, such as "lusu" when "dimeng", or "zhanghe" when "qiaobian"
-    QString m_targetId; // To keep this structure lightweight, currently this is only used for UI purpose.
-    // It will be set to empty if multiple targets are involved. NEVER use it for trigger condition
-    // judgement!!! It will not accurately reflect the real reason.
-    QString m_skillName; // skill that triggers movement of the cards, such as "longdang", "dimeng"
-    QString m_eventName; // additional arg such as "lebusishu" on top of "S_REASON_JUDGE"
-    QVariant m_extraData; // additional data and will not be parsed to clients
-    QVariant m_provider; // additional data recording who provide this card for otherone to use or response, e.g. guanyu provide a slash for "jijiang"
-
-    /* implicit */ CardMoveReason(QSanguosha::MoveReasonCategory moveReason = QSanguosha::MoveReasonUnknown, const QString &playerId = QString(),
-                                  const QString &skillName = QString(), const QString &eventName = QString());
-    CardMoveReason(QSanguosha::MoveReasonCategory moveReason, const QString &playerId, const QString &targetId, const QString &skillName, const QString &eventName);
-
-#ifndef SWIG
-
-    inline bool operator==(const CardMoveReason &other) const
-    {
-        return m_reason == other.m_reason && m_playerId == other.m_playerId && m_targetId == other.m_targetId && m_skillName == other.m_skillName
-            && m_eventName == other.m_eventName;
-    }
-    inline bool operator!=(const CardMoveReason &other) const
-    {
-        return !((*this) == other);
-    }
-#endif
-};
-
 // Attention!!! DO NOT FORWARD DECLARE SingleCardMoveStruct
 // Always using #include <structs.h>
 struct QSGS_CORE_EXPORT SingleCardMoveStruct
 {
-    /* implicit */ SingleCardMoveStruct(int id = -1, Player *to = nullptr, QSanguosha::Place toPlace = QSanguosha::PlaceHand);
+    /* implicit */ SingleCardMoveStruct(int id = -1); // default constructor. Note that toPlace is set to PlaceDiscardPile!!
+    SingleCardMoveStruct(int id, Player *to, QSanguosha::Place toPlace = QSanguosha::PlaceHand);
     SingleCardMoveStruct(int id, Player *from, Player *to, QSanguosha::Place fromPlace = QSanguosha::PlaceUnknown, QSanguosha::Place toPlace = QSanguosha::PlaceHand);
 
     // Info about Card:
     int card_id;
-    bool broken;
-    bool shown;
-    bool open;
+    bool brokenEquipBeforeMove;
+    bool shownHandcardBeforeMove;
+    bool visibleToAll;
 
     // Info about from:
     Player *from;
     QSanguosha::Place fromPlace;
     QString fromPile;
+    bool isFromLastHandcard;
 
     // Info about to:
+    // toPlace == PlaceDrawPile && toPile == QStringLiteral("bottom") --> move to bottom of Draw Pile
+    // toPlace == PlaceDelayedTrick && toPile == QStringLiteral("bootom") --> move to bottom of delayed trick (may be of no use since delayed tricks are always FILO)
     Player *to;
     QSanguosha::Place toPlace;
     QString toPile;
 
-    // Should origin_***  be preserved? Do they make any sense? In what use case should the original ones be picked instead of the modified ones?
+    // Should origin_*** be preserved? Do they make any sense? In what use case should the original ones be picked instead of the modified ones?
 
 public:
 #ifndef SWIG
+    QJsonValue serializeLegacy(bool visible, QSanguosha::MoveReasonCategory reason, Player *causedBy, Player *aimFor, const QString &via) const;
+    QJsonValue serialize(bool visible) const;
     // satisfy QList
     inline bool operator==(const SingleCardMoveStruct &another) const
     {
@@ -152,14 +128,35 @@ public:
 struct CardsMoveStruct : public QList<SingleCardMoveStruct>
 #else
 using CardsMoveStruct = QList<SingleCardMoveStruct>;
+QSGS_CORE_EXPORT QJsonValue _qsgs_CardsMoveStructSerializeLegacyImpl(const CardsMoveStruct &move, QList<bool> visibles);
+QSGS_CORE_EXPORT QJsonValue _qsgs_CardsMoveStructSerializeImpl(const CardsMoveStruct &move, QList<bool> visibles);
 template<> struct QSGS_CORE_EXPORT QListSpecialMethods<SingleCardMoveStruct>
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     : public QListSpecialMethodsBase<SingleCardMoveStruct>
 #endif
 #endif
 {
-    bool isLastHandCard;
-    CardMoveReason reason;
+    QSanguosha::MoveReasonCategory reason;
+    Player *causedBy; // the cause of the movement (i.e., the invoker of some kinds of skill which cause this movement)
+    Player *aimFor; // the aim of the movement (i.e., the target of some kinds of skill which cause this movement)
+    QString via; // the skill name / card name of which cause this movement
+
+public:
+#ifndef SWIG
+    // can't use dynamic_cast here since Qt 5 QListSpecialMethods has no virtual methods
+    QJsonValue serializeLegacy(QList<bool> visible) const
+    {
+        const CardsMoveStruct *s = static_cast<const CardsMoveStruct *>(this);
+        return _qsgs_CardsMoveStructSerializeLegacyImpl(*s, visible);
+    }
+
+    QJsonValue serialize(QList<bool> visible) const
+    {
+        const CardsMoveStruct *s = static_cast<const CardsMoveStruct *>(this);
+        return _qsgs_CardsMoveStructSerializeImpl(*s, visible);
+    }
+
+#endif
 };
 
 struct QSGS_CORE_EXPORT DeathStruct

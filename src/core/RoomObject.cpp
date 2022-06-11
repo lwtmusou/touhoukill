@@ -3,6 +3,8 @@
 #include "card.h"
 #include "engine.h"
 #include "exppattern.h"
+#include "general.h"
+#include "mode.h"
 #include "player.h"
 #include "serverinfostruct.h"
 #include "skill.h"
@@ -17,11 +19,13 @@ public:
     QString currentCardUsePattern;
     CardUseReason currentCardUseReason;
     QList<Card *> clonedCards;
+    QHash<int, QPair<Player *, Place>> cardMapping;
 
     QList<int> discardPile;
 
     QList<Player *> players;
     Player *current;
+    Player *currentDying; // TODO, may be stack
     QStringList seatInfo;
 
     // special skills
@@ -37,6 +41,7 @@ public:
 
     RoomObjectPrivate()
         : current(nullptr)
+        , currentDying(nullptr)
     {
     }
 };
@@ -136,35 +141,40 @@ void RoomObject::unregisterPlayer(const QString &objectName)
 
 Player *RoomObject::findPlayer(const QString &objectName)
 {
-    foreach (Player *p, d->players)
+    foreach (Player *p, d->players) {
         if (p->objectName() == objectName)
             return p;
+    }
 
     return nullptr;
 }
 
 const Player *RoomObject::findPlayer(const QString &objectName) const
 {
-    foreach (Player *p, d->players)
+    foreach (Player *p, d->players) {
         if (p->objectName() == objectName)
             return p;
+    }
 
     return nullptr;
 }
 
-Player *RoomObject::current()
+Player *RoomObject::currentRound()
 {
     return d->current;
 }
 
-const Player *RoomObject::current() const
+const Player *RoomObject::currentRound() const
 {
     return d->current;
 }
 
-void RoomObject::setCurrent(Player *player)
+void RoomObject::setCurrentRound(Player *player)
 {
-    if (!(d->players.contains(player) || (player == nullptr)))
+    if (player == nullptr)
+        return;
+
+    if (!d->players.contains(player))
         return;
 
     d->current = player;
@@ -176,6 +186,21 @@ void RoomObject::setCurrent(Player *player)
 
         d->players = ps;
     }
+}
+
+Player *RoomObject::currentDying()
+{
+    return d->currentDying;
+}
+
+const Player *RoomObject::currentDying() const
+{
+    return d->currentDying;
+}
+
+void RoomObject::setCurrentDying(Player *player)
+{
+    d->currentDying = player;
 }
 
 Player *RoomObject::findAdjecentPlayer(Player *player, bool next, bool include_dead, bool include_removed)
@@ -212,6 +237,40 @@ const Player *RoomObject::findAdjecentPlayer(const Player *player, bool next, bo
     }
 
     return currentPlayers.at(index);
+}
+
+Player *RoomObject::findLord(const QString &kingdom)
+{
+    if (d->serverInfo.GameMode->category() == ModeHegemony) {
+        foreach (Player *player, d->players) {
+            if (player->kingdom() == kingdom && player->generals().first()->isLord())
+                return player;
+        }
+    } else {
+        foreach (Player *player, d->players) {
+            if (player->isLord())
+                return player;
+        }
+    }
+
+    return nullptr;
+}
+
+const Player *RoomObject::findLord(const QString &kingdom) const
+{
+    if (d->serverInfo.GameMode->category() == ModeHegemony) {
+        foreach (Player *player, d->players) {
+            if (player->kingdom() == kingdom && player->generals().first()->isLord())
+                return player;
+        }
+    } else {
+        foreach (Player *player, d->players) {
+            if (player->isLord())
+                return player;
+        }
+    }
+
+    return nullptr;
 }
 
 void RoomObject::arrangeSeat(const QStringList &_seatInfo)
@@ -303,6 +362,70 @@ CardUseReason RoomObject::currentCardUseReason() const
 void RoomObject::setCurrentCardUseReason(CardUseReason reason)
 {
     d->currentCardUseReason = reason;
+}
+
+Player *RoomObject::cardOwner(int cardId)
+{
+    if (d->cardMapping.contains(cardId))
+        return d->cardMapping.value(cardId).first;
+
+    return nullptr;
+}
+
+const Player *RoomObject::cardOwner(int cardId) const
+{
+    if (d->cardMapping.contains(cardId))
+        return d->cardMapping.value(cardId).first;
+
+    return nullptr;
+}
+
+Place RoomObject::cardPlace(int cardId) const
+{
+    if (d->cardMapping.contains(cardId))
+        return d->cardMapping.value(cardId).second;
+
+    return PlaceUnknown;
+}
+
+void RoomObject::setCardMapping(int cardId, Player *owner, Place place)
+{
+    if (place == PlaceUnknown)
+        d->cardMapping.remove(cardId);
+
+    d->cardMapping[cardId] = qMakePair(owner, place);
+}
+
+Player *RoomObject::cardOwner(Card *card)
+{
+    if (card->id() < 0)
+        return nullptr;
+
+    return cardOwner(card->id());
+}
+
+const Player *RoomObject::cardOwner(const Card *card) const
+{
+    if (card->id() < 0)
+        return nullptr;
+
+    return cardOwner(card->id());
+}
+
+Place RoomObject::cardPlace(const Card *card) const
+{
+    if (card->id() < 0)
+        return PlaceUnknown;
+
+    return cardPlace(card->id());
+}
+
+void RoomObject::setCardMapping(Card *card, Player *owner, Place place)
+{
+    if (card->id() < 0)
+        return;
+
+    return setCardMapping(card->id(), owner, place);
 }
 
 void RoomObject::resetCard(int cardId)

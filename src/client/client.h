@@ -67,9 +67,12 @@ public:
     void requestSurrender();
 
     void disconnectFromHost();
-    void replyToServer(QSanProtocol::CommandType command, const QJsonValue &arg = QJsonValue());
-    void requestServer(QSanProtocol::CommandType command, const QJsonValue &arg = QJsonValue());
-    void notifyServer(QSanProtocol::CommandType command, const QJsonValue &arg = QJsonValue());
+    void replyToRoom(QSanProtocol::CommandType command, const QJsonValue &arg = QJsonValue());
+    void requestRoom(QSanProtocol::CommandType command, const QJsonValue &arg = QJsonValue());
+    void notifyRoom(QSanProtocol::CommandType command, const QJsonValue &arg = QJsonValue());
+    void replyToLobby(QSanProtocol::CommandType command, const QJsonValue &arg = QJsonValue());
+    void requestLobby(QSanProtocol::CommandType command, const QJsonValue &arg = QJsonValue());
+    void notifyLobby(QSanProtocol::CommandType command, const QJsonValue &arg = QJsonValue());
     void onPlayerResponseCard(const Card *card, const QList<const Player *> &targets = QList<const Player *>());
     void setStatus(Status status);
     Status getStatus() const;

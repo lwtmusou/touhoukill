@@ -8,6 +8,47 @@
 
 class Player;
 
+class CardMoveReason
+{
+public:
+    QSanguosha::MoveReasonCategory m_reason;
+    QString m_playerId; // the cause (not the source) of the movement, such as "lusu" when "dimeng", or "zhanghe" when "qiaobian"
+    QString m_targetId; // To keep this structure lightweight, currently this is only used for UI purpose.
+    // It will be set to empty if multiple targets are involved. NEVER use it for trigger condition
+    // judgement!!! It will not accurately reflect the real reason.
+    QString m_skillName; // skill that triggers movement of the cards, such as "longdang", "dimeng"
+    QString m_eventName; // additional arg such as "lebusishu" on top of "S_REASON_JUDGE"
+    QVariant m_extraData; // additional data and will not be parsed to clients
+    QVariant m_provider; // additional data recording who provide this card for otherone to use or response, e.g. guanyu provide a slash for "jijiang"
+
+    /* implicit */ CardMoveReason(QSanguosha::MoveReasonCategory moveReason = QSanguosha::MoveReasonUnknown, const QString &playerId = QString(),
+                                  const QString &skillName = QString(), const QString &eventName = QString())
+        : m_reason(moveReason)
+        , m_playerId(playerId)
+        , m_skillName(skillName)
+        , m_eventName(eventName)
+    {
+    }
+    CardMoveReason(QSanguosha::MoveReasonCategory moveReason, const QString &playerId, const QString &targetId, const QString &skillName, const QString &eventName)
+        : m_reason(moveReason)
+        , m_playerId(playerId)
+        , m_targetId(targetId)
+        , m_skillName(skillName)
+        , m_eventName(eventName)
+    {
+    }
+
+    inline bool operator==(const CardMoveReason &other) const
+    {
+        return m_reason == other.m_reason && m_playerId == other.m_playerId && m_targetId == other.m_targetId && m_skillName == other.m_skillName
+            && m_eventName == other.m_eventName;
+    }
+    inline bool operator!=(const CardMoveReason &other) const
+    {
+        return !((*this) == other);
+    }
+};
+
 struct LegacyCardsMoveStruct
 {
     LegacyCardsMoveStruct();

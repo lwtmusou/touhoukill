@@ -201,7 +201,7 @@ void Replayer::run()
         bool delayed = true;
         Packet packet;
         if (packet.parse(pair.cmd.toLatin1().constData())) {
-            if (nondelays.contains(packet.getCommandType()))
+            if (nondelays.contains(packet.commandType()))
                 delayed = false;
         }
 

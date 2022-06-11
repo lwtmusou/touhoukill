@@ -10,9 +10,8 @@ struct QSGS_CORE_EXPORT ServerInfoStruct
 {
     ServerInfoStruct();
 
-    Q_DECL_DEPRECATED bool parseLegacy(const QString &str);
+    /* Q_DECL_DEPRECATED */ bool parseLegacy(const QString &str);
 
-    bool parse(const QVariant &object);
     bool parse(const QJsonValue &value);
     bool parsed() const;
     bool isMultiGeneralEnabled() const;

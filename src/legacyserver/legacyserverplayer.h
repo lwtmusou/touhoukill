@@ -49,7 +49,6 @@ public:
     QSGS_SOCKET void unicast(const QString &message);
 
     QSGS_LOGIC void drawCard(const Card *card);
-    QSGS_STATE_ROOM LegacyRoom *getRoom() const;
     QSGS_LOGIC void broadcastSkillInvoke(const Card *card) const;
     QSGS_LOGIC void broadcastSkillInvoke(const QString &card_name) const;
     QSGS_STATE_GAME int getRandomHandCardId() const;
@@ -170,9 +169,6 @@ public:
     QSanProtocol::CommandType m_expectedReplyCommand; // Store the command to be sent to the client.
     QJsonValue m_commandArgs; // Store the command args to be sent to the client.
 
-    // static function
-    static bool CompareByActionOrder(LegacyServerPlayer *a, LegacyServerPlayer *b);
-
     QSGS_LOGIC void showGeneral(bool head_general = true, bool trigger_event = true, bool sendLog = true, bool ignore_rule = true);
     QSGS_LOGIC void hideGeneral(bool head_general = true);
     QSGS_LOGIC void removeGeneral(bool head_general = true);
@@ -186,6 +182,8 @@ public:
 
     bool isReady() const;
     void setReady(bool ready);
+
+    QSGS_SOCKET bool reconnect(LegacyClientSocket *socket);
 
 protected:
     //Synchronization helpers

@@ -1522,7 +1522,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
                 break;
         }
         bool paused = pausing_text->isVisible();
-        ClientInstance->notifyServer(S_COMMAND_PAUSE, !paused);
+        ClientInstance->notifyRoom(S_COMMAND_PAUSE, !paused);
         break;
     }
     case Qt::Key_F7: {
@@ -4700,7 +4700,7 @@ void RoomScene::selectGeneral()
 {
     CardItem *item = qobject_cast<CardItem *>(sender());
     if (item != nullptr) {
-        ClientInstance->replyToServer(S_COMMAND_ASK_GENERAL, item->objectName());
+        ClientInstance->replyToRoom(S_COMMAND_ASK_GENERAL, item->objectName());
         foreach (CardItem *item, general_items) {
             item->setFlag(QGraphicsItem::ItemIsFocusable, false);
             item->disconnect(this);
@@ -4881,7 +4881,7 @@ void RoomScene::finishArrange()
     }
     arrange_rects.clear();
 
-    ClientInstance->replyToServer(S_COMMAND_ARRANGE_GENERAL, QSgsJsonUtils::toJsonArray(names));
+    ClientInstance->replyToRoom(S_COMMAND_ARRANGE_GENERAL, QSgsJsonUtils::toJsonArray(names));
     ClientInstance->setStatus(Client::NotActive);
 }
 
