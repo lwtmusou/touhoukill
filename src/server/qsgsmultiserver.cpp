@@ -1,6 +1,5 @@
 
 #include "qsgsmultiserver.h"
-#include "serverconfig.h"
 
 #include <QBuffer>
 #include <QLocalServer>
@@ -54,6 +53,11 @@ public:
     bool isSocketConnected() const override
     {
         return socket->state() == QTcpSocket::ConnectedState;
+    }
+
+    QString peerName() const override
+    {
+        return socket->peerName();
     }
 
     QString peerAddress() const override
@@ -128,6 +132,11 @@ public:
         return socket->state() == QLocalSocket::ConnectedState;
     }
 
+    QString peerName() const override
+    {
+        // append arbitary string after server name, only ensuring this name can be used for identifying this socket
+        return socket->serverName() + QString::number(reinterpret_cast<intptr_t>(this), 16);
+    }
     QString peerAddress() const override
     {
         return socket->serverName();
@@ -201,6 +210,11 @@ public:
         return socket->state() == QProcess::Running;
     }
 
+    QString peerName() const override
+    {
+        // append arbitary string, only ensuring this name can be used for identifying this socket
+        return socket->program() + QString::number(reinterpret_cast<intptr_t>(this), 16);
+    }
     QString peerAddress() const override
     {
         return socket->program();
@@ -268,6 +282,7 @@ public:
     QSgsStdInOutSocket(QObject *parent = nullptr);
     void disconnectFromHost() override;
     bool isSocketConnected() const override;
+    QString peerName() const override;
     QString peerAddress() const override;
     bool canReadLine() const override;
     QByteArray readLine() override;
@@ -348,6 +363,12 @@ void QSgsStdInOutSocket::disconnectFromHost()
 bool QSgsStdInOutSocket::isSocketConnected() const
 {
     return socket->isRunning();
+}
+
+QString QSgsStdInOutSocket::peerName() const
+{
+    // append arbitary string, only ensuring this name can be used for identifying this socket
+    return QStringLiteral("stdio") + QString::number(reinterpret_cast<intptr_t>(this), 16);
 }
 
 QString QSgsStdInOutSocket::peerAddress() const
@@ -464,14 +485,14 @@ QSgsMultiServer::QSgsMultiServer(QObject *parent)
     connect(d->localServer, &QLocalServer::newConnection, d, &QSgsMultiServerPrivate::localServerNewConnection);
 }
 
-void QSgsMultiServer::listenTcp(const QHostAddress &bindIp, quint16 port)
+bool QSgsMultiServer::listenTcp(const QHostAddress &bindIp, quint16 port)
 {
-    d->tcpServer->listen(bindIp, port);
+    return d->tcpServer->listen(bindIp, port);
 }
 
-void QSgsMultiServer::listenLocal(const QString &name)
+bool QSgsMultiServer::listenLocal(const QString &name)
 {
-    d->localServer->listen(name);
+    return d->localServer->listen(name);
 }
 
 QSgsMultiSocket *QSgsMultiServer::createSubProcess(const QString &program, const QStringList &arguments)

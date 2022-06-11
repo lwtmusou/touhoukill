@@ -119,13 +119,18 @@ set(QSanguosha_Socket_MOCS
 )
 
 set (QSanguosha_Server_SRCS
+    src/server/server-main.cpp
     src/server/server.cpp
     src/server/serverconfig.cpp
+    #src/server/room.cpp
 )
 
 set (QSanguosha_Server_MOCS
-    src/server/serverconfig.h
     src/server/qsgsserver.h
+    src/server/serverconfig.h
+    src/server/server.h
+    #src/server/room.h
+    #src/server/roomlogic.h
 )
 
 set (QSanguosha_SRCS
@@ -584,8 +589,6 @@ if (Qt6_FOUND)
     endif()
 
     set_target_properties(QSgsCore PROPERTIES VERSION ${QSanguosha_VERSION})
-
-
 
     add_library(QSgsSocket ${QSanguosha_Socket_SRCS} ${QSanguosha_Socket_MOCS} )
 

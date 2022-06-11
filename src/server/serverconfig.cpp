@@ -1215,6 +1215,34 @@ bool ServerConfigStruct::saveConfigFile()
     return false;
 }
 
+ServerInfoStruct ServerConfigStruct::toServerInfo(const QString &modeName) const
+{
+    const Mode *mode = Mode::findMode(modeName);
+
+    ServerInfoStruct info;
+    if (mode == nullptr)
+        return info;
+
+    info.Name = game.serverName;
+    info.GameMode = mode;
+    info.GameModeStr = modeName;
+    info.GameRuleMode.clear(); // TODO info.GameRuleMode
+    info.OperationTimeout = game.timeout;
+    info.NullificationCountDown = game.nullificationTimeout;
+    info.EnabledPackages = game.enabledPackages;
+    info.RandomSeat = game.shuffleSeat;
+    info.EnableCheat = cheat.enable;
+    info.FreeChoose = cheat.freeChoose;
+    info.GeneralsPerPlayer = game.multiGenerals;
+    info.EnableAI = game.enableAi;
+    info.DisableChat = !game.chat;
+
+    foreach (const auto &pair, role.banLists)
+        info.RoleBanlist.insert(pair.first, static_cast<ServerInfoStruct::RoleBanFor>(pair.second));
+
+    return info;
+}
+
 ServerConfigStruct *serverConfigInstanceFunc()
 {
     return ServerConfigInstance;

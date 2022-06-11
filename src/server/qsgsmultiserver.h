@@ -44,6 +44,7 @@ public:
     virtual void disconnectFromHost() = 0;
 
     virtual bool isSocketConnected() const = 0;
+    virtual QString peerName() const = 0;
     virtual QString peerAddress() const = 0;
 
     virtual bool canReadLine() const = 0;
@@ -76,8 +77,8 @@ public:
     QSgsMultiServer(QObject *parent = nullptr);
     ~QSgsMultiServer() override = default;
 
-    void listenTcp(const QHostAddress &bindIp, quint16 port);
-    void listenLocal(const QString &name);
+    bool listenTcp(const QHostAddress &bindIp, quint16 port);
+    bool listenLocal(const QString &name);
 
     QSgsMultiSocket *createSubProcess(const QString &program, const QStringList &arguments);
 

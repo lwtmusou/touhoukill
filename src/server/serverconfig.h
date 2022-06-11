@@ -2,6 +2,9 @@
 #ifndef TOUHOUKILL_SERVERCONFIG_H
 #define TOUHOUKILL_SERVERCONFIG_H
 
+#include "global.h"
+#include "serverinfostruct.h"
+
 #include <QHostAddress>
 #include <QString>
 
@@ -86,6 +89,8 @@ struct ServerConfigStruct
         HegemonyRewardOptions firstShow, companion, halfHp;
         int careeristKillReward; // 0 for as-usual, > 0 for always draw this number of card
     } hegemony;
+
+    ServerInfoStruct toServerInfo(const QString &mode) const;
 };
 
 extern ServerConfigStruct *serverConfigInstanceFunc();
