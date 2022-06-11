@@ -212,32 +212,37 @@ local verifyExtensionChecksum = function(name, checksums, isBuiltin)
 end
 
 local loadBuiltinExtensions = function()
-    -- TODO: builtin extensions might be accessed via Luac file with checksum check. Disable connection to server if checksum mismatches
+    -- TODO: builtin extensions might be accessed via Luac file with checksum check.
+    -- These checksums and the package versions should be checked with Server
     -- All packages may be loaded via Lua, with a few builtin CardFaces and Skills available in CPP
     -- A builtin extension updater is needed in CPP to provide the needed checksum algorithm, since checksum is calculated in CPP
 
     -- First, we should get names of all builtin extensions from CPP.
     -- There was 'config.lua' who did this thing by just listing names of extensions in a table, but it isn't now.
     -- We should find a place for putting the configurations somewhere.
-    local checksumFailed = false
-    local loadFailed = false
+    local checksumFailed = {}
+    local loadFailed = {}
 
     local def = extensionDefinition("lua/builtinExtension/extensions.json")
 
     for name, value in pairs(def) do
         if not verifyExtensionChecksum(name, value, true) then
             warn("Checksum of " .. name .. " mismatches")
-            checksumFailed = true
+            table.insert(checksumFailed, name)
         end
 
         if not loadExtension(name, true) then
             warn("Builtin extension " .. name .. " has failed to load")
-            loadFailed = true
+            table.insert(loadFailed, name)
         end
     end
 
-    if checksumFailed or loadFailed then
-        -- sgs.BuiltinExtension_disableConnectToServer()
+    if #checksumFailed ~= 0 then
+        -- sgs.BuiltinExtension_warnChecksumMismatch(table.unpack(checksumFailed))
+    end
+
+    if #loadFailed ~= 0 then
+        -- sgs.BuiltinExtension_warnFailedToLoad(table.unpack(loadFailed))
     end
 end
 
