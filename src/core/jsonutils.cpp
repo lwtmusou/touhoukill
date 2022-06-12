@@ -6,8 +6,14 @@
 
 bool QSgsJsonUtils::isStringArray(const QJsonArray &var, int from, int to)
 {
+    if (from < 0)
+        return false;
+    if (var.count() <= to)
+        return false;
     if (to < 0)
         to = var.count();
+    if (from > to)
+        return false;
 
     for (int i = from; i < to; ++i) {
         if (!var.at(i).isString())
@@ -26,8 +32,14 @@ bool QSgsJsonUtils::isStringArray(const QJsonValue &var, int from, int to)
 
 bool QSgsJsonUtils::isNumberArray(const QJsonArray &var, int from, int to)
 {
+    if (from < 0)
+        return false;
+    if (var.count() <= to)
+        return false;
     if (to < 0)
         to = var.count();
+    if (from > to)
+        return false;
 
     for (int i = from; i < to; ++i) {
         if (!var.at(i).isDouble())

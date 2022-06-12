@@ -92,8 +92,8 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_UPDATE_STATE_ITEM] = &Client::updateStateItem;
     m_callbacks[S_COMMAND_AVAILABLE_CARDS] = &Client::setAvailableCards;
 
-    m_callbacks[S_COMMAND_GET_CARD] = &Client::getCards;
-    m_callbacks[S_COMMAND_LOSE_CARD] = &Client::loseCards;
+    m_callbacks[S_COMMAND_GET_CARD_LEGACY] = &Client::getCards;
+    m_callbacks[S_COMMAND_LOSE_CARD_LEGACY] = &Client::loseCards;
     m_callbacks[S_COMMAND_SET_PROPERTY] = &Client::updateProperty;
     m_callbacks[S_COMMAND_RESET_PILE] = &Client::resetPiles;
     m_callbacks[S_COMMAND_UPDATE_PILE] = &Client::setPileNumber;

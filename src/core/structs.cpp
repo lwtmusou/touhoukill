@@ -3,6 +3,7 @@
 #include "card.h"
 #include "exppattern.h"
 #include "global.h"
+#include "jsonutils.h"
 #include "player.h"
 #include "protocol.h"
 #include "skill.h"
@@ -413,6 +414,66 @@ QJsonValue _qsgs_CardsMoveStructSerializeImpl(const CardsMoveStruct &moves, QLis
     ob[QStringLiteral("via")] = moves.via;
 
     return ob;
+}
+
+LogStruct::LogStruct()
+    : from(nullptr)
+{
+}
+
+QJsonValue LogStruct::serialize() const
+{
+    QStringList tos;
+    foreach (Player *player, to) {
+        if (player != nullptr)
+            tos << player->objectName();
+    }
+    QJsonArray log;
+    log << type << (from != nullptr ? from->objectName() : QString()) << tos.join(QStringLiteral("+")) << card_str << arg << arg2;
+    return log;
+}
+
+bool LogStruct::parse(const QJsonValue &value, RoomObject *room)
+{
+    if (!QSgsJsonUtils::isStringArray(value, 0, 6))
+        return false;
+
+    bool ok = false;
+    QStringList sl = QSgsJsonUtils::toStringList(value, &ok);
+    if (!ok)
+        return false;
+
+    type = sl.takeFirst();
+    if (type.isEmpty())
+        return false;
+
+    QString fromName = sl.takeFirst();
+    if (fromName.isEmpty()) {
+        from = nullptr;
+    } else {
+        from = room->findPlayer(fromName);
+        if (from == nullptr)
+            return false;
+    }
+
+    to.clear();
+    QString toNames = sl.takeFirst();
+    if (toNames.isEmpty()) {
+        // do nothing
+    } else {
+        QStringList toNameSplitted = toNames.split(QStringLiteral("+"), Qt::SkipEmptyParts);
+        foreach (const QString &toName, toNameSplitted) {
+            Player *p = room->findPlayer(toName);
+            if (p == nullptr)
+                return false;
+            to << p;
+        }
+    }
+
+    card_str = sl.takeFirst();
+    arg = sl.takeFirst();
+    arg2 = sl.takeFirst();
+    return true;
 }
 
 DeathStruct::DeathStruct(Player *who, DamageStruct *damage)

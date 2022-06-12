@@ -11,20 +11,6 @@ class LegacyGameRule;
 class LegacyRoom;
 class LegacyServerPlayer;
 
-struct LogMessage
-{
-    LogMessage();
-    QString toString() const;
-    QJsonValue toJsonValue() const;
-
-    QString type;
-    Player *from;
-    QList<Player *> to;
-    QString card_str;
-    QString arg;
-    QString arg2;
-};
-
 class RoomThread : public QThread
 {
     Q_OBJECT

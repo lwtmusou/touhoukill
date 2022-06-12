@@ -20,34 +20,6 @@
 using namespace QSgsJsonUtils;
 using namespace QSanProtocol;
 
-LogMessage::LogMessage()
-    : from(nullptr)
-{
-}
-
-QString LogMessage::toString() const
-{
-    QStringList tos;
-    foreach (Player *player, to)
-        if (player != nullptr)
-            tos << player->objectName();
-
-    return QStringLiteral("%1:%2->%3:%4:%5:%6").arg(type, from != nullptr ? from->objectName() : QString(), tos.join(QStringLiteral("+")), card_str, arg, arg2);
-}
-
-QJsonValue LogMessage::toJsonValue() const
-{
-    QStringList tos;
-    foreach (Player *player, to)
-        if (player != nullptr)
-            tos << player->objectName();
-
-    QStringList log;
-    log << type << (from != nullptr ? from->objectName() : QString()) << tos.join(QStringLiteral("+")) << card_str << arg << arg2;
-    QJsonValue json_log = QSgsJsonUtils::toJsonArray(log);
-    return json_log;
-}
-
 RoomThread::RoomThread(LegacyRoom *room)
     : room(room)
     , game_rule(nullptr)

@@ -155,7 +155,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                     QString new_kingdom = room->askForKingdom(player);
                     room->setPlayerProperty(player, "kingdom", new_kingdom);
 
-                    LogMessage log;
+                    LogStruct log;
                     log.type = QStringLiteral("#ChooseKingdom");
                     log.from = player;
                     log.arg = new_kingdom;
@@ -221,7 +221,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                 room->setTag(QStringLiteral("Global_RoundCount"), room->getTag(QStringLiteral("Global_RoundCount")).toInt() + 1);
         }
 
-        LogMessage log;
+        LogStruct log;
         log.type = QStringLiteral("$AppendSeparator");
         room->sendLog(log);
         room->addPlayerMark(player, QStringLiteral("Global_TurnCount"));
@@ -276,7 +276,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
         if (change.to == QSanguosha::PhaseNotActive) {
             foreach (LegacyServerPlayer *p, room->getAllPlayers()) {
                 if (p->mark(QStringLiteral("drank")) > 0) {
-                    LogMessage log;
+                    LogStruct log;
                     log.type = QStringLiteral("#UnsetDrankEndOfTurn");
                     log.from = p;
                     room->sendLog(log);
@@ -284,7 +284,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                     room->setPlayerMark(p, QStringLiteral("drank"), 0);
                 }
                 if (p->mark(QStringLiteral("magic_drank")) > 0) {
-                    LogMessage log;
+                    LogStruct log;
                     log.type = QStringLiteral("#UnsetDrankEndOfTurn");
                     log.from = p;
                     room->sendLog(log);
@@ -510,7 +510,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
     case QSanguosha::ConfirmDamage: {
         DamageStruct damage = data.value<DamageStruct>();
         if ((damage.card != nullptr) && damage.to->mark(QStringLiteral("SlashIsDrank")) > 0) {
-            LogMessage log;
+            LogStruct log;
             log.type = QStringLiteral("#AnalepticBuff");
             log.from = damage.from;
             log.to << damage.to;
@@ -560,7 +560,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                 foreach (LegacyServerPlayer *chained_player, chained_players) {
                     if (chained_player->isChained()) {
                         room->getThread()->delay();
-                        LogMessage log;
+                        LogStruct log;
                         log.type = QStringLiteral("#IronChainDamage");
                         log.from = chained_player;
                         room->sendLog(log);
@@ -592,7 +592,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
         if (data.canConvert<CardEffectStruct>()) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if (!effect.card->face()->isKindOf(QStringLiteral("Slash")) && effect.nullified) {
-                LogMessage log;
+                LogStruct log;
                 log.type = QStringLiteral("#CardNullified");
                 log.from = qobject_cast<LegacyServerPlayer *>(effect.to);
                 log.arg = effect.card->faceName();
@@ -723,7 +723,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
     case QSanguosha::SlashEffected: {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if (effect.nullified) {
-            LogMessage log;
+            LogStruct log;
             log.type = QStringLiteral("#CardNullified");
             log.from = effect.to;
             log.arg = effect.slash->faceName();
@@ -1042,7 +1042,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
 
         JudgeStruct *judge = data.value<JudgeStruct *>();
 
-        LogMessage log;
+        LogStruct log;
         log.type = QStringLiteral("$InitialJudge");
         log.from = judge->who;
         log.card_str = QString::number(card_id);
@@ -1057,7 +1057,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
     case QSanguosha::FinishRetrial: {
         JudgeStruct *judge = data.value<JudgeStruct *>();
 
-        LogMessage log;
+        LogStruct log;
         log.type = QStringLiteral("$JudgeResult");
         log.from = judge->who;
         log.card_str = QString::number(judge->card()->effectiveId());
@@ -1119,7 +1119,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                     room->attachSkillToPlayer(player, attachName);
             } else if (Config.HegemonyFirstShowReward == QStringLiteral("Instant")) {
                 if (player->askForSkillInvoke(QStringLiteral("FirstShowReward"))) {
-                    LogMessage log;
+                    LogStruct log;
                     log.type = QStringLiteral("#FirstShowReward");
                     log.from = player;
                     room->sendLog(log);
@@ -1144,7 +1144,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                     if (player->isWounded())
                         choices << QStringLiteral("recover");
                     choices << QStringLiteral("draw") << QStringLiteral("cancel");
-                    LogMessage log;
+                    LogStruct log;
                     log.type = QStringLiteral("#CompanionEffect");
                     log.from = player;
                     room->sendLog(log);
@@ -1169,7 +1169,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                     if ((player != nullptr) && !player->hasValidSkill(attachName))
                         room->attachSkillToPlayer(player, attachName);
                 } else {
-                    LogMessage log;
+                    LogStruct log;
                     log.type = QStringLiteral("#HalfMaxHpLeft");
                     log.from = player;
                     room->sendLog(log);
@@ -1239,7 +1239,7 @@ void LegacyGameRule::changeGeneral1v1(LegacyRoom *room, LegacyServerPlayer *play
         QString new_kingdom = room->askForKingdom(player);
         room->setPlayerProperty(player, "kingdom", new_kingdom);
 
-        LogMessage log;
+        LogStruct log;
         log.type = QStringLiteral("#ChooseKingdom");
         log.from = player;
         log.arg = new_kingdom;
@@ -1301,7 +1301,7 @@ void LegacyGameRule::changeGeneralXMode(LegacyRoom *room, LegacyServerPlayer *pl
         QString new_kingdom = room->askForKingdom(player);
         room->setPlayerProperty(player, "kingdom", new_kingdom);
 
-        LogMessage log;
+        LogStruct log;
         log.type = QStringLiteral("#ChooseKingdom");
         log.from = player;
         log.arg = new_kingdom;

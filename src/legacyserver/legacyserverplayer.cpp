@@ -436,13 +436,13 @@ bool LegacyServerPlayer::pindian(LegacyServerPlayer *target, const QString &reas
 {
     room->tryPause();
 
-    LogMessage log;
+    LogStruct log;
     log.type = QStringLiteral("#Pindian");
     log.from = this;
     log.to << target;
     room->sendLog(log);
 
-    LogMessage log2;
+    LogStruct log2;
     bool card1_result_logged = false;
 
     const Card *card2 = nullptr;
@@ -580,7 +580,7 @@ void LegacyServerPlayer::turnOver()
     setFaceUp(!faceUp());
     room->broadcastProperty(this, "faceup");
 
-    LogMessage log;
+    LogStruct log;
     log.type = QStringLiteral("#TurnOver");
     log.from = this;
     log.arg = faceUp() ? QStringLiteral("face_up") : QStringLiteral("face_down");
@@ -724,7 +724,7 @@ void LegacyServerPlayer::skip(QSanguosha::Phase phase, bool isCost, bool sendLog
     int index = static_cast<int>(phase);
 
     if (sendLog) {
-        LogMessage log;
+        LogStruct log;
         log.type = QStringLiteral("#SkipPhase");
         log.from = this;
         log.arg = phase_strings.at(index);
@@ -798,7 +798,7 @@ void LegacyServerPlayer::gainMark(const QString &m, int n)
 
     int value = mark(m) + n;
 
-    LogMessage log;
+    LogStruct log;
     log.type = QStringLiteral("#GetMark");
     log.from = this;
     log.arg = m;
@@ -841,7 +841,7 @@ void LegacyServerPlayer::loseMark(const QString &m, int n)
         n = mark(m);
     }
 
-    LogMessage log;
+    LogStruct log;
     log.type = QStringLiteral("#LoseMark");
     log.from = this;
     log.arg = m;
@@ -1634,7 +1634,7 @@ void LegacyServerPlayer::showGeneral(bool head_general, bool trigger_event, bool
     }
 
     if (sendLog) {
-        LogMessage log;
+        LogStruct log;
         log.type = QStringLiteral("#HegemonyReveal");
         log.from = this;
         log.arg = generalName();
@@ -1736,7 +1736,7 @@ void LegacyServerPlayer::hideGeneral(bool head_general)
         }
     }
 
-    LogMessage log;
+    LogStruct log;
     log.type = QStringLiteral("#BasaraConceal");
     log.from = this;
     log.arg = generalName();
@@ -1828,7 +1828,7 @@ void LegacyServerPlayer::removeGeneral(bool head_general)
         }
     }
 
-    LogMessage log;
+    LogStruct log;
     log.type = QStringLiteral("#BasaraRemove");
     log.from = this;
     log.arg = head_general ? QStringLiteral("head_general") : QStringLiteral("deputy_general");
@@ -1944,12 +1944,12 @@ void LegacyServerPlayer::summonFriends(const QString &type)
 
     if (room->alivePlayerCount() < 4)
         return;
-    LogMessage log;
+    LogStruct log;
     log.type = QStringLiteral("#InvokeSkill");
     log.from = this;
     log.arg = QStringLiteral("GameRule_AskForArraySummon");
     room->sendLog(log);
-    LogMessage log2;
+    LogStruct log2;
     log2.type = QStringLiteral("#SummonType");
     log2.arg = (type == QStringLiteral("Siege")) ? QStringLiteral("summon_type_siege") : QStringLiteral("summon_type_formation");
     room->sendLog(log2);
@@ -1963,7 +1963,7 @@ void LegacyServerPlayer::summonFriends(const QString &type)
             if (!target->haveShownOneGeneral()) {
                 QString prompt = target->willBeFriendWith(this) ? QStringLiteral("SiegeSummon") : QStringLiteral("SiegeSummon!");
                 bool success = room->askForSkillInvoke(target, prompt);
-                LogMessage log;
+                LogStruct log;
                 log.type = QStringLiteral("#SummonResult");
                 log.from = target;
                 log.arg = success ? QStringLiteral("summon_success") : QStringLiteral("summon_failed");
@@ -1979,7 +1979,7 @@ void LegacyServerPlayer::summonFriends(const QString &type)
             if (!target->haveShownOneGeneral()) {
                 QString prompt = target->willBeFriendWith(this) ? QStringLiteral("SiegeSummon") : QStringLiteral("SiegeSummon!");
                 bool success = room->askForSkillInvoke(target, prompt);
-                LogMessage log;
+                LogStruct log;
                 log.type = QStringLiteral("#SummonResult");
                 log.from = target;
                 log.arg = success ? QStringLiteral("summon_success") : QStringLiteral("summon_failed");
@@ -2004,7 +2004,7 @@ void LegacyServerPlayer::summonFriends(const QString &type)
             else if (!target->haveShownOneGeneral()) {
                 QString prompt = target->willBeFriendWith(this) ? QStringLiteral("FormationSummon") : QStringLiteral("FormationSummon!");
                 bool success = room->askForSkillInvoke(target, prompt);
-                LogMessage log;
+                LogStruct log;
                 log.type = QStringLiteral("#SummonResult");
                 log.from = target;
                 log.arg = success ? QStringLiteral("summon_success") : QStringLiteral("summon_failed");
@@ -2033,7 +2033,7 @@ void LegacyServerPlayer::summonFriends(const QString &type)
                 if (!target->haveShownOneGeneral()) {
                     QString prompt = target->willBeFriendWith(this) ? QStringLiteral("FormationSummon") : QStringLiteral("FormationSummon!");
                     bool success = room->askForSkillInvoke(target, prompt);
-                    LogMessage log;
+                    LogStruct log;
                     log.type = QStringLiteral("#SummonResult");
                     log.from = target;
                     log.arg = success ? QStringLiteral("summon_success") : QStringLiteral("summon_failed");

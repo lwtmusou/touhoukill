@@ -217,7 +217,7 @@ void LegacyRoom::enterDying(LegacyServerPlayer *player, DamageStruct *reason)
             if (player->hp() >= player->dyingFactor()) {
                 setPlayerFlag(player, QStringLiteral("-Global_Dying"));
             } else {
-                LogMessage log;
+                LogStruct log;
                 log.type = QStringLiteral("#AskForPeaches");
                 log.from = player;
                 // log.to = getAllPlayers();
@@ -381,7 +381,7 @@ void LegacyRoom::killPlayer(LegacyServerPlayer *victim, DamageStruct *reason)
 
     updateStateItem();
 
-    LogMessage log;
+    LogStruct log;
     log.type = killer != nullptr ? (killer == victim ? QStringLiteral("#Suicide") : QStringLiteral("#Murder")) : QStringLiteral("#Contingency");
     log.to << victim;
     log.arg = victim->roleString();
@@ -599,7 +599,7 @@ void LegacyRoom::detachSkillFromPlayer(LegacyServerPlayer *player, const QString
 
         if (!is_equip) {
             if (sendlog) {
-                LogMessage log;
+                LogStruct log;
                 log.type = QStringLiteral("#LoseSkill");
                 log.from = player;
                 log.arg = skill_name;
@@ -660,7 +660,7 @@ void LegacyRoom::handleAcquireDetachSkills(LegacyServerPlayer *player, const QSt
                 args << QSanProtocol::S_GAME_EVENT_DETACH_SKILL << player->objectName() << actual_skill << head;
                 doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
-                LogMessage log;
+                LogStruct log;
                 log.type = QStringLiteral("#LoseSkill");
                 log.from = player;
                 log.arg = actual_skill;
@@ -1100,7 +1100,7 @@ bool LegacyRoom::isCanceled(const CardEffectStruct &effect)
     QStringList targets = getTag(effect.card->toString() + QStringLiteral("HegNullificationTargets")).toStringList();
     if (!targets.isEmpty()) {
         if (targets.contains(effect.to->objectName())) {
-            LogMessage log;
+            LogStruct log;
             log.type = QStringLiteral("#HegNullificationEffect");
             log.from = effect.from;
             log.to << effect.to;
@@ -1323,20 +1323,20 @@ bool LegacyRoom::_askForNullification(const Card *trick, LegacyServerPlayer *fro
     }
 
     if (!isHegNullification) {
-        LogMessage log;
+        LogStruct log;
         log.type = QStringLiteral("#NullificationDetails");
         log.from = from;
         log.to << to;
         log.arg = trick_name;
         sendLog(log);
     } else {
-        LogMessage log;
+        LogStruct log;
         log.type = QStringLiteral("#HegNullificationDetails");
         log.from = from;
         log.to << to;
         log.arg = trick_name;
         sendLog(log);
-        LogMessage log2;
+        LogStruct log2;
         log2.type = QStringLiteral("#HegNullificationSelection");
         log2.from = repliedPlayer;
         log2.arg = QStringLiteral("hegnul_") + heg_nullification_selection;
@@ -1428,7 +1428,7 @@ int LegacyRoom::askForCardChosen(LegacyServerPlayer *player, LegacyServerPlayer 
         if (!targets.isEmpty()) {
             LegacyServerPlayer *lord = askForPlayerChosen(player, targets, QStringLiteral("youtong"), QStringLiteral("@youtong:") + who->objectName(), true);
             if (lord != nullptr) {
-                LogMessage log;
+                LogStruct log;
                 log.type = QStringLiteral("#InvokeOthersSkill");
                 log.from = player;
                 log.to << lord;
@@ -1637,7 +1637,7 @@ const Card *LegacyRoom::askForCard(LegacyServerPlayer *player, const QString &pa
         }
 
         if ((method == QSanguosha::MethodUse || method == QSanguosha::MethodResponse) && !isRetrial) {
-            LogMessage log;
+            LogStruct log;
             log.card_str = card_->toString();
             log.from = player;
             log.type = QStringLiteral("#%1").arg(card_->faceName());
@@ -1646,7 +1646,7 @@ const Card *LegacyRoom::askForCard(LegacyServerPlayer *player, const QString &pa
             sendLog(log);
             player->broadcastSkillInvoke(card_);
         } else if (method == QSanguosha::MethodDiscard) {
-            LogMessage log;
+            LogStruct log;
             log.type = skill_name.isEmpty() ? QStringLiteral("$DiscardCard") : QStringLiteral("$DiscardCardWithSkill");
             log.from = player;
             QList<int> to_discard;
@@ -2525,7 +2525,7 @@ void LegacyRoom::reverseFor3v3(const Card *card, LegacyServerPlayer *player, QLi
     } else
         isClockwise = true;
 
-    LogMessage log;
+    LogStruct log;
     log.type = QStringLiteral("#TrickDirection");
     log.from = player;
     log.arg = isClockwise ? QStringLiteral("cw") : QStringLiteral("ccw");
@@ -3878,7 +3878,7 @@ void LegacyRoom::loseHp(LegacyServerPlayer *victim, int lose)
     if (l.num <= 0)
         return;
 
-    LogMessage log;
+    LogStruct log;
     log.type = QStringLiteral("#LoseHp");
     log.from = victim;
     log.arg = QString::number(l.num);
@@ -3909,7 +3909,7 @@ void LegacyRoom::loseMaxHp(LegacyServerPlayer *victim, int lose)
     broadcastProperty(victim, "maxhp");
     broadcastProperty(victim, "hp");
 
-    LogMessage log;
+    LogStruct log;
     log.type = QStringLiteral("#LoseMaxHp");
     log.from = victim;
     log.arg = QString::number(lose);
@@ -3920,7 +3920,7 @@ void LegacyRoom::loseMaxHp(LegacyServerPlayer *victim, int lose)
     arg << -lose;
     doBroadcastNotify(S_COMMAND_CHANGE_MAXHP, arg);
 
-    LogMessage log2;
+    LogStruct log2;
     log2.type = QStringLiteral("#GetHp");
     log2.from = victim;
     log2.arg = QString::number(victim->hp());
@@ -3956,13 +3956,13 @@ bool LegacyRoom::changeMaxHpForAwakenSkill(LegacyServerPlayer *player, int magni
     } else {
         setPlayerProperty(player, "maxhp", player->maxHp() + magnitude);
 
-        LogMessage log;
+        LogStruct log;
         log.type = QStringLiteral("#GainMaxHp");
         log.from = player;
         log.arg = QString::number(magnitude);
         sendLog(log);
 
-        LogMessage log2;
+        LogStruct log2;
         log2.type = QStringLiteral("#GetHp");
         log2.from = player;
         log2.arg = QString::number(player->hp());
@@ -4076,7 +4076,7 @@ void LegacyRoom::damage(const DamageStruct &data)
     if (damage_data.to == nullptr || damage_data.to->isDead())
         return;
     if (damage_data.to->hasValidSkill(QStringLiteral("huanmeng"))) {
-        LogMessage log2;
+        LogStruct log2;
         log2.type = QStringLiteral("#TriggerSkill");
         log2.from = damage_data.to;
         log2.arg = QStringLiteral("huanmeng");
@@ -4172,7 +4172,7 @@ void LegacyRoom::damage(const DamageStruct &data)
 
 void LegacyRoom::sendDamageLog(const DamageStruct &data)
 {
-    LogMessage log;
+    LogStruct log;
 
     if (data.from != nullptr) {
         log.type = QStringLiteral("#Damage");
@@ -4493,7 +4493,7 @@ void LegacyRoom::throwCard(const Card *card, const CardMoveReason &reason, Legac
         to_discard << card->effectiveId();
 
     if (notifyLog) {
-        LogMessage log;
+        LogStruct log;
         if (who != nullptr) {
             if (thrower == nullptr) {
                 log.type = QStringLiteral("$DiscardCard");
@@ -5068,7 +5068,7 @@ bool LegacyRoom::notifyMoveCards(bool isLostPhase, QList<LegacyCardsMoveStruct> 
 
             arg << cards_moves[i].toVariant();
         }
-        doNotify(player, isLostPhase ? S_COMMAND_LOSE_CARD : S_COMMAND_GET_CARD, arg);
+        doNotify(player, isLostPhase ? S_COMMAND_LOSE_CARD_LEGACY : S_COMMAND_GET_CARD_LEGACY, arg);
     }
     return true;
 }
@@ -5318,7 +5318,7 @@ void LegacyRoom::filterCards(LegacyServerPlayer *player, QList<const Card *> car
         else {
             broadcastUpdateCard(getPlayers(), cardId, cards[i]);
             if (place == QSanguosha::PlaceJudge) {
-                LogMessage log;
+                LogStruct log;
                 log.type = QStringLiteral("#FilterJudge");
                 log.arg = cards[i]->skillName();
                 log.from = player;
@@ -5488,7 +5488,7 @@ void LegacyRoom::askForLuckCard()
         if (used.isEmpty())
             return;
 
-        LogMessage log;
+        LogStruct log;
         log.type = QStringLiteral("#UseLuckCard");
         foreach (LegacyServerPlayer *player, used) {
             log.from = player;
@@ -5747,7 +5747,7 @@ void LegacyRoom::doJileiShow(LegacyServerPlayer *player, QList<int> jilei_ids)
             broadcastResetCard(getOtherPlayers(player), cardId);
     }
 
-    LogMessage log;
+    LogStruct log;
     log.type = QStringLiteral("$JileiShowAllCards");
     log.from = player;
 
@@ -5906,7 +5906,7 @@ void LegacyRoom::askForGuanxing(LegacyServerPlayer *zhuge, const QList<int> &car
     }
 
     if (guanxing_type == GuanxingBothSides) {
-        LogMessage log;
+        LogStruct log;
         log.type = QStringLiteral("#GuanxingResult");
         if (skillName == QStringLiteral("fengshui"))
             log.type = QStringLiteral("#fengshuiResult");
@@ -5919,18 +5919,18 @@ void LegacyRoom::askForGuanxing(LegacyServerPlayer *zhuge, const QList<int> &car
     }
 
     if (!top_cards.isEmpty()) {
-        LogMessage log;
+        LogStruct log;
         log.type = QStringLiteral("$GuanxingTop");
         log.from = zhuge;
         log.card_str = IntList2StringList(top_cards).join(QStringLiteral("+"));
-        doNotify(zhuge, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+        doNotify(zhuge, QSanProtocol::S_COMMAND_LOG_SKILL, log.serialize());
     }
     if (!bottom_cards.isEmpty()) {
-        LogMessage log;
+        LogStruct log;
         log.type = QStringLiteral("$GuanxingBottom");
         log.from = zhuge;
         log.card_str = IntList2StringList(bottom_cards).join(QStringLiteral("+"));
-        doNotify(zhuge, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+        doNotify(zhuge, QSanProtocol::S_COMMAND_LOG_SKILL, log.serialize());
     }
 
     QListIterator<int> i(top_cards);
@@ -5953,12 +5953,12 @@ int LegacyRoom::doGongxin(LegacyServerPlayer *shenlvmeng, LegacyServerPlayer *ta
     tryPause();
     notifyMoveFocus(shenlvmeng, S_COMMAND_SKILL_GONGXIN);
 
-    LogMessage log;
+    LogStruct log;
     log.type = QStringLiteral("$ViewAllCards");
     log.from = shenlvmeng;
     log.to << target;
     log.card_str = IntList2StringList(target->handcards().values()).join(QStringLiteral("+"));
-    doNotify(shenlvmeng, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+    doNotify(shenlvmeng, QSanProtocol::S_COMMAND_LOG_SKILL, log.serialize());
 
     ChoiceMadeStruct s;
     s.player = shenlvmeng;
@@ -6152,7 +6152,7 @@ LegacyServerPlayer *LegacyRoom::askForPlayerChosen(LegacyServerPlayer *player, c
             thread->trigger(QSanguosha::ChoiceMade, decisionData);
 
             doAnimate(S_ANIMATE_INDICATE, player->objectName(), choice->objectName());
-            LogMessage log;
+            LogStruct log;
             log.type = QStringLiteral("#ChoosePlayerWithSkill");
             log.from = player;
             log.to << choice;
@@ -6261,7 +6261,7 @@ bool LegacyRoom::makeCheat(LegacyServerPlayer *player)
             return false;
         int card_id = arg[1].toInt();
 
-        LogMessage log;
+        LogStruct log;
         log.type = QStringLiteral("$CheatCard");
         log.from = player;
         log.card_str = QString::number(card_id);
@@ -6412,7 +6412,7 @@ void LegacyRoom::takeAG(LegacyServerPlayer *player, int card_id, bool move_cards
         doBroadcastNotify(to_notify, S_COMMAND_TAKE_AMAZING_GRACE, arg);
         if (!move_cards)
             return;
-        LogMessage log;
+        LogStruct log;
         log.type = QStringLiteral("$EnterDiscardPile");
         log.card_str = QString::number(card_id);
         sendLog(log);
@@ -6458,12 +6458,12 @@ QList<LegacyServerPlayer *> LegacyRoom::getLieges(const QString &kingdom, Legacy
     return lieges;
 }
 
-void LegacyRoom::sendLog(const LogMessage &log)
+void LegacyRoom::sendLog(const LogStruct &log)
 {
     if (log.type.isEmpty())
         return;
 
-    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_SKILL, log.serialize());
 }
 
 void LegacyRoom::showCard(LegacyServerPlayer *player, int card_id, LegacyServerPlayer *only_viewer)
@@ -6527,12 +6527,12 @@ void LegacyRoom::showAllCards(LegacyServerPlayer *player, LegacyServerPlayer *to
     }
 
     if (isUnicast) {
-        LogMessage log;
+        LogStruct log;
         log.type = QStringLiteral("$ViewAllCards");
         log.from = to;
         log.to << player;
         log.card_str = IntList2StringList(player->handcards().values()).join(QStringLiteral("+"));
-        doNotify(to, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+        doNotify(to, QSanProtocol::S_COMMAND_LOG_SKILL, log.serialize());
 
         ChoiceMadeStruct s;
         s.player = to;
@@ -6543,7 +6543,7 @@ void LegacyRoom::showAllCards(LegacyServerPlayer *player, LegacyServerPlayer *to
 
         doNotify(to, S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);
     } else {
-        LogMessage log;
+        LogStruct log;
         log.type = QStringLiteral("$ShowAllCards");
         log.from = player;
         foreach (int card_id, player->handcards())
@@ -6581,7 +6581,7 @@ void LegacyRoom::retrial(const Card *card_, LegacyServerPlayer *player, JudgeStr
                                 reason);
     move2.card_ids.append(oldJudge->effectiveId());
 
-    LogMessage log;
+    LogStruct log;
     log.type = QStringLiteral("$ChangedJudge");
     log.arg = skill_name;
     log.from = player;
@@ -6705,7 +6705,7 @@ int LegacyRoom::askForRende(LegacyServerPlayer *liubei, QList<int> &cards, const
     thread->trigger(QSanguosha::ChoiceMade, decisionData);
 
     if (notify_skill) {
-        LogMessage log;
+        LogStruct log;
         log.type = QStringLiteral("#InvokeSkill");
         log.from = liubei;
         log.arg = skill_name;
@@ -6798,7 +6798,7 @@ bool LegacyRoom::askForYiji(LegacyServerPlayer *guojia, QList<int> &cards, const
     thread->trigger(QSanguosha::ChoiceMade, decisionData);
 
     if (notify_skill) {
-        LogMessage log;
+        LogStruct log;
         log.type = QStringLiteral("#InvokeSkill");
         log.from = guojia;
         log.arg = skill_name;
@@ -6866,7 +6866,7 @@ void LegacyRoom::networkDelayTestCommand(LegacyServerPlayer *player, const QJson
 
 void LegacyRoom::touhouLogmessage(const QString &logtype, LegacyServerPlayer *logfrom, const QString &logarg, const QList<LegacyServerPlayer *> &logto, const QString &logarg2)
 {
-    LogMessage alog;
+    LogStruct alog;
 
     alog.type = logtype;
     alog.from = logfrom;
@@ -7076,25 +7076,4 @@ void LegacyRoom::transformGeneral(LegacyServerPlayer *player, const QString &gen
     }
 
     player->showGeneral(head != 0);
-}
-
-// deprecated structs
-SlashEffectStruct::SlashEffectStruct()
-    : jink_num(1)
-    , slash(nullptr)
-    , jink(nullptr)
-    , from(nullptr)
-    , to(nullptr)
-    , drank(0)
-    , nature(QSanguosha::DamageNormal)
-    , multiple(false)
-    , nullified(false)
-    , canceled(false)
-    , effectValue(QList<int>() << 0 << 0)
-{
-}
-
-JinkEffectStruct::JinkEffectStruct()
-    : jink(nullptr)
-{
 }

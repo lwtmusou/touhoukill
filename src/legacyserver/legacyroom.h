@@ -18,7 +18,7 @@ class TrickCard;
 struct ServerInfoStruct;
 
 struct lua_State;
-struct LogMessage;
+struct LogStruct;
 
 #define QSGS_STATE_ROOM
 #define QSGS_STATE_GAME
@@ -146,7 +146,7 @@ public:
                            QSanguosha::Place fromPlace = QSanguosha::PlaceDrawPile);
     QSGS_LOGIC void clearAG(LegacyServerPlayer *player = nullptr);
     QSGS_LOGIC void provide(const Card *card, LegacyServerPlayer *who = nullptr);
-    QSGS_LOGIC void sendLog(const LogMessage &log);
+    QSGS_LOGIC void sendLog(const LogStruct &log);
     QSGS_LOGIC void showCard(LegacyServerPlayer *player, int card_id, LegacyServerPlayer *only_viewer = nullptr);
     QSGS_LOGIC void showAllCards(LegacyServerPlayer *player, LegacyServerPlayer *to = nullptr);
     QSGS_LOGIC void retrial(const Card *card, LegacyServerPlayer *player, JudgeStruct *judge, const QString &skill_name, bool exchange = false);

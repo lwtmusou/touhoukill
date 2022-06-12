@@ -144,6 +144,7 @@ template<> struct QSGS_CORE_EXPORT QListSpecialMethods<SingleCardMoveStruct>
 public:
 #ifndef SWIG
     // can't use dynamic_cast here since Qt 5 QListSpecialMethods has no virtual methods
+    // But since we ensure that this instance must be CardsMoveStruct, this may not be a problem
     QJsonValue serializeLegacy(QList<bool> visible) const
     {
         const CardsMoveStruct *s = static_cast<const CardsMoveStruct *>(this);
@@ -157,6 +158,20 @@ public:
     }
 
 #endif
+};
+
+struct QSGS_CORE_EXPORT LogStruct
+{
+    LogStruct();
+    QJsonValue serialize() const;
+    bool parse(const QJsonValue &value, RoomObject *room);
+
+    QString type;
+    Player *from;
+    QList<Player *> to;
+    QString card_str;
+    QString arg;
+    QString arg2;
 };
 
 struct QSGS_CORE_EXPORT DeathStruct

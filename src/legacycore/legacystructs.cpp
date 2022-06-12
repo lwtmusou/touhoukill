@@ -13,6 +13,26 @@
 
 using namespace QSanguosha;
 
+SlashEffectStruct::SlashEffectStruct()
+    : jink_num(1)
+    , slash(nullptr)
+    , jink(nullptr)
+    , from(nullptr)
+    , to(nullptr)
+    , drank(0)
+    , nature(QSanguosha::DamageNormal)
+    , multiple(false)
+    , nullified(false)
+    , canceled(false)
+    , effectValue(QList<int>() << 0 << 0)
+{
+}
+
+JinkEffectStruct::JinkEffectStruct()
+    : jink(nullptr)
+{
+}
+
 LegacyCardsMoveStruct::LegacyCardsMoveStruct()
 {
     from_place = PlaceUnknown;
