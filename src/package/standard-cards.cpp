@@ -1370,7 +1370,7 @@ void Collateral::onEffect(const CardEffectStruct &effect) const
         WrappedCard *weapon = killer->getWeapon();
         prompt = QString("collateral-slash:%1:%2").arg(v->objectName()).arg(source->objectName());
         bool doSlash = doCollateral(room, killer, v, prompt);
-        if (!doSlash && (killer->getWeapon() != nullptr))
+        if (!doSlash && source->isAlive() && (killer->getWeapon() != nullptr))
             source->obtainCard(weapon);
         if (!doSlash)
             break;
