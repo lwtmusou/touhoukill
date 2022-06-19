@@ -6576,8 +6576,16 @@ public:
     {
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
             return false;
+
+        QSet<Card::CardType> typeIds;
+        QList<int> xiuyePile = player->getPile("xiuye");
+        foreach (int id, xiuyePile) {
+            const Card *xiuyecard = Sanguosha->getCard(id);
+            typeIds << xiuyecard->getTypeId();
+        }
+
         foreach (const Card *c, ClientInstance->discarded_list) {
-            if (c->getSuit() == Card::Club && (c->getTypeId() == Card::TypeBasic || c->isNDTrick())) {
+            if (c->getSuit() == Card::Club && (c->getTypeId() == Card::TypeBasic || c->isNDTrick()) && !typeIds.contains(c->getTypeId())) {
                 const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
                 if (cardPattern != nullptr && cardPattern->match(player, c))
                     return true;
@@ -6586,10 +6594,17 @@ public:
         return false;
     }
 
-    bool isEnabledAtPlay(const Player *) const override
+    bool isEnabledAtPlay(const Player *player) const override
     {
+        QSet<Card::CardType> typeIds;
+        QList<int> xiuyePile = player->getPile("xiuye");
+        foreach (int id, xiuyePile) {
+            const Card *xiuyecard = Sanguosha->getCard(id);
+            typeIds << xiuyecard->getTypeId();
+        }
+
         foreach (const Card *c, ClientInstance->discarded_list) {
-            if (c->getSuit() == Card::Club && (c->getTypeId() == Card::TypeBasic || c->isNDTrick()))
+            if (c->getSuit() == Card::Club && (c->getTypeId() == Card::TypeBasic || c->isNDTrick()) && !typeIds.contains(c->getTypeId()))
                 return true;
         }
         return false;
@@ -6597,6 +6612,13 @@ public:
 
     bool viewFilter(const Card *to_select) const override
     {
+        QList<int> xiuyePile = Self->getPile("xiuye");
+        foreach (int id, xiuyePile) {
+            const Card *xiuyecard = Sanguosha->getCard(id);
+            if (xiuyecard->getTypeId() == to_select->getTypeId())
+                return false;
+        }
+
         if (to_select->getSuit() != Card::Club || !ClientInstance->discarded_list.contains(to_select))
             return false;
         if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) // in play!!
@@ -6620,10 +6642,17 @@ public:
 
     bool isEnabledAtNullification(const ServerPlayer *player) const override
     {
+        QSet<Card::CardType> typeIds;
+        QList<int> xiuyePile = player->getPile("xiuye");
+        foreach (int id, xiuyePile) {
+            const Card *xiuyecard = Sanguosha->getCard(id);
+            typeIds << xiuyecard->getTypeId();
+        }
+
         QList<int> discardpile = player->getRoom()->getDiscardPile();
         foreach (int id, discardpile) {
             Card *c = Sanguosha->getCard(id);
-            if (c->getSuit() == Card::Club && c->isKindOf("Nullification"))
+            if (c->getSuit() == Card::Club && c->isKindOf("Nullification") && !typeIds.contains(c->getTypeId()))
                 return true;
         }
         return false;
@@ -6662,16 +6691,11 @@ public:
 
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, nullptr, true);
             }
-        } else if (e == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive && (change.player != nullptr) && !change.player->getPile("xiuye").isEmpty() && change.player->hasSkill(this))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, nullptr, true);
         }
-
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent e, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         if (e == CardFinished) {
             CardUseStruct use = data.value<CardUseStruct>();
@@ -6679,6 +6703,56 @@ public:
             QList<int> l = VariantList2IntList(use.from->tag.value("xiuye", QVariantList()).toList());
             l.removeAll(use.card->getId());
             use.from->tag["xiuye"] = IntList2VariantList(l);
+        }
+        return false;
+    }
+};
+
+class Kuangji : public TriggerSkill
+{
+public:
+    Kuangji()
+        : TriggerSkill("kuangji")
+    {
+        events << Damaged << CardFinished;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
+    {
+        if (triggerEvent == Damaged) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.to->isAlive() && damage.to->hasSkill(this))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
+        } else if (triggerEvent == CardFinished) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.m_isHandcard && use.from != nullptr && use.from->isAlive() && use.from->hasSkill(this))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
+        }
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        if (TriggerSkill::cost(triggerEvent, room, invoke, data)) {
+            QString xiuye_select = "discardpile";
+            if (!invoke->invoker->getPile("xiuye").isEmpty())
+                xiuye_select = room->askForChoice(invoke->invoker, "kuangji", "discardpile+putleaftoend");
+            invoke->tag["xiuye_select"] = xiuye_select;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        QString xiuye_select = invoke->tag["xiuye_select"].toString();
+        if (xiuye_select == "discardpile") {
+            QList<int> list = room->getNCards(4);
+            CardsMoveStruct move(list, nullptr, Player::DiscardPile, CardMoveReason(CardMoveReason::S_REASON_PUT, invoke->invoker->objectName(), objectName(), QString()));
+            room->moveCardsAtomic(move, true);
         } else {
             QList<int> ids = invoke->invoker->getPile("xiuye");
 
@@ -6693,40 +6767,6 @@ public:
             if (ids.length() > 1)
                 room->askForGuanxing(invoke->invoker, ids, Room::GuanxingDownOnly, objectName());
         }
-        return false;
-    }
-};
-
-class Kuangji : public TriggerSkill
-{
-public:
-    Kuangji()
-        : TriggerSkill("kuangji")
-    {
-        events << Damaged;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
-    {
-        DamageStruct damage = data.value<DamageStruct>();
-        if (damage.to->isAlive() && damage.to->hasSkill(this))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
-
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
-    {
-        int x = room->alivePlayerCount();
-
-        QList<int> list = room->getNCards(x);
-        CardsMoveStruct move(list, nullptr, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, invoke->invoker->objectName(), objectName(), QString()));
-        room->moveCardsAtomic(move, true);
-
-        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, invoke->invoker->objectName(), objectName(), QString());
-        DummyCard dummy(list);
-        room->throwCard(&dummy, reason, nullptr);
-
         return false;
     }
 };
@@ -7139,8 +7179,6 @@ TouhouGodPackage::TouhouGodPackage()
     General *yuka_god = new General(this, "yuka_god", "touhougod", 4);
     yuka_god->addSkill(new Xiuye);
     yuka_god->addSkill(new Kuangji);
-    //yuka_god->addSkill(new KuangjiTargetMod);
-    //related_skills.insertMulti("kuangji", "#kuangji_effect");
 
     General *tenshi_god = new General(this, "tenshi_god", "touhougod", 4);
     tenshi_god->addSkill(new Dimai);

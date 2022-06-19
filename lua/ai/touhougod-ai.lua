@@ -1830,13 +1830,26 @@ end
 
 -- 神 风见幽香
 --[朽叶]
-local function getXiuye(self)
+local function getXiuye(self, player)
+	player = player or self.player
+	local hasBasic, hasTrick = false, false
+	for _, id in sgs.qlist(player:getPile("xiuye")) do
+		if sgs.Sanguosha:getCard(id):getTypeId() == sgs.Card_TypeBasic then
+			hasBasic = true
+		elseif sgs.Sanguosha:getCard(id):getTypeId() == sgs.Card_TypeTrick then
+			hasTrick = true
+		end
+	end
+
 	local cards = {}
+	if hasBasic and hasTrick then return cards end
 	local pile = self.room:getDiscardPile()
 	if pile:isEmpty() then return cards end
 	for _, id in sgs.qlist(pile) do
 		local acard = sgs.Sanguosha:getCard(id)
-		if acard:getSuit() == sgs.Card_Club then
+		if (acard:getSuit() == sgs.Card_Club) and 
+			(((acard:getTypeId() == sgs.Card_TypeBasic) and (not hasBasic)) 
+				or (acard:isNDTrick() and (not hasTrick))) then
 			table.insert(cards, acard)
 		end
 	end
@@ -1868,7 +1881,7 @@ end
 
 function sgs.ai_cardsview_valuable.xiuye(self, class_name, player)
 	if sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_RESPONSE then return nil end
-	local cards = getXiuye(self)
+	local cards = getXiuye(self, player)
 	if #cards == 0 then return nil end
 	local acard
 	for _, c in ipairs(cards) do
@@ -1890,6 +1903,7 @@ end
 
 --[狂季]
 sgs.ai_skill_invoke.kuangji =  true
+sgs.ai_skill_choice.kuangji = function() return "putleaftoend" end
 
 --神比那名居天子
 --[天道]
