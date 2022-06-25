@@ -397,8 +397,8 @@ return {
 	["elis"] = "依莉斯",
 	["#elis"] = "无罪的恶魔",
 	["designer:elis"] = "223",
-	["illustrator:elis"] = "赤束子",
-	["origin:elis"] = "p号：76260057；个人id：359082",
+	["illustrator:elis"] = "杉山一郎Ⅱ",
+	["origin:elis"] = "p号：75836151；个人id：2663699",
 	
 	["yihuan"] = "易幻",
 	[":yihuan"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张非装备、不具有伤害效果的牌并选择一名其他角色，对其造成1点伤害。",
