@@ -413,8 +413,8 @@ return {
 	["luize"] = "露易兹",
 	["#luize"] = "魔界人",
 	["designer:luize"] = "223",
-	["illustrator:elis"] = "风灵",
-	["origin:elis"] = "p号：90298446；个人id：16820723",
+	["illustrator:luize"] = "风灵",
+	["origin:luize"] = "p号：90298446；个人id：16820723",
 	
 	["yuejie"] = "越界",
 	[":yuejie"] = "当仅一张牌置入你的一个区域后，你可以与一名你与其该区域里牌数之差不大于X（X为你已损失的体力值+1）的其他角色交换此区域的牌。<font color=\"green\"><b>每回合限一次。</b></font>",
