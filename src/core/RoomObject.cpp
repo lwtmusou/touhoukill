@@ -18,7 +18,6 @@ public:
     QHash<int, Card *> cards;
     QString currentCardUsePattern;
     CardUseReason currentCardUseReason;
-    QList<Card *> clonedCards;
     QHash<int, QPair<Player *, Place>> cardMapping;
 
     QList<int> discardPile;
@@ -54,12 +53,6 @@ RoomObject::RoomObject(QObject *parent)
 
 RoomObject::~RoomObject()
 {
-    foreach (Card *c, d->cards)
-        delete c;
-
-    foreach (Card *c, d->clonedCards)
-        delete c;
-
     delete d;
 }
 
@@ -243,7 +236,7 @@ Player *RoomObject::findLord(const QString &kingdom)
 {
     if (d->serverInfo.GameMode->category() == ModeHegemony) {
         foreach (Player *player, d->players) {
-            if (player->kingdom() == kingdom && player->generals().first()->isLord())
+            if (player->kingdom() == kingdom && player->generals().constFirst()->isLord())
                 return player;
         }
     } else {
@@ -260,7 +253,7 @@ const Player *RoomObject::findLord(const QString &kingdom) const
 {
     if (d->serverInfo.GameMode->category() == ModeHegemony) {
         foreach (Player *player, d->players) {
-            if (player->kingdom() == kingdom && player->generals().first()->isLord())
+            if (player->kingdom() == kingdom && player->generals().constFirst()->isLord())
                 return player;
         }
     } else {
@@ -479,22 +472,12 @@ Card *RoomObject::cloneCard(const QString &name, Suit suit, Number number)
 Card *RoomObject::cloneCard(const CardFace *cardFace, Suit suit, Number number)
 {
     Card *c = new Card(this, cardFace, suit, number);
-    d->clonedCards << c;
     return c;
 }
 
 Card *RoomObject::cloneCard(const CardDescriptor &descriptor)
 {
     return cloneCard(descriptor.face(), descriptor.suit, descriptor.number);
-}
-
-void RoomObject::cardDeleting(const Card *card)
-{
-    // const_cast is necessary for this function since card may be const
-    // but for non-const Room, this Card instance is definitely mutable
-    if (card != nullptr)
-        d->clonedCards.removeAll(const_cast<Card *>(card));
-    delete card;
 }
 
 QSet<const DistanceSkill *> RoomObject::distanceSkills() const

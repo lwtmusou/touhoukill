@@ -1200,7 +1200,7 @@ bool LegacyRoom::isCanceled(const CardEffectStruct &effect)
                         extraEffect.multiple = effect.multiple;
                         extraCard->face()->onEffect(extraEffect);
                     }
-                    cardDeleting(extraCard);
+                    delete extraCard;
                 }
             }
         }
@@ -1925,7 +1925,7 @@ void LegacyRoom::doExtraAmazingGrace(LegacyServerPlayer *from, LegacyServerPlaye
         foreach (int id, card_ids)
             dummy->addSubcard(id);
         throwCard(dummy, reason, nullptr);
-        cardDeleting(dummy);
+        delete (dummy);
     }
 }
 
@@ -5682,10 +5682,10 @@ bool LegacyRoom::askForDiscard(LegacyServerPlayer *player, const QString &reason
 
             if (card_num < min_num && !jilei_list.isEmpty()) {
                 doJileiShow(player, jilei_list);
-                cardDeleting(dummy);
+                delete (dummy);
                 return false;
             }
-            cardDeleting(dummy);
+            delete (dummy);
             return true;
         }
     }
@@ -5727,7 +5727,7 @@ bool LegacyRoom::askForDiscard(LegacyServerPlayer *player, const QString &reason
     QVariant data = QVariant::fromValue(s);
     thread->trigger(QSanguosha::ChoiceMade, data);
 
-    cardDeleting(dummy_card);
+    delete (dummy_card);
 
     return true;
 }
@@ -6031,7 +6031,7 @@ const Card *LegacyRoom::askForPindian(LegacyServerPlayer *player, LegacyServerPl
         const Card *card_ = Card::Parse(clientReply[0].toString(), this);
         if (card_->isVirtualCard()) {
             const Card *real_card = card(card_->effectiveId());
-            cardDeleting(card_);
+            delete (card_);
             return real_card;
         } else
             return card_;
@@ -6091,7 +6091,7 @@ QList<const Card *> LegacyRoom::askForPindianRace(LegacyServerPlayer *from, Lega
                 c = card(card_id);
             } else if (card_->isVirtualCard()) {
                 const Card *real_card = card(card_->effectiveId());
-                cardDeleting(card_);
+                delete (card_);
                 c = real_card;
             } else
                 c = card_;

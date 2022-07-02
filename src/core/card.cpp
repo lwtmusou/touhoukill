@@ -73,7 +73,7 @@ public:
  * It only represents game card. It doesn't represent general card, role card nor HP card, etc.
  *
  * A game card is either a basic card, an equip card or a trick card.
- * In QSanguosha, we introcude a new type of card which is called skill card, to indicate a skill invokation.
+ * In QSanguosha, we introduce a new type of card which is called skill card, to indicate a skill invocation.
  * What the card actually do is described in class @c CardFace .
  */
 
@@ -84,13 +84,14 @@ public:
  * @param suit the suit of the card.
  * @param number the number of the card.
  * @param id (for real card) the id of the card.
- *
- * @note This constructor is private. One can only use @c RoomObject::cloneCard or @c RoomObject::getCard to get an instance of a card.
  */
 
 Card::Card(RoomObject *room, const CardFace *face, Suit suit, Number number, int id)
-    : d(new CardPrivate(room, face, suit, number, id))
+    : QObject(room)
+    , d(new CardPrivate(room, face, suit, number, id))
 {
+    if (room == nullptr)
+        throw std::invalid_argument("RoomObject shouldn't be nullptr");
 }
 
 /**

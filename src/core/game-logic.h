@@ -17,8 +17,7 @@ struct LogMessage;
 /**
  * @brief The game logic interface.
  * 
- * All game events should be triggered by functions in this interface. 
- * The game state is modified by functions in this interface.
+ * All game events should be triggered by functions in this interface.
  */
 class QSGS_CORE_EXPORT GameLogic
 {

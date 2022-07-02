@@ -111,8 +111,6 @@ public:
     Card *cloneCard(const CardFace *cardFace = nullptr, QSanguosha::Suit suit = QSanguosha::SuitToBeDecided, QSanguosha::Number number = QSanguosha::NumberToBeDecided);
     Card *cloneCard(const CardDescriptor &descriptor);
 
-    void cardDeleting(const Card *card);
-
     // --------------------- Skill Related ---------------------
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
     const TreatAsEquippingSkill *treatAsEquipping(const Player *player, const QString &equipName, QSanguosha::EquipLocation location) const;

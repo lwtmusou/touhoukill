@@ -1385,19 +1385,19 @@ bool Player::canSlash(const Player *other, const Card *slash, bool distance_limi
     if (other == this || !other->isAlive())
         return false;
 
-    const Card *new_shash = roomObject()->cloneCard(QStringLiteral("Slash"));
-#define THIS_SLASH (slash == nullptr ? new_shash : slash)
+    const Card *new_slash = roomObject()->cloneCard(QStringLiteral("Slash"));
+#define THIS_SLASH (slash == nullptr ? new_slash : slash)
     if (isProhibited(other, THIS_SLASH, others)) {
-        roomObject()->cardDeleting(new_shash);
+        delete new_slash;
         return false;
     }
 
     if (distance_limit) {
         bool res = distanceTo(other, rangefix) <= attackRange() + d->room->correctCardTarget(ModDistance, this, THIS_SLASH);
-        roomObject()->cardDeleting(new_shash);
+        delete new_slash;
         return res;
     } else {
-        roomObject()->cardDeleting(new_shash);
+        delete new_slash;
         return true;
     }
 #undef THIS_SLASH
@@ -1590,7 +1590,7 @@ bool Player::canSlashWithoutCrossbow(const Card *slash) const
     int slash_count = slashCount();
     int valid_slash_count = 1;
     valid_slash_count += d->room->correctCardTarget(ModResidue, this, THIS_SLASH);
-    roomObject()->cardDeleting(newslash);
+    delete newslash;
     return slash_count < valid_slash_count;
 #undef THIS_SLASH
 }

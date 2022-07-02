@@ -1537,7 +1537,7 @@ void Dashboard::updatePending()
     const Card *new_pending_card = view_as_skill->viewAs(cards, Self, RoomSceneInstance->currentViewAsSkillSelectionChain());
     if (pending_card != new_pending_card) {
         if ((pending_card != nullptr) && pending_card->isVirtualCard()) {
-            ClientInstance->cardDeleting(pending_card);
+            delete pending_card;
             pending_card = nullptr;
         }
         pending_card = new_pending_card;

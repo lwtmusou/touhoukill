@@ -133,7 +133,7 @@ void ClientLogBox::appendLog(const QString &type, const QString &from_general, c
                     log = tr("%from %5 [%1] %6 %4 %2 as %3").arg(skill_name, subcard_str, card_name, reason, meth, suffix);
             }
 
-            ClientInstance->cardDeleting(card);
+            delete card;
         } else if (!card->skillName().isEmpty()) {
             const CardDescriptor &real = Sanguosha->cardDescriptor(card->effectiveId());
             QString skill_name = Sanguosha->translate(card->skillName());

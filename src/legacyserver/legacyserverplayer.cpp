@@ -109,7 +109,7 @@ void LegacyServerPlayer::throwAllEquips()
     }
     if (!card->subcards().empty())
         room->throwCard(card, this);
-    room->cardDeleting(card);
+    delete card;
 }
 
 void LegacyServerPlayer::throwAllHandCards()
@@ -157,7 +157,7 @@ void LegacyServerPlayer::clearOnePrivatePile(const QString &pile_name)
         }
     }
     room->throwCard(dummy, reason, nullptr, nullptr, notifyLog);
-    room->cardDeleting(dummy);
+    delete dummy;
 }
 
 void LegacyServerPlayer::clearPrivatePiles()
@@ -189,7 +189,7 @@ void LegacyServerPlayer::throwAllCards()
         card->addSubcard(equip);
     if (!card->subcards().empty())
         room->throwCard(card, this);
-    room->cardDeleting(card);
+    delete card;
 
     QList<const Card *> tricks = judgingAreaCards();
     foreach (const Card *trick, tricks) {

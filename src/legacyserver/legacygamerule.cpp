@@ -708,7 +708,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                     if (effect.effectValue.first() > 0 && effect.card->face()->isNdTrick() && extraCard->hasEffectValue())
                         effect.effectValue.first() = 0;
 
-                    room->cardDeleting(extraCard);
+                    delete extraCard;
 
                     if (effect.to->isAlive())
                         effect.card->face()->onEffect(effect); //do original effect
@@ -768,7 +768,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                 asked_jink = room->askForCard(qobject_cast<LegacyServerPlayer *>(effect.to), QStringLiteral("jink"), prompt, data, QSanguosha::MethodUse,
                                               qobject_cast<LegacyServerPlayer *>(effect.from));
                 if (!room->isJinkEffected(effect, asked_jink)) {
-                    room->cardDeleting(jink);
+                    delete jink;
                     room->slashResult(effect, nullptr);
                     return false;
                 } else {
@@ -776,7 +776,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                 }
             }
             room->slashResult(effect, jink);
-            room->cardDeleting(jink);
+            delete jink;
         }
 
         break;
@@ -844,7 +844,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                     extraCard->face()->onEffect(extraEffect);
                 }
 
-                room->cardDeleting(extraCard);
+                delete extraCard;
             }
         }
 
@@ -920,7 +920,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                 extraCard->face()->onEffect(extraEffect);
             }
 
-            room->cardDeleting(extraCard);
+            delete extraCard;
         }
 
         if (effect.to->isDead())

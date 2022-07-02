@@ -649,7 +649,7 @@ void Client::requestCheatRunScript(const QString &script)
     cheatReq << script;
     QJsonDocument doc(cheatReq);
     QString cheatStr = QString::fromUtf8(doc.toJson());
-    Card *card = cloneCard(QStringLiteral("CheatCard"));
+    Card *card = new Card(this, Sanguosha->cardFace(QStringLiteral("CheatCard")));
     card->setHandleMethod(QSanguosha::MethodNone);
     card->setUserString(cheatStr);
     onPlayerResponseCard(card);
@@ -665,7 +665,8 @@ void Client::requestCheatRevive(const QString &name)
     cheatReq << name;
     QJsonDocument doc(cheatReq);
     QString cheatStr = QString::fromUtf8(doc.toJson());
-    Card *card = cloneCard(QStringLiteral("CheatCard"));
+    Card *card = new Card(this, Sanguosha->cardFace(QStringLiteral("CheatCard")));
+    card->setUserString(cheatStr);
     card->setHandleMethod(QSanguosha::MethodNone);
     onPlayerResponseCard(card);
 }
@@ -772,8 +773,7 @@ void Client::onPlayerResponseCard(const Card *card, const QList<const Player *> 
 
         // FIXME: When to recycle the card?
         if (card->isVirtualCard())
-            // delete card;
-            cardDeleting(card);
+            delete card;
     }
 
     setStatus(NotActive);
@@ -1799,7 +1799,7 @@ void Client::onPlayerDiscardCards(const Card *cards)
         foreach (int card_id, cards->subcards())
             arr << card_id;
         if (cards->isVirtualCard()) // TODO: Delete card
-            cardDeleting(cards);
+            delete cards;
         replyToRoom(S_COMMAND_DISCARD_CARD, arr);
     } else {
         replyToRoom(S_COMMAND_DISCARD_CARD);
@@ -1896,7 +1896,8 @@ void Client::askForSinglePeach(const QJsonValue &arg)
             Self->setCardLimitation(QStringLiteral("use"), QStringLiteral("Peach"), QStringLiteral("Global_PreventPeach"));
         }
     }
-    cardDeleting(temp_peach); // Delete of card peach.
+
+    delete temp_peach;
 
     setCurrentCardUsePattern(pattern.join(QStringLiteral("+")));
     m_isDiscardActionRefusable = true;

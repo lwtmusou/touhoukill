@@ -21,21 +21,18 @@ class CardFace;
 class Package;
 #endif
 
-class QSGS_CORE_EXPORT Card final
+class QSGS_CORE_EXPORT Card final : public QObject
 {
-    Q_GADGET
-
-    friend class RoomObject;
+    Q_OBJECT
 
 public:
     static const int S_UNKNOWN_CARD_ID;
 
-private:
     // constructor to create real card
+    // Do not use nullptr RoomObject pointer for this function! It'll throw and crash the whole game.
     Card(RoomObject *room, const CardFace *face, QSanguosha::Suit suit = QSanguosha::SuitToBeDecided, QSanguosha::Number number = QSanguosha::NumberToBeDecided, int id = -1);
     ~Card();
 
-public:
     // Suit method
     QSanguosha::Suit suit() const;
     void setSuit(QSanguosha::Suit suit);
@@ -88,10 +85,10 @@ public:
 
     // Face (functional model)
     const CardFace *face() const;
-    // For compulsory view as skill. (Doesn't this kind of skill should return a new card and make that card as subcard?)
+    // For Filter skill.
     void setFace(const CardFace *face);
 
-    // Flags
+    // Flags (for server recording use. Do not synchorize to Client!)
     const QSet<QString> &flags() const;
     void addFlag(const QString &flag) const /* mutable */;
     void addFlags(const QSet<QString> &flags) const /* mutable */;
