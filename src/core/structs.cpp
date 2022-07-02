@@ -85,7 +85,7 @@ CardUseStruct::CardUseStruct(const Card *card, Player *from, const QList<Player 
     : card(card)
     , from(from)
     , to(to)
-    , toCard(nullptr)
+    , toCardUse(nullptr)
     , m_isOwnerUse(isOwnerUse)
     , m_addHistory(true)
     , m_isHandcard(false)
@@ -97,7 +97,7 @@ CardUseStruct::CardUseStruct(const Card *card, Player *from, const QList<Player 
 CardUseStruct::CardUseStruct(const Card *card, Player *from, Player *target, bool isOwnerUse)
     : card(card)
     , from(from)
-    , toCard(nullptr)
+    , toCardUse(nullptr)
     , m_isOwnerUse(isOwnerUse)
     , m_addHistory(true)
     , m_isHandcard(false)
@@ -108,10 +108,10 @@ CardUseStruct::CardUseStruct(const Card *card, Player *from, Player *target, boo
         to << target;
 }
 
-CardUseStruct::CardUseStruct(const Card *card, Player *from, const Card *toCard, bool isOwnerUse)
+CardUseStruct::CardUseStruct(const Card *card, Player *from, const CardUseStruct *toCardUse, bool isOwnerUse)
     : card(card)
     , from(from)
-    , toCard(toCard)
+    , toCardUse(toCardUse)
     , m_isOwnerUse(isOwnerUse)
     , m_addHistory(true)
     , m_isHandcard(false)

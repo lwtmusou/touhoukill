@@ -198,8 +198,8 @@ QString ExtendCardUseStruct::toString(const CardUseStruct &use)
     QStringList l;
     l << use.card->toString();
 
-    if (use.toCard != nullptr) {
-        l << use.toCard->toString();
+    if (use.toCardUse != nullptr) {
+        l << toString(*use.toCardUse);
     } else {
         if (use.to.isEmpty())
             l << QStringLiteral(".");

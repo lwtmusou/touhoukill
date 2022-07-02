@@ -53,12 +53,12 @@ struct QSGS_CORE_EXPORT CardUseStruct
 {
     explicit CardUseStruct(const Card *card = nullptr, Player *from = nullptr, const QList<Player *> &to = QList<Player *>(), bool isOwnerUse = true);
     CardUseStruct(const Card *card, Player *from, Player *target, bool isOwnerUse = true);
-    CardUseStruct(const Card *card, Player *from, const Card *toCard, bool isOwnerUse = true);
+    CardUseStruct(const Card *card, Player *from, const CardUseStruct *toCardUse, bool isOwnerUse = true);
 
     const Card *card;
     Player *from;
     QList<Player *> to;
-    const Card *toCard;
+    const CardUseStruct *toCardUse;
     bool m_isOwnerUse;
     bool m_addHistory;
     bool m_isHandcard;

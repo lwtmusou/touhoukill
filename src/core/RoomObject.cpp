@@ -478,14 +478,6 @@ Card *RoomObject::cloneCard(const QString &name, Suit suit, Number number)
 
 Card *RoomObject::cloneCard(const CardFace *cardFace, Suit suit, Number number)
 {
-    // Design change: dummy cards does not have CardFace
-#if 0
-    if (cardFace == nullptr) {
-        qDebug() << "RoomObject::cloneCard - cardFace is nullptr";
-        return nullptr;
-    }
-#endif
-
     Card *c = new Card(this, cardFace, suit, number);
     d->clonedCards << c;
     return c;
