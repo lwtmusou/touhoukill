@@ -70,6 +70,7 @@ set (QSanguosha_Core_SRCS
     src/core/card.cpp
     src/core/CardFace.cpp
     src/core/engine.cpp
+    src/core/game-logic.cpp
     src/core/general.cpp
     src/core/lua-wrapper.cpp
     src/core/package.cpp
@@ -91,6 +92,7 @@ set (QSanguosha_Core_MOCS
     src/core/card.h
     src/core/CardFace.h
     src/core/engine.h
+    src/core/game-logic.h
     src/core/general.h
     src/core/lua-wrapper.h
     src/core/package.h
