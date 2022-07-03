@@ -60,7 +60,7 @@ QList<Player *> RoomObject::players(bool include_dead, bool include_removed)
 {
     QList<Player *> ps = d->players;
     if (!include_dead) {
-        for (auto it = ps.constBegin(); it != ps.constEnd();) {
+        for (auto it = ps.begin(); it != ps.end();) {
             if ((*it)->isDead()) {
                 auto x = it + 1;
                 ps.erase(it);
@@ -70,7 +70,7 @@ QList<Player *> RoomObject::players(bool include_dead, bool include_removed)
         }
     }
     if (!include_removed) {
-        for (auto it = ps.constBegin(); it != ps.constEnd();) {
+        for (auto it = ps.begin(); it != ps.end();) {
             if ((*it)->isRemoved()) {
                 auto x = it + 1;
                 ps.erase(it);
@@ -87,7 +87,7 @@ QList<const Player *> RoomObject::players(bool include_dead, bool include_remove
 {
     QList<Player *> ps = d->players;
     if (!include_dead) {
-        for (auto it = ps.constBegin(); it != ps.constEnd();) {
+        for (auto it = ps.begin(); it != ps.end();) {
             if ((*it)->isDead()) {
                 auto x = it + 1;
                 ps.erase(it);
@@ -97,7 +97,7 @@ QList<const Player *> RoomObject::players(bool include_dead, bool include_remove
         }
     }
     if (!include_removed) {
-        for (auto it = ps.constBegin(); it != ps.constEnd();) {
+        for (auto it = ps.begin(); it != ps.end();) {
             if ((*it)->isRemoved()) {
                 auto x = it + 1;
                 ps.erase(it);
@@ -122,7 +122,7 @@ void RoomObject::unregisterPlayer(Player *player)
 
 void RoomObject::unregisterPlayer(const QString &objectName)
 {
-    for (auto it = d->players.constBegin(), lastIt = d->players.constEnd(); it != d->players.constEnd(); it == d->players.constEnd() ? (it = d->players.constBegin()) : ++it) {
+    for (auto it = d->players.begin(), lastIt = d->players.end(); it != d->players.end(); it == d->players.end() ? (it = d->players.begin()) : ++it) {
         if ((*it)->objectName() == objectName) {
             d->players.erase(it);
             it = lastIt;
@@ -274,7 +274,7 @@ void RoomObject::arrangeSeat(const QStringList &_seatInfo)
     QStringList seatInfo = _seatInfo;
     while (!seatInfo.isEmpty()) {
         QString first = seatInfo.takeFirst();
-        for (auto it = ps.constBegin(); it != ps.constEnd(); ++it) {
+        for (auto it = ps.begin(); it != ps.end(); ++it) {
             if ((*it)->objectName() == first) {
                 d->players << (*it);
                 ps.erase(it);

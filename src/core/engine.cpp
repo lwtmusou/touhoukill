@@ -414,8 +414,8 @@ const CardFace *Engine::cardFace(const QString &name) const
 
 void Engine::unregisterCardFace(const QString &name)
 {
-    auto face = d->faces.constFind(name);
-    if (face != d->faces.constEnd()) {
+    auto face = d->faces.find(name);
+    if (face != d->faces.end()) {
         const auto *handle = *face;
         d->faces.erase(face);
         delete handle;
@@ -435,8 +435,8 @@ const Trigger *Engine::trigger(const QString &name) const
 
 void Engine::unregisterTrigger(const QString &name)
 {
-    auto face = d->triggers.constFind(name);
-    if (face != d->triggers.constEnd()) {
+    auto face = d->triggers.find(name);
+    if (face != d->triggers.end()) {
         const auto *handle = *face;
         d->triggers.erase(face);
         delete handle;
