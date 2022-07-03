@@ -109,7 +109,6 @@ public:
 
 private:
 #endif
-    Q_DECL_DEPRECATED QString getModeName(const QString &name) const;
     Q_DECL_DEPRECATED int getPlayerCount(const QString &name) const;
     Q_DECL_DEPRECATED QString getRoles(const QString &mode) const;
     Q_DECL_DEPRECATED QStringList getRoleList(const QString &mode) const;

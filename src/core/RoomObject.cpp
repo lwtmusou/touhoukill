@@ -60,7 +60,7 @@ QList<Player *> RoomObject::players(bool include_dead, bool include_removed)
 {
     QList<Player *> ps = d->players;
     if (!include_dead) {
-        for (auto it = ps.begin(); it != ps.end();) {
+        for (auto it = ps.constBegin(); it != ps.constEnd();) {
             if ((*it)->isDead()) {
                 auto x = it + 1;
                 ps.erase(it);
@@ -70,7 +70,7 @@ QList<Player *> RoomObject::players(bool include_dead, bool include_removed)
         }
     }
     if (!include_removed) {
-        for (auto it = ps.begin(); it != ps.end();) {
+        for (auto it = ps.constBegin(); it != ps.constEnd();) {
             if ((*it)->isRemoved()) {
                 auto x = it + 1;
                 ps.erase(it);
@@ -87,7 +87,7 @@ QList<const Player *> RoomObject::players(bool include_dead, bool include_remove
 {
     QList<Player *> ps = d->players;
     if (!include_dead) {
-        for (auto it = ps.begin(); it != ps.end();) {
+        for (auto it = ps.constBegin(); it != ps.constEnd();) {
             if ((*it)->isDead()) {
                 auto x = it + 1;
                 ps.erase(it);
@@ -97,7 +97,7 @@ QList<const Player *> RoomObject::players(bool include_dead, bool include_remove
         }
     }
     if (!include_removed) {
-        for (auto it = ps.begin(); it != ps.end();) {
+        for (auto it = ps.constBegin(); it != ps.constEnd();) {
             if ((*it)->isRemoved()) {
                 auto x = it + 1;
                 ps.erase(it);
@@ -122,7 +122,7 @@ void RoomObject::unregisterPlayer(Player *player)
 
 void RoomObject::unregisterPlayer(const QString &objectName)
 {
-    for (auto it = d->players.begin(), lastIt = d->players.end(); it != d->players.end(); it == d->players.end() ? (it = d->players.begin()) : ++it) {
+    for (auto it = d->players.constBegin(), lastIt = d->players.constEnd(); it != d->players.constEnd(); it == d->players.constEnd() ? (it = d->players.constBegin()) : ++it) {
         if ((*it)->objectName() == objectName) {
             d->players.erase(it);
             it = lastIt;
@@ -274,7 +274,7 @@ void RoomObject::arrangeSeat(const QStringList &_seatInfo)
     QStringList seatInfo = _seatInfo;
     while (!seatInfo.isEmpty()) {
         QString first = seatInfo.takeFirst();
-        for (auto it = ps.begin(); it != ps.end(); ++it) {
+        for (auto it = ps.constBegin(); it != ps.constEnd(); ++it) {
             if ((*it)->objectName() == first) {
                 d->players << (*it);
                 ps.erase(it);
@@ -461,9 +461,9 @@ Card *RoomObject::cloneCard(const QString &name, Suit suit, Number number)
 {
     const CardFace *face = nullptr;
 
-    if (!name.isEmpty()) {
+    if (!name.isEmpty() && name != QStringLiteral("DummyCard")) {
         face = Sanguosha->cardFace(name);
-        if (face == nullptr && name != QStringLiteral("DummyCard"))
+        if (face == nullptr)
             return nullptr;
     }
     return cloneCard(face, suit, number);
@@ -471,8 +471,7 @@ Card *RoomObject::cloneCard(const QString &name, Suit suit, Number number)
 
 Card *RoomObject::cloneCard(const CardFace *cardFace, Suit suit, Number number)
 {
-    Card *c = new Card(this, cardFace, suit, number);
-    return c;
+    return new Card(this, cardFace, suit, number);
 }
 
 Card *RoomObject::cloneCard(const CardDescriptor &descriptor)

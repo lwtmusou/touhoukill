@@ -94,6 +94,14 @@ Card::Card(RoomObject *room, const CardFace *face, Suit suit, Number number, int
         throw std::invalid_argument("RoomObject shouldn't be nullptr");
 }
 
+Card::Card(RoomObject *room, const QString &faceName, QSanguosha::Suit suit, QSanguosha::Number number, int id)
+    : QObject(room)
+    , d(new CardPrivate(room, Sanguosha->cardFace(faceName), suit, number, id))
+{
+    if (room == nullptr)
+        throw std::invalid_argument("RoomObject shouldn't be nullptr");
+}
+
 /**
  * @brief Destructor.
  */
@@ -621,8 +629,8 @@ Card *Card::Parse(const QString &str, RoomObject *room)
 
     // for skill cards
     if (str.startsWith(QLatin1Char('@'))) {
-        QRegularExpression pattern(QStringLiteral("^@(\\w+)=([^:]+)(:.+)?$"));
-        QRegularExpression ex_pattern(QStringLiteral("^@(\\w*)\\[(\\w+):(.+)\\]=([^:]+)(:.+)?$"));
+        static QRegularExpression pattern(QStringLiteral("^@(\\w+)=([^:]+)(:.+)?$"));
+        static QRegularExpression ex_pattern(QStringLiteral("^@(\\w*)\\[(\\w+):(.+)\\]=([^:]+)(:.+)?$"));
 
         QStringList texts;
         QString card_name;
@@ -692,7 +700,7 @@ Card *Card::Parse(const QString &str, RoomObject *room)
 
     // for regular virtual cards
     if (str.contains(QLatin1Char('='))) {
-        QRegularExpression pattern(QStringLiteral("^(\\w+):(\\w*)\\[(\\w+):(.+)\\]=(.+)$"));
+        static QRegularExpression pattern(QStringLiteral("^(\\w+):(\\w*)\\[(\\w+):(.+)\\]=(.+)$"));
         QRegularExpressionMatch match = pattern.match(str);
         if (!match.hasMatch())
             return nullptr;

@@ -301,11 +301,6 @@ QSet<QString> Engine::hegemonyKingdoms() const
     return hegemony_kingdoms;
 }
 
-QString Engine::getModeName(const QString &name) const
-{
-    return translate(name);
-}
-
 int Engine::getPlayerCount(const QString &name) const
 {
     const Mode *mode = Mode::findMode(name);
@@ -402,8 +397,14 @@ QVariant Engine::configuration(const QString &key) const
 
 void Engine::registerCardFace(const CardFace *cardFace)
 {
-    if (cardFace != nullptr)
+    // ensure that "DummyCard" always match the nullptr return value of cardFace function
+
+    if (cardFace != nullptr) {
+        if (cardFace->name() == QStringLiteral("DummyCard"))
+            throw std::invalid_argument("DummyCard can't be registered");
+
         d->faces.insert(cardFace->name(), cardFace);
+    }
 }
 
 const CardFace *Engine::cardFace(const QString &name) const
@@ -413,8 +414,8 @@ const CardFace *Engine::cardFace(const QString &name) const
 
 void Engine::unregisterCardFace(const QString &name)
 {
-    auto face = d->faces.find(name);
-    if (face != d->faces.end()) {
+    auto face = d->faces.constFind(name);
+    if (face != d->faces.constEnd()) {
         const auto *handle = *face;
         d->faces.erase(face);
         delete handle;
@@ -434,8 +435,8 @@ const Trigger *Engine::trigger(const QString &name) const
 
 void Engine::unregisterTrigger(const QString &name)
 {
-    auto face = d->triggers.find(name);
-    if (face != d->triggers.end()) {
+    auto face = d->triggers.constFind(name);
+    if (face != d->triggers.constEnd()) {
         const auto *handle = *face;
         d->triggers.erase(face);
         delete handle;

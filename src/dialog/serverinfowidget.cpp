@@ -63,7 +63,7 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
 {
     name_label->setText(info.Name);
     address_label->setText(address);
-    game_mode_label->setText(Sanguosha->getModeName(info.GameModeStr));
+    game_mode_label->setText(Sanguosha->translate(info.GameModeStr));
     int player_count = Sanguosha->getPlayerCount(info.GameModeStr);
     player_count_label->setText(QString::number(player_count));
     port_label->setText(QString::number(Config.ServerPort));

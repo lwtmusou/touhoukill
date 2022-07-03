@@ -150,7 +150,7 @@ public:
                 renegadeCount = &_players;
         }
 
-        QRegularExpression regexp(QRegularExpression::anchoredPattern(QStringLiteral(R"re(role_(\d+),(\d+),(\d+))re")));
+        static QRegularExpression regexp(QRegularExpression::anchoredPattern(QStringLiteral(R"re(role_(\d+),(\d+),(\d+))re")));
         QRegularExpressionMatch match;
         if ((match = regexp.match(name)).hasMatch()) {
             bool ok1 = false;
@@ -230,7 +230,7 @@ public:
                 players = &_players;
         }
 
-        QRegularExpression regexp(QRegularExpression::anchoredPattern(QStringLiteral(R"re(hegemony_(\d+))re")));
+        static QRegularExpression regexp(QRegularExpression::anchoredPattern(QStringLiteral(R"re(hegemony_(\d+))re")));
         QRegularExpressionMatch match;
         if ((match = regexp.match(name)).hasMatch()) {
             bool ok1 = false;
