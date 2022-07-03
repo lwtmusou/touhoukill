@@ -7,7 +7,9 @@
 #include "legacygamerule.h"
 #include "legacyroom.h"
 #include "legacyutil.h"
+#include "mode.h"
 #include "recorder.h"
+#include "serverinfostruct.h"
 #include "settings.h"
 #include "skill.h"
 #include "util.h"
@@ -1017,7 +1019,7 @@ void LegacyServerPlayer::marshal(LegacyServerPlayer *player) const
     room->notifyProperty(player, this, "general2_showed");
     room->notifyProperty(player, this, "inital_seat");
 
-    if (isHegemonyGameMode(room->getMode())) {
+    if (isHegemonyGameMode(room->serverInfo()->GameMode->name())) {
         QVariant RoleConfirmedTag = room->getTag(this->objectName() + QStringLiteral("_RoleConfirmed"));
         bool roleConfirmed = RoleConfirmedTag.canConvert<bool>() && RoleConfirmedTag.toBool();
         if (player == this || haveShownOneGeneral() || roleConfirmed) {
@@ -1142,7 +1144,7 @@ void LegacyServerPlayer::marshal(LegacyServerPlayer *player) const
 
     //need remove mark of hidden limit skill
     QStringList hegemony_limitmarks;
-    if (isHegemonyGameMode(room->getMode())) {
+    if (isHegemonyGameMode(room->serverInfo()->GameMode->name())) {
         foreach (const Skill *skill, skills(false))
             if (skill->isLimited() && mark(skill->limitMark()) > 0 && (this != player && !haveShownSkill(skill)))
                 hegemony_limitmarks.append(skill->limitMark());
@@ -1161,7 +1163,7 @@ void LegacyServerPlayer::marshal(LegacyServerPlayer *player) const
         }
     }
 
-    if (!isHegemonyGameMode(room->getMode())) {
+    if (!isHegemonyGameMode(room->serverInfo()->GameMode->name())) {
         foreach (const Skill *skill, skills(true)) {
             //should not nofity the lord skill
             if (skill->isLordSkill() && !hasValidLordSkill(skill->name()))
@@ -1236,7 +1238,7 @@ void LegacyServerPlayer::marshal(LegacyServerPlayer *player) const
         }
     }
 
-    if (!isHegemonyGameMode(room->getMode()) && hasShownRole()) {
+    if (!isHegemonyGameMode(room->serverInfo()->GameMode->name()) && hasShownRole()) {
         room->notifyProperty(player, this, "role");
         room->notifyProperty(player, this, "role_shown"); // notify client!!
     }
@@ -1310,7 +1312,7 @@ void LegacyServerPlayer::showHiddenSkill(const QString &skill_name)
     if (skill_name.isNull())
         return;
 
-    if (isHegemonyGameMode(room->getMode())) {
+    if (isHegemonyGameMode(room->serverInfo()->GameMode->name())) {
         if (!haveShownGeneral() && hasGeneralCardSkill(skill_name) && inHeadSkills(skill_name))
             showGeneral();
         else if (!hasShownGeneral2() && hasGeneralCardSkill(skill_name) && inDeputySkills(skill_name))
@@ -1381,11 +1383,11 @@ QStringList LegacyServerPlayer::checkTargetModSkillShow(const CardUseStruct &use
 {
     if (use.card == nullptr || use.card->face()->type() == QSanguosha::TypeSkill)
         return QStringList();
-    if (!isHegemonyGameMode(room->getMode())) {
+    if (!isHegemonyGameMode(room->serverInfo()->GameMode->name())) {
     }
 
     QList<const TargetModSkill *> tarmods;
-    if (isHegemonyGameMode(room->getMode())) {
+    if (isHegemonyGameMode(room->serverInfo()->GameMode->name())) {
         foreach (const Skill *skill, use.from->skills(false)) {
             if (use.from->hasValidSkill(skill) && !use.from->haveShownSkill(skill)) { //main_skill??
                 const TargetModSkill *tarmod = dynamic_cast<const TargetModSkill *>(skill);
@@ -1638,7 +1640,7 @@ void LegacyServerPlayer::showGeneral(bool head_general, bool trigger_event, bool
         log.type = QStringLiteral("#HegemonyReveal");
         log.from = this;
         log.arg = generalName();
-        if (Config.Enable2ndGeneral || isHegemonyGameMode(room->getMode())) {
+        if (Config.Enable2ndGeneral || isHegemonyGameMode(room->serverInfo()->GameMode->name())) {
             log.type = QStringLiteral("#HegemonyRevealDouble");
             log.arg2 = getGeneral2Name();
         }

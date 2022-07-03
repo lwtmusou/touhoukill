@@ -7,6 +7,8 @@
 #include "legacyroom.h"
 #include "legacyserverplayer.h"
 #include "legacyutil.h"
+#include "mode.h"
+#include "serverinfostruct.h"
 #include "settings.h"
 #include "skill.h"
 #include "util.h"
@@ -90,7 +92,7 @@ void LegacyGameRule::onPhaseProceed(LegacyRoom *room, LegacyServerPlayer *player
         int num = 2;
         if (player->hasFlag(QStringLiteral("Global_FirstRound"))) {
             room->setPlayerFlag(player, QStringLiteral("-Global_FirstRound"));
-            if (room->getMode() == QStringLiteral("02_1v1"))
+            if (room->serverInfo()->GameMode->name() == QStringLiteral("02_1v1"))
                 num--;
         }
         DrawNCardsStruct s;
@@ -150,7 +152,8 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
         if (data.isNull()) {
             foreach (LegacyServerPlayer *player, room->getPlayers()) {
                 Q_ASSERT(player->general() != nullptr);
-                if (!isHegemonyGameMode(room->getMode()) && (player->general()->kingdom() == QStringLiteral("zhu") || player->general()->kingdom() == QStringLiteral("touhougod"))
+                if (!isHegemonyGameMode(room->serverInfo()->GameMode->name())
+                    && (player->general()->kingdom() == QStringLiteral("zhu") || player->general()->kingdom() == QStringLiteral("touhougod"))
                     && player->generalName() != QStringLiteral("anjiang")) {
                     QString new_kingdom = room->askForKingdom(player);
                     room->setPlayerProperty(player, "kingdom", new_kingdom);
@@ -161,7 +164,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                     log.arg = new_kingdom;
                     room->sendLog(log);
                 }
-                if (isHegemonyGameMode(room->getMode())) {
+                if (isHegemonyGameMode(room->serverInfo()->GameMode->name())) {
                     foreach (const Skill *skill, player->skills(false)) {
                         if (skill->isLimited() && !skill->limitMark().isEmpty() && (!skill->isLordSkill() || player->hasValidLordSkill(skill->name()))) {
                             QJsonArray arg;
@@ -180,8 +183,8 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                 }
             }
             room->setTag(QStringLiteral("FirstRound"), true);
-            bool kof_mode
-                = room->getMode() == QStringLiteral("02_1v1") && Config.value(QStringLiteral("1v1/Rule"), QStringLiteral("2013")).toString() != QStringLiteral("Classical");
+            bool kof_mode = room->serverInfo()->GameMode->name() == QStringLiteral("02_1v1")
+                && Config.value(QStringLiteral("1v1/Rule"), QStringLiteral("2013")).toString() != QStringLiteral("Classical");
             QList<DrawNCardsStruct> s_list;
             foreach (LegacyServerPlayer *p, room->getPlayers()) {
                 int n = kof_mode ? p->maxHp() : 4;
@@ -575,11 +578,11 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                 }
             }
         }
-        if (room->getMode() == QStringLiteral("02_1v1") || room->getMode() == QStringLiteral("06_XMode")) {
+        if (room->serverInfo()->GameMode->name() == QStringLiteral("02_1v1") || room->serverInfo()->GameMode->name() == QStringLiteral("06_XMode")) {
             foreach (LegacyServerPlayer *p, room->getAllPlayers()) {
                 if (p->hasFlag(QStringLiteral("Global_DebutFlag"))) {
                     p->setFlag(QStringLiteral("-Global_DebutFlag"));
-                    if (room->getMode() == QStringLiteral("02_1v1")) {
+                    if (room->serverInfo()->GameMode->name() == QStringLiteral("02_1v1")) {
                         QVariant v = QVariant::fromValue(p);
                         room->getThread()->trigger(QSanguosha::Debut, v);
                     }
@@ -957,7 +960,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
     case QSanguosha::BeforeGameOverJudge: {
         DeathStruct death = data.value<DeathStruct>();
         LegacyServerPlayer *player = qobject_cast<LegacyServerPlayer *>(death.who);
-        if (isHegemonyGameMode(room->getMode())) {
+        if (isHegemonyGameMode(room->serverInfo()->GameMode->name())) {
             if (!player->haveShownGeneral())
                 player->showGeneral(true, false, false);
             if ((player->getGeneral2() != nullptr) && !player->hasShownGeneral2())
@@ -969,7 +972,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
     case QSanguosha::GameOverJudge: {
         DeathStruct death = data.value<DeathStruct>();
         LegacyServerPlayer *player = qobject_cast<LegacyServerPlayer *>(death.who);
-        if (room->getMode() == QStringLiteral("02_1v1")) {
+        if (room->serverInfo()->GameMode->name() == QStringLiteral("02_1v1")) {
             QStringList list = player->tag[QStringLiteral("1v1Arrange")].toStringList();
             QString rule = Config.value(QStringLiteral("1v1/Rule"), QStringLiteral("2013")).toString();
             if (list.length() > ((rule == QStringLiteral("OL")) ? 3 : 0))
@@ -1009,7 +1012,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
 
         //if lord dead in hegemony mode?
 
-        if (room->getMode() == QStringLiteral("02_1v1")) {
+        if (room->serverInfo()->GameMode->name() == QStringLiteral("02_1v1")) {
             QStringList list = death.who->tag[QStringLiteral("1v1Arrange")].toStringList();
             QString rule = Config.value(QStringLiteral("1v1/Rule"), QStringLiteral("2013")).toString();
             if (list.length() <= ((rule == QStringLiteral("OL")) ? 3 : 0))
@@ -1029,7 +1032,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
             } else
                 death.who->setFlag(QStringLiteral("Global_DebutFlag"));
             return false;
-        } else if (room->getMode() == QStringLiteral("06_XMode")) {
+        } else if (room->serverInfo()->GameMode->name() == QStringLiteral("06_XMode")) {
             changeGeneralXMode(room, qobject_cast<LegacyServerPlayer *>(death.who));
             if (death.damage != nullptr)
                 death.who->setFlag(QStringLiteral("Global_DebutFlag"));
@@ -1100,7 +1103,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
     }
     case QSanguosha::GeneralShown: {
         //Only for Hegemony (Enable2ndGeneral is default setting)
-        if (!isHegemonyGameMode(room->getMode()))
+        if (!isHegemonyGameMode(room->serverInfo()->GameMode->name()))
             break;
 
         ShowGeneralStruct s = data.value<ShowGeneralStruct>();
@@ -1340,18 +1343,18 @@ void LegacyGameRule::changeGeneralXMode(LegacyRoom *room, LegacyServerPlayer *pl
 
 void LegacyGameRule::rewardAndPunish(LegacyRoom *room, LegacyServerPlayer *killer, LegacyServerPlayer *victim) const
 {
-    if (killer->isDead() || room->getMode() == QStringLiteral("06_XMode"))
+    if (killer->isDead() || room->serverInfo()->GameMode->name() == QStringLiteral("06_XMode"))
         return;
 
-    if (isHegemonyGameMode(room->getMode()) && !killer->haveShownOneGeneral())
+    if (isHegemonyGameMode(room->serverInfo()->GameMode->name()) && !killer->haveShownOneGeneral())
         return;
 
-    if (room->getMode() == QStringLiteral("06_3v3")) {
+    if (room->serverInfo()->GameMode->name() == QStringLiteral("06_3v3")) {
         if (Config.value(QStringLiteral("3v3/OfficialRule"), QStringLiteral("2013")).toString().startsWith(QStringLiteral("201")))
             killer->drawCards(2);
         else
             killer->drawCards(3);
-    } else if (isHegemonyGameMode(room->getMode())) {
+    } else if (isHegemonyGameMode(room->serverInfo()->GameMode->name())) {
         if (!killer->isFriendWith(victim)) {
             int n = 1;
             if (Config.HegemonyCareeristKillReward == QStringLiteral("AlwaysDraw3") && killer->roleString() == QStringLiteral("careerist")) {
@@ -1377,7 +1380,7 @@ QString LegacyGameRule::getWinner(LegacyRoom *room, LegacyServerPlayer *victim) 
 {
     QString winner;
 
-    if (room->getMode() == QStringLiteral("06_3v3")) {
+    if (room->serverInfo()->GameMode->name() == QStringLiteral("06_3v3")) {
         switch (victim->role()) {
         case QSanguosha::RoleLord:
             winner = QStringLiteral("renegade+rebel");
@@ -1388,7 +1391,7 @@ QString LegacyGameRule::getWinner(LegacyRoom *room, LegacyServerPlayer *victim) 
         default:
             break;
         }
-    } else if (room->getMode() == QStringLiteral("06_XMode")) {
+    } else if (room->serverInfo()->GameMode->name() == QStringLiteral("06_XMode")) {
         QString role = victim->roleString();
         LegacyServerPlayer *leader = victim->tag[QStringLiteral("XModeLeader")].value<LegacyServerPlayer *>();
         if (leader->tag[QStringLiteral("XModeBackup")].toStringList().isEmpty()) {
@@ -1397,7 +1400,7 @@ QString LegacyGameRule::getWinner(LegacyRoom *room, LegacyServerPlayer *victim) 
             else
                 winner = QStringLiteral("renegade+rebel");
         }
-    } else if (isHegemonyGameMode(room->getMode())) {
+    } else if (isHegemonyGameMode(room->serverInfo()->GameMode->name())) {
         QList<LegacyServerPlayer *> players = room->getAlivePlayers();
         LegacyServerPlayer *win_player = players.first();
         if (players.length() == 1) {

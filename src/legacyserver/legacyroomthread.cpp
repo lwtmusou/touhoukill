@@ -5,8 +5,10 @@
 #include "legacygamerule.h"
 #include "legacyroom.h"
 #include "legacyutil.h"
+#include "mode.h"
 #include "package.h"
 #include "protocol.h"
+#include "serverinfostruct.h"
 #include "settings.h"
 #include "skill.h"
 #include "util.h"
@@ -310,7 +312,7 @@ void RoomThread::run()
     } else
         room->doBroadcastNotify(S_COMMAND_START_IN_X_SECONDS, QJsonValue(0));
 
-    if (room->getMode() == QStringLiteral("04_1v3")) {
+    if (room->serverInfo()->GameMode->name() == QStringLiteral("04_1v3")) {
         LegacyServerPlayer *lord = room->getPlayers().first();
         room->setPlayerProperty(lord, "general", QStringLiteral("yuyuko_1v3"));
 
@@ -347,7 +349,7 @@ void RoomThread::run()
         }
 
         room->startGame();
-    } else if (isHegemonyGameMode(room->getMode())) {
+    } else if (room->serverInfo()->GameMode->category() == QSanguosha::ModeHegemony) {
         room->chooseHegemonyGenerals();
         room->startGame();
     } else {
@@ -368,7 +370,7 @@ void RoomThread::run()
         QList<LegacyServerPlayer *> cool;
         QList<LegacyServerPlayer *> first;
         QList<LegacyServerPlayer *> second;
-        if (room->getMode() == QStringLiteral("06_3v3")) {
+        if (room->serverInfo()->GameMode->name() == QStringLiteral("06_3v3")) {
             foreach (LegacyServerPlayer *player, room->m_players) {
                 switch (player->role()) {
                 case QSanguosha::RoleLord:
@@ -397,9 +399,9 @@ void RoomThread::run()
         constructTriggerTable();
         QVariant v;
         trigger(QSanguosha::GameStart, v);
-        if (room->getMode() == QStringLiteral("06_3v3")) {
+        if (room->serverInfo()->GameMode->name() == QStringLiteral("06_3v3")) {
             run3v3(first, second, game_rule, first.first());
-        } else if (room->getMode() == QStringLiteral("04_1v3")) {
+        } else if (room->serverInfo()->GameMode->name() == QStringLiteral("04_1v3")) {
             LegacyServerPlayer *uuz = room->getLord();
             QList<LegacyServerPlayer *> league = room->getPlayers();
             league.removeOne(uuz);
@@ -407,7 +409,7 @@ void RoomThread::run()
             room->setCurrent(league.first());
             actionHulaoPass(uuz, league, game_rule);
         } else {
-            if (room->getMode() == QStringLiteral("02_1v1")) {
+            if (room->serverInfo()->GameMode->name() == QStringLiteral("02_1v1")) {
                 LegacyServerPlayer *first = room->getPlayers().first();
                 if (first->roleString() != QStringLiteral("renegade"))
                     first = room->getPlayers().at(1);

@@ -41,7 +41,7 @@ public:
 
     QSGS_STATE_ROOM int getLack() const;
     QSGS_STATE_GAME bool isFinished() const;
-    QSGS_STATE_GAME QString getMode() const;
+
     QSGS_STATE_GAME LegacyServerPlayer *getCurrent() const;
     QSGS_STATE_GAME void setCurrent(LegacyServerPlayer *current);
     QSGS_STATE_GAME int alivePlayerCount() const;
