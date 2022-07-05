@@ -76,10 +76,6 @@ void LegacyServer::daemonize()
 LegacyRoom *LegacyServer::createNewRoom()
 {
     LegacyRoom *new_room = new LegacyRoom(this, &ServerInfo);
-    if (new_room->getLuaState() == nullptr) {
-        delete new_room;
-        return nullptr;
-    }
     current = new_room;
     rooms.insert(current);
 

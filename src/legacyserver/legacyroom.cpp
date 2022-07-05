@@ -9,6 +9,7 @@
 #include "legacyjson.h"
 #include "legacyserver.h"
 #include "legacyutil.h"
+#include "lua-wrapper.h"
 #include "mode.h"
 #include "settings.h"
 #include "skill.h"
@@ -42,7 +43,6 @@ LegacyRoom::LegacyRoom(QObject *parent, const ServerInfoStruct *si)
     , game_started2(false)
     , game_finished(false)
     , game_paused(false)
-    , L(nullptr)
     , fill_robot(false)
     , thread(nullptr)
     , _m_semRaceRequest(0)
@@ -55,8 +55,6 @@ LegacyRoom::LegacyRoom(QObject *parent, const ServerInfoStruct *si)
 {
     *(serverInfo()) = *si;
 
-    static int s_global_room_id = 0;
-    _m_Id = s_global_room_id++;
     player_count = si->GameMode->playersCount();
     pile1 = si->GameMode->availableCards().values();
     qShuffle(pile1);
@@ -1673,7 +1671,7 @@ const Card *LegacyRoom::askForCard(LegacyServerPlayer *player, const QString &pa
             ids = card_->subcards();
         if (!ids.isEmpty()) {
             foreach (int id, ids) {
-                if (getCardOwner(id) != player || getCardPlace(id) != QSanguosha::PlaceHand) {
+                if (cardOwner(id) != player || cardPlace(id) != QSanguosha::PlaceHand) {
                     isHandcard = false;
                     break;
                 }
@@ -1684,7 +1682,7 @@ const Card *LegacyRoom::askForCard(LegacyServerPlayer *player, const QString &pa
 
         if (!ids.isEmpty()) {
             foreach (int id, ids) {
-                LegacyServerPlayer *shownCardOwner = getCardOwner(id);
+                Player *shownCardOwner = cardOwner(id);
                 if ((shownCardOwner != nullptr) && shownCardOwner->isShownHandcard(id)) {
                     isShowncard = true;
                     break;
@@ -1716,8 +1714,8 @@ const Card *LegacyRoom::askForCard(LegacyServerPlayer *player, const QString &pa
             reason.m_extraData = QVariant::fromValue(card_);
             if (theProvider != nullptr)
                 moveCardTo(card_, theProvider, nullptr, QSanguosha::PlaceTable, reason, true);
-            else if (!card_->isVirtualCard() && (getCardOwner(card_->effectiveId()) != nullptr) && getCardOwner(card_->effectiveId()) != player) //only for Skill Xinhua
-                moveCardTo(card_, getCardOwner(card_->effectiveId()), nullptr, QSanguosha::PlaceTable, reason, true);
+            else if (!card_->isVirtualCard() && (cardOwner(card_->effectiveId()) != nullptr) && cardOwner(card_->effectiveId()) != player) //only for Skill Xinhua
+                moveCardTo(card_, cardOwner(card_->effectiveId()), nullptr, QSanguosha::PlaceTable, reason, true);
             else
                 moveCardTo(card_, player, nullptr, QSanguosha::PlaceTable, reason, true);
         } else if (method == QSanguosha::MethodDiscard) {
@@ -1729,8 +1727,8 @@ const Card *LegacyRoom::askForCard(LegacyServerPlayer *player, const QString &pa
             reason.m_extraData = QVariant::fromValue(card_);
             if (theProvider != nullptr)
                 moveCardTo(card_, theProvider, nullptr, isProvision ? QSanguosha::PlaceTable : QSanguosha::PlaceDiscardPile, reason, method != QSanguosha::MethodPindian);
-            else if (!card_->isVirtualCard() && (getCardOwner(card_->effectiveId()) != nullptr) && getCardOwner(card_->effectiveId()) != player) //only for Skill Xinhua
-                moveCardTo(card_, getCardOwner(card_->effectiveId()), nullptr, isProvision ? QSanguosha::PlaceTable : QSanguosha::PlaceDiscardPile, reason,
+            else if (!card_->isVirtualCard() && (cardOwner(card_->effectiveId()) != nullptr) && cardOwner(card_->effectiveId()) != player) //only for Skill Xinhua
+                moveCardTo(card_, cardOwner(card_->effectiveId()), nullptr, isProvision ? QSanguosha::PlaceTable : QSanguosha::PlaceDiscardPile, reason,
                            method != QSanguosha::MethodPindian);
             else
                 moveCardTo(card_, player, nullptr, isProvision ? QSanguosha::PlaceTable : QSanguosha::PlaceDiscardPile, reason, method != QSanguosha::MethodPindian);
@@ -1746,7 +1744,7 @@ const Card *LegacyRoom::askForCard(LegacyServerPlayer *player, const QString &pa
             thread->trigger(QSanguosha::CardResponded, data);
             resp = data.value<CardResponseStruct>();
             if (method == QSanguosha::MethodUse) {
-                if (getCardPlace(card_->effectiveId()) == QSanguosha::PlaceTable) {
+                if (cardPlace(card_->effectiveId()) == QSanguosha::PlaceTable) {
                     CardMoveReason reason(QSanguosha::MoveReasonLetUse, player->objectName(), QString(), card_->skillName(), QString());
                     reason.m_extraData = QVariant::fromValue(card_);
                     if (theProvider != nullptr)
@@ -2490,11 +2488,6 @@ void LegacyRoom::changeHero(LegacyServerPlayer *player, const QString &new_gener
     }
 }
 
-lua_State *LegacyRoom::getLuaState() const
-{
-    return L;
-}
-
 void LegacyRoom::setFixedDistance(Player *from, const Player *to, int distance)
 {
     from->setFixedDistance(to, distance);
@@ -2986,16 +2979,9 @@ LegacyServerPlayer *LegacyRoom::getOwner() const
     return nullptr;
 }
 
-void LegacyRoom::toggleReadyCommand(LegacyServerPlayer *player, const QJsonValue & /*unused*/)
+void LegacyRoom::toggleReadyCommand(LegacyServerPlayer *, const QJsonValue & /*unused*/)
 {
-    player->setReady(true);
-
     if (!game_started2 && isFull()) {
-        foreach (LegacyServerPlayer *p, getPlayers()) {
-            if (!p->isReady())
-                return;
-        }
-
         game_started2 = true;
         thread = new RoomThread(this);
         thread->start();
@@ -3732,7 +3718,7 @@ bool LegacyRoom::useCard(const CardUseStruct &use, bool add_history)
         ids = card_->subcards();
     if (!ids.isEmpty()) {
         foreach (int id, ids) {
-            if (getCardOwner(id) != use.from || getCardPlace(id) != QSanguosha::PlaceHand) {
+            if (cardOwner(id) != use.from || cardPlace(id) != QSanguosha::PlaceHand) {
                 card_use.m_isHandcard = false;
                 break;
             }
@@ -3820,7 +3806,7 @@ bool LegacyRoom::useCard(const CardUseStruct &use, bool add_history)
         }
     } catch (QSanguosha::TriggerEvent triggerEvent) {
         if (triggerEvent == QSanguosha::TurnBroken) {
-            if (getCardPlace(card_use.card->effectiveId()) == QSanguosha::PlaceTable) {
+            if (cardPlace(card_use.card->effectiveId()) == QSanguosha::PlaceTable) {
                 CardMoveReason reason(QSanguosha::MoveReasonUnknown, card_use.from->objectName(), QString(), card_use.card->skillName(), QString());
                 if (card_use.to.size() == 1)
                     reason.m_targetId = card_use.to.first()->objectName();
@@ -3843,7 +3829,7 @@ bool LegacyRoom::useCard(const CardUseStruct &use, bool add_history)
             }
 
             foreach (const Card *c, cards()) {
-                if (getCardPlace(c->id()) == QSanguosha::PlaceTable || getCardPlace(c->id()) == QSanguosha::PlaceJudge)
+                if (cardPlace(c->id()) == QSanguosha::PlaceTable || cardPlace(c->id()) == QSanguosha::PlaceJudge)
                     moveCardTo(c, nullptr, QSanguosha::PlaceDiscardPile, true);
                 if (c->hasFlag(QStringLiteral("using")))
                     setCardFlag(c->id(), QStringLiteral("-using"));
@@ -4529,24 +4515,23 @@ RoomThread *LegacyRoom::getThread() const
     return thread;
 }
 
-void LegacyRoom::moveCardTo(const Card *card, LegacyServerPlayer *dstPlayer, QSanguosha::Place dstPlace, bool forceMoveVisible)
+void LegacyRoom::moveCardTo(const Card *card, Player *dstPlayer, QSanguosha::Place dstPlace, bool forceMoveVisible)
 {
     moveCardTo(card, dstPlayer, dstPlace, CardMoveReason(QSanguosha::MoveReasonUnknown, QString()), forceMoveVisible);
 }
 
-void LegacyRoom::moveCardTo(const Card *card, LegacyServerPlayer *dstPlayer, QSanguosha::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible)
+void LegacyRoom::moveCardTo(const Card *card, Player *dstPlayer, QSanguosha::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible)
 {
     moveCardTo(card, nullptr, dstPlayer, dstPlace, QString(), reason, forceMoveVisible);
 }
 
-void LegacyRoom::moveCardTo(const Card *card, LegacyServerPlayer *srcPlayer, LegacyServerPlayer *dstPlayer, QSanguosha::Place dstPlace, const CardMoveReason &reason,
-                            bool forceMoveVisible)
+void LegacyRoom::moveCardTo(const Card *card, Player *srcPlayer, Player *dstPlayer, QSanguosha::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible)
 {
     moveCardTo(card, srcPlayer, dstPlayer, dstPlace, QString(), reason, forceMoveVisible);
 }
 
-void LegacyRoom::moveCardTo(const Card *card, LegacyServerPlayer *srcPlayer, LegacyServerPlayer *dstPlayer, QSanguosha::Place dstPlace, const QString &pileName,
-                            const CardMoveReason &reason, bool forceMoveVisible)
+void LegacyRoom::moveCardTo(const Card *card, Player *srcPlayer, Player *dstPlayer, QSanguosha::Place dstPlace, const QString &pileName, const CardMoveReason &reason,
+                            bool forceMoveVisible)
 {
     LegacyCardsMoveStruct move;
     if (card->isVirtualCard()) {
@@ -4565,12 +4550,12 @@ void LegacyRoom::moveCardTo(const Card *card, LegacyServerPlayer *srcPlayer, Leg
     moveCardsAtomic(moves, forceMoveVisible);
 }
 
-void LegacyRoom::_fillMoveInfo(LegacyCardsMoveStruct &moves, int card_index) const
+void LegacyRoom::_fillMoveInfo(LegacyCardsMoveStruct &moves, int card_index)
 {
     int card_id = moves.card_ids[card_index];
     if (moves.from == nullptr)
-        moves.from = getCardOwner(card_id);
-    moves.from_place = getCardPlace(card_id);
+        moves.from = cardOwner(card_id);
+    moves.from_place = cardPlace(card_id);
     if (moves.from != nullptr) { // Hand/Equip/Judge
         if (moves.from_place == QSanguosha::PlaceSpecial || moves.from_place == QSanguosha::PlaceTable)
             moves.from_pile_name = moves.from->pileName(card_id);
@@ -5306,7 +5291,7 @@ void LegacyRoom::filterCards(LegacyServerPlayer *player, QList<const Card *> car
 
     for (int i = 0; i < cards.size(); i++) {
         int cardId = cards[i]->id();
-        QSanguosha::Place place = getCardPlace(cardId);
+        QSanguosha::Place place = cardPlace(cardId);
         if (!cardChanged[i])
             continue;
         if (place == QSanguosha::PlaceHand && !player->isShownHandcard(cardId))
@@ -5793,24 +5778,6 @@ const Card *LegacyRoom::askForExchange(LegacyServerPlayer *player, const QString
     return card;
 }
 
-void LegacyRoom::setCardMapping(int card_id, LegacyServerPlayer *owner, QSanguosha::Place place)
-{
-    owner_map.insert(card_id, owner);
-    place_map.insert(card_id, place);
-}
-
-LegacyServerPlayer *LegacyRoom::getCardOwner(int card_id) const
-{
-    return owner_map.value(card_id);
-}
-
-QSanguosha::Place LegacyRoom::getCardPlace(int card_id) const
-{
-    if (card_id < 0)
-        return QSanguosha::PlaceUnknown;
-    return place_map.value(card_id);
-}
-
 QList<int> LegacyRoom::getCardIdsOnTable(const Card *virtual_card) const
 {
     if (virtual_card == nullptr)
@@ -5829,7 +5796,7 @@ QList<int> LegacyRoom::getCardIdsOnTable(const IdSet &card_ids) const
 {
     QList<int> r;
     foreach (int id, card_ids) {
-        if (getCardPlace(id) == QSanguosha::PlaceTable)
+        if (cardPlace(id) == QSanguosha::PlaceTable)
             r << id;
     }
     return r;
@@ -6464,7 +6431,7 @@ void LegacyRoom::sendLog(const LogStruct &log)
 
 void LegacyRoom::showCard(LegacyServerPlayer *player, int card_id, LegacyServerPlayer *only_viewer)
 {
-    if (getCardOwner(card_id) != player)
+    if (cardOwner(card_id) != player)
         return;
 
     tryPause();
@@ -6556,8 +6523,8 @@ void LegacyRoom::retrial(const Card *card_, LegacyServerPlayer *player, JudgeStr
     if (card_ == nullptr)
         return;
 
-    bool triggerResponded = getCardOwner(card_->effectiveId()) == player;
-    bool isHandcard = (triggerResponded && getCardPlace(card_->effectiveId()) == QSanguosha::PlaceHand);
+    bool triggerResponded = cardOwner(card_->effectiveId()) == player;
+    bool isHandcard = (triggerResponded && cardPlace(card_->effectiveId()) == QSanguosha::PlaceHand);
 
     const Card *oldJudge = judge->card();
     Player *rebyre = judge->retrial_by_response; //old judge provider

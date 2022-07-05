@@ -23,12 +23,12 @@ public:
     // For Sanguosha, the secret data is only Handcard ids and Role.
     // Other things such as general, number of Handcard, Equip id, kingdom, gender, hp/maxhp, etc., are all public data.
 
-    // Game essentials:
-    RoomObject *room;
+    // Agent related?
     QString screenName; // a better name may be UserName?
-    QString state; // A limited set of "online", "offline", "trust", "robot", which indicates how the player's actual network and/or playing state, considering to refactor to enum
+    QString state; // A limited set of "online", "offline", "trust", "robot", which indicates how the Agent's actual network and/or playing state, considering to refactor to enum
 
     // Public Data:
+    RoomObject *room;
     QList<const General *> generals;
     QList<bool> generalShown; // for Hegemony
     Gender gender;
@@ -110,7 +110,7 @@ public:
     int chaoren; // for skill "chaoren"
 
     QMap<QString, QStringList> pile_open; // Fs: only used to classify move in server side. Not that important since secret pile should remain its security.
-    QStringList skills_originalOrder, skills2_originalOrder; //equals  skills.keys().  unlike QMap, QStringList will keep originalOrder // Fs: removed due to meanless
+    QStringList skills_originalOrder, skills2_originalOrder; //equals  skills.keys().  unlike QMap, QStringList will keep originalOrder // Fs: removed due to meaningless
     bool owner; // Fs: for request & response
     int initialSeat; // for record
     QString next; // the seat information is only maintained by room now. Player only remain a property called 'seat' which is used for record / log.
@@ -130,7 +130,7 @@ public:
     int _m_phases_index;
     QList<PhaseStruct> _m_phases_state;
     QStringList selected; // 3v3 mode use only
-    QDateTime test_time; // unknown
+    QDateTime test_time; // network delay test start time. Maybe refactor to Agent
 
     // ------ ClientPlayer ------
     QTextDocument *mark_doc; // originally this one is todo in ClientPlayer

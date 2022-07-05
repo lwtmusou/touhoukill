@@ -31,16 +31,10 @@ LegacyServerPlayer::LegacyServerPlayer(LegacyRoom *room)
     , room(room)
     , recorder(nullptr)
     , _m_phases_index(0)
-    , ready(false)
 {
     semas = new QSemaphore *[S_NUM_SEMAPHORES];
     for (int i = 0; i < S_NUM_SEMAPHORES; i++)
         semas[i] = new QSemaphore(0);
-}
-
-void LegacyServerPlayer::drawCard(const Card *card)
-{
-    m_handcards << card;
 }
 
 void LegacyServerPlayer::broadcastSkillInvoke(const QString &card_name) const
@@ -87,8 +81,8 @@ int LegacyServerPlayer::getRandomHandCardId() const
 
 const Card *LegacyServerPlayer::getRandomHandCard() const
 {
-    int index = QRandomGenerator::global()->generate() % m_handcards.length();
-    return m_handcards.at(index);
+    int index = QRandomGenerator::global()->generate() % handCards().length();
+    return handCards().at(index);
 }
 
 void LegacyServerPlayer::obtainCard(const Card *card, bool unhide)
@@ -369,14 +363,14 @@ QList<const Card *> LegacyServerPlayer::getCards(const QString &flags) const
 {
     QList<const Card *> cards;
     if (flags.contains(QStringLiteral("h")) && flags.contains(QStringLiteral("s")))
-        cards << m_handcards;
+        cards << handCards();
     else if (flags.contains(QStringLiteral("h"))) {
-        foreach (const Card *c, m_handcards) {
+        foreach (const Card *c, handCards()) {
             if (!shownHandcards().contains(c->effectiveId()))
                 cards << c;
         }
     } else if (flags.contains(QStringLiteral("s"))) {
-        foreach (const Card *c, m_handcards) {
+        foreach (const Card *c, handCards()) {
             if (shownHandcards().contains(c->effectiveId()))
                 cards << c;
         }
@@ -396,7 +390,7 @@ Card *LegacyServerPlayer::wholeHandCards() const
         return nullptr;
 
     Card *dummy_card = room->cloneCard(QStringLiteral("DummyCard"));
-    foreach (const Card *card, m_handcards)
+    foreach (const Card *card, handCards())
         dummy_card->addSubcard(card->id());
 
     return dummy_card;
@@ -404,7 +398,7 @@ Card *LegacyServerPlayer::wholeHandCards() const
 
 bool LegacyServerPlayer::hasNullification() const
 {
-    foreach (const Card *card, m_handcards) {
+    foreach (const Card *card, handCards()) {
         if (card->face()->isKindOf(QStringLiteral("Nullification")))
             return true;
     }
@@ -557,12 +551,12 @@ bool LegacyServerPlayer::pindian(LegacyServerPlayer *target, const QString &reas
     data = QVariant::fromValue(pindian_star);
     thread->trigger(QSanguosha::Pindian, data);
 
-    if (room->getCardPlace(pindian_struct.from_card->effectiveId()) == QSanguosha::PlaceTable) {
+    if (room->cardPlace(pindian_struct.from_card->effectiveId()) == QSanguosha::PlaceTable) {
         CardMoveReason reason1(QSanguosha::MoveReasonPindian, pindian_struct.from->objectName(), pindian_struct.to->objectName(), pindian_struct.reason, QString());
         room->moveCardTo(pindian_struct.from_card, qobject_cast<LegacyServerPlayer *>(pindian_struct.from), nullptr, QSanguosha::PlaceDiscardPile, reason1, true);
     }
 
-    if (room->getCardPlace(pindian_struct.to_card->effectiveId()) == QSanguosha::PlaceTable) {
+    if (room->cardPlace(pindian_struct.to_card->effectiveId()) == QSanguosha::PlaceTable) {
         CardMoveReason reason2(QSanguosha::MoveReasonPindian, pindian_struct.to->objectName());
         room->moveCardTo(pindian_struct.to_card, qobject_cast<LegacyServerPlayer *>(pindian_struct.to), nullptr, QSanguosha::PlaceDiscardPile, reason2, true);
     }
@@ -1059,7 +1053,7 @@ void LegacyServerPlayer::marshal(LegacyServerPlayer *player) const
 
     if (!isKongcheng()) {
         LegacyCardsMoveStruct move;
-        foreach (const Card *card, m_handcards) {
+        foreach (const Card *card, handCards()) {
             move.card_ids << card->id();
             if (player == this) {
                 Card *c = room->card(card->id());
@@ -2053,16 +2047,6 @@ void LegacyServerPlayer::summonFriends(const QString &type)
         if (failed)
             room->setPlayerFlag(this, QStringLiteral("Global_SummonFailed"));
     }
-}
-
-bool LegacyServerPlayer::isReady() const
-{
-    return ready;
-}
-
-void LegacyServerPlayer::setReady(bool ready)
-{
-    this->ready = ready;
 }
 
 bool LegacyServerPlayer::reconnect(LegacyClientSocket *socket)

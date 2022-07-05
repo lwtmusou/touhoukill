@@ -48,7 +48,6 @@ public:
     QSGS_SOCKET QString reportHeader() const;
     QSGS_SOCKET void unicast(const QString &message);
 
-    QSGS_LOGIC void drawCard(const Card *card);
     QSGS_LOGIC void broadcastSkillInvoke(const Card *card) const;
     QSGS_LOGIC void broadcastSkillInvoke(const QString &card_name) const;
     QSGS_STATE_GAME int getRandomHandCardId() const;
@@ -85,11 +84,6 @@ public:
     QSGS_LOGIC void gainMark(const QString &mark, int n = 1);
     QSGS_LOGIC void loseMark(const QString &mark, int n = 1);
     QSGS_LOGIC void loseAllMarks(const QString &mark_name);
-
-#if 0
-    QSGS_LOGIC void addSkill(const QString &skill_name, bool head_skill = true) override;
-    QSGS_LOGIC void loseSkill(const QString &skill_name, bool head_skill = true) override;
-#endif
 
     // utilities?
     void startRecord();
@@ -180,9 +174,6 @@ public:
     QSGS_STATE_GAME bool inFormationRalation(LegacyServerPlayer *teammate) const;
     QSGS_LOGIC void summonFriends(const QString &type);
 
-    bool isReady() const;
-    void setReady(bool ready);
-
     QSGS_SOCKET bool reconnect(LegacyClientSocket *socket);
 
 protected:
@@ -192,7 +183,6 @@ protected:
 
 private:
     LegacyClientSocket *socket;
-    QList<const Card *> m_handcards;
     LegacyRoom *room;
     Recorder *recorder;
     QList<QSanguosha::Phase> phases;
@@ -201,8 +191,6 @@ private:
     QStringList selected; // 3v3 mode use only
     QDateTime test_time;
     QJsonValue _m_clientResponse;
-
-    bool ready;
 
 private slots:
     void getMessage(const char *message);

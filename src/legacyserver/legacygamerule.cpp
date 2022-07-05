@@ -355,7 +355,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
             //1) exclude SkillCard 2)changed move reason (USE) 3)keep extraData
             if ((card_use.card != nullptr) && card_use.card->face()->type() != QSanguosha::TypeSkill && !(card_use.card->isVirtualCard() && card_use.card->subcards().isEmpty())
                 && card_use.to.isEmpty()) {
-                if (room->getCardPlace(card_use.card->effectiveId()) == QSanguosha::PlaceTable) {
+                if (room->cardPlace(card_use.card->effectiveId()) == QSanguosha::PlaceTable) {
                     CardMoveReason reason(QSanguosha::MoveReasonUse, card_use.from->objectName(), QString(), card_use.card->skillName(), QString());
                     reason.m_extraData = QVariant::fromValue(card_use.card);
                     room->moveCardTo(card_use.card, qobject_cast<LegacyServerPlayer *>(card_use.from), nullptr, QSanguosha::PlaceDiscardPile, reason, true);
@@ -400,7 +400,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
 
                 //copy from Room::useCard()
                 if (triggerEvent == QSanguosha::TurnBroken) {
-                    if (room->getCardPlace(card_use.card->effectiveId()) == QSanguosha::PlaceTable) {
+                    if (room->cardPlace(card_use.card->effectiveId()) == QSanguosha::PlaceTable) {
                         CardMoveReason reason(QSanguosha::MoveReasonUnknown, card_use.from->objectName(), QString(), card_use.card->skillName(), QString());
                         if (card_use.to.size() == 1)
                             reason.m_targetId = card_use.to.first()->objectName();
@@ -423,7 +423,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                     }
 
                     foreach (const Card *c, room->cards()) {
-                        if (room->getCardPlace(c->id()) == QSanguosha::PlaceTable || room->getCardPlace(c->id()) == QSanguosha::PlaceJudge)
+                        if (room->cardPlace(c->id()) == QSanguosha::PlaceTable || room->cardPlace(c->id()) == QSanguosha::PlaceJudge)
                             room->moveCardTo(c, nullptr, QSanguosha::PlaceDiscardPile, true);
                         if (c->hasFlag(QStringLiteral("using")))
                             room->setCardFlag(c->id(), QStringLiteral("-using"));
@@ -1081,7 +1081,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
     case QSanguosha::FinishJudge: {
         JudgeStruct *judge = data.value<JudgeStruct *>();
 
-        if (room->getCardPlace(judge->card()->effectiveId()) == QSanguosha::PlaceJudge) {
+        if (room->cardPlace(judge->card()->effectiveId()) == QSanguosha::PlaceJudge) {
             CardMoveReason reason(QSanguosha::MoveReasonJudgeDone, judge->who->objectName(), QString(), judge->reason);
             if (judge->retrial_by_response != nullptr) {
                 reason.m_extraData = QVariant::fromValue(judge->retrial_by_response);

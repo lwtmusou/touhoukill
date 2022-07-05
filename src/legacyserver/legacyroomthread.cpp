@@ -47,7 +47,7 @@ void RoomThread::constructTriggerTable()
 LegacyServerPlayer *RoomThread::find3v3Next(QList<LegacyServerPlayer *> &first, QList<LegacyServerPlayer *> &second)
 {
     bool all_actioned = true;
-    foreach (LegacyServerPlayer *player, room->m_alivePlayers) {
+    foreach (LegacyServerPlayer *player, room->getAlivePlayers()) {
         if (!player->hasFlag(QStringLiteral("actioned"))) {
             all_actioned = false;
             break;
@@ -55,7 +55,7 @@ LegacyServerPlayer *RoomThread::find3v3Next(QList<LegacyServerPlayer *> &first, 
     }
 
     if (all_actioned) {
-        foreach (LegacyServerPlayer *player, room->m_alivePlayers) {
+        foreach (LegacyServerPlayer *player, room->getAlivePlayers()) {
             room->setPlayerFlag(player, QStringLiteral("-actioned"));
             QVariant v = QVariant::fromValue(player);
             trigger(QSanguosha::ActionedReset, v);
@@ -371,7 +371,7 @@ void RoomThread::run()
         QList<LegacyServerPlayer *> first;
         QList<LegacyServerPlayer *> second;
         if (room->serverInfo()->GameMode->name() == QStringLiteral("06_3v3")) {
-            foreach (LegacyServerPlayer *player, room->m_players) {
+            foreach (LegacyServerPlayer *player, room->getPlayers()) {
                 switch (player->role()) {
                 case QSanguosha::RoleLord:
                     warm.prepend(player);

@@ -37,8 +37,6 @@ public:
     void saveWinnerTable(const QString &winner, bool isSurrender = false);
     void countDescription();
 
-    friend class RoomThread;
-
     QSGS_STATE_ROOM int getLack() const;
     QSGS_STATE_GAME bool isFinished() const;
 
@@ -71,9 +69,7 @@ public:
     QSGS_STATE_GAME QVariant getTag(const QString &key) const;
     QSGS_STATE_GAME void removeTag(const QString &key);
     QSGS_STATE_GAME QStringList getTagNames() const;
-    QSGS_STATE_GAME QSanguosha::Place getCardPlace(int card_id) const;
-    QSGS_STATE_GAME LegacyServerPlayer *getCardOwner(int card_id) const;
-    QSGS_STATE_GAME void setCardMapping(int card_id, LegacyServerPlayer *owner, QSanguosha::Place place);
+
     // FIXME: Replace their return value to IDSet.
     QSGS_STATE_GAME QList<int> getCardIdsOnTable(const Card *) const;
     QSGS_STATE_GAME QList<int> getCardIdsOnTable(const IdSet &card_ids) const;
@@ -86,10 +82,6 @@ public:
 
     QSGS_SOCKET LegacyServerPlayer *addSocket(LegacyClientSocket *socket);
 
-    QSGS_SOCKET inline int getId() const
-    {
-        return _m_Id;
-    }
     QSGS_STATE_ROOM bool isFull() const;
     QSGS_STATE_ROOM bool canPause(LegacyServerPlayer *p) const;
     QSGS_STATE_ROOM void tryPause();
@@ -293,7 +285,6 @@ public:
     QSGS_LOGIC void changeHero(LegacyServerPlayer *player, const QString &new_general, bool full_state, bool invoke_start = true, bool isSecondaryHero = false,
                                bool sendLog = true);
     QSGS_LOGIC void swapSeat(LegacyServerPlayer *a, LegacyServerPlayer *b);
-    lua_State *getLuaState() const;
     QSGS_LOGIC void setFixedDistance(Player *from, const Player *to, int distance);
     QSGS_LOGIC void reverseFor3v3(const Card *card, LegacyServerPlayer *player, QList<LegacyServerPlayer *> &list);
     QSGS_SOCKET void signup(LegacyServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot);
@@ -318,12 +309,11 @@ public:
     QSGS_LOGIC void throwCard(const Card *card, LegacyServerPlayer *who, LegacyServerPlayer *thrower = nullptr, bool notifyLog = true);
     QSGS_LOGIC void throwCard(const Card *card, const CardMoveReason &reason, LegacyServerPlayer *who, LegacyServerPlayer *thrower = nullptr, bool notifyLog = true);
 
-    QSGS_LOGIC void moveCardTo(const Card *card, LegacyServerPlayer *dstPlayer, QSanguosha::Place dstPlace, bool forceMoveVisible = false);
-    QSGS_LOGIC void moveCardTo(const Card *card, LegacyServerPlayer *dstPlayer, QSanguosha::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible = false);
-    QSGS_LOGIC void moveCardTo(const Card *card, LegacyServerPlayer *srcPlayer, LegacyServerPlayer *dstPlayer, QSanguosha::Place dstPlace, const CardMoveReason &reason,
+    QSGS_LOGIC void moveCardTo(const Card *card, Player *dstPlayer, QSanguosha::Place dstPlace, bool forceMoveVisible = false);
+    QSGS_LOGIC void moveCardTo(const Card *card, Player *dstPlayer, QSanguosha::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible = false);
+    QSGS_LOGIC void moveCardTo(const Card *card, Player *srcPlayer, Player *dstPlayer, QSanguosha::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible = false);
+    QSGS_LOGIC void moveCardTo(const Card *card, Player *srcPlayer, Player *dstPlayer, QSanguosha::Place dstPlace, const QString &pileName, const CardMoveReason &reason,
                                bool forceMoveVisible = false);
-    QSGS_LOGIC void moveCardTo(const Card *card, LegacyServerPlayer *srcPlayer, LegacyServerPlayer *dstPlayer, QSanguosha::Place dstPlace, const QString &pileName,
-                               const CardMoveReason &reason, bool forceMoveVisible = false);
     QSGS_LOGIC void moveCardsAtomic(QList<LegacyCardsMoveStruct> cards_move, bool forceMoveVisible);
     QSGS_LOGIC void moveCardsAtomic(const LegacyCardsMoveStruct &cards_move, bool forceMoveVisible);
     QSGS_LOGIC void moveCardsToEndOfDrawpile(const QList<int> &card_ids, bool forceVisible = false);
@@ -401,8 +391,15 @@ public:
     QSGS_LOGIC void cheat(LegacyServerPlayer *player, const QJsonValue &args);
     QSGS_LOGIC bool makeSurrender(LegacyServerPlayer *player);
 
-protected:
-    int _m_Id;
+    static QString generatePlayerName();
+    void prepareForStart();
+    void assignGeneralsForPlayers(const QList<LegacyServerPlayer *> &to_assign);
+    void chooseGenerals();
+    void chooseHegemonyGenerals();
+    void broadcast(const QString &message, LegacyServerPlayer *except = nullptr);
+    void initCallbacks();
+    QString askForOrder(LegacyServerPlayer *player, const QString &default_choice);
+    QString askForRole(LegacyServerPlayer *player, const QStringList &roles, const QString &scheme);
 
 private:
     struct _MoveSourceClassifier
@@ -504,7 +501,7 @@ private:
     };
 
     int _m_lastMovementId;
-    void _fillMoveInfo(LegacyCardsMoveStruct &moves, int card_index) const;
+    void _fillMoveInfo(LegacyCardsMoveStruct &moves, int card_index);
     QList<LegacyCardsMoveOneTimeStruct> _mergeMoves(QList<LegacyCardsMoveStruct> cards_moves);
     QList<LegacyCardsMoveStruct> _separateMoves(QList<LegacyCardsMoveOneTimeStruct> moveOneTimes);
     QString _chooseDefaultGeneral(LegacyServerPlayer *player) const;
@@ -522,7 +519,6 @@ private:
     bool game_started2;
     bool game_finished;
     bool game_paused;
-    lua_State *L;
     bool fill_robot;
 
     RoomThread *thread;
@@ -538,9 +534,6 @@ private:
     bool _m_raceStarted;
     QAtomicPointer<LegacyServerPlayer> _m_raceWinner;
 
-    QMap<int, QSanguosha::Place> place_map;
-    QMap<int, LegacyServerPlayer *> owner_map;
-
     const Card *provided;
     bool has_provided;
     LegacyServerPlayer *provider;
@@ -555,16 +548,6 @@ private:
     mutable QMutex m_mutex;
 
     volatile bool playerPropertySet;
-
-    static QString generatePlayerName();
-    void prepareForStart();
-    void assignGeneralsForPlayers(const QList<LegacyServerPlayer *> &to_assign);
-    void chooseGenerals();
-    void chooseHegemonyGenerals();
-    void broadcast(const QString &message, LegacyServerPlayer *except = nullptr);
-    void initCallbacks();
-    QString askForOrder(LegacyServerPlayer *player, const QString &default_choice);
-    QString askForRole(LegacyServerPlayer *player, const QStringList &roles, const QString &scheme);
 
     //process client requests
 
@@ -592,8 +575,10 @@ private slots:
     void reportDisconnection();
     void processClientPacket(const QString &packet);
     void assignRoles();
-    void startGame();
     void slotSetProperty(LegacyServerPlayer *player, const char *property_name, const QVariant &value);
+
+public slots:
+    void startGame();
 
 signals:
     void room_message(const QString &msg);
