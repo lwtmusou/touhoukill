@@ -296,7 +296,16 @@ jobs:
           { sys: ucrt64,  env: ucrt-x86_64 },
           { sys: clang64, env: clang-x86_64 },
         ]
-    name: build-msys-${{ matrix.msys.sys }}
+        dependency:
+          - dep:
+            optionalDependency:
+          - dep: -Lua
+            optionalDependency: lua
+          - dep: -vorbis
+            optionalDependency: libvorbis
+          - dep: -Lua-vorbis
+            optionalDependency: lua libvorbis
+    name: build-msys-${{ matrix.msys.sys }}${{ matrix.dependency.dep }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -307,6 +316,12 @@ jobs:
           msystem: ${{ matrix.msys.sys }}
           install: mingw-w64-${{ matrix.msys.env }}-cmake mingw-w64-${{ matrix.msys.env }}-qt5 mingw-w64-${{ matrix.msys.env }}-qt6 mingw-w64-${{ matrix.msys.env }}-swig mingw-w64-${{ matrix.msys.env }}-toolchain mingw-w64-${{ matrix.msys.env }}-ninja
           update: true
+
+      - name: install optional dependencies and update
+        shell: msys2 {0}
+        run : |
+          prependPrefix() { while read; do for i in ${REPLY}; do echo "mingw-w64-${{ matrix.msys.env }}-${i}" ; done; done }
+          pacman -Syu --noconfirm `echo "${{ matrix.dependency.optionalDependency }}" | prependPrefix`
 
       - name: run cmake+ninja
         shell: msys2 {0}
