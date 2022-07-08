@@ -92,16 +92,6 @@ void LegacyRoom::initCallbacks()
     m_callbacks[S_COMMAND_PRESHOW] = &LegacyRoom::processRequestPreshow;
 }
 
-LegacyServerPlayer *LegacyRoom::getCurrent() const
-{
-    return current;
-}
-
-void LegacyRoom::setCurrent(LegacyServerPlayer *current)
-{
-    this->current = current;
-}
-
 int LegacyRoom::alivePlayerCount() const
 {
     return m_alivePlayers.count();

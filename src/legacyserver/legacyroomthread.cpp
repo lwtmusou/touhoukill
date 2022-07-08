@@ -70,7 +70,7 @@ LegacyServerPlayer *RoomThread::find3v3Next(QList<LegacyServerPlayer *> &first, 
         return room->askForPlayerChosen(first.first(), first_alive, QStringLiteral("3v3-action"), QStringLiteral("@3v3-action"));
     }
 
-    LegacyServerPlayer *current = room->getCurrent();
+    LegacyServerPlayer *current = RefactorProposal::fixme_cast<LegacyServerPlayer *>(room->currentRound());
     if (current != first.first()) {
         LegacyServerPlayer *another = nullptr;
         if (current == first.last())
@@ -98,7 +98,7 @@ void RoomThread::run3v3(QList<LegacyServerPlayer *> &first, QList<LegacyServerPl
 {
     try {
         forever {
-            room->setCurrent(current);
+            room->setCurrentRound(current);
             QVariant v = QVariant::fromValue(current);
             trigger(QSanguosha::TurnStart, v);
             room->setPlayerFlag(current, QStringLiteral("actioned"));
@@ -115,7 +115,7 @@ void RoomThread::run3v3(QList<LegacyServerPlayer *> &first, QList<LegacyServerPl
 void RoomThread::_handleTurnBroken3v3(QList<LegacyServerPlayer *> &first, QList<LegacyServerPlayer *> &second, LegacyGameRule *game_rule)
 {
     try {
-        LegacyServerPlayer *player = room->getCurrent();
+        LegacyServerPlayer *player = RefactorProposal::fixme_cast<LegacyServerPlayer *>(room->currentRound());
         QVariant v = QVariant::fromValue(player);
         trigger(QSanguosha::TurnBroken, v);
         if (player->phase() != QSanguosha::PhaseNotActive) {
@@ -139,7 +139,7 @@ void RoomThread::_handleTurnBroken3v3(QList<LegacyServerPlayer *> &first, QList<
 
 LegacyServerPlayer *RoomThread::findHulaoPassNext(LegacyServerPlayer * /*unused*/, const QList<LegacyServerPlayer *> & /*unused*/)
 {
-    LegacyServerPlayer *current = room->getCurrent();
+    LegacyServerPlayer *current = RefactorProposal::fixme_cast<LegacyServerPlayer *>(room->currentRound());
     return qobject_cast<LegacyServerPlayer *>(current->getNextAlive(1, false));
 }
 
@@ -147,7 +147,7 @@ void RoomThread::actionHulaoPass(LegacyServerPlayer *uuz, QList<LegacyServerPlay
 {
     try {
         forever {
-            LegacyServerPlayer *current = room->getCurrent();
+            LegacyServerPlayer *current = RefactorProposal::fixme_cast<LegacyServerPlayer *>(room->currentRound());
             QVariant v = QVariant::fromValue(current);
             trigger(QSanguosha::TurnStart, v);
 
@@ -161,7 +161,7 @@ void RoomThread::actionHulaoPass(LegacyServerPlayer *uuz, QList<LegacyServerPlay
                     }
                 }
             }
-            room->setCurrent(next);
+            room->setCurrentRound(next);
         }
     } catch (QSanguosha::TriggerEvent triggerEvent) {
         if (triggerEvent == QSanguosha::TurnBroken)
@@ -174,7 +174,7 @@ void RoomThread::actionHulaoPass(LegacyServerPlayer *uuz, QList<LegacyServerPlay
 void RoomThread::_handleTurnBrokenHulaoPass(LegacyServerPlayer *uuz, const QList<LegacyServerPlayer *> &league, LegacyGameRule *game_rule)
 {
     try {
-        LegacyServerPlayer *player = room->getCurrent();
+        LegacyServerPlayer *player = RefactorProposal::fixme_cast<LegacyServerPlayer *>(room->currentRound());
         QVariant v = QVariant::fromValue(player);
         trigger(QSanguosha::TurnBroken, v);
         LegacyServerPlayer *next = findHulaoPassNext(uuz, league);
@@ -184,7 +184,7 @@ void RoomThread::_handleTurnBrokenHulaoPass(LegacyServerPlayer *uuz, const QList
             player->changePhase(player->phase(), QSanguosha::PhaseNotActive);
         }
 
-        room->setCurrent(next);
+        room->setCurrentRound(next);
         actionHulaoPass(uuz, league, game_rule);
     } catch (QSanguosha::TriggerEvent triggerEvent) {
         if (triggerEvent == QSanguosha::TurnBroken)
@@ -198,7 +198,7 @@ void RoomThread::actionNormal(LegacyGameRule *game_rule)
 {
     try {
         forever {
-            LegacyServerPlayer *current = room->getCurrent();
+            LegacyServerPlayer *current = RefactorProposal::fixme_cast<LegacyServerPlayer *>(room->currentRound());
             QVariant data = QVariant::fromValue(current);
             trigger(QSanguosha::TurnStart, data);
             if (room->isFinished())
@@ -206,7 +206,7 @@ void RoomThread::actionNormal(LegacyGameRule *game_rule)
 
             while (nextExtraTurn != nullptr) {
                 extraTurnReturn = current;
-                room->setCurrent(nextExtraTurn);
+                room->setCurrentRound(nextExtraTurn);
                 LegacyServerPlayer *nextExtraTurnCopy = nextExtraTurn;
                 QVariant data = QVariant::fromValue(nextExtraTurn);
                 nextExtraTurn = nullptr;
@@ -224,7 +224,7 @@ void RoomThread::actionNormal(LegacyGameRule *game_rule)
                 extraTurnReturn = nullptr;
             }
 
-            room->setCurrent(qobject_cast<LegacyServerPlayer *>(current->getNextAlive(1, false)));
+            room->setCurrentRound(qobject_cast<LegacyServerPlayer *>(current->getNextAlive(1, false)));
         }
     } catch (QSanguosha::TriggerEvent triggerEvent) {
         if (triggerEvent == QSanguosha::TurnBroken)
@@ -237,7 +237,7 @@ void RoomThread::actionNormal(LegacyGameRule *game_rule)
 void RoomThread::_handleTurnBrokenNormal(LegacyGameRule *game_rule)
 {
     try {
-        LegacyServerPlayer *player = room->getCurrent();
+        LegacyServerPlayer *player = RefactorProposal::fixme_cast<LegacyServerPlayer *>(room->currentRound());
         QVariant data = QVariant::fromValue(player);
         trigger(QSanguosha::TurnBroken, data);
 
@@ -256,7 +256,7 @@ void RoomThread::_handleTurnBrokenNormal(LegacyGameRule *game_rule)
 
         while (nextExtraTurn != nullptr) {
             extraTurnReturn = player;
-            room->setCurrent(nextExtraTurn);
+            room->setCurrentRound(nextExtraTurn);
             LegacyServerPlayer *nextExtraTurnCopy = nextExtraTurn;
             QVariant data = QVariant::fromValue(nextExtraTurn);
             nextExtraTurn = nullptr;
@@ -274,7 +274,7 @@ void RoomThread::_handleTurnBrokenNormal(LegacyGameRule *game_rule)
         }
 
         LegacyServerPlayer *next = qobject_cast<LegacyServerPlayer *>(player->getNextAlive(1, false));
-        room->setCurrent(next);
+        room->setCurrentRound(next);
         actionNormal(game_rule);
     } catch (QSanguosha::TriggerEvent triggerEvent) {
         if (triggerEvent == QSanguosha::TurnBroken)
@@ -406,7 +406,7 @@ void RoomThread::run()
             QList<LegacyServerPlayer *> league = room->players();
             league.removeOne(uuz);
 
-            room->setCurrent(league.first());
+            room->setCurrentRound(league.first());
             actionHulaoPass(uuz, league, game_rule);
         } else {
             if (room->serverInfo()->GameMode->name() == QStringLiteral("02_1v1")) {
@@ -418,7 +418,7 @@ void RoomThread::run()
                 trigger(QSanguosha::Debut, v1);
                 QVariant v2 = QVariant::fromValue(second);
                 trigger(QSanguosha::Debut, v2);
-                room->setCurrent(first);
+                room->setCurrentRound(first);
             }
 
             actionNormal(game_rule);

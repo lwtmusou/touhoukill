@@ -210,7 +210,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
         break;
     }
     case QSanguosha::TurnStart: {
-        LegacyServerPlayer *player = room->getCurrent();
+        LegacyServerPlayer *player = RefactorProposal::fixme_cast<LegacyServerPlayer *>(room->currentRound());
         if (player == nullptr)
             return false;
         if (room->getTag(QStringLiteral("FirstRound")).toBool()) {
@@ -556,8 +556,8 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
         if (damage.trigger_chain) {
             if ((damage.nature != QSanguosha::DamageNormal) && !damage.chain) {
                 QList<LegacyServerPlayer *> chained_players;
-                if (room->getCurrent()->isDead())
-                    chained_players = room->getOtherPlayers(room->getCurrent());
+                if (room->currentRound()->isDead())
+                    chained_players = room->getOtherPlayers(RefactorProposal::fixme_cast<LegacyServerPlayer *>(room->currentRound()));
                 else
                     chained_players = room->getAllPlayers();
                 foreach (LegacyServerPlayer *chained_player, chained_players) {
