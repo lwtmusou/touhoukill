@@ -22,7 +22,7 @@ struct LogMessage;
 class QSGS_CORE_EXPORT GameLogic
 {
 public:
-    virtual ~GameLogic() = 0;
+    virtual ~GameLogic();
 
     enum GuanxingType
     {

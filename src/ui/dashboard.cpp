@@ -1292,7 +1292,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
                 pile << id;
         }
     } else if (pile_name == QStringLiteral("#judging_area")) {
-        pile = List2Set(Self->judgingArea());
+        pile = List2Set(Self->judgingAreaIds());
     } else {
         pile = Self->pile(new_name);
     }

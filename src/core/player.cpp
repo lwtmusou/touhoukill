@@ -933,7 +933,7 @@ QList<const Card *> Player::equipCards() const
     return equips;
 }
 
-IdSet Player::equips() const
+IdSet Player::equipIds() const
 {
     QList<int> equips {d->weapon, d->armor, d->defensiveHorse, d->offensiveHorse, d->treasure};
     equips.removeAll(-1);
@@ -1032,7 +1032,7 @@ QList<const Card *> Player::judgingAreaCards() const
     return cards;
 }
 
-QList<int> Player::judgingArea() const
+QList<int> Player::judgingAreaIds() const
 {
     return d->judgingArea;
 }
@@ -1111,7 +1111,7 @@ void Player::setKingdom(const QString &kingdom)
 
 bool Player::isKongcheng() const
 {
-    return handcardNum() == 0;
+    return handCardNum() == 0;
 }
 
 bool Player::isNude() const
@@ -1136,7 +1136,7 @@ bool Player::canDiscard(const Player *to, const QString &flags, const QString &r
         if (!to->shownHandcards().isEmpty())
             return true;
     } else if (flags.contains(QStringLiteral("h"))) {
-        if ((to->handcardNum() - to->shownHandcards().size()) > 0)
+        if ((to->handCardNum() - to->shownHandcards().size()) > 0)
             return true;
     }
     if (flags.contains(judging_flag) && !to->judgingAreaCards().isEmpty())
@@ -1207,7 +1207,7 @@ bool Player::containsTrick(const QString &trick_name) const
     return false;
 }
 
-int Player::handcardNum() const
+int Player::handCardNum() const
 {
     return d->handCardNum;
 }
@@ -1297,7 +1297,7 @@ void Player::addCard(const Card *card, Place place, const QString &pile_name)
     }
 }
 
-IdSet Player::handcards() const
+IdSet Player::handCardIds() const
 {
     return d->handcards;
 }
@@ -1410,7 +1410,7 @@ bool Player::canSlash(const Player *other, bool distance_limit, int rangefix, co
 
 int Player::getCardCount(bool include_equip, bool include_judging) const
 {
-    int count = handcardNum();
+    int count = handCardNum();
     if (include_equip) {
         if (d->weapon != -1)
             count++;
@@ -1997,7 +1997,7 @@ void Player::removeBrokenEquips(const IdSet &card_ids)
         d->brokenEquips.remove(id);
 }
 
-void Player::addToShownHandCards(const IdSet &card_ids)
+void Player::addShownHandCards(const IdSet &card_ids)
 {
     IdSet add_ids;
     int newKnown = 0;

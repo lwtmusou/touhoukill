@@ -512,7 +512,7 @@ void PlayerCardContainer::updateHandcardNum()
 {
     int num = 0;
     if ((m_player != nullptr) && (m_player->general() != nullptr))
-        num = m_player->handcardNum();
+        num = m_player->handCardNum();
     Q_ASSERT(num >= 0);
     _m_layout->m_handCardFont.paintText(_m_handCardNumText, _m_layout->m_handCardArea, Qt::AlignCenter, QString::number(num));
     _m_handCardNumText->setVisible(true);

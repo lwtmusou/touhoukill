@@ -110,7 +110,7 @@ void LegacyServerPlayer::throwAllEquips()
 
 void LegacyServerPlayer::throwAllHandCards()
 {
-    int card_length = handcardNum();
+    int card_length = handCardNum();
     room->askForDiscard(this, QString(), card_length, card_length);
 }
 
@@ -946,7 +946,7 @@ void LegacyServerPlayer::introduceTo(LegacyServerPlayer *player)
     if (player != nullptr)
         room->doNotify(player, S_COMMAND_ADD_PLAYER, introduce_str);
     else {
-        QList<LegacyServerPlayer *> players = room->getPlayers();
+        QList<LegacyServerPlayer *> players = room->players();
         players.removeOne(this);
         room->doBroadcastNotify(players, S_COMMAND_ADD_PLAYER, introduce_str);
     }
@@ -1086,9 +1086,9 @@ void LegacyServerPlayer::marshal(LegacyServerPlayer *player) const
         moves << move;
     }
 
-    if (!judgingArea().isEmpty()) {
+    if (!judgingAreaIds().isEmpty()) {
         LegacyCardsMoveStruct move;
-        foreach (int card_id, judgingArea()) {
+        foreach (int card_id, judgingAreaIds()) {
             move.card_ids << card_id;
             Card *c = room->card(card_id);
             if (c->isModified())
@@ -1610,7 +1610,7 @@ void LegacyServerPlayer::showGeneral(bool head_general, bool trigger_event, bool
         }
 
         if (role != QStringLiteral("careerist")) {
-            if ((i + 1) > (room->getPlayers().length() / 2)) { // set hidden careerist
+            if ((i + 1) > (room->players().length() / 2)) { // set hidden careerist
                 foreach (LegacyServerPlayer *p, room->getOtherPlayers(this, true)) {
                     QVariant RoleConfirmedTag1 = room->getTag(p->objectName() + QStringLiteral("_RoleConfirmed"));
                     bool roleConfirmed1 = RoleConfirmedTag1.canConvert<bool>() && RoleConfirmedTag1.toBool();
@@ -1622,7 +1622,7 @@ void LegacyServerPlayer::showGeneral(bool head_general, bool trigger_event, bool
             }
         }
 
-        if (i > (room->getPlayers().length() / 2))
+        if (i > (room->players().length() / 2))
             role = QStringLiteral("careerist");
 
         room->setPlayerProperty(this, "role", role);
@@ -1990,7 +1990,7 @@ void LegacyServerPlayer::summonFriends(const QString &type)
             room->setPlayerFlag(this, QStringLiteral("Global_SummonFailed"));
 
     } else if (type == QStringLiteral("Formation")) {
-        int n = room->players(false, false).length();
+        int n = ((RoomObject *)room)->players(false, false).length();
         int asked = n;
         bool failed = true;
         for (int i = 1; i < n; ++i) {

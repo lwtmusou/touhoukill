@@ -44,10 +44,9 @@ public:
     QSGS_STATE_GAME void setCurrent(LegacyServerPlayer *current);
     QSGS_STATE_GAME int alivePlayerCount() const;
     QSGS_STATE_GAME QList<LegacyServerPlayer *> getOtherPlayers(LegacyServerPlayer *except, bool include_dead = false) const;
-    QSGS_STATE_GAME QList<LegacyServerPlayer *> getPlayers() const;
+    QSGS_STATE_GAME QList<LegacyServerPlayer *> players() const;
     QSGS_STATE_GAME QList<LegacyServerPlayer *> getAllPlayers(bool include_dead = false) const;
     QSGS_STATE_GAME QList<LegacyServerPlayer *> getAlivePlayers() const;
-    QSGS_STATE_GAME LegacyServerPlayer *getCurrentDyingPlayer() const;
     QSGS_STATE_GAME QStringList aliveRoles(LegacyServerPlayer *except = nullptr) const;
     QSGS_STATE_GAME LegacyServerPlayer *getLord(const QString &kingdom = QStringLiteral("wei"), bool include_death = false) const;
     QSGS_STATE_GAME QList<LegacyServerPlayer *> getLieges(const QString &kingdom, LegacyServerPlayer *lord) const;

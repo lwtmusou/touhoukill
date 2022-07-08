@@ -124,7 +124,7 @@ void LegacyGameRule::onPhaseProceed(LegacyRoom *room, LegacyServerPlayer *player
     }
     case QSanguosha::PhaseDiscard: {
         int discard_num = 0; //discard in one time
-        discard_num = player->handcardNum() - player->maxCards();
+        discard_num = player->handCardNum() - player->maxCards();
         if (discard_num > 0)
             room->askForDiscard(player, QStringLiteral("gamerule"), discard_num, discard_num);
         break;
@@ -150,7 +150,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
     switch (triggerEvent) {
     case QSanguosha::GameStart: {
         if (data.isNull()) {
-            foreach (LegacyServerPlayer *player, room->getPlayers()) {
+            foreach (LegacyServerPlayer *player, room->players()) {
                 Q_ASSERT(player->general() != nullptr);
                 if (!isHegemonyGameMode(room->serverInfo()->GameMode->name())
                     && (player->general()->kingdom() == QStringLiteral("zhu") || player->general()->kingdom() == QStringLiteral("touhougod"))
@@ -186,7 +186,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
             bool kof_mode = room->serverInfo()->GameMode->name() == QStringLiteral("02_1v1")
                 && Config.value(QStringLiteral("1v1/Rule"), QStringLiteral("2013")).toString() != QStringLiteral("Classical");
             QList<DrawNCardsStruct> s_list;
-            foreach (LegacyServerPlayer *p, room->getPlayers()) {
+            foreach (LegacyServerPlayer *p, room->players()) {
                 int n = kof_mode ? p->maxHp() : 4;
                 DrawNCardsStruct s;
                 s.player = p;
@@ -199,7 +199,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
             QList<int> n_list;
             foreach (DrawNCardsStruct s, s_list)
                 n_list << s.n;
-            room->drawCards(room->getPlayers(), n_list, QStringLiteral("initialDraw"));
+            room->drawCards(room->players(), n_list, QStringLiteral("initialDraw"));
             if (Config.LuckCardLimitation > 0)
                 room->askForLuckCard();
             foreach (DrawNCardsStruct s, s_list) {
@@ -1253,7 +1253,7 @@ void LegacyGameRule::changeGeneral1v1(LegacyRoom *room, LegacyServerPlayer *play
     if (player->kingdom() != player->general()->kingdom())
         room->setPlayerProperty(player, "kingdom", player->general()->kingdom());
 
-    QList<LegacyServerPlayer *> notified = classical ? room->getOtherPlayers(player, true) : room->getPlayers();
+    QList<LegacyServerPlayer *> notified = classical ? room->getOtherPlayers(player, true) : room->players();
     room->doBroadcastNotify(notified, QSanProtocol::S_COMMAND_REVEAL_GENERAL, QJsonArray() << player->objectName() << new_general);
 
     if (!player->faceUp())
@@ -1410,14 +1410,14 @@ QString LegacyGameRule::getWinner(LegacyRoom *room, LegacyServerPlayer *victim) 
             if ((win_player->getGeneral2() != nullptr) && !win_player->hasShownGeneral2())
                 win_player->showGeneral(false, false, false);
 
-            foreach (LegacyServerPlayer *p, room->getPlayers()) {
+            foreach (LegacyServerPlayer *p, room->players()) {
                 if (win_player->isFriendWith(p))
                     winners << p->objectName();
             }
             winner = winners.join(QStringLiteral("+"));
         } else {
             QList<LegacyServerPlayer *> winners;
-            int careerist_threshold = (room->getPlayers().length() / 2);
+            int careerist_threshold = (room->players().length() / 2);
             QMap<QString, QList<LegacyServerPlayer *>> role_count;
             QMap<QString, QList<LegacyServerPlayer *>> dead_role_count;
             foreach (LegacyServerPlayer *p, room->getAllPlayers(true)) {

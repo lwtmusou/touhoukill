@@ -66,7 +66,7 @@ void PlayerCardBox::chooseCard(const QString &reason, const Player *player, cons
     bool judging = false;
 
     if ((flags.contains(QStringLiteral("h")) || flags.contains(QStringLiteral("s"))) && !player->isKongcheng()) {
-        updateNumbers(player->handcardNum());
+        updateNumbers(player->handCardNum());
         handcard = true;
     }
 
@@ -109,7 +109,7 @@ void PlayerCardBox::chooseCard(const QString &reason, const Player *player, cons
                 const Card *c = ClientInstance->card(id);
                 handcards << c;
             }
-            int hidden = player->handcardNum() - handcards.length();
+            int hidden = player->handCardNum() - handcards.length();
             for (int i = 0; i < hidden; ++i)
                 handcards << nullptr;
         } else

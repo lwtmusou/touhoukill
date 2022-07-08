@@ -40,7 +40,7 @@ void RoomThread::addPlayerSkills(LegacyServerPlayer *player, bool /*unused*/)
 
 void RoomThread::constructTriggerTable()
 {
-    foreach (LegacyServerPlayer *player, room->getPlayers())
+    foreach (LegacyServerPlayer *player, room->players())
         addPlayerSkills(player, true);
 }
 
@@ -288,7 +288,7 @@ void RoomThread::run()
 {
     // initialize random seed for later use
     Config.AIDelay = Config.OriginAIDelay;
-    foreach (LegacyServerPlayer *player, room->getPlayers()) {
+    foreach (LegacyServerPlayer *player, room->players()) {
         //Ensure that the game starts with all player's mutex locked
         player->drainAllLocks();
         player->releaseLock(LegacyServerPlayer::SEMA_MUTEX);
@@ -313,7 +313,7 @@ void RoomThread::run()
         room->doBroadcastNotify(S_COMMAND_START_IN_X_SECONDS, QJsonValue(0));
 
     if (room->serverInfo()->GameMode->name() == QStringLiteral("04_1v3")) {
-        LegacyServerPlayer *lord = room->getPlayers().first();
+        LegacyServerPlayer *lord = room->players().first();
         room->setPlayerProperty(lord, "general", QStringLiteral("yuyuko_1v3"));
 
         QList<const General *> generals = QList<const General *>();
@@ -336,7 +336,7 @@ void RoomThread::run()
             if (names.contains(name))
                 names.removeOne(name);
 
-        foreach (LegacyServerPlayer *player, room->getPlayers()) {
+        foreach (LegacyServerPlayer *player, room->players()) {
             if (player == lord)
                 continue;
 
@@ -371,7 +371,7 @@ void RoomThread::run()
         QList<LegacyServerPlayer *> first;
         QList<LegacyServerPlayer *> second;
         if (room->serverInfo()->GameMode->name() == QStringLiteral("06_3v3")) {
-            foreach (LegacyServerPlayer *player, room->getPlayers()) {
+            foreach (LegacyServerPlayer *player, room->players()) {
                 switch (player->role()) {
                 case QSanguosha::RoleLord:
                     warm.prepend(player);
@@ -403,16 +403,16 @@ void RoomThread::run()
             run3v3(first, second, game_rule, first.first());
         } else if (room->serverInfo()->GameMode->name() == QStringLiteral("04_1v3")) {
             LegacyServerPlayer *uuz = room->getLord();
-            QList<LegacyServerPlayer *> league = room->getPlayers();
+            QList<LegacyServerPlayer *> league = room->players();
             league.removeOne(uuz);
 
             room->setCurrent(league.first());
             actionHulaoPass(uuz, league, game_rule);
         } else {
             if (room->serverInfo()->GameMode->name() == QStringLiteral("02_1v1")) {
-                LegacyServerPlayer *first = room->getPlayers().first();
+                LegacyServerPlayer *first = room->players().first();
                 if (first->roleString() != QStringLiteral("renegade"))
-                    first = room->getPlayers().at(1);
+                    first = room->players().at(1);
                 LegacyServerPlayer *second = room->getOtherPlayers(first).first();
                 QVariant v1 = QVariant::fromValue(first);
                 trigger(QSanguosha::Debut, v1);

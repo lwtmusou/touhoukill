@@ -138,7 +138,7 @@ bool LegacyRoom::broadcastResetCard(const QList<LegacyServerPlayer *> &players, 
     return true;
 }
 
-QList<LegacyServerPlayer *> LegacyRoom::getPlayers() const
+QList<LegacyServerPlayer *> LegacyRoom::players() const
 {
     return m_players;
 }
@@ -260,22 +260,6 @@ void LegacyRoom::enterDying(LegacyServerPlayer *player, DamageStruct *reason)
         doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
     }
     thread->trigger(QSanguosha::QuitDying, dying_data);
-}
-
-LegacyServerPlayer *LegacyRoom::getCurrentDyingPlayer() const
-{
-    QStringList currentdying = getTag(QStringLiteral("CurrentDying")).toStringList();
-    if (currentdying.isEmpty())
-        return nullptr;
-    QString dyingobj = currentdying.last();
-    LegacyServerPlayer *who = nullptr;
-    foreach (LegacyServerPlayer *p, m_alivePlayers) {
-        if (p->objectName() == dyingobj) {
-            who = p;
-            break;
-        }
-    }
-    return who;
 }
 
 void LegacyRoom::revivePlayer(LegacyServerPlayer *player, bool initialize)
@@ -495,7 +479,7 @@ void LegacyRoom::gameOver(const QString &winner, bool isSurrender)
     QStringList all_roles;
     foreach (LegacyServerPlayer *player, m_players) {
         all_roles << player->roleString();
-        if (player->handcardNum() > 0) {
+        if (player->handCardNum() > 0) {
             QStringList handcards;
             foreach (const Card *card, player->handCards())
                 handcards << Sanguosha->cardDescriptor(card->id()).logName();
@@ -1458,7 +1442,7 @@ int LegacyRoom::askForCardChosen(LegacyServerPlayer *player, LegacyServerPlayer 
     }
 
     const IdSet &shownHandcards = who->shownHandcards();
-    QList<int> unknownHandcards = who->handcards().values();
+    QList<int> unknownHandcards = who->handCardIds().values();
     foreach (int id, shownHandcards)
         unknownHandcards.removeOne(id);
 
@@ -1490,7 +1474,7 @@ int LegacyRoom::askForCardChosen(LegacyServerPlayer *player, LegacyServerPlayer 
     Q_ASSERT(!cards.isEmpty());
 
     if (handcard_visible && !who->isKongcheng()) {
-        QList<int> handcards = who->handcards().values();
+        QList<int> handcards = who->handCardIds().values();
         QJsonArray arg;
         arg << who->objectName();
         arg << QSgsJsonUtils::toJsonArray(handcards);
@@ -1629,9 +1613,9 @@ const Card *LegacyRoom::askForCard(LegacyServerPlayer *player, const QString &pa
         if (!card_->isVirtualCard()) {
             Card *wrapped = card(card_->effectiveId());
             if (wrapped->isModified())
-                broadcastUpdateCard(getPlayers(), card_->effectiveId(), wrapped);
+                broadcastUpdateCard(players(), card_->effectiveId(), wrapped);
             else
-                broadcastResetCard(getPlayers(), card_->effectiveId());
+                broadcastResetCard(players(), card_->effectiveId());
         }
 
         if ((method == QSanguosha::MethodUse || method == QSanguosha::MethodResponse) && !isRetrial) {
@@ -1935,7 +1919,7 @@ const Card *LegacyRoom::askForCardShow(LegacyServerPlayer *player, LegacyServerP
     notifyMoveFocus(player, S_COMMAND_SHOW_CARD);
     const Card *card = nullptr;
 
-    if (player->handcardNum() == 1)
+    if (player->handCardNum() == 1)
         card = player->handCards().first();
     else {
         bool success = doRequest(player, S_COMMAND_SHOW_CARD, requestor->generalName(), true);
@@ -3783,7 +3767,7 @@ bool LegacyRoom::useCard(const CardUseStruct &use, bool add_history)
 
             if (card_->face()->isKindOf(QStringLiteral("DelayedTrick")) && card_->isVirtualCard() && card_->subcards().size() == 1) {
                 Card *wrapped = card(card_use.card->effectiveId());
-                broadcastUpdateCard(getPlayers(), wrapped->id(), wrapped);
+                broadcastUpdateCard(players(), wrapped->id(), wrapped);
                 card_use.card = wrapped;
                 wrapped->face()->onUse(this, card_use);
                 return true;
@@ -3794,9 +3778,9 @@ bool LegacyRoom::useCard(const CardUseStruct &use, bool add_history)
                 Card *wrapped = card(card_use.card->effectiveId());
 
                 if (wrapped->isModified())
-                    broadcastUpdateCard(getPlayers(), card_use.card->effectiveId(), wrapped);
+                    broadcastUpdateCard(players(), card_use.card->effectiveId(), wrapped);
                 else
-                    broadcastResetCard(getPlayers(), card_use.card->effectiveId());
+                    broadcastResetCard(players(), card_use.card->effectiveId());
             }
             card_use.card->face()->onUse(this, card_use);
         } else if (card_ != nullptr) {
@@ -4660,7 +4644,7 @@ QList<LegacyCardsMoveStruct> LegacyRoom::_separateMoves(QList<LegacyCardsMoveOne
         LegacyServerPlayer *from = (LegacyServerPlayer *)cls.m_from;
         card_move.from = cls.m_from;
         if ((from != nullptr) && !from_handcards.keys().contains(from))
-            from_handcards[from] = from->handcards().values();
+            from_handcards[from] = from->handCardIds().values();
         card_move.to = cls.m_to;
         if (card_move.from != nullptr)
             card_move.from_player_name = card_move.from->objectName();
@@ -4965,7 +4949,7 @@ void LegacyRoom::updateCardsOnLose(const LegacyCardsMoveStruct &move)
                 card_ = nullptr;
                 // resetCard deletes card
                 resetCard(move.card_ids[i]);
-                broadcastResetCard(getPlayers(), move.card_ids[i]);
+                broadcastResetCard(players(), move.card_ids[i]);
             }
         }
     }
@@ -5297,7 +5281,7 @@ void LegacyRoom::filterCards(LegacyServerPlayer *player, QList<const Card *> car
         if (place == QSanguosha::PlaceHand && !player->isShownHandcard(cardId))
             notifyUpdateCard(player, cardId, cards[i]);
         else {
-            broadcastUpdateCard(getPlayers(), cardId, cards[i]);
+            broadcastUpdateCard(players(), cardId, cards[i]);
             if (place == QSanguosha::PlaceJudge) {
                 LogStruct log;
                 log.type = QStringLiteral("#FilterJudge");
@@ -5478,7 +5462,7 @@ void LegacyRoom::askForLuckCard()
 
         QList<int> draw_list;
         foreach (LegacyServerPlayer *player, used) {
-            draw_list << player->handcardNum();
+            draw_list << player->handCardNum();
 
             CardMoveReason reason(QSanguosha::MoveReasonPut, player->objectName(), QStringLiteral("luck_card"), QString());
             QList<LegacyCardsMoveStruct> moves;
@@ -5487,7 +5471,7 @@ void LegacyRoom::askForLuckCard()
             move.from_place = QSanguosha::PlaceHand;
             move.to = nullptr;
             move.to_place = QSanguosha::PlaceDrawPile;
-            move.card_ids = player->handcards().values();
+            move.card_ids = player->handCardIds().values();
             move.reason = reason;
             moves.append(move);
             moves = _breakDownCardMoves(moves);
@@ -5920,7 +5904,7 @@ int LegacyRoom::doGongxin(LegacyServerPlayer *shenlvmeng, LegacyServerPlayer *ta
     log.type = QStringLiteral("$ViewAllCards");
     log.from = shenlvmeng;
     log.to << target;
-    log.card_str = IntList2StringList(target->handcards().values()).join(QStringLiteral("+"));
+    log.card_str = IntList2StringList(target->handCardIds().values()).join(QStringLiteral("+"));
     doNotify(shenlvmeng, QSanProtocol::S_COMMAND_LOG_SKILL, log.serialize());
 
     ChoiceMadeStruct s;
@@ -5932,7 +5916,7 @@ int LegacyRoom::doGongxin(LegacyServerPlayer *shenlvmeng, LegacyServerPlayer *ta
 
     shenlvmeng->tag[skill_name] = QVariant::fromValue((LegacyServerPlayer *)target);
     int card_id = 0;
-    foreach (int cardId, target->handcards()) {
+    foreach (int cardId, target->handCardIds()) {
         Card *card_ = card(cardId);
         if (card_->isModified())
             notifyUpdateCard(shenlvmeng, cardId, card_);
@@ -5944,13 +5928,13 @@ int LegacyRoom::doGongxin(LegacyServerPlayer *shenlvmeng, LegacyServerPlayer *ta
     QJsonArray gongxinArgs;
     gongxinArgs << target->objectName();
     gongxinArgs << true;
-    gongxinArgs << QSgsJsonUtils::toJsonArray(target->handcards().values());
+    gongxinArgs << QSgsJsonUtils::toJsonArray(target->handCardIds().values());
     gongxinArgs << QSgsJsonUtils::toJsonArray(enabled_ids);
     gongxinArgs << skill_name;
     gongxinArgs << cancellable;
     bool success = doRequest(shenlvmeng, S_COMMAND_SKILL_GONGXIN, gongxinArgs, true);
     const QJsonValue &clientReply = shenlvmeng->getClientReply();
-    if (!success || !QSgsJsonUtils::isNumber(clientReply) || !target->handcards().contains(clientReply.toInt())) {
+    if (!success || !QSgsJsonUtils::isNumber(clientReply) || !target->handCardIds().contains(clientReply.toInt())) {
         if (cancellable)
             shenlvmeng->tag.remove(skill_name);
         return -1;
@@ -5981,7 +5965,7 @@ const Card *LegacyRoom::askForPindian(LegacyServerPlayer *player, LegacyServerPl
     tryPause();
     notifyMoveFocus(player, S_COMMAND_PINDIAN);
 
-    if (player->handcardNum() == 1)
+    if (player->handCardNum() == 1)
         return player->handCards().first();
 
     bool success = doRequest(player, S_COMMAND_PINDIAN, QJsonArray() << from->objectName() << to->objectName(), true);
@@ -6015,9 +5999,9 @@ QList<const Card *> LegacyRoom::askForPindianRace(LegacyServerPlayer *from, Lega
     const Card *from_card = nullptr;
     const Card *to_card = nullptr;
 
-    if (from->handcardNum() == 1)
+    if (from->handCardNum() == 1)
         from_card = from->handCards().first();
-    if (to->handcardNum() == 1)
+    if (to->handCardNum() == 1)
         to_card = to->handCards().first();
 
     if ((from_card != nullptr) && (to_card != nullptr)) {
@@ -6470,11 +6454,11 @@ void LegacyRoom::showAllCards(LegacyServerPlayer *player, LegacyServerPlayer *to
     QJsonArray gongxinArgs;
     gongxinArgs << player->objectName();
     gongxinArgs << false;
-    gongxinArgs << QSgsJsonUtils::toJsonArray(player->handcards().values());
+    gongxinArgs << QSgsJsonUtils::toJsonArray(player->handCardIds().values());
 
     bool isUnicast = (to != nullptr);
 
-    foreach (int cardId, player->handcards()) {
+    foreach (int cardId, player->handCardIds()) {
         Card *card_ = card(cardId);
         if (card_->isModified()) {
             if (isUnicast)
@@ -6494,7 +6478,7 @@ void LegacyRoom::showAllCards(LegacyServerPlayer *player, LegacyServerPlayer *to
         log.type = QStringLiteral("$ViewAllCards");
         log.from = to;
         log.to << player;
-        log.card_str = IntList2StringList(player->handcards().values()).join(QStringLiteral("+"));
+        log.card_str = IntList2StringList(player->handCardIds().values()).join(QStringLiteral("+"));
         doNotify(to, QSanProtocol::S_COMMAND_LOG_SKILL, log.serialize());
 
         ChoiceMadeStruct s;
@@ -6509,9 +6493,9 @@ void LegacyRoom::showAllCards(LegacyServerPlayer *player, LegacyServerPlayer *to
         LogStruct log;
         log.type = QStringLiteral("$ShowAllCards");
         log.from = player;
-        foreach (int card_id, player->handcards())
+        foreach (int card_id, player->handCardIds())
             card(card_id)->addFlag(QStringLiteral("visible"));
-        log.card_str = IntList2StringList(player->handcards().values()).join(QStringLiteral("+"));
+        log.card_str = IntList2StringList(player->handCardIds().values()).join(QStringLiteral("+"));
         sendLog(log);
 
         doBroadcastNotify(S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);

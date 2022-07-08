@@ -123,9 +123,6 @@ public:
     QString generalName(int pos = 0) const;
     QStringList generalNames() const;
 
-    void setState(const QString &state);
-    QString getState() const;
-
     int seat() const;
     void setSeat(int seat);
     bool isAdjacentTo(const Player *another) const;
@@ -155,16 +152,6 @@ public:
     int originalRightDistanceTo(const Player *other) const;
     int distanceTo(const Player *other, int distance_fix = 0) const;
 
-    Player *getNext(bool ignoreRemoved = true);
-    Player *getLast(bool ignoreRemoved = true);
-    Player *getNextAlive(int n = 1, bool ignoreRemoved = true);
-    Player *getLastAlive(int n = 1, bool ignoreRemoved = true);
-
-    const Player *getNext(bool ignoreRemoved = true) const;
-    const Player *getLast(bool ignoreRemoved = true) const;
-    const Player *getNextAlive(int n = 1, bool ignoreRemoved = true) const;
-    const Player *getLastAlive(int n = 1, bool ignoreRemoved = true) const;
-
     inline bool isLord() const
     {
         return role() == QSanguosha::RoleLord;
@@ -183,7 +170,6 @@ public:
     bool hasValidLordSkill(const Skill *skill, bool include_lose = false) const;
 
     void removeDisableShow(const QString &reason);
-
     void setDisableShow(const QList<int> &positions, const QString &reason);
     QStringList disableShow(int pos) const;
     bool canShowGeneral(const QList<int> &positions = {}) const;
@@ -202,15 +188,15 @@ public:
     bool hasEquip() const;
 
     QList<const Card *> judgingAreaCards() const;
-    QList<int> judgingArea() const; // DO NOT USE IDSet SINCE THE ORDER MATTERS
+    QList<int> judgingAreaIds() const; // DO NOT USE IDSet SINCE THE ORDER MATTERS
     void addDelayedTrick(const Card *trick);
     void removeDelayedTrick(const Card *trick);
     bool containsTrick(const QString &trick_name) const;
 
-    int handcardNum() const;
+    int handCardNum() const;
     void removeCard(const Card *card, QSanguosha::Place place, const QString &pile_name = QString());
     void addCard(const Card *card, QSanguosha::Place place, const QString &pile_name = QString());
-    IdSet handcards() const;
+    IdSet handCardIds() const;
     void setHandCards(const IdSet &hc);
     QList<const Card *> handCards() const;
 
@@ -220,7 +206,7 @@ public:
     const Card *offensiveHorse() const;
     const Card *treasure() const;
     QList<const Card *> equipCards() const;
-    IdSet equips() const;
+    IdSet equipIds() const;
     const Card *equipCard(int index) const;
 
     bool hasValidWeapon(const QString &weapon_name) const;
@@ -249,14 +235,10 @@ public:
 
     bool canSlash(const Player *other, const Card *slash, bool distance_limit = true, int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
     bool canSlash(const Player *other, bool distance_limit = true, int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
-    int getCardCount(bool include_equip = true, bool = false) const;
 
     IdSet pile(const QString &pile_name) const;
     QStringList pileNames() const;
     QString pileName(int card_id) const;
-
-    IdSet getHandPile() const;
-    QStringList getHandPileList(bool view_as_skill = true) const;
 
     void addHistory(const QString &name, int times = 1);
     void clearHistory();
@@ -306,7 +288,7 @@ public:
 
     void addBrokenEquips(const IdSet &card_ids);
     void removeBrokenEquips(const IdSet &card_ids);
-    void addToShownHandCards(const IdSet &card_ids);
+    void addShownHandCards(const IdSet &card_ids);
     void removeShownHandCards(const IdSet &card_ids);
 
     RoomObject *roomObject() const;
@@ -315,6 +297,24 @@ public:
     QVariantMap tag;
 
     // bool hasValidSkill()
+
+    void setState(const QString &state);
+    QString getState() const;
+
+    Player *getNext(bool ignoreRemoved = true);
+    Player *getLast(bool ignoreRemoved = true);
+    Player *getNextAlive(int n = 1, bool ignoreRemoved = true);
+    Player *getLastAlive(int n = 1, bool ignoreRemoved = true);
+
+    const Player *getNext(bool ignoreRemoved = true) const;
+    const Player *getLast(bool ignoreRemoved = true) const;
+    const Player *getNextAlive(int n = 1, bool ignoreRemoved = true) const;
+    const Player *getLastAlive(int n = 1, bool ignoreRemoved = true) const;
+
+    IdSet getHandPile() const;
+    QStringList getHandPileList(bool view_as_skill = true) const;
+
+    int getCardCount(bool include_equip = true, bool = false) const;
 
 #ifndef QSGS_CORE_NODEPRECATED
 

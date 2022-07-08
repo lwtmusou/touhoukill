@@ -1950,7 +1950,7 @@ void Client::showCard(const QJsonValue &show_str)
 
     Player *player = findPlayer(player_name);
     if (player != Self) {
-        IdSet s = player->handcards();
+        IdSet s = player->handCardIds();
         s << card_id;
         player->setHandCards(s);
     }
