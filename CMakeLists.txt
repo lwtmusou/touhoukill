@@ -55,12 +55,6 @@ set(CMAKE_SWIG_FLAGS "-nodefaultctor")
 find_package(SWIG COMPONENTS lua REQUIRED)
 include(UseSWIG)
 
-find_package(PkgConfig)
-if (PKG_CONFIG_FOUND)
-    # Should we use "lua>=5.4 to indicate a lua 5.4? Lua is not even source compatible between minor versions!"
-    pkg_search_module(lua54 IMPORTED_TARGET GLOBAL lua-5.4 lua5.4 lua54)
-endif()
-
 set_property(SOURCE src/swig/sgs.i
     PROPERTY
     CPLUSPLUS ON
@@ -285,8 +279,18 @@ if (WIN32)
     configure_file(resource/QSanguosha_resource.rc.in QSanguosha_resource.rc @ONLY)
 endif()
 
-if (lua54_FOUND)
-    add_library(QSanguoshaLibs::lua54 ALIAS PkgConfig::lua54)
+find_package(Lua)
+
+if (LUA_FOUND)
+    if  (LUA_VERSION_STRING VERSION_LESS 5.4)
+        set(LUA_FOUND false)
+    endif()
+endif()
+
+if (LUA_FOUND)
+    add_library(QSanguoshaLibslua54 INTERFACE)
+    target_include_directories(QSanguoshaLibslua54 INTERFACE ${LUA_INCLUDE_DIR})
+    target_link_libraries(QSanguoshaLibslua54 INTERFACE ${LUA_LIBRARIES})
 else()
     set(QSGS_LUAVERSION 5.4.4)
 
@@ -354,18 +358,19 @@ else()
         src/3rdparty/lua-${QSGS_LUAVERSION}/src/lua.h
     )
 
-    add_library(lua54 STATIC ${QSGS_LUA_FILE})
-    target_include_directories(lua54 PUBLIC "src/3rdparty/lua-${QSGS_LUAVERSION}/src")
+    add_library(QSanguoshaLibslua54 STATIC ${QSGS_LUA_FILE})
+    target_include_directories(QSanguoshaLibslua54 PUBLIC "src/3rdparty/lua-${QSGS_LUAVERSION}/src")
     if(APPLE)
-        target_compile_definitions(lua54 PRIVATE LUA_USE_MACOSX)
+        target_compile_definitions(QSanguoshaLibslua54 PRIVATE LUA_USE_MACOSX)
     elseif(NOT WIN32)
-        target_compile_definitions(lua54 PRIVATE LUA_USE_LINUX)
+        target_compile_definitions(QSanguoshaLibslua54 PRIVATE LUA_USE_LINUX)
     endif()
-
-    add_library(QSanguoshaLibs::lua54 ALIAS lua54)
 endif()
 
+add_library(QSanguoshaLibs::lua54 ALIAS QSanguoshaLibslua54)
+
 if (Qt5Multimedia_FOUND OR Qt6Multimedia_FOUND)
+    find_package(PkgConfig)
     if (PKG_CONFIG_FOUND)
         pkg_check_modules(oggvorbisfile IMPORTED_TARGET GLOBAL ogg>=1.0.0 vorbis>=1.0.0 vorbisfile>=1.0.0)
     endif()
