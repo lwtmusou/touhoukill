@@ -284,7 +284,11 @@ public:
     bool isFriendWith(const Player *player, bool considerAnjiang = false) const;
     bool willBeFriendWith(const Player *player) const;
 
-    QList<const Player *> getFormation() const;
+    QList<const Player *> formationPlayers() const;
+    QList<Player *> formationPlayers();
+    bool inFormationRalation(const Player *teammate) const;
+
+    bool inSiegeRelation(const Player *skill_owner, const Player *victim) const;
 
     void addBrokenEquips(const IdSet &card_ids);
     void removeBrokenEquips(const IdSet &card_ids);

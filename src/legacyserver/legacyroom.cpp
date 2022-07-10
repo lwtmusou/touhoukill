@@ -92,18 +92,14 @@ void LegacyRoom::initCallbacks()
     m_callbacks[S_COMMAND_PRESHOW] = &LegacyRoom::processRequestPreshow;
 }
 
-int LegacyRoom::alivePlayerCount() const
-{
-    return m_alivePlayers.count();
-}
-
 bool LegacyRoom::notifyUpdateCard(LegacyServerPlayer *player, int cardId, const Card *newCard)
 {
     // TODO： Duplicated faceName here.
     QJsonArray val;
     Q_ASSERT(newCard);
     QString className = newCard->faceName();
-    val << cardId << newCard->suit() << newCard->suit() << className << newCard->skillName() << newCard->faceName() << QSgsJsonUtils::toJsonArray(newCard->flags().values());
+    val << cardId << newCard->suit() << newCard->numberString() << className << newCard->skillName() << newCard->faceName()
+        << QSgsJsonUtils::toJsonArray(newCard->flags().values());
     doNotify(player, S_COMMAND_UPDATE_CARD, val);
     return true;
 }
@@ -128,7 +124,7 @@ bool LegacyRoom::broadcastResetCard(const QList<LegacyServerPlayer *> &players, 
     return true;
 }
 
-QList<LegacyServerPlayer *> LegacyRoom::players() const
+QList<LegacyServerPlayer *> LegacyRoom::serverPlayers() const
 {
     return m_players;
 }
@@ -1603,9 +1599,9 @@ const Card *LegacyRoom::askForCard(LegacyServerPlayer *player, const QString &pa
         if (!card_->isVirtualCard()) {
             Card *wrapped = card(card_->effectiveId());
             if (wrapped->isModified())
-                broadcastUpdateCard(players(), card_->effectiveId(), wrapped);
+                broadcastUpdateCard(serverPlayers(), card_->effectiveId(), wrapped);
             else
-                broadcastResetCard(players(), card_->effectiveId());
+                broadcastResetCard(serverPlayers(), card_->effectiveId());
         }
 
         if ((method == QSanguosha::MethodUse || method == QSanguosha::MethodResponse) && !isRetrial) {
@@ -3757,7 +3753,7 @@ bool LegacyRoom::useCard(const CardUseStruct &use, bool add_history)
 
             if (card_->face()->isKindOf(QStringLiteral("DelayedTrick")) && card_->isVirtualCard() && card_->subcards().size() == 1) {
                 Card *wrapped = card(card_use.card->effectiveId());
-                broadcastUpdateCard(players(), wrapped->id(), wrapped);
+                broadcastUpdateCard(serverPlayers(), wrapped->id(), wrapped);
                 card_use.card = wrapped;
                 wrapped->face()->onUse(this, card_use);
                 return true;
@@ -3768,9 +3764,9 @@ bool LegacyRoom::useCard(const CardUseStruct &use, bool add_history)
                 Card *wrapped = card(card_use.card->effectiveId());
 
                 if (wrapped->isModified())
-                    broadcastUpdateCard(players(), card_use.card->effectiveId(), wrapped);
+                    broadcastUpdateCard(serverPlayers(), card_use.card->effectiveId(), wrapped);
                 else
-                    broadcastResetCard(players(), card_use.card->effectiveId());
+                    broadcastResetCard(serverPlayers(), card_use.card->effectiveId());
             }
             card_use.card->face()->onUse(this, card_use);
         } else if (card_ != nullptr) {
@@ -4939,7 +4935,7 @@ void LegacyRoom::updateCardsOnLose(const LegacyCardsMoveStruct &move)
                 card_ = nullptr;
                 // resetCard deletes card
                 resetCard(move.card_ids[i]);
-                broadcastResetCard(players(), move.card_ids[i]);
+                broadcastResetCard(serverPlayers(), move.card_ids[i]);
             }
         }
     }
@@ -5102,7 +5098,7 @@ void LegacyRoom::doBattleArrayAnimate(LegacyServerPlayer *player, LegacyServerPl
         return;
     if (target == nullptr) {
         QStringList names;
-        foreach (const Player *p, player->getFormation())
+        foreach (const Player *p, player->formationPlayers())
             names << p->objectName();
         if (names.length() > 1)
             doAnimate(QSanProtocol::S_ANIMATE_BATTLEARRAY, player->objectName(), names.join(QStringLiteral("+")));
@@ -5271,7 +5267,7 @@ void LegacyRoom::filterCards(LegacyServerPlayer *player, QList<const Card *> car
         if (place == QSanguosha::PlaceHand && !player->isShownHandcard(cardId))
             notifyUpdateCard(player, cardId, cards[i]);
         else {
-            broadcastUpdateCard(players(), cardId, cards[i]);
+            broadcastUpdateCard(serverPlayers(), cardId, cards[i]);
             if (place == QSanguosha::PlaceJudge) {
                 LogStruct log;
                 log.type = QStringLiteral("#FilterJudge");

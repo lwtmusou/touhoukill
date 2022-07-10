@@ -170,8 +170,6 @@ public:
     QSGS_STATE_GAME int getPlayerNumWithSameKingdom(const QString &reason, const QString &_to_calculate = QString()) const;
     QSGS_LOGIC bool askForGeneralShow(bool one = true, bool refusable = false);
 
-    QSGS_STATE_GAME bool inSiegeRelation(const LegacyServerPlayer *skill_owner, const LegacyServerPlayer *victim) const;
-    QSGS_STATE_GAME bool inFormationRalation(LegacyServerPlayer *teammate) const;
     QSGS_LOGIC void summonFriends(const QString &type);
 
     QSGS_SOCKET bool reconnect(LegacyClientSocket *socket);

@@ -1957,7 +1957,7 @@ bool Player::canShowGeneral(const QList<int> &positions) const
     return false;
 }
 
-QList<const Player *> Player::getFormation() const
+QList<const Player *> Player::formationPlayers() const
 {
     QList<const Player *> teammates;
     teammates << this;
@@ -1983,6 +1983,50 @@ QList<const Player *> Player::getFormation() const
     }
 
     return teammates;
+}
+
+QList<Player *> Player::formationPlayers()
+{
+    QList<Player *> teammates;
+    teammates << this;
+    int n = d->room->players(false, false).length();
+    int num = n;
+    for (int i = 1; i < n; ++i) {
+        Player *target = getNextAlive(i);
+        if (isFriendWith(target))
+            teammates << target;
+        else {
+            num = i;
+            break;
+        }
+    }
+
+    n -= num;
+    for (int i = 1; i < n; ++i) {
+        Player *target = getLastAlive(i);
+        if (isFriendWith(target))
+            teammates << target;
+        else
+            break;
+    }
+
+    return teammates;
+}
+
+bool Player::inFormationRalation(const Player *teammate) const
+{
+    QList<const Player *> teammates = formationPlayers();
+    return teammates.length() > 1 && teammates.contains(teammate);
+}
+
+bool Player::inSiegeRelation(const Player *skill_owner, const Player *victim) const
+{
+    if (isFriendWith(victim) || !isFriendWith(skill_owner) || !victim->haveShownOneGeneral())
+        return false;
+    if (this == skill_owner)
+        return (getNextAlive() == victim && getNextAlive(2)->isFriendWith(this)) || (getLastAlive() == victim && getLastAlive(2)->isFriendWith(this));
+    else
+        return (getNextAlive() == victim && getNextAlive(2) == skill_owner) || (getLastAlive() == victim && getLastAlive(2) == skill_owner);
 }
 
 void Player::addBrokenEquips(const IdSet &card_ids)

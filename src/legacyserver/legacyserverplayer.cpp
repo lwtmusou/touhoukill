@@ -946,7 +946,7 @@ void LegacyServerPlayer::introduceTo(LegacyServerPlayer *player)
     if (player != nullptr)
         room->doNotify(player, S_COMMAND_ADD_PLAYER, introduce_str);
     else {
-        QList<LegacyServerPlayer *> players = room->players();
+        QList<LegacyServerPlayer *> players = room->serverPlayers();
         players.removeOne(this);
         room->doBroadcastNotify(players, S_COMMAND_ADD_PLAYER, introduce_str);
     }
@@ -1610,7 +1610,7 @@ void LegacyServerPlayer::showGeneral(bool head_general, bool trigger_event, bool
         }
 
         if (role != QStringLiteral("careerist")) {
-            if ((i + 1) > (room->players().length() / 2)) { // set hidden careerist
+            if ((i + 1) > (room->serverPlayers().length() / 2)) { // set hidden careerist
                 foreach (LegacyServerPlayer *p, room->getOtherPlayers(this, true)) {
                     QVariant RoleConfirmedTag1 = room->getTag(p->objectName() + QStringLiteral("_RoleConfirmed"));
                     bool roleConfirmed1 = RoleConfirmedTag1.canConvert<bool>() && RoleConfirmedTag1.toBool();
@@ -1622,7 +1622,7 @@ void LegacyServerPlayer::showGeneral(bool head_general, bool trigger_event, bool
             }
         }
 
-        if (i > (room->players().length() / 2))
+        if (i > (room->serverPlayers().length() / 2))
             role = QStringLiteral("careerist");
 
         room->setPlayerProperty(this, "role", role);
@@ -1918,27 +1918,11 @@ bool LegacyServerPlayer::askForGeneralShow(bool one, bool refusable)
     return choice.startsWith(QStringLiteral("s"));
 }
 
-bool LegacyServerPlayer::inSiegeRelation(const LegacyServerPlayer *skill_owner, const LegacyServerPlayer *victim) const
-{
-    if (isFriendWith(victim) || !isFriendWith(skill_owner) || !victim->haveShownOneGeneral())
-        return false;
-    if (this == skill_owner)
-        return (getNextAlive() == victim && getNextAlive(2)->isFriendWith(this)) || (getLastAlive() == victim && getLastAlive(2)->isFriendWith(this));
-    else
-        return (getNextAlive() == victim && getNextAlive(2) == skill_owner) || (getLastAlive() == victim && getLastAlive(2) == skill_owner);
-}
-
-bool LegacyServerPlayer::inFormationRalation(LegacyServerPlayer *teammate) const
-{
-    QList<const Player *> teammates = getFormation();
-    return teammates.length() > 1 && teammates.contains(teammate);
-}
-
 void LegacyServerPlayer::summonFriends(const QString &type)
 {
     room->tryPause();
 
-    if (room->alivePlayerCount() < 4)
+    if (room->players(false, true).length() < 4)
         return;
     LogStruct log;
     log.type = QStringLiteral("#InvokeSkill");
@@ -1990,7 +1974,7 @@ void LegacyServerPlayer::summonFriends(const QString &type)
             room->setPlayerFlag(this, QStringLiteral("Global_SummonFailed"));
 
     } else if (type == QStringLiteral("Formation")) {
-        int n = ((RoomObject *)room)->players(false, false).length();
+        int n = room->players(false, false).length();
         int asked = n;
         bool failed = true;
         for (int i = 1; i < n; ++i) {

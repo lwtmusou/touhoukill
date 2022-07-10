@@ -40,9 +40,8 @@ public:
     QSGS_STATE_ROOM int getLack() const;
     QSGS_STATE_GAME bool isFinished() const;
 
-    QSGS_STATE_GAME int alivePlayerCount() const;
     QSGS_STATE_GAME QList<LegacyServerPlayer *> getOtherPlayers(LegacyServerPlayer *except, bool include_dead = false) const;
-    QSGS_STATE_GAME QList<LegacyServerPlayer *> players() const;
+    QSGS_STATE_GAME QList<LegacyServerPlayer *> serverPlayers() const;
     QSGS_STATE_GAME QList<LegacyServerPlayer *> getAllPlayers(bool include_dead = false) const;
     QSGS_STATE_GAME QList<LegacyServerPlayer *> getAlivePlayers() const;
     QSGS_STATE_GAME QStringList aliveRoles(LegacyServerPlayer *except = nullptr) const;
