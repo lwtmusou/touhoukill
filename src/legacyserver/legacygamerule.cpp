@@ -299,7 +299,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
             room->setPlayerFlag(player, QStringLiteral("."));
             room->setPlayerMark(player, QStringLiteral("touhou-extra"), 0);
 
-            foreach (LegacyServerPlayer *p, room->getAlivePlayers()) {
+            foreach (LegacyServerPlayer *p, room->getAllPlayers()) {
                 room->clearPlayerCardLimitation(p, true);
                 QMap<QString, int> marks = p->marks();
                 QMap<QString, int>::iterator it;
@@ -411,7 +411,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                     thread->trigger(QSanguosha::CardFinished, data);
                     card_use.from->setFlag(QStringLiteral("-Global_ProcessBroken"));
 
-                    foreach (LegacyServerPlayer *p, room->getAlivePlayers()) {
+                    foreach (LegacyServerPlayer *p, room->getAllPlayers()) {
                         p->tag.remove(QStringLiteral("Qinggang"));
 
                         foreach (QString flag, p->flagList()) {
@@ -444,7 +444,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
             room->removeTag(use.card->toString() + QStringLiteral("HegNullificationTargets"));
 
         if (use.card->face()->isKindOf(QStringLiteral("AOE")) || use.card->face()->isKindOf(QStringLiteral("GlobalEffect"))) {
-            foreach (LegacyServerPlayer *p, room->getAlivePlayers())
+            foreach (LegacyServerPlayer *p, room->getAllPlayers())
                 room->doNotify(p, QSanProtocol::S_COMMAND_NULLIFICATION_ASKED, QStringLiteral("."));
         }
 
@@ -1093,7 +1093,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
         break;
     }
     case QSanguosha::ChoiceMade: {
-        foreach (LegacyServerPlayer *p, room->getAlivePlayers()) {
+        foreach (LegacyServerPlayer *p, room->getAllPlayers()) {
             foreach (QString flag, p->flagList()) {
                 if (flag.startsWith(QStringLiteral("Global_")) && flag.endsWith(QStringLiteral("Failed")))
                     room->setPlayerFlag(p, QStringLiteral("-") + flag);
@@ -1401,7 +1401,7 @@ QString LegacyGameRule::getWinner(LegacyRoom *room, LegacyServerPlayer *victim) 
                 winner = QStringLiteral("renegade+rebel");
         }
     } else if (isHegemonyGameMode(room->serverInfo()->GameMode->name())) {
-        QList<LegacyServerPlayer *> players = room->getAlivePlayers();
+        QList<LegacyServerPlayer *> players = room->getAllPlayers();
         LegacyServerPlayer *win_player = players.first();
         if (players.length() == 1) {
             QStringList winners;
@@ -1491,7 +1491,7 @@ QString LegacyGameRule::getWinner(LegacyRoom *room, LegacyServerPlayer *victim) 
         switch (victim->role()) {
         case QSanguosha::RoleLord: {
             if (alive_roles.length() == 1 && alive_roles.first() == QStringLiteral("renegade"))
-                winner = room->getAlivePlayers().first()->objectName();
+                winner = room->getAllPlayers().first()->objectName();
             else
                 winner = QStringLiteral("rebel");
             break;

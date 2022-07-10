@@ -230,7 +230,7 @@ void Client::setPlayerSkillInvalidity(const QJsonValue &arg)
     QJsonArray a = arg.toArray();
     if (a.count() == 3) {
         QString playerName = a.first().toString();
-        Player *player = findPlayer(playerName);
+        Player *player = findPlayerByObjectName(playerName);
         if (player == nullptr)
             return;
 
@@ -254,7 +254,7 @@ void Client::setShownHandCards(const QJsonValue &card_var)
     QList<int> card_ids;
     QSgsJsonUtils::tryParse(card_str[1], card_ids);
 
-    Player *player = findPlayer(who);
+    Player *player = findPlayerByObjectName(who);
     player->setShownHandcards(IdSet(card_ids.begin(), card_ids.end()));
     //  player->changePile(QStringLiteral("shown_card"), true, card_ids);
 }
@@ -271,7 +271,7 @@ void Client::setBrokenEquips(const QJsonValue &card_var)
     QList<int> card_ids;
     QSgsJsonUtils::tryParse(card_str[1], card_ids);
 
-    Player *player = findPlayer(who);
+    Player *player = findPlayerByObjectName(who);
 
     player->setBrokenEquips(IdSet(card_ids.begin(), card_ids.end()));
 }
@@ -292,7 +292,7 @@ void Client::setHiddenGenerals(const QJsonValue &arg)
         while (n-- > 0)
             names << QStringLiteral("sujiangf");
     }
-    Player *player = findPlayer(who);
+    Player *player = findPlayerByObjectName(who);
     // player->setHiddenGenerals(names);
     // player->changePile(QStringLiteral("huashencard"), false, QList<int>());
 }
@@ -306,7 +306,7 @@ void Client::setShownHiddenGeneral(const QJsonValue &arg)
     QString who = str[0].toString();
     QString general = str[1].toString();
 
-    Player *player = findPlayer(who);
+    Player *player = findPlayerByObjectName(who);
 }
 
 void Client::signup()
@@ -540,7 +540,7 @@ void Client::updateProperty(const QJsonValue &arg)
     if (!QSgsJsonUtils::isStringArray(args, 0, 2))
         return;
     QString object_name = args[0].toString();
-    Player *player = findPlayer(object_name);
+    Player *player = findPlayerByObjectName(object_name);
     if (player == nullptr)
         return;
     player->setProperty(args[1].toString().toLatin1().constData(), args[2].toString());
@@ -597,8 +597,8 @@ void Client::getCards(const QJsonValue &arg)
         LegacyCardsMoveStruct move;
         if (!move.tryParse(args[i]))
             return;
-        move.from = findPlayer(move.from_player_name);
-        move.to = findPlayer(move.to_player_name);
+        move.from = findPlayerByObjectName(move.from_player_name);
+        move.to = findPlayerByObjectName(move.to_player_name);
         foreach (int card_id, move.card_ids)
             _getSingleCard(card_id, move);
 
@@ -618,8 +618,8 @@ void Client::loseCards(const QJsonValue &arg)
         LegacyCardsMoveStruct move;
         if (!move.tryParse(args[i]))
             return;
-        move.from = findPlayer(move.from_player_name);
-        move.to = findPlayer(move.to_player_name);
+        move.from = findPlayerByObjectName(move.from_player_name);
+        move.to = findPlayerByObjectName(move.to_player_name);
 
         foreach (int card_id, move.card_ids)
             _loseSingleCard(card_id, move);
@@ -911,7 +911,7 @@ void Client::cardLimitation(const QJsonValue &limit)
         return;
 
     QString object_name = args[4].toString();
-    Player *player = findPlayer(object_name);
+    Player *player = findPlayerByObjectName(object_name);
     if (player == nullptr)
         return;
 
@@ -939,7 +939,7 @@ void Client::disableShow(const QJsonValue &arg)
     if (args.size() != 4)
         return;
 
-    Player *p = findPlayer(args[0].toString());
+    Player *p = findPlayerByObjectName(args[0].toString());
     if (p == nullptr)
         return;
 
@@ -983,8 +983,8 @@ void Client::exchangeKnownCards(const QJsonValue &players)
     QJsonArray args = players.toArray();
     if (args.size() != 2 || !QSgsJsonUtils::isString(args[0]) || !QSgsJsonUtils::isString(args[1]))
         return;
-    Player *a = findPlayer(args[0].toString());
-    Player *b = findPlayer(args[1].toString());
+    Player *a = findPlayerByObjectName(args[0].toString());
+    Player *b = findPlayerByObjectName(args[1].toString());
     IdSet a_known;
     IdSet b_known;
     foreach (const Card *card, a->handCards())
@@ -1001,7 +1001,7 @@ void Client::setKnownCards(const QJsonValue &set_str)
     if (set.size() != 2)
         return;
     QString name = set[0].toString();
-    Player *player = findPlayer(name);
+    Player *player = findPlayerByObjectName(name);
     if (player == nullptr)
         return;
     QList<int> ids;
@@ -1031,7 +1031,7 @@ QString Client::getPlayerName(const QString &str)
     QRegularExpression rx(QRegularExpression::anchoredPattern(QStringLiteral("sgs\\d+")));
     QString general_name;
     if (rx.match(str).hasMatch()) {
-        Player *player = findPlayer(str);
+        Player *player = findPlayerByObjectName(str);
         general_name = player->generalName();
         general_name = Sanguosha->translate(general_name);
         if (player->getGeneral2() != nullptr)
@@ -1219,14 +1219,14 @@ void Client::askForNullification(const QJsonValue &arg)
 
     QString trick_name = args[0].toString();
     const QJsonValue &source_name = args[1];
-    Player *target_player = findPlayer(args[2].toString());
+    Player *target_player = findPlayerByObjectName(args[2].toString());
 
     if ((target_player == nullptr) || (target_player->general() == nullptr))
         return;
 
     Player *source = nullptr;
     if (!source_name.isNull())
-        source = findPlayer(source_name.toString());
+        source = findPlayerByObjectName(source_name.toString());
 
     const CardFace *trick_card = Sanguosha->cardFace(trick_name);
     if (Config.NeverNullifyMyTrick && source == Self) {
@@ -1270,7 +1270,7 @@ void Client::onPlayerChooseCard(int card_id)
 void Client::onPlayerChoosePlayer(const Player *player)
 {
     if (player == nullptr && !m_isDiscardActionRefusable)
-        player = findPlayer(players_to_choose.first());
+        player = findPlayerByObjectName(players_to_choose.first());
 
     replyToRoom(S_COMMAND_CHOOSE_PLAYER, (player == nullptr) ? QJsonValue() : player->objectName());
     setStatus(NotActive);
@@ -1535,7 +1535,7 @@ void Client::gameOver(const QJsonValue &arg)
 
     for (int i = 0; i < roles.length(); i++) {
         QString name = players().at(i)->objectName();
-        findPlayer(name)->setRole(roles.at(i));
+        findPlayerByObjectName(name)->setRole(roles.at(i));
     }
 
     if (winner == QStringLiteral(".")) {
@@ -1562,7 +1562,7 @@ void Client::killPlayer(const QJsonValue &player_name)
     QString name = player_name.toString();
 
     alive_count--;
-    Player *player = findPlayer(name);
+    Player *player = findPlayerByObjectName(name);
     if (player == Self) {
         if (isHegemonyGameMode(serverInfo()->GameModeStr)) {
             foreach (const Skill *skill, Self->getHeadSkillList(true, true))
@@ -1713,7 +1713,7 @@ void Client::askForCardChosen(const QJsonValue &ask_str)
     highlight_skill_name = reason;
     bool handcard_visible = ask[3].toBool();
     QSanguosha::HandlingMethod method = (QSanguosha::HandlingMethod)ask[4].toInt();
-    Player *player = findPlayer(player_name);
+    Player *player = findPlayerByObjectName(player_name);
     if (player == nullptr)
         return;
     QList<int> disabled_ids;
@@ -1776,7 +1776,7 @@ void Client::setMark(const QJsonValue &mark_var)
     QString mark = mark_str[1].toString();
     int value = mark_str[2].toInt();
 
-    Player *player = findPlayer(who);
+    Player *player = findPlayerByObjectName(who);
     player->setMark(mark, value);
 }
 
@@ -1841,7 +1841,7 @@ void Client::takeAG(const QJsonValue &take_var)
         }
         emit ag_taken(nullptr, card_id, move_cards);
     } else {
-        Player *taker = findPlayer(take[0].toString());
+        Player *taker = findPlayerByObjectName(take[0].toString());
         if (move_cards)
             taker->addCard(card_, QSanguosha::PlaceHand);
         emit ag_taken(taker, card_id, move_cards);
@@ -1859,7 +1859,7 @@ void Client::askForSinglePeach(const QJsonValue &arg)
     if (args.size() != 2 || !QSgsJsonUtils::isString(args[0]) || !QSgsJsonUtils::isNumber(args[1]))
         return;
 
-    Player *dying = findPlayer(args[0].toString());
+    Player *dying = findPlayerByObjectName(args[0].toString());
     int peaches = args[1].toInt();
 
     // @todo: anti-cheating of askForSinglePeach is not done yet!!!
@@ -1948,7 +1948,7 @@ void Client::showCard(const QJsonValue &show_str)
     QString player_name = show[0].toString();
     int card_id = show[1].toInt();
 
-    Player *player = findPlayer(player_name);
+    Player *player = findPlayerByObjectName(player_name);
     if (player != Self) {
         IdSet s = player->handCardIds();
         s << card_id;
@@ -2007,7 +2007,7 @@ void Client::showAllCards(const QJsonValue &arg)
     if (args.size() != 3 || !QSgsJsonUtils::isString(args[0]) || !QSgsJsonUtils::isBool(args[1]))
         return;
 
-    Player *who = findPlayer(args[0].toString());
+    Player *who = findPlayerByObjectName(args[0].toString());
     QList<int> card_ids;
     if (!QSgsJsonUtils::tryParse(args[2], card_ids))
         return;
@@ -2024,7 +2024,7 @@ void Client::askForGongxin(const QJsonValue &args)
     if (arg.size() != 6 || !QSgsJsonUtils::isString(arg[0]) || !QSgsJsonUtils::isBool(arg[1]))
         return;
 
-    Player *who = findPlayer(arg[0].toString());
+    Player *who = findPlayerByObjectName(arg[0].toString());
 
     bool enable_heart = arg[1].toBool();
     QList<int> card_ids;
@@ -2198,7 +2198,7 @@ void Client::speak(const QJsonValue &speak)
 
     emit player_spoken(who, QStringLiteral("<p style=\"margin:3px 2px;\">%1</p>").arg(text));
 
-    const Player *from = findPlayer(who);
+    const Player *from = findPlayerByObjectName(who);
 
     QString title;
     if (from != nullptr) {
@@ -2285,8 +2285,8 @@ void Client::setFixedDistance(const QJsonValue &set_str)
     if (set.size() != 3 || !QSgsJsonUtils::isString(set[0]) || !QSgsJsonUtils::isString(set[1]) || !QSgsJsonUtils::isNumber(set[2]))
         return;
 
-    Player *from = findPlayer(set[0].toString());
-    Player *to = findPlayer(set[1].toString());
+    Player *from = findPlayerByObjectName(set[0].toString());
+    Player *to = findPlayerByObjectName(set[1].toString());
     int distance = set[2].toInt();
 
     if ((from != nullptr) && (to != nullptr))

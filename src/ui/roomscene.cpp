@@ -438,7 +438,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
     GameEventType eventType = (GameEventType)arg[0].toInt();
     switch (eventType) {
     case S_GAME_EVENT_PLAYER_DYING: {
-        Player *player = ClientInstance->findPlayer(arg[1].toString());
+        Player *player = ClientInstance->findPlayerByObjectName(arg[1].toString());
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(QSanguosha::PlaceHand, player);
         container->setSaveMeIcon(true);
         Photo *photo = qobject_cast<Photo *>(container);
@@ -447,7 +447,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         break;
     }
     case S_GAME_EVENT_PLAYER_QUITDYING: {
-        Player *player = ClientInstance->findPlayer(arg[1].toString());
+        Player *player = ClientInstance->findPlayerByObjectName(arg[1].toString());
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(QSanguosha::PlaceHand, player);
         container->setSaveMeIcon(false);
         Photo *photo = qobject_cast<Photo *>(container);
@@ -456,7 +456,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         break;
     }
     case S_GAME_EVENT_HUASHEN: {
-        Player *player = ClientInstance->findPlayer(arg[1].toString());
+        Player *player = ClientInstance->findPlayerByObjectName(arg[1].toString());
         QString huashenGeneral = arg[2].toString();
         QString huashenSkill = arg[3].toString();
         QString huashenGeneral2 = arg[4].toString();
@@ -493,7 +493,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         QString skill_name = arg[2].toString();
         bool head = arg[3].toBool();
 
-        Player *player = ClientInstance->findPlayer(player_name);
+        Player *player = ClientInstance->findPlayerByObjectName(player_name);
         player->detachSkill(skill_name);
         if (player == Self)
             detachSkill(skill_name, head);
@@ -509,7 +509,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         bool head_skill = arg[3].toBool();
         const Skill *s = Sanguosha->skill(skill_name);
         ClientInstance->loadSkill(s);
-        Player *player = ClientInstance->findPlayer(player_name);
+        Player *player = ClientInstance->findPlayerByObjectName(player_name);
         player->acquireSkill(skill_name);
         acquireSkill(player, skill_name, head_skill);
 
@@ -527,7 +527,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
 
         const Skill *s = Sanguosha->skill(skill_name);
         ClientInstance->loadSkill(s);
-        Player *player = ClientInstance->findPlayer(player_name);
+        Player *player = ClientInstance->findPlayerByObjectName(player_name);
         player->addSkill(skill_name, head_skill);
 
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(QSanguosha::PlaceHand, player);
@@ -541,7 +541,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         QString player_name = arg[1].toString();
         QString skill_name = arg[2].toString();
         bool head = arg[3].toBool();
-        Player *player = ClientInstance->findPlayer(player_name);
+        Player *player = ClientInstance->findPlayerByObjectName(player_name);
         player->loseSkill(skill_name, head);
 
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(QSanguosha::PlaceHand, player);
@@ -577,7 +577,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         QString player_name = arg[1].toString();
         QSanguosha::Gender gender = (QSanguosha::Gender)arg[2].toInt();
 
-        Player *player = ClientInstance->findPlayer(player_name);
+        Player *player = ClientInstance->findPlayerByObjectName(player_name);
         player->setGender(gender);
 
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(QSanguosha::PlaceHand, player);
@@ -589,7 +589,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         QString newHeroName = arg[2].toString();
         bool isSecondaryHero = arg[3].toBool();
         bool sendLog = arg[4].toBool();
-        Player *player = ClientInstance->findPlayer(playerName);
+        Player *player = ClientInstance->findPlayerByObjectName(playerName);
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(QSanguosha::PlaceHand, player);
         if (container != nullptr)
             container->refresh();
@@ -635,7 +635,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         break;
     }
     case S_GAME_EVENT_PLAYER_REFORM: {
-        Player *player = ClientInstance->findPlayer(arg[1].toString());
+        Player *player = ClientInstance->findPlayerByObjectName(arg[1].toString());
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(QSanguosha::PlaceHand, player);
         container->updateReformState();
         break;
@@ -647,7 +647,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         if ((skill != nullptr) && skill->isAttachedSkill())
             return;
 
-        Player *player = ClientInstance->findPlayer(player_name);
+        Player *player = ClientInstance->findPlayerByObjectName(player_name);
         if (player == nullptr)
             return;
 
@@ -718,7 +718,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
             break;
         bool head = arg[4].toBool();
 
-        Player *player = ClientInstance->findPlayer(player_name);
+        Player *player = ClientInstance->findPlayerByObjectName(player_name);
 
         QList<PlayerCardContainer *> playerCardContainers;
         foreach (Photo *photo, photos) {
@@ -764,7 +764,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
         QString player_name = arg[1].toString();
         bool shown = arg[2].toBool();
 
-        Player *player = ClientInstance->findPlayer(player_name);
+        Player *player = ClientInstance->findPlayerByObjectName(player_name);
         QList<PlayerCardContainer *> playerCardContainers;
         foreach (Photo *photo, photos) {
             playerCardContainers.append(photo);
@@ -2044,9 +2044,9 @@ void RoomScene::getCards(int moveId, QList<LegacyCardsMoveStruct> card_moves)
             CardMoveReason reason = movement.reason;
             if (!reason.m_skillName.isEmpty() && (movement.from != nullptr) && movement.to_place != QSanguosha::PlaceHand && movement.to_place != QSanguosha::PlaceSpecial
                 && movement.to_place != QSanguosha::PlaceEquip && movement.to_place != QSanguosha::PlaceDelayedTrick) {
-                Player *target = ClientInstance->findPlayer(movement.from->objectName());
+                Player *target = ClientInstance->findPlayerByObjectName(movement.from->objectName());
                 if (!reason.m_playerId.isEmpty() && reason.m_playerId != movement.from->objectName())
-                    target = ClientInstance->findPlayer(reason.m_playerId);
+                    target = ClientInstance->findPlayerByObjectName(reason.m_playerId);
 
                 if ((target != nullptr) && target->haveShownSkill(reason.m_skillName))
                     card->showAvatar(target->general());
@@ -3204,16 +3204,16 @@ void RoomScene::changeHp(const QString &who, int delta, QSanguosha::DamageNature
     if (delta < 0) {
         if (losthp) {
             Audio::playSystemAudioEffect(QStringLiteral("hplost"));
-            QString from_general = ClientInstance->findPlayer(who)->objectName();
-            log_box->appendLog(QStringLiteral("#GetHp"), from_general, QStringList(), QString(), QString::number(ClientInstance->findPlayer(who)->hp()),
-                               QString::number(ClientInstance->findPlayer(who)->maxHp()));
+            QString from_general = ClientInstance->findPlayerByObjectName(who)->objectName();
+            log_box->appendLog(QStringLiteral("#GetHp"), from_general, QStringList(), QString(), QString::number(ClientInstance->findPlayerByObjectName(who)->hp()),
+                               QString::number(ClientInstance->findPlayerByObjectName(who)->maxHp()));
             return;
         }
 
         QString damage_effect;
-        QString from_general = ClientInstance->findPlayer(who)->objectName();
-        log_box->appendLog(QStringLiteral("#GetHp"), from_general, QStringList(), QString(), QString::number(ClientInstance->findPlayer(who)->hp()),
-                           QString::number(ClientInstance->findPlayer(who)->maxHp()));
+        QString from_general = ClientInstance->findPlayerByObjectName(who)->objectName();
+        log_box->appendLog(QStringLiteral("#GetHp"), from_general, QStringList(), QString(), QString::number(ClientInstance->findPlayerByObjectName(who)->hp()),
+                           QString::number(ClientInstance->findPlayerByObjectName(who)->maxHp()));
         switch (delta) {
         case -1:
             damage_effect = QStringLiteral("injure1");
@@ -3240,12 +3240,12 @@ void RoomScene::changeHp(const QString &who, int delta, QSanguosha::DamageNature
             doAnimation(S_ANIMATE_LIGHTNING, QStringList() << who);
     } else {
         QString type = QStringLiteral("#Recover");
-        QString from_general = ClientInstance->findPlayer(who)->objectName();
+        QString from_general = ClientInstance->findPlayerByObjectName(who)->objectName();
         QString n = QString::number(delta);
 
         log_box->appendLog(type, from_general, QStringList(), QString(), n);
-        log_box->appendLog(QStringLiteral("#GetHp"), from_general, QStringList(), QString(), QString::number(ClientInstance->findPlayer(who)->hp()),
-                           QString::number(ClientInstance->findPlayer(who)->maxHp()));
+        log_box->appendLog(QStringLiteral("#GetHp"), from_general, QStringList(), QString(), QString::number(ClientInstance->findPlayerByObjectName(who)->hp()),
+                           QString::number(ClientInstance->findPlayerByObjectName(who)->maxHp()));
     }
 }
 
@@ -3722,7 +3722,7 @@ void RoomScene::killPlayer(const QString &who)
     const General *general = nullptr;
     m_roomMutex.lock();
 
-    Player *player = ClientInstance->findPlayer(who);
+    Player *player = ClientInstance->findPlayerByObjectName(who);
     if (player != nullptr) {
         PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(QSanguosha::PlaceHand, player);
         container->stopHuaShen();
@@ -3810,7 +3810,7 @@ void RoomScene::showCard(const QString &player_name, int card_id)
 {
     QList<int> card_ids;
     card_ids << card_id;
-    Player *player = ClientInstance->findPlayer(player_name);
+    Player *player = ClientInstance->findPlayerByObjectName(player_name);
 
     GenericCardContainer *container = _getGenericCardContainer(QSanguosha::PlaceHand, player);
     QList<CardItem *> card_items = container->cloneCardItems(card_ids);
@@ -3960,7 +3960,7 @@ void RoomScene::showPlayerCards()
     if (action != nullptr) {
         QStringList names = action->data().toString().split(QStringLiteral("."));
         QString player_name = names.first();
-        const Player *player = ClientInstance->findPlayer(player_name);
+        const Player *player = ClientInstance->findPlayerByObjectName(player_name);
         if (names.length() > 1) {
             QString pile_name = names.last();
 
@@ -4385,7 +4385,7 @@ void RoomScene::doHuashen(const QString & /*unused*/, const QStringList &args)
     QString name = hargs.first();
     hargs.removeOne(name);
     hargs = hargs.first().split(QStringLiteral(":"));
-    Player *player = ClientInstance->findPlayer(name);
+    Player *player = ClientInstance->findPlayerByObjectName(name);
     bool owner = (hargs.first() != QStringLiteral("unknown"));
 
     QVariantList huashen_list;
@@ -4428,7 +4428,7 @@ void RoomScene::showIndicator(const QString &from, const QString &to)
     QPointF start = obj1->sceneBoundingRect().center();
     QPointF finish = obj2->sceneBoundingRect().center();
 
-    IndicatorItem *indicator = new IndicatorItem(start, finish, ClientInstance->findPlayer(from));
+    IndicatorItem *indicator = new IndicatorItem(start, finish, ClientInstance->findPlayerByObjectName(from));
 
     qreal x = qMin(start.x(), finish.x());
     qreal y = qMin(start.y(), finish.y());

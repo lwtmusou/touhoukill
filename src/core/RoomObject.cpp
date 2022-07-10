@@ -132,7 +132,7 @@ void RoomObject::unregisterPlayer(const QString &objectName)
     }
 }
 
-Player *RoomObject::findPlayer(const QString &objectName)
+Player *RoomObject::findPlayerByObjectName(const QString &objectName)
 {
     foreach (Player *p, d->players) {
         if (p->objectName() == objectName)
@@ -142,7 +142,7 @@ Player *RoomObject::findPlayer(const QString &objectName)
     return nullptr;
 }
 
-const Player *RoomObject::findPlayer(const QString &objectName) const
+const Player *RoomObject::findPlayerByObjectName(const QString &objectName) const
 {
     foreach (Player *p, d->players) {
         if (p->objectName() == objectName)

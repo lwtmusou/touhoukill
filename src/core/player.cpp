@@ -334,8 +334,7 @@ void Player::setSeat(int seat)
 
 bool Player::isAdjacentTo(const Player *another) const
 {
-    int alive_length = d->room->players(false).count();
-    return qAbs(d->seat - another->seat()) == 1 || (d->seat == 1 && another->seat() == alive_length) || (d->seat == alive_length && another->seat() == 1);
+    return (getNextAlive() == another) || (getLastAlive() == another);
 }
 
 bool Player::isAlive() const

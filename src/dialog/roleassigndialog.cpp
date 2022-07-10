@@ -138,7 +138,7 @@ void RoleAssignDialog::updateRole(int index)
 {
     QString name = list->currentItem()->data(Qt::UserRole).toString();
     QString role = role_ComboBox->itemData(index).toString();
-    Player *player = ClientInstance->findPlayer(name);
+    Player *player = ClientInstance->findPlayerByObjectName(name);
     QString text = QStringLiteral("%1[%2]").arg(player->screenName(), Sanguosha->translate(role));
     list->currentItem()->setText(text);
     role_mapping[name] = role;

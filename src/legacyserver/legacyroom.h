@@ -43,7 +43,6 @@ public:
     QSGS_STATE_GAME QList<LegacyServerPlayer *> getOtherPlayers(LegacyServerPlayer *except, bool include_dead = false) const;
     QSGS_STATE_GAME QList<LegacyServerPlayer *> serverPlayers() const;
     QSGS_STATE_GAME QList<LegacyServerPlayer *> getAllPlayers(bool include_dead = false) const;
-    QSGS_STATE_GAME QList<LegacyServerPlayer *> getAlivePlayers() const;
     QSGS_STATE_GAME QStringList aliveRoles(LegacyServerPlayer *except = nullptr) const;
     QSGS_STATE_GAME LegacyServerPlayer *getLord(const QString &kingdom = QStringLiteral("wei"), bool include_death = false) const;
     QSGS_STATE_GAME QList<LegacyServerPlayer *> getLieges(const QString &kingdom, LegacyServerPlayer *lord) const;
@@ -58,7 +57,6 @@ public:
     QSGS_STATE_GAME LegacyServerPlayer *findPlayer(const QString &general_name, bool include_dead = false) const;
     QSGS_STATE_GAME QList<LegacyServerPlayer *> findPlayersBySkillName(const QString &skill_name, bool include_hidden = true) const;
     QSGS_STATE_GAME LegacyServerPlayer *findPlayerBySkillName(const QString &skill_name) const;
-    QSGS_STATE_GAME LegacyServerPlayer *findPlayerByObjectName(const QString &name, bool include_dead = false) const;
     QSGS_STATE_GAME bool hasWelfare(const LegacyServerPlayer *player) const;
     QSGS_STATE_GAME LegacyServerPlayer *getFront(LegacyServerPlayer *a, LegacyServerPlayer *b) const;
     QSGS_STATE_GAME void setTag(const QString &key, const QVariant &value);
@@ -284,7 +282,6 @@ public:
     QSGS_LOGIC void setFixedDistance(Player *from, const Player *to, int distance);
     QSGS_LOGIC void reverseFor3v3(const Card *card, LegacyServerPlayer *player, QList<LegacyServerPlayer *> &list);
     QSGS_SOCKET void signup(LegacyServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot);
-    QSGS_STATE_ROOM LegacyServerPlayer *getOwner() const;
     QSGS_LOGIC void updateStateItem();
 
     QSGS_SOCKET void reconnect(LegacyServerPlayer *player, LegacyClientSocket *socket);
@@ -504,7 +501,6 @@ private:
     QStringList _chooseDefaultGenerals(LegacyServerPlayer *player) const;
     bool _setPlayerGeneral(LegacyServerPlayer *player, const QString &generalName, bool isFirst);
     QList<LegacyServerPlayer *> m_players;
-    QList<LegacyServerPlayer *> m_alivePlayers;
     int player_count;
     LegacyServerPlayer *current;
     QList<int> pile1;

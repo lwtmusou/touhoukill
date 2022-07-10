@@ -164,11 +164,6 @@ QList<LegacyServerPlayer *> LegacyRoom::getOtherPlayers(LegacyServerPlayer *exce
     return other_players;
 }
 
-QList<LegacyServerPlayer *> LegacyRoom::getAlivePlayers() const
-{
-    return m_alivePlayers;
-}
-
 void LegacyRoom::output(const QString &message)
 {
     emit room_message(message);
@@ -286,17 +281,6 @@ void LegacyRoom::revivePlayer(LegacyServerPlayer *player, bool initialize)
             setPlayerFlag(player, QStringLiteral("Global_TurnTerminated"));
     }
 
-    m_alivePlayers.clear();
-    foreach (LegacyServerPlayer *player, m_players) {
-        if (player->isAlive())
-            m_alivePlayers << player;
-    }
-
-    for (int i = 0; i < m_alivePlayers.length(); i++) {
-        m_alivePlayers.at(i)->setSeat(i + 1);
-        broadcastProperty(m_alivePlayers.at(i), "seat");
-    }
-
     doBroadcastNotify(S_COMMAND_REVIVE_PLAYER, player->objectName());
     updateStateItem();
 
@@ -333,15 +317,6 @@ void LegacyRoom::killPlayer(LegacyServerPlayer *victim, DamageStruct *reason)
     LegacyServerPlayer *killer = reason != nullptr ? qobject_cast<LegacyServerPlayer *>(reason->from) : nullptr;
 
     victim->setAlive(false);
-
-    int index = m_alivePlayers.indexOf(victim);
-    for (int i = index + 1; i < m_alivePlayers.length(); i++) {
-        LegacyServerPlayer *p = m_alivePlayers.at(i);
-        p->setSeat(p->seat() - 1);
-        broadcastProperty(p, "seat");
-    }
-
-    m_alivePlayers.removeOne(victim);
 
     DeathStruct death(victim, reason);
     QVariant data = QVariant::fromValue(death);
@@ -452,7 +427,7 @@ void LegacyRoom::returnToTopDrawPile(const QList<int> &cards)
 QStringList LegacyRoom::aliveRoles(LegacyServerPlayer *except) const
 {
     QStringList roles;
-    foreach (LegacyServerPlayer *player, m_alivePlayers) {
+    foreach (LegacyServerPlayer *player, getAllPlayers()) {
         if (player != except)
             roles << player->roleString();
     }
@@ -1100,7 +1075,7 @@ bool LegacyRoom::isCanceled(const CardEffectStruct &effect)
     }
 
     //deal xianshi
-    foreach (LegacyServerPlayer *p, getAlivePlayers()) {
+    foreach (LegacyServerPlayer *p, getAllPlayers()) {
         LegacyServerPlayer *target = p->tag[QStringLiteral("xianshi_nullification_target")].value<LegacyServerPlayer *>();
         p->tag.remove(QStringLiteral("xianshi_nullification_target"));
         const Card *xianshi_nullification = p->tag.value(QStringLiteral("xianshi_nullification")).value<const Card *>();
@@ -1218,7 +1193,7 @@ bool LegacyRoom::_askForNullification(const Card *trick, LegacyServerPlayer *fro
 
     setTag(QStringLiteral("NullifiationTarget"), data);
 
-    foreach (LegacyServerPlayer *player, m_alivePlayers) {
+    foreach (LegacyServerPlayer *player, getAllPlayers()) {
         if (player->hasNullification()) {
             if (!thread->trigger(QSanguosha::TrickCardCanceling, data)) {
                 player->m_commandArgs = arg;
@@ -2316,8 +2291,10 @@ bool LegacyRoom::canPause(LegacyServerPlayer *player) const
 
 void LegacyRoom::tryPause()
 {
+#if 0
     if (!canPause(getOwner()))
         return;
+#endif
     QMutexLocker locker(&m_mutex);
     while (game_paused)
         m_waitCond.wait(locker.mutex());
@@ -2368,7 +2345,7 @@ void LegacyRoom::swapPile()
 
 LegacyServerPlayer *LegacyRoom::findPlayer(const QString &general_name, bool include_dead) const
 {
-    const QList<LegacyServerPlayer *> &list = include_dead ? m_players : m_alivePlayers;
+    const QList<LegacyServerPlayer *> &list = getAllPlayers(include_dead);
 
     if (general_name.contains(QStringLiteral("+"))) {
         QStringList names = general_name.split(QStringLiteral("+"));
@@ -2401,15 +2378,6 @@ LegacyServerPlayer *LegacyRoom::findPlayerBySkillName(const QString &skill_name)
 {
     foreach (LegacyServerPlayer *player, getAllPlayers()) {
         if (player->hasValidSkill(skill_name))
-            return player;
-    }
-    return nullptr;
-}
-
-LegacyServerPlayer *LegacyRoom::findPlayerByObjectName(const QString &name, bool /*unused*/) const
-{
-    foreach (LegacyServerPlayer *player, getAllPlayers()) {
-        if (player->objectName() == name)
             return player;
     }
     return nullptr;
@@ -2538,6 +2506,8 @@ void LegacyRoom::prepareForStart()
         if (Config.RandomSeat)
             qShuffle(m_players);
     } else if (Config.EnableCheat && Config.value(QStringLiteral("FreeAssign"), false).toBool()) {
+        // TODO: reconsider this
+#if 0
         LegacyServerPlayer *owner = getOwner();
         notifyMoveFocus(owner, S_COMMAND_CHOOSE_ROLE);
         if ((owner != nullptr) && owner->getState() == QStringLiteral("online")) {
@@ -2602,7 +2572,9 @@ void LegacyRoom::prepareForStart()
                 broadcastProperty(player, "role");
                 setPlayerProperty(player, "role_shown", true);
             }
-        } else {
+        } else
+#endif
+        {
             if (Config.RandomSeat)
                 qShuffle(m_players);
             assignRoles();
@@ -2805,7 +2777,7 @@ bool LegacyRoom::makeSurrender(LegacyServerPlayer *initiator)
     // vote counting
     if (serverInfo()->GameMode->category() == QSanguosha::ModeHegemony) {
         if (hegemony_give_up > (playersAlive.length() + 1) / 2) {
-            foreach (LegacyServerPlayer *p, getAlivePlayers()) {
+            foreach (LegacyServerPlayer *p, getAllPlayers()) {
                 if (!p->haveShownGeneral())
                     p->showGeneral(true, false, false);
                 if ((p->getGeneral2() != nullptr) && !p->hasShownGeneral2())
@@ -2939,16 +2911,6 @@ void LegacyRoom::fillRobotsCommand(LegacyServerPlayer *player, const QJsonValue 
         addRobotCommand(player, QJsonValue());
 }
 
-LegacyServerPlayer *LegacyRoom::getOwner() const
-{
-    //    foreach (ServerPlayer *player, m_players) {
-    //        if (player->isOwner())
-    //            return player;
-    //    }
-
-    return nullptr;
-}
-
 void LegacyRoom::toggleReadyCommand(LegacyServerPlayer *, const QJsonValue & /*unused*/)
 {
     if (!game_started2 && isFull()) {
@@ -2968,12 +2930,13 @@ void LegacyRoom::signup(LegacyServerPlayer *player, const QString &screen_name, 
         // TODO: since MG_SELF is removed, this notify is no longer usable.
         // There should be another method to send this object name and remove the coupling in notifyProperty (such as send the player name through setup string)
         notifyProperty(player, player, "objectName");
-
+#if 0
         LegacyServerPlayer *owner = getOwner();
         if (owner == nullptr) {
-            //            player->setOwner(true);
+            player->setOwner(true);
             notifyProperty(player, player, "owner");
         }
+#endif
     }
 
     // introduce the new joined player to existing players except himself
@@ -3373,18 +3336,11 @@ void LegacyRoom::swapSeat(LegacyServerPlayer *a, LegacyServerPlayer *b)
         player_circle << player->objectName();
     doBroadcastNotify(S_COMMAND_ARRANGE_SEATS, QSgsJsonUtils::toJsonArray(player_circle));
 
-    m_alivePlayers.clear();
     for (int i = 0; i < m_players.length(); i++) {
         LegacyServerPlayer *player = m_players.at(i);
-        if (player->isAlive()) {
-            m_alivePlayers << player;
-            player->setSeat(m_alivePlayers.length());
-        } else {
-            player->setSeat(0);
-        }
+        player->setSeat(i);
 
         broadcastProperty(player, "seat");
-
         broadcastProperty(player, "next");
     }
 }
@@ -3451,14 +3407,6 @@ void LegacyRoom::adjustSeats()
         player_circle << player->objectName();
 
     doBroadcastNotify(S_COMMAND_ARRANGE_SEATS, QSgsJsonUtils::toJsonArray(player_circle));
-
-    //record initial seat
-    //    foreach (ServerPlayer *player, m_players) {
-    //        if (player->getInitialSeat() == 0) {
-    //            player->setInitialSeat(player->getSeat());
-    //            broadcastProperty(player, "inital_seat");
-    //        }
-    //    }
 }
 
 QString LegacyRoom::_chooseDefaultGeneral(LegacyServerPlayer *player) const
@@ -3524,14 +3472,14 @@ void LegacyRoom::speakCommand(LegacyServerPlayer *player, const QJsonValue &arg)
         QString sentence = QString::fromUtf8(QByteArray::fromBase64(arg.toString().toLatin1()));
         if (sentence == QStringLiteral(".BroadcastRoles")) {
             noBroadcastSpeaking();
-            foreach (LegacyServerPlayer *p, m_alivePlayers) {
+            foreach (LegacyServerPlayer *p, getAllPlayers()) {
                 broadcastProperty(p, "role", p->roleString());
                 setPlayerProperty(p, "role_shown", true);
             }
         } else if (sentence.startsWith(QStringLiteral(".BroadcastRoles="))) {
             noBroadcastSpeaking();
             QString name = sentence.mid(12);
-            foreach (LegacyServerPlayer *p, m_alivePlayers) {
+            foreach (LegacyServerPlayer *p, getAllPlayers()) {
                 if (p->objectName() == name || p->generalName() == name) {
                     broadcastProperty(p, "role", p->roleString());
                     setPlayerProperty(p, "role_shown", true);
@@ -3545,7 +3493,7 @@ void LegacyRoom::speakCommand(LegacyServerPlayer *player, const QJsonValue &arg)
             QJsonArray body;
             body << player->objectName() << split;
             doNotify(player, S_COMMAND_SPEAK, body);
-            foreach (LegacyServerPlayer *p, m_alivePlayers) {
+            foreach (LegacyServerPlayer *p, getAllPlayers()) {
                 if (!p->isKongcheng()) {
                     QStringList handcards;
                     foreach (const Card *card, p->handCards())
@@ -3561,7 +3509,7 @@ void LegacyRoom::speakCommand(LegacyServerPlayer *player, const QJsonValue &arg)
         } else if (sentence.startsWith(QStringLiteral(".ShowHandCards="))) {
             noBroadcastSpeaking();
             QString name = sentence.mid(15);
-            foreach (LegacyServerPlayer *p, m_alivePlayers) {
+            foreach (LegacyServerPlayer *p, getAllPlayers()) {
                 if (p->objectName() == name || p->generalName() == name) {
                     if (!p->isKongcheng()) {
                         QStringList handcards;
@@ -3582,7 +3530,7 @@ void LegacyRoom::speakCommand(LegacyServerPlayer *player, const QJsonValue &arg)
             if (arg.length() == 2) {
                 QString name = arg.first();
                 QString pile_name = arg.last();
-                foreach (LegacyServerPlayer *p, m_alivePlayers) {
+                foreach (LegacyServerPlayer *p, getAllPlayers()) {
                     if (p->objectName() == name || p->generalName() == name) {
                         if (!p->pile(pile_name).isEmpty()) {
                             QStringList pile_cards;
@@ -3787,7 +3735,7 @@ bool LegacyRoom::useCard(const CardUseStruct &use, bool add_history)
             thread->trigger(QSanguosha::CardFinished, data);
             card_use.from->setFlag(QStringLiteral("-Global_ProcessBroken"));
 
-            foreach (LegacyServerPlayer *p, m_alivePlayers) {
+            foreach (LegacyServerPlayer *p, getAllPlayers()) {
                 p->tag.remove(QStringLiteral("Qinggang"));
 
                 foreach (QString flag, p->flagList()) {
@@ -4261,8 +4209,6 @@ void LegacyRoom::marshal(LegacyServerPlayer *player)
 
 void LegacyRoom::startGame()
 {
-    m_alivePlayers = m_players;
-
     //step1 : player set  MaxHP and CompanionEffect
     foreach (LegacyServerPlayer *player, m_players) {
         Q_ASSERT(player->general());
@@ -5094,7 +5040,7 @@ void LegacyRoom::doAnimate(QSanProtocol::AnimateType type, const QString &arg1, 
 
 void LegacyRoom::doBattleArrayAnimate(LegacyServerPlayer *player, LegacyServerPlayer *target)
 {
-    if (getAlivePlayers().length() < 4)
+    if (getAllPlayers().length() < 4)
         return;
     if (target == nullptr) {
         QStringList names;

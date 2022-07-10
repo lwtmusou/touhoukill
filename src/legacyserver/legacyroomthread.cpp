@@ -47,7 +47,7 @@ void RoomThread::constructTriggerTable()
 LegacyServerPlayer *RoomThread::find3v3Next(QList<LegacyServerPlayer *> &first, QList<LegacyServerPlayer *> &second)
 {
     bool all_actioned = true;
-    foreach (LegacyServerPlayer *player, room->getAlivePlayers()) {
+    foreach (LegacyServerPlayer *player, room->getAllPlayers()) {
         if (!player->hasFlag(QStringLiteral("actioned"))) {
             all_actioned = false;
             break;
@@ -55,7 +55,7 @@ LegacyServerPlayer *RoomThread::find3v3Next(QList<LegacyServerPlayer *> &first, 
     }
 
     if (all_actioned) {
-        foreach (LegacyServerPlayer *player, room->getAlivePlayers()) {
+        foreach (LegacyServerPlayer *player, room->getAllPlayers()) {
             room->setPlayerFlag(player, QStringLiteral("-actioned"));
             QVariant v = QVariant::fromValue(player);
             trigger(QSanguosha::ActionedReset, v);

@@ -43,8 +43,8 @@ public:
     void unregisterPlayer(Player *player);
     void unregisterPlayer(const QString &objectName);
 
-    Player *findPlayer(const QString &objectName);
-    const Player *findPlayer(const QString &objectName) const;
+    Player *findPlayerByObjectName(const QString &objectName);
+    const Player *findPlayerByObjectName(const QString &objectName) const;
 
     Player *currentRound();
     const Player *currentRound() const;

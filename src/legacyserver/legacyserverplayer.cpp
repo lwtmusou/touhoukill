@@ -1872,7 +1872,7 @@ int LegacyServerPlayer::getPlayerNumWithSameKingdom(const QString & /*unused*/, 
             to_calculate = roleString();
     }
 
-    QList<LegacyServerPlayer *> players = room->getAlivePlayers();
+    QList<LegacyServerPlayer *> players = room->getAllPlayers();
 
     int num = 0;
     foreach (LegacyServerPlayer *p, players) {

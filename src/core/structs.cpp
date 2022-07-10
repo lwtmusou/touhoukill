@@ -451,7 +451,7 @@ bool LogStruct::parse(const QJsonValue &value, RoomObject *room)
     if (fromName.isEmpty()) {
         from = nullptr;
     } else {
-        from = room->findPlayer(fromName);
+        from = room->findPlayerByObjectName(fromName);
         if (from == nullptr)
             return false;
     }
@@ -463,7 +463,7 @@ bool LogStruct::parse(const QJsonValue &value, RoomObject *room)
     } else {
         QStringList toNameSplitted = toNames.split(QStringLiteral("+"), Qt::SkipEmptyParts);
         foreach (const QString &toName, toNameSplitted) {
-            Player *p = room->findPlayer(toName);
+            Player *p = room->findPlayerByObjectName(toName);
             if (p == nullptr)
                 return false;
             to << p;

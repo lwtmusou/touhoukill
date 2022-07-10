@@ -92,8 +92,8 @@ void DistanceViewDialog::showDistance()
     QString from_name = ui->from->itemData(ui->from->currentIndex()).toString();
     QString to_name = ui->to->itemData(ui->to->currentIndex()).toString();
 
-    const Player *from = ClientInstance->findPlayer(from_name);
-    const Player *to = ClientInstance->findPlayer(to_name);
+    const Player *from = ClientInstance->findPlayerByObjectName(from_name);
+    const Player *to = ClientInstance->findPlayerByObjectName(to_name);
 
     if (from->isRemoved() || to->isRemoved()) {
         ui->right->setText(tr("Not exist"));
