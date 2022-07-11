@@ -855,34 +855,6 @@ void LegacyServerPlayer::loseAllMarks(const QString &mark_name)
     loseMark(mark_name, mark(mark_name));
 }
 
-#if 0
-void ServerPlayer::addSkill(const QString &skill_name, bool head_skill)
-{
-    Player::addSkill(skill_name, head_skill);
-    JsonArray args;
-    args << QSanProtocol::S_GAME_EVENT_ADD_SKILL;
-    args << objectName();
-    args << skill_name;
-    args << head_skill;
-
-    if (isHegemonyGameMode(room->getMode()))
-        room->doNotify(this, QSanProtocol::S_COMMAND_LOG_EVENT, args);
-    else
-        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
-}
-
-void ServerPlayer::loseSkill(const QString &skill_name, bool head_skill)
-{
-    Player::loseSkill(skill_name, head_skill);
-    JsonArray args;
-    args << QSanProtocol::S_GAME_EVENT_LOSE_SKILL;
-    args << objectName();
-    args << skill_name;
-    args << head_skill;
-    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
-}
-#endif
-
 int LegacyServerPlayer::getGeneralMaxHp() const
 {
     int max_hp = 0;
