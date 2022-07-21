@@ -33,9 +33,6 @@ public:
     explicit LegacyRoom(QObject *parent, const ServerInfoStruct *si);
     ~LegacyRoom() override = default;
     RoomThread *getThread() const;
-    void output(const QString &message);
-    void saveWinnerTable(const QString &winner, bool isSurrender = false);
-    void countDescription();
 
     QSGS_STATE_ROOM int getLack() const;
     QSGS_STATE_GAME bool isFinished() const;
@@ -57,7 +54,6 @@ public:
     QSGS_STATE_GAME LegacyServerPlayer *findPlayer(const QString &general_name, bool include_dead = false) const;
     QSGS_STATE_GAME QList<LegacyServerPlayer *> findPlayersBySkillName(const QString &skill_name, bool include_hidden = true) const;
     QSGS_STATE_GAME LegacyServerPlayer *findPlayerBySkillName(const QString &skill_name) const;
-    QSGS_STATE_GAME bool hasWelfare(const LegacyServerPlayer *player) const;
     QSGS_STATE_GAME LegacyServerPlayer *getFront(LegacyServerPlayer *a, LegacyServerPlayer *b) const;
     QSGS_STATE_GAME void setTag(const QString &key, const QVariant &value);
     QSGS_STATE_GAME QVariant getTag(const QString &key) const;
@@ -567,7 +563,6 @@ private slots:
     void reportDisconnection();
     void processClientPacket(const QString &packet);
     void assignRoles();
-    void slotSetProperty(LegacyServerPlayer *player, const char *property_name, const QVariant &value);
 
 public slots:
     void startGame();
@@ -575,7 +570,6 @@ public slots:
 signals:
     void room_message(const QString &msg);
     void game_over(const QString &winner);
-    void signalSetProperty(LegacyServerPlayer *player, const char *property_name, const QVariant &value);
 };
 
 #undef QSGS_STATE_ROOM

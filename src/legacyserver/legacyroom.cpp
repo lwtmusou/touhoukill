@@ -60,8 +60,6 @@ LegacyRoom::LegacyRoom(QObject *parent, const ServerInfoStruct *si)
     qShuffle(pile1);
 
     initCallbacks();
-
-    connect(this, &LegacyRoom::signalSetProperty, this, &LegacyRoom::slotSetProperty, Qt::QueuedConnection);
 }
 
 void LegacyRoom::initCallbacks()
@@ -162,11 +160,6 @@ QList<LegacyServerPlayer *> LegacyRoom::getOtherPlayers(LegacyServerPlayer *exce
     if ((except != nullptr) && (except->isAlive() || include_dead))
         other_players.removeOne(except);
     return other_players;
-}
-
-void LegacyRoom::output(const QString &message)
-{
-    emit room_message(message);
 }
 
 void LegacyRoom::enterDying(LegacyServerPlayer *player, DamageStruct *reason)
@@ -450,7 +443,7 @@ void LegacyRoom::gameOver(const QString &winner, bool isSurrender)
     }
 
     game_finished = true;
-    saveWinnerTable(winner, isSurrender);
+    // saveWinnerTable(winner, isSurrender);
 
     emit game_over(winner);
 
@@ -833,7 +826,7 @@ bool LegacyRoom::doNotify(LegacyServerPlayer *player, int command, const char *a
         packet.setMessageBody(v);
         player->invoke(&packet);
     } else {
-        output(QStringLiteral("Fail to parse the Json Value %1").arg(QString::fromUtf8(arg)));
+        // output(QStringLiteral("Fail to parse the Json Value %1").arg(QString::fromUtf8(arg)));
     }
     return true;
 }
@@ -2097,12 +2090,6 @@ void LegacyRoom::setPlayerProperty(LegacyServerPlayer *player, const char *prope
             thread->trigger(QSanguosha::KingdomChanged, v);
         }
     }
-}
-
-void LegacyRoom::slotSetProperty(LegacyServerPlayer *player, const char *property_name, const QVariant &value)
-{
-    player->setProperty(property_name, value);
-    playerPropertySet = true;
 }
 
 void LegacyRoom::setPlayerMark(LegacyServerPlayer *player, const QString &mark, int value)
@@ -4096,17 +4083,6 @@ void LegacyRoom::sendDamageLog(const DamageStruct &data)
     }
 
     sendLog(log);
-}
-
-bool LegacyRoom::hasWelfare(const LegacyServerPlayer *player) const
-{
-    if (serverInfo()->GameMode->name() == QStringLiteral("06_3v3"))
-        return player->isLord() || player->roleString() == QStringLiteral("renegade");
-    else if (serverInfo()->GameMode->name() == QStringLiteral("06_XMode") || serverInfo()->GameMode->category() == QSanguosha::ModeHegemony)
-
-        return false;
-    else
-        return player->isLord() && player_count > 4;
 }
 
 LegacyServerPlayer *LegacyRoom::getFront(LegacyServerPlayer *a, LegacyServerPlayer *b) const
@@ -6788,126 +6764,6 @@ bool LegacyRoom::roleStatusCommand(LegacyServerPlayer *player)
 
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val);
     return true;
-}
-
-void LegacyRoom::saveWinnerTable(const QString &winner, bool isSurrender)
-{
-    //check gameMode
-    //    QString mode = Config.GameMode;
-    //    if (mode.endsWith(QStringLiteral("1v1")) || mode.endsWith(QStringLiteral("1v3")) || mode == QStringLiteral("06_XMode"))
-    //        return;
-
-    //check human players and check Surrender
-    int count = 0;
-    foreach (LegacyServerPlayer *p, getAllPlayers(true)) {
-        if (p->getState() != QStringLiteral("robot"))
-            count++;
-    }
-    if (getAllPlayers(true).length() < 6 || count < getAllPlayers(true).length() / 2)
-        return;
-
-    if (isSurrender) {
-        LegacyServerPlayer *lord = getLord();
-        bool lordALive = false;
-        if ((lord == nullptr) || lord->isAlive())
-            lordALive = true;
-        int round = getTag(QStringLiteral("Global_RoundCount")).toInt();
-        int death = getAllPlayers(true).length() - getAllPlayers().length();
-        if (round < 2 && lordALive && death < (getAllPlayers(true).length() / 4))
-            return;
-    }
-
-    QString location = QStringLiteral("etc/winner/");
-    if (!QDir(location).exists())
-        QDir().mkdir(location);
-    QDateTime time = QDateTime::currentDateTime();
-    if (serverInfo()->GameMode->category() == QSanguosha::ModeHegemony)
-        location.append(QStringLiteral("Heg"));
-    location.append(time.toString(QStringLiteral("yyyyMM")));
-    location.append(QStringLiteral(".txt"));
-    QFile file(location);
-
-    if (!file.open(QIODevice::ReadWrite))
-        return;
-
-    QString line;
-    QTextStream stream(&file);
-    stream.seek(file.size());
-
-    line.append(QStringLiteral("Date: %1/%2 %3:%4:%5")
-                    .arg(time.toString(QStringLiteral("MM")))
-                    .arg(time.toString(QStringLiteral("dd")))
-                    .arg(time.toString(QStringLiteral("hh")))
-                    .arg(time.toString(QStringLiteral("mm")))
-                    .arg(time.toString(QStringLiteral("ss"))));
-    line.append(QStringLiteral("\n"));
-    QStringList winners = winner.split(QStringLiteral("+"));
-    foreach (LegacyServerPlayer *p, getAllPlayers(true)) {
-        QString originalName = p->tag.value(QStringLiteral("init_general"), QString()).toString();
-        if (!originalName.isNull() && (Sanguosha->general(originalName) != nullptr))
-            line.append(Sanguosha->general(originalName)->name());
-        else
-            line.append(p->generalName());
-        line.append(QStringLiteral(" "));
-        line.append(p->roleString());
-        line.append(QStringLiteral(" "));
-        line.append(QString::number(p->seat()));
-        line.append(QStringLiteral(" "));
-        if (p->getState() != QStringLiteral("robot"))
-            line.append(QStringLiteral("human"));
-        else
-            line.append(QStringLiteral("robot"));
-        line.append(QStringLiteral(" "));
-        if (winner == QStringLiteral("."))
-            line.append(QStringLiteral("draw"));
-        else if (winners.contains(p->roleString()) || winner == p->objectName())
-            line.append(QStringLiteral("win"));
-        else
-            line.append(QStringLiteral("lose"));
-        line.append(QStringLiteral("\n"));
-    }
-
-    stream << line;
-    file.close();
-}
-
-void LegacyRoom::countDescription()
-{
-    QString location = QStringLiteral("etc/count.txt");
-    QFile file(location);
-    if (!file.open(QIODevice::ReadWrite))
-        return;
-
-    QTextStream stream(&file);
-    QSet<QString> all = Sanguosha->generalNames();
-
-    QMultiMap<int, QString> map;
-    foreach (QString name, all) {
-        const General *gen = Sanguosha->general(name);
-        QString line;
-        foreach (const Skill *skill, gen->skills()) {
-            QString skill_name = Sanguosha->translate(skill->name());
-
-            QString desc = Sanguosha->translate(QStringLiteral(":") + skill->name());
-            QRegularExpression rx(QStringLiteral("<[^>]*>"));
-            desc.remove(rx);
-            QString skill_line = QStringLiteral("%1:%2").arg(skill_name, desc);
-            line = line + skill_line;
-        }
-        map.insert(line.length(), name);
-    }
-    QMultiMap<int, QString>::iterator it;
-    int num = 0;
-    for (it = map.begin(); it != map.end(); ++it) {
-        QString countString;
-        countString.append(QStringLiteral("%1: %2 ").arg(Sanguosha->translate(it.value()), QString::number(it.key())));
-        countString.append(QStringLiteral("\n"));
-        stream << countString;
-        num += it.key();
-    }
-    QString count = QString::number(num / map.size());
-    stream << count;
-    file.close();
 }
 
 void LegacyRoom::transformGeneral(LegacyServerPlayer *player, const QString &general_name, int head)

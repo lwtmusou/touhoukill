@@ -885,8 +885,10 @@ int LegacyServerPlayer::getGeneralMaxHp() const
         max_hp = qMax(max_hp, 1);
     }
 
+#if 0
     if (room->hasWelfare(this))
         max_hp++;
+#endif
 
     return max_hp;
 }
