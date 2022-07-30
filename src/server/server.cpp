@@ -1157,22 +1157,41 @@ void Server::processRequest(const char *request)
 
     const JsonArray &body = signup.getMessageBody().value<JsonArray>();
     QString urlPath = body[0].toString();
-    QString screen_name = QString::fromUtf8(QByteArray::fromBase64(body[1].toString().toLatin1()));
-    QString avatar = body[2].toString();
-    bool reconnection_enabled = false;
+
+    enum
+    {
+        DefaultConnect,
+        Observe,
+        Reconnect,
+        GetLack,
+    } connectionType
+        = DefaultConnect;
 
     QStringList ps = urlPath.split('/', QString::SkipEmptyParts);
     QString messageBodyToSend;
     if (ps.length() == 0) {
         // default connected
     } else {
-        if (ps.length() != 2) {
-            messageBodyToSend = "INVALID_OPERATION";
-            emit server_message(tr("invalid operation: more than 2 parts"));
-        } else {
+        if (ps.length() == 2) {
             // check valid ps.first
             if (ps.first() == "reconnect") {
-                reconnection_enabled = true;
+                connectionType = Reconnect;
+
+                // check valid ps.last
+                if (!ps.last().startsWith("sgs")) {
+                    emit server_message(tr("reconnect username incorrect: %1").arg(ps.last()));
+                    messageBodyToSend = "USERNAME_INCORRECT";
+                } else {
+                    QString num = ps.last().mid(3);
+                    bool ok = false;
+                    num.toInt(&ok);
+                    if (ok) {
+                        // valid connection name
+                    } else {
+                        emit server_message(tr("reconnect username incorrect: %1").arg(ps.last()));
+                        messageBodyToSend = "USERNAME_INCORRECT";
+                    }
+                }
             } else if (ps.first() == "observe") {
                 // warning, not implemented
                 emit server_message(tr("unimplemented operation: %1").arg(ps.first()));
@@ -1181,23 +1200,16 @@ void Server::processRequest(const char *request)
                 emit server_message(tr("invalid operation: %1").arg(ps.first()));
                 messageBodyToSend = "INVALID_OPERATION";
             }
-        }
-        if (messageBodyToSend.isEmpty()) {
-            // check valid ps.last
-            if (!ps.last().startsWith("sgs")) {
-                emit server_message(tr("reconnect username incorrect: %1").arg(ps.last()));
-                messageBodyToSend = "USERNAME_INCORRECT";
+        } else if (ps.length() == 1) {
+            if (ps.first() == "getlack") {
+                connectionType = GetLack;
             } else {
-                QString num = ps.last().mid(3);
-                bool ok = false;
-                num.toInt(&ok);
-                if (ok) {
-                    // valid connection name
-                } else {
-                    emit server_message(tr("reconnect username incorrect: %1").arg(ps.last()));
-                    messageBodyToSend = "USERNAME_INCORRECT";
-                }
+                emit server_message(tr("invalid operation: %1").arg(ps.first()));
+                messageBodyToSend = "INVALID_OPERATION";
             }
+        } else {
+            emit server_message(tr("invalid operation: more than 2 parts"));
+            messageBodyToSend = "INVALID_OPERATION";
         }
 
         if (!messageBodyToSend.isEmpty()) {
@@ -1224,8 +1236,18 @@ void Server::processRequest(const char *request)
     QString s = Sanguosha->getSetupString();
     packet2.setMessageBody(s);
     socket->send((packet2.toString()));
+    if (connectionType == GetLack) {
+        QSanProtocol::Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_HEARTBEAT);
 
-    if (reconnection_enabled) {
+        if (current == nullptr || current->isFull() || current->isFinished())
+            packet.setMessageBody(QString::number(0));
+        else
+            packet.setMessageBody(QString::number(current->getLack()));
+
+        socket->send(packet.toString());
+        socket->disconnectFromHost();
+        return;
+    } else if (connectionType == Reconnect) {
         ServerPlayer *player = players.value(ps.last());
         if ((player != nullptr) && player->getState() == "offline" && !player->getRoom()->isFinished()) {
             player->getRoom()->reconnect(player, socket);
@@ -1244,6 +1266,9 @@ void Server::processRequest(const char *request)
 
     if (current == nullptr || current->isFull() || current->isFinished())
         createNewRoom();
+
+    QString screen_name = QString::fromUtf8(QByteArray::fromBase64(body[1].toString().toLatin1()));
+    QString avatar = body[2].toString();
 
     ServerPlayer *player = current->addSocket(socket);
     current->signup(player, screen_name, avatar, false);
