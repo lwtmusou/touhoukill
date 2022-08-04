@@ -1220,6 +1220,33 @@ void Server::processRequest(const char *request)
             return;
         }
     }
+
+    if (connectionType == GetLack) {
+        int playingRooms = 0;
+        foreach (Room *room, rooms) {
+            if (room->isFull())
+                ++playingRooms;
+        }
+
+        int lack = -1;
+
+        if (current == nullptr || current->isFull() || current->isFinished())
+            lack = Sanguosha->getPlayerCount(ServerInfo.GameMode);
+        else
+            lack = current->getLack();
+
+        QJsonObject ob;
+        ob["playingRooms"] = playingRooms;
+        ob["currentLack"] = lack;
+        QJsonDocument doc(ob);
+
+        Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_HEARTBEAT);
+        packet.setMessageBody(doc.toJson(QJsonDocument::Compact));
+        socket->send(packet.toString());
+        socket->disconnectFromHost();
+        return;
+    }
+
     if (Config.ForbidSIMC) {
         QString addr = socket->peerAddress();
         if (addresses.contains(addr)) {
@@ -1236,18 +1263,8 @@ void Server::processRequest(const char *request)
     QString s = Sanguosha->getSetupString();
     packet2.setMessageBody(s);
     socket->send((packet2.toString()));
-    if (connectionType == GetLack) {
-        QSanProtocol::Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_HEARTBEAT);
 
-        if (current == nullptr || current->isFull() || current->isFinished())
-            packet.setMessageBody(QString::number(0));
-        else
-            packet.setMessageBody(QString::number(current->getLack()));
-
-        socket->send(packet.toString());
-        socket->disconnectFromHost();
-        return;
-    } else if (connectionType == Reconnect) {
+    if (connectionType == Reconnect) {
         ServerPlayer *player = players.value(ps.last());
         if ((player != nullptr) && player->getState() == "offline" && !player->getRoom()->isFinished()) {
             player->getRoom()->reconnect(player, socket);
