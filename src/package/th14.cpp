@@ -35,7 +35,8 @@ public:
         ServerPlayer *player = data.value<ServerPlayer *>();
         if (player->getPhase() == Player::Start) {
             return room->askForCard(invoke->invoker, ".|.|.|hand,equipped", "@baochui:" + player->objectName(), QVariant::fromValue(player), Card::MethodDiscard, nullptr, false,
-                                    objectName()) != nullptr;
+                                    objectName())
+                != nullptr;
         }
         return true;
     }
@@ -694,7 +695,7 @@ void YuanfeiCard::onEffect(const CardEffectStruct &effect) const
 {
     Room *room = effect.to->getRoom();
     ServerPlayer *target = effect.to;
-    room->setPlayerCardLimitation(target, "use,response", ".|.|.|.", "yuanfei", true);
+    room->setPlayerCardLimitation(target, "use,response", ".", "yuanfei", true);
     LogMessage l;
     l.type = "#yuanfei";
     l.from = target;
@@ -1152,8 +1153,8 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if ((damage.card != nullptr) && (damage.from != nullptr) && damage.from->isAlive() && damage.by_user && damage.to->isAlive() && damage.from != damage.to && !damage.to->getEquips().isEmpty()
-            && (damage.from->hasSkill(this) || damage.to->hasSkill(this))) {
+        if ((damage.card != nullptr) && (damage.from != nullptr) && damage.from->isAlive() && damage.by_user && damage.to->isAlive() && damage.from != damage.to
+            && !damage.to->getEquips().isEmpty() && (damage.from->hasSkill(this) || damage.to->hasSkill(this))) {
             if (triggerEvent == Damage && damage.from->hasSkill(this))
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, nullptr, true);
             else if (triggerEvent == Damaged && damage.to->hasSkill(this))

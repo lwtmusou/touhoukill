@@ -420,6 +420,8 @@ private:
     QMap<Card::HandlingMethod, QMap<QString, QStringList>> card_limitation; //method, reason , pattern
     QStringList disable_show;
 
+    void updateYingyingguai();
+
 signals:
     void general_changed();
     void general2_changed();

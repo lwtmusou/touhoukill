@@ -667,12 +667,12 @@ public:
                 l.from = invoke->targets.first();
                 l.arg = "no_suit_" + colorstring;
                 room->sendLog(l);
-                room->setPlayerCardLimitation(invoke->targets.first(), "use,response", ".|" + colorstring + "|.|.", "shengyu", false);
+                room->setPlayerCardLimitation(invoke->targets.first(), "use,response", ".|" + colorstring, "shengyu", false);
                 invoke->targets.first()->setFlags("shengyu_" + use.card->toString());
             } else
                 invoke->targets.first()->addBrokenEquips(ids);
         } else
-            room->removePlayerCardLimitation(invoke->targets.first(), "use,response", ".|" + colorstring + "|.|.$0", "shengyu");
+            room->removePlayerCardLimitation(invoke->targets.first(), "use,response", ".|" + colorstring + "$0", "shengyu");
 
         return false;
     }

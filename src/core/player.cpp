@@ -1650,6 +1650,7 @@ void Player::setCardLimitation(const QString &limit_list, const QString &pattern
         Card::HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
         card_limitation[method][reason] << _pattern;
     }
+    updateYingyingguai();
 }
 
 void Player::removeCardLimitation(const QString &limit_list, const QString &pattern, const QString &reason, bool clearReason)
@@ -1664,6 +1665,7 @@ void Player::removeCardLimitation(const QString &limit_list, const QString &patt
         if (card_limitation[method][reason].isEmpty() || _pattern.endsWith("$1") || clearReason)
             card_limitation[method].remove(reason);
     }
+    updateYingyingguai();
 }
 
 void Player::clearCardLimitation(bool single_turn)
@@ -1680,6 +1682,7 @@ void Player::clearCardLimitation(bool single_turn)
             }
         }
     }
+    updateYingyingguai();
 }
 
 bool Player::isCardLimited(const Card *card, Card::HandlingMethod method, bool isHandcard) const
@@ -2053,6 +2056,34 @@ const Player *Player::getLord(bool include_death) const
     }
 
     return nullptr;
+}
+
+void Player::updateYingyingguai()
+{
+    bool isUseLimitedAll = false;
+    bool isResponseLimitedAll = false;
+    foreach (QStringList patternList, card_limitation[Card::MethodUse]) {
+        foreach (QString pat, patternList) {
+            if (pat.startsWith(".$")) {
+                isUseLimitedAll = true;
+                break;
+            }
+        }
+        if (isUseLimitedAll)
+            break;
+    }
+    foreach (QStringList patternList, card_limitation[Card::MethodUse]) {
+        foreach (QString pat, patternList) {
+            if (pat.startsWith(".$")) {
+                isResponseLimitedAll = true;
+                break;
+            }
+        }
+        if (isResponseLimitedAll)
+            break;
+    }
+
+    setMark("coupling__yingyingguai", ((isUseLimitedAll && isResponseLimitedAll) ? 1 : 0));
 }
 
 QList<const Skill *> Player::getHeadSkillList(bool visible_only, bool include_acquired, bool include_equip) const

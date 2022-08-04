@@ -1252,10 +1252,8 @@ public:
             ServerPlayer *c = data.value<ServerPlayer *>();
             if (c->getPhase() == Player::NotActive) {
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->getMark("duozhi") > 0) {
-                        room->setPlayerMark(p, "duozhi", 0);
+                    if (p->isCardLimited("use,response", "duozhi"))
                         room->removePlayerCardLimitation(p, "use,response", ".$1", "duozhi", true);
-                    }
                 }
             }
         }
@@ -1269,7 +1267,7 @@ public:
                 ServerPlayer *current = room->getCurrent();
                 if (current != nullptr && current->getPhase() != Player::NotActive && current->isAlive()) {
                     foreach (ServerPlayer *p, room->getOtherPlayers(use.from)) {
-                        if (p->getMark("duozhi") == 0)
+                        if (!p->isCardLimited("use,response", "duozhi"))
                             return {SkillInvokeDetail(this, use.from, use.from, nullptr, true)};
                     }
                 }
@@ -1301,8 +1299,7 @@ public:
         LogMessage l;
 
         foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
-            if (p->getMark("duozhi") == 0) {
-                room->setPlayerMark(p, "duozhi", 1);
+            if (!p->isCardLimited("use,response", "duozhi")) {
                 room->setPlayerCardLimitation(p, "use,response", ".", "duozhi", true);
                 l.to << p;
             }

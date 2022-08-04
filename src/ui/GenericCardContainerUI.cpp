@@ -223,7 +223,7 @@ void PlayerCardContainer::updateAvatar()
     if (general != nullptr) {
         _m_avatarArea->setToolTip(m_player->getSkillDescription(true, "head"));
         QString name = general->objectName();
-        if (m_player != nullptr && m_player->getMark("duozhi") > 0)
+        if (m_player != nullptr && m_player->getMark("coupling__yingyingguai") > 0)
             name = "yingyingguai";
 
         QPixmap avatarIcon = _getAvatarIcon(name);
@@ -313,7 +313,7 @@ void PlayerCardContainer::updateSmallAvatar()
 
     if (general != nullptr) {
         QString g_name = general->objectName();
-        if (m_player != nullptr && m_player->getMark("duozhi") > 0)
+        if (m_player != nullptr && m_player->getMark("coupling__yingyingguai") > 0)
             g_name = "yingyingguai";
         QPixmap smallAvatarIcon = G_ROOM_SKIN.getGeneralPixmap(g_name, QSanRoomSkin::GeneralIconSize(_m_layout->m_smallAvatarSize));
         smallAvatarIcon = paintByMask(smallAvatarIcon);
@@ -1597,7 +1597,8 @@ void PlayerCardContainer::stopHeroSkinChangingAnimation()
 
 QPixmap PlayerCardContainer::_getAvatarIcon(const QString &heroName)
 {
-    int avatarSize = ((m_player->getGeneral2() != nullptr) || (ServerInfo.Enable2ndGeneral && this->getPlayer() == Self)) ? _m_layout->m_primaryAvatarSize : _m_layout->m_avatarSize;
+    int avatarSize
+        = ((m_player->getGeneral2() != nullptr) || (ServerInfo.Enable2ndGeneral && this->getPlayer() == Self)) ? _m_layout->m_primaryAvatarSize : _m_layout->m_avatarSize;
     return G_ROOM_SKIN.getGeneralPixmap(heroName, (QSanRoomSkin::GeneralIconSize)avatarSize);
 }
 QPixmap PlayerCardContainer::getSmallAvatarIcon(const QString &generalName)
