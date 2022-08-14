@@ -295,6 +295,7 @@ end]]
 
 --[无念]
 function wunian_judge(self,user,card)
+	if not card then return 0 end
 	if card:isKindOf("AmazingGrace") then
 		return 2
 	end
