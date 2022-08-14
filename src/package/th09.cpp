@@ -1165,64 +1165,184 @@ public:
     }
 };
 
-class Jingdian : public TriggerSkill
+class LeiyuVS : public OneCardViewAsSkill
 {
 public:
-    Jingdian()
-        : TriggerSkill("jingdian")
+    LeiyuVS()
+        : OneCardViewAsSkill("leiyu")
     {
-        frequency = Compulsory;
+        response_or_use = true;
+    }
+
+    bool isEnabledAtResponse(const Player *, const QString &pattern) const override
+    {
+        return pattern == "slash";
+    }
+
+    bool isEnabledAtPlay(const Player *player) const override
+    {
+        return Slash::IsAvailable(player);
+    }
+
+    bool viewFilter(const Card *to_select) const override
+    {
+        if (to_select->getSuit() == Card::Spade || to_select->getSuit() == Card::Heart) {
+            if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+                Slash *slash = new Slash(Card::SuitToBeDecided, -1);
+                slash->addSubcard(to_select->getEffectiveId());
+                slash->deleteLater();
+                return slash->isAvailable(Self);
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    const Card *viewAs(const Card *originalCard) const override
+    {
+        ThunderSlash *slash = new ThunderSlash(originalCard->getSuit(), originalCard->getNumber());
+        slash->addSubcard(originalCard);
+        slash->setSkillName(objectName());
+        return slash;
+    }
+};
+
+class Leiyu : public TriggerSkill
+{
+public:
+    Leiyu()
+        : TriggerSkill("leiyu")
+    {
         events << DamageInflicted;
+        view_as_skill = new LeiyuVS;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.nature == DamageStruct::Thunder && damage.to->hasSkill(this))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, nullptr, true);
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
         return QList<SkillInvokeDetail>();
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
-        room->touhouLogmessage("#jingdian", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(damage.damage));
+        room->touhouLogmessage("#leiyu", invoke->invoker, objectName(), QList<ServerPlayer *>(), QString::number(damage.damage));
         room->notifySkillInvoked(invoke->invoker, objectName());
-        room->drawCards(invoke->invoker, 3 * damage.damage, objectName());
+        room->drawCards(invoke->invoker, 2, objectName());
         return true;
     }
 };
 
-class Leiyun : public OneCardViewAsSkill
+ShizaiCard::ShizaiCard()
+{
+    target_fixed = true;
+}
+
+void ShizaiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+{
+    JudgeStruct j;
+    j.good = false;
+    j.pattern = ".";
+    j.play_animation = false;
+    j.reason = "shizai";
+    j.who = source;
+    room->judge(j);
+}
+
+class ShizaiVS : public ZeroCardViewAsSkill
 {
 public:
-    Leiyun()
-        : OneCardViewAsSkill("leiyun")
+    ShizaiVS()
+        : ZeroCardViewAsSkill("shizai")
     {
-        response_or_use = true;
-        filter_pattern = ".|spade,heart|.|hand";
     }
 
-    bool isEnabledAtResponse(const Player *p, const QString &pattern) const override
+    const Card *viewAs() const override
     {
-        Lightning l(Card::SuitToBeDecided, -1);
-        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
-
-        return l.isAvailable(p) && (cardPattern != nullptr && cardPattern->match(p, &l));
+        return new ShizaiCard;
     }
 
     bool isEnabledAtPlay(const Player *player) const override
     {
-        Lightning l(Card::SuitToBeDecided, -1);
-        return l.isAvailable(player);
+        return !player->hasUsed("ShizaiCard");
+    }
+};
+
+class Shizai : public TriggerSkill
+{
+public:
+    Shizai()
+        : TriggerSkill("shizai")
+    {
+        events << CardUsed << FinishJudge;
+        view_as_skill = new ShizaiVS;
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    void record(TriggerEvent triggerEvent, Room *, QVariant &data) const override
     {
-        Lightning *card = new Lightning(originalCard->getSuit(), originalCard->getNumber());
-        card->addSubcard(originalCard);
-        card->setSkillName("leiyun");
-        return card;
+        if (triggerEvent == FinishJudge) {
+            JudgeStruct *j = data.value<JudgeStruct *>();
+            if (j->reason == objectName()) {
+                if (j->card->isRed())
+                    j->who->setFlags(objectName() + "Red");
+                else if (j->card->isBlack())
+                    j->who->setFlags(objectName() + "Black");
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
+    {
+        if (triggerEvent == CardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            bool invoke = false;
+            if (use.from != nullptr && use.card != nullptr && !use.card->isKindOf("SkillCard")) {
+                if (use.card->isBlack() && use.from->hasFlag(objectName() + "Black"))
+                    invoke = true;
+                else if (use.card->isRed() && use.from->hasFlag(objectName() + "Red"))
+                    invoke = true;
+            }
+
+            if (invoke) {
+                invoke = false;
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
+                    if (!p->isChained()) {
+                        invoke = true;
+                        break;
+                    }
+                }
+            }
+
+            if (invoke)
+                return {SkillInvokeDetail(this, use.from, use.from, nullptr, true, nullptr, false)};
+        }
+
+        return {};
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        QList<ServerPlayer *> ts;
+
+        foreach (ServerPlayer *p, room->getAllPlayers()) {
+            if (!p->isChained())
+                ts << p;
+        }
+
+        if (ts.isEmpty())
+            return false;
+
+        invoke->targets << room->askForPlayerChosen(invoke->invoker, ts, objectName(), "@@shizai-chain", false, true);
+        return true;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        room->setPlayerProperty(invoke->targets.first(), "chained", !invoke->targets.first()->isChained());
+        return false;
     }
 };
 
@@ -2781,8 +2901,8 @@ TH09Package::TH09Package()
     tenshi->addSkill(new Tianren);
 
     General *iku = new General(this, "iku", "zhan", 4);
-    iku->addSkill(new Jingdian);
-    iku->addSkill(new Leiyun);
+    iku->addSkill(new Leiyu);
+    iku->addSkill(new Shizai);
 
     General *hatate = new General(this, "hatate", "zhan", 4);
     hatate->addSkill(new Kuaizhao);
@@ -2827,6 +2947,7 @@ TH09Package::TH09Package()
     addMetaObject<MengxiangTargetCard>();
     addMetaObject<JishiCard>();
     addMetaObject<MianLingCard>();
+    addMetaObject<ShizaiCard>();
 
     skills << new YanhuiVS;
 }

@@ -203,7 +203,7 @@ return
 	--zhan008  势力：战 4血
 	["iku"] = "永江衣玖",
 	["#iku"] = "美丽的绯之衣",
-	["designer:iku"] = "星野梦美☆",
+	["designer:iku"] = "谁",
 
 	["illustrator:iku"] = "しろさ",
 	["origin:iku"] = "p号：28342536，个人id：374262",
@@ -218,11 +218,12 @@ return
 	["illustrator:iku_5"] = "kirero",
 	["origin:iku_5"] = "p号：4385046，个人id：35490",
 
-	["jingdian"] = "静电",
-	[":jingdian"] = "<font color=\"blue\"><b>锁定技，</b></font>当你受到雷电伤害时，你防止此伤害并摸3X张牌（X为伤害值）。",
-	["#jingdian"] = "%from 的 “%arg” 被触发，%from 防止了 %arg2 点雷电伤害。",
-	["leiyun"] = "雷云",
-	[":leiyun"] = "你可以将一张<font size=\"5\", color=\"#808080\"><b>♠</b></font>或<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>手牌当【闪电】使用。",
+	["leiyu"] = "雷羽",
+	[":leiyu"] = "你可以将红桃或黑桃牌当雷【杀】使用；当你受雷电伤害时，你可以防止此伤害，摸两张牌。",
+	["#leiyu"] = "%from 的 “%arg” 被触发，防止了 %arg2 点雷电伤害。",
+	["shizai"] = "示灾",
+	[":shizai"] = "出牌阶段限一次，你可以判定，然后当你于此回合内使用与结果颜色相同的牌时，你须横置一名角色。",
+	["@@shizai-chain"] = "示灾请选择一名角色横置其",
 
 --**********************************************
 	--zhan009  势力：战 4血

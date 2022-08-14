@@ -723,59 +723,55 @@ sgs.ai_skill_cardask["@tianren-jink"] = function(self)
 end
 
 --永江衣玖
---[静电]
-sgs.ai_skill_invoke.jingdian =  true
-sgs.ai_damageInflicted.jingdian = function(self, damage)
-	if damage.nature == sgs.DamageStruct_Thunder and damage.to:hasSkill("jingdian") then
+--视为雷杀 懒了
+sgs.ai_skill_invoke.leiyu = true
+
+sgs.ai_damageInflicted.leiyu = function(self, damage)
+	if damage.nature == sgs.DamageStruct_Thunder and damage.to:hasSkill("leiyu") then
 			damage.damage=0
 	end
 	return damage
 end
-sgs.ai_benefitBySlashed.jingdian = function(self, card,source,target)
+sgs.ai_benefitBySlashed.leiyu = function(self, card,source,target)
 	if not card:isKindOf("ThunderSlash")  then return false end
 	return true
 end
 
---[雷云]
-local leiyun_skill = {}
-leiyun_skill.name = "leiyun"
-table.insert(sgs.ai_skills, leiyun_skill)
-leiyun_skill.getTurnUseCard = function(self, inclusive)
-		local cards = self.player:getCards("hs")
-		cards=self:touhouAppendExpandPileToList(self.player,cards)
-		cards = sgs.QList2Table(cards)
-		self:sortByUseValue(cards, true)
-
-		local heart_card
-		for _, card in ipairs(cards) do
-				if  (card:getSuit()==sgs.Card_Heart or card:getSuit()==sgs.Card_Spade) and  not isCard("Peach", card, self.player)
-				and not isCard("ExNihilo", card, self.player) then
-						heart_card = card
-						break
-				end
-		end
-		if heart_card then
-				local suit = heart_card:getSuitString()
-				local number = heart_card:getNumberString()
-				local card_id = heart_card:getEffectiveId()
-				local lightning_str = ("lightning:leiyun[%s:%s]=%d"):format(suit, number, card_id)
-				local lightning = sgs.Card_Parse(lightning_str)
-
-				assert(lightning)
-				return lightning
-		end
-end
-sgs.ai_cardneed.leiyun = function(to, card, self)
-	if not self:willSkipPlayPhase(to) then
-		return card:getSuit()==sgs.Card_Heart or card:getSuit()==sgs.Card_Spade
+local shizai_skill = {}
+shizai_skill.name = "shizai"
+table.insert(sgs.ai_skills, shizai_skill)
+shizai_skill.getTurnUseCard = function(self)
+	if not self.player.hasUsed("ShizaiCard") then
+		return sgs.Card_Parse("@ShizaiCard=.")
 	end
 end
-sgs.leiyun_suit_value = {
-	spade = 3.9,
-	heart = 3.9
-}
-sgs.ai_skillProperty.leiyun = function(self)
-	return "use_delayed_trick"
+sgs.ai_skill_use_func.ShizaiCard = function(card, use, self)
+	use.card = card
+end
+sgs.ai_use_priority.ShizaiCard = 4294967295
+
+sgs.ai_skill_playerchosen.shizai = function(self, targets)
+	local enemies = {}
+	local friends = {}
+	
+	targets = sgs.QList2Table(targets)
+	for _, t in ipairs(targets) do
+		if self:isEnemy(t) then
+			table.insert(enemies, t)
+		else
+			table.insert(friends, t)
+		end
+	end
+	
+	if #enemies > 0 then
+		self:sort(enemies)
+		return enemies[1]
+	elseif #friends > 0 then
+		self:sort(friends, "defense")
+		return friends[1]
+	end
+	
+	return targets[1]
 end
 
 --姬海棠果

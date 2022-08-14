@@ -133,6 +133,16 @@ public:
     const Card *validateInResponse(ServerPlayer *user) const override;
 };
 
+class ShizaiCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ShizaiCard();
+
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+};
+
 class TH09Package : public Package
 {
     Q_OBJECT
