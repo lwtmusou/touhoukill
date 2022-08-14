@@ -1455,13 +1455,13 @@ public:
         bool flag = false;
 
         foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
-            if (p->inMyAttackRange(invoke->targets.first())) {
+            if (invoke->targets.first()->isAlive() && p->inMyAttackRange(invoke->targets.first())) {
                 if (askForUseLingjunTo(room, invoke->invoker, p, invoke->targets.first()) != nullptr)
                     flag = true;
             }
         }
 
-        if (flag && !invoke->invoker->hasFlag("lingjunNotSlash")) {
+        if (flag && !invoke->invoker->hasFlag("lingjunNotSlash") && invoke->targets.first()->isAlive()) {
             Slash *s = new Slash(Card::NoSuit, 0);
             s->setSkillName("_lingjun");
             if (!invoke->invoker->isLocked(s))

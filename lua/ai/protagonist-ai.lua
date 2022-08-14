@@ -393,6 +393,8 @@ sgs.saiqian_suit_value = {
 
 --SP大盗魔理沙
 --[借走]
+--推重
+--[[
 --find cost for jiezou
 function jiezouSpade(self,player)
 	local cards
@@ -509,6 +511,7 @@ end
 sgs.ai_choicemade_filter.cardChosen.jiezou = sgs.ai_choicemade_filter.cardChosen.snatch
 sgs.ai_use_value.JiezouCard = 8
 sgs.ai_use_priority.JiezouCard =6
+]]
 sgs.dynamic_value.control_card.JiezouCard = true
 sgs.ai_cardneed.jiezou = function(to, card, self)
 	return card:getSuit()==sgs.Card_Spade
@@ -516,7 +519,6 @@ end
 sgs.jiezou_suit_value = {
 	spade = 4.9
 }
-
 
 
 --[借走 国]
