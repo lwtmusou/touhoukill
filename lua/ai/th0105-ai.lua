@@ -1202,8 +1202,12 @@ sgs.ai_skill_cardask["@wuzui-put"] = function(self, data)
 end
 
 sgs.ai_skill_cardask["@wuzui-discard"] = function(self, data)
-	local t = sgs.QList2Table(self.player:getPile("guilt"))
-	if #t == 0 then return "." end
+	local ids = sgs.QList2Table(self.player:getPile("guilt"))
+	if #ids == 0 then return "." end
+	local t = {}
+	for _, id in ipairs(ids) do
+		table.insert(t, sgs.Sanguosha:getCard(id))
+	end
 	local damage = data:toDamage()
 	local to = damage.to
 	if self:isFriend(to) then return "." end
