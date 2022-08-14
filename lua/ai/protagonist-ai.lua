@@ -698,13 +698,9 @@ sgs.ai_trick_prohibit.baoyi = function(self, from, to, card)
 	return true
 end
 
-
 --妖妖梦SP灵梦
 --[职责]
 function SmartAI:zhizeValue(player)
-	if self:touhouHandCardsFix(player) or player:hasSkill("heibai") then
-		return 0
-	end
 	local value=0
 	for _, card in sgs.qlist(player:getHandcards()) do
 		local flag = string.format("%s_%s_%s", "visible", global_room:getCurrent():objectName(), player:objectName())
@@ -722,8 +718,6 @@ function SmartAI:zhizeValue(player)
 	return value
 end
 sgs.ai_skill_playerchosen.zhize = function(self, targets)
-
-	local pre_zhize=self.player:getTag("pre_zhize"):toPlayer()
 	local target_table = sgs.QList2Table(targets)
 	local zhize_target
 	local targets={}
@@ -731,13 +725,13 @@ sgs.ai_skill_playerchosen.zhize = function(self, targets)
 	local ftargets={}
 	for _,target in pairs(target_table) do
 		if  self:isEnemy(target)  then
-			if target:hasSkills("yongheng|kongpiao") then
+			if target:hasSkills("yongheng") then
 				table.insert(badtargets,target)
 			else
 				table.insert(targets,target)
 			end
 		else
-			if target:hasSkills("yongheng|kongpiao") then
+			if target:hasSkills("yongheng") then
 				table.insert(ftargets,target)
 			end
 		end
@@ -765,12 +759,8 @@ sgs.ai_skill_playerchosen.zhize = function(self, targets)
 	else
 		tt=target_table[1]
 	end
-	local _data = sgs.QVariant()
-	 _data:setValue(tt)
-	self.player:setTag("pre_zhize",_data)
 	return tt
 end
-
 sgs.ai_playerchosen_intention.zhize =function(self, from, to)
 	local intention = 30
 	if self:isFriend(from,to)   then
@@ -785,57 +775,18 @@ sgs.ai_playerchosen_intention.zhize =function(self, from, to)
 	end
 	sgs.updateIntention(from, to, intention)
 end
-sgs.ai_skill_cardchosen.zhize = function(self, who, flags)
-	local hearts={}
-	local others={}
-	for _,c in sgs.qlist(who:getCards("hs")) do
-		if self.player:hasSkill("chunxi") and c:getSuit() ==sgs.Card_Heatrt then
-			table.insert(hearts,c)
-		else
-			table.insert(others,c)
-		end
-	end
-	local inverse = not self:isFriend(who)
-	if #hearts>0 then
-		self:sortByKeepValue(hearts, inverse)
-		return hearts[1]
-	else
-		self:sortByKeepValue(others, inverse)
-		return others[1]
-	end
-end
 
 --[春息]
-sgs.ai_skill_use["@@chunxi"] = function(self, prompt)
-	local move = self.player:getTag("chunxi_move"):toMoveOneTime()
-	local ids = {}
-	for _, id in sgs.qlist(move.card_ids) do
-		if sgs.Sanguosha:getCard(id):getSuit() == sgs.Card_Heart
-		  and self.room:getCardPlace(id) == sgs.Player_PlaceHand then
-			table.insert(ids, id)
+local chunxiTargetChoose = function(self)
+	local enemies = self:getEnemies(self.player)
+	local target_table = {}
+	
+	for _, p in ipairs(enemies) do
+		if p:getMark("chunxi_used") == 0 then
+			table.insert(target_table, p)
 		end
 	end
-	if #ids > 0 then
-		return "@ChunxiCard=" .. table.concat(ids, "+")
-	end
-	return "."
-end
-sgs.ai_skill_playerchosen.chunxi = function(self, targets)
-	local preheart=false
-	local pre_zhize
-	if self.player:getPhase()==sgs.Player_Draw then
-		if self.player:getTag("pre_heart") and self.player:getTag("pre_heart"):toBool() then
-			preheart=true
-		end
-		if preheart then
-			pre_zhize=self.player:getTag("pre_zhize"):toPlayer()
-		end
-	end
-	if pre_zhize then
-		self.player:setTag("pre_heart",sgs.QVariant(false))
-		return pre_zhize
-	end
-	local target_table = self:getEnemies(self.player)
+
 	if #target_table == 0 then return false end
 	local chunxi_target
 	self:sort(target_table, "value")
@@ -853,9 +804,29 @@ sgs.ai_skill_playerchosen.chunxi = function(self, targets)
 		return chunxi_target
 	end
 end
+
+sgs.ai_skill_use["@@chunxi"] = function(self, prompt)
+	local move = self.player:getTag("chunxi_move"):toMoveOneTime()
+	local selectedId
+	for _, id in sgs.qlist(move.card_ids) do
+		if sgs.Sanguosha:getCard(id):getSuit() == sgs.Card_Heart and self.room:getCardPlace(id) == sgs.Player_PlaceHand then
+			selectedId = id
+			break
+		end
+	end
+
+	if selectedId then
+		local target = chunxiTargetChoose(self)
+		if target then
+			return "@ChunxiCard=" .. tostring(selectedId) .. "->" .. target:objectName()
+		end
+	end
+	return "."
+end
+
 sgs.ai_playerchosen_intention.chunxi = 30
 sgs.ai_cardneed.chunxi = function(to, card, self)
- return card:getSuit()==sgs.Card_Heart
+	return card:getSuit()==sgs.Card_Heart
 end
 sgs.chunxi_suit_value = {
 	heart = 4.0

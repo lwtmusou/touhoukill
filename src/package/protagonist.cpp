@@ -917,55 +917,72 @@ public:
     }
 };
 
-class Zhize : public PhaseChangeSkill
+class Zhize : public TriggerSkill
 {
 public:
     Zhize()
-        : PhaseChangeSkill("zhize")
+        : TriggerSkill("zhize")
     {
         frequency = Compulsory;
+        events << DrawNCards << AfterDrawNCards;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
     {
-        ServerPlayer *reimu = data.value<ServerPlayer *>();
-        if (reimu->getPhase() == Player::Draw && reimu->hasSkill(this))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, reimu, reimu, nullptr, true);
-        return QList<SkillInvokeDetail>();
+        DrawNCardsStruct d = data.value<DrawNCardsStruct>();
+        if (d.player != nullptr && d.player->isAlive() && !d.isInitial) {
+            if (triggerEvent == DrawNCards) {
+                if (d.player->hasSkill(this) && d.n >= 1)
+                    return {SkillInvokeDetail(this, d.player, d.player, nullptr, true)};
+
+            } else if (triggerEvent == AfterDrawNCards) {
+                if (d.player->hasFlag(objectName()))
+                    return {SkillInvokeDetail(this, d.player, d.player, nullptr, true, nullptr, false)};
+            }
+        }
+
+        return {};
     }
 
-    bool onPhaseChange(ServerPlayer *player) const override
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
-        Room *room = player->getRoom();
-        QList<ServerPlayer *> players;
-        foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-            if (!p->isKongcheng())
-                players << p;
-        }
-        if (players.isEmpty()) {
-            room->touhouLogmessage("#TriggerSkill", player, objectName());
-            room->notifySkillInvoked(player, objectName());
-            room->loseHp(player);
-            player->skip(Player::Play);
-            return false;
+        if (TriggerSkill::cost(triggerEvent, room, invoke, data)) {
+            if (triggerEvent == DrawNCards) {
+                DrawNCardsStruct d = data.value<DrawNCardsStruct>();
+                --d.n;
+                data = QVariant::fromValue(d);
+            }
+
+            return true;
         }
 
-        ServerPlayer *target = room->askForPlayerChosen(player, players, objectName(), "@@zhize", true, true);
-        if (target != nullptr) {
+        return false;
+    }
+
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        if (triggerEvent == DrawNCards) {
+            invoke->invoker->setFlags(objectName());
+        } else {
+            QList<ServerPlayer *> players;
+            foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
+                if (!p->isKongcheng())
+                    players << p;
+            }
+            if (players.isEmpty())
+                return false;
+
+            ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, players, objectName(), "@zhize", false, true);
+
             QList<int> ids = target->handCards();
-            int id = room->doGongxin(player, target, ids, objectName());
+            int id = room->doGongxin(invoke->invoker, target, ids, objectName());
 
             if (id > -1)
-                room->obtainCard(player, id, false);
+                room->obtainCard(invoke->invoker, id, false);
 
-            player->tag.remove(objectName());
-            return true;
-        } else {
-            room->touhouLogmessage("#TriggerSkill", player, objectName());
-            room->notifySkillInvoked(player, objectName());
-            room->loseHp(player);
-            player->skip(Player::Play);
+            invoke->invoker->tag.remove(objectName());
         }
+
         return false;
     }
 };
@@ -973,40 +990,50 @@ public:
 ChunxiCard::ChunxiCard()
 {
     will_throw = false;
-    target_fixed = true;
     handling_method = Card::MethodNone;
     m_skillName = "chunxi";
 }
 
-void ChunxiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+bool ChunxiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    foreach (int id, subcards)
-        room->showCard(source, id);
-    source->tag["chunxi"] = QVariant::fromValue(subcards.length());
+    return targets.isEmpty() && to_select != Self && !to_select->isKongcheng() && to_select->getMark("chunxi_used") == 0;
 }
 
-class ChunxiVS : public ViewAsSkill
+void ChunxiCard::onUse(Room *room, const CardUseStruct &card_use) const
+{
+    LogMessage log;
+    log.from = card_use.from;
+    log.to = card_use.to;
+    log.type = "#UseCard";
+    log.card_str = card_use.card->toString(true);
+    room->sendLog(log);
+
+    room->showCard(card_use.from, subcards.first());
+
+    // TODO : set target flag
+    card_use.to.first()->setMark("chunxi", 1);
+    room->setPlayerMark(card_use.to.first(), "chunxi_used", 1);
+}
+
+class ChunxiVS : public OneCardViewAsSkill
 {
 public:
     ChunxiVS()
-        : ViewAsSkill("chunxi")
+        : OneCardViewAsSkill("chunxi")
     {
         response_pattern = "@@chunxi";
     }
 
-    bool viewFilter(const QList<const Card *> &, const Card *to_select) const override
+    bool viewFilter(const Card *to_select) const override
     {
         return to_select->hasFlag("chunxi");
     }
 
-    const Card *viewAs(const QList<const Card *> &cards) const override
+    const Card *viewAs(const Card *card) const override
     {
-        if (cards.length() > 0) {
-            ChunxiCard *card = new ChunxiCard;
-            card->addSubcards(cards);
-            return card;
-        } else
-            return nullptr;
+        ChunxiCard *c = new ChunxiCard;
+        c->addSubcard(card);
+        return c;
     }
 };
 
@@ -1023,16 +1050,6 @@ public:
     bool canPreshow() const override
     {
         return true;
-    }
-
-    static QList<ServerPlayer *> chunxi_targets(ServerPlayer *player)
-    {
-        QList<ServerPlayer *> targets;
-        foreach (ServerPlayer *p, player->getRoom()->getOtherPlayers(player)) {
-            if (!p->isKongcheng())
-                targets << p;
-        }
-        return targets;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
@@ -1070,27 +1087,26 @@ public:
         foreach (int id, move.card_ids)
             room->setCardFlag(id, "-chunxi");
 
+        if (c != nullptr) {
+            foreach (ServerPlayer *p, room->getOtherPlayers(reimu)) {
+                if (p->getMark("chunxi") > 0) {
+                    invoke->targets << p;
+                    break;
+                }
+            }
+        }
+
+        foreach (ServerPlayer *p, room->getOtherPlayers(reimu))
+            p->setMark("chunxi", 0);
+
         return c != nullptr;
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        int count = invoke->invoker->tag["chunxi"].toInt();
-        invoke->invoker->tag.remove("chunxi");
+        int obtainId = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hs", objectName());
+        room->obtainCard(invoke->invoker, obtainId, false);
 
-        for (int i = 0; i < count; ++i) {
-            QList<ServerPlayer *> targets = chunxi_targets(invoke->invoker);
-            if (targets.isEmpty())
-                return false;
-            QStringList prompt_list;
-            prompt_list << "chunxi-target" << QString::number(i + 1) << QString::number(count);
-            QString prompt = prompt_list.join(":");
-            ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, objectName(), prompt, true, true);
-            if (target == nullptr)
-                return false;
-            int obtainId = room->askForCardChosen(invoke->invoker, target, "hs", objectName());
-            room->obtainCard(invoke->invoker, obtainId, false);
-        }
         return false;
     }
 };
