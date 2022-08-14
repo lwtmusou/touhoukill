@@ -584,9 +584,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 }
             }
             if (effect.to->isAlive() || effect.card->isKindOf("Slash")) {
-                //record for skill tianxie
-                if (!effect.card->isKindOf("Slash"))
-                    room->setCardFlag(effect.card, "tianxieEffected_" + effect.to->objectName());
                 //do chunhua effect
                 if (effect.card->hasFlag("chunhua") && !effect.card->isKindOf("Slash")) {
                     room->touhouLogmessage("#Chunhua", effect.to, effect.card->objectName());

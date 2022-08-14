@@ -358,7 +358,7 @@ bool TriggerSkill::cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> 
         if (invoke->owner == nullptr || invoke->owner != invoke->invoker || frequency == Eternal)
             return true;
         if (invoke->invoker != nullptr) {
-            if (!invoke->invoker->hasSkill(this))
+            if (!invoke->invoker->hasSkill(this, true))
                 return true;
             return invoke->invoker->hasShownSkill(this) || invoke->invoker->askForSkillInvoke(this, data);
         }

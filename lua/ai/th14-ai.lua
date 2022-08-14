@@ -533,16 +533,12 @@ sgs.ai_skill_invoke.tianxie =function(self,data)
 	end
 	return false
 end
---老技能？
-sgs.ai_skill_invoke.huobao =function(self,data)
-	local target = self.room:getCurrent()
-	return target and self:isEnemy(target)
-end
-sgs.ai_choicemade_filter.skillInvoke.huobao = function(self, player, args)
-	local target = self.room:getCurrent()
-	if target  and args[#args] == "yes" then
-		sgs.updateIntention(player, target, 50)
-	end
-end
+
 --[夺宝]
-sgs.ai_skill_invoke.duobao =  true
+sgs.ai_skill_invoke.duobao = false
+sgs.ai_skill_playerchosen.duobao = function(self, targets)
+	return self:findPlayerToDiscard("ej", true, false, targets) -- 摆
+end
+sgs.ai_skill_cardask["@duobao-give"] = function(self)
+	return sgs.QList2Table(self.player:getEquips())[1]:toString() -- 摆
+end

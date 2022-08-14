@@ -1597,7 +1597,7 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const
 
     int card_id = -1;
 
-    QList<int> ids, disable;
+    QList<int> disable;
     foreach (const Card *c, effect.to->getCards(flag)) {
         if (!effect.from->canDiscard(effect.to, c->getEffectiveId()))
             disable << c->getEffectiveId();
