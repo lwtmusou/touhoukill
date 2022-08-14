@@ -1672,17 +1672,18 @@ DfgzmSiyuCard::DfgzmSiyuCard()
 void DfgzmSiyuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
 {
     ServerPlayer *target = targets.first();
-    room->obtainCard(target, subcards.first(), false);
-    source->tag["dfgzmsiyu"] = QVariant::fromValue(target);
+    room->obtainCard(target, this, false);
+    QVariantMap m = source->tag.value("dfgzmsiyu_selected", QVariantMap()).toMap();
+    m[target->objectName()] = subcardsLength();
+    source->tag["dfgzmsiyu_selected"] = m;
 }
 
-class DfgzmsiyuVS : public OneCardViewAsSkill
+class DfgzmsiyuVS : public ViewAsSkill
 {
 public:
     DfgzmsiyuVS()
-        : OneCardViewAsSkill("dfgzmsiyu")
+        : ViewAsSkill("dfgzmsiyu")
     {
-        filter_pattern = ".|.|.|hand";
     }
 
     bool isEnabledAtPlay(const Player *player) const override
@@ -1690,14 +1691,22 @@ public:
         return !player->hasUsed("DfgzmSiyuCard") && !player->isKongcheng();
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
     {
-        if (originalCard != nullptr) {
+        if (selected.length() >= 2)
+            return false;
+        return !to_select->isEquipped();
+    }
+
+    const Card *viewAs(const QList<const Card *> &cards) const override
+    {
+        if (!cards.isEmpty()) {
             DfgzmSiyuCard *card = new DfgzmSiyuCard;
-            card->addSubcard(originalCard);
+            card->addSubcards(cards);
             return card;
-        } else
-            return nullptr;
+        }
+
+        return nullptr;
     }
 };
 
@@ -1715,27 +1724,52 @@ public:
     {
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.to == Player::RoundStart)
-            change.player->tag.remove("dfgzmsiyu");
+            change.player->tag.remove("dfgzmsiyu_selected");
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.to == Player::NotActive) {
-            ServerPlayer *target = change.player->tag["dfgzmsiyu"].value<ServerPlayer *>();
-            if (change.player->isAlive() && target != nullptr && target->isAlive() && !target->isKongcheng())
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player, nullptr, true, target);
+            if (change.player->isAlive()) {
+                QList<SkillInvokeDetail> d;
+                QVariantMap siyu = change.player->tag.value("dfgzmsiyu_selected", QVariantMap()).toMap();
+                foreach (QString sy, siyu.keys()) {
+                    ServerPlayer *syP = room->findPlayerByObjectName(sy);
+                    if (syP != nullptr && syP->isAlive() && !syP->isKongcheng())
+                        d << SkillInvokeDetail(this, change.player, change.player, nullptr, false, syP, false);
+                }
+
+                return d;
+            }
         }
         return QList<SkillInvokeDetail>();
     }
 
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        invoke->invoker->tag["dfgzmsiyu_invokeTarget"] = QVariant::fromValue(invoke->preferredTarget);
+        return room->askForSkillInvoke(invoke->invoker, this, "get:" + invoke->invoker->objectName());
+    }
+
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        room->touhouLogmessage("#TouhouBuff", invoke->invoker, objectName());
-        room->notifySkillInvoked(invoke->invoker, objectName());
-        int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hs", objectName(), true);
-        if (id > -1)
-            room->obtainCard(invoke->invoker, id, false);
+        QVariantMap siyu = invoke->invoker->tag.value("dfgzmsiyu_selected", QVariantMap()).toMap();
+        int syNum = siyu.value(invoke->targets.first()->objectName(), 0).toInt();
+        if (syNum > 0) {
+            QList<int> enabled_ids = invoke->targets.first()->handCards();
+            DummyCard dummy;
+            while (syNum--) {
+                int id = room->doGongxin(invoke->invoker, invoke->targets.first(), enabled_ids, objectName(), false);
+                dummy.addSubcard(id);
+                enabled_ids.removeAll(id);
+                if (enabled_ids.isEmpty())
+                    break;
+            }
+
+            room->obtainCard(invoke->invoker, &dummy, false);
+            invoke->invoker->tag.remove(objectName());
+        }
         return false;
     }
 };
@@ -1898,6 +1932,8 @@ public:
 
             room->setPlayerFlag(invoke->invoker, "-Global_Dying");
 
+            // This is a bad design.
+            // A better way may be set turnbreak flag and throw a ProcessBroken.
             throw TurnBroken;
 
             Q_UNREACHABLE();

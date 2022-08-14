@@ -1082,6 +1082,7 @@ end
 
 --神灵庙SP早苗
 --[私欲]
+--[[
 local dfgzmsiyu_skill = {}
 dfgzmsiyu_skill.name = "dfgzmsiyu"
 table.insert(sgs.ai_skills, dfgzmsiyu_skill)
@@ -1156,7 +1157,7 @@ sgs.ai_skill_cardchosen.dfgzmsiyu = function(self, who, flags)
 	self:sortByKeepValue(cards, inverse)
 	return cards[1]
 end
-
+]]
 
 
 
