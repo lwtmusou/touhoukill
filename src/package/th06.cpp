@@ -185,7 +185,7 @@ public:
                 return true;
             }
         } else {
-            prompt.prepend("overmaxhp_");
+            prompt.prepend("@mingyun_overmaxhp_");
             const Card *c = room->askForCard(invoke->invoker, ".", prompt, data, Card::MethodNone, nullptr, false, objectName(), false, 0);
             if (c != nullptr) {
                 invoke->tag[objectName()] = c->getEffectiveId();
