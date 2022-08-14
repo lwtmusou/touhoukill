@@ -2062,7 +2062,11 @@ void Player::updateYingyingguai()
 {
     bool isUseLimitedAll = false;
     bool isResponseLimitedAll = false;
-    foreach (QStringList patternList, card_limitation[Card::MethodUse]) {
+
+    QMap<QString, QStringList> currentLimitation = card_limitation[Card::MethodUse];
+    currentLimitation.remove("lure_tiger");
+
+    foreach (QStringList patternList, currentLimitation) {
         foreach (QString pat, patternList) {
             if (pat.startsWith(".$")) {
                 isUseLimitedAll = true;
@@ -2072,7 +2076,11 @@ void Player::updateYingyingguai()
         if (isUseLimitedAll)
             break;
     }
-    foreach (QStringList patternList, card_limitation[Card::MethodUse]) {
+
+    currentLimitation = card_limitation[Card::MethodResponse];
+    currentLimitation.remove("lure_tiger");
+
+    foreach (QStringList patternList, currentLimitation) {
         foreach (QString pat, patternList) {
             if (pat.startsWith(".$")) {
                 isResponseLimitedAll = true;
