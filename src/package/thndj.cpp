@@ -935,7 +935,7 @@ public:
             card = resp.m_card;
         }
 
-        if (player != nullptr && player->hasSkill(this) && card != nullptr && card->getTypeId() == Card::TypeBasic)
+        if (player != nullptr && player->hasSkill(this) && card != nullptr && (card->getTypeId() == Card::TypeBasic || card->getTypeId() == Card::TypeTrick))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, nullptr, true);
 
         return QList<SkillInvokeDetail>();
@@ -964,14 +964,6 @@ public:
         pattern = "Slash,TrickCard+^DelayedTrick";
     }
 
-    int getDistanceLimit(const Player *from, const Card *) const override
-    {
-        if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && from->hasSkill(objectName()) && from->isChained() && from->getPhase() == Player::Play)
-            return 1000;
-        else
-            return 0;
-    }
-
     int getExtraTargetNum(const Player *player, const Card *) const override
     {
         if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && player->hasSkill(objectName()) && player->isChained()
@@ -979,6 +971,71 @@ public:
             return 1000;
         else
             return 0;
+    }
+};
+
+class KexueDistance : public DistanceSkill
+{
+public:
+    KexueDistance()
+        : DistanceSkill("#kexue-dis")
+    {
+    }
+
+    int getCorrect(const Player *from, const Player *to) const override
+    {
+        if (from->hasSkill(this) && from->isAlive() && from->getPhase() != Player::NotActive && from->isChained() && from != to)
+            return -from->getMark("kexue");
+
+        return 0;
+    }
+};
+
+class KexueRecord : public TriggerSkill
+{
+public:
+    KexueRecord()
+        : TriggerSkill("#kexue-record")
+    {
+        events << PreCardUsed << CardResponded << EventPhaseChanging << EventAcquireSkill;
+        global = true;
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const override
+    {
+        if (e == EventAcquireSkill) {
+            SkillAcquireDetachStruct ac = data.value<SkillAcquireDetachStruct>();
+            if (ac.skill->objectName() == "kexue")
+                room->setPlayerMark(ac.player, "kexue", ac.player->getMark("kexue"));
+        } else if (e == PreCardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.from != nullptr && use.card->getTypeId() != Card::TypeSkill && room->getCurrent() != nullptr && room->getCurrent()->isAlive()
+                && room->getCurrent()->getPhase() != Player::NotActive) {
+                if (use.from->hasSkill(this, true, true))
+                    room->setPlayerMark(use.from, "kexue", use.from->getMark("kexue") + 1);
+                else
+                    use.from->setMark("kexue", use.from->getMark("kexue") + 1);
+            }
+        } else if (e == CardResponded) {
+            CardResponseStruct use = data.value<CardResponseStruct>();
+            if (use.m_who != nullptr && use.m_card->getTypeId() != Card::TypeSkill && use.m_isUse && room->getCurrent() != nullptr && room->getCurrent()->isAlive()
+                && room->getCurrent()->getPhase() != Player::NotActive) {
+                if (use.m_who->hasSkill(this, true, true))
+                    room->setPlayerMark(use.m_who, "kexue", use.m_who->getMark("kexue") + 1);
+                else
+                    use.m_who->setMark("kexue", use.m_who->getMark("kexue") + 1);
+            }
+        } else if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->hasSkill(this, true, true))
+                        room->setPlayerMark(p, "kexue", 0);
+                    else
+                        p->setMark("kexue", 0);
+                }
+            }
+        }
     }
 };
 
@@ -1971,8 +2028,12 @@ THNDJPackage::THNDJPackage()
     General *renko_ndj = new General(this, "renko_ndj", "wai", 4);
     renko_ndj->addSkill(new Liangzi);
     renko_ndj->addSkill(new Kexue);
+    renko_ndj->addSkill(new KexueRecord);
     renko_ndj->addSkill(new KexueEffect);
+    renko_ndj->addSkill(new KexueDistance);
+    related_skills.insertMulti("kexue", "#kexue-record");
     related_skills.insertMulti("kexue", "#kexue-effect");
+    related_skills.insertMulti("kexue", "#kexue-dis");
 
     General *sanae_ndj = new General(this, "sanae_ndj", "fsl", 4);
     sanae_ndj->addSkill(new Xiubu);
