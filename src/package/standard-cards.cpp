@@ -1552,7 +1552,7 @@ void Snatch::onEffect(const CardEffectStruct &effect) const
             break;
     }
 
-    CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
+    CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName(), getSkillName(), objectName()); // for jiezou
     room->obtainCard(effect.from, dummy, reason, false);
     delete dummy;
 }
