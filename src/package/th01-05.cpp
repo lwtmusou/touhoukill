@@ -1746,9 +1746,9 @@ ModianCard::ModianCard()
     m_skillName = "modian_attach";
 }
 
-bool ModianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
+bool ModianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    return targets.isEmpty() && to_select->hasSkill("modian") && !to_select->hasFlag("modianInvoked");
+    return targets.isEmpty() && to_select->hasSkill("modian", false, to_select == Self) && !to_select->hasFlag("modianInvoked");
 }
 
 void ModianCard::use(Room *room, ServerPlayer *src, QList<ServerPlayer *> &targets) const

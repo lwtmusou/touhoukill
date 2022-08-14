@@ -60,7 +60,7 @@ public:
     {
         if (player->getHp() > player->dyingThreshold() && pattern.contains("peach")) {
             foreach (const Player *p, player->getAliveSiblings()) {
-                if (p->hasFlag("Global_Dying") && p->hasSkill("skltkexue"))
+                if (p->hasFlag("Global_Dying") && p->hasSkill("skltkexue", false, false))
                     return true;
             }
         }

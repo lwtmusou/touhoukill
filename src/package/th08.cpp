@@ -1736,7 +1736,7 @@ MingmuCard::MingmuCard()
 
 bool MingmuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    return targets.isEmpty() && to_select->hasSkill("mingmu") && to_select != Self && !to_select->hasFlag("mingmuInvoked");
+    return targets.isEmpty() && to_select->hasSkill("mingmu", false, false) && to_select != Self && !to_select->hasFlag("mingmuInvoked");
 }
 
 void MingmuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const

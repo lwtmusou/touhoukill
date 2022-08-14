@@ -438,7 +438,7 @@ SaiqianCard::SaiqianCard()
 
 bool SaiqianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    return targets.isEmpty() && to_select->hasSkill("saiqian") && to_select != Self && !to_select->hasFlag("saiqianInvoked");
+    return targets.isEmpty() && to_select->hasSkill("saiqian", false, false) && to_select != Self && !to_select->hasFlag("saiqianInvoked");
 }
 
 void SaiqianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
@@ -1043,7 +1043,7 @@ public:
     Chunxi()
         : TriggerSkill("chunxi")
     {
-        events << CardsMoveOneTime;
+        events << CardsMoveOneTime << EventPhaseChanging;
         view_as_skill = new ChunxiVS;
     }
 
@@ -1052,19 +1052,32 @@ public:
         return true;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
     {
-        if (room->getTag("FirstRound").toBool())
-            return QList<SkillInvokeDetail>();
+        if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach (ServerPlayer *p, room->getAllPlayers())
+                    room->setPlayerMark(p, "chunxi_used", 0);
+            }
+        }
+    }
 
-        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        ServerPlayer *reimu = qobject_cast<ServerPlayer *>(move.to);
-        if (reimu != nullptr && reimu->hasSkill(this) && move.to_place == Player::PlaceHand) {
-            foreach (int id, move.card_ids) {
-                if (Sanguosha->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand) {
-                    ServerPlayer *owner = room->getCardOwner(id);
-                    if ((owner != nullptr) && owner == reimu)
-                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, reimu, reimu);
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const override
+    {
+        if (e == CardsMoveOneTime) {
+            if (room->getTag("FirstRound").toBool())
+                return QList<SkillInvokeDetail>();
+
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            ServerPlayer *reimu = qobject_cast<ServerPlayer *>(move.to);
+            if (reimu != nullptr && reimu->hasSkill(this) && move.to_place == Player::PlaceHand) {
+                foreach (int id, move.card_ids) {
+                    if (Sanguosha->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand) {
+                        ServerPlayer *owner = room->getCardOwner(id);
+                        if ((owner != nullptr) && owner == reimu)
+                            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, reimu, reimu);
+                    }
                 }
             }
         }
@@ -1746,7 +1759,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         invoke->invoker->tag["dfgzmsiyu_invokeTarget"] = QVariant::fromValue(invoke->preferredTarget);
         return room->askForSkillInvoke(invoke->invoker, this, "get:" + invoke->invoker->objectName());

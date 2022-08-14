@@ -1721,9 +1721,9 @@ bool YaoliCard::targetFixed(const Player *Self) const
     return true;
 }
 
-bool YaoliCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const
+bool YaoliCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    return targets.isEmpty() && to_select->hasSkill("yaoli") && !to_select->hasFlag("yaoliselected");
+    return targets.isEmpty() && to_select->hasSkill("yaoli", false, to_select == Self) && !to_select->hasFlag("yaoliselected");
 }
 
 void YaoliCard::onUse(Room *room, const CardUseStruct &_use) const
