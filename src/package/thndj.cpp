@@ -1319,6 +1319,7 @@ public:
             judge.pattern = ".";
             judge.good = false;
             judge.reason = objectName();
+            judge.play_animation = false;
             room->judge(judge);
         }
         return false;

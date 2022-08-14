@@ -140,45 +140,75 @@ public:
     Mingyun()
         : TriggerSkill("mingyun")
     {
-        events << StartJudge;
+        events << StartJudge << EventPhaseEnd;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const override
     {
-        JudgeStruct *judge = data.value<JudgeStruct *>();
-        if ((judge->who == nullptr) || !judge->who->isAlive())
-            return QList<SkillInvokeDetail>();
-
         QList<SkillInvokeDetail> r;
-        foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (p->hasSkill(this))
+        if (e == StartJudge) {
+            JudgeStruct *judge = data.value<JudgeStruct *>();
+            if ((judge->who == nullptr) || !judge->who->isAlive())
+                return QList<SkillInvokeDetail>();
+
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
+                if (p->hasSkill(this))
+                    r << SkillInvokeDetail(this, p, p);
+            }
+        } else if (e == EventPhaseEnd) {
+            ServerPlayer *p = data.value<ServerPlayer *>();
+            if (p->getPhase() != Player::Play)
+                return QList<SkillInvokeDetail>();
+
+            if (p->isAlive() && p->hasSkill(this))
                 r << SkillInvokeDetail(this, p, p);
         }
 
         return r;
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool cost(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         invoke->invoker->tag["mingyun_judge"] = data;
-        JudgeStruct *judge = data.value<JudgeStruct *>();
-        QString prompt = "judge:" + judge->who->objectName() + ":" + judge->reason;
-        if (invoke->invoker->askForSkillInvoke(this, prompt)) {
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), judge->who->objectName());
-            return true;
+        QString prompt = "playphase";
+        JudgeStruct *judge = nullptr;
+        if (e == StartJudge) {
+            judge = data.value<JudgeStruct *>();
+            prompt = "judge:" + judge->who->objectName() + ":" + judge->reason;
+        }
+
+        if (invoke->invoker->getHandcardNum() <= invoke->invoker->getMaxHp()) {
+            if (invoke->invoker->askForSkillInvoke(this, prompt)) {
+                if (judge != nullptr)
+                    room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), judge->who->objectName());
+                invoke->tag[objectName()] = -1;
+                return true;
+            }
+        } else {
+            prompt.prepend("overmaxhp_");
+            const Card *c = room->askForCard(invoke->invoker, ".", prompt, data, Card::MethodNone, nullptr, false, objectName(), false, 0);
+            if (c != nullptr) {
+                invoke->tag[objectName()] = c->getEffectiveId();
+                return true;
+            }
         }
         return false;
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        QList<int> list = room->getNCards(2);
-        room->returnToTopDrawPile(list);
+        if (invoke->tag[objectName()].toInt() == -1) {
+            QList<int> list = room->getNCards(2);
+            room->returnToTopDrawPile(list);
 
-        room->fillAG(list, invoke->invoker);
-        int obtain_id = room->askForAG(invoke->invoker, list, false, objectName());
-        room->clearAG(invoke->invoker);
-        room->obtainCard(invoke->invoker, obtain_id, false);
+            room->fillAG(list, invoke->invoker);
+            int obtain_id = room->askForAG(invoke->invoker, list, false, objectName());
+            room->clearAG(invoke->invoker);
+            room->obtainCard(invoke->invoker, obtain_id, false);
+        } else {
+            room->moveCardTo(Sanguosha->getCard(invoke->tag[objectName()].toInt()), invoke->invoker, nullptr, Player::DrawPile,
+                             CardMoveReason(CardMoveReason::S_REASON_PUT, invoke->invoker->objectName()));
+        }
         return false;
     }
 };
