@@ -826,7 +826,6 @@ public:
     Shuangren()
         : TargetModSkill("shuangren")
     {
-        frequency = NotFrequent;
         pattern = "Slash";
     }
 
