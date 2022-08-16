@@ -4,7 +4,7 @@ return{ ["th06"] = "红魔乡",
 	--hmx001  势力：红 3血
 	["remilia"] = "蕾米莉亚",
 	["#remilia"] = "红之恶魔",
-	["!remilia"] = "蕾米莉亚·斯卡雷特",
+	["!remilia"] = "蕾米莉亚·斯卡蕾特",
 	["designer:remilia"] = "星野梦美☆",
 
 	["illustrator:remilia"] = "ke-ta",
@@ -41,7 +41,7 @@ return{ ["th06"] = "红魔乡",
 	--hmx002  势力：红 3血
 	["flandre"] = "芙兰朵露",
 	["#flandre"] = "恶魔之妹",
-	["!flandre"] = "芙兰朵露·斯卡雷特",
+	["!flandre"] = "芙兰朵露·斯卡蕾特",
 	["designer:flandre"] = "星野梦美☆",
 
 

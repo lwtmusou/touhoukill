@@ -411,7 +411,7 @@ return {
 	["guilt"] = "罪",
 	
 	["luize"] = "露易兹",
-	["#luize"] = "魔界人",
+	["#luize"] = "越界之魔",
 	["designer:luize"] = "223",
 	["illustrator:luize"] = "风灵",
 	["origin:luize"] = "p号：90298446；个人id：16820723",

@@ -112,14 +112,14 @@ return
 --夏（月）
 
 	["remilia_hegemony"] = "蕾米莉亚",
-	["!remilia_hegemony"] = "蕾米莉亚·斯卡雷特",
+	["!remilia_hegemony"] = "蕾米莉亚·斯卡蕾特",
 	--["skltkexue_hegemony"] = "渴血",
 	[":skltkexue_hegemony"] = "你进入濒死状态时，你可以明置此武将牌；当你向其他角色求【桃】时，若其体力值大于其体力下限，其可以失去1点体力，摸一张牌，然后令你回复1点体力。",
 	--["skltkexue_hegemony_attach"]= "渴血出桃",
 	[":skltkexue_attach_hegemony"]= "当拥有“渴血”的角色处于濒死状态时并向你求【桃】时，若你的体力值大于体力下限，你可以失去1点体力，摸一张牌，然后令其回复1点体力。",
 	
 	["flandre_hegemony"] = "芙兰朵露",
-	["!flandre_hegemony"] = "芙兰朵露·斯卡雷特",
+	["!flandre_hegemony"] = "芙兰朵露·斯卡蕾特",
 	["sakuya_hegemony"] = "十六夜咲夜",
 	["patchouli_hegemony"] = "帕秋莉",
 	["!patchouli_hegemony"] = "帕秋莉·诺蕾姬",
