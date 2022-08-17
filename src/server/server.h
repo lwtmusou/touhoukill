@@ -108,7 +108,6 @@ private:
     QSpinBox *nonlord_maxchoice_spinbox;
     QCheckBox *forbid_same_ip_checkbox;
     QCheckBox *disable_chat_checkbox;
-    QCheckBox *second_general_checkbox;
     QCheckBox *scene_checkbox; //changjing
     QCheckBox *same_checkbox;
     QCheckBox *basara_checkbox;

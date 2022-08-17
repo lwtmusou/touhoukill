@@ -222,9 +222,6 @@ QWidget *ServerDialog::createAdvancedTab()
     disable_chat_checkbox = new QCheckBox(tr("Disable chat"));
     disable_chat_checkbox->setChecked(Config.DisableChat);
 
-    second_general_checkbox = new QCheckBox(tr("Enable second general"));
-    second_general_checkbox->setChecked(Config.Enable2ndGeneral);
-
     //same_checkbox = new QCheckBox(tr("Enable Same"));
     //same_checkbox->setChecked(Config.EnableSame);
 
@@ -277,7 +274,6 @@ QWidget *ServerDialog::createAdvancedTab()
     layout->addLayout(HLay(godlimit_label, godlimit_spinbox));
     layout->addLayout(HLay(lord_maxchoice_label, lord_maxchoice_spinbox));
     layout->addLayout(HLay(new QLabel(tr("Upperlimit for non-lord")), nonlord_maxchoice_spinbox));
-    layout->addWidget(second_general_checkbox);
     //layout->addLayout(HLay(max_hp_label, max_hp_scheme_ComboBox));
     //layout->addLayout(HLay(scheme0_subtraction_label, scheme0_subtraction_spinbox));
     layout->addWidget(prevent_awaken_below3_checkbox);
@@ -954,19 +950,13 @@ bool ServerDialog::config()
     Config.FreeAssignSelf = Config.EnableCheat && free_assign_self_checkbox->isChecked() && free_assign_checkbox->isEnabled();
     Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
     Config.DisableChat = disable_chat_checkbox->isChecked();
-    Config.Enable2ndGeneral = second_general_checkbox->isChecked();
-    //Config.EnableSame = same_checkbox->isChecked();
-    //Config.EnableBasara = basara_checkbox->isChecked() && basara_checkbox->isEnabled();
-    //Config.EnableHegemony = hegemony_checkbox->isChecked() && hegemony_checkbox->isEnabled();
-    //Config.MaxHpScheme = max_hp_scheme_ComboBox->currentIndex();
+    Config.Enable2ndGeneral = (Config.GameMode.startsWith("hegemony_"));
     if (Config.MaxHpScheme == 0) {
-        //Config.Scheme0Subtraction = scheme0_subtraction_spinbox->value();
         Config.PreventAwakenBelow3 = false;
     } else {
         Config.Scheme0Subtraction = 3;
         Config.PreventAwakenBelow3 = prevent_awaken_below3_checkbox->isChecked();
     }
-    //Config.EnableSurprisingGenerals = enable_surprising_generals_checkbox->isChecked();
     Config.Address = address_edit->text();
     Config.CountDownSeconds = game_start_spinbox->value();
     Config.NullificationCountDown = nullification_spinbox->value();
@@ -1015,8 +1005,6 @@ bool ServerDialog::config()
     Config.setValue("ForbidSIMC", Config.ForbidSIMC);
     Config.setValue("DisableChat", Config.DisableChat);
     Config.setValue("Enable2ndGeneral", Config.Enable2ndGeneral);
-    //Config.setValue("EnableSame", Config.EnableSame);
-    //Config.setValue("EnableSurprisingGenerals", Config.EnableSurprisingGenerals);
     Config.setValue("MaxHpScheme", Config.MaxHpScheme);
     Config.setValue("Scheme0Subtraction", Config.Scheme0Subtraction);
     Config.setValue("PreventAwakenBelow3", Config.PreventAwakenBelow3);
