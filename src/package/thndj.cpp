@@ -945,13 +945,81 @@ public:
     {
         LogMessage log;
         log.from = invoke->invoker;
-        log.arg = "liangzi";
+        log.arg = objectName();
         log.type = "#TriggerSkill";
         room->sendLog(log);
-        room->notifySkillInvoked(invoke->invoker, "liangzi");
+        room->notifySkillInvoked(invoke->invoker, objectName());
 
         room->setPlayerProperty(invoke->invoker, "chained", !invoke->invoker->isChained());
         return false;
+    }
+};
+
+class LiangziRecord : public TriggerSkill
+{
+public:
+    static QString mainSkillName;
+
+    LiangziRecord()
+        : TriggerSkill("#liangzi-record")
+    {
+        events << PreCardUsed << CardResponded << EventPhaseChanging << EventAcquireSkill;
+        global = true;
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const override
+    {
+        if (e == EventAcquireSkill) {
+            SkillAcquireDetachStruct ac = data.value<SkillAcquireDetachStruct>();
+            if (ac.skill->objectName() == mainSkillName)
+                room->setPlayerMark(ac.player, mainSkillName, ac.player->getMark(mainSkillName));
+        } else if (e == PreCardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.from != nullptr && use.card->getTypeId() != Card::TypeSkill && room->getCurrent() != nullptr && room->getCurrent()->isAlive()
+                && room->getCurrent()->getPhase() != Player::NotActive) {
+                if (use.from->hasSkill(this, true, true))
+                    room->setPlayerMark(use.from, mainSkillName, use.from->getMark(mainSkillName) + 1);
+                else
+                    use.from->setMark(mainSkillName, use.from->getMark(mainSkillName) + 1);
+            }
+        } else if (e == CardResponded) {
+            CardResponseStruct use = data.value<CardResponseStruct>();
+            if (use.m_who != nullptr && use.m_card->getTypeId() != Card::TypeSkill && use.m_isUse && room->getCurrent() != nullptr && room->getCurrent()->isAlive()
+                && room->getCurrent()->getPhase() != Player::NotActive) {
+                if (use.m_who->hasSkill(this, true, true))
+                    room->setPlayerMark(use.m_who, mainSkillName, use.m_who->getMark(mainSkillName) + 1);
+                else
+                    use.m_who->setMark(mainSkillName, use.m_who->getMark(mainSkillName) + 1);
+            }
+        } else if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->hasSkill(this, true, true))
+                        room->setPlayerMark(p, mainSkillName, 0);
+                    else
+                        p->setMark(mainSkillName, 0);
+                }
+            }
+        }
+    }
+};
+QString LiangziRecord::mainSkillName = "liangzi";
+
+class LiangziDistance : public DistanceSkill
+{
+public:
+    LiangziDistance()
+        : DistanceSkill("#liangzi-dis")
+    {
+    }
+
+    int getCorrect(const Player *from, const Player *to) const override
+    {
+        if (from->hasSkill(this) && from->isAlive() && from->getPhase() != Player::NotActive && from != to)
+            return -from->getMark(LiangziRecord::mainSkillName);
+
+        return 0;
     }
 };
 
@@ -971,71 +1039,6 @@ public:
             return 1000;
         else
             return 0;
-    }
-};
-
-class KexueDistance : public DistanceSkill
-{
-public:
-    KexueDistance()
-        : DistanceSkill("#kexue-dis")
-    {
-    }
-
-    int getCorrect(const Player *from, const Player *to) const override
-    {
-        if (from->hasSkill(this) && from->isAlive() && from->getPhase() != Player::NotActive && from->isChained() && from != to)
-            return -from->getMark("kexue");
-
-        return 0;
-    }
-};
-
-class KexueRecord : public TriggerSkill
-{
-public:
-    KexueRecord()
-        : TriggerSkill("#kexue-record")
-    {
-        events << PreCardUsed << CardResponded << EventPhaseChanging << EventAcquireSkill;
-        global = true;
-    }
-
-    void record(TriggerEvent e, Room *room, QVariant &data) const override
-    {
-        if (e == EventAcquireSkill) {
-            SkillAcquireDetachStruct ac = data.value<SkillAcquireDetachStruct>();
-            if (ac.skill->objectName() == "kexue")
-                room->setPlayerMark(ac.player, "kexue", ac.player->getMark("kexue"));
-        } else if (e == PreCardUsed) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from != nullptr && use.card->getTypeId() != Card::TypeSkill && room->getCurrent() != nullptr && room->getCurrent()->isAlive()
-                && room->getCurrent()->getPhase() != Player::NotActive) {
-                if (use.from->hasSkill(this, true, true))
-                    room->setPlayerMark(use.from, "kexue", use.from->getMark("kexue") + 1);
-                else
-                    use.from->setMark("kexue", use.from->getMark("kexue") + 1);
-            }
-        } else if (e == CardResponded) {
-            CardResponseStruct use = data.value<CardResponseStruct>();
-            if (use.m_who != nullptr && use.m_card->getTypeId() != Card::TypeSkill && use.m_isUse && room->getCurrent() != nullptr && room->getCurrent()->isAlive()
-                && room->getCurrent()->getPhase() != Player::NotActive) {
-                if (use.m_who->hasSkill(this, true, true))
-                    room->setPlayerMark(use.m_who, "kexue", use.m_who->getMark("kexue") + 1);
-                else
-                    use.m_who->setMark("kexue", use.m_who->getMark("kexue") + 1);
-            }
-        } else if (e == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive) {
-                foreach (ServerPlayer *p, room->getAllPlayers()) {
-                    if (p->hasSkill(this, true, true))
-                        room->setPlayerMark(p, "kexue", 0);
-                    else
-                        p->setMark("kexue", 0);
-                }
-            }
-        }
     }
 };
 
@@ -2027,13 +2030,13 @@ THNDJPackage::THNDJPackage()
 
     General *renko_ndj = new General(this, "renko_ndj", "wai", 4);
     renko_ndj->addSkill(new Liangzi);
+    renko_ndj->addSkill(new LiangziRecord);
+    renko_ndj->addSkill(new LiangziDistance);
     renko_ndj->addSkill(new Kexue);
-    renko_ndj->addSkill(new KexueRecord);
     renko_ndj->addSkill(new KexueEffect);
-    renko_ndj->addSkill(new KexueDistance);
-    related_skills.insertMulti("kexue", "#kexue-record");
+    related_skills.insertMulti("liangzi", "#liangzi-record");
+    related_skills.insertMulti("liangzi", "#liangzi-dis");
     related_skills.insertMulti("kexue", "#kexue-effect");
-    related_skills.insertMulti("kexue", "#kexue-dis");
 
     General *sanae_ndj = new General(this, "sanae_ndj", "fsl", 4);
     sanae_ndj->addSkill(new Xiubu);

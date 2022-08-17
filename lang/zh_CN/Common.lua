@@ -119,7 +119,7 @@ CommonTranslationTable = {
 	["#Damage"] = "%from 对 %to 造成了 %arg 点伤害[%arg2]",
 	["#DamageNoSource"] = "%to 受到了 %arg 点伤害[%arg2]",
 	["#Recover"] = "%from 回复了 %arg 点体力",
-	["#AskForPeaches"] = "%from 向 %to 求桃，一共需要 %arg 张【<font color=\"yellow\"><b>桃</b></font>】",
+	["#AskForPeaches"] = "%from 向 %to 求桃，一共需要回复 %arg 点体力",
 	["#ChooseKingdom"] = "%from 选择了 %arg 势力",
 	["#NullificationDetails"] = "【<font color=\"yellow\"><b>无懈可击</b></font>】的目标是 %from 对 %to 的锦囊 【%arg】",
 	["#SkillAvoid"] = "%from 的“%arg”被触发，不能被选择为此 【%arg2】 的目标",

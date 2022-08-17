@@ -550,7 +550,7 @@ public:
             }
         } else if (triggerEvent == CardResponded) {
             CardResponseStruct resp = data.value<CardResponseStruct>();
-            if (resp.m_from == current || !resp.m_card->isKindOf("BasicCard") || resp.m_isRetrial || resp.m_isProvision)
+            if (resp.m_from == current || !resp.m_card->isKindOf("BasicCard") || resp.m_isRetrial)
                 return QList<SkillInvokeDetail>();
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, current, current, nullptr, true);
         }
@@ -609,6 +609,92 @@ public:
             data = QVariant::fromValue(resp);
         }
         return false;
+    }
+};
+
+class FanhuaVS : public OneCardViewAsSkill
+{
+public:
+    FanhuaVS()
+        : OneCardViewAsSkill("fanhua")
+    {
+        response_or_use = true;
+    }
+
+    bool isEnabledAtPlay(const Player *player) const override
+    {
+        Slash *s = new Slash(Card::NoSuit, 0);
+        s->setSkillName(objectName());
+        DELETE_OVER_SCOPE(Slash, s);
+        return !player->hasUsed("fanhuaSlash") && Slash::IsAvailable(player, s);
+    }
+
+    bool viewFilter(const Card *to_select) const override
+    {
+        // Prohibit NoSuit
+        Card::Suit s = to_select->getSuit();
+        int sx = (1 << (int)(s));
+        if ((sx & 0xF) != sx)
+            return false;
+
+        QList<const Player *> ps = Self->getAliveSiblings();
+        ps << Self;
+
+        foreach (const Player *p, ps) {
+            QList<const Card *> cards = p->getEquips() + p->getJudgingArea();
+            foreach (const Card *c, cards) {
+                if (c->getSuit() == to_select->getSuit())
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    const Card *viewAs(const Card *originalCard) const override
+    {
+        Slash *s = new Slash(Card::NoSuit, 0);
+        s->setSkillName(objectName());
+        s->setShowSkill(objectName());
+        s->addSubcard(originalCard);
+        return s;
+    }
+};
+
+class Fanhua : public TriggerSkill
+{
+public:
+    Fanhua()
+        : TriggerSkill("fanhua")
+    {
+        view_as_skill = new FanhuaVS;
+        events << PreCardUsed;
+    }
+
+    void record(TriggerEvent, Room *room, QVariant &data) const override
+    {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.from != nullptr && use.card->isKindOf("Slash") && use.card->getSkillName() == objectName()) {
+            room->addPlayerHistory(use.from, "fanhuaSlash");
+            room->addPlayerHistory(use.from, "Slash", -1);
+        }
+    }
+};
+
+class FanhuaLimit : public TargetModSkill
+{
+public:
+    FanhuaLimit()
+        : TargetModSkill("#fanhua-mod")
+    {
+    }
+
+    int getResidueNum(const Player *from, const Card *card) const override
+    {
+        if (from->hasSkill("fanhua") && card->getSkillName() == "fanhua")
+            return 1000;
+        else
+            return 0;
     }
 };
 
@@ -2886,6 +2972,9 @@ TH09Package::TH09Package()
 
     General *yuka = new General(this, "yuka", "zhan", 4);
     yuka->addSkill(new Weiya);
+    yuka->addSkill(new Fanhua);
+    yuka->addSkill(new FanhuaLimit);
+    related_skills.insertMulti("fanhua", "#fanhua-mod");
 
     General *medicine = new General(this, "medicine", "zhan", 3);
     medicine->addSkill(new Judu);
