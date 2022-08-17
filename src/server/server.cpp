@@ -950,7 +950,6 @@ bool ServerDialog::config()
     Config.FreeAssignSelf = Config.EnableCheat && free_assign_self_checkbox->isChecked() && free_assign_checkbox->isEnabled();
     Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
     Config.DisableChat = disable_chat_checkbox->isChecked();
-    Config.Enable2ndGeneral = (Config.GameMode.startsWith("hegemony_"));
     if (Config.MaxHpScheme == 0) {
         Config.PreventAwakenBelow3 = false;
     } else {
@@ -977,6 +976,7 @@ bool ServerDialog::config()
     QString objname = mode_group->checkedButton()->objectName();
 
     Config.GameMode = objname;
+    Config.Enable2ndGeneral = (Config.GameMode.startsWith("hegemony_"));
 
     if (Config.GameMode.startsWith("hegemony_")) {
         Config.HegemonyFirstShowReward = hegemony_first_show->itemData(hegemony_first_show->currentIndex()).toString();
