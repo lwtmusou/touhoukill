@@ -85,7 +85,7 @@ function SmartAI:useCardSuperPeach(card, use)
 	local targets = {}
 	local good_targets = {}
 	for _,f in ipairs (self.friends) do
-		if f:isDebuffStatus() then
+		if f:isDebuffStatus() and (not f:isRemoved()) then
 			table.insert(targets, f)
 			if f:isWounded() then
 				table.insert(good_targets, f)
