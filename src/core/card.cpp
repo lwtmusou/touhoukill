@@ -726,8 +726,11 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
     thread->trigger(CardFinished, room, data);
 }
 
-void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void Card::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
     bool all_nullified = nullified_list.contains("_ALL_TARGETS");
     int magic_drank = 0;

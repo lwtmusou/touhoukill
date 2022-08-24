@@ -251,8 +251,10 @@ MofaCard::MofaCard()
     handling_method = Card::MethodDiscard;
 }
 
-void MofaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void MofaCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     Card *card = Sanguosha->getCard(subcards.first());
     if (card->getSuit() == Card::Spade)
         source->drawCards(1);
@@ -337,8 +339,11 @@ WuyuCard::WuyuCard()
     m_skillName = "wuyu_attach";
 }
 
-void WuyuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void WuyuCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     ServerPlayer *marisa = targets.first();
     room->setPlayerFlag(marisa, "wuyuInvoked");
 
@@ -441,8 +446,11 @@ bool SaiqianCard::targetFilter(const QList<const Player *> &targets, const Playe
     return targets.isEmpty() && to_select->hasSkill("saiqian", false, false) && to_select != Self && !to_select->hasFlag("saiqianInvoked");
 }
 
-void SaiqianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void SaiqianCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     ServerPlayer *reimu = targets.first();
     room->setPlayerFlag(reimu, "saiqianInvoked");
     room->notifySkillInvoked(reimu, "saiqian");
@@ -699,8 +707,10 @@ ShoucangCard::ShoucangCard()
     m_skillName = "shoucang";
 }
 
-void ShoucangCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void ShoucangCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     foreach (int id, subcards)
         room->showCard(source, id);
     room->touhouLogmessage("#shoucang_max", source, "shoucang", QList<ServerPlayer *>(), QString::number(subcards.length()));
@@ -813,8 +823,10 @@ BaoyiCard::BaoyiCard()
     handling_method = Card::MethodDiscard;
 }
 
-void BaoyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void BaoyiCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     foreach (int id, subcards) {
         Card *c = Sanguosha->getCard(id);
         if (c->getSuit() == Card::Spade) {
@@ -1131,8 +1143,10 @@ BllmWuyuCard::BllmWuyuCard()
     target_fixed = true;
 }
 
-void BllmWuyuCard::use(Room *room, ServerPlayer *bllm, QList<ServerPlayer *> &) const
+void BllmWuyuCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *bllm = card_use.from;
+
     QStringList uselist;
     if (Analeptic::IsAvailable(bllm))
         uselist << "bllmshiyu";
@@ -1306,8 +1320,10 @@ BllmSeyuCard::BllmSeyuCard()
     target_fixed = true;
 }
 
-void BllmSeyuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void BllmSeyuCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     room->setPlayerMark(source, "bllmseyu", source->getMark("bllmseyu") + 1);
 }
 
@@ -1392,7 +1408,7 @@ BllmShiyuDummy::BllmShiyuDummy()
     handling_method = Card::MethodNone;
 }
 
-void BllmShiyuDummy::use(Room *, ServerPlayer *, QList<ServerPlayer *> &) const
+void BllmShiyuDummy::use(Room *, const CardUseStruct &) const
 {
 }
 
@@ -1682,8 +1698,11 @@ DfgzmSiyuCard::DfgzmSiyuCard()
     will_throw = false;
 }
 
-void DfgzmSiyuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void DfgzmSiyuCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     ServerPlayer *target = targets.first();
     room->obtainCard(target, this, false);
     QVariantMap m = source->tag.value("dfgzmsiyu_selected", QVariantMap()).toMap();
@@ -2417,8 +2436,11 @@ bool BodongCard::targetsFeasible(const QList<const Player *> &targets, const Pla
     return true;
 }
 
-void BodongCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void BodongCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     QMap<ServerPlayer *, int> map;
     foreach (ServerPlayer *sp, targets)
         map[sp]++;

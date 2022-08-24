@@ -12,8 +12,10 @@ QiuwenCard::QiuwenCard()
     target_fixed = true;
 }
 
-void QiuwenCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void QiuwenCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     room->drawCards(source, 3);
 }
 
@@ -87,8 +89,11 @@ bool DangjiaCard::targetFilter(const QList<const Player *> &targets, const Playe
         && to_select->isWounded();
 }
 
-void DangjiaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void DangjiaCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     ServerPlayer *akyu = targets.first();
     room->setPlayerFlag(akyu, "dangjiaInvoked");
 
@@ -284,8 +289,10 @@ void XiufuCard::onUse(Room *room, const CardUseStruct &card_use) const
     SkillCard::onUse(room, card_use);
 }
 
-void XiufuCard::use(Room *room, ServerPlayer *mori, QList<ServerPlayer *> &) const
+void XiufuCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *mori = card_use.from;
+
     room->setPlayerFlag(mori, "xiufu_used");
     //process move
     int xiufu_id = mori->tag.value("xiufu_id", -1).toInt();
@@ -1661,8 +1668,11 @@ bool PanduCard::targetFilter(const QList<const Player *> &targets, const Player 
     return targets.length() == 0 && !to_select->isKongcheng() && to_select != Self;
 }
 
-void PanduCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void PanduCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     ServerPlayer *target = targets.first();
     int card_id = room->askForCardChosen(source, target, "hs", "pandu");
     room->showCard(target, card_id);
@@ -2460,8 +2470,10 @@ XieliCard::XieliCard()
     handling_method = Card::MethodNone;
 }
 
-void XieliCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void XieliCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     source->addBrokenEquips(subcards);
 
     Analeptic *ana = new Analeptic(Card::NoSuit, -1);

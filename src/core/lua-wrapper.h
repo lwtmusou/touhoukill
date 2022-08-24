@@ -213,7 +213,7 @@ public:
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
     bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
     void onUse(Room *room, const CardUseStruct &card_use) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
     void onEffect(const CardEffectStruct &effect) const override;
     const Card *validate(CardUseStruct &cardUse) const override;
     const Card *validateInResponse(ServerPlayer *user) const override;
@@ -249,7 +249,7 @@ public:
 
     void onUse(Room *room, const CardUseStruct &card_use) const override;
     void onEffect(const CardEffectStruct &effect) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 
     bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
@@ -313,7 +313,7 @@ public:
 
     void onUse(Room *room, const CardUseStruct &card_use) const override;
     void onEffect(const CardEffectStruct &effect) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
     void onNullified(ServerPlayer *target) const override;
     bool isCancelable(const CardEffectStruct &effect) const override;
 

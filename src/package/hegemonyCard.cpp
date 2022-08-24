@@ -349,8 +349,11 @@ void AwaitExhaustedHegemony::onUse(Room *room, const CardUseStruct &card_use) co
     TrickCard::onUse(room, new_use);
 }
 
-void AwaitExhaustedHegemony::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void AwaitExhaustedHegemony::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
     bool all_nullified = nullified_list.contains("_ALL_TARGETS");
     foreach (ServerPlayer *target, targets) {

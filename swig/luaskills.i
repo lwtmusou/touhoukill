@@ -208,17 +208,17 @@ public:
     void setTargetFixed(bool target_fixed);
     void setCanRecast(bool can_recast);
 
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-
-    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual bool isAvailable(const Player *player) const;
-
-    virtual QString getClassName() const;
-    virtual QString getSubtype() const;
-    virtual bool isKindOf(const char *cardType) const;
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
+    
+    bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    bool isAvailable(const Player *player) const override;
+    
+    QString getClassName() const override;
+    QString getSubtype() const override;
+    bool isKindOf(const char *cardType) const override;
 
     // the lua callbacks
     LuaFunction filter;
@@ -238,21 +238,21 @@ public:
     void setTargetFixed(bool target_fixed);
     void setCanRecast(bool can_recast);
 
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-    virtual void onNullified(ServerPlayer *target) const;
-    virtual bool isCancelable(const CardEffectStruct &effect) const;
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
+    void onNullified(ServerPlayer *target) const override;
+    bool isCancelable(const CardEffectStruct &effect) const override;
 
-    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual bool isAvailable(const Player *player) const;
+    bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    bool isAvailable(const Player *player) const override;
 
-    virtual QString getClassName() const;
+    QString getClassName() const override;
     void setSubClass(SubClass subclass);
     SubClass getSubClass() const;
-    virtual QString getSubtype() const;
-    virtual bool isKindOf(const char *cardType) const;
+    QString getSubtype() const override;
+    bool isKindOf(const char *cardType) const override;
 
     // the lua callbacks
     LuaFunction filter;
@@ -270,11 +270,11 @@ public:
     LuaWeapon(Card::Suit suit, int number, int range, const char *obj_name, const char *class_name);
     LuaWeapon *clone(Card::Suit suit = Card::SuitToBeDecided, int number = -1) const;
 
-    virtual void onInstall(ServerPlayer *player) const;
-    virtual void onUninstall(ServerPlayer *player) const;
+    void onInstall(ServerPlayer *player) const override;
+    void onUninstall(ServerPlayer *player) const override;
 
-    virtual QString getClassName();
-    virtual bool isKindOf(const char *cardType);
+    QString getClassName() override;
+    bool isKindOf(const char *cardType) override;
 
     // the lua callbacks
     LuaFunction on_install;
@@ -286,11 +286,11 @@ public:
     LuaArmor(Card::Suit suit, int number, const char *obj_name, const char *class_name);
     LuaArmor *clone(Card::Suit suit = Card::SuitToBeDecided, int number = -1) const;
 
-    virtual void onInstall(ServerPlayer *player) const;
-    virtual void onUninstall(ServerPlayer *player) const;
+    void onInstall(ServerPlayer *player) const override;
+    void onUninstall(ServerPlayer *player) const override;
 
-    virtual QString getClassName();
-    virtual bool isKindOf(const char *cardType);
+    QString getClassName() override;
+    bool isKindOf(const char *cardType) override;
 
     // the lua callbacks
     LuaFunction on_install;
@@ -303,11 +303,11 @@ public:
     LuaTreasure(Card::Suit suit, int number, const char *obj_name, const char *class_name);
     LuaTreasure *clone(Card::Suit suit = Card::SuitToBeDecided, int number = -1) const;
 
-    virtual void onInstall(ServerPlayer *player) const;
-    virtual void onUninstall(ServerPlayer *player) const;
+    void onInstall(ServerPlayer *player) const override;
+    void onUninstall(ServerPlayer *player) const override;
 
-    virtual QString getClassName() const;
-    virtual bool isKindOf(const char *cardType) const;
+    QString getClassName() const override;
+    bool isKindOf(const char *cardType) const override;
 
     // the lua callbacks
     LuaFunction on_install;
@@ -1001,10 +1001,13 @@ void LuaSkillCard::onUse(Room *room, const CardUseStruct &card_use) const
     }
 }
 
-void LuaSkillCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void LuaSkillCard::use(Room *room, const CardUseStruct &card_use) const
 {
     if (on_use == 0)
-        return SkillCard::use(room, source, targets);
+        return SkillCard::use(room, card_use);
+
+	ServerPlayer *source = card_use.from;
+	const QList<ServerPlayer *> &targets = card_use.to;
 
     lua_State *L = Sanguosha->getLuaState();
 
@@ -1207,11 +1210,13 @@ void LuaBasicCard::onUse(Room *room, const CardUseStruct &card_use) const
     }
 }
 
-void LuaBasicCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void LuaBasicCard::use(Room *room, const CardUseStruct &card_use) const
 {
     if (on_use == 0)
-        return BasicCard::use(room, source, targets);
+        return BasicCard::use(room, card_use);
 
+	ServerPlayer *source = card_use.from;
+	const QList<ServerPlayer *> &targets = card_use.to;
     lua_State *L = Sanguosha->getLuaState();
 
     // the callback
@@ -1425,10 +1430,13 @@ void LuaTrickCard::onUse(Room *room, const CardUseStruct &card_use) const
     }
 }
 
-void LuaTrickCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void LuaTrickCard::use(Room *room, const CardUseStruct &card_use) const
 {
     if (on_use == 0)
-        return TrickCard::use(room, source, targets);
+        return TrickCard::use(room, card_use);
+
+	ServerPlayer *source = card_use.from;
+	const QList<ServerPlayer *> &targets = card_use.to;
 
     lua_State *L = Sanguosha->getLuaState();
 

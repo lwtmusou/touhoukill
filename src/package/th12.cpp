@@ -147,8 +147,10 @@ WeizhiCard::WeizhiCard()
     target_fixed = true;
 }
 
-void WeizhiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void WeizhiCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     if (source->isAlive())
         room->drawCards(source, subcards.length() + 1);
 }
@@ -294,7 +296,8 @@ public:
             return QList<SkillInvokeDetail>();
 
         CardEffectStruct effect = data.value<CardEffectStruct>();
-        if ((effect.from != nullptr) && effect.from != effect.to && effect.to->hasSkill(this) && effect.to->isAlive() && effect.to->hasFlag("jinghua") && effect.card->isNDTrick()) {
+        if ((effect.from != nullptr) && effect.from != effect.to && effect.to->hasSkill(this) && effect.to->isAlive() && effect.to->hasFlag("jinghua")
+            && effect.card->isNDTrick()) {
             QList<int> ids;
             if (effect.card->isVirtualCard())
                 ids = effect.card->getSubcards();
@@ -1217,8 +1220,11 @@ bool NuhuoCard::targetFilter(const QList<const Player *> &targets, const Player 
 {
     return (targets.isEmpty() && to_select != Self);
 }
-void NuhuoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void NuhuoCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     ServerPlayer *target = targets.first();
     room->damage(DamageStruct("nuhuo", target, source));
 

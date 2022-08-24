@@ -295,8 +295,11 @@ bool KuangzaoCard::targetFilter(const QList<const Player *> &targets, const Play
     return targets.length() == 0 && to_select->inMyAttackRange(Self) && to_select != Self;
 }
 
-void KuangzaoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void KuangzaoCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     QString prompt = "@kuangzao-slash:" + source->objectName();
     const Card *card = room->askForUseSlashTo(targets.first(), source, prompt);
     if (card == nullptr)
@@ -573,8 +576,10 @@ void BuxianCard::onUse(Room *room, const CardUseStruct &card_use) const
     thread->trigger(CardFinished, room, data);
 }
 
-void BuxianCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const
+void BuxianCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     room->moveCardTo(Sanguosha->getCard(subcards.first()), nullptr, Player::DrawPile);
     targets.first()->pindian(targets.last(), "buxian");
 }
@@ -685,8 +690,10 @@ XingyunCard::XingyunCard()
     m_skillName = "xingyun";
 }
 
-void XingyunCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void XingyunCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     foreach (int id, subcards)
         room->showCard(source, id);
     source->tag["xingyun"] = QVariant::fromValue(subcards.length());
@@ -1429,8 +1436,11 @@ bool ChuangshiCard::targetsFeasible(const QList<const Player *> &targets, const 
     return (new_card != nullptr) && new_card->targetsFeasible(targets, user);
 }
 
-void ChuangshiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void ChuangshiCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     ServerPlayer *user = Chuangshi::getChuangshiUser1(source);
     Card *use_card = Sanguosha->cloneCard(user_string);
 
@@ -1620,8 +1630,10 @@ void JinxiCard::onUse(Room *room, const CardUseStruct &card_use) const
     SkillCard::onUse(room, card_use);
 }
 
-void JinxiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void JinxiCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     room->removePlayerMark(source, "@jinxi");
     RecoverStruct recov;
     recov.recover = source->getMaxHp() - source->getHp();
@@ -1739,8 +1751,11 @@ bool MingmuCard::targetFilter(const QList<const Player *> &targets, const Player
     return targets.isEmpty() && to_select->hasSkill("mingmu", false, false) && to_select != Self && !to_select->hasFlag("mingmuInvoked");
 }
 
-void MingmuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void MingmuCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     ServerPlayer *mystia = targets.first();
     room->setPlayerFlag(mystia, "mingmuInvoked");
     room->notifySkillInvoked(mystia, "mingmu");

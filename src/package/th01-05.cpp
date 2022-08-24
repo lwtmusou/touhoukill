@@ -1570,8 +1570,10 @@ bool SqChuangshiCard::targetFilter(const QList<const Player *> &targets, const P
     return !targets.contains(to_select);
 }
 
-void SqChuangshiCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const
+void SqChuangshiCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     foreach (ServerPlayer *p, targets)
         room->setPlayerMark(p, "sqchuangshi", 1);
 }
@@ -1751,8 +1753,11 @@ bool ModianCard::targetFilter(const QList<const Player *> &targets, const Player
     return targets.isEmpty() && to_select->hasSkill("modian", false, to_select == Self) && !to_select->hasFlag("modianInvoked");
 }
 
-void ModianCard::use(Room *room, ServerPlayer *src, QList<ServerPlayer *> &targets) const
+void ModianCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *src = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     ServerPlayer *alice = targets.first();
     if (src == alice)
         src->showHiddenSkill("modian"); // why not use "setShowSkill?"
@@ -2233,8 +2238,11 @@ void EzhaoCard::onUse(Room *room, const CardUseStruct &card_use) const
     SkillCard::onUse(room, card_use);
 }
 
-void EzhaoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void EzhaoCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     room->removePlayerMark(source, "@ezhao");
     foreach (ServerPlayer *p, targets) {
         room->recover(p, RecoverStruct());
@@ -2278,8 +2286,11 @@ void MoyanCard::onUse(Room *room, const CardUseStruct &card_use) const
     SkillCard::onUse(room, card_use);
 }
 
-void MoyanCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void MoyanCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     room->removePlayerMark(source, "@moyan");
     foreach (ServerPlayer *p, targets) {
         room->setPlayerProperty(p, "dyingFactor", p->getDyingFactor() + 1);
@@ -2873,8 +2884,10 @@ LuliCard::LuliCard()
     handling_method = Card::MethodNone;
 }
 
-void LuliCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void LuliCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     LogMessage log;
     log.type = "#Card_Recast";
     log.from = source;
@@ -2883,9 +2896,7 @@ void LuliCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) co
 
     CardMoveReason reason(CardMoveReason::S_REASON_RECAST, source->objectName());
     reason.m_skillName = getSkillName();
-    DummyCard *dummy = new DummyCard(subcards);
-    dummy->deleteLater();
-    room->moveCardTo(dummy, source, nullptr, Player::DiscardPile, reason);
+    room->moveCardTo(this, source, nullptr, Player::DiscardPile, reason);
     source->broadcastSkillInvoke("@recast");
 
     source->drawCards(subcards.length());

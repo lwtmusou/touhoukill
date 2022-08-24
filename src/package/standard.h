@@ -80,7 +80,7 @@ public:
     bool isAvailable(const Player *player) const override;
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
     void onUse(Room *room, const CardUseStruct &card_use) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 
     virtual void onInstall(ServerPlayer *player) const;
     virtual void onUninstall(ServerPlayer *player) const;
@@ -121,7 +121,7 @@ class AmazingGrace : public GlobalEffect
 public:
     Q_INVOKABLE AmazingGrace(Card::Suit suit, int number);
     void doPreAction(Room *room, const CardUseStruct &card_use) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
     void onEffect(const CardEffectStruct &effect) const override;
     bool isCancelable(const CardEffectStruct &effect) const override;
 
@@ -223,7 +223,7 @@ public:
     void onNullified(ServerPlayer *target) const override;
 
     void onUse(Room *room, const CardUseStruct &card_use) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
     QString getSubtype() const override;
     void onEffect(const CardEffectStruct &effect) const override;
     virtual void takeEffect(ServerPlayer *target) const = 0;
@@ -278,7 +278,7 @@ class Nullification : public SingleTargetTrick
 public:
     Q_INVOKABLE Nullification(Card::Suit suit, int number);
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
     bool isAvailable(const Player *player) const override;
 };
 
@@ -455,7 +455,7 @@ public:
     QString getSubtype() const override;
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
     void onEffect(const CardEffectStruct &effect) const override;
 };
 
@@ -485,7 +485,7 @@ public:
     bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
     void onUse(Room *room, const CardUseStruct &card_use) const override;
     void onEffect(const CardEffectStruct &effect) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class SavingEnergy : public DelayedTrick

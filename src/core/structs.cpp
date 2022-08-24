@@ -104,9 +104,7 @@ DamageStruct::DamageStruct()
     , chain(false)
     , transfer(false)
     , by_user(true)
-    , reason(QString())
     , trigger_chain(false)
-    , trigger_info(QString())
 {
 }
 
@@ -114,9 +112,7 @@ DamageStruct::DamageStruct(const Card *card, ServerPlayer *from, ServerPlayer *t
     : chain(false)
     , transfer(false)
     , by_user(true)
-    , reason(QString())
     , trigger_chain(false)
-    , trigger_info(QString())
 {
     this->card = card;
     this->from = from;
@@ -131,7 +127,6 @@ DamageStruct::DamageStruct(const QString &reason, ServerPlayer *from, ServerPlay
     , transfer(false)
     , by_user(true)
     , trigger_chain(false)
-    , trigger_info(QString())
 {
     this->from = from;
     this->to = to;
@@ -156,7 +151,7 @@ CardEffectStruct::CardEffectStruct()
     , multiple(false)
     , nullified(false)
     , canceled(false)
-    , effectValue(QList<int>() << 0 << 0)
+    , effectValue {0, 0}
 {
 }
 
@@ -171,7 +166,7 @@ SlashEffectStruct::SlashEffectStruct()
     , multiple(false)
     , nullified(false)
     , canceled(false)
-    , effectValue(QList<int>() << 0 << 0)
+    , effectValue {0, 0}
 {
 }
 
@@ -270,7 +265,7 @@ CardUseStruct::CardUseStruct()
     , from(nullptr)
     , m_isOwnerUse(true)
     , m_addHistory(true)
-    , nullified_list(QStringList())
+    , m_effectValue {0, 0}
 {
 }
 
@@ -283,6 +278,7 @@ CardUseStruct::CardUseStruct(const Card *card, ServerPlayer *from, const QList<S
     this->m_addHistory = true;
     this->m_isHandcard = false;
     this->m_isLastHandcard = false;
+    this->m_effectValue = {0, 0};
 }
 
 CardUseStruct::CardUseStruct(const Card *card, ServerPlayer *from, ServerPlayer *target, bool isOwnerUse)
@@ -295,53 +291,60 @@ CardUseStruct::CardUseStruct(const Card *card, ServerPlayer *from, ServerPlayer 
     this->m_addHistory = true;
     this->m_isHandcard = false;
     this->m_isLastHandcard = false;
+    this->m_effectValue = {0, 0};
 }
 
 bool CardUseStruct::isValid(const QString &pattern) const
 {
     Q_UNUSED(pattern)
     return card != nullptr;
-    /*if (card == NULL) return false;
+#if 0
+    if (card == NULL)
+        return false;
     if (!card->getSkillName().isEmpty()) {
-    bool validSkill = false;
-    QString skillName = card->getSkillName();
-    QSet<const Skill *> skills = from->getVisibleSkills();
-    for (int i = 0; i < 4; i++) {
-    const EquipCard *equip = from->getEquip(i);
-    if (equip == NULL) continue;
-    const Skill *skill = Sanguosha->getSkill(equip);
-    if (skill)
-    skills.insert(skill);
-    }
-    foreach (const Skill *skill, skills) {
-    if (skill->objectName() != skillName) continue;
-    const ViewAsSkill *vsSkill = ViewAsSkill::parseViewAsSkill(skill);
-    if (vsSkill) {
-    if (!vsSkill->isAvailable(from, m_reason, pattern))
-    return false;
-    else {
-    validSkill = true;
-    break;
-    }
-    } else if (skill->getFrequency() == Skill::Wake) {
-    bool valid = (from->getMark(skill->objectName()) > 0);
-    if (!valid)
-    return false;
-    else
-    validSkill = true;
-    } else
-    return false;
-    }
-    if (!validSkill) return false;
+        bool validSkill = false;
+        QString skillName = card->getSkillName();
+        QSet<const Skill *> skills = from->getVisibleSkills();
+        for (int i = 0; i < 4; i++) {
+            const EquipCard *equip = from->getEquip(i);
+            if (equip == NULL)
+                continue;
+            const Skill *skill = Sanguosha->getSkill(equip);
+            if (skill)
+                skills.insert(skill);
+        }
+        foreach (const Skill *skill, skills) {
+            if (skill->objectName() != skillName)
+                continue;
+            const ViewAsSkill *vsSkill = ViewAsSkill::parseViewAsSkill(skill);
+            if (vsSkill) {
+                if (!vsSkill->isAvailable(from, m_reason, pattern))
+                    return false;
+                else {
+                    validSkill = true;
+                    break;
+                }
+            } else if (skill->getFrequency() == Skill::Wake) {
+                bool valid = (from->getMark(skill->objectName()) > 0);
+                if (!valid)
+                    return false;
+                else
+                    validSkill = true;
+            } else
+                return false;
+        }
+        if (!validSkill)
+            return false;
     }
     if (card->targetFixed())
-    return true;
+        return true;
     else {
-    QList<const Player *> targets;
-    foreach (const ServerPlayer *player, to)
-    targets.push_back(player);
-    return card->targetsFeasible(targets, from);
-    }*/
+        QList<const Player *> targets;
+        foreach (const ServerPlayer *player, to)
+            targets.push_back(player);
+        return card->targetsFeasible(targets, from);
+    }
+#endif
 }
 
 bool CardUseStruct::tryParse(const QVariant &usage, Room *room)
@@ -607,15 +610,12 @@ SkillInvalidStruct::SkillInvalidStruct()
 
 ExtraTurnStruct::ExtraTurnStruct()
     : player(nullptr)
-    , set_phases(QList<Player::Phase>())
-    , reason(QString())
     , extraTarget(nullptr)
 {
 }
 
 BrokenEquipChangedStruct::BrokenEquipChangedStruct()
     : player(nullptr)
-    , ids(QList<int>())
     , broken(false)
     , moveFromEquip(false)
 {
@@ -623,7 +623,6 @@ BrokenEquipChangedStruct::BrokenEquipChangedStruct()
 
 ShownCardChangedStruct::ShownCardChangedStruct()
     : player(nullptr)
-    , ids(QList<int>())
     , shown(false)
     , moveFromHand(false)
 {

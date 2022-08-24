@@ -11,7 +11,7 @@ class QiuwenCard : public SkillCard
 public:
     Q_INVOKABLE QiuwenCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class DangjiaCard : public SkillCard
@@ -22,7 +22,7 @@ public:
     Q_INVOKABLE DangjiaCard();
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class XiufuMoveCard : public SkillCard
@@ -44,7 +44,7 @@ public:
     Q_INVOKABLE XiufuCard();
 
     void onUse(Room *room, const CardUseStruct &card_use) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 
 private:
     static bool putToPile(Room *room, ServerPlayer *mori);
@@ -105,7 +105,7 @@ public:
     Q_INVOKABLE PanduCard();
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class XieliCard : public SkillCard
@@ -115,7 +115,7 @@ class XieliCard : public SkillCard
 public:
     Q_INVOKABLE XieliCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class TH99Package : public Package

@@ -105,6 +105,7 @@ struct CardUseStruct
     bool m_isLastHandcard;
     QList<int> m_showncards;
     QStringList nullified_list;
+    QList<int> m_effectValue;
 };
 
 class CardMoveReason

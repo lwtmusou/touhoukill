@@ -591,8 +591,10 @@ ShihuiCard::ShihuiCard()
     handling_method = Card::MethodNone;
 }
 
-void ShihuiCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const
+void ShihuiCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     room->obtainCard(targets.first(), this);
 }
 
@@ -2014,8 +2016,11 @@ bool YujianCard::targetFilter(const QList<const Player *> &targets, const Player
     return targets.length() < 2 && !to_select->isKongcheng() && to_select != Self;
 }
 
-void YujianCard::use(Room *, ServerPlayer *player, QList<ServerPlayer *> &targets) const
+void YujianCard::use(Room *, const CardUseStruct &card_use) const
 {
+    ServerPlayer *player = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     player->pindian(targets.first(), "yujian");
 }
 
@@ -2103,8 +2108,11 @@ bool HuayinCard::targetsFeasible(const QList<const Player *> &targets, const Pla
     return card->targetsFeasible(targets, Self);
 }
 
-void HuayinCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void HuayinCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     room->showAllCards(source);
     Peach *card = new Peach(Card::SuitToBeDecided, -1);
     foreach (int id, source->handCards()) {

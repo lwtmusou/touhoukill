@@ -129,8 +129,9 @@ public:
         return targets.isEmpty() && set.contains(to_select->objectName());
     }
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override
+    void use(Room *, const CardUseStruct &) const override
     {
+#if 0
         ServerPlayer *target = targets.first();
 
         room->broadcastSkillInvoke("rende");
@@ -147,6 +148,7 @@ public:
             recover.who = source;
             room->recover(source, recover);
         }
+#endif
     }
 
 private:

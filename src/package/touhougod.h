@@ -19,7 +19,7 @@ class HongwuCard : public SkillCard
 public:
     Q_INVOKABLE HongwuCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class ShenqiangCard : public SkillCard
@@ -29,7 +29,7 @@ class ShenqiangCard : public SkillCard
 public:
     Q_INVOKABLE ShenqiangCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class HuimieCard : public SkillCard
@@ -40,7 +40,7 @@ public:
     Q_INVOKABLE HuimieCard();
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class ShenshouCard : public SkillCard
@@ -50,7 +50,7 @@ class ShenshouCard : public SkillCard
 public:
     Q_INVOKABLE ShenshouCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 /*class FengyinCard : public SkillCard
@@ -86,7 +86,7 @@ class ChaowoCard : public SkillCard
 public:
     Q_INVOKABLE ChaowoCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class ShenbaoDialog : public QDialog
@@ -132,7 +132,7 @@ public:
     Q_INVOKABLE WendaoCard();
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class XinhuaCard : public SkillCard
@@ -160,7 +160,7 @@ public:
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
     bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
     void onUse(Room *room, const CardUseStruct &card_use) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class AnyunDialog : public QDialog
@@ -235,7 +235,7 @@ public:
     Q_INVOKABLE WenyueCard();
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class QianqiangCard : public SkillCard
@@ -246,7 +246,7 @@ public:
     Q_INVOKABLE QianqiangCard();
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 /*class KuangjiCard : public SkillCard

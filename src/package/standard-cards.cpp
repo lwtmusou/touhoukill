@@ -496,9 +496,12 @@ void TribladeCard::onUse(Room *room, const CardUseStruct &card_use) const
     SkillCard::onUse(room, card_use);
 }
 
-void TribladeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void TribladeCard::use(Room *room, const CardUseStruct &card_use) const
 {
-    room->damage(DamageStruct("Triblade", source, targets[0]));
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
+    room->damage(DamageStruct("Triblade", source, targets.value(0)));
 }
 
 class TribladeSkillVS : public OneCardViewAsSkill
@@ -1149,14 +1152,16 @@ void AmazingGrace::doPreAction(Room *room, const CardUseStruct &use) const
     room->setTag("AmazingGrace", IntList2VariantList(card_ids));
 }
 
-void AmazingGrace::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void AmazingGrace::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     //shemi count
     if (getSkillName() == "shemi")
         room->addPlayerHistory(source, "ShemiAG");
 
     try {
-        GlobalEffect::use(room, source, targets);
+        GlobalEffect::use(room, card_use);
         clearRestCards(room);
     } catch (TriggerEvent triggerEvent) {
         if (triggerEvent == TurnBroken)
@@ -1385,8 +1390,10 @@ Nullification::Nullification(Suit suit, int number)
     has_effectvalue = false;
 }
 
-void Nullification::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void Nullification::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     // does nothing, just throw it
     if (room->getCardPlace(getEffectiveId()) == Player::PlaceTable) {
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName());
@@ -1875,8 +1882,10 @@ WoodenOxCard::WoodenOxCard()
     m_skillName = "wooden_ox";
 }
 
-void WoodenOxCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void WoodenOxCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     source->addToPile("wooden_ox", subcards, false);
 
     QList<ServerPlayer *> targets;
@@ -2021,8 +2030,11 @@ bool LureTiger::targetFilter(const QList<const Player *> &targets, const Player 
     return to_select != Self;
 }
 
-void LureTiger::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void LureTiger::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
     bool all_nullified = nullified_list.contains("_ALL_TARGETS");
     foreach (ServerPlayer *target, targets) {
@@ -2274,8 +2286,11 @@ void KnownBoth::onEffect(const CardEffectStruct &effect) const
     effect.to->addToShownHandCards(ids);
 }
 
-void KnownBoth::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void KnownBoth::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
     bool all_nullified = nullified_list.contains("_ALL_TARGETS");
     int magic_drank = 0;

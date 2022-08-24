@@ -31,7 +31,7 @@ public:
     Q_INVOKABLE ToupaiCard();
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class TianrenCard : public SkillCard
@@ -91,7 +91,7 @@ public:
     Q_INVOKABLE MengxiangTargetCard();
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class MengxiangCard : public SkillCard
@@ -115,7 +115,7 @@ class JishiCard : public SkillCard
 public:
     Q_INVOKABLE JishiCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class MianLingCard : public SkillCard
@@ -140,7 +140,7 @@ class ShizaiCard : public SkillCard
 public:
     Q_INVOKABLE ShizaiCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class TH09Package : public Package

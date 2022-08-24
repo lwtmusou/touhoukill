@@ -45,8 +45,10 @@ QingtingCard::QingtingCard()
     target_fixed = true;
 }
 
-void QingtingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void QingtingCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     foreach (ServerPlayer *p, room->getOtherPlayers(source)) {
         if (p->isKongcheng())
             continue;
@@ -654,8 +656,10 @@ ShijieCard::ShijieCard()
     handling_method = Card::MethodDiscard;
 }
 
-void ShijieCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void ShijieCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     ServerPlayer *who = room->getCurrentDyingPlayer();
     JudgeStruct judge;
     judge.reason = "shijie";
@@ -962,8 +966,10 @@ void XiefaCard::onUse(Room *room, const CardUseStruct &card_use) const
     thread->trigger(CardFinished, room, data);
 }
 
-void XiefaCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const
+void XiefaCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     ServerPlayer *to1 = targets.first();
     ServerPlayer *to2 = targets.last();
     Card *card = Sanguosha->getCard(subcards.first());
@@ -1434,8 +1440,11 @@ bool BumingCard::targetFilter(const QList<const Player *> &targets, const Player
     return false;
 }
 
-void BumingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void BumingCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     ServerPlayer *target = targets.first();
     QStringList choices;
     Slash *slash = new Slash(Card::NoSuit, 0);
@@ -1449,17 +1458,17 @@ void BumingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
     if (choices.length() == 0)
         return;
     QString choice = room->askForChoice(target, "buming", choices.join("+"));
-    CardUseStruct card_use;
+    CardUseStruct new_use;
     slash->setSkillName("buming");
     duel->setSkillName("buming");
     if (choice == "slash_buming")
-        card_use.card = slash;
+        new_use.card = slash;
     else if (choice == "duel_buming")
-        card_use.card = duel;
-    room->touhouLogmessage("#buming_choose", target, card_use.card->objectName());
-    card_use.to << target;
-    card_use.from = source;
-    room->useCard(card_use, false);
+        new_use.card = duel;
+    room->touhouLogmessage("#buming_choose", target, new_use.card->objectName());
+    new_use.to << target;
+    new_use.from = source;
+    room->useCard(new_use, false);
 }
 
 class Buming : public OneCardViewAsSkill

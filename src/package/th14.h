@@ -32,7 +32,7 @@ class LiangeCard : public SkillCard
 public:
     Q_INVOKABLE LiangeCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class TH14Package : public Package

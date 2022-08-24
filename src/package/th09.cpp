@@ -836,8 +836,11 @@ bool ToupaiCard::targetFilter(const QList<const Player *> &targets, const Player
     return targets.length() < 2 && to_select != Self && !to_select->isKongcheng();
 }
 
-void ToupaiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void ToupaiCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     foreach (ServerPlayer *p, targets) {
         if (!p->isKongcheng()) {
             room->showAllCards(p, source);
@@ -1335,8 +1338,10 @@ ShizaiCard::ShizaiCard()
     target_fixed = true;
 }
 
-void ShizaiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void ShizaiCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     JudgeStruct j;
     j.good = false;
     j.pattern = ".";
@@ -2285,8 +2290,11 @@ bool MengxiangTargetCard::targetFilter(const QList<const Player *> &targets, con
     return targets.length() < Self->getMark("mengxiang") && !to_select->isKongcheng(); //
 }
 
-void MengxiangTargetCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void MengxiangTargetCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     room->notifySkillInvoked(source, "mengxiang");
     foreach (ServerPlayer *p, targets)
         room->setPlayerMark(p, "mengxiangtarget", 1);
@@ -2541,8 +2549,10 @@ JishiCard::JishiCard()
     will_throw = false;
 }
 
-void JishiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void JishiCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     int x = subcards.length();
     CardsMoveStruct move;
     move.card_ids = subcards;

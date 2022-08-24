@@ -1354,8 +1354,10 @@ HuazhaoCard::HuazhaoCard()
     target_fixed = true;
 }
 
-void HuazhaoCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &) const
+void HuazhaoCard::use(Room *, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     source->tag["huazhaoid"] = getEffectiveId();
 }
 
@@ -1447,8 +1449,10 @@ ChuntengCard::ChuntengCard()
     handling_method = Card::MethodNone;
 }
 
-void ChuntengCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void ChuntengCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     room->showCard(source, getEffectiveId());
 }
 

@@ -28,7 +28,7 @@ class HalfLifeCard : public SkillCard
 public:
     Q_INVOKABLE HalfLifeCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class CompanionCard : public SkillCard
@@ -38,7 +38,7 @@ class CompanionCard : public SkillCard
 public:
     Q_INVOKABLE CompanionCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class PioneerCard : public SkillCard
@@ -48,7 +48,7 @@ class PioneerCard : public SkillCard
 public:
     Q_INVOKABLE PioneerCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class QingtingHegemonyCard : public SkillCard
@@ -58,7 +58,7 @@ class QingtingHegemonyCard : public SkillCard
 public:
     Q_INVOKABLE QingtingHegemonyCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class ShowShezhengCard : public SkillCard
@@ -79,7 +79,7 @@ public:
     Q_INVOKABLE XushiHegemonyCard();
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class XingyunHegemonyCard : public SkillCard
@@ -89,7 +89,7 @@ class XingyunHegemonyCard : public SkillCard
 public:
     Q_INVOKABLE XingyunHegemonyCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class ShowFengsuCard : public SkillCard
@@ -109,7 +109,7 @@ class ChunhenHegemonyCard : public SkillCard
 public:
     Q_INVOKABLE ChunhenHegemonyCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class DongzhiHegemonyCard : public SkillCard
@@ -120,7 +120,7 @@ public:
     Q_INVOKABLE DongzhiHegemonyCard();
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
     void onUse(Room *room, const CardUseStruct &card_use) const override;
 };
 
@@ -134,7 +134,7 @@ public:
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
     bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
     void onUse(Room *room, const CardUseStruct &card_use) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 // taken from LijianCard
@@ -148,7 +148,7 @@ public:
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
     bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
     void onUse(Room *room, const CardUseStruct &card_use) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class HegemonyGeneralPackage : public Package

@@ -18,7 +18,7 @@ class GongfengCard : public SkillCard
 public:
     Q_INVOKABLE GongfengCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
 };
 
@@ -95,7 +95,7 @@ public:
     Q_INVOKABLE JiliaoCard();
 
     bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class BujuCard : public SkillCard
@@ -105,7 +105,7 @@ class BujuCard : public SkillCard
 public:
     Q_INVOKABLE BujuCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class TH10Package : public Package

@@ -252,10 +252,10 @@ public:
         m_card->onUse(room, cardUse);
     }
 
-    inline void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override
+    inline void use(Room *room, const CardUseStruct &card_use) const override
     {
         Q_ASSERT(m_card != nullptr);
-        m_card->use(room, source, targets);
+        m_card->use(room, card_use);
     }
 
     inline void onEffect(const CardEffectStruct &effect) const override

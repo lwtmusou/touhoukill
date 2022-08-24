@@ -136,8 +136,11 @@ MaihuoCard::MaihuoCard()
     handling_method = Card::MethodNone;
 }
 
-void MaihuoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void MaihuoCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     room->moveCardTo(Sanguosha->getCard(subcards.first()), nullptr, Player::DrawPile);
     QList<int> card_to_show = room->getNCards(2, false);
     CardsMoveStruct move(card_to_show, nullptr, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, targets.first()->objectName()));

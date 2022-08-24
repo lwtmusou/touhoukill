@@ -1022,8 +1022,11 @@ bool YuejianCard::targetFilter(const QList<const Player *> &targets, const Playe
     return targets.isEmpty() && !to_select->isKongcheng() && to_select != Self;
 }
 
-void YuejianCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void YuejianCard::use(Room *, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     ServerPlayer *target = targets.first();
     source->pindian(target, "yuejian");
 }

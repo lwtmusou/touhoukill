@@ -189,8 +189,10 @@ HalfLifeCard::HalfLifeCard()
     target_fixed = true;
 }
 
-void HalfLifeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void HalfLifeCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     source->loseMark("@HalfLife", 1);
     source->drawCards(1);
     room->detachSkillFromPlayer(source, "halflife_attach", true);
@@ -295,8 +297,10 @@ CompanionCard::CompanionCard()
     target_fixed = true;
 }
 
-void CompanionCard::use(Room *room, ServerPlayer *player, QList<ServerPlayer *> &) const
+void CompanionCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *player = card_use.from;
+
     player->loseMark("@CompanionEffect", 1);
     room->detachSkillFromPlayer(player, "companion_attach", true);
 
@@ -364,8 +368,10 @@ PioneerCard::PioneerCard()
     target_fixed = true;
 }
 
-void PioneerCard::use(Room *room, ServerPlayer *player, QList<ServerPlayer *> &) const
+void PioneerCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *player = card_use.from;
+
     player->loseMark("@Pioneer", 1);
     room->detachSkillFromPlayer(player, "pioneer_attach", true);
 
@@ -965,8 +971,10 @@ QingtingHegemonyCard::QingtingHegemonyCard()
     m_skillName = "qingting_hegemony";
 }
 
-void QingtingHegemonyCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void QingtingHegemonyCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     foreach (ServerPlayer *p, room->getOtherPlayers(source)) {
         if (p->isKongcheng())
             continue;
@@ -1896,8 +1904,10 @@ bool XushiHegemonyCard::targetFilter(const QList<const Player *> &targets, const
     return targets.isEmpty() && to_select->hasFlag("Global_xushiFailed");
 }
 
-void XushiHegemonyCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const
+void XushiHegemonyCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     foreach (ServerPlayer *p, targets)
         room->setPlayerFlag(p, "xushi_cancel");
 }
@@ -2127,8 +2137,10 @@ XingyunHegemonyCard::XingyunHegemonyCard()
     m_skillName = "xingyun_hegemony";
 }
 
-void XingyunHegemonyCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void XingyunHegemonyCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     foreach (int id, subcards)
         room->showCard(source, id);
 }
@@ -3210,8 +3222,10 @@ void KuaizhaoHegemonyCard::onUse(Room *room, const CardUseStruct &use) const
     thread->trigger(CardFinished, room, data);
 }
 
-void KuaizhaoHegemonyCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const
+void KuaizhaoHegemonyCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     ServerPlayer *to = targets.at(1);
     ServerPlayer *from = targets.at(0);
 
@@ -3570,10 +3584,11 @@ ChunhenHegemonyCard::ChunhenHegemonyCard()
     m_skillName = "chunhen_hegemony";
 }
 
-void ChunhenHegemonyCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const
+void ChunhenHegemonyCard::use(Room *room, const CardUseStruct &card_use) const
 {
-    DummyCard dummy(subcards);
-    room->obtainCard(targets.first(), &dummy);
+    const QList<ServerPlayer *> &targets = card_use.to;
+
+    room->obtainCard(targets.first(), this);
 }
 
 class ChunhenHegemonyVS : public ViewAsSkill
@@ -3786,8 +3801,11 @@ void DongzhiHegemonyCard::onUse(Room *room, const CardUseStruct &card_use) const
     SkillCard::onUse(room, card_use);
 }
 
-void DongzhiHegemonyCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void DongzhiHegemonyCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     room->removePlayerMark(source, "@dongzhi");
 
     QString flag = "hes";
@@ -3994,8 +4012,11 @@ void BanyueHegemonyCard::onUse(Room *room, const CardUseStruct &card_use) const
     thread->trigger(CardFinished, room, data);
 }
 
-void BanyueHegemonyCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const // onEffect is better?
+void BanyueHegemonyCard::use(Room *room, const CardUseStruct &card_use) const // onEffect is better?
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     room->loseHp(source);
     ServerPlayer *to1 = targets.first();
     ServerPlayer *to2 = targets.last();

@@ -568,8 +568,10 @@ HunpoCard::HunpoCard()
     mute = true;
 }
 
-void HunpoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void HunpoCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     room->setPlayerProperty(source, "maxhp", source->getMaxHp() + 1);
     room->touhouLogmessage("#GainMaxHp", source, QString::number(1));
     room->touhouLogmessage("#GetHp", source, QString::number(source->getHp()), QList<ServerPlayer *>(), QString::number(source->getMaxHp()));

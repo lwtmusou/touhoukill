@@ -957,8 +957,10 @@ LiangeCard::LiangeCard()
     handling_method = Card::MethodNone;
 }
 
-void LiangeCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const
+void LiangeCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     room->moveCardTo(Sanguosha->getCard(subcards.first()), nullptr, Player::DrawPile);
     QList<int> idlist = room->getNCards(2);
 

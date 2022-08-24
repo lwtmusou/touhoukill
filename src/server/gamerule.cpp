@@ -365,7 +365,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 if (card_use.card->isNDTrick() && !card_use.card->isKindOf("Nullification"))
                     room->setCardFlag(card_use.card, "LastTrickTarget_" + card_use.to.last()->objectName());
 
-                card_use.card->use(room, card_use.from, card_use.to);
+                card_use.card->use(room, card_use);
                 if (!jink_list_backup.isEmpty())
                     card_use.from->tag["Jink_" + card_use.card->toString()] = QVariant::fromValue(jink_list_backup);
             } catch (TriggerEvent triggerEvent) {

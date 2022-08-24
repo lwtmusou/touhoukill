@@ -22,8 +22,10 @@ SkltKexueCard::SkltKexueCard()
     m_skillName = "skltkexue_attach";
 }
 
-void SkltKexueCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void SkltKexueCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     ServerPlayer *who = room->getCurrentDyingPlayer();
     if (who != nullptr && who->hasSkill("skltkexue")) {
         room->notifySkillInvoked(who, "skltkexue");
@@ -485,8 +487,11 @@ bool SuodingCard::targetsFeasible(const QList<const Player *> &targets, const Pl
     return true;
 }
 
-void SuodingCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void SuodingCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     QMap<ServerPlayer *, int> map;
     foreach (ServerPlayer *sp, targets)
         map[sp]++;
@@ -1521,8 +1526,10 @@ void SishuCard::onUse(Room *room, const CardUseStruct &card_use) const
     SkillCard::onUse(room, card_use);
 }
 
-void SishuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void SishuCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     room->removePlayerMark(source, "@sishu");
     int num = 1 + source->getLostHp();
     for (int i = 0; i < num; i += 1)
@@ -1626,8 +1633,11 @@ bool BanyueCard::targetFilter(const QList<const Player *> &targets, const Player
     return (targets.length() < 3);
 }
 
-void BanyueCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const // onEffect is better?
+void BanyueCard::use(Room *room, const CardUseStruct &card_use) const // onEffect is better?
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     // the loseHp here is actually cost.
     room->loseHp(source);
     foreach (ServerPlayer *p, targets) {

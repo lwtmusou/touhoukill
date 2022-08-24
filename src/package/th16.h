@@ -127,7 +127,7 @@ class HuazhaoCard : public SkillCard
 public:
     Q_INVOKABLE HuazhaoCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class ChuntengCard : public SkillCard
@@ -137,7 +137,7 @@ class ChuntengCard : public SkillCard
 public:
     Q_INVOKABLE ChuntengCard();
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class Chunteng2Card : public SkillCard

@@ -270,8 +270,10 @@ HongwuCard::HongwuCard()
     target_fixed = true;
 }
 
-void HongwuCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &) const
+void HongwuCard::use(Room *, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     source->gainMark("@ye", 1);
 }
 
@@ -311,8 +313,11 @@ ShenqiangCard::ShenqiangCard()
     will_throw = true;
 }
 
-void ShenqiangCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void ShenqiangCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     ServerPlayer *target = targets.first();
     room->damage(DamageStruct("shenqiang", source, target));
 }
@@ -879,8 +884,11 @@ bool HuimieCard::targetFilter(const QList<const Player *> &targets, const Player
     return (targets.isEmpty() && to_select != Self);
 }
 
-void HuimieCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void HuimieCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     ServerPlayer *target = targets.first();
     source->gainMark("@kinki");
     if (!target->isChained())
@@ -1387,8 +1395,11 @@ ShenshouCard::ShenshouCard()
     will_throw = false;
 }
 
-void ShenshouCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void ShenshouCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     ServerPlayer *target = targets.first();
 
     Card *card = Sanguosha->getCard(subcards.first());
@@ -3009,8 +3020,10 @@ ChaowoCard::ChaowoCard()
     handling_method = Card::MethodNone;
 }
 
-void ChaowoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void ChaowoCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     QList<const General *> sameNameGenerals;
 
     const General *sourceGeneral = source->getGeneral();
@@ -3370,9 +3383,11 @@ bool WendaoCard::targetFilter(const QList<const Player *> &targets, const Player
     }
 }
 
-void WendaoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void WendaoCard::use(Room *room, const CardUseStruct &card_use) const
 {
-    room->sortByActionOrder(targets);
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     foreach (ServerPlayer *p, targets) {
         if (source->isDead())
             break;
@@ -4931,12 +4946,17 @@ bool RumoCard::targetsFeasible(const QList<const Player *> &targets, const Playe
 }
 void RumoCard::onUse(Room *room, const CardUseStruct &card_use) const
 {
+    CardUseStruct new_use = card_use;
+    room->sortByActionOrder(new_use.to);
     room->doLightbox("$rumoAnimate", 4000);
-    SkillCard::onUse(room, card_use);
+    SkillCard::onUse(room, new_use);
 }
 
-void RumoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void RumoCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     room->removePlayerMark(source, "@rumo");
     QStringList roles = room->aliveRoles();
     int loyalist = 0;
@@ -4954,7 +4974,6 @@ void RumoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targ
     int num = qMax(renegade, loyalist);
     num = qMax(num, rebel);
 
-    room->sortByActionOrder(targets);
     foreach (ServerPlayer *target, targets) {
         if (!target->isChained())
             room->setPlayerProperty(target, "chained", true);
@@ -6169,8 +6188,11 @@ bool WenyueCard::targetFilter(const QList<const Player *> &targets, const Player
     return false;
 }
 
-void WenyueCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void WenyueCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     int throw_id = -1, card_id = -1;
     foreach (int id, subcards) {
         if (Sanguosha->getCard(id)->getTypeId() == Card::TypeEquip)
@@ -6422,8 +6444,11 @@ bool QianqiangCard::targetFilter(const QList<const Player *> &targets, const Pla
     return false;
 }
 
-void QianqiangCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void QianqiangCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     int card_id = subcards.first();
     const Card *card = Sanguosha->getCard(card_id);
     if (room->getCardPlace(card_id) != Player::PlaceEquip) {
