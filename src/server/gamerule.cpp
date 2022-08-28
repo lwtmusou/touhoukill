@@ -964,6 +964,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             }
 
             delete extraCard;
+            effect.effectValue.first() -= effect.magic_drank;
             effect.magic_drank = 0;
         }
 
