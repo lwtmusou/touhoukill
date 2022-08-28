@@ -399,7 +399,7 @@ public:
                 && ((move.to != move.from) || (move.to_place == Player::PlaceTable) || (move.to_place == Player::DiscardPile) || (move.to_place == Player::DrawPile))) {
                 int n = 0;
                 for (int i = 0; i < move.card_ids.length(); ++i) {
-                    if (((move.from_places.at(i) == Player::PlaceHand) || (move.from_places.at(i) == Player::PlaceEquip)))
+                    if (move.from_places.at(i) == Player::PlaceHand)
                         ++n;
                 }
                 if (n >= 2) {
