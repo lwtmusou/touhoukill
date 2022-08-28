@@ -1983,7 +1983,7 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
 
 void Room::doExtraAmazingGrace(ServerPlayer *from, ServerPlayer *target, int times)
 { //couple xianshi
-    target->gainMark("@MMP");
+
     int count = getAllPlayers().length();
     QList<int> card_ids = getNCards(count);
     CardsMoveStruct move(card_ids, nullptr, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, from->objectName(), "xianshi", QString()));

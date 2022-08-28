@@ -1955,18 +1955,20 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral(this, general_name);
 
-        //change skinhero
-        int skin_id = room->getTag(general_name + "_skin_id").toInt();
-        JsonArray val;
-        val << (int)QSanProtocol::S_GAME_EVENT_SKIN_CHANGED;
-        val << objectName();
-        val << general_name;
-        val << skin_id;
-        val << true; //head
-        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val);
+        //change skinhero //but not for ai player
+        if (getState() == "online") {
+            int skin_id = room->getTag(general_name + "_skin_id").toInt();
+            JsonArray val;
+            val << (int)QSanProtocol::S_GAME_EVENT_SKIN_CHANGED;
+            val << objectName();
+            val << general_name;
+            val << skin_id;
+            val << true; //head
+            room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val);
+        }
 
         sendSkillsToOthers();
-        foreach (const Skill *skill, getHeadSkillList()) { //getSkillList()
+        foreach(const Skill *skill, getHeadSkillList()) { //getSkillList()
             if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
                 && hasShownSkill(skill)) {
                 JsonArray arg;
@@ -1976,6 +1978,8 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
             }
         }
+        
+        
 
     } else {
         //if (!ignore_rule && !canShowGeneral("h")) return;
@@ -1999,14 +2003,16 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         room->changePlayerGeneral2(this, general_name);
 
         //change skinhero
-        int skin_id = room->getTag(general_name + "_skin_id").toInt();
-        JsonArray val;
-        val << (int)QSanProtocol::S_GAME_EVENT_SKIN_CHANGED;
-        val << objectName();
-        val << general_name;
-        val << skin_id;
-        val << false; // deputy?
-        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val);
+        if (getState() == "online") {
+            int skin_id = room->getTag(general_name + "_skin_id").toInt();
+            JsonArray val;
+            val << (int)QSanProtocol::S_GAME_EVENT_SKIN_CHANGED;
+            val << objectName();
+            val << general_name;
+            val << skin_id;
+            val << false; // deputy?
+            room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, val);
+        }
 
         sendSkillsToOthers(false);
         foreach (const Skill *skill, getDeputySkillList()) { //getSkillList()
