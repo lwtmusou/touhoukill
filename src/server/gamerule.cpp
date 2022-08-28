@@ -337,8 +337,11 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             }
             //since use.to is empty, break the whole process
             if ((card_use.card != nullptr) && card_use.card->getTypeId() != Card::TypeSkill && card_use.to.isEmpty()) {
-                if (card_use.card->isKindOf("Slash") && card_use.from->isAlive())
+                if (card_use.card->isKindOf("Slash") && card_use.from->isAlive()) {
                     room->setPlayerMark(card_use.from, "drank", 0);
+                    room->setPlayerMark(card_use.from, "magic_drank", 0);
+                }
+                    
                 if (card_use.card->isNDTrick() && card_use.from->isAlive()) //clear magic_drank while using Nullification
                     room->setPlayerMark(card_use.from, "magic_drank", 0);
                 break;
@@ -934,13 +937,13 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 extraEffect.from = effect.from;
                 extraEffect.to = effect.to;
                 extraEffect.multiple = effect.multiple;
-                extraEffect.effectValue.first() = extraEffect.effectValue.first(); //+effect.drank;
+                extraEffect.effectValue.first() = extraEffect.effectValue.first() + effect.magic_drank;
                 extraCard->onEffect(extraEffect);
             } else if (extraCard->isKindOf("Analeptic")) {
                 RecoverStruct recover;
                 recover.card = effect.slash;
                 recover.who = effect.from;
-                recover.recover = 1; //+effect.drank;
+                recover.recover = 1 + effect.magic_drank;
                 room->recover(effect.to, recover);
             } else if (extraCard->isKindOf("AmazingGrace")) {
                 effect.from->getRoom()->doExtraAmazingGrace(effect.from, effect.to, 1);
@@ -960,7 +963,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             }
 
             delete extraCard;
-            //effect.drank = 0;
+            effect.magic_drank = 0;
         }
 
         if (effect.to->isDead())
@@ -976,8 +979,11 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 PowerSlash::debuffEffect(effect);
         }
 
-        if (effect.drank > 0)
-            effect.to->setMark("SlashIsDrank", effect.drank);
+        if (effect.drank > 0 || effect.magic_drank > 0) {
+            int drank_num = (effect.slash->isKindOf("LightSlash") || effect.slash->isKindOf("PowerSlash"))? effect.drank : effect.drank + effect.magic_drank;
+            effect.to->setMark("SlashIsDrank", drank_num);
+        }
+            
 
         DamageStruct d = DamageStruct(effect.slash, effect.from, effect.to, 1 + effect.effectValue.last(), effect.nature);
         foreach (ServerPlayer *p, room->getAllPlayers(true)) {

@@ -565,6 +565,7 @@ struct SlashEffectStruct {
     ServerPlayer *to;
 
     int drank;
+    int magic_drank;
 
     DamageStruct::Nature nature;
     bool multiple;

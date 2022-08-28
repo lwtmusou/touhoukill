@@ -438,7 +438,9 @@ public:
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         int damage_value = 1 + effect.drank + effect.effectValue.last();
-
+        if (!effect.slash->isKindOf("DebuffSlash") && effect.slash->getSkillName() != "xianshi") {
+            damage_value += effect.magic_drank;
+        }
         QStringList damage_flags;
         damage_flags << "jidu_card"
                      << "mofa_card"

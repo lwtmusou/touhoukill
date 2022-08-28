@@ -16,6 +16,7 @@ Slash::Slash(Suit suit, int number)
     setObjectName("slash");
     nature = DamageStruct::Normal;
     drank = 0;
+    magic_drank = 0;
     can_damage = true;
 }
 
@@ -218,6 +219,11 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const
         drank = card_effect.from->getMark("drank");
         room->setPlayerMark(card_effect.from, "drank", 0);
     }
+    if (card_effect.from->getMark("magic_drank") > 0) {
+        room->setCardFlag(this, "magic_drank");
+        magic_drank = card_effect.from->getMark("magic_drank");
+        room->setPlayerMark(card_effect.from, "magic_drank", 0);
+    }
 
     SlashEffectStruct effect;
     effect.from = card_effect.from;
@@ -225,9 +231,14 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const
     effect.slash = this;
 
     effect.to = card_effect.to;
+    
     effect.drank = drank;
+    effect.magic_drank = magic_drank;
     effect.nullified = card_effect.nullified;
-    effect.effectValue = card_effect.effectValue;
+    QList<int> values;
+    values.first() = card_effect.effectValue.first() + magic_drank;
+    values.last() = card_effect.effectValue.last();
+    effect.effectValue = values;  
 
     QVariantList jink_list = effect.from->tag["Jink_" + toString()].toList();
     effect.jink_num = jink_list.takeFirst().toInt();
