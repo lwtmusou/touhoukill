@@ -937,6 +937,7 @@ end
 sgs.ai_skill_playerchosen.jijing = function(self, targets)
 	local good_targets = {}
 	for _,p in sgs.qlist(targets) do
+		if p:getMark("@jijing") > 0 then continue end
 		if self.player:isCurrent() and self.player:distanceTo(p) > 1 and not self:isFriend(p) then
 			table.insert(good_targets, p)
 		elseif not self.player:isCurrent() and self:isFriend(p) then
@@ -947,7 +948,6 @@ sgs.ai_skill_playerchosen.jijing = function(self, targets)
 	if #good_targets == 0 then return nil end
 	local sorttype = not self.player:isCurrent()
 	self:sort(good_targets, "defenseSlash")
-	
 	return good_targets[1]
 end
 sgs.ai_playerchosen_intention.jijing = function(self, from, to)
