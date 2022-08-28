@@ -231,13 +231,13 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const
     effect.slash = this;
 
     effect.to = card_effect.to;
-    
+
     effect.drank = drank;
     effect.magic_drank = magic_drank;
     effect.nullified = card_effect.nullified;
     effect.effectValue.first() = card_effect.effectValue.first() + magic_drank;
     effect.effectValue.last() = card_effect.effectValue.last();
-    
+
     QVariantList jink_list = effect.from->tag["Jink_" + toString()].toList();
     effect.jink_num = jink_list.takeFirst().toInt();
 
@@ -2053,6 +2053,7 @@ void LureTiger::use(Room *room, const CardUseStruct &card_use) const
         effect.to = target;
         effect.multiple = (targets.length() > 1);
         effect.nullified = (all_nullified || nullified_list.contains(target->objectName()));
+        effect.effectValue = card_use.m_effectValue;
 
         QVariantList players;
         for (int i = targets.indexOf(target); i < targets.length(); i++) {
@@ -2313,6 +2314,7 @@ void KnownBoth::use(Room *room, const CardUseStruct &card_use) const
         effect.to = target;
         effect.multiple = (targets.length() > 1);
         effect.nullified = (all_nullified || nullified_list.contains(target->objectName()));
+        effect.effectValue = card_use.m_effectValue;
 
         QVariantList players;
         for (int i = targets.indexOf(target); i < targets.length(); i++) {
@@ -2321,13 +2323,6 @@ void KnownBoth::use(Room *room, const CardUseStruct &card_use) const
         }
         //for HegNullification???
         room->setTag("targets" + this->toString(), QVariant::fromValue(players));
-        if (hasFlag("mopao"))
-            effect.effectValue.first() = effect.effectValue.first() + 1;
-        if (source->getMark("kuangji_value") > 0) {
-            effect.effectValue.first() = effect.effectValue.first() + source->getMark("kuangji_value");
-            room->setPlayerMark(source, "kuangji_value", 0);
-        }
-
         effect.effectValue.first() = effect.effectValue.first() + magic_drank;
         room->cardEffect(effect);
     }

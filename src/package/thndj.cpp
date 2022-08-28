@@ -1836,9 +1836,10 @@ public:
         room->sendLog(l);
 
         if (!use.card->isKindOf("Slash") || use.card->isKindOf("LightSlash") || use.card->isKindOf("PowerSlash"))
-            use.card->setFlags("mopao");
+            use.m_effectValue.first()++;
         else
-            use.card->setFlags("mopao2");
+            use.m_effectValue.last()++;
+        data = QVariant::fromValue(use);
 
         return false;
     }

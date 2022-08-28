@@ -363,6 +363,7 @@ void AwaitExhaustedHegemony::use(Room *room, const CardUseStruct &card_use) cons
         effect.to = target;
         effect.multiple = (targets.length() > 1);
         effect.nullified = (all_nullified || nullified_list.contains(target->objectName()));
+        effect.effectValue = card_use.m_effectValue;
 
         QVariantList players;
         for (int i = targets.indexOf(target); i < targets.length(); i++) {
@@ -370,8 +371,6 @@ void AwaitExhaustedHegemony::use(Room *room, const CardUseStruct &card_use) cons
                 players.append(QVariant::fromValue(targets.at(i)));
         }
         room->setTag("targets" + this->toString(), QVariant::fromValue(players));
-        if (hasFlag("mopao"))
-            effect.effectValue.first() = effect.effectValue.first() + 1;
         room->cardEffect(effect);
     }
 

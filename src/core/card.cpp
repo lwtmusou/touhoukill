@@ -744,16 +744,7 @@ void Card::use(Room *room, const CardUseStruct &card_use) const
         effect.to = target;
         effect.multiple = (targets.length() > 1);
         effect.nullified = (all_nullified || nullified_list.contains(target->objectName()));
-        if (hasFlag("mopao"))
-            effect.effectValue.first() = effect.effectValue.first() + 1;
-        if (hasFlag("mopao2"))
-            effect.effectValue.last() = effect.effectValue.last() + 1;
-        if (source->getMark("kuangji_value") > 0) {
-            effect.effectValue.first() = effect.effectValue.first() + source->getMark("kuangji_value");
-            effect.effectValue.last() = effect.effectValue.last() + source->getMark("kuangji_value");
-            room->setPlayerMark(source, "kuangji_value", 0);
-        }
-
+        effect.effectValue = card_use.m_effectValue;
         effect.effectValue.first() = effect.effectValue.first() + magic_drank;
         QVariantList players;
         for (int i = targets.indexOf(target); i < targets.length(); i++) {

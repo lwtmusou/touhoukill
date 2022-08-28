@@ -1479,7 +1479,8 @@ public:
     {
         //add log?
         CardUseStruct use = data.value<CardUseStruct>();
-        use.card->setFlags("mopao");
+        use.m_effectValue.first()++;
+        data = QVariant::fromValue(use);
         room->setPlayerFlag(invoke->invoker, objectName());
         return false;
     }

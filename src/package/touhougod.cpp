@@ -5591,9 +5591,9 @@ public:
                 QString choices = QString("%1_first+%2_second").arg(use.card->objectName()).arg(use.card->objectName());
                 choice = room->askForChoice(invoke->invoker, objectName(), choices);
                 if (choice.endsWith("second"))
-                    use.card->setFlags("mopao2");
+                    use.m_effectValue.last()++;
                 else
-                    use.card->setFlags("mopao");
+                    use.m_effectValue.first()++;
             } else if (use.card->isKindOf("Slash")) {
                 choice = "second";
                 if (use.card->isKindOf("LightSlash") || use.card->isKindOf("PowerSlash")) {
@@ -5602,11 +5602,12 @@ public:
                 }
 
                 if (choice.endsWith("second"))
-                    use.card->setFlags("mopao2");
+                    use.m_effectValue.last()++;
                 else
-                    use.card->setFlags("mopao");
+                    use.m_effectValue.first()++;
             } else
-                use.card->setFlags("mopao");
+                use.m_effectValue.first()++;
+            data = QVariant::fromValue(use);
 
             LogMessage log;
             log.type = "#Chongneng";
@@ -5685,9 +5686,7 @@ public:
         Card *card = Sanguosha->cloneCard(use.card->objectName());
         //copy flag
         QStringList flags;
-        flags << "mopao"
-              << "mopao2"
-              << "jidu_card";
+        flags << "jidu_card";
         foreach (QString flag, flags) {
             if (use.card->hasFlag(flag))
                 card->setFlags(flag);
@@ -7232,7 +7231,6 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<XianshiCard>();
     addMetaObject<WenyueCard>();
     addMetaObject<QianqiangCard>();
-    //addMetaObject<KuangjiCard>();
     addMetaObject<XiuyeCard>();
     skills << new ChaorenLog << new Wendao << new ShenbaoAttach << new Ziwo << new Benwo << new Chaowo << new TiandaoDistance;
 }
