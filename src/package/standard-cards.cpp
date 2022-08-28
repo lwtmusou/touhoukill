@@ -235,11 +235,9 @@ void Slash::onEffect(const CardEffectStruct &card_effect) const
     effect.drank = drank;
     effect.magic_drank = magic_drank;
     effect.nullified = card_effect.nullified;
-    QList<int> values;
-    values.first() = card_effect.effectValue.first() + magic_drank;
-    values.last() = card_effect.effectValue.last();
-    effect.effectValue = values;  
-
+    effect.effectValue.first() = card_effect.effectValue.first() + magic_drank;
+    effect.effectValue.last() = card_effect.effectValue.last();
+    
     QVariantList jink_list = effect.from->tag["Jink_" + toString()].toList();
     effect.jink_num = jink_list.takeFirst().toInt();
 
