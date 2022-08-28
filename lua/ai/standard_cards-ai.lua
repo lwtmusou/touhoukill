@@ -1162,11 +1162,12 @@ function SmartAI:useCardPeach(card, use)
 			return
 		end
 	end
-	if self.player:hasSkill("bumie")  then
+	--技能【不灭】已删？
+	--[[if self.player:hasSkill("bumie")  then
 		if self.player:getHp()==1 and self.player:getHandcardNum()==1 then
 			return
 		end
-	end
+	end]]
 	if self:cautionDoujiu(self.player,card) then
 		return
 	end

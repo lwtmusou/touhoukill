@@ -640,7 +640,14 @@ function SmartAI:adjustUsePriority(card, v)
 
 		--if self.player:hasSkill("guaili") and card:isRed() then v = v + 0.21 end
 	end
-	if card:isKindOf("Peach") and card:getSkillName() == "shende" then v = v + 0.21 end
+	
+	if card:isKindOf("Peach") then
+		if card:getSkillName() == "shende" then v = v + 0.21 end
+		--通常仙桃优先度低一些，但此时加高优先度。 未考虑异常状态对自己有利的情况 
+		if card:isKindOf("SuperPeach") and self.player:isDebuffStatus() then
+			v = v + 0.21
+		end
+	end
 	if sgs.touhouCanWoodenOx(self.player) and not self.player:getPile("wooden_ox"):isEmpty()  then  --and self.player:getMark("@tianyi_Treasure") ==0
 		local id_table = {}
 		if not card:isVirtualCard() then id_table = { card:getEffectiveId() }

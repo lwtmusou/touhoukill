@@ -91,9 +91,9 @@ public:
     bool matchTypeOrName(const QString &pattern) const override;
 
     void onEffect(const CardEffectStruct &effect) const override;
-    bool targetFixed(const Player *Self) const override;
-    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    bool isAvailable(const Player *player) const override;
+    //bool targetFixed(const Player *Self) const override;
+    //bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    //bool isAvailable(const Player *player) const override;
 };
 
 class Gun : public Weapon

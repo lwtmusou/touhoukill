@@ -74,9 +74,11 @@ function SmartAI:searchForMagicAnaleptic(use, enemy, trick)
 	end
 end
 
-
-
-
+function SmartAI:useCardSuperPeach(...)
+	self:useCardPeach(...)
+end
+sgs.ai_use_priority.SuperPeach = 0.7
+--[[
 function SmartAI:useCardSuperPeach(card, use)
 	if self:cautionDoujiu(self.player,card) then
 		return
@@ -170,7 +172,7 @@ function SmartAI:useCardSuperPeach(card, use)
 		end
 	end
 end
-
+]]
 sgs.ai_card_intention.SuperPeach = sgs.ai_card_intention.Peach
 
 sgs.weapon_range.Gun = 4
