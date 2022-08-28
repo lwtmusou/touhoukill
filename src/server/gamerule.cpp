@@ -937,16 +937,16 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 extraEffect.from = effect.from;
                 extraEffect.to = effect.to;
                 extraEffect.multiple = effect.multiple;
-                extraEffect.effectValue.first() = extraEffect.effectValue.first() + effect.magic_drank;
+                extraEffect.effectValue.first() += effect.effectValue.first();
                 extraCard->onEffect(extraEffect);
             } else if (extraCard->isKindOf("Analeptic")) {
                 RecoverStruct recover;
                 recover.card = effect.slash;
                 recover.who = effect.from;
-                recover.recover = 1 + effect.magic_drank;
+                recover.recover += effect.effectValue.first();
                 room->recover(effect.to, recover);
             } else if (extraCard->isKindOf("AmazingGrace")) {
-                effect.from->getRoom()->doExtraAmazingGrace(effect.from, effect.to, 1);
+                effect.from->getRoom()->doExtraAmazingGrace(effect.from, effect.to, 1 + effect.effectValue.first());
             } else {
                 extraEffect.card = effect.slash;
                 extraEffect.from = effect.from;
@@ -959,6 +959,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     else
                         extraEffect.effectValue.last() = extraEffect.effectValue.last() + effect.drank;
                 }
+                extraEffect.effectValue.first() += effect.effectValue.first();
                 extraCard->onEffect(extraEffect);
             }
 
