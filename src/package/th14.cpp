@@ -1079,7 +1079,7 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
 
-        if ((damage.card != nullptr) && (damage.from != nullptr) && damage.from->isAlive() && damage.by_user && damage.to->isAlive() && damage.from != damage.to) {
+        if ((damage.card != nullptr) && (damage.from != nullptr) && damage.from->isAlive() && damage.by_user && damage.from != damage.to) {
             if (triggerEvent == Damage && damage.from->hasSkill(this)) {
                 bool invoke = false;
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
@@ -1091,7 +1091,7 @@ public:
                 if (invoke)
                     return {SkillInvokeDetail(this, damage.from, damage.from, nullptr, true)};
 
-            } else if (triggerEvent == Damaged && damage.to->hasSkill(this)) {
+            } else if (triggerEvent == Damaged && damage.to->isAlive() && damage.to->hasSkill(this)) {
                 if (!damage.to->getCards("e").isEmpty())
                     return {SkillInvokeDetail(this, damage.to, damage.to, damage.from, true)};
             }

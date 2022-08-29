@@ -689,14 +689,6 @@ public:
     {
     }
 
-    int getResidueNum(const Player *from, const Card *card) const override
-    {
-        if (from->hasSkill("fanhua") && card->getSkillName() == "fanhua")
-            return 1000;
-        else
-            return 0;
-    }
-
     int getDistanceLimit(const Player *from, const Card *card) const override
     {
         if (from->hasSkill("fanhua") && card->getSkillName() == "fanhua")

@@ -6749,7 +6749,7 @@ public:
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
         } else if (triggerEvent == CardFinished) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.m_isHandcard && use.from != nullptr && use.from->isAlive() && use.from->hasSkill(this))
+            if (use.m_isHandcard && use.from != nullptr && use.from->isAlive() && use.from->hasSkill(this) && use.card->getTypeId() != Card::TypeSkill)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
         }
 
