@@ -722,7 +722,7 @@ sgs.ai_skill_use["@@chunhen_hegemony"] = function(self, prompt)
 	if #self.friends_noself == 0 then return "." end
 	self:sort(self.friends_noself, "handcard")
 	for _, afriend in ipairs(self.friends_noself) do
-		if friend:isAlive() and not self:needKongcheng(afriend, true) then
+		if afriend:isAlive() and not self:needKongcheng(afriend, true) then
 			return "@ChunhenHegemonyCard=" .. cards[1]:getEffectiveId() .. "->" .. afriend:objectName()
 		end
 	end
