@@ -818,7 +818,7 @@ function SmartAI:hasDiaopingEffect(from,target)
 	return false, nil
 end
 
-
+sgs.ai_skill_invoke.tongju  = true
 sgs.ai_skill_invoke.diaoping_hegemony  =function(self,data)
 	if self.player:isKongcheng() then return false end
     return true 
