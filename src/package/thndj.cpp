@@ -977,8 +977,7 @@ public:
                 room->setPlayerMark(ac.player, mainSkillName, ac.player->getMark(mainSkillName));
         } else if (e == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from != nullptr && use.card->getTypeId() != Card::TypeSkill && room->getCurrent() != nullptr && room->getCurrent()->isAlive()
-                && room->getCurrent()->getPhase() != Player::NotActive) {
+            if (use.from != nullptr && room->getCurrent() != nullptr && room->getCurrent()->isAlive() && room->getCurrent()->getPhase() != Player::NotActive) {
                 if (use.from->hasSkill(this, true, true))
                     room->setPlayerMark(use.from, mainSkillName, use.from->getMark(mainSkillName) + 1);
                 else
@@ -986,8 +985,7 @@ public:
             }
         } else if (e == CardResponded) {
             CardResponseStruct use = data.value<CardResponseStruct>();
-            if (use.m_who != nullptr && use.m_card->getTypeId() != Card::TypeSkill && use.m_isUse && room->getCurrent() != nullptr && room->getCurrent()->isAlive()
-                && room->getCurrent()->getPhase() != Player::NotActive) {
+            if (use.m_who != nullptr && use.m_isUse && room->getCurrent() != nullptr && room->getCurrent()->isAlive() && room->getCurrent()->getPhase() != Player::NotActive) {
                 if (use.m_who->hasSkill(this, true, true))
                     room->setPlayerMark(use.m_who, mainSkillName, use.m_who->getMark(mainSkillName) + 1);
                 else
@@ -1076,7 +1074,7 @@ public:
         //clear histroy
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.m_isLastHandcard && use.m_addHistory && !use.card->isKindOf("SkillCard") && use.from->getMark("xiubu") > 0) {
+            if (use.m_isLastHandcard && use.m_addHistory && use.from->getMark("xiubu") > 0) {
                 room->addPlayerHistory(use.from, use.card->getClassName(), -1);
                 use.m_addHistory = false;
                 data = QVariant::fromValue(use);
@@ -1096,7 +1094,7 @@ public:
                 if (response.m_isUse)
                     card = response.m_card;
             }
-            if ((player != nullptr) && player->getPhase() == Player::Play && (card != nullptr) && card->getHandlingMethod() == Card::MethodUse && !card->isKindOf("SkillCard")) {
+            if ((player != nullptr) && player->getPhase() == Player::Play && (card != nullptr) && card->getHandlingMethod() == Card::MethodUse) {
                 if (player->hasFlag("xiubu_first"))
                     player->setFlags("xiubu_second");
                 else
@@ -1126,7 +1124,7 @@ public:
                 if (response.m_isUse)
                     card = response.m_card;
             }
-            if ((player != nullptr) && player->getPhase() == Player::Play && (card != nullptr) && card->getHandlingMethod() == Card::MethodUse && !card->isKindOf("SkillCard")) {
+            if ((player != nullptr) && player->getPhase() == Player::Play && (card != nullptr) && card->getHandlingMethod() == Card::MethodUse) {
                 if (player->hasFlag("xiubu_first") && !player->hasFlag("xiubu_second")) {
                     QList<SkillInvokeDetail> d;
                     foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {

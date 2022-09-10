@@ -47,7 +47,7 @@ public:
     {
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (!use.card->isKindOf("BasicCard") && !use.card->isKindOf("SkillCard") && (use.from != nullptr) && use.from->hasSkill(this) && use.from->getPhase() == Player::Play)
+            if (!use.card->isKindOf("BasicCard") && (use.from != nullptr) && use.from->hasSkill(this) && use.from->getPhase() == Player::Play)
                 room->setPlayerFlag(use.from, "zuiyue");
             else if (isHegemonyGameMode(ServerInfo.GameMode) && use.card->getSkillName() == "zuiyue")
                 room->setPlayerFlag(use.from, "zuiyue_used");
@@ -931,12 +931,11 @@ public:
             return QList<SkillInvokeDetail>();
         if (triggerEvent == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->getTypeId() != Card::TypeSkill && use.card->isRed() && use.from != player)
+            if (use.card->isRed() && use.from != player)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         } else if (triggerEvent == CardResponded) {
             CardResponseStruct response = data.value<CardResponseStruct>();
-            if ((response.m_from != nullptr) && player != response.m_from && response.m_isUse && (response.m_card != nullptr) && response.m_card->getTypeId() != Card::TypeSkill
-                && response.m_card->isRed())
+            if ((response.m_from != nullptr) && player != response.m_from && response.m_isUse && (response.m_card != nullptr) && response.m_card->isRed())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         } else if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
@@ -1390,7 +1389,7 @@ public:
         if (triggerEvent == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             bool invoke = false;
-            if (use.from != nullptr && use.card != nullptr && !use.card->isKindOf("SkillCard")) {
+            if (use.from != nullptr && use.card != nullptr) {
                 if (use.card->isBlack() && use.from->hasFlag(objectName() + "Black"))
                     invoke = true;
                 else if (use.card->isRed() && use.from->hasFlag(objectName() + "Red"))
@@ -1683,11 +1682,11 @@ public:
         ServerPlayer *player = nullptr;
         if (triggerEvent == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->getHandlingMethod() == Card::MethodUse && use.card->getSuit() == Card::Heart) //caution the case using a skillcard
+            if (use.card->getHandlingMethod() == Card::MethodUse && use.card->getSuit() == Card::Heart)
                 player = use.from;
         } else if (triggerEvent == CardResponded) {
             CardResponseStruct s = data.value<CardResponseStruct>();
-            if (!s.m_isProvision && s.m_card->getSuit() == Card::Heart)
+            if (s.m_card->getSuit() == Card::Heart)
                 player = s.m_from;
         }
 

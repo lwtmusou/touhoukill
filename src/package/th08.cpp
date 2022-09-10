@@ -403,7 +403,7 @@ public:
             ServerPlayer *player = use.from;
 
             if ((player != nullptr) && player->getPhase() == Player::Play && !player->hasFlag("xushi_first") && (use.card != nullptr)
-                && use.card->getHandlingMethod() == Card::MethodUse && !use.card->isKindOf("SkillCard")) {
+                && use.card->getHandlingMethod() == Card::MethodUse) {
                 bool ignore = ((use.from != nullptr) && use.from->hasSkill("tianqu", false, false) && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
                                && !use.from->hasFlag("IgnoreFailed"));
 
@@ -443,7 +443,7 @@ public:
         if (e != CardUsed)
             return QList<SkillInvokeDetail>();
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->getTypeId() == Card::TypeSkill || use.from == nullptr || use.from->getPhase() != Player::Play || !use.card->hasFlag("xushi_first"))
+        if (use.from == nullptr || use.from->getPhase() != Player::Play || !use.card->hasFlag("xushi_first"))
             return QList<SkillInvokeDetail>();
         //just for skill "tianqu"
         bool ignore = (use.from != nullptr && use.from->hasSkill("tianqu", false, false) && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY

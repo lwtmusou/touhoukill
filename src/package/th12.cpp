@@ -858,7 +858,7 @@ public:
     {
         if (e == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from->hasSkill(this) && use.from->isAlive() && !use.card->isKindOf("SkillCard"))
+            if (use.from->hasSkill(this) && use.from->isAlive())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
         }
         if (e == CardResponded) {

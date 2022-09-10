@@ -171,7 +171,7 @@ public:
     {
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
-        if (use.from->hasLordSkill(this) && use.card != nullptr && !use.card->isKindOf("SkillCard")) {
+        if (use.from->hasLordSkill(this) && use.card != nullptr) {
             foreach (auto p, use.to) {
                 if (p->getKingdom() == "tkz" && p->isAlive() && p != use.from && !p->isRemoved())
                     d << SkillInvokeDetail(this, use.from, use.from, nullptr, false, p);
@@ -246,9 +246,6 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->getTypeId() == Card::TypeSkill)
-            return QList<SkillInvokeDetail>();
-
         ServerPlayer *player = use.from;
 
         if ((player != nullptr) && player->isAlive() && player->hasSkill(this)) {
@@ -535,12 +532,10 @@ public:
         CardUseStruct use;
         if (triggerEvent == CardUsed) {
             use = data.value<CardUseStruct>();
-            if (use.card->getTypeId() == Card::TypeSkill)
-                return QList<SkillInvokeDetail>();
             p = use.from;
         } else if (triggerEvent == CardResponded) {
             CardResponseStruct resp = data.value<CardResponseStruct>();
-            if ((resp.m_card != nullptr) && resp.m_card->getTypeId() == Card::TypeSkill)
+            if (resp.m_card == nullptr)
                 return QList<SkillInvokeDetail>();
             if (resp.m_isUse) {
                 use.from = resp.m_from;
@@ -1124,8 +1119,7 @@ public:
     {
         QList<SkillInvokeDetail> d;
         CardUseStruct use = data.value<CardUseStruct>();
-        if (room->getCurrent() == use.from && use.from->isAlive() && use.from->getPhase() != Player::NotActive && use.card != nullptr && !use.card->isKindOf("SkillCard")
-            && cardMatch(use.card) && canAddTarget(use)) {
+        if (room->getCurrent() == use.from && use.from->isAlive() && use.from->getPhase() != Player::NotActive && use.card != nullptr && cardMatch(use.card) && canAddTarget(use)) {
             foreach (ServerPlayer *p, use.to) {
                 if (use.from->getNextAlive() == p || use.from->getLastAlive() == p) {
                     foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
@@ -1557,7 +1551,7 @@ public:
             }
         }
 
-        if (u.card != nullptr && !u.card->isKindOf("SkillCard") && u.from != nullptr && u.from->isAlive() && u.from->hasSkill(this) && !u.from->getPile("spring").isEmpty()) {
+        if (u.card != nullptr && u.from != nullptr && u.from->isAlive() && u.from->hasSkill(this) && !u.from->getPile("spring").isEmpty()) {
             SkillInvokeDetail d(this, u.from, u.from);
             d.tag["u"] = QVariant::fromValue<CardUseStruct>(u);
 

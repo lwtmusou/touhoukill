@@ -664,26 +664,13 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
         room->reverseFor3v3(this, player, targets);
     card_use.to = targets;
 
-    bool hidden = (card_use.card->getTypeId() == TypeSkill && !card_use.card->willThrow());
     LogMessage log;
     log.from = player;
     if (!card_use.card->targetFixed(card_use.from) || card_use.to.length() > 1 || !card_use.to.contains(card_use.from))
         log.to = card_use.to;
     log.type = "#UseCard";
-    log.card_str = card_use.card->toString(hidden);
+    log.card_str = card_use.card->toString();
     room->sendLog(log);
-
-    /*if (card_use.card->isKindOf("Collateral")) { // put it here for I don't wanna repeat these codes in Card::onUse
-        ServerPlayer *victim = card_use.to.first()->tag["collateralVictim"].value<ServerPlayer *>();
-        if (victim) {
-            LogMessage log;
-            log.type = "#CollateralSlash";
-            log.from = card_use.from;
-            log.to << victim;
-            room->sendLog(log);
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, card_use.to.first()->objectName(), victim->objectName());
-        }
-    }*/
 
     QList<int> used_cards;
     QList<CardsMoveStruct> moves;
@@ -698,29 +685,19 @@ void Card::onUse(Room *room, const CardUseStruct &use) const
     thread->trigger(PreCardUsed, room, data);
     card_use = data.value<CardUseStruct>();
 
-    if (card_use.card->getTypeId() != TypeSkill) {
-        CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), card_use.card->getSkillName(), QString());
-        if (card_use.to.size() == 1)
-            reason.m_targetId = card_use.to.first()->objectName();
+    CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), card_use.card->getSkillName(), QString());
+    if (card_use.to.size() == 1)
+        reason.m_targetId = card_use.to.first()->objectName();
 
-        reason.m_extraData = QVariant::fromValue(card_use.card);
+    reason.m_extraData = QVariant::fromValue(card_use.card);
 
-        foreach (int id, used_cards) {
-            CardsMoveStruct move(id, nullptr, Player::PlaceTable, reason);
-            moves.append(move);
-        }
-        room->moveCardsAtomic(moves, true);
-        // show general
-        player->showHiddenSkill(card_use.card->getSkillName(false));
-    } else {
-        const SkillCard *skill_card = qobject_cast<const SkillCard *>(card_use.card);
-        // show general
-        player->showHiddenSkill(skill_card->getSkillName());
-        if (card_use.card->willThrow()) {
-            CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName(), QString(), card_use.card->getSkillName(), QString());
-            room->moveCardTo(this, player, nullptr, Player::DiscardPile, reason, true);
-        }
+    foreach (int id, used_cards) {
+        CardsMoveStruct move(id, nullptr, Player::PlaceTable, reason);
+        moves.append(move);
     }
+    room->moveCardsAtomic(moves, true);
+    // show general // Fs: why not use getShowSkill?
+    player->showHiddenSkill(card_use.card->getSkillName(false));
 
     thread->trigger(CardUsed, room, data);
     thread->trigger(CardFinished, room, data);
@@ -761,7 +738,7 @@ void Card::use(Room *room, const CardUseStruct &card_use) const
         room->setPlayerMark(source, "magic_drank", 0);
 
     if (room->getCardPlace(getEffectiveId()) == Player::PlaceTable) {
-        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), getSkillName(), QString());
+        CardMoveReason reason(CardMoveReason::S_REASON_USE, ((source != nullptr) ? source->objectName() : QString()), QString(), getSkillName(), QString());
         if (targets.size() == 1)
             reason.m_targetId = targets.first()->objectName();
         reason.m_extraData = QVariant::fromValue(this);
@@ -978,6 +955,60 @@ QString SkillCard::toString(bool hidden) const
         return QString("%1:%2").arg(str).arg(user_string);
     else
         return str;
+}
+
+void SkillCard::onUse(Room *room, const CardUseStruct &_use) const
+{
+    CardUseStruct card_use = _use;
+    ServerPlayer *player = card_use.from;
+
+    room->sortByActionOrder(card_use.to);
+
+    // GameRule::effect (PreCardUsed)
+    {
+        if (card_use.from->hasFlag("Global_ForbidSurrender")) {
+            card_use.from->setFlags("-Global_ForbidSurrender");
+            room->doNotify(card_use.from, QSanProtocol::S_COMMAND_ENABLE_SURRENDER, QVariant(true));
+        }
+
+        card_use.from->broadcastSkillInvoke(card_use.card);
+        if (!card_use.card->getSkillName().isNull() && card_use.card->getSkillName(true) == card_use.card->getSkillName(false) && card_use.m_isOwnerUse
+            && card_use.from->hasSkill(card_use.card->getSkillName()))
+            room->notifySkillInvoked(card_use.from, card_use.card->getSkillName());
+    }
+
+    LogMessage log;
+    log.from = player;
+    if (!card_use.card->targetFixed(card_use.from) || card_use.to.length() > 1 || !card_use.to.contains(card_use.from))
+        log.to = card_use.to;
+    log.type = "#UseCard";
+    log.card_str = card_use.card->toString(!card_use.card->willThrow());
+    room->sendLog(log);
+
+    // show general // Fs: why not use getShowSkill?
+    player->showHiddenSkill(card_use.card->getSkillName(false));
+
+    if (card_use.card->willThrow()) {
+        CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName(), QString(), card_use.card->getSkillName(), QString());
+        room->moveCardTo(this, player, nullptr, Player::DiscardPile, reason, true);
+    }
+
+    use(room, card_use);
+}
+
+void SkillCard::use(Room *, const CardUseStruct &card_use) const
+{
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
+    foreach (ServerPlayer *target, targets) {
+        CardEffectStruct effect;
+        effect.card = this;
+        effect.from = source;
+        effect.to = target;
+
+        onEffect(effect);
+    }
 }
 
 // ---------- Dummy card      -------------------

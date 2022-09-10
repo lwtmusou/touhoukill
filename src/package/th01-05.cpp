@@ -1663,8 +1663,7 @@ public:
             }
         } else if (e == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (!use.card->isKindOf("SkillCard"))
-                room->setPlayerMark(use.from, "yuanfa", 1);
+            room->setPlayerMark(use.from, "yuanfa", 1);
         } else if (e == CardResponded) {
             CardResponseStruct response = data.value<CardResponseStruct>();
             if (response.m_isUse)
@@ -2946,7 +2945,7 @@ public:
     {
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from != nullptr && use.from->isCurrent() && (use.card != nullptr) && use.card->getTypeId() != Card::TypeSkill)
+            if (use.from != nullptr && use.from->isCurrent() && (use.card != nullptr))
                 room->setPlayerMark(use.from, "luli", use.from->getMark("luli") + 1);
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -2962,7 +2961,7 @@ public:
     {
         if (e == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from == nullptr || !use.from->isCurrent() || use.from->isDead() || use.card->getTypeId() == Card::TypeSkill)
+            if (use.from == nullptr || !use.from->isCurrent() || use.from->isDead())
                 return QList<SkillInvokeDetail>();
             QList<SkillInvokeDetail> d;
             foreach (ServerPlayer *p, use.to) {

@@ -459,7 +459,7 @@ public:
     {
         if (event == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if ((use.card != nullptr) && use.card->getSuit() == Card::Heart && use.card->getTypeId() != Card::TypeSkill) {
+            if ((use.card != nullptr) && use.card->getSuit() == Card::Heart) {
                 if ((use.from != nullptr) && use.from->hasSkill(this)) {
                     foreach (ServerPlayer *p, room->getOtherPlayers(use.from)) {
                         if ((p->hasShownGeneral() && !p->getGeneralName().contains("sujiang")) || (p->hasShownGeneral2() && !p->getGeneral2Name().contains("sujiang")))
@@ -804,7 +804,7 @@ public:
     {
         if (event == CardFinished) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card == nullptr || use.card->getTypeId() == Card::TypeSkill || !use.card->canDamage() || use.card->hasFlag("lizhiDamage"))
+            if (use.card == nullptr || !use.card->canDamage() || use.card->hasFlag("lizhiDamage"))
                 return QList<SkillInvokeDetail>();
 
             ServerPlayer *source = nullptr;
@@ -1949,7 +1949,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->getTypeId() == Card::TypeSkill || use.to.length() < 2)
+        if (use.to.length() < 2)
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;

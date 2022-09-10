@@ -77,7 +77,7 @@ public:
                 return {SkillInvokeDetail(this, p, p)};
         } else {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->getTypeId() != Card::TypeSkill && use.to.length() == 1) {
+            if (use.to.length() == 1) {
                 QList<SkillInvokeDetail> r;
                 foreach (ServerPlayer *p, room->getOtherPlayers(use.to.first())) {
                     if (p->isAlive() && p->hasSkill(this)) {
@@ -1263,7 +1263,7 @@ public:
     {
         if (triggerEvent == CardFinished) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from != nullptr && use.from->isAlive() && use.from->hasSkill(this) && use.card->getTypeId() != Card::TypeSkill) {
+            if (use.from != nullptr && use.from->isAlive() && use.from->hasSkill(this)) {
                 ServerPlayer *current = room->getCurrent();
                 if (current != nullptr && current->getPhase() != Player::NotActive && current->isAlive()) {
                     foreach (ServerPlayer *p, room->getOtherPlayers(use.from)) {

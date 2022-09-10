@@ -922,7 +922,7 @@ public:
                 if (response.m_isUse)
                     card = response.m_card;
             }
-            if ((player != nullptr) && player->getPhase() == Player::Play && (card != nullptr) && !card->isKindOf("SkillCard") && card->getHandlingMethod() == Card::MethodUse)
+            if ((player != nullptr) && player->getPhase() == Player::Play && (card != nullptr) && card->getHandlingMethod() == Card::MethodUse)
                 room->setPlayerProperty(player, "xiezou_card", card->objectName());
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -2251,11 +2251,11 @@ public:
         bool invoke = false;
         if (triggerEvent == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (!use.card->isRed() && !use.card->isBlack() && !use.card->isKindOf("SkillCard"))
+            if (!use.card->isRed() && !use.card->isBlack())
                 invoke = true;
         } else if (triggerEvent == CardResponded) {
             CardResponseStruct response = data.value<CardResponseStruct>();
-            if (!response.m_card->isRed() && !response.m_card->isBlack() && !response.m_card->isKindOf("SkillCard") && response.m_isUse)
+            if (!response.m_card->isRed() && !response.m_card->isBlack() && response.m_isUse)
                 invoke = true;
         }
         if (invoke) {

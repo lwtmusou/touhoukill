@@ -1044,8 +1044,7 @@ public:
                 }
             }
 
-            if (from != nullptr && from->isAlive() && from->hasSkill(this) && c != nullptr && !c->isKindOf("SkillCard")
-                && (c->isBlack() || (c->isRed() && from->getMark("@flying") > 0))) {
+            if (from != nullptr && from->isAlive() && from->hasSkill(this) && c != nullptr && (c->isBlack() || (c->isRed() && from->getMark("@flying") > 0))) {
                 SkillInvokeDetail d(this, from, from, nullptr, true);
                 d.tag["card"] = QVariant::fromValue(c);
                 return {d};

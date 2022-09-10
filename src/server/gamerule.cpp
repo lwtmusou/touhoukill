@@ -325,9 +325,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 card_use = data.value<CardUseStruct>();
             }
 
-            //1) exclude SkillCard 2)changed move reason (USE) 3)keep extraData
-            if ((card_use.card != nullptr) && card_use.card->getTypeId() != Card::TypeSkill && !(card_use.card->isVirtualCard() && card_use.card->getSubcards().isEmpty())
-                && card_use.to.isEmpty()) {
+            //2)changed move reason (USE) 3)keep extraData
+            if ((card_use.card != nullptr) && !(card_use.card->isVirtualCard() && card_use.card->getSubcards().isEmpty()) && card_use.to.isEmpty()) {
                 if (room->getCardPlace(card_use.card->getEffectiveId()) == Player::PlaceTable) {
                     CardMoveReason reason(CardMoveReason::S_REASON_USE, card_use.from->objectName(), QString(), card_use.card->getSkillName(), QString());
                     reason.m_extraData = QVariant::fromValue(card_use.card);
@@ -336,12 +335,12 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 }
             }
             //since use.to is empty, break the whole process
-            if ((card_use.card != nullptr) && card_use.card->getTypeId() != Card::TypeSkill && card_use.to.isEmpty()) {
+            if ((card_use.card != nullptr) && card_use.to.isEmpty()) {
                 if (card_use.card->isKindOf("Slash") && card_use.from->isAlive()) {
                     room->setPlayerMark(card_use.from, "drank", 0);
                     room->setPlayerMark(card_use.from, "magic_drank", 0);
                 }
-                    
+
                 if (card_use.card->isNDTrick() && card_use.from->isAlive()) //clear magic_drank while using Nullification
                     room->setPlayerMark(card_use.from, "magic_drank", 0);
                 break;
@@ -982,10 +981,9 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         }
 
         if (effect.drank > 0 || effect.magic_drank > 0) {
-            int drank_num = (effect.slash->isKindOf("LightSlash") || effect.slash->isKindOf("PowerSlash"))? effect.drank : effect.drank + effect.magic_drank;
+            int drank_num = (effect.slash->isKindOf("LightSlash") || effect.slash->isKindOf("PowerSlash")) ? effect.drank : effect.drank + effect.magic_drank;
             effect.to->setMark("SlashIsDrank", drank_num);
         }
-            
 
         DamageStruct d = DamageStruct(effect.slash, effect.from, effect.to, 1 + effect.effectValue.last(), effect.nature);
         foreach (ServerPlayer *p, room->getAllPlayers(true)) {

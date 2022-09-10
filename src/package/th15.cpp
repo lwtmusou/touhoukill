@@ -401,8 +401,7 @@ public:
                 if (response.m_isUse)
                     card = response.m_card;
             }
-            if ((player != nullptr) && player->hasSkill(this) && player->getPhase() == Player::Play && (card != nullptr) && !card->isKindOf("SkillCard")
-                && card->getHandlingMethod() == Card::MethodUse) {
+            if ((player != nullptr) && player->hasSkill(this) && player->getPhase() == Player::Play && (card != nullptr) && card->getHandlingMethod() == Card::MethodUse) {
                 if (card->isKindOf("EquipCard") && player->getMark("santi_equip") == 0)
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, nullptr, true);
 
@@ -479,7 +478,7 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         if (invoke->invoker->askForSkillInvoke("kuangluan1", QVariant::fromValue(invoke->preferredTarget))) {
-            room->notifySkillInvoked(invoke->invoker, objectName());
+            room->notifySkillInvoked(invoke->invoker, "kuangluan");
             room->touhouLogmessage("#InvokeSkill", invoke->owner, objectName());
             return true;
         }
@@ -548,7 +547,7 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         if (invoke->invoker->askForSkillInvoke("kuangluan2", QVariant::fromValue(invoke->preferredTarget))) {
-            room->notifySkillInvoked(invoke->invoker, objectName());
+            room->notifySkillInvoked(invoke->invoker, "kuangluan");
             room->touhouLogmessage("#InvokeSkill", invoke->owner, objectName());
 
             return true;
