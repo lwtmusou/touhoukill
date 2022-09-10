@@ -1361,41 +1361,76 @@ public:
     }
 };
 
-class Zhenye : public TriggerSkill
+int ZhenyeCard::X(const Player *p)
+{
+    return qMin(qMax(p->getLostHp(), 1), 3);
+}
+
+ZhenyeCard::ZhenyeCard()
+{
+    m_skillName = "zhenye";
+}
+
+void ZhenyeCard::onEffect(const CardEffectStruct &effect) const
+{
+    ServerPlayer *nokia = effect.from;
+    ServerPlayer *target = effect.to;
+    Room *room = nokia->getRoom();
+
+    // should be in onUse!!
+    nokia->turnOver();
+
+    int x = X(target);
+
+    bool discarded = false;
+    if (target->getCardCount() >= x) {
+        const Card *c = room->askForExchange(target, getSkillName(), x, x, true, "@zhenye-exchange:" + nokia->objectName() + "::" + QString::number(x), true);
+        if (c != nullptr) {
+            discarded = true;
+            DummyCard toGet;
+            DummyCard toDiscard;
+            foreach (int id, c->getSubcards()) {
+                room->showCard(target, id);
+
+                const Card *originalCard = Sanguosha->getCard(id);
+                if (originalCard->isBlack())
+                    toGet.addSubcard(id);
+                else if (!target->isJilei(originalCard))
+                    toDiscard.addSubcard(id);
+            }
+
+            if (!toGet.getSubcards().isEmpty())
+                room->obtainCard(nokia, &toGet, CardMoveReason(CardMoveReason::S_REASON_GIVE, nokia->objectName(), getSkillName(), QString()));
+
+            if (!toDiscard.getSubcards().isEmpty())
+                room->throwCard(&toDiscard, target);
+
+            delete c;
+        }
+    }
+
+    if (!discarded) {
+        room->drawCards(target, x, getSkillName());
+        target->turnOver();
+    }
+}
+
+class Zhenye : public ZeroCardViewAsSkill
 {
 public:
     Zhenye()
-        : TriggerSkill("zhenye")
+        : ZeroCardViewAsSkill("zhenye")
     {
-        events << EventPhaseStart;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
+    const Card *viewAs() const override
     {
-        ServerPlayer *nokia = data.value<ServerPlayer *>();
-        if (nokia->hasSkill(this) && nokia->getPhase() == Player::Finish)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, nokia, nokia);
-
-        return QList<SkillInvokeDetail>();
+        return new ZhenyeCard;
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool isEnabledAtPlay(const Player *nokia) const override
     {
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getOtherPlayers(invoke->invoker), objectName(), "@zhenye-select", true, true);
-        if (target != nullptr) {
-            invoke->targets << target;
-            return true;
-        }
-
-        return false;
-    }
-
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
-    {
-        invoke->targets.first()->turnOver();
-        invoke->invoker->turnOver();
-
-        return false;
+        return !nokia->hasUsed("ZhenyeCard");
     }
 };
 
@@ -1405,18 +1440,22 @@ public:
     Anyu()
         : TriggerSkill("anyu")
     {
-        events << Damaged;
+        events << TargetConfirmed;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
-        DamageStruct damage = data.value<DamageStruct>();
-        if ((damage.card == nullptr) || !damage.card->isBlack())
-            return QList<SkillInvokeDetail>();
+        QList<SkillInvokeDetail> d;
+        CardUseStruct use = data.value<CardUseStruct>();
 
-        if (damage.to->isAlive() && damage.to->hasSkill(this))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to);
-        return QList<SkillInvokeDetail>();
+        if (use.card != nullptr && use.card->isBlack()) {
+            foreach (ServerPlayer *to, use.to) {
+                if (to->hasSkill(this) && to->isAlive())
+                    d << SkillInvokeDetail(this, to, to);
+            }
+        }
+
+        return d;
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
@@ -1564,63 +1603,58 @@ public:
     Juxian()
         : TriggerSkill("juxian")
     {
-        events << Dying;
+        events << EnterDying;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         DyingStruct dying = data.value<DyingStruct>();
 
-        if (dying.who->hasSkill(this) && dying.who->faceUp() && dying.who->isAlive() && dying.who->getHp() < dying.who->dyingThreshold())
+        if (dying.who->hasSkill(this) && dying.who->isAlive() && dying.who->getHp() < dying.who->dyingThreshold())
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, dying.who, dying.who);
 
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
-    {
-        if (invoke->invoker->askForSkillInvoke(this, data)) {
-            invoke->invoker->turnOver();
-            return true;
-        }
-
-        return false;
-    }
-
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        QList<int> list = room->getNCards(3);
-        CardsMoveStruct move(list, nullptr, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, invoke->invoker->objectName(), objectName(), QString()));
-        room->moveCardsAtomic(move, true);
+        invoke->invoker->turnOver();
 
-        QVariantList listc = IntList2VariantList(list);
-        invoke->invoker->tag["juxian_cards"] = listc;
-        Card::Suit suit = room->askForSuit(invoke->invoker, objectName());
-        invoke->invoker->tag.remove("juxian_cards");
+        if (!invoke->invoker->faceUp()) {
+            QList<int> list = room->getNCards((room->alivePlayerCount() < 4) ? 1 : 3);
+            CardsMoveStruct move(list, nullptr, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, invoke->invoker->objectName(), objectName(), QString()));
+            room->moveCardsAtomic(move, true);
 
-        room->touhouLogmessage("#ChooseSuit", invoke->invoker, Card::Suit2String(suit));
+            QVariantList listc = IntList2VariantList(list);
+            invoke->invoker->tag["juxian_cards"] = listc;
+            Card::Suit suit = room->askForSuit(invoke->invoker, objectName());
+            invoke->invoker->tag.remove("juxian_cards");
 
-        QList<int> get;
-        QList<int> thro;
-        foreach (int id, list) {
-            if (Sanguosha->getCard(id)->getSuit() != suit)
-                get << id;
-            else
-                thro << id;
+            room->touhouLogmessage("#ChooseSuit", invoke->invoker, Card::Suit2String(suit));
+
+            QList<int> get;
+            QList<int> thro;
+            foreach (int id, list) {
+                if (Sanguosha->getCard(id)->getSuit() != suit)
+                    get << id;
+                else
+                    thro << id;
+            }
+
+            if (!get.isEmpty()) {
+                DummyCard dummy(get);
+                invoke->invoker->obtainCard(&dummy);
+            }
+            if (!thro.isEmpty()) {
+                CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, invoke->invoker->objectName(), objectName(), QString());
+                DummyCard dummy(thro);
+                room->throwCard(&dummy, reason, nullptr);
+                RecoverStruct recover;
+                recover.recover = thro.length();
+                room->recover(invoke->invoker, recover);
+            }
         }
 
-        if (!get.isEmpty()) {
-            DummyCard dummy(get);
-            invoke->invoker->obtainCard(&dummy);
-        }
-        if (!thro.isEmpty()) {
-            CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, invoke->invoker->objectName(), objectName(), QString());
-            DummyCard dummy(thro);
-            room->throwCard(&dummy, reason, nullptr);
-            RecoverStruct recover;
-            recover.recover = thro.length();
-            room->recover(invoke->invoker, recover);
-        }
         return false;
     }
 };
@@ -1639,12 +1673,12 @@ void BanyueCard::use(Room *room, const CardUseStruct &card_use) const // onEffec
     ServerPlayer *source = card_use.from;
     const QList<ServerPlayer *> &targets = card_use.to;
 
-    // the loseHp here is actually cost.
-    room->loseHp(source);
     foreach (ServerPlayer *p, targets) {
         if (p->isAlive())
             p->drawCards(1);
     }
+    if (targets.length() >= 2)
+        room->loseHp(source);
 }
 
 class Banyue : public ZeroCardViewAsSkill
@@ -2202,6 +2236,7 @@ TH06Package::TH06Package()
     addMetaObject<SuodingCard>();
     addMetaObject<HezhouCard>();
     addMetaObject<SishuCard>();
+    addMetaObject<ZhenyeCard>();
     addMetaObject<BanyueCard>();
 
     skills << new SkltKexueVS << new XiaoyinVS << new Anyue;

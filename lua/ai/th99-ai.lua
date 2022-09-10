@@ -688,6 +688,8 @@ end
 --技能 贪吃 已取消
 sgs.ai_skill_invoke.tanchi =  true
 --[折射]
+-- 国色雷击肛裂恩怨倾国都是啥？？？？
+-- 遗计不屈双雄再起英魂都是什么鬼。。。。。。。
 sgs.ai_skill_use["@@zheshe"] = function(self, data, method)
 	if not method then method = sgs.Card_MethodDiscard end
 	local friend_lost_hp = 10
@@ -710,7 +712,7 @@ sgs.ai_skill_use["@@zheshe"] = function(self, data, method)
 	self:sortByUseValue(cards, true)
 	for _, card in ipairs(cards) do
 		if not self.player:isCardLimited(card, method)
-		and not card:isKindOf("Peach") then
+		and not card:isKindOf("Peach")  and card:isRed() then
 			card_id = card:getId()
 			break
 		end

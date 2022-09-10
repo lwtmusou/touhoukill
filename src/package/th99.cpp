@@ -1117,7 +1117,7 @@ public:
     ZhesheVS()
         : OneCardViewAsSkill("zheshe")
     {
-        filter_pattern = ".|.|.|hand!";
+        filter_pattern = ".|red|.|hand!";
         response_pattern = "@@zheshe";
     }
 

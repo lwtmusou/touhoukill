@@ -75,6 +75,19 @@ public:
     const Card *validateInResponse(ServerPlayer *user) const override;
 };
 
+class ZhenyeCard : public SkillCard
+{
+    Q_OBJECT
+
+private:
+    static int X(const Player *p);
+
+public:
+    Q_INVOKABLE ZhenyeCard();
+
+    void onEffect(const CardEffectStruct &effect) const override;
+};
+
 class SishuCard : public SkillCard
 {
     Q_OBJECT
