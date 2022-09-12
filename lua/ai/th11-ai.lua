@@ -667,7 +667,7 @@ sgs.ai_skill_cardask["@jidu"] = function(self, data)
 	if e <= f then return "." end
 
 	local cards = sgs.QList2Table(self.player:getCards("hes"))
-	self:sortByUseValue(cards)
+	self:sortByUseValue(cards, true)
 	if #cards <= 0 then return "." end
 	return "$" .. cards[1]:getId()
 end
