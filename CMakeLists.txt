@@ -436,14 +436,14 @@ if (Qt5Multimedia_FOUND OR Qt6Multimedia_FOUND)
 
         )
 
-        add_library(oggvorbisfile STATIC ${QSGS_OGG_FILE})
-        target_include_directories(oggvorbisfile PUBLIC "src/3rdparty/libogg-${QSGS_OGGVERSION}/include")
-        target_include_directories(oggvorbisfile PUBLIC "src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/include")
+        add_library(QSanguoshaLibsoggvorbisfile STATIC ${QSGS_OGG_FILE})
+        target_include_directories(QSanguoshaLibsoggvorbisfile PUBLIC "src/3rdparty/libogg-${QSGS_OGGVERSION}/include")
+        target_include_directories(QSanguoshaLibsoggvorbisfile PUBLIC "src/3rdparty/libvorbis-${QSGS_VORBISVERSION}/include")
 
         if (MSVC)
-            target_compile_options(oggvorbisfile BEFORE PRIVATE "-wd4244" PRIVATE "-wd4305" PRIVATE "-wd4267")
+            target_compile_options(QSanguoshaLibsoggvorbisfile BEFORE PRIVATE "-wd4244" PRIVATE "-wd4305" PRIVATE "-wd4267")
         endif()
-        add_library(QSanguoshaLibs::oggvorbisfile ALIAS oggvorbisfile)
+        add_library(QSanguoshaLibs::oggvorbisfile ALIAS QSanguoshaLibsoggvorbisfile)
     endif()
 endif()
 
