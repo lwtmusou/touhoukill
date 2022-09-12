@@ -198,14 +198,13 @@ function SmartAI:initialize(player)
 		local method_name = string.sub(full_method_name, method_name_start)
 		local method = self[method_name]
 		if method then
-			local success, result1, result2
-			success, result1, result2 = pcall(method, self, ...)
-			if not success then
-				self.room:writeToConsole(result1)
+			local success, result1, result2 = xpcall(method, function(err)
+				self.room:writeToConsole(err)
 				self.room:writeToConsole(method_name)
 				self.room:writeToConsole(debug.traceback())
 				self.room:outputEventStack()
-			else
+			end, self, ...)
+			if success then
 				return result1, result2
 			end
 		end
@@ -641,7 +640,14 @@ function SmartAI:adjustUsePriority(card, v)
 
 		--if self.player:hasSkill("guaili") and card:isRed() then v = v + 0.21 end
 	end
-	if card:isKindOf("Peach") and card:getSkillName() == "shende" then v = v + 0.21 end
+	
+	if card:isKindOf("Peach") then
+		if card:getSkillName() == "shende" then v = v + 0.21 end
+		--通常仙桃优先度低一些，但此时加高优先度。 未考虑异常状态对自己有利的情况 
+		if card:isKindOf("SuperPeach") and self.player:isDebuffStatus() then
+			v = v + 0.21
+		end
+	end
 	if sgs.touhouCanWoodenOx(self.player) and not self.player:getPile("wooden_ox"):isEmpty()  then  --and self.player:getMark("@tianyi_Treasure") ==0
 		local id_table = {}
 		if not card:isVirtualCard() then id_table = { card:getEffectiveId() }
@@ -1202,36 +1208,6 @@ sgs.ai_card_intention.general = function(from, to, level)
 		end
 	end
 
-	--[[
-	if global_room:getTag("humanCount") and global_room:getTag("humanCount"):toInt() ==1 then
-		local diffarr = {
-			loyalist_value  = sgs.role_evaluation[from:objectName()]["loyalist"] - loyalist_value ,
-			renegade_value  = sgs.role_evaluation[from:objectName()]["renegade"] - renegade_value
-		}
-
-		local value_changed = false
-
-		for msgtype,diffvalue in pairs(diffarr) do
-			if diffvalue ~= 0 then
-				value_changed = true
-				local log= sgs.LogMessage()
-				log.type = "#" .. msgtype .. (diffvalue > 0 and "_inc" or "_dec")
-				log.from = from
-				log.arg= math.abs(math.ceil(diffvalue))
-				global_room:sendLog(log)
-			end
-		end
-
-		if value_changed then
-			local log= sgs.LogMessage()
-			log.type = sgs.role_evaluation[from:objectName()]["loyalist"] >= 0 and  "#show_intention_loyalist" or "#show_intention_rebel"
-			log.from = from
-			log.arg  = string.format("%d", math.abs(math.ceil(sgs.role_evaluation[from:objectName()]["loyalist"])))
-			log.arg2 = string.format("%d", sgs.role_evaluation[from:objectName()]["renegade"])
-			global_room:sendLog(log)
-		end
-	end
-	]]
 	sgs.outputRoleValues(from, level)
 end
 
@@ -6056,18 +6032,6 @@ function SmartAI:findPlayerToDiscard(flags, include_self, isDiscard, players, re
 					table.insert(player_table, enemy)
 				end
 			end
-		end
-		for _, enemy in ipairs(enemies) do
-			--[[if self:hasSkills("jijiu|beige|mingce|weimu|qingcheng", enemy) and not self:doNotDiscard(enemy, "e") then
-				if enemy:getDefensiveHorse() and (not isDiscard or self.player:canDiscard(enemy, enemy:getDefensiveHorse():getEffectiveId())) then table.insert(player_table, enemy) end
-				if enemy:getArmor() and not self:needToThrowArmor(enemy) and (not isDiscard or self.player:canDiscard(enemy, enemy:getArmor():getEffectiveId())) then table.insert(player_table, enemy) end
-				if enemy:getOffensiveHorse() and (not enemy:hasSkill("jijiu") or enemy:getOffensiveHorse():isRed()) and (not isDiscard or self.player:canDiscard(enemy, enemy:getOffensiveHorse():getEffectiveId())) then
-					table.insert(player_table, enemy)
-				end
-				if enemy:getWeapon() and (not enemy:hasSkill("jijiu") or enemy:getWeapon():isRed()) and (not isDiscard or self.player:canDiscard(enemy, enemy:getWeapon():getEffectiveId())) then
-					table.insert(player_table, enemy)
-				end
-			end]]
 		end
 	end
 

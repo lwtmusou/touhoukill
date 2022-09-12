@@ -318,7 +318,7 @@ public:
     IdSet getHandPile() const;
     QStringList getHandPileList(bool view_as_skill = true) const;
 
-    int getCardCount(bool include_equip = true, bool = false) const;
+    int getCardCount(bool include_equip = true, bool include_judging = false) const;
 
 #ifndef QSGS_CORE_NODEPRECATED
 

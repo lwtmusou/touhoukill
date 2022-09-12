@@ -331,8 +331,11 @@ void AwaitExhaustedHegemony::onUse(Room *room, const CardUseStruct &card_use) co
     TrickCard::onUse(room, new_use);
 }
 
-void AwaitExhaustedHegemony::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void AwaitExhaustedHegemony::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     QStringList nullified_list = room->getTag("CardUseNullifiedList").toStringList();
     bool all_nullified = nullified_list.contains("_ALL_TARGETS");
     foreach (ServerPlayer *target, targets) {
@@ -342,6 +345,7 @@ void AwaitExhaustedHegemony::use(Room *room, ServerPlayer *source, QList<ServerP
         effect.to = target;
         effect.multiple = (targets.length() > 1);
         effect.nullified = (all_nullified || nullified_list.contains(target->objectName()));
+        effect.effectValue = card_use.m_effectValue;
 
         QVariantList players;
         for (int i = targets.indexOf(target); i < targets.length(); i++) {
@@ -349,8 +353,6 @@ void AwaitExhaustedHegemony::use(Room *room, ServerPlayer *source, QList<ServerP
                 players.append(QVariant::fromValue(targets.at(i)));
         }
         room->setTag("targets" + this->toString(), QVariant::fromValue(players));
-        if (hasFlag("mopao"))
-            effect.effectValue.first() = effect.effectValue.first() + 1;
         room->cardEffect(effect);
     }
 

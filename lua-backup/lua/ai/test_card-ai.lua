@@ -74,9 +74,11 @@ function SmartAI:searchForMagicAnaleptic(use, enemy, trick)
 	end
 end
 
-
-
-
+function SmartAI:useCardSuperPeach(...)
+	self:useCardPeach(...)
+end
+sgs.ai_use_priority.SuperPeach = 0.7
+--[[
 function SmartAI:useCardSuperPeach(card, use)
 	if self:cautionDoujiu(self.player,card) then
 		return
@@ -85,7 +87,7 @@ function SmartAI:useCardSuperPeach(card, use)
 	local targets = {}
 	local good_targets = {}
 	for _,f in ipairs (self.friends) do
-		if f:isDebuffStatus() then
+		if f:isDebuffStatus() and (not f:isRemoved()) then
 			table.insert(targets, f)
 			if f:isWounded() then
 				table.insert(good_targets, f)
@@ -170,7 +172,7 @@ function SmartAI:useCardSuperPeach(card, use)
 		end
 	end
 end
-
+]]
 sgs.ai_card_intention.SuperPeach = sgs.ai_card_intention.Peach
 
 sgs.weapon_range.Gun = 4

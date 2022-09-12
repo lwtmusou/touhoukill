@@ -99,6 +99,9 @@ sgs.ai_skill_invoke.skltkexue =  true
 --sgs.ai_armor_value.EightDiagram
 --SmartAI:getFinalRetrial
 --SmartAI:canRetrial
+-- temporarily comment it out since it don't work
+-- "mingyun_judge" tag is not always available
+--[[
 sgs.ai_skill_invoke.mingyun = true
 sgs.ai_skill_askforag.mingyun = function(self, card_ids)
 	local judge = self.player:getTag("mingyun_judge"):toJudge()
@@ -130,7 +133,7 @@ end
 sgs.ai_skillProperty.mingyun = function(self)
 	return "wizard_harm"
 end
-
+]]
 
 --[血裔]
 sgs.ai_skill_invoke.xueyi = function(self, data)

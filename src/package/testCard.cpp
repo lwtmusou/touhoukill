@@ -192,7 +192,7 @@ bool SuperPeach::matchTypeOrName(const QString &pattern) const
         return Peach::matchTypeOrName(pattern);
 }
 
-bool SuperPeach::targetFixed(const Player *Self) const
+/*bool SuperPeach::targetFixed(const Player *Self) const
 {
     bool globalDying = false;
     if (Self) {
@@ -209,7 +209,7 @@ bool SuperPeach::targetFixed(const Player *Self) const
     if (globalDying && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
         return true;
     return false;
-}
+}*/
 
 void SuperPeach::onEffect(const CardEffectStruct &effect) const
 {
@@ -218,18 +218,20 @@ void SuperPeach::onEffect(const CardEffectStruct &effect) const
     Room *room = effect.to->getRoom();
     room->setEmotion(effect.from, "peach");
 
-    effect.to->removeShownHandCards(effect.to->getShownHandcards(), true);
-    effect.to->removeBrokenEquips(effect.to->getBrokenEquips(), true);
-    if (effect.to->isChained())
-        effect.to->getRoom()->setPlayerProperty(effect.to, "chained", !effect.to->isChained());
+
 
     RecoverStruct recover;
     recover.card = this;
     recover.who = effect.from;
     recover.recover = 1 + effect.effectValue.first();
     room->recover(effect.to, recover);
-}
 
+    effect.to->removeShownHandCards(effect.to->getShownHandcards(), true);
+    effect.to->removeBrokenEquips(effect.to->getBrokenEquips(), true);
+    if (effect.to->isChained())
+        effect.to->getRoom()->setPlayerProperty(effect.to, "chained", !effect.to->isChained());
+}
+/*
 bool SuperPeach::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
     if (Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && !hasFlag("IgnoreFailed")) {
@@ -265,7 +267,8 @@ bool SuperPeach::targetFilter(const QList<const Player *> &targets, const Player
     }
     return false;
 }
-
+*/
+/*
 bool SuperPeach::isAvailable(const Player *player) const
 {
     if (!BasicCard::isAvailable(player))
@@ -292,6 +295,7 @@ bool SuperPeach::isAvailable(const Player *player) const
     }
     return false;
 }
+*/
 
 class GunSkill : public WeaponSkill
 {
@@ -434,7 +438,9 @@ public:
     {
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         int damage_value = 1 + effect.drank + effect.effectValue.last();
-
+        if (!effect.slash->isKindOf("DebuffSlash") && effect.slash->getSkillName() != "xianshi") {
+            damage_value += effect.magic_drank;
+        }
         QStringList damage_flags;
         damage_flags << "jidu_card"
                      << "mofa_card"

@@ -33,8 +33,8 @@ public:
     {
         handling_method = Card::MethodUse;
     }
-    virtual QString getType() const;
-    virtual CardType getTypeId() const;
+    QString getType() const override;
+    CardType getTypeId() const override;
 };
 
 class TrickCard : public Card
@@ -45,9 +45,9 @@ public:
     TrickCard(Suit suit, int number);
     void setCancelable(bool cancelable);
 
-    virtual QString getType() const;
-    virtual CardType getTypeId() const;
-    virtual bool isCancelable(const CardEffectStruct &effect) const;
+    QString getType() const override;
+    CardType getTypeId() const override;
+    bool isCancelable(const CardEffectStruct &effect) const override;
 
 private:
     bool cancelable;
@@ -74,13 +74,13 @@ public:
         handling_method = MethodUse;
     }
 
-    virtual QString getType() const;
-    virtual CardType getTypeId() const;
+    QString getType() const override;
+    CardType getTypeId() const override;
 
-    virtual bool isAvailable(const Player *player) const;
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    bool isAvailable(const Player *player) const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 
     virtual void onInstall(ServerPlayer *player) const;
     virtual void onUninstall(ServerPlayer *player) const;
@@ -98,9 +98,10 @@ public:
     {
         target_fixed = true;
     }
-    virtual QString getSubtype() const;
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
-    virtual bool isAvailable(const Player *player) const;
+    QString getSubtype() const override;
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
+    bool isAvailable(const Player *player) const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
 };
 
 class GodSalvation : public GlobalEffect
@@ -108,9 +109,9 @@ class GodSalvation : public GlobalEffect
     Q_OBJECT
 
 public:
-    Q_INVOKABLE GodSalvation(Card::Suit suit = Heart, int number = 1);
-    virtual bool isCancelable(const CardEffectStruct &effect) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
+    Q_INVOKABLE explicit GodSalvation(Card::Suit suit = Heart, int number = 1);
+    bool isCancelable(const CardEffectStruct &effect) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
 };
 
 class AmazingGrace : public GlobalEffect
@@ -119,10 +120,10 @@ class AmazingGrace : public GlobalEffect
 
 public:
     Q_INVOKABLE AmazingGrace(Card::Suit suit, int number);
-    virtual void doPreAction(Room *room, const CardUseStruct &card_use) const;
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
-    virtual bool isCancelable(const CardEffectStruct &effect) const;
+    void doPreAction(Room *room, const CardUseStruct &card_use) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
+    bool isCancelable(const CardEffectStruct &effect) const override;
 
 private:
     void clearRestCards(Room *room) const;
@@ -138,9 +139,10 @@ public:
     {
         target_fixed = true;
     }
-    virtual QString getSubtype() const;
-    virtual bool isAvailable(const Player *player) const;
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+    QString getSubtype() const override;
+    bool isAvailable(const Player *player) const override;
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
 };
 
 class SavageAssault : public AOE
@@ -149,7 +151,7 @@ class SavageAssault : public AOE
 
 public:
     Q_INVOKABLE SavageAssault(Card::Suit suit, int number);
-    virtual void onEffect(const CardEffectStruct &effect) const;
+    void onEffect(const CardEffectStruct &effect) const override;
 };
 
 class ArcheryAttack : public AOE
@@ -157,8 +159,8 @@ class ArcheryAttack : public AOE
     Q_OBJECT
 
 public:
-    Q_INVOKABLE ArcheryAttack(Card::Suit suit = Heart, int number = 1);
-    virtual void onEffect(const CardEffectStruct &effect) const;
+    Q_INVOKABLE explicit ArcheryAttack(Card::Suit suit = Heart, int number = 1);
+    void onEffect(const CardEffectStruct &effect) const override;
 };
 
 class SingleTargetTrick : public TrickCard
@@ -170,8 +172,8 @@ public:
         : TrickCard(suit, number)
     {
     }
-    virtual QString getSubtype() const;
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    QString getSubtype() const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
 };
 
 class Collateral : public SingleTargetTrick
@@ -180,11 +182,11 @@ class Collateral : public SingleTargetTrick
 
 public:
     Q_INVOKABLE Collateral(Card::Suit suit, int number);
-    virtual bool isAvailable(const Player *player) const;
+    bool isAvailable(const Player *player) const override;
     //virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
     //virtual void onUse(Room *room, const CardUseStruct &card_use) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
+    void onEffect(const CardEffectStruct &effect) const override;
 
 private:
     bool doCollateral(Room *room, ServerPlayer *killer, ServerPlayer *victim, const QString &prompt) const;
@@ -197,9 +199,9 @@ class ExNihilo : public SingleTargetTrick
 public:
     Q_INVOKABLE ExNihilo(Card::Suit suit, int number);
 
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
-    virtual bool isAvailable(const Player *player) const;
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
+    bool isAvailable(const Player *player) const override;
 };
 
 class Duel : public SingleTargetTrick
@@ -208,8 +210,8 @@ class Duel : public SingleTargetTrick
 
 public:
     Q_INVOKABLE Duel(Card::Suit suit, int number);
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
 };
 
 class DelayedTrick : public TrickCard
@@ -218,12 +220,12 @@ class DelayedTrick : public TrickCard
 
 public:
     DelayedTrick(Suit suit, int number, bool movable = false, bool returnable = false);
-    virtual void onNullified(ServerPlayer *target) const;
+    void onNullified(ServerPlayer *target) const override;
 
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-    virtual QString getSubtype() const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
+    QString getSubtype() const override;
+    void onEffect(const CardEffectStruct &effect) const override;
     virtual void takeEffect(ServerPlayer *target) const = 0;
     JudgeStruct getJudge();
 
@@ -242,9 +244,9 @@ class Indulgence : public DelayedTrick
 public:
     Q_INVOKABLE Indulgence(Card::Suit suit, int number);
 
-    virtual QString getSubtype() const;
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void takeEffect(ServerPlayer *target) const;
+    QString getSubtype() const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void takeEffect(ServerPlayer *target) const override;
 };
 
 class Disaster : public DelayedTrick
@@ -253,10 +255,10 @@ class Disaster : public DelayedTrick
 
 public:
     Disaster(Card::Suit suit, int number);
-    virtual QString getSubtype() const;
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
-    virtual bool isAvailable(const Player *player) const;
+    QString getSubtype() const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
+    bool isAvailable(const Player *player) const override;
 };
 
 class Lightning : public Disaster
@@ -266,7 +268,7 @@ class Lightning : public Disaster
 public:
     Q_INVOKABLE Lightning(Card::Suit suit, int number);
 
-    virtual void takeEffect(ServerPlayer *target) const;
+    void takeEffect(ServerPlayer *target) const override;
 };
 
 class Nullification : public SingleTargetTrick
@@ -276,8 +278,8 @@ class Nullification : public SingleTargetTrick
 public:
     Q_INVOKABLE Nullification(Card::Suit suit, int number);
 
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-    virtual bool isAvailable(const Player *player) const;
+    void use(Room *room, const CardUseStruct &card_use) const override;
+    bool isAvailable(const Player *player) const override;
 };
 
 class Weapon : public EquipCard
@@ -288,12 +290,12 @@ public:
     Weapon(Suit suit, int number, int range);
     int getRange() const;
 
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
-    virtual QString getSubtype() const;
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
+    QString getSubtype() const override;
 
-    virtual Location location() const;
-    virtual QString getCommonEffectName() const;
-    virtual bool isAvailable(const Player *player) const;
+    Location location() const override;
+    QString getCommonEffectName() const override;
+    bool isAvailable(const Player *player) const override;
 
 protected:
     int range;
@@ -308,10 +310,10 @@ public:
         : EquipCard(suit, number)
     {
     }
-    virtual QString getSubtype() const;
+    QString getSubtype() const override;
 
-    virtual Location location() const;
-    virtual QString getCommonEffectName() const;
+    Location location() const override;
+    QString getCommonEffectName() const override;
 };
 
 class Treasure : public EquipCard
@@ -323,11 +325,11 @@ public:
         : EquipCard(suit, number)
     {
     }
-    virtual QString getSubtype() const;
+    QString getSubtype() const override;
 
-    virtual Location location() const;
+    Location location() const override;
 
-    virtual QString getCommonEffectName() const;
+    QString getCommonEffectName() const override;
 };
 
 class Horse : public EquipCard
@@ -338,11 +340,11 @@ public:
     Horse(Suit suit, int number, int correct);
     int getCorrect() const;
 
-    virtual Location location() const;
-    virtual void onInstall(ServerPlayer *player) const;
-    virtual void onUninstall(ServerPlayer *player) const;
+    Location location() const override;
+    void onInstall(ServerPlayer *player) const override;
+    void onUninstall(ServerPlayer *player) const override;
 
-    virtual QString getCommonEffectName() const;
+    QString getCommonEffectName() const override;
 
 private:
     int correct;
@@ -354,7 +356,7 @@ class OffensiveHorse : public Horse
 
 public:
     Q_INVOKABLE OffensiveHorse(Card::Suit suit, int number, int correct = -1);
-    virtual QString getSubtype() const;
+    QString getSubtype() const override;
 };
 
 class DefensiveHorse : public Horse
@@ -363,7 +365,7 @@ class DefensiveHorse : public Horse
 
 public:
     Q_INVOKABLE DefensiveHorse(Card::Suit suit, int number, int correct = +1);
-    virtual QString getSubtype() const;
+    QString getSubtype() const override;
 };
 
 // cards of standard package
@@ -377,20 +379,21 @@ public:
     DamageStruct::Nature getNature() const;
     void setNature(DamageStruct::Nature nature);
 
-    virtual QString getSubtype() const;
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
+    QString getSubtype() const override;
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
 
-    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual bool isAvailable(const Player *player) const;
+    bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    bool isAvailable(const Player *player) const override;
 
-    static bool IsAvailable(const Player *player, const Card *slash = NULL, bool considerSpecificAssignee = true);
+    static bool IsAvailable(const Player *player, const Card *slash = nullptr, bool considerSpecificAssignee = true);
     static bool IsSpecificAssignee(const Player *player, const Player *from, const Card *slash);
 
 protected:
     DamageStruct::Nature nature;
     mutable int drank;
+    mutable int magic_drank;
 };
 
 class Jink : public BasicCard
@@ -399,8 +402,8 @@ class Jink : public BasicCard
 
 public:
     Q_INVOKABLE Jink(Card::Suit suit, int number);
-    virtual QString getSubtype() const;
-    virtual bool isAvailable(const Player *player) const;
+    QString getSubtype() const override;
+    bool isAvailable(const Player *player) const override;
 };
 
 class Peach : public BasicCard
@@ -409,12 +412,12 @@ class Peach : public BasicCard
 
 public:
     Q_INVOKABLE Peach(Card::Suit suit, int number);
-    virtual QString getSubtype() const;
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
-    virtual bool targetFixed(const Player *Self) const;
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual bool isAvailable(const Player *player) const;
+    QString getSubtype() const override;
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
+    bool targetFixed(const Player *Self) const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    bool isAvailable(const Player *player) const override;
 };
 
 class Snatch : public SingleTargetTrick
@@ -424,10 +427,10 @@ class Snatch : public SingleTargetTrick
 public:
     Q_INVOKABLE Snatch(Card::Suit suit, int number);
 
-    virtual bool isAvailable(const Player *player) const;
+    bool isAvailable(const Player *player) const override;
 
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
 };
 
 class Dismantlement : public SingleTargetTrick
@@ -437,10 +440,10 @@ class Dismantlement : public SingleTargetTrick
 public:
     Q_INVOKABLE Dismantlement(Card::Suit suit, int number);
 
-    virtual bool isAvailable(const Player *player) const;
+    bool isAvailable(const Player *player) const override;
 
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
 };
 
 class LureTiger : public TrickCard
@@ -450,11 +453,11 @@ class LureTiger : public TrickCard
 public:
     Q_INVOKABLE LureTiger(Card::Suit suit, int number);
 
-    virtual QString getSubtype() const;
+    QString getSubtype() const override;
 
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
 };
 
 class Drowning : public AOE
@@ -465,8 +468,8 @@ public:
     Q_INVOKABLE Drowning(Card::Suit suit, int number);
 
     //virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual bool isCancelable(const CardEffectStruct &effect) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
+    bool isCancelable(const CardEffectStruct &effect) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
     // virtual bool isAvailable(const Player *player) const;
     //virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };
@@ -477,13 +480,13 @@ class KnownBoth : public TrickCard
 
 public:
     Q_INVOKABLE KnownBoth(Card::Suit suit, int number);
-    virtual QString getSubtype() const;
+    QString getSubtype() const override;
 
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
-    virtual void onEffect(const CardEffectStruct &effect) const;
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class SavingEnergy : public DelayedTrick
@@ -493,9 +496,9 @@ class SavingEnergy : public DelayedTrick
 public:
     Q_INVOKABLE SavingEnergy(Card::Suit suit, int number);
 
-    virtual QString getSubtype() const;
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void takeEffect(ServerPlayer *target) const;
+    QString getSubtype() const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void takeEffect(ServerPlayer *target) const override;
 };
 
 #endif

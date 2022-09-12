@@ -33,32 +33,8 @@ class YuejianCard : public SkillCard
 public:
     Q_INVOKABLE YuejianCard();
 
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-};
-
-class YidanDialog : public QDialog
-{
-    Q_OBJECT
-
-public:
-    static YidanDialog *getInstance(const QString &object);
-
-public slots:
-    void popup();
-    void selectCard(QAbstractButton *button);
-
-private:
-    explicit YidanDialog(const QString &object);
-
-    QVBoxLayout *layout;
-    QButtonGroup *group;
-    //QHash<QString, const Card *> map;
-
-    QString object_name;
-
-signals:
-    void onButtonClick();
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
 class YidanCard : public SkillCard
@@ -68,10 +44,10 @@ class YidanCard : public SkillCard
 public:
     Q_INVOKABLE YidanCard();
 
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
     //virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
 
-    virtual const Card *validate(CardUseStruct &card_use) const;
+    const Card *validate(CardUseStruct &card_use) const override;
 };
 
 class TH15Package : public Package

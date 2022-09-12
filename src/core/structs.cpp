@@ -51,7 +51,7 @@ CardEffectStruct::CardEffectStruct(const Card *card, Player *from, Player *to)
     , multiple(false)
     , nullified(false)
     , canceled(false)
-    , effectValue({0, 0})
+    , effectValue {0, 0}
 {
 }
 
@@ -91,6 +91,7 @@ CardUseStruct::CardUseStruct(const Card *card, Player *from, const QList<Player 
     , m_isHandcard(false)
     , m_isLastHandcard(false)
     , m_reason(CardUseReasonUnknown)
+    , effectValue {0, 0}
 {
 }
 
@@ -103,6 +104,7 @@ CardUseStruct::CardUseStruct(const Card *card, Player *from, Player *target, boo
     , m_isHandcard(false)
     , m_isLastHandcard(false)
     , m_reason(CardUseReasonUnknown)
+    , effectValue {0, 0}
 {
     if (target != nullptr)
         to << target;
@@ -117,6 +119,7 @@ CardUseStruct::CardUseStruct(const Card *card, Player *from, const CardUseStruct
     , m_isHandcard(false)
     , m_isLastHandcard(false)
     , m_reason(CardUseReasonUnknown)
+    , effectValue {0, 0}
 {
 }
 

@@ -493,7 +493,7 @@ sgs.ai_skill_invoke.fenyuan = function(self,data)
 	end
 end
 --[忿雷]
-sgs.ai_skill_playerchosen.fenlei = function(self,targets)
+sgs.ai_skill_playerchosen.fenlei_hegemony = function(self,targets)
 	if #self.enemies == 0 then return nil end
 	
 	self:sort(self.enemies,"hp")

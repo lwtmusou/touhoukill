@@ -350,7 +350,10 @@ end
 ]]
 
 --年代记SP莲子
---无
+-- 考虑神灵梦 连着为啥要亮将解开
+sgs.ai_skill_invoke.liangzi = function(self)
+	return not self.player:isChained()
+end
 
 --年代记SP早苗
 --[修补]

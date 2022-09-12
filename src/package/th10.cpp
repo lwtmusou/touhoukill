@@ -121,8 +121,11 @@ GongfengCard::GongfengCard()
     m_skillName = "gongfeng_attach";
 }
 
-void GongfengCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void GongfengCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     ServerPlayer *kanako = targets.first();
     room->setPlayerFlag(kanako, "gongfengInvoked");
 
@@ -1501,8 +1504,11 @@ bool JiliaoCard::targetFilter(const QList<const Player *> &targets, const Player
     return targets.isEmpty();
 }
 
-void JiliaoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const
+void JiliaoCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+    const QList<ServerPlayer *> &targets = card_use.to;
+
     ServerPlayer *target = targets.first();
     QList<int> equips;
     foreach (const Card *c, target->getEquips())
@@ -1590,8 +1596,10 @@ BujuCard::BujuCard()
     target_fixed = true;
 }
 
-void BujuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const
+void BujuCard::use(Room *room, const CardUseStruct &card_use) const
 {
+    ServerPlayer *source = card_use.from;
+
     int x = qMin(room->alivePlayerCount(), 4);
 
     source->drawCards(x);

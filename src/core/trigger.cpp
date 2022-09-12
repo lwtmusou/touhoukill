@@ -230,7 +230,7 @@ bool SkillTrigger::cost(TriggerEvent /*unused*/, RoomObject * /*unused*/, Trigge
         return true;
 
     // detail.owner == detail.invoker
-    bool isCompulsory = detail.isCompulsory() && (detail.invoker()->hasValidSkill(d->name) && !detail.invoker()->haveShownSkill(d->name));
+    bool isCompulsory = detail.isCompulsory() && (detail.invoker()->hasValidSkill(d->name, true) && !detail.invoker()->haveShownSkill(d->name));
     bool invoke = true;
 #if 0
     if (!isCompulsory)

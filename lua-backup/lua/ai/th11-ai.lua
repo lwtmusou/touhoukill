@@ -295,6 +295,7 @@ end]]
 
 --[无念]
 function wunian_judge(self,user,card)
+	if not card then return 0 end
 	if card:isKindOf("AmazingGrace") then
 		return 2
 	end
@@ -666,7 +667,7 @@ sgs.ai_skill_cardask["@jidu"] = function(self, data)
 	if e <= f then return "." end
 
 	local cards = sgs.QList2Table(self.player:getCards("hes"))
-	self:sortByUseValue(cards)
+	self:sortByUseValue(cards, true)
 	if #cards <= 0 then return "." end
 	return "$" .. cards[1]:getId()
 end
@@ -817,7 +818,7 @@ function SmartAI:hasDiaopingEffect(from,target)
 	return false, nil
 end
 
-
+sgs.ai_skill_invoke.tongju  = true
 sgs.ai_skill_invoke.diaoping_hegemony  =function(self,data)
 	if self.player:isKongcheng() then return false end
     return true 

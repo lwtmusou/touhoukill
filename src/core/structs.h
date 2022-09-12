@@ -66,6 +66,7 @@ struct QSGS_CORE_EXPORT CardUseStruct
     QList<int> m_showncards;
     QStringList nullified_list;
     QSanguosha::CardUseReason m_reason;
+    QList<int> effectValue;
 };
 
 struct QSGS_CORE_EXPORT CardEffectStruct
