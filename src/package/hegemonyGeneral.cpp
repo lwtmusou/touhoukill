@@ -3199,9 +3199,8 @@ bool KuaizhaoHegemonyCard::targetsFeasible(const QList<const Player *> &targets,
     return targets.length() == 2;
 }
 
-void KuaizhaoHegemonyCard::onUse(Room *room, const CardUseStruct &use) const
+void KuaizhaoHegemonyCard::onUse(Room *room, const CardUseStruct &card_use) const
 {
-    CardUseStruct card_use = use;
     ServerPlayer *player = card_use.from;
 
     LogMessage log;
@@ -3211,16 +3210,9 @@ void KuaizhaoHegemonyCard::onUse(Room *room, const CardUseStruct &use) const
     log.card_str = card_use.card->toString();
     room->sendLog(log);
 
-    QVariant data = QVariant::fromValue(card_use);
-    RoomThread *thread = room->getThread();
-    Q_ASSERT(thread != nullptr);
-    thread->trigger(PreCardUsed, room, data);
-    card_use = data.value<CardUseStruct>();
-
     player->showHiddenSkill("kuaizhao_hegemony");
 
-    thread->trigger(CardUsed, room, data);
-    thread->trigger(CardFinished, room, data);
+    use(room, card_use);
 }
 
 void KuaizhaoHegemonyCard::use(Room *room, const CardUseStruct &card_use) const
@@ -3993,12 +3985,7 @@ bool BanyueHegemonyCard::targetsFeasible(const QList<const Player *> &targets, c
 
 void BanyueHegemonyCard::onUse(Room *room, const CardUseStruct &card_use) const
 {
-    CardUseStruct use = card_use;
-    QVariant data = QVariant::fromValue(use);
-    RoomThread *thread = room->getThread();
-    use.from->showHiddenSkill("banyue_hegemony");
-    thread->trigger(PreCardUsed, room, data);
-    use = data.value<CardUseStruct>();
+    card_use.from->showHiddenSkill("banyue_hegemony");
 
     ServerPlayer *from = card_use.from;
     ServerPlayer *to1 = card_use.to.at(0);
@@ -4008,9 +3995,7 @@ void BanyueHegemonyCard::onUse(Room *room, const CardUseStruct &card_use) const
     room->touhouLogmessage("#ChoosePlayerWithSkill", from, "banyue_hegemony", logto, "");
     room->notifySkillInvoked(card_use.from, "banyue_hegemony");
 
-    thread->trigger(CardUsed, room, data);
-    use = data.value<CardUseStruct>();
-    thread->trigger(CardFinished, room, data);
+    use(room, card_use);
 }
 
 void BanyueHegemonyCard::use(Room *room, const CardUseStruct &card_use) const // onEffect is better?
