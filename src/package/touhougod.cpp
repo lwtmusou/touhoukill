@@ -5502,7 +5502,9 @@ public:
         }
 
         card->setSkillName("huixing");
-        room->useCard(CardUseStruct(card, invoke->invoker, invoke->targets.first()), false);
+        CardUseStruct newuse(card, invoke->invoker, invoke->targets.first());
+        newuse.m_effectValue = use.m_effectValue;
+        room->useCard(newuse, false);
         return false;
     }
 };

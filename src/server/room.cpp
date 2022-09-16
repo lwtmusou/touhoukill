@@ -3915,6 +3915,7 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
         } else if (card != nullptr) {
             CardUseStruct new_use = card_use;
             new_use.card = card;
+            new_use.m_effectValue = card_use.m_effectValue;
             useCard(new_use);
         }
     } catch (TriggerEvent triggerEvent) {
