@@ -18,7 +18,8 @@ lessThan(QT_MINOR_VERSION, 6) {
 CONFIG += c++11
 CONFIG += lua
 
-VERSION = 0.10.3
+VERSION = 0.10.7
+VERSIONNUMBER = 20220916
 
 CONFIG += precompiled_header
 PRECOMPILED_HEADER = src/pch.h
@@ -262,6 +263,8 @@ macx{
     ICON = resource/icon/sgs.icns
 }
 
+DEFINES += "QSGS_VERSION=\\\"$$VERSION\\\""
+DEFINES += "QSGS_VERSIONNUMBER=\\\"$$VERSIONNUMBER\\\""
 
 LIBS += -L.
 win32-msvc*{
