@@ -626,7 +626,7 @@ public:
         Slash *s = new Slash(Card::NoSuit, 0);
         s->setSkillName(objectName());
         DELETE_OVER_SCOPE(Slash, s);
-        return !player->hasUsed("fanhuaSlash") && Slash::IsAvailable(player, s);
+        return Slash::IsAvailable(player, s);
     }
 
     bool viewFilter(const Card *to_select) const override
@@ -674,10 +674,8 @@ public:
     void record(TriggerEvent, Room *room, QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from != nullptr && use.card->isKindOf("Slash") && use.card->getSkillName() == objectName()) {
-            room->addPlayerHistory(use.from, "fanhuaSlash");
+        if (use.from != nullptr && use.card->isKindOf("Slash") && use.card->getSkillName() == objectName())
             room->addPlayerHistory(use.from, "Slash", -1);
-        }
     }
 };
 
