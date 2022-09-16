@@ -626,7 +626,7 @@ public:
         Slash *s = new Slash(Card::NoSuit, 0);
         s->setSkillName(objectName());
         DELETE_OVER_SCOPE(Slash, s);
-        return !player->hasUsed("fanhuaSlash") && Slash::IsAvailable(player, s);
+        return Slash::IsAvailable(player, s);
     }
 
     bool viewFilter(const Card *to_select) const override
@@ -643,8 +643,16 @@ public:
         foreach (const Player *p, ps) {
             QList<const Card *> cards = p->getEquips() + p->getJudgingArea();
             foreach (const Card *c, cards) {
-                if (c->getSuit() == to_select->getSuit())
-                    return true;
+                if (c->getSuit() == to_select->getSuit()) {
+                    Slash *s = new Slash(Card::SuitToBeDecided, -1);
+                    DELETE_OVER_SCOPE(Slash, s);
+
+                    s->setSkillName(objectName());
+                    s->setShowSkill(objectName());
+                    s->addSubcard(c);
+                    if (s->isAvailable(Self))
+                        return true;
+                }
             }
         }
 
@@ -653,7 +661,7 @@ public:
 
     const Card *viewAs(const Card *originalCard) const override
     {
-        Slash *s = new Slash(Card::NoSuit, 0);
+        Slash *s = new Slash(Card::SuitToBeDecided, -1);
         s->setSkillName(objectName());
         s->setShowSkill(objectName());
         s->addSubcard(originalCard);
@@ -674,10 +682,8 @@ public:
     void record(TriggerEvent, Room *room, QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from != nullptr && use.card->isKindOf("Slash") && use.card->getSkillName() == objectName()) {
-            room->addPlayerHistory(use.from, "fanhuaSlash");
+        if (use.from != nullptr && use.card->isKindOf("Slash") && use.card->getSkillName() == objectName())
             room->addPlayerHistory(use.from, "Slash", -1);
-        }
     }
 };
 
