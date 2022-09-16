@@ -557,13 +557,7 @@ bool BuxianCard::targetsFeasible(const QList<const Player *> &targets, const Pla
 
 void BuxianCard::onUse(Room *room, const CardUseStruct &card_use) const
 {
-    CardUseStruct use = card_use;
-    QVariant data = QVariant::fromValue(use);
-    RoomThread *thread = room->getThread();
-
-    thread->trigger(PreCardUsed, room, data);
-    use = data.value<CardUseStruct>();
-    use.from->showHiddenSkill("buxian");
+    card_use.from->showHiddenSkill("buxian");
     LogMessage log;
     log.from = card_use.from;
     log.to << card_use.to;
@@ -571,9 +565,7 @@ void BuxianCard::onUse(Room *room, const CardUseStruct &card_use) const
     log.card_str = toString();
     room->sendLog(log);
 
-    thread->trigger(CardUsed, room, data);
-    use = data.value<CardUseStruct>();
-    thread->trigger(CardFinished, room, data);
+    use(room, card_use);
 }
 
 void BuxianCard::use(Room *room, const CardUseStruct &card_use) const

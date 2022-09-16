@@ -3298,7 +3298,12 @@ void ZhancheCard::onUse(Room *room, const CardUseStruct &card_use) const
     CardMoveReason reason(CardMoveReason::S_REASON_THROW, card_use.from->objectName(), QString(), card_use.card->getSkillName(), QString());
     room->moveCardTo(this, card_use.from, nullptr, Player::DiscardPile, reason, true);
 
-    room->cardEffect(card_use.card, card_use.from, card_use.to.first());
+    CardEffectStruct effect;
+    effect.card = this;
+    effect.from = card_use.from;
+    effect.to = card_use.to.first();
+
+    onEffect(effect);
 }
 
 void ZhancheCard::onEffect(const CardEffectStruct &effect) const

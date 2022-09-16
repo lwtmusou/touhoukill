@@ -946,12 +946,7 @@ bool XiefaCard::targetsFeasible(const QList<const Player *> &targets, const Play
 
 void XiefaCard::onUse(Room *room, const CardUseStruct &card_use) const
 {
-    CardUseStruct use = card_use;
-    QVariant data = QVariant::fromValue(use);
-    RoomThread *thread = room->getThread();
-    use.from->showHiddenSkill("xiefa");
-    thread->trigger(PreCardUsed, room, data);
-    use = data.value<CardUseStruct>();
+    card_use.from->showHiddenSkill("xiefa");
 
     ServerPlayer *from = card_use.from;
     ServerPlayer *to1 = card_use.to.at(0);
@@ -961,9 +956,7 @@ void XiefaCard::onUse(Room *room, const CardUseStruct &card_use) const
     room->touhouLogmessage("#ChoosePlayerWithSkill", from, "xiefa", logto, "");
     room->notifySkillInvoked(card_use.from, "xiefa");
 
-    thread->trigger(CardUsed, room, data);
-    use = data.value<CardUseStruct>();
-    thread->trigger(CardFinished, room, data);
+    use(room, card_use);
 }
 
 void XiefaCard::use(Room *room, const CardUseStruct &card_use) const
