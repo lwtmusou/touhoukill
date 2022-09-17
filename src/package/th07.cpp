@@ -1796,16 +1796,6 @@ public:
 };
 
 // the skill's 2 "subskill"s are of the same timing, and have different effect, so we must split them
-class Jixiong : public TriggerSkill
-{
-public:
-    Jixiong()
-        : TriggerSkill("jixiong")
-    {
-        events << EventPhaseChanging;
-    }
-};
-
 class Jixiong1 : public TriggerSkill
 {
 public:
@@ -2329,7 +2319,7 @@ TH07Package::TH07Package()
 
     General *ran_sp = new General(this, "ran_sp", "yym", 4);
     ran_sp->addSkill(new Shizhao);
-    ran_sp->addSkill(new Jixiong);
+    ran_sp->addSkill(new Skill("jixiong", Skill::NotFrequent));
     ran_sp->addSkill(new Jixiong1);
     ran_sp->addSkill(new Jixiong2);
     related_skills.insertMulti("jixiong", "#jixiong1");

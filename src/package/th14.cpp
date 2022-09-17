@@ -126,7 +126,7 @@ public:
         QList<SkillInvokeDetail> d;
         if (triggerEvent == EventPhaseEnd) {
             ServerPlayer *current = data.value<ServerPlayer *>();
-            ;
+
             if ((current == nullptr) || current->getKingdom() != "hzc" || current->getPhase() != Player::Discard || !current->isAlive())
                 return d;
 

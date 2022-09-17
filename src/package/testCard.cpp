@@ -218,8 +218,6 @@ void SuperPeach::onEffect(const CardEffectStruct &effect) const
     Room *room = effect.to->getRoom();
     room->setEmotion(effect.from, "peach");
 
-
-
     RecoverStruct recover;
     recover.card = this;
     recover.who = effect.from;
@@ -685,15 +683,14 @@ public:
             }
         } else {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if ((move.to != nullptr) && move.to_place == Player::PlaceEquip && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE) {
-                ServerPlayer *invoker = qobject_cast<ServerPlayer *>(move.to);
+            ServerPlayer *invoker = qobject_cast<ServerPlayer *>(move.to);
+            if ((invoker != nullptr) && move.to_place == Player::PlaceEquip && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE) {
                 for (int i = 0; i < move.card_ids.size(); i++) {
                     const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
                     if (card->objectName() == objectName()) {
                         foreach (ServerPlayer *p, room->getAllPlayers()) {
-                            if ((p->getArmor() != nullptr) && p->getArmor()->objectName() != objectName()) {
+                            if ((p->getArmor() != nullptr) && p->getArmor()->objectName() != objectName())
                                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, invoker, invoker, nullptr, true);
-                            }
                         }
                     }
                 }
@@ -905,8 +902,8 @@ QString SpringBreath::getSubtype() const
 
 bool SpringBreath::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    bool ignore
-        = ((Self != nullptr) && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
+    bool ignore = ((Self != nullptr) && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self
+                   && !hasFlag("IgnoreFailed"));
     return targets.isEmpty() && (!to_select->containsTrick(objectName()) || ignore);
 }
 
