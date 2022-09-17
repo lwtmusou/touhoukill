@@ -597,7 +597,7 @@ public:
         if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
 
-            if ((move.from_places.contains(Player::PlaceHand) || move.from_places.contains(Player::PlaceEquip))
+            if ((move.from != nullptr) && (move.from_places.contains(Player::PlaceHand) || move.from_places.contains(Player::PlaceEquip))
                 && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_USE)
                 && ((move.to != move.from) || ((move.to_place != Player::PlaceHand) && (move.to_place != Player::PlaceEquip)))) {
                 ServerPlayer *current = room->getCurrent();

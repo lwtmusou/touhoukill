@@ -2407,12 +2407,10 @@ public:
     {
         if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (move.from != nullptr) {
-                ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-                if (player->getPhase() == Player::Discard && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)
-                    && move.to_place == Player::DiscardPile) {
-                    room->setPlayerMark(player, objectName(), player->getMark(objectName()) + move.card_ids.length());
-                }
+            ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
+            if (player != nullptr && player->getPhase() == Player::Discard && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)
+                && move.to_place == Player::DiscardPile) {
+                room->setPlayerMark(player, objectName(), player->getMark(objectName()) + move.card_ids.length());
             }
         }
         if (triggerEvent == EventPhaseChanging) {
