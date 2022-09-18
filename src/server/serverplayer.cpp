@@ -217,7 +217,7 @@ QList<int> ServerPlayer::forceToDiscard(int discard_num, bool include_equip, boo
 {
     QList<int> to_discard;
 
-    QString flags = "h";
+    QString flags = "hs";
     if (include_equip)
         flags.append("e");
 
@@ -1968,7 +1968,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         }
 
         sendSkillsToOthers();
-        foreach(const Skill *skill, getHeadSkillList()) { //getSkillList()
+        foreach (const Skill *skill, getHeadSkillList()) { //getSkillList()
             if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty() && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
                 && hasShownSkill(skill)) {
                 JsonArray arg;
@@ -1978,8 +1978,6 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
             }
         }
-        
-        
 
     } else {
         //if (!ignore_rule && !canShowGeneral("h")) return;

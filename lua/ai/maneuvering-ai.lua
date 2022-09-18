@@ -660,7 +660,7 @@ sgs.ai_skill_cardask["@fire-attack"] = function(self, data, pattern, target)
 						or self:isGoodChainTarget(target) or target:hasArmorEffect("Vine") then
 					needKeepPeach = false
 				end
-				if (self.player:hasSkill("fengxiang") and self.player:getCards("h"):contains(acard)) then
+				if (self.player:hasSkill("fengxiang") and self.player:getCards("hs"):contains(acard)) then
 					needKeepPeach = false
 				end
 				if lord and not self:isEnemy(lord) and sgs.isLordInDanger() and self:getCardsNum("Peach") == 1 and self.player:aliveCount() > 2 then
@@ -850,7 +850,7 @@ sgs.ai_skill_cardask["@fire_attack_show"] = function(self, data)
 	local cards = {}
 	local card_ids = self.player:getTag("fireattack_tempmove"):toIntList()
 
-	for _, c in sgs.qlist(self.player:getCards("h")) do
+	for _, c in sgs.qlist(self.player:getCards("hs")) do
 		if not card_ids:contains(c:getEffectiveId()) then
 			table.insert(cards, c)
 		end
