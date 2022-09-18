@@ -1556,16 +1556,17 @@ public:
     Qiangyu()
         : TriggerSkill("qiangyu")
     {
-        events << CardsMoveOneTime << BeforeCardsMove << EventPhaseChanging;
+        events << CardsMoveOneTime << BeforeCardsMove << TurnStart;
         view_as_skill = new QiangyuVS;
     }
 
-    void record(TriggerEvent e, Room *room, QVariant &data) const override
+    void record(TriggerEvent e, Room *room, QVariant &) const override
     {
-        if (e == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive)
-                room->setPlayerMark(change.player, objectName(), 0);
+        if (e == TurnStart) {
+            foreach (ServerPlayer *ps, room->getAllPlayers()) {
+                if (ps->getMark(objectName()) > 0)
+                    room->setPlayerMark(ps, objectName(), 0);
+            }
         }
     }
 
