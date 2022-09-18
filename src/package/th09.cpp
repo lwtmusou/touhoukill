@@ -612,10 +612,10 @@ public:
     }
 };
 
-class FanhuaVS : public OneCardViewAsSkill
+class Fanhua : public OneCardViewAsSkill
 {
 public:
-    FanhuaVS()
+    Fanhua()
         : OneCardViewAsSkill("fanhua")
     {
         response_or_use = true;
@@ -666,24 +666,6 @@ public:
         s->setShowSkill(objectName());
         s->addSubcard(originalCard);
         return s;
-    }
-};
-
-class Fanhua : public TriggerSkill
-{
-public:
-    Fanhua()
-        : TriggerSkill("fanhua")
-    {
-        view_as_skill = new FanhuaVS;
-        events << PreCardUsed;
-    }
-
-    void record(TriggerEvent, Room *room, QVariant &data) const override
-    {
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from != nullptr && use.card->isKindOf("Slash") && use.card->getSkillName() == objectName())
-            room->addPlayerHistory(use.from, "Slash", -1);
     }
 };
 
