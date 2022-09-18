@@ -623,10 +623,16 @@ public:
 
     bool isEnabledAtPlay(const Player *player) const override
     {
-        Slash *s = new Slash(Card::NoSuit, 0);
-        s->setSkillName(objectName());
-        DELETE_OVER_SCOPE(Slash, s);
-        return Slash::IsAvailable(player, s);
+        return Slash::IsAvailable(player);
+    }
+
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
+    {
+        Slash *card = new Slash(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(Slash, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        return cardPattern != nullptr && cardPattern->match(player, card);
     }
 
     bool viewFilter(const Card *to_select) const override
@@ -649,7 +655,7 @@ public:
 
                     s->setSkillName(objectName());
                     s->setShowSkill(objectName());
-                    s->addSubcard(c);
+                    s->addSubcard(to_select);
                     if (s->isAvailable(Self))
                         return true;
                 }
@@ -1210,8 +1216,8 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
-        CardAskedStruct s = data.value<CardAskedStruct>();
-        QString pattern = s.pattern;
+        // CardAskedStruct s = data.value<CardAskedStruct>();
+        // QString pattern = s.pattern;
         //for ai  to add global flag
         //slashsource or jinksource
         if (invoke->tag.value("isSlash").toBool())
@@ -1250,9 +1256,13 @@ public:
         response_or_use = true;
     }
 
-    bool isEnabledAtResponse(const Player *, const QString &pattern) const override
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        return pattern == "slash";
+        ThunderSlash *card = new ThunderSlash(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(ThunderSlash, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        return cardPattern != nullptr && cardPattern->match(player, card);
     }
 
     bool isEnabledAtPlay(const Player *player) const override
