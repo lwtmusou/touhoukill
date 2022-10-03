@@ -291,12 +291,6 @@ bool XijianCard::targetsFeasible(const QList<const Player *> &targets, const Pla
 
 void XijianCard::onUse(Room *room, const CardUseStruct &card_use) const
 {
-    CardUseStruct use = card_use;
-    QVariant data = QVariant::fromValue(use);
-    RoomThread *thread = room->getThread();
-
-    thread->trigger(PreCardUsed, room, data);
-
     ServerPlayer *from = card_use.from;
     ServerPlayer *to1 = card_use.to.at(0);
     ServerPlayer *to2 = card_use.to.at(1);
@@ -348,9 +342,7 @@ void XijianCard::onUse(Room *room, const CardUseStruct &card_use) const
         }
     }
 
-    thread->trigger(CardUsed, room, data);
-    use = data.value<CardUseStruct>();
-    thread->trigger(CardFinished, room, data);
+    use(room, card_use);
 }
 
 class XijianVS : public ZeroCardViewAsSkill
@@ -1804,16 +1796,6 @@ public:
 };
 
 // the skill's 2 "subskill"s are of the same timing, and have different effect, so we must split them
-class Jixiong : public TriggerSkill
-{
-public:
-    Jixiong()
-        : TriggerSkill("jixiong")
-    {
-        events << EventPhaseChanging;
-    }
-};
-
 class Jixiong1 : public TriggerSkill
 {
 public:
@@ -2337,7 +2319,7 @@ TH07Package::TH07Package()
 
     General *ran_sp = new General(this, "ran_sp", "yym", 4);
     ran_sp->addSkill(new Shizhao);
-    ran_sp->addSkill(new Jixiong);
+    ran_sp->addSkill(new Skill("jixiong", Skill::NotFrequent));
     ran_sp->addSkill(new Jixiong1);
     ran_sp->addSkill(new Jixiong2);
     related_skills.insertMulti("jixiong", "#jixiong1");

@@ -612,10 +612,10 @@ public:
     }
 };
 
-class FanhuaVS : public OneCardViewAsSkill
+class Fanhua : public OneCardViewAsSkill
 {
 public:
-    FanhuaVS()
+    Fanhua()
         : OneCardViewAsSkill("fanhua")
     {
         response_or_use = true;
@@ -623,10 +623,16 @@ public:
 
     bool isEnabledAtPlay(const Player *player) const override
     {
-        Slash *s = new Slash(Card::NoSuit, 0);
-        s->setSkillName(objectName());
-        DELETE_OVER_SCOPE(Slash, s);
-        return !player->hasUsed("fanhuaSlash") && Slash::IsAvailable(player, s);
+        return Slash::IsAvailable(player);
+    }
+
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
+    {
+        Slash *card = new Slash(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(Slash, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        return cardPattern != nullptr && cardPattern->match(player, card);
     }
 
     bool viewFilter(const Card *to_select) const override
@@ -643,8 +649,16 @@ public:
         foreach (const Player *p, ps) {
             QList<const Card *> cards = p->getEquips() + p->getJudgingArea();
             foreach (const Card *c, cards) {
-                if (c->getSuit() == to_select->getSuit())
-                    return true;
+                if (c->getSuit() == to_select->getSuit()) {
+                    Slash *s = new Slash(Card::SuitToBeDecided, -1);
+                    DELETE_OVER_SCOPE(Slash, s);
+
+                    s->setSkillName(objectName());
+                    s->setShowSkill(objectName());
+                    s->addSubcard(to_select);
+                    if (s->isAvailable(Self))
+                        return true;
+                }
             }
         }
 
@@ -653,31 +667,11 @@ public:
 
     const Card *viewAs(const Card *originalCard) const override
     {
-        Slash *s = new Slash(Card::NoSuit, 0);
+        Slash *s = new Slash(Card::SuitToBeDecided, -1);
         s->setSkillName(objectName());
         s->setShowSkill(objectName());
         s->addSubcard(originalCard);
         return s;
-    }
-};
-
-class Fanhua : public TriggerSkill
-{
-public:
-    Fanhua()
-        : TriggerSkill("fanhua")
-    {
-        view_as_skill = new FanhuaVS;
-        events << PreCardUsed;
-    }
-
-    void record(TriggerEvent, Room *room, QVariant &data) const override
-    {
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from != nullptr && use.card->isKindOf("Slash") && use.card->getSkillName() == objectName()) {
-            room->addPlayerHistory(use.from, "fanhuaSlash");
-            room->addPlayerHistory(use.from, "Slash", -1);
-        }
     }
 };
 
@@ -1222,8 +1216,8 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
-        CardAskedStruct s = data.value<CardAskedStruct>();
-        QString pattern = s.pattern;
+        // CardAskedStruct s = data.value<CardAskedStruct>();
+        // QString pattern = s.pattern;
         //for ai  to add global flag
         //slashsource or jinksource
         if (invoke->tag.value("isSlash").toBool())
@@ -1262,9 +1256,13 @@ public:
         response_or_use = true;
     }
 
-    bool isEnabledAtResponse(const Player *, const QString &pattern) const override
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
     {
-        return pattern == "slash";
+        ThunderSlash *card = new ThunderSlash(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(ThunderSlash, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        return cardPattern != nullptr && cardPattern->match(player, card);
     }
 
     bool isEnabledAtPlay(const Player *player) const override
@@ -2401,12 +2399,10 @@ public:
     {
         if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (move.from != nullptr) {
-                ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
-                if (player->getPhase() == Player::Discard && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)
-                    && move.to_place == Player::DiscardPile) {
-                    room->setPlayerMark(player, objectName(), player->getMark(objectName()) + move.card_ids.length());
-                }
+            ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
+            if (player != nullptr && player->getPhase() == Player::Discard && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)
+                && move.to_place == Player::DiscardPile) {
+                room->setPlayerMark(player, objectName(), player->getMark(objectName()) + move.card_ids.length());
             }
         }
         if (triggerEvent == EventPhaseChanging) {

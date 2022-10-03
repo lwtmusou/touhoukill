@@ -529,7 +529,6 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
     foreach (int id, cards->getSubcards())
         room->showCard(effect.to, id);
 
-    QString suit_str = Sanguosha->getCard(cards->getSubcards().first())->getSuitString();
     QStringList suits;
     foreach (int id, cards->getSubcards()) {
         QString suit = Sanguosha->getWrappedCard(id)->getSuitString();
@@ -694,7 +693,7 @@ bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Pl
 {
     if (!targets.isEmpty() || to_select == Self)
         return false;
-    bool ignore
+    bool ignore = ((Self != nullptr) && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self
         = (Self && Self->hasSkill("tianqu") && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && to_select != Self && !hasFlag("IgnoreFailed"));
     if (to_select->containsTrick(objectName()) && !ignore)
         return false;
