@@ -41,7 +41,7 @@
 namespace {
     class LuaDelayedPop final {
     public:
-        LuaDelayedPop(lua_State *l, int n = 1) : l(l), n(1) {}
+        LuaDelayedPop(lua_State *l, int n = 1) : l(l), n(n) {}
         ~LuaDelayedPop() { lua_pop(l, n); }
     private:
         lua_State *const l;

@@ -29,7 +29,6 @@ QSGS_CORE_EXPORT QVariantList IntList2VariantList(const QList<int> &intlist);
 QSGS_CORE_EXPORT QList<int> VariantList2IntList(const QVariantList &variantlist);
 
 // QList::toSet is got deleted by Qt since Qt 5.14
-// Can this be inlined?
 template<typename T> Q_ALWAYS_INLINE QSet<T> List2Set(const QList<T> &list)
 {
     return QSet<T>(list.begin(), list.end());

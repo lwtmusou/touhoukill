@@ -48,6 +48,19 @@ CardEffectStruct::CardEffectStruct(const Card *card, Player *from, Player *to)
     : card(card)
     , from(from)
     , to(to)
+    , toCardEffect(nullptr)
+    , multiple(false)
+    , nullified(false)
+    , canceled(false)
+    , effectValue {0, 0}
+{
+}
+
+CardEffectStruct::CardEffectStruct(const Card *card, Player *from, CardEffectStruct *toCardEffect)
+    : card(card)
+    , from(from)
+    , to(nullptr)
+    , toCardEffect(toCardEffect)
     , multiple(false)
     , nullified(false)
     , canceled(false)
@@ -85,7 +98,7 @@ CardUseStruct::CardUseStruct(const Card *card, Player *from, const QList<Player 
     : card(card)
     , from(from)
     , to(to)
-    , toCardUse(nullptr)
+    , toCardEffect(nullptr)
     , m_isOwnerUse(isOwnerUse)
     , m_addHistory(true)
     , m_isHandcard(false)
@@ -98,7 +111,7 @@ CardUseStruct::CardUseStruct(const Card *card, Player *from, const QList<Player 
 CardUseStruct::CardUseStruct(const Card *card, Player *from, Player *target, bool isOwnerUse)
     : card(card)
     , from(from)
-    , toCardUse(nullptr)
+    , toCardEffect(nullptr)
     , m_isOwnerUse(isOwnerUse)
     , m_addHistory(true)
     , m_isHandcard(false)
@@ -110,10 +123,10 @@ CardUseStruct::CardUseStruct(const Card *card, Player *from, Player *target, boo
         to << target;
 }
 
-CardUseStruct::CardUseStruct(const Card *card, Player *from, const CardUseStruct *toCardUse, bool isOwnerUse)
+CardUseStruct::CardUseStruct(const Card *card, Player *from, CardEffectStruct *toCardEffect, bool isOwnerUse)
     : card(card)
     , from(from)
-    , toCardUse(toCardUse)
+    , toCardEffect(toCardEffect)
     , m_isOwnerUse(isOwnerUse)
     , m_addHistory(true)
     , m_isHandcard(false)
@@ -132,7 +145,7 @@ public:
     Player *invoker; // skill invoker. When invoking skill, we sort firstly according to the priority, then the seat of invoker, at last weather it is a skill of an equip.
     QList<Player *> targets; // skill targets.
     bool isCompulsory; // judge the skill is compulsory or not. It is set in the skill's triggerable
-    bool triggered; // judge whether the skill is triggere
+    bool triggered; // judge whether the skill is triggered
     bool effectOnly;
     QVariantMap tag; // used to add a tag to the struct. useful for skills like Tieqi and Liegong to save a QVariantList for assisting to assign targets
 
@@ -419,9 +432,27 @@ QJsonValue _qsgs_CardsMoveStructSerializeImpl(const CardsMoveStruct &moves, QLis
     return ob;
 }
 
-LogStruct::LogStruct()
-    : from(nullptr)
+LogStruct::LogStruct(const QString &type, Player *from, const QList<Player *> &to, const QString &arg, const QString &arg2, const Card *card)
+    : type(type)
+    , from(from)
+    , to(to)
+    , arg(arg)
+    , arg2(arg2)
 {
+    if (card != nullptr)
+        card_str = card->toString();
+}
+
+LogStruct::LogStruct(const QString &type, Player *from, Player *_to, const QString &arg, const QString &arg2, const Card *card)
+    : type(type)
+    , from(from)
+    , arg(arg)
+    , arg2(arg2)
+{
+    if (_to != nullptr)
+        to << _to;
+    if (card != nullptr)
+        card_str = card->toString();
 }
 
 QJsonValue LogStruct::serialize() const

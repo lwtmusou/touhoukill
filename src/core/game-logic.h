@@ -12,7 +12,6 @@
 class Player;
 class RoomObject;
 struct DamageStruct;
-struct LogMessage;
 
 /**
  * @brief The game logic interface.
@@ -29,6 +28,18 @@ public:
         GuanxingUpOnly = 1,
         GuanxingBothSides = 0,
         GuanxingDownOnly = -1
+    };
+
+    enum GiveMovementType
+    {
+        MovementDisable = 0x0,
+        MovementEnable = 0x1,
+
+        OneTimeMovement = 0x0, // for Rende
+        SplittedMovement = 0x2, // for Yiji
+
+        NonPreviewGiveMovement = 0x0, // for Rende
+        PreviewGiveMovement = 0x4, // for Yiji
     };
 
     virtual void enterDying(Player *player, DamageStruct *reason) = 0;
@@ -64,12 +75,10 @@ public:
     virtual bool useCard(const CardUseStruct &card_use, bool add_history = true) = 0;
 
     // TODO: Decouple the slash for these functions
-    virtual bool cardEffect(const Card *card, Player *from, Player *to, bool multiple = false) = 0;
     virtual bool cardEffect(const CardEffectStruct &effect) = 0;
 
     virtual void damage(const DamageStruct &data) = 0;
     virtual void applyDamage(Player *victim, const DamageStruct &damage) = 0; // Change Player HP according to @param damage.
-    virtual void sendDamageLog(const DamageStruct &data) = 0;
 
     virtual void loseHp(Player *victim, int lose = 1) = 0;
     virtual void loseMaxHp(Player *victim, int lose = 1) = 0;
@@ -79,23 +88,20 @@ public:
 
     virtual void turnPlayerOver(Player *player) = 0;
 
-    virtual void letPlayerPlay(Player *target, QList<QSanguosha::Phase> phases = QList<QSanguosha::Phase>()) = 0;
+    virtual void letPlayerPlay(Player *target, const QList<QSanguosha::Phase> &phases = QList<QSanguosha::Phase>()) = 0;
     virtual void changePlayerPhase(Player *target, QSanguosha::Phase from, QSanguosha::Phase to) = 0;
     virtual void skipPlayerPhase(Player *player, QSanguosha::Phase phase, bool is_cost = false, bool send_log = true) = 0;
-    virtual void insertPlayerPhases(Player *player, QList<QSanguosha::Phase> new_phases, int index = -1) = 0;
+    virtual void insertPlayerPhases(Player *player, const QList<QSanguosha::Phase> &new_phases, int index = -1) = 0;
     virtual void exchangePlayerPhases(Player *player, QSanguosha::Phase from, QSanguosha::Phase to) = 0;
 
     virtual void givePlayerAnExtraTurn(Player *benefiter) = 0;
-
-    // TODO: Remove it when fixing the Jink.
-    // virtual bool isJinkEffected(const SlashEffectStruct &effect, const Card *jink) = 0;
 
     virtual void judge(JudgeStruct &judge_struct) = 0;
     virtual void retrial(const Card *card, Player *player, JudgeStruct *judge, const QString &skill_name, bool exchange = false) = 0;
     virtual void sendJudgeResult(const JudgeStruct *judge) = 0; // Send log
 
-    // FIXME(xusine): I move ServerPlayer's pindian to here. Please help check if this makes sense.
-    virtual bool pindian(Player *source, Player *target, const QString &reason, const Card *card1 = nullptr) = 0;
+    // Move ServerPlayer's pindian to here.
+    virtual bool pindian(Player *source, Player *target, const QString &reason) = 0;
 
     virtual QList<int> peekCards(int n = 1, bool bottom = false) = 0; // Cards still stay in the pile. shuffle the pile if the number left is not enough
     virtual void shuffleDrawPile() = 0;
@@ -103,29 +109,31 @@ public:
     // virtual QList<int> getNCards(int n, bool update_pile_number = true, bool bottom = false) = 0;
     // virtual void returnToTopDrawPile(const QList<int> &cards) = 0;
 
-    virtual void askForGuanxing(Player *player, const QList<int> &cards, GuanxingType guanxing_type = GuanxingBothSides, QString skillName = "") = 0;
+    virtual void askForGuanxing(Player *player, const QList<int> &cards, GuanxingType guanxing_type = GuanxingBothSides, QString skillName = QString()) = 0;
 
-    // Create the Frame for selecting cards
-    virtual void fillAG(const QList<int> &card_ids, Player *who = nullptr, const QList<int> &disabled_ids = QList<int>(), const QList<int> &shownHandcard_ids = QList<int>()) = 0;
-    // Let player select from the frame.
+    // Create the Frame for selecting cards. Since it is made for Amazing Grace, this is notified to all players
+    virtual void fillAG(const QList<int> &card_ids, const QList<int> &disabled_ids = {}, const QList<Player *> &viewers = {}) = 0;
+    // Let player select from the frame. (todo: make card_ids argument optional since we must use fillAG)
     virtual int askForAG(Player *player, const QList<int> &card_ids, bool refusable, const QString &reason) = 0;
     // Trigger Moving Card
-    virtual void takeAG(Player *player, int card_id, bool move_cards = true, QList<Player *> to_notify = QList<Player *>(), QSanguosha::Place fromPlace = QSanguosha::PlaceDrawPile)
-        = 0;
-    virtual void clearAG(Player *player = nullptr) = 0; // disappear the selecting frame.
+    virtual void takeAG(Player *player, int card_id, bool move_cards = true, QSanguosha::Place fromPlace = QSanguosha::PlaceDrawPile) = 0;
+    virtual void clearAG(const QList<Player *> &viewers = {}) = 0; // disappear the selecting frame.
 
     // Only available for CardAsked
     virtual void provide(const Card *card, Player *who = nullptr) = 0;
 
-    virtual void sendLog(const LogMessage &log) = 0;
-    virtual void sendLog(const QString &logtype, Player *logfrom, const QString &logarg = QString(), const QList<Player *> &logto = QList<Player *>(),
-                         const QString &logarg2 = QString())
-        = 0;
+    virtual void sendLog(const LogStruct &log) = 0;
+
+    // weird argument sequence...... well, remove it by adding constructor to LogStruct
+    // virtual void sendLog(const QString &logtype, Player *logfrom, const QString &logarg = QString(), const QList<Player *> &logto = QList<Player *>(),
+    //                      const QString &logarg2 = QString())
+    //    = 0;
 
     virtual void showCard(Player *player, int card_id, Player *only_viewer = nullptr) = 0;
     virtual void showAllCards(Player *player, Player *to = nullptr) = 0;
 
     // For FilterSkill
+    // Fs: filter skills should be calculated in both client and server. Current implementation is on server only
     // virtual bool notifyUpdateCard(Player *player, int cardId, const Card *newCard) = 0;
     // virtual bool broadcastUpdateCard(const QList<Player *> &players, int cardId, const Card *newCard) = 0;
     // virtual bool notifyResetCard(Player *player, int cardId) = 0;
@@ -146,7 +154,7 @@ public:
 
     // Animation Helpers
     virtual void doIndicateAnimation(const Player *from, const Player *to) = 0;
-    virtual void doLightbox(const QString &lightboxName, int duration = 2000) = 0;
+    virtual void doLightbox(const QString &lightboxName, int duration = 4000) = 0;
     virtual void doHuashenAnimation(const Player *player, const QString &skill_name) = 0;
     virtual void doNullificationAnimation(const Player *from, const Player *to) = 0;
     virtual void doFireAnimation(const Player *player) = 0;
@@ -186,13 +194,16 @@ public:
     virtual void throwPlayerDelayTrickRegion(const Player *victim) = 0;
     virtual void throwPlayerAllCards(const Player *victim) = 0;
 
-    virtual void addToPlayerPile(Player *owner, const QString &pile_name, const Card *card, bool open = true, QList<Player *> open_target = QList<Player *>()) = 0;
-    virtual void addToPlayerPile(Player *owner, const QString &pile_name, int card_id, bool open = true, QList<Player *> open_target = QList<Player *>()) = 0;
-    virtual void addToPlayerPile(Player *owner, const QString &pile_name, const IdSet &card_id, bool open = true, QList<Player *> open_target = QList<Player *>()) = 0;
-    // virtual void addToPlayerPile(Player *owner, const QString &pile_name, const IdSet &card_id, bool open, CardMoveReason reason, QList<Player *> open_target = QList<Player *>()) = 0;
+    // TODO: remove the design of partitially open private pile since it sucks
+    // Sanguosha never needs this kind of private pile to run
+    // Record it in each client if needed
+    virtual void addToPlayerPile(Player *owner, const QString &pile_name, const Card *card, bool open = true) = 0;
+    virtual void addToPlayerPile(Player *owner, const QString &pile_name, int card_id, bool open = true) = 0;
+    virtual void addToPlayerPile(Player *owner, const QString &pile_name, const IdSet &card_id, bool open = true) = 0;
+    // virtual void addToPlayerPile(Player *owner, const QString &pile_name, const IdSet &card_id, bool open, CardMoveReason reason) = 0;
 
-    virtual void addToPlayerShowHandCards(Player *target, const IdSet &card_ids) = 0;
-    virtual void addToPlayerShowHandCards(Player *target, const IdSet &card_ids, bool send_log = false, bool move_from_hand = false) = 0;
+    virtual void addToPlayerShownHandCards(Player *target, const IdSet &card_ids) = 0;
+    virtual void removePlayerShownHandCards(Player *target, const IdSet &card_ids) = 0;
 
     virtual void addPlayerBrokenEquip(Player *target, const IdSet &ids) = 0;
     virtual void removePlayerBrokenEquip(Player *target, const IdSet &ids) = 0;
@@ -200,96 +211,123 @@ public:
     virtual void addPlayerHiddenGeneral(Player *target, const QStringList &generals) = 0;
     virtual void removePlayerHiddenGeneral(Player *target, const QStringList) = 0;
 
+    // Note: Cards will move to Discard Pile
     virtual void clearPlayerPrivatePile(const Player *target, const QString &pile_name) = 0;
     virtual void clearPlayerAllPrivatePiles(const Player *target) = 0;
 
-    virtual void moveCardTo(const Card *card, Player *dstPlayer, QSanguosha::Place dstPlace, bool forceMoveVisible = false) = 0;
+    virtual void moveCardTo(const Card *card, Player *dstPlayer, QSanguosha::Place dstPlace, bool forceVisible = false) = 0;
     // virtual void moveCardTo(const Card *card, Player *dstPlayer, QSanguosha::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible = false) = 0;
     // virtual void moveCardTo(const Card *card, Player *srcPlayer, Player *dstPlayer, QSanguosha::Place dstPlace, const CardMoveReason &reason, bool forceMoveVisible = false) = 0;
     // virtual void moveCardTo(const Card *card, Player *srcPlayer, Player *dstPlayer, QSanguosha::Place dstPlace, const QString &pileName, const CardMoveReason &reason, bool forceMoveVisible = false) = 0;
 
-    virtual void moveCardsAtomic(QList<CardsMoveStruct> cards_move, bool forceMoveVisible) = 0;
-    virtual void moveCardsAtomic(CardsMoveStruct cards_move, bool forceMoveVisible) = 0;
-    virtual QList<CardsMoveStruct> _breakDownCardMoves(QList<CardsMoveStruct> &cards_moves) = 0;
+    // only _fillMoveInfo from legacy room is absolutely useful
+    // since the CardsMoveStruct here is already broken down and no need to merge it anywhere to something like CardsMoveOneTimeStruct...
+    virtual void moveCardsAtomic(CardsMoveStruct cards_move, bool forceVisible = false) = 0;
 
-    virtual void moveCardsToEndOfDrawpile(QList<int> card_ids, bool forceVisible = false) = 0;
+    // use move.toPile = QStringLiteral("bottom") instead
+    // virtual void moveCardsToEndOfDrawpile(QList<int> card_ids, bool forceVisible = false) = 0;
 
     // interactive methods
     virtual bool activate(Player *player) = 0;
     // askForUseCard / askForUseSlashTo (QSanguosha::MethodUse)
-    // TODO: askForUseCard supports the recast here. (Add additional parameter to this function, or change method -> QList<QSanguosha::HandlingMethod>)
-    virtual const Card *askForUseCard(Player *player, const QString &pattern, const QString &prompt, int notice_index = -1,
-                                      QSanguosha::HandlingMethod method = QSanguosha::MethodUse, bool addHistory = true, const QString &skill_name = QString())
+    // by default no recasting is enabled for askForUseCard. (To enable recasting add QSanguosha::MethodRecast to methods)
+    virtual const Card *askForUseCard(Player *player, const QString &reason, const QString &pattern, bool optional = true, const QString &prompt = QString(),
+                                      bool addHistory = true, const QList<QSanguosha::HandlingMethod> &methods = {QSanguosha::MethodUse}, bool enableConversion = true)
         = 0;
-    virtual const Card *askForUseSlashTo(Player *slasher, Player *victim, const QString &prompt, bool distance_limit = true, bool disable_extra = false, bool addHistory = false)
+    // wrapper to askForUseCard. use SkillName instead of reason / pattern and add pattern index.
+    // use MethodDiscard and MethodNone for default handling method since most SkillCards use them
+    virtual const Card *askForUseCard(Player *player, const QString &skillName, int patternIndex = 0, bool optional = true, const QString &prompt = QString(),
+                                      const QList<QSanguosha::HandlingMethod> &methods = {QSanguosha::MethodDiscard, QSanguosha::MethodNone})
         = 0;
-    virtual const Card *askForUseSlashTo(Player *slasher, QList<Player *> victims, const QString &prompt, bool distance_limit = true, bool disable_extra = false,
-                                         bool addHistory = false)
+    // wrapper to askForUseCard. To support skill Luanwu from Jiaxu in Sanguosha victim should be list
+    virtual const Card *askForUseSlashTo(Player *slasher, const QString &reason, Player *victim, bool disableExtra = false, bool optional = true, const QString &prompt = QString(),
+                                         bool addHistory = false, bool enableConversion = true)
         = 0;
-    virtual const Card *askForUseJink(Player *player, ...) = 0;
+    virtual const Card *askForUseSlashTo(Player *slasher, const QString &reason, const QList<Player *> &victims, bool disableExtra = false, bool optional = true,
+                                         const QString &prompt = QString(), bool addHistory = false, bool enableConversion = true)
+        = 0;
 
-    virtual void askForLuckCard() = 0;
+    // variants of askForUseCard
+    virtual const Card *askForJink(Player *player, const CardEffectStruct &slashUse, bool enableConversion = true) = 0;
+    virtual const Card *askForSinglePeach(Player *toAsk, const DeathStruct &dying, bool enableConversion = true) = 0;
+    // Is there any skill or something which can prevent asking for nullification?
+    virtual bool askForNullification(const CardEffectStruct &trickEffect, bool enableConversion = true) = 0;
+    virtual bool askForNullification(const QList<Player *> &toAsk, const CardEffectStruct &trickEffect, bool enableConversion = true) = 0;
+
+    // a.k.a. Beriberi Card (Jiao qi ka in Chinese)
+    virtual void askForLuckCard(const QList<Player *> &toAsk = {}) = 0;
 
     virtual QSanguosha::Suit askForSuit(Player *player, const QString &reason) = 0;
 
-    virtual QString askForKingdom(Player *player) = 0;
+    virtual QString askForKingdom(Player *player, const QString &reason = QString()) = 0;
 
-    virtual bool askForSkillInvoke(Player *player, const QString &skill_name, const QVariant &data = QVariant(), const QString &prompt = QString()) = 0;
+    virtual bool askForSkillInvoke(Player *player, const QString &skill_name, const QString &prompt = QString()) = 0;
 
-    virtual QString askForChoice(Player *player, const QString &skill_name, const QString &choices, const QVariant &data = QVariant()) = 0;
+    virtual QString askForChoice(Player *player, const QString &reason, const QStringList &choices, const QString &defaultChoice = QString()) = 0;
+    // wrapper to askForChoice
+    virtual QString askForGeneral(Player *player, const QStringList &generals, const QString &defaultChoice = QString()) = 0;
 
-    // TODO: Add pattern to askForDiscard (QSanguosha::MethodDiscard)
-    virtual bool askForDiscard(Player *target, const QString &reason, int discard_num, int min_num, bool optional = false, bool include_equip = false,
+    // QSanguosha::MethodDiscard
+    virtual bool askForDiscard(Player *target, const QString &reason, int max_num, int min_num = 1, bool include_equip = false, bool optional = false,
                                const QString &prompt = QString())
         = 0;
+    virtual bool askForDiscard(Player *target, const QString &reason, const QString &pattern, bool optional = false, const QString &prompt = QString()) = 0;
+    virtual bool askForDiscard(Player *target, const QString &skillName, int patternIndex = 0, bool optional = false, const QString &prompt = QString()) = 0;
+
     virtual void doJileiShow(Player *player, const IdSet &jilei_ids) = 0;
     virtual void forcePlayerDiscard(const Player *target, int discard_num, int include_equip, bool is_discard = true) = 0;
 
-    // TODO: Add pattern to askForExchange (QSanguosha::MethodNone)
-    virtual const Card *askForExchange(Player *player, const QString &reason, int discard_num, int min_num, bool include_equip = false, const QString &prompt = QString(),
-                                       bool optional = false)
+    // QSanguosha::MethodNone
+    virtual bool askForExchange(Player *target, const QString &reason, int max_num, int min_num = 1, bool include_equip = false, bool optional = false,
+                                const QString &prompt = QString())
         = 0;
+    virtual bool askForExchange(Player *target, const QString &reason, const QString &pattern, bool optional = false, const QString &prompt = QString()) = 0;
+    virtual bool askForExchangeSkillCard(Player *target, const QString &skillName, int patternIndex = 0, bool optional = false, const QString &prompt = QString()) = 0;
 
-    // TODO: Fix the process of nullification.
-    virtual bool askForNullification(const Card *trick, Player *from, Player *to, bool positive) = 0;
-    virtual bool isCanceled(const CardEffectStruct &effect) = 0;
+    // use askForNullification instead
+    // virtual bool isCanceled(const CardEffectStruct &effect) = 0;
 
     virtual int askForCardChosen(Player *player, Player *who, const QString &flags, const QString &reason, bool handcard_visible = false,
                                  QSanguosha::HandlingMethod method = QSanguosha::MethodNone, const QList<int> &disabled_ids = QList<int>())
         = 0;
 
-    virtual const Card *askForCard(Player *player, const QString &pattern, const QString &prompt, const QVariant &data, const QString &skill_name, int notice_index = -1) = 0;
-    virtual const Card *askForCard(Player *player, const QString &pattern, const QString &prompt, const QVariant &data = QVariant(),
-                                   QSanguosha::HandlingMethod method = QSanguosha::MethodDiscard, Player *to = nullptr, bool isRetrial = false,
-                                   const QString &skill_name = QString(), bool isProvision = false, int notice_index = -1)
+    // use askForUseCard / askForResponseCard / askForExchange(pattern) / askForDiscard(pattern) instead
+    // virtual const Card *askForCard(Player *player, const QString &pattern, const QString &prompt, const QVariant &data, const QString &skill_name, int notice_index = -1) = 0;
+    // virtual const Card *askForCard(Player *player, const QString &pattern, const QString &prompt, const QVariant &data = QVariant(),
+    //                                QSanguosha::HandlingMethod method = QSanguosha::MethodDiscard, Player *to = nullptr, bool isRetrial = false,
+    //                                const QString &skill_name = QString(), bool isProvision = false)
+    //     = 0;
+
+    virtual const Card *askForResponseCard(Player *player, const QString &reason, const QString &pattern, bool optional = true, const QString &prompt = QString(),
+                                           bool isRetrial = false, bool isProvision = false, const QList<QSanguosha::HandlingMethod> &methods = {QSanguosha::MethodResponse},
+                                           bool enableConversion = true)
+        = 0;
+    // Is it of any actual use?
+    virtual const Card *askForResponseCard(Player *player, const QString &skillName, int patternIndex = 0, bool optional = true, const QString &prompt = QString(),
+                                           bool isRetrial = false, bool isProvision = false, const QList<QSanguosha::HandlingMethod> &methods = {QSanguosha::MethodResponse})
         = 0;
 
-    virtual const Card *askForResponse(Player *, ...) = 0;
+    // exclusive to God-Patchouli
+    // virtual void doExtraAmazingGrace(Player *from, Player *target, int times) = 0;
 
-    virtual void doExtraAmazingGrace(Player *from, Player *target, int times) = 0;
+    // use askForExchange instead
+    // virtual const Card *askForCardShow(Player *player, Player *requestor, const QString &reason) = 0;
 
-    virtual const Card *askForCardShow(Player *player, Player *requestor, const QString &reason) = 0;
-
-    // virtual int askForRende(Player *liubei, QList<int> &cards, const QString &skill_name = QString(), bool visible = false, bool optional = true, int max_num = -1, QList<Player *> players = QList<Player *>(), CardMoveReason reason = CardMoveReason(), const QString &prompt = QString(), bool notify_skill = false) = 0;
-    // virtual bool askForYiji(Player *guojia, QList<int> &cards, const QString &skill_name = QString(), bool is_preview = false, bool visible = false, bool optional = true, int max_num = -1, QList<Player *> players = QList<Player *>(), CardMoveReason reason = CardMoveReason(), const QString &prompt = QString(), bool notify_skill = false) = 0;
+    // replacement of askForRende / askForYiji
+    virtual int askForCardGive(Player *giver, const QString &reason, const IdSet &cardIds, bool optional = true, const QString &prompt = QString(),
+                               GiveMovementType movement = MovementEnable, bool movementVisible = false, const QList<Player *> players = {})
+        = 0;
 
     virtual const Card *askForPindian(PindianStruct &pindian) = 0;
     virtual QList<const Card *> askForPindianRace(Player *from, Player *to, const QString &reason) = 0;
 
-    virtual Player *askForPlayerChosen(Player *player, const QList<Player *> &targets, const QString &reason, const QString &prompt = QString(), bool optional = false,
-                                       bool notify_skill = false)
+    virtual QList<Player *> askForPlayersChosen(Player *chooser, const QString &reason, const QList<Player *> targets, int max_num, int min_num = 1, bool optional = true,
+                                                const QString &prompt = QString())
         = 0;
+    // wrapper to askForPlayersChosen
+    virtual Player *askForPlayerChosen(Player *chooser, const QString &reason, const QList<Player *> targets, bool optional = true, const QString &prompt = QString()) = 0;
 
-    virtual QString askForGeneral(Player *player, const QStringList &generals, QString default_choice = QString()) = 0;
-    virtual QString askForGeneral(Player *player, const QString &generals, QString default_choice = QString()) = 0;
-
-    virtual const Card *askForSinglePeach(Player *player, Player *dying) = 0; // Replace with askForUseCard
-
-    // virtual QSharedPointer<SkillInvokeDetail> askForTriggerOrder(Player *player, const QList<QSharedPointer<SkillInvokeDetail> > &sameTiming, bool cancelable,
-    //                                                                  const QVariant &data) = 0;
-
-    virtual void updateCardsOnLose(const CardsMoveStruct &move) = 0;
-    virtual void updateCardsOnGet(const CardsMoveStruct &move) = 0;
+    virtual TriggerDetail askForTriggerOrder(Player *player, const QList<TriggerDetail> &sameTiming, bool cancelable) = 0;
 
     virtual void cheat(Player *player, const QVariant &args) = 0;
     virtual bool makeSurrender(Player *player) = 0;

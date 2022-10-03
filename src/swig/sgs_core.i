@@ -1,4 +1,7 @@
 
+// final is not recognized by swig so use macro define to remove it.
+// DO NOT USE final AS IDENTIFIER!!!
+
 #define final
 
 %include "global.h"

@@ -33,7 +33,7 @@ struct QSGS_CORE_EXPORT DamageStruct
     bool by_user;
     QString reason;
     bool trigger_chain;
-    QString trigger_info; //keep addtion info while record. since this damage event may be triggered lately by insertion of new damage event.
+    QString trigger_info; //keep addition info while record. since this damage event may be triggered lately by insertion of new damage event.
 };
 
 struct QSGS_CORE_EXPORT RecoverStruct
@@ -49,16 +49,31 @@ struct QSGS_CORE_EXPORT RecoverStruct
     QString reason;
 };
 
+struct QSGS_CORE_EXPORT CardEffectStruct
+{
+    explicit CardEffectStruct(const Card *card = nullptr, Player *from = nullptr, Player *to = nullptr);
+    CardEffectStruct(const Card *card, Player *from, CardEffectStruct *toCardEffect);
+
+    const Card *card;
+    Player *from;
+    Player *to;
+    CardEffectStruct *toCardEffect;
+    bool multiple; // helper to judge whether the card has multiple targets, does not make sense if the card inherits SkillCard
+    bool nullified;
+    bool canceled; // for cancel process, like "yuyi"
+    QList<int> effectValue;
+};
+
 struct QSGS_CORE_EXPORT CardUseStruct
 {
     explicit CardUseStruct(const Card *card = nullptr, Player *from = nullptr, const QList<Player *> &to = QList<Player *>(), bool isOwnerUse = true);
     CardUseStruct(const Card *card, Player *from, Player *target, bool isOwnerUse = true);
-    CardUseStruct(const Card *card, Player *from, const CardUseStruct *toCardUse, bool isOwnerUse = true);
+    CardUseStruct(const Card *card, Player *from, CardEffectStruct *toCardEffect, bool isOwnerUse = true);
 
     const Card *card;
     Player *from;
     QList<Player *> to;
-    const CardUseStruct *toCardUse;
+    CardEffectStruct *toCardEffect;
     bool m_isOwnerUse;
     bool m_addHistory;
     bool m_isHandcard;
@@ -69,24 +84,15 @@ struct QSGS_CORE_EXPORT CardUseStruct
     QList<int> effectValue;
 };
 
-struct QSGS_CORE_EXPORT CardEffectStruct
-{
-    explicit CardEffectStruct(const Card *card = nullptr, Player *from = nullptr, Player *to = nullptr);
-
-    const Card *card;
-    Player *from;
-    Player *to;
-    bool multiple; // helper to judge whether the card has multiple targets, does not make sense if the card inherits SkillCard
-    bool nullified;
-    bool canceled; // for cancel process, like "yuyi"
-    QList<int> effectValue;
-};
-
 // Attention!!! DO NOT FORWARD DECLARE SingleCardMoveStruct
 // Always using #include <structs.h>
 struct QSGS_CORE_EXPORT SingleCardMoveStruct
 {
-    /* implicit */ SingleCardMoveStruct(int id = -1); // default constructor. Note that toPlace is set to PlaceDiscardPile!!
+    // implicit constructor makes it possible for only ID in constructing CardsMoveStruct e.g.:
+    //   CardsMoveStruct move {1, 2, 3};
+    //   GameLogicInstance->moveCardsAtomic(move);
+    // will move card number 1, 2 and 3 to discard pile with default reason and actual move from
+    /* implicit */ SingleCardMoveStruct(int id = -1); // Note that toPlace is set to PlaceDiscardPile!!
     SingleCardMoveStruct(int id, Player *to, QSanguosha::Place toPlace = QSanguosha::PlaceHand);
     SingleCardMoveStruct(int id, Player *from, Player *to, QSanguosha::Place fromPlace = QSanguosha::PlaceUnknown, QSanguosha::Place toPlace = QSanguosha::PlaceHand);
 
@@ -104,7 +110,7 @@ struct QSGS_CORE_EXPORT SingleCardMoveStruct
 
     // Info about to:
     // toPlace == PlaceDrawPile && toPile == QStringLiteral("bottom") --> move to bottom of Draw Pile
-    // toPlace == PlaceDelayedTrick && toPile == QStringLiteral("bootom") --> move to bottom of delayed trick (may be of no use since delayed tricks are always FILO)
+    // toPlace == PlaceDelayedTrick && toPile == QStringLiteral("bottom") --> move to bottom of delayed trick (may be of no use since delayed tricks are always FILO)
     Player *to;
     QSanguosha::Place toPlace;
     QString toPile;
@@ -123,8 +129,8 @@ public:
 #endif
 };
 
-// Can we specialize QListSpecialMethods<SingleCardMoveStruct>?
-// It modifies size of QList and may cause binary incompatibility
+// Specialize QListSpecialMethods<SingleCardMoveStruct> for Qt 5 & Qt 6
+// Note: Qt maintains binary compatibility between major versions, so template declarations can't be modified throughout the major version
 #ifdef SWIG
 struct CardsMoveStruct : public QList<SingleCardMoveStruct>
 #else
@@ -132,8 +138,10 @@ using CardsMoveStruct = QList<SingleCardMoveStruct>;
 QSGS_CORE_EXPORT QJsonValue _qsgs_CardsMoveStructSerializeLegacyImpl(const CardsMoveStruct &move, QList<bool> visibles);
 QSGS_CORE_EXPORT QJsonValue _qsgs_CardsMoveStructSerializeImpl(const CardsMoveStruct &move, QList<bool> visibles);
 template<> struct QSGS_CORE_EXPORT QListSpecialMethods<SingleCardMoveStruct>
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0) && QT_VERSION < QT_VERSION_CHECK(7, 0, 0)
     : public QListSpecialMethodsBase<SingleCardMoveStruct>
+#elif QT_VERSION >= QT_VERSION_CHECK(7, 0, 0)
+#error "Check CardsMoveStruct between update to Qt 7. It depends on QList internal mechanics"
 #endif
 #endif
 {
@@ -163,7 +171,10 @@ public:
 
 struct QSGS_CORE_EXPORT LogStruct
 {
-    LogStruct();
+    explicit LogStruct(const QString &type = QString(), Player *from = nullptr, const QList<Player *> &to = {}, const QString &arg = QString(), const QString &arg2 = QString(),
+                       const Card *card = nullptr);
+    LogStruct(const QString &type, Player *from, Player *to, const QString &arg = QString(), const QString &arg2 = QString(), const Card *card = nullptr);
+
     QJsonValue serialize() const;
     bool parse(const QJsonValue &value, RoomObject *room);
 

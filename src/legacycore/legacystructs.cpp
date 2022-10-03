@@ -190,6 +190,21 @@ bool ExtendCardUseStruct::tryParse(CardUseStruct &use, const QJsonValue &usage, 
     return true;
 }
 
+namespace {
+QString cardEffectStructToString(const CardEffectStruct &effect)
+{
+    CardUseStruct use;
+    use.card = effect.card;
+    use.from = effect.from;
+    if (effect.toCardEffect != nullptr)
+        use.toCardEffect = effect.toCardEffect;
+    else if (effect.to != nullptr)
+        use.to << effect.to;
+
+    return ExtendCardUseStruct::toString(use);
+}
+} // namespace
+
 QString ExtendCardUseStruct::toString(const CardUseStruct &use)
 {
     if (use.card == nullptr)
@@ -198,8 +213,8 @@ QString ExtendCardUseStruct::toString(const CardUseStruct &use)
     QStringList l;
     l << use.card->toString();
 
-    if (use.toCardUse != nullptr) {
-        l << toString(*use.toCardUse);
+    if (use.toCardEffect != nullptr) {
+        l << cardEffectStructToString(*use.toCardEffect);
     } else {
         if (use.to.isEmpty())
             l << QStringLiteral(".");
