@@ -134,7 +134,7 @@ void Settings::init()
     ServerPort = value(QStringLiteral("ServerPort"), 9527U).toUInt();
     LimitRobot = value(QStringLiteral("LimitRobot"), false).toBool();
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     UserName = value(QStringLiteral("UserName"), QString::fromUtf8(qgetenv("USERNAME"))).toString();
 #else
     UserName = value(QStringLiteral("USERNAME"), QString::fromUtf8(qgetenv("USER"))).toString();
