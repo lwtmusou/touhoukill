@@ -71,7 +71,7 @@ Settings::Settings()
 void Settings::init()
 {
     if (!QCoreApplication::arguments().contains(QStringLiteral("-server"))) {
-        QString font_path = value(QStringLiteral("DefaultFontPath"), QStringLiteral("font/simli.ttf")).toString();
+        QString font_path = value(QStringLiteral("DefaultFontPath"), QDir::currentPath() + QStringLiteral("/font/simli.ttf")).toString();
         int font_id = QFontDatabase::addApplicationFont(font_path);
         if (font_id != -1) {
             QString font_family = QFontDatabase::applicationFontFamilies(font_id).first();

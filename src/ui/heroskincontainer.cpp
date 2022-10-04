@@ -299,12 +299,7 @@ void HeroSkinContainer::swapWithSkinItemUsed(int skinIndex)
 
 const QFont &HeroSkinContainer::getAvatarNameFont()
 {
-    // load font
-    static int id = QFontDatabase::addApplicationFont(QStringLiteral("font/simli"));
-    static QString family = QFontDatabase::applicationFontFamilies(id).at(0);
-    static QFont font(family);
-    font.setPixelSize(18);
-    return font;
+    return Config.TinyFont;
 }
 
 void HeroSkinContainer::mousePressEvent(QGraphicsSceneMouseEvent * /*event*/)
