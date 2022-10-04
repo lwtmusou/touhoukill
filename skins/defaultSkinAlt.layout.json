@@ -1,325 +1,503 @@
 {
-"common":
-{
-    "cardNormalWidth": 93,
-    "cardNormalHeight": 130,
-    "cardMainArea": [0, 0, 93, 130],
-    "cardFrameArea": [-5,-5,98, 135],
-    "cardSuitArea": [3, 19, 21, 17],
-    "cardNumberArea": [0, 2, 27, 28],
-    "cardFootnoteArea": [0, 70, 93, 50],
-    "cardAvatarArea": [46, 45, 40, 40],
-    "cardFootnoteFont": ["DroidSansFallback", [12, 12, 3], 0, [255, 255, 255, 255], 1, 10, [0, 0], [20, 20, 20, 255]],
-    "chooseGeneralBoxSwitchIconSizeThreshold": 12,
-    "chooseGeneralBoxSwitchIconEachRow": 6,
-    "chooseGeneralBoxSwitchIconEachRowForTooManyGenerals": 7,
-    "chooseGeneralBoxNoIconThreshold": 21,
-    "chooseGeneralBoxSparseIconSize": [171, 240],
-    "chooseGeneralBoxDenseIconSize": [130, 130],
-    "tinyAvatarSize": [40, 40],
+	"common": {
+		"cardNormalWidth": 93,
+		"cardNormalHeight": 130,
+		"cardMainArea": [0, 0, 93, 130],
+		"cardFrameArea": [-5, -5, 98, 135],
+		"cardSuitArea": [3, 19, 21, 17],
+		"cardNumberArea": [0, 2, 27, 28],
+		"cardFootnoteArea": [0, 70, 93, 50],
+		"cardAvatarArea": [46, 45, 40, 40],
+		"cardFootnoteFont": ["DroidSansFallback", [12, 12, 3], 0, [255, 255, 255, 255], 1, 10, [0, 0],
+			[20, 20, 20, 255]
+		],
+		"chooseGeneralBoxSwitchIconSizeThreshold": 12,
+		"chooseGeneralBoxSwitchIconEachRow": 6,
+		"chooseGeneralBoxSwitchIconEachRowForTooManyGenerals": 7,
+		"chooseGeneralBoxNoIconThreshold": 21,
+		"chooseGeneralBoxSparseIconSize": [171, 240],
+		"chooseGeneralBoxDenseIconSize": [130, 130],
+		"tinyAvatarSize": [40, 40],
 
-    "graphicsBoxBgColor": [0, 0, 0, 220],
-    "graphicsBoxBorderColor": [166, 150, 122],
-    //"graphicsBoxTitleFont": ["wqy-microhei", 16, 2, [228, 213, 160]],
-    "graphicsBoxTitleFont": ["DroidSansFallback", 16, 2, [228, 213, 160]],
+		"graphicsBoxBgColor": [0, 0, 0, 220],
+		"graphicsBoxBorderColor": [166, 150, 122],
+
+		"graphicsBoxTitleFont": ["DroidSansFallback", 16, 2, [228, 213, 160]],
 
 
-    "optionButtonText": ["DroidSansFallback", [18, 18, 0], 0, [255, 255, 255, 255], 1, 10, [0, 0], [50, 50, 50, 200]],
-    "generalButtonPositionIconRegion": [-1, 2, 29, 24],
-    "generalButtonNameRegion": [26, 0, 60, 23],
+		"optionButtonText": ["DroidSansFallback", [18, 18, 0], 0, [255, 255, 255, 255], 1, 10, [0, 0],
+			[50, 50, 50, 200]
+		],
+		"generalButtonPositionIconRegion": [-1, 2, 29, 24],
+		"generalButtonNameRegion": [26, 0, 60, 23],
 
-    // When hp exceeds 5, we use text (e.g. 5/8) instead of drawing more than 5 magatamas. The color
-    // and font are specified below.
-    // All the font in skin file takes the following format:
-    // simple font: ["fontName", fontSize, fontWeight(bold), foreColor(rgba)]
-    // shawdow font: ["fontName", fontSize, fontWeight(bold), foreColor(rgba), shadowRadius,
-    //                shadowDecadeFactor, shadowOffset, shadowDeepestColor]
-    // the shadow radius is the width of shadow on each end; the shadow decade factor specifies how
-    // fast shadow will disappear; specifying a shadow radius of 5 but decade factor of 0 is equivalent
-    // to specify a solid border of width 5.
-    // @todo: adjust these colors!
-    "magatamaFont": [
-        ["DroidSansFallback", [15, 15, -2], 80, [233, 0, 0, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
-        ["DroidSansFallback", [15, 15, -2], 80, [233, 34, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
-        ["DroidSansFallback", [15, 15, -2], 80, [233, 116, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
-        ["DroidSansFallback", [15, 15, -2], 80, [195, 195, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
-        ["DroidSansFallback", [15, 15, -2], 80, [141, 195, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]],
-        ["DroidSansFallback", [15, 15, -2], 80, [66, 174, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]]
-    ],
-    // I realized that some MOD might need a wider background area than the foreground magatamas in order
-    // to draw certain effect. The following factor specifies the number of invisible magatama to be appended.
-    "hpExtraSpaceHolder": 1,
-	
-	"roleNormalBgSize": [46, 47],
-    "roleBoxRect-wei": [3, 3, 19, 19],
-    "roleBoxRect-qun": [23, 3, 19, 19],
-    "roleBoxRect-shu": [3, 23, 19, 19],
-    "roleBoxRect-wu": [23, 23, 19, 19],
-    "roleBoxColor-wei": [39, 121, 170],
-    "roleBoxColor-qun": [195, 177, 84],
-    "roleBoxColor-shu": [172, 49, 32],
-    "roleBoxColor-wu": [85, 164, 52],
-    "roleDarkColor": [125, 125, 126],
-	
-	"generalBoxDestSeatFont": ["SimSun", 12, 2, [105, 103, 91]],
-	"generalCardItemCompanionPromptRegion": [-1, 102, 95, 15]
-},
-"room":
-{
-    "scenePadding": 0,
-    "roleBoxHeight": 60,
-    "chatTextBoxHeight": 35,
-    "logBoxHeightPercentage": 0.6,
-    "chatBoxHeightPercentage": 0.4,
-    "infoPlaneWidthPercentage": 0.2,
-    "photoRoomPadding": 10,
-    "photoDashboardPadding": 40,
-    "photoHDistance": 32,
-    "photoVDistance": 32,
-    "discardPileMinWidth": 465,
-    "discardPilePadding": 50,
-    "minimumSceneSize": [1130, 650], // if smaller than this size, switch to compact skin
-    //make sure that default skin's minimum scene size is smaller than maximum scene size in compact skin to avoid deadloop!!!
-    "minimumSceneSize-10player": [1050, 800]
-},
-"photo":
-{
-    "normalWidth": 175,
-    "normalHeight": 210,
-    "mainFrameArea": [0, 0, 175, 210],
-    "canvasArea": [0, 0, 175, 210],
-    "handCardNumIconArea": [-8, 125, 30, 18],
-    "handCardFont": ["DroidSansFallback", [12, 12, -1], 20, [255, 255, 255, 255], 1, 30, [0, 0], [20, 20, 20, 200]],
-    "equipAreas": [[1, 137, 162, 21], [1, 151, 162, 21], [1, 165, 162, 21], [1, 179, 162, 21], [1, 193, 162, 21]],
-    "equipImageArea": [0, 1, 150, 19],
-    //"equipTextArea": [35, -5, 85, 21], // need adjustment
-    "equipSuitArea": [117, 2, 21, 17],
-    //"equipSuitArea": [117, 2, 20, 13],
-    //"equipDistanceArea": [14, -5, 30, 21], // need adjustment
-    "equipPointArea": [106, -4, 25, 25],
-    "equipTianyiArea": [20, 2, 21, 17],// for skill mokai
-    //"equipFont": ["FZLiBian-S02", [14, 14, 0], 50, [0, 0, 0, 255], 3, 50, [0, 0], [255, 255, 190, 255]],
-    "equipPointFont": ["DroidSansFallback", [13, 13, 3], 20, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],
-    "delayedTrickFirstRegion": [-13, 16, 28, 28],
-    "delayedTrickStep": [0, 19],
-    "roleComboBoxPos": [140, 1],
-    "roleShownArea": [135, -5, 38, 38],
-    "changePrimaryHeroSkinBtnPos": [25, 35],
-	"changeSecondaryHeroSkinBtnPos": [110, 35],
-	
-    "borderWidth": 15,
-    "avatarImageType": 1,
-    "secondaryAvatarImageType": 4,
-    "primaryAvatarImageType": 6,
-    "circleImageType": 0,
-    "avatarArea": [0, 0, 175, 208],
-	"primaryAvatarArea": [0, 0, 86, 208], // not used yet
-    "secondaryAvatarArea": [88, 1, 86, 208],
-    "circleArea": [1, 1, 175, 208],
-    "avatarNameArea": [3, 23, 100, 100],
-    "avatarNameFont": ["@simli", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
-    "smallAvatarNameArea": [88, 23, 100, 100],
-    "smallAvatarNameFont": ["@simli", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
-    "kingdomIconArea": [2, -1, 28, 28],
-    "kingdomMaskArea": [-2, 14, 36, 120],
-    "screenNameArea": [0, 0, 157, 15],
-    "screenNameFont": ["DroidSansFallback", 12, 0, [255, 255, 255, 255], 0, 10, [0, 0], [20, 20, 20, 155]],
-    "magatamasHorizontal": false,
-    "magatamaSize": [22, 20],
-    "magatamaImageArea": [2, 2, 18, 19],
-    "magatamaImageSubArea": [3, 2, 18, 19], //for skill banling
-    "magatamasBgVisible": true,
-    //"magatamasAnchor": ["bottomRight", [156, 194]],
-    "magatamasAnchor": ["bottomRight", [174, 225]],
-    "magatamasSubAnchor": ["topRight", [174, 35]],
-    "cardMoveArea": [-15, 35, 200, 130],
-    "phaseArea": [25, 207, 140, 12],
-    "onlineStatusArea": [127, 24, 30, 25],
-    "onlineStatusBgColor": [0, 0, 0, 0],
-    "onlineStatusFont": ["DroidSansFallback",12, 0, [255, 255, 255, 255], 3, 10, [0, 0], [20, 20, 20, 155]],
-    "skillNameArea": [45, 30, 300, 50],
-    "skillNameFont": ["simli", 30, 0, [255, 255, 255, 255], 2, 20, [0, 0], [255, 20, 255, 128]],
-    "progressBarArea": ["topLeft", "bottomLeft", [0, 10], [160, 10]],
-    "progressBarHorizontal": true,
-    "privatePileStartPos": [27, 18],
-    "privatePileStep": [0, 16],
-    "privatePileButtonSize": [60, 16],
-    "actionedIconRegion": [100, 78, 52, 21],
-    "saveMeIconRegion": [25, 46, 122, 50],
-    "votesIconRegion": [53, 66, 50, 50],
-    "chainedIconRegion": [0, 95, 175, 19],
-    "deathIconRegion": [0, 50, 157, 102],
-    "drankMaskColor": [250, 0, 0, 115],
-    "duanchangMaskColor": [255, 255, 255, 128],
-    "deathEffectColor": [50, 50, 50, 255],
-    "extraSkillArea": [32, 116, 56, 20],
-    "extraSkillFont": ["simli", [16, 16, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
-    "extraSkillTextArea": [32, 113, 56, 20],
-	"seatIconRegion": [4, 1, 23, 16]
-},
-"dashboard":
-{
-    "leftWidth": 164,
-   "rightWidth": 200,
-   "rightWidthDouble": 400, //300,
-    "reverseSelectionWidth": 10,
-    "normalHeight": 200,
-    "floatingAreaHeight": 50,
 
-    "handCardNumIconArea": [-130, 50, 30, 18],
-    "handCardFont": ["DroidSansFallback", [12, 12, -1], 20, [255, 255, 255, 255], 1, 30, [0, 0], [20, 20, 20, 200]],
-    //ensure that these areas belong to left frame
-    "equipAreas": [[5, 38, 149, 32], [5, 70, 149, 32], [5, 102, 149, 32], [5, 134, 149, 32],[5, 166, 149, 32]],
-    "equipBorderPos": [-6, -6],
-    "equipSelectedOffset": [10, 0],
-    "equipImageArea": [0, 0, 149, 25],
-    "equipTextArea": [0, 0, 0, 0],
-    "equipSuitArea": [128, 5, 21, 17],
-    "equipDistanceArea": [0, 0, 0, 0],
-    "equipPointArea": [117, -5, 30, 30],
-    "equipTianyiArea": [0, 5, 21, 17],// for skill mokai
-    "equipFont": ["simli", 9, 60, [0, 0, 0, 255], 3, 8, [0, 0], [240, 240, 240, 200]],
-    "equipPointFont": ["DroidSansFallback", [14, 14, 3], 20, [0, 0, 0, 255], 1, 0, [0, 0], [240, 240, 240, 200]],
-    "delayedTrickFirstRegion": [0, 0, 28, 28],
-    "delayedTrickStep": [28, 0],
-    // the width of the region to disperse cards when the cards are to be moved to the special pile.
-    "disperseWidth": 250,
-    "markTextArea": [0, 0, 50, 50],
-    "roleComboBoxPos": [-28, 47],
-    "roleShownArea": [-35, 41, 38, 38],
-    "changePrimaryHeroSkinBtnPos": [25, 40],
-	"changeSecondaryHeroSkinBtnPos": [225, 40],
-    "borderWidth": 6,
-    "avatarImageType": 1,
-    "secondaryAvatarImageType":1,// 4,
-    "primaryAvatarImageType": 1, //6,
-    "circleImageType": 0,
-    //"avatarArea": [0,  0, 175, 210],
-    "avatarArea": [0,  0, 200, 240],
-	"avatarAreaDouble": [0,  0, 400, 240], //[0,  0, 300, 240], //head of double generals 
-	"primaryAvatarArea": [0, 0, 200, 240],//[0, 0, 150, 240],
-	"secondaryAvatarArea": [201, 0, 200, 240],//[151, 0, 150, 240],
-    //"circleArea": [8, 10, 134, 134],
-	"circleArea": [1, 1, 400, 240],//[1, 1, 300, 240],
-    "avatarNameArea": [-67, -30, 100, 100],
-	"headAvatarNameArea": [0, -30, 100, 100],
-	"smallAvatarNameArea": [200, -30, 100, 100],//[-67, -30, 100, 100],
-    "focusFrameArea": [0, 0, 200, 240],
-	"focusFrameAreaDouble": [0, 0, 400, 240],//[0, 0, 300, 240],
-    //"smallAvatarNameArea": [84, 36, 18, 36],
-    "avatarNameFont": ["simli", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
-	"smallAvatarNameFont": ["simli", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
 
-    // "avatarNameFont": ["@simli", [12, 12, 1], 60, [255, 255, 255, 255], 5, 8, [0, 0], [50, 50, 50, 150]],
-    // "smallAvatarNameFont": ["@simli", [12, 12, 1], 40, [255, 255, 255, 255], 2, 10, [0, 0], [50, 50, 50, 150]],
 
-    "skillNameArea": [55, 30, 300, 50],
-	"secondarySkillNameArea": [255, 30, 300, 50],
-    "skillNameFont": ["simli", 30, 0, [255, 255, 255, 255], 2, 20, [0, 0], [255, 20, 255, 128]],
 
-    // must be in one of the following format:
-    // [offsetX, offestY, sizeX, sizeY]
-    // [childAnchor, parentAnchor, [offsetX, offsetY]]
-    // [childAnchor, parentAnchor, [offsetX, offsetY], [sizeX, sizeY]]
-    // if childAnchor and/or parentAnchor are not set, then area will be aligned using top left corner of both child and parent
-    // otherwise, the corner of child specified by "childAnchor" will first be aligned to that of parent specified by "parentAnchor",
-    // and offset if applied after the alignment is done. When the 4th parameter [sizeX, sizeY] is specified, fixed size of the area
-    // is used; otherwise, it means area's size is variable with the content of that area, the program will adjust the size automatically
-    "markTextArea": ["bottomRight", "bottomRight",  [-160, -10]],
-    //"markTextArea": ["bottomCenter", "bottomCenter",  [50, -10]],
-    "phaseArea": ["bottomLeft", "bottomLeft", [-50, 0], [209, 20]],
 
-    "kingdomIconArea": [-94, 10, 28, 28],
-	"kingdomIconAreaDouble": [-24, 10, 28, 28],
-    "dashboardKingdomMaskArea": [-100, -2, 160, 50],
-	"dashboardPrimaryKingdomMaskArea": [-20, -2, 140, 50],
-	"dashboardSecondaryKingdomMaskArea": [200, -2, 120, 50],
-    //"screenNameArea": [0, 0, 157, 25],
-    "screenNameArea": [20, 0, 157, 25],
-	"screenNameAreaDouble": [80, 0, 157, 25],
-    "screenNameFont": ["DroidSansFallback", 12, 0, [255, 255, 255, 255], 2, 10, [0, 0], [0, 0, 0, 224]],
-    "magatamasHorizontal": false,
-    "magatamaSize": [23, 30],
-    "magatamaImageArea": [0, 6, 22, 26],
-    "magatamaImageSubArea": [0, 6, 22, 26], //for skill banling
-    "magatamasBgVisible": true,
-    "magatamasAnchor": ["rightBottom", [195, 260]], //right
-	"magatamasAnchorDouble": ["rightBottom", [395, 260]], //right double
-    "magatamasSubAnchor": ["leftBottom", [0, 260]],
-    "cardMoveArea": [-50, 65, 200, 130],
-    "progressBarArea": ["bottomCenter", "bottomCenter", [-8, 0], [300, 18]],
-    "progressBarHorizontal": true,
-    //"privatePileStartPos": [10, 30],
-    "privatePileStartPos": [70, 5],
-	"privatePileStartPosDouble": [140, 5],
-    "privatePileStep": [0, 16],
-    "privatePileButtonSize": [60, 16],
-    "actionedIconRegion": [50, 77, 52, 21],
-    "saveMeIconRegion": [55, 15, 122, 50],
-    "votesIconRegion": [70, 52, 50, 50],
-    "chainedIconRegion": [0, 90, 194, 19],
-    "deathIconRegion": ["center", "center", [0, 0], [157, 102]],
-    "drankMaskColor": [250, 0, 0, 115],
-    "duanchangMaskColor": [255, 255, 255, 128],
-    //"extraSkillArea": [32, 116, 56, 20],
-    //"extraSkillFont": ["SimLi", [16, 16, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
-    //"extraSkillTextArea": [32, 113, 56, 20],
-    "buttonSetSize": [100, 195],
-    "confirmButtonArea": [6, 10, 75, 90],
-    "cancelButtonArea": [1, 112, 75, 90],
-    "discardButtonArea": [67, 60, 77, 95],
-    "trustButtonArea": [62, 162, 70, 70],
-    "trustEffectColor": [38, 26, 66],
-	"generalShadowColor": [0, 0, 0, 180],
+
+
+
+
+
+		"magatamaFont": [
+			["DroidSansFallback", [15, 15, -2], 80, [233, 0, 0, 255], 2, 10, [0, 0],
+				[20, 20, 20, 155]
+			],
+			["DroidSansFallback", [15, 15, -2], 80, [233, 34, 34, 255], 2, 10, [0, 0],
+				[20, 20, 20, 155]
+			],
+			["DroidSansFallback", [15, 15, -2], 80, [233, 116, 34, 255], 2, 10, [0, 0],
+				[20, 20, 20, 155]
+			],
+			["DroidSansFallback", [15, 15, -2], 80, [195, 195, 34, 255], 2, 10, [0, 0],
+				[20, 20, 20, 155]
+			],
+			["DroidSansFallback", [15, 15, -2], 80, [141, 195, 34, 255], 2, 10, [0, 0],
+				[20, 20, 20, 155]
+			],
+			["DroidSansFallback", [15, 15, -2], 80, [66, 174, 34, 255], 2, 10, [0, 0],
+				[20, 20, 20, 155]
+			]
+		],
+
+
+		"hpExtraSpaceHolder": 1,
+
+		"roleNormalBgSize": [46, 47],
+		"roleBoxRect-wei": [3, 3, 19, 19],
+		"roleBoxRect-qun": [23, 3, 19, 19],
+		"roleBoxRect-shu": [3, 23, 19, 19],
+		"roleBoxRect-wu": [23, 23, 19, 19],
+		"roleBoxColor-wei": [39, 121, 170],
+		"roleBoxColor-qun": [195, 177, 84],
+		"roleBoxColor-shu": [172, 49, 32],
+		"roleBoxColor-wu": [85, 164, 52],
+		"roleDarkColor": [125, 125, 126],
+
+		"generalBoxDestSeatFont": ["SimSun", 12, 2, [105, 103, 91]],
+		"generalCardItemCompanionPromptRegion": [-1, 102, 95, 15]
+	},
+	"room": {
+		"scenePadding": 0,
+		"roleBoxHeight": 60,
+		"chatTextBoxHeight": 35,
+		"logBoxHeightPercentage": 0.6,
+		"chatBoxHeightPercentage": 0.4,
+		"infoPlaneWidthPercentage": 0.2,
+		"photoRoomPadding": 10,
+		"photoDashboardPadding": 40,
+		"photoHDistance": 32,
+		"photoVDistance": 32,
+		"discardPileMinWidth": 465,
+		"discardPilePadding": 50,
+		"minimumSceneSize": [1130, 650],
+
+		"minimumSceneSize-10player": [1050, 800]
+	},
+	"photo": {
+		"normalWidth": 175,
+		"normalHeight": 210,
+		"mainFrameArea": [0, 0, 175, 210],
+		"canvasArea": [0, 0, 175, 210],
+		"handCardNumIconArea": [-8, 125, 30, 18],
+		"handCardFont": ["DroidSansFallback", [12, 12, -1], 20, [255, 255, 255, 255], 1, 30, [0, 0],
+			[20, 20, 20, 200]
+		],
+		"equipAreas": [
+			[1, 137, 162, 21],
+			[1, 151, 162, 21],
+			[1, 165, 162, 21],
+			[1, 179, 162, 21],
+			[1, 193, 162, 21]
+		],
+		"equipImageArea": [0, 1, 150, 19],
+
+		"equipSuitArea": [117, 2, 21, 17],
+
+
+		"equipPointArea": [106, -4, 25, 25],
+		"equipTianyiArea": [20, 2, 21, 17],
+
+		"equipPointFont": ["DroidSansFallback", [13, 13, 3], 20, [0, 0, 0, 255], 1, 1, [0, 0],
+			[255, 255, 190, 128]
+		],
+		"delayedTrickFirstRegion": [-13, 16, 28, 28],
+		"delayedTrickStep": [0, 19],
+		"roleComboBoxPos": [140, 1],
+		"roleShownArea": [135, -5, 38, 38],
+		"changePrimaryHeroSkinBtnPos": [25, 35],
+		"changeSecondaryHeroSkinBtnPos": [110, 35],
+
+		"borderWidth": 15,
+		"avatarImageType": 1,
+		"secondaryAvatarImageType": 4,
+		"primaryAvatarImageType": 6,
+		"circleImageType": 0,
+		"avatarArea": [0, 0, 175, 208],
+		"primaryAvatarArea": [0, 0, 86, 208],
+		"secondaryAvatarArea": [88, 1, 86, 208],
+		"circleArea": [1, 1, 175, 208],
+		"avatarNameArea": [3, 23, 100, 100],
+		"avatarNameFont": ["@simli", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0],
+			[50, 50, 50, 200]
+		],
+		"smallAvatarNameArea": [88, 23, 100, 100],
+		"smallAvatarNameFont": ["@simli", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0],
+			[50, 50, 50, 200]
+		],
+		"kingdomIconArea": [2, -1, 28, 28],
+		"kingdomMaskArea": [-2, 14, 36, 120],
+		"screenNameArea": [0, 0, 157, 15],
+		"screenNameFont": ["DroidSansFallback", 12, 0, [255, 255, 255, 255], 0, 10, [0, 0],
+			[20, 20, 20, 155]
+		],
+		"magatamasHorizontal": false,
+		"magatamaSize": [22, 20],
+		"magatamaImageArea": [2, 2, 18, 19],
+		"magatamaImageSubArea": [3, 2, 18, 19],
+		"magatamasBgVisible": true,
+
+		"magatamasAnchor": ["bottomRight", [174, 225]],
+		"magatamasSubAnchor": ["topRight", [174, 35]],
+		"cardMoveArea": [-15, 35, 200, 130],
+		"phaseArea": [25, 207, 140, 12],
+		"onlineStatusArea": [127, 24, 30, 25],
+		"onlineStatusBgColor": [0, 0, 0, 0],
+		"onlineStatusFont": ["DroidSansFallback", 12, 0, [255, 255, 255, 255], 3, 10, [0, 0],
+			[20, 20, 20, 155]
+		],
+		"skillNameArea": [45, 30, 300, 50],
+		"skillNameFont": ["simli", 30, 0, [255, 255, 255, 255], 2, 20, [0, 0],
+			[255, 20, 255, 128]
+		],
+		"progressBarArea": ["topLeft", "bottomLeft", [0, 10],
+			[160, 10]
+		],
+		"progressBarHorizontal": true,
+		"privatePileStartPos": [27, 18],
+		"privatePileStep": [0, 16],
+		"privatePileButtonSize": [60, 16],
+		"actionedIconRegion": [100, 78, 52, 21],
+		"saveMeIconRegion": [25, 46, 122, 50],
+		"votesIconRegion": [53, 66, 50, 50],
+		"chainedIconRegion": [0, 95, 175, 19],
+		"deathIconRegion": [0, 50, 157, 102],
+		"drankMaskColor": [250, 0, 0, 115],
+		"duanchangMaskColor": [255, 255, 255, 128],
+		"deathEffectColor": [50, 50, 50, 255],
+		"extraSkillArea": [32, 116, 56, 20],
+		"extraSkillFont": ["simli", [16, 16, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0],
+			[102, 16, 120, 255]
+		],
+		"extraSkillTextArea": [32, 113, 56, 20],
+		"seatIconRegion": [4, 1, 23, 16]
+	},
+	"dashboard": {
+		"leftWidth": 164,
+		"rightWidth": 200,
+		"rightWidthDouble": 400,
+		"reverseSelectionWidth": 10,
+		"normalHeight": 200,
+		"floatingAreaHeight": 50,
+
+		"handCardNumIconArea": [-130, 50, 30, 18],
+		"handCardFont": ["DroidSansFallback", [12, 12, -1], 20, [255, 255, 255, 255], 1, 30, [0, 0],
+			[20, 20, 20, 200]
+		],
+
+		"equipAreas": [
+			[5, 38, 149, 32],
+			[5, 70, 149, 32],
+			[5, 102, 149, 32],
+			[5, 134, 149, 32],
+			[5, 166, 149, 32]
+		],
+		"equipBorderPos": [-6, -6],
+		"equipSelectedOffset": [10, 0],
+		"equipImageArea": [0, 0, 149, 25],
+		"equipTextArea": [0, 0, 0, 0],
+		"equipSuitArea": [128, 5, 21, 17],
+		"equipDistanceArea": [0, 0, 0, 0],
+		"equipPointArea": [117, -5, 30, 30],
+		"equipTianyiArea": [0, 5, 21, 17],
+		"equipFont": ["simli", 9, 60, [0, 0, 0, 255], 3, 8, [0, 0],
+			[240, 240, 240, 200]
+		],
+		"equipPointFont": ["DroidSansFallback", [14, 14, 3], 20, [0, 0, 0, 255], 1, 0, [0, 0],
+			[240, 240, 240, 200]
+		],
+		"delayedTrickFirstRegion": [0, 0, 28, 28],
+		"delayedTrickStep": [28, 0],
+
+		"disperseWidth": 250,
+		"roleComboBoxPos": [-28, 47],
+		"roleShownArea": [-35, 41, 38, 38],
+		"changePrimaryHeroSkinBtnPos": [25, 40],
+		"changeSecondaryHeroSkinBtnPos": [225, 40],
+		"borderWidth": 6,
+		"avatarImageType": 1,
+		"secondaryAvatarImageType": 1,
+		"primaryAvatarImageType": 1,
+		"circleImageType": 0,
+
+		"avatarArea": [0, 0, 200, 240],
+		"avatarAreaDouble": [0, 0, 400, 240],
+		"primaryAvatarArea": [0, 0, 200, 240],
+		"secondaryAvatarArea": [201, 0, 200, 240],
+
+		"circleArea": [1, 1, 400, 240],
+		"avatarNameArea": [-67, -30, 100, 100],
+		"headAvatarNameArea": [0, -30, 100, 100],
+		"smallAvatarNameArea": [200, -30, 100, 100],
+		"focusFrameArea": [0, 0, 200, 240],
+		"focusFrameAreaDouble": [0, 0, 400, 240],
+
+		"avatarNameFont": ["simli", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0],
+			[50, 50, 50, 200]
+		],
+		"smallAvatarNameFont": ["simli", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0],
+			[50, 50, 50, 200]
+		],
+
+
+
+
+		"skillNameArea": [55, 30, 300, 50],
+		"secondarySkillNameArea": [255, 30, 300, 50],
+		"skillNameFont": ["simli", 30, 0, [255, 255, 255, 255], 2, 20, [0, 0],
+			[255, 20, 255, 128]
+		],
+
+
+
+
+
+
+
+
+
+		"markTextArea": ["bottomRight", "bottomRight", [-160, -10]],
+
+		"phaseArea": ["bottomLeft", "bottomLeft", [-50, 0],
+			[209, 20]
+		],
+
+		"kingdomIconArea": [-94, 10, 28, 28],
+		"kingdomIconAreaDouble": [-24, 10, 28, 28],
+		"dashboardKingdomMaskArea": [-100, -2, 160, 50],
+		"dashboardPrimaryKingdomMaskArea": [-20, -2, 140, 50],
+		"dashboardSecondaryKingdomMaskArea": [200, -2, 120, 50],
+
+		"screenNameArea": [20, 0, 157, 25],
+		"screenNameAreaDouble": [80, 0, 157, 25],
+		"screenNameFont": ["DroidSansFallback", 12, 0, [255, 255, 255, 255], 2, 10, [0, 0],
+			[0, 0, 0, 224]
+		],
+		"magatamasHorizontal": false,
+		"magatamaSize": [23, 30],
+		"magatamaImageArea": [0, 6, 22, 26],
+		"magatamaImageSubArea": [0, 6, 22, 26],
+		"magatamasBgVisible": true,
+		"magatamasAnchor": ["rightBottom", [195, 260]],
+		"magatamasAnchorDouble": ["rightBottom", [395, 260]],
+		"magatamasSubAnchor": ["leftBottom", [0, 260]],
+		"cardMoveArea": [-50, 65, 200, 130],
+		"progressBarArea": ["bottomCenter", "bottomCenter", [-8, 0],
+			[300, 18]
+		],
+		"progressBarHorizontal": true,
+
+		"privatePileStartPos": [70, 5],
+		"privatePileStartPosDouble": [140, 5],
+		"privatePileStep": [0, 16],
+		"privatePileButtonSize": [60, 16],
+		"actionedIconRegion": [50, 77, 52, 21],
+		"saveMeIconRegion": [55, 15, 122, 50],
+		"votesIconRegion": [70, 52, 50, 50],
+		"chainedIconRegion": [0, 90, 194, 19],
+		"deathIconRegion": ["center", "center", [0, 0],
+			[157, 102]
+		],
+		"drankMaskColor": [250, 0, 0, 115],
+		"duanchangMaskColor": [255, 255, 255, 128],
+
+
+
+		"buttonSetSize": [100, 195],
+		"confirmButtonArea": [6, 10, 75, 90],
+		"cancelButtonArea": [1, 112, 75, 90],
+		"discardButtonArea": [67, 60, 77, 95],
+		"trustButtonArea": [62, 162, 70, 70],
+		"trustEffectColor": [38, 26, 66],
+		"generalShadowColor": [0, 0, 0, 180],
 		"hiddenMarkRegion": [4, 0, 200, 146],
-	"hiddenMarkRegion3": [4, -3, 170, 200],
-    "hiddenMarkRegion2": [201, 0, 200, 146],
-	//"seatIconRegion": [-32, 118, 30, 30]
-	"seatIconRegion": [-94, 10, 30, 30],
-	"seatIconRegionDouble": [-24, 10, 30, 30]
-},
-"skillButton":
-{
-"height": 26,
-"width": [136, 67, 45],
-//"width": 0,
-"textArea": [[19, 2, 112, 20], [20, 2, 44, 20], [9, 2, 40, 20]],
-"textAreaDown": [[20, 3, 112, 20], [21, 3, 44, 20], [10, 3, 40, 20]],
-"textFont": [["fzktf", [13, 13, 2], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // wide
-             ["fzktf", [13, 13, 1], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // medium
-             ["fzktf", [13, 13, 0], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]]],  // narrow
+		"hiddenMarkRegion3": [4, -3, 170, 200],
+		"hiddenMarkRegion2": [201, 0, 200, 146],
 
-// The following settings override the text color defined above
-// xxButtonColor = [normalColor, downColor, disabledColor, hoverColor]
-"awakenFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]], // normalColor = [penColor, shadowColor]
-                    [[255, 255, 255, 255], [0, 0, 0, 120]], // downColor = [penColor, shadowColor]
-                    [[255, 255, 255, 255], [0, 0, 0, 120]], // disableColor = [penColor, shadowColor]
-                    [[255, 255, 255, 255], [0, 0, 0, 120]], // hoverColor = [penColor, shadowColor]
-					[[255, 255, 255, 255], [0, 0, 0, 120]]], // preshowColor = [penColor, shadowColor]
-"compulsoryFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
-                        [[255, 255, 255, 255], [0, 0, 0, 120]],
-                        [[255, 255, 255, 255], [0, 0, 0, 120]],
-						[[255, 255, 255, 255], [0, 0, 0, 120]],
-                        [[255, 255, 255, 255], [0, 0, 0, 120]]],
-"frequentFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
-                      [[255, 255, 255, 255], [0, 0, 0, 120]],
-                      [[255, 255, 255, 255], [0, 0, 0, 120]],
-					  [[255, 255, 255, 255], [0, 0, 0, 120]],
-                      [[255, 255, 255, 255], [0, 0, 0, 120]]],
-"oneoffFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
-                    [[255, 255, 255, 255], [0, 0, 0, 120]],
-                    [[255, 255, 255, 255], [0, 0, 0, 120]],
-					[[255, 255, 255, 255], [0, 0, 0, 120]],
-                    [[255, 255, 255, 255], [0, 0, 0, 120]]],
-"proactiveFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
-                       [[255, 255, 255, 255], [0, 0, 0, 120]],
-                       [[255, 255, 255, 255], [0, 0, 0, 120]],
-					   [[255, 255, 255, 255], [0, 0, 0, 120]],
-                       [[255, 255, 255, 255], [0, 0, 0, 120]]],
-"attachedlordFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
-                          [[255, 255, 255, 255], [0, 0, 0, 120]],
-                          [[255, 255, 255, 255], [0, 0, 0, 120]],
-						  [[255, 255, 255, 255], [0, 0, 0, 120]],
-                          [[255, 255, 255, 255], [0, 0, 0, 120]]]
-}
+		"seatIconRegion": [-94, 10, 30, 30],
+		"seatIconRegionDouble": [-24, 10, 30, 30]
+	},
+	"skillButton": {
+		"height": 26,
+		"width": [136, 67, 45],
+
+		"textArea": [
+			[19, 2, 112, 20],
+			[20, 2, 44, 20],
+			[9, 2, 40, 20]
+		],
+		"textAreaDown": [
+			[20, 3, 112, 20],
+			[21, 3, 44, 20],
+			[10, 3, 40, 20]
+		],
+		"textFont": [
+			["fzktf", [13, 13, 2], 50, [0, 0, 0, 255], 1, 1, [0, 0],
+				[255, 255, 190, 128]
+			],
+			["fzktf", [13, 13, 1], 50, [0, 0, 0, 255], 1, 1, [0, 0],
+				[255, 255, 190, 128]
+			],
+			["fzktf", [13, 13, 0], 50, [0, 0, 0, 255], 1, 1, [0, 0],
+				[255, 255, 190, 128]
+			]
+		],
+
+
+
+		"awakenFontColor": [
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			]
+		],
+		"compulsoryFontColor": [
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			]
+		],
+		"frequentFontColor": [
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			]
+		],
+		"oneoffFontColor": [
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			]
+		],
+		"proactiveFontColor": [
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			]
+		],
+		"attachedlordFontColor": [
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			],
+			[
+				[255, 255, 255, 255],
+				[0, 0, 0, 120]
+			]
+		]
+	}
 }
