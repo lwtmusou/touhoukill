@@ -13,6 +13,7 @@ jobs:
     # jammy (22.04) also features Qt 5.15 while focal (20.04) still features 5.12, bionic (18.04) features 5.9
     runs-on: ubuntu-22.04
     strategy:
+      fail-fast: false
       matrix:
         dependency:
           - dep:
@@ -25,6 +26,7 @@ jobs:
             optionalDependency: liblua5.4-dev libvorbis-dev
 
     name: build-ubuntu2204${{ matrix.dependency.dep }}
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v2
         with:
@@ -48,6 +50,7 @@ jobs:
   build-macos-selfBuiltQt:
     # This matrix uses self-built Qt (by Fsu0413)
     strategy:
+      fail-fast: false
       matrix:
         macOS:
           - qt5url: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt5.15/macOS-x86_64/Qt5.15.6-macOS-x86_64-AppleClang12.0.5-20220915.tar.xz
@@ -58,6 +61,7 @@ jobs:
 
     name: build-macOS${{ matrix.runner }}-selfBuilt
     runs-on: macos-${{ matrix.runner }}
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v2
         with:
@@ -93,6 +97,7 @@ jobs:
     # This matrix uses prebuilt Qt from Homebrew
     # macOS runners have vorbis preinstalled by Homebrew, so we uninstall it before running our workflow
     strategy:
+      fail-fast: false
       matrix:
         dependency:
           - dep:
@@ -107,6 +112,7 @@ jobs:
 
     name: build-macOS${{ matrix.runner }}-Homebrew${{ matrix.dependency.dep }}
     runs-on: macos-${{ matrix.runner }}
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v2
         with:
@@ -130,6 +136,7 @@ jobs:
   build-msvc:
     # This matrix uses self-built Qt (by Fsu0413)
     strategy:
+      fail-fast: false
       matrix:
         VC:
           - ver: 2019
@@ -149,6 +156,7 @@ jobs:
 
     name: build-MSVC-${{ matrix.VC.ver }}
     runs-on: ${{ matrix.VC.runson }}
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v2
         with:
@@ -188,6 +196,7 @@ jobs:
   build-mingw:
     # This matrix uses self-built Qt (by Fsu0413)
     strategy:
+      fail-fast: false
       matrix:
         mingw:
           - qtver: 5
@@ -203,6 +212,7 @@ jobs:
 
     name: build-mingw-qt${{ matrix.mingw.qtver }}
     runs-on: windows-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v2
         with:
@@ -241,6 +251,7 @@ jobs:
     # This matrix uses self-built Qt (by Fsu0413)
     runs-on: windows-latest
     strategy:
+      fail-fast: false
       matrix:
         clang:
           - ver: msvcrt
@@ -255,6 +266,7 @@ jobs:
             qt6name: Qt6.4.0-Windows-x86_64-llvm-mingw-15.0.0-ucrt
 
     name: build-mingwclang-${{ matrix.clang.ver }}
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v2
         with:
@@ -297,6 +309,7 @@ jobs:
     # This matrix uses prebuilt Qt from MSYS2
     runs-on: windows-latest
     strategy:
+      fail-fast: false
       matrix:
         msys: [
           { sys: mingw64, env: x86_64 },
@@ -312,7 +325,9 @@ jobs:
             optionalDependency: libvorbis
           - dep: -Lua-vorbis
             optionalDependency: lua libvorbis
+
     name: build-msys-${{ matrix.msys.sys }}${{ matrix.dependency.dep }}
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v2
         with:
