@@ -27,7 +27,6 @@ public:
     QFont AppFont;
     QFont UIFont;
     QColor TextEditColor;
-    QColor ToolTipBackgroundColor;
 
     // server side
     QString ServerName;

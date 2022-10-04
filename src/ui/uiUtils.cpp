@@ -77,7 +77,11 @@ QColor QSanUiUtils::getKingdomColor(const QString &kingdom)
         QMapIterator<QString, QVariant> itor(map);
         while (itor.hasNext()) {
             itor.next();
-            QColor color(itor.value().toString());
+            QColor color = QColor
+#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
+                ::fromString
+#endif
+                (itor.value().toString());
             if (!color.isValid()) {
                 qWarning("Invalid color for kingdom %s", qPrintable(itor.key()));
                 color = QColor(128, 128, 128);

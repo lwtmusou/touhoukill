@@ -89,8 +89,17 @@ void Settings::init()
 
         AppFont = value(QStringLiteral("AppFont"), QApplication::font("QMainWindow")).value<QFont>();
         UIFont = value(QStringLiteral("UIFont"), QApplication::font("QTextEdit")).value<QFont>();
-        TextEditColor = QColor(value(QStringLiteral("TextEditColor"), QStringLiteral("white")).toString());
-        ToolTipBackgroundColor = value(QStringLiteral("ToolTipBackgroundColor"), QStringLiteral("#000000")).toString();
+
+        QVariant TextEditColorV = value(QStringLiteral("TextEditColor"), QColor(Qt::white));
+        if (TextEditColorV.canConvert<QColor>()) {
+            TextEditColor = TextEditColorV.value<QColor>();
+        } else {
+            TextEditColor = QColor
+#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
+                ::fromString
+#endif
+                (TextEditColorV.toString());
+        }
     }
 
     CountDownSeconds = value(QStringLiteral("CountDownSeconds"), 3).toInt();
