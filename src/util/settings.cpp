@@ -134,11 +134,15 @@ void Settings::init()
     ServerPort = value(QStringLiteral("ServerPort"), 9527U).toUInt();
     LimitRobot = value(QStringLiteral("LimitRobot"), false).toBool();
 
+    UserName = value(QStringLiteral("UserName"),
+                     QString::fromUtf8(qgetenv(
 #ifdef Q_OS_WIN
-    UserName = value(QStringLiteral("UserName"), QString::fromUtf8(qgetenv("USERNAME"))).toString();
+                         "USERNAME"
 #else
-    UserName = value(QStringLiteral("USERNAME"), QString::fromUtf8(qgetenv("USER"))).toString();
+                         "USER"
 #endif
+                         )))
+                   .toString();
 
     if (UserName == QStringLiteral("Admin") || UserName == QStringLiteral("Administrator"))
         UserName = tr("Sanguosha-fans");
