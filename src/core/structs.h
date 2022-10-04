@@ -272,13 +272,12 @@ struct QSGS_CORE_EXPORT PhaseSkippingStruct
 
 struct QSGS_CORE_EXPORT CardResponseStruct
 {
-    explicit CardResponseStruct(const Card *card = nullptr, Player *from = nullptr, bool isRetrial = false, bool isProvision = false, Player *to = nullptr);
+    explicit CardResponseStruct(const Card *card = nullptr, Player *from = nullptr, bool isRetrial = false, bool isProvision = false);
 
     const Card *m_card;
     Player *from;
     bool m_isRetrial;
     bool m_isProvision;
-    Player *to;
     bool m_isHandcard;
     bool m_isNullified;
     bool m_isShowncard;

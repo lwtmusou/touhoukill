@@ -554,12 +554,11 @@ PhaseSkippingStruct::PhaseSkippingStruct(Player *player, QSanguosha::Phase phase
 {
 }
 
-CardResponseStruct::CardResponseStruct(const Card *card, Player *from, bool isRetrial, bool isProvision, Player *to)
+CardResponseStruct::CardResponseStruct(const Card *card, Player *from, bool isRetrial, bool isProvision)
     : m_card(card)
     , from(from)
     , m_isRetrial(isRetrial)
     , m_isProvision(isProvision)
-    , to(to)
     , m_isHandcard(false)
     , m_isNullified(false)
     , m_isShowncard(false)

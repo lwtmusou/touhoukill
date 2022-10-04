@@ -1675,7 +1675,7 @@ const Card *LegacyRoom::askForCard(LegacyServerPlayer *player, const QString &pa
         if ((method == QSanguosha::MethodUse || method == QSanguosha::MethodResponse) && !isRetrial) {
             if (!card_->skillName().isNull() && card_->skillName(true) == card_->skillName(false) && player->hasValidSkill(card_->skillName()))
                 notifySkillInvoked(player, card_->skillName());
-            CardResponseStruct resp(card_, to, isRetrial, isProvision, player);
+            CardResponseStruct resp(card_, to, isRetrial, isProvision);
             resp.m_isHandcard = isHandcard;
             resp.m_isShowncard = isShowncard;
             QVariant data = QVariant::fromValue(resp);
@@ -6452,7 +6452,7 @@ void LegacyRoom::retrial(const Card *card_, LegacyServerPlayer *player, JudgeStr
     judge->setCard(card(card_->effectiveId()));
 
     if (triggerResponded) {
-        CardResponseStruct resp(card_, judge->who, true, false, player);
+        CardResponseStruct resp(card_, judge->who, true, false);
         QVariant data = QVariant::fromValue(resp);
         resp.m_isHandcard = isHandcard;
         thread->trigger(QSanguosha::CardResponded, data);
