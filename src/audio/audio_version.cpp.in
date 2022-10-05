@@ -1,0 +1,15 @@
+#include "audio.h"
+
+namespace Audio {
+
+QString oggVersion()
+{
+	return QStringLiteral("${QSGS_OGGVERSION}");
+}
+
+QString vorbisVersion()
+{
+	return QStringLiteral("${QSGS_VORBISVERSION}");
+}
+
+}

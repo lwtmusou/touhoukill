@@ -772,10 +772,34 @@ void MainWindow::on_actionAbout_Lua_triggered()
     QString address = QStringLiteral("http://www.lua.org");
     content.append(tr("Official site: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(address));
 
-    content.append(tr("Current versionn %1 <br/>").arg(LuaMultiThreadEnvironment::luaVersion()));
+    content.append(tr("Current version %1 <br/>").arg(LuaMultiThreadEnvironment::luaVersion()));
     content.append(LuaMultiThreadEnvironment::luaCopyright());
 
     Window *window = new Window(tr("About Lua"), QSize(500, 585));
+    scene->addItem(window);
+
+    window->addContent(content);
+    window->addCloseButton(tr("OK"));
+    window->setZValue(32766);
+    window->shift((scene != nullptr) && scene->inherits("RoomScene") ? scene->width() : 0, (scene != nullptr) && scene->inherits("RoomScene") ? scene->height() : 0);
+
+    window->appear();
+}
+
+void MainWindow::on_actionAbout_Audio_triggered()
+{
+    QString content = tr("Ogg Vorbis is a fully open, non-proprietary, patent-and-royalty-free, "
+                         "general-purpose compressed audio format for mid to high quality audio and music "
+                         "at fixed and variable bitrates from 16 to 128 kbps/channel.");
+    content.append(QStringLiteral("<p align='center'> <img src='image/logo/xiph.png' /> </p> <br/>"));
+
+    QString address = QStringLiteral("https://xiph.org/vorbis/");
+    content.append(tr("Official site: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(address));
+
+    content.append(tr("Current OGG version %1 <br/>").arg(Audio::oggVersion()));
+    content.append(tr("Current Vorbis version %1 <br/>").arg(Audio::vorbisVersion()));
+
+    Window *window = new Window(tr("About OggVorbis"), QSize(500, 585));
     scene->addItem(window);
 
     window->addContent(content);

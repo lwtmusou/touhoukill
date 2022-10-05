@@ -473,6 +473,17 @@ void GeneralLastWord(const QString &generalName)
     Audio::playAudioEffect(filename);
 }
 
+#ifndef AUDIO_SUPPORT
+QString oggVersion()
+{
+    return QString();
+}
+QString vorbisVersion()
+{
+    return QString();
+}
+#endif
+
 } // namespace Audio
 
 #ifdef AUDIO_SUPPORT

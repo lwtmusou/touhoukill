@@ -26,6 +26,9 @@ void playAudioEffect(const QString &filename);
 void playSkillAudioEffect(const QString &skill_name, int index);
 void GeneralLastWord(const QString &generalName);
 
+QString oggVersion();
+QString vorbisVersion();
+
 } // namespace Audio
 
 #endif

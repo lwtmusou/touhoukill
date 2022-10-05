@@ -394,6 +394,8 @@ if (Qt5Multimedia_FOUND OR Qt6Multimedia_FOUND)
 
     if (oggvorbisfile_FOUND)
         add_library(QSanguoshaLibs::oggvorbisfile ALIAS PkgConfig::oggvorbisfile)
+        set(QSGS_OGGVERSION ${oggvorbisfile_ogg_VERSION})
+        set(QSGS_VORBISVERSION ${oggvorbisfile_vorbisfile_VERSION})
     else()
         set(QSGS_OGGVERSION 1.3.5)
         set(QSGS_VORBISVERSION 1.3.7)
@@ -462,6 +464,9 @@ if (Qt5Multimedia_FOUND OR Qt6Multimedia_FOUND)
         endif()
         add_library(QSanguoshaLibs::oggvorbisfile ALIAS QSanguoshaLibsoggvorbisfile)
     endif()
+
+    configure_file(src/audio/audio_version.cpp.in audio_autogen/audio_version.cpp NO_SOURCE_PERMISSIONS)
+    set(QSanguosha_SRCS ${QSanguosha_SRCS} audio_autogen/audio_version.cpp)
 endif()
 
 if (Qt5_FOUND)
