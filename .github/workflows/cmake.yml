@@ -353,5 +353,5 @@ jobs:
           mkdir -p "${{ github.workspace }}/build"
           cd "${{ github.workspace }}/build"
           rm -rf `ls -A`
-          cmake -GNinja "${{ github.workspace }}/touhoukill-refactor"
+          cmake -GNinja -DCMAKE_BUILD_TYPE=Release "${{ github.workspace }}/touhoukill-refactor"
           ninja -k0
