@@ -17,5 +17,6 @@
 %include "skill.h"
 %include "trigger.h"
 %include "RoomObject.h"
+%include "game-logic.h"
 
 #undef final

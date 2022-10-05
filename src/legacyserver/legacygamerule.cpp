@@ -455,7 +455,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
     }
     case QSanguosha::EventAcquireSkill:
     case QSanguosha::EventLoseSkill: {
-        SkillAcquireDetachStruct s = data.value<SkillAcquireDetachStruct>();
+        SkillAcquireLoseStruct s = data.value<SkillAcquireLoseStruct>();
 
         const Skill *skill = s.skill;
         bool refilter = dynamic_cast<const FilterSkill *>(skill) != nullptr;

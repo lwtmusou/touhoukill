@@ -93,24 +93,24 @@ bool Server::socketSignupLegacy(QSgsMultiSocket *socket, const QSanProtocol::Pac
     } else {
         if (ps.length() != 2) {
             messageBodyToSend = QStringLiteral("INVALID_OPERATION");
-            emit server_message(tr("invalid operation: more than 2 parts"));
+            emit serverMessage(tr("invalid operation: more than 2 parts"));
         } else {
             // check valid ps.first
             if (ps.first() == QStringLiteral("reconnect")) {
                 reconnection_enabled = true;
             } else if (ps.first() == QStringLiteral("observe")) {
                 // warning, not implemented
-                emit server_message(tr("unimplemented operation: %1").arg(ps.first()));
+                emit serverMessage(tr("unimplemented operation: %1").arg(ps.first()));
                 messageBodyToSend = QStringLiteral("OPERATION_NOT_IMPLEMENTED");
             } else {
-                emit server_message(tr("invalid operation: %1").arg(ps.first()));
+                emit serverMessage(tr("invalid operation: %1").arg(ps.first()));
                 messageBodyToSend = QStringLiteral("INVALID_OPERATION");
             }
         }
         if (messageBodyToSend.isEmpty()) {
             // check valid ps.last
             if (!ps.last().startsWith(QStringLiteral("sgs"))) {
-                emit server_message(tr("reconnect username incorrect: %1").arg(ps.last()));
+                emit serverMessage(tr("reconnect username incorrect: %1").arg(ps.last()));
                 messageBodyToSend = QStringLiteral("USERNAME_INCORRECT");
             } else {
                 QString num = ps.last().mid(3);
@@ -119,7 +119,7 @@ bool Server::socketSignupLegacy(QSgsMultiSocket *socket, const QSanProtocol::Pac
                 if (ok) {
                     // valid connection name
                 } else {
-                    emit server_message(tr("reconnect username incorrect: %1").arg(ps.last()));
+                    emit serverMessage(tr("reconnect username incorrect: %1").arg(ps.last()));
                     messageBodyToSend = QStringLiteral("USERNAME_INCORRECT");
                 }
             }
@@ -208,7 +208,7 @@ void Server::socketConnected(QSgsMultiSocket *socket)
 
     unverifiedSockets.insert(socket, 0);
 
-    emit server_message(tr("%1 connected").arg(socket->peerName()));
+    emit serverMessage(tr("%1 connected").arg(socket->peerName()));
     connect(socket, &QSgsMultiSocket::readyRead, this, &Server::socketReadyRead);
 }
 
@@ -343,9 +343,8 @@ void Server::socketReadyRead()
 void Server::socketDisconnected()
 {
     QSgsMultiSocket *socket = qobject_cast<QSgsMultiSocket *>(sender());
-    if (socket != nullptr) {
+    if (socket != nullptr)
         unverifiedSockets.remove(socket);
-    }
 
     sender()->deleteLater();
 }

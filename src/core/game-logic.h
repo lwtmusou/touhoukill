@@ -1,6 +1,11 @@
 #ifndef TOUHOUKILL_GAME_LOGIC_H_
 #define TOUHOUKILL_GAME_LOGIC_H_
 
+// BE WARE! THIS FILE IS USED IN BOTH SWIG AND C++.
+// MAKE SURE THE GRAMMAR IS COMPATIBLE BETWEEN 2 LANGUAGES.
+
+#ifndef SWIG
+
 #include "protocol.h"
 #include "qsgscore.h"
 #include "structs.h"
@@ -13,6 +18,8 @@ class Player;
 class RoomObject;
 struct DamageStruct;
 
+#endif
+
 /**
  * @brief The game logic interface.
  * 
@@ -22,13 +29,6 @@ class QSGS_CORE_EXPORT GameLogic
 {
 public:
     virtual ~GameLogic();
-
-    enum GuanxingType
-    {
-        GuanxingUpOnly = 1,
-        GuanxingBothSides = 0,
-        GuanxingDownOnly = -1
-    };
 
 public:
     // --- logic manipulation only ---
@@ -97,8 +97,6 @@ public:
 
     // Create the Frame for selecting cards. Since it is made for Amazing Grace, this is notified to all players
     virtual void fillAG(const QList<int> &card_ids, const QList<int> &disabled_ids = {}, const QList<Player *> &viewers = {}) = 0;
-    // Let player select from the frame. (todo: make card_ids argument optional since we must use fillAG)
-    virtual int askForAG(Player *player, const QList<int> &card_ids, bool refusable, const QString &reason) = 0;
     // Trigger Moving Card
     virtual void takeAG(Player *player, int card_id, bool move_cards = true, QSanguosha::Place fromPlace = QSanguosha::PlaceDrawPile) = 0;
     virtual void clearAG(const QList<Player *> &viewers = {}) = 0; // disappear the selecting frame.
@@ -228,8 +226,8 @@ public:
 
     virtual void activate(CardUseStruct &use, Player *player) = 0;
 
-    virtual void askForGuanxing(QList<int> &upCards, QList<int> &downCards, Player *player, const QList<int> &cards, GuanxingType guanxingType = GuanxingBothSides,
-                                QString skillName = QString())
+    virtual void askForGuanxing(QList<int> &upCards, QList<int> &downCards, Player *player, const QList<int> &cards,
+                                QSanguosha::GuanxingType guanxingType = QSanguosha::GuanxingBothSides, QString skillName = QString())
         = 0;
 
     // askForUseCard / askForUseSlashTo (QSanguosha::MethodUse)
@@ -269,14 +267,14 @@ public:
         = 0;
 
     // QSanguosha::MethodDiscard
-    virtual void askForDiscard(IdSet &discardedIds, Player *target, const QString &reason, int max_num, int min_num = 1, bool include_equip = false, bool optional = false,
+    virtual void askForDiscard(IdSet &discardedIds, Player *target, const QString &reason, int max_num, int min_num, bool include_equip = false, bool optional = false,
                                const QString &prompt = QString())
         = 0;
     virtual void askForDiscard(IdSet &discardedIds, Player *target, const QString &reason, const QString &pattern, bool optional = false, const QString &prompt = QString()) = 0;
     virtual void askForDiscard(IdSet &discardedIds, Player *target, const QString &skillName, int patternIndex = 0, bool optional = false, const QString &prompt = QString()) = 0;
 
     // QSanguosha::MethodNone
-    virtual void askForExchange(IdSet &discardedIds, Player *target, const QString &reason, int max_num, int min_num = 1, bool include_equip = false, bool optional = false,
+    virtual void askForExchange(IdSet &discardedIds, Player *target, const QString &reason, int max_num, int min_num, bool include_equip = false, bool optional = false,
                                 const QString &prompt = QString())
         = 0;
     virtual void askForExchange(IdSet &discardedIds, Player *target, const QString &reason, const QString &pattern, bool optional = false, const QString &prompt = QString()) = 0;
@@ -307,6 +305,9 @@ public:
                                  QSanguosha::HandlingMethod method = QSanguosha::MethodNone, const QList<int> &disabled_ids = QList<int>())
         = 0;
 
+    // Let player select from the frame. (todo: make card_ids argument optional since we must use fillAG)
+    virtual int askForAG(Player *player, const QList<int> &card_ids, bool refusable, const QString &reason) = 0;
+
     // use askForUseCard / askForResponseCard / askForExchange(pattern) / askForDiscard(pattern) instead
     // virtual const Card *askForCard(Player *player, const QString &pattern, const QString &prompt, const QVariant &data, const QString &skill_name, int notice_index = -1) = 0;
     // virtual const Card *askForCard(Player *player, const QString &pattern, const QString &prompt, const QVariant &data = QVariant(),
@@ -335,6 +336,12 @@ public:
     // --- cheat related ---
     virtual void cheat(Player *player, const QVariant &args) = 0;
     virtual bool makeSurrender(Player *player) = 0;
+
+#ifndef SWIG
+
+protected:
+    GameLogic() = default;
+#endif
 };
 
 #endif

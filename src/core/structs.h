@@ -292,9 +292,9 @@ struct QSGS_CORE_EXPORT MarkChangeStruct
     int num;
 };
 
-struct QSGS_CORE_EXPORT SkillAcquireDetachStruct
+struct QSGS_CORE_EXPORT SkillAcquireLoseStruct
 {
-    explicit SkillAcquireDetachStruct(Player *player = nullptr, const Skill *skill = nullptr, bool isAcquire = false);
+    explicit SkillAcquireLoseStruct(Player *player = nullptr, const Skill *skill = nullptr, bool isAcquire = false);
 
     Player *player;
     const Skill *skill;
@@ -427,7 +427,7 @@ Q_DECLARE_METATYPE(RecoverStruct)
 Q_DECLARE_METATYPE(PhaseChangeStruct)
 Q_DECLARE_METATYPE(CardResponseStruct)
 Q_DECLARE_METATYPE(MarkChangeStruct)
-Q_DECLARE_METATYPE(SkillAcquireDetachStruct)
+Q_DECLARE_METATYPE(SkillAcquireLoseStruct)
 Q_DECLARE_METATYPE(CardAskedStruct)
 Q_DECLARE_METATYPE(HpLostStruct)
 Q_DECLARE_METATYPE(PhaseSkippingStruct)

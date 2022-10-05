@@ -40,7 +40,7 @@ private slots:
     void gameOver();
 
 signals:
-    void server_message(const QString &);
+    void serverMessage(const QString &);
 };
 
 #endif

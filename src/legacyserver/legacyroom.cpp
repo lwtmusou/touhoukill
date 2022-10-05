@@ -542,7 +542,7 @@ void LegacyRoom::detachSkillFromPlayer(LegacyServerPlayer *player, const QString
                 sendLog(log);
             }
 
-            SkillAcquireDetachStruct s;
+            SkillAcquireLoseStruct s;
             s.player = player;
             s.skill = skill;
             s.isAcquire = false;
@@ -645,7 +645,7 @@ void LegacyRoom::handleAcquireDetachSkills(LegacyServerPlayer *player, const QSt
     }
     if (!triggerList.isEmpty()) {
         for (int i = 0; i < triggerList.length(); i++) {
-            SkillAcquireDetachStruct s;
+            SkillAcquireLoseStruct s;
             s.skill = triggerList.value(i);
             s.player = player;
             s.isAcquire = isAcquire.value(i);
@@ -2403,7 +2403,7 @@ void LegacyRoom::changeHero(LegacyServerPlayer *player, const QString &new_gener
 
             if (skill->isLimited() && !skill->limitMark().isEmpty())
                 setPlayerMark(player, skill->limitMark(), 1);
-            SkillAcquireDetachStruct s;
+            SkillAcquireLoseStruct s;
             s.isAcquire = true;
             s.player = player;
             s.skill = skill;
@@ -5235,7 +5235,7 @@ void LegacyRoom::acquireSkill(LegacyServerPlayer *player, const Skill *skill, bo
                 acquireSkill(player, related_skill);
         }
 
-        SkillAcquireDetachStruct s;
+        SkillAcquireLoseStruct s;
         s.isAcquire = true;
         s.player = player;
         s.skill = skill;
@@ -5710,26 +5710,26 @@ LegacyServerPlayer *LegacyRoom::getLord(const QString & /*unused*/, bool /*unuse
     return nullptr;
 }
 
-void LegacyRoom::askForGuanxing(LegacyServerPlayer *zhuge, const QList<int> &cards, GuanxingType guanxing_type, const QString &skillName)
+void LegacyRoom::askForGuanxing(LegacyServerPlayer *zhuge, const QList<int> &cards, QSanguosha::GuanxingType guanxing_type, const QString &skillName)
 {
     QList<int> top_cards;
     QList<int> bottom_cards;
     tryPause();
     notifyMoveFocus(zhuge, S_COMMAND_SKILL_GUANXING);
 
-    if (guanxing_type == GuanxingUpOnly && cards.length() == 1) {
+    if (guanxing_type == QSanguosha::GuanxingUpOnly && cards.length() == 1) {
         top_cards = cards;
-    } else if (guanxing_type == GuanxingDownOnly && cards.length() == 1) {
+    } else if (guanxing_type == QSanguosha::GuanxingDownOnly && cards.length() == 1) {
         bottom_cards = cards;
     } else {
         QJsonArray guanxingArgs;
         guanxingArgs << QSgsJsonUtils::toJsonArray(cards);
-        guanxingArgs << (guanxing_type != GuanxingBothSides);
+        guanxingArgs << (guanxing_type != QSanguosha::GuanxingBothSides);
         guanxingArgs << skillName;
         bool success = doRequest(zhuge, S_COMMAND_SKILL_GUANXING, guanxingArgs, true);
         if (!success) {
             foreach (int card_id, cards) {
-                if (guanxing_type == GuanxingDownOnly)
+                if (guanxing_type == QSanguosha::GuanxingDownOnly)
                     m_drawPile->append(card_id);
                 else
                     m_drawPile->prepend(card_id);
@@ -5739,7 +5739,7 @@ void LegacyRoom::askForGuanxing(LegacyServerPlayer *zhuge, const QList<int> &car
         if (clientReply.size() == 2) {
             QSgsJsonUtils::tryParse(clientReply[0], top_cards);
             QSgsJsonUtils::tryParse(clientReply[1], bottom_cards);
-            if (guanxing_type == GuanxingDownOnly) {
+            if (guanxing_type == QSanguosha::GuanxingDownOnly) {
                 bottom_cards = top_cards;
                 top_cards.clear();
             }
@@ -5751,7 +5751,7 @@ void LegacyRoom::askForGuanxing(LegacyServerPlayer *zhuge, const QList<int> &car
     bool result_equal = IdSet(allcards.begin(), allcards.end()) == IdSet(cards.begin(), cards.end());
 
     if (!length_equal || !result_equal) {
-        if (guanxing_type == GuanxingDownOnly) {
+        if (guanxing_type == QSanguosha::GuanxingDownOnly) {
             bottom_cards = cards;
             top_cards.clear();
         } else {
@@ -5760,7 +5760,7 @@ void LegacyRoom::askForGuanxing(LegacyServerPlayer *zhuge, const QList<int> &car
         }
     }
 
-    if (guanxing_type == GuanxingBothSides) {
+    if (guanxing_type == QSanguosha::GuanxingBothSides) {
         LogStruct log;
         log.type = QStringLiteral("#GuanxingResult");
         if (skillName == QStringLiteral("fengshui"))

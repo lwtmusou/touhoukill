@@ -64,9 +64,6 @@ public:
     QSGS_STATE_GAME QList<int> getCardIdsOnTable(const Card *) const;
     QSGS_STATE_GAME QList<int> getCardIdsOnTable(const IdSet &card_ids) const;
 
-    QSGS_LOGIC enum GuanxingType { GuanxingUpOnly = 1, GuanxingBothSides = 0, GuanxingDownOnly = -1 };
-    Q_ENUM(GuanxingType)
-
     QSGS_SOCKET typedef void (LegacyRoom::*Callback)(LegacyServerPlayer *, const QJsonValue &);
     QSGS_SOCKET typedef bool (LegacyRoom::*ResponseVerifyFunction)(LegacyServerPlayer *, const QJsonValue &, void *);
 
@@ -118,7 +115,8 @@ public:
     QSGS_LOGIC void sendJudgeResult(const JudgeStruct *judge);
     QSGS_LOGIC QList<int> getNCards(int n, bool update_pile_number = true, bool bottom = false);
     QSGS_LOGIC void returnToTopDrawPile(const QList<int> &cards);
-    QSGS_LOGIC void askForGuanxing(LegacyServerPlayer *zhuge, const QList<int> &cards, GuanxingType guanxing_type = GuanxingBothSides, const QString &skillName = QString());
+    QSGS_LOGIC void askForGuanxing(LegacyServerPlayer *zhuge, const QList<int> &cards, QSanguosha::GuanxingType guanxing_type = QSanguosha::GuanxingBothSides,
+                                   const QString &skillName = QString());
     QSGS_LOGIC int doGongxin(LegacyServerPlayer *shenlvmeng, LegacyServerPlayer *target, const QList<int> &enabled_ids = QList<int>(),
                              const QString &skill_name = QStringLiteral("gongxin"), bool cancellable = true);
     QSGS_LOGIC int drawCard(bool bottom = false);

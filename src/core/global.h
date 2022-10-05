@@ -415,6 +415,14 @@ enum DamageNature
 };
 Q_ENUM_NS(DamageNature)
 
+enum GuanxingType
+{
+    GuanxingUpOnly = 1,
+    GuanxingBothSides = 0,
+    GuanxingDownOnly = -1
+};
+Q_ENUM_NS(GuanxingType)
+
 } // namespace QSanguosha
 #ifdef SWIG
 ;

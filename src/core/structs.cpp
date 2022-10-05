@@ -572,7 +572,7 @@ MarkChangeStruct::MarkChangeStruct(Player *player, const QString &name, int num)
 {
 }
 
-SkillAcquireDetachStruct::SkillAcquireDetachStruct(Player *player, const Skill *skill, bool isAcquire)
+SkillAcquireLoseStruct::SkillAcquireLoseStruct(Player *player, const Skill *skill, bool isAcquire)
     : player(player)
     , skill(skill)
     , isAcquire(isAcquire)
