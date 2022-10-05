@@ -1,8 +1,23 @@
-# CMake 3.20 is needed for USE_SWIG_DEPENDENCIES
+# CMake 3.20 is needed for USE_SWIG_DEPENDENCIES with Makefile and Ninja
+# CMake 3.21 is needed for USE_SWIG_DEPENDENCIES with Xcode
+# CMake 3.22 is needed for USE_SWIG_DEPENDENCIES with Visual Studio
+
 cmake_minimum_required(VERSION 3.20)
 
-if ( NOT ( ( CMAKE_GENERATOR MATCHES "Makefiles" ) OR ( CMAKE_GENERATOR MATCHES "Ninja" ) ) )
-    message(FATAL_ERROR "We only support makefile and ninja generator.")
+set(QSANGUOSHA_MINIMUM_CMAKE_VERSION 3.20)
+
+if ( ( CMAKE_GENERATOR MATCHES "Makefiles" ) OR ( CMAKE_GENERATOR MATCHES "Ninja" ) )
+    # OK!
+elseif ( CMAKE_GENERATOR MATCHES "Xcode" )
+    set(QSANGUOSHA_MINIMUM_CMAKE_VERSION 3.21)
+elseif ( CMAKE_GENERATOR MATCHES "Visual Studio" )
+    set(QSANGUOSHA_MINIMUM_CMAKE_VERSION 3.22)
+else()
+    message(FATAL_ERROR "Current CMake Generator ${CMAKE_GENERATOR} is not supported since we are using USE_SWIG_DEPENDENCIES for UseSwig.cmake")
+endif()
+
+if (CMAKE_VERSION VERSION_LESS ${QSANGUOSHA_MINIMUM_CMAKE_VERSION})
+    message(FATAL_ERROR "We need at least CMake ${QSANGUOSHA_MINIMUM_CMAKE_VERSION} for using CMake Generator ${CMAKE_GENERATOR}")
 endif()
 
 set (PCH true)
@@ -16,6 +31,9 @@ endif()
 
 project(QSanguosha
     VERSION 0.12.0
+    DESCRIPTION "TouhouSatsu"
+    HOMEPAGE_URL "https://github.com/lwtmusou/touhoukill"
+    LANGUAGES C CXX
     )
 
 set(VERSION_DATE_QSanguosha 20211222)
@@ -282,7 +300,7 @@ endif()
 find_package(Lua)
 
 if (LUA_FOUND)
-    if  (LUA_VERSION_STRING VERSION_LESS 5.4)
+    if (LUA_VERSION_STRING VERSION_LESS 5.4)
         set(LUA_FOUND false)
     endif()
 endif()
@@ -499,8 +517,8 @@ if (Qt5_FOUND)
         target_compile_definitions(Q5SgsCore PRIVATE -DBUILD_QSGSCORE)
         target_compile_definitions(Q5SgsSocket PRIVATE -DBUILD_QSGSSOCKET)
 
-        set_target_properties(Q5SgsCore PROPERTIES SOVERSION 0.12)
-        set_target_properties(Q5SgsSocket PROPERTIES SOVERSION 0.12)
+        set_target_properties(Q5SgsCore PROPERTIES SOVERSION ${QSanguosha_VERSION_MAJOR}.${QSanguosha_VERSION_MINOR})
+        set_target_properties(Q5SgsSocket PROPERTIES SOVERSION ${QSanguosha_VERSION_MAJOR}.${QSanguosha_VERSION_MINOR})
     endif()
 
 
@@ -616,8 +634,8 @@ if (Qt6_FOUND)
         target_compile_definitions(QSgsCore PRIVATE -DBUILD_QSGSCORE)
         target_compile_definitions(QSgsSocket PRIVATE -DBUILD_QSGSSOCKET)
 
-        set_target_properties(QSgsCore PROPERTIES SOVERSION 0.12)
-        set_target_properties(QSgsSocket PROPERTIES SOVERSION 0.12)
+        set_target_properties(QSgsCore PROPERTIES SOVERSION ${QSanguosha_VERSION_MAJOR}.${QSanguosha_VERSION_MINOR})
+        set_target_properties(QSgsSocket PROPERTIES SOVERSION ${QSanguosha_VERSION_MAJOR}.${QSanguosha_VERSION_MINOR})
     endif()
 
     if (NOT ( ANDROID OR IOS ) )
