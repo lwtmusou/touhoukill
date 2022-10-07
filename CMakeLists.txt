@@ -514,10 +514,6 @@ if (Qt5_FOUND)
     target_link_libraries(Q5SgsCore Qt5::Core q5sanguosha_wrap QSanguoshaLibs::lua54)
     target_include_directories(Q5SgsCore PUBLIC "src/core")
 
-    if (NOT WIN32)
-        target_link_libraries(Q5SgsCore dl)
-    endif()
-
     set_target_properties(Q5SgsCore PROPERTIES VERSION ${QSanguosha_VERSION})
 
     add_library(Q5SgsSocket ${QSanguosha_Socket_SRCS} ${QSanguosha_Socket_MOCS} )
@@ -544,7 +540,6 @@ if (Qt5_FOUND)
         set_target_properties(Q5SgsCore PROPERTIES SOVERSION ${QSanguosha_VERSION_MAJOR}.${QSanguosha_VERSION_MINOR})
         set_target_properties(Q5SgsSocket PROPERTIES SOVERSION ${QSanguosha_VERSION_MAJOR}.${QSanguosha_VERSION_MINOR})
     endif()
-
 
     if (NOT ( ANDROID OR IOS ) )
         add_executable(Q5SgsServer ${QSanguosha_Server_SRCS} ${QSanguosha_Server_MOCS} )
@@ -630,10 +625,6 @@ if (Qt6_FOUND)
     target_compile_definitions(QSgsCore PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x70000 VERSION=${QSanguosha_VERSION} VERSIONDATE=${VERSION_DATE_QSanguosha})
     target_link_libraries(QSgsCore Qt6::Core qsanguosha_wrap QSanguoshaLibs::lua54)
     target_include_directories(QSgsCore PUBLIC "src/core")
-
-    if (NOT WIN32)
-        target_link_libraries(QSgsCore dl)
-    endif()
 
     set_target_properties(QSgsCore PROPERTIES VERSION ${QSanguosha_VERSION})
 
