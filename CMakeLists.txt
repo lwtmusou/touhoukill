@@ -22,7 +22,6 @@ endif()
 
 set (PCH true)
 
-# temporary for testing
 set (BUILD_SHARED_LIBS true)
 
 if (BUILD_SHARED_LIBS)
@@ -58,9 +57,30 @@ set(QSANGUOSHA_QT6_COMPONENTS Core Widgets Network LinguistTools)
 find_package(Qt6 COMPONENTS ${QSANGUOSHA_QT6_COMPONENTS} OPTIONAL_COMPONENTS Multimedia) # Locate the position of Qt6.
 find_package(Qt5 COMPONENTS ${QSANGUOSHA_QT5_COMPONENTS} OPTIONAL_COMPONENTS Multimedia) # Locate the position of Qt5.
 
+#find_package(Qt6 COMPONENTS ${QSANGUOSHA_QT6_COMPONENTS}  ) # Locate the position of Qt6.
+#find_package(Qt5 COMPONENTS ${QSANGUOSHA_QT5_COMPONENTS}  ) # Locate the position of Qt5.
+
 if (NOT (Qt5_FOUND OR Qt6_FOUND))
     message(FATAL_ERROR "at least one of Qt 5 and Qt 6 is needed")
 endif()
+
+if ( NOT ( DEFINED CACHE{QSANGUOSHA_AUDIO_SUPPORT} ) )
+    set (QSANGUOSHA_AUDIO_SUPPORT "CHECK" CACHE STRING "Build QSanguosha with Audio support")
+endif()
+option(QSANGUOSHA_AUDIO_SUPPORT "Build QSanguosha with Audio support")
+
+if (QSANGUOSHA_AUDIO_SUPPORT STREQUAL "CHECK")
+    if (Qt5Multimedia_FOUND OR Qt6Multimedia_FOUND)
+        set(QSANGUOSHA_AUDIO_SUPPORT "ON")
+    else()
+        set(QSANGUOSHA_AUDIO_SUPPORT "OFF")
+    endif()
+else()
+    if ( (QSANGUOSHA_AUDIO_SUPPORT) AND ( NOT (Qt5Multimedia_FOUND OR Qt6Multimedia_FOUND) ) )
+        message(FATAL_ERROR "Audio support can't be enabled due to Qt multimedia not found")
+    endif()
+endif()
+set (QSANGUOSHA_AUDIO_SUPPORT "${QSANGUOSHA_AUDIO_SUPPORT}" CACHE STRING "Build QSanguosha with Audio support" FORCE)
 
 find_program(SWIG_EXECUTABLE swig)
 if (CMAKE_HOST_WIN32)
@@ -386,7 +406,7 @@ endif()
 
 add_library(QSanguoshaLibs::lua54 ALIAS QSanguoshaLibslua54)
 
-if (Qt5Multimedia_FOUND OR Qt6Multimedia_FOUND)
+if (QSANGUOSHA_AUDIO_SUPPORT)
     find_package(PkgConfig)
     if (PKG_CONFIG_FOUND)
         pkg_check_modules(oggvorbisfile IMPORTED_TARGET GLOBAL ogg>=1.0.0 vorbis>=1.0.0 vorbisfile>=1.0.0)
@@ -570,7 +590,7 @@ if (Qt5_FOUND)
         target_link_libraries(Q5Sanguosha Q5SgsServer)
     endif()
 
-    if (Qt5Multimedia_FOUND)
+    if (QSANGUOSHA_AUDIO_SUPPORT AND Qt5Multimedia_FOUND)
         target_compile_definitions(Q5Sanguosha PUBLIC AUDIO_SUPPORT)
         target_link_libraries(Q5Sanguosha QSanguoshaLibs::oggvorbisfile Qt5::Multimedia)
     endif()
@@ -679,7 +699,7 @@ if (Qt6_FOUND)
         target_link_libraries(QSanguosha QSgsServer)
     endif()
 
-    if (Qt6Multimedia_FOUND)
+    if (QSANGUOSHA_AUDIO_SUPPORT AND Qt6Multimedia_FOUND)
         target_compile_definitions(QSanguosha PUBLIC AUDIO_SUPPORT)
         target_link_libraries(QSanguosha PUBLIC QSanguoshaLibs::oggvorbisfile Qt6::Multimedia)
     endif()
