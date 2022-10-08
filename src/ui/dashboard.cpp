@@ -609,10 +609,15 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName, bool head)
         }
     }
     _mutexEquipAnim.unlock();
+
+#if 0
+    // TODO: check how the assert works before
 #ifndef QT_NO_DEBUG
     const Skill *skill = Sanguosha->skill(skillName);
     Q_ASSERT(skill && !skill->inherits("WeaponSkill") && !skill->inherits("ArmorSkill") && !skill->inherits("TreasureSkill"));
 #endif
+#endif
+
     if (_m_skillDock->getSkillButtonByName(skillName) != nullptr && head)
         return nullptr;
 
