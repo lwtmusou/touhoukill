@@ -43,7 +43,7 @@ ServerInfoStruct::ServerInfoStruct()
 
 bool ServerInfoStruct::parseLegacy(const QString &str)
 {
-    QRegularExpression rx(QRegularExpression::anchoredPattern(QStringLiteral("(.*):(@?\\w+):(\\d+):(\\d+):([+\\w]*):([RCFSAM]*)")));
+    static QRegularExpression rx(QRegularExpression::anchoredPattern(QStringLiteral("(.*):(@?\\w+):(\\d+):(\\d+):([+\\w]*):([RCFSAM]*)")));
     QRegularExpressionMatch match;
     if (!(match = rx.match(str)).hasMatch()) {
         qWarning("%s", qPrintable(QStringLiteral("Setup string error!")));
