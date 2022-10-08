@@ -17,20 +17,21 @@ namespace {
 // IMPORTANT! This should be updated when Lua updates.
 // Currently we are cutting 'coroutine' lib out of standard Lua simply because it uses sjlj across calling stack, where it is not C++-exception-aware.
 // Also we need to add our own 'sgs' lib to our preload modules to provide our functionality.
-// Codes are copied from linit.c. MAKE SURE to update these code when Lua updates.
-// These codes are for Lua 5.3 and Lua 5.4 and only 5.4 will be tested.
-// Lua 5.1 (probably the most popular version?) and Lua 5.2 (which is used in legacy QSanguosha v2) are out of support.
+// Following codes are for Lua 5.4 and only 5.4 will be tested.
+// Lua 5.1 (probably the most popular version?), Lua 5.2 (which is used in legacy QSanguosha v2) and Lua 5.3 are out of support.
 
-#if LUA_VERSION_NUM != 503 && LUA_VERSION_NUM != 504
-#error Incompatible Lua version. QSanguosha requires Lua 5.3 or 5.4.
+#if LUA_VERSION_NUM != 504
+#error Incompatible Lua version. QSanguosha requires Lua 5.4.
 #endif
 
-#if LUA_VERSION_NUM == 503
-#warning You are using Lua 5.3 which is not fully supported. Consider install Lua 5.4 from your package manager, or use the builtin Lua 5.4.
+// wrote as following intentionally. Preserved for future Lua update
+#if 0 && (LUA_VERSION_NUM == 504)
+#warning You are using Lua 5.4 which is not fully supported. Consider install Lua 5.5 from your package manager, or use the builtin Lua 5.5.
 #endif
 
 constexpr const char *sgs_libname = "sgs";
 
+// Codes are copied from linit.c. MAKE SURE to update these code when Lua updates.
 const luaL_Reg sgs_libs[] = {{LUA_GNAME, luaopen_base},
                              {LUA_LOADLIBNAME, luaopen_package},
                              {LUA_TABLIBNAME, luaopen_table},
@@ -90,19 +91,12 @@ public:
         // 2. ---QMessageBox (will probably won't compile since this is Core where we should get rid of UI libs)--- removed because it breaks structure
         // 3. QDebug (Always builds and runs but hard to find its output on Windows by default, can be customized to use log file)
         // Temporary let's take method 3
-        constexpr int errorDealingMethod = 3;
 
         int luaRet = luaL_loadbuffer(l, arr.constData(), arr.length(), "qrc:/luaInitialize.lua"); // { func(luaInitialize.lua) }
         if (luaRet != LUA_OK) {
             QString errorText = QString::fromUtf8(lua_tostring(l, -1));
             lua_pop(l, 1);
-            if constexpr (errorDealingMethod == 1) {
-                throw luaRet;
-            } else if constexpr (errorDealingMethod == 2) {
-                // removed
-            } else if constexpr (errorDealingMethod == 3) {
-                qDebug() << errorText;
-            }
+            qDebug() << errorText;
 
             return;
         }
@@ -112,13 +106,7 @@ public:
         if (luaRet != LUA_OK) {
             QString errorText = QString::fromUtf8(lua_tostring(l, -1));
             lua_pop(l, 1);
-            if constexpr (errorDealingMethod == 1) {
-                throw luaRet;
-            } else if constexpr (errorDealingMethod == 2) {
-                // removed
-            } else if constexpr (errorDealingMethod == 3) {
-                qDebug() << errorText;
-            }
+            qDebug() << errorText;
         }
 
         // cache registry index for pushXxx use
@@ -534,9 +522,9 @@ LuaMultiThreadEnvironment::LuaMultiThreadEnvironment()
         // todo
         Q_UNUSED(name);
 #if 0
-        CardFace *f = SgsEx::createNewSkill(name);
+        Skill *f = SgsEx::createNewSkill(name);
         if (f != nullptr)
-            Sanguosha->registerSkill(f);
+            d->skills << f;
         else
             qDebug() << "creation of skill " << name << "failed";
 #endif
@@ -548,7 +536,7 @@ LuaMultiThreadEnvironment::LuaMultiThreadEnvironment()
         if (f != nullptr)
             d->triggers << f;
         else
-            qDebug() << "creation of cardFace " << name << "failed";
+            qDebug() << "creation of trigger " << name << "failed";
     }
 
     qDebug() << "Packages: " << firstLuaState->packageNames();
@@ -556,9 +544,9 @@ LuaMultiThreadEnvironment::LuaMultiThreadEnvironment()
         // todo
         Q_UNUSED(name);
 #if 0
-        CardFace *f = SgsEx::createNewLuaCardFace(name);
+        Package *f = SgsEx::createNewPackage(name);
         if (f != nullptr)
-            Sanguosha->registerCardFace(f);
+            Sanguosha->addPackage(f);
         else
             qDebug() << "creation of cardFace " << name << "failed";
 #endif
