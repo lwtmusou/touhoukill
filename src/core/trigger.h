@@ -25,7 +25,7 @@ class QSGS_CORE_EXPORT Trigger
 {
 public:
 #ifndef SWIG
-    Trigger(const QString &name);
+    explicit Trigger(const QString &name);
 #endif
     virtual ~Trigger();
 
@@ -80,7 +80,7 @@ class QSGS_CORE_EXPORT Rule : public Trigger
 {
 public:
 #ifndef SWIG
-    Rule(const QString &name);
+    explicit Rule(const QString &name);
 #endif
     ~Rule() override = default;
 
@@ -151,7 +151,7 @@ class QSGS_CORE_EXPORT GlobalRecord : public Trigger
 {
 public:
 #ifndef SWIG
-    GlobalRecord(const QString &name);
+    explicit GlobalRecord(const QString &name);
 #endif
     ~GlobalRecord() override = default;
 

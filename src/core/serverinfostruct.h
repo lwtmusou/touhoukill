@@ -8,7 +8,7 @@ class Mode;
 
 struct QSGS_CORE_EXPORT ServerInfoStruct
 {
-    ServerInfoStruct();
+    explicit ServerInfoStruct();
 
     /* Q_DECL_DEPRECATED */ bool parseLegacy(const QString &str);
 

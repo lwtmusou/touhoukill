@@ -20,13 +20,13 @@ class Player;
 
 struct QSGS_CORE_EXPORT DamageStruct
 {
-    explicit DamageStruct(const Card *card = nullptr, Player *from = nullptr, Player *to = nullptr, int damage = 1, QSanguosha::DamageNature nature = QSanguosha::DamageNormal);
-    explicit DamageStruct(const QString &reason, Player *from = nullptr, Player *to = nullptr, int damage = 1, QSanguosha::DamageNature nature = QSanguosha::DamageNormal);
+    explicit DamageStruct(const Card *card = nullptr, Player *from = nullptr, Player *to = nullptr, int num = 1, QSanguosha::DamageNature nature = QSanguosha::DamageNormal);
+    explicit DamageStruct(const QString &reason, Player *from = nullptr, Player *to = nullptr, int num = 1, QSanguosha::DamageNature nature = QSanguosha::DamageNormal);
 
     Player *from;
     Player *to;
     const Card *card;
-    int damage;
+    int num;
     QSanguosha::DamageNature nature;
     bool chain;
     bool transfer;
@@ -36,23 +36,12 @@ struct QSGS_CORE_EXPORT DamageStruct
     QString trigger_info; //keep addition info while record. since this damage event may be triggered lately by insertion of new damage event.
 };
 
-struct QSGS_CORE_EXPORT RecoverStruct
-{
-    // keep same argument sequence of DamageStruct
-    explicit RecoverStruct(const Card *card = nullptr, Player *from = nullptr, Player *to = nullptr, int recover = 1);
-    explicit RecoverStruct(const QString &reason, Player *from = nullptr, Player *to = nullptr, int recover = 1);
-
-    int recover;
-    Player *from;
-    Player *to;
-    const Card *card;
-    QString reason;
-};
+using RecoverStruct = DamageStruct;
 
 struct QSGS_CORE_EXPORT CardEffectStruct
 {
     explicit CardEffectStruct(const Card *card = nullptr, Player *from = nullptr, Player *to = nullptr);
-    CardEffectStruct(const Card *card, Player *from, CardEffectStruct *toCardEffect);
+    explicit CardEffectStruct(const Card *card, Player *from, CardEffectStruct *toCardEffect);
 
     const Card *card;
     Player *from;
@@ -67,8 +56,8 @@ struct QSGS_CORE_EXPORT CardEffectStruct
 struct QSGS_CORE_EXPORT CardUseStruct
 {
     explicit CardUseStruct(const Card *card = nullptr, Player *from = nullptr, const QList<Player *> &to = QList<Player *>(), bool isOwnerUse = true);
-    CardUseStruct(const Card *card, Player *from, Player *target, bool isOwnerUse = true);
-    CardUseStruct(const Card *card, Player *from, CardEffectStruct *toCardEffect, bool isOwnerUse = true);
+    explicit CardUseStruct(const Card *card, Player *from, Player *target, bool isOwnerUse = true);
+    explicit CardUseStruct(const Card *card, Player *from, CardEffectStruct *toCardEffect, bool isOwnerUse = true);
 
     const Card *card;
     Player *from;
@@ -93,8 +82,8 @@ struct QSGS_CORE_EXPORT SingleCardMoveStruct
     //   GameLogicInstance->moveCardsAtomic(move);
     // will move card number 1, 2 and 3 to discard pile with default reason and actual move from
     /* implicit */ SingleCardMoveStruct(int id = -1); // Note that toPlace is set to PlaceDiscardPile!!
-    SingleCardMoveStruct(int id, Player *to, QSanguosha::Place toPlace = QSanguosha::PlaceHand);
-    SingleCardMoveStruct(int id, Player *from, Player *to, QSanguosha::Place fromPlace = QSanguosha::PlaceUnknown, QSanguosha::Place toPlace = QSanguosha::PlaceHand);
+    explicit SingleCardMoveStruct(int id, Player *to, QSanguosha::Place toPlace = QSanguosha::PlaceHand);
+    explicit SingleCardMoveStruct(int id, Player *from, Player *to, QSanguosha::Place fromPlace = QSanguosha::PlaceUnknown, QSanguosha::Place toPlace = QSanguosha::PlaceHand);
 
     // Info about Card:
     int card_id;
@@ -121,7 +110,10 @@ public:
 #ifndef SWIG
     QJsonValue serializeLegacy(bool visible, QSanguosha::MoveReasonCategory reason, Player *causedBy, Player *aimFor, const QString &via) const;
     QJsonValue serialize(bool visible) const;
-    // satisfy QList
+
+    // CardsMoveStruct::contains can be used to find a movement of a single card
+    // since SingleCardMoveStruct can be implicitly constructed
+    // so we need a real operator == implementation
     inline bool operator==(const SingleCardMoveStruct &another) const
     {
         return card_id == another.card_id;
@@ -141,7 +133,7 @@ template<> struct QSGS_CORE_EXPORT QListSpecialMethods<SingleCardMoveStruct>
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0) && QT_VERSION < QT_VERSION_CHECK(7, 0, 0)
     : public QListSpecialMethodsBase<SingleCardMoveStruct>
 #elif QT_VERSION >= QT_VERSION_CHECK(7, 0, 0)
-#error "Check CardsMoveStruct between update to Qt 7. It depends on QList internal mechanics"
+#error "Check CardsMoveStruct when updating to Qt 7. It depends on QList internal mechanics"
 #endif
 #endif
 {
@@ -173,7 +165,7 @@ struct QSGS_CORE_EXPORT LogStruct
 {
     explicit LogStruct(const QString &type = QString(), Player *from = nullptr, const QList<Player *> &to = {}, const QString &arg = QString(), const QString &arg2 = QString(),
                        const Card *card = nullptr);
-    LogStruct(const QString &type, Player *from, Player *to, const QString &arg = QString(), const QString &arg2 = QString(), const Card *card = nullptr);
+    explicit LogStruct(const QString &type, Player *from, Player *to, const QString &arg = QString(), const QString &arg2 = QString(), const Card *card = nullptr);
 
     QJsonValue serialize() const;
     bool parse(const QJsonValue &value, RoomObject *room);
@@ -197,8 +189,6 @@ struct QSGS_CORE_EXPORT DeathStruct
     Player *viewAsKiller;
     bool useViewAsKiller;
 };
-
-using DyingStruct = DeathStruct;
 
 struct QSGS_CORE_EXPORT PindianStruct
 {
@@ -263,7 +253,7 @@ struct QSGS_CORE_EXPORT PhaseChangeStruct
 
 struct QSGS_CORE_EXPORT PhaseSkippingStruct
 {
-    PhaseSkippingStruct(Player *player = nullptr, QSanguosha::Phase phase = QSanguosha::PhaseNotActive, bool isCost = false);
+    explicit PhaseSkippingStruct(Player *player = nullptr, QSanguosha::Phase phase = QSanguosha::PhaseNotActive, bool isCost = false);
 
     Player *player;
     QSanguosha::Phase phase;
@@ -322,7 +312,7 @@ class QSGS_CORE_EXPORT TriggerDetail
 public:
     explicit TriggerDetail(RoomObject *room, const Trigger *trigger = nullptr, Player *owner = nullptr, Player *invoker = nullptr,
                            const QList<Player *> &targets = QList<Player *>(), bool isCompulsory = false, bool effectOnly = false);
-    TriggerDetail(RoomObject *room, const Trigger *trigger, Player *owner, Player *invoker, Player *target, bool isCompulsory = false, bool effectOnly = false);
+    explicit TriggerDetail(RoomObject *room, const Trigger *trigger, Player *owner, Player *invoker, Player *target, bool isCompulsory = false, bool effectOnly = false);
 
     TriggerDetail(const TriggerDetail &other);
     TriggerDetail &operator=(const TriggerDetail &other);
@@ -423,7 +413,6 @@ Q_DECLARE_METATYPE(CardUseStruct)
 Q_DECLARE_METATYPE(SingleCardMoveStruct)
 Q_DECLARE_METATYPE(CardsMoveStruct)
 Q_DECLARE_METATYPE(DeathStruct)
-Q_DECLARE_METATYPE(RecoverStruct)
 Q_DECLARE_METATYPE(PhaseChangeStruct)
 Q_DECLARE_METATYPE(CardResponseStruct)
 Q_DECLARE_METATYPE(MarkChangeStruct)

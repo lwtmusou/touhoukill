@@ -29,7 +29,7 @@ class GameLogicPrivate;
 class QSGS_CORE_EXPORT GameLogic
 {
 public:
-    GameLogic();
+    explicit GameLogic();
     ~GameLogic();
 
 public:

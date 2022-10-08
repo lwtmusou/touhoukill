@@ -22,7 +22,7 @@ class QSGS_CORE_EXPORT Mode
 {
 protected:
 #ifndef SWIG
-    Mode(const QString &name, QSanguosha::ModeCategory category);
+    explicit Mode(const QString &name, QSanguosha::ModeCategory category);
 #endif
 
 public:

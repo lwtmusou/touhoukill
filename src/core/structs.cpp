@@ -17,11 +17,11 @@
 
 using namespace QSanguosha;
 
-DamageStruct::DamageStruct(const Card *card, Player *from, Player *to, int damage, DamageNature nature)
+DamageStruct::DamageStruct(const Card *card, Player *from, Player *to, int num, DamageNature nature)
     : from(from)
     , to(to)
     , card(card)
-    , damage(damage)
+    , num(num)
     , nature(nature)
     , chain(false)
     , transfer(false)
@@ -30,11 +30,11 @@ DamageStruct::DamageStruct(const Card *card, Player *from, Player *to, int damag
 {
 }
 
-DamageStruct::DamageStruct(const QString &reason, Player *from, Player *to, int damage, DamageNature nature)
+DamageStruct::DamageStruct(const QString &reason, Player *from, Player *to, int num, DamageNature nature)
     : from(from)
     , to(to)
     , card(nullptr)
-    , damage(damage)
+    , num(num)
     , nature(nature)
     , chain(false)
     , transfer(false)
@@ -516,23 +516,6 @@ DeathStruct::DeathStruct(Player *who, DamageStruct *damage)
     , nowAskingForPeaches(nullptr)
     , viewAsKiller(nullptr)
     , useViewAsKiller(false)
-{
-}
-
-RecoverStruct::RecoverStruct(const Card *card, Player *from, Player *to, int recover)
-    : recover(recover)
-    , from(from)
-    , to(to)
-    , card(card)
-{
-}
-
-RecoverStruct::RecoverStruct(const QString &reason, Player *from, Player *to, int recover)
-    : recover(recover)
-    , from(from)
-    , to(to)
-    , card(nullptr)
-    , reason(reason)
 {
 }
 

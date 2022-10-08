@@ -486,7 +486,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
         break;
     }
     case QSanguosha::AskForPeaches: {
-        DyingStruct dying = data.value<DyingStruct>();
+        DeathStruct dying = data.value<DeathStruct>();
         int threshold = dying.who->dyingFactor();
 
         while (dying.who->hp() < threshold) {
@@ -503,7 +503,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
         break;
     }
     case QSanguosha::AskForPeachesDone: {
-        DyingStruct dying = data.value<DyingStruct>();
+        DeathStruct dying = data.value<DeathStruct>();
         int threshold = dying.who->dyingFactor();
         if (dying.who->hp() < threshold && dying.who->isAlive())
             room->killPlayer(qobject_cast<LegacyServerPlayer *>(dying.who), dying.damage);
@@ -517,12 +517,12 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
             log.type = QStringLiteral("#AnalepticBuff");
             log.from = damage.from;
             log.to << damage.to;
-            log.arg = QString::number(damage.damage);
+            log.arg = QString::number(damage.num);
 
-            damage.damage += damage.to->mark(QStringLiteral("SlashIsDrank"));
+            damage.num += damage.to->mark(QStringLiteral("SlashIsDrank"));
             damage.to->setMark(QStringLiteral("SlashIsDrank"), 0);
 
-            log.arg2 = QString::number(damage.damage);
+            log.arg2 = QString::number(damage.num);
 
             room->sendLog(log);
 
@@ -624,7 +624,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                         RecoverStruct recover;
                         recover.card = effect.card;
                         recover.from = effect.from;
-                        recover.recover = 1 + effect.effectValue.first();
+                        recover.num = 1 + effect.effectValue.first();
                         room->recover(qobject_cast<LegacyServerPlayer *>(effect.to), recover);
                     }
                 } else if (effect.card->skillName() == QStringLiteral("xianshi")) { // deal xianshi extra effect and original effect
@@ -689,7 +689,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                             recover.card = effect.card;
                             recover.from = effect.from;
                             if (effect.card->face()->isNdTrick())
-                                recover.recover = 1 + effect.effectValue.first();
+                                recover.num = 1 + effect.effectValue.first();
                             room->recover(qobject_cast<LegacyServerPlayer *>(effect.to), recover);
                         } else if (extraCard->face()->isKindOf(QStringLiteral("AmazingGrace"))) {
                             room->doExtraAmazingGrace(qobject_cast<LegacyServerPlayer *>(effect.from), qobject_cast<LegacyServerPlayer *>(effect.to),
@@ -875,7 +875,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                 RecoverStruct recover;
                 recover.card = effect.slash;
                 recover.from = effect.from;
-                recover.recover = 1 + effect.effectValue.first();
+                recover.num = 1 + effect.effectValue.first();
                 room->recover(qobject_cast<LegacyServerPlayer *>(effect.to), recover);
                 break;
             }
@@ -904,7 +904,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                 RecoverStruct recover;
                 recover.card = effect.slash;
                 recover.from = effect.from;
-                recover.recover = 1;
+                recover.num = 1;
                 room->recover(qobject_cast<LegacyServerPlayer *>(effect.to), recover);
             } else if (extraCard->face()->isKindOf(QStringLiteral("AmazingGrace"))) {
                 room->doExtraAmazingGrace(qobject_cast<LegacyServerPlayer *>(effect.from), qobject_cast<LegacyServerPlayer *>(effect.to), 1);
@@ -1155,7 +1155,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                     if (choice == QStringLiteral("recover")) {
                         RecoverStruct recover;
                         recover.from = player;
-                        recover.recover = 1;
+                        recover.num = 1;
                         room->recover(player, recover);
                     } else if (choice == QStringLiteral("draw"))
                         player->drawCards(2);

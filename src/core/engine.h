@@ -42,7 +42,7 @@ class QSGS_CORE_EXPORT Engine final
 {
 public:
 #ifndef SWIG
-    Engine();
+    explicit Engine();
     ~Engine();
 
     void init();

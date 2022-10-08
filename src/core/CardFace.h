@@ -126,7 +126,7 @@ class QSGS_CORE_EXPORT BasicCard : public CardFace
 {
 public:
 #ifndef SWIG
-    BasicCard(const QString &name);
+    explicit BasicCard(const QString &name);
     ~BasicCard() override = default;
 
     QSanguosha::CardType type() const override;
@@ -138,7 +138,7 @@ class QSGS_CORE_EXPORT EquipCard : public CardFace
 {
 public:
 #ifndef SWIG
-    EquipCard(const QString &name);
+    explicit EquipCard(const QString &name);
     ~EquipCard() override = default;
 
     QSanguosha::CardType type() const override;
@@ -162,7 +162,7 @@ class QSGS_CORE_EXPORT Weapon : public EquipCard
 {
 public:
 #ifndef SWIG
-    Weapon(const QString &name);
+    explicit Weapon(const QString &name);
     ~Weapon() override;
 
     QSanguosha::EquipLocation location() const override;
@@ -179,7 +179,7 @@ class QSGS_CORE_EXPORT Armor : public EquipCard
 {
 public:
 #ifndef SWIG
-    Armor(const QString &name);
+    explicit Armor(const QString &name);
     ~Armor() override = default;
 
     QSanguosha::EquipLocation location() const override;
@@ -190,7 +190,7 @@ class QSGS_CORE_EXPORT DefensiveHorse : public EquipCard
 {
 public:
 #ifndef SWIG
-    DefensiveHorse(const QString &name);
+    explicit DefensiveHorse(const QString &name);
     ~DefensiveHorse() override = default;
 
     QSanguosha::EquipLocation location() const override;
@@ -204,7 +204,7 @@ class QSGS_CORE_EXPORT OffensiveHorse : public EquipCard
 {
 public:
 #ifndef SWIG
-    OffensiveHorse(const QString &name);
+    explicit OffensiveHorse(const QString &name);
     ~OffensiveHorse() override = default;
 
     QSanguosha::EquipLocation location() const override;
@@ -217,7 +217,7 @@ class QSGS_CORE_EXPORT Treasure : public EquipCard
 {
 public:
 #ifndef SWIG
-    Treasure(const QString &name);
+    explicit Treasure(const QString &name);
     ~Treasure() override = default;
 
     QSanguosha::EquipLocation location() const override;
@@ -228,7 +228,7 @@ class QSGS_CORE_EXPORT TrickCard : public CardFace
 {
 public:
 #ifndef SWIG
-    TrickCard(const QString &name);
+    explicit TrickCard(const QString &name);
     ~TrickCard() override = default;
 
     QSanguosha::CardType type() const override;
@@ -240,7 +240,7 @@ class QSGS_CORE_EXPORT NonDelayedTrick : public TrickCard
 {
 public:
 #ifndef SWIG
-    NonDelayedTrick(const QString &name);
+    explicit NonDelayedTrick(const QString &name);
     ~NonDelayedTrick() override = default;
 #endif
 };
@@ -251,7 +251,7 @@ class QSGS_CORE_EXPORT DelayedTrick : public TrickCard
 {
 public:
 #ifndef SWIG
-    DelayedTrick(const QString &name);
+    explicit DelayedTrick(const QString &name);
     ~DelayedTrick() override;
 #endif
 
@@ -270,7 +270,7 @@ class QSGS_CORE_EXPORT SkillCard : public CardFace
 {
 public:
 #ifndef SWIG
-    SkillCard(const QString &name);
+    explicit SkillCard(const QString &name);
     ~SkillCard() override;
 
     QSanguosha::CardType type() const override;

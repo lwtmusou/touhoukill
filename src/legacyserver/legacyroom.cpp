@@ -178,7 +178,7 @@ void LegacyRoom::enterDying(LegacyServerPlayer *player, DamageStruct *reason)
     arg << QSanProtocol::S_GAME_EVENT_PLAYER_DYING << player->objectName();
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
 
-    DyingStruct dying(player, reason);
+    DeathStruct dying(player, reason);
     QVariant dying_data = QVariant::fromValue(dying);
 
     bool enterdying = thread->trigger(QSanguosha::EnterDying, dying_data);
@@ -199,7 +199,7 @@ void LegacyRoom::enterDying(LegacyServerPlayer *player, DamageStruct *reason)
                 sendLog(log);
 
                 foreach (LegacyServerPlayer *saver, getAllPlayers()) {
-                    DyingStruct dying = dying_data.value<DyingStruct>();
+                    DeathStruct dying = dying_data.value<DeathStruct>();
                     dying.nowAskingForPeaches = saver;
                     dying_data = QVariant::fromValue(dying);
                     if (player->hp() >= player->dyingFactor() || player->isDead())
@@ -211,7 +211,7 @@ void LegacyRoom::enterDying(LegacyServerPlayer *player, DamageStruct *reason)
                     thread->trigger(QSanguosha::AskForPeaches, dying_data);
                     setPlayerProperty(saver, "currentdying", cd);
                 }
-                DyingStruct dying = dying_data.value<DyingStruct>();
+                DeathStruct dying = dying_data.value<DeathStruct>();
                 dying.nowAskingForPeaches = nullptr;
                 dying_data = QVariant::fromValue(dying);
                 thread->trigger(QSanguosha::AskForPeachesDone, dying_data);
@@ -3860,11 +3860,11 @@ bool LegacyRoom::changeMaxHpForAwakenSkill(LegacyServerPlayer *player, int magni
 
 void LegacyRoom::applyDamage(LegacyServerPlayer *victim, const DamageStruct &damage)
 {
-    int new_hp = victim->hp() - damage.damage;
+    int new_hp = victim->hp() - damage.num;
 
     if (!victim->hasValidSkill(QStringLiteral("banling")))
         setPlayerProperty(victim, "hp", new_hp);
-    QString change_str = QStringLiteral("%1:%2").arg(victim->objectName(), -damage.damage);
+    QString change_str = QStringLiteral("%1:%2").arg(victim->objectName(), -damage.num);
     switch (damage.nature) {
     case QSanguosha::DamageFire:
         change_str.append(QStringLiteral("F"));
@@ -3877,7 +3877,7 @@ void LegacyRoom::applyDamage(LegacyServerPlayer *victim, const DamageStruct &dam
     }
 
     QJsonArray arg;
-    arg << victim->objectName() << -damage.damage << damage.nature;
+    arg << victim->objectName() << -damage.num << damage.nature;
     doBroadcastNotify(QSanProtocol::S_COMMAND_CHANGE_HP, arg);
 }
 
@@ -3886,6 +3886,7 @@ void LegacyRoom::recover(LegacyServerPlayer *player, const RecoverStruct &recove
     if (player->lostHp() == 0 || player->isDead())
         return;
     RecoverStruct recover_struct = recover;
+    recover_struct.nature = QSanguosha::DamageRecover;
     recover_struct.to = player;
 
     QVariant data = QVariant::fromValue(recover_struct);
@@ -3893,7 +3894,7 @@ void LegacyRoom::recover(LegacyServerPlayer *player, const RecoverStruct &recove
         return;
 
     recover_struct = data.value<RecoverStruct>();
-    int recover_num = recover_struct.recover;
+    int recover_num = recover_struct.num;
 
     if (!player->hasValidSkill(QStringLiteral("banling"))) {
         int new_hp = qMin(player->hp() + recover_num, player->maxHp());
@@ -4068,7 +4069,7 @@ void LegacyRoom::sendDamageLog(const DamageStruct &data)
     }
 
     log.to << data.to;
-    log.arg = QString::number(data.damage);
+    log.arg = QString::number(data.num);
 
     switch (data.nature) {
     case QSanguosha::DamageNormal:
@@ -6150,7 +6151,7 @@ void LegacyRoom::makeDamage(const QString &source, const QString &target, QSanPr
     } else if (nature == S_CHEAT_HP_RECOVER) {
         RecoverStruct r;
         r.from = sourcePlayer;
-        r.recover = point;
+        r.num = point;
         recover(targetPlayer, r);
         return;
     } else if (nature == S_CHEAT_MAX_HP_RESET) {

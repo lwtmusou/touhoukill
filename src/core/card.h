@@ -30,9 +30,11 @@ public:
 
     // constructor to create real card
     // Do not use nullptr RoomObject pointer for this function! It'll throw .
-    Card(RoomObject *room, const CardFace *face, QSanguosha::Suit suit = QSanguosha::SuitToBeDecided, QSanguosha::Number number = QSanguosha::NumberToBeDecided, int id = -1);
+    explicit Card(RoomObject *room, const CardFace *face, QSanguosha::Suit suit = QSanguosha::SuitToBeDecided, QSanguosha::Number number = QSanguosha::NumberToBeDecided,
+                  int id = -1);
     // A dummy card will be constructed if faceName is invalid.
-    Card(RoomObject *room, const QString &faceName, QSanguosha::Suit suit = QSanguosha::SuitToBeDecided, QSanguosha::Number number = QSanguosha::NumberToBeDecided, int id = -1);
+    explicit Card(RoomObject *room, const QString &faceName, QSanguosha::Suit suit = QSanguosha::SuitToBeDecided, QSanguosha::Number number = QSanguosha::NumberToBeDecided,
+                  int id = -1);
     ~Card();
 
     // Suit method

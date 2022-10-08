@@ -409,9 +409,11 @@ Q_ENUM_NS(MoveReasonCategory)
 
 enum DamageNature
 {
-    DamageNormal, // normal slash, duel and most damage caused by skill
+    DamageRecover = -1,
+
+    DamageNormal = 0, // normal slash, duel and most damage caused by skill
     DamageFire, // fire slash, fire attack and few damage skill (Yeyan, etc)
-    DamageThunder // lightning, thunder slash, and few damage skill (Leiji, etc)
+    DamageThunder, // lightning, thunder slash, and few damage skill (Leiji, etc)
 };
 Q_ENUM_NS(DamageNature)
 

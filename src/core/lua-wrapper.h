@@ -41,7 +41,7 @@ private:
     LuaStatePrivate *d;
     friend class LuaMultiThreadEnvironment;
 
-    LuaState();
+    explicit LuaState();
     Q_DISABLE_COPY_MOVE(LuaState)
 };
 
@@ -111,7 +111,7 @@ private:
     LuaMultiThreadEnvironmentPrivate *d;
     Q_DISABLE_COPY_MOVE(LuaMultiThreadEnvironment)
 
-    LuaMultiThreadEnvironment();
+    explicit LuaMultiThreadEnvironment();
     static LuaMultiThreadEnvironment *self();
 };
 
