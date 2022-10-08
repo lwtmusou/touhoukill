@@ -1170,7 +1170,7 @@ void Dashboard::enableCards()
 {
     m_mutexEnableCards.lock();
 
-    foreach (const QString &pile, Self->getHandPileList(false))
+    foreach (const QString &pile, playerGetHandPileList(Self, false))
         expandPileCards(pile);
     expandSpecialCard();
 
@@ -1212,7 +1212,7 @@ void Dashboard::startPending(const ViewAsSkill *skill)
     retractSpecialCard();
 
     if (expand) {
-        foreach (const QString &pile, Self->getHandPileList(false))
+        foreach (const QString &pile, playerGetHandPileList(Self, false))
             expandPileCards(pile);
         if (!((skill != nullptr) && skill->isResponseOrUse()))
             expandSpecialCard();
@@ -1650,6 +1650,20 @@ bool Dashboard::isItemUnderMouse(QGraphicsItem *item) const
 {
     return (item->isUnderMouse() && !_m_skillDock->isUnderMouse() && !_m_rightSkillDock->isUnderMouse())
         || ((_m_skillDock->isUnderMouse() || _m_rightSkillDock->isUnderMouse()) && _m_screenNameItem->isVisible());
+}
+
+QStringList Dashboard::playerGetHandPileList(Player *player, bool vas)
+{
+    QStringList handlist;
+    if (vas)
+        handlist.append(QStringLiteral("hand"));
+    foreach (const QString &pile, player->pileNames()) {
+        if (pile.startsWith(QStringLiteral("&")) || pile.startsWith(QStringLiteral("^")))
+            handlist.append(pile);
+        else if (pile == QStringLiteral("wooden_ox") && player->hasValidTreasure(QStringLiteral("wooden_ox")))
+            handlist.append(pile);
+    }
+    return handlist;
 }
 
 void Dashboard::onAvatarHoverEnter()

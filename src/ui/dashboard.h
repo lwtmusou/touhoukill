@@ -290,6 +290,10 @@ protected:
     QWinTaskbarButton *taskbarButton;
 #endif
 
+    bool isItemUnderMouse(QGraphicsItem *item) const override;
+
+    QStringList playerGetHandPileList(Player *player, bool vas = true);
+
 protected slots:
     void _onEquipSelectChanged() override;
 
@@ -300,8 +304,6 @@ protected slots:
     {
         _m_screenNameItem->hide();
     }
-
-    bool isItemUnderMouse(QGraphicsItem *item) const override;
 
 private slots:
     void onCardItemClicked();

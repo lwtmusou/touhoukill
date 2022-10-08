@@ -300,7 +300,6 @@ public:
     // TODO: d->tag?
     QVariantMap tag;
 
-    // bool hasValidSkill()
 
     void setState(const QString &state);
     QString getState() const;
@@ -315,8 +314,6 @@ public:
     const Player *getNextAlive(int n = 1, bool ignoreRemoved = true) const;
     const Player *getLastAlive(int n = 1, bool ignoreRemoved = true) const;
 
-    IdSet getHandPile() const;
-    QStringList getHandPileList(bool view_as_skill = true) const;
 
     int getCardCount(bool include_equip = true, bool include_judging = false) const;
 

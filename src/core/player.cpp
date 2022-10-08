@@ -1459,32 +1459,6 @@ QString Player::pileName(int card_id) const
     return QString();
 }
 
-IdSet Player::getHandPile() const
-{
-    IdSet result;
-    foreach (const QString &p, pileNames()) {
-        if (p.startsWith(QStringLiteral("&")) || (p == QStringLiteral("wooden_ox") && hasValidTreasure(QStringLiteral("wooden_ox")))) {
-            foreach (int id, pile(p))
-                result << id;
-        }
-    }
-    return result;
-}
-
-QStringList Player::getHandPileList(bool view_as_skill) const
-{
-    QStringList handlist;
-    if (view_as_skill)
-        handlist.append(QStringLiteral("hand"));
-    foreach (const QString &pile, this->pileNames()) {
-        if (pile.startsWith(QStringLiteral("&")) || pile.startsWith(QStringLiteral("^")))
-            handlist.append(pile);
-        else if (pile == QStringLiteral("wooden_ox") && hasValidTreasure(QStringLiteral("wooden_ox")))
-            handlist.append(pile);
-    }
-    return handlist;
-}
-
 void Player::addHistory(const QString &name, int times)
 {
     d->history[name] += times;
