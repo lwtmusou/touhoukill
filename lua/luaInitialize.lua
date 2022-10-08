@@ -2,9 +2,8 @@
 -- Initialization script for QSanguosha
 -- Assuming standard module (w/o coroutine) and module "sgs" imported and is accessable globally
 
--- compatible with Lua 5.3
-if _VERSION == "Lua 5.3" then
-    fail = nil
+if _VERSION ~= "Lua 5.4" then
+    warn("QSanguosha is only tested with Lua 5.4. You are running QSanguosha with " .. _VERSION .. ".")
 end
 
 -- first, kill some function that shouldn't be used
