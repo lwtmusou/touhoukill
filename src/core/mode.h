@@ -1,6 +1,10 @@
 #ifndef TOUHOUKILL_MODE_H
 #define TOUHOUKILL_MODE_H
 
+// BE WARE! THIS FILE IS USED IN BOTH SWIG AND C++.
+// MAKE SURE THE GRAMMAR IS COMPATIBLE BETWEEN 2 LANGUAGES.
+
+#ifndef SWIG
 #include "global.h"
 
 #include <QSet>
@@ -12,17 +16,22 @@ class RoomObject;
 class General;
 
 class ModePrivate;
+#endif
 
 class QSGS_CORE_EXPORT Mode
 {
 protected:
+#ifndef SWIG
     Mode(const QString &name, QSanguosha::ModeCategory category);
+#endif
 
 public:
     static QSet<QString> availableModes();
     static const Mode *findMode(const QString &name);
 
+#ifndef SWIG
     virtual ~Mode();
+#endif
 
     const QString &name() const;
     QSanguosha::ModeCategory category() const;
@@ -41,11 +50,15 @@ public:
 private:
     ModePrivate *const d;
     Q_DISABLE_COPY_MOVE(Mode)
+#ifdef SWIG
+    Mode() = delete;
+#endif
 };
 
 // I don't think that implementing these modes here is a good idea.
-// But there seems to be no other place for them
+// But there seems to be no other place for them for now
 
+#ifndef SWIG
 class GenericRoleModePrivate;
 
 class QSGS_CORE_EXPORT GenericRoleMode : public Mode
@@ -87,5 +100,6 @@ private:
     friend class Mode;
     GenericHegemonyModePrivate *const d;
 };
+#endif
 
 #endif

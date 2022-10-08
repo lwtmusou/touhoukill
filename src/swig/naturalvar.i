@@ -45,7 +45,13 @@ SWIG_arg ++;
 %typemap(out) QString
 %{ lua_pushstring(L, $1.toUtf8().constData()); SWIG_arg++; %}
 
+%typemap(out) const QString &
+%{ lua_pushstring(L, (*($1)).toUtf8().constData()); SWIG_arg++; %}
+
 %naturalvar QByteArray;
 
 %typemap(out) QByteArray
 %{ lua_pushlstring(L, $1.constData(), $1.length()); SWIG_arg++; %}
+
+%typemap(out) const QByteArray &
+%{ lua_pushlstring(L, (*($1)).constData(), (*($1)).length()); SWIG_arg++; %}

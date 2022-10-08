@@ -28,6 +28,7 @@
 #include "trigger.h"
 #include "RoomObject.h"
 #include "game-logic.h"
+#include "mode.h"
 
 #include <QObject>
 #include <QVariant>

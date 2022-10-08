@@ -18,5 +18,6 @@
 %include "trigger.h"
 %include "RoomObject.h"
 %include "game-logic.h"
+%include "mode.h"
 
 #undef final
