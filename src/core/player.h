@@ -96,13 +96,28 @@ public:
     void setDyingFactor(int dyingFactor);
     int maxHp() const;
     void setMaxHp(int max_hp);
-    int lostHp() const;
+
+    inline int lostHp() const
+    {
+        return maxHp() - qMax(hp(), 0);
+    }
+
     bool isWounded() const;
     QSanguosha::Gender gender() const;
     void setGender(QSanguosha::Gender gender);
-    bool isMale() const;
-    bool isFemale() const;
-    bool isNeuter() const;
+
+    inline bool isMale() const
+    {
+        return gender() == QSanguosha::Male;
+    }
+    inline bool isFemale() const
+    {
+        return gender() == QSanguosha::Female;
+    }
+    inline bool isNeuter() const
+    {
+        return gender() == QSanguosha::Neuter;
+    }
 
     bool hasShownRole() const;
     void setShownRole(bool shown);

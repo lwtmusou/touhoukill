@@ -284,11 +284,6 @@ void Player::setMaxHp(int max_hp)
         d->hp = max_hp;
 }
 
-int Player::lostHp() const
-{
-    return d->maxHp - qMax(hp(), 0);
-}
-
 bool Player::isWounded() const
 {
     if (d->hp < 0)
@@ -305,21 +300,6 @@ Gender Player::gender() const
 void Player::setGender(Gender gender)
 {
     d->gender = gender;
-}
-
-bool Player::isMale() const
-{
-    return d->gender == Male;
-}
-
-bool Player::isFemale() const
-{
-    return d->gender == Female;
-}
-
-bool Player::isNeuter() const
-{
-    return d->gender == Neuter;
 }
 
 int Player::seat() const
