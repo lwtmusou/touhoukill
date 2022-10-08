@@ -154,14 +154,12 @@ set (QSanguosha_Server_SRCS
     src/server/server-main.cpp
     src/server/server.cpp
     src/server/serverconfig.cpp
-    src/server/serverlogic.cpp
 )
 
 set (QSanguosha_Server_MOCS
     src/server/qsgsserver.h
     src/server/serverconfig.h
     src/server/server.h
-    src/server/serverlogic.h
 )
 
 set (QSanguosha_SRCS
