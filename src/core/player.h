@@ -315,7 +315,6 @@ public:
     const Player *getLastAlive(int n = 1, bool ignoreRemoved = true) const;
 
 
-    int getCardCount(bool include_equip = true, bool include_judging = false) const;
 
 #ifndef QSGS_CORE_NODEPRECATED
 

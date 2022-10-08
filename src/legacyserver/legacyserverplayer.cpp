@@ -116,7 +116,7 @@ void LegacyServerPlayer::throwAllHandCards()
 
 void LegacyServerPlayer::throwAllHandCardsAndEquips()
 {
-    int card_length = getCardCount(true);
+    int card_length = handCardNum() + equipIds().count();
     room->askForDiscard(this, QString(), card_length, card_length, false, true);
 }
 

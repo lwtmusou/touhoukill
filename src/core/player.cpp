@@ -1413,26 +1413,6 @@ bool Player::canSlash(const Player *other, bool distance_limit, int rangefix, co
     return canSlash(other, nullptr, distance_limit, rangefix, others);
 }
 
-int Player::getCardCount(bool include_equip, bool include_judging) const
-{
-    int count = handCardNum();
-    if (include_equip) {
-        if (d->weapon != -1)
-            count++;
-        if (d->armor != -1)
-            count++;
-        if (d->defensiveHorse != -1)
-            count++;
-        if (d->offensiveHorse != -1)
-            count++;
-        if (d->treasure != -1)
-            count++;
-    }
-    if (include_judging)
-        count += d->judgingArea.length();
-    return count;
-}
-
 IdSet Player::pile(const QString &pile_name) const
 {
     if (pile_name == QStringLiteral("shown_card"))
