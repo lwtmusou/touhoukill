@@ -2,6 +2,7 @@
 #define qsgslegacy__ROOM_H
 
 #include "RoomObject.h"
+#include "game-logic.h"
 #include "legacyprotocol.h"
 #include "legacyroomthread.h"
 #include "legacyserverplayer.h"
@@ -25,7 +26,13 @@ struct LogStruct;
 #define QSGS_LOGIC
 #define QSGS_SOCKET
 
-class LegacyRoom : public RoomObject
+// Fs: The inheritance here is only for pass build.
+// But it seems reasonable since this class is originally for both logic and state.
+// Adding inheritance of GameLogic is the fastest way to pass build. This class won't be used any longer in refactored program.
+
+class LegacyRoom
+    : public RoomObject
+    , public GameLogic
 {
     Q_OBJECT
 

@@ -159,6 +159,16 @@ public:
     }
 
 #endif
+
+protected:
+#ifndef SWIG
+    QListSpecialMethods()
+        : reason(QSanguosha::MoveReasonUnknown)
+        , causedBy(nullptr)
+        , aimFor(nullptr)
+    {
+    }
+#endif
 };
 
 struct QSGS_CORE_EXPORT LogStruct

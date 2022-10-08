@@ -1223,11 +1223,14 @@ void Player::removeCard(const Card *card, Place place, const QString &pile_name)
         break;
     }
     case PlaceEquip: {
+#if 0
+        // TODO: find a place for these logic
         const EquipCard *equip = dynamic_cast<const EquipCard *>(card->face());
         if (equip == nullptr)
             equip = dynamic_cast<const EquipCard *>(Sanguosha->cardDescriptor(card->effectiveId()).face());
         Q_ASSERT(equip != nullptr);
         equip->onUninstall(this);
+#endif
         removeEquip(card);
         break;
     }
@@ -1273,11 +1276,14 @@ void Player::addCard(const Card *card, Place place, const QString &pile_name)
         break;
     }
     case PlaceEquip: {
+        setEquip(card);
+#if 0
+        // TODO: find a place for these logic
         const EquipCard *equip = dynamic_cast<const EquipCard *>(card->face());
         if (equip == nullptr)
             equip = dynamic_cast<const EquipCard *>(Sanguosha->cardDescriptor(card->effectiveId()).face());
-        setEquip(card);
         equip->onInstall(this);
+#endif
         break;
     }
     case PlaceDelayedTrick: {

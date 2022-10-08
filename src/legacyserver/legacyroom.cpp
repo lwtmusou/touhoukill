@@ -1119,7 +1119,7 @@ bool LegacyRoom::isCanceled(const CardEffectStruct &effect)
                         extraEffect.from = p;
                         extraEffect.to = target;
                         extraEffect.multiple = effect.multiple;
-                        extraCard->face()->onEffect(extraEffect);
+                        extraCard->face()->onEffect(this, extraEffect);
                     } else if (extraCard->face()->isKindOf(QStringLiteral("Analeptic"))) {
                         RecoverStruct re;
                         re.card = xianshi_nullification;
@@ -1134,7 +1134,7 @@ bool LegacyRoom::isCanceled(const CardEffectStruct &effect)
                         extraEffect.from = p;
                         extraEffect.to = target;
                         extraEffect.multiple = effect.multiple;
-                        extraCard->face()->onEffect(extraEffect);
+                        extraCard->face()->onEffect(this, extraEffect);
                     }
                     delete extraCard;
                 }
@@ -1214,7 +1214,7 @@ bool LegacyRoom::_askForNullification(const Card *trick, LegacyServerPlayer *fro
     if (card == nullptr)
         return false;
 
-    card = card->face()->validateInResponse(repliedPlayer, card);
+    card = card->face()->validateInResponse(this, repliedPlayer, card);
     if (card != nullptr && repliedPlayer->isCardLimited(card, QSanguosha::MethodUse))
         card = nullptr;
     if (card == nullptr)
@@ -1558,7 +1558,7 @@ const Card *LegacyRoom::askForCard(LegacyServerPlayer *player, const QString &pa
         return nullptr;
     }
 
-    card_ = card_->face()->validateInResponse(player, card_);
+    card_ = card_->face()->validateInResponse(this, player, card_);
     if (card_ != nullptr && player->isCardLimited(card_, method))
         card_ = nullptr;
     const Card *result = nullptr;
@@ -1929,7 +1929,7 @@ void LegacyRoom::askForSinglePeach(LegacyServerPlayer *player, LegacyServerPlaye
     if (use.card != nullptr && player->isCardLimited(use.card, use.card->handleMethod()))
         use.card = nullptr;
     if (use.card != nullptr) {
-        use.card = use.card->face()->validateInResponse(player, use.card);
+        use.card = use.card->face()->validateInResponse(this, player, use.card);
         QSanguosha::HandlingMethod method = QSanguosha::MethodUse;
         if (use.card != nullptr && use.card->face()->type() == QSanguosha::TypeSkill) //keep TypeSkill after validateInResponse
             method = use.card->handleMethod();
@@ -3663,7 +3663,7 @@ bool LegacyRoom::useCard(const CardUseStruct &use, bool add_history)
     }
     bool slash_not_record = key.contains(QStringLiteral("Slash")) && slash_count > 0 && (card_use.from->hasValidWeapon(QStringLiteral("Crossbow")) || showTMskill);
 
-    card_ = card_use.card->face()->validate(card_use);
+    card_ = card_use.card->face()->validate(this, card_use);
     if (card_ == nullptr)
         return false;
 

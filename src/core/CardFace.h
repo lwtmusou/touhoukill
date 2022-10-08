@@ -11,6 +11,7 @@
 
 class Player;
 class RoomObject;
+class GameLogic;
 class Card;
 
 class CardFacePrivate;
@@ -93,28 +94,26 @@ public:
      * 
      * @note to_select will be selectable until its appearance in targets >= its maximum vote. 
      */
-    // virtual for current aux-skills
-    // TODO: remove this virtual
     int targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card) const;
 
     bool isAvailable(const Player *player, const Card *card) const;
 
-    const Card *validate(const CardUseStruct &cardUse) const;
-    const Card *validateInResponse(Player *player, const Card *original_card) const;
+    const Card *validate(GameLogic *logic, const CardUseStruct &cardUse) const;
+    const Card *validateInResponse(GameLogic *logic, Player *player, const Card *original_card) const;
 
-    void doPreAction(RoomObject *room, const CardUseStruct &use) const;
+    void doPreAction(GameLogic *logic, const CardUseStruct &use) const;
 
     // TODO_Fs: Aren't the names of these 2 functions easy to be misunderstood?
-    void onUse(RoomObject *room, const CardUseStruct &use) const; // Shouldn't this be "processOfUsing" / "usingProcess" or something like this?
-    void use(RoomObject *room, const CardUseStruct &use) const; // Shouldn't this be "onUse"?
+    void onUse(GameLogic *logic, const CardUseStruct &use) const; // Shouldn't this be "processOfUsing" / "usingProcess" or something like this?
+    void use(GameLogic *logic, const CardUseStruct &use) const; // Shouldn't this be "onUse"?
 
-    void onEffect(const CardEffectStruct &effect) const;
+    void onEffect(GameLogic *logic, const CardEffectStruct &effect) const;
     bool isCancelable(const CardEffectStruct &effect) const;
-    void onNullified(Player *player, const Card *card) const;
+    void onNullified(GameLogic *logic, Player *player, const Card *card) const;
 
 protected:
-    virtual void defaultOnUse(RoomObject *room, const CardUseStruct &use) const;
-    virtual void defaultUse(RoomObject *room, const CardUseStruct &use) const;
+    virtual void defaultOnUse(GameLogic *logic, const CardUseStruct &use) const;
+    virtual void defaultUse(GameLogic *logic, const CardUseStruct &use) const;
 
 private:
     CardFace() = delete;
@@ -148,12 +147,12 @@ public:
     virtual QSanguosha::EquipLocation location() const = 0;
 
     // TODO: should these function have a 2nd parameter which is Card?
-    void onInstall(Player *player) const;
-    void onUninstall(Player *player) const;
+    void onInstall(GameLogic *logic, Player *player) const;
+    void onUninstall(GameLogic *logic, Player *player) const;
 
 protected:
-    virtual void defaultOnInstall(Player *player) const;
-    virtual void defaultOnUninstall(Player *player) const;
+    virtual void defaultOnInstall(GameLogic *logic, Player *player) const;
+    virtual void defaultOnUninstall(GameLogic *logic, Player *player) const;
 };
 
 class WeaponPrivate;
@@ -255,7 +254,7 @@ public:
     ~DelayedTrick() override;
 #endif
 
-    void takeEffect(Player *target) const;
+    void takeEffect(GameLogic *logic, Player *target) const;
 
     void setJudge(const JudgeStruct &j);
     JudgeStruct judge() const;
@@ -281,8 +280,8 @@ public:
     void setThrowWhenUsing(bool can);
 
 protected:
-    void defaultOnUse(RoomObject *room, const CardUseStruct &use) const override;
-    void defaultUse(RoomObject *room, const CardUseStruct &use) const override;
+    void defaultOnUse(GameLogic *logic, const CardUseStruct &use) const override;
+    void defaultUse(GameLogic *logic, const CardUseStruct &use) const override;
 
 private:
     SkillCardPrivate *const d;

@@ -209,6 +209,9 @@ public:
     // use move.toPile = QStringLiteral("bottom") instead
     // void moveCardsToEndOfDrawpile(QList<int> card_ids, bool forceVisible = false);
 
+    // The DRIVER
+    bool trigger(QSanguosha::TriggerEvent e, QVariant &data);
+
 public:
     // --- interactive methods ---
     // Legacy implementation of following functions are doing the actual manipulation after successfully asked
@@ -273,6 +276,8 @@ public:
     void askForExchange(IdSet &discardedIds, Player *target, const QString &skillName, int patternIndex, bool optional = false, const QString &prompt = QString());
 
     // replacement of askForRende / askForYiji
+    // I don't expect the LUA interface be complicated, but currently the first parameter seems impossible to operate in LUA
+    // maybe separate the QHash to 2 QLists?
     void askForCardGive(QHash<Player *, int> &give, Player *giver, const QString &reason, const IdSet &cardIds, bool optional = true, const QString &prompt = QString(),
                         const QList<Player *> players = {});
 

@@ -387,6 +387,11 @@ void GameLogic::moveCardsAtomic(CardsMoveStruct cards_move, bool forceVisible)
 {
 }
 
+bool GameLogic::trigger(QSanguosha::TriggerEvent e, QVariant &data)
+{
+    return true;
+}
+
 void GameLogic::activate(CardUseStruct &use, Player *player)
 {
 }

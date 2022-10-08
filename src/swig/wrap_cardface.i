@@ -63,11 +63,12 @@ std::optional<int> targetFilter(lua_State *l, const QList<const Player *> &targe
 
 // [-2, +1, e]
 // Assumes the corresponding function then the table itself are pushed on the top of stack, pops them and pushes the result (if any) or error object
-std::optional<const Card *> validate(lua_State *l, const CardUseStruct &use)
+std::optional<const Card *> validate(lua_State *l, GameLogic *logic, const CardUseStruct &use)
 {
-    SWIG_NewPointerObj(l, &use, SWIGTYPE_p_CardUseStruct, 0); // { use, CardFace, CardFace.validate }
+    SWIG_NewPointerObj(l, logic, SWIGTYPE_p_GameLogic, 0); // { logic, CardFace, CardFace.validate }
+    SWIG_NewPointerObj(l, &use, SWIGTYPE_p_CardUseStruct, 0); // { use, logic, CardFace, CardFace.validate }
 
-    int call = lua_pcall(l, 2, 1, 0); // { CardFace.validate() / error }
+    int call = lua_pcall(l, 3, 1, 0); // { CardFace.validate() / error }
 
     if (call != LUA_OK)
         return std::nullopt;
@@ -83,12 +84,13 @@ std::optional<const Card *> validate(lua_State *l, const CardUseStruct &use)
 
 // [-2, +1, e]
 // Assumes the corresponding function then the table itself are pushed on the top of stack, pops them and pushes the result (if any) or error object
-std::optional<const Card *> validateInResponse(lua_State *l, Player *player, const Card *card)
+std::optional<const Card *> validateInResponse(lua_State *l, GameLogic *logic, Player *player, const Card *card)
 {
-    SWIG_NewPointerObj(l, player, SWIGTYPE_p_Player, 0); // { player, CardFace, CardFace.validateInResponse }
-    SWIG_NewPointerObj(l, card, SWIGTYPE_p_Card, 0); // { card, player, CardFace, CardFace.validateInResponse }
+    SWIG_NewPointerObj(l, logic, SWIGTYPE_p_GameLogic, 0); // { logic, CardFace, CardFace.validateInResponse }
+    SWIG_NewPointerObj(l, player, SWIGTYPE_p_Player, 0); // { player, logic, CardFace, CardFace.validateInResponse }
+    SWIG_NewPointerObj(l, card, SWIGTYPE_p_Card, 0); // { card, player, logic, CardFace, CardFace.validateInResponse }
 
-    int call = lua_pcall(l, 3, 1, 0); // { cardFace.validateInResponse() / error }
+    int call = lua_pcall(l, 4, 1, 0); // { cardFace.validateInResponse() / error }
 
     if (call != LUA_OK)
         return std::nullopt;
@@ -105,10 +107,10 @@ std::optional<const Card *> validateInResponse(lua_State *l, Player *player, con
 // also used by: doPreAction, onUse
 // [-2, 0, e]
 // Assumes the corresponding function then the table itself are pushed on the top of stack, pops them and pushes the result (if any) or error object
-bool use(lua_State *l, RoomObject *room, const CardUseStruct &use)
+bool use(lua_State *l, GameLogic *logic, const CardUseStruct &use)
 {
-    SWIG_NewPointerObj(l, room, SWIGTYPE_p_RoomObject, 0); // { room, CardFace, CardFace.use }
-    SWIG_NewPointerObj(l, &use, SWIGTYPE_p_CardUseStruct, 0); // { use, room, CardFace, CardFace.use }
+    SWIG_NewPointerObj(l, logic, SWIGTYPE_p_GameLogic, 0); // { logic, CardFace, CardFace.use }
+    SWIG_NewPointerObj(l, &use, SWIGTYPE_p_CardUseStruct, 0); // { use, logic, CardFace, CardFace.use }
 
     int call = lua_pcall(l, 3, 0, 0); // { error (if any) } / { }
 
@@ -120,11 +122,12 @@ bool use(lua_State *l, RoomObject *room, const CardUseStruct &use)
 
 // [-2, 0, e]
 // Assumes the corresponding function then the table itself are pushed on the top of stack, pops them and pushes the result (if any) or error object
-bool onEffect(lua_State *l, const CardEffectStruct &effect)
+bool onEffect(lua_State *l, GameLogic *logic, const CardEffectStruct &effect)
 {
-    SWIG_NewPointerObj(l, &effect, SWIGTYPE_p_CardEffectStruct, 0); // { player, CardFace, CardFace.onEffect }
+    SWIG_NewPointerObj(l, logic, SWIGTYPE_p_GameLogic, 0); // { logic, CardFace, CardFace.onEffect }
+    SWIG_NewPointerObj(l, &effect, SWIGTYPE_p_CardEffectStruct, 0); // { player, logic, CardFace, CardFace.onEffect }
 
-    int call = lua_pcall(l, 2, 0, 0); // { error (if any) } / { }
+    int call = lua_pcall(l, 3, 0, 0); // { error (if any) } / { }
 
     if (call != LUA_OK)
         return false;
@@ -149,12 +152,13 @@ std::optional<bool> isCancelable(lua_State *l, const CardEffectStruct &effect)
 
 // [-2, 0, e]
 // Assumes the corresponding function then the table itself are pushed on the top of stack, pops them and pushes the result (if any) or error object
-bool onNullified(lua_State *l, Player *player, const Card *card)
+bool onNullified(lua_State *l, GameLogic *logic, Player *player, const Card *card)
 {
-    SWIG_NewPointerObj(l, player, SWIGTYPE_p_Player, 0); // { player, CardFace, CardFace.onNullified }
-    SWIG_NewPointerObj(l, card, SWIGTYPE_p_Card, 0); // { card, player, CardFace, CardFace.onNullified }
+    SWIG_NewPointerObj(l, logic, SWIGTYPE_p_GameLogic, 0); // { logic, CardFace, CardFace.onNullified }
+    SWIG_NewPointerObj(l, player, SWIGTYPE_p_Player, 0); // { player, logic, CardFace, CardFace.onNullified }
+    SWIG_NewPointerObj(l, card, SWIGTYPE_p_Card, 0); // { card, player, logic, CardFace, CardFace.onNullified }
 
-    int call = lua_pcall(l, 3, 0, 0); // { error (if any) } / { }
+    int call = lua_pcall(l, 4, 0, 0); // { error (if any) } / { }
 
     if (call != LUA_OK)
         return false;
@@ -167,11 +171,12 @@ bool onNullified(lua_State *l, Player *player, const Card *card)
 // also used by: onUninstall, takeEffect
 // [-2, 0, e]
 // Assumes the corresponding function then the table itself are pushed on the top of stack, pops them and pushes the result (if any) or error object
-bool onInstall(lua_State *l, Player *player)
+bool onInstall(lua_State *l, GameLogic *logic, Player *player)
 {
-    SWIG_NewPointerObj(l, player, SWIGTYPE_p_Player, 0); // { player, CardFace, EquipCard.onInstall }
+    SWIG_NewPointerObj(l, logic, SWIGTYPE_p_GameLogic, 0); // { logic, CardFace, EquipCard.onInstall }
+    SWIG_NewPointerObj(l, player, SWIGTYPE_p_Player, 0); // { player, logic, CardFace, EquipCard.onInstall }
 
-    int call = lua_pcall(l, 2, 0, 0); // { error (if any) } / { }
+    int call = lua_pcall(l, 3, 0, 0); // { error (if any) } / { }
 
     if (call != LUA_OK)
         return false;

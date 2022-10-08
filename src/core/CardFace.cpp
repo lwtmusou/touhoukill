@@ -2,8 +2,10 @@
 #include "RoomObject.h"
 #include "card.h"
 #include "engine.h"
+#include "game-logic.h"
 #include "lua-wrapper.h"
 #include "player.h"
+#include "structs.h"
 #include "util.h"
 
 #include "lua.hpp"
@@ -42,15 +44,15 @@ namespace CardFaceLuaCall {
 std::optional<bool> targetFixed(lua_State *l, const Player *player, const Card *card); // also used by: isAvailable
 std::optional<bool> targetsFeasible(lua_State *l, const QList<const Player *> &targets, const Player *Self, const Card *card);
 std::optional<int> targetFilter(lua_State *l, const QList<const Player *> &targets, const Player *to_select, const Player *Self, const Card *card);
-std::optional<const Card *> validate(lua_State *l, const CardUseStruct &use);
-std::optional<const Card *> validateInResponse(lua_State *l, Player *player, const Card *card);
-bool use(lua_State *l, RoomObject *room, const CardUseStruct &use); // also used by: doPreAction, onUse
-bool onEffect(lua_State *l, const CardEffectStruct &effect);
+std::optional<const Card *> validate(lua_State *l, GameLogic *logic, const CardUseStruct &use);
+std::optional<const Card *> validateInResponse(lua_State *l, GameLogic *logic, Player *player, const Card *card);
+bool use(lua_State *l, GameLogic *logic, const CardUseStruct &use); // also used by: doPreAction, onUse
+bool onEffect(lua_State *l, GameLogic *logic, const CardEffectStruct &effect);
 std::optional<bool> isCancelable(lua_State *l, const CardEffectStruct &effect);
-bool onNullified(lua_State *l, Player *player, const Card *card);
+bool onNullified(lua_State *l, GameLogic *logic, Player *player, const Card *card);
 
 // EquipCard
-bool onInstall(lua_State *l, Player *player); // also used by: onUninstall, takeEffect
+bool onInstall(lua_State *l, GameLogic *logic, Player *player); // also used by: onUninstall, takeEffect
 
 // DelayedTrick
 std::optional<JudgeStruct> judge(lua_State *l);
@@ -494,7 +496,7 @@ bool CardFace::isAvailable(const Player *player, const Card *card) const
 }
 
 // --  - validate - function(cardUse) -> card
-const Card *CardFace::validate(const CardUseStruct &use) const
+const Card *CardFace::validate(GameLogic *logic, const CardUseStruct &use) const
 {
     std::optional<const Card *> r;
 
@@ -508,7 +510,7 @@ const Card *CardFace::validate(const CardUseStruct &use) const
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
                     lua_pushvalue(l, -2); // { CardFace, CardFace.validate, CardFace }
-                    r = CardFaceLuaCall::validate(l, use); // { CardFace.validate(), CardFace }
+                    r = CardFaceLuaCall::validate(l, logic, use); // { CardFace.validate(), CardFace }
                 } else {
                     // not function, ignored
                 }
@@ -526,7 +528,7 @@ const Card *CardFace::validate(const CardUseStruct &use) const
 }
 
 // --  - validateInResponse - function(player, card) -> card
-const Card *CardFace::validateInResponse(Player *player, const Card *original_card) const
+const Card *CardFace::validateInResponse(GameLogic *logic, Player *player, const Card *original_card) const
 {
     std::optional<const Card *> r;
 
@@ -540,7 +542,7 @@ const Card *CardFace::validateInResponse(Player *player, const Card *original_ca
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
                     lua_pushvalue(l, -2); // { CardFace, CardFace.validateInResponse, CardFace }
-                    r = CardFaceLuaCall::validateInResponse(l, player, original_card); // { CardFace.validateInResponse(), CardFace }
+                    r = CardFaceLuaCall::validateInResponse(l, logic, player, original_card); // { CardFace.validateInResponse(), CardFace }
                 } else {
                     // not function, ignored
                 }
@@ -558,7 +560,7 @@ const Card *CardFace::validateInResponse(Player *player, const Card *original_ca
 }
 
 // --  - doPreAction - function(room, cardUse)
-void CardFace::doPreAction(RoomObject *room, const CardUseStruct &use) const
+void CardFace::doPreAction(GameLogic *logic, const CardUseStruct &use) const
 {
     bool called = false;
 
@@ -572,7 +574,7 @@ void CardFace::doPreAction(RoomObject *room, const CardUseStruct &use) const
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
                     lua_pushvalue(l, -2); // { CardFace, CardFace.doPreAction, CardFace }
-                    called = CardFaceLuaCall::use(l, room, use); // { error (if any), CardFace }
+                    called = CardFaceLuaCall::use(l, logic, use); // { error (if any), CardFace }
                     if (called)
                         lua_pushnil(l); // for following lua_pop
                 } else {
@@ -592,7 +594,7 @@ void CardFace::doPreAction(RoomObject *room, const CardUseStruct &use) const
 }
 
 // --  - onUse - function(room, cardUse)
-void CardFace::onUse(RoomObject *room, const CardUseStruct &use) const
+void CardFace::onUse(GameLogic *logic, const CardUseStruct &use) const
 {
     bool called = false;
 
@@ -606,7 +608,7 @@ void CardFace::onUse(RoomObject *room, const CardUseStruct &use) const
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
                     lua_pushvalue(l, -2); // { CardFace, CardFace.onUse, CardFace }
-                    called = CardFaceLuaCall::use(l, room, use); // { error (if any), CardFace }
+                    called = CardFaceLuaCall::use(l, logic, use); // { error (if any), CardFace }
                     if (called)
                         lua_pushnil(l); // for following lua_pop
                 } else {
@@ -622,11 +624,11 @@ void CardFace::onUse(RoomObject *room, const CardUseStruct &use) const
         return;
 
     // default
-    defaultOnUse(room, use);
+    defaultOnUse(logic, use);
 }
 
 // --  - use - function(room, cardUse)
-void CardFace::use(RoomObject *room, const CardUseStruct &use) const
+void CardFace::use(GameLogic *logic, const CardUseStruct &use) const
 {
     bool called = false;
 
@@ -640,7 +642,7 @@ void CardFace::use(RoomObject *room, const CardUseStruct &use) const
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
                     lua_pushvalue(l, -2); // { CardFace, CardFace.use, CardFace }
-                    called = CardFaceLuaCall::use(l, room, use); // { error (if any), CardFace }
+                    called = CardFaceLuaCall::use(l, logic, use); // { error (if any), CardFace }
                     if (called)
                         lua_pushnil(l); // for following lua_pop
                 } else {
@@ -656,14 +658,15 @@ void CardFace::use(RoomObject *room, const CardUseStruct &use) const
         return;
 
     // default
-    defaultUse(room, use);
+    defaultUse(logic, use);
 }
 
-void CardFace::defaultOnUse(RoomObject *room, const CardUseStruct &use) const
+void CardFace::defaultOnUse(GameLogic *logic, const CardUseStruct &_use) const
 {
-#if 0
-    CardUseStruct card_use = use;
+    CardUseStruct card_use = _use;
     Player *player = card_use.from;
+
+    RoomObject *room = player->roomObject();
 
     room->sortPlayersByActionOrder(card_use.to);
 
@@ -673,114 +676,84 @@ void CardFace::defaultOnUse(RoomObject *room, const CardUseStruct &use) const
     //     room->reverseFor3v3(card_use.card, player, targets);
     card_use.to = targets;
 
-    LogMessage log;
-    log.from = player;
+    QVariant data = QVariant::fromValue<CardUseStruct>(card_use);
+    bool cancel = logic->trigger(PreCardUsed, data);
+    if (cancel)
+        return;
+
+    card_use = data.value<CardUseStruct>();
+
+    LogStruct log(QStringLiteral("#UseCard"), player, nullptr, QString(), QString(), card_use.card);
     if (!targetFixed(card_use.from, card_use.card) || card_use.to.length() > 1 || !card_use.to.contains(card_use.from))
         log.to = card_use.to;
-    log.type = QStringLiteral("#UseCard");
-    log.card_str = card_use.card->toString(false);
-    RefactorProposal::fixme_cast<Room *>(room)->sendLog(log);
+    logic->sendLog(log);
 
-    IDSet used_cards;
-    QList<CardsMoveStruct> moves;
+    CardsMoveStruct move;
+    IdSet used_cards;
     if (card_use.card->isVirtualCard())
         used_cards.unite(card_use.card->subcards());
     else
-        used_cards.insert(card_use.card->effectiveID());
+        used_cards.insert(card_use.card->effectiveId());
 
-    QVariant data = QVariant::fromValue(card_use);
-    RoomThread *thread = RefactorProposal::fixme_cast<Room *>(room)->getThread();
-    Q_ASSERT(thread != nullptr);
-    thread->trigger(PreCardUsed, data);
-    card_use = data.value<CardUseStruct>();
-
-    CardMoveReason reason(MoveReasonUse, player->objectName(), QString(), card_use.card->skillName(), QString());
+    move.causedBy = player;
     if (card_use.to.size() == 1)
-        reason.m_targetId = card_use.to.first()->objectName();
+        move.aimFor = card_use.to.first();
+    move.via = card_use.card->skillName();
+    move.reason = MoveReasonUse;
 
-    reason.m_extraData = QVariant::fromValue(card_use.card);
+    foreach (int id, used_cards)
+        move << SingleCardMoveStruct(id, nullptr, PlaceTable);
 
-    foreach (int id, used_cards) {
-        CardsMoveStruct move(id, nullptr, PlaceTable, reason);
-        moves.append(move);
-    }
-    RefactorProposal::fixme_cast<Room *>(room)->moveCardsAtomic(moves, true);
+    logic->moveCardsAtomic(move, true);
 
-    RefactorProposal::fixme_cast<ServerPlayer *>(player)->showHiddenSkill(card_use.card->showSkillName());
+    logic->showPlayerHiddenSkill(player, card_use.card->showSkillName());
 
-    thread->trigger(CardUsed, data);
-    thread->trigger(CardFinished, data);
-#endif
+    logic->trigger(CardUsed, data);
+    logic->trigger(CardFinished, data);
 }
 
-void CardFace::defaultUse(RoomObject *room, const CardUseStruct &use) const
+void CardFace::defaultUse(GameLogic *logic, const CardUseStruct &_use) const
 {
-#if 0
-    Player *source = use.from;
+    CardUseStruct card_use = _use;
+    Player *source = card_use.from;
 
-    QStringList nullified_list = use.nullified_list; // room->getTag(QStringLiteral("CardUseNullifiedList")).toStringList();
+    QStringList nullified_list = card_use.nullified_list;
     bool all_nullified = nullified_list.contains(QStringLiteral("_ALL_TARGETS"));
-    int magic_drank = 0;
-    if (isNDTrick() && (source != nullptr) && source->mark(QStringLiteral("magic_drank")) > 0)
-        magic_drank = source->mark(QStringLiteral("magic_drank"));
 
-    foreach (Player *target, use.to) {
+    // TODO magic_drank refactor
+
+    foreach (Player *target, card_use.to) {
         CardEffectStruct effect;
-        effect.card = use.card;
+        effect.card = card_use.card;
         effect.from = source;
         effect.to = target;
-        effect.multiple = (use.to.length() > 1);
         effect.nullified = (all_nullified || nullified_list.contains(target->objectName()));
-        if (use.card->hasFlag(QStringLiteral("mopao")))
-            effect.effectValue.first() = effect.effectValue.first() + 1;
-        if (use.card->hasFlag(QStringLiteral("mopao2")))
-            effect.effectValue.last() = effect.effectValue.last() + 1;
-        if (source != nullptr && source->mark(QStringLiteral("kuangji_value")) > 0) {
-            effect.effectValue.first() = effect.effectValue.first() + source->mark(QStringLiteral("kuangji_value"));
-            effect.effectValue.last() = effect.effectValue.last() + source->mark(QStringLiteral("kuangji_value"));
-            source->setMark(QStringLiteral("kuangji_value"), 0);
-        }
 
-        effect.effectValue.first() = effect.effectValue.first() + magic_drank;
-        QVariantList players;
-        for (int i = use.to.indexOf(target); i < use.to.length(); i++) {
-            if (!nullified_list.contains(use.to.at(i)->objectName()) && !all_nullified)
-                players.append(QVariant::fromValue(use.to.at(i)));
-        }
-
-        //room->setTag(QStringLiteral("targets") + use.card->toString(), QVariant::fromValue(players));
-
-        // TODO: full card effect procedure //room->cardEffect(effect);
-        effect.card->face()->onEffect(effect);
+        logic->cardEffect(effect);
     }
-    //room->removeTag(QStringLiteral("targets") + use.card->toString()); //for ai?
-    if (source != nullptr && magic_drank > 0)
-        source->setMark(QStringLiteral("magic_drank"), 0);
 
-    if (RefactorProposal::fixme_cast<Room *>(room)->getCardPlace(use.card->effectiveID()) == PlaceTable) {
-        CardMoveReason reason(MoveReasonUse, source != nullptr ? source->objectName() : QString(), QString(), use.card->skillName(), QString());
-        if (use.to.size() == 1)
-            reason.m_targetId = use.to.first()->objectName();
-        reason.m_extraData = QVariant::fromValue(use.card);
-        Player *provider = nullptr;
-        foreach (const QString &flag, use.card->flags()) {
-            if (flag.startsWith(QStringLiteral("CardProvider_"))) {
-                QStringList patterns = flag.split(QStringLiteral("_"));
-                provider = room->findPlayer(patterns.at(1));
-                break;
-            }
-        }
+    if (source->roomObject()->cardPlace(card_use.card->effectiveId()) == PlaceTable) {
+        CardsMoveStruct move;
+        IdSet used_cards;
+        if (card_use.card->isVirtualCard())
+            used_cards.unite(card_use.card->subcards());
+        else
+            used_cards.insert(card_use.card->effectiveId());
 
-        Player *from = source;
-        if (provider != nullptr)
-            from = provider;
-        RefactorProposal::fixme_cast<Room *>(room)->moveCardTo(use.card, RefactorProposal::fixme_cast<ServerPlayer *>(from), nullptr, PlaceDiscardPile, reason, true);
+        move.causedBy = card_use.from;
+        if (card_use.to.size() == 1)
+            move.aimFor = card_use.to.first();
+        move.via = card_use.card->skillName();
+
+        foreach (int id, used_cards)
+            move << SingleCardMoveStruct(id, nullptr, PlaceDiscardPile);
+
+        logic->moveCardsAtomic(move, true);
     }
-#endif
 }
 
 // --  - onEffect(cardEffect)
-void CardFace::onEffect(const CardEffectStruct &effect) const
+void CardFace::onEffect(GameLogic *logic, const CardEffectStruct &effect) const
 {
     bool called = false;
 
@@ -794,7 +767,7 @@ void CardFace::onEffect(const CardEffectStruct &effect) const
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
                     lua_pushvalue(l, -2); // { CardFace, CardFace.onEffect, CardFace }
-                    called = CardFaceLuaCall::onEffect(l, effect); // { error (if any), CardFace }
+                    called = CardFaceLuaCall::onEffect(l, logic, effect); // { error (if any), CardFace }
                     if (called)
                         lua_pushnil(l); // for following lua_pop
                 } else {
@@ -846,7 +819,7 @@ bool CardFace::isCancelable(const CardEffectStruct &effect) const
 }
 
 // --  - onNullified(player, card)
-void CardFace::onNullified(Player *player, const Card *card) const
+void CardFace::onNullified(GameLogic *logic, Player *player, const Card *card) const
 {
     bool called = false;
 
@@ -860,7 +833,7 @@ void CardFace::onNullified(Player *player, const Card *card) const
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
                     lua_pushvalue(l, -2); // { CardFace, CardFace.onNullified, CardFace }
-                    called = CardFaceLuaCall::onNullified(l, player, card); // { error (if any), CardFace }
+                    called = CardFaceLuaCall::onNullified(l, logic, player, card); // { error (if any), CardFace }
                     if (called)
                         lua_pushnil(l);
                 } else {
@@ -917,7 +890,7 @@ QString EquipCard::typeName() const
 --  - onInstall
 --  - onUninstall (for silverlion record, although this event seems able to record in a Trigger)
 #endif
-void EquipCard::onInstall(Player *player) const
+void EquipCard::onInstall(GameLogic *logic, Player *player) const
 {
     bool called = false;
 
@@ -931,7 +904,7 @@ void EquipCard::onInstall(Player *player) const
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
                     lua_pushvalue(l, -2); // { CardFace, EquipCard.onInstall, CardFace }
-                    called = CardFaceLuaCall::onInstall(l, player); // { error (if any), CardFace }
+                    called = CardFaceLuaCall::onInstall(l, logic, player); // { error (if any), CardFace }
                     if (called)
                         lua_pushnil(l);
                 } else {
@@ -947,10 +920,10 @@ void EquipCard::onInstall(Player *player) const
         return;
 
     // default
-    defaultOnInstall(player);
+    defaultOnInstall(logic, player);
 }
 
-void EquipCard::onUninstall(Player *player) const
+void EquipCard::onUninstall(GameLogic *logic, Player *player) const
 {
     bool called = false;
 
@@ -964,7 +937,7 @@ void EquipCard::onUninstall(Player *player) const
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
                     lua_pushvalue(l, -2); // { CardFace, EquipCard.onInstall, CardFace }
-                    called = CardFaceLuaCall::onInstall(l, player); // { error (if any), CardFace }
+                    called = CardFaceLuaCall::onInstall(l, logic, player); // { error (if any), CardFace }
                     if (called)
                         lua_pushnil(l);
                 } else {
@@ -980,10 +953,10 @@ void EquipCard::onUninstall(Player *player) const
         return;
 
     // default
-    defaultOnUninstall(player);
+    defaultOnUninstall(logic, player);
 }
 
-void EquipCard::defaultOnInstall(Player * /*unused*/) const
+void EquipCard::defaultOnInstall(GameLogic *logic, Player * /*unused*/) const
 {
 #if 0
     // Shouldn't the attach skill logic be in GameLogic?
@@ -1005,7 +978,7 @@ void EquipCard::defaultOnInstall(Player * /*unused*/) const
 #endif
 }
 
-void EquipCard::defaultOnUninstall(Player * /*unused*/) const
+void EquipCard::defaultOnUninstall(GameLogic *logic, Player *player) const
 {
 #if 0
     // Shouldn't the detech skill logic be in GameLogic?
@@ -1150,7 +1123,7 @@ DelayedTrick::~DelayedTrick()
     delete d;
 }
 
-void DelayedTrick::takeEffect(Player *target) const
+void DelayedTrick::takeEffect(GameLogic *logic, Player *target) const
 {
     bool called = false;
 
@@ -1164,7 +1137,7 @@ void DelayedTrick::takeEffect(Player *target) const
                     // we should do the function call and return
                     // error should be catched in CardFaceLuaCall
                     lua_pushvalue(l, -2); // { CardFace, EquipCard.onInstall, CardFace }
-                    called = CardFaceLuaCall::onInstall(l, target); // { error (if any), CardFace }
+                    called = CardFaceLuaCall::onInstall(l, logic, target); // { error (if any), CardFace }
                     if (called)
                         lua_pushnil(l);
                 } else {
@@ -1238,37 +1211,24 @@ QString SkillCard::typeName() const
     return QStringLiteral("skill");
 }
 
-void SkillCard::defaultOnUse(RoomObject *room, const CardUseStruct &_use) const
+void SkillCard::defaultOnUse(GameLogic *logic, const CardUseStruct &_use) const
 {
-#if 0
     CardUseStruct card_use = _use;
     Player *player = card_use.from;
+    RoomObject *room = player->roomObject();
 
     room->sortPlayersByActionOrder(card_use.to);
 
-    QList<Player *> targets = card_use.to;
-    card_use.to = targets;
+    LogStruct log(QStringLiteral("#UseCard"), player, nullptr, QString(), QString(), card_use.card);
+    logic->sendLog(log);
 
-    LogMessage log;
-    log.from = player;
-    if (!targetFixed(card_use.from, card_use.card) || card_use.to.length() > 1 || !card_use.to.contains(card_use.from))
-        log.to = card_use.to;
-    log.type = QStringLiteral("#UseCard");
-    log.card_str = card_use.card->toString(!throwWhenUsing());
-    RefactorProposal::fixme_cast<Room *>(room)->sendLog(log);
+    if (throwWhenUsing())
+        logic->throwCard(card_use.card, player, nullptr, false);
 
-    if (throwWhenUsing()) {
-        CardMoveReason reason(MoveReasonThrow, player->objectName(), QString(), card_use.card->skillName(), QString());
-        RefactorProposal::fixme_cast<Room *>(room)->moveCardTo(card_use.card, RefactorProposal::fixme_cast<ServerPlayer *>(player), nullptr, PlaceDiscardPile, reason, true);
-    }
-
-    RefactorProposal::fixme_cast<ServerPlayer *>(player)->showHiddenSkill(card_use.card->showSkillName());
-
-    use(room, card_use);
-#endif
+    use(logic, card_use);
 }
 
-void SkillCard::defaultUse(RoomObject * /*room*/, const CardUseStruct &use) const
+void SkillCard::defaultUse(GameLogic *logic, const CardUseStruct &use) const
 {
     Player *source = use.from;
     foreach (Player *target, use.to) {
@@ -1276,7 +1236,7 @@ void SkillCard::defaultUse(RoomObject * /*room*/, const CardUseStruct &use) cons
         effect.card = use.card;
         effect.from = source;
         effect.to = target;
-        onEffect(effect);
+        onEffect(logic, effect);
     }
 }
 
@@ -1329,7 +1289,7 @@ public:
     SurrenderCard();
 
 protected:
-    void defaultOnUse(RoomObject *room, const CardUseStruct &use) const override;
+    void defaultOnUse(GameLogic *logic, const CardUseStruct &use) const override;
 };
 
 class CheatCard : public SkillCard
@@ -1338,7 +1298,7 @@ public:
     CheatCard();
 
 protected:
-    void defaultOnUse(RoomObject *room, const CardUseStruct &use) const override;
+    void defaultOnUse(GameLogic *logic, const CardUseStruct &use) const override;
 };
 
 SurrenderCard::SurrenderCard()
@@ -1348,11 +1308,9 @@ SurrenderCard::SurrenderCard()
     setDefaultHandlingMethod(MethodNone);
 }
 
-void SurrenderCard::defaultOnUse(RoomObject *room, const CardUseStruct &use) const
+void SurrenderCard::defaultOnUse(GameLogic *logic, const CardUseStruct &use) const
 {
-#if 0
-    RefactorProposal::fixme_cast<Room *>(room)->makeSurrender(RefactorProposal::fixme_cast<ServerPlayer *>(use.from));
-#endif
+    logic->makeSurrender(use.from);
 }
 
 CheatCard::CheatCard()
@@ -1362,12 +1320,11 @@ CheatCard::CheatCard()
     setDefaultHandlingMethod(MethodNone);
 }
 
-void CheatCard::defaultOnUse(RoomObject *room, const CardUseStruct &use) const
+void CheatCard::defaultOnUse(GameLogic *logic, const CardUseStruct &use) const
 {
-#if 0
     QString cheatString = use.card->userString();
-    JsonDocument doc = JsonDocument::fromJson(cheatString.toUtf8().constData());
-    if (doc.isValid())
-        RefactorProposal::fixme_cast<Room *>(room)->cheat(RefactorProposal::fixme_cast<ServerPlayer *>(use.from), doc.toVariant());
-#endif
+    QJsonParseError error;
+    QJsonDocument doc = QJsonDocument::fromJson(cheatString.toUtf8().constData(), &error);
+    if (error.error == QJsonParseError::NoError)
+        logic->cheat(use.from, doc.toVariant());
 }

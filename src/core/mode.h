@@ -14,6 +14,7 @@ class Rule;
 class Package;
 class RoomObject;
 class General;
+class GameLogic;
 
 class ModePrivate;
 #endif
@@ -45,7 +46,7 @@ public:
 
     // TODO: Should this be here?
     // since only Server is running game logic, put this in server maybe a good idea?
-    virtual void startGame(RoomObject *room) const = 0;
+    virtual void startGame(GameLogic *logic, RoomObject *room) const = 0;
 
 private:
     ModePrivate *const d;
@@ -73,7 +74,7 @@ public:
     QString roles() const override;
     Rule *rule() const override;
 
-    void startGame(RoomObject *room) const override;
+    void startGame(GameLogic *logic, RoomObject *room) const override;
 
 private:
     friend class Mode;
@@ -94,7 +95,7 @@ public:
     QString roles() const override;
     Rule *rule() const override;
 
-    void startGame(RoomObject *room) const override;
+    void startGame(GameLogic *logic, RoomObject *room) const override;
 
 private:
     friend class Mode;

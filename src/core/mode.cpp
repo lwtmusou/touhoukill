@@ -207,7 +207,7 @@ Rule *GenericRoleMode::rule() const
     return nullptr;
 }
 
-void GenericRoleMode::startGame(RoomObject *room) const
+void GenericRoleMode::startGame(GameLogic *logic, RoomObject *room) const
 {
     // TODO
 }
@@ -279,7 +279,7 @@ Rule *GenericHegemonyMode::rule() const
     return nullptr;
 }
 
-void GenericHegemonyMode::startGame(RoomObject *room) const
+void GenericHegemonyMode::startGame(GameLogic *logic, RoomObject *room) const
 {
     // TODO
 }

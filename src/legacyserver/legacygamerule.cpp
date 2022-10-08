@@ -84,7 +84,7 @@ void LegacyGameRule::onPhaseProceed(LegacyRoom *room, LegacyServerPlayer *player
             bool on_effect = room->cardEffect(trick, nullptr, player);
             effected << trick;
             if (!on_effect)
-                trick->face()->onNullified(player, trick);
+                trick->face()->onNullified(room, player, trick);
         }
         break;
     }
@@ -683,7 +683,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                             extraEffect.multiple = effect.multiple;
                             if (effect.card->face()->isNdTrick())
                                 extraEffect.effectValue.first() = effect.effectValue.first();
-                            extraCard->face()->onEffect(extraEffect);
+                            extraCard->face()->onEffect(room, extraEffect);
                         } else if (extraCard->face()->isKindOf(QStringLiteral("Analeptic"))) {
                             RecoverStruct recover;
                             recover.card = effect.card;
@@ -704,7 +704,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                             extraEffect.multiple = effect.multiple;
                             if (effect.card->face()->isNdTrick())
                                 extraEffect.effectValue.first() = effect.effectValue.first();
-                            extraCard->face()->onEffect(extraEffect);
+                            extraCard->face()->onEffect(room, extraEffect);
                         }
                     }
                     //xianshi_extra effect will use magic_drank whilefirst effect, then clean it.  //need check
@@ -714,10 +714,10 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                     delete extraCard;
 
                     if (effect.to->isAlive())
-                        effect.card->face()->onEffect(effect); //do original effect
+                        effect.card->face()->onEffect(room, effect); //do original effect
 
                 } else
-                    effect.card->face()->onEffect(effect);
+                    effect.card->face()->onEffect(room, effect);
             }
         }
 
@@ -827,7 +827,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                     extraEffect.from = effect.to;
                     extraEffect.to = effect.from;
                     extraEffect.multiple = effect.multiple;
-                    extraCard->face()->onEffect(extraEffect);
+                    extraCard->face()->onEffect(room, extraEffect);
                 } else if (extraCard->face()->isKindOf(QStringLiteral("Analeptic"))) {
                     RecoverStruct recover;
                     recover.card = j.jink;
@@ -844,7 +844,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                     extraEffect.from = effect.to;
                     extraEffect.to = effect.from;
                     extraEffect.multiple = effect.multiple;
-                    extraCard->face()->onEffect(extraEffect);
+                    extraCard->face()->onEffect(room, extraEffect);
                 }
 
                 delete extraCard;
@@ -859,7 +859,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                 new_effect.card = j.jink;
                 new_effect.from = effect.to;
                 new_effect.to = effect.from;
-                j.jink->face()->onEffect(new_effect);
+                j.jink->face()->onEffect(room, new_effect);
             }
         }
 
@@ -899,7 +899,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                 extraEffect.to = effect.to;
                 extraEffect.multiple = effect.multiple;
                 extraEffect.effectValue.first() = extraEffect.effectValue.first();
-                extraCard->face()->onEffect(extraEffect);
+                extraCard->face()->onEffect(room, extraEffect);
             } else if (extraCard->face()->isKindOf(QStringLiteral("Analeptic"))) {
                 RecoverStruct recover;
                 recover.card = effect.slash;
@@ -920,7 +920,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *
                     else
                         extraEffect.effectValue.last() = extraEffect.effectValue.last() + effect.drank;
                 }
-                extraCard->face()->onEffect(extraEffect);
+                extraCard->face()->onEffect(room, extraEffect);
             }
 
             delete extraCard;
