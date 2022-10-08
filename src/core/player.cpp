@@ -314,7 +314,7 @@ void Player::setSeat(int seat)
 
 bool Player::isAdjacentTo(const Player *another) const
 {
-    return (getNextAlive() == another) || (getLastAlive() == another);
+    return (findNextAlive() == another) || (findLastAlive() == another);
 }
 
 bool Player::isAlive() const
@@ -411,7 +411,7 @@ int Player::originalRightDistanceTo(const Player *other) const
     int right = 0;
     const Player *next_p = this;
     while (next_p != other) {
-        next_p = next_p->getNextAlive();
+        next_p = next_p->findNextAlive();
         right++;
     }
     return right;
@@ -450,72 +450,72 @@ int Player::distanceTo(const Player *other, int distance_fix) const
     return distance;
 }
 
-Player *Player::getNext(bool ignoreRemoved)
+Player *Player::findNext(bool ignoreRemoved)
 {
     return d->room->findAdjecentPlayer(this, true, true, !ignoreRemoved);
 }
 
-Player *Player::getLast(bool ignoreRemoved)
+Player *Player::findLast(bool ignoreRemoved)
 {
     return d->room->findAdjecentPlayer(this, false, true, !ignoreRemoved);
 }
 
-Player *Player::getNextAlive(int n, bool ignoreRemoved)
+Player *Player::findNextAlive(int n, bool ignoreRemoved)
 {
-    Player *p = getNext(ignoreRemoved);
+    Player *p = findNext(ignoreRemoved);
     if (p->isAlive()) {
         n = n - 1;
         if (n == 0)
             return p;
     }
 
-    return p->getNextAlive(n, ignoreRemoved);
+    return p->findNextAlive(n, ignoreRemoved);
 }
 
-Player *Player::getLastAlive(int n, bool ignoreRemoved)
+Player *Player::findLastAlive(int n, bool ignoreRemoved)
 {
-    Player *p = getLast(ignoreRemoved);
+    Player *p = findLast(ignoreRemoved);
     if (p->isAlive()) {
         n = n - 1;
         if (n == 0)
             return p;
     }
 
-    return p->getLastAlive(n, ignoreRemoved);
+    return p->findLastAlive(n, ignoreRemoved);
 }
 
-const Player *Player::getNext(bool ignoreRemoved) const
+const Player *Player::findNext(bool ignoreRemoved) const
 {
     return d->room->findAdjecentPlayer(this, true, true, !ignoreRemoved);
 }
 
-const Player *Player::getLast(bool ignoreRemoved) const
+const Player *Player::findLast(bool ignoreRemoved) const
 {
     return d->room->findAdjecentPlayer(this, false, true, !ignoreRemoved);
 }
 
-const Player *Player::getNextAlive(int n, bool ignoreRemoved) const
+const Player *Player::findNextAlive(int n, bool ignoreRemoved) const
 {
-    const Player *p = getNext(ignoreRemoved);
+    const Player *p = findNext(ignoreRemoved);
     if (p->isAlive()) {
         n = n - 1;
         if (n == 0)
             return p;
     }
 
-    return p->getNextAlive(n, ignoreRemoved);
+    return p->findNextAlive(n, ignoreRemoved);
 }
 
-const Player *Player::getLastAlive(int n, bool ignoreRemoved) const
+const Player *Player::findLastAlive(int n, bool ignoreRemoved) const
 {
-    const Player *p = getLast(ignoreRemoved);
+    const Player *p = findLast(ignoreRemoved);
     if (p->isAlive()) {
         n = n - 1;
         if (n == 0)
             return p;
     }
 
-    return p->getLastAlive(n, ignoreRemoved);
+    return p->findLastAlive(n, ignoreRemoved);
 }
 
 void Player::setGeneral(const General *new_general, int pos)
@@ -1090,7 +1090,7 @@ void Player::setKingdom(const QString &kingdom)
 
 bool Player::isKongcheng() const
 {
-    return handCardNum() == 0;
+    return handCardIds().isEmpty();
 }
 
 bool Player::isNude() const
@@ -1115,7 +1115,7 @@ bool Player::canDiscard(const Player *to, const QString &flags, const QString &r
         if (!to->shownHandcards().isEmpty())
             return true;
     } else if (flags.contains(QStringLiteral("h"))) {
-        if ((to->handCardNum() - to->shownHandcards().size()) > 0)
+        if ((to->handCardIds().count() - to->shownHandcards().size()) > 0)
             return true;
     }
     if (flags.contains(judging_flag) && !to->judgingAreaCards().isEmpty())
@@ -1903,7 +1903,7 @@ QList<const Player *> Player::formationPlayers() const
     int n = d->room->players(false, false).length();
     int num = n;
     for (int i = 1; i < n; ++i) {
-        const Player *target = getNextAlive(i);
+        const Player *target = findNextAlive(i);
         if (isFriendWith(target))
             teammates << target;
         else {
@@ -1914,7 +1914,7 @@ QList<const Player *> Player::formationPlayers() const
 
     n -= num;
     for (int i = 1; i < n; ++i) {
-        const Player *target = getLastAlive(i);
+        const Player *target = findLastAlive(i);
         if (isFriendWith(target))
             teammates << target;
         else
@@ -1931,7 +1931,7 @@ QList<Player *> Player::formationPlayers()
     int n = d->room->players(false, false).length();
     int num = n;
     for (int i = 1; i < n; ++i) {
-        Player *target = getNextAlive(i);
+        Player *target = findNextAlive(i);
         if (isFriendWith(target))
             teammates << target;
         else {
@@ -1942,7 +1942,7 @@ QList<Player *> Player::formationPlayers()
 
     n -= num;
     for (int i = 1; i < n; ++i) {
-        Player *target = getLastAlive(i);
+        Player *target = findLastAlive(i);
         if (isFriendWith(target))
             teammates << target;
         else
@@ -1963,9 +1963,9 @@ bool Player::inSiegeRelation(const Player *skill_owner, const Player *victim) co
     if (isFriendWith(victim) || !isFriendWith(skill_owner) || !victim->haveShownOneGeneral())
         return false;
     if (this == skill_owner)
-        return (getNextAlive() == victim && getNextAlive(2)->isFriendWith(this)) || (getLastAlive() == victim && getLastAlive(2)->isFriendWith(this));
+        return (findNextAlive() == victim && findNextAlive(2)->isFriendWith(this)) || (findLastAlive() == victim && findLastAlive(2)->isFriendWith(this));
     else
-        return (getNextAlive() == victim && getNextAlive(2) == skill_owner) || (getLastAlive() == victim && getLastAlive(2) == skill_owner);
+        return (findNextAlive() == victim && findNextAlive(2) == skill_owner) || (findLastAlive() == victim && findLastAlive(2) == skill_owner);
 }
 
 void Player::addBrokenEquips(const IdSet &card_ids)

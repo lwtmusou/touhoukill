@@ -140,7 +140,7 @@ void RoomThread::_handleTurnBroken3v3(QList<LegacyServerPlayer *> &first, QList<
 LegacyServerPlayer *RoomThread::findHulaoPassNext(LegacyServerPlayer * /*unused*/, const QList<LegacyServerPlayer *> & /*unused*/)
 {
     LegacyServerPlayer *current = RefactorProposal::fixme_cast<LegacyServerPlayer *>(room->currentRound());
-    return qobject_cast<LegacyServerPlayer *>(current->getNextAlive(1, false));
+    return qobject_cast<LegacyServerPlayer *>(current->findNextAlive(1, false));
 }
 
 void RoomThread::actionHulaoPass(LegacyServerPlayer *uuz, QList<LegacyServerPlayer *> league, LegacyGameRule *game_rule)
@@ -224,7 +224,7 @@ void RoomThread::actionNormal(LegacyGameRule *game_rule)
                 extraTurnReturn = nullptr;
             }
 
-            room->setCurrentRound(qobject_cast<LegacyServerPlayer *>(current->getNextAlive(1, false)));
+            room->setCurrentRound(qobject_cast<LegacyServerPlayer *>(current->findNextAlive(1, false)));
         }
     } catch (QSanguosha::TriggerEvent triggerEvent) {
         if (triggerEvent == QSanguosha::TurnBroken)
@@ -273,7 +273,7 @@ void RoomThread::_handleTurnBrokenNormal(LegacyGameRule *game_rule)
             extraTurnReturn = nullptr;
         }
 
-        LegacyServerPlayer *next = qobject_cast<LegacyServerPlayer *>(player->getNextAlive(1, false));
+        LegacyServerPlayer *next = qobject_cast<LegacyServerPlayer *>(player->findNextAlive(1, false));
         room->setCurrentRound(next);
         actionNormal(game_rule);
     } catch (QSanguosha::TriggerEvent triggerEvent) {

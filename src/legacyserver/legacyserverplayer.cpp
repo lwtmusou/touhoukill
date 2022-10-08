@@ -1909,11 +1909,11 @@ void LegacyServerPlayer::summonFriends(const QString &type)
     room->sendLog(log2);
 
     if (type == QStringLiteral("Siege")) {
-        if (isFriendWith(getNextAlive()) && isFriendWith(getLastAlive()))
+        if (isFriendWith(findNextAlive()) && isFriendWith(findLastAlive()))
             return;
         bool failed = true;
-        if (!isFriendWith(getNextAlive()) && getNextAlive()->haveShownOneGeneral()) {
-            LegacyServerPlayer *target = qobject_cast<LegacyServerPlayer *>(getNextAlive(2));
+        if (!isFriendWith(findNextAlive()) && findNextAlive()->haveShownOneGeneral()) {
+            LegacyServerPlayer *target = qobject_cast<LegacyServerPlayer *>(findNextAlive(2));
             if (!target->haveShownOneGeneral()) {
                 QString prompt = target->willBeFriendWith(this) ? QStringLiteral("SiegeSummon") : QStringLiteral("SiegeSummon!");
                 bool success = room->askForSkillInvoke(target, prompt);
@@ -1928,8 +1928,8 @@ void LegacyServerPlayer::summonFriends(const QString &type)
                 }
             }
         }
-        if (!isFriendWith(getLastAlive()) && getLastAlive()->haveShownOneGeneral()) {
-            LegacyServerPlayer *target = qobject_cast<LegacyServerPlayer *>(getLastAlive(2));
+        if (!isFriendWith(findLastAlive()) && findLastAlive()->haveShownOneGeneral()) {
+            LegacyServerPlayer *target = qobject_cast<LegacyServerPlayer *>(findLastAlive(2));
             if (!target->haveShownOneGeneral()) {
                 QString prompt = target->willBeFriendWith(this) ? QStringLiteral("SiegeSummon") : QStringLiteral("SiegeSummon!");
                 bool success = room->askForSkillInvoke(target, prompt);
@@ -1952,7 +1952,7 @@ void LegacyServerPlayer::summonFriends(const QString &type)
         int asked = n;
         bool failed = true;
         for (int i = 1; i < n; ++i) {
-            LegacyServerPlayer *target = qobject_cast<LegacyServerPlayer *>(getNextAlive(i));
+            LegacyServerPlayer *target = qobject_cast<LegacyServerPlayer *>(findNextAlive(i));
             if (isFriendWith(target))
                 continue;
             else if (!target->haveShownOneGeneral()) {
@@ -1980,7 +1980,7 @@ void LegacyServerPlayer::summonFriends(const QString &type)
 
         n -= asked;
         for (int i = 1; i < n; ++i) {
-            LegacyServerPlayer *target = qobject_cast<LegacyServerPlayer *>(getLastAlive(i));
+            LegacyServerPlayer *target = qobject_cast<LegacyServerPlayer *>(findLastAlive(i));
             if (isFriendWith(target))
                 continue;
             else {

@@ -135,7 +135,7 @@ QList<LegacyServerPlayer *> LegacyRoom::getAllPlayers(bool include_dead) const
 
     LegacyServerPlayer *starter = current;
     if (current->phase() == QSanguosha::PhaseNotActive)
-        starter = qobject_cast<LegacyServerPlayer *>(current->getNextAlive(1, false));
+        starter = qobject_cast<LegacyServerPlayer *>(current->findNextAlive(1, false));
     int index = count_players.indexOf(starter);
     if (index == -1)
         return count_players;

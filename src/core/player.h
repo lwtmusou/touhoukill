@@ -75,9 +75,6 @@ public:
 #endif
     ~Player() override;
 
-    void setScreenName(const QString &screen_name);
-    QString screenName() const;
-
     // property setters/getters
     const IdSet &shownHandcards() const;
     void setShownHandcards(const IdSet &ids);
@@ -315,21 +312,24 @@ public:
     // TODO: d->tag?
     QVariantMap tag;
 
+    Player *findNext(bool ignoreRemoved = true);
+    Player *findLast(bool ignoreRemoved = true);
+    Player *findNextAlive(int n = 1, bool ignoreRemoved = true);
+    Player *findLastAlive(int n = 1, bool ignoreRemoved = true);
+
+    const Player *findNext(bool ignoreRemoved = true) const;
+    const Player *findLast(bool ignoreRemoved = true) const;
+    const Player *findNextAlive(int n = 1, bool ignoreRemoved = true) const;
+    const Player *findLastAlive(int n = 1, bool ignoreRemoved = true) const;
+
+    // following 4 RPC related functions have nowhere to be put
+    // I don't think these function should be here, but ..............
+    // TODO: make Agent maintain these variable / functions after they are ready
+    void setScreenName(const QString &screen_name);
+    QString screenName() const;
 
     void setState(const QString &state);
     QString getState() const;
-
-    Player *getNext(bool ignoreRemoved = true);
-    Player *getLast(bool ignoreRemoved = true);
-    Player *getNextAlive(int n = 1, bool ignoreRemoved = true);
-    Player *getLastAlive(int n = 1, bool ignoreRemoved = true);
-
-    const Player *getNext(bool ignoreRemoved = true) const;
-    const Player *getLast(bool ignoreRemoved = true) const;
-    const Player *getNextAlive(int n = 1, bool ignoreRemoved = true) const;
-    const Player *getLastAlive(int n = 1, bool ignoreRemoved = true) const;
-
-
 
 #ifndef QSGS_CORE_NODEPRECATED
 
