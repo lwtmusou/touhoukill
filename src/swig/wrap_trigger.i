@@ -7,10 +7,10 @@ namespace TriggerLuaCall {
 
 // [-2, 0, e]
 // Assumes the corresponding function then the table itself are pushed on the top of stack, pops them and pushes the result (if any) or error object
-bool record(lua_State *l, QSanguosha::TriggerEvent event, RoomObject *room, QVariant &data)
+bool record(lua_State *l, QSanguosha::TriggerEvent event, GameLogic *logic, QVariant &data)
 {
     lua_pushnumber(l, static_cast<int>(event)); // { event, Trigger, Trigger.record }
-    SWIG_NewPointerObj(l, room, SWIGTYPE_p_RoomObject, 0); // { room, event, Trigger, Trigger.record }
+    SWIG_NewPointerObj(l, logic, SWIGTYPE_p_GameLogic, 0); // { logic, event, Trigger, Trigger.record }
     SWIG_NewPointerObj(l, &data, SWIGTYPE_p_QVariant, 0); // { data, room, event, Trigger, Trigger.record }
 
     int call = lua_pcall(l, 4, 0, 0); // { error (if any) } / { }
@@ -24,11 +24,11 @@ bool record(lua_State *l, QSanguosha::TriggerEvent event, RoomObject *room, QVar
 // [-2, 0, e]
 // Assumes the corresponding function then the table itself are pushed on the top of stack, pops them and pushes only error object if error occurs
 // return value from Lua is a table of TriggerDetail's. We need to convert it to QList for C++ to recognize them
-bool triggerable(lua_State *l, QSanguosha::TriggerEvent event, RoomObject *room, const QVariant &data, QList<TriggerDetail> &ret)
+bool triggerable(lua_State *l, QSanguosha::TriggerEvent event, GameLogic *logic, const QVariant &data, QList<TriggerDetail> &ret)
 {
     lua_pushnumber(l, static_cast<int>(event)); // { event, Trigger, Trigger.triggerable }
-    SWIG_NewPointerObj(l, room, SWIGTYPE_p_RoomObject, 0); // { room, event, Trigger, Trigger.triggerable }
-    SWIG_NewPointerObj(l, &data, SWIGTYPE_p_QVariant, 0); // { data, room, event, Trigger, Trigger.triggerable }
+    SWIG_NewPointerObj(l, logic, SWIGTYPE_p_GameLogic, 0); // { logic, event, Trigger, Trigger.triggerable }
+    SWIG_NewPointerObj(l, &data, SWIGTYPE_p_QVariant, 0); // { data, logic, event, Trigger, Trigger.triggerable }
 
     int call = lua_pcall(l, 4, 1, 0); // { error (if any) } / table of TriggerDetail's
 
@@ -54,9 +54,9 @@ bool triggerable(lua_State *l, QSanguosha::TriggerEvent event, RoomObject *room,
     return true;
 }
 
-std::optional<bool> trigger(lua_State *l, QSanguosha::TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data);
+std::optional<bool> trigger(lua_State *l, QSanguosha::TriggerEvent event, GameLogic *logic, const TriggerDetail &detail, QVariant &data);
 
-std::optional<bool> skillTriggerCost(lua_State *l, QSanguosha::TriggerEvent event, RoomObject *room, TriggerDetail &detail, QVariant &data);
+std::optional<bool> skillTriggerCost(lua_State *l, QSanguosha::TriggerEvent event, GameLogic *logic, TriggerDetail &detail, QVariant &data);
 
 } // namespace TriggerLuaCall
 

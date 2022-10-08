@@ -10,7 +10,7 @@ class LegacyGameRule : public Rule
 {
 public:
     LegacyGameRule();
-    bool trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *room, const TriggerDetail &invoke, QVariant &data) const override;
+    bool trigger(QSanguosha::TriggerEvent triggerEvent, GameLogic *logic, const TriggerDetail &invoke, QVariant &data) const override;
 
 private:
     void onPhaseProceed(LegacyRoom *room, LegacyServerPlayer *player) const;

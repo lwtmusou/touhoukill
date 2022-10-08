@@ -15,6 +15,7 @@ class Card;
 class Player;
 class RoomObject;
 class TriggerDetail;
+class GameLogic;
 class Skill;
 class EquipCard;
 
@@ -61,14 +62,14 @@ public:
     virtual int priority() const = 0;
 
     // Should not trigger other events and affect other things in principle
-    virtual void record(QSanguosha::TriggerEvent event, RoomObject *room, QVariant &data) const;
+    virtual void record(QSanguosha::TriggerEvent event, GameLogic *logic, QVariant &data) const;
 
     // TODO: make RoomObject const:
     // Current implementation is: To create a TriggerDetail in this function. All data saved in TriggerDetail is non-const
     // This makes the RoomObject not able to be const even if it should be.
     // EXACTLY STRICTLY NOTHING should be even TOUCHED in this function
-    virtual QList<TriggerDetail> triggerable(QSanguosha::TriggerEvent event, RoomObject *room, const QVariant &data) const;
-    virtual bool trigger(QSanguosha::TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const;
+    virtual QList<TriggerDetail> triggerable(QSanguosha::TriggerEvent event, GameLogic *logic, const QVariant &data) const;
+    virtual bool trigger(QSanguosha::TriggerEvent event, GameLogic *logic, const TriggerDetail &detail, QVariant &data) const;
 
 private:
     Trigger() = delete;
@@ -87,7 +88,7 @@ public:
     // fixed 0
 #ifndef SWIG
     int priority() const final override;
-    QList<TriggerDetail> triggerable(QSanguosha::TriggerEvent /*event*/, RoomObject *room, const QVariant & /*data*/) const final override;
+    QList<TriggerDetail> triggerable(QSanguosha::TriggerEvent event, GameLogic *logic, const QVariant &data) const final override;
 #endif
 };
 
@@ -109,14 +110,14 @@ public:
     int priority() const override;
 
     // force subclass override this function
-    // virtual QList<TriggerDetail> triggerable(TriggerEvent event, RoomObject *room, const QVariant &data) const = 0;
+    // virtual QList<TriggerDetail> triggerable(TriggerEvent event,GameLogic *logic, const QVariant &data) const = 0;
 
-    bool trigger(QSanguosha::TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const final override;
+    bool trigger(QSanguosha::TriggerEvent event, GameLogic *logic, const TriggerDetail &detail, QVariant &data) const final override;
 #endif
     // Limited modification to TriggerDetail, notably tag and target
-    virtual bool cost(QSanguosha::TriggerEvent event, RoomObject *room, TriggerDetail &detail, QVariant &data) const;
+    virtual bool cost(QSanguosha::TriggerEvent event, GameLogic *logic, TriggerDetail &detail, QVariant &data) const;
     // No modification to TriggerDetail since the cost is done
-    virtual bool effect(QSanguosha::TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const;
+    virtual bool effect(QSanguosha::TriggerEvent event, GameLogic *logic, const TriggerDetail &detail, QVariant &data) const;
 
 private:
     SkillTriggerPrivate *const d;
@@ -161,7 +162,7 @@ public:
 
     // Since it may use only Record, override this function here
     // Optional override in subclass
-    QList<TriggerDetail> triggerable(QSanguosha::TriggerEvent event, RoomObject *room, const QVariant &data) const override;
+    QList<TriggerDetail> triggerable(QSanguosha::TriggerEvent event, GameLogic *logic, const QVariant &data) const override;
 #endif
 };
 
@@ -176,8 +177,8 @@ public:
     ~FakeMoveRecord() final override;
 
 #ifndef SWIG
-    QList<TriggerDetail> triggerable(QSanguosha::TriggerEvent event, RoomObject *room, const QVariant &data) const final override;
-    bool trigger(QSanguosha::TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const final override;
+    QList<TriggerDetail> triggerable(QSanguosha::TriggerEvent event, GameLogic *logic, const QVariant &data) const final override;
+    bool trigger(QSanguosha::TriggerEvent event, GameLogic *logic, const TriggerDetail &detail, QVariant &data) const final override;
 #endif
 
 private:

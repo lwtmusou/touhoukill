@@ -2,6 +2,7 @@
 #include "CardFace.h"
 #include "RoomObject.h"
 #include "card.h"
+#include "game-logic.h"
 #include "lua-wrapper.h"
 #include "player.h"
 #include "skill.h"
@@ -27,11 +28,11 @@ public:
 // SWIG doesn't provide a binary-compatible way to export its constants
 // These functions are implemented in wrap_trigger.i and generated in sgsLUA_wrap.cxx
 namespace TriggerLuaCall {
-bool record(lua_State *l, TriggerEvent event, RoomObject *room, QVariant &data);
-bool triggerable(lua_State *l, TriggerEvent event, RoomObject *room, const QVariant &data, QList<TriggerDetail> &ret);
-std::optional<bool> trigger(lua_State *l, TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data);
+bool record(lua_State *l, TriggerEvent event, GameLogic *logic, QVariant &data);
+bool triggerable(lua_State *l, TriggerEvent event, GameLogic *logic, const QVariant &data, QList<TriggerDetail> &ret);
+std::optional<bool> trigger(lua_State *l, TriggerEvent event, GameLogic *logic, const TriggerDetail &detail, QVariant &data);
 
-std::optional<bool> skillTriggerCost(lua_State *l, TriggerEvent event, RoomObject *room, TriggerDetail &detail, QVariant &data);
+std::optional<bool> skillTriggerCost(lua_State *l, TriggerEvent event, GameLogic *logic, TriggerDetail &detail, QVariant &data);
 } // namespace TriggerLuaCall
 
 Trigger::Trigger(const QString &name)
@@ -83,7 +84,7 @@ void Trigger::setGlobal(bool global)
     d->global = global;
 }
 
-void Trigger::record(TriggerEvent event, RoomObject *room, QVariant &data) const
+void Trigger::record(TriggerEvent event, GameLogic *logic, QVariant &data) const
 {
     bool called = false;
 
@@ -97,7 +98,7 @@ void Trigger::record(TriggerEvent event, RoomObject *room, QVariant &data) const
                     // we should do the function call and return
                     // error should be catched in TriggerLuaCall
                     lua_pushvalue(l, -2); // { Trigger, Trigger.record, Trigger }
-                    called = TriggerLuaCall::record(l, event, room, data); // { error (if any), Trigger }
+                    called = TriggerLuaCall::record(l, event, logic, data); // { error (if any), Trigger }
                     if (called)
                         lua_pushnil(l); // for following lua_pop
                 } else {
@@ -116,7 +117,7 @@ void Trigger::record(TriggerEvent event, RoomObject *room, QVariant &data) const
     // do nothing
 }
 
-QList<TriggerDetail> Trigger::triggerable(QSanguosha::TriggerEvent event, RoomObject *room, const QVariant &data) const
+QList<TriggerDetail> Trigger::triggerable(QSanguosha::TriggerEvent event, GameLogic *logic, const QVariant &data) const
 {
     bool called = false;
     QList<TriggerDetail> ret = {};
@@ -131,7 +132,7 @@ QList<TriggerDetail> Trigger::triggerable(QSanguosha::TriggerEvent event, RoomOb
                     // we should do the function call and return
                     // error should be catched in TriggerLuaCall
                     lua_pushvalue(l, -2); // { Trigger, Trigger.triggerable, Trigger }
-                    called = TriggerLuaCall::triggerable(l, event, room, data, ret); // { error (if any), Trigger }, return value are saved to ret
+                    called = TriggerLuaCall::triggerable(l, event, logic, data, ret); // { error (if any), Trigger }, return value are saved to ret
                     if (called)
                         lua_pushnil(l); // for following lua_pop
                 } else {
@@ -151,8 +152,10 @@ QList<TriggerDetail> Trigger::triggerable(QSanguosha::TriggerEvent event, RoomOb
     return {};
 }
 
-bool Trigger::trigger(TriggerEvent /*unused*/, RoomObject * /*unused*/, const TriggerDetail & /*unused*/, QVariant & /*unused*/) const
+bool Trigger::trigger(TriggerEvent /*unused*/, GameLogic * /*unused*/, const TriggerDetail & /*unused*/, QVariant & /*unused*/) const
 {
+    // TODO: implementation
+    Q_UNIMPLEMENTED();
     return false;
 }
 
@@ -167,9 +170,9 @@ int Rule::priority() const
     return 0;
 }
 
-QList<TriggerDetail> Rule::triggerable(TriggerEvent /*event*/, RoomObject *room, const QVariant & /*data*/) const
+QList<TriggerDetail> Rule::triggerable(TriggerEvent /*event*/, GameLogic *logic, const QVariant & /*data*/) const
 {
-    return {TriggerDetail(room, this)};
+    return {TriggerDetail(logic->room(), this)};
 }
 
 class SkillTriggerPrivate
@@ -209,22 +212,21 @@ int SkillTrigger::priority() const
     return 2;
 }
 
-bool SkillTrigger::trigger(TriggerEvent event, RoomObject *room, const TriggerDetail &_detail, QVariant &data) const
+bool SkillTrigger::trigger(TriggerEvent event, GameLogic *logic, const TriggerDetail &_detail, QVariant &data) const
 {
     TriggerDetail detail = _detail;
     if (!detail.effectOnly()) {
-        if (!cost(event, room, detail, data))
+        if (!cost(event, logic, detail, data))
             return false;
-#if 0
+
         if (detail.owner()->hasValidSkill(d->name) && !detail.owner()->haveShownSkill(d->name))
-            RefactorProposal::fixme_cast<ServerPlayer *>(detail.owner())->showHiddenSkill(d->name);
-#endif
+            logic->showPlayerHiddenSkill(detail.owner(), d->name);
     }
 
-    return effect(event, room, detail, data);
+    return effect(event, logic, detail, data);
 }
 
-bool SkillTrigger::cost(TriggerEvent /*unused*/, RoomObject * /*unused*/, TriggerDetail &detail, QVariant & /*unused*/) const
+bool SkillTrigger::cost(TriggerEvent /*unused*/, GameLogic *logic, TriggerDetail &detail, QVariant & /*unused*/) const
 {
     if ((detail.owner() == nullptr) || (detail.owner() != detail.invoker()) || (detail.invoker() == nullptr))
         return true;
@@ -232,17 +234,14 @@ bool SkillTrigger::cost(TriggerEvent /*unused*/, RoomObject * /*unused*/, Trigge
     // detail.owner == detail.invoker
     bool isCompulsory = detail.isCompulsory() && (detail.invoker()->hasValidSkill(d->name, true) && !detail.invoker()->haveShownSkill(d->name));
     bool invoke = true;
-#if 0
+
     if (!isCompulsory)
-        invoke = RefactorProposal::fixme_cast<ServerPlayer *>(detail.invoker())->askForSkillInvoke(d->name);
-#else
-    Q_UNUSED(isCompulsory);
-    Q_UNIMPLEMENTED();
-#endif
+        invoke = logic->askForSkillInvoke(detail.invoker(), d->name);
+
     return invoke;
 }
 
-bool SkillTrigger::effect(QSanguosha::TriggerEvent event, RoomObject *room, const TriggerDetail &detail, QVariant &data) const
+bool SkillTrigger::effect(QSanguosha::TriggerEvent event, GameLogic *logic, const TriggerDetail &detail, QVariant &data) const
 {
     return false;
 }
@@ -320,7 +319,7 @@ int GlobalRecord::priority() const
     return 10;
 }
 
-QList<TriggerDetail> GlobalRecord::triggerable(TriggerEvent /*event*/, RoomObject * /*room*/, const QVariant & /*data*/) const
+QList<TriggerDetail> GlobalRecord::triggerable(TriggerEvent /*event*/, GameLogic * /*room*/, const QVariant & /*data*/) const
 {
     return QList<TriggerDetail>();
 }
@@ -344,10 +343,10 @@ FakeMoveRecord::~FakeMoveRecord()
     delete d;
 }
 
-QList<TriggerDetail> FakeMoveRecord::triggerable(TriggerEvent /*event*/, RoomObject *room, const QVariant & /*data*/) const
+QList<TriggerDetail> FakeMoveRecord::triggerable(TriggerEvent /*event*/, GameLogic *logic, const QVariant & /*data*/) const
 {
     Player *owner = nullptr;
-    foreach (Player *p, room->players(false)) {
+    foreach (Player *p, logic->room()->players(false)) {
         if (p->hasValidSkill(d->skillName)) {
             owner = p;
             break;
@@ -355,15 +354,15 @@ QList<TriggerDetail> FakeMoveRecord::triggerable(TriggerEvent /*event*/, RoomObj
     }
 
     QString flag = QString(QStringLiteral("%1_InTempMoving")).arg(d->skillName);
-    foreach (Player *p, room->players(false)) {
+    foreach (Player *p, logic->room()->players(false)) {
         if (p->hasFlag(flag))
-            return {TriggerDetail(room, this, owner, p, nullptr)};
+            return {TriggerDetail(logic->room(), this, owner, p, nullptr)};
     }
 
     return {};
 }
 
-bool FakeMoveRecord::trigger(TriggerEvent /*event*/, RoomObject * /*room*/, const TriggerDetail & /*detail*/, QVariant & /*data*/) const
+bool FakeMoveRecord::trigger(TriggerEvent /*event*/, GameLogic * /*room*/, const TriggerDetail & /*detail*/, QVariant & /*data*/) const
 {
     return true;
 }

@@ -33,6 +33,12 @@ public:
     ~GameLogic();
 
 public:
+    // --- the state model it modifies ---
+    RoomObject *room();
+    const RoomObject *room() const;
+    void setRoom(RoomObject *room);
+
+public:
     // --- logic manipulation only ---
     void enterDying(Player *player, DamageStruct *reason);
     void buryPlayer(Player *victim);

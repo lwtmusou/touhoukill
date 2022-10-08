@@ -2,6 +2,8 @@
 
 class GameLogicPrivate
 {
+public:
+    RoomObject *room;
 };
 
 GameLogic::GameLogic()
@@ -12,6 +14,21 @@ GameLogic::GameLogic()
 GameLogic::~GameLogic()
 {
     delete d;
+}
+
+RoomObject *GameLogic::room()
+{
+    return d->room;
+}
+
+const RoomObject *GameLogic::room() const
+{
+    return d->room;
+}
+
+void GameLogic::setRoom(RoomObject *room)
+{
+    d->room = room;
 }
 
 void GameLogic::enterDying(Player *player, DamageStruct *reason)

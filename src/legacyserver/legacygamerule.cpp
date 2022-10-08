@@ -138,9 +138,9 @@ void LegacyGameRule::onPhaseProceed(LegacyRoom *room, LegacyServerPlayer *player
     }
 }
 
-bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, RoomObject *_room, const TriggerDetail & /*detail*/, QVariant &data) const
+bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, GameLogic *logic, const TriggerDetail & /*detail*/, QVariant &data) const
 {
-    LegacyRoom *room = qobject_cast<LegacyRoom *>(_room);
+    LegacyRoom *room = static_cast<LegacyRoom *>(logic);
 
     if (room->getTag(QStringLiteral("SkipGameRule")).toBool()) {
         room->removeTag(QStringLiteral("SkipGameRule"));
