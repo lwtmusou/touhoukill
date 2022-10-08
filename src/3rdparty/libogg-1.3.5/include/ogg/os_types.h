@@ -23,6 +23,8 @@
 #define _ogg_realloc realloc
 #define _ogg_free free
 
+/* Fsu0413: All supported platform by us have intXX_t so use them directly here */
+
 #include <stdint.h>
 typedef int16_t ogg_int16_t;
 typedef uint16_t ogg_uint16_t;
