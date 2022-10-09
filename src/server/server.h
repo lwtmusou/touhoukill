@@ -192,6 +192,10 @@ private:
     QSet<QString> addresses;
     QMultiHash<QString, QString> name2objname;
 
+private:
+    void getLack(ClientSocket *socket);
+    void getWinnersTableFile(ClientSocket *socket, const QString &tableName);
+
 private slots:
     void processNewConnection(ClientSocket *socket);
     void processRequest(const char *request);
