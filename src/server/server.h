@@ -33,10 +33,6 @@ private:
     static const QMap<QSanProtocol::CommandType, SocketVerificationCallback> VerificationCallbacks;
     static const QMap<QSanProtocol::CommandType, SocketCallback> Callbacks;
 
-private:
-    void getLack(ClientSocket *socket);
-    void getWinnersTableFile(ClientSocket *socket, const QString &tableName);
-
 private slots:
     void socketConnected(QSgsMultiSocket *socket);
     void socketReadyRead();
