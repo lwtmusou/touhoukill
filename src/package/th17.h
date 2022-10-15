@@ -4,6 +4,21 @@
 #include "card.h"
 #include "package.h"
 
+class LiaoguCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE LiaoguCard();
+
+    bool targetFixed(const Player *Self) const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const override;
+
+    void onUse(Room *room, const CardUseStruct &card_use) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
+};
+
 class TH17Package : public Package
 {
     Q_OBJECT

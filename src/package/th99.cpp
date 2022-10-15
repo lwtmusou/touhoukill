@@ -1885,7 +1885,7 @@ public:
             use.card->setFlags("IgnoreFailed");
             foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (use.from != nullptr && use.from->isAlive() && p != use.from && !use.to.contains(p) && !use.to.isEmpty()
-                    && (p->getHandcardNum() < use.from->getHandcardNum() || p->getHp() < use.from->getHp()) && !use.from->isProhibited(p, use.card, ps)) {
+                    && (p->getHandcardNum() <= use.from->getHandcardNum() && p->getHp() <= use.from->getHp()) && !use.from->isProhibited(p, use.card, ps)) {
                     if (use.card->isKindOf("Peach")) {
                         if (p->isWounded())
                             d << SkillInvokeDetail(this, p, p, nullptr, true);

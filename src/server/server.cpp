@@ -288,6 +288,11 @@ void Server::socketReadyRead()
                     messageBodyToSend = QStringLiteral("USERNAME_INCORRECT");
                 }
             }
+            } else if (ps.first() == "getwinners") {
+                QString tableName = ps.last();
+                getWinnersTableFile(socket, tableName);
+                return;
+                return;
         }
 
         if (!messageBodyToSend.isEmpty()) {
@@ -362,6 +367,56 @@ void Server::signupPlayer(ServerPlayer *player)
 {
     name2objname.insert(player->screenName(), player->objectName());
     players.insert(player->objectName(), player);
+}
+
+void Server::getLack(ClientSocket *socket)
+{
+    int playingRooms = 0;
+    foreach (Room *room, rooms) {
+        if (room->isFull())
+            ++playingRooms;
+    }
+
+    int lack = -1;
+
+    if (current == nullptr || current->isFull() || current->isFinished())
+        lack = Sanguosha->getPlayerCount(ServerInfo.GameMode);
+    else
+        lack = current->getLack();
+
+    QJsonObject ob;
+    ob["playingRooms"] = playingRooms;
+    ob["currentLack"] = lack;
+    QJsonDocument doc(ob);
+
+    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_HEARTBEAT);
+    packet.setMessageBody(doc.toJson(QJsonDocument::Compact));
+    socket->send(packet.toString());
+    socket->disconnectFromHost();
+}
+
+void Server::getWinnersTableFile(ClientSocket *socket, const QString &tableName)
+{
+    QJsonObject ob;
+    QFile f("etc/winner/" + tableName + ".txt");
+
+    if (f.exists()) {
+        if (f.open(QIODevice::ReadOnly)) {
+            QByteArray arr = f.readAll();
+            f.close();
+            ob["data"] = QString::fromLatin1(arr.toBase64());
+        } else {
+            ob["error"] = QStringLiteral("file open failed");
+        }
+    } else {
+        ob["data"] = QString();
+    }
+    QJsonDocument doc(ob);
+
+    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_HEARTBEAT);
+    packet.setMessageBody(doc.toJson(QJsonDocument::Compact));
+    socket->send(packet.toString());
+    socket->disconnectFromHost();
 }
 #endif
 
