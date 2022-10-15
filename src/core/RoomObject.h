@@ -7,10 +7,10 @@
 #ifndef SWIG
 #include "qsgscore.h"
 #include "structs.h"
-
 #include <QList>
 #include <QObject>
 #include <QPointer>
+#endif
 
 class CardFace;
 struct CardDescriptor;
@@ -21,6 +21,7 @@ class ViewAsSkill;
 class Card;
 struct ServerInfoStruct;
 
+#ifndef SWIG
 class RoomObjectPrivate;
 #endif
 
@@ -123,7 +124,8 @@ public:
 
     void loadSkill(const Skill *skill);
 
-    ServerInfoStruct *serverInfo() const;
+    ServerInfoStruct *serverInfo();
+    const ServerInfoStruct *serverInfo() const;
 
 private:
     RoomObjectPrivate *const d;

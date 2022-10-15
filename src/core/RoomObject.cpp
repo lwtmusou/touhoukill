@@ -617,7 +617,12 @@ void RoomObject::loadSkill(const Skill *skill)
 #undef LOADSKILLBYTYPE
 }
 
-ServerInfoStruct *RoomObject::serverInfo() const
+const ServerInfoStruct *RoomObject::serverInfo() const
+{
+    return &(d->serverInfo);
+}
+
+ServerInfoStruct *RoomObject::serverInfo()
 {
     return &(d->serverInfo);
 }
