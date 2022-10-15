@@ -1,9 +1,14 @@
 #include "game-logic.h"
+#include "RoomObject.h"
+#include "player.h"
+
+using namespace QSanguosha;
 
 class GameLogicPrivate
 {
 public:
     RoomObject *room;
+    QList<Player *> dying;
 };
 
 GameLogic::GameLogic()
@@ -31,15 +36,125 @@ void GameLogic::setRoom(RoomObject *room)
     d->room = room;
 }
 
-void GameLogic::enterDying(Player *player, DamageStruct *reason)
+void GameLogic::enterDying(const DeathStruct &_death)
+{
+    Player *player = _death.who;
+
+    if (player->dyingFactor() > player->maxHp()) {
+        killPlayer(_death);
+        return;
+    }
+
+    DeathStruct death = _death;
+    death.nowAskingForPeaches = nullptr;
+    player->tag[QStringLiteral("GameLogic_Dying")] = player->tag[QStringLiteral("GameLogic_Dying")].toInt() + 1;
+    d->dying << player;
+
+#if 0
+    QJsonArray arg;
+    arg << QSanProtocol::S_GAME_EVENT_PLAYER_DYING << player->objectName();
+    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+#endif
+
+    QVariant death_data = QVariant::fromValue(death);
+    std::function<bool(const ProcessBreakStruct *self)> brokenCallback;
+
+    try {
+        do {
+            bool disableEnterDying = trigger(EnterDying, death_data);
+            if (disableEnterDying || player->isDead() || (player->hp() >= player->dyingFactor()))
+                break;
+
+            bool disableDying = trigger(Dying, death_data);
+            if (disableDying || player->isDead() || (player->hp() >= player->dyingFactor()))
+                break;
+
+            LogStruct log;
+            log.type = QStringLiteral("#AskForPeaches");
+            log.from = player;
+            log.to = player->roomObject()->players(false);
+            log.arg = QString::number(player->dyingFactor() - player->hp());
+            sendLog(log);
+
+            foreach (Player *p, player->roomObject()->players(false)) {
+                death = death_data.value<DeathStruct>();
+                death.nowAskingForPeaches = p;
+                death_data = QVariant::fromValue(death);
+                bool disableAskForPeaches = trigger(AskForPeaches, death_data);
+                if (disableAskForPeaches || player->isDead() || (player->hp() >= player->dyingFactor()))
+                    break;
+            }
+            death = death_data.value<DeathStruct>();
+            death.nowAskingForPeaches = nullptr;
+            death_data = QVariant::fromValue(death);
+            trigger(AskForPeachesDone, death_data);
+        } while (false);
+    } catch (ProcessBreakStruct breakStruct) {
+        // defer the process broken
+        //
+        // DO NOT DO THE REMAINING PROCESS OF THIS FUNCTION HERE
+        // Every process may throw so all we can do is not to run any process during catch.
+        //
+        // Actually we need to throw after cleanup has finished
+        // But if cleanup introduce process we need another try - catch block for catching another process broken
+        // All the stuff is for skills like "Danshou" (Zhu Ran - Sanguosha, legacy) or "Juhe" (Konpaku Youmu - TouhouSatsu)
+
+        brokenCallback = breakStruct.stopHereCallback;
+
+        death = death_data.value<DeathStruct>();
+        death.nowAskingForPeaches = nullptr;
+        death_data = QVariant::fromValue(death);
+    } catch (GameOverException) {
+        // free allocated memory here!
+        // and then --
+        throw;
+    }
+
+    d->dying.removeLast();
+    player->tag[QStringLiteral("GameLogic_Dying")] = player->tag[QStringLiteral("GameLogic_Dying")].toInt() - 1;
+
+    if (player->isAlive()) {
+#if 0
+        QJsonArray arg;
+        arg << QSanProtocol::S_GAME_EVENT_PLAYER_QUITDYING << player->objectName();
+        doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+#endif
+    }
+
+    try {
+        trigger(QuitDying, death_data);
+    } catch (ProcessBreakStruct breakStruct) {
+        if (!brokenCallback) {
+            brokenCallback = breakStruct.stopHereCallback;
+        } else {
+            // Break process again during process breaking
+            // There is no way for this happening, but we'd prevent the crash here
+            // anyway let's just do nothing and wait for bug report after all...
+        }
+    } catch (GameOverException) {
+        // free allocated memory here!
+        // and then --
+        throw;
+    }
+
+    // Finally, the process broken
+    if (brokenCallback) {
+        ProcessBreakStruct breakStruct;
+        breakStruct.currentData = &death_data;
+        breakStruct.currentFunctionName = QString::fromUtf8(__FUNCTION__);
+        breakStruct.currentProcessingEvent = NonTrigger;
+        breakStruct.stopHereCallback = brokenCallback;
+
+        if (!brokenCallback(&breakStruct))
+            throw breakStruct;
+    }
+}
+
+void GameLogic::killPlayer(const DeathStruct &death)
 {
 }
 
 void GameLogic::buryPlayer(Player *victim)
-{
-}
-
-void GameLogic::killPlayer(Player *victim, DamageStruct *reason)
 {
 }
 

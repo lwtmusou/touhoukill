@@ -40,9 +40,9 @@ public:
 
 public:
     // --- logic manipulation only ---
-    void enterDying(Player *player, DamageStruct *reason);
+    void enterDying(const DeathStruct &death);
+    void killPlayer(const DeathStruct &death);
     void buryPlayer(Player *victim);
-    void killPlayer(Player *victim, DamageStruct *reason = nullptr);
     void revivePlayer(Player *player, bool initialize = true);
 
     void gameOver(const QString &winner, bool isSurrender = false);

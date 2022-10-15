@@ -617,3 +617,7 @@ ExtraTurnStruct::ExtraTurnStruct(Player *player)
     : player(player)
 {
 }
+
+ProcessBreakStruct::ProcessBreakStruct()
+{
+}

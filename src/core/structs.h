@@ -417,6 +417,82 @@ struct QSGS_CORE_EXPORT ExtraTurnStruct
     QList<QSanguosha::Phase> set_phases;
 };
 
+#ifdef SWIG
+%nodefaultdtor ProcessBreakStruct;
+#endif
+
+#if 0
+bool Danshou::stopBreakingCallback(const ProcessBreakStruct *self)
+{
+    // match the "EventPhaseProcessing" / "EventPhaseStart" / "EventPhaseEnd" trigger
+    // In that trigger data should be a Player
+    // Its phase must be PhaseNotActive in order for the turn to be end
+    // But this also matches
+
+    if (self->currentFunctionName == QStringLiteral("trigger")) {
+        Player *p = nullptr;
+        // match following triggers
+        switch (self->currentProcessingEvent) {
+        case QSanguosha::EventPhaseStart:
+        case QSanguosha::EventPhaseProceeding:
+        case QSanguosha::EventPhaseEnd:
+            p = self->currentData->value<Player *>();
+            [[fallthrough]];
+        case QSanguosha::EventPhaseChanging:
+            if (self->currentData->canConvert<PhaseChangeStruct>()) {
+                PhaseChangeStruct change = self->currentData->value<PhaseChangeStruct>();
+                p = change.player;
+            }
+            if (p->phase() != QSanguosha::PhaseNotActive)
+                p->setProperty("danshou", true); // for immediately break turn
+
+            return true;
+        default:
+            break;
+        }
+
+        return false;
+    }
+}
+#endif
+
+struct QSGS_CORE_EXPORT ProcessBreakStruct
+{
+#ifndef SWIG
+    explicit ProcessBreakStruct();
+
+    // Implementation is ongoing.
+    // How can the program identify the target process we should return to?
+    // Give every function a name and do callback to it?
+    //
+    // The callback may be called like following?
+    //
+    // if (!break.stopHereCallback(QStringLiteral(__FUNCTION__), data))
+    //     throw;
+
+    std::function<bool(const ProcessBreakStruct *self)> stopHereCallback;
+
+    QString currentFunctionName;
+    QSanguosha::TriggerEvent currentProcessingEvent;
+    QVariant *currentData;
+
+private:
+    // NOOOOOOOOOOOOOO! Never call "new ProcessBreakStruct"!!!
+    // always use stack for it - It is only for throwing and should be pass by value.
+    static void *operator new(std::size_t) = delete;
+    static void operator delete(void *) = delete;
+#endif
+};
+
+#ifndef SWIG
+struct QSGS_CORE_EXPORT GameOverException
+{
+private:
+    static void *operator new(std::size_t) = delete;
+    static void operator delete(void *) = delete;
+};
+#endif
+
 Q_DECLARE_METATYPE(DamageStruct)
 Q_DECLARE_METATYPE(CardEffectStruct)
 Q_DECLARE_METATYPE(CardUseStruct)
