@@ -494,7 +494,7 @@ if (Qt5_FOUND)
         SOURCES src/swig/sgs.i
         )
 
-    target_compile_definitions(q5sanguosha_wrap PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONDATE=${VERSION_DATE_QSanguosha})
+    target_compile_definitions(q5sanguosha_wrap PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60000 PUBLIC VERSION=${QSanguosha_VERSION} PUBLIC VERSIONDATE=${VERSION_DATE_QSanguosha} PUBLIC QT_NO_CAST_FROM_ASCII)
     # ONLY FOR THEIR INCLUDE DIRECTORIES! Compile fails if we don't add the link libraries.
     # Seems weird since we don't even link the libraries here
     target_link_libraries(q5sanguosha_wrap QSanguoshaLibs::lua54 Qt5::Core)
@@ -508,7 +508,7 @@ if (Qt5_FOUND)
     set_property(TARGET Q5SgsCore PROPERTY AUTOUIC ON)
     set_property(TARGET Q5SgsCore PROPERTY AUTORCC ON)
 
-    target_compile_definitions(Q5SgsCore PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONDATE=${VERSION_DATE_QSanguosha})
+    target_compile_definitions(Q5SgsCore PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60000 PUBLIC VERSION=${QSanguosha_VERSION} PUBLIC VERSIONDATE=${VERSION_DATE_QSanguosha} PUBLIC QT_NO_CAST_FROM_ASCII)
     target_link_libraries(Q5SgsCore Qt5::Core q5sanguosha_wrap QSanguoshaLibs::lua54)
     target_include_directories(Q5SgsCore PUBLIC "src/core")
 
@@ -520,7 +520,7 @@ if (Qt5_FOUND)
     set_property(TARGET Q5SgsSocket PROPERTY AUTOUIC ON)
     set_property(TARGET Q5SgsSocket PROPERTY AUTORCC ON)
 
-    target_compile_definitions(Q5SgsSocket PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60000 VERSION=${QSanguosha_VERSION} VERSIONDATE=${VERSION_DATE_QSanguosha})
+    target_compile_definitions(Q5SgsSocket PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x60000 PUBLIC VERSION=${QSanguosha_VERSION} PUBLIC VERSIONDATE=${VERSION_DATE_QSanguosha} PUBLIC QT_NO_CAST_FROM_ASCII)
     target_link_libraries(Q5SgsSocket Qt5::Network Qt5::Core)
     target_include_directories(Q5SgsSocket PUBLIC "src/server")
 
@@ -550,8 +550,6 @@ if (Qt5_FOUND)
     set_property(TARGET Q5SgsServer PROPERTY AUTORCC ON)
 
     target_link_libraries(Q5SgsServer Q5SgsSocket Q5SgsCore)
-
-    target_compile_definitions(Q5SgsServer PUBLIC -DQT_NO_CAST_FROM_ASCII)
 
     if (NOT ANDROID)
         add_executable(Q5Sanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} )
@@ -590,7 +588,7 @@ if (Qt5_FOUND)
 
     target_link_libraries(Q5Sanguosha Qt5::Widgets Qt5::Gui Qt5::Network Q5SgsCore)
 
-    target_compile_definitions(Q5Sanguosha PUBLIC -DOV_EXCLUDE_STATIC_CALLBACKS PUBLIC -DQT_NO_CAST_FROM_ASCII)
+    target_compile_definitions(Q5Sanguosha PUBLIC -DOV_EXCLUDE_STATIC_CALLBACKS)
     if (PCH)
         target_precompile_headers(q5sanguosha_wrap PUBLIC src/core/qsgscore.h)
         target_precompile_headers(Q5SgsCore PUBLIC src/core/qsgscore.h)
@@ -606,7 +604,7 @@ if (Qt6_FOUND)
         SOURCES src/swig/sgs.i
         )
 
-    target_compile_definitions(qsanguosha_wrap PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x70000 VERSION=${QSanguosha_VERSION} VERSIONDATE=${VERSION_DATE_QSanguosha})
+    target_compile_definitions(qsanguosha_wrap PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x70000 PUBLIC VERSION=${QSanguosha_VERSION} PUBLIC VERSIONDATE=${VERSION_DATE_QSanguosha} PUBLIC QT_NO_CAST_FROM_ASCII)
     # ONLY FOR THEIR INCLUDE DIRECTORIES! Compile fails if we don't add the link libraries.
     # Seems weird since we don't even link the libraries here
     target_link_libraries(qsanguosha_wrap QSanguoshaLibs::lua54 Qt6::Core)
@@ -620,7 +618,7 @@ if (Qt6_FOUND)
     set_property(TARGET QSgsCore PROPERTY AUTOUIC ON)
     set_property(TARGET QSgsCore PROPERTY AUTORCC ON)
 
-    target_compile_definitions(QSgsCore PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x70000 VERSION=${QSanguosha_VERSION} VERSIONDATE=${VERSION_DATE_QSanguosha})
+    target_compile_definitions(QSgsCore PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x70000 PUBLIC VERSION=${QSanguosha_VERSION} PUBLIC VERSIONDATE=${VERSION_DATE_QSanguosha} PUBLIC QT_NO_CAST_FROM_ASCII)
     target_link_libraries(QSgsCore Qt6::Core qsanguosha_wrap QSanguoshaLibs::lua54)
     target_include_directories(QSgsCore PUBLIC "src/core")
 
@@ -632,7 +630,7 @@ if (Qt6_FOUND)
     set_property(TARGET QSgsSocket PROPERTY AUTOUIC ON)
     set_property(TARGET QSgsSocket PROPERTY AUTORCC ON)
 
-    target_compile_definitions(QSgsSocket PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x70000 VERSION=${QSanguosha_VERSION} VERSIONDATE=${VERSION_DATE_QSanguosha})
+    target_compile_definitions(QSgsSocket PUBLIC QT_DISABLE_DEPRECATED_BEFORE=0x70000 PUBLIC VERSION=${QSanguosha_VERSION} PUBLIC VERSIONDATE=${VERSION_DATE_QSanguosha} PUBLIC QT_NO_CAST_FROM_ASCII)
     target_link_libraries(QSgsSocket Qt6::Network Qt6::Core)
     target_include_directories(QSgsSocket PUBLIC "src/server")
 
@@ -662,8 +660,6 @@ if (Qt6_FOUND)
     set_property(TARGET QSgsServer PROPERTY AUTORCC ON)
 
     target_link_libraries(QSgsServer QSgsSocket QSgsCore)
-
-    target_compile_definitions(QSgsServer PUBLIC -DQT_NO_CAST_FROM_ASCII)
 
     qt6_add_translation(QM_FILES6 ${TS_FILES})
     qt6_add_executable(QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} ${QM_FILES6} )
@@ -695,7 +691,7 @@ if (Qt6_FOUND)
 
     target_link_libraries(QSanguosha PUBLIC Qt6::Widgets Qt6::Gui Qt6::Network QSgsCore)
 
-    target_compile_definitions(QSanguosha PUBLIC -DOV_EXCLUDE_STATIC_CALLBACKS PUBLIC -DQT_NO_CAST_FROM_ASCII)
+    target_compile_definitions(QSanguosha PUBLIC -DOV_EXCLUDE_STATIC_CALLBACKS)
     if (PCH)
         target_precompile_headers(qsanguosha_wrap PUBLIC src/core/qsgscore.h)
         target_precompile_headers(QSgsCore PUBLIC src/core/qsgscore.h)

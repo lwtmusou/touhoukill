@@ -81,7 +81,7 @@ private:
 %extend qrc {
     static QByteArray contents(const QString &n) noexcept {
         QString fileName = n;
-        if (!fileName.startsWith("qrc:"))
+        if (!fileName.startsWith(QStringLiteral("qrc:")))
             return QByteArray();
 
         fileName = fileName.mid(3);
@@ -95,7 +95,7 @@ private:
 
     static bool contains(const QString &n) noexcept {
         QString fileName = n;
-        if (!fileName.startsWith("qrc:"))
+        if (!fileName.startsWith(QStringLiteral("qrc:")))
             return false;
 
         fileName = fileName.mid(3);
@@ -128,7 +128,7 @@ public:
 class QObject {
 public:
     QString objectName();
-    void setObjectName(const char *name);
+    void setObjectName(const QString &name);
     bool inherits(const char *class_name);
     bool setProperty(const char *name, const QVariant &value);
     QVariant property(const char *name) const;
