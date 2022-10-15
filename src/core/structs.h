@@ -32,7 +32,8 @@ struct QSGS_CORE_EXPORT DamageStruct
     bool by_user;
     QString reason;
     bool trigger_chain;
-    QString trigger_info; //keep addition info while record. since this damage event may be triggered lately by insertion of new damage event.
+
+    QVariantMap tag;
 };
 
 using RecoverStruct = DamageStruct;
@@ -194,9 +195,7 @@ struct QSGS_CORE_EXPORT DeathStruct
     Player *who; // who is dead
     DamageStruct *damage; // if it is NULL that means the dying is caused by losing hp
     Player *nowAskingForPeaches; // who is asking for peaches
-
-    Player *viewAsKiller;
-    bool useViewAsKiller;
+    std::optional<Player *> viewAsKiller;
 };
 
 struct QSGS_CORE_EXPORT PindianStruct

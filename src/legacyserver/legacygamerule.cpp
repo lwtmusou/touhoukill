@@ -571,7 +571,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, GameLogic *l
                         DamageStruct chain_damage = damage;
                         chain_damage.to = chained_player;
                         chain_damage.chain = true;
-                        chain_damage.trigger_info = QString(); //clear trigger_info.  eg. shihui
+                        chain_damage.tag.clear();
 
                         room->damage(chain_damage);
                     }
@@ -992,8 +992,8 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, GameLogic *l
         qobject_cast<LegacyServerPlayer *>(death.who)->bury();
 
         LegacyServerPlayer *killer = nullptr;
-        if (death.useViewAsKiller)
-            killer = qobject_cast<LegacyServerPlayer *>(death.viewAsKiller);
+        if (death.viewAsKiller.has_value())
+            killer = qobject_cast<LegacyServerPlayer *>(death.viewAsKiller.value());
         else if (death.damage != nullptr)
             killer = qobject_cast<LegacyServerPlayer *>(death.damage->from);
 

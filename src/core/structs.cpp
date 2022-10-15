@@ -514,8 +514,7 @@ DeathStruct::DeathStruct(Player *who, DamageStruct *damage)
     : who(who)
     , damage(damage)
     , nowAskingForPeaches(nullptr)
-    , viewAsKiller(nullptr)
-    , useViewAsKiller(false)
+    , viewAsKiller(std::nullopt)
 {
 }
 
