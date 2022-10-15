@@ -6,10 +6,10 @@
 
 #ifndef SWIG
 #include "global.h"
-
 #include <QCryptographicHash>
 #include <QList>
 #include <QString>
+#endif
 
 class Skill;
 class Player;
@@ -17,7 +17,6 @@ class Card;
 class CardFace;
 struct CardDescriptor;
 class General;
-#endif
 
 #ifndef SWIG
 class PackagePrivate;

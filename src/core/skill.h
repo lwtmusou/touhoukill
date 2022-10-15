@@ -3,19 +3,21 @@
 
 // BE WARE! THIS FILE IS USED IN BOTH SWIG AND C++.
 // MAKE SURE THE GRAMMAR IS COMPATIBLE BETWEEN 2 LANGUAGES.
+
 #ifndef SWIG
 #include "global.h"
-
 #include <QList>
 #include <QObject>
 #include <QSet>
 #include <QString>
+#endif
 
 class Player;
 class Card;
 class RoomObject;
 class Trigger;
 
+#ifndef SWIG
 class SkillPrivate;
 #endif
 
@@ -321,7 +323,8 @@ public:
 #endif
 
     virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>(),
-                              bool include_hidden = false) const = 0;
+                              bool include_hidden = false) const
+        = 0;
 };
 
 class QSGS_CORE_EXPORT DistanceSkill : public Skill

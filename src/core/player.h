@@ -5,14 +5,13 @@
 // MAKE SURE THE GRAMMAR IS COMPATIBLE BETWEEN 2 LANGUAGES.
 
 #ifndef SWIG
-
 #include "global.h"
-
 #include <QList>
 #include <QMap>
 #include <QObject>
 #include <QString>
 #include <QStringList>
+#endif
 
 class EquipCard;
 class Weapon;
@@ -25,8 +24,8 @@ class Skill;
 class Card;
 class General;
 
+#ifndef SWIG
 class PlayerPrivate;
-
 #endif
 
 class QSGS_CORE_EXPORT Player : public QObject

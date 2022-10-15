@@ -6,17 +6,16 @@
 
 #ifndef SWIG
 #include "global.h"
-
 #include <QJsonValue>
 #include <QString>
 #include <QStringList>
 #include <QVariant>
+#endif
 
 class Skill;
 class RoomObject;
 class Card;
 class Player;
-#endif
 
 struct QSGS_CORE_EXPORT DamageStruct
 {

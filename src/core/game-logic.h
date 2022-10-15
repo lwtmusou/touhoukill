@@ -5,19 +5,19 @@
 // MAKE SURE THE GRAMMAR IS COMPATIBLE BETWEEN 2 LANGUAGES.
 
 #ifndef SWIG
-
 #include "protocol.h"
 #include "qsgscore.h"
 #include "structs.h"
-
 #include <QString>
 #include <QStringList>
 #include <QVariant>
+#endif
 
 class Player;
 class RoomObject;
 struct DamageStruct;
 
+#ifndef SWIG
 class GameLogicPrivate;
 #endif
 

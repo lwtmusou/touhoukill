@@ -5,20 +5,20 @@
 // MAKE SURE THE GRAMMAR IS COMPATIBLE BETWEEN 2 LANGUAGES.
 
 #ifndef SWIG
-
 #include "global.h"
-
 #include <QString>
 #include <QVariant>
+#endif
 
 class RoomObject;
 class Player;
 struct CardEffectStruct;
 struct CardUseStruct;
-
-class CardPrivate;
 class CardFace;
 class Package;
+
+#ifndef SWIG
+class CardPrivate;
 #endif
 
 class QSGS_CORE_EXPORT Card final : public QObject

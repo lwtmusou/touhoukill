@@ -6,14 +6,15 @@
 
 #ifndef SWIG
 #include "global.h"
-
 #include <QSet>
 #include <QString>
 #include <QStringList>
+#endif
 
 class Skill;
 class Package;
 
+#ifndef SWIG
 class GeneralPrivate;
 #endif
 

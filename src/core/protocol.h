@@ -2,7 +2,6 @@
 #define TOUHOUKILL_PROTOCOL_H
 
 #include "qsgscore.h"
-
 #include <QJsonValue>
 #include <QtGlobal>
 

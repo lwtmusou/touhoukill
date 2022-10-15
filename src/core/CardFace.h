@@ -6,18 +6,19 @@
 
 #ifndef SWIG
 #include "global.h"
-
 #include <QString>
+#endif
 
 class Player;
 class RoomObject;
 class GameLogic;
 class Card;
-
-class CardFacePrivate;
 struct CardUseStruct;
 struct CardEffectStruct;
 struct JudgeStruct;
+
+#ifndef SWIG
+class CardFacePrivate;
 #endif
 
 /**
@@ -155,7 +156,9 @@ protected:
     virtual void defaultOnUninstall(GameLogic *logic, Player *player) const;
 };
 
+#ifndef SWIG
 class WeaponPrivate;
+#endif
 
 class QSGS_CORE_EXPORT Weapon : public EquipCard
 {
@@ -244,7 +247,9 @@ public:
 #endif
 };
 
+#ifndef SWIG
 class DelayedTrickPrivate;
+#endif
 
 class QSGS_CORE_EXPORT DelayedTrick : public TrickCard
 {
@@ -263,7 +268,9 @@ private:
     DelayedTrickPrivate *d;
 };
 
+#ifndef SWIG
 class SkillCardPrivate;
+#endif
 
 class QSGS_CORE_EXPORT SkillCard : public CardFace
 {

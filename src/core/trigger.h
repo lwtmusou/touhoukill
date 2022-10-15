@@ -6,10 +6,10 @@
 
 #ifndef SWIG
 #include "global.h"
-
 #include <QList>
 #include <QString>
 #include <QVariant>
+#endif
 
 class Card;
 class Player;
@@ -19,6 +19,7 @@ class GameLogic;
 class Skill;
 class EquipCard;
 
+#ifndef SWIG
 class TriggerPrivate;
 #endif
 
@@ -92,7 +93,9 @@ public:
 #endif
 };
 
+#ifndef SWIG
 class SkillTriggerPrivate;
+#endif
 
 class QSGS_CORE_EXPORT SkillTrigger : public Trigger
 {
@@ -167,7 +170,10 @@ public:
 };
 
 // a nasty way for 'fake moves', usually used in the process of multi-card chosen
+#ifndef SWIG
 class FakeMoveRecordPrivate;
+#endif
+
 class QSGS_CORE_EXPORT FakeMoveRecord final : public GlobalRecord
 {
 public:

@@ -6,9 +6,9 @@
 
 #ifndef SWIG
 #include "global.h"
-
 #include <QSet>
 #include <QString>
+#endif
 
 class Rule;
 class Package;
@@ -16,6 +16,7 @@ class RoomObject;
 class General;
 class GameLogic;
 
+#ifndef SWIG
 class ModePrivate;
 #endif
 

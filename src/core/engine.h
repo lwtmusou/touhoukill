@@ -5,18 +5,15 @@
 // MAKE SURE THE GRAMMAR IS COMPATIBLE BETWEEN 2 LANGUAGES.
 
 #ifndef SWIG
-
 #include "global.h"
-
 #include <QList>
 #include <QSet>
 #include <QString>
 #include <QStringList>
 #include <QVariant>
+#endif
 
 class QVersionNumber;
-class LuaStatePointer;
-class CardPattern;
 class General;
 class ViewAsSkill;
 class ProhibitSkill;
@@ -35,6 +32,9 @@ class RoomObject;
 class CardFace;
 class Trigger;
 
+#ifndef SWIG
+class LuaStatePointer;
+class CardPattern;
 class EnginePrivate;
 #endif
 

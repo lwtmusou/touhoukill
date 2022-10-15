@@ -2,7 +2,6 @@
 #define TOUHOUKILL_QJSONUTILS_H
 
 #include "qsgscore.h"
-
 #include <QList>
 #include <QStringList>
 
