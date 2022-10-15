@@ -1,44 +1,53 @@
 To build QSanguosha using CMake
+======
+
 Tips: ${SouirceDir} stands for the source directory. Make sure there is no non-ascii character and no space in the path where the repo is in.
 Make sure you have a recent toolchain, recent (3.20 or later) CMake and a project builder (such as GNU Make) installed.
+This instructions assumes that you have CMake and toolchain available in PATH.
 
-1. Download Qt 5.15 and/or Qt 6.2 from Qt official online installer, or build Qt from source.
+1. Download Qt 5.15 and/or Qt 6.2 (or later Qt 6) from Qt official online installer, or build Qt from source.
    If you can't bare the force login policy of Qt installer, and don't want to build Qt from source, you may download a prebuilt Qt.
    Let's use ${QtDir} to stand for the Qt directory.
    Alternatively, for Unix-like OS, you can also install Qt from your package manager, provided that version is 5.15 or 6.x.
    -- e.g. using "apt-get install qt5-default" for your Ubuntu or "brew install qt@5" for your macOS with Homebrew.
 
-2. (for Windows) Download the swigwin (swig for Windows, 4.0.0 or later to ensure the support for Lua 5.3) http://sourceforge.net/projects/swig/files/swigwin/
-Create a ${SouirceDir}/tools/swig folder under your source directory. Unzip swigwin and copy all unzipped files to tools/swig. To make sure you copied them to the right directory hierarchy, check if this file exists: ${SouirceDir}/tools/swig/swig.exe
-2. (for Unix-like OS) Install swig from your package manager or build it from source.
-   -- e.g. using "apt-get install swig" for your Ubuntu Linux or "brew install swig" for your macOS with Homebrew.
+2. Install swig from your package manager or build it from source.
+   -- e.g. using "apt-get install swig" for your Ubuntu Linux
+   -- e.g. using "brew install swig" for your macOS with Homebrew.
+   -- e.g. using "choco install swig" for your Windows with chocolatey.
+2. (Alternatively for Windows) Download swigwin (swig for Windows, 4.0.2 or later to ensure the support for Lua 5.4) http://sourceforge.net/projects/swig/files/swigwin/
+   Create a ${SouirceDir}/tools/swig folder under your source directory. Unzip swigwin and copy all unzipped files to tools/swig. To make sure you copied them to the right directory hierarchy, check if this file exists: ${SouirceDir}/tools/swig/swig.exe
 
 3. Create a folder outside ${SouirceDir}. This will be the build directory.
    Let's use ${BuildDir} to stand for the build directory.
 
-4. Open your console, and chdir to ${BuildDir}.
-
-4.1. (for Visual Studio) run "vcvars64.bat" in the console folder. "vcvars64.bat" is in the Visual Studio installation directory.
-4.1. (for Windows hosted MinGW-w64) set environment variable PATH and make sure "gcc" is of the current MinGW-w64 toolchain.
-4.1. (for cross-build) (To-Do)
-
-5. Type following in your terminal (parameter "-G" requires a project builder as argument. make sure that suits your environment):
+4. Type following in your terminal (parameter "-G" requires a project builder as argument. make sure that suits your environment):
    cmake -G"..." -DCMAKE_PREFIX_PATH="${QtDir}" -DCMAKE_BUILD_TYPE=Release ${SourceDir}
    cmake --build . --parallel
 
-   Typical argument for "-G" is:
-     Ninja - ninja build (cross-platform project builder)
-     Unix Makefiles - GNU Make (on Unix-like OS)
-     MSYS Makefiles - GNU Make (for MSYS on windows with MinGW toolchain, MSYS make)
-     MinGW Makefiles - GNU Make (for cmd with MinGW toolchain, mingw32-make)
-     NMake Makefiles - Visual Studio NMake (for Visual Studio command prompt, aka vcvars64.bat, no parallel build support)
-     NMake Makefiles JOM - JOM (for Visual Studio command prompt, aka vcvars64.bat, with JOM produced by Qt)
+   Typical argument for "-G" is one of following:
+     Ninja - build.ninja files which can be built using ninja build tool
+     (Windows only) NMake Makefiles JOM - Makefile which can be built using JOM or NMake
+     (Unix / MSYS2 only) Unix Makefiles - Makefile which can be built using GNU make on Unix environment
+     (Windows only, uses MSYS2) MSYS Makefiles - Makefile which can be built using GNU make on MSYS environment for native Win32 program
+     (Windows only) MinGW Makefiles - Makefile which can be built using GNU make on CMD environment
+     (Windows only, Not recommended. No parallel support) NMake Makefiles - Makefile which can be built using NMake
 
-   Note that only ninja and makefiles are supported. Other generators are not supported due to lack of swig support.
+   Alternately following generator can be used.
+     (CMake 3.22+, Windows only) Visual Studio 16 2019 - Project files for VS 2019 which can be used with msbuild (When building pass "-p:Configuration=Release" to msbuild since CMAKE_BUILD_TYPE is ignored)
+     (CMake 3.22+, Windows only) Visual Studio 17 2022 - Project files for VS 2022 which can be used with msbuild (When building pass "-p:Configuration=Release" to msbuild since CMAKE_BUILD_TYPE is ignored)
+     (CMake 3.21+, macOS only) Xcode - Project files for Xcode which can be used with xcodebuild (When building pass "-configuration Release" to msbuild since CMAKE_BUILD_TYPE is ignored)
 
-6. (for Windows) Copy the generated application file "QSanguosha.exe" to your source directory, and copy Qt related file to your source directory.
-6. (for Linux) Copy the generated application file "QSanguosha" to your source directory.
-6. (for macOS) use "macdeployqt" tool on your "QSanguosha.app", and then copy the contents of source directory to "QSanguosha.app/Contents/MacOS".
-6. (for Android) (To-Do)
+   Note that only listed generators are supported by CMake and only Ninja and Makefiles are actually used.
+   Other generators are unfortunately out of support due to lack of swig support in CMake.
 
-7. You are now able to run this program.
+   Visual Studio and Xcode generators for CMake makes effort on CLI build experience instead of IDE usage.
+   It may be better to find a way for CMake support of your IDE instead of using the generated project files.
+
+5. Installation (TODO: make install)
+  -- (for Windows) Copy the generated application file "QSanguosha.exe" to your source directory, and copy Qt related file to your source directory.
+  -- (for Linux) Copy the generated application file "QSanguosha" to your source directory.
+  -- (for macOS) use "macdeployqt" tool on your "QSanguosha.app", and then copy the contents of source directory to "QSanguosha.app/Contents/MacOS".
+  -- (for Android)
+  -- (for WebAssembly)
+
