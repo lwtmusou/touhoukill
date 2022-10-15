@@ -38,7 +38,7 @@ public:
     QStringList packageNames() const;
 
 private:
-    LuaStatePrivate *d;
+    LuaStatePrivate *const d;
     friend class LuaMultiThreadEnvironment;
 
     explicit LuaState();
@@ -108,7 +108,7 @@ public:
     static const QString &luaCopyright();
 
 private:
-    LuaMultiThreadEnvironmentPrivate *d;
+    LuaMultiThreadEnvironmentPrivate *const d;
     Q_DISABLE_COPY_MOVE(LuaMultiThreadEnvironment)
 
     explicit LuaMultiThreadEnvironment();

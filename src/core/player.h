@@ -446,7 +446,7 @@ private:
 
 private:
     Player() = delete;
-    PlayerPrivate *d;
+    PlayerPrivate *const d;
 };
 
 #endif

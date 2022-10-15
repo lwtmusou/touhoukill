@@ -338,7 +338,7 @@ public:
 
 private:
     Q_DISABLE_COPY_MOVE(GameLogic)
-    GameLogicPrivate *d;
+    GameLogicPrivate *const d;
 };
 
 #endif

@@ -70,7 +70,7 @@ struct QSGS_CORE_EXPORT ServerInfoStruct
     //Get the timeout allowance for a command. Server countdown is more lenient than the client.
     //@param command: type of command
     //@return countdown for command in milliseconds.
-    time_t getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance, int operationRate = 2);
+    time_t getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance, int operationRate = 2) const;
 };
 
 #endif

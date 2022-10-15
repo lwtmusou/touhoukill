@@ -117,8 +117,8 @@ protected:
 
 private:
     CardFace() = delete;
-    CardFacePrivate *const d;
     Q_DISABLE_COPY_MOVE(CardFace)
+    CardFacePrivate *const d;
 };
 
 class QSGS_CORE_EXPORT BasicCard : public CardFace

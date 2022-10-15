@@ -47,7 +47,7 @@ public:
 private:
     Package() = delete;
     Q_DISABLE_COPY_MOVE(Package)
-    PackagePrivate *d;
+    PackagePrivate *const d;
 };
 
 #ifndef SWIG
