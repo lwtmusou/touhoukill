@@ -28,7 +28,7 @@ jobs:
     name: build-ubuntu2204${{ matrix.dependency.dep }}
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           path: touhoukill-refactor
 
@@ -63,7 +63,7 @@ jobs:
     runs-on: macos-${{ matrix.runner }}
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           path: touhoukill-refactor
       
@@ -114,7 +114,7 @@ jobs:
     runs-on: macos-${{ matrix.runner }}
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           path: touhoukill-refactor
       
@@ -158,7 +158,7 @@ jobs:
     runs-on: ${{ matrix.VC.runson }}
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           path: touhoukill-refactor
 
@@ -214,7 +214,7 @@ jobs:
     runs-on: windows-latest
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           path: touhoukill-refactor
 
@@ -268,7 +268,7 @@ jobs:
     name: build-mingwclang-${{ matrix.clang.ver }}
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           path: touhoukill-refactor
 
@@ -329,7 +329,7 @@ jobs:
     name: build-msys-${{ matrix.msys.sys }}${{ matrix.dependency.dep }}
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           path: touhoukill-refactor
 
