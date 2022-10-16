@@ -364,7 +364,7 @@ void GeneralOverview::fillGenerals(const QStringList &generals, bool init)
         nickname_item->setData(Qt::UserRole, general_name);
         nickname_item->setTextAlignment(Qt::AlignCenter);
 
-        if (Sanguosha->isGeneralHidden(general_name)) {
+        if (Sanguosha->general(general_name)->isHidden()) {
             nickname_item->setBackground(QBrush(Qt::gray));
             nickname_item->setToolTip(tr("<font color=#FFFF33>This general is hidden</font>"));
         }
@@ -377,7 +377,7 @@ void GeneralOverview::fillGenerals(const QStringList &generals, bool init)
             name_item->setTextAlignment(Qt::AlignCenter);
         }
 
-        if (Sanguosha->isGeneralHidden(general_name)) {
+        if (Sanguosha->general(general_name)->isHidden()) {
             name_item->setBackground(QBrush(Qt::gray));
             name_item->setToolTip(tr("<font color=#FFFF33>This general is hidden</font>"));
         }

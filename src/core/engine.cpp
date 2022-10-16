@@ -224,21 +224,6 @@ QSet<QString> Engine::generalNames() const
     return List2Set(d->generals.keys());
 }
 
-bool Engine::isGeneralHidden(const QString &general_name) const
-{
-    const General *theGeneral = general(general_name);
-    if (theGeneral == nullptr)
-        return false;
-
-    return theGeneral->isHidden();
-#if 0
-    if (!general->isHidden())
-        return Config.ExtraHiddenGenerals.contains(general_name);
-    else
-        return !Config.RemovedHiddenGenerals.contains(general_name);
-#endif
-}
-
 const CardDescriptor &Engine::cardDescriptor(int cardId) const
 {
     static CardDescriptor nullDescriptor = {QString(), NoSuit, NumberNA, nullptr};
@@ -301,59 +286,6 @@ QSet<QString> Engine::hegemonyKingdoms() const
         hegemony_kingdoms = List2Set(configuration(QStringLiteral("hegemony_kingdoms")).toStringList());
 
     return hegemony_kingdoms;
-}
-
-int Engine::getPlayerCount(const QString &name) const
-{
-    const Mode *mode = gameMode(name);
-    if (mode == nullptr)
-        return -1;
-
-    return mode->playersCount();
-}
-
-QString Engine::getRoles(const QString &mode) const
-{
-    return gameMode(mode)->roles();
-}
-
-QStringList Engine::getRoleList(const QString &mode) const
-{
-    QString roles = gameMode(mode)->roles();
-
-    QStringList role_list;
-    for (int i = 0; roles[i] != QChar::Null; i++) {
-        QString role;
-        switch (roles[i].toLatin1()) {
-        case 'Z':
-            role = QStringLiteral("lord");
-            break;
-        case 'C':
-            role = QStringLiteral("loyalist");
-            break;
-        case 'N':
-            role = QStringLiteral("renegade");
-            break;
-        case 'F':
-            role = QStringLiteral("rebel");
-            break;
-        case 'W':
-            role = QStringLiteral("wei");
-            break;
-        case 'S':
-            role = QStringLiteral("shu");
-            break;
-        case 'G':
-            role = QStringLiteral("wu");
-            break;
-        case 'Q':
-            role = QStringLiteral("qun");
-            break;
-        }
-        role_list << role;
-    }
-
-    return role_list;
 }
 
 int Engine::cardCount() const

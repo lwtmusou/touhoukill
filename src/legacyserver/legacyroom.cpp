@@ -2488,8 +2488,10 @@ void LegacyRoom::prepareForStart()
         || serverInfo()->GameMode->name() == QStringLiteral("02_1v1")) {
         return;
     } else if (serverInfo()->GameMode->category() == QSanguosha::ModeHegemony) {
+#if 0
         if (!serverInfo()->isMultiGeneralEnabled())
             assignRoles();
+#endif
         if (Config.RandomSeat)
             qShuffle(m_players);
     } else if (Config.EnableCheat && Config.value(QStringLiteral("FreeAssign"), false).toBool()) {
@@ -3295,7 +3297,22 @@ void LegacyRoom::assignRoles()
 {
     int n = m_players.count();
 
-    QStringList roles = Sanguosha->getRoleList(serverInfo()->GameMode->name());
+    QByteArray roleStr = serverInfo()->GameMode->roles().toLatin1();
+
+    static const QMap<char, QString> roleMap {
+        std::make_pair('Z', QStringLiteral("lord")),
+        std::make_pair('C', QStringLiteral("loyalist")),
+        std::make_pair('F', QStringLiteral("rebel")),
+        std::make_pair('N', QStringLiteral("renegade")),
+    };
+
+    QStringList roles;
+
+    for (int i = 0; i < roleStr.length(); ++i) {
+        if (roleMap.contains(roleStr.at(i)))
+            roles << roleMap.value(roleStr.at(i));
+    }
+
     qShuffle(roles);
 
     for (int i = 0; i < n; i++) {

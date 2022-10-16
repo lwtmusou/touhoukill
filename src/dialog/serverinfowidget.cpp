@@ -2,6 +2,7 @@
 #include "client.h"
 #include "engine.h"
 #include "jsonutils.h"
+#include "mode.h"
 #include "package.h"
 #include "settings.h"
 #include "structs.h"
@@ -64,7 +65,7 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
     name_label->setText(info.Name);
     address_label->setText(address);
     game_mode_label->setText(Sanguosha->translate(info.GameModeStr));
-    int player_count = Sanguosha->getPlayerCount(info.GameModeStr);
+    int player_count = info.GameMode->playersCount();
     player_count_label->setText(QString::number(player_count));
     port_label->setText(QString::number(Config.ServerPort));
     two_general_label->setText(info.isMultiGeneralEnabled() ? tr("Enabled") : tr("Disabled"));

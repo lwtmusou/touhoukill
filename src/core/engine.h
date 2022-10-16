@@ -106,18 +106,6 @@ public:
     // configuration
     QVariant configuration(const QString &key) const;
 
-#ifndef QSGS_CORE_NODEPRECATED
-
-public:
-#else
-
-private:
-#endif
-    Q_DECL_DEPRECATED int getPlayerCount(const QString &name) const;
-    Q_DECL_DEPRECATED QString getRoles(const QString &mode) const;
-    Q_DECL_DEPRECATED QStringList getRoleList(const QString &mode) const;
-    Q_DECL_DEPRECATED bool isGeneralHidden(const QString &general_name) const;
-
 private:
     Q_DISABLE_COPY_MOVE(Engine)
     EnginePrivate *const d;

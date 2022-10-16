@@ -37,10 +37,7 @@ public:
 
     virtual int playersCount() const = 0;
     virtual int generalsPerPlayer() const = 0;
-#ifndef SWIG
-    // This function serves deprecated functions
     virtual QString roles() const = 0;
-#endif
     virtual Rule *rule() const = 0;
     virtual IdSet availableCards() const;
     virtual QSet<const General *> availableGenerals() const;

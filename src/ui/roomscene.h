@@ -559,8 +559,8 @@ Q_ALWAYS_INLINE Player *selfFunc()
     return nullptr;
 }
 
-#define ClientInstance clientInstanceFunc()
+#define ClientInstance (clientInstanceFunc())
 #define ConstClientInstance ((const Client *)clientInstanceFunc())
-#define Self selfFunc()
+#define Self (selfFunc())
 
 #endif

@@ -85,7 +85,7 @@ RoomScene::RoomScene(QMainWindow *main_window, Client *client)
     RoomSceneInstance = this;
     _m_last_front_item = nullptr;
     _m_last_front_ZValue = 0;
-    int player_count = Sanguosha->getPlayerCount(ClientInstance->serverInfo()->GameModeStr);
+    int player_count = ClientInstance->serverInfo()->GameMode->playersCount();
     _m_roomSkin = &(QSanSkinFactory::getInstance().getCurrentSkinScheme().getRoomSkin());
     _m_roomLayout = &(G_ROOM_SKIN.getRoomLayout());
     _m_photoLayout = &(G_ROOM_SKIN.getPhotoLayout());
@@ -353,7 +353,7 @@ RoomScene::RoomScene(QMainWindow *main_window, Client *client)
     m_rolesBoxBackground.load(QStringLiteral("image/system/state.png"));
     m_rolesBox = new QGraphicsPixmapItem;
     addItem(m_rolesBox);
-    QString roles = Sanguosha->getRoles(ClientInstance->serverInfo()->GameModeStr);
+    QString roles = ClientInstance->serverInfo()->GameMode->roles();
     m_pileCardNumInfoTextBox = addText(QString());
     m_pileCardNumInfoTextBox->setParentItem(m_rolesBox);
     m_pileCardNumInfoTextBox->setDocument(ClientInstance->getLinesDoc());
@@ -1515,7 +1515,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event)
         break;
     }
     case Qt::Key_F6: {
-        if (!Self || /*!Self->isOwner() || */ ClientInstance->players().length() < Sanguosha->getPlayerCount(ClientInstance->serverInfo()->GameModeStr))
+        if (Self == nullptr || /*!Self->isOwner() || */ ClientInstance->players().length() < ClientInstance->serverInfo()->GameMode->playersCount())
             break;
         foreach (const Player *p, ClientInstance->players()) {
             if (p != Self && p->isAlive() && p->getState() != QStringLiteral("robot"))

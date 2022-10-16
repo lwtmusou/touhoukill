@@ -23,6 +23,9 @@ private:
     QComboBox *role_ComboBox;
     QMap<QString, QString> role_mapping;
 
+private:
+    static const QMap<char, QString> roleMap;
+
 private slots:
     void updateRole(int index);
     void updateRole(QListWidgetItem *current);

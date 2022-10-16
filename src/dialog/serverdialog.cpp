@@ -754,7 +754,7 @@ void Select3v3GeneralDialog::fillListWidget(QListWidget *list, const Package *pa
 {
     QList<const General *> generals = pack->generals();
     foreach (const General *general, generals) {
-        if (Sanguosha->isGeneralHidden(general->name()))
+        if (general->isHidden())
             continue;
 
         QListWidgetItem *item = new QListWidgetItem(list);

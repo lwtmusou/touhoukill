@@ -2,6 +2,7 @@
 #include "client.h"
 #include "engine.h"
 #include "general.h"
+#include "mode.h"
 #include "player.h"
 #include "roomscene.h"
 #include "settings.h"
@@ -14,6 +15,13 @@
 
 using namespace QSanProtocol;
 
+const QMap<char, QString> RoleAssignDialog::roleMap {
+    std::make_pair('Z', QStringLiteral("lord")),
+    std::make_pair('C', QStringLiteral("loyalist")),
+    std::make_pair('F', QStringLiteral("rebel")),
+    std::make_pair('N', QStringLiteral("renegade")),
+};
+
 RoleAssignDialog::RoleAssignDialog(QWidget *parent)
     : QDialog(parent)
 {
@@ -23,7 +31,14 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
     list->setFlow(QListView::TopToBottom);
     list->setMovement(QListView::Static);
 
-    QStringList role_list = Sanguosha->getRoleList(ClientInstance->serverInfo()->GameModeStr);
+    QByteArray roleStr = ClientInstance->serverInfo()->GameMode->roles().toLatin1();
+
+    QStringList role_list;
+
+    for (int i = 0; i < roleStr.length(); ++i) {
+        if (roleMap.contains(roleStr.at(i)))
+            role_list << roleMap.value(roleStr.at(i));
+    }
 
     if (Config.FreeAssignSelf) {
         QString text = QStringLiteral("%1[%2]").arg(Self->screenName(), Sanguosha->translate(QStringLiteral("lord")));
@@ -88,7 +103,14 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
 
 void RoleAssignDialog::accept()
 {
-    QStringList role_list = Sanguosha->getRoleList(ClientInstance->serverInfo()->GameModeStr);
+    QByteArray roleStr = ClientInstance->serverInfo()->GameMode->roles().toLatin1();
+
+    QStringList role_list;
+
+    for (int i = 0; i < roleStr.length(); ++i) {
+        if (roleMap.contains(roleStr.at(i)))
+            role_list << roleMap.value(roleStr.at(i));
+    }
     QStringList real_list;
 
     QStringList names;
