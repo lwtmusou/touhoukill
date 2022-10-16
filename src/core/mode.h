@@ -28,9 +28,6 @@ protected:
 #endif
 
 public:
-    static QSet<QString> availableModes();
-    static const Mode *findMode(const QString &name);
-
 #ifndef SWIG
     virtual ~Mode();
 #endif
@@ -40,7 +37,10 @@ public:
 
     virtual int playersCount() const = 0;
     virtual int generalsPerPlayer() const = 0;
+#ifndef SWIG
+    // This function serves deprecated functions
     virtual QString roles() const = 0;
+#endif
     virtual Rule *rule() const = 0;
     virtual IdSet availableCards() const;
     virtual QSet<const General *> availableGenerals() const;
@@ -66,6 +66,7 @@ class GenericRoleModePrivate;
 class QSGS_CORE_EXPORT GenericRoleMode : public Mode
 {
     explicit GenericRoleMode(const QString &name);
+    static bool nameMatched(const QString &name);
 
 public:
     ~GenericRoleMode() override;
@@ -78,7 +79,7 @@ public:
     void startGame(GameLogic *logic, RoomObject *room) const override;
 
 private:
-    friend class Mode;
+    friend class Engine;
     GenericRoleModePrivate *const d;
 };
 
@@ -87,6 +88,7 @@ class GenericHegemonyModePrivate;
 class QSGS_CORE_EXPORT GenericHegemonyMode : public Mode
 {
     explicit GenericHegemonyMode(const QString &name);
+    static bool nameMatched(const QString &name);
 
 public:
     ~GenericHegemonyMode() override;
@@ -99,7 +101,7 @@ public:
     void startGame(GameLogic *logic, RoomObject *room) const override;
 
 private:
-    friend class Mode;
+    friend class Engine;
     GenericHegemonyModePrivate *const d;
 };
 #endif

@@ -606,7 +606,7 @@ QGroupBox *ServerDialog::createGameModeBox()
     QObjectList item_list;
 
     // normal modes
-    QSet<QString> modes = Mode::availableModes();
+    QSet<QString> modes = Sanguosha->availableGameModes();
     QSetIterator<QString> itor(modes);
     while (itor.hasNext()) {
         QString mode = itor.next();

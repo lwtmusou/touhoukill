@@ -70,7 +70,7 @@ bool General::isFemale() const
 
 bool General::isNeuter() const
 {
-    return d->gender == Neuter;
+    return d->gender == NonBinaryGender;
 }
 
 void General::setGender(Gender gender)

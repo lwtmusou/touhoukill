@@ -59,7 +59,7 @@ bool Server::socketSignup(QSgsMultiSocket *socket, const QSanProtocol::Packet &p
     QJsonObject ob;
 
     for (auto it = currentRooms.constBegin(); it != currentRooms.constEnd(); ++it) {
-        const Mode *mode = Mode::findMode(it.key());
+        const Mode *mode = Sanguosha->gameMode(it.key());
         int lack = mode->playersCount() - it.value()->players().length();
         if (lack == 0)
             lack = mode->playersCount();

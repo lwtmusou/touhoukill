@@ -31,6 +31,7 @@ class Card;
 class RoomObject;
 class CardFace;
 class Trigger;
+class Mode;
 
 #ifndef SWIG
 class LuaStatePointer;
@@ -99,6 +100,9 @@ public:
     const Trigger *trigger(const QString &name) const;
     void unregisterTrigger(const QString &name);
 
+    QSet<QString> availableGameModes() const;
+    const Mode *gameMode(const QString &name) const;
+
     // configuration
     QVariant configuration(const QString &key) const;
 
@@ -118,6 +122,7 @@ private:
     Q_DISABLE_COPY_MOVE(Engine)
     EnginePrivate *const d;
 };
+
 #ifdef SWIG
 extern Engine *const Sanguosha;
 #else

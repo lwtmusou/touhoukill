@@ -104,15 +104,15 @@ public:
 
     inline bool isMale() const
     {
-        return gender() == QSanguosha::Male;
+        return gender() & QSanguosha::Male;
     }
     inline bool isFemale() const
     {
-        return gender() == QSanguosha::Female;
+        return gender() & QSanguosha::Female;
     }
-    inline bool isNeuter() const
+    inline bool isNonBinaryGender() const
     {
-        return gender() == QSanguosha::Neuter;
+        return gender() == QSanguosha::NonBinaryGender;
     }
 
     bool hasShownRole() const;

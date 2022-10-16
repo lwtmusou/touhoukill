@@ -187,10 +187,10 @@ Q_ENUM_NS(PackageType)
 
 enum Gender
 {
-    Sexless,
+    Genderless,
     Male,
     Female,
-    Neuter
+    NonBinaryGender
 };
 Q_ENUM_NS(Gender)
 

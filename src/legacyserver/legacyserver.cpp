@@ -26,7 +26,7 @@ LegacyServer::LegacyServer(QObject *parent)
     // Synchonize ServerInfo and Config
     ServerInfo.Name = Config.ServerName;
     ServerInfo.GameModeStr = Config.GameMode;
-    ServerInfo.GameMode = Mode::findMode(Config.GameMode);
+    ServerInfo.GameMode = Sanguosha->gameMode(Config.GameMode);
     if (Config.GameMode == QStringLiteral("02_1v1"))
         ServerInfo.GameRuleMode = Config.value(QStringLiteral("1v1/Rule"), QStringLiteral("2013")).toString();
     else if (Config.GameMode == QStringLiteral("06_3v3"))

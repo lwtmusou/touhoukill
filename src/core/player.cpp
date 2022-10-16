@@ -76,7 +76,7 @@ public:
 
     PlayerPrivate(RoomObject *room)
         : room(room)
-        , gender(Sexless)
+        , gender(Genderless)
         , hp(-1)
         , linghp(-1)
         , renhp(-1)

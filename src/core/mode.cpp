@@ -26,49 +26,6 @@ Mode::Mode(const QString &name, ModeCategory category)
 {
 }
 
-QSet<QString> Mode::availableModes()
-{
-    return {
-        // Role
-        QStringLiteral("role_0,1,0"), //  2 players
-        QStringLiteral("role_0,1,1"), //  3 players
-        QStringLiteral("role_0,2,1"), //  4 players
-        QStringLiteral("role_1,2,1"), //  5 players
-        QStringLiteral("role_1,3,1"), //  6 players
-        QStringLiteral("role_1,2,2"), //  6 players, dual renegades
-        QStringLiteral("role_2,3,1"), //  7 players
-        QStringLiteral("role_2,4,1"), //  8 players
-        QStringLiteral("role_2,3,2"), //  8 players, dual renegades
-        QStringLiteral("role_3,4,0"), //  8 players, no renegades
-        QStringLiteral("role_3,4,1"), //  9 players
-        QStringLiteral("role_3,4,2"), //  10players
-        QStringLiteral("role_3,5,1"), //  10players, single renegade
-        QStringLiteral("role_4,5,0"), //  10players, no renegades
-        // TODO: Shall we support player number > 10 in Role mode?
-        // TODO: Shall we support customized Role mode?
-
-        // Hegemony
-        QStringLiteral("hegemony_2"), //  2 players
-        QStringLiteral("hegemony_3"), //  3 players
-        QStringLiteral("hegemony_4"), //  4 players
-        QStringLiteral("hegemony_5"), //  5 players
-        QStringLiteral("hegemony_6"), //  6 players
-        QStringLiteral("hegemony_7"), //  7 players
-        QStringLiteral("hegemony_8"), //  8 players
-        QStringLiteral("hegemony_9"), //  9 players
-        QStringLiteral("hegemony_10"), // 10players
-        QStringLiteral("hegemony_11"), // 11players
-        QStringLiteral("hegemony_12"), // 12players
-
-        // Others
-        // QStringLiteral("1v1"), //      official 1v1 mode
-        // QStringLiteral("1v3"), //      official 1v3 mode
-        // QStringLiteral("3v3"), //      official 3v3 mode
-        // QStringLiteral("3v3x"), //     official 3v3 mode, extreme
-        // QStringLiteral("jiange"), //   official 4v4 mode, JianGe Defense
-    };
-}
-
 Mode::~Mode()
 {
     delete d;
@@ -212,6 +169,11 @@ void GenericRoleMode::startGame(GameLogic *logic, RoomObject *room) const
     // TODO
 }
 
+bool GenericRoleMode::nameMatched(const QString &name)
+{
+    return GenericRoleModePrivate::parseRoleCount(name, nullptr);
+}
+
 class GenericHegemonyModePrivate
 {
 public:
@@ -284,32 +246,7 @@ void GenericHegemonyMode::startGame(GameLogic *logic, RoomObject *room) const
     // TODO
 }
 
-// This function must be put at end of file!!
-const Mode *Mode::findMode(const QString &name)
+bool GenericHegemonyMode::nameMatched(const QString &name)
 {
-    static QHash<QString, Mode *> modes;
-
-    if (modes.contains(name))
-        return modes.value(name);
-
-    Mode *ret = nullptr;
-
-    if (name == QStringLiteral("1v1")) {
-        // TODO: create 1v1 mode
-    } else if (name == QStringLiteral("1v3")) {
-        // TODO: create 1v3 mode
-    } else if (name == QStringLiteral("3v3")) {
-        // TODO: create 3v3 mode
-    } else if (name.startsWith(QStringLiteral("hegemony_"))) {
-        if (GenericHegemonyModePrivate::parsePlayers(name, nullptr))
-            ret = new GenericHegemonyMode(name);
-    } else if (name.startsWith(QStringLiteral("role_"))) {
-        if (GenericRoleModePrivate::parseRoleCount(name, nullptr))
-            ret = new GenericRoleMode(name);
-    }
-
-    if (ret != nullptr)
-        modes[name] = ret;
-
-    return ret;
+    return GenericHegemonyModePrivate::parsePlayers(name, nullptr);
 }

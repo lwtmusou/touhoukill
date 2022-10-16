@@ -86,7 +86,7 @@ signals:
     void newConnection(QSgsMultiSocket *client);
 
 private:
-    QSgsMultiServerPrivate *d;
+    QSgsMultiServerPrivate *const d;
 };
 
 #endif

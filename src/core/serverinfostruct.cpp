@@ -59,7 +59,7 @@ bool ServerInfoStruct::parseLegacy(const QString &str)
 
         GameModeStr = texts.at(2);
 
-        GameMode = Mode::findMode(GameModeStr);
+        GameMode = Sanguosha->gameMode(GameModeStr);
         if (GameMode == nullptr)
             return false;
 
@@ -122,7 +122,7 @@ bool ServerInfoStruct::parse(const QJsonValue &value)
         } else {
             return false;
         }
-        GameMode = Mode::findMode(GameModeStr);
+        GameMode = Sanguosha->gameMode(GameModeStr);
         if (GameMode == nullptr)
             return false;
 

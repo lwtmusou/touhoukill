@@ -466,7 +466,7 @@ bool ServerConfigStruct::parse()
     if (parser.isSet(QStringLiteral("m"))) {
         modesServing = parser.values(QStringLiteral("m"));
         foreach (const QString &mode, modesServing) {
-            const Mode *findMode = Mode::findMode(mode);
+            const Mode *findMode = Sanguosha->gameMode(mode);
             if (findMode == nullptr)
                 parserFailures << QString(QStringLiteral("Value for --mode (%1) is incorrect. Nonexistant mode %1 is specified. Check your input.")).arg(mode);
         }
@@ -1217,7 +1217,7 @@ bool ServerConfigStruct::saveConfigFile()
 
 ServerInfoStruct ServerConfigStruct::toServerInfo(const QString &modeName) const
 {
-    const Mode *mode = Mode::findMode(modeName);
+    const Mode *mode = Sanguosha->gameMode(modeName);
 
     ServerInfoStruct info;
     if (mode == nullptr)
