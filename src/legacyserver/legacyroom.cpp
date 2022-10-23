@@ -258,8 +258,8 @@ void LegacyRoom::revivePlayer(LegacyServerPlayer *player, bool initialize)
             player->setChained(false);
             broadcastProperty(player, "chained");
         }
-        if (!player->faceUp()) {
-            player->setFaceUp(true);
+        if (player->turnSkipping()) {
+            player->setTurnSkipping(false);
             broadcastProperty(player, "faceup");
         }
         setPlayerProperty(player, "role_shown", player->isLord());
@@ -2769,7 +2769,7 @@ bool LegacyRoom::makeSurrender(LegacyServerPlayer *initiator)
             foreach (LegacyServerPlayer *p, getAllPlayers()) {
                 if (!p->haveShownGeneral())
                     p->showGeneral(true, false, false);
-                if ((p->getGeneral2() != nullptr) && !p->hasShownGeneral2())
+                if ((p->getGeneral2() != nullptr) && !p->haveShownGeneral(1))
                     p->showGeneral(false, false, false);
             }
             gameOver(QStringLiteral("."), true);
@@ -4150,7 +4150,7 @@ void LegacyRoom::marshal(LegacyServerPlayer *player)
             notifyProperty(player, p, "general");
 
         if (p->getGeneral2() != nullptr) {
-            if (serverInfo()->GameMode->category() == QSanguosha::ModeHegemony && p == player && !p->hasShownGeneral2()) {
+            if (serverInfo()->GameMode->category() == QSanguosha::ModeHegemony && p == player && !p->haveShownGeneral(1)) {
                 QString general2_name = tag[player->objectName()].toStringList().at(1);
                 notifyProperty(player, p, "general2", general2_name);
             } else {

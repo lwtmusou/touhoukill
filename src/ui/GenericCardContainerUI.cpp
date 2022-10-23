@@ -571,9 +571,9 @@ void PlayerCardContainer::refresh()
         rightDisableShowLock->setVisible(false);
     } else if (m_player != nullptr) {
         if (_m_faceTurnedIcon != nullptr)
-            _m_faceTurnedIcon->setVisible(!m_player->faceUp());
+            _m_faceTurnedIcon->setVisible(m_player->turnSkipping());
         if (_m_faceTurnedIcon2 != nullptr)
-            _m_faceTurnedIcon2->setVisible(!m_player->faceUp());
+            _m_faceTurnedIcon2->setVisible(m_player->turnSkipping());
         if (_m_chainIcon != nullptr)
             _m_chainIcon->setVisible(m_player->isChained());
         if (_m_actionIcon != nullptr)
@@ -583,7 +583,7 @@ void PlayerCardContainer::refresh()
         if (leftDisableShowLock != nullptr)
             leftDisableShowLock->setVisible(!m_player->haveShownGeneral() && !m_player->disableShow(true).isEmpty());
         if (rightDisableShowLock != nullptr)
-            rightDisableShowLock->setVisible((m_player->getGeneral2() != nullptr) && !m_player->hasShownGeneral2() && !m_player->disableShow(false).isEmpty());
+            rightDisableShowLock->setVisible((m_player->getGeneral2() != nullptr) && !m_player->haveShownGeneral(1) && !m_player->disableShow(false).isEmpty());
     }
     updateHandcardNum();
     _adjustComponentZValues();

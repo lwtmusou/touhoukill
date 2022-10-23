@@ -1717,7 +1717,7 @@ void Dashboard::updateHiddenMark()
     if (!isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr))
         return;
     if ((m_player != nullptr) && RoomSceneInstance->game_started && !m_player->haveShownGeneral()) {
-        leftHiddenMark->setVisible(m_player->isHidden(true));
+        leftHiddenMark->setVisible(m_player->isHidden(0));
     }
 
     else
@@ -1730,8 +1730,8 @@ void Dashboard::updateRightHiddenMark()
         return;
     if (rightHiddenMark == nullptr)
         return;
-    if ((m_player != nullptr) && RoomSceneInstance->game_started && !m_player->hasShownGeneral2())
-        rightHiddenMark->setVisible(m_player->isHidden(false));
+    if ((m_player != nullptr) && RoomSceneInstance->game_started && !m_player->haveShownGeneral(1))
+        rightHiddenMark->setVisible(m_player->isHidden(1));
     else
         rightHiddenMark->setVisible(false);
 }
@@ -1758,7 +1758,7 @@ void Dashboard::onDeputyStateChanged()
 {
     if (!isHegemonyGameMode(ClientInstance->serverInfo()->GameModeStr))
         return;
-    if ((m_player != nullptr) && RoomSceneInstance->game_started && !m_player->hasShownGeneral2())
+    if ((m_player != nullptr) && RoomSceneInstance->game_started && !m_player->haveShownGeneral(1))
         _m_shadow_layer2->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
     else
         _m_shadow_layer2->setBrush(Qt::NoBrush);
@@ -1782,10 +1782,10 @@ void Dashboard::refresh()
     } else if (m_player != nullptr) {
         _m_shadow_layer1->setBrush(m_player->haveShownGeneral() ? Qt::transparent : G_DASHBOARD_LAYOUT.m_generalShadowColor);
 
-        leftHiddenMark->setVisible(m_player->isHidden(true));
+        leftHiddenMark->setVisible(m_player->isHidden(0));
         if (ClientInstance->serverInfo()->isMultiGeneralEnabled()) {
-            _m_shadow_layer2->setBrush(m_player->hasShownGeneral2() ? Qt::transparent : G_DASHBOARD_LAYOUT.m_generalShadowColor);
-            rightHiddenMark->setVisible(m_player->isHidden(false));
+            _m_shadow_layer2->setBrush(m_player->haveShownGeneral(1) ? Qt::transparent : G_DASHBOARD_LAYOUT.m_generalShadowColor);
+            rightHiddenMark->setVisible(m_player->isHidden(0));
         }
     }
 }

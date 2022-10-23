@@ -280,6 +280,10 @@ public:
     int findPositionOfGeneralOwningSkill(const QString &skill_name) const;
     void setSkillPreshowed(const QString &skill, bool preshowed = true); //hegemony
     void setSkillsPreshowed(const QList<int> &positions, bool preshowed = true);
+    inline void setSkillsPreshowed(int position, bool preshowed = true)
+    {
+        setSkillsPreshowed(QList<int> {position}, preshowed);
+    }
 
     bool havePreshownSkill(const QString &name) const;
     bool havePreshownSkill(const Skill *skill) const;
@@ -338,22 +342,6 @@ public:
 private:
 #endif
 
-    Q_DECL_DEPRECATED inline bool isHidden(bool head_general) const
-    {
-        return isHidden(head_general ? 0 : 1);
-    }
-    Q_DECL_DEPRECATED inline void setGeneralShowed(bool showed, int pos = 0)
-    {
-        setShownGeneral(pos, showed);
-    }
-    Q_DECL_DEPRECATED inline bool hasShownGeneral2() const
-    {
-        return haveShownGeneral(1);
-    }
-    Q_DECL_DEPRECATED inline void setGeneral2Showed(bool showed)
-    {
-        return setShownGeneral(1, showed);
-    }
     Q_DECL_DEPRECATED bool inHeadSkills(const QString &skill_name) const
     {
         return findPositionOfGeneralOwningSkill(skill_name) == 0;
@@ -361,15 +349,6 @@ private:
     Q_DECL_DEPRECATED bool inDeputySkills(const QString &skill_name) const
     {
         return findPositionOfGeneralOwningSkill(skill_name) == 1;
-    }
-    Q_DECL_DEPRECATED inline void setSkillsPreshowed(const QString &flag = QStringLiteral("hd"), bool preshowed = true)
-    {
-        QList<int> p;
-        if (flag.contains(QStringLiteral("h")))
-            p << 0;
-        if (flag.contains(QStringLiteral("d")))
-            p << 1;
-        setSkillsPreshowed(p, preshowed);
     }
     Q_DECL_DEPRECATED inline bool isJilei(const Card *card) const
     {
@@ -418,14 +397,6 @@ private:
     Q_DECL_DEPRECATED void loseSkill(const QString &skill_name, bool head)
     {
         loseSkill(skill_name, head ? 0 : 1);
-    }
-    Q_DECL_DEPRECATED inline bool faceUp() const
-    {
-        return !turnSkipping();
-    }
-    Q_DECL_DEPRECATED inline void setFaceUp(bool face_up)
-    {
-        setTurnSkipping(!face_up);
     }
     Q_DECL_DEPRECATED inline const General *getGeneral2() const
     {

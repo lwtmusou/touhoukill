@@ -573,13 +573,13 @@ bool LegacyServerPlayer::pindian(LegacyServerPlayer *target, const QString &reas
 
 void LegacyServerPlayer::turnOver()
 {
-    setFaceUp(!faceUp());
-    room->broadcastProperty(this, "faceup");
+    setTurnSkipping(!turnSkipping());
+    room->broadcastProperty(this, "turnskipping");
 
     LogStruct log;
     log.type = QStringLiteral("#TurnOver");
     log.from = this;
-    log.arg = faceUp() ? QStringLiteral("face_up") : QStringLiteral("face_down");
+    log.arg = turnSkipping() ? QStringLiteral("face_down") : QStringLiteral("face_up");
     room->sendLog(log);
 
     Q_ASSERT(room->getThread() != nullptr);
@@ -952,7 +952,7 @@ void LegacyServerPlayer::introduceTo(LegacyServerPlayer *player)
             }
         }
     }
-    if (hasShownGeneral2()) {
+    if (haveShownGeneral(1)) {
         foreach (const QString skill_name, skills2.keys()) {
             if (Sanguosha->getSkill(skill_name)->isVisible()) {
                 JsonArray args1;
@@ -1011,7 +1011,7 @@ void LegacyServerPlayer::marshal(LegacyServerPlayer *player) const
         room->doNotify(player, S_COMMAND_KILL_PLAYER, QJsonValue(objectName()));
     }
 
-    if (!faceUp())
+    if (turnSkipping())
         room->notifyProperty(player, this, "faceup");
 
     if (isChained())
@@ -1283,7 +1283,7 @@ void LegacyServerPlayer::showHiddenSkill(const QString &skill_name)
     if (isHegemonyGameMode(room->serverInfo()->GameMode->name())) {
         if (!haveShownGeneral() && hasGeneralCardSkill(skill_name) && inHeadSkills(skill_name))
             showGeneral();
-        else if (!hasShownGeneral2() && hasGeneralCardSkill(skill_name) && inDeputySkills(skill_name))
+        else if (!haveShownGeneral(1) && hasGeneralCardSkill(skill_name) && inDeputySkills(skill_name))
             showGeneral(false);
     } else {
         //for yibian
@@ -1492,7 +1492,7 @@ void LegacyServerPlayer::showGeneral(bool head_general, bool trigger_event, bool
         if (generalName() != QStringLiteral("anjiang"))
             return;
 
-        setSkillsPreshowed(QStringLiteral("h"));
+        setSkillsPreshowed(0);
         room->setPlayerProperty(this, "general_showed", true);
 
         general_name = names.first();
@@ -1531,7 +1531,7 @@ void LegacyServerPlayer::showGeneral(bool head_general, bool trigger_event, bool
         if (getGeneral2Name() != QStringLiteral("anjiang"))
             return;
 
-        setSkillsPreshowed(QStringLiteral("d"));
+        setSkillsPreshowed(1);
         room->setPlayerProperty(this, "general2_showed", true);
 
         general_name = names.last();
@@ -1643,7 +1643,7 @@ void LegacyServerPlayer::hideGeneral(bool head_general)
         if (generalName() == QStringLiteral("anjiang"))
             return;
 
-        setSkillsPreshowed(QStringLiteral("h"), false);
+        setSkillsPreshowed(0, false);
         // dirty hack for temporary convenience.
         room->setPlayerProperty(this, "flags", QStringLiteral("hiding"));
         room->setPlayerProperty(this, "general_showed", false);
@@ -1676,7 +1676,7 @@ void LegacyServerPlayer::hideGeneral(bool head_general)
         if (getGeneral2Name() == QStringLiteral("anjiang"))
             return;
 
-        setSkillsPreshowed(QStringLiteral("d"), false);
+        setSkillsPreshowed(1, false);
         // dirty hack for temporary convenience
         room->setPlayerProperty(this, "flags", QStringLiteral("hiding"));
         room->setPlayerProperty(this, "general2_showed", false);
@@ -1723,7 +1723,7 @@ void LegacyServerPlayer::hideGeneral(bool head_general)
     room->getThread()->trigger(QSanguosha::GeneralHidden, _head);
 
     room->filterCards(this, getCards(QStringLiteral("he")), true);
-    setSkillsPreshowed(head_general ? QStringLiteral("h") : QStringLiteral("d"));
+    setSkillsPreshowed(head_general ? 0 : 1);
 }
 
 void LegacyServerPlayer::removeGeneral(bool head_general)
@@ -1759,7 +1759,7 @@ void LegacyServerPlayer::removeGeneral(bool head_general)
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral(this, general_name);
 
-        setSkillsPreshowed(QStringLiteral("h"), false);
+        setSkillsPreshowed(0, false);
         // disconnectSkillsFromOthers();
 
         foreach (const Skill *skill, getHeadSkillList()) {
@@ -1767,7 +1767,7 @@ void LegacyServerPlayer::removeGeneral(bool head_general)
                 room->detachSkillFromPlayer(this, skill->name(), false, false, false, true); //sendlog  head deputy
         }
     } else {
-        if (!hasShownGeneral2())
+        if (!haveShownGeneral(1))
             showGeneral(false);
 
         from_general = getGeneral2Name();
@@ -1789,7 +1789,7 @@ void LegacyServerPlayer::removeGeneral(bool head_general)
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral2(this, general_name);
 
-        setSkillsPreshowed(QStringLiteral("d"), false);
+        setSkillsPreshowed(1, false);
         // disconnectSkillsFromOthers(false);
 
         foreach (const Skill *skill, getDeputySkillList()) {
@@ -1873,7 +1873,7 @@ bool LegacyServerPlayer::askForGeneralShow(bool one, bool refusable)
 
     if (!haveShownGeneral() && disableShow(true).isEmpty())
         choices << QStringLiteral("show_head_general");
-    if (!hasShownGeneral2() && disableShow(false).isEmpty())
+    if (!haveShownGeneral(1) && disableShow(false).isEmpty())
         choices << QStringLiteral("show_deputy_general");
     if (choices.isEmpty())
         return false;

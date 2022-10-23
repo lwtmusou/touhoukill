@@ -237,7 +237,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, GameLogic *l
         foreach (LegacyServerPlayer *p, room->getOtherPlayers(player))
             p->tag.remove(QStringLiteral("ExtraTurnInfo"));
 
-        if (!player->faceUp()) {
+        if (player->turnSkipping()) {
             room->setPlayerFlag(player, QStringLiteral("-Global_FirstRound"));
             player->turnOver();
         } else if (player->isAlive()) {
@@ -963,7 +963,7 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, GameLogic *l
         if (isHegemonyGameMode(room->serverInfo()->GameMode->name())) {
             if (!player->haveShownGeneral())
                 player->showGeneral(true, false, false);
-            if ((player->getGeneral2() != nullptr) && !player->hasShownGeneral2())
+            if ((player->getGeneral2() != nullptr) && !player->haveShownGeneral(1))
                 player->showGeneral(false, false, false);
         }
 
@@ -1256,7 +1256,7 @@ void LegacyGameRule::changeGeneral1v1(LegacyRoom *room, LegacyServerPlayer *play
     QList<LegacyServerPlayer *> notified = classical ? room->getOtherPlayers(player, true) : room->serverPlayers();
     room->doBroadcastNotify(notified, QSanProtocol::S_COMMAND_REVEAL_GENERAL, QJsonArray() << player->objectName() << new_general);
 
-    if (!player->faceUp())
+    if (player->turnSkipping())
         player->turnOver();
 
     if (player->isChained())
@@ -1315,7 +1315,7 @@ void LegacyGameRule::changeGeneralXMode(LegacyRoom *room, LegacyServerPlayer *pl
     if (player->kingdom() != player->general()->kingdom())
         room->setPlayerProperty(player, "kingdom", player->general()->kingdom());
 
-    if (!player->faceUp())
+    if (player->turnSkipping())
         player->turnOver();
 
     if (player->isChained())
@@ -1407,7 +1407,7 @@ QString LegacyGameRule::getWinner(LegacyRoom *room, LegacyServerPlayer *victim) 
             QStringList winners;
             if (!win_player->haveShownGeneral())
                 win_player->showGeneral(true, false, false);
-            if ((win_player->getGeneral2() != nullptr) && !win_player->hasShownGeneral2())
+            if ((win_player->getGeneral2() != nullptr) && !win_player->haveShownGeneral(1))
                 win_player->showGeneral(false, false, false);
 
             foreach (LegacyServerPlayer *p, room->serverPlayers()) {
@@ -1480,7 +1480,7 @@ QString LegacyGameRule::getWinner(LegacyRoom *room, LegacyServerPlayer *victim) 
                 winner_names << p->objectName();
                 if (!p->haveShownGeneral())
                     p->showGeneral(true, false, false);
-                if ((p->getGeneral2() != nullptr) && !p->hasShownGeneral2())
+                if ((p->getGeneral2() != nullptr) && !p->haveShownGeneral(1))
                     p->showGeneral(false, false, false);
             }
             winner = winner_names.join(QStringLiteral("+"));
