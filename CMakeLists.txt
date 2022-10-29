@@ -48,6 +48,11 @@ else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 endif()
 
+# Find Qt
+# We don't use and don't need the Qt versionless Functions and Targets
+set(QT_NO_CREATE_VERSIONLESS_FUNCTIONS 1)
+set(QT_NO_CREATE_VERSIONLESS_TARGETS 1)
+
 set(QSANGUOSHA_QT5_COMPONENTS Core Widgets Network LinguistTools)
 if (WIN32)
     set(QSANGUOSHA_QT5_COMPONENTS ${QSANGUOSHA_QT5_COMPONENTS} WinExtras)
@@ -553,10 +558,17 @@ if (Qt5_FOUND)
 
     target_link_libraries(Q5SgsServer Q5SgsSocket Q5SgsCore)
 
-    if (NOT ANDROID)
-        add_executable(Q5Sanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} )
+    # in Qt 5 we don't have qt5_add_translations, instead we have qt5_add_translation which got depecrated in Qt 6
+    # it can't be used with Qt 6 since it will create duplicated target
+    if (NOT Qt6_FOUND)
+        qt5_add_translation(QM_FILES5 ${TS_FILES})
     else()
-        add_library(Q5Sanguosha MODULE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} )
+        set(QM_FILES5)
+    endif()
+    if (NOT ANDROID)
+        add_executable(Q5Sanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} ${QM_FILES5})
+    else()
+        add_library(Q5Sanguosha MODULE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} ${QM_FILES5})
     endif()
 
     set_property(TARGET Q5Sanguosha PROPERTY AUTOMOC ON)
@@ -626,7 +638,7 @@ if (Qt6_FOUND)
 
     set_target_properties(QSgsCore PROPERTIES VERSION ${QSanguosha_VERSION})
 
-    add_library(QSgsSocket ${QSanguosha_Socket_SRCS} ${QSanguosha_Socket_MOCS} )
+    qt6_add_library(QSgsSocket ${QSanguosha_Socket_SRCS} ${QSanguosha_Socket_MOCS} )
 
     set_property(TARGET QSgsSocket PROPERTY AUTOMOC ON)
     set_property(TARGET QSgsSocket PROPERTY AUTOUIC ON)
@@ -641,7 +653,7 @@ if (Qt6_FOUND)
     if (NOT BUILD_SHARED_LIBS)
         target_compile_definitions(qsanguosha_wrap PUBLIC -DQSGS_STATIC)
         target_compile_definitions(QSgsCore PUBLIC -DQSGS_STATIC)
-        target_compile_definitions(QSgsSocket PRIVATE -DBUILD_QSGSSOCKET)
+        target_compile_definitions(QSgsSocket PUBLIC -DQSGS_STATIC)
     else()
         target_compile_definitions(qsanguosha_wrap PRIVATE -DBUILD_QSGSCORE)
         target_compile_definitions(QSgsCore PRIVATE -DBUILD_QSGSCORE)
@@ -652,7 +664,7 @@ if (Qt6_FOUND)
     endif()
 
     if ( ANDROID OR IOS OR ( CMAKE_SYSTEM_NAME STREQUAL "Emscripten" ) )
-        add_library(QSgsServer STATIC ${QSanguosha_Server_SRCS} ${QSanguosha_Server_MOCS} )
+        qt6_add_library(QSgsServer STATIC ${QSanguosha_Server_SRCS} ${QSanguosha_Server_MOCS} )
     else()
         add_executable(QSgsServer ${QSanguosha_Server_SRCS} ${QSanguosha_Server_MOCS} )
     endif()
@@ -663,8 +675,12 @@ if (Qt6_FOUND)
 
     target_link_libraries(QSgsServer QSgsSocket QSgsCore)
 
-    qt6_add_translation(QM_FILES6 ${TS_FILES})
-    qt6_add_executable(QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} ${QM_FILES6} )
+    qt6_add_executable(QSanguosha WIN32 MACOSX_BUNDLE ${QSanguosha_SRCS} ${QSanguosha_MOCS} ${QSanguosha_UIS} )
+    # We'd support Qt 6.2 so ... qt6_add_translations can't be used
+    # qt6_add_translations(QSanguosha ${TS_FILES})
+    # we can use qt6_add_lupdate and qt6_add_lrelease
+    qt6_add_lupdate(QSanguosha TS_FILES ${TS_FILES})
+    qt6_add_lrelease(QSanguosha TS_FILES ${TS_FILES} QM_FILES_OUTPUT_VARIABLE QM_FILES6)
 
     set_property(TARGET QSanguosha PROPERTY AUTOMOC ON)
     set_property(TARGET QSanguosha PROPERTY AUTOUIC ON)
