@@ -50,8 +50,9 @@ endif()
 
 # Find Qt
 # We don't use and don't need the Qt versionless Functions and Targets
-set(QT_NO_CREATE_VERSIONLESS_FUNCTIONS 1)
-set(QT_NO_CREATE_VERSIONLESS_TARGETS 1)
+# but setting these items breaks Qt
+# set(QT_NO_CREATE_VERSIONLESS_FUNCTIONS 1)
+# set(QT_NO_CREATE_VERSIONLESS_TARGETS 1)
 
 set(QSANGUOSHA_QT5_COMPONENTS Core Widgets Network LinguistTools)
 if (WIN32)
