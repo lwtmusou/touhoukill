@@ -19,7 +19,7 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 
-#if !((defined(Q_OS_DARWIN) && !defined(Q_OS_MACOS)) || defined(Q_OS_ANDROID))
+#if !((defined(Q_OS_DARWIN) && !defined(Q_OS_MACOS)) || defined(Q_OS_ANDROID)) || defined(Q_OS_WASM)
 #include <QCommandLineOption>
 #include <QCommandLineParser>
 #endif

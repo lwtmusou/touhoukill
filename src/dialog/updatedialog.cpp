@@ -327,6 +327,7 @@ void UpdateDialog::startUpdate()
     arg << QStringLiteral("UpdateScript.vbs") << QString::number(QCoreApplication::applicationPid());
     QProcess::startDetached(QStringLiteral("wscript"), arg, QCoreApplication::applicationDirPath());
 #else
+#ifndef Q_OS_WASM
 #ifdef Q_OS_ANDROID
     if (m_updateScript == QStringLiteral("jni")) {
         // call jni
@@ -338,6 +339,7 @@ void UpdateDialog::startUpdate()
         QProcess::startDetached(QStringLiteral("sh"), arg, QCoreApplication::applicationDirPath());
 #ifdef Q_OS_ANDROID
     }
+#endif
 #endif
 #endif
 

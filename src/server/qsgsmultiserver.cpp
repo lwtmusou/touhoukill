@@ -178,6 +178,9 @@ private:
     QLocalSocket *socket;
 };
 
+#if (defined(Q_OS_DARWIN) && !defined(Q_OS_MACOS)) || defined(Q_OS_ANDROID) || defined(Q_OS_WASM)
+// We don't use subprocesses on these platform
+#else
 // TODO: Is there a Qt way for wrapping stdin and stdout of current running process (instead of the process to be run!!!!) to QIODevice?
 // I don't like running a separate thread just for monitoring if there is data on stdin, and emitting readyRead on that thread, where a mutex should be used for thread safety.
 class QSgsSubProcessSocket : public QSgsMultiSocket
@@ -421,6 +424,7 @@ void QSgsStdInOutSocket::stdinFail()
 }
 
 // implementations of QSgsStdInOutSocket end
+#endif
 
 QSgsMultiSocket *QSgsMultiSocket::ConnectToHost(const QHostAddress &host, quint16 port, QObject *parent)
 {
@@ -434,7 +438,12 @@ QSgsMultiSocket *QSgsMultiSocket::ConnectToHost(const QString &localName, QObjec
 
 QSgsMultiSocket *QSgsMultiSocket::WrapStdio(QObject *parent)
 {
+#if (defined(Q_OS_DARWIN) && !defined(Q_OS_MACOS)) || defined(Q_OS_ANDROID) || defined(Q_OS_WASM)
+    Q_UNIMPLEMENTED();
+    return nullptr;
+#else
     return new QSgsStdInOutSocket(parent);
+#endif
 }
 
 class QSgsMultiServerPrivate : public QObject
@@ -497,7 +506,12 @@ bool QSgsMultiServer::listenLocal(const QString &name)
 
 QSgsMultiSocket *QSgsMultiServer::createSubProcess(const QString &program, const QStringList &arguments)
 {
+#if (defined(Q_OS_DARWIN) && !defined(Q_OS_MACOS)) || defined(Q_OS_ANDROID) || defined(Q_OS_WASM)
+    Q_UNIMPLEMENTED();
+    return nullptr;
+#else
     return new QSgsSubProcessSocket(program, arguments, this);
+#endif
 }
 
 #include "qsgsmultiserver.moc"

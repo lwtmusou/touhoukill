@@ -94,6 +94,7 @@ void StartScene::switchToServer(LegacyServer *server)
 
 void StartScene::printServerInfo()
 {
+#ifndef Q_OS_WASM
     QStringList items;
     QList<QHostAddress> addresses = QNetworkInterface::allAddresses();
     foreach (QHostAddress address, addresses) {
@@ -114,6 +115,7 @@ void StartScene::printServerInfo()
         else if (!item.startsWith(QStringLiteral("169.254.")))
             server_log->append(tr("Your other address: %1, if this is a public IP, that will be available for all cases").arg(item));
     }
+#endif
 
     server_log->append(tr("Binding port number is %1").arg(Config.ServerPort));
     server_log->append(tr("Game mode is %1").arg(Sanguosha->translate(Config.GameMode)));

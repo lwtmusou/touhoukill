@@ -191,6 +191,7 @@ set (QSanguosha_SRCS
     src/legacyserver/legacyserverplayer.cpp
     src/legacyserver/legacysocket.cpp
     src/legacyserver/legacydetector.cpp
+    src/legacyserver/legacysemaphore.cpp
     src/ui/bubblechatbox.cpp
     src/ui/button.cpp
     src/ui/cardcontainer.cpp
@@ -264,6 +265,7 @@ set (QSanguosha_MOCS
     src/legacyserver/legacyserverplayer.h
     src/legacyserver/legacysocket.h
     src/legacyserver/legacydetector.h
+    src/legacyserver/legacysemaphore.h
     src/ui/bubblechatbox.h
     src/ui/button.h
     src/ui/cardcontainer.h
@@ -539,10 +541,10 @@ if (Qt5_FOUND)
         set_target_properties(Q5SgsSocket PROPERTIES SOVERSION ${QSanguosha_VERSION_MAJOR}.${QSanguosha_VERSION_MINOR})
     endif()
 
-    if (NOT ( ANDROID OR IOS ) )
-        add_executable(Q5SgsServer ${QSanguosha_Server_SRCS} ${QSanguosha_Server_MOCS} )
-    else()
+    if ( ANDROID OR IOS OR ( CMAKE_SYSTEM_NAME STREQUAL "Emscripten" ) )
         add_library(Q5SgsServer STATIC ${QSanguosha_Server_SRCS} ${QSanguosha_Server_MOCS} )
+    else()
+        add_executable(Q5SgsServer ${QSanguosha_Server_SRCS} ${QSanguosha_Server_MOCS} )
     endif()
 
     set_property(TARGET Q5SgsServer PROPERTY AUTOMOC ON)
@@ -577,8 +579,8 @@ if (Qt5_FOUND)
         target_link_libraries(Q5Sanguosha Qt5::WinExtras)
     endif()
 
-    if ( ANDROID OR IOS )
-        target_link_libraries(Q5Sanguosha Q5SgsServer)
+    if ( ANDROID OR IOS OR ( CMAKE_SYSTEM_NAME STREQUAL "Emscripten" ) )
+        target_link_libraries(Q5Sanguosha PUBLIC Q5SgsServer)
     endif()
 
     if (QSANGUOSHA_AUDIO_SUPPORT AND Qt5Multimedia_FOUND)
@@ -649,10 +651,10 @@ if (Qt6_FOUND)
         set_target_properties(QSgsSocket PROPERTIES SOVERSION ${QSanguosha_VERSION_MAJOR}.${QSanguosha_VERSION_MINOR})
     endif()
 
-    if (NOT ( ANDROID OR IOS ) )
-        add_executable(QSgsServer ${QSanguosha_Server_SRCS} ${QSanguosha_Server_MOCS} )
-    else()
+    if ( ANDROID OR IOS OR ( CMAKE_SYSTEM_NAME STREQUAL "Emscripten" ) )
         add_library(QSgsServer STATIC ${QSanguosha_Server_SRCS} ${QSanguosha_Server_MOCS} )
+    else()
+        add_executable(QSgsServer ${QSanguosha_Server_SRCS} ${QSanguosha_Server_MOCS} )
     endif()
 
     set_property(TARGET QSgsServer PROPERTY AUTOMOC ON)
@@ -680,8 +682,8 @@ if (Qt6_FOUND)
         PUBLIC "src"
     )
 
-    if ( ANDROID OR IOS )
-        target_link_libraries(QSanguosha QSgsServer)
+    if ( ANDROID OR IOS OR ( CMAKE_SYSTEM_NAME STREQUAL "Emscripten" ) )
+        target_link_libraries(QSanguosha PUBLIC QSgsServer)
     endif()
 
     if (QSANGUOSHA_AUDIO_SUPPORT AND Qt6Multimedia_FOUND)

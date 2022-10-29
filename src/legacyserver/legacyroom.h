@@ -5,6 +5,7 @@
 #include "game-logic.h"
 #include "legacyprotocol.h"
 #include "legacyroomthread.h"
+#include "legacysemaphore.h"
 #include "legacyserverplayer.h"
 #include "legacystructs.h"
 #include "protocol.h"

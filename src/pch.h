@@ -151,7 +151,6 @@
 #include <QRegularExpressionMatch>
 #include <QRegularExpressionMatchIterator>
 #include <QScrollBar>
-#include <QSemaphore>
 #include <QSequentialAnimationGroup>
 #include <QSet>
 #include <QSettings>

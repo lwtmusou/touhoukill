@@ -16,7 +16,7 @@
 
 #include <iostream>
 
-#if (defined(Q_OS_DARWIN) && !defined(Q_OS_MACOS)) || defined(Q_OS_ANDROID)
+#if (defined(Q_OS_DARWIN) && !defined(Q_OS_MACOS)) || defined(Q_OS_ANDROID) || defined(Q_OS_WASM)
 // mobile platforms don't use processes, so command line option shouldn't be get
 // always use server config file for it
 #else
@@ -34,14 +34,16 @@ const QString &configFilePath()
 {
     static QString p;
     if (p.isEmpty()) {
-#if (defined(Q_OS_DARWIN) && !defined(Q_OS_MACOS)) || defined(Q_OS_ANDROID)
-#ifdef Q_OS_ANDROID
+#if (defined(Q_OS_DARWIN) && !defined(Q_OS_MACOS)) || defined(Q_OS_ANDROID) || defined(Q_OS_WASM)
+#if defined(Q_OS_ANDROID)
         p = QStringLiteral("/sdcard/Android/data/rocks.touhousatsu.app/serverconfig.json");
+#elif defined(Q_OS_WASM)
+        p = QStringLiteral("/serverconfig.json");
 #else
         // wait for anyone who's formaliar with iOS / watchOS / tvOS
 #endif
 #else
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX)
         if (getuid() == (uid_t)0)
             p = QStringLiteral("/etc/QSanguosha/serverconfig.json");
         else
@@ -376,7 +378,7 @@ bool ServerConfigStruct::parse()
     if (readConfigFile())
         qWarning() << QStringLiteral("Config file load failed. Default configuration will be used.");
 
-#if (defined(Q_OS_DARWIN) && !defined(Q_OS_MACOS)) || defined(Q_OS_ANDROID)
+#if (defined(Q_OS_DARWIN) && !defined(Q_OS_MACOS)) || defined(Q_OS_ANDROID) || defined(Q_OS_WASM)
 // mobile platforms don't use processes, so get command line options from it is unable
 #else
     QCommandLineParser parser;

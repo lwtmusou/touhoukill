@@ -433,7 +433,9 @@ void MainWindow::gotoStartScene()
 
 void MainWindow::startGameInAnotherInstance()
 {
+#ifndef Q_OS_WASM
     QProcess::startDetached(QApplication::applicationFilePath(), QStringList());
+#endif
 }
 
 void MainWindow::on_actionGeneral_Overview_triggered()
