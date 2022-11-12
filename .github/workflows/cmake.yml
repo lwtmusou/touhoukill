@@ -53,8 +53,8 @@ jobs:
       fail-fast: false
       matrix:
         macOS:
-          - qt5url: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt5.15/macOS-x86_64/Qt5.15.6-macOS-x86_64-AppleClang12.0.5-20220915.tar.xz
-            qt5name: Qt5.15.6-macOS-x86_64-AppleClang12.0.5
+          - qt5url: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt5.15/macOS-x86_64/Qt5.15.7-macOS-x86_64-AppleClang13.0.0-20221107.tar.xz
+            qt5name: Qt5.15.7-macOS-x86_64-AppleClang13.0.0
             qt6url: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt6.4/macOS-x86_64/Qt6.4.0-macOS-x86_64-AppleClang14.0.0-20221003.tar.xz
             qt6name: Qt6.4.0-macOS-x86_64-AppleClang14.0.0
         runner: [ "11", "12" ]
@@ -142,15 +142,15 @@ jobs:
           - ver: 2019
             runson: windows-2019
             call: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat
-            qt5url: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt5.15/Windows-x86_64/Qt5.15.6-Windows-x86_64-VS2019-16.11.18-20220914.7z
-            qt5name: Qt5.15.6-Windows-x86_64-VS2019-16.11.18
+            qt5url: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt5.15/Windows-x86_64/Qt5.15.7-Windows-x86_64-VS2019-16.11.20-20221103.7z
+            qt5name: Qt5.15.7-Windows-x86_64-VS2019-16.11.20
             qt6url: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt6.4/Windows-x86_64/Qt6.4.0-Windows-x86_64-VS2019-16.11.19-20221003.7z
             qt6name: Qt6.4.0-Windows-x86_64-VS2019-16.11.19
           - ver: 2022
             runson: windows-2022
             call: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat
-            qt5url: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt5.15/Windows-x86_64/Qt5.15.6-Windows-x86_64-VS2022-17.3.3-20220915.7z
-            qt5name: Qt5.15.6-Windows-x86_64-VS2022-17.3.3
+            qt5url: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt5.15/Windows-x86_64/Qt5.15.7-Windows-x86_64-VS2022-17.3.6-20221104.7z
+            qt5name: Qt5.15.7-Windows-x86_64-VS2022-17.3.6
             qt6url: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt6.4/Windows-x86_64/Qt6.4.0-Windows-x86_64-VS2022-17.3.5-20221003.7z
             qt6name: Qt6.4.0-Windows-x86_64-VS2022-17.3.5
 
@@ -200,8 +200,8 @@ jobs:
       matrix:
         mingw:
           - qtver: 5
-            qturl: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt5.15/Windows-x86_64/Qt5.15.6-Windows-x86_64-MinGW8.1.0-20220915.7z
-            qtname: Qt5.15.6-Windows-x86_64-MinGW8.1.0
+            qturl: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt5.15/Windows-x86_64/Qt5.15.7-Windows-x86_64-MinGW8.1.0-20221104.7z
+            qtname: Qt5.15.7-Windows-x86_64-MinGW8.1.0
             mingwurl: https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/8.1.0/threads-posix/seh/x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z
             mingwname: mingw64
           - qtver: 6
