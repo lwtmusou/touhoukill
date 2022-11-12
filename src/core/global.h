@@ -424,6 +424,24 @@ enum GuanxingType
 };
 Q_ENUM_NS(GuanxingType)
 
+enum AgentState
+{
+    AgentOnline,
+    AgentOffline,
+    AgentTrust,
+    AgentRobot
+};
+Q_ENUM_NS(AgentState)
+// implementation in player.cpp
+#ifdef SWIG
+static
+#endif
+QSGS_CORE_EXPORT AgentState string2AgentState(const QString &str);
+#ifdef SWIG
+static
+#endif
+QSGS_CORE_EXPORT QString agentState2String(AgentState str);
+
 } // namespace QSanguosha
 #ifdef SWIG
 ;

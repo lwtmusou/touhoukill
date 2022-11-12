@@ -25,7 +25,8 @@ public:
 
     // Agent related?
     QString screenName; // a better name may be UserName?
-    QString state; // A limited set of "online", "offline", "trust", "robot", which indicates how the Agent's actual network and/or playing state, considering to refactor to enum
+    // A limited set of "online", "offline", "trust", "robot", which indicates how the Agent's actual network and/or playing state
+    AgentState agentState;
 
     // Public Data:
     RoomObject *room;
@@ -75,7 +76,8 @@ public:
     IdSet handcards; // a.k.a. knownHandCards in client side
 
     PlayerPrivate(RoomObject *room)
-        : room(room)
+        : agentState(AgentOffline)
+        , room(room)
         , gender(Genderless)
         , hp(-1)
         , linghp(-1)
@@ -157,6 +159,16 @@ void Player::setScreenName(const QString &screen_name)
 QString Player::screenName() const
 {
     return d->screenName;
+}
+
+void Player::setAgentState(AgentState state)
+{
+    d->agentState = state;
+}
+
+AgentState Player::agentState() const
+{
+    return d->agentState;
 }
 
 bool Player::hasShownRole() const
@@ -557,17 +569,6 @@ QStringList Player::generalNames() const
         r << generalName(i);
 
     return r;
-}
-
-QString Player::getState() const
-{
-    return d->state;
-}
-
-void Player::setState(const QString &state)
-{
-    if (d->state != state)
-        d->state = state;
 }
 
 void Player::setRole(const QString &role)
@@ -2008,3 +2009,37 @@ void Player::removeShownHandCards(const IdSet &card_ids)
             d->shownHandcards.remove(id);
     }
 }
+
+namespace QSanguosha {
+
+QSGS_CORE_EXPORT AgentState string2AgentState(const QString &str)
+{
+    if (str == QStringLiteral("offline"))
+        return AgentOffline;
+    else if (str == QStringLiteral("online"))
+        return AgentOnline;
+    else if (str == QStringLiteral("robot"))
+        return AgentRobot;
+    else if (str == QStringLiteral("trust"))
+        return AgentTrust;
+
+    // else
+    return AgentOffline;
+}
+
+QSGS_CORE_EXPORT QString agentState2String(AgentState str)
+{
+    switch (str) {
+    case AgentOffline:
+        return QStringLiteral("offline");
+    case AgentOnline:
+        return QStringLiteral("online");
+    case AgentRobot:
+        return QStringLiteral("robot");
+    case AgentTrust:
+        return QStringLiteral("trust");
+    }
+
+    return QString();
+}
+} // namespace QSanguosha

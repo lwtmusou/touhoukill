@@ -30,7 +30,7 @@ class QSGS_CORE_EXPORT GameLogic
 {
 public:
     explicit GameLogic();
-    ~GameLogic();
+    virtual ~GameLogic();
 
 public:
     // --- the state model it modifies ---

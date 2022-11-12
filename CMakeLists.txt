@@ -90,6 +90,7 @@ set (QSANGUOSHA_AUDIO_SUPPORT "${QSANGUOSHA_AUDIO_SUPPORT}" CACHE STRING "Build 
 
 find_program(SWIG_EXECUTABLE swig)
 if (CMAKE_HOST_WIN32)
+    # unbreak previous practice
     find_program(SWIG_EXECUTABLE swig.exe ${CMAKE_CURRENT_LIST_DIR}/tools/swig)
 endif()
 
@@ -124,6 +125,7 @@ set (QSanguosha_Core_SRCS
     src/core/sgs_ex.cpp
     src/core/exppattern.cpp
     src/core/jsonutils.cpp
+    src/core/agent.cpp
     )
 
 set (QSanguosha_Core_MOCS
@@ -147,6 +149,7 @@ set (QSanguosha_Core_MOCS
     src/core/exppattern.h
     src/core/qsgscore.h
     src/core/jsonutils.h
+    src/core/agent.h
     )
 
 set(QSanguosha_Socket_SRCS
@@ -322,10 +325,12 @@ if (WIN32)
     configure_file(resource/QSanguosha_resource.rc.in QSanguosha_resource.rc @ONLY)
 endif()
 
-find_package(Lua)
+# FindLua.cmake which is provided by CMake is used.
+# It does not support ranged versions......
+find_package(Lua 5.4)
 
 if (LUA_FOUND)
-    if (LUA_VERSION_STRING VERSION_LESS 5.4)
+    if ( NOT ( ( LUA_VERSION_STRING VERSION_GREATER_EQUAL 5.4 ) AND ( LUA_VERSION_STRING VERSION_LESS 5.5 ) ) )
         set(LUA_FOUND false)
     endif()
 endif()
@@ -413,6 +418,9 @@ endif()
 add_library(QSanguoshaLibs::lua54 ALIAS QSanguoshaLibslua54)
 
 if (QSANGUOSHA_AUDIO_SUPPORT)
+    # in fact both libogg and libvorbis provides CMake module
+    # but none of them are built if autotools are used for building them
+    # so falling back using PkgConfig
     find_package(PkgConfig)
     if (PKG_CONFIG_FOUND)
         pkg_check_modules(oggvorbisfile IMPORTED_TARGET GLOBAL ogg>=1.0.0 vorbis>=1.0.0 vorbisfile>=1.0.0)
@@ -667,6 +675,8 @@ if (Qt6_FOUND)
     if ( ANDROID OR IOS OR ( CMAKE_SYSTEM_NAME STREQUAL "Emscripten" ) )
         qt6_add_library(QSgsServer STATIC ${QSanguosha_Server_SRCS} ${QSanguosha_Server_MOCS} )
     else()
+        # DO NOT USE qt6_add_executable!
+        # qt6_add_executable builds libaray target on Android, but we may use separate server executable on Android so we can only use add_executable
         add_executable(QSgsServer ${QSanguosha_Server_SRCS} ${QSanguosha_Server_MOCS} )
     endif()
 

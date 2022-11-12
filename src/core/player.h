@@ -327,12 +327,14 @@ public:
 
     // following 4 RPC related functions have nowhere to be put
     // I don't think these function should be here, but ..............
-    // TODO: make Agent maintain these variable / functions after they are ready
+    // I also don't think these functions should belongs to Agent since Agent maybe server only
+    // Putting them here also makes Logic can update them, so putting them here........
+
     void setScreenName(const QString &screen_name);
     QString screenName() const;
 
-    void setState(const QString &state);
-    QString getState() const;
+    void setAgentState(QSanguosha::AgentState state);
+    QSanguosha::AgentState agentState() const;
 
 #ifndef QSGS_CORE_NODEPRECATED
 
@@ -358,11 +360,11 @@ private:
     {
         return isCardLimited(card, QSanguosha::MethodUse);
     }
-    Q_DECL_DEPRECATED QSet<const Skill *> getHeadSkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const
+    Q_DECL_DEPRECATED QSet<const Skill *> getHeadSkillList(bool = true, bool include_acquired = false, bool include_equip = false) const
     {
         return skills(include_equip, include_acquired, {0});
     }
-    Q_DECL_DEPRECATED QSet<const Skill *> getDeputySkillList(bool visible_only = true, bool include_acquired = false, bool include_equip = false) const
+    Q_DECL_DEPRECATED QSet<const Skill *> getDeputySkillList(bool = true, bool include_acquired = false, bool include_equip = false) const
     {
         return skills(include_equip, include_acquired, {1});
     }
@@ -412,6 +414,14 @@ private:
     }
     Q_DECL_DEPRECATED void setPileOpen(const QString &pile_name, const QString &player)
     {
+    }
+    void setState(const QString &state)
+    {
+        setAgentState(QSanguosha::string2AgentState(state));
+    }
+    QString getState() const
+    {
+        return QSanguosha::agentState2String(agentState());
     }
 
 private:
