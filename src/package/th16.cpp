@@ -1580,22 +1580,6 @@ TH16Package::TH16Package()
     okina->addSkill(new Liji);
     okina->addSkill(new Houguang);
 
-    General *eternity = new General(this, "eternity", "tkz", 3);
-    eternity->addSkill(new Diexing);
-    eternity->addSkill(new Linsa);
-
-    General *nemuno = new General(this, "nemuno", "tkz", 4);
-    nemuno->addSkill(new Shengyu);
-    nemuno->addSkill(new Modao);
-
-    General *aun = new General(this, "aun", "tkz", 3);
-    aun->addSkill(new Xunfo);
-    aun->addSkill(new Zhenshe);
-
-    General *narumi = new General(this, "narumi", "tkz");
-    narumi->addSkill(new Puti);
-    narumi->addSkill(new Zangfa);
-
     General *satono = new General(this, "satono", "tkz", 3);
     satono->addSkill(new Guwu);
     satono->addSkill(new Minghe);
@@ -1603,6 +1587,24 @@ TH16Package::TH16Package()
     General *mai = new General(this, "mai", "tkz", 3);
     mai->addSkill(new Kuangwu);
     mai->addSkill(new Zhuti);
+
+
+    General *narumi = new General(this, "narumi", "tkz");
+    narumi->addSkill(new Puti);
+    narumi->addSkill(new Zangfa);
+
+    General *aun = new General(this, "aun", "tkz", 3);
+    aun->addSkill(new Xunfo);
+    aun->addSkill(new Zhenshe);
+
+    General *nemuno = new General(this, "nemuno", "tkz", 4);
+    nemuno->addSkill(new Shengyu);
+    nemuno->addSkill(new Modao);
+
+    General *eternity = new General(this, "eternity", "tkz", 3);
+    eternity->addSkill(new Diexing);
+    eternity->addSkill(new Linsa);
+
 
     General *okinasp = new General(this, "okina_sp", "tkz");
     okinasp->addSkill(new Menfei);

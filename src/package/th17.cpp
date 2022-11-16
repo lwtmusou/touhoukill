@@ -1745,30 +1745,30 @@ TH17Package::TH17Package()
     keiki->addSkill(new ZhuyingD);
     related_skills.insertMulti("zhuying", "#zhuying-distance");
 
-    General *eika = new General(this, "eika", "gxs", 3);
-    eika->addSkill(new Shanlei);
-    eika->addSkill(new Bengluo);
-
-    General *urumi = new General(this, "urumi", "gxs");
-    urumi->addSkill(new Lunni);
-    urumi->addSkill(new Liaogu);
-
-    General *kutaka = new General(this, "kutaka", "gxs");
-    kutaka->addSkill(new Yvshou);
-    kutaka->addSkill(new Lingdu);
-
-    General *yachie = new General(this, "yachie", "gxs");
-    yachie->addSkill(new Duozhi);
-
-    General *mayumi = new General(this, "mayumi", "gxs");
-    mayumi->addSkill(new Lingjun);
-    mayumi->addSkill(new Ciou);
-
     General *saki = new General(this, "saki", "gxs");
     saki->addSkill(new Jinji);
     saki->addSkill(new Tianxing);
     saki->addSkill(new TianxingP);
     related_skills.insertMulti("tianxing", "#tianxing-probibit");
+
+    General *mayumi = new General(this, "mayumi", "gxs");
+    mayumi->addSkill(new Lingjun);
+    mayumi->addSkill(new Ciou);
+
+    General *yachie = new General(this, "yachie", "gxs");
+    yachie->addSkill(new Duozhi);
+
+    General *kutaka = new General(this, "kutaka", "gxs");
+    kutaka->addSkill(new Yvshou);
+    kutaka->addSkill(new Lingdu);
+
+    General *urumi = new General(this, "urumi", "gxs");
+    urumi->addSkill(new Lunni);
+    urumi->addSkill(new Liaogu);
+
+    General *eika = new General(this, "eika", "gxs", 3);
+    eika->addSkill(new Shanlei);
+    eika->addSkill(new Bengluo);
 
     addMetaObject<LunniCard>();
     addMetaObject<ZhuyingCard>();
