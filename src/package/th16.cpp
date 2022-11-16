@@ -360,35 +360,19 @@ public:
     Diexing()
         : TriggerSkill("diexing")
     {
-        events << HpChanged << CardsMoveOneTime;
+        events << Damaged << CardsMoveOneTime;
         frequency = Compulsory;
     }
 
-    void record(TriggerEvent triggerEvent, Room *, QVariant &data) const override
-    {
-        if (triggerEvent == HpChanged) {
-            ServerPlayer *p = data.value<ServerPlayer *>();
-            if (p != nullptr) {
-                if (!p->tag.contains("diexingHp"))
-                    p->tag["diexingHp"] = p->getMaxHp(); //p->getGeneral()->getMaxHp();
-
-                p->tag["diexingHp2"] = p->tag.value("diexingHp");
-                p->tag["diexingHp"] = p->getHp();
-            }
-        }
-    }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
     {
         QList<SkillInvokeDetail> r;
-        if (triggerEvent == HpChanged) {
-            ServerPlayer *player = data.value<ServerPlayer *>();
+        if (triggerEvent == Damaged) {
+            DamageStruct damage = data.value<DamageStruct>();
 
-            if (player != nullptr && player->isAlive() && player->hasSkill(this)) {
-                // judge if hp is deduced
-                bool ok = false;
-                if (player->tag.value("diexingHp2", -1).toInt(&ok) > player->getHp() && ok)
-                    r << SkillInvokeDetail(this, player, player, nullptr, true);
+            if (damage.to != nullptr && damage.to->isAlive() && damage.to->hasSkill(this)) {
+                    r << SkillInvokeDetail(this, damage.to, damage.to, nullptr, true);
             }
         } else {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
@@ -431,7 +415,7 @@ public:
 
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        if (triggerEvent == HpChanged)
+        if (triggerEvent == Damaged)
             invoke->invoker->drawCards(2, objectName());
         else
             room->recover(invoke->invoker, RecoverStruct());
