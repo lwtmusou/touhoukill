@@ -236,7 +236,7 @@ function SmartAI:searchForAnaleptic(use, enemy, slash)
 		end
 	end
 
-	local analeptic = self:getCard("Analeptic", nil, "MagicAnaleptic")
+	local analeptic = self:getCard("Analeptic")
 	if not analeptic then return nil end
 
 	local analepticAvail = 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_Residue, self.player, analeptic)
@@ -257,11 +257,12 @@ function SmartAI:searchForAnaleptic(use, enemy, slash)
 
 
 
-	local card_str = self:getCardId("Analeptic", nil, nil, "MagicAnaleptic")
+	local card_str = self:getCardId("Analeptic")
+	--local card_str = self:getCardId("Analeptic", nil, nil, "MagicAnaleptic")
 	if card_str then  return sgs.Card_Parse(card_str) end
 
 	for _, anal in ipairs(cards) do
-		if (anal:getClassName() == "Analeptic" and not anal:isKindOf("MagicAnaleptic")) and not (anal:getEffectiveId() == slash:getEffectiveId()) then
+		if anal:getClassName() == "Analeptic"  and not (anal:getEffectiveId() == slash:getEffectiveId()) then
 			return anal
 		end
 	end
