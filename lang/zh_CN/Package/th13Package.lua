@@ -20,7 +20,7 @@ return{
 	["origin:miko_4"] = "p号：23917375，个人id：312852",
 
 	["shengge"] = "圣格",
-	[":shengge"] = "<font color=\"purple\"><b>觉醒技，</b></font>准备阶段开始时，若你没有手牌，你减1点体力上限，摸三张牌。",
+	[":shengge"] = "<font color=\"purple\"><b>觉醒技，</b></font>准备阶段开始时，若你没有手牌或手牌数唯一最少，你减1点体力上限，摸三张牌。",
 	["$shenggeAnimate"]= "skill=miko:shengge",
 	["#ShenggeWake"] = "%from 没有手牌，触发“%arg”觉醒",
 	["qingting"] = "倾听",

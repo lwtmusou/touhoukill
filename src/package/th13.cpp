@@ -20,11 +20,21 @@ public:
         frequency = Wake;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player->hasSkill(this) && player->getMark(objectName()) == 0 && player->getPhase() == Player::Start && player->isKongcheng())
+        if (player->hasSkill(this) && player->getMark(objectName()) == 0 && player->getPhase() == Player::Start ) {
+            if (player->isKongcheng())
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, nullptr, true);
+            //if (player->getHp() == 1)
+            //    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, nullptr, true);
+            foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+                if (player->getHandcardNum() >= p->getHandcardNum())
+                    return QList<SkillInvokeDetail>();
+            }
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, nullptr, true);
+        }
+            
         return QList<SkillInvokeDetail>();
     }
 
