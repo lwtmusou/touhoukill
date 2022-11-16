@@ -909,6 +909,13 @@ function sgs.ai_cardsview_valuable.zongjiu(self, class_name, player)
 end
 
 --梦子
+--[幻术]
+--默认无脑发动
+sgs.ai_skill_invoke.huanshu = function(self,data)
+	--local effect = self.player:getTag("huanshu"):toCardEffect()
+	return true
+end
+
 --[奇刃]
 local qiren_skill = {}
 qiren_skill.name = "qiren"

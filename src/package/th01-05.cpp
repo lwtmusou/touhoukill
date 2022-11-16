@@ -2499,19 +2499,11 @@ public:
     Huanshu()
         : TriggerSkill("huanshu")
     {
-        events << PostCardEffected << CardsMoveOneTime << EventPhaseChanging;
-        frequency = Compulsory;
+        events << PostCardEffected << EventPhaseChanging;
     }
 
     void record(TriggerEvent e, Room *room, QVariant &data) const override
     {
-        if (e == CardsMoveOneTime) {
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            ServerPlayer *from = qobject_cast<ServerPlayer *>(move.from);
-            if ((from != nullptr) && move.from_places.contains(Player::PlaceHand)) {
-                room->setPlayerFlag(from, "huanshu_disable");
-            }
-        }
         if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
@@ -2541,14 +2533,23 @@ public:
                 if (room->getCardPlace(id) != Player::PlaceTable)
                     return QList<SkillInvokeDetail>();
             }
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to, nullptr, true);
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, effect.to, effect.to);
         }
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         CardEffectStruct effect = data.value<CardEffectStruct>();
+        QString prompt = "invoke:"  + effect.card->objectName();
+        invoke->invoker->tag["huanshu"] = data;//for ai
+        return invoke->invoker->askForSkillInvoke(this, prompt);
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        CardEffectStruct effect = data.value<CardEffectStruct>();
+        room->setPlayerFlag(invoke->invoker, "huanshu_disable");
         invoke->invoker->obtainCard(effect.card);
         invoke->invoker->addToShownHandCards(effect.card->getSubcards());
         return false;
