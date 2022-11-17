@@ -2237,6 +2237,8 @@ bool KnownBoth::targetsFeasible(const QList<const Player *> &targets, const Play
             }
         }
     }
+    if (getSkillName() == "linsa")
+        rec = false;
 
     if (rec && Self->isCardLimited(this, Card::MethodUse))
         return targets.length() == 0;
@@ -2294,6 +2296,19 @@ void KnownBoth::onEffect(const CardEffectStruct &effect) const
     }
 
     effect.to->addToShownHandCards(ids);
+
+    // linsa effect
+    if (effect.from->isAlive() && effect.from->hasSkill("linsa") && effect.from != effect.to) {
+        DummyCard *dummy = new DummyCard;
+
+        foreach(int cardid, ids) {
+            if (Sanguosha->getCard(cardid)->getSuit() == getSuit() &&  effect.from->canDiscard(effect.to, cardid))
+                dummy->addSubcard(cardid);
+        }
+        if (dummy->getSubcards().length() > 0 && room->askForSkillInvoke(effect.from, "linsa"))
+            room->throwCard(dummy, effect.to, effect.from);
+        delete dummy;
+    }
 }
 
 void KnownBoth::use(Room *room, const CardUseStruct &card_use) const

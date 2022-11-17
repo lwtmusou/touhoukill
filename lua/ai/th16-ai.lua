@@ -154,7 +154,7 @@ end
 
 --天空璋：爱塔妮缇拉尔瓦
 --[鳞洒]
-local linsa_skill={}
+--[[local linsa_skill={}
 linsa_skill.name="linsa"
 table.insert(sgs.ai_skills,linsa_skill)
 linsa_skill.getTurnUseCard=function(self)
@@ -189,6 +189,7 @@ sgs.ai_skill_use_func.LinsaCard = function(card, use, self)
 	
 end
 sgs.ai_use_priority.LinsaCard =  sgs.ai_use_priority.Slash + 0.5
+]]
 
 --天空璋：坂田合欢
 --[磨刀]

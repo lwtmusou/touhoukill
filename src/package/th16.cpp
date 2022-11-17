@@ -424,7 +424,38 @@ public:
     }
 };
 
-LinsaCard::LinsaCard()
+
+class Linsa : public OneCardViewAsSkill
+{
+public:
+    Linsa()
+        : OneCardViewAsSkill("linsa")
+    {
+        filter_pattern = ".|diamond";
+        response_or_use = true;
+    }
+
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
+    {
+        KnownBoth *card = new KnownBoth(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(KnownBoth, card)
+            const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        return cardPattern != nullptr && cardPattern->match(player, card)
+            && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
+    }
+
+
+    const Card *viewAs(const Card *originalCard) const override
+    {
+        KnownBoth *card = new KnownBoth(Card::SuitToBeDecided, -1);
+        card->addSubcard(originalCard);
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
+/*LinsaCard::LinsaCard()
 {
     will_throw = false;
     handling_method = Card::MethodNone;
@@ -453,6 +484,7 @@ void LinsaCard::onEffect(const CardEffectStruct &effect) const
         effect.to->tag["linsaNullifyFrom"] = QVariant::fromValue<ServerPlayer *>(effect.from);
     }
 }
+
 
 class LinsaVS : public OneCardViewAsSkill
 {
@@ -570,7 +602,7 @@ public:
 
         return false;
     }
-};
+};*/
 
 class Shengyu : public TriggerSkill
 {
@@ -1620,7 +1652,7 @@ TH16Package::TH16Package()
     addMetaObject<HuazhaoCard>();
     addMetaObject<ChuntengCard>();
     addMetaObject<Chunteng2Card>();
-    addMetaObject<LinsaCard>();
+    //addMetaObject<LinsaCard>();
     addMetaObject<GuwuCard>();
     addMetaObject<MingheCard>();
     addMetaObject<KuangwuCard>();
