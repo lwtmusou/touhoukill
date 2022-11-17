@@ -3443,7 +3443,7 @@ public:
     Huosui()
         : TriggerSkill("huosui")
     {
-        events << EventPhaseChanging << CardsMoveOneTime << TurnStart << TargetSpecified;
+        events << EventPhaseStart << CardsMoveOneTime << TurnStart << TargetSpecified;
         global = true;
     }
 
@@ -3472,13 +3472,14 @@ public:
     {
         QList<SkillInvokeDetail> r;
 
-        if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive) {
-                foreach (ServerPlayer *p, room->getAlivePlayers()) {
+        if (triggerEvent == EventPhaseStart) {
+            //PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            ServerPlayer *current = data.value<ServerPlayer *>();
+            if ((current != nullptr) && current->isAlive() && current->getPhase() == Player::Finish) {
+                foreach(ServerPlayer *p, room->getAlivePlayers()) {
                     if (p->isAlive() && p->hasSkill(this) && p->hasFlag("huosui")) {
                         bool flag = false;
-                        foreach (ServerPlayer *v, room->getOtherPlayers(p)) {
+                        foreach(ServerPlayer *v, room->getOtherPlayers(p)) {
                             if (p->canSlash(v, false)) {
                                 flag = true;
                                 break;
@@ -3503,7 +3504,7 @@ public:
 
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        if (triggerEvent == EventPhaseChanging) {
+        if (triggerEvent == EventPhaseStart) {
             QList<ServerPlayer *> ps;
             foreach (ServerPlayer *v, room->getOtherPlayers(invoke->invoker)) {
                 if (invoke->invoker->canSlash(v, false))
@@ -3523,7 +3524,7 @@ public:
 
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
-        if (triggerEvent == EventPhaseChanging) {
+        if (triggerEvent == EventPhaseStart) {
             Slash *s = new Slash(Card::NoSuit, 0);
             s->setSkillName("_huosui");
             room->useCard(CardUseStruct(s, invoke->invoker, invoke->targets.first()));
