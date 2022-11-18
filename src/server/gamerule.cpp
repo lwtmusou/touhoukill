@@ -163,10 +163,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     else
                         room->handleAcquireDetachSkills(player, "jili");
                 }
-                if (room->getMode() == "03_1v2" || room->getMode() == "04_2v2") {
-                    room->broadcastProperty(player, "role");
-                    //room->setPlayerProperty(player, "role_shown", true); //important! to notify client
-                }
+
                 
                 
             }
@@ -177,6 +174,16 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                 int n = kof_mode ? p->getMaxHp() : 4;
                 if (room->getMode() == "03_1v2" && p->isLord())
                     n++;
+
+                if (room->getMode() == "04_2v2") {
+                    if (p->getSeat() == 1)
+                        n--;
+                    else if (p->getSeat() == 4)
+                        n++;
+                }
+                    
+
+
                 DrawNCardsStruct s;
                 s.player = p;
                 s.isInitial = true;
@@ -1043,7 +1050,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
     case BuryVictim: {
         DeathStruct death = data.value<DeathStruct>();
         bool skipRewardAndPunish = death.who->hasFlag("skipRewardAndPunish") ? true : false;
-        if (room->getMode() == "03_1v2")
+        if (room->getMode() == "03_1v2" || room->getMode() == "04_2v2")
             skipRewardAndPunish = true;
         death.who->bury();
 
@@ -1065,6 +1072,16 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
 
         if ((killer != nullptr) && !skipRewardAndPunish)
             rewardAndPunish(killer, death.who);
+
+        //reward teamate
+        if (room->getMode() == "04_2v2") {
+            foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                if (death.who->getRole() == p->getRole()) {
+                    room->touhouLogmessage("#contest2v2Buff", p);
+                    p->drawCards(1);
+                }
+            }
+        }
 
         //if lord dead in hegemony mode?
 
@@ -1469,7 +1486,16 @@ QString GameRule::getWinner(ServerPlayer *victim) const
             else
                 winner = "renegade+rebel";
         }
-    } else if (isHegemonyGameMode(room->getMode())) {
+    }
+    else if (room->getMode() == "04_2v2") {
+        QString role = victim->getRole();
+        QStringList alive_roles = room->aliveRoles(victim);
+        if (alive_roles.length() == 1)
+            winner = alive_roles.first();
+        else if (alive_roles.length() == 2 && alive_roles.first() == alive_roles.last())
+            winner = alive_roles.first();  
+    }
+    else if (isHegemonyGameMode(room->getMode())) {
         QList<ServerPlayer *> players = room->getAlivePlayers();
         ServerPlayer *win_player = players.first();
         if (players.length() == 1) {

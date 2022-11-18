@@ -148,6 +148,10 @@ config = {
 
 	peasantsvslandlord_ban = {
 	},
+	
+	contest2v2_ban = {
+	},
+	
 	kof_ban = {
 	},
 

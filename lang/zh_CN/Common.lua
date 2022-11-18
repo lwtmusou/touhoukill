@@ -272,7 +272,8 @@ CommonTranslationTable = {
 	["CompanionEffect:recover"] = "回复1点体力",
 	["CompanionEffect:draw"] = "摸两张牌",
 	
-	
+	["#contest2v2Buff"]= "%from 执行队友阵亡效果。",
+	["04_2v2"] = "欢乐2v2",
 }
 
 return CommonTranslationTable

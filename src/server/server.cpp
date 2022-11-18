@@ -440,7 +440,7 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
     if (ban_list.isEmpty())
         ban_list << "Roles"
                  << "HulaoPass"
-                << "03_1v2";
+                << "03_1v2" << "04_2v2";
     QVBoxLayout *layout = new QVBoxLayout;
 
     QTabWidget *tab = new QTabWidget;

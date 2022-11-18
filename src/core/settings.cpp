@@ -197,10 +197,11 @@ void Settings::init()
     RecordSavePath = value("RecordSavePath", "records/").toString();
 
     lua_State *lua = Sanguosha->getLuaState();
-    QStringList roles_ban, peasantsvslandlord_ban, kof_ban, hulao_ban, xmode_ban, basara_ban, hegemony_ban, pairs_ban;
+    QStringList roles_ban, peasantsvslandlord_ban,  contest2v2_ban, kof_ban, hulao_ban, xmode_ban, basara_ban, hegemony_ban, pairs_ban;
 
     roles_ban = GetConfigFromLuaState(lua, "roles_ban").toStringList();
     peasantsvslandlord_ban = GetConfigFromLuaState(lua, "peasantsvslandlord_ban").toStringList();
+    contest2v2_ban = GetConfigFromLuaState(lua, "contest2v2_ban").toStringList();
     kof_ban = GetConfigFromLuaState(lua, "kof_ban").toStringList();
     hulao_ban = GetConfigFromLuaState(lua, "hulao_ban").toStringList();
     xmode_ban = GetConfigFromLuaState(lua, "xmode_ban").toStringList();
@@ -231,11 +232,18 @@ void Settings::init()
 
     banlist = value("Banlist/03_1v2").toStringList();
     if (banlist.isEmpty()) {
-        foreach(QString ban_general, peasantsvslandlord_ban)
+        foreach(QString ban_general, contest2v2_ban)
             banlist << ban_general;
         setValue("Banlist/03_1v2", banlist);
     }
 
+
+    banlist = value("Banlist/04_2v2").toStringList();
+    if (banlist.isEmpty()) {
+        foreach(QString ban_general, peasantsvslandlord_ban)
+            banlist << ban_general;
+        setValue("Banlist/04_2v2", banlist);
+    }
 
     banlist = value("Banlist/HulaoPass").toStringList();
     if (banlist.isEmpty()) {

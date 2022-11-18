@@ -3482,7 +3482,8 @@ void Room::assignRoles()
     int n = m_players.count();
 
     QStringList roles = Sanguosha->getRoleList(mode);
-    qShuffle(roles);
+    if (mode != "04_2v2")
+        qShuffle(roles);
 
     for (int i = 0; i < n; i++) {
         ServerPlayer *player = m_players[i];
@@ -3492,7 +3493,11 @@ void Room::assignRoles()
         if (role == "lord") {
             broadcastProperty(player, "role", "lord");
             setPlayerProperty(player, "role_shown", true);
-        } else
+        } else if (mode == "03_1v2" || mode == "04_2v2") {
+            broadcastProperty(player, "role", role);
+            //room->setPlayerProperty(player, "role_shown", true); //important! to notify client
+        }
+        else
             notifyProperty(player, player, "role");
     }
 }

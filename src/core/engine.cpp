@@ -78,6 +78,7 @@ void Engine::init()
     modes["hegemony_10"] = tr("hegemony 10 players");
 
     modes["03_1v2"] = tr("Peasants vs Landlord");
+    modes["04_2v2"] = tr("contest 2v2");
 
     foreach (const Skill *skill, skills.values()) {
         Skill *mutable_skill = const_cast<Skill *>(skill);
@@ -265,7 +266,7 @@ QStringList Engine::getBanPackages() const
             if (!ban.contains("hegemony_card"))
                 ban << "hegemony_card";
 
-            if (ServerInfo.GameMode == "03_1v2")
+            if (ServerInfo.GameMode == "03_1v2" || ServerInfo.GameMode == "04_2v2")
                 ban << "test_card" << "touhougod";
             return ban;
         }
@@ -776,6 +777,9 @@ QString Engine::getRoles(const QString &mode) const
     if (mode == "03_1v2") {
         return "ZFF";
     }
+    if (mode == "04_2v2") {
+        return "CFFC";
+    }
 
     if (isHegemonyGameMode(mode)) {
         QString role;
@@ -1056,6 +1060,8 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
         general_set.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());
     else if (ServerInfo.GameMode == "03_1v2")
         general_set.subtract(Config.value("Banlist/03_1v2", "").toStringList().toSet());
+    else if (ServerInfo.GameMode == "04_2v2")
+        general_set.subtract(Config.value("Banlist/04_2v2", "").toStringList().toSet());
     else if (ServerInfo.GameMode == "04_1v3")
         general_set.subtract(Config.value("Banlist/HulaoPass", "").toStringList().toSet());
     else if (ServerInfo.GameMode == "06_XMode")
@@ -1147,7 +1153,7 @@ QList<int> Engine::getRandomCards() const
         
 
         if (!getBanPackages().contains(card->getPackage())) {
-            if (card->getPackage() == "standard_ex_cards" &&  ServerInfo.GameMode == "03_1v2") {
+            if (card->getPackage() == "standard_ex_cards" &&  (ServerInfo.GameMode == "03_1v2" || ServerInfo.GameMode == "04_2v2")) {
                 QStringList ex;
                 ex << "IceSword" << "RenwangShield" << "lightning" << "nullification";
                 if (ex.contains(card->objectName()))

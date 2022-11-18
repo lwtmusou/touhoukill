@@ -1081,7 +1081,7 @@ function sgs.isRolePredictable(classical)
 	if not classical and sgs.GetConfig("RolePredictable", false) then return true end
 	local mode = string.lower(global_room:getMode())
 	if (not mode:find("0")) or mode:find("02p") or mode:find("02_1v1") or mode:find("04_1v3")
-		or mode == "06_3v3" or mode == "06_xmode" then return true end
+		or mode == "06_3v3" or mode == "06_xmode"  or mode == "03_1v2" or mode == "04_2v2" then return true end
 	return false
 end
 
