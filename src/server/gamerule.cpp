@@ -163,6 +163,11 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     else
                         room->handleAcquireDetachSkills(player, "jili");
                 }
+                if (room->getMode() == "03_1v2" || room->getMode() == "04_2v2") {
+                    room->broadcastProperty(player, "role");
+                    //room->setPlayerProperty(player, "role_shown", true); //important! to notify client
+                }
+                
                 
             }
             room->setTag("FirstRound", true);
