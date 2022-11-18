@@ -31,8 +31,11 @@ public:
             room->askForDiscard(player, reason, hc_num - card_num, hc_num - card_num);
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
     {
+        if (room->getTag("FirstRound").toBool())
+            return QList<SkillInvokeDetail>();
+
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::Discard && change.player->hasSkill(objectName()))
