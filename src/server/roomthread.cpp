@@ -389,7 +389,11 @@ void RoomThread::run()
     } else if (isHegemonyGameMode(room->getMode())) {
         room->chooseHegemonyGenerals();
         room->startGame();
-    } else {
+    } if (room->getMode() == "03_1v2") {
+        room->choose1v2Generals();
+        room->startGame();
+    }
+    else {
         room->chooseGenerals();
         room->startGame();
     }

@@ -62,6 +62,7 @@ config = {
 		"HegemonyCard",
 
 		--武将包
+		"PeasantsVSLandlord",
 		"Protagonist",
 		"TH0105",
 		"TH06",
@@ -84,6 +85,7 @@ config = {
 		"Standard", --此包内带pattern的定义 不能屏蔽。。。
 		"Test",
 		"Playground", -- 发布前再次屏蔽掉
+		
 	},
 
 	hulao_packages = {
@@ -144,6 +146,8 @@ config = {
 	roles_ban = {
 	},
 
+	peasantsvslandlord_ban = {
+	},
 	kof_ban = {
 	},
 

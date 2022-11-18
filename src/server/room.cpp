@@ -721,7 +721,8 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
                 args << QSanProtocol::S_GAME_EVENT_ACQUIRE_SKILL << player->objectName() << actual_skill << head;
                 doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
-                foreach (const Skill *related_skill, Sanguosha->getRelatedSkills(actual_skill)) {
+                
+                foreach (const Skill *related_skill, Sanguosha->getRelatedSkills(actual_skill)) {                
                     if (!related_skill->isVisible())
                         acquireSkill(player, related_skill);
                 }
@@ -3221,15 +3222,24 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign)
             existed << player->getGeneral2Name();
     }
 
-    const int max_choice = Config.value("MaxChoice", 6).toInt();
     const int total = Sanguosha->getGeneralCount();
     const int max_available = (total - existed.size()) / to_assign.length();
-    const int choice_count = qMin(max_choice, max_available);
+
 
     QStringList choices = Sanguosha->getRandomGenerals(total - existed.size(), existed);
     QStringList latest = Sanguosha->getLatestGenerals(existed);
     bool assign_latest_general = Config.value("AssignLatestGeneral", true).toBool() && !isHegemonyGameMode(mode);
     foreach (ServerPlayer *player, to_assign) {
+        int max_choice = Config.value("MaxChoice", 6).toInt();
+        if (mode == "03_1v2") {
+            if (player->isLord())
+                max_choice = Config.value("LandlordMaxChoice", 8).toInt();          
+            else 
+                max_choice = Config.value("PeasantMaxChoice", 5).toInt();
+        }
+        int choice_count = qMin(max_choice, max_available);
+
+
         player->clearSelected();
         int i = 0;
         if (assign_latest_general && !latest.isEmpty()) {
@@ -3325,9 +3335,50 @@ void Room::chooseGenerals()
     Config.setValue("Banlist/Roles", ban_list);
 }
 
+
+void Room::choose1v2Generals()
+{
+    QStringList ban_list = Config.value("Banlist/03_1v2").toStringList();
+    //Sanguosha->banRandomGods(); //why this function add the rest gods into banlist....
+
+    QList<ServerPlayer *> to_assign = m_players;
+
+    assignGeneralsForPlayers(to_assign);
+    foreach(ServerPlayer *player, to_assign)
+        _setupChooseGeneralRequestArgs(player);
+
+    doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
+    foreach(ServerPlayer *player, to_assign) {
+        if (player->getGeneral() != nullptr)
+            continue;
+        QString generalName = player->getClientReply().toString();
+        if (!player->m_isClientResponseReady || !_setPlayerGeneral(player, generalName, true))
+            _setPlayerGeneral(player, _chooseDefaultGeneral(player), true);
+    }
+
+    if (Config.Enable2ndGeneral) {
+        QList<ServerPlayer *> to_assign = m_players;
+        assignGeneralsForPlayers(to_assign);
+        foreach(ServerPlayer *player, to_assign)
+            _setupChooseGeneralRequestArgs(player);
+
+        doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
+        foreach(ServerPlayer *player, to_assign) {
+            if (player->getGeneral2() != nullptr)
+                continue;
+            QString generalName = player->getClientReply().toString();
+            if (!player->m_isClientResponseReady || !_setPlayerGeneral(player, generalName, false))
+                _setPlayerGeneral(player, _chooseDefaultGeneral(player), false);
+        }
+    }
+
+    Config.setValue("Banlist/03_1v2", ban_list);
+}
+
+
 void Room::chooseHegemonyGenerals()
 {
-    QStringList ban_list = Config.value("Banlist/Roles").toStringList();
+    QStringList ban_list = Config.value("Banlist/Hegemony").toStringList();
     QList<ServerPlayer *> to_assign = m_players;
 
     assignGeneralsForPlayers(to_assign);
@@ -3423,7 +3474,7 @@ void Room::chooseHegemonyGenerals()
         this->setTag(player->objectName(), QVariant::fromValue(names));
     }
 
-    Config.setValue("Banlist/Roles", ban_list);
+    Config.setValue("Banlist/Hegemony", ban_list);
 }
 
 void Room::assignRoles()
@@ -4304,6 +4355,8 @@ bool Room::hasWelfare(const ServerPlayer *player) const
         return player->isLord() || player->getRole() == "renegade";
     else if (mode == "06_XMode" || isHegemonyGameMode(mode))
         return false;
+    else if (mode == "03_1v2")
+        return player->isLord();
     else
         return player->isLord() && player_count > 4;
 }
@@ -4443,7 +4496,7 @@ void Room::startGame()
     }
 
     foreach (ServerPlayer *player, m_players) {
-        if (mode == "06_3v3" || mode == "02_1v1" || mode == "06_XMode" || (!isHegemonyGameMode(mode) && !player->isLord())) // hegemony has already notified "general"
+        if (mode == "06_3v3" || mode == "02_1v1" || mode == "06_XMode" || mode == "03_1v2" || (!isHegemonyGameMode(mode) && !player->isLord())) // hegemony has already notified "general"
             broadcastProperty(player, "general");
 
         if (mode == "02_1v1")
@@ -6349,7 +6402,7 @@ void Room::_setupChooseGeneralRequestArgs(ServerPlayer *player)
         options << false;
     } else {
         options = JsonUtils::toJsonArray(player->getSelected()).value<JsonArray>();
-        if (getLord() != nullptr)
+        if (getLord() != nullptr && mode !="03_1v2")
             options.append(QString("%1(lord)").arg(getLord()->getGeneralName()));
     }
 

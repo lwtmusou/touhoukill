@@ -77,6 +77,8 @@ void Engine::init()
     modes["hegemony_09"] = tr("hegemony 9 players");
     modes["hegemony_10"] = tr("hegemony 10 players");
 
+    modes["03_1v2"] = tr("Peasants vs Landlord");
+
     foreach (const Skill *skill, skills.values()) {
         Skill *mutable_skill = const_cast<Skill *>(skill);
         mutable_skill->initMediaSource();
@@ -262,6 +264,9 @@ QStringList Engine::getBanPackages() const
                 ban << "hegemonyGeneral";
             if (!ban.contains("hegemony_card"))
                 ban << "hegemony_card";
+
+            if (ServerInfo.GameMode == "03_1v2")
+                ban << "test_card" << "touhougod";
             return ban;
         }
     }
@@ -604,7 +609,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const
 
 QString Engine::getVersionNumber() const
 {
-    return QSGS_VERSIONNUMBER;
+    return "20221116";//QSGS_VERSIONNUMBER;
 }
 
 QString Engine::getVersion() const
@@ -614,12 +619,12 @@ QString Engine::getVersion() const
 
 QString Engine::getVersionName() const
 {
-    return "V" QSGS_VERSION;
+    return "V0.10.8"; //"V"QSGS_VERSION;
 }
 
 QVersionNumber Engine::getQVersionNumber() const
 {
-    return QVersionNumber::fromString(QSGS_VERSION);
+    return QVersionNumber::fromString("0.10.8");//QVersionNumber::fromString(QSGS_VERSION);
 }
 
 QString Engine::getMODName() const
@@ -768,6 +773,10 @@ QString Engine::getRoles(const QString &mode) const
     } else if (mode == "04_1v3") {
         return "ZFFF";
     }
+    if (mode == "03_1v2") {
+        return "ZFF";
+    }
+
     if (isHegemonyGameMode(mode)) {
         QString role;
         int num = getPlayerCount(mode);
@@ -1045,6 +1054,8 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 
     if (isNormalGameMode(ServerInfo.GameMode))
         general_set.subtract(Config.value("Banlist/Roles", "").toStringList().toSet());
+    else if (ServerInfo.GameMode == "03_1v2")
+        general_set.subtract(Config.value("Banlist/03_1v2", "").toStringList().toSet());
     else if (ServerInfo.GameMode == "04_1v3")
         general_set.subtract(Config.value("Banlist/HulaoPass", "").toStringList().toSet());
     else if (ServerInfo.GameMode == "06_XMode")
@@ -1133,7 +1144,18 @@ QList<int> Engine::getRandomCards() const
         /* if (Config.GameMode == "06_3v3" && !Config.value("3v3/UsingExtension", false).toBool()
             && card->getPackage() != "standard_cards" && card->getPackage() != "standard_ex_cards")
             continue; */
+        
+
         if (!getBanPackages().contains(card->getPackage())) {
+            if (card->getPackage() == "standard_ex_cards" &&  ServerInfo.GameMode == "03_1v2") {
+                QStringList ex;
+                ex << "IceSword" << "RenwangShield" << "lightning" << "nullification";
+                if (ex.contains(card->objectName()))
+                    list << card->getId();
+                else
+                    continue;
+            }
+
             if (card->objectName().startsWith("known_both")) {
                 if (isHegemonyGameMode(Config.GameMode) && card->objectName() == "known_both_hegemony")
                     list << card->getId();
@@ -1145,7 +1167,8 @@ QList<int> Engine::getRandomCards() const
                     list << card->getId();
                 else if (!isHegemonyGameMode(Config.GameMode) && card->objectName() == "DoubleSword")
                     list << card->getId();
-            } else
+            }
+            else
                 list << card->getId();
         }
     }

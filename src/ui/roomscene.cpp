@@ -2536,7 +2536,7 @@ void RoomScene::updateSkillButtons()
     //check duanchang?
     foreach (const Skill *skill, Self->getHeadSkillList()) { //Self->getVisibleSkillList()
         if (skill->isLordSkill()
-            && (Self->getRole() != "lord" || ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode" || ServerInfo.GameMode == "02_1v1"
+            && (Self->getRole() != "lord"  || ServerInfo.GameMode == "03_1v2" || ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode" || ServerInfo.GameMode == "02_1v1"
                 || Config.value("WithoutLordskill", false).toBool()))
             continue;
 
@@ -2544,7 +2544,7 @@ void RoomScene::updateSkillButtons()
     }
     foreach (const Skill *skill, Self->getDeputySkillList()) {
         if (skill->isLordSkill()
-            && (Self->getRole() != "lord" || ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode" || ServerInfo.GameMode == "02_1v1"
+            && (Self->getRole() != "lord" || ServerInfo.GameMode == "03_1v2" || ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode" || ServerInfo.GameMode == "02_1v1"
                 || Config.value("WithoutLordskill", false).toBool()))
             continue;
 

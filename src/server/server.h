@@ -106,6 +106,9 @@ private:
     QLabel *lord_maxchoice_label;
     QSpinBox *lord_maxchoice_spinbox;
     QSpinBox *nonlord_maxchoice_spinbox;
+    QSpinBox *landlord_maxchoice_spinbox;
+    QSpinBox *peasant_maxchoice_spinbox;
+
     QCheckBox *forbid_same_ip_checkbox;
     QCheckBox *disable_chat_checkbox;
     QCheckBox *scene_checkbox; //changjing

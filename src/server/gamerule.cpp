@@ -157,12 +157,21 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                             room->setPlayerMark(player, skill->getLimitMark(), 1);
                     }
                 }
+                if (room->getMode() == "03_1v2") {
+                    if (player->isLord())
+                        room->handleAcquireDetachSkills(player, "zhubing");
+                    else
+                        room->handleAcquireDetachSkills(player, "jili");
+                }
+                
             }
             room->setTag("FirstRound", true);
             bool kof_mode = room->getMode() == "02_1v1" && Config.value("1v1/Rule", "2013").toString() != "Classical";
             QList<DrawNCardsStruct> s_list;
             foreach (ServerPlayer *p, room->getPlayers()) {
                 int n = kof_mode ? p->getMaxHp() : 4;
+                if (room->getMode() == "03_1v2" && p->isLord())
+                    n++;
                 DrawNCardsStruct s;
                 s.player = p;
                 s.isInitial = true;
@@ -1029,6 +1038,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
     case BuryVictim: {
         DeathStruct death = data.value<DeathStruct>();
         bool skipRewardAndPunish = death.who->hasFlag("skipRewardAndPunish") ? true : false;
+        if (room->getMode() == "03_1v2")
+            skipRewardAndPunish = true;
         death.who->bury();
 
         ServerPlayer *killer = nullptr;
