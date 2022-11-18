@@ -17,17 +17,17 @@
         <translation>选择排除的人物</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="468"/>
+        <location filename="../src/server/server.cpp" line="469"/>
         <source>Add ...</source>
         <translation>添加 ...</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="469"/>
+        <location filename="../src/server/server.cpp" line="470"/>
         <source>Remove</source>
         <translation>删除</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="470"/>
+        <location filename="../src/server/server.cpp" line="471"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
@@ -1152,7 +1152,12 @@
         <translation>斗地主</translation>
     </message>
     <message>
-        <location filename="../src/core/engine.cpp" line="110"/>
+        <location filename="../src/core/engine.cpp" line="81"/>
+        <source>contest 2v2</source>
+        <translation>欢乐2v2</translation>
+    </message>
+    <message>
+        <location filename="../src/core/engine.cpp" line="111"/>
         <source>Duplicated skill : %1</source>
         <translation>重复技能: %1</translation>
     </message>
@@ -2230,69 +2235,69 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="../src/server/room.cpp" line="2845"/>
+        <location filename="../src/server/room.cpp" line="2846"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3137"/>
+        <location filename="../src/server/room.cpp" line="3138"/>
         <source>Computer %1</source>
         <translation>电脑 %1</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2868"/>
+        <location filename="../src/server/room.cpp" line="2869"/>
         <source>&lt;font color=#000000&gt;Player &lt;b&gt;%1&lt;/b&gt; left the game&lt;/font&gt;</source>
         <translation>&lt;font color=#000000&gt;玩家 %1 离开了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3114"/>
+        <location filename="../src/server/room.cpp" line="3115"/>
         <source>This server is limited to add robot. YOU CAN ONLY ADD ROBOT USING &quot;Fill Robots&quot;.</source>
         <translation>这个服务器启用了限制添加电脑。&lt;b&gt;只允许使用“补全所有电脑”来添加电脑&lt;/b&gt;。</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3141"/>
+        <location filename="../src/server/room.cpp" line="3142"/>
         <source>Hello, I&apos;m a robot</source>
         <translation>大家好，我是一个机器人</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3151"/>
+        <location filename="../src/server/room.cpp" line="3152"/>
         <source>This server is limited to add robot. Please ensure that the number of players is more than 4 and there is more than a half human players.</source>
         <translation>这个服务器启用了限制添加电脑。请确定本模式人数大于4并且存在一半以上的真人玩家。</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3201"/>
+        <location filename="../src/server/room.cpp" line="3202"/>
         <source>&lt;font color=#EEB422&gt;Player &lt;b&gt;%1&lt;/b&gt; joined the game&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 加入了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3825"/>
+        <location filename="../src/server/room.cpp" line="3870"/>
         <source>Unable to parse player</source>
         <translation>不可分析的玩家</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3827"/>
+        <location filename="../src/server/room.cpp" line="3872"/>
         <source>Server is not waiting for reply from %1</source>
         <translation>服务器无法获取 %1 的响应</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3829"/>
+        <location filename="../src/server/room.cpp" line="3874"/>
         <source>Reply command should be %1 instead of %2</source>
         <translation>应答指令应为 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="3831"/>
+        <location filename="../src/server/room.cpp" line="3876"/>
         <source>Reply serial should be %1 instead of %2</source>
         <translation>玩家序号应为 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="5592"/>
+        <location filename="../src/server/room.cpp" line="5637"/>
         <source>Card cannot be parsed:
  %1</source>
         <translation>卡牌字符串无法解析:
  %1</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="7096"/>
+        <location filename="../src/server/room.cpp" line="7141"/>
         <source>&lt;font color=#EEB422&gt;The network delay of player &lt;b&gt;%1&lt;/b&gt; is %2 milliseconds.&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 的网络延迟为 %2 毫秒&lt;/font&gt;</translation>
     </message>
@@ -2729,17 +2734,17 @@ P = 你自己, R = 你所在的房间</translation>
 <context>
     <name>Select3v3GeneralDialog</name>
     <message>
-        <location filename="../src/server/server.cpp" line="826"/>
+        <location filename="../src/server/server.cpp" line="827"/>
         <source>Select generals in extend 3v3 mode</source>
         <translation>选择在扩展 3v3 模式中启用的人物</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="832"/>
+        <location filename="../src/server/server.cpp" line="833"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="889"/>
+        <location filename="../src/server/server.cpp" line="890"/>
         <source>Check/Uncheck all</source>
         <translation>全部勾选或取消勾选</translation>
     </message>
@@ -2747,44 +2752,44 @@ P = 你自己, R = 你所在的房间</translation>
 <context>
     <name>Server</name>
     <message>
-        <location filename="../src/server/server.cpp" line="1237"/>
+        <location filename="../src/server/server.cpp" line="1238"/>
         <source>Forbid the connection of address %1</source>
         <translation>禁止了地址 %1 的连接</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="1143"/>
+        <location filename="../src/server/server.cpp" line="1144"/>
         <source>%1 connected</source>
         <translation>%1 已连接</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="1155"/>
+        <location filename="../src/server/server.cpp" line="1156"/>
         <source>Invalid signup string: %1</source>
         <translation>无效的登录字符串: %1</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="1220"/>
+        <location filename="../src/server/server.cpp" line="1221"/>
         <source>invalid operation: more than 2 parts</source>
         <translation>无效的操作：多于 2 部分</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="1201"/>
+        <location filename="../src/server/server.cpp" line="1202"/>
         <source>unimplemented operation: %1</source>
         <translation>未实现的操作： %1</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="1208"/>
-        <location filename="../src/server/server.cpp" line="1216"/>
+        <location filename="../src/server/server.cpp" line="1209"/>
+        <location filename="../src/server/server.cpp" line="1217"/>
         <source>invalid operation: %1</source>
         <translation>无效操作：%1</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="1186"/>
-        <location filename="../src/server/server.cpp" line="1195"/>
+        <location filename="../src/server/server.cpp" line="1187"/>
+        <location filename="../src/server/server.cpp" line="1196"/>
         <source>reconnect username incorrect: %1</source>
         <translation>重连用户名不正确：%1</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="1258"/>
+        <location filename="../src/server/server.cpp" line="1259"/>
         <source>reconnect username not found: %1</source>
         <translation>重连用户名未找到：%1</translation>
     </message>
@@ -2879,22 +2884,22 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>无懈可击时间</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="546"/>
+        <location filename="../src/server/server.cpp" line="547"/>
         <source>1v1 options</source>
         <translation>1v1 选项</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="553"/>
+        <location filename="../src/server/server.cpp" line="554"/>
         <source>Classical</source>
         <translation>经典</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="571"/>
+        <location filename="../src/server/server.cpp" line="572"/>
         <source>Rule option</source>
         <translation>规则设置</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="587"/>
+        <location filename="../src/server/server.cpp" line="588"/>
         <source>3v3 options</source>
         <translation>3v3 选项</translation>
     </message>
@@ -2989,46 +2994,46 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>更改后的电脑延时</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="608"/>
+        <location filename="../src/server/server.cpp" line="609"/>
         <source>Extension mode</source>
         <translation>全扩3v3</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="609"/>
+        <location filename="../src/server/server.cpp" line="610"/>
         <source>General selection ...</source>
         <translation>人物选择 ...</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="614"/>
+        <location filename="../src/server/server.cpp" line="615"/>
         <source>Exclude disasters</source>
         <translation>移除天灾卡牌</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="618"/>
-        <location filename="../src/server/server.cpp" line="652"/>
+        <location filename="../src/server/server.cpp" line="619"/>
+        <location filename="../src/server/server.cpp" line="653"/>
         <source>Normal</source>
         <translation>普通</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="619"/>
-        <location filename="../src/server/server.cpp" line="653"/>
+        <location filename="../src/server/server.cpp" line="620"/>
+        <location filename="../src/server/server.cpp" line="654"/>
         <source>Random</source>
         <translation>随机</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="620"/>
-        <location filename="../src/server/server.cpp" line="654"/>
+        <location filename="../src/server/server.cpp" line="621"/>
+        <location filename="../src/server/server.cpp" line="655"/>
         <source>All roles</source>
         <translation>全身份</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="633"/>
-        <location filename="../src/server/server.cpp" line="664"/>
+        <location filename="../src/server/server.cpp" line="634"/>
+        <location filename="../src/server/server.cpp" line="665"/>
         <source>Role choose</source>
         <translation>身份选择</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="647"/>
+        <location filename="../src/server/server.cpp" line="648"/>
         <source>XMode options</source>
         <translation>血战到底模式选项</translation>
     </message>
@@ -3089,7 +3094,7 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>高级</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="717"/>
+        <location filename="../src/server/server.cpp" line="718"/>
         <source>Game mode</source>
         <translation>游戏模式</translation>
     </message>
@@ -3134,66 +3139,66 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>启用 AI</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="670"/>
+        <location filename="../src/server/server.cpp" line="671"/>
         <source>Hegemony options</source>
         <translation>国战模式选项</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="675"/>
+        <location filename="../src/server/server.cpp" line="676"/>
         <source>Not Used</source>
         <translation>不使用奖励</translation>
-    </message>
-    <message>
-        <location filename="../src/server/server.cpp" line="676"/>
-        <location filename="../src/server/server.cpp" line="685"/>
-        <location filename="../src/server/server.cpp" line="692"/>
-        <source>Instant</source>
-        <translation>立刻结算奖励</translation>
     </message>
     <message>
         <location filename="../src/server/server.cpp" line="677"/>
         <location filename="../src/server/server.cpp" line="686"/>
         <location filename="../src/server/server.cpp" line="693"/>
+        <source>Instant</source>
+        <translation>立刻结算奖励</translation>
+    </message>
+    <message>
+        <location filename="../src/server/server.cpp" line="678"/>
+        <location filename="../src/server/server.cpp" line="687"/>
+        <location filename="../src/server/server.cpp" line="694"/>
         <source>Postponed</source>
         <translation>延迟结算奖励</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="699"/>
+        <location filename="../src/server/server.cpp" line="700"/>
         <source>As Usual</source>
         <translation>通常</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="700"/>
+        <location filename="../src/server/server.cpp" line="701"/>
         <source>Always draw 3</source>
         <translation>始终摸3张</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="706"/>
+        <location filename="../src/server/server.cpp" line="707"/>
         <source>First Show Reward</source>
         <translation>首亮奖励</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="707"/>
+        <location filename="../src/server/server.cpp" line="708"/>
         <source>Companion Reward</source>
         <translation>珠联璧合奖励</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="708"/>
+        <location filename="../src/server/server.cpp" line="709"/>
         <source>Half HP Draw Reward</source>
         <translation>半血奖励</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="709"/>
+        <location filename="../src/server/server.cpp" line="710"/>
         <source>Careerist Kill Reward</source>
         <translation>野心家击杀他人奖励</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="794"/>
+        <location filename="../src/server/server.cpp" line="795"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="795"/>
+        <location filename="../src/server/server.cpp" line="796"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>

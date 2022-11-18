@@ -3376,6 +3376,45 @@ void Room::choose1v2Generals()
 }
 
 
+void Room::choose2v2Generals()
+{
+    QStringList ban_list = Config.value("Banlist/04_2v2").toStringList();
+    //Sanguosha->banRandomGods(); //why this function add the rest gods into banlist....
+
+    QList<ServerPlayer *> to_assign = m_players;
+
+    assignGeneralsForPlayers(to_assign);
+    foreach(ServerPlayer *player, to_assign)
+        _setupChooseGeneralRequestArgs(player);
+
+    doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
+    foreach(ServerPlayer *player, to_assign) {
+        if (player->getGeneral() != nullptr)
+            continue;
+        QString generalName = player->getClientReply().toString();
+        if (!player->m_isClientResponseReady || !_setPlayerGeneral(player, generalName, true))
+            _setPlayerGeneral(player, _chooseDefaultGeneral(player), true);
+    }
+
+    if (Config.Enable2ndGeneral) {
+        QList<ServerPlayer *> to_assign = m_players;
+        assignGeneralsForPlayers(to_assign);
+        foreach(ServerPlayer *player, to_assign)
+            _setupChooseGeneralRequestArgs(player);
+
+        doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
+        foreach(ServerPlayer *player, to_assign) {
+            if (player->getGeneral2() != nullptr)
+                continue;
+            QString generalName = player->getClientReply().toString();
+            if (!player->m_isClientResponseReady || !_setPlayerGeneral(player, generalName, false))
+                _setPlayerGeneral(player, _chooseDefaultGeneral(player), false);
+        }
+    }
+
+    Config.setValue("Banlist/04_2v2", ban_list);
+}
+
 void Room::chooseHegemonyGenerals()
 {
     QStringList ban_list = Config.value("Banlist/Hegemony").toStringList();

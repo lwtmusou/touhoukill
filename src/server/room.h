@@ -580,6 +580,7 @@ private:
     void assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign);
     void chooseGenerals();
     void choose1v2Generals();
+    void choose2v2Generals();
     void chooseHegemonyGenerals();
     AI *cloneAI(ServerPlayer *player);
     void broadcast(const QString &message, ServerPlayer *except = nullptr);
