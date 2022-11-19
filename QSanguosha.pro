@@ -127,7 +127,8 @@ SOURCES += \
     src/package/testCard.cpp \
     src/package/hegemonyCard.cpp \
     src/package/playground.cpp \
-    src/ui/hegemonyrolecombobox.cpp
+    src/ui/hegemonyrolecombobox.cpp \
+    src/package/peasants_vs_landlord.cpp
 
 HEADERS += \
     src/client/aux-skills.h \
@@ -235,7 +236,8 @@ HEADERS += \
     src/package/testCard.h \
     src/package/hegemonyCard.h \
     src/package/playground.h \
-    src/pch.h
+    src/pch.h \
+    src/package/peasants_vs_landlord.h
 
 FORMS += \
     src/dialog/cardoverview.ui \

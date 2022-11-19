@@ -31,9 +31,6 @@
     <Filter Include="package">
       <UniqueIdentifier>{12921f3f-26ad-402c-a6a2-9865e25d3ec8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="scenario">
-      <UniqueIdentifier>{6db79ca9-2e4f-498e-b52b-c59736aabf0f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ui">
       <UniqueIdentifier>{ffa117bb-84ff-4371-9304-3f2c80af7d0e}</UniqueIdentifier>
     </Filter>
@@ -80,9 +77,6 @@
     <ClCompile Include="..\..\src\core\audio.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\core\banpair.cpp">
-      <Filter>core</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\core\card.cpp">
       <Filter>core</Filter>
     </ClCompile>
@@ -119,9 +113,6 @@
     <ClCompile Include="..\..\src\dialog\distanceviewdialog.cpp">
       <Filter>dialog</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\dialog\customassigndialog.cpp">
-      <Filter>dialog</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\dialog\connectiondialog.cpp">
       <Filter>dialog</Filter>
     </ClCompile>
@@ -145,15 +136,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\package\exppattern.cpp">
       <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\scenario\miniscenarios.cpp">
-      <Filter>scenario</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\scenario\scenario.cpp">
-      <Filter>scenario</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\scenario\scenerule.cpp">
-      <Filter>scenario</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\ui\chatwidget.cpp">
       <Filter>ui</Filter>
@@ -180,9 +162,6 @@
       <Filter>ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\ui\pixmapanimation.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\ui\window.cpp">
       <Filter>ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\ui\startscene.cpp">
@@ -224,12 +203,6 @@
     <ClCompile Include="..\..\src\server\roomthread.cpp">
       <Filter>server</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\server\roomthread1v1.cpp">
-      <Filter>server</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\server\roomthread3v3.cpp">
-      <Filter>server</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\server\server.cpp">
       <Filter>server</Filter>
     </ClCompile>
@@ -242,360 +215,15 @@
     <ClCompile Include="..\..\src\core\structs.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_qsanbutton.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_qsanbutton.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\ui\qsanbutton.cpp">
       <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_record-analysis.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_record-analysis.cpp">
-      <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\core\record-analysis.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\server\roomthreadxmode.cpp">
-      <Filter>server</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_roomthreadxmode.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_roomthreadxmode.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_window.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_startscene.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_standard.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_standard-equips.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_sprite.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_socket.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_skill.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_settings.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_serverplayer.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_server.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_scenario.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_roomthread3v3.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_roomthread1v1.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_roomthread.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_room.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_roomscene.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_rolecombobox.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_roleassigndialog.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_recorder.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_player.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_pixmapanimation.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_photo.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_package.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_nativesocket.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_miniscenarios.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_maneuvering.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_mainwindow.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_lua-wrapper.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_indicatoritem.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_generalselector.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_generaloverview.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_general.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_gamerule.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_engine.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_distanceviewdialog.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_detector.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_dashboard.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_customassigndialog.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_connectiondialog.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_configdialog.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_clientstruct.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_clientplayer.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_clientlogbox.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_client.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_choosegeneraldialog.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_chatwidget.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_cardoverview.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_carditem.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_cardcontainer.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_card.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_button.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_aux-skills.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_ai.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_ai.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_aux-skills.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_button.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_card.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_cardcontainer.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_carditem.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_cardoverview.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_chatwidget.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_choosegeneraldialog.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_client.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_clientlogbox.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_clientplayer.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_clientstruct.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_configdialog.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_connectiondialog.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_customassigndialog.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_dashboard.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_detector.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_distanceviewdialog.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_engine.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_gamerule.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_general.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_generaloverview.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_generalselector.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_indicatoritem.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_lua-wrapper.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_mainwindow.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_maneuvering.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_miniscenarios.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_nativesocket.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_package.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_photo.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_pixmapanimation.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_player.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_recorder.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_roleassigndialog.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_rolecombobox.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_room.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_roomscene.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_roomthread.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_roomthread1v1.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_roomthread3v3.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_scenario.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_server.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_serverplayer.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_settings.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_skill.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_socket.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_sprite.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_standard-equips.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_standard.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_startscene.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_window.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\main.cpp" />
     <ClCompile Include="..\..\src\ui\bubblechatbox.cpp">
       <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_bubblechatbox.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_bubblechatbox.cpp">
-      <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\core\RoomState.cpp">
       <Filter>core</Filter>
@@ -603,152 +231,50 @@
     <ClCompile Include="..\..\src\core\WrappedCard.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_WrappedCard.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_WrappedCard.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\dialog\AboutUs.cpp">
       <Filter>dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_AboutUs.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_AboutUs.cpp">
-      <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\package\th12.cpp">
       <Filter>package</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_th12.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_th12.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\package\th13.cpp">
       <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_th13.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_th13.cpp">
-      <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\package\th14.cpp">
       <Filter>package</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_th14.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_th14.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\package\th99.cpp">
       <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_th99.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_th99.cpp">
-      <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\package\thndj.cpp">
       <Filter>package</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_thndj.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_thndj.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\package\touhougod.cpp">
       <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_touhougod.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_touhougod.cpp">
-      <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\package\protagonist.cpp">
       <Filter>package</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_protagonist.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_protagonist.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\package\th06.cpp">
       <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_th06.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_th06.cpp">
-      <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\package\th07.cpp">
       <Filter>package</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_th07.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_th07.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\package\th08.cpp">
       <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_th08.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_th08.cpp">
-      <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\package\th09.cpp">
       <Filter>package</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_th09.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_th09.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\package\th10.cpp">
       <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_th10.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_th10.cpp">
-      <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\package\th11.cpp">
       <Filter>package</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_th11.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_th11.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_TablePile.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_TablePile.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\ui\TimedProgressBar.cpp">
       <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_TimedProgressBar.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_TimedProgressBar.cpp">
-      <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\ui\uiUtils.cpp">
       <Filter>ui</Filter>
@@ -756,47 +282,17 @@
     <ClCompile Include="..\..\src\ui\GenericCardContainerUI.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_GenericCardContainerUI.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_GenericCardContainerUI.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\ui\graphicspixmaphoveritem.cpp">
       <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_graphicspixmaphoveritem.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_graphicspixmaphoveritem.cpp">
-      <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\ui\heroskincontainer.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_heroskincontainer.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_heroskincontainer.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\ui\magatamasItem.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_magatamasItem.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_magatamasItem.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\ui\QSanSelectableItem.cpp">
       <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_QSanSelectableItem.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_QSanSelectableItem.cpp">
-      <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\ui\sanfreetypefont.cpp">
       <Filter>ui</Filter>
@@ -816,32 +312,14 @@
     <ClCompile Include="..\..\src\ui\skinitem.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_skinitem.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_skinitem.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\ui\TablePile.cpp">
       <Filter>ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\ui\choosetriggerorderbox.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_choosetriggerorderbox.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_choosetriggerorderbox.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\ui\graphicsbox.cpp">
       <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_graphicsbox.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_graphicsbox.cpp">
-      <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\core\json.cpp">
       <Filter>core</Filter>
@@ -849,44 +327,14 @@
     <ClCompile Include="..\..\src\package\th01-05.cpp">
       <Filter>package</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_th01-05.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_th01-05.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_th15.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_th15.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\package\th15.cpp">
       <Filter>package</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\ui\lightboxanimation.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_lightboxanimation.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_lightboxanimation.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\package\testCard.cpp">
       <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_testCard.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_testCard.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_chooseoptionsbox.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_chooseoptionsbox.cpp">
-      <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\ui\chooseoptionsbox.cpp">
       <Filter>ui</Filter>
@@ -894,293 +342,329 @@
     <ClCompile Include="..\..\src\ui\playercardbox.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_playercardbox.cpp">
-      <Filter>Generated Files\Debug</Filter>
+    <ClCompile Include="..\..\src\dialog\updatedialog.cpp">
+      <Filter>dialog</Filter>
     </ClCompile>
-    <ClCompile Include="Release\moc_playercardbox.cpp">
-      <Filter>Generated Files\Release</Filter>
+    <ClCompile Include="..\..\src\package\hegemonyCard.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\hegemonyGeneral.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\playground.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\th17.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\th18.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\th16.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\choosegeneralbox.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\sgswindow.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\hegemonyrolecombobox.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\peasants_vs_landlord.cpp">
+      <Filter>package</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\src\server\ai.h">
+    <QtMoc Include="..\..\src\server\ai.h">
       <Filter>server</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\server\gamerule.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\server\gamerule.h">
       <Filter>server</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\server\generalselector.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\server\generalselector.h">
       <Filter>server</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\server\room.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\server\room.h">
       <Filter>server</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\server\roomthread.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\server\roomthread.h">
       <Filter>server</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\server\roomthread1v1.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\server\server.h">
       <Filter>server</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\server\roomthread3v3.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\server\serverplayer.h">
       <Filter>server</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\server\server.h">
-      <Filter>server</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\server\serverplayer.h">
-      <Filter>server</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\client\aux-skills.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\client\aux-skills.h">
       <Filter>client</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\client\client.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\client\client.h">
       <Filter>client</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\client\clientplayer.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\client\clientplayer.h">
       <Filter>client</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\client\clientstruct.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\client\clientstruct.h">
       <Filter>client</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\core\card.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\core\card.h">
       <Filter>core</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\core\engine.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\core\engine.h">
       <Filter>core</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\core\general.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\core\general.h">
       <Filter>core</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\core\lua-wrapper.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\core\lua-wrapper.h">
       <Filter>core</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\core\player.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\core\player.h">
       <Filter>core</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\core\settings.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\core\settings.h">
       <Filter>core</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\core\skill.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\core\skill.h">
       <Filter>core</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\cardoverview.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\dialog\cardoverview.h">
       <Filter>dialog</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\choosegeneraldialog.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\dialog\choosegeneraldialog.h">
       <Filter>dialog</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\configdialog.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\dialog\configdialog.h">
       <Filter>dialog</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\connectiondialog.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\dialog\connectiondialog.h">
       <Filter>dialog</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\distanceviewdialog.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\dialog\distanceviewdialog.h">
       <Filter>dialog</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\generaloverview.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\dialog\generaloverview.h">
       <Filter>dialog</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\mainwindow.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\dialog\mainwindow.h">
       <Filter>dialog</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\roleassigndialog.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\dialog\roleassigndialog.h">
       <Filter>dialog</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\standard-equips.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\standard-equips.h">
       <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\standard.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\standard.h">
       <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\maneuvering.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\maneuvering.h">
       <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\package.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\package.h">
       <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\scenario\scenario.h">
-      <Filter>scenario</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\scenario\miniscenarios.h">
-      <Filter>scenario</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\button.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\button.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\cardcontainer.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\cardcontainer.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\carditem.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\carditem.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\chatwidget.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\chatwidget.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\clientlogbox.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\clientlogbox.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\dashboard.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\dashboard.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\indicatoritem.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\indicatoritem.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\photo.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\photo.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\pixmapanimation.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\pixmapanimation.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\roomscene.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\roomscene.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\sprite.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\sprite.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\startscene.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\startscene.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\window.h">
-      <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\util\socket.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\util\socket.h">
       <Filter>util</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\util\detector.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\util\detector.h">
       <Filter>util</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\util\nativesocket.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\util\nativesocket.h">
       <Filter>util</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\util\recorder.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\util\recorder.h">
       <Filter>util</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\rolecombobox.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\rolecombobox.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\customassigndialog.h">
-      <Filter>dialog</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\qsanbutton.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\qsanbutton.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\core\record-analysis.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\core\record-analysis.h">
       <Filter>core</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\server\roomthreadxmode.h">
-      <Filter>server</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\cardoverview.ui">
+    </QtMoc>
+    <QtUic Include="..\..\src\dialog\cardoverview.ui">
       <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\configdialog.ui">
+    </QtUic>
+    <QtUic Include="..\..\src\dialog\configdialog.ui">
       <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\connectiondialog.ui">
+    </QtUic>
+    <QtUic Include="..\..\src\dialog\generaloverview.ui">
       <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\generaloverview.ui">
+    </QtUic>
+    <QtUic Include="..\..\src\dialog\mainwindow.ui">
       <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\mainwindow.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\bubblechatbox.h">
+    </QtUic>
+    <QtMoc Include="..\..\src\ui\bubblechatbox.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\core\WrappedCard.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\core\WrappedCard.h">
       <Filter>core</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\AboutUs.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\dialog\AboutUs.h">
       <Filter>dialog</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\th12.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\th12.h">
       <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\th13.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\th13.h">
       <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\th14.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\th14.h">
       <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\th99.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\th99.h">
       <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\thndj.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\thndj.h">
       <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\touhougod.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\touhougod.h">
       <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\protagonist.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\protagonist.h">
       <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\th06.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\th06.h">
       <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\th07.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\th07.h">
       <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\th08.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\th08.h">
       <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\th09.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\th09.h">
       <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\th10.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\th10.h">
       <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\th11.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\th11.h">
       <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\TablePile.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\TablePile.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\TimedProgressBar.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\TimedProgressBar.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\GenericCardContainerUI.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\GenericCardContainerUI.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\graphicspixmaphoveritem.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\graphicspixmaphoveritem.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\heroskincontainer.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\heroskincontainer.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\magatamasItem.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\magatamasItem.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\QSanSelectableItem.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\QSanSelectableItem.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\skinitem.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\skinitem.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\choosetriggerorderbox.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\choosetriggerorderbox.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\graphicsbox.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\graphicsbox.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\th01-05.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\th01-05.h">
       <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\th15.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\th15.h">
       <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\lightboxanimation.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\lightboxanimation.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\testCard.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\testCard.h">
       <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\chooseoptionsbox.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\chooseoptionsbox.h">
       <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\playercardbox.h">
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\playercardbox.h">
       <Filter>ui</Filter>
-    </CustomBuild>
+    </QtMoc>
+    <QtMoc Include="..\..\src\dialog\updatedialog.h">
+      <Filter>dialog</Filter>
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\hegemonyCard.h">
+      <Filter>package</Filter>
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\hegemonyGeneral.h">
+      <Filter>package</Filter>
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\peasants_vs_landlord.h">
+      <Filter>package</Filter>
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\playground.h">
+      <Filter>package</Filter>
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\th17.h">
+      <Filter>package</Filter>
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\th18.h">
+      <Filter>package</Filter>
+    </QtMoc>
+    <QtMoc Include="..\..\src\package\th16.h">
+      <Filter>package</Filter>
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\choosegeneralbox.h">
+      <Filter>ui</Filter>
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\sgswindow.h">
+      <Filter>ui</Filter>
+    </QtMoc>
+    <QtMoc Include="..\..\src\ui\hegemonyrolecombobox.h">
+      <Filter>ui</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\resource\icon.rc" />
@@ -1212,25 +696,7 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_cardoverview.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_configdialog.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_connectiondialog.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_generaloverview.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_mainwindow.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\core\audio.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\core\banpair.h">
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\compiler-specific.h">
@@ -1238,9 +704,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\package\exppattern.h">
       <Filter>package</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\scenario\scenerule.h">
-      <Filter>scenario</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\util.h">
       <Filter>core</Filter>
