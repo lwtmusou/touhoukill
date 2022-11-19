@@ -67,6 +67,58 @@ public:
 
 
 
+
+class Cadan : public TriggerSkill
+{
+public:
+    Cadan()
+        : TriggerSkill("cadan")
+    {
+        events << EventPhaseStart;
+
+    }
+
+    bool canPreshow() const override
+    {
+        return false;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
+    {
+        ServerPlayer *a = data.value<ServerPlayer *>();
+        if (!a->hasSkill(this) || a->isDead() || a->getPhase() != Player::Judge || a->getJudgingArea().isEmpty() || !a->canDiscard(a, "j"))
+            return QList<SkillInvokeDetail>();
+
+        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, a, a, nullptr, true);
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        return room->askForDiscard(invoke->invoker, objectName(), 2, 2, true, true, "@cadan");
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>invoke, QVariant &data) const override
+    {
+        
+        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+        room->notifySkillInvoked(invoke->invoker, objectName());
+        room->broadcastSkillInvoke(objectName());
+        
+        DummyCard *dummy = new DummyCard;
+        foreach(int id, invoke->invoker->getJudgingAreaID()) {
+            if (invoke->invoker->canDiscard(invoke->invoker, id))
+                dummy->addSubcard(id);
+        }
+        
+        if (!dummy->getSubcards().isEmpty())
+            room->throwCard(dummy, invoke->invoker, invoke->invoker);
+        delete dummy;
+        return false;
+    }
+};
+
+
+
 class Jili : public TriggerSkill
 {
 public:
@@ -111,7 +163,7 @@ PeasantsVSLandlordPackage::PeasantsVSLandlordPackage()
     : Package("peasants_vs_landlord")
 {
 
-    skills << new Zhubing << new ZhubingTargetMod << new Jili;
+    skills << new Zhubing << new ZhubingTargetMod << new Cadan << new Jili;
     related_skills.insertMulti("zhubing", "#zhubing_mod");
 }
 

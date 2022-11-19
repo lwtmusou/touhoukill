@@ -158,8 +158,10 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     }
                 }
                 if (room->getMode() == "03_1v2") {
-                    if (player->isLord())
+                    if (player->isLord()) {
                         room->handleAcquireDetachSkills(player, "zhubing");
+                        room->handleAcquireDetachSkills(player, "cadan");
+                    }  
                     else
                         room->handleAcquireDetachSkills(player, "jili");
                 }
