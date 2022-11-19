@@ -364,7 +364,6 @@ public:
         frequency = Compulsory;
     }
 
-
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
     {
         QList<SkillInvokeDetail> r;
@@ -372,7 +371,7 @@ public:
             DamageStruct damage = data.value<DamageStruct>();
 
             if (damage.to != nullptr && damage.to->isAlive() && damage.to->hasSkill(this)) {
-                    r << SkillInvokeDetail(this, damage.to, damage.to, nullptr, true);
+                r << SkillInvokeDetail(this, damage.to, damage.to, nullptr, true);
             }
         } else {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
@@ -424,7 +423,6 @@ public:
     }
 };
 
-
 class Linsa : public OneCardViewAsSkill
 {
 public:
@@ -439,12 +437,11 @@ public:
     {
         KnownBoth *card = new KnownBoth(Card::SuitToBeDecided, -1);
         DELETE_OVER_SCOPE(KnownBoth, card)
-            const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
 
         return cardPattern != nullptr && cardPattern->match(player, card)
             && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
     }
-
 
     const Card *viewAs(const Card *originalCard) const override
     {
@@ -1620,7 +1617,6 @@ TH16Package::TH16Package()
     mai->addSkill(new Kuangwu);
     mai->addSkill(new Zhuti);
 
-
     General *narumi = new General(this, "narumi", "tkz");
     narumi->addSkill(new Puti);
     narumi->addSkill(new Zangfa);
@@ -1636,7 +1632,6 @@ TH16Package::TH16Package()
     General *eternity = new General(this, "eternity", "tkz", 3);
     eternity->addSkill(new Diexing);
     eternity->addSkill(new Linsa);
-
 
     General *okinasp = new General(this, "okina_sp", "tkz");
     okinasp->addSkill(new Menfei);

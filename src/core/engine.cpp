@@ -267,7 +267,8 @@ QStringList Engine::getBanPackages() const
                 ban << "hegemony_card";
 
             if (ServerInfo.GameMode == "03_1v2" || ServerInfo.GameMode == "04_2v2")
-                ban << "test_card" << "touhougod";
+                ban << "test_card"
+                    << "touhougod";
             return ban;
         }
     }
@@ -1150,12 +1151,14 @@ QList<int> Engine::getRandomCards() const
         /* if (Config.GameMode == "06_3v3" && !Config.value("3v3/UsingExtension", false).toBool()
             && card->getPackage() != "standard_cards" && card->getPackage() != "standard_ex_cards")
             continue; */
-        
 
         if (!getBanPackages().contains(card->getPackage())) {
-            if (card->getPackage() == "standard_ex_cards" &&  (ServerInfo.GameMode == "03_1v2" || ServerInfo.GameMode == "04_2v2")) {
+            if (card->getPackage() == "standard_ex_cards" && (ServerInfo.GameMode == "03_1v2" || ServerInfo.GameMode == "04_2v2")) {
                 QStringList ex;
-                ex << "IceSword" << "RenwangShield" << "lightning" << "nullification";
+                ex << "IceSword"
+                   << "RenwangShield"
+                   << "lightning"
+                   << "nullification";
                 if (ex.contains(card->objectName()))
                     list << card->getId();
                 else
@@ -1173,8 +1176,7 @@ QList<int> Engine::getRandomCards() const
                     list << card->getId();
                 else if (!isHegemonyGameMode(Config.GameMode) && card->objectName() == "DoubleSword")
                     list << card->getId();
-            }
-            else
+            } else
                 list << card->getId();
         }
     }

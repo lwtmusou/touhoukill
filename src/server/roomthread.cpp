@@ -395,8 +395,7 @@ void RoomThread::run()
     } else if (room->getMode() == "04_2v2") {
         room->choose2v2Generals();
         room->startGame();
-    }
-    else {
+    } else {
         room->chooseGenerals();
         room->startGame();
     }

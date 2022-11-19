@@ -14,8 +14,8 @@
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QHostInfo>
-#include <QJsonObject>
 #include <QJsonDocument>
+#include <QJsonObject>
 #include <QLabel>
 #include <QMessageBox>
 #include <QPushButton>
@@ -226,8 +226,6 @@ QWidget *ServerDialog::createAdvancedTab()
     peasant_maxchoice_spinbox->setRange(0, 10);
     peasant_maxchoice_spinbox->setValue(Config.value("PeasantMaxChoice", 5).toInt());
 
-    
-
     forbid_same_ip_checkbox = new QCheckBox(tr("Forbid same IP with multiple connection"));
     forbid_same_ip_checkbox->setChecked(Config.ForbidSIMC);
 
@@ -288,7 +286,6 @@ QWidget *ServerDialog::createAdvancedTab()
     layout->addLayout(HLay(new QLabel(tr("Upperlimit for non-lord")), nonlord_maxchoice_spinbox));
     layout->addLayout(HLay(new QLabel(tr("Upperlimit for landlord")), landlord_maxchoice_spinbox));
     layout->addLayout(HLay(new QLabel(tr("Upperlimit for peasant")), peasant_maxchoice_spinbox));
-   
 
     //layout->addLayout(HLay(max_hp_label, max_hp_scheme_ComboBox));
     //layout->addLayout(HLay(scheme0_subtraction_label, scheme0_subtraction_spinbox));
@@ -442,7 +439,8 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
     if (ban_list.isEmpty())
         ban_list << "Roles"
                  << "HulaoPass"
-                << "03_1v2" << "04_2v2";
+                 << "03_1v2"
+                 << "04_2v2";
     QVBoxLayout *layout = new QVBoxLayout;
 
     QTabWidget *tab = new QTabWidget;

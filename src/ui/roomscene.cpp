@@ -2360,7 +2360,8 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move)
 {
     if (move.card_ids.isEmpty())
         return;
-    if ((move.to != nullptr) && (move.to_place == Player::PlaceHand || move.to_place == Player::PlaceEquip || move.to_place == Player::PlaceSpecial) && move.from_place != Player::DrawPile) {
+    if ((move.to != nullptr) && (move.to_place == Player::PlaceHand || move.to_place == Player::PlaceEquip || move.to_place == Player::PlaceSpecial)
+        && move.from_place != Player::DrawPile) {
         foreach (QString flag, move.to->getFlagList())
             if (flag.endsWith("_InTempMoving"))
                 return;
@@ -2536,16 +2537,16 @@ void RoomScene::updateSkillButtons()
     //check duanchang?
     foreach (const Skill *skill, Self->getHeadSkillList()) { //Self->getVisibleSkillList()
         if (skill->isLordSkill()
-            && (Self->getRole() != "lord"  || ServerInfo.GameMode == "03_1v2" || ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode" || ServerInfo.GameMode == "02_1v1"
-                || Config.value("WithoutLordskill", false).toBool()))
+            && (Self->getRole() != "lord" || ServerInfo.GameMode == "03_1v2" || ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode"
+                || ServerInfo.GameMode == "02_1v1" || Config.value("WithoutLordskill", false).toBool()))
             continue;
 
         addSkillButton(skill, true);
     }
     foreach (const Skill *skill, Self->getDeputySkillList()) {
         if (skill->isLordSkill()
-            && (Self->getRole() != "lord" || ServerInfo.GameMode == "03_1v2" || ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode" || ServerInfo.GameMode == "02_1v1"
-                || Config.value("WithoutLordskill", false).toBool()))
+            && (Self->getRole() != "lord" || ServerInfo.GameMode == "03_1v2" || ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode"
+                || ServerInfo.GameMode == "02_1v1" || Config.value("WithoutLordskill", false).toBool()))
             continue;
 
         addSkillButton(skill, false);

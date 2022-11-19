@@ -7,7 +7,6 @@
 #include "skill.h"
 #include "standard.h"
 
-
 class Zhubing : public TriggerSkill
 {
 public:
@@ -41,8 +40,6 @@ public:
 
         player->drawCards(1);
 
-        
-
         return false;
     }
 };
@@ -65,9 +62,6 @@ public:
     }
 };
 
-
-
-
 class Cadan : public TriggerSkill
 {
 public:
@@ -75,7 +69,6 @@ public:
         : TriggerSkill("cadan")
     {
         events << EventPhaseStart;
-
     }
 
     bool canPreshow() const override
@@ -97,26 +90,24 @@ public:
         return room->askForDiscard(invoke->invoker, objectName(), 2, 2, true, true, "@cadan");
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>invoke, QVariant &data) const override
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
         room->notifySkillInvoked(invoke->invoker, objectName());
         room->broadcastSkillInvoke(objectName());
-        
+
         DummyCard *dummy = new DummyCard;
-        foreach(int id, invoke->invoker->getJudgingAreaID()) {
+        foreach (int id, invoke->invoker->getJudgingAreaID()) {
             if (invoke->invoker->canDiscard(invoke->invoker, id))
                 dummy->addSubcard(id);
         }
-        
+
         if (!dummy->getSubcards().isEmpty())
             room->throwCard(dummy, invoke->invoker, invoke->invoker);
         delete dummy;
         return false;
     }
 };
-
-
 
 class Jili : public TriggerSkill
 {
@@ -133,7 +124,7 @@ public:
         DeathStruct death = data.value<DeathStruct>();
         if (death.who->hasSkill(objectName()) && room->getAlivePlayers().length() > 1) {
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, death.who, death.who, nullptr, true);
-        }    
+        }
         return QList<SkillInvokeDetail>();
     }
 
@@ -143,8 +134,7 @@ public:
         room->notifySkillInvoked(invoke->invoker, objectName());
         room->broadcastSkillInvoke(objectName());
 
-        ServerPlayer *target;
-        foreach(ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
+        foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
             if (invoke->invoker->getRole() == p->getRole()) {
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), p->objectName());
                 p->drawCards(2);
@@ -156,12 +146,9 @@ public:
     }
 };
 
-
-
 PeasantsVSLandlordPackage::PeasantsVSLandlordPackage()
     : Package("peasants_vs_landlord")
 {
-
     skills << new Zhubing << new ZhubingTargetMod << new Cadan << new Jili;
     related_skills.insertMulti("zhubing", "#zhubing_mod");
 }

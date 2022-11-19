@@ -161,13 +161,9 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     if (player->isLord()) {
                         room->handleAcquireDetachSkills(player, "zhubing");
                         room->handleAcquireDetachSkills(player, "cadan");
-                    }  
-                    else
+                    } else
                         room->handleAcquireDetachSkills(player, "jili");
                 }
-
-                
-                
             }
             room->setTag("FirstRound", true);
             bool kof_mode = room->getMode() == "02_1v1" && Config.value("1v1/Rule", "2013").toString() != "Classical";
@@ -183,8 +179,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     else if (p->getSeat() == 4)
                         n++;
                 }
-                    
-
 
                 DrawNCardsStruct s;
                 s.player = p;
@@ -1077,7 +1071,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
 
         //reward teamate
         if (room->getMode() == "04_2v2") {
-            foreach(ServerPlayer *p, room->getAlivePlayers()) {
+            foreach (ServerPlayer *p, room->getAlivePlayers()) {
                 if (death.who->getRole() == p->getRole()) {
                     room->touhouLogmessage("#contest2v2Buff", p);
                     p->drawCards(1);
@@ -1488,16 +1482,14 @@ QString GameRule::getWinner(ServerPlayer *victim) const
             else
                 winner = "renegade+rebel";
         }
-    }
-    else if (room->getMode() == "04_2v2") {
+    } else if (room->getMode() == "04_2v2") {
         QString role = victim->getRole();
         QStringList alive_roles = room->aliveRoles(victim);
         if (alive_roles.length() == 1)
             winner = alive_roles.first();
         else if (alive_roles.length() == 2 && alive_roles.first() == alive_roles.last())
-            winner = alive_roles.first();  
-    }
-    else if (isHegemonyGameMode(room->getMode())) {
+            winner = alive_roles.first();
+    } else if (isHegemonyGameMode(room->getMode())) {
         QList<ServerPlayer *> players = room->getAlivePlayers();
         ServerPlayer *win_player = players.first();
         if (players.length() == 1) {

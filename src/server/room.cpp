@@ -721,8 +721,7 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
                 args << QSanProtocol::S_GAME_EVENT_ACQUIRE_SKILL << player->objectName() << actual_skill << head;
                 doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
-                
-                foreach (const Skill *related_skill, Sanguosha->getRelatedSkills(actual_skill)) {                
+                foreach (const Skill *related_skill, Sanguosha->getRelatedSkills(actual_skill)) {
                     if (!related_skill->isVisible())
                         acquireSkill(player, related_skill);
                 }
@@ -2791,8 +2790,7 @@ void Room::prepareForStart()
                     player->setRole(role);
                     if (mode == "03_1v2" || mode == "04_2v2") {
                         broadcastProperty(player, "role", role);
-                    }
-                    else if (role == "lord") {
+                    } else if (role == "lord") {
                         broadcastProperty(player, "role", "lord");
                         setPlayerProperty(player, "role_shown", true);
                     } else {
@@ -3231,7 +3229,6 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign)
     const int total = Sanguosha->getGeneralCount();
     const int max_available = (total - existed.size()) / to_assign.length();
 
-
     QStringList choices = Sanguosha->getRandomGenerals(total - existed.size(), existed);
     QStringList latest = Sanguosha->getLatestGenerals(existed);
     bool assign_latest_general = Config.value("AssignLatestGeneral", true).toBool() && !isHegemonyGameMode(mode);
@@ -3239,12 +3236,11 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign)
         int max_choice = Config.value("MaxChoice", 6).toInt();
         if (mode == "03_1v2") {
             if (player->isLord())
-                max_choice = Config.value("LandlordMaxChoice", 8).toInt();          
-            else 
+                max_choice = Config.value("LandlordMaxChoice", 8).toInt();
+            else
                 max_choice = Config.value("PeasantMaxChoice", 5).toInt();
         }
         int choice_count = qMin(max_choice, max_available);
-
 
         player->clearSelected();
         int i = 0;
@@ -3341,7 +3337,6 @@ void Room::chooseGenerals()
     Config.setValue("Banlist/Roles", ban_list);
 }
 
-
 void Room::choose1v2Generals()
 {
     QStringList ban_list = Config.value("Banlist/03_1v2").toStringList();
@@ -3350,11 +3345,11 @@ void Room::choose1v2Generals()
     QList<ServerPlayer *> to_assign = m_players;
 
     assignGeneralsForPlayers(to_assign);
-    foreach(ServerPlayer *player, to_assign)
+    foreach (ServerPlayer *player, to_assign)
         _setupChooseGeneralRequestArgs(player);
 
     doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
-    foreach(ServerPlayer *player, to_assign) {
+    foreach (ServerPlayer *player, to_assign) {
         if (player->getGeneral() != nullptr)
             continue;
         QString generalName = player->getClientReply().toString();
@@ -3365,11 +3360,11 @@ void Room::choose1v2Generals()
     if (Config.Enable2ndGeneral) {
         QList<ServerPlayer *> to_assign = m_players;
         assignGeneralsForPlayers(to_assign);
-        foreach(ServerPlayer *player, to_assign)
+        foreach (ServerPlayer *player, to_assign)
             _setupChooseGeneralRequestArgs(player);
 
         doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
-        foreach(ServerPlayer *player, to_assign) {
+        foreach (ServerPlayer *player, to_assign) {
             if (player->getGeneral2() != nullptr)
                 continue;
             QString generalName = player->getClientReply().toString();
@@ -3381,7 +3376,6 @@ void Room::choose1v2Generals()
     Config.setValue("Banlist/03_1v2", ban_list);
 }
 
-
 void Room::choose2v2Generals()
 {
     QStringList ban_list = Config.value("Banlist/04_2v2").toStringList();
@@ -3390,11 +3384,11 @@ void Room::choose2v2Generals()
     QList<ServerPlayer *> to_assign = m_players;
 
     assignGeneralsForPlayers(to_assign);
-    foreach(ServerPlayer *player, to_assign)
+    foreach (ServerPlayer *player, to_assign)
         _setupChooseGeneralRequestArgs(player);
 
     doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
-    foreach(ServerPlayer *player, to_assign) {
+    foreach (ServerPlayer *player, to_assign) {
         if (player->getGeneral() != nullptr)
             continue;
         QString generalName = player->getClientReply().toString();
@@ -3405,11 +3399,11 @@ void Room::choose2v2Generals()
     if (Config.Enable2ndGeneral) {
         QList<ServerPlayer *> to_assign = m_players;
         assignGeneralsForPlayers(to_assign);
-        foreach(ServerPlayer *player, to_assign)
+        foreach (ServerPlayer *player, to_assign)
             _setupChooseGeneralRequestArgs(player);
 
         doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
-        foreach(ServerPlayer *player, to_assign) {
+        foreach (ServerPlayer *player, to_assign) {
             if (player->getGeneral2() != nullptr)
                 continue;
             QString generalName = player->getClientReply().toString();
@@ -3541,8 +3535,7 @@ void Room::assignRoles()
         } else if (mode == "03_1v2" || mode == "04_2v2") {
             broadcastProperty(player, "role", role);
             //room->setPlayerProperty(player, "role_shown", true); //important! to notify client
-        }
-        else
+        } else
             notifyProperty(player, player, "role");
     }
 }
@@ -3618,15 +3611,13 @@ void Room::adjustSeats()
 {
     QList<ServerPlayer *> players;
     int i = 0;
-    if (mode == "04_2v2" && Config.EnableCheat 
-        && Config.value("FreeAssign", false).toBool() && Config.FreeAssignSelf) {//shffule players then fix seats
+    if (mode == "04_2v2" && Config.EnableCheat && Config.value("FreeAssign", false).toBool() && Config.FreeAssignSelf) { //shffule players then fix seats
         qShuffle(m_players);
         for (i = 0; i < m_players.length(); i++) {
             if (m_players.at(i)->getRoleEnum() == Player::Loyalist) {
                 players << m_players.at(i);
                 break;
             }
-
         }
         for (int j = 0; j < m_players.length(); j++) {
             if (m_players.at(j)->getRoleEnum() != Player::Loyalist)
@@ -3637,11 +3628,9 @@ void Room::adjustSeats()
                 players << m_players.at(k);
                 break;
             }
-
         }
         m_players = players;
-    }
-    else {
+    } else {
         for (i = 0; i < m_players.length(); i++) {
             if (m_players.at(i)->getRoleEnum() == Player::Lord)
                 break;
@@ -3652,8 +3641,6 @@ void Room::adjustSeats()
             players << m_players.at(j);
 
         m_players = players;
-
-        
     }
     for (int i = 0; i < m_players.length(); i++)
         m_players.at(i)->setSeat(i + 1);
@@ -4572,7 +4559,8 @@ void Room::startGame()
     }
 
     foreach (ServerPlayer *player, m_players) {
-        if (mode == "06_3v3" || mode == "02_1v1" || mode == "06_XMode" || mode == "03_1v2" || (!isHegemonyGameMode(mode) && !player->isLord())) // hegemony has already notified "general"
+        if (mode == "06_3v3" || mode == "02_1v1" || mode == "06_XMode" || mode == "03_1v2"
+            || (!isHegemonyGameMode(mode) && !player->isLord())) // hegemony has already notified "general"
             broadcastProperty(player, "general");
 
         if (mode == "02_1v1")
@@ -6478,7 +6466,7 @@ void Room::_setupChooseGeneralRequestArgs(ServerPlayer *player)
         options << false;
     } else {
         options = JsonUtils::toJsonArray(player->getSelected()).value<JsonArray>();
-        if (getLord() != nullptr && mode !="03_1v2")
+        if (getLord() != nullptr && mode != "03_1v2")
             options.append(QString("%1(lord)").arg(getLord()->getGeneralName()));
     }
 

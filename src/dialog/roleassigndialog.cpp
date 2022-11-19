@@ -53,22 +53,15 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
         role_ComboBox->addItem(tr("Lord"), "lord");
         role_ComboBox->addItem(tr("Rebel"), "rebel");
 
-    }
-    else if (ServerInfo.GameMode == "04_2v2") {
+    } else if (ServerInfo.GameMode == "04_2v2") {
         role_ComboBox->addItem(tr("Loyalist"), "loyalist");
         role_ComboBox->addItem(tr("Rebel"), "rebel");
-    }
-    else {
+    } else {
         role_ComboBox->addItem(tr("Lord"), "lord");
         role_ComboBox->addItem(tr("Loyalist"), "loyalist");
         role_ComboBox->addItem(tr("Renegade"), "renegade");
         role_ComboBox->addItem(tr("Rebel"), "rebel");
     }
-
-
-    
-
-
 
     QPushButton *moveUpButton = new QPushButton(tr("Move up"));
     QPushButton *moveDownButton = new QPushButton(tr("Move down"));
@@ -124,7 +117,7 @@ void RoleAssignDialog::accept()
         QString role = role_mapping.value(name);
 
         if (ServerInfo.GameMode == "04_2v2") {
-            if ((i == 0 || i==3 ) && role != "loyalist") {
+            if ((i == 0 || i == 3) && role != "loyalist") {
                 QMessageBox::warning(this, tr("Warning"), tr("The first or fourth assigned role must be loyalist!"));
                 return;
             }
@@ -132,14 +125,12 @@ void RoleAssignDialog::accept()
                 QMessageBox::warning(this, tr("Warning"), tr("The second or third assigned role must be rebel!"));
                 return;
             }
-        }
-        else {
+        } else {
             if (i == 0 && role != "lord") {
                 QMessageBox::warning(this, tr("Warning"), tr("The first assigned role must be lord!"));
                 return;
             }
         }
-
 
         real_list << role;
         names.push_back(name);
@@ -180,18 +171,15 @@ void RoleAssignDialog::updateRole(QListWidgetItem *current)
         if (ServerInfo.GameMode == "03_1v2") {
             mapping["lord"] = 0;
             mapping["rebel"] = 1;
-        }
-        else if (ServerInfo.GameMode == "04_2v2") {
+        } else if (ServerInfo.GameMode == "04_2v2") {
             mapping["loyalist"] = 0;
             mapping["rebel"] = 1;
-        }
-        else {
+        } else {
             mapping["lord"] = 0;
             mapping["loyalist"] = 1;
             mapping["renegade"] = 2;
             mapping["rebel"] = 3;
         }
-
     }
 
     QString name = current->data(Qt::UserRole).toString();
