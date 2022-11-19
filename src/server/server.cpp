@@ -14,6 +14,8 @@
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QHostInfo>
+#include <QJsonObject>
+#include <QJsonDocument>
 #include <QLabel>
 #include <QMessageBox>
 #include <QPushButton>
