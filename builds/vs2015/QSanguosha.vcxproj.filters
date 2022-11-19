@@ -31,9 +31,6 @@
     <Filter Include="package">
       <UniqueIdentifier>{12921f3f-26ad-402c-a6a2-9865e25d3ec8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="scenario">
-      <UniqueIdentifier>{6db79ca9-2e4f-498e-b52b-c59736aabf0f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ui">
       <UniqueIdentifier>{ffa117bb-84ff-4371-9304-3f2c80af7d0e}</UniqueIdentifier>
     </Filter>
@@ -60,6 +57,9 @@
     <Filter Include="Form Files">
       <UniqueIdentifier>{c1f0d23e-0665-4100-990b-a5a0d4709b14}</UniqueIdentifier>
     </Filter>
+    <Filter Include="package\scenario">
+      <UniqueIdentifier>{6db79ca9-2e4f-498e-b52b-c59736aabf0f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\swig\sanguosha_wrap.cxx">
@@ -78,9 +78,6 @@
       <Filter>client</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\core\audio.cpp">
-      <Filter>core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\core\banpair.cpp">
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\core\card.cpp">
@@ -170,9 +167,6 @@
     <ClCompile Include="..\..\src\ui\pixmapanimation.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\ui\window.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\ui\startscene.cpp">
       <Filter>ui</Filter>
     </ClCompile>
@@ -241,9 +235,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\core\record-analysis.cpp">
       <Filter>core</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_window.cpp">
-      <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="Release\moc_startscene.cpp">
       <Filter>Generated Files\Release</Filter>
@@ -525,9 +516,6 @@
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="Debug\moc_startscene.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_window.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\main.cpp" />
@@ -898,6 +886,42 @@
     <ClCompile Include="Release\moc_updatedialog.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\ui\sgswindow.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_sgswindow.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_sgswindow.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\th17.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_th17.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_th17.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\th18.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_th18.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_th18.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_peasants_vs_landlord.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_peasants_vs_landlord.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\pesants_vs_landlord.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -1024,9 +1048,6 @@
       <Filter>ui</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\ui\startscene.h">
-      <Filter>ui</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\window.h">
       <Filter>ui</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\util\socket.h">
@@ -1176,6 +1197,18 @@
     <CustomBuild Include="..\..\src\dialog\updatedialog.h">
       <Filter>dialog</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\sgswindow.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\th17.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\th18.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\peasants_vs_landlord.h">
+      <Filter>package</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\resource\icon.rc" />
@@ -1223,9 +1256,6 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\audio.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\core\banpair.h">
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\compiler-specific.h">
