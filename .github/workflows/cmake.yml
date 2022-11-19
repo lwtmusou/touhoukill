@@ -55,8 +55,8 @@ jobs:
         macOS:
           - qt5url: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt5.15/macOS-x86_64/Qt5.15.7-macOS-x86_64-AppleClang13.0.0-20221107.tar.xz
             qt5name: Qt5.15.7-macOS-x86_64-AppleClang13.0.0
-            qt6url: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt6.4/macOS-x86_64/Qt6.4.0-macOS-x86_64-AppleClang14.0.0-20221003.tar.xz
-            qt6name: Qt6.4.0-macOS-x86_64-AppleClang14.0.0
+            qt6url: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt6.4/macOS-Universal/Qt6.4.1-macOS-Universal-AppleClang14.0.0-20221116.tar.xz
+            qt6name: Qt6.4.1-macOS-Universal-AppleClang14.0.0
         runner: [ "11", "12" ]
 
     name: build-macOS${{ matrix.runner }}-selfBuilt
@@ -144,15 +144,15 @@ jobs:
             call: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat
             qt5url: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt5.15/Windows-x86_64/Qt5.15.7-Windows-x86_64-VS2019-16.11.20-20221103.7z
             qt5name: Qt5.15.7-Windows-x86_64-VS2019-16.11.20
-            qt6url: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt6.4/Windows-x86_64/Qt6.4.0-Windows-x86_64-VS2019-16.11.19-20221003.7z
-            qt6name: Qt6.4.0-Windows-x86_64-VS2019-16.11.19
+            qt6url: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt6.4/Windows-x86_64/Qt6.4.1-Windows-x86_64-VS2019-16.11.21-20221116.7z
+            qt6name: Qt6.4.1-Windows-x86_64-VS2019-16.11.21
           - ver: 2022
             runson: windows-2022
             call: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat
             qt5url: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt5.15/Windows-x86_64/Qt5.15.7-Windows-x86_64-VS2022-17.3.6-20221104.7z
             qt5name: Qt5.15.7-Windows-x86_64-VS2022-17.3.6
-            qt6url: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt6.4/Windows-x86_64/Qt6.4.0-Windows-x86_64-VS2022-17.3.5-20221003.7z
-            qt6name: Qt6.4.0-Windows-x86_64-VS2022-17.3.5
+            qt6url: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt6.4/Windows-x86_64/Qt6.4.1-Windows-x86_64-VS2022-17.4.1-20221117.7z
+            qt6name: Qt6.4.1-Windows-x86_64-VS2022-17.4.1
 
     name: build-MSVC-${{ matrix.VC.ver }}
     runs-on: ${{ matrix.VC.runson }}
@@ -205,8 +205,8 @@ jobs:
             mingwurl: https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/8.1.0/threads-posix/seh/x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z
             mingwname: mingw64
           - qtver: 6
-            qturl: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt6.4/Windows-x86_64/Qt6.4.0-Windows-x86_64-MinGW12.1.0-20221003.7z
-            qtname: Qt6.4.0-Windows-x86_64-MinGW12.1.0
+            qturl: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt6.4/Windows-x86_64/Qt6.4.1-Windows-x86_64-MinGW12.1.0-20221116.7z
+            qtname: Qt6.4.1-Windows-x86_64-MinGW12.1.0
             mingwurl: https://github.com/cristianadam/mingw-builds/releases/download/v12.1.0-rev0/x86_64-12.1.0-release-posix-seh-rt_v10-rev0.7z
             mingwname: mingw64
 
@@ -257,13 +257,13 @@ jobs:
           - ver: msvcrt
             toolchainurl: https://github.com/mstorsjo/llvm-mingw/releases/download/20220906/llvm-mingw-20220906-msvcrt-x86_64.zip
             toolchainname: llvm-mingw-20220906-msvcrt-x86_64
-            qt6url: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt6.4/Windows-x86_64/Qt6.4.0-Windows-x86_64-llvm-mingw-15.0.0-msvcrt-20221003.7z
-            qt6name: Qt6.4.0-Windows-x86_64-llvm-mingw-15.0.0-msvcrt
+            qt6url: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt6.4/Windows-x86_64/Qt6.4.1-Windows-x86_64-llvm-mingw-15.0.0-msvcrt-20221116.7z
+            qt6name: Qt6.4.1-Windows-x86_64-llvm-mingw-15.0.0-msvcrt
           - ver: ucrt
             toolchainurl: https://github.com/mstorsjo/llvm-mingw/releases/download/20220906/llvm-mingw-20220906-ucrt-x86_64.zip
             toolchainname: llvm-mingw-20220906-ucrt-x86_64
-            qt6url: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt6.4/Windows-x86_64/Qt6.4.0-Windows-x86_64-llvm-mingw-15.0.0-ucrt-20221003.7z
-            qt6name: Qt6.4.0-Windows-x86_64-llvm-mingw-15.0.0-ucrt
+            qt6url: https://sourceforge.net/projects/fsu0413-qtbuilds/files/Qt6.4/Windows-x86_64/Qt6.4.1-Windows-x86_64-llvm-mingw-15.0.0-ucrt-20221116.7z
+            qt6name: Qt6.4.1-Windows-x86_64-llvm-mingw-15.0.0-ucrt
 
     name: build-mingwclang-${{ matrix.clang.ver }}
     continue-on-error: true
