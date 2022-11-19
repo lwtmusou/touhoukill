@@ -99,8 +99,7 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>invoke, QVariant &data) const override
     {
-        
-        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+        room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
         room->notifySkillInvoked(invoke->invoker, objectName());
         room->broadcastSkillInvoke(objectName());
         

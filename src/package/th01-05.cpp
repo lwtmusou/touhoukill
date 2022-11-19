@@ -4162,7 +4162,7 @@ public:
     Menshao()
         : TriggerSkill("menshao")
     {
-        events << PostCardEffected  << CardEffected;
+        events << PostCardEffected  << CardEffected << TurnStart;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
@@ -4173,6 +4173,11 @@ public:
             if (effect.from != nullptr &&  !effect.to->hasFlag("menshao_used") && effect.card->isBlack() && (effect.card->isKindOf("Slash") || effect.card->isNDTrick())) {
                 effect.to->tag["menshao_hp"] = QVariant::fromValue(effect.to->getHp());
                 effect.to->tag["menshao_handcard"] = QVariant::fromValue(effect.to->getHandcardNum());
+            }
+        }
+        if (triggerEvent == TurnStart) {
+            foreach(ServerPlayer *p, room->getAllPlayers(true)) {
+                room->setPlayerFlag(p, "-menshao_used");
             }
         }
     }
@@ -4217,6 +4222,7 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
+        room->setPlayerFlag(invoke->invoker, "menshao_used");
         room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
         QStringList select = invoke->tag["menshao_choices"].toStringList();
         QString choice = invoke->tag["menshao_choice"].toString();
