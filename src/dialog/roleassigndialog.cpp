@@ -25,12 +25,13 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
     QStringList role_list = Sanguosha->getRoleList(ServerInfo.GameMode);
 
     if (Config.FreeAssignSelf) {
-        QString text = QString("%1[%2]").arg(Self->screenName()).arg(Sanguosha->translate("lord"));
+        QString lord_prompt = ServerInfo.GameMode == "04_2v2" ? "loyalist" : "lord";
+        QString text = QString("%1[%2]").arg(Self->screenName()).arg(Sanguosha->translate(lord_prompt));
 
         QListWidgetItem *item = new QListWidgetItem(text, list);
         item->setData(Qt::UserRole, Self->objectName());
 
-        role_mapping.insert(Self->objectName(), "lord");
+        role_mapping.insert(Self->objectName(), lord_prompt);
     } else {
         QList<const ClientPlayer *> players = ClientInstance->getPlayers();
         for (int i = 0; i < players.length(); i++) {
@@ -48,10 +49,26 @@ RoleAssignDialog::RoleAssignDialog(QWidget *parent)
     QVBoxLayout *vlayout = new QVBoxLayout;
 
     role_ComboBox = new QComboBox;
-    role_ComboBox->addItem(tr("Lord"), "lord");
-    role_ComboBox->addItem(tr("Loyalist"), "loyalist");
-    role_ComboBox->addItem(tr("Renegade"), "renegade");
-    role_ComboBox->addItem(tr("Rebel"), "rebel");
+    if (ServerInfo.GameMode == "03_1v2") {
+        role_ComboBox->addItem(tr("Lord"), "lord");
+        role_ComboBox->addItem(tr("Rebel"), "rebel");
+
+    }
+    else if (ServerInfo.GameMode == "04_2v2") {
+        role_ComboBox->addItem(tr("Loyalist"), "loyalist");
+        role_ComboBox->addItem(tr("Rebel"), "rebel");
+    }
+    else {
+        role_ComboBox->addItem(tr("Lord"), "lord");
+        role_ComboBox->addItem(tr("Loyalist"), "loyalist");
+        role_ComboBox->addItem(tr("Renegade"), "renegade");
+        role_ComboBox->addItem(tr("Rebel"), "rebel");
+    }
+
+
+    
+
+
 
     QPushButton *moveUpButton = new QPushButton(tr("Move up"));
     QPushButton *moveDownButton = new QPushButton(tr("Move down"));
@@ -106,10 +123,23 @@ void RoleAssignDialog::accept()
         QString name = list->item(i)->data(Qt::UserRole).toString();
         QString role = role_mapping.value(name);
 
-        if (i == 0 && role != "lord") {
-            QMessageBox::warning(this, tr("Warning"), tr("The first assigned role must be lord!"));
-            return;
+        if (ServerInfo.GameMode == "04_2v2") {
+            if ((i == 0 || i==3 ) && role != "loyalist") {
+                QMessageBox::warning(this, tr("Warning"), tr("The first or fourth assigned role must be loyalist!"));
+                return;
+            }
+            if ((i == 1 || i == 2) && role != "rebel") {
+                QMessageBox::warning(this, tr("Warning"), tr("The second or third assigned role must be rebel!"));
+                return;
+            }
         }
+        else {
+            if (i == 0 && role != "lord") {
+                QMessageBox::warning(this, tr("Warning"), tr("The first assigned role must be lord!"));
+                return;
+            }
+        }
+
 
         real_list << role;
         names.push_back(name);
@@ -147,10 +177,21 @@ void RoleAssignDialog::updateRole(QListWidgetItem *current)
 {
     static QMap<QString, int> mapping;
     if (mapping.isEmpty()) {
-        mapping["lord"] = 0;
-        mapping["loyalist"] = 1;
-        mapping["renegade"] = 2;
-        mapping["rebel"] = 3;
+        if (ServerInfo.GameMode == "03_1v2") {
+            mapping["lord"] = 0;
+            mapping["rebel"] = 1;
+        }
+        else if (ServerInfo.GameMode == "04_2v2") {
+            mapping["loyalist"] = 0;
+            mapping["rebel"] = 1;
+        }
+        else {
+            mapping["lord"] = 0;
+            mapping["loyalist"] = 1;
+            mapping["renegade"] = 2;
+            mapping["rebel"] = 3;
+        }
+
     }
 
     QString name = current->data(Qt::UserRole).toString();

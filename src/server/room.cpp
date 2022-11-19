@@ -2773,6 +2773,9 @@ void Room::prepareForStart()
                 QString role = replyArray.value(1).value<JsonArray>().value(0).toString();
                 ServerPlayer *player_self = findChild<ServerPlayer *>(name);
                 setPlayerProperty(player_self, "role", role);
+                if (mode == "03_1v2" || mode == "04_2v2") {
+                    broadcastProperty(player_self, "role", role);
+                }
 
                 QList<ServerPlayer *> all_players = m_players;
                 all_players.removeOne(player_self);
@@ -2786,7 +2789,10 @@ void Room::prepareForStart()
                     QString role = roles.at(i);
 
                     player->setRole(role);
-                    if (role == "lord") {
+                    if (mode == "03_1v2" || mode == "04_2v2") {
+                        broadcastProperty(player, "role", role);
+                    }
+                    else if (role == "lord") {
                         broadcastProperty(player, "role", "lord");
                         setPlayerProperty(player, "role_shown", true);
                     } else {
@@ -3612,17 +3618,43 @@ void Room::adjustSeats()
 {
     QList<ServerPlayer *> players;
     int i = 0;
-    for (i = 0; i < m_players.length(); i++) {
-        if (m_players.at(i)->getRoleEnum() == Player::Lord)
-            break;
+    if (mode == "04_2v2" && Config.EnableCheat 
+        && Config.value("FreeAssign", false).toBool() && Config.FreeAssignSelf) {//shffule players then fix seats
+        qShuffle(m_players);
+        for (i = 0; i < m_players.length(); i++) {
+            if (m_players.at(i)->getRoleEnum() == Player::Loyalist) {
+                players << m_players.at(i);
+                break;
+            }
+
+        }
+        for (int j = 0; j < m_players.length(); j++) {
+            if (m_players.at(j)->getRoleEnum() != Player::Loyalist)
+                players << m_players.at(j);
+        }
+        for (int k = i + 1; k < m_players.length(); k++) {
+            if (m_players.at(k)->getRoleEnum() == Player::Loyalist) {
+                players << m_players.at(k);
+                break;
+            }
+
+        }
+        m_players = players;
     }
-    for (int j = i; j < m_players.length(); j++)
-        players << m_players.at(j);
-    for (int j = 0; j < i; j++)
-        players << m_players.at(j);
+    else {
+        for (i = 0; i < m_players.length(); i++) {
+            if (m_players.at(i)->getRoleEnum() == Player::Lord)
+                break;
+        }
+        for (int j = i; j < m_players.length(); j++)
+            players << m_players.at(j);
+        for (int j = 0; j < i; j++)
+            players << m_players.at(j);
 
-    m_players = players;
+        m_players = players;
 
+        
+    }
     for (int i = 0; i < m_players.length(); i++)
         m_players.at(i)->setSeat(i + 1);
 

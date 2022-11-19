@@ -2176,58 +2176,74 @@
         <translation>自由分配身份和座位</translation>
     </message>
     <message>
-        <location filename="../src/dialog/roleassigndialog.cpp" line="51"/>
+        <location filename="../src/dialog/roleassigndialog.cpp" line="52"/>
+        <location filename="../src/dialog/roleassigndialog.cpp" line="61"/>
         <source>Lord</source>
         <translation>主公</translation>
     </message>
     <message>
-        <location filename="../src/dialog/roleassigndialog.cpp" line="52"/>
+        <location filename="../src/dialog/roleassigndialog.cpp" line="57"/>
+        <location filename="../src/dialog/roleassigndialog.cpp" line="62"/>
         <source>Loyalist</source>
         <translation>忠臣</translation>
     </message>
     <message>
-        <location filename="../src/dialog/roleassigndialog.cpp" line="53"/>
+        <location filename="../src/dialog/roleassigndialog.cpp" line="63"/>
         <source>Renegade</source>
         <translation>内奸</translation>
     </message>
     <message>
-        <location filename="../src/dialog/roleassigndialog.cpp" line="54"/>
+        <location filename="../src/dialog/roleassigndialog.cpp" line="53"/>
+        <location filename="../src/dialog/roleassigndialog.cpp" line="58"/>
+        <location filename="../src/dialog/roleassigndialog.cpp" line="64"/>
         <source>Rebel</source>
         <translation>反贼</translation>
     </message>
     <message>
-        <location filename="../src/dialog/roleassigndialog.cpp" line="56"/>
+        <location filename="../src/dialog/roleassigndialog.cpp" line="72"/>
         <source>Move up</source>
         <translation>移上</translation>
     </message>
     <message>
-        <location filename="../src/dialog/roleassigndialog.cpp" line="57"/>
+        <location filename="../src/dialog/roleassigndialog.cpp" line="73"/>
         <source>Move down</source>
         <translation>移下</translation>
     </message>
     <message>
-        <location filename="../src/dialog/roleassigndialog.cpp" line="58"/>
+        <location filename="../src/dialog/roleassigndialog.cpp" line="74"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="../src/dialog/roleassigndialog.cpp" line="59"/>
+        <location filename="../src/dialog/roleassigndialog.cpp" line="75"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../src/dialog/roleassigndialog.cpp" line="110"/>
-        <location filename="../src/dialog/roleassigndialog.cpp" line="126"/>
+        <location filename="../src/dialog/roleassigndialog.cpp" line="127"/>
+        <location filename="../src/dialog/roleassigndialog.cpp" line="131"/>
+        <location filename="../src/dialog/roleassigndialog.cpp" line="137"/>
+        <location filename="../src/dialog/roleassigndialog.cpp" line="155"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="../src/dialog/roleassigndialog.cpp" line="110"/>
+        <location filename="../src/dialog/roleassigndialog.cpp" line="127"/>
+        <source>The first or fourth assigned role must be loyalist!</source>
+        <translation>1号位或4号位必须是忠臣!</translation>
+    </message>
+    <message>
+        <location filename="../src/dialog/roleassigndialog.cpp" line="131"/>
+        <source>The second or third assigned role must be rebel!</source>
+        <translation>2号位或3号位必须是反贼!</translation>
+    </message>
+    <message>
+        <location filename="../src/dialog/roleassigndialog.cpp" line="137"/>
         <source>The first assigned role must be lord!</source>
         <translation>1号位必须是主公!</translation>
     </message>
     <message>
-        <location filename="../src/dialog/roleassigndialog.cpp" line="126"/>
+        <location filename="../src/dialog/roleassigndialog.cpp" line="155"/>
         <source>The roles that you assigned do not comform with the current game mode</source>
         <translation>你所分配的身份不符合当前游戏的身份设置</translation>
     </message>
