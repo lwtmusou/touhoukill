@@ -1,6 +1,7 @@
 #ifndef qsgslegacy__ROOM_THREAD_H
 #define qsgslegacy__ROOM_THREAD_H
 
+#include <QSemaphore>
 #include <QThread>
 #include <QVariant>
 

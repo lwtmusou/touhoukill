@@ -200,7 +200,6 @@ set (QSanguosha_SRCS
     src/legacyserver/legacyserverplayer.cpp
     src/legacyserver/legacysocket.cpp
     src/legacyserver/legacydetector.cpp
-    src/legacyserver/legacysemaphore.cpp
     src/ui/bubblechatbox.cpp
     src/ui/button.cpp
     src/ui/cardcontainer.cpp
@@ -274,7 +273,6 @@ set (QSanguosha_MOCS
     src/legacyserver/legacyserverplayer.h
     src/legacyserver/legacysocket.h
     src/legacyserver/legacydetector.h
-    src/legacyserver/legacysemaphore.h
     src/ui/bubblechatbox.h
     src/ui/button.h
     src/ui/cardcontainer.h
@@ -711,6 +709,12 @@ if (Qt6_FOUND)
 
     if ( ANDROID OR IOS OR ( CMAKE_SYSTEM_NAME STREQUAL "Emscripten" ) )
         target_link_libraries(QSanguosha PUBLIC QSgsServer)
+    endif()
+
+    if (CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+        # '--no-check-features' is a workaround for building Qt application with thread support.
+        # I'm not quite sure how it occurs here but..... It is the truth
+        target_link_options(QSanguosha PUBLIC -sASYNCIFY -Os "-Wl,--no-check-features")
     endif()
 
     if (QSANGUOSHA_AUDIO_SUPPORT AND Qt6Multimedia_FOUND)

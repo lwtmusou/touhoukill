@@ -1,13 +1,13 @@
 #ifndef _RECORDER_H
 #define _RECORDER_H
 
-#include "legacysemaphore.h"
 #include "protocol.h"
 
 #include <QImage>
 #include <QMap>
 #include <QMutex>
 #include <QObject>
+#include <QSemaphore>
 #include <QThread>
 #include <QTime>
 

@@ -8,12 +8,12 @@ class DummyCard;
 class CardMoveReason;
 struct CardUseStruct;
 
-#include "legacysemaphore.h"
 #include "legacysocket.h"
 #include "player.h"
 #include "protocol.h"
 
 #include <QDateTime>
+#include <QSemaphore>
 
 // only used in ServerPlayer
 struct PhaseStruct
