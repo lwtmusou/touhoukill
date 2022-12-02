@@ -14,7 +14,7 @@ public:
     void onUse(Room *room, const CardUseStruct &card_use) const override;
     void onEffect(const CardEffectStruct &effect) const override;
 };
-
+/*
 class ZhuyingCard : public SkillCard
 {
     Q_OBJECT
@@ -25,7 +25,7 @@ public:
     void onUse(Room *room, const CardUseStruct &card_use) const override;
     void onEffect(const CardEffectStruct &effect) const override;
 };
-
+*/
 class LiaoguCard : public SkillCard
 {
     Q_OBJECT

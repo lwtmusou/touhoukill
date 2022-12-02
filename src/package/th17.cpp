@@ -4,6 +4,7 @@
 #include "general.h"
 #include "skill.h"
 
+/*
 class ZaoxingVS : public ViewAsSkill
 {
 public:
@@ -156,6 +157,53 @@ public:
         return false;
     }
 };
+*/
+
+
+class Shanxing : public TriggerSkill
+{
+public:
+    Shanxing()
+        : TriggerSkill("shanxing")
+    {
+        events << CardsMoveOneTime;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
+    {
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        ServerPlayer *ko = qobject_cast<ServerPlayer *>(move.from);
+        if (ko != nullptr && ko->isAlive() && move.from_places.contains(Player::PlaceEquip)) {
+            QList<SkillInvokeDetail> d;
+
+            foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName()))
+                d << SkillInvokeDetail(this, p, p, nullptr, false, ko);
+            return d;
+        }
+
+        return QList<SkillInvokeDetail>();
+    }
+
+
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        RecoverStruct recover;
+        recover.who = invoke->invoker;
+        room->recover(invoke->targets.first(), recover);
+
+        invoke->targets.first()->drawCards(1, objectName());
+        if (invoke->targets.first() != invoke->invoker) {
+            const Card *c = room->askForExchange(invoke->targets.first(), objectName(), 1, 1, false, "@shanxing-exchange:" + invoke->invoker->objectName(), true);
+            if (c != nullptr) {
+                CardMoveReason reason(CardMoveReason::S_REASON_GIVE, invoke->targets.first()->objectName(), objectName(), QString());
+                room->obtainCard(invoke->invoker, c, reason, false);
+            }
+        }
+        return false;
+    }
+};
+
 
 class LingshouOtherVS : public ViewAsSkill
 {
@@ -282,6 +330,7 @@ public:
     }
 };
 
+/*
 ZhuyingCard::ZhuyingCard()
 {
     m_skillName = "zhuying";
@@ -442,6 +491,72 @@ public:
         return 0;
     }
 };
+*/
+
+class Qijue : public TriggerSkill
+{
+public:
+    Qijue()
+        : TriggerSkill("qijue$")
+    {
+        events << Death << BuryVictim;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const override
+    {
+        DeathStruct death = data.value<DeathStruct>();
+        QList<SkillInvokeDetail> details;
+        if (e == Death) {
+            if (death.who->getKingdom() != "gxs")
+                return details;
+
+            foreach(ServerPlayer *p, room->getOtherPlayers(death.who)) {
+                if (p->hasLordSkill(objectName()) && p->isWounded())
+                    details << SkillInvokeDetail(this, p, death.who);
+            }
+        }
+        else if (e == BuryVictim) {
+            ServerPlayer *killer = death.damage->from;
+            if (killer == nullptr || killer->getKingdom() != "gxs")
+                return details;
+
+            foreach(ServerPlayer *p, room->getOtherPlayers(killer)) {
+                if (p->hasLordSkill(objectName()) && p->isWounded())
+                    details << SkillInvokeDetail(this, p, killer);
+            }
+        }
+        return details;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        bool result = invoke->invoker->askForSkillInvoke(objectName(), QVariant::fromValue(invoke->owner));
+        if (result) {
+            room->broadcastSkillInvoke(objectName());
+
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->owner->objectName());
+            room->notifySkillInvoked(invoke->owner, objectName());
+            LogMessage log;
+            log.type = "#InvokeOthersSkill";
+            log.from = invoke->invoker;
+            log.to << invoke->owner;
+            log.arg = objectName();
+            room->sendLog(log);
+        }
+        return result;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        RecoverStruct recover;
+        recover.who = invoke->invoker;
+        room->recover(invoke->owner, recover);
+
+        return false;
+    }
+};
+
+
 
 class Shanlei : public TriggerSkill
 {
@@ -1739,11 +1854,12 @@ TH17Package::TH17Package()
     : Package("th17")
 {
     General *keiki = new General(this, "keiki$", "gxs");
-    keiki->addSkill(new Zaoxing);
+    keiki->addSkill(new Shanxing);
     keiki->addSkill(new Lingshou);
-    keiki->addSkill(new Zhuying);
-    keiki->addSkill(new ZhuyingD);
-    related_skills.insertMulti("zhuying", "#zhuying-distance");
+    keiki->addSkill(new Qijue);
+    //keiki->addSkill(new Zhuying);
+    //keiki->addSkill(new ZhuyingD);
+    //related_skills.insertMulti("zhuying", "#zhuying-distance");
 
     General *saki = new General(this, "saki", "gxs");
     saki->addSkill(new Jinji);
@@ -1771,9 +1887,9 @@ TH17Package::TH17Package()
     eika->addSkill(new Bengluo);
 
     addMetaObject<LunniCard>();
-    addMetaObject<ZhuyingCard>();
+    //addMetaObject<ZhuyingCard>();
 
-    skills << new LingjunOtherVS << new LingshouOtherVS << new ZhuyingAttach;
+    skills << new LingjunOtherVS << new LingshouOtherVS; //<< new ZhuyingAttach;
 }
 
 ADD_PACKAGE(TH17)
