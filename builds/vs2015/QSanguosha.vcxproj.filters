@@ -919,7 +919,7 @@
     <ClCompile Include="Release\moc_peasants_vs_landlord.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\package\pesants_vs_landlord.cpp">
+    <ClCompile Include="..\..\src\package\peasants_vs_landlord.cpp">
       <Filter>package</Filter>
     </ClCompile>
   </ItemGroup>

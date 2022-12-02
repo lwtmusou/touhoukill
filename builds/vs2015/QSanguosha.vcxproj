@@ -381,7 +381,7 @@
     <ClCompile Include="..\..\src\package\hegemonyGeneral.cpp" />
     <ClCompile Include="..\..\src\package\maneuvering.cpp" />
     <ClCompile Include="..\..\src\package\package.cpp" />
-    <ClCompile Include="..\..\src\package\pesants_vs_landlord.cpp" />
+    <ClCompile Include="..\..\src\package\peasants_vs_landlord.cpp" />
     <ClCompile Include="..\..\src\package\protagonist.cpp" />
     <ClCompile Include="..\..\src\package\standard.cpp" />
     <ClCompile Include="..\..\src\package\standard-cards.cpp" />
