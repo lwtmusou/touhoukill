@@ -3,6 +3,8 @@
 #include "engine.h"
 #include "general.h"
 #include "skill.h"
+#include "testCard.h"
+
 
 /*
 class ZaoxingVS : public ViewAsSkill
@@ -697,7 +699,7 @@ public:
     Bengluo()
         : TriggerSkill("bengluo")
     {
-        events << CardsMoveOneTime << EventPhaseEnd << EventPhaseStart << DamageCaused;
+        events << CardsMoveOneTime << TurnStart << EventPhaseEnd << EventPhaseStart << DamageCaused;
         view_as_skill = new BengluoVS;
         global = true;
     }
@@ -716,7 +718,7 @@ public:
                         move.from->setFlags("bengluo");
                 }
             }
-        } else if (triggerEvent == EventPhaseStart) {
+        } else if (triggerEvent == TurnStart) {
             foreach (ServerPlayer *p, room->getAllPlayers())
                 p->setFlags("-bengluo");
         }
@@ -869,7 +871,7 @@ public:
             if (p->getPhase() == Player::Play) {
                 QList<ServerPlayer *> players = room->getOtherPlayers(p);
                 foreach (ServerPlayer *bull, players) {
-                    if (bull->isAlive() && bull->hasSkill(this) && !bull->isAllNude())
+                    if (bull->isAlive() && bull->hasSkill(this) && !bull->getCards("e").isEmpty())
                         r << SkillInvokeDetail(this, bull, bull, p);
                 }
             }
@@ -1686,11 +1688,11 @@ public:
     }
 };
 
-class Jinji : public DistanceSkill
+class JinjiD : public DistanceSkill
 {
 public:
-    Jinji()
-        : DistanceSkill("jinji")
+    JinjiD()
+        : DistanceSkill("#jinji")
     {
     }
 
@@ -1699,15 +1701,169 @@ public:
         if (from == to)
             return 0;
         int i = 0;
-        if (from->hasSkill(this))
-            i -= from->getEquips().length();
-        if (to->hasSkill(this))
-            i += to->getBrokenEquips().length();
+        if (from->hasSkill("jinji"))
+            i -= 1;
+        if (to->hasSkill("jinji"))
+            i += 1;
 
         return i;
     }
 };
 
+
+class Jinji : public TriggerSkill
+{
+public:
+    Jinji()
+        : TriggerSkill("jinji")
+    {
+        events << CardResponded << CardUsed << EventPhaseChanging;
+        frequency = Compulsory;
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const override
+    {
+        if (e == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->getMark("jinji_invalid") >0) {
+                        room->setPlayerMark(p, "jinji_invalid", 0);
+                        room->setPlayerSkillInvalidity(p, objectName(), false);
+                    }
+                }
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
+    {
+        ServerPlayer *user = nullptr;
+        const Card *card = nullptr;
+        if (triggerEvent == CardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            card = use.card;
+            user = use.from;
+        }
+        else if (triggerEvent == CardResponded) {
+            CardResponseStruct resp = data.value<CardResponseStruct>();
+            card = resp.m_card;
+            user = resp.m_from;
+        }
+
+        if (user != nullptr && user->hasSkill(this) && user->isAlive() && card != nullptr && card->getTypeId() == Card::TypeBasic )
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, user, user, nullptr, true);
+
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
+        room->setPlayerMark(invoke->invoker, "jinji_invalid", 1);
+        room->setPlayerSkillInvalidity(invoke->invoker, objectName(), true);
+
+        return false;
+    }
+};
+
+class TianxingVS : public ZeroCardViewAsSkill
+{
+public:
+    TianxingVS()
+        : ZeroCardViewAsSkill("tianxing")
+    {
+        response_pattern = "@@tianxing";
+    }
+
+
+    const Card *viewAs() const override
+    {
+        PowerSlash *card = new PowerSlash(Card::SuitToBeDecided, -1);
+        card->setSkillName("tianxing");
+        return card;
+    }
+};
+
+class Tianxing : public TriggerSkill
+{
+public:
+    Tianxing()
+        : TriggerSkill("tianxing")
+    {
+        events << EventPhaseStart << EventPhaseEnd;
+        view_as_skill = new TianxingVS;
+        global = true;//need global?
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
+    {
+        //updatemark 
+        if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *c = data.value<ServerPlayer *>();
+            if (c != nullptr && c->getPhase() == Player::Play) {
+                foreach(ServerPlayer *p, room->getAllPlayers()) {
+                    int m = 0;
+                    foreach(ServerPlayer *t, room->getOtherPlayers(p)) {
+                        if (p->inMyAttackRange(t))
+                            m++;
+                    }
+                    room->setPlayerMark(p, "tianxing", m);
+                }
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
+    {
+        QList<SkillInvokeDetail> r;
+
+        if (triggerEvent == EventPhaseEnd) {
+            ServerPlayer *c = data.value<ServerPlayer *>();
+            if (c !=nullptr && c->getPhase() == Player::Play) { //need check alive?
+                foreach(ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                    if (p->isAlive()) {
+                        int m = 0;
+                        foreach(ServerPlayer *t, room->getOtherPlayers(p)) {
+                            if (p->inMyAttackRange(t))
+                                m++;
+                        }
+                        if (m != p->getMark("tianxing"))
+                            r << SkillInvokeDetail(this, p, p);
+                    }
+                }
+            }
+        }
+
+        return r;
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        room->askForUseCard(invoke->invoker, "@@tianxing", "@tianxing");
+        return false;
+    }
+
+};
+
+class TianxingTargetMod : public TargetModSkill
+{
+public:
+    TianxingTargetMod()
+        : TargetModSkill("#tianxing-targetmod")
+    {
+        pattern = "Slash";
+    }
+
+    int getDistanceLimit(const Player *, const Card *c) const override
+    {
+        if (c->getSkillName()=="tianxing")
+            return 1000;
+
+        return 0;
+    }
+};
+/*
 class TianxingVS : public OneCardViewAsSkill
 {
 public:
@@ -1848,7 +2004,7 @@ public:
     {
         return from != nullptr && from->property("tianxing").toString().split("+").contains(to->objectName()) && card->getTypeId() != Card::TypeSkill && others.isEmpty();
     }
-};
+};*/
 
 TH17Package::TH17Package()
     : Package("th17")
@@ -1863,9 +2019,12 @@ TH17Package::TH17Package()
 
     General *saki = new General(this, "saki", "gxs");
     saki->addSkill(new Jinji);
+    saki->addSkill(new JinjiD);
     saki->addSkill(new Tianxing);
-    saki->addSkill(new TianxingP);
-    related_skills.insertMulti("tianxing", "#tianxing-probibit");
+    saki->addSkill(new TianxingTargetMod);
+    //saki->addSkill(new TianxingP);
+    related_skills.insertMulti("jinji", "#jinji");
+    related_skills.insertMulti("tianxing", "#tianxing-targetmod");
 
     General *mayumi = new General(this, "mayumi", "gxs");
     mayumi->addSkill(new Lingjun);
