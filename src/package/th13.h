@@ -62,16 +62,6 @@ public:
     const Card *validateInResponse(ServerPlayer *user) const override;
 };
 
-class ShijieCard : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE ShijieCard();
-
-    void use(Room *room, const CardUseStruct &card_use) const override;
-};
-
 class LeishiCard : public SkillCard
 {
     Q_OBJECT
@@ -95,18 +85,6 @@ public:
     void onUse(Room *room, const CardUseStruct &card_use) const override;
     void use(Room *room, const CardUseStruct &card_use) const override;
 };
-
-/*class HuishengCard : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE HuishengCard();
-
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
-    virtual const Card *validate(CardUseStruct &card_use) const;
-};*/
 
 class BumingCard : public SkillCard
 {

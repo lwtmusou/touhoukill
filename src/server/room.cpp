@@ -488,14 +488,17 @@ QList<int> Room::getNCards(int n, bool update_pile_number, bool bottom)
     return card_ids;
 }
 
-void Room::returnToTopDrawPile(const QList<int> &cards)
+void Room::returnToDrawPile(const QList<int> &cards, bool bottom)
 {
     QListIterator<int> i(cards);
     i.toBack();
     while (i.hasPrevious()) {
         int id = i.previous();
         setCardMapping(id, nullptr, Player::DrawPile);
-        m_drawPile->prepend(id);
+        if (bottom)
+            m_drawPile->prepend(id);
+        else
+            m_drawPile->append(id);
     }
     doBroadcastNotify(S_COMMAND_UPDATE_PILE, QVariant(m_drawPile->length()));
 }

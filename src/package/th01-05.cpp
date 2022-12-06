@@ -1319,7 +1319,7 @@ public:
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
 
             QList<int> list = room->getNCards(2);
-            room->returnToTopDrawPile(list);
+            room->returnToDrawPile(list);
 
             room->fillAG(list, invoke->invoker);
             id = room->askForAG(invoke->invoker, list, false, objectName());
@@ -1335,7 +1335,6 @@ public:
                 pindian->to_card = c;
             room->showCard(invoke->invoker, id);
             data = QVariant::fromValue(pindian);
-            CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, invoke->invoker->objectName(), invoke->targets.first()->objectName(), pindian->reason, QString());
         }
         return false;
     }
