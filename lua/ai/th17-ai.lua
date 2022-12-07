@@ -729,7 +729,7 @@ end
 -- 【天行】一名其他角色的准备阶段开始时，你可以横置装备区里的一张牌，视为对其使用【杀】；当你使用【杀】对一名角色造成伤害后，其于此回合内不能使用以你为唯一目标的牌。 
 -- 用默认杀的策略，只是杀换成了视为的
 
-sgs.ai_skill_cardask["@tianxing-discard"] = function(self, data)
+--[[sgs.ai_skill_cardask["@tianxing-discard"] = function(self, data)
 	local current = data:toPlayer()
 	if self:isFriend(current) then return "." end
 	
@@ -758,3 +758,4 @@ sgs.ai_skill_cardask["@tianxing-discard"] = function(self, data)
 	
 	return "$" .. tostring(id)
 end
+]]
