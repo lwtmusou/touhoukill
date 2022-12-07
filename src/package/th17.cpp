@@ -1182,6 +1182,8 @@ public:
             sl->setSkillName("_junzhen");
             return sl;
         }
+
+        return nullptr;
     }
 };
 
@@ -1192,6 +1194,7 @@ public:
         : TriggerSkill("junzhen")
     {
         events << EventPhaseEnd << Death << BuryVictim;
+        view_as_skill = new JunzhenVS;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
