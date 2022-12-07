@@ -729,7 +729,8 @@ public:
             }
         } else if (e == EventPhaseEnd) {
             ServerPlayer *current = data.value<ServerPlayer *>();
-            if (current->getPhase() == Player::Play && ((current->getMark("shijie_recordSuits") & current->getMark("shijie_usedSuits")) > 0)) {
+            if (current->getPhase() == Player::Play
+                && ((current->getMark("shijie_recordSuits") & current->getMark("shijie_usedSuits")) == current->getMark("shijie_recordSuits"))) {
                 foreach (ServerPlayer *futou, room->findPlayersBySkillName(objectName()))
                     r << SkillInvokeDetail(this, futou, current, nullptr, true, nullptr, false);
             }
