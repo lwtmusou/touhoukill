@@ -108,7 +108,7 @@ public:
     void judge(JudgeStruct &judge_struct);
     void sendJudgeResult(const JudgeStruct *judge);
     QList<int> getNCards(int n, bool update_pile_number = true, bool bottom = false);
-    void returnToTopDrawPile(const QList<int> &cards);
+    void returnToDrawPile(const QList<int> &cards, bool bottom = false);
     ServerPlayer *getLord(const QString &kingdom = "wei", bool include_death = false) const;
     void askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, GuanxingType guanxing_type = GuanxingBothSides, QString skillName = "");
     int doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids = QList<int>(), QString skill_name = "gongxin", bool cancellable = true);

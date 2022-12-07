@@ -201,7 +201,7 @@ public:
     {
         if (invoke->tag[objectName()].toInt() == -1) {
             QList<int> list = room->getNCards(2);
-            room->returnToTopDrawPile(list);
+            room->returnToDrawPile(list);
 
             room->fillAG(list, invoke->invoker);
             int obtain_id = room->askForAG(invoke->invoker, list, false, objectName());

@@ -358,9 +358,9 @@ sgs.ai_cardneed.xihua = function(to, card, self)
 	end
 end
 
-
 --物部布都
 --[尸解]
+--[[
 function sgs.ai_cardsview_valuable.shijie(self, class_name, player)
 	if class_name == "Peach" then
 		local dying = player:getRoom():getCurrentDyingPlayer()
@@ -392,7 +392,9 @@ sgs.ai_skill_cardchosen.shijie = function(self, who, flags)
 	end
 	return who:getCards("e"):first()
 end
+]]
 --[风水]
+--[[
 sgs.ai_skill_invoke.fengshui = function(self,data)
 	return true
 end
@@ -410,7 +412,7 @@ sgs.ai_skill_invoke.fengshui_retrial = function(self,data)
 	end
 	return false
 end
-
+]]
 --苏我屠自古
 --[雷矢]
 local leishi_skill = {}

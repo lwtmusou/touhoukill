@@ -1780,7 +1780,7 @@ public:
     {
         ServerPlayer *p = data.value<ServerPlayer *>();
         QList<int> card_ids = room->getNCards(p->getLostHp());
-        room->returnToTopDrawPile(card_ids);
+        room->returnToDrawPile(card_ids);
 
         room->fillAG(card_ids, invoke->invoker);
         int to_throw = room->askForAG(invoke->invoker, card_ids, true, objectName());
