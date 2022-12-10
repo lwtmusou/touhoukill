@@ -1187,6 +1187,8 @@ public:
     }
 };
 
+#define JUNZHEN_DEATH
+
 class Junzhen : public TriggerSkill
 {
 public:
