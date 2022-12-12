@@ -379,7 +379,12 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     thread->trigger(TargetSpecified, room, data);
                     thread->trigger(TargetConfirmed, room, data);
                 }
-                card_use = data.value<CardUseStruct>();
+
+                // only copy limited data after TargetConfirmed since the from / to / card, etc are fixed
+                CardUseStruct newcard_use = data.value<CardUseStruct>();
+                card_use.m_effectValue = newcard_use.m_effectValue;
+                card_use.nullified_list = newcard_use.nullified_list;
+
                 room->setTag("CardUseNullifiedList", QVariant::fromValue(card_use.nullified_list));
                 if (card_use.card->isNDTrick() && !card_use.card->isKindOf("Nullification"))
                     room->setCardFlag(card_use.card, "LastTrickTarget_" + card_use.to.last()->objectName());

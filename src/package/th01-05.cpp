@@ -2182,7 +2182,7 @@ public:
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
                     }
                 }
-                use.card->setFlags("-baosi");
+                use.card->setFlags("-xunshi");
             }
         }
         return QList<SkillInvokeDetail>();

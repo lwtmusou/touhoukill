@@ -68,68 +68,6 @@ public:
     }
 };
 
-class Huzhu : public TriggerSkill
-{
-public:
-    Huzhu()
-        : TriggerSkill("huzhu$")
-    {
-        events << TargetConfirming;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
-    {
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (!use.card->isKindOf("Slash") || use.to.length() != 1)
-            return QList<SkillInvokeDetail>();
-        if (!use.to.first()->hasLordSkill(objectName()))
-            return QList<SkillInvokeDetail>();
-
-        use.card->setFlags("IgnoreFailed");
-        foreach (ServerPlayer *liege, room->getLieges("dld", use.to.first())) {
-            if (use.from != nullptr && use.from->canSlash(liege, use.card, false)) {
-                use.card->setFlags("-IgnoreFailed");
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.to.first(), use.to.first());
-            }
-        }
-        use.card->setFlags("-IgnoreFailed");
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
-    {
-        CardUseStruct use = data.value<CardUseStruct>();
-        QList<ServerPlayer *> targets;
-        use.card->setFlags("IgnoreFailed");
-        foreach (ServerPlayer *p, room->getLieges("dld", invoke->invoker)) {
-            if (use.from->canSlash(p, use.card, false))
-                targets << p;
-        }
-        use.card->setFlags("-IgnoreFailed");
-
-        foreach (ServerPlayer *p, targets) {
-            room->setTag("huzhu_target", QVariant::fromValue(invoke->invoker));
-            QString prompt = "slashtarget:" + use.from->objectName() + ":" + invoke->invoker->objectName() + ":" + use.card->objectName();
-            if (p->askForSkillInvoke("huzhu_change", prompt)) {
-                room->removeTag("huzhu_target");
-                use.to << p;
-                use.to.removeOne(invoke->invoker);
-                data = QVariant::fromValue(use);
-
-                QList<ServerPlayer *> logto;
-                logto << invoke->invoker;
-                room->touhouLogmessage("$CancelTarget", use.from, use.card->objectName(), logto);
-                logto << p;
-                logto.removeOne(invoke->invoker);
-                room->touhouLogmessage("#huzhu_change", use.from, use.card->objectName(), logto);
-
-                break;
-            }
-        }
-        return false;
-    }
-};
-
 MaihuoCard::MaihuoCard()
 {
     will_throw = false;
