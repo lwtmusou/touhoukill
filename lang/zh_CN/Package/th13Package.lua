@@ -86,8 +86,11 @@ return{
 	["shijie:front"] = "排队顶",
 	["shijie:bottom"] = "排队底",
 	["shijie:recoverRRRRRRRRR"] = "师姐你于出牌阶段使用了师姐花色的牌，你可以按确定回复 1 点体力，或者按取消摸 2 张牌。",
+	["$ShijieShowCards"] = "%from 发动 %arg 展示了 %card",
 	["fengshui"] = "风水",
 	[":fengshui"] = "准备阶段开始时或判定开始前，你可以观看牌堆一端的三张牌，并改变其中任意数量的牌的顺序并将其余的牌以任意顺序置于牌堆另一端。",
+	["fengshui:front"] = "排队顶",
+	["fengshui:bottom"] = "排队底",
 	["#fengshuiResult"] = "%from 的“<font color=\"yellow\"><b>风水</b></font>”结果：%arg 上，%arg2 下。",
 
 --*********************************************

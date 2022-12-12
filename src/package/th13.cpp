@@ -756,10 +756,33 @@ public:
             QList<int> cards = room->getNCards(2, false, bottom);
             room->returnToDrawPile(cards, bottom);
 
+            {
+                JsonArray gongxinArgs;
+                gongxinArgs << invoke->invoker->objectName();
+                gongxinArgs << false;
+                gongxinArgs << JsonUtils::toJsonArray(cards);
+
+                foreach (int cardId, cards) {
+                    WrappedCard *card = Sanguosha->getWrappedCard(cardId);
+                    if (card->isModified())
+                        room->broadcastUpdateCard(room->getAllPlayers(true), cardId, card);
+                    else
+                        room->broadcastResetCard(room->getAllPlayers(true), cardId);
+                }
+
+                LogMessage log;
+                log.type = "$ShijieShowCards";
+                log.from = invoke->invoker;
+                log.arg = objectName();
+                log.card_str = IntList2StringList(cards).join("+");
+                room->sendLog(log);
+
+                room->doBroadcastNotify(QSanProtocol::S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);
+            }
+
             ServerPlayer *current = data.value<ServerPlayer *>();
 
             foreach (int id, cards) {
-                room->showCard(invoke->invoker, id);
                 const Card *c = Sanguosha->getCard(id);
                 bool flag = false;
                 switch (c->getSuit()) {

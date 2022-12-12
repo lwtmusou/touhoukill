@@ -492,8 +492,12 @@ public:
         : OneCardViewAsSkill("liaogu")
     {
         response_pattern = "@@liaogu";
-        filter_pattern = ".|.|.|#liaoguTemp";
         expand_pile = "#liaoguTemp";
+    }
+
+    bool viewFilter(const Card *to_select) const override
+    {
+        return Self->getPile("#liaoguTemp").contains(to_select->getEffectiveId());
     }
 
     const Card *viewAs(const Card *originalCard) const override

@@ -495,7 +495,7 @@ void Room::returnToDrawPile(const QList<int> &cards, bool bottom)
     while (i.hasPrevious()) {
         int id = i.previous();
         setCardMapping(id, nullptr, Player::DrawPile);
-        if (bottom)
+        if (!bottom)
             m_drawPile->prepend(id);
         else
             m_drawPile->append(id);
