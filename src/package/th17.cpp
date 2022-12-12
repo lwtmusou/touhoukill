@@ -31,10 +31,6 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        RecoverStruct recover;
-        recover.who = invoke->invoker;
-        room->recover(invoke->targets.first(), recover);
-
         invoke->targets.first()->drawCards(1, objectName());
         if (invoke->targets.first() != invoke->invoker) {
             const Card *c = room->askForExchange(invoke->targets.first(), objectName(), 1, 1, false, "@shanxing-exchange:" + invoke->invoker->objectName(), true);
@@ -336,7 +332,7 @@ public:
     {
         if (triggerEvent == EventPhaseStart) {
             ServerPlayer *change = data.value<ServerPlayer *>();
-            if (change->getPhase() == Player::Play) {
+            if (change->getPhase() == Player::Finish) {
                 QList<SkillInvokeDetail> r;
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->hasSkill(this) && p->hasFlag("bengluo"))
@@ -1152,6 +1148,9 @@ public:
 
     const Card *viewAs(const QList<const Card *> &cards) const override
     {
+        if (cards.isEmpty())
+            return nullptr;
+
         QString pattern = Sanguosha->getCurrentCardUsePattern();
         if (pattern == "@@junzhen-card1") {
             JunzhenCard *dc = new JunzhenCard;
@@ -1187,8 +1186,6 @@ public:
     }
 };
 
-#define JUNZHEN_DEATH
-
 class Junzhen : public TriggerSkill
 {
 public:
@@ -1202,31 +1199,21 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
     {
         QList<SkillInvokeDetail> r;
-#ifdef JUNZHEN_DEATH
         if (triggerEvent == BuryVictim) {
             foreach (ServerPlayer *p, room->getAllPlayers()) {
                 if (p->tag.contains("junzhenTo"))
                     r << SkillInvokeDetail(this, nullptr, p, nullptr, true, nullptr, false);
             }
-        } else
-#endif
-            if (triggerEvent == EventPhaseEnd
-#ifdef JUNZHEN_DEATH
-                || triggerEvent == Death
-#endif
-            ) {
+        } else if (triggerEvent == EventPhaseEnd || triggerEvent == Death) {
             ServerPlayer *invoker = nullptr;
             if (triggerEvent == EventPhaseEnd) {
                 ServerPlayer *c = data.value<ServerPlayer *>();
                 if (c->getPhase() == Player::Play && c->isAlive())
                     invoker = c;
-            }
-#ifdef JUNZHEN_DEATH
-            else if (triggerEvent == Death) {
+            } else if (triggerEvent == Death) {
                 DeathStruct death = data.value<DeathStruct>();
                 invoker = death.who;
             }
-#endif
             if (invoker != nullptr && !invoker->isNude()) {
                 foreach (ServerPlayer *owner, room->findPlayersBySkillName(objectName()))
                     r << SkillInvokeDetail(this, owner, invoker);
@@ -1241,16 +1228,9 @@ public:
 
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-#ifdef JUNZHEN_DEATH
         if (triggerEvent == BuryVictim) {
             return true;
-        } else
-#endif
-            if (triggerEvent == EventPhaseEnd
-#ifdef JUNZHEN_DEATH
-                || triggerEvent == Death
-#endif
-            ) {
+        } else if (triggerEvent == EventPhaseEnd || triggerEvent == Death) {
             room->setPlayerFlag(invoke->owner, "junzhen_owner");
             invoke->invoker->tag.remove("junzhenTo");
             QString prompt = (invoke->invoker == invoke->owner) ? QStringLiteral("@junzhen-prompt2") : (QString(QStringLiteral("@junzhen-prompt1:")) + invoke->owner->objectName());
@@ -1269,11 +1249,7 @@ public:
 
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        if (
-#ifdef JUNZHEN_DEATH
-            triggerEvent == BuryVictim ||
-#endif
-            triggerEvent == EventPhaseEnd) {
+        if (triggerEvent == BuryVictim || triggerEvent == EventPhaseEnd) {
             ServerPlayer *target = invoke->invoker->tag["junzhenTo"].value<ServerPlayer *>();
             invoke->invoker->tag.remove("junzhenTo");
 
@@ -1459,8 +1435,10 @@ TH17Package::TH17Package()
 
     General *saki = new General(this, "saki", "gxs");
     saki->addSkill(new Jinji);
+    saki->addSkill(new JinjiT);
     saki->addSkill(new Tianxing);
     saki->addSkill(new SlashNoDistanceLimitSkill("tianxing"));
+    related_skills.insertMulti("jinji", "#jinji-t");
     related_skills.insertMulti("tianxing", "#tianxing-slash-ndl");
 
     General *mayumi = new General(this, "mayumi", "gxs");
@@ -1482,6 +1460,7 @@ TH17Package::TH17Package()
     eika->addSkill(new Shanlei);
     eika->addSkill(new Bengluo);
 
+    addMetaObject<LiaoguCard>();
     addMetaObject<LunniCard>();
     addMetaObject<JunzhenCard>();
 

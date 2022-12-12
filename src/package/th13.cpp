@@ -729,7 +729,7 @@ public:
             }
         } else if (e == EventPhaseEnd) {
             ServerPlayer *current = data.value<ServerPlayer *>();
-            if (current->getPhase() == Player::Play
+            if (current->getPhase() == Player::Play && (current->getMark("shijie_recordSuits") > 0)
                 && ((current->getMark("shijie_recordSuits") & current->getMark("shijie_usedSuits")) == current->getMark("shijie_recordSuits"))) {
                 foreach (ServerPlayer *futou, room->findPlayersBySkillName(objectName()))
                     r << SkillInvokeDetail(this, futou, current, nullptr, true, nullptr, false);
@@ -742,7 +742,7 @@ public:
     bool cost(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         if (e == EventPhaseStart)
-            return room->askForDiscard(invoke->invoker, objectName(), 1, 1, true, true, "@shijie-discard" + data.value<ServerPlayer *>()->objectName());
+            return room->askForDiscard(invoke->invoker, objectName(), 1, 1, true, true, "@shijie-discard:" + data.value<ServerPlayer *>()->objectName());
         else if (e == EventPhaseEnd)
             return true;
 
