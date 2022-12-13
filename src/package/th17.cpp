@@ -497,7 +497,7 @@ public:
 
     bool viewFilter(const Card *to_select) const override
     {
-        return Self->getPile("#liaoguTemp").contains(to_select->getEffectiveId());
+        return Self->getPile("#liaoguTemp").contains(to_select->getEffectiveId()) && to_select->isAvailable(Self);
     }
 
     const Card *viewAs(const Card *originalCard) const override
@@ -572,7 +572,7 @@ public:
         : TriggerSkill("liaogu")
     {
         view_as_skill = new LiaoguVS;
-        events << CardsMoveOneTime << EventPhaseChanging;
+        events << CardsMoveOneTime << EventPhaseStart;
         global = true;
     }
 
@@ -584,9 +584,12 @@ public:
                 && ((move.to != move.from) || (move.to_place != Player::PlaceHand && move.to_place != Player::PlaceEquip)))
                 if (room->getCurrent() != nullptr && room->getCurrent()->isAlive() && room->getCurrent()->getPhase() != Player::NotActive)
                     move.from->setFlags("liaogulost");
-        } else if (triggerEvent == EventPhaseChanging) {
-            foreach (ServerPlayer *p, room->getAllPlayers())
-                p->setFlags("-liaogulost");
+        } else if (triggerEvent == EventPhaseStart) {
+            ServerPlayer *current = data.value<ServerPlayer *>();
+            if (current->getPhase() == Player::NotActive) {
+                foreach (ServerPlayer *p, room->getAllPlayers())
+                    p->setFlags("-liaogulost");
+            }
         }
     }
 
@@ -1334,7 +1337,7 @@ public:
     JinjiT()
         : TriggerSkill("#jinji-t")
     {
-        events << EventPhaseChanging << CardUsed;
+        events << EventPhaseChanging << CardUsed << CardResponded;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
@@ -1343,6 +1346,10 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->getTypeId() == Card::TypeBasic && use.from != nullptr && use.from->hasSkill("jinji") && use.from->isAlive())
                 room->setPlayerFlag(use.from, "jinji_basic");
+        } else if (triggerEvent == CardResponded) {
+            CardResponseStruct resp = data.value<CardResponseStruct>();
+            if (resp.m_card->getTypeId() == Card::TypeBasic && resp.m_from != nullptr && resp.m_from->hasSkill("jinji") && resp.m_from->isAlive())
+                room->setPlayerFlag(resp.m_from, "jinji_basic");
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
