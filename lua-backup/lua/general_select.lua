@@ -143,6 +143,11 @@ selectFirst = function(player, candidates) -- string
 	    local idx = math.random(1, #candidates)
 		return candidates[idx]
 	end
+	if player:getRoom():getMode()== "04_2v2" then
+	    local idx = math.random(1, #candidates)
+		return candidates[idx]
+	end
+	
 
 	local values = {}
 	local role = player:getRole()

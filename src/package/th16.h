@@ -37,14 +37,14 @@ public:
     void onEffect(const CardEffectStruct &effect) const override;
 };
 
-class LinsaCard : public SkillCard
+/*class LinsaCard : public SkillCard
 {
     Q_OBJECT
 
 public:
     Q_INVOKABLE LinsaCard();
     void onEffect(const CardEffectStruct &effect) const override;
-};
+};*/
 
 class GakungWuCard : public SkillCard
 {

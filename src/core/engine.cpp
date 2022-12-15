@@ -417,6 +417,10 @@ QSet<QString> Engine::availableGameModes() const
         // QStringLiteral("3v3"), //      official 3v3 mode
         // QStringLiteral("3v3x"), //     official 3v3 mode, extreme
         // QStringLiteral("jiange"), //   official 4v4 mode, JianGe Defense
+
+        //         modes["03_1v2"] = tr("Peasants vs Landlord");
+        //         modes["04_2v2"] = tr("contest 2v2");
+
     };
 }
 

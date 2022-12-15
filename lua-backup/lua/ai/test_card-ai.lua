@@ -74,6 +74,8 @@ function SmartAI:searchForMagicAnaleptic(use, enemy, trick)
 	end
 end
 
+sgs.ai_use_priority.MagicAnaleptic = sgs.ai_use_priority.Analeptic  - 0.2
+
 function SmartAI:useCardSuperPeach(...)
 	self:useCardPeach(...)
 end

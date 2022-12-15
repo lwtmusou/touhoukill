@@ -690,7 +690,7 @@ bool Player::hasValidLordSkill(const QString &skill_name, bool include_lose) con
         return true;
 
     QString mode = d->room->serverInfo()->GameModeStr;
-    if (mode == QStringLiteral("06_3v3") || mode == QStringLiteral("06_XMode") || mode == QStringLiteral("02_1v1")
+    if (mode == QStringLiteral("06_3v3") || mode == QStringLiteral("06_XMode") || mode == QStringLiteral("02_1v1") || mode == QStringLiteral("03_1v2")
 #if 0
             // todo: make this in serverinfo
         || Config.value(QStringLiteral("WithoutLordskill"), false).toBool()

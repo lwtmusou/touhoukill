@@ -360,35 +360,18 @@ public:
     Diexing()
         : TriggerSkill("diexing")
     {
-        events << HpChanged << CardsMoveOneTime;
+        events << Damaged << CardsMoveOneTime;
         frequency = Compulsory;
-    }
-
-    void record(TriggerEvent triggerEvent, Room *, QVariant &data) const override
-    {
-        if (triggerEvent == HpChanged) {
-            ServerPlayer *p = data.value<ServerPlayer *>();
-            if (p != nullptr) {
-                if (!p->tag.contains("diexingHp"))
-                    p->tag["diexingHp"] = p->getMaxHp(); //p->getGeneral()->getMaxHp();
-
-                p->tag["diexingHp2"] = p->tag.value("diexingHp");
-                p->tag["diexingHp"] = p->getHp();
-            }
-        }
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
     {
         QList<SkillInvokeDetail> r;
-        if (triggerEvent == HpChanged) {
-            ServerPlayer *player = data.value<ServerPlayer *>();
+        if (triggerEvent == Damaged) {
+            DamageStruct damage = data.value<DamageStruct>();
 
-            if (player != nullptr && player->isAlive() && player->hasSkill(this)) {
-                // judge if hp is deduced
-                bool ok = false;
-                if (player->tag.value("diexingHp2", -1).toInt(&ok) > player->getHp() && ok)
-                    r << SkillInvokeDetail(this, player, player, nullptr, true);
+            if (damage.to != nullptr && damage.to->isAlive() && damage.to->hasSkill(this)) {
+                r << SkillInvokeDetail(this, damage.to, damage.to, nullptr, true);
             }
         } else {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
@@ -431,7 +414,7 @@ public:
 
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        if (triggerEvent == HpChanged)
+        if (triggerEvent == Damaged)
             invoke->invoker->drawCards(2, objectName());
         else
             room->recover(invoke->invoker, RecoverStruct());
@@ -440,7 +423,36 @@ public:
     }
 };
 
-LinsaCard::LinsaCard()
+class Linsa : public OneCardViewAsSkill
+{
+public:
+    Linsa()
+        : OneCardViewAsSkill("linsa")
+    {
+        filter_pattern = ".|diamond";
+        response_or_use = true;
+    }
+
+    bool isEnabledAtResponse(const Player *player, const QString &pattern) const override
+    {
+        KnownBoth *card = new KnownBoth(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(KnownBoth, card)
+        const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
+
+        return cardPattern != nullptr && cardPattern->match(player, card)
+            && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
+    }
+
+    const Card *viewAs(const Card *originalCard) const override
+    {
+        KnownBoth *card = new KnownBoth(Card::SuitToBeDecided, -1);
+        card->addSubcard(originalCard);
+        card->setSkillName(objectName());
+        return card;
+    }
+};
+
+/*LinsaCard::LinsaCard()
 {
     will_throw = false;
     handling_method = Card::MethodNone;
@@ -469,6 +481,7 @@ void LinsaCard::onEffect(const CardEffectStruct &effect) const
         effect.to->tag["linsaNullifyFrom"] = QVariant::fromValue<ServerPlayer *>(effect.from);
     }
 }
+
 
 class LinsaVS : public OneCardViewAsSkill
 {
@@ -586,7 +599,7 @@ public:
 
         return false;
     }
-};
+};*/
 
 class Shengyu : public TriggerSkill
 {
@@ -1596,22 +1609,6 @@ TH16Package::TH16Package()
     okina->addSkill(new Liji);
     okina->addSkill(new Houguang);
 
-    General *eternity = new General(this, "eternity", "tkz", 3);
-    eternity->addSkill(new Diexing);
-    eternity->addSkill(new Linsa);
-
-    General *nemuno = new General(this, "nemuno", "tkz", 4);
-    nemuno->addSkill(new Shengyu);
-    nemuno->addSkill(new Modao);
-
-    General *aun = new General(this, "aun", "tkz", 3);
-    aun->addSkill(new Xunfo);
-    aun->addSkill(new Zhenshe);
-
-    General *narumi = new General(this, "narumi", "tkz");
-    narumi->addSkill(new Puti);
-    narumi->addSkill(new Zangfa);
-
     General *satono = new General(this, "satono", "tkz", 3);
     satono->addSkill(new Guwu);
     satono->addSkill(new Minghe);
@@ -1619,6 +1616,22 @@ TH16Package::TH16Package()
     General *mai = new General(this, "mai", "tkz", 3);
     mai->addSkill(new Kuangwu);
     mai->addSkill(new Zhuti);
+
+    General *narumi = new General(this, "narumi", "tkz");
+    narumi->addSkill(new Puti);
+    narumi->addSkill(new Zangfa);
+
+    General *aun = new General(this, "aun", "tkz", 3);
+    aun->addSkill(new Xunfo);
+    aun->addSkill(new Zhenshe);
+
+    General *nemuno = new General(this, "nemuno", "tkz", 4);
+    nemuno->addSkill(new Shengyu);
+    nemuno->addSkill(new Modao);
+
+    General *eternity = new General(this, "eternity", "tkz", 3);
+    eternity->addSkill(new Diexing);
+    eternity->addSkill(new Linsa);
 
     General *okinasp = new General(this, "okina_sp", "tkz");
     okinasp->addSkill(new Menfei);
@@ -1634,7 +1647,7 @@ TH16Package::TH16Package()
     addMetaObject<HuazhaoCard>();
     addMetaObject<ChuntengCard>();
     addMetaObject<Chunteng2Card>();
-    addMetaObject<LinsaCard>();
+    //addMetaObject<LinsaCard>();
     addMetaObject<GuwuCard>();
     addMetaObject<MingheCard>();
     addMetaObject<KuangwuCard>();

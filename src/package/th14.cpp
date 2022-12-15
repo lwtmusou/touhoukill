@@ -697,8 +697,8 @@ void YuanfeiCard::onEffect(const CardEffectStruct &effect) const
     ServerPlayer *target = effect.to;
     room->setPlayerCardLimitation(target, "use,response", ".", "yuanfei", true);
     LogMessage l;
-    l.type = "#yuanfei";
-    l.from = target;
+    l.type = "#duozhi";
+    l.to << target;
     room->sendLog(l);
 }
 

@@ -2394,18 +2394,18 @@ void RoomScene::updateSkillButtons()
     //check duanchang?
     foreach (const Skill *skill, Self->getHeadSkillList()) {
         if (skill->isLordSkill()
-            && (Self->roleString() != QStringLiteral("lord") || ClientInstance->serverInfo()->GameModeStr == QStringLiteral("06_3v3")
-                || ClientInstance->serverInfo()->GameModeStr == QStringLiteral("06_XMode") || ClientInstance->serverInfo()->GameModeStr == QStringLiteral("02_1v1")
-                || Config.value(QStringLiteral("WithoutLordskill"), false).toBool()))
+            && (Self->role() != QSanguosha::RoleLord || ClientInstance->serverInfo()->GameModeStr == QStringLiteral("03_1v2")
+                || ClientInstance->serverInfo()->GameModeStr == QStringLiteral("06_3v3") || ClientInstance->serverInfo()->GameModeStr == QStringLiteral("06_XMode")
+                || ClientInstance->serverInfo()->GameModeStr == QStringLiteral("02_1v1") || Config.value(QStringLiteral("WithoutLordskill"), false).toBool()))
             continue;
 
         addSkillButton(skill, true);
     }
     foreach (const Skill *skill, Self->getDeputySkillList()) {
         if (skill->isLordSkill()
-            && (Self->roleString() != QStringLiteral("lord") || ClientInstance->serverInfo()->GameModeStr == QStringLiteral("06_3v3")
-                || ClientInstance->serverInfo()->GameModeStr == QStringLiteral("06_XMode") || ClientInstance->serverInfo()->GameModeStr == QStringLiteral("02_1v1")
-                || Config.value(QStringLiteral("WithoutLordskill"), false).toBool()))
+            && (Self->role() != QSanguosha::RoleLord || ClientInstance->serverInfo()->GameModeStr == QStringLiteral("03_1v2")
+                || ClientInstance->serverInfo()->GameModeStr == QStringLiteral("06_3v3") || ClientInstance->serverInfo()->GameModeStr == QStringLiteral("06_XMode")
+                || ClientInstance->serverInfo()->GameModeStr == QStringLiteral("02_1v1") || Config.value(QStringLiteral("WithoutLordskill"), false).toBool()))
             continue;
 
         addSkillButton(skill, false);

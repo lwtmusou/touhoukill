@@ -2161,9 +2161,18 @@ public:
     static void setYsJieLimit(ServerPlayer *player, QList<ServerPlayer *> targets)
     {
         Room *room = player->getRoom();
+
+        LogMessage l;
         foreach (ServerPlayer *p, targets) {
-            if (!p->isCardLimited("use,response", "ysjie"))
+            if (!p->isCardLimited("use,response", "ysjie")) {
                 room->setPlayerCardLimitation(p, "use,response", ".", "ysjie", true);
+                l.to << p;
+            }
+        }
+
+        if (!l.to.isEmpty()) {
+            l.type = "#duozhi";
+            room->sendLog(l);
         }
     }
 
