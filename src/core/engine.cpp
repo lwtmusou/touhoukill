@@ -411,6 +411,9 @@ QSet<QString> Engine::availableGameModes() const
         QStringLiteral("hegemony_11"), // 11players
         QStringLiteral("hegemony_12"), // 12players
 
+        QStringLiteral("peasents_vs_landlord"), // 3 players, peasents vs landlord mode
+        QStringLiteral("happy2v2"), //    4 players, happy 2v2 mode
+
         // Others
         // QStringLiteral("1v1"), //      official 1v1 mode
         // QStringLiteral("1v3"), //      official 1v3 mode
@@ -418,12 +421,10 @@ QSet<QString> Engine::availableGameModes() const
         // QStringLiteral("3v3x"), //     official 3v3 mode, extreme
         // QStringLiteral("jiange"), //   official 4v4 mode, JianGe Defense
 
-        //         modes["03_1v2"] = tr("Peasants vs Landlord");
-        //         modes["04_2v2"] = tr("contest 2v2");
-
     };
 }
 
+// TODO: refactor using factory?
 const Mode *Engine::gameMode(const QString &name) const
 {
     if (d->modes.contains(name))
@@ -443,6 +444,10 @@ const Mode *Engine::gameMode(const QString &name) const
     } else if (name.startsWith(QStringLiteral("role_"))) {
         if (GenericRoleMode::nameMatched(name))
             ret = new GenericRoleMode(name);
+    } else if (name == QStringLiteral("peasents_vs_landlord")) {
+        ret = new PeasentsVsLandlordMode;
+    } else if (name == QStringLiteral("happy2v2")) {
+        ret = new Happy2v2Mode;
     }
 
     if (ret != nullptr)

@@ -174,6 +174,69 @@ bool GenericRoleMode::nameMatched(const QString &name)
     return GenericRoleModePrivate::parseRoleCount(name, nullptr);
 }
 
+PeasentsVsLandlordMode::PeasentsVsLandlordMode()
+    : GenericRoleMode(QStringLiteral("peasents_vs_landlord"))
+{
+    d->loyalistCount = 0;
+    d->rebelCount = 2;
+    d->renegadeCount = 0;
+}
+
+PeasentsVsLandlordMode::~PeasentsVsLandlordMode()
+{
+}
+
+Rule *PeasentsVsLandlordMode::rule() const
+{
+    // TODO
+    return nullptr;
+}
+
+bool PeasentsVsLandlordMode::nameMatched(const QString &name)
+{
+    return name == QStringLiteral("peasents_vs_landlord");
+}
+
+Happy2v2Mode::Happy2v2Mode()
+    : Mode(QStringLiteral("happy2v2"), ModeRole)
+{
+}
+
+bool Happy2v2Mode::nameMatched(const QString &name)
+{
+    return name == QStringLiteral("happy2v2");
+}
+
+Happy2v2Mode::~Happy2v2Mode()
+{
+}
+
+int Happy2v2Mode::playersCount() const
+{
+    return 4;
+}
+
+int Happy2v2Mode::generalsPerPlayer() const
+{
+    return 1;
+}
+
+QString Happy2v2Mode::roles() const
+{
+    return QStringLiteral("CCFF");
+}
+
+Rule *Happy2v2Mode::rule() const
+{
+    // TODO
+    return nullptr;
+}
+
+void Happy2v2Mode::startGame(GameLogic *logic, RoomObject *room) const
+{
+    // TODO
+}
+
 class GenericHegemonyModePrivate
 {
 public:

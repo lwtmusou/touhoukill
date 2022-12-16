@@ -62,6 +62,7 @@ class GenericRoleModePrivate;
 
 class QSGS_CORE_EXPORT GenericRoleMode : public Mode
 {
+protected:
     explicit GenericRoleMode(const QString &name);
     static bool nameMatched(const QString &name);
 
@@ -75,15 +76,51 @@ public:
 
     void startGame(GameLogic *logic, RoomObject *room) const override;
 
-private:
+protected:
     friend class Engine;
     GenericRoleModePrivate *const d;
+};
+
+class QSGS_CORE_EXPORT PeasentsVsLandlordMode : public GenericRoleMode
+{
+protected:
+    explicit PeasentsVsLandlordMode();
+    static bool nameMatched(const QString &name);
+
+public:
+    ~PeasentsVsLandlordMode() override;
+
+    Rule *rule() const override;
+
+protected:
+    friend class Engine;
+};
+
+class QSGS_CORE_EXPORT Happy2v2Mode : public Mode
+{
+protected:
+    explicit Happy2v2Mode();
+    static bool nameMatched(const QString &name);
+
+public:
+    ~Happy2v2Mode() override;
+
+    int playersCount() const override;
+    int generalsPerPlayer() const override;
+    QString roles() const override;
+    Rule *rule() const override;
+
+    void startGame(GameLogic *logic, RoomObject *room) const override;
+
+protected:
+    friend class Engine;
 };
 
 class GenericHegemonyModePrivate;
 
 class QSGS_CORE_EXPORT GenericHegemonyMode : public Mode
 {
+protected:
     explicit GenericHegemonyMode(const QString &name);
     static bool nameMatched(const QString &name);
 
@@ -97,7 +134,7 @@ public:
 
     void startGame(GameLogic *logic, RoomObject *room) const override;
 
-private:
+protected:
     friend class Engine;
     GenericHegemonyModePrivate *const d;
 };
