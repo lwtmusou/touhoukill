@@ -405,14 +405,18 @@ QList<int> LegacyRoom::getNCards(int n, bool update_pile_number, bool bottom)
     return card_ids;
 }
 
-void LegacyRoom::returnToTopDrawPile(const QList<int> &cards)
+void LegacyRoom::returnToDrawPile(const QList<int> &cards, bool bottom)
 {
     QListIterator<int> i(cards);
     i.toBack();
     while (i.hasPrevious()) {
         int id = i.previous();
         setCardMapping(id, nullptr, QSanguosha::PlaceDrawPile);
-        m_drawPile->prepend(id);
+
+        if (!bottom)
+            m_drawPile->prepend(id);
+        else
+            m_drawPile->append(id);
     }
     doBroadcastNotify(S_COMMAND_UPDATE_PILE, m_drawPile->length());
 }
@@ -2512,6 +2516,9 @@ void LegacyRoom::prepareForStart()
                 QString role = replyArray.at(1).toArray().at(0).toString();
                 LegacyServerPlayer *player_self = findChild<LegacyServerPlayer *>(name);
                 setPlayerProperty(player_self, "role", role);
+                if (mode == "03_1v2" || mode == "04_2v2") {
+                    broadcastProperty(player_self, "role", role);
+                }
 
                 QList<LegacyServerPlayer *> all_players = m_players;
                 all_players.removeOne(player_self);
@@ -2525,7 +2532,9 @@ void LegacyRoom::prepareForStart()
                     const QString &role = roles.at(i);
 
                     player->setRole(role);
-                    if (role == QStringLiteral("lord")) {
+                                     if (mode == "03_1v2" || mode == "04_2v2") {
+                                         broadcastProperty(player, "role", role);
+                                     } else  if (role == QStringLiteral("lord")) {
                         broadcastProperty(player, "role", QStringLiteral("lord"));
                         setPlayerProperty(player, "role_shown", true);
                     } else {
@@ -2953,10 +2962,8 @@ void LegacyRoom::assignGeneralsForPlayers(const QList<LegacyServerPlayer *> &to_
 
     QSet<const General *> generals = serverInfo()->GameMode->availableGenerals();
 
-    int max_choice = Config.value(QStringLiteral("MaxChoice"), 6).toInt();
     int total = generals.count();
     int max_available = (total - existed.size()) / to_assign.length();
-    int choice_count = qMin(max_choice, max_available);
 
     QSet<const General *> choices = generals;
     choices.subtract(existed);
@@ -2973,6 +2980,15 @@ void LegacyRoom::assignGeneralsForPlayers(const QList<LegacyServerPlayer *> &to_
 
     bool assign_latest_general = Config.value(QStringLiteral("AssignLatestGeneral"), true).toBool() && serverInfo()->GameMode->category() == QSanguosha::ModeRole;
     foreach (LegacyServerPlayer *player, to_assign) {
+        int max_choice = Config.value(QStringLiteral("MaxChoice"), 6).toInt();
+        if (serverInfo()->GameMode->name() == QStringLiteral("03_1v2")) {
+            if (player->isLord())
+                max_choice = Config.value(QStringLiteral("LandlordMaxChoice"), 8).toInt();
+            else
+                max_choice = Config.value(QStringLiteral("PeasantMaxChoice"), 5).toInt();
+        }
+        int choice_count = qMin(max_choice, max_available);
+
         player->clearSelected();
         int i = 0;
         if (assign_latest_general && !latest.empty()) {
@@ -3216,9 +3232,87 @@ void LegacyRoom::chooseGenerals()
     Config.setValue(QStringLiteral("Banlist/Roles"), ban_list);
 }
 
+void LegacyRoom::choose1v2Generals()
+{
+    QStringList ban_list = Config.value(QStringLiteral("Banlist/03_1v2")).toStringList();
+    //Sanguosha->banRandomGods(); //why this function add the rest gods into banlist....
+
+    QList<LegacyServerPlayer *> to_assign = m_players;
+
+    assignGeneralsForPlayers(to_assign);
+    foreach (LegacyServerPlayer *player, to_assign)
+        _setupChooseGeneralRequestArgs(player);
+
+    doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
+    foreach (LegacyServerPlayer *player, to_assign) {
+        if (player->general() != nullptr)
+            continue;
+        QString generalName = player->getClientReply().toString();
+        if (!player->m_isClientResponseReady || !_setPlayerGeneral(player, generalName, true))
+            _setPlayerGeneral(player, _chooseDefaultGeneral(player), true);
+    }
+
+    if (Config.Enable2ndGeneral) {
+        QList<LegacyServerPlayer *> to_assign = m_players;
+        assignGeneralsForPlayers(to_assign);
+        foreach (LegacyServerPlayer *player, to_assign)
+            _setupChooseGeneralRequestArgs(player);
+
+        doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
+        foreach (LegacyServerPlayer *player, to_assign) {
+            if (player->getGeneral2() != nullptr)
+                continue;
+            QString generalName = player->getClientReply().toString();
+            if (!player->m_isClientResponseReady || !_setPlayerGeneral(player, generalName, false))
+                _setPlayerGeneral(player, _chooseDefaultGeneral(player), false);
+        }
+    }
+
+    Config.setValue(QStringLiteral("Banlist/03_1v2"), ban_list);
+}
+
+void LegacyRoom::choose2v2Generals()
+{
+    QStringList ban_list = Config.value(QStringLiteral("Banlist/04_2v2")).toStringList();
+    //Sanguosha->banRandomGods(); //why this function add the rest gods into banlist....
+
+    QList<LegacyServerPlayer *> to_assign = m_players;
+
+    assignGeneralsForPlayers(to_assign);
+    foreach (LegacyServerPlayer *player, to_assign)
+        _setupChooseGeneralRequestArgs(player);
+
+    doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
+    foreach (LegacyServerPlayer *player, to_assign) {
+        if (player->general() != nullptr)
+            continue;
+        QString generalName = player->getClientReply().toString();
+        if (!player->m_isClientResponseReady || !_setPlayerGeneral(player, generalName, true))
+            _setPlayerGeneral(player, _chooseDefaultGeneral(player), true);
+    }
+
+    if (Config.Enable2ndGeneral) {
+        QList<LegacyServerPlayer *> to_assign = m_players;
+        assignGeneralsForPlayers(to_assign);
+        foreach (LegacyServerPlayer *player, to_assign)
+            _setupChooseGeneralRequestArgs(player);
+
+        doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
+        foreach (LegacyServerPlayer *player, to_assign) {
+            if (player->getGeneral2() != nullptr)
+                continue;
+            QString generalName = player->getClientReply().toString();
+            if (!player->m_isClientResponseReady || !_setPlayerGeneral(player, generalName, false))
+                _setPlayerGeneral(player, _chooseDefaultGeneral(player), false);
+        }
+    }
+
+    Config.setValue(QStringLiteral("Banlist/04_2v2"), ban_list);
+}
+
 void LegacyRoom::chooseHegemonyGenerals()
 {
-    QStringList ban_list = Config.value(QStringLiteral("Banlist/Roles")).toStringList();
+    QStringList ban_list = Config.value(QStringLiteral("Banlist/Hegemony")).toStringList();
     QList<LegacyServerPlayer *> to_assign = m_players;
 
     assignGeneralsForPlayers(to_assign);
@@ -3290,7 +3384,7 @@ void LegacyRoom::chooseHegemonyGenerals()
         this->setTag(player->objectName(), QVariant::fromValue(names));
     }
 
-    Config.setValue(QStringLiteral("Banlist/Roles"), ban_list);
+    Config.setValue(QStringLiteral("Banlist/Hegemony"), ban_list);
 }
 
 void LegacyRoom::assignRoles()
@@ -3312,8 +3406,8 @@ void LegacyRoom::assignRoles()
         if (roleMap.contains(roleStr.at(i)))
             roles << roleMap.value(roleStr.at(i));
     }
-
-    qShuffle(roles);
+    if (serverInfo()->GameMode->name() != QStringLiteral("04_2v2"))
+        qShuffle(roles);
 
     for (int i = 0; i < n; i++) {
         LegacyServerPlayer *player = m_players[i];
@@ -3323,6 +3417,9 @@ void LegacyRoom::assignRoles()
         if (role == QStringLiteral("lord")) {
             broadcastProperty(player, "role", QStringLiteral("lord"));
             setPlayerProperty(player, "role_shown", true);
+        } else if (serverInfo()->GameMode->name() == QStringLiteral("03_1v2") || serverInfo()->GameMode->name() == QStringLiteral("04_2v2")) {
+            broadcastProperty(player, "role", role);
+            //room->setPlayerProperty(player, "role_shown", true); //important! to notify client
         } else
             notifyProperty(player, player, "role");
     }
@@ -3391,17 +3488,38 @@ void LegacyRoom::adjustSeats()
 {
     QList<LegacyServerPlayer *> players;
     int i = 0;
-    for (i = 0; i < m_players.length(); i++) {
-        if (m_players.at(i)->role() == QSanguosha::RoleLord)
-            break;
+    if (serverInfo()->GameMode->name() == QStringLiteral("04_2v2") && Config.EnableCheat && Config.value(QStringLiteral("FreeAssign"), false).toBool()
+        && Config.FreeAssignSelf) { //shffule players then fix seats
+        qShuffle(m_players);
+        for (i = 0; i < m_players.length(); i++) {
+            if (m_players.at(i)->role() == QSanguosha::RoleLoyalist) {
+                players << m_players.at(i);
+                break;
+            }
+        }
+        for (int j = 0; j < m_players.length(); j++) {
+            if (m_players.at(j)->role() != QSanguosha::RoleLoyalist)
+                players << m_players.at(j);
+        }
+        for (int k = i + 1; k < m_players.length(); k++) {
+            if (m_players.at(k)->role() == QSanguosha::RoleLoyalist) {
+                players << m_players.at(k);
+                break;
+            }
+        }
+        m_players = players;
+    } else {
+        for (i = 0; i < m_players.length(); i++) {
+            if (m_players.at(i)->role() == QSanguosha::RoleLord)
+                break;
+        }
+        for (int j = i; j < m_players.length(); j++)
+            players << m_players.at(j);
+        for (int j = 0; j < i; j++)
+            players << m_players.at(j);
+
+        m_players = players;
     }
-    for (int j = i; j < m_players.length(); j++)
-        players << m_players.at(j);
-    for (int j = 0; j < i; j++)
-        players << m_players.at(j);
-
-    m_players = players;
-
     for (int i = 0; i < m_players.length(); i++)
         m_players.at(i)->setSeat(i + 1);
 
@@ -4226,7 +4344,7 @@ void LegacyRoom::startGame()
 
     foreach (LegacyServerPlayer *player, m_players) {
         if (serverInfo()->GameMode->name() == QStringLiteral("06_3v3") || serverInfo()->GameMode->name() == QStringLiteral("02_1v1")
-            || serverInfo()->GameMode->name() == QStringLiteral("06_XMode")
+            || serverInfo()->GameMode->name() == QStringLiteral("06_XMode") || serverInfo()->GameMode->name() == QStringLiteral("03_1v2")
             || (serverInfo()->GameMode->category() == QSanguosha::ModeRole && !player->isLord())) // hegemony has already notified "general"
             broadcastProperty(player, "general");
 
@@ -6060,7 +6178,7 @@ void LegacyRoom::_setupChooseGeneralRequestArgs(LegacyServerPlayer *player)
         options << false;
     } else {
         options = QSgsJsonUtils::toJsonArray(player->getSelected());
-        if (getLord() != nullptr)
+        if (getLord() != nullptr && serverInfo()->GameMode->name() != QStringLiteral("03_1v2"))
             options.append(QStringLiteral("%1(lord)").arg(getLord()->generalName()));
     }
 

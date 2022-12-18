@@ -352,6 +352,12 @@ void RoomThread::run()
     } else if (room->serverInfo()->GameMode->category() == QSanguosha::ModeHegemony) {
         room->chooseHegemonyGenerals();
         room->startGame();
+    } else if (room->serverInfo()->GameMode->name() == QStringLiteral("03_1v2")) {
+        room->choose1v2Generals();
+        room->startGame();
+    } else if (room->serverInfo()->GameMode->name() == QStringLiteral("04_2v2")) {
+        room->choose2v2Generals();
+        room->startGame();
     } else {
         room->chooseGenerals();
         room->startGame();

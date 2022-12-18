@@ -181,13 +181,32 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, GameLogic *l
                             room->setPlayerMark(player, skill->limitMark(), 1);
                     }
                 }
+                if (room->serverInfo()->GameMode->name() == QStringLiteral("03_1v2")) {
+                    if (player->isLord()) {
+                        room->handleAcquireDetachSkills(player, QStringLiteral("zhubing"));
+                        room->handleAcquireDetachSkills(player, QStringLiteral("cadan"));
+                    } else
+                        room->handleAcquireDetachSkills(player, QStringLiteral("jili"));
+                }
             }
+
             room->setTag(QStringLiteral("FirstRound"), true);
             bool kof_mode = room->serverInfo()->GameMode->name() == QStringLiteral("02_1v1")
                 && Config.value(QStringLiteral("1v1/Rule"), QStringLiteral("2013")).toString() != QStringLiteral("Classical");
             QList<DrawNCardsStruct> s_list;
             foreach (LegacyServerPlayer *p, room->serverPlayers()) {
                 int n = kof_mode ? p->maxHp() : 4;
+
+                if (room->serverInfo()->GameMode->name() == QStringLiteral("03_1v2") && p->isLord())
+                    n++;
+
+                if (room->serverInfo()->GameMode->name() == QStringLiteral("04_2v2")) {
+                    if (p->seat() == 1)
+                        n--;
+                    else if (p->seat() == 4)
+                        n++;
+                }
+
                 DrawNCardsStruct s;
                 s.player = p;
                 s.isInitial = true;
@@ -386,7 +405,12 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, GameLogic *l
                     thread->trigger(QSanguosha::TargetSpecified, data);
                     thread->trigger(QSanguosha::TargetConfirmed, data);
                 }
-                card_use = data.value<CardUseStruct>();
+
+                // only copy limited data after TargetConfirmed since the from / to / card, etc are fixed
+                CardUseStruct newcard_use = data.value<CardUseStruct>();
+                card_use.effectValue = newcard_use.effectValue;
+                card_use.nullified_list = newcard_use.nullified_list;
+
                 room->setTag(QStringLiteral("CardUseNullifiedList"), QVariant::fromValue(card_use.nullified_list));
                 if (card_use.card->face()->isNdTrick() && !card_use.card->face()->isKindOf(QStringLiteral("Nullification")))
                     room->setCardFlag(card_use.card, QStringLiteral("LastTrickTarget_") + card_use.to.last()->objectName());
@@ -989,6 +1013,8 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, GameLogic *l
     case QSanguosha::BuryVictim: {
         DeathStruct death = data.value<DeathStruct>();
         bool skipRewardAndPunish = death.who->hasFlag(QStringLiteral("skipRewardAndPunish"));
+        if (room->serverInfo()->GameMode->name() == QStringLiteral("03_1v2") || room->serverInfo()->GameMode->name() == QStringLiteral("04_2v2"))
+            skipRewardAndPunish = true;
         qobject_cast<LegacyServerPlayer *>(death.who)->bury();
 
         LegacyServerPlayer *killer = nullptr;
@@ -1009,6 +1035,16 @@ bool LegacyGameRule::trigger(QSanguosha::TriggerEvent triggerEvent, GameLogic *l
 
         if ((killer != nullptr) && !skipRewardAndPunish)
             rewardAndPunish(room, killer, qobject_cast<LegacyServerPlayer *>(death.who));
+
+        //reward teamate
+        if (room->serverInfo()->GameMode->name() == QStringLiteral("04_2v2")) {
+            foreach (LegacyServerPlayer *p, room->getAllPlayers()) {
+                if (death.who->role() == p->role()) {
+                    room->touhouLogmessage(QStringLiteral("#contest2v2Buff"), p);
+                    p->drawCards(1);
+                }
+            }
+        }
 
         //if lord dead in hegemony mode?
 
@@ -1400,6 +1436,13 @@ QString LegacyGameRule::getWinner(LegacyRoom *room, LegacyServerPlayer *victim) 
             else
                 winner = QStringLiteral("renegade+rebel");
         }
+    } else if (room->serverInfo()->GameMode->name() == QStringLiteral("04_2v2")) {
+        QString role = victim->roleString();
+        QStringList alive_roles = room->aliveRoles(victim);
+        if (alive_roles.length() == 1)
+            winner = alive_roles.first();
+        else if (alive_roles.length() == 2 && alive_roles.first() == alive_roles.last())
+            winner = alive_roles.first();
     } else if (isHegemonyGameMode(room->serverInfo()->GameMode->name())) {
         QList<LegacyServerPlayer *> players = room->getAllPlayers();
         LegacyServerPlayer *win_player = players.first();

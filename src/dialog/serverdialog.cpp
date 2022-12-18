@@ -210,6 +210,14 @@ QWidget *ServerDialog::createAdvancedTab()
     nonlord_maxchoice_spinbox->setRange(0, 10);
     nonlord_maxchoice_spinbox->setValue(Config.value(QStringLiteral("NonLordMaxChoice"), 6).toInt());
 
+    landlord_maxchoice_spinbox = new QSpinBox;
+    landlord_maxchoice_spinbox->setRange(0, 10);
+    landlord_maxchoice_spinbox->setValue(Config.value(QStringLiteral("LandlordMaxChoice"), 8).toInt());
+
+    peasant_maxchoice_spinbox = new QSpinBox;
+    peasant_maxchoice_spinbox->setRange(0, 10);
+    peasant_maxchoice_spinbox->setValue(Config.value(QStringLiteral("PeasantMaxChoice"), 5).toInt());
+
     forbid_same_ip_checkbox = new QCheckBox(tr("Forbid same IP with multiple connection"));
     forbid_same_ip_checkbox->setChecked(Config.ForbidSIMC);
 
@@ -246,6 +254,8 @@ QWidget *ServerDialog::createAdvancedTab()
     layout->addLayout(HLay(godlimit_label, godlimit_spinbox));
     layout->addLayout(HLay(lord_maxchoice_label, lord_maxchoice_spinbox));
     layout->addLayout(HLay(new QLabel(tr("Upperlimit for non-lord")), nonlord_maxchoice_spinbox));
+    layout->addLayout(HLay(new QLabel(tr("Upperlimit for landlord")), landlord_maxchoice_spinbox));
+    layout->addLayout(HLay(new QLabel(tr("Upperlimit for peasant")), peasant_maxchoice_spinbox));
     layout->addWidget(second_general_checkbox);
     layout->addWidget(prevent_awaken_below3_checkbox);
     layout->addLayout(HLay(new QLabel(tr("Address")), address_edit));
@@ -358,7 +368,7 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
     setWindowTitle(tr("Select generals that are excluded"));
 
     if (ban_list.isEmpty())
-        ban_list << QStringLiteral("Roles") << QStringLiteral("HulaoPass");
+        ban_list << QStringLiteral("Roles") << QStringLiteral("HulaoPass") << QStringLiteral("03_1v2") << QStringLiteral("04_2v2");
     QVBoxLayout *layout = new QVBoxLayout;
 
     QTabWidget *tab = new QTabWidget;
@@ -901,6 +911,8 @@ bool ServerDialog::config()
     Config.setValue(QStringLiteral("GodLimit"), godlimit_spinbox->value());
     Config.setValue(QStringLiteral("LordMaxChoice"), lord_maxchoice_spinbox->value());
     Config.setValue(QStringLiteral("NonLordMaxChoice"), nonlord_maxchoice_spinbox->value());
+    Config.setValue(QStringLiteral("LandlordMaxChoice"), landlord_maxchoice_spinbox->value());
+    Config.setValue(QStringLiteral("PeasantMaxChoice"), peasant_maxchoice_spinbox->value());
     Config.setValue(QStringLiteral("ForbidSIMC"), Config.ForbidSIMC);
     Config.setValue(QStringLiteral("DisableChat"), Config.DisableChat);
     Config.setValue(QStringLiteral("Enable2ndGeneral"), Config.Enable2ndGeneral);

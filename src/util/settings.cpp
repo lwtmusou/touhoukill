@@ -211,6 +211,8 @@ void Settings::init()
     RecordSavePath = value(QStringLiteral("RecordSavePath"), QStringLiteral("records/")).toString();
 
     QStringList roles_ban;
+    QStringList peasantsvslandlord_ban;
+    QStringList contest2v2_ban;
     QStringList kof_ban;
     QStringList hulao_ban;
     QStringList xmode_ban;
@@ -219,6 +221,8 @@ void Settings::init()
     QStringList pairs_ban;
 
     roles_ban = Sanguosha->configuration(QStringLiteral("roles_ban")).toStringList();
+    peasantsvslandlord_ban = Sanguosha->configuration(QStringLiteral("peasantsvslandlord_ban")).toStringList();
+    contest2v2_ban = Sanguosha->configuration(QStringLiteral("contest2v2_ban")).toStringList();
     kof_ban = Sanguosha->configuration(QStringLiteral("kof_ban")).toStringList();
     hulao_ban = Sanguosha->configuration(QStringLiteral("hulao_ban")).toStringList();
     xmode_ban = Sanguosha->configuration(QStringLiteral("xmode_ban")).toStringList();
@@ -241,6 +245,22 @@ void Settings::init()
             banlist << ban_general;
 
         setValue(QStringLiteral("Banlist/1v1"), banlist);
+    }
+
+    banlist = value(QStringLiteral("Banlist/03_1v2")).toStringList();
+    if (banlist.isEmpty()) {
+        foreach (QString ban_general, contest2v2_ban)
+            banlist << ban_general;
+
+        setValue(QStringLiteral("Banlist/03_1v2"), banlist);
+    }
+
+    banlist = value(QStringLiteral("Banlist/04_2v2")).toStringList();
+    if (banlist.isEmpty()) {
+        foreach (QString ban_general, peasantsvslandlord_ban)
+            banlist << ban_general;
+
+        setValue(QStringLiteral("Banlist/04_2v2"), banlist);
     }
 
     banlist = value(QStringLiteral("Banlist/HulaoPass")).toStringList();

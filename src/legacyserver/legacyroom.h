@@ -121,7 +121,7 @@ public:
     QSGS_LOGIC void judge(JudgeStruct &judge_struct);
     QSGS_LOGIC void sendJudgeResult(const JudgeStruct *judge);
     QSGS_LOGIC QList<int> getNCards(int n, bool update_pile_number = true, bool bottom = false);
-    QSGS_LOGIC void returnToTopDrawPile(const QList<int> &cards);
+    QSGS_LOGIC void returnToDrawPile(const QList<int> &cards, bool bottom = false);
     QSGS_LOGIC void askForGuanxing(LegacyServerPlayer *zhuge, const QList<int> &cards, QSanguosha::GuanxingType guanxing_type = QSanguosha::GuanxingBothSides,
                                    const QString &skillName = QString());
     QSGS_LOGIC int doGongxin(LegacyServerPlayer *shenlvmeng, LegacyServerPlayer *target, const QList<int> &enabled_ids = QList<int>(),
@@ -389,6 +389,8 @@ public:
     void prepareForStart();
     void assignGeneralsForPlayers(const QList<LegacyServerPlayer *> &to_assign);
     void chooseGenerals();
+    void choose1v2Generals();
+    void choose2v2Generals();
     void chooseHegemonyGenerals();
     void broadcast(const QString &message, LegacyServerPlayer *except = nullptr);
     void initCallbacks();
