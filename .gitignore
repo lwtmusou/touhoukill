@@ -8,6 +8,7 @@ QSanguosha
 /audio/bgm/*
 *thumbs.db
 *.orig
+*.rej
 /config.json
 *.qmlc
 /ths.cppcheck
