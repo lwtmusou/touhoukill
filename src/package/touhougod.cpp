@@ -251,10 +251,28 @@ public:
 
         QList<int> idlist = room->getNCards(1);
         int cd_id = idlist.first();
-        room->fillAG(idlist, nullptr);
-        room->getThread()->delay();
 
-        room->clearAG();
+        {
+            JsonArray gongxinArgs;
+            gongxinArgs << invoke->invoker->objectName();
+            gongxinArgs << false;
+            gongxinArgs << JsonUtils::toJsonArray(idlist);
+
+            WrappedCard *card = Sanguosha->getWrappedCard(cd_id);
+            if (card->isModified())
+                room->broadcastUpdateCard(room->getAllPlayers(true), cd_id, card);
+            else
+                room->broadcastResetCard(room->getAllPlayers(true), cd_id);
+
+            LogMessage log;
+            log.type = "$ShowCard";
+            log.from = invoke->invoker;
+            log.card_str = QString::number(cd_id);
+            room->sendLog(log);
+
+            room->doBroadcastNotify(QSanProtocol::S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);
+        }
+
         Card *card = Sanguosha->getCard(cd_id);
         if (card->isBlack())
             player->gainMark("@ye", 1);
@@ -273,7 +291,6 @@ HongwuCard::HongwuCard()
 void HongwuCard::use(Room *, const CardUseStruct &card_use) const
 {
     ServerPlayer *source = card_use.from;
-
     source->gainMark("@ye", 1);
 }
 

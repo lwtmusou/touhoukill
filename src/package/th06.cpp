@@ -904,7 +904,7 @@ public:
 
     QDialog *getDialog() const override
     {
-        return QijiDialog::getInstance("hezhou", false);
+        return QijiDialog::getInstance("hezhou");
     }
 
     void record(TriggerEvent, Room *room, QVariant &data) const override
