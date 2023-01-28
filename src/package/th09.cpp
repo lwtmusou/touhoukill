@@ -1434,17 +1434,13 @@ public:
     }
 };
 
-class Kuaizhao : public DrawCardsSkill
+class Kuaizhao : public TriggerSkill
 {
 public:
     Kuaizhao()
-        : DrawCardsSkill("kuaizhao")
+        : TriggerSkill("kuaizhao")
     {
-    }
-
-    int getDrawNum(const DrawNCardsStruct &draw) const override
-    {
-        return draw.n;
+        events << DrawNCards;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override

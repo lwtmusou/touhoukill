@@ -188,31 +188,6 @@ public:
     virtual bool onPhaseChange(ServerPlayer *target) const = 0;
 };
 
-class DrawCardsSkill : public TriggerSkill
-{
-    Q_OBJECT
-
-public:
-    explicit DrawCardsSkill(const QString &name, bool = false);
-
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override;
-    virtual int getDrawNum(const DrawNCardsStruct &draw) const = 0;
-
-protected:
-    bool is_initial;
-};
-
-class GameStartSkill : public TriggerSkill
-{
-    Q_OBJECT
-
-public:
-    explicit GameStartSkill(const QString &name);
-
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override;
-    virtual void onGameStart() const = 0;
-};
-
 class ProhibitSkill : public Skill
 {
     Q_OBJECT
@@ -221,7 +196,8 @@ public:
     explicit ProhibitSkill(const QString &name);
 
     virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>(),
-                              bool include_hidden = false) const = 0;
+                              bool include_hidden = false) const
+        = 0;
 };
 
 class DistanceSkill : public Skill

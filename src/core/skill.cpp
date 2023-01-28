@@ -419,36 +419,6 @@ bool PhaseChangeSkill::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDe
     return onPhaseChange(player);
 }
 
-DrawCardsSkill::DrawCardsSkill(const QString &name, bool is_initial)
-    : TriggerSkill(name)
-    , is_initial(is_initial)
-{
-    if (is_initial)
-        events << DrawInitialCards;
-    else
-        events << DrawNCards;
-}
-
-bool DrawCardsSkill::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &data) const
-{
-    DrawNCardsStruct s = data.value<DrawNCardsStruct>();
-    s.n = getDrawNum(s);
-    data = QVariant::fromValue(s);
-    return false;
-}
-
-GameStartSkill::GameStartSkill(const QString &name)
-    : TriggerSkill(name)
-{
-    events << GameStart;
-}
-
-bool GameStartSkill::effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &) const
-{
-    onGameStart();
-    return false;
-}
-
 int MaxCardsSkill::getExtra(const Player *) const
 {
     return 0;
