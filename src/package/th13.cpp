@@ -495,11 +495,13 @@ bool XihuaCard::targetFilter(const QList<const Player *> &targets, const Player 
     if (user_string == nullptr)
         return false;
     Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+    if (card == nullptr)
+        return false;
     DELETE_OVER_SCOPE(Card, card)
     card->setSkillName("xihua");
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && card->targetFixed(Self))
+    if (card->targetFixed(Self))
         return false;
-    return (card != nullptr) && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
+    return card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
 }
 
 bool XihuaCard::targetFixed(const Player *) const
@@ -509,8 +511,8 @@ bool XihuaCard::targetFixed(const Player *) const
     if (user_string == nullptr)
         return false;
 
-    //return false defaultly
-    //we need a confirming chance to pull back, since  this is a zero cards viewas Skill.
+    // return false by default
+    // we need a confirming chance to pull back, since this is a zero cards viewas Skill.
     return false;
 }
 
@@ -522,16 +524,21 @@ bool XihuaCard::targetsFeasible(const QList<const Player *> &targets, const Play
     if (user_string == nullptr)
         return false;
     Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+    if (card == nullptr)
+        return false;
+    DELETE_OVER_SCOPE(Card, card)
     card->setSkillName("xihua");
     if (card->canRecast() && targets.length() == 0)
         return false;
-    return (card != nullptr) && card->targetsFeasible(targets, Self);
+    if (card->targetFixed(Self))
+        return true;
+    return card->targetsFeasible(targets, Self);
 }
 
 const Card *XihuaCard::validate(CardUseStruct &card_use) const
 {
     ServerPlayer *xihua_general = card_use.from;
-    xihua_general->showHiddenSkill("xihua");
+    xihua_general->showHiddenSkill("xihua"); // TODO kill this
     Room *room = xihua_general->getRoom();
     QString to_use = user_string;
 
@@ -568,7 +575,7 @@ const Card *XihuaCard::validateInResponse(ServerPlayer *user) const
     room->sendLog(log);
 
     user->tag["xihua_choice"] = QVariant::fromValue(user_string);
-    user->showHiddenSkill("xihua");
+    user->showHiddenSkill("xihua"); // TODO kill this
     bool success = do_xihua(user);
     if (success) {
         Card *use_card = Sanguosha->cloneCard(user_string);

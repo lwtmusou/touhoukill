@@ -585,7 +585,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName());
-        room->obtainCard(invoke->invoker, id, false); //room->getCardPlace(id) != Player::PlaceHand
+        room->obtainCard(invoke->invoker, id, false);
         return false;
     }
 };
@@ -608,7 +608,7 @@ public:
 
         Jink jink(Card::NoSuit, 0);
         const CardPattern *cardPattern = Sanguosha->getPattern(s.pattern);
-        if (cardPattern != nullptr && cardPattern->match(s.player, &jink) && !s.player->isCardLimited(&jink, s.method)) // ??? isCardLimited????
+        if (cardPattern != nullptr && cardPattern->match(s.player, &jink) && !s.player->isCardLimited(&jink, s.method))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, s.player, s.player, nullptr, false, current);
 
         return QList<SkillInvokeDetail>();
