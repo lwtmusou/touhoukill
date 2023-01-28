@@ -440,7 +440,8 @@ void QijiDialog::popup()
     } else if (object_name == "hezhou") {
         QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
         foreach (const Card *card, cards) {
-            if (card->isNDTrick() && !ban_list.contains(card->getPackage())) { //&& !ServerInfo.Extensions.contains("!" + card->getPackage())
+            if ((!Self->isCurrent() && card->isKindOf("Peach"))
+                || (Self->isCurrent() && card->isNDTrick() && !card->isKindOf("AOE") && !card->isKindOf("GlobalEffect")) && !ban_list.contains(card->getPackage())) {
                 QString name = card->objectName();
                 if (!validPatterns.contains(name))
                     validPatterns << card->objectName();
@@ -481,8 +482,8 @@ void QijiDialog::popup()
                     break;
                 }
             }
-        } else
-            user = Self;
+        }
+
         if (user == nullptr)
             user = Self;
 

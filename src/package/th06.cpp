@@ -729,11 +729,13 @@ bool HezhouCard::targetFilter(const QList<const Player *> &targets, const Player
     if (user_string == nullptr)
         return false;
     Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+    if (card == nullptr)
+        return false;
     DELETE_OVER_SCOPE(Card, card)
     card->setSkillName("hezhou");
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY && card->targetFixed(Self))
+    if (card->targetFixed(Self))
         return false;
-    return (card != nullptr) && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
+    return card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
 }
 
 bool HezhouCard::targetFixed(const Player *) const
@@ -743,8 +745,8 @@ bool HezhouCard::targetFixed(const Player *) const
     if (user_string == nullptr)
         return false;
 
-    //return false defaultly
-    //we need a confirming chance to pull back, since  this is a zero cards viewas Skill.
+    // return false by default
+    // we need a confirming chance to pull back, since this is a zero cards viewas Skill.
     return false;
 }
 
@@ -752,14 +754,18 @@ bool HezhouCard::targetsFeasible(const QList<const Player *> &targets, const Pla
 {
     if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE)
         return true;
-
     if (user_string == nullptr)
         return false;
     Card *card = Sanguosha->cloneCard(user_string.split("+").first(), Card::NoSuit, 0);
+    if (card == nullptr)
+        return false;
+    DELETE_OVER_SCOPE(Card, card)
     card->setSkillName("hezhou");
     if (card->canRecast() && targets.length() == 0)
         return false;
-    return (card != nullptr) && card->targetsFeasible(targets, Self);
+    if (card->targetFixed(Self))
+        return true;
+    return card->targetsFeasible(targets, Self);
 }
 
 const Card *HezhouCard::validate(CardUseStruct &card_use) const
@@ -835,8 +841,8 @@ public:
         QStringList checkedPatterns;
         QStringList ban_list = Sanguosha->getBanPackages();
         foreach (const Card *card, cards) {
-            //if (((card->isNDTrick() && !card->isKindOf("Nullification")) || card->isKindOf("BasicCard")) && !ban_list.contains(card->getPackage())) {
-            if ((card->isKindOf("Nullification") || card->objectName() == "peach") && !ban_list.contains(card->getPackage())) {
+            if ((!Self->isCurrent() && card->isKindOf("Peach"))
+                || (Self->isCurrent() && card->isNDTrick() && !card->isKindOf("AOE") && !card->isKindOf("GlobalEffect")) && !ban_list.contains(card->getPackage())) {
                 QString name = card->objectName();
                 if (!checkedPatterns.contains(name) && (pattern != nullptr && pattern->match(Self, card)) && !Self->isCardLimited(card, method))
                     checkedPatterns << name;
@@ -869,16 +875,7 @@ public:
             HezhouCard *card = new HezhouCard;
             card->setUserString(checkedPatterns.first());
             return card;
-        } /*else if (checkedPatterns.length() > 1) {
-            HezhouCard *card = new HezhouCard;
-            card->setUserString("nullification");
-            return card;
         }
-        else {
-            HezhouCard *card = new HezhouCard;
-            card->setUserString("ex_nihilo");
-            return card;
-        }*/
 
         QString name = Self->tag.value("hezhou", QString()).toString();
         if (name != nullptr) {
@@ -889,7 +886,7 @@ public:
             return nullptr;
     }
 
-    virtual bool isEnabledAtNullification(const ServerPlayer *player) const
+    bool isEnabledAtNullification(const ServerPlayer *player) const override
     {
         return !player->hasFlag("hezhou_used") && player->isCurrent();
     }
@@ -917,7 +914,6 @@ public:
             foreach (ServerPlayer *p, room->getAllPlayers()) {
                 if (p->hasFlag("hezhou_used"))
                     room->setPlayerFlag(p, "-hezhou_used");
-                //p->setFlags("-hezhou_used");
             }
         }
     }
