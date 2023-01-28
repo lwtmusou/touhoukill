@@ -1282,10 +1282,10 @@ public:
     {
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.to->isAlive() && damage.to->hasSkill(this)) {
-            if (!(damage.card != nullptr
-                  && (!damage.card->isVirtualCard()
-                      || (damage.card->subcardsLength() == 1 && Sanguosha->getCard(damage.card->getEffectiveId())->getClassName() == damage.card->getClassName()))
-                  && damage.nature == DamageStruct::Normal))
+            if ((damage.card != nullptr
+                 && (!damage.card->isVirtualCard()
+                     || (damage.card->subcardsLength() == 1 && Sanguosha->getCard(damage.card->getEffectiveId())->getClassName() == damage.card->getClassName())))
+                || (damage.nature != DamageStruct::Normal))
                 return {SkillInvokeDetail(this, damage.to, damage.to, nullptr, true)};
         }
 
