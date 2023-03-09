@@ -46,7 +46,7 @@ return {
 	["origin:eternity"] = "p号：65972608；个人id：15772166",
 	
 	["diexing"] = "蝶形",
-	[":diexing"] = "<font color=\"blue\"><b>锁定技，</b></font>当你扣减体力后，你摸两张牌；当你一次性失去至少两张手牌后，你回复1点体力。",
+	[":diexing"] = "<font color=\"blue\"><b>锁定技，</b></font>当你受到伤害后，你摸两张牌；当你一次性失去至少两张手牌后，你回复1点体力。",
 	
 	["linsa"] = "鳞洒",
 	--[":linsa"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将一张手牌交给一名其它角色并展示之，若此牌花色为：<font size=\"5\", color=\"#FF0000\"><b>♥</b></font>牌，其失去1点体力；<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌，其于此回合内使用下一张手牌时，你无效之。",
