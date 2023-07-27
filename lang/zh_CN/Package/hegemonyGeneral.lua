@@ -47,6 +47,8 @@ return
 	["byakuren_hegemony"] = "圣白莲",
 	["nue_hegemony"]= "封兽鵺",
 	["toramaru_hegemony"] = "寅丸星",
+	[":weiguang_hegemony"] = "当你使用非转化的黑色锦囊牌时，你可以获得牌堆底的一张牌。",
+
 	["murasa_hegemony"] = "村纱水蜜",
 	
 	["ichirin_hegemony"] = "云居一轮",--国战修改
