@@ -423,13 +423,13 @@ public:
     }
 };
 
-class Linsa : public OneCardViewAsSkill
+class LinsaVS : public OneCardViewAsSkill
 {
 public:
-    Linsa()
+    LinsaVS()
         : OneCardViewAsSkill("linsa")
     {
-        filter_pattern = ".|diamond";
+        filter_pattern = ".|diamond|.|hand";
         response_or_use = true;
     }
 
@@ -450,6 +450,63 @@ public:
         card->setSkillName(objectName());
         return card;
     }
+};
+
+
+class Linsa : public TriggerSkill
+{
+public:
+	Linsa()
+		: TriggerSkill("linsa")
+	{
+		events << CardFinished;
+		view_as_skill = new LinsaVS;
+	}
+
+	QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
+	{
+		CardUseStruct use = data.value<CardUseStruct>();
+		if (use.card->getSuit() == Card::NoSuit || !use.from || !use.from->hasSkill(this) || use.from->isDead())
+			return QList<SkillInvokeDetail>();
+
+		QList<SkillInvokeDetail> d;
+		foreach(ServerPlayer *p, use.to) {
+			if (p != use.from && !p->getShownHandcards().isEmpty()) {
+				foreach(int id, p->getShownHandcards()) {
+					if (Sanguosha->getCard(id)->getSuit() == use.card->getSuit() && use.from->canDiscard(p, id)) {
+						d << SkillInvokeDetail(this, use.from, use.from, nullptr, false, p);
+						break;
+					}
+				}
+			}	
+		}
+		return d;
+	}
+
+	//default cost
+	/*bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+	{
+		return invoke->invoker->askForSkillInvoke(this, QVariant::fromValue(invoke->preferredTarget));
+	}*/
+
+	bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+	{
+		CardUseStruct use = data.value<CardUseStruct>();
+		ServerPlayer *target = invoke->targets.first();
+		DummyCard *dummy = new DummyCard;
+
+		foreach(int id, target->getShownHandcards()) {
+			if (Sanguosha->getCard(id)->getSuit() == use.card->getSuit() && use.from->canDiscard(target, id)) {
+				dummy->addSubcard(id);
+			}
+		}
+		
+		if (dummy->getSubcards().length() > 0)
+			room->throwCard(dummy, target, invoke->invoker);
+		delete dummy;
+
+		return false;
+	}
 };
 
 /*LinsaCard::LinsaCard()
@@ -1632,6 +1689,7 @@ TH16Package::TH16Package()
     General *eternity = new General(this, "eternity", "tkz", 3);
     eternity->addSkill(new Diexing);
     eternity->addSkill(new Linsa);
+	eternity->addSkill("duxin");
 
     General *okinasp = new General(this, "okina_sp", "tkz");
     okinasp->addSkill(new Menfei);

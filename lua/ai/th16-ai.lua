@@ -154,6 +154,55 @@ end
 
 --天空璋：爱塔妮缇拉尔瓦
 --[鳞洒]
+sgs.ai_skill_invoke.linsa = function(self, data)
+	local to = data:toPlayer()
+	return self:isEnemy(to) -- and not self:touhouHandCardsFix(to)
+end
+local linsa_skill={}
+linsa_skill.name="linsa"
+table.insert(sgs.ai_skills,linsa_skill)
+linsa_skill.getTurnUseCard=function(self)
+	local cards = self.player:getCards("hs")
+	cards=self:touhouAppendExpandPileToList(self.player, cards)
+	cards=sgs.QList2Table(cards)
+	local card
+	self:sortByUseValue(cards,true)
+	for _,acard in ipairs(cards) do
+		if acard:getSuit() == sgs.Card_Diamond and not acard:isKindOf("Peach") and (self:getDynamicUsePriority(acard) < sgs.ai_use_value.FireAttack or self:getOverflow() > 0) then
+			if acard:isKindOf("Slash") and self:getCardsNum("Slash") == 1 then
+				local keep
+				local dummy_use = { isDummy = true , to = sgs.SPlayerList() }
+				self:useBasicCard(acard, dummy_use)
+				if dummy_use.card and dummy_use.to and dummy_use.to:length() > 0 then
+					for _, p in sgs.qlist(dummy_use.to) do
+						if p:getHp() <= 1 then keep = true break end
+					end
+					if dummy_use.to:length() > 1 then keep = true end
+				end
+				if keep then sgs.ai_use_priority.Slash = sgs.ai_use_priority.KnownBoth + 0.1
+				else
+					sgs.ai_use_priority.Slash = 2.6
+					card = acard
+					break
+				end
+			else
+				card = acard
+				break
+			end
+		end
+	end
+	if not card then return nil end
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	local card_str = ("known_both:linsa[%s:%s]=%d"):format(suit, number, card_id)
+	local skillcard = sgs.Card_Parse(card_str)
+	assert(skillcard)
+	return skillcard
+end
+sgs.ai_cardneed.linsa = function(to, card, self)
+	return card:getSuit() == sgs.Card_Diamond
+end
 --[[local linsa_skill={}
 linsa_skill.name="linsa"
 table.insert(sgs.ai_skills,linsa_skill)
