@@ -1689,7 +1689,6 @@ TH16Package::TH16Package()
     General *eternity = new General(this, "eternity", "tkz", 3);
     eternity->addSkill(new Diexing);
     eternity->addSkill(new Linsa);
-	eternity->addSkill("duxin");
 
     General *okinasp = new General(this, "okina_sp", "tkz");
     okinasp->addSkill(new Menfei);
