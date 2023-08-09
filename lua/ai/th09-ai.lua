@@ -297,7 +297,14 @@ end
 
 --风见幽香
 --[威压]
-sgs.ai_skill_invoke.weiya =  true
+sgs.ai_skill_invoke.weiya =  function(self,data)
+	--AOE情况下，更复杂的判断情况，放弃了
+	local use =data:toCardUse()
+	if use and use.from and self:isFriend(use.from) then return false end
+	local resp = data:toCardResponse()
+	if resp and resp.m_from and self:isFriend(resp.m_from) then return false end
+	return true
+end
 function SmartAI:hasWeiya(player)
 	player=player or self.player
 	local current=self.room:getCurrent()
