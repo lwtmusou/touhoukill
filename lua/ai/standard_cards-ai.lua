@@ -3801,7 +3801,7 @@ function SmartAI:useCardLureTiger(LureTiger, use)
 	if not LureTiger:isAvailable(self.player) then return end
 
 	local players = sgs.PlayerList()
-
+    --目前没有火烧连营
 	local card = self:getCard("BurningCamps")
 	if card and card:isAvailable(self.player) then
 		--local nextp = self.player:getNextAlive()
@@ -3860,7 +3860,9 @@ function SmartAI:useCardLureTiger(LureTiger, use)
 					use.to:append(self.room:findPlayer(p:objectName()))
 				end
 			end
-			return
+			if use.to and not use.to:isEmpty() then
+				return
+			end
 		end
 	end
 
@@ -3887,7 +3889,9 @@ function SmartAI:useCardLureTiger(LureTiger, use)
 					use.to:append(self.room:findPlayer(p:objectName()))
 				end
 			end
-			return
+			if use.to and not use.to:isEmpty() then
+				return
+			end
 		end
 	end
 
@@ -3917,7 +3921,9 @@ function SmartAI:useCardLureTiger(LureTiger, use)
 					use.to:append(self.room:findPlayer(p:objectName()))
 				end
 			end
-			return
+			if use.to and not use.to:isEmpty() then
+				return
+			end
 		end
 	end
 
@@ -3981,7 +3987,10 @@ function SmartAI:useCardLureTiger(LureTiger, use)
 								use.to:append(self.room:findPlayer(p:objectName()))
 							end
 						end
-						return
+						--有需要跳过杀的目标
+						if use.to and not use.to:isEmpty() then
+							return
+						end
 					end
 				end
 			end
@@ -3995,7 +4004,7 @@ function SmartAI:useCardLureTiger(LureTiger, use)
 	if card and card:isAvailable(self.player) then
 		self:sort(self.enemies, "hp")
 		for _, enemy in ipairs(self.enemies) do
-			if LureTiger:targetFilter(players, enemy, self.player) and self:hasTrickEffective(LureTiger, enemy, self.player) then
+			if LureTiger:targetFilter(players, enemy, self.player) and self:hasTrickEffective(LureTiger, enemy, self.player) and enemey:isWounded() then
 				players:append(enemy)
 			end
 		end
@@ -4007,7 +4016,9 @@ function SmartAI:useCardLureTiger(LureTiger, use)
 					use.to:append(self.room:findPlayer(p:objectName()))
 				end
 			end
-			return
+			if use.to and not use.to:isEmpty() then
+				return
+			end
 		end
 	end
 
@@ -4030,12 +4041,40 @@ function SmartAI:useCardLureTiger(LureTiger, use)
 					use.to:append(self.room:findPlayer(p:objectName()))
 				end
 			end
-			return
+			if use.to and not use.to:isEmpty() then
+				return
+			end
 		end
 	end
 
 
-	players = sgs.PlayerList()
+	card = self:getCard("AmazingGrace")
+	if card and card:isAvailable(self.player) then
+		for _, enemy in ipairs(self.enemies) do
+			if LureTiger:targetFilter(players, enemy, self.player) and self:hasTrickEffective(LureTiger, enemy, self.player) then
+				players:append(enemy)
+			end
+		end
+		if players:length() > 0 then
+			sgs.ai_use_priority.LureTiger = sgs.ai_use_priority.AmazingGrace + 0.1
+			use.card = LureTiger
+			if use.to then
+				for _, p in sgs.qlist(players) do
+					use.to:append(self.room:findPlayer(p:objectName()))
+				end
+			end
+			if use.to and not use.to:isEmpty() then
+				return
+			end
+		end
+	end
+	
+	--重铸
+	use.card = LureTiger return
+	
+	
+	--还有其他要用调虎的时候么？  太复杂了
+	--[[players = sgs.PlayerList()
 
 	if self.player:objectName() == self.room:getCurrent():objectName() then
 		for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
@@ -4046,7 +4085,9 @@ function SmartAI:useCardLureTiger(LureTiger, use)
 				return
 			end
 		end
-	end
+	end]]
+	
+
 end
 
 --[[sgs.ai_nullification.LureTiger = function(self, card, from, to, positive)

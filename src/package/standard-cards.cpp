@@ -2021,6 +2021,8 @@ LureTiger::LureTiger(Card::Suit suit, int number)
     : TrickCard(suit, number)
 {
     setObjectName("lure_tiger");
+	can_recast = true;
+	has_effectvalue = false;
 }
 
 QString LureTiger::getSubtype() const
@@ -2039,6 +2041,44 @@ bool LureTiger::targetFilter(const QList<const Player *> &targets, const Player 
     return to_select != Self;
 }
 
+bool LureTiger::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const
+{
+	bool rec = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) && can_recast;
+	if (rec) {
+		QList<int> sub;
+		if (isVirtualCard())
+			sub = subcards;
+		else
+			sub << getEffectiveId();
+
+		foreach(int id, sub) {
+			if (Self->getHandPile().contains(id)) {
+				rec = false;
+				break;
+			}
+			else { // for  skill chaoren
+				if (id == Self->property("chaoren").toInt()) {
+					rec = false;
+					break;
+				}
+			}
+		}
+	}
+
+	if (rec && Self->isCardLimited(this, Card::MethodUse))
+		return targets.length() == 0;
+
+	if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
+		return targets.length() != 0;
+
+	int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+	if (!rec)
+		return targets.length() > 0 && targets.length() <= total_num;
+	else
+		return targets.length() <= total_num;
+}
+
+/*
 void LureTiger::use(Room *room, const CardUseStruct &card_use) const
 {
     ServerPlayer *source = card_use.from;
@@ -2077,6 +2117,27 @@ void LureTiger::use(Room *room, const CardUseStruct &card_use) const
         reason.m_extraData = QVariant::fromValue((const Card *)this);
         room->moveCardTo(this, source, nullptr, Player::DiscardPile, reason, true);
     }
+}*/
+
+
+void LureTiger::onUse(Room *room, const CardUseStruct &card_use) const
+{
+	if (card_use.to.isEmpty()) {
+		LogMessage log;
+		log.type = "#Card_Recast";
+		log.from = card_use.from;
+		log.card_str = card_use.card->toString();
+		room->sendLog(log);
+
+		CardMoveReason reason(CardMoveReason::S_REASON_RECAST, card_use.from->objectName());
+		reason.m_skillName = getSkillName();
+		room->moveCardTo(this, card_use.from, nullptr, Player::DiscardPile, reason);
+		card_use.from->broadcastSkillInvoke("@recast");
+
+		card_use.from->drawCards(1);
+	}
+	else
+		TrickCard::onUse(room, card_use);
 }
 
 void LureTiger::onEffect(const CardEffectStruct &effect) const
