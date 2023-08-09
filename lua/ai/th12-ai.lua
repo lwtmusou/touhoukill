@@ -380,6 +380,9 @@ end
 --[净化]
 function sgs.ai_cardsview_valuable.jinghua(self, class_name, player)
 	if class_name == "Nullification" then
+		if self:hasWeiya() then
+			return nil
+		end
 		local reds = {}
 		local cards = self.player:getCards("hes")
 		cards=self:touhouAppendExpandPileToList(self.player,cards)
