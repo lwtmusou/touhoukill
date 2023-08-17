@@ -1116,7 +1116,10 @@ sgs.ai_skill_playerchosen.anliu = function(self, targets)
 	return nil
 end
 
-sgs.ai_skill_use["@@zhanche"] = function(self)
+
+
+--里香
+--[[sgs.ai_skill_use["@@zhanche"] = function(self)
 	-- return "@ZhancheCard=5->sgs1"
 	local t = sgs.QList2Table(self.player:getCards("hs"))
 	if #t == 0 then return "." end
@@ -1130,7 +1133,44 @@ sgs.ai_skill_use["@@zhanche"] = function(self)
 	if #enemies == 0 then return "." end
 	self:sort(enemies, "threat")
 	return "@ZhancheCard=" .. tostring(t[1]:getEffectiveId()) .. "->" .. enemies[1]:objectName()
+end]]
+
+local zhanche_skill = {}
+zhanche_skill.name = "zhanche"
+table.insert(sgs.ai_skills, zhanche_skill)
+function zhanche_skill.getTurnUseCard(self)
+	if self.player:hasUsed("ZhancheCard") then return nil end
+	local cards = sgs.QList2Table(self.player:getCards("hs"))
+	if #cards == 0 then return nil end
+	self:sortByUseValue(cards, true)
+	if self:getUseValue(cards[1]) >= sgs.ai_use_value.Peach then return nil end
+	local enemies = {}
+	local enemy
+	for _,enemy in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if self:isEnemy(enemy) and (not enemy:getEquips():isEmpty()) then table.insert(enemies, enemy) end
+	end
+	if #enemies == 0 then return nil end
+	return sgs.Card_Parse("@ZhancheCard=" .. cards[1]:getEffectiveId())
 end
+
+sgs.ai_skill_use_func.ZhancheCard = function(card, use, self)
+	local enemies = {}
+	local enemy
+	for _,enemy in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if self:isEnemy(enemy) and (not enemy:getEquips():isEmpty()) then table.insert(enemies, enemy) end
+	end
+	if #enemies > 0 then
+		self:sort(enemies, "threat")
+		use.card = card
+		if use.to then
+			use.to:append(enemies[1])
+			return
+		end
+	end
+end
+sgs.ai_use_priority.ZhancheCard = sgs.ai_use_priority.Snatch + 0.1
+sgs.ai_card_intention.ZhancheCard = 40
+
 
 sgs.ai_skill_cardask["@zhanche-robbed"] = function(self)
 	local t = sgs.QList2Table(self.player:getCards("hes"))
@@ -1139,7 +1179,7 @@ sgs.ai_skill_cardask["@zhanche-robbed"] = function(self)
 	return t[1]:getEffectiveId()
 end
 
-sgs.ai_skill_playerchosen.huosui = function(self, targets)
+--[[sgs.ai_skill_playerchosen.huosui = function(self, targets)
 	local _targets = sgs.QList2Table(targets)
 	self:sort(_targets)
 	for _, current in ipairs(_targets) do
@@ -1154,7 +1194,32 @@ sgs.ai_skill_playerchosen.huosui = function(self, targets)
 		end
 	end
 end
+]]
 
+sgs.ai_skill_use["@@huosui"] = function(self, prompt)
+	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
+	local card=sgs.cloneCard("power_slash", sgs.Card_NoSuit, 0)
+	card:setSkillName("huosui")
+	card:deleteLater()
+	local target
+
+	self:useBasicCard(card, dummy_use)
+
+
+	if not dummy_use.card then return false end
+	local target_objectname = {}
+	for _, p in sgs.qlist(dummy_use.to) do
+		if self:isEnemy(p) then
+			table.insert(target_objectname, p:objectName())
+			target=p
+			break
+		end
+	end
+	if #target_objectname>0 then
+		return dummy_use.card:toString() .. "->" .. table.concat(target_objectname, "+")
+	end
+	return "."
+end
 
 local yihuan_skill = {}
 yihuan_skill.name = "yihuan"
