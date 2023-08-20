@@ -1062,30 +1062,30 @@ end
 --依神女苑&依神紫苑
 --[俭奢]
 --俭奢:其他角色的结束阶段开始时，你可以弃置一张手牌，令其选择一项：将手牌弃置至一张，若如此做，其回复1点体力；或摸一张牌，然后失去1点体力。
---俭奢: 弃牌发动
+--俭奢: 暂时无脑弃牌发动
 sgs.ai_skill_cardask["@jianshe-discard"] = function(self, data)
-	if not self.player:canDiscard(self.player, "hs") then return "." end
+	if not self.player:canDiscard(self.player, "hes") then return "." end
 	local target = self.room:getCurrent()
 	if not target or target:isDead() then return "." end
-	local effect=false
-	local num =  target:getHandcardNum() - 1
- 
-	if self:isEnemy(target) and (num > 2 or num <=0) then
-		effect=true
-	elseif self:isFriend(target) and num <= 2 and num > 0  and target:isWounded() then
-		effect=true
-	end
-	if not effect then return "." end
+	if not self:isEnemy(target) then return "." end
 
 
-	local cards = sgs.QList2Table(self.player:getCards("hs"))
+	local cards = sgs.QList2Table(self.player:getCards("hes"))
 	if #cards ==0 then return "." end
 	self:sortByCardNeed(cards)
 
 	return "$" .. cards[1]:getId()
 end
+sgs.ai_choicemade_filter.cardResponded["@jianshe-discard"] = function(self, player, args)
+	if args[#args] ~= "_nil_" then
+		local target =self.room:getCurrent()
+		if not target then return end
+		sgs.updateIntention(player, target, 30)
+	end
+end
 
-sgs.ai_skill_invoke.jianshe = function(self, data)
+
+--[[sgs.ai_skill_invoke.jianshe = function(self, data)
 	local target = self.room:getCurrent()
 	if not target or target:isDead() then return false end
 	local effect=false
@@ -1098,10 +1098,10 @@ sgs.ai_skill_invoke.jianshe = function(self, data)
 	end
 	return effect 
 end
-
+]]
 
 --俭奢: 执行选项
-sgs.ai_skill_choice.jianshe = function(self, choices, data)
+--[[sgs.ai_skill_choice.jianshe = function(self, choices, data)
 	if self:isWeak(self.player) then
 		return "jianshe_jian"
 	end	
@@ -1113,6 +1113,66 @@ sgs.ai_skill_choice.jianshe = function(self, choices, data)
 		return "jianshe_jian"
 	end
 	return choices[1]
+end]]
+
+--俭奢: 暂时无脑给牌
+sgs.ai_skill_discard.jianshe = function(self)
+	local to_discard = {}
+	local cards = self.player:getCards("hes")
+	cards = sgs.QList2Table(cards)
+	self:sortByKeepValue(cards)
+
+	table.insert(to_discard, cards[1]:getEffectiveId())
+
+	return to_discard
+	
+	--暂时没考虑不给的情况
+	--local skiller = self.player:getTag("jianshe_source"):toPlayer()
+	--local to_discard = {}
+	--if not skiller or not self:isFriend(skiller) then return to_discard end
+
+end
+
+
+
+--极厄:出牌阶段限一次，你可以令至少一名手牌数小于其已损失体力值的角色各失去1点体力。
+local ysjie_skill = {}
+ysjie_skill.name = "ysjie"
+table.insert(sgs.ai_skills, ysjie_skill)
+ysjie_skill.getTurnUseCard = function(self, inclusive)
+	if self.player:hasUsed("YsJieCard") then return nil end
+	return sgs.Card_Parse("@YsJieCard=.")
+end
+
+sgs.ai_skill_use_func.YsJieCard=function(card,use,self)
+	local targets = {}
+	for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if self:isEnemy(p) and p:getHandcardNum() < p:getLostHp() then
+			table.insert(targets, p)
+		end
+	end
+	if #targets > 0 then
+		use.card = card
+		if use.to then
+			for _,p in ipairs(targets) do
+				use.to:append(p)
+			end
+			return
+		end
+	end
+end
+ sgs.ai_card_intention.YsJieCard = 50
+
+--依神：锁定技，当你成为【杀】的目标后，若此牌使用者攻击范围内有其他战势力角色，其选择弃置一张牌或令【杀】无效。
+sgs.ai_skill_invoke.yishen =  true
+sgs.ai_skill_cardask["@yishen-discard"] = function(self, data)
+	local target = self.player:getTag("yishen_target"):toPlayer()
+	if self:isFriend(target)  then return "." end
+
+	local cards = sgs.QList2Table(self.player:getCards("hes"))
+	if #cards ==0 then return "." end
+	self:sortByKeepValue(cards)
+	return "$" .. cards[1]:getEffectiveId()
 end
 
 
