@@ -3,8 +3,8 @@
 #include "engine.h"
 #include "general.h"
 #include "maneuvering.h"
-#include "testCard.h"
 #include "skill.h"
+#include "testCard.h"
 
 class Meiling : public TriggerSkill
 {
@@ -3278,9 +3278,9 @@ public:
 
 ZhancheCard::ZhancheCard()
 {
-	will_throw = true;
+    will_throw = true;
     //m_skillName = "_zhanche";
-	handling_method = Card::MethodDiscard;
+    handling_method = Card::MethodDiscard;
 }
 
 bool ZhancheCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
@@ -3336,19 +3336,19 @@ void ZhancheCard::onEffect(const CardEffectStruct &effect) const
 
     room->obtainCard(effect.from, c);
 
-	int num = effect.from->getEquips().length();
-	foreach(ServerPlayer *p, room->getOtherPlayers(effect.from)) {
-		if (p->getEquips().length() > num)
-			return;
-	}
-	LogMessage l;
-	l.type = "#zhanche-engine";
-	l.from = effect.from;
-	l.arg = "zhanche";
-	room->sendLog(l);
+    int num = effect.from->getEquips().length();
+    foreach (ServerPlayer *p, room->getOtherPlayers(effect.from)) {
+        if (p->getEquips().length() > num)
+            return;
+    }
+    LogMessage l;
+    l.type = "#zhanche-engine";
+    l.from = effect.from;
+    l.arg = "zhanche";
+    room->sendLog(l);
 
-	//Player.cpp: delete the relation between  this flag and  Player::hasArmorEffect, Player::hasTreasure
-	room->setPlayerFlag(effect.from, "zhanche");
+    //Player.cpp: delete the relation between  this flag and  Player::hasArmorEffect, Player::hasTreasure
+    room->setPlayerFlag(effect.from, "zhanche");
 }
 
 class ZhancheVS : public OneCardViewAsSkill
@@ -3360,10 +3360,10 @@ public:
         filter_pattern = ".!";
     }
 
-	bool isEnabledAtPlay(const Player *player) const override
-	{
-		return !player->hasUsed("ZhancheCard");
-	}
+    bool isEnabledAtPlay(const Player *player) const override
+    {
+        return !player->hasUsed("ZhancheCard");
+    }
 
     const Card *viewAs(const Card *originalCard) const override
     {
@@ -3411,23 +3411,21 @@ public:
     }
 };
 
-
-
 class HuosuiVS : public ZeroCardViewAsSkill
 {
 public:
-	HuosuiVS()
-		: ZeroCardViewAsSkill("huosui")
-	{
-		response_pattern = "@@huosui";
-	}
+    HuosuiVS()
+        : ZeroCardViewAsSkill("huosui")
+    {
+        response_pattern = "@@huosui";
+    }
 
-	const Card *viewAs() const override
-	{
-		PowerSlash *slash = new PowerSlash(Card::NoSuit, 0);
-		slash->setSkillName(objectName());
-		return slash;
-	}
+    const Card *viewAs() const override
+    {
+        PowerSlash *slash = new PowerSlash(Card::NoSuit, 0);
+        slash->setSkillName(objectName());
+        return slash;
+    }
 };
 
 class Huosui : public TriggerSkill
@@ -3436,9 +3434,9 @@ public:
     Huosui()
         : TriggerSkill("huosui")
     {
-        events << EventPhaseStart << CardsMoveOneTime << TurnStart ;//<< TargetSpecified
+        events << EventPhaseStart << CardsMoveOneTime << TurnStart; //<< TargetSpecified
         global = true;
-		view_as_skill = new HuosuiVS;
+        view_as_skill = new HuosuiVS;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
@@ -3454,16 +3452,16 @@ public:
                     }
                 }
             }*/
-			if (flag) {
-				ServerPlayer *from = qobject_cast<ServerPlayer *>(move.from);
-				if (from != nullptr)
-				room->setPlayerFlag(from, "huosui");// client  server?
-				//move.from->setFlags("huosui");
-			}
-			
+            if (flag) {
+                ServerPlayer *from = qobject_cast<ServerPlayer *>(move.from);
+                if (from != nullptr)
+                    room->setPlayerFlag(from, "huosui"); // client  server?
+                //move.from->setFlags("huosui");
+            }
+
         } else if (triggerEvent == TurnStart) {
             foreach (ServerPlayer *p, room->getAlivePlayers())
-				room->setPlayerFlag(p, "-huosui");
+                room->setPlayerFlag(p, "-huosui");
         }
     }
 
@@ -3501,13 +3499,13 @@ public:
         return r;
     }
 
-	bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
-	{
-		room->askForUseCard(invoke->invoker, "@@huosui", "@huosui-victim");
-		return false;
-	}
-    
-	/*bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        room->askForUseCard(invoke->invoker, "@@huosui", "@huosui-victim");
+        return false;
+    }
+
+    /*bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         if (triggerEvent == EventPhaseStart) {
             QList<ServerPlayer *> ps;
@@ -3542,26 +3540,23 @@ public:
     }*/
 };
 
-
 class HuosuiTM : public TargetModSkill
 {
 public:
-	HuosuiTM()
-		: TargetModSkill("#huosui-dist")
-	{
-		pattern = "Slash";
-	}
+    HuosuiTM()
+        : TargetModSkill("#huosui-dist")
+    {
+        pattern = "Slash";
+    }
 
-	int getDistanceLimit(const Player *, const Card *c) const override
-	{
-		if (c->getSkillName() == "huosui")
-			return 1000;
+    int getDistanceLimit(const Player *, const Card *c) const override
+    {
+        if (c->getSkillName() == "huosui")
+            return 1000;
 
-		return 0;
-	}
+        return 0;
+    }
 };
-
-
 
 YihuanCard::YihuanCard()
 {
@@ -4350,9 +4345,9 @@ TH0105Package::TH0105Package()
     rika->addSkill(new Zhanche);
     rika->addSkill(new ZhancheD);
     rika->addSkill(new Huosui);
-	rika->addSkill(new HuosuiTM);
+    rika->addSkill(new HuosuiTM);
     related_skills.insertMulti("zhanche", "#zhanche-distance");
-	related_skills.insertMulti("huosui", "#huosui-dist");
+    related_skills.insertMulti("huosui", "#huosui-dist");
 
     General *elis = new General(this, "elis", "pc98", 3);
     elis->addSkill(new Yihuan);

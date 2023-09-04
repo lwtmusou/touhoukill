@@ -675,8 +675,7 @@ public:
         if (e == Damage) {
             ServerPlayer *target = data.value<DamageStruct>().from;
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
-            int maxnum = qMax(target->getEquips().length(), 1);
-			room->askForUseCard(target, "@@shihuiVS", "shihuiuse");
+            room->askForUseCard(target, "@@shihuiVS", "shihuiuse");
             //const Card *c = room->askForUseCard(target, "@@shihuiVS", "shihuiuse");
             //if (c == nullptr)
             //    room->askForDiscard(target, objectName(), maxnum, maxnum, false, true);
