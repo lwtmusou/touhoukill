@@ -358,11 +358,10 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-		if (isHegemonyGameMode(ServerInfo.GameMode)) {
-			if ((use.card->isKindOf("TrickCard") && !use.card->isVirtualCard()  && use.card->isBlack() && use.from->hasSkill(this) && use.from->isAlive()))
-				return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
-		}
-		else if ((use.card->isKindOf("TrickCard") && use.card->isBlack() && use.from->hasSkill(this) && use.from->isAlive()))
+        if (isHegemonyGameMode(ServerInfo.GameMode)) {
+            if ((use.card->isKindOf("TrickCard") && !use.card->isVirtualCard() && use.card->isBlack() && use.from->hasSkill(this) && use.from->isAlive()))
+                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
+        } else if ((use.card->isKindOf("TrickCard") && use.card->isBlack() && use.from->hasSkill(this) && use.from->isAlive()))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from);
         return QList<SkillInvokeDetail>();
     }

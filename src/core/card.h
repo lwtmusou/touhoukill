@@ -238,6 +238,7 @@ protected:
     QString user_string;
 
     // Card interface
+
 public:
     void onUse(Room *room, const CardUseStruct &card_use) const override;
     void use(Room *room, const CardUseStruct &card_use) const override;

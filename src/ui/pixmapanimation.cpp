@@ -19,7 +19,6 @@
     *********************************************************************/
 
 #include "pixmapanimation.h"
-//#include "skinbank.h"
 #include "SkinBank.h"
 
 #include <QDir>

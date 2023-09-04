@@ -143,18 +143,16 @@ public:
     void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
-
 class YsJieCard : public SkillCard
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	Q_INVOKABLE YsJieCard();
+    Q_INVOKABLE YsJieCard();
 
-	bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-	void use(Room *room, const CardUseStruct &card_use) const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void use(Room *room, const CardUseStruct &card_use) const override;
 };
-
 
 class TH09Package : public Package
 {

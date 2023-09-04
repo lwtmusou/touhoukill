@@ -19,9 +19,9 @@
     *********************************************************************/
 
 #include "hegemonyrolecombobox.h"
+#include "SkinBank.h"
 #include "engine.h"
 #include "roomscene.h"
-#include "SkinBank.h"
 
 void HegemonyRoleComboBox::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {

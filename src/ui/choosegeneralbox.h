@@ -21,10 +21,10 @@
 #ifndef _CHOOSE_GENERAL_BOX_H
 #define _CHOOSE_GENERAL_BOX_H
 
+#include "TimedProgressBar.h"
 #include "carditem.h"
 #include "graphicsbox.h"
 #include "protocol.h"
-#include "TimedProgressBar.h"
 #include <QTimer>
 
 class Button;

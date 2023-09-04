@@ -19,13 +19,13 @@
     *********************************************************************/
 
 #include "choosegeneralbox.h"
+#include "SkinBank.h"
 #include "button.h"
 #include "cardcontainer.h"
-#include "choosegeneraldialog.h" //#include "freechoosedialog.h"
+#include "choosegeneraldialog.h"
 #include "client.h"
 #include "clientplayer.h"
 #include "engine.h"
-#include "SkinBank.h"
 
 #include <QApplication>
 #include <QGraphicsProxyWidget>

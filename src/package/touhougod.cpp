@@ -980,13 +980,11 @@ public:
                 if (!room->askForDiscard(player, objectName(), x, x, true, true, "@jinguo:" + QString::number(x) + ":" + QString::number(y)))
                     room->loseHp(player, y);
             }
-		}
-		else {
-			player->loseMark("@kinki", 1);
-			player->skip(Player::Discard);
+        } else {
+            player->loseMark("@kinki", 1);
+            player->skip(Player::Discard);
+        }
 
-		}
-            
         return false;
     }
 };

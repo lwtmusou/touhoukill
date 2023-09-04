@@ -4695,7 +4695,7 @@ void Room::drawCards(QList<ServerPlayer *> players, QList<int> n_list, const QSt
 void Room::throwCard(const Card *card, ServerPlayer *who, ServerPlayer *thrower, bool notifyLog)
 {
     CardMoveReason reason;
-    if (thrower == nullptr) {// && thrower != who
+    if (thrower == nullptr) { // && thrower != who
         reason.m_reason = CardMoveReason::S_REASON_THROW;
         reason.m_playerId = who != nullptr ? who->objectName() : QString();
     } else {

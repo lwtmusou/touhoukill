@@ -5,7 +5,8 @@
 #include <QStringList>
 #include <QVariant>
 
-extern "C" {
+extern "C"
+{
     int luaopen_sgs(lua_State *);
 }
 

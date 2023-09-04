@@ -105,7 +105,7 @@ void UpdateDialog::checkForUpdate()
     req.setUrl(QUrl("https://www.touhousatsu.rocks/TouhouKillUpdate0.10.json"));
 
     QNetworkReply *reply = downloadManager->get(req);
-    connect(reply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::updateError);
+    connect(reply, (void(QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::updateError);
     connect(reply, &QNetworkReply::finished, this, &UpdateDialog::updateInfoReceived);
 }
 
@@ -375,7 +375,7 @@ void UpdateDialog::startDownload()
     reqPack.setUrl(QUrl(m_updatePack));
     packReply = downloadManager->get(reqPack);
     connect(packReply, &QNetworkReply::downloadProgress, this, &UpdateDialog::downloadProgress);
-    connect(packReply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errPack);
+    connect(packReply, (void(QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errPack);
     connect(packReply, &QNetworkReply::finished, this, &UpdateDialog::finishedPack);
 
 #ifdef Q_OS_ANDROID
@@ -385,7 +385,7 @@ void UpdateDialog::startDownload()
         reqScript.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
         reqScript.setUrl(QUrl(m_updateScript));
         scriptReply = downloadManager->get(reqScript);
-        connect(scriptReply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errScript);
+        connect(scriptReply, (void(QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errScript);
         connect(scriptReply, &QNetworkReply::finished, this, &UpdateDialog::finishedScript);
 #ifdef Q_OS_ANDROID
     } else
@@ -435,12 +435,12 @@ void UpdateDialog::errScript()
     taskbarButton->progress()->hide();
 #endif
     if (scriptReply != nullptr) {
-        disconnect(scriptReply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errScript);
+        disconnect(scriptReply, (void(QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errScript);
         disconnect(scriptReply, &QNetworkReply::finished, this, &UpdateDialog::finishedScript);
     }
     if (packReply != nullptr) {
         disconnect(packReply, &QNetworkReply::downloadProgress, this, &UpdateDialog::downloadProgress);
-        disconnect(packReply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errPack);
+        disconnect(packReply, (void(QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errPack);
         disconnect(packReply, &QNetworkReply::finished, this, &UpdateDialog::finishedPack);
     }
 
@@ -488,12 +488,12 @@ void UpdateDialog::errPack()
     taskbarButton->progress()->hide();
 #endif
     if (scriptReply != nullptr) {
-        disconnect(scriptReply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errScript);
+        disconnect(scriptReply, (void(QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errScript);
         disconnect(scriptReply, &QNetworkReply::finished, this, &UpdateDialog::finishedScript);
     }
     if (packReply != nullptr) {
         disconnect(packReply, &QNetworkReply::downloadProgress, this, &UpdateDialog::downloadProgress);
-        disconnect(packReply, (void (QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errPack);
+        disconnect(packReply, (void(QNetworkReply::*)(QNetworkReply::NetworkError))(&QNetworkReply::error), this, &UpdateDialog::errPack);
         disconnect(packReply, &QNetworkReply::finished, this, &UpdateDialog::finishedPack);
     }
 
