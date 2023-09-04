@@ -227,7 +227,6 @@ QString TrustAI::askForKingdom()
     QStringList kingdoms = Sanguosha->getKingdoms();
     kingdoms.removeOne("zhu");
     kingdoms.removeOne("touhougod");
-    QString selfKingdom = self->getGeneral()->getKingdom();
     if (lord == nullptr)
         return kingdoms.at(qrand() % kingdoms.length());
 

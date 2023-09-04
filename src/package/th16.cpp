@@ -725,7 +725,7 @@ public:
                     ids << eq->getId();
             }
 
-            if (ids.isEmpty() || invoke->targets.first()->askForSkillInvoke("#shengyu-select", QString("mow:%1::%2").arg(invoke->invoker->objectName()).arg(colorstring))) {
+            if (ids.isEmpty() || invoke->targets.first()->askForSkillInvoke("#shengyu-select", QString("mow:%1::%2").arg(invoke->invoker->objectName(), colorstring))) {
                 LogMessage l;
                 l.type = "#shengyu";
                 l.from = invoke->targets.first();

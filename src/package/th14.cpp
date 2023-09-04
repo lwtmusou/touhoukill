@@ -132,7 +132,7 @@ public:
 
             bool invoke = false;
             QVariantList ids = current->tag["moyi_basics"].toList();
-            foreach (QVariant card_data, ids) {
+            foreach (const QVariant &card_data, ids) {
                 if (room->getCardPlace(card_data.toInt()) == Player::DiscardPile) {
                     invoke = true;
                     break;
@@ -163,7 +163,7 @@ public:
 
             QVariantList ids = invoke->invoker->tag["moyi_basics"].toList();
             QList<int> all;
-            foreach (QVariant card_data, ids) {
+            foreach (const QVariant &card_data, ids) {
                 if (room->getCardPlace(card_data.toInt()) == Player::DiscardPile)
                     all << card_data.toInt();
             }
@@ -822,7 +822,7 @@ public:
         if (!invoke->invoker->isKongcheng()) {
             const Card *cards = room->askForExchange(invoke->invoker, objectName(), 1, 1, false, "feitou-exchange");
             DELETE_OVER_SCOPE(const Card, cards)
-            invoke->invoker->addToPile("feitou", cards->getSubcards().first());
+            invoke->invoker->addToPile("feitou", cards->getSubcards().constFirst());
         }
         return false;
     }
@@ -870,7 +870,7 @@ public:
             if (move.to_place == Player::DiscardPile) {
                 QList<int> temp_ids;
                 QVariantList shizhu_ids = room->getTag("shizhuPeach").toList();
-                foreach (QVariant card_data, shizhu_ids)
+                foreach (const QVariant &card_data, shizhu_ids)
                     temp_ids << card_data.toInt();
 
                 foreach (int id, move.card_ids) {
@@ -896,7 +896,7 @@ public:
 
             bool hasPeach = false;
             QVariantList shizhu_ids = room->getTag("shizhuPeach").toList();
-            foreach (QVariant card_data, shizhu_ids) {
+            foreach (const QVariant &card_data, shizhu_ids) {
                 if (room->getCardPlace(card_data.toInt()) == Player::DiscardPile) {
                     hasPeach = true;
                     break;
@@ -925,7 +925,7 @@ public:
         ServerPlayer *source = invoke->invoker;
         QList<int> temp_ids;
         QVariantList shizhu_ids = room->getTag("shizhuPeach").toList();
-        foreach (QVariant card_data, shizhu_ids) {
+        foreach (const QVariant &card_data, shizhu_ids) {
             if (room->getCardPlace(card_data.toInt()) == Player::DiscardPile)
                 temp_ids << card_data.toInt();
         }

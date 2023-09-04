@@ -653,7 +653,7 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
     QList<bool> isAcquire;
     QList<const Skill *> triggerList;
 
-    foreach (QString skill_name, skill_names) {
+    foreach (const QString &skill_name, skill_names) {
         if (skill_name.startsWith("-")) {
             QString actual_skill = skill_name.mid(1);
             bool head = true;
@@ -930,7 +930,7 @@ bool Room::doBroadcastNotify(int command, const char *arg)
 
 void Room::broadcastInvoke(const char *method, const QString &arg, ServerPlayer *except)
 {
-    broadcast(QString("%1 %2").arg(method).arg(arg), except);
+    broadcast(QString("%1 %2").arg(method, arg), except);
 }
 
 void Room::broadcastInvoke(const QSanProtocol::AbstractPacket *packet, ServerPlayer *except)
@@ -1370,7 +1370,6 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
             }
         }
         if (isHegNullification) {
-            QString log = trick->getFullName(true);
             //heg_nullification_selection = askForChoice(repliedPlayer, "heg_nullification%log:" + log, "single%to:" + to->objectName() +
             //    "+all%to:" + to->objectName() + "%log:" + Sanguosha->translate(to->getRole()), data);
             heg_nullification_selection = askForChoice(repliedPlayer, "heg_nullification", "single+all", data);
@@ -1443,7 +1442,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     }
     if (pagoda == 0 && result && EquipSkill::equipAvailable(repliedPlayer, EquipCard::TreasureLocation, "Pagoda")) {
         bool isLastTarget = true;
-        foreach (QString flag, trick->getFlags()) {
+        foreach (const QString &flag, trick->getFlags()) {
             if (flag.startsWith("LastTrickTarget_")) {
                 QStringList f = flag.split("_");
                 ServerPlayer *last = findPlayerByObjectName(f.at(1));
@@ -1771,7 +1770,6 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         QVariant d = QVariant::fromValue(s);
         thread->trigger(ChoiceMade, this, d);
         //show hidden general
-        QString showskill = card->getSkillName();
         player->showHiddenSkill(skill_name);
         player->showHiddenSkill(card->getSkillName());
         const Skill *equipSkill = Sanguosha->getSkill(skill_name);
@@ -2024,7 +2022,7 @@ const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, 
         card = ai->askForCardShow(requestor, reason);
     else {
         if (player->getHandcardNum() == 1)
-            card = player->getHandcards().first();
+            card = player->getHandcards().constFirst();
         else {
             bool success = doRequest(player, S_COMMAND_SHOW_CARD, requestor->getGeneralName(), true);
             JsonArray clientReply = player->getClientReply().value<JsonArray>();
@@ -3704,8 +3702,8 @@ QStringList Room::_chooseDefaultGenerals(ServerPlayer *player) const
 
     QStringList general_pairs;
     //temp AI
-    foreach (QString a, candidates) {
-        foreach (QString b, candidates) {
+    foreach (const QString &a, candidates) {
+        foreach (const QString &b, candidates) {
             if (a == b)
                 continue;
             const General *general1 = Sanguosha->getGeneral(a);
@@ -3850,7 +3848,7 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg)
         } else if (sentence.startsWith(".SetAIDelay=")) {
             _NO_BROADCAST_SPEAKING;
             bool ok = false;
-            int delay = sentence.mid(12).toInt(&ok);
+            int delay = sentence.midRef(12).toInt(&ok);
             if (ok) {
                 Config.AIDelay = Config.OriginAIDelay = delay;
                 Config.setValue("OriginAIDelay", delay);
@@ -4012,7 +4010,7 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
             if (card->isKindOf("DelayedTrick") && card->isVirtualCard() && card->subcardsLength() == 1) {
                 Card *trick = Sanguosha->cloneCard(card);
                 Q_ASSERT(trick != nullptr);
-                WrappedCard *wrapped = Sanguosha->getWrappedCard(card->getSubcards().first());
+                WrappedCard *wrapped = Sanguosha->getWrappedCard(card->getSubcards().constFirst());
                 wrapped->takeOver(trick);
                 broadcastUpdateCard(getPlayers(), wrapped->getId(), wrapped);
                 card_use.card = wrapped;
@@ -4051,7 +4049,7 @@ bool Room::useCard(const CardUseStruct &use, bool add_history)
             foreach (ServerPlayer *p, m_alivePlayers) {
                 p->tag.remove("Qinggang");
 
-                foreach (QString flag, p->getFlagList()) {
+                foreach (const QString &flag, p->getFlagList()) {
                     if (flag == "Global_GongxinOperator")
                         p->setFlags("-" + flag);
                     else if (flag.endsWith("_InTempMoving"))
@@ -4819,13 +4817,13 @@ QList<CardsMoveOneTimeStruct> Room::_mergeMoves(QList<CardsMoveStruct> cards_mov
 {
     QMap<_MoveMergeClassifier, QList<CardsMoveStruct>> moveMap;
 
-    foreach (CardsMoveStruct cards_move, cards_moves) {
+    foreach (const CardsMoveStruct &cards_move, cards_moves) {
         _MoveMergeClassifier classifier(cards_move);
         moveMap[classifier].append(cards_move);
     }
 
     QList<CardsMoveOneTimeStruct> result;
-    foreach (_MoveMergeClassifier cls, moveMap.keys()) {
+    foreach (const _MoveMergeClassifier &cls, moveMap.keys()) {
         CardsMoveOneTimeStruct moveOneTime;
         moveOneTime.from = cls.m_from;
         moveOneTime.reason = moveMap[cls].first().reason;
@@ -4837,7 +4835,7 @@ QList<CardsMoveOneTimeStruct> Room::_mergeMoves(QList<CardsMoveStruct> cards_mov
         moveOneTime.origin_to = cls.m_origin_to;
         moveOneTime.origin_to_place = cls.m_origin_to_place;
         moveOneTime.origin_to_pile_name = cls.m_origin_to_pile_name;
-        foreach (CardsMoveStruct move, moveMap[cls]) {
+        foreach (const CardsMoveStruct &move, moveMap[cls]) {
             moveOneTime.card_ids.append(move.card_ids);
             moveOneTime.broken_ids.append(move.broken_ids);
             moveOneTime.shown_ids.append(move.shown_ids);
@@ -4880,7 +4878,7 @@ QList<CardsMoveStruct> Room::_separateMoves(QList<CardsMoveOneTimeStruct> moveOn
     QList<QList<int>> ids;
     QList<int> broken_ids;
     QList<int> shown_ids;
-    foreach (CardsMoveOneTimeStruct moveOneTime, moveOneTimes) {
+    foreach (const CardsMoveOneTimeStruct &moveOneTime, moveOneTimes) {
         for (int i = 0; i < moveOneTime.card_ids.size(); i++) {
             _MoveSeparateClassifier classifier(moveOneTime, i);
             if (classifiers.contains(classifier)) {
@@ -4899,12 +4897,12 @@ QList<CardsMoveStruct> Room::_separateMoves(QList<CardsMoveOneTimeStruct> moveOn
 
     QList<CardsMoveStruct> card_moves;
     int i = 0;
-    QMap<ServerPlayer *, QList<int>> from_handcards;
-    foreach (_MoveSeparateClassifier cls, classifiers) {
+    QHash<ServerPlayer *, QList<int>> from_handcards;
+    foreach (const _MoveSeparateClassifier &cls, classifiers) {
         CardsMoveStruct card_move;
         ServerPlayer *from = (ServerPlayer *)cls.m_from;
         card_move.from = cls.m_from;
-        if ((from != nullptr) && !from_handcards.keys().contains(from))
+        if ((from != nullptr) && !from_handcards.contains(from))
             from_handcards[from] = from->handCards();
         card_move.to = cls.m_to;
         if (card_move.from != nullptr)
@@ -4932,7 +4930,7 @@ QList<CardsMoveStruct> Room::_separateMoves(QList<CardsMoveOneTimeStruct> moveOn
         card_move.origin_from_pile_name = cls.m_from_pile_name;
         card_move.origin_to_pile_name = cls.m_to_pile_name;
 
-        if ((from != nullptr) && from_handcards.keys().contains(from)) {
+        if ((from != nullptr) && from_handcards.contains(from)) {
             QList<int> &move_ids = from_handcards[from];
             if (!move_ids.isEmpty()) {
                 foreach (int id, card_move.card_ids)
@@ -5018,7 +5016,7 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
             doBroadcastNotify(S_COMMAND_UPDATE_PILE, QVariant(m_drawPile->length()));
     }
 
-    foreach (CardsMoveStruct move, cards_moves)
+    foreach (const CardsMoveStruct &move, cards_moves)
         updateCardsOnLose(move);
 
     for (int i = 0; i < cards_moves.size(); i++) {
@@ -5027,7 +5025,7 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
             setCardMapping(cards_move.card_ids[j], (ServerPlayer *)cards_move.to, cards_move.to_place);
         }
     }
-    foreach (CardsMoveStruct move, cards_moves)
+    foreach (const CardsMoveStruct &move, cards_moves)
         updateCardsOnGet(move);
     notifyMoveCards(false, cards_moves, forceMoveVisible);
 
@@ -5062,7 +5060,7 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
 
     //trigger event
     moveOneTimes = _mergeMoves(cards_moves);
-    foreach (CardsMoveOneTimeStruct moveOneTime, moveOneTimes) {
+    foreach (const CardsMoveOneTimeStruct &moveOneTime, moveOneTimes) {
         if (moveOneTime.card_ids.size() == 0)
             continue;
         QVariant data = QVariant::fromValue(moveOneTime);
@@ -5122,7 +5120,7 @@ void Room::moveCardsToEndOfDrawpile(QList<int> card_ids, bool forceVisible)
             doBroadcastNotify(S_COMMAND_UPDATE_PILE, QVariant(m_drawPile->length()));
     }
 
-    foreach (CardsMoveStruct move, cards_moves)
+    foreach (const CardsMoveStruct &move, cards_moves)
         updateCardsOnLose(move);
 
     for (int i = 0; i < cards_moves.size(); i++) {
@@ -5131,7 +5129,7 @@ void Room::moveCardsToEndOfDrawpile(QList<int> card_ids, bool forceVisible)
             setCardMapping(cards_move.card_ids[j], (ServerPlayer *)cards_move.to, cards_move.to_place);
         }
     }
-    foreach (CardsMoveStruct move, cards_moves)
+    foreach (const CardsMoveStruct &move, cards_moves)
         updateCardsOnGet(move);
     notifyMoveCards(false, cards_moves, forceVisible);
     // Now, process add cards
@@ -5173,7 +5171,7 @@ QList<CardsMoveStruct> Room::_breakDownCardMoves(QList<CardsMoveStruct> &cards_m
             _MoveSourceClassifier classifier(move);
             moveMap[classifier].append(move.card_ids[j]);
         }
-        foreach (_MoveSourceClassifier cls, moveMap.keys()) {
+        foreach (const _MoveSourceClassifier &cls, moveMap.keys()) {
             CardsMoveStruct sub_move = move;
             cls.copyTo(sub_move);
             if ((sub_move.from == sub_move.to && sub_move.from_place == sub_move.to_place) || sub_move.card_ids.size() == 0)
@@ -5357,7 +5355,7 @@ void Room::doBattleArrayAnimate(ServerPlayer *player, ServerPlayer *target)
     } else {
         foreach (ServerPlayer *p, getOtherPlayers(player))
             if (p->inSiegeRelation(player, target))
-                doAnimate(QSanProtocol::S_ANIMATE_BATTLEARRAY, player->objectName(), QString("%1+%2").arg(p->objectName()).arg(player->objectName()));
+                doAnimate(QSanProtocol::S_ANIMATE_BATTLEARRAY, player->objectName(), QString("%1+%2").arg(p->objectName(), player->objectName()));
     }
 }
 
@@ -6279,7 +6277,7 @@ const Card *Room::askForPindian(ServerPlayer *player, ServerPlayer *from, Server
     notifyMoveFocus(player, S_COMMAND_PINDIAN);
 
     if (player->getHandcardNum() == 1)
-        return player->getHandcards().first();
+        return player->getHandcards().constFirst();
 
     AI *ai = player->getAI();
     if (ai != nullptr) {
@@ -6318,9 +6316,9 @@ QList<const Card *> Room::askForPindianRace(ServerPlayer *from, ServerPlayer *to
     const Card *from_card = nullptr, *to_card = nullptr;
 
     if (from->getHandcardNum() == 1)
-        from_card = from->getHandcards().first();
+        from_card = from->getHandcards().constFirst();
     if (to->getHandcardNum() == 1)
-        to_card = to->getHandcards().first();
+        to_card = to->getHandcards().constFirst();
 
     AI *ai = nullptr;
     if (from_card == nullptr) {
@@ -7161,7 +7159,7 @@ QString Room::askForRole(ServerPlayer *player, const QStringList &roles, const Q
 void Room::networkDelayTestCommand(ServerPlayer *player, const QVariant &)
 {
     qint64 delay = player->endNetworkDelayTest();
-    QString reportStr = tr("<font color=#EEB422>The network delay of player <b>%1</b> is %2 milliseconds.</font>").arg(player->screenName()).arg(QString::number(delay));
+    QString reportStr = tr("<font color=#EEB422>The network delay of player <b>%1</b> is %2 milliseconds.</font>").arg(player->screenName(), QString::number(delay));
     speakCommand(player, reportStr.toUtf8().toBase64());
 }
 
@@ -7176,7 +7174,7 @@ void Room::defaultHeroSkin()
     if (Config.DefaultHeroSkin) {
         QStringList all = Sanguosha->getLimitedGeneralNames();
         Config.beginGroup("HeroSkin");
-        foreach (QString general_name, all)
+        foreach (const QString &general_name, all)
             Config.remove(general_name);
 
         Config.endGroup();
@@ -7273,7 +7271,7 @@ void Room::saveWinnerTable(const QString &winner, bool isSurrender)
     QTextStream stream(&file);
     stream.seek(file.size());
 
-    line.append(QString("Date: %1/%2 %3:%4:%5").arg(time.toString("MM")).arg(time.toString("dd")).arg(time.toString("hh")).arg(time.toString("mm")).arg(time.toString("ss")));
+    line.append(QString("Date: %1/%2 %3:%4:%5").arg(time.toString("MM"), time.toString("dd"), time.toString("hh"), time.toString("mm"), time.toString("ss")));
     line.append("\n");
     QStringList winners = winner.split("+");
     foreach (ServerPlayer *p, getAllPlayers(true)) {
@@ -7326,7 +7324,7 @@ void Room::countDescription()
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
     QMultiMap<int, QString> map;
-    foreach (QString name, all) {
+    foreach (const QString &name, all) {
         const General *gen = Sanguosha->getGeneral(name);
         QString line = "";
         foreach (const Skill *skill, gen->getVisibleSkillList()) {
@@ -7335,7 +7333,7 @@ void Room::countDescription()
             QString desc = Sanguosha->translate(":" + skill->objectName());
             QRegExp rx("<[^>]*>");
             desc.remove(rx);
-            QString skill_line = QString("%1:%2").arg(skill_name).arg(desc);
+            QString skill_line = QString("%1:%2").arg(skill_name, desc);
             line = line + skill_line;
         }
         map.insert(line.length(), name);
@@ -7344,7 +7342,7 @@ void Room::countDescription()
     int num = 0;
     for (it = map.begin(); it != map.end(); ++it) {
         QString countString = "";
-        countString.append(QString("%1: %2 ").arg(Sanguosha->translate(it.value())).arg(QString::number(it.key())));
+        countString.append(QString("%1: %2 ").arg(Sanguosha->translate(it.value()), QString::number(it.key())));
         countString.append("\n");
         stream << countString;
         num += it.key();

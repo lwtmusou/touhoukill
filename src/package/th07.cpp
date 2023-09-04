@@ -433,7 +433,7 @@ public:
         if (!invoke->invoker->isKongcheng()) {
             const Card *cards = room->askForExchange(invoke->invoker, objectName(), 1, 1, false, "jingjie_exchange");
             DELETE_OVER_SCOPE(const Card, cards)
-            int id = cards->getSubcards().first();
+            int id = cards->getSubcards().constFirst();
             invoke->invoker->addToPile("jingjie", id);
         }
         return false;
@@ -507,7 +507,7 @@ public:
         if (yukari == who) {
             const Card *card = room->askForExchange(yukari, objectName(), 1, 1, true, "@sisheng");
             DELETE_OVER_SCOPE(const Card, card)
-            id2 = card->getSubcards().first();
+            id2 = card->getSubcards().constFirst();
         } else
             id2 = room->askForCardChosen(yukari, who, "hes", objectName(), false, Card::MethodDiscard);
 

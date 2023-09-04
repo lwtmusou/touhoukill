@@ -380,7 +380,7 @@ void CardUseStruct::parse(const QString &str, Room *room)
 
     if (target_str != ".") {
         QStringList target_names = target_str.split("+");
-        foreach (QString target_name, target_names)
+        foreach (const QString &target_name, target_names)
             to << room->findChild<ServerPlayer *>(target_name);
     }
 }

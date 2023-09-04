@@ -180,7 +180,7 @@ bool Card::isEquipped() const
 bool Card::matchTypeOrName(const QString &pattern) const
 {
     QStringList patterns = pattern.split("+");
-    foreach (QString ptn, patterns)
+    foreach (const QString &ptn, patterns)
         if (objectName() == ptn || getType() == ptn || getSubtype() == ptn)
             return true;
     return false;
@@ -235,7 +235,7 @@ bool Card::CompareByType(const Card *a, const Card *b)
                   << "super_peach";
         switch (a->getTypeId()) {
         case TypeBasic: {
-            foreach (QString object_name, basic) {
+            foreach (const QString &object_name, basic) {
                 if (a->objectName() == object_name) {
                     if (b->objectName() == object_name)
                         return CompareBySuit(a, b);
@@ -301,9 +301,9 @@ QString Card::getFullName(bool include_suit) const
     QString name = getName();
     if (include_suit) {
         QString suit_name = Sanguosha->translate(getSuitString());
-        return QString("%1%2 %3").arg(suit_name).arg(getNumberString()).arg(name);
+        return QString("%1%2 %3").arg(suit_name, getNumberString(), name);
     } else
-        return QString("%1 %2").arg(getNumberString()).arg(name);
+        return QString("%1 %2").arg(getNumberString(), name);
 }
 
 QString Card::getLogName() const
@@ -338,7 +338,7 @@ QString Card::getLogName() const
     if (m_number > 0 && m_number <= 13)
         number_string = getNumberString();
 
-    return QString("%1[%2%3]").arg(getName()).arg(suit_char).arg(number_string);
+    return QString("%1[%2%3]").arg(getName(), suit_char, number_string);
 }
 
 QString Card::getCommonEffectName() const
@@ -368,7 +368,7 @@ QString Card::getDescription(bool yellow) const
 {
     QString desc = Sanguosha->translate(":" + objectName());
     desc.replace("\n", "<br/>");
-    return tr("<font color=%1><b>[%2]</b> %3</font>").arg(yellow ? "#FFFF33" : "#FF0080").arg(getName()).arg(desc);
+    return tr("<font color=%1><b>[%2]</b> %3</font>").arg((yellow ? "#FFFF33" : "#FF0080"), getName(), desc);
 }
 
 QString Card::toString(bool hidden) const
@@ -377,7 +377,7 @@ QString Card::toString(bool hidden) const
     if (!isVirtualCard())
         return QString::number(m_id);
     else
-        return QString("%1:%2[%3:%4]=%5").arg(objectName()).arg(m_skillName).arg(getSuitString()).arg(getNumberString()).arg(subcardString());
+        return QString("%1:%2[%3:%4]=%5").arg(objectName(), m_skillName, getSuitString(), getNumberString(), subcardString());
 }
 
 QString Card::getEffectName() const
@@ -947,12 +947,12 @@ QString SkillCard::toString(bool hidden) const
 {
     QString str;
     if (!hidden)
-        str = QString("@%1[%2:%3]=%4").arg(metaObject()->className()).arg(getSuitString()).arg(getNumberString()).arg(subcardString());
+        str = QString("@%1[%2:%3]=%4").arg(metaObject()->className(), getSuitString(), getNumberString(), subcardString());
     else
         str = QString("@%1[no_suit:-]=.").arg(metaObject()->className());
 
     if (!user_string.isEmpty())
-        return QString("%1:%2").arg(str).arg(user_string);
+        return QString("%1:%2").arg(str, user_string);
     else
         return str;
 }

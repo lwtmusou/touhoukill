@@ -72,7 +72,7 @@ void Settings::init()
         QString font_path = value("DefaultFontPath", "font/simli.ttf").toString();
         int font_id = QFontDatabase::addApplicationFont(font_path);
         if (font_id != -1) {
-            QString font_family = QFontDatabase::applicationFontFamilies(font_id).first();
+            QString font_family = QFontDatabase::applicationFontFamilies(font_id).constFirst();
             BigFont.setFamily(font_family);
             SmallFont.setFamily(font_family);
             TinyFont.setFamily(font_family);
@@ -208,7 +208,7 @@ void Settings::init()
     basara_ban = GetConfigFromLuaState(lua, "basara_ban").toStringList();
     hegemony_ban = GetConfigFromLuaState(lua, "hegemony_ban").toStringList();
     hegemony_ban.append(basara_ban);
-    foreach (QString general, Sanguosha->getLimitedGeneralNames()) {
+    foreach (const QString &general, Sanguosha->getLimitedGeneralNames()) {
         if (Sanguosha->getGeneral(general)->getKingdom() == "god" && !hegemony_ban.contains(general))
             hegemony_ban << general;
     }
@@ -216,7 +216,7 @@ void Settings::init()
 
     QStringList banlist = value("Banlist/Roles").toStringList();
     if (banlist.isEmpty()) {
-        foreach (QString ban_general, roles_ban)
+        foreach (const QString &ban_general, roles_ban)
             banlist << ban_general;
 
         setValue("Banlist/Roles", banlist);
@@ -224,7 +224,7 @@ void Settings::init()
 
     banlist = value("Banlist/1v1").toStringList();
     if (banlist.isEmpty()) {
-        foreach (QString ban_general, kof_ban)
+        foreach (const QString &ban_general, kof_ban)
             banlist << ban_general;
 
         setValue("Banlist/1v1", banlist);
@@ -232,21 +232,21 @@ void Settings::init()
 
     banlist = value("Banlist/03_1v2").toStringList();
     if (banlist.isEmpty()) {
-        foreach (QString ban_general, contest2v2_ban)
+        foreach (const QString &ban_general, contest2v2_ban)
             banlist << ban_general;
         setValue("Banlist/03_1v2", banlist);
     }
 
     banlist = value("Banlist/04_2v2").toStringList();
     if (banlist.isEmpty()) {
-        foreach (QString ban_general, peasantsvslandlord_ban)
+        foreach (const QString &ban_general, peasantsvslandlord_ban)
             banlist << ban_general;
         setValue("Banlist/04_2v2", banlist);
     }
 
     banlist = value("Banlist/HulaoPass").toStringList();
     if (banlist.isEmpty()) {
-        foreach (QString ban_general, hulao_ban)
+        foreach (const QString &ban_general, hulao_ban)
             banlist << ban_general;
 
         setValue("Banlist/HulaoPass", banlist);
@@ -254,7 +254,7 @@ void Settings::init()
 
     banlist = value("Banlist/XMode").toStringList();
     if (banlist.isEmpty()) {
-        foreach (QString ban_general, xmode_ban)
+        foreach (const QString &ban_general, xmode_ban)
             banlist << ban_general;
 
         setValue("Banlist/XMode", banlist);
@@ -262,7 +262,7 @@ void Settings::init()
 
     banlist = value("Banlist/Basara").toStringList();
     if (banlist.isEmpty()) {
-        foreach (QString ban_general, basara_ban)
+        foreach (const QString &ban_general, basara_ban)
             banlist << ban_general;
 
         setValue("Banlist/Basara", banlist);
@@ -270,14 +270,14 @@ void Settings::init()
 
     banlist = value("Banlist/Hegemony").toStringList();
     if (banlist.isEmpty()) {
-        foreach (QString ban_general, hegemony_ban)
+        foreach (const QString &ban_general, hegemony_ban)
             banlist << ban_general;
         setValue("Banlist/Hegemony", banlist);
     }
 
     banlist = value("Banlist/Pairs").toStringList();
     if (banlist.isEmpty()) {
-        foreach (QString ban_general, pairs_ban)
+        foreach (const QString &ban_general, pairs_ban)
             banlist << ban_general;
 
         setValue("Banlist/Pairs", banlist);

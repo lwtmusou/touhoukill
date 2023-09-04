@@ -787,7 +787,7 @@ public:
         invoke->invoker->tag.remove("souji");
 
         QList<int> obtain_ids;
-        foreach (QVariant record_id, ids)
+        foreach (const QVariant &record_id, ids)
             obtain_ids << record_id.toInt();
 
         CardsMoveStruct mo;
@@ -901,7 +901,8 @@ public:
         QList<int> able;
         QList<int> disable;
         foreach (int id, ids) {
-            if (Sanguosha->getCard(id)->getSuit() == card->getSuit())
+            const Card *c = Sanguosha->getCard(id);
+            if (c != nullptr && c->getSuit() == card->getSuit())
                 able << id;
             else
                 disable << id;
@@ -1126,7 +1127,6 @@ public:
         if (damage.from != nullptr && damage.to->canDiscard(damage.from, "hes"))
             select << "discard";
 
-        QList<ServerPlayer *> fieldcard;
         foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (damage.to->canDiscard(p, "ej")) {
                 select << "discardfield";

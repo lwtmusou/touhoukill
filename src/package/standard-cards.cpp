@@ -175,6 +175,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
         room->notifySkillInvoked(player, "shuangren");
     }
 
+#if 0
     int rangefix = 0;
     if (use.card->isVirtualCard()) {
         if ((use.from->getWeapon() != nullptr) && use.card->getSubcards().contains(use.from->getWeapon()->getId())) {
@@ -185,6 +186,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const
         if ((use.from->getOffensiveHorse() != nullptr) && use.card->getSubcards().contains(use.from->getOffensiveHorse()->getId()))
             rangefix += 1;
     }
+#endif
     if (use.card->isVirtualCard() && use.card->getSkillName() == "Spear")
         room->setEmotion(player, "weapon/spear");
     else if (use.to.size() > 1 && player->hasWeapon("Halberd") && player->isLastHandCard(this))
@@ -1186,7 +1188,7 @@ void AmazingGrace::onEffect(const CardEffectStruct &effect) const
     if (ag_list.isEmpty() || effect.to->isDead())
         return;
     QList<int> card_ids;
-    foreach (QVariant card_id, ag_list)
+    foreach (const QVariant &card_id, ag_list)
         card_ids << card_id.toInt();
 
     int times = 1 + effect.effectValue.first();
@@ -1382,7 +1384,7 @@ void Collateral::onEffect(const CardEffectStruct &effect) const
     room->sortByActionOrder(victims);
     foreach (ServerPlayer *v, victims) {
         WrappedCard *weapon = killer->getWeapon();
-        prompt = QString("collateral-slash:%1:%2").arg(v->objectName()).arg(source->objectName());
+        prompt = QString("collateral-slash:%1:%2").arg(v->objectName(), source->objectName());
         bool doSlash = doCollateral(room, killer, v, prompt);
         if (!doSlash && source->isAlive() && (killer->getWeapon() != nullptr))
             source->obtainCard(weapon);
@@ -2403,7 +2405,7 @@ void KnownBoth::use(Room *room, const CardUseStruct &card_use) const
         room->setPlayerMark(source, "magic_drank", 0);
     room->removeTag("targets" + this->toString());
 
-    if (source->isAlive() && source->isCurrent()) {
+    if (source != nullptr && source->isAlive() && source->isCurrent()) {
         room->touhouLogmessage("#KnownBothLimit", source);
         room->setTag("KnownBothUsed", true);
         foreach (ServerPlayer *p, room->getOtherPlayers(source)) {
@@ -2415,7 +2417,7 @@ void KnownBoth::use(Room *room, const CardUseStruct &card_use) const
     }
 
     if (room->getCardPlace(getEffectiveId()) == Player::PlaceTable) {
-        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
+        CardMoveReason reason(CardMoveReason::S_REASON_USE, ((source != nullptr) ? source->objectName() : QString()), QString(), this->getSkillName(), QString());
         if (targets.size() == 1)
             reason.m_targetId = targets.first()->objectName();
         reason.m_extraData = QVariant::fromValue((const Card *)this);

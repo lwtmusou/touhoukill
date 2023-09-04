@@ -40,7 +40,7 @@ void Engine::init()
     DoLuaScript(lua, "lua/config.lua");
 
     QStringList package_names = GetConfigFromLuaState(lua, "package_names").toStringList();
-    foreach (QString name, package_names)
+    foreach (const QString &name, package_names)
         addPackage(name);
 
     metaobjects.insert(SurrenderCard::staticMetaObject.className(), &SurrenderCard::staticMetaObject);
@@ -80,7 +80,7 @@ void Engine::init()
     modes["03_1v2"] = tr("Peasants vs Landlord");
     modes["04_2v2"] = tr("contest 2v2");
 
-    foreach (const Skill *skill, skills.values()) {
+    foreach (const Skill *skill, skills) {
         Skill *mutable_skill = const_cast<Skill *>(skill);
         mutable_skill->initMediaSource();
     }
@@ -181,25 +181,25 @@ void Engine::addPackage(Package *package)
             const LuaBasicCard *lcard = qobject_cast<const LuaBasicCard *>(card);
             Q_ASSERT(lcard != nullptr);
             luaBasicCard_className2objectName.insert(lcard->getClassName(), lcard->objectName());
-            if (!luaBasicCards.keys().contains(lcard->getClassName()))
+            if (!luaBasicCards.contains(lcard->getClassName()))
                 luaBasicCards.insert(lcard->getClassName(), lcard->clone());
         } else if (card->isKindOf("LuaTrickCard")) {
             const LuaTrickCard *lcard = qobject_cast<const LuaTrickCard *>(card);
             Q_ASSERT(lcard != nullptr);
             luaTrickCard_className2objectName.insert(lcard->getClassName(), lcard->objectName());
-            if (!luaTrickCards.keys().contains(lcard->getClassName()))
+            if (!luaTrickCards.contains(lcard->getClassName()))
                 luaTrickCards.insert(lcard->getClassName(), lcard->clone());
         } else if (card->isKindOf("LuaWeapon")) {
             const LuaWeapon *lcard = qobject_cast<const LuaWeapon *>(card);
             Q_ASSERT(lcard != nullptr);
             luaWeapon_className2objectName.insert(lcard->getClassName(), lcard->objectName());
-            if (!luaWeapons.keys().contains(lcard->getClassName()))
+            if (!luaWeapons.contains(lcard->getClassName()))
                 luaWeapons.insert(lcard->getClassName(), lcard->clone());
         } else if (card->isKindOf("LuaArmor")) {
             const LuaArmor *lcard = qobject_cast<const LuaArmor *>(card);
             Q_ASSERT(lcard != nullptr);
             luaArmor_className2objectName.insert(lcard->getClassName(), lcard->objectName());
-            if (!luaArmors.keys().contains(lcard->getClassName()))
+            if (!luaArmors.contains(lcard->getClassName()))
                 luaArmors.insert(lcard->getClassName(), lcard->clone());
         } /* else if (card->isKindOf("LuaTreasure")) {
             const LuaTreasure *lcard = qobject_cast<const LuaTreasure *>(card);
@@ -220,7 +220,7 @@ void Engine::addPackage(Package *package)
     QList<General *> all_generals = package->findChildren<General *>();
     foreach (General *general, all_generals) {
         addSkills(general->findChildren<const Skill *>());
-        foreach (QString skill_name, general->getExtraSkillSet()) {
+        foreach (const QString &skill_name, general->getExtraSkillSet()) {
             if (skill_name.startsWith("#"))
                 continue;
             foreach (const Skill *related, getRelatedSkills(skill_name))
@@ -283,7 +283,7 @@ QString Engine::translate(const QString &to_translate, bool addHegemony) const
 {
     QStringList list = to_translate.split("\\");
     QString res;
-    foreach (QString str, list) {
+    foreach (const QString &str, list) {
         if (addHegemony && !str.endsWith("_hegemony")) {
             QString strh = str + "_hegemony";
             if (translations.contains(strh))
@@ -345,7 +345,7 @@ Card::HandlingMethod Engine::getCardHandlingMethod(const QString &method_name) c
 QList<const Skill *> Engine::getRelatedSkills(const QString &skill_name) const
 {
     QList<const Skill *> skills;
-    foreach (QString name, related_skills.values(skill_name))
+    foreach (const QString &name, related_skills.values(skill_name))
         skills << getSkill(name);
 
     return skills;
@@ -354,10 +354,10 @@ QList<const Skill *> Engine::getRelatedSkills(const QString &skill_name) const
 const Skill *Engine::getMainSkill(const QString &skill_name) const
 {
     const Skill *skill = getSkill(skill_name);
-    if ((skill == nullptr) || skill->isVisible() || related_skills.keys().contains(skill_name))
+    if ((skill == nullptr) || skill->isVisible() || related_skills.contains(skill_name))
         return skill;
-    foreach (QString key, related_skills.keys()) {
-        foreach (QString name, related_skills.values(key))
+    foreach (const QString &key, related_skills.keys()) {
+        foreach (const QString &name, related_skills.values(key))
             if (name == skill_name)
                 return getSkill(key);
     }
@@ -521,7 +521,7 @@ Card *Engine::cloneCard(const Card *card) const
 Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const QStringList &flags) const
 {
     Card *card = nullptr;
-    if (luaBasicCard_className2objectName.keys().contains(name)) {
+    if (luaBasicCard_className2objectName.contains(name)) {
         const LuaBasicCard *lcard = luaBasicCards.value(name, NULL);
         if (lcard == nullptr)
             return nullptr;
@@ -532,7 +532,7 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const 
         if (lcard == nullptr)
             return nullptr;
         card = lcard->clone(suit, number);
-    } else if (luaTrickCard_className2objectName.keys().contains(name)) {
+    } else if (luaTrickCard_className2objectName.contains(name)) {
         const LuaTrickCard *lcard = luaTrickCards.value(name, NULL);
         if (lcard == nullptr)
             return nullptr;
@@ -543,7 +543,7 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const 
         if (lcard == nullptr)
             return nullptr;
         card = lcard->clone(suit, number);
-    } else if (luaWeapon_className2objectName.keys().contains(name)) {
+    } else if (luaWeapon_className2objectName.contains(name)) {
         const LuaWeapon *lcard = luaWeapons.value(name, NULL);
         if (lcard == nullptr)
             return nullptr;
@@ -554,7 +554,7 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const 
         if (lcard == nullptr)
             return nullptr;
         card = lcard->clone(suit, number);
-    } else if (luaArmor_className2objectName.keys().contains(name)) {
+    } else if (luaArmor_className2objectName.contains(name)) {
         const LuaArmor *lcard = luaArmors.value(name, NULL);
         if (lcard == nullptr)
             return nullptr;
@@ -565,7 +565,7 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const 
         if (lcard == nullptr)
             return nullptr;
         card = lcard->clone(suit, number);
-    } else if (luaTreasure_className2objectName.keys().contains(name)) {
+    } else if (luaTreasure_className2objectName.contains(name)) {
         const LuaTreasure *lcard = luaTreasures.value(name, NULL);
         if (lcard == nullptr)
             return nullptr;
@@ -590,7 +590,7 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const 
         return nullptr;
     card->clearFlags();
     if (!flags.isEmpty()) {
-        foreach (QString flag, flags)
+        foreach (const QString &flag, flags)
             card->setFlags(flag);
     }
     return card;
@@ -616,7 +616,7 @@ QString Engine::getVersionNumber() const
 
 QString Engine::getVersion() const
 {
-    return QString("%1:%2").arg(getVersionNumber()).arg(getMODName());
+    return QString("%1:%2").arg(getVersionNumber(), getMODName());
 }
 
 QString Engine::getVersionName() const
@@ -760,7 +760,7 @@ int Engine::getPlayerCount(const QString &mode) const
         QRegExp rx("(\\d+)");
         int index = rx.indexIn(mode);
         if (index != -1)
-            return rx.capturedTexts().first().toInt();
+            return rx.capturedTexts().constFirst().toInt();
     }
 
     return -1;
@@ -936,7 +936,7 @@ QStringList Engine::getRandomLords() const
     }
 
     QStringList nonlord_list;
-    foreach (QString nonlord, generals.keys()) {
+    foreach (const QString &nonlord, generals.keys()) {
         if (isGeneralHidden(nonlord))
             continue;
         const General *general = generals.value(nonlord);
@@ -996,7 +996,7 @@ QStringList Engine::getLimitedGeneralNames() const
     QHashIterator<QString, const General *> itor(generals);
     if (ServerInfo.GameMode == "04_1v3") {
         QList<const General *> hulao_generals = QList<const General *>();
-        foreach (QString pack_name, GetConfigFromLuaState(lua, "hulao_packages").toStringList()) {
+        foreach (const QString &pack_name, GetConfigFromLuaState(lua, "hulao_packages").toStringList()) {
             const Package *pack = Sanguosha->findChild<const Package *>(pack_name);
             if (pack != nullptr)
                 hulao_generals << pack->findChildren<const General *>();

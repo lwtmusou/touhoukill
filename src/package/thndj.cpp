@@ -293,7 +293,7 @@ public:
             invoke->invoker->tag["huanyue_damage"] = data;
             return invoke->invoker->askForSkillInvoke(this, prompt);
         } else {
-            QString prompt = QString("@huanyue:%1:%2").arg(damage.to->objectName()).arg(damage.card->objectName());
+            QString prompt = QString("@huanyue:%1:%2").arg(damage.to->objectName(), damage.card->objectName());
             room->setPlayerProperty(invoke->invoker, "huanyue", damage.card->getType());
             const Card *c = room->askForCard(invoke->invoker, "@@huanyue-card2", prompt, data, Card::MethodNone, nullptr, false, "huanyue", false, 2);
             if (c != nullptr) {
@@ -1188,7 +1188,7 @@ public:
         if (subcards.length() != 1 || player->getHandcardNum() != 1)
             return false;
 
-        return subcards.contains(player->getHandcards().first()->getEffectiveId());
+        return subcards.contains(player->getHandcards().constFirst()->getEffectiveId());
     }
 
     int getDistanceLimit(const Player *from, const Card *card) const override
@@ -1900,7 +1900,7 @@ public:
 
         ServerPlayer *target = room->askForPlayerChosen(use.from, canAdd + use.to, "yaolitrick", "@yaolitrick:::" + use.card->objectName(), false, true);
         if (target == nullptr)
-            target = (canAdd + use.to).first();
+            target = (canAdd + use.to).constFirst();
 
         if (canAdd.contains(target)) {
             LogMessage l;

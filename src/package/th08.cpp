@@ -1060,7 +1060,7 @@ public:
             }
 
             foreach (ServerPlayer *p, room->getAlivePlayers()) {
-                foreach (QString pattern, patterns) {
+                foreach (const QString &pattern, patterns) {
                     QString markName = "yinghuo_record_" + pattern;
                     if (p->getMark(markName) > 0)
                         room->setPlayerMark(p, markName, 0);
@@ -1168,7 +1168,7 @@ public:
         }
 
         QStringList checkedPatterns;
-        foreach (QString str, validPatterns) {
+        foreach (const QString &str, validPatterns) {
             Card *card = Sanguosha->cloneCard(str);
             DELETE_OVER_SCOPE(Card, card)
 

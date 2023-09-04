@@ -541,7 +541,7 @@ void FireAttack::onEffect(const CardEffectStruct &effect) const
     while (suits.length() < 4) {
         suits << QString();
     }
-    QString prompt = QString("@fire-attack:%1:%2:%3:%4").arg(suits[0]).arg(suits[1]).arg(suits[2]).arg(suits[3]);
+    QString prompt = QString("@fire-attack:%1:%2:%3:%4").arg(suits[0], suits[1], suits[2], suits[3]);
     if (effect.from->isAlive()) {
         bool damage = false;
         if (effect.from->hasSkill("fengxiang")) {

@@ -298,7 +298,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                         room->setPlayerMark(player, it.key(), 0);
                 }
 
-                foreach (QString flag, p->getFlagList()) {
+                foreach (const QString &flag, p->getFlagList()) {
                     if (flag.endsWith("Animate"))
                         room->setPlayerFlag(p, "-" + flag);
                 }
@@ -412,7 +412,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
                     foreach (ServerPlayer *p, room->getAlivePlayers()) {
                         p->tag.remove("Qinggang");
 
-                        foreach (QString flag, p->getFlagList()) {
+                        foreach (const QString &flag, p->getFlagList()) {
                             if (flag == "Global_GongxinOperator")
                                 p->setFlags("-" + flag);
                             else if (flag.endsWith("_InTempMoving"))
@@ -830,7 +830,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
             jink->deleteLater();
             const Card *asked_jink = nullptr;
             for (int i = effect.jink_num; i > 0; i--) {
-                QString prompt = QString("@multi-jink%1:%2::%3").arg(i == effect.jink_num ? "-start" : QString()).arg(slasher).arg(i);
+                QString prompt = QString("@multi-jink%1:%2::%3").arg((i == effect.jink_num ? "-start" : QString()), slasher, QString::number(i));
                 asked_jink = room->askForCard(effect.to, "jink", prompt, data, Card::MethodUse, effect.from);
                 if (!room->isJinkEffected(effect, asked_jink)) {
                     delete jink;
@@ -1168,7 +1168,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
     }
     case ChoiceMade: {
         foreach (ServerPlayer *p, room->getAlivePlayers()) {
-            foreach (QString flag, p->getFlagList()) {
+            foreach (const QString &flag, p->getFlagList()) {
                 if (flag.startsWith("Global_") && flag.endsWith("Failed"))
                     room->setPlayerFlag(p, "-" + flag);
             }
@@ -1488,7 +1488,6 @@ QString GameRule::getWinner(ServerPlayer *victim) const
                 winner = "renegade+rebel";
         }
     } else if (room->getMode() == "04_2v2") {
-        QString role = victim->getRole();
         QStringList alive_roles = room->aliveRoles(victim);
         if (alive_roles.length() == 1)
             winner = alive_roles.first();
@@ -1514,7 +1513,6 @@ QString GameRule::getWinner(ServerPlayer *victim) const
             int careerist_threshold = (room->getPlayers().length() / 2);
             QMap<QString, QList<ServerPlayer *>> role_count;
             QMap<QString, QList<ServerPlayer *>> dead_role_count;
-            QMap<QString, QString> role_judge;
             foreach (ServerPlayer *p, room->getAllPlayers(true)) {
                 QString role = p->getRole();
                 if (role_count.contains(role)) {
@@ -1541,12 +1539,10 @@ QString GameRule::getWinner(ServerPlayer *victim) const
             }
 
             QList<QString> roles = role_count.keys();
-            foreach (QString role, roles) {
+            foreach (const QString &role, roles) {
                 QList<ServerPlayer *> players = role_count[role];
                 if (players.length() == dead_role_count[role].length()) //all dead
-                {
                     role_count.remove(role);
-                }
             }
 
             if (role_count.keys().length() == 1) {
@@ -1588,7 +1584,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const
         switch (victim->getRoleEnum()) {
         case Player::Lord: {
             if (alive_roles.length() == 1 && alive_roles.first() == "renegade")
-                winner = room->getAlivePlayers().first()->objectName();
+                winner = room->getAlivePlayers().constFirst()->objectName();
             else
                 winner = "rebel";
             break;

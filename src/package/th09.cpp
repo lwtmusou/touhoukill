@@ -367,7 +367,6 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         use.from->tag["huiwu"] = QVariant::fromValue(invoke->owner);
         room->setTag("huiwu_use", data);
-        QString prompt = "target:" + invoke->owner->objectName() + ":" + use.card->objectName();
         if (use.from->askForSkillInvoke(objectName(), QVariant::fromValue(invoke->owner))) {
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, use.from->objectName(), invoke->owner->objectName());
 
@@ -1772,7 +1771,7 @@ void NianliDialog::popup()
     card_names << "slash"
                << "snatch";
 
-    foreach (QString card_name, card_names) {
+    foreach (const QString &card_name, card_names) {
         QCommandLinkButton *button = new QCommandLinkButton;
         button->setText(Sanguosha->translate(card_name));
         button->setObjectName(card_name);
@@ -2028,7 +2027,7 @@ public:
             return QList<SkillInvokeDetail>();
 
         QList<SkillInvokeDetail> d;
-        for (ServerPlayer *skiller : room->findPlayersBySkillName(objectName())) {
+        foreach (ServerPlayer *skiller, room->findPlayersBySkillName(objectName())) {
             if (skiller != player && skiller->canDiscard(skiller, "hes"))
                 d << SkillInvokeDetail(this, skiller, skiller);
         }

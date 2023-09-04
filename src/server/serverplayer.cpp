@@ -121,7 +121,7 @@ void ServerPlayer::throwAllHandCardsAndEquips()
 
 void ServerPlayer::throwAllMarks(bool visible_only)
 {
-    foreach (QString mark_name, marks.keys()) {
+    foreach (const QString &mark_name, marks.keys()) {
         if (!mark_name.startsWith("@"))
             continue;
 
@@ -161,7 +161,7 @@ void ServerPlayer::clearOnePrivatePile(QString pile_name)
 
 void ServerPlayer::clearPrivatePiles()
 {
-    foreach (QString pile_name, piles.keys())
+    foreach (const QString &pile_name, piles.keys())
         clearOnePrivatePile(pile_name);
     piles.clear();
 }
@@ -367,7 +367,7 @@ void ServerPlayer::invoke(const AbstractPacket *packet)
 
 void ServerPlayer::invoke(const char *method, const QString &arg)
 {
-    unicast(QString("%1 %2").arg(method).arg(arg));
+    unicast(QString("%1 %2").arg(method, arg));
 }
 
 QString ServerPlayer::reportHeader() const
@@ -1146,7 +1146,7 @@ void ServerPlayer::introduceTo(ServerPlayer *player)
     if (!isHegemonyGameMode(room->getMode()))
         return;
     if (hasShownGeneral()) {
-        foreach (const QString skill_name, skills.keys()) { //skills.keys()  skills_originalOrder
+        foreach (const QString &skill_name, skills.keys()) { //skills.keys()  skills_originalOrder
             if (Sanguosha->getSkill(skill_name)->isVisible()) {
                 JsonArray args1;
                 args1 << (int)S_GAME_EVENT_ADD_SKILL;
@@ -1169,7 +1169,7 @@ void ServerPlayer::introduceTo(ServerPlayer *player)
         }
     }
     if (hasShownGeneral2()) {
-        foreach (const QString skill_name, skills2.keys()) {
+        foreach (const QString &skill_name, skills2.keys()) {
             if (Sanguosha->getSkill(skill_name)->isVisible()) {
                 JsonArray args1;
                 args1 << S_GAME_EVENT_ADD_SKILL;
@@ -1300,7 +1300,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
         move.from_place = DrawPile;
         move.to_player_name = objectName();
         move.to_place = PlaceSpecial;
-        foreach (QString pile, piles.keys()) {
+        foreach (const QString &pile, piles.keys()) {
             move.card_ids.clear();
             move.card_ids.append(piles[pile]);
             move.to_pile_name = pile;
@@ -1333,7 +1333,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
                 hegemony_limitmarks.append(skill->getLimitMark());
     }
 
-    foreach (QString mark_name, marks.keys()) {
+    foreach (const QString &mark_name, marks.keys()) {
         if (mark_name.startsWith("@") && !hegemony_limitmarks.contains(mark_name)) {
             int value = getMark(mark_name);
             if (value > 0) {
@@ -1410,7 +1410,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
     foreach (QString flag, flags)
         room->notifyProperty(player, this, "flags", flag);
 
-    foreach (QString item, history.keys()) {
+    foreach (const QString &item, history.keys()) {
         int value = history.value(item);
         if (value > 0) {
             JsonArray arg;
@@ -1637,7 +1637,7 @@ void ServerPlayer::addHiddenGenerals(const QStringList &generals)
 
 void ServerPlayer::removeHiddenGenerals(const QStringList &generals)
 {
-    foreach (QString name, generals)
+    foreach (const QString &name, generals)
         hidden_generals.removeOne(name);
 
     QString g = hidden_generals.join("|");
@@ -1655,7 +1655,7 @@ void ServerPlayer::removeHiddenGenerals(const QStringList &generals)
     arg1 << QString();
     room->doBroadcastNotify(S_COMMAND_SET_SHOWN_HIDDEN_GENERAL, arg1);
 
-    foreach (QString name, generals) {
+    foreach (const QString &name, generals) {
         room->touhouLogmessage("#RemoveHiddenGeneral", this, name);
         foreach (const Skill *skill, Sanguosha->getGeneral(name)->getVisibleSkillList()) {
             room->handleAcquireDetachSkills(this, "-" + skill->objectName(), true);
@@ -1909,7 +1909,7 @@ void ServerPlayer::notifyPreshow()
     JsonArray args;
     args << (int)S_GAME_EVENT_UPDATE_PRESHOW;
     JsonObject args1;
-    foreach (const QString skill, skills.keys() + skills2.keys()) {
+    foreach (const QString &skill, skills.keys() + skills2.keys()) {
         args1.insert(skill, skills.value(skill, false) || skills2.value(skill, false));
     }
     args << args1;

@@ -31,7 +31,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
 
     bool checkpoint = false;
     QStringList card_types = factors.at(0).split(',');
-    foreach (QString or_name, card_types) {
+    foreach (const QString &or_name, card_types) {
         checkpoint = false;
         foreach (QString name, or_name.split('+')) {
             if (name == ".") {
@@ -90,7 +90,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
     QStringList card_numbers = factors.at(2).split(',');
     int cdn = card->getNumber();
 
-    foreach (QString number, card_numbers) {
+    foreach (const QString &number, card_numbers) {
         if (number == ".") {
             checkpoint = true;
             break;

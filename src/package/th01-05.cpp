@@ -84,7 +84,6 @@ public:
         if (!use.card->isKindOf("Slash") || use.from == nullptr || !use.from->isAlive() || !use.from->hasLordSkill(this))
             return QList<SkillInvokeDetail>();
 
-        QList<SkillInvokeDetail> d;
         bool can = false;
         foreach (ServerPlayer *t, use.to) {
             foreach (ServerPlayer *p, room->getLieges("pc98", use.from)) {
@@ -488,7 +487,7 @@ public:
               << "shiqu_draw"
               << "shiqu_play"
               << "shiqu_discard";
-        foreach (QString m, marks) {
+        foreach (const QString &m, marks) {
             if (player->getMark(m) == 0)
                 choices << m;
         }
@@ -722,7 +721,7 @@ public:
         invoke->invoker->tag.remove("qiusuo");
         room->touhouLogmessage("#InvokeSkill", invoke->invoker, objectName());
         QList<int> get_ids;
-        foreach (QVariant card_data, ids) {
+        foreach (const QVariant &card_data, ids) {
             int id = card_data.toInt();
             room->showCard(invoke->invoker, id);
             get_ids << id;
@@ -3316,7 +3315,7 @@ void ZhancheCard::onEffect(const CardEffectStruct &effect) const
     const Card *c = room->askForCard(effect.to, ".Equip!", "@zhanche-robbed:" + effect.from->objectName(), QVariant::fromValue<CardEffectStruct>(effect), Card::MethodNone);
     if (c == nullptr) {
         if (!effect.to->getEquips().isEmpty())
-            c = effect.to->getEquips().first();
+            c = effect.to->getEquips().constFirst();
         else {
             // ?????
             Q_UNREACHABLE();
@@ -3930,7 +3929,6 @@ public:
     {
         if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            QList<ServerPlayer *> kaguyas;
             ServerPlayer *ellen = qobject_cast<ServerPlayer *>(move.from);
 
             if ((ellen != nullptr) && ellen->isAlive() && (move.from_places.contains(Player::PlaceHand) || move.from_places.contains(Player::PlaceEquip)))

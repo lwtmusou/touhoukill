@@ -859,6 +859,7 @@ public:
             has_delaytrick = true;
         }
         if (cards.length() == 0 && !has_delaytrick) {
+            delete card;
             return nullptr;
         }
         if (cards.length() > 0)
@@ -1767,7 +1768,7 @@ public:
             if (change.player->isAlive()) {
                 QList<SkillInvokeDetail> d;
                 QVariantMap siyu = change.player->tag.value("dfgzmsiyu_selected", QVariantMap()).toMap();
-                foreach (QString sy, siyu.keys()) {
+                foreach (const QString &sy, siyu.keys()) {
                     ServerPlayer *syP = room->findPlayerByObjectName(sy);
                     if (syP != nullptr && syP->isAlive() && !syP->isKongcheng())
                         d << SkillInvokeDetail(this, change.player, change.player, nullptr, false, syP, false);
@@ -2424,7 +2425,7 @@ bool BodongCard::targetsFeasible(const QList<const Player *> &targets, const Pla
 {
     if (targets.toSet().size() > 3 || targets.toSet().size() == 0)
         return false;
-    QMap<const Player *, int> map;
+    QHash<const Player *, int> map;
 
     foreach (const Player *sp, targets)
         map[sp]++;
@@ -2442,7 +2443,7 @@ void BodongCard::use(Room *room, const CardUseStruct &card_use) const
     ServerPlayer *source = card_use.from;
     const QList<ServerPlayer *> &targets = card_use.to;
 
-    QMap<ServerPlayer *, int> map;
+    QHash<ServerPlayer *, int> map;
     foreach (ServerPlayer *sp, targets)
         map[sp]++;
 

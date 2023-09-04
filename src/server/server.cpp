@@ -106,7 +106,7 @@ QWidget *ServerDialog::createPackageTab()
 
     int i = 0, j = 0;
     int row = 0, column = 0;
-    foreach (QString extension, extensions) {
+    foreach (const QString &extension, extensions) {
         const Package *package = Sanguosha->findChild<const Package *>(extension);
         if (package == nullptr)
             continue;
@@ -454,7 +454,7 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
         list->setObjectName(item);
 
         QStringList banlist = Config.value(QString("Banlist/%1").arg(item)).toStringList();
-        foreach (QString name, banlist)
+        foreach (const QString &name, banlist)
             addGeneral(name);
 
         lists << list;
@@ -808,7 +808,7 @@ void ServerDialog::onDetectButtonClicked()
 {
     QHostInfo vHostInfo = QHostInfo::fromName(QHostInfo::localHostName());
     QList<QHostAddress> vAddressList = vHostInfo.addresses();
-    foreach (QHostAddress address, vAddressList) {
+    foreach (const QHostAddress &address, vAddressList) {
         if (!address.isNull() && address != QHostAddress::LocalHost && address.protocol() == QAbstractSocket::IPv4Protocol) {
             address_edit->setText(address.toString());
             return;

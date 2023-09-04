@@ -775,11 +775,11 @@ public:
                 int id = -1;
                 //auto throw
                 if (p->getHandcardNum() == 1)
-                    id = p->getCards("hs").first()->getEffectiveId();
+                    id = p->getCards("hs").constFirst()->getEffectiveId();
                 else {
                     const Card *cards = room->askForExchange(p, objectName(), 1, 1, false, "cuixiang-exchange:" + player->objectName() + ":" + objectName());
                     DELETE_OVER_SCOPE(const Card, cards)
-                    id = cards->getSubcards().first();
+                    id = cards->getSubcards().constFirst();
                 }
                 room->throwCard(id, p);
                 idlist << id;
@@ -4382,7 +4382,7 @@ public:
         }
 
         QStringList checkedPatterns;
-        foreach (QString str, validPatterns) {
+        foreach (const QString &str, validPatterns) {
             Card *card = Sanguosha->cloneCard(str);
             DELETE_OVER_SCOPE(Card, card)
 
@@ -4429,7 +4429,7 @@ public:
             QStringList patterns = responsePatterns();
             foreach (const Player *p, Self->getAliveSiblings()) {
                 if (p->getShownHandcards().contains(to_select->getId())) {
-                    foreach (QString pattern, patterns) {
+                    foreach (const QString &pattern, patterns) {
                         ExpPattern exp(pattern);
                         if (exp.match(Self, to_select))
                             return true;
@@ -4791,7 +4791,7 @@ void RumoCard::use(Room *room, const CardUseStruct &card_use) const
     int loyalist = 0;
     int rebel = 0;
     int renegade = 0;
-    foreach (QString role, roles) {
+    foreach (const QString &role, roles) {
         if (role == "rebel")
             rebel++;
         else if (role == "renegade")
@@ -4871,7 +4871,7 @@ void AnyunDialog::popup()
         delete button;
     }
 
-    foreach (QString hidden, Self->getHiddenGenerals()) {
+    foreach (const QString &hidden, Self->getHiddenGenerals()) {
         const General *g = Sanguosha->getGeneral(hidden);
         foreach (const Skill *skill, g->getSkillList()) {
             const ViewAsSkill *vs = Sanguosha->getViewAsSkill(skill->objectName());
@@ -4939,7 +4939,7 @@ public:
     {
         bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
         QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-        foreach (QString hidden, Self->getHiddenGenerals()) {
+        foreach (const QString &hidden, Self->getHiddenGenerals()) {
             const General *g = Sanguosha->getGeneral(hidden);
             foreach (const Skill *skill, g->getSkillList()) {
                 const ViewAsSkill *vs = Sanguosha->getViewAsSkill(skill->objectName());
@@ -4996,7 +4996,7 @@ public:
     {
         if (!player->canShowHiddenSkill())
             return false;
-        foreach (QString hidden, player->getHiddenGenerals()) {
+        foreach (const QString &hidden, player->getHiddenGenerals()) {
             const General *g = Sanguosha->getGeneral(hidden);
             foreach (const Skill *skill, g->getSkillList()) {
                 const ViewAsSkill *vs = Sanguosha->getViewAsSkill(skill->objectName());
@@ -5053,7 +5053,7 @@ public:
             acquired << limit_general;
         }
         //add triggerSkill
-        foreach (QString name, acquired) {
+        foreach (const QString &name, acquired) {
             huashens << name;
             const General *general = Sanguosha->getGeneral(name);
             if (general != nullptr) {
@@ -5151,7 +5151,7 @@ public:
         if (shown != nullptr)
             return show;
         QStringList generals = nue->getHiddenGenerals();
-        foreach (QString name, generals) {
+        foreach (const QString &name, generals) {
             const General *p = Sanguosha->getGeneral(name);
             foreach (const Skill *skill, p->getSkillList()) {
                 if (skill->getShowType() == "static" && !skill->isLordSkill() && !skill->isAttachedLordSkill() && skill->getFrequency() != Skill::Limited
@@ -5218,7 +5218,7 @@ public:
         if (shown != nullptr)
             return show;
         QStringList generals = nue->getHiddenGenerals();
-        foreach (QString name, generals) {
+        foreach (const QString &name, generals) {
             const General *p = Sanguosha->getGeneral(name);
             foreach (const Skill *skill, p->getSkillList()) {
                 if (skill->inherits("ProhibitSkill")) {
@@ -5417,7 +5417,7 @@ public:
             QString choice = "first";
             if (use.card->isKindOf("FireAttack") || use.card->isKindOf("Duel") || use.card->isKindOf("SavageAssault") || use.card->isKindOf("ArcheryAttack")
                 || use.card->isKindOf("AwaitExhausted")) {
-                QString choices = QString("%1_first+%2_second").arg(use.card->objectName()).arg(use.card->objectName());
+                QString choices = QString("%1_first+%2_second").arg(use.card->objectName(), use.card->objectName());
                 choice = room->askForChoice(invoke->invoker, objectName(), choices);
                 if (choice.endsWith("second"))
                     use.m_effectValue.last()++;
@@ -5426,7 +5426,7 @@ public:
             } else if (use.card->isKindOf("Slash")) {
                 choice = "second";
                 if (use.card->isKindOf("LightSlash") || use.card->isKindOf("PowerSlash")) {
-                    QString choices = QString("%1_first+%2_second").arg(use.card->objectName()).arg(use.card->objectName());
+                    QString choices = QString("%1_first+%2_second").arg(use.card->objectName(), use.card->objectName());
                     choice = room->askForChoice(invoke->invoker, objectName(), choices);
                 }
 
@@ -5516,7 +5516,7 @@ public:
         //copy flag
         QStringList flags;
         flags << "jidu_card";
-        foreach (QString flag, flags) {
+        foreach (const QString &flag, flags) {
             if (use.card->hasFlag(flag))
                 card->setFlags(flag);
         }
@@ -5592,7 +5592,7 @@ void XianshiDialog::popup()
     if (play)
         checkedPatterns = xianshi_record.split("+");
     else {
-        foreach (QString name, xianshi_record.split("+")) {
+        foreach (const QString &name, xianshi_record.split("+")) {
             Card *c = Sanguosha->cloneCard(name);
             DELETE_OVER_SCOPE(Card, c)
 
@@ -5885,7 +5885,7 @@ public:
         QString xianshi_record = player->property("xianshi_record").toString();
         if (xianshi_record == nullptr)
             return false;
-        foreach (QString name, xianshi_record.split("+")) {
+        foreach (const QString &name, xianshi_record.split("+")) {
             if (!name.contains("nullification")) {
                 record = true;
                 break;

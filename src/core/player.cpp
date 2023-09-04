@@ -731,9 +731,9 @@ bool Player::hasSkill(const Skill *skill, bool include_lose, bool include_hidden
 
 bool Player::hasSkills(const QString &skill_name, bool include_lose) const
 {
-    foreach (QString skill, skill_name.split("|")) {
+    foreach (const QString &skill, skill_name.split("|")) {
         bool checkpoint = true;
-        foreach (QString sk, skill.split("+")) {
+        foreach (const QString &sk, skill.split("+")) {
             if (!hasSkill(sk, include_lose)) {
                 checkpoint = false;
                 break;
@@ -794,8 +794,8 @@ void Player::setSkillInvalidity(const Skill *skill, bool invalidity)
 {
     if (skill == nullptr)
         setSkillInvalidity("_ALL_SKILLS", invalidity);
-
-    setSkillInvalidity(skill->objectName(), invalidity);
+    else
+        setSkillInvalidity(skill->objectName(), invalidity);
 }
 
 void Player::setSkillInvalidity(const QString &skill_name, bool invalidity)
@@ -1424,14 +1424,14 @@ QList<int> Player::getPile(const QString &pile_name) const
 QStringList Player::getPileNames() const
 {
     QStringList names;
-    foreach (QString pile_name, piles.keys())
+    foreach (const QString &pile_name, piles.keys())
         names.append(pile_name);
     return names;
 }
 
 QString Player::getPileName(int card_id) const
 {
-    foreach (QString pile_name, piles.keys()) {
+    foreach (const QString &pile_name, piles.keys()) {
         QList<int> pile = piles[pile_name];
         if (pile.contains(card_id))
             return pile_name;
@@ -1544,7 +1544,7 @@ QSet<const TriggerSkill *> Player::getTriggerSkills() const
 {
     QSet<const TriggerSkill *> skillList;
 
-    foreach (QString skill_name, skills.keys() + skills2.keys() + acquired_skills.toList() + acquired_skills2.toList()) {
+    foreach (const QString &skill_name, skills.keys() + skills2.keys() + acquired_skills.toList() + acquired_skills2.toList()) {
         const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
         if ((skill != nullptr) && !hasEquipSkill(skill->objectName()))
             skillList << skill;
@@ -1562,7 +1562,7 @@ QList<const Skill *> Player::getSkillList(bool include_equip, bool visible_only)
 {
     QList<const Skill *> skillList;
 
-    foreach (QString skill_name, skills.keys() + skills2.keys() + acquired_skills.toList() + acquired_skills2.toList()) {
+    foreach (const QString &skill_name, skills.keys() + skills2.keys() + acquired_skills.toList() + acquired_skills2.toList()) {
         //foreach (QString skill_name, skills_originalOrder + skills2_originalOrder + acquired_skills.toList() + acquired_skills2.toList()) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if ((skill != nullptr) && (include_equip || !hasEquipSkill(skill->objectName())) && (!visible_only || skill->isVisible()))
@@ -1613,7 +1613,7 @@ QString Player::getSkillDescription(bool yellow, const QString &flag) const
         bool addHegemony = isHegemonyGameMode(ServerInfo.GameMode) && !skill->objectName().endsWith("_hegemony");
         QString desc = skill->getDescription(yellow, addHegemony);
         desc.replace("\n", "<br/>");
-        description.append(QString("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(color).arg(skill_name).arg(desc));
+        description.append(QString("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(color, skill_name, desc));
     }
 
     if (description.isEmpty())
@@ -1646,7 +1646,7 @@ void Player::setCardLimitation(const QString &limit_list, const QString &pattern
         QString symb = single_turn ? "$1" : "$0";
         _pattern = _pattern + symb;
     }
-    foreach (QString limit, limit_type) {
+    foreach (const QString &limit, limit_type) {
         Card::HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
         card_limitation[method][reason] << _pattern;
     }
@@ -1659,7 +1659,7 @@ void Player::removeCardLimitation(const QString &limit_list, const QString &patt
     QString _pattern = pattern;
     if (!_pattern.endsWith("$1") && !_pattern.endsWith("$0"))
         _pattern = _pattern + "$0";
-    foreach (QString limit, limit_type) {
+    foreach (const QString &limit, limit_type) {
         Card::HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
         card_limitation[method][reason].removeOne(_pattern);
         if (card_limitation[method][reason].isEmpty() || _pattern.endsWith("$1") || clearReason)
@@ -1724,7 +1724,7 @@ bool Player::isCardLimited(const Card *card, Card::HandlingMethod method, bool i
 bool Player::isCardLimited(const QString &limit_list, const QString &reason) const
 {
     QStringList limit_type = limit_list.split(",");
-    foreach (QString limit, limit_type) {
+    foreach (const QString &limit, limit_type) {
         Card::HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
         if (card_limitation[method].contains(reason))
             return true;
@@ -2066,8 +2066,8 @@ void Player::updateYingyingguai()
     QMap<QString, QStringList> currentLimitation = card_limitation[Card::MethodUse];
     currentLimitation.remove("lure_tiger");
 
-    foreach (QStringList patternList, currentLimitation) {
-        foreach (QString pat, patternList) {
+    foreach (const QStringList &patternList, currentLimitation) {
+        foreach (const QString &pat, patternList) {
             if (pat.startsWith(".$")) {
                 isUseLimitedAll = true;
                 break;
@@ -2080,8 +2080,8 @@ void Player::updateYingyingguai()
     currentLimitation = card_limitation[Card::MethodResponse];
     currentLimitation.remove("lure_tiger");
 
-    foreach (QStringList patternList, currentLimitation) {
-        foreach (QString pat, patternList) {
+    foreach (const QStringList &patternList, currentLimitation) {
+        foreach (const QString &pat, patternList) {
             if (pat.startsWith(".$")) {
                 isResponseLimitedAll = true;
                 break;

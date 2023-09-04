@@ -375,7 +375,7 @@ void LunniCard::onUse(Room *room, const CardUseStruct &card_use) const
 
 void LunniCard::onEffect(const CardEffectStruct &effect) const
 {
-    const EquipCard *c = qobject_cast<const EquipCard *>(Sanguosha->getCard(effect.card->getSubcards().first())->getRealCard());
+    const EquipCard *c = qobject_cast<const EquipCard *>(Sanguosha->getCard(effect.card->getSubcards().constFirst())->getRealCard());
     if (c == nullptr)
         return;
 
@@ -913,15 +913,15 @@ public:
             bool isLastCard = false;
             switch (room->getCardPlace(l->getEffectiveId())) {
             case Player::PlaceHand: {
-                isLastCard = (invoke->invoker->getHandcardNum() == 1 && invoke->invoker->getHandcards().first()->getEffectiveId() == l->getEffectiveId());
+                isLastCard = (invoke->invoker->getHandcardNum() == 1 && invoke->invoker->getHandcards().constFirst()->getEffectiveId() == l->getEffectiveId());
                 break;
             }
             case Player::PlaceEquip: {
-                isLastCard = (invoke->invoker->getEquips().length() == 1 && invoke->invoker->getEquips().first()->getEffectiveId() == l->getEffectiveId());
+                isLastCard = (invoke->invoker->getEquips().length() == 1 && invoke->invoker->getEquips().constFirst()->getEffectiveId() == l->getEffectiveId());
                 break;
             }
             case Player::PlaceDelayedTrick: {
-                isLastCard = (invoke->invoker->getJudgingAreaID().length() == 1 && invoke->invoker->getJudgingAreaID().first() == l->getEffectiveId());
+                isLastCard = (invoke->invoker->getJudgingAreaID().length() == 1 && invoke->invoker->getJudgingAreaID().constFirst() == l->getEffectiveId());
                 break;
             }
             default: {

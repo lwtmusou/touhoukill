@@ -96,7 +96,7 @@ public:
         if (!invoke->invoker->isKongcheng()) {
             const Card *cards = room->askForExchange(invoke->invoker, objectName(), 1, 1, false, "shende-exchange");
             DELETE_OVER_SCOPE(const Card, cards)
-            invoke->invoker->addToPile("shende", cards->getSubcards().first());
+            invoke->invoker->addToPile("shende", cards->getSubcards().constFirst());
         }
         return false;
     }
@@ -458,7 +458,7 @@ void QijiDialog::popup()
         }
     }
     //then match it and check "CardLimit"
-    foreach (QString str, validPatterns) {
+    foreach (const QString &str, validPatterns) {
         Card *card = Sanguosha->cloneCard(str);
         DELETE_OVER_SCOPE(Card, card)
         if (play || (cardPattern != nullptr && cardPattern->match(Self, card)) && !Self->isCardLimited(card, method))

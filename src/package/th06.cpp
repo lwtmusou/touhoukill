@@ -475,7 +475,7 @@ bool SuodingCard::targetsFeasible(const QList<const Player *> &targets, const Pl
 {
     if (targets.toSet().size() > 3 || targets.toSet().size() == 0)
         return false;
-    QMap<const Player *, int> map;
+    QHash<const Player *, int> map;
 
     foreach (const Player *sp, targets)
         map[sp]++;
@@ -492,7 +492,7 @@ void SuodingCard::use(Room *room, const CardUseStruct &card_use) const
     ServerPlayer *source = card_use.from;
     const QList<ServerPlayer *> &targets = card_use.to;
 
-    QMap<ServerPlayer *, int> map;
+    QHash<ServerPlayer *, int> map;
     foreach (ServerPlayer *sp, targets)
         map[sp]++;
 
@@ -1062,7 +1062,7 @@ void BeishuiDialog::popup()
     }
 
     //then match it and check "CardLimit"
-    foreach (QString str, validPatterns) {
+    foreach (const QString &str, validPatterns) {
         Card *card = Sanguosha->cloneCard(str);
         DELETE_OVER_SCOPE(Card, card)
         if (play || (cardPattern != nullptr && cardPattern->match(Self, card)) && !Self->isCardLimited(card, method))

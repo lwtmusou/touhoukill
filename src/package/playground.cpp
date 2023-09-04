@@ -32,7 +32,7 @@ public:
 
                 player->tag.remove("fsu0413gepi");
 
-                foreach (QString skill_name, gepi_list) {
+                foreach (const QString &skill_name, gepi_list) {
                     room->setPlayerSkillInvalidity(player, skill_name, false);
                     if (player->hasSkill(skill_name)) {
                         LogMessage log;
@@ -902,7 +902,7 @@ public:
             // Ignoring the force hit case at this time...
 
             for (int i = 2; i > 0; i--) {
-                QString prompt = QString("@bmmaoji-slash%1:%2::%3").arg(i == eff.jink_num ? "-start" : QString()).arg(eff.from->objectName()).arg(i);
+                QString prompt = QString("@bmmaoji-slash%1:%2::%3").arg((i == eff.jink_num ? "-start" : QString()), eff.from->objectName(), QString::number(i));
                 const Card *slash = room->askForCard(eff.to, "slash", prompt, data, Card::MethodResponse, eff.from);
                 if (slash == nullptr)
                     return true;

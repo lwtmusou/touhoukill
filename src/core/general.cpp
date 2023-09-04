@@ -176,7 +176,7 @@ QString General::getSkillDescription(bool include_name, bool yellow) const
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription(yellow, addHegemony);
         desc.replace("\n", "<br/>");
-        description.append(QString("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(yellow ? "#FFFF33" : "#FF0080").arg(skill_name).arg(desc));
+        description.append(QString("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg((yellow ? "#FFFF33" : "#FF0080"), skill_name, desc));
     }
 
     if (include_name) {
@@ -184,7 +184,7 @@ QString General::getSkillDescription(bool include_name, bool yellow) const
         QString g_name = Sanguosha->translate("!" + objectName());
         if (g_name.startsWith("!"))
             g_name = Sanguosha->translate(objectName());
-        QString name = QString("<font color=%1><b>%2</b></font>     ").arg(color_str).arg(g_name);
+        QString name = QString("<font color=%1><b>%2</b></font>     ").arg(color_str, g_name);
         name.prepend(QString("<img src='image/kingdom/icon/%1.png'/>    ").arg(kingdom));
         for (int i = 0; i < max_hp; i++)
             name.append("<img src='image/system/magatamas/5.png' height = 12/>");
@@ -234,7 +234,7 @@ QString General::getCompanions() const
         name << QString("%1").arg(Sanguosha->translate(general));
     //GeneralList generals(Sanguosha->getGeneralList());
     QList<QString> generals = Sanguosha->getGenerals();
-    foreach (QString gname, generals) {
+    foreach (const QString &gname, generals) {
         const General *gnr = Sanguosha->getGeneral(gname);
         if (gnr == nullptr)
             continue;

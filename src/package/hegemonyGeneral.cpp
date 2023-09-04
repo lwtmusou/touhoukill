@@ -912,7 +912,6 @@ public:
         if (damage.from != nullptr && damage.to->canDiscard(damage.from, "hes"))
             select << "discard";
 
-        QList<ServerPlayer *> fieldcard;
         foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (damage.to->canDiscard(p, "ej")) {
                 select << "discardfield";

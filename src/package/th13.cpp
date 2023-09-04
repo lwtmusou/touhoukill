@@ -254,7 +254,7 @@ void XihuaDialog::popup()
     }
 
     //then match it and check "CardLimit"
-    foreach (QString str, validPatterns) {
+    foreach (const QString &str, validPatterns) {
         Card *card = Sanguosha->cloneCard(str);
         DELETE_OVER_SCOPE(Card, card)
         if (play || (cardPattern != nullptr && cardPattern->match(Self, card)) && !Self->isCardLimited(card, method))
@@ -438,7 +438,7 @@ public:
             }
 
             foreach (ServerPlayer *p, room->getAlivePlayers()) {
-                foreach (QString pattern, patterns) {
+                foreach (const QString &pattern, patterns) {
                     QString markName = "xihua_record_" + pattern;
                     if (p->getMark(markName) > 0)
                         room->setPlayerMark(p, markName, 0);
@@ -1295,7 +1295,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         QString suit_str = damage.card->getSuitString();
         QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());
-        QString prompt = QString("@gongzhen:%1::%2").arg(damage.to->objectName()).arg(suit_str);
+        QString prompt = QString("@gongzhen:%1::%2").arg(damage.to->objectName(), suit_str);
         return room->askForCard(invoke->invoker, pattern, prompt, data, objectName()) != nullptr;
     }
 
@@ -1350,7 +1350,7 @@ public:
                          << "heart"
                          << "club"
                          << "diamond";
-                foreach (QString suit, allsuits) {
+                foreach (const QString &suit, allsuits) {
                     room->setPlayerMark(change.player, "chuixue" + suit, 0);
                 }
             }
@@ -1370,7 +1370,7 @@ public:
                      << "heart"
                      << "club"
                      << "diamond";
-            foreach (QString suit, allsuits) {
+            foreach (const QString &suit, allsuits) {
                 if (player->getMark("chuixue" + suit) == 0)
                     count++;
             }
@@ -1398,7 +1398,7 @@ public:
                  << "club"
                  << "diamond";
         QStringList suits;
-        foreach (QString suit, allsuits) {
+        foreach (const QString &suit, allsuits) {
             if (invoke->invoker->getMark("chuixue" + suit) == 0)
                 suits << suit;
             room->setPlayerMark(invoke->invoker, "chuixue" + suit, 0);
@@ -1649,7 +1649,7 @@ public:
             room->sendLog(log);
 
             SupplyShortage *supplyshortage = new SupplyShortage(card->getSuit(), card->getNumber());
-            WrappedCard *vs_card = Sanguosha->getWrappedCard(card->getSubcards().first());
+            WrappedCard *vs_card = Sanguosha->getWrappedCard(card->getSubcards().constFirst());
             vs_card->setSkillName(objectName());
             vs_card->takeOver(supplyshortage);
             room->broadcastUpdateCard(room->getAlivePlayers(), vs_card->getId(), vs_card);

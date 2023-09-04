@@ -201,7 +201,7 @@ public:
                 dir->setNameFilters(filter);
                 QList<QFileInfo> file_info(dir->entryInfoList(filter));
 
-                foreach (QFileInfo file, file_info) {
+                foreach (const QFileInfo &file, file_info) {
                     QString fileName = path + file.fileName();
                     if (file.fileName().startsWith(fileNames + "_") && !all.contains(fileName))
                         all << fileName;
@@ -216,7 +216,7 @@ public:
                 dir->setNameFilters(filter);
                 QList<QFileInfo> file_info(dir->entryInfoList(filter));
 
-                foreach (QFileInfo file, file_info) {
+                foreach (const QFileInfo &file, file_info) {
                     QString fileName = path + file.fileName();
                     if ((file.fileName().startsWith("main") || file.fileName().startsWith("opening")))
                         openings << fileName;

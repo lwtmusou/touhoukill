@@ -44,14 +44,14 @@ bool Skill::shouldBeVisible(const Player *Self) const
 QString Skill::getDescription(bool yellow, bool addHegemony) const
 {
     bool normal_game = ServerInfo.DuringGame && isNormalGameMode(ServerInfo.GameMode);
-    QString name = QString("%1%2").arg(objectName()).arg(normal_game ? "_p" : "");
+    QString name = QString("%1%2").arg(objectName(), (normal_game ? "_p" : ""));
     //bool addHegemony = isHegemony && !objectName().endsWith("_hegemony");
     QString des_src = Sanguosha->translate(":" + name, addHegemony);
     if (normal_game && des_src.startsWith(":"))
         des_src = Sanguosha->translate(":" + objectName());
     if (des_src.startsWith(":"))
         return QString();
-    QString desc = QString("<font color=%1>%2</font>").arg(yellow ? "#FFFF33" : "#FF0080").arg(des_src);
+    QString desc = QString("<font color=%1>%2</font>").arg((yellow ? "#FFFF33" : "#FF0080"), des_src);
     //if (isHegemonyGameMode(ServerInfo.GameMode) && !canPreshow())
     if (addHegemony && !canPreshow())
         desc.prepend(QString("<font color=gray>(%1)</font><br/>").arg(tr("this skill cannot preshow")));
@@ -80,7 +80,7 @@ void Skill::initMediaSource()
 {
     sources.clear();
     for (int i = 1;; i++) {
-        QString effect_file = QString("audio/skill/%1%2.ogg").arg(objectName()).arg(QString::number(i));
+        QString effect_file = QString("audio/skill/%1%2.ogg").arg(objectName(), QString::number(i));
         if (QFile::exists(effect_file))
             sources << effect_file;
         else
