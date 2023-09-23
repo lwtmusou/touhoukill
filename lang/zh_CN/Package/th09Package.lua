@@ -206,7 +206,7 @@ return
 	--zhan008  势力：战 4血
 	["iku"] = "永江衣玖",
 	["#iku"] = "美丽的绯之衣",
-	["designer:iku"] = "谁",
+	["designer:iku"] = "dawda",
 
 	["illustrator:iku"] = "しろさ",
 	["origin:iku"] = "p号：28342536，个人id：374262",
