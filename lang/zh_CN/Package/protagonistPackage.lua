@@ -112,7 +112,7 @@ return {
 	["origin:marisa_sp_2"] = "p号：15273460，个人id：274333",
 
 	["jiezou"] = "借走",
-	[":jiezou"] = "出牌阶段，你可以将一张牌当【顺手牵羊】使用（以此法使用<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌无距离限制）。以此法使用非<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌时，或获得装备区里的<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌后，你结束当前阶段。",
+	[":jiezou"] = "出牌阶段，你可以将一张牌当【顺手牵羊】使用，以此法：使用<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌无距离限制；使用非<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌时或获得装备区里的<font size=\"5\", color=\"#808080\"><b>♠</b></font>牌后，你结束出牌阶段。",
 	["$jiezou-skip1"]= "由于 %from 用非黑桃牌（%card）发动 %arg，%from 的出牌阶段将结束。",
 	["$jiezou-skip2"]= "由于 %from 发动 %arg 获得装备区里的黑桃牌（%card），%from 的出牌阶段将结束。",
 	["shoucang"] = "收藏",
