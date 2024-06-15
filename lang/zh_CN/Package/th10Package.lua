@@ -308,7 +308,7 @@ return{
 	["origin:momizi_sp_2"] = "p号：22093408，个人id：30974",
 
 	["buju"] = "布局",
-	[":buju"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以摸X张牌（X为角色数且至多为4），然后将X张牌以任意顺序置于牌堆顶。",
+	[":buju"] = "<font color=\"green\"><b>出牌阶段限一次</b></font>或当你受到伤害后，你可以摸X张牌（X为角色数且至多为4），然后将X张牌以任意顺序置于牌堆顶。",
 	["buju_exchange"]= "请选择 %src 张要置于牌堆顶的牌。",
 	["$GuanxingTop"] = "置于牌堆顶的牌：%card",
 	["$GuanxingBottom"] = "置于牌堆底的牌：%card",

@@ -977,3 +977,4 @@ sgs.ai_skill_discard.buju = function(self,discard_num, min_num)
 
 	return to_discard
 end
+sgs.ai_skill_invoke.buju = true

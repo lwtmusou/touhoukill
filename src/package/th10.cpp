@@ -1601,32 +1601,11 @@ public:
     }
 };
 
-BujuCard::BujuCard()
-{
-    target_fixed = true;
-}
-
-void BujuCard::use(Room *room, const CardUseStruct &card_use) const
-{
-    ServerPlayer *source = card_use.from;
-
-    int x = qMin(room->alivePlayerCount(), 4);
-
-    source->drawCards(x);
-    const Card *cards = room->askForExchange(source, "buju", x, x, true, "buju_exchange:" + QString::number(x));
-    DELETE_OVER_SCOPE(const Card, cards)
-    CardsMoveStruct move;
-    move.card_ids = cards->getSubcards();
-    move.from = source;
-    move.to_place = Player::DrawPile;
-    room->moveCardsAtomic(move, false);
-    room->askForGuanxing(source, room->getNCards(x), Room::GuanxingUpOnly, "buju");
-}
-
-class Buju : public ZeroCardViewAsSkill
+// put this on top for BujuCard references Buju
+class BujuVS : public ZeroCardViewAsSkill
 {
 public:
-    Buju()
+    BujuVS()
         : ZeroCardViewAsSkill("buju")
     {
     }
@@ -1641,6 +1620,59 @@ public:
         return new BujuCard;
     }
 };
+
+class Buju : public TriggerSkill
+{
+public:
+    static void doEffect(Room *room, ServerPlayer *source)
+    {
+        int x = qMin(room->alivePlayerCount(), 4);
+
+        source->drawCards(x);
+        const Card *cards = room->askForExchange(source, "buju", x, x, true, "buju_exchange:" + QString::number(x));
+        DELETE_OVER_SCOPE(const Card, cards)
+        CardsMoveStruct move;
+        move.card_ids = cards->getSubcards();
+        move.from = source;
+        move.to_place = Player::DrawPile;
+        room->moveCardsAtomic(move, false);
+        room->askForGuanxing(source, room->getNCards(x), Room::GuanxingUpOnly, "buju");
+    }
+
+    Buju()
+        : TriggerSkill("buju")
+    {
+        events = {Damaged};
+        view_as_skill = new BujuVS;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.to != nullptr && damage.to->isAlive() && damage.to->hasSkill(this)) {
+            return {SkillInvokeDetail(this, damage.to, damage.to)};
+        }
+
+        return {};
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        doEffect(room, invoke->invoker);
+        return false;
+    }
+};
+
+BujuCard::BujuCard()
+{
+    target_fixed = true;
+}
+
+void BujuCard::use(Room *room, const CardUseStruct &card_use) const
+{
+    ServerPlayer *source = card_use.from;
+    Buju::doEffect(room, source);
+}
 
 TH10Package::TH10Package()
     : Package("th10")
