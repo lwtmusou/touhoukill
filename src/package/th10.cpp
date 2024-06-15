@@ -337,20 +337,47 @@ public:
     }
 };
 
+class DfgzmJiyiVS : public ViewAsSkill
+{
+public:
+    DfgzmJiyiVS()
+        : ViewAsSkill("dfgzmjiyi")
+    {
+        response_pattern = "@@dfgzmjiyi";
+    }
+
+    bool viewFilter(const QList<const Card *> &selected, const Card *) const override
+    {
+        return selected.length() < 2;
+    }
+
+    const Card *viewAs(const QList<const Card *> &cards) const override
+    {
+        if (cards.length() == 2) {
+            DummyCard *c = new DummyCard;
+            c->addSubcards(cards);
+            return c;
+        }
+
+        return nullptr;
+    }
+};
+
 class DfgzmJiyi : public TriggerSkill
 {
 public:
     DfgzmJiyi()
         : TriggerSkill("dfgzmjiyi")
     {
-        events << EventPhaseStart << EventPhaseChanging;
+        events << EventPhaseEnd << EventPhaseChanging;
+        view_as_skill = new DfgzmJiyiVS;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const override
     {
-        if (e == EventPhaseStart) {
+        if (e == EventPhaseEnd) {
             ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player->getPhase() == Player::Draw && player->hasSkill(this))
+            if (player->getPhase() == Player::Draw && player->hasSkill(this) && player->getCardCount() >= 2)
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
         } else if (e == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -361,9 +388,17 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        if (triggerEvent == EventPhaseEnd)
+            return room->askForCard(invoke->invoker, "@@dfgzmjiyi", "@dfgzmjiyi-discard", QVariant(), Card::MethodDiscard, nullptr, false, objectName());
+
+        return TriggerSkill::cost(triggerEvent, room, invoke, data);
+    }
+
     bool effect(TriggerEvent e, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        if (e == EventPhaseStart) {
+        if (e == EventPhaseEnd) {
             invoke->invoker->setFlags(objectName());
             return true;
         } else if (e == EventPhaseChanging) {

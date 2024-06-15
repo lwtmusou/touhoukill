@@ -208,9 +208,31 @@ end
 
 --东风谷早苗
 --[祭仪]
-sgs.ai_skill_invoke.dfgzmjiyi  =function(self,data)
-	if self.player:isKongcheng() then return false end
-	return true
+sgs.ai_skill_cardask["@dfgzmjiyi-discard"] = function(self)
+	local ids = {}
+	
+	local cards = sgs.QList2Table(self.player:getCards("hs"))
+	if #cards > 0 then
+		if self.player:isSkipped(sgs.Player_Play) then
+			self:sortByKeepValue(cards)
+		else
+			self:sortByUseValue(cards)
+		end
+		table.insert(ids, cards[#cards]:getId())
+	end
+	if self.player:getArmor() and self.player:getArmor():isKindOf("SilverLion") and self.player:isWounded() then
+		table.insert(ids, self.player:getArmor():getId())
+	elseif #cards > 1 then
+		table.insert(ids, cards[#cards - 1]:getId())
+	end
+	
+	if #ids == 2 then
+		local idstrings = {}
+		for _, id in ipairs(ids) do
+			table.insert(idstrings, tostring(id))
+		end
+		return "$" .. table.concat(idstrings, "+")
+	end
 end
 
 --[奇迹]
