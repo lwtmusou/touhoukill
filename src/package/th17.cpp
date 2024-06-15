@@ -405,7 +405,7 @@ public:
     LunniVS()
         : OneCardViewAsSkill("lunni")
     {
-        filter_pattern = "EquipCard";
+        filter_pattern = ".|.|.|equipped";
         response_pattern = "@@lunni";
     }
 

@@ -236,13 +236,13 @@ sgs.ai_skill_invoke.bengluo = function(self, data)
 	return bengluoNeedAddDamage(self, damage.to)
 end
 
--- 【沦溺】其他角色回合开始时，你可以将一张装备牌置入其装备区（若已有同类型的牌则替换之），若如此做，此回合的：出牌段结束时，其获得其装备区里所有的牌；弃牌阶段结束时，你可以获得一张其于此阶段内弃置于弃牌堆里的装备牌。
+-- 【沦溺】其他角色的出牌阶段开始时，你可以将你装备区里的一张牌置入其装备区（若已有同类型的牌则替换之），若如此做，此阶段结束时，其获得其装备区里所有的牌。
 -- 看注释吧
 
--- 回合开始的询问
+-- 出牌阶段开始的询问
 sgs.ai_skill_use["@@lunni"] = function(self)
 	local w, a, oh, dh, t = {},{},{},{},{}
-	for _, p in sgs.qlist(self.player:getCards("hes")) do
+	for _, p in sgs.qlist(self.player:getCards("e")) do
 		    if p:isKindOf("Weapon") then table.insert(w, p:getId())
 		elseif p:isKindOf("Armor") then table.insert(a, p:getId())
 		elseif p:isKindOf("OffensiveHorse") then table.insert(oh, p:getId())
@@ -420,50 +420,6 @@ sgs.ai_skill_use["@@lunni"] = function(self)
 	return "."
 end
 
--- 弃牌阶段捡垃圾
-sgs.ai_skill_askforag.lunni = function(self, ids)
-	local cards = {}
-	for _, id in ipairs(ids) do
-		table.insert(cards, sgs.Sanguosha:getCard(id))
-	end
-	
-	-- 狮子
-	for _, c in ipairs(cards) do
-		if c:getClassName() == "SliverLion" then return c:getId() end
-	end
-	
-	-- 母牛
-	for _, c in ipairs(cards) do
-		if c:getClassName() == "WoodenOx" then return c:getId() end
-	end
-	
-	-- 连弩
-	for _, c in ipairs(cards) do
-		if c:getClassName() == "Crossbow" then return c:getId() end
-	end
-	
-	self:sortByUseValue(cards, true)
-	
-	-- 其他装备：优先度：宝物，防具，武器，+1，-1
-	for _, c in ipairs(cards) do
-		if c:isKindOf("Treasure") then return c:getId() end
-	end
-	for _, c in ipairs(cards) do
-		if c:isKindOf("Armor") then return c:getId() end
-	end
-	for _, c in ipairs(cards) do
-		if c:isKindOf("Weapon") then return c:getId() end
-	end
-	for _, c in ipairs(cards) do
-		if c:isKindOf("DefensiveHorse") then return c:getId() end
-	end
-	for _, c in ipairs(cards) do
-		if c:isKindOf("OffensiveHorse") then return c:getId() end
-	end
-	
-	-- 理论上不会走到这里的
-	return ids[1]
-end
 
 -- 【劝归】当其他角色因牌的效果受到大于1点的伤害而进入濒死状态时，你可以展示并获得其区域里的一张牌，若获得的是装备牌，其将体力回复至其体力下限。
 -- 思路：拿队友装备（优先级：连弩，距离2武器，-1，其他武器，+1，宝物，防具）和兵乐电，拿对手手牌和春息养精蓄锐
