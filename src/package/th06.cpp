@@ -1915,6 +1915,7 @@ public:
         ServerPlayer *target = invoke->targets.first();
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
         room->setPlayerFlag(invoke->invoker, "Global_xiaoyinFailed");
+        target->drawCards(1, objectName());
         const Card *card = room->askForUseCard(target, "@@xiaoyinVS!", "xiaoyinuse:" + invoke->invoker->objectName());
         if (card == nullptr) {
             //force use!
@@ -1966,7 +1967,7 @@ public:
     {
         if (triggerEvent == GameStart || triggerEvent == Debut) {
             ServerPlayer *player = data.value<ServerPlayer *>();
-            if ((player != nullptr) && player->hasSkill(this))
+            if ((player != nullptr) && player->hasSkill(this) && player->getPile(objectName()).isEmpty())
                 return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, nullptr, true);
         } else if (triggerEvent == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
@@ -1987,7 +1988,8 @@ public:
         } else if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *satsuki = qobject_cast<ServerPlayer *>(move.from);
-            if (satsuki != nullptr && satsuki->isAlive() && satsuki->hasSkill(this) && move.from_places.contains(Player::PlaceSpecial)) {
+            if (satsuki != nullptr && satsuki->isAlive() && satsuki->hasSkill(this) && move.from_places.contains(Player::PlaceSpecial)
+                && satsuki->getPile(objectName()).isEmpty()) {
                 for (int i = 0; i < move.card_ids.size(); i++) {
                     if (move.from_pile_names.value(i) == objectName())
                         return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, satsuki, satsuki, nullptr, true);
