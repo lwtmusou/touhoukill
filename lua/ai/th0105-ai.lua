@@ -1285,5 +1285,5 @@ sgs.ai_skill_cardask["@wuzui-discard"] = function(self, data)
 	if self:isFriend(to) then return "." end
 	if to:getHp() - damage.damage - 1 > to:dyingThreshold() then return "." end
 	self:sortByUseValue(t)
-	return "$" .. tonumber(t[1])
+	return "$" .. t[1]:getEffectiveId()
 end
