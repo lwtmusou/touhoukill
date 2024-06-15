@@ -1182,7 +1182,6 @@ bool Room::isCanceled(const CardEffectStruct &effect)
             if ((xianshi_result == 0 && !result) || (xianshi_result == 1 && result)) {
                 QString xianshi_name = p->property("xianshi_card").toString();
                 if (xianshi_name != nullptr && p->isAlive() && target->isAlive()) {
-                    CardEffectStruct extraEffect;
                     Card *extraCard = Sanguosha->cloneCard(xianshi_name);
                     if (extraCard->isKindOf("Slash")) {
                         DamageStruct::Nature nature = DamageStruct::Normal;
