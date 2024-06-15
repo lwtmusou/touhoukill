@@ -1116,6 +1116,31 @@ public:
     }
 };
 
+class TianMing : public TriggerSkill
+{
+public:
+    TianMing()
+        : TriggerSkill("TianMing")
+    {
+        events << Damaged;//ShiJi Wei ShouShangHou
+        frequency = Compulsory;//JiNengPinLv(LeiXing) SuoDingJi
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override//PanDuanNengFou ChuFa
+    {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.to->hasSkill(this) && damage.to->isAlive())//RuGuo ShouShangDeRen YouZheJiNeng BingQie HuanHuoZhe
+            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, nullptr, true);//'true' BiaoShi BuXunWen
+        return QList<SkillInvokeDetail>();
+    }
+
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override//XiaoGuo
+    {
+        invoke->invoker->drawCards(2, objectName());//Mo 2 Zhang Pai
+        return false;
+    }
+};
+
 PlaygroundPackage::PlaygroundPackage()
     : Package("playground")
 {
@@ -1153,6 +1178,10 @@ PlaygroundPackage::PlaygroundPackage()
 
     General *fsb = new General(this, "flyingskybright", "touhougod", 4, true);
     fsb->addSkill(new FtmFeitian);
+
+    General *huochairen = new General(this, "huochairen", "touhougod", 4, true);
+    huochairen->addSkill(new TianMing);
+
 }
 
 ADD_PACKAGE(Playground)

@@ -12,7 +12,7 @@ public:
     Sidie()
         : TriggerSkill("sidie")
     {
-        events << EventPhaseStart;
+        events << EventPhaseEnd;
     }
 
     bool canPreshow() const override
@@ -23,7 +23,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         ServerPlayer *uuz = data.value<ServerPlayer *>();
-        if (uuz->isAlive() && uuz->hasSkill(this) && uuz->getPhase() == Player::Start) {
+        if (uuz->isAlive() && uuz->hasSkill(this) && uuz->getPhase() == Player::Play) {
             foreach (ServerPlayer *p, room->getOtherPlayers(uuz)) {
                 if (uuz->getHandcardNum() > p->getHandcardNum() && uuz->canSlash(p, false))
                     return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, uuz, uuz);
@@ -84,7 +84,7 @@ public:
             return QList<SkillInvokeDetail>();
         QList<SkillInvokeDetail> d;
         ServerPlayer *player = data.value<ServerPlayer *>();
-        if (player->getPhase() == Player::RoundStart) {
+        if (player->getPhase() == Player::Play) {
             foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
                 if (p != player && p->canDiscard(p, "e"))
                     d << SkillInvokeDetail(this, p, p, nullptr, false, player);
