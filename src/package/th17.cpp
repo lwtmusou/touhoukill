@@ -1199,70 +1199,43 @@ public:
     Junzhen()
         : TriggerSkill("junzhen")
     {
-        events << EventPhaseEnd << Death << BuryVictim;
+        events << EventPhaseEnd;
         view_as_skill = new JunzhenVS;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
         QList<SkillInvokeDetail> r;
-        if (triggerEvent == BuryVictim) {
-            foreach (ServerPlayer *p, room->getAllPlayers()) {
-                if (p->tag.contains("junzhenTo"))
-                    r << SkillInvokeDetail(this, nullptr, p, nullptr, true, nullptr, false);
-            }
-        } else if (triggerEvent == EventPhaseEnd || triggerEvent == Death) {
-            ServerPlayer *invoker = nullptr;
-            if (triggerEvent == EventPhaseEnd) {
-                ServerPlayer *c = data.value<ServerPlayer *>();
-                if (c->getPhase() == Player::Play && c->isAlive())
-                    invoker = c;
-            } else if (triggerEvent == Death) {
-                DeathStruct death = data.value<DeathStruct>();
-                invoker = death.who;
-            }
-            if (invoker != nullptr && !invoker->isNude()) {
-                foreach (ServerPlayer *owner, room->findPlayersBySkillName(objectName()))
-                    r << SkillInvokeDetail(this, owner, invoker);
-            }
 
-        } else {
-            // ??
+        ServerPlayer *c = data.value<ServerPlayer *>();
+        if (c->getPhase() == Player::Play && c->isAlive() && !c->isNude()) {
+            foreach (ServerPlayer *owner, room->findPlayersBySkillName(objectName()))
+                r << SkillInvokeDetail(this, owner, c);
         }
 
         return r;
     }
 
-    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        if (triggerEvent == BuryVictim) {
-            return true;
-        } else if (triggerEvent == EventPhaseEnd || triggerEvent == Death) {
-            room->setPlayerFlag(invoke->owner, "junzhen_owner");
-            invoke->invoker->tag.remove("junzhenTo");
-            QString prompt = (invoke->invoker == invoke->owner) ? QStringLiteral("@junzhen-prompt2") : (QString(QStringLiteral("@junzhen-prompt1:")) + invoke->owner->objectName());
-            int noticeIndex = (invoke->invoker == invoke->owner) ? 2 : 1;
-            bool invoked = room->askForUseCard(invoke->invoker, "@@junzhen-card1", prompt, noticeIndex, Card::MethodNone);
-            if (!invoked)
-                room->setPlayerFlag(invoke->owner, "-junzhen_owner");
+        room->setPlayerFlag(invoke->owner, "junzhen_owner");
+        invoke->invoker->tag.remove("junzhenTo");
+        QString prompt = (invoke->invoker == invoke->owner) ? QStringLiteral("@junzhen-prompt2") : (QString(QStringLiteral("@junzhen-prompt1:")) + invoke->owner->objectName());
+        int noticeIndex = (invoke->invoker == invoke->owner) ? 2 : 1;
+        bool invoked = room->askForUseCard(invoke->invoker, "@@junzhen-card1", prompt, noticeIndex, Card::MethodNone);
+        if (!invoked)
+            room->setPlayerFlag(invoke->owner, "-junzhen_owner");
 
-            return invoked;
-        } else {
-            // ??
-        }
-
-        return false;
+        return invoked;
     }
 
-    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        if (triggerEvent == BuryVictim || triggerEvent == EventPhaseEnd) {
-            ServerPlayer *target = invoke->invoker->tag["junzhenTo"].value<ServerPlayer *>();
-            invoke->invoker->tag.remove("junzhenTo");
+        ServerPlayer *target = invoke->invoker->tag["junzhenTo"].value<ServerPlayer *>();
+        invoke->invoker->tag.remove("junzhenTo");
 
-            if (target != nullptr)
-                room->askForUseCard(target, "@@junzhen-card2", "@junzhen-prompt3", 3, Card::MethodUse);
-        }
+        if (target != nullptr && !target->isNude())
+            room->askForUseCard(target, "@@junzhen-card2", "@junzhen-prompt3", 3, Card::MethodUse);
 
         return false;
     }
@@ -1283,8 +1256,8 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.to->isAlive() && damage.to->hasSkill(this)) {
             if ((damage.card != nullptr
-                 && (!damage.card->isVirtualCard()
-                     || (damage.card->subcardsLength() == 1 && Sanguosha->getCard(damage.card->getEffectiveId())->getClassName() == damage.card->getClassName())))
+                 && (damage.card->isVirtualCard()
+                     && !(damage.card->subcardsLength() == 1 && Sanguosha->getCard(damage.card->getEffectiveId())->getClassName() == damage.card->getClassName())))
                 || (damage.nature != DamageStruct::Normal))
                 return {SkillInvokeDetail(this, damage.to, damage.to, nullptr, true)};
         }
