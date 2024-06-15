@@ -174,66 +174,40 @@ sgs.ai_skill_invoke.zhuying_effect = function(self, data)
 	return false
 end
 
--- 【善垒】锁定技，回合开始时，若你的手牌数大于你的手牌上限，你将手牌弃置至上限；回合结束时，若你的手牌数不大于所有其他角色，你摸至X张（X为手牌最多的角色的手牌数+1）。
+-- 【善垒】锁定技，准备阶段开始时，若你的手牌数大于你的手牌上限，你将手牌弃置至上限；结束阶段开始时，若你不是手牌数唯一最多的角色，你将手牌摸至X张（X为手牌最多的角色的手牌数+1）。
 -- None needed
 
--- 【崩落】一名角色的一个阶段结束时，若你于此阶段内有过不因使用而失去牌后使你的手牌数大于你的手牌上限的情况，你可以将一张手牌当【杀】使用。当此牌对目标造成伤害时，若其手牌数小于你，你可以将手牌调整至你的手牌上限，令此伤害值+1。
--- 用最坏的牌和默认的杀算法选择目标来杀就行，用弃牌阶段弃牌的算法选择弃牌调整所需的牌
+-- 【崩落】一名角色的结束阶段开始时，若你于此回合内不因使用而失去过手牌，你可以使用一张非锦囊牌。
+-- 照抄sqchuangshi
 -- shanlei+bengluo = 延时卖血，保守的话暂时先卖剩2血，之后再看看怎么调
 
-sgs.ai_skill_use["@@bengluo-card1"] = function(self)
-	local cards = self.player:getHandcards()
-	local cl = {}
-	for _, c in sgs.qlist(cards) do
-		if not (c:isKindOf("Peach")) then
-			table.insert(cl,c)
-		end
-	end
-	if #cl == 0 then return nil end
-	self:sortByKeepValue(cl)
-	
-	for _, c in ipairs(cl) do
-		local u = {isDummy=true, to = sgs.SPlayerList()}
-		local slash = sgs.Sanguosha:cloneCard("Slash", sgs.Card_SuitToBeDecided, -1)
-		slash:addSubcard(c)
-		slash:setSkillName("bengluo")
-		slash:deleteLater()
-		self:useCardSlash(slash, u)
-		if u.card and (not u.to:isEmpty()) then
-			local slist = {}
-			for _, s in sgs.qlist(u.to) do
-				table.insert(slist, s:objectName())
+sgs.ai_skill_use["BasicCard+^Jink,EquipCard|.|.|sqchuangshi"] = function(self, prompt, method)
+	local cards =  self:getCards("sqchuangshi", "hs")
+	self:sortByUseValue(cards)
+	for _, card in ipairs(cards) do
+		if card:getTypeId() == sgs.Card_TypeBasic and not card:isKindOf("Jink") then
+			local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
+			self:useBasicCard(card, dummy_use)
+			if dummy_use.card then
+				if dummy_use.to:isEmpty() then
+					return dummy_use.card:toString()
+				else
+					local target_objectname = {}
+					for _, p in sgs.qlist(dummy_use.to) do
+						table.insert(target_objectname, p:objectName())
+					end
+					return dummy_use.card:toString() .. "->" .. table.concat(target_objectname, "+")
+				end
 			end
-			return slash:toString() .. "->" .. table.concat(slist, "+")
+		elseif card:getTypeId() == sgs.Card_TypeEquip then
+			local dummy_use = { isDummy = true }
+			self:useEquipCard(card, dummy_use)
+			if dummy_use.card then
+				return dummy_use.card:toString()
+			end
 		end
 	end
-	
 	return "."
-end
-
-local bengluoNeedAddDamage=function(self, player)
-	return self:isEnemy(player)
-end
-
-sgs.ai_skill_cardask["@bengluo-discard"] = function(self, data)
-	local damage = data:toDamage()
-	if bengluoNeedAddDamage(self, damage.to) then
-		local n = self.player:getHandcardNum() - self.player:getMaxCards()
-		local cards = sgs.ai_skill_discard.gamerule(self, n, n)
-		local cardss = {}
-		for _, i in ipairs(cards) do
-			table.insert(cardss, tostring(i))
-		end
-		
-		return "$" .. table.concat(cardss, "+")
-	end
-	
-	return "."
-end
-
-sgs.ai_skill_invoke.bengluo = function(self, data)
-	local damage = data:toDamage()
-	return bengluoNeedAddDamage(self, damage.to)
 end
 
 -- 【沦溺】其他角色的出牌阶段开始时，你可以将你装备区里的一张牌置入其装备区（若已有同类型的牌则替换之），若如此做，此阶段结束时，其获得其装备区里所有的牌。
@@ -288,7 +262,7 @@ sgs.ai_skill_use["@@lunni"] = function(self)
 				if not current:getWeapon() and #w > 0 then
 					local crossbow
 					for _, p in ipairs(w) do
-						if sgs.Sanguosha:getCard(p):getClassName() == "Crossbow" then silverlion = p break end
+						if sgs.Sanguosha:getCard(p):getClassName() == "Crossbow" then crossbow = p break end
 					end
 					if crossbow then
 						id = crossbow
@@ -420,49 +394,128 @@ sgs.ai_skill_use["@@lunni"] = function(self)
 	return "."
 end
 
+-- 【撩罟】当其他角色于其弃牌阶段弃置牌后，你可以使用这些牌中的一张牌，然后若你于回合内未曾失去过牌，你须弃置一张牌。
+-- 思路：
+-- 如果没有失去过牌：（如果没有lunni）狮子 -> 桃以外的手牌 -> （如果没有lunni）-1
+-- 如果有lunni：拿不重样的装备
+-- 然后使用usevalue最大的
+local liaogu_discard
 
--- 【劝归】当其他角色因牌的效果受到大于1点的伤害而进入濒死状态时，你可以展示并获得其区域里的一张牌，若获得的是装备牌，其将体力回复至其体力下限。
--- 思路：拿队友装备（优先级：连弩，距离2武器，-1，其他武器，+1，宝物，防具）和兵乐电，拿对手手牌和春息养精蓄锐
+sgs.ai_skill_discard["liaogu"] = function(self)
+	local owner = self.room:getCardOwner(liaogu_discard)
+	if owner and owner:objectName() == self.player:objectName() then return liaogu_discard end
+	
+	-- return nil to let default AI dealing with unexpected condition
+end
 
-sgs.ai_skill_invoke.quangui = function(self, data)
-	local dying = data:toDying()
-	if self:isFriend(dying.who) then
-		if not dying.who:getEquips():isEmpty() then
-			if dying.who:getWeapon() and dying.who:getWeapon():getClassName() == "Crossbow" then sgs.ai_skill_cardchosen.quangui = dying.who:getWeapon():getId() return true end
-			if dying.who:getWeapon() and dying.who:getWeapon():getRealCard():toWeapon():getRange() == 2 then sgs.ai_skill_cardchosen.quangui = dying.who:getWeapon():getId() return true end
-			if dying.who:getOffensiveHorse() then sgs.ai_skill_cardchosen.quangui = dying.who:getOffensiveHorse():getId() return true end
-			if dying.who:getWeapon() then sgs.ai_skill_cardchosen.quangui = dying.who:getWeapon():getId() return true end
-			if dying.who:getDefensiveHorse() then sgs.ai_skill_cardchosen.quangui = dying.who:getDefensiveHorse():getId() return true end
-			if dying.who:getTreasure() then sgs.ai_skill_cardchosen.quangui = dying.who:getTreasure():getId() return true end
-			if dying.who:getArmor() then sgs.ai_skill_cardchosen.quangui = dying.who:getArmor():getId() return true end
-		end
-		if not dying.who:getJudgingArea():isEmpty() then
-			local ids = {}
-			for _, p in sgs.qlist(dying.who:getJudgingArea()) do
-				ids[p:getClassName()] = p:getEffectiveId()
+sgs.ai_skill_use["@@liaogu"] = function(self)
+	if not self.player:hasFlag("liaogulost") then
+		-- 先想好弃置啥
+		repeat
+			liaogu_discard = nil
+
+			if not self.player:hasSkill("lunni", true) then
+				if self.player:getArmor() and self.player:getArmor():isKindOf("SilverLion") then
+					liaogu_discard = self.player:getArmor():getId()
+					break
+				end
 			end
-			if ids.Indulgence then sgs.ai_skill_cardchosen.quangui = ids.Indulgence return true end
-			if ids.SupplyShortage then sgs.ai_skill_cardchosen.quangui = ids.SupplyShortage return true end
-			if ids.Lightning then sgs.ai_skill_cardchosen.quangui = ids.Lightning return true end
-			-- if ids.SavingEnergy then sgs.ai_skill_cardchosen.quangui = ids.SavingEnergy return true end
-			-- if ids.SpringBreath then sgs.ai_skill_cardchosen.quangui = ids.SpringBreath return true end
-		end
-	elseif self:isEnemy(dying.who) then
-		if dying.who:getHandcardNum() > 0 then sgs.ai_skill_cardchosen.quangui = -1 return true end
-		if not dying.who:getJudgingArea():isEmpty() then
-			local ids = {}
-			for _, p in sgs.qlist(dying.who:getJudgingArea()) do
-				ids[p:getClassName()] = p:getEffectiveId()
+
+			local hc = self.player:getHandcards()
+			local cl = {}
+			for _, c in sgs.qlist(hc) do
+				if not c:isKindOf("Peach") then table.insert(cl, c) end
 			end
-			-- if ids.Indulgence then sgs.ai_skill_cardchosen.quangui = ids.Indulgence return true end
-			-- if ids.SupplyShortage then sgs.ai_skill_cardchosen.quangui = ids.SupplyShortage return true end
-			-- if ids.Lightning then sgs.ai_skill_cardchosen.quangui = ids.Lightning return true end
-			if ids.SpringBreath then sgs.ai_skill_cardchosen.quangui = ids.SpringBreath return true end
-			if ids.SavingEnergy then sgs.ai_skill_cardchosen.quangui = ids.SavingEnergy return true end
+			if #cl > 0 then
+				self:sortByKeepValue(cl)
+				liaogu_discard = cl[1]:getId()
+				break
+			end
+			
+			if not self.player:hasSkill("lunni", true) then
+				if self.player:getOffensiveHorse() then
+					liaogu_discard = self.player:getOffensiveHorse():getId()
+					break
+				end
+			end
+		until true
+
+		-- 想不好了，不聊了，拜拜了您内！
+		return "."
+	end
+
+	local liaoguCardIds = self.player:getTag("liaogu_tempmove"):toIntList()
+	local liaoguCards = {}
+	for _, id in sgs.qlist(liaoguCardIds) do
+		table.insert(liaoguCards, sgs.Sanguosha:getCard(id))
+	end
+
+	if self.player:hasSkill("lunni", true) then
+		local w, a, oh, dh, t
+		for _, p in sgs.qlist(self.player:getCards("e")) do
+				if p:isKindOf("Weapon") then w = p:getId()
+			elseif p:isKindOf("Armor") then a = p:getId()
+			elseif p:isKindOf("OffensiveHorse") then oh = p:getId()
+			elseif p:isKindOf("DefensiveHorse") then dh = p:getId()
+			elseif p:isKindOf("Treasure") then t = p:getId()
+			end
+		end
+		local selected
+		local selectedLevel = 8
+		for _, c in ipairs(liaoguCards) do
+			-- 顺序：狮子 - 母牛 - +1 - 防具 - 宝物 - 武器 - -1
+			local level
+			    if c:isKindOf("SliverLion") and not a then level = 1
+			elseif c:isKindOf("WoodenOx") and not t then level = 2
+			elseif c:isKindOf("DefensiveHorse") and not dh then level = 3
+			elseif c:isKindOf("Armor") and not a then level = 4
+			elseif c:isKindOf("Treasure") and not t then level = 5
+			elseif c:isKindOf("Weapon") and not w then level = 6
+			elseif c:isKindOf("OffensiveHorse") and not oh then level = 7
+			else level = 9
+			end
+			
+			if level < selectedLevel then selectedLevel = level selected = c end
+		end
+		if selected then
+			-- 装备牌都是直接用的，不用加目标
+			local card = sgs.Sanguosha:cloneSkillCard("LiaoguCard")
+			card:addSubcard(selected)
+			card:deleteLater()
+			return card:toString() .. "->."
 		end
 	end
 	
-	return false
+	-- 崩服务器 暂且注释掉。。。。
+--	self:sortByUseValue(liaoguCards)
+--	for _, c in ipairs(liaoguCards) do
+--		-- 如果是装备，要确认是否这个装备会顶掉discard的牌
+--		local willReplaceEquip
+--		if c:isKindOf("EquipCard") and (not self.player:hasFlag("liaogulost")) then
+--			local ce = c:getRealCard():toEquipCard()
+--			local discardce = sgs.Sanguosha:getCard(liaogu_discard):getRealCard():toEquipCard()
+--			willReplaceEquip = (ce:location() == discardce:location())
+--		end
+--		if (not willReplaceEquip) then
+--			self.player:speak(c:toString())
+--			local use = {isDummy = true, to = sgs.SPlayerList()}
+--			self:useCardByClassName(c, use)
+--			if use.card then
+--				local card = sgs.Sanguosha:cloneSkillCard("LiaoguCard")
+--				card:addSubcard(selected)
+--				card:deleteLater()
+--				local targetsStr = "."
+--				if not use.to:isEmpty() then
+--					local targets = {}
+--					for _, to in sgs.qlist(use.to) do table.insert(targets, to:objectName()) end
+--					targetsStr = table.concat(targets, "+")
+--				end
+--				return card:toString() .. "->" .. targetsStr
+--			end
+--		end
+--	end
+	
+	return "."
 end
 
 -- 【狱守】 其他角色的准备阶段开始时，你可以弃置一张手牌，若如此做，当其于此回合内使用第一张有点数的牌时，若点数不大于之，此牌无效，反之此牌不计入限制的使用次数。
@@ -572,7 +625,7 @@ sgs.ai_skill_askforag.lingdu = function()
 end
 
 -- 【夺志】锁定技 当你使用牌结算完毕后，你令所有其他角色于当前回合内不能使用或打出牌。
--- 本体无需AI，出牌顺序可能需要微调，比如先挂装备等，防御上调（防二刀，防锦囊，太强了）
+-- 本体无需AI，出牌顺序可能需要微调，比如先挂装备等，防御上调（防二刀，防锦囊，太强了），出牌顺序搁置
 
 -- 【领军】当你于一个回合内使用的第一张【杀】结算完毕后，你可以选择此牌的一个目标，令攻击范围内有其的其他角色各选择是否将一张基本牌当【杀】对其使用（除其外的角色不是合法目标），然后若此次被以此法转化的牌均是【杀】，你视为对其使用【杀】。
 -- 只要不是杀队友无脑发动，目标的对手手牌中有杀的话用杀当杀，没杀的话看剩余目标数和目标血量手牌数决定是否用其他牌（除桃外）当杀，目标的队友不响应
