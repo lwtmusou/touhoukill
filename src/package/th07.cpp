@@ -844,20 +844,32 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.chain || damage.transfer || !damage.by_user || (damage.from == nullptr) || damage.from->isDead() || damage.from == damage.to || !damage.from->hasSkill(this))
-            return QList<SkillInvokeDetail>();
-        if ((damage.card != nullptr) && damage.card->isKindOf("Slash") && !damage.to->getEquips().isEmpty())
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, nullptr, false, damage.to);
-        return QList<SkillInvokeDetail>();
+        if (damage.from != nullptr && damage.from->isAlive() && damage.from->hasSkill(this) && damage.to->isAlive() && damage.card != nullptr && damage.card->isKindOf("Slash"))
+            return {SkillInvokeDetail(this, damage.from, damage.from, nullptr, false, damage.to)};
+
+        return {};
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
         room->broadcastSkillInvoke(objectName());
-        QString prompt = "@zhanwang-discard:" + invoke->invoker->objectName();
-        const Card *card = room->askForCard(invoke->targets.first(), ".|.|.|equipped", prompt, data);
-        if (card == nullptr) {
+
+        bool discard = false;
+
+        if (invoke->invoker == invoke->targets.first()) {
+            discard = room->askForDiscard(invoke->invoker, objectName(), 1, 1, false, true, "zhanwang-self");
+        } else {
+            if (invoke->invoker->canDiscard(invoke->targets.first(), "hes", objectName())) {
+                discard = invoke->targets.first()->askForSkillInvoke("zhanwang_discard", "emmm:" + invoke->invoker->objectName());
+                if (discard) {
+                    int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName(), false, Card::MethodDiscard);
+                    room->throwCard(id, invoke->targets.first(), invoke->invoker);
+                }
+            }
+        }
+
+        if (!discard) {
             DamageStruct damage = data.value<DamageStruct>();
             damage.damage = damage.damage + 1;
             data = QVariant::fromValue(damage);

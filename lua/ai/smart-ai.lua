@@ -3122,7 +3122,7 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 	end
 
 
-	if ("snatch|dismantlement|yinling"):match(reason)  then
+	if ("snatch|dismantlement|yinling|zhanwang"):match(reason)  then
 		local flag = "AIGlobal_SDCardChosen_" .. reason
 		local to_choose
 		for _, card in sgs.qlist(who:getCards(flags)) do
@@ -3135,7 +3135,7 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 		if to_choose  then
 			local is_handcard
 			if not who:isKongcheng() and who:handCards():contains(to_choose) then is_handcard = true end
-			if is_handcard and reason == "dismantlement" and self.room:getMode() == "02_1v1" and sgs.GetConfig("1v1/Rule", "Classical") == "2013" then
+			if is_handcard and (reason == "dismantlement" or reason == "zhanwang") and self.room:getMode() == "02_1v1" and sgs.GetConfig("1v1/Rule", "Classical") == "2013" then
 				local cards = sgs.QList2Table(who:getHandcards())
 				local peach, jink
 				for _, card in ipairs(cards) do
@@ -3157,7 +3157,7 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 	end
 
 	if self:isFriend(who) then
-		if flags:match("j") and not who:containsTrick("YanxiaoCard") and not (who:hasSkill("qiaobian") and who:getHandcardNum() > 0) then
+		if flags:match("j") then
 			local tricks = who:getCards("j")
 			local lightning, indulgence, supply_shortage
 			for _, trick in sgs.qlist(tricks) do
