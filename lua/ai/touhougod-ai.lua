@@ -1305,9 +1305,7 @@ sgs.ai_skill_discard.worao = function(self)
 	return woraoGive
 end
 --[神话]
-sgs.ai_skill_choice.shenhua = function(self, choices, data)
-	return "discardMark"
-end
+sgs.ai_skill_invoke.shenhua_discardmark = true
 
 --神 丰聪耳神子
 --[弘佛]

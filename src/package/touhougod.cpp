@@ -3173,17 +3173,32 @@ public:
     Worao()
         : TriggerSkill("worao")
     {
-        events << TargetConfirmed;
+        events << TargetConfirmed << EventPhaseStart;
         related_mark = "@xinyang";
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
+    void record(TriggerEvent e, Room *room, QVariant &data) const override
+    {
+        if (e == EventPhaseStart) {
+            ServerPlayer *p = data.value<ServerPlayer *>();
+            if (p->getPhase() == Player::NotActive) {
+                foreach (ServerPlayer *p, room->getAllPlayers())
+                    p->setFlags("-woraoInvoked");
+            }
+        }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const override
     {
         QList<SkillInvokeDetail> d;
+
+        if (e == EventPhaseStart)
+            return d;
+
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.from != nullptr && use.from->isAlive() && (use.card->isKindOf("Slash") || use.card->isNDTrick()) && !use.card->isVirtualCard()) {
             foreach (ServerPlayer *p, use.to) {
-                if (p->hasSkill(this) && p != use.from)
+                if (p->hasSkill(this) && p != use.from && !p->hasFlag("woraoInvoked"))
                     d << SkillInvokeDetail(this, p, p, nullptr, false, use.from);
             }
         }
@@ -3201,6 +3216,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         ServerPlayer *player = invoke->invoker;
+        player->setFlags("woraoInvoked");
         CardUseStruct use = data.value<CardUseStruct>();
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), use.from->objectName());
         player->gainMark("@xinyang");
@@ -3233,15 +3249,16 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         room->notifySkillInvoked(invoke->invoker, objectName());
         room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
-        QString choice = "loseHp";
-        if (invoke->invoker->getMark("@xinyang") > 0)
-            choice = room->askForChoice(invoke->invoker, objectName(), "loseHp+discardMark", data);
 
-        if (choice == "loseHp")
+        bool loseMarkSelected = false;
+        if (invoke->invoker->getMark("@xinyang") > 0)
+            loseMarkSelected = invoke->invoker->askForSkillInvoke("shenhua_discardmark", "meowmeow");
+
+        if (!loseMarkSelected)
             room->loseMaxHp(invoke->invoker, 1);
         else
             invoke->invoker->loseMark("@xinyang", invoke->invoker->getMark("@xinyang"));
