@@ -1814,7 +1814,7 @@ public:
     QishuTargetMod()
         : TargetModSkill("#qishu-mod")
     {
-        pattern = "Slash,TrickCard+^DelayedTrick";
+        pattern = ".";
     }
 
     static bool isLastHandCard(const Player *player, const Card *card)
@@ -1847,7 +1847,7 @@ public:
 
     int getExtraTargetNum(const Player *player, const Card *card) const override
     {
-        if (player->hasSkill("qishu") && player->getPhase() == Player::Play && isLastHandCard(player, card))
+        if (player->hasSkill("qishu") && player->getPhase() == Player::Play && isLastHandCard(player, card) && (card->isKindOf("Slash") || card->isNDTrick()))
             return 1000;
         else
             return 0;
