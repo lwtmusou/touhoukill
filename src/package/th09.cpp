@@ -1131,9 +1131,11 @@ public:
     {
     }
 
-    bool isEnabledAtPlay(const Player *) const override
+    bool isEnabledAtPlay(const Player *player) const override
     {
-        return false;
+        Slash *card = new Slash(Card::SuitToBeDecided, -1);
+        DELETE_OVER_SCOPE(Slash, card)
+        return card->isAvailable(player) && hasZhanGenerals(player) && (!player->hasFlag("Global_tianrenFailed"));
     }
 
     static bool hasZhanGenerals(const Player *player)
@@ -1152,7 +1154,7 @@ public:
         const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
 
         return hasZhanGenerals(player) && (cardPattern != nullptr && cardPattern->match(player, card))
-            && (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) && (!player->hasFlag("Global_tianrenFailed")) && !player->isCurrent();
+            && (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) && (!player->hasFlag("Global_tianrenFailed"));
     }
 
     const Card *viewAs() const override
@@ -1175,7 +1177,7 @@ public:
     {
         CardAskedStruct s = data.value<CardAskedStruct>();
         ServerPlayer *player = s.player;
-        if (!player->hasLordSkill(objectName()) || player->isCurrent())
+        if (!player->hasLordSkill(objectName()))
             return QList<SkillInvokeDetail>();
 
         const CardPattern *cardPattern = Sanguosha->getPattern(s.pattern);
