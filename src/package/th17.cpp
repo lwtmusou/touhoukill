@@ -1145,7 +1145,7 @@ public:
     {
         QString pattern = Sanguosha->getCurrentCardUsePattern();
         if (pattern == "@@junzhen-card1") {
-            return to_select->isEquipped();
+            return to_select->isKindOf("EquipCard");
         } else if (pattern == "@@junzhen-card2") {
             return selected.isEmpty();
         }
