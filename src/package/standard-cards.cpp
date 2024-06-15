@@ -1165,12 +1165,6 @@ void AmazingGrace::doPreAction(Room *room, const CardUseStruct &use) const
 
 void AmazingGrace::use(Room *room, const CardUseStruct &card_use) const
 {
-    ServerPlayer *source = card_use.from;
-
-    //shemi count
-    if (getSkillName() == "shemi")
-        room->addPlayerHistory(source, "ShemiAG");
-
     try {
         GlobalEffect::use(room, card_use);
         clearRestCards(room);

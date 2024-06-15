@@ -7253,6 +7253,7 @@ end
 	--铁骑类 比如雌雄剑 @DoubleSword:sgs1:sgs1:sgs2:1  和  @DoubleSword:sgs1:sgs1:sgs3:2
 	--颂威类 比如血裔 @huazhong:sgs1:sgs2  和  @huazhong:sgs1:sgs3
 	for _, invoke in ipairs(invokes) do
+		if invoke == "shanlei" then return "shanlei" end -- shanlei / bengluo同人物同时机（结束阶段开始时），shanlei可以摸牌供bengluo使用，无脑先发动
 		if (invoke ~= "cancel") and  (not invoke:match("pingyi:")) then--先触发凭依以外的卖血技能后再考虑凭依
 			return invoke
 		end

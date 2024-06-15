@@ -1005,7 +1005,7 @@ public:
     Tianxie()
         : TriggerSkill("tianxie")
     {
-        events << SlashHit << PostCardEffected << CardEffected; //<< CardFinished
+        events << SlashHit << PostCardEffected << TrickEffect; //<< CardFinished
     }
 
     void record(TriggerEvent e, Room *room, QVariant &data) const override
@@ -1013,10 +1013,9 @@ public:
         if (e == SlashHit) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             room->setCardFlag(effect.slash, "tianxieEffected_" + effect.to->objectName());
-        } else if (e == CardEffected) {
+        } else if (e == TrickEffect) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (!effect.card->isKindOf("Slash"))
-                room->setCardFlag(effect.card, "tianxieEffected_" + effect.to->objectName());
+            room->setCardFlag(effect.card, "tianxieEffected_" + effect.to->objectName());
         }
     }
 

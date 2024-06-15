@@ -1606,14 +1606,14 @@ public:
     Yaoli()
         : TriggerSkill("yaoli")
     {
-        events << GameStart << EventAcquireSkill << EventLoseSkill << Death << Debut << Revive << GeneralShown << EventPhaseEnd;
+        events << GameStart << EventAcquireSkill << EventLoseSkill << Death << Debut << Revive << GeneralShown << EventPhaseChanging;
         // show_type = "static";
         view_as_skill = new YaoliVS("yaoli", false);
     }
 
     void record(TriggerEvent e, Room *room, QVariant &) const override
     {
-        if (e == EventPhaseEnd)
+        if (e == EventPhaseChanging)
             return;
 
         static QString attachName = "yaoliattach";
@@ -1643,11 +1643,12 @@ public:
     {
         QList<SkillInvokeDetail> r;
 
-        if (triggerEvent != EventPhaseEnd)
+        if (triggerEvent != EventPhaseChanging)
             return r;
 
-        ServerPlayer *p = data.value<ServerPlayer *>();
-        if (p->getPhase() == Player::Play && p->hasFlag("yaolieffected")) {
+        PhaseChangeStruct s = data.value<PhaseChangeStruct>();
+        ServerPlayer *p = s.player;
+        if (s.from == Player::Play && p->hasFlag("yaolieffected")) {
             // Tag "yaolieffect0" is for no actual effect
             for (int i = 0; i <= 3; ++i) {
                 QString tagName = "yaolieffect" + QString::number(i);
@@ -1668,7 +1669,8 @@ public:
 
     bool effect(TriggerEvent, Room *r, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
-        ServerPlayer *p = data.value<ServerPlayer *>();
+        PhaseChangeStruct s = data.value<PhaseChangeStruct>();
+        ServerPlayer *p = s.player;
         int i = invoke->tag["yaolieffect"].toInt();
 
         if (i != 0) {

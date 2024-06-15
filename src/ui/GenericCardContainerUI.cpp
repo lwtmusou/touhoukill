@@ -452,17 +452,19 @@ void PlayerCardContainer::updatePile(const QString &pile_name)
                 qWarning("PlayerCardContainer::updatePile: button == NULL");
         }
 
-        QString text = Sanguosha->translate(pile_name);
-        if (pile.length() > 0)
-            text.append(QString("(%1)").arg(pile.length()));
-        button->setText(text);
+        if (button != nullptr) {
+            QString text = Sanguosha->translate(pile_name);
+            if (pile.length() > 0)
+                text.append(QString("(%1)").arg(pile.length()));
+            button->setText(text);
 
-        disconnect(button, &QPushButton::pressed, this, &PlayerCardContainer::showPile);
-        connect(button, &QPushButton::pressed, this, &PlayerCardContainer::showPile);
+            disconnect(button, &QPushButton::pressed, this, &PlayerCardContainer::showPile);
+            connect(button, &QPushButton::pressed, this, &PlayerCardContainer::showPile);
 
-        if (pile_name != "huashencard") {
-            disconnect(button, &QPushButton::released, this, &PlayerCardContainer::hidePile);
-            connect(button, &QPushButton::released, this, &PlayerCardContainer::hidePile);
+            if (pile_name != "huashencard") {
+                disconnect(button, &QPushButton::released, this, &PlayerCardContainer::hidePile);
+                connect(button, &QPushButton::released, this, &PlayerCardContainer::hidePile);
+            }
         }
     }
     //set treasure pile at first

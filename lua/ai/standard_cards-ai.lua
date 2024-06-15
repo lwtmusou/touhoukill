@@ -4004,7 +4004,7 @@ function SmartAI:useCardLureTiger(LureTiger, use)
 	if card and card:isAvailable(self.player) then
 		self:sort(self.enemies, "hp")
 		for _, enemy in ipairs(self.enemies) do
-			if LureTiger:targetFilter(players, enemy, self.player) and self:hasTrickEffective(LureTiger, enemy, self.player) and enemey:isWounded() then
+			if LureTiger:targetFilter(players, enemy, self.player) and self:hasTrickEffective(LureTiger, enemy, self.player) and enemy:isWounded() then
 				players:append(enemy)
 			end
 		end
