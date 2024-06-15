@@ -1591,28 +1591,31 @@ QString Player::getSkillDescription(bool yellow, const QString &flag) const
 {
     QString description = QString();
     QString color = yellow ? "#FFFF33" : "#FF0080";
-    QList<const Skill *> skillList = getVisibleSkillList();
-    //if (isHegemonyGameMode(ServerInfo.GameMode)) {
+    QList<const Skill *> skillList;
+
     if (flag == "head")
         skillList = getHeadSkillList(true, true);
     else if (flag == "deputy")
         skillList = getDeputySkillList(true, true);
-    //}
 
     foreach (const Skill *skill, skillList) {
         if (skill->isAttachedLordSkill())
             continue;
-        if (!isHegemonyGameMode(ServerInfo.GameMode) && !hasSkill(skill->objectName()))
+        if (skill->inherits("EquipSkill"))
             continue;
-
+        if (!isHegemonyGameMode(ServerInfo.GameMode) && !hasSkill(skill->objectName(), true))
+            continue;
         //remove lord skill Description
-        if (skill->isLordSkill() && !hasLordSkill(skill->objectName()))
+        if (skill->isLordSkill() && !hasLordSkill(skill->objectName(), true))
             continue;
 
         QString skill_name = Sanguosha->translate(skill->objectName());
         bool addHegemony = isHegemonyGameMode(ServerInfo.GameMode) && !skill->objectName().endsWith("_hegemony");
         QString desc = skill->getDescription(yellow, addHegemony);
         desc.replace("\n", "<br/>");
+
+        if (isSkillInvalid(skill))
+            description.append(QString(QStringLiteral("<font color=gray>%1</font>")).arg(tr("Invalidated")));
         description.append(QString("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(color, skill_name, desc));
     }
 
