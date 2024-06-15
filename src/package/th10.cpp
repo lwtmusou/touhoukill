@@ -814,6 +814,7 @@ public:
     FengsuDistance()
         : DistanceSkill("#fengsu-distance")
     {
+        show_type = "static";
     }
 
     int getCorrect(const Player *from, const Player *to) const override
