@@ -1289,7 +1289,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             ServerPlayer *player = use.from;
             if (player != nullptr && player->isAlive() && player->hasSkill(this) && (player->getMark("qimen_used") < 5 - player->getEquips().length()) && use.card != nullptr
-                && (use.card->isKindOf("Slash") || (use.card->isNDTrick() && !use.card->isKindOf("Nullification")))) {
+                && (use.card->isKindOf("Slash") || (use.card->isNDTrick() && !use.card->isKindOf("Nullification"))) && use.m_isHandcard) {
                 int maxnum = qimenMax(player);
                 Card *c = Sanguosha->cloneCard(use.card->objectName());
                 DELETE_OVER_SCOPE(Card, c)
