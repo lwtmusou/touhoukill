@@ -1449,6 +1449,8 @@ TH17Package::TH17Package()
     General *mayumi = new General(this, "mayumi", "gxs");
     mayumi->addSkill(new Junzhen);
     mayumi->addSkill(new Ciou);
+    mayumi->addSkill(new CiouRecord);
+    related_skills.insertMulti("ciou", "#ciou");
 
     General *yachie = new General(this, "yachie", "gxs");
     yachie->addSkill(new Duozhi);
