@@ -68,54 +68,30 @@ public:
     }
 };
 
-class Fuchou : public TriggerSkill
+class Fuchou : public TargetModSkill
 {
 public:
     Fuchou()
-        : TriggerSkill("fuchou$")
+        : TargetModSkill("fuchou$")
     {
-        frequency = Compulsory;
-        events << TargetConfirmed;
+        pattern = "Slash";
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
+    int getResidueNum(const Player *from, const Card *) const override
     {
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (!use.card->isKindOf("Slash") || use.from == nullptr || !use.from->isAlive() || !use.from->hasLordSkill(this))
-            return QList<SkillInvokeDetail>();
+        int r = 0;
 
-        bool can = false;
-        foreach (ServerPlayer *t, use.to) {
-            foreach (ServerPlayer *p, room->getLieges("pc98", use.from)) {
-                if (p->inMyAttackRange(t) && t->getHp() > p->getHp() && p != use.from) {
-                    can = true;
-                    break;
-                }
+        if (from->hasLordSkill(this)) {
+            QList<const Player *> sib = from->getAliveSiblings();
+            sib << from;
+
+            foreach (const Player *s, sib) {
+                if (s->getKingdom() == "pc98" && s->getHp() <= from->getHp())
+                    ++r;
             }
         }
-        if (can)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, nullptr, true);
-        return QList<SkillInvokeDetail>();
-    }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
-    {
-        CardUseStruct use = data.value<CardUseStruct>();
-        room->notifySkillInvoked(invoke->invoker, objectName());
-        LogMessage l;
-        l.type = "#fuchou";
-        l.from = invoke->invoker;
-        l.arg = objectName();
-        l.arg2 = "Slash";
-
-        room->sendLog(l);
-
-        if (use.m_addHistory) {
-            room->addPlayerHistory(use.from, use.card->getClassName(), -1);
-            use.m_addHistory = false;
-            data = QVariant::fromValue(use);
-        }
-        return false;
+        return r;
     }
 };
 

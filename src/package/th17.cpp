@@ -793,7 +793,7 @@ public:
                     data = QVariant::fromValue<CardResponseStruct>(resp);
                 }
             } else {
-                l.type = "#fuchou";
+                l.type = "#yvshou";
                 if (triggerEvent == CardUsed) {
                     CardUseStruct use = data.value<CardUseStruct>();
                     if (use.m_addHistory) {
