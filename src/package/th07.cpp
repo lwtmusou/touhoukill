@@ -1193,7 +1193,7 @@ QimenCard::QimenCard()
 static int qimenMax(const Player *chen)
 {
     int maxNum = chen->getEquips().length();
-    foreach (const Player *p, chen->getAliveSiblings()) {
+    foreach (const Player *p, chen->getAliveSiblings() << chen) {
         if (p->getEquips().length() > maxNum)
             maxNum = p->getEquips().length();
     }
@@ -1230,6 +1230,7 @@ bool QimenCard::targetsFeasible(const QList<const Player *> &targets, const Play
 void QimenCard::onUse(Room *room, const CardUseStruct &card_use) const
 {
     CardUseStruct new_use = card_use;
+    card_use.from->addMark("qimen_used");
 
     QString cardname = card_use.from->property("qimen_card").toString();
     Card *card = Sanguosha->cloneCard(cardname);
@@ -1262,8 +1263,19 @@ public:
     Qimen()
         : TriggerSkill("qimen")
     {
-        events << CardFinished;
+        events = {CardFinished, EventPhaseStart};
         view_as_skill = new QimenVS;
+    }
+
+    void record(TriggerEvent e, Room *room, QVariant &data) const override
+    {
+        if (e == EventPhaseStart) {
+            ServerPlayer *p = data.value<ServerPlayer *>();
+            if (p->getPhase() == Player::NotActive) {
+                foreach (ServerPlayer *p, room->getAllPlayers())
+                    p->setMark("qimen_used", 0);
+            }
+        }
     }
 
     bool canPreshow() const override
@@ -1271,26 +1283,24 @@ public:
         return true;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const override
     {
-        CardUseStruct use = data.value<CardUseStruct>();
-        ServerPlayer *player = use.from;
-        if ((player != nullptr) && player->isAlive() && player->hasSkill(this) && (use.card != nullptr) && use.card->isBlack()) { //&& use.to.length() == 1
-
-            if (use.card->isKindOf("Nullification") || use.card->isKindOf("Jink"))
-                return QList<SkillInvokeDetail>();
-
-            if (use.card->isNDTrick() || use.card->getTypeId() == Card::TypeBasic) {
+        if (e == CardFinished) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            ServerPlayer *player = use.from;
+            if (player != nullptr && player->isAlive() && player->hasSkill(this) && (player->getMark("qimen_used") < 5 - player->getEquips().length()) && use.card != nullptr
+                && (use.card->isKindOf("Slash") || (use.card->isNDTrick() && !use.card->isKindOf("Nullification")))) {
                 int maxnum = qimenMax(player);
                 Card *c = Sanguosha->cloneCard(use.card->objectName());
                 DELETE_OVER_SCOPE(Card, c)
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->getEquips().length() >= maxnum && !player->isCardLimited(c, Card::MethodUse) && !player->isProhibited(p, c))
-                        return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player);
+                        return {SkillInvokeDetail(this, player, player)};
                 }
             }
         }
-        return QList<SkillInvokeDetail>();
+
+        return {};
     }
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
