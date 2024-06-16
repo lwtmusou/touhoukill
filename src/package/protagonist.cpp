@@ -1771,7 +1771,7 @@ public:
                 foreach (const QString &sy, siyu.keys()) {
                     ServerPlayer *syP = room->findPlayerByObjectName(sy);
                     if (syP != nullptr && syP->isAlive() && !syP->isKongcheng())
-                        d << SkillInvokeDetail(this, change.player, change.player, nullptr, false, syP, false);
+                        d << SkillInvokeDetail(this, change.player, change.player, nullptr, true, syP, false);
                 }
 
                 return d;
@@ -1780,10 +1780,10 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool cost(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         invoke->invoker->tag["dfgzmsiyu_invokeTarget"] = QVariant::fromValue(invoke->preferredTarget);
-        return room->askForSkillInvoke(invoke->invoker, this, "get:" + invoke->invoker->objectName());
+        return true;
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
@@ -1792,16 +1792,8 @@ public:
         int syNum = siyu.value(invoke->targets.first()->objectName(), 0).toInt();
         if (syNum > 0) {
             QList<int> enabled_ids = invoke->targets.first()->handCards();
-            DummyCard dummy;
-            while (syNum--) {
-                int id = room->doGongxin(invoke->invoker, invoke->targets.first(), enabled_ids, objectName(), false);
-                dummy.addSubcard(id);
-                enabled_ids.removeAll(id);
-                if (enabled_ids.isEmpty())
-                    break;
-            }
-
-            room->obtainCard(invoke->invoker, &dummy, false);
+            int id = room->doGongxin(invoke->invoker, invoke->targets.first(), enabled_ids, objectName(), false);
+            room->obtainCard(invoke->invoker, id, false);
             invoke->invoker->tag.remove(objectName());
         }
         return false;

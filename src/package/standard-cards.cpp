@@ -1415,7 +1415,11 @@ ExNihilo::ExNihilo(Suit suit, int number)
     : SingleTargetTrick(suit, number)
 {
     setObjectName("ex_nihilo");
-    target_fixed = true;
+}
+
+void ExNihilo::targetFixed(const Player *Self) const
+{
+    return Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this) == 0;
 }
 
 void ExNihilo::onUse(Room *room, const CardUseStruct &card_use) const
