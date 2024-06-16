@@ -1417,7 +1417,7 @@ ExNihilo::ExNihilo(Suit suit, int number)
     setObjectName("ex_nihilo");
 }
 
-void ExNihilo::targetFixed(const Player *Self) const
+bool ExNihilo::targetFixed(const Player *Self) const
 {
     return Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this) == 0;
 }

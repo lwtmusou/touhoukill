@@ -199,7 +199,7 @@ class ExNihilo : public SingleTargetTrick
 public:
     Q_INVOKABLE ExNihilo(Card::Suit suit, int number);
 
-    void targetFixed(const Player *Self) const override;
+    bool targetFixed(const Player *Self) const override;
     void onUse(Room *room, const CardUseStruct &card_use) const override;
     void onEffect(const CardEffectStruct &effect) const override;
     bool isAvailable(const Player *player) const override;
