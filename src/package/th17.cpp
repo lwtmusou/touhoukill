@@ -1387,7 +1387,7 @@ public:
 
         if (triggerEvent == EventPhaseEnd) {
             ServerPlayer *c = data.value<ServerPlayer *>();
-            if (c->getPhase() == Player::Play && c->isAlive() && c->hasSkill(this)) {
+            if (c->getPhase() == Player::Play) {
                 foreach (ServerPlayer *saki, room->findPlayersBySkillName(objectName())) {
                     int n = 0;
                     foreach (ServerPlayer *p, room->getOtherPlayers(saki)) {
