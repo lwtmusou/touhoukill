@@ -1241,44 +1241,65 @@ public:
     }
 };
 
+class CiouRecord : public TriggerSkill
+{
+public:
+    CiouRecord()
+        : TriggerSkill("#ciou")
+    {
+        events = {DamageDone, EventPhaseChanging};
+        global = true;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
+    {
+        if (triggerEvent == DamageDone) {
+            DamageStruct damage = data.value<DamageStruct>();
+
+            if (damage.to->isAlive()) {
+                if ((damage.card != nullptr
+                     && (damage.card->isVirtualCard()
+                         && !(damage.card->subcardsLength() == 1 && Sanguosha->getCard(damage.card->getEffectiveId())->getClassName() == damage.card->getClassName())))
+                    || (damage.nature != DamageStruct::Normal))
+                    damage.to->setFlags("ciou");
+            }
+
+        } else if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct s = data.value<PhaseChangeStruct>();
+            if (s.to == Player::NotActive) {
+                foreach (ServerPlayer *p, room->getAllPlayers())
+                    p->setFlags("-ciou");
+            }
+        }
+    }
+};
+
 class Ciou : public TriggerSkill
 {
 public:
     Ciou()
         : TriggerSkill("ciou")
     {
-        events << DamageInflicted;
-        frequency = Compulsory;
+        events = {EventPhaseStart};
+        frequency = Frequent;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
-        DamageStruct damage = data.value<DamageStruct>();
-        if (damage.to->isAlive() && damage.to->hasSkill(this)) {
-            if ((damage.card != nullptr
-                 && (damage.card->isVirtualCard()
-                     && !(damage.card->subcardsLength() == 1 && Sanguosha->getCard(damage.card->getEffectiveId())->getClassName() == damage.card->getClassName())))
-                || (damage.nature != DamageStruct::Normal))
-                return {SkillInvokeDetail(this, damage.to, damage.to, nullptr, true)};
-        }
+        ServerPlayer *p = data.value<ServerPlayer *>();
+        if (p->isAlive() && p->hasSkill(this) && p->hasFlag(objectName()))
+            return {SkillInvokeDetail(this, p, p)};
 
         return {};
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        DamageStruct damage = data.value<DamageStruct>();
-        LogMessage l;
-        l.from = invoke->invoker;
-        l.arg = objectName();
-        l.type = "#micai01";
-        l.arg2 = QString::number(1);
-        damage.damage -= 1;
+        RecoverStruct recover;
+        recover.reason = objectName();
+        room->recover(invoke->invoker, recover);
 
-        room->sendLog(l);
-        room->notifySkillInvoked(invoke->invoker, "ciou");
-        data = QVariant::fromValue<DamageStruct>(damage);
-        return damage.damage == 0;
+        return false;
     }
 };
 
