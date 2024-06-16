@@ -1011,7 +1011,7 @@ sgs.ai_skill_invoke.qiangyu = function(self, data)
 	local willdiscardNum = qiangyutime + 2
 	
 	local move = data:toMoveOneTime()
-	if willdiscardNum <= move.card_ids.length() + 3 then return true end
+	if willdiscardNum <= move.card_ids:length() + 3 then return true end
 	
 	local blacks = {}
 	for _,c in sgs.qlist(self.player:getHandcards()) do
