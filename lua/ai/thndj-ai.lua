@@ -523,40 +523,36 @@ end
 
 --年代记SP天子
 --[忧乐]
--- 忧乐："一名角色的非额外回合结束时，若你于此回合内造成或受到过伤害，你可以选择一名角色的一个有牌区域，令其弃置其中的X张牌（X为其中的牌数且至多为5），然后其获得一个额外的回合。"
+-- 忧乐："一名角色的非额外回合结束时，若你于此回合内造成或受到过伤害，你可以弃置一名此回合内未造成过伤害的角色有牌区域各一张牌，令其获得一个额外的回合，然后若此次你仅弃置了其他角色一张牌，你失去1点体力。"
 --忧乐：选择发动技能的目标 @todo:sort targets
 sgs.ai_skill_playerchosen.youle = function(self, targets)
 	for _,t in sgs.qlist(targets) do
 		if self:isFriend(t) then
-			if t:containsTrick("supply_shortage") or t:containsTrick("indulgence") then return t end
-			if t:getHandcardNum() <= 2 then  return t end
-			if t:getEquips():length() == 1  then  return t end
-			
+			local num = 0
+			if t:getHandCardNum() > 0 then num = num + 1 end
+			if not t:getEquips():isEmpty() then num = num + 1 end
+			if t:containsTrick("supply_shortage") or t:containsTrick("indulgence") then
+				if (not self:isWeak(self.player)) or num >= 1 then return t end
+			end
 		end
-		if self:isEnemy(t) then
-			if t:getEquips():length() > 2  then  return t end
-                	if t:getHandcardNum() >= 3  then return t end
-		end
-        end
-	return nil	
-end
-
---忧乐：选择牌的区域
-sgs.ai_skill_choice.youle = function(self, choices, data)
-	--要改程序
-	local t = self.player:getTag("youle"):toPlayer() 
-	
-	if self:isFriend(t) then
-		if t:containsTrick("supply_shortage") or t:containsTrick("indulgence") then return "j" end
-		if t:getHandcardNum() <= 2 then  return "h" end
-		if t:getEquips():length() == 1  then  return "e" end			
-	elseif self:isEnemy(t) then
-		if t:getEquips():length() > 2  then  return "e" end
-               	if t:getHandcardNum() >= 3  then return "h" end
 	end
-	return choices[1]
+	for _,t in sgs.qlist(targets) do
+		if self:isEnemy(t) then
+			local num = 0
+			if t:getHandCardNum() > 0 then num = num + 1 end
+			if not t:getEquips():isEmpty() then num = num + 1 end
+			if t:containsTrick("spring_breath") or t:containsTrick("saving_energy") then
+				if num >= 1 then return t end
+			elseif t:getJudgingArea():isEmpty() then
+				if num > 1 then return t end
+			end
+		end
+	end
+	return nil
 end
 
+-- 忧乐：选择牌
+-- 直接用默认AI算了，默认AI反正也会拆乐兵电
 
 --年代记SP永琳
---无
+-- （太TM难了）

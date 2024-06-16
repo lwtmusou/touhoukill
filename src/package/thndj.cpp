@@ -3,6 +3,7 @@
 #include "engine.h"
 #include "general.h"
 #include "maneuvering.h"
+#include "settings.h"
 #include "skill.h"
 #include "standard.h"
 
@@ -1447,27 +1448,26 @@ public:
     }
 };
 
-class Youle : public TriggerSkill
+class YouleRecord : public TriggerSkill
 {
 public:
-    Youle()
-        : TriggerSkill("youle")
+    YouleRecord()
+        : TriggerSkill("#youle-record")
     {
-        events << EventPhaseChanging << Damage << Damaged;
+        events = {DamageDone, EventPhaseChanging};
+        global = true;
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
     {
-        if (triggerEvent == Damage) {
+        if (triggerEvent == DamageDone) {
             DamageStruct damage = data.value<DamageStruct>();
             if ((damage.from != nullptr) && damage.from->isAlive()) {
                 if (!damage.from->hasFlag("youle"))
                     damage.from->setFlags("youle");
+                if (!damage.from->hasFlag("youle2"))
+                    damage.from->setFlags("youle2");
             }
-        }
-
-        else if (triggerEvent == Damaged) {
-            DamageStruct damage = data.value<DamageStruct>();
             if (damage.to->isAlive()) {
                 if (!damage.to->hasFlag("youle"))
                     damage.to->setFlags("youle");
@@ -1478,23 +1478,45 @@ public:
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->hasFlag("youle"))
                         p->setFlags("-youle");
+                    if (p->hasFlag("youle2"))
+                        p->setFlags("-youle2");
                 }
             }
         }
     }
+};
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
+class Youle : public TriggerSkill
+{
+public:
+    Youle()
+        : TriggerSkill("youle")
     {
-        if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive && !change.player->tag.value("touhou-extra", false).toBool()) {
-                QList<SkillInvokeDetail> d;
-                foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                    if (p->hasFlag("youle"))
-                        d << SkillInvokeDetail(this, p, p);
-                }
-                return d;
+        events << EventPhaseChanging;
+    }
+
+    QList<ServerPlayer *> findTargets(const Room *room, ServerPlayer *source) const
+    {
+        QList<ServerPlayer *> targets;
+        foreach (ServerPlayer *p, room->getAllPlayers()) {
+            if (!p->isAllNude() && !p->hasFlag("youle2") && (p->isKongcheng() || source->canDiscard(p, "hs")) && (p->getEquips().isEmpty() || source->canDiscard(p, "e"))
+                && (p->getJudgingArea().isEmpty() || source->canDiscard(p, "j")))
+                targets << p;
+        }
+
+        return targets;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
+    {
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if (change.to == Player::NotActive && !change.player->tag.value("touhou-extra", false).toBool()) {
+            QList<SkillInvokeDetail> d;
+            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
+                if (p->hasFlag("youle") && p->isAlive() && !findTargets(room, p).isEmpty())
+                    d << SkillInvokeDetail(this, p, p);
             }
+            return d;
         }
 
         return QList<SkillInvokeDetail>();
@@ -1502,42 +1524,53 @@ public:
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        QList<ServerPlayer *> targets;
-        foreach (ServerPlayer *p, room->getAllPlayers()) {
-            int num = 0;
-            if (invoke->invoker->canDiscard(p, "hs"))
-                num++;
-            if (invoke->invoker->canDiscard(p, "j"))
-                num++;
-            if (invoke->invoker->canDiscard(p, "e"))
-                num++;
-
-            if (num > 1)
-                targets << p;
-        }
-        if (targets.isEmpty())
-            return false;
+        QList<ServerPlayer *> targets = findTargets(room, invoke->invoker);
 
         ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, targets, "youle", "@youle", true, true);
         if (target != nullptr) {
-            DummyCard *dummy = new DummyCard;
-            QString flag = "hsej";
-            for (int i = 0; i < 2; i += 1) {
-                int card_id = room->askForCardChosen(invoke->invoker, target, flag, objectName(), false, Card::MethodDiscard);
-                if (room->getCardPlace(card_id) == Player::PlaceHand)
-                    flag.remove("hs");
-                if (room->getCardPlace(card_id) == Player::PlaceEquip)
-                    flag.remove("e");
-                if (room->getCardPlace(card_id) == Player::PlaceDelayedTrick)
-                    flag.remove("j");
+            DummyCard d;
 
-                dummy->addSubcard(card_id);
+            bool h = false;
+            bool e = false;
+            bool j = false;
+
+            if (!target->isKongcheng())
+                h = true;
+            if (!target->getEquips().isEmpty())
+                e = true;
+            if (!target->getJudgingArea().isEmpty())
+                j = true;
+
+            int aidelay = Config.AIDelay;
+            Config.AIDelay = 0;
+            while (h || e || j) {
+                QString flag;
+                if (h)
+                    flag.append("hs");
+                if (e)
+                    flag.append("e");
+                if (j)
+                    flag.append("j");
 
                 if (target->getCards(flag).length() <= 0)
                     break;
+
+                int card_id = room->askForCardChosen(invoke->invoker, target, flag, objectName(), false, Card::MethodDiscard);
+                if (room->getCardPlace(card_id) == Player::PlaceHand)
+                    h = false;
+                if (room->getCardPlace(card_id) == Player::PlaceEquip)
+                    e = false;
+                if (room->getCardPlace(card_id) == Player::PlaceDelayedTrick)
+                    j = false;
+
+                d.addSubcard(card_id);
             }
-            room->throwCard(dummy, target, invoke->invoker);
-            delete dummy;
+            Config.AIDelay = aidelay;
+
+            if (d.subcardsLength() == 1)
+                invoke->tag["youle-punish"] = true;
+
+            room->throwCard(&d, target, invoke->invoker);
 
             invoke->targets << target;
             return true;
@@ -1559,6 +1592,10 @@ public:
 
             room->sendLog(log);
         }
+
+        if (invoke->tag.contains("youle-punish") && invoke->tag["youle-punish"].toBool())
+            room->loseHp(invoke->invoker);
+
         return false;
     }
 };
@@ -2054,6 +2091,8 @@ THNDJPackage::THNDJPackage()
 
     General *tenshi_ndj = new General(this, "tenshi_ndj", "zhan", 4);
     tenshi_ndj->addSkill(new Youle);
+    tenshi_ndj->addSkill(new YouleRecord);
+    related_skills.insertMulti("youle", "#youle-record");
 
     General *eirin = new General(this, "eirin_ndj", "yyc");
     eirin->addSkill(new Yaoli);
