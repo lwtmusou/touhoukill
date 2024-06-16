@@ -1907,12 +1907,8 @@ public:
         : OneCardViewAsSkill("xiaoyinVS")
     {
         response_pattern = "@@xiaoyinVS!";
+        filter_pattern = ".";
         response_or_use = true;
-    }
-
-    bool viewFilter(const Card *c) const override
-    {
-        return !c->isEquipped();
     }
 
     const Card *viewAs(const Card *c) const override
@@ -1961,7 +1957,7 @@ public:
         const Card *card = room->askForUseCard(target, "@@xiaoyinVS!", "xiaoyinuse:" + invoke->invoker->objectName());
         if (card == nullptr) {
             //force use!
-            foreach (const Card *c, target->getHandcards()) {
+            foreach (const Card *c, target->getCards("hes")) {
                 LureTiger *lure = new LureTiger(Card::SuitToBeDecided, 0);
                 lure->addSubcard(c->getEffectiveId());
                 lure->setSkillName("_xiaoyin");

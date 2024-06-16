@@ -1654,7 +1654,6 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         provided = nullptr;
         has_provided = false;
         provider = nullptr;
-
     } else {
         AI *ai = player->getAI();
         if (ai != nullptr) {
