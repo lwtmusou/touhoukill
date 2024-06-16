@@ -1286,7 +1286,7 @@ public:
     Dongjie()
         : TriggerSkill("dongjie")
     {
-        events << DamageCaused << EventPhaseChanging;
+        events = {TargetSpecified, EventPhaseChanging, Cancel};
     }
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &) const override
@@ -1297,36 +1297,78 @@ public:
         }
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
     {
-        ServerPlayer *current = room->getCurrent();
-        if (current == nullptr || !current->isInMainPhase())
-            return QList<SkillInvokeDetail>();
+        if (triggerEvent == TargetSpecified) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            QList<SkillInvokeDetail> d;
+            if (use.from != nullptr && use.from->hasSkill(this) && use.from->isAlive() && !use.to.isEmpty() && !use.from->hasFlag(objectName())) {
+                foreach (ServerPlayer *to, use.to) {
+                    if (to != use.from)
+                        d << SkillInvokeDetail(this, use.from, use.from, nullptr, false, to);
+                }
+            }
+            return d;
+        } else if (triggerEvent == Cancel) {
+            const Card *c = nullptr;
+            ServerPlayer *from = nullptr;
+            ServerPlayer *to = nullptr;
+            if (data.canConvert<SlashEffectStruct>()) {
+                SlashEffectStruct e = data.value<SlashEffectStruct>();
+                c = e.slash;
+                from = e.from;
+                to = e.to;
+            } else if (data.canConvert<CardEffectStruct>()) {
+                CardEffectStruct e = data.value<CardEffectStruct>();
+                c = e.card;
+                from = e.from;
+                to = e.to;
+            }
 
-        if (e != DamageCaused)
-            return QList<SkillInvokeDetail>();
-        DamageStruct damage = data.value<DamageStruct>();
-        if (damage.chain || damage.transfer || !damage.by_user)
-            return QList<SkillInvokeDetail>();
-        if ((damage.from != nullptr) && (damage.card != nullptr) && damage.from->hasSkill(this) && !damage.from->hasFlag(objectName()))
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.from, damage.from, nullptr, false, damage.to);
+            if (c != nullptr && c->hasFlag(objectName()))
+                return {SkillInvokeDetail(this, from, from, to, true, nullptr, false)};
+        }
 
-        return QList<SkillInvokeDetail>();
+        return {};
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
-    {
-        DamageStruct damage = data.value<DamageStruct>();
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), damage.to->objectName());
+    // default cost
 
-        invoke->invoker->setFlags(objectName());
-        QList<ServerPlayer *> logto;
-        logto << damage.to;
-        room->touhouLogmessage("#Dongjie", invoke->invoker, "dongjie", logto);
-        invoke->invoker->drawCards(1);
-        damage.to->turnOver();
-        damage.to->drawCards(1);
-        return true;
+    bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        if (triggerEvent == TargetSpecified) {
+            ServerPlayer *target = invoke->targets.first();
+            CardUseStruct use = data.value<CardUseStruct>();
+
+            invoke->invoker->setFlags(objectName());
+
+            bool given = false;
+            if (!target->isKongcheng()) {
+                const Card *c = room->askForCard(target, ".red", "@dongjie-give:" + invoke->invoker->objectName() + "::" + use.card->objectName(), data, Card::MethodNone, nullptr,
+                                                 false, {}, false, 0);
+                if (c != nullptr) {
+                    given = true;
+                    room->moveCardTo(c, invoke->invoker, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_GIVE, invoke->invoker->objectName(), objectName(), {}), true);
+                }
+            }
+
+            if (!given) {
+                LogMessage l;
+                l.type = "#dongjie-notgiven";
+                l.from = invoke->invoker;
+                l.arg = use.card->objectName();
+                l.arg2 = objectName();
+                room->sendLog(l);
+
+                use.card->setFlags(objectName());
+                target->drawCards(1);
+                target->turnOver();
+            }
+        } else if (triggerEvent == Cancel) {
+            return true;
+        }
+
+        return false;
     }
 };
 

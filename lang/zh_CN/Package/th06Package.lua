@@ -174,16 +174,14 @@ return{ ["th06"] = "红魔乡",
 	["origin:cirno_5"] = "",
     ["illustrator:cirno_6"] = "ちんちくりん",
 	["origin:cirno_6"] = "p号：7616113，个人id：3401",
-	
-	
+
 	["dongjie"] = "冻结",
-	[":dongjie"] = "当你使用牌对目标角色造成伤害时，你可以防止此伤害并摸一张牌，然后其翻面并摸一张牌。<font color=\"green\"><b>每阶段限一次。</b></font>",
-	["#Dongjie"] = "%from 发动了“%arg”，防止了对 %to 的伤害",
+	[":dongjie"] = "当你使用牌指定一名其他角色为目标后，你可以令其选择一项：1.交给你一张红色手牌；2.不能使用或打出牌响应此牌，然后摸一张牌并翻面。<font color=\"green\"><b>每阶段限一次。</b></font>",
+	["@dongjie-give"] = "冻结%src 对你发动了冻结，你可以选择交给 %src 一张 <font color=\"red\">红色</font>手牌，或者按“取消”不能响应此 【%arg】，然后摸一张牌并翻面" ,
+	["#dongjie-notgiven"] = "%from 因 %arg2 不能使用或打出牌响应【%arg】",
 	["bingpo"] = "冰魄",
 	[":bingpo"] = "<font color=\"blue\"><b>锁定技，</b></font>当你受到除火焰伤害外的伤害时，若伤害值不小于你的体力值，防止此伤害。",
 	["#bingpolog"] = "%from的“%arg”被触发, %from 防止了%arg2点伤害.",
-	["bendan"] = "笨蛋",
-	[":bendan"] = "<font color=\"blue\"><b>锁定技，</b></font>你的牌的点数均视为9。",
 
 --************************************************
 	--hmx007  势力：红 3血
