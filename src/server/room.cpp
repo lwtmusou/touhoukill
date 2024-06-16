@@ -1014,7 +1014,7 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
             thread->delay();
     } else {
         JsonArray skillCommand;
-        if (prompt != nullptr)
+        if (!prompt.isEmpty())
             skillCommand << skill_name << prompt;
         else if (data.type() == QVariant::String)
             skillCommand << skill_name << data.toString();

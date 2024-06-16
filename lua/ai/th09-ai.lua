@@ -184,7 +184,7 @@ sgs.ai_playerchosen_intention.shenpan =function(self, from, to)
 end
 
 --[悔悟]
-function huiwu_judge(self,target,card)
+function huiwu_judge(self,owner,card, invoker)
 	if card:isKindOf("AmazingGrace") then
 		return 3
 	end
@@ -203,10 +203,10 @@ function huiwu_judge(self,target,card)
 		end
 	end
 	if   card:isKindOf("Dismantlement") or card:isKindOf("Snatch") then
-		if self:isFriend(target) and target:getCards("j"):length()>0 then
+		if self:isFriend(owner, invoker) and owner:getCards("j"):length()>0 then
 			return 2
 		end
-		if self:isEnemy(target) and target:getCards("j"):length()>0  and target:isNude() then
+		if self:isEnemy(owner, invoker) and owner:getCards("j"):length()>0  and owner:isNude() then
 			return 2
 		end
 		return 1
@@ -214,39 +214,31 @@ function huiwu_judge(self,target,card)
 	return 1
 end
 sgs.ai_skill_invoke.huiwu =function(self,data)
-	local target=self.player:getTag("huiwu"):toPlayer()
-	local card=self.room:getTag("huiwu_use"):toCardUse().card
-	if not target then  return false end
-	local res=huiwu_judge(self,target,card)
-	if res==1 then--杀等危害性牌
-		return self:isFriend(target)
-	end
-	if res==2  then
-		return self:isEnemy(target)
-	end
-	return false
+	local owner=self.player:getTag("huiwu_owner"):toPlayer()
+	local card=data:toCardUse().card
+	if not owner then return false end
+	return self:isFriend(owner)
 end
+
+-- 先注释掉，这逻辑。。。。
 sgs.ai_choicemade_filter.skillInvoke.huiwu = function(self, player, args, data)
-	local card=self.room:getTag("huiwu_use"):toCardUse().card
-	local to=player:getTag("huiwu"):toPlayer()
+	local card=data:toCardUse().card
+	local to=player:getTag("huiwu_owner"):toPlayer()
 	res=huiwu_judge(self,to,card)
-	if res==1 then
-		if args[#args] == "yes" then
-			sgs.updateIntention(player, to, -20)
-		else
-			sgs.updateIntention(player, to, 20)
-		end
-	end
-	if res==2 then
-		if args[#args] == "yes" then
-			sgs.updateIntention(player, to, 20)
-		else
-			sgs.updateIntention(player, to, -20)
-		end
+	
+	if args[#args] == "yes" then
+		sgs.updateIntention(player, to, -20)
+	else
+		sgs.updateIntention(player, to, 20)
 	end
 end
 sgs.ai_benefitBySlashed.huiwu = function(self, card,source,target)
 	return true
+end
+sgs.ai_skill_invoke.huiwu_nullify = function(self, data)
+	local use = data:toCardUse()
+	local card= use.card
+	return huiwu_judge(self, self.player, card, use.from) == 1
 end
 
 --[花冢]
@@ -748,7 +740,7 @@ local shizai_skill = {}
 shizai_skill.name = "shizai"
 table.insert(sgs.ai_skills, shizai_skill)
 shizai_skill.getTurnUseCard = function(self)
-	if not self.player.hasUsed("ShizaiCard") then
+	if not self.player:hasUsed("ShizaiCard") then
 		return sgs.Card_Parse("@ShizaiCard=.")
 	end
 end

@@ -302,7 +302,7 @@ public:
     Shenpan()
         : TriggerSkill("shenpan")
     {
-        events << EventPhaseStart;
+        events << EventPhaseEnd;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
@@ -324,9 +324,9 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         room->damage(DamageStruct(objectName(), invoke->invoker, invoke->targets.first(), 1, DamageStruct::Thunder));
-        if (invoke->targets.first()->isAlive() && invoke->targets.first()->getHandcardNum() > invoke->targets.first()->getHp())
-            room->drawCards(invoke->invoker, 1);
-        return true;
+        if (invoke->targets.first()->isAlive() && invoke->targets.first()->getHandcardNum() <= invoke->targets.first()->getHp() && invoke->invoker->getCardCount(true) >= 1)
+            room->askForDiscard(invoke->invoker, objectName(), 1, 1, false, true);
+        return false;
     }
 };
 
@@ -365,9 +365,9 @@ public:
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        use.from->tag["huiwu"] = QVariant::fromValue(invoke->owner);
-        room->setTag("huiwu_use", data);
-        if (use.from->askForSkillInvoke(objectName(), QVariant::fromValue(invoke->owner))) {
+        invoke->invoker->tag["huiwu_owner"] = QVariant::fromValue(invoke->owner);
+
+        if (use.from->askForSkillInvoke(objectName(), data, "fsu0413:" + invoke->owner->objectName() + "::" + use.card->objectName())) {
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, use.from->objectName(), invoke->owner->objectName());
 
             room->broadcastSkillInvoke(objectName());
@@ -384,12 +384,21 @@ public:
         return false;
     }
 
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         CardUseStruct use = data.value<CardUseStruct>();
-        use.nullified_list << invoke->owner->objectName();
-        data = QVariant::fromValue(use);
         invoke->owner->drawCards(1);
+        if (invoke->owner->askForSkillInvoke("huiwu_nullify", data, "dawda:" + invoke->invoker->objectName() + "::" + use.card->objectName())) {
+            LogMessage log;
+            log.type = "#MengweiNullified";
+            log.from = invoke->invoker;
+            log.to << invoke->owner;
+            log.arg = objectName();
+            log.arg2 = use.card->objectName();
+            room->sendLog(log);
+            use.nullified_list << invoke->owner->objectName();
+            data = QVariant::fromValue(use);
+        }
         return false;
     }
 };
