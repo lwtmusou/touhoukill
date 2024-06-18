@@ -108,12 +108,30 @@ public:
     Qiankun()
         : MaxCardsSkill("qiankun")
     {
+        show_type = "static";
     }
 
     int getExtra(const Player *target) const override
     {
         if (target->hasSkill(objectName()) && target->hasShownSkill(objectName()))
-            return 2;
+            return 1;
+        else
+            return 0;
+    }
+};
+
+class Qiankun2 : public AttackRangeSkill
+{
+public:
+    Qiankun2()
+        : AttackRangeSkill("#qiankun2")
+    {
+    }
+
+    int getExtra(const Player *target, bool) const override
+    {
+        if (target->hasSkill("qiankun") && target->hasShownSkill("qiankun"))
+            return 1;
         else
             return 0;
     }
@@ -1715,7 +1733,9 @@ TH10Package::TH10Package()
     General *kanako = new General(this, "kanako$", "fsl", 4);
     kanako->addSkill(new Shende);
     kanako->addSkill(new Qiankun);
+    kanako->addSkill(new Qiankun2);
     kanako->addSkill(new Gongfeng);
+    related_skills.insertMulti("qiankun", "#qiankun2");
 
     General *suwako = new General(this, "suwako", "fsl", 3);
     suwako->addSkill(new Bushu);

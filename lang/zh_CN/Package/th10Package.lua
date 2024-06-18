@@ -27,7 +27,7 @@ return{
 	["shendedummy"]= "神德",
 	["shende-exchange"] = "请将一张手牌作为“神德”置于人物牌上。",
 	["qiankun"] = "乾坤",
-	[":qiankun"] = "<font color=\"blue\"><b>锁定技，</b></font>你的手牌上限+2。",
+	[":qiankun"] = "<font color=\"blue\"><b>锁定技，</b></font>你的手牌上限和攻击范围+1。",
 	["gongfeng"] = "供奉",
 	[":gongfeng"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"green\"><b>其他风势力角色的出牌阶段限一次，</b></font>其可以将一张【杀】交给你。",
 	["gongfeng_attach"]= "供奉给杀",
