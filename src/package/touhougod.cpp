@@ -3196,7 +3196,7 @@ public:
             return d;
 
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from != nullptr && use.from->isAlive() && (use.card->isKindOf("Slash") || use.card->isNDTrick()) && !use.card->isVirtualCard()) {
+        if (use.from != nullptr && use.from->isAlive() && (use.card->isKindOf("Slash") || use.card->isNDTrick())) {
             foreach (ServerPlayer *p, use.to) {
                 if (p->hasSkill(this) && p != use.from && !p->hasFlag("woraoInvoked"))
                     d << SkillInvokeDetail(this, p, p, nullptr, false, use.from);
