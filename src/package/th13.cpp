@@ -1129,13 +1129,12 @@ public:
     }
 };
 
-class DuzhuaVS : public OneCardViewAsSkill
+class DuzhuaVS : public ZeroCardViewAsSkill
 {
 public:
     DuzhuaVS()
-        : OneCardViewAsSkill("duzhua")
+        : ZeroCardViewAsSkill("duzhua")
     {
-        filter_pattern = ".|red|.|hand";
         response_or_use = true;
     }
 
@@ -1144,10 +1143,9 @@ public:
         return !player->hasFlag("duzhua") && Slash::IsAvailable(player);
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs() const override
     {
-        Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
-        slash->addSubcard(originalCard);
+        Slash *slash = new Slash(Card::NoSuit, 0);
         slash->setSkillName("duzhua");
         return slash;
     }
@@ -1159,7 +1157,7 @@ public:
     Duzhua()
         : TriggerSkill("duzhua")
     {
-        events << PreCardUsed;
+        events = {PreCardUsed, CardUsed};
         view_as_skill = new DuzhuaVS;
     }
 
@@ -1174,6 +1172,25 @@ public:
                 data = QVariant::fromValue(use);
             }
         }
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
+    {
+        if (triggerEvent == CardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->getSkillName() == "duzhua")
+                return {SkillInvokeDetail(this, use.from, use.from, nullptr, true, nullptr, false)};
+        }
+
+        return {};
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        if (!room->askForCard(invoke->invoker, ".red", "@duzhua-discard"))
+            room->loseHp(invoke->invoker);
+
+        return false;
     }
 };
 

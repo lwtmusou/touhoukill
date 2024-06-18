@@ -648,36 +648,35 @@ end
 
 --宫古芳香
 --[毒爪]
+local duzhua_red_card
 local duzhua_skill = {}
 duzhua_skill.name = "duzhua"
 table.insert(sgs.ai_skills, duzhua_skill)
 duzhua_skill.getTurnUseCard = function(self, inclusive)
-
-		if self.player:hasFlag("duzhua") then return false end
-		local cards = self.player:getCards("hs")
-		cards=self:touhouAppendExpandPileToList(self.player,cards)
-		cards = sgs.QList2Table(cards)
-		if #cards==0 then return false end
-		self:sortByUseValue(cards, true)
-		cards1={}
-		for _,c in pairs (cards) do
-			if c:isRed() then
-			table.insert(cards1,c)
-			end
+	duzhua_red_card=nil
+	if self.player:hasFlag("duzhua") then return false end
+	local cards = self.player:getCards("hs")
+	cards = sgs.QList2Table(cards)
+	if #cards==0 then return false end
+	self:sortByUseValue(cards, true)
+	cards1={}
+	for _,c in pairs (cards) do
+		if c:isRed() then
+		table.insert(cards1,c)
 		end
-		if #cards1==0 then return false end
-		local red_card=cards1[1]
+	end
+	if #cards1==0 then return false end
+	duzhua_red_card=cards1[1]
 
-		if red_card then
-			local suit = red_card:getSuitString()
-			local number = red_card:getNumberString()
-			local card_id = red_card:getEffectiveId()
-			local slash_str = ("slash:duzhua[%s:%s]=%d"):format(suit, number, card_id)
-			local slash = sgs.Card_Parse(slash_str)
-
-			assert(slash)
-			return slash
-		end
+	if duzhua_red_card then
+		local slash = sgs.Sanguosha:cloneCard("Slash", sgs.Card_NoSuit, 0)
+		slash:setSkillName("duzhua")
+		slash:deleteLater()
+		return slash
+	end
+end
+sgs.ai_skill_cardask["@duzhua-discard"] = function()
+	if duzhua_red_card then return duzhua_red_card:getId() else return "." end
 end
 sgs.duzhua_suit_value = {
 	heart = 3.9,
@@ -696,56 +695,7 @@ sgs.ai_skillProperty.taotie = function(self)
 	return "cause_judge"
 end
 
-
 --幽谷响子
---[[
-sgs.ai_skill_use["@@huisheng"] = function(self, prompt)
-	local use=self.room:getTag("huisheng_use"):toCardUse()
-	local target = use.from
-	local card = use.card
-	if not target then return "."    end
-	if not card then return "."  end
-
-	local needHuisheng=false
-	if self:isFriend(target) then
-		if card:isKindOf("Peach") and target:isWounded() then
-			needHuisheng= true
-		end
-	end
-	if self:isEnemy(target) then
-		if card:isKindOf("Duel") then
-			needHuisheng = self:getCardsNum("Slash") >= getCardsNum("Slash", target, self.player)
-		end
-		if not card:isKindOf("Peach") then
-			needHuisheng= true
-		end
-	end
-	if not needHuisheng then return "."  end
-
-	local victim
-	if card:isKindOf("Collateral") then
-		local others ={}
-		for _,p in sgs.qlist(self.room:getOtherPlayers(target)) do
-			if self:isEnemy(p) and target:canSlash(p) then
-				victim= p
-				break
-			elseif target:canSlash(p) then
-				table.insert(others,p)
-			end
-		end
-		if not victim and #others>0 then
-			victim=others[1]
-		end
-	end
-
-	local targets={}
-	table.insert(targets,target:objectName())
-	if victim then
-		table.insert(targets,victim:objectName())
-	end
-	return "@HuishengCard=.->" .. table.concat(targets, "+")
-end
-]]
 --[诵经]
 sgs.ai_skill_invoke.songjing = true
 --[共振]
