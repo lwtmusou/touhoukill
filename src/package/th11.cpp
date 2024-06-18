@@ -649,24 +649,55 @@ public:
     Chuanran()
         : TriggerSkill("chuanran")
     {
-        events << Damage;
+        events = {EventPhaseStart, Damage};
         frequency = Compulsory;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const override
     {
-        DamageStruct damage = data.value<DamageStruct>();
-        QList<ServerPlayer *> yamames = room->findPlayersBySkillName(objectName());
-        if (yamames.isEmpty() || damage.nature != DamageStruct::Normal || (damage.from == nullptr) || damage.from->isDead() || damage.to->isChained())
-            return QList<SkillInvokeDetail>();
+        if (e == Damage) {
+            DamageStruct damage = data.value<DamageStruct>();
+            QList<ServerPlayer *> yamames = room->findPlayersBySkillName(objectName());
+            if (yamames.isEmpty() || damage.nature != DamageStruct::Normal || (damage.from == nullptr) || damage.from->isDead() || damage.to->isChained())
+                return {};
 
-        QList<SkillInvokeDetail> d;
-        foreach (ServerPlayer *p, yamames) {
-            if ((p == damage.from || damage.from->isChained()) && damage.to != p) {
-                d << SkillInvokeDetail(this, p, p, nullptr, true, damage.to);
+            QList<SkillInvokeDetail> d;
+            foreach (ServerPlayer *p, yamames) {
+                if ((p == damage.from || damage.from->isChained()) && damage.to != p)
+                    d << SkillInvokeDetail(this, p, p, nullptr, true, damage.to);
+            }
+            return d;
+        } else if (e == EventPhaseStart) {
+            ServerPlayer *current = data.value<ServerPlayer *>();
+            if (current->getPhase() == Player::Start && current->isAlive() && current->hasSkill(this)) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
+                    if (!p->isChained())
+                        return {SkillInvokeDetail(this, current, current, nullptr, true)};
+                }
             }
         }
-        return d;
+
+        return {};
+    }
+
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        if (triggerEvent == EventPhaseStart) {
+            QList<ServerPlayer *> ts;
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
+                if (!p->isChained())
+                    ts << p;
+            }
+            ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, ts, objectName(), "@chuanran-forceselect");
+            if (target == nullptr) {
+                qShuffle(ts);
+                target = ts.first();
+            }
+            invoke->targets << target;
+            return true;
+        }
+
+        return TriggerSkill::cost(triggerEvent, room, invoke, data);
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
@@ -697,7 +728,7 @@ public:
     {
         QList<SkillInvokeDetail> d;
         ServerPlayer *current = data.value<ServerPlayer *>();
-        if (current->getPhase() == Player::Finish && (!current->faceUp() || current->isChained()) && !current->isNude()) {
+        if (current->getPhase() == Player::Finish && (!current->faceUp() || current->isChained())) {
             bool invoke = false;
             foreach (ServerPlayer *p, room->getOtherPlayers(current)) {
                 if (current->inMyAttackRange(p)) {
@@ -736,8 +767,10 @@ public:
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->owner->objectName(), current->objectName());
         QString prompt = "@rebing-slash:" + invoke->invoker->objectName() + ":" + invoke->targets.first()->objectName();
         if (room->askForUseSlashTo(current, invoke->targets.first(), prompt) == nullptr) {
-            int id = room->askForCardChosen(invoke->invoker, current, "hes", objectName());
-            room->obtainCard(invoke->invoker, id, false);
+            if (!invoke->invoker->isNude()) {
+                int id = room->askForCardChosen(invoke->invoker, current, "hes", objectName());
+                room->obtainCard(invoke->invoker, id, false);
+            }
         }
         return false;
     }

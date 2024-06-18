@@ -692,6 +692,25 @@ sgs.ai_skill_invoke.chuanran_hegemony  =function(self,data)
 	local player = data:toPlayer()
 	return not self:isFriend(player)
 end
+sgs.ai_skill_playerchosen.chuanran = function(self, targets)
+	local otherTargets = {}
+	local enemyTargets = {}
+	for _,p in sgs.qlist(targets) do
+		if (self:isEnemy(p)) then
+			table.insert(enemyTargets, p)
+		else
+			table.insert(otherTargets, p)
+		end
+	end
+	if #enemyTargets > 0 then
+		self:sort(enemyTargets, "defenseSlash")
+		--暂时不考虑什么  SmartAI:slashProhibit(card, enemy, from)
+		--和damageEffect
+		return enemyTargets[1]
+	end
+	
+	return otherTargets[1]
+end
 
 --[热病]
 sgs.ai_skill_playerchosen.rebing = function(self, targets)
