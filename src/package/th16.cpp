@@ -1490,7 +1490,7 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         if (invoke->invoker->getPile("spring").isEmpty()) {
-            invoke->invoker->addToPile("spring", room->getNCards(4), false);
+            invoke->invoker->addToPile("spring", room->getNCards(4));
         } else {
             bool ok = false;
             int id = invoke->invoker->tag["huazhaoid"].toInt(&ok);
@@ -1507,38 +1507,21 @@ public:
 
 ChuntengCard::ChuntengCard()
 {
-    target_fixed = true;
     will_throw = false;
     handling_method = Card::MethodNone;
 }
 
-void ChuntengCard::use(Room *room, const CardUseStruct &card_use) const
+void ChuntengCard::onEffect(const CardEffectStruct &effect) const
 {
-    ServerPlayer *source = card_use.from;
-
-    room->showCard(source, getEffectiveId());
-}
-
-Chunteng2Card::Chunteng2Card()
-{
-    will_throw = false;
-    handling_method = Card::MethodNone;
-    m_skillName = "_chunteng";
-}
-
-void Chunteng2Card::onEffect(const CardEffectStruct &effect) const
-{
-    CardMoveReason r(CardMoveReason::S_REASON_GIVE, effect.from->objectName(), effect.to->objectName(), "huazhao", QString());
+    CardMoveReason r(CardMoveReason::S_REASON_GIVE, effect.from->objectName(), effect.to->objectName(), "chunteng", QString());
     Room *room = effect.from->getRoom();
     room->obtainCard(effect.to, this, r, false);
 
-    if (effect.to->getHandcardNum() > effect.from->getPile("spring").length()) {
-        if (!room->askForDiscard(effect.to, "chunteng", 1, 1, true, true, "@chunteng-discard")) {
-            DummyCard d;
-            d.addSubcards(effect.from->getPile("spring"));
-            CardMoveReason r2(CardMoveReason::S_REASON_PUT, effect.to->objectName(), QString(), "chunteng", QString());
-            room->throwCard(&d, r2, nullptr);
-        }
+    if (room->askForSkillInvoke(effect.to, "chunteng_discard", QVariant::fromValue<CardEffectStruct>(effect), "weiMaoYaoJiaPromptZiFuChuanAAAAA:" + effect.from->objectName())) {
+        DummyCard d;
+        d.addSubcards(effect.from->getPile("spring"));
+        CardMoveReason r2(CardMoveReason::S_REASON_PUT, effect.to->objectName(), QString(), "chunteng", QString());
+        room->throwCard(&d, r2, nullptr);
     }
 }
 
@@ -1549,47 +1532,20 @@ public:
         : OneCardViewAsSkill("chunteng")
     {
         expand_pile = "spring";
+        response_pattern = "@@chunteng";
     }
 
     bool viewFilter(const Card *to_select) const override
     {
-        if (Self->getPile("spring").contains(to_select->getId())) {
-            if (Sanguosha->getCurrentCardUsePattern() == "@@chunteng-card2!")
-                return true;
-
-            bool ok = false;
-            Card::Suit s = static_cast<Card::Suit>(Self->property("chunteng1").toString().toInt(&ok));
-            if (ok)
-                return to_select->getSuit() == s;
-        }
-
-        return false;
+        return Self->getPile("spring").contains(to_select->getId());
     }
 
     const Card *viewAs(const Card *originalCard) const override
     {
-        Card *c = nullptr;
-        if (Sanguosha->getCurrentCardUsePattern() == "@@chunteng-card1") {
-            c = new ChuntengCard;
-            c->setSkillName(objectName());
-        } else {
-            c = new Chunteng2Card;
-            c->setSkillName("_chunteng");
-        }
-
+        Card *c = new ChuntengCard;
         c->addSubcard(originalCard);
 
         return c;
-    }
-
-    bool isEnabledAtPlay(const Player *) const override
-    {
-        return false;
-    }
-
-    bool isEnabledAtResponse(const Player *, const QString &pattern) const override
-    {
-        return pattern.startsWith("@@chunteng-card");
     }
 };
 
@@ -1609,50 +1565,37 @@ public:
         CardUseStruct u;
 
         if (triggerEvent == CardUsed) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            u.card = use.card;
-            u.from = use.from;
+            u = data.value<CardUseStruct>();
         } else if (triggerEvent == CardResponded) {
             CardResponseStruct resp = data.value<CardResponseStruct>();
-            if (resp.m_isUse) {
-                u.card = resp.m_card;
-                u.from = resp.m_from;
-            }
+            u.card = resp.m_card;
+            u.from = resp.m_from;
+            u.to << resp.m_who;
         }
 
         if (u.card != nullptr && u.from != nullptr && u.from->isAlive() && u.from->hasSkill(this) && !u.from->getPile("spring").isEmpty()) {
-            SkillInvokeDetail d(this, u.from, u.from);
-            d.tag["u"] = QVariant::fromValue<CardUseStruct>(u);
-
-            return QList<SkillInvokeDetail>() << d;
+            QList<int> ids = u.from->getPile("spring");
+            foreach (int id, ids) {
+                const Card *c = Sanguosha->getCard(id);
+                if (c->getSuit() == u.card->getSuit()) {
+                    SkillInvokeDetail d(this, u.from, u.from);
+                    d.tag["u"] = QVariant::fromValue(u);
+                    return {d};
+                }
+            }
         }
 
-        return QList<SkillInvokeDetail>();
+        return {};
     }
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        CardUseStruct u = invoke->tag["u"].value<CardUseStruct>();
-        room->setPlayerProperty(u.from, "chunteng1", QString::number(static_cast<int>(u.card->getSuit())));
-        return room->askForUseCard(u.from, "@@chunteng-card1", "@chunteng1:::" + u.card->getSuitString(), -1, Card::MethodNone, true, objectName()) != nullptr;
+        invoke->invoker->tag["chunteng_use"] = invoke->tag["u"];
+        return room->askForUseCard(invoke->invoker, "@@chunteng", "@chunteng2", -1, Card::MethodNone, true, objectName()) != nullptr;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &) const override
     {
-        CardUseStruct u = invoke->tag["u"].value<CardUseStruct>();
-        if (room->askForUseCard(u.from, "@@chunteng-card2!", "@chunteng2", -1, Card::MethodNone, true, "_chunteng") == nullptr) {
-            QList<ServerPlayer *> p = room->getAllPlayers();
-            p.removeAll(u.from);
-            ServerPlayer *target = p[qrand() % p.length()];
-
-            Card *c = new Chunteng2Card;
-            c->setSkillName("_chunteng");
-            c->addSubcard(u.from->getPile("spring")[qrand() % u.from->getPile("spring").length()]);
-
-            CardUseStruct newUse(c, u.from, target);
-            room->useCard(newUse);
-        }
-
         return false;
     }
 };
@@ -1702,7 +1645,6 @@ TH16Package::TH16Package()
     addMetaObject<MenfeiCard>();
     addMetaObject<HuazhaoCard>();
     addMetaObject<ChuntengCard>();
-    addMetaObject<Chunteng2Card>();
     //addMetaObject<LinsaCard>();
     addMetaObject<GuwuCard>();
     addMetaObject<MingheCard>();
