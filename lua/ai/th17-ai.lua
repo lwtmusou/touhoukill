@@ -1,6 +1,6 @@
 
 -- 【缮形】当一名角色失去装备区里的牌后，你可以令其摸一张牌，然后其可以交给你一张手牌。
--- 搁置 初版是另外一个技能造形，当时的AI不能用了
+-- 思路：对队友发动，然后如果你处于回合内弃牌阶段前，队友给usevalue最高的牌，否则给keepvalue最高的牌
 
 -- 【灵守】结束阶段开始时，你可以观看一名角色的手牌并展示其中至多两张花色相同的牌，其须选择将这些牌重铸或当【杀】使用。
 -- 思路：找个牌最多的拆个桃子啥的
@@ -70,6 +70,7 @@ sgs.ai_skill_use["@@LingshouOtherVS"] = function(self)
 end
 
 -- 【祈绝】主公技，当其他鬼势力角色杀死一名角色后或死亡时，其可以令你回复1点体力。
+-- 对队友发动
 sgs.ai_skill_invoke.qijue = function(self,data)
 	return self:isFriend(data:toPlayer())
 end

@@ -33,6 +33,7 @@ public:
     {
         invoke->targets.first()->drawCards(1, objectName());
         if (invoke->targets.first() != invoke->invoker) {
+            invoke->targets.first()->tag[objectName()] = QVariant::fromValue(invoke->invoker);
             const Card *c = room->askForExchange(invoke->targets.first(), objectName(), 1, 1, false, "@shanxing-exchange:" + invoke->invoker->objectName(), true);
             if (c != nullptr) {
                 CardMoveReason reason(CardMoveReason::S_REASON_GIVE, invoke->targets.first()->objectName(), objectName(), QString());
