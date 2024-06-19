@@ -1567,7 +1567,7 @@ public:
             }
             Config.AIDelay = aidelay;
 
-            if (d.subcardsLength() == 1)
+            if (d.subcardsLength() == 1 && target != invoke->invoker)
                 invoke->tag["youle-punish"] = true;
 
             room->throwCard(&d, target, invoke->invoker);
