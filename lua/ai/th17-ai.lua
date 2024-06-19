@@ -1,6 +1,27 @@
 
 -- 【缮形】当一名角色失去装备区里的牌后，你可以令其摸一张牌，然后其可以交给你一张手牌。
 -- 思路：对队友发动，然后如果你处于回合内弃牌阶段前，队友给usevalue最高的牌，否则给keepvalue最高的牌
+sgs.ai_skill_invoke.shanxing = function(self, data)
+	return self:isFriend(data:toPlayer())
+end
+
+sgs.ai_skill_discard.shanxing = function(self)
+	local target = self.player:getTag("shanxing"):toPlayer()
+	if self:isFriend(target) and not self.player:isCurrent() then
+		local cards = sgs.QList2Table(self.player:getHandcards())
+		self:sortByKeepValue(cards)
+		if target:isCurrent() then
+			local targetphase = target:getPhases()
+			local targetCurrentPhase = target:getPhasesIndex()
+			if targetphase.at(targetCurrentPhase) <= sgs.Player_Play and not self:willSkipPlayPhase(target) then
+				self:sortByUseValue(cards)
+			end
+		end
+		return cards[#cards]:getId()
+	end
+
+	return {}
+end
 
 -- 【灵守】结束阶段开始时，你可以观看一名角色的手牌并展示其中至多两张花色相同的牌，其须选择将这些牌重铸或当【杀】使用。
 -- 思路：找个牌最多的拆个桃子啥的
