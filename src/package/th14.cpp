@@ -1026,7 +1026,7 @@ public:
             if (effect.card->isKindOf("BasicCard") || effect.card->isNDTrick()) {
                 if (effect.to->hasSkill(this) && effect.to->isAlive()) {
                     if (effect.card->hasFlag("tianxieEffected_" + effect.to->objectName())) {
-                        if ((effect.from != nullptr) && effect.from->isAlive() && effect.to->canDiscard(effect.from, "hes"))
+                        if ((effect.from != nullptr) && effect.from->isAlive() && effect.from->canDiscard(effect.from, "hes"))
                             return {SkillInvokeDetail(this, effect.to, effect.to, effect.from)};
                     } else
                         return {SkillInvokeDetail(this, effect.to, effect.to)};
@@ -1050,13 +1050,7 @@ public:
     {
         if (!invoke->targets.isEmpty()) {
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
-
-            if (invoke->invoker != invoke->targets.first()) {
-                int card_id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hes", objectName(), false, Card::MethodDiscard);
-                room->throwCard(card_id, invoke->targets.first(), invoke->invoker);
-            } else {
-                room->askForDiscard(invoke->invoker, objectName(), 1, 1, false, true);
-            }
+            room->askForDiscard(invoke->targets.first(), objectName(), 1, 1, false, true, "@tianxie-discard:" + invoke->invoker->objectName());
         } else {
             invoke->invoker->drawCards(1);
         }
