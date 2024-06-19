@@ -6537,7 +6537,7 @@ public:
     Xiuye()
         : TriggerSkill("xiuye")
     {
-        events << CardFinished << EventPhaseChanging;
+        events << CardFinished;
         view_as_skill = new XiuyeVS;
     }
 
@@ -6580,6 +6580,23 @@ public:
     }
 };
 
+class KuangjiVS : public OneCardViewAsSkill
+{
+public:
+    KuangjiVS()
+        : OneCardViewAsSkill("kuangji")
+    {
+        response_pattern = "@@kuangji";
+        filter_pattern = ".|.|.|xiuye";
+        expand_pile = "xiuye";
+    }
+
+    const Card *viewAs(const Card *originalCard) const override
+    {
+        return new DummyCard({originalCard->getId()});
+    }
+};
+
 class Kuangji : public TriggerSkill
 {
 public:
@@ -6587,6 +6604,7 @@ public:
         : TriggerSkill("kuangji")
     {
         events << Damaged << CardFinished;
+        view_as_skill = new KuangjiVS;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
@@ -6607,10 +6625,13 @@ public:
     bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
         if (TriggerSkill::cost(triggerEvent, room, invoke, data)) {
-            QString xiuye_select = "discardpile";
-            if (!invoke->invoker->getPile("xiuye").isEmpty())
-                xiuye_select = room->askForChoice(invoke->invoker, "kuangji", "discardpile+putleaftoend");
-            invoke->tag["xiuye_select"] = xiuye_select;
+            if (!invoke->invoker->getPile("xiuye").isEmpty()) {
+                const Card *c = room->askForCard(invoke->invoker, "@@kuangji", "@kuangji-discard", QVariant(), Card::MethodNone);
+                if (c != nullptr) {
+                    int id = c->getEffectiveId();
+                    invoke->tag["xiuye_id"] = id;
+                }
+            }
 
             return true;
         }
@@ -6620,24 +6641,19 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        QString xiuye_select = invoke->tag["xiuye_select"].toString();
-        if (xiuye_select == "discardpile") {
-            QList<int> list = room->getNCards(4);
+        if (!invoke->tag.contains("xiuye_id")) {
+            QList<int> list = room->getNCards(3);
             CardsMoveStruct move(list, nullptr, Player::DiscardPile, CardMoveReason(CardMoveReason::S_REASON_PUT, invoke->invoker->objectName(), objectName(), QString()));
             room->moveCardsAtomic(move, true);
         } else {
-            QList<int> ids = invoke->invoker->getPile("xiuye");
-
-            room->moveCardsToEndOfDrawpile(ids, true);
+            int ids = invoke->tag.value("xiuye_id").toInt();
+            room->moveCardsToEndOfDrawpile({ids}, true);
 
             LogMessage l;
             l.type = "$jinghua";
             l.from = invoke->invoker;
-            l.card_str = IntList2StringList(ids).join("+");
+            l.card_str = QString::number(ids);
             room->sendLog(l);
-
-            if (ids.length() > 1)
-                room->askForGuanxing(invoke->invoker, ids, Room::GuanxingDownOnly, objectName());
         }
         return false;
     }

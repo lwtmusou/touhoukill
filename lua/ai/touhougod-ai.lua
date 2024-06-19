@@ -1901,7 +1901,9 @@ end
 
 --[狂季]
 sgs.ai_skill_invoke.kuangji =  true
-sgs.ai_skill_choice.kuangji = function() return "putleaftoend" end
+sgs.ai_skill_cardask["@kuangji-discard"] = function(self)
+	return "$" .. tostring(self.player:getPile("xiuye"):first())
+end
 
 --神比那名居天子
 --[天道]
