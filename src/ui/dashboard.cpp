@@ -1464,11 +1464,28 @@ void Dashboard::selectLingshou()
 
     if (view_as_skill != nullptr) {
         unselectAll();
-        QList<int> selectedIds = StringList2IntList(Self->property("lingshouSelected").toString().split("+"));
+        bool ok = false;
+        int selectedId = Self->property("lingshouSelected").toString().toInt(&ok);
+        if (!ok)
+            return;
+
+        CardItem *handcardItem = nullptr;
         foreach (CardItem *card_item, m_handCards) {
-            if (selectedIds.contains(card_item->getId())) {
+            if (selectedId == card_item->getId()) {
                 selectCard(card_item, true);
                 pendings << card_item;
+                handcardItem = card_item;
+                break;
+            }
+        }
+        if (handcardItem != nullptr) {
+            for (CardItem *card_item : _m_equipCards) {
+                if (card_item != nullptr) {
+                    if (handcardItem->getCard()->getSuit() == card_item->getCard()->getSuit()) {
+                        // selectCard(card_item, true);
+                        card_item->mark();
+                    }
+                }
             }
         }
         updatePending();

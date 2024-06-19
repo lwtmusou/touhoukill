@@ -2919,7 +2919,6 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
 
         QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
         QRegExp rx("@@?(\\w+)(-card)?(\\d+)?!?");
-        //QRegExp rx("@@?([_A-Za-z]+)(\\d+)?!?");
         if (rx.exactMatch(pattern)) {
             QString skill_name = rx.capturedTexts().at(1);
             const ViewAsSkill *skill = Sanguosha->getViewAsSkill(skill_name);
@@ -3025,8 +3024,6 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                         ClientInstance->onPlayerInvokeSkill(true);
                         return;
                     }
-                    //else
-                    //button->setState(QSanButton::S_STATE_HOVER,true);
                 }
             }
         }

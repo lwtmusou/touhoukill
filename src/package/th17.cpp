@@ -55,21 +55,54 @@ public:
 
     bool viewFilter(const QList<const Card *> &, const Card *to_select) const override
     {
-        QList<int> selectedIds = StringList2IntList(Self->property("lingshouSelected").toString().split("+"));
-        return selectedIds.contains(to_select->getId());
+        bool ok = false;
+        int selectedId = Self->property("lingshouSelected").toString().toInt(&ok);
+        if (ok && to_select->getId() == selectedId)
+            return true;
+
+        const Card *c = Sanguosha->getCard(selectedId);
+        return c->getSuit() == to_select->getSuit() && to_select->isEquipped();
     }
 
     const Card *viewAs(const QList<const Card *> &cards) const override
     {
+        bool ok = false;
+        int selectedId = Self->property("lingshouSelected").toString().toInt(&ok);
+        if (!ok)
+            return nullptr;
+
+        const Card *originalCard = Sanguosha->getCard(selectedId);
+        bool containsOriginal = false;
+
+        foreach (const Card *c, cards) {
+            if (c->getId() == originalCard->getId()) {
+                containsOriginal = true;
+                break;
+            }
+        }
+        if (!containsOriginal)
+            return nullptr;
+
+        QList<const Card *> equips = Self->getEquips();
+        foreach (const Card *equip, equips) {
+            if (equip->getSuit() == originalCard->getSuit()) {
+                bool containsEquip = false;
+                foreach (const Card *c, cards) {
+                    if (c->getId() == equip->getId()) {
+                        containsEquip = true;
+                        break;
+                    }
+                }
+                if (!containsEquip)
+                    return nullptr;
+            }
+        }
+
         Slash *s = new Slash(Card::SuitToBeDecided, -1);
         s->addSubcards(cards);
         s->setSkillName("_lingshou");
 
-        if (s->getSubcards().toSet() == StringList2IntList(Self->property("lingshouSelected").toString().split("+")).toSet())
-            return s;
-
-        delete s;
-        return nullptr;
+        return s;
     }
 };
 
@@ -113,30 +146,7 @@ public:
                 id1 = ids.first();
             room->clearAG(invoke->invoker); // re-fill AG since the disabled cards changed
 
-            QList<int> disable_ids;
-            QList<int> ids2;
-            foreach (int id, ids) {
-                if ((Sanguosha->getCard(id)->getSuit() == Sanguosha->getCard(id1)->getSuit()) && (id != id1))
-                    ids2 << id;
-                else
-                    disable_ids << id;
-            }
-
-            int id2 = -1;
-            if (!ids2.isEmpty()) {
-                room->fillAG(ids, invoke->invoker, disable_ids);
-                id2 = room->askForAG(invoke->invoker, ids2, true, "lingshou");
-                room->clearAG(invoke->invoker);
-            }
-
-            room->showCard(target, id1);
-            QList<int> selectedIds {id1};
-            if (id2 != -1) {
-                selectedIds << id2;
-                room->showCard(target, id2);
-            }
-
-            invoke->tag["lingshou"] = IntList2VariantList(selectedIds);
+            invoke->tag["lingshou"] = id1;
             invoke->targets << target;
             return true;
         }
@@ -146,22 +156,28 @@ public:
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        QList<int> selectedIds = VariantList2IntList(invoke->tag.value("lingshou").toList());
-        room->setPlayerProperty(invoke->targets.first(), "lingshouSelected", IntList2StringList(selectedIds).join("+"));
+        int selectedIds = invoke->tag.value("lingshou").toInt();
+        room->setPlayerProperty(invoke->targets.first(), "lingshouSelected", QString::number(selectedIds));
         if (room->askForUseCard(invoke->targets.first(), "@@LingshouOtherVS", "@lingshou-slash", -1, Card::MethodUse, true, "_lingshou") == nullptr) {
-            DummyCard d(selectedIds);
+            DummyCard d({selectedIds});
+            const Card *originalCard = Sanguosha->getCard(selectedIds);
+
+            foreach (const Card *c, invoke->targets.first()->getCards("e")) {
+                if (c->getSuit() == originalCard->getSuit())
+                    d.addSubcard(c);
+            }
 
             LogMessage log;
             log.type = "#Card_Recast";
             log.from = invoke->targets.first();
-            log.card_str = IntList2StringList(selectedIds).join("+");
+            log.card_str = IntList2StringList(d.getSubcards()).join("+");
             room->sendLog(log);
 
             CardMoveReason reason(CardMoveReason::S_REASON_RECAST, invoke->targets.first()->objectName());
             room->moveCardTo(&d, invoke->targets.first(), nullptr, Player::DiscardPile, reason);
             invoke->targets.first()->broadcastSkillInvoke("@recast");
 
-            invoke->targets.first()->drawCards(selectedIds.length());
+            invoke->targets.first()->drawCards(d.getSubcards().length());
         }
 
         return false;
