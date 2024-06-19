@@ -145,6 +145,7 @@ public:
             if (id1 == -1)
                 id1 = ids.first();
             room->clearAG(invoke->invoker); // re-fill AG since the disabled cards changed
+            room->showCard(target, id1);
 
             invoke->tag["lingshou"] = id1;
             invoke->targets << target;
