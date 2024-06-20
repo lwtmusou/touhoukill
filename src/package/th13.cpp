@@ -231,7 +231,7 @@ void XihuaDialog::popup()
 
     bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
 
-    //collect avaliable patterns for specific skill
+    //collect available patterns for specific skill
     QStringList validPatterns;
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
     QStringList ban_list = Sanguosha->getBanPackages();
@@ -261,7 +261,7 @@ void XihuaDialog::popup()
             checkedPatterns << str;
     }
 
-    //while responsing, if only one pattern were checked, emit click()
+    //while responding, if only one pattern were checked, emit click()
     if (!play && checkedPatterns.length() <= 1) {
         emit onButtonClick();
         return;
@@ -271,16 +271,16 @@ void XihuaDialog::popup()
         const Card *card = map[button->objectName()];
         const Player *user = Self;
 
-        bool avaliable = (!play) || card->isAvailable(user);
+        bool available = (!play) || card->isAvailable(user);
         if (card->isKindOf("Peach"))
-            avaliable = card->isAvailable(user);
+            available = card->isAvailable(user);
         if (object_name == "chuangshi" && (card->isKindOf("Jink") || card->isKindOf("Nullification")))
-            avaliable = false;
+            available = false;
         if (object_name == "qiji" && (user->getMark("xiubu") != 0))
-            avaliable = true;
+            available = true;
 
         bool checked = checkedPatterns.contains(card->objectName());
-        bool enabled = !user->isCardLimited(card, method, true) && avaliable && (checked || object_name == "chuangshi");
+        bool enabled = !user->isCardLimited(card, method, true) && available && (checked || object_name == "chuangshi");
         button->setEnabled(enabled);
     }
 

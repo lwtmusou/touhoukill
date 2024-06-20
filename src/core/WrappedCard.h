@@ -12,7 +12,7 @@
 // suit/number/flags/... are maintained in WrappedCard's own member variables.
 //
 // All WrappedCard's member function that takes a Card as parameter will take over the Card passed
-// in, meaning that the caller is resposible for allocating the memory, but WrappedCard is responsible
+// in, meaning that the caller is responsible for allocating the memory, but WrappedCard is responsible
 // for destroying it. No caller should ever delete any card that has been passed in to any member function
 // of WrappedCard that takes Card * as parameter (unless the parameter is (const Card *)).
 //

@@ -1913,11 +1913,11 @@ void Client::askForSinglePeach(const QVariant &arg)
     setStatus(RespondingUse);
 }
 
-void Client::askForCardShow(const QVariant &requestor)
+void Client::askForCardShow(const QVariant &requester)
 {
-    if (!JsonUtils::isString(requestor))
+    if (!JsonUtils::isString(requester))
         return;
-    QString name = Sanguosha->translate(requestor.toString());
+    QString name = Sanguosha->translate(requester.toString());
     prompt_doc->setHtml(tr("%1 request you to show one hand card").arg(name));
 
     _m_roomState.setCurrentCardUsePattern(".");
@@ -2070,8 +2070,8 @@ void Client::askForPindian(const QVariant &ask_str)
     if (from == Self->objectName())
         prompt_doc->setHtml(tr("Please play a card for pindian"));
     else {
-        QString requestor = getPlayerName(from);
-        prompt_doc->setHtml(tr("%1 ask for you to play a card to pindian").arg(requestor));
+        QString requester = getPlayerName(from);
+        prompt_doc->setHtml(tr("%1 ask for you to play a card to pindian").arg(requester));
     }
     _m_roomState.setCurrentCardUsePattern(".");
     setStatus(AskForShowOrPindian);

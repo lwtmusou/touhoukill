@@ -460,7 +460,7 @@ function SmartAI:isPriorFriendOfSlash(friend, card, source)
 	--[[if self:sidieEffect(source) then
 		local sidies = self:touhouSidieTarget(card,source)
 		if #sidies ~= 0 and not table.contains(sidies, friend:objectName()) then return false end
-		if sgs.ai_role[source:objectName()]  ~= "netural" then
+		if sgs.ai_role[source:objectName()]  ~= "neutral" then
 			local sidieTargets=sgs.SPlayerList()
 			for _,p in sgs.qlist(self.room:getOtherPlayers(friend)) do
 				if friend:canSlash(p,nil,false) then
@@ -2045,7 +2045,7 @@ end
 function SmartAI:JijiangSlash(player)
 	if not player then self.room:writeToConsole(debug.traceback()) return 0 end
 	if not player:hasLordSkill("tianren")  then return 0 end
-	local slashs = 0
+	local slashes = 0
 	local kingdom= "shu"
 	if player:hasLordSkill("tianren") then
 		kingdom= "zhan"
@@ -2054,10 +2054,10 @@ function SmartAI:JijiangSlash(player)
 		local slash_num = getCardsNum("Slash", p, self.player)
 		if p:getKingdom() == kingdom and slash_num >= 1 and sgs.card_lack[p:objectName()]["Slash"] ~= 1 and
 			(sgs.turncount <= 1 and sgs.ai_role[p:objectName()] == "neutral" or self:isFriend(player, p)) then
-				slashs = slashs + slash_num
+				slashes = slashes + slash_num
 		end
 	end
-	return slashs
+	return slashes
 end
 
 function SmartAI:useCardDuel(duel, use)
@@ -3463,10 +3463,10 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 	end
 
 	if analeptic then
-		local slashs = self:getCards("Slash")
+		local slashes = self:getCards("Slash")
 		for _, enemy in ipairs(self.enemies) do
 			local hit_num = 0
-			for _, slash in ipairs(slashs) do
+			for _, slash in ipairs(slashes) do
 				if self:slashIsEffective(slash, enemy) and self.player:canSlash(enemy, slash) and self:slashIsAvailable() then
 					hit_num = hit_num + 1
 					if getCardsNum("Jink", enemy) < 1

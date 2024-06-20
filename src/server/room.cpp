@@ -2007,7 +2007,7 @@ void Room::doExtraAmazingGrace(ServerPlayer *from, ServerPlayer *target, int tim
     }
 }
 
-const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const QString &reason)
+const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requester, const QString &reason)
 {
     Q_ASSERT(!player->isKongcheng());
 
@@ -2017,12 +2017,12 @@ const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, 
 
     AI *ai = player->getAI();
     if (ai != nullptr)
-        card = ai->askForCardShow(requestor, reason);
+        card = ai->askForCardShow(requester, reason);
     else {
         if (player->getHandcardNum() == 1)
             card = player->getHandcards().constFirst();
         else {
-            bool success = doRequest(player, S_COMMAND_SHOW_CARD, requestor->getGeneralName(), true);
+            bool success = doRequest(player, S_COMMAND_SHOW_CARD, requester->getGeneralName(), true);
             JsonArray clientReply = player->getClientReply().value<JsonArray>();
             if (success && clientReply.size() > 0 && JsonUtils::isString(clientReply[0]))
                 card = Card::Parse(clientReply[0].toString());

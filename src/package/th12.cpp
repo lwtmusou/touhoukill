@@ -673,9 +673,9 @@ public:
 
     //case1.1 while provideCard went to discar pile , like skill Tianren
     //if the provider is self,it should not trigger skill
-    //case2 while retrial card went to discard pile, we consdier the move.from as the responser, not judge.who!!!
-    //if responser(move.from) is self, it could not trigger skill.
-    //case 3 if the card went to DiscardPile from PlaceTable,shoud chcek whether it was from private pile, like woodenOx. This case should not trigger skill.
+    //case2 while retrial card went to discard pile, we consider the move.from as the responder, not judge.who!!!
+    //if responder(move.from) is self, it could not trigger skill.
+    //case 3 if the card went to DiscardPile from PlaceTable,should check whether it was from private pile, like woodenOx. This case should not trigger skill.
 
     void record(TriggerEvent, Room *room, QVariant &data) const override
     {

@@ -1527,7 +1527,7 @@ public:
              && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)) {
             if (player->isCardLimited(card, Card::MethodUse))
                 return false;
-            //check avaliable target
+            //check available target
             foreach (const Player *p, player->getAliveSiblings()) {
                 if (card->targetFilter(QList<const Player *>(), p, player))
                     return true;

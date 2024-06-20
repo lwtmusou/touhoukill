@@ -232,7 +232,7 @@ selectFirst = function(player, candidates) -- string
 	return max_general
 end
 
---todo: lwtmusou  to bulid a table
+--todo: lwtmusou  to build a table
 --return weight of relation
 weightRelation =  function(relation, role)
 	if relation == "anti" then
@@ -244,7 +244,7 @@ weightRelation =  function(relation, role)
 	end
 	return 1.0
 end
---todo: lwtmusou  to bulid a new method
+--todo: lwtmusou  to build a new method
 --decide relation between nodes of skill property
 relationOfSkillProperty =  function(node1, node2, player1, player2, propertyType)
 	for _, str1 in pairs(node1) do
@@ -296,7 +296,7 @@ weightSkillProperty =  function(player, lord, general)
 				for k, effect2 in pairs(l_pro["effect"]) do
 					local relation  =  relationOfSkillProperty(effect1, effect2, player, lord, "effect")
 					local weight =  weightRelation(relation, player:getRole())
-					if weight ~= 1.0 then-- if find specail relationship, check whether two effect nodes in same condition(target, trigger)
+					if weight ~= 1.0 then-- if find special relationship, check whether two effect nodes in same condition(target, trigger)
 						local target1 = pro["target"][i] or pro["target"][1]
 						local target2 = l_pro["target"][k] or l_pro["target"][1]
 						local relation1  =  relationOfSkillProperty(target1, target2, player, lord, "target")

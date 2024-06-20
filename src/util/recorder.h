@@ -72,7 +72,7 @@ private:
 
 signals:
     void command_parsed(const QString &cmd);
-    void elasped(int secs);
+    void elapsed(int secs);
     void speed_changed(qreal speed);
 };
 

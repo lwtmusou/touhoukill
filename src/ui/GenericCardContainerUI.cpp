@@ -244,7 +244,7 @@ void PlayerCardContainer::updateAvatar()
                                  _getAvatarParent());
             }
             //@todo
-            //we want this mask to start at zero piont of logbox width,
+            //we want this mask to start at zero point of logbox width,
             //and keep the height to equal with the diff between middleFrame and rightFrame
             //if (!isHegemonyGameMode(ServerInfo.GameMode)) {
             if (ServerInfo.Enable2ndGeneral)

@@ -1072,7 +1072,7 @@ public:
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
     {
-        //clear histroy
+        //clear history
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.m_isLastHandcard && use.m_addHistory && use.from->getMark("xiubu") > 0) {

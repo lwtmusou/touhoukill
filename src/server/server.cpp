@@ -39,7 +39,7 @@ ServerDialog::ServerDialog(QWidget *parent)
 
     QTabWidget *tab_widget = new QTabWidget;
     tab_widget->addTab(createBasicTab(), tr("Basic"));
-    tab_widget->addTab(createPackageTab(), tr("Game Pacakge Selection"));
+    tab_widget->addTab(createPackageTab(), tr("Game Package Selection"));
     tab_widget->addTab(createAdvancedTab(), tr("Advanced"));
     tab_widget->addTab(createMiscTab(), tr("Miscellaneous"));
 

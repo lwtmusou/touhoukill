@@ -27,8 +27,8 @@ public:
     virtual const Card *askForCard(const char *pattern, const char *prompt, const QVariant &data) = 0;
     virtual QString askForUseCard(const char *pattern, const char *prompt, const Card::HandlingMethod method) = 0;
     virtual int askForAG(const QList<int> &card_ids, bool refusable, const char *reason) = 0;
-    virtual const Card *askForCardShow(ServerPlayer *requestor, const char *reason) = 0;
-    virtual const Card *askForPindian(ServerPlayer *requestor, const char *reason) = 0;
+    virtual const Card *askForCardShow(ServerPlayer *requester, const char *reason) = 0;
+    virtual const Card *askForPindian(ServerPlayer *requester, const char *reason) = 0;
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const char *reason,bool optional) = 0;
     virtual const Card *askForSinglePeach(ServerPlayer *dying) = 0;
     virtual ServerPlayer *askForYiji(const QList<int> &cards, const char *reason, int &card_id) = 0;
@@ -51,8 +51,8 @@ public:
     virtual const Card *askForCard(const char *pattern, const char *prompt, const QVariant &data);
     virtual QString askForUseCard(const char *pattern, const char *prompt, const Card::HandlingMethod method);
     virtual int askForAG(const QList<int> &card_ids, bool refusable, const char *reason);
-    virtual const Card *askForCardShow(ServerPlayer *requestor, const char *reason);
-    virtual const Card *askForPindian(ServerPlayer *requestor, const char *reason);
+    virtual const Card *askForCardShow(ServerPlayer *requester, const char *reason);
+    virtual const Card *askForPindian(ServerPlayer *requester, const char *reason);
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const char *reason,bool optional);
     virtual const Card *askForSinglePeach(ServerPlayer *dying);
     virtual ServerPlayer *askForYiji(const QList<int> &cards, const char *reason, int &card_id);
@@ -65,7 +65,7 @@ class LuaAI: public TrustAI {
 public:
     LuaAI(ServerPlayer *player);
 
-    virtual const Card *askForCardShow(ServerPlayer *requestor, const char *reason);
+    virtual const Card *askForCardShow(ServerPlayer *requester, const char *reason);
     virtual bool askForSkillInvoke(const char *skill_name, const QVariant &data);
     virtual void activate(CardUseStruct &card_use);
     virtual QString askForUseCard(const char *pattern, const char *prompt, const Card::HandlingMethod method);
@@ -77,7 +77,7 @@ public:
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const char *reason,bool optional);
     virtual int askForAG(const QList<int> &card_ids, bool refusable, const char *reason);
     virtual const Card *askForSinglePeach(ServerPlayer *dying);
-    virtual const Card *askForPindian(ServerPlayer *requestor, const char *reason);
+    virtual const Card *askForPindian(ServerPlayer *requester, const char *reason);
     virtual Card::Suit askForSuit(const char *reason);
 
     virtual ServerPlayer *askForYiji(const QList<int> &cards, const char *reason, int &card_id);
@@ -128,12 +128,12 @@ AI *Room::cloneAI(ServerPlayer *player)
     return new TrustAI(player);
 }
 
-const Card *LuaAI::askForCardShow(ServerPlayer *requestor, const QString &reason)
+const Card *LuaAI::askForCardShow(ServerPlayer *requester, const QString &reason)
 {
     lua_State *L = room->getLuaState();
 
     pushCallback(L, __FUNCTION__);
-    SWIG_NewPointerObj(L, requestor, SWIGTYPE_p_ServerPlayer, 0);
+    SWIG_NewPointerObj(L, requester, SWIGTYPE_p_ServerPlayer, 0);
     lua_pushstring(L, reason.toLatin1());
 
     int error = lua_pcall(L, 3, 1, 0);
@@ -142,7 +142,7 @@ const Card *LuaAI::askForCardShow(ServerPlayer *requestor, const QString &reason
         lua_pop(L, 1);
         room->output(error_msg);
 
-        return TrustAI::askForCardShow(requestor, reason);
+        return TrustAI::askForCardShow(requester, reason);
     }
     void *card_ptr;
     int result = SWIG_ConvertPtr(L, -1, &card_ptr, SWIGTYPE_p_Card, 0);
@@ -150,7 +150,7 @@ const Card *LuaAI::askForCardShow(ServerPlayer *requestor, const QString &reason
     if (SWIG_IsOK(result))
         return static_cast<const Card *>(card_ptr);
     else
-        return TrustAI::askForCardShow(requestor, reason);
+        return TrustAI::askForCardShow(requester, reason);
 }
 
 bool LuaAI::askForSkillInvoke(const QString &skill_name, const QVariant &data)
@@ -348,12 +348,12 @@ const Card *LuaAI::askForSinglePeach(ServerPlayer *dying)
     return Card::Parse(result);
 }
 
-const Card *LuaAI::askForPindian(ServerPlayer *requestor, const QString &reason)
+const Card *LuaAI::askForPindian(ServerPlayer *requester, const QString &reason)
 {
     lua_State *L = room->getLuaState();
 
     pushCallback(L, __FUNCTION__);
-    SWIG_NewPointerObj(L, requestor, SWIGTYPE_p_ServerPlayer, 0);
+    SWIG_NewPointerObj(L, requester, SWIGTYPE_p_ServerPlayer, 0);
     lua_pushstring(L, reason.toLatin1());
 
     int error = lua_pcall(L, 3, 1, 0);
@@ -362,7 +362,7 @@ const Card *LuaAI::askForPindian(ServerPlayer *requestor, const QString &reason)
         lua_pop(L, 1);
         room->output(error_msg);
 
-        return TrustAI::askForPindian(requestor, reason);
+        return TrustAI::askForPindian(requester, reason);
     }
 
     void *card_ptr;
@@ -371,7 +371,7 @@ const Card *LuaAI::askForPindian(ServerPlayer *requestor, const QString &reason)
     if (SWIG_IsOK(result))
         return static_cast<const Card *>(card_ptr);
     else
-        return TrustAI::askForPindian(requestor, reason);
+        return TrustAI::askForPindian(requester, reason);
 }
 
 Card::Suit LuaAI::askForSuit(const QString &reason)

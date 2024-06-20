@@ -631,12 +631,12 @@ function turnUse_guaiqi(self)
 
 	local choices={}
 	for i = 1, #guaiqis do
-		local forbiden = guaiqis[i]
+		local forbidden = guaiqis[i]
 		local forbid
-		if forbiden == "slash" then
-			forbid = sgs.cloneCard(forbiden, tricks[1]:getSuit(),tricks[1]:getNumber())
+		if forbidden == "slash" then
+			forbid = sgs.cloneCard(forbidden, tricks[1]:getSuit(),tricks[1]:getNumber())
 		else
-			forbid = sgs.cloneCard(forbiden, slashes[1]:getSuit(),slashes[1]:getNumber())
+			forbid = sgs.cloneCard(forbidden, slashes[1]:getSuit(),slashes[1]:getNumber())
 		end
 		if self.player:isCardLimited(forbid, sgs.Card_MethodUse, true) or not forbid:isAvailable(self.player) then
 		else

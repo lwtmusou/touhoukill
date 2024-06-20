@@ -1877,7 +1877,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         QList<SkillInvokeDetail> d;
         if (use.card->isKindOf("Peach") || use.card->isKindOf("Slash") || use.card->isNDTrick()) {
-            // Fs: when modifiying this skill, check skill "GakungWu" (Guwu & Kuangwu) in th16
+            // Fs: when modifying this skill, check skill "GakungWu" (Guwu & Kuangwu) in th16
             QList<const Player *> ps;
             foreach (ServerPlayer *p, use.to)
                 ps << p;
@@ -1921,7 +1921,7 @@ public:
     }
 };
 
-// Fs: when modifiying this skill, check everything which is using "xunshi" flag
+// Fs: when modifying this skill, check everything which is using "xunshi" flag
 class XunshiDistance : public TargetModSkill
 {
 public:

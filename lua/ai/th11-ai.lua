@@ -276,7 +276,7 @@ sgs.ai_card_intention.MaihuoCard = -70
 
 sgs.ai_skill_property.maihuo = { effect = {{"DrawEffect"},{"DrawEffect"}},
 --effect1 means that target draw, effect2 means that maihuo skillonwer draw
-	trigger =       {{"NotActive"}, {"Unkown"}},
+	trigger =       {{"NotActive"}, {"Unknown"}},
 	target =        {{"OtherAlivePlayers"}, {"SkillOwner"}},
 }
 

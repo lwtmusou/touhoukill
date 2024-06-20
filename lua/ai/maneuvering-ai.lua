@@ -828,9 +828,9 @@ function SmartAI:useCardFireAttack(fire_attack, use) --尼玛 吃酒+火攻+丢�
 	end
 end
 
-sgs.ai_cardshow.fire_attack = function(self, requestor)
+sgs.ai_cardshow.fire_attack = function(self, requester)
 	local cards = sgs.QList2Table(self.player:getHandcards())
-	if requestor:objectName() == self.player:objectName() then
+	if requester:objectName() == self.player:objectName() then
 		self:sortByUseValue(cards, true)
 		return cards[1]
 	end
@@ -858,8 +858,8 @@ sgs.ai_skill_cardask["@fire_attack_show"] = function(self, data)
 	end
 
 
-	requestor = data:toCardEffect().to
-	if requestor:objectName() == self.player:objectName() then
+	requester = data:toCardEffect().to
+	if requester:objectName() == self.player:objectName() then
 		self:sortByUseValue(cards, true)
 		return "$" .. cards[1]:getId()
 	end

@@ -1543,7 +1543,7 @@ public:
     const Card *askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const char *prompt,
                                      bool distance_limit = true, bool disable_extra = false, bool addHistory = false);
     int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const char *reason);
-    const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const char *reason);
+    const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requester, const char *reason);
     int askForRende(ServerPlayer *liubei, QList<int> &cards, const char *skill_name = NULL,
                     bool visible = false, bool optional = true, int max_num = -1,
                     QList<ServerPlayer *> players = QList<ServerPlayer *>(), CardMoveReason reason = CardMoveReason(),

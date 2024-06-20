@@ -306,7 +306,7 @@ public:
                 new_slash->addSubcard(id);
         }
 
-        //remain the information of origianl card
+        //remain the information of original card
         new_slash->setSkillName(use.card->getSkillName());
         QStringList flags = use.card->getFlags();
         foreach (const QString &flag, flags)

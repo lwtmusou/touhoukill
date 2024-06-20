@@ -492,7 +492,7 @@ public:
         return d;
     }
 
-    //defualt cost
+    //default cost
 
     bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
@@ -1896,7 +1896,7 @@ public:
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
     {
-        //clear histroy
+        //clear history
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.m_addHistory && use.card->getSkillName() == objectName()) {
@@ -1987,7 +1987,7 @@ public:
         return QList<SkillInvokeDetail>();
     }
 
-    //defualt cost
+    //default cost
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {

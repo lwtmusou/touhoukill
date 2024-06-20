@@ -51,8 +51,8 @@ public:
     virtual const Card *askForCard(const QString &pattern, const QString &prompt, const QVariant &data) = 0;
     virtual QString askForUseCard(const QString &pattern, const QString &prompt, const Card::HandlingMethod method) = 0;
     virtual int askForAG(const QList<int> &card_ids, bool refusable, const QString &reason) = 0;
-    virtual const Card *askForCardShow(ServerPlayer *requestor, const QString &reason) = 0;
-    virtual const Card *askForPindian(ServerPlayer *requestor, const QString &reason) = 0;
+    virtual const Card *askForCardShow(ServerPlayer *requester, const QString &reason) = 0;
+    virtual const Card *askForPindian(ServerPlayer *requester, const QString &reason) = 0;
     virtual ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason, bool optional) = 0;
     virtual const Card *askForSinglePeach(ServerPlayer *dying) = 0;
     virtual ServerPlayer *askForYiji(const QList<int> &cards, const QString &reason, int &card_id) = 0;
@@ -83,8 +83,8 @@ public:
     const Card *askForCard(const QString &pattern, const QString &prompt, const QVariant &data) override;
     QString askForUseCard(const QString &pattern, const QString &prompt, const Card::HandlingMethod method) override;
     int askForAG(const QList<int> &card_ids, bool refusable, const QString &reason) override;
-    const Card *askForCardShow(ServerPlayer *requestor, const QString &reason) override;
-    const Card *askForPindian(ServerPlayer *requestor, const QString &reason) override;
+    const Card *askForCardShow(ServerPlayer *requester, const QString &reason) override;
+    const Card *askForPindian(ServerPlayer *requester, const QString &reason) override;
     ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason, bool optional) override;
     const Card *askForSinglePeach(ServerPlayer *dying) override;
     ServerPlayer *askForYiji(const QList<int> &cards, const QString &reason, int &card_id) override;
@@ -103,7 +103,7 @@ class LuaAI : public TrustAI
 public:
     explicit LuaAI(ServerPlayer *player);
 
-    const Card *askForCardShow(ServerPlayer *requestor, const QString &reason) override;
+    const Card *askForCardShow(ServerPlayer *requester, const QString &reason) override;
     bool askForSkillInvoke(const QString &skill_name, const QVariant &data) override;
     void activate(CardUseStruct &card_use) override;
     QString askForUseCard(const QString &pattern, const QString &prompt, const Card::HandlingMethod method) override;
@@ -115,7 +115,7 @@ public:
     ServerPlayer *askForPlayerChosen(const QList<ServerPlayer *> &targets, const QString &reason, bool optional) override;
     int askForAG(const QList<int> &card_ids, bool refusable, const QString &reason) override;
     const Card *askForSinglePeach(ServerPlayer *dying) override;
-    const Card *askForPindian(ServerPlayer *requestor, const QString &reason) override;
+    const Card *askForPindian(ServerPlayer *requester, const QString &reason) override;
     Card::Suit askForSuit(const QString &reason) override;
 
     ServerPlayer *askForYiji(const QList<int> &cards, const QString &reason, int &card_id) override;

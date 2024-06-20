@@ -291,8 +291,8 @@ QPixmap QSanRoomSkin::getProgressBarPixmap(int percentile) const
     for (int i = 0; i < allMaps.size(); i++) {
         if (!isNumber(allMaps[i].value<JsonArray>()[0]))
             continue;
-        int thred = allMaps[i].value<JsonArray>()[0].toInt();
-        if (thred >= percentile) {
+        int thread = allMaps[i].value<JsonArray>()[0].toInt();
+        if (thread >= percentile) {
             if (!isString(allMaps[i].value<JsonArray>()[1]))
                 continue;
             return getPixmapFromFileName(allMaps[i].value<JsonArray>()[1].toString(), true);
@@ -853,7 +853,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout)
         _m_commonLayout.m_hpFont[i].tryParse(magatamaFont[i]);
     }
 
-    //for graphic boxs, especially for new trigger order box
+    // for graphic boxes, especially for new trigger order box
     tryParse(config["graphicsBoxBgColor"], _m_commonLayout.graphicsBoxBackgroundColor);
     tryParse(config["graphicsBoxBorderColor"], _m_commonLayout.graphicsBoxBorderColor);
     _m_commonLayout.graphicsBoxTitleFont.tryParse(config["graphicsBoxTitleFont"]);

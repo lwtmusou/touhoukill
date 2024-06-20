@@ -59,7 +59,7 @@ sgs.ai_choicemade_filter.skillInvoke.doujiu = function(self, player, args, data)
 		end
 	end
 end
-function sgs.ai_skill_pindian.doujiu(minusecard, self, requestor, maxcard)
+function sgs.ai_skill_pindian.doujiu(minusecard, self, requester, maxcard)
 	return self:getMaxCard()
 end
 sgs.ai_cardneed.doujiu = function(to, card, self)

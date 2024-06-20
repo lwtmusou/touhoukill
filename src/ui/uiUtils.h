@@ -7,7 +7,7 @@
 #include <QRect>
 
 namespace QSanUiUtils {
-// This is in no way a generic diation fuction. It is some dirty trick that
+// This is in no way a generic diation function. It is some dirty trick that
 // produces a shadow image for a pixmap whose foreground mask is binaryImage
 QImage produceShadow(const QImage &image, QColor shadowColor, int radius, double decade);
 void makeGray(QPixmap &pixmap);
@@ -24,7 +24,7 @@ QString resolveFont(const QString &fontName);
 // @param fontSize [IN, OUT]
 //        Suggested width and height of each character in pixels. If the
 //        bounding box cannot contain the text using the suggested font
-//        size, font size may be shrinked. The output value will be the
+//        size, font size may be shrunk. The output value will be the
 //        actual font size used.
 // @param boundingBox
 //        Text will be painted in the center of the bounding box on the device

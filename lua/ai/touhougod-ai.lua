@@ -864,15 +864,15 @@ end
 sgs.ai_skill_cardask["@quanjie-discard"] = function(self, data)
 	local num = getCardsNum("Slash", self.player, self.player)
 	if num < 2 then return "." end
-	local slashs = {}
+	local slashes = {}
 	for _,c in sgs.qlist(self.player:getCards("hs")) do
 		if c:isKindOf("Slash") then
-			table.insert(slashs, c)
+			table.insert(slashes, c)
 		end
 	end
-	if #slashs > 0 then
-		self:sortByKeepValue(slashs)
-		return "$" .. slashs[1]:getId()
+	if #slashes > 0 then
+		self:sortByKeepValue(slashes)
+		return "$" .. slashes[1]:getId()
 	end
 	return "."
 end

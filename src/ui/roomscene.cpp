@@ -627,7 +627,7 @@ void RoomScene::handleGameEvent(const QVariant &args)
             log_box->appendLog(type, player->objectName(), QStringList(), QString(), newHeroName, arg2);
         }
 
-        //change bgm and backgroud
+        //change bgm and background
         if (!isHegemonyGameMode(ServerInfo.GameMode) && player->isLord()) {
             ClientInstance->lord_name = newHeroName;
             setLordBGM(newHeroName);
@@ -886,7 +886,7 @@ ReplayerControlBar::ReplayerControlBar(Dashboard *dashboard)
     connect(uniform, SIGNAL(clicked()), replayer, SLOT(uniform()));
     connect(slow_down, SIGNAL(clicked()), replayer, SLOT(slowDown()));
     connect(speed_up, SIGNAL(clicked()), replayer, SLOT(speedUp()));
-    connect(replayer, SIGNAL(elasped(int)), this, SLOT(setTime(int)));
+    connect(replayer, SIGNAL(elapsed(int)), this, SLOT(setTime(int)));
     connect(replayer, SIGNAL(speed_changed(qreal)), this, SLOT(setSpeed(qreal)));
 
     speed = replayer->getSpeed();
@@ -1329,7 +1329,7 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer *> &seats)
         setChatBoxVisible(false);
 }
 
-// @todo: The following 3 fuctions are for drag & use feature. Currently they are very buggy and
+// @todo: The following 3 functions are for drag & use feature. Currently they are very buggy and
 // cause a lot of major problems. We should look into this later.
 void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -5356,7 +5356,7 @@ void RoomScene::setLordBGM(QString lord)
         return;
     Audio::stopBGM();
     bool changeBGM = Config.value("UseLordBGM", true).toBool();
-    //intialize default path
+    //initialize default path
     bgm_path = Config.value("BackgroundMusic", "audio/title/main.ogg").toString();
     QString lord_name = (lord == nullptr) ? ClientInstance->lord_name : lord;
     if (lord_name == nullptr)
@@ -5395,7 +5395,7 @@ void RoomScene::setLordBGM(QString lord)
 void RoomScene::setLordBackdrop(QString lord)
 {
     bool changeBackdrop = Config.value("UseLordBackdrop", true).toBool();
-    //intialize default path
+    //initialize default path
     image_path = Config.TableBgImage;
     QString lord_name = (lord == nullptr) ? ClientInstance->lord_name : lord;
     if (lord_name == nullptr)

@@ -137,7 +137,7 @@ public:
     //        If true, return immediately after sending the request without waiting for client reply.
     // @return True if the a valid response is returned from client.
     // Usage note: when you need a round trip request-response vector with a SINGLE client, use this command
-    // with wait = true and read the reponse from player->getClientReply(). If you want to initiate a poll
+    // with wait = true and read the response from player->getClientReply(). If you want to initiate a poll
     // where more than one clients can respond simultaneously, you have to do it in two steps:
     // 1. Use this command with wait = false once for each client involved in the poll (or you can call this
     //    command only once in all with broadcast = true if the poll is to everypody).
@@ -360,7 +360,7 @@ public:
                                  bool addHistory = false);
     int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const QString &reason);
     void doExtraAmazingGrace(ServerPlayer *from, ServerPlayer *target, int times);
-    const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const QString &reason);
+    const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requester, const QString &reason);
     int askForRende(ServerPlayer *liubei, QList<int> &cards, const QString &skill_name = QString(), bool visible = false, bool optional = true, int max_num = -1,
                     QList<ServerPlayer *> players = QList<ServerPlayer *>(), CardMoveReason reason = CardMoveReason(), const QString &prompt = QString(),
                     bool notify_skill = false);

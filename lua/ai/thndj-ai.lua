@@ -34,9 +34,9 @@ sgs.ai_skill_playerchosen.sidou = function(self, targets)
     end
 	
 	
-	local wizzard=self:invokeTouhouJudge()
+	local wizard=self:invokeTouhouJudge()
 	for _,p in sgs.qlist(targets) do
-		if not wizzard and p:containsTrick("lightning") then
+		if not wizard and p:containsTrick("lightning") then
 			return p
 		end
 		if self:isFriend(p) then
@@ -53,7 +53,7 @@ sgs.ai_skill_playerchosen.sidou = function(self, targets)
 	return nil
 end
 sgs.ai_skill_cardchosen.sidou = function(self, who, flags)
-	local wizzard=self:invokeTouhouJudge()
+	local wizard=self:invokeTouhouJudge()
 	if self:isFriend(who) then
 		cards=who:getCards("j")
 		cards = sgs.QList2Table(cards)

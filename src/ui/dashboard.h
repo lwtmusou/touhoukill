@@ -70,7 +70,7 @@ public:
     QSanSkillButton *addSkillButton(const QString &skillName, const bool &head = true);
     bool isAvatarUnderMouse();
 
-    void highlightEquip(QString skillName, bool hightlight);
+    void highlightEquip(QString skillName, bool highlight);
 
     void setTrust(bool trust);
     void killPlayer() override;
@@ -291,7 +291,7 @@ protected:
     void drawEquip(QPainter *painter, const CardItem *equip, int order);
     void setSelectedItem(CardItem *card_item);
 
-    // for battle arry
+    // for battle array
     QHash<QString, PixmapAnimation *> _m_frameBorders;
     QHash<QString, PixmapAnimation *> _m_roleBorders;
     void _createBattleArrayAnimations();

@@ -3319,10 +3319,10 @@ function SmartAI:askForAG(card_ids, refusable, reason)
 	return cards[1]:getEffectiveId()
 end
 
-function SmartAI:askForCardShow(requestor, reason)
+function SmartAI:askForCardShow(requester, reason)
 	local func = sgs.ai_cardshow[reason]
 	if func then
-		return func(self, requestor)
+		return func(self, requester)
 	else
 		return self.player:getRandomHandCard()
 	end
@@ -3701,9 +3701,9 @@ function SmartAI:askForYiji(card_ids, reason)
 	return nil, -1
 end
 
-function SmartAI:askForPindian(requestor, reason)
+function SmartAI:askForPindian(requester, reason)
 	local passive = { "lieren" }
-	if self.player:objectName() == requestor:objectName() and not table.contains(passive, reason) then
+	if self.player:objectName() == requester:objectName() and not table.contains(passive, reason) then
 		if self[reason .. "_card"] then
 			return sgs.Sanguosha:getCard(self[reason .. "_card"])
 		else
@@ -3726,7 +3726,7 @@ function SmartAI:askForPindian(requestor, reason)
 		if self:getUseValue(card) < 6 then mincard = card break end
 	end
 	--self.room:setPlayerMark(self.player, "@pindian3_1", 0)
-	--self.room:setPlayerMark(requestor, "@pindian3_1", 0)
+	--self.room:setPlayerMark(requester, "@pindian3_1", 0)
 	for _, card in ipairs(sgs.reverse(cards)) do
 		--self.player:gainMark("@pindian_value1_" .. card:objectName())
 		if self:getUseValue(card) < 6 then maxcard = card break end
@@ -3747,17 +3747,17 @@ function SmartAI:askForPindian(requestor, reason)
 		elseif c1:getClassName() ~= c2:getClassName() then sameclass = false end
 	end
 	if sameclass then
-		if self:isFriend(requestor) then return self:getMinCard()
+		if self:isFriend(requester) then return self:getMinCard()
 		else return self:getMaxCard() end
 	end
 	--self.player:gainMark("@pindian5")
 	--requestor:gainMark("@pindian5")
 	local callback = sgs.ai_skill_pindian[reason]
 	if type(callback) == "function" then
-		local ret = callback(minusecard, self, requestor, maxcard, mincard)
+		local ret = callback(minusecard, self, requester, maxcard, mincard)
 		if ret then return ret end
 	end
-	if self:isFriend(requestor) then return mincard else return maxcard end
+	if self:isFriend(requester) then return mincard else return maxcard end
 end
 
 sgs.ai_skill_playerchosen.damage = function(self, targets)

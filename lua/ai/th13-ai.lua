@@ -327,7 +327,7 @@ sgs.ai_skill_cardchosen.xihua = function(self, who, flags)
 		self:sortByKeepValue(cards)
 
 		local success={}
-		local unsuccess={}
+		local unsuccessful={}
 		for _,c in pairs(cards) do
 			if xihua:isKindOf("BasicCard") and c:isKindOf("BasicCard") then
 				table.insert(success,c)
@@ -336,13 +336,13 @@ sgs.ai_skill_cardchosen.xihua = function(self, who, flags)
 			elseif not self.player:getRoom():getMode():find("hegemony") and c:getNumber()>10 then
 				table.insert(success,c)
 			else
-				table.insert(unsuccess,c)
+				table.insert(unsuccessful,c)
 			end
 		end
 		if self:isFriend(who) and #success>0 then
 			return success[1]
-		elseif self:isEnemy(who) and #unsuccess>0 then
-			return unsuccess[#unsuccess]
+		elseif self:isEnemy(who) and #unsuccessful>0 then
+			return unsuccessful[#unsuccessful]
 		end
 	end
 	local j = math.random(1, #cards)

@@ -167,7 +167,7 @@ public:
             }
 
             // When TargetSpecified, no need to check canSlash()
-            //remain the information of origianl card
+            //remain the information of original card
             fire_slash->setSkillName(use.card->getSkillName());
             QStringList flags = use.card->getFlags();
             foreach (const QString &flag, flags)

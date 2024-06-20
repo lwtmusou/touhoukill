@@ -39,7 +39,7 @@ Dashboard::Dashboard(QGraphicsItem *widget) //QGraphicsPixmapItem *widget
     animations = new EffectAnimation();
     pending_card = nullptr;
 
-    leftHiddenMark = nullptr; //?? intialization?
+    leftHiddenMark = nullptr; //?? initialization?
     rightHiddenMark = nullptr;
     _m_pile_expanded = QMap<QString, QList<int>>(); //QStringList();
     for (int i = 0; i < 5; i++) {
@@ -255,7 +255,7 @@ int Dashboard::width()
 }
 
 void Dashboard::_createRight()
-{ //40 equals diff bettween middlefarme and rightframe
+{ //40 equals diff between middlefarme and rightframe
     int rwidth = (ServerInfo.Enable2ndGeneral) ? G_DASHBOARD_LAYOUT.m_rightWidthDouble : G_DASHBOARD_LAYOUT.m_rightWidth;
     QRect rect = QRect(_m_width - rwidth, -40, rwidth, G_DASHBOARD_LAYOUT.m_normalHeight + 40);
     _paintPixmap(_m_rightFrame, rect, QPixmap(1, 1), _m_groupMain);
@@ -1219,7 +1219,7 @@ void Dashboard::startPending(const ViewAsSkill *skill)
         if ((resp_skill != nullptr) && (resp_skill->getRequest() == Card::MethodResponse || resp_skill->getRequest() == Card::MethodUse))
             expand = true;
     }
-    //deal askForCard at first, then use the card automaticly
+    //deal askForCard at first, then use the card automatically
     if (Self->hasFlag("Global_expandpileFailed"))
         expand = true;
 
@@ -1761,7 +1761,7 @@ void Dashboard::showSeat()
     _m_roleComboBox = new RoleComboBox(rightFrame, true);
 }*/
 
-// for battle arry
+// for battle array
 /*void Dashboard::repaintAll()
 {
     PlayerCardContainer::repaintAll();

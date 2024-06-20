@@ -493,9 +493,9 @@ void RoomThread::getSkillAndSort(TriggerEvent triggerEvent, Room *room, QList<QS
                                  const QList<QSharedPointer<SkillInvokeDetail>> &triggered, const QVariant &data)
 {
     // used to get all the skills which can be triggered now, and sort them.
-    // everytime this function is called, it will get all the skiils and judge the triggerable one by one
+    // every time this function is called, it will get all the skiils and judge the triggerable one by one
     QList<const TriggerSkill *> skillList = skill_table[triggerEvent];
-    QList<QSharedPointer<SkillInvokeDetail>> details; // We create a new list everytime this function is called
+    QList<QSharedPointer<SkillInvokeDetail>> details; // We create a new list every time this function is called
     foreach (const TriggerSkill *skill, skillList) {
         // judge every skill
         QList<SkillInvokeDetail> triggerable = skill->triggerable(triggerEvent, room, data);

@@ -34,7 +34,7 @@ public:
     // @param fontSize [IN, OUT]
     //        Suggested width and height of each character in pixels. If the
     //        bounding box cannot contain the text using the suggested font
-    //        size, font size may be shrinked. The output value will be the
+    //        size, font size may be shrunk. The output value will be the
     //        actual font size used.
     // @param boundingBox
     //        Text will be painted in the center of the bounding box on the device

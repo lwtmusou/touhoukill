@@ -73,9 +73,9 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
             QString text = translate(choice_);
             foreach (const QString &element, choices) {
                 if (element.startsWith("from:")) {
-                    QStringList froms = element.split(":");
-                    if (!froms.at(1).isEmpty()) {
-                        QString from = ClientInstance->getPlayerName(froms.at(1));
+                    QStringList forms = element.split(":");
+                    if (!forms.at(1).isEmpty()) {
+                        QString from = ClientInstance->getPlayerName(forms.at(1));
                         text.replace("%from", from);
                     }
                 } else if (element.startsWith("to:")) {

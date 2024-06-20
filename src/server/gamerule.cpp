@@ -225,7 +225,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<Skil
         ExtraTurnStruct extra = player->tag["ExtraTurnInfo"].value<ExtraTurnStruct>();
         if (!extra.set_phases.isEmpty())
             set_phases = extra.set_phases;
-        //clear other's extraTurn infomation
+        //clear other's extraTurn information
         foreach (ServerPlayer *p, room->getOtherPlayers(player))
             p->tag.remove("ExtraTurnInfo");
 

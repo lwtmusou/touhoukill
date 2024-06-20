@@ -1049,7 +1049,7 @@ void BeishuiDialog::popup()
 
     bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
 
-    //collect avaliable patterns for specific skill
+    //collect available patterns for specific skill
     QStringList validPatterns;
     QList<const Card *> cards = Sanguosha->findChildren<const Card *>();
     QStringList ban_list = Sanguosha->getBanPackages();
@@ -1068,7 +1068,7 @@ void BeishuiDialog::popup()
         if (play || (cardPattern != nullptr && cardPattern->match(Self, card)) && !Self->isCardLimited(card, method))
             checkedPatterns << str;
     }
-    //while responsing, if only one pattern were checked, emit click()
+    //while responding, if only one pattern were checked, emit click()
 
     if (!play && checkedPatterns.length() <= 1) {
         // @ todo: basic card
@@ -1080,13 +1080,13 @@ void BeishuiDialog::popup()
         const Card *card = map[button->objectName()];
         const Player *user = Self;
 
-        bool avaliable = (!play) || card->isAvailable(user);
+        bool available = (!play) || card->isAvailable(user);
         if (card->isKindOf("Peach"))
-            avaliable = card->isAvailable(user);
+            available = card->isAvailable(user);
 
         bool checked = checkedPatterns.contains(card->objectName());
         //check isCardLimited
-        bool enabled = avaliable && checked;
+        bool enabled = available && checked;
         button->setEnabled(enabled);
     }
 

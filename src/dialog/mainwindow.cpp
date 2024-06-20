@@ -893,7 +893,7 @@ void MainWindow::on_actionAbout_fmod_triggered()
     content.append(tr("Official site: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(address));
 
 #ifdef AUDIO_SUPPORT
-    content.append(tr("Current versionn %1 <br/>").arg(Audio::getVersion()));
+    content.append(tr("Current version %1 <br/>").arg(Audio::getVersion()));
 #endif
 
     Window *window = new Window(tr("About fmod"), QSize(500, 260));
@@ -915,7 +915,7 @@ void MainWindow::on_actionAbout_Lua_triggered()
     QString address = "http://www.lua.org";
     content.append(tr("Official site: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(address));
 
-    content.append(tr("Current versionn %1 <br/>").arg(LUA_RELEASE));
+    content.append(tr("Current version %1 <br/>").arg(LUA_RELEASE));
     content.append(LUA_COPYRIGHT);
 
     Window *window = new Window(tr("About Lua"), QSize(500, 585));

@@ -845,7 +845,7 @@ void ServerPlayer::skip(Player::Phase phase, bool isCost, bool sendLog)
                 return;
             }
             _m_phases_state[i].skipped = (isCost ? -1 : 1);
-            //defaultly skip all phases even someone has same pahses.
+            //defaultly skip all phases even someone has same phases.
         }
     }
 
@@ -889,7 +889,7 @@ void ServerPlayer::exchangePhases(Player::Phase phase1, Player::Phase phase2)
 
     int index1 = phases.indexOf(phase1);
     int index2 = phases.indexOf(phase2);
-    // make sure that "_m_phases_state" has already contain informations from "phases"
+    // make sure that "_m_phases_state" has already contain information from "phases"
     if (index1 > -1 && index2 > -1) {
         _phase1 = _m_phases_state[index1];
         _phase2 = _m_phases_state[index2];
@@ -1348,7 +1348,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const
 
     if (!isHegemonyGameMode(room->getMode())) {
         foreach (const Skill *skill, getVisibleSkillList(true)) {
-            //should not nofity the lord skill
+            //should not notify the lord skill
             if (skill->isLordSkill() && !hasLordSkill(skill->objectName()))
                 continue;
             QString skill_name = skill->objectName();
@@ -1805,7 +1805,7 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     }
 
     //check ResidueNum
-    //only consider the folloing cards
+    //only consider the following cards
     if (use.card->isKindOf("Slash") || use.card->isKindOf("Analeptic")) {
         num = 0;
         if (use.card->isKindOf("Slash"))
@@ -1824,7 +1824,7 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     }
 
     //check DistanceLimit
-    //only consider the folloing cards
+    //only consider the following cards
     if (use.card->isKindOf("Slash") || use.card->isKindOf("SupplyShortage") || use.card->isKindOf("Snatch")) {
         int distance = 1;
         foreach (ServerPlayer *p, use.to) {
@@ -1844,7 +1844,7 @@ QStringList ServerPlayer::checkTargetModSkillShow(const CardUseStruct &use)
     }
 
     //check TargetFix
-    //only consider the folloing cards
+    //only consider the following cards
     //Peach , EquipCard , ExNihilo, Analeptic, Lightning
 
     use.card->setFlags("IgnoreFailed");

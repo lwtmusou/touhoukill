@@ -2486,7 +2486,7 @@ public:
             return;
         if (triggerEvent == FetchDrawPileCard)
             return;
-        //need trigger after drawing intiial cards?
+        //need trigger after drawing initial cards?
         const QList<int> &drawpile = room->getDrawPile();
         int new_firstcard = -1;
         if (!drawpile.isEmpty())
@@ -3104,7 +3104,7 @@ void ChaowoCard::use(Room *room, const CardUseStruct &card_use) const
             toChange = room->askForChoice(source, "chaowo", sameNameGeneralNames.join("+"));
     }
 
-    // Different from Room::changeHero, must be written seprately
+    // Different from Room::changeHero, must be written separately
     Chaowo::changeHero(room, source, toChange);
 }
 

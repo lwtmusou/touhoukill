@@ -473,7 +473,7 @@ void QijiDialog::popup()
     const CardPattern *cardPattern = Sanguosha->getPattern(pattern);
     bool play = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
 
-    //collect avaliable patterns for specific skill
+    //collect available patterns for specific skill
     QStringList validPatterns;
     QStringList ban_list = Sanguosha->getBanPackages();
     if (object_name == "huaxiang") {
@@ -517,7 +517,7 @@ void QijiDialog::popup()
         if (play || (cardPattern != nullptr && cardPattern->match(Self, card)) && !Self->isCardLimited(card, method))
             checkedPatterns << str;
     }
-    //while responsing, if only one pattern were checked, emit click()
+    //while responding, if only one pattern were checked, emit click()
 
     if (object_name != "chuangshi" && !play && checkedPatterns.length() <= 1) {
         // @ todo: basic card
@@ -540,17 +540,17 @@ void QijiDialog::popup()
         if (user == nullptr)
             user = Self;
 
-        bool avaliable = (!play) || card->isAvailable(user);
+        bool available = (!play) || card->isAvailable(user);
         if (card->isKindOf("Peach"))
-            avaliable = card->isAvailable(user);
+            available = card->isAvailable(user);
         if (object_name == "chuangshi" && (card->isKindOf("Jink") || card->isKindOf("Nullification")))
-            avaliable = false;
+            available = false;
         if (object_name == "qiji" && (user->getMark("xiubu") != 0))
-            avaliable = true;
+            available = true;
 
         bool checked = checkedPatterns.contains(card->objectName());
         //check isCardLimited
-        bool enabled = avaliable && (checked || object_name == "chuangshi");
+        bool enabled = available && (checked || object_name == "chuangshi");
         button->setEnabled(enabled);
     }
 
@@ -1256,7 +1256,7 @@ public:
             return; // no need to update record.
         //record some temp ids, went to discardpile undirectly (through other places).
         if (move.to_place == Player::PlaceTable && move.from_places.contains(Player::PlaceHand) && move.is_last_handcard) {
-            //1 temp ids: record lasthand ids for using or responsing
+            //1 temp ids: record lasthand ids for using or responding
             if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
                 || (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE) {
                 QVariantList record_ids = sanae->tag["jinianTemp"].toList();

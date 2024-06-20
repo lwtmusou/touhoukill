@@ -210,7 +210,7 @@ void Replayer::run()
             delay /= getSpeed();
 
             msleep(delay);
-            emit elasped(pair.elapsed / 1000.0);
+            emit elapsed(pair.elapsed / 1000.0);
 
             if (!playing)
                 play_sem.acquire();

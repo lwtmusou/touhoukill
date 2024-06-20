@@ -82,7 +82,7 @@ sgs.ai_skill_use_func.DangjiaCard = function(card, use, self)
 			return
 	end
 end
-function sgs.ai_skill_pindian.dangjia(minusecard, self, requestor, maxcard)
+function sgs.ai_skill_pindian.dangjia(minusecard, self, requester, maxcard)
 	return self:getMaxCard()
 end
 
@@ -343,7 +343,7 @@ sgs.ai_skill_invoke.taohuan = function(self, data)
 	return true
 end
 
-function sgs.ai_skill_pindian.taohuan(minusecard, self, requestor, maxcard)
+function sgs.ai_skill_pindian.taohuan(minusecard, self, requester, maxcard)
 	return self:getMaxCard()
 end
 sgs.ai_choicemade_filter.skillInvoke.taohuan = function(self, player, args, data)

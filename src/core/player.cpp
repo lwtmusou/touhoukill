@@ -1851,7 +1851,7 @@ bool Player::hasShownSkill(const Skill *skill) const
                     return true;
             }
             else
-                return hasShownOneGeneral();                                                    //if player doesnt own it, then must showOneGeneral
+                return hasShownOneGeneral();                                                    //if player doesn't own it, then must showOneGeneral
         }
     }*/
     return false;

@@ -117,7 +117,7 @@ public:
         : BattleArraySkill("niaoxiang", "Siege")
     {
         events << TargetSpecified;
-        //array_type = "Seige";
+        //array_type = "Siege";
     }
 
     bool canPreshow() const override

@@ -134,8 +134,8 @@ sgs.ai_skill_invoke.bushu =function(self,data)
 	end
 	return false
 end
-function sgs.ai_skill_pindian.bushu(minusecard, self, requestor, maxcard)
-	if self:isFriend(requestor) then
+function sgs.ai_skill_pindian.bushu(minusecard, self, requester, maxcard)
+	if self:isFriend(requester) then
 		return self:getMinCard()
 	end
 	return self:getMaxCard()
@@ -259,8 +259,8 @@ qiji_skill.getTurnUseCard = function(self)
 		table.removeOne(qijis, "super_peach")
 	end
 	for i = 1, #qijis do
-		local forbiden = qijis[i]
-		forbid = sgs.cloneCard(forbiden, card:getSuit(),card:getNumber())
+		local forbidden = qijis[i]
+		forbid = sgs.cloneCard(forbidden, card:getSuit(),card:getNumber())
 		if self.player:isCardLimited(forbid, sgs.Card_MethodUse, true) or not forbid:isAvailable(self.player) then
 		else
 			table.insert(choices,qijis[i])
