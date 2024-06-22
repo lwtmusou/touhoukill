@@ -349,6 +349,49 @@ end
 sgs.ai_use_value.KuangzaoCard = 8
 sgs.ai_use_priority.KuangzaoCard = 0
 sgs.ai_card_intention.KuangzaoCard = 50
+sgs.ai_skill_cardask["@kuangzao-annoying"] = function(self, data)
+	local cards = sgs.QList2Table(self.players:getCards("hes"))
+
+	local effect = data:toCardEffect()
+	local from = effect.from
+	self.player:setFlags("slashTargetFix")
+	self.player:setFlags("slashNoDistanceLimit")
+	self.player:setFlags("slashTargetFixToOne")
+	effect.from:setFlags("SlashAssignee")
+	local slashUse = sgs.ai_skill_use.slash(self, "dummy")
+	effect.from:setFlags("-SlashAssignee")
+	self.player:setFlags("-slashTargetFixToOne")
+	self.player:setFlags("-slashNoDistanceLimit")
+	self.player:setFlags("-slashTargetFix")
+	local slash
+	if slashUse ~= "." then
+		local slashStr = string.split(slashUse, "->")
+		slash = sgs.Card_Parse(slashStr)
+	end
+
+	if self.player:getArmor() and self.player:getArmor():isKindOf("SliverLion") and self.player:isWounded() and not slash then
+		return tostring(self.player:getArmor():getId())
+	end
+	
+	self:sortByKeepValue(cards)
+	for _, c in ipairs(cards) do
+		if not slash then
+			return tostring(c:getId())
+		end
+		if not slash:isVirtualCard() then
+			if c:getId() ~= slash:getId() then
+				return tostring(c:getId())
+			end
+		else
+			for _, id in slash:getSubcards() do
+				if c:getId() ~= id then
+					return tostring(c:getId())
+				end
+			end
+		end
+	end
+	return tostring(cards[1]:getId())
+end
 
 --[幻视]
 sgs.ai_skill_playerchosen.huanshi = function(self, targets)
@@ -405,13 +448,13 @@ end
 
 --只指定一个？
 sgs.ai_skill_playerchosen.xushi = function(self, targets)
-	local use=self.player:getTag("xushi_use"):toCardUse()    
-    for _,p in sgs.qlist(targets) do 
+	local use=self.player:getTag("xushi_use"):toCardUse()
+    for _,p in sgs.qlist(targets) do
         	if self:isEnemy(p) == self:isEnemy(use.to:first()) then
 			return p
         end
 	end
-	
+
 	return targets:first()
 end
 sgs.ai_skill_invoke.shishi =function(self,data)
@@ -567,7 +610,7 @@ sgs.ai_skill_use["@@yege"] = function(self, prompt)
 	if self:isEnemy(current) then
 		local cards = self.player:getHandcards()
 		cards=self:touhouAppendExpandPileToList(self.player,cards)
-		
+
 	    if self.room:getMode():find("hegemony") then
 		    local diamonds = {}
 			for _,c in sgs.qlist(cards) do
@@ -576,8 +619,8 @@ sgs.ai_skill_use["@@yege"] = function(self, prompt)
 				end
 			end
 			self:sortByUseValue(diamonds)
-			if #diamonds > 0 then 
-				return "@YegeCard=".. diamonds[1]:getId() .."->" .. current:objectName() 
+			if #diamonds > 0 then
+				return "@YegeCard=".. diamonds[1]:getId() .."->" .. current:objectName()
 			end
 		end
 		cards = sgs.QList2Table(cards)
@@ -823,7 +866,7 @@ sgs.ai_skill_use["@@chuangshi"] = function(self, prompt)
 	if cardname and user then
 		self.room:setPlayerMark(self.player, "chuangshi", self.player:getMark("chuangshi")+1)
 		--self.room:setPlayerMark(user, "chuangshi_user", 0)
-		
+
 		self.room:setPlayerFlag(self.player, "chuangshi")
 		if target then
 			return "@ChuangshiCard=.:" .. cardname .. "->" .. target:objectName()

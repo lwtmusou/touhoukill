@@ -22,8 +22,7 @@ class KuangzaoCard : public SkillCard
 public:
     Q_INVOKABLE KuangzaoCard();
 
-    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
-    void use(Room *room, const CardUseStruct &card_use) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
 };
 
 class BuxianCard : public SkillCard

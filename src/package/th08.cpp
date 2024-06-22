@@ -293,20 +293,37 @@ KuangzaoCard::KuangzaoCard()
 {
 }
 
-bool KuangzaoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+void KuangzaoCard::onEffect(const CardEffectStruct &effect) const
 {
-    return targets.length() == 0 && to_select->inMyAttackRange(Self) && to_select != Self;
-}
+    ServerPlayer *rabbit = effect.from;
+    ServerPlayer *annoying = effect.to;
+    Room *room = annoying->getRoom();
 
-void KuangzaoCard::use(Room *room, const CardUseStruct &card_use) const
-{
-    ServerPlayer *source = card_use.from;
-    const QList<ServerPlayer *> &targets = card_use.to;
+    int discarded = -1;
 
-    QString prompt = "@kuangzao-slash:" + source->objectName();
-    const Card *card = room->askForUseSlashTo(targets.first(), source, prompt);
-    if (card == nullptr)
-        room->damage(DamageStruct("kuangzao", nullptr, targets.first()));
+    if (!annoying->isNude() && annoying->canDiscard(annoying, "hes")) {
+        const Card *c = room->askForCard(annoying, "..!", "@kuangzao-annoying:" + rabbit->objectName(), QVariant::fromValue(effect));
+        if (c == nullptr) {
+            foreach (const Card *cs, annoying->getCards("hes")) {
+                if (!annoying->isJilei(cs)) {
+                    c = cs;
+                    break;
+                }
+            }
+        }
+        if (c != nullptr)
+            discarded = c->getEffectiveId();
+        else
+            Q_UNREACHABLE();
+    }
+
+    QString prompt = "@kuangzao-slash:" + rabbit->objectName();
+    const Card *slash = room->askForUseSlashTo(annoying, rabbit, prompt, false);
+    if (slash == nullptr) {
+        room->damage(DamageStruct("kuangzao", nullptr, annoying));
+        if (annoying->isAlive() && discarded != -1)
+            room->obtainCard(annoying, discarded);
+    }
 }
 
 class Kuangzao : public ZeroCardViewAsSkill
@@ -347,7 +364,7 @@ public:
         foreach (ServerPlayer *to, use.to) {
             if (to->hasSkill(this)) {
                 foreach (ServerPlayer *p, room->getOtherPlayers(to)) {
-                    if (use.from != nullptr && use.from->canSlash(p, use.card, true) && !use.to.contains(p) && use.from->inMyAttackRange(p)) {
+                    if (use.from != nullptr && use.from->canSlash(p, use.card, false) && !use.to.contains(p) && (use.from->inMyAttackRange(p) || to->inMyAttackRange(p))) {
                         d << SkillInvokeDetail(this, to, to);
                         break;
                     }
@@ -365,7 +382,7 @@ public:
         QList<ServerPlayer *> listt;
         use.card->setFlags("IgnoreFailed");
         foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-            if (use.from->canSlash(p, use.card, true) && !use.to.contains(p) && use.from->inMyAttackRange(p))
+            if (use.from->canSlash(p, use.card, false) && !use.to.contains(p) && (use.from->inMyAttackRange(p) || player->inMyAttackRange(p)))
                 listt << p;
         }
         use.card->setFlags("-IgnoreFailed");
