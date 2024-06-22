@@ -37,10 +37,10 @@ return{
 	["mamizou"] = "二岩猯藏",
 	["#mamizou"] = "狸猫怪的十大变化",
 	["designer:mamizou"] = "星野梦美☆",
-	
+
 	["illustrator:mamizou"] = "茹でピー",
 	["origin:mamizou"] = "p号：33663902，个人id：264281",
-	
+
 	["illustrator:mamizou_1"] = "ふーえん",
 	["origin:mamizou_1"] = "p号：36315798，个人id：131669",
 	["illustrator:mamizou_2"] = "まくわうに",
@@ -182,7 +182,7 @@ return{
 	["&yuyuko_slm"] = "神灵庙幽幽子" ,
 	["#yuyuko_slm"] = "不再彷徨的亡灵" ,
 	["designer:yuyuko_slm"] = "星野梦美☆",
-	
+
 	["illustrator:yuyuko_slm"] = "みや",
 	["origin:yuyuko_slm"] = "p号：22766094，个人id：41977",
 	["illustrator:yuyuko_slm_1"] = ".SIN",
@@ -191,7 +191,6 @@ return{
 	["origin:yuyuko_slm_2"] = "p号：17232914，个人id：464525",
 	["illustrator:yuyuko_slm_3"] = "はいばね",
 	["origin:yuyuko_slm_3"] = "p号：22145913",
-
 
 	["chuixue"] = "吹雪" ,
 	[":chuixue"] = "弃牌阶段结束时，若你于此阶段内弃置过你的至少一张手牌，你可以令一名其他角色选择一项：弃置与这些牌花色均不同的一张手牌，或失去1点体力。" ,
@@ -223,11 +222,10 @@ return{
 	["duel_buming"] = "视为你被使用【决斗】",
 	["#buming_choose"]= "%from 选择了 “%arg”。",
 	["zhengti"] = "正体",
-	[":zhengti"] = "<font color=\"blue\"><b>锁定技，</b></font>其他角色的回合结束时，若你于此回合内受到过其造成的伤害，其横置装备区里所有的牌；当你受到伤害时，若其他角色装备区里有横牌，你重置其中的一名角色的装备区所有的牌，将此伤害转移给其。",
-	["@zhengti"] = "正体",
-	["@zhengti-choose"]= "请选择装备区里有横牌的一名其他角色，将伤害转移给该角色。",
-	["zhengti_extra"] = "正体",
-	[":zhengti_extra"] = "“正体”目标会代替你承受伤害。",
+	[":zhengti"] = "当你受到伤害后，你可以获得伤害来源装备区里的一张牌；当你受到伤害时，你可以将一张装备牌置入其他角色的装备区，将此伤害转移给其。",
+	["@zhengti-rob"] = "正体你可以发动“正体”抢走 %src 一张装备区的牌",
+	["@zhengti-redirect"] = "正体你可以将一张装备牌置入一名角色的装备区，将伤害转移给其",
+	["~zhengti"] = "选择装备牌 -> 选择角色 -> “确定”",
 
 --*********************************************
 	--slm010  势力：灵 3血

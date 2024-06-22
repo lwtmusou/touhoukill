@@ -1554,87 +1554,103 @@ public:
     }
 };
 
+ZhengtiCard::ZhengtiCard()
+{
+    will_throw = false;
+    handling_method = Card::MethodNone;
+}
+
+bool ZhengtiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    if (targets.isEmpty() && to_select != Self) {
+        const EquipCard *originalCard = qobject_cast<const EquipCard *>(Sanguosha->getCard(subcards.first())->getRealCard());
+        if (originalCard != nullptr) {
+            EquipCard::Location location = originalCard->location();
+            return to_select->getEquip(location) == nullptr;
+        }
+    }
+
+    return false;
+}
+
+void ZhengtiCard::onEffect(const CardEffectStruct &effect) const
+{
+    effect.from->tag["zhengti_target"] = QVariant::fromValue(effect.to);
+    CardMoveReason r(CardMoveReason::S_REASON_PUT, effect.from->objectName(), effect.to->objectName(), "zhengti", QString());
+    effect.from->getRoom()->moveCardTo(this, effect.to, Player::PlaceEquip, r, true);
+}
+
+class ZhengtiVS : public OneCardViewAsSkill
+{
+public:
+    ZhengtiVS()
+        : OneCardViewAsSkill("zhengti")
+    {
+        response_pattern = "@@zhengti";
+        filter_pattern = "EquipCard";
+    }
+
+    const Card *viewAs(const Card *originalCard) const override
+    {
+        ZhengtiCard *zhengti = new ZhengtiCard;
+        zhengti->addSubcard(originalCard);
+        return zhengti;
+    }
+};
+
 class Zhengti : public TriggerSkill
 {
 public:
     Zhengti()
         : TriggerSkill("zhengti")
     {
-        events << DamageInflicted << DamageDone << EventPhaseChanging;
-        frequency = Compulsory;
+        events = {DamageInflicted, Damaged};
+        view_as_skill = new ZhengtiVS;
     }
 
-    void record(TriggerEvent e, Room *room, QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const override
     {
-        if (e == DamageDone) {
+        if (e == Damaged) {
             DamageStruct damage = data.value<DamageStruct>();
-            if ((damage.from != nullptr) && damage.from->isCurrent() && damage.from != damage.to)
-                room->setPlayerFlag(damage.from, "zhengti_" + damage.to->objectName());
-        }
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const override
-    {
-        QList<SkillInvokeDetail> d;
-        if (e == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive && change.player->isAlive()) {
-                foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName())) {
-                    if (change.player != p && change.player->hasFlag("zhengti_" + p->objectName())
-                        && change.player->getBrokenEquips().length() < change.player->getEquips().length())
-                        d << SkillInvokeDetail(this, p, p, nullptr, true, change.player);
-                }
-            }
+            if (damage.from != nullptr && !damage.from->getEquips().isEmpty() && damage.to->isAlive() && damage.to->hasSkill(this))
+                return {SkillInvokeDetail(this, damage.to, damage.to, damage.from)};
         } else if (e == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (!damage.to->hasSkill(this))
-                return QList<SkillInvokeDetail>();
-            foreach (ServerPlayer *p, room->getOtherPlayers(damage.to)) {
-                if (!p->getBrokenEquips().isEmpty())
-                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, damage.to, damage.to, nullptr, true);
+            if (damage.to->isAlive() && damage.to->hasSkill(this) && !damage.to->isNude())
+                return {SkillInvokeDetail(this, damage.to, damage.to)};
+        }
+
+        return {};
+    }
+
+    bool cost(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    {
+        if (triggerEvent == Damaged) {
+            return invoke->invoker->askForSkillInvoke(this, data, "@zhengti-rob:" + invoke->targets.first()->objectName());
+        } else {
+            if (room->askForUseCard(invoke->invoker, "@@zhengti", "@zhengti-redirect", -1, Card::MethodNone, true, objectName())) {
+                invoke->targets << invoke->invoker->tag.value("zhengti_target").value<ServerPlayer *>();
+                return true;
             }
         }
-        return d;
+
+        return false;
     }
 
     bool effect(TriggerEvent triggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
-        if (triggerEvent == DamageInflicted) {
+        if (triggerEvent == Damaged) {
+            int id = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "e", objectName());
+            room->obtainCard(invoke->invoker, id, true);
+        } else if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
-            QList<ServerPlayer *> targets;
-            foreach (ServerPlayer *p, room->getOtherPlayers(damage.to)) {
-                if (!p->getBrokenEquips().isEmpty())
-                    targets << p;
-            }
-            ServerPlayer *target = room->askForPlayerChosen(damage.to, targets, objectName(), "@zhengti-choose", false, true);
-            QList<int> ids;
-            foreach (const Card *c, target->getCards("e")) {
-                if (target->isBrokenEquip(c->getEffectiveId()))
-                    ids << c->getEffectiveId();
-            }
-            room->notifySkillInvoked(invoke->invoker, objectName());
-            room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
-            if (!ids.isEmpty())
-                target->removeBrokenEquips(ids);
-
-            damage.to = target;
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), invoke->targets.first()->objectName());
+            damage.to = invoke->targets.first();
             damage.transfer = true;
             room->damage(damage);
             return true;
-        } else if (triggerEvent == EventPhaseChanging) {
-            ServerPlayer *target = invoke->targets.first();
-            room->notifySkillInvoked(invoke->invoker, objectName());
-            room->touhouLogmessage("#TriggerSkill", invoke->invoker, objectName());
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, invoke->invoker->objectName(), target->objectName());
-            QList<int> ids;
-            foreach (const Card *c, target->getCards("e")) {
-                if (!target->isBrokenEquip(c->getEffectiveId()))
-                    ids << c->getEffectiveId();
-            }
-            if (!ids.isEmpty())
-                target->addBrokenEquips(ids);
         }
+
         return false;
     }
 };
