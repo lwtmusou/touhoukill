@@ -1621,78 +1621,77 @@ public:
         : TriggerSkill("youqu")
     {
         frequency = Compulsory;
-        events << EventPhaseStart;
-        related_pile = "siling";
+        events = {EventPhaseStart, AfterDrawInitialCards};
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const override
     {
-        ServerPlayer *player = data.value<ServerPlayer *>();
-        if (!player->hasSkill(this))
-            return QList<SkillInvokeDetail>();
-        if ((player->getPhase() == Player::Start && player->getPile("siling").length() >= 2) || player->getPhase() == Player::Finish)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, player, player, nullptr, true);
-        return QList<SkillInvokeDetail>();
+        if (e == AfterDrawInitialCards) {
+            DrawNCardsStruct s = data.value<DrawNCardsStruct>();
+            if (s.player->hasSkill(this)) {
+                SkillInvokeDetail d(this, s.player, s.player, nullptr, true);
+                d.tag["i"] = 1;
+                return {d};
+            }
+        } else if (e == EventPhaseStart) {
+            ServerPlayer *p = data.value<ServerPlayer *>();
+            if (p->getPhase() == Player::Finish) {
+                SkillInvokeDetail d(this, p, p, nullptr, true);
+                d.tag["i"] = 1;
+                return {d};
+            }
+            if (p->getPhase() == Player::Start && p->getHandcardNum() > p->getMaxCards()) {
+                SkillInvokeDetail d(this, p, p, nullptr, true);
+                d.tag["i"] = 2;
+                return {d};
+            }
+        }
+        return {};
     }
 
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         ServerPlayer *player = invoke->invoker;
-        if (player->getPhase() == Player::Start) {
-            QList<int> sl = player->getPile("siling");
-            room->notifySkillInvoked(player, objectName());
+        room->notifySkillInvoked(player, objectName());
+        room->touhouLogmessage("#TriggerSkill", player, objectName());
 
-            room->touhouLogmessage("#TriggerSkill", player, objectName());
-
-            CardsMoveStruct move(sl, player, player, Player::PlaceSpecial, Player::PlaceHand, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()));
-            room->moveCardsAtomic(move, false);
-
-            room->touhouLogmessage("#silinggain", player, objectName(), QList<ServerPlayer *>(), QString::number(sl.length()));
+        int i = invoke->tag.value("i").toInt();
+        if (i == 1)
+            player->drawCards(3, objectName());
+        else
             room->damage(DamageStruct("siling", player, player));
 
-        } else if (player->getPhase() == Player::Finish) {
-            room->notifySkillInvoked(player, objectName());
-            room->touhouLogmessage("#TriggerSkill", player, objectName());
-            QString choice = room->askForChoice(player, objectName(), "siling1+siling2+siling3");
-            QList<int> list;
-            if (choice == "siling1")
-                list = room->getNCards(1);
-            else if (choice == "siling2")
-                list = room->getNCards(2);
-            else if (choice == "siling3")
-                list = room->getNCards(3);
-            CardMoveReason reason(CardMoveReason::S_REASON_UNKNOWN, "", nullptr, "siling", "");
-            player->addToPile("siling", list, false, reason);
-        }
         return false;
     }
 };
 
-class WangwuVS : public OneCardViewAsSkill
+class WangwuVS : public ViewAsSkill
 {
 public:
     WangwuVS()
-        : OneCardViewAsSkill("wangwu")
+        : ViewAsSkill("wangwu")
     {
         response_pattern = "@@wangwu";
-        expand_pile = "siling";
     }
 
-    bool viewFilter(const Card *to_select) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
     {
-        if (!Self->getPile("siling").contains(to_select->getId()))
+        QString cardStr = Self->property("wangwu").toString();
+        const Card *c = Card::Parse(cardStr);
+        if (c == nullptr)
             return false;
 
-        QString property = Self->property("wangwu").toString();
-        if (property == "black")
-            return to_select->isBlack();
-        else
-            return to_select->isRed();
+        if (selected.length() == 2)
+            return false;
+
+        return to_select->getColor() == c->getColor() && to_select->getTypeId() == c->getTypeId();
     }
 
-    const Card *viewAs(const Card *originalCard) const override
+    const Card *viewAs(const QList<const Card *> &cards) const override
     {
-        return originalCard;
+        DummyCard *d = new DummyCard;
+        d->addSubcards(cards);
+        return d;
     }
 };
 
@@ -1713,14 +1712,8 @@ public:
         if ((use.card != nullptr) && (use.card->isKindOf("Slash") || use.card->isNDTrick()) && (use.card->isRed() || use.card->isBlack())) {
             if (use.from != nullptr && use.from->isAlive()) {
                 foreach (ServerPlayer *p, use.to) {
-                    if (p != use.from && p->hasSkill(this) && !p->getPile("siling").isEmpty()) {
-                        foreach (int id, p->getPile("siling")) {
-                            if (Sanguosha->getCard(id)->sameColorWith(use.card)) {
-                                d << SkillInvokeDetail(this, p, p);
-                                break;
-                            }
-                        }
-                    }
+                    if (p != use.from && p->hasSkill(this) && p->getHandcardNum() >= 2)
+                        d << SkillInvokeDetail(this, p, p, use.from);
                 }
             }
         }
@@ -1732,43 +1725,24 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         ServerPlayer *player = invoke->invoker;
 
-        bool flag = false;
-        QList<int> list = player->getPile("siling");
-        foreach (int id, list) {
-            if (Sanguosha->getCard(id)->sameColorWith(use.card)) {
-                flag = true;
-                break;
-            }
-        }
-        if (!flag)
-            return false;
+        room->setPlayerProperty(player, "wangwu", use.card->toString(true));
 
-        if (use.card->isRed()) {
-            player->setProperty("wangwu", "red");
-            room->notifyProperty(player, player, "wangwu");
-        } else {
-            player->setProperty("wangwu", "black");
-            room->notifyProperty(player, player, "wangwu");
-        }
         // for ai record siling lack
         player->tag["wangwu_use"] = data;
         QString prompt = "@wangwu-invoke:" + use.from->objectName() + ":" + use.card->objectName();
-        const Card *c = room->askForCard(player, "@@wangwu", prompt, data, Card::MethodNone, nullptr, false, "wangwu");
+        const Card *c = room->askForCard(player, "@@wangwu", prompt, data, Card::MethodDiscard, nullptr, false, "wangwu");
 
         if (c != nullptr) {
-            CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), nullptr, objectName(), QString());
-            room->throwCard(c, reason, nullptr);
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), use.from->objectName());
-            player->drawCards(1);
             return true;
         }
         return false;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        CardUseStruct use = data.value<CardUseStruct>();
-        room->damage(DamageStruct("wangwu", invoke->invoker, use.from));
+        invoke->invoker->drawCards(1);
+        room->damage(DamageStruct("wangwu", invoke->invoker, invoke->targets.first()));
         return false;
     }
 };
@@ -1780,7 +1754,6 @@ public:
         : TriggerSkill("shizhao")
     {
         events << EventPhaseStart;
-        //frequency = Frequent;
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
