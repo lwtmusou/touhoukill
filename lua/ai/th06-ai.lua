@@ -349,7 +349,7 @@ hezhou_skill.getTurnUseCard = function(self)
 
 	self:sortByUseValue(HezhouCards, false)
 	for _,HezhouCard in pairs (HezhouCards) do
-		
+
 			local dummyuse = { isDummy = true }
 			if HezhouCard:isKindOf("BasicCard") then
 				self:useBasicCard(HezhouCard, dummyuse)
@@ -360,7 +360,7 @@ hezhou_skill.getTurnUseCard = function(self)
 				local fakeCard = sgs.Card_Parse("@HezhouCard=.:" .. HezhouCard:objectName())
 				return fakeCard
 			end
-		
+
 	end
 	return nil
 end
@@ -392,7 +392,7 @@ function sgs.ai_cardsview_valuable.hezhou(self, class_name, player)
 		["ChainJink"] = "chain_jink", ["LightJink"] = "light_jink",
 		["MagicAnaleptic"] = "magic_analeptic",["SuperPeach"] = "super_peach"
 	}
-	
+
 	--[[if self.player:getRoom():getMode():find("hegemony") then
 		classname2objectname = {
 		["Slash"] = "slash", ["Jink"] = "jink",
@@ -406,11 +406,11 @@ function sgs.ai_cardsview_valuable.hezhou(self, class_name, player)
 		if self.player:isLocked(viewcard) then
 			return nil
 		end
-		
+
 		return "@HezhouCard=.:".. classname2objectname[class_name]
-		
+
 	end
-	
+
 end
 
 
@@ -566,7 +566,7 @@ beishui_skill.getTurnUseCard = function(self)
 		count = count + 1
 		if (count >= x) then break end
 	end
-	
+
 	local card_str = (choice..":%s[%s:%s]="):format("beishui", "to_be_decided", -1)
 	for _,id in pairs(ids) do
 		if id == ids[#ids] then
@@ -587,7 +587,7 @@ function sgs.ai_cardsview_valuable.beishui(self, class_name, player)
 	end
 	if self.player:getMark("beishui") > 0 then return nil end
     --不考虑酒
-    if class_name ~= "Peach"  and class_name ~= "Jink" and class_name ~= "Slash" then return nil end 
+    if class_name ~= "Peach"  and class_name ~= "Jink" and class_name ~= "Slash" then return nil end
 
 	local x = math.max(self.player:getHp(), 1)
 	local cards = self.player:getCards("hes")
@@ -597,7 +597,7 @@ function sgs.ai_cardsview_valuable.beishui(self, class_name, player)
 	for _,c in pairs(cards) do
 		if c:isKindOf(class_name) then return nil end
 	end
-	
+
 	self:sortByKeepValue(cards)
 	local ids = {}
 	local count = 0
@@ -644,7 +644,7 @@ beishui_hegemony_skill.getTurnUseCard = function(self)
         end
     end
 	local x = math.max(self.player:getHp(), roles)
-	
+
     local beishuiCards = {}
 	local pattern = "slash|peach" --|analeptic
 	local patterns = pattern:split("|")
@@ -674,7 +674,7 @@ beishui_hegemony_skill.getTurnUseCard = function(self)
 		count = count + 1
 		if (count >= x) then break end
 	end
-	
+
 	local card_str = (choice..":%s[%s:%s]="):format("beishui_hegemony", "to_be_decided", -1)
 	for _,id in pairs(ids) do
 		if id == ids[#ids] then
@@ -695,9 +695,9 @@ function sgs.ai_cardsview_valuable.beishui_hegemony(self, class_name, player)
 	end
 	if self.player:getMark("beishui") > 0 then return nil end
     --不考虑酒
-    if class_name ~= "Peach"  and class_name ~= "Jink" and class_name ~= "Slash" then return nil end 
+    if class_name ~= "Peach"  and class_name ~= "Jink" and class_name ~= "Slash" then return nil end
 
-	
+
 	local roles = 1
     if self.player:getRole() ~= "careerist" then
         for _,p in sgs.qlist(self.player:getAliveSiblings()) do
@@ -714,7 +714,7 @@ function sgs.ai_cardsview_valuable.beishui_hegemony(self, class_name, player)
 	for _,c in pairs(cards) do
 		if c:isKindOf(class_name) then return nil end
 	end
-	
+
 	self:sortByKeepValue(cards)
 	local ids = {}
 	local count = 0
@@ -839,13 +839,13 @@ end
 
 --[真夜 国]
 sgs.ai_skill_playerchosen.zhenye_hegemony = function(self, targets)
-	local target_table= sgs.QList2Table(targets)    
+	local target_table= sgs.QList2Table(targets)
     local do_turnup = true
 	if self.player:faceUp() then
         local gameProcess = sgs.gameProcess()
         if not string.find(gameProcess, ">") then
             do_turnup = false
-        end 
+        end
     end
 
 	self:sort(target_table,"hp")
@@ -863,30 +863,6 @@ end
 
 --[暗域]
 sgs.ai_skill_invoke.anyu = true
-sgs.ai_skill_choice.anyu= function(self, choices, data)
-	if self.player:faceUp() then
-		return "draw"
-	end
-
-	if self.player:containsTrick("indulgence") or self.player:containsTrick("supply_shortage") then
-		return "draw"
-	end
-
-	--[[local damage =data:toDamage()
-	local dongjie=false
-	if damage.from and damage.from:hasSkill("dongjie") and self:isFriend(use.from)  then
-		dongjie=true
-	end
-	if dongjie then
-		return "draw"
-	else]]
-	if self:isWeak(self.player) and self:getOverflow() <2 then
-		return "draw"
-	elseif self:getOverflow() >=2 then
-		return "turnover"
-	end
-	return "turnover"
-end
 sgs.ai_slash_prohibit.anyu = function(self, from, to, card)
 	if not card:isBlack() or not to:hasSkill("zhenye") then return false end
 
@@ -974,10 +950,10 @@ local banyue_hegemony_skill = {}
 banyue_hegemony_skill.name = "banyue_hegemony"
 table.insert(sgs.ai_skills, banyue_hegemony_skill)
 function banyue_hegemony_skill.getTurnUseCard(self)
-	
+
 	if self.player:hasUsed("BanyueHegemonyCard") then return nil end
 	if self.player:getHp() <= 1  then return nil end --consider juxian?
-	
+
 	return sgs.Card_Parse("@BanyueHegemonyCard=.")
 end
 sgs.ai_skill_use_func.BanyueHegemonyCard = function(card, use, self)
@@ -991,7 +967,7 @@ sgs.ai_skill_use_func.BanyueHegemonyCard = function(card, use, self)
 	end
 
 	if not to1 then return end
-	
+
 	for _, p in sgs.qlist(self.room:getOtherPlayers(to1)) do
 		local isSelf = (to1:objectName() == self.player:objectName())
 		if p:hasShownOneGeneral() and not to1:isFriendWith(p, isSelf) then
@@ -999,7 +975,7 @@ sgs.ai_skill_use_func.BanyueHegemonyCard = function(card, use, self)
 			break
 		end
 	end
-	
+
 	if to1 and to2 then
 		use.card = card
 		if use.to then

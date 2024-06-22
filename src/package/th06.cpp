@@ -1496,13 +1496,10 @@ public:
         return d;
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        QString choice = room->askForChoice(invoke->invoker, objectName(), "turnover+draw", data);
-        if (choice == "turnover")
-            invoke->invoker->turnOver();
-        else
-            invoke->invoker->drawCards(1);
+        invoke->invoker->turnOver();
+        invoke->invoker->drawCards(1);
 
         return false;
     }
