@@ -4058,8 +4058,6 @@ public:
         int dummy_num = dummy->getSubcards().length();
         if (dummy_num > 0) {
             room->throwCard(dummy, target, invoke->invoker);
-            if (target == invoke->invoker)
-                dummy_num++;
             target->drawCards(dummy_num);
         }
 
