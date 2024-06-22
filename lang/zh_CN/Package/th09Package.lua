@@ -3,7 +3,6 @@ return
 	["th09"] = "对战系列",
 	["zhan"] = "战",
 
-
 	--**********************************************
 	--zhan001  势力：战 3血
 	["suika"] = "伊吹萃香",
@@ -59,7 +58,7 @@ return
 	["illustrator:shikieiki_2"] = "DomotoLain",
 	["origin:shikieiki_2"] = "p号：27397315，个人id：38674",--（国人 貌似可以）
 	["illustrator:shikieiki_3"] = "もねてぃ",
-	["origin:shikieiki_3"] = "p号：59554554，个人id：3066815", 
+	["origin:shikieiki_3"] = "p号：59554554，个人id：3066815",
 	["illustrator:shikieiki_4"] = "カズ",
 	["origin:shikieiki_4"] = "p号：4734540，个人id：137496",
 	["illustrator:shikieiki_5"] = " 偽造光 ",
@@ -70,7 +69,7 @@ return
 	["@shenpan-select"] = "你可以选择一名其他角色，对其发动“审判”。",
 	["huiwu"] = "悔悟",
 	[":huiwu"] = "当你成为其他角色使用的【杀】或普通锦囊牌的目标后，其可以令你摸一张牌，然后你可以令此牌对你无效。" ,
-	["huiwu:fsu0413"] = "你使用【%arg】时，指定了<font color=\"#00FF00\"><b>%src </b></font>为目标，你可以对<font color=\"#00FF00\"><b>%src </b></font>发动其“悔悟”。" , 
+	["huiwu:fsu0413"] = "你使用【%arg】时，指定了<font color=\"#00FF00\"><b>%src </b></font>为目标，你可以对<font color=\"#00FF00\"><b>%src </b></font>发动其“悔悟”。" ,
 	["huiwu_nullify:dawda"] = "悔悟你可以令 %src 使用【%arg】 对你无效。",
 	["huazhong"] = "花冢" ,
 	[":huazhong"] = "<font color=\"orange\"><b>主公技，</b></font>当其他战势力角色造成1点伤害后，其可以判定，当红色判定牌生效后，你获得之。" ,
@@ -122,7 +121,7 @@ return
 	["@weiya"]= "由于“威压”的效果，你需要弃置一张牌名相同的牌，否则之前的【%src】无效。",
 	["#weiya"]= "由于“%arg”的效果，%from的【%arg2】无效。",
 	["#weiya_ask"]= "由于“%arg”的效果，%from 需要弃置一张与【%arg2】牌名相同的牌。",
-	
+
 	["fanhua"] = "繁花",
 	[":fanhua"] = "你可以将一张与场上一种花色相同的牌当无距离限制的【杀】使用或打出。",
 
@@ -246,8 +245,13 @@ return
 	["origin:hatate_4"] = "p号：29166434，个人id：217707",
 
 	["kuaizhao"] = "快照",
-	[":kuaizhao"] = "摸牌阶段，你可以少摸一张牌并令一名在你攻击范围内的角色展示其手牌，若如此做，你多摸X张牌（X为其中的基本牌的牌数且至多为2）。",
-	["@kuaizhao-select_one"] = "选择一名其他角色，令其展示其所有手牌。",
+	[":kuaizhao"] = "摸牌阶段结束时，你可以弃置一张牌并展示你攻击范围内的一名角色的手牌，若其中有基本牌，你选择一项：1.摸X张牌（X为其中的基本牌数且至多为2）；2.依次视为使用其中一至X张黑色的基本牌或普通锦囊牌（不能同名）。",
+	["@kuaizhao-card1"] = "快照你可以弃置 1 张牌并选择一名在你攻击范围内的角色，令其展示其所有手牌。",
+	["~kuaizhao1"] = "选择牌 - 选择一名角色 - “确定”",
+	["@kuaizhao-card2"] = "快照你可以视为使用 %arg2 张其中的黑色基本牌或普通锦囊牌，或者按“取消”摸 %arg2 张牌。",
+	["~kuaizhao2"] = "（使用牌）选择视为使用类型的牌 -> 选择此牌的目标 -> “确定” / （摸牌）“取消”",
+	["@kuaizhao-card3"] = "快照你可以视为使用 %arg2 张其中的黑色基本牌或普通锦囊牌。你还可以使用 %arg 张牌。",
+	["~kuaizhao3"] = "选择视为使用类型的牌 -> 选择此牌的目标 -> “确定”",
 	["#kuaizhao"] = "快照(后续)",
 	["duanjiao"] = "短焦",
 	[":duanjiao"] = "<font color=\"blue\"><b>锁定技，</b></font>你的攻击范围视为3。",
@@ -270,7 +274,7 @@ return
 	["origin:kokoro_4"] = "p号：38162749，个人id：2600911",
 	["illustrator:kokoro_5"] = "ちろたた/tirotata",
 	["origin:kokoro_5"] = "p号：68574773；个人id：4743526",
-	
+
 
 	["nengwu"] = "能舞",
 	[":nengwu"] = "当你于回合外回复体力后/获得牌后，你可以令一名体力值/手牌数小于你的角色摸一张牌；当你于回合外受到伤害后/失去手牌后，你可以弃置一名体力值/手牌数大于你的角色的一张手牌。",
@@ -309,7 +313,7 @@ return
 --**********************************************
 	--zhan012  势力：战 4血
 	["sumireko_sp"] = "密封梦魇堇子",
-	["#sumireko_sp"] = "往返两界的梦魂", 
+	["#sumireko_sp"] = "往返两界的梦魂",
 	["designer:sumireko_sp"] = "bullytou",
 
 	["illustrator:sumireko_sp"] = "EO@例大祭ひ19ab",
@@ -322,18 +326,18 @@ return
 	["~mengxiang"] = "选择X名其他角色 -> 确定 -> 选择要使用的牌和牌的目标 ->确定",
 	["$mengxiang"] = "%from 发动“%arg” 使用 %to 的 %card ",
 	["mengxiangtarget"] = "梦乡",
-	
+
 	["jishi"] = "记事",
 	[":jishi"] = "当你的手牌因弃置而置入弃牌堆时，你可以将其中至少一张牌以任意顺序置于牌堆顶。",
 	["#jishi_temp"] = "记事",
 	["@jishi"] = "你可以发动“记事”，将所需的牌置于牌堆顶",
 	["~jishi"] = "选择要放置的牌 -> 确定 -> 调整顺序 -> 确定",
-	
-	
+
+
 --**********************************************
 	--zhan013  势力：战 4血
 	["yorigamis"] = "依神女苑&依神紫苑",
-	["#yorigamis"] = "最凶最恶的双子", 
+	["#yorigamis"] = "最凶最恶的双子",
 	["&yorigamis"] = "依神姐妹",
 	["designer:yorigamis"] = "bullytou",
 
@@ -356,14 +360,14 @@ return
 	["&kokoro_sp"] = "丧面秦心",
 	["#kokoro_sp"] = "追寻希望的付丧神",
 	["designer:kokoro_sp"] = "223",
-	
+
 	["illustrator:kokoro_sp"] = "Ny速@3日目V23a",
 	["origin:kokoro_sp"] = "p号：37640183；个人id：218591",
 	["illustrator:kokoro_sp_1"] = "poppy",
 	["origin:kokoro_sp_1"] = "p号：38073917；个人id：3596054",
 	["illustrator:kokoro_sp_2"] = "ぢせ",
 	["origin:kokoro_sp_2"] = "p号：75568924；个人id：4790",
-	
+
 	["mianling"] = "面灵",
 	[":mianling"] = "<font color=\"blue\"><b>锁定技，</b></font>当你从牌堆获得牌时，你将牌堆顶等量的牌置于人物牌上称为“面”，然后若“面”数大于存活角色数，你将X张的“面”置入弃牌堆（X为两者之差）；你能使用“面”，以此法使用牌结算完毕后，你须弃置一张牌或失去1点体力。",
 	["@mianling-exchange"] = "你因“面灵”的效果，需要将 %arg 张“面”置入弃牌堆。",

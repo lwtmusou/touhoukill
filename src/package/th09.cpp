@@ -1444,89 +1444,196 @@ public:
     }
 };
 
+KuaizhaoCard::KuaizhaoCard()
+{
+    will_throw = true;
+}
+
+bool KuaizhaoCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
+{
+    return targets.isEmpty() && to_select != Self && Self->inMyAttackRange(to_select);
+}
+
+void KuaizhaoCard::onEffect(const CardEffectStruct &effect) const
+{
+    Room *room = effect.to->getRoom();
+    room->showAllCards(effect.to);
+
+    int basicNum = 0;
+    QList<int> blackBasicNdtrick;
+    QList<const Card *> hcs = effect.to->getHandcards();
+    foreach (const Card *c, hcs) {
+        if (c->getTypeId() == Card::TypeBasic)
+            ++basicNum;
+        if ((c->isNDTrick() || c->getTypeId() == Card::TypeBasic) && c->isBlack())
+            blackBasicNdtrick << c->getEffectiveId();
+    }
+
+    if (basicNum == 0)
+        return;
+
+    basicNum = qMin(basicNum, 2);
+
+    int blackBasicNdtrickUsedCount = 0;
+    if (!blackBasicNdtrick.isEmpty()) {
+        QString prop = IntList2StringList(blackBasicNdtrick).join("+");
+        room->setPlayerProperty(effect.from, "kuaizhao_black", prop);
+        room->setPlayerProperty(effect.from, "kuaizhao_used", QString());
+
+        for (; blackBasicNdtrickUsedCount < basicNum; ++blackBasicNdtrickUsedCount) {
+            QStringList usedList = effect.from->property("kuaizhao_used").toString().split("+");
+            bool allUsed = true;
+            foreach (int id, blackBasicNdtrick) {
+                const Card *c = Sanguosha->getCard(id);
+                bool thisUsed = false;
+                foreach (const QString &used, usedList) {
+                    if (c->isKindOf(used.toUtf8().constData())) {
+                        thisUsed = true;
+                        break;
+                    }
+                }
+                if (!thisUsed) {
+                    allUsed = false;
+                    break;
+                }
+            }
+
+            if (allUsed)
+                break;
+
+            int prompt = 2;
+            if (blackBasicNdtrickUsedCount != 0)
+                prompt = 3;
+            if (!room->askForUseCard(effect.from, "@@kuaizhao-card2",
+                                     "@kuaizhao-card" + QString::number(prompt) + ":::" + QString::number(basicNum - blackBasicNdtrickUsedCount) + ":" + QString::number(basicNum),
+                                     prompt, Card::MethodUse, false))
+                break;
+        }
+    }
+
+    room->setPlayerProperty(effect.from, "kuaizhao_black", QString());
+
+    if (blackBasicNdtrickUsedCount == 0)
+        effect.from->drawCards(basicNum, "kuaizhao");
+}
+
+class KuaizhaoVS : public OneCardViewAsSkill
+{
+public:
+    KuaizhaoVS()
+        : OneCardViewAsSkill("kuaizhao")
+    {
+    }
+
+    bool isEnabledAtPlay(const Player *) const override
+    {
+        return false;
+    }
+
+    bool isEnabledAtResponse(const Player *, const QString &pattern) const override
+    {
+        return pattern.startsWith("@@kuaizhao-card");
+    }
+
+    QString getExpandPile() const override
+    {
+        QList<int> blackList = StringList2IntList(Self->property("kuaizhao_black").toString().split("+"));
+        if (!blackList.isEmpty())
+            return "#kuaizhao";
+
+        return {};
+    }
+
+    bool viewFilter(const Card *to_select) const override
+    {
+        if (Sanguosha->getCurrentCardUsePattern() == "@@kuaizhao-card1")
+            return true;
+
+        QList<int> blackList = StringList2IntList(Self->property("kuaizhao_black").toString().split("+"));
+        QStringList usedList = Self->property("kuaizhao_used").toString().split("+");
+
+        if (blackList.contains(to_select->getEffectiveId())) {
+            bool used = false;
+            foreach (const QString &s, usedList) {
+                if (to_select->isKindOf(s.toUtf8().constData())) {
+                    used = true;
+                    break;
+                }
+            }
+
+            return !used;
+        }
+
+        return false;
+    }
+
+    const Card *viewAs(const Card *originalCard) const override
+    {
+        if (Sanguosha->getCurrentCardUsePattern() == "@@kuaizhao-card1") {
+            KuaizhaoCard *c = new KuaizhaoCard;
+            c->addSubcard(originalCard);
+            return c;
+        }
+
+        Card *c = Sanguosha->cloneCard(originalCard->getClassName());
+        c->setSkillName("_" + objectName());
+        return c;
+    }
+};
+
 class Kuaizhao : public TriggerSkill
 {
 public:
     Kuaizhao()
         : TriggerSkill("kuaizhao")
     {
-        events << DrawNCards;
+        events = {EventPhaseEnd, PreCardUsed};
+        view_as_skill = new KuaizhaoVS;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
     {
-        DrawNCardsStruct dc = data.value<DrawNCardsStruct>();
-        if (dc.n <= 0 || !dc.player->hasSkill(this))
-            return QList<SkillInvokeDetail>();
+        if (triggerEvent == PreCardUsed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->getSkillName() == objectName() && use.card->isVirtualCard() && use.card->subcardsLength() == 0 && use.from != nullptr) {
+                if (use.m_addHistory) {
+                    room->addPlayerHistory(use.from, use.card->getClassName(), -1);
+                    use.m_addHistory = false;
+                    data = QVariant::fromValue(use);
+                }
 
-        foreach (ServerPlayer *p, room->getOtherPlayers(dc.player)) {
-            if (!p->isKongcheng() && dc.player->inMyAttackRange(p))
-                return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, dc.player, dc.player);
+                QString type = use.card->getClassName();
+                if (use.card->isKindOf("Slash"))
+                    type = "Slash";
+                else if (use.card->isKindOf("Analeptic"))
+                    type = "Analeptic";
+                else if (use.card->isKindOf("Peach"))
+                    type = "Peach";
+
+                QStringList usedProp = use.from->property("kuaizhao_used").toString().split("+");
+                usedProp << type;
+                room->setPlayerProperty(use.from, "kuaizhao_used", usedProp.join("+"));
+            }
         }
-        return QList<SkillInvokeDetail>();
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *, const QVariant &data) const override
+    {
+        if (e == EventPhaseEnd) {
+            ServerPlayer *p = data.value<ServerPlayer *>();
+            if (p->getPhase() == Player::Draw && p->isAlive() && p->hasSkill(this))
+                return {SkillInvokeDetail(this, p, p)};
+        }
+        return {};
     }
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        ServerPlayer *player = invoke->invoker;
-        QList<ServerPlayer *> others = room->getOtherPlayers(player);
-        foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-            if (p->isKongcheng() || !player->inMyAttackRange(p))
-                others.removeOne(p);
-        }
-
-        ServerPlayer *target = room->askForPlayerChosen(player, others, objectName(), "@kuaizhao-select_one", true, true);
-        if (target != nullptr) {
-            invoke->targets << target;
-            return true;
-        }
-        return false;
+        return room->askForUseCard(invoke->invoker, "@@kuaizhao-card1", "@kuaizhao-card1", 1, Card::MethodDiscard, true, objectName());
     }
 
-    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
+    bool effect(TriggerEvent, Room *, QSharedPointer<SkillInvokeDetail>, QVariant &) const override
     {
-        invoke->invoker->tag["kuaizhao_target"] = QVariant::fromValue(invoke->targets.first());
-
-        DrawNCardsStruct s = data.value<DrawNCardsStruct>();
-        s.n = s.n - 1;
-        data = QVariant::fromValue(s);
-        return false;
-    }
-};
-
-class KuaizhaoEffect : public TriggerSkill
-{
-public:
-    KuaizhaoEffect()
-        : TriggerSkill("#kuaizhao")
-    {
-        events << AfterDrawNCards;
-    }
-
-    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
-    {
-        DrawNCardsStruct dc = data.value<DrawNCardsStruct>();
-        ServerPlayer *target = dc.player->tag["kuaizhao_target"].value<ServerPlayer *>();
-        if (target != nullptr)
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, dc.player, dc.player, nullptr, true, target);
-        return QList<SkillInvokeDetail>();
-    }
-
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
-    {
-        invoke->invoker->tag.remove("kuaizhao_target");
-
-        ServerPlayer *target = invoke->targets.first();
-        room->showAllCards(target);
-        room->getThread()->delay(1000);
-        room->clearAG();
-
-        int num = 0;
-        foreach (const Card *c, target->getCards("hs")) {
-            if (c->isKindOf("BasicCard"))
-                num++;
-        }
-        room->drawCards(invoke->invoker, qMin(2, num));
         return false;
     }
 };
@@ -1537,7 +1644,6 @@ public:
     Duanjiao()
         : AttackRangeSkill("duanjiao")
     {
-        //view_as_skill = new ShowDistanceSkill(objectName());
     }
 
     int getFixed(const Player *target, bool) const override
@@ -3030,9 +3136,7 @@ TH09Package::TH09Package()
 
     General *hatate = new General(this, "hatate", "zhan", 4);
     hatate->addSkill(new Kuaizhao);
-    hatate->addSkill(new KuaizhaoEffect);
     hatate->addSkill(new Duanjiao);
-    related_skills.insertMulti("kuaizhao", "#kuaizhao");
 
     General *kokoro = new General(this, "kokoro$", "zhan", 4);
     kokoro->addSkill(new Nengwu);
@@ -3071,6 +3175,7 @@ TH09Package::TH09Package()
     addMetaObject<MengxiangTargetCard>();
     addMetaObject<JishiCard>();
     addMetaObject<MianLingCard>();
+    addMetaObject<KuaizhaoCard>();
     addMetaObject<ShizaiCard>();
     addMetaObject<YsJieCard>();
 

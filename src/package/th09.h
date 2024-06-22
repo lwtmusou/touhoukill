@@ -133,6 +133,17 @@ public:
     const Card *validateInResponse(ServerPlayer *user) const override;
 };
 
+class KuaizhaoCard : public SkillCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE KuaizhaoCard();
+
+    bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const override;
+    void onEffect(const CardEffectStruct &effect) const override;
+};
+
 class ShizaiCard : public SkillCard
 {
     Q_OBJECT

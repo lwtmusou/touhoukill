@@ -1184,17 +1184,13 @@ void Dashboard::disableAllCards()
 void Dashboard::enableCards()
 {
     m_mutexEnableCards.lock();
-    /*foreach (const QString &pile, Self->getPileNames()) {
-        if (pile.startsWith("&") || pile == "wooden_ox")
-            expandPileCards(pile);
-    }*/
     foreach (const QString &pile, Self->getHandPileList(false))
         expandPileCards(pile);
     expandSpecialCard();
 
-    foreach (CardItem *card_item, m_handCards) {
+    foreach (CardItem *card_item, m_handCards)
         card_item->setEnabled(card_item->getCard()->isAvailable(Self));
-    }
+
     m_mutexEnableCards.unlock();
 }
 
@@ -1219,7 +1215,7 @@ void Dashboard::startPending(const ViewAsSkill *skill)
         if ((resp_skill != nullptr) && (resp_skill->getRequest() == Card::MethodResponse || resp_skill->getRequest() == Card::MethodUse))
             expand = true;
     }
-    //deal askForCard at first, then use the card automatically
+
     if (Self->hasFlag("Global_expandpileFailed"))
         expand = true;
 
@@ -1230,10 +1226,6 @@ void Dashboard::startPending(const ViewAsSkill *skill)
     retractSpecialCard();
 
     if (expand) {
-        /*foreach (const QString &pile, Self->getPileNames()) {
-            if (pile.startsWith("&") || pile == "wooden_ox")
-                expandPileCards(pile);
-        }*/
         foreach (const QString &pile, Self->getHandPileList(false))
             expandPileCards(pile);
         if (!((skill != nullptr) && skill->isResponseOrUse()))
@@ -1316,6 +1308,8 @@ void Dashboard::expandPileCards(const QString &pile_name)
         }
     } else if (pile_name == "#judging_area") {
         pile = Self->getJudgingAreaID();
+    } else if (pile_name == "#kuaizhao") {
+        pile = StringList2IntList(Self->property("kuaizhao_black").toString().split("+"));
     } else {
         pile = Self->getPile(new_name);
     }
@@ -1342,7 +1336,7 @@ void Dashboard::expandPileCards(const QString &pile_name)
             }
         }
         if (pile_name == "#mengxiang_temp") {
-            QString target_name = ""; //Self->tag.value("mengxiang_target", QString()).toString();
+            QString target_name = "";
             foreach (const Player *p, Self->getAliveSiblings()) {
                 if (p->hasFlag("mengxiangtarget")) {
                     target_name = p->objectName();
