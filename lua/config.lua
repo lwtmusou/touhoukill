@@ -21,10 +21,11 @@ config = {
 		"tkz",
 		"gxs",
 		-- "hld",
+		-- "swy",
 		"wai",
 		"touhougod"
 	},
-	hegemony_kingdoms = { 
+	hegemony_kingdoms = {
 	"wei", "qun", "shu", "wu"
 	},
 	kingdom_colors = {
@@ -43,9 +44,10 @@ config = {
 		tkz = "#48D1CC",
 		gxs = "#ff8080",
 		hld = "#ff0000",
+		swy = "#461187",
 		wai = "#cc7014",
 		touhougod = "#96943D",
-		
+
 		wei = "#547998",
 		shu = "#D0796C",
 		wu = "#4DB873",
@@ -76,8 +78,9 @@ config = {
 		"TH14",
 		"TH15",
 		"TH16",
-		"TH17", 
-		-- "TH18", 
+		"TH17",
+		-- "TH18",
+		-- "TH19",
 		"TH99",
 		"THNDJ",
 		"TouhouGod",
@@ -85,7 +88,7 @@ config = {
 		"Standard", --此包内带pattern的定义 不能屏蔽。。。
 		"Test",
 		"Playground", -- 发布前再次屏蔽掉
-		
+
 	},
 
 	hulao_packages = {
@@ -148,10 +151,10 @@ config = {
 
 	peasantsvslandlord_ban = {
 	},
-	
+
 	contest2v2_ban = {
 	},
-	
+
 	kof_ban = {
 	},
 
@@ -164,10 +167,10 @@ config = {
 	basara_ban = {
 	},
 
-	hegemony_ban = {		
-	
+	hegemony_ban = {
+
 	},
-	
+
 	pairs_ban = {
 	},
 
@@ -178,7 +181,7 @@ config = {
 
 	bgm_convert_pairs = {
 		--BGM： 由于开始尝试加入arrange代替原曲，曲目对应关系可能有变，以后转换列表还要重新整理。
-		
+
 		"kosuzu->akyuu",
 		"tokiko->rinnosuke",
 		"unzan->ichirin",

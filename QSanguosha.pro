@@ -73,6 +73,7 @@ SOURCES += \
     src/package/th16.cpp \
     src/package/th17.cpp \
     src/package/th18.cpp \
+    src/package/th19.cpp \
     src/package/th99.cpp \
     src/package/thndj.cpp \
     src/package/touhougod.cpp \
@@ -181,6 +182,7 @@ HEADERS += \
     src/package/th16.h \
     src/package/th17.h \
     src/package/th18.h \
+    src/package/th19.h \
     src/package/th99.h \
     src/package/thndj.h \
     src/package/touhougod.h \
