@@ -103,4 +103,10 @@ return {
 	[":ftmfeitian"] = "<font color=blue><b>锁定技，</b></font>当你使用黑色牌时，你获得X+1枚“飞”标记；当你使用红色牌时，你获得X枚“飞”标记。结束阶段开始时，若X为：0，你摸两张牌；一名角色的座次，你选择令其回复或失去1点体力；牌堆牌数，你获得牌堆。回合结束时，你弃所有“飞”标记。（X为“飞”标记数）",
 	["ftmfeitian_x:recover-or-losehp"] = "飞天：点击“确定”令 %src 失去 1 点体力，或者点击“取消”令 %src 回复 1 点体力。",
 	["@flying"] = "飞",
+	
+	["huochairen"] = "火柴人",
+	["#huochairen"] = "比那名居天子",
+	["designer:huochairen"] = "dawda",
+	["TianMing"] = "天明",
+	[":TianMing"] = "<font color=blue><b>锁定技，</b></font>当你受到伤害后，你摸两张牌。",
 }
