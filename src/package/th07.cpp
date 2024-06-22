@@ -1676,6 +1676,9 @@ public:
 
     bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
     {
+        if (Self->isJilei(to_select))
+            return false;
+
         QString cardStr = Self->property("wangwu").toString();
         const Card *c = Card::Parse(cardStr);
         if (c == nullptr)

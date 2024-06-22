@@ -1547,7 +1547,7 @@ public:
     bool viewFilter(const Card *to_select) const override
     {
         if (Sanguosha->getCurrentCardUsePattern() == "@@kuaizhao-card1")
-            return true;
+            return !Self->isJilei(to_select);
 
         QList<int> blackList = StringList2IntList(Self->property("kuaizhao_black").toString().split("+"));
         QStringList usedList = Self->property("kuaizhao_used").toString().split("+");

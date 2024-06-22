@@ -364,9 +364,9 @@ public:
         response_pattern = "@@dfgzmjiyi";
     }
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *) const override
+    bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const override
     {
-        return selected.length() < 2;
+        return selected.length() < 2 && !Self->isJilei(to_select);
     }
 
     const Card *viewAs(const QList<const Card *> &cards) const override
