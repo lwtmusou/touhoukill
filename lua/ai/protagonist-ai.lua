@@ -778,14 +778,7 @@ end
 
 --[春息]
 local chunxiTargetChoose = function(self)
-	local enemies = self:getEnemies(self.player)
-	local target_table = {}
-	
-	for _, p in ipairs(enemies) do
-		if p:getMark("chunxi_used") == 0 then
-			table.insert(target_table, p)
-		end
-	end
+	local target_table = self:getEnemies(self.player)
 
 	if #target_table == 0 then return false end
 	local chunxi_target

@@ -947,10 +947,13 @@ public:
             if (triggerEvent == DrawNCards) {
                 if (d.player->hasSkill(this) && d.n >= 1)
                     return {SkillInvokeDetail(this, d.player, d.player, nullptr, true)};
-
             } else if (triggerEvent == AfterDrawNCards) {
-                if (d.player->hasFlag(objectName()))
-                    return {SkillInvokeDetail(this, d.player, d.player, nullptr, true, nullptr, false)};
+                if (d.player->hasFlag(objectName())) {
+                    foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
+                        if (!p->isKongcheng())
+                            return {SkillInvokeDetail(this, d.player, d.player, nullptr, true, nullptr, false)};
+                    }
+                }
             }
         }
 
@@ -989,11 +992,8 @@ public:
 
             QList<int> ids = target->handCards();
             int id = room->doGongxin(invoke->invoker, target, ids, objectName());
-
-            if (id > -1)
-                room->obtainCard(invoke->invoker, id, false);
-
             invoke->invoker->tag.remove(objectName());
+            room->obtainCard(invoke->invoker, id, false);
         }
 
         return false;
@@ -1009,7 +1009,7 @@ ChunxiCard::ChunxiCard()
 
 bool ChunxiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const
 {
-    return targets.isEmpty() && to_select != Self && !to_select->isKongcheng() && to_select->getMark("chunxi_used") == 0;
+    return targets.isEmpty() && to_select != Self && !to_select->isKongcheng();
 }
 
 void ChunxiCard::onUse(Room *room, const CardUseStruct &card_use) const
@@ -1025,7 +1025,6 @@ void ChunxiCard::onUse(Room *room, const CardUseStruct &card_use) const
 
     // TODO : set target flag
     card_use.to.first()->setMark("chunxi", 1);
-    room->setPlayerMark(card_use.to.first(), "chunxi_used", 1);
 }
 
 class ChunxiVS : public OneCardViewAsSkill
@@ -1056,24 +1055,13 @@ public:
     Chunxi()
         : TriggerSkill("chunxi")
     {
-        events << CardsMoveOneTime << EventPhaseChanging;
+        events << CardsMoveOneTime;
         view_as_skill = new ChunxiVS;
     }
 
     bool canPreshow() const override
     {
         return true;
-    }
-
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
-    {
-        if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::NotActive) {
-                foreach (ServerPlayer *p, room->getAllPlayers())
-                    room->setPlayerMark(p, "chunxi_used", 0);
-            }
-        }
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent e, const Room *room, const QVariant &data) const override
@@ -1084,7 +1072,7 @@ public:
 
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             ServerPlayer *reimu = qobject_cast<ServerPlayer *>(move.to);
-            if (reimu != nullptr && reimu->hasSkill(this) && move.to_place == Player::PlaceHand) {
+            if (reimu != nullptr && reimu->hasSkill(this) && move.to_place == Player::PlaceHand && move.reason.m_skillName != objectName()) {
                 foreach (int id, move.card_ids) {
                     if (Sanguosha->getCard(id)->getSuit() == Card::Heart && room->getCardPlace(id) == Player::PlaceHand) {
                         ServerPlayer *owner = room->getCardOwner(id);
@@ -1131,7 +1119,8 @@ public:
     bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
         int obtainId = room->askForCardChosen(invoke->invoker, invoke->targets.first(), "hs", objectName());
-        room->obtainCard(invoke->invoker, obtainId, false);
+        CardMoveReason r(CardMoveReason::S_REASON_ROB, invoke->invoker->objectName(), objectName(), QString());
+        room->obtainCard(invoke->invoker, Sanguosha->getCard(obtainId), r, false);
 
         return false;
     }
