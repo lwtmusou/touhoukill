@@ -940,7 +940,7 @@ public:
         events << DrawNCards << AfterDrawNCards;
     }
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
     {
         DrawNCardsStruct d = data.value<DrawNCardsStruct>();
         if (d.player != nullptr && d.player->isAlive() && !d.isInitial) {
@@ -949,7 +949,7 @@ public:
                     return {SkillInvokeDetail(this, d.player, d.player, nullptr, true)};
             } else if (triggerEvent == AfterDrawNCards) {
                 if (d.player->hasFlag(objectName())) {
-                    foreach (ServerPlayer *p, room->getOtherPlayers(invoke->invoker)) {
+                    foreach (ServerPlayer *p, room->getOtherPlayers(d.player)) {
                         if (!p->isKongcheng())
                             return {SkillInvokeDetail(this, d.player, d.player, nullptr, true, nullptr, false)};
                     }
