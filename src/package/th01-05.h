@@ -85,17 +85,6 @@ public:
     void use(Room *room, const CardUseStruct &card_use) const override;
 };
 
-class ZongjiuCard : public SkillCard
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE ZongjiuCard();
-
-    bool targetFixed(const Player *Self) const override;
-    const Card *validate(CardUseStruct &card_use) const override;
-};
-
 class QirenCard : public SkillCard
 {
     Q_OBJECT

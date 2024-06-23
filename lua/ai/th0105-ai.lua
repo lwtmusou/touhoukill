@@ -864,47 +864,38 @@ sgs.ai_use_priority.MoyanCard = sgs.ai_use_priority.ExNihilo - 0.2
 
 --矜羯罗
 --[纵酒]
-local zongjiu_skill = {}
-zongjiu_skill.name = "zongjiu"
-table.insert(sgs.ai_skills, zongjiu_skill)
-function zongjiu_skill.getTurnUseCard(self)
-	if self.player:getCards("s"):isEmpty() then return nil end
-	local slash = self:getCard("Slash")
-	if not slash or not self:shouldUseAnaleptic(self.player, slash) then return nil end
-	local ana = sgs.cloneCard("analeptic", sgs.Card_NoSuit, 0)
-	ana:deleteLater()
-	if not sgs.Analeptic_IsAvailable(self.player, ana) or self.player:isCardLimited(ana, sgs.Card_MethodUse) then   return nil  end
-	local cards = self.player:getCards("s")
-	cards = sgs.QList2Table(cards)
-	self:sortByCardNeed(cards)
-	return sgs.Card_Parse("@ZongjiuCard=" .. cards[1]:getEffectiveId())
-end
-sgs.ai_skill_use_func.ZongjiuCard=function(card,use,self)
-	use.card = card
-end
-sgs.ai_use_priority.ZongjiuCard = sgs.ai_use_priority.Slash + 0.4
-sgs.ai_skill_cardask["@zongjiu"] = function(self, data)
-	local cards = self.player:getCards("h")
-	cards = sgs.QList2Table(cards)
-	self:sortByCardNeed(cards)
-	if #cards > 0 then
-		return "$" .. cards[1]:getId()
-	end
-	return "."
-end
-
-function sgs.ai_cardsview_valuable.zongjiu(self, class_name, player)
-	if class_name == "Analeptic" then
-		local dying = player:getRoom():getCurrentDyingPlayer()
-		if not dying then return nil end
-		if self:isFriend(dying, player) then
-			local cards = self.player:getCards("s")
-			cards = sgs.QList2Table(cards)
-			if #cards== 0 then return nil end
-			self:sortByCardNeed(cards)
-			return "@ZongjiuCard=" .. cards[1]:getEffectiveId()
+sgs.ai_skill_use["@@zongjiu-card1"] = function(self)
+	local handcards = sgs.QList2Table(self.player:getHandcards())
+	if #handcards == 0 then return end
+	self:sortByUseValue(handcards)
+	local use = {isDummy = true, to = sgs.SPlayerList()}
+	local s = sgs.Sanguosha:cloneCard("analeptic",sgs.Card_SuitToBeDecided, -1)
+	s:addSubcard(handcards[1])
+	s:setSkillName("zongjiu")
+	s:setShowSkill("zongjiu")
+	self:useCardAnaleptic(self,s, use)
+	if use.card then
+		local realUse = sgs.CardUseStruct()
+		realUse.card = use.card
+		for _, to in use.to do
+			realUse.to:append(to)
 		end
-		return nil
+		return realUse:toString()
+	end
+end
+sgs.ai_skill_use["@@zongjiu-card2"] = function(self)
+	local use = {isDummy = true, to = sgs.SPlayerList()}
+	local s = sgs.Sanguosha:cloneCard("slash",sgs.Card_NoSuit, 0)
+	s:setSkillName("zongjiu")
+	s:setShowSkill("zongjiu")
+	self:useCardSlash(self,s, use)
+	if use.card then
+		local realUse = sgs.CardUseStruct()
+		realUse.card = use.card
+		for _, to in use.to do
+			realUse.to:append(to)
+		end
+		return realUse:toString()
 	end
 end
 
@@ -1021,7 +1012,7 @@ sgs.ai_skill_use["@@luli"] = function(self, prompt)
 		end
 		if ids:length() >= num then break end
 	end
-	
+
 	if (num - ids:length()) >= 3 then
 		for _,c in sgs.qlist(self.player:getCards("e")) do
 			ids:append(c:getEffectiveId())
@@ -1029,11 +1020,11 @@ sgs.ai_skill_use["@@luli"] = function(self, prompt)
 		end
 	end
 
-	
-	
+
+
 	--默认全制衡？
 	if not ids:isEmpty() then
-        
+
 		local recast = {}
 		for _,id in sgs.qlist(ids) do
 			table.insert(recast, tostring(id))
@@ -1060,7 +1051,7 @@ sgs.ai_choicemade_filter.skillChoice.xiewu = function(self, player, args, data)
 		target = data:toCardResponse().m_from
 	end
 	local choice = args[#args]
-	
+
 	if  choice == "draw" then
 		sgs.updateIntention(player, target, -40)
 	elseif choice == "discard" then

@@ -2118,6 +2118,7 @@ public:
     {
         frequency = Compulsory;
         events = {NumOfEvents};
+        show_type = "static";
     }
 
     void record(TriggerEvent, Room *room, QVariant &) const override
