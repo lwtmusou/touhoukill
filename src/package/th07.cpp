@@ -1635,15 +1635,17 @@ public:
             }
         } else if (e == EventPhaseStart) {
             ServerPlayer *p = data.value<ServerPlayer *>();
-            if (p->getPhase() == Player::Finish) {
-                SkillInvokeDetail d(this, p, p, nullptr, true);
-                d.tag["i"] = 1;
-                return {d};
-            }
-            if (p->getPhase() == Player::Start && p->getHandcardNum() > p->getMaxCards()) {
-                SkillInvokeDetail d(this, p, p, nullptr, true);
-                d.tag["i"] = 2;
-                return {d};
+            if (p->isAlive() && p->hasSkill(this)) {
+                if (p->getPhase() == Player::Finish) {
+                    SkillInvokeDetail d(this, p, p, nullptr, true);
+                    d.tag["i"] = 1;
+                    return {d};
+                }
+                if (p->getPhase() == Player::Start && p->getHandcardNum() > p->getMaxCards()) {
+                    SkillInvokeDetail d(this, p, p, nullptr, true);
+                    d.tag["i"] = 2;
+                    return {d};
+                }
             }
         }
         return {};
