@@ -4009,6 +4009,93 @@ public:
     }
 };
 
+class NantiVS : public ZeroCardViewAsSkill
+{
+public:
+    NantiVS()
+        : ZeroCardViewAsSkill("nanti")
+    {
+        response_or_use = true;
+        response_pattern = "@@nanti";
+    }
+
+    const Card *viewAs() const override
+    {
+        Slash *s = new Slash(Card::NoSuit, 0);
+        s->setSkillName("_" + objectName());
+        return s;
+    }
+};
+
+class Nanti : public TriggerSkill
+{
+public:
+    static int X(const Room *r)
+    {
+        QList<EquipCard::Location> ls = {
+            EquipCard::WeaponLocation, EquipCard::ArmorLocation, EquipCard::DefensiveHorseLocation, EquipCard::OffensiveHorseLocation, EquipCard::TreasureLocation,
+        };
+
+        foreach (ServerPlayer *p, r->getAlivePlayers()) {
+            if (p->getWeapon())
+                ls.removeAll(EquipCard::WeaponLocation);
+            if (p->getArmor())
+                ls.removeAll(EquipCard::ArmorLocation);
+            if (p->getDefensiveHorse())
+                ls.removeAll(EquipCard::DefensiveHorseLocation);
+            if (p->getOffensiveHorse())
+                ls.removeAll(EquipCard::OffensiveHorseLocation);
+            if (p->getTreasure())
+                ls.removeAll(EquipCard::TreasureLocation);
+        }
+
+        return ls.length();
+    }
+
+    Nanti()
+        : TriggerSkill("nanti")
+    {
+        events = {EventPhaseEnd};
+        view_as_skill = new NantiVS;
+    }
+
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
+    {
+        ServerPlayer *p = data.value<ServerPlayer *>();
+        if (p->isAlive() && p->hasSkill(this) && p->getPhase() == Player::Play && p->getHandcardNum() != (5 - X(room)))
+            return {SkillInvokeDetail(this, p, p)};
+
+        return {};
+    }
+
+    bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        if (invoke->invoker->getHandcardNum() > (5 - X(room))) {
+            int n = invoke->invoker->getHandcardNum() - (5 - X(room));
+            if (room->askForDiscard(invoke->invoker, objectName(), n, n, true, false, "@nanti-discard:::" + QString::number(n) + ":" + QString::number(5 - X(room)))) {
+                invoke->tag["discard"] = true;
+                return true;
+            }
+        } else {
+            int n = (5 - X(room)) - invoke->invoker->getHandcardNum();
+            if (room->askForSkillInvoke(invoke->invoker, this, "drawcard:::" + QString::number(n) + ":" + QString::number(5 - X(room)))) {
+                invoke->tag["discard"] = false;
+                room->drawCards(invoke->invoker, n, objectName());
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
+    {
+        if (invoke->tag["discard"].toBool())
+            room->askForUseCard(invoke->invoker, "@@nanti", "@nanti-useslash", 1, Card::MethodUse, true, "_" + objectName());
+
+        return false;
+    }
+};
+
 class Yindu : public TriggerSkill
 {
 public:
@@ -6966,8 +7053,6 @@ TouhouGodPackage::TouhouGodPackage()
     reimu_god->addSkill(new Yibian);
     reimu_god->addSkill(new Tuizhi);
     reimu_god->addSkill(new Tongjie);
-    //reimu_god->addSkill(new Fengyin);
-    //reimu_god->addSkill(new Huanxiang);
 
     General *shikieiki_god = new General(this, "shikieiki_god", "touhougod", 4);
     shikieiki_god->addSkill(new Quanjie);
@@ -7016,6 +7101,7 @@ TouhouGodPackage::TouhouGodPackage()
     related_skills.insertMulti("shenbao", "#shenbao_distance");
     related_skills.insertMulti("shenbao", "#shenbao");
     related_skills.insertMulti("shenbao", "#shenbao_viewhas");
+    kaguya_god->addSkill(new Nanti);
 
     General *komachi_god = new General(this, "komachi_god", "touhougod", 4);
     komachi_god->addSkill(new Yindu);
@@ -7085,7 +7171,6 @@ TouhouGodPackage::TouhouGodPackage()
     addMetaObject<ShenqiangCard>();
     addMetaObject<HuimieCard>();
     addMetaObject<ShenshouCard>();
-    //addMetaObject<FengyinCard>();
     addMetaObject<HuaxiangCard>();
     addMetaObject<ChaowoCard>();
     addMetaObject<ShowShenbaoCard>();

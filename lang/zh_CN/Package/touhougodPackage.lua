@@ -5,7 +5,7 @@ return{
 	["zun"] = "ZUN",
 	["#zun"] = "创幻神主",
 	["designer:zun"] = "辰焰天明",
-	
+
 	["illustrator:zun"] = "太田顺也",
 	["origin:zun"] = "靓仔照",
 	["illustrator:zun_1"] = "太田顺也",
@@ -572,6 +572,12 @@ return{
 	[":shenbao"] = "<font color=\"blue\"><b>锁定技，</b></font>你视为装备着场上的所有装备牌（武器牌的攻击范围取最长；描述不同的装备技能均能发动和触发；牌名不同的坐骑牌的装备技能均叠加；你不能发动不在你装备区里的【木牛流马】的装备技能）。",
 	["shenbao_attach"] = "装备",
 	[":shenbao_attach"] = "你可以发动场上任意一张装备牌的技能（除【木牛流马】外）。",
+	["nanti"] = "难题",
+	[":nanti"] = "出牌阶段结束时，你可以将手牌调整至5-X张牌（X为场上装备的子类型数量），若以此法弃置了牌，你可以视为使用【杀】。",
+	["@nanti-discard"] = "难题（5 - X = %arg2）你可以调整手牌至%arg2张，你可以弃置 %arg 张牌。随后可以视为使用【杀】",
+	["nanti:drawcard"] = "难题（5 - X = %arg2）你可以调整手牌至%arg2张，你可以摸 %arg 张牌。",
+	["@nanti-useslash"] = "难题你可以视为使用杀",
+	["~nanti1"] = "选择【杀】的目标 -> “确定”",
 
 	["#shenbao_distance"] = "神宝(距离)",
 	["#shenbao"] = "神宝",
@@ -650,9 +656,6 @@ return{
 	["xinhua"] = "心花",
 	[":xinhua"] = "你可以使用或打出其他角色的明置手牌。",
 
-	--["cuimian"] = "催眠",
-	--[":cuimian"] = "<font color=\"red\"><b>限定技，</b></font>出牌阶段，你可以于此阶段内获得“读心”且你使用牌无次数限制。",
-	--[":cuimian"] = "<font color=\"blue\"><b>锁定技，</b></font>若其他角色的明置手牌数不大于其手牌上限，其于其回合内不能使用、打出或弃置明置手牌。",
 	["$xinhua"] = "%from 发动“%arg” 使用/打出 %to 的 %card ",
 	["$cuimianAnimate"]= "skill=satori_god:cuimian",
 --*************************************
@@ -820,13 +823,13 @@ return{
 	["xianji:loseHP"] = "失去体力" ,
 	["xianji:recoverHP"] = "回复体力" ,
 
-	
+
 	["yuka_god"] = "神 风见幽香",
 	["&yuka_god"] = "神风见幽香",
 	["!yuka_god"] = "神 风见幽香",
 	["#yuka_god"] = "风花笑月",
 	["designer:yuka_god"] = "223",
-	
+
 	["illustrator:yuka_god"] = "河CY",
 	["origin:yuka_god"] = "p号：75887724；个人id：3869665",
 	["illustrator:yuka_god_1"] = "KiTA",
@@ -835,8 +838,8 @@ return{
 	["origin:yuka_god_2"] = "p号：65165692；个人id：18839016",
 	["illustrator:yuka_god_3"] = "dleung",
 	["origin:yuka_god_3"] = "p号：76147330；个人id：18310868",
-	
-	
+
+
 	["xiuye"] = "朽叶",
 	[":xiuye"] = "若你的人物牌上没有与之类别相同的“叶”，你可以使用弃牌堆中的<font size=\"5\", color=\"#808080\"><b>♣</b></font>基本牌或<font size=\"5\", color=\"#808080\"><b>♣</b></font>普通锦囊牌。以此法使用的牌结算完毕后，你将之置于人物牌上，称为“叶”。",
 	["kuangji"] = "狂季",
@@ -853,25 +856,25 @@ return{
 	["&tenshi_god"] = "神比那名居天子",
 	["#tenshi_god"] = "有顶天变",
 	["designer:tenshi_god"] = "三国有单",
-	
+
 	["illustrator:tenshi_god"] = "kannnu",
 	["origin:tenshi_god"] = "p号：35616984；个人id：798193",
 	["illustrator:tenshi_god_1"] = " 伊吹のつ",
 	["origin:tenshi_god_1"] = "p号：54075238；个人id：7013",
 	["illustrator:tenshi_god_2"] = " 梅まろ",
 	["origin:tenshi_god_2"] = "p号：84826681；个人id：19885975",
-	
-	
+
+
 	["dimai"] = "地脉",
 	[":dimai"] = "<font color=\"#808080\"><b>永久技，</b></font>若你存活：一名角色的判定阶段开始时，若其判定区没有牌，其执行下列一张对应的延时锦囊牌的效果：【闪电】【乐不思蜀】【春息】【养精蓄锐】【兵粮寸断】；每以此法执行效果后或每回合首次有角色受到伤害后，须依照从左往右顺序循环切换下一张要执行的锦囊。<br /><br />" ..
 					"♦游戏开始后，最先行动的角色对应的锦囊是【闪电】。",
-					
+
 	["#dimai"]= "天气预报，下一次的天气为：  <font color=\"orange\"><b>%arg</b></font>。",
 	["#dimai_judge"]= "由于“%arg”的效果，%from 将执行 %arg2 的效果。",
 	["#dimai_unknownErr"] = "由于 %arg 原因，%from 的天气失效。",
 	["tiandao"] = "天道",
 	[":tiandao"] = "当一名角色的判定牌生效后，你可以对其使用此牌（无距离限制），并中止此次判定的后续有关结算或效果。",
-	
+
 	["yuyuko_1v3"] = "西行寺幽幽子",
 	["!yuyuko_1v3"] = "神 西行寺幽幽子-1v3",
 	["#yuyuko_1v3"] = "天衣无缝的亡灵" ,
