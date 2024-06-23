@@ -551,11 +551,36 @@ public:
 class Shitu : public TriggerSkill
 {
 public:
+    enum ShituRecordType
+    {
+        HasDamage = 1,
+        HasUsedCard = 2,
+        HasLostCard = 4,
+    };
+
+    static void clearShitu(Room *room)
+    {
+        foreach (ServerPlayer *p, room->getAllPlayers())
+            p->tag["shituRecord"] = 0;
+    }
+
+    static void recordShitu(Player *p, ShituRecordType recordType)
+    {
+        int n = p->tag.value("shituRecord").toInt();
+        n = n | recordType;
+        p->tag["shituRecord"] = n;
+    }
+
+    static bool isShitu(const Player *p, ShituRecordType recordType)
+    {
+        int n = p->tag.value("shituRecord").toInt();
+        return n & recordType;
+    }
+
     Shitu()
         : TriggerSkill("shitu")
     {
-        events << EventPhaseChanging << DamageDone << TurnStart;
-        global = true;
+        events = {EventPhaseChanging};
     }
 
     bool canPreshow() const override
@@ -563,45 +588,56 @@ public:
         return true;
     }
 
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
+    QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *room, const QVariant &data) const override
     {
-        switch (triggerEvent) {
-        case DamageDone: {
-            DamageStruct damage = data.value<DamageStruct>();
-            if ((damage.from != nullptr) && damage.from->isCurrent())
-                room->setTag("shituDamageOrDeath", true);
-            break;
-        }
-        case TurnStart:
-            room->setTag("shituDamageOrDeath", false);
-            break;
-        default:
-            break;
-        }
-    }
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if (change.player->hasSkill(this) && change.player->isAlive() && change.to == Player::NotActive) {
+            QVariant extraTag = room->getTag("touhou-extra");
+            bool nowExtraTurn = extraTag.canConvert(QVariant::Bool) && extraTag.toBool();
+            bool extraTurnExist = room->getThread()->hasExtraTurn();
 
-    QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *room, const QVariant &data) const override
-    {
-        if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.player->hasSkill(this) && change.player->isAlive() && change.to == Player::NotActive) {
-                QVariant extraTag = room->getTag("touhou-extra");
-                QVariant damageOrDeathTag = room->getTag("shituDamageOrDeath");
+            if (!nowExtraTurn && !extraTurnExist) {
+                bool shitu1 = !isShitu(change.player, HasDamage);
+                bool shitu2 = isShitu(change.player, HasUsedCard) && isShitu(change.player, HasLostCard);
+                if (shitu2) {
+                    foreach (ServerPlayer *p, room->getOtherPlayers(change.player)) {
+                        if (isShitu(p, HasLostCard)) {
+                            shitu2 = false;
+                            break;
+                        }
+                    }
+                }
 
-                bool nowExtraTurn = extraTag.canConvert(QVariant::Bool) && extraTag.toBool();
-                bool damageOrDeath = damageOrDeathTag.canConvert(QVariant::Bool) && damageOrDeathTag.toBool();
-                bool extraTurnExist = room->getThread()->hasExtraTurn();
-
-                if (!nowExtraTurn && !damageOrDeath && !extraTurnExist)
-                    return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, change.player, change.player);
+                if (shitu1 || shitu2) {
+                    SkillInvokeDetail d(this, change.player, change.player);
+                    d.tag["shitu1"] = shitu1;
+                    d.tag["shitu2"] = shitu2;
+                    return {d};
+                }
             }
         }
-        return QList<SkillInvokeDetail>();
+        return {};
     }
 
     bool cost(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &) const override
     {
-        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getAllPlayers(), objectName(), "@shitu-playerchoose", true, true);
+        invoke->invoker->tag["shitu1"] = invoke->tag["shitu1"];
+        invoke->invoker->tag["shitu2"] = invoke->tag["shitu2"];
+
+        QStringList prompt = {QString(), QString(), QString(), QString(), QString()};
+
+        int n = 0;
+        if (invoke->tag["shitu1"].toBool()) {
+            ++n;
+            prompt[3] = prompt[4] = "ShituDrawPhase";
+        }
+        if (invoke->tag["shitu2"].toBool()) {
+            ++n;
+            prompt[4] = "ShituPlayPhase";
+        }
+        prompt[0] = "@shitu-playerchoose" + QString::number(n);
+
+        ServerPlayer *target = room->askForPlayerChosen(invoke->invoker, room->getAllPlayers(), objectName(), prompt.join(":"), true, true);
         if (target != nullptr) {
             invoke->targets << target;
             return true;
@@ -615,11 +651,63 @@ public:
         room->notifySkillInvoked(invoke->invoker, objectName());
 
         ExtraTurnStruct extra;
-        extra.set_phases << Player::RoundStart << Player::Draw << Player::NotActive;
+        extra.set_phases << Player::RoundStart;
+        if (invoke->tag["shitu1"].toBool())
+            extra.set_phases << Player::Draw;
+        if (invoke->tag["shitu2"].toBool())
+            extra.set_phases << Player::Play;
+        extra.set_phases << Player::NotActive;
+
         invoke->targets.first()->tag["ExtraTurnInfo"] = QVariant::fromValue(extra);
         invoke->targets.first()->gainAnExtraTurn();
 
         return false;
+    }
+};
+
+class ShituRecord : public TriggerSkill
+{
+public:
+    ShituRecord()
+        : TriggerSkill("#shitu")
+    {
+        events = {TurnStart, DamageDone, PreCardUsed, CardsMoveOneTime, CardResponded};
+        global = true;
+    }
+
+    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
+    {
+        switch (triggerEvent) {
+        case TurnStart: {
+            Shitu::clearShitu(room);
+            break;
+        }
+        case DamageDone: {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.from != nullptr)
+                Shitu::recordShitu(damage.from, Shitu::HasDamage);
+            break;
+        }
+        case PreCardUsed: {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.from != nullptr)
+                Shitu::recordShitu(use.from, Shitu::HasUsedCard);
+            break;
+        }
+        case CardResponded: {
+            CardResponseStruct resp = data.value<CardResponseStruct>();
+            if (resp.m_isUse && resp.m_from != nullptr)
+                Shitu::recordShitu(resp.m_from, Shitu::HasUsedCard);
+        }
+        case CardsMoveOneTime: {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if (move.from != nullptr && (move.from_places.contains(Player::PlaceHand) || move.from_places.contains(Player::PlaceEquip)))
+                Shitu::recordShitu(move.from, Shitu::HasLostCard);
+            break;
+        }
+        default:
+            break;
+        }
     }
 };
 
@@ -2533,6 +2621,8 @@ TH99Package::TH99Package()
 
     General *renko = new General(this, "renko", "wai", 4);
     renko->addSkill(new Shitu);
+    renko->addSkill(new ShituRecord);
+    related_skills.insertMulti("shitu", "#shitu");
 
     General *merry = new General(this, "merry", "wai", 4);
     merry->addSkill("jingjie");
