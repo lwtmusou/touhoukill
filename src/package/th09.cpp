@@ -1836,7 +1836,7 @@ public:
         ServerPlayer *lord = invoke->owner;
         int card_id = invoke->invoker->tag["xiwang_id"].toInt();
         invoke->invoker->tag.remove("xiwang_id");
-        room->obtainCard(lord, card_id, false); //room->getCardPlace(card_id) != Player::PlaceHand
+        room->obtainCard(lord, card_id, false);
         return false;
     }
 };
@@ -1884,9 +1884,17 @@ void NianliDialog::popup()
         delete button;
     }
 
+    static const QStringList cardNamesInitial = {"slash", "snatch"};
     QStringList card_names;
-    card_names << "slash"
-               << "snatch";
+    foreach (const QString &card_name, cardNamesInitial) {
+        if (!Self->hasUsed("nianli" + card_name))
+            card_names << card_name;
+    }
+
+    if (card_names.length() == 0) {
+        emit onButtonClick();
+        return;
+    }
 
     foreach (const QString &card_name, card_names) {
         QCommandLinkButton *button = new QCommandLinkButton;
@@ -1904,6 +1912,12 @@ void NianliDialog::popup()
         button->setToolTip(c->getDescription());
         layout->addWidget(button);
         delete c;
+    }
+
+    if (group->buttons().length() == 1) {
+        Self->tag[object_name] = QVariant::fromValue(group->buttons().constFirst()->objectName());
+        emit onButtonClick();
+        return;
     }
 
     exec();
@@ -1970,13 +1984,22 @@ public:
 
     bool isEnabledAtPlay(const Player *player) const override
     {
-        return !player->hasUsed("NianliCard");
+        // I decided to not use NianliCard for history since it is not AI friendly
+        // We can record history in Nianli::record
+        // return !player->hasUsed("NianliCard");
+        bool nianlislash = false;
+        bool nianlisnatch = false;
+        if (player->hasUsed("nianlislash"))
+            nianlislash = true;
+        if (player->hasUsed("nianlisnatch"))
+            nianlisnatch = true;
+        return (nianlislash ? 1 : 0) + (nianlisnatch ? 1 : 0) - player->usedTimes("nianliextra") == 0 && !(nianlisnatch && nianlislash);
     }
 
     const Card *viewAs() const override
     {
         QString name = Self->tag.value("nianli", QString()).toString();
-        if (name != nullptr) {
+        if (!name.isEmpty()) {
             NianliCard *card = new NianliCard;
             card->setUserString(name);
             return card;
@@ -1991,7 +2014,7 @@ public:
     Nianli()
         : TriggerSkill("nianli")
     {
-        events << TargetSpecified << PreCardUsed;
+        events = {TargetSpecified, PreCardUsed};
         view_as_skill = new NianliVS;
     }
 
@@ -2002,76 +2025,61 @@ public:
 
     void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
     {
-        //clear history
         if (triggerEvent == PreCardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.m_addHistory && use.card->getSkillName() == objectName()) {
-                room->addPlayerHistory(use.from, use.card->getClassName(), -1);
-                use.m_addHistory = false;
-                data = QVariant::fromValue(use);
+            if (use.card->getSkillName() == objectName()) {
+                if (use.card->isKindOf("Slash"))
+                    room->addPlayerHistory(use.from, "nianlislash");
+                else
+                    room->addPlayerHistory(use.from, "nianlisnatch");
             }
         }
     }
 
     QList<SkillInvokeDetail> triggerable(TriggerEvent triggerEvent, const Room *, const QVariant &data) const override
     {
-        if (triggerEvent != TargetSpecified)
-            return QList<SkillInvokeDetail>();
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->getSkillName() == objectName() && use.from != nullptr && use.from->isAlive())
-            return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, use.from, use.from, nullptr, true);
-        return QList<SkillInvokeDetail>();
+        if (triggerEvent == TargetSpecified) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->getSkillName() == objectName() && use.from != nullptr && use.from->isAlive() && !use.card->isBlack() && !use.card->isRed())
+                return {SkillInvokeDetail(this, use.from, use.from, nullptr, true, nullptr, false)};
+        }
+        return {};
     }
 
-    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail>, QVariant &data) const override
+    bool effect(TriggerEvent, Room *room, QSharedPointer<SkillInvokeDetail> invoke, QVariant &data) const override
     {
-        bool loseHp = false;
-        CardUseStruct use = data.value<CardUseStruct>();
-        QString pattern = "";
-        if (use.card->isRed())
-            pattern = ".|red|.|hand";
-        else if (use.card->isBlack())
-            pattern = ".|black|.|hand";
-        else
-            loseHp = true;
+        room->loseHp(invoke->invoker, 1);
 
-        if (!loseHp) {
-            QString prompt = "@nianli-discard:";
-            prompt = prompt + use.card->getSuitString();
-            prompt = prompt + ":" + use.card->objectName();
-            const Card *card = room->askForCard(use.from, pattern, prompt, data, Card::MethodNone);
-            if (card != nullptr) {
+        if (invoke->invoker->isAlive() && !invoke->invoker->isNude()) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            int n = 0;
+            if (invoke->invoker->hasUsed("nianlislash"))
+                ++n;
+            if (invoke->invoker->hasUsed("nianlisnatch"))
+                ++n;
+
+            QStringList prompt = {QString(), QString(), QString(), QString(), QString()};
+            if (use.card->isKindOf("Slash")) {
+                prompt[3] = "Slash";
+                prompt[4] = "Snatch";
+            } else {
+                prompt[3] = "Snatch";
+                prompt[4] = "Slash";
+            }
+
+            prompt[0] = "@nianli-discard" + QString::number(n);
+            const Card *c = room->askForCard(invoke->invoker, ".", prompt.join(":"), data, Card::MethodNone);
+            if (c != nullptr) {
                 CardsMoveStruct move;
-                move.card_ids = card->getSubcards();
-                move.from = use.from;
+                move.card_ids = {c->getEffectiveId()};
+                move.from = invoke->invoker;
                 move.to_place = Player::DrawPile;
                 room->moveCardsAtomic(move, true);
+                room->addPlayerHistory(invoke->invoker, "nianliextra");
+            }
+        }
 
-            } else
-                loseHp = true;
-        }
-        if (loseHp) {
-            room->loseHp(use.from, 1);
-        }
         return false;
-    }
-};
-
-class NianliTargetMod : public TargetModSkill
-{
-public:
-    NianliTargetMod()
-        : TargetModSkill("#nianlimod")
-    {
-        pattern = "Slash";
-    }
-
-    int getResidueNum(const Player *from, const Card *card) const override
-    {
-        if (from->hasSkill("nianli") && ((card->getSkillName() == "nianli") || card->hasFlag("Global_SlashAvailabilityChecker")))
-            return 1000;
-        else
-            return 0;
     }
 };
 
@@ -2088,7 +2096,7 @@ public:
     QList<SkillInvokeDetail> triggerable(TriggerEvent, const Room *, const QVariant &data) const override
     {
         DrawNCardsStruct dc = data.value<DrawNCardsStruct>();
-        if (dc.player->hasSkill(this) && dc.player->getHandcardNum() > dc.player->getMaxCards())
+        if (dc.player->hasSkill(this))
             return QList<SkillInvokeDetail>() << SkillInvokeDetail(this, dc.player, dc.player);
         return QList<SkillInvokeDetail>();
     }
@@ -2102,29 +2110,50 @@ public:
     }
 };
 
-class Liqun : public DistanceSkill
+class Chongshen : public TriggerSkill
 {
 public:
-    Liqun()
-        : DistanceSkill("liqun$")
+    Chongshen()
+        : TriggerSkill("chongshen$")
     {
+        frequency = Compulsory;
+        events = {NumOfEvents};
     }
 
-    int getCorrect(const Player *from, const Player *to) const override
+    void record(TriggerEvent, Room *room, QVariant &) const override
     {
-        int correct = 0;
-        if (to->hasLordSkill(objectName())) {
-            if (from != to) {
-                QList<const Player *> players = from->getAliveSiblings();
-                foreach (const Player *player, players) {
-                    if (player->getKingdom() == "zhan" && player != to && from->inMyAttackRange(player)) {
-                        correct = 1;
-                        break;
+        foreach (ServerPlayer *sumireko, room->getAllPlayers()) {
+            QSet<QString> distance1;
+            if (sumireko->isCurrent() && sumireko->hasLordSkill(this) && sumireko->isAlive()) {
+                foreach (ServerPlayer *others, room->getOtherPlayers(sumireko)) {
+                    foreach (ServerPlayer *others2, room->getLieges("zhan", sumireko)) {
+                        if (others2->inMyAttackRange(others)) {
+                            distance1 << others->objectName();
+                            break;
+                        }
                     }
                 }
             }
+
+            QSet<QString> previousDistance1 = sumireko->tag["Chongshen_distance1"].toStringList().toSet();
+            QSet<QString> added = distance1 - previousDistance1;
+            QSet<QString> removed = previousDistance1 - distance1;
+
+            if (!(added.isEmpty() && removed.isEmpty()))
+                room->notifySkillInvoked(sumireko, objectName());
+
+            foreach (const QString &remove, removed) {
+                ServerPlayer *p = room->findPlayerByObjectName(remove);
+                room->setFixedDistance(sumireko, p, -1);
+            }
+            foreach (const QString &add, added) {
+                ServerPlayer *p = room->findPlayerByObjectName(add);
+                room->setFixedDistance(sumireko, p, 1);
+            }
+
+            QStringList distance1List = distance1.toList();
+            sumireko->tag["Chongshen_distance1"] = distance1List;
         }
-        return correct;
     }
 };
 
@@ -2183,122 +2212,6 @@ public:
         return false;
     }
 };
-
-/*
-class YsJie : public TriggerSkill
-{
-public:
-    YsJie()
-        : TriggerSkill("ysjie")
-    {
-        events << EventPhaseStart << EventAcquireSkill << EventLoseSkill << Death << EventSkillInvalidityChange << HpChanged << CardsMoveOneTime;
-        show_type = "static";
-        frequency = Compulsory;
-    }
-
-    static void removeYsJieLimit(ServerPlayer *player, QList<ServerPlayer *> targets)
-    {
-        Room *room = player->getRoom();
-        foreach (ServerPlayer *p, targets) {
-            if (p->isCardLimited("use,response", "ysjie"))
-                room->removePlayerCardLimitation(p, "use,response", ".$1", "ysjie");
-        }
-    }
-
-    static void setYsJieLimit(ServerPlayer *player, QList<ServerPlayer *> targets)
-    {
-        Room *room = player->getRoom();
-
-        LogMessage l;
-        foreach (ServerPlayer *p, targets) {
-            if (!p->isCardLimited("use,response", "ysjie")) {
-                room->setPlayerCardLimitation(p, "use,response", ".", "ysjie", true);
-                l.to << p;
-            }
-        }
-
-        if (!l.to.isEmpty()) {
-            l.type = "#duozhi";
-            room->sendLog(l);
-        }
-    }
-
-    void record(TriggerEvent triggerEvent, Room *room, QVariant &data) const override
-    {
-        if (triggerEvent == EventPhaseStart) {
-            ServerPlayer *player = data.value<ServerPlayer *>();
-            if (player->hasSkill(this) && player->getPhase() == Player::RoundStart) {
-                QList<ServerPlayer *> targets;
-                foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-                    if (p->getHandcardNum() < p->getLostHp())
-                        targets << p;
-                }
-                if (!targets.isEmpty())
-                    setYsJieLimit(player, targets);
-            }
-        } else if (triggerEvent == Death) {
-            DeathStruct death = data.value<DeathStruct>();
-            if ((death.who != nullptr) && death.who->isCurrent() && death.who->hasSkill(this)) {
-                removeYsJieLimit(death.who, room->getOtherPlayers(death.who));
-            }
-        } else if (triggerEvent == EventLoseSkill) {
-            SkillAcquireDetachStruct a = data.value<SkillAcquireDetachStruct>();
-            if ((a.player != nullptr) && a.player->isCurrent() && a.skill->objectName() == objectName()) {
-                removeYsJieLimit(a.player, room->getOtherPlayers(a.player));
-            }
-        } else if (triggerEvent == EventAcquireSkill) {
-            SkillAcquireDetachStruct a = data.value<SkillAcquireDetachStruct>();
-            if ((a.player != nullptr) && a.player->isCurrent() && a.skill->objectName() == objectName()) {
-                QList<ServerPlayer *> targets;
-                foreach (ServerPlayer *p, room->getOtherPlayers(a.player)) {
-                    if (p->getHandcardNum() < p->getLostHp())
-                        targets << p;
-                }
-                setYsJieLimit(a.player, targets);
-            }
-        } else if (triggerEvent == EventSkillInvalidityChange) {
-            QList<SkillInvalidStruct> invalids = data.value<QList<SkillInvalidStruct>>();
-            foreach (SkillInvalidStruct v, invalids) {
-                if (v.player == nullptr || !v.player->isCurrent())
-                    continue;
-
-                if ((v.skill == nullptr) || v.skill->objectName() == objectName()) {
-                    if (!v.invalid && v.player->hasSkill(this)) {
-                        QList<ServerPlayer *> targets;
-                        foreach (ServerPlayer *p, room->getOtherPlayers(v.player)) {
-                            if (p->getHandcardNum() < p->getLostHp())
-                                targets << p;
-                        }
-                        setYsJieLimit(v.player, targets);
-                    } else if (v.invalid)
-                        removeYsJieLimit(v.player, room->getOtherPlayers(v.player));
-                }
-            }
-        } else if (triggerEvent == HpChanged || triggerEvent == CardsMoveOneTime) {
-            if (triggerEvent == CardsMoveOneTime) {
-                CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-                if (!move.from_places.contains(Player::PlaceHand) && move.to_place != Player::PlaceHand)
-                    return;
-            }
-
-            ServerPlayer *current = room->getCurrent();
-            if ((current != nullptr) && current->hasSkill(this)) {
-                QList<ServerPlayer *> targets1;
-                QList<ServerPlayer *> targets2;
-                foreach (ServerPlayer *p, room->getOtherPlayers(current)) {
-                    if (p->getHandcardNum() < p->getLostHp())
-                        targets1 << p;
-                    else
-                        targets2 << p;
-                }
-                if (!targets1.isEmpty())
-                    setYsJieLimit(current, targets1);
-                if (!targets2.isEmpty())
-                    removeYsJieLimit(current, targets2);
-            }
-        }
-    }
-};*/
 
 YsJieCard::YsJieCard()
 {
@@ -2379,32 +2292,6 @@ public:
         return false;
     }
 };
-
-/*class Yishen : public DistanceSkill
-{
-public:
-    Yishen()
-        : DistanceSkill("yishen$")
-    {
-    }
-
-    int getCorrect(const Player *from, const Player *to) const override
-    {
-        int correct = 0;
-        if (from->hasLordSkill(objectName())) {
-            if (from != to) {
-                QList<const Player *> players = from->getAliveSiblings();
-                foreach (const Player *player, players) {
-                    if (player->getKingdom() == "zhan" && player != to && player->inMyAttackRange(to)) {
-                        correct = -1;
-                        break;
-                    }
-                }
-            }
-        }
-        return correct;
-    }
-};*/
 
 MengxiangTargetCard::MengxiangTargetCard()
 {
@@ -3146,10 +3033,8 @@ TH09Package::TH09Package()
 
     General *sumireko = new General(this, "sumireko$", "zhan", 4);
     sumireko->addSkill(new Nianli);
-    sumireko->addSkill(new NianliTargetMod);
     sumireko->addSkill(new Shenmi);
-    sumireko->addSkill(new Liqun);
-    related_skills.insertMulti("nianli", "#nianlimod");
+    sumireko->addSkill(new Chongshen);
 
     General *sumireko_sp = new General(this, "sumireko_sp", "zhan", 4);
     sumireko_sp->addSkill(new Mengxiang);
