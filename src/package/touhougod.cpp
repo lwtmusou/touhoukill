@@ -4032,24 +4032,22 @@ class Nanti : public TriggerSkill
 public:
     static int X(const Room *r)
     {
-        QList<EquipCard::Location> ls = {
-            EquipCard::WeaponLocation, EquipCard::ArmorLocation, EquipCard::DefensiveHorseLocation, EquipCard::OffensiveHorseLocation, EquipCard::TreasureLocation,
-        };
+        QSet<EquipCard::Location> ls;
 
         foreach (ServerPlayer *p, r->getAlivePlayers()) {
             if (p->getWeapon())
-                ls.removeAll(EquipCard::WeaponLocation);
+                ls << EquipCard::WeaponLocation;
             if (p->getArmor())
-                ls.removeAll(EquipCard::ArmorLocation);
+                ls << EquipCard::ArmorLocation;
             if (p->getDefensiveHorse())
-                ls.removeAll(EquipCard::DefensiveHorseLocation);
+                ls << EquipCard::DefensiveHorseLocation;
             if (p->getOffensiveHorse())
-                ls.removeAll(EquipCard::OffensiveHorseLocation);
+                ls << EquipCard::OffensiveHorseLocation;
             if (p->getTreasure())
-                ls.removeAll(EquipCard::TreasureLocation);
+                ls << EquipCard::TreasureLocation;
         }
 
-        return ls.length();
+        return ls.size();
     }
 
     Nanti()
